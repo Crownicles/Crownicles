@@ -1,6 +1,5 @@
 import Player from "../database/game/models/Player";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
-import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
@@ -9,7 +8,7 @@ import {
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { giveFoodToGuild } from "../utils/FoodUtils";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import {
 	CrowniclesPacket, makePacket, PacketContext
@@ -93,7 +92,7 @@ async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response
 			await giveItemToPlayer(response, context, player, generateRandomItem({
 				minRarity: minRarity(player),
 				maxRarity: maxRarity(player)
-			}), { itemLevel: ItemConstants.generateRandomLootLevel() });
+			}), { itemLevel: generateRandomLootLevel() });
 			break;
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD:
 			packet.amount = foodAmount(player, guild!.commonFood, false);

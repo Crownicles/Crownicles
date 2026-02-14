@@ -27,11 +27,9 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
-import {
-	ItemConstants, ItemRarity
-} from "../../../../Lib/src/constants/ItemConstants";
+import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { crowniclesInstance } from "../../index";
@@ -244,7 +242,7 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 		if (bonusItemGiven) {
 			await giveItemToPlayer(response, context, player, generateRandomItem({
 				minRarity: ItemRarity.SPECIAL
-			}), { itemLevel: ItemConstants.generateRandomLootLevel() });
+			}), { itemLevel: generateRandomLootLevel() });
 		}
 
 		await player.save();
