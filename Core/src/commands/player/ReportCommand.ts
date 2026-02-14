@@ -248,13 +248,13 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 					await handleMoveHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
 					break;
 				case ReactionCollectorCityShopReaction.name:
-					await handleCityShopReaction(
+					await handleCityShopReaction({
 						player,
 						city,
-						(firstReaction.reaction.data as ReactionCollectorCityShopReaction).shopId,
+						shopId: (firstReaction.reaction.data as ReactionCollectorCityShopReaction).shopId,
 						context,
 						response
-					);
+					});
 					break;
 				case ReactionCollectorHomeMenuReaction.name:
 					// Home menu reaction - currently just re-opens city menu (handled by Discord frontend)

@@ -503,18 +503,26 @@ async function checkEnchantmentConditions(
 }
 
 /**
- * Apply the enchantment to the item and spend currencies
+ * Parameters for the enchantItem function
  */
-async function enchantItem(
-	player: Player,
-	enchantment: ItemEnchantment,
+interface EnchantItemParams {
+	player: Player;
+	enchantment: ItemEnchantment;
 	price: {
 		money: number; gems: number;
-	},
-	playerMissionsInfo: PlayerMissionsInfo | null,
-	itemToEnchant: InventorySlot,
-	response: CrowniclesPacket[]
-): Promise<void> {
+	};
+	playerMissionsInfo: PlayerMissionsInfo | null;
+	itemToEnchant: InventorySlot;
+	response: CrowniclesPacket[];
+}
+
+/**
+ * Apply the enchantment to the item and spend currencies
+ */
+async function enchantItem(params: EnchantItemParams): Promise<void> {
+	const {
+		player, enchantment, price, playerMissionsInfo, itemToEnchant, response
+	} = params;
 	await player.reload();
 
 	itemToEnchant.itemEnchantmentId = enchantment.id;
@@ -550,7 +558,14 @@ export async function handleEnchantReaction(player: Player, reaction: ReactionCo
 		return;
 	}
 
-	await enchantItem(player, conditions.enchantment, conditions.price, conditions.playerMissionsInfo, conditions.itemToEnchant, response);
+	await enchantItem({
+		player,
+		enchantment: conditions.enchantment,
+		price: conditions.price,
+		playerMissionsInfo: conditions.playerMissionsInfo,
+		itemToEnchant: conditions.itemToEnchant,
+		response
+	});
 }
 
 /**
@@ -937,13 +952,21 @@ export async function handleBlacksmithDisenchantReaction(
 /**
  * Handle city shop reaction — player visits a shop in the city
  */
-export async function handleCityShopReaction(
-	player: Player,
-	city: City,
-	shopId: string,
-	context: PacketContext,
-	response: CrowniclesPacket[]
-): Promise<void> {
+/**
+ * Parameters for handleCityShopReaction
+ */
+interface CityShopReactionParams {
+	player: Player;
+	city: City;
+	shopId: string;
+	context: PacketContext;
+	response: CrowniclesPacket[];
+}
+
+export async function handleCityShopReaction(params: CityShopReactionParams): Promise<void> {
+	const {
+		player, city, shopId, context, response
+	} = params;
 	if (!city.shops?.includes(shopId)) {
 		CrowniclesLogger.warn(`Player tried to access unknown shop ${shopId} in city ${city.id}`);
 		return;
