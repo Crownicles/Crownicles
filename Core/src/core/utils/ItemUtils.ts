@@ -132,7 +132,9 @@ async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player
 		itemWithDetails: toItemWithDetails(player, item, 0, null)
 	}));
 	await InventorySlot.update({
-		itemId: item.id
+		itemId: item.id,
+		itemLevel: 1,
+		itemEnchantmentId: null
 	}, {
 		where: {
 			slot: itemToReplace.slot,
