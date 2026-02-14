@@ -125,6 +125,23 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			return true;
 		}
 
+		if (selectedValue.startsWith(HomeMenuIds.CHEST_SWAP_SELECT_PREFIX)) {
+			await this.handleSwapSelect(ctx, selectedValue, componentInteraction, nestedMenus);
+			return true;
+		}
+
+		if (selectedValue.startsWith(HomeMenuIds.CHEST_SWAP_TARGET_PREFIX)) {
+			await this.handleSwapTarget(ctx, selectedValue, componentInteraction, nestedMenus);
+			return true;
+		}
+
+		if (selectedValue.startsWith(HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX)) {
+			await componentInteraction.deferUpdate();
+			const categoryIndex = parseInt(selectedValue.replace(HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX, ""), 10);
+			await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
+			return true;
+		}
+
 		return false;
 	}
 
@@ -265,9 +282,19 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}[] = [];
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 
-		// Deposit section — items from inventory that can be stored
-		if (categoryDepositableItems.length > 0) {
-			description += `\n\n${i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng })}`;
+		const bothFull = !hasEmptySlots && isInventoryFull;
+
+		// Warning banners at the top
+		if (!hasEmptySlots) {
+			description += `\n\n⚠️ *${i18n.t("commands:report.city.homes.chest.chestFull", { lng: ctx.lng })}*`;
+		}
+		if (isInventoryFull) {
+			description += `\n⚠️ *${i18n.t("commands:report.city.homes.chest.inventoryFullLabel", { lng: ctx.lng })}*`;
+		}
+
+		if (bothFull && categoryChestItems.length > 0 && categoryDepositableItems.length > 0) {
+			// When both are full, only show the swap section (deposit/withdraw would all be disabled)
+			description += `\n\n${i18n.t("commands:report.city.homes.chest.swapSection", { lng: ctx.lng })}`;
 			for (const item of categoryDepositableItems) {
 				const details = this.withUnlimitedMaxValue(item.details, catInfo.category);
 				const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
@@ -275,15 +302,11 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 				if (emoteIndex < ChestFeatureHandler.CHOICE_EMOTES.length) {
 					description += `\n${ChestFeatureHandler.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
-					if (!hasEmptySlots) {
-						description += ` *(${i18n.t("commands:report.city.homes.chest.chestFull", { lng: ctx.lng })})*`;
-					}
 
 					const button = new ButtonBuilder()
 						.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[emoteIndex])!)
-						.setCustomId(`${HomeMenuIds.CHEST_DEPOSIT_PREFIX}${catInfo.category}_${item.slot}`)
-						.setStyle(hasEmptySlots ? ButtonStyle.Secondary : ButtonStyle.Secondary)
-						.setDisabled(!hasEmptySlots);
+						.setCustomId(`${HomeMenuIds.CHEST_SWAP_SELECT_PREFIX}${catInfo.category}_${item.slot}`)
+						.setStyle(ButtonStyle.Secondary);
 
 					if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
 						rows.push(new ActionRowBuilder<ButtonBuilder>());
@@ -296,35 +319,61 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				}
 			}
 		}
+		else {
+			// Normal mode: show deposit + withdraw sections
+			if (categoryDepositableItems.length > 0) {
+				description += `\n\n${i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng })}`;
+				for (const item of categoryDepositableItems) {
+					const details = this.withUnlimitedMaxValue(item.details, catInfo.category);
+					const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
+					const emoteIndex = choices.length;
 
-		// Withdraw section — items in the chest that can be retrieved
-		if (categoryChestItems.length > 0) {
-			description += `\n\n${i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng })}`;
-			for (const item of categoryChestItems) {
-				const details = this.withUnlimitedMaxValue(item.details, catInfo.category);
-				const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
-				const emoteIndex = choices.length;
+					if (emoteIndex < ChestFeatureHandler.CHOICE_EMOTES.length) {
+						description += `\n${ChestFeatureHandler.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
 
-				if (emoteIndex < ChestFeatureHandler.CHOICE_EMOTES.length) {
-					description += `\n${ChestFeatureHandler.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
-					if (isInventoryFull) {
-						description += ` *(${i18n.t("commands:report.city.homes.chest.inventoryFullLabel", { lng: ctx.lng })})*`;
+						const button = new ButtonBuilder()
+							.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[emoteIndex])!)
+							.setCustomId(`${HomeMenuIds.CHEST_DEPOSIT_PREFIX}${catInfo.category}_${item.slot}`)
+							.setStyle(ButtonStyle.Secondary)
+							.setDisabled(!hasEmptySlots);
+
+						if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+							rows.push(new ActionRowBuilder<ButtonBuilder>());
+						}
+						rows[rows.length - 1].addComponents(button);
+
+						choices.push({
+							type: "deposit", category: catInfo.category, slot: item.slot
+						});
 					}
+				}
+			}
 
-					const button = new ButtonBuilder()
-						.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[emoteIndex])!)
-						.setCustomId(`${HomeMenuIds.CHEST_WITHDRAW_PREFIX}${catInfo.category}_${item.slot}`)
-						.setStyle(ButtonStyle.Secondary)
-						.setDisabled(isInventoryFull);
+			if (categoryChestItems.length > 0) {
+				description += `\n\n${i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng })}`;
+				for (const item of categoryChestItems) {
+					const details = this.withUnlimitedMaxValue(item.details, catInfo.category);
+					const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
+					const emoteIndex = choices.length;
 
-					if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-						rows.push(new ActionRowBuilder<ButtonBuilder>());
+					if (emoteIndex < ChestFeatureHandler.CHOICE_EMOTES.length) {
+						description += `\n${ChestFeatureHandler.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
+
+						const button = new ButtonBuilder()
+							.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[emoteIndex])!)
+							.setCustomId(`${HomeMenuIds.CHEST_WITHDRAW_PREFIX}${catInfo.category}_${item.slot}`)
+							.setStyle(ButtonStyle.Secondary)
+							.setDisabled(isInventoryFull);
+
+						if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+							rows.push(new ActionRowBuilder<ButtonBuilder>());
+						}
+						rows[rows.length - 1].addComponents(button);
+
+						choices.push({
+							type: "withdraw", category: catInfo.category, slot: item.slot
+						});
 					}
-					rows[rows.length - 1].addComponents(button);
-
-					choices.push({
-						type: "withdraw", category: catInfo.category, slot: item.slot
-					});
 				}
 			}
 		}
@@ -408,7 +457,148 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Send a chest action (deposit/withdraw) directly to Core via AsyncPacketSender
+	 * Handle step 1 of swap: player selected an inventory item to swap.
+	 * Open a sub-menu showing chest items as targets.
+	 */
+	private async handleSwapSelect(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		// Parse "CHEST_SWAP_SEL_{category}_{inventorySlot}"
+		const parts = selectedValue.replace(HomeMenuIds.CHEST_SWAP_SELECT_PREFIX, "").split("_");
+		const category = parseInt(parts[0], 10) as ItemCategory;
+		const inventorySlot = parseInt(parts[1], 10);
+
+		await componentInteraction.deferUpdate();
+
+		const categoryIndex = CATEGORY_INFO.findIndex(c => c.category === category);
+		if (categoryIndex === -1) {
+			return;
+		}
+
+		await this.registerSwapTargetMenu(ctx, categoryIndex, inventorySlot, nestedMenus);
+		await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_SWAP_MENU_PREFIX}${categoryIndex}_${inventorySlot}`);
+	}
+
+	/**
+	 * Handle step 2 of swap: player selected a chest item to swap with.
+	 * Execute the swap action via Core.
+	 */
+	private async handleSwapTarget(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		// Parse "CHEST_SWAP_TGT_{category}_{inventorySlot}_{chestSlot}"
+		const parts = selectedValue.replace(HomeMenuIds.CHEST_SWAP_TARGET_PREFIX, "").split("_");
+		const category = parseInt(parts[0], 10) as ItemCategory;
+		const inventorySlot = parseInt(parts[1], 10);
+		const chestSlot = parseInt(parts[2], 10);
+
+		await componentInteraction.deferUpdate();
+
+		await this.sendChestAction(ctx, "swap", inventorySlot, category, nestedMenus, chestSlot);
+	}
+
+	/**
+	 * Build and register the swap target selection sub-menu.
+	 * Shows chest items to swap with the selected inventory item.
+	 */
+	private async registerSwapTargetMenu(
+		ctx: HomeFeatureHandlerContext,
+		categoryIndex: number,
+		inventorySlot: number,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		const catInfo = CATEGORY_INFO[categoryIndex];
+		const chest = ctx.homeData.chest!;
+
+		const categoryChestItems = chest.chestItems.filter(item => item.category === catInfo.category);
+		const categoryDepositableItems = chest.depositableItems.filter(item => item.category === catInfo.category);
+
+		// Find the selected inventory item for display
+		const selectedItem = categoryDepositableItems.find(item => item.slot === inventorySlot);
+		const menuId = `${HomeMenuIds.CHEST_SWAP_MENU_PREFIX}${categoryIndex}_${inventorySlot}`;
+
+		let description = i18n.t("commands:report.city.homes.chest.swapHeader", {
+			lng: ctx.lng,
+			item: selectedItem
+				? DisplayUtils.getItemDisplayWithStats(
+					this.withUnlimitedMaxValue(selectedItem.details, catInfo.category), ctx.lng
+				)
+				: "?"
+		});
+
+		description += "\n";
+
+		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
+
+		for (let j = 0; j < categoryChestItems.length; j++) {
+			const chestItem = categoryChestItems[j];
+			const details = this.withUnlimitedMaxValue(chestItem.details, catInfo.category);
+			const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
+
+			if (j < ChestFeatureHandler.CHOICE_EMOTES.length) {
+				description += `\n${ChestFeatureHandler.CHOICE_EMOTES[j]} - ${itemDisplay}`;
+
+				const button = new ButtonBuilder()
+					.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[j])!)
+					.setCustomId(`${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`)
+					.setStyle(ButtonStyle.Secondary);
+
+				if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+					rows.push(new ActionRowBuilder<ButtonBuilder>());
+				}
+				rows[rows.length - 1].addComponents(button);
+			}
+		}
+
+		// Back button
+		const backButton = new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+			.setCustomId(`${HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX}${categoryIndex}`)
+			.setStyle(ButtonStyle.Secondary);
+
+		if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+			rows.push(new ActionRowBuilder<ButtonBuilder>());
+		}
+		rows[rows.length - 1].addComponents(backButton);
+
+		const { CrowniclesEmbed } = await import("../../../../../messages/CrowniclesEmbed");
+
+		nestedMenus.registerMenu(menuId, {
+			embed: new CrowniclesEmbed()
+				.formatAuthor(
+					i18n.t("commands:report.city.homes.chest.title", {
+						lng: ctx.lng, pseudo: ctx.pseudo
+					}),
+					ctx.user
+				)
+				.setDescription(description),
+			components: rows,
+			createCollector: (menus, message) => {
+				const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+				collector.on("collect", async interaction => {
+					if (interaction.user.id !== ctx.user.id) {
+						const { sendInteractionNotForYou } = await import("../../../../../utils/ErrorUtils");
+						await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
+						return;
+					}
+
+					if (interaction.isButton()) {
+						await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
+					}
+				});
+				return collector;
+			}
+		});
+	}
+
+	/**
+	 * Send a chest action (deposit/withdraw/swap) directly to Core via AsyncPacketSender
 	 * and update the menu in-place with the refreshed data.
 	 */
 	private async sendChestAction(
@@ -416,12 +606,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		action: string,
 		slot: number,
 		itemCategory: ItemCategory,
-		nestedMenus: CrowniclesNestedMenus
+		nestedMenus: CrowniclesNestedMenus,
+		chestSlot?: number
 	): Promise<void> {
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
 			makePacket(CommandReportHomeChestActionReq, {
-				action, slot, itemCategory
+				action, slot, itemCategory, chestSlot: chestSlot ?? -1
 			}),
 			async (_responseContext, _packetName, responsePacket) => {
 				const response = responsePacket as unknown as CommandReportHomeChestActionRes;
