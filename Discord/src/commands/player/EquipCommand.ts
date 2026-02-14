@@ -339,14 +339,14 @@ function registerCategoryMenu(
 					const category = parseInt(parts[0], 10) as ItemCategory;
 					const slot = parseInt(parts[1], 10);
 					await interaction.deferUpdate();
-					await sendEquipAction(ctx, "equip", category, slot, categoryIndex, menus);
+					await sendEquipAction({ ctx, action: "equip", itemCategory: category, slot, categoryIndex, nestedMenus: menus });
 					return;
 				}
 
 				if (value.startsWith(EQUIP_MENU_IDS.DEPOSIT_PREFIX)) {
 					const category = parseInt(value.replace(EQUIP_MENU_IDS.DEPOSIT_PREFIX, ""), 10) as ItemCategory;
 					await interaction.deferUpdate();
-					await sendEquipAction(ctx, "deposit", category, 0, categoryIndex, menus);
+					await sendEquipAction({ ctx, action: "deposit", itemCategory: category, slot: 0, categoryIndex, nestedMenus: menus });
 				}
 			});
 			return collector;
@@ -360,14 +360,23 @@ function registerCategoryMenu(
  * =============================================
  */
 
-async function sendEquipAction(
-	ctx: EquipMenuContext,
-	action: string,
-	itemCategory: ItemCategory,
-	slot: number,
-	categoryIndex: number,
-	nestedMenus: CrowniclesNestedMenus
-): Promise<void> {
+interface EquipActionParams {
+	ctx: EquipMenuContext;
+	action: string;
+	itemCategory: ItemCategory;
+	slot: number;
+	categoryIndex: number;
+	nestedMenus: CrowniclesNestedMenus;
+}
+
+async function sendEquipAction({
+	ctx,
+	action,
+	itemCategory,
+	slot,
+	categoryIndex,
+	nestedMenus
+}: EquipActionParams): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
 		makePacket(CommandEquipActionReq, {

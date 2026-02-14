@@ -1238,51 +1238,18 @@ export async function handleHomeChestWithdrawReaction(
 		return false;
 	}
 
-	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+	// Try to place the item in the player's inventory
+	const itemToPlace: ItemPlacement = {
+		itemId: chestSlot.itemId,
+		itemLevel: chestSlot.itemLevel,
+		itemEnchantmentId: chestSlot.itemEnchantmentId
+	};
+	const placed = await placeItemInInventory(player, home, reaction.itemCategory, itemToPlace);
 
-	// Priority 1: Check if the active slot (slot 0) is empty — equips the item immediately
-	const activeSlot = playerInventory.find(s => s.itemCategory === reaction.itemCategory && s.slot === 0);
-	if (activeSlot && activeSlot.itemId === 0) {
-		activeSlot.itemId = chestSlot.itemId;
-		activeSlot.itemLevel = chestSlot.itemLevel;
-		activeSlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
-		await activeSlot.save();
-	}
-	else {
-		// Priority 2: Check backup slots
-		const backupSlots = playerInventory.filter(s => s.itemCategory === reaction.itemCategory && s.slot > 0);
-		const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
-		const homeBonus = home.getLevel()?.features.inventoryBonus;
-		const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, reaction.itemCategory) : 0;
-		const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(reaction.itemCategory) + bonusForCategory : 1;
-		const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
-
-		if (emptyBackupSlot) {
-			// Use existing empty backup slot
-			emptyBackupSlot.itemId = chestSlot.itemId;
-			emptyBackupSlot.itemLevel = chestSlot.itemLevel;
-			emptyBackupSlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
-			await emptyBackupSlot.save();
-		}
-		else if (backupSlots.length < maxSlots) {
-			// Create a new backup slot — use the next slot number after the current max
-			const nextSlot = backupSlots.length > 0
-				? Math.max(...backupSlots.map(s => s.slot)) + 1
-				: 1;
-			await InventorySlot.create({
-				playerId: player.id,
-				slot: nextSlot,
-				itemCategory: reaction.itemCategory,
-				itemId: chestSlot.itemId,
-				itemLevel: chestSlot.itemLevel,
-				itemEnchantmentId: chestSlot.itemEnchantmentId
-			});
-		}
-		else {
-			// Inventory full — all backup slots occupied and at max capacity
-			response.push(makePacket(CommandReportHomeChestInventoryFullRes, {}));
-			return false;
-		}
+	if (!placed) {
+		// Inventory full — all backup slots occupied and at max capacity
+		response.push(makePacket(CommandReportHomeChestInventoryFullRes, {}));
+		return false;
 	}
 
 	// Clear the chest slot
@@ -1330,7 +1297,13 @@ export async function handleChestAction(
 		}
 	}
 	else if (packet.action === "swap") {
-		const error = await processChestSwap(player, home, packet.slot, packet.chestSlot, packet.itemCategory as ItemCategory);
+		const error = await processChestSwap({
+			player,
+			home,
+			inventorySlotNumber: packet.slot,
+			chestSlotNumber: packet.chestSlot,
+			itemCategory: packet.itemCategory as ItemCategory
+		});
 		if (error) {
 			return buildChestActionError(error);
 		}
@@ -1390,6 +1363,16 @@ async function processChestDeposit(
 	await emptyChestSlot.save();
 
 	// Clear inventory slot
+	await clearInventorySlot(slot);
+
+	return null;
+}
+
+/**
+ * Clear an inventory slot after depositing/moving its item.
+ * Active slots are reset, backup slots are destroyed.
+ */
+async function clearInventorySlot(slot: InventorySlot): Promise<void> {
 	if (slot.slot === 0) {
 		slot.itemId = 0;
 		slot.itemLevel = 0;
@@ -1399,8 +1382,69 @@ async function processChestDeposit(
 	else {
 		await slot.destroy();
 	}
+}
 
-	return null;
+/**
+ * Item data to be placed in an inventory slot.
+ */
+interface ItemPlacement {
+	itemId: number;
+	itemLevel: number;
+	itemEnchantmentId: string | null;
+}
+
+/**
+ * Attempt to place an item in the player's inventory.
+ * Returns null on success, "inventoryFull" if no space.
+ */
+async function placeItemInInventory(
+	player: Player,
+	home: Home,
+	itemCategory: ItemCategory,
+	item: ItemPlacement
+): Promise<string | null> {
+	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+
+	// Priority 1: active slot (slot 0) if empty
+	const activeSlot = playerInventory.find(s => s.itemCategory === itemCategory && s.slot === 0);
+	if (activeSlot && activeSlot.itemId === 0) {
+		activeSlot.itemId = item.itemId;
+		activeSlot.itemLevel = item.itemLevel;
+		activeSlot.itemEnchantmentId = item.itemEnchantmentId;
+		await activeSlot.save();
+		return null;
+	}
+
+	// Priority 2: backup slots
+	const backupSlots = playerInventory.filter(s => s.itemCategory === itemCategory && s.slot > 0);
+	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
+	const homeBonus = home.getLevel()?.features.inventoryBonus;
+	const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, itemCategory) : 0;
+	const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(itemCategory) + bonusForCategory : 1;
+
+	const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
+	if (emptyBackupSlot) {
+		emptyBackupSlot.itemId = item.itemId;
+		emptyBackupSlot.itemLevel = item.itemLevel;
+		emptyBackupSlot.itemEnchantmentId = item.itemEnchantmentId;
+		await emptyBackupSlot.save();
+		return null;
+	}
+
+	if (backupSlots.length < maxSlots) {
+		const nextSlot = backupSlots.length > 0 ? Math.max(...backupSlots.map(s => s.slot)) + 1 : 1;
+		await InventorySlot.create({
+			playerId: player.id,
+			slot: nextSlot,
+			itemCategory,
+			itemId: item.itemId,
+			itemLevel: item.itemLevel,
+			itemEnchantmentId: item.itemEnchantmentId
+		});
+		return null;
+	}
+
+	return "inventoryFull";
 }
 
 async function processChestWithdraw(
@@ -1414,47 +1458,14 @@ async function processChestWithdraw(
 		return "invalid";
 	}
 
-	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+	const error = await placeItemInInventory(player, home, itemCategory, {
+		itemId: chestSlot.itemId,
+		itemLevel: chestSlot.itemLevel,
+		itemEnchantmentId: chestSlot.itemEnchantmentId
+	});
 
-	// Priority 1: active slot (slot 0) if empty
-	const activeSlot = playerInventory.find(s => s.itemCategory === itemCategory && s.slot === 0);
-	if (activeSlot && activeSlot.itemId === 0) {
-		activeSlot.itemId = chestSlot.itemId;
-		activeSlot.itemLevel = chestSlot.itemLevel;
-		activeSlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
-		await activeSlot.save();
-	}
-	else {
-		// Priority 2: backup slots
-		const backupSlots = playerInventory.filter(s => s.itemCategory === itemCategory && s.slot > 0);
-		const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
-		const homeBonus = home.getLevel()?.features.inventoryBonus;
-		const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, itemCategory) : 0;
-		const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(itemCategory) + bonusForCategory : 1;
-		const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
-
-		if (emptyBackupSlot) {
-			emptyBackupSlot.itemId = chestSlot.itemId;
-			emptyBackupSlot.itemLevel = chestSlot.itemLevel;
-			emptyBackupSlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
-			await emptyBackupSlot.save();
-		}
-		else if (backupSlots.length < maxSlots) {
-			const nextSlot = backupSlots.length > 0
-				? Math.max(...backupSlots.map(s => s.slot)) + 1
-				: 1;
-			await InventorySlot.create({
-				playerId: player.id,
-				slot: nextSlot,
-				itemCategory,
-				itemId: chestSlot.itemId,
-				itemLevel: chestSlot.itemLevel,
-				itemEnchantmentId: chestSlot.itemEnchantmentId
-			});
-		}
-		else {
-			return "inventoryFull";
-		}
+	if (error) {
+		return error;
 	}
 
 	// Clear the chest slot
@@ -1466,13 +1477,21 @@ async function processChestWithdraw(
 	return null;
 }
 
-async function processChestSwap(
-	player: Player,
-	home: Home,
-	inventorySlotNumber: number,
-	chestSlotNumber: number,
-	itemCategory: ItemCategory
-): Promise<string | null> {
+interface ChestSwapParams {
+	player: Player;
+	home: Home;
+	inventorySlotNumber: number;
+	chestSlotNumber: number;
+	itemCategory: ItemCategory;
+}
+
+async function processChestSwap({
+	player,
+	home,
+	inventorySlotNumber,
+	chestSlotNumber,
+	itemCategory
+}: ChestSwapParams): Promise<string | null> {
 	const inventorySlot = await InventorySlots.getItem(player.id, inventorySlotNumber, itemCategory);
 	if (!inventorySlot || inventorySlot.itemId === 0) {
 		return "invalid";
