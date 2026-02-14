@@ -135,6 +135,29 @@ export class DisplayUtils {
 	}
 
 	/**
+	 * Display the item name with its icon and stats, without showing max value caps.
+	 * This creates a copy of the details to avoid mutating the original data.
+	 * Useful for select menu descriptions where showing stat caps is not desired.
+	 * @param details
+	 * @param language
+	 */
+	static getItemDisplayWithStatsWithoutMaxValues(details: MainItemDetails, language: Language): string {
+		const detailsWithoutMax: MainItemDetails = {
+			...details,
+			attack: {
+				...details.attack, maxValue: Infinity
+			},
+			defense: {
+				...details.defense, maxValue: Infinity
+			},
+			speed: {
+				...details.speed, maxValue: Infinity
+			}
+		};
+		return DisplayUtils.getItemDisplayWithStats(detailsWithoutMax, language);
+	}
+
+	/**
 	 * Display the emote of a map location + its name
 	 * @param mapType
 	 * @param mapLocationId

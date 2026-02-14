@@ -35,12 +35,85 @@ import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects
 import { chooseDestination } from "./ReportDestinationService";
 
 /**
+ * Handle pet love points change for the winner of a PVE fight
+ */
+async function handleWinnerPetLovePoints(
+	fight: FightController,
+	endFightResponse: CrowniclesPacket[]
+): Promise<void> {
+	if (fight.isADraw()) {
+		return;
+	}
+
+	const winner = fight.getWinnerFighter();
+	const petLoveResult = fight.getPostFightPetLoveChange(winner, PostFightPetLoveOutcomes.WIN);
+	if (!petLoveResult || !(winner instanceof RealPlayerFighter)) {
+		return;
+	}
+
+	const petEntity = winner.pet;
+	if (!petEntity) {
+		return;
+	}
+
+	await petEntity.changeLovePoints({
+		player: winner.player,
+		response: endFightResponse,
+		amount: petLoveResult.loveChange,
+		reason: NumberChangeReason.FIGHT
+	});
+	await petEntity.save({ fields: ["lovePoints"] });
+	fight.petReactionData = {
+		keycloakId: winner.player.keycloakId,
+		reactionType: petLoveResult.reactionType,
+		loveDelta: petLoveResult.loveChange,
+		petId: petEntity.typeId,
+		petSex: petEntity.sex,
+		petNickname: petEntity.nickname
+	};
+}
+
+/**
+ * Handle guild rewards (score + XP) after a PVE fight
+ */
+async function handleGuildRewards(
+	player: Player,
+	rewards: {
+		guildScore: number; guildXp: number;
+	},
+	endFightResponse: CrowniclesPacket[]
+): Promise<{
+	guildXp: number; guildPoints: number;
+}> {
+	if (!player.guildId) {
+		return {
+			guildXp: 0, guildPoints: 0
+		};
+	}
+
+	const guild = await Guilds.getById(player.guildId);
+	if (!guild) {
+		return {
+			guildXp: 0, guildPoints: 0
+		};
+	}
+
+	await guild.addScore({
+		amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+	});
+	await guild.addExperience({
+		amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+	});
+	await guild.save();
+
+	return {
+		guildXp: guild.level < GuildConstants.MAX_LEVEL ? rewards.guildXp : 0,
+		guildPoints: rewards.guildScore
+	};
+}
+
+/**
  * Handle rewards and pet reactions after a PVE fight
- * @param fight
- * @param player
- * @param rewards
- * @param endFightResponse
- * @param playerActiveObjects
  */
 async function handlePveFightRewards(
 	fight: FightController,
@@ -53,33 +126,7 @@ async function handlePveFightRewards(
 ): Promise<{
 	guildXp: number; guildPoints: number;
 }> {
-	let guildXp = 0;
-	let guildPoints = 0;
-
-	if (!fight.isADraw()) {
-		const winner = fight.getWinnerFighter();
-		const petLoveResult = fight.getPostFightPetLoveChange(winner, PostFightPetLoveOutcomes.WIN);
-		if (petLoveResult && winner instanceof RealPlayerFighter) {
-			const petEntity = winner.pet;
-			if (petEntity) {
-				await petEntity.changeLovePoints({
-					player: winner.player,
-					response: endFightResponse,
-					amount: petLoveResult.loveChange,
-					reason: NumberChangeReason.FIGHT
-				});
-				await petEntity.save({ fields: ["lovePoints"] });
-				fight.petReactionData = {
-					keycloakId: winner.player.keycloakId,
-					reactionType: petLoveResult.reactionType,
-					loveDelta: petLoveResult.loveChange,
-					petId: petEntity.typeId,
-					petSex: petEntity.sex,
-					petNickname: petEntity.nickname
-				};
-			}
-		}
-	}
+	await handleWinnerPetLovePoints(fight, endFightResponse);
 
 	await player.addMoney({
 		amount: rewards.money,
@@ -92,25 +139,7 @@ async function handlePveFightRewards(
 		response: endFightResponse
 	}, playerActiveObjects);
 
-	if (player.guildId) {
-		const guild = await Guilds.getById(player.guildId);
-		if (guild) {
-			await guild.addScore({
-				amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
-			});
-			await guild.addExperience({
-				amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
-			});
-			await guild.save();
-			if (guild.level < GuildConstants.MAX_LEVEL) {
-				guildXp = rewards.guildXp;
-			}
-			guildPoints = rewards.guildScore;
-		}
-	}
-	return {
-		guildXp, guildPoints
-	};
+	return handleGuildRewards(player, rewards, endFightResponse);
 }
 
 /**
@@ -124,7 +153,9 @@ export async function doPVEBoss(
 	response: CrowniclesPacket[],
 	context: PacketContext
 ): Promise<void> {
-	const seed = player.id + millisecondsToSeconds(player.startTravelDate.valueOf());
+	// Use a hash of keycloakId rather than the sequential player.id to prevent seed prediction
+	const keycloakIdHash = Math.abs(Array.from(player.keycloakId).reduce((hash, char) => (hash << 5) - hash + char.charCodeAt(0) | 0, 0));
+	const seed = keycloakIdHash + millisecondsToSeconds(player.startTravelDate.valueOf());
 	const mapId = player.getDestination()!.id;
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
 	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
@@ -152,14 +183,6 @@ export async function doPVEBoss(
 					guildXp,
 					guildPoints,
 					petReaction: fight.petReactionData
-						? {
-							reactionType: fight.petReactionData.reactionType,
-							loveDelta: fight.petReactionData.loveDelta,
-							petId: fight.petReactionData.petId,
-							petSex: fight.petReactionData.petSex,
-							petNickname: fight.petReactionData.petNickname
-						}
-						: undefined
 				}));
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 

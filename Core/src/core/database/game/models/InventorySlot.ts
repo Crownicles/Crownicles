@@ -76,6 +76,17 @@ export class InventorySlot extends Model {
 		return this.itemCategory === ItemCategory.ARMOR;
 	}
 
+	isWeaponOrArmor(): boolean {
+		return this.isWeapon() || this.isArmor();
+	}
+
+	/**
+	 * Check if this slot contains a valid primary equipment (weapon or armor with a valid item)
+	 */
+	isPrimaryEquipment(): boolean {
+		return this.isWeaponOrArmor() && this.itemId !== 0;
+	}
+
 	isPotion(): boolean {
 		return this.itemCategory === ItemCategory.POTION;
 	}
