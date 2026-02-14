@@ -137,4 +137,19 @@ export abstract class DiscordConstants {
 		 */
 		EMPTY_FIELD_NAME: "\u200B"
 	};
+
+	/**
+	 * Numbered emoji buttons for selection interfaces (1️⃣ to 9️⃣)
+	 */
+	static readonly CHOICE_EMOTES = [
+		"1⃣",
+		"2⃣",
+		"3⃣",
+		"4⃣",
+		"5⃣",
+		"6⃣",
+		"7⃣",
+		"8⃣",
+		"9⃣"
+	] as const;
 }

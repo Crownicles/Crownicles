@@ -57,18 +57,6 @@ const CATEGORY_INFO = [
 	}
 ];
 
-const CHOICE_EMOTES = [
-	"1⃣",
-	"2⃣",
-	"3⃣",
-	"4⃣",
-	"5⃣",
-	"6⃣",
-	"7⃣",
-	"8⃣",
-	"9⃣"
-];
-
 const EQUIP_MENU_IDS = {
 	MAIN: "EQUIP_MAIN",
 	CATEGORY_PREFIX: "EQUIP_CAT_",
@@ -241,12 +229,12 @@ function registerCategoryMenu(
 	if (categoryData.equippedItem) {
 		const details = withUnlimitedMaxValue(categoryData.equippedItem.details, catInfo.category);
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
-		description += `\n${CHOICE_EMOTES[choiceIndex]} - ${itemDisplay}`;
+		description += `\n${DiscordConstants.CHOICE_EMOTES[choiceIndex]} - ${itemDisplay}`;
 
 		// Deposit button — only if there's room in reserve
 		const canDeposit = categoryData.reserveItems.length < categoryData.maxReserveSlots;
 		const button = new ButtonBuilder()
-			.setEmoji(parseEmoji(CHOICE_EMOTES[choiceIndex])!)
+			.setEmoji(parseEmoji(DiscordConstants.CHOICE_EMOTES[choiceIndex])!)
 			.setCustomId(`${EQUIP_MENU_IDS.DEPOSIT_PREFIX}${catInfo.category}`)
 			.setStyle(ButtonStyle.Secondary)
 			.setDisabled(!canDeposit);
@@ -270,16 +258,16 @@ function registerCategoryMenu(
 	})}`;
 
 	for (const item of categoryData.reserveItems) {
-		if (choiceIndex >= CHOICE_EMOTES.length) {
+		if (choiceIndex >= DiscordConstants.CHOICE_EMOTES.length) {
 			break;
 		}
 
 		const details = withUnlimitedMaxValue(item.details, catInfo.category);
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
-		description += `\n${CHOICE_EMOTES[choiceIndex]} - ${itemDisplay}`;
+		description += `\n${DiscordConstants.CHOICE_EMOTES[choiceIndex]} - ${itemDisplay}`;
 
 		const button = new ButtonBuilder()
-			.setEmoji(parseEmoji(CHOICE_EMOTES[choiceIndex])!)
+			.setEmoji(parseEmoji(DiscordConstants.CHOICE_EMOTES[choiceIndex])!)
 			.setCustomId(`${EQUIP_MENU_IDS.EQUIP_PREFIX}${catInfo.category}_${item.slot}`)
 			.setStyle(ButtonStyle.Secondary);
 

@@ -155,18 +155,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 	}
 
-	private static readonly CHOICE_EMOTES = [
-		"1⃣",
-		"2⃣",
-		"3⃣",
-		"4⃣",
-		"5⃣",
-		"6⃣",
-		"7⃣",
-		"8⃣",
-		"9⃣"
-	];
-
 	/**
 	 * Add a button to the last row, creating a new row if the current one is full.
 	 */
@@ -182,7 +170,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildItemButton(emoteIndex: number, customId: string, disabled?: boolean): ButtonBuilder {
 		return new ButtonBuilder()
-			.setEmoji(parseEmoji(ChestFeatureHandler.CHOICE_EMOTES[emoteIndex])!)
+			.setEmoji(parseEmoji(DiscordConstants.CHOICE_EMOTES[emoteIndex])!)
 			.setCustomId(customId)
 			.setStyle(ButtonStyle.Secondary)
 			.setDisabled(disabled ?? false);
@@ -205,13 +193,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		let { emoteIndex } = params;
 
 		for (const item of params.items) {
-			if (emoteIndex >= ChestFeatureHandler.CHOICE_EMOTES.length) {
+			if (emoteIndex >= DiscordConstants.CHOICE_EMOTES.length) {
 				break;
 			}
 
 			const details = this.withUnlimitedMaxValue(item.details, params.category);
 			const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, params.lng);
-			description += `\n${ChestFeatureHandler.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
+			description += `\n${DiscordConstants.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
 
 			const button = this.buildItemButton(
 				emoteIndex,
@@ -583,10 +571,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 
 		// Build swap target buttons using helper
-		for (let j = 0; j < categoryChestItems.length && j < ChestFeatureHandler.CHOICE_EMOTES.length; j++) {
+		for (let j = 0; j < categoryChestItems.length && j < DiscordConstants.CHOICE_EMOTES.length; j++) {
 			const chestItem = categoryChestItems[j];
 			const details = this.withUnlimitedMaxValue(chestItem.details, catInfo.category);
-			description += `\n${ChestFeatureHandler.CHOICE_EMOTES[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
+			description += `\n${DiscordConstants.CHOICE_EMOTES[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
 
 			const button = this.buildItemButton(j, `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`);
 			this.addButtonToRow(rows, button);

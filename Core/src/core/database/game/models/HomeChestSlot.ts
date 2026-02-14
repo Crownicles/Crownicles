@@ -114,10 +114,10 @@ export class HomeChestSlots {
 				key: "armor", category: ItemCategory.ARMOR
 			},
 			{
-				key: "object", category: ItemCategory.OBJECT
+				key: "potion", category: ItemCategory.POTION
 			},
 			{
-				key: "potion", category: ItemCategory.POTION
+				key: "object", category: ItemCategory.OBJECT
 			}
 		];
 
