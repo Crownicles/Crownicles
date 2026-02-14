@@ -1,5 +1,4 @@
 import { MaterialRarity } from "../types/MaterialRarity";
-import { RandomUtils } from "../utils/RandomUtils";
 
 export enum ItemCategory {
 	WEAPON,
