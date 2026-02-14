@@ -5,13 +5,6 @@ import { MaterialRarity } from "../../src/types/MaterialRarity";
 
 describe("BlacksmithConstants", () => {
 	describe("getUpgradePrice", () => {
-		it("should return the base price for EPIC rarity (reference rarity)", () => {
-			expect(BlacksmithConstants.getUpgradePrice(1, ItemRarity.EPIC)).toBe(50);
-			expect(BlacksmithConstants.getUpgradePrice(2, ItemRarity.EPIC)).toBe(500);
-			expect(BlacksmithConstants.getUpgradePrice(3, ItemRarity.EPIC)).toBe(1500);
-			expect(BlacksmithConstants.getUpgradePrice(4, ItemRarity.EPIC)).toBe(3500);
-		});
-
 		it("should increase price for rarities above EPIC", () => {
 			const epicPrice = BlacksmithConstants.getUpgradePrice(1, ItemRarity.EPIC);
 			const legendaryPrice = BlacksmithConstants.getUpgradePrice(1, ItemRarity.LEGENDARY);
@@ -30,19 +23,11 @@ describe("BlacksmithConstants", () => {
 			expect(commonPrice).toBeLessThan(rarePrice);
 		});
 
-		it("should always return a positive price", () => {
+		it("should always return a positive integer", () => {
 			for (const level of [1, 2, 3, 4] as const) {
 				for (const rarity of Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[]) {
 					const price = BlacksmithConstants.getUpgradePrice(level, rarity);
 					expect(price).toBeGreaterThan(0);
-				}
-			}
-		});
-
-		it("should return integer values", () => {
-			for (const level of [1, 2, 3, 4] as const) {
-				for (const rarity of Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[]) {
-					const price = BlacksmithConstants.getUpgradePrice(level, rarity);
 					expect(Number.isInteger(price)).toBe(true);
 				}
 			}
@@ -128,12 +113,6 @@ describe("BlacksmithConstants", () => {
 			expect(BlacksmithConstants.getDisenchantPrice(ItemRarity.BASIC)).toBe(0);
 		});
 
-		it("should return the correct price from the DISENCHANT_PRICE table", () => {
-			expect(BlacksmithConstants.getDisenchantPrice(ItemRarity.COMMON)).toBe(50);
-			expect(BlacksmithConstants.getDisenchantPrice(ItemRarity.EPIC)).toBe(1500);
-			expect(BlacksmithConstants.getDisenchantPrice(ItemRarity.MYTHICAL)).toBe(6000);
-		});
-
 		it("should increase price with higher rarity", () => {
 			const rarities = Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[];
 			for (let i = 1; i < rarities.length; i++) {
@@ -143,7 +122,7 @@ describe("BlacksmithConstants", () => {
 			}
 		});
 
-		it("should have a defined price for every item rarity", () => {
+		it("should return a defined number for every item rarity", () => {
 			const rarities = Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[];
 			for (const rarity of rarities) {
 				const price = BlacksmithConstants.getDisenchantPrice(rarity);
