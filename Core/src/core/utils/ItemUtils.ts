@@ -42,6 +42,8 @@ import { SupportItem } from "../../data/SupportItem";
 import { CommandDrinkPacketRes } from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
 import { TravelTime } from "../maps/TravelTime";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
+import { Homes } from "../database/game/models/Home";
+import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
 
 
 /**
@@ -451,7 +453,10 @@ export async function giveItemToPlayer(
 	}
 
 	const category = item.getCategory();
-	const maxSlots = (await InventoryInfos.getOfPlayer(player.id)).slotLimitForCategory(category);
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	const home = await Homes.getOfPlayer(player.id);
+	const homeBonus = home?.getLevel()?.features.inventoryBonus;
+	const maxSlots = invInfo.slotLimitForCategory(category) + (homeBonus ? getSlotCountForCategory(homeBonus, category) : 0);
 	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 	const canDrinkThisPotion = canPotionBeDrunkImmediately(item, canDrinkImmediately);

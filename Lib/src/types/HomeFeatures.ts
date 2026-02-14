@@ -1,4 +1,6 @@
-import { ItemRarity } from "../constants/ItemConstants";
+import {
+	ItemCategory, ItemRarity
+} from "../constants/ItemConstants";
 import { GardenEarthQuality } from "./GardenEarthQuality";
 
 export interface ChestSlotsPerCategory {
@@ -6,6 +8,24 @@ export interface ChestSlotsPerCategory {
 	armor: number;
 	object: number;
 	potion: number;
+}
+
+/**
+ * Get the value from ChestSlotsPerCategory for a given ItemCategory
+ */
+export function getSlotCountForCategory(slots: ChestSlotsPerCategory, category: ItemCategory): number {
+	switch (category) {
+		case ItemCategory.WEAPON:
+			return slots.weapon;
+		case ItemCategory.ARMOR:
+			return slots.armor;
+		case ItemCategory.POTION:
+			return slots.potion;
+		case ItemCategory.OBJECT:
+			return slots.object;
+		default:
+			return 0;
+	}
 }
 
 export interface HomeFeatures {

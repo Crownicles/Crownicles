@@ -9,7 +9,9 @@ import {
 	Home, Homes
 } from "../database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
-import { ChestSlotsPerCategory } from "../../../../Lib/src/types/HomeFeatures";
+import {
+	ChestSlotsPerCategory, getSlotCountForCategory
+} from "../../../../Lib/src/types/HomeFeatures";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import {
@@ -317,13 +319,14 @@ export async function buildChestData(
 			details: inventorySlot.itemWithDetails(player)
 		}));
 
-	// Get inventory capacity per category (max backup slots)
+	// Get inventory capacity per category (max backup slots) including home bonus
 	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
+	const homeBonus = homeLevel.features.inventoryBonus;
 	const inventoryCapacity: ChestSlotsPerCategory = {
-		weapon: inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON) : 1,
-		armor: inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR) : 1,
-		potion: inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.POTION) : 1,
-		object: inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) : 1
+		weapon: (inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON) : 1) + homeBonus.weapon,
+		armor: (inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR) : 1) + homeBonus.armor,
+		potion: (inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.POTION) : 1) + homeBonus.potion,
+		object: (inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) : 1) + homeBonus.object
 	};
 
 	return {
@@ -716,46 +719,10 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 	const newLevel = HomeLevel.getNextUpgrade(oldLevel, player.level)!;
 	home.level = newLevel.level;
 
-	// Apply inventory bonus delta between old and new level
-	const oldBonus = oldLevel.features.inventoryBonus;
-	const newBonus = newLevel.features.inventoryBonus;
-	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
-
-	if (inventoryInfo) {
-		const bonusCategories: {
-			key: keyof typeof oldBonus; category: ItemCategory;
-		}[] = [
-			{
-				key: "weapon", category: ItemCategory.WEAPON
-			},
-			{
-				key: "armor", category: ItemCategory.ARMOR
-			},
-			{
-				key: "potion", category: ItemCategory.POTION
-			},
-			{
-				key: "object", category: ItemCategory.OBJECT
-			}
-		];
-
-		let bonusApplied = false;
-
-		for (const {
-			key, category
-		} of bonusCategories) {
-			const delta = newBonus[key] - oldBonus[key];
-
-			for (let i = 0; i < delta; i++) {
-				inventoryInfo.addSlotForCategory(category);
-				bonusApplied = true;
-			}
-		}
-
-		if (bonusApplied) {
-			await inventoryInfo.save();
-		}
-	}
+	/*
+	 * Note: inventory bonus is now calculated dynamically based on home level,
+	 * so we no longer modify InventoryInfo during upgrades
+	 */
 
 	await player.spendMoney({
 		response,
@@ -1285,7 +1252,9 @@ export async function handleHomeChestWithdrawReaction(
 		// Priority 2: Check backup slots
 		const backupSlots = playerInventory.filter(s => s.itemCategory === reaction.itemCategory && s.slot > 0);
 		const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
-		const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(reaction.itemCategory) : 1;
+		const homeBonus = home.getLevel()?.features.inventoryBonus;
+		const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, reaction.itemCategory) : 0;
+		const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(reaction.itemCategory) + bonusForCategory : 1;
 		const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
 
 		if (emptyBackupSlot) {
@@ -1459,7 +1428,9 @@ async function processChestWithdraw(
 		// Priority 2: backup slots
 		const backupSlots = playerInventory.filter(s => s.itemCategory === itemCategory && s.slot > 0);
 		const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
-		const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(itemCategory) : 1;
+		const homeBonus = home.getLevel()?.features.inventoryBonus;
+		const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, itemCategory) : 0;
+		const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(itemCategory) + bonusForCategory : 1;
 		const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
 
 		if (emptyBackupSlot) {

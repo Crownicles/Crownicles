@@ -20,6 +20,7 @@ import {
 } from "../../core/utils/CommandUtils";
 import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import { Materials } from "../../core/database/game/models/Material";
+import { Homes } from "../../core/database/game/models/Home";
 
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
@@ -41,6 +42,10 @@ export default class InventoryCommand {
 		const invInfo = await InventoryInfos.getOfPlayer(toCheckPlayer.id);
 		const talismans = await PlayerTalismansManager.getOfPlayer(toCheckPlayer.id);
 		const playerMaterials = await Materials.getPlayerMaterials(toCheckPlayer.id);
+		const home = await Homes.getOfPlayer(toCheckPlayer.id);
+		const homeBonus = home?.getLevel()?.features.inventoryBonus ?? {
+			weapon: 0, armor: 0, potion: 0, object: 0
+		};
 
 		const weapon = items.find(item => item.isWeapon() && item.isEquipped());
 		const armor = items.find(item => item.isArmor() && item.isEquipped());
@@ -78,10 +83,10 @@ export default class InventoryCommand {
 						display: (item.getItem() as ObjectItem).getDisplayPacket(maxStatsValues), slot: item.slot
 					})),
 				slots: {
-					weapons: invInfo.weaponSlots,
-					armors: invInfo.armorSlots,
-					potions: invInfo.potionSlots,
-					objects: invInfo.objectSlots
+					weapons: invInfo.weaponSlots + homeBonus.weapon,
+					armors: invInfo.armorSlots + homeBonus.armor,
+					potions: invInfo.potionSlots + homeBonus.potion,
+					objects: invInfo.objectSlots + homeBonus.object
 				},
 				materials: playerMaterials
 					.filter(m => m.quantity > 0)
