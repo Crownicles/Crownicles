@@ -13,6 +13,10 @@ import {
 	CommandReportHomeChestActionReq, CommandReportHomeChestActionRes
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { handleChestAction } from "../../report/ReportCityService";
+import {
+	CommandEquipActionReq, CommandEquipActionRes
+} from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
+import { handleEquipAction } from "../../utils/EquipActionService";
 
 export default class CoreHandlers {
 	@packetHandler(ReactionCollectorReactPacket)
@@ -34,5 +38,11 @@ export default class CoreHandlers {
 	async homeChestAction(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportHomeChestActionReq): Promise<void> {
 		const result = await handleChestAction(context.keycloakId!, packet);
 		response.push(makePacket(CommandReportHomeChestActionRes, result));
+	}
+
+	@packetHandler(CommandEquipActionReq)
+	async equipAction(response: CrowniclesPacket[], context: PacketContext, packet: CommandEquipActionReq): Promise<void> {
+		const result = await handleEquipAction(context.keycloakId!, packet);
+		response.push(makePacket(CommandEquipActionRes, result));
 	}
 }

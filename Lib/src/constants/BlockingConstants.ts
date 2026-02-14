@@ -41,6 +41,7 @@ export abstract class BlockingConstants {
 		SHOP: "shop",
 		SHOP_CONFIRMATION: "shopConfirmation",
 		SWITCH: "switch",
+		EQUIP: "equip",
 		TEST: "test",
 		UNLOCK: "unlock",
 		START_BOSS_FIGHT: "startBossFight",

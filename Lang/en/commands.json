@@ -1731,6 +1731,24 @@
     "depositSelectionTitle": "{{pseudo}}, depositing an item",
     "depositSelectionDescription": "Choose an object to deposit from the list below:"
   },
+  "equip": {
+    "title": "{{pseudo}}, equipment management",
+    "mainDescription": "Select a category to manage your equipment.",
+    "categoryHeader": "**{{category}}**",
+    "equippedSection": "🗡️ **Equipped item:**",
+    "reserveSection": "🎒 **Reserve ({{count}}/{{max}}):**",
+    "noEquippedItem": "No equipped item",
+    "noReserveItems": "No reserve items",
+    "reserveFull": "Reserve full",
+    "noItems": "You have no equipment to manage!",
+    "closeTitle": "{{pseudo}}, equipment closed",
+    "closeDescription": "You closed the equipment menu.",
+    "categories": {
+      "armors": "Armors",
+      "potions": "Potions",
+      "objects": "Objects"
+    }
+  },
   "drink": {
     "errors": {
       "noAvailablePotions": "Unfortunately, you have no consumable potions in your inventory! Combat potions cannot be consumed via this command.",

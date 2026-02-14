@@ -319,6 +319,10 @@
     "name": "deposit",
     "description": "Deposit one of your active items."
   },
+  "equip": {
+    "name": "equip",
+    "description": "Manage your equipment: equip, store or swap your items."
+  },
   "drink": {
     "name": "drink",
     "description": "Drink a potion."

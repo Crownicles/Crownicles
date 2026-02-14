@@ -319,6 +319,10 @@
     "name": "deposer",
     "description": "Déposer un de vos objets actifs."
   },
+  "equip": {
+    "name": "equiper",
+    "description": "Gérer votre équipement : équiper, ranger ou intervertir vos objets."
+  },
   "drink": {
     "name": "boire",
     "description": "Boire une potion."
