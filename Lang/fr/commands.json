@@ -855,7 +855,7 @@
         },
         "tanner": {
           "label": "Le Tanneur",
-          "description": "Un artisan spécialisé dans le travail du cuir. Il peut fabriquer de nouvelles sacoches pour agrandir votre inventaire."
+          "description": "Agrandissez votre inventaire grâce aux sacoches en cuir de cet artisan."
         }
       },
       "inns": {

@@ -110,7 +110,7 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 			label: i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng }),
 			description: i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng }),
 			value: `CITY_SHOP_${shop.shopId}`,
-			emoji: CrowniclesIcons.city.shop
+			emoji: CrowniclesIcons.city.shops[shop.shopId] ?? "🛒"
 		});
 	}
 
