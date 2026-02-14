@@ -94,7 +94,6 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 		});
 	}
 
-	// Blacksmith option
 	if (data.blacksmith) {
 		selectMenu.addOptions({
 			label: i18n.t("commands:report.city.blacksmith.menuLabel", { lng }),

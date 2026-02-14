@@ -199,7 +199,6 @@ export default class ReportCommandPacketHandlers {
 		await handleUpgradeItemMaxLevel(context);
 	}
 
-	// Blacksmith packet handlers
 	@packetHandler(CommandReportBlacksmithUpgradeRes)
 	async reportBlacksmithUpgradeRes(context: PacketContext, packet: CommandReportBlacksmithUpgradeRes): Promise<void> {
 		await handleBlacksmithUpgrade(packet, context);
