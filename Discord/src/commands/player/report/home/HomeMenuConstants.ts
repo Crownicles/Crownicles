@@ -53,7 +53,19 @@ export const HomeMenuIds = {
 	CHEST_BACK_TO_CATEGORIES: "CHEST_BACK_CATEGORIES",
 
 	/** Prefix for chest category detail sub-menu */
-	CHEST_CATEGORY_DETAIL_PREFIX: "CHEST_CAT_DETAIL_"
+	CHEST_CATEGORY_DETAIL_PREFIX: "CHEST_CAT_DETAIL_",
+
+	/** Prefix for chest swap action (step 1: select inventory item) */
+	CHEST_SWAP_SELECT_PREFIX: "CHEST_SWAP_SEL_",
+
+	/** Prefix for chest swap target (step 2: select chest item to swap with) */
+	CHEST_SWAP_TARGET_PREFIX: "CHEST_SWAP_TGT_",
+
+	/** Prefix for chest swap target sub-menu */
+	CHEST_SWAP_MENU_PREFIX: "CHEST_SWAP_MENU_",
+
+	/** Back to category detail from swap menu */
+	CHEST_BACK_TO_DETAIL_PREFIX: "CHEST_BACK_DETAIL_"
 } as const;
 
 /**

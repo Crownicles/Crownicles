@@ -1360,6 +1360,12 @@ export async function handleChestAction(
 			return buildChestActionError(error);
 		}
 	}
+	else if (packet.action === "swap") {
+		const error = await processChestSwap(player, home, packet.slot, packet.chestSlot, packet.itemCategory as ItemCategory);
+		if (error) {
+			return buildChestActionError(error);
+		}
+	}
 	else {
 		return buildChestActionError("invalid");
 	}
@@ -1484,6 +1490,42 @@ async function processChestWithdraw(
 	chestSlot.itemId = 0;
 	chestSlot.itemLevel = 0;
 	chestSlot.itemEnchantmentId = null;
+	await chestSlot.save();
+
+	return null;
+}
+
+async function processChestSwap(
+	player: Player,
+	home: Home,
+	inventorySlotNumber: number,
+	chestSlotNumber: number,
+	itemCategory: ItemCategory
+): Promise<string | null> {
+	const inventorySlot = await InventorySlots.getItem(player.id, inventorySlotNumber, itemCategory);
+	if (!inventorySlot || inventorySlot.itemId === 0) {
+		return "invalid";
+	}
+
+	const chestSlot = await HomeChestSlots.getSlot(home.id, chestSlotNumber, itemCategory);
+	if (!chestSlot || chestSlot.itemId === 0) {
+		return "invalid";
+	}
+
+	// Swap: exchange items between inventory slot and chest slot
+	const tempItemId = inventorySlot.itemId;
+	const tempItemLevel = inventorySlot.itemLevel;
+	const tempItemEnchantmentId = inventorySlot.itemEnchantmentId;
+
+	inventorySlot.itemId = chestSlot.itemId;
+	inventorySlot.itemLevel = chestSlot.itemLevel;
+	inventorySlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
+
+	chestSlot.itemId = tempItemId;
+	chestSlot.itemLevel = tempItemLevel;
+	chestSlot.itemEnchantmentId = tempItemEnchantmentId;
+
+	await inventorySlot.save();
 	await chestSlot.save();
 
 	return null;

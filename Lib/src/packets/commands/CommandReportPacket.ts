@@ -284,13 +284,16 @@ export class CommandReportHomeBedAlreadyFullRes extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportHomeChestActionReq extends CrowniclesPacket {
-	/** "deposit" or "withdraw" */
+	/** "deposit", "withdraw", or "swap" */
 	action!: string;
 
-	/** The inventory slot (for deposit) or chest slot (for withdraw) */
+	/** The inventory slot (for deposit/swap) or chest slot (for withdraw) */
 	slot!: number;
 
 	itemCategory!: number;
+
+	/** The chest slot to swap with (only for swap action, -1 otherwise) */
+	chestSlot!: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
