@@ -14,6 +14,12 @@ import { ReactionCollectorInstance } from '../../../src/core/utils/ReactionsColl
 // Mock all external dependencies
 vi.mock('../../../src/core/database/game/models/InventorySlot');
 vi.mock('../../../src/core/database/game/models/InventoryInfo');
+vi.mock('../../../src/core/database/game/models/Home', () => ({
+	Home: class {},
+	Homes: {
+		getOfPlayer: vi.fn().mockResolvedValue(null)
+	}
+}));
 vi.mock('../../../src/core/missions/MissionsController');
 vi.mock('../../../src/core/utils/BlockingUtils');
 vi.mock('../../../src/core/utils/ReactionsCollector', () => ({
