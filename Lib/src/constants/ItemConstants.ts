@@ -1,4 +1,5 @@
 import { MaterialRarity } from "../types/MaterialRarity";
+import { RandomUtils } from "../utils/RandomUtils";
 
 export enum ItemCategory {
 	WEAPON,
@@ -416,11 +417,11 @@ export abstract class ItemConstants {
 	 * @returns The generated level (0, 1, or 2)
 	 */
 	static generateRandomLootLevel(): number {
-		const roll = Math.random() * 100;
+		const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * 100;
 		if (roll < this.LOOT_LEVEL_CHANCES[2]) {
 			return 2;
 		}
-		if (roll < this.LOOT_LEVEL_CHANCES[1]) {
+		if (roll < this.LOOT_LEVEL_CHANCES[1] + this.LOOT_LEVEL_CHANCES[2]) {
 			return 1;
 		}
 		return 0;
