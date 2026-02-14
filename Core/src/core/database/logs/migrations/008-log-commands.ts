@@ -9,7 +9,6 @@ import { CommandTopPacketReq } from "../../../../../../Lib/src/packets/commands/
 import { CommandReportPacketReq } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CommandDailyBonusPacketReq } from "../../../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
 import { CommandGuildShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildShopPacket";
-import { CommandSwitchPacketReq } from "../../../../../../Lib/src/packets/commands/CommandSwitchPacket";
 import { CommandShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandShopPacket";
 import { CommandUpdatePacketReq } from "../../../../../../Lib/src/packets/commands/CommandUpdatePacket";
 import { CommandGuildLeavePacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
@@ -58,7 +57,7 @@ const commandsToPacketNames: Map<string, string> = new Map([
 	["petfeed", CommandPetFeedPacketReq.name],
 	["guildshop", CommandGuildShopPacketReq.name],
 	["guilddailybonus", CommandGuildDailyPacketReq.name],
-	["switch", CommandSwitchPacketReq.name],
+	["switch", "[OLD] switch"],
 	["shop", CommandShopPacketReq.name],
 	["update", CommandUpdatePacketReq.name],
 	["guildleave", CommandGuildLeavePacketReq.name],

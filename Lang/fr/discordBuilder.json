@@ -311,14 +311,6 @@
     "description": "Lancer un combat.",
     "name": "combat"
   },
-  "switch": {
-    "name": "intervertir",
-    "description": "Intervertir l'objet actif avec l'un des objets présent dans votre réserve."
-  },
-  "deposit": {
-    "name": "deposer",
-    "description": "Déposer un de vos objets actifs."
-  },
   "equip": {
     "name": "equiper",
     "description": "Gérer votre équipement : équiper, ranger ou intervertir vos objets."
