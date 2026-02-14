@@ -12,8 +12,6 @@ import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 export class BedFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "bed";
 
-	private static readonly MENU_VALUE = "HOME_BED";
-
 	public isAvailable(_ctx: HomeFeatureHandlerContext): boolean {
 		return true; // All homes have a bed
 	}
@@ -26,7 +24,7 @@ export class BedFeatureHandler implements HomeFeatureHandler {
 				health: ctx.homeData.features.bedHealthRegeneration
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.bed,
-			value: BedFeatureHandler.MENU_VALUE
+			value: this.featureId
 		};
 	}
 
