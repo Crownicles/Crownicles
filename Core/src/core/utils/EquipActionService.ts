@@ -166,7 +166,8 @@ async function placeItemInBackupSlot(
 		return null;
 	}
 
-	if (backupSlots.length < maxSlots) {
+	// maxSlots includes the equipped slot (slot 0), so backup capacity is maxSlots - 1
+	if (backupSlots.length < maxSlots - 1) {
 		const nextSlot = backupSlots.length > 0
 			? Math.max(...backupSlots.map(s => s.slot)) + 1
 			: 1;

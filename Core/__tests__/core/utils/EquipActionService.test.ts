@@ -283,15 +283,15 @@ describe("EquipActionService", () => {
 		});
 
 		it("should account for home inventory bonus when checking capacity", async () => {
-			// Setup: active + 2 reserve (at base limit)
+			// Setup: active + 1 reserve (at base backup limit of 1)
 			mockSlots = [
 				createMockInventorySlot(1, 0, ItemCategory.WEAPON, 100, 1, null),
-				createMockInventorySlot(1, 1, ItemCategory.WEAPON, 200, 1, null),
-				createMockInventorySlot(1, 2, ItemCategory.WEAPON, 300, 1, null)
+				createMockInventorySlot(1, 1, ItemCategory.WEAPON, 200, 1, null)
 			];
 			mockInventoryInfo.slotLimitForCategory.mockReturnValue(2);
 
-			// With home bonus of 1, total capacity = 3
+			// Without home bonus: backup capacity = 2-1 = 1, already 1 backup → reserveFull
+			// With home bonus of 1: backup capacity = 3-1 = 2, only 1 backup → success
 			mockHome = {
 				getLevel: () => ({
 					features: {
