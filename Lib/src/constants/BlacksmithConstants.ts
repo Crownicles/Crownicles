@@ -2,6 +2,12 @@ import { ItemRarity } from "./ItemConstants";
 import { MaterialRarity } from "../types/MaterialRarity";
 
 /**
+ * Valid upgrade levels for items (1-4)
+ * Level 1 = first upgrade from level 0, etc.
+ */
+export type ItemUpgradeLevel = 1 | 2 | 3 | 4;
+
+/**
  * Constants for the blacksmith NPC found in cities
  * The blacksmith can:
  * - Upgrade items from level 0 to MAX_UPGRADE_LEVEL
@@ -20,7 +26,7 @@ export abstract class BlacksmithConstants {
 	 * Other rarities are adjusted using RARITY_PRICE_MODIFIER
 	 * Index = target level (1 = upgrade from 0 to 1, etc.)
 	 */
-	static readonly BASE_UPGRADE_PRICES: Record<1 | 2 | 3 | 4, number> = {
+	static readonly BASE_UPGRADE_PRICES: Record<ItemUpgradeLevel, number> = {
 		1: 50,
 		2: 500,
 		3: 1500,

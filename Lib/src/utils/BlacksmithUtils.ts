@@ -1,4 +1,6 @@
-import { BlacksmithConstants } from "../constants/BlacksmithConstants";
+import {
+	BlacksmithConstants, ItemUpgradeLevel
+} from "../constants/BlacksmithConstants";
 import { ItemRarity } from "../constants/ItemConstants";
 import { MaterialRarity } from "../types/MaterialRarity";
 
@@ -8,7 +10,7 @@ import { MaterialRarity } from "../types/MaterialRarity";
  * @param itemRarity The rarity of the item being upgraded
  * @returns The gold cost for the upgrade at the blacksmith
  */
-export function getUpgradePrice(targetLevel: 1 | 2 | 3 | 4, itemRarity: ItemRarity): number {
+export function getUpgradePrice(targetLevel: ItemUpgradeLevel, itemRarity: ItemRarity): number {
 	const basePrice = BlacksmithConstants.BASE_UPGRADE_PRICES[targetLevel];
 	const rarityDifference = itemRarity - BlacksmithConstants.REFERENCE_RARITY;
 	const modifier = 1 + (rarityDifference * BlacksmithConstants.RARITY_PRICE_MODIFIER_PERCENT / 100);
