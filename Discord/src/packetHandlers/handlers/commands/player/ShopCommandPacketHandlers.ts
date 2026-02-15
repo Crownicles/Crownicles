@@ -6,6 +6,7 @@ import {
 	CommandShopClosed,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
+	CommandShopNoPlantSlotAvailable,
 	CommandShopNotEnoughCurrency
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -16,6 +17,7 @@ import {
 	handleCommandShopClosed,
 	handleCommandShopHealAlterationDone,
 	handleCommandShopNoAlterationToHeal,
+	handleCommandShopNoPlantSlotAvailable,
 	handleCommandShopNotEnoughMoney,
 	handleReactionCollectorBuyCategorySlotBuySuccess
 } from "../../../../utils/ShopDisplayUtils";
@@ -50,6 +52,11 @@ export default class ShopCommandPacketHandlers {
 	@packetHandler(CommandShopBoughtTooMuchDailyPotions)
 	async shopBoughtTooMuchDailyPotions(context: PacketContext, _packet: CommandShopBoughtTooMuchDailyPotions): Promise<void> {
 		await handleCommandShopBoughtTooMuchDailyPotions(context);
+	}
+
+	@packetHandler(CommandShopNoPlantSlotAvailable)
+	async shopNoPlantSlotAvailable(context: PacketContext, _packet: CommandShopNoPlantSlotAvailable): Promise<void> {
+		await handleCommandShopNoPlantSlotAvailable(context);
 	}
 
 	@packetHandler(CommandShopNotEnoughCurrency)

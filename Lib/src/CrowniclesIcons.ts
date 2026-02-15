@@ -2599,7 +2599,8 @@ export const CrowniclesIcons: {
 			royalMarket: "💎",
 			generalShop: "🛒",
 			stockExchange: "💎",
-			tanner: "🧳"
+			tanner: "🧳",
+			herbalist: "🌿"
 		},
 		home: {
 			1: "🏕️",
