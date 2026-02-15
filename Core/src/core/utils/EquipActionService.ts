@@ -8,7 +8,9 @@ import {
 	InventorySlot, InventorySlots
 } from "../database/game/models/InventorySlot";
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
-import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemCategory, ItemConstants
+} from "../../../../Lib/src/constants/ItemConstants";
 import { buildEquipCategoryData } from "../../commands/player/EquipCommand";
 import { Homes } from "../database/game/models/Home";
 import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
@@ -22,7 +24,7 @@ export async function handleEquipAction(
 ): Promise<Omit<CommandEquipActionRes, "name">> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player) {
-		return buildEquipActionError("invalid");
+		return buildEquipActionError(ItemConstants.EQUIP_ERRORS.INVALID);
 	}
 
 	const itemCategory = packet.itemCategory as ItemCategory;
@@ -36,12 +38,12 @@ export async function handleEquipAction(
 
 function executeEquipAction(action: string, playerId: number, slot: number, category: ItemCategory): Promise<string | null> {
 	switch (action) {
-		case "equip":
+		case ItemConstants.EQUIP_ACTIONS.EQUIP:
 			return processEquip(playerId, slot, category);
-		case "deposit":
+		case ItemConstants.EQUIP_ACTIONS.DEPOSIT:
 			return processDeposit(playerId, category);
 		default:
-			return Promise.resolve("invalid");
+			return Promise.resolve(ItemConstants.EQUIP_ERRORS.INVALID);
 	}
 }
 
@@ -82,12 +84,12 @@ async function processEquip(playerId: number, reserveSlot: number, category: Ite
 	const inventorySlots = await InventorySlots.getOfPlayer(playerId);
 	const toEquip = inventorySlots.find(s => s.itemCategory === category && s.slot === reserveSlot);
 	if (!toEquip || toEquip.itemId === 0) {
-		return "invalid";
+		return ItemConstants.EQUIP_ERRORS.INVALID;
 	}
 
 	const activeSlot = inventorySlots.find(s => s.itemCategory === category && s.isEquipped());
 	if (!activeSlot) {
-		return "invalid";
+		return ItemConstants.EQUIP_ERRORS.INVALID;
 	}
 
 	// If active slot is empty (id=0), just move the reserve item and destroy the reserve slot
@@ -126,7 +128,7 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	const inventorySlots = await InventorySlots.getOfPlayer(playerId);
 	const activeSlot = inventorySlots.find(s => s.itemCategory === category && s.isEquipped());
 	if (!activeSlot || activeSlot.itemId === 0) {
-		return "noItem";
+		return ItemConstants.EQUIP_ERRORS.NO_ITEM;
 	}
 
 	const inventoryInfo = await InventoryInfos.getOfPlayer(playerId);
@@ -182,5 +184,5 @@ async function placeItemInBackupSlot(
 		return null;
 	}
 
-	return "reserveFull";
+	return ItemConstants.EQUIP_ERRORS.RESERVE_FULL;
 }

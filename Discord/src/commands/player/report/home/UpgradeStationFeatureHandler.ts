@@ -15,9 +15,8 @@ import { ItemRarity } from "../../../../../../Lib/src/constants/ItemConstants";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
-import {
-	ADVANCED_UPGRADE_LEVEL_THRESHOLD, HomeMenuIds
-} from "./HomeMenuConstants";
+import { HomeMenuIds } from "./HomeMenuConstants";
+import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
 
 /**
  * Handler for the upgrade station feature in the home.
@@ -368,7 +367,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 	 * Get the level limitation text based on max upgrade level at home
 	 */
 	private getLevelLimitationText(lng: Language, maxLevel: number): string {
-		const key = maxLevel >= ADVANCED_UPGRADE_LEVEL_THRESHOLD
+		const key = maxLevel >= HomeConstants.ADVANCED_UPGRADE_LEVEL_THRESHOLD
 			? "commands:report.city.homes.upgradeStation.levelLimitationAdvanced"
 			: "commands:report.city.homes.upgradeStation.levelLimitationBasic";
 
