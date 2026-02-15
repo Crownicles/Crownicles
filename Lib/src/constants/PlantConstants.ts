@@ -38,9 +38,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 10,
 		fallbackEmote: "🌿",
 		compostMaterials: [
-			52,
-			54,
-			37
+			52, // Herbe de prairie
+			54, // Mousses
+			37 // Fil de lin
 		]
 	},
 	{
@@ -48,9 +48,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 30 * 60,
 		fallbackEmote: "☘️",
 		compostMaterials: [
-			43,
-			59,
-			25
+			43, // Laiton doré
+			59, // Feuilles de chêne
+			25 // Coton
 		]
 	},
 	{
@@ -58,9 +58,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 2 * 60 * 60,
 		fallbackEmote: "🌙",
 		compostMaterials: [
-			53,
-			30,
-			89
+			53, // Pierre de lune
+			30, // Lavande séchée
+			89 // Bougie blanche
 		]
 	},
 	{
@@ -68,9 +68,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 8 * 60 * 60,
 		fallbackEmote: "🌱",
 		compostMaterials: [
-			70,
-			41,
-			81
+			70, // Fer brut
+			41, // Racines de gingembre
+			81 // Acier
 		]
 	},
 	{
@@ -78,9 +78,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 24 * 60 * 60,
 		fallbackEmote: "🍄",
 		compostMaterials: [
-			55,
-			66,
-			36
+			55, // Champignon
+			66, // Champignon vénéneux
+			36 // Champignon extrêmement vénéneux
 		]
 	},
 	{
@@ -88,9 +88,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 2 * 24 * 60 * 60,
 		fallbackEmote: "🍃",
 		compostMaterials: [
-			10,
-			17,
-			38
+			10, // Belladone
+			17, // Graine de ricin
+			38 // Tétrodotoxine de fugu
 		]
 	},
 	{
@@ -98,9 +98,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 4 * 24 * 60 * 60,
 		fallbackEmote: "🔥",
 		compostMaterials: [
-			35,
-			82,
-			44
+			35, // Flamme éternelle
+			82, // Soufre
+			44 // Poudre à canon
 		]
 	},
 	{
@@ -108,9 +108,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 6 * 24 * 60 * 60,
 		fallbackEmote: "🥩",
 		compostMaterials: [
-			42,
-			48,
-			26
+			42, // Cuir de chèvre
+			48, // Cuir d'agneau
+			26 // Cuir de vache
 		]
 	},
 	{
@@ -118,9 +118,9 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 10 * 24 * 60 * 60,
 		fallbackEmote: "💎",
 		compostMaterials: [
-			34,
-			67,
-			69
+			34, // Rune enchantée
+			67, // Pierre précieuse
+			69 // Quartz arc-en-ciel
 		]
 	},
 	{
@@ -128,12 +128,19 @@ export const PLANT_TYPES: readonly PlantType[] = [
 		growthTimeSeconds: 14 * 24 * 60 * 60,
 		fallbackEmote: "🌳",
 		compostMaterials: [
-			84,
-			31,
-			18
+			84, // Planche de teck
+			31, // Écorce d'ébène
+			18 // Bois de cèdre
 		]
 	}
 ] as const;
+
+export const PLANT_SLOT_TYPE = {
+	SEED: "seed",
+	PLANT: "plant"
+} as const;
+
+export type PlantSlotType = typeof PLANT_SLOT_TYPE[keyof typeof PLANT_SLOT_TYPE];
 
 export abstract class PlantConstants {
 	/**
@@ -167,9 +174,9 @@ export abstract class PlantConstants {
 	public static readonly PLANT_SLOT_PRICES = [3000, 8000] as const;
 
 	/**
-	 * Get a plant type by its ID
+	 * Get a plant type by its ID. Returns undefined for 0 (empty slot) or unknown IDs.
 	 */
-	public static getPlantById(id: PlantId): PlantType | undefined {
+	public static getPlantById(id: PlantId | 0): PlantType | undefined {
 		return PLANT_TYPES.find(p => p.id === id);
 	}
 

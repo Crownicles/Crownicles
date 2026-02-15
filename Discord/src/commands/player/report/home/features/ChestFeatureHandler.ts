@@ -33,6 +33,7 @@ import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConsta
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
+import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import {
         PLANT_TYPES
 } from "../../../../../../../Lib/src/constants/PlantConstants";
@@ -236,7 +237,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				`${params.customIdPrefix}${params.category}_${item.slot}`,
 				params.disabled
 			);
+
 			DiscordCollectorUtils.addButtonToRow(params.rows, button);
+
+			addButtonToRow(params.rows, button);
 			emoteIndex++;
 		}
 
@@ -424,6 +428,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		// Back button
 
 		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
+
+		addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
 			.setStyle(ButtonStyle.Secondary));
@@ -606,6 +612,12 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		// Back button
 		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
+
+			addButtonToRow(rows, button);
+		}
+
+		// Back button
+		addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(`${HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX}${categoryIndex}`)
 			.setStyle(ButtonStyle.Secondary));
@@ -727,14 +739,14 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 					continue;
 				}
 				const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${plantType.fallbackEmote} ${plantName}`;
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${CrowniclesIcons.plants[plantType.id] ?? "🌱"} ${plantName}`;
 
 				const button = this.buildItemButton(
 					emoteIndex,
 					`${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${slot.plantId}_${slot.slot}`,
 					isStorageFull
 				);
-				this.addButtonToRow(rows, button);
+				addButtonToRow(rows, button);
 				emoteIndex++;
 			}
 		}
@@ -754,14 +766,14 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 					continue;
 				}
 				const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${plantType.fallbackEmote} ${plantName} (x${stored.quantity})`;
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${CrowniclesIcons.plants[plantType.id] ?? "🌱"} ${plantName} (x${stored.quantity})`;
 
 				const button = this.buildItemButton(
 					emoteIndex,
 					`${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${stored.plantId}`,
 					!hasEmptySlot
 				);
-				this.addButtonToRow(rows, button);
+				addButtonToRow(rows, button);
 				emoteIndex++;
 			}
 		}
@@ -771,7 +783,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 
 		// Back button
-		this.addButtonToRow(rows, new ButtonBuilder()
+		addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
 			.setStyle(ButtonStyle.Secondary));
