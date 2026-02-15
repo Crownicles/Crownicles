@@ -1239,9 +1239,9 @@ export async function handleHomeChestWithdrawReaction(
 		itemLevel: chestSlot.itemLevel,
 		itemEnchantmentId: chestSlot.itemEnchantmentId
 	};
-	const placed = await placeItemInInventory(player, home, reaction.itemCategory, itemToPlace);
+	const placementError = await placeItemInInventory(player, home, reaction.itemCategory, itemToPlace);
 
-	if (!placed) {
+	if (placementError) {
 		// Inventory full — all backup slots occupied and at max capacity
 		response.push(makePacket(CommandReportHomeChestInventoryFullRes, {}));
 		return false;
