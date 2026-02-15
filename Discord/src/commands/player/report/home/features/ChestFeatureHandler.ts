@@ -35,6 +35,7 @@ import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConsta
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
+import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import {
 	PlantConstants, PlantId
 } from "../../../../../../../Lib/src/constants/PlantConstants";
