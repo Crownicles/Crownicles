@@ -894,7 +894,14 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				.setStyle(ButtonStyle.Danger)
 		);
 
-		return [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)];
+		// Split buttons into rows of max 5 (Discord limit)
+		const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+		for (let i = 0; i < buttons.length; i += DiscordConstants.MAX_BUTTONS_PER_ROW) {
+			rows.push(new ActionRowBuilder<ButtonBuilder>()
+				.addComponents(buttons.slice(i, i + DiscordConstants.MAX_BUTTONS_PER_ROW)));
+		}
+
+		return rows;
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
