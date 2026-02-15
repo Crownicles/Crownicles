@@ -17,20 +17,24 @@ import {
 	EMPTY_SLOTS_PER_CATEGORY, getSlotCountForCategory
 } from "../../../../Lib/src/types/HomeFeatures";
 
+type EquipActionResult = Omit<CommandEquipActionRes, "name">;
+type EquipAction = typeof ItemConstants.EQUIP_ACTIONS[keyof typeof ItemConstants.EQUIP_ACTIONS];
+type EquipError = typeof ItemConstants.EQUIP_ERRORS[keyof typeof ItemConstants.EQUIP_ERRORS];
+
 /**
  * Handle an equip/deposit action from AsyncPacketSender.
  */
 export async function handleEquipAction(
 	keycloakId: string,
 	packet: CommandEquipActionReq
-): Promise<Omit<CommandEquipActionRes, "name">> {
+): Promise<EquipActionResult> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player) {
 		return buildEquipActionError(ItemConstants.EQUIP_ERRORS.INVALID);
 	}
 
 	const itemCategory = packet.itemCategory as ItemCategory;
-	const error = await executeEquipAction(packet.action, player.id, packet.slot, itemCategory);
+	const error = await executeEquipAction(packet.action as EquipAction, player.id, packet.slot, itemCategory);
 	if (error) {
 		return buildEquipActionError(error);
 	}
@@ -38,7 +42,7 @@ export async function handleEquipAction(
 	return buildRefreshedEquipData(player);
 }
 
-function executeEquipAction(action: string, playerId: number, slot: number, category: ItemCategory): Promise<string | null> {
+function executeEquipAction(action: EquipAction, playerId: number, slot: number, category: ItemCategory): Promise<EquipError | null> {
 	switch (action) {
 		case ItemConstants.EQUIP_ACTIONS.EQUIP:
 			return processEquip(playerId, slot, category);
@@ -51,7 +55,7 @@ function executeEquipAction(action: string, playerId: number, slot: number, cate
 
 async function buildRefreshedEquipData(player: {
 	id: number; keycloakId: string;
-}): Promise<Omit<CommandEquipActionRes, "name">> {
+}): Promise<EquipActionResult> {
 	const refreshedSlots = await InventorySlots.getOfPlayer(player.id);
 	const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 	const home = await Homes.getOfPlayer(player.id);
@@ -69,7 +73,7 @@ async function buildRefreshedEquipData(player: {
 	};
 }
 
-function buildEquipActionError(error: string): Omit<CommandEquipActionRes, "name"> {
+function buildEquipActionError(error: EquipError): EquipActionResult {
 	return {
 		success: false,
 		error,
@@ -80,7 +84,7 @@ function buildEquipActionError(error: string): Omit<CommandEquipActionRes, "name
 /**
  * Equip a reserve item (swap with active slot).
  */
-async function processEquip(playerId: number, reserveSlot: number, category: ItemCategory): Promise<string | null> {
+async function processEquip(playerId: number, reserveSlot: number, category: ItemCategory): Promise<EquipError | null> {
 	const inventorySlots = await InventorySlots.getOfPlayer(playerId);
 	const toEquip = inventorySlots.find(s => s.itemCategory === category && s.slot === reserveSlot);
 	if (!toEquip || toEquip.itemId === 0) {
@@ -124,7 +128,7 @@ async function processEquip(playerId: number, reserveSlot: number, category: Ite
 /**
  * Deposit the active item to reserve.
  */
-async function processDeposit(playerId: number, category: ItemCategory): Promise<string | null> {
+async function processDeposit(playerId: number, category: ItemCategory): Promise<EquipError | null> {
 	const inventorySlots = await InventorySlots.getOfPlayer(playerId);
 	const activeSlot = inventorySlots.find(s => s.itemCategory === category && s.isEquipped());
 	if (!activeSlot || activeSlot.itemId === 0) {
@@ -138,7 +142,9 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	const maxSlots = inventoryInfo.slotLimitForCategory(category) + bonusForCategory;
 	const backupSlots = inventorySlots.filter(s => s.itemCategory === category && !s.isEquipped());
 
-	const placeError = await placeItemInBackupSlot(playerId, category, activeSlot, backupSlots, maxSlots);
+	const placeError = await placeItemInBackupSlot({
+		playerId, category, source: activeSlot, backupSlots, maxSlots
+	});
 	if (placeError) {
 		return placeError;
 	}
@@ -152,13 +158,13 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	return null;
 }
 
-async function placeItemInBackupSlot(
-	playerId: number,
-	category: ItemCategory,
-	source: InventorySlot,
-	backupSlots: InventorySlot[],
-	maxSlots: number
-): Promise<string | null> {
+async function placeItemInBackupSlot({ playerId, category, source, backupSlots, maxSlots }: {
+	playerId: number;
+	category: ItemCategory;
+	source: InventorySlot;
+	backupSlots: InventorySlot[];
+	maxSlots: number;
+}): Promise<EquipError | null> {
 	const emptySlot = backupSlots.find(s => s.itemId === 0);
 	if (emptySlot) {
 		emptySlot.itemId = source.itemId;
