@@ -17,6 +17,18 @@ export abstract class HomeConstants {
 		INVENTORY_FULL: "inventoryFull"
 	} as const;
 
+	public static readonly PLANT_TRANSFER_ACTIONS = {
+		DEPOSIT: "plantDeposit",
+		WITHDRAW: "plantWithdraw"
+	} as const;
+
+	public static readonly PLANT_TRANSFER_ERRORS = {
+		INVALID: "invalid",
+		STORAGE_FULL: "storageFull",
+		NO_EMPTY_SLOT: "noEmptySlot",
+		NOT_FOUND: "notFound"
+	} as const;
+
 	/**
 	 * Threshold for advanced upgrade level features.
 	 * Homes with maxItemUpgradeLevel >= this value get "advanced" description.

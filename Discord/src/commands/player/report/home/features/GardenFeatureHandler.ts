@@ -105,14 +105,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			return true;
 		}
 
-		// Plant in specific slot
+		// Plant in first available slot
 		if (selectedValue.startsWith(HomeMenuIds.GARDEN_PLANT_PREFIX)) {
-			const slot = parseInt(selectedValue.replace(HomeMenuIds.GARDEN_PLANT_PREFIX, ""), 10);
-			if (!Number.isNaN(slot)) {
-				await componentInteraction.deferUpdate();
-				await this.sendPlantAction(ctx, slot, nestedMenus);
-				return true;
-			}
+			await componentInteraction.deferUpdate();
+			await this.sendPlantAction(ctx, -1, nestedMenus);
+			return true;
 		}
 
 		return false;
@@ -216,20 +213,14 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				.setDisabled(!hasReadyPlants)
 		);
 
-		// Plant buttons (only if player has a seed)
+		// Plant button (only if player has a seed and there is an empty plot)
 		if (garden.hasSeed) {
-			const emptyPlots = garden.plots.filter(p => p.plantId === 0);
-			for (const plot of emptyPlots) {
-				if (rows[rows.length - 1].components.length >= 5) {
-					rows.push(new ActionRowBuilder<ButtonBuilder>());
-				}
-				rows[rows.length - 1].addComponents(
+			const hasEmptyPlot = garden.plots.some(p => p.plantId === 0);
+			if (hasEmptyPlot) {
+				rows[0].addComponents(
 					new ButtonBuilder()
-						.setCustomId(`${HomeMenuIds.GARDEN_PLANT_PREFIX}${plot.slot}`)
-						.setLabel(i18n.t("commands:report.city.homes.garden.plantButton", {
-							lng: ctx.lng,
-							slot: plot.slot + 1
-						}))
+						.setCustomId(`${HomeMenuIds.GARDEN_PLANT_PREFIX}auto`)
+						.setLabel(i18n.t("commands:report.city.homes.garden.plantButton", { lng: ctx.lng }))
 						.setStyle(ButtonStyle.Primary)
 				);
 			}
