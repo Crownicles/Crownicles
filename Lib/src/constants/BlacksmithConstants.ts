@@ -8,6 +8,11 @@ import { MaterialRarity } from "../types/MaterialRarity";
 export type ItemUpgradeLevel = 1 | 2 | 3 | 4;
 
 /**
+ * All valid item levels: 0 (base) + upgrade levels (1-4)
+ */
+export type ItemLevel = 0 | ItemUpgradeLevel;
+
+/**
  * Constants for the blacksmith NPC found in cities
  * The blacksmith can:
  * - Upgrade items from level 0 to MAX_UPGRADE_LEVEL
