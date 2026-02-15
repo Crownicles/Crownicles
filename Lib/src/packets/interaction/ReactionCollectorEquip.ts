@@ -4,7 +4,7 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
-import { EquipCategoryData } from "../commands/CommandEquipPacket";
+import { EquipCategoryData } from "../../types/EquipCategoryData";
 
 export class ReactionCollectorEquipData extends ReactionCollectorData {
 	categories!: EquipCategoryData[];

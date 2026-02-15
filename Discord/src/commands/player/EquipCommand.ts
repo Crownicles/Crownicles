@@ -10,8 +10,9 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
-	CommandEquipPacketReq, CommandEquipActionReq, CommandEquipActionRes, EquipCategoryData
+	CommandEquipPacketReq, CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../Lib/src/packets/commands/CommandEquipPacket";
+import { EquipCategoryData } from "../../../../Lib/src/types/EquipCategoryData";
 import {
 	CrowniclesNestedMenus, CrowniclesNestedMenu, CrowniclesNestedMenuCollector
 } from "../../messages/CrowniclesNestedMenus";
@@ -19,7 +20,9 @@ import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import i18n from "../../translations/i18n";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemCategory, ItemConstants
+} from "../../../../Lib/src/constants/ItemConstants";
 import { DiscordConstants } from "../../DiscordConstants";
 import { DiscordMQTT } from "../../bot/DiscordMQTT";
 import { PacketUtils } from "../../utils/PacketUtils";
@@ -328,7 +331,7 @@ function registerCategoryMenu(
 					const slot = parseInt(parts[1], 10);
 					await interaction.deferUpdate();
 					await sendEquipAction({
-						ctx, action: "equip", itemCategory: category, slot, categoryIndex, nestedMenus: menus
+						ctx, action: ItemConstants.EQUIP_ACTIONS.EQUIP, itemCategory: category, slot, categoryIndex, nestedMenus: menus
 					});
 					return;
 				}
@@ -337,7 +340,7 @@ function registerCategoryMenu(
 					const category = parseInt(value.replace(EQUIP_MENU_IDS.DEPOSIT_PREFIX, ""), 10) as ItemCategory;
 					await interaction.deferUpdate();
 					await sendEquipAction({
-						ctx, action: "deposit", itemCategory: category, slot: 0, categoryIndex, nestedMenus: menus
+						ctx, action: ItemConstants.EQUIP_ACTIONS.DEPOSIT, itemCategory: category, slot: 0, categoryIndex, nestedMenus: menus
 					});
 				}
 			});
