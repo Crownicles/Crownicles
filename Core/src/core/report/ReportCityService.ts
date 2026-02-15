@@ -10,7 +10,7 @@ import {
 } from "../database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import {
-	ChestSlotsPerCategory, getSlotCountForCategory
+	ChestSlotsPerCategory, EMPTY_SLOTS_PER_CATEGORY, getSlotCountForCategory
 } from "../../../../Lib/src/types/HomeFeatures";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
@@ -92,6 +92,8 @@ type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
 const CHEST_ERROR_INVALID = "invalid";
+
+type ChestError = typeof CHEST_ERROR_INVALID | "chestFull" | "inventoryFull";
 
 /**
  * Build enchanter data for the city reaction collector
@@ -1186,7 +1188,7 @@ function executeChestAction(
 	packet: CommandReportHomeChestActionReq,
 	player: Player,
 	home: Home
-): Promise<string | null> {
+): Promise<ChestError | null> {
 	const itemCategory = packet.itemCategory as ItemCategory;
 
 	switch (packet.action) {
@@ -1209,18 +1211,14 @@ function executeChestAction(
 
 const INVALID_CHEST_ACTION = buildChestActionError(CHEST_ERROR_INVALID);
 
-function buildChestActionError(error: string): ChestActionResult {
+function buildChestActionError(error: ChestError): ChestActionResult {
 	return {
 		success: false,
 		error,
 		chestItems: [],
 		depositableItems: [],
-		slotsPerCategory: {
-			weapon: 0, armor: 0, object: 0, potion: 0
-		},
-		inventoryCapacity: {
-			weapon: 0, armor: 0, object: 0, potion: 0
-		}
+		slotsPerCategory: EMPTY_SLOTS_PER_CATEGORY,
+		inventoryCapacity: EMPTY_SLOTS_PER_CATEGORY
 	};
 }
 
@@ -1229,7 +1227,7 @@ async function processChestDeposit(
 	home: Home,
 	inventorySlot: number,
 	itemCategory: ItemCategory
-): Promise<string | null> {
+): Promise<ChestError | null> {
 	const slot = await InventorySlots.getItem(player.id, inventorySlot, itemCategory);
 	if (!slot || slot.itemId === 0) {
 		return CHEST_ERROR_INVALID;
@@ -1300,7 +1298,7 @@ async function placeItemInInventory(
 	home: Home,
 	itemCategory: ItemCategory,
 	item: ItemPlacement
-): Promise<string | null> {
+): Promise<ChestError | null> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 
 	// Priority 1: active slot (slot 0) if empty
@@ -1345,7 +1343,7 @@ async function processChestWithdraw(
 	home: Home,
 	chestSlotNumber: number,
 	itemCategory: ItemCategory
-): Promise<string | null> {
+): Promise<ChestError | null> {
 	const chestSlot = await HomeChestSlots.getSlot(home.id, chestSlotNumber, itemCategory);
 	if (!chestSlot || chestSlot.itemId === 0) {
 		return CHEST_ERROR_INVALID;
@@ -1381,7 +1379,7 @@ async function processChestSwap({
 	inventorySlotNumber,
 	chestSlotNumber,
 	itemCategory
-}: ChestSwapParams): Promise<string | null> {
+}: ChestSwapParams): Promise<ChestError | null> {
 	const inventorySlot = await InventorySlots.getItem(player.id, inventorySlotNumber, itemCategory);
 	if (!inventorySlot || inventorySlot.itemId === 0) {
 		return CHEST_ERROR_INVALID;
