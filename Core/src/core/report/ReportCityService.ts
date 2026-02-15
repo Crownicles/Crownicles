@@ -63,10 +63,11 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
+import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import {
-	HomeChestSlots
+	HomeChestSlot, HomeChestSlots
 } from "../database/game/models/HomeChestSlot";
 import InventoryInfo from "../database/game/models/InventoryInfo";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
@@ -90,7 +91,11 @@ import { crowniclesInstance } from "../../index";
 type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
 type HomeData = ReactionCollectorCityData["home"];
 type UpgradeStationData = NonNullable<NonNullable<HomeData["owned"]>["upgradeStation"]>;
+type ChestData = NonNullable<NonNullable<HomeData["owned"]>["chest"]>;
 type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
+type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
+
+const CHEST_ERROR_INVALID = "invalid";
 
 /**
  * Build enchanter data for the city reaction collector
@@ -292,7 +297,7 @@ export async function buildChestData(
 	homeLevel: HomeLevel,
 	playerInventory: InventorySlot[],
 	player: Player
-): Promise<NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["chest"]>> {
+): Promise<ChestData> {
 	const slotsPerCategory = homeLevel.features.chestSlots;
 
 	// Ensure chest slots exist for the current home level
@@ -302,7 +307,7 @@ export async function buildChestData(
 	const allChestSlots = await HomeChestSlots.getOfHome(home.id);
 
 	// Build chest items (non-empty slots)
-	const chestItems: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["chest"]>["chestItems"] = allChestSlots
+	const chestItems: ChestData["chestItems"] = allChestSlots
 		.filter(slot => slot.itemId !== 0)
 		.map(slot => ({
 			slot: slot.slot,
@@ -311,7 +316,7 @@ export async function buildChestData(
 		}));
 
 	// Build depositable items (all inventory items with itemId !== 0, including active items)
-	const depositableItems: NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["chest"]>["depositableItems"] = playerInventory
+	const depositableItems: ChestData["depositableItems"] = playerInventory
 		.filter(inventorySlot => inventorySlot.itemId !== 0)
 		.map(inventorySlot => ({
 			slot: inventorySlot.slot,
@@ -1192,17 +1197,7 @@ export async function handleHomeChestDepositReaction(
 	await emptyChestSlot.save();
 
 	// Clear the inventory slot
-	if (inventorySlot.slot === 0) {
-		// Active slot: reset to default empty item (keep the slot row)
-		inventorySlot.itemId = 0;
-		inventorySlot.itemLevel = 0;
-		inventorySlot.itemEnchantmentId = null;
-		await inventorySlot.save();
-	}
-	else {
-		// Backup slot: destroy it since empty backup slots shouldn't persist
-		await inventorySlot.destroy();
-	}
+	await clearInventorySlot(inventorySlot);
 
 	return true;
 }
@@ -1253,10 +1248,7 @@ export async function handleHomeChestWithdrawReaction(
 	}
 
 	// Clear the chest slot
-	chestSlot.itemId = 0;
-	chestSlot.itemLevel = 0;
-	chestSlot.itemEnchantmentId = null;
-	await chestSlot.save();
+	await clearChestSlot(chestSlot);
 
 	return true;
 }
@@ -1268,20 +1260,13 @@ export async function handleHomeChestWithdrawReaction(
 export async function handleChestAction(
 	keycloakId: string,
 	packet: CommandReportHomeChestActionReq
-): Promise<Omit<CommandReportHomeChestActionRes, "name">> {
+): Promise<ChestActionResult> {
 	const player = await Players.getByKeycloakId(keycloakId);
-	if (!player) {
-		return buildChestActionError("invalid");
-	}
+	const home = player ? await Homes.getOfPlayer(player.id) : null;
+	const homeLevel = home?.getLevel();
 
-	const home = await Homes.getOfPlayer(player.id);
-	if (!home) {
-		return buildChestActionError("invalid");
-	}
-
-	const homeLevel = home.getLevel();
-	if (!homeLevel) {
-		return buildChestActionError("invalid");
+	if (!player || !home || !homeLevel) {
+		return INVALID_CHEST_ACTION;
 	}
 
 	const error = await executeChestAction(packet, player, home);
@@ -1310,11 +1295,11 @@ function executeChestAction(
 	const itemCategory = packet.itemCategory as ItemCategory;
 
 	switch (packet.action) {
-		case "deposit":
+		case HomeConstants.CHEST_ACTIONS.DEPOSIT:
 			return processChestDeposit(player, home, packet.slot, itemCategory);
-		case "withdraw":
+		case HomeConstants.CHEST_ACTIONS.WITHDRAW:
 			return processChestWithdraw(player, home, packet.slot, itemCategory);
-		case "swap":
+		case HomeConstants.CHEST_ACTIONS.SWAP:
 			return processChestSwap({
 				player,
 				home,
@@ -1323,11 +1308,13 @@ function executeChestAction(
 				itemCategory
 			});
 		default:
-			return Promise.resolve("invalid");
+			return Promise.resolve(CHEST_ERROR_INVALID);
 	}
 }
 
-function buildChestActionError(error: string): Omit<CommandReportHomeChestActionRes, "name"> {
+const INVALID_CHEST_ACTION = buildChestActionError(CHEST_ERROR_INVALID);
+
+function buildChestActionError(error: string): ChestActionResult {
 	return {
 		success: false,
 		error,
@@ -1350,7 +1337,7 @@ async function processChestDeposit(
 ): Promise<string | null> {
 	const slot = await InventorySlots.getItem(player.id, inventorySlot, itemCategory);
 	if (!slot || slot.itemId === 0) {
-		return "invalid";
+		return CHEST_ERROR_INVALID;
 	}
 
 	const emptyChestSlot = await HomeChestSlots.findEmptySlot(home.id, itemCategory);
@@ -1384,6 +1371,13 @@ async function clearInventorySlot(slot: InventorySlot): Promise<void> {
 	else {
 		await slot.destroy();
 	}
+}
+
+async function clearChestSlot(chestSlot: HomeChestSlot): Promise<void> {
+	chestSlot.itemId = 0;
+	chestSlot.itemLevel = 0;
+	chestSlot.itemEnchantmentId = null;
+	await chestSlot.save();
 }
 
 /**
@@ -1459,7 +1453,7 @@ async function processChestWithdraw(
 ): Promise<string | null> {
 	const chestSlot = await HomeChestSlots.getSlot(home.id, chestSlotNumber, itemCategory);
 	if (!chestSlot || chestSlot.itemId === 0) {
-		return "invalid";
+		return CHEST_ERROR_INVALID;
 	}
 
 	const error = await placeItemInInventory(player, home, itemCategory, {
@@ -1473,10 +1467,7 @@ async function processChestWithdraw(
 	}
 
 	// Clear the chest slot
-	chestSlot.itemId = 0;
-	chestSlot.itemLevel = 0;
-	chestSlot.itemEnchantmentId = null;
-	await chestSlot.save();
+	await clearChestSlot(chestSlot);
 
 	return null;
 }
@@ -1498,12 +1489,12 @@ async function processChestSwap({
 }: ChestSwapParams): Promise<string | null> {
 	const inventorySlot = await InventorySlots.getItem(player.id, inventorySlotNumber, itemCategory);
 	if (!inventorySlot || inventorySlot.itemId === 0) {
-		return "invalid";
+		return CHEST_ERROR_INVALID;
 	}
 
 	const chestSlot = await HomeChestSlots.getSlot(home.id, chestSlotNumber, itemCategory);
 	if (!chestSlot || chestSlot.itemId === 0) {
-		return "invalid";
+		return CHEST_ERROR_INVALID;
 	}
 
 	// Swap: exchange items between inventory slot and chest slot
