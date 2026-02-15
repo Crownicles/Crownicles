@@ -144,6 +144,10 @@ export const CrowniclesIcons: {
 	petInformation: {
 		[petInfoId: string]: string;
 	};
+	equipCommand: {
+		equipped: string;
+		reserve: string;
+	};
 	petCommand: {
 		petButton: string;
 		pet: string;
@@ -247,6 +251,7 @@ export const CrowniclesIcons: {
 		exit: string;
 		stay: string;
 		inn: string;
+		innSleep: string;
 		enchanter: string;
 		shop: string;
 		home: { [level: number]: string };
@@ -264,6 +269,12 @@ export const CrowniclesIcons: {
 			upgradeEquipment: string;
 			garden: string;
 			earthQuality: string;
+		};
+		chestActions: {
+			inventory: string;
+			deposit: string;
+			withdraw: string;
+			swap: string;
 		};
 	};
 	meals: {
@@ -2342,6 +2353,10 @@ export const CrowniclesIcons: {
 		speed: "🚀",
 		feedDelay: "⏳"
 	},
+	equipCommand: {
+		equipped: "🗡️",
+		reserve: "🎒"
+	},
 	petCommand: {
 		petButton: "🖐️",
 		pet: "😻"
@@ -2538,6 +2553,7 @@ export const CrowniclesIcons: {
 		exit: "🏃‍➡️",
 		stay: "👀",
 		inn: "🍺",
+		innSleep: "😴",
 		enchanter: "🔮",
 		shop: "💎",
 		home: {
@@ -2564,6 +2580,12 @@ export const CrowniclesIcons: {
 			upgradeEquipment: "🛠️",
 			garden: "🌱",
 			earthQuality: "↗️"
+		},
+		chestActions: {
+			inventory: "🎒",
+			deposit: "📥",
+			withdraw: "📤",
+			swap: "🔄"
 		}
 	},
 	meals: {
