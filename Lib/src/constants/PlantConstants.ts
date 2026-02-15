@@ -23,6 +23,9 @@ export interface PlantType {
 
 	/** Fallback emoji when custom emote is unavailable */
 	fallbackEmote: string;
+
+	/** Material IDs that this plant can produce when composted */
+	compostMaterials: number[];
 }
 
 /**
@@ -33,52 +36,102 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.COMMON_HERB,
 		growthTimeSeconds: 10,
-		fallbackEmote: "🌿"
+		fallbackEmote: "🌿",
+		compostMaterials: [
+			52,
+			54,
+			37
+		]
 	},
 	{
 		id: PlantId.GOLDEN_CLOVER,
 		growthTimeSeconds: 30 * 60,
-		fallbackEmote: "☘️"
+		fallbackEmote: "☘️",
+		compostMaterials: [
+			43,
+			59,
+			25
+		]
 	},
 	{
 		id: PlantId.LUNAR_MOSS,
 		growthTimeSeconds: 2 * 60 * 60,
-		fallbackEmote: "🌙"
+		fallbackEmote: "🌙",
+		compostMaterials: [
+			53,
+			30,
+			89
+		]
 	},
 	{
 		id: PlantId.IRON_ROOT,
 		growthTimeSeconds: 8 * 60 * 60,
-		fallbackEmote: "🌱"
+		fallbackEmote: "🌱",
+		compostMaterials: [
+			70,
+			41,
+			81
+		]
 	},
 	{
 		id: PlantId.NIGHT_MUSHROOM,
 		growthTimeSeconds: 24 * 60 * 60,
-		fallbackEmote: "🍄"
+		fallbackEmote: "🍄",
+		compostMaterials: [
+			55,
+			66,
+			36
+		]
 	},
 	{
 		id: PlantId.VENOMOUS_LEAF,
 		growthTimeSeconds: 2 * 24 * 60 * 60,
-		fallbackEmote: "🍃"
+		fallbackEmote: "🍃",
+		compostMaterials: [
+			10,
+			17,
+			38
+		]
 	},
 	{
 		id: PlantId.FIRE_BULB,
 		growthTimeSeconds: 4 * 24 * 60 * 60,
-		fallbackEmote: "🔥"
+		fallbackEmote: "🔥",
+		compostMaterials: [
+			35,
+			82,
+			44
+		]
 	},
 	{
 		id: PlantId.MEAT_PLANT,
 		growthTimeSeconds: 6 * 24 * 60 * 60,
-		fallbackEmote: "🥩"
+		fallbackEmote: "🥩",
+		compostMaterials: [
+			42,
+			48,
+			26
+		]
 	},
 	{
 		id: PlantId.CRYSTAL_FLOWER,
 		growthTimeSeconds: 10 * 24 * 60 * 60,
-		fallbackEmote: "💎"
+		fallbackEmote: "💎",
+		compostMaterials: [
+			34,
+			67,
+			69
+		]
 	},
 	{
 		id: PlantId.ANCIENT_TREE,
 		growthTimeSeconds: 14 * 24 * 60 * 60,
-		fallbackEmote: "🌳"
+		fallbackEmote: "🌳",
+		compostMaterials: [
+			84,
+			31,
+			18
+		]
 	}
 ] as const;
 

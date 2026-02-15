@@ -279,11 +279,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Register the garden main menu
 	 */
-	private registerGardenMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): void {
+	private registerGardenMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus, extraMessage = ""): void {
 		nestedMenus.registerMenu(HomeMenuIds.GARDEN_MENU, {
 			embed: new CrowniclesEmbed()
 				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-				.setDescription(this.buildGardenDescription(ctx)),
+				.setDescription(this.buildGardenDescription(ctx) + extraMessage),
 			components: this.buildGardenButtons(ctx),
 			createCollector: this.createGardenCollector(ctx)
 		});
@@ -375,8 +375,29 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 					}
 				}
 
-				// Refresh the garden menu with updated data
-				this.registerGardenMenu(ctx, nestedMenus);
+				// Build compost notification if any plants were composted
+				let compostMessage = "";
+				if (response.compostResults && response.compostResults.length > 0) {
+					compostMessage = `\n\n${i18n.t("commands:report.city.homes.garden.compostTitle", { lng: ctx.lng })}`;
+					for (const result of response.compostResults) {
+						const plant = PLANT_TYPES.find(p => p.id === result.plantId);
+						const plantName = plant
+							? i18n.t(`commands:report.city.homes.garden.plants.${plant.id}`, { lng: ctx.lng })
+							: "?";
+						const materialEmoji = CrowniclesIcons.materials[result.materialId] ?? "📦";
+						const materialName = i18n.t(`models:materials.${result.materialId}`, { lng: ctx.lng });
+						compostMessage += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
+							lng: ctx.lng,
+							plantEmoji: plant?.fallbackEmote ?? "🌱",
+							plant: plantName,
+							materialEmoji,
+							material: materialName
+						})}`;
+					}
+				}
+
+				// Refresh the garden menu with updated data and compost message
+				this.registerGardenMenu(ctx, nestedMenus, compostMessage);
 				await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 			}
 		);

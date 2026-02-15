@@ -335,11 +335,14 @@ export class CommandReportGardenHarvestRes extends CrowniclesPacket {
 	/** Number of plants successfully stored in the chest */
 	plantsHarvested!: number;
 
-	/** Number of plants that didn't fit and were destroyed */
-	plantsDestroyed!: number;
+	/** Number of plants that didn't fit and were composted */
+	plantsComposted!: number;
 
-	/** Number of bonus materials received from destroyed plants */
-	materialsReceived!: number;
+	/** Materials generated from composting (plantId → materialId) */
+	compostResults!: {
+		plantId: PlantId;
+		materialId: number;
+	}[];
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
