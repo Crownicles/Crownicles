@@ -42,6 +42,7 @@ import { CommandMaintenancePacketReq } from "../../../../../../Lib/src/packets/c
 import { CommandLeagueRewardPacketReq } from "../../../../../../Lib/src/packets/commands/CommandLeagueRewardPacket";
 import { CommandJoinBoatPacketReq } from "../../../../../../Lib/src/packets/commands/CommandJoinBoatPacket";
 import { CommandFightPacketReq } from "../../../../../../Lib/src/packets/commands/CommandFightPacket";
+import { CommandEquipPacketReq } from "../../../../../../Lib/src/packets/commands/CommandEquipPacket";
 
 const commandsToPacketNames: Map<string, string> = new Map([
 	["profile", CommandProfilePacketReq.name],
@@ -58,6 +59,7 @@ const commandsToPacketNames: Map<string, string> = new Map([
 	["guildshop", CommandGuildShopPacketReq.name],
 	["guilddailybonus", CommandGuildDailyPacketReq.name],
 	["switch", "[OLD] switch"],
+	["equip", CommandEquipPacketReq.name],
 	["shop", CommandShopPacketReq.name],
 	["update", CommandUpdatePacketReq.name],
 	["guildleave", CommandGuildLeavePacketReq.name],
