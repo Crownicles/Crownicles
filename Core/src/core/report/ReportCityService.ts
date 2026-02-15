@@ -1147,6 +1147,19 @@ export async function handleHomeBedReaction(
 	}));
 }
 
+function buildChestActionError(error: ChestError): ChestActionResult {
+	return {
+		success: false,
+		error,
+		chestItems: [],
+		depositableItems: [],
+		slotsPerCategory: EMPTY_SLOTS_PER_CATEGORY,
+		inventoryCapacity: EMPTY_SLOTS_PER_CATEGORY
+	};
+}
+
+const INVALID_CHEST_ACTION = buildChestActionError(HomeConstants.CHEST_ERRORS.INVALID);
+
 /**
  * Handle a chest action request (deposit/withdraw) sent directly from Discord via AsyncPacketSender.
  * Returns refreshed chest data for the Discord side to update the view in-place.
@@ -1204,19 +1217,6 @@ function executeChestAction(
 		default:
 			return Promise.resolve(HomeConstants.CHEST_ERRORS.INVALID);
 	}
-}
-
-const INVALID_CHEST_ACTION = buildChestActionError(HomeConstants.CHEST_ERRORS.INVALID);
-
-function buildChestActionError(error: ChestError): ChestActionResult {
-	return {
-		success: false,
-		error,
-		chestItems: [],
-		depositableItems: [],
-		slotsPerCategory: EMPTY_SLOTS_PER_CATEGORY,
-		inventoryCapacity: EMPTY_SLOTS_PER_CATEGORY
-	};
 }
 
 async function processChestDeposit(
