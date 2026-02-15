@@ -364,7 +364,7 @@ export class CommandReportGardenPlantReq extends CrowniclesPacket {
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportGardenPlantRes extends CrowniclesPacket {
 	/** The plant type that was planted */
-	plantId!: number;
+	plantId!: PlantId;
 
 	/** The garden slot that was planted */
 	gardenSlot!: number;

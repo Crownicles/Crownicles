@@ -376,14 +376,14 @@ export async function buildChestData(
 		plantStorage = homeStorage
 			.filter(s => s.quantity > 0)
 			.map(s => ({
-				plantId: s.plantId as PlantId,
+				plantId: s.plantId,
 				quantity: s.quantity,
 				maxCapacity: plantMaxCapacity!
 			}));
 
 		playerPlantSlots = plantSlots.map(s => ({
 			slot: s.slot,
-			plantId: s.plantId as PlantId | 0
+			plantId: s.plantId
 		}));
 	}
 
@@ -1593,7 +1593,7 @@ export async function buildGardenData(
 
 	// Build plot status
 	const plots: GardenData["plots"] = gardenSlots.map(slot => {
-		const plant = PlantConstants.getPlantById(slot.plantId as PlantId);
+		const plant = PlantConstants.getPlantById(slot.plantId);
 		const effectiveGrowthTime = plant
 			? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality)
 			: 0;
@@ -1608,7 +1608,7 @@ export async function buildGardenData(
 
 		return {
 			slot: slot.slot,
-			plantId: slot.plantId as PlantId | 0,
+			plantId: slot.plantId,
 			growthProgress: progress,
 			isReady,
 			remainingSeconds
@@ -1619,7 +1619,7 @@ export async function buildGardenData(
 	const storageEntries = await HomePlantStorages.getOfHome(home.id);
 	const maxCapacity = home.level;
 	const plantStorage: GardenData["plantStorage"] = storageEntries.map(entry => ({
-		plantId: entry.plantId as PlantId,
+		plantId: entry.plantId,
 		quantity: entry.quantity,
 		maxCapacity
 	}));
@@ -1670,7 +1670,7 @@ export async function handleGardenHarvest(
 			continue;
 		}
 
-		const plant = PlantConstants.getPlantById(slot.plantId as PlantId);
+		const plant = PlantConstants.getPlantById(slot.plantId);
 		if (!plant) {
 			continue;
 		}
@@ -1707,7 +1707,7 @@ export async function handleGardenHarvest(
 	const plantStorage = updatedStorage
 		.filter(s => s.quantity > 0)
 		.map(s => ({
-			plantId: s.plantId as PlantId,
+			plantId: s.plantId,
 			quantity: s.quantity,
 			maxCapacity
 		}));
@@ -1802,13 +1802,13 @@ async function buildPlantTransferResponseData(
 		plantStorage: homeStorage
 			.filter(s => s.quantity > 0)
 			.map(s => ({
-				plantId: s.plantId as PlantId,
+				plantId: s.plantId,
 				quantity: s.quantity,
 				maxCapacity
 			})),
 		playerPlantSlots: plantSlots.map(s => ({
 			slot: s.slot,
-			plantId: s.plantId as PlantId | 0
+			plantId: s.plantId
 		}))
 	};
 }

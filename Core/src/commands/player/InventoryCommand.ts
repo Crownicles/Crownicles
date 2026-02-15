@@ -21,10 +21,10 @@ import { Materials } from "../../core/database/game/models/Material";
 import { Homes } from "../../core/database/game/models/Home";
 import { StatValues } from "../../../../Lib/src/types/StatValues";
 import { EMPTY_SLOTS_PER_CATEGORY } from "../../../../Lib/src/types/HomeFeatures";
+import { PlayerPlantSlots } from "../../core/database/game/models/PlayerPlantSlot";
 import {
-	PlayerPlantSlots, PLANT_SLOT_TYPE
-} from "../../core/database/game/models/PlayerPlantSlot";
-import { PlantId } from "../../../../Lib/src/constants/PlantConstants";
+	PlantId, PLANT_SLOT_TYPE
+} from "../../../../Lib/src/constants/PlantConstants";
 
 function buildMainItemBackups(
 	items: InventorySlot[],
