@@ -20,6 +20,7 @@ import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTa
 import { Materials } from "../../core/database/game/models/Material";
 import { Homes } from "../../core/database/game/models/Home";
 import { StatValues } from "../../../../Lib/src/types/StatValues";
+import { EMPTY_SLOTS_PER_CATEGORY } from "../../../../Lib/src/types/HomeFeatures";
 
 function buildMainItemBackups(
 	items: InventorySlot[],
@@ -90,9 +91,7 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 	const talismans = await PlayerTalismansManager.getOfPlayer(toCheckPlayer.id);
 	const playerMaterials = await Materials.getPlayerMaterials(toCheckPlayer.id);
 	const home = await Homes.getOfPlayer(toCheckPlayer.id);
-	const homeBonus = home?.getLevel()?.features.inventoryBonus ?? {
-		weapon: 0, armor: 0, potion: 0, object: 0
-	};
+	const homeBonus = home?.getLevel()?.features.inventoryBonus ?? EMPTY_SLOTS_PER_CATEGORY;
 
 	const weapon = items.find(item => item.isWeapon() && item.isEquipped())!;
 	const armor = items.find(item => item.isArmor() && item.isEquipped())!;

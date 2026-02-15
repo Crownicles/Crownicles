@@ -10,6 +10,10 @@ export interface ChestSlotsPerCategory {
 	potion: number;
 }
 
+export const EMPTY_SLOTS_PER_CATEGORY: ChestSlotsPerCategory = {
+	weapon: 0, armor: 0, object: 0, potion: 0
+};
+
 /**
  * Get the value from ChestSlotsPerCategory for a given ItemCategory
  */

@@ -20,6 +20,7 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorEquip } from "../../../../Lib/src/packets/interaction/ReactionCollectorEquip";
 import { Homes } from "../../core/database/game/models/Home";
+import { EMPTY_SLOTS_PER_CATEGORY } from "../../../../Lib/src/types/HomeFeatures";
 
 /**
  * Build category data from player's inventory.
@@ -74,9 +75,7 @@ export default class EquipCommand {
 		const inventorySlots = await InventorySlots.getOfPlayer(player.id);
 		const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 		const home = await Homes.getOfPlayer(player.id);
-		const homeBonus = home?.getLevel()?.features.inventoryBonus ?? {
-			weapon: 0, armor: 0, potion: 0, object: 0
-		};
+const homeBonus = home?.getLevel()?.features.inventoryBonus ?? EMPTY_SLOTS_PER_CATEGORY;
 
 		// Subtract 1 from total slots because the equipped slot (slot 0) is not part of the reserve
 		const slotLimits = new Map<ItemCategory, number>([

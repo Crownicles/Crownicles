@@ -13,7 +13,9 @@ import {
 } from "../../../../Lib/src/constants/ItemConstants";
 import { buildEquipCategoryData } from "../../commands/player/EquipCommand";
 import { Homes } from "../database/game/models/Home";
-import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
+import {
+	EMPTY_SLOTS_PER_CATEGORY, getSlotCountForCategory
+} from "../../../../Lib/src/types/HomeFeatures";
 
 /**
  * Handle an equip/deposit action from AsyncPacketSender.
@@ -53,9 +55,7 @@ async function buildRefreshedEquipData(player: {
 	const refreshedSlots = await InventorySlots.getOfPlayer(player.id);
 	const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 	const home = await Homes.getOfPlayer(player.id);
-	const homeBonus = home?.getLevel()?.features.inventoryBonus ?? {
-		weapon: 0, armor: 0, potion: 0, object: 0
-	};
+	const homeBonus = home?.getLevel()?.features.inventoryBonus ?? EMPTY_SLOTS_PER_CATEGORY;
 	const slotLimits = new Map<ItemCategory, number>([
 		[ItemCategory.WEAPON, inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON) + homeBonus.weapon],
 		[ItemCategory.ARMOR, inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR) + homeBonus.armor],
