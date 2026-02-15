@@ -28,11 +28,15 @@ import { disableRows } from "../../utils/DiscordCollectorUtils";
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { DiscordConstants } from "../../DiscordConstants";
+import {
+	PlantConstants, PLANT_TYPES
+} from "../../../../Lib/src/constants/PlantConstants";
 
 enum InventoryView {
 	EQUIPPED = 0,
 	BACKUP = 1,
-	MATERIALS = 2
+	MATERIALS = 2,
+	PLANTS = 3
 }
 
 /**
@@ -267,6 +271,78 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 	return embed;
 }
 
+function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+	if (!packet.data) {
+		throw new Error("Inventory packet data must not be undefined");
+	}
+
+	const embed = new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:inventory.plantsTitle", {
+			lng,
+			pseudo
+		}));
+
+	const plants = packet.data.plants;
+	if (!plants) {
+		embed.addFields([
+			{
+				name: i18n.t("commands:inventory.plantsField", {
+					lng, count: 0
+				}),
+				value: i18n.t("commands:inventory.noPlants", { lng }),
+				inline: false
+			}
+		]);
+		return embed;
+	}
+
+	// Seed slot
+	let seedValue: string;
+	if (plants.seed) {
+		const seedPlant = PLANT_TYPES.find(p => p.id === plants.seed);
+		const seedName = i18n.t(`commands:homes.garden.plants.${plants.seed}`, { lng });
+		seedValue = `${seedPlant?.fallbackEmote ?? "🌱"} **${seedName}**`;
+	}
+	else {
+		seedValue = i18n.t("commands:inventory.emptySlot", { lng });
+	}
+	embed.addFields([
+		{
+			name: i18n.t("commands:inventory.seedSlot", { lng }),
+			value: seedValue,
+			inline: false
+		}
+	]);
+
+	// Plant slots
+	const plantEntries: string[] = [];
+	for (let slot = 0; slot < plants.maxPlantSlots; slot++) {
+		const found = plants.plantSlots.find(p => p.slot === slot);
+		if (found) {
+			const plant = PlantConstants.getPlantById(found.plantId);
+			const plantName = i18n.t(`commands:homes.garden.plants.${found.plantId}`, { lng });
+			plantEntries.push(`${plant?.fallbackEmote ?? "🌱"} **${plantName}**`);
+		}
+		else {
+			plantEntries.push(i18n.t("commands:inventory.emptySlot", { lng }));
+		}
+	}
+
+	embed.addFields([
+		{
+			name: i18n.t("commands:inventory.plantSlots", {
+				lng,
+				count: plants.plantSlots.length,
+				max: plants.maxPlantSlots
+			}),
+			value: plantEntries.join("\n"),
+			inline: false
+		}
+	]);
+
+	return embed;
+}
+
 export async function handleCommandInventoryPacketRes(packet: CommandInventoryPacketRes, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
@@ -297,11 +373,13 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 	const equippedEmbed = getEquippedEmbed(packet, username, lng);
 	const backupEmbed = getBackupEmbed(packet, username, lng);
 	const materialsEmbed = getMaterialsEmbed(packet, username, lng);
+	const plantsEmbed = getPlantsEmbed(packet, username, lng);
 
 	const embeds = [
 		equippedEmbed,
 		backupEmbed,
-		materialsEmbed
+		materialsEmbed,
+		plantsEmbed
 	];
 
 	function getButtonLabels(view: InventoryView): {
@@ -311,7 +389,7 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		switch (view) {
 			case InventoryView.EQUIPPED:
 				return {
-					prev: i18n.t("commands:inventory.seeMaterials", { lng }),
+					prev: i18n.t("commands:inventory.seePlants", { lng }),
 					next: i18n.t("commands:inventory.seeBackupItems", { lng })
 				};
 			case InventoryView.BACKUP:
@@ -320,9 +398,14 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 					next: i18n.t("commands:inventory.seeMaterials", { lng })
 				};
 			case InventoryView.MATERIALS:
-			default:
 				return {
 					prev: i18n.t("commands:inventory.seeBackupItems", { lng }),
+					next: i18n.t("commands:inventory.seePlants", { lng })
+				};
+			case InventoryView.PLANTS:
+			default:
+				return {
+					prev: i18n.t("commands:inventory.seeMaterials", { lng }),
 					next: i18n.t("commands:inventory.seeEquippedItems", { lng })
 				};
 		}
