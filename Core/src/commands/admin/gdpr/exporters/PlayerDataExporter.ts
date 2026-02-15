@@ -20,6 +20,7 @@ import { DwarfPetsSeen } from "../../../../core/database/game/models/DwarfPetsSe
 import { PlayerTalismansManager } from "../../../../core/database/game/models/PlayerTalismans";
 import { Material } from "../../../../core/database/game/models/Material";
 import { Homes } from "../../../../core/database/game/models/Home";
+import { PlayerPlantSlot } from "../../../../core/database/game/models/PlayerPlantSlot";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
 
@@ -209,6 +210,16 @@ async function exportMiscData(
 				level: home.level
 			}
 		]);
+	}
+
+	// Player plant slots
+	const plantSlots = await PlayerPlantSlot.findAll({ where: { playerId: player.id } });
+	if (plantSlots.length > 0) {
+		csvFiles["17_plant_slots.csv"] = toCSV(plantSlots.map(slot => ({
+			slotType: slot.slotType,
+			slot: slot.slot,
+			plantId: slot.plantId
+		})));
 	}
 }
 

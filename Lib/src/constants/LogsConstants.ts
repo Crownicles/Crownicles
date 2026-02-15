@@ -87,7 +87,8 @@ export enum ShopItemType {
 	ENERGY_HEAL,
 	BIG_GUILD_XP,
 	QUEST_MASTER_BADGE,
-	TOKEN
+	TOKEN,
+	PLANT_SLOT_EXTENSION
 }
 
 export const ShopItemTypeToString: Record<ShopItemType, string> = {
@@ -110,5 +111,6 @@ export const ShopItemTypeToString: Record<ShopItemType, string> = {
 	[ShopItemType.ENERGY_HEAL]: "energyHeal",
 	[ShopItemType.BIG_GUILD_XP]: "bigGuildXp",
 	[ShopItemType.QUEST_MASTER_BADGE]: "questMasterBadge",
-	[ShopItemType.TOKEN]: "token"
+	[ShopItemType.TOKEN]: "token",
+	[ShopItemType.PLANT_SLOT_EXTENSION]: "plantSlotExtension"
 };
