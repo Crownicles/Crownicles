@@ -158,7 +158,9 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	return null;
 }
 
-async function placeItemInBackupSlot({ playerId, category, source, backupSlots, maxSlots }: {
+async function placeItemInBackupSlot({
+	playerId, category, source, backupSlots, maxSlots
+}: {
 	playerId: number;
 	category: ItemCategory;
 	source: InventorySlot;

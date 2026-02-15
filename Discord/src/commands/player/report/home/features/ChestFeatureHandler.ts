@@ -7,7 +7,9 @@ import {
 	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "../HomeMenuTypes";
-import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedMenus";
+import {
+	CrowniclesNestedMenuCollector, CrowniclesNestedMenus
+} from "../../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../../translations/i18n";
 import { DisplayUtils } from "../../../../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
@@ -141,8 +143,12 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		for (const route of actionRoutes) {
 			if (selectedValue.startsWith(route.prefix)) {
 				await this.handleChestActionByPrefix({
-					ctx, selectedValue, componentInteraction, nestedMenus,
-					prefix: route.prefix, action: route.action
+					ctx,
+					selectedValue,
+					componentInteraction,
+					nestedMenus,
+					prefix: route.prefix,
+					action: route.action
 				});
 				return true;
 			}
@@ -288,10 +294,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 * Re-register the chest categories menu (HOME_CHEST_MENU) with updated item counts.
 	 * Called after a deposit/withdraw to keep category buttons in sync.
 	 */
-	private async refreshChestCategoriesMenu(
+	private refreshChestCategoriesMenu(
 		ctx: HomeFeatureHandlerContext,
 		nestedMenus: CrowniclesNestedMenus
-	): Promise<void> {
+	): void {
 		nestedMenus.registerMenu(HomeMenuIds.CHEST_MENU, {
 			embed: new CrowniclesEmbed()
 				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
@@ -304,7 +310,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Create a collector that delegates button interactions to handleSubMenuSelection.
 	 */
-	private createChestCollector(ctx: HomeFeatureHandlerContext) {
+	private createChestCollector(ctx: HomeFeatureHandlerContext): (menus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 		return (menus: CrowniclesNestedMenus, message: Message) => {
 			const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
 			collector.on("collect", async interaction => {
@@ -324,11 +330,11 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build and register the category detail menu with its embed, buttons and collector.
 	 */
-	private async registerCategoryMenu(
+	private registerCategoryMenu(
 		ctx: HomeFeatureHandlerContext,
 		categoryIndex: number,
 		nestedMenus: CrowniclesNestedMenus
-	): Promise<void> {
+	): void {
 		const catInfo = CATEGORY_INFO[categoryIndex];
 		const chest = ctx.homeData.chest!;
 
@@ -516,7 +522,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		return text;
 	}
 
-	private async handleChestActionByPrefix({ ctx, selectedValue, componentInteraction, nestedMenus, prefix, action }: {
+	private async handleChestActionByPrefix({
+		ctx, selectedValue, componentInteraction, nestedMenus, prefix, action
+	}: {
 		ctx: HomeFeatureHandlerContext;
 		selectedValue: string;
 		componentInteraction: ComponentInteraction;
@@ -556,7 +564,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			return;
 		}
 
-		await this.registerSwapTargetMenu(ctx, categoryIndex, inventorySlot, nestedMenus);
+		this.registerSwapTargetMenu(ctx, categoryIndex, inventorySlot, nestedMenus);
 		await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_SWAP_MENU_PREFIX}${categoryIndex}_${inventorySlot}`);
 	}
 
@@ -564,12 +572,12 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 * Build and register the swap target selection sub-menu.
 	 * Shows chest items to swap with the selected inventory item.
 	 */
-	private async registerSwapTargetMenu(
+	private registerSwapTargetMenu(
 		ctx: HomeFeatureHandlerContext,
 		categoryIndex: number,
 		inventorySlot: number,
 		nestedMenus: CrowniclesNestedMenus
-	): Promise<void> {
+	): void {
 		const catInfo = CATEGORY_INFO[categoryIndex];
 		const chest = ctx.homeData.chest!;
 
@@ -655,7 +663,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				}
 
 				// Re-register the chest categories menu with updated counts
-				await this.refreshChestCategoriesMenu(ctx, nestedMenus);
+				this.refreshChestCategoriesMenu(ctx, nestedMenus);
 
 				// Rebuild and refresh the category detail view in-place
 				const categoryIndex = CATEGORY_INFO.findIndex(c => c.category === category);

@@ -75,7 +75,7 @@ export default class EquipCommand {
 		const inventorySlots = await InventorySlots.getOfPlayer(player.id);
 		const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
 		const home = await Homes.getOfPlayer(player.id);
-const homeBonus = home?.getLevel()?.features.inventoryBonus ?? EMPTY_SLOTS_PER_CATEGORY;
+		const homeBonus = home?.getLevel()?.features.inventoryBonus ?? EMPTY_SLOTS_PER_CATEGORY;
 
 		// Subtract 1 from total slots because the equipped slot (slot 0) is not part of the reserve
 		const slotLimits = new Map<ItemCategory, number>([
