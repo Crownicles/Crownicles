@@ -1663,6 +1663,7 @@ export async function handleGardenHarvest(
 	const compostResults: {
 		plantId: PlantId; materialId: number;
 	}[] = [];
+	const harvestedSlots: number[] = [];
 
 	for (const slot of gardenSlots) {
 		if (slot.isEmpty()) {
@@ -1678,6 +1679,8 @@ export async function handleGardenHarvest(
 		if (!slot.isReady(effectiveGrowthTime)) {
 			continue;
 		}
+
+		harvestedSlots.push(slot.slot);
 
 		// Try to store the plant in the chest
 		const overflow = await HomePlantStorages.addPlant(home.id, slot.plantId, 1, maxCapacity);
@@ -1699,10 +1702,22 @@ export async function handleGardenHarvest(
 		await HomeGardenSlots.resetGrowthTimer(home.id, slot.slot);
 	}
 
+	// Fetch updated plant storage to return to frontend
+	const updatedStorage = await HomePlantStorages.getOfHome(home.id);
+	const plantStorage = updatedStorage
+		.filter(s => s.quantity > 0)
+		.map(s => ({
+			plantId: s.plantId as PlantId,
+			quantity: s.quantity,
+			maxCapacity
+		}));
+
 	return makePacket(CommandReportGardenHarvestRes, {
 		plantsHarvested,
 		plantsComposted: compostResults.length,
-		compostResults
+		compostResults,
+		plantStorage,
+		harvestedSlots
 	});
 }
 
