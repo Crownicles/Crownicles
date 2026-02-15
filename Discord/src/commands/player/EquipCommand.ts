@@ -47,16 +47,16 @@ import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 
 const CATEGORY_INFO = [
 	{
-		category: ItemCategory.WEAPON, translationKey: "weapons", emoji: "⚔️"
+		category: ItemCategory.WEAPON, translationKey: "weapons"
 	},
 	{
-		category: ItemCategory.ARMOR, translationKey: "armors", emoji: "🛡️"
+		category: ItemCategory.ARMOR, translationKey: "armors"
 	},
 	{
-		category: ItemCategory.POTION, translationKey: "potions", emoji: "🧪"
+		category: ItemCategory.POTION, translationKey: "potions"
 	},
 	{
-		category: ItemCategory.OBJECT, translationKey: "objects", emoji: "📦"
+		category: ItemCategory.OBJECT, translationKey: "objects"
 	}
 ];
 
@@ -144,8 +144,8 @@ function buildMainMenu(ctx: EquipMenuContext): CrowniclesNestedMenu {
 		buttons.push(
 			new ButtonBuilder()
 				.setCustomId(`${EQUIP_MENU_IDS.CATEGORY_PREFIX}${i}`)
-				.setLabel(`${i18n.t(`commands:equip.categories.${catInfo.translationKey}`, { lng: ctx.lng })} (${itemCount})`)
-				.setEmoji(catInfo.emoji)
+				.setLabel(`${i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })} (${itemCount})`)
+				.setEmoji(CrowniclesIcons.itemCategories[catInfo.category])
 				.setStyle(ButtonStyle.Primary)
 		);
 	}
@@ -224,7 +224,7 @@ function registerCategoryMenu(
 
 	let description = i18n.t("commands:equip.categoryHeader", {
 		lng: ctx.lng,
-		category: i18n.t(`commands:equip.categories.${catInfo.translationKey}`, { lng: ctx.lng })
+		category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })
 	});
 
 	// Equipped item section
@@ -232,12 +232,12 @@ function registerCategoryMenu(
 	if (categoryData.equippedItem) {
 		const details = withUnlimitedMaxValue(categoryData.equippedItem.details, catInfo.category);
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
-		description += `\n${DiscordConstants.CHOICE_EMOTES[choiceIndex]} - ${itemDisplay}`;
+		description += `\n${CrowniclesIcons.choiceEmotes[choiceIndex]} - ${itemDisplay}`;
 
 		// Deposit button — only if there's room in reserve
 		const canDeposit = categoryData.reserveItems.length < categoryData.maxReserveSlots;
 		const button = new ButtonBuilder()
-			.setEmoji(parseEmoji(DiscordConstants.CHOICE_EMOTES[choiceIndex])!)
+			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[choiceIndex])!)
 			.setCustomId(`${EQUIP_MENU_IDS.DEPOSIT_PREFIX}${catInfo.category}`)
 			.setStyle(ButtonStyle.Secondary)
 			.setDisabled(!canDeposit);
@@ -261,16 +261,16 @@ function registerCategoryMenu(
 	})}`;
 
 	for (const item of categoryData.reserveItems) {
-		if (choiceIndex >= DiscordConstants.CHOICE_EMOTES.length) {
+		if (choiceIndex >= CrowniclesIcons.choiceEmotes.length) {
 			break;
 		}
 
 		const details = withUnlimitedMaxValue(item.details, catInfo.category);
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
-		description += `\n${DiscordConstants.CHOICE_EMOTES[choiceIndex]} - ${itemDisplay}`;
+		description += `\n${CrowniclesIcons.choiceEmotes[choiceIndex]} - ${itemDisplay}`;
 
 		const button = new ButtonBuilder()
-			.setEmoji(parseEmoji(DiscordConstants.CHOICE_EMOTES[choiceIndex])!)
+			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[choiceIndex])!)
 			.setCustomId(`${EQUIP_MENU_IDS.EQUIP_PREFIX}${catInfo.category}_${item.slot}`)
 			.setStyle(ButtonStyle.Secondary);
 

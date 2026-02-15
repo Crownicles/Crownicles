@@ -97,8 +97,6 @@ class HomeFeatureRegistry {
  * 2. Register it here with .register(new YourHandler())
  *
  * Future features to implement:
- * - BedFeatureHandler: Rest to recover health
- * - ChestFeatureHandler: Store backup items ✅ (registered)
  * - PotionCraftingFeatureHandler: Craft potions
  * - GardenFeatureHandler: Cultivate plants
  */
