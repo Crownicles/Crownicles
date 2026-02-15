@@ -1256,9 +1256,7 @@ async function processChestDeposit(
  */
 async function clearInventorySlot(slot: InventorySlot): Promise<void> {
 	if (slot.slot === 0) {
-		slot.itemId = 0;
-		slot.itemLevel = 0;
-		slot.itemEnchantmentId = null;
+		resetItemFields(slot);
 		await slot.save();
 	}
 	else {
@@ -1267,10 +1265,19 @@ async function clearInventorySlot(slot: InventorySlot): Promise<void> {
 }
 
 async function clearChestSlot(chestSlot: HomeChestSlot): Promise<void> {
-	chestSlot.itemId = 0;
-	chestSlot.itemLevel = 0;
-	chestSlot.itemEnchantmentId = null;
+	resetItemFields(chestSlot);
 	await chestSlot.save();
+}
+
+/**
+ * Reset item-related fields on any slot-like entity.
+ */
+function resetItemFields(target: {
+	itemId: number; itemLevel: number; itemEnchantmentId: string | null;
+}): void {
+	target.itemId = 0;
+	target.itemLevel = 0;
+	target.itemEnchantmentId = null;
 }
 
 /**
