@@ -1077,7 +1077,12 @@
           "errors": {
             "chestFull": "Votre coffre est plein pour cette catégorie ! Améliorez votre maison pour obtenir plus d'emplacements.",
             "inventoryFull": "Votre inventaire est plein pour cette catégorie ! Libérez de la place avant de retirer un objet du coffre."
-          }
+          },
+          "plantTabLabel": "Plantes",
+          "plantHeader": "🌱 **Plantes** — {{stored}}/{{max}} stockées",
+          "plantDepositSection": "⬇️ **Déposer depuis votre inventaire :**",
+          "plantWithdrawSection": "⬆️ **Retirer vers votre inventaire :**",
+          "plantEmpty": "Aucune plante stockée ou transportée."
         },
         "garden": {
           "menuLabel": "Jardin",
@@ -1091,7 +1096,7 @@
           "growingPlot": "⏳ Parcelle {{slot}} — {{emoji}} **{{plant}}** — {{progress}}% ({{timeLeft}})",
           "hasSeed": "🌰 Vous portez une graine : {{emoji}} **{{seed}}**",
           "harvestButton": "Récolter",
-          "plantButton": "Planter ({{slot}})",
+          "plantButton": "Planter",
           "storageButton": "Réserve ({{count}})",
           "storageTitle": "{emote:city.homeUpgrades.garden} Réserve de plantes :",
           "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",

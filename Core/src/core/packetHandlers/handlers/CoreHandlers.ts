@@ -12,10 +12,11 @@ import {
 import {
 	CommandReportHomeChestActionReq, CommandReportHomeChestActionRes,
 	CommandReportGardenHarvestReq,
-	CommandReportGardenPlantReq
+	CommandReportGardenPlantReq,
+	CommandReportPlantTransferReq
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	handleChestAction, handleGardenHarvest, handleGardenPlant
+	handleChestAction, handleGardenHarvest, handleGardenPlant, handlePlantTransfer
 } from "../../report/ReportCityService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
@@ -58,5 +59,10 @@ export default class CoreHandlers {
 	@packetHandler(CommandReportGardenPlantReq)
 	async gardenPlant(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenPlantReq): Promise<void> {
 		response.push(await handleGardenPlant(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportPlantTransferReq)
+	async plantTransfer(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportPlantTransferReq): Promise<void> {
+		response.push(await handlePlantTransfer(context.keycloakId!, packet));
 	}
 }
