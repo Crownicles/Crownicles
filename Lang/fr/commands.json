@@ -1070,6 +1070,36 @@
             "inventoryFull": "Votre inventaire est plein pour cette catégorie ! Libérez de la place avant de retirer un objet du coffre."
           }
         },
+        "garden": {
+          "menuLabel": "Jardin",
+          "menuDescription": "{{ready}}/{{total}} plantes prêtes à être récoltées",
+          "available": "{emote:city.homeUpgrades.garden} Votre jardin vous permet de cultiver des plantes.",
+          "title": "{{pseudo}}, jardin",
+          "placeholder": "Gérer votre jardin",
+          "description": "{emote:city.homeUpgrades.garden} Voici l'état de votre jardin :",
+          "emptyPlot": "🕳️ Parcelle {{slot}} — *Vide*",
+          "readyPlot": "✅ Parcelle {{slot}} — {{emoji}} **{{plant}}** — Prête à être récoltée !",
+          "growingPlot": "⏳ Parcelle {{slot}} — {{emoji}} **{{plant}}** — {{progress}}% ({{timeLeft}})",
+          "hasSeed": "🌰 Vous portez une graine : {{emoji}} **{{seed}}**",
+          "harvestButton": "Récolter",
+          "plantButton": "Planter ({{slot}})",
+          "storageButton": "Réserve ({{count}})",
+          "storageTitle": "{emote:city.homeUpgrades.garden} Réserve de plantes :",
+          "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",
+          "backToGarden": "← Retour au jardin",
+          "plants": {
+            "1": "Herbe commune",
+            "2": "Trèfle doré",
+            "3": "Mousse lunaire",
+            "4": "Racine de fer",
+            "5": "Champignon nocturne",
+            "6": "Feuille venimeuse",
+            "7": "Bulbe de feu",
+            "8": "Plante carnée",
+            "9": "Fleur de cristal",
+            "10": "Arbre ancestral"
+          }
+        },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
           "chest": "Un coffre pour y ranger vos affaires {emote:city.homeUpgrades.chest}",
@@ -1183,6 +1213,7 @@
       "token_one": "Jeton ({{count}} disponible)",
       "token_other": "Jetons ({{count}} disponibles)",
       "slotExtension": "Extensions d'inventaire",
+      "plantSlotExtension": "Extensions de récolte",
       "food": "Nourriture pour familiers",
       "guildXp": "Expérience de guilde",
       "resources": "Ressources",
@@ -1221,6 +1252,10 @@
       "slotExtension": {
         "name": "{emote:shopItems.inventoryExtension} Nouvel emplacement d'inventaire",
         "info": "Vous pourrez choisir une catégorie d'inventaire à laquelle ajouter un emplacement."
+      },
+      "plantSlotExtension": {
+        "name": "{emote:shopItems.plantSlotExtension} Nouvel emplacement de plante",
+        "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire."
       },
       "dailyPotion": {
         "info": "Vous obtiendrez une potion que vous déciderez de garder ou non. Si vous l'avez déjà, elle sera jetée sans remboursement !"

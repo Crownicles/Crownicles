@@ -47,7 +47,9 @@ import {
 	ReactionCollectorUpgradeItemReaction,
 	ReactionCollectorBlacksmithMenuReaction,
 	ReactionCollectorBlacksmithUpgradeReaction,
-	ReactionCollectorBlacksmithDisenchantReaction
+	ReactionCollectorBlacksmithDisenchantReaction,
+	ReactionCollectorGardenHarvestReaction,
+	ReactionCollectorGardenPlantReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
@@ -291,6 +293,12 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 						collector.creationPacket.data.data as ReactionCollectorCityData,
 						response
 					);
+					break;
+				case ReactionCollectorGardenHarvestReaction.name:
+					// Garden harvest — handled via async packet in GardenFeatureHandler
+					break;
+				case ReactionCollectorGardenPlantReaction.name:
+					// Garden plant — handled via async packet in GardenFeatureHandler
 					break;
 				default:
 					CrowniclesLogger.error(`Unknown city reaction: ${firstReaction.reaction.type}`);

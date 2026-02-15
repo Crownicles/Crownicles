@@ -4,6 +4,8 @@ import {
 import { HomeLevel } from "../../../../../../Lib/src/types/HomeLevel";
 import * as moment from "moment";
 import { HomeChestSlots } from "./HomeChestSlot";
+import { HomeGardenSlots } from "./HomeGardenSlot";
+import { HomePlantStorages } from "./HomePlantStorage";
 
 export class Home extends Model {
 	declare readonly id: number;
@@ -76,6 +78,8 @@ export class Homes {
 
 		if (home) {
 			await HomeChestSlots.deleteOfHome(home.id);
+			await HomeGardenSlots.deleteOfHome(home.id);
+			await HomePlantStorages.deleteOfHome(home.id);
 			await home.destroy();
 		}
 	}

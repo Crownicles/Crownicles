@@ -23,6 +23,8 @@ import {
 	ReactionCollectorBuyCategorySlotCancelReaction,
 	ReactionCollectorBuyCategorySlotReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
+import { PlantConstants } from "../../../../Lib/src/constants/PlantConstants";
+import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 
 function getBuySlotExtensionShopItemCallback(playerId: number, price: number): EndCallback {
 	return async (collector, response): Promise<void> => {
@@ -95,6 +97,45 @@ export async function getSlotExtensionShopItem(playerId: number): Promise<ShopIt
 			response.push(packet);
 
 			return false; // For this specific callback, we don't want to directly consider the purchase as successful as we need the player to choose a slot category
+		}
+	};
+}
+
+/**
+ * Get the shop item for extending plant inventory slots at the tanner
+ */
+export async function getPlantSlotExtensionShopItem(playerId: number): Promise<ShopItem | null> {
+	const invInfo = await InventoryInfos.getOfPlayer(playerId);
+
+	if (invInfo.plantSlots >= PlantConstants.MAX_PLANT_SLOTS) {
+		return null;
+	}
+
+	const priceIndex = invInfo.plantSlots - PlantConstants.DEFAULT_PLANT_SLOTS;
+	const price = PlantConstants.PLANT_SLOT_PRICES[priceIndex];
+
+	if (price === undefined) {
+		return null;
+	}
+
+	return {
+		id: ShopItemType.PLANT_SLOT_EXTENSION,
+		price,
+		amounts: [1],
+		buyCallback: async (_response, _playerId, _context): Promise<boolean> => {
+			const player = await Players.getById(playerId);
+			const freshInvInfo = await InventoryInfos.getOfPlayer(player.id);
+
+			freshInvInfo.plantSlots++;
+			await freshInvInfo.save();
+
+			// Ensure the new physical slot exists
+			await PlayerPlantSlots.ensureSlotsForCount(player.id, freshInvInfo.plantSlots);
+
+			crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.PLANT_SLOT_EXTENSION)
+				.then();
+
+			return true;
 		}
 	};
 }

@@ -4,6 +4,7 @@ import {
 import { UpgradeStationFeatureHandler } from "./UpgradeStationFeatureHandler";
 import { BedFeatureHandler } from "./BedFeatureHandler";
 import { ChestFeatureHandler } from "./features/ChestFeatureHandler";
+import { GardenFeatureHandler } from "./features/GardenFeatureHandler";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
 import { StringSelectMenuInteraction } from "discord.js";
 
@@ -103,4 +104,5 @@ class HomeFeatureRegistry {
 export const homeFeatureRegistry = new HomeFeatureRegistry()
 	.register(new UpgradeStationFeatureHandler())
 	.register(new BedFeatureHandler())
-	.register(new ChestFeatureHandler());
+	.register(new ChestFeatureHandler())
+	.register(new GardenFeatureHandler());
