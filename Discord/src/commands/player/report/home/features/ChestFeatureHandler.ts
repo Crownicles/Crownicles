@@ -162,6 +162,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			return true;
 		}
 
+		// Plant tab pagination
+		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX)) {
+			await componentInteraction.deferUpdate();
+			const targetPage = parseInt(selectedValue.replace(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX, ""), 10);
+			this.registerPlantTabMenu(ctx, nestedMenus, targetPage);
+			await nestedMenus.changeMenu(HomeMenuIds.CHEST_PLANT_TAB);
+			return true;
+		}
+
 		const categoryIndex = this.parsePrefixIndex(selectedValue, HomeMenuIds.CHEST_CATEGORY_PREFIX);
 		if (categoryIndex !== null) {
 			await this.showCategoryDetail(ctx, categoryIndex, componentInteraction, nestedMenus);
@@ -707,78 +716,82 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 */
 	private registerPlantTabMenu(
 		ctx: HomeFeatureHandlerContext,
-		nestedMenus: CrowniclesNestedMenus
+		nestedMenus: CrowniclesNestedMenus,
+		page: number = 0
 	): void {
 		const chest = ctx.homeData.chest!;
 		const plantStorage = chest.plantStorage ?? [];
 		const playerSlots = chest.playerPlantSlots ?? [];
 		const maxCapacity = chest.plantMaxCapacity ?? 0;
+		const hasEmptySlot = playerSlots.some(s => s.plantId === 0);
 
+		// Build full list of plant entries (deposit first, then withdraw)
+		const entries = this.buildPlantEntryList(playerSlots, plantStorage, maxCapacity, hasEmptySlot);
+
+		// Pagination
+		const itemsPerPage = CrowniclesIcons.choiceEmotes.length;
+		const totalPages = Math.max(1, Math.ceil(entries.length / itemsPerPage));
+		const currentPage = Math.min(Math.max(0, page), totalPages - 1);
+		const pageEntries = entries.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
+		// Build description and buttons
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-		let emoteIndex = 0;
-
 		let description = i18n.t("commands:report.city.homes.chest.plantHeader", {
 			lng: ctx.lng,
 			max: maxCapacity
 		});
 
-		// Deposit section: player plants that can be deposited to home storage
-		const depositablePlants = playerSlots.filter(s => s.plantId !== 0);
-		if (depositablePlants.length > 0) {
-			description += `\n\n${i18n.t("commands:report.city.homes.chest.plantDepositSection", { lng: ctx.lng })}`;
+		let currentSection: "deposit" | "withdraw" | null = null;
+		let emoteIndex = 0;
 
-			for (const slot of depositablePlants) {
-				if (emoteIndex >= CrowniclesIcons.choiceEmotes.length) {
-					break;
-				}
-				const plantType = PLANT_TYPES.find(p => p.id === slot.plantId);
-				if (!plantType) {
-					continue;
-				}
-				const storageForType = plantStorage.find(s => s.plantId === slot.plantId);
-				const isTypeFull = (storageForType?.quantity ?? 0) >= maxCapacity;
-				const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${CrowniclesIcons.plants[plantType.id] ?? "🌱"} ${plantName}`;
-
-				const button = this.buildItemButton(
-					emoteIndex,
-					`${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${slot.plantId}_${slot.slot}`,
-					isTypeFull
-				);
-				addButtonToRow(rows, button);
-				emoteIndex++;
+		for (const entry of pageEntries) {
+			// Add section header when section changes
+			if (entry.section !== currentSection) {
+				currentSection = entry.section;
+				const sectionKey = entry.section === "deposit" ? "plantDepositSection" : "plantWithdrawSection";
+				description += `\n\n${i18n.t(`commands:report.city.homes.chest.${sectionKey}`, { lng: ctx.lng })}`;
 			}
+
+			const plantType = PLANT_TYPES.find(p => p.id === entry.plantId)!;
+			const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
+			const icon = CrowniclesIcons.plants[plantType.id] ?? "🌱";
+
+			if (entry.section === "deposit") {
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
+				addButtonToRow(rows, this.buildItemButton(
+					emoteIndex,
+					`${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${entry.plantId}_${entry.slot}`,
+					entry.disabled
+				));
+			}
+			else {
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName} (${entry.quantity}/${maxCapacity})`;
+				addButtonToRow(rows, this.buildItemButton(
+					emoteIndex,
+					`${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${entry.plantId}`,
+					entry.disabled
+				));
+			}
+
+			emoteIndex++;
 		}
 
-		// Withdraw section: stored plants that can be withdrawn to player inventory
-		const storedPlants = plantStorage.filter(s => s.quantity > 0);
-		if (storedPlants.length > 0) {
-			const hasEmptySlot = playerSlots.some(s => s.plantId === 0);
-			description += `\n\n${i18n.t("commands:report.city.homes.chest.plantWithdrawSection", { lng: ctx.lng })}`;
-
-			for (const stored of storedPlants) {
-				if (emoteIndex >= CrowniclesIcons.choiceEmotes.length) {
-					break;
-				}
-				const plantType = PLANT_TYPES.find(p => p.id === stored.plantId);
-				if (!plantType) {
-					continue;
-				}
-				const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${CrowniclesIcons.plants[plantType.id] ?? "🌱"} ${plantName} (${stored.quantity}/${maxCapacity})`;
-
-				const button = this.buildItemButton(
-					emoteIndex,
-					`${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${stored.plantId}`,
-					!hasEmptySlot
-				);
-				addButtonToRow(rows, button);
-				emoteIndex++;
-			}
-		}
-
-		if (depositablePlants.length === 0 && storedPlants.length === 0) {
+		if (entries.length === 0) {
 			description += `\n\n${i18n.t("commands:report.city.homes.chest.plantEmpty", { lng: ctx.lng })}`;
+		}
+
+		// Pagination buttons (prev / next)
+		if (totalPages > 1) {
+			addButtonToRow(rows, new ButtonBuilder()
+				.setEmoji(parseEmoji(CrowniclesIcons.collectors.previousPage)!)
+				.setCustomId(`${HomeMenuIds.CHEST_PLANT_PAGE_PREFIX}${currentPage - 1}`)
+				.setStyle(ButtonStyle.Primary)
+				.setDisabled(currentPage === 0));
+			addButtonToRow(rows, new ButtonBuilder()
+				.setEmoji(parseEmoji(CrowniclesIcons.collectors.nextPage)!)
+				.setCustomId(`${HomeMenuIds.CHEST_PLANT_PAGE_PREFIX}${currentPage + 1}`)
+				.setStyle(ButtonStyle.Primary)
+				.setDisabled(currentPage === totalPages - 1));
 		}
 
 		// Back button
@@ -799,6 +812,57 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			components: rows,
 			createCollector: this.createChestCollector(ctx)
 		});
+	}
+
+	/**
+	 * Build the full list of plant entries for the plant tab (deposit + withdraw).
+	 */
+	private buildPlantEntryList(
+		playerSlots: {
+			slot: number; plantId: number;
+		}[],
+		plantStorage: {
+			plantId: number; quantity: number;
+		}[],
+		maxCapacity: number,
+		hasEmptySlot: boolean
+	): {
+		section: "deposit" | "withdraw"; plantId: number; slot?: number; quantity?: number; disabled: boolean;
+	}[] {
+		const entries: {
+			section: "deposit" | "withdraw";
+			plantId: number;
+			slot?: number;
+			quantity?: number;
+			disabled: boolean;
+		}[] = [];
+
+		for (const slot of playerSlots.filter(s => s.plantId !== 0)) {
+			if (!PLANT_TYPES.find(p => p.id === slot.plantId)) {
+				continue;
+			}
+			const storageForType = plantStorage.find(s => s.plantId === slot.plantId);
+			entries.push({
+				section: "deposit",
+				plantId: slot.plantId,
+				slot: slot.slot,
+				disabled: (storageForType?.quantity ?? 0) >= maxCapacity
+			});
+		}
+
+		for (const stored of plantStorage.filter(s => s.quantity > 0)) {
+			if (!PLANT_TYPES.find(p => p.id === stored.plantId)) {
+				continue;
+			}
+			entries.push({
+				section: "withdraw",
+				plantId: stored.plantId,
+				quantity: stored.quantity,
+				disabled: !hasEmptySlot
+			});
+		}
+
+		return entries;
 	}
 
 	/**
