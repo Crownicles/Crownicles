@@ -400,4 +400,15 @@ export abstract class ItemConstants {
 			}
 		}
 	};
+
+	static readonly EQUIP_ACTIONS = {
+		EQUIP: "equip",
+		DEPOSIT: "deposit"
+	} as const;
+
+	static readonly EQUIP_ERRORS = {
+		INVALID: "invalid",
+		NO_ITEM: "noItem",
+		RESERVE_FULL: "reserveFull"
+	} as const;
 }

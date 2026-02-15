@@ -21,7 +21,7 @@ export {
 } from "./HomeMenu";
 export { homeFeatureRegistry } from "./HomeFeatureRegistry";
 export {
-	HomeMenuIds, ADVANCED_UPGRADE_LEVEL_THRESHOLD
+	HomeMenuIds
 } from "./HomeMenuConstants";
 export type {
 	HomeFeatureHandler, HomeFeatureHandlerContext

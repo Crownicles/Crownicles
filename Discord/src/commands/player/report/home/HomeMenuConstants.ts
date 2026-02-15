@@ -67,9 +67,3 @@ export const HomeMenuIds = {
 	/** Back to category detail from swap menu */
 	CHEST_BACK_TO_DETAIL_PREFIX: "CHEST_BACK_DETAIL_"
 } as const;
-
-/**
- * Threshold for advanced upgrade level features.
- * Homes with maxItemUpgradeLevel >= this value get "advanced" description.
- */
-export const ADVANCED_UPGRADE_LEVEL_THRESHOLD = 2;

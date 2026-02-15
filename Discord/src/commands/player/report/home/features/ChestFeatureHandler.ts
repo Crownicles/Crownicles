@@ -24,6 +24,7 @@ import {
 	CommandReportHomeChestActionReq,
 	CommandReportHomeChestActionRes
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
+import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConstants";
 
 const CATEGORY_INFO: {
 	key: keyof ChestSlotsPerCategory; category: ItemCategory; translationKey: string; emoji: string;
@@ -122,13 +123,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			prefix: string; action: string;
 		}[] = [
 			{
-				prefix: HomeMenuIds.CHEST_DEPOSIT_PREFIX, action: "deposit"
+				prefix: HomeMenuIds.CHEST_DEPOSIT_PREFIX, action: HomeConstants.CHEST_ACTIONS.DEPOSIT
 			},
 			{
-				prefix: HomeMenuIds.CHEST_WITHDRAW_PREFIX, action: "withdraw"
+				prefix: HomeMenuIds.CHEST_WITHDRAW_PREFIX, action: HomeConstants.CHEST_ACTIONS.WITHDRAW
 			},
 			{
-				prefix: HomeMenuIds.CHEST_SWAP_TARGET_PREFIX, action: "swap"
+				prefix: HomeMenuIds.CHEST_SWAP_TARGET_PREFIX, action: HomeConstants.CHEST_ACTIONS.SWAP
 			}
 		];
 
