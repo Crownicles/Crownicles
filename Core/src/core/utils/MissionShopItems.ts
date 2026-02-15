@@ -20,13 +20,13 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
 
-export function calculateGemsToMoneyRatio(): number {
+export function calculateGemsToMoneyRatio(dayOffset: number = 0): number {
 	const frac = function(x: number): number {
 		return x >= 0 ? x % 1 : 1 + x % 1;
 	};
 	return Constants.MISSION_SHOP.BASE_RATIO
 		+ Math.round(Constants.MISSION_SHOP.RANGE_MISSION_MONEY * 2
-			* frac(100 * Math.sin(Constants.MISSION_SHOP.SIN_RANDOMIZER * (getDayNumber() % Constants.MISSION_SHOP.SEED_RANGE) + 1))
+			* frac(100 * Math.sin(Constants.MISSION_SHOP.SIN_RANDOMIZER * ((getDayNumber() + dayOffset) % Constants.MISSION_SHOP.SEED_RANGE) + 1))
 			- Constants.MISSION_SHOP.RANGE_MISSION_MONEY);
 }
 
