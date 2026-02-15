@@ -4,6 +4,7 @@ import {
 import { MainItemDetails } from "../../types/MainItemDetails";
 import { SupportItemDetails } from "../../types/SupportItemDetails";
 import { MaterialQuantity } from "../../types/MaterialQuantity";
+import { PlantId } from "../../constants/PlantConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandInventoryPacketReq extends CrowniclesPacket {
@@ -43,6 +44,14 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 			objects: number;
 		};
 		materials: MaterialQuantity[];
+		plants?: {
+			seed?: PlantId;
+			plantSlots: {
+				plantId: PlantId;
+				slot: number;
+			}[];
+			maxPlantSlots: number;
+		};
 	};
 
 	/**
