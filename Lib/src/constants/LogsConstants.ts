@@ -88,7 +88,10 @@ export enum ShopItemType {
 	BIG_GUILD_XP,
 	QUEST_MASTER_BADGE,
 	TOKEN,
-	PLANT_SLOT_EXTENSION
+	PLANT_SLOT_EXTENSION,
+	WEEKLY_PLANT_TIER_1,
+	WEEKLY_PLANT_TIER_2,
+	WEEKLY_PLANT_TIER_3
 }
 
 export const ShopItemTypeToString: Record<ShopItemType, string> = {
@@ -112,5 +115,8 @@ export const ShopItemTypeToString: Record<ShopItemType, string> = {
 	[ShopItemType.BIG_GUILD_XP]: "bigGuildXp",
 	[ShopItemType.QUEST_MASTER_BADGE]: "questMasterBadge",
 	[ShopItemType.TOKEN]: "token",
-	[ShopItemType.PLANT_SLOT_EXTENSION]: "plantSlotExtension"
+	[ShopItemType.PLANT_SLOT_EXTENSION]: "plantSlotExtension",
+	[ShopItemType.WEEKLY_PLANT_TIER_1]: "weeklyPlantTier1",
+	[ShopItemType.WEEKLY_PLANT_TIER_2]: "weeklyPlantTier2",
+	[ShopItemType.WEEKLY_PLANT_TIER_3]: "weeklyPlantTier3"
 };

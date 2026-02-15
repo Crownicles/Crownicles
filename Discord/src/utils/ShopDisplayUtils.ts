@@ -73,6 +73,14 @@ export async function handleCommandShopBoughtTooMuchDailyPotions(context: Packet
 	}
 }
 
+export async function handleCommandShopNoPlantSlotAvailable(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+
+	if (interaction) {
+		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.noPlantSlotAvailable", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+	}
+}
+
 export async function handleCommandShopNotEnoughMoney(packet: CommandShopNotEnoughCurrency, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 
@@ -256,6 +264,23 @@ function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemT
 				id: data.additionalShopData!.dailyPotion!.id,
 				category: data.additionalShopData!.dailyPotion!.itemCategory
 			}, lng)
+		};
+	}
+	if (shopItemId >= ShopItemType.WEEKLY_PLANT_TIER_1 && shopItemId <= ShopItemType.WEEKLY_PLANT_TIER_3) {
+		const tierIndex = shopItemId - ShopItemType.WEEKLY_PLANT_TIER_1;
+		const plantId = data.additionalShopData?.weeklyPlants?.[tierIndex];
+		const plantName = plantId
+			? i18n.t(`commands:report.city.homes.garden.plants.${plantId}`, { lng })
+			: "???";
+		const plantEmoji = plantId ? CrowniclesIcons.plants[plantId] ?? "🌱" : "🌱";
+		const bothNames = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.name`, {
+			lng,
+			plantName,
+			plantEmoji
+		});
+		return {
+			normal: `**${bothNames}**`,
+			short: bothNames
 		};
 	}
 	const bothNames = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.name`, {

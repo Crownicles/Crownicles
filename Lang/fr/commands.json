@@ -865,6 +865,10 @@
         "tanner": {
           "label": "Le Tanneur",
           "description": "Agrandissez votre inventaire grâce aux sacoches en cuir de cet artisan."
+        },
+        "herbalist": {
+          "label": "L'Herboriste",
+          "description": "Achetez des plantes déjà cultivées, sélection renouvelée chaque semaine."
         }
       },
       "inns": {
@@ -1206,6 +1210,7 @@
     "badgeBought": "Vous avez reçu un nouveau badge : {emote:badges.{{badgeName}}} !",
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Il n'y a plus aucune potion du jour disponible à la vente... Revenez demain !",
+    "noPlantSlotAvailable": "Vous n'avez aucun emplacement de plante libre ! Libérez-en un ou améliorez votre équipement au tanneur.",
     "boughtTooMuchTokens": "Vous avez atteint la limite d'achat de jetons pour le moment. Revenez plus tard !",
     "tokensBought_one": "Vous avez acheté **{{count}} jeton** {emote:unitValues.token}.",
     "tokensBought_other": "Vous avez acheté **{{count}} jetons** {emote:unitValues.token}.",
@@ -1230,6 +1235,7 @@
       "token_other": "Jetons ({{count}} disponibles)",
       "slotExtension": "Extensions d'inventaire",
       "plantSlotExtension": "Extensions de récolte",
+      "weeklyPlants": "Plantes de la semaine",
       "food": "Nourriture pour familiers",
       "guildXp": "Expérience de guilde",
       "resources": "Ressources",
@@ -1272,6 +1278,18 @@
       "plantSlotExtension": {
         "name": "{emote:shopItems.plantSlotExtension} Nouvel emplacement de plante",
         "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire."
+      },
+      "weeklyPlantTier1": {
+        "name": "{{plantEmoji}} {{plantName}}",
+        "info": "Une plante commune déjà cultivée, prête à être compostée ou stockée."
+      },
+      "weeklyPlantTier2": {
+        "name": "{{plantEmoji}} {{plantName}}",
+        "info": "Une plante intermédiaire déjà cultivée, prête à être compostée ou stockée."
+      },
+      "weeklyPlantTier3": {
+        "name": "{{plantEmoji}} {{plantName}}",
+        "info": "Une plante rare déjà cultivée, prête à être compostée ou stockée."
       },
       "dailyPotion": {
         "info": "Vous obtiendrez une potion que vous déciderez de garder ou non. Si vous l'avez déjà, elle sera jetée sans remboursement !"

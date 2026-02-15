@@ -174,6 +174,82 @@ export abstract class PlantConstants {
 	public static readonly PLANT_SLOT_PRICES = [3000, 8000] as const;
 
 	/**
+	 * Plant tiers for the herbalist shop.
+	 * Each tier offers one plant per week.
+	 */
+	public static readonly HERBALIST_TIERS: readonly PlantId[][] = [
+		[
+			PlantId.COMMON_HERB,
+			PlantId.GOLDEN_CLOVER,
+			PlantId.LUNAR_MOSS
+		],
+		[
+			PlantId.IRON_ROOT,
+			PlantId.NIGHT_MUSHROOM,
+			PlantId.VENOMOUS_LEAF
+		],
+		[
+			PlantId.FIRE_BULB,
+			PlantId.MEAT_PLANT,
+			PlantId.CRYSTAL_FLOWER,
+			PlantId.ANCIENT_TREE
+		]
+	];
+
+	/**
+	 * Buy prices at the herbalist for each plant (indexed by PlantId - 1)
+	 */
+	public static readonly HERBALIST_PRICES: readonly number[] = [
+		100, // Herbe commune
+		144, // Trèfle doré
+		250, // Mousse lunaire
+		576, // Racine de fer
+		1728, // Champignon nocturne
+		3456, // Feuille venimeuse
+		6912, // Bulbe de feu
+		10368, // Plante carnivore
+		17280, // Fleur de cristal
+		24192 // Arbre ancien
+	];
+
+	/**
+	 * Get the buy price of a plant at the herbalist shop
+	 */
+	public static getHerbalistPrice(plant: PlantType): number {
+		return PlantConstants.HERBALIST_PRICES[plant.id - 1];
+	}
+
+	/**
+	 * Get the 3 plants available at the herbalist this week (one per tier).
+	 * Uses a deterministic seed based on the ISO week number.
+	 */
+	public static getWeeklyHerbalistPlants(date: Date = new Date()): PlantType[] {
+		let seed = PlantConstants.getIsoWeekNumber(date);
+		seed += date.getFullYear() * 100;
+
+		const plants: PlantType[] = [];
+		for (const tier of PlantConstants.HERBALIST_TIERS) {
+			const index = (seed * 9301 + 49297) % 233280 % tier.length;
+			const plantType = PlantConstants.getPlantById(tier[index]);
+			if (plantType) {
+				plants.push(plantType);
+			}
+			seed += 1;
+		}
+		return plants;
+	}
+
+	/**
+	 * Get ISO week number (1-53) for a given date
+	 */
+	private static getIsoWeekNumber(date: Date): number {
+		const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+		d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
+		const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+		return Math.ceil(((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+	}
+
+	/**
 	 * Get a plant type by its ID. Returns undefined for 0 (empty slot) or unknown IDs.
 	 */
 	public static getPlantById(id: PlantId | 0): PlantType | undefined {

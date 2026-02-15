@@ -9,7 +9,10 @@ import {
 } from "../CrowniclesPacket";
 import { ItemWithDetails } from "../../types/ItemWithDetails";
 import { ShopCurrency } from "../../constants/ShopConstants";
-import { ShopItemType } from "../../constants/LogsConstants";
+import {
+	ShopItemType
+} from "../../constants/LogsConstants";
+import { PlantId } from "../../constants/PlantConstants";
 
 export interface ShopItem {
 	id: ShopItemType;
@@ -52,6 +55,10 @@ export class CommandShopBoughtTooMuchDailyPotions extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopNoPlantSlotAvailable extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopNotEnoughCurrency extends CrowniclesPacket {
 	missingCurrency!: number;
 
@@ -85,6 +92,7 @@ export type additionalShopData = {
 	dailyPotion?: ItemWithDetails;
 	gemToMoneyRatio?: number;
 	remainingTokens?: number;
+	weeklyPlants?: PlantId[];
 };
 
 type ShopReaction = ReactionCollectorShopItemReaction | ReactionCollectorShopCloseReaction;

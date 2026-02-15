@@ -65,7 +65,9 @@ import {
 	CommandReportPlantTransferReq,
 	CommandReportPlantTransferRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
-import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import {
+	NumberChangeReason, ShopItemType
+} from "../../../../Lib/src/constants/LogsConstants";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import { TravelTime } from "../maps/TravelTime";
@@ -82,7 +84,9 @@ import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ShopUtils } from "../utils/ShopUtils";
 import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
-import { ShopCategory } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
+import {
+	ShopCategory, CommandShopNoPlantSlotAvailable
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
 	calculateGemsToMoneyRatio,
 	getAThousandPointsShopItem,
@@ -1146,6 +1150,9 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		case "tanner":
 			await openTanner(player, context, response);
 			break;
+		case "herbalist":
+			await openHerbalist(player, context, response);
+			break;
 		default:
 			CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
 			break;
@@ -1259,6 +1266,48 @@ export async function openTanner(player: Player, context: PacketContext, respons
 		shopCategories,
 		player,
 		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
+	});
+}
+
+/**
+ * Open the herbalist shop for the player (weekly rotating plants)
+ */
+export async function openHerbalist(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants();
+
+	const tierTypes: ShopItemType[] = [
+		ShopItemType.WEEKLY_PLANT_TIER_1,
+		ShopItemType.WEEKLY_PLANT_TIER_2,
+		ShopItemType.WEEKLY_PLANT_TIER_3
+	];
+
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "weeklyPlants",
+			items: weeklyPlants.map((plant, index) => ({
+				id: tierTypes[index],
+				price: PlantConstants.getHerbalistPrice(plant),
+				amounts: [1],
+				buyCallback: async (buyResponse, playerId): Promise<boolean> => {
+					const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(playerId);
+					if (!emptySlot) {
+						buyResponse.push(makePacket(CommandShopNoPlantSlotAvailable, {}));
+						return false;
+					}
+					await PlayerPlantSlots.setPlant(playerId, emptySlot.slot, plant.id);
+					return true;
+				}
+			}))
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		additionalShopData: {
+			weeklyPlants: weeklyPlants.map(p => p.id)
+		}
 	});
 }
 
