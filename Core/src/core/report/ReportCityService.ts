@@ -92,8 +92,10 @@ type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
 const CHEST_ERROR_INVALID = "invalid";
+const CHEST_ERROR_CHEST_FULL = "chestFull";
+const CHEST_ERROR_INVENTORY_FULL = "inventoryFull";
 
-type ChestError = typeof CHEST_ERROR_INVALID | "chestFull" | "inventoryFull";
+type ChestError = typeof CHEST_ERROR_INVALID | typeof CHEST_ERROR_CHEST_FULL | typeof CHEST_ERROR_INVENTORY_FULL;
 
 /**
  * Build enchanter data for the city reaction collector
@@ -1235,7 +1237,7 @@ async function processChestDeposit(
 
 	const emptyChestSlot = await HomeChestSlots.findEmptySlot(home.id, itemCategory);
 	if (!emptyChestSlot) {
-		return "chestFull";
+		return CHEST_ERROR_CHEST_FULL;
 	}
 
 	// Move item to chest
@@ -1298,7 +1300,7 @@ async function assignItemToSlot(slot: InventorySlot, item: ItemPlacement): Promi
 
 /**
  * Attempt to place an item in the player's inventory.
- * Returns null on success, "inventoryFull" if no space.
+ * Returns null on success, CHEST_ERROR_INVENTORY_FULL if no space.
  */
 async function placeItemInInventory(
 	player: Player,
@@ -1342,7 +1344,7 @@ async function placeItemInInventory(
 		return null;
 	}
 
-	return "inventoryFull";
+	return CHEST_ERROR_INVENTORY_FULL;
 }
 
 async function processChestWithdraw(
