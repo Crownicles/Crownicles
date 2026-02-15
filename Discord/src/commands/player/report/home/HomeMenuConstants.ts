@@ -76,6 +76,9 @@ export const HomeMenuIds = {
 	/** Prefix for chest plant withdraw (home → player) */
 	CHEST_PLANT_WITHDRAW_PREFIX: "CHEST_PLANT_WDR_",
 
+	/** Prefix for chest plant tab pagination (target page number appended) */
+	CHEST_PLANT_PAGE_PREFIX: "CHEST_PLANT_PG_",
+
 	// --- Garden feature ---
 	/** Garden feature menu */
 	GARDEN_MENU: "HOME_GARDEN_MENU",
