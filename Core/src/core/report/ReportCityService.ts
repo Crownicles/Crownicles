@@ -21,9 +21,7 @@ import {
 	ReactionCollectorInnRoomReaction,
 	ReactionCollectorUpgradeItemReaction,
 	ReactionCollectorBlacksmithUpgradeReaction,
-	ReactionCollectorBlacksmithDisenchantReaction,
-	ReactionCollectorHomeChestDepositReaction,
-	ReactionCollectorHomeChestWithdrawReaction
+	ReactionCollectorBlacksmithDisenchantReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
@@ -47,8 +45,6 @@ import {
 	CommandReportEnchantNotEnoughCurrenciesRes,
 	CommandReportHomeChestActionReq,
 	CommandReportHomeChestActionRes,
-	CommandReportHomeChestFullRes,
-	CommandReportHomeChestInventoryFullRes,
 	CommandReportHomeBedAlreadyFullRes,
 	CommandReportHomeBedRes,
 	CommandReportItemCannotBeEnchantedRes,
@@ -1150,107 +1146,6 @@ export async function handleHomeBedReaction(
 	response.push(makePacket(CommandReportHomeBedRes, {
 		health: homeData.features.bedHealthRegeneration
 	}));
-}
-
-/**
- * Handle home chest deposit reaction — player stores an item from inventory into the chest
- * @returns true if the deposit succeeded, false otherwise
- */
-export async function handleHomeChestDepositReaction(
-	player: Player,
-	data: ReactionCollectorCityData,
-	reaction: ReactionCollectorHomeChestDepositReaction,
-	response: CrowniclesPacket[]
-): Promise<boolean> {
-	await player.reload();
-
-	const homeData = data.home.owned;
-	if (!homeData?.chest) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit into chest without valid chest data.`);
-		return false;
-	}
-
-	const home = await Homes.getOfPlayer(player.id);
-	if (!home) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit into chest but has no home.`);
-		return false;
-	}
-
-	// Find the inventory slot the player wants to deposit
-	const inventorySlot = await InventorySlots.getItem(player.id, reaction.inventorySlot, reaction.itemCategory);
-	if (!inventorySlot || inventorySlot.itemId === 0) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to deposit empty/invalid inventory slot.`);
-		return false;
-	}
-
-	// Find an empty chest slot for this category
-	const emptyChestSlot = await HomeChestSlots.findEmptySlot(home.id, reaction.itemCategory);
-	if (!emptyChestSlot) {
-		response.push(makePacket(CommandReportHomeChestFullRes, {}));
-		return false;
-	}
-
-	// Move item from inventory to chest
-	emptyChestSlot.itemId = inventorySlot.itemId;
-	emptyChestSlot.itemLevel = inventorySlot.itemLevel;
-	emptyChestSlot.itemEnchantmentId = inventorySlot.itemEnchantmentId;
-	await emptyChestSlot.save();
-
-	// Clear the inventory slot
-	await clearInventorySlot(inventorySlot);
-
-	return true;
-}
-
-/**
- * Handle home chest withdraw reaction — player retrieves an item from the chest into their inventory
- * @returns true if the withdraw succeeded, false otherwise
- */
-export async function handleHomeChestWithdrawReaction(
-	player: Player,
-	data: ReactionCollectorCityData,
-	reaction: ReactionCollectorHomeChestWithdrawReaction,
-	response: CrowniclesPacket[]
-): Promise<boolean> {
-	await player.reload();
-
-	const homeData = data.home.owned;
-	if (!homeData?.chest) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw from chest without valid chest data.`);
-		return false;
-	}
-
-	const home = await Homes.getOfPlayer(player.id);
-	if (!home) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw from chest but has no home.`);
-		return false;
-	}
-
-	// Find the chest slot the player wants to withdraw
-	const chestSlot = await HomeChestSlots.getSlot(home.id, reaction.chestSlot, reaction.itemCategory);
-	if (!chestSlot || chestSlot.itemId === 0) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to withdraw empty/invalid chest slot.`);
-		return false;
-	}
-
-	// Try to place the item in the player's inventory
-	const itemToPlace: ItemPlacement = {
-		itemId: chestSlot.itemId,
-		itemLevel: chestSlot.itemLevel,
-		itemEnchantmentId: chestSlot.itemEnchantmentId
-	};
-	const placementError = await placeItemInInventory(player, home, reaction.itemCategory, itemToPlace);
-
-	if (placementError) {
-		// Inventory full — all backup slots occupied and at max capacity
-		response.push(makePacket(CommandReportHomeChestInventoryFullRes, {}));
-		return false;
-	}
-
-	// Clear the chest slot
-	await clearChestSlot(chestSlot);
-
-	return true;
 }
 
 /**

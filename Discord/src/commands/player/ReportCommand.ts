@@ -12,8 +12,6 @@ import {
 	CommandReportChooseDestinationCityRes,
 	CommandReportEatInnMealRes,
 	CommandReportHomeBedRes,
-	CommandReportHomeChestDepositRes,
-	CommandReportHomeChestWithdrawRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
 	CommandReportMoveHomeRes,
@@ -1283,50 +1281,6 @@ export async function handleHomeBed(packet: CommandReportHomeBedRes, context: Pa
 		.setDescription(i18n.t("commands:report.city.homes.bed.restDescription", {
 			lng,
 			health: packet.health
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
-	});
-}
-
-export async function handleHomeChestDeposit(packet: CommandReportHomeChestDepositRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.chest.depositTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.chest.depositDescription", {
-			lng,
-			category: i18n.t(`commands:report.city.homes.chest.categoryNames.${packet.itemCategory}`, { lng })
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
-	});
-}
-
-export async function handleHomeChestWithdraw(packet: CommandReportHomeChestWithdrawRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.chest.withdrawTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.chest.withdrawDescription", {
-			lng,
-			category: i18n.t(`commands:report.city.homes.chest.categoryNames.${packet.itemCategory}`, { lng })
 		}));
 
 	await interaction.editReply({
