@@ -61,7 +61,9 @@ import {
 	CommandReportGardenHarvestRes,
 	CommandReportGardenPlantReq,
 	CommandReportGardenPlantRes,
-	CommandReportGardenPlantErrorRes
+	CommandReportGardenPlantErrorRes,
+	CommandReportPlantTransferReq,
+	CommandReportPlantTransferRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
@@ -98,7 +100,9 @@ import {
 } from "../utils/TannerShopItems";
 import { crowniclesInstance } from "../../index";
 import { toItemWithDetails } from "../utils/ItemUtils";
-import { HomeGardenSlots } from "../database/game/models/HomeGardenSlot";
+import {
+	HomeGardenSlot, HomeGardenSlots
+} from "../database/game/models/HomeGardenSlot";
 import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import {
@@ -360,11 +364,39 @@ export async function buildChestData(
 		object: (inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) : 1) + homeBonus.object
 	};
 
+	// Build plant data if garden is available
+	const hasGarden = homeLevel.features.gardenPlots > 0;
+	let plantStorage: ChestData["plantStorage"];
+	let playerPlantSlots: ChestData["playerPlantSlots"];
+	let plantMaxCapacity: ChestData["plantMaxCapacity"];
+
+	if (hasGarden) {
+		const homeStorage = await HomePlantStorages.getOfHome(home.id);
+		const plantSlots = await PlayerPlantSlots.getPlantSlots(player.id);
+		plantMaxCapacity = home.level;
+
+		plantStorage = homeStorage
+			.filter(s => s.quantity > 0)
+			.map(s => ({
+				plantId: s.plantId as PlantId,
+				quantity: s.quantity,
+				maxCapacity: plantMaxCapacity!
+			}));
+
+		playerPlantSlots = plantSlots.map(s => ({
+			slot: s.slot,
+			plantId: s.plantId as PlantId | 0
+		}));
+	}
+
 	return {
 		chestItems,
 		depositableItems,
 		slotsPerCategory,
-		inventoryCapacity
+		inventoryCapacity,
+		plantStorage,
+		playerPlantSlots,
+		plantMaxCapacity
 	};
 }
 
@@ -1712,15 +1744,16 @@ export async function handleGardenPlant(
 		});
 	}
 
-	// Check if the garden slot is empty
-	const gardenSlot = await HomeGardenSlots.getSlot(home.id, packet.gardenSlot);
-	if (!gardenSlot) {
-		return makePacket(CommandReportGardenPlantErrorRes, {
-			error: GardenConstants.GARDEN_ERRORS.NO_EMPTY_PLOT
-		});
+	// Check if the garden slot is empty (auto-find if -1)
+	let gardenSlot: HomeGardenSlot | null;
+	if (packet.gardenSlot === -1) {
+		gardenSlot = await HomeGardenSlots.findEmptySlot(home.id);
+	}
+	else {
+		gardenSlot = await HomeGardenSlots.getSlot(home.id, packet.gardenSlot);
 	}
 
-	if (!gardenSlot.isEmpty()) {
+	if (!gardenSlot || !gardenSlot.isEmpty()) {
 		return makePacket(CommandReportGardenPlantErrorRes, {
 			error: GardenConstants.GARDEN_ERRORS.NO_EMPTY_PLOT
 		});
@@ -1738,13 +1771,138 @@ export async function handleGardenPlant(
 	const plantId = seedSlot.plantId;
 
 	// Plant the seed
-	await HomeGardenSlots.plantSeed(home.id, packet.gardenSlot, plantId);
+	await HomeGardenSlots.plantSeed(home.id, gardenSlot.slot, plantId);
 
 	// Consume the seed
 	await PlayerPlantSlots.clearSeed(player.id);
 
 	return makePacket(CommandReportGardenPlantRes, {
 		plantId,
-		gardenSlot: packet.gardenSlot
+		gardenSlot: gardenSlot.slot
+	});
+}
+
+/**
+ * Build refreshed plant transfer data (storage + player slots) for response.
+ */
+async function buildPlantTransferResponseData(
+	homeId: number,
+	playerId: number,
+	maxCapacity: number
+): Promise<{
+	plantStorage: CommandReportPlantTransferRes["plantStorage"];
+	playerPlantSlots: CommandReportPlantTransferRes["playerPlantSlots"];
+}> {
+	const homeStorage = await HomePlantStorages.getOfHome(homeId);
+	const plantSlots = await PlayerPlantSlots.getPlantSlots(playerId);
+
+	return {
+		plantStorage: homeStorage
+			.filter(s => s.quantity > 0)
+			.map(s => ({
+				plantId: s.plantId as PlantId,
+				quantity: s.quantity,
+				maxCapacity
+			})),
+		playerPlantSlots: plantSlots.map(s => ({
+			slot: s.slot,
+			plantId: s.plantId as PlantId | 0
+		}))
+	};
+}
+
+/**
+ * Handle a plant transfer (deposit/withdraw) between player inventory and home storage.
+ */
+export async function handlePlantTransfer(
+	keycloakId: string,
+	packet: CommandReportPlantTransferReq
+): Promise<CrowniclesPacket> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	const home = player ? await Homes.getOfPlayer(player.id) : null;
+
+	if (!player || !home) {
+		return makePacket(CommandReportPlantTransferRes, {
+			success: false,
+			error: HomeConstants.PLANT_TRANSFER_ERRORS.INVALID,
+			plantStorage: [],
+			playerPlantSlots: []
+		});
+	}
+
+	const maxCapacity = home.level;
+
+	if (packet.action === HomeConstants.PLANT_TRANSFER_ACTIONS.DEPOSIT) {
+		/*
+		 * Deposit: move a plant from player's inventory to home storage.
+		 * playerSlot identifies which plant slot to take from.
+		 */
+		const plantSlots = await PlayerPlantSlots.getPlantSlots(player.id);
+		const sourceSlot = plantSlots.find(s => s.slot === packet.playerSlot);
+
+		if (!sourceSlot || sourceSlot.plantId === 0) {
+			return makePacket(CommandReportPlantTransferRes, {
+				success: false,
+				error: HomeConstants.PLANT_TRANSFER_ERRORS.NOT_FOUND,
+				plantStorage: [],
+				playerPlantSlots: []
+			});
+		}
+
+		const overflow = await HomePlantStorages.addPlant(home.id, sourceSlot.plantId, 1, maxCapacity);
+		if (overflow > 0) {
+			return makePacket(CommandReportPlantTransferRes, {
+				success: false,
+				error: HomeConstants.PLANT_TRANSFER_ERRORS.STORAGE_FULL,
+				plantStorage: [],
+				playerPlantSlots: []
+			});
+		}
+
+		await PlayerPlantSlots.clearPlant(player.id, packet.playerSlot);
+	}
+	else if (packet.action === HomeConstants.PLANT_TRANSFER_ACTIONS.WITHDRAW) {
+		/*
+		 * Withdraw: move a plant from home storage to player's inventory.
+		 * plantId identifies what to withdraw, playerSlot where to put it.
+		 */
+		const storageEntry = await HomePlantStorages.getForPlant(home.id, packet.plantId);
+		if (!storageEntry || storageEntry.quantity <= 0) {
+			return makePacket(CommandReportPlantTransferRes, {
+				success: false,
+				error: HomeConstants.PLANT_TRANSFER_ERRORS.NOT_FOUND,
+				plantStorage: [],
+				playerPlantSlots: []
+			});
+		}
+
+		// Find an empty plant slot
+		const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(player.id);
+		if (!emptySlot) {
+			return makePacket(CommandReportPlantTransferRes, {
+				success: false,
+				error: HomeConstants.PLANT_TRANSFER_ERRORS.NO_EMPTY_SLOT,
+				plantStorage: [],
+				playerPlantSlots: []
+			});
+		}
+
+		await HomePlantStorages.removePlant(home.id, packet.plantId);
+		await PlayerPlantSlots.setPlant(player.id, emptySlot.slot, packet.plantId);
+	}
+	else {
+		return makePacket(CommandReportPlantTransferRes, {
+			success: false,
+			error: HomeConstants.PLANT_TRANSFER_ERRORS.INVALID,
+			plantStorage: [],
+			playerPlantSlots: []
+		});
+	}
+
+	const refreshedData = await buildPlantTransferResponseData(home.id, player.id, maxCapacity);
+
+	return makePacket(CommandReportPlantTransferRes, {
+		success: true,
+		...refreshedData
 	});
 }

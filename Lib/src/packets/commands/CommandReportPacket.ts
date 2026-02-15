@@ -7,17 +7,16 @@ import {
 } from "../../constants/HomeConstants";
 import { GardenConstants } from "../../constants/GardenConstants";
 import { ItemSlot } from "../../types/ItemSlot";
+import { PlantId } from "../../constants/PlantConstants";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
 export type { ChestAction } from "../../constants/HomeConstants";
 
 export type GardenError = typeof GardenConstants.GARDEN_ERRORS[keyof typeof GardenConstants.GARDEN_ERRORS];
 
-export type { ItemSlot };
+export type PlantTransferError = typeof HomeConstants.PLANT_TRANSFER_ERRORS[keyof typeof HomeConstants.PLANT_TRANSFER_ERRORS];
 
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandReportPacketReq extends CrowniclesPacket {
-}
+export type { ItemSlot };
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportTravelSummaryRes extends CrowniclesPacket {
@@ -363,3 +362,34 @@ export class CommandReportGardenPlantErrorRes extends CrowniclesPacket {
 	error!: GardenError;
 }
 
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportPlantTransferReq extends CrowniclesPacket {
+	/** "plantDeposit" or "plantWithdraw" */
+	action!: string;
+
+	/** The plant type to transfer */
+	plantId!: number;
+
+	/** The player slot involved (for deposit: source slot; for withdraw: target slot) */
+	playerSlot!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportPlantTransferRes extends CrowniclesPacket {
+	success!: boolean;
+
+	error?: PlantTransferError;
+
+	/** Updated plant storage after transfer */
+	plantStorage!: {
+		plantId: PlantId;
+		quantity: number;
+		maxCapacity: number;
+	}[];
+
+	/** Updated player plant slots after transfer */
+	playerPlantSlots!: {
+		slot: number;
+		plantId: PlantId | 0;
+	}[];
+}

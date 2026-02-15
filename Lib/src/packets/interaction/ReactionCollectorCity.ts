@@ -99,6 +99,22 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 				/** Max backup slots per category in the player's inventory */
 				inventoryCapacity: ChestSlotsPerCategory;
+
+				/** Plant storage in the chest (quantities per plant type) */
+				plantStorage?: {
+					plantId: PlantId;
+					quantity: number;
+					maxCapacity: number;
+				}[];
+
+				/** Player's carried plant slots */
+				playerPlantSlots?: {
+					slot: number;
+					plantId: PlantId | 0;
+				}[];
+
+				/** Maximum capacity per plant type (homeLevel * 1) */
+				plantMaxCapacity?: number;
 			};
 
 			garden?: {

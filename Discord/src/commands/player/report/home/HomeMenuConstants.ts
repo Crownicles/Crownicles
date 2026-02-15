@@ -67,6 +67,15 @@ export const HomeMenuIds = {
 	/** Back to category detail from swap menu */
 	CHEST_BACK_TO_DETAIL_PREFIX: "CHEST_BACK_DETAIL_",
 
+	/** Chest plant tab */
+	CHEST_PLANT_TAB: "CHEST_PLANT_TAB",
+
+	/** Prefix for chest plant deposit (player → home) */
+	CHEST_PLANT_DEPOSIT_PREFIX: "CHEST_PLANT_DEP_",
+
+	/** Prefix for chest plant withdraw (home → player) */
+	CHEST_PLANT_WITHDRAW_PREFIX: "CHEST_PLANT_WDR_",
+
 	// --- Garden feature ---
 	/** Garden feature menu */
 	GARDEN_MENU: "HOME_GARDEN_MENU",
