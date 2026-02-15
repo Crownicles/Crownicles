@@ -91,7 +91,8 @@ export enum ShopItemType {
 	PLANT_SLOT_EXTENSION,
 	WEEKLY_PLANT_TIER_1,
 	WEEKLY_PLANT_TIER_2,
-	WEEKLY_PLANT_TIER_3
+	WEEKLY_PLANT_TIER_3,
+	MARKET_ANALYSIS
 }
 
 export const ShopItemTypeToString: Record<ShopItemType, string> = {
@@ -118,5 +119,6 @@ export const ShopItemTypeToString: Record<ShopItemType, string> = {
 	[ShopItemType.PLANT_SLOT_EXTENSION]: "plantSlotExtension",
 	[ShopItemType.WEEKLY_PLANT_TIER_1]: "weeklyPlantTier1",
 	[ShopItemType.WEEKLY_PLANT_TIER_2]: "weeklyPlantTier2",
-	[ShopItemType.WEEKLY_PLANT_TIER_3]: "weeklyPlantTier3"
+	[ShopItemType.WEEKLY_PLANT_TIER_3]: "weeklyPlantTier3",
+	[ShopItemType.MARKET_ANALYSIS]: "marketAnalysis"
 };
