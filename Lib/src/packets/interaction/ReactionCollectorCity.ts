@@ -210,18 +210,6 @@ export class ReactionCollectorHomeMenuReaction extends ReactionCollectorReaction
 
 export class ReactionCollectorHomeBedReaction extends ReactionCollectorReaction {}
 
-export class ReactionCollectorHomeChestDepositReaction extends ReactionCollectorReaction {
-	inventorySlot!: number;
-
-	itemCategory!: ItemCategory;
-}
-
-export class ReactionCollectorHomeChestWithdrawReaction extends ReactionCollectorReaction {
-	chestSlot!: number;
-
-	itemCategory!: ItemCategory;
-}
-
 export class ReactionCollectorUpgradeItemReaction extends ReactionCollectorReaction {
 	slot!: number;
 
@@ -367,24 +355,10 @@ export class ReactionCollectorCity extends ReactionCollector {
 				itemCategory: item.category
 			})) ?? [];
 
-		const chestDepositReactions = this.data.home.owned.chest?.depositableItems.map(item =>
-			this.buildReaction(ReactionCollectorHomeChestDepositReaction, {
-				inventorySlot: item.slot,
-				itemCategory: item.category
-			})) ?? [];
-
-		const chestWithdrawReactions = this.data.home.owned.chest?.chestItems.map(item =>
-			this.buildReaction(ReactionCollectorHomeChestWithdrawReaction, {
-				chestSlot: item.slot,
-				itemCategory: item.category
-			})) ?? [];
-
 		return [
 			homeMenuReaction,
 			homeBedReaction,
-			...upgradeItemReactions,
-			...chestDepositReactions,
-			...chestWithdrawReactions
+			...upgradeItemReactions
 		];
 	}
 

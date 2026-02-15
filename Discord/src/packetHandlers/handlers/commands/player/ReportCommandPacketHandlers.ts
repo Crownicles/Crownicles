@@ -17,10 +17,6 @@ import {
 	CommandReportErrorNoMonsterRes,
 	CommandReportHomeBedAlreadyFullRes,
 	CommandReportHomeBedRes,
-	CommandReportHomeChestDepositRes,
-	CommandReportHomeChestFullRes,
-	CommandReportHomeChestInventoryFullRes,
-	CommandReportHomeChestWithdrawRes,
 	CommandReportItemCannotBeEnchantedRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
@@ -52,8 +48,6 @@ import {
 	handleChooseDestinationCity,
 	handleEatInnMeal,
 	handleHomeBed,
-	handleHomeChestDeposit,
-	handleHomeChestWithdraw,
 	handleInnRoom,
 	handleItemEnchanted,
 	handleMoveHome,
@@ -236,25 +230,5 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportHomeBedAlreadyFullRes)
 	async reportHomeBedAlreadyFullRes(context: PacketContext, _packet: CommandReportHomeBedAlreadyFullRes): Promise<void> {
 		await handleClassicError(context, "commands:report.city.homes.bed.alreadyFull");
-	}
-
-	@packetHandler(CommandReportHomeChestDepositRes)
-	async reportHomeChestDepositRes(context: PacketContext, packet: CommandReportHomeChestDepositRes): Promise<void> {
-		await handleHomeChestDeposit(packet, context);
-	}
-
-	@packetHandler(CommandReportHomeChestWithdrawRes)
-	async reportHomeChestWithdrawRes(context: PacketContext, packet: CommandReportHomeChestWithdrawRes): Promise<void> {
-		await handleHomeChestWithdraw(packet, context);
-	}
-
-	@packetHandler(CommandReportHomeChestFullRes)
-	async reportHomeChestFullRes(context: PacketContext, _packet: CommandReportHomeChestFullRes): Promise<void> {
-		await handleClassicError(context, "commands:report.city.homes.chest.errors.chestFull");
-	}
-
-	@packetHandler(CommandReportHomeChestInventoryFullRes)
-	async reportHomeChestInventoryFullRes(context: PacketContext, _packet: CommandReportHomeChestInventoryFullRes): Promise<void> {
-		await handleClassicError(context, "commands:report.city.homes.chest.errors.inventoryFull");
 	}
 }
