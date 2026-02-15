@@ -1101,6 +1101,8 @@
           "storageTitle": "{emote:city.homeUpgrades.garden} Réserve de plantes :",
           "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",
           "backToGarden": "← Retour au jardin",
+          "compostTitle": "♻️ **Compostage :**",
+          "compostLine": "• {{plantEmoji}} {{plant}} → {{materialEmoji}} {{material}}",
           "plants": {
             "1": "Herbe commune",
             "2": "Trèfle doré",
