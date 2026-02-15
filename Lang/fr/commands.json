@@ -1240,7 +1240,8 @@
       "guildXp": "Expérience de guilde",
       "resources": "Ressources",
       "utilitaries": "Utilitaires",
-      "prestige": "Prestige"
+      "prestige": "Prestige",
+      "services": "Services"
     },
     "chooseSlotTitle": "{{pseudo}}, nouvel emplacement d'inventaire",
     "chooseSlotIndication": "Choisissez un nouvel emplacement d'inventaire ou annulez :",

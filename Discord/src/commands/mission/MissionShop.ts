@@ -270,7 +270,7 @@ function buildRotationSection(packet: CommandMissionShopMarketAnalysis, lng: Lan
 	const horizonLabel = i18n.t(`commands:shop.shopItems.marketAnalysis.horizonLabels.${getHorizonLabel(packet.plantRotation.horizonIndex)}`, { lng });
 	const newPlantsList = packet.plantRotation.newPlantIds.map(plantId => {
 		const plantEmoji = CrowniclesIcons.plants[plantId] ?? "🌱";
-		const plantName = i18n.t(`commands:home.manage.garden.plants.${plantId}`, { lng });
+		const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantId}`, { lng });
 		return `${plantEmoji} ${plantName}`;
 	}).join(", ");
 
@@ -282,7 +282,7 @@ function buildRotationSection(packet: CommandMissionShopMarketAnalysis, lng: Lan
 
 	// Show forecasts for each new plant at post-rotation horizons
 	for (const forecast of packet.plantRotation.newPlantForecasts) {
-		const plantName = i18n.t(`commands:home.manage.garden.plants.${forecast.plantId}`, { lng });
+		const plantName = i18n.t(`commands:report.city.homes.garden.plants.${forecast.plantId}`, { lng });
 		const plantEmoji = CrowniclesIcons.plants[forecast.plantId] ?? "🌱";
 		text += `\n\n${plantEmoji} **${plantName}** :`;
 		for (let i = 0; i < timeHorizons.length; i++) {
@@ -330,7 +330,7 @@ function buildMarketAnalysisText(packet: CommandMissionShopMarketAnalysis, lng: 
 		if (!plant) {
 			continue;
 		}
-		const plantName = i18n.t(`commands:home.manage.garden.plants.${plantTrend.plantId}`, { lng });
+		const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantTrend.plantId}`, { lng });
 		const plantEmoji = CrowniclesIcons.plants[plantTrend.plantId] ?? "🌱";
 		text += `\n\n${plantEmoji} **${plantName}** :`;
 

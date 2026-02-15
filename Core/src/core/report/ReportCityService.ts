@@ -98,7 +98,9 @@ import {
 	getGeneralShopData,
 	getRandomItemShopItem
 } from "../utils/GeneralShopItems";
-import { getBadgeShopItem } from "../utils/StockExchangeShopItems";
+import {
+	getBadgeShopItem, getMarketAnalysisShopItem
+} from "../utils/StockExchangeShopItems";
 import {
 	getPlantSlotExtensionShopItem, getSlotExtensionShopItem
 } from "../utils/TannerShopItems";
@@ -1226,6 +1228,10 @@ export async function openStockExchange(player: Player, context: PacketContext, 
 		{
 			id: "permanentItem",
 			items: [getBadgeShopItem()]
+		},
+		{
+			id: "services",
+			items: [getMarketAnalysisShopItem()]
 		}
 	];
 
