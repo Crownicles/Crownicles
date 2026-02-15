@@ -6,8 +6,9 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import {
-	CommandEquipPacketReq, CommandEquipErrorNoItem, EquipCategoryData
+	CommandEquipPacketReq, CommandEquipErrorNoItem
 } from "../../../../Lib/src/packets/commands/CommandEquipPacket";
+import { EquipCategoryData } from "../../../../Lib/src/types/EquipCategoryData";
 import {
 	InventorySlot, InventorySlots
 } from "../../core/database/game/models/InventorySlot";
@@ -77,11 +78,12 @@ export default class EquipCommand {
 			weapon: 0, armor: 0, potion: 0, object: 0
 		};
 
+		// Subtract 1 from total slots because the equipped slot (slot 0) is not part of the reserve
 		const slotLimits = new Map<ItemCategory, number>([
-			[ItemCategory.WEAPON, inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON) + homeBonus.weapon],
-			[ItemCategory.ARMOR, inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR) + homeBonus.armor],
-			[ItemCategory.POTION, inventoryInfo.slotLimitForCategory(ItemCategory.POTION) + homeBonus.potion],
-			[ItemCategory.OBJECT, inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) + homeBonus.object]
+			[ItemCategory.WEAPON, inventoryInfo.slotLimitForCategory(ItemCategory.WEAPON) + homeBonus.weapon - 1],
+			[ItemCategory.ARMOR, inventoryInfo.slotLimitForCategory(ItemCategory.ARMOR) + homeBonus.armor - 1],
+			[ItemCategory.POTION, inventoryInfo.slotLimitForCategory(ItemCategory.POTION) + homeBonus.potion - 1],
+			[ItemCategory.OBJECT, inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) + homeBonus.object - 1]
 		]);
 
 		const categories = buildEquipCategoryData(player, inventorySlots, slotLimits);

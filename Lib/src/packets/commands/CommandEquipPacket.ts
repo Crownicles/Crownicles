@@ -1,8 +1,9 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
-import { ItemCategory } from "../../constants/ItemConstants";
-import { ItemWithDetails } from "../../types/ItemWithDetails";
+import { EquipCategoryData } from "../../types/EquipCategoryData";
+
+export type { EquipCategoryData } from "../../types/EquipCategoryData";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandEquipPacketReq extends CrowniclesPacket {
@@ -10,21 +11,6 @@ export class CommandEquipPacketReq extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandEquipErrorNoItem extends CrowniclesPacket {
-}
-
-/**
- * Data for a single inventory category in the equip menu.
- */
-export interface EquipCategoryData {
-	category: ItemCategory;
-	equippedItem: {
-		details: ItemWithDetails;
-	} | null;
-	reserveItems: {
-		slot: number;
-		details: ItemWithDetails;
-	}[];
-	maxReserveSlots: number;
 }
 
 /**
