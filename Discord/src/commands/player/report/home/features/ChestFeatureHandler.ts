@@ -1,6 +1,7 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
-	parseEmoji, StringSelectMenuBuilder, StringSelectMenuInteraction
+	Message, parseEmoji, StringSelectMenuBuilder,
+	StringSelectMenuInteraction
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -27,21 +28,23 @@ import {
 	CommandReportHomeChestActionRes
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConstants";
+import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
+import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 
 const CATEGORY_INFO: {
-	key: keyof ChestSlotsPerCategory; category: ItemCategory; translationKey: string; emoji: string;
+	key: keyof ChestSlotsPerCategory; category: ItemCategory; translationKey: string;
 }[] = [
 	{
-		key: "weapon", category: ItemCategory.WEAPON, translationKey: "weapons", emoji: "⚔️"
+		key: "weapon", category: ItemCategory.WEAPON, translationKey: "weapons"
 	},
 	{
-		key: "armor", category: ItemCategory.ARMOR, translationKey: "armors", emoji: "🛡️"
+		key: "armor", category: ItemCategory.ARMOR, translationKey: "armors"
 	},
 	{
-		key: "potion", category: ItemCategory.POTION, translationKey: "potions", emoji: "🧪"
+		key: "potion", category: ItemCategory.POTION, translationKey: "potions"
 	},
 	{
-		key: "object", category: ItemCategory.OBJECT, translationKey: "objects", emoji: "📦"
+		key: "object", category: ItemCategory.OBJECT, translationKey: "objects"
 	}
 ];
 
@@ -137,7 +140,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		for (const route of actionRoutes) {
 			if (selectedValue.startsWith(route.prefix)) {
-				await this.handleChestActionByPrefix(ctx, selectedValue, componentInteraction, nestedMenus, route.prefix, route.action);
+				await this.handleChestActionByPrefix({
+					ctx, selectedValue, componentInteraction, nestedMenus,
+					prefix: route.prefix, action: route.action
+				});
 				return true;
 			}
 		}
@@ -180,7 +186,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildItemButton(emoteIndex: number, customId: string, disabled?: boolean): ButtonBuilder {
 		return new ButtonBuilder()
-			.setEmoji(parseEmoji(DiscordConstants.CHOICE_EMOTES[emoteIndex])!)
+			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[emoteIndex])!)
 			.setCustomId(customId)
 			.setStyle(ButtonStyle.Secondary)
 			.setDisabled(disabled ?? false);
@@ -207,13 +213,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		let { emoteIndex } = params;
 
 		for (const item of params.items) {
-			if (emoteIndex >= DiscordConstants.CHOICE_EMOTES.length) {
+			if (emoteIndex >= CrowniclesIcons.choiceEmotes.length) {
 				break;
 			}
 
 			const details = this.withUnlimitedMaxValue(item.details, params.category);
 			const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, params.lng);
-			description += `\n${DiscordConstants.CHOICE_EMOTES[emoteIndex]} - ${itemDisplay}`;
+			description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${itemDisplay}`;
 
 			const button = this.buildItemButton(
 				emoteIndex,
@@ -286,29 +292,33 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		ctx: HomeFeatureHandlerContext,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		const { CrowniclesEmbed } = await import("../../../../../messages/CrowniclesEmbed");
-
 		nestedMenus.registerMenu(HomeMenuIds.CHEST_MENU, {
 			embed: new CrowniclesEmbed()
 				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
 				.setDescription(this.getSubMenuDescription(ctx)),
 			components: this.getSubMenuComponents(ctx),
-			createCollector: (menus, message) => {
-				const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-				collector.on("collect", async interaction => {
-					if (interaction.user.id !== ctx.user.id) {
-						const { sendInteractionNotForYou } = await import("../../../../../utils/ErrorUtils");
-						await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
-						return;
-					}
-
-					if (interaction.isButton()) {
-						await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
-					}
-				});
-				return collector;
-			}
+			createCollector: this.createChestCollector(ctx)
 		});
+	}
+
+	/**
+	 * Create a collector that delegates button interactions to handleSubMenuSelection.
+	 */
+	private createChestCollector(ctx: HomeFeatureHandlerContext) {
+		return (menus: CrowniclesNestedMenus, message: Message) => {
+			const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+			collector.on("collect", async interaction => {
+				if (interaction.user.id !== ctx.user.id) {
+					await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
+					return;
+				}
+
+				if (interaction.isButton()) {
+					await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
+				}
+			});
+			return collector;
+		};
 	}
 
 	/**
@@ -334,8 +344,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			ctx, catInfo, categoryChestItems, categoryDepositableItems, maxSlots, hasEmptySlots
 		);
 
-		const { CrowniclesEmbed } = await import("../../../../../messages/CrowniclesEmbed");
-
 		nestedMenus.registerMenu(menuId, {
 			embed: new CrowniclesEmbed()
 				.formatAuthor(
@@ -346,21 +354,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				)
 				.setDescription(description.text),
 			components: description.rows,
-			createCollector: (menus, message) => {
-				const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-				collector.on("collect", async interaction => {
-					if (interaction.user.id !== ctx.user.id) {
-						const { sendInteractionNotForYou } = await import("../../../../../utils/ErrorUtils");
-						await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
-						return;
-					}
-
-					if (interaction.isButton()) {
-						await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
-					}
-				});
-				return collector;
-			}
+			createCollector: this.createChestCollector(ctx)
 		});
 	}
 
@@ -387,7 +381,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		// Build header
 		let text = i18n.t("commands:report.city.homes.chest.categoryHeader", {
 			lng: ctx.lng,
-			category: i18n.t(`commands:report.city.homes.chest.categories.${catInfo.translationKey}`, { lng: ctx.lng }),
+			category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng }),
 			filled: categoryChestItems.length,
 			total: maxSlots
 		});
@@ -400,7 +394,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		text += `\n${i18n.t("commands:report.city.homes.chest.inventoryInfo", {
 			lng: ctx.lng,
-			equipped: activeItem ? "✅" : "❌",
+			equipped: activeItem ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse,
 			backupCount,
 			maxBackup
 		})}`;
@@ -438,10 +432,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	private buildWarningBanners(lng: Language, hasEmptySlots: boolean, isInventoryFull: boolean): string {
 		let text = "";
 		if (!hasEmptySlots) {
-			text += `\n\n⚠️ *${i18n.t("commands:report.city.homes.chest.chestFull", { lng })}*`;
+			text += `\n\n${CrowniclesIcons.collectors.warning} *${i18n.t("commands:report.city.homes.chest.chestFull", { lng })}*`;
 		}
 		if (isInventoryFull) {
-			text += `\n⚠️ *${i18n.t("commands:report.city.homes.chest.inventoryFullLabel", { lng })}*`;
+			text += `\n${CrowniclesIcons.collectors.warning} *${i18n.t("commands:report.city.homes.chest.inventoryFullLabel", { lng })}*`;
 		}
 		return text;
 	}
@@ -522,14 +516,14 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		return text;
 	}
 
-	private async handleChestActionByPrefix(
-		ctx: HomeFeatureHandlerContext,
-		selectedValue: string,
-		componentInteraction: ComponentInteraction,
-		nestedMenus: CrowniclesNestedMenus,
-		prefix: string,
-		action: string
-	): Promise<void> {
+	private async handleChestActionByPrefix({ ctx, selectedValue, componentInteraction, nestedMenus, prefix, action }: {
+		ctx: HomeFeatureHandlerContext;
+		selectedValue: string;
+		componentInteraction: ComponentInteraction;
+		nestedMenus: CrowniclesNestedMenus;
+		prefix: string;
+		action: string;
+	}): Promise<void> {
 		const params = this.parseChestActionParams(selectedValue, prefix);
 		await componentInteraction.deferUpdate();
 		await this.sendChestAction({
@@ -595,10 +589,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 
 		// Build swap target buttons using helper
-		for (let j = 0; j < categoryChestItems.length && j < DiscordConstants.CHOICE_EMOTES.length; j++) {
+		for (let j = 0; j < categoryChestItems.length && j < CrowniclesIcons.choiceEmotes.length; j++) {
 			const chestItem = categoryChestItems[j];
 			const details = this.withUnlimitedMaxValue(chestItem.details, catInfo.category);
-			description += `\n${DiscordConstants.CHOICE_EMOTES[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
+			description += `\n${CrowniclesIcons.choiceEmotes[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
 
 			const button = this.buildItemButton(j, `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`);
 			this.addButtonToRow(rows, button);
@@ -610,8 +604,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			.setCustomId(`${HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX}${categoryIndex}`)
 			.setStyle(ButtonStyle.Secondary));
 
-		const { CrowniclesEmbed } = await import("../../../../../messages/CrowniclesEmbed");
-
 		nestedMenus.registerMenu(menuId, {
 			embed: new CrowniclesEmbed()
 				.formatAuthor(
@@ -622,21 +614,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				)
 				.setDescription(description),
 			components: rows,
-			createCollector: (menus, message) => {
-				const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-				collector.on("collect", async interaction => {
-					if (interaction.user.id !== ctx.user.id) {
-						const { sendInteractionNotForYou } = await import("../../../../../utils/ErrorUtils");
-						await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
-						return;
-					}
-
-					if (interaction.isButton()) {
-						await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
-					}
-				});
-				return collector;
-			}
+			createCollector: this.createChestCollector(ctx)
 		});
 	}
 
@@ -710,8 +688,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			buttons.push(
 				new ButtonBuilder()
 					.setCustomId(`${HomeMenuIds.CHEST_CATEGORY_PREFIX}${i}`)
-					.setLabel(`${i18n.t(`commands:report.city.homes.chest.categories.${catInfo.translationKey}`, { lng: ctx.lng })} (${filledCount}/${maxSlots})`)
-					.setEmoji(catInfo.emoji)
+					.setLabel(`${i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })} (${filledCount}/${maxSlots})`)
+					.setEmoji(CrowniclesIcons.itemCategories[catInfo.category])
 					.setStyle(filledCount > 0 ? ButtonStyle.Primary : ButtonStyle.Secondary)
 			);
 		}

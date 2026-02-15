@@ -236,6 +236,7 @@ export const CrowniclesIcons: {
 	};
 	itemNatures: string[];
 	itemCategories: string[];
+	choiceEmotes: string[];
 	profile: {
 		displayAllBadgeEmote: string;
 	};
@@ -2539,6 +2540,17 @@ export const CrowniclesIcons: {
 		"🛡️",
 		"⚗️",
 		"🧸"
+	],
+	choiceEmotes: [
+		"1⃣",
+		"2⃣",
+		"3⃣",
+		"4⃣",
+		"5⃣",
+		"6⃣",
+		"7⃣",
+		"8⃣",
+		"9⃣"
 	],
 	profile: {
 		displayAllBadgeEmote: "🎖️"
