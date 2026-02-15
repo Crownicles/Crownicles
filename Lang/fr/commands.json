@@ -1072,9 +1072,9 @@
           "swapSection": "🔄 **Intervertir avec le coffre :**",
           "swapHeader": "🔄 **Échanger** {{item}} **avec :**",
           "depositTitle": "{{pseudo}}, objet déposé !",
-          "depositDescription": "{emote:city.homeUpgrades.chest} Vous rangez soigneusement votre {{category}} dans le coffre. Elle y sera en sécurité jusqu'à votre retour.",
+          "depositDescription": "{emote:city.homeUpgrades.chest} Vous rangez soigneusement votre {{category}} dans le coffre, à l'abri jusqu'à votre retour.",
           "withdrawTitle": "{{pseudo}}, objet récupéré !",
-          "withdrawDescription": "{emote:city.homeUpgrades.chest} Vous récupérez votre {{category}} du coffre et la rangez dans votre inventaire.",
+          "withdrawDescription": "{emote:city.homeUpgrades.chest} Vous récupérez votre {{category}} du coffre et complétez votre inventaire.",
           "errors": {
             "chestFull": "Votre coffre est plein pour cette catégorie ! Améliorez votre maison pour obtenir plus d'emplacements.",
             "inventoryFull": "Votre inventaire est plein pour cette catégorie ! Libérez de la place avant de retirer un objet du coffre."
