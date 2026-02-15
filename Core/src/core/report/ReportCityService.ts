@@ -26,7 +26,7 @@ import {
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
 import {
-	BlacksmithConstants, ItemUpgradeLevel
+	BlacksmithConstants, ItemLevel, ItemUpgradeLevel
 } from "../../../../Lib/src/constants/BlacksmithConstants";
 import {
 	getDisenchantPrice, getMaterialsPurchasePrice, getUpgradePrice
@@ -1285,7 +1285,7 @@ function resetItemFields(target: {
  */
 interface ItemPlacement {
 	itemId: number;
-	itemLevel: number;
+	itemLevel: ItemLevel;
 	itemEnchantmentId: string | null;
 }
 
@@ -1358,7 +1358,7 @@ async function processChestWithdraw(
 
 	const error = await placeItemInInventory(player, home, itemCategory, {
 		itemId: chestSlot.itemId,
-		itemLevel: chestSlot.itemLevel,
+		itemLevel: chestSlot.itemLevel as ItemLevel,
 		itemEnchantmentId: chestSlot.itemEnchantmentId
 	});
 
