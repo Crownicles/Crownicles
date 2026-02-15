@@ -1,6 +1,6 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
-	parseEmoji
+	Message, parseEmoji
 } from "discord.js";
 import { ICommand } from "../ICommand";
 import {
@@ -38,6 +38,7 @@ import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import { Language } from "../../../../Lib/src/Language";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 
 /*
  * =============================================
@@ -168,7 +169,6 @@ function buildMainMenu(ctx: EquipMenuContext): CrowniclesNestedMenu {
 			const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
 			collector.on("collect", async interaction => {
 				if (interaction.user.id !== ctx.interaction.user.id) {
-					const { sendInteractionNotForYou } = await import("../../utils/ErrorUtils");
 					await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
 					return;
 				}
@@ -207,34 +207,25 @@ function buildMainMenu(ctx: EquipMenuContext): CrowniclesNestedMenu {
  * =============================================
  */
 
-function registerCategoryMenu(
+/**
+ * Build the "equipped item" section: description text + deposit button.
+ */
+function buildEquippedSection(
 	ctx: EquipMenuContext,
-	categoryIndex: number,
-	nestedMenus: CrowniclesNestedMenus
-): void {
-	const catInfo = CATEGORY_INFO[categoryIndex];
-	const categoryData = ctx.categories.find(c => c.category === catInfo.category);
-	if (!categoryData) {
-		return;
-	}
-
-	const menuId = `${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`;
+	categoryData: EquipCategoryData,
+	catInfo: typeof CATEGORY_INFO[number],
+	rows: ActionRowBuilder<ButtonBuilder>[]
+): {
+	description: string; choiceIndex: number;
+} {
+	let description = `\n\n${i18n.t("commands:equip.equippedSection", { lng: ctx.lng })}`;
 	let choiceIndex = 0;
-	const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 
-	let description = i18n.t("commands:equip.categoryHeader", {
-		lng: ctx.lng,
-		category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })
-	});
-
-	// Equipped item section
-	description += `\n\n${i18n.t("commands:equip.equippedSection", { lng: ctx.lng })}`;
 	if (categoryData.equippedItem) {
 		const details = withUnlimitedMaxValue(categoryData.equippedItem.details, catInfo.category);
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
 		description += `\n${CrowniclesIcons.choiceEmotes[choiceIndex]} - ${itemDisplay}`;
 
-		// Deposit button — only if there's room in reserve
 		const canDeposit = categoryData.reserveItems.length < categoryData.maxReserveSlots;
 		const button = new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[choiceIndex])!)
@@ -253,13 +244,28 @@ function registerCategoryMenu(
 		description += `\n*${i18n.t("commands:equip.noEquippedItem", { lng: ctx.lng })}*`;
 	}
 
-	// Reserve items section
-	description += `\n\n${i18n.t("commands:equip.reserveSection", {
+	return {
+		description, choiceIndex
+	};
+}
+
+/**
+ * Build the "reserve items" section: description text + equip buttons.
+ */
+function buildReserveSection(
+	ctx: EquipMenuContext,
+	categoryData: EquipCategoryData,
+	catInfo: typeof CATEGORY_INFO[number],
+	rows: ActionRowBuilder<ButtonBuilder>[],
+	startChoiceIndex: number
+): string {
+	let description = `\n\n${i18n.t("commands:equip.reserveSection", {
 		lng: ctx.lng,
 		count: categoryData.reserveItems.length,
 		max: categoryData.maxReserveSlots
 	})}`;
 
+	let choiceIndex = startChoiceIndex;
 	for (const item of categoryData.reserveItems) {
 		if (choiceIndex >= CrowniclesIcons.choiceEmotes.length) {
 			break;
@@ -285,6 +291,84 @@ function registerCategoryMenu(
 		description += `\n*${i18n.t("commands:equip.noReserveItems", { lng: ctx.lng })}*`;
 	}
 
+	return description;
+}
+
+/**
+ * Create collector for category detail menu interactions.
+ */
+function createEquipCategoryCollector(
+	ctx: EquipMenuContext,
+	categoryIndex: number
+): (menus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return (menus, message) => {
+		const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+		collector.on("collect", async interaction => {
+			if (interaction.user.id !== ctx.interaction.user.id) {
+				await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
+				return;
+			}
+
+			if (!interaction.isButton()) {
+				return;
+			}
+
+			const value = interaction.customId;
+
+			if (value === EQUIP_MENU_IDS.BACK_TO_CATEGORIES) {
+				await interaction.deferUpdate();
+				refreshMainMenu(ctx, menus);
+				await menus.changeToMainMenu();
+				return;
+			}
+
+			if (value.startsWith(EQUIP_MENU_IDS.EQUIP_PREFIX)) {
+				const parts = value.replace(EQUIP_MENU_IDS.EQUIP_PREFIX, "").split("_");
+				const category = parseInt(parts[0], 10) as ItemCategory;
+				const slot = parseInt(parts[1], 10);
+				await interaction.deferUpdate();
+				await sendEquipAction({
+					ctx, action: ItemConstants.EQUIP_ACTIONS.EQUIP, itemCategory: category, slot, categoryIndex, nestedMenus: menus
+				});
+				return;
+			}
+
+			if (value.startsWith(EQUIP_MENU_IDS.DEPOSIT_PREFIX)) {
+				const category = parseInt(value.replace(EQUIP_MENU_IDS.DEPOSIT_PREFIX, ""), 10) as ItemCategory;
+				await interaction.deferUpdate();
+				await sendEquipAction({
+					ctx, action: ItemConstants.EQUIP_ACTIONS.DEPOSIT, itemCategory: category, slot: 0, categoryIndex, nestedMenus: menus
+				});
+			}
+		});
+		return collector;
+	};
+}
+
+function registerCategoryMenu(
+	ctx: EquipMenuContext,
+	categoryIndex: number,
+	nestedMenus: CrowniclesNestedMenus
+): void {
+	const catInfo = CATEGORY_INFO[categoryIndex];
+	const categoryData = ctx.categories.find(c => c.category === catInfo.category);
+	if (!categoryData) {
+		return;
+	}
+
+	const menuId = `${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`;
+	const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
+
+	let description = i18n.t("commands:equip.categoryHeader", {
+		lng: ctx.lng,
+		category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })
+	});
+
+	// Build equipped and reserve sections
+	const equipped = buildEquippedSection(ctx, categoryData, catInfo, rows);
+	description += equipped.description;
+	description += buildReserveSection(ctx, categoryData, catInfo, rows, equipped.choiceIndex);
+
 	// Back button
 	const backButton = new ButtonBuilder()
 		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
@@ -303,49 +387,7 @@ function registerCategoryMenu(
 			}), ctx.interaction.user)
 			.setDescription(description),
 		components: rows,
-		createCollector: (menus, message) => {
-			const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-			collector.on("collect", async interaction => {
-				if (interaction.user.id !== ctx.interaction.user.id) {
-					const { sendInteractionNotForYou } = await import("../../utils/ErrorUtils");
-					await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
-					return;
-				}
-
-				if (!interaction.isButton()) {
-					return;
-				}
-
-				const value = interaction.customId;
-
-				if (value === EQUIP_MENU_IDS.BACK_TO_CATEGORIES) {
-					await interaction.deferUpdate();
-					refreshMainMenu(ctx, menus);
-					await menus.changeToMainMenu();
-					return;
-				}
-
-				if (value.startsWith(EQUIP_MENU_IDS.EQUIP_PREFIX)) {
-					const parts = value.replace(EQUIP_MENU_IDS.EQUIP_PREFIX, "").split("_");
-					const category = parseInt(parts[0], 10) as ItemCategory;
-					const slot = parseInt(parts[1], 10);
-					await interaction.deferUpdate();
-					await sendEquipAction({
-						ctx, action: ItemConstants.EQUIP_ACTIONS.EQUIP, itemCategory: category, slot, categoryIndex, nestedMenus: menus
-					});
-					return;
-				}
-
-				if (value.startsWith(EQUIP_MENU_IDS.DEPOSIT_PREFIX)) {
-					const category = parseInt(value.replace(EQUIP_MENU_IDS.DEPOSIT_PREFIX, ""), 10) as ItemCategory;
-					await interaction.deferUpdate();
-					await sendEquipAction({
-						ctx, action: ItemConstants.EQUIP_ACTIONS.DEPOSIT, itemCategory: category, slot: 0, categoryIndex, nestedMenus: menus
-					});
-				}
-			});
-			return collector;
-		}
+		createCollector: createEquipCategoryCollector(ctx, categoryIndex)
 	});
 }
 
