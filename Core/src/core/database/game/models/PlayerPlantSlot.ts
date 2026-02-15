@@ -4,13 +4,9 @@ import {
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
-
-export const PLANT_SLOT_TYPE = {
-	SEED: "seed",
-	PLANT: "plant"
-} as const;
-
-export type PlantSlotType = typeof PLANT_SLOT_TYPE[keyof typeof PLANT_SLOT_TYPE];
+import {
+	PlantId, PLANT_SLOT_TYPE, PlantSlotType
+} from "../../../../../../Lib/src/constants/PlantConstants";
 
 export class PlayerPlantSlot extends Model {
 	declare readonly playerId: number;
@@ -19,7 +15,7 @@ export class PlayerPlantSlot extends Model {
 
 	declare slot: number;
 
-	declare plantId: number;
+	declare plantId: PlantId | 0;
 
 	declare updatedAt: Date;
 
