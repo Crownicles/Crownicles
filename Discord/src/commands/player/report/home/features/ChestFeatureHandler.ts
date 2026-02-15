@@ -140,26 +140,23 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			}
 		];
 
-		for (const route of actionRoutes) {
-			if (selectedValue.startsWith(route.prefix)) {
-				await this.handleChestActionByPrefix({
-					ctx,
-					selectedValue,
-					componentInteraction,
-					nestedMenus,
-					prefix: route.prefix,
-					action: route.action
-				});
-				return true;
-			}
+		const matchedRoute = actionRoutes.find(route => selectedValue.startsWith(route.prefix));
+		if (matchedRoute) {
+			await this.handleChestActionByPrefix({
+				ctx,
+				selectedValue,
+				componentInteraction,
+				nestedMenus,
+				prefix: matchedRoute.prefix,
+				action: matchedRoute.action
+			});
+			return true;
 		}
 
-		if (selectedValue.startsWith(HomeMenuIds.CHEST_CATEGORY_PREFIX)) {
-			const categoryIndex = parseInt(selectedValue.replace(HomeMenuIds.CHEST_CATEGORY_PREFIX, ""), 10);
-			if (!Number.isNaN(categoryIndex)) {
-				await this.showCategoryDetail(ctx, categoryIndex, componentInteraction, nestedMenus);
-				return true;
-			}
+		const categoryIndex = this.parsePrefixIndex(selectedValue, HomeMenuIds.CHEST_CATEGORY_PREFIX);
+		if (categoryIndex !== null) {
+			await this.showCategoryDetail(ctx, categoryIndex, componentInteraction, nestedMenus);
+			return true;
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_SWAP_SELECT_PREFIX)) {
@@ -175,6 +172,17 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Parse a numeric index from a prefixed value. Returns null if not matching or invalid.
+	 */
+	private parsePrefixIndex(value: string, prefix: string): number | null {
+		if (!value.startsWith(prefix)) {
+			return null;
+		}
+		const index = parseInt(value.replace(prefix, ""), 10);
+		return Number.isNaN(index) ? null : index;
 	}
 
 	/**
