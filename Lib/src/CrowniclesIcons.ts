@@ -2234,7 +2234,8 @@ export const CrowniclesIcons: {
 		bigGuildXp: "🌟",
 		skipMission: "🧾",
 		lovePointsValue: "🧑‍⚕️",
-		treasure: "👑"
+		treasure: "👑",
+		plantSlotExtension: "🌿"
 	},
 	badges: {
 		[Badge.BEST_V1_PLAYER]: "🏆",

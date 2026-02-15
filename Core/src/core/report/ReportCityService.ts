@@ -56,7 +56,12 @@ import {
 	CommandReportUpgradeItemMaxLevelRes,
 	CommandReportUpgradeItemMissingMaterialsRes,
 	CommandReportUpgradeItemRes,
-	ChestError
+	ChestError,
+	CommandReportGardenHarvestReq,
+	CommandReportGardenHarvestRes,
+	CommandReportGardenPlantReq,
+	CommandReportGardenPlantRes,
+	CommandReportGardenPlantErrorRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
@@ -88,9 +93,21 @@ import {
 	getRandomItemShopItem
 } from "../utils/GeneralShopItems";
 import { getBadgeShopItem } from "../utils/StockExchangeShopItems";
-import { getSlotExtensionShopItem } from "../utils/TannerShopItems";
+import {
+	getPlantSlotExtensionShopItem, getSlotExtensionShopItem
+} from "../utils/TannerShopItems";
 import { crowniclesInstance } from "../../index";
 import { toItemWithDetails } from "../utils/ItemUtils";
+import { HomeGardenSlots } from "../database/game/models/HomeGardenSlot";
+import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
+import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
+import {
+	PlantConstants, PlantId
+} from "../../../../Lib/src/constants/PlantConstants";
+import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { MaterialDataController } from "../../data/Material";
+import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 
 // Type aliases for commonly used nested types from ReactionCollectorCityData
 type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
@@ -98,6 +115,7 @@ type HomeData = ReactionCollectorCityData["home"];
 type UpgradeStationData = NonNullable<NonNullable<HomeData["owned"]>["upgradeStation"]>;
 type ChestData = NonNullable<NonNullable<HomeData["owned"]>["chest"]>;
 type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
+type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
 /**
@@ -172,15 +190,20 @@ export async function buildHomeData(
 
 	let upgradeStation;
 	let chest;
+	let garden;
 	let owned;
 	if (isHomeInCity) {
 		upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel!, player);
 		chest = await buildChestData(home!, homeLevel!, playerInventory, player);
+		garden = homeLevel!.features.gardenPlots > 0
+			? await buildGardenData(home!, homeLevel!, player)
+			: undefined;
 		owned = {
 			level: home!.level,
 			features: homeLevel!.features,
 			upgradeStation,
-			chest
+			chest,
+			garden
 		};
 	}
 
@@ -1180,27 +1203,27 @@ export async function openStockExchange(player: Player, context: PacketContext, 
 }
 
 /**
- * Open the tanner shop for the player (inventory slot extensions)
+ * Open the tanner shop for the player (inventory slot extensions + plant slot extensions)
  */
 export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	const slotExtensionItem = await getSlotExtensionShopItem(player.id);
-	if (!slotExtensionItem) {
-		// Player has all slots maxed out — just open an empty shop
-		const shopCategories: ShopCategory[] = [];
-		await ShopUtils.createAndSendShopCollector(context, response, {
-			shopCategories,
-			player,
-			logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
-		});
-		return;
-	}
+	const plantSlotExtensionItem = await getPlantSlotExtensionShopItem(player.id);
 
-	const shopCategories: ShopCategory[] = [
-		{
+	const shopCategories: ShopCategory[] = [];
+
+	if (slotExtensionItem) {
+		shopCategories.push({
 			id: "slotExtension",
 			items: [slotExtensionItem]
-		}
-	];
+		});
+	}
+
+	if (plantSlotExtensionItem) {
+		shopCategories.push({
+			id: "plantSlotExtension",
+			items: [plantSlotExtensionItem]
+		});
+	}
 
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
@@ -1509,4 +1532,219 @@ async function processChestSwap({
 	await chestSlot.save();
 
 	return null;
+}
+
+/*
+ * ========================
+ * Garden system
+ * ========================
+ */
+
+/**
+ * Build garden data for the home feature in the city collector.
+ * Calculates growth progress and storage capacity.
+ */
+export async function buildGardenData(
+	home: Home,
+	homeLevel: HomeLevel,
+	player: Player
+): Promise<GardenData> {
+	const gardenPlots = homeLevel.features.gardenPlots;
+	const earthQuality = homeLevel.features.gardenEarthQuality;
+
+	// Ensure garden slots exist
+	await HomeGardenSlots.ensureSlotsForLevel(home.id, gardenPlots);
+
+	// Ensure plant storage exists
+	await HomePlantStorages.initializeStorage(home.id);
+
+	// Load garden slots
+	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
+
+	// Build plot status
+	const plots: GardenData["plots"] = gardenSlots.map(slot => {
+		const plant = PlantConstants.getPlantById(slot.plantId as PlantId);
+		const effectiveGrowthTime = plant
+			? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality)
+			: 0;
+		const isReady = slot.isReady(effectiveGrowthTime);
+		const progress = slot.getGrowthProgress(effectiveGrowthTime);
+
+		let remainingSeconds = 0;
+		if (plant && slot.plantedAt && !isReady) {
+			const elapsed = (Date.now() - slot.plantedAt.valueOf()) / 1000;
+			remainingSeconds = Math.max(0, Math.ceil(effectiveGrowthTime - elapsed));
+		}
+
+		return {
+			slot: slot.slot,
+			plantId: slot.plantId as PlantId | 0,
+			growthProgress: progress,
+			isReady,
+			remainingSeconds
+		};
+	});
+
+	// Build plant storage data
+	const storageEntries = await HomePlantStorages.getOfHome(home.id);
+	const maxCapacity = home.level;
+	const plantStorage: GardenData["plantStorage"] = storageEntries.map(entry => ({
+		plantId: entry.plantId as PlantId,
+		quantity: entry.quantity,
+		maxCapacity
+	}));
+
+	// Get player's seed
+	await PlayerPlantSlots.initializeSlots(player.id, 1);
+	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
+	const hasSeed = seedSlot !== null && seedSlot.plantId !== 0;
+
+	return {
+		plots,
+		plantStorage,
+		hasSeed,
+		seedPlantId: seedSlot?.plantId ?? 0,
+		totalPlots: gardenPlots
+	};
+}
+
+/**
+ * Handle garden harvest — collect all ready plants from the garden
+ */
+export async function handleGardenHarvest(
+	keycloakId: string,
+	_packet: CommandReportGardenHarvestReq
+): Promise<CrowniclesPacket> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	const home = player ? await Homes.getOfPlayer(player.id) : null;
+	const homeLevel = home?.getLevel();
+
+	if (!player || !home || !homeLevel) {
+		return makePacket(CommandReportGardenPlantErrorRes, {
+			error: GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS
+		});
+	}
+
+	const earthQuality = homeLevel.features.gardenEarthQuality;
+	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
+	const maxCapacity = home.level;
+
+	let plantsHarvested = 0;
+	let plantsDestroyed = 0;
+
+	for (const slot of gardenSlots) {
+		if (slot.isEmpty()) {
+			continue;
+		}
+
+		const plant = PlantConstants.getPlantById(slot.plantId as PlantId);
+		if (!plant) {
+			continue;
+		}
+
+		const effectiveGrowthTime = GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality);
+		if (!slot.isReady(effectiveGrowthTime)) {
+			continue;
+		}
+
+		// Try to store the plant in the chest
+		const overflow = await HomePlantStorages.addPlant(home.id, slot.plantId, 1, maxCapacity);
+
+		if (overflow > 0) {
+			plantsDestroyed += overflow;
+		}
+		else {
+			plantsHarvested++;
+		}
+
+		// Reset the growth timer (plant regrows automatically)
+		await HomeGardenSlots.resetGrowthTimer(home.id, slot.slot);
+	}
+
+	// Award materials for destroyed plants (1 material per 5 destroyed)
+	let materialsReceived = 0;
+	if (plantsDestroyed >= PlantConstants.DESTROYED_PLANTS_PER_MATERIAL) {
+		materialsReceived = Math.floor(plantsDestroyed / PlantConstants.DESTROYED_PLANTS_PER_MATERIAL);
+		const rarities = [
+			MaterialRarity.COMMON,
+			MaterialRarity.UNCOMMON,
+			MaterialRarity.RARE
+		];
+
+		for (let i = 0; i < materialsReceived; i++) {
+			const rarity = RandomUtils.crowniclesRandom.pick(rarities);
+			const randomMaterial = MaterialDataController.instance.getRandomMaterialFromRarity(rarity);
+			if (randomMaterial) {
+				await Materials.giveMaterial(player.id, parseInt(randomMaterial.id, 10), 1);
+			}
+		}
+	}
+
+	return makePacket(CommandReportGardenHarvestRes, {
+		plantsHarvested,
+		plantsDestroyed,
+		materialsReceived
+	});
+}
+
+/**
+ * Handle garden plant — plant a seed in a specific garden plot
+ */
+export async function handleGardenPlant(
+	keycloakId: string,
+	packet: CommandReportGardenPlantReq
+): Promise<CrowniclesPacket> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	const home = player ? await Homes.getOfPlayer(player.id) : null;
+	const homeLevel = home?.getLevel();
+
+	if (!player || !home || !homeLevel) {
+		return makePacket(CommandReportGardenPlantErrorRes, {
+			error: GardenConstants.GARDEN_ERRORS.NO_SEED
+		});
+	}
+
+	// Check if player has a seed
+	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
+	if (!seedSlot || seedSlot.plantId === 0) {
+		return makePacket(CommandReportGardenPlantErrorRes, {
+			error: GardenConstants.GARDEN_ERRORS.NO_SEED
+		});
+	}
+
+	// Check if the garden slot is empty
+	const gardenSlot = await HomeGardenSlots.getSlot(home.id, packet.gardenSlot);
+	if (!gardenSlot) {
+		return makePacket(CommandReportGardenPlantErrorRes, {
+			error: GardenConstants.GARDEN_ERRORS.NO_EMPTY_PLOT
+		});
+	}
+
+	if (!gardenSlot.isEmpty()) {
+		return makePacket(CommandReportGardenPlantErrorRes, {
+			error: GardenConstants.GARDEN_ERRORS.NO_EMPTY_PLOT
+		});
+	}
+
+	// Check if the plant type is already planted in another slot
+	const allGardenSlots = await HomeGardenSlots.getOfHome(home.id);
+	const alreadyPlanted = allGardenSlots.some(s => s.plantId === seedSlot.plantId);
+	if (alreadyPlanted) {
+		return makePacket(CommandReportGardenPlantErrorRes, {
+			error: GardenConstants.GARDEN_ERRORS.SEED_ALREADY_PLANTED
+		});
+	}
+
+	const plantId = seedSlot.plantId;
+
+	// Plant the seed
+	await HomeGardenSlots.plantSeed(home.id, packet.gardenSlot, plantId);
+
+	// Consume the seed
+	await PlayerPlantSlots.clearSeed(player.id);
+
+	return makePacket(CommandReportGardenPlantRes, {
+		plantId,
+		gardenSlot: packet.gardenSlot
+	});
 }

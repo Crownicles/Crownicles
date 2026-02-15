@@ -65,5 +65,21 @@ export const HomeMenuIds = {
 	CHEST_SWAP_MENU_PREFIX: "CHEST_SWAP_MENU_",
 
 	/** Back to category detail from swap menu */
-	CHEST_BACK_TO_DETAIL_PREFIX: "CHEST_BACK_DETAIL_"
+	CHEST_BACK_TO_DETAIL_PREFIX: "CHEST_BACK_DETAIL_",
+
+	// --- Garden feature ---
+	/** Garden feature menu */
+	GARDEN_MENU: "HOME_GARDEN_MENU",
+
+	/** Harvest all ready plants */
+	GARDEN_HARVEST: "GARDEN_HARVEST",
+
+	/** Prefix for planting in a specific slot */
+	GARDEN_PLANT_PREFIX: "GARDEN_PLANT_",
+
+	/** View plant storage */
+	GARDEN_STORAGE: "GARDEN_STORAGE",
+
+	/** Back to garden from storage */
+	GARDEN_BACK: "GARDEN_BACK"
 } as const;

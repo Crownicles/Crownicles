@@ -15,6 +15,7 @@ import {
 } from "../../types/HomeFeatures";
 import { MaterialRarity } from "../../types/MaterialRarity";
 import { ItemSlot } from "../../types/ItemSlot";
+import { PlantId } from "../../constants/PlantConstants";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -98,6 +99,36 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 				/** Max backup slots per category in the player's inventory */
 				inventoryCapacity: ChestSlotsPerCategory;
+			};
+
+			garden?: {
+
+				/** Garden plot status */
+				plots: {
+					slot: number;
+					plantId: PlantId | 0;
+					growthProgress: number;
+					isReady: boolean;
+
+					/** Remaining seconds until ready, 0 if ready */
+					remainingSeconds: number;
+				}[];
+
+				/** Plant storage (chest) quantities per plant type */
+				plantStorage: {
+					plantId: PlantId;
+					quantity: number;
+					maxCapacity: number;
+				}[];
+
+				/** Whether the player has a seed to plant */
+				hasSeed: boolean;
+
+				/** The seed plant type the player is carrying (0 if none) */
+				seedPlantId: number;
+
+				/** Total garden plots available */
+				totalPlots: number;
 			};
 		};
 		manage?: {
@@ -228,6 +259,14 @@ export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionColle
 	itemCategory!: ItemCategory;
 }
 
+/** Reaction for harvesting all ready plants from the garden */
+export class ReactionCollectorGardenHarvestReaction extends ReactionCollectorReaction {}
+
+/** Reaction for planting a seed in a garden plot */
+export class ReactionCollectorGardenPlantReaction extends ReactionCollectorReaction {
+	gardenSlot!: number;
+}
+
 /**
  * Union type for all city reactions
  */
@@ -245,7 +284,9 @@ type CityReaction =
 	| ReactionCollectorUpgradeItemReaction
 	| ReactionCollectorBlacksmithMenuReaction
 	| ReactionCollectorBlacksmithUpgradeReaction
-	| ReactionCollectorBlacksmithDisenchantReaction;
+	| ReactionCollectorBlacksmithDisenchantReaction
+	| ReactionCollectorGardenHarvestReaction
+	| ReactionCollectorGardenPlantReaction;
 
 /**
  * Packet type for the city reaction collector
@@ -347,11 +388,43 @@ export class ReactionCollectorCity extends ReactionCollector {
 				itemCategory: item.category
 			})) ?? [];
 
+		const gardenReactions = this.buildGardenReactions();
+
 		return [
 			homeMenuReaction,
 			homeBedReaction,
-			...upgradeItemReactions
+			...upgradeItemReactions,
+			...gardenReactions
 		];
+	}
+
+	private buildGardenReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		const garden = this.data.home.owned?.garden;
+		if (!garden) {
+			return [];
+		}
+
+		const reactions: {
+			type: string; data: ReactionCollectorReaction;
+		}[] = [];
+
+		// Harvest reaction (always available if garden exists)
+		reactions.push(this.buildReaction(ReactionCollectorGardenHarvestReaction, {}));
+
+		// Plant reactions for each empty plot (if player has a seed)
+		if (garden.hasSeed) {
+			for (const plot of garden.plots) {
+				if (plot.plantId === 0) {
+					reactions.push(this.buildReaction(ReactionCollectorGardenPlantReaction, {
+						gardenSlot: plot.slot
+					}));
+				}
+			}
+		}
+
+		return reactions;
 	}
 
 	private buildBlacksmithReactions(): {
