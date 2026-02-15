@@ -1,4 +1,6 @@
-import { HomeFeatures } from "./HomeFeatures";
+import {
+	EMPTY_SLOTS_PER_CATEGORY, HomeFeatures
+} from "./HomeFeatures";
 import { ItemRarity } from "../constants/ItemConstants";
 import { GardenEarthQuality } from "./GardenEarthQuality";
 
@@ -13,9 +15,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 0,
 		gardenEarthQuality: GardenEarthQuality.POOR,
-		inventoryBonus: {
-			weapon: 0, armor: 0, object: 0, potion: 0
-		}
+		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY
 	});
 
 	public static readonly LEVEL_2 = new HomeLevel(2, 15, 5000, {
@@ -28,9 +28,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 0,
 		gardenEarthQuality: GardenEarthQuality.POOR,
-		inventoryBonus: {
-			weapon: 0, armor: 0, object: 0, potion: 0
-		}
+		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY
 	});
 
 	public static readonly LEVEL_3 = new HomeLevel(3, 30, 20000, {
