@@ -34,6 +34,35 @@ function buildMainItemBackups(
 	}));
 }
 
+function buildPotionBackups(
+	items: InventorySlot[]
+): {
+	display: ReturnType<Potion["getDisplayPacket"]>;
+	slot: number;
+}[] {
+	return items.map(item => ({
+		display: (item.getItem() as Potion).getDisplayPacket(),
+		slot: item.slot
+	}));
+}
+
+function buildObjectBackups(
+	items: InventorySlot[],
+	maxStats: StatValues
+): {
+	display: ReturnType<ObjectItem["getDisplayPacket"]>;
+	slot: number;
+}[] {
+	return items.map(item => ({
+		display: (item.getItem() as ObjectItem).getDisplayPacket(maxStats),
+		slot: item.slot
+	}));
+}
+
+function getBackupItems(items: InventorySlot[], categoryCheck: (item: InventorySlot) => boolean): InventorySlot[] {
+	return items.filter(item => categoryCheck(item) && !item.isEquipped() && item.itemId !== 0);
+}
+
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
 		notBlocked: false,
@@ -80,14 +109,10 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 			armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId ?? undefined, maxStatsValues),
 			potion: (potion.getItem() as Potion).getDisplayPacket(),
 			object: (object.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
-			backupWeapons: buildMainItemBackups(items.filter(item => item.isWeapon() && !item.isEquipped() && item.itemId !== 0), maxStatsValues),
-			backupArmors: buildMainItemBackups(items.filter(item => item.isArmor() && !item.isEquipped() && item.itemId !== 0), maxStatsValues),
-			backupPotions: items.filter(item => item.isPotion() && !item.isEquipped() && item.itemId !== 0).map(item => ({
-				display: (item.getItem() as Potion).getDisplayPacket(), slot: item.slot
-			})),
-			backupObjects: items.filter(item => item.isObject() && !item.isEquipped() && item.itemId !== 0).map(item => ({
-				display: (item.getItem() as ObjectItem).getDisplayPacket(maxStatsValues), slot: item.slot
-			})),
+			backupWeapons: buildMainItemBackups(getBackupItems(items, item => item.isWeapon()), maxStatsValues),
+			backupArmors: buildMainItemBackups(getBackupItems(items, item => item.isArmor()), maxStatsValues),
+			backupPotions: buildPotionBackups(getBackupItems(items, item => item.isPotion())),
+			backupObjects: buildObjectBackups(getBackupItems(items, item => item.isObject()), maxStatsValues),
 			slots: {
 				weapons: invInfo.weaponSlots + homeBonus.weapon,
 				armors: invInfo.armorSlots + homeBonus.armor,
