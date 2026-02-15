@@ -39,7 +39,7 @@ export class HomeLevel {
 		craftPotionMaximumRarity: ItemRarity.EXOTIC,
 		upgradeItemMaximumRarity: ItemRarity.EXOTIC,
 		maxItemUpgradeLevel: 1,
-		gardenPlots: 10,
+		gardenPlots: 3,
 		gardenEarthQuality: GardenEarthQuality.POOR,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 0, potion: 0
@@ -54,7 +54,7 @@ export class HomeLevel {
 		craftPotionMaximumRarity: ItemRarity.RARE,
 		upgradeItemMaximumRarity: ItemRarity.RARE,
 		maxItemUpgradeLevel: 1,
-		gardenPlots: 10,
+		gardenPlots: 4,
 		gardenEarthQuality: GardenEarthQuality.POOR,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
@@ -69,7 +69,7 @@ export class HomeLevel {
 		craftPotionMaximumRarity: ItemRarity.SPECIAL,
 		upgradeItemMaximumRarity: ItemRarity.SPECIAL,
 		maxItemUpgradeLevel: 2,
-		gardenPlots: 10,
+		gardenPlots: 6,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
@@ -84,7 +84,7 @@ export class HomeLevel {
 		craftPotionMaximumRarity: ItemRarity.EPIC,
 		upgradeItemMaximumRarity: ItemRarity.EPIC,
 		maxItemUpgradeLevel: 2,
-		gardenPlots: 10,
+		gardenPlots: 8,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
