@@ -1,3 +1,5 @@
+import { getDayNumber } from "../utils/TimeUtils";
+
 /**
  * Plant type IDs for the garden system.
  * Each plant has a unique ID (1-10), a growth time, and a fallback emoji.
@@ -213,10 +215,40 @@ export abstract class PlantConstants {
 	];
 
 	/**
-	 * Get the buy price of a plant at the herbalist shop
+	 * Constants for the daily price variation of herbalist plants.
+	 * Uses a sin-based deterministic algorithm similar to the gem-to-money ratio.
 	 */
-	public static getHerbalistPrice(plant: PlantType): number {
-		return PlantConstants.HERBALIST_PRICES[plant.id - 1];
+	private static readonly HERBALIST_PRICE_VARIATION = {
+		/** Maximum variation as a fraction of the base price (±40%) */
+		RANGE_RATIO: 0.4,
+
+		/** Seed range to avoid period repetition */
+		SEED_RANGE: 1000,
+
+		/** Large multiplier for sin to produce pseudo-random behavior */
+		SIN_RANDOMIZER: 100000
+	};
+
+	/**
+	 * Get the buy price of a plant at the herbalist shop, with daily variation.
+	 * Uses a sin-based deterministic algorithm: prices vary ±20% daily around the base price.
+	 * Each plant varies independently thanks to the plant ID being part of the seed.
+	 * @param plant - The plant type
+	 * @param dayOffset - Number of days in the future (0 = today)
+	 */
+	public static getHerbalistPrice(plant: PlantType, dayOffset: number = 0): number {
+		const basePrice = PlantConstants.HERBALIST_PRICES[plant.id - 1];
+		const {
+			RANGE_RATIO, SEED_RANGE, SIN_RANDOMIZER
+		} = PlantConstants.HERBALIST_PRICE_VARIATION;
+
+		const frac = (x: number): number => x >= 0 ? x % 1 : 1 + x % 1;
+		const dailyFactor = frac(100 * Math.sin(SIN_RANDOMIZER * ((getDayNumber() + dayOffset) % SEED_RANGE) + plant.id));
+
+		// dailyFactor is in [0, 1), map to [-RANGE_RATIO, +RANGE_RATIO]
+		const variation = RANGE_RATIO * 2 * dailyFactor - RANGE_RATIO;
+
+		return Math.round(basePrice * (1 + variation));
 	}
 
 	/**

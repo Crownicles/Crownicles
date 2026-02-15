@@ -1291,6 +1291,90 @@
         "name": "{{plantEmoji}} {{plantName}}",
         "info": "Une plante rare déjà cultivée, prête à être compostée ou stockée."
       },
+      "marketAnalysis": {
+        "name": "{emote:shopItems.marketAnalysis} Analyse du marché",
+        "info": "Un conseiller du marché vous remettra un rapport détaillé sur les tendances des cours de l'argent du roi et des prix des plantes pour les jours à venir.",
+        "giveTitle": "{{pseudo}}, rapport du conseiller du marché",
+        "intro": "Le conseiller ajuste ses lunettes et déroule un long parchemin couvert de notes et d'observations...",
+        "kingsMoneyTitle": "{emote:unitValues.money} **Cours de l'Argent du Roi :**",
+        "kingsMoney": {
+          "tomorrow": {
+            "bigDrop": "• **Demain** : Les coffres royaux se videront considérablement. Le cours va fortement chuter, les échanges seront très défavorables.",
+            "drop": "• **Demain** : Le trésorier royal prévoit un resserrement des bourses. Le cours devrait baisser.",
+            "stable": "• **Demain** : Le marché des changes ne devrait pas connaître de mouvement particulier.",
+            "rise": "• **Demain** : Des rumeurs de prospérité circulent dans les tavernes. Le cours devrait monter.",
+            "bigRise": "• **Demain** : Le roi prépare un grand festin et les coffres déborderont. Le cours sera exceptionnel !"
+          },
+          "threeDays": {
+            "bigDrop": "• **Dans 3 jours** : Une période de grande austérité s'annonce pour le royaume. Le cours chutera lourdement.",
+            "drop": "• **Dans 3 jours** : Le vent tournera légèrement en défaveur des échangeurs. Le cours devrait diminuer.",
+            "stable": "• **Dans 3 jours** : La situation restera semblable à celle d'aujourd'hui. Pas de changement notable.",
+            "rise": "• **Dans 3 jours** : Les marchands étrangers afflueront. Le cours du change sera plus avantageux.",
+            "bigRise": "• **Dans 3 jours** : Le commerce sera en plein essor et le cours atteindra des sommets !"
+          },
+          "oneWeek": {
+            "bigDrop": "• **Dans une semaine** : Le royaume traversera une crise commerciale majeure. Le cours s'effondrera.",
+            "drop": "• **Dans une semaine** : Le commerce ralentira quelque peu, entraînant une baisse du cours.",
+            "stable": "• **Dans une semaine** : Les astres indiquent une période de stabilité pour les échanges.",
+            "rise": "• **Dans une semaine** : Les caravanes marchandes apporteront richesse et abondance. Le cours montera.",
+            "bigRise": "• **Dans une semaine** : Une ère de grande prospérité approche, le cours sera exceptionnel !"
+          }
+        },
+        "plantsTitle": "🌿 **Marché des plantes :**",
+        "plants": {
+          "tomorrow": {
+            "bigDrop": "• **Demain** : Des stocks massifs de {{plantName}} arriveront sur les étals, les prix vont s'effondrer.",
+            "drop": "• **Demain** : L'offre de {{plantName}} sera un peu supérieure à la demande, les prix devraient baisser.",
+            "stable": "• **Demain** : Rien de particulier à signaler pour cette plante, les cours resteront stables.",
+            "rise": "• **Demain** : Les réserves de {{plantName}} s'amenuisent chez les herboristes, les prix vont monter.",
+            "bigRise": "• **Demain** : Une pénurie de {{plantName}} se profile, les prix vont flamber !"
+          },
+          "threeDays": {
+            "bigDrop": "• **Dans 3 jours** : Le marché sera inondé de {{plantName}}, les prix chuteront fortement.",
+            "drop": "• **Dans 3 jours** : Une légère surproduction de {{plantName}} fera baisser les prix.",
+            "stable": "• **Dans 3 jours** : Le marché de cette plante restera équilibré.",
+            "rise": "• **Dans 3 jours** : La demande de {{plantName}} augmentera sensiblement, les prix grimperont.",
+            "bigRise": "• **Dans 3 jours** : Les herboristes peineront à trouver de la {{plantName}}, les prix exploseront !"
+          },
+          "oneWeek": {
+            "bigDrop": "• **Dans une semaine** : Une surproduction massive fera chuter les prix de la {{plantName}}.",
+            "drop": "• **Dans une semaine** : Le marché de la {{plantName}} sera légèrement en surplus.",
+            "stable": "• **Dans une semaine** : Le marché de cette plante devrait maintenir son équilibre actuel.",
+            "rise": "• **Dans une semaine** : Les réserves de {{plantName}} s'épuiseront, les prix augmenteront.",
+            "bigRise": "• **Dans une semaine** : Une sécheresse frappera les cultures de {{plantName}}, les prix seront au plus haut !"
+          }
+        },
+        "outro": "*Le conseiller roule le parchemin et vous le tend avec un sourire entendu.*",
+        "horizonLabels": {
+          "tomorrow": "demain",
+          "threeDays": "dans 3 jours",
+          "oneWeek": "dans une semaine"
+        },
+        "rotation": "📦 **Changement de stock** : L'herboriste renouvellera sa sélection **{{horizon}}**. Les nouvelles plantes disponibles seront : {{newPlants}}.",
+        "newPlants": {
+          "tomorrow": {
+            "bigDrop": "• **Demain** : Le prix de la {{plantName}} sera très en dessous de sa valeur habituelle, une excellente affaire !",
+            "drop": "• **Demain** : Le prix de la {{plantName}} sera légèrement en dessous du prix courant.",
+            "stable": "• **Demain** : Le prix de la {{plantName}} sera conforme à sa valeur habituelle.",
+            "rise": "• **Demain** : Le prix de la {{plantName}} sera un peu élevé par rapport à la normale.",
+            "bigRise": "• **Demain** : Le prix de la {{plantName}} sera bien au-dessus de sa valeur habituelle, mieux vaut attendre."
+          },
+          "threeDays": {
+            "bigDrop": "• **Dans 3 jours** : La {{plantName}} sera proposée à un prix très avantageux.",
+            "drop": "• **Dans 3 jours** : Le prix de la {{plantName}} sera un peu en dessous de la moyenne.",
+            "stable": "• **Dans 3 jours** : Le prix de la {{plantName}} n'aura rien de surprenant.",
+            "rise": "• **Dans 3 jours** : La {{plantName}} sera un peu plus chère que d'ordinaire.",
+            "bigRise": "• **Dans 3 jours** : La {{plantName}} coûtera bien plus cher que d'habitude."
+          },
+          "oneWeek": {
+            "bigDrop": "• **Dans une semaine** : Le prix de la {{plantName}} sera exceptionnellement bas.",
+            "drop": "• **Dans une semaine** : La {{plantName}} sera proposée à un prix légèrement réduit.",
+            "stable": "• **Dans une semaine** : Le prix de la {{plantName}} sera dans la moyenne.",
+            "rise": "• **Dans une semaine** : Le prix de la {{plantName}} sera un peu au-dessus de la normale.",
+            "bigRise": "• **Dans une semaine** : La {{plantName}} sera vendue à un prix exorbitant !"
+          }
+        }
+      },
       "dailyPotion": {
         "info": "Vous obtiendrez une potion que vous déciderez de garder ou non. Si vous l'avez déjà, elle sera jetée sans remboursement !"
       },

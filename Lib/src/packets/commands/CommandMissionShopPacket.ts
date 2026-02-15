@@ -4,6 +4,19 @@ import {
 import { BaseMission } from "../../types/CompletedMission";
 import { PetDiet } from "../../constants/PetConstants";
 import { SexTypeShort } from "../../constants/StringConstants";
+import { PlantId } from "../../constants/PlantConstants";
+
+/**
+ * Market trend indicator for the market analysis shop item.
+ * Describes price evolution relative to the current day.
+ */
+export enum MarketTrend {
+	BIG_DROP = -2,
+	DROP = -1,
+	STABLE = 0,
+	RISE = 1,
+	BIG_RISE = 2
+}
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandMissionShopPacketReq extends CrowniclesPacket {
@@ -88,4 +101,40 @@ export class CommandMissionShopAlreadyHadBadge extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandMissionShopNoPet extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandMissionShopMarketAnalysis extends CrowniclesPacket {
+	/**
+	 * King's money trends: [tomorrow, 3 days, 7 days]
+	 */
+	kingsMoneyTrends!: [MarketTrend, MarketTrend, MarketTrend];
+
+	/**
+	 * Plant price trends for each weekly plant.
+	 * Trends are null for horizons where the plant is no longer available due to weekly rotation.
+	 */
+	plantTrends!: {
+		plantId: PlantId;
+		trends: [MarketTrend | null, MarketTrend | null, MarketTrend | null];
+	}[];
+
+	/**
+	 * Info about plant rotation at a future horizon.
+	 * Only set if the weekly plant selection changes within the forecast period.
+	 * horizonIndex: 0 = tomorrow, 1 = 3 days, 2 = 7 days
+	 */
+	plantRotation?: {
+		horizonIndex: number;
+		newPlantIds: PlantId[];
+
+		/**
+		 * Forecasts for the new plants at post-rotation horizons.
+		 * Trends describe whether prices will be above (RISE/BIG_RISE) or below (DROP/BIG_DROP) average.
+		 */
+		newPlantForecasts: {
+			plantId: PlantId;
+			trends: (MarketTrend | null)[];
+		}[];
+	};
 }

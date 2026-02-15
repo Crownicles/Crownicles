@@ -50,7 +50,8 @@ export class Constants {
 			THOUSAND_POINTS: 5,
 			PET_INFORMATION: 3,
 			MISSION_SKIP: 10,
-			BADGE: 150
+			BADGE: 150,
+			MARKET_ANALYSIS: 5
 		},
 		THOUSAND_POINTS: 1000
 	};

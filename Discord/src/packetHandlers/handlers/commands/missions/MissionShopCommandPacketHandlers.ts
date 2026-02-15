@@ -3,6 +3,7 @@ import {
 	CommandMissionShopAlreadyBoughtPointsThisWeek, CommandMissionShopAlreadyHadBadge,
 	CommandMissionShopBadge,
 	CommandMissionShopKingsFavor,
+	CommandMissionShopMarketAnalysis,
 	CommandMissionShopMoney, CommandMissionShopNoMissionToSkip, CommandMissionShopNoPet,
 	CommandMissionShopPetInformation,
 	CommandMissionShopSkipMissionResult
@@ -10,7 +11,7 @@ import {
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 import {
-	handleLovePointsValueShopItem, handleMissionShopBadge, handleMissionShopKingsFavor,
+	handleLovePointsValueShopItem, handleMarketAnalysis, handleMissionShopBadge, handleMissionShopKingsFavor,
 	handleMissionShopMoney,
 	skipMissionShopResult
 } from "../../../../commands/mission/MissionShop";
@@ -59,5 +60,10 @@ export default class MissionShopCommandPacketHandlers {
 	@packetHandler(CommandMissionShopNoPet)
 	async missionShopNoPet(context: PacketContext, _packet: CommandMissionShopNoPet): Promise<void> {
 		await handleClassicError(context, "commands:missionsshop.error.noPet");
+	}
+
+	@packetHandler(CommandMissionShopMarketAnalysis)
+	async missionShopMarketAnalysis(context: PacketContext, packet: CommandMissionShopMarketAnalysis): Promise<void> {
+		await handleMarketAnalysis(packet, context);
 	}
 }

@@ -4,10 +4,12 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
+	CommandMissionShopMarketAnalysis,
 	CommandMissionShopMoney,
 	CommandMissionShopPacketReq,
 	CommandMissionShopPetInformation,
-	CommandMissionShopSkipMissionResult
+	CommandMissionShopSkipMissionResult,
+	MarketTrend
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
@@ -33,6 +35,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { Language } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { ExpeditionLocationType } from "../../../../Lib/src/constants/ExpeditionConstants";
+import { PlantConstants } from "../../../../Lib/src/constants/PlantConstants";
 
 /**
  * Get the packet to send to the server
@@ -214,6 +217,161 @@ export async function skipMissionShopResult(packet: CommandMissionShopSkipMissio
 					lng,
 					mission: MissionUtils.formatBaseMission(packet.newMission, lng)
 				})}`)
+		]
+	});
+}
+
+
+/**
+ * Get the translation key suffix for a given market trend
+ */
+function getTrendKey(trend: MarketTrend): string {
+	switch (trend) {
+		case MarketTrend.BIG_DROP:
+			return "bigDrop";
+		case MarketTrend.DROP:
+			return "drop";
+		case MarketTrend.STABLE:
+			return "stable";
+		case MarketTrend.RISE:
+			return "rise";
+		case MarketTrend.BIG_RISE:
+			return "bigRise";
+		default:
+			return "stable";
+	}
+}
+
+/**
+ * Get the horizon label translation key
+ */
+function getHorizonLabel(horizonIndex: number): string {
+	return [
+		"tomorrow",
+		"threeDays",
+		"oneWeek"
+	][horizonIndex];
+}
+
+/**
+ * Build the plant rotation notice and new plant forecasts
+ */
+function buildRotationSection(packet: CommandMissionShopMarketAnalysis, lng: Language): string {
+	if (!packet.plantRotation) {
+		return "";
+	}
+
+	const timeHorizons = [
+		"tomorrow",
+		"threeDays",
+		"oneWeek"
+	] as const;
+
+	const horizonLabel = i18n.t(`commands:shop.shopItems.marketAnalysis.horizonLabels.${getHorizonLabel(packet.plantRotation.horizonIndex)}`, { lng });
+	const newPlantsList = packet.plantRotation.newPlantIds.map(plantId => {
+		const plantEmoji = CrowniclesIcons.plants[plantId] ?? "🌱";
+		const plantName = i18n.t(`commands:home.manage.garden.plants.${plantId}`, { lng });
+		return `${plantEmoji} ${plantName}`;
+	}).join(", ");
+
+	let text = `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.rotation", {
+		lng,
+		horizon: horizonLabel,
+		newPlants: newPlantsList
+	})}`;
+
+	// Show forecasts for each new plant at post-rotation horizons
+	for (const forecast of packet.plantRotation.newPlantForecasts) {
+		const plantName = i18n.t(`commands:home.manage.garden.plants.${forecast.plantId}`, { lng });
+		const plantEmoji = CrowniclesIcons.plants[forecast.plantId] ?? "🌱";
+		text += `\n\n${plantEmoji} **${plantName}** :`;
+		for (let i = 0; i < timeHorizons.length; i++) {
+			if (forecast.trends[i] === null) {
+				continue; // Plant not available at this horizon
+			}
+			const horizon = timeHorizons[i];
+			const trendKey = getTrendKey(forecast.trends[i]!);
+			text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.newPlants.${horizon}.${trendKey}`, {
+				lng,
+				plantName,
+				plantEmoji
+			})}`;
+		}
+	}
+
+	return text;
+}
+
+/**
+ * Build the market analysis text from the packet data
+ */
+function buildMarketAnalysisText(packet: CommandMissionShopMarketAnalysis, lng: Language): string {
+	const timeHorizons = [
+		"tomorrow",
+		"threeDays",
+		"oneWeek"
+	] as const;
+
+	// Intro
+	let text = i18n.t("commands:shop.shopItems.marketAnalysis.intro", { lng });
+
+	// King's money section
+	text += `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.kingsMoneyTitle", { lng })}`;
+	for (let i = 0; i < timeHorizons.length; i++) {
+		const horizon = timeHorizons[i];
+		const trendKey = getTrendKey(packet.kingsMoneyTrends[i]);
+		text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.kingsMoney.${horizon}.${trendKey}`, { lng })}`;
+	}
+
+	// Plants section
+	text += `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.plantsTitle", { lng })}`;
+	for (const plantTrend of packet.plantTrends) {
+		const plant = PlantConstants.getPlantById(plantTrend.plantId);
+		if (!plant) {
+			continue;
+		}
+		const plantName = i18n.t(`commands:home.manage.garden.plants.${plantTrend.plantId}`, { lng });
+		const plantEmoji = CrowniclesIcons.plants[plantTrend.plantId] ?? "🌱";
+		text += `\n\n${plantEmoji} **${plantName}** :`;
+
+		// Only show trends for horizons where the plant is still available
+		for (let i = 0; i < timeHorizons.length; i++) {
+			if (plantTrend.trends[i] === null) {
+				break; // Rotation happened, no more trend data for this plant
+			}
+			const horizon = timeHorizons[i];
+			const trendKey = getTrendKey(plantTrend.trends[i]!);
+			text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.plants.${horizon}.${trendKey}`, {
+				lng,
+				plantName,
+				plantEmoji
+			})}`;
+		}
+	}
+
+	// Rotation notice and new plant forecasts if applicable
+	text += buildRotationSection(packet, lng);
+
+	// Outro
+	text += `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.outro", { lng })}`;
+
+	return text;
+}
+
+export async function handleMarketAnalysis(packet: CommandMissionShopMarketAnalysis, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+	await interaction.followUp({
+		embeds: [
+			new CrowniclesEmbed()
+				.formatAuthor(i18n.t("commands:shop.shopItems.marketAnalysis.giveTitle", {
+					lng,
+					pseudo: escapeUsername(interaction.user.displayName)
+				}), interaction.user)
+				.setDescription(buildMarketAnalysisText(packet, lng))
 		]
 	});
 }
