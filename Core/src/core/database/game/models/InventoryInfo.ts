@@ -27,6 +27,8 @@ export class InventoryInfo extends Model {
 
 	declare objectSlots: number;
 
+	declare plantSlots: number;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -115,6 +117,10 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: 1
 		},
 		objectSlots: {
+			type: DataTypes.INTEGER,
+			defaultValue: 1
+		},
+		plantSlots: {
 			type: DataTypes.INTEGER,
 			defaultValue: 1
 		},

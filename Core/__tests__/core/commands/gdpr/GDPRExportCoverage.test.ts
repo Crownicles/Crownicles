@@ -127,6 +127,7 @@ const EXPORTED_TABLES = {
 	"GuildPet": "14_guild_pets.csv",
 	"Material": "15_materials.csv",
 	"Home": "16_home.csv",
+	"PlayerPlantSlot": "17_plant_slots.csv",
 
 	// ============ LOGS DATABASE - Player Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersScore": "logs/15_score_history.csv",
