@@ -349,31 +349,19 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 
 				const response = responsePacket as unknown as CommandReportGardenHarvestRes;
 
-				// Update the garden data: reset ready plants
+				// Update the garden data: reset only harvested plots
 				const garden = ctx.homeData.garden!;
 				for (const plot of garden.plots) {
-					if (plot.isReady) {
-						// After harvest, the plant regrows from scratch
+					if (response.harvestedSlots.includes(plot.slot)) {
 						plot.growthProgress = 0;
 						plot.isReady = false;
-
-						// Approximate remaining seconds (will be exact on next data load)
 						const plant = PLANT_TYPES.find(p => p.id === plot.plantId);
 						plot.remainingSeconds = plant?.growthTimeSeconds ?? 0;
 					}
 				}
 
-				// Update storage counts
-				if (response.plantsHarvested > 0) {
-					for (const plot of garden.plots) {
-						if (plot.plantId !== 0) {
-							const storageEntry = garden.plantStorage.find(s => s.plantId === plot.plantId);
-							if (storageEntry) {
-								storageEntry.quantity = Math.min(storageEntry.quantity + 1, storageEntry.maxCapacity);
-							}
-						}
-					}
-				}
+				// Use refreshed storage data from Core
+				garden.plantStorage = response.plantStorage;
 
 				// Build compost notification if any plants were composted
 				let compostMessage = "";

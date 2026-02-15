@@ -343,6 +343,16 @@ export class CommandReportGardenHarvestRes extends CrowniclesPacket {
 		plantId: PlantId;
 		materialId: number;
 	}[];
+
+	/** Updated plant storage after harvest */
+	plantStorage!: {
+		plantId: PlantId;
+		quantity: number;
+		maxCapacity: number;
+	}[];
+
+	/** Slots that were harvested (reset to growing) */
+	harvestedSlots!: number[];
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
