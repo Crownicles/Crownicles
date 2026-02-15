@@ -506,15 +506,19 @@ function totalSlots(slots: ChestSlotsPerCategory): number {
 	return slots.weapon + slots.armor + slots.object + slots.potion;
 }
 
-function addNewOrUpgradeChange(changes: string[], isNew: boolean, newKey: string, upgradeKey: string, lng: Language): void {
-	changes.push(i18n.t(`commands:report.city.homes.upgradeChanges.${isNew ? newKey : upgradeKey}`, { lng }));
+function addNewOrUpgradeChange(changes: string[], isNew: boolean, keys: {
+	new: string; upgrade: string;
+}, lng: Language): void {
+	changes.push(i18n.t(`commands:report.city.homes.upgradeChanges.${isNew ? keys.new : keys.upgrade}`, { lng }));
 }
 
 const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFeatures, lng: Language): string => {
 	const changes: string[] = [];
 
 	if (hasSlotsChanged(oldFeatures.chestSlots, newFeatures.chestSlots)) {
-		addNewOrUpgradeChange(changes, totalSlots(oldFeatures.chestSlots) === 0, "chest", "biggerChest", lng);
+		addNewOrUpgradeChange(changes, totalSlots(oldFeatures.chestSlots) === 0, {
+			new: "chest", upgrade: "biggerChest"
+		}, lng);
 	}
 
 	if (hasSlotsChanged(oldFeatures.inventoryBonus, newFeatures.inventoryBonus)) {
@@ -522,11 +526,15 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 	}
 
 	if (oldFeatures.upgradeItemMaximumRarity !== newFeatures.upgradeItemMaximumRarity) {
-		addNewOrUpgradeChange(changes, oldFeatures.upgradeItemMaximumRarity === ItemRarity.BASIC, "upgradeItemStation", "betterUpgradeItemStation", lng);
+		addNewOrUpgradeChange(changes, oldFeatures.upgradeItemMaximumRarity === ItemRarity.BASIC, {
+			new: "upgradeItemStation", upgrade: "betterUpgradeItemStation"
+		}, lng);
 	}
 
 	if (oldFeatures.craftPotionMaximumRarity !== newFeatures.craftPotionMaximumRarity) {
-		addNewOrUpgradeChange(changes, oldFeatures.craftPotionMaximumRarity === ItemRarity.BASIC, "craftPotionStation", "betterCraftPotionStation", lng);
+		addNewOrUpgradeChange(changes, oldFeatures.craftPotionMaximumRarity === ItemRarity.BASIC, {
+			new: "craftPotionStation", upgrade: "betterCraftPotionStation"
+		}, lng);
 	}
 
 	if (oldFeatures.bedHealthRegeneration !== newFeatures.bedHealthRegeneration) {
@@ -534,7 +542,9 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 	}
 
 	if (oldFeatures.gardenPlots !== newFeatures.gardenPlots) {
-		addNewOrUpgradeChange(changes, oldFeatures.gardenPlots === 0, "garden", "biggerGarden", lng);
+		addNewOrUpgradeChange(changes, oldFeatures.gardenPlots === 0, {
+			new: "garden", upgrade: "biggerGarden"
+		}, lng);
 	}
 
 	if (oldFeatures.gardenEarthQuality !== newFeatures.gardenEarthQuality) {
