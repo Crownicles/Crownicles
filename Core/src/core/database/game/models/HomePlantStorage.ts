@@ -1,7 +1,9 @@
 import {
 	DataTypes, Model, Sequelize
 } from "sequelize";
-import { PlantConstants } from "../../../../../../Lib/src/constants/PlantConstants";
+import {
+	PlantConstants, PlantId
+} from "../../../../../../Lib/src/constants/PlantConstants";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -9,7 +11,7 @@ import * as moment from "moment";
 export class HomePlantStorage extends Model {
 	declare readonly homeId: number;
 
-	declare plantId: number;
+	declare plantId: PlantId;
 
 	declare quantity: number;
 

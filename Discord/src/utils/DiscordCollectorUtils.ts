@@ -78,6 +78,18 @@ export function disableRows(rows: ActionRowBuilder<MessageActionRowComponentBuil
 	});
 }
 
+/**
+ * Add a button to the last row, creating a new row if the current one is full (max 5 buttons per row).
+ * @param rows - Array of action rows to add the button to
+ * @param button - The button to add
+ */
+export function addButtonToRow(rows: ActionRowBuilder<ButtonBuilder>[], button: ButtonBuilder): void {
+	if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+		rows.push(new ActionRowBuilder<ButtonBuilder>());
+	}
+	rows[rows.length - 1].addComponents(button);
+}
+
 export abstract class DiscordCollectorUtils {
 	private static choiceListEmotes = [
 		"1⃣",

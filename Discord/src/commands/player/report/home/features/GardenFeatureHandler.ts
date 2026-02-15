@@ -27,8 +27,9 @@ import {
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import {
-	PlantConstants, PlantId, PLANT_TYPES
+	PlantId, PLANT_TYPES
 } from "../../../../../../../Lib/src/constants/PlantConstants";
+import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 
 export class GardenFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "garden";
@@ -123,11 +124,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Get the plant emoji
+	 * Get the plant emoji from CrowniclesIcons
 	 */
 	private getPlantEmoji(plantId: PlantId): string {
-		const plant = PlantConstants.getPlantById(plantId);
-		return plant?.fallbackEmote ?? "🌱";
+		return CrowniclesIcons.plants[plantId] ?? "🌱";
 	}
 
 	/**
@@ -155,8 +155,8 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				})}`;
 			}
 			else {
-				const plantName = this.getPlantName(plot.plantId as PlantId, ctx.lng);
-				const emoji = this.getPlantEmoji(plot.plantId as PlantId);
+				const plantName = this.getPlantName(plot.plantId, ctx.lng);
+				const emoji = this.getPlantEmoji(plot.plantId);
 
 				if (plot.isReady) {
 					description += `\n${i18n.t("commands:report.city.homes.garden.readyPlot", {
@@ -181,9 +181,9 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			}
 		}
 
-		if (garden.hasSeed) {
-			const seedName = this.getPlantName(garden.seedPlantId as PlantId, ctx.lng);
-			const seedEmoji = this.getPlantEmoji(garden.seedPlantId as PlantId);
+		if (garden.hasSeed && garden.seedPlantId !== 0) {
+			const seedName = this.getPlantName(garden.seedPlantId, ctx.lng);
+			const seedEmoji = this.getPlantEmoji(garden.seedPlantId);
 			description += `\n\n${i18n.t("commands:report.city.homes.garden.hasSeed", {
 				lng: ctx.lng,
 				emoji: seedEmoji,
@@ -228,30 +228,20 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 
 		// Storage button
 		const totalStored = garden.plantStorage.reduce((sum, s) => sum + s.quantity, 0);
-		if (rows[rows.length - 1].components.length >= 5) {
-			rows.push(new ActionRowBuilder<ButtonBuilder>());
-		}
-		rows[rows.length - 1].addComponents(
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.GARDEN_STORAGE)
-				.setLabel(i18n.t("commands:report.city.homes.garden.storageButton", {
-					lng: ctx.lng,
-					count: totalStored
-				}))
-				.setStyle(ButtonStyle.Secondary)
-		);
+		addButtonToRow(rows, new ButtonBuilder()
+			.setCustomId(HomeMenuIds.GARDEN_STORAGE)
+			.setLabel(i18n.t("commands:report.city.homes.garden.storageButton", {
+				lng: ctx.lng,
+				count: totalStored
+			}))
+			.setStyle(ButtonStyle.Secondary));
 
 		// Back button
-		if (rows[rows.length - 1].components.length >= 5) {
-			rows.push(new ActionRowBuilder<ButtonBuilder>());
-		}
-		rows[rows.length - 1].addComponents(
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.BACK_TO_HOME)
-				.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
-				.setEmoji(CrowniclesIcons.collectors.back)
-				.setStyle(ButtonStyle.Danger)
-		);
+		addButtonToRow(rows, new ButtonBuilder()
+			.setCustomId(HomeMenuIds.BACK_TO_HOME)
+			.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
+			.setEmoji(CrowniclesIcons.collectors.back)
+			.setStyle(ButtonStyle.Danger));
 
 		return rows;
 	}
@@ -376,7 +366,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 						const materialName = i18n.t(`models:materials.${result.materialId}`, { lng: ctx.lng });
 						compostMessage += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
 							lng: ctx.lng,
-							plantEmoji: plant?.fallbackEmote ?? "🌱",
+							plantEmoji: CrowniclesIcons.plants[result.plantId] ?? "🌱",
 							plant: plantName,
 							materialEmoji,
 							material: materialName
@@ -416,7 +406,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				const garden = ctx.homeData.garden!;
 				const plot = garden.plots.find(p => p.slot === response.gardenSlot);
 				if (plot) {
-					plot.plantId = response.plantId as PlantId;
+					plot.plantId = response.plantId;
 					plot.growthProgress = 0;
 					plot.isReady = false;
 					const plant = PLANT_TYPES.find(p => p.id === response.plantId);
