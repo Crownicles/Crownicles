@@ -13,7 +13,9 @@ import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { ItemCategory } from "../../../../../../../Lib/src/constants/ItemConstants";
 import { Language } from "../../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "../HomeMenuConstants";
-import { ChestSlotsPerCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
+import {
+	ChestSlotsPerCategory, getSlotCountForCategory
+} from "../../../../../../../Lib/src/types/HomeFeatures";
 import { MainItemDetails } from "../../../../../../../Lib/src/types/MainItemDetails";
 import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
@@ -161,16 +163,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 
 		return false;
-	}
-
-	private getCategorySlotCount(slotsPerCategory: ChestSlotsPerCategory, category: ItemCategory): number {
-		switch (category) {
-			case ItemCategory.WEAPON: return slotsPerCategory.weapon;
-			case ItemCategory.ARMOR: return slotsPerCategory.armor;
-			case ItemCategory.POTION: return slotsPerCategory.potion;
-			case ItemCategory.OBJECT: return slotsPerCategory.object;
-			default: return 0;
-		}
 	}
 
 	/**
@@ -332,7 +324,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		const categoryChestItems = chest.chestItems.filter(item => item.category === catInfo.category);
 		const categoryDepositableItems = chest.depositableItems.filter(item => item.category === catInfo.category);
-		const maxSlots = this.getCategorySlotCount(chest.slotsPerCategory, catInfo.category);
+		const maxSlots = getSlotCountForCategory(chest.slotsPerCategory, catInfo.category);
 		const hasEmptySlots = categoryChestItems.length < maxSlots;
 
 		const menuId = `${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`;
@@ -403,7 +395,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		// Inventory capacity info
 		const activeItem = categoryDepositableItems.find(item => item.slot === 0);
 		const backupCount = categoryDepositableItems.filter(item => item.slot > 0).length;
-		const maxBackup = this.getCategorySlotCount(chest.inventoryCapacity, catInfo.category);
+		const maxBackup = getSlotCountForCategory(chest.inventoryCapacity, catInfo.category);
 		const isInventoryFull = activeItem !== undefined && backupCount >= maxBackup;
 
 		text += `\n${i18n.t("commands:report.city.homes.chest.inventoryInfo", {
@@ -710,7 +702,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		for (let i = 0; i < CATEGORY_INFO.length; i++) {
 			const catInfo = CATEGORY_INFO[i];
-			const maxSlots = this.getCategorySlotCount(chest.slotsPerCategory, catInfo.category);
+			const maxSlots = getSlotCountForCategory(chest.slotsPerCategory, catInfo.category);
 			if (maxSlots === 0) {
 				continue;
 			}
