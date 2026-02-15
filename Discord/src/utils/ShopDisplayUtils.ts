@@ -448,7 +448,14 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		.setStyle(ButtonStyle.Secondary);
 
 	const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeShopButton);
-	const selectRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
+	const hasItems = categories.length > 0;
+	const components: ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>[] = [buttonRow];
+	let selectRow: ActionRowBuilder<StringSelectMenuBuilder> | undefined;
+
+	if (hasItems) {
+		selectRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
+		components.unshift(selectRow);
+	}
 
 	const embed = new CrowniclesEmbed()
 		.setTitle(i18n.t("commands:shop.title", { lng }))
@@ -460,7 +467,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 	const messagePayload = {
 		embeds: [embed],
-		components: [selectRow, buttonRow]
+		components
 	};
 
 	let msg: Message | null;
@@ -500,13 +507,15 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 		hasEnded = true;
 
-		selectRow.components[0].setDisabled(true);
+		if (selectRow) {
+			selectRow.components[0].setDisabled(true);
+		}
 
 		buttonRow.components.forEach(component => {
 			component.setDisabled(true);
 		});
 
-		await msgComponentInteraction.update({ components: [selectRow, buttonRow] });
+		await msgComponentInteraction.update({ components: selectRow ? [selectRow, buttonRow] : [buttonRow] });
 
 		if (msgComponentInteraction.customId === "closeShop") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, msgComponentInteraction, packet.reactions.findIndex(r =>
@@ -527,14 +536,16 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 	});
 
 	buttonCollector.on("end", async () => {
-		selectRow.components[0].setDisabled(true);
+		if (selectRow) {
+			selectRow.components[0].setDisabled(true);
+		}
 
 		buttonRow.components.forEach(component => {
 			component.setDisabled(true);
 		});
 
 		await msg.edit({
-			components: [selectRow, buttonRow]
+			components: selectRow ? [selectRow, buttonRow] : [buttonRow]
 		});
 	});
 
