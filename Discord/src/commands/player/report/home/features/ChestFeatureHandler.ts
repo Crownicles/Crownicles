@@ -714,20 +714,17 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const playerSlots = chest.playerPlantSlots ?? [];
 		const maxCapacity = chest.plantMaxCapacity ?? 0;
 
-		const storedCount = plantStorage.reduce((sum, s) => sum + s.quantity, 0);
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 		let emoteIndex = 0;
 
 		let description = i18n.t("commands:report.city.homes.chest.plantHeader", {
 			lng: ctx.lng,
-			stored: storedCount,
 			max: maxCapacity
 		});
 
 		// Deposit section: player plants that can be deposited to home storage
 		const depositablePlants = playerSlots.filter(s => s.plantId !== 0);
 		if (depositablePlants.length > 0) {
-			const isStorageFull = storedCount >= maxCapacity;
 			description += `\n\n${i18n.t("commands:report.city.homes.chest.plantDepositSection", { lng: ctx.lng })}`;
 
 			for (const slot of depositablePlants) {
@@ -738,13 +735,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				if (!plantType) {
 					continue;
 				}
+				const storageForType = plantStorage.find(s => s.plantId === slot.plantId);
+				const isTypeFull = (storageForType?.quantity ?? 0) >= maxCapacity;
 				const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
 				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${CrowniclesIcons.plants[plantType.id] ?? "🌱"} ${plantName}`;
 
 				const button = this.buildItemButton(
 					emoteIndex,
 					`${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${slot.plantId}_${slot.slot}`,
-					isStorageFull
+					isTypeFull
 				);
 				addButtonToRow(rows, button);
 				emoteIndex++;
@@ -766,7 +765,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 					continue;
 				}
 				const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${CrowniclesIcons.plants[plantType.id] ?? "🌱"} ${plantName} (x${stored.quantity})`;
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${CrowniclesIcons.plants[plantType.id] ?? "🌱"} ${plantName} (${stored.quantity}/${maxCapacity})`;
 
 				const button = this.buildItemButton(
 					emoteIndex,

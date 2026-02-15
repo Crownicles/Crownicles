@@ -1079,7 +1079,7 @@
             "inventoryFull": "Votre inventaire est plein pour cette catégorie ! Libérez de la place avant de retirer un objet du coffre."
           },
           "plantTabLabel": "Plantes",
-          "plantHeader": "🌱 **Plantes** — {{stored}}/{{max}} stockées",
+          "plantHeader": "🌱 **Plantes** — Max {{max}} par type",
           "plantDepositSection": "⬇️ **Déposer depuis votre inventaire :**",
           "plantWithdrawSection": "⬆️ **Retirer vers votre inventaire :**",
           "plantEmpty": "Aucune plante stockée ou transportée."
