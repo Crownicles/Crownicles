@@ -72,5 +72,11 @@
     "burnedDamage1": "Dégâts de brûlure",
     "frozenDamage1": "Dégâts de gel",
     "poisonedDamage1": "Dégâts de poison"
+  },
+  "categories": {
+    "weapons": "Armes",
+    "armors": "Armures",
+    "potions": "Potions",
+    "objects": "Objets"
   }
 }

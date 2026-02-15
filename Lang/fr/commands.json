@@ -1044,18 +1044,6 @@
           "placeholder": "Choisissez une catégorie",
           "descriptionWithItems": "{emote:city.homeUpgrades.chest} Votre coffre contient quelques objets. Sélectionnez une catégorie pour consulter son contenu ou y ranger de nouveaux objets.",
           "descriptionEmpty": "{emote:city.homeUpgrades.chest} Votre coffre est vide pour le moment. Sélectionnez une catégorie pour y ranger des objets de votre inventaire.",
-          "categories": {
-            "weapons": "Armes",
-            "armors": "Armures",
-            "potions": "Potions",
-            "objects": "Objets"
-          },
-          "categoryNames": {
-            "0": "arme",
-            "1": "armure",
-            "2": "potion",
-            "3": "objet"
-          },
           "categorySlots": "{{filled}}/{{total}} emplacements",
           "categoryHeader": "**{{category}}** — {{filled}}/{{total}} emplacements occupés",
           "inventoryInfo": "{emote:city.chestActions.inventory} Équipé : {{equipped}} | Réserve : {{backupCount}}/{{maxBackup}}",
@@ -2003,13 +1991,7 @@
     "reserveFull": "Réserve pleine",
     "noItems": "Vous n'avez aucun équipement à gérer !",
     "closeTitle": "{{pseudo}}, fermeture de l'équipement",
-    "closeDescription": "Vous avez fermé le menu d'équipement.",
-    "categories": {
-      "weapons": "Armes",
-      "armors": "Armures",
-      "potions": "Potions",
-      "objects": "Objets"
-    }
+    "closeDescription": "Vous avez fermé le menu d'équipement."
   },
   "drink": {
     "errors": {

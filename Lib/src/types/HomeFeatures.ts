@@ -25,10 +25,8 @@ export function getSlotCountForCategory(slots: ChestSlotsPerCategory, category: 
 			return slots.armor;
 		case ItemCategory.POTION:
 			return slots.potion;
-		case ItemCategory.OBJECT:
-			return slots.object;
 		default:
-			return 0;
+			return slots.object;
 	}
 }
 
