@@ -110,8 +110,6 @@ import {
 } from "../../../../Lib/src/constants/PlantConstants";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { MaterialDataController } from "../../data/Material";
-import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 
 // Type aliases for commonly used nested types from ReactionCollectorCityData
 type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
@@ -1662,7 +1660,9 @@ export async function handleGardenHarvest(
 	const maxCapacity = home.level;
 
 	let plantsHarvested = 0;
-	let plantsDestroyed = 0;
+	const compostResults: {
+		plantId: PlantId; materialId: number;
+	}[] = [];
 
 	for (const slot of gardenSlots) {
 		if (slot.isEmpty()) {
@@ -1683,7 +1683,13 @@ export async function handleGardenHarvest(
 		const overflow = await HomePlantStorages.addPlant(home.id, slot.plantId, 1, maxCapacity);
 
 		if (overflow > 0) {
-			plantsDestroyed += overflow;
+			// Plant storage is full — compost the plant into a random material from its set
+			const materialId = RandomUtils.crowniclesRandom.pick(plant.compostMaterials);
+			await Materials.giveMaterial(player.id, materialId, 1);
+			compostResults.push({
+				plantId: plant.id,
+				materialId
+			});
 		}
 		else {
 			plantsHarvested++;
@@ -1693,29 +1699,10 @@ export async function handleGardenHarvest(
 		await HomeGardenSlots.resetGrowthTimer(home.id, slot.slot);
 	}
 
-	// Award materials for destroyed plants (1 material per 5 destroyed)
-	let materialsReceived = 0;
-	if (plantsDestroyed >= PlantConstants.DESTROYED_PLANTS_PER_MATERIAL) {
-		materialsReceived = Math.floor(plantsDestroyed / PlantConstants.DESTROYED_PLANTS_PER_MATERIAL);
-		const rarities = [
-			MaterialRarity.COMMON,
-			MaterialRarity.UNCOMMON,
-			MaterialRarity.RARE
-		];
-
-		for (let i = 0; i < materialsReceived; i++) {
-			const rarity = RandomUtils.crowniclesRandom.pick(rarities);
-			const randomMaterial = MaterialDataController.instance.getRandomMaterialFromRarity(rarity);
-			if (randomMaterial) {
-				await Materials.giveMaterial(player.id, parseInt(randomMaterial.id, 10), 1);
-			}
-		}
-	}
-
 	return makePacket(CommandReportGardenHarvestRes, {
 		plantsHarvested,
-		plantsDestroyed,
-		materialsReceived
+		plantsComposted: compostResults.length,
+		compostResults
 	});
 }
 
