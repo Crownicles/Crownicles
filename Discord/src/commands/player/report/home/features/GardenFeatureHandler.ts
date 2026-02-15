@@ -426,7 +426,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 
 				// Update the garden data locally
 				const garden = ctx.homeData.garden!;
-				const plot = garden.plots.find(p => p.slot === gardenSlot);
+				const plot = garden.plots.find(p => p.slot === response.gardenSlot);
 				if (plot) {
 					plot.plantId = response.plantId as PlantId;
 					plot.growthProgress = 0;
