@@ -4,6 +4,15 @@ import {
 import { ItemCategory } from "../../constants/ItemConstants";
 import { ItemWithDetails } from "../../types/ItemWithDetails";
 import { ChestSlotsPerCategory } from "../../types/HomeFeatures";
+import { HomeConstants } from "../../constants/HomeConstants";
+
+export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
+
+export type ItemSlot = {
+	slot: number;
+	category: ItemCategory;
+	details: ItemWithDetails;
+};
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportPacketReq extends CrowniclesPacket {
@@ -300,22 +309,14 @@ export class CommandReportHomeChestActionRes extends CrowniclesPacket {
 	/** Whether the action succeeded */
 	success!: boolean;
 
-	/** Error type if failed: "chestFull", "inventoryFull", "invalid" */
-	error?: string;
+	/** Error type if failed */
+	error?: ChestError;
 
 	/** Refreshed chest items list */
-	chestItems!: {
-		slot: number;
-		category: ItemCategory;
-		details: ItemWithDetails;
-	}[];
+	chestItems!: ItemSlot[];
 
 	/** Refreshed depositable items from inventory */
-	depositableItems!: {
-		slot: number;
-		category: ItemCategory;
-		details: ItemWithDetails;
-	}[];
+	depositableItems!: ItemSlot[];
 
 	/** Slots per category (unchanged but included for completeness) */
 	slotsPerCategory!: ChestSlotsPerCategory;

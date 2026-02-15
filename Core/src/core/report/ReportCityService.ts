@@ -55,7 +55,8 @@ import {
 	CommandReportUpgradeHomeRes,
 	CommandReportUpgradeItemMaxLevelRes,
 	CommandReportUpgradeItemMissingMaterialsRes,
-	CommandReportUpgradeItemRes
+	CommandReportUpgradeItemRes,
+	ChestError
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
@@ -90,12 +91,6 @@ type UpgradeStationData = NonNullable<NonNullable<HomeData["owned"]>["upgradeSta
 type ChestData = NonNullable<NonNullable<HomeData["owned"]>["chest"]>;
 type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
-
-const CHEST_ERROR_INVALID = "invalid";
-const CHEST_ERROR_CHEST_FULL = "chestFull";
-const CHEST_ERROR_INVENTORY_FULL = "inventoryFull";
-
-type ChestError = typeof CHEST_ERROR_INVALID | typeof CHEST_ERROR_CHEST_FULL | typeof CHEST_ERROR_INVENTORY_FULL;
 
 /**
  * Build enchanter data for the city reaction collector
@@ -1207,11 +1202,11 @@ function executeChestAction(
 				itemCategory
 			});
 		default:
-			return Promise.resolve(CHEST_ERROR_INVALID);
+			return Promise.resolve(HomeConstants.CHEST_ERRORS.INVALID);
 	}
 }
 
-const INVALID_CHEST_ACTION = buildChestActionError(CHEST_ERROR_INVALID);
+const INVALID_CHEST_ACTION = buildChestActionError(HomeConstants.CHEST_ERRORS.INVALID);
 
 function buildChestActionError(error: ChestError): ChestActionResult {
 	return {
@@ -1232,12 +1227,12 @@ async function processChestDeposit(
 ): Promise<ChestError | null> {
 	const slot = await InventorySlots.getItem(player.id, inventorySlot, itemCategory);
 	if (!slot || slot.itemId === 0) {
-		return CHEST_ERROR_INVALID;
+		return HomeConstants.CHEST_ERRORS.INVALID;
 	}
 
 	const emptyChestSlot = await HomeChestSlots.findEmptySlot(home.id, itemCategory);
 	if (!emptyChestSlot) {
-		return CHEST_ERROR_CHEST_FULL;
+		return HomeConstants.CHEST_ERRORS.CHEST_FULL;
 	}
 
 	// Move item to chest
@@ -1300,7 +1295,7 @@ async function assignItemToSlot(slot: InventorySlot, item: ItemPlacement): Promi
 
 /**
  * Attempt to place an item in the player's inventory.
- * Returns null on success, CHEST_ERROR_INVENTORY_FULL if no space.
+ * Returns null on success, HomeConstants.CHEST_ERRORS.INVENTORY_FULL if no space.
  */
 async function placeItemInInventory(
 	player: Player,
@@ -1344,7 +1339,7 @@ async function placeItemInInventory(
 		return null;
 	}
 
-	return CHEST_ERROR_INVENTORY_FULL;
+	return HomeConstants.CHEST_ERRORS.INVENTORY_FULL;
 }
 
 async function processChestWithdraw(
@@ -1355,7 +1350,7 @@ async function processChestWithdraw(
 ): Promise<ChestError | null> {
 	const chestSlot = await HomeChestSlots.getSlot(home.id, chestSlotNumber, itemCategory);
 	if (!chestSlot || chestSlot.itemId === 0) {
-		return CHEST_ERROR_INVALID;
+		return HomeConstants.CHEST_ERRORS.INVALID;
 	}
 
 	const error = await placeItemInInventory(player, home, itemCategory, {
@@ -1391,12 +1386,12 @@ async function processChestSwap({
 }: ChestSwapParams): Promise<ChestError | null> {
 	const inventorySlot = await InventorySlots.getItem(player.id, inventorySlotNumber, itemCategory);
 	if (!inventorySlot || inventorySlot.itemId === 0) {
-		return CHEST_ERROR_INVALID;
+		return HomeConstants.CHEST_ERRORS.INVALID;
 	}
 
 	const chestSlot = await HomeChestSlots.getSlot(home.id, chestSlotNumber, itemCategory);
 	if (!chestSlot || chestSlot.itemId === 0) {
-		return CHEST_ERROR_INVALID;
+		return HomeConstants.CHEST_ERRORS.INVALID;
 	}
 
 	// Swap: exchange items between inventory slot and chest slot

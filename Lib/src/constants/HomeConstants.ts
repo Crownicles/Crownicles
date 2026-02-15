@@ -9,6 +9,12 @@ export abstract class HomeConstants {
 		SWAP: "swap"
 	} as const;
 
+	public static readonly CHEST_ERRORS = {
+		INVALID: "invalid",
+		CHEST_FULL: "chestFull",
+		INVENTORY_FULL: "inventoryFull"
+	} as const;
+
 	/**
 	 * Threshold for advanced upgrade level features.
 	 * Homes with maxItemUpgradeLevel >= this value get "advanced" description.
