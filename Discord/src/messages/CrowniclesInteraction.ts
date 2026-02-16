@@ -82,6 +82,24 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		// @ts-expect-error - We aim at changing the signature of the editReply function to allow it to return null
 		discordInteraction.editReply = CrowniclesInteraction.prototype.editReply.bind(discordInteraction);
 
+		/*
+		 * Make deferReply idempotent to prevent Unknown interaction errors when Core takes > 3s
+		 */
+		const originalDeferReply = discordInteraction.deferReply.bind(discordInteraction);
+
+		// @ts-expect-error - We change the return type to void since callers never use the return value
+		discordInteraction.deferReply = async (): Promise<void> => {
+			if (discordInteraction.deferred || discordInteraction.replied) {
+				return;
+			}
+			try {
+				await originalDeferReply();
+			}
+			catch (e) {
+				CrowniclesLogger.errorWithObj("Failed to defer reply (interaction likely expired)", e);
+			}
+		};
+
 		const interaction = discordInteraction as unknown as CrowniclesInteraction;
 		interaction._channel = CrowniclesChannel.cast(discordInteraction.channel as GuildTextBasedChannel);
 		if (discordInteraction.isCommand() && "options" in discordInteraction) {

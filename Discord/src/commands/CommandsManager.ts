@@ -626,6 +626,7 @@ export class CommandsManager {
 		DiscordCache.cacheInteraction(interaction);
 		const packet = await commandInfo.getPacket(interaction, user);
 		if (packet) {
+			await interaction.deferReply();
 			const context = await PacketUtils.createPacketContext(interaction, user);
 			PacketUtils.sendPacketToBackend(context, packet);
 		}
