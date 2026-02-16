@@ -159,6 +159,9 @@ class ArgumentValue {
 	 * Check if this value matches the expected type
 	 */
 	matchesType(expectedType: TypeKey): boolean {
+		if (expectedType === TypeKey.STRING) {
+			return true;
+		}
 		return this.getType() === expectedType;
 	}
 }
