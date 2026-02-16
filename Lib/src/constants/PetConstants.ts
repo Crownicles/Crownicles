@@ -312,7 +312,8 @@ export abstract class PetConstants {
 		MOOSE: 98,
 		JACK_O_LANTERN: 99,
 		GHOST: 100,
-		VAMPIRE: 101
+		VAMPIRE: 101,
+		FAIRY: 102
 	};
 
 	static readonly PET_BEHAVIORS = [
@@ -605,6 +606,10 @@ export abstract class PetConstants {
 		{
 			petIds: [PetConstants.PETS.RAT],
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.SMALL_BITE
+		},
+		{
+			petIds: [PetConstants.PETS.FAIRY],
+			behaviorId: FightConstants.FIGHT_ACTIONS.PET.FAIRY_HEAL
 		}
 	];
 
@@ -629,7 +634,8 @@ export abstract class PetConstants {
 		PetConstants.PETS.SCARLET_DUCK,
 		PetConstants.PETS.BLACK_BIRD,
 		PetConstants.PETS.RAVEN,
-		PetConstants.PETS.PHOENIX
+		PetConstants.PETS.PHOENIX,
+		PetConstants.PETS.FAIRY
 	];
 
 	static SEX = {

@@ -171,7 +171,8 @@ export abstract class FightConstants {
 				TRIES_TO_HELP: "triesToHelp",
 				UN_BLIND: "unBlind",
 				USE_TOOL: "useTool",
-				VAMPIRISM: "vampirism"
+				VAMPIRISM: "vampirism",
+				FAIRY_HEAL: "fairyHeal"
 			},
 			PLAYER: {
 				BENEDICTION: "benediction",
