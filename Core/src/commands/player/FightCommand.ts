@@ -162,7 +162,7 @@ async function calculateMoneyReward(
 		reason: NumberChangeReason.FIGHT
 	});
 
-	return extraMoneyBonus;
+	return BlessingManager.getInstance().applyMoneyBlessing(extraMoneyBonus);
 }
 
 /**

@@ -22,6 +22,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
+import { BlessingManager } from "../blessings/BlessingManager";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
@@ -173,7 +174,7 @@ function sendMonsterRewardPacket(
 	fight: FightController
 ): void {
 	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
-		money: rewards.money,
+		money: BlessingManager.getInstance().applyMoneyBlessing(rewards.money),
 		experience: rewards.xp,
 		guildXp: guildResult.guildXp,
 		guildPoints: guildResult.guildPoints,

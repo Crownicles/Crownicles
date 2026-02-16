@@ -28,6 +28,7 @@ import { giveFoodToGuild } from "../utils/FoodUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PetFood } from "../../../../Lib/src/types/PetFood";
 import { Badge } from "../../../../Lib/src/types/Badge";
+import { BlessingManager } from "../blessings/BlessingManager";
 import { PetUtils } from "../utils/PetUtils";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
@@ -133,6 +134,7 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
+			packet.amount = BlessingManager.getInstance().applyMoneyBlessing(packet.amount!);
 		}
 	},
 	[PetConstants.PET_INTERACTIONS_NAMES.WIN_TIME]: {

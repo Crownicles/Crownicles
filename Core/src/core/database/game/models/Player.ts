@@ -214,9 +214,7 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addMoney(parameters: EditValueParameters): Promise<Player> {
-		if (parameters.amount > 0) {
-			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getMoneyMultiplier());
-		}
+		parameters.amount = BlessingManager.getInstance().applyMoneyBlessing(parameters.amount);
 		this.money += parameters.amount;
 		if (parameters.amount > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
