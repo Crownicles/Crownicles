@@ -30,6 +30,7 @@ import {
 	PlantId, PLANT_TYPES
 } from "../../../../../../../Lib/src/constants/PlantConstants";
 import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
+import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
 
 export class GardenFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "garden";
@@ -346,7 +347,9 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 						plot.growthProgress = 0;
 						plot.isReady = false;
 						const plant = PLANT_TYPES.find(p => p.id === plot.plantId);
-						plot.remainingSeconds = plant?.growthTimeSeconds ?? 0;
+						plot.remainingSeconds = plant
+							? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, ctx.homeData.features.gardenEarthQuality)
+							: 0;
 					}
 				}
 
@@ -410,7 +413,9 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 					plot.growthProgress = 0;
 					plot.isReady = false;
 					const plant = PLANT_TYPES.find(p => p.id === response.plantId);
-					plot.remainingSeconds = plant?.growthTimeSeconds ?? 0;
+					plot.remainingSeconds = plant
+						? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, ctx.homeData.features.gardenEarthQuality)
+						: 0;
 				}
 
 				// Seed consumed
