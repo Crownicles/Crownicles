@@ -1051,6 +1051,15 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 			"forest"
 		],
 		disliked: ["plains", "desert"]
+	},
+
+	// Fairy - Magical creature, loves nature
+	102: {
+		liked: [
+			"forest",
+			"plains"
+		],
+		disliked: ["cave", "desert"]
 	}
 };
 

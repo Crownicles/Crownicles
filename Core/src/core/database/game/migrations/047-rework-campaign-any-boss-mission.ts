@@ -16,10 +16,15 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		  AND expiresAt IS NULL
 	`);
 
-	// Add new campaign mission at position 99 (win any boss with 1 class)
-	await addCampaignMissionList(context, [99]);
+	/*
+	 * Add new campaign missions (master has 127 missions):
+	 * - Position 99: winAnyBossWithDifferentClasses (obj=1)
+	 * - Position 129: depositPetInShelter
+	 * Original positions: [99, 128] (128 = 129 - 1 new mission before)
+	 */
+	await addCampaignMissionList(context, [99, 128]);
 
-	// Set completed campaign players to the new mission position
+	// Set completed campaign players to the first new mission position
 	await context.sequelize.query(`
 		UPDATE player_missions_info
 		SET campaignProgression = 99
@@ -37,5 +42,5 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 		  AND expiresAt IS NULL
 	`);
 
-	await removeCampaignMissionList(context, [99]);
+	await removeCampaignMissionList(context, [99, 128]);
 }

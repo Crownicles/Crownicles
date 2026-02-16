@@ -30,6 +30,7 @@ import { FightActionController } from "../fights/actions/FightActionController";
 import { MissionUtils } from "../../../../Lib/src/utils/MissionUtils";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { PetEntities } from "../database/game/models/PetEntity";
 
 type MissionInformations = {
 	missionId: string;
@@ -96,6 +97,18 @@ export abstract class MissionsController {
 				missions: MissionsController.prepareBaseMissions(completedMissions),
 				keycloakId: player.keycloakId
 			}));
+
+			// Give pet rewards from campaign missions
+			for (const mission of completedMissions) {
+				if (mission.petRewardTypeId) {
+					const pet = PetEntities.createPet(
+						mission.petRewardTypeId,
+						RandomUtils.crowniclesRandom.pick(["m", "f"]),
+						""
+					);
+					await pet.giveToPlayer(player, response);
+				}
+			}
 		}
 
 		return player;

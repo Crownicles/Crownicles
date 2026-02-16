@@ -9,6 +9,7 @@ export interface CompletedMission extends BaseMission {
 	xpToWin: number;
 	gemsToWin: number;
 	moneyToWin: number;
+	petRewardTypeId?: number;
 }
 
 export type BaseMission = {
