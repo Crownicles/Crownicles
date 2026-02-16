@@ -23,6 +23,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { GuildDailyNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildDailyNotificationPacket";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { PacketUtils } from "../../core/utils/PacketUtils";
 import {
 	commandRequires, CommandUtils
@@ -374,7 +375,7 @@ async function awardMoneyToMembers(guildLike: GuildLike, response: CrowniclesPac
 			reason: NumberChangeReason.GUILD_DAILY
 		});
 	});
-	rewardPacket.money = moneyWon;
+	rewardPacket.money = BlessingManager.getInstance().applyMoneyBlessing(moneyWon);
 	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.MONEY).then();
 }
 

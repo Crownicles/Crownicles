@@ -17,6 +17,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../database/game/models/Player";
 import { ClassKind } from "../../../../Lib/src/types/ClassKind";
+import { BlessingManager } from "../blessings/BlessingManager";
 
 /**
  * Manage the different interactions
@@ -76,6 +77,7 @@ async function managePickedInteraction(player: Player, packet: SmallEventClassPa
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
+			packet.amount = BlessingManager.getInstance().applyMoneyBlessing(packet.amount);
 			break;
 		default:
 			break;

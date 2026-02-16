@@ -19,6 +19,7 @@ import { MissionsController } from "../missions/MissionsController";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../utils/PetUtils";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
+import { BlessingManager } from "../blessings/BlessingManager";
 
 /**
  * Return true if the player has a pet AND the pet is not feisty AND the dwarf never saw this pet from it
@@ -123,7 +124,7 @@ async function manageAllPetsAreSeen(response: CrowniclesPacket[], player: Player
 	await player.save();
 	response.push(makePacket(SmallEventDwarfPetFanPacket, {
 		interactionName: SmallEventConstants.DWARF_PET_FAN.INTERACTIONS_NAMES.ALL_PETS_SEEN,
-		amount: SmallEventConstants.DWARF_PET_FAN.ALL_PETS_SEEN.MONEY_REWARD
+		amount: BlessingManager.getInstance().applyMoneyBlessing(SmallEventConstants.DWARF_PET_FAN.ALL_PETS_SEEN.MONEY_REWARD)
 	}));
 }
 

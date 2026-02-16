@@ -18,6 +18,7 @@ import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { BlessingManager } from "../blessings/BlessingManager";
 
 /**
  * Return the min rarity the player can get on an item
@@ -105,6 +106,7 @@ async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
+			packet.amount = BlessingManager.getInstance().applyMoneyBlessing(packet.amount);
 			break;
 
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.FULL_ULTIMATE_FOOD:

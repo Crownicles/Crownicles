@@ -89,6 +89,9 @@ export abstract class MissionsController {
 		const completedMissions = await MissionsController.completeAndUpdateMissions(player, missionSlots, specialMissionCompletion);
 		if (completedMissions.length !== 0) {
 			player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
+			for (const mission of completedMissions) {
+				mission.moneyToWin = BlessingManager.getInstance().applyMoneyBlessing(mission.moneyToWin);
+			}
 			response.push(makePacket(MissionsCompletedPacket, {
 				missions: MissionsController.prepareBaseMissions(completedMissions),
 				keycloakId: player.keycloakId

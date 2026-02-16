@@ -18,6 +18,7 @@ import {
 	SmallEventLotteryLosePacket, SmallEventLotteryNoAnswerPacket, SmallEventLotteryPoorPacket, SmallEventLotteryWinPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventLotteryPacket";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { BlessingManager } from "../blessings/BlessingManager";
 import {
 	Guild, Guilds
 } from "../database/game/models/Guild";
@@ -98,7 +99,7 @@ async function giveRewardToPlayer(
 				reason: NumberChangeReason.SMALL_EVENT
 			});
 			response.push(makePacket(SmallEventLotteryWinPacket, {
-				winAmount: SmallEventConstants.LOTTERY.REWARDS.MONEY * coefficient,
+				winAmount: BlessingManager.getInstance().applyMoneyBlessing(SmallEventConstants.LOTTERY.REWARDS.MONEY * coefficient),
 				lostTime,
 				level: levelKey,
 				winReward: "money"
