@@ -190,6 +190,26 @@ async function sendAltarResultEmbed(
 }
 
 export async function altarNoContribution(packet: SmallEventAltarNoContributionPacket, context: PacketContext): Promise<void> {
+	// AFK case: no buttonInteraction, use followUp on the original interaction
+	if (!context.discord?.buttonInteraction) {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+		await interaction.followUp({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"altar",
+					StringUtils.getRandomTranslation("smallEvents:altar.end", lng),
+					interaction.user,
+					lng
+				)
+			]
+		});
+		return;
+	}
+
 	await sendAltarResultEmbed(context, determineNoContributionStory(packet), {
 		amount: packet.amount,
 		moneyEmote: CrowniclesIcons.unitValues.money,
