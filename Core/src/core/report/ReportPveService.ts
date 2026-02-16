@@ -212,6 +212,10 @@ function createFightCallback(
 				const guildResult = await handlePveFightRewards(fight, player, rewards, endFightResponse);
 				sendMonsterRewardPacket(endFightResponse, rewards, guildResult, fight);
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
+				await MissionsController.update(player, endFightResponse, {
+					missionId: "winAnyBossWithDifferentClasses",
+					params: { classId: player.class }
+				});
 
 				// Only count final island bosses for the different classes mission
 				if (Maps.isAtFinalPveBoss(player)) {
