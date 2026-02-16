@@ -137,6 +137,8 @@ async function deposePetToGuild(
 	await GuildPets.addPet(guild, validation.playerPet, false).save();
 	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, null!).then();
 
+	await MissionsController.update(player, response, { missionId: "depositPetInShelter" });
+
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
 		oldPet: validation.playerPet.asOwnedPet()
 	}));

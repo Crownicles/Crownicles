@@ -1287,6 +1287,7 @@
     "guildLevel": "Faire partie d'une guilde niveau {{count, number}} ou plus",
     "haveItemRarity": "Posséder un équipement de rareté {{variantText}} ou mieux",
     "havePet": "Avoir un familier avec soi",
+    "depositPetInShelter": "Déposer ou libérer son familier",
     "petCaress": "Caresser votre familier",
     "petAssistedFight": "Se faire aider par votre familier en combat",
     "havePotions": "Posséder {{count}} potions en même temps",

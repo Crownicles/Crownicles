@@ -48,6 +48,7 @@ import {
 } from "../../core/database/game/models/GuildPet";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { MissionsController } from "../../core/missions/MissionsController";
 
 
 /**
@@ -108,6 +109,8 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 	player.petId = null;
 	player.lastPetFree = new Date();
 	await player.save();
+
+	await MissionsController.update(player, response, { missionId: "depositPetInShelter" });
 
 	let guild: Guild | null = null;
 	let luckyMeat = false;

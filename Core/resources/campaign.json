@@ -1023,6 +1023,15 @@
       "gemsToWin": 28,
       "xpToWin": 350,
       "moneyToWin": 0
+    },
+    {
+      "missionId": "depositPetInShelter",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 15,
+      "xpToWin": 300,
+      "moneyToWin": 0,
+      "petRewardTypeId": 102
     }
   ]
 }
