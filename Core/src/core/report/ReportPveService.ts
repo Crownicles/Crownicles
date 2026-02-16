@@ -213,7 +213,7 @@ function createFightCallback(
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 
 				// Only count final island bosses for the different classes mission
-				if (Maps.isAtPveExit(player)) {
+				if (Maps.isAtFinalPveBoss(player)) {
 					await MissionsController.update(player, endFightResponse, {
 						missionId: "winBossWithDifferentClasses",
 						params: { classId: player.class }

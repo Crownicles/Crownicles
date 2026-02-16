@@ -7,7 +7,8 @@ export const missionInterface: IMission = {
 		if (!saveBlob) {
 			return true;
 		}
-		return !saveBlob.toString().includes(`${params.classId}`);
+		return !saveBlob.toString().split(",")
+			.includes(`${params.classId}`);
 	},
 
 	initialNumberDone: () => 0,
