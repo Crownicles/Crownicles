@@ -3,13 +3,13 @@ import { GardenEarthQuality } from "../types/GardenEarthQuality";
 export abstract class GardenConstants {
 	/**
 	 * Growth time multiplier per earth quality.
-	 * Lower value = faster growth.
-	 * POOR = base speed, AVERAGE = 25% faster, RICH = 50% faster
+	 * Higher value = slower growth.
+	 * RICH = base speed, AVERAGE = 50% slower, POOR = 100% slower (x2 duration)
 	 */
 	public static readonly EARTH_QUALITY_MULTIPLIER: Record<GardenEarthQuality, number> = {
-		[GardenEarthQuality.POOR]: 1.0,
-		[GardenEarthQuality.AVERAGE]: 0.75,
-		[GardenEarthQuality.RICH]: 0.5
+		[GardenEarthQuality.POOR]: 2.0,
+		[GardenEarthQuality.AVERAGE]: 1.5,
+		[GardenEarthQuality.RICH]: 1.0
 	};
 
 	public static readonly GARDEN_ACTIONS = {
