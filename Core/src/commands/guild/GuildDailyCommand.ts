@@ -37,6 +37,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 const guildDailyLockManager = new LockManager();
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 
 type GuildLike = {
 	guild: Guild; members: Player[];
@@ -50,7 +51,8 @@ type FunctionRewardType = (guildLike: GuildLike, response: CrowniclesPacket[], r
  * @param rewardPacket
  */
 async function awardGuildWithNewPet(guild: Guild, rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
-	const pet = PetEntities.generateRandomPetEntity();
+	const minRarity = Math.min(ItemRarity.SPECIAL, Math.ceil(guild.level / GuildDailyConstants.PET_MIN_RARITY_LEVEL_DIVISOR));
+	const pet = PetEntities.generateRandomPetEntity(minRarity);
 	await pet.save();
 	await GuildPets.addPet(guild, pet, true).save();
 	rewardPacket.pet = {
