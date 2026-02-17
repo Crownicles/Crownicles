@@ -1226,6 +1226,11 @@
             "Los exámenes confirman una capacidad natural de absorción de energía, caracterizada por una sutil retirada de la energía contraria.",
             "Las observaciones clínicas demuestran que dispone de mecanismos de transferencia de energía, capaces de revitalizar a su amo captando la energía hostil."
           ],
+          "fairyHeal": [
+            "Ce familier émet une poudre scintillante aux propriétés régénératrices. Après quelques échanges de coups, il saupoudre ses particules magiques sur vos blessures, accélérant leur cicatrisation.",
+            "Les analyses révèlent une sécrétion lumineuse unique qui stimule la guérison naturelle. Votre familier interviendra régulièrement pour restaurer une partie de votre énergie vitale.",
+            "Ce spécimen produit une poussière enchantée aux vertus curatives remarquables. Au fil du combat, il vous enveloppera de ses particules dorées pour apaiser vos douleurs."
+          ],
           "smallBite": [
             "Sus pequeños dientes son discretos pero formidables. Al morder, corre el riesgo de provocar una infección furtiva en su adversario.",
             "Esta mascota tiene dientes finos pero penetrantes. Sus mordeduras, aunque modestas, pueden empeorar con el tiempo.",
