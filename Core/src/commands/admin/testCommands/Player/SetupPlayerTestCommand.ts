@@ -13,6 +13,7 @@ import {
 	ItemCategory, ItemRarity
 } from "../../../../../../Lib/src/constants/ItemConstants";
 import { PetDataController } from "../../../../data/Pet";
+import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
 import { crowniclesInstance } from "../../../../index";
 
@@ -75,7 +76,7 @@ const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, res
 	}
 	const maxPetId = PetDataController.instance.getMaxId();
 	const petId = RandomUtils.crowniclesRandom.integer(1, maxPetId);
-	const petSex = RandomUtils.crowniclesRandom.bool() ? "m" : "f";
+	const petSex = RandomUtils.crowniclesRandom.bool() ? PetConstants.SEX.MALE : PetConstants.SEX.FEMALE;
 	const pet = PetEntities.createPet(petId, petSex, "");
 	await pet.save();
 	player.setPet(pet);

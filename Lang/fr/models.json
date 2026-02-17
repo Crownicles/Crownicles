@@ -1345,7 +1345,7 @@
     "wealthyPayForPVEIsland": "Acheter un voyage vers une île mystérieuse au prix maximal",
     "winBoss_one": "Gagner {{count}} combat de boss",
     "winBoss_other": "Gagner {{count}} combats de boss",
-    "winAnyBossWithDifferentClasses_one": "Vaincre un boss en utilisant une classe différente",
+    "winAnyBossWithDifferentClasses_one": "Vaincre {{count}} boss",
     "winAnyBossWithDifferentClasses_other": "Vaincre des boss en utilisant {{count}} classes différentes",
     "winBossWithDifferentClasses_one": "Vaincre un boss final d'île (seul le dernier boss de chaque île compte)",
     "winBossWithDifferentClasses_other": "Vaincre des boss finaux d'îles en utilisant {{count}} classes différentes (seul le dernier boss de chaque île compte)"
@@ -1520,7 +1520,7 @@
     "100_female": "Fantôme",
     "101_male": "Vampire",
     "101_female": "Vampire",
-    "102_male": "Lutin",
+    "102_male": "Féetauds",
     "102_female": "Fée",
     "10_female": "Poule",
     "10_male": "Coq",
