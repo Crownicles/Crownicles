@@ -809,7 +809,7 @@
       "success": "é assistido por **{{petNickname}}** que suga um pouco de energia do adversário para a oferecer como tributo ao seu mestre."
     },
     "fairyHeal": {
-      "success": "est enveloppé d'une douce lueur dorée tandis que **{{petNickname}}** saupoudre de la poussière de fée sur ses blessures, lui rendant un peu d'énergie."
+      "success": "é envolvido por um suave brilho dourado enquanto **{{petNickname}}** polvilha pó de fada nas suas feridas, restaurando um pouco da sua energia."
     },
     "weak": {
       "name": "prejudicado",
@@ -1287,7 +1287,7 @@
     "guildLevel": "Fazer parte de uma guilda de nível {{count, number}} ou superior",
     "haveItemRarity": "{{variantText}} Equipamento raro ou melhor",
     "havePet": "Ter um animal de estimação consigo",
-    "depositPetInShelter": "Déposer ou libérer son familier",
+    "depositPetInShelter": "Deixar ou libertar o seu animal de estimação",
     "petCaress": "Acariciar o seu animal de estimação",
     "petAssistedFight": "Obter ajuda do seu animal de estimação em combate",
     "havePotions": "{{count}} Possuir poções ao mesmo tempo",
@@ -1345,8 +1345,8 @@
     "wealthyPayForPVEIsland": "Comprar uma viagem a uma ilha misteriosa ao preço máximo",
     "winBoss_one": "{{count}} Vencer batalha de chefe",
     "winBoss_other": "{{count}} Vencer lutas contra chefes",
-    "winAnyBossWithDifferentClasses_one": "Vaincre {{count}} boss",
-    "winAnyBossWithDifferentClasses_other": "Vaincre des boss en utilisant {{count}} classes différentes",
+    "winAnyBossWithDifferentClasses_one": "Derrotar o chefe {{count}}",
+    "winAnyBossWithDifferentClasses_other": "Derrote os chefes usando {{count}} classes diferentes",
     "winBossWithDifferentClasses_one": "Derrotar um boss da ilha final (apenas o último boss de cada ilha conta)",
     "winBossWithDifferentClasses_other": "Derrotar os chefes das ilhas finais usando {{count}} classes diferentes (apenas o último chefe de cada ilha conta)"
   },
@@ -1521,7 +1521,7 @@
     "101_male": "Vampiro",
     "101_female": "Vampiro",
     "102_male": "Féetaud",
-    "102_female": "Fée",
+    "102_female": "Fada",
     "10_female": "Galinha",
     "10_male": "Coq",
     "11_female": "Ave",
