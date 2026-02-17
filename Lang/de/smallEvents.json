@@ -2472,6 +2472,10 @@
       "Ein mystischer Windstoß umhüllt den Altar und als er sich auflöst, liegt eine unbekannte Ausrüstung auf dem Stein, die noch warm von der Magie ist. Das Orakel weist mit einem Blick darauf hin."
     ],
     "badgeAwarded": "Das Orakel markiert eine tiefe Verbeugung. Die Runen bilden ein uraltes Symbol: das Symbol des Beschützers des Orakels. Sie erhalten das Abzeichen {emote:badges.oracle_patron} als Anerkennung für Ihre Ergebenheit.",
+    "end": [
+      "Vous restez immobile, perdu dans vos pensées. L'oracle attend patiemment, puis, constatant votre absence de réaction, se détourne vers l'autel et reprend sa veille silencieuse.",
+      "Le silence s'étire entre vous et l'oracle. Celui-ci finit par baisser les mains et retourne à sa contemplation des runes, vous laissant poursuivre votre route."
+    ],
     "firstEncounter": "ein goldenes Leuchten durch den Nebel zieht Sie zu einem Steinaltar, der mit alten Runen bedeckt ist. Ein Orakel mit verschleiertem Gesicht steht regungslos vor dem Gebäude.\n\nMit einer langsamen Geste deutet es auf den Altar: Die Runen erzählen die Geschichte der Segnungen, jener uralten Kräfte, die die Reisenden erwecken können, indem sie ihre Opfergaben vereinen. Wenn der kollektive Topf seine Schwelle erreicht, ergießt sich ein Segen über alle Abenteurer der Welt und verleiht ihnen vorübergehend Macht.\n\nDas Orakel tritt näher und zeichnet mit den Fingerspitzen ein Runenzeichen auf Ihr Handgelenk. Die Haut kribbelt an den Stellen, an denen die glühenden Linien eingeritzt werden, dann lässt das Gefühl nach. Dieses Zeichen verbindet Sie nun mit den Geheimnissen des Altars. Den Status der Segnungen können Sie jederzeit mit dem Befehl {command:blessing}abrufen."
   }
 }
