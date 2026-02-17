@@ -1226,6 +1226,11 @@
             "Les examens confirment une capacité d'absorption énergétique naturelle, caractérisée par un prélèvement subtil d'énergie adverse.",
             "Les observations cliniques attestent qu'il possède des mécanismes de transfert d'énergie, capables de revitaliser son maître en captant l'énergie hostile."
           ],
+          "fairyHeal": [
+            "Ce familier émet une poudre scintillante aux propriétés régénératrices. Après quelques échanges de coups, il saupoudre ses particules magiques sur vos blessures, accélérant leur cicatrisation.",
+            "Les analyses révèlent une sécrétion lumineuse unique qui stimule la guérison naturelle. Votre familier interviendra régulièrement pour restaurer une partie de votre énergie vitale.",
+            "Ce spécimen produit une poussière enchantée aux vertus curatives remarquables. Au fil du combat, il vous enveloppera de ses particules dorées pour apaiser vos douleurs."
+          ],
           "smallBite": [
             "Ses petites dents sont discrètes mais redoutables. En mordant, il risque de provoquer une infection sournoise chez l’adversaire.",
             "Ce familier possède une dentition fine mais perçante. Ses morsures, bien que modestes, peuvent s’aggraver avec le temps.",
