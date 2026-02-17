@@ -2473,8 +2473,8 @@
     ],
     "badgeAwarded": "L'oracolo è oggetto di una profonda venerazione. Le rune formano un simbolo antico: quello del protettore dell'Oracolo. Ricevi il distintivo {emote:badges.oracle_patron} come riconoscimento della tua devozione.",
     "end": [
-      "Vous restez immobile, perdu dans vos pensées. L'oracle attend patiemment, puis, constatant votre absence de réaction, se détourne vers l'autel et reprend sa veille silencieuse.",
-      "Le silence s'étire entre vous et l'oracle. Celui-ci finit par baisser les mains et retourne à sa contemplation des runes, vous laissant poursuivre votre route."
+      "Rimani immobile, perso nei tuoi pensieri. L'oracolo aspetta pazientemente, poi, notando la vostra mancanza di reazione, si volta verso l'altare e riprende la sua silenziosa veglia.",
+      "Tra voi e l'oracolo si estende il silenzio. Alla fine l'oracolo posa le mani e torna a contemplare le rune, lasciandovi proseguire il cammino."
     ],
     "firstEncounter": "Un bagliore dorato attraverso la nebbia vi attira verso un altare di pietra coperto di antiche rune. Un oracolo dal volto velato è immobile davanti all'edificio.\n\nCon un gesto lento, indica l'altare: le rune raccontano la storia delle benedizioni, le forze ancestrali che i viaggiatori possono risvegliare unendo le loro offerte. Quando la cassa collettiva raggiunge la sua soglia, una benedizione viene riversata su tutti gli avventurieri del mondo, conferendo loro un potere temporaneo.\n\nL'oracolo si avvicina e traccia con la punta delle dita un segno runico sul vostro polso. La pelle formicola nel punto in cui sono incise le linee incandescenti, poi la sensazione si attenua. Questo segno ora vi collega ai misteri dell'altare. Potete controllare lo stato delle benedizioni in qualsiasi momento usando il comando {command:blessing}."
   }
