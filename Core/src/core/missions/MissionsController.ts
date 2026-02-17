@@ -31,6 +31,7 @@ import { MissionUtils } from "../../../../Lib/src/utils/MissionUtils";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 
 type MissionInformations = {
 	missionId: string;
@@ -103,7 +104,7 @@ export abstract class MissionsController {
 				if (mission.petRewardTypeId) {
 					const pet = PetEntities.createPet(
 						mission.petRewardTypeId,
-						RandomUtils.crowniclesRandom.pick(["m", "f"]),
+						RandomUtils.crowniclesRandom.pick([PetConstants.SEX.MALE, PetConstants.SEX.FEMALE]),
 						""
 					);
 					await pet.giveToPlayer(player, response);
