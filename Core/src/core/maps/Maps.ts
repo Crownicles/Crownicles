@@ -119,12 +119,12 @@ export class Maps {
 	}
 
 	/**
-	 * Check if the player is at the PVE exit (final boss area)
+	 * Check if the player is at a final PVE boss location (dead-end island location whose only exit leads to pve_exit)
 	 * @param player
 	 */
-	static isAtPveExit(player: Player): boolean {
+	static isAtFinalPveBoss(player: Player): boolean {
 		const destination = player.getDestination();
-		return destination?.attribute === MapConstants.MAP_ATTRIBUTES.PVE_EXIT;
+		return destination !== null && MapCache.finalPveBossMapIds.includes(destination.id);
 	}
 
 	/**

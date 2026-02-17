@@ -21,6 +21,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
+import { BlessingManager } from "../blessings/BlessingManager";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
@@ -33,6 +34,24 @@ import { crowniclesInstance } from "../../index";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { chooseDestination } from "./ReportDestinationService";
+
+/**
+ * PVE fight rewards structure
+ */
+interface PveFightRewards {
+	money: number;
+	xp: number;
+	guildScore: number;
+	guildXp: number;
+}
+
+/**
+ * Guild rewards result
+ */
+interface GuildRewardsResult {
+	guildXp: number;
+	guildPoints: number;
+}
 
 /**
  * Handle pet love points change for the winner of a PVE fight
@@ -76,15 +95,11 @@ async function handleWinnerPetLovePoints(
 /**
  * Handle guild rewards (score + XP) after a PVE fight
  */
-async function handleGuildRewards(
+async function applyGuildRewards(
 	player: Player,
-	rewards: {
-		guildScore: number; guildXp: number;
-	},
+	rewards: PveFightRewards,
 	endFightResponse: CrowniclesPacket[]
-): Promise<{
-	guildXp: number; guildPoints: number;
-}> {
+): Promise<GuildRewardsResult> {
 	if (!player.guildId) {
 		return {
 			guildXp: 0, guildPoints: 0
@@ -118,14 +133,10 @@ async function handleGuildRewards(
 async function handlePveFightRewards(
 	fight: FightController,
 	player: Player,
-	rewards: {
-		money: number; xp: number; guildScore: number; guildXp: number;
-	},
+	rewards: PveFightRewards,
 	endFightResponse: CrowniclesPacket[],
 	playerActiveObjects: PlayerActiveObjects
-): Promise<{
-	guildXp: number; guildPoints: number;
-}> {
+): Promise<GuildRewardsResult> {
 	await handleWinnerPetLovePoints(fight, endFightResponse);
 
 	await player.addMoney({
@@ -139,7 +150,33 @@ async function handlePveFightRewards(
 		response: endFightResponse
 	}, playerActiveObjects);
 
-	return handleGuildRewards(player, rewards, endFightResponse);
+	return await applyGuildRewards(player, rewards, endFightResponse);
+}
+
+/**
+ * Send monster reward packet
+ */
+function sendMonsterRewardPacket(
+	endFightResponse: CrowniclesPacket[],
+	rewards: PveFightRewards,
+	guildResult: GuildRewardsResult,
+	fight: FightController
+): void {
+	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
+		money: BlessingManager.getInstance().applyMoneyBlessing(rewards.money),
+		experience: rewards.xp,
+		guildXp: guildResult.guildXp,
+		guildPoints: guildResult.guildPoints,
+		petReaction: fight.petReactionData
+			? {
+				reactionType: fight.petReactionData.reactionType,
+				loveDelta: fight.petReactionData.loveDelta,
+				petId: fight.petReactionData.petId,
+				petSex: fight.petReactionData.petSex,
+				petNickname: fight.petReactionData.petNickname
+			}
+			: undefined
+	}));
 }
 
 /**
@@ -167,27 +204,21 @@ export async function doPVEBoss(
 		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		if (fight) {
 			const rewards = monsterObj.getRewards(randomLevel);
-			let guildXp = 0;
-			let guildPoints = 0;
 
 			player.fightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
 
 			// Only give reward if draw or win
 			if (fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter) {
 				const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
-				guildXp = result.guildXp;
-				guildPoints = result.guildPoints;
-				endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
-					money: rewards.money,
-					experience: rewards.xp,
-					guildXp,
-					guildPoints,
-					petReaction: fight.petReactionData
-				}));
+				sendMonsterRewardPacket(endFightResponse, rewards, result, fight);
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
+				await MissionsController.update(player, endFightResponse, {
+					missionId: "winAnyBossWithDifferentClasses",
+					params: { classId: player.class }
+				});
 
 				// Only count final island bosses for the different classes mission
-				if (Maps.isAtPveExit(player)) {
+				if (Maps.isAtFinalPveBoss(player)) {
 					await MissionsController.update(player, endFightResponse, {
 						missionId: "winBossWithDifferentClasses",
 						params: { classId: player.class }

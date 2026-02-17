@@ -808,6 +808,9 @@
     "vampirism": {
       "success": "wird von **{{petNickname}}** unterstützt, der dem Gegner ein wenig Energie absaugt, um sie seinem Herrn als Tribut anzubieten."
     },
+    "fairyHeal": {
+      "success": "wird von einem sanften goldenen Schimmer umhüllt, während **{{petNickname}}** Feenstaub auf seine Wunden streut und ihm so ein wenig Energie zurückgibt."
+    },
     "weak": {
       "name": "geschwächt",
       "new": "geschwächt ist.",
@@ -1284,6 +1287,7 @@
     "guildLevel": "Mitglied einer Gilde Stufe {{count, number}} oder höher sein",
     "haveItemRarity": "Ein Gerät mit einer Knappheit von {{variantText}} oder besser",
     "havePet": "Mit einem Vertrauten vertraut sein",
+    "depositPetInShelter": "Vertrautes ablegen oder freigeben",
     "petCaress": "Ihren Vertrauten streicheln",
     "petAssistedFight": "Sich im Kampf von Ihrem Vertrauten helfen lassen",
     "havePotions": "Besitze {{count}} Tränke zur gleichen Zeit",
@@ -1341,6 +1345,8 @@
     "wealthyPayForPVEIsland": "Eine Reise zu einer mysteriösen Insel zu einem Höchstpreis kaufen",
     "winBoss_one": "Gewinnt {{count}} Bosskampf",
     "winBoss_other": "Gewinnen Sie {{count}} Bosskämpfe",
+    "winAnyBossWithDifferentClasses_one": "Bezwinge {{count}} boss",
+    "winAnyBossWithDifferentClasses_other": "Besiege Bosse mithilfe von {{count}} verschiedenen Klassen.",
     "winBossWithDifferentClasses_one": "Besiege den Endboss einer Insel (nur der letzte Endboss jeder Insel zählt)",
     "winBossWithDifferentClasses_other": "Besiege Endbosse auf Inseln mit {{count}} verschiedenen Klassen (nur der letzte Boss auf jeder Insel zählt)."
   },
@@ -1514,6 +1520,8 @@
     "100_female": "Geist",
     "101_male": "Vampire",
     "101_female": "Vampire",
+    "102_male": "Féetaud",
+    "102_female": "Fee",
     "10_female": "Henne",
     "10_male": "Hahn",
     "11_female": "Vogel",

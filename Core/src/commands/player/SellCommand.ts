@@ -28,6 +28,7 @@ import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/int
 import { crowniclesInstance } from "../../index";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 
@@ -82,7 +83,7 @@ function getEndCallback(player: Player) {
 
 			response.push(makePacket(CommandSellItemSuccessPacket, {
 				item: sellItem.item,
-				price: sellItem.price
+				price: BlessingManager.getInstance().applyMoneyBlessing(sellItem.price)
 			}));
 		}
 	};

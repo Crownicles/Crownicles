@@ -23,6 +23,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { GuildDailyNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildDailyNotificationPacket";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { PacketUtils } from "../../core/utils/PacketUtils";
 import {
 	commandRequires, CommandUtils
@@ -36,6 +37,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 const guildDailyLockManager = new LockManager();
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 
 type GuildLike = {
 	guild: Guild; members: Player[];
@@ -49,7 +51,8 @@ type FunctionRewardType = (guildLike: GuildLike, response: CrowniclesPacket[], r
  * @param rewardPacket
  */
 async function awardGuildWithNewPet(guild: Guild, rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
-	const pet = PetEntities.generateRandomPetEntity();
+	const minRarity = Math.min(ItemRarity.SPECIAL, Math.ceil(guild.level / GuildDailyConstants.PET_MIN_RARITY_LEVEL_DIVISOR));
+	const pet = PetEntities.generateRandomPetEntity(minRarity);
 	await pet.save();
 	await GuildPets.addPet(guild, pet, true).save();
 	rewardPacket.pet = {
@@ -374,7 +377,7 @@ async function awardMoneyToMembers(guildLike: GuildLike, response: CrowniclesPac
 			reason: NumberChangeReason.GUILD_DAILY
 		});
 	});
-	rewardPacket.money = moneyWon;
+	rewardPacket.money = BlessingManager.getInstance().applyMoneyBlessing(moneyWon);
 	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.MONEY).then();
 }
 

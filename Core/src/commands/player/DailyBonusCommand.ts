@@ -23,6 +23,7 @@ import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
 import { DailyConstants } from "../../../../Lib/src/constants/DailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { toItemWithDetails } from "../../core/utils/ItemUtils";
 import {
@@ -103,6 +104,7 @@ async function activateDailyItem(player: Player, activeObject: ObjectItem, inven
 				response,
 				reason: NumberChangeReason.DAILY
 			});
+			packet.value = BlessingManager.getInstance().applyMoneyBlessing(activeObject.power);
 			break;
 	}
 	inventoryInfo.updateLastDailyAt();

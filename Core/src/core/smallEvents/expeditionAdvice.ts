@@ -28,6 +28,7 @@ import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { MissionsController } from "../missions/MissionsController";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
+import { BlessingManager } from "../blessings/BlessingManager";
 
 /**
  * Check if the small event can be executed for this player
@@ -228,6 +229,7 @@ async function applyExpeditionBonusRewards(
 			response,
 			reason: NumberChangeReason.SMALL_EVENT
 		});
+		rewards.bonusMoney = BlessingManager.getInstance().applyMoneyBlessing(rewards.bonusMoney);
 	}
 	else if (roll < bonusConfig.POTION_THRESHOLD) {
 		// 35% chance: combat potion

@@ -5,6 +5,7 @@ import {
 	Op, Sequelize
 } from "sequelize";
 import { MapLinkDataController } from "../../data/MapLink";
+import { MapLocationDataController } from "../../data/MapLocation";
 
 export abstract class MapCache {
 	static boatEntryMapLinks: number[];
@@ -24,6 +25,8 @@ export abstract class MapCache {
 	static logsPveIslandMapLinks: number[];
 
 	static hauntedMapLinks: number[];
+
+	static finalPveBossMapIds: number[];
 
 	static async init(): Promise<void> {
 		// Boat links entry only
@@ -68,6 +71,18 @@ export abstract class MapCache {
 
 		this.hauntedMapLinks = MapLinkDataController.instance.getFromAttributeToAttribute(MapConstants.MAP_ATTRIBUTES.HAUNTED, MapConstants.MAP_ATTRIBUTES.HAUNTED)
 			.map(mapLink => mapLink.id);
+
+		// Final PVE boss locations: pve_island locations whose only outgoing links go to pve_exit (dead-ends)
+		const pveIslandLocations = MapLocationDataController.instance.getWithAttributes([MapConstants.MAP_ATTRIBUTES.PVE_ISLAND]);
+		this.finalPveBossMapIds = pveIslandLocations
+			.filter(location => {
+				const outgoingLinks = MapLinkDataController.instance.getLinksByMapStart(location.id);
+				return outgoingLinks.length > 0 && outgoingLinks.every(link => {
+					const endMap = MapLocationDataController.instance.getById(link.endMap);
+					return endMap?.attribute === MapConstants.MAP_ATTRIBUTES.PVE_EXIT;
+				});
+			})
+			.map(location => location.id);
 
 		// Fight regen list
 		this.regenEnergyMapLinks = MapLinkDataController.instance.getAll()

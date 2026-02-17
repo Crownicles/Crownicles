@@ -31,6 +31,8 @@ import { MissionUtils } from "../../../../Lib/src/utils/MissionUtils";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { PetEntities } from "../database/game/models/PetEntity";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 
 type MissionInformations = {
 	missionId: string;
@@ -90,10 +92,25 @@ export abstract class MissionsController {
 		const completedMissions = await MissionsController.completeAndUpdateMissions(player, missionSlots, specialMissionCompletion);
 		if (completedMissions.length !== 0) {
 			player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
+			for (const mission of completedMissions) {
+				mission.moneyToWin = BlessingManager.getInstance().applyMoneyBlessing(mission.moneyToWin);
+			}
 			response.push(makePacket(MissionsCompletedPacket, {
 				missions: MissionsController.prepareBaseMissions(completedMissions),
 				keycloakId: player.keycloakId
 			}));
+
+			// Give pet rewards from campaign missions
+			for (const mission of completedMissions) {
+				if (mission.petRewardTypeId) {
+					const pet = PetEntities.createPet(
+						mission.petRewardTypeId,
+						RandomUtils.crowniclesRandom.pick([PetConstants.SEX.MALE, PetConstants.SEX.FEMALE]),
+						""
+					);
+					await pet.giveToPlayer(player, response);
+				}
+			}
 		}
 
 		return player;

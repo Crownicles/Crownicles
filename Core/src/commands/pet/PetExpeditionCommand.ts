@@ -43,6 +43,7 @@ import {
 	handleActiveExpedition,
 	setResolveExpeditionFunction
 } from "../../core/expeditions/ExpeditionCollectorFactory";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { MissionSlots } from "../../core/database/game/models/MissionSlot";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
@@ -361,6 +362,11 @@ export default class PetExpeditionCommand {
 
 		// Apply outcome effects (love change and rewards)
 		await applyOutcomeEffects(outcome, player, petEntity, response, context, playerActiveObjects);
+
+		// Update displayed money to include blessing multiplier
+		if (outcome.rewards) {
+			outcome.rewards.money = BlessingManager.getInstance().applyMoneyBlessing(outcome.rewards.money);
+		}
 
 		// Finalize expedition (log, cleanup, mark completed)
 		const expeditionSuccess = !outcome.totalFailure;

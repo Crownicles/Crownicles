@@ -22,6 +22,7 @@ import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
 import { BigEventConstants } from "../../../../Lib/src/constants/BigEventConstants";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(time)
@@ -127,7 +128,7 @@ async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, play
 			reason: NumberChangeReason.BIG_EVENT
 		});
 	}
-	return moneyChange;
+	return BlessingManager.getInstance().applyMoneyBlessing(moneyChange);
 }
 
 function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects): number {

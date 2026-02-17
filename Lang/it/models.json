@@ -808,6 +808,9 @@
     "vampirism": {
       "success": "è assistito da **{{petNickname}}** che succhia un po' di energia dall'avversario per offrirla come tributo al suo padrone."
     },
+    "fairyHeal": {
+      "success": "è avvolto da un tenue bagliore dorato mentre **{{petNickname}}** cosparge di polvere di fata le sue ferite, ripristinando un po' della sua energia."
+    },
     "weak": {
       "name": "compromesso",
       "new": "è indebolito.",
@@ -1284,6 +1287,7 @@
     "guildLevel": "Fare parte di una gilda di livello {{count, number}} o superiore",
     "haveItemRarity": "Equipaggiamento raro {{variantText}} o superiore",
     "havePet": "Avere un animale domestico con sé",
+    "depositPetInShelter": "Lasciare o rilasciare il proprio animale domestico",
     "petCaress": "Accarezzare il proprio animale domestico",
     "petAssistedFight": "Ottenere aiuto dal proprio animale domestico in combattimento",
     "havePotions": "Possedere {{count}} pozione al stesso momento",
@@ -1341,6 +1345,8 @@
     "wealthyPayForPVEIsland": "Acquistare un viaggio su un'isola misteriosa al prezzo massimo",
     "winBoss_one": "Vincere {{count}} combatto di boss",
     "winBoss_other": "Vincere {{count}} combatti di boss",
+    "winAnyBossWithDifferentClasses_one": "Sconfiggi il boss {{count}}",
+    "winAnyBossWithDifferentClasses_other": "Sconfiggi i boss utilizzando {{count}} classi diverse",
     "winBossWithDifferentClasses_one": "Sconfiggere un boss finale dell'isola (conta solo l'ultimo boss di ogni isola)",
     "winBossWithDifferentClasses_other": "Sconfiggere i boss finali delle isole utilizzando {{count}} classi diverse (conta solo l'ultimo boss di ogni isola)"
   },
@@ -1514,6 +1520,8 @@
     "100_female": "Fantasma",
     "101_male": "Vampiro",
     "101_female": "Vampiro",
+    "102_male": "Féetaud",
+    "102_female": "Fata",
     "10_female": "Gallina",
     "10_male": "Gallo",
     "11_female": "Uccello",

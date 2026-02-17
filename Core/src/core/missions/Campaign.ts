@@ -44,10 +44,12 @@ export class Campaign {
 
 		const completedMissions: CompletedMission[] = [];
 		while (campaign.isCompleted()) {
+			const currentCampaignData = CampaignData.getMissions()[missionInfo.campaignProgression - 1];
 			completedMissions.push({
 				...campaign.toJSON(),
 				missionType: MissionType.CAMPAIGN,
-				pointsToWin: 0 // Campaign doesn't give points
+				pointsToWin: 0, // Campaign doesn't give points
+				petRewardTypeId: currentCampaignData?.petRewardTypeId
 			});
 			missionInfo.campaignBlob = `${missionInfo.campaignBlob.slice(0, missionInfo.campaignProgression - 1)}1${missionInfo.campaignBlob.slice(missionInfo.campaignProgression)}`;
 			missionInfo.campaignProgression = this.hasNextCampaign(missionInfo.campaignBlob) ? this.findNextCampaignIndex(missionInfo.campaignBlob) + 1 : 0;

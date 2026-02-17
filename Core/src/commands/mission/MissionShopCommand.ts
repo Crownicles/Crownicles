@@ -23,6 +23,7 @@ import {
 	CommandMissionShopPetInformation,
 	CommandMissionShopSkipMissionResult
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
+import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
@@ -100,7 +101,7 @@ function getMoneyShopItem(): ShopItem {
 				await MissionsController.update(player, response, { missionId: "kingsMoneyValue" });
 			}
 			response.push(makePacket(CommandMissionShopMoney, {
-				amount
+				amount: BlessingManager.getInstance().applyMoneyBlessing(amount)
 			}));
 			return true;
 		}

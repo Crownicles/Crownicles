@@ -38,7 +38,9 @@ export abstract class GuildDailyConstants {
 
 	static readonly CHANCES_SUM = 1000;
 
-	static readonly PET_DROP_CHANCE = 0.01;
+	static readonly PET_DROP_CHANCE = 0.07;
+
+	static readonly PET_MIN_RARITY_LEVEL_DIVISOR = 30;
 
 	static readonly GUILD_CHANCES = [
 		{

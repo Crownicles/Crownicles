@@ -434,6 +434,14 @@ export class BlessingManager {
 	}
 
 	/**
+	 * Apply the money blessing multiplier to an amount (mirrors the logic in Player.addMoney).
+	 * Use this to get the actual money value for display purposes.
+	 */
+	applyMoneyBlessing(amount: number): number {
+		return amount > 0 ? Math.round(amount * this.getMoneyMultiplier()) : amount;
+	}
+
+	/**
 	 * Get the score boost multiplier (1.0 = no boost, 1.1 = +10%)
 	 */
 	getScoreMultiplier(): number {

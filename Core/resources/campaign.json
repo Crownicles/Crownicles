@@ -529,7 +529,7 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "winBossWithDifferentClasses",
+      "missionId": "winAnyBossWithDifferentClasses",
       "missionVariant": 0,
       "missionObjective": 2,
       "gemsToWin": 13,
@@ -785,6 +785,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "winAnyBossWithDifferentClasses",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 3,
+      "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "doExpeditions",
       "missionVariant": 6,
       "missionObjective": 25,
@@ -1015,6 +1023,15 @@
       "gemsToWin": 28,
       "xpToWin": 350,
       "moneyToWin": 0
+    },
+    {
+      "missionId": "depositPetInShelter",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 15,
+      "xpToWin": 300,
+      "moneyToWin": 0,
+      "petRewardTypeId": 102
     }
   ]
 }

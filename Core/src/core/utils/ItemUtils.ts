@@ -194,7 +194,7 @@ async function manageItemRefusal(response: CrowniclesPacket[], {
 			category: item.getCategory()
 		},
 		autoSell,
-		soldMoney: money
+		soldMoney: BlessingManager.getInstance().applyMoneyBlessing(money)
 	}));
 	await MissionsController.update(player, response, { missionId: "findOrBuyItem" });
 	await player.reload();
