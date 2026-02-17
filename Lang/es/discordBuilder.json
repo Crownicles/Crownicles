@@ -77,7 +77,7 @@
     "options": {
       "guildName": {
         "description": "El nombre del gremio.",
-        "name": "name"
+        "name": "nombre"
       }
     }
   },

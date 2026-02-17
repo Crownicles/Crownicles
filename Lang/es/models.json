@@ -808,6 +808,9 @@
     "vampirism": {
       "success": "es asistido por **{{petNickname}}** que chupa un poco de energía del adversario para ofrecérsela como tributo a su amo."
     },
+    "fairyHeal": {
+      "success": "se envuelve en un suave resplandor dorado mientras **{{petNickname}}** espolvorea polvo de hadas sobre sus heridas, restaurando un poco de su energía."
+    },
     "weak": {
       "name": "deficiente",
       "new": "se debilita.",
@@ -1284,6 +1287,7 @@
     "guildLevel": "Formar parte de un gremio nivel {{count, number}} o superior",
     "haveItemRarity": "Equipo raro {{variantText}} o mejor",
     "havePet": "Tener un animal de compañía",
+    "depositPetInShelter": "Dejar o liberar a su mascota",
     "petCaress": "Acariciar a su mascota",
     "petAssistedFight": "Obtener ayuda de su mascota en combate",
     "havePotions": "{{count}} Pociones propias al mismo tiempo",
@@ -1341,6 +1345,8 @@
     "wealthyPayForPVEIsland": "Comprar un viaje a una isla misteriosa al precio máximo",
     "winBoss_one": "{{count}} Gana la batalla contra el jefe",
     "winBoss_other": "{{count}} Gana combates contra jefes",
+    "winAnyBossWithDifferentClasses_one": "Derrota al jefe de {{count}}",
+    "winAnyBossWithDifferentClasses_other": "Derrota a los jefes usando {{count}} clases diferentes",
     "winBossWithDifferentClasses_one": "Derrota a un jefe final de isla (solo cuenta el último jefe de cada isla)",
     "winBossWithDifferentClasses_other": "Derrota a los jefes finales de las islas usando {{count}} clases diferentes (solo cuenta el último jefe de cada isla)."
   },
@@ -1514,6 +1520,8 @@
     "100_female": "Fantasma",
     "101_male": "Vampiro",
     "101_female": "Vampiro",
+    "102_male": "Féetaud",
+    "102_female": "Hada",
     "10_female": "Gallina",
     "10_male": "Coq",
     "11_female": "Pájaro",
