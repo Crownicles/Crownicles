@@ -808,6 +808,9 @@
     "vampirism": {
       "success": "is assisted by **{{petNickname}}** who sucks a little energy from his opponent and offers it as tribute to his master."
     },
+    "fairyHeal": {
+      "success": "est enveloppé d'une douce lueur dorée tandis que **{{petNickname}}** saupoudre de la poussière de fée sur ses blessures, lui rendant un peu d'énergie."
+    },
     "weak": {
       "name": "weakened",
       "new": "is weakened.",
@@ -1284,6 +1287,7 @@
     "guildLevel": "Be in a guild level {{count, number}} or more",
     "haveItemRarity": "Have an item with a rarity {{variantText}} or better",
     "havePet": "Have a pet with you",
+    "depositPetInShelter": "Déposer ou libérer son familier",
     "petCaress": "Petting your pet",
     "petAssistedFight": "Getting help from your pet in combat",
     "havePotions": "Have {{count}} potions at the same time",
@@ -1341,6 +1345,8 @@
     "wealthyPayForPVEIsland": "Buy a trip to a mysterious island at a very high price",
     "winBoss_one": "Win {{count}} boss fight",
     "winBoss_other": "Win {{count}} boss fights",
+    "winAnyBossWithDifferentClasses_one": "Vaincre {{count}} boss",
+    "winAnyBossWithDifferentClasses_other": "Vaincre des boss en utilisant {{count}} classes différentes",
     "winBossWithDifferentClasses_one": "Defeat a final island boss (only the last boss on each island counts)",
     "winBossWithDifferentClasses_other": "Defeat final island bosses using {{count}} different classes (only the last boss on each island counts)"
   },
@@ -1514,6 +1520,8 @@
     "100_female": "Ghost",
     "101_male": "Vampire",
     "101_female": "Vampire",
+    "102_male": "Féetaud",
+    "102_female": "Fée",
     "10_female": "Hen",
     "10_male": "Rooster",
     "11_female": "Bird",
