@@ -2472,6 +2472,10 @@
       "A mystical gust envelops the altar and, as it dissipates, an unknown piece of equipment lies on the stone, still warm with magic. The oracle points to it with a glance."
     ],
     "badgeAwarded": "The oracle marks a profound reverence. The runes form an ancient symbol: that of the Oracle's protector. You receive the {emote:badges.oracle_patron} badge in recognition of your devotion.",
+    "end": [
+      "Vous restez immobile, perdu dans vos pensées. L'oracle attend patiemment, puis, constatant votre absence de réaction, se détourne vers l'autel et reprend sa veille silencieuse.",
+      "Le silence s'étire entre vous et l'oracle. Celui-ci finit par baisser les mains et retourne à sa contemplation des runes, vous laissant poursuivre votre route."
+    ],
     "firstEncounter": "a golden glow through the fog draws you to a stone altar covered with ancient runes. A veiled-faced oracle stands motionless before the edifice.\n\nWith a slow gesture, he points to the altar: the runes tell the story of blessings, ancestral forces that travelers can awaken by joining their offerings. When the collective kitty reaches its threshold, a blessing is showered on every adventurer in the world, conferring temporary power.\n\nThe oracle approaches and traces a runic mark on your wrist with his fingertips. Your skin tingles where the incandescent lines are etched, then the sensation subsides. This mark now links you to the mysteries of the altar. You can check the status of your blessings at any time using the {command:blessing}command."
   }
 }
