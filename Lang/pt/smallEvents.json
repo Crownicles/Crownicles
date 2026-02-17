@@ -2473,8 +2473,8 @@
     ],
     "badgeAwarded": "O oráculo marca uma profunda reverência. As runas formam um símbolo antigo: o do protetor do oráculo. Recebe o emblema {emote:badges.oracle_patron} em reconhecimento da sua devoção.",
     "end": [
-      "Vous restez immobile, perdu dans vos pensées. L'oracle attend patiemment, puis, constatant votre absence de réaction, se détourne vers l'autel et reprend sa veille silencieuse.",
-      "Le silence s'étire entre vous et l'oracle. Celui-ci finit par baisser les mains et retourne à sa contemplation des runes, vous laissant poursuivre votre route."
+      "Fica imóvel, perdido em pensamentos. O oráculo espera pacientemente, depois, notando a tua falta de reação, vira-se para o altar e retoma a sua vigília silenciosa.",
+      "O silêncio estende-se entre si e o oráculo. O oráculo pousa finalmente as mãos e volta a contemplar as runas, deixando-o continuar o seu caminho."
     ],
     "firstEncounter": "Um brilho dourado através do nevoeiro atrai-o para um altar de pedra coberto de runas antigas. Um oráculo de rosto velado permanece imóvel em frente ao edifício.\n\nCom um gesto lento, ele aponta para o altar: as runas contam a história das bênçãos, as forças ancestrais que os viajantes podem despertar juntando as suas oferendas. Quando o gatinho coletivo atinge o seu limiar, uma bênção é derramada sobre todos os aventureiros do mundo, dando-lhes um poder temporário.\n\nO oráculo aproxima-se e traça uma marca rúnica no teu pulso com a ponta dos dedos. A tua pele fica com um formigueiro onde as linhas incandescentes estão gravadas, mas depois a sensação desaparece. Esta marca liga-te agora aos mistérios do altar. Podes verificar o estado das bênçãos a qualquer momento usando o comando em {command:blessing}."
   }
