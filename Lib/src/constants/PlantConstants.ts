@@ -205,13 +205,13 @@ export abstract class PlantConstants {
 		100, // Herbe commune
 		144, // Trèfle doré
 		250, // Mousse lunaire
-		576, // Racine de fer
-		1728, // Champignon nocturne
-		3456, // Feuille venimeuse
-		6912, // Bulbe de feu
-		10368, // Plante carnivore
-		17280, // Fleur de cristal
-		24192 // Arbre ancien
+		476, // Racine de fer
+		728, // Champignon nocturne
+		956, // Feuille venimeuse
+		1212, // Bulbe de feu
+		1568, // Plante carnivore
+		1728, // Fleur de cristal
+		2419 // Arbre ancien
 	];
 
 	/**
