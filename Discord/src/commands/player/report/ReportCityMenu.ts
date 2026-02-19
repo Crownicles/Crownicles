@@ -506,49 +506,66 @@ function totalSlots(slots: ChestSlotsPerCategory): number {
 	return slots.weapon + slots.armor + slots.object + slots.potion;
 }
 
-function addNewOrUpgradeChange(changes: string[], isNew: boolean, keys: {
-	new: string; upgrade: string;
-}, lng: Language): void {
-	changes.push(i18n.t(`commands:report.city.homes.upgradeChanges.${isNew ? keys.new : keys.upgrade}`, { lng }));
+interface UpgradeCheck {
+	hasChanged: (oldF: HomeFeatures, newF: HomeFeatures) => boolean;
+	isNew: (oldF: HomeFeatures) => boolean;
+	newKey: string;
+	upgradeKey: string;
 }
+
+const UPGRADE_CHECKS: UpgradeCheck[] = [
+	{
+		hasChanged: (o, n): boolean => hasSlotsChanged(o.chestSlots, n.chestSlots),
+		isNew: (o): boolean => totalSlots(o.chestSlots) === 0,
+		newKey: "chest",
+		upgradeKey: "biggerChest"
+	},
+	{
+		hasChanged: (o, n): boolean => hasSlotsChanged(o.inventoryBonus, n.inventoryBonus),
+		isNew: (): boolean => false,
+		newKey: "inventoryBonus",
+		upgradeKey: "inventoryBonus"
+	},
+	{
+		hasChanged: (o, n): boolean => o.upgradeItemMaximumRarity !== n.upgradeItemMaximumRarity,
+		isNew: (o): boolean => o.upgradeItemMaximumRarity === ItemRarity.BASIC,
+		newKey: "upgradeItemStation",
+		upgradeKey: "betterUpgradeItemStation"
+	},
+	{
+		hasChanged: (o, n): boolean => o.craftPotionMaximumRarity !== n.craftPotionMaximumRarity,
+		isNew: (o): boolean => o.craftPotionMaximumRarity === ItemRarity.BASIC,
+		newKey: "craftPotionStation",
+		upgradeKey: "betterCraftPotionStation"
+	},
+	{
+		hasChanged: (o, n): boolean => o.bedHealthRegeneration !== n.bedHealthRegeneration,
+		isNew: (): boolean => false,
+		newKey: "betterBed",
+		upgradeKey: "betterBed"
+	},
+	{
+		hasChanged: (o, n): boolean => o.gardenPlots !== n.gardenPlots,
+		isNew: (o): boolean => o.gardenPlots === 0,
+		newKey: "garden",
+		upgradeKey: "biggerGarden"
+	},
+	{
+		hasChanged: (o, n): boolean => o.gardenEarthQuality !== n.gardenEarthQuality,
+		isNew: (): boolean => false,
+		newKey: "betterGardenEarth",
+		upgradeKey: "betterGardenEarth"
+	}
+];
 
 const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFeatures, lng: Language): string => {
 	const changes: string[] = [];
 
-	if (hasSlotsChanged(oldFeatures.chestSlots, newFeatures.chestSlots)) {
-		addNewOrUpgradeChange(changes, totalSlots(oldFeatures.chestSlots) === 0, {
-			new: "chest", upgrade: "biggerChest"
-		}, lng);
-	}
-
-	if (hasSlotsChanged(oldFeatures.inventoryBonus, newFeatures.inventoryBonus)) {
-		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.inventoryBonus", { lng }));
-	}
-
-	if (oldFeatures.upgradeItemMaximumRarity !== newFeatures.upgradeItemMaximumRarity) {
-		addNewOrUpgradeChange(changes, oldFeatures.upgradeItemMaximumRarity === ItemRarity.BASIC, {
-			new: "upgradeItemStation", upgrade: "betterUpgradeItemStation"
-		}, lng);
-	}
-
-	if (oldFeatures.craftPotionMaximumRarity !== newFeatures.craftPotionMaximumRarity) {
-		addNewOrUpgradeChange(changes, oldFeatures.craftPotionMaximumRarity === ItemRarity.BASIC, {
-			new: "craftPotionStation", upgrade: "betterCraftPotionStation"
-		}, lng);
-	}
-
-	if (oldFeatures.bedHealthRegeneration !== newFeatures.bedHealthRegeneration) {
-		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterBed", { lng }));
-	}
-
-	if (oldFeatures.gardenPlots !== newFeatures.gardenPlots) {
-		addNewOrUpgradeChange(changes, oldFeatures.gardenPlots === 0, {
-			new: "garden", upgrade: "biggerGarden"
-		}, lng);
-	}
-
-	if (oldFeatures.gardenEarthQuality !== newFeatures.gardenEarthQuality) {
-		changes.push(i18n.t("commands:report.city.homes.upgradeChanges.betterGardenEarth", { lng }));
+	for (const check of UPGRADE_CHECKS) {
+		if (check.hasChanged(oldFeatures, newFeatures)) {
+			const key = check.isNew(oldFeatures) ? check.newKey : check.upgradeKey;
+			changes.push(i18n.t(`commands:report.city.homes.upgradeChanges.${key}`, { lng }));
+		}
 	}
 
 	return changes.map(change => `- ${change}`).join("\n");

@@ -34,8 +34,6 @@ import {
 import {
 	ReactionCollectorResetTimerPacketReq
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
-import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
-import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import { Language } from "../../../../Lib/src/Language";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
@@ -102,31 +100,6 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandEqu
 
 /*
  * =============================================
- * Item display helpers
- * =============================================
- */
-
-function withUnlimitedMaxValue(details: ItemWithDetails, category: ItemCategory): ItemWithDetails {
-	if (category === ItemCategory.WEAPON || category === ItemCategory.ARMOR) {
-		const mainDetails = details as MainItemDetails;
-		return {
-			...mainDetails,
-			attack: {
-				...mainDetails.attack, maxValue: Infinity
-			},
-			defense: {
-				...mainDetails.defense, maxValue: Infinity
-			},
-			speed: {
-				...mainDetails.speed, maxValue: Infinity
-			}
-		};
-	}
-	return details;
-}
-
-/*
- * =============================================
  * Main menu builder
  * =============================================
  */
@@ -165,39 +138,46 @@ function buildMainMenu(ctx: EquipMenuContext): CrowniclesNestedMenu {
 			}), ctx.interaction.user)
 			.setDescription(i18n.t("commands:equip.mainDescription", { lng: ctx.lng })),
 		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)],
-		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-			collector.on("collect", async interaction => {
-				if (interaction.user.id !== ctx.interaction.user.id) {
-					await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
-					return;
-				}
+		createCollector: createMainMenuCollector(ctx)
+	};
+}
 
-				if (!interaction.isButton()) {
-					return;
-				}
+/**
+ * Create a collector for the main menu button interactions.
+ */
+function createMainMenuCollector(ctx: EquipMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
+		const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+		collector.on("collect", async interaction => {
+			if (interaction.user.id !== ctx.interaction.user.id) {
+				await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
+				return;
+			}
 
-				const value = interaction.customId;
+			if (!interaction.isButton()) {
+				return;
+			}
 
-				if (value === EQUIP_MENU_IDS.CLOSE) {
+			const value = interaction.customId;
+
+			if (value === EQUIP_MENU_IDS.CLOSE) {
+				await interaction.deferUpdate();
+				DiscordCollectorUtils.sendReaction(
+					ctx.packet, ctx.context, ctx.context.keycloakId!, interaction, ctx.closeReactionIndex
+				);
+				return;
+			}
+
+			if (value.startsWith(EQUIP_MENU_IDS.CATEGORY_PREFIX)) {
+				const categoryIndex = parseInt(value.replace(EQUIP_MENU_IDS.CATEGORY_PREFIX, ""), 10);
+				if (!Number.isNaN(categoryIndex)) {
 					await interaction.deferUpdate();
-					DiscordCollectorUtils.sendReaction(
-						ctx.packet, ctx.context, ctx.context.keycloakId!, interaction, ctx.closeReactionIndex
-					);
-					return;
+					await registerCategoryMenu(ctx, categoryIndex, nestedMenus);
+					await nestedMenus.changeMenu(`${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
 				}
-
-				if (value.startsWith(EQUIP_MENU_IDS.CATEGORY_PREFIX)) {
-					const categoryIndex = parseInt(value.replace(EQUIP_MENU_IDS.CATEGORY_PREFIX, ""), 10);
-					if (!Number.isNaN(categoryIndex)) {
-						await interaction.deferUpdate();
-						await registerCategoryMenu(ctx, categoryIndex, nestedMenus);
-						await nestedMenus.changeMenu(`${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
-					}
-				}
-			});
-			return collector;
-		}
+			}
+		});
+		return collector;
 	};
 }
 
@@ -222,7 +202,7 @@ function buildEquippedSection(
 	let choiceIndex = 0;
 
 	if (categoryData.equippedItem) {
-		const details = withUnlimitedMaxValue(categoryData.equippedItem.details, catInfo.category);
+		const details = DisplayUtils.withUnlimitedMaxValue(categoryData.equippedItem.details, catInfo.category);
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
 		description += `\n${CrowniclesIcons.choiceEmotes[choiceIndex]} - ${itemDisplay}`;
 
@@ -271,7 +251,7 @@ function buildReserveSection(
 			break;
 		}
 
-		const details = withUnlimitedMaxValue(item.details, catInfo.category);
+		const details = DisplayUtils.withUnlimitedMaxValue(item.details, catInfo.category);
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
 		description += `\n${CrowniclesIcons.choiceEmotes[choiceIndex]} - ${itemDisplay}`;
 
@@ -345,6 +325,54 @@ function createEquipCategoryCollector(
 	};
 }
 
+/**
+ * Add a back button to the last row, creating a new row if needed.
+ */
+function addBackButton(rows: ActionRowBuilder<ButtonBuilder>[]): void {
+	const backButton = new ButtonBuilder()
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+		.setCustomId(EQUIP_MENU_IDS.BACK_TO_CATEGORIES)
+		.setStyle(ButtonStyle.Secondary);
+
+	if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+		rows.push(new ActionRowBuilder<ButtonBuilder>());
+	}
+	rows[rows.length - 1].addComponents(backButton);
+}
+
+/**
+ * Build the full category detail menu (embed + buttons + collector).
+ */
+function buildCategoryDetailMenu(
+	ctx: EquipMenuContext,
+	categoryData: EquipCategoryData,
+	catInfo: typeof CATEGORY_INFO[number],
+	categoryIndex: number
+): CrowniclesNestedMenu {
+	const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
+
+	let description = i18n.t("commands:equip.categoryHeader", {
+		lng: ctx.lng,
+		category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })
+	});
+
+	const equipped = buildEquippedSection(ctx, categoryData, catInfo, rows);
+	description += equipped.description;
+	description += buildReserveSection(ctx, categoryData, catInfo, rows, equipped.choiceIndex);
+
+	addBackButton(rows);
+
+	return {
+		embed: new CrowniclesEmbed()
+			.formatAuthor(i18n.t("commands:equip.title", {
+				lng: ctx.lng, pseudo: ctx.pseudo
+			}), ctx.interaction.user)
+			.setDescription(description),
+		components: rows,
+		createCollector: createEquipCategoryCollector(ctx, categoryIndex)
+	};
+}
+
 function registerCategoryMenu(
 	ctx: EquipMenuContext,
 	categoryIndex: number,
@@ -356,39 +384,10 @@ function registerCategoryMenu(
 		return;
 	}
 
-	const menuId = `${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`;
-	const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-
-	let description = i18n.t("commands:equip.categoryHeader", {
-		lng: ctx.lng,
-		category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })
-	});
-
-	// Build equipped and reserve sections
-	const equipped = buildEquippedSection(ctx, categoryData, catInfo, rows);
-	description += equipped.description;
-	description += buildReserveSection(ctx, categoryData, catInfo, rows, equipped.choiceIndex);
-
-	// Back button
-	const backButton = new ButtonBuilder()
-		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
-		.setCustomId(EQUIP_MENU_IDS.BACK_TO_CATEGORIES)
-		.setStyle(ButtonStyle.Secondary);
-
-	if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-		rows.push(new ActionRowBuilder<ButtonBuilder>());
-	}
-	rows[rows.length - 1].addComponents(backButton);
-
-	nestedMenus.registerMenu(menuId, {
-		embed: new CrowniclesEmbed()
-			.formatAuthor(i18n.t("commands:equip.title", {
-				lng: ctx.lng, pseudo: ctx.pseudo
-			}), ctx.interaction.user)
-			.setDescription(description),
-		components: rows,
-		createCollector: createEquipCategoryCollector(ctx, categoryIndex)
-	});
+	nestedMenus.registerMenu(
+		`${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`,
+		buildCategoryDetailMenu(ctx, categoryData, catInfo, categoryIndex)
+	);
 }
 
 /*

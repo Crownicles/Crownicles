@@ -341,4 +341,27 @@ export class DisplayUtils {
 		}
 		return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
 	}
+
+	/**
+	 * Clone item details with unlimited maxValue for display purposes.
+	 * Only applies to MainItemDetails (weapons/armors); support items are returned as-is.
+	 */
+	static withUnlimitedMaxValue(details: ItemWithDetails, category: ItemCategory): ItemWithDetails {
+		if (category === ItemCategory.WEAPON || category === ItemCategory.ARMOR) {
+			const mainDetails = details as MainItemDetails;
+			return {
+				...mainDetails,
+				attack: {
+					...mainDetails.attack, maxValue: Infinity
+				},
+				defense: {
+					...mainDetails.defense, maxValue: Infinity
+				},
+				speed: {
+					...mainDetails.speed, maxValue: Infinity
+				}
+			};
+		}
+		return details;
+	}
 }

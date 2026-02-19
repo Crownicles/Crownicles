@@ -1,18 +1,13 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
-import { ItemCategory } from "../../constants/ItemConstants";
-import { ItemWithDetails } from "../../types/ItemWithDetails";
 import { ChestSlotsPerCategory } from "../../types/HomeFeatures";
 import { HomeConstants } from "../../constants/HomeConstants";
+import { ItemSlot } from "../../types/ItemSlot";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
 
-export type ItemSlot = {
-	slot: number;
-	category: ItemCategory;
-	details: ItemWithDetails;
-};
+export type { ItemSlot };
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportPacketReq extends CrowniclesPacket {
