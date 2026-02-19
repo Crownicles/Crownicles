@@ -1519,7 +1519,7 @@
         "noProlongation": "[{{currentTurn}}/{{maxTurn}}]"
       },
       "attacker": "{emote:unitValues.attack} | **Attacker: {{pseudo}}**\n",
-      "defender": "\n\n{emote:unitValues.defense} | Defender: {{pseudo}}**\n",
+      "defender": "\n\n{emote:unitValues.defense} | **Defender: {{pseudo}}**\n",
       "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "end": {
