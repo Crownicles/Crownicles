@@ -6,7 +6,6 @@ import {
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
 import { MainItemDetails } from "../../types/MainItemDetails";
-import { ItemWithDetails } from "../../types/ItemWithDetails";
 import { MaterialQuantity } from "../../types/MaterialQuantity";
 import {
 	ItemCategory, ItemRarity
@@ -15,6 +14,7 @@ import {
 	HomeFeatures, ChestSlotsPerCategory
 } from "../../types/HomeFeatures";
 import { MaterialRarity } from "../../types/MaterialRarity";
+import { ItemSlot } from "../../types/ItemSlot";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -92,16 +92,8 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 				maxUpgradeableRarity: ItemRarity;
 			};
 			chest?: {
-				chestItems: {
-					slot: number;
-					category: ItemCategory;
-					details: ItemWithDetails;
-				}[];
-				depositableItems: {
-					slot: number;
-					category: ItemCategory;
-					details: ItemWithDetails;
-				}[];
+				chestItems: ItemSlot[];
+				depositableItems: ItemSlot[];
 				slotsPerCategory: ChestSlotsPerCategory;
 
 				/** Max backup slots per category in the player's inventory */

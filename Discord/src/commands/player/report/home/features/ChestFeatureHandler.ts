@@ -19,7 +19,6 @@ import { HomeMenuIds } from "../HomeMenuConstants";
 import {
 	ChestSlotsPerCategory, getSlotCountForCategory
 } from "../../../../../../../Lib/src/types/HomeFeatures";
-import { MainItemDetails } from "../../../../../../../Lib/src/types/MainItemDetails";
 import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { DiscordConstants } from "../../../../../DiscordConstants";
@@ -231,7 +230,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				break;
 			}
 
-			const details = this.withUnlimitedMaxValue(item.details, params.category);
+			const details = DisplayUtils.withUnlimitedMaxValue(item.details, params.category);
 			const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, params.lng);
 			description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${itemDisplay}`;
 
@@ -597,7 +596,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		let description = i18n.t("commands:report.city.homes.chest.swapHeader", {
 			lng: ctx.lng,
 			item: selectedItem
-				? DisplayUtils.getItemDisplayWithStats(this.withUnlimitedMaxValue(selectedItem.details, catInfo.category), ctx.lng)
+				? DisplayUtils.getItemDisplayWithStats(DisplayUtils.withUnlimitedMaxValue(selectedItem.details, catInfo.category), ctx.lng)
 				: "?"
 		});
 		description += "\n";
@@ -607,7 +606,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		// Build swap target buttons using helper
 		for (let j = 0; j < categoryChestItems.length && j < CrowniclesIcons.choiceEmotes.length; j++) {
 			const chestItem = categoryChestItems[j];
-			const details = this.withUnlimitedMaxValue(chestItem.details, catInfo.category);
+			const details = DisplayUtils.withUnlimitedMaxValue(chestItem.details, catInfo.category);
 			description += `\n${CrowniclesIcons.choiceEmotes[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
 
 			const button = this.buildItemButton(j, `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`);
@@ -719,29 +718,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		);
 
 		return [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)];
-	}
-
-	/**
-	 * Clone item details with unlimited maxValue for display purposes.
-	 * Only applies to MainItemDetails (weapons/armors); support items are returned as-is.
-	 */
-	private withUnlimitedMaxValue(details: ItemWithDetails, category: ItemCategory): ItemWithDetails {
-		if (category === ItemCategory.WEAPON || category === ItemCategory.ARMOR) {
-			const mainDetails = details as MainItemDetails;
-			return {
-				...mainDetails,
-				attack: {
-					...mainDetails.attack, maxValue: Infinity
-				},
-				defense: {
-					...mainDetails.defense, maxValue: Infinity
-				},
-				speed: {
-					...mainDetails.speed, maxValue: Infinity
-				}
-			};
-		}
-		return details;
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {

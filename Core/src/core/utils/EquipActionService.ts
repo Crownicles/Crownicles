@@ -22,6 +22,24 @@ type EquipAction = typeof ItemConstants.EQUIP_ACTIONS[keyof typeof ItemConstants
 type EquipError = typeof ItemConstants.EQUIP_ERRORS[keyof typeof ItemConstants.EQUIP_ERRORS];
 
 /**
+ * Copy item data (id, level, enchantment) from one slot to another.
+ */
+function copySlotData(target: InventorySlot, source: InventorySlot): void {
+	target.itemId = source.itemId;
+	target.itemLevel = source.itemLevel;
+	target.itemEnchantmentId = source.itemEnchantmentId;
+}
+
+/**
+ * Clear all item data from a slot (set to empty).
+ */
+function clearSlot(slot: InventorySlot): void {
+	slot.itemId = 0;
+	slot.itemLevel = 0;
+	slot.itemEnchantmentId = null;
+}
+
+/**
  * Handle an equip/deposit action from AsyncPacketSender.
  */
 export async function handleEquipAction(
@@ -100,9 +118,7 @@ async function processEquip(playerId: number, reserveSlot: number, category: Ite
 
 	// If active slot is empty (id=0), just move the reserve item and destroy the reserve slot
 	if (activeSlot.itemId === 0) {
-		activeSlot.itemId = toEquip.itemId;
-		activeSlot.itemLevel = toEquip.itemLevel;
-		activeSlot.itemEnchantmentId = toEquip.itemEnchantmentId;
+		copySlotData(activeSlot, toEquip);
 		await activeSlot.save();
 		await toEquip.destroy();
 	}
@@ -112,9 +128,7 @@ async function processEquip(playerId: number, reserveSlot: number, category: Ite
 		const tempLevel = activeSlot.itemLevel;
 		const tempEnchantment = activeSlot.itemEnchantmentId;
 
-		activeSlot.itemId = toEquip.itemId;
-		activeSlot.itemLevel = toEquip.itemLevel;
-		activeSlot.itemEnchantmentId = toEquip.itemEnchantmentId;
+		copySlotData(activeSlot, toEquip);
 
 		toEquip.itemId = tempId;
 		toEquip.itemLevel = tempLevel;
@@ -152,9 +166,7 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	}
 
 	// Clear active slot
-	activeSlot.itemId = 0;
-	activeSlot.itemLevel = 0;
-	activeSlot.itemEnchantmentId = null;
+	clearSlot(activeSlot);
 	await activeSlot.save();
 
 	return null;
@@ -171,9 +183,7 @@ async function placeItemInBackupSlot({
 }): Promise<EquipError | null> {
 	const emptySlot = backupSlots.find(s => s.itemId === 0);
 	if (emptySlot) {
-		emptySlot.itemId = source.itemId;
-		emptySlot.itemLevel = source.itemLevel;
-		emptySlot.itemEnchantmentId = source.itemEnchantmentId;
+		copySlotData(emptySlot, source);
 		await emptySlot.save();
 		return null;
 	}
