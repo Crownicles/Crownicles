@@ -19,6 +19,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Explicit return types** on all functions (enforced by ESLint `@typescript-eslint/explicit-function-return-type`)
 - [ ] **Derived union types** from `as const` objects using `typeof Object[keyof typeof Object]` — avoid raw `string` when a finite set of values exists
 - [ ] **Type aliases for repeated inline types** — if an inline type `{ slot: number; category: ItemCategory }` appears 2+ times, extract it to a named type
+- [ ] **Shared types in `Lib/src/types/`** — types used across multiple packets or services must be extracted to a dedicated file in `Lib/src/types/`, not defined inline in packet files or duplicated across consumers
 - [ ] **No `any`** — use proper types or generics
 - [ ] **Parameter object pattern** for functions with 4+ arguments — group related parameters into a single options object
 
@@ -27,6 +28,8 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **No nested conditionals deeper than 2 levels** (CodeScene "Bumpy Road Ahead") — use `Array.find()`, early returns, or guard clauses to flatten
 - [ ] **Cyclomatic complexity under threshold** (CodeScene "Complex Method") — extract helper functions for distinct logical sections
 - [ ] **Functions do one thing** — if a function builds UI + handles interactions + processes data, split it into separate functions
+- [ ] **Data-driven over sequential if-branches** — when 4+ similar if-blocks check different fields with the same pattern (e.g., comparing old vs new values), use a declarative array of checks iterated in a loop
+- [ ] **Inline collectors extracted** — `createCollector` callbacks in menu builders should be extracted to named functions, not defined inline in the return object
 - [ ] **Max 4 function arguments** (CodeScene "Excess Number of Function Arguments") — use parameter objects for 5+
 
 ## 4. Imports & Module Organization
@@ -38,7 +41,9 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 ## 5. Code Duplication
 
 - [ ] **No repeated code blocks** — if 2+ places share similar logic (e.g., creating collectors, building menus), extract a shared helper
+- [ ] **No repeated field-level operations** — if the same 3+ field assignments appear in multiple places (e.g., copying `itemId`, `itemLevel`, `itemEnchantmentId`), extract a `copyX` / `clearX` helper function
 - [ ] **Shared utilities in appropriate scope** — helper used by one class → private method; used across files → utility function; used across services → Lib
+- [ ] **Cross-file duplicate functions** — search for identical or near-identical private functions across command files (e.g., `withUnlimitedMaxValue` in both EquipCommand and ChestFeatureHandler) and move to a shared utility class
 - [ ] **Translation keys shared when appropriate** — if multiple commands use the same labels (e.g., category names), put them in a shared namespace (`items.json` not `commands.json`)
 
 ## 6. Translations (i18n)
