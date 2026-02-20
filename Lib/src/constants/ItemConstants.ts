@@ -1,5 +1,8 @@
 import { MaterialRarity } from "../types/MaterialRarity";
 
+export type EquipAction = typeof ItemConstants.EQUIP_ACTIONS[keyof typeof ItemConstants.EQUIP_ACTIONS];
+export type EquipError = typeof ItemConstants.EQUIP_ERRORS[keyof typeof ItemConstants.EQUIP_ERRORS];
+
 export enum ItemCategory {
 	WEAPON,
 	ARMOR,

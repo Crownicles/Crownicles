@@ -10,7 +10,7 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import {
-	CommandEquipPacketReq, CommandEquipActionReq, CommandEquipActionRes
+	CommandEquipPacketReq, CommandEquipActionReq, CommandEquipActionRes, EquipAction
 } from "../../../../Lib/src/packets/commands/CommandEquipPacket";
 import { EquipCategoryData } from "../../../../Lib/src/types/EquipCategoryData";
 import {
@@ -23,7 +23,6 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
 	ItemCategory, ItemConstants
 } from "../../../../Lib/src/constants/ItemConstants";
-import { DiscordConstants } from "../../DiscordConstants";
 import { DiscordMQTT } from "../../bot/DiscordMQTT";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
@@ -37,27 +36,13 @@ import {
 import { Language } from "../../../../Lib/src/Language";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
+import { CATEGORY_INFO } from "../../utils/ItemCategoryInfo";
 
 /*
  * =============================================
  * Constants
  * =============================================
  */
-
-const CATEGORY_INFO = [
-	{
-		category: ItemCategory.WEAPON, translationKey: "weapons"
-	},
-	{
-		category: ItemCategory.ARMOR, translationKey: "armors"
-	},
-	{
-		category: ItemCategory.POTION, translationKey: "potions"
-	},
-	{
-		category: ItemCategory.OBJECT, translationKey: "objects"
-	}
-];
 
 const EQUIP_MENU_IDS = {
 	MAIN: "EQUIP_MAIN",
@@ -260,10 +245,7 @@ function buildReserveSection(
 			.setCustomId(`${EQUIP_MENU_IDS.EQUIP_PREFIX}${catInfo.category}_${item.slot}`)
 			.setStyle(ButtonStyle.Secondary);
 
-		if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-			rows.push(new ActionRowBuilder<ButtonBuilder>());
-		}
-		rows[rows.length - 1].addComponents(button);
+		DiscordCollectorUtils.addButtonToRow(rows, button);
 		choiceIndex++;
 	}
 
@@ -334,10 +316,7 @@ function addBackButton(rows: ActionRowBuilder<ButtonBuilder>[]): void {
 		.setCustomId(EQUIP_MENU_IDS.BACK_TO_CATEGORIES)
 		.setStyle(ButtonStyle.Secondary);
 
-	if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-		rows.push(new ActionRowBuilder<ButtonBuilder>());
-	}
-	rows[rows.length - 1].addComponents(backButton);
+	DiscordCollectorUtils.addButtonToRow(rows, backButton);
 }
 
 /**
@@ -398,7 +377,7 @@ function registerCategoryMenu(
 
 interface EquipActionParams {
 	ctx: EquipMenuContext;
-	action: string;
+	action: EquipAction;
 	itemCategory: ItemCategory;
 	slot: number;
 	categoryIndex: number;
