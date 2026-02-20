@@ -82,10 +82,10 @@ export abstract class ShopUtils {
 		response.push(packet);
 	}
 
-	private static canBuyItem<T extends ShopCurrency>(
-		player: T extends ShopCurrency.MONEY ? Player : PlayerMissionsInfo,
+	private static canBuyItem(
+		player: Player | PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
-		currency: T,
+		currency: ShopCurrency,
 		response: CrowniclesPacket[]
 	): boolean {
 		const valueToCheck = player instanceof Player ? player.money : player.gems;
@@ -99,8 +99,8 @@ export abstract class ShopUtils {
 		return true;
 	}
 
-	private static async manageCurrencySpending<T extends ShopCurrency>(
-		player: T extends ShopCurrency.MONEY ? Player : PlayerMissionsInfo,
+	private static async manageCurrencySpending(
+		player: Player | PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
 		response: CrowniclesPacket[]
 	): Promise<void> {

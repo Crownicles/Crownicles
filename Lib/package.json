@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@types/node": "25.0.2",
-    "mariadb": "3.4.5",
+    "mariadb": "3.0.2",
     "random-js": "2.1.0",
     "sequelize": "6.37.7",
     "triple-beam": "1.4.1",

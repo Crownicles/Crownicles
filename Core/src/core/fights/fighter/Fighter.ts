@@ -106,6 +106,7 @@ export abstract class Fighter {
 	 * @param winner Indicate if the fighter is the winner
 	 * @param response
 	 * @param bug - Indicate if the fighter is buggy
+	 * @param turnCount
 	 */
 	abstract endFight(winner: boolean, response: CrowniclesPacket[], bug: boolean, turnCount: number): Promise<void>;
 

@@ -438,7 +438,7 @@ export class FightController {
 			};
 		}
 
-		if (fighter instanceof PlayerFighter && !fighter.hasPetAssisted()) {
+		if (!fighter.hasPetAssisted()) {
 			return null;
 		}
 

@@ -344,7 +344,7 @@ export default class PetExpeditionCommand {
 
 		// Validate prerequisites
 		const validation = await validateExpeditionPrerequisites(player.id, player.petId);
-		if (validation.success === false) {
+		if (!validation.success) {
 			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: validation.errorCode }));
 			return;
 		}
