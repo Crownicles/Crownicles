@@ -91,6 +91,16 @@ export abstract class DiscordCollectorUtils {
 		"9⃣"
 	];
 
+	/**
+	 * Add a button to the last row, creating a new row if the current one is full.
+	 */
+	static addButtonToRow(rows: ActionRowBuilder<ButtonBuilder>[], button: ButtonBuilder): void {
+		if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
+			rows.push(new ActionRowBuilder<ButtonBuilder>());
+		}
+		rows[rows.length - 1].addComponents(button);
+	}
+
 	static sendReaction(
 		packet: ReactionCollectorCreationPacket,
 		context: PacketContext,
@@ -305,20 +315,14 @@ export abstract class DiscordCollectorUtils {
 				.setCustomId(i.toString())
 				.setStyle(ButtonStyle.Secondary);
 
-			if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-				rows.push(new ActionRowBuilder<ButtonBuilder>());
-			}
-			rows[rows.length - 1].addComponents(button);
+			DiscordCollectorUtils.addButtonToRow(rows, button);
 
 			choiceDesc += `${DiscordCollectorUtils.choiceListEmotes[i]} - ${items[i]}\n`;
 		}
 
 		if (options.additionalButtons) {
 			for (const additionalButton of options.additionalButtons) {
-				if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-					rows.push(new ActionRowBuilder<ButtonBuilder>());
-				}
-				rows[rows.length - 1].addComponents(additionalButton.button);
+				DiscordCollectorUtils.addButtonToRow(rows, additionalButton.button);
 				if (additionalButton.text && additionalButton.emoji) {
 					choiceDesc += `${additionalButton.emoji} - ${additionalButton.text}\n`;
 				}
@@ -331,10 +335,7 @@ export abstract class DiscordCollectorUtils {
 				.setCustomId("refuse")
 				.setStyle(ButtonStyle.Secondary);
 
-			if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-				rows.push(new ActionRowBuilder<ButtonBuilder>());
-			}
-			rows[rows.length - 1].addComponents(buttonRefuse);
+			DiscordCollectorUtils.addButtonToRow(rows, buttonRefuse);
 		}
 
 		// Add a choice description to the embed

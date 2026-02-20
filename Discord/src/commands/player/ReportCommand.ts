@@ -53,7 +53,6 @@ import {
 } from "../../utils/DiscordCollectorUtils";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
-import { DiscordConstants } from "../../DiscordConstants";
 import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import {
 	escapeUsername, StringUtils
@@ -97,10 +96,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 				.setCustomId(possibility.name)
 				.setStyle(ButtonStyle.Secondary);
 
-			if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-				rows.push(new ActionRowBuilder<ButtonBuilder>());
-			}
-			rows[rows.length - 1].addComponents(button);
+			DiscordCollectorUtils.addButtonToRow(rows, button);
 
 			const reactionText = `${emoji} ${i18n.t(`events:${data.eventId}.possibilities.${possibility.name}.text`, {
 				lng

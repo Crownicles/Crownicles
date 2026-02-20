@@ -1,3 +1,5 @@
+export type ChestAction = typeof HomeConstants.CHEST_ACTIONS[keyof typeof HomeConstants.CHEST_ACTIONS];
+
 export abstract class HomeConstants {
 	public static readonly PONDERATION_MINIMUM = 0.5;
 

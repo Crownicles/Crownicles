@@ -2,8 +2,14 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { EquipCategoryData } from "../../types/EquipCategoryData";
+import {
+	EquipAction, EquipError
+} from "../../constants/ItemConstants";
 
 export type { EquipCategoryData } from "../../types/EquipCategoryData";
+export type {
+	EquipAction, EquipError
+} from "../../constants/ItemConstants";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandEquipPacketReq extends CrowniclesPacket {
@@ -19,7 +25,7 @@ export class CommandEquipErrorNoItem extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandEquipActionReq extends CrowniclesPacket {
 	/** "equip" or "deposit" */
-	action!: string;
+	action!: EquipAction;
 
 	itemCategory!: number;
 
@@ -34,7 +40,7 @@ export class CommandEquipActionReq extends CrowniclesPacket {
 export class CommandEquipActionRes extends CrowniclesPacket {
 	success!: boolean;
 
-	error?: string;
+	error?: EquipError;
 
 	categories!: EquipCategoryData[];
 }

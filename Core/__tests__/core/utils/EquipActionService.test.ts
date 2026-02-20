@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemCategory, ItemConstants
+} from "../../../../Lib/src/constants/ItemConstants";
 
 // Mock storage
 let mockSlots: {
@@ -122,7 +124,7 @@ describe("EquipActionService", () => {
 	describe("handleEquipAction - invalid player", () => {
 		it("should return error for invalid player", async () => {
 			const packet = {
-				action: "equip",
+				action: ItemConstants.EQUIP_ACTIONS.EQUIP,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 1
 			} as CommandEquipActionReq;
@@ -130,7 +132,7 @@ describe("EquipActionService", () => {
 			const result = await handleEquipAction("invalid-player", packet);
 
 			expect(result.success).toBe(false);
-			expect(result.error).toBe("invalid");
+			expect(result.error).toBe(ItemConstants.EQUIP_ERRORS.INVALID);
 		});
 	});
 
@@ -145,7 +147,7 @@ describe("EquipActionService", () => {
 
 		it("should swap items between active and reserve slots", async () => {
 			const packet = {
-				action: "equip",
+				action: ItemConstants.EQUIP_ACTIONS.EQUIP,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 1
 			} as CommandEquipActionReq;
@@ -163,7 +165,7 @@ describe("EquipActionService", () => {
 
 		it("should fail for non-existent reserve slot", async () => {
 			const packet = {
-				action: "equip",
+				action: ItemConstants.EQUIP_ACTIONS.EQUIP,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 99 // Doesn't exist
 			} as CommandEquipActionReq;
@@ -171,7 +173,7 @@ describe("EquipActionService", () => {
 			const result = await handleEquipAction("valid-player", packet);
 
 			expect(result.success).toBe(false);
-			expect(result.error).toBe("invalid");
+			expect(result.error).toBe(ItemConstants.EQUIP_ERRORS.INVALID);
 		});
 
 		it("should move reserve item to empty active slot and destroy reserve", async () => {
@@ -182,7 +184,7 @@ describe("EquipActionService", () => {
 			];
 
 			const packet = {
-				action: "equip",
+				action: ItemConstants.EQUIP_ACTIONS.EQUIP,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 1
 			} as CommandEquipActionReq;
@@ -207,7 +209,7 @@ describe("EquipActionService", () => {
 
 		it("should create new reserve slot when depositing", async () => {
 			const packet = {
-				action: "deposit",
+				action: ItemConstants.EQUIP_ACTIONS.DEPOSIT,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 0
 			} as CommandEquipActionReq;
@@ -234,7 +236,7 @@ describe("EquipActionService", () => {
 			mockInventoryInfo.slotLimitForCategory.mockReturnValue(2);
 
 			const packet = {
-				action: "deposit",
+				action: ItemConstants.EQUIP_ACTIONS.DEPOSIT,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 0
 			} as CommandEquipActionReq;
@@ -242,7 +244,7 @@ describe("EquipActionService", () => {
 			const result = await handleEquipAction("valid-player", packet);
 
 			expect(result.success).toBe(false);
-			expect(result.error).toBe("reserveFull");
+			expect(result.error).toBe(ItemConstants.EQUIP_ERRORS.RESERVE_FULL);
 		});
 
 		it("should fail when active slot is empty", async () => {
@@ -251,7 +253,7 @@ describe("EquipActionService", () => {
 			];
 
 			const packet = {
-				action: "deposit",
+				action: ItemConstants.EQUIP_ACTIONS.DEPOSIT,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 0
 			} as CommandEquipActionReq;
@@ -259,7 +261,7 @@ describe("EquipActionService", () => {
 			const result = await handleEquipAction("valid-player", packet);
 
 			expect(result.success).toBe(false);
-			expect(result.error).toBe("noItem");
+			expect(result.error).toBe(ItemConstants.EQUIP_ERRORS.NO_ITEM);
 		});
 
 		it("should use empty reserve slot if one exists", async () => {
@@ -269,7 +271,7 @@ describe("EquipActionService", () => {
 			];
 
 			const packet = {
-				action: "deposit",
+				action: ItemConstants.EQUIP_ACTIONS.DEPOSIT,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 0
 			} as CommandEquipActionReq;
@@ -303,7 +305,7 @@ describe("EquipActionService", () => {
 			};
 
 			const packet = {
-				action: "deposit",
+				action: ItemConstants.EQUIP_ACTIONS.DEPOSIT,
 				itemCategory: ItemCategory.WEAPON,
 				slot: 0
 			} as CommandEquipActionReq;
@@ -329,7 +331,7 @@ describe("EquipActionService", () => {
 			const result = await handleEquipAction("valid-player", packet);
 
 			expect(result.success).toBe(false);
-			expect(result.error).toBe("invalid");
+			expect(result.error).toBe(ItemConstants.EQUIP_ERRORS.INVALID);
 		});
 	});
 });

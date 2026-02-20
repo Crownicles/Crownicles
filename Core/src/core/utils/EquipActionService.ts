@@ -9,7 +9,7 @@ import {
 } from "../database/game/models/InventorySlot";
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import {
-	ItemCategory, ItemConstants
+	EquipAction, EquipError, ItemCategory, ItemConstants
 } from "../../../../Lib/src/constants/ItemConstants";
 import { buildEquipCategoryData } from "../../commands/player/EquipCommand";
 import { Homes } from "../database/game/models/Home";
@@ -18,8 +18,6 @@ import {
 } from "../../../../Lib/src/types/HomeFeatures";
 
 type EquipActionResult = Omit<CommandEquipActionRes, "name">;
-type EquipAction = typeof ItemConstants.EQUIP_ACTIONS[keyof typeof ItemConstants.EQUIP_ACTIONS];
-type EquipError = typeof ItemConstants.EQUIP_ERRORS[keyof typeof ItemConstants.EQUIP_ERRORS];
 
 /**
  * Copy item data (id, level, enchantment) from one slot to another.

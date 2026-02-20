@@ -2,10 +2,13 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { ChestSlotsPerCategory } from "../../types/HomeFeatures";
-import { HomeConstants } from "../../constants/HomeConstants";
+import {
+	ChestAction, HomeConstants
+} from "../../constants/HomeConstants";
 import { ItemSlot } from "../../types/ItemSlot";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
+export type { ChestAction } from "../../constants/HomeConstants";
 
 export type { ItemSlot };
 
@@ -288,7 +291,7 @@ export class CommandReportHomeBedAlreadyFullRes extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportHomeChestActionReq extends CrowniclesPacket {
-	action!: string;
+	action!: ChestAction;
 
 	/** The inventory slot (for deposit/swap) or chest slot (for withdraw) */
 	slot!: number;
