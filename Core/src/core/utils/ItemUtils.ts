@@ -447,7 +447,7 @@ export async function giveItemToPlayer(
 		itemWithDetails: toItemWithDetails(player, item, itemLevel, null)
 	}));
 
-	if (await player.giveItem(item, itemLevel) === true) {
+	if (await player.giveItem(item, itemLevel)) {
 		await manageGiveItemRelateds(response, player, item);
 		return;
 	}

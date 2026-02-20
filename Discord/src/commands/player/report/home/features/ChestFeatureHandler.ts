@@ -259,7 +259,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 
 		await componentInteraction.deferUpdate();
-		await this.registerCategoryMenu(ctx, categoryIndex, nestedMenus);
+		this.registerCategoryMenu(ctx, categoryIndex, nestedMenus);
 		await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
 	}
 
@@ -272,7 +272,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		categoryIndex: number,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await this.registerCategoryMenu(ctx, categoryIndex, nestedMenus);
+		this.registerCategoryMenu(ctx, categoryIndex, nestedMenus);
 		await nestedMenus.changeMenu(`${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
 	}
 

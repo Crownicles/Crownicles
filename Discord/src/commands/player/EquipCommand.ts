@@ -157,7 +157,7 @@ function createMainMenuCollector(ctx: EquipMenuContext): (nestedMenus: Crownicle
 				const categoryIndex = parseInt(value.replace(EQUIP_MENU_IDS.CATEGORY_PREFIX, ""), 10);
 				if (!Number.isNaN(categoryIndex)) {
 					await interaction.deferUpdate();
-					await registerCategoryMenu(ctx, categoryIndex, nestedMenus);
+					registerCategoryMenu(ctx, categoryIndex, nestedMenus);
 					await nestedMenus.changeMenu(`${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
 				}
 			}

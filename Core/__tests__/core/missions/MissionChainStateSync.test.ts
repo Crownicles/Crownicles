@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MissionsController } from "../../../src/core/missions/MissionsController";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {MissionsController} from "../../../src/core/missions/MissionsController";
 import Player from "../../../src/core/database/game/models/Player";
-import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import type { CrowniclesPacket } from "@crownicles/lib";
+import {NumberChangeReason} from "../../../../Lib/src/constants/LogsConstants";
+import type {CrowniclesPacket} from "@crownicles/lib";
 
 // Mock crowniclesInstance with all required logsDatabase methods
 vi.mock("../../../src/index", () => ({
@@ -93,12 +93,11 @@ describe("Mission chain state synchronization", () => {
 			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer) => {
 				// Simulate what happens when a mission completes:
 				// The returned player has modified experience (mission reward)
-				const modifiedPlayer = createTestPlayer({
+				return createTestPlayer({
 					...inputPlayer,
 					money: inputPlayer.money,
 					experience: inputPlayer.experience + 25 // Mission reward: +25 XP
 				});
-				return modifiedPlayer;
 			});
 
 			// Call the actual addMoney method

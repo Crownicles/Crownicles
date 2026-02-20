@@ -55,7 +55,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 
 	/**
 	 * Function called when the fight starts
-	 * @param fightView The fight view
+	 * @param _fightView The fight view
 	 * @param startStatus The first status of a player
 	 * @param response The response packets
 	 */

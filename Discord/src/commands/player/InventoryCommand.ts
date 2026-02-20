@@ -107,7 +107,7 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 			talismanValue = i18n.t("commands:inventory.talismanNotOwned", { lng });
 		}
 
-		const embed = new CrowniclesEmbed()
+		return new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:inventory.title", {
 				lng,
 				pseudo
@@ -123,7 +123,6 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 					inline: false
 				}
 			]);
-		return embed;
 	}
 
 	throw new Error("Inventory packet data must not be undefined");

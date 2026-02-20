@@ -85,9 +85,8 @@ class KnightFightBehavior implements ClassBehavior {
 		if ((me.getBreath() > 10 || RandomUtils.crowniclesRandom.bool(0.2) || this.blessUsed)
 			&& me.getBreath() >= 4
 			&& opponent.getEnergy() > 250
-			&& this.blessRoundChosen !== null && this.blessRoundChosen - 2 !== currentRound
-			&& this.blessRoundChosen !== null && this.blessRoundChosen - 1 !== currentRound
-			&& me.getEnergy() < (me.getMaxEnergy() * 0.9)
+			&& this.blessRoundChosen !== null
+			&& this.blessRoundChosen - 2 !== currentRound && this.blessRoundChosen - 1 !== currentRound && me.getEnergy() < (me.getMaxEnergy() * 0.9)
 			&& RandomUtils.crowniclesRandom.bool(0.9)
 			&& this.restCount < 4) {
 			this.restCount++;

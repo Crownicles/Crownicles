@@ -390,7 +390,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			vi.mocked(InventorySlots.getOfPlayer).mockRejectedValue(new Error('Database error'));
 
 			// Act & Assert
-			await expect(giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem))
+			expect(giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem))
 				.rejects.toThrow('Database error');
 		});
 
@@ -400,7 +400,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			mockPlayer.giveItem.mockResolvedValue(false);
 
 			// Act & Assert
-			await expect(giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem))
+			expect(giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem))
 				.rejects.toThrow('Inventory info not found');
 		});
 	});

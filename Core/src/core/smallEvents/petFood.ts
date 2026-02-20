@@ -263,6 +263,7 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 
 /**
  * Handle the continue reaction outcome
+ * @param _player
  * @param properties
  */
 function handleContinueReaction(_player: Player, properties: PetFoodProperties): Promise<string> {
