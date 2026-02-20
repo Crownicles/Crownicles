@@ -42,10 +42,9 @@ import {
 import { Language } from "../../../../../Lib/src/Language";
 import { ItemRarity } from "../../../../../Lib/src/constants/ItemConstants";
 import {
-	getHomeMenu, getHomeSubMenus
+	getHomeMenu, getHomeSubMenus, HomeMenuIds
 } from "./home";
 import { HomeMenuParams } from "./home/HomeMenuTypes";
-import { HomeMenuIds } from "./home/HomeMenuConstants";
 import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
 
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
