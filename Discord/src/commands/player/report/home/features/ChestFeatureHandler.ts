@@ -19,25 +19,22 @@ import { HomeMenuIds } from "../HomeMenuConstants";
 import { getSlotCountForCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
 import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
-import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
+import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
+import { DiscordConstants } from "../../../../../DiscordConstants";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportHomeChestActionReq,
 	CommandReportHomeChestActionRes,
-        ChestAction,
-        CommandReportPlantTransferReq,
-        CommandReportPlantTransferRes
+	ChestAction,
+	CommandReportPlantTransferReq,
+	CommandReportPlantTransferRes
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConstants";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
-import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
-import {
-        PLANT_TYPES
-} from "../../../../../../../Lib/src/constants/PlantConstants";
- */
+import { PLANT_TYPES } from "../../../../../../../Lib/src/constants/PlantConstants";
 type ItemSlotDisplay = {
 	slot: number;
 	details: ItemWithDetails;
@@ -247,8 +244,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				params.disabled
 			);
 
-			DiscordCollectorUtils.addButtonToRow(params.rows, button);
-
 			addButtonToRow(params.rows, button);
 			emoteIndex++;
 		}
@@ -435,9 +430,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		});
 
 		// Back button
-
-		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
-
 		addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
@@ -615,12 +607,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			description += `\n${CrowniclesIcons.choiceEmotes[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
 
 			const button = this.buildItemButton(j, `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`);
-
-			DiscordCollectorUtils.addButtonToRow(rows, button);
-		}
-
-		// Back button
-		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
 
 			addButtonToRow(rows, button);
 		}
