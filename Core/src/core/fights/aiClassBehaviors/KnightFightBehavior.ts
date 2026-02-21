@@ -20,6 +20,46 @@ class KnightFightBehavior implements ClassBehavior {
 
 	private heavyAttackCount = 0;
 
+	/**
+	 * Check if the knight has favorable conditions to rest (excess breath, luck, or post-bless)
+	 */
+	private hasRestingOpportunity(me: AiPlayerFighter): boolean {
+		return me.getBreath() > 10 || RandomUtils.crowniclesRandom.bool(0.2) || this.blessUsed;
+	}
+
+	/**
+	 * Check if we're not in a round where we should be preparing/using benediction
+	 */
+	private isNotNearBlessRound(currentRound: number): boolean {
+		return this.blessRoundChosen !== null
+			&& this.blessRoundChosen - 2 !== currentRound
+			&& this.blessRoundChosen - 1 !== currentRound;
+	}
+
+	/**
+	 * Check if the knight needs to recover energy
+	 */
+	private needsEnergyRecovery(me: AiPlayerFighter): boolean {
+		return me.getEnergy() < me.getMaxEnergy() * 0.9;
+	}
+
+	/**
+	 * Check if all conditions for resting are met
+	 */
+	private shouldRest(
+		me: AiPlayerFighter,
+		opponent: AiPlayerFighter | RealPlayerFighter,
+		currentRound: number
+	): boolean {
+		return this.hasRestingOpportunity(me)
+			&& me.getBreath() >= 4
+			&& opponent.getEnergy() > 250
+			&& this.isNotNearBlessRound(currentRound)
+			&& this.needsEnergyRecovery(me)
+			&& RandomUtils.crowniclesRandom.bool(0.9)
+			&& this.restCount < 4;
+	}
+
 	chooseAction(me: AiPlayerFighter, fightView: FightView): FightAction {
 		const opponent = fightView.fightController.getDefendingFighter() as AiPlayerFighter | RealPlayerFighter;
 		const currentRound = fightView.fightController.turn;
@@ -82,13 +122,7 @@ class KnightFightBehavior implements ClassBehavior {
 		}
 
 		// REST STRATEGY: Rest if breath is above 4 but energy is below 90%, and we haven't rested too often
-		if ((me.getBreath() > 10 || RandomUtils.crowniclesRandom.bool(0.2) || this.blessUsed)
-			&& me.getBreath() >= 4
-			&& opponent.getEnergy() > 250
-			&& this.blessRoundChosen !== null
-			&& this.blessRoundChosen - 2 !== currentRound && this.blessRoundChosen - 1 !== currentRound && me.getEnergy() < (me.getMaxEnergy() * 0.9)
-			&& RandomUtils.crowniclesRandom.bool(0.9)
-			&& this.restCount < 4) {
+		if (this.shouldRest(me, opponent, currentRound)) {
 			this.restCount++;
 			return FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.RESTING)!;
 		}
