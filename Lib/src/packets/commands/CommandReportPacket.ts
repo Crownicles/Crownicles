@@ -8,11 +8,16 @@ import {
 import { GardenConstants } from "../../constants/GardenConstants";
 import { ItemSlot } from "../../types/ItemSlot";
 import { PlantId } from "../../constants/PlantConstants";
+import {
+	PlantStorageEntry, PlayerPlantSlotEntry
+} from "../../types/PlantStorageEntry";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
 export type { ChestAction } from "../../constants/HomeConstants";
 
 export type GardenError = typeof GardenConstants.GARDEN_ERRORS[keyof typeof GardenConstants.GARDEN_ERRORS];
+
+export type PlantTransferAction = typeof HomeConstants.PLANT_TRANSFER_ACTIONS[keyof typeof HomeConstants.PLANT_TRANSFER_ACTIONS];
 
 export type PlantTransferError = typeof HomeConstants.PLANT_TRANSFER_ERRORS[keyof typeof HomeConstants.PLANT_TRANSFER_ERRORS];
 
@@ -349,11 +354,7 @@ export class CommandReportGardenHarvestRes extends CrowniclesPacket {
 	}[];
 
 	/** Updated plant storage after harvest */
-	plantStorage!: {
-		plantId: PlantId;
-		quantity: number;
-		maxCapacity: number;
-	}[];
+	plantStorage!: PlantStorageEntry[];
 
 	/** Slots that were harvested (reset to growing) */
 	harvestedSlots!: number[];
@@ -381,11 +382,11 @@ export class CommandReportGardenPlantErrorRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportPlantTransferReq extends CrowniclesPacket {
-	/** "plantDeposit" or "plantWithdraw" */
-	action!: string;
+	/** The transfer action: deposit or withdraw */
+	action!: PlantTransferAction;
 
-	/** The plant type to transfer */
-	plantId!: number;
+	/** The plant type to transfer (required for withdraw; ignored for deposit) */
+	plantId!: PlantId | 0;
 
 	/** The player slot involved (for deposit: source slot; for withdraw: target slot) */
 	playerSlot!: number;
@@ -398,15 +399,8 @@ export class CommandReportPlantTransferRes extends CrowniclesPacket {
 	error?: PlantTransferError;
 
 	/** Updated plant storage after transfer */
-	plantStorage!: {
-		plantId: PlantId;
-		quantity: number;
-		maxCapacity: number;
-	}[];
+	plantStorage!: PlantStorageEntry[];
 
 	/** Updated player plant slots after transfer */
-	playerPlantSlots!: {
-		slot: number;
-		plantId: PlantId | 0;
-	}[];
+	playerPlantSlots!: PlayerPlantSlotEntry[];
 }
