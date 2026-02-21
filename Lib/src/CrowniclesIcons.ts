@@ -254,7 +254,7 @@ export const CrowniclesIcons: {
 		inn: string;
 		innSleep: string;
 		enchanter: string;
-		shop: string;
+		shops: { [shopId: string]: string };
 		home: { [level: number]: string };
 		manageHome: string;
 		back: string;
@@ -2567,7 +2567,12 @@ export const CrowniclesIcons: {
 		inn: "🍺",
 		innSleep: "😴",
 		enchanter: "🔮",
-		shop: "💎",
+		shops: {
+			royalMarket: "💎",
+			generalShop: "🛒",
+			stockExchange: "💎",
+			tanner: "🧳"
+		},
 		home: {
 			1: "🏕️",
 			2: "🏕️",

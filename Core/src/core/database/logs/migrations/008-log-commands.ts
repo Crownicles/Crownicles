@@ -9,7 +9,6 @@ import { CommandTopPacketReq } from "../../../../../../Lib/src/packets/commands/
 import { CommandReportPacketReq } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CommandDailyBonusPacketReq } from "../../../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
 import { CommandGuildShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildShopPacket";
-import { CommandShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandShopPacket";
 import { CommandUpdatePacketReq } from "../../../../../../Lib/src/packets/commands/CommandUpdatePacket";
 import { CommandGuildLeavePacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
 import { CommandGuildDescriptionPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
@@ -60,7 +59,7 @@ const commandsToPacketNames: Map<string, string> = new Map([
 	["guilddailybonus", CommandGuildDailyPacketReq.name],
 	["switch", "[OLD] switch"],
 	["equip", CommandEquipPacketReq.name],
-	["shop", CommandShopPacketReq.name],
+	["shop", "[OLD] shop"], // /shop command removed — migrated to city shops
 	["update", CommandUpdatePacketReq.name],
 	["guildleave", CommandGuildLeavePacketReq.name],
 	["guilddescription", CommandGuildDescriptionPacketReq.name],

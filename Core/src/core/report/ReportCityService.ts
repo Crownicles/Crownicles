@@ -82,7 +82,15 @@ import {
 	getMoneyShopItem,
 	getValuableItemShopItem
 } from "../utils/MissionShopItems";
+import {
+	getDailyPotionShopItem,
+	getGeneralShopData,
+	getRandomItemShopItem
+} from "../utils/GeneralShopItems";
+import { getBadgeShopItem } from "../utils/StockExchangeShopItems";
+import { getSlotExtensionShopItem } from "../utils/TannerShopItems";
 import { crowniclesInstance } from "../../index";
+import { toItemWithDetails } from "../utils/ItemUtils";
 
 // Type aliases for commonly used nested types from ReactionCollectorCityData
 type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
@@ -1076,6 +1084,15 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		case "royalMarket":
 			await openRoyalMarket(player, context, response);
 			break;
+		case "generalShop":
+			await openGeneralShop(player, context, response);
+			break;
+		case "stockExchange":
+			await openStockExchange(player, context, response);
+			break;
+		case "tanner":
+			await openTanner(player, context, response);
+			break;
 		default:
 			CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
 			break;
@@ -1108,6 +1125,87 @@ export async function openRoyalMarket(player: Player, context: PacketContext, re
 			currency: ShopCurrency.GEM,
 			gemToMoneyRatio: calculateGemsToMoneyRatio()
 		}
+	});
+}
+
+/**
+ * Open the general shop for the player (daily potion + random equipment)
+ */
+export async function openGeneralShop(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const {
+		potion, remainingPotions
+	} = await getGeneralShopData(player.keycloakId);
+
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "permanentItem",
+			items: [getRandomItemShopItem()]
+		},
+		{
+			id: "dailyPotion",
+			items: [getDailyPotionShopItem(potion)]
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		additionalShopData: {
+			remainingPotions,
+			dailyPotion: toItemWithDetails(player, potion, 0, null)
+		}
+	});
+}
+
+/**
+ * Open the stock exchange shop for the player (money mouth badge + gem exchange rate info)
+ */
+export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "permanentItem",
+			items: [getBadgeShopItem()]
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		additionalShopData: {
+			gemToMoneyRatio: calculateGemsToMoneyRatio()
+		}
+	});
+}
+
+/**
+ * Open the tanner shop for the player (inventory slot extensions)
+ */
+export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const slotExtensionItem = await getSlotExtensionShopItem(player.id);
+	if (!slotExtensionItem) {
+		// Player has all slots maxed out — just open an empty shop
+		const shopCategories: ShopCategory[] = [];
+		await ShopUtils.createAndSendShopCollector(context, response, {
+			shopCategories,
+			player,
+			logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
+		});
+		return;
+	}
+
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "slotExtension",
+			items: [slotExtensionItem]
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
 	});
 }
 

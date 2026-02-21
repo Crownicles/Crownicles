@@ -404,6 +404,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		});
 
 		// Back button
+
 		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
@@ -581,6 +582,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			description += `\n${CrowniclesIcons.choiceEmotes[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
 
 			const button = this.buildItemButton(j, `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`);
+
 			DiscordCollectorUtils.addButtonToRow(rows, button);
 		}
 

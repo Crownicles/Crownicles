@@ -7,6 +7,9 @@
     10,
     36
   ],
+  "shops": [
+    "generalShop"
+  ],
   "inns": [
     {
       "id": "bloodyTankard",

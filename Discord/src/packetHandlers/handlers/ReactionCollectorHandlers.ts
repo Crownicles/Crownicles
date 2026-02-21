@@ -47,7 +47,7 @@ import { createGuildInviteCollector } from "../../commands/guild/GuildInviteComm
 import { ReactionCollectorShopData } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
 	shopCollector, shopInventoryExtensionCollector
-} from "../../commands/player/ShopCommand";
+} from "../../utils/ShopDisplayUtils";
 import { ReactionCollectorBuyCategorySlotData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 import { ReactionCollectorCartData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import { cartCollector } from "../../smallEvents/cart";
