@@ -3,7 +3,7 @@ import {
 } from "../CrowniclesPacket";
 import { ChestSlotsPerCategory } from "../../types/HomeFeatures";
 import {
-        ChestAction, HomeConstants
+	ChestAction, HomeConstants
 } from "../../constants/HomeConstants";
 import { GardenConstants } from "../../constants/GardenConstants";
 import { ItemSlot } from "../../types/ItemSlot";
@@ -17,6 +17,10 @@ export type GardenError = typeof GardenConstants.GARDEN_ERRORS[keyof typeof Gard
 export type PlantTransferError = typeof HomeConstants.PLANT_TRANSFER_ERRORS[keyof typeof HomeConstants.PLANT_TRANSFER_ERRORS];
 
 export type { ItemSlot };
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportPacketReq extends CrowniclesPacket {
+}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportTravelSummaryRes extends CrowniclesPacket {
