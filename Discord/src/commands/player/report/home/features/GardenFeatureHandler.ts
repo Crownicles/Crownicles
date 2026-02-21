@@ -124,14 +124,14 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	 * Get the plant name for display
 	 */
 	private getPlantName(plantId: PlantId, lng: Language): string {
-		return i18n.t(`commands:report.city.homes.garden.plants.${plantId}`, { lng });
+		return i18n.t(`models:plants.${plantId}`, { lng });
 	}
 
 	/**
 	 * Get the plant emoji from CrowniclesIcons
 	 */
 	private getPlantEmoji(plantId: PlantId): string {
-		return CrowniclesIcons.plants[plantId] ?? "🌱";
+		return CrowniclesIcons.plants[plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
 	}
 
 	/**
@@ -355,13 +355,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		for (const result of response.compostResults) {
 			const plant = PLANT_TYPES.find(p => p.id === result.plantId);
 			const plantName = plant
-				? i18n.t(`commands:report.city.homes.garden.plants.${plant.id}`, { lng: ctx.lng })
+				? i18n.t(`models:plants.${plant.id}`, { lng: ctx.lng })
 				: "?";
-			const materialEmoji = CrowniclesIcons.materials[result.materialId] ?? "📦";
+			const materialEmoji = CrowniclesIcons.materials[result.materialId] ?? CrowniclesIcons.city.homeUpgrades.chest;
 			const materialName = i18n.t(`models:materials.${result.materialId}`, { lng: ctx.lng });
 			message += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
 				lng: ctx.lng,
-				plantEmoji: CrowniclesIcons.plants[result.plantId] ?? "🌱",
+				plantEmoji: CrowniclesIcons.plants[result.plantId] ?? CrowniclesIcons.city.homeUpgrades.garden,
 				plant: plantName,
 				materialEmoji,
 				material: materialName
