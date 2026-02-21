@@ -32,6 +32,9 @@ import {
 import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
 
+type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
+type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
+
 export class GardenFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "garden";
 
@@ -145,41 +148,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	private buildGardenDescription(ctx: HomeFeatureHandlerContext): string {
 		const garden = ctx.homeData.garden!;
 		let description = i18n.t("commands:report.city.homes.garden.description", { lng: ctx.lng });
-
 		description += "\n";
 
 		for (const plot of garden.plots) {
-			if (plot.plantId === 0) {
-				description += `\n${i18n.t("commands:report.city.homes.garden.emptyPlot", {
-					lng: ctx.lng,
-					slot: plot.slot + 1
-				})}`;
-			}
-			else {
-				const plantName = this.getPlantName(plot.plantId, ctx.lng);
-				const emoji = this.getPlantEmoji(plot.plantId);
-
-				if (plot.isReady) {
-					description += `\n${i18n.t("commands:report.city.homes.garden.readyPlot", {
-						lng: ctx.lng,
-						slot: plot.slot + 1,
-						emoji,
-						plant: plantName
-					})}`;
-				}
-				else {
-					const progress = Math.floor(plot.growthProgress * 100);
-					const timeLeft = this.formatRemainingTime(plot.remainingSeconds, ctx.lng);
-					description += `\n${i18n.t("commands:report.city.homes.garden.growingPlot", {
-						lng: ctx.lng,
-						slot: plot.slot + 1,
-						emoji,
-						plant: plantName,
-						progress,
-						timeLeft
-					})}`;
-				}
-			}
+			description += this.buildPlotDescription(plot, ctx);
 		}
 
 		if (garden.hasSeed && garden.seedPlantId !== 0) {
@@ -193,6 +165,38 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		}
 
 		return description;
+	}
+
+	/**
+	 * Build description for a single garden plot
+	 */
+	private buildPlotDescription(plot: GardenPlotData, ctx: HomeFeatureHandlerContext): string {
+		if (plot.plantId === 0) {
+			return `\n${i18n.t("commands:report.city.homes.garden.emptyPlot", {
+				lng: ctx.lng,
+				slot: plot.slot + 1
+			})}`;
+		}
+		const plantName = this.getPlantName(plot.plantId, ctx.lng);
+		const emoji = this.getPlantEmoji(plot.plantId);
+		if (plot.isReady) {
+			return `\n${i18n.t("commands:report.city.homes.garden.readyPlot", {
+				lng: ctx.lng,
+				slot: plot.slot + 1,
+				emoji,
+				plant: plantName
+			})}`;
+		}
+		const progress = Math.floor(plot.growthProgress * 100);
+		const timeLeft = this.formatRemainingTime(plot.remainingSeconds, ctx.lng);
+		return `\n${i18n.t("commands:report.city.homes.garden.growingPlot", {
+			lng: ctx.lng,
+			slot: plot.slot + 1,
+			emoji,
+			plant: plantName,
+			progress,
+			timeLeft
+		})}`;
 	}
 
 	/**
@@ -323,6 +327,49 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Send a harvest action to Core and refresh the garden menu
 	 */
+	/**
+	 * Reset harvested plots in local garden state after a successful harvest
+	 */
+	private updateGardenAfterHarvest(garden: GardenData, response: CommandReportGardenHarvestRes, ctx: HomeFeatureHandlerContext): void {
+		for (const plot of garden.plots) {
+			if (response.harvestedSlots.includes(plot.slot)) {
+				plot.growthProgress = 0;
+				plot.isReady = false;
+				const plant = PLANT_TYPES.find(p => p.id === plot.plantId);
+				plot.remainingSeconds = plant
+					? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, ctx.homeData.features.gardenEarthQuality)
+					: 0;
+			}
+		}
+		garden.plantStorage = response.plantStorage;
+	}
+
+	/**
+	 * Build a compost result notification string from a harvest response
+	 */
+	private buildCompostMessage(response: CommandReportGardenHarvestRes, ctx: HomeFeatureHandlerContext): string {
+		if (!response.compostResults || response.compostResults.length === 0) {
+			return "";
+		}
+		let message = `\n\n${i18n.t("commands:report.city.homes.garden.compostTitle", { lng: ctx.lng })}`;
+		for (const result of response.compostResults) {
+			const plant = PLANT_TYPES.find(p => p.id === result.plantId);
+			const plantName = plant
+				? i18n.t(`commands:report.city.homes.garden.plants.${plant.id}`, { lng: ctx.lng })
+				: "?";
+			const materialEmoji = CrowniclesIcons.materials[result.materialId] ?? "📦";
+			const materialName = i18n.t(`models:materials.${result.materialId}`, { lng: ctx.lng });
+			message += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
+				lng: ctx.lng,
+				plantEmoji: CrowniclesIcons.plants[result.plantId] ?? "🌱",
+				plant: plantName,
+				materialEmoji,
+				material: materialName
+			})}`;
+		}
+		return message;
+	}
+
 	private async sendHarvestAction(
 		ctx: HomeFeatureHandlerContext,
 		nestedMenus: CrowniclesNestedMenus
@@ -332,52 +379,15 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			makePacket(CommandReportGardenHarvestReq, {}),
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportGardenPlantErrorRes.name) {
-					// No ready plants — just refresh the menu
 					this.registerGardenMenu(ctx, nestedMenus);
 					await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 					return;
 				}
 
 				const response = responsePacket as unknown as CommandReportGardenHarvestRes;
-
-				// Update the garden data: reset only harvested plots
 				const garden = ctx.homeData.garden!;
-				for (const plot of garden.plots) {
-					if (response.harvestedSlots.includes(plot.slot)) {
-						plot.growthProgress = 0;
-						plot.isReady = false;
-						const plant = PLANT_TYPES.find(p => p.id === plot.plantId);
-						plot.remainingSeconds = plant
-							? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, ctx.homeData.features.gardenEarthQuality)
-							: 0;
-					}
-				}
-
-				// Use refreshed storage data from Core
-				garden.plantStorage = response.plantStorage;
-
-				// Build compost notification if any plants were composted
-				let compostMessage = "";
-				if (response.compostResults && response.compostResults.length > 0) {
-					compostMessage = `\n\n${i18n.t("commands:report.city.homes.garden.compostTitle", { lng: ctx.lng })}`;
-					for (const result of response.compostResults) {
-						const plant = PLANT_TYPES.find(p => p.id === result.plantId);
-						const plantName = plant
-							? i18n.t(`commands:report.city.homes.garden.plants.${plant.id}`, { lng: ctx.lng })
-							: "?";
-						const materialEmoji = CrowniclesIcons.materials[result.materialId] ?? "📦";
-						const materialName = i18n.t(`models:materials.${result.materialId}`, { lng: ctx.lng });
-						compostMessage += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
-							lng: ctx.lng,
-							plantEmoji: CrowniclesIcons.plants[result.plantId] ?? "🌱",
-							plant: plantName,
-							materialEmoji,
-							material: materialName
-						})}`;
-					}
-				}
-
-				// Refresh the garden menu with updated data and compost message
+				this.updateGardenAfterHarvest(garden, response, ctx);
+				const compostMessage = this.buildCompostMessage(response, ctx);
 				this.registerGardenMenu(ctx, nestedMenus, compostMessage);
 				await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 			}
