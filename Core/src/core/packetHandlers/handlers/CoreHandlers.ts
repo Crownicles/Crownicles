@@ -16,8 +16,11 @@ import {
 	CommandReportPlantTransferReq
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	handleChestAction, handleGardenHarvest, handleGardenPlant, handlePlantTransfer
+	handleChestAction
 } from "../../report/ReportCityService";
+import {
+	handleGardenHarvest, handleGardenPlant, handlePlantTransfer
+} from "../../report/ReportGardenService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
