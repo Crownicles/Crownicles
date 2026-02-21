@@ -35,9 +35,30 @@ import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
 import { PLANT_TYPES } from "../../../../../../../Lib/src/constants/PlantConstants";
+
 type ItemSlotDisplay = {
 	slot: number;
 	details: ItemWithDetails;
+};
+
+type PlantEntry = {
+	section: "deposit" | "withdraw";
+	plantId: number;
+	slot?: number;
+	quantity?: number;
+	disabled: boolean;
+};
+
+type PlantTransferPrefixParams = {
+	selectedValue: string;
+	prefix: string;
+	action: string;
+};
+
+type PlantTransferData = {
+	action: string;
+	plantId: number;
+	playerSlot: number;
 };
 
 export class ChestFeatureHandler implements HomeFeatureHandler {
@@ -151,11 +172,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		// Plant transfer actions
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX)) {
-			await this.handlePlantTransferByPrefix(ctx, selectedValue, HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX, HomeConstants.PLANT_TRANSFER_ACTIONS.DEPOSIT, componentInteraction, nestedMenus);
+			await this.handlePlantTransferByPrefix(ctx, {
+				selectedValue, prefix: HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX, action: HomeConstants.PLANT_TRANSFER_ACTIONS.DEPOSIT
+			}, componentInteraction, nestedMenus);
 			return true;
 		}
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX)) {
-			await this.handlePlantTransferByPrefix(ctx, selectedValue, HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX, HomeConstants.PLANT_TRANSFER_ACTIONS.WITHDRAW, componentInteraction, nestedMenus);
+			await this.handlePlantTransferByPrefix(ctx, {
+				selectedValue, prefix: HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX, action: HomeConstants.PLANT_TRANSFER_ACTIONS.WITHDRAW
+			}, componentInteraction, nestedMenus);
 			return true;
 		}
 
@@ -720,51 +745,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const currentPage = Math.min(Math.max(0, page), totalPages - 1);
 		const pageEntries = entries.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
 
-		// Build description and buttons
-		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-		let description = i18n.t("commands:report.city.homes.chest.plantHeader", {
-			lng: ctx.lng,
-			max: maxCapacity
-		});
-
-		let currentSection: "deposit" | "withdraw" | null = null;
-		let emoteIndex = 0;
-
-		for (const entry of pageEntries) {
-			// Add section header when section changes
-			if (entry.section !== currentSection) {
-				currentSection = entry.section;
-				const sectionKey = entry.section === "deposit" ? "plantDepositSection" : "plantWithdrawSection";
-				description += `\n\n${i18n.t(`commands:report.city.homes.chest.${sectionKey}`, { lng: ctx.lng })}`;
-			}
-
-			const plantType = PLANT_TYPES.find(p => p.id === entry.plantId)!;
-			const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
-			const icon = CrowniclesIcons.plants[plantType.id] ?? "🌱";
-
-			if (entry.section === "deposit") {
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
-				addButtonToRow(rows, this.buildItemButton(
-					emoteIndex,
-					`${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${entry.plantId}_${entry.slot}`,
-					entry.disabled
-				));
-			}
-			else {
-				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName} (${entry.quantity}/${maxCapacity})`;
-				addButtonToRow(rows, this.buildItemButton(
-					emoteIndex,
-					`${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${entry.plantId}`,
-					entry.disabled
-				));
-			}
-
-			emoteIndex++;
-		}
-
-		if (entries.length === 0) {
-			description += `\n\n${i18n.t("commands:report.city.homes.chest.plantEmpty", { lng: ctx.lng })}`;
-		}
+		const {
+			description, rows
+		} = this.buildPlantTabContent(ctx, pageEntries, maxCapacity);
 
 		// Pagination buttons (prev / next)
 		if (totalPages > 1) {
@@ -792,12 +775,68 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 					i18n.t("commands:report.city.homes.chest.title", {
 						lng: ctx.lng, pseudo: ctx.pseudo
 					}),
+
 					ctx.user
 				)
 				.setDescription(description),
 			components: rows,
 			createCollector: this.createChestCollector(ctx)
 		});
+	}
+
+	/**
+	 * Build description and button rows for the plant tab entries list.
+	 */
+	private buildPlantTabContent(
+		ctx: HomeFeatureHandlerContext,
+		pageEntries: PlantEntry[],
+		maxCapacity: number
+	): {
+		description: string; rows: ActionRowBuilder<ButtonBuilder>[];
+	} {
+		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
+		let description = i18n.t("commands:report.city.homes.chest.plantHeader", {
+			lng: ctx.lng,
+			max: maxCapacity
+		});
+		let currentSection: "deposit" | "withdraw" | null = null;
+		let emoteIndex = 0;
+
+		for (const entry of pageEntries) {
+			if (entry.section !== currentSection) {
+				currentSection = entry.section;
+				const sectionKey = entry.section === "deposit" ? "plantDepositSection" : "plantWithdrawSection";
+				description += `\n\n${i18n.t(`commands:report.city.homes.chest.${sectionKey}`, { lng: ctx.lng })}`;
+			}
+			const plantType = PLANT_TYPES.find(p => p.id === entry.plantId)!;
+			const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
+			const icon = CrowniclesIcons.plants[plantType.id] ?? "🌱";
+
+			if (entry.section === "deposit") {
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
+				addButtonToRow(rows, this.buildItemButton(
+					emoteIndex,
+					`${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${entry.plantId}_${entry.slot}`,
+					entry.disabled
+				));
+			}
+			else {
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName} (${entry.quantity}/${maxCapacity})`;
+				addButtonToRow(rows, this.buildItemButton(
+					emoteIndex,
+					`${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${entry.plantId}`,
+					entry.disabled
+				));
+			}
+			emoteIndex++;
+		}
+
+		if (pageEntries.length === 0) {
+			description += `\n\n${i18n.t("commands:report.city.homes.chest.plantEmpty", { lng: ctx.lng })}`;
+		}
+		return {
+			description, rows
+		};
 	}
 
 	/**
@@ -812,16 +851,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}[],
 		maxCapacity: number,
 		hasEmptySlot: boolean
-	): {
-		section: "deposit" | "withdraw"; plantId: number; slot?: number; quantity?: number; disabled: boolean;
-	}[] {
-		const entries: {
-			section: "deposit" | "withdraw";
-			plantId: number;
-			slot?: number;
-			quantity?: number;
-			disabled: boolean;
-		}[] = [];
+	): PlantEntry[] {
+		const entries: PlantEntry[] = [];
 
 		for (const slot of playerSlots.filter(s => s.plantId !== 0)) {
 			if (!PLANT_TYPES.find(p => p.id === slot.plantId)) {
@@ -856,19 +887,19 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 */
 	private async handlePlantTransferByPrefix(
 		ctx: HomeFeatureHandlerContext,
-		selectedValue: string,
-		prefix: string,
-		action: string,
+		params: PlantTransferPrefixParams,
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		await componentInteraction.deferUpdate();
 
-		const parts = selectedValue.replace(prefix, "").split("_");
+		const parts = params.selectedValue.replace(params.prefix, "").split("_");
 		const plantId = parseInt(parts[0], 10);
 		const playerSlot = parts[1] !== undefined ? parseInt(parts[1], 10) : -1;
 
-		await this.sendPlantTransferAction(ctx, action, plantId, playerSlot, nestedMenus);
+		await this.sendPlantTransferAction(ctx, {
+			action: params.action, plantId, playerSlot
+		}, nestedMenus);
 	}
 
 	/**
@@ -876,15 +907,13 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 */
 	private async sendPlantTransferAction(
 		ctx: HomeFeatureHandlerContext,
-		action: string,
-		plantId: number,
-		playerSlot: number,
+		transferData: PlantTransferData,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
 			makePacket(CommandReportPlantTransferReq, {
-				action, plantId, playerSlot
+				action: transferData.action, plantId: transferData.plantId, playerSlot: transferData.playerSlot
 			}),
 			async (_responseContext, _packetName, responsePacket) => {
 				const response = responsePacket as unknown as CommandReportPlantTransferRes;

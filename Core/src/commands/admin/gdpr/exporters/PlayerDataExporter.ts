@@ -213,7 +213,11 @@ async function exportMiscData(
 	}
 
 	// Player plant slots
-	const plantSlots = await PlayerPlantSlot.findAll({ where: { playerId: player.id } });
+	await exportPlayerPlantSlots(player.id, csvFiles);
+}
+
+async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const plantSlots = await PlayerPlantSlot.findAll({ where: { playerId } });
 	if (plantSlots.length > 0) {
 		csvFiles["17_plant_slots.csv"] = toCSV(plantSlots.map(slot => ({
 			slotType: slot.slotType,

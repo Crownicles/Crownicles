@@ -21,7 +21,9 @@ import { Materials } from "../../core/database/game/models/Material";
 import { Homes } from "../../core/database/game/models/Home";
 import { StatValues } from "../../../../Lib/src/types/StatValues";
 import { EMPTY_SLOTS_PER_CATEGORY } from "../../../../Lib/src/types/HomeFeatures";
-import { PlayerPlantSlots } from "../../core/database/game/models/PlayerPlantSlot";
+import {
+	PlayerPlantSlots, PlayerPlantSlot
+} from "../../core/database/game/models/PlayerPlantSlot";
 import {
 	PlantId, PLANT_SLOT_TYPE
 } from "../../../../Lib/src/constants/PlantConstants";
@@ -66,6 +68,27 @@ function buildObjectBackups(
 
 function getBackupItems(items: InventorySlot[], categoryCheck: (item: InventorySlot) => boolean): InventorySlot[] {
 	return items.filter(item => categoryCheck(item) && !item.isEquipped() && item.itemId !== 0);
+}
+
+function buildPlantsData(
+	playerPlantSlots: PlayerPlantSlot[],
+	invInfo: { plantSlots: number }
+): NonNullable<CommandInventoryPacketRes["data"]>["plants"] {
+	if (playerPlantSlots.length === 0) {
+		return undefined;
+	}
+	return {
+		seed: playerPlantSlots.find(
+			s => s.slotType === PLANT_SLOT_TYPE.SEED && s.plantId !== 0
+		)?.plantId as PlantId | undefined,
+		plantSlots: playerPlantSlots
+			.filter(s => s.slotType === PLANT_SLOT_TYPE.PLANT && s.plantId !== 0)
+			.map(s => ({
+				plantId: s.plantId as PlantId,
+				slot: s.slot
+			})),
+		maxPlantSlots: invInfo.plantSlots
+	};
 }
 
 export default class InventoryCommand {
@@ -129,20 +152,7 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 					materialId: m.materialId,
 					quantity: m.quantity
 				})),
-			plants: playerPlantSlots.length > 0
-				? {
-					seed: playerPlantSlots.find(
-						s => s.slotType === PLANT_SLOT_TYPE.SEED && s.plantId !== 0
-					)?.plantId as PlantId | undefined,
-					plantSlots: playerPlantSlots
-						.filter(s => s.slotType === PLANT_SLOT_TYPE.PLANT && s.plantId !== 0)
-						.map(s => ({
-							plantId: s.plantId as PlantId,
-							slot: s.slot
-						})),
-					maxPlantSlots: invInfo.plantSlots
-				}
-				: undefined
+			plants: buildPlantsData(playerPlantSlots, invInfo)
 		}
 	};
 }
