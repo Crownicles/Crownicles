@@ -19,9 +19,7 @@ import { HomeMenuIds } from "../HomeMenuConstants";
 import { getSlotCountForCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
 import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
-import {
-	DiscordCollectorUtils, addButtonToRow
-} from "../../../../../utils/DiscordCollectorUtils";
+import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -407,7 +405,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 		// Back button
 
-		addButtonToRow(rows, new ButtonBuilder()
+		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
 			.setStyle(ButtonStyle.Secondary));
@@ -585,11 +583,11 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 			const button = this.buildItemButton(j, `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`);
 
-			addButtonToRow(rows, button);
+			DiscordCollectorUtils.addButtonToRow(rows, button);
 		}
 
 		// Back button
-		addButtonToRow(rows, new ButtonBuilder()
+		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(`${HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX}${categoryIndex}`)
 			.setStyle(ButtonStyle.Secondary));
