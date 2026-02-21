@@ -28,9 +28,6 @@ import { disableRows } from "../../utils/DiscordCollectorUtils";
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { DiscordConstants } from "../../DiscordConstants";
-import {
-	PlantConstants, PLANT_TYPES
-} from "../../../../Lib/src/constants/PlantConstants";
 
 enum InventoryView {
 	EQUIPPED = 0,
@@ -294,9 +291,9 @@ function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: 
 	// Seed slot
 	let seedValue: string;
 	if (plants.seed) {
-		const seedPlant = PLANT_TYPES.find(p => p.id === plants.seed);
-		const seedName = i18n.t(`commands:report.city.homes.garden.plants.${plants.seed}`, { lng });
-		seedValue = `${seedPlant?.fallbackEmote ?? "🌱"} **${seedName}**`;
+		const seedEmoji = CrowniclesIcons.plants[plants.seed] ?? CrowniclesIcons.city.homeUpgrades.garden;
+		const seedName = i18n.t(`models:plants.${plants.seed}`, { lng });
+		seedValue = `${seedEmoji} **${seedName}**`;
 	}
 	else {
 		seedValue = i18n.t("commands:inventory.emptySlot", { lng });
@@ -314,9 +311,9 @@ function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: 
 	for (let slot = 0; slot < plants.maxPlantSlots; slot++) {
 		const found = plants.plantSlots.find(p => p.slot === slot);
 		if (found) {
-			const plant = PlantConstants.getPlantById(found.plantId);
-			const plantName = i18n.t(`commands:report.city.homes.garden.plants.${found.plantId}`, { lng });
-			plantEntries.push(`${plant?.fallbackEmote ?? "🌱"} **${plantName}**`);
+			const plantEmoji = CrowniclesIcons.plants[found.plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
+			const plantName = i18n.t(`models:plants.${found.plantId}`, { lng });
+			plantEntries.push(`${plantEmoji} **${plantName}**`);
 		}
 		else {
 			plantEntries.push(i18n.t("commands:inventory.emptySlot", { lng }));

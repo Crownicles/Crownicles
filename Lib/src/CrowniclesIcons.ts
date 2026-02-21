@@ -271,6 +271,13 @@ export const CrowniclesIcons: {
 			garden: string;
 			earthQuality: string;
 		};
+		gardenStatus: {
+			empty: string;
+			ready: string;
+			growing: string;
+			seed: string;
+			compost: string;
+		};
 		chestActions: {
 			inventory: string;
 			deposit: string;
@@ -2617,6 +2624,13 @@ export const CrowniclesIcons: {
 			upgradeEquipment: "🛠️",
 			garden: "🌱",
 			earthQuality: "↗️"
+		},
+		gardenStatus: {
+			empty: "🕳️",
+			ready: "✅",
+			growing: "⏳",
+			seed: "🌰",
+			compost: "♻️"
 		},
 		chestActions: {
 			inventory: "🎒",
