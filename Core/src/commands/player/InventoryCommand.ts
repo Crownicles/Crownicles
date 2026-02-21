@@ -21,6 +21,12 @@ import { Materials } from "../../core/database/game/models/Material";
 import { Homes } from "../../core/database/game/models/Home";
 import { StatValues } from "../../../../Lib/src/types/StatValues";
 import { EMPTY_SLOTS_PER_CATEGORY } from "../../../../Lib/src/types/HomeFeatures";
+import {
+	PlayerPlantSlots, PlayerPlantSlot
+} from "../../core/database/game/models/PlayerPlantSlot";
+import {
+	PlantId, PLANT_SLOT_TYPE
+} from "../../../../Lib/src/constants/PlantConstants";
 
 function buildMainItemBackups(
 	items: InventorySlot[],
@@ -64,6 +70,27 @@ function getBackupItems(items: InventorySlot[], categoryCheck: (item: InventoryS
 	return items.filter(item => categoryCheck(item) && !item.isEquipped() && item.itemId !== 0);
 }
 
+function buildPlantsData(
+	playerPlantSlots: PlayerPlantSlot[],
+	invInfo: { plantSlots: number }
+): NonNullable<CommandInventoryPacketRes["data"]>["plants"] {
+	if (playerPlantSlots.length === 0) {
+		return undefined;
+	}
+	return {
+		seed: playerPlantSlots.find(
+			s => s.slotType === PLANT_SLOT_TYPE.SEED && s.plantId !== 0
+		)?.plantId as PlantId | undefined,
+		plantSlots: playerPlantSlots
+			.filter(s => s.slotType === PLANT_SLOT_TYPE.PLANT && s.plantId !== 0)
+			.map(s => ({
+				plantId: s.plantId as PlantId,
+				slot: s.slot
+			})),
+		maxPlantSlots: invInfo.plantSlots
+	};
+}
+
 export default class InventoryCommand {
 	@commandRequires(CommandInventoryPacketReq, {
 		notBlocked: false,
@@ -92,6 +119,7 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 	const playerMaterials = await Materials.getPlayerMaterials(toCheckPlayer.id);
 	const home = await Homes.getOfPlayer(toCheckPlayer.id);
 	const homeBonus = home?.getLevel()?.features.inventoryBonus ?? EMPTY_SLOTS_PER_CATEGORY;
+	const playerPlantSlots = await PlayerPlantSlots.getOfPlayer(toCheckPlayer.id);
 
 	const weapon = items.find(item => item.isWeapon() && item.isEquipped())!;
 	const armor = items.find(item => item.isArmor() && item.isEquipped())!;
@@ -123,7 +151,8 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 				.map(m => ({
 					materialId: m.materialId,
 					quantity: m.quantity
-				}))
+				})),
+			plants: buildPlantsData(playerPlantSlots, invInfo)
 		}
 	};
 }

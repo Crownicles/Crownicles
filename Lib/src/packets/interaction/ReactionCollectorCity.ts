@@ -15,6 +15,10 @@ import {
 } from "../../types/HomeFeatures";
 import { MaterialRarity } from "../../types/MaterialRarity";
 import { ItemSlot } from "../../types/ItemSlot";
+import { PlantId } from "../../constants/PlantConstants";
+import {
+	PlantStorageEntry, PlayerPlantSlotEntry
+} from "../../types/PlantStorageEntry";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -98,6 +102,41 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 				/** Max backup slots per category in the player's inventory */
 				inventoryCapacity: ChestSlotsPerCategory;
+
+				/** Plant storage in the chest (quantities per plant type) */
+				plantStorage?: PlantStorageEntry[];
+
+				/** Player's carried plant slots */
+				playerPlantSlots?: PlayerPlantSlotEntry[];
+
+				/** Maximum capacity per plant type (homeLevel * 1) */
+				plantMaxCapacity?: number;
+			};
+
+			garden?: {
+
+				/** Garden plot status */
+				plots: {
+					slot: number;
+					plantId: PlantId | 0;
+					growthProgress: number;
+					isReady: boolean;
+
+					/** Remaining seconds until ready, 0 if ready */
+					remainingSeconds: number;
+				}[];
+
+				/** Plant storage (chest) quantities per plant type */
+				plantStorage: PlantStorageEntry[];
+
+				/** Whether the player has a seed to plant */
+				hasSeed: boolean;
+
+				/** The seed plant type the player is carrying (0 if none) */
+				seedPlantId: PlantId | 0;
+
+				/** Total garden plots available */
+				totalPlots: number;
 			};
 		};
 		manage?: {
@@ -228,6 +267,9 @@ export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionColle
 	itemCategory!: ItemCategory;
 }
 
+/** Reaction for harvesting all ready plants from the garden */
+export class ReactionCollectorGardenHarvestReaction extends ReactionCollectorReaction {}
+
 /**
  * Union type for all city reactions
  */
@@ -245,7 +287,8 @@ type CityReaction =
 	| ReactionCollectorUpgradeItemReaction
 	| ReactionCollectorBlacksmithMenuReaction
 	| ReactionCollectorBlacksmithUpgradeReaction
-	| ReactionCollectorBlacksmithDisenchantReaction;
+	| ReactionCollectorBlacksmithDisenchantReaction
+	| ReactionCollectorGardenHarvestReaction;
 
 /**
  * Packet type for the city reaction collector
@@ -347,11 +390,26 @@ export class ReactionCollectorCity extends ReactionCollector {
 				itemCategory: item.category
 			})) ?? [];
 
+		const gardenReactions = this.buildGardenReactions();
+
 		return [
 			homeMenuReaction,
 			homeBedReaction,
-			...upgradeItemReactions
+			...upgradeItemReactions,
+			...gardenReactions
 		];
+	}
+
+	private buildGardenReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		const garden = this.data.home.owned?.garden;
+		if (!garden) {
+			return [];
+		}
+
+		// Harvest reaction (always available if garden exists)
+		return [this.buildReaction(ReactionCollectorGardenHarvestReaction, {})];
 	}
 
 	private buildBlacksmithReactions(): {

@@ -10,9 +10,17 @@ import {
 	ReactionCollectorResetTimerPacketReq
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import {
-	CommandReportHomeChestActionReq, CommandReportHomeChestActionRes
+	CommandReportHomeChestActionReq, CommandReportHomeChestActionRes,
+	CommandReportGardenHarvestReq,
+	CommandReportGardenPlantReq,
+	CommandReportPlantTransferReq
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
-import { handleChestAction } from "../../report/ReportCityService";
+import {
+	handleChestAction
+} from "../../report/ReportCityService";
+import {
+	handleGardenHarvest, handleGardenPlant, handlePlantTransfer
+} from "../../report/ReportGardenService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
@@ -44,5 +52,20 @@ export default class CoreHandlers {
 	async equipAction(response: CrowniclesPacket[], context: PacketContext, packet: CommandEquipActionReq): Promise<void> {
 		const result = await handleEquipAction(context.keycloakId!, packet);
 		response.push(makePacket(CommandEquipActionRes, result));
+	}
+
+	@packetHandler(CommandReportGardenHarvestReq)
+	async gardenHarvest(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenHarvestReq): Promise<void> {
+		response.push(await handleGardenHarvest(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportGardenPlantReq)
+	async gardenPlant(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenPlantReq): Promise<void> {
+		response.push(await handleGardenPlant(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportPlantTransferReq)
+	async plantTransfer(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportPlantTransferReq): Promise<void> {
+		response.push(await handlePlantTransfer(context.keycloakId!, packet));
 	}
 }

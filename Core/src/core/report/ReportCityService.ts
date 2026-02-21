@@ -88,9 +88,14 @@ import {
 	getRandomItemShopItem
 } from "../utils/GeneralShopItems";
 import { getBadgeShopItem } from "../utils/StockExchangeShopItems";
-import { getSlotExtensionShopItem } from "../utils/TannerShopItems";
+import {
+	getPlantSlotExtensionShopItem, getSlotExtensionShopItem
+} from "../utils/TannerShopItems";
 import { crowniclesInstance } from "../../index";
 import { toItemWithDetails } from "../utils/ItemUtils";
+import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
+import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
+import { buildGardenData } from "./ReportGardenService";
 
 // Type aliases for commonly used nested types from ReactionCollectorCityData
 type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
@@ -172,15 +177,20 @@ export async function buildHomeData(
 
 	let upgradeStation;
 	let chest;
+	let garden;
 	let owned;
 	if (isHomeInCity) {
 		upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel!, player);
 		chest = await buildChestData(home!, homeLevel!, playerInventory, player);
+		garden = homeLevel!.features.gardenPlots > 0
+			? await buildGardenData(home!, homeLevel!, player)
+			: undefined;
 		owned = {
 			level: home!.level,
 			features: homeLevel!.features,
 			upgradeStation,
-			chest
+			chest,
+			garden
 		};
 	}
 
@@ -337,11 +347,39 @@ export async function buildChestData(
 		object: (inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) : 1) + homeBonus.object
 	};
 
+	// Build plant data if garden is available
+	const hasGarden = homeLevel.features.gardenPlots > 0;
+	let plantStorage: ChestData["plantStorage"];
+	let playerPlantSlots: ChestData["playerPlantSlots"];
+	let plantMaxCapacity: ChestData["plantMaxCapacity"];
+
+	if (hasGarden) {
+		const homeStorage = await HomePlantStorages.getOfHome(home.id);
+		const plantSlots = await PlayerPlantSlots.getPlantSlots(player.id);
+		plantMaxCapacity = home.level;
+
+		plantStorage = homeStorage
+			.filter(s => s.quantity > 0)
+			.map(s => ({
+				plantId: s.plantId,
+				quantity: s.quantity,
+				maxCapacity: plantMaxCapacity!
+			}));
+
+		playerPlantSlots = plantSlots.map(s => ({
+			slot: s.slot,
+			plantId: s.plantId
+		}));
+	}
+
 	return {
 		chestItems,
 		depositableItems,
 		slotsPerCategory,
-		inventoryCapacity
+		inventoryCapacity,
+		plantStorage,
+		playerPlantSlots,
+		plantMaxCapacity
 	};
 }
 
@@ -1180,27 +1218,27 @@ export async function openStockExchange(player: Player, context: PacketContext, 
 }
 
 /**
- * Open the tanner shop for the player (inventory slot extensions)
+ * Open the tanner shop for the player (inventory slot extensions + plant slot extensions)
  */
 export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	const slotExtensionItem = await getSlotExtensionShopItem(player.id);
-	if (!slotExtensionItem) {
-		// Player has all slots maxed out — just open an empty shop
-		const shopCategories: ShopCategory[] = [];
-		await ShopUtils.createAndSendShopCollector(context, response, {
-			shopCategories,
-			player,
-			logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
-		});
-		return;
-	}
+	const plantSlotExtensionItem = await getPlantSlotExtensionShopItem(player.id);
 
-	const shopCategories: ShopCategory[] = [
-		{
+	const shopCategories: ShopCategory[] = [];
+
+	if (slotExtensionItem) {
+		shopCategories.push({
 			id: "slotExtension",
 			items: [slotExtensionItem]
-		}
-	];
+		});
+	}
+
+	if (plantSlotExtensionItem) {
+		shopCategories.push({
+			id: "plantSlotExtension",
+			items: [plantSlotExtensionItem]
+		});
+	}
 
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
@@ -1510,3 +1548,4 @@ async function processChestSwap({
 
 	return null;
 }
+
