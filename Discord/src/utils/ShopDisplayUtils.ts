@@ -6,7 +6,7 @@ import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import {
 	sendErrorMessage, sendInteractionNotForYou, SendManner
-} from "../utils/ErrorUtils";
+} from "./ErrorUtils";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
 	CommandShopNotEnoughCurrency,
@@ -26,16 +26,16 @@ import {
 	StringSelectMenuBuilder,
 	StringSelectMenuOptionBuilder
 } from "discord.js";
-import { DisplayUtils } from "../utils/DisplayUtils";
+import { DisplayUtils } from "./DisplayUtils";
 import { Constants } from "../../../Lib/src/constants/Constants";
-import { PacketUtils } from "../utils/PacketUtils";
+import { PacketUtils } from "./PacketUtils";
 import { ChangeBlockingReasonPacket } from "../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
 import { BlockingConstants } from "../../../Lib/src/constants/BlockingConstants";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../Lib/src/Language";
 import {
 	disableRows, DiscordCollectorUtils
-} from "../utils/DiscordCollectorUtils";
+} from "./DiscordCollectorUtils";
 import {
 	ReactionCollectorBuyCategorySlotCancelReaction,
 	ReactionCollectorBuyCategorySlotReaction
@@ -46,7 +46,7 @@ import {
 } from "../../../Lib/src/utils/ShopUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { ReactionCollectorResetTimerPacketReq } from "../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
-import { escapeUsername } from "../utils/StringUtils";
+import { escapeUsername } from "./StringUtils";
 import { Badge } from "../../../Lib/src/types/Badge";
 
 export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
