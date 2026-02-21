@@ -5,7 +5,9 @@ import {
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
-import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemCategory, ItemConstants
+} from "../../../../Lib/src/constants/ItemConstants";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -54,19 +56,21 @@ function getBuySlotExtensionShopItemCallback(playerId: number, price: number): E
 export async function getSlotExtensionShopItem(playerId: number): Promise<ShopItem | null> {
 	const player = await Players.getById(playerId);
 	const invInfo = await InventoryInfos.getOfPlayer(player.id);
-	const availableCategories = [
-		0,
-		1,
-		2,
-		3
+	const availableSlotsPerCategory = [
+		ItemCategory.WEAPON,
+		ItemCategory.ARMOR,
+		ItemCategory.POTION,
+		ItemCategory.OBJECT
 	]
 		.map(itemCategory => ItemConstants.SLOTS.LIMITS[itemCategory] - invInfo.slotLimitForCategory(itemCategory));
-	if (availableCategories.every(availableCategory => availableCategory <= 0)) {
+	if (availableSlotsPerCategory.every(availableCategory => availableCategory <= 0)) {
 		return null;
 	}
 	const totalSlots = invInfo.weaponSlots + invInfo.armorSlots
 		+ invInfo.potionSlots + invInfo.objectSlots;
-	const price = ItemConstants.SLOTS.PRICES[totalSlots - 4];
+	const baseSlots = ItemConstants.SLOTS.LIMITS.length; // 1 slot per category by default
+	const extraSlotsBought = totalSlots - baseSlots;
+	const price = ItemConstants.SLOTS.PRICES[extraSlotsBought];
 	if (!price) {
 		return null;
 	}
@@ -75,7 +79,7 @@ export async function getSlotExtensionShopItem(playerId: number): Promise<ShopIt
 		price,
 		amounts: [1],
 		buyCallback: (response, _playerId, context): boolean => {
-			const collector = new ReactionCollectorBuyCategorySlot(availableCategories);
+			const collector = new ReactionCollectorBuyCategorySlot(availableSlotsPerCategory);
 
 			const packet = new ReactionCollectorInstance(
 				collector,
