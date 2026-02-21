@@ -16,6 +16,9 @@ import {
 import { MaterialRarity } from "../../types/MaterialRarity";
 import { ItemSlot } from "../../types/ItemSlot";
 import { PlantId } from "../../constants/PlantConstants";
+import {
+	PlantStorageEntry, PlayerPlantSlotEntry
+} from "../../types/PlantStorageEntry";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -101,17 +104,10 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 				inventoryCapacity: ChestSlotsPerCategory;
 
 				/** Plant storage in the chest (quantities per plant type) */
-				plantStorage?: {
-					plantId: PlantId;
-					quantity: number;
-					maxCapacity: number;
-				}[];
+				plantStorage?: PlantStorageEntry[];
 
 				/** Player's carried plant slots */
-				playerPlantSlots?: {
-					slot: number;
-					plantId: PlantId | 0;
-				}[];
+				playerPlantSlots?: PlayerPlantSlotEntry[];
 
 				/** Maximum capacity per plant type (homeLevel * 1) */
 				plantMaxCapacity?: number;
@@ -131,11 +127,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 				}[];
 
 				/** Plant storage (chest) quantities per plant type */
-				plantStorage: {
-					plantId: PlantId;
-					quantity: number;
-					maxCapacity: number;
-				}[];
+				plantStorage: PlantStorageEntry[];
 
 				/** Whether the player has a seed to plant */
 				hasSeed: boolean;

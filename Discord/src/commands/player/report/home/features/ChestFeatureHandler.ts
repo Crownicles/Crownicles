@@ -809,8 +809,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				description += `\n\n${i18n.t(`commands:report.city.homes.chest.${sectionKey}`, { lng: ctx.lng })}`;
 			}
 			const plantType = PLANT_TYPES.find(p => p.id === entry.plantId)!;
-			const plantName = i18n.t(`commands:report.city.homes.garden.plants.${plantType.id}`, { lng: ctx.lng });
-			const icon = CrowniclesIcons.plants[plantType.id] ?? "🌱";
+			const plantName = i18n.t(`models:plants.${plantType.id}`, { lng: ctx.lng });
+			const icon = CrowniclesIcons.plants[plantType.id] ?? CrowniclesIcons.city.homeUpgrades.garden;
 
 			if (entry.section === "deposit") {
 				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
@@ -971,7 +971,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				new ButtonBuilder()
 					.setCustomId(HomeMenuIds.CHEST_PLANT_TAB)
 					.setLabel(`${i18n.t("commands:report.city.homes.chest.plantTabLabel", { lng: ctx.lng })} (${plantCount})`)
-					.setEmoji("🌱")
+					.setEmoji(CrowniclesIcons.city.homeUpgrades.garden)
 					.setStyle(plantCount > 0 ? ButtonStyle.Primary : ButtonStyle.Secondary)
 			);
 		}
