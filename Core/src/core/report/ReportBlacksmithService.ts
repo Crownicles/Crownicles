@@ -13,11 +13,12 @@ import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
 type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
+type BlacksmithItemData = ReturnType<typeof WeaponDataController.instance.getById> | ReturnType<typeof ArmorDataController.instance.getById> | null;
 
 /**
  * Get the item data (weapon or armor) for an inventory slot
  */
-export function getBlacksmithItemData(inventorySlot: InventorySlot): ReturnType<typeof WeaponDataController.instance.getById> | ReturnType<typeof ArmorDataController.instance.getById> | null {
+export function getBlacksmithItemData(inventorySlot: InventorySlot): BlacksmithItemData {
 	if (!inventorySlot.isPrimaryEquipment()) {
 		return null;
 	}

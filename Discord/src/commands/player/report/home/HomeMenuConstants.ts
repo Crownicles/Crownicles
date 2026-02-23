@@ -93,5 +93,12 @@ export const HomeMenuIds = {
 	GARDEN_STORAGE: "GARDEN_STORAGE",
 
 	/** Back to garden from storage */
-	GARDEN_BACK: "GARDEN_BACK"
+	GARDEN_BACK: "GARDEN_BACK",
+
+	// --- Feature IDs ---
+	/** Garden feature identifier */
+	FEATURE_GARDEN: "garden",
+
+	/** Chest feature identifier */
+	FEATURE_CHEST: "chest"
 } as const;
