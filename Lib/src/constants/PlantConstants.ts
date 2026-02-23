@@ -1,3 +1,5 @@
+import { CrowniclesIcons } from "../CrowniclesIcons";
+
 /**
  * Plant type IDs for the garden system.
  * Each plant has a unique ID (1-10), a growth time, and a fallback emoji.
@@ -133,7 +135,7 @@ export abstract class PlantConstants {
 	/**
 	 * Total number of plant types
 	 */
-	public static readonly PLANT_COUNT = 10;
+	public static readonly PLANT_COUNT = PLANT_TYPES.length;
 
 	/**
 	 * Number of destroyed plants required to receive a random material
@@ -165,6 +167,13 @@ export abstract class PlantConstants {
 	 */
 	public static getPlantById(id: PlantId | 0): PlantType | undefined {
 		return PLANT_TYPES.find(p => p.id === id);
+	}
+
+	/**
+	 * Get the emoji for a plant ID, falling back to the garden icon.
+	 */
+	public static getPlantEmoji(plantId: PlantId | 0): string {
+		return CrowniclesIcons.plants[plantId as PlantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
 	}
 
 	/**

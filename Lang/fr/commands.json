@@ -1100,6 +1100,7 @@
           "storageButton": "Réserve ({{count}})",
           "storageTitle": "{emote:city.homeUpgrades.garden} Réserve de plantes :",
           "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",
+          "storageEntry": "{{emoji}} {{plant}} — {{quantity}}/{{maxCapacity}}",
           "backToGarden": "← Retour au jardin",
           "compostTitle": "{emote:city.gardenStatus.compost} **Compostage :**",
           "compostLine": "• {{plantEmoji}} {{plant}} → {{materialEmoji}} {{material}}"

@@ -28,13 +28,14 @@ import {
 	CommandReportHomeChestActionRes,
 	ChestAction,
 	CommandReportPlantTransferReq,
-	CommandReportPlantTransferRes
+	CommandReportPlantTransferRes,
+	PlantTransferAction
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConstants";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
-import { PLANT_TYPES } from "../../../../../../../Lib/src/constants/PlantConstants";
+import { PlantConstants } from "../../../../../../../Lib/src/constants/PlantConstants";
 
 type ItemSlotDisplay = {
 	slot: number;
@@ -52,17 +53,17 @@ type PlantEntry = {
 type PlantTransferPrefixParams = {
 	selectedValue: string;
 	prefix: string;
-	action: string;
+	action: PlantTransferAction;
 };
 
 type PlantTransferData = {
-	action: string;
+	action: PlantTransferAction;
 	plantId: number;
 	playerSlot: number;
 };
 
 export class ChestFeatureHandler implements HomeFeatureHandler {
-	public readonly featureId = "chest";
+	public readonly featureId = HomeMenuIds.FEATURE_CHEST;
 
 	private hasAnyChestSlots(ctx: HomeFeatureHandlerContext): boolean {
 		const slots = ctx.homeData.features.chestSlots;
@@ -383,9 +384,12 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const menuId = `${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`;
 
 		// Build description header and inventory info
-		const description = this.buildCategoryMenuContent(
-			ctx, catInfo, categoryChestItems, categoryDepositableItems, maxSlots, hasEmptySlots
-		);
+		const description = this.buildCategoryMenuContent(ctx, catInfo, {
+			chestItems: categoryChestItems,
+			depositableItems: categoryDepositableItems,
+			maxSlots,
+			hasEmptySlots
+		});
 
 		nestedMenus.registerMenu(menuId, {
 			embed: new CrowniclesEmbed()
@@ -407,13 +411,21 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	private buildCategoryMenuContent(
 		ctx: HomeFeatureHandlerContext,
 		catInfo: typeof CATEGORY_INFO[number],
-		categoryChestItems: ItemSlotDisplay[],
-		categoryDepositableItems: ItemSlotDisplay[],
-		maxSlots: number,
-		hasEmptySlots: boolean
+		categoryData: {
+			chestItems: ItemSlotDisplay[];
+			depositableItems: ItemSlotDisplay[];
+			maxSlots: number;
+			hasEmptySlots: boolean;
+		}
 	): {
 		text: string; rows: ActionRowBuilder<ButtonBuilder>[];
 	} {
+		const {
+			chestItems: categoryChestItems,
+			depositableItems: categoryDepositableItems,
+			maxSlots,
+			hasEmptySlots
+		} = categoryData;
 		const chest = ctx.homeData.chest!;
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 
@@ -808,9 +820,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				const sectionKey = entry.section === "deposit" ? "plantDepositSection" : "plantWithdrawSection";
 				description += `\n\n${i18n.t(`commands:report.city.homes.chest.${sectionKey}`, { lng: ctx.lng })}`;
 			}
-			const plantType = PLANT_TYPES.find(p => p.id === entry.plantId)!;
+			const plantType = PlantConstants.getPlantById(entry.plantId)!;
 			const plantName = i18n.t(`models:plants.${plantType.id}`, { lng: ctx.lng });
-			const icon = CrowniclesIcons.plants[plantType.id] ?? CrowniclesIcons.city.homeUpgrades.garden;
+			const icon = PlantConstants.getPlantEmoji(plantType.id);
 
 			if (entry.section === "deposit") {
 				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
@@ -855,7 +867,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const entries: PlantEntry[] = [];
 
 		for (const slot of playerSlots.filter(s => s.plantId !== 0)) {
-			if (!PLANT_TYPES.find(p => p.id === slot.plantId)) {
+			if (!PlantConstants.getPlantById(slot.plantId)) {
 				continue;
 			}
 			const storageForType = plantStorage.find(s => s.plantId === slot.plantId);
@@ -868,7 +880,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		}
 
 		for (const stored of plantStorage.filter(s => s.quantity > 0)) {
-			if (!PLANT_TYPES.find(p => p.id === stored.plantId)) {
+			if (!PlantConstants.getPlantById(stored.plantId)) {
 				continue;
 			}
 			entries.push({

@@ -27,7 +27,7 @@ import {
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import {
-	PlantId, PLANT_TYPES
+	PlantId, PlantConstants
 } from "../../../../../../../Lib/src/constants/PlantConstants";
 import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
@@ -36,7 +36,7 @@ type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
 
 export class GardenFeatureHandler implements HomeFeatureHandler {
-	public readonly featureId = "garden";
+	public readonly featureId = HomeMenuIds.FEATURE_GARDEN;
 
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
 		return ctx.homeData.garden !== undefined;
@@ -128,10 +128,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Get the plant emoji from CrowniclesIcons
+	 * Get the plant emoji from PlantConstants
 	 */
 	private getPlantEmoji(plantId: PlantId): string {
-		return CrowniclesIcons.plants[plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
+		return PlantConstants.getPlantEmoji(plantId);
 	}
 
 	/**
@@ -302,7 +302,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			for (const storage of storedPlants) {
 				const plantName = this.getPlantName(storage.plantId, ctx.lng);
 				const emoji = this.getPlantEmoji(storage.plantId);
-				description += `\n${emoji} ${plantName} — ${storage.quantity}/${storage.maxCapacity}`;
+				description += `\n${i18n.t("commands:report.city.homes.garden.storageEntry", {
+					lng: ctx.lng,
+					emoji,
+					plant: plantName,
+					quantity: storage.quantity,
+					maxCapacity: storage.maxCapacity
+				})}`;
 			}
 		}
 
@@ -335,7 +341,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			if (response.harvestedSlots.includes(plot.slot)) {
 				plot.growthProgress = 0;
 				plot.isReady = false;
-				const plant = PLANT_TYPES.find(p => p.id === plot.plantId);
+				const plant = PlantConstants.getPlantById(plot.plantId);
 				plot.remainingSeconds = plant
 					? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, ctx.homeData.features.gardenEarthQuality)
 					: 0;
@@ -353,7 +359,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		}
 		let message = `\n\n${i18n.t("commands:report.city.homes.garden.compostTitle", { lng: ctx.lng })}`;
 		for (const result of response.compostResults) {
-			const plant = PLANT_TYPES.find(p => p.id === result.plantId);
+			const plant = PlantConstants.getPlantById(result.plantId);
 			const plantName = plant
 				? i18n.t(`models:plants.${plant.id}`, { lng: ctx.lng })
 				: "?";
@@ -361,7 +367,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			const materialName = i18n.t(`models:materials.${result.materialId}`, { lng: ctx.lng });
 			message += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
 				lng: ctx.lng,
-				plantEmoji: CrowniclesIcons.plants[result.plantId] ?? CrowniclesIcons.city.homeUpgrades.garden,
+				plantEmoji: PlantConstants.getPlantEmoji(result.plantId),
 				plant: plantName,
 				materialEmoji,
 				material: materialName
@@ -422,7 +428,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 					plot.plantId = response.plantId;
 					plot.growthProgress = 0;
 					plot.isReady = false;
-					const plant = PLANT_TYPES.find(p => p.id === response.plantId);
+					const plant = PlantConstants.getPlantById(response.plantId);
 					plot.remainingSeconds = plant
 						? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, ctx.homeData.features.gardenEarthQuality)
 						: 0;

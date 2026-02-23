@@ -96,10 +96,6 @@ class HomeFeatureRegistry {
  * To add a new home feature:
  * 1. Create a new handler class implementing HomeFeatureHandler
  * 2. Register it here with .register(new YourHandler())
- *
- * Future features to implement:
- * - PotionCraftingFeatureHandler: Craft potions
- * - GardenFeatureHandler: Cultivate plants
  */
 export const homeFeatureRegistry = new HomeFeatureRegistry()
 	.register(new UpgradeStationFeatureHandler())
