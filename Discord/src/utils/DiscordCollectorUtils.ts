@@ -107,10 +107,7 @@ export abstract class DiscordCollectorUtils {
 	 * Add a button to the last row, creating a new row if the current one is full.
 	 */
 	static addButtonToRow(rows: ActionRowBuilder<ButtonBuilder>[], button: ButtonBuilder): void {
-		if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-			rows.push(new ActionRowBuilder<ButtonBuilder>());
-		}
-		rows[rows.length - 1].addComponents(button);
+		addButtonToRow(rows, button);
 	}
 
 	static sendReaction(
