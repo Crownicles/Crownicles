@@ -173,50 +173,73 @@ export async function buildHomeData(
 		home, homeLevel
 	} = homeData;
 	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
-	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 
-	let upgradeStation;
-	let chest;
-	let garden;
-	let owned;
-	if (isHomeInCity) {
-		upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel!, player);
-		chest = await buildChestData(home!, homeLevel!, playerInventory, player);
-		garden = homeLevel!.features.gardenPlots > 0
-			? await buildGardenData(home!, homeLevel!, player)
-			: undefined;
-		owned = {
-			level: home!.level,
-			features: homeLevel!.features,
-			upgradeStation,
-			chest,
-			garden
-		};
-	}
+	const owned = isHomeInCity
+		? await buildOwnedHomeData(player, playerInventory, playerMaterialMap, home!, homeLevel!)
+		: undefined;
 
-	const homesCount = await Homes.getHomesCount();
-
-	const manage: HomeData["manage"] = {
-		newPrice: home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount),
-		upgrade: nextHomeUpgrade && isHomeInCity
-			? {
-				price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
-				oldFeatures: homeLevel!.features,
-				newFeatures: nextHomeUpgrade.features
-			}
-			: undefined,
-		movePrice: home && home.cityId !== city.id && homeLevel
-			? city.getHomeLevelPrice(homeLevel, homesCount)
-			: undefined,
-		currentMoney: player.money
-	};
-
-	const hasManageOptions = manage.newPrice || manage.upgrade || manage.movePrice;
+	const manage = await buildManageHomeData(player, home, homeLevel, city, isHomeInCity);
 
 	return {
 		owned,
-		manage: hasManageOptions ? manage : undefined
+		manage
 	};
+}
+
+async function buildOwnedHomeData(
+	player: Player,
+	playerInventory: InventorySlot[],
+	playerMaterialMap: Map<number, number>,
+	home: Home,
+	homeLevel: HomeLevel
+): Promise<HomeData["owned"]> {
+	const upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player);
+	const chest = await buildChestData(home, homeLevel, playerInventory, player);
+	const garden = homeLevel.features.gardenPlots > 0
+		? await buildGardenData(home, homeLevel, player)
+		: undefined;
+
+	return {
+		level: home.level,
+		features: homeLevel.features,
+		upgradeStation,
+		chest,
+		garden
+	};
+}
+
+async function buildManageHomeData(
+	player: Player,
+	home: Home | null,
+	homeLevel: HomeLevel | null,
+	city: City,
+	isHomeInCity: boolean
+): Promise<HomeData["manage"]> {
+	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
+	const homesCount = await Homes.getHomesCount();
+
+	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
+	const upgrade = nextHomeUpgrade && isHomeInCity
+		? {
+			price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
+			oldFeatures: homeLevel!.features,
+			newFeatures: nextHomeUpgrade.features
+		}
+		: undefined;
+	const movePrice = home && home.cityId !== city.id && homeLevel
+		? city.getHomeLevelPrice(homeLevel, homesCount)
+		: undefined;
+
+	const hasManageOptions = newPrice || upgrade || movePrice;
+
+	return hasManageOptions
+		? {
+			newPrice,
+			upgrade,
+			movePrice,
+			currentMoney: player.money
+		}
+		: undefined;
 }
 
 /**
