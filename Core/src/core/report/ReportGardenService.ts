@@ -342,7 +342,7 @@ function executeTransferAction(packet: CommandReportPlantTransferReq, playerId: 
 			plantId: packet.plantId
 		});
 	}
-	return HomeConstants.PLANT_TRANSFER_ERRORS.INVALID;
+	return Promise.resolve(HomeConstants.PLANT_TRANSFER_ERRORS.INVALID);
 }
 
 export async function handlePlantTransfer(
