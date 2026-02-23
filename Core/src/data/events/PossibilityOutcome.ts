@@ -26,12 +26,13 @@ async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, play
 	const scoreChange = TravelTime.timeTravelledToScore(time)
 		+ await PlayerSmallEvents.calculateCurrentScore(player)
 		+ (outcome.bonusPoints ?? 0);
-	await player.addScore({
+	const scoreParameters = {
 		response,
 		amount: scoreChange,
 		reason: NumberChangeReason.BIG_EVENT
-	});
-	return scoreChange;
+	};
+	await player.addScore(scoreParameters);
+	return scoreParameters.amount;
 }
 
 async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
