@@ -13,7 +13,7 @@ import {
 	CommandReportGardenHarvestRes,
 	CommandReportGardenPlantReq,
 	CommandReportGardenPlantRes,
-	CommandReportGardenPlantErrorRes,
+	CommandReportGardenErrorRes,
 	CommandReportPlantTransferReq,
 	CommandReportPlantTransferRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
@@ -28,6 +28,7 @@ import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Materials } from "../database/game/models/Material";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { InventoryInfos } from "../database/game/models/InventoryInfo";
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
@@ -83,7 +84,8 @@ export async function buildGardenData(
 	}));
 
 	// Get player's seed
-	await PlayerPlantSlots.initializeSlots(player.id, 1);
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
 	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
 	const hasSeed = seedSlot !== null && seedSlot.plantId !== 0;
 
@@ -108,7 +110,7 @@ export async function handleGardenHarvest(
 	const homeLevel = home?.getLevel();
 
 	if (!player || !home || !homeLevel) {
-		return makePacket(CommandReportGardenPlantErrorRes, {
+		return makePacket(CommandReportGardenErrorRes, {
 			error: GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS
 		});
 	}
@@ -191,7 +193,7 @@ export async function handleGardenPlant(
 	const homeLevel = home?.getLevel();
 
 	if (!player || !home || !homeLevel) {
-		return makePacket(CommandReportGardenPlantErrorRes, {
+		return makePacket(CommandReportGardenErrorRes, {
 			error: GardenConstants.GARDEN_ERRORS.NO_SEED
 		});
 	}
@@ -199,7 +201,7 @@ export async function handleGardenPlant(
 	// Check if player has a seed
 	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
 	if (!seedSlot || seedSlot.plantId === 0) {
-		return makePacket(CommandReportGardenPlantErrorRes, {
+		return makePacket(CommandReportGardenErrorRes, {
 			error: GardenConstants.GARDEN_ERRORS.NO_SEED
 		});
 	}
@@ -210,7 +212,7 @@ export async function handleGardenPlant(
 		: await HomeGardenSlots.getSlot(home.id, packet.gardenSlot);
 
 	if (!gardenSlot || !gardenSlot.isEmpty()) {
-		return makePacket(CommandReportGardenPlantErrorRes, {
+		return makePacket(CommandReportGardenErrorRes, {
 			error: GardenConstants.GARDEN_ERRORS.NO_EMPTY_PLOT
 		});
 	}
@@ -219,7 +221,7 @@ export async function handleGardenPlant(
 	const allGardenSlots = await HomeGardenSlots.getOfHome(home.id);
 	const alreadyPlanted = allGardenSlots.some(s => s.plantId === seedSlot.plantId);
 	if (alreadyPlanted) {
-		return makePacket(CommandReportGardenPlantErrorRes, {
+		return makePacket(CommandReportGardenErrorRes, {
 			error: GardenConstants.GARDEN_ERRORS.SEED_ALREADY_PLANTED
 		});
 	}

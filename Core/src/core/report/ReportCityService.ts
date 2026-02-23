@@ -355,6 +355,11 @@ export async function buildChestData(
 
 	if (hasGarden) {
 		const homeStorage = await HomePlantStorages.getOfHome(home.id);
+
+		// Ensure player plant slots are initialized before reading them
+		const desiredPlantSlots = inventoryInfo ? inventoryInfo.plantSlots : 1;
+		await PlayerPlantSlots.ensureSlotsForCount(player.id, desiredPlantSlots);
+
 		const plantSlots = await PlayerPlantSlots.getPlantSlots(player.id);
 		plantMaxCapacity = home.level;
 

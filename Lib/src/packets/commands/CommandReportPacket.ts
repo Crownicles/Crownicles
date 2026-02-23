@@ -376,7 +376,7 @@ export class CommandReportGardenPlantRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.NONE)
-export class CommandReportGardenPlantErrorRes extends CrowniclesPacket {
+export class CommandReportGardenErrorRes extends CrowniclesPacket {
 	error!: GardenError;
 }
 

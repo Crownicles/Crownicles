@@ -21,9 +21,6 @@ export interface PlantType {
 	/** Growth time in seconds */
 	growthTimeSeconds: number;
 
-	/** Fallback emoji when custom emote is unavailable */
-	fallbackEmote: string;
-
 	/** Material IDs that this plant can produce when composted */
 	compostMaterials: number[];
 }
@@ -36,7 +33,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.COMMON_HERB,
 		growthTimeSeconds: 10,
-		fallbackEmote: "🌿",
 		compostMaterials: [
 			52, // Herbe de prairie
 			54, // Mousses
@@ -46,7 +42,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.GOLDEN_CLOVER,
 		growthTimeSeconds: 30 * 60,
-		fallbackEmote: "☘️",
 		compostMaterials: [
 			43, // Laiton doré
 			59, // Feuilles de chêne
@@ -56,7 +51,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.LUNAR_MOSS,
 		growthTimeSeconds: 2 * 60 * 60,
-		fallbackEmote: "🌙",
 		compostMaterials: [
 			53, // Pierre de lune
 			30, // Lavande séchée
@@ -66,7 +60,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.IRON_ROOT,
 		growthTimeSeconds: 8 * 60 * 60,
-		fallbackEmote: "🌱",
 		compostMaterials: [
 			70, // Fer brut
 			41, // Racines de gingembre
@@ -76,7 +69,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.NIGHT_MUSHROOM,
 		growthTimeSeconds: 24 * 60 * 60,
-		fallbackEmote: "🍄",
 		compostMaterials: [
 			55, // Champignon
 			66, // Champignon vénéneux
@@ -86,7 +78,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.VENOMOUS_LEAF,
 		growthTimeSeconds: 2 * 24 * 60 * 60,
-		fallbackEmote: "🍃",
 		compostMaterials: [
 			10, // Belladone
 			17, // Graine de ricin
@@ -96,7 +87,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.FIRE_BULB,
 		growthTimeSeconds: 4 * 24 * 60 * 60,
-		fallbackEmote: "🔥",
 		compostMaterials: [
 			35, // Flamme éternelle
 			82, // Soufre
@@ -106,7 +96,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.MEAT_PLANT,
 		growthTimeSeconds: 6 * 24 * 60 * 60,
-		fallbackEmote: "🥩",
 		compostMaterials: [
 			42, // Cuir de chèvre
 			48, // Cuir d'agneau
@@ -116,7 +105,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.CRYSTAL_FLOWER,
 		growthTimeSeconds: 10 * 24 * 60 * 60,
-		fallbackEmote: "💎",
 		compostMaterials: [
 			34, // Rune enchantée
 			67, // Pierre précieuse
@@ -126,7 +114,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.ANCIENT_TREE,
 		growthTimeSeconds: 14 * 24 * 60 * 60,
-		fallbackEmote: "🌳",
 		compostMaterials: [
 			84, // Planche de teck
 			31, // Écorce d'ébène
