@@ -70,7 +70,9 @@ import { doRandomBigEvent } from "../../core/report/ReportBigEventService";
 import { doPVEBoss } from "../../core/report/ReportPveService";
 import { sendTravelPath } from "../../core/report/ReportTravelService";
 import {
-	buildBlacksmithData,
+	buildBlacksmithData
+} from "../../core/report/ReportBlacksmithService";
+import {
 	buildEnchanterData,
 	buildHomeData,
 	handleBlacksmithDisenchantReaction,
