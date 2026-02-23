@@ -2,6 +2,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { PlayerPlantSlots } from "../../../../core/database/game/models/PlayerPlantSlot";
+import { InventoryInfos } from "../../../../core/database/game/models/InventoryInfo";
 import {
 	PlantConstants, PlantId
 } from "../../../../../../Lib/src/constants/PlantConstants";
@@ -20,7 +21,8 @@ const giveSeedTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		throw new Error("ID de plante invalide. Utilisez un ID entre 1 et 10.");
 	}
 
-	await PlayerPlantSlots.initializeSlots(player.id, 1);
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
 
 	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
 	if (seedSlot && !seedSlot.isEmpty()) {
@@ -29,7 +31,7 @@ const giveSeedTestCommand: ExecuteTestCommandLike = async (player, args) => {
 
 	await PlayerPlantSlots.setSeed(player.id, plantId);
 
-	return `Vous avez reçu une graine de ${plant.fallbackEmote} (ID: ${plantId}).`;
+	return `Vous avez reçu une graine (ID: ${plantId}).`;
 };
 
 commandInfo.execute = giveSeedTestCommand;

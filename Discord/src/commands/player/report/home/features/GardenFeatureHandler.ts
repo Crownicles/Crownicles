@@ -22,7 +22,7 @@ import {
 	CommandReportGardenHarvestRes,
 	CommandReportGardenPlantReq,
 	CommandReportGardenPlantRes,
-	CommandReportGardenPlantErrorRes
+	CommandReportGardenErrorRes
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
@@ -378,7 +378,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			ctx.context,
 			makePacket(CommandReportGardenHarvestReq, {}),
 			async (_responseContext, packetName, responsePacket) => {
-				if (packetName === CommandReportGardenPlantErrorRes.name) {
+				if (packetName === CommandReportGardenErrorRes.name) {
 					this.registerGardenMenu(ctx, nestedMenus);
 					await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 					return;
@@ -406,7 +406,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			ctx.context,
 			makePacket(CommandReportGardenPlantReq, { gardenSlot }),
 			async (_responseContext, packetName, responsePacket) => {
-				if (packetName === CommandReportGardenPlantErrorRes.name) {
+				if (packetName === CommandReportGardenErrorRes.name) {
 					// Error — just refresh the menu
 					this.registerGardenMenu(ctx, nestedMenus);
 					await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
