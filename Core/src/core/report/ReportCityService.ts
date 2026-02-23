@@ -175,10 +175,14 @@ export async function buildHomeData(
 	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
 
 	const owned = isHomeInCity
-		? await buildOwnedHomeData(player, playerInventory, playerMaterialMap, home!, homeLevel!)
+		? await buildOwnedHomeData({
+			player, playerInventory, playerMaterialMap, home: home!, homeLevel: homeLevel!
+		})
 		: undefined;
 
-	const manage = await buildManageHomeData(player, home, homeLevel, city, isHomeInCity);
+	const manage = await buildManageHomeData({
+		player, home, homeLevel, city
+	});
 
 	return {
 		owned,
@@ -186,13 +190,16 @@ export async function buildHomeData(
 	};
 }
 
-async function buildOwnedHomeData(
-	player: Player,
-	playerInventory: InventorySlot[],
-	playerMaterialMap: Map<number, number>,
-	home: Home,
-	homeLevel: HomeLevel
-): Promise<HomeData["owned"]> {
+async function buildOwnedHomeData(params: {
+	player: Player;
+	playerInventory: InventorySlot[];
+	playerMaterialMap: Map<number, number>;
+	home: Home;
+	homeLevel: HomeLevel;
+}): Promise<HomeData["owned"]> {
+	const {
+		player, playerInventory, playerMaterialMap, home, homeLevel
+	} = params;
 	const upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player);
 	const chest = await buildChestData(home, homeLevel, playerInventory, player);
 	const garden = homeLevel.features.gardenPlots > 0
@@ -208,13 +215,16 @@ async function buildOwnedHomeData(
 	};
 }
 
-async function buildManageHomeData(
-	player: Player,
-	home: Home | null,
-	homeLevel: HomeLevel | null,
-	city: City,
-	isHomeInCity: boolean
-): Promise<HomeData["manage"]> {
+async function buildManageHomeData(params: {
+	player: Player;
+	home: Home | null;
+	homeLevel: HomeLevel | null;
+	city: City;
+}): Promise<HomeData["manage"]> {
+	const {
+		player, home, homeLevel, city
+	} = params;
+	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
 	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 	const homesCount = await Homes.getHomesCount();
 
