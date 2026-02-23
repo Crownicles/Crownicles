@@ -15,12 +15,14 @@ import {
 	CommandReportGardenPlantRes,
 	CommandReportGardenErrorRes,
 	CommandReportPlantTransferReq,
-	CommandReportPlantTransferRes
+	CommandReportPlantTransferRes,
+	PlantTransferError,
+	GardenError
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
-import { HomeGardenSlots } from "../database/game/models/HomeGardenSlot";
+import HomeGardenSlot, { HomeGardenSlots } from "../database/game/models/HomeGardenSlot";
 import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
-import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
+import PlayerPlantSlot, { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import {
 	PlantConstants, PlantId
 } from "../../../../Lib/src/constants/PlantConstants";
@@ -69,7 +71,7 @@ export async function buildGardenData(
 	};
 }
 
-function buildGardenPlotsData(gardenSlots: HomeGardenSlots[], earthQuality: number): GardenData["plots"] {
+function buildGardenPlotsData(gardenSlots: HomeGardenSlot[], earthQuality: number): GardenData["plots"] {
 	return gardenSlots.map(slot => {
 		const plant = PlantConstants.getPlantById(slot.plantId);
 		const effectiveGrowthTime = plant
@@ -104,8 +106,9 @@ export async function handleGardenHarvest(
 	const player = await Players.getByKeycloakId(keycloakId);
 	const home = player ? await Homes.getOfPlayer(player.id) : null;
 	const homeLevel = home?.getLevel();
+	const hasValidHome = player && home && homeLevel;
 
-	if (!player || !home || !homeLevel) {
+	if (!hasValidHome) {
 		return makePacket(CommandReportGardenErrorRes, {
 			error: GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS
 		});
@@ -152,7 +155,7 @@ export async function handleGardenHarvest(
 }
 
 async function processHarvestSlot(params: {
-	slot: HomeGardenSlots;
+	slot: HomeGardenSlot;
 	earthQuality: number;
 	homeId: number;
 	playerId: number;
@@ -209,7 +212,7 @@ export async function handleGardenPlant(
 ): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	const home = player ? await Homes.getOfPlayer(player.id) : null;
-	const homeLevel = home?.getLevel();
+	const homeLevel = home?.getLevel() ?? undefined;
 
 	const validation = await validateGardenPlant(player, home, homeLevel, packet);
 	if (validation.error) {
@@ -232,33 +235,36 @@ export async function handleGardenPlant(
 	});
 }
 
+type GardenPlantValidation = {
+	error?: GardenError;
+	seedSlot?: PlayerPlantSlot;
+	gardenSlot?: HomeGardenSlot;
+};
+
 async function validateGardenPlant(
 	player: Player | null,
 	home: Home | null,
 	homeLevel: HomeLevel | undefined,
 	packet: CommandReportGardenPlantReq
-): Promise<{
-	error?: string; seedSlot?: PlayerPlantSlots; gardenSlot?: HomeGardenSlots;
-}> {
-	if (!player || !home || !homeLevel) {
+): Promise<GardenPlantValidation> {
+	const hasValidHome = player && home && homeLevel;
+	if (!hasValidHome) {
 		return { error: GardenConstants.GARDEN_ERRORS.NO_SEED };
 	}
 
 	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
-	if (!seedSlot || seedSlot.plantId === 0) {
+	const hasSeed = seedSlot && seedSlot.plantId !== 0;
+	if (!hasSeed) {
 		return { error: GardenConstants.GARDEN_ERRORS.NO_SEED };
 	}
 
-	const gardenSlot = packet.gardenSlot === -1
-		? await HomeGardenSlots.findEmptySlot(home.id)
-		: await HomeGardenSlots.getSlot(home.id, packet.gardenSlot);
-
-	if (!gardenSlot || !gardenSlot.isEmpty()) {
+	const gardenSlot = await resolveGardenSlot(home.id, packet.gardenSlot);
+	const isSlotAvailable = gardenSlot && gardenSlot.isEmpty();
+	if (!isSlotAvailable) {
 		return { error: GardenConstants.GARDEN_ERRORS.NO_EMPTY_PLOT };
 	}
 
-	const allGardenSlots = await HomeGardenSlots.getOfHome(home.id);
-	const alreadyPlanted = allGardenSlots.some(s => s.plantId === seedSlot.plantId);
+	const alreadyPlanted = await isPlantAlreadyInGarden(home.id, seedSlot.plantId);
 	if (alreadyPlanted) {
 		return { error: GardenConstants.GARDEN_ERRORS.SEED_ALREADY_PLANTED };
 	}
@@ -266,6 +272,17 @@ async function validateGardenPlant(
 	return {
 		seedSlot, gardenSlot
 	};
+}
+
+async function resolveGardenSlot(homeId: number, gardenSlot: number): Promise<HomeGardenSlot | null> {
+	return gardenSlot === -1
+		? await HomeGardenSlots.findEmptySlot(homeId)
+		: await HomeGardenSlots.getSlot(homeId, gardenSlot);
+}
+
+async function isPlantAlreadyInGarden(homeId: number, plantId: PlantId | 0): Promise<boolean> {
+	const allGardenSlots = await HomeGardenSlots.getOfHome(homeId);
+	return allGardenSlots.some(s => s.plantId === plantId);
 }
 
 /**
@@ -300,6 +317,34 @@ async function buildPlantTransferResponseData(
 /**
  * Handle a plant transfer (deposit/withdraw) between player inventory and home storage.
  */
+function makeTransferErrorPacket(error: PlantTransferError): CrowniclesPacket {
+	return makePacket(CommandReportPlantTransferRes, {
+		success: false,
+		error,
+		plantStorage: [],
+		playerPlantSlots: []
+	});
+}
+
+function executeTransferAction(packet: CommandReportPlantTransferReq, playerId: number, homeId: number, maxCapacity: number): Promise<PlantTransferError | null> {
+	if (packet.action === HomeConstants.PLANT_TRANSFER_ACTIONS.DEPOSIT) {
+		return handlePlantDeposit({
+			playerId,
+			homeId,
+			playerSlot: packet.playerSlot,
+			maxCapacity
+		});
+	}
+	if (packet.action === HomeConstants.PLANT_TRANSFER_ACTIONS.WITHDRAW) {
+		return handlePlantWithdraw({
+			playerId,
+			homeId,
+			plantId: packet.plantId
+		});
+	}
+	return HomeConstants.PLANT_TRANSFER_ERRORS.INVALID;
+}
+
 export async function handlePlantTransfer(
 	keycloakId: string,
 	packet: CommandReportPlantTransferReq
@@ -308,45 +353,14 @@ export async function handlePlantTransfer(
 	const home = player ? await Homes.getOfPlayer(player.id) : null;
 
 	if (!player || !home) {
-		return makePacket(CommandReportPlantTransferRes, {
-			success: false,
-			error: HomeConstants.PLANT_TRANSFER_ERRORS.INVALID,
-			plantStorage: [],
-			playerPlantSlots: []
-		});
+		return makeTransferErrorPacket(HomeConstants.PLANT_TRANSFER_ERRORS.INVALID);
 	}
 
 	const maxCapacity = home.level;
+	const error = await executeTransferAction(packet, player.id, home.id, maxCapacity);
 
-	if (packet.action === HomeConstants.PLANT_TRANSFER_ACTIONS.DEPOSIT) {
-		const error = await handlePlantDeposit(player.id, home.id, packet.playerSlot, maxCapacity);
-		if (error) {
-			return makePacket(CommandReportPlantTransferRes, {
-				success: false,
-				error,
-				plantStorage: [],
-				playerPlantSlots: []
-			});
-		}
-	}
-	else if (packet.action === HomeConstants.PLANT_TRANSFER_ACTIONS.WITHDRAW) {
-		const error = await handlePlantWithdraw(player.id, home.id, packet.plantId);
-		if (error) {
-			return makePacket(CommandReportPlantTransferRes, {
-				success: false,
-				error,
-				plantStorage: [],
-				playerPlantSlots: []
-			});
-		}
-	}
-	else {
-		return makePacket(CommandReportPlantTransferRes, {
-			success: false,
-			error: HomeConstants.PLANT_TRANSFER_ERRORS.INVALID,
-			plantStorage: [],
-			playerPlantSlots: []
-		});
+	if (error) {
+		return makeTransferErrorPacket(error);
 	}
 
 	const refreshedData = await buildPlantTransferResponseData(home.id, player.id, maxCapacity);
@@ -357,35 +371,44 @@ export async function handlePlantTransfer(
 	});
 }
 
-async function handlePlantDeposit(playerId: number, homeId: number, playerSlot: number, maxCapacity: number): Promise<string | null> {
-	const plantSlots = await PlayerPlantSlots.getPlantSlots(playerId);
-	const sourceSlot = plantSlots.find(s => s.slot === playerSlot);
+async function handlePlantDeposit(params: {
+	playerId: number;
+	homeId: number;
+	playerSlot: number;
+	maxCapacity: number;
+}): Promise<PlantTransferError | null> {
+	const plantSlots = await PlayerPlantSlots.getPlantSlots(params.playerId);
+	const sourceSlot = plantSlots.find(s => s.slot === params.playerSlot);
 
 	if (!sourceSlot || sourceSlot.plantId === 0) {
 		return HomeConstants.PLANT_TRANSFER_ERRORS.NOT_FOUND;
 	}
 
-	const overflow = await HomePlantStorages.addPlant(homeId, sourceSlot.plantId, 1, maxCapacity);
+	const overflow = await HomePlantStorages.addPlant(params.homeId, sourceSlot.plantId, 1, params.maxCapacity);
 	if (overflow > 0) {
 		return HomeConstants.PLANT_TRANSFER_ERRORS.STORAGE_FULL;
 	}
 
-	await PlayerPlantSlots.clearPlant(playerId, playerSlot);
+	await PlayerPlantSlots.clearPlant(params.playerId, params.playerSlot);
 	return null;
 }
 
-async function handlePlantWithdraw(playerId: number, homeId: number, plantId: number): Promise<string | null> {
-	const storageEntry = await HomePlantStorages.getForPlant(homeId, plantId);
+async function handlePlantWithdraw(params: {
+	playerId: number;
+	homeId: number;
+	plantId: PlantId | 0;
+}): Promise<PlantTransferError | null> {
+	const storageEntry = await HomePlantStorages.getForPlant(params.homeId, params.plantId);
 	if (!storageEntry || storageEntry.quantity <= 0) {
 		return HomeConstants.PLANT_TRANSFER_ERRORS.NOT_FOUND;
 	}
 
-	const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(playerId);
+	const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(params.playerId);
 	if (!emptySlot) {
 		return HomeConstants.PLANT_TRANSFER_ERRORS.NO_EMPTY_SLOT;
 	}
 
-	await HomePlantStorages.removePlant(homeId, plantId);
-	await PlayerPlantSlots.setPlant(playerId, emptySlot.slot, plantId);
+	await HomePlantStorages.removePlant(params.homeId, params.plantId);
+	await PlayerPlantSlots.setPlant(params.playerId, emptySlot.slot, params.plantId);
 	return null;
 }
