@@ -32,13 +32,9 @@ import { DiscordConstants } from "../../DiscordConstants";
 enum InventoryView {
 	EQUIPPED = 0,
 	BACKUP = 1,
-	MATERIALS = 2
+	MATERIALS = 2,
+	PLANTS = 3
 }
-
-/**
- * Number of different views in the inventory carousel
- */
-const INVENTORY_VIEW_COUNT = Object.keys(InventoryView).length / 2;
 
 async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandInventoryPacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
@@ -267,6 +263,78 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 	return embed;
 }
 
+function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+	if (!packet.data) {
+		throw new Error("Inventory packet data must not be undefined");
+	}
+
+	const embed = new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:inventory.plantsTitle", {
+			lng,
+			pseudo
+		}));
+
+	const plants = packet.data.plants;
+	if (!plants) {
+		embed.addFields([
+			{
+				name: i18n.t("commands:inventory.plantsField", {
+					lng, count: 0
+				}),
+				value: i18n.t("commands:inventory.noPlants", { lng }),
+				inline: false
+			}
+		]);
+		return embed;
+	}
+
+	// Seed slot
+	let seedValue: string;
+	if (plants.seed) {
+		const seedEmoji = CrowniclesIcons.plants[plants.seed] ?? CrowniclesIcons.city.homeUpgrades.garden;
+		const seedName = i18n.t(`models:plants.${plants.seed}`, { lng });
+		seedValue = `${seedEmoji} **${seedName}**`;
+	}
+	else {
+		seedValue = i18n.t("commands:inventory.emptySlot", { lng });
+	}
+	embed.addFields([
+		{
+			name: i18n.t("commands:inventory.seedSlot", { lng }),
+			value: seedValue,
+			inline: false
+		}
+	]);
+
+	// Plant slots
+	const plantEntries: string[] = [];
+	for (let slot = 0; slot < plants.maxPlantSlots; slot++) {
+		const found = plants.plantSlots.find(p => p.slot === slot);
+		if (found) {
+			const plantEmoji = CrowniclesIcons.plants[found.plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
+			const plantName = i18n.t(`models:plants.${found.plantId}`, { lng });
+			plantEntries.push(`${plantEmoji} **${plantName}**`);
+		}
+		else {
+			plantEntries.push(i18n.t("commands:inventory.emptySlot", { lng }));
+		}
+	}
+
+	embed.addFields([
+		{
+			name: i18n.t("commands:inventory.plantSlots", {
+				lng,
+				count: plants.plantSlots.length,
+				max: plants.maxPlantSlots
+			}),
+			value: plantEntries.join("\n"),
+			inline: false
+		}
+	]);
+
+	return embed;
+}
+
 export async function handleCommandInventoryPacketRes(packet: CommandInventoryPacketRes, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 
@@ -291,59 +359,53 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 	const username = await DisplayUtils.getEscapedUsername(packet.keycloakId!, lng);
 	let currentView = InventoryView.EQUIPPED;
 
-	const prevButtonId = "prevView";
-	const nextButtonId = "nextView";
-
-	const equippedEmbed = getEquippedEmbed(packet, username, lng);
-	const backupEmbed = getBackupEmbed(packet, username, lng);
-	const materialsEmbed = getMaterialsEmbed(packet, username, lng);
-
 	const embeds = [
-		equippedEmbed,
-		backupEmbed,
-		materialsEmbed
+		getEquippedEmbed(packet, username, lng),
+		getBackupEmbed(packet, username, lng),
+		getMaterialsEmbed(packet, username, lng),
+		getPlantsEmbed(packet, username, lng)
 	];
 
-	function getButtonLabels(view: InventoryView): {
-		prev: string;
-		next: string;
-	} {
-		switch (view) {
-			case InventoryView.EQUIPPED:
-				return {
-					prev: i18n.t("commands:inventory.seeMaterials", { lng }),
-					next: i18n.t("commands:inventory.seeBackupItems", { lng })
-				};
-			case InventoryView.BACKUP:
-				return {
-					prev: i18n.t("commands:inventory.seeEquippedItems", { lng }),
-					next: i18n.t("commands:inventory.seeMaterials", { lng })
-				};
-			case InventoryView.MATERIALS:
-			default:
-				return {
-					prev: i18n.t("commands:inventory.seeBackupItems", { lng }),
-					next: i18n.t("commands:inventory.seeEquippedItems", { lng })
-				};
+	/**
+	 * All views with their button labels and custom IDs, in fixed display order
+	 */
+	const viewButtons = [
+		{
+			view: InventoryView.EQUIPPED,
+			customId: "viewEquipped",
+			label: i18n.t("commands:inventory.seeEquippedItems", { lng })
+		},
+		{
+			view: InventoryView.BACKUP,
+			customId: "viewBackup",
+			label: i18n.t("commands:inventory.seeBackupItems", { lng })
+		},
+		{
+			view: InventoryView.MATERIALS,
+			customId: "viewMaterials",
+			label: i18n.t("commands:inventory.seeMaterials", { lng })
+		},
+		{
+			view: InventoryView.PLANTS,
+			customId: "viewPlants",
+			label: i18n.t("commands:inventory.seePlants", { lng })
 		}
-	}
+	];
+
+	const allCustomIds = viewButtons.map(v => v.customId);
 
 	function createButtons(view: InventoryView): ActionRowBuilder<ButtonBuilder> {
-		const labels = getButtonLabels(view);
-		return new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder()
-				.setCustomId(prevButtonId)
-				.setLabel(labels.prev)
-				.setStyle(ButtonStyle.Secondary),
-			new ButtonBuilder()
-				.setCustomId(nextButtonId)
-				.setLabel(labels.next)
-				.setStyle(ButtonStyle.Secondary)
-		);
+		const buttons = viewButtons
+			.filter(v => v.view !== view)
+			.map(v => new ButtonBuilder()
+				.setCustomId(v.customId)
+				.setLabel(v.label)
+				.setStyle(ButtonStyle.Secondary));
+		return new ActionRowBuilder<ButtonBuilder>().addComponents(buttons);
 	}
 
 	const reply = await interaction.reply({
-		embeds: [equippedEmbed],
+		embeds: [embeds[currentView]],
 		components: [createButtons(currentView)],
 		withResponse: true
 	});
@@ -352,7 +414,7 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 	}
 	const msg = reply.resource.message;
 	const collector = msg.createMessageComponentCollector({
-		filter: buttonInteraction => buttonInteraction.customId === prevButtonId || buttonInteraction.customId === nextButtonId,
+		filter: buttonInteraction => allCustomIds.includes(buttonInteraction.customId),
 		time: Constants.MESSAGES.COLLECTOR_TIME
 	});
 	collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
@@ -361,11 +423,9 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 			return;
 		}
 
-		if (buttonInteraction.customId === nextButtonId) {
-			currentView = (currentView + 1) % INVENTORY_VIEW_COUNT as InventoryView;
-		}
-		else {
-			currentView = (currentView + INVENTORY_VIEW_COUNT - 1) % INVENTORY_VIEW_COUNT as InventoryView;
+		const targetView = viewButtons.find(v => v.customId === buttonInteraction.customId);
+		if (targetView) {
+			currentView = targetView.view;
 		}
 
 		await buttonInteraction.update({

@@ -5,10 +5,21 @@ import { ChestSlotsPerCategory } from "../../types/HomeFeatures";
 import {
 	ChestAction, HomeConstants
 } from "../../constants/HomeConstants";
+import { GardenConstants } from "../../constants/GardenConstants";
 import { ItemSlot } from "../../types/ItemSlot";
+import { PlantId } from "../../constants/PlantConstants";
+import {
+	PlantStorageEntry, PlayerPlantSlotEntry
+} from "../../types/PlantStorageEntry";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
 export type { ChestAction } from "../../constants/HomeConstants";
+
+export type GardenError = typeof GardenConstants.GARDEN_ERRORS[keyof typeof GardenConstants.GARDEN_ERRORS];
+
+export type PlantTransferAction = typeof HomeConstants.PLANT_TRANSFER_ACTIONS[keyof typeof HomeConstants.PLANT_TRANSFER_ACTIONS];
+
+export type PlantTransferError = typeof HomeConstants.PLANT_TRANSFER_ERRORS[keyof typeof HomeConstants.PLANT_TRANSFER_ERRORS];
 
 export type { ItemSlot };
 
@@ -323,3 +334,73 @@ export class CommandReportHomeChestActionRes extends CrowniclesPacket {
 	inventoryCapacity!: ChestSlotsPerCategory;
 }
 
+// Garden packets
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportGardenHarvestReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenHarvestRes extends CrowniclesPacket {
+	/** Number of plants successfully stored in the chest */
+	plantsHarvested!: number;
+
+	/** Number of plants that didn't fit and were composted */
+	plantsComposted!: number;
+
+	/** Materials generated from composting (plantId → materialId) */
+	compostResults!: {
+		plantId: PlantId;
+		materialId: number;
+	}[];
+
+	/** Updated plant storage after harvest */
+	plantStorage!: PlantStorageEntry[];
+
+	/** Slots that were harvested (reset to growing) */
+	harvestedSlots!: number[];
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportGardenPlantReq extends CrowniclesPacket {
+	/** The garden slot to plant in */
+	gardenSlot!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenPlantRes extends CrowniclesPacket {
+	/** The plant type that was planted */
+	plantId!: PlantId;
+
+	/** The garden slot that was planted */
+	gardenSlot!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenErrorRes extends CrowniclesPacket {
+	error!: GardenError;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportPlantTransferReq extends CrowniclesPacket {
+	/** The transfer action: deposit or withdraw */
+	action!: PlantTransferAction;
+
+	/** The plant type to transfer (required for withdraw; ignored for deposit) */
+	plantId!: PlantId | 0;
+
+	/** The player slot involved (for deposit: source slot; for withdraw: target slot) */
+	playerSlot!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportPlantTransferRes extends CrowniclesPacket {
+	success!: boolean;
+
+	error?: PlantTransferError;
+
+	/** Updated plant storage after transfer */
+	plantStorage!: PlantStorageEntry[];
+
+	/** Updated player plant slots after transfer */
+	playerPlantSlots!: PlayerPlantSlotEntry[];
+}

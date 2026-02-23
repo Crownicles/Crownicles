@@ -621,6 +621,15 @@
     "materialsField_one": "Matériau ({{count}}) :",
     "materialsField_other": "Matériaux ({{count}}) :",
     "noMaterials": "{emote:inventory.empty} **Aucun matériau**",
+    "seePlants": "{emote:city.homeUpgrades.garden} Plantes",
+    "plantsTitle": "{emote:city.homeUpgrades.garden} **Plantes de {{pseudo}}**",
+    "plantsField_zero": "Plantes (0) :",
+    "plantsField_one": "Plante ({{count}}) :",
+    "plantsField_other": "Plantes ({{count}}) :",
+    "noPlants": "{emote:inventory.empty} **Aucune plante transportée**",
+    "seedSlot": "{emote:city.homeUpgrades.garden} Graine :",
+    "plantSlots_one": "{emote:shopItems.plantSlotExtension} Plante transportée ({{count}}/{{max}}) :",
+    "plantSlots_other": "{emote:shopItems.plantSlotExtension} Plantes transportées ({{count}}/{{max}}) :",
     "weapons_one": "Arme ({{count}}/{{max}}) :",
     "weapons_other": "Armes ({{count}}/{{max}}) :",
     "talisman": "Artefacts :",
@@ -1068,7 +1077,33 @@
           "errors": {
             "chestFull": "Votre coffre est plein pour cette catégorie ! Améliorez votre maison pour obtenir plus d'emplacements.",
             "inventoryFull": "Votre inventaire est plein pour cette catégorie ! Libérez de la place avant de retirer un objet du coffre."
-          }
+          },
+          "plantTabLabel": "Plantes",
+          "plantHeader": "{emote:city.homeUpgrades.garden} **Plantes** — Max {{max}} par type",
+          "plantDepositSection": "{emote:city.chestActions.deposit} **Déposer depuis votre inventaire :**",
+          "plantWithdrawSection": "{emote:city.chestActions.withdraw} **Retirer vers votre inventaire :**",
+          "plantEmpty": "Aucune plante stockée ou transportée."
+        },
+        "garden": {
+          "menuLabel": "Jardin",
+          "menuDescription": "{{ready}}/{{total}} plantes prêtes à être récoltées",
+          "available": "{emote:city.homeUpgrades.garden} Votre jardin vous permet de cultiver des plantes.",
+          "title": "{{pseudo}}, jardin",
+          "placeholder": "Gérer votre jardin",
+          "description": "{emote:city.homeUpgrades.garden} Voici l'état de votre jardin :",
+          "emptyPlot": "{emote:city.gardenStatus.empty} Parcelle {{slot}} — *Vide*",
+          "readyPlot": "{emote:city.gardenStatus.ready} Parcelle {{slot}} — {{emoji}} **{{plant}}** — Prête à être récoltée !",
+          "growingPlot": "{emote:city.gardenStatus.growing} Parcelle {{slot}} — {{emoji}} **{{plant}}** — {{progress}}% ({{timeLeft}})",
+          "hasSeed": "{emote:city.gardenStatus.seed} Vous portez une graine : {{emoji}} **{{seed}}**",
+          "harvestButton": "Récolter",
+          "plantButton": "Planter",
+          "storageButton": "Réserve ({{count}})",
+          "storageTitle": "{emote:city.homeUpgrades.garden} Réserve de plantes :",
+          "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",
+          "storageEntry": "{{emoji}} {{plant}} — {{quantity}}/{{maxCapacity}}",
+          "backToGarden": "← Retour au jardin",
+          "compostTitle": "{emote:city.gardenStatus.compost} **Compostage :**",
+          "compostLine": "• {{plantEmoji}} {{plant}} → {{materialEmoji}} {{material}}"
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
@@ -1183,6 +1218,7 @@
       "token_one": "Jeton ({{count}} disponible)",
       "token_other": "Jetons ({{count}} disponibles)",
       "slotExtension": "Extensions d'inventaire",
+      "plantSlotExtension": "Extensions de récolte",
       "food": "Nourriture pour familiers",
       "guildXp": "Expérience de guilde",
       "resources": "Ressources",
@@ -1221,6 +1257,10 @@
       "slotExtension": {
         "name": "{emote:shopItems.inventoryExtension} Nouvel emplacement d'inventaire",
         "info": "Vous pourrez choisir une catégorie d'inventaire à laquelle ajouter un emplacement."
+      },
+      "plantSlotExtension": {
+        "name": "{emote:shopItems.plantSlotExtension} Nouvel emplacement de plante",
+        "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire."
       },
       "dailyPotion": {
         "info": "Vous obtiendrez une potion que vous déciderez de garder ou non. Si vous l'avez déjà, elle sera jetée sans remboursement !"

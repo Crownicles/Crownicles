@@ -2218,5 +2218,17 @@
     "88": "Branche de noyer",
     "89": "Bougie blanche",
     "90": "Zinc"
+  },
+  "plants": {
+    "1": "Herbe commune",
+    "2": "Trèfle doré",
+    "3": "Mousse lunaire",
+    "4": "Racine de fer",
+    "5": "Champignon nocturne",
+    "6": "Feuille venimeuse",
+    "7": "Bulbe de feu",
+    "8": "Plante carnée",
+    "9": "Fleur de cristal",
+    "10": "Arbre ancestral"
   }
 }

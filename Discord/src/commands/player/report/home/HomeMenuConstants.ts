@@ -65,5 +65,40 @@ export const HomeMenuIds = {
 	CHEST_SWAP_MENU_PREFIX: "CHEST_SWAP_MENU_",
 
 	/** Back to category detail from swap menu */
-	CHEST_BACK_TO_DETAIL_PREFIX: "CHEST_BACK_DETAIL_"
+	CHEST_BACK_TO_DETAIL_PREFIX: "CHEST_BACK_DETAIL_",
+
+	/** Chest plant tab */
+	CHEST_PLANT_TAB: "CHEST_PLANT_TAB",
+
+	/** Prefix for chest plant deposit (player → home) */
+	CHEST_PLANT_DEPOSIT_PREFIX: "CHEST_PLANT_DEP_",
+
+	/** Prefix for chest plant withdraw (home → player) */
+	CHEST_PLANT_WITHDRAW_PREFIX: "CHEST_PLANT_WDR_",
+
+	/** Prefix for chest plant tab pagination (target page number appended) */
+	CHEST_PLANT_PAGE_PREFIX: "CHEST_PLANT_PG_",
+
+	// --- Garden feature ---
+	/** Garden feature menu */
+	GARDEN_MENU: "HOME_GARDEN_MENU",
+
+	/** Harvest all ready plants */
+	GARDEN_HARVEST: "GARDEN_HARVEST",
+
+	/** Prefix for planting in a specific slot */
+	GARDEN_PLANT_PREFIX: "GARDEN_PLANT_",
+
+	/** View plant storage */
+	GARDEN_STORAGE: "GARDEN_STORAGE",
+
+	/** Back to garden from storage */
+	GARDEN_BACK: "GARDEN_BACK",
+
+	// --- Feature IDs ---
+	/** Garden feature identifier */
+	FEATURE_GARDEN: "garden",
+
+	/** Chest feature identifier */
+	FEATURE_CHEST: "chest"
 } as const;

@@ -19,29 +19,51 @@ import { HomeMenuIds } from "../HomeMenuConstants";
 import { getSlotCountForCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
 import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
-import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
+import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
+import { DiscordConstants } from "../../../../../DiscordConstants";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportHomeChestActionReq,
 	CommandReportHomeChestActionRes,
-	ChestAction
+	ChestAction,
+	CommandReportPlantTransferReq,
+	CommandReportPlantTransferRes,
+	PlantTransferAction
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConstants";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
+import { PlantConstants } from "../../../../../../../Lib/src/constants/PlantConstants";
 
-/**
- * An item with its slot number and display details (without category).
- */
 type ItemSlotDisplay = {
 	slot: number;
 	details: ItemWithDetails;
 };
 
+type PlantEntry = {
+	section: "deposit" | "withdraw";
+	plantId: number;
+	slot?: number;
+	quantity?: number;
+	disabled: boolean;
+};
+
+type PlantTransferPrefixParams = {
+	selectedValue: string;
+	prefix: string;
+	action: PlantTransferAction;
+};
+
+type PlantTransferData = {
+	action: PlantTransferAction;
+	plantId: number;
+	playerSlot: number;
+};
+
 export class ChestFeatureHandler implements HomeFeatureHandler {
-	public readonly featureId = "chest";
+	public readonly featureId = HomeMenuIds.FEATURE_CHEST;
 
 	private hasAnyChestSlots(ctx: HomeFeatureHandlerContext): boolean {
 		const slots = ctx.homeData.features.chestSlots;
@@ -106,6 +128,12 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			return true;
 		}
 
+		// Plant tab navigation
+		if (selectedValue === HomeMenuIds.CHEST_PLANT_TAB) {
+			await this.showPlantTabDetail(ctx, componentInteraction, nestedMenus);
+			return true;
+		}
+
 		// Prefix-based action routing
 		return this.handlePrefixAction(ctx, selectedValue, componentInteraction, nestedMenus);
 	}
@@ -140,6 +168,29 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				prefix: matchedRoute.prefix,
 				action: matchedRoute.action
 			});
+			return true;
+		}
+
+		// Plant transfer actions
+		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX)) {
+			await this.handlePlantTransferByPrefix(ctx, {
+				selectedValue, prefix: HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX, action: HomeConstants.PLANT_TRANSFER_ACTIONS.DEPOSIT
+			}, componentInteraction, nestedMenus);
+			return true;
+		}
+		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX)) {
+			await this.handlePlantTransferByPrefix(ctx, {
+				selectedValue, prefix: HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX, action: HomeConstants.PLANT_TRANSFER_ACTIONS.WITHDRAW
+			}, componentInteraction, nestedMenus);
+			return true;
+		}
+
+		// Plant tab pagination
+		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX)) {
+			await componentInteraction.deferUpdate();
+			const targetPage = parseInt(selectedValue.replace(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX, ""), 10);
+			this.registerPlantTabMenu(ctx, nestedMenus, targetPage);
+			await nestedMenus.changeMenu(HomeMenuIds.CHEST_PLANT_TAB);
 			return true;
 		}
 
@@ -218,7 +269,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				`${params.customIdPrefix}${params.category}_${item.slot}`,
 				params.disabled
 			);
-			DiscordCollectorUtils.addButtonToRow(params.rows, button);
+
+			addButtonToRow(params.rows, button);
 			emoteIndex++;
 		}
 
@@ -332,9 +384,12 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const menuId = `${HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX}${categoryIndex}`;
 
 		// Build description header and inventory info
-		const description = this.buildCategoryMenuContent(
-			ctx, catInfo, categoryChestItems, categoryDepositableItems, maxSlots, hasEmptySlots
-		);
+		const description = this.buildCategoryMenuContent(ctx, catInfo, {
+			chestItems: categoryChestItems,
+			depositableItems: categoryDepositableItems,
+			maxSlots,
+			hasEmptySlots
+		});
 
 		nestedMenus.registerMenu(menuId, {
 			embed: new CrowniclesEmbed()
@@ -356,13 +411,21 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	private buildCategoryMenuContent(
 		ctx: HomeFeatureHandlerContext,
 		catInfo: typeof CATEGORY_INFO[number],
-		categoryChestItems: ItemSlotDisplay[],
-		categoryDepositableItems: ItemSlotDisplay[],
-		maxSlots: number,
-		hasEmptySlots: boolean
+		categoryData: {
+			chestItems: ItemSlotDisplay[];
+			depositableItems: ItemSlotDisplay[];
+			maxSlots: number;
+			hasEmptySlots: boolean;
+		}
 	): {
 		text: string; rows: ActionRowBuilder<ButtonBuilder>[];
 	} {
+		const {
+			chestItems: categoryChestItems,
+			depositableItems: categoryDepositableItems,
+			maxSlots,
+			hasEmptySlots
+		} = categoryData;
 		const chest = ctx.homeData.chest!;
 		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
 
@@ -404,8 +467,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		});
 
 		// Back button
-
-		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
+		addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
 			.setStyle(ButtonStyle.Secondary));
@@ -583,11 +645,11 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 
 			const button = this.buildItemButton(j, `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`);
 
-			DiscordCollectorUtils.addButtonToRow(rows, button);
+			addButtonToRow(rows, button);
 		}
 
 		// Back button
-		DiscordCollectorUtils.addButtonToRow(rows, new ButtonBuilder()
+		addButtonToRow(rows, new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 			.setCustomId(`${HomeMenuIds.CHEST_BACK_TO_DETAIL_PREFIX}${categoryIndex}`)
 			.setStyle(ButtonStyle.Secondary));
@@ -654,6 +716,238 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		);
 	}
 
+	/**
+	 * Show the plant tab detail menu.
+	 */
+	private async showPlantTabDetail(
+		ctx: HomeFeatureHandlerContext,
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		if (!ctx.homeData.chest?.plantStorage) {
+			await componentInteraction.deferUpdate();
+			return;
+		}
+
+		await componentInteraction.deferUpdate();
+		this.registerPlantTabMenu(ctx, nestedMenus);
+		await nestedMenus.changeMenu(HomeMenuIds.CHEST_PLANT_TAB);
+	}
+
+	/**
+	 * Build and register the plant tab detail menu with deposit/withdraw buttons.
+	 */
+	private registerPlantTabMenu(
+		ctx: HomeFeatureHandlerContext,
+		nestedMenus: CrowniclesNestedMenus,
+		page: number = 0
+	): void {
+		const chest = ctx.homeData.chest!;
+		const plantStorage = chest.plantStorage ?? [];
+		const playerSlots = chest.playerPlantSlots ?? [];
+		const maxCapacity = chest.plantMaxCapacity ?? 0;
+		const hasEmptySlot = playerSlots.some(s => s.plantId === 0);
+
+		// Build full list of plant entries (deposit first, then withdraw)
+		const entries = this.buildPlantEntryList(playerSlots, plantStorage, maxCapacity, hasEmptySlot);
+
+		// Pagination
+		const itemsPerPage = CrowniclesIcons.choiceEmotes.length;
+		const totalPages = Math.max(1, Math.ceil(entries.length / itemsPerPage));
+		const currentPage = Math.min(Math.max(0, page), totalPages - 1);
+		const pageEntries = entries.slice(currentPage * itemsPerPage, (currentPage + 1) * itemsPerPage);
+
+		const {
+			description, rows
+		} = this.buildPlantTabContent(ctx, pageEntries, maxCapacity);
+
+		// Pagination buttons (prev / next)
+		if (totalPages > 1) {
+			addButtonToRow(rows, new ButtonBuilder()
+				.setEmoji(parseEmoji(CrowniclesIcons.collectors.previousPage)!)
+				.setCustomId(`${HomeMenuIds.CHEST_PLANT_PAGE_PREFIX}${currentPage - 1}`)
+				.setStyle(ButtonStyle.Primary)
+				.setDisabled(currentPage === 0));
+			addButtonToRow(rows, new ButtonBuilder()
+				.setEmoji(parseEmoji(CrowniclesIcons.collectors.nextPage)!)
+				.setCustomId(`${HomeMenuIds.CHEST_PLANT_PAGE_PREFIX}${currentPage + 1}`)
+				.setStyle(ButtonStyle.Primary)
+				.setDisabled(currentPage === totalPages - 1));
+		}
+
+		// Back button
+		addButtonToRow(rows, new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+			.setCustomId(HomeMenuIds.CHEST_BACK_TO_CATEGORIES)
+			.setStyle(ButtonStyle.Secondary));
+
+		nestedMenus.registerMenu(HomeMenuIds.CHEST_PLANT_TAB, {
+			embed: new CrowniclesEmbed()
+				.formatAuthor(
+					i18n.t("commands:report.city.homes.chest.title", {
+						lng: ctx.lng, pseudo: ctx.pseudo
+					}),
+
+					ctx.user
+				)
+				.setDescription(description),
+			components: rows,
+			createCollector: this.createChestCollector(ctx)
+		});
+	}
+
+	/**
+	 * Build description and button rows for the plant tab entries list.
+	 */
+	private buildPlantTabContent(
+		ctx: HomeFeatureHandlerContext,
+		pageEntries: PlantEntry[],
+		maxCapacity: number
+	): {
+		description: string; rows: ActionRowBuilder<ButtonBuilder>[];
+	} {
+		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
+		let description = i18n.t("commands:report.city.homes.chest.plantHeader", {
+			lng: ctx.lng,
+			max: maxCapacity
+		});
+		let currentSection: "deposit" | "withdraw" | null = null;
+		let emoteIndex = 0;
+
+		for (const entry of pageEntries) {
+			if (entry.section !== currentSection) {
+				currentSection = entry.section;
+				const sectionKey = entry.section === "deposit" ? "plantDepositSection" : "plantWithdrawSection";
+				description += `\n\n${i18n.t(`commands:report.city.homes.chest.${sectionKey}`, { lng: ctx.lng })}`;
+			}
+			const plantType = PlantConstants.getPlantById(entry.plantId)!;
+			const plantName = i18n.t(`models:plants.${plantType.id}`, { lng: ctx.lng });
+			const icon = PlantConstants.getPlantEmoji(plantType.id);
+
+			if (entry.section === "deposit") {
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
+				addButtonToRow(rows, this.buildItemButton(
+					emoteIndex,
+					`${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${entry.plantId}_${entry.slot}`,
+					entry.disabled
+				));
+			}
+			else {
+				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName} (${entry.quantity}/${maxCapacity})`;
+				addButtonToRow(rows, this.buildItemButton(
+					emoteIndex,
+					`${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${entry.plantId}`,
+					entry.disabled
+				));
+			}
+			emoteIndex++;
+		}
+
+		if (pageEntries.length === 0) {
+			description += `\n\n${i18n.t("commands:report.city.homes.chest.plantEmpty", { lng: ctx.lng })}`;
+		}
+		return {
+			description, rows
+		};
+	}
+
+	/**
+	 * Build the full list of plant entries for the plant tab (deposit + withdraw).
+	 */
+	private buildPlantEntryList(
+		playerSlots: {
+			slot: number; plantId: number;
+		}[],
+		plantStorage: {
+			plantId: number; quantity: number;
+		}[],
+		maxCapacity: number,
+		hasEmptySlot: boolean
+	): PlantEntry[] {
+		const entries: PlantEntry[] = [];
+
+		for (const slot of playerSlots.filter(s => s.plantId !== 0)) {
+			if (!PlantConstants.getPlantById(slot.plantId)) {
+				continue;
+			}
+			const storageForType = plantStorage.find(s => s.plantId === slot.plantId);
+			entries.push({
+				section: "deposit",
+				plantId: slot.plantId,
+				slot: slot.slot,
+				disabled: (storageForType?.quantity ?? 0) >= maxCapacity
+			});
+		}
+
+		for (const stored of plantStorage.filter(s => s.quantity > 0)) {
+			if (!PlantConstants.getPlantById(stored.plantId)) {
+				continue;
+			}
+			entries.push({
+				section: "withdraw",
+				plantId: stored.plantId,
+				quantity: stored.quantity,
+				disabled: !hasEmptySlot
+			});
+		}
+
+		return entries;
+	}
+
+	/**
+	 * Handle a plant transfer action (deposit/withdraw) by prefix.
+	 */
+	private async handlePlantTransferByPrefix(
+		ctx: HomeFeatureHandlerContext,
+		params: PlantTransferPrefixParams,
+		componentInteraction: ComponentInteraction,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		await componentInteraction.deferUpdate();
+
+		const parts = params.selectedValue.replace(params.prefix, "").split("_");
+		const plantId = parseInt(parts[0], 10);
+		const playerSlot = parts[1] !== undefined ? parseInt(parts[1], 10) : -1;
+
+		await this.sendPlantTransferAction(ctx, {
+			action: params.action, plantId, playerSlot
+		}, nestedMenus);
+	}
+
+	/**
+	 * Send a plant transfer action to Core and refresh the plant tab menu.
+	 */
+	private async sendPlantTransferAction(
+		ctx: HomeFeatureHandlerContext,
+		transferData: PlantTransferData,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			ctx.context,
+			makePacket(CommandReportPlantTransferReq, {
+				action: transferData.action, plantId: transferData.plantId, playerSlot: transferData.playerSlot
+			}),
+			async (_responseContext, _packetName, responsePacket) => {
+				const response = responsePacket as unknown as CommandReportPlantTransferRes;
+
+				if (!response.success) {
+					return;
+				}
+
+				// Update chest plant data with refreshed data from Core
+				if (ctx.homeData.chest) {
+					ctx.homeData.chest.plantStorage = response.plantStorage;
+					ctx.homeData.chest.playerPlantSlots = response.playerPlantSlots;
+				}
+
+				// Refresh category menu and plant tab
+				this.refreshChestCategoriesMenu(ctx, nestedMenus);
+				this.registerPlantTabMenu(ctx, nestedMenus);
+				await nestedMenus.changeMenu(HomeMenuIds.CHEST_PLANT_TAB);
+			}
+		);
+	}
+
 	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {
 		// Chest uses custom button components instead of select menu options
 	}
@@ -682,6 +976,18 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			);
 		}
 
+		// Add plant tab button if garden is available
+		if (chest.plantStorage) {
+			const plantCount = chest.plantStorage.reduce((sum, s) => sum + s.quantity, 0);
+			buttons.push(
+				new ButtonBuilder()
+					.setCustomId(HomeMenuIds.CHEST_PLANT_TAB)
+					.setLabel(`${i18n.t("commands:report.city.homes.chest.plantTabLabel", { lng: ctx.lng })} (${plantCount})`)
+					.setEmoji(CrowniclesIcons.city.homeUpgrades.garden)
+					.setStyle(plantCount > 0 ? ButtonStyle.Primary : ButtonStyle.Secondary)
+			);
+		}
+
 		buttons.push(
 			new ButtonBuilder()
 				.setCustomId(HomeMenuIds.BACK_TO_HOME)
@@ -690,7 +996,14 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				.setStyle(ButtonStyle.Danger)
 		);
 
-		return [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)];
+		// Split buttons into rows of max 5 (Discord limit)
+		const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+		for (let i = 0; i < buttons.length; i += DiscordConstants.MAX_BUTTONS_PER_ROW) {
+			rows.push(new ActionRowBuilder<ButtonBuilder>()
+				.addComponents(buttons.slice(i, i + DiscordConstants.MAX_BUTTONS_PER_ROW)));
+		}
+
+		return rows;
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {

@@ -26,11 +26,9 @@ import {
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
 import {
-	BlacksmithConstants, ItemLevel, ItemUpgradeLevel
+	ItemLevel
 } from "../../../../Lib/src/constants/BlacksmithConstants";
-import {
-	getDisenchantPrice, getMaterialsPurchasePrice, getUpgradePrice
-} from "../../../../Lib/src/utils/BlacksmithUtils";
+import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithUtils";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -88,16 +86,20 @@ import {
 	getRandomItemShopItem
 } from "../utils/GeneralShopItems";
 import { getBadgeShopItem } from "../utils/StockExchangeShopItems";
-import { getSlotExtensionShopItem } from "../utils/TannerShopItems";
+import {
+	getPlantSlotExtensionShopItem, getSlotExtensionShopItem
+} from "../utils/TannerShopItems";
 import { crowniclesInstance } from "../../index";
 import { toItemWithDetails } from "../utils/ItemUtils";
+import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
+import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
+import { buildGardenData } from "./ReportGardenService";
 
 // Type aliases for commonly used nested types from ReactionCollectorCityData
 type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
 type HomeData = ReactionCollectorCityData["home"];
 type UpgradeStationData = NonNullable<NonNullable<HomeData["owned"]>["upgradeStation"]>;
 type ChestData = NonNullable<NonNullable<HomeData["owned"]>["chest"]>;
-type BlacksmithData = NonNullable<ReactionCollectorCityData["blacksmith"]>;
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
 /**
@@ -168,45 +170,83 @@ export async function buildHomeData(
 		home, homeLevel
 	} = homeData;
 	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
-	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 
-	let upgradeStation;
-	let chest;
-	let owned;
-	if (isHomeInCity) {
-		upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel!, player);
-		chest = await buildChestData(home!, homeLevel!, playerInventory, player);
-		owned = {
-			level: home!.level,
-			features: homeLevel!.features,
-			upgradeStation,
-			chest
-		};
-	}
+	const owned = isHomeInCity
+		? await buildOwnedHomeData({
+			player, playerInventory, playerMaterialMap, home: home!, homeLevel: homeLevel!
+		})
+		: undefined;
 
-	const homesCount = await Homes.getHomesCount();
-
-	const manage: HomeData["manage"] = {
-		newPrice: home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount),
-		upgrade: nextHomeUpgrade && isHomeInCity
-			? {
-				price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
-				oldFeatures: homeLevel!.features,
-				newFeatures: nextHomeUpgrade.features
-			}
-			: undefined,
-		movePrice: home && home.cityId !== city.id && homeLevel
-			? city.getHomeLevelPrice(homeLevel, homesCount)
-			: undefined,
-		currentMoney: player.money
-	};
-
-	const hasManageOptions = manage.newPrice || manage.upgrade || manage.movePrice;
+	const manage = await buildManageHomeData({
+		player, home, homeLevel, city
+	});
 
 	return {
 		owned,
-		manage: hasManageOptions ? manage : undefined
+		manage
 	};
+}
+
+async function buildOwnedHomeData(params: {
+	player: Player;
+	playerInventory: InventorySlot[];
+	playerMaterialMap: Map<number, number>;
+	home: Home;
+	homeLevel: HomeLevel;
+}): Promise<HomeData["owned"]> {
+	const {
+		player, playerInventory, playerMaterialMap, home, homeLevel
+	} = params;
+	const upgradeStation = buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player);
+	const chest = await buildChestData(home, homeLevel, playerInventory, player);
+	const garden = homeLevel.features.gardenPlots > 0
+		? await buildGardenData(home, homeLevel, player)
+		: undefined;
+
+	return {
+		level: home.level,
+		features: homeLevel.features,
+		upgradeStation,
+		chest,
+		garden
+	};
+}
+
+async function buildManageHomeData(params: {
+	player: Player;
+	home: Home | null;
+	homeLevel: HomeLevel | null;
+	city: City;
+}): Promise<HomeData["manage"]> {
+	const {
+		player, home, homeLevel, city
+	} = params;
+	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
+	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
+	const homesCount = await Homes.getHomesCount();
+
+	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
+	const upgrade = nextHomeUpgrade && isHomeInCity
+		? {
+			price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
+			oldFeatures: homeLevel!.features,
+			newFeatures: nextHomeUpgrade.features
+		}
+		: undefined;
+	const movePrice = home && home.cityId !== city.id && homeLevel
+		? city.getHomeLevelPrice(homeLevel, homesCount)
+		: undefined;
+
+	const hasManageOptions = newPrice || upgrade || movePrice;
+
+	return hasManageOptions
+		? {
+			newPrice,
+			upgrade,
+			movePrice,
+			currentMoney: player.money
+		}
+		: undefined;
 }
 
 /**
@@ -337,157 +377,44 @@ export async function buildChestData(
 		object: (inventoryInfo ? inventoryInfo.slotLimitForCategory(ItemCategory.OBJECT) : 1) + homeBonus.object
 	};
 
+	// Build plant data if garden is available
+	const hasGarden = homeLevel.features.gardenPlots > 0;
+	let plantStorage: ChestData["plantStorage"];
+	let playerPlantSlots: ChestData["playerPlantSlots"];
+	let plantMaxCapacity: ChestData["plantMaxCapacity"];
+
+	if (hasGarden) {
+		const homeStorage = await HomePlantStorages.getOfHome(home.id);
+
+		// Ensure player plant slots are initialized before reading them
+		const desiredPlantSlots = inventoryInfo ? inventoryInfo.plantSlots : 1;
+		await PlayerPlantSlots.ensureSlotsForCount(player.id, desiredPlantSlots);
+
+		const plantSlots = await PlayerPlantSlots.getPlantSlots(player.id);
+		plantMaxCapacity = home.level;
+
+		plantStorage = homeStorage
+			.filter(s => s.quantity > 0)
+			.map(s => ({
+				plantId: s.plantId,
+				quantity: s.quantity,
+				maxCapacity: plantMaxCapacity!
+			}));
+
+		playerPlantSlots = plantSlots.map(s => ({
+			slot: s.slot,
+			plantId: s.plantId
+		}));
+	}
+
 	return {
 		chestItems,
 		depositableItems,
 		slotsPerCategory,
-		inventoryCapacity
-	};
-}
-
-/**
- * Get the item data (weapon or armor) for an inventory slot
- */
-function getBlacksmithItemData(inventorySlot: InventorySlot): ReturnType<typeof WeaponDataController.instance.getById> | ReturnType<typeof ArmorDataController.instance.getById> | null {
-	if (!inventorySlot.isPrimaryEquipment()) {
-		return null;
-	}
-	return inventorySlot.isWeapon()
-		? WeaponDataController.instance.getById(inventorySlot.itemId)
-		: ArmorDataController.instance.getById(inventorySlot.itemId);
-}
-
-/**
- * Build the list of items that can be upgraded at the blacksmith
- */
-function buildBlacksmithUpgradeableItems(
-	playerInventory: InventorySlot[],
-	playerMaterialMap: Map<number, number>,
-	player: Player
-): BlacksmithData["upgradeableItems"] {
-	const upgradeableItems: BlacksmithData["upgradeableItems"] = [];
-
-	for (const inventorySlot of playerInventory) {
-		const itemData = getBlacksmithItemData(inventorySlot);
-		if (!itemData) {
-			continue;
-		}
-
-		const currentLevel = inventorySlot.itemLevel ?? 0;
-		if (currentLevel >= BlacksmithConstants.MAX_UPGRADE_LEVEL) {
-			continue;
-		}
-
-		const nextLevel = currentLevel + 1 as ItemUpgradeLevel;
-		const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
-
-		// Aggregate materials with rarity info
-		const materialAggregation = new Map<number, {
-			quantity: number; rarity: number;
-		}>();
-		for (const material of requiredMaterialsRaw) {
-			const materialIdNum = parseInt(material.id, 10);
-			const existing = materialAggregation.get(materialIdNum);
-			if (existing) {
-				existing.quantity += 1;
-			}
-			else {
-				materialAggregation.set(materialIdNum, {
-					quantity: 1,
-					rarity: material.rarity
-				});
-			}
-		}
-
-		const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
-		const missingMaterials: {
-			rarity: number; quantity: number;
-		}[] = [];
-		let hasAllMaterials = true;
-
-		for (const [
-			materialId, {
-				quantity, rarity
-			}
-		] of materialAggregation) {
-			const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
-			requiredMaterials.push({
-				materialId,
-				rarity,
-				quantity,
-				playerQuantity
-			});
-			if (playerQuantity < quantity) {
-				hasAllMaterials = false;
-				missingMaterials.push({
-					rarity,
-					quantity: quantity - playerQuantity
-				});
-			}
-		}
-
-		const upgradeCost = getUpgradePrice(nextLevel, itemData.rarity);
-		const missingMaterialsCost = getMaterialsPurchasePrice(missingMaterials);
-
-		upgradeableItems.push({
-			slot: inventorySlot.slot,
-			category: inventorySlot.itemCategory,
-			details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-			nextLevel,
-			upgradeCost,
-			requiredMaterials,
-			missingMaterialsCost,
-			hasAllMaterials
-		});
-	}
-
-	return upgradeableItems;
-}
-
-/**
- * Build the list of items that can be disenchanted at the blacksmith
- */
-function buildBlacksmithDisenchantableItems(
-	playerInventory: InventorySlot[],
-	player: Player
-): BlacksmithData["disenchantableItems"] {
-	const disenchantableItems: BlacksmithData["disenchantableItems"] = [];
-
-	for (const inventorySlot of playerInventory) {
-		const itemData = getBlacksmithItemData(inventorySlot);
-		if (!itemData || !inventorySlot.itemEnchantmentId) {
-			continue;
-		}
-
-		const enchantment = ItemEnchantment.getById(inventorySlot.itemEnchantmentId);
-		if (enchantment) {
-			disenchantableItems.push({
-				slot: inventorySlot.slot,
-				category: inventorySlot.itemCategory,
-				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-				enchantmentId: inventorySlot.itemEnchantmentId,
-				enchantmentType: enchantment.kind.type.id,
-				disenchantCost: getDisenchantPrice(itemData.rarity)
-			});
-		}
-	}
-
-	return disenchantableItems;
-}
-
-/**
- * Build blacksmith data for the city collector.
- * The blacksmith allows upgrading items beyond home level and disenchanting items.
- */
-export function buildBlacksmithData(
-	playerInventory: InventorySlot[],
-	playerMaterialMap: Map<number, number>,
-	player: Player
-): BlacksmithData {
-	return {
-		upgradeableItems: buildBlacksmithUpgradeableItems(playerInventory, playerMaterialMap, player),
-		disenchantableItems: buildBlacksmithDisenchantableItems(playerInventory, player),
-		playerMoney: player.money
+		inventoryCapacity,
+		plantStorage,
+		playerPlantSlots,
+		plantMaxCapacity
 	};
 }
 
@@ -1180,27 +1107,27 @@ export async function openStockExchange(player: Player, context: PacketContext, 
 }
 
 /**
- * Open the tanner shop for the player (inventory slot extensions)
+ * Open the tanner shop for the player (inventory slot extensions + plant slot extensions)
  */
 export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	const slotExtensionItem = await getSlotExtensionShopItem(player.id);
-	if (!slotExtensionItem) {
-		// Player has all slots maxed out — just open an empty shop
-		const shopCategories: ShopCategory[] = [];
-		await ShopUtils.createAndSendShopCollector(context, response, {
-			shopCategories,
-			player,
-			logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
-		});
-		return;
-	}
+	const plantSlotExtensionItem = await getPlantSlotExtensionShopItem(player.id);
 
-	const shopCategories: ShopCategory[] = [
-		{
+	const shopCategories: ShopCategory[] = [];
+
+	if (slotExtensionItem) {
+		shopCategories.push({
 			id: "slotExtension",
 			items: [slotExtensionItem]
-		}
-	];
+		});
+	}
+
+	if (plantSlotExtensionItem) {
+		shopCategories.push({
+			id: "plantSlotExtension",
+			items: [plantSlotExtensionItem]
+		});
+	}
 
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
@@ -1510,3 +1437,4 @@ async function processChestSwap({
 
 	return null;
 }
+

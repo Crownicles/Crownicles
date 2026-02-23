@@ -271,6 +271,13 @@ export const CrowniclesIcons: {
 			garden: string;
 			earthQuality: string;
 		};
+		gardenStatus: {
+			empty: string;
+			ready: string;
+			growing: string;
+			seed: string;
+			compost: string;
+		};
 		chestActions: {
 			inventory: string;
 			deposit: string;
@@ -294,6 +301,9 @@ export const CrowniclesIcons: {
 	};
 	materials: {
 		[materialId: string]: string;
+	};
+	plants: {
+		[plantId: string]: string;
 	};
 } = {
 	effects: {
@@ -2234,7 +2244,8 @@ export const CrowniclesIcons: {
 		bigGuildXp: "🌟",
 		skipMission: "🧾",
 		lovePointsValue: "🧑‍⚕️",
-		treasure: "👑"
+		treasure: "👑",
+		plantSlotExtension: "🌿"
 	},
 	badges: {
 		[Badge.BEST_V1_PLAYER]: "🏆",
@@ -2598,6 +2609,13 @@ export const CrowniclesIcons: {
 			garden: "🌱",
 			earthQuality: "↗️"
 		},
+		gardenStatus: {
+			empty: "🕳️",
+			ready: "✅",
+			growing: "⏳",
+			seed: "🌰",
+			compost: "♻️"
+		},
 		chestActions: {
 			inventory: "🎒",
 			deposit: "📥",
@@ -2738,5 +2756,17 @@ export const CrowniclesIcons: {
 		81: "🔩",
 		85: "🛠️",
 		79: "🛡️"
+	},
+	plants: {
+		1: "🌿",
+		2: "☘️",
+		3: "🌙",
+		4: "🌱",
+		5: "🍄",
+		6: "🍃",
+		7: "🔥",
+		8: "🥩",
+		9: "💎",
+		10: "🌳"
 	}
 };
