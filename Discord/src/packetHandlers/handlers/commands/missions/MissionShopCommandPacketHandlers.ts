@@ -37,8 +37,8 @@ export default class MissionShopCommandPacketHandlers {
 	}
 
 	@packetHandler(CommandMissionShopKingsFavor)
-	async missionShopKingsFavor(context: PacketContext, _packet: CommandMissionShopKingsFavor): Promise<void> {
-		await handleMissionShopKingsFavor(context);
+	async missionShopKingsFavor(context: PacketContext, packet: CommandMissionShopKingsFavor): Promise<void> {
+		await handleMissionShopKingsFavor(packet, context);
 	}
 
 	@packetHandler(CommandMissionShopBadge)

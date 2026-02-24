@@ -93,6 +93,7 @@ export abstract class MissionsController {
 			player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
 			for (const mission of completedMissions) {
 				mission.moneyToWin = BlessingManager.getInstance().applyMoneyBlessing(mission.moneyToWin);
+				mission.pointsToWin = Math.round(mission.pointsToWin * BlessingManager.getInstance().getScoreMultiplier());
 			}
 			response.push(makePacket(MissionsCompletedPacket, {
 				missions: MissionsController.prepareBaseMissions(completedMissions),

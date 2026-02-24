@@ -65,23 +65,23 @@ async function applyFavorableOutcome(
 	properties: LimogesProperties
 ): Promise<Required<SmallEventLimogesPacket>["reward"]> {
 	const experience = RandomUtils.rangedInt(properties.reward.experience);
-	const score = RandomUtils.rangedInt(properties.reward.score);
+	const scoreParameters = {
+		amount: RandomUtils.rangedInt(properties.reward.score),
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
+	};
 
 	await player.addExperience({
 		amount: experience,
 		response,
 		reason: NumberChangeReason.SMALL_EVENT
 	});
-	await player.addScore({
-		amount: score,
-		response,
-		reason: NumberChangeReason.SMALL_EVENT
-	});
+	await player.addScore(scoreParameters);
 	await player.save();
 
 	return {
 		experience,
-		score
+		score: scoreParameters.amount
 	};
 }
 
