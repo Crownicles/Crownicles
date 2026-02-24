@@ -22,8 +22,8 @@
     "hungry": "{emote:effects.starving} starving",
     "diet": {
       "diet_null": "{emote:diet.omnivorous} Omnivore",
-      "diet_herbivorous": "🥬 Herbivore",
-      "diet_carnivorous": "🥩 Carnivore"
+      "diet_herbivorous": "{emote:diet.herbivorous} Herbivore",
+      "diet_carnivorous": "{emote:diet.carnivorous} Carnivore"
     },
     "sexDisplay_f": "Female {emote:sex.female}",
     "sexDisplay_m": "Male {emote:sex.male}",
