@@ -1,33 +1,33 @@
 {
   "badges": {
     "description": "Informationen über Abzeichen und ihre Funktionsweise anzeigen.",
-    "name": "Badges"
+    "name": "badges"
   },
   "help": {
     "description": "Eine Liste der verfügbaren Bestellungen oder detaillierte Informationen zu einer Bestellung anzeigen.",
-    "name": "Hilfe",
+    "name": "hilfe",
     "options": {
       "commandName": {
         "description": "Der Befehl, dessen Informationen angezeigt werden sollen.",
-        "name": "Befehl"
+        "name": "befehl"
       }
     }
   },
   "idea": {
     "description": "Einen Vorschlag zur Verbesserung des Spiels senden.",
-    "name": "Vorschlag"
+    "name": "vorschlag"
   },
   "inventory": {
     "description": "Zeigt das Inventar des Spielers an.",
-    "name": "Bestandsaufnahme",
+    "name": "bestandsaufnahme",
     "options": {
       "rank": {
         "description": "Die Rangfolge des Spielers, dessen Bestand angezeigt werden soll.",
-        "name": "Rangfolge"
+        "name": "rangfolge"
       },
       "user": {
         "description": "Der Benutzer, dessen Bestand angezeigt werden soll.",
-        "name": "User"
+        "name": "user"
       }
     }
   },
@@ -37,11 +37,11 @@
   },
   "language": {
     "description": "Ändern Sie die Sprache des Bots für Ihre nächsten Interaktionen.",
-    "name": "Sprache"
+    "name": "sprache"
   },
   "ping": {
     "description": "Zeigt die Latenz des Bots an und ermöglicht es dem Spieler, zu überprüfen, ob der Bot online ist.",
-    "name": "Ping"
+    "name": "ping"
   },
   "pet": {
     "description": "Informationen über den Vertrauten eines Spielers anzeigen.",
@@ -49,11 +49,11 @@
     "options": {
       "rank": {
         "description": "Die Rangliste des Spielers, dessen Vertrauter angezeigt werden soll.",
-        "name": "Rangliste"
+        "name": "rangliste"
       },
       "user": {
         "description": "Der Nutzer, dessen Vertrauter angezeigt werden soll.",
-        "name": "Benutzer"
+        "name": "benutzer"
       }
     }
   },
@@ -63,11 +63,11 @@
   },
   "petNick": {
     "description": "Geben Sie Ihrem Vertrauten einen Namen.",
-    "name": "Spitznamefamilier",
+    "name": "spitznamefamilier",
     "options": {
       "nickname": {
         "description": "Der Spitzname, den du deinem Begleiter geben möchtest. (Lassen Sie ihn leer, um den Spitznamen zu löschen)",
-        "name": "Spitzname"
+        "name": "spitzname"
       }
     }
   },
@@ -77,7 +77,7 @@
     "options": {
       "guildName": {
         "description": "Der Name der Gilde.",
-        "name": "Name"
+        "name": "name"
       }
     }
   },
@@ -87,85 +87,85 @@
     "options": {
       "description": {
         "description": "Beschreibung.",
-        "name": "Beschreibung"
+        "name": "beschreibung"
       }
     }
   },
   "guildInvite": {
     "description": "Werben Sie ein neues Mitglied für Ihre Gilde.",
-    "name": "Einladungguilde",
+    "name": "einladungguilde",
     "options": {
       "user": {
         "description": "Der zu rekrutierende Nutzer.",
-        "name": "Benutzer"
+        "name": "benutzer"
       }
     }
   },
   "guild": {
     "description": "Informationen über eine Gilde anzeigen.",
-    "name": "Gilde",
+    "name": "gilde",
     "options": {
       "rank": {
         "description": "Die Rangliste des Spielers, dessen Gilde angezeigt werden soll.",
-        "name": "Rangliste"
+        "name": "rangliste"
       },
       "user": {
         "description": "Der Benutzer, dessen Gilde angezeigt werden soll.",
-        "name": "Benutzer"
+        "name": "benutzer"
       },
       "guildName": {
         "description": "Der Name der Gilde, deren Informationen angezeigt werden sollen.",
-        "name": "Gilde"
+        "name": "gilde"
       }
     }
   },
   "profile": {
     "description": "Zeigt das Profil eines Spielers an.",
-    "name": "Profil",
+    "name": "profil",
     "options": {
       "rank": {
         "description": "Die Rangfolge des Spielers, dessen Profil angezeigt werden soll.",
-        "name": "Rangfolge"
+        "name": "rangfolge"
       },
       "user": {
         "description": "Der Benutzer, dessen Profil angezeigt werden soll.",
-        "name": "User"
+        "name": "user"
       }
     }
   },
   "rarity": {
     "description": "Zeigen Sie die verschiedenen Seltenheiten der Ausrüstung an.",
-    "name": "Seltenheit"
+    "name": "seltenheit"
   },
   "report": {
     "description": "Holen Sie sich einen Bericht über die Situation Ihres Charakters.",
-    "name": "Bericht"
+    "name": "bericht"
   },
   "test": {
     "description": "Schmacks-Befehl für Tester (NUR TESTMODUS).",
-    "name": "Test",
+    "name": "test",
     "options": {
       "commandName": {
         "description": "Der auszuführende Testbefehl.",
-        "name": "Befehl"
+        "name": "befehl"
       }
     }
   },
   "update": {
     "description": "Aktuelle Version des Bots anzeigen.",
-    "name": "Neuigkeiten"
+    "name": "neuigkeiten"
   },
   "vote": {
     "description": "Link zur Abstimmung für den Bot anzeigen.",
-    "name": "Abstimmung"
+    "name": "abstimmung"
   },
   "map": {
     "description": "Karte anzeigen, um anzuzeigen, wohin Sie gehen.",
-    "name": "Karte"
+    "name": "karte"
   },
   "shop": {
     "description": "Laden anzeigen.",
-    "name": "Laden"
+    "name": "laden"
   },
   "classesInfo": {
     "description": "Informationen über die für Ihren Charakter auswählbaren Klassen anzeigen.",
@@ -177,7 +177,7 @@
   },
   "notifications": {
     "description": "Verwalten Sie die Benachrichtigungen des Bots.",
-    "name": "Benachrichtigungen",
+    "name": "benachrichtigungen",
     "options": {
       "toggle": {
         "description": "Aktivieren oder deaktivieren Sie Benachrichtigungen eines bestimmten Typs.",
@@ -187,7 +187,7 @@
   },
   "maintenance": {
     "description": "Schalten Sie den Bot in den Wartungsmodus.",
-    "name": "Wartung",
+    "name": "wartung",
     "options": {
       "enable": {
         "description": "Aktiviert oder deaktiviert den Wartungsmodus.",
@@ -201,15 +201,15 @@
   },
   "missions": {
     "description": "Die Aufgaben eines Spielers auflisten.",
-    "name": "Missionen",
+    "name": "missionen",
     "options": {
       "rank": {
         "description": "Die Rangliste des Spielers, dessen Aufgaben angezeigt werden sollen.",
-        "name": "Rangliste"
+        "name": "rangliste"
       },
       "user": {
         "description": "Der Nutzer, dessen Aufgaben angezeigt werden müssen.",
-        "name": "Benutzer"
+        "name": "benutzer"
       }
     }
   },
@@ -219,15 +219,15 @@
   },
   "guildKick": {
     "description": "Ein Mitglied aus der Gilde ausschließen.",
-    "name": "ausschließenGilde",
+    "name": "ausschließengilde",
     "options": {
       "rank": {
         "description": "Die Rangliste des Spielers, der aus der Gilde ausgeschlossen werden soll.",
-        "name": "Rangliste"
+        "name": "rangliste"
       },
       "user": {
         "description": "Der Nutzer, der aus der Gilde ausgeschlossen werden soll.",
-        "name": "Benutzer"
+        "name": "benutzer"
       }
     }
   },
@@ -241,7 +241,7 @@
     "options": {
       "user": {
         "description": "Der Nutzer, der als Ältester befördert wird.",
-        "name": "Benutzer"
+        "name": "benutzer"
       }
     }
   },
@@ -251,11 +251,11 @@
   },
   "guildLeave": {
     "description": "Die Gilde verlassen.",
-    "name": "verlassenGilde"
+    "name": "verlassengilde"
   },
   "daily": {
     "description": "Benutzen Sie Ihren ausgerüsteten Gegenstand, um einen täglichen Bonus zu erhalten.",
-    "name": "Bonustag"
+    "name": "bonustag"
   },
   "unlock": {
     "description": "Befreie einen anderen Spieler aus dem Gefängnis.",
@@ -263,11 +263,11 @@
     "options": {
       "rank": {
         "description": "Die Einstufung des auszustellenden Spielers.",
-        "name": "Rangliste"
+        "name": "rangliste"
       },
       "user": {
         "description": "Der zu liefernde Nutzer.",
-        "name": "Benutzer"
+        "name": "benutzer"
       }
     }
   },
@@ -277,11 +277,11 @@
   },
   "top": {
     "description": "Zeigt die Ranglisten des Spiels an.",
-    "name": "Rangliste",
+    "name": "rangliste",
     "subcommands": {
       "score": {
         "description": "Zeigt die Rangfolge der Spieler nach ihrer Punktzahl an.",
-        "name": "Punktestand"
+        "name": "punktestand"
       },
       "glory": {
         "description": "Zeigt die Rangliste der Spieler nach ihrem Ruhm an.",
@@ -289,17 +289,17 @@
       },
       "guild": {
         "description": "Anzeige der Rangfolge der Gilden nach Punkten.",
-        "name": "Gilde"
+        "name": "gilde"
       }
     },
     "options": {
       "timing": {
         "description": "Die Dauer der angezeigten Rangliste (Seit immer als Standard).",
-        "name": "Dauer"
+        "name": "dauer"
       },
       "page": {
         "description": "Die Seite der Rangliste, die angezeigt werden soll.",
-        "name": "Seite"
+        "name": "seite"
       }
     },
     "timings": {
@@ -309,7 +309,7 @@
   },
   "fight": {
     "description": "Einen Kampf beginnen.",
-    "name": "Kampf"
+    "name": "kampf"
   },
   "switch": {
     "name": "vertauschen",
@@ -328,17 +328,17 @@
     "description": "Verkaufen Sie einen Vertrauten an einen anderen Spieler.",
     "options": {
       "price": {
-        "name": "Preis",
+        "name": "preis",
         "description": "Der Verkaufspreis des Vertrauten."
       },
       "user": {
-        "name": "Spieler",
+        "name": "spieler",
         "description": "Der Spieler, an den der Begleiter verkauft werden soll."
       }
     }
   },
   "classes": {
-    "name": "Klassen",
+    "name": "klassen",
     "description": "Die Klasse wechseln."
   },
   "sell": {
@@ -374,13 +374,13 @@
     "description": "Einem Spieler ein Abzeichen geben.",
     "options": {
       "user": {
-        "name": "Benutzer",
+        "name": "benutzer",
         "description": "Der Spieler, dem das Abzeichen gegeben werden soll."
       }
     }
   },
   "fightHistory": {
-    "name": "Kampfhistorisch",
+    "name": "kampfhistorisch",
     "description": "Die Historisch der Kämpfe anzeigen."
   },
   "deletecode": {
