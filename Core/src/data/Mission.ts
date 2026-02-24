@@ -30,15 +30,15 @@ export class Mission extends Data<string> {
 
 
 	public canBeEasy(): boolean {
-		return this.difficulties?.easy?.length !== 0;
+		return (this.difficulties?.easy?.length ?? 0) > 0;
 	}
 
 	public canBeMedium(): boolean {
-		return this.difficulties?.medium?.length !== 0;
+		return (this.difficulties?.medium?.length ?? 0) > 0;
 	}
 
 	public canBeHard(): boolean {
-		return this.difficulties?.hard?.length !== 0;
+		return (this.difficulties?.hard?.length ?? 0) > 0;
 	}
 }
 
