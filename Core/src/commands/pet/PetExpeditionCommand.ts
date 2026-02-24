@@ -357,9 +357,10 @@ export default class PetExpeditionCommand {
 		// Apply outcome effects (love change and rewards)
 		await applyOutcomeEffects(outcome, player, petEntity, response, context);
 
-		// Update displayed money to include blessing multiplier
+		// Update displayed values to include blessing multipliers
 		if (outcome.rewards) {
 			outcome.rewards.money = BlessingManager.getInstance().applyMoneyBlessing(outcome.rewards.money);
+			outcome.rewards.points = Math.round(outcome.rewards.points * BlessingManager.getInstance().getScoreMultiplier());
 		}
 
 		// Finalize expedition (log, cleanup, mark completed)

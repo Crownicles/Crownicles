@@ -128,7 +128,10 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 			response, player
 		}, amount) => player.addScore({
 			amount, response, reason: NumberChangeReason.SMALL_EVENT
-		})
+		}),
+		afterApply: ({ packet }) => {
+			packet.amount = Math.round(packet.amount! * BlessingManager.getInstance().getScoreMultiplier());
+		}
 	}),
 	[PetConstants.PET_INTERACTIONS_NAMES.WIN_LOVE]: createStatInteraction({
 		range: SmallEventConstants.PET.LOVE_POINTS,

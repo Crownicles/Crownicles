@@ -87,11 +87,12 @@ async function acceptJoinBoat(player: Player, response: CrowniclesPacket[]): Pro
 
 	// Gain Score
 	const gainScore = await TravelTime.joinBoatScore(player);
-	await player.addScore({
+	const scoreParameters = {
 		amount: gainScore,
 		response,
 		reason: NumberChangeReason.JOIN_BOAT
-	});
+	};
+	await player.addScore(scoreParameters);
 
 	// Start the travel
 	const anotherMemberOnBoat = await Maps.getGuildMembersOnBoat(player);
@@ -106,7 +107,7 @@ async function acceptJoinBoat(player: Player, response: CrowniclesPacket[]): Pro
 		missionId: "joinPVEIsland",
 		set: true
 	});
-	response.push(makePacket(CommandJoinBoatAcceptPacketRes, { score: gainScore }));
+	response.push(makePacket(CommandJoinBoatAcceptPacketRes, { score: scoreParameters.amount }));
 	await player.save();
 }
 

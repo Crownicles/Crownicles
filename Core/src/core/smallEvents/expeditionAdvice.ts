@@ -204,12 +204,13 @@ async function applyExpeditionBonusRewards(
 	const rewards: ExpeditionBonusRewards = {};
 
 	// Always give bonus points
-	rewards.bonusPoints = RandomUtils.crowniclesRandom.integer(bonusConfig.POINTS_MIN, bonusConfig.POINTS_MAX);
-	await player.addScore({
-		amount: rewards.bonusPoints,
+	const scoreParameters = {
+		amount: RandomUtils.crowniclesRandom.integer(bonusConfig.POINTS_MIN, bonusConfig.POINTS_MAX),
 		response,
 		reason: NumberChangeReason.SMALL_EVENT
-	});
+	};
+	await player.addScore(scoreParameters);
+	rewards.bonusPoints = scoreParameters.amount;
 
 	// Single random roll to determine bonus type
 	const roll = RandomUtils.crowniclesRandom.integer(0, 99);

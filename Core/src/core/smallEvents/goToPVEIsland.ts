@@ -70,11 +70,12 @@ export const smallEventFuncs: SmallEventFuncs = {
 					price
 				};
 				const gainScore = await TravelTime.joinBoatScore(player);
-				await player.addScore({
+				const scoreParameters = {
 					amount: gainScore,
 					response,
 					reason: NumberChangeReason.SMALL_EVENT
-				});
+				};
+				await player.addScore(scoreParameters);
 
 				await Maps.startBoatTravel(player, options, NumberChangeReason.SMALL_EVENT, response);
 				await MissionsController.update(player, response, {
@@ -82,7 +83,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 					set: true
 				});
 				response.push(makePacket(SmallEventGoToPVEIslandAcceptPacket, {
-					alone: !anotherMemberOnBoat.length, pointsWon: gainScore
+					alone: !anotherMemberOnBoat.length, pointsWon: scoreParameters.amount
 				}));
 			}
 			else {
