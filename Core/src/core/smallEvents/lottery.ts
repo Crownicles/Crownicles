@@ -65,6 +65,14 @@ type RewardParams = {
 	levelKey: LotteryLevelKey;
 };
 
+function pushWinPacket(response: CrowniclesPacket[], reward: {
+	amount: number; type: string;
+}, lostTime: number, levelKey: LotteryLevelKey): void {
+	response.push(makePacket(SmallEventLotteryWinPacket, {
+		winAmount: reward.amount, lostTime, level: levelKey, winReward: reward.type
+	}));
+}
+
 async function giveRewardToPlayer(
 	response: CrowniclesPacket[],
 	{
@@ -85,12 +93,9 @@ async function giveRewardToPlayer(
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
-			response.push(makePacket(SmallEventLotteryWinPacket, {
-				winAmount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient,
-				lostTime,
-				level: levelKey,
-				winReward: "xp"
-			}));
+			pushWinPacket(response, {
+				amount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient, type: "xp"
+			}, lostTime, levelKey);
 			break;
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.MONEY:
 			await player.addMoney({
@@ -98,24 +103,18 @@ async function giveRewardToPlayer(
 				response,
 				reason: NumberChangeReason.SMALL_EVENT
 			});
-			response.push(makePacket(SmallEventLotteryWinPacket, {
-				winAmount: BlessingManager.getInstance().applyMoneyBlessing(SmallEventConstants.LOTTERY.REWARDS.MONEY * coefficient),
-				lostTime,
-				level: levelKey,
-				winReward: "money"
-			}));
+			pushWinPacket(response, {
+				amount: BlessingManager.getInstance().applyMoneyBlessing(SmallEventConstants.LOTTERY.REWARDS.MONEY * coefficient), type: "money"
+			}, lostTime, levelKey);
 			break;
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP:
 			await guild.addExperience({
 				amount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient, response, reason: NumberChangeReason.SMALL_EVENT
 			});
 			await guild.save();
-			response.push(makePacket(SmallEventLotteryWinPacket, {
-				winAmount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient,
-				lostTime,
-				level: levelKey,
-				winReward: "guildXp"
-			}));
+			pushWinPacket(response, {
+				amount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient, type: "guildXp"
+			}, lostTime, levelKey);
 			break;
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.POINTS: {
 			const scoreParameters = {
@@ -124,14 +123,11 @@ async function giveRewardToPlayer(
 				reason: NumberChangeReason.SMALL_EVENT
 			};
 			await player.addScore(scoreParameters);
-			response.push(makePacket(SmallEventLotteryWinPacket, {
-				winAmount: scoreParameters.amount,
-				lostTime,
-				level: levelKey,
-				winReward: "points"
-			}));
-		}
+			pushWinPacket(response, {
+				amount: scoreParameters.amount, type: "points"
+			}, lostTime, levelKey);
 			break;
+		}
 		default:
 			throw new Error("lottery reward type not found");
 	}
