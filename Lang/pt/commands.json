@@ -19,11 +19,11 @@
       "5_male": "{emote:loveLevels.4} Vestido",
       "5_female": "{emote:loveLevels.4} Vestido"
     },
-    "hungry": "🤤 com fome",
+    "hungry": "{emote:effects.starving} com fome",
     "diet": {
       "diet_null": "Omnívoro",
       "diet_herbivorous": "Herbívoro",
-      "diet_carnivorous": "🥩 Carnívoro"
+      "diet_carnivorous": "{emote:diet.carnivorous} Carnívoro"
     },
     "sexDisplay_f": "{emote:sex.female}Feminino",
     "sexDisplay_m": "{emote:sex.male}Masculino",
@@ -618,7 +618,7 @@
     "potions_one": "{{count}}{{max}}Poção ( / ):",
     "potions_other": "{{count}}{{max}}Poções ( / ) :",
     "seeBackupItems": "Ver a reserva",
-    "seeEquippedItems": "🔄 Ver inventário principal",
+    "seeEquippedItems": "{emote:collectors.switch} Ver inventário principal",
     "stockTitle": ":package: {{pseudo}}**Reservar itens de **",
     "title": ":briefcase: {{pseudo}}** ** Inventário",
     "weapons_one": "{{count}}{{max}}Arma ( / ):",
@@ -781,7 +781,7 @@
     "encounterMonster": [
       "Chegas ao teu destino quando, de repente, ouves um barulho atrás de ti... Um monstro está a atacar-vos!"
     ],
-    "encounterMonsterStats": "{{emoji}} {{monsterName}} {{level, number}}\n {{description}}\n\n {{energy, number}} {{attack, number}} {{defense, number}} {{speed, number}}> ** **| **Nível ** > ⚡ | 🗡 | 🛡 | 🚀",
+    "encounterMonsterStats": "{{emoji}} {{monsterName}} {{level, number}}\n {{description}}\n\n {{energy, number}} {{attack, number}} {{defense, number}} {{speed, number}}> ** **| **Nível ** > {emote:unitValues.energy} | {emote:unitValues.attack} | {emote:unitValues.defense} | {emote:unitValues.speed}",
     "endPoint": "Ponto de chegada :",
     "energy": ":zap: ** Poupança de energia :{{energy, number}}**",
     "experience": "** | {emote:unitValues.xp} Experiência adquirida : **{{experience, number}}",
@@ -875,12 +875,12 @@
   "shop": {
     "closeShop": "Fechou a loja.",
     "closeShopTitle": "{{pseudo}}encerramento da loja",
-    "noAlterationToHeal": "Não é vítima de qualquer alteração de estado 🙂",
+    "noAlterationToHeal": "Não é vítima de qualquer alteração de estado {emote:effects.none}",
     "cannotHealOccupied": "Está atualmente ocupado. Esta alteração não pode ser curada na loja. {emote:effects.occupied}",
     "success": "{{pseudo}}Uma transação bem sucedida!",
     "healAlteration": "As suas alterações de estado foram removidas.",
     "tooManyEnergyBought": "Comprou a quantidade máxima de recuperação de energia para esta semana.",
-    "noEnergyToHeal": "Tens toda a tua energia de combate à tua disposição. ⚡",
+    "noEnergyToHeal": "Tens toda a tua energia de combate à tua disposição. {emote:unitValues.energy}",
     "fullRegen": "Foi completamente tratado.",
     "alreadyHaveBadge": "Já tem este distintivo.",
     "badgeBought": "Recebeu um novo distintivo: {emote:badges.{{badgeName}}} !",
