@@ -8,15 +8,25 @@ export abstract class EloUtils {
 	 * @param player
 	 */
 	static getKFactor(player: Player): number {
-		if (player.getGloryPoints() < FightConstants.ELO.LOW_K_FACTOR_THRESHOLD) {
+		const glory = player.getGloryPoints();
+
+		if (glory < FightConstants.ELO.LOW_K_FACTOR_THRESHOLD) {
 			return FightConstants.ELO.DEFAULT_K_FACTOR;
 		}
 
-		if (player.getGloryPoints() < FightConstants.ELO.VERY_LOW_K_FACTOR_THRESHOLD) {
+		if (glory < FightConstants.ELO.VERY_LOW_K_FACTOR_THRESHOLD) {
 			return FightConstants.ELO.LOW_K_FACTOR;
 		}
 
-		return FightConstants.ELO.VERY_LOW_K_FACTOR;
+		if (glory < FightConstants.ELO.ULTRA_LOW_K_FACTOR_THRESHOLD) {
+			return FightConstants.ELO.VERY_LOW_K_FACTOR;
+		}
+
+		if (glory < FightConstants.ELO.MINIMAL_K_FACTOR_THRESHOLD) {
+			return FightConstants.ELO.ULTRA_LOW_K_FACTOR;
+		}
+
+		return FightConstants.ELO.MINIMAL_K_FACTOR;
 	}
 
 	/**
