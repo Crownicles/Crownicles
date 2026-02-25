@@ -1567,6 +1567,46 @@
         "name": "Faire appel aux membres de votre guilde",
         "success": "Vous faites appel à vos coéquipiers, qui arrivent rapidement sur les lieux. L'animal, surpris par l'arrivée de ces renforts, prend la fuite sans demander son reste !",
         "failure": "Vous faites appel à vos coéquipiers, mais ces derniers sont trop loin pour vous entendre. L'animal, rapide, vous assomme avant de repartir au loin."
+      },
+      "channelRage": {
+        "name": "Canaliser sa rage",
+        "success": "Vous fermez les yeux et laissez votre rage intérieure vous envahir. Vos muscles se tendent, vos yeux s'enflamment et vous chargez la bête avec une fureur dévastatrice ! L'animal, terrifié par votre puissance, disparaît dans les fourrés !",
+        "failure": "Vous tentez de puiser dans votre rage, mais votre colère ne semble pas suffisante pour impressionner la bête. Elle profite de votre hésitation pour vous asséner un coup violent avant de s'en aller."
+      },
+      "stealthApproach": {
+        "name": "Approche furtive",
+        "success": "Vous vous accroupissez silencieusement et contournez la bête avec la grâce d'une ombre. Vous frappez par surprise et la créature, désorientée, prend la fuite avant de comprendre ce qu'il s'est passé !",
+        "failure": "Vous tentez de vous faufiler discrètement, mais une branche craque sous vos pieds. L'animal se retourne et, furieux d'avoir été pris par surprise, vous charge violemment avant de s'éloigner."
+      },
+      "analyze": {
+        "name": "Analyser les faiblesses",
+        "success": "Votre expérience de vétéran vous permet de repérer les points faibles de la créature. Vous frappez avec précision à l'endroit vulnérable et l'animal s'enfuit en gémissant !",
+        "failure": "Vous observez attentivement l'animal pour trouver ses faiblesses, mais votre analyse prend trop de temps. La bête se jette sur vous avant que vous n'ayez pu agir."
+      },
+      "guildBanner": {
+        "name": "Brandir l'étendard de guilde",
+        "success": "Vous brandissez fièrement l'étendard de votre guilde ! L'animal recule, impressionné par l'aura de puissance qui s'en dégage. Il baisse la tête et s'éloigne respectueusement.",
+        "failure": "Vous brandissez l'étendard de votre guilde, mais la bête n'a que faire de votre bannière. Elle la renverse d'un coup de patte et vous fait tomber avec, avant de repartir dans les bois."
+      },
+      "throwRock": {
+        "name": "Lancer un caillou au loin",
+        "success": "Vous ramassez un caillou et le lancez de toutes vos forces dans les buissons. L'animal, surpris par le bruit, détourne son attention et vous en profitez pour vous éclipser discrètement !",
+        "failure": "Vous ramassez un caillou et le lancez au loin, mais votre visée laisse à désirer. Le caillou atterrit juste à côté de la bête, qui vous charge furieusement !"
+      },
+      "battleCry": {
+        "name": "Pousser un cri de guerre",
+        "success": "Vous inspirez profondément et poussez un cri de guerre tonitruant qui résonne dans toute la forêt ! L'animal, tétanisé, prend la fuite sans demander son reste !",
+        "failure": "Vous tentez de pousser un cri de guerre, mais votre voix se brise piteusement. La bête vous dévisage, peu impressionnée, avant de vous bousculer violemment."
+      },
+      "feint": {
+        "name": "Feinter",
+        "success": "Vous amorcez un mouvement vers la gauche, puis pivotez brusquement vers la droite et frappez la bête là où elle ne s'y attendait pas ! Désorientée, elle s'enfuit dans la direction opposée !",
+        "failure": "Vous tentez une feinte, mais l'animal anticipe votre manoeuvre et vous attrape en plein mouvement. Vous tituber et tombez lourdement au sol."
+      },
+      "shareSoup": {
+        "name": "Faire sentir l'une de vos soupes",
+        "success": "Vous sortez soudainement le couvercle de votre marmite de soupe et une volute de fumée odorante s'élève dans les airs. L'animal, hypnotisé par le délicieux arôme, s'apaise et s'éloigne tranquillement, rêvant d'un bon repas.",
+        "failure": "Vous sortez le couvercle de votre marmite, mais l'odeur qui s'en échappe n'a rien d'appétissant aujourd'hui. La bête plisse le nez de dégoût et vous bouscule rageusement avant de détaler."
       }
     }
   },
