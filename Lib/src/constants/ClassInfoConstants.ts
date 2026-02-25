@@ -15,6 +15,20 @@ export abstract class ClassInfoConstants {
 			ClassConstants.CLASSES_ID.INFANTRYMAN
 		];
 
+	static readonly STEALTHY_CLASSES = [
+		ClassConstants.CLASSES_ID.ROCK_THROWER,
+		ClassConstants.CLASSES_ID.SLINGER,
+		ClassConstants.CLASSES_ID.ARCHER,
+		ClassConstants.CLASSES_ID.GUNNER,
+		ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER,
+		ClassConstants.CLASSES_ID.EXPERIENCED_VETERAN
+	];
+
+	static readonly GUNNER_CLASSES = [
+		ClassConstants.CLASSES_ID.GUNNER,
+		ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER
+	];
+
 	static readonly MENU_IDS = {
 		CLASS_SELECTION: "classSelectionMenu",
 		LIST_OPTION: "listOption"

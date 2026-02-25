@@ -2,5 +2,8 @@
   "rarity": 7,
   "rawAttack": 8,
   "defense": -35,
-  "speed": 25
+  "speed": 25,
+  "tags": [
+    "ranged"
+  ]
 }

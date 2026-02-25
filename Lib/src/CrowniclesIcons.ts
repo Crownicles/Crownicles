@@ -2221,7 +2221,15 @@ export const CrowniclesIcons: {
 		prayGod: "🙏",
 		attackLeft: "🤛",
 		attackRight: "🤜",
-		helpFromMates: "🏟️"
+		helpFromMates: "🏟️",
+		channelRage: "🔴",
+		stealthApproach: "🗡️",
+		analyze: "🧠",
+		guildBanner: "🚩",
+		throwRock: "🪨",
+		battleCry: "📯",
+		feint: "🎭",
+		shareSoup: "🍲"
 	},
 	rewards: {
 		item: "🎁",
