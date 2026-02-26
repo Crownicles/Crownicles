@@ -18,6 +18,8 @@ import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/Sm
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { crowniclesInstance } from "../../index";
+import { TravelTime } from "../maps/TravelTime";
+import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 
 type CartResult = {
 	destination: MapLink;
@@ -36,11 +38,21 @@ function getEndCallback(player: Player, destination: CartResult): EndCallback {
 			travelDone: {
 				isAccepted: true,
 				hasEnoughMoney: player.money >= destination.price
-			}
+			},
+			pointsWon: 0
 		};
 
 		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 			if (packet.travelDone.hasEnoughMoney) {
+				const gainScore = await TravelTime.calculateScoreOnTeleportation(player);
+				const scoreParameters = {
+					amount: gainScore,
+					response,
+					reason: NumberChangeReason.SMALL_EVENT
+				};
+				await player.addScore(scoreParameters);
+				await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
+				packet.pointsWon = scoreParameters.amount;
 				const newMapLinkId = destination.isScam ? destination.scamDestination!.id : destination.destination.id;
 				crowniclesInstance.logsDatabase.logTeleportation(player.keycloakId, player.mapLinkId, newMapLinkId).then();
 				player.mapLinkId = newMapLinkId;

@@ -86,7 +86,7 @@ async function acceptJoinBoat(player: Player, response: CrowniclesPacket[]): Pro
 	}
 
 	// Gain Score
-	const gainScore = await TravelTime.joinBoatScore(player);
+	const gainScore = await TravelTime.calculateScoreOnTeleportation(player);
 	const scoreParameters = {
 		amount: gainScore,
 		response,

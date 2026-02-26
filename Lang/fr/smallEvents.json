@@ -1359,7 +1359,8 @@
       "Vous fouillez dans vos poches, mais vous réalisez que vous n'avez pas assez d'argent. L'homme vous regarde déçu et part avec sa charrette.",
       "Vous comptez vos pièces, mais il vous en manque pour le voyage. Le roublard secoue la tête et s'éloigne avec sa charrette.",
       "Vous vérifiez votre bourse, mais malheureusement vous n'avez pas assez d'argent. L'étranger hoche la tête et part avec sa charrette."
-    ]
+    ],
+    "confirmedScore": "\n\n**{emote:unitValues.score} Points gagnés :** {{score, number}}"
   },
   "findMission": {
     "intrigue": [
