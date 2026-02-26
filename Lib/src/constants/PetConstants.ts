@@ -620,7 +620,7 @@ export abstract class PetConstants {
 		5
 	];
 
-	static FLYING_PETS = [
+	static readonly FLYING_PETS = [
 		PetConstants.PETS.BIRD,
 		PetConstants.PETS.DUCK,
 		PetConstants.PETS.OWL,
@@ -638,7 +638,7 @@ export abstract class PetConstants {
 		PetConstants.PETS.FAIRY
 	];
 
-	static AQUATIC_PETS = [
+	static readonly AQUATIC_PETS = [
 		PetConstants.PETS.OCTOPUS,
 		PetConstants.PETS.FISH,
 		PetConstants.PETS.TROPICAL_FISH,
