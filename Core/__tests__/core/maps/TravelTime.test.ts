@@ -169,17 +169,17 @@ describe('TravelTime', () => {
 		expect(score).toBeGreaterThanOrEqual(0);
 	});
 
-	it('calculateScoreOnTeleportation calculates correct score scenarios', async () => {
+	it('joinBoatScore calculates correct score scenarios', async () => {
 		vi.spyOn(TravelTime, 'getTravelDataSimplified').mockReturnValue({playerTravelledTime: 10 * 60_000} as any);
-		let score = await TravelTime.calculateScoreOnTeleportation({} as any);
+		let score = await TravelTime.joinBoatScore({} as any);
 		expect(score).toBeGreaterThanOrEqual(0);
 
 		vi.spyOn(TravelTime, 'getTravelDataSimplified').mockReturnValue({playerTravelledTime: 40 * 60_000} as any);
-		score = await TravelTime.calculateScoreOnTeleportation({} as any);
+		score = await TravelTime.joinBoatScore({} as any);
 		expect(score).toBeGreaterThanOrEqual(0);
 
 		vi.spyOn(TravelTime, 'getTravelDataSimplified').mockReturnValue({playerTravelledTime: 70 * 60_000} as any);
-		score = await TravelTime.calculateScoreOnTeleportation({} as any);
+		score = await TravelTime.joinBoatScore({} as any);
 		expect(score).toBeGreaterThanOrEqual(0);
 	});
 

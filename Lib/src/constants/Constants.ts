@@ -131,7 +131,7 @@ export class Constants {
 	};
 
 
-	static readonly TELEPORTATION_SCORE = {
+	static readonly JOIN_BOAT = {
 		TIME_TRAVELLED_SUBTRAHEND: 30,
 		TIME_TRAVELLED_THIRTY_MINUTES: 30,
 		TIME_TRAVELLED_ONE_HOUR: 60,
