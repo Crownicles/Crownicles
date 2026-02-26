@@ -20,6 +20,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 
 const FARMER_INTERACTIONS = {
 	SALAD: "salad",
@@ -55,7 +56,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!isOnPlainsMapLink(player.mapLinkId)) {
 			return false;
 		}
-		return await PlayerSmallEvents.playerSmallEventCount(player.id, "farmer") === 0;
+		return await PlayerSmallEvents.playerSmallEventCount(player.id, SmallEventConstants.UNIQUE_EVENT_IDS.FARMER) === 0;
 	},
 	executeSmallEvent: async (response: CrowniclesPacket[], player, context: PacketContext): Promise<void> => {
 		let guild;

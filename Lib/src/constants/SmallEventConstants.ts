@@ -564,4 +564,14 @@ export abstract class SmallEventConstants {
 		MANY_GEMS_MIN: 200,
 		MANY_TOKENS_MIN: 15
 	};
+
+	/**
+	 * Small event IDs that can only be triggered once per player run.
+	 * Used with PlayerSmallEvents.playerSmallEventCount().
+	 */
+	static readonly UNIQUE_EVENT_IDS = {
+		ALTAR: "altar",
+		FARMER: "farmer",
+		GO_TO_PVE_ISLAND: "goToPVEIsland"
+	} as const;
 }

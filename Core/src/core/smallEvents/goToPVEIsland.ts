@@ -18,6 +18,7 @@ import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import { MissionsController } from "../missions/MissionsController";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
+import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
@@ -35,7 +36,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		return player.level >= PVEConstants.MIN_LEVEL
 			&& Maps.isNearWater(player)
 			&& player.hasEnoughEnergyToFight()
-			&& await PlayerSmallEvents.playerSmallEventCount(player.id, "goToPVEIsland") === 0
+			&& await PlayerSmallEvents.playerSmallEventCount(player.id, SmallEventConstants.UNIQUE_EVENT_IDS.GO_TO_PVE_ISLAND) === 0
 			&& await LogsReadRequests.getCountPVEIslandThisWeek(player.keycloakId, player.guildId) < PVEConstants.TRAVEL_COST.length;
 	},
 
