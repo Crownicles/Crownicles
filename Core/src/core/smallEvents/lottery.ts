@@ -65,8 +65,10 @@ type RewardParams = {
 	levelKey: LotteryLevelKey;
 };
 
+type LotteryRewardType = typeof SmallEventConstants.LOTTERY.REWARD_TYPES[keyof typeof SmallEventConstants.LOTTERY.REWARD_TYPES];
+
 function pushWinPacket(response: CrowniclesPacket[], reward: {
-	amount: number; type: string;
+	amount: number; type: LotteryRewardType;
 }, lostTime: number, levelKey: LotteryLevelKey): void {
 	response.push(makePacket(SmallEventLotteryWinPacket, {
 		winAmount: reward.amount, lostTime, level: levelKey, winReward: reward.type
@@ -94,7 +96,7 @@ async function giveRewardToPlayer(
 				reason: NumberChangeReason.SMALL_EVENT
 			});
 			pushWinPacket(response, {
-				amount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient, type: "xp"
+				amount: SmallEventConstants.LOTTERY.REWARDS.EXPERIENCE * coefficient, type: SmallEventConstants.LOTTERY.REWARD_TYPES.XP
 			}, lostTime, levelKey);
 			break;
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.MONEY:
@@ -104,7 +106,7 @@ async function giveRewardToPlayer(
 				reason: NumberChangeReason.SMALL_EVENT
 			});
 			pushWinPacket(response, {
-				amount: BlessingManager.getInstance().applyMoneyBlessing(SmallEventConstants.LOTTERY.REWARDS.MONEY * coefficient), type: "money"
+				amount: BlessingManager.getInstance().applyMoneyBlessing(SmallEventConstants.LOTTERY.REWARDS.MONEY * coefficient), type: SmallEventConstants.LOTTERY.REWARD_TYPES.MONEY
 			}, lostTime, levelKey);
 			break;
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP:
@@ -113,7 +115,7 @@ async function giveRewardToPlayer(
 			});
 			await guild.save();
 			pushWinPacket(response, {
-				amount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient, type: "guildXp"
+				amount: SmallEventConstants.LOTTERY.REWARDS.GUILD_EXPERIENCE * coefficient, type: SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP
 			}, lostTime, levelKey);
 			break;
 		case SmallEventConstants.LOTTERY.REWARD_TYPES.POINTS: {
@@ -124,7 +126,7 @@ async function giveRewardToPlayer(
 			};
 			await player.addScore(scoreParameters);
 			pushWinPacket(response, {
-				amount: scoreParameters.amount, type: "points"
+				amount: scoreParameters.amount, type: SmallEventConstants.LOTTERY.REWARD_TYPES.POINTS
 			}, lostTime, levelKey);
 			break;
 		}

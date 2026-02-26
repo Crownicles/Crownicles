@@ -39,6 +39,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
 import { LogsPveFightsResults } from "../database/logs/models/LogsPveFightsResults";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 
 /**
  * Check top interactions
@@ -367,15 +368,15 @@ function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, i
 }
 
 const FINAL_BOSS_IDS = [
-	"magmaTitan",
-	"maleIceDragon",
-	"femaleIceDragon"
+	FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN,
+	FightConstants.FINAL_BOSS_MONSTER_IDS.MALE_ICE_DRAGON,
+	FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON
 ] as const;
 
 const BOSS_INTERACTION_MAP: Record<string, InteractOtherPlayerInteraction> = {
-	magmaTitan: InteractOtherPlayerInteraction.BEATEN_MAGMA_TITAN,
-	maleIceDragon: InteractOtherPlayerInteraction.BEATEN_MALE_ICE_DRAGON,
-	femaleIceDragon: InteractOtherPlayerInteraction.BEATEN_FEMALE_ICE_DRAGON
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN]: InteractOtherPlayerInteraction.BEATEN_MAGMA_TITAN,
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.MALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_MALE_ICE_DRAGON,
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_FEMALE_ICE_DRAGON
 };
 
 /**

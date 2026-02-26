@@ -314,6 +314,15 @@ export abstract class FightConstants {
 		ATTACKER: "attacker",
 		DEFENDER: "defender"
 	} as const;
+
+	/**
+	 * Monster IDs for the final PvE bosses that players can beat
+	 */
+	static readonly FINAL_BOSS_MONSTER_IDS = {
+		MAGMA_TITAN: "magmaTitan",
+		MALE_ICE_DRAGON: "maleIceDragon",
+		FEMALE_ICE_DRAGON: "femaleIceDragon"
+	} as const;
 }
 
 /**

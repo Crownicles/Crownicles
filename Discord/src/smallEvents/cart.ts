@@ -43,7 +43,9 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 	});
 }
 
-function getCartStory(packet: SmallEventCartPacket): string {
+type CartStory = "notEnoughMoney" | "travelRefused" | "scamTravelDone" | "normalTravelDone" | "unknownDestinationTravelDone";
+
+function getCartStory(packet: SmallEventCartPacket): CartStory {
 	if (!packet.travelDone.hasEnoughMoney && packet.travelDone.isAccepted) {
 		return "notEnoughMoney";
 	}
@@ -53,7 +55,7 @@ function getCartStory(packet: SmallEventCartPacket): string {
 	return packet.isScam ? "scamTravelDone" : packet.isDisplayed ? "normalTravelDone" : "unknownDestinationTravelDone";
 }
 
-function getGainScoreText(story: string, packet: SmallEventCartPacket, lng: Language): string {
+function getGainScoreText(story: CartStory, packet: SmallEventCartPacket, lng: Language): string {
 	if (story === "notEnoughMoney" || story === "travelRefused" || packet.pointsWon <= 0) {
 		return "";
 	}
