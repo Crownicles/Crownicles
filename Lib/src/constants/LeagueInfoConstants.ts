@@ -38,7 +38,7 @@ export abstract class LeagueInfoConstants {
 		4, // Elite
 		5, // Infinite
 		5, // Legendary
-		5 // Royal
+		6 // Royal
 	];
 
 	static readonly ITEM_MAXIMAL_RARITY = [
