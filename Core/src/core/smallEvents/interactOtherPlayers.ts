@@ -63,6 +63,16 @@ function checkTop(otherPlayerRank: number, interactionsList: InteractOtherPlayer
 	}
 }
 
+const BADGE_TO_INTERACTION: Partial<Record<Badge, InteractOtherPlayerInteraction>> = {
+	[Badge.POWERFUL_GUILD]: InteractOtherPlayerInteraction.POWERFUL_GUILD,
+	[Badge.VERY_POWERFUL_GUILD]: InteractOtherPlayerInteraction.POWERFUL_GUILD,
+	[Badge.TECHNICAL_TEAM]: InteractOtherPlayerInteraction.STAFF_MEMBER,
+	[Badge.ORACLE_PATRON]: InteractOtherPlayerInteraction.ORACLE_PATRON,
+	[Badge.EXPERT_EXPEDITEUR]: InteractOtherPlayerInteraction.EXPERT_EXPEDITEUR,
+	[Badge.ANIMAL_LOVER]: InteractOtherPlayerInteraction.ANIMAL_LOVER,
+	[Badge.MISSION_COMPLETER]: InteractOtherPlayerInteraction.MISSION_COMPLETER
+};
+
 /**
  * Check badge interactions
  * @param otherPlayer
@@ -70,24 +80,12 @@ function checkTop(otherPlayerRank: number, interactionsList: InteractOtherPlayer
  */
 async function checkBadges(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
 	const badges = await PlayerBadgesManager.getOfPlayer(otherPlayer.id);
-	if (badges.length > 0) {
-		if (badges.includes(Badge.POWERFUL_GUILD) || badges.includes(Badge.VERY_POWERFUL_GUILD)) {
-			interactionsList.push(InteractOtherPlayerInteraction.POWERFUL_GUILD);
-		}
-		if (badges.includes(Badge.TECHNICAL_TEAM)) {
-			interactionsList.push(InteractOtherPlayerInteraction.STAFF_MEMBER);
-		}
-		if (badges.includes(Badge.ORACLE_PATRON)) {
-			interactionsList.push(InteractOtherPlayerInteraction.ORACLE_PATRON);
-		}
-		if (badges.includes(Badge.EXPERT_EXPEDITEUR)) {
-			interactionsList.push(InteractOtherPlayerInteraction.EXPERT_EXPEDITEUR);
-		}
-		if (badges.includes(Badge.ANIMAL_LOVER)) {
-			interactionsList.push(InteractOtherPlayerInteraction.ANIMAL_LOVER);
-		}
-		if (badges.includes(Badge.MISSION_COMPLETER)) {
-			interactionsList.push(InteractOtherPlayerInteraction.MISSION_COMPLETER);
+	const addedInteractions = new Set<InteractOtherPlayerInteraction>();
+	for (const badge of badges) {
+		const interaction = BADGE_TO_INTERACTION[badge];
+		if (interaction && !addedInteractions.has(interaction)) {
+			interactionsList.push(interaction);
+			addedInteractions.add(interaction);
 		}
 	}
 }
@@ -344,6 +342,11 @@ function checkTalismans(hasTalisman: boolean, hasCloneTalisman: boolean, interac
  * @param otherPet
  * @param interactionsList
  */
+const PET_TYPE_TO_INTERACTION = new Map<number, InteractOtherPlayerInteraction>([
+	...PetConstants.FLYING_PETS.map(id => [id, InteractOtherPlayerInteraction.FLYING_PET] as [number, InteractOtherPlayerInteraction]),
+	...PetConstants.AQUATIC_PETS.map(id => [id, InteractOtherPlayerInteraction.AQUATIC_PET] as [number, InteractOtherPlayerInteraction])
+]);
+
 function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, interactionsList: InteractOtherPlayerInteraction[]): void {
 	if (!otherPet) {
 		return;
@@ -357,11 +360,9 @@ function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, i
 			interactionsList.splice(petIndex, 1);
 		}
 	}
-	if (PetConstants.FLYING_PETS.includes(otherPet.typeId)) {
-		interactionsList.push(InteractOtherPlayerInteraction.FLYING_PET);
-	}
-	if (PetConstants.AQUATIC_PETS.includes(otherPet.typeId)) {
-		interactionsList.push(InteractOtherPlayerInteraction.AQUATIC_PET);
+	const petInteraction = PET_TYPE_TO_INTERACTION.get(otherPet.typeId);
+	if (petInteraction) {
+		interactionsList.push(petInteraction);
 	}
 }
 

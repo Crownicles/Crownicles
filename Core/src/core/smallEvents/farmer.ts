@@ -18,6 +18,7 @@ import { SmallEventFarmerPacket } from "../../../../Lib/src/packets/smallEvents/
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
+import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
 
 const FARMER_INTERACTIONS = {
 	SALAD: "salad",
@@ -42,7 +43,7 @@ function isOnPlainsMapLink(mapLinkId: number): boolean {
 	const startLocation = MapLocationDataController.instance.getById(link.startMap);
 	const endLocation = MapLocationDataController.instance.getById(link.endMap);
 
-	return startLocation?.type === "pl" || endLocation?.type === "pl";
+	return startLocation?.type === MapLocationConstants.TYPES.PLAINS || endLocation?.type === MapLocationConstants.TYPES.PLAINS;
 }
 
 export const smallEventFuncs: SmallEventFuncs = {

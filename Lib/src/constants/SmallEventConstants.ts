@@ -1,3 +1,5 @@
+import { MapLocationConstants } from "./MapLocationConstants";
+
 export abstract class SmallEventConstants {
 	static readonly HEALTH = {
 		MIN: 1,
@@ -372,28 +374,28 @@ export abstract class SmallEventConstants {
 		MAX_PROBABILITY: 1.0,
 
 		// Map location types that affect food type probabilities
-		BAD_SMELL_TYPES: ["de", "mo"],
+		BAD_SMELL_TYPES: [MapLocationConstants.TYPES.DESERT, MapLocationConstants.TYPES.MOUNTAIN],
 
 		// Map location types where vegetarian food is more likely
 		VEGETARIAN_TYPES: [
-			"fo",
-			"pl",
-			"ro"
+			MapLocationConstants.TYPES.FOREST,
+			MapLocationConstants.TYPES.PLAINS,
+			MapLocationConstants.TYPES.ROAD
 		],
 
 		// Map location types where meat is more likely
 		MEAT_TYPES: [
-			"ri",
-			"be",
-			"la"
+			MapLocationConstants.TYPES.RIVER,
+			MapLocationConstants.TYPES.BEACH,
+			MapLocationConstants.TYPES.LAKE
 		],
 
 		// Map location types where good smelling food is more likely
 		GOOD_SMELL_TYPES: [
-			"vi",
-			"ci",
-			"castleEntrance",
-			"castleThrone"
+			MapLocationConstants.TYPES.VILLAGE,
+			MapLocationConstants.TYPES.CITY,
+			MapLocationConstants.TYPES.CASTLE_ENTRANCE,
+			MapLocationConstants.TYPES.CASTLE_THRONE
 		],
 		FOOD_TYPES: {
 			BAD_SMELL: "badSmell",
