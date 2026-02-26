@@ -344,6 +344,91 @@
       "En parlant avec {{playerDisplay}}, il vous montre son object \"**{{object}}**\" !",
       "{{playerDisplay}}, un joueur marchant sur la même route que vous, sort un objet de sa collection. Il vous montre fièrement \"**{{object}}**\"."
     ],
+    "oracle_patron": [
+      "Une aura mystique émane de {{playerDisplay}}. Vous remarquez la marque de l'Oracle sur son bras, signe d'une grande générosité envers la cagnotte des bénédictions.",
+      "Vous croisez {{playerDisplay}} sur votre chemin. Son regard dégage une sagesse particulière... Il fait partie des protecteurs de l'Oracle, ceux qui contribuent généreusement aux bénédictions !",
+      "{{playerDisplay}} passe près de vous, et vous ressentez une énergie bienfaisante. Ce protecteur de l'Oracle a contribué à de nombreuses bénédictions pour tous les aventuriers."
+    ],
+    "expert_expediteur": [
+      "Vous rencontrez {{playerDisplay}}, un maître des expéditions ! Son expérience dans l'envoi de familiers explorer des terres lointaines est légendaire.",
+      "{{playerDisplay}} vous raconte ses nombreuses expéditions réussies. Ses familiers ont parcouru des contrées que peu d'aventuriers ont osé explorer !",
+      "Les récits d'expéditions de {{playerDisplay}} vous fascinent. Cet expert a envoyé ses compagnons aux quatre coins du monde et en a toujours tiré de précieuses récompenses."
+    ],
+    "animal_lover": [
+      "{{playerDisplay}} est entouré d'une aura de douceur. C'est un véritable ami des animaux, et ses familiers semblent l'adorer en retour !",
+      "Vous croisez {{playerDisplay}}, connu pour son amour inconditionnel des familiers. Ses compagnons sont parmi les plus heureux du royaume.",
+      "L'amour que porte {{playerDisplay}} à ses familiers est touchant. Cet ami des bêtes prend soin de chaque animal qu'il rencontre sur sa route."
+    ],
+    "mission_completer": [
+      "Vous croisez {{playerDisplay}}, un aventurier ayant accompli toutes les missions de la campagne ! Son parcours est une véritable source d'inspiration.",
+      "{{playerDisplay}} porte fièrement la marque de celui qui a complété toute la campagne. Ses exploits sont connus dans tout le royaume !",
+      "Impressionnant ! {{playerDisplay}} a terminé l'intégralité de la campagne. Vous lui demandez quelques conseils pour vos propres missions."
+    ],
+    "high_league": [
+      "Vous croisez {{playerDisplay}}, un combattant d'arène redoutable ! Il évolue en {{leagueEmoji}} **{{leagueName}}**. Impressionnant !",
+      "{{playerDisplay}} dégage une aura menaçante. En {{leagueEmoji}} **{{leagueName}}**, c'est un adversaire que peu osent défier dans l'arène.",
+      "Les cicatrices de combat de {{playerDisplay}} témoignent de sa puissance. Il combat en {{leagueEmoji}} **{{leagueName}}**, ce qui en dit long sur ses compétences !"
+    ],
+    "same_league": [
+      "Tiens, {{playerDisplay}} combat dans la même ligue que vous ! Vous êtes tous les deux en {{leagueEmoji}} **{{leagueName}}**. Peut-être vous affronterez-vous un jour dans l'arène ?",
+      "Vous reconnaissez le grade de {{playerDisplay}} : {{leagueEmoji}} **{{leagueName}}**, tout comme vous ! Un rival potentiel sur votre chemin.",
+      "{{playerDisplay}} est en {{leagueEmoji}} **{{leagueName}}**, comme vous ! Vous échangez quelques techniques de combat avant de reprendre la route."
+    ],
+    "top_glory": [
+      "Vous croisez {{playerDisplay}}, classé **{{gloryRank, number}}e** au classement de gloire ! Sa réputation dans l'arène le précède.",
+      "Les exploits de {{playerDisplay}} dans l'arène sont légendaires. Il est actuellement **{{gloryRank, number}}e** au classement de gloire !",
+      "{{playerDisplay}} est un véritable champion d'arène, classé **{{gloryRank, number}}e** au top gloire. Vous l'observez avec admiration."
+    ],
+    "many_gems": [
+      "L'éclat des gemmes de {{playerDisplay}} attire votre regard. Il en possède **{{gems, number}}** ! Un véritable collectionneur.",
+      "{{playerDisplay}} fait tinter fièrement ses **{{gems, number}}** gemmes dans sa bourse. Vous vous demandez comment il en a amassé autant.",
+      "Vous apercevez {{playerDisplay}} qui contemple ses **{{gems, number}}** gemmes avec satisfaction. C'est un aventurier qui accomplit bien ses missions !"
+    ],
+    "many_tokens": [
+      "{{playerDisplay}} semble prêt pour de nombreuses aventures : ses poches débordent de jetons d'expédition ! Il en a **{{tokens, number}}**.",
+      "Vous remarquez les **{{tokens, number}}** jetons que {{playerDisplay}} porte à sa ceinture. Cet aventurier est bien préparé pour ses prochaines explorations !",
+      "Les jetons d'expédition de {{playerDisplay}} cliquètent à chaque pas. Avec **{{tokens, number}}** jetons, il ne manque pas de ressources pour voyager."
+    ],
+    "has_talisman": [
+      "{{playerDisplay}} porte un talisman d'ancrage autour du cou. Grâce à cet artefact, il peut envoyer son familier en expédition à sa place !",
+      "Vous remarquez un étrange talisman au poignet de {{playerDisplay}}. Il vous explique que c'est un talisman d'ancrage, un objet rare permettant les expéditions de familiers.",
+      "Le talisman d'ancrage de {{playerDisplay}} brille d'une lueur mystique. Cet aventurier expérimenté a débloqué le pouvoir d'envoyer son compagnon explorer le monde."
+    ],
+    "has_clone_talisman": [
+      "{{playerDisplay}} possède le légendaire talisman de clone ! Même quand son familier est en expédition, une copie spectrale reste à ses côtés.",
+      "Vous remarquez quelque chose d'étrange chez {{playerDisplay}} : son familier semble légèrement translucide. Il vous montre fièrement son talisman de clone, un artefact extrêmement rare.",
+      "Le talisman de clone que porte {{playerDisplay}} émet une aura surnaturelle. Grâce à lui, il n'est jamais vraiment séparé de son compagnon, même pendant les expéditions."
+    ],
+    "same_pet": [
+      "Oh ! {{playerDisplay}} a le même type de familier que vous ! Son **{{petEmote}}** **{{petName}}** et le vôtre semblent très bien s'entendre.",
+      "Quelle coïncidence ! {{playerDisplay}} se promène aussi avec un **{{petEmote}}** **{{petName}}** ! Vos deux compagnons se regardent avec curiosité.",
+      "Vous croisez {{playerDisplay}} accompagné d'un **{{petEmote}}** **{{petName}}**, tout comme vous ! Les deux familiers se reniflent amicalement."
+    ],
+    "flying_pet": [
+      "Vous levez les yeux et apercevez le familier de {{playerDisplay}} : un magnifique **{{petEmote}}** **{{petName}}** qui plane majestueusement dans les airs !",
+      "Le **{{petEmote}}** **{{petName}}** de {{playerDisplay}} survole le chemin en battant gracieusement des ailes. Quel spectacle !",
+      "{{playerDisplay}} passe près de vous tandis que son **{{petEmote}}** **{{petName}}** virevolte dans le ciel au-dessus de sa tête. Vous êtes émerveillé par cette créature ailée."
+    ],
+    "aquatic_pet": [
+      "{{playerDisplay}} transporte son **{{petEmote}}** **{{petName}}** dans un aquarium portable ! Cette créature aquatique semble heureuse dans son petit habitat.",
+      "Vous observez avec curiosité le **{{petEmote}}** **{{petName}}** de {{playerDisplay}}, une créature aquatique qui nage joyeusement dans sa bulle d'eau magique.",
+      "Le compagnon aquatique de {{playerDisplay}}, un **{{petEmote}}** **{{petName}}**, flotte dans une sphère d'eau enchantée à ses côtés. Fascinant !"
+    ],
+    "beaten_magma_titan": [
+      "{{playerDisplay}} vous raconte fièrement avoir terrassé le Titan de magma au niveau **{{bossLevel, number}}** ! Les flammes ne lui font plus peur.",
+      "Les traces de brûlures sur l'armure de {{playerDisplay}} témoignent de son combat contre le Titan de magma. Il l'a vaincu au niveau **{{bossLevel, number}}** !",
+      "Vous croisez {{playerDisplay}}, un aventurier ayant affronté et vaincu le terrible Titan de magma au niveau **{{bossLevel, number}}**. Un véritable héros !"
+    ],
+    "beaten_male_ice_dragon": [
+      "{{playerDisplay}} a osé affronter le Seigneur des glaces et l'a vaincu au niveau **{{bossLevel, number}}** ! Le froid ne semble plus l'atteindre.",
+      "Les cristaux de glace accrochés à l'armure de {{playerDisplay}} proviennent de son combat contre le Seigneur des glaces au niveau **{{bossLevel, number}}**. Quel exploit !",
+      "Vous rencontrez {{playerDisplay}}, un héros ayant triomphé du redoutable Seigneur des glaces au niveau **{{bossLevel, number}}**. Ses récits de combat vous donnent des frissons."
+    ],
+    "beaten_female_ice_dragon": [
+      "{{playerDisplay}} a vaincu la Reine des glaces au niveau **{{bossLevel, number}}** ! C'est l'un des combats les plus difficiles qui existe.",
+      "Le regard de {{playerDisplay}} trahit une expérience hors du commun : il a terrassé la Reine des glaces au niveau **{{bossLevel, number}}** ! Peu peuvent se vanter d'un tel exploit.",
+      "Vous croisez {{playerDisplay}}, qui a accompli l'impossible en battant la Reine des glaces au niveau **{{bossLevel, number}}**. Vous vous inclinez respectueusement."
+    ],
     "effect": {
       "sick": [
         "Vous entendez un bruit au loin... C'est {{playerDisplay}} qui vomit dans un buisson... Vous reprenez votre route bouleversé.",

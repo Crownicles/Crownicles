@@ -539,4 +539,30 @@ export abstract class SmallEventConstants {
 			CONDITIONS: "conditions"
 		}
 	} as const;
+
+	static readonly INTERACT_OTHER_PLAYERS = {
+		TOP_RANKS: {
+			TOP10: 10,
+			TOP50: 50,
+			TOP100: 100
+		},
+		TOP_WEEK_MAX_RANK: 5,
+		LEVEL: {
+			BEGINNER_MAX: 15,
+			ADVANCED_MIN: 115
+		},
+		HEALTH: {
+			LOW_HP_THRESHOLD: 0.2,
+			FULL_HP: 1.0
+		},
+		MONEY: {
+			RICH_MIN: 100000,
+			POOR_MAX: 200
+		},
+		MIN_SCORE_FOR_COUNTING: 100,
+		HIGH_LEAGUE_MIN_ID: 6,
+		TOP_GLORY_MAX_RANK: 50,
+		MANY_GEMS_MIN: 200,
+		MANY_TOKENS_MIN: 15
+	};
 }

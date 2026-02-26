@@ -14,7 +14,9 @@ import {
 	SmallEventInteractOtherPlayersRefuseToGivePoorPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventInteractOtherPlayers";
 import { MissionsController } from "../missions/MissionsController";
-import { PetEntities } from "../database/game/models/PetEntity";
+import {
+	PetEntity, PetEntities
+} from "../database/game/models/PetEntity";
 import {
 	InventorySlot, InventorySlots
 } from "../database/game/models/InventorySlot";
@@ -31,6 +33,12 @@ import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { PetUtils } from "../utils/PetUtils";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
+import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { LogsDatabase } from "../database/logs/LogsDatabase";
+import { LogsPveFightsResults } from "../database/logs/models/LogsPveFightsResults";
+import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 
 /**
  * Check top interactions
@@ -42,15 +50,15 @@ function checkTop(otherPlayerRank: number, interactionsList: InteractOtherPlayer
 		interactionsList.push(InteractOtherPlayerInteraction.TOP1);
 		return;
 	}
-	if (otherPlayerRank <= 10) {
+	if (otherPlayerRank <= SmallEventConstants.INTERACT_OTHER_PLAYERS.TOP_RANKS.TOP10) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP10);
 		return;
 	}
-	if (otherPlayerRank <= 50) {
+	if (otherPlayerRank <= SmallEventConstants.INTERACT_OTHER_PLAYERS.TOP_RANKS.TOP50) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP50);
 		return;
 	}
-	if (otherPlayerRank <= 100) {
+	if (otherPlayerRank <= SmallEventConstants.INTERACT_OTHER_PLAYERS.TOP_RANKS.TOP100) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP100);
 	}
 }
@@ -69,6 +77,18 @@ async function checkBadges(otherPlayer: Player, interactionsList: InteractOtherP
 		if (badges.includes(Badge.TECHNICAL_TEAM)) {
 			interactionsList.push(InteractOtherPlayerInteraction.STAFF_MEMBER);
 		}
+		if (badges.includes(Badge.ORACLE_PATRON)) {
+			interactionsList.push(InteractOtherPlayerInteraction.ORACLE_PATRON);
+		}
+		if (badges.includes(Badge.EXPERT_EXPEDITEUR)) {
+			interactionsList.push(InteractOtherPlayerInteraction.EXPERT_EXPEDITEUR);
+		}
+		if (badges.includes(Badge.ANIMAL_LOVER)) {
+			interactionsList.push(InteractOtherPlayerInteraction.ANIMAL_LOVER);
+		}
+		if (badges.includes(Badge.MISSION_COMPLETER)) {
+			interactionsList.push(InteractOtherPlayerInteraction.MISSION_COMPLETER);
+		}
 	}
 }
 
@@ -78,10 +98,10 @@ async function checkBadges(otherPlayer: Player, interactionsList: InteractOtherP
  * @param interactionsList
  */
 function checkLevel(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.level < 15) {
+	if (otherPlayer.level < SmallEventConstants.INTERACT_OTHER_PLAYERS.LEVEL.BEGINNER_MAX) {
 		interactionsList.push(InteractOtherPlayerInteraction.BEGINNER);
 	}
-	else if (otherPlayer.level >= 115) {
+	else if (otherPlayer.level >= SmallEventConstants.INTERACT_OTHER_PLAYERS.LEVEL.ADVANCED_MIN) {
 		interactionsList.push(InteractOtherPlayerInteraction.ADVANCED);
 	}
 }
@@ -116,7 +136,7 @@ function checkGuild(otherPlayer: Player, player: Player, interactionsList: Inter
  * @param interactionsList
  */
 function checkTopWeek(otherPlayerWeeklyRank: number, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayerWeeklyRank <= 5) {
+	if (otherPlayerWeeklyRank <= SmallEventConstants.INTERACT_OTHER_PLAYERS.TOP_WEEK_MAX_RANK) {
 		interactionsList.push(InteractOtherPlayerInteraction.TOP_WEEK);
 	}
 }
@@ -128,10 +148,10 @@ function checkTopWeek(otherPlayerWeeklyRank: number, interactionsList: InteractO
  */
 function checkHealth(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
 	const healthPercentage = otherPlayer.health / otherPlayer.getMaxHealth();
-	if (healthPercentage < 0.2) {
+	if (healthPercentage < SmallEventConstants.INTERACT_OTHER_PLAYERS.HEALTH.LOW_HP_THRESHOLD) {
 		interactionsList.push(InteractOtherPlayerInteraction.LOW_HP);
 	}
-	else if (healthPercentage === 1.0) {
+	else if (healthPercentage === SmallEventConstants.INTERACT_OTHER_PLAYERS.HEALTH.FULL_HP) {
 		interactionsList.push(InteractOtherPlayerInteraction.FULL_HP);
 	}
 }
@@ -162,10 +182,10 @@ function checkRanking(otherPlayerRank: number, numberOfPlayers: number, interact
  * @param player
  */
 function checkMoney(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[], player: Player): void {
-	if (otherPlayer.money > 20000) {
+	if (otherPlayer.money > SmallEventConstants.INTERACT_OTHER_PLAYERS.MONEY.RICH_MIN) {
 		interactionsList.push(InteractOtherPlayerInteraction.RICH);
 	}
-	else if (player.money > 0 && otherPlayer.money < 200) {
+	else if (player.money > 0 && otherPlayer.money < SmallEventConstants.INTERACT_OTHER_PLAYERS.MONEY.POOR_MAX) {
 		interactionsList.push(InteractOtherPlayerInteraction.POOR);
 	}
 }
@@ -254,6 +274,148 @@ async function checkInventory(otherPlayer: Player, interactionsList: InteractOth
 }
 
 /**
+ * Check league interactions
+ * @param otherPlayer
+ * @param player
+ * @param interactionsList
+ */
+function checkLeague(otherPlayer: Player, player: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
+	const otherLeague = otherPlayer.getLeague();
+	const playerLeague = player.getLeague();
+	if (otherLeague.id >= SmallEventConstants.INTERACT_OTHER_PLAYERS.HIGH_LEAGUE_MIN_ID) {
+		interactionsList.push(InteractOtherPlayerInteraction.HIGH_LEAGUE);
+	}
+	if (otherLeague.id === playerLeague.id) {
+		interactionsList.push(InteractOtherPlayerInteraction.SAME_LEAGUE);
+	}
+}
+
+/**
+ * Check glory ranking interactions
+ * @param otherPlayerGloryRank
+ * @param interactionsList
+ */
+function checkGlory(otherPlayerGloryRank: number, interactionsList: InteractOtherPlayerInteraction[]): void {
+	if (otherPlayerGloryRank > 0 && otherPlayerGloryRank <= SmallEventConstants.INTERACT_OTHER_PLAYERS.TOP_GLORY_MAX_RANK) {
+		interactionsList.push(InteractOtherPlayerInteraction.TOP_GLORY);
+	}
+}
+
+/**
+ * Check gems interactions
+ * @param gems
+ * @param interactionsList
+ */
+function checkGems(gems: number, interactionsList: InteractOtherPlayerInteraction[]): void {
+	if (gems >= SmallEventConstants.INTERACT_OTHER_PLAYERS.MANY_GEMS_MIN) {
+		interactionsList.push(InteractOtherPlayerInteraction.MANY_GEMS);
+	}
+}
+
+/**
+ * Check token interactions
+ * @param otherPlayer
+ * @param interactionsList
+ */
+function checkTokens(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
+	if (otherPlayer.tokens >= SmallEventConstants.INTERACT_OTHER_PLAYERS.MANY_TOKENS_MIN) {
+		interactionsList.push(InteractOtherPlayerInteraction.MANY_TOKENS);
+	}
+}
+
+/**
+ * Check talisman interactions
+ * @param hasTalisman
+ * @param hasCloneTalisman
+ * @param interactionsList
+ */
+function checkTalismans(hasTalisman: boolean, hasCloneTalisman: boolean, interactionsList: InteractOtherPlayerInteraction[]): void {
+	if (hasCloneTalisman) {
+		interactionsList.push(InteractOtherPlayerInteraction.HAS_CLONE_TALISMAN);
+	}
+	else if (hasTalisman) {
+		interactionsList.push(InteractOtherPlayerInteraction.HAS_TALISMAN);
+	}
+}
+
+/**
+ * Check pet type interactions (same pet, flying, aquatic)
+ * @param playerPet
+ * @param otherPet
+ * @param interactionsList
+ */
+function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, interactionsList: InteractOtherPlayerInteraction[]): void {
+	if (!otherPet) {
+		return;
+	}
+	if (playerPet && playerPet.typeId === otherPet.typeId) {
+		interactionsList.push(InteractOtherPlayerInteraction.SAME_PET);
+
+		// Remove the generic PET interaction since SAME_PET is more specific
+		const petIndex = interactionsList.indexOf(InteractOtherPlayerInteraction.PET);
+		if (petIndex !== -1) {
+			interactionsList.splice(petIndex, 1);
+		}
+	}
+	if (PetConstants.FLYING_PETS.includes(otherPet.typeId)) {
+		interactionsList.push(InteractOtherPlayerInteraction.FLYING_PET);
+	}
+	if (PetConstants.AQUATIC_PETS.includes(otherPet.typeId)) {
+		interactionsList.push(InteractOtherPlayerInteraction.AQUATIC_PET);
+	}
+}
+
+const FINAL_BOSS_IDS = [
+	"magmaTitan",
+	"maleIceDragon",
+	"femaleIceDragon"
+] as const;
+
+const BOSS_INTERACTION_MAP: Record<string, InteractOtherPlayerInteraction> = {
+	magmaTitan: InteractOtherPlayerInteraction.BEATEN_MAGMA_TITAN,
+	maleIceDragon: InteractOtherPlayerInteraction.BEATEN_MALE_ICE_DRAGON,
+	femaleIceDragon: InteractOtherPlayerInteraction.BEATEN_FEMALE_ICE_DRAGON
+};
+
+/**
+ * Check boss kill interactions
+ * @param otherPlayer
+ * @param interactionsList
+ */
+async function checkBossKills(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<Map<string, number>> {
+	const bestBossKills = new Map<string, number>();
+
+	const logPlayer = await LogsDatabase.findOrCreatePlayer(otherPlayer.keycloakId);
+	if (!logPlayer) {
+		return bestBossKills;
+	}
+
+	const bossKills = await LogsPveFightsResults.findAll({
+		where: {
+			playerId: logPlayer.id,
+			monsterId: { [Op.in]: [...FINAL_BOSS_IDS] },
+			winner: 1
+		}
+	});
+
+	for (const kill of bossKills) {
+		const current = bestBossKills.get(kill.monsterId);
+		if (current === undefined || kill.monsterLevel > current) {
+			bestBossKills.set(kill.monsterId, kill.monsterLevel);
+		}
+	}
+
+	for (const [monsterId] of bestBossKills) {
+		const interaction = BOSS_INTERACTION_MAP[monsterId];
+		if (interaction !== undefined) {
+			interactionsList.push(interaction);
+		}
+	}
+
+	return bestBossKills;
+}
+
+/**
  * Get all available interactions, considering both entities
  * @param otherPlayer
  * @param player
@@ -263,17 +425,31 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	guild: Guild | null;
 	inventorySlots: InventorySlot[];
 	interactionsList: InteractOtherPlayerInteraction[];
+	otherPet: PetEntity | null;
+	gloryRank: number;
+	gems: number;
+	bestBossKills: Map<string, number>;
 }> {
 	let guild = null;
 	const interactionsList: InteractOtherPlayerInteraction[] = [];
 	const [
 		playerRank,
 		otherPlayerRank,
-		otherPlayerWeeklyRank
+		otherPlayerWeeklyRank,
+		otherPlayerGloryRank,
+		otherPet,
+		playerPet,
+		otherPlayerMissionsInfo,
+		otherPlayerTalismans
 	] = await Promise.all([
 		Players.getRankById(player.id),
 		Players.getRankById(otherPlayer.id),
-		Players.getWeeklyRankById(otherPlayer.id)
+		Players.getWeeklyRankById(otherPlayer.id),
+		Players.getGloryRankById(otherPlayer.id).catch(() => -1),
+		PetEntities.getById(otherPlayer.petId),
+		PetEntities.getById(player.petId),
+		PlayerMissionsInfos.getOfPlayer(otherPlayer.id),
+		PlayerTalismansManager.getOfPlayer(otherPlayer.id)
 	]);
 	checkTop(otherPlayerRank, interactionsList);
 	await checkBadges(otherPlayer, interactionsList);
@@ -289,8 +465,21 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	interactionsList.push(InteractOtherPlayerInteraction.CLASS);
 	checkEffects(otherPlayer, interactionsList);
 	const inventorySlots = await checkInventory(otherPlayer, interactionsList);
+	checkLeague(otherPlayer, player, interactionsList);
+	checkGlory(otherPlayerGloryRank, interactionsList);
+	checkGems(otherPlayerMissionsInfo.gems, interactionsList);
+	checkTokens(otherPlayer, interactionsList);
+	checkTalismans(otherPlayerTalismans.hasTalisman, otherPlayerTalismans.hasCloneTalisman, interactionsList);
+	checkPetType(playerPet, otherPet, interactionsList);
+	const bestBossKills = await checkBossKills(otherPlayer, interactionsList);
 	return {
-		guild, inventorySlots, interactionsList
+		guild,
+		inventorySlots,
+		interactionsList,
+		otherPet,
+		gloryRank: otherPlayerGloryRank,
+		gems: otherPlayerMissionsInfo.gems,
+		bestBossKills
 	};
 }
 
@@ -324,7 +513,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 	async executeSmallEvent(response, player, context): Promise<void> {
 		const numberOfPlayers = await Player.count({
-			where: { score: { [Op.gt]: 100 } }
+			where: { score: { [Op.gt]: SmallEventConstants.INTERACT_OTHER_PLAYERS.MIN_SCORE_FOR_COUNTING } }
 		});
 
 		const destinationId = player.getDestinationId();
@@ -347,7 +536,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const {
 			guild,
 			inventorySlots,
-			interactionsList
+			interactionsList,
+			otherPet,
+			gloryRank,
+			gems,
+			bestBossKills
 		} = await getAvailableInteractions(otherPlayer, player, numberOfPlayers);
 		const interaction = RandomUtils.crowniclesRandom.pick(interactionsList);
 		const fetchedRank = await Players.getRankById(otherPlayer.id);
@@ -388,7 +581,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			response.push(packet);
 		}
 		else {
-			const otherPet = await PetEntities.getById(otherPlayer.petId);
+			const bossId = FINAL_BOSS_IDS.find(id => BOSS_INTERACTION_MAP[id] === interaction);
 			response.push(makePacket(SmallEventInteractOtherPlayersPacket, {
 				keycloakId: otherPlayer.keycloakId,
 				playerInteraction: interaction,
@@ -404,7 +597,13 @@ export const smallEventFuncs: SmallEventFuncs = {
 					armorId: inventorySlots.find(slot => slot.isArmor() && slot.isEquipped())?.itemId ?? 0,
 					potionId: inventorySlots.find(slot => slot.isPotion() && slot.isEquipped())?.itemId ?? 0,
 					objectId: inventorySlots.find(slot => slot.isObject() && slot.isEquipped())?.itemId ?? 0,
-					effectId: otherPlayer.effectId
+					effectId: otherPlayer.effectId,
+					leagueId: otherPlayer.getLeague().id,
+					gloryRank,
+					gems,
+					tokens: otherPlayer.tokens,
+					bossId,
+					bossLevel: bossId ? bestBossKills.get(bossId) : undefined
 				}
 			}));
 		}

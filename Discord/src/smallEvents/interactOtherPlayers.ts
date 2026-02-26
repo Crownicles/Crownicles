@@ -103,6 +103,7 @@ export async function handleEffectInteraction(interaction: CrowniclesInteraction
  */
 export async function handleOtherInteractions(interaction: CrowniclesInteraction, packet: SmallEventInteractOtherPlayersPacket, lng: Language, playerDisplay: string): Promise<void> {
 	const hasPetInfo = packet.data!.petId && packet.data!.petSex;
+	const data = packet.data!;
 	await interaction.editReply({
 		embeds: [
 			new CrowniclesSmallEventEmbed(
@@ -112,17 +113,24 @@ export async function handleOtherInteractions(interaction: CrowniclesInteraction
 					lng,
 					{
 						playerDisplay,
-						level: packet.data!.level,
-						class: DisplayUtils.getClassDisplay(packet.data!.classId, lng),
-						classPlural: DisplayUtils.getClassDisplay(packet.data!.classId, lng, true),
+						level: data.level,
+						class: DisplayUtils.getClassDisplay(data.classId, lng),
+						classPlural: DisplayUtils.getClassDisplay(data.classId, lng, true),
 						advice: StringUtils.getRandomTranslation("advices:advices", lng),
-						petEmote: hasPetInfo ? DisplayUtils.getPetIcon(packet.data!.petId!, packet.data!.petSex!) : "",
-						petName: hasPetInfo ? DisplayUtils.getPetNicknameOrTypeName(packet.data!.petName ?? null, packet.data!.petId!, packet.data!.petSex!, lng) : "",
-						guildName: packet.data!.guildName,
-						weapon: DisplayUtils.getWeaponDisplay(packet.data!.weaponId, lng),
-						armor: DisplayUtils.getArmorDisplay(packet.data!.armorId, lng),
-						object: DisplayUtils.getObjectDisplay(packet.data!.objectId, lng),
-						potion: DisplayUtils.getPotionDisplay(packet.data!.potionId, lng)
+						petEmote: hasPetInfo ? DisplayUtils.getPetIcon(data.petId!, data.petSex!) : "",
+						petName: hasPetInfo ? DisplayUtils.getPetNicknameOrTypeName(data.petName ?? null, data.petId!, data.petSex!, lng) : "",
+						guildName: data.guildName,
+						weapon: DisplayUtils.getWeaponDisplay(data.weaponId, lng),
+						armor: DisplayUtils.getArmorDisplay(data.armorId, lng),
+						object: DisplayUtils.getObjectDisplay(data.objectId, lng),
+						potion: DisplayUtils.getPotionDisplay(data.potionId, lng),
+						leagueEmoji: data.leagueId !== undefined ? CrowniclesIcons.leagues[data.leagueId] : "",
+						leagueName: data.leagueId !== undefined ? i18n.t(`models:leagues.${data.leagueId}`, { lng }) : "",
+						gloryRank: data.gloryRank,
+						gems: data.gems,
+						tokens: data.tokens,
+						monsterName: data.bossId ? i18n.t(`models:monsters.${data.bossId}.name`, { lng }) : "",
+						bossLevel: data.bossLevel
 					}
 				),
 				interaction.user,
