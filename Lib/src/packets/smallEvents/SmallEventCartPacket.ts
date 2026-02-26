@@ -13,4 +13,6 @@ export class SmallEventCartPacket extends SmallEventPacket {
 		isAccepted: boolean;
 		hasEnoughMoney: boolean;
 	};
+
+	pointsWon!: number;
 }

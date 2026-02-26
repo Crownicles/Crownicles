@@ -61,11 +61,18 @@ export async function cartResult(packet: SmallEventCartPacket, context: PacketCo
 		story = packet.isScam ? "scamTravelDone" : packet.isDisplayed ? "normalTravelDone" : "unknownDestinationTravelDone";
 	}
 
+	const gainScoreText = story !== "notEnoughMoney" && story !== "travelRefused" && packet.pointsWon > 0
+		? i18n.t("smallEvents:cart.confirmedScore", {
+			lng,
+			score: packet.pointsWon
+		})
+		: "";
+
 	await interaction.editReply({
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"cart",
-				StringUtils.getRandomTranslation(`smallEvents:cart.${story}`, lng),
+				StringUtils.getRandomTranslation(`smallEvents:cart.${story}`, lng) + gainScoreText,
 				interaction.user,
 				lng
 			)

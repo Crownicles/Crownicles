@@ -261,8 +261,11 @@ export abstract class TravelTime {
 		return score > 0 ? score : 0; // Return 0 if the score is negative
 	}
 
-	static async joinBoatScore(player: Player): Promise<number> {
-		// Gain Score
+	/**
+	 * Calculates the score a player earns when their trip is interrupted by a teleportation (boat boarding, cart, etc.).
+	 * Awards partial travel time score and accumulated small event score based on time already travelled.
+	 */
+	static async calculateScoreOnTeleportation(player: Player): Promise<number> {
 		const travelData = TravelTime.getTravelDataSimplified(player, new Date());
 		let timeTravelled = millisecondsToMinutes(travelData.playerTravelledTime); // Convert the time in minutes to calculate the score
 
@@ -270,14 +273,14 @@ export abstract class TravelTime {
 		let scoreFromSmallEvent = 0;
 
 		// Divide by 3 if the player has travelled between 30 minutes and 1 hour.
-		if (timeTravelled >= Constants.JOIN_BOAT.TIME_TRAVELLED_THIRTY_MINUTES && timeTravelled < Constants.JOIN_BOAT.TIME_TRAVELLED_ONE_HOUR) {
-			scoreFromSmallEvent = Math.floor(await PlayerSmallEvents.calculateCurrentScore(player) / Constants.JOIN_BOAT.DIVISOR_TIME_TRAVELLED_LESS_THAN_ONE_HOUR);
+		if (timeTravelled >= Constants.TELEPORTATION_SCORE.TIME_TRAVELLED_THIRTY_MINUTES && timeTravelled < Constants.TELEPORTATION_SCORE.TIME_TRAVELLED_ONE_HOUR) {
+			scoreFromSmallEvent = Math.floor(await PlayerSmallEvents.calculateCurrentScore(player) / Constants.TELEPORTATION_SCORE.DIVISOR_TIME_TRAVELLED_LESS_THAN_ONE_HOUR);
 		}
-		if (timeTravelled >= Constants.JOIN_BOAT.TIME_TRAVELLED_ONE_HOUR) {
+		if (timeTravelled >= Constants.TELEPORTATION_SCORE.TIME_TRAVELLED_ONE_HOUR) {
 			scoreFromSmallEvent = await PlayerSmallEvents.calculateCurrentScore(player);
 		}
 
-		timeTravelled -= Constants.JOIN_BOAT.TIME_TRAVELLED_SUBTRAHEND;
+		timeTravelled -= Constants.TELEPORTATION_SCORE.TIME_TRAVELLED_SUBTRAHEND;
 		if (timeTravelled > ReportConstants.TIME_LIMIT) {
 			timeTravelled = ReportConstants.TIME_LIMIT;
 		}
