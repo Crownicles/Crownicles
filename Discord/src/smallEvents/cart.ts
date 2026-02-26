@@ -11,6 +11,7 @@ import {
 	ReactionCollectorCartPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
+import { Language } from "../../../Lib/src/Language";
 
 export async function cartCollector(context: PacketContext, packet: ReactionCollectorCartPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
@@ -42,31 +43,34 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 	});
 }
 
+function getCartStory(packet: SmallEventCartPacket): string {
+	if (!packet.travelDone.hasEnoughMoney && packet.travelDone.isAccepted) {
+		return "notEnoughMoney";
+	}
+	if (!packet.travelDone.isAccepted) {
+		return "travelRefused";
+	}
+	return packet.isScam ? "scamTravelDone" : packet.isDisplayed ? "normalTravelDone" : "unknownDestinationTravelDone";
+}
+
+function getGainScoreText(story: string, packet: SmallEventCartPacket, lng: Language): string {
+	if (story === "notEnoughMoney" || story === "travelRefused" || packet.pointsWon <= 0) {
+		return "";
+	}
+	return i18n.t("smallEvents:cart.confirmedScore", {
+		lng,
+		score: packet.pointsWon
+	});
+}
+
 export async function cartResult(packet: SmallEventCartPacket, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (!interaction) {
 		return;
 	}
 	const lng = context.discord!.language;
-	let story;
-	if (!packet.travelDone.hasEnoughMoney && packet.travelDone.isAccepted) {
-		story = "notEnoughMoney";
-	}
-
-	else if (!packet.travelDone.isAccepted) {
-		story = "travelRefused";
-	}
-
-	else {
-		story = packet.isScam ? "scamTravelDone" : packet.isDisplayed ? "normalTravelDone" : "unknownDestinationTravelDone";
-	}
-
-	const gainScoreText = story !== "notEnoughMoney" && story !== "travelRefused" && packet.pointsWon > 0
-		? i18n.t("smallEvents:cart.confirmedScore", {
-			lng,
-			score: packet.pointsWon
-		})
-		: "";
+	const story = getCartStory(packet);
+	const gainScoreText = getGainScoreText(story, packet, lng);
 
 	await interaction.editReply({
 		embeds: [
