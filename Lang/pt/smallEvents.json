@@ -344,6 +344,91 @@
       "{{playerDisplay}}{{object}}Ao falar com , ele mostra-lhe o seu objeto \"** **\" !",
       "{{playerDisplay}}Um jogador que caminha na mesma rua que tu tira um objeto da sua coleção.{{object}} Ele mostra-te com orgulho \"** **\"."
     ],
+    "oracle_patron": [
+      "Uma aura mística emana de {{playerDisplay}}. Notar-se-á a marca do Oráculo no seu braço, sinal de uma grande generosidade para com a piscina das bênçãos.",
+      "No seu caminho, encontra o {{playerDisplay}} . Os seus olhos exalam uma sabedoria especial... Ele é um dos protectores do Oráculo, aqueles que contribuem generosamente com as suas bênçãos!",
+      "{{playerDisplay}} passa perto de si, e sente uma energia benéfica. Este protetor do Oráculo tem contribuído com muitas bênçãos para todos os aventureiros."
+    ],
+    "expert_expediteur": [
+      "Conhece {{playerDisplay}}, um mestre das expedições! A sua experiência em enviar animais de estimação para explorar terras longínquas é lendária.",
+      "{{playerDisplay}} conta-te tudo sobre as suas muitas expedições bem sucedidas. Os seus animais de estimação viajaram para terras que poucos aventureiros se atreveram a explorar!",
+      "Ficará fascinado com as histórias de expedições do {{playerDisplay}} . Este especialista enviou os seus companheiros para os quatro cantos do mundo e colheu sempre recompensas valiosas."
+    ],
+    "animal_lover": [
+      "{{playerDisplay}} está rodeado por uma aura de gentileza. É um verdadeiro amante dos animais, e os seus animais de estimação parecem adorá-lo também!",
+      "Encontramos o site {{playerDisplay}}, conhecido pelo seu amor incondicional pelos animais de estimação. Os seus companheiros estão entre os mais felizes do reino.",
+      "O amor de {{playerDisplay}} pelos seus animais de estimação é comovente. Este amante dos animais cuida de todos os animais que encontra pelo caminho."
+    ],
+    "mission_completer": [
+      "Conhece {{playerDisplay}}, um aventureiro que cumpriu todas as missões da campanha! A sua viagem é uma verdadeira fonte de inspiração.",
+      "{{playerDisplay}} ostenta orgulhosamente a marca do homem que completou toda a campanha. As suas façanhas são conhecidas em todo o reino!",
+      "Impressionante! {{playerDisplay}} completou toda a campanha. Pede-lhe conselhos para as tuas próprias missões."
+    ],
+    "high_league": [
+      "Apresento-vos {{playerDisplay}}, um temível lutador de arena! Ele pode ser encontrado em {{leagueEmoji}} **{{leagueName}}**. Impressionante!",
+      "{{playerDisplay}} exala uma aura ameaçadora. Em {{leagueEmoji}} **{{leagueName}}**, este é um adversário que poucos se atrevem a desafiar na arena.",
+      "As cicatrizes de batalha de {{playerDisplay}} são um testemunho do seu poder. Ele luta em {{leagueEmoji}} **{{leagueName}}**, o que diz muito sobre as suas capacidades!"
+    ],
+    "same_league": [
+      "Aqui, {{playerDisplay}} luta na mesma liga que tu! Estão ambos em {{leagueEmoji}} **{{leagueName}}**. Talvez se enfrentem em breve na arena?",
+      "Reconhece o posto de {{playerDisplay}} : {{leagueEmoji}} **{{leagueName}}**, tal como tu! Um potencial rival no vosso caminho.",
+      "{{playerDisplay}} está em {{leagueEmoji}} **{{leagueName}}**, tal como tu! Trocam algumas técnicas de combate antes de voltarem à estrada."
+    ],
+    "top_glory": [
+      "Deparas-te com {{playerDisplay}}, classificado em **{{gloryRank, number}}º** no ranking da fama! A sua reputação na arena precede-o.",
+      "As façanhas de {{playerDisplay}} na arena são lendárias. Ele está atualmente em **{{gloryRank, number}}th** no ranking da fama!",
+      "{{playerDisplay}} é um verdadeiro campeão de arena, classificado **{{gloryRank, number}}e** na glória máxima. Observa-o com admiração."
+    ],
+    "many_gems": [
+      "O brilho das jóias {{playerDisplay}} chama a atenção. Ele possui **{{gems, number}}** delas! Um verdadeiro colecionador.",
+      "{{playerDisplay}} fait tinter fièrement ses **{{gems, number}}** gemmes dans sa bourse. Vous vous demandez comment il en a amassé autant.",
+      "Podes ver o {{playerDisplay}} a contemplar as suas **{{gems, number}}** jóias com satisfação. Ele é um aventureiro que cumpre bem as suas missões!"
+    ],
+    "many_tokens": [
+      "{{playerDisplay}} parece pronto para muitas aventuras: os seus bolsos estão cheios de fichas de expedição! Ele tem alguns **{{tokens, number}}**.",
+      "Repara nas fichas **{{tokens, number}}** que {{playerDisplay}} está a usar no seu cinto. Este aventureiro está bem preparado para as suas próximas explorações!",
+      "Os tokens de transporte de {{playerDisplay}} clicam a cada passo. Com os tokens **{{tokens, number}}**, não há falta de recursos para viajar."
+    ],
+    "has_talisman": [
+      "{{playerDisplay}} usa um talismã de ancoragem à volta do pescoço. Graças a este artefacto, ele pode enviar o seu animal de estimação para uma expedição no seu lugar!",
+      "Repara num estranho talismã no pulso de {{playerDisplay}}. Ele explica que é um talismã de âncora, um item raro que permite expedições de animais de estimação.",
+      "O talismã de âncora do {{playerDisplay}} brilha misticamente. Este aventureiro experiente desbloqueou o poder de enviar o seu companheiro para explorar o mundo."
+    ],
+    "has_clone_talisman": [
+      "{{playerDisplay}} possui o lendário talismã do clone! Mesmo quando o seu animal de estimação está numa expedição, uma cópia espetral permanece ao seu lado.",
+      "Repara em algo estranho em {{playerDisplay}} : a sua mascote parece ligeiramente translúcida. Ele mostra-te com orgulho o seu talismã de clone, um artefacto extremamente raro.",
+      "O talismã de clone usado por {{playerDisplay}} emite uma aura sobrenatural. Graças a ela, ele nunca se separa realmente do seu companheiro, mesmo durante as expedições."
+    ],
+    "same_pet": [
+      "Oh! {{playerDisplay}} tem o mesmo tipo de animal de estimação que tu! O dele **{{petEmote}}** **{{petName}}** e o teu parecem dar-se muito bem.",
+      "Que coincidência! {{playerDisplay}} também anda por aí com um **{{petEmote}}** **{{petName}}** ! Os vossos dois companheiros olham um para o outro com curiosidade.",
+      "Depara-se com {{playerDisplay}} acompanhado de um **{{petEmote}}** **{{petName}}**, tal como você! Os dois animais de estimação olham-se amigavelmente."
+    ],
+    "flying_pet": [
+      "Olhas para cima e vês o animal de estimação de {{playerDisplay}} : um magnífico **{{petEmote}}** **{{petName}}** que voa majestosamente pelo ar!",
+      "O **{{petEmote}}** **{{petName}}** de {{playerDisplay}} sobrevoa o caminho, batendo graciosamente as asas. Que espetáculo!",
+      "{{playerDisplay}} passa por ti enquanto o seu **{{petEmote}}**{{petName}}** rodopia no céu por cima da sua cabeça. Ficas maravilhado com esta criatura alada."
+    ],
+    "aquatic_pet": [
+      "{{playerDisplay}} transporte o seu **{{petEmote}}** **{{petName}}** num aquário portátil! Esta criatura aquática parece feliz no seu pequeno habitat.",
+      "Observa com curiosidade como {{playerDisplay}}, uma criatura aquática, nada alegremente na sua bolha de água mágica.{{petEmote}}** **{{petName}}**.",
+      "O companheiro aquático de {{playerDisplay}}, um **{{petEmote}}** **{{petName}}**, flutua numa esfera de água encantada ao seu lado. Fascinante!"
+    ],
+    "beaten_magma_titan": [
+      "{{playerDisplay}} diz-te com orgulho que derrotou o Titã de Magma no nível **{{bossLevel, number}}**! Ele já não tem medo das chamas.",
+      "As marcas de queimadura na armadura de {{playerDisplay}} testemunham a sua batalha contra o Titã de Magma. Ele derrotou-o no nível **{{bossLevel, number}}**!",
+      "Conheces {{playerDisplay}}, um aventureiro que enfrentou e derrotou o terrível Titã de Magma no nível **{{bossLevel, number}}**. Um verdadeiro herói!"
+    ],
+    "beaten_male_ice_dragon": [
+      "{{playerDisplay}} a osé affronter le Seigneur des glaces et l'a vaincu au niveau **{{bossLevel, number}}** ! Le froid ne semble plus l'atteindre.",
+      "Os cristais de gelo presos à armadura de {{playerDisplay}} são da sua batalha contra o Senhor do Gelo no nível **{{bossLevel, number}}**. Que proeza!",
+      "Conheces {{playerDisplay}}, um herói que triunfou sobre o temível Senhor do Gelo no nível **{{bossLevel, number}}**. As suas histórias de batalha causam-te arrepios na espinha."
+    ],
+    "beaten_female_ice_dragon": [
+      "{{playerDisplay}} derrotou a Rainha do Gelo no nível **{{bossLevel, number}}**! Esta é uma das batalhas mais difíceis que existem.",
+      "O olhar no rosto de {{playerDisplay}} revela uma experiência extraordinária: ele derrotou a Rainha do Gelo até ao nível **{{bossLevel, number}}**! Poucos se podem gabar de tal façanha.",
+      "Passas por {{playerDisplay}}, que conseguiu o impossível ao derrotar a Rainha do Gelo no nível **{{bossLevel, number}}**. Fazes uma vénia respeitosa."
+    ],
     "effect": {
       "sick": [
         "Ouve-se um barulho ao longe... {{playerDisplay}} Está a vomitar num arbusto... Continua o seu caminho, perturbado.",
@@ -391,7 +476,7 @@
         "{{playerDisplay}} Vê-se que está bastante embriagado, para dizer o mínimo. Ele parece estar a divertir-se... sozinho. Faz o que pode para o ignorar e continua o seu caminho."
       ],
       "scared": [
-        "Passa por {{playerDisplay}} , que parece estar a correr na sua direção. Ele está a ser perseguido por ladrões atrás do seu dinheiro. Acompanha-o ao longo da estrada para o ajudar a recuperar a calma. Depois de o ter tranquilizado, deixa-o e parte de novo.",
+        "Passa por {{playerDisplay}} , que parece estar a correr na sua direção. Ele está a ser perseguido por ladrões atrás do seu dinheiro. Acompanha-o ao longo da estrada para o ajudar a recuperar a calma. Depois de o tranquilizar, deixa-o e continua o seu caminho.",
         "{{playerDisplay}} Ao longe, vê-se um homem a correr a toda a velocidade para escapar a uma matilha de lobos. Corres em seu auxílio e obrigas os animais selvagens a bater em retirada.",
         "{{playerDisplay}}Encontra-se com . Ele parece completamente em pânico. Perguntas-lhe por que está tão perturbado. Ele diz-te que acabou de ser perseguido por um dragão, mas que conseguiu fugir, perdendo alguns cabelos no processo."
       ],
@@ -616,6 +701,14 @@
           "freezing": [
             "Decides provar a poção, que está muito fria. Mas a sensação de frio não desaparece e sentes cada parte do teu corpo a ficar mais fria... {emote:effects.freezing}",
             "Quando estavas prestes a terminar a poção, tropeçaste e caíste no abismo cheio de gelo onde planeavas colocar o pote. {emote:effects.freezing}"
+          ],
+          "hurt": [
+            "A poção começa a borbulhar violentamente e salpica-te. A queimadura é intensa e arrependes-te amargamente da tua escolha. {emote:effects.hurt}",
+            "Quando se adiciona o último ingrediente, a panela explode numa nuvem de fumo. Sai coberto de nódoas negras e queimaduras. {emote:effects.hurt}"
+          ],
+          "confounded": [
+            "Os vapores da poção estão a subir-te à cabeça. Perdes o sentido de orientação e não te lembras bem onde estás... {emote:effects.confounded}",
+            "Um remoinho escapa-se da panela e envolve-te. Desorientado, cambaleia por um momento antes de recuperar os sentidos. {emote:effects.confounded}"
           ]
         },
         "3": [
@@ -666,7 +759,14 @@
       "turtle": "Adicionar uma tartaruga",
       "wand": "Lançar um feitiço",
       "wiltedRose": "Adicionar uma rosa murcha",
-      "worm": "Adicionar uma minhoca"
+      "worm": "Adicionar uma minhoca",
+      "feather": "Adicionar uma pena de fénix",
+      "bubble": "Soprar bolas de sabão",
+      "honey": "Adicionar mel",
+      "iceCrystal": "Adicionar um cristal de gelo",
+      "sing": "Cantar uma melodia",
+      "dragonScale": "Adicionar uma escama de dragão",
+      "windEssence": "Adicionar uma essência de vento"
     }
   },
   "space": {
@@ -1190,7 +1290,7 @@
         "{{count}} Ele dá-lhe ** sopas definitivas**, que você guarda cuidadosamente."
       ],
       "fullUltimateFood": [
-        "Ele oferece-lhe as melhores sopas. Infelizmente, o seu armazém está cheio e tem de as devolver."
+        "Ele gostaria de lhe oferecer as suas preciosas sopas definitivas, mas, ao inspecionar o seu armazém, apercebe-se de que já não há um único lugar. Encolhe os ombros e deseja-vos uma boa viagem."
       ],
       "item": [
         "Ele oferece-lhe **um objeto** que pensa que lhe pode ser útil."
@@ -1259,7 +1359,8 @@
       "Mete a mão nos bolsos, mas apercebe-se de que não tem dinheiro suficiente. O homem olha para ti com desilusão e vai-se embora com o carrinho.",
       "Conta as suas moedas, mas não tem o suficiente para a viagem. A raposa abana a cabeça e parte na sua carroça.",
       "Verifica a sua carteira, mas infelizmente não tem dinheiro suficiente. O desconhecido acena com a cabeça e sai com o seu carrinho."
-    ]
+    ],
+    "confirmedScore": "\n\n**{emote:unitValues.score} Pontos ganhos :** {{score, number}}"
   },
   "findMission": {
     "intrigue": [
@@ -1567,6 +1668,46 @@
         "name": "Convide os membros da sua associação",
         "success": "Chama os seus companheiros de equipa, que chegam rapidamente ao local. O animal, surpreendido com a chegada destes reforços, foge sem pensar duas vezes!",
         "failure": "Chamas pelos teus companheiros de equipa, mas eles estão demasiado longe para te ouvirem. O animal veloz deixa-te inconsciente antes de fugir para longe."
+      },
+      "channelRage": {
+        "name": "Canalizar a sua raiva",
+        "success": "Fechas os olhos e deixas que a tua raiva interior te domine. Os teus músculos ficam tensos, os teus olhos iluminam-se e atacas a fera com uma fúria devastadora! O animal, aterrorizado pelo teu poder, desaparece no meio do mato!",
+        "failure": "Tentas usar a tua fúria, mas a tua raiva não parece ser suficiente para impressionar a fera. Ela aproveita a tua hesitação para te dar um golpe forte antes de se afastar."
+      },
+      "stealthApproach": {
+        "name": "Abordagem furtiva",
+        "success": "Agacha-te silenciosamente e desvia-te da fera com a graça de uma sombra. Atacas de surpresa e a criatura, desorientada, foge antes de se aperceber do que aconteceu!",
+        "failure": "Tenta aproximar-se discretamente, mas um ramo estala debaixo dos seus pés. O animal vira-se e, furioso por ter sido apanhado de surpresa, ataca-o violentamente antes de se afastar."
+      },
+      "analyze": {
+        "name": "Analisar os pontos fracos",
+        "success": "A tua experiência de veterano permite-te identificar os pontos fracos da criatura. Atinges com precisão o ponto vulnerável e o animal foge a choramingar!",
+        "failure": "Observas o animal com atenção para descobrir os seus pontos fracos, mas a tua análise demora demasiado tempo. A fera ataca-te antes que possas agir."
+      },
+      "guildBanner": {
+        "name": "Agitar a bandeira do grémio",
+        "success": "Agitas orgulhosamente o estandarte da tua guilda! O animal recua, impressionado com a aura de poder que emana dele. Baixa a cabeça e afasta-se respeitosamente.",
+        "failure": "Agitas o estandarte do teu grémio, mas o animal não quer saber do teu estandarte. Derruba-o com uma das patas, derrubando-te com ele, antes de voltar a entrar na floresta."
+      },
+      "throwRock": {
+        "name": "Atirar uma pedra para longe",
+        "success": "Pega numa pedra e atira-a com toda a força para os arbustos. O animal, assustado com o barulho, desvia a sua atenção e tu aproveitas para te escapares discretamente!",
+        "failure": "Apanha uma pedra e atira-a, mas a sua pontaria deixa a desejar. A pedra cai mesmo ao lado do monstro, que ataca furiosamente!"
+      },
+      "battleCry": {
+        "name": "Um grito de guerra",
+        "success": "Respiras fundo e soltas um grito de guerra estrondoso que ecoa por toda a floresta! O animal, atordoado, foge sem pensar duas vezes!",
+        "failure": "Tentas soltar um grito de guerra, mas a tua voz quebra-se de forma lamentável. A besta olha para ti, sem se impressionar, antes de te empurrar violentamente."
+      },
+      "feint": {
+        "name": "Feinter",
+        "success": "Começa a mover-se para a esquerda, depois gira bruscamente para a direita e atinge o monstro onde ele menos esperava! Desorientada, ela foge na direção oposta!",
+        "failure": "Tenta fintar, mas o animal antecipa a sua manobra e apanha-o a meio do movimento. Cambaleia e cai pesadamente no chão."
+      },
+      "shareSoup": {
+        "name": "Fazer uma das suas sopas cheirar",
+        "success": "De repente, tira-se a tampa da panela da sopa e um fio de fumo perfumado sobe para o ar. O animal, hipnotizado pelo aroma delicioso, acalma-se e afasta-se calmamente, sonhando com uma boa refeição.",
+        "failure": "Tiras a tampa da panela, mas hoje o cheiro não é nada apetitoso. O animal enruga o nariz com repugnância e empurra-te com raiva antes de sair a correr."
       }
     }
   },
@@ -2477,5 +2618,27 @@
       "O silêncio estende-se entre si e o oráculo. O oráculo pousa finalmente as mãos e volta a contemplar as runas, deixando-o continuar o seu caminho."
     ],
     "firstEncounter": "Um brilho dourado através do nevoeiro atrai-o para um altar de pedra coberto de runas antigas. Um oráculo de rosto velado permanece imóvel em frente ao edifício.\n\nCom um gesto lento, ele aponta para o altar: as runas contam a história das bênçãos, as forças ancestrais que os viajantes podem despertar juntando as suas oferendas. Quando o gatinho coletivo atinge o seu limiar, uma bênção é derramada sobre todos os aventureiros do mundo, dando-lhes um poder temporário.\n\nO oráculo aproxima-se e traça uma marca rúnica no teu pulso com a ponta dos dedos. A tua pele fica com um formigueiro onde as linhas incandescentes estão gravadas, mas depois a sensação desaparece. Esta marca liga-te agora aos mistérios do altar. Podes verificar o estado das bênçãos a qualquer momento usando o comando em {command:blessing}."
+  },
+  "farmer": {
+    "stories": [
+      "Está a passar por um campo verdejante quando a mulher de um agricultor, com mãos de terra e um largo sorriso, o chama da sua parcela. Apresenta-se como Mylène e insiste para que prove os frutos do seu trabalho, recusando-se categoricamente a deixá-lo partir de mãos vazias. ",
+      "O cheiro da terra acabada de revolver faz-lhe cócegas nas narinas. Uma velha agricultora com um chapéu de palha gasto acena-lhe da berma do caminho, com um carrinho de mão cheio de legumes ao seu lado. Ela entrega-lhe com orgulho a colheita do dia. ",
+      "Ao passar por uma horta cuidadosamente cuidada, vê uma agricultora a fazer a colheita. Ao vê-lo, ela limpa a testa com as costas da mão e vem a trote até si, com os braços carregados de provisões. ",
+      "quase tropeça num cesto que está no meio do caminho. Uma agricultora hilariante surge por detrás de uma sebe e explica que deixa sempre cestos de legumes para os viajantes que passam. ",
+      "Uma agricultora de bochechas coradas pelo sol aproxima-se de si, com uma forquilha espetada no chão. Diz que se chama Mylène e conta-lhe que a colheita desta época foi excecional e que já não sabe o que fazer com todos os legumes. "
+    ],
+    "rewards": {
+      "salad_one": [
+        "Ela oferece-te **uma salada fresca** {emote:foods.herbivorousFood} que guardas no armazém da tua guilda."
+      ],
+      "salad_other": [
+        "Ela oferece-te **{{count}} saladas frescas** {emote:foods.herbivorousFood} que guardas no armazém da tua guilda."
+      ],
+      "item": [
+        "Impressionada por ver que o seu armazém já está cheio de saladas, a agricultora remexe no celeiro e oferece-lhe **um artigo** que tem guardado há muito tempo.",
+        "Vendo que já não tens espaço para as suas saladas, a agricultora admiradora decide oferecer-te **um objeto velho** encontrado nos seus campos durante a lavoura.",
+        "A agricultora vê que o seu stock de saladas já está cheio até rebentar. Espantada, desaparece no seu barracão e regressa com **um objeto empoeirado**, que lhe entrega com um piscar de olhos."
+      ]
+    }
   }
 }
