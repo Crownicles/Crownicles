@@ -370,7 +370,7 @@
       "Les cicatrices de combat de {{playerDisplay}} témoignent de sa puissance. Il combat en {{leagueEmoji}} **{{leagueName}}**, ce qui en dit long sur ses compétences !"
     ],
     "same_league": [
-      "Tiens, {{playerDisplay}} combat dans la même ligue que vous ! Vous êtes tous les deux en {{leagueEmoji}} **{{leagueName}}**. Peut-être vous affronterez-vous un jour dans l'arène ?",
+      "Tiens, {{playerDisplay}} combat dans la même ligue que vous ! Vous êtes tous les deux en {{leagueEmoji}} **{{leagueName}}**. Peut-être vous affronterez-vous bientôt dans l'arène ?",
       "Vous reconnaissez le grade de {{playerDisplay}} : {{leagueEmoji}} **{{leagueName}}**, tout comme vous ! Un rival potentiel sur votre chemin.",
       "{{playerDisplay}} est en {{leagueEmoji}} **{{leagueName}}**, comme vous ! Vous échangez quelques techniques de combat avant de reprendre la route."
     ],
@@ -476,7 +476,7 @@
         "Vous voyez {{playerDisplay}} assez éméché, pour ne pas dire de terme plus fort. Celui-ci semble bien s'amuser... tout seul. Vous faites ce que vous pouvez pour l'ignorer et continuez votre route."
       ],
       "scared": [
-        "Vous croisez {{playerDisplay}} qui semble courir en votre direction. En effet, celui-ci est pourchassé par des brigands en voulant après son argent. Vous l'accompagnez sur un bout de chemin afin qu'il regagne son calme. Une fois rassuré, vous le quittez et reprenez route.",
+        "Vous croisez {{playerDisplay}} qui semble courir en votre direction. En effet, celui-ci est pourchassé par des brigands en voulant après son argent. Vous l'accompagnez sur un bout de chemin afin qu'il regagne son calme. Une fois rassuré, vous le quittez et reprenez votre route.",
         "Vous apercevez au loin {{playerDisplay}} courant à toutes jambes pour fuir une meute de loups. Vous vous empressez de lui venir en aide et faites battre en retrait les bêtes sauvages.",
         "Vous rencontrez {{playerDisplay}}. Celui-ci semble complètement paniqué. Vous lui demandez ce qui le met dans tout ses états. Il vous raconte qu'il vient de se faire poursuivre par un dragon, mais qu'il a réussi à s'en sortir, perdant quelques poils au passage."
       ],
