@@ -344,6 +344,91 @@
       "Talking with {{playerDisplay}}, he shows you his \"**{{object}}**\" item!",
       "{{playerDisplay}}, a player walking along the same road as you, pulls out an item from his collection. He proudly shows you his \"**{{object}}**\"."
     ],
+    "oracle_patron": [
+      "Une aura mystique émane de {{playerDisplay}}. Vous remarquez la marque de l'Oracle sur son bras, signe d'une grande générosité envers la cagnotte des bénédictions.",
+      "Vous croisez {{playerDisplay}} sur votre chemin. Son regard dégage une sagesse particulière... Il fait partie des protecteurs de l'Oracle, ceux qui contribuent généreusement aux bénédictions !",
+      "{{playerDisplay}} passe près de vous, et vous ressentez une énergie bienfaisante. Ce protecteur de l'Oracle a contribué à de nombreuses bénédictions pour tous les aventuriers."
+    ],
+    "expert_expediteur": [
+      "Vous rencontrez {{playerDisplay}}, un maître des expéditions ! Son expérience dans l'envoi de familiers explorer des terres lointaines est légendaire.",
+      "{{playerDisplay}} vous raconte ses nombreuses expéditions réussies. Ses familiers ont parcouru des contrées que peu d'aventuriers ont osé explorer !",
+      "Les récits d'expéditions de {{playerDisplay}} vous fascinent. Cet expert a envoyé ses compagnons aux quatre coins du monde et en a toujours tiré de précieuses récompenses."
+    ],
+    "animal_lover": [
+      "{{playerDisplay}} est entouré d'une aura de douceur. C'est un véritable ami des animaux, et ses familiers semblent l'adorer en retour !",
+      "Vous croisez {{playerDisplay}}, connu pour son amour inconditionnel des familiers. Ses compagnons sont parmi les plus heureux du royaume.",
+      "L'amour que porte {{playerDisplay}} à ses familiers est touchant. Cet ami des bêtes prend soin de chaque animal qu'il rencontre sur sa route."
+    ],
+    "mission_completer": [
+      "Vous croisez {{playerDisplay}}, un aventurier ayant accompli toutes les missions de la campagne ! Son parcours est une véritable source d'inspiration.",
+      "{{playerDisplay}} porte fièrement la marque de celui qui a complété toute la campagne. Ses exploits sont connus dans tout le royaume !",
+      "Impressionnant ! {{playerDisplay}} a terminé l'intégralité de la campagne. Vous lui demandez quelques conseils pour vos propres missions."
+    ],
+    "high_league": [
+      "Vous croisez {{playerDisplay}}, un combattant d'arène redoutable ! Il évolue en {{leagueEmoji}} **{{leagueName}}**. Impressionnant !",
+      "{{playerDisplay}} dégage une aura menaçante. En {{leagueEmoji}} **{{leagueName}}**, c'est un adversaire que peu osent défier dans l'arène.",
+      "Les cicatrices de combat de {{playerDisplay}} témoignent de sa puissance. Il combat en {{leagueEmoji}} **{{leagueName}}**, ce qui en dit long sur ses compétences !"
+    ],
+    "same_league": [
+      "Tiens, {{playerDisplay}} combat dans la même ligue que vous ! Vous êtes tous les deux en {{leagueEmoji}} **{{leagueName}}**. Peut-être vous affronterez-vous bientôt dans l'arène ?",
+      "Vous reconnaissez le grade de {{playerDisplay}} : {{leagueEmoji}} **{{leagueName}}**, tout comme vous ! Un rival potentiel sur votre chemin.",
+      "{{playerDisplay}} est en {{leagueEmoji}} **{{leagueName}}**, comme vous ! Vous échangez quelques techniques de combat avant de reprendre la route."
+    ],
+    "top_glory": [
+      "Vous croisez {{playerDisplay}}, classé **{{gloryRank, number}}e** au classement de gloire ! Sa réputation dans l'arène le précède.",
+      "Les exploits de {{playerDisplay}} dans l'arène sont légendaires. Il est actuellement **{{gloryRank, number}}e** au classement de gloire !",
+      "{{playerDisplay}} est un véritable champion d'arène, classé **{{gloryRank, number}}e** au top gloire. Vous l'observez avec admiration."
+    ],
+    "many_gems": [
+      "L'éclat des gemmes de {{playerDisplay}} attire votre regard. Il en possède **{{gems, number}}** ! Un véritable collectionneur.",
+      "{{playerDisplay}} fait tinter fièrement ses **{{gems, number}}** gemmes dans sa bourse. Vous vous demandez comment il en a amassé autant.",
+      "Vous apercevez {{playerDisplay}} qui contemple ses **{{gems, number}}** gemmes avec satisfaction. C'est un aventurier qui accomplit bien ses missions !"
+    ],
+    "many_tokens": [
+      "{{playerDisplay}} semble prêt pour de nombreuses aventures : ses poches débordent de jetons d'expédition ! Il en a **{{tokens, number}}**.",
+      "Vous remarquez les **{{tokens, number}}** jetons que {{playerDisplay}} porte à sa ceinture. Cet aventurier est bien préparé pour ses prochaines explorations !",
+      "Les jetons d'expédition de {{playerDisplay}} cliquètent à chaque pas. Avec **{{tokens, number}}** jetons, il ne manque pas de ressources pour voyager."
+    ],
+    "has_talisman": [
+      "{{playerDisplay}} porte un talisman d'ancrage autour du cou. Grâce à cet artefact, il peut envoyer son familier en expédition à sa place !",
+      "Vous remarquez un étrange talisman au poignet de {{playerDisplay}}. Il vous explique que c'est un talisman d'ancrage, un objet rare permettant les expéditions de familiers.",
+      "Le talisman d'ancrage de {{playerDisplay}} brille d'une lueur mystique. Cet aventurier expérimenté a débloqué le pouvoir d'envoyer son compagnon explorer le monde."
+    ],
+    "has_clone_talisman": [
+      "{{playerDisplay}} possède le légendaire talisman de clone ! Même quand son familier est en expédition, une copie spectrale reste à ses côtés.",
+      "Vous remarquez quelque chose d'étrange chez {{playerDisplay}} : son familier semble légèrement translucide. Il vous montre fièrement son talisman de clone, un artefact extrêmement rare.",
+      "Le talisman de clone que porte {{playerDisplay}} émet une aura surnaturelle. Grâce à lui, il n'est jamais vraiment séparé de son compagnon, même pendant les expéditions."
+    ],
+    "same_pet": [
+      "Oh ! {{playerDisplay}} a le même type de familier que vous ! Son **{{petEmote}}** **{{petName}}** et le vôtre semblent très bien s'entendre.",
+      "Quelle coïncidence ! {{playerDisplay}} se promène aussi avec un **{{petEmote}}** **{{petName}}** ! Vos deux compagnons se regardent avec curiosité.",
+      "Vous croisez {{playerDisplay}} accompagné d'un **{{petEmote}}** **{{petName}}**, tout comme vous ! Les deux familiers se reniflent amicalement."
+    ],
+    "flying_pet": [
+      "Vous levez les yeux et apercevez le familier de {{playerDisplay}} : un magnifique **{{petEmote}}** **{{petName}}** qui plane majestueusement dans les airs !",
+      "Le **{{petEmote}}** **{{petName}}** de {{playerDisplay}} survole le chemin en battant gracieusement des ailes. Quel spectacle !",
+      "{{playerDisplay}} passe près de vous tandis que son **{{petEmote}}** **{{petName}}** virevolte dans le ciel au-dessus de sa tête. Vous êtes émerveillé par cette créature ailée."
+    ],
+    "aquatic_pet": [
+      "{{playerDisplay}} transporte son **{{petEmote}}** **{{petName}}** dans un aquarium portable ! Cette créature aquatique semble heureuse dans son petit habitat.",
+      "Vous observez avec curiosité le **{{petEmote}}** **{{petName}}** de {{playerDisplay}}, une créature aquatique qui nage joyeusement dans sa bulle d'eau magique.",
+      "Le compagnon aquatique de {{playerDisplay}}, un **{{petEmote}}** **{{petName}}**, flotte dans une sphère d'eau enchantée à ses côtés. Fascinant !"
+    ],
+    "beaten_magma_titan": [
+      "{{playerDisplay}} vous raconte fièrement avoir terrassé le Titan de magma au niveau **{{bossLevel, number}}** ! Les flammes ne lui font plus peur.",
+      "Les traces de brûlures sur l'armure de {{playerDisplay}} témoignent de son combat contre le Titan de magma. Il l'a vaincu au niveau **{{bossLevel, number}}** !",
+      "Vous croisez {{playerDisplay}}, un aventurier ayant affronté et vaincu le terrible Titan de magma au niveau **{{bossLevel, number}}**. Un véritable héros !"
+    ],
+    "beaten_male_ice_dragon": [
+      "{{playerDisplay}} a osé affronter le Seigneur des glaces et l'a vaincu au niveau **{{bossLevel, number}}** ! Le froid ne semble plus l'atteindre.",
+      "Les cristaux de glace accrochés à l'armure de {{playerDisplay}} proviennent de son combat contre le Seigneur des glaces au niveau **{{bossLevel, number}}**. Quel exploit !",
+      "Vous rencontrez {{playerDisplay}}, un héros ayant triomphé du redoutable Seigneur des glaces au niveau **{{bossLevel, number}}**. Ses récits de combat vous donnent des frissons."
+    ],
+    "beaten_female_ice_dragon": [
+      "{{playerDisplay}} a vaincu la Reine des glaces au niveau **{{bossLevel, number}}** ! C'est l'un des combats les plus difficiles qui existe.",
+      "Le regard de {{playerDisplay}} trahit une expérience hors du commun : il a terrassé la Reine des glaces au niveau **{{bossLevel, number}}** ! Peu peuvent se vanter d'un tel exploit.",
+      "Vous croisez {{playerDisplay}}, qui a accompli l'impossible en battant la Reine des glaces au niveau **{{bossLevel, number}}**. Vous vous inclinez respectueusement."
+    ],
     "effect": {
       "sick": [
         "You hear a noise in the distance... It's {{playerDisplay}} throwing up in a bush... You continue on your way, distraught.",
@@ -391,7 +476,7 @@
         "You can see {{playerDisplay}} is quite tipsy, to put it mildly. He seems to be enjoying himself... all by himself. You do what you can to ignore him and continue on your way."
       ],
       "scared": [
-        "You pass {{playerDisplay}} , who seems to be running towards you. He is being chased by robbers after his money. You accompany him along the road so that he can regain his composure. Once reassured, you leave him and set off again.",
+        "Vous croisez {{playerDisplay}} qui semble courir en votre direction. En effet, celui-ci est pourchassé par des brigands en voulant après son argent. Vous l'accompagnez sur un bout de chemin afin qu'il regagne son calme. Une fois rassuré, vous le quittez et reprenez votre route.",
         "In the distance, you spot {{playerDisplay}} running at full speed to escape a pack of wolves. You rush to his aid and make the wild beasts retreat.",
         "You meet {{playerDisplay}}. He seems completely panicked. You ask him what's got him so worked up. He tells you he's just been chased by a dragon, but managed to get away, losing a few hairs in the process."
       ],
@@ -616,6 +701,14 @@
           "freezing": [
             "You decide to taste the potion, which is very cold. However, the feeling of cold does not go away, and you helplessly feel each of your limbs growing colder... {emote:effects.freezing}",
             "As you were about to finish the potion, you fell into the ice-filled chasm in which you were planning to drop the pot. {emote:effects.freezing}"
+          ],
+          "hurt": [
+            "La potion se met à bouillonner violemment et vous éclabousse. La brûlure est intense et vous regrettez amèrement votre choix. {emote:effects.hurt}",
+            "En ajoutant le dernier ingrédient, la marmite explose dans un nuage de fumée. Vous en ressortez couvert de bleus et de brûlures. {emote:effects.hurt}"
+          ],
+          "confounded": [
+            "Les vapeurs de la potion vous montent à la tête. Vous perdez le sens de l'orientation et ne savez plus très bien où vous êtes... {emote:effects.confounded}",
+            "Un tourbillon de vent s'échappe de la marmite et vous enveloppe. Désorienté, vous titubez un moment avant de retrouver vos esprits. {emote:effects.confounded}"
           ]
         },
         "3": [
@@ -666,7 +759,14 @@
       "turtle": "Add turtle",
       "wand": "Cast a spell",
       "wiltedRose": "Add a faded rose",
-      "worm": "Add worm"
+      "worm": "Add worm",
+      "feather": "Ajouter une plume de phénix",
+      "bubble": "Souffler des bulles de savon",
+      "honey": "Ajouter du miel",
+      "iceCrystal": "Ajouter un cristal de glace",
+      "sing": "Chanter une mélodie",
+      "dragonScale": "Ajouter une écaille de dragon",
+      "windEssence": "Ajouter une essence de vent"
     }
   },
   "space": {
@@ -1190,7 +1290,7 @@
         "He tends **{{count}} ultimate soup**, which you store carefully."
       ],
       "fullUltimateFood": [
-        "He offers you ultimate soups. Unfortunately, your storage being full, you have to return them."
+        "Il voudrait vous offrir ses précieuses soupes ultimes, mais en inspectant votre entrepôt, il constate qu'il n'y a plus la moindre place. Il hausse les épaules et vous souhaite bonne route."
       ],
       "item": [
         "He offers you **an item** which, according to him, might be useful to you."
@@ -1259,7 +1359,8 @@
       "You search in your pockets, but you realize you don't have enough money. The man looks at you and leaves with his cart.",
       "You count your pieces, but you still miss some amount for the journey. The rogue shakes his head and moves away with his cart.",
       "You check your purse, but unfortunately you don't have enough money. The stranger nods and leaves with his cart."
-    ]
+    ],
+    "confirmedScore": "\n\n**{emote:unitValues.score} Points gagnés :** {{score, number}}"
   },
   "findMission": {
     "intrigue": [
@@ -1567,6 +1668,46 @@
         "name": "Call on your guild members",
         "success": "You call on your teammates, who arrive quickly on the spot. The animal, surprised by the arrival of these reinforcements, flees without any second thought!",
         "failure": "You call on your teammates, but they are too far away to hear you. The quick animal knocks you down before leaving."
+      },
+      "channelRage": {
+        "name": "Canaliser sa rage",
+        "success": "Vous fermez les yeux et laissez votre rage intérieure vous envahir. Vos muscles se tendent, vos yeux s'enflamment et vous chargez la bête avec une fureur dévastatrice ! L'animal, terrifié par votre puissance, disparaît dans les fourrés !",
+        "failure": "Vous tentez de puiser dans votre rage, mais votre colère ne semble pas suffisante pour impressionner la bête. Elle profite de votre hésitation pour vous asséner un coup violent avant de s'en aller."
+      },
+      "stealthApproach": {
+        "name": "Approche furtive",
+        "success": "Vous vous accroupissez silencieusement et contournez la bête avec la grâce d'une ombre. Vous frappez par surprise et la créature, désorientée, prend la fuite avant de comprendre ce qu'il s'est passé !",
+        "failure": "Vous tentez de vous faufiler discrètement, mais une branche craque sous vos pieds. L'animal se retourne et, furieux d'avoir été pris par surprise, vous charge violemment avant de s'éloigner."
+      },
+      "analyze": {
+        "name": "Analyser les faiblesses",
+        "success": "Votre expérience de vétéran vous permet de repérer les points faibles de la créature. Vous frappez avec précision à l'endroit vulnérable et l'animal s'enfuit en gémissant !",
+        "failure": "Vous observez attentivement l'animal pour trouver ses faiblesses, mais votre analyse prend trop de temps. La bête se jette sur vous avant que vous n'ayez pu agir."
+      },
+      "guildBanner": {
+        "name": "Brandir l'étendard de guilde",
+        "success": "Vous brandissez fièrement l'étendard de votre guilde ! L'animal recule, impressionné par l'aura de puissance qui s'en dégage. Il baisse la tête et s'éloigne respectueusement.",
+        "failure": "Vous brandissez l'étendard de votre guilde, mais la bête n'a que faire de votre bannière. Elle la renverse d'un coup de patte et vous fait tomber avec, avant de repartir dans les bois."
+      },
+      "throwRock": {
+        "name": "Lancer un caillou au loin",
+        "success": "Vous ramassez un caillou et le lancez de toutes vos forces dans les buissons. L'animal, surpris par le bruit, détourne son attention et vous en profitez pour vous éclipser discrètement !",
+        "failure": "Vous ramassez un caillou et le lancez au loin, mais votre visée laisse à désirer. Le caillou atterrit juste à côté de la bête, qui vous charge furieusement !"
+      },
+      "battleCry": {
+        "name": "Pousser un cri de guerre",
+        "success": "Vous inspirez profondément et poussez un cri de guerre tonitruant qui résonne dans toute la forêt ! L'animal, tétanisé, prend la fuite sans demander son reste !",
+        "failure": "Vous tentez de pousser un cri de guerre, mais votre voix se brise piteusement. La bête vous dévisage, peu impressionnée, avant de vous bousculer violemment."
+      },
+      "feint": {
+        "name": "Feinter",
+        "success": "Vous amorcez un mouvement vers la gauche, puis pivotez brusquement vers la droite et frappez la bête là où elle ne s'y attendait pas ! Désorientée, elle s'enfuit dans la direction opposée !",
+        "failure": "Vous tentez une feinte, mais l'animal anticipe votre manoeuvre et vous attrape en plein mouvement. Vous titubez et tombez lourdement au sol."
+      },
+      "shareSoup": {
+        "name": "Faire sentir l'une de vos soupes",
+        "success": "Vous sortez soudainement le couvercle de votre marmite de soupe et une volute de fumée odorante s'élève dans les airs. L'animal, hypnotisé par le délicieux arôme, s'apaise et s'éloigne tranquillement, rêvant d'un bon repas.",
+        "failure": "Vous sortez le couvercle de votre marmite, mais l'odeur qui s'en échappe n'a rien d'appétissant aujourd'hui. La bête plisse le nez de dégoût et vous bouscule rageusement avant de détaler."
       }
     }
   },
@@ -2477,5 +2618,27 @@
       "Silence stretches out between you and the oracle. Eventually, he drops his hands and returns to his contemplation of the runes, leaving you to continue on your way."
     ],
     "firstEncounter": "a golden glow through the fog draws you to a stone altar covered with ancient runes. A veiled-faced oracle stands motionless before the edifice.\n\nWith a slow gesture, he points to the altar: the runes tell the story of blessings, ancestral forces that travelers can awaken by joining their offerings. When the collective pot reaches its threshold, a blessing is showered on every adventurer in the world, conferring temporary power.\n\nThe oracle approaches and traces a runic mark on your wrist with his fingertips. Your skin tingles where the incandescent lines are etched, then the sensation subsides. This mark now links you to the mysteries of the altar. You can check the status of your blessings at any time using the {command:blessing}command."
+  },
+  "farmer": {
+    "stories": [
+      "vous traversez un champ verdoyant lorsqu'une fermière robuste, les mains terreuses et le sourire large, vous interpelle depuis sa parcelle. Elle se présente comme Mylène et insiste pour que vous goûtiez le fruit de son labeur, refusant catégoriquement que vous repartiez les mains vides. ",
+      "une odeur de terre fraîchement retournée vous chatouille les narines. Une vieille fermière au chapeau de paille cabossé vous fait signe depuis le bord du chemin, une brouette débordante de légumes à ses côtés. Elle vous tend fièrement sa récolte du jour. ",
+      "en longeant un potager soigneusement entretenu, vous apercevez une fermière en train de récolter ses cultures. En vous voyant, elle s'essuie le front du revers de la main et trottine jusqu'à vous, les bras chargés de provisions. ",
+      "vous manquez de trébucher sur un panier posé en plein milieu du chemin. Une fermière hilare surgit de derrière une haie et vous explique qu'elle laisse toujours des paniers de légumes pour les voyageurs de passage. ",
+      "une fermière aux joues rougies par le soleil vous accoste, une fourche plantée dans le sol à ses côtés. Elle dit s'appeler Mylène et vous raconte que la récolte a été exceptionnelle cette saison et qu'elle ne sait plus quoi faire de tous ses légumes. "
+    ],
+    "rewards": {
+      "salad_one": [
+        "Elle vous offre **une salade** {emote:foods.herbivorousFood} bien fraîche que vous rangez dans l'entrepôt de votre guilde."
+      ],
+      "salad_other": [
+        "Elle vous offre **{{count}} salades** {emote:foods.herbivorousFood} bien fraîches que vous rangez dans l'entrepôt de votre guilde."
+      ],
+      "item": [
+        "Impressionnée de voir que votre entrepôt déborde déjà de salades, la fermière fouille dans sa grange et vous offre **un objet** qu'elle gardait de côté depuis longtemps.",
+        "Voyant que vous n'avez plus de place pour ses salades, la fermière, admirative, décide de vous offrir **un vieil objet** trouvé dans ses champs lors des labours.",
+        "La fermière constate que votre réserve de salades est déjà pleine à craquer. Épatée, elle disparaît dans sa remise et revient avec **un objet poussiéreux** qu'elle vous tend avec un clin d'œil."
+      ]
+    }
   }
 }
