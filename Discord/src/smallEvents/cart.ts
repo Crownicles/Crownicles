@@ -45,6 +45,8 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 
 type CartStory = "notEnoughMoney" | "travelRefused" | "scamTravelDone" | "normalTravelDone" | "unknownDestinationTravelDone";
 
+const CART_NO_SCORE_STORIES: CartStory[] = ["notEnoughMoney", "travelRefused"];
+
 function getCartStory(packet: SmallEventCartPacket): CartStory {
 	if (!packet.travelDone.hasEnoughMoney && packet.travelDone.isAccepted) {
 		return "notEnoughMoney";
@@ -56,7 +58,7 @@ function getCartStory(packet: SmallEventCartPacket): CartStory {
 }
 
 function getGainScoreText(story: CartStory, packet: SmallEventCartPacket, lng: Language): string {
-	if (story === "notEnoughMoney" || story === "travelRefused" || packet.pointsWon <= 0) {
+	if (CART_NO_SCORE_STORIES.includes(story) || packet.pointsWon <= 0) {
 		return "";
 	}
 	return i18n.t("smallEvents:cart.confirmedScore", {
