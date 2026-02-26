@@ -381,11 +381,11 @@
     ],
     "many_gems": [
       "Lo scintillio delle gemme {{playerDisplay}} cattura il vostro sguardo. Ne possiede **{{gems, number}}** di gemme! Un vero collezionista.",
-      "{{playerDisplay}} fait tinter fièrement ses **{{gems, number}}** gemmes dans sa bourse. Vous vous demandez comment il en a amassé autant.",
+      "{{playerDisplay}} fa tintinnare con orgoglio le sue **{{gems, number}}** gemme nella sua borsa. Ti chiedi come abbia fatto ad accumularne così tante.",
       "Si può vedere {{playerDisplay}} contemplare con soddisfazione le sue gemme **{{gems, number}}**. È un avventuriero che porta a termine bene le sue missioni!"
     ],
     "many_tokens": [
-      "{{playerDisplay}} semble prêt pour de nombreuses aventures : ses poches débordent de jetons d'expédition ! Il en a **{{tokens, number}}**.",
+      "{{playerDisplay}} sembra pronto per tante avventure: le sue tasche traboccano di gettoni spedizione! Ha **{{tokens, number}}**.",
       "Notate i gettoni **{{tokens, number}}** che {{playerDisplay}} porta alla cintura. Questo avventuriero è ben preparato per le sue prossime esplorazioni!",
       "I gettoni di spedizione di {{playerDisplay}} scattano a ogni passo. Con i gettoni di **{{tokens, number}}** non mancano le risorse per viaggiare."
     ],
@@ -420,7 +420,7 @@
       "Incontri {{playerDisplay}}, un avventuriero che ha affrontato e sconfitto il terribile Titano di Magma al livello **{{bossLevel, number}}**. Un vero eroe!"
     ],
     "beaten_male_ice_dragon": [
-      "{{playerDisplay}} a osé affronter le Seigneur des glaces et l'a vaincu au niveau **{{bossLevel, number}}** ! Le froid ne semble plus l'atteindre.",
+      "{{playerDisplay}} ha osato affrontare il Signore del Ghiaccio e lo ha sconfitto al livello **{{bossLevel, number}}**! Il freddo non sembra più fargli effetto.",
       "I cristalli di ghiaccio attaccati all'armatura di {{playerDisplay}} provengono dalla sua battaglia con il Signore del Ghiaccio al livello **{{bossLevel, number}}**. Che impresa!",
       "Incontrate {{playerDisplay}}, un eroe che ha trionfato sul temibile Signore dei Ghiacci al livello **{{bossLevel, number}}**. I suoi racconti di battaglia fanno venire i brividi."
     ],
