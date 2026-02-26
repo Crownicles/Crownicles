@@ -996,7 +996,8 @@ export const CrowniclesIcons: {
 		haunted: "🦴",
 		expeditionAdvice: "🗺️",
 		petDropToken: "🪙",
-		altar: "⛩️"
+		altar: "⛩️",
+		farmer: "🧑‍🌾"
 	},
 	pets: {
 		0: {

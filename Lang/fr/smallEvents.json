@@ -1290,7 +1290,7 @@
         "Il vous tend **{{count}} soupes ultimes**, que vous rangez soigneusement."
       ],
       "fullUltimateFood": [
-        "Il vous offre des soupes ultimes. Malheureusement, votre entrepôt étant plein, vous êtes dans l'obligation de les lui rendre."
+        "Il voudrait vous offrir ses précieuses soupes ultimes, mais en inspectant votre entrepôt, il constate qu'il n'y a plus la moindre place. Il hausse les épaules et vous souhaite bonne route."
       ],
       "item": [
         "Il vous offre **un objet** qui, d'après ses dires, pourrait vous être utile."
@@ -2617,5 +2617,27 @@
       "Le silence s'étire entre vous et l'oracle. Celui-ci finit par baisser les mains et retourne à sa contemplation des runes, vous laissant poursuivre votre route."
     ],
     "firstEncounter": "une lueur dorée à travers le brouillard vous attire vers un autel de pierre recouvert de runes anciennes. Un oracle au visage voilé se tient immobile devant l'édifice.\n\nD'un geste lent, il désigne l'autel : les runes racontent l'histoire des bénédictions, ces forces ancestrales que les voyageurs peuvent éveiller en unissant leurs offrandes. Lorsque la cagnotte collective atteint son seuil, une bénédiction se répand sur tous les aventuriers du monde, leur conférant un pouvoir temporaire.\n\nL'oracle s'approche et trace du bout des doigts une marque runique sur votre poignet. La peau picote là où les lignes incandescentes se gravent, puis la sensation s'apaise. Cette marque vous lie désormais aux mystères de l'autel. Vous pourrez consulter l'état des bénédictions à tout moment grâce à la commande {command:blessing}."
+  },
+  "farmer": {
+    "stories": [
+      "vous traversez un champ verdoyant lorsqu'une fermière robuste, les mains terreuses et le sourire large, vous interpelle depuis sa parcelle. Elle se présente comme Mylène et insiste pour que vous goûtiez le fruit de son labeur, refusant catégoriquement que vous repartiez les mains vides. ",
+      "une odeur de terre fraîchement retournée vous chatouille les narines. Une vieille fermière au chapeau de paille cabossé vous fait signe depuis le bord du chemin, une brouette débordante de légumes à ses côtés. Elle vous tend fièrement sa récolte du jour. ",
+      "en longeant un potager soigneusement entretenu, vous apercevez une fermière en train de récolter ses cultures. En vous voyant, elle s'essuie le front du revers de la main et trottine jusqu'à vous, les bras chargés de provisions. ",
+      "vous manquez de trébucher sur un panier posé en plein milieu du chemin. Une fermière hilare surgit de derrière une haie et vous explique qu'elle laisse toujours des paniers de légumes pour les voyageurs de passage. ",
+      "une fermière aux joues rougies par le soleil vous accoste, une fourche plantée dans le sol à ses côtés. Elle dit s'appeler Mylène et vous raconte que la récolte a été exceptionnelle cette saison et qu'elle ne sait plus quoi faire de tous ses légumes. "
+    ],
+    "rewards": {
+      "salad_one": [
+        "Elle vous offre **une salade** {emote:foods.herbivorousFood} bien fraîche que vous rangez dans l'entrepôt de votre guilde."
+      ],
+      "salad_other": [
+        "Elle vous offre **{{count}} salades** {emote:foods.herbivorousFood} bien fraîches que vous rangez dans l'entrepôt de votre guilde."
+      ],
+      "item": [
+        "Impressionnée de voir que votre entrepôt déborde déjà de salades, la fermière fouille dans sa grange et vous offre **un objet** qu'elle gardait de côté depuis longtemps.",
+        "Voyant que vous n'avez plus de place pour ses salades, la fermière, admirative, décide de vous offrir **un vieil objet** trouvé dans ses champs lors des labours.",
+        "La fermière constate que votre réserve de salades est déjà pleine à craquer. Épatée, elle disparaît dans sa remise et revient avec **un objet poussiéreux** qu'elle vous tend avec un clin d'œil."
+      ]
+    }
   }
 }
