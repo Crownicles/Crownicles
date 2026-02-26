@@ -69,7 +69,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 					anotherMemberOnBoat: anotherMemberOnBoat[0],
 					price
 				};
-				const gainScore = await TravelTime.calculateScoreOnTeleportation(player);
+				const gainScore = await TravelTime.joinBoatScore(player);
 				const scoreParameters = {
 					amount: gainScore,
 					response,

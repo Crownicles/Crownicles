@@ -18,7 +18,6 @@ import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/Sm
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { crowniclesInstance } from "../../index";
-import { TravelTime } from "../maps/TravelTime";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 
 type CartResult = {
@@ -44,7 +43,7 @@ function getEndCallback(player: Player, destination: CartResult): EndCallback {
 
 		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 			if (packet.travelDone.hasEnoughMoney) {
-				const gainScore = await TravelTime.calculateScoreOnTeleportation(player);
+				const gainScore = await PlayerSmallEvents.calculateCurrentScore(player);
 				const scoreParameters = {
 					amount: gainScore,
 					response,
