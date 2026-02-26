@@ -19,6 +19,7 @@ import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 
 const FARMER_INTERACTIONS = {
 	SALAD: "salad",
@@ -76,7 +77,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			// Give salad to the guild
 			const maxGiveable = GuildConstants.MAX_HERBIVOROUS_PET_FOOD - guild.herbivorousFood;
 			packet.amount = Math.min(RandomUtils.randInt(SALAD_AMOUNT.MIN, SALAD_AMOUNT.MAX + 1), maxGiveable);
-			await giveFoodToGuild(response, player, "herbivorousFood", packet.amount, NumberChangeReason.SMALL_EVENT);
+			await giveFoodToGuild(response, player, PetConstants.PET_FOOD.HERBIVOROUS_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 		}
 
 		response.push(makePacket(SmallEventFarmerPacket, packet));
