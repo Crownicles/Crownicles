@@ -1702,7 +1702,7 @@
       "feint": {
         "name": "Feinter",
         "success": "Vous amorcez un mouvement vers la gauche, puis pivotez brusquement vers la droite et frappez la bête là où elle ne s'y attendait pas ! Désorientée, elle s'enfuit dans la direction opposée !",
-        "failure": "Vous tentez une feinte, mais l'animal anticipe votre manoeuvre et vous attrape en plein mouvement. Vous tituber et tombez lourdement au sol."
+        "failure": "Vous tentez une feinte, mais l'animal anticipe votre manoeuvre et vous attrape en plein mouvement. Vous titubez et tombez lourdement au sol."
       },
       "shareSoup": {
         "name": "Faire sentir l'une de vos soupes",
