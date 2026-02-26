@@ -46,7 +46,7 @@ function isOnPlainsMapLink(mapLinkId: number): boolean {
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
-	canBeExecuted: async (player) => {
+	canBeExecuted: async player => {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
