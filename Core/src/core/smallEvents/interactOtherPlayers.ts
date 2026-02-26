@@ -5,7 +5,7 @@ import { Op } from "sequelize";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
-	CrowniclesPacket, makePacket
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	InteractOtherPlayerInteraction,
@@ -383,6 +383,20 @@ const BOSS_INTERACTION_MAP: Record<string, InteractOtherPlayerInteraction> = {
  * @param otherPlayer
  * @param interactionsList
  */
+function updateBestBossKill(bestBossKills: Map<string, number>, monsterId: string, monsterLevel: number): void {
+	const current = bestBossKills.get(monsterId);
+	if (current === undefined || monsterLevel > current) {
+		bestBossKills.set(monsterId, monsterLevel);
+	}
+}
+
+function pushBossInteraction(monsterId: string, interactionsList: InteractOtherPlayerInteraction[]): void {
+	const interaction = BOSS_INTERACTION_MAP[monsterId];
+	if (interaction !== undefined) {
+		interactionsList.push(interaction);
+	}
+}
+
 async function checkBossKills(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<Map<string, number>> {
 	const bestBossKills = new Map<string, number>();
 
@@ -400,17 +414,11 @@ async function checkBossKills(otherPlayer: Player, interactionsList: InteractOth
 	});
 
 	for (const kill of bossKills) {
-		const current = bestBossKills.get(kill.monsterId);
-		if (current === undefined || kill.monsterLevel > current) {
-			bestBossKills.set(kill.monsterId, kill.monsterLevel);
-		}
+		updateBestBossKill(bestBossKills, kill.monsterId, kill.monsterLevel);
 	}
 
 	for (const [monsterId] of bestBossKills) {
-		const interaction = BOSS_INTERACTION_MAP[monsterId];
-		if (interaction !== undefined) {
-			interactionsList.push(interaction);
-		}
+		pushBossInteraction(monsterId, interactionsList);
 	}
 
 	return bestBossKills;
@@ -485,6 +493,47 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 }
 
 /**
+ * Build a reaction collector response for the POOR interaction
+ */
+function buildPoorInteractionResponse(
+	otherPlayer: Player,
+	player: Player,
+	context: PacketContext,
+	otherPlayerRank: number | undefined
+): CrowniclesPacket {
+	const collector = new ReactionCollectorInteractOtherPlayersPoor(
+		otherPlayer.keycloakId,
+		otherPlayerRank ?? 0
+	);
+
+	const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		const reaction = collector.getFirstReaction();
+
+		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+			await sendACoin(otherPlayer, player, response);
+			response.push(makePacket(SmallEventInteractOtherPlayersAcceptToGivePoorPacket, {}));
+		}
+		else {
+			response.push(makePacket(SmallEventInteractOtherPlayersRefuseToGivePoorPacket, {}));
+		}
+
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+	};
+
+	return new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1
+		},
+		endCallback
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND)
+		.build();
+}
+
+/**
  * Send a coin from the current player to the interacted one
  * @param otherPlayer
  * @param player
@@ -548,65 +597,34 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const otherPlayerRank = fetchedRank === null || fetchedRank > numberOfPlayers ? undefined : fetchedRank;
 
 		if (interaction === InteractOtherPlayerInteraction.POOR) {
-			const collector = new ReactionCollectorInteractOtherPlayersPoor(
-				otherPlayer.keycloakId,
-				otherPlayerRank ?? 0
-			);
-
-			const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-				const reaction = collector.getFirstReaction();
-
-				if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-					await sendACoin(otherPlayer, player, response);
-					response.push(makePacket(SmallEventInteractOtherPlayersAcceptToGivePoorPacket, {}));
-				}
-				else {
-					response.push(makePacket(SmallEventInteractOtherPlayersRefuseToGivePoorPacket, {}));
-				}
-
-				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
-			};
-
-			const packet = new ReactionCollectorInstance(
-				collector,
-				context,
-				{
-					allowedPlayerKeycloakIds: [player.keycloakId],
-					reactionLimit: 1
-				},
-				endCallback
-			)
-				.block(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND)
-				.build();
-
-			response.push(packet);
+			response.push(buildPoorInteractionResponse(otherPlayer, player, context, otherPlayerRank));
+			return;
 		}
-		else {
-			const bossId = FINAL_BOSS_IDS.find(id => BOSS_INTERACTION_MAP[id] === interaction);
-			response.push(makePacket(SmallEventInteractOtherPlayersPacket, {
-				keycloakId: otherPlayer.keycloakId,
-				playerInteraction: interaction,
-				data: {
-					rank: otherPlayerRank,
-					level: otherPlayer.level,
-					classId: otherPlayer.class,
-					petName: otherPlayer.petId && otherPet ? otherPet.nickname : undefined,
-					petId: otherPlayer.petId && otherPet ? otherPet.typeId : undefined,
-					petSex: (otherPlayer.petId && otherPet ? otherPet.sex : undefined) as SexTypeShort,
-					guildName: guild ? guild.name : undefined,
-					weaponId: inventorySlots.find(slot => slot.isWeapon() && slot.isEquipped())?.itemId ?? 0,
-					armorId: inventorySlots.find(slot => slot.isArmor() && slot.isEquipped())?.itemId ?? 0,
-					potionId: inventorySlots.find(slot => slot.isPotion() && slot.isEquipped())?.itemId ?? 0,
-					objectId: inventorySlots.find(slot => slot.isObject() && slot.isEquipped())?.itemId ?? 0,
-					effectId: otherPlayer.effectId,
-					leagueId: otherPlayer.getLeague().id,
-					gloryRank,
-					gems,
-					tokens: otherPlayer.tokens,
-					bossId,
-					bossLevel: bossId ? bestBossKills.get(bossId) : undefined
-				}
-			}));
-		}
+
+		const bossId = FINAL_BOSS_IDS.find(id => BOSS_INTERACTION_MAP[id] === interaction);
+		response.push(makePacket(SmallEventInteractOtherPlayersPacket, {
+			keycloakId: otherPlayer.keycloakId,
+			playerInteraction: interaction,
+			data: {
+				rank: otherPlayerRank,
+				level: otherPlayer.level,
+				classId: otherPlayer.class,
+				petName: otherPlayer.petId && otherPet ? otherPet.nickname : undefined,
+				petId: otherPlayer.petId && otherPet ? otherPet.typeId : undefined,
+				petSex: (otherPlayer.petId && otherPet ? otherPet.sex : undefined) as SexTypeShort,
+				guildName: guild ? guild.name : undefined,
+				weaponId: inventorySlots.find(slot => slot.isWeapon() && slot.isEquipped())?.itemId ?? 0,
+				armorId: inventorySlots.find(slot => slot.isArmor() && slot.isEquipped())?.itemId ?? 0,
+				potionId: inventorySlots.find(slot => slot.isPotion() && slot.isEquipped())?.itemId ?? 0,
+				objectId: inventorySlots.find(slot => slot.isObject() && slot.isEquipped())?.itemId ?? 0,
+				effectId: otherPlayer.effectId,
+				leagueId: otherPlayer.getLeague().id,
+				gloryRank,
+				gems,
+				tokens: otherPlayer.tokens,
+				bossId,
+				bossLevel: bossId ? bestBossKills.get(bossId) : undefined
+			}
+		}));
 	}
 };
