@@ -45,7 +45,7 @@ import {
 } from "../../core/expeditions/ExpeditionCollectorFactory";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { MissionSlots } from "../../core/database/game/models/MissionSlot";
+import { resetExpeditionStreakMission } from "../../core/missions/ExpeditionStreakUtils";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 
 /**
@@ -76,20 +76,6 @@ function extractExpeditionLogParams(
 		rewardIndex: activeExpedition.rewardIndex,
 		success
 	};
-}
-
-/**
- * Reset expedition streak mission progress if the latest expedition failed
- */
-async function resetExpeditionStreakMission(player: Player): Promise<void> {
-	const missionSlots = await MissionSlots.getOfPlayer(player.id);
-	const streakMission = missionSlots.find(slot => slot.missionId === "expeditionStreak");
-	if (!streakMission || streakMission.isCompleted()) {
-		return;
-	}
-
-	streakMission.numberDone = 0;
-	await streakMission.save();
 }
 
 /**
