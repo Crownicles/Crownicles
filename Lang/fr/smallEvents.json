@@ -616,6 +616,14 @@
           "freezing": [
             "Vous décidez de goûter à la potion qui est très froide. La sensation de froid ne disparait cependant pas et vous ressentez impuissant chacun de vos membres se refroidir... {emote:effects.freezing}",
             "Alors que vous alliez terminer la potion, vous trébuchez et tombez dans le gouffre rempli de glace dans lequel vous prévoyiez de déposer la marmite. {emote:effects.freezing}"
+          ],
+          "hurt": [
+            "La potion se met à bouillonner violemment et vous éclabousse. La brûlure est intense et vous regrettez amèrement votre choix. {emote:effects.hurt}",
+            "En ajoutant le dernier ingrédient, la marmite explose dans un nuage de fumée. Vous en ressortez couvert de bleus et de brûlures. {emote:effects.hurt}"
+          ],
+          "confounded": [
+            "Les vapeurs de la potion vous montent à la tête. Vous perdez le sens de l'orientation et ne savez plus très bien où vous êtes... {emote:effects.confounded}",
+            "Un tourbillon de vent s'échappe de la marmite et vous enveloppe. Désorienté, vous titubez un moment avant de retrouver vos esprits. {emote:effects.confounded}"
           ]
         },
         "3": [
@@ -666,7 +674,14 @@
       "turtle": "Ajouter une tortue",
       "wand": "Jeter un sort",
       "wiltedRose": "Ajouter une rose fanée",
-      "worm": "Ajouter un ver"
+      "worm": "Ajouter un ver",
+      "feather": "Ajouter une plume de phénix",
+      "bubble": "Souffler des bulles de savon",
+      "honey": "Ajouter du miel",
+      "iceCrystal": "Ajouter un cristal de glace",
+      "sing": "Chanter une mélodie",
+      "dragonScale": "Ajouter une écaille de dragon",
+      "windEssence": "Ajouter une essence de vent"
     }
   },
   "space": {
