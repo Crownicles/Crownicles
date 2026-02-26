@@ -381,7 +381,7 @@
     ],
     "many_gems": [
       "O brilho das jóias {{playerDisplay}} chama a atenção. Ele possui **{{gems, number}}** delas! Um verdadeiro colecionador.",
-      "{{playerDisplay}} fait tinter fièrement ses **{{gems, number}}** gemmes dans sa bourse. Vous vous demandez comment il en a amassé autant.",
+      "{{playerDisplay}} agita orgulhosamente as suas **{{gems, number}}** jóias na sua bolsa. Pergunta-se como é que ele conseguiu acumular tantas.",
       "Podes ver o {{playerDisplay}} a contemplar as suas **{{gems, number}}** jóias com satisfação. Ele é um aventureiro que cumpre bem as suas missões!"
     ],
     "many_tokens": [
@@ -420,7 +420,7 @@
       "Conheces {{playerDisplay}}, um aventureiro que enfrentou e derrotou o terrível Titã de Magma no nível **{{bossLevel, number}}**. Um verdadeiro herói!"
     ],
     "beaten_male_ice_dragon": [
-      "{{playerDisplay}} a osé affronter le Seigneur des glaces et l'a vaincu au niveau **{{bossLevel, number}}** ! Le froid ne semble plus l'atteindre.",
+      "{{playerDisplay}} ousou confrontar o Senhor do Gelo e derrotou-o ao nível **{{bossLevel, number}}**! O frio já não parece afetá-lo.",
       "Os cristais de gelo presos à armadura de {{playerDisplay}} são da sua batalha contra o Senhor do Gelo no nível **{{bossLevel, number}}**. Que proeza!",
       "Conheces {{playerDisplay}}, um herói que triunfou sobre o temível Senhor do Gelo no nível **{{bossLevel, number}}**. As suas histórias de batalha causam-te arrepios na espinha."
     ],
