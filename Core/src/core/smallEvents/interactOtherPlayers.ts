@@ -313,6 +313,7 @@ function checkGems(gems: number, interactionsList: InteractOtherPlayerInteractio
 
 /**
  * Check token interactions
+ *  not permitted if the player is below level 5
  * @param otherPlayer
  * @param interactionsList
  */
