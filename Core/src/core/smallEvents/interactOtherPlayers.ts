@@ -313,11 +313,12 @@ function checkGems(gems: number, interactionsList: InteractOtherPlayerInteractio
 
 /**
  * Check token interactions
+ *  not permitted if the player is below level 5
  * @param otherPlayer
  * @param interactionsList
  */
 function checkTokens(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.tokens >= SmallEventConstants.INTERACT_OTHER_PLAYERS.MANY_TOKENS_MIN) {
+	if (otherPlayer.level >= 5 && otherPlayer.tokens >= SmallEventConstants.INTERACT_OTHER_PLAYERS.MANY_TOKENS_MIN) {
 		interactionsList.push(InteractOtherPlayerInteraction.MANY_TOKENS);
 	}
 }
