@@ -20,7 +20,7 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent, turn) =>
 		damageDealt += MathUtils.getIntervalValue(0, damageDealt * 2, (affected.alterationTurn - 2) / 3);
 		damageDealt += MathUtils.getIntervalValue(0, damageDealt, Math.min(turn, FightConstants.MAX_TURNS) / FightConstants.MAX_TURNS);
 		result.damages = Math.round(damageDealt);
-		affected.newAlteration(FightAlterationDataController.instance.getById(FightAlterations.SUBMERGED));
+		affected.newAlteration(FightAlterationDataController.instance.getById(FightAlterations.SUBMERGED)!);
 		return result;
 	}
 	return defaultFightAlterationResult();

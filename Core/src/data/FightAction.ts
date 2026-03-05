@@ -40,12 +40,12 @@ export class FightAction extends Data<string> {
 			}
 		}
 
-		receiver.damage(result.damages);
+		receiver.damage(result.damages ?? 0);
 
 		if (result.usedAction) {
 			// Get the type of the used action
 			const usedAction = FightActionDataController.instance.getById(result.usedAction.id);
-			if (result.usedAction.result.damages !== undefined) {
+			if (usedAction && result.usedAction.result.damages !== undefined) {
 				const originalUsedActionDamages = result.usedAction.result.damages;
 				const usedActionResistanceMultiplier = receiver.getResistanceMultiplier(usedAction.type);
 				result.usedAction.result.damages = Math.round(result.usedAction.result.damages * usedActionResistanceMultiplier);
@@ -60,7 +60,7 @@ export class FightAction extends Data<string> {
 					result.usedAction.result.reflectedDamages += reflectedUsedActionDamage;
 				}
 			}
-			receiver.damage(result.usedAction.result.damages);
+			receiver.damage(result.usedAction.result.damages ?? 0);
 		}
 
 		return result;

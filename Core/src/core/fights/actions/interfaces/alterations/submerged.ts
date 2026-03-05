@@ -21,7 +21,7 @@ const use: FightAlterationFunc = (affected, fightAlteration, _opponent, _turn) =
 	if (affected.alterationTurn > turnsToHeal) {
 		affected.removeSpeedModifiers(fightAlteration);
 		if (RandomUtils.crowniclesRandom.bool(0.6)) {
-			affected.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.GET_SOAKED);
+			affected.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.GET_SOAKED) ?? null;
 			return defaultHealFightAlterationResult(affected);
 		}
 		return defaultHealFightAlterationResult(affected);
