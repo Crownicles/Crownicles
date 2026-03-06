@@ -5,7 +5,7 @@ import { FightActionStatus } from "../../../../../Lib/src/types/FightActionStatu
 import {
 	defaultFightActionResult,
 	FightActionBuff,
-	FightActionResult,
+	FightActionResult, FightActionTypeResistance,
 	FightAlterationApplied,
 	FightStatBuffed
 } from "../../../../../Lib/src/types/FightActionResult";
@@ -126,6 +126,19 @@ export abstract class FightActionController {
 			result.alterations = [];
 		}
 		result.alterations.push(fightAlteration);
+	}
+
+	static applyResistance(result: FightActionResult, resistance: FightActionTypeResistance, target: Fighter): void {
+		target.applyResistance({
+			type: resistance.type,
+			value: resistance.value,
+			turns: resistance.duration ?? 0,
+			reflectDamage: resistance.reflectDamage
+		});
+		if (result.resistances === undefined) {
+			result.resistances = [];
+		}
+		result.resistances.push(resistance);
 	}
 
 	/**

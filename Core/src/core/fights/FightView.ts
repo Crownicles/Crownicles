@@ -218,7 +218,8 @@ export class FightView {
 				{
 					...buildStatsChange(false),
 					newAlteration: "alterations" in fightActionResult && fightActionResult.alterations?.find(alt => !alt.selfTarget)?.alteration || undefined,
-					damages: fightActionResult.damages
+					damages: fightActionResult.damages,
+					reflectedDamages: "reflectedDamages" in fightActionResult ? fightActionResult.reflectedDamages : undefined
 				},
 			fightActionEffectReceived:
 				{
