@@ -14,7 +14,7 @@ const use: FightActionFunc = sender => {
 	if (maelstromCount >= 1 || delugeCount >= 1) {
 		return defaultMaxUsesFightActionResult();
 	}
-	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.DELUGE);
+	sender.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.MONSTER.DELUGE) ?? null;
 	return customMessageActionResult();
 };
 

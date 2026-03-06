@@ -509,12 +509,6 @@
       "name_one": "Salissure",
       "name_other": "Salissures"
     },
-    "getSoaked": {
-      "description": "S'exécute si l'attaquant s'est récemment retrouvé submergé d'eau.",
-      "customMessage": "a réussi à s'extraire de l'eau mais en finit complétement trempé.",
-      "name_one": "Trempé",
-      "name_other": "Trempés"
-    },
     "glacialBreathAttack": {
       "name_one": "Attaque souffle glacial",
       "name_other": "Attaques souffles glacials"
@@ -921,7 +915,7 @@
       "name": "submergé",
       "new": "est submergé.",
       "active": "est submergé et a du mal à respirer.",
-      "stop": "n'est plus submergé."
+      "stop": "a réussi à s'extraire de l'eau mais en finit complétement trempé."
       },
     "summonAttack": {
       "name_one": "Invocation d'alliés",
@@ -1093,37 +1087,37 @@
       "particle": "vers le"
     },
     "1108": {
-      "description": "",
+      "description": "Une plage paradisiaque recouverte de coquillages de toutes les couleurs. On dit que chaque coquillage renferme un écho des profondeurs. Le sable fin et blanc contraste avec les eaux turquoise du lagon voisin. Attention où vous mettez les pieds, certains coquillages sont tranchants comme des lames.",
       "name": "Plage de coquillage",
       "particle": "vers la"
     },
     "1109": {
-      "description": "",
+      "description": "Un lagon aux eaux cristallines d'un bleu irréel, protégé par une barrière de corail. Le calme apparent de ce lieu est trompeur : sous la surface, des courants traîtres peuvent aspirer les nageurs imprudents vers les profondeurs. On dit que les tortues géantes y trouvent refuge.",
       "name": "Creux du Lagon",
       "particle": "vers le"
     },
     "1110": {
-      "description": "",
+      "description": "Une grotte maritime dont l'entrée n'est accessible qu'à marée basse. Les parois suintent d'eau salée et résonnent d'étranges échos aquatiques. Des lueurs bleutées dansent dans les recoins les plus sombres. On raconte que des formes spectrales flottent au-dessus des flots dans les recoins les plus obscurs.",
       "name": "Caverne Maritime",
       "particle": "vers la"
     },
     "1111": {
-      "description": "",
+      "description": "Une crique isolée aux eaux troubles et agitées. Des rochers acérés affleurent à la surface, piégeant tout ce qui passe. La nuit, des feux follets dansent au-dessus des vagues, attirant les imprudents vers leur perte. Une aura sinistre plane sur ce lieu maudit.",
       "name": "Crique du Revenant",
       "particle": "vers la"
     },
     "1112": {
-      "description": "",
+      "description": "Une caverne sous-marine où le moindre son se répercute à l'infini sur les parois humides. Des chants mélodieux semblent émaner des profondeurs. Ceux qui s'y aventurent trop longtemps reviennent changés, obsédés par ces murmures envoûtants qu'ils sont seuls à percevoir.",
       "name": "Cave des murmures",
       "particle": "vers la"
     },
     "1113": {
-      "description": "",
+      "description": "Un gouffre marin vertigineux où la lumière du soleil ne pénètre jamais. Les eaux y sont d'un noir d'encre et glaciales malgré le climat tropical. Des tentacules gigantesques ont été aperçus remontant parfois vers la surface. Nul ne sait ce qui se cache vraiment au fond de cet abîme sans fin.",
       "name": "Gouffre des Profondeurs",
       "particle": "vers le"
     },
     "1114": {
-      "description": "",
+      "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
       "name": "Ravin des Abysses",
       "particle": "vers le"
     },
@@ -1620,19 +1614,19 @@
     },
     "waterSpirit": {
       "name": "Esprit des mers",
-      "description": ""
+      "description": "Une entité éthérée d'une vélocité surnaturelle, capable de surgir de nulle part pour tendre des embuscades mortelles. Son souffle glacial gèle ses adversaires sur place, tandis que ses jets d'eau puissants et ses raz-de-marée dévastateurs ne laissent aucun répit. Elle peut même puiser dans les flots pour régénérer ses blessures."
     },
     "mermaid": {
       "name": "Sirène",
-      "description": ""
+      "description": "Mi-femme mi-poisson, cette créature enchanteresse attire ses proies par son chant envoûtant avant de les achever d'un baiser glacé. Son cri strident résonne comme un appel des profondeurs, et sa séduction glaciale paralyse même les plus braves. Rares sont ceux qui résistent à l'appel des mers qu'elle incarne."
     },
     "kraken": {
       "name": "Kraken",
-      "description": ""
+      "description": "Un titan des abysses dont les tentacules massifs frappent avec une force dévastatrice. Il aveugle ses proies de jets d'encre noire, les étouffe dans son étreinte abyssale et peut déclencher des maelströms capables d'engloutir des flottes entières. Sa lenteur est compensée par une puissance et une résistance colossales."
     },
     "leviathan": {
       "name": "Léviathan",
-      "description": ""
+      "description": "Le seigneur incontesté des océans, capable d'invoquer la foudre divine depuis les cieux et de déchaîner des déluges apocalyptiques. Ses crocs givrés déchirent tout sur leur passage, et sa faim abyssale est insatiable. Les téméraires qui l'affrontent font face aux maelströms les plus dévastateurs jamais vus."
     }
   },
   "objects": {

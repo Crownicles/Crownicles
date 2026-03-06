@@ -36,7 +36,7 @@ const use: FightActionFunc = (sender, receiver) => {
 	);
 
 
-	receiver.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.NONE);
+	receiver.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.NONE) ?? null;
 	return result;
 };
 

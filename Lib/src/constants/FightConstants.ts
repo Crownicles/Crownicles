@@ -219,7 +219,6 @@ export abstract class FightConstants {
 				ENERGETIC_ATTACK: "energeticAttack",
 				FIRE_ATTACK: "fireAttack",
 				GET_DIRTY: "getDirty",
-				GET_SOAKED: "getSoaked",
 				GUILD_ATTACK: "guildAttack",
 				HEAVY_ATTACK: "heavyAttack",
 				INTENSE_ATTACK: "intenseAttack",

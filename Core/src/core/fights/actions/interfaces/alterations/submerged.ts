@@ -9,8 +9,8 @@ import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 import { FightAlterationState } from "../../../../../../../Lib/src/types/FightAlterationResult";
-import { FightActionDataController } from "../../../../../data/FightAction";
-import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
+import { FightAlterationDataController } from "../../../../../data/FightAlteration";
+import { FightAlterations } from "../../FightAlterations";
 
 const turnsToHeal = 2;
 
@@ -21,7 +21,7 @@ const use: FightAlterationFunc = (affected, fightAlteration, _opponent, _turn) =
 	if (affected.alterationTurn > turnsToHeal) {
 		affected.removeSpeedModifiers(fightAlteration);
 		if (RandomUtils.crowniclesRandom.bool(0.6)) {
-			affected.nextFightAction = FightActionDataController.instance.getById(FightConstants.FIGHT_ACTIONS.PLAYER.GET_SOAKED) ?? null;
+			affected.newAlteration(FightAlterationDataController.instance.getById(FightAlterations.SOAKED)!);
 			return defaultHealFightAlterationResult(affected);
 		}
 		return defaultHealFightAlterationResult(affected);
