@@ -46,9 +46,9 @@ function getAttackInfo(receiver: Fighter): attackInfo {
 	const scaleFactor = 1 + missingHpRatio * 3;
 
 	return {
-		minDamage: Math.round(20 * scaleFactor),
-		averageDamage: Math.round(40 * scaleFactor),
-		maxDamage: Math.round(60 * scaleFactor)
+		minDamage: Math.round(15 * scaleFactor),
+		averageDamage: Math.round(30 * scaleFactor),
+		maxDamage: Math.round(45 * scaleFactor)
 	};
 }
 
