@@ -1,11 +1,7 @@
-import {
-	CrowniclesPacket, PacketDirection, sendablePacket
-} from "../CrowniclesPacket";
-import { TopDataType } from "../../types/TopDataType";
-import { TopTiming } from "../../types/TopTimings";
-import {
-	TopElement, TopElementScoreFirstType
-} from "../../types/TopElement";
+import {CrowniclesPacket, PacketDirection, sendablePacket} from "../CrowniclesPacket";
+import {TopDataType} from "../../types/TopDataType";
+import {TopTiming} from "../../types/TopTimings";
+import {TopElement, TopElementGlory, TopElementGuild, TopElementScore} from "../../types/TopElement";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandTopPacketReq extends CrowniclesPacket {
@@ -17,7 +13,7 @@ export class CommandTopPacketReq extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.NONE)
-export class CommandTopPacketRes<T extends TopElement<Attr1, Attr2, Attr3>, Attr1, Attr2, Attr3> extends CrowniclesPacket {
+export class CommandTopPacketRes<T extends TopElement<unknown, unknown, unknown>> extends CrowniclesPacket {
 	timing!: TopTiming;
 
 	minRank!: number;
@@ -37,18 +33,18 @@ export class CommandTopPacketRes<T extends TopElement<Attr1, Attr2, Attr3>, Attr
 
 // Attributes: mapType and afk, score, level
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandTopPacketResScore extends CommandTopPacketRes<TopElement<TopElementScoreFirstType, number, number>, TopElementScoreFirstType, number, number> {
+export class CommandTopPacketResScore extends CommandTopPacketRes<TopElementScore> {
 }
 
 // Attributes: leagueId, glory, level
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandTopPacketResGlory extends CommandTopPacketRes<TopElement<number, number, number>, number, number, number> {
+export class CommandTopPacketResGlory extends CommandTopPacketRes<TopElementGlory> {
 	needFight!: number;
 }
 
 // Attributes: guild points, level, none
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandTopPacketResGuild extends CommandTopPacketRes<TopElement<number, number, undefined>, number, number, undefined> {
+export class CommandTopPacketResGuild extends CommandTopPacketRes<TopElementGuild> {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

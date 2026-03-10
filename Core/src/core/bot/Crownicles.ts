@@ -1,52 +1,47 @@
-import { PacketListenerServer } from "../../../../Lib/src/packets/PacketListener";
-import { GameDatabase } from "../database/game/GameDatabase";
-import { LogsDatabase } from "../database/logs/LogsDatabase";
-import {
-	botConfig, crowniclesInstance
-} from "../../index";
-import {
-	Op, Sequelize
-} from "sequelize";
-import {
-	daysToMilliseconds, minutesToMilliseconds
-} from "../../../../Lib/src/utils/TimeUtils";
-import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
-import { MapCache } from "../maps/MapCache";
-import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
-import { CommandsTest } from "../CommandsTest";
+import {PacketListenerServer} from "../../../../Lib/src/packets/PacketListener";
+import {GameDatabase} from "../database/game/GameDatabase";
+import {LogsDatabase} from "../database/logs/LogsDatabase";
+import {botConfig, crowniclesInstance} from "../../index";
+import {Op, Sequelize} from "sequelize";
+import {daysToMilliseconds, minutesToMilliseconds} from "../../../../Lib/src/utils/TimeUtils";
+import {TimeoutFunctionsConstants} from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
+import {MapCache} from "../maps/MapCache";
+import {registerAllPacketHandlers} from "../packetHandlers/PacketHandler";
+import {CommandsTest} from "../CommandsTest";
 import Player from "../database/game/models/Player";
-import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
-import { PacketUtils } from "../utils/PacketUtils";
-import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
-import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
-import { MapLocationDataController } from "../../data/MapLocation";
-import { Settings } from "../database/game/models/Setting";
-import { PotionDataController } from "../../data/Potion";
-import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import {FightConstants} from "../../../../Lib/src/constants/FightConstants";
+import {PacketUtils} from "../utils/PacketUtils";
+import {makePacket} from "../../../../Lib/src/packets/CrowniclesPacket";
+import {ScheduledReportNotifications} from "../database/game/models/ScheduledReportNotification";
+import {ReachDestinationNotificationPacket} from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
+import {MapLocationDataController} from "../../data/MapLocation";
+import {Settings} from "../database/game/models/Setting";
+import {PotionDataController} from "../../data/Potion";
+import {RandomUtils} from "../../../../Lib/src/utils/RandomUtils";
 import PetEntity from "../database/game/models/PetEntity";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
-import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
-import { Badge } from "../../../../Lib/src/types/Badge";
-import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
-import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
-import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
+import {PetConstants} from "../../../../Lib/src/constants/PetConstants";
+import {TopWeekFightAnnouncementPacket} from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
+import {MqttTopicUtils} from "../../../../Lib/src/utils/MqttTopicUtils";
+import {Badge} from "../../../../Lib/src/types/Badge";
+import {TopWeekAnnouncementPacket} from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
+import {PlayerMissionsInfo} from "../database/game/models/PlayerMissionsInfo";
+import {PlayerBadgesManager} from "../database/game/models/PlayerBadges";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
 import * as fs from "fs";
-import { initializeAllClassBehaviors } from "../fights/AiBehaviorController";
-import { initializeAllPetBehaviors } from "../fights/PetAssistManager";
-import { CrowniclesCoreWebServer } from "./CrowniclesCoreWebServer";
-import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { FightsManager } from "../fights/FightsManager";
-import { BlessingManager } from "../blessings/BlessingManager";
-import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
-import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
-import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
-import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
-import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
-import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
+import {initializeAllClassBehaviors} from "../fights/AiBehaviorController";
+import {initializeAllPetBehaviors} from "../fights/PetAssistManager";
+import {CrowniclesCoreWebServer} from "./CrowniclesCoreWebServer";
+import {CrowniclesLogger} from "../../../../Lib/src/logs/CrowniclesLogger";
+import {FightsManager} from "../fights/FightsManager";
+import {BlessingManager} from "../blessings/BlessingManager";
+import {EnergyFullNotificationPacket} from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
+import {DailyBonusNotificationPacket} from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
+import {ScheduledDailyBonusNotifications} from "../database/game/models/ScheduledDailyBonusNotification";
+import {CrowniclesDaily} from "./cronJobs/CrowniclesDaily";
+import {CrowniclesSunday} from "./cronJobs/CrowniclesSunday";
+import {CrowniclesMonday} from "./cronJobs/CrowniclesMonday";
+import {TopStorage} from "../utils/TopUtils";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -325,6 +320,12 @@ export class Crownicles {
 		Crownicles.topWeekEnd()
 			.then();
 		Crownicles.newPveIsland()
+			.then();
+	}
+
+	static async minuteTimeout(): Promise<void> {
+		await Settings.NEXT_MINUTE_TIMEOUT.setValue(await Settings.NEXT_MINUTE_TIMEOUT.getValue() + minutesToMilliseconds(1));
+		TopStorage.getInstance().updateTops()
 			.then();
 	}
 
