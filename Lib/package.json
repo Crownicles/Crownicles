@@ -21,7 +21,7 @@
     "@types/node": "25.0.2",
     "mariadb": "3.4.5",
     "random-js": "2.1.0",
-    "sequelize": "6.37.7",
+    "sequelize": "6.37.8",
     "triple-beam": "1.4.1",
     "umzug": "3.8.2",
     "winston": "3.19.0",
