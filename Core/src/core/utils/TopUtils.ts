@@ -100,22 +100,17 @@ export function getTopKind(dataType: TopDataType, timing: TopTiming): TopKind {
 }
 
 export function getTopPacket<T extends TopKind>(response: CrowniclesPacket[], result: AskTopResult<T>): void {
+	const packetKind = result.kind === TopKind.SCORE_ALL_TIME || result.kind === TopKind.SCORE_WEEKLY
+		? [CommandTopPacketResScore, CommandTopPlayersEmptyPacket]
+		: result.kind === TopKind.GLORY
+			? [CommandTopPacketResGlory, CommandTopPlayersEmptyPacket]
+			: [CommandTopPacketResGuild, CommandTopGuildsEmptyPacket];
 	if (result.result === TopAskingResult.INVALID_PAGE) {
 		response.push(makePacket(CommandTopInvalidPagePacket, result.data));
 	} else if (result.result === TopAskingResult.NO_ELEMENT) {
-		if (result.kind === TopKind.GUILDS) {
-			response.push(makePacket(CommandTopGuildsEmptyPacket, result.data));
-		} else {
-			response.push(makePacket(CommandTopPlayersEmptyPacket, result.data));
-		}
+		response.push(makePacket(packetKind[1], result.data));
 	} else {
-		if (result.kind === TopKind.SCORE_ALL_TIME || result.kind === TopKind.SCORE_WEEKLY) {
-			response.push(makePacket(CommandTopPacketResScore, result.data as TopObjectResponse<TopElementScore>));
-		} else if (result.kind === TopKind.GUILDS) {
-			response.push(makePacket(CommandTopPacketResGuild, result.data as TopObjectResponse<TopElementGuild>));
-		} else {
-			response.push(makePacket(CommandTopPacketResGlory, result.data as TopObjectResponse<TopElementGlory>));
-		}
+		response.push(makePacket(packetKind[0], result.data));
 	}
 }
 
@@ -141,52 +136,8 @@ export class TopStorage {
 	private static _topUpdateFunctions: {
 		[key in TopKind]: (now: number) => Promise<void>
 	} = {
-		[TopKind.SCORE_ALL_TIME]: async (now: number) => {
-			const totalElements = await Players.getNumberOfPlayingPlayers(false);
-			const elements = await Players.getPlayersTop(1, totalElements, false);
-			TopStorage.getInstance()._tops[TopKind.SCORE_ALL_TIME] = {
-				totalElements,
-				timing: TopTiming.ALL_TIME,
-				elements: elements.map((player, index) => ({
-					id: player.id,
-					rank: index + 1,
-					sameContext: false,
-					text: player.keycloakId,
-					attributes: {
-						1: {
-							effectId: player.currentEffectFinished(new Date(now)) ? undefined : player.effectId,
-							mapType: TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime > now ? undefined : player.getDestination()?.type,
-							afk: player.isInactive()
-						},
-						2: player.score,
-						3: player.level
-					}
-				}))
-			};
-		},
-		[TopKind.SCORE_WEEKLY]: async (now: number) => {
-			const totalElements = await Players.getNumberOfPlayingPlayers(true);
-			const elements = await Players.getPlayersTop(1, totalElements, true);
-			TopStorage.getInstance()._tops[TopKind.SCORE_WEEKLY] = {
-				totalElements,
-				timing: TopTiming.WEEK,
-				elements: elements.map((player, index) => ({
-					id: player.id,
-					rank: index + 1,
-					sameContext: false,
-					text: player.keycloakId,
-					attributes: {
-						1: {
-							effectId: player.currentEffectFinished(new Date(now)) ? undefined : player.effectId,
-							mapType: TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime > now ? undefined : player.getDestination()?.type,
-							afk: player.isInactive()
-						},
-						2: player.weeklyScore,
-						3: player.level
-					}
-				}))
-			};
-		},
+		[TopKind.SCORE_ALL_TIME]: TopStorage.topUpdateFunctionScore(false),
+		[TopKind.SCORE_WEEKLY]: TopStorage.topUpdateFunctionScore(true),
 		[TopKind.GLORY]: async () => {
 			const totalElements = await Players.getNumberOfFightingPlayers();
 			const elements = await Players.getPlayersGloryTop(1, totalElements);
@@ -226,7 +177,39 @@ export class TopStorage {
 			};
 		}
 	};
-	private _cachedPositions: Map<TopKind, Map<number, number>> = new Map();
+
+	static topUpdateFunctionScore(weekly: boolean): (now: number) => Promise<void> {
+		return async (now: number) => {
+			const totalElements = await Players.getNumberOfPlayingPlayers(weekly);
+			const elements = await Players.getPlayersTop(1, totalElements, weekly);
+			TopStorage.getInstance()._tops[TopKind.SCORE_ALL_TIME] = {
+				totalElements,
+				timing: weekly ? TopTiming.WEEK : TopTiming.ALL_TIME,
+				elements: elements.map((player, index) => ({
+					id: player.id,
+					rank: index + 1,
+					sameContext: false,
+					text: player.keycloakId,
+					attributes: {
+						1: {
+							effectId: player.currentEffectFinished(new Date(now)) ? undefined : player.effectId,
+							mapType: TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime > now ? undefined : player.getDestination()?.type,
+							afk: player.isInactive()
+						},
+						2: weekly ? player.weeklyScore : player.score,
+						3: player.level
+					}
+				}))
+			};
+		}
+	}
+
+	private _cachedPositions: Map<TopKind, Map<number, number>> = new Map([
+		[TopKind.SCORE_ALL_TIME, new Map()],
+		[TopKind.SCORE_WEEKLY, new Map()],
+		[TopKind.GLORY, new Map()],
+		[TopKind.GUILDS, new Map()]
+	]);
 	private _cachedPages: {
 		[key in TopKind]: Map<number, TopElementBaseStorage<TopElementKind<key>>[]>
 	} = {
@@ -244,7 +227,7 @@ export class TopStorage {
 		return this._instance;
 	}
 
-	public async updateTops() {
+	public async updateTops(): Promise<void> {
 		const now = Date.now();
 		for (const kind of Object.values(TopKind)) {
 			await TopStorage._topUpdateFunctions[kind](now);
@@ -272,7 +255,7 @@ export class TopStorage {
 		if (totalElements === 0) {
 			return {
 				result: TopAskingResult.NO_ELEMENT,
-				data: kind == TopKind.GLORY ? {needFight} : {},
+				data: kind === TopKind.GLORY ? {needFight} : {},
 				kind
 			};
 		}
@@ -312,7 +295,7 @@ export class TopStorage {
 				minRank,
 				maxRank,
 				contextRank: rank > 0 ? rank : undefined,
-				canBeRanked: kind !== TopKind.GUILDS || id !== null,
+				canBeRanked: kind !== TopKind.GUILDS || id !== -1,
 				needFight,
 				elements: elementPortion.map(element => ({
 						rank: element.rank,

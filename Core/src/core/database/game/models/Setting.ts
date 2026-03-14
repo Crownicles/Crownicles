@@ -119,8 +119,8 @@ export abstract class Settings {
 		(): Promise<number> => Promise.resolve(0)
 	);
 
-	public static readonly NEXT_MINUTE_TIMEOUT = new SettingClassNumber(
-		"nextMinuteTimeout",
+	public static readonly NEXT_10_MINUTES_TIMEOUT = new SettingClassNumber(
+		"next10MinutesTimeout",
 		(): Promise<number> => Promise.resolve(0)
 	);
 
