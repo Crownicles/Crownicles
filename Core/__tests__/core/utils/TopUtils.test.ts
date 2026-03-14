@@ -13,6 +13,10 @@ function getStorageInternals(storage: TopStorage): any {
 	return storage;
 }
 
+function markFresh(storage: TopStorage, kind: TopKind): void {
+	getStorageInternals(storage)._lastUpdated.set(kind, Date.now());
+}
+
 function injectScoreTop(storage: TopStorage, count: number, weekly: boolean): void {
 	const internals = getStorageInternals(storage);
 	const kind = weekly ? TopKind.SCORE_WEEKLY : TopKind.SCORE_ALL_TIME;
@@ -35,6 +39,7 @@ function injectScoreTop(storage: TopStorage, count: number, weekly: boolean): vo
 			}
 		}))
 	};
+	markFresh(storage, kind);
 }
 
 function injectGloryTop(storage: TopStorage, count: number): void {
@@ -54,6 +59,7 @@ function injectGloryTop(storage: TopStorage, count: number): void {
 			}
 		}))
 	};
+	markFresh(storage, TopKind.GLORY);
 }
 
 function injectGuildTop(storage: TopStorage, count: number): void {
@@ -73,6 +79,7 @@ function injectGuildTop(storage: TopStorage, count: number): void {
 			}
 		}))
 	};
+	markFresh(storage, TopKind.GUILDS);
 }
 
 describe("getTopKind", () => {
@@ -105,20 +112,27 @@ describe("TopStorage.askTop", () => {
 	});
 
 	describe("with 0 elements", () => {
-		it("should return NO_ELEMENT for empty score top", () => {
-			const result = storage.askTop(TopKind.SCORE_ALL_TIME, 1);
+		beforeEach(() => {
+			// Mark all kinds as fresh so askTop doesn't try to refresh from DB
+			for (const kind of Object.values(TopKind)) {
+				markFresh(storage, kind);
+			}
+		});
+
+		it("should return NO_ELEMENT for empty score top", async () => {
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 1);
 			expect(result.result).toBe(1); // NO_ELEMENT
 			expect(result.kind).toBe(TopKind.SCORE_ALL_TIME);
 		});
 
-		it("should include needFight for empty glory top", () => {
-			const result = storage.askTop(TopKind.GLORY, 1, 3);
+		it("should include needFight for empty glory top", async () => {
+			const result = await storage.askTop(TopKind.GLORY, 1, 3);
 			expect(result.result).toBe(1); // NO_ELEMENT
 			expect(result.data).toHaveProperty("needFight", 3);
 		});
 
-		it("should not include needFight for empty guild top", () => {
-			const result = storage.askTop(TopKind.GUILDS, 1);
+		it("should not include needFight for empty guild top", async () => {
+			const result = await storage.askTop(TopKind.GUILDS, 1);
 			expect(result.result).toBe(1); // NO_ELEMENT
 			expect(result.data).not.toHaveProperty("needFight");
 		});
@@ -129,8 +143,8 @@ describe("TopStorage.askTop", () => {
 			injectScoreTop(storage, 30, false);
 		});
 
-		it("should return OK with all elements", () => {
-			const result = storage.askTop(TopKind.SCORE_ALL_TIME, 1);
+		it("should return OK with all elements", async () => {
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 1);
 			expect(result.result).toBe(0); // OK
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.elements).toHaveLength(30);
@@ -139,22 +153,22 @@ describe("TopStorage.askTop", () => {
 			}
 		});
 
-		it("should find contextRank for existing player", () => {
-			const result = storage.askTop(TopKind.SCORE_ALL_TIME, 5);
+		it("should find contextRank for existing player", async () => {
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 5);
 			if ("data" in result && "contextRank" in result.data) {
 				expect(result.data.contextRank).toBe(5);
 			}
 		});
 
-		it("should not have contextRank for unknown player", () => {
-			const result = storage.askTop(TopKind.SCORE_ALL_TIME, 999);
+		it("should not have contextRank for unknown player", async () => {
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 999);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.contextRank).toBeUndefined();
 			}
 		});
 
-		it("should set sameContext for the requesting player's elements", () => {
-			const result = storage.askTop(TopKind.SCORE_ALL_TIME, 3);
+		it("should set sameContext for the requesting player's elements", async () => {
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 3);
 			if ("data" in result && "elements" in result.data) {
 				const selfElement = result.data.elements.find(e => e.rank === 3);
 				expect(selfElement?.sameContext).toBe(true);
@@ -163,24 +177,24 @@ describe("TopStorage.askTop", () => {
 			}
 		});
 
-		it("should pass initialPage through", () => {
-			const result = storage.askTop(TopKind.SCORE_ALL_TIME, 1, undefined, 2);
+		it("should pass initialPage through", async () => {
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 1, undefined, 2);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.initialPage).toBe(2);
 			}
 		});
 
-		it("should cache position on second call", () => {
-			storage.askTop(TopKind.SCORE_ALL_TIME, 5);
+		it("should cache position on second call", async () => {
+			await storage.askTop(TopKind.SCORE_ALL_TIME, 5);
 			// Second call should use cache
-			const result = storage.askTop(TopKind.SCORE_ALL_TIME, 5);
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 5);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.contextRank).toBe(5);
 			}
 		});
 
-		it("should always set canBeRanked to true for score top", () => {
-			const result = storage.askTop(TopKind.SCORE_ALL_TIME, 999);
+		it("should always set canBeRanked to true for score top", async () => {
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 999);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.canBeRanked).toBe(true);
 			}
@@ -192,23 +206,23 @@ describe("TopStorage.askTop", () => {
 			injectGloryTop(storage, 20);
 		});
 
-		it("should set rank to -1 when needFight > 0", () => {
-			const result = storage.askTop(TopKind.GLORY, 5, 3);
+		it("should set rank to -1 when needFight > 0", async () => {
+			const result = await storage.askTop(TopKind.GLORY, 5, 3);
 			if ("data" in result && "elements" in result.data) {
 				// Player 5 exists but has needFight > 0 → not ranked
 				expect(result.data.contextRank).toBeUndefined();
 			}
 		});
 
-		it("should find rank when needFight <= 0", () => {
-			const result = storage.askTop(TopKind.GLORY, 5, -2);
+		it("should find rank when needFight <= 0", async () => {
+			const result = await storage.askTop(TopKind.GLORY, 5, -2);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.contextRank).toBe(5);
 			}
 		});
 
-		it("should find rank when needFight is 0", () => {
-			const result = storage.askTop(TopKind.GLORY, 5, 0);
+		it("should find rank when needFight is 0", async () => {
+			const result = await storage.askTop(TopKind.GLORY, 5, 0);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.contextRank).toBe(5);
 			}
@@ -220,30 +234,30 @@ describe("TopStorage.askTop", () => {
 			injectGuildTop(storage, 10);
 		});
 
-		it("should set canBeRanked to false when id is NO_GUILD_ID", () => {
-			const result = storage.askTop(TopKind.GUILDS, NO_GUILD_ID);
+		it("should set canBeRanked to false when id is NO_GUILD_ID", async () => {
+			const result = await storage.askTop(TopKind.GUILDS, NO_GUILD_ID);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.canBeRanked).toBe(false);
 			}
 		});
 
-		it("should set canBeRanked to true when player has a guild", () => {
-			const result = storage.askTop(TopKind.GUILDS, 100);
+		it("should set canBeRanked to true when player has a guild", async () => {
+			const result = await storage.askTop(TopKind.GUILDS, 100);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.canBeRanked).toBe(true);
 				expect(result.data.contextRank).toBe(1);
 			}
 		});
 
-		it("should use GUILDS_PER_PAGE for guilds", () => {
-			const result = storage.askTop(TopKind.GUILDS, 100);
+		it("should use GUILDS_PER_PAGE for guilds", async () => {
+			const result = await storage.askTop(TopKind.GUILDS, 100);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.elementsPerPage).toBe(TopConstants.GUILDS_PER_PAGE);
 			}
 		});
 
-		it("should not find context rank for player without guild in top", () => {
-			const result = storage.askTop(TopKind.GUILDS, 999);
+		it("should not find context rank for player without guild in top", async () => {
+			const result = await storage.askTop(TopKind.GUILDS, 999);
 			if ("data" in result && "elements" in result.data) {
 				expect(result.data.contextRank).toBeUndefined();
 				expect(result.data.canBeRanked).toBe(true);

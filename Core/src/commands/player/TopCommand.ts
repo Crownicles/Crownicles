@@ -15,13 +15,13 @@ export default class TopCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	static execute(
+	static async execute(
 		response: CrowniclesPacket[],
 		player: Player,
 		packet: CommandTopPacketReq
-	): void {
+	): Promise<void> {
 		const topKind = getTopKind(packet.dataType, packet.timing);
-		const result = TopStorage.getInstance()
+		const result = await TopStorage.getInstance()
 			.askTop<typeof topKind>(
 				topKind,
 				topKind === TopKind.GUILDS ? player.guildId ?? NO_GUILD_ID : player.id,
