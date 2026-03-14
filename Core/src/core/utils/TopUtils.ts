@@ -1,10 +1,14 @@
-import {TopTiming} from "../../../../Lib/src/types/TopTimings";
-import {TopElementGlory, TopElementGuild, TopElementScore} from "../../../../Lib/src/types/TopElement";
-import {Players} from "../database/game/models/Player";
-import {TravelTime} from "../maps/TravelTime";
-import {Guilds} from "../database/game/models/Guild";
-import {TopDataType} from "../../../../Lib/src/types/TopDataType";
-import {CrowniclesPacket, makePacket} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { TopTiming } from "../../../../Lib/src/types/TopTimings";
+import {
+	TopElementGlory, TopElementGuild, TopElementScore
+} from "../../../../Lib/src/types/TopElement";
+import { Players } from "../database/game/models/Player";
+import { TravelTime } from "../maps/TravelTime";
+import { Guilds } from "../database/game/models/Guild";
+import { TopDataType } from "../../../../Lib/src/types/TopDataType";
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandTopGuildsEmptyPacket,
 	CommandTopInvalidPagePacket,
@@ -13,7 +17,7 @@ import {
 	CommandTopPacketResScore,
 	CommandTopPlayersEmptyPacket
 } from "../../../../Lib/src/packets/commands/CommandTopPacket";
-import {CrowniclesLogger} from "../../../../Lib/src/logs/CrowniclesLogger";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 type TopObject = {
 	totalElements: number;

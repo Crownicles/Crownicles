@@ -1,5 +1,5 @@
-import {set10MinutesCronJob} from "../../utils/CronInterface";
-import {TopStorage} from "../../utils/TopUtils";
+import { set10MinutesCronJob } from "../../utils/CronInterface";
+import { TopStorage } from "../../utils/TopUtils";
 
 export class CrowniclesEach10Minutes {
 	public static async programCronJob(): Promise<void> {
@@ -9,7 +9,7 @@ export class CrowniclesEach10Minutes {
 	/**
 	 * Execute all regular tasks
 	 */
-	static async job(): Promise<void> {
+	static job(): void {
 		TopStorage.getInstance()
 			.updateTops()
 			.then();
