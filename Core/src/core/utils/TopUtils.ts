@@ -241,7 +241,6 @@ export class TopStorage {
 		const now = Date.now();
 		for (const kind of Object.values(TopKind)) {
 			await TopStorage._topUpdateFunctions[kind](now);
-			console.log(`Top ${kind} updated, ${TopStorage.getInstance()._tops[kind].totalElements}`);
 		}
 		this._cachedPositions.forEach(cachedPosition => {
 			cachedPosition.clear();
