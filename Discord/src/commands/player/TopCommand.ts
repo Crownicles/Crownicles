@@ -8,23 +8,31 @@ import {
 	CommandTopPlayersEmptyPacket
 } from "../../../../Lib/src/packets/commands/CommandTopPacket";
 import i18n from "../../translations/i18n";
-import {makePacket, PacketContext} from "../../../../Lib/src/packets/CrowniclesPacket";
-import {TopElement, TopElementScoreFirstType} from "../../../../Lib/src/types/TopElement";
-import {CrowniclesIcons} from "../../../../Lib/src/CrowniclesIcons";
-import {LANGUAGE, Language} from "../../../../Lib/src/Language";
-import {KeycloakUtils} from "../../../../Lib/src/keycloak/KeycloakUtils";
-import {keycloakConfig} from "../../bot/CrowniclesShard";
-import {DiscordCache} from "../../bot/DiscordCache";
-import {CrowniclesEmbed} from "../../messages/CrowniclesEmbed";
-import {TopTiming} from "../../../../Lib/src/types/TopTimings";
-import {CrowniclesInteraction} from "../../messages/CrowniclesInteraction";
-import {ICommand} from "../ICommand";
-import {SlashCommandBuilderGenerator} from "../SlashCommandBuilderGenerator";
-import {TopDataType} from "../../../../Lib/src/types/TopDataType";
-import {SlashCommandBuilder, SlashCommandSubcommandBuilder} from "@discordjs/builders";
-import {CrowniclesErrorEmbed} from "../../messages/CrowniclesErrorEmbed";
-import {escapeUsername} from "../../utils/StringUtils";
-import {DisplayUtils} from "../../utils/DisplayUtils";
+import {
+	makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	TopElement, TopElementScoreFirstType
+} from "../../../../Lib/src/types/TopElement";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import {
+	LANGUAGE, Language
+} from "../../../../Lib/src/Language";
+import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
+import { keycloakConfig } from "../../bot/CrowniclesShard";
+import { DiscordCache } from "../../bot/DiscordCache";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
+import { TopTiming } from "../../../../Lib/src/types/TopTimings";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
+import { ICommand } from "../ICommand";
+import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
+import { TopDataType } from "../../../../Lib/src/types/TopDataType";
+import {
+	SlashCommandBuilder, SlashCommandSubcommandBuilder
+} from "@discordjs/builders";
+import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
+import { escapeUsername } from "../../utils/StringUtils";
+import { DisplayUtils } from "../../utils/DisplayUtils";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandTopPacketReq> {
 	await interaction.deferReply();
@@ -181,7 +189,7 @@ type TopTextKeys = {
 	overriddenElementTexts?: string[];
 };
 
-function getTopDescription<TopElementKind extends TopElement<unknown,unknown,unknown>>(
+function getTopDescription<TopElementKind extends TopElement<unknown, unknown, unknown>>(
 	packet: CommandTopPacketRes<TopElementKind>,
 	textKeys: TopTextKeys,
 	formatAttributes: (element: TopElementKind, lng: Language) => string,
@@ -234,7 +242,7 @@ function getTopDescription<TopElementKind extends TopElement<unknown,unknown,unk
 	return desc;
 }
 
-async function handleGenericTopPacketRes<TopElementKind extends TopElement<unknown,unknown,unknown>>(
+async function handleGenericTopPacketRes<TopElementKind extends TopElement<unknown, unknown, unknown>>(
 	context: PacketContext,
 	packet: CommandTopPacketRes<TopElementKind>,
 	textKeys: TopTextKeys,
