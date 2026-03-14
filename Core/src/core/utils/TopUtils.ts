@@ -285,7 +285,7 @@ export class TopStorage {
 		const maxRank = Math.min(page * elementsPerPage, totalElements);
 		let rank = this._cachedPositions.get(kind)!.get(id);
 		if (rank === undefined) {
-			rank = needFight && needFight > 0 ? -1 : elements.find(element => element.id === id)?.rank ?? -1;
+			rank = kind === TopKind.GLORY && needFight! > 0 ? -1 : elements.find(element => element.id === id)?.rank ?? -1;
 			this._cachedPositions.get(kind)!.set(id, rank);
 		}
 		const tmpElementPortion = this._cachedPages[kind].get(page);
