@@ -1,13 +1,9 @@
-import {
-	commandRequires, CommandUtils
-} from "../../core/utils/CommandUtils";
-import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import {commandRequires, CommandUtils} from "../../core/utils/CommandUtils";
+import {CrowniclesPacket} from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
-import { CommandTopPacketReq } from "../../../../Lib/src/packets/commands/CommandTopPacket";
-import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
-import {
-	getTopKind, getTopPacket, TopKind, TopStorage
-} from "../../core/utils/TopUtils";
+import {CommandTopPacketReq} from "../../../../Lib/src/packets/commands/CommandTopPacket";
+import {FightConstants} from "../../../../Lib/src/constants/FightConstants";
+import {getTopKind, getTopPacket, TopKind, TopStorage} from "../../core/utils/TopUtils";
 
 export default class TopCommand {
 	@commandRequires(CommandTopPacketReq, {

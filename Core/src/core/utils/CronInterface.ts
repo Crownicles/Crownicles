@@ -1,4 +1,4 @@
-import { CronJob } from "cron";
+import {CronJob} from "cron";
 
 export enum DayOfTheWeek {
 	SUNDAY = "0",
@@ -25,6 +25,13 @@ export async function setWeeklyCronJob(
 	dayOfTheWeek: DayOfTheWeek
 ): Promise<void> {
 	await setCronJob(`0 0 * * ${dayOfTheWeek}`, toExecute, shouldRunImmediately);
+}
+
+export async function set10MinutesCronJob(
+	toExecute: Executable,
+	shouldRunImmediately: boolean
+): Promise<void> {
+	await setCronJob("0 */10 * * * *", toExecute, shouldRunImmediately);
 }
 
 interface YearlySchedule {

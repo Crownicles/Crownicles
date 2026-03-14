@@ -1,8 +1,6 @@
-import {
-	DataTypes, Model, Sequelize
-} from "sequelize";
-import { PotionDataController } from "../../../../data/Potion";
-import { MapCache } from "../../../maps/MapCache";
+import {DataTypes, Model, Sequelize} from "sequelize";
+import {PotionDataController} from "../../../../data/Potion";
+import {MapCache} from "../../../maps/MapCache";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -118,11 +116,6 @@ export abstract class Settings {
 
 	public static readonly NEXT_DAILY_RESET = new SettingClassNumber(
 		"nextDailyReset",
-		(): Promise<number> => Promise.resolve(0)
-	);
-
-	public static readonly NEXT_10_MINUTES_TIMEOUT = new SettingClassNumber(
-		"next10MinutesTimeout",
 		(): Promise<number> => Promise.resolve(0)
 	);
 
