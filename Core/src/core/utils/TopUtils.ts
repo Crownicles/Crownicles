@@ -1,10 +1,14 @@
-import {TopTiming} from "../../../../Lib/src/types/TopTimings";
-import {TopElementGlory, TopElementGuild, TopElementScore} from "../../../../Lib/src/types/TopElement";
-import {Players} from "../database/game/models/Player";
-import {TravelTime} from "../maps/TravelTime";
-import {Guilds} from "../database/game/models/Guild";
-import {TopDataType} from "../../../../Lib/src/types/TopDataType";
-import {CrowniclesPacket, makePacket} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { TopTiming } from "../../../../Lib/src/types/TopTimings";
+import {
+	TopElementGlory, TopElementGuild, TopElementScore
+} from "../../../../Lib/src/types/TopElement";
+import { Players } from "../database/game/models/Player";
+import { TravelTime } from "../maps/TravelTime";
+import { Guilds } from "../database/game/models/Guild";
+import { TopDataType } from "../../../../Lib/src/types/TopDataType";
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandTopGuildsEmptyPacket,
 	CommandTopInvalidPagePacket,
@@ -15,49 +19,51 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandTopPacket";
 
 type TopObject = {
-	totalElements: number,
-	timing: TopTiming,
-}
+	totalElements: number;
+	timing: TopTiming;
+};
 
 type TopElementBaseStorage<Element> = Element & { id: number };
 
 type TopObjectStorage<Element> = TopObject & {
-	elements: TopElementBaseStorage<Element>[]
-}
+	elements: TopElementBaseStorage<Element>[];
+};
 
 type TopObjectResponse<Element> = TopObject & {
-	elements: Element[],
-	contextRank?: number,
-	canBeRanked: boolean
-	minRank: number,
-	maxRank: number,
-	elementsPerPage: number,
-	needFight?: number
-}
+	elements: Element[];
+	contextRank?: number;
+	canBeRanked: boolean;
+	minRank: number;
+	maxRank: number;
+	elementsPerPage: number;
+	needFight?: number;
+};
 
 type AskTopResultBase = {
-	result: TopAskingResult,
-	kind: TopKind
-}
+	result: TopAskingResult;
+	kind: TopKind;
+};
 
 type AskTopResultOKBase<Element, Kind extends TopKind> = AskTopResultBase & {
-	result: TopAskingResult.OK,
-	data: TopObjectResponse<Element>,
-	now: number,
-	kind: Kind
-}
+	result: TopAskingResult.OK;
+	data: TopObjectResponse<Element>;
+	now: number;
+	kind: Kind;
+};
 
-type AskTopResultOK<T extends TopKind> = AskTopResultOKBase<TopElementKind<T>, T>
+type AskTopResultOK<T extends TopKind> = AskTopResultOKBase<TopElementKind<T>, T>;
 
 type AskTopResultNoElement = AskTopResultBase & {
-	result: TopAskingResult.NO_ELEMENT,
-	data: { needFight?: number }
-}
+	result: TopAskingResult.NO_ELEMENT;
+	data: { needFight?: number };
+};
 
 type AskTopResultInvalidPage = AskTopResultBase & {
-	result: TopAskingResult.INVALID_PAGE,
-	data: { minPage: number, maxPage: number }
-}
+	result: TopAskingResult.INVALID_PAGE;
+	data: {
+		minPage: number; maxPage: number;
+	};
+};
 
 type AskTopResult<T extends TopKind> = AskTopResultOK<T> | AskTopResultNoElement | AskTopResultInvalidPage;
 
@@ -92,11 +98,12 @@ const ELEMENTS_PER_PAGE: Record<TopKind, number> = {
 export function getTopKind(dataType: TopDataType, timing: TopTiming): TopKind {
 	if (dataType === TopDataType.SCORE) {
 		return timing === TopTiming.ALL_TIME ? TopKind.SCORE_ALL_TIME : TopKind.SCORE_WEEKLY;
-	} else if (dataType === TopDataType.GLORY) {
-		return TopKind.GLORY;
-	} else {
-		return TopKind.GUILDS;
 	}
+	else if (dataType === TopDataType.GLORY) {
+		return TopKind.GLORY;
+	}
+
+	return TopKind.GUILDS;
 }
 
 export function getTopPacket<T extends TopKind>(response: CrowniclesPacket[], result: AskTopResult<T>): void {
@@ -107,9 +114,11 @@ export function getTopPacket<T extends TopKind>(response: CrowniclesPacket[], re
 			: [CommandTopPacketResGuild, CommandTopGuildsEmptyPacket];
 	if (result.result === TopAskingResult.INVALID_PAGE) {
 		response.push(makePacket(CommandTopInvalidPagePacket, result.data));
-	} else if (result.result === TopAskingResult.NO_ELEMENT) {
+	}
+	else if (result.result === TopAskingResult.NO_ELEMENT) {
 		response.push(makePacket(packetKind[1], result.data));
-	} else {
+	}
+	else {
 		response.push(makePacket(packetKind[0], result.data));
 	}
 }
@@ -125,14 +134,7 @@ function initialiseTopObjectStorage<Kind extends TopKind>(): TopObjectStorage<To
 
 export class TopStorage {
 	private static _instance: TopStorage;
-	private _tops: {
-		[key in TopKind]: TopObjectStorage<TopElementKind<key>>
-	} = {
-		[TopKind.SCORE_ALL_TIME]: initialiseTopObjectStorage<TopKind.SCORE_ALL_TIME>(),
-		[TopKind.SCORE_WEEKLY]: initialiseTopObjectStorage<TopKind.SCORE_WEEKLY>(),
-		[TopKind.GLORY]: initialiseTopObjectStorage<TopKind.GLORY>(),
-		[TopKind.GUILDS]: initialiseTopObjectStorage<TopKind.GUILDS>()
-	}
+
 	private static _topUpdateFunctions: {
 		[key in TopKind]: (now: number) => Promise<void>
 	} = {
@@ -178,6 +180,33 @@ export class TopStorage {
 		}
 	};
 
+	private _tops: {
+		[key in TopKind]: TopObjectStorage<TopElementKind<key>>
+	} = {
+		[TopKind.SCORE_ALL_TIME]: initialiseTopObjectStorage<TopKind.SCORE_ALL_TIME>(),
+		[TopKind.SCORE_WEEKLY]: initialiseTopObjectStorage<TopKind.SCORE_WEEKLY>(),
+		[TopKind.GLORY]: initialiseTopObjectStorage<TopKind.GLORY>(),
+		[TopKind.GUILDS]: initialiseTopObjectStorage<TopKind.GUILDS>()
+	};
+
+	private _cachedPositions: Map<TopKind, Map<number, number>> = new Map([
+		[TopKind.SCORE_ALL_TIME, new Map()],
+		[TopKind.SCORE_WEEKLY, new Map()],
+		[TopKind.GLORY, new Map()],
+		[TopKind.GUILDS, new Map()]
+	]);
+
+	private _cachedPages: {
+		[key in TopKind]: Map<number, TopElementBaseStorage<TopElementKind<key>>[]>
+	} = {
+		[TopKind.SCORE_ALL_TIME]: new Map(),
+		[TopKind.SCORE_WEEKLY]: new Map(),
+		[TopKind.GLORY]: new Map(),
+		[TopKind.GUILDS]: new Map()
+	};
+
+	private _now: number = Date.now();
+
 	static topUpdateFunctionScore(weekly: boolean): (now: number) => Promise<void> {
 		return async (now: number) => {
 			const totalElements = await Players.getNumberOfPlayingPlayers(weekly);
@@ -201,24 +230,8 @@ export class TopStorage {
 					}
 				}))
 			};
-		}
+		};
 	}
-
-	private _cachedPositions: Map<TopKind, Map<number, number>> = new Map([
-		[TopKind.SCORE_ALL_TIME, new Map()],
-		[TopKind.SCORE_WEEKLY, new Map()],
-		[TopKind.GLORY, new Map()],
-		[TopKind.GUILDS, new Map()]
-	]);
-	private _cachedPages: {
-		[key in TopKind]: Map<number, TopElementBaseStorage<TopElementKind<key>>[]>
-	} = {
-		[TopKind.SCORE_ALL_TIME]: new Map(),
-		[TopKind.SCORE_WEEKLY]: new Map(),
-		[TopKind.GLORY]: new Map(),
-		[TopKind.GUILDS]: new Map()
-	}
-	private _now: number = Date.now();
 
 	public static getInstance(): TopStorage {
 		if (!this._instance) {
@@ -232,7 +245,7 @@ export class TopStorage {
 		for (const kind of Object.values(TopKind)) {
 			await TopStorage._topUpdateFunctions[kind](now);
 		}
-		this._cachedPositions.forEach((cachedPosition) => {
+		this._cachedPositions.forEach(cachedPosition => {
 			cachedPosition.clear();
 		});
 		for (const cachedPage of Object.values(this._cachedPages)) {
@@ -255,7 +268,7 @@ export class TopStorage {
 		if (totalElements === 0) {
 			return {
 				result: TopAskingResult.NO_ELEMENT,
-				data: kind === TopKind.GLORY ? {needFight} : {},
+				data: kind === TopKind.GLORY ? { needFight } : {},
 				kind
 			};
 		}
@@ -277,12 +290,13 @@ export class TopStorage {
 			rank = needFight && needFight > 0 ? -1 : elements.find(element => element.id === id)?.rank ?? -1;
 			this._cachedPositions.get(kind)!.set(id, rank);
 		}
-		let tmpElementPortion = this._cachedPages[kind].get(page);
+		const tmpElementPortion = this._cachedPages[kind].get(page);
 		let elementPortion: TopElementBaseStorage<TopElementKind<T>>[];
 		if (!tmpElementPortion) {
 			elementPortion = elements.filter(element => element.rank >= minRank && element.rank <= maxRank);
 			this._cachedPages[kind].set(page, elementPortion);
-		} else {
+		}
+		else {
 			elementPortion = tmpElementPortion;
 		}
 		return {
@@ -298,11 +312,11 @@ export class TopStorage {
 				canBeRanked: kind !== TopKind.GUILDS || id !== -1,
 				needFight,
 				elements: elementPortion.map(element => ({
-						rank: element.rank,
-						sameContext: element.id === id,
-						text: element.text,
-						attributes: element.attributes
-					})),
+					rank: element.rank,
+					sameContext: element.id === id,
+					text: element.text,
+					attributes: element.attributes
+				})),
 				elementsPerPage
 			}
 		} as AskTopResult<T>;

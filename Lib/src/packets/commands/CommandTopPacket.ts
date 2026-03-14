@@ -1,7 +1,11 @@
-import {CrowniclesPacket, PacketDirection, sendablePacket} from "../CrowniclesPacket";
-import {TopDataType} from "../../types/TopDataType";
-import {TopTiming} from "../../types/TopTimings";
-import {TopElement, TopElementGlory, TopElementGuild, TopElementScore} from "../../types/TopElement";
+import {
+	CrowniclesPacket, PacketDirection, sendablePacket
+} from "../CrowniclesPacket";
+import { TopDataType } from "../../types/TopDataType";
+import { TopTiming } from "../../types/TopTimings";
+import {
+	TopElement, TopElementGlory, TopElementGuild, TopElementScore
+} from "../../types/TopElement";
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandTopPacketReq extends CrowniclesPacket {

@@ -1,47 +1,53 @@
-import {PacketListenerServer} from "../../../../Lib/src/packets/PacketListener";
-import {GameDatabase} from "../database/game/GameDatabase";
-import {LogsDatabase} from "../database/logs/LogsDatabase";
-import {botConfig, crowniclesInstance} from "../../index";
-import {Op, Sequelize} from "sequelize";
-import {daysToMilliseconds, minutesToMilliseconds} from "../../../../Lib/src/utils/TimeUtils";
-import {TimeoutFunctionsConstants} from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
-import {MapCache} from "../maps/MapCache";
-import {registerAllPacketHandlers} from "../packetHandlers/PacketHandler";
-import {CommandsTest} from "../CommandsTest";
+import { PacketListenerServer } from "../../../../Lib/src/packets/PacketListener";
+import { GameDatabase } from "../database/game/GameDatabase";
+import { LogsDatabase } from "../database/logs/LogsDatabase";
+import {
+	botConfig, crowniclesInstance
+} from "../../index";
+import {
+	Op, Sequelize
+} from "sequelize";
+import {
+	daysToMilliseconds, minutesToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
+import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
+import { MapCache } from "../maps/MapCache";
+import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
+import { CommandsTest } from "../CommandsTest";
 import Player from "../database/game/models/Player";
-import {FightConstants} from "../../../../Lib/src/constants/FightConstants";
-import {PacketUtils} from "../utils/PacketUtils";
-import {makePacket} from "../../../../Lib/src/packets/CrowniclesPacket";
-import {ScheduledReportNotifications} from "../database/game/models/ScheduledReportNotification";
-import {ReachDestinationNotificationPacket} from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
-import {MapLocationDataController} from "../../data/MapLocation";
-import {Settings} from "../database/game/models/Setting";
-import {PotionDataController} from "../../data/Potion";
-import {RandomUtils} from "../../../../Lib/src/utils/RandomUtils";
+import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
+import { PacketUtils } from "../utils/PacketUtils";
+import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
+import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
+import { MapLocationDataController } from "../../data/MapLocation";
+import { Settings } from "../database/game/models/Setting";
+import { PotionDataController } from "../../data/Potion";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import PetEntity from "../database/game/models/PetEntity";
-import {PetConstants} from "../../../../Lib/src/constants/PetConstants";
-import {TopWeekFightAnnouncementPacket} from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
-import {MqttTopicUtils} from "../../../../Lib/src/utils/MqttTopicUtils";
-import {Badge} from "../../../../Lib/src/types/Badge";
-import {TopWeekAnnouncementPacket} from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
-import {PlayerMissionsInfo} from "../database/game/models/PlayerMissionsInfo";
-import {PlayerBadgesManager} from "../database/game/models/PlayerBadges";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
+import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
+import { Badge } from "../../../../Lib/src/types/Badge";
+import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
+import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 // skipcq: JS-C1003 - fs does not expose itself as an ES Module.
 import * as fs from "fs";
-import {initializeAllClassBehaviors} from "../fights/AiBehaviorController";
-import {initializeAllPetBehaviors} from "../fights/PetAssistManager";
-import {CrowniclesCoreWebServer} from "./CrowniclesCoreWebServer";
-import {CrowniclesLogger} from "../../../../Lib/src/logs/CrowniclesLogger";
-import {FightsManager} from "../fights/FightsManager";
-import {BlessingManager} from "../blessings/BlessingManager";
-import {EnergyFullNotificationPacket} from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
-import {DailyBonusNotificationPacket} from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
-import {ScheduledDailyBonusNotifications} from "../database/game/models/ScheduledDailyBonusNotification";
-import {CrowniclesDaily} from "./cronJobs/CrowniclesDaily";
-import {CrowniclesSunday} from "./cronJobs/CrowniclesSunday";
-import {CrowniclesMonday} from "./cronJobs/CrowniclesMonday";
-import {CrowniclesEach10Minutes} from "./cronJobs/CrowniclesEach10Minutes";
+import { initializeAllClassBehaviors } from "../fights/AiBehaviorController";
+import { initializeAllPetBehaviors } from "../fights/PetAssistManager";
+import { CrowniclesCoreWebServer } from "./CrowniclesCoreWebServer";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { FightsManager } from "../fights/FightsManager";
+import { BlessingManager } from "../blessings/BlessingManager";
+import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
+import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
+import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
+import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
+import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
+import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
+import { CrowniclesEach10Minutes } from "./cronJobs/CrowniclesEach10Minutes";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -186,68 +192,6 @@ export class Crownicles {
 	}
 
 	/**
-	 * Database queries to execute at the end of the season
-	 */
-	private static async seasonEndQueries(): Promise<void> {
-		// We set the gloryPointsLastSeason to 0 if the fightCountdown is above the limit because the player was inactive
-		await Player.update(
-			{
-				gloryPointsLastSeason: Sequelize.literal(
-					`CASE WHEN fightCountdown <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE} THEN attackGloryPoints + defenseGloryPoints ELSE 0 END`
-				)
-			},
-			{ where: {} }
-		);
-
-		// We add one to the fightCountdown
-		await Player.update(
-			{
-				fightCountdown: Sequelize.literal(
-					"fightCountdown + 1"
-				)
-			},
-			{ where: { fightCountdown: { [Op.lt]: FightConstants.FIGHT_COUNTDOWN_REGEN_LIMIT } } }
-		);
-
-		// Transform a part of the defense glory into attack glory
-		await Player.update(
-			{
-				defenseGloryPoints: Sequelize.literal(
-					`defenseGloryPoints + LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
-				),
-				attackGloryPoints: Sequelize.literal(
-					`attackGloryPoints - LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
-				)
-			},
-			{
-				where: {
-					attackGloryPoints: { [Op.gt]: 0 },
-					defenseGloryPoints: { [Op.lte]: FightConstants.MAX_DEFENSE_GLORY_FOR_TRANSFER }
-				}
-			}
-		);
-	}
-
-	/**
-	 * Find the winner of the season
-	 */
-	private static async findSeasonWinner(): Promise<Player | null> {
-		return await Player.findOne({
-			where: {
-				fightCountdown: {
-					[Op.lte]: FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
-				}
-			},
-			order: [
-				[Sequelize.literal("(attackGloryPoints + defenseGloryPoints)"), "DESC"],
-				["level", "DESC"],
-				["score", "DESC"]
-			],
-			limit: 1
-		});
-	}
-
-	/**
 	 * Choose a new pve island
 	 */
 	static async newPveIsland(): Promise<void> {
@@ -260,7 +204,8 @@ export class Crownicles {
 	 * Update the fight points of the entities that lost some
 	 */
 	static async fightPowerRegenerationLoop(): Promise<void> {
-		const regenAmount = FightConstants.POINTS_REGEN_AMOUNT * BlessingManager.getInstance().getEnergyRegenMultiplier();
+		const regenAmount = FightConstants.POINTS_REGEN_AMOUNT * BlessingManager.getInstance()
+			.getEnergyRegenMultiplier();
 
 		const notifications = await Player.findAll(
 			{
@@ -359,6 +304,67 @@ export class Crownicles {
 		setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
 	}
 
+	/**
+	 * Database queries to execute at the end of the season
+	 */
+	private static async seasonEndQueries(): Promise<void> {
+		// We set the gloryPointsLastSeason to 0 if the fightCountdown is above the limit because the player was inactive
+		await Player.update(
+			{
+				gloryPointsLastSeason: Sequelize.literal(
+					`CASE WHEN fightCountdown <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE} THEN attackGloryPoints + defenseGloryPoints ELSE 0 END`
+				)
+			},
+			{ where: {} }
+		);
+
+		// We add one to the fightCountdown
+		await Player.update(
+			{
+				fightCountdown: Sequelize.literal(
+					"fightCountdown + 1"
+				)
+			},
+			{ where: { fightCountdown: { [Op.lt]: FightConstants.FIGHT_COUNTDOWN_REGEN_LIMIT } } }
+		);
+
+		// Transform a part of the defense glory into attack glory
+		await Player.update(
+			{
+				defenseGloryPoints: Sequelize.literal(
+					`defenseGloryPoints + LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
+				),
+				attackGloryPoints: Sequelize.literal(
+					`attackGloryPoints - LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
+				)
+			},
+			{
+				where: {
+					attackGloryPoints: { [Op.gt]: 0 },
+					defenseGloryPoints: { [Op.lte]: FightConstants.MAX_DEFENSE_GLORY_FOR_TRANSFER }
+				}
+			}
+		);
+	}
+
+	/**
+	 * Find the winner of the season
+	 */
+	private static async findSeasonWinner(): Promise<Player | null> {
+		return await Player.findOne({
+			where: {
+				fightCountdown: {
+					[Op.lte]: FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
+				}
+			},
+			order: [
+				[Sequelize.literal("(attackGloryPoints + defenseGloryPoints)"), "DESC"],
+				["level", "DESC"],
+				["score", "DESC"]
+			],
+			limit: 1
+		});
+	}
 
 	/**
 	 * Sets the maintenance mode of the bot
@@ -398,7 +404,8 @@ export class Crownicles {
 		await this.logsDatabase.init(true);
 		await MapCache.init();
 		FightsManager.init();
-		await BlessingManager.getInstance().init();
+		await BlessingManager.getInstance()
+			.init();
 		if (botConfig.TEST_MODE) {
 			await CommandsTest.init();
 		}
