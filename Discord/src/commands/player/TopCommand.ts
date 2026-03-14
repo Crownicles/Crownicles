@@ -187,6 +187,18 @@ type TopTextKeys = {
 	cantBeRanked?: string;
 };
 
+const PLAYER_RANK_KEYS = {
+	yourRankTitle: "commands:top.yourRankTitle",
+	yourRankFirst: "commands:top.yourRankFirst",
+	yourRank: "commands:top.yourRank"
+} as const;
+
+const GUILD_RANK_KEYS = {
+	yourRankTitle: "commands:top.yourRankGuildTitle",
+	yourRankFirst: "commands:top.yourRankGuildFirst",
+	yourRank: "commands:top.yourRankGuild"
+} as const;
+
 function buildYourRankSection<TopElementKind extends TopElement<unknown, unknown, unknown>>(
 	packet: CommandTopPacketRes<TopElementKind>,
 	textKeys: TopTextKeys,
@@ -246,6 +258,10 @@ async function getOverriddenPlayersUsernames<U, V, W>(elements: TopElement<U, V,
 		.map(u => u ? escapeUsername(u.attributes.gameUsername[0]) : unknownUsername);
 }
 
+function isValidInitialPage(initialPage: number | undefined, pagesCount: number): boolean {
+	return initialPage !== undefined && initialPage >= 1 && initialPage <= pagesCount;
+}
+
 async function handleGenericTopPacketRes<TopElementKind extends TopElement<unknown, unknown, unknown>>(
 	context: PacketContext,
 	packet: CommandTopPacketRes<TopElementKind>,
@@ -261,8 +277,7 @@ async function handleGenericTopPacketRes<TopElementKind extends TopElement<unkno
 
 	// Determine initial page (0-based)
 	let selectedPageIndex = 0;
-	const hasValidInitialPage = packet.initialPage && packet.initialPage >= 1 && packet.initialPage <= pagesCount;
-	if (hasValidInitialPage) {
+	if (isValidInitialPage(packet.initialPage, pagesCount)) {
 		selectedPageIndex = packet.initialPage! - 1;
 	}
 	else if (packet.contextRank) {
@@ -297,9 +312,7 @@ export async function handleCommandTopPacketResScore(context: PacketContext, pac
 		title: packet.timing === TopTiming.ALL_TIME
 			? "commands:top.titleScoreAllTime"
 			: "commands:top.titleScoreWeekly",
-		yourRankTitle: "commands:top.yourRankTitle",
-		yourRankFirst: "commands:top.yourRankFirst",
-		yourRank: "commands:top.yourRank",
+		...PLAYER_RANK_KEYS,
 		yourRankNone: {
 			key: "commands:top.yourRankNoneScore",
 			replacements: {}
@@ -313,9 +326,7 @@ export async function handleCommandTopPacketResScore(context: PacketContext, pac
 export async function handleCommandTopPacketResGlory(context: PacketContext, packet: CommandTopPacketResGlory): Promise<void> {
 	await handleGenericTopPacketRes(context, packet, {
 		title: "commands:top.titleGlory",
-		yourRankTitle: "commands:top.yourRankTitle",
-		yourRankFirst: "commands:top.yourRankFirst",
-		yourRank: "commands:top.yourRank",
+		...PLAYER_RANK_KEYS,
 		yourRankNone: {
 			key: "commands:top.yourRankNoneGlory",
 			replacements: {
@@ -335,9 +346,7 @@ export async function handleCommandTopPacketResGlory(context: PacketContext, pac
 export async function handleCommandTopPacketResGuild(context: PacketContext, packet: CommandTopPacketResGuild): Promise<void> {
 	await handleGenericTopPacketRes(context, packet, {
 		title: "commands:top.titleGuild",
-		yourRankTitle: "commands:top.yourRankGuildTitle",
-		yourRankFirst: "commands:top.yourRankGuildFirst",
-		yourRank: "commands:top.yourRankGuild",
+		...GUILD_RANK_KEYS,
 		yourRankNone: {
 			key: "commands:top.yourRankNoneGuild",
 			replacements: {}
