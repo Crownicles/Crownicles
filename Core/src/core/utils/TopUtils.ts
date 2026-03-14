@@ -4,6 +4,7 @@ import {
 } from "../../../../Lib/src/types/TopElement";
 import { Players } from "../database/game/models/Player";
 import { TravelTime } from "../maps/TravelTime";
+import { MapLinkDataController } from "../../data/MapLink";
 import { Guilds } from "../database/game/models/Guild";
 import { TopDataType } from "../../../../Lib/src/types/TopDataType";
 import {
@@ -216,7 +217,10 @@ export class TopStorage {
 					attributes: {
 						1: {
 							effectId: player.currentEffectFinished(new Date(now)) ? undefined : player.effectId,
-							mapType: TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime > now ? undefined : player.getDestination()?.type,
+							mapType: !MapLinkDataController.instance.getById(player.mapLinkId)
+								|| TravelTime.getTravelDataSimplified(player, new Date(now)).travelEndTime > now
+								? undefined
+								: player.getDestination()?.type,
 							afk: player.isInactive()
 						},
 						2: weekly ? player.weeklyScore : player.score,
