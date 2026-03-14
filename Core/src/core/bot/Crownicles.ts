@@ -41,7 +41,7 @@ import {ScheduledDailyBonusNotifications} from "../database/game/models/Schedule
 import {CrowniclesDaily} from "./cronJobs/CrowniclesDaily";
 import {CrowniclesSunday} from "./cronJobs/CrowniclesSunday";
 import {CrowniclesMonday} from "./cronJobs/CrowniclesMonday";
-import {TopStorage} from "../utils/TopUtils";
+import {CrowniclesEach10Minutes} from "./cronJobs/CrowniclesEach10Minutes";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -323,12 +323,6 @@ export class Crownicles {
 			.then();
 	}
 
-	static async minuteTimeout(): Promise<void> {
-		await Settings.NEXT_MINUTE_TIMEOUT.setValue(await Settings.NEXT_MINUTE_TIMEOUT.getValue() + minutesToMilliseconds(1));
-		TopStorage.getInstance().updateTops()
-			.then();
-	}
-
 	static async reportNotifications(): Promise<void> {
 		if (PacketUtils.isMqttConnected()) {
 			const notifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
@@ -412,6 +406,7 @@ export class Crownicles {
 		await CrowniclesDaily.programCronJob();
 		await CrowniclesSunday.programCronJob();
 		await CrowniclesMonday.programCronJob();
+		await CrowniclesEach10Minutes.programCronJob();
 
 		Crownicles.reportNotifications()
 			.then();
