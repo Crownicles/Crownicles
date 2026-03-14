@@ -190,6 +190,15 @@ export class TopStorage {
 		[TopKind.GUILDS, new Map()]
 	]);
 
+	private _lastUpdated: Map<TopKind, number> = new Map([
+		[TopKind.SCORE_ALL_TIME, 0],
+		[TopKind.SCORE_WEEKLY, 0],
+		[TopKind.GLORY, 0],
+		[TopKind.GUILDS, 0]
+	]);
+
+	private static readonly STALE_THRESHOLD_MS = 45000;
+
 	private _now: number = Date.now();
 
 	static topUpdateFunctionScore(weekly: boolean): (now: number) => Promise<void> {
@@ -228,16 +237,27 @@ export class TopStorage {
 	public async updateTops(): Promise<void> {
 		const now = Date.now();
 		for (const kind of Object.values(TopKind)) {
-			await TopStorage._topUpdateFunctions[kind](now);
+			await this.refreshKind(kind, now);
 		}
-		this._cachedPositions.forEach(cachedPosition => {
-			cachedPosition.clear();
-		});
-		this._now = now;
 		CrowniclesLogger.info("Tops updated");
 	}
 
-	public askTop<T extends TopKind>(kind: T, id: number, needFight?: number, initialPage?: number): AskTopResult<T> {
+	private async refreshKind(kind: TopKind, now: number): Promise<void> {
+		await TopStorage._topUpdateFunctions[kind](now);
+		this._cachedPositions.get(kind)!.clear();
+		this._lastUpdated.set(kind, now);
+		this._now = now;
+	}
+
+	private async refreshIfStale(kind: TopKind): Promise<void> {
+		const lastUpdated = this._lastUpdated.get(kind)!;
+		if (Date.now() - lastUpdated > TopStorage.STALE_THRESHOLD_MS) {
+			await this.refreshKind(kind, Date.now());
+		}
+	}
+
+	public async askTop<T extends TopKind>(kind: T, id: number, needFight?: number, initialPage?: number): Promise<AskTopResult<T>> {
+		await this.refreshIfStale(kind);
 		const top = this._tops[kind] as TopObjectStorage<TopElementKind<T>>;
 		if (!top) {
 			throw new Error(`Top of kind ${kind} not found`);
