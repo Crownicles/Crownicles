@@ -47,6 +47,7 @@ import { ScheduledDailyBonusNotifications } from "../database/game/models/Schedu
 import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
 import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
 import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
+import { CrowniclesEach10Minutes } from "./cronJobs/CrowniclesEach10Minutes";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -191,68 +192,6 @@ export class Crownicles {
 	}
 
 	/**
-	 * Database queries to execute at the end of the season
-	 */
-	private static async seasonEndQueries(): Promise<void> {
-		// We set the gloryPointsLastSeason to 0 if the fightCountdown is above the limit because the player was inactive
-		await Player.update(
-			{
-				gloryPointsLastSeason: Sequelize.literal(
-					`CASE WHEN fightCountdown <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE} THEN attackGloryPoints + defenseGloryPoints ELSE 0 END`
-				)
-			},
-			{ where: {} }
-		);
-
-		// We add one to the fightCountdown
-		await Player.update(
-			{
-				fightCountdown: Sequelize.literal(
-					"fightCountdown + 1"
-				)
-			},
-			{ where: { fightCountdown: { [Op.lt]: FightConstants.FIGHT_COUNTDOWN_REGEN_LIMIT } } }
-		);
-
-		// Transform a part of the defense glory into attack glory
-		await Player.update(
-			{
-				defenseGloryPoints: Sequelize.literal(
-					`defenseGloryPoints + LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
-				),
-				attackGloryPoints: Sequelize.literal(
-					`attackGloryPoints - LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
-				)
-			},
-			{
-				where: {
-					attackGloryPoints: { [Op.gt]: 0 },
-					defenseGloryPoints: { [Op.lte]: FightConstants.MAX_DEFENSE_GLORY_FOR_TRANSFER }
-				}
-			}
-		);
-	}
-
-	/**
-	 * Find the winner of the season
-	 */
-	private static async findSeasonWinner(): Promise<Player | null> {
-		return await Player.findOne({
-			where: {
-				fightCountdown: {
-					[Op.lte]: FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
-				}
-			},
-			order: [
-				[Sequelize.literal("(attackGloryPoints + defenseGloryPoints)"), "DESC"],
-				["level", "DESC"],
-				["score", "DESC"]
-			],
-			limit: 1
-		});
-	}
-
-	/**
 	 * Choose a new pve island
 	 */
 	static async newPveIsland(): Promise<void> {
@@ -265,7 +204,8 @@ export class Crownicles {
 	 * Update the fight points of the entities that lost some
 	 */
 	static async fightPowerRegenerationLoop(): Promise<void> {
-		const regenAmount = FightConstants.POINTS_REGEN_AMOUNT * BlessingManager.getInstance().getEnergyRegenMultiplier();
+		const regenAmount = FightConstants.POINTS_REGEN_AMOUNT * BlessingManager.getInstance()
+			.getEnergyRegenMultiplier();
 
 		const notifications = await Player.findAll(
 			{
@@ -364,6 +304,67 @@ export class Crownicles {
 		setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
 	}
 
+	/**
+	 * Database queries to execute at the end of the season
+	 */
+	private static async seasonEndQueries(): Promise<void> {
+		// We set the gloryPointsLastSeason to 0 if the fightCountdown is above the limit because the player was inactive
+		await Player.update(
+			{
+				gloryPointsLastSeason: Sequelize.literal(
+					`CASE WHEN fightCountdown <= ${FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE} THEN attackGloryPoints + defenseGloryPoints ELSE 0 END`
+				)
+			},
+			{ where: {} }
+		);
+
+		// We add one to the fightCountdown
+		await Player.update(
+			{
+				fightCountdown: Sequelize.literal(
+					"fightCountdown + 1"
+				)
+			},
+			{ where: { fightCountdown: { [Op.lt]: FightConstants.FIGHT_COUNTDOWN_REGEN_LIMIT } } }
+		);
+
+		// Transform a part of the defense glory into attack glory
+		await Player.update(
+			{
+				defenseGloryPoints: Sequelize.literal(
+					`defenseGloryPoints + LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
+				),
+				attackGloryPoints: Sequelize.literal(
+					`attackGloryPoints - LEAST(${FightConstants.ATTACK_GLORY_TO_DEFENSE_GLORY_EACH_WEEK}, attackGloryPoints)`
+				)
+			},
+			{
+				where: {
+					attackGloryPoints: { [Op.gt]: 0 },
+					defenseGloryPoints: { [Op.lte]: FightConstants.MAX_DEFENSE_GLORY_FOR_TRANSFER }
+				}
+			}
+		);
+	}
+
+	/**
+	 * Find the winner of the season
+	 */
+	private static async findSeasonWinner(): Promise<Player | null> {
+		return await Player.findOne({
+			where: {
+				fightCountdown: {
+					[Op.lte]: FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
+				}
+			},
+			order: [
+				[Sequelize.literal("(attackGloryPoints + defenseGloryPoints)"), "DESC"],
+				["level", "DESC"],
+				["score", "DESC"]
+			],
+			limit: 1
+		});
+	}
 
 	/**
 	 * Sets the maintenance mode of the bot
@@ -403,7 +404,8 @@ export class Crownicles {
 		await this.logsDatabase.init(true);
 		await MapCache.init();
 		FightsManager.init();
-		await BlessingManager.getInstance().init();
+		await BlessingManager.getInstance()
+			.init();
 		if (botConfig.TEST_MODE) {
 			await CommandsTest.init();
 		}
@@ -411,6 +413,7 @@ export class Crownicles {
 		await CrowniclesDaily.programCronJob();
 		await CrowniclesSunday.programCronJob();
 		await CrowniclesMonday.programCronJob();
+		await CrowniclesEach10Minutes.programCronJob();
 
 		Crownicles.reportNotifications()
 			.then();
