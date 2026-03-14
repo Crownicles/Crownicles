@@ -1,6 +1,6 @@
-import {setDailyCronJob} from "../../utils/CronInterface";
-import {Settings} from "../../database/game/models/Setting";
-import {TopStorage} from "../../utils/TopUtils";
+import { setDailyCronJob } from "../../utils/CronInterface";
+import { Settings } from "../../database/game/models/Setting";
+import { TopStorage } from "../../utils/TopUtils";
 
 export class CrowniclesEach10Minutes {
 	public static async programCronJob(): Promise<void> {
@@ -16,7 +16,8 @@ export class CrowniclesEach10Minutes {
 			next10Min += 24 * 60 * 60 * 1000;
 		}
 		await Settings.NEXT_10_MINUTES_TIMEOUT.setValue(next10Min);
-		TopStorage.getInstance().updateTops()
+		TopStorage.getInstance()
+			.updateTops()
 			.then();
 	}
 }
