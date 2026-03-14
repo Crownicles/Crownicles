@@ -1,14 +1,10 @@
-import { TopTiming } from "../../../../Lib/src/types/TopTimings";
-import {
-	TopElementGlory, TopElementGuild, TopElementScore
-} from "../../../../Lib/src/types/TopElement";
-import { Players } from "../database/game/models/Player";
-import { TravelTime } from "../maps/TravelTime";
-import { Guilds } from "../database/game/models/Guild";
-import { TopDataType } from "../../../../Lib/src/types/TopDataType";
-import {
-	CrowniclesPacket, makePacket
-} from "../../../../Lib/src/packets/CrowniclesPacket";
+import {TopTiming} from "../../../../Lib/src/types/TopTimings";
+import {TopElementGlory, TopElementGuild, TopElementScore} from "../../../../Lib/src/types/TopElement";
+import {Players} from "../database/game/models/Player";
+import {TravelTime} from "../maps/TravelTime";
+import {Guilds} from "../database/game/models/Guild";
+import {TopDataType} from "../../../../Lib/src/types/TopDataType";
+import {CrowniclesPacket, makePacket} from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandTopGuildsEmptyPacket,
 	CommandTopInvalidPagePacket,
@@ -17,6 +13,7 @@ import {
 	CommandTopPacketResScore,
 	CommandTopPlayersEmptyPacket
 } from "../../../../Lib/src/packets/commands/CommandTopPacket";
+import {CrowniclesLogger} from "../../../../Lib/src/logs/CrowniclesLogger";
 
 type TopObject = {
 	totalElements: number;
@@ -211,7 +208,7 @@ export class TopStorage {
 		return async (now: number) => {
 			const totalElements = await Players.getNumberOfPlayingPlayers(weekly);
 			const elements = await Players.getPlayersTop(1, totalElements, weekly);
-			TopStorage.getInstance()._tops[TopKind.SCORE_ALL_TIME] = {
+			TopStorage.getInstance()._tops[weekly ? TopKind.SCORE_WEEKLY : TopKind.SCORE_ALL_TIME] = {
 				totalElements,
 				timing: weekly ? TopTiming.WEEK : TopTiming.ALL_TIME,
 				elements: elements.map((player, index) => ({
@@ -244,6 +241,7 @@ export class TopStorage {
 		const now = Date.now();
 		for (const kind of Object.values(TopKind)) {
 			await TopStorage._topUpdateFunctions[kind](now);
+			console.log(`Top ${kind} updated, ${TopStorage.getInstance()._tops[kind].totalElements}`);
 		}
 		this._cachedPositions.forEach(cachedPosition => {
 			cachedPosition.clear();
@@ -252,6 +250,7 @@ export class TopStorage {
 			cachedPage.clear();
 		}
 		this._now = now;
+		CrowniclesLogger.info("Tops updated");
 	}
 
 	public askTop<T extends TopKind>(kind: T, id: number, page: number, needFight?: number): AskTopResult<T> {
