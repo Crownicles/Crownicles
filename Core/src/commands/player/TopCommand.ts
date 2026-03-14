@@ -25,8 +25,8 @@ export default class TopCommand {
 			.askTop<typeof topKind>(
 				topKind,
 				topKind === TopKind.GUILDS ? player.guildId ?? -1 : player.id,
-				packet.page ?? 1,
-				player.fightCountdown - FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
+				player.fightCountdown - FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE,
+				packet.page
 			);
 		getTopPacket(response, result);
 	}

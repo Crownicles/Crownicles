@@ -20,10 +20,6 @@ export class CommandTopPacketReq extends CrowniclesPacket {
 export class CommandTopPacketRes<T extends TopElement<unknown, unknown, unknown>> extends CrowniclesPacket {
 	timing!: TopTiming;
 
-	minRank!: number;
-
-	maxRank!: number;
-
 	contextRank?: number;
 
 	canBeRanked!: boolean;
@@ -33,6 +29,8 @@ export class CommandTopPacketRes<T extends TopElement<unknown, unknown, unknown>
 	totalElements!: number;
 
 	elementsPerPage!: number;
+
+	initialPage?: number;
 }
 
 // Attributes: mapType and afk, score, level
@@ -49,13 +47,6 @@ export class CommandTopPacketResGlory extends CommandTopPacketRes<TopElementGlor
 // Attributes: guild points, level, none
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandTopPacketResGuild extends CommandTopPacketRes<TopElementGuild> {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandTopInvalidPagePacket extends CrowniclesPacket {
-	minPage!: number;
-
-	maxPage!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
