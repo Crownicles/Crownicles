@@ -7,7 +7,7 @@ import { TravelTime } from "../maps/TravelTime";
 import { Guilds } from "../database/game/models/Guild";
 import { TopDataType } from "../../../../Lib/src/types/TopDataType";
 import {
-	CrowniclesPacket, makePacket
+	CrowniclesPacket, makePacket, PacketLike
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandTopGuildsEmptyPacket,
@@ -17,6 +17,9 @@ import {
 	CommandTopPlayersEmptyPacket
 } from "../../../../Lib/src/packets/commands/CommandTopPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { TopConstants } from "../../../../Lib/src/constants/TopConstants";
+
+export const NO_GUILD_ID = -1;
 
 type TopObject = {
 	totalElements: number;
@@ -80,10 +83,10 @@ export enum TopKind {
 }
 
 const ELEMENTS_PER_PAGE: Record<TopKind, number> = {
-	[TopKind.SCORE_ALL_TIME]: 15,
-	[TopKind.SCORE_WEEKLY]: 15,
-	[TopKind.GLORY]: 15,
-	[TopKind.GUILDS]: 15
+	[TopKind.SCORE_ALL_TIME]: TopConstants.PLAYERS_PER_PAGE,
+	[TopKind.SCORE_WEEKLY]: TopConstants.PLAYERS_PER_PAGE,
+	[TopKind.GLORY]: TopConstants.PLAYERS_PER_PAGE,
+	[TopKind.GUILDS]: TopConstants.GUILDS_PER_PAGE
 };
 
 export function getTopKind(dataType: TopDataType, timing: TopTiming): TopKind {
@@ -97,17 +100,20 @@ export function getTopKind(dataType: TopDataType, timing: TopTiming): TopKind {
 	return TopKind.GUILDS;
 }
 
+const TOP_PACKET_MAP: Record<TopKind, [PacketLike<CrowniclesPacket>, PacketLike<CrowniclesPacket>]> = {
+	[TopKind.SCORE_ALL_TIME]: [CommandTopPacketResScore, CommandTopPlayersEmptyPacket],
+	[TopKind.SCORE_WEEKLY]: [CommandTopPacketResScore, CommandTopPlayersEmptyPacket],
+	[TopKind.GLORY]: [CommandTopPacketResGlory, CommandTopPlayersEmptyPacket],
+	[TopKind.GUILDS]: [CommandTopPacketResGuild, CommandTopGuildsEmptyPacket]
+};
+
 export function getTopPacket<T extends TopKind>(response: CrowniclesPacket[], result: AskTopResult<T>): void {
-	const packetKind = result.kind === TopKind.SCORE_ALL_TIME || result.kind === TopKind.SCORE_WEEKLY
-		? [CommandTopPacketResScore, CommandTopPlayersEmptyPacket]
-		: result.kind === TopKind.GLORY
-			? [CommandTopPacketResGlory, CommandTopPlayersEmptyPacket]
-			: [CommandTopPacketResGuild, CommandTopGuildsEmptyPacket];
+	const [resPacket, emptyPacket] = TOP_PACKET_MAP[result.kind];
 	if (result.result === TopAskingResult.NO_ELEMENT) {
-		response.push(makePacket(packetKind[1], result.data));
+		response.push(makePacket(emptyPacket, result.data));
 	}
 	else {
-		response.push(makePacket(packetKind[0], result.data));
+		response.push(makePacket(resPacket, result.data));
 	}
 }
 
@@ -262,7 +268,7 @@ export class TopStorage {
 				totalElements,
 				timing,
 				contextRank: rank > 0 ? rank : undefined,
-				canBeRanked: kind !== TopKind.GUILDS || id !== -1,
+				canBeRanked: kind !== TopKind.GUILDS || id !== NO_GUILD_ID,
 				needFight,
 				elements: elements.map(element => ({
 					rank: element.rank,

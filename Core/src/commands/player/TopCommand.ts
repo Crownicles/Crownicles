@@ -6,7 +6,7 @@ import Player from "../../core/database/game/models/Player";
 import { CommandTopPacketReq } from "../../../../Lib/src/packets/commands/CommandTopPacket";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import {
-	getTopKind, getTopPacket, TopKind, TopStorage
+	getTopKind, getTopPacket, NO_GUILD_ID, TopKind, TopStorage
 } from "../../core/utils/TopUtils";
 
 export default class TopCommand {
@@ -24,7 +24,7 @@ export default class TopCommand {
 		const result = TopStorage.getInstance()
 			.askTop<typeof topKind>(
 				topKind,
-				topKind === TopKind.GUILDS ? player.guildId ?? -1 : player.id,
+				topKind === TopKind.GUILDS ? player.guildId ?? NO_GUILD_ID : player.id,
 				player.fightCountdown - FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE,
 				packet.page
 			);
