@@ -272,7 +272,6 @@ async function handleGenericTopPacketRes<TopElementKind extends TopElement<unkno
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
 	const playerUsername = await DisplayUtils.getEscapedUsername(context.keycloakId!, lng);
-	const title = i18n.t(textKeys.title, { lng });
 	const pagesCount = Math.ceil(packet.elements.length / packet.elementsPerPage);
 
 	// Determine initial page (0-based)
@@ -290,6 +289,17 @@ async function handleGenericTopPacketRes<TopElementKind extends TopElement<unkno
 		lng,
 		pagesCount,
 		selectedPageIndex,
+		titleBuilder: (pageIndex: number): string => {
+			const start = pageIndex * packet.elementsPerPage;
+			const end = Math.min(start + packet.elementsPerPage, packet.elements.length);
+			const minRank = packet.elements[start].rank;
+			const maxRank = packet.elements[end - 1].rank;
+			return i18n.t(textKeys.title, {
+				lng,
+				minRank,
+				maxRank
+			});
+		},
 		pageBuilder: async (pageIndex: number): Promise<string> => {
 			const start = pageIndex * packet.elementsPerPage;
 			const end = Math.min(start + packet.elementsPerPage, packet.elements.length);
@@ -303,8 +313,7 @@ async function handleGenericTopPacketRes<TopElementKind extends TopElement<unkno
 				pageElements, formatAttributes, lng, packet.contextRank, overriddenTexts
 			) + yourRankSection;
 		}
-	}).setTitle(title)
-		.send(interaction);
+	}).send(interaction);
 }
 
 export async function handleCommandTopPacketResScore(context: PacketContext, packet: CommandTopPacketResScore): Promise<void> {
