@@ -27,6 +27,11 @@ export type CrowniclesPaginatedEmbedOptions = {
 	pageBuilder?: (pageIndex: number) => Promise<string>;
 
 	/**
+	 * Dynamic title builder, called per page. Overrides setTitle.
+	 */
+	titleBuilder?: (pageIndex: number) => string;
+
+	/**
 	 * Total number of pages (required when using pageBuilder)
 	 */
 	pagesCount?: number;
@@ -66,6 +71,12 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 		this.options = options;
 	}
 
+	private applyTitle(pageIndex: number): void {
+		if (this.options.titleBuilder) {
+			this.setTitle(this.options.titleBuilder(pageIndex));
+		}
+	}
+
 	private getTotalPages(): number {
 		return this.options.pages ? this.options.pages.length : this.options.pagesCount!;
 	}
@@ -103,6 +114,7 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 			.setStyle(ButtonStyle.Secondary);
 
 		const firstPageContent = await this.getPage(currentPage);
+		this.applyTitle(currentPage);
 
 		const msg = await originalInteraction.editReply({
 			embeds: [this.setDescription(firstPageContent).setFooter(CrowniclesPaginatedEmbed.getPageFooter(currentPage, totalPages, this.options.lng))],
@@ -134,6 +146,7 @@ export class CrowniclesPaginatedEmbed extends CrowniclesEmbed {
 			}
 
 			const pageContent = await this.getPage(currentPage);
+			this.applyTitle(currentPage);
 
 			await buttonInteraction.update({
 				embeds: [this.setDescription(pageContent).setFooter(CrowniclesPaginatedEmbed.getPageFooter(currentPage, totalPages, this.options.lng))],
