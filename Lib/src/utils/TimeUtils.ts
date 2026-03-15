@@ -258,11 +258,52 @@ export function getTimeFromXHoursAgo(hours: number): Date {
 }
 
 /**
+ * Fallback duration formatting for runtimes without Intl.DurationFormat
+ */
+function minutesDisplayFallback(minutes: number, lng: string): string {
+	let hours = Math.floor(minutesToHours(minutes));
+	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
+	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
+	hours %= TimeConstants.HOURS_IN_DAY;
+
+	const isFrench = lng.startsWith("fr");
+	const pluralSuffix = (n: number): string => n > 1 ? "s" : "";
+
+	const parts: string[] = [];
+	if (days > 0) {
+		parts.push(`${days} ${isFrench ? "jour" : "day"}${pluralSuffix(days)}`);
+	}
+	if (hours > 0) {
+		parts.push(`${hours} ${isFrench ? "heure" : "hour"}${pluralSuffix(hours)}`);
+	}
+	if (mins > 0) {
+		parts.push(`${mins} minute${pluralSuffix(mins)}`);
+	}
+
+	if (parts.length === 0) {
+		return "< 1 minute";
+	}
+
+	if (parts.length === 1) {
+		return parts[0];
+	}
+
+	const linkWord = isFrench ? " et " : " and ";
+	const lastPart = parts.pop()!;
+	return `${parts.join(", ")}${linkWord}${lastPart}`;
+}
+
+/**
  * Display a time in a human-readable format using Intl.DurationFormat
  * @param minutes - the time in minutes
  * @param lng - language code for formatting
  */
 export function minutesDisplayIntl(minutes: number, lng: string): string {
+	// Fallback for runtimes without Intl.DurationFormat (Node < 24)
+	if (typeof Intl === "undefined" || !("DurationFormat" in Intl)) {
+		return minutesDisplayFallback(minutes, lng);
+	}
+
 	// Compute components
 	let hours = Math.floor(minutesToHours(minutes));
 	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
