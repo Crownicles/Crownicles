@@ -27,7 +27,7 @@ const use: FightActionFunc = (sender, receiver) => {
 	if (RandomUtils.crowniclesRandom.bool(0.1)) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,
-			alteration: FightAlterations.FROZEN
+			alteration: FightAlterations.BLEEDING
 		}, receiver);
 	}
 
