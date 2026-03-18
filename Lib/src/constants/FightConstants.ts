@@ -146,11 +146,11 @@ export abstract class FightConstants {
 				CHARGE_MAELSTROM_ATTACK: "chargeMaelstromAttack",
 				DELUGE: "deluge",
 				DIVINE_LIGHTNING: "divineLightning",
-				FROSTED_FANGS: "frostedFangs",
+				ACERATED_FANGS: "aceratedFangs",
 				MAELSTROM_ATTACK: "maelstromAttack",
 				TENTACLE_BLOW_ATTACK: "tentacleBlowAttack",
 				ABYSSAL_EMBRACE_ATTACK: "abyssalEmbraceAttack",
-				ABYSSAL_HUNGER: "abyssalHunger"
+				SEPULCRAL_HUNGER: "sepulcralHunger"
 			},
 			PET: {
 				BITE: "bite",

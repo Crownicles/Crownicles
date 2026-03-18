@@ -1994,7 +1994,7 @@ export const CrowniclesIcons: {
 	},
 	fightActions: {
 		abyssalEmbraceAttack: "➰",
-		abyssalHunger: "🦈",
+		sepulcralHunger: "🦈",
 		aerialDiveAttack: "🦅",
 		alliesArePresent: "💀",
 		ambush: "😶‍🌫️",
@@ -2042,7 +2042,7 @@ export const CrowniclesIcons: {
 		familyMealAttack: "🍽️",
 		fireAttack: "🔥",
 		frozen: "🥶",
-		frostedFangs: "🦷",
+		aceratedFangs: "🦷",
 		frozenKissAttack: "💋",
 		full: "😴",
 		getDirty: "💩",

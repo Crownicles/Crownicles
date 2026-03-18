@@ -14,12 +14,12 @@
       "weight": 5
     },
     {
-      "id": "frostedFangs",
+      "id": "aceratedFangs",
       "minLevel": 0,
       "weight": 2
     },
     {
-      "id": "abyssalHunger",
+      "id": "sepulcralHunger",
       "minLevel": 80,
       "weight": 3
     },

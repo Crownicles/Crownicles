@@ -203,10 +203,10 @@
       "name_one": "Attaque étreinte abyssale",
       "name_other": "Attaques étreintes abyssales"
     },
-    "abyssalHunger": {
+    "sepulcralHunger": {
       "customMessage": "sent la faiblesse de sa proie et attaque avec une férocité redoublée, ses yeux brillant d'une lueur prédatrice.",
-      "name_one": "Faim abyssale",
-      "name_other": "Faims abyssales"
+      "name_one": "Faim sépulcrale",
+      "name_other": "Faims sépulcrales"
     },
     "aerialDiveAttack": {
       "customMessage": "s'élance dans les airs pour plonger sur son adversaire, mais celui-ci parvient à le maintenir à distance grâce à ses attaques.",
@@ -298,8 +298,8 @@
     },
     "chargeChargeMaelstromAttack": {
       "customMessage": "s'immobilise et se prépare à déclencher un désastre.",
-      "name_one": "Attaque maelström",
-      "name_other": "Attaques maelströms"
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
     },
     "chargeChargeRadiantBlastAttack": {
       "customMessage": "charge son énergie et se prépare à lancer une attaque puissante.",
@@ -317,13 +317,13 @@
     },
     "chargeDeluge": {
       "customMessage": "concentre son énergie primordiale, le ciel s'obscurcit et des éclairs commencent à zébrer le ciel.",
-      "name_one": "Attaque Déluge",
-      "name_other": "Attaques Déluges"
+      "name_one": "Déluge",
+      "name_other": "Déluges"
     },
     "chargeMaelstromAttack": {
       "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
-      "name_one": "Attaque maelström",
-      "name_other": "Attaques maelströms"
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
     },
     "chargeRadiantBlastAttack": {
       "customMessage": "continue de charger son énergie et de se préparer à lancer une attaque puissante.",
@@ -488,10 +488,10 @@
       "active": "est gelé.",
       "stop": "n'est plus gelé."
     },
-    "frostedFangs": {
-      "customMessage": "mord violemment avec ses crocs givrés, laissant une marque glaciale.",
-      "name_one": "Crocs givrés",
-      "name_other": "Crocs givrés"
+    "aceratedFangs": {
+      "customMessage": "mord violemment avec ses crocs acérés, laissant une marque sanglante.",
+      "name_one": "Crocs acérés",
+      "name_other": "Crocs acérés"
     },
     "frozenKissAttack": {
       "name_one": "Attaque baiser gelé",
@@ -622,8 +622,8 @@
     },
     "maelstromAttack": {
       "customMessage": "déchaîne un maelström, mêlant vents et courants dans un tourbillon ravageur.",
-      "name_one": "Attaque maelström",
-      "name_other": "Attaques maelströms"
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
     },
     "magicMimicAttack": {
       "name_one": "Attaque mimique magique",
@@ -1626,7 +1626,7 @@
     },
     "leviathan": {
       "name": "Léviathan",
-      "description": "Le seigneur incontesté des océans, capable d'invoquer la foudre divine depuis les cieux et de déchaîner des déluges apocalyptiques. Ses crocs givrés déchirent tout sur leur passage, et sa faim abyssale est insatiable. Les téméraires qui l'affrontent font face aux maelströms les plus dévastateurs jamais vus."
+      "description": "Le seigneur incontesté des océans, capable d'invoquer la foudre divine depuis les cieux et de déchaîner des déluges apocalyptiques. Ses crocs acérés déchirent tout sur leur passage, et sa faim sépulcrale est insatiable. Les téméraires qui l'affrontent font face aux maelströms les plus dévastateurs jamais vus."
     }
   },
   "objects": {
