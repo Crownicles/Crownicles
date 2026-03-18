@@ -42,7 +42,7 @@ function getAttackInfo(): attackInfo {
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
 		attackerStats: [sender.getAttack()],
-		defenderStats: [receiver.getDefense() / 4],
+		defenderStats: [receiver.getDefense()],
 		statsEffect: [1]
 	};
 }
