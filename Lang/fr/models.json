@@ -474,7 +474,6 @@
       "name_other": "Repas de famille"
     },
     "fireAttack": {
-      "customMessage": "tente de brûler son adversaire mais celui-ci est insensible au feu.",
       "description": "Brûle l'adversaire. L'altération \"brûlé\" inflige des dégâts à votre adversaire sur la durée.",
       "name_one": "Attaque feu",
       "name_other": "Attaques feu"
@@ -598,11 +597,11 @@
       "name_one": "Attaque intense",
       "name_other": "Attaques intenses"
     },
-    "irradiated": {
-      "name": "irradié",
-      "new": "est irradié.",
-      "active": "subit les radiations.",
-      "stop": "n'est plus irradié."
+    "blackCorrosion": {
+      "name": "corrodé",
+      "new": "est corrodé.",
+      "active": "est rongé par la corrosion noire.",
+      "stop": "n'est plus corrodé."
     },
     "isStuckInPolarEmbrace": {
       "customMessage": "ne parvient pas à maintenir son accroche sur son adversaire qui parvient à se libérer grâce à ses attaques",
@@ -1594,7 +1593,7 @@
     },
     "captainCrow": {
       "name": "Capitaine Crow",
-      "description": "Fantôme du légendaire Capitaine Crow !"
+      "description": "Âme damnée du plus redouté des pirates, le Capitaine Crow hante la Crique du Revenant depuis sa mort tragique. Son regard de braise et son rire sinistre glacent le sang de ceux qui osent fouler ses eaux maudites."
     },
     "celestialGuardian": {
       "name": "Gardien céleste",
@@ -2243,6 +2242,9 @@
     },
     "1110": {
       "waterSpirit": "Vous pénétrez dans une caverne maritime à marée basse. Les parois suintent d'eau salée et des échos étranges résonnent dans les profondeurs. Des lueurs bleutées dansent dans l'obscurité, vous attirant plus loin. Soudain, l'eau stagnante au sol se met à tourbillonner d'elle-même. Les gouttelettes sur les parois convergent vers un point central. Une forme translucide prend vie devant vous, mi-brume mi-eau. L'Esprit des mers vous fixe de ses yeux d'un bleu abyssal. Avant que vous ne puissiez réagir, il disparaît et réapparaît dans votre dos. Ce gardien spectral ne vous laissera pas quitter son sanctuaire si facilement..."
+    },
+    "1111": {
+      "captainCrow": "La brume s'épaissit à mesure que vous approchez de la Crique du Revenant. Le soleil s'est couché depuis longtemps et seuls les feux follets éclairent votre chemin, dansant au-dessus des vagues noires comme pour vous narguer. Les rochers affleurent à peine sous la surface, traîtres et silencieux. Vous progressez prudemment sur les galets mouillés quand votre regard accroche les carcasses de plusieurs navires éventrés, leurs coques pourries coincées entre les brisants. Tout à coup, la brume se condense en une forme humanoïde à quelques mètres devant vous. Un manteau en lambeaux qui flotte dans un vent inexistant. Et des yeux, deux braises rougeoyantes dans le néant. Un rire grave et caverneux résonne sur les falaises. Le Capitaine Crow, spectre du pirate le plus redouté des sept mers, matérialise sa silhouette devant vous, son sabre spectral crépitant d'une énergie maudite. Il n'a pas fini de réclamer des âmes."
     },
     "1112": {
       "mermaid": "Vous explorez une caverne sous-marine où chaque son se répercute à l'infini. Plus vous avancez, plus vous percevez une mélodie envoûtante. Vos jambes vous portent malgré vous vers sa source. Au détour d'un passage, vous découvrez un bassin d'eau turquoise. Et là, assise sur un rocher, elle vous attend. Mi-femme mi-poisson, la Sirène vous observe de ses yeux hypnotiques. Sa beauté est saisissante, mais son sourire vous glace le sang. Ses griffes acérées tapotent la pierre tandis que son chant change de tonalité. Ce n'est plus une invitation, c'est un piège. Les murmures que vous entendiez sont les échos des victimes précédentes..."
