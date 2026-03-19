@@ -12,7 +12,7 @@ import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionR
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 
 const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
-	if (RandomUtils.crowniclesRandom.bool(0.1) && affected.alterationTurn === 3 || RandomUtils.crowniclesRandom.bool(0.7) && affected.alterationTurn > 2) {
+	if (affected.alterationTurn > 3 || RandomUtils.crowniclesRandom.bool(0.3)) {
 		affected.removeSpeedModifiers(fightAlteration);
 		affected.removeAttackModifiers(fightAlteration);
 		return defaultHealFightAlterationResult(affected);
