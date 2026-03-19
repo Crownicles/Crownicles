@@ -75,7 +75,7 @@ export abstract class FightConstants {
 				DIRTY: "dirty",
 				FROZEN: "frozen",
 				FULL: "full",
-				IRRADIATED: "irradiated",
+				BLACK_CORROSION: "blackCorrosion",
 				OUTRAGE: "outrage",
 				OUT_OF_BREATH: "outOfBreath",
 				PARALYZED: "paralyzed",

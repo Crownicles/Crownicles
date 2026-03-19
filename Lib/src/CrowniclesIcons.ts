@@ -2061,7 +2061,7 @@ export const CrowniclesIcons: {
 		icySeductionAttack: "❄️",
 		inkJet: "🖋️",
 		intenseAttack: "😤",
-		irradiated: "☢️",
+		blackCorrosion: "⚫",
 		isStuckInPolarEmbrace: "🤍",
 		lavaWaveAttack: "♨️",
 		lightRayAttack: "🔆",

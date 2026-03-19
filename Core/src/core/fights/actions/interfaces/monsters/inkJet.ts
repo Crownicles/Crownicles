@@ -6,7 +6,7 @@ import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 const use: FightActionFunc = (_sender, receiver) => {
 	const result = simpleAlterationFightAction(receiver, {
 		selfTarget: false,
-		alteration: RandomUtils.crowniclesRandom.bool(0.70) ? FightAlterations.IRRADIATED : FightAlterations.BLIND
+		alteration: RandomUtils.crowniclesRandom.bool(0.70) ? FightAlterations.BLACK_CORROSION : FightAlterations.BLIND
 	});
 
 	return {

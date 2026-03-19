@@ -23,8 +23,8 @@ const use: FightActionFunc = (sender, receiver) => {
 		}
 	);
 
-	// 10% chance to freeze the defender
-	if (RandomUtils.crowniclesRandom.bool(0.1)) {
+	// 25% chance to make bleeding the defender
+	if (RandomUtils.crowniclesRandom.bool(0.25)) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,
 			alteration: FightAlterations.BLEEDING
