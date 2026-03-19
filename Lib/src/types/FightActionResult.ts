@@ -38,6 +38,7 @@ export interface FightActionResult {
 	attackStatus: FightActionStatus;
 	alterations?: FightAlterationApplied[];
 	customMessage?: boolean; // If true, the attack should be displayed with a custom message
+	customMessageFail?: boolean; // If true, the failed attack should be displayed with a custom fail message
 	usedAction?: {
 		id: string;
 		result: FightActionResult;
@@ -70,6 +71,19 @@ export function defaultFailFightActionResult(): FightActionResult {
 	return {
 		fail: true,
 		attackStatus: FightActionStatus.MISSED
+	};
+}
+
+/**
+ * Create a custom message fail FightActionResult,
+ * For example, an action that fails but should display a specific custom message
+ * instead of the default "XXX missed with Attack YYY"
+ */
+export function customMessageFailActionResult(): FightActionResult {
+	return {
+		fail: true,
+		attackStatus: FightActionStatus.MISSED,
+		customMessageFail: true
 	};
 }
 

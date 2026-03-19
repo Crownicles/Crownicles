@@ -62,7 +62,7 @@ describe("FightConstants fight_actions models.json validation", () => {
 			it(`${id} should have only success, customMessage or afraid`, () => {
 				const entry = fightActions[id];
 				expect(entry).toBeDefined();
-				const allowed = ["success", "customMessage", "afraid", "generalEffect", "failure"];
+				const allowed = ["success", "customMessage", "customMessageFail", "afraid", "generalEffect", "failure"];
 				for (const key of Object.keys(entry)) {
 					expect(allowed).toContain(key);
 				}
