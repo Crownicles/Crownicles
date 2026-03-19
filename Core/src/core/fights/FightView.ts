@@ -207,6 +207,7 @@ export class FightView {
 			fightActionId: fightAction.id,
 			usedFightActionId,
 			customMessage: "customMessage" in fightActionResult ? fightActionResult.customMessage : false,
+			customMessageFail: "customMessageFail" in fightActionResult ? fightActionResult.customMessageFail : false,
 			status:
 				"attackStatus" in fightActionResult
 					? fightActionResult.attackStatus // FightAction is an attack, so we have an attackStatus

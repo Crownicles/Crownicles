@@ -473,6 +473,12 @@
       "name_one": "Repas de famille",
       "name_other": "Repas de famille"
     },
+    "fatalFlight": {
+      "customMessageFail": "invoque des corbeaux spectraux mais votre familier ordonne à ceux-ci de retourner au néant.",
+      "customMessage": "invoque des corbeaux spectraux qui fondent sur son adversaire et le lacèrent de toute part.",
+      "name_one": "Volée funeste",
+      "name_other": "Volées funestes"
+    },
     "fireAttack": {
       "description": "Brûle l'adversaire. L'altération \"brûlé\" inflige des dégâts à votre adversaire sur la durée.",
       "name_one": "Attaque feu",
@@ -641,7 +647,7 @@
       "name_other": "Attaques tir de boue"
     },
     "mutiny": {
-      "customMessage": "invoque les fantômes de son vieil équipage, c'est une révolte total !",
+      "customMessage": "invoque les fantômes de son vieil équipage, c'est une bataille générale !",
       "name_one": "Mutinerie",
       "name_other": "Mutineries"
     },
