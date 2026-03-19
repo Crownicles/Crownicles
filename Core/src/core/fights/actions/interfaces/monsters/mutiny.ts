@@ -45,9 +45,9 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 				0.40
 			]
 		}, sender, {
-			minDamage: 90 * damageFactor,
-			averageDamage: 150 * damageFactor,
-			maxDamage: 250 * damageFactor
+			minDamage: 80 * damageFactor,
+			averageDamage: 120 * damageFactor,
+			maxDamage: 180 * damageFactor
 		})
 	}, sender, fightAction);
 
@@ -61,9 +61,9 @@ export default use;
 
 function getAttackInfo(): attackInfo {
 	return {
-		minDamage: 90,
-		averageDamage: 150,
-		maxDamage: 250
+		minDamage: 80,
+		averageDamage: 130,
+		maxDamage: 220
 	};
 }
 
