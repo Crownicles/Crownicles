@@ -2040,6 +2040,7 @@ export const CrowniclesIcons: {
 		energeticAttack: "⚡",
 		eruptionAttack: "🌋",
 		familyMealAttack: "🍽️",
+		fatalFlight: "🐦‍⬛",
 		fireAttack: "🔥",
 		frozen: "🥶",
 		aceratedFangs: "🦷",

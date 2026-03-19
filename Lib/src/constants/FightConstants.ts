@@ -120,6 +120,7 @@ export abstract class FightConstants {
 				MUTINY: "mutiny",
 				OUTRAGE_ATTACK: "outrageAttack",
 				PETRIFICATION_ATTACK: "petrificationAttack",
+				FATAL_FLIGHT: "fatalFlight",
 				RADIANT_BLAST_ATTACK: "radiantBlastAttack",
 				ROAR_ATTACK: "roarAttack",
 				ROCK_SHIELD_ATTACK: "rockShieldAttack",

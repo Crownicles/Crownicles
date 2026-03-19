@@ -14,14 +14,14 @@
       "weight": 4
     },
     {
-      "id": "ambush",
-      "minLevel": 0,
-      "weight": 3
+      "id": "fatalFlight",
+      "minLevel": 100,
+      "weight": 1
     },
     {
       "id": "cursedOfTheSea",
       "minLevel": 0,
-      "weight": 3
+      "weight": 2
     },
     {
       "id": "mutiny",
