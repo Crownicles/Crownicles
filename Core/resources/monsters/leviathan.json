@@ -5,7 +5,7 @@
   "speedRatio": 180,
   "breath": 10,
   "maxBreath": 60,
-  "breathRegen": 12,
+  "breathRegen": 9,
   "rewardFactor": 1.8,
   "attacks": [
     {
