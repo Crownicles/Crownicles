@@ -1111,7 +1111,8 @@ export const CrowniclesIcons: {
 		expeditionAdvice: "🗺️",
 		petDropToken: "🪙",
 		altar: "⛩️",
-		farmer: "🧑‍🌾"
+		farmer: "🧑‍🌾",
+		gardener: "🌱"
 	},
 	pets: {
 		0: {

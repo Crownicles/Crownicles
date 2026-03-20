@@ -122,6 +122,8 @@ import { ReactionCollectorAltarData } from "../../../../Lib/src/packets/interact
 import { altarCollector } from "../../smallEvents/altar";
 import { ReactionCollectorEquipData } from "../../../../Lib/src/packets/interaction/ReactionCollectorEquip";
 import { equipCollector } from "../../commands/player/EquipCommand";
+import { ReactionCollectorGardenerData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGardener";
+import { gardenerCollector } from "../../smallEvents/gardener";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -195,6 +197,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorBuyHealData.name, createBuyHealCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorAltarData.name, altarCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorEquipData.name, equipCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGardenerData.name, gardenerCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

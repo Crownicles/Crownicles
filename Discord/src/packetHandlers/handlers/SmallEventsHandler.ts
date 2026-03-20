@@ -113,6 +113,8 @@ import {
 	SmallEventAltarNoContributionPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import { SmallEventFarmerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFarmerPacket";
+import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
+import { PlantConstants } from "../../../../Lib/src/constants/PlantConstants";
 import {
 	altarContributed, altarFirstEncounter, altarNoContribution
 } from "../../smallEvents/altar";
@@ -1278,6 +1280,61 @@ export default class SmallEventsHandler {
 					+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, {
 						count: packet.amount
 					}),
+					interaction.user,
+					lng
+				)
+			]
+		});
+	}
+
+	@packetHandler(SmallEventGardenerPacket)
+	async smallEventGardener(context: PacketContext, packet: SmallEventGardenerPacket): Promise<void> {
+		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!) : DiscordCache.getInteraction(context.discord!.interaction!);
+		const lng = context.discord!.language;
+
+		const story = getRandomSmallEventIntro(lng)
+			+ StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
+
+		let rewardText: string;
+
+		switch (packet.interactionName) {
+			case "seed":
+				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.seed.${packet.conditionKey}`, lng, {
+					cost: packet.cost
+				});
+				break;
+			case "advice": {
+				const adviceReplacements: Record<string, unknown> = {};
+				if (packet.conditionKey === "needLevel" && packet.plantId > 0) {
+					adviceReplacements.level = PlantConstants.SEED_LEVEL_REQUIREMENTS[packet.plantId as keyof typeof PlantConstants.SEED_LEVEL_REQUIREMENTS];
+				}
+				if (packet.conditionKey === "needMoney" && packet.plantId > 0) {
+					adviceReplacements.cost = PlantConstants.SEED_COSTS[packet.plantId as keyof typeof PlantConstants.SEED_COSTS];
+				}
+				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.advice.${packet.conditionKey}`, lng, adviceReplacements);
+				break;
+			}
+			case "plant":
+				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
+					plantEmoji: CrowniclesIcons.plants[packet.plantId],
+					plantName: i18n.t(`models:plants.${packet.plantId}`, { lng })
+				});
+				break;
+			case "material":
+				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.material", lng, {
+					materialEmoji: CrowniclesIcons.materials[packet.materialId] ?? CrowniclesIcons.inventory.stock,
+					materialName: i18n.t(`models:materials.${packet.materialId}`, { lng })
+				});
+				break;
+			default:
+				rewardText = "";
+		}
+
+		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"gardener",
+					story + rewardText,
 					interaction.user,
 					lng
 				)

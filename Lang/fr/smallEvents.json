@@ -2659,5 +2659,117 @@
         "La fermière constate que votre réserve de salades est déjà pleine à craquer. Épatée, elle disparaît dans sa remise et revient avec **un objet poussiéreux** qu'elle vous tend avec un clin d'œil."
       ]
     }
+  },
+  "gardener": {
+    "stories": [
+      "un vieil homme au tablier terreux et aux mains calleuses vous interpelle depuis un petit lopin de terre au bord du chemin. Il se présente comme Théobald, jardinier itinérant, et vous invite à admirer ses plants avec une fierté non dissimulée. ",
+      "vous apercevez un homme agenouillé au pied d'un arbre, les doigts plongés dans la terre. Il se relève en vous voyant, époussetant ses genoux, et vous salue chaleureusement. Il dit s'appeler Théobald et consacrer sa vie à l'art du jardinage. ",
+      "une odeur de terre humide et de feuilles fraîches vous attire vers un petit campement improvisé au bord du sentier. Un jardinier nommé Théobald, arrosoir à la main et chapeau fleuri sur la tête, vous accueille avec un grand sourire. ",
+      "vous manquez de marcher sur un semis soigneusement disposé en bordure du chemin. Un vieillard surgit d'un buisson voisin, l'air faussement outré, avant d'éclater de rire. Il se présente comme Théobald, maître jardinier ambulant. ",
+      "un homme au visage buriné par le soleil vous fait signe depuis un petit jardin aménagé en bord de route. Cet homme, un certain Théobald, semble connaître chaque plante par son nom et insiste pour partager son savoir avec les voyageurs. "
+    ],
+    "rewards": {
+      "seed": {
+        "free": [
+          "Le vieux Théobald fouille dans sa sacoche et en sort une petite graine qu'il vous tend. Il vous explique que c'est parfait pour débuter et apprendre les bases du jardinage. Vous recevez une **graine** {emote:smallEvents.gardener}."
+        ],
+        "paid": [
+          "Théobald vous montre une graine qu'il examine à la lumière. Il accepte de vous la céder contre **{{cost}} {emote:unitValues.money}**."
+        ],
+        "paidAccepted": [
+          "Théobald vous montre une graine qu'il examine à la lumière. Après avoir déboursé **{{cost}} {emote:unitValues.money}**, vous rangez précieusement cette **graine** {emote:smallEvents.gardener} dans votre sac."
+        ],
+        "moon": [
+          "Théobald lève les yeux vers le ciel nocturne et sourit en voyant la lune briller. Il sort précautionneusement une graine de sa sacoche en murmurant que cette plante ne peut être confiée que sous un clair de lune suffisant. Vous recevez une **graine** {emote:smallEvents.gardener}."
+        ],
+        "night": [
+          "Théobald scrute le ciel assombri avec satisfaction. La nuit est idéale pour confier cette graine, car la plante a besoin de l'obscurité pour s'épanouir. Vous recevez une **graine** {emote:smallEvents.gardener}."
+        ],
+        "herbivorePet": [
+          "Le jardinier observe votre familier herbivore avec admiration, impressionné par le lien évident qui vous unit. Seuls ceux qui prennent soin de la nature méritent une telle plante, confie-t-il en vous tendant une **graine** {emote:smallEvents.gardener}."
+        ],
+        "mage": [
+          "Théobald remarque votre aura de mage et hoche la tête avec respect. Votre maîtrise de la magie saura faire prospérer cette plante ardente, dit-il en vous confiant une **graine** {emote:smallEvents.gardener}."
+        ],
+        "phoenix": [
+          "Le jardinier écarquille les yeux devant votre phénix et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
+        ],
+        "fireItem": [
+          "Théobald repère votre équipement forgé dans le feu et acquiesce. L'affinité avec les flammes est essentielle pour cultiver cette plante ardente, explique-t-il en vous offrant une **graine** {emote:smallEvents.gardener}."
+        ],
+        "carnivorePet": [
+          "Le jardinier observe votre impressionnant familier carnivore avec un mélange de respect et de prudence. Votre compagnon saura veiller à ce que cette plante ne manque de rien, conclut-il en vous tendant une **graine** {emote:smallEvents.gardener}."
+        ],
+        "legendaryHerbivorePet": [
+          "Le jardinier tombe presque à genoux en voyant votre familier légendaire, visiblement ému par le lien extraordinaire qui vous unit. D'une main tremblante, il sort sa dernière graine {emote:smallEvents.gardener}. Seule une personne ayant tissé un lien aussi fort avec la nature peut cultiver un tel trésor, murmure-t-il."
+        ]
+      },
+      "advice": {
+        "needLevel": [
+          "Le jardinier vous examine de la tête aux pieds et secoue la tête. Vous n'avez pas encore assez d'expérience pour sa prochaine graine. Revenez quand vous aurez atteint le **niveau {{level}}**, conseille-t-il.",
+          "Théobald fronce les sourcils en évaluant votre stature. La nature exige un minimum de maturité pour mériter cette graine, et il vous faudra atteindre le **niveau {{level}}**."
+        ],
+        "needGarden": [
+          "Théobald penche la tête en apprenant que vous n'avez pas de jardin. Il vous conseille d'investir dans une **maison avec un jardin** avant de revenir le voir.",
+          "Le jardinier soupire. Sans jardin, inutile de s'encombrer de nouvelles graines. Procurez-vous une **maison avec un espace de jardinage**, puis revenez."
+        ],
+        "needMoney": [
+          "Théobald vous montre la prochaine graine mais la range aussitôt. Il vous faudra **{{cost}} {emote:unitValues.money}** pour l'obtenir, et vous n'avez pas assez sur vous.",
+          "Le jardinier fait miroiter une graine devant vos yeux avant de la ranger précieusement. Son prix est de **{{cost}} {emote:unitValues.money}**, revenez quand vous aurez les moyens."
+        ],
+        "needHerbivorePet": [
+          "Le jardinier scrute les alentours et remarque que vous n'avez pas de familier herbivore dressé à vos côtés. Il vous faudrait un **familier herbivore avec un lien de confiance maximal**.",
+          "Théobald secoue la tête. La prochaine graine nécessite un compagnon proche de la nature. Revenez avec un **familier herbivore** que vous aurez **apprivoisé complètement**."
+        ],
+        "needNight": [
+          "Théobald regarde le soleil encore haut dans le ciel et soupire. La prochaine graine ne peut être offerte qu'à la **tombée de la nuit**. Revenez quand le soleil se sera couché.",
+          "Le jardinier observe le ciel lumineux et secoue la tête. Cette graine particulière ne se confie que dans l'**obscurité de la nuit**."
+        ],
+        "needMoonlight": [
+          "Le jardinier observe le ciel avec déception. La **lune n'est pas assez visible** pour confier cette graine. Revenez quand elle brillera davantage dans le ciel nocturne.",
+          "Théobald scrute le firmament en plissant les yeux. Cette graine exige un **puissant clair de lune** pour être offerte. Revenez lors d'une nuit plus lumineuse."
+        ],
+        "needFireAffinity": [
+          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **phénix** ou porter un **équipement forgé dans les flammes**.",
+          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **phénix**, ou un porteur d'**arme enflammée**."
+        ],
+        "needCarnivorePet": [
+          "Le jardinier vous explique que la prochaine graine nécessite un compagnon carnivore particulièrement puissant. Il vous faudrait un **familier carnivore de rareté épique ou supérieure**.",
+          "Théobald vous confie que cette graine singulière se nourrit de viande. Seul un **familier carnivore d'exception** pourrait veiller à sa croissance."
+        ],
+        "needLegendaryHerbivorePet": [
+          "Théobald vous confie avec gravité que sa dernière graine est la plus précieuse. Il ne la confiera qu'à quelqu'un accompagné d'un **familier herbivore légendaire** avec un **lien de confiance maximal**.",
+          "Le vieil homme murmure que ce qu'il garde est le trésor d'une vie. Seul un aventurier ayant noué un lien exceptionnel avec un **familier herbivore de rareté légendaire** pourra le mériter."
+        ],
+        "seedSlotFull": [
+          "Le jardinier remarque que vous avez déjà une graine sur vous. **Plantez-la d'abord** dans votre jardin, puis revenez le voir.",
+          "Théobald secoue la tête en voyant votre sacoche pleine. **Plantez votre graine actuelle** avant de lui en demander une nouvelle."
+        ],
+        "allSeedsObtained": [
+          "Théobald vous félicite chaleureusement en voyant toutes les plantes de votre jardin. Vous avez déjà obtenu **toutes ses graines** et il n'a plus rien à vous offrir, mais il est très fier de votre jardin.",
+          "Le vieux jardinier vous serre chaleureusement la main. Vous avez accompli tout ce qu'il pouvait vous enseigner. Votre jardin est un **chef-d'œuvre**, dit-il les larmes aux yeux."
+        ],
+        "noPlantSpace": [
+          "Théobald voulait vous offrir une plante, mais votre inventaire est déjà plein. Il hausse les épaules avec un sourire et vous souhaite bonne route.",
+          "Le jardinier fouille dans ses réserves mais constate que vous n'avez **plus de place** pour transporter de plante. Il vous conseille de libérer un emplacement."
+        ],
+        "refused": [
+          "Vous déclinez poliment l'offre de Théobald. Le jardinier range la graine dans sa sacoche avec un sourire compréhensif et vous souhaite bonne route.",
+          "Vous n'avez pas les moyens pour le moment. Théobald hoche la tête et vous invite à revenir quand vous serez prêt."
+        ]
+      },
+      "plant": [
+        "Impressionné par votre passage, le jardinier fouille dans ses réserves et vous offre généreusement une de ses plantes cultivées :\n\n{{plantEmoji}} **{{plantName}}**",
+        "Théobald sort une plante de son chariot et vous la tend avec un clin d'œil malicieux :\n\n{{plantEmoji}} **{{plantName}}**",
+        "Le jardinier, ne pouvant vous donner de graine, vous offre généreusement une de ses plantes en souvenir de votre rencontre :\n\n{{plantEmoji}} **{{plantName}}**"
+      ],
+      "material": [
+        "Théobald fouille dans sa besace et vous offre un matériau lié au jardinage avec un sourire bienveillant :\n\n{{materialEmoji}} **{{materialName}}**",
+        "Le jardinier vous tend un matériau de jardinage tout en vous expliquant comment il pourrait vous être utile :\n\n{{materialEmoji}} **{{materialName}}**"
+      ]
+    },
+    "menu": [
+      "\n\nAcceptez-vous son offre ?"
+    ]
   }
 }
