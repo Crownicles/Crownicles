@@ -1,8 +1,8 @@
 {
-  "baseEnergyValue": -150,
+  "baseEnergyValue": 0,
   "attackRatio": 50,
   "defenseRatio": 50,
-  "speedRatio": 150,
+  "speedRatio": 300,
   "breath": 6,
   "maxBreath": 18,
   "breathRegen": 5,
@@ -14,14 +14,14 @@
       "weight": 1
     },
     {
-      "id": "waterJet",
+      "id": "wateryGust",
       "minLevel": 0,
       "weight": 4
     },
     {
-      "id": "ambush",
+      "id": "aqueousEvasion",
       "minLevel": 0,
-      "weight": 1
+      "weight": 2
     },
     {
       "id": "tidalWave",
