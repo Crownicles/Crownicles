@@ -128,13 +128,6 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Get the plant emoji from PlantConstants
-	 */
-	private getPlantEmoji(plantId: PlantId): string {
-		return PlantConstants.getPlantEmoji(plantId);
-	}
-
-	/**
 	 * Format remaining time for display
 	 */
 	private formatRemainingTime(remainingSeconds: number, lng: Language): string {
@@ -156,7 +149,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 
 		if (garden.hasSeed && garden.seedPlantId !== 0) {
 			const seedName = this.getPlantName(garden.seedPlantId, ctx.lng);
-			const seedEmoji = this.getPlantEmoji(garden.seedPlantId);
+			const seedEmoji = CrowniclesIcons.plants[garden.seedPlantId];
 			description += `\n\n${i18n.t("commands:report.city.homes.garden.hasSeed", {
 				lng: ctx.lng,
 				emoji: seedEmoji,
@@ -178,7 +171,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			})}`;
 		}
 		const plantName = this.getPlantName(plot.plantId, ctx.lng);
-		const emoji = this.getPlantEmoji(plot.plantId);
+		const emoji = CrowniclesIcons.plants[plot.plantId as PlantId];
 		if (plot.isReady) {
 			return `\n${i18n.t("commands:report.city.homes.garden.readyPlot", {
 				lng: ctx.lng,
@@ -301,7 +294,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		else {
 			for (const storage of storedPlants) {
 				const plantName = this.getPlantName(storage.plantId, ctx.lng);
-				const emoji = this.getPlantEmoji(storage.plantId);
+				const emoji = CrowniclesIcons.plants[storage.plantId as PlantId];
 				description += `\n${i18n.t("commands:report.city.homes.garden.storageEntry", {
 					lng: ctx.lng,
 					emoji,
@@ -367,7 +360,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			const materialName = i18n.t(`models:materials.${result.materialId}`, { lng: ctx.lng });
 			message += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
 				lng: ctx.lng,
-				plantEmoji: PlantConstants.getPlantEmoji(result.plantId),
+				plantEmoji: CrowniclesIcons.plants[result.plantId as PlantId] ?? CrowniclesIcons.city.homeUpgrades.garden,
 				plant: plantName,
 				materialEmoji,
 				material: materialName

@@ -18,7 +18,7 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
 import {
-	EndCallback, ReactionCollectorInstance
+	EndCallback, ReactionCollectorInstance, ReactionInfo
 } from "../../core/utils/ReactionsCollector";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { MapLocationDataController } from "../../data/MapLocation";
@@ -250,9 +250,7 @@ async function handleCityReaction(params: {
 	forceSpecificEvent: number;
 	city: City;
 	collector: ReactionCollectorInstance;
-	firstReaction: { reaction: {
-		type: string; data?: unknown;
-	}; };
+	firstReaction: ReactionInfo;
 	response: CrowniclesPacket[];
 }): Promise<void> {
 	const {

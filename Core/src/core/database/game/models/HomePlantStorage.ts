@@ -34,7 +34,7 @@ export class HomePlantStorages {
 	/**
 	 * Get storage for a specific plant type
 	 */
-	public static async getForPlant(homeId: number, plantId: number): Promise<HomePlantStorage | null> {
+	public static async getForPlant(homeId: number, plantId: PlantId | 0): Promise<HomePlantStorage | null> {
 		return await HomePlantStorage.findOne({
 			where: {
 				homeId, plantId
@@ -48,7 +48,7 @@ export class HomePlantStorages {
 	public static async initializeStorage(homeId: number): Promise<void> {
 		const entriesToCreate: {
 			homeId: number;
-			plantId: number;
+			plantId: PlantId;
 			quantity: number;
 		}[] = [];
 
@@ -66,7 +66,7 @@ export class HomePlantStorages {
 	/**
 	 * Add plants to storage, capped at max capacity. Returns the number of plants that didn't fit.
 	 */
-	public static async addPlant(homeId: number, plantId: number, amount: number, maxCapacity: number): Promise<number> {
+	public static async addPlant(homeId: number, plantId: PlantId | 0, amount: number, maxCapacity: number): Promise<number> {
 		let storage = await HomePlantStorages.getForPlant(homeId, plantId);
 
 		if (!storage) {
@@ -93,7 +93,7 @@ export class HomePlantStorages {
 	/**
 	 * Remove a plant from storage. Returns true if successful.
 	 */
-	public static async removePlant(homeId: number, plantId: number): Promise<boolean> {
+	public static async removePlant(homeId: number, plantId: PlantId | 0): Promise<boolean> {
 		const storage = await HomePlantStorages.getForPlant(homeId, plantId);
 
 		if (!storage || storage.quantity <= 0) {

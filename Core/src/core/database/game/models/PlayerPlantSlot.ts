@@ -74,7 +74,7 @@ export class PlayerPlantSlots {
 			playerId: number;
 			slotType: PlantSlotType;
 			slot: number;
-			plantId: number;
+			plantId: PlantId | 0;
 		}[] = [];
 
 		// Seed slot (always 1)
@@ -121,7 +121,7 @@ export class PlayerPlantSlots {
 	/**
 	 * Set a seed in the player's seed slot
 	 */
-	public static async setSeed(playerId: number, plantId: number): Promise<void> {
+	public static async setSeed(playerId: number, plantId: PlantId | 0): Promise<void> {
 		await PlayerPlantSlot.update(
 			{ plantId },
 			{
@@ -144,7 +144,7 @@ export class PlayerPlantSlots {
 	/**
 	 * Place a plant in a specific slot
 	 */
-	public static async setPlant(playerId: number, slot: number, plantId: number): Promise<void> {
+	public static async setPlant(playerId: number, slot: number, plantId: PlantId | 0): Promise<void> {
 		await PlayerPlantSlot.update(
 			{ plantId },
 			{
@@ -167,7 +167,7 @@ export class PlayerPlantSlots {
 	/**
 	 * Check if the player already has a seed of a given plant type
 	 */
-	public static async hasSeedOfType(playerId: number, plantId: number): Promise<boolean> {
+	public static async hasSeedOfType(playerId: number, plantId: PlantId | 0): Promise<boolean> {
 		const seedSlot = await PlayerPlantSlots.getSeedSlot(playerId);
 		return seedSlot?.plantId === plantId;
 	}
