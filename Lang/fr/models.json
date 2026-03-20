@@ -213,6 +213,11 @@
       "name_one": "Attaque plongée aérienne",
       "name_other": "Attaques plongées aériennes"
     },
+    "abyssalAura": {
+      "customMessage": "exerce une pression abyssale qui comprime les poumons de son adversaire, réduisant sa régénération de souffle.",
+      "name_one": "Aura abyssale",
+      "name_other": "Auras abyssales"
+    },
     "alliesArePresent": {
       "name": "victime des alliés",
       "new": "est victime des alliés de son adversaire.",
@@ -222,6 +227,11 @@
       "customMessage": "se cache pour préparer une embuscade...",
       "name_one": "Embuscade",
       "name_other": "Embuscades"
+    },
+    "aqueousEvasion": {
+      "customMessage": "glisse hors de portée dans un tourbillon aqueux et ralentit son adversaire.",
+      "name_one": "Esquive aquatique",
+      "name_other": "Esquives aquatiques"
     },
     "benediction": {
       "description": "Fait partie du groupe des \"actions des dieux\". Échoue si 1 action des dieux a déjà été effectuée dans le combat. Augmente toutes les statistiques du lanceur. Plus la bénédiction est utilisée tard dans le combat, plus l'augmentation des statistiques est importante.",
@@ -949,6 +959,11 @@
       "customMessage": "balance un tentacule sur son adversaire.",
       "name_one": "Attaque coup de tentacule",
       "name_other": "Attaques coups de tentacules"
+    },
+    "tentacleShield": {
+      "customMessage": "agite ses tentacules dans tous les sens, renvoyant une partie des projectiles.",
+      "name_one": "Bouclier tentacule",
+      "name_other": "Boucliers tentacules"
     },
     "tidalWave": {
       "name_one": "Attaque raz-de-marée",

@@ -151,7 +151,10 @@ export abstract class FightConstants {
 				MAELSTROM_ATTACK: "maelstromAttack",
 				TENTACLE_BLOW_ATTACK: "tentacleBlowAttack",
 				DROWNING: "drowning",
-				SEPULCRAL_HUNGER: "sepulcralHunger"
+				SEPULCRAL_HUNGER: "sepulcralHunger",
+				AQUEOUS_EVASION: "aqueousEvasion",
+				TENTACLE_SHIELD: "tentacleShield",
+				ABYSSAL_AURA: "abyssalAura"
 			},
 			PET: {
 				BITE: "bite",

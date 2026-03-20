@@ -1995,8 +1995,10 @@ export const CrowniclesIcons: {
 	fightActions: {
 		drowning: "➰",
 		sepulcralHunger: "🦈",
+		abyssalAura: "🌑",
 		aerialDiveAttack: "🦅",
 		alliesArePresent: "💀",
+		aqueousEvasion: "🏄",
 		ambush: "😶‍🌫️",
 		benediction: "👼",
 		bleeding: "🩸",
@@ -2113,6 +2115,7 @@ export const CrowniclesIcons: {
 		tailWhipAttack: "🐊",
 		targeted: "↩️",
 		tentacleBlowAttack: "🪢",
+		tentacleShield: "🐙",
 		tidalWave: "🌊",
 		ultimateAttack: "☄️",
 		waterJet: "💦",
