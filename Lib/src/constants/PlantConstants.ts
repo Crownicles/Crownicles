@@ -1,4 +1,4 @@
-import { CrowniclesIcons } from "../CrowniclesIcons";
+import { TimeConstants } from "./TimeConstants";
 
 /**
  * Plant type IDs for the garden system.
@@ -43,7 +43,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.GOLDEN_CLOVER,
-		growthTimeSeconds: 30 * 60,
+		growthTimeSeconds: 30 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			43, // Laiton doré
 			59, // Feuilles de chêne
@@ -52,7 +52,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.LUNAR_MOSS,
-		growthTimeSeconds: 2 * 60 * 60,
+		growthTimeSeconds: 2 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			53, // Pierre de lune
 			30, // Lavande séchée
@@ -61,7 +61,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.IRON_ROOT,
-		growthTimeSeconds: 8 * 60 * 60,
+		growthTimeSeconds: 8 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			70, // Fer brut
 			41, // Racines de gingembre
@@ -70,7 +70,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.NIGHT_MUSHROOM,
-		growthTimeSeconds: 24 * 60 * 60,
+		growthTimeSeconds: TimeConstants.S_TIME.DAY,
 		compostMaterials: [
 			55, // Champignon
 			66, // Champignon vénéneux
@@ -79,7 +79,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.VENOMOUS_LEAF,
-		growthTimeSeconds: 2 * 24 * 60 * 60,
+		growthTimeSeconds: 2 * TimeConstants.S_TIME.DAY,
 		compostMaterials: [
 			10, // Belladone
 			17, // Graine de ricin
@@ -88,7 +88,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.FIRE_BULB,
-		growthTimeSeconds: 4 * 24 * 60 * 60,
+		growthTimeSeconds: 4 * TimeConstants.S_TIME.DAY,
 		compostMaterials: [
 			35, // Flamme éternelle
 			82, // Soufre
@@ -97,7 +97,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.MEAT_PLANT,
-		growthTimeSeconds: 6 * 24 * 60 * 60,
+		growthTimeSeconds: 6 * TimeConstants.S_TIME.DAY,
 		compostMaterials: [
 			42, // Cuir de chèvre
 			48, // Cuir d'agneau
@@ -106,7 +106,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.CRYSTAL_FLOWER,
-		growthTimeSeconds: 10 * 24 * 60 * 60,
+		growthTimeSeconds: 10 * TimeConstants.S_TIME.DAY,
 		compostMaterials: [
 			34, // Rune enchantée
 			67, // Pierre précieuse
@@ -115,7 +115,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.ANCIENT_TREE,
-		growthTimeSeconds: 14 * 24 * 60 * 60,
+		growthTimeSeconds: 14 * TimeConstants.S_TIME.DAY,
 		compostMaterials: [
 			84, // Planche de teck
 			31, // Écorce d'ébène
@@ -167,13 +167,6 @@ export abstract class PlantConstants {
 	 */
 	public static getPlantById(id: PlantId | 0): PlantType | undefined {
 		return PLANT_TYPES.find(p => p.id === id);
-	}
-
-	/**
-	 * Get the emoji for a plant ID, falling back to the garden icon.
-	 */
-	public static getPlantEmoji(plantId: PlantId | 0): string {
-		return CrowniclesIcons.plants[plantId as PlantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
 	}
 
 	/**

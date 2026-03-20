@@ -76,7 +76,7 @@ export class HomeGardenSlots {
 		const slotsToCreate: {
 			homeId: number;
 			slot: number;
-			plantId: number;
+			plantId: PlantId | 0;
 			plantedAt: null;
 		}[] = [];
 
@@ -116,7 +116,7 @@ export class HomeGardenSlots {
 	/**
 	 * Plant a seed in a specific slot
 	 */
-	public static async plantSeed(homeId: number, slot: number, plantId: number): Promise<void> {
+	public static async plantSeed(homeId: number, slot: number, plantId: PlantId | 0): Promise<void> {
 		const where = {
 			homeId, slot
 		};

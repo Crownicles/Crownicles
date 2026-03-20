@@ -35,7 +35,9 @@ import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConsta
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
-import { PlantConstants } from "../../../../../../../Lib/src/constants/PlantConstants";
+import {
+	PlantConstants, PlantId
+} from "../../../../../../../Lib/src/constants/PlantConstants";
 
 type ItemSlotDisplay = {
 	slot: number;
@@ -44,7 +46,7 @@ type ItemSlotDisplay = {
 
 type PlantEntry = {
 	section: "deposit" | "withdraw";
-	plantId: number;
+	plantId: PlantId | 0;
 	slot?: number;
 	quantity?: number;
 	disabled: boolean;
@@ -58,7 +60,7 @@ type PlantTransferPrefixParams = {
 
 type PlantTransferData = {
 	action: PlantTransferAction;
-	plantId: number;
+	plantId: PlantId;
 	playerSlot: number;
 };
 
@@ -822,7 +824,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			}
 			const plantType = PlantConstants.getPlantById(entry.plantId)!;
 			const plantName = i18n.t(`models:plants.${plantType.id}`, { lng: ctx.lng });
-			const icon = PlantConstants.getPlantEmoji(plantType.id);
+			const icon = CrowniclesIcons.plants[plantType.id];
 
 			if (entry.section === "deposit") {
 				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
@@ -856,10 +858,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildPlantEntryList(
 		playerSlots: {
-			slot: number; plantId: number;
+			slot: number; plantId: PlantId | 0;
 		}[],
 		plantStorage: {
-			plantId: number; quantity: number;
+			plantId: PlantId; quantity: number;
 		}[],
 		maxCapacity: number,
 		hasEmptySlot: boolean
