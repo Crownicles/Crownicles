@@ -31,6 +31,11 @@ type FightDamageMultiplier = {
 	turns: number;
 };
 
+type FightBreathRegenModifier = {
+	value: number;
+	turns: number;
+};
+
 type FightTypeResistance = {
 	type: FightActionType;
 	value: number;
@@ -67,6 +72,8 @@ export abstract class Fighter {
 
 	private damageMultipliers: FightDamageMultiplier[];
 
+	private breathRegenModifiers: FightBreathRegenModifier[];
+
 	protected constructor(level: number, availableFightActions: FightAction[]) {
 		this.stats = {
 			energy: null,
@@ -89,6 +96,7 @@ export abstract class Fighter {
 		this.alterationTurn = 0;
 		this.level = level;
 		this.damageMultipliers = [];
+		this.breathRegenModifiers = [];
 		this.resistances = [];
 
 		this.availableFightActions = new Map();
@@ -186,7 +194,15 @@ export abstract class Fighter {
 	 * Get the regeneration amount breath of the fighter per turn
 	 */
 	public getRegenBreath(): number {
-		return this.stats.breathRegen!;
+		let regen = this.stats.breathRegen!;
+		for (const modifier of this.breathRegenModifiers) {
+			regen += modifier.value;
+		}
+		return Math.max(0, regen);
+	}
+
+	public applyBreathRegenModifier(value: number, turns: number): void {
+		this.breathRegenModifiers.push({ value, turns });
 	}
 
 	/**
@@ -527,6 +543,11 @@ export abstract class Fighter {
 		this.resistances = this.resistances.filter(resistance => {
 			resistance.turns--;
 			return resistance.turns > 0;
+		});
+
+		this.breathRegenModifiers = this.breathRegenModifiers.filter(modifier => {
+			modifier.turns--;
+			return modifier.turns > 0;
 		});
 	}
 

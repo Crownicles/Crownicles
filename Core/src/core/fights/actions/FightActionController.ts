@@ -104,6 +104,9 @@ export abstract class FightActionController {
 			case FightStatBuffed.DAMAGE_BOOST:
 				target.applyDamageMultiplier(buff.value, buff.duration ?? 1);
 				break;
+			case FightStatBuffed.BREATH_REGEN:
+				target.applyBreathRegenModifier(buff.value, buff.duration ?? 1);
+				break;
 			default:
 				return;
 		}

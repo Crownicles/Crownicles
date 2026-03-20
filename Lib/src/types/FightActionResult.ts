@@ -10,7 +10,8 @@ export enum FightStatBuffed {
 	ENERGY,
 	DAMAGE,
 	SUMMON,
-	DAMAGE_BOOST
+	DAMAGE_BOOST,
+	BREATH_REGEN
 }
 
 export interface FightActionBuff {
