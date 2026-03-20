@@ -1,6 +1,6 @@
 {
   "baseEnergyValue": 360,
-  "attackRatio": 300,
+  "attackRatio": 240,
   "defenseRatio": 120,
   "speedRatio": 35,
   "breath": 15,
@@ -29,7 +29,7 @@
       "weight": 2
     },
     {
-      "id": "abyssalEmbraceAttack",
+      "id": "drowning",
       "minLevel": 50,
       "weight": 3
     }
