@@ -198,10 +198,10 @@
     "9": "Une classe axée sur la vitesse. Peu de points de vie et d'énergie mais vitesse et attaque élevées."
   },
   "fight_actions": {
-    "abyssalEmbraceAttack": {
-      "customMessage": "ne parvient pas à attraper son adversaire qui le tient à distance respectable grâce à ses attaques",
-      "name_one": "Attaque étreinte abyssale",
-      "name_other": "Attaques étreintes abyssales"
+    "drowning": {
+      "customMessage": "saisit son adversaire avec l'une de ses tentacules et le plonge sous l'eau, seuls les adversaires ayant du souffle s'extirpent sans dommage.",
+      "name_one": "Noyade",
+      "name_other": "Noyades"
     },
     "sepulcralHunger": {
       "customMessage": "sent la faiblesse de sa proie et attaque avec une férocité redoublée, ses yeux brillant d'une lueur prédatrice.",
@@ -429,7 +429,7 @@
       "name_other": "Boosts de la défense"
     },
     "deluge": {
-      "customMessage": "déchaîne une tempête cataclysmique, la foudre et les trombes d'eau s'abattent sur tout.",
+      "customMessage": "déchaîne une tempête cataclysmique, la foudre et les trombes d'eau s'abattent sur vous.",
       "name_one": "Déluge",
       "name_other": "Déluges"
     },
@@ -444,10 +444,10 @@
       "name_one": "Attaque divine",
       "name_other": "Attaques divines"
     },
-    "divineLightning": {
-      "customMessage": "invoque la foudre des cieux qui s'abat sur l'adversaire.",
-      "name_one": "Foudre divine",
-      "name_other": "Foudres divines"
+    "celestialLightning": {
+      "customMessage": "invoque la foudre céleste qui s'abat sur l'adversaire.",
+      "name_one": "Foudre céleste",
+      "name_other": "Foudres célestes"
     },
     "earthquake": {
       "customMessage": "fait trembler la terre, seul les adversaires les plus solides parviennent à y résister.",
@@ -594,7 +594,7 @@
       "name_other": "Attaque séductions glaciales"
     },
     "inkJet": {
-      "customMessage": "jette de l'encre sur son adversaire.",
+      "customMessage": "lance un puissant jet d'encre sur son adversaire.",
       "name_one": "Jet d'encre",
       "name_other": "Jet d'encre"
     },
@@ -946,7 +946,7 @@
       "active": "est touché par le boomerang."
     },
     "tentacleBlowAttack": {
-      "customMessage": "balance une tentacule sur son adversaire.",
+      "customMessage": "balance un tentacule sur son adversaire.",
       "name_one": "Attaque coup de tentacule",
       "name_other": "Attaques coups de tentacules"
     },
@@ -1627,7 +1627,7 @@
     },
     "kraken": {
       "name": "Kraken",
-      "description": "Un titan des abysses dont les tentacules massifs frappent avec une force dévastatrice. Il aveugle ses proies de jets d'encre noire, les étouffe dans son étreinte abyssale et peut déclencher des maelströms capables d'engloutir des flottes entières. Sa lenteur est compensée par une puissance et une résistance colossales."
+      "description": "Un titan des abysses dont les tentacules massifs frappent avec une force dévastatrice. Il aveugle ses proies de jets d'encre noire et peut déclencher des maelströms capables d'engloutir des flottes entières. Sa lenteur est compensée par une puissance et une résistance colossales."
     },
     "leviathan": {
       "name": "Léviathan",

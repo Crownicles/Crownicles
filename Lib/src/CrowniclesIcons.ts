@@ -1993,7 +1993,7 @@ export const CrowniclesIcons: {
 		nextPage: "➡️"
 	},
 	fightActions: {
-		abyssalEmbraceAttack: "➰",
+		drowning: "➰",
 		sepulcralHunger: "🦈",
 		aerialDiveAttack: "🦅",
 		alliesArePresent: "💀",
@@ -2035,7 +2035,7 @@ export const CrowniclesIcons: {
 		deluge: "⛈️",
 		dirty: "🗑️",
 		divineAttack: "🙏",
-		divineLightning: "⚡",
+		celestialLightning: "⚡",
 		earthquake: "🌎",
 		energeticAttack: "⚡",
 		eruptionAttack: "🌋",
