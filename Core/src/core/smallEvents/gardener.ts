@@ -38,6 +38,7 @@ import { ReactionCollectorGardener } from "../../../../Lib/src/packets/interacti
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
+import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 
 const GARDENER_INTERACTIONS = {
 	SEED: "seed",
@@ -225,7 +226,7 @@ async function checkHerbivorePetCondition(player: Player, requireLegendary: bool
 		};
 	}
 
-	if (requireLegendary && petData.rarity < 7) {
+	if (requireLegendary && petData.rarity < ItemRarity.EPIC) {
 		return {
 			canObtain: false,
 			conditionKey: "needLegendaryHerbivorePet"
@@ -310,7 +311,7 @@ async function checkCarnivorePetCondition(player: Player): Promise<SeedCondition
 		};
 	}
 
-	if (petData.rarity < 6) {
+	if (petData.rarity < ItemRarity.EPIC) {
 		return {
 			canObtain: false,
 			conditionKey: "needCarnivorePet"

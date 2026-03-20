@@ -2701,7 +2701,7 @@
           "Le jardinier observe votre impressionnant familier carnivore avec un mélange de respect et de prudence. Votre compagnon saura veiller à ce que cette plante ne manque de rien, conclut-il en vous tendant une **graine** {emote:smallEvents.gardener}."
         ],
         "legendaryHerbivorePet": [
-          "Le jardinier tombe presque à genoux en voyant votre familier légendaire, visiblement ému par le lien extraordinaire qui vous unit. D'une main tremblante, il sort sa dernière graine {emote:smallEvents.gardener}. Seule une personne ayant tissé un lien aussi fort avec la nature peut cultiver un tel trésor, murmure-t-il."
+          "Le jardinier écarquille les yeux en voyant votre familier herbivore épique, visiblement ému par le lien extraordinaire qui vous unit. D'une main tremblante, il sort sa dernière graine {emote:smallEvents.gardener}. Seule une personne ayant tissé un lien aussi fort avec la nature peut cultiver un tel trésor, murmure-t-il."
         ]
       },
       "advice": {
@@ -2738,8 +2738,8 @@
           "Théobald vous confie que cette graine singulière se nourrit de viande. Seul un **familier carnivore d'exception** pourrait veiller à sa croissance."
         ],
         "needLegendaryHerbivorePet": [
-          "Théobald vous confie avec gravité que sa dernière graine est la plus précieuse. Il ne la confiera qu'à quelqu'un accompagné d'un **familier herbivore légendaire** avec un **lien de confiance maximal**.",
-          "Le vieil homme murmure que ce qu'il garde est le trésor d'une vie. Seul un aventurier ayant noué un lien exceptionnel avec un **familier herbivore de rareté légendaire** pourra le mériter."
+          "Théobald vous confie avec gravité que sa dernière graine est la plus précieuse. Il ne la confiera qu'à quelqu'un accompagné d'un **familier herbivore épique** avec un **lien de confiance maximal**.",
+          "Le vieil homme murmure que ce qu'il garde est le trésor d'une vie. Seul un aventurier ayant noué un lien exceptionnel avec un **familier herbivore de rareté épique** pourra le mériter."
         ],
         "seedSlotFull": [
           "Le jardinier remarque que vous avez déjà une graine sur vous. **Plantez-la d'abord** dans votre jardin, puis revenez le voir.",
