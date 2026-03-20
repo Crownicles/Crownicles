@@ -16,12 +16,12 @@
     {
       "id": "aceratedFangs",
       "minLevel": 0,
-      "weight": 2
+      "weight": 3
     },
     {
       "id": "sepulcralHunger",
       "minLevel": 80,
-      "weight": 3
+      "weight": 2
     },
     {
       "id": "chargeDeluge",
@@ -32,6 +32,11 @@
       "id": "chargeChargeMaelstromAttack",
       "minLevel": 100,
       "weight": 1
+    },
+    {
+      "id": "abyssalAura",
+      "minLevel": 0,
+      "weight": 3
     }
   ],
   "maps": [
