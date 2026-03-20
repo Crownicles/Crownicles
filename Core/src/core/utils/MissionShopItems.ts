@@ -89,7 +89,7 @@ export function getAThousandPointsShopItem(): ShopItem {
 				reason: NumberChangeReason.MISSION_SHOP
 			});
 			missionsInfo.hasBoughtPointsThisWeek = true;
-			response.push(makePacket(CommandMissionShopKingsFavor, {}));
+			response.push(makePacket(CommandMissionShopKingsFavor, { score: player.score }));
 			await Promise.all([player.save(), missionsInfo.save()]);
 			return true;
 		}
