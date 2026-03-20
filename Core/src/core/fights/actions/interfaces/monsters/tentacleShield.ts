@@ -8,7 +8,6 @@ import { FightActionType } from "../../../../../../../Lib/src/types/FightActionT
 const use: FightActionFunc = (sender, _receiver, _fightAction) => {
 	const result = defaultFightActionResult();
 
-	// The kraken wraps its tentacles around itself, absorbing 60% of distance damage for 2 player turns
 	FightActionController.applyResistance(result, {
 		selfTarget: true,
 		type: FightActionType.DISTANCE,
