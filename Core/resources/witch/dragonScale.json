@@ -1,0 +1,9 @@
+{
+  "outcomeProbabilities": {
+    "potion": 20,
+    "effect": 20,
+    "life_loss": 10
+  },
+  "effectName": "hurt",
+  "isIngredient": true
+}

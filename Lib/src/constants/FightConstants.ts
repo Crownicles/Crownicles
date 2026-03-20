@@ -261,8 +261,12 @@ export abstract class FightConstants {
 		DEFAULT_K_FACTOR: 32,
 		LOW_K_FACTOR: 24,
 		VERY_LOW_K_FACTOR: 16,
+		ULTRA_LOW_K_FACTOR: 12,
+		MINIMAL_K_FACTOR: 8,
 		LOW_K_FACTOR_THRESHOLD: 2100,
 		VERY_LOW_K_FACTOR_THRESHOLD: 2400,
+		ULTRA_LOW_K_FACTOR_THRESHOLD: 3400,
+		MINIMAL_K_FACTOR_THRESHOLD: 3800,
 		LOW_LEVEL_BONUS_THRESHOLD: 1000,
 		MAX_RANK_FOR_LEAGUE_POINTS_REWARD: 200,
 		ELO_DIFFERENCE_FOR_SAME_ELO: 30
@@ -319,6 +323,15 @@ export abstract class FightConstants {
 	static readonly FIGHT_ROLES = {
 		ATTACKER: "attacker",
 		DEFENDER: "defender"
+	} as const;
+
+	/**
+	 * Monster IDs for the final PvE bosses that players can beat
+	 */
+	static readonly FINAL_BOSS_MONSTER_IDS = {
+		MAGMA_TITAN: "magmaTitan",
+		MALE_ICE_DRAGON: "maleIceDragon",
+		FEMALE_ICE_DRAGON: "femaleIceDragon"
 	} as const;
 }
 

@@ -40,6 +40,7 @@ import { MissionsController } from "../missions/MissionsController";
 import {
 	daysToMilliseconds, hoursToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
+import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 
 /**
  * Calculate money factor based on player's wealth.
@@ -260,7 +261,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
-		if (await PlayerSmallEvents.playerSmallEventCount(player.id, "altar") !== 0) {
+		if (await PlayerSmallEvents.playerSmallEventCount(player.id, SmallEventConstants.UNIQUE_EVENT_IDS.ALTAR) !== 0) {
 			return false;
 		}
 

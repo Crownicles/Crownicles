@@ -45,7 +45,7 @@ import {
 } from "../../core/expeditions/ExpeditionCollectorFactory";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { MissionSlots } from "../../core/database/game/models/MissionSlot";
+import { resetExpeditionStreakMission } from "../../core/missions/ExpeditionStreakUtils";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
@@ -78,20 +78,6 @@ function extractExpeditionLogParams(
 		rewardIndex: activeExpedition.rewardIndex,
 		success
 	};
-}
-
-/**
- * Reset expedition streak mission progress if the latest expedition failed
- */
-async function resetExpeditionStreakMission(player: Player): Promise<void> {
-	const missionSlots = await MissionSlots.getOfPlayer(player.id);
-	const streakMission = missionSlots.find(slot => slot.missionId === "expeditionStreak");
-	if (!streakMission || streakMission.isCompleted()) {
-		return;
-	}
-
-	streakMission.numberDone = 0;
-	await streakMission.save();
 }
 
 /**
@@ -363,9 +349,10 @@ export default class PetExpeditionCommand {
 		// Apply outcome effects (love change and rewards)
 		await applyOutcomeEffects(outcome, player, petEntity, response, context, playerActiveObjects);
 
-		// Update displayed money to include blessing multiplier
+		// Update displayed values to include blessing multipliers
 		if (outcome.rewards) {
 			outcome.rewards.money = BlessingManager.getInstance().applyMoneyBlessing(outcome.rewards.money);
+			outcome.rewards.points = Math.round(outcome.rewards.points * BlessingManager.getInstance().getScoreMultiplier());
 		}
 
 		// Finalize expedition (log, cleanup, mark completed)

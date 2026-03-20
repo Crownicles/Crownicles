@@ -56,11 +56,12 @@ export default class LeagueRewardCommand {
 			const moneyToAward = leagueLastSeason.getMoneyToAward();
 			const xpToAward = leagueLastSeason.getXPToAward();
 
-			await player.addScore({
+			const scoreParameters = {
 				response,
 				amount: scoreToAward,
 				reason: NumberChangeReason.LEAGUE_REWARD
-			});
+			};
+			await player.addScore(scoreParameters);
 			await player.addMoney({
 				response,
 				amount: moneyToAward,
@@ -79,7 +80,7 @@ export default class LeagueRewardCommand {
 			await player.save();
 
 			response.push(makePacket(CommandLeagueRewardSuccessPacketRes, {
-				score: scoreToAward,
+				score: scoreParameters.amount,
 				money: BlessingManager.getInstance().applyMoneyBlessing(moneyToAward),
 				xp: xpToAward,
 				gloryPoints: player.gloryPointsLastSeason,

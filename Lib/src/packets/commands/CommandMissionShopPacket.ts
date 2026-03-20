@@ -20,6 +20,7 @@ export class CommandMissionShopMoney extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandMissionShopKingsFavor extends CrowniclesPacket {
+	score!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

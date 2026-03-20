@@ -259,7 +259,7 @@
   },
   "unlock": {
     "description": "Libera a otro jugador de la prisión.",
-    "name": "Entregar",
+    "name": "entregar",
     "options": {
       "rank": {
         "description": "La clasificación del jugador que se emitirá.",

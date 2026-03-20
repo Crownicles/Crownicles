@@ -6,7 +6,8 @@ exclude_patterns = [
     "Core/src/core/database/logs/migrations/*.ts",
 	"**/__tests__/**",
 	"**/tests/**",
-	"**/vitest.setup.ts"
+	"**/vitest.setup.ts",
+	"Lang/**"
 ]
 
 [[analyzers]]

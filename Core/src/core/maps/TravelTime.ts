@@ -261,8 +261,11 @@ export abstract class TravelTime {
 		return score > 0 ? score : 0; // Return 0 if the score is negative
 	}
 
+	/**
+	 * Calculates a score based on the time traveled and the small events done during the trip.
+	 * Used when a player boards a boat (joinBoat command or goToPVEIsland small event).
+	 */
 	static async joinBoatScore(player: Player): Promise<number> {
-		// Gain Score
 		const travelData = TravelTime.getTravelDataSimplified(player, new Date());
 		let timeTravelled = millisecondsToMinutes(travelData.playerTravelledTime); // Convert the time in minutes to calculate the score
 

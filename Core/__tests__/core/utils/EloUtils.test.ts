@@ -7,10 +7,14 @@ describe('MathUtils', () => {
             const mockPlayer1 = { getGloryPoints: () => 1500 } as any;
             const mockPlayer2 = { getGloryPoints: () => 2200 } as any;
             const mockPlayer3 = { getGloryPoints: () => 2500 } as any;
+            const mockPlayer4 = { getGloryPoints: () => 3500 } as any;
+            const mockPlayer5 = { getGloryPoints: () => 4000 } as any;
 
             expect(EloUtils.getKFactor(mockPlayer1)).toBe(32);
             expect(EloUtils.getKFactor(mockPlayer2)).toBe(24);
             expect(EloUtils.getKFactor(mockPlayer3)).toBe(16);
+            expect(EloUtils.getKFactor(mockPlayer4)).toBe(12);
+            expect(EloUtils.getKFactor(mockPlayer5)).toBe(8);
         });
     });
 

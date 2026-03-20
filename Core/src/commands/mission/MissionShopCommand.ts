@@ -144,13 +144,14 @@ function getAThousandPointsShopItem(): ShopItem {
 				response.push(makePacket(CommandMissionShopAlreadyBoughtPointsThisWeek, {}));
 				return false;
 			}
-			await player.addScore({
+			const scoreParameters = {
 				amount: Constants.MISSION_SHOP.THOUSAND_POINTS,
 				response,
 				reason: NumberChangeReason.MISSION_SHOP
-			});
+			};
+			await player.addScore(scoreParameters);
 			missionsInfo.hasBoughtPointsThisWeek = true;
-			response.push(makePacket(CommandMissionShopKingsFavor, {}));
+			response.push(makePacket(CommandMissionShopKingsFavor, { score: scoreParameters.amount }));
 			await Promise.all([player.save(), missionsInfo.save()]);
 			return true;
 		}

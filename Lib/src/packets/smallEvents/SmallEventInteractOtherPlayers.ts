@@ -33,7 +33,24 @@ export enum InteractOtherPlayerInteraction {
 	ARMOR,
 	POTION,
 	OBJECT,
-	CLASS
+	CLASS,
+	ORACLE_PATRON,
+	EXPERT_EXPEDITEUR,
+	ANIMAL_LOVER,
+	MISSION_COMPLETER,
+	HIGH_LEAGUE,
+	SAME_LEAGUE,
+	TOP_GLORY,
+	MANY_GEMS,
+	MANY_TOKENS,
+	HAS_TALISMAN,
+	HAS_CLONE_TALISMAN,
+	SAME_PET,
+	FLYING_PET,
+	AQUATIC_PET,
+	BEATEN_MAGMA_TITAN,
+	BEATEN_MALE_ICE_DRAGON,
+	BEATEN_FEMALE_ICE_DRAGON
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -55,6 +72,12 @@ export class SmallEventInteractOtherPlayersPacket extends SmallEventPacket {
 		potionId: number;
 		objectId: number;
 		effectId: string;
+		leagueId?: number;
+		gloryRank?: number;
+		gems?: number;
+		tokens?: number;
+		bossId?: string;
+		bossLevel?: number;
 	};
 }
 

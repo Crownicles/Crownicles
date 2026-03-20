@@ -3,5 +3,8 @@
   "rawAttack": 7,
   "defense": -20,
   "speed": 10,
+  "tags": [
+    "ranged"
+  ],
   "type": "rope"
 }

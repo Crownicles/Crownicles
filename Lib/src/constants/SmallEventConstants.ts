@@ -1,3 +1,5 @@
+import { MapLocationConstants } from "./MapLocationConstants";
+
 export abstract class SmallEventConstants {
 	static readonly HEALTH = {
 		MIN: 1,
@@ -226,7 +228,7 @@ export abstract class SmallEventConstants {
 		ENERGY_BASED_ACTIONS_RARITY_MULTIPLIER: 0.05,
 		DO_NOTHING_VERY_LUCKY_THRESHOLD: 0.2,
 		PROTECT_DEFENSE_NEEDED: 60,
-		MAXIMUM_STATS_BASED_ACTIONS_CHANCES: 0.8,
+		MAXIMUM_STATS_BASED_ACTIONS_CHANCES: 0.3,
 		PRAYER_CHANCE: 0.1,
 		HAS_AN_HOLY_ATTACK_CHANCE: 0.2,
 		LEFT_RIGHT_GOOD_SIDE_CHANCES: 0.75,
@@ -240,9 +242,23 @@ export abstract class SmallEventConstants {
 		BONUS_FOR_RIGHT_DIET: 1,
 		SUCCESS_PROBABILITY_FOR_RARITY_DIFFERENCE: 0.13,
 		MAX_PROBABILITY_PET_VS_PET: 0.97,
-		MIN_PROBABILITY_PET_VS_PET: 0.1
-
-
+		MIN_PROBABILITY_PET_VS_PET: 0.1,
+		CHANNEL_RAGE_MULTIPLIER: 0.3,
+		CHANNEL_RAGE_MAX_CHANCE: 0.95,
+		STEALTH_SPEED_THRESHOLD: 25,
+		STEALTH_CLASS_BONUS: 0.15,
+		STEALTH_MAX_CHANCE: 0.8,
+		ANALYZE_LEVEL_CAP: 120,
+		ANALYZE_MAX_CHANCE: 0.7,
+		GUILD_BANNER_LEVEL_CAP: 100,
+		GUILD_BANNER_MAX_CHANCE: 0.7,
+		THROW_ROCK_BASE_CHANCE: 0.4,
+		THROW_ROCK_RANGED_BONUS: 0.3,
+		THROW_ROCK_GUNNER_BONUS: 0.3,
+		BATTLE_CRY_BASE_CHANCE: 0.75,
+		BATTLE_CRY_PET_BONUS: 0.1,
+		FEINT_BASE_CHANCE: 0.75,
+		SHARE_SOUP_WITH_SOUP_CHANCE: 0.9
 	};
 
 	static readonly INFO_FIGHT = {
@@ -355,28 +371,28 @@ export abstract class SmallEventConstants {
 		MAX_PROBABILITY: 1.0,
 
 		// Map location types that affect food type probabilities
-		BAD_SMELL_TYPES: ["de", "mo"],
+		BAD_SMELL_TYPES: [MapLocationConstants.TYPES.DESERT, MapLocationConstants.TYPES.MOUNTAIN],
 
 		// Map location types where vegetarian food is more likely
 		VEGETARIAN_TYPES: [
-			"fo",
-			"pl",
-			"ro"
+			MapLocationConstants.TYPES.FOREST,
+			MapLocationConstants.TYPES.PLAINS,
+			MapLocationConstants.TYPES.ROAD
 		],
 
 		// Map location types where meat is more likely
 		MEAT_TYPES: [
-			"ri",
-			"be",
-			"la"
+			MapLocationConstants.TYPES.RIVER,
+			MapLocationConstants.TYPES.BEACH,
+			MapLocationConstants.TYPES.LAKE
 		],
 
 		// Map location types where good smelling food is more likely
 		GOOD_SMELL_TYPES: [
-			"vi",
-			"ci",
-			"castleEntrance",
-			"castleThrone"
+			MapLocationConstants.TYPES.VILLAGE,
+			MapLocationConstants.TYPES.CITY,
+			MapLocationConstants.TYPES.CASTLE_ENTRANCE,
+			MapLocationConstants.TYPES.CASTLE_THRONE
 		],
 		FOOD_TYPES: {
 			BAD_SMELL: "badSmell",
@@ -527,5 +543,41 @@ export abstract class SmallEventConstants {
 		SMALL_EVENT_NAME: "findMaterial",
 		RARE_PROBABILITY: 0.1,
 		UNCOMMON_PROBABILITY: 0.3
+	} as const;
+
+	static readonly INTERACT_OTHER_PLAYERS = {
+		TOP_RANKS: {
+			TOP10: 10,
+			TOP50: 50,
+			TOP100: 100
+		},
+		TOP_WEEK_MAX_RANK: 5,
+		LEVEL: {
+			BEGINNER_MAX: 15,
+			ADVANCED_MIN: 115
+		},
+		HEALTH: {
+			LOW_HP_THRESHOLD: 0.2,
+			FULL_HP: 1.0
+		},
+		MONEY: {
+			RICH_MIN: 100000,
+			POOR_MAX: 200
+		},
+		MIN_SCORE_FOR_COUNTING: 100,
+		HIGH_LEAGUE_MIN_ID: 6,
+		TOP_GLORY_MAX_RANK: 50,
+		MANY_GEMS_MIN: 200,
+		MANY_TOKENS_MIN: 15
+	};
+
+	/**
+	 * Small event IDs that can only be triggered once per player run.
+	 * Used with PlayerSmallEvents.playerSmallEventCount().
+	 */
+	static readonly UNIQUE_EVENT_IDS = {
+		ALTAR: "altar",
+		FARMER: "farmer",
+		GO_TO_PVE_ISLAND: "goToPVEIsland"
 	} as const;
 }

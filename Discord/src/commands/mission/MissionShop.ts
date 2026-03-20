@@ -4,6 +4,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
+	CommandMissionShopKingsFavor,
 	CommandMissionShopMoney,
 	CommandMissionShopPacketReq,
 	CommandMissionShopPetInformation,
@@ -25,7 +26,6 @@ import {
 import {
 	DiscordCollectorUtils, SEND_POLITICS
 } from "../../utils/DiscordCollectorUtils";
-import { Constants } from "../../../../Lib/src/constants/Constants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
@@ -72,8 +72,8 @@ export async function handleMissionShopMoney(packet: CommandMissionShopMoney, co
 	await handleBasicMissionShopItem(context, "commands:shop.shopItems.money.giveDescription", { amount: packet.amount });
 }
 
-export async function handleMissionShopKingsFavor(context: PacketContext): Promise<void> {
-	await handleBasicMissionShopItem(context, "commands:shop.shopItems.kingsFavor.giveDescription", { thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS });
+export async function handleMissionShopKingsFavor(packet: CommandMissionShopKingsFavor, context: PacketContext): Promise<void> {
+	await handleBasicMissionShopItem(context, "commands:shop.shopItems.kingsFavor.giveDescription", { thousandPoints: packet.score });
 }
 
 /**

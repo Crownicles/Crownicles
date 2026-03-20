@@ -1,6 +1,7 @@
 import {
 	daysToMinutes, hoursToMinutes
 } from "../utils/TimeUtils";
+import { MapLocationConstants } from "./MapLocationConstants";
 
 /**
  * Constants for the Pet Expedition system
@@ -106,7 +107,7 @@ export abstract class ExpeditionConstants {
 	/**
 	 * Default map type code when not specified
 	 */
-	static readonly DEFAULT_MAP_TYPE = "ro";
+	static readonly DEFAULT_MAP_TYPE = MapLocationConstants.TYPES.ROAD;
 
 	/**
 	 * Number of local expeditions generated (based on player's current map link)
@@ -132,20 +133,20 @@ export abstract class ExpeditionConstants {
 	 * Mapping from map location types to expedition location types
 	 */
 	static readonly MAP_TYPE_TO_EXPEDITION_TYPE: Record<string, ExpeditionLocationType> = {
-		fo: "forest",
-		mo: "mountain",
-		de: "desert",
-		ruins: "ruins",
-		be: "coast",
-		ri: "coast",
-		la: "swamp",
-		pl: "plains",
-		ro: "plains",
-		vi: "plains",
-		ci: "cave",
-		castleEntrance: "ruins",
-		castleThrone: "ruins",
-		continent: "plains"
+		[MapLocationConstants.TYPES.FOREST]: "forest",
+		[MapLocationConstants.TYPES.MOUNTAIN]: "mountain",
+		[MapLocationConstants.TYPES.DESERT]: "desert",
+		[MapLocationConstants.TYPES.RUINS]: "ruins",
+		[MapLocationConstants.TYPES.BEACH]: "coast",
+		[MapLocationConstants.TYPES.RIVER]: "coast",
+		[MapLocationConstants.TYPES.LAKE]: "swamp",
+		[MapLocationConstants.TYPES.PLAINS]: "plains",
+		[MapLocationConstants.TYPES.ROAD]: "plains",
+		[MapLocationConstants.TYPES.VILLAGE]: "plains",
+		[MapLocationConstants.TYPES.CITY]: "cave",
+		[MapLocationConstants.TYPES.CASTLE_ENTRANCE]: "ruins",
+		[MapLocationConstants.TYPES.CASTLE_THRONE]: "ruins",
+		[MapLocationConstants.TYPES.CONTINENT]: "plains"
 	};
 
 	/**

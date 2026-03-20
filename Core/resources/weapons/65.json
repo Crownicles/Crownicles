@@ -1,5 +1,8 @@
 {
   "rarity": 3,
   "rawAttack": 10,
+  "tags": [
+    "ranged"
+  ],
   "type": "alloy"
 }

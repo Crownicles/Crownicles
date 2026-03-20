@@ -1100,7 +1100,8 @@ export const CrowniclesIcons: {
 		findMaterial: "🔎",
 		expeditionAdvice: "🗺️",
 		petDropToken: "🪙",
-		altar: "⛩️"
+		altar: "⛩️",
+		farmer: "🧑‍🌾"
 	},
 	pets: {
 		0: {
@@ -1976,15 +1977,20 @@ export const CrowniclesIcons: {
 		blood: "🩸",
 		bone: "🦴",
 		book: "📖",
+		bubble: "🫧",
 		cobweb: "🕸️",
 		chicken: "🐔",
 		cool: "❄️",
 		crystalBall: "🔮",
 		distiller: "⚗️",
+		dragonScale: "🐉",
 		eye: "👁️",
+		feather: "🪶",
 		frog: "🐸",
 		greenApple: "🍏",
 		heart: "🫀",
+		honey: "🍯",
+		iceCrystal: "🧊",
 		mushroom: "🍄",
 		nothing: "🤷",
 		package: "📦",
@@ -1992,6 +1998,7 @@ export const CrowniclesIcons: {
 		redApple: "🍎",
 		rose: "🌹",
 		scorpion: "🦂",
+		sing: "🎵",
 		smallWait: "⏳",
 		smallWarm: "🌡️",
 		snake: "🐍",
@@ -2002,6 +2009,7 @@ export const CrowniclesIcons: {
 		turtle: "🐢",
 		wand: "🪄",
 		wiltedRose: "🥀",
+		windEssence: "🌬️",
 		worm: "🪱"
 	},
 	badPetSmallEvent: {
@@ -2324,7 +2332,15 @@ export const CrowniclesIcons: {
 		prayGod: "🙏",
 		attackLeft: "🤛",
 		attackRight: "🤜",
-		helpFromMates: "🏟️"
+		helpFromMates: "🏟️",
+		channelRage: "🔴",
+		stealthApproach: "🗡️",
+		analyze: "🧠",
+		guildBanner: "🚩",
+		throwRock: "🪨",
+		battleCry: "📯",
+		feint: "🎭",
+		shareSoup: "🍲"
 	},
 	rewards: {
 		item: "🎁",

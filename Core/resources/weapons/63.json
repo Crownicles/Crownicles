@@ -3,5 +3,8 @@
   "rawAttack": 10,
   "attack": 20,
   "speed": -40,
+  "tags": [
+    "ranged"
+  ],
   "type": "explosive"
 }

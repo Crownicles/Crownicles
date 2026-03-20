@@ -91,7 +91,7 @@ type PetFoodProperties = {
  * @param type
  */
 function getProbabilities(type: string): { [key: string]: number } {
-	const locationCategory = LOCATION_PROBABILITY_MAPPING.find(entry => entry.types.includes(type));
+	const locationCategory = LOCATION_PROBABILITY_MAPPING.find(entry => (entry.types as readonly string[]).includes(type));
 	if (!locationCategory) {
 		return SmallEventConstants.PET_FOOD.PROBABILITIES.DEFAULT;
 	}

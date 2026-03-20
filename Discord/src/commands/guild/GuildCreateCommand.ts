@@ -63,12 +63,6 @@ async function replyErrorEmbed(context: PacketContext, errorKey: string, formatP
 export async function handleCommandGuildCreatePacketRes(packet: CommandGuildCreatePacketRes, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (interaction) {
-		if (packet.playerMoney < GuildCreateConstants.PRICE) {
-			await replyErrorEmbed(context, "error:notEnoughMoney", {
-				money: GuildCreateConstants.PRICE - packet.playerMoney
-			});
-			return;
-		}
 		if (packet.foundGuild) {
 			await replyErrorEmbed(context, "error:alreadyInAGuild");
 			return;
@@ -81,6 +75,12 @@ export async function handleCommandGuildCreatePacketRes(packet: CommandGuildCrea
 			await replyErrorEmbed(context, "error:guildNameNotValid", {
 				min: GuildConstants.GUILD_NAME_LENGTH_RANGE.MIN,
 				max: GuildConstants.GUILD_NAME_LENGTH_RANGE.MAX
+			});
+			return;
+		}
+		if (packet.playerMoney < GuildCreateConstants.PRICE) {
+			await replyErrorEmbed(context, "error:notEnoughMoney", {
+				money: GuildCreateConstants.PRICE - packet.playerMoney
 			});
 		}
 	}

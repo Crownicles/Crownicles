@@ -620,7 +620,7 @@ export abstract class PetConstants {
 		5
 	];
 
-	static FLYING_PETS = [
+	static readonly FLYING_PETS = [
 		PetConstants.PETS.BIRD,
 		PetConstants.PETS.DUCK,
 		PetConstants.PETS.OWL,
@@ -636,6 +636,22 @@ export abstract class PetConstants {
 		PetConstants.PETS.RAVEN,
 		PetConstants.PETS.PHOENIX,
 		PetConstants.PETS.FAIRY
+	];
+
+	static readonly AQUATIC_PETS = [
+		PetConstants.PETS.OCTOPUS,
+		PetConstants.PETS.FISH,
+		PetConstants.PETS.TROPICAL_FISH,
+		PetConstants.PETS.PUFFERFISH,
+		PetConstants.PETS.JELLYFISH,
+		PetConstants.PETS.SHARK,
+		PetConstants.PETS.WHALE,
+		PetConstants.PETS.WHALE_2,
+		PetConstants.PETS.SHRIMP,
+		PetConstants.PETS.LOBSTER,
+		PetConstants.PETS.DOLPHIN,
+		PetConstants.PETS.CRAB,
+		PetConstants.PETS.SNAIL
 	];
 
 	static SEX = {

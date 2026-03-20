@@ -11,6 +11,7 @@ import {
 	ReactionCollectorCartPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
+import { Language } from "../../../Lib/src/Language";
 
 export async function cartCollector(context: PacketContext, packet: ReactionCollectorCartPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
@@ -42,30 +43,44 @@ export async function cartCollector(context: PacketContext, packet: ReactionColl
 	});
 }
 
+type CartStory = "notEnoughMoney" | "travelRefused" | "scamTravelDone" | "normalTravelDone" | "unknownDestinationTravelDone";
+
+const CART_NO_SCORE_STORIES: CartStory[] = ["notEnoughMoney", "travelRefused"];
+
+function getCartStory(packet: SmallEventCartPacket): CartStory {
+	if (!packet.travelDone.hasEnoughMoney && packet.travelDone.isAccepted) {
+		return "notEnoughMoney";
+	}
+	if (!packet.travelDone.isAccepted) {
+		return "travelRefused";
+	}
+	return packet.isScam ? "scamTravelDone" : packet.isDisplayed ? "normalTravelDone" : "unknownDestinationTravelDone";
+}
+
+function getGainScoreText(story: CartStory, packet: SmallEventCartPacket, lng: Language): string {
+	if (CART_NO_SCORE_STORIES.includes(story) || packet.pointsWon <= 0) {
+		return "";
+	}
+	return i18n.t("smallEvents:cart.confirmedScore", {
+		lng,
+		score: packet.pointsWon
+	});
+}
+
 export async function cartResult(packet: SmallEventCartPacket, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	if (!interaction) {
 		return;
 	}
 	const lng = context.discord!.language;
-	let story;
-	if (!packet.travelDone.hasEnoughMoney && packet.travelDone.isAccepted) {
-		story = "notEnoughMoney";
-	}
-
-	else if (!packet.travelDone.isAccepted) {
-		story = "travelRefused";
-	}
-
-	else {
-		story = packet.isScam ? "scamTravelDone" : packet.isDisplayed ? "normalTravelDone" : "unknownDestinationTravelDone";
-	}
+	const story = getCartStory(packet);
+	const gainScoreText = getGainScoreText(story, packet, lng);
 
 	await interaction.editReply({
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"cart",
-				StringUtils.getRandomTranslation(`smallEvents:cart.${story}`, lng),
+				StringUtils.getRandomTranslation(`smallEvents:cart.${story}`, lng) + gainScoreText,
 				interaction.user,
 				lng
 			)

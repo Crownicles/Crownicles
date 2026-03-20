@@ -1,6 +1,6 @@
 files:
   - source: /Lang/fr/*.json
     translation: /Lang/%two_letters_code%/%file_name%.json
-commit_message: '[ci skip]'
+commit_message: 'update translations from Crowdin'
 pull_request_labels:
   - translations

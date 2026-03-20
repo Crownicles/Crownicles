@@ -1,0 +1,9 @@
+{
+  "outcomeProbabilities": {
+    "potion": 30,
+    "effect": 10,
+    "nothing": 10
+  },
+  "effectName": "confounded",
+  "isIngredient": true
+}
