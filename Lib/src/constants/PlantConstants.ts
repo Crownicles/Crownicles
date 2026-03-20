@@ -175,4 +175,97 @@ export abstract class PlantConstants {
 	public static getAllPlants(): readonly PlantType[] {
 		return PLANT_TYPES;
 	}
+
+	/**
+	 * Loot weights for each plant (higher = more common to loot).
+	 * Plant 1 is very common, plant 10 is very rare.
+	 */
+	public static readonly PLANT_LOOT_WEIGHTS: Readonly<Record<PlantId, number>> = {
+		[PlantId.COMMON_HERB]: 100,
+		[PlantId.GOLDEN_CLOVER]: 70,
+		[PlantId.LUNAR_MOSS]: 50,
+		[PlantId.IRON_ROOT]: 35,
+		[PlantId.NIGHT_MUSHROOM]: 22,
+		[PlantId.VENOMOUS_LEAF]: 15,
+		[PlantId.FIRE_BULB]: 10,
+		[PlantId.MEAT_PLANT]: 5,
+		[PlantId.CRYSTAL_FLOWER]: 3,
+		[PlantId.ANCIENT_TREE]: 1
+	};
+
+	/**
+	 * Roll a random plant weighted by rarity (common plants appear more often).
+	 */
+	public static lootRandomPlant(random: { integer: (min: number, max: number) => number }): PlantId {
+		const weights = PlantConstants.PLANT_LOOT_WEIGHTS;
+		let totalWeight = 0;
+		for (const plant of PLANT_TYPES) {
+			totalWeight += weights[plant.id];
+		}
+		let roll = random.integer(0, totalWeight - 1);
+		for (const plant of PLANT_TYPES) {
+			roll -= weights[plant.id];
+			if (roll < 0) {
+				return plant.id;
+			}
+		}
+		return PlantId.COMMON_HERB;
+	}
+
+	/**
+	 * Seed quest: minimum player level required for each seed
+	 */
+	public static readonly SEED_LEVEL_REQUIREMENTS: Readonly<Record<PlantId, number>> = {
+		[PlantId.COMMON_HERB]: 8,
+		[PlantId.GOLDEN_CLOVER]: 15,
+		[PlantId.LUNAR_MOSS]: 22,
+		[PlantId.IRON_ROOT]: 30,
+		[PlantId.NIGHT_MUSHROOM]: 38,
+		[PlantId.VENOMOUS_LEAF]: 48,
+		[PlantId.FIRE_BULB]: 58,
+		[PlantId.MEAT_PLANT]: 68,
+		[PlantId.CRYSTAL_FLOWER]: 85,
+		[PlantId.ANCIENT_TREE]: 100
+	};
+
+	/**
+	 * Seed quest: cost in money for paid seeds (0 = free)
+	 */
+	public static readonly SEED_COSTS: Readonly<Record<PlantId, number>> = {
+		[PlantId.COMMON_HERB]: 0,
+		[PlantId.GOLDEN_CLOVER]: 250,
+		[PlantId.LUNAR_MOSS]: 0,
+		[PlantId.IRON_ROOT]: 850,
+		[PlantId.NIGHT_MUSHROOM]: 0,
+		[PlantId.VENOMOUS_LEAF]: 0,
+		[PlantId.FIRE_BULB]: 0,
+		[PlantId.MEAT_PLANT]: 0,
+		[PlantId.CRYSTAL_FLOWER]: 2500,
+		[PlantId.ANCIENT_TREE]: 0
+	};
+
+	/**
+	 * Map link IDs where the gardener NPC can appear.
+	 * Link 8: Plains(3) → Forest(4)
+	 * Link 46: Village(17) → Forest(27)
+	 * Link 32: Forest(22) → Lake(14)
+	 */
+	public static readonly GARDENER_MAP_LINKS: readonly number[] = [
+		8,
+		46,
+		32
+	];
+
+	/**
+	 * Fire-themed item IDs that satisfy the Fire Bulb seed condition.
+	 */
+	public static readonly FIRE_ITEM_IDS = {
+		WEAPONS: [
+			64,
+			89,
+			97
+		],
+		ARMORS: [70],
+		OBJECTS: [72]
+	} as const;
 }

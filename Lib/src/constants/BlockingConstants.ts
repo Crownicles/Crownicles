@@ -47,6 +47,7 @@ export abstract class BlockingConstants {
 		REPORT_USE_TOKENS: "reportUseTokens",
 		REPORT_BUY_HEAL: "reportBuyHeal",
 		CART_SMALL_EVENT: "cartSmallEvent",
+		GARDENER_SMALL_EVENT: "gardenerSmallEvent",
 		LIMOGES_SMALL_EVENT: "limogesSmallEvent",
 		PET_FOOD_SMALL_EVENT: "petFoodSmallEvent",
 		BAD_PET_SMALL_EVENT: "badPetSmallEvent",

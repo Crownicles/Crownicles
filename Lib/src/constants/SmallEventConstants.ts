@@ -578,6 +578,7 @@ export abstract class SmallEventConstants {
 	static readonly UNIQUE_EVENT_IDS = {
 		ALTAR: "altar",
 		FARMER: "farmer",
+		GARDENER: "gardener",
 		GO_TO_PVE_ISLAND: "goToPVEIsland"
 	} as const;
 }
