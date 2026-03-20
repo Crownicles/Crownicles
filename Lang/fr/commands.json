@@ -1310,7 +1310,7 @@
             "bigRise": "• **Dans une semaine** : Une ère de grande prospérité approche, le cours sera exceptionnel !"
           }
         },
-        "plantsTitle": "🌿 **Marché des plantes :**",
+        "plantsTitle": "{emote:shopItems.plantSlotExtension} **Marché des plantes :**",
         "plants": {
           "tomorrow": {
             "bigDrop": "• **Demain** : Des stocks massifs de {{plantName}} arriveront sur les étals, les prix vont s'effondrer.",
@@ -1340,7 +1340,7 @@
           "threeDays": "dans 3 jours",
           "oneWeek": "dans une semaine"
         },
-        "rotation": "📦 **Changement de stock** : L'herboriste renouvellera sa sélection **{{horizon}}**. Les nouvelles plantes disponibles seront : {{newPlants}}.",
+        "rotation": "{emote:inventory.stock} **Changement de stock** : L'herboriste renouvellera sa sélection **{{horizon}}**. Les nouvelles plantes disponibles seront : {{newPlants}}.",
         "newPlants": {
           "tomorrow": {
             "bigDrop": "• **Demain** : Le prix de la {{plantName}} sera très en dessous de sa valeur habituelle, une excellente affaire !",

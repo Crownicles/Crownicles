@@ -99,6 +99,7 @@ import { crowniclesInstance } from "../../index";
 import { toItemWithDetails } from "../utils/ItemUtils";
 import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
+import { PlantConstants, PlantType } from "../../../../Lib/src/constants/PlantConstants";
 import { buildGardenData } from "./ReportGardenService";
 
 // Type aliases for commonly used nested types from ReactionCollectorCityData
@@ -1164,11 +1165,11 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "weeklyPlants",
-			items: weeklyPlants.map((plant, index) => ({
+			items: weeklyPlants.map((plant: PlantType, index: number) => ({
 				id: tierTypes[index],
 				price: PlantConstants.getHerbalistPrice(plant),
 				amounts: [1],
-				buyCallback: async (buyResponse, playerId): Promise<boolean> => {
+				buyCallback: async (buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 					const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(playerId);
 					if (!emptySlot) {
 						buyResponse.push(makePacket(CommandShopNoPlantSlotAvailable, {}));
@@ -1186,7 +1187,7 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 		player,
 		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
 		additionalShopData: {
-			weeklyPlants: weeklyPlants.map(p => p.id)
+			weeklyPlants: weeklyPlants.map((p: PlantType) => p.id)
 		}
 	});
 }
