@@ -5,11 +5,11 @@
   "speedRatio": 180,
   "breath": 10,
   "maxBreath": 60,
-  "breathRegen": 9,
+  "breathRegen": 12,
   "rewardFactor": 1.8,
   "attacks": [
     {
-      "id": "divineLightning",
+      "id": "celestialLightning",
       "minLevel": 0,
       "weight": 5
     },
@@ -25,7 +25,7 @@
     },
     {
       "id": "chargeDeluge",
-      "minLevel": 100,
+      "minLevel": 120,
       "weight": 1
     },
     {
