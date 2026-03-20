@@ -25,7 +25,6 @@ const use: FightActionFunc = (sender, receiver) => {
 		};
 	}
 
-	// Otherwise, a small retaliatory water strike
 	return simpleDamageFightAction(
 		{
 			sender,
