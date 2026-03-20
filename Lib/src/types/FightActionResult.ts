@@ -26,7 +26,7 @@ export interface FightActionTypeResistance {
 	type: FightActionType;
 	value: number;
 	duration?: number;
-	reflectDamage?: boolean; // Si true, renvoie les dégâts résistés
+	reflectDamage?: boolean; // if true, reflect the damages
 }
 
 export interface FightActionResult {
