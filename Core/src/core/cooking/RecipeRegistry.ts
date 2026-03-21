@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import * as path from "path";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { RecipeType } from "../../../../Lib/src/constants/CookingConstants";
 
@@ -15,8 +14,7 @@ class RecipeRegistry {
 	}
 
 	private load(): void {
-		const filePath = path.join(__dirname, "../../../resources/cooking/recipes.json");
-		const data = JSON.parse(fs.readFileSync(filePath, "utf-8")) as CookingRecipe[];
+		const data = JSON.parse(fs.readFileSync("resources/cooking/recipes.json", "utf-8")) as CookingRecipe[];
 		this.recipes = data;
 		for (const recipe of data) {
 			this.recipeById.set(recipe.id, recipe);
