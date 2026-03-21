@@ -746,6 +746,10 @@
       "fieldName": "Familier :",
       "fieldValue": "$t(commands:pet.shortPetField) | {{rarity}}"
     },
+    "cooking": {
+      "fieldName": "Cuisine :",
+      "fieldValue": "{emote:city.homeUpgrades.cooking} Niveau {{level}} — {{grade}}"
+    },
     "playerClass": {
       "fieldName": "Classe :",
       "fieldValue": "$t(models:classFormat)"

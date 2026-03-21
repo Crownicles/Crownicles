@@ -32,6 +32,7 @@ import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import { getCookingGrade } from "../../../../Lib/src/constants/CookingConstants";
 
 /**
  * Get the current campaign progression of the player
@@ -217,7 +218,9 @@ export default class ProfileCommand {
 				},
 				money: toCheckPlayer.money,
 				tokens: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? toCheckPlayer.tokens : undefined,
-				tokensMax: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? TokensConstants.MAX : undefined
+				tokensMax: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? TokensConstants.MAX : undefined,
+				cookingLevel: toCheckPlayer.cookingLevel > 0 ? toCheckPlayer.cookingLevel : undefined,
+				cookingGrade: toCheckPlayer.cookingLevel > 0 ? getCookingGrade(toCheckPlayer.cookingLevel).name : undefined
 			}
 		}));
 	}

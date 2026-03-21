@@ -235,6 +235,12 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 	addFightRankingField(fields, packet, lng);
 	addPetField(fields, packet, lng);
 
+	addField(fields, "cooking", Boolean(packet.playerData.cookingLevel), {
+		lng,
+		level: packet.playerData.cookingLevel ?? 0,
+		grade: packet.playerData.cookingGrade ?? ""
+	});
+
 	return fields;
 }
 
