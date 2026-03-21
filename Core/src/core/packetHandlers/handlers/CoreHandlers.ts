@@ -13,7 +13,11 @@ import {
 	CommandReportHomeChestActionReq, CommandReportHomeChestActionRes,
 	CommandReportGardenHarvestReq,
 	CommandReportGardenPlantReq,
-	CommandReportPlantTransferReq
+	CommandReportPlantTransferReq,
+	CommandReportCookingIgniteReq,
+	CommandReportCookingWoodConfirmRes,
+	CommandReportCookingReviveReq,
+	CommandReportCookingCraftReq
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	handleChestAction
@@ -21,6 +25,9 @@ import {
 import {
 	handleGardenHarvest, handleGardenPlant, handlePlantTransfer
 } from "../../report/ReportGardenService";
+import {
+	handleCookingIgnite, handleCookingWoodConfirm, handleCookingRevive, handleCookingCraft
+} from "../../report/ReportCookingService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
@@ -67,5 +74,25 @@ export default class CoreHandlers {
 	@packetHandler(CommandReportPlantTransferReq)
 	async plantTransfer(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportPlantTransferReq): Promise<void> {
 		response.push(await handlePlantTransfer(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingIgniteReq)
+	async cookingIgnite(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingIgniteReq): Promise<void> {
+		response.push(...await handleCookingIgnite(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingWoodConfirmRes)
+	async cookingWoodConfirm(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingWoodConfirmRes): Promise<void> {
+		response.push(...await handleCookingWoodConfirm(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingReviveReq)
+	async cookingRevive(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingReviveReq): Promise<void> {
+		response.push(...await handleCookingRevive(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingCraftReq)
+	async cookingCraft(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingCraftReq): Promise<void> {
+		response.push(...await handleCookingCraft(context.keycloakId!, packet));
 	}
 }
