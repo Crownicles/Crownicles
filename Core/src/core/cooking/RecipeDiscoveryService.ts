@@ -21,6 +21,17 @@ const POTION_NATURE_TO_RECIPE_TYPE: Partial<Record<ItemNature, RecipeType>> = {
 
 export class RecipeDiscoveryService {
 	/**
+	 * Count how many recipes from a given source the player has already discovered
+	 */
+	static async countDiscoveredFromSource(player: Player, source: RecipeDiscoverySource): Promise<number> {
+		const sourceRecipeIds = recipeRegistry.getAll()
+			.filter(r => !r.discoveredByDefault && r.discoverySource === source)
+			.map(r => r.id);
+		const discoveredIds = await PlayerCookingRecipe.getDiscoveredRecipeIds(player);
+		return sourceRecipeIds.filter(id => discoveredIds.includes(id)).length;
+	}
+
+	/**
 	 * Discover a recipe from a given source for a player.
 	 * Picks the lowest-level undiscovered recipe matching the source.
 	 * Returns the discovered recipe or null if none available.

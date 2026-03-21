@@ -9,9 +9,11 @@ import {
 	CommandReportCookingWoodConfirmRes,
 	CommandReportCookingWoodConfirmReq,
 	CommandReportCookingReviveReq,
+	CommandReportCookingReviveRes,
 	CommandReportCookingCraftReq,
 	CommandReportCookingCraftRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingService } from "../cooking/CookingService";
 import { recipeRegistry } from "../cooking/RecipeRegistry";
 import {
@@ -62,14 +64,15 @@ async function getPlayerAndHome(keycloakId: string): Promise<{
 	};
 }
 
-function buildIgniteResponse(
+function buildIgniteOrReviveResponse(
+	PacketClass: typeof CommandReportCookingIgniteRes | typeof CommandReportCookingReviveRes,
 	slots: Awaited<ReturnType<typeof CookingService.getSlotRecipes>>,
 	woodConsumed: boolean,
 	woodMaterialId: number,
 	furnaceUsesToday: number,
 	cookingLevel: number
-): CommandReportCookingIgniteRes {
-	return makePacket(CommandReportCookingIgniteRes, {
+): CommandReportCookingIgniteRes | CommandReportCookingReviveRes {
+	return makePacket(PacketClass, {
 		slots,
 		woodConsumed,
 		woodMaterialId,
@@ -81,7 +84,8 @@ function buildIgniteResponse(
 
 async function igniteOrReviveFurnace(
 	keycloakId: string,
-	response: CrowniclesPacket[]
+	response: CrowniclesPacket[],
+	PacketClass: typeof CommandReportCookingIgniteRes | typeof CommandReportCookingReviveRes
 ): Promise<void> {
 	const data = await getPlayerAndHome(keycloakId);
 	if (!data) {
@@ -119,15 +123,20 @@ async function igniteOrReviveFurnace(
 		return;
 	}
 
-	// Consume common wood directly
-	await Materials.consumeMaterial(player.id, wood.materialId, 1);
+	// Check wood save buff (Chef de table grade)
+	const grade = getCookingGrade(player.cookingLevel);
+	const woodSaved = grade.woodSaveChance > 0 && RandomUtils.crowniclesRandom.realZeroToOneInclusive() < grade.woodSaveChance;
+
+	if (!woodSaved) {
+		await Materials.consumeMaterial(player.id, wood.materialId, 1);
+	}
 
 	// Advance furnace position and increment usage
 	player.furnacePosition++;
 	await CookingService.incrementFurnaceUsage(player);
 
 	const slots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
-	response.push(buildIgniteResponse(slots, true, wood.materialId, player.furnaceUsesToday, player.cookingLevel));
+	response.push(buildIgniteOrReviveResponse(PacketClass, slots, !woodSaved, wood.materialId, player.furnaceUsesToday, player.cookingLevel));
 }
 
 export async function handleCookingIgnite(
@@ -135,7 +144,7 @@ export async function handleCookingIgnite(
 	_packet: CommandReportCookingIgniteReq
 ): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
-	await igniteOrReviveFurnace(keycloakId, response);
+	await igniteOrReviveFurnace(keycloakId, response, CommandReportCookingIgniteRes);
 	return response;
 }
 
@@ -160,7 +169,7 @@ export async function handleCookingWoodConfirm(
 		player, home, cookingSlots
 	} = data;
 
-	// Consume the confirmed wood
+	// Consume the confirmed wood (no save buff — player already confirmed rare wood)
 	await Materials.consumeMaterial(player.id, pending.materialId, 1);
 
 	// Advance furnace position and increment usage
@@ -168,7 +177,7 @@ export async function handleCookingWoodConfirm(
 	await CookingService.incrementFurnaceUsage(player);
 
 	const slots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
-	response.push(buildIgniteResponse(slots, true, pending.materialId, player.furnaceUsesToday, player.cookingLevel));
+	response.push(buildIgniteOrReviveResponse(CommandReportCookingIgniteRes, slots, true, pending.materialId, player.furnaceUsesToday, player.cookingLevel));
 	return response;
 }
 
@@ -177,7 +186,7 @@ export async function handleCookingRevive(
 	_packet: CommandReportCookingReviveReq
 ): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
-	await igniteOrReviveFurnace(keycloakId, response);
+	await igniteOrReviveFurnace(keycloakId, response, CommandReportCookingReviveRes);
 	return response;
 }
 
@@ -198,6 +207,14 @@ export async function handleCookingCraft(
 	const slots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
 	const slot = slots.find(s => s.slotIndex === packet.slotIndex);
 	if (!slot?.recipe) {
+		response.push(makePacket(CommandReportCookingCraftRes, {
+			success: false,
+			recipeId: "",
+			wasSecret: false,
+			outputType: "potion",
+			cookingXpGained: 0,
+			cookingLevelUp: false
+		}));
 		return response;
 	}
 

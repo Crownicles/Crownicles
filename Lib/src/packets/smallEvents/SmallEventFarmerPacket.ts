@@ -10,4 +10,6 @@ export class SmallEventFarmerPacket extends SmallEventPacket {
 	amount?: number;
 
 	discoveredRecipeId?: string;
+
+	recipeCost?: number;
 }

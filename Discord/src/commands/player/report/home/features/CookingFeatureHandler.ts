@@ -60,7 +60,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			description: i18n.t("commands:report.city.homes.cooking.menuDescription", {
 				lng: ctx.lng,
 				level: this.cookingLevel,
-				grade: this.cookingGrade
+				grade: i18n.t(`models:cooking.grades.${this.cookingGrade}`, { lng: ctx.lng })
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.cooking,
 			value: HomeMenuIds.COOKING_MENU
@@ -514,14 +514,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (response.success) {
 			message += i18n.t("commands:report.city.homes.cooking.craftSuccess", {
 				lng: ctx.lng,
-				recipe: response.recipeId,
+				recipe: i18n.t(`models:cooking.recipes.${response.recipeId}`, { lng: ctx.lng }),
 				wasSecret: response.wasSecret
 			});
 		}
 		else {
 			message += i18n.t("commands:report.city.homes.cooking.craftFailure", {
 				lng: ctx.lng,
-				recipe: response.recipeId
+				recipe: i18n.t(`models:cooking.recipes.${response.recipeId}`, { lng: ctx.lng })
 			});
 		}
 
@@ -534,7 +534,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			message += `\n${i18n.t("commands:report.city.homes.cooking.levelUp", {
 				lng: ctx.lng,
 				level: response.newCookingLevel,
-				grade: response.newCookingGrade
+				grade: i18n.t(`models:cooking.grades.${response.newCookingGrade}`, { lng: ctx.lng })
 			})}`;
 		}
 

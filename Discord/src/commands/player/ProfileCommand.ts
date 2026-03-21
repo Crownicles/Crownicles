@@ -238,7 +238,9 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 	addField(fields, "cooking", Boolean(packet.playerData.cookingLevel), {
 		lng,
 		level: packet.playerData.cookingLevel ?? 0,
-		grade: packet.playerData.cookingGrade ?? ""
+		grade: packet.playerData.cookingGrade
+			? i18n.t(`models:cooking.grades.${packet.playerData.cookingGrade}`, { lng })
+			: ""
 	});
 
 	return fields;

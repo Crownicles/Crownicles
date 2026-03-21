@@ -2232,6 +2232,18 @@
     "10": "Arbre ancestral"
   },
   "cooking": {
+    "grades": {
+      "aideCuisine": "Aide-cuisine",
+      "marmiton": "Marmiton",
+      "cuisinier": "Cuisinier",
+      "rotisseur": "Rôtisseur",
+      "saucier": "Saucier",
+      "maitreOffice": "Maître d'office",
+      "chefDeTable": "Chef de table",
+      "chefDesFourneaux": "Chef des fourneaux",
+      "maitreDesCuisines": "Maître des cuisines",
+      "grandCuisinierRoyal": "Grand cuisinier royal"
+    },
     "recipes": {
       "potion_health_1": "Potion de soin basique",
       "potion_health_2": "Potion de soin légère",

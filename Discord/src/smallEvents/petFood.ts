@@ -201,10 +201,14 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 	}
 
 	if (packet.discoveredRecipeId) {
-		result += `\n\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
+		let recipeMsg = i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
 			lng,
 			recipe: i18n.t(`models:cooking.recipes.${packet.discoveredRecipeId}`, { lng })
-		})}`;
+		});
+		if (packet.recipeCost) {
+			recipeMsg += ` (${packet.recipeCost} :moneybag:)`;
+		}
+		result += `\n\n${recipeMsg}`;
 	}
 
 	return result;

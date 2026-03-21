@@ -18,4 +18,6 @@ export class SmallEventPetFoodPacket extends SmallEventPacket {
 	petSex!: SexTypeShort; // Sex of the pet for gendered translations
 
 	discoveredRecipeId?: string;
+
+	recipeCost?: number;
 }

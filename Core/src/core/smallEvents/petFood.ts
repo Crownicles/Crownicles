@@ -37,7 +37,9 @@ import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventCon
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { PetUtils } from "../utils/PetUtils";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
-import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
+import {
+	GASPARD_JO_RECIPE_COSTS, RecipeDiscoverySource
+} from "../../../../Lib/src/constants/CookingConstants";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
 
@@ -202,15 +204,29 @@ async function applyOutcome(
 		await petEntity.save();
 	}
 
-	// Discover a Gaspard Jo recipe when successfully finding soup
+	// Discover a Gaspard Jo recipe when successfully finding soup (costs money)
 	let discoveredRecipeId: string | undefined;
+	let recipeCost: number | undefined;
 	if (foodType === SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP && [
 		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PLAYER,
 		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET,
 		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY
 	].includes(outcome)) {
-		const discovered = await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.GASPARD_JO);
-		discoveredRecipeId = discovered?.id;
+		const alreadyDiscovered = await RecipeDiscoveryService.countDiscoveredFromSource(player, RecipeDiscoverySource.GASPARD_JO);
+		const cost = GASPARD_JO_RECIPE_COSTS[Math.min(alreadyDiscovered, GASPARD_JO_RECIPE_COSTS.length - 1)];
+		if (player.money >= cost) {
+			const discovered = await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.GASPARD_JO);
+			if (discovered) {
+				await player.spendMoney({
+					amount: cost,
+					response,
+					reason: NumberChangeReason.SMALL_EVENT
+				});
+				await player.save();
+				discoveredRecipeId = discovered.id;
+				recipeCost = cost;
+			}
+		}
 	}
 
 	response.push(makePacket(SmallEventPetFoodPacket, {
@@ -219,7 +235,8 @@ async function applyOutcome(
 		loveChange,
 		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined,
 		petSex: petEntity.sex,
-		discoveredRecipeId
+		discoveredRecipeId,
+		recipeCost
 	}));
 }
 

@@ -1281,10 +1281,14 @@ export default class SmallEventsHandler {
 			});
 
 		if (packet.discoveredRecipeId) {
-			description += `\n\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
+			let recipeMsg = i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
 				lng,
 				recipe: i18n.t(`models:cooking.recipes.${packet.discoveredRecipeId}`, { lng })
-			})}`;
+			});
+			if (packet.recipeCost) {
+				recipeMsg += ` (${packet.recipeCost} :moneybag:)`;
+			}
+			description += `\n\n${recipeMsg}`;
 		}
 
 		await interaction?.editReply({

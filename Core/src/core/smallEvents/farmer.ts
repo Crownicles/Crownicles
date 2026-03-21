@@ -22,7 +22,9 @@ import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationC
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
-import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
+import {
+	FARMER_RECIPE_COSTS, RecipeDiscoverySource
+} from "../../../../Lib/src/constants/CookingConstants";
 
 const FARMER_INTERACTIONS = {
 	SALAD: "salad",
@@ -82,9 +84,22 @@ export const smallEventFuncs: SmallEventFuncs = {
 			packet.amount = Math.min(RandomUtils.randInt(SALAD_AMOUNT.MIN, SALAD_AMOUNT.MAX + 1), maxGiveable);
 			await giveFoodToGuild(response, player, PetConstants.PET_FOOD.HERBIVOROUS_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 
-			// Discover a farmer recipe
-			const discovered = await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.FARMER);
-			packet.discoveredRecipeId = discovered?.id;
+			// Discover a farmer recipe (costs money)
+			const alreadyDiscovered = await RecipeDiscoveryService.countDiscoveredFromSource(player, RecipeDiscoverySource.FARMER);
+			const cost = FARMER_RECIPE_COSTS[Math.min(alreadyDiscovered, FARMER_RECIPE_COSTS.length - 1)];
+			if (player.money >= cost) {
+				const discovered = await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.FARMER);
+				if (discovered) {
+					await player.spendMoney({
+						amount: cost,
+						response,
+						reason: NumberChangeReason.SMALL_EVENT
+					});
+					await player.save();
+					packet.discoveredRecipeId = discovered.id;
+					packet.recipeCost = cost;
+				}
+			}
 		}
 
 		response.push(makePacket(SmallEventFarmerPacket, packet));
