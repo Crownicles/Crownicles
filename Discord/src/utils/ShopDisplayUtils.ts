@@ -9,6 +9,7 @@ import {
 } from "./ErrorUtils";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
+	CommandShopGenericPurchase,
 	CommandShopNotEnoughCurrency,
 	ReactionCollectorShopCloseReaction,
 	ReactionCollectorShopData,
@@ -129,6 +130,29 @@ export async function handleCommandShopBadgeBought(context: PacketContext): Prom
 				.setDescription(i18n.t("commands:shop.badgeBought", {
 					lng,
 					badgeName: Badge.RICH
+				}))
+		]
+	});
+}
+
+export async function handleCommandShopGenericPurchase(packet: CommandShopGenericPurchase, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+	const itemName = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(packet.shopItemId)}.name`, { lng });
+
+	await interaction.followUp({
+		embeds: [
+			new CrowniclesEmbed()
+				.formatAuthor(i18n.t("commands:shop.success", {
+					lng,
+					pseudo: escapeUsername(interaction.user.displayName)
+				}), interaction.user)
+				.setDescription(i18n.t("commands:shop.genericPurchase", {
+					lng,
+					item: itemName
 				}))
 		]
 	});

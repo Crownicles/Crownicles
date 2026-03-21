@@ -13,6 +13,7 @@ import {
 import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
+import { getCookingGrade } from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
@@ -42,7 +43,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 	private furnaceUsesRemaining = 0;
 
-	private cookingGrade = "";
+	private cookingGrade = getCookingGrade(0).name;
 
 	private cookingLevel = 0;
 
@@ -150,49 +151,56 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Build the ignited furnace description with slot details
+	 * Build the ignited furnace header description (uses remaining)
 	 */
 	private buildIgnitedDescription(ctx: HomeFeatureHandlerContext): string {
-		let description = i18n.t("commands:report.city.homes.cooking.usesRemaining", {
+		return i18n.t("commands:report.city.homes.cooking.usesRemaining", {
 			lng: ctx.lng,
 			count: this.furnaceUsesRemaining
 		});
-		description += "\n";
-
-		for (const slot of this.currentSlots) {
-			description += `\n${this.buildSlotDescription(slot, ctx)}`;
-		}
-
-		return description;
 	}
 
 	/**
-	 * Build description for a single cooking slot
+	 * Build embed fields for each cooking slot
 	 */
-	private buildSlotDescription(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): string {
-		if (!slot.recipe) {
-			return i18n.t("commands:report.city.homes.cooking.slotEmpty", {
-				lng: ctx.lng,
-				slot: slot.slotIndex + 1
-			});
-		}
+	private buildSlotFields(ctx: HomeFeatureHandlerContext): {
+		name: string; value: string;
+	}[] {
+		return this.currentSlots.map(slot => this.buildSlotField(slot, ctx));
+	}
 
-		if (slot.recipe.isSecret) {
-			return i18n.t("commands:report.city.homes.cooking.slotSecret", {
-				lng: ctx.lng,
-				slot: slot.slotIndex + 1
-			});
+	/**
+	 * Build a single slot embed field
+	 */
+	private buildSlotField(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): {
+		name: string; value: string;
+	} {
+		const slotLabel = i18n.t("commands:report.city.homes.cooking.slotLabel", {
+			lng: ctx.lng,
+			slot: slot.slotIndex + 1
+		});
+
+		if (!slot.recipe) {
+			return {
+				name: slotLabel,
+				value: i18n.t("commands:report.city.homes.cooking.slotEmpty", { lng: ctx.lng })
+			};
 		}
 
 		const ingredientsList = this.buildIngredientsDescription(slot.recipe.ingredients, ctx.lng);
-		return i18n.t("commands:report.city.homes.cooking.slotRecipe", {
-			lng: ctx.lng,
-			slot: slot.slotIndex + 1,
-			recipe: slot.recipe.outputDescription,
-			level: slot.recipe.level,
-			ingredients: ingredientsList,
-			canCraft: slot.recipe.canCraft
-		});
+
+		if (slot.recipe.isSecret) {
+			return {
+				name: `${slotLabel} — **???** (Niv. ${slot.recipe.level})`,
+				value: ingredientsList
+			};
+		}
+
+		const recipeName = i18n.t(`models:cooking.recipes.${slot.recipe.id}`, { lng: ctx.lng });
+		return {
+			name: `${slotLabel} — **${recipeName}** (Niv. ${slot.recipe.level})`,
+			value: ingredientsList
+		};
 	}
 
 	/**
@@ -334,10 +342,13 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 * Register the ignited furnace menu with slot recipes
 	 */
 	private registerIgnitedMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus, extraMessage = ""): void {
+		const embed = new CrowniclesEmbed()
+			.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
+			.setDescription(this.buildIgnitedDescription(ctx) + extraMessage)
+			.addFields(this.buildSlotFields(ctx));
+
 		nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-				.setDescription(this.buildIgnitedDescription(ctx) + extraMessage),
+			embed,
 			components: this.buildIgnitedButtons(ctx),
 			createCollector: this.createCookingCollector(ctx)
 		});
