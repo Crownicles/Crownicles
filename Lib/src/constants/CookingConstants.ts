@@ -39,7 +39,8 @@ export enum RecipeDiscoverySource {
 	PLAYER_LEVEL_MILESTONE = "PLAYER_LEVEL_MILESTONE",
 	GASPARD_JO = "GASPARD_JO",
 	FARMER = "FARMER",
-	COOKING_LEVEL = "COOKING_LEVEL"
+	COOKING_LEVEL = "COOKING_LEVEL",
+	WITCH = "WITCH"
 }
 
 export interface CookingGradeDefinition {
