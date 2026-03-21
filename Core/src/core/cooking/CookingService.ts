@@ -1,7 +1,14 @@
 import Player from "../database/game/models/Player";
 import { Materials } from "../database/game/models/Material";
 import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
+import { Homes } from "../database/game/models/Home";
+import {
+	Guilds, Guild
+} from "../database/game/models/Guild";
+import { InventoryInfos } from "../database/game/models/InventoryInfo";
+import { InventorySlots } from "../database/game/models/InventorySlot";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
+import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialDataController } from "../../data/Material";
@@ -20,12 +27,13 @@ import {
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
 import {
-	getRecipeForSlot,
+	getUniqueRecipesForSlots,
 	isRecipeSecret,
 	getCurrentDaySeed
 } from "./CookingSlotRotation";
 import { CookingSlotData } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
+import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
 
 interface WoodSelection {
 	materialId: number;
@@ -44,6 +52,43 @@ interface CraftResult {
 }
 
 export class CookingService {
+	static async getPlayerGuild(player: Player): Promise<Guild | null> {
+		return player.guildId ? await Guilds.getById(player.guildId) : null;
+	}
+
+	static async canReceivePotionReward(player: Player): Promise<boolean> {
+		const inventorySlots = await InventorySlots.getOfPlayer(player.id);
+		const equippedPotionSlot = inventorySlots.find(slot => slot.itemCategory === ItemCategory.POTION && slot.isEquipped());
+		if (equippedPotionSlot?.itemId === 0) {
+			return true;
+		}
+
+		const backupPotionSlots = inventorySlots.filter(slot => slot.itemCategory === ItemCategory.POTION && slot.slot > 0);
+		if (backupPotionSlots.some(slot => slot.itemId === 0)) {
+			return true;
+		}
+
+		const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
+		const home = await Homes.getOfPlayer(player.id);
+		const homeBonus = home?.getLevel()?.features.inventoryBonus;
+		const bonusPotionSlots = homeBonus ? getSlotCountForCategory(homeBonus, ItemCategory.POTION) : 0;
+		const maxPotionSlots = inventoryInfo.slotLimitForCategory(ItemCategory.POTION) + bonusPotionSlots;
+
+		return backupPotionSlots.length < maxPotionSlots - 1;
+	}
+
+	static canStorePetFoodReward(recipe: CookingRecipe, guild: Guild | null): boolean {
+		if (recipe.outputType !== "petFood") {
+			return true;
+		}
+
+		if (!guild || !recipe.petFoodType || recipe.petFoodQuantity === undefined) {
+			return false;
+		}
+
+		return !guild.isStorageFullFor(recipe.petFoodType, recipe.petFoodQuantity);
+	}
+
 	/**
 	 * Get wood to consume for furnace, with priority system
 	 */
@@ -154,11 +199,20 @@ export class CookingService {
 		const grade = getCookingGrade(player.cookingLevel);
 		const playerMaterials = await Materials.getPlayerMaterials(player.id);
 		const materialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
+		const guild = await CookingService.getPlayerGuild(player);
+		const canReceivePotionReward = await CookingService.canReceivePotionReward(player);
+		const slotRecipes = getUniqueRecipesForSlots({
+			cookingSlots,
+			furnacePosition: player.furnacePosition,
+			daySeed,
+			discoveredRecipeIds: discoveredIds,
+			allowPetFoodRecipes: Boolean(guild)
+		});
 
 		const slots: CookingSlotData[] = [];
 
 		for (let i = 0; i < cookingSlots && i < SLOT_CONFIGS.length; i++) {
-			const recipe = getRecipeForSlot(i, player.furnacePosition, daySeed, discoveredIds);
+			const recipe = slotRecipes[i];
 			if (!recipe) {
 				slots.push({
 					slotIndex: i,
@@ -187,8 +241,12 @@ export class CookingService {
 				playerHas: materialMap.get(m.materialId) ?? 0
 			}));
 
-			const canCraft = plantAvailability.every(p => p.playerHas >= p.quantity)
+			const hasIngredients = plantAvailability.every(p => p.playerHas >= p.quantity)
 				&& materialAvailability.every(m => m.playerHas >= m.quantity);
+			const canCraftOutput = recipe.outputType === "potion"
+				? canReceivePotionReward
+				: CookingService.canStorePetFoodReward(recipe, guild);
+			const canCraft = hasIngredients && canCraftOutput;
 
 			slots.push({
 				slotIndex: i,

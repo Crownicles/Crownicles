@@ -11,7 +11,9 @@ import {
 	CommandReportCookingReviveReq,
 	CommandReportCookingReviveRes,
 	CommandReportCookingCraftReq,
-	CommandReportCookingCraftRes
+	CommandReportCookingCraftRes,
+	CookingCraftErrors,
+	CookingCraftError
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingService } from "../cooking/CookingService";
@@ -24,7 +26,6 @@ import {
 } from "../database/game/models/Home";
 import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
-import { PetEntities } from "../database/game/models/PetEntity";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
 	getCookingGrade, FURNACE_MAX_USES_PER_DAY
@@ -79,6 +80,29 @@ function buildIgniteOrReviveResponse(
 		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - furnaceUsesToday,
 		cookingGrade: getCookingGrade(cookingLevel).name,
 		cookingLevel
+	});
+}
+
+async function buildBlockedCraftResponse(params: {
+	player: NonNullable<Awaited<ReturnType<typeof Players.getByKeycloakId>>>;
+	homeId: number;
+	cookingSlots: number;
+	error: CookingCraftError;
+	recipeId: string;
+	wasSecret: boolean;
+	outputType: "potion" | "petFood";
+}): Promise<CommandReportCookingCraftRes> {
+	const updatedSlots = await CookingService.getSlotRecipes(params.player, params.homeId, params.cookingSlots);
+
+	return makePacket(CommandReportCookingCraftRes, {
+		success: false,
+		recipeId: params.recipeId,
+		wasSecret: params.wasSecret,
+		outputType: params.outputType,
+		cookingXpGained: 0,
+		cookingLevelUp: false,
+		error: params.error,
+		updatedSlots
 	});
 }
 
@@ -213,7 +237,9 @@ export async function handleCookingCraft(
 			wasSecret: false,
 			outputType: "potion",
 			cookingXpGained: 0,
-			cookingLevelUp: false
+			cookingLevelUp: false,
+			error: CookingCraftErrors.CRAFT_UNAVAILABLE,
+			updatedSlots: slots
 		}));
 		return response;
 	}
@@ -223,8 +249,57 @@ export async function handleCookingCraft(
 		return response;
 	}
 
+	if (recipe.outputType === "potion" && !await CookingService.canReceivePotionReward(player)) {
+		response.push(await buildBlockedCraftResponse({
+			player,
+			homeId: home.id,
+			cookingSlots,
+			error: CookingCraftErrors.INVENTORY_FULL,
+			recipeId: recipe.id,
+			wasSecret: slot.recipe.isSecret,
+			outputType: recipe.outputType
+		}));
+		return response;
+	}
+
+	const guild = await CookingService.getPlayerGuild(player);
+	if (recipe.outputType === "petFood" && !guild) {
+		response.push(await buildBlockedCraftResponse({
+			player,
+			homeId: home.id,
+			cookingSlots,
+			error: CookingCraftErrors.GUILD_REQUIRED,
+			recipeId: recipe.id,
+			wasSecret: slot.recipe.isSecret,
+			outputType: recipe.outputType
+		}));
+		return response;
+	}
+
+	if (recipe.outputType === "petFood" && !CookingService.canStorePetFoodReward(recipe, guild)) {
+		response.push(await buildBlockedCraftResponse({
+			player,
+			homeId: home.id,
+			cookingSlots,
+			error: CookingCraftErrors.GUILD_STORAGE_FULL,
+			recipeId: recipe.id,
+			wasSecret: slot.recipe.isSecret,
+			outputType: recipe.outputType
+		}));
+		return response;
+	}
+
 	// Verify ingredients are still available
 	if (!slot.recipe.canCraft) {
+		response.push(await buildBlockedCraftResponse({
+			player,
+			homeId: home.id,
+			cookingSlots,
+			error: CookingCraftErrors.CRAFT_UNAVAILABLE,
+			recipeId: recipe.id,
+			wasSecret: slot.recipe.isSecret,
+			outputType: recipe.outputType
+		}));
 		return response;
 	}
 
@@ -239,35 +314,49 @@ export async function handleCookingCraft(
 
 	if (result.success && recipe.outputType === "potion" && recipe.potionNature !== undefined && recipe.potionRarity !== undefined) {
 		const potion = PotionDataController.instance.randomItem(recipe.potionNature, recipe.potionRarity);
-		await player.giveItem(potion);
+		const itemReceived = await player.giveItem(potion);
+		if (!itemReceived) {
+			response.push(await buildBlockedCraftResponse({
+				player,
+				homeId: home.id,
+				cookingSlots,
+				error: CookingCraftErrors.INVENTORY_FULL,
+				recipeId: recipe.id,
+				wasSecret: slot.recipe.isSecret,
+				outputType: recipe.outputType
+			}));
+			return response;
+		}
 		potionId = potion.id;
 	}
-	else if (result.success && recipe.outputType === "petFood" && recipe.petFoodLovePoints !== undefined) {
+	else if (result.success && recipe.outputType === "petFood" && recipe.petFoodType !== undefined && recipe.petFoodQuantity !== undefined && guild) {
 		petFoodType = recipe.petFoodType;
 		petFoodQuantity = recipe.petFoodQuantity;
-
-		// Apply love points to the player's pet if they have one
-		if (player.petId) {
-			const pet = await PetEntities.getById(player.petId);
-			if (pet) {
-				await pet.changeLovePoints({
-					player,
-					amount: recipe.petFoodLovePoints,
-					response,
-					reason: NumberChangeReason.COOKING
-				});
-				await pet.save();
-			}
-		}
+		guild.addFood(recipe.petFoodType, recipe.petFoodQuantity, NumberChangeReason.COOKING);
+		await guild.save();
 	}
 	else if (!result.success && recipe.outputType === "potion") {
 		// Failed potion — give a no-effect potion (nature 0, rarity 0 = "potion sans effet")
 		const noEffectPotion = PotionDataController.instance.getById(0);
 		if (noEffectPotion) {
-			await player.giveItem(noEffectPotion);
+			const itemReceived = await player.giveItem(noEffectPotion);
+			if (!itemReceived) {
+				response.push(await buildBlockedCraftResponse({
+					player,
+					homeId: home.id,
+					cookingSlots,
+					error: CookingCraftErrors.INVENTORY_FULL,
+					recipeId: recipe.id,
+					wasSecret: slot.recipe.isSecret,
+					outputType: recipe.outputType
+				}));
+				return response;
+			}
 			failedPotionId = 0;
 		}
 	}
+
+	const updatedSlots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
 
 	response.push(makePacket(CommandReportCookingCraftRes, {
 		success: result.success,
@@ -283,7 +372,8 @@ export async function handleCookingCraft(
 		newCookingLevel: result.newLevel,
 		newCookingGrade: result.newGrade,
 		materialSaved: result.materialSaved,
-		discoveredRecipeIds: result.discoveredRecipeIds
+		discoveredRecipeIds: result.discoveredRecipeIds,
+		updatedSlots
 	}));
 	return response;
 }

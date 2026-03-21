@@ -29,6 +29,7 @@ import {
 	CommandReportCookingReviveRes,
 	CommandReportCookingCraftReq,
 	CommandReportCookingCraftRes,
+	CookingCraftErrors,
 	CookingSlotData
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
@@ -166,7 +167,9 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private buildSlotFields(ctx: HomeFeatureHandlerContext): {
 		name: string; value: string;
 	}[] {
-		return this.currentSlots.map(slot => this.buildSlotField(slot, ctx));
+		return this.currentSlots
+			.filter(slot => slot.recipe !== null)
+			.map(slot => this.buildSlotField(slot, ctx));
 	}
 
 	/**
@@ -498,16 +501,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				const response = responsePacket as unknown as CommandReportCookingCraftRes;
 				const resultMessage = this.buildCraftResultMessage(response, ctx);
 
+				if (response.updatedSlots) {
+					this.currentSlots = response.updatedSlots;
+				}
+
 				// Update state after craft
 				if (response.cookingLevelUp && response.newCookingLevel !== undefined && response.newCookingGrade !== undefined) {
 					this.cookingLevel = response.newCookingLevel;
 					this.cookingGrade = response.newCookingGrade;
-				}
-
-				// Mark the crafted slot as empty
-				const slot = this.currentSlots.find(s => s.slotIndex === slotIndex);
-				if (slot) {
-					slot.recipe = null;
 				}
 
 				this.registerIgnitedMenu(ctx, nestedMenus, resultMessage);
@@ -520,6 +521,22 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 * Build the craft result notification message
 	 */
 	private buildCraftResultMessage(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): string {
+		if (response.error === CookingCraftErrors.CRAFT_UNAVAILABLE) {
+			return `\n\n${i18n.t("commands:report.city.homes.cooking.craftUnavailable", { lng: ctx.lng })}`;
+		}
+
+		if (response.error === CookingCraftErrors.INVENTORY_FULL) {
+			return `\n\n${i18n.t("commands:report.city.homes.cooking.inventoryFull", { lng: ctx.lng })}`;
+		}
+
+		if (response.error === CookingCraftErrors.GUILD_REQUIRED) {
+			return `\n\n${i18n.t("commands:report.city.homes.cooking.guildRequired", { lng: ctx.lng })}`;
+		}
+
+		if (response.error === CookingCraftErrors.GUILD_STORAGE_FULL) {
+			return `\n\n${i18n.t("commands:report.city.homes.cooking.guildStorageFull", { lng: ctx.lng })}`;
+		}
+
 		let message = "\n\n";
 
 		if (response.success) {
@@ -553,6 +570,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			message += `\n${i18n.t("commands:report.city.homes.cooking.materialSaved", {
 				lng: ctx.lng,
 				material: i18n.t(`models:materials.${response.materialSaved}`, { lng: ctx.lng })
+			})}`;
+		}
+
+		if (response.outputType === "petFood" && response.petFoodType !== undefined && response.petFoodQuantity !== undefined) {
+			message += `\n${i18n.t("commands:report.city.homes.cooking.petFoodStored", {
+				lng: ctx.lng,
+				quantity: response.petFoodQuantity,
+				food: i18n.t(`commands:guildStorage.food.names.${response.petFoodType}`, { lng: ctx.lng })
 			})}`;
 		}
 

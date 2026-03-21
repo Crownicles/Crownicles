@@ -426,6 +426,15 @@ export interface CookingSlotData {
 	} | null;
 }
 
+export const CookingCraftErrors = {
+	CRAFT_UNAVAILABLE: "craftUnavailable",
+	INVENTORY_FULL: "inventoryFull",
+	GUILD_REQUIRED: "guildRequired",
+	GUILD_STORAGE_FULL: "guildStorageFull"
+} as const;
+
+export type CookingCraftError = typeof CookingCraftErrors[keyof typeof CookingCraftErrors];
+
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingIgniteReq extends CrowniclesPacket {}
 
@@ -516,4 +525,8 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 	materialSaved?: number;
 
 	discoveredRecipeIds?: string[];
+
+	error?: CookingCraftError;
+
+	updatedSlots?: CookingSlotData[];
 }

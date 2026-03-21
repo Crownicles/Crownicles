@@ -2,11 +2,12 @@ import {
 	describe, expect, it
 } from "vitest";
 import {
-	getSlotCycle, getRecipeForSlot, isRecipeSecret, getCurrentDaySeed
+	getSlotCycle, getRecipeForSlot, getUniqueRecipesForSlots, isRecipeSecret, getCurrentDaySeed
 } from "../../../src/core/cooking/CookingSlotRotation";
 import {
 	SLOT_CONFIGS, RecipeType
 } from "../../../../Lib/src/constants/CookingConstants";
+import { recipeRegistry } from "../../../src/core/cooking/RecipeRegistry";
 
 describe("CookingSlotRotation", () => {
 	describe("getSlotCycle", () => {
@@ -67,6 +68,43 @@ describe("CookingSlotRotation", () => {
 			const ids = recipes.filter(r => r !== null).map(r => r!.id);
 			const uniqueIds = new Set(ids);
 			expect(uniqueIds.size).toBeGreaterThanOrEqual(1);
+		});
+	});
+
+	describe("getUniqueRecipesForSlots", () => {
+		it("should not propose the same recipe in two slots at the same time", () => {
+			const discovered = recipeRegistry.getAll().map(recipe => recipe.id);
+			const daySeeds = [
+				1,
+				42,
+				12345
+			];
+
+			for (const daySeed of daySeeds) {
+				for (let furnacePosition = 0; furnacePosition < 40; furnacePosition++) {
+					const recipes = getUniqueRecipesForSlots({
+						cookingSlots: SLOT_CONFIGS.length,
+						furnacePosition,
+						daySeed,
+						discoveredRecipeIds: discovered
+					});
+					const ids = recipes.filter(recipe => recipe !== null).map(recipe => recipe!.id);
+					expect(ids).toHaveLength(new Set(ids).size);
+				}
+			}
+		});
+
+		it("should exclude pet food recipes when guild storage is unavailable", () => {
+			const discovered = recipeRegistry.getAll().map(recipe => recipe.id);
+			const recipes = getUniqueRecipesForSlots({
+				cookingSlots: SLOT_CONFIGS.length,
+				furnacePosition: 12,
+				daySeed: 77,
+				discoveredRecipeIds: discovered,
+				allowPetFoodRecipes: false
+			});
+
+			expect(recipes.every(recipe => recipe === null || recipe.outputType !== "petFood")).toBe(true);
 		});
 	});
 
