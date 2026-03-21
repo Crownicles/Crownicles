@@ -13,7 +13,9 @@ import {
 import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
-import { getCookingGrade } from "../../../../../../../Lib/src/constants/CookingConstants";
+import {
+	getCookingGrade, CookingOutputType
+} from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
@@ -194,14 +196,23 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 		if (slot.recipe.isSecret) {
 			return {
-				name: `${slotLabel} — **???** (Niv. ${slot.recipe.level})`,
+				name: i18n.t("commands:report.city.homes.cooking.slotSecretName", {
+					lng: ctx.lng,
+					slotLabel,
+					level: slot.recipe.level
+				}),
 				value: ingredientsList
 			};
 		}
 
 		const recipeName = i18n.t(`models:cooking.recipes.${slot.recipe.id}`, { lng: ctx.lng });
 		return {
-			name: `${slotLabel} — **${recipeName}** (Niv. ${slot.recipe.level})`,
+			name: i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
+				lng: ctx.lng,
+				slotLabel,
+				recipe: recipeName,
+				level: slot.recipe.level
+			}),
 			value: ingredientsList
 		};
 	}
@@ -215,14 +226,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		for (const plant of ingredients.plants) {
 			const plantName = i18n.t(`models:plants.${plant.plantId}`, { lng });
 			const emoji = CrowniclesIcons.plants[plant.plantId];
-			const status = plant.playerHas >= plant.quantity ? "✅" : "❌";
+			const status = plant.playerHas >= plant.quantity ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse;
 			parts.push(`${emoji} ${plantName} ${plant.playerHas}/${plant.quantity} ${status}`);
 		}
 
 		for (const material of ingredients.materials) {
 			const materialName = i18n.t(`models:materials.${material.materialId}`, { lng });
-			const emoji = CrowniclesIcons.materials[material.materialId as keyof typeof CrowniclesIcons.materials] ?? "🧱";
-			const status = material.playerHas >= material.quantity ? "✅" : "❌";
+			const emoji = CrowniclesIcons.materials[material.materialId as keyof typeof CrowniclesIcons.materials] ?? CrowniclesIcons.defaultMaterial;
+			const status = material.playerHas >= material.quantity ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse;
 			parts.push(`${emoji} ${materialName} ${material.playerHas}/${material.quantity} ${status}`);
 		}
 
@@ -517,24 +528,22 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		);
 	}
 
+	private static readonly CRAFT_ERROR_KEYS: Record<string, string> = {
+		[CookingCraftErrors.CRAFT_UNAVAILABLE]: "craftUnavailable",
+		[CookingCraftErrors.INVENTORY_FULL]: "inventoryFull",
+		[CookingCraftErrors.GUILD_REQUIRED]: "guildRequired",
+		[CookingCraftErrors.GUILD_STORAGE_FULL]: "guildStorageFull"
+	};
+
 	/**
 	 * Build the craft result notification message
 	 */
 	private buildCraftResultMessage(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): string {
-		if (response.error === CookingCraftErrors.CRAFT_UNAVAILABLE) {
-			return `\n\n${i18n.t("commands:report.city.homes.cooking.craftUnavailable", { lng: ctx.lng })}`;
-		}
-
-		if (response.error === CookingCraftErrors.INVENTORY_FULL) {
-			return `\n\n${i18n.t("commands:report.city.homes.cooking.inventoryFull", { lng: ctx.lng })}`;
-		}
-
-		if (response.error === CookingCraftErrors.GUILD_REQUIRED) {
-			return `\n\n${i18n.t("commands:report.city.homes.cooking.guildRequired", { lng: ctx.lng })}`;
-		}
-
-		if (response.error === CookingCraftErrors.GUILD_STORAGE_FULL) {
-			return `\n\n${i18n.t("commands:report.city.homes.cooking.guildStorageFull", { lng: ctx.lng })}`;
+		if (response.error) {
+			const errorKey = CookingFeatureHandler.CRAFT_ERROR_KEYS[response.error];
+			if (errorKey) {
+				return `\n\n${i18n.t(`commands:report.city.homes.cooking.${errorKey}`, { lng: ctx.lng })}`;
+			}
 		}
 
 		let message = "\n\n";
@@ -573,7 +582,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			})}`;
 		}
 
-		if (response.outputType === "petFood" && response.petFoodType !== undefined && response.petFoodQuantity !== undefined) {
+		if (response.outputType === CookingOutputType.PET_FOOD && response.petFoodType !== undefined && response.petFoodQuantity !== undefined) {
 			message += `\n${i18n.t("commands:report.city.homes.cooking.petFoodStored", {
 				lng: ctx.lng,
 				quantity: response.petFoodQuantity,

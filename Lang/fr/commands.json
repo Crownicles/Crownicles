@@ -1135,6 +1135,8 @@
           "usesRemaining": "{emote:city.homeUpgrades.cooking} **Fourneau allumé** — Utilisations restantes : **{{count}}**",
           "slotLabel": "Slot {{slot}}",
           "slotEmpty": "*Aucune recette*",
+          "slotSecretName": "{{slotLabel}} — **???** (Niv. {{level}})",
+          "slotRecipeName": "{{slotLabel}} — **{{recipe}}** (Niv. {{level}})",
           "craftSuccess": "{emote:messages.validate} Cuisson réussie ! Vous avez préparé **{{recipe}}** !",
           "craftFailure": "{emote:messages.refuse} La cuisson a échoué... La recette **{{recipe}}** n'a pas donné le résultat escompté.",
           "craftUnavailable": "{emote:messages.info} Cette recette n'est plus disponible dans l'état actuel du fourneau. Les propositions ont été rafraîchies.",

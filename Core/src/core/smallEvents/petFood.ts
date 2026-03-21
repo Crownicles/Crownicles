@@ -212,21 +212,14 @@ async function applyOutcome(
 		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET,
 		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY
 	].includes(outcome)) {
-		const alreadyDiscovered = await RecipeDiscoveryService.countDiscoveredFromSource(player, RecipeDiscoverySource.GASPARD_JO);
-		const cost = GASPARD_JO_RECIPE_COSTS[Math.min(alreadyDiscovered, GASPARD_JO_RECIPE_COSTS.length - 1)];
-		if (player.money >= cost) {
-			const discovered = await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.GASPARD_JO);
-			if (discovered) {
-				await player.spendMoney({
-					amount: cost,
-					response,
-					reason: NumberChangeReason.SMALL_EVENT
-				});
-				await player.save();
-				discoveredRecipeId = discovered.id;
-				recipeCost = cost;
-			}
-		}
+		const discovery = await RecipeDiscoveryService.tryDiscoverAndPay({
+			player,
+			source: RecipeDiscoverySource.GASPARD_JO,
+			costs: GASPARD_JO_RECIPE_COSTS,
+			response
+		});
+		discoveredRecipeId = discovery.discoveredRecipeId;
+		recipeCost = discovery.recipeCost;
 	}
 
 	response.push(makePacket(SmallEventPetFoodPacket, {

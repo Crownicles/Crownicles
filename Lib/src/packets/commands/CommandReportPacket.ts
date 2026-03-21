@@ -7,10 +7,17 @@ import {
 } from "../../constants/HomeConstants";
 import { GardenConstants } from "../../constants/GardenConstants";
 import { ItemSlot } from "../../types/ItemSlot";
+import { CookingOutputTypeValue } from "../../constants/CookingConstants";
 import { PlantId } from "../../constants/PlantConstants";
 import {
 	PlantStorageEntry, PlayerPlantSlotEntry
 } from "../../types/PlantStorageEntry";
+export {
+	CookingSlotData, CookingCraftErrors, CookingCraftError
+} from "../../types/CookingTypes";
+import {
+	CookingSlotData, CookingCraftError
+} from "../../types/CookingTypes";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
 export type { ChestAction } from "../../constants/HomeConstants";
@@ -407,34 +414,6 @@ export class CommandReportPlantTransferRes extends CrowniclesPacket {
 
 // ---- Cooking packets ----
 
-export interface CookingSlotData {
-	slotIndex: number;
-	recipe: {
-		id: string;
-		level: number;
-		isSecret: boolean;
-		outputDescription: string;
-		ingredients: {
-			plants: {
-				plantId: PlantId; quantity: number; playerHas: number;
-			}[];
-			materials: {
-				materialId: number; quantity: number; playerHas: number;
-			}[];
-		};
-		canCraft: boolean;
-	} | null;
-}
-
-export const CookingCraftErrors = {
-	CRAFT_UNAVAILABLE: "craftUnavailable",
-	INVENTORY_FULL: "inventoryFull",
-	GUILD_REQUIRED: "guildRequired",
-	GUILD_STORAGE_FULL: "guildStorageFull"
-} as const;
-
-export type CookingCraftError = typeof CookingCraftErrors[keyof typeof CookingCraftErrors];
-
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingIgniteReq extends CrowniclesPacket {}
 
@@ -504,7 +483,7 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	wasSecret!: boolean;
 
-	outputType!: "potion" | "petFood";
+	outputType!: CookingOutputTypeValue;
 
 	potionId?: number;
 

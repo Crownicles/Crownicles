@@ -85,21 +85,14 @@ export const smallEventFuncs: SmallEventFuncs = {
 			await giveFoodToGuild(response, player, PetConstants.PET_FOOD.HERBIVOROUS_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 
 			// Discover a farmer recipe (costs money)
-			const alreadyDiscovered = await RecipeDiscoveryService.countDiscoveredFromSource(player, RecipeDiscoverySource.FARMER);
-			const cost = FARMER_RECIPE_COSTS[Math.min(alreadyDiscovered, FARMER_RECIPE_COSTS.length - 1)];
-			if (player.money >= cost) {
-				const discovered = await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.FARMER);
-				if (discovered) {
-					await player.spendMoney({
-						amount: cost,
-						response,
-						reason: NumberChangeReason.SMALL_EVENT
-					});
-					await player.save();
-					packet.discoveredRecipeId = discovered.id;
-					packet.recipeCost = cost;
-				}
-			}
+			const discovery = await RecipeDiscoveryService.tryDiscoverAndPay({
+				player,
+				source: RecipeDiscoverySource.FARMER,
+				costs: FARMER_RECIPE_COSTS,
+				response
+			});
+			packet.discoveredRecipeId = discovery.discoveredRecipeId;
+			packet.recipeCost = discovery.recipeCost;
 		}
 
 		response.push(makePacket(SmallEventFarmerPacket, packet));

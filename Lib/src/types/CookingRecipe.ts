@@ -3,7 +3,7 @@ import {
 	ItemNature, ItemRarity
 } from "../constants/ItemConstants";
 import {
-	RecipeType, RecipeDiscoverySource
+	RecipeType, RecipeDiscoverySource, CookingOutputTypeValue
 } from "../constants/CookingConstants";
 
 export interface CookingRecipeMaterial {
@@ -22,7 +22,7 @@ export interface CookingRecipe {
 	recipeType: RecipeType;
 	plants: CookingRecipePlant[];
 	materials: CookingRecipeMaterial[];
-	outputType: "potion" | "petFood";
+	outputType: CookingOutputTypeValue;
 	potionNature?: ItemNature;
 	potionRarity?: ItemRarity;
 	petFoodType?: string;

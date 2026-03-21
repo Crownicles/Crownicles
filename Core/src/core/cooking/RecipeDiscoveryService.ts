@@ -6,6 +6,13 @@ import PlayerCookingRecipe from "../database/game/models/PlayerCookingRecipe";
 import Player from "../database/game/models/Player";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
+import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+
+export interface RecipeDiscoveryPayResult {
+	discoveredRecipeId?: string;
+	recipeCost?: number;
+}
 
 /**
  * Maps ItemNature (potion nature) to the corresponding RecipeType
@@ -115,5 +122,35 @@ export class RecipeDiscoveryService {
 			}
 		}
 		return discovered;
+	}
+
+	/**
+	 * Try to discover a recipe from a source and pay for it.
+	 * Returns the discovered recipe id and cost if successful.
+	 */
+	static async tryDiscoverAndPay(params: {
+		player: Player;
+		source: RecipeDiscoverySource;
+		costs: readonly number[];
+		response: CrowniclesPacket[];
+	}): Promise<RecipeDiscoveryPayResult> {
+		const alreadyDiscovered = await RecipeDiscoveryService.countDiscoveredFromSource(params.player, params.source);
+		const cost = params.costs[Math.min(alreadyDiscovered, params.costs.length - 1)];
+		if (params.player.money >= cost) {
+			const discovered = await RecipeDiscoveryService.discoverFromSource(params.player, params.source);
+			if (discovered) {
+				await params.player.spendMoney({
+					amount: cost,
+					response: params.response,
+					reason: NumberChangeReason.SMALL_EVENT
+				});
+				await params.player.save();
+				return {
+					discoveredRecipeId: discovered.id,
+					recipeCost: cost
+				};
+			}
+		}
+		return {};
 	}
 }

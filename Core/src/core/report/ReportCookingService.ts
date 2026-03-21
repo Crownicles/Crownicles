@@ -28,7 +28,7 @@ import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	getCookingGrade, FURNACE_MAX_USES_PER_DAY
+	getCookingGrade, FURNACE_MAX_USES_PER_DAY, CookingOutputType, CookingOutputTypeValue
 } from "../../../../Lib/src/constants/CookingConstants";
 
 /**
@@ -90,7 +90,7 @@ async function buildBlockedCraftResponse(params: {
 	error: CookingCraftError;
 	recipeId: string;
 	wasSecret: boolean;
-	outputType: "potion" | "petFood";
+	outputType: CookingOutputTypeValue;
 }): Promise<CommandReportCookingCraftRes> {
 	const updatedSlots = await CookingService.getSlotRecipes(params.player, params.homeId, params.cookingSlots);
 
@@ -235,7 +235,7 @@ export async function handleCookingCraft(
 			success: false,
 			recipeId: "",
 			wasSecret: false,
-			outputType: "potion",
+			outputType: CookingOutputType.POTION,
 			cookingXpGained: 0,
 			cookingLevelUp: false,
 			error: CookingCraftErrors.CRAFT_UNAVAILABLE,
@@ -249,7 +249,7 @@ export async function handleCookingCraft(
 		return response;
 	}
 
-	if (recipe.outputType === "potion" && !await CookingService.canReceivePotionReward(player)) {
+	if (recipe.outputType === CookingOutputType.POTION && !await CookingService.canReceivePotionReward(player)) {
 		response.push(await buildBlockedCraftResponse({
 			player,
 			homeId: home.id,
@@ -263,7 +263,7 @@ export async function handleCookingCraft(
 	}
 
 	const guild = await CookingService.getPlayerGuild(player);
-	if (recipe.outputType === "petFood" && !guild) {
+	if (recipe.outputType === CookingOutputType.PET_FOOD && !guild) {
 		response.push(await buildBlockedCraftResponse({
 			player,
 			homeId: home.id,
@@ -276,7 +276,7 @@ export async function handleCookingCraft(
 		return response;
 	}
 
-	if (recipe.outputType === "petFood" && !CookingService.canStorePetFoodReward(recipe, guild)) {
+	if (recipe.outputType === CookingOutputType.PET_FOOD && !CookingService.canStorePetFoodReward(recipe, guild)) {
 		response.push(await buildBlockedCraftResponse({
 			player,
 			homeId: home.id,
@@ -312,7 +312,7 @@ export async function handleCookingCraft(
 	let petFoodQuantity: number | undefined;
 	let failedPotionId: number | undefined;
 
-	if (result.success && recipe.outputType === "potion" && recipe.potionNature !== undefined && recipe.potionRarity !== undefined) {
+	if (result.success && recipe.outputType === CookingOutputType.POTION && recipe.potionNature !== undefined && recipe.potionRarity !== undefined) {
 		const potion = PotionDataController.instance.randomItem(recipe.potionNature, recipe.potionRarity);
 		const itemReceived = await player.giveItem(potion);
 		if (!itemReceived) {
@@ -329,13 +329,13 @@ export async function handleCookingCraft(
 		}
 		potionId = potion.id;
 	}
-	else if (result.success && recipe.outputType === "petFood" && recipe.petFoodType !== undefined && recipe.petFoodQuantity !== undefined && guild) {
+	else if (result.success && recipe.outputType === CookingOutputType.PET_FOOD && recipe.petFoodType !== undefined && recipe.petFoodQuantity !== undefined && guild) {
 		petFoodType = recipe.petFoodType;
 		petFoodQuantity = recipe.petFoodQuantity;
 		guild.addFood(recipe.petFoodType, recipe.petFoodQuantity, NumberChangeReason.COOKING);
 		await guild.save();
 	}
-	else if (!result.success && recipe.outputType === "potion") {
+	else if (!result.success && recipe.outputType === CookingOutputType.POTION) {
 		// Failed potion — give a no-effect potion (nature 0, rarity 0 = "potion sans effet")
 		const noEffectPotion = PotionDataController.instance.getById(0);
 		if (noEffectPotion) {
