@@ -1109,18 +1109,44 @@
           "compostTitle": "{emote:city.gardenStatus.compost} **Compostage :**",
           "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})"
         },
+        "cooking": {
+          "menuLabel": "Cuisine",
+          "menuDescription": "Fourneau — Niveau {{level}} ({{grade}})",
+          "available": "{emote:city.homeUpgrades.cooking} Vous avez accès à un fourneau pour préparer des potions et de la nourriture pour familiers.",
+          "title": "{{pseudo}}, cuisine",
+          "placeholder": "Gérer votre fourneau",
+          "description": "{emote:city.homeUpgrades.cooking} Votre fourneau dispose de **{{slots}} emplacements** de cuisson.\nAllumez-le pour voir les recettes disponibles.",
+          "igniteButton": "Allumer le fourneau",
+          "reviveButton": "Relancer le fourneau",
+          "craftButton": "Slot {{slot}}",
+          "noWood": "{emote:messages.error} Vous n'avez pas de bois pour allumer le fourneau. Récoltez du bois lors de vos expéditions !",
+          "overheat": "{emote:messages.error} Le fourneau est en surchauffe ! Il sera de nouveau disponible {{time}}.",
+          "woodConfirm": "{emote:messages.warning} Vous n'avez plus de bois commun. Du **{{material}}** sera utilisé pour allumer le fourneau. Confirmer ?",
+          "confirmButton": "Confirmer",
+          "cancelButton": "Annuler",
+          "usesRemaining": "{emote:city.homeUpgrades.cooking} **Fourneau allumé** — Utilisations restantes : **{{count}}**",
+          "slotEmpty": "• Slot {{slot}} — *Aucune recette*",
+          "slotSecret": "• Slot {{slot}} — **???** — Recette mystère",
+          "slotRecipe": "• Slot {{slot}} — **{{recipe}}** (Niv. {{level}})\n{{ingredients}}",
+          "craftSuccess": "{emote:messages.success} Cuisson réussie ! Vous avez préparé **{{recipe}}** !",
+          "craftFailure": "{emote:messages.error} La cuisson a échoué... La recette **{{recipe}}** n'a pas donné le résultat escompté.",
+          "xpGained": "{emote:unitValues.xp} +**{{xp}}** XP de cuisine",
+          "levelUp": "{emote:messages.levelUp} Vous êtes passé au **niveau {{level}}** de cuisine ! Nouveau grade : **{{grade}}**",
+          "materialSaved": "{emote:messages.success} Grâce à votre expertise, un **{{material}}** a été économisé !",
+          "backToCooking": "Retour à la cuisine"
+        },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
           "chest": "Un coffre pour y ranger vos affaires {emote:city.homeUpgrades.chest}",
           "biggerChest": "Un coffre plus grand pour y ranger encore plus d'affaires {emote:city.homeUpgrades.chest}",
-          "craftPotionStation": "Un établi d'alchimie pour créer des potions {emote:city.homeUpgrades.potionStation}",
-          "betterCraftPotionStation": "Un meilleur établi d'alchimie pour créer des potions plus rares {emote:city.homeUpgrades.potionStation}",
           "upgradeItemStation": "Un établi d'équipement pour améliorer vos armes et armures {emote:city.homeUpgrades.upgradeEquipment}",
           "betterUpgradeItemStation": "Un meilleur établi d'équipement pour améliorer des armes et armures plus puissantes {emote:city.homeUpgrades.upgradeEquipment}",
           "garden": "Un jardin pour cultiver des plantes {emote:city.homeUpgrades.garden}",
           "biggerGarden": "Un plus grand jardin pour cultiver encore plus de plantes {emote:city.homeUpgrades.garden}",
           "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement {emote:city.homeUpgrades.earthQuality}",
-          "inventoryBonus": "Des emplacements d'inventaire supplémentaires permanents {emote:city.homeUpgrades.chest}"
+          "inventoryBonus": "Des emplacements d'inventaire supplémentaires permanents {emote:city.homeUpgrades.chest}",
+          "cookingStation": "Un fourneau pour préparer des potions et de la nourriture pour familiers {emote:city.homeUpgrades.cooking}",
+          "betterCookingStation": "Un fourneau amélioré avec plus d'emplacements de cuisson {emote:city.homeUpgrades.cooking}"
         }
       }
     },

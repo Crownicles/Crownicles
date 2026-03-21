@@ -578,12 +578,6 @@ const UPGRADE_CHECKS: UpgradeCheck[] = [
 		upgradeKey: "betterUpgradeItemStation"
 	},
 	{
-		hasChanged: (o, n): boolean => o.craftPotionMaximumRarity !== n.craftPotionMaximumRarity,
-		isNew: (o): boolean => o.craftPotionMaximumRarity === ItemRarity.BASIC,
-		newKey: "craftPotionStation",
-		upgradeKey: "betterCraftPotionStation"
-	},
-	{
 		hasChanged: (o, n): boolean => o.bedHealthRegeneration !== n.bedHealthRegeneration,
 		isNew: (): boolean => false,
 		newKey: "betterBed",
