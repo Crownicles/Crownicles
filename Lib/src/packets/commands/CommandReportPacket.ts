@@ -404,3 +404,114 @@ export class CommandReportPlantTransferRes extends CrowniclesPacket {
 	/** Updated player plant slots after transfer */
 	playerPlantSlots!: PlayerPlantSlotEntry[];
 }
+
+// ---- Cooking packets ----
+
+export interface CookingSlotData {
+	slotIndex: number;
+	recipe: {
+		id: string;
+		level: number;
+		isSecret: boolean;
+		outputDescription: string;
+		ingredients: {
+			plants: {
+				plantId: PlantId; quantity: number; playerHas: number;
+			}[];
+			materials: {
+				materialId: number; quantity: number; playerHas: number;
+			}[];
+		};
+		canCraft: boolean;
+	} | null;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingIgniteReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportCookingWoodConfirmReq extends CrowniclesPacket {
+	woodMaterialId!: number;
+
+	woodRarity!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingWoodConfirmRes extends CrowniclesPacket {
+	accepted!: boolean;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportCookingIgniteRes extends CrowniclesPacket {
+	slots!: CookingSlotData[];
+
+	woodConsumed!: boolean;
+
+	woodMaterialId!: number;
+
+	furnaceUsesRemaining!: number;
+
+	cookingGrade!: string;
+
+	cookingLevel!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportCookingNoWoodRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportCookingOverheatRes extends CrowniclesPacket {
+	overheatUntil!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingReviveReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportCookingReviveRes extends CrowniclesPacket {
+	slots!: CookingSlotData[];
+
+	woodConsumed!: boolean;
+
+	woodMaterialId!: number;
+
+	furnaceUsesRemaining!: number;
+
+	cookingGrade!: string;
+
+	cookingLevel!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingCraftReq extends CrowniclesPacket {
+	slotIndex!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportCookingCraftRes extends CrowniclesPacket {
+	success!: boolean;
+
+	recipeId!: string;
+
+	wasSecret!: boolean;
+
+	outputType!: "potion" | "petFood";
+
+	potionId?: number;
+
+	petFoodType?: string;
+
+	petFoodQuantity?: number;
+
+	failedPotionId?: number;
+
+	cookingXpGained!: number;
+
+	cookingLevelUp!: boolean;
+
+	newCookingLevel?: number;
+
+	newCookingGrade?: string;
+
+	materialSaved?: number;
+}

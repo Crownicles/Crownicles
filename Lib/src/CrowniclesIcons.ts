@@ -270,6 +270,7 @@ export const CrowniclesIcons: {
 			upgradeEquipment: string;
 			garden: string;
 			earthQuality: string;
+			cooking: string;
 		};
 		gardenStatus: {
 			empty: string;
@@ -2626,7 +2627,8 @@ export const CrowniclesIcons: {
 			potionStation: "🧪",
 			upgradeEquipment: "🛠️",
 			garden: "🌱",
-			earthQuality: "↗️"
+			earthQuality: "↗️",
+			cooking: "🔥"
 		},
 		gardenStatus: {
 			empty: "🕳️",
