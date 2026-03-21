@@ -545,6 +545,24 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			})}`;
 		}
 
+		if (response.discoveredRecipeIds && response.discoveredRecipeIds.length > 0) {
+			if (response.discoveredRecipeIds.length === 1) {
+				message += `\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
+					lng: ctx.lng,
+					recipe: i18n.t(`models:cooking.recipes.${response.discoveredRecipeIds[0]}`, { lng: ctx.lng })
+				})}`;
+			}
+			else {
+				const recipeNames = response.discoveredRecipeIds
+					.map(id => `**${i18n.t(`models:cooking.recipes.${id}`, { lng: ctx.lng })}**`)
+					.join(", ");
+				message += `\n${i18n.t("commands:report.city.homes.cooking.recipesDiscovered", {
+					lng: ctx.lng,
+					recipes: recipeNames
+				})}`;
+			}
+		}
+
 		return message;
 	}
 

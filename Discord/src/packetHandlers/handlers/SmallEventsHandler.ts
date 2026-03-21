@@ -1273,15 +1273,25 @@ export default class SmallEventsHandler {
 	async smallEventFarmer(context: PacketContext, packet: SmallEventFarmerPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
+
+		let description = getRandomSmallEventIntro(lng)
+			+ StringUtils.getRandomTranslation("smallEvents:farmer.stories", lng)
+			+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, {
+				count: packet.amount
+			});
+
+		if (packet.discoveredRecipeId) {
+			description += `\n\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
+				lng,
+				recipe: i18n.t(`models:cooking.recipes.${packet.discoveredRecipeId}`, { lng })
+			})}`;
+		}
+
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"farmer",
-					getRandomSmallEventIntro(lng)
-					+ StringUtils.getRandomTranslation("smallEvents:farmer.stories", lng)
-					+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, {
-						count: packet.amount
-					}),
+					description,
 					interaction.user,
 					lng
 				)

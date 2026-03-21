@@ -1133,7 +1133,9 @@
           "xpGained": "{emote:unitValues.xp} +**{{xp}}** XP de cuisine",
           "levelUp": "{emote:messages.levelUp} Vous êtes passé au **niveau {{level}}** de cuisine ! Nouveau grade : **{{grade}}**",
           "materialSaved": "{emote:messages.success} Grâce à votre expertise, un **{{material}}** a été économisé !",
-          "backToCooking": "Retour à la cuisine"
+          "backToCooking": "Retour à la cuisine",
+          "recipeDiscovered": "{emote:city.homeUpgrades.cooking} Vous avez appris une nouvelle recette : **{{recipe}}** !",
+          "recipesDiscovered": "{emote:city.homeUpgrades.cooking} Vous avez appris de nouvelles recettes : {{recipes}} !"
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",

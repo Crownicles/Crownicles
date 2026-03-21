@@ -36,6 +36,8 @@ import { Maps } from "../maps/Maps";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { PetUtils } from "../utils/PetUtils";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
 
@@ -200,12 +202,24 @@ async function applyOutcome(
 		await petEntity.save();
 	}
 
+	// Discover a Gaspard Jo recipe when successfully finding soup
+	let discoveredRecipeId: string | undefined;
+	if (foodType === SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP && [
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PLAYER,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY
+	].includes(outcome)) {
+		const discovered = await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.GASPARD_JO);
+		discoveredRecipeId = discovered?.id;
+	}
+
 	response.push(makePacket(SmallEventPetFoodPacket, {
 		outcome,
 		foodType,
 		loveChange,
 		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined,
-		petSex: petEntity.sex
+		petSex: petEntity.sex,
+		discoveredRecipeId
 	}));
 }
 

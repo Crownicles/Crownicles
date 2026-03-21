@@ -51,6 +51,11 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			type: DataTypes.STRING(64), // eslint-disable-line new-cap
 			allowNull: false,
 			primaryKey: true
+		},
+		sourceMapId: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+			defaultValue: null
 		}
 	});
 }

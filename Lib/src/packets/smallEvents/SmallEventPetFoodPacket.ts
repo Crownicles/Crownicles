@@ -16,4 +16,6 @@ export class SmallEventPetFoodPacket extends SmallEventPacket {
 	timeLost?: number; // Time lost in minutes when investigating
 
 	petSex!: SexTypeShort; // Sex of the pet for gendered translations
+
+	discoveredRecipeId?: string;
 }

@@ -34,6 +34,7 @@ import { crowniclesInstance } from "../../index";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { chooseDestination } from "./ReportDestinationService";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 
 /**
  * PVE fight rewards structure
@@ -223,6 +224,9 @@ export async function doPVEBoss(
 						missionId: "winBossWithDifferentClasses",
 						params: { classId: player.class }
 					});
+
+					// Discover an island boss cooking recipe
+					await RecipeDiscoveryService.discoverFromBoss(player, mapId);
 				}
 			}
 			else {

@@ -223,8 +223,7 @@
 		"outputType": "potion",
 		"potionNature": 1,
 		"potionRarity": 7,
-		"discoveredByDefault": false,
-		"discoverySource": "ISLAND_BOSS"
+		"discoveredByDefault": true
 	},
 	{
 		"id": "potion_energy_1",
@@ -685,8 +684,7 @@
 		"outputType": "potion",
 		"potionNature": 5,
 		"potionRarity": 7,
-		"discoveredByDefault": false,
-		"discoverySource": "ISLAND_BOSS"
+		"discoveredByDefault": true
 	},
 	{
 		"id": "potion_defense_1",

@@ -514,4 +514,6 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 	newCookingGrade?: string;
 
 	materialSaved?: number;
+
+	discoveredRecipeIds?: string[];
 }

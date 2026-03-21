@@ -72,6 +72,8 @@ import {
 import { BlessingManager } from "../../../blessings/BlessingManager";
 import { Homes } from "./Home";
 import { getSlotCountForCategory } from "../../../../../../Lib/src/types/HomeFeatures";
+import { RecipeDiscoveryService } from "../../../cooking/RecipeDiscoveryService";
+import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/CookingConstants";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -470,6 +472,8 @@ export class Player extends Model {
 			set: true
 		}));
 
+		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
+
 		await this.addLevelUpPacket(response, newLevel, playerActiveObjects);
 
 		await this.levelUpIfNeeded(response, playerActiveObjects);
@@ -497,6 +501,8 @@ export class Player extends Model {
 			count: newLevel,
 			set: true
 		}));
+
+		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
 
 		await this.addLevelUpPacketSimple(response, newLevel);
 

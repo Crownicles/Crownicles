@@ -25,6 +25,7 @@ import {
 	getCurrentDaySeed
 } from "./CookingSlotRotation";
 import { CookingSlotData } from "../../../../Lib/src/packets/commands/CommandReportPacket";
+import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 
 interface WoodSelection {
 	materialId: number;
@@ -39,6 +40,7 @@ interface CraftResult {
 	levelUp: boolean;
 	newLevel: number | undefined;
 	newGrade: string | undefined;
+	discoveredRecipeIds: string[];
 }
 
 export class CookingService {
@@ -329,13 +331,21 @@ export class CookingService {
 
 		const levelResult = await CookingService.addCookingXp(player, xp);
 
+		// Discover cooking-level recipes on level up
+		let discoveredRecipeIds: string[] = [];
+		if (levelResult.levelUp) {
+			const discovered = await RecipeDiscoveryService.discoverCookingLevelRecipes(player);
+			discoveredRecipeIds = discovered.map(r => r.id);
+		}
+
 		return {
 			success,
 			xpGained: xp,
 			materialSaved,
 			levelUp: levelResult.levelUp,
 			newLevel: levelResult.newLevel,
-			newGrade: levelResult.newGrade
+			newGrade: levelResult.newGrade,
+			discoveredRecipeIds
 		};
 	}
 }

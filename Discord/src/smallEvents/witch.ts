@@ -111,14 +111,24 @@ export async function witchResult(packet: SmallEventWitchResultPacket, context: 
 	const outcomeTranslationToLoad = packet.outcome === WitchActionOutcomeType.EFFECT
 		? `smallEvents:witch.witchEventResults.outcomes.2.${packet.effectId}`
 		: `smallEvents:witch.witchEventResults.outcomes.${packet.outcome + 1}`;
+
+	let description = `${StringUtils.getRandomTranslation(introToLoad, lng, {
+		witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${CrowniclesIcons.witchSmallEvent[packet.ingredientId]}`
+			.toLowerCase()
+	})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${timeOutro}`;
+
+	if (packet.discoveredRecipeId) {
+		description += `\n\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
+			lng,
+			recipe: i18n.t(`models:cooking.recipes.${packet.discoveredRecipeId}`, { lng })
+		})}`;
+	}
+
 	await (interaction.isRepliable() ? interaction.followUp : interaction.editReply).bind(interaction)({
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"witch",
-				`${StringUtils.getRandomTranslation(introToLoad, lng, {
-					witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${CrowniclesIcons.witchSmallEvent[packet.ingredientId]}`
-						.toLowerCase()
-				})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${timeOutro}`,
+				description,
 				interaction.user,
 				lng
 			)
