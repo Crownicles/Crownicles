@@ -429,7 +429,7 @@ export interface CookingSlotData {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingIgniteReq extends CrowniclesPacket {}
 
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
+@sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingWoodConfirmReq extends CrowniclesPacket {
 	woodMaterialId!: number;
 
@@ -441,7 +441,7 @@ export class CommandReportCookingWoodConfirmRes extends CrowniclesPacket {
 	accepted!: boolean;
 }
 
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
+@sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingIgniteRes extends CrowniclesPacket {
 	slots!: CookingSlotData[];
 
@@ -456,10 +456,10 @@ export class CommandReportCookingIgniteRes extends CrowniclesPacket {
 	cookingLevel!: number;
 }
 
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
+@sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingNoWoodRes extends CrowniclesPacket {}
 
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
+@sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingOverheatRes extends CrowniclesPacket {
 	overheatUntil!: number;
 }
@@ -467,7 +467,7 @@ export class CommandReportCookingOverheatRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingReviveReq extends CrowniclesPacket {}
 
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
+@sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingReviveRes extends CrowniclesPacket {
 	slots!: CookingSlotData[];
 
@@ -487,7 +487,7 @@ export class CommandReportCookingCraftReq extends CrowniclesPacket {
 	slotIndex!: number;
 }
 
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
+@sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingCraftRes extends CrowniclesPacket {
 	success!: boolean;
 
