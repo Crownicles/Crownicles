@@ -92,7 +92,10 @@ export enum ShopItemType {
 	WEEKLY_PLANT_TIER_1,
 	WEEKLY_PLANT_TIER_2,
 	WEEKLY_PLANT_TIER_3,
-	MARKET_ANALYSIS
+	MARKET_ANALYSIS,
+	WOOD_COMMON_BUNDLE,
+	WOOD_UNCOMMON_BUNDLE,
+	WOOD_RARE_BUNDLE
 }
 
 export const ShopItemTypeToString: Record<ShopItemType, string> = {
@@ -120,5 +123,8 @@ export const ShopItemTypeToString: Record<ShopItemType, string> = {
 	[ShopItemType.WEEKLY_PLANT_TIER_1]: "weeklyPlantTier1",
 	[ShopItemType.WEEKLY_PLANT_TIER_2]: "weeklyPlantTier2",
 	[ShopItemType.WEEKLY_PLANT_TIER_3]: "weeklyPlantTier3",
-	[ShopItemType.MARKET_ANALYSIS]: "marketAnalysis"
+	[ShopItemType.MARKET_ANALYSIS]: "marketAnalysis",
+	[ShopItemType.WOOD_COMMON_BUNDLE]: "woodCommonBundle",
+	[ShopItemType.WOOD_UNCOMMON_BUNDLE]: "woodUncommonBundle",
+	[ShopItemType.WOOD_RARE_BUNDLE]: "woodRareBundle"
 };

@@ -2256,7 +2256,10 @@ export const CrowniclesIcons: {
 		lovePointsValue: "🧑‍⚕️",
 		treasure: "👑",
 		plantSlotExtension: "🌿",
-		marketAnalysis: "📊"
+		marketAnalysis: "📊",
+		woodCommonBundle: "🪵",
+		woodUncommonBundle: "🪓",
+		woodRareBundle: "🌲"
 	},
 	badges: {
 		[Badge.BEST_V1_PLAYER]: "🏆",
@@ -2602,7 +2605,8 @@ export const CrowniclesIcons: {
 			generalShop: "🛒",
 			stockExchange: "💎",
 			tanner: "🧳",
-			herbalist: "🌿"
+			herbalist: "🌿",
+			lumberjack: "🪵"
 		},
 		home: {
 			1: "🏕️",

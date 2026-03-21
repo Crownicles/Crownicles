@@ -869,6 +869,10 @@
         "herbalist": {
           "label": "L'Herboriste",
           "description": "Achetez des plantes déjà cultivées, sélection renouvelée chaque semaine."
+        },
+        "lumberjack": {
+          "label": "Le Bûcheron",
+          "description": "Achetez du bois de chauffage et des bois de qualité pour la cuisine."
         }
       },
       "inns": {
@@ -1398,6 +1402,18 @@
       },
       "dailyPotion": {
         "info": "Vous obtiendrez une potion que vous déciderez de garder ou non. Si vous l'avez déjà, elle sera jetée sans remboursement !"
+      },
+      "woodCommonBundle": {
+        "name": "{emote:shopItems.woodCommonBundle} Lot de bois de chauffage",
+        "info": "Un lot de bois commun, parfait pour alimenter votre fourneau de cuisine."
+      },
+      "woodUncommonBundle": {
+        "name": "{emote:shopItems.woodUncommonBundle} Lot de bois travaillé",
+        "info": "Un lot de bois de qualité intermédiaire, utile comme ingrédient dans certaines recettes."
+      },
+      "woodRareBundle": {
+        "name": "{emote:shopItems.woodRareBundle} Lot de bois précieux",
+        "info": "Un lot de bois rare et précieux, nécessaire pour les recettes les plus exigeantes."
       },
       "token": {
         "name": "{emote:unitValues.token} Jeton",

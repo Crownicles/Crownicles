@@ -10,7 +10,8 @@
   "hasBlacksmith": false,
   "shops": [
     "generalShop",
-    "herbalist"
+    "herbalist",
+    "lumberjack"
   ],
   "inns": [
     {
