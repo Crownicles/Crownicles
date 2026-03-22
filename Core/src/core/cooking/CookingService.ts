@@ -253,7 +253,9 @@ export class CookingService {
 				&& materialAvailability.every(m => m.playerHas >= m.quantity);
 			const canCraftOutput = recipe.outputType === "potion"
 				? canReceivePotionReward
-				: Boolean(guild);
+				: recipe.outputType === "petFood"
+					? Boolean(guild)
+					: true;
 			const canCraft = hasIngredients && canCraftOutput;
 
 			slots.push({

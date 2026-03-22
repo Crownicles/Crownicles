@@ -14,7 +14,8 @@ export enum RecipeType {
 	PETFOOD_SALAD = "PETFOOD_SALAD",
 	PETFOOD_CANDY = "PETFOOD_CANDY",
 	PETFOOD_MEAT = "PETFOOD_MEAT",
-	PETFOOD_ULTIMATE = "PETFOOD_ULTIMATE"
+	PETFOOD_ULTIMATE = "PETFOOD_ULTIMATE",
+	MATERIAL_CRAFT = "MATERIAL_CRAFT"
 }
 
 /**
@@ -30,7 +31,8 @@ export const RECIPE_TYPE_BASE_PLANT: Record<RecipeType, PlantId> = {
 	[RecipeType.PETFOOD_SALAD]: PlantId.COMMON_HERB,
 	[RecipeType.PETFOOD_CANDY]: PlantId.GOLDEN_CLOVER,
 	[RecipeType.PETFOOD_MEAT]: PlantId.MEAT_PLANT,
-	[RecipeType.PETFOOD_ULTIMATE]: PlantId.ANCIENT_TREE
+	[RecipeType.PETFOOD_ULTIMATE]: PlantId.ANCIENT_TREE,
+	[RecipeType.MATERIAL_CRAFT]: PlantId.CRYSTAL_FLOWER
 };
 
 export enum RecipeDiscoverySource {
@@ -46,7 +48,8 @@ export enum RecipeDiscoverySource {
 
 export const CookingOutputType = {
 	POTION: "potion",
-	PET_FOOD: "petFood"
+	PET_FOOD: "petFood",
+	MATERIAL: "material"
 } as const;
 
 export type CookingOutputTypeValue = typeof CookingOutputType[keyof typeof CookingOutputType];
@@ -268,6 +271,11 @@ const POTION_TYPES_ONLY = [
 	RecipeType.POTION_SPEED
 ] as const;
 
+const ALL_TYPES_WITH_MATERIALS = [
+	...ALL_TYPES,
+	RecipeType.MATERIAL_CRAFT
+] as const;
+
 export const SLOT_CONFIGS: readonly SlotConfig[] = [
 	{
 		minLevel: 1,
@@ -284,7 +292,7 @@ export const SLOT_CONFIGS: readonly SlotConfig[] = [
 	{
 		minLevel: 1,
 		maxLevel: 8,
-		eligibleTypes: ALL_TYPES,
+		eligibleTypes: ALL_TYPES_WITH_MATERIALS,
 		potionsOnly: false
 	},
 	{
@@ -296,7 +304,7 @@ export const SLOT_CONFIGS: readonly SlotConfig[] = [
 	{
 		minLevel: 4,
 		maxLevel: 8,
-		eligibleTypes: ALL_TYPES,
+		eligibleTypes: ALL_TYPES_WITH_MATERIALS,
 		potionsOnly: false
 	}
 ] as const;

@@ -610,6 +610,15 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			}
 		}
 
+		if (response.outputType === CookingOutputType.MATERIAL && response.craftedMaterialId !== undefined && response.craftedMaterialQuantity !== undefined) {
+			const materialName = i18n.t(`models:materials.${response.craftedMaterialId}`, { lng: ctx.lng });
+			message += `\n${i18n.t("commands:report.city.homes.cooking.materialCrafted", {
+				lng: ctx.lng,
+				quantity: response.craftedMaterialQuantity,
+				material: materialName
+			})}`;
+		}
+
 		if (response.discoveredRecipeIds && response.discoveredRecipeIds.length > 0) {
 			if (response.discoveredRecipeIds.length === 1) {
 				message += `\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {

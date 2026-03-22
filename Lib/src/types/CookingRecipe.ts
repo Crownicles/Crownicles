@@ -28,6 +28,8 @@ export interface CookingRecipe {
 	petFoodType?: string;
 	petFoodQuantity?: number;
 	petFoodLovePoints?: number;
+	outputMaterialId?: number;
+	outputMaterialQuantity?: number;
 	discoveredByDefault: boolean;
 	discoverySource?: RecipeDiscoverySource;
 }

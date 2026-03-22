@@ -301,6 +301,8 @@ export async function handleCookingCraft(
 	let petFedFromSurplus: boolean | undefined;
 	let surplusMaterialId: number | undefined;
 	let surplusMaterialQuantity: number | undefined;
+	let craftedMaterialId: number | undefined;
+	let craftedMaterialQuantity: number | undefined;
 	let failedPotionId: number | undefined;
 
 	if (result.success && recipe.outputType === CookingOutputType.POTION && recipe.potionNature !== undefined && recipe.potionRarity !== undefined) {
@@ -356,6 +358,11 @@ export async function handleCookingCraft(
 			}
 		}
 	}
+	else if (result.success && recipe.outputType === CookingOutputType.MATERIAL && recipe.outputMaterialId !== undefined && recipe.outputMaterialQuantity !== undefined) {
+		await Materials.giveMaterial(player.id, recipe.outputMaterialId, recipe.outputMaterialQuantity);
+		craftedMaterialId = recipe.outputMaterialId;
+		craftedMaterialQuantity = recipe.outputMaterialQuantity;
+	}
 	else if (!result.success && recipe.outputType === CookingOutputType.POTION) {
 		// Failed potion — give a no-effect potion (nature 0, rarity 0 = "potion sans effet")
 		const noEffectPotion = PotionDataController.instance.getById(0);
@@ -391,6 +398,8 @@ export async function handleCookingCraft(
 		petFedFromSurplus,
 		surplusMaterialId,
 		surplusMaterialQuantity,
+		craftedMaterialId,
+		craftedMaterialQuantity,
 		failedPotionId,
 		cookingXpGained: result.xpGained,
 		cookingLevelUp: result.levelUp,

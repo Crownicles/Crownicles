@@ -503,6 +503,12 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 	/** Quantity of materials returned from surplus food recycling */
 	surplusMaterialQuantity?: number;
 
+	/** Material ID crafted from a material recipe */
+	craftedMaterialId?: number;
+
+	/** Quantity of materials crafted from a material recipe */
+	craftedMaterialQuantity?: number;
+
 	failedPotionId?: number;
 
 	cookingXpGained!: number;
