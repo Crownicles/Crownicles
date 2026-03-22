@@ -92,16 +92,25 @@ export function getRecipeForSlotExcluding({
 	allowPetFoodRecipes = true
 }: SlotRecipeSelectionOptions): CookingRecipe | null {
 	const cycle = getSlotCycle(slotIndex, daySeed);
-	const typeIndex = furnacePosition % cycle.length;
-	const recipeType = cycle[typeIndex];
-	const candidates = getCandidatesForSlotType(slotIndex, recipeType, discoveredRecipeIds, allowPetFoodRecipes);
+	const startTypeIndex = furnacePosition % cycle.length;
 
-	if (candidates.length === 0) {
-		return null;
+	// Try each type in the cycle starting from the current rotation position
+	for (let offset = 0; offset < cycle.length; offset++) {
+		const recipeType = cycle[(startTypeIndex + offset) % cycle.length];
+		const candidates = getCandidatesForSlotType(slotIndex, recipeType, discoveredRecipeIds, allowPetFoodRecipes);
+
+		if (candidates.length === 0) {
+			continue;
+		}
+
+		const baseIndex = getBaseCandidateIndex(slotIndex, furnacePosition, daySeed, candidates.length);
+		const recipe = pickCandidateWithoutDuplicates(candidates, baseIndex, excludedRecipeIds);
+		if (recipe) {
+			return recipe;
+		}
 	}
 
-	const baseIndex = getBaseCandidateIndex(slotIndex, furnacePosition, daySeed, candidates.length);
-	return pickCandidateWithoutDuplicates(candidates, baseIndex, excludedRecipeIds);
+	return null;
 }
 
 export function getUniqueRecipesForSlots({
