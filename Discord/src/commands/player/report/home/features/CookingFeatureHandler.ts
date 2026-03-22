@@ -124,9 +124,9 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.COOKING_CRAFT_PREFIX)) {
-			await componentInteraction.deferUpdate();
+			await componentInteraction.deferReply();
 			const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_CRAFT_PREFIX, ""), 10);
-			await this.sendCraftAction(ctx, slotIndex, nestedMenus);
+			await this.sendCraftAction(ctx, slotIndex, nestedMenus, componentInteraction);
 			return true;
 		}
 
@@ -499,7 +499,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private async sendCraftAction(
 		ctx: HomeFeatureHandlerContext,
 		slotIndex: number,
-		nestedMenus: CrowniclesNestedMenus
+		nestedMenus: CrowniclesNestedMenus,
+		craftInteraction: ComponentInteraction
 	): Promise<void> {
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
@@ -510,7 +511,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				}
 
 				const response = responsePacket as unknown as CommandReportCookingCraftRes;
-				const resultMessage = this.buildCraftResultMessage(response, ctx);
+				const resultDescription = this.buildCraftResultMessage(response, ctx);
 
 				if (response.updatedSlots) {
 					this.currentSlots = response.updatedSlots;
@@ -522,8 +523,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					this.cookingGrade = response.newCookingGrade;
 				}
 
-				this.registerIgnitedMenu(ctx, nestedMenus, resultMessage);
-				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+				await nestedMenus.stopCurrentCollector();
+				await craftInteraction.editReply({
+					embeds: [
+						new CrowniclesEmbed()
+							.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
+							.setDescription(resultDescription)
+					]
+				});
 			}
 		);
 	}
@@ -542,11 +549,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (response.error) {
 			const errorKey = CookingFeatureHandler.CRAFT_ERROR_KEYS[response.error];
 			if (errorKey) {
-				return `\n\n${i18n.t(`commands:report.city.homes.cooking.${errorKey}`, { lng: ctx.lng })}`;
+				return i18n.t(`commands:report.city.homes.cooking.${errorKey}`, { lng: ctx.lng });
 			}
 		}
 
-		let message = "\n\n";
+		let message = "";
 
 		if (response.success) {
 			message += i18n.t("commands:report.city.homes.cooking.craftSuccess", {

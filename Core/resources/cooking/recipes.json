@@ -17,7 +17,7 @@
     ],
     "outputType": "potion",
     "potionNature": 1,
-    "potionRarity": 0,
+    "potionRarity": 1,
     "discoveredByDefault": true
   },
   {
@@ -243,7 +243,7 @@
     ],
     "outputType": "potion",
     "potionNature": 7,
-    "potionRarity": 0,
+    "potionRarity": 1,
     "discoveredByDefault": true
   },
   {
@@ -472,7 +472,7 @@
     ],
     "outputType": "potion",
     "potionNature": 5,
-    "potionRarity": 0,
+    "potionRarity": 1,
     "discoveredByDefault": false,
     "discoverySource": "WITCH"
   },
@@ -704,7 +704,7 @@
     ],
     "outputType": "potion",
     "potionNature": 4,
-    "potionRarity": 0,
+    "potionRarity": 1,
     "discoveredByDefault": false,
     "discoverySource": "WITCH"
   },
@@ -938,7 +938,7 @@
     ],
     "outputType": "potion",
     "potionNature": 3,
-    "potionRarity": 0,
+    "potionRarity": 1,
     "discoveredByDefault": true
   },
   {
@@ -1161,7 +1161,7 @@
     ],
     "outputType": "potion",
     "potionNature": 2,
-    "potionRarity": 0,
+    "potionRarity": 1,
     "discoveredByDefault": false,
     "discoverySource": "WITCH"
   },
