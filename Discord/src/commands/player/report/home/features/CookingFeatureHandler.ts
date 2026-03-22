@@ -149,7 +149,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private buildCookingDescription(ctx: HomeFeatureHandlerContext): string {
 		return i18n.t("commands:report.city.homes.cooking.description", {
 			lng: ctx.lng,
-			slots: ctx.homeData.features.cookingSlots
+			count: ctx.homeData.features.cookingSlots
 		});
 	}
 
