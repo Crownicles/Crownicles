@@ -491,6 +491,18 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	petFoodQuantity?: number;
 
+	/** How much food was actually stored in guild (may be less than recipe output) */
+	petFoodStoredQuantity?: number;
+
+	/** Whether the player's pet was fed from surplus food */
+	petFedFromSurplus?: boolean;
+
+	/** Material ID returned from surplus food recycling */
+	surplusMaterialId?: number;
+
+	/** Quantity of materials returned from surplus food recycling */
+	surplusMaterialQuantity?: number;
+
 	failedPotionId?: number;
 
 	cookingXpGained!: number;

@@ -276,19 +276,6 @@ export async function handleCookingCraft(
 		return response;
 	}
 
-	if (recipe.outputType === CookingOutputType.PET_FOOD && !CookingService.canStorePetFoodReward(recipe, guild)) {
-		response.push(await buildBlockedCraftResponse({
-			player,
-			homeId: home.id,
-			cookingSlots,
-			error: CookingCraftErrors.GUILD_STORAGE_FULL,
-			recipeId: recipe.id,
-			wasSecret: slot.recipe.isSecret,
-			outputType: recipe.outputType
-		}));
-		return response;
-	}
-
 	// Verify ingredients are still available
 	if (!slot.recipe.canCraft) {
 		response.push(await buildBlockedCraftResponse({
@@ -310,6 +297,10 @@ export async function handleCookingCraft(
 	let potionId: number | undefined;
 	let petFoodType: string | undefined;
 	let petFoodQuantity: number | undefined;
+	let petFoodStoredQuantity: number | undefined;
+	let petFedFromSurplus: boolean | undefined;
+	let surplusMaterialId: number | undefined;
+	let surplusMaterialQuantity: number | undefined;
 	let failedPotionId: number | undefined;
 
 	if (result.success && recipe.outputType === CookingOutputType.POTION && recipe.potionNature !== undefined && recipe.potionRarity !== undefined) {
@@ -332,8 +323,38 @@ export async function handleCookingCraft(
 	else if (result.success && recipe.outputType === CookingOutputType.PET_FOOD && recipe.petFoodType !== undefined && recipe.petFoodQuantity !== undefined && guild) {
 		petFoodType = recipe.petFoodType;
 		petFoodQuantity = recipe.petFoodQuantity;
-		guild.addFood(recipe.petFoodType, recipe.petFoodQuantity, NumberChangeReason.COOKING);
-		await guild.save();
+
+		// Calculate how much can actually be stored in guild
+		const availableSpace = CookingService.getAvailableFoodSpace(guild, recipe.petFoodType);
+		const storedQuantity = Math.min(recipe.petFoodQuantity, availableSpace);
+		petFoodStoredQuantity = storedQuantity;
+
+		if (storedQuantity > 0) {
+			guild.addFood(recipe.petFoodType, storedQuantity, NumberChangeReason.COOKING);
+			await guild.save();
+		}
+
+		// Handle surplus
+		let surplus = recipe.petFoodQuantity - storedQuantity;
+		if (surplus > 0) {
+			// Try to feed player's pet if hungry and compatible
+			const hungryPet = await CookingService.getHungryCompatiblePet(player, recipe.petFoodType);
+			if (hungryPet) {
+				await CookingService.feedPetFromSurplus(player, hungryPet, recipe.petFoodType);
+				petFedFromSurplus = true;
+				surplus--;
+			}
+
+			// Remaining surplus is recycled into materials
+			if (surplus > 0) {
+				const recycleMaterialId = CookingService.getSurplusRecycleMaterial(recipe);
+				if (recycleMaterialId !== undefined) {
+					await Materials.giveMaterial(player.id, recycleMaterialId, surplus);
+					surplusMaterialId = recycleMaterialId;
+					surplusMaterialQuantity = surplus;
+				}
+			}
+		}
 	}
 	else if (!result.success && recipe.outputType === CookingOutputType.POTION) {
 		// Failed potion — give a no-effect potion (nature 0, rarity 0 = "potion sans effet")
@@ -366,6 +387,10 @@ export async function handleCookingCraft(
 		potionId,
 		petFoodType,
 		petFoodQuantity,
+		petFoodStoredQuantity,
+		petFedFromSurplus,
+		surplusMaterialId,
+		surplusMaterialQuantity,
 		failedPotionId,
 		cookingXpGained: result.xpGained,
 		cookingLevelUp: result.levelUp,

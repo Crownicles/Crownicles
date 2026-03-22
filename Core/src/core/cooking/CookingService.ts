@@ -14,6 +14,14 @@ import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialDataController } from "../../data/Material";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import {
+	PetEntities, PetEntity
+} from "../database/game/models/PetEntity";
+import { PetDataController } from "../../data/Pet";
+import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { getFoodIndexOf } from "../utils/FoodUtils";
+import {
 	getCookingGrade,
 	CookingGradeDefinition,
 	PLANT_COOKING_XP,
@@ -245,7 +253,7 @@ export class CookingService {
 				&& materialAvailability.every(m => m.playerHas >= m.quantity);
 			const canCraftOutput = recipe.outputType === "potion"
 				? canReceivePotionReward
-				: CookingService.canStorePetFoodReward(recipe, guild);
+				: Boolean(guild);
 			const canCraft = hasIngredients && canCraftOutput;
 
 			slots.push({
@@ -405,5 +413,92 @@ export class CookingService {
 			newGrade: levelResult.newGrade,
 			discoveredRecipeIds
 		};
+	}
+
+	/**
+	 * Get available food space in guild for a given food type
+	 */
+	static getAvailableFoodSpace(guild: Guild, foodType: string): number {
+		const foodIndex = getFoodIndexOf(foodType);
+		const max = GuildConstants.MAX_PET_FOOD[foodIndex];
+		const current = guild.getDataValue(foodType) as number;
+		return Math.max(0, max - current);
+	}
+
+	/**
+	 * Check if a pet food type is compatible with a pet's diet
+	 */
+	static isFoodCompatibleWithPet(foodType: string, petEntity: PetEntity): boolean {
+		const petModel = PetDataController.instance.getById(petEntity.typeId);
+		if (!petModel) {
+			return false;
+		}
+
+		if (foodType === PetConstants.PET_FOOD.COMMON_FOOD || foodType === PetConstants.PET_FOOD.ULTIMATE_FOOD) {
+			return true;
+		}
+		if (foodType === PetConstants.PET_FOOD.HERBIVOROUS_FOOD) {
+			return petModel.canEatVegetables();
+		}
+		if (foodType === PetConstants.PET_FOOD.CARNIVOROUS_FOOD) {
+			return petModel.canEatMeat();
+		}
+		return false;
+	}
+
+	/**
+	 * Check if the player's pet is hungry and can eat the given food type
+	 */
+	static async getHungryCompatiblePet(player: Player, foodType: string): Promise<PetEntity | null> {
+		if (!player.petId) {
+			return null;
+		}
+
+		const petEntity = await PetEntities.getById(player.petId);
+		if (!petEntity) {
+			return null;
+		}
+
+		const petModel = PetDataController.instance.getById(petEntity.typeId);
+		if (!petModel) {
+			return null;
+		}
+
+		const cooldown = petEntity.getFeedCooldown(petModel);
+		if (cooldown > 0) {
+			return null;
+		}
+
+		if (!CookingService.isFoodCompatibleWithPet(foodType, petEntity)) {
+			return null;
+		}
+
+		return petEntity;
+	}
+
+	/**
+	 * Feed the player's pet from surplus cooking food
+	 */
+	static async feedPetFromSurplus(player: Player, petEntity: PetEntity, foodType: string): Promise<void> {
+		const foodIndex = getFoodIndexOf(foodType);
+		petEntity.hungrySince = new Date();
+		await petEntity.changeLovePoints({
+			response: [],
+			player,
+			amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[foodIndex],
+			reason: NumberChangeReason.PET_FEED
+		});
+		await petEntity.save();
+	}
+
+	/**
+	 * Get the material to return when recycling surplus pet food.
+	 * Returns the first material from the recipe's ingredient list.
+	 */
+	static getSurplusRecycleMaterial(recipe: CookingRecipe): number | undefined {
+		if (recipe.materials.length === 0) {
+			return undefined;
+		}
+		return recipe.materials[0].materialId;
 	}
 }

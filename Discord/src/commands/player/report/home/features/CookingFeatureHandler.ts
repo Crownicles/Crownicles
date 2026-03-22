@@ -583,11 +583,31 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (response.outputType === CookingOutputType.PET_FOOD && response.petFoodType !== undefined && response.petFoodQuantity !== undefined) {
-			message += `\n${i18n.t("commands:report.city.homes.cooking.petFoodStored", {
-				lng: ctx.lng,
-				quantity: response.petFoodQuantity,
-				food: i18n.t(`commands:guildStorage.food.names.${response.petFoodType}`, { lng: ctx.lng })
-			})}`;
+			const foodName = i18n.t(`commands:guildStorage.food.names.${response.petFoodType}`, { lng: ctx.lng });
+			const storedQuantity = response.petFoodStoredQuantity ?? response.petFoodQuantity;
+
+			if (storedQuantity > 0) {
+				message += `\n${i18n.t("commands:report.city.homes.cooking.petFoodStored", {
+					lng: ctx.lng,
+					quantity: storedQuantity,
+					food: foodName
+				})}`;
+			}
+
+			if (response.petFedFromSurplus) {
+				message += `\n${i18n.t("commands:report.city.homes.cooking.petFedFromSurplus", {
+					lng: ctx.lng,
+					food: foodName
+				})}`;
+			}
+
+			if (response.surplusMaterialId !== undefined && response.surplusMaterialQuantity !== undefined) {
+				message += `\n${i18n.t("commands:report.city.homes.cooking.surplusRecycled", {
+					lng: ctx.lng,
+					quantity: response.surplusMaterialQuantity,
+					material: i18n.t(`models:materials.${response.surplusMaterialId}`, { lng: ctx.lng })
+				})}`;
+			}
 		}
 
 		if (response.discoveredRecipeIds && response.discoveredRecipeIds.length > 0) {
