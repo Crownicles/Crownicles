@@ -28,6 +28,7 @@ import {
 	MATERIAL_RARITY_COOKING_XP,
 	CookingXpConstants,
 	FAILURE_PENALTY_BASE,
+	NO_XP_LEVEL_THRESHOLD,
 	FURNACE_MAX_USES_PER_DAY,
 	FURNACE_MIN_OVERHEAT_HOURS,
 	SLOT_CONFIGS
@@ -392,10 +393,13 @@ export class CookingService {
 		const failureRate = CookingService.getFailureRate(grade, recipe.level);
 		const success = !RandomUtils.crowniclesRandom.bool(Math.min(failureRate, 1));
 
-		// Calculate XP
-		const xp = success
-			? CookingService.calculateCookingXp(recipe)
-			: CookingService.calculateFailureXp(recipe.level);
+		// Calculate XP (0 if recipe is too far above grade level)
+		const levelDiff = recipe.level - grade.maxRecipeLevelWithoutPenalty;
+		const xp = levelDiff >= NO_XP_LEVEL_THRESHOLD
+			? 0
+			: success
+				? CookingService.calculateCookingXp(recipe)
+				: CookingService.calculateFailureXp(recipe.level);
 
 		const levelResult = await CookingService.addCookingXp(player, xp);
 

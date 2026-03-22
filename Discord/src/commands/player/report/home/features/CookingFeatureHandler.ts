@@ -164,6 +164,27 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
+	 * Build a message indicating which wood was consumed (or saved)
+	 */
+	private buildWoodConsumedMessage(
+		response: CommandReportCookingIgniteRes | CommandReportCookingReviveRes,
+		ctx: HomeFeatureHandlerContext
+	): string {
+		const woodEmoji = CrowniclesIcons.materials[response.woodMaterialId as unknown as keyof typeof CrowniclesIcons.materials] ?? CrowniclesIcons.defaultMaterial;
+		const woodName = i18n.t(`models:materials.${response.woodMaterialId}`, { lng: ctx.lng });
+		if (response.woodConsumed) {
+			return `\n${i18n.t("commands:report.city.homes.cooking.woodConsumed", {
+				lng: ctx.lng,
+				wood: `${woodEmoji} ${woodName}`
+			})}`;
+		}
+		return `\n${i18n.t("commands:report.city.homes.cooking.woodSaved", {
+			lng: ctx.lng,
+			wood: `${woodEmoji} ${woodName}`
+		})}`;
+	}
+
+	/**
 	 * Build embed fields for each cooking slot
 	 */
 	private buildSlotFields(ctx: HomeFeatureHandlerContext): {
@@ -417,7 +438,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				if (packetName === CommandReportCookingIgniteRes.name) {
 					const response = responsePacket as unknown as CommandReportCookingIgniteRes;
 					this.updateStateFromIgniteResponse(response);
-					this.registerIgnitedMenu(ctx, nestedMenus);
+					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 				}
 			}
@@ -432,10 +453,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		woodInfo: CommandReportCookingWoodConfirmReq,
 		nestedMenus: CrowniclesNestedMenus
 	): void {
+		const woodEmoji = CrowniclesIcons.materials[woodInfo.woodMaterialId as unknown as keyof typeof CrowniclesIcons.materials] ?? CrowniclesIcons.defaultMaterial;
 		const materialName = i18n.t(`models:materials.${woodInfo.woodMaterialId}`, { lng: ctx.lng });
 		const description = i18n.t("commands:report.city.homes.cooking.woodConfirm", {
 			lng: ctx.lng,
-			material: materialName,
+			material: `${woodEmoji} ${materialName}`,
 			rarity: woodInfo.woodRarity
 		});
 
@@ -456,6 +478,23 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		accepted: boolean,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
+		if (!accepted) {
+			// Core returns no packets on cancel, navigate back immediately
+			await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+				ctx.context,
+				makePacket(CommandReportCookingWoodConfirmRes, { accepted: false }),
+				async () => { /* No-op: Core returns empty on cancel */ }
+			);
+			if (this.currentSlots.length > 0) {
+				this.registerIgnitedMenu(ctx, nestedMenus);
+			}
+			else {
+				this.registerCookingMenu(ctx, nestedMenus);
+			}
+			await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+			return;
+		}
+
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
 			makePacket(CommandReportCookingWoodConfirmRes, { accepted }),
@@ -463,12 +502,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				if (packetName === CommandReportCookingIgniteRes.name) {
 					const response = responsePacket as unknown as CommandReportCookingIgniteRes;
 					this.updateStateFromIgniteResponse(response);
-					this.registerIgnitedMenu(ctx, nestedMenus);
+					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 					return;
 				}
 
-				// Cancelled or no wood — go back to initial cooking menu
 				this.registerCookingMenu(ctx, nestedMenus);
 				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 			}
@@ -483,10 +521,35 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			ctx.context,
 			makePacket(CommandReportCookingReviveReq, {}),
 			async (_responseContext, packetName, responsePacket) => {
+				if (packetName === CommandReportCookingNoWoodRes.name) {
+					const noWoodMessage = `\n\n${i18n.t("commands:report.city.homes.cooking.noWood", { lng: ctx.lng })}`;
+					this.registerIgnitedMenu(ctx, nestedMenus, noWoodMessage);
+					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+					return;
+				}
+
+				if (packetName === CommandReportCookingOverheatRes.name) {
+					const response = responsePacket as unknown as CommandReportCookingOverheatRes;
+					const overheatMessage = `\n\n${i18n.t("commands:report.city.homes.cooking.overheat", {
+						lng: ctx.lng,
+						time: finishInTimeDisplay(new Date(response.overheatUntil))
+					})}`;
+					this.registerIgnitedMenu(ctx, nestedMenus, overheatMessage);
+					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+					return;
+				}
+
+				if (packetName === CommandReportCookingWoodConfirmReq.name) {
+					const response = responsePacket as unknown as CommandReportCookingWoodConfirmReq;
+					this.registerWoodConfirmMenu(ctx, response, nestedMenus);
+					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+					return;
+				}
+
 				if (packetName === CommandReportCookingReviveRes.name) {
 					const response = responsePacket as unknown as CommandReportCookingReviveRes;
 					this.updateStateFromIgniteResponse(response);
-					this.registerIgnitedMenu(ctx, nestedMenus);
+					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 				}
 			}

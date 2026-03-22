@@ -228,6 +228,11 @@ export const CookingXpConstants = {
 export const FAILURE_PENALTY_BASE = 18;
 
 /**
+ * If the recipe level exceeds the grade's max by this amount or more, no XP is gained
+ */
+export const NO_XP_LEVEL_THRESHOLD = 3;
+
+/**
  * Slot configurations for the furnace
  */
 export interface SlotConfig {
