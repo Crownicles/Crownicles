@@ -187,14 +187,30 @@ async function buildManageHomeData(params: {
 
 	const hasManageOptions = newPrice || upgrade || movePrice;
 
-	return hasManageOptions
-		? {
+	if (hasManageOptions) {
+		return {
 			newPrice,
 			upgrade,
 			movePrice,
 			currentMoney: player.money
-		}
-		: undefined;
+		};
+	}
+
+	// When no actions are available but player has a home in this city, provide reason
+	if (isHomeInCity && homeLevel) {
+		const nextLevel = HomeLevel.getNextLevelInfo(homeLevel);
+		const isMaxLevel = nextLevel === null;
+
+		return {
+			currentMoney: player.money,
+			isMaxLevel: isMaxLevel || undefined,
+			requiredPlayerLevelForUpgrade: nextLevel && player.level < nextLevel.requiredPlayerLevel
+				? nextLevel.requiredPlayerLevel
+				: undefined
+		};
+	}
+
+	return undefined;
 }
 
 /**

@@ -66,20 +66,33 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 	}
 
 	// Manage home option
-	if (data.home.manage && (data.home.manage.newPrice || data.home.manage.upgrade || data.home.manage.movePrice)) {
+	if (data.home.manage) {
+		let description: string;
+		if (data.home.manage.newPrice) {
+			description = i18n.t("commands:report.city.homes.manageHomeDescriptionNew", { lng });
+		}
+		else if (data.home.manage.upgrade) {
+			description = i18n.t("commands:report.city.homes.manageHomeDescriptionUpgrade", { lng });
+		}
+		else if (data.home.manage.movePrice) {
+			description = i18n.t("commands:report.city.homes.manageHomeDescriptionMove", { lng });
+		}
+		else if (data.home.manage.isMaxLevel) {
+			description = i18n.t("commands:report.city.homes.manageHomeDescriptionMaxLevel", { lng });
+		}
+		else if (data.home.manage.requiredPlayerLevelForUpgrade) {
+			description = i18n.t("commands:report.city.homes.manageHomeDescriptionLevelRequired", {
+				lng,
+				level: data.home.manage.requiredPlayerLevelForUpgrade
+			});
+		}
+		else {
+			description = i18n.t("commands:report.city.homes.manageHomeDescriptionUnavailable", { lng });
+		}
+
 		selectMenu.addOptions({
 			label: i18n.t("commands:report.city.homes.manageHome", { lng }),
-			description: data.home.manage.newPrice
-				? i18n.t("commands:report.city.homes.manageHomeDescriptionNew", {
-					lng
-				})
-				: data.home.manage.upgrade
-					? i18n.t("commands:report.city.homes.manageHomeDescriptionUpgrade", {
-						lng
-					})
-					: i18n.t("commands:report.city.homes.manageHomeDescriptionMove", {
-						lng
-					}),
+			description,
 			value: HomeMenuIds.MANAGE_HOME_MENU,
 			emoji: CrowniclesIcons.city.manageHome
 		});
@@ -666,6 +679,15 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 				cost: data.movePrice
 			});
 		}
+	}
+	else if (data.requiredPlayerLevelForUpgrade) {
+		description += i18n.t("commands:report.city.homes.notaryLevelRequired", {
+			lng,
+			level: data.requiredPlayerLevelForUpgrade
+		});
+	}
+	else if (data.isMaxLevel) {
+		description += i18n.t("commands:report.city.homes.notaryMaxLevel", { lng });
 	}
 	else {
 		console.warn("Manage home menu opened without any available action");

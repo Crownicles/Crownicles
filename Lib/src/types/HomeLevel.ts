@@ -160,6 +160,18 @@ export class HomeLevel {
 		return HomeLevel.LEVEL_1;
 	}
 
+	/**
+	 * Get info about the next upgrade without filtering by player level.
+	 * Returns null if this is the max level, otherwise returns the next HomeLevel.
+	 */
+	public static getNextLevelInfo(currentLevel: HomeLevel): HomeLevel | null {
+		const nextLevelIndex = HomeLevel.LEVELS.indexOf(currentLevel) + 1;
+		if (nextLevelIndex >= HomeLevel.LEVELS.length) {
+			return null;
+		}
+		return HomeLevel.LEVELS[nextLevelIndex];
+	}
+
 
 	public level: number;
 

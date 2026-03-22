@@ -148,6 +148,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			};
 			movePrice?: number;
 			currentMoney: number;
+
+			/** When no actions are available, the required player level for the next home upgrade */
+			requiredPlayerLevelForUpgrade?: number;
+
+			/** Whether the home is at max level */
+			isMaxLevel?: boolean;
 		};
 	};
 
