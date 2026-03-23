@@ -99,7 +99,9 @@ import { crowniclesInstance } from "../../index";
 import { toItemWithDetails } from "../utils/ItemUtils";
 import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
-import { PlantConstants, PlantType } from "../../../../Lib/src/constants/PlantConstants";
+import {
+	PlantConstants, PlantType
+} from "../../../../Lib/src/constants/PlantConstants";
 import { buildGardenData } from "./ReportGardenService";
 
 // Type aliases for commonly used nested types from ReactionCollectorCityData

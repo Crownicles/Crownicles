@@ -27,7 +27,7 @@ import {
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import {
-	PlantConstants
+	PlantConstants, PlantId
 } from "../../../../../../../Lib/src/constants/PlantConstants";
 import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
@@ -308,8 +308,23 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Send a harvest action to Core and refresh the garden menu
+	 * Compute remaining seconds for a plant in a garden slot
 	 */
+	private computeRemainingSeconds(plantId: PlantId | 0, earthQuality: number): number {
+		const plant = PlantConstants.getPlantById(plantId);
+		return plant
+			? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality)
+			: 0;
+	}
+
+	/**
+	 * Handle garden error response by refreshing the menu
+	 */
+	private async handleGardenError(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+		this.registerGardenMenu(ctx, nestedMenus);
+		await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+	}
+
 	/**
 	 * Reset harvested plots in local garden state after a successful harvest
 	 */
@@ -318,10 +333,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			if (response.harvestedSlots.includes(plot.slot)) {
 				plot.growthProgress = 0;
 				plot.isReady = false;
-				const plant = PlantConstants.getPlantById(plot.plantId);
-				plot.remainingSeconds = plant
-					? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, ctx.homeData.features.gardenEarthQuality)
-					: 0;
+				plot.remainingSeconds = this.computeRemainingSeconds(plot.plantId, ctx.homeData.features.gardenEarthQuality);
 			}
 		}
 		garden.plantStorage = response.plantStorage;
@@ -354,8 +366,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			makePacket(CommandReportGardenHarvestReq, {}),
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportGardenErrorRes.name) {
-					this.registerGardenMenu(ctx, nestedMenus);
-					await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+					await this.handleGardenError(ctx, nestedMenus);
 					return;
 				}
 
@@ -382,9 +393,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			makePacket(CommandReportGardenPlantReq, { gardenSlot }),
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportGardenErrorRes.name) {
-					// Error — just refresh the menu
-					this.registerGardenMenu(ctx, nestedMenus);
-					await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+					await this.handleGardenError(ctx, nestedMenus);
 					return;
 				}
 
@@ -397,10 +406,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 					plot.plantId = response.plantId;
 					plot.growthProgress = 0;
 					plot.isReady = false;
-					const plant = PlantConstants.getPlantById(response.plantId);
-					plot.remainingSeconds = plant
-						? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, ctx.homeData.features.gardenEarthQuality)
-						: 0;
+					plot.remainingSeconds = this.computeRemainingSeconds(response.plantId, ctx.homeData.features.gardenEarthQuality);
 				}
 
 				// Seed consumed
