@@ -1,5 +1,7 @@
 import { TimeConstants } from "./TimeConstants";
-import { getDayNumber } from "../utils/TimeUtils";
+import {
+	getDayNumber, getWeekNumber
+} from "../utils/TimeUtils";
 import { frac } from "../utils/MathUtils";
 
 /**
@@ -290,16 +292,30 @@ export abstract class PlantConstants {
 	}
 
 	/**
+	 * Linear congruential generator constants for deterministic pseudo-random selection.
+	 * Used to pick herbalist plants from a seed value.
+	 */
+	private static readonly LCG = {
+		MULTIPLIER: 9301,
+		INCREMENT: 49297,
+		MODULUS: 233280
+	};
+
+	/**
 	 * Get the 3 plants available at the herbalist this week (one per tier).
 	 * Uses a deterministic seed based on the ISO week number.
 	 */
 	public static getWeeklyHerbalistPlants(date: Date = new Date()): PlantType[] {
-		let seed = PlantConstants.getIsoWeekNumber(date);
+		let seed = getWeekNumber(date);
 		seed += date.getFullYear() * 100;
+
+		const {
+			MULTIPLIER, INCREMENT, MODULUS
+		} = PlantConstants.LCG;
 
 		const plants: PlantType[] = [];
 		for (const tier of PlantConstants.HERBALIST_TIERS) {
-			const index = (seed * 9301 + 49297) % 233280 % tier.length;
+			const index = (seed * MULTIPLIER + INCREMENT) % MODULUS % tier.length;
 			const plantType = PlantConstants.getPlantById(tier[index]);
 			if (plantType) {
 				plants.push(plantType);
@@ -307,16 +323,6 @@ export abstract class PlantConstants {
 			seed += 1;
 		}
 		return plants;
-	}
-
-	/**
-	 * Get ISO week number (1-53) for a given date
-	 */
-	private static getIsoWeekNumber(date: Date): number {
-		const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-		utcDate.setUTCDate(utcDate.getUTCDate() + 4 - (utcDate.getUTCDay() || 7));
-		const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
-		return Math.ceil(((utcDate.getTime() - yearStart.getTime()) / TimeConstants.MS_TIME.DAY + 1) / 7);
 	}
 
 	/**
