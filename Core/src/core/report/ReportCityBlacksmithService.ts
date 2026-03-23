@@ -36,9 +36,18 @@ export interface UpgradeItemValidationResult {
 	logError?: string;
 }
 
+type InventoryReaction = {
+	slot: number;
+	itemCategory: number;
+};
+
+type PlayerInventorySlot = Awaited<ReturnType<typeof InventorySlots.getOfPlayer>>[number];
+
 type InventoryMaterialStock = Map<number, number>;
 
 type BlacksmithUpgradeItem = NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][number];
+
+type BlacksmithDisenchantItem = NonNullable<ReactionCollectorCityData["blacksmith"]>["disenchantableItems"][number];
 
 type BlacksmithUpgradeExecutionData = {
 	totalCost: number;
@@ -50,14 +59,28 @@ type BlacksmithUpgradeExecutionData = {
 	}[];
 };
 
+function getBlacksmithData(player: Player, data: ReactionCollectorCityData): NonNullable<ReactionCollectorCityData["blacksmith"]> | null {
+	const { blacksmith } = data;
+	if (!blacksmith) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use blacksmith but no blacksmith data available.`);
+		return null;
+	}
+
+	return blacksmith;
+}
+
+function logMissingInventoryItem(player: Player, action: string): null {
+	CrowniclesLogger.error(`Player ${player.keycloakId} tried to ${action} an item that doesn't exist in their inventory.`);
+	return null;
+}
+
 function getBlacksmithUpgradeItem(
 	player: Player,
 	reaction: ReactionCollectorBlacksmithUpgradeReaction,
 	data: ReactionCollectorCityData
 ): BlacksmithUpgradeItem | null {
-	const blacksmith = data.blacksmith;
+	const blacksmith = getBlacksmithData(player, data);
 	if (!blacksmith) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use blacksmith but no blacksmith data available.`);
 		return null;
 	}
 
@@ -70,6 +93,27 @@ function getBlacksmithUpgradeItem(
 	}
 
 	return itemToUpgrade;
+}
+
+function getBlacksmithDisenchantItem(
+	player: Player,
+	reaction: ReactionCollectorBlacksmithDisenchantReaction,
+	data: ReactionCollectorCityData
+): BlacksmithDisenchantItem | null {
+	const blacksmith = getBlacksmithData(player, data);
+	if (!blacksmith) {
+		return null;
+	}
+
+	const itemToDisenchant = blacksmith.disenchantableItems.find(
+		item => item.slot === reaction.slot && item.category === reaction.itemCategory
+	);
+	if (!itemToDisenchant) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to disenchant an item that doesn't exist in the blacksmith.`);
+		return null;
+	}
+
+	return itemToDisenchant;
 }
 
 async function getPlayerMaterialStock(playerId: number): Promise<InventoryMaterialStock> {
@@ -108,12 +152,24 @@ function buildBlacksmithUpgradeExecutionData(params: {
 	};
 }
 
-async function findInventorySlotForReaction(playerId: number, reaction: {
-	slot: number;
-	itemCategory: number;
-}): Promise<Awaited<ReturnType<typeof InventorySlots.getOfPlayer>>[number] | undefined> {
+function pushBlacksmithMissingMoneyResponse(response: CrowniclesPacket[], totalCost: number, playerMoney: number): void {
+	response.push(makePacket(CommandReportBlacksmithNotEnoughMoneyRes, {
+		missingMoney: totalCost - playerMoney
+	}));
+}
+
+async function findInventorySlotForReaction(playerId: number, reaction: InventoryReaction): Promise<PlayerInventorySlot | undefined> {
 	return await InventorySlots.getOfPlayer(playerId)
 		.then(slots => slots.find(slot => slot.slot === reaction.slot && slot.itemCategory === reaction.itemCategory));
+}
+
+async function getInventorySlotForReaction(
+	player: Player,
+	reaction: InventoryReaction,
+	action: string
+): Promise<PlayerInventorySlot | null> {
+	const inventorySlot = await findInventorySlotForReaction(player.id, reaction);
+	return inventorySlot ?? logMissingInventoryItem(player, action);
 }
 
 /**
@@ -173,7 +229,6 @@ export async function handleUpgradeItemReaction(
 
 	const { itemToUpgrade } = validation;
 
-	// Consume materials
 	const materialsToConsume = itemToUpgrade!.requiredMaterials.map(m => ({
 		materialId: m.materialId,
 		quantity: m.quantity
@@ -185,12 +240,8 @@ export async function handleUpgradeItemReaction(
 		return;
 	}
 
-	// Upgrade the item
-	const inventorySlot = await InventorySlots.getOfPlayer(player.id)
-		.then(slots => slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory));
-
+	const inventorySlot = await getInventorySlotForReaction(player, reaction, "upgrade");
 	if (!inventorySlot) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in their inventory.`);
 		return;
 	}
 
@@ -227,9 +278,7 @@ export async function handleBlacksmithUpgradeReaction(
 	});
 
 	if (player.money < executionData.totalCost) {
-		response.push(makePacket(CommandReportBlacksmithNotEnoughMoneyRes, {
-			missingMoney: executionData.totalCost - player.money
-		}));
+		pushBlacksmithMissingMoneyResponse(response, executionData.totalCost, player.money);
 		return;
 	}
 
@@ -253,9 +302,8 @@ export async function handleBlacksmithUpgradeReaction(
 		reason: NumberChangeReason.BLACKSMITH_UPGRADE
 	});
 
-	const inventorySlot = await findInventorySlotForReaction(player.id, reaction);
+	const inventorySlot = await getInventorySlotForReaction(player, reaction, "upgrade");
 	if (!inventorySlot) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in their inventory.`);
 		return;
 	}
 
@@ -282,42 +330,24 @@ export async function handleBlacksmithDisenchantReaction(
 ): Promise<void> {
 	await player.reload();
 
-	const blacksmith = data.blacksmith;
-	if (!blacksmith) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use blacksmith but no blacksmith data available.`);
-		return;
-	}
-
-	const itemToDisenchant = blacksmith.disenchantableItems.find(
-		item => item.slot === reaction.slot && item.category === reaction.itemCategory
-	);
-
+	const itemToDisenchant = getBlacksmithDisenchantItem(player, reaction, data);
 	if (!itemToDisenchant) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to disenchant an item that doesn't exist in the blacksmith.`);
 		return;
 	}
 
-	// Check if player has enough money
 	if (player.money < itemToDisenchant.disenchantCost) {
-		response.push(makePacket(CommandReportBlacksmithNotEnoughMoneyRes, {
-			missingMoney: itemToDisenchant.disenchantCost - player.money
-		}));
+		pushBlacksmithMissingMoneyResponse(response, itemToDisenchant.disenchantCost, player.money);
 		return;
 	}
 
-	// Spend money
 	await player.spendMoney({
 		response,
 		amount: itemToDisenchant.disenchantCost,
 		reason: NumberChangeReason.BLACKSMITH_DISENCHANT
 	});
 
-	// Remove enchantment from the item
-	const inventorySlot = await InventorySlots.getOfPlayer(player.id)
-		.then(slots => slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory));
-
+	const inventorySlot = await getInventorySlotForReaction(player, reaction, "disenchant");
 	if (!inventorySlot) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to disenchant an item that doesn't exist in their inventory.`);
 		return;
 	}
 
