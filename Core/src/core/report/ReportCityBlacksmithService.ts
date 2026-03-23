@@ -74,46 +74,42 @@ function logMissingInventoryItem(player: Player, action: string): null {
 	return null;
 }
 
-function getBlacksmithUpgradeItem(
+function getBlacksmithItem(
 	player: Player,
 	reaction: ReactionCollectorBlacksmithUpgradeReaction,
-	data: ReactionCollectorCityData
-): BlacksmithUpgradeItem | null {
-	const blacksmith = getBlacksmithData(player, data);
-	if (!blacksmith) {
-		return null;
-	}
-
-	const itemToUpgrade = blacksmith.upgradeableItems.find(
-		item => item.slot === reaction.slot && item.category === reaction.itemCategory
-	);
-	if (!itemToUpgrade) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in the blacksmith.`);
-		return null;
-	}
-
-	return itemToUpgrade;
-}
-
-function getBlacksmithDisenchantItem(
+	data: ReactionCollectorCityData,
+	action: "upgrade"
+): BlacksmithUpgradeItem | null;
+function getBlacksmithItem(
 	player: Player,
 	reaction: ReactionCollectorBlacksmithDisenchantReaction,
-	data: ReactionCollectorCityData
-): BlacksmithDisenchantItem | null {
+	data: ReactionCollectorCityData,
+	action: "disenchant"
+): BlacksmithDisenchantItem | null;
+function getBlacksmithItem(
+	player: Player,
+	reaction: {
+		slot: number;
+		itemCategory: number;
+	},
+	data: ReactionCollectorCityData,
+	action: "upgrade" | "disenchant"
+): BlacksmithUpgradeItem | BlacksmithDisenchantItem | null {
 	const blacksmith = getBlacksmithData(player, data);
 	if (!blacksmith) {
 		return null;
 	}
 
-	const itemToDisenchant = blacksmith.disenchantableItems.find(
+	const items = action === "upgrade" ? blacksmith.upgradeableItems : blacksmith.disenchantableItems;
+	const found = items.find(
 		item => item.slot === reaction.slot && item.category === reaction.itemCategory
 	);
-	if (!itemToDisenchant) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to disenchant an item that doesn't exist in the blacksmith.`);
+	if (!found) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to ${action} an item that doesn't exist in the blacksmith.`);
 		return null;
 	}
 
-	return itemToDisenchant;
+	return found;
 }
 
 async function getPlayerMaterialStock(playerId: number): Promise<InventoryMaterialStock> {
@@ -265,7 +261,7 @@ export async function handleBlacksmithUpgradeReaction(
 ): Promise<void> {
 	await player.reload();
 
-	const itemToUpgrade = getBlacksmithUpgradeItem(player, reaction, data);
+	const itemToUpgrade = getBlacksmithItem(player, reaction, data, "upgrade");
 	if (!itemToUpgrade) {
 		return;
 	}
@@ -330,7 +326,7 @@ export async function handleBlacksmithDisenchantReaction(
 ): Promise<void> {
 	await player.reload();
 
-	const itemToDisenchant = getBlacksmithDisenchantItem(player, reaction, data);
+	const itemToDisenchant = getBlacksmithItem(player, reaction, data, "disenchant");
 	if (!itemToDisenchant) {
 		return;
 	}

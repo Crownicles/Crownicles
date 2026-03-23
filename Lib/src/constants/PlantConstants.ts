@@ -56,6 +56,15 @@ export const SEED_CONDITION_FAILURE = {
 	NONE: "none"
 } as const;
 
+export const GARDENER_INTERACTIONS = {
+	SEED: "seed",
+	ADVICE: "advice",
+	PLANT: "plant",
+	MATERIAL: "material"
+} as const;
+
+export type GardenerInteractionName = typeof GARDENER_INTERACTIONS[keyof typeof GARDENER_INTERACTIONS];
+
 export type SeedConditionKey =
 	typeof SEED_CONDITION_SUCCESS[keyof typeof SEED_CONDITION_SUCCESS]
 	| typeof SEED_CONDITION_FAILURE[keyof typeof SEED_CONDITION_FAILURE];
@@ -403,17 +412,4 @@ export abstract class PlantConstants {
 		46,
 		32
 	];
-
-	/**
-	 * Fire-themed item IDs that satisfy the Fire Bulb seed condition.
-	 */
-	public static readonly FIRE_ITEM_IDS = {
-		WEAPONS: [
-			64,
-			89,
-			97
-		],
-		ARMORS: [70],
-		OBJECTS: [72]
-	} as const;
 }

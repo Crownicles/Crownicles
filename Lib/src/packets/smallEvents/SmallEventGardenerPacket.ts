@@ -2,11 +2,13 @@ import { SmallEventPacket } from "./SmallEventPacket";
 import {
 	PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
-import { SeedConditionKey } from "../../constants/PlantConstants";
+import {
+	GardenerInteractionName, SeedConditionKey
+} from "../../constants/PlantConstants";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventGardenerPacket extends SmallEventPacket {
-	interactionName!: string;
+	interactionName!: GardenerInteractionName;
 
 	plantId!: number;
 

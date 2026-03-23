@@ -9,7 +9,7 @@ import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
 	PlantConstants, PlantId,
-	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE
+	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE, GARDENER_INTERACTIONS
 } from "../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import {
@@ -42,14 +42,9 @@ import { ReactionCollectorGardener } from "../../../../Lib/src/packets/interacti
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
-
-const GARDENER_INTERACTIONS = {
-	SEED: "seed",
-	ADVICE: "advice",
-	PLANT: "plant",
-	MATERIAL: "material"
-} as const;
+import {
+	ItemConstants, ItemRarity
+} from "../../../../Lib/src/constants/ItemConstants";
 
 const FALLBACK_PROBABILITIES = {
 	ADVICE: 0.4,
@@ -58,7 +53,6 @@ const FALLBACK_PROBABILITIES = {
 
 const LUNAR_CYCLE_DAYS = 29.53058770576;
 const REFERENCE_NEW_MOON = new Date(2000, 0, 6, 18, 14, 0).getTime();
-const GAME_TIMEZONE = "Europe/Paris";
 const NIGHT_THRESHOLDS = {
 	EVENING: 21,
 	MORNING: 6
@@ -71,12 +65,7 @@ function getMoonIllumination(): number {
 }
 
 function getGameHour(): number {
-	const formatter = new Intl.DateTimeFormat("fr-FR", {
-		timeZone: GAME_TIMEZONE,
-		hour: "numeric",
-		hour12: false
-	});
-	return parseInt(formatter.format(new Date()), 10);
+	return new Date().getHours();
 }
 
 function isNight(): boolean {
@@ -256,34 +245,22 @@ async function checkFireAffinityCondition(player: Player): Promise<SeedCondition
 		};
 	}
 
-	if (player.petId) {
-		const petEntity = await PetEntities.getById(player.petId);
-		if (petEntity && petEntity.typeId === PetConstants.PETS.PHOENIX) {
-			return {
-				canObtain: true,
-				conditionKey: SEED_CONDITION_SUCCESS.PHOENIX
-			};
-		}
+	const petEntity = await getOwnedPet(player);
+	if (petEntity?.typeId === PetConstants.PETS.PHOENIX) {
+		return {
+			canObtain: true,
+			conditionKey: SEED_CONDITION_SUCCESS.PHOENIX
+		};
 	}
 
-	const fireItemChecks: {
-		slot: { itemId: number } | null; fireIds: readonly number[];
-	}[] = [
-		{
-			slot: await InventorySlots.getMainWeaponSlot(player.id), fireIds: PlantConstants.FIRE_ITEM_IDS.WEAPONS
-		},
-		{
-			slot: await InventorySlots.getMainArmorSlot(player.id), fireIds: PlantConstants.FIRE_ITEM_IDS.ARMORS
-		},
-		{
-			slot: await InventorySlots.getMainObjectSlot(player.id), fireIds: PlantConstants.FIRE_ITEM_IDS.OBJECTS
-		}
+	const equippedSlots = [
+		await InventorySlots.getMainWeaponSlot(player.id),
+		await InventorySlots.getMainArmorSlot(player.id),
+		await InventorySlots.getMainObjectSlot(player.id)
 	];
 
-	for (const {
-		slot, fireIds
-	} of fireItemChecks) {
-		if (slot && fireIds.includes(slot.itemId)) {
+	for (const slot of equippedSlots) {
+		if (slot?.getItem()?.tags?.includes(ItemConstants.TAGS.FIRE)) {
 			return {
 				canObtain: true,
 				conditionKey: SEED_CONDITION_SUCCESS.FIRE_ITEM
@@ -298,7 +275,7 @@ async function checkFireAffinityCondition(player: Player): Promise<SeedCondition
 }
 
 async function checkCarnivorePetCondition(player: Player): Promise<SeedConditionResult> {
-	const petEntity = player.petId ? await PetEntities.getById(player.petId) : null;
+	const petEntity = await getOwnedPet(player);
 	if (!petEntity) {
 		return {
 			canObtain: false,

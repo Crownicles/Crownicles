@@ -112,7 +112,8 @@ export abstract class ItemConstants {
 
 	static readonly TAGS = {
 		HOLY: "holy",
-		RANGED: "ranged"
+		RANGED: "ranged",
+		FIRE: "fire"
 	};
 
 	static readonly NATURE_ID_TO_NAME = [

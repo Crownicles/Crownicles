@@ -3,5 +3,8 @@
   "rawDefense": 3,
   "speed": 30,
   "attack": 25,
-  "type": "magic"
+  "type": "magic",
+  "tags": [
+    "fire"
+  ]
 }

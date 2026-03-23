@@ -115,7 +115,7 @@ import {
 import { SmallEventFarmerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFarmerPacket";
 import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
 import {
-	PlantConstants, SEED_CONDITION_FAILURE
+	GARDENER_INTERACTIONS, PlantConstants, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
 import {
 	altarContributed, altarFirstEncounter, altarNoContribution
@@ -1300,12 +1300,12 @@ export default class SmallEventsHandler {
 		let rewardText: string;
 
 		switch (packet.interactionName) {
-			case "seed":
+			case GARDENER_INTERACTIONS.SEED:
 				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.seed.${packet.conditionKey}`, lng, {
 					cost: packet.cost
 				});
 				break;
-			case "advice": {
+			case GARDENER_INTERACTIONS.ADVICE: {
 				const adviceReplacements: Record<string, unknown> = {};
 				if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_LEVEL && packet.plantId > 0) {
 					adviceReplacements.level = PlantConstants.SEED_LEVEL_REQUIREMENTS[packet.plantId as keyof typeof PlantConstants.SEED_LEVEL_REQUIREMENTS];
@@ -1316,12 +1316,12 @@ export default class SmallEventsHandler {
 				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.advice.${packet.conditionKey}`, lng, adviceReplacements);
 				break;
 			}
-			case "plant":
+			case GARDENER_INTERACTIONS.PLANT:
 				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
 					plantId: packet.plantId
 				});
 				break;
-			case "material":
+			case GARDENER_INTERACTIONS.MATERIAL:
 				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.material", lng, {
 					materialId: packet.materialId
 				});
