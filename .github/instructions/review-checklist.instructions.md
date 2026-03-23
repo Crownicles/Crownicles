@@ -11,6 +11,8 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 
 - [ ] **No hardcoded strings** used as identifiers, action names, or error codes — use `as const` objects (e.g., `CHEST_ACTIONS.DEPOSIT`, `EQUIP_ERRORS.INVALID`)
 - [ ] **No hardcoded emojis** in code or translations — use `CrowniclesIcons.*` with `{emote:path}` pattern in translations
+- [ ] **No hardcoded timezones or locale formats** — use system time aligned with game reset (e.g., `new Date().getHours()`), never `"Europe/Paris"` or `Intl.DateTimeFormat` with hardcoded locale
+- [ ] **Data tags over hardcoded ID lists** — when items share a property (e.g., fire affinity), add a tag to the data JSON files (e.g., `"tags": ["fire"]`) and check via `ItemConstants.TAGS.X` instead of maintaining a static list of IDs in constants
 - [ ] **Constants in the right location** — shared constants go in `Lib/src/constants/`, not duplicated across services
 - [ ] **No duplicate constants** — search for similar values already defined elsewhere before creating new ones
 
@@ -21,6 +23,8 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Type aliases for repeated inline types** — if an inline type `{ slot: number; category: ItemCategory }` appears 2+ times, extract it to a named type
 - [ ] **Shared types in `Lib/src/types/`** — types used across multiple packets or services must be extracted to a dedicated file in `Lib/src/types/`, not defined inline in packet files or duplicated across consumers
 - [ ] **No `any`** — use proper types or generics
+- [ ] **No unnecessary type assertions** — don't cast to `readonly T[]` or force types when the type is already correctly inferred; let TypeScript's inference do the work
+- [ ] **Replace `null` with semantic values** — when `null` has a specific meaning (e.g., "not applicable"), use a named enum/constant (e.g., `NON_APPLICABLE = -3`) instead of `| null` everywhere
 - [ ] **Parameter object pattern** for functions with 4+ arguments — group related parameters into a single options object
 
 ## 3. Code Complexity
@@ -30,6 +34,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Functions do one thing** — if a function builds UI + handles interactions + processes data, split it into separate functions
 - [ ] **Data-driven over sequential if-branches** — when 4+ similar if-blocks check different fields with the same pattern (e.g., comparing old vs new values), use a declarative array of checks iterated in a loop
 - [ ] **Inline collectors extracted** — `createCollector` callbacks in menu builders should be extracted to named functions, not defined inline in the return object
+- [ ] **Large files split by responsibility** — files with big switch statements covering many cases (e.g., one case per shop reaction) should be split into one file per case/handler
 - [ ] **Max 4 function arguments** (CodeScene "Excess Number of Function Arguments") — use parameter objects for 5+
 
 ## 4. Imports & Module Organization
@@ -44,6 +49,8 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **No repeated field-level operations** — if the same 3+ field assignments appear in multiple places (e.g., copying `itemId`, `itemLevel`, `itemEnchantmentId`), extract a `copyX` / `clearX` helper function
 - [ ] **Shared utilities in appropriate scope** — helper used by one class → private method; used across files → utility function; used across services → Lib
 - [ ] **Cross-file duplicate functions** — search for identical or near-identical private functions across command files (e.g., `withUnlimitedMaxValue` in both EquipCommand and ChestFeatureHandler) and move to a shared utility class
+- [ ] **TypeScript overloads over duplicated functions** — when two functions differ only by type parameters/return types (e.g., `getBlacksmithUpgradeItem`/`getBlacksmithDisenchantItem`), use TypeScript function overloads with a single implementation
+- [ ] **Reuse existing Lib utilities** — before implementing utility logic (e.g., `frac()`, `getWeekNumber()`), check if a shared function already exists in `Lib/src/utils/`
 - [ ] **Translation keys shared when appropriate** — if multiple commands use the same labels (e.g., category names), put them in a shared namespace (`items.json` not `commands.json`)
 
 ## 6. Translations (i18n)
@@ -51,6 +58,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Only modify French translations** (`Lang/fr/`) — other languages are synced via Crowdin
 - [ ] **No direct speech** — all text should be narrative/descriptive, never dialogue with quotes
 - [ ] **Emojis in translations use `{emote:path}` interpolation** — never hardcode emoji characters in translation files
+- [ ] **Entity IDs as i18n parameters** — pass entity IDs (plantId, materialId, etc.) as interpolation parameters to translation keys instead of concatenating strings or emoji names in code
 - [ ] **No dead/unused translation keys** — remove keys that are no longer referenced in code
 - [ ] **No duplicate translation keys** — check if a similar key already exists before adding a new one
 
@@ -85,4 +93,5 @@ pnpm test          # All tests pass
 # Check for common issues
 grep -rn "await import(" src/             # Dynamic imports to review
 grep -rn "\"✅\|\"❌\|\"⚠️\|\"🔥" src/   # Hardcoded emojis
+grep -rn "Europe/Paris\|Intl.DateTimeFormat" src/  # Hardcoded timezones
 ```
