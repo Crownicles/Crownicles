@@ -153,12 +153,6 @@ function getEndCallback(player: Player): EndCallback {
 			}
 			resultPacket.outcome = WitchActionOutcomeType.POTION;
 
-			// Discover a WITCH recipe even for no-effect potions
-			const discovered = await RecipeDiscoveryService.discoverWitchRecipe(player, ItemNature.NONE);
-			if (discovered) {
-				resultPacket.discoveredRecipeId = discovered.id;
-			}
-
 			response.push(resultPacket);
 			const potionToGive = generateRandomItem({
 				itemCategory: ItemCategory.POTION,
