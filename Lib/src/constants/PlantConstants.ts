@@ -266,7 +266,7 @@ export abstract class PlantConstants {
 	 * @param plant - The plant type
 	 * @param dayOffset - Number of days in the future (0 = today)
 	 */
-	public static getHerbalistPrice(plant: PlantType, dayOffset: number = 0): number {
+	public static getHerbalistPrice(plant: PlantType, dayOffset = 0): number {
 		const basePrice = PlantConstants.HERBALIST_PRICES[plant.id - 1];
 		const {
 			RANGE_RATIO, SEED_RANGE, SIN_RANDOMIZER
@@ -304,10 +304,10 @@ export abstract class PlantConstants {
 	 * Get ISO week number (1-53) for a given date
 	 */
 	private static getIsoWeekNumber(date: Date): number {
-		const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
-		d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-		const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-		return Math.ceil(((d.getTime() - yearStart.getTime()) / TimeConstants.MS_TIME.DAY + 1) / 7);
+		const utcDate = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+		utcDate.setUTCDate(utcDate.getUTCDate() + 4 - (utcDate.getUTCDay() || 7));
+		const yearStart = new Date(Date.UTC(utcDate.getUTCFullYear(), 0, 1));
+		return Math.ceil(((utcDate.getTime() - yearStart.getTime()) / TimeConstants.MS_TIME.DAY + 1) / 7);
 	}
 
 	/**
