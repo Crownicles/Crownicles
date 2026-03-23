@@ -47,6 +47,7 @@ import {
 } from "../../../../Lib/src/constants/ItemConstants";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 const FALLBACK_PROBABILITIES = {
 	ADVICE: 0.3,
@@ -61,10 +62,61 @@ const NIGHT_THRESHOLDS = {
 	MORNING: 6
 };
 
-function getMoonIllumination(): number {
+const MOON_API = {
+	BASE_URL: "https://api.met.no/weatherapi/sunrise/3.0/moon",
+	LAT: 48.8566,
+	LON: 2.3522,
+	USER_AGENT: "Crownicles/1.0",
+	CACHE_DURATION: TimeConstants.MS_TIME.HOUR
+} as const;
+
+let moonCache: {
+	illumination: number; fetchedAt: number;
+} | null = null;
+
+function getFallbackMoonIllumination(): number {
 	const daysSinceNewMoon = (Date.now() - REFERENCE_NEW_MOON) / TimeConstants.MS_TIME.DAY;
 	const phase = (daysSinceNewMoon % LUNAR_CYCLE_DAYS) / LUNAR_CYCLE_DAYS;
 	return (1 - Math.cos(2 * Math.PI * phase)) / 2;
+}
+
+async function getMoonIllumination(): Promise<number> {
+	if (moonCache && Date.now() - moonCache.fetchedAt < MOON_API.CACHE_DURATION) {
+		return moonCache.illumination;
+	}
+
+	try {
+		const today = new Date().toISOString()
+			.split("T")[0];
+		const url = `${MOON_API.BASE_URL}?lat=${MOON_API.LAT}&lon=${MOON_API.LON}&date=${today}&offset=+01:00`;
+		const response = await fetch(url, {
+			headers: { "User-Agent": MOON_API.USER_AGENT }
+		});
+
+		if (!response.ok) {
+			CrowniclesLogger.errorWithObj("Moon API returned non-OK status", response);
+			return getFallbackMoonIllumination();
+		}
+
+		const data = await response.json() as { properties?: { moonphase?: number } };
+		const moonphase = data.properties?.moonphase;
+
+		if (typeof moonphase !== "number") {
+			CrowniclesLogger.error("Moon API returned unexpected data format");
+			return getFallbackMoonIllumination();
+		}
+
+		const illumination = moonphase / 100;
+		moonCache = {
+			illumination,
+			fetchedAt: Date.now()
+		};
+		return illumination;
+	}
+	catch (e) {
+		CrowniclesLogger.errorWithObj("Failed to fetch moon phase from API", e);
+		return getFallbackMoonIllumination();
+	}
 }
 
 function getGameHour(): number {
@@ -133,9 +185,9 @@ function getDefaultSeedCondition(cost: number): SeedConditionResult {
 	};
 }
 
-function getNightSeedCondition(seedId: PlantId): SeedConditionResult {
+async function getNightSeedCondition(seedId: PlantId): Promise<SeedConditionResult> {
 	if (seedId === PlantId.LUNAR_MOSS) {
-		return !isNight() || getMoonIllumination() <= 0.5
+		return !isNight() || await getMoonIllumination() <= 0.5
 			? {
 				canObtain: false,
 				conditionKey: SEED_CONDITION_FAILURE.NEED_MOONLIGHT
@@ -161,7 +213,7 @@ function getSpecialSeedChecker(seedId: PlantId): SeedConditionChecker | null {
 	switch (seedId) {
 		case PlantId.LUNAR_MOSS:
 		case PlantId.NIGHT_MUSHROOM:
-			return (): Promise<SeedConditionResult> => Promise.resolve(getNightSeedCondition(seedId));
+			return async (): Promise<SeedConditionResult> => await getNightSeedCondition(seedId);
 		case PlantId.VENOMOUS_LEAF:
 			return async (player: Player): Promise<SeedConditionResult> => await checkHerbivorePetCondition(player, false);
 		case PlantId.FIRE_BULB:
