@@ -11,6 +11,7 @@ import { PlantId } from "../../constants/PlantConstants";
  * Describes price evolution relative to the current day.
  */
 export enum MarketTrend {
+	NON_APPLICABLE = -3,
 	BIG_DROP = -2,
 	DROP = -1,
 	STABLE = 0,
@@ -117,7 +118,7 @@ export class CommandMissionShopMarketAnalysis extends CrowniclesPacket {
 	 */
 	plantTrends!: {
 		plantId: PlantId;
-		trends: [MarketTrend | null, MarketTrend | null, MarketTrend | null];
+		trends: [MarketTrend, MarketTrend, MarketTrend];
 	}[];
 
 	/**
@@ -135,7 +136,7 @@ export class CommandMissionShopMarketAnalysis extends CrowniclesPacket {
 		 */
 		newPlantForecasts: {
 			plantId: PlantId;
-			trends: (MarketTrend | null)[];
+			trends: MarketTrend[];
 		}[];
 	};
 }

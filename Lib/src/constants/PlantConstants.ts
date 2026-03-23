@@ -1,5 +1,6 @@
 import { TimeConstants } from "./TimeConstants";
 import { getDayNumber } from "../utils/TimeUtils";
+import { frac } from "../utils/MathUtils";
 
 /**
  * Plant type IDs for the garden system.
@@ -17,6 +18,47 @@ export enum PlantId {
 	CRYSTAL_FLOWER = 9,
 	ANCIENT_TREE = 10
 }
+
+/**
+ * Condition keys for successful seed obtention
+ */
+export const SEED_CONDITION_SUCCESS = {
+	FREE: "free",
+	PAID: "paid",
+	PAID_ACCEPTED: "paidAccepted",
+	MOON: "moon",
+	NIGHT: "night",
+	HERBIVORE_PET: "herbivorePet",
+	LEGENDARY_HERBIVORE_PET: "legendaryHerbivorePet",
+	MAGE: "mage",
+	PHOENIX: "phoenix",
+	FIRE_ITEM: "fireItem",
+	CARNIVORE_PET: "carnivorePet"
+} as const;
+
+/**
+ * Condition keys for failed seed obtention (advice)
+ */
+export const SEED_CONDITION_FAILURE = {
+	NEED_LEVEL: "needLevel",
+	NEED_GARDEN: "needGarden",
+	NEED_MONEY: "needMoney",
+	NEED_MOONLIGHT: "needMoonlight",
+	NEED_NIGHT: "needNight",
+	NEED_HERBIVORE_PET: "needHerbivorePet",
+	NEED_LEGENDARY_HERBIVORE_PET: "needLegendaryHerbivorePet",
+	NEED_FIRE_AFFINITY: "needFireAffinity",
+	NEED_CARNIVORE_PET: "needCarnivorePet",
+	SEED_SLOT_FULL: "seedSlotFull",
+	ALL_SEEDS_OBTAINED: "allSeedsObtained",
+	NO_PLANT_SPACE: "noPlantSpace",
+	REFUSED: "refused",
+	NONE: "none"
+} as const;
+
+export type SeedConditionKey =
+	typeof SEED_CONDITION_SUCCESS[keyof typeof SEED_CONDITION_SUCCESS]
+	| typeof SEED_CONDITION_FAILURE[keyof typeof SEED_CONDITION_FAILURE];
 
 export interface PlantType {
 	id: PlantId;
@@ -230,7 +272,6 @@ export abstract class PlantConstants {
 			RANGE_RATIO, SEED_RANGE, SIN_RANDOMIZER
 		} = PlantConstants.HERBALIST_PRICE_VARIATION;
 
-		const frac = (x: number): number => x >= 0 ? x % 1 : 1 + x % 1;
 		const dailyFactor = frac(100 * Math.sin(SIN_RANDOMIZER * ((getDayNumber() + dayOffset) % SEED_RANGE) + plant.id));
 
 		// dailyFactor is in [0, 1), map to [-RANGE_RATIO, +RANGE_RATIO]
