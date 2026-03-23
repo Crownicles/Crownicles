@@ -67,9 +67,23 @@ export const GARDENER_INTERACTIONS = {
 
 export type GardenerInteractionName = typeof GARDENER_INTERACTIONS[keyof typeof GARDENER_INTERACTIONS];
 
+/**
+ * Condition keys for gardener generic advice tips
+ */
+export const GARDENER_ADVICE = {
+	TIP_BUY_HOME: "tipBuyHome",
+	TIP_UPGRADE_FOR_GARDEN: "tipUpgradeForGarden",
+	TIP_PLANT_SEED: "tipPlantSeed",
+	TIP_HARVEST_READY: "tipHarvestReady",
+	TIP_EMPTY_PLOTS: "tipEmptyPlots",
+	TIP_UPGRADE_SOIL: "tipUpgradeSoil",
+	TIP_GENERIC: "tipGeneric"
+} as const;
+
 export type SeedConditionKey =
 	typeof SEED_CONDITION_SUCCESS[keyof typeof SEED_CONDITION_SUCCESS]
-	| typeof SEED_CONDITION_FAILURE[keyof typeof SEED_CONDITION_FAILURE];
+	| typeof SEED_CONDITION_FAILURE[keyof typeof SEED_CONDITION_FAILURE]
+	| typeof GARDENER_ADVICE[keyof typeof GARDENER_ADVICE];
 
 export interface PlantType {
 	id: PlantId;

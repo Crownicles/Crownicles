@@ -8,7 +8,7 @@ import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvent
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
-	GARDENER_INTERACTIONS, PLANT_TYPES, PlantConstants, PlantId,
+	GARDENER_ADVICE, GARDENER_INTERACTIONS, PLANT_TYPES, PlantConstants, PlantId,
 	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
@@ -364,16 +364,16 @@ function getPaidSeedEndCallback(player: Player, seedId: PlantId, _conditionKey: 
 	};
 }
 
-async function getGenericAdviceKey(player: Player): Promise<string> {
+async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	const home = await Homes.getOfPlayer(player.id);
 
 	if (!home) {
-		return "tipBuyHome";
+		return GARDENER_ADVICE.TIP_BUY_HOME;
 	}
 
 	const homeLevel = home.getLevel();
 	if (!homeLevel || homeLevel.features.gardenPlots === 0) {
-		return "tipUpgradeForGarden";
+		return GARDENER_ADVICE.TIP_UPGRADE_FOR_GARDEN;
 	}
 
 	// Check if player has an unplanted seed
@@ -381,7 +381,7 @@ async function getGenericAdviceKey(player: Player): Promise<string> {
 	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
 	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
 	if (seedSlot && seedSlot.plantId !== 0) {
-		return "tipPlantSeed";
+		return GARDENER_ADVICE.TIP_PLANT_SEED;
 	}
 
 	// Check if any plant is ready to harvest
@@ -393,7 +393,7 @@ async function getGenericAdviceKey(player: Player): Promise<string> {
 			if (plantType) {
 				const effectiveGrowth = GardenConstants.getEffectiveGrowthTime(plantType.growthTimeSeconds, earthQuality);
 				if (slot.isReady(effectiveGrowth)) {
-					return "tipHarvestReady";
+					return GARDENER_ADVICE.TIP_HARVEST_READY;
 				}
 			}
 		}
@@ -402,15 +402,15 @@ async function getGenericAdviceKey(player: Player): Promise<string> {
 	// Check if garden has empty plots and player could plant
 	const emptyPlots = gardenSlots.filter(s => s.isEmpty());
 	if (emptyPlots.length > 0) {
-		return "tipEmptyPlots";
+		return GARDENER_ADVICE.TIP_EMPTY_PLOTS;
 	}
 
 	// Check if soil quality is poor
 	if (earthQuality === GardenEarthQuality.POOR) {
-		return "tipUpgradeSoil";
+		return GARDENER_ADVICE.TIP_UPGRADE_SOIL;
 	}
 
-	return "tipGeneric";
+	return GARDENER_ADVICE.TIP_GENERIC;
 }
 
 async function handleFallback(response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
