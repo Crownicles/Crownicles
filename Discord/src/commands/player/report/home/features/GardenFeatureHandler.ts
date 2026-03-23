@@ -27,10 +27,11 @@ import {
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import {
-	PlantId, PlantConstants
+	PlantConstants
 } from "../../../../../../../Lib/src/constants/PlantConstants";
 import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
+import { TimeConstants } from "../../../../../../../Lib/src/constants/TimeConstants";
 
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
@@ -121,17 +122,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Get the plant name for display
-	 */
-	private getPlantName(plantId: PlantId, lng: Language): string {
-		return i18n.t(`models:plants.${plantId}`, { lng });
-	}
-
-	/**
 	 * Format remaining time for display
 	 */
 	private formatRemainingTime(remainingSeconds: number, lng: Language): string {
-		const minutes = Math.ceil(remainingSeconds / 60);
+		const minutes = Math.ceil(remainingSeconds / TimeConstants.S_TIME.MINUTE);
 		return i18n.formatDuration(minutes, lng);
 	}
 
@@ -148,12 +142,9 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (garden.hasSeed && garden.seedPlantId !== 0) {
-			const seedName = this.getPlantName(garden.seedPlantId, ctx.lng);
-			const seedEmoji = CrowniclesIcons.plants[garden.seedPlantId];
 			description += `\n\n${i18n.t("commands:report.city.homes.garden.hasSeed", {
 				lng: ctx.lng,
-				emoji: seedEmoji,
-				seed: seedName
+				plantId: garden.seedPlantId
 			})}`;
 		}
 
@@ -170,14 +161,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				slot: plot.slot + 1
 			})}`;
 		}
-		const plantName = this.getPlantName(plot.plantId, ctx.lng);
-		const emoji = CrowniclesIcons.plants[plot.plantId as PlantId];
 		if (plot.isReady) {
 			return `\n${i18n.t("commands:report.city.homes.garden.readyPlot", {
 				lng: ctx.lng,
 				slot: plot.slot + 1,
-				emoji,
-				plant: plantName
+				plantId: plot.plantId
 			})}`;
 		}
 		const progress = Math.floor(plot.growthProgress * 100);
@@ -185,8 +173,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		return `\n${i18n.t("commands:report.city.homes.garden.growingPlot", {
 			lng: ctx.lng,
 			slot: plot.slot + 1,
-			emoji,
-			plant: plantName,
+			plantId: plot.plantId,
 			progress,
 			timeLeft
 		})}`;
@@ -293,12 +280,9 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		}
 		else {
 			for (const storage of storedPlants) {
-				const plantName = this.getPlantName(storage.plantId, ctx.lng);
-				const emoji = CrowniclesIcons.plants[storage.plantId as PlantId];
 				description += `\n${i18n.t("commands:report.city.homes.garden.storageEntry", {
 					lng: ctx.lng,
-					emoji,
-					plant: plantName,
+					plantId: storage.plantId,
 					quantity: storage.quantity,
 					maxCapacity: storage.maxCapacity
 				})}`;
@@ -352,18 +336,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		}
 		let message = `\n\n${i18n.t("commands:report.city.homes.garden.compostTitle", { lng: ctx.lng })}`;
 		for (const result of response.compostResults) {
-			const plant = PlantConstants.getPlantById(result.plantId);
-			const plantName = plant
-				? i18n.t(`models:plants.${plant.id}`, { lng: ctx.lng })
-				: "?";
-			const materialEmoji = CrowniclesIcons.materials[result.materialId] ?? CrowniclesIcons.city.homeUpgrades.chest;
-			const materialName = i18n.t(`models:materials.${result.materialId}`, { lng: ctx.lng });
 			message += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
 				lng: ctx.lng,
-				plantEmoji: CrowniclesIcons.plants[result.plantId as PlantId] ?? CrowniclesIcons.city.homeUpgrades.garden,
-				plant: plantName,
-				materialEmoji,
-				material: materialName
+				plantId: result.plantId,
+				materialId: result.materialId
 			})}`;
 		}
 		return message;
