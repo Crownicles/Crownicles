@@ -1,5 +1,5 @@
 import {
-	CrowniclesPacket, makePacket
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportCookingIgniteReq,
@@ -30,6 +30,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import {
 	getCookingGrade, FURNACE_MAX_USES_PER_DAY, CookingOutputType, CookingOutputTypeValue
 } from "../../../../Lib/src/constants/CookingConstants";
+import { giveItemToPlayer } from "../utils/ItemUtils";
 
 /**
  * Temporary in-memory store for pending wood confirmations.
@@ -215,6 +216,7 @@ export async function handleCookingRevive(
 }
 
 export async function handleCookingCraft(
+	context: PacketContext,
 	keycloakId: string,
 	packet: CommandReportCookingCraftReq
 ): Promise<CrowniclesPacket[]> {
@@ -246,19 +248,6 @@ export async function handleCookingCraft(
 
 	const recipe = recipeRegistry.getById(slot.recipe.id);
 	if (!recipe) {
-		return response;
-	}
-
-	if (recipe.outputType === CookingOutputType.POTION && !await CookingService.canReceivePotionReward(player)) {
-		response.push(await buildBlockedCraftResponse({
-			player,
-			homeId: home.id,
-			cookingSlots,
-			error: CookingCraftErrors.INVENTORY_FULL,
-			recipeId: recipe.id,
-			wasSecret: slot.recipe.isSecret,
-			outputType: recipe.outputType
-		}));
 		return response;
 	}
 
@@ -304,21 +293,14 @@ export async function handleCookingCraft(
 	let craftedMaterialId: number | undefined;
 	let craftedMaterialQuantity: number | undefined;
 	let failedPotionId: number | undefined;
+	let inventorySwapPackets: CrowniclesPacket[] | undefined;
 
 	if (result.success && recipe.outputType === CookingOutputType.POTION && recipe.potionNature !== undefined && recipe.potionRarity !== undefined) {
 		const potion = PotionDataController.instance.randomItem(recipe.potionNature, recipe.potionRarity);
 		const itemReceived = await player.giveItem(potion);
 		if (!itemReceived) {
-			response.push(await buildBlockedCraftResponse({
-				player,
-				homeId: home.id,
-				cookingSlots,
-				error: CookingCraftErrors.INVENTORY_FULL,
-				recipeId: recipe.id,
-				wasSecret: slot.recipe.isSecret,
-				outputType: recipe.outputType
-			}));
-			return response;
+			inventorySwapPackets = [];
+			await giveItemToPlayer(inventorySwapPackets, context, player, potion);
 		}
 		potionId = potion.id;
 	}
@@ -369,16 +351,8 @@ export async function handleCookingCraft(
 		if (noEffectPotion) {
 			const itemReceived = await player.giveItem(noEffectPotion);
 			if (!itemReceived) {
-				response.push(await buildBlockedCraftResponse({
-					player,
-					homeId: home.id,
-					cookingSlots,
-					error: CookingCraftErrors.INVENTORY_FULL,
-					recipeId: recipe.id,
-					wasSecret: slot.recipe.isSecret,
-					outputType: recipe.outputType
-				}));
-				return response;
+				inventorySwapPackets = [];
+				await giveItemToPlayer(inventorySwapPackets, context, player, noEffectPotion);
 			}
 			failedPotionId = 0;
 		}
@@ -409,5 +383,8 @@ export async function handleCookingCraft(
 		discoveredRecipeIds: result.discoveredRecipeIds,
 		updatedSlots
 	}));
+	if (inventorySwapPackets) {
+		response.push(...inventorySwapPackets);
+	}
 	return response;
 }

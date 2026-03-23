@@ -209,7 +209,6 @@ export class CookingService {
 		const playerMaterials = await Materials.getPlayerMaterials(player.id);
 		const materialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
 		const guild = await CookingService.getPlayerGuild(player);
-		const canReceivePotionReward = await CookingService.canReceivePotionReward(player);
 		const slotRecipes = getUniqueRecipesForSlots({
 			cookingSlots,
 			furnacePosition: player.furnacePosition,
@@ -252,11 +251,9 @@ export class CookingService {
 
 			const hasIngredients = plantAvailability.every(p => p.playerHas >= p.quantity)
 				&& materialAvailability.every(m => m.playerHas >= m.quantity);
-			const canCraftOutput = recipe.outputType === "potion"
-				? canReceivePotionReward
-				: recipe.outputType === "petFood"
-					? Boolean(guild)
-					: true;
+			const canCraftOutput = recipe.outputType === "petFood"
+				? Boolean(guild)
+				: true;
 			const canCraft = hasIngredients && canCraftOutput;
 
 			slots.push({
