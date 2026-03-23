@@ -5,6 +5,7 @@ import {
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { PlantId } from "../../../../../../Lib/src/constants/PlantConstants";
+import { TimeConstants } from "../../../../../../Lib/src/constants/TimeConstants";
 
 export class HomeGardenSlot extends Model {
 	declare readonly homeId: number;
@@ -32,7 +33,7 @@ export class HomeGardenSlot extends Model {
 		}
 		const now = Date.now();
 		const plantedTime = this.plantedAt.valueOf();
-		return now - plantedTime >= effectiveGrowthTimeSeconds * 1000;
+		return now - plantedTime >= effectiveGrowthTimeSeconds * TimeConstants.MS_TIME.SECOND;
 	}
 
 	/**
@@ -43,7 +44,7 @@ export class HomeGardenSlot extends Model {
 			return 0;
 		}
 		const elapsed = Date.now() - this.plantedAt.valueOf();
-		return Math.min(1, elapsed / (effectiveGrowthTimeSeconds * 1000));
+		return Math.min(1, elapsed / (effectiveGrowthTimeSeconds * TimeConstants.MS_TIME.SECOND));
 	}
 }
 

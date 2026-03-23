@@ -18,7 +18,7 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
 import {
-	EndCallback, ReactionCollectorInstance, ReactionInfo
+	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { MapLocationDataController } from "../../data/MapLocation";
@@ -231,102 +231,125 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 		}
 		else {
 			await player.reload();
-			await handleCityReaction({
+			await handleCityReaction(firstReaction.reaction.type, {
 				context,
 				player,
 				forceSpecificEvent,
 				city,
-				collector,
-				firstReaction,
-				response
+				response,
+				reactionData: firstReaction.reaction.data,
+				collectorData: collector.creationPacket.data.data
 			});
 		}
 	};
 }
 
-async function handleCityReaction(params: {
+type CityReactionParams = {
 	context: PacketContext;
 	player: Player;
 	forceSpecificEvent: number;
 	city: City;
-	collector: ReactionCollectorInstance;
-	firstReaction: ReactionInfo;
 	response: CrowniclesPacket[];
-}): Promise<void> {
-	const {
-		context, player, forceSpecificEvent, city, collector, firstReaction, response
-	} = params;
-	switch (firstReaction.reaction.type) {
-		case ReactionCollectorExitCityReaction.name:
-			await doRandomBigEvent(context, response, player, forceSpecificEvent);
-			break;
-		case ReactionCollectorInnMealReaction.name:
-			await handleInnMealReaction(player, firstReaction.reaction.data as ReactionCollectorInnMealReaction, response);
-			break;
-		case ReactionCollectorInnRoomReaction.name:
-			await handleInnRoomReaction(player, firstReaction.reaction.data as ReactionCollectorInnRoomReaction, response);
-			break;
-		case ReactionCollectorEnchantReaction.name:
-			await handleEnchantReaction(player, firstReaction.reaction.data as ReactionCollectorEnchantReaction, response);
-			break;
-		case ReactionCollectorCityBuyHomeReaction.name:
-			await handleBuyHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
-			break;
-		case ReactionCollectorCityUpgradeHomeReaction.name:
-			await handleUpgradeHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
-			break;
-		case ReactionCollectorCityMoveHomeReaction.name:
-			await handleMoveHomeReaction(player, city, collector.creationPacket.data.data as ReactionCollectorCityData, response);
-			break;
-		case ReactionCollectorCityShopReaction.name:
+	reactionData: unknown;
+	collectorData: unknown;
+};
+
+const NOOP_REACTION = (): Promise<void> => Promise.resolve();
+
+const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => Promise<void>>([
+	[
+		ReactionCollectorExitCityReaction.name, async (params): Promise<void> => {
+			await doRandomBigEvent(params.context, params.response, params.player, params.forceSpecificEvent);
+		}
+	],
+	[
+		ReactionCollectorInnMealReaction.name, async (params): Promise<void> => {
+			await handleInnMealReaction(params.player, params.reactionData as ReactionCollectorInnMealReaction, params.response);
+		}
+	],
+	[
+		ReactionCollectorInnRoomReaction.name, async (params): Promise<void> => {
+			await handleInnRoomReaction(params.player, params.reactionData as ReactionCollectorInnRoomReaction, params.response);
+		}
+	],
+	[
+		ReactionCollectorEnchantReaction.name, async (params): Promise<void> => {
+			await handleEnchantReaction(params.player, params.reactionData as ReactionCollectorEnchantReaction, params.response);
+		}
+	],
+	[
+		ReactionCollectorCityBuyHomeReaction.name, async (params): Promise<void> => {
+			await handleBuyHomeReaction(params.player, params.city, params.collectorData as ReactionCollectorCityData, params.response);
+		}
+	],
+	[
+		ReactionCollectorCityUpgradeHomeReaction.name, async (params): Promise<void> => {
+			await handleUpgradeHomeReaction(params.player, params.city, params.collectorData as ReactionCollectorCityData, params.response);
+		}
+	],
+	[
+		ReactionCollectorCityMoveHomeReaction.name, async (params): Promise<void> => {
+			await handleMoveHomeReaction(params.player, params.city, params.collectorData as ReactionCollectorCityData, params.response);
+		}
+	],
+	[
+		ReactionCollectorCityShopReaction.name, async (params): Promise<void> => {
 			await handleCityShopReaction({
-				player,
-				city,
-				shopId: (firstReaction.reaction.data as ReactionCollectorCityShopReaction).shopId,
-				context,
-				response
+				player: params.player,
+				city: params.city,
+				shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
+				context: params.context,
+				response: params.response
 			});
-			break;
-		case ReactionCollectorHomeMenuReaction.name:
-			// Home menu reaction - currently just re-opens city menu (handled by Discord frontend)
-			break;
-		case ReactionCollectorHomeBedReaction.name:
-			await handleHomeBedReaction(player, collector.creationPacket.data.data as ReactionCollectorCityData, response);
-			break;
-		case ReactionCollectorUpgradeItemReaction.name:
+		}
+	],
+	[ReactionCollectorHomeMenuReaction.name, NOOP_REACTION],
+	[
+		ReactionCollectorHomeBedReaction.name, async (params): Promise<void> => {
+			await handleHomeBedReaction(params.player, params.collectorData as ReactionCollectorCityData, params.response);
+		}
+	],
+	[
+		ReactionCollectorUpgradeItemReaction.name, async (params): Promise<void> => {
 			await handleUpgradeItemReaction(
-				player,
-				firstReaction.reaction.data as ReactionCollectorUpgradeItemReaction,
-				collector.creationPacket.data.data as ReactionCollectorCityData,
-				response
+				params.player,
+				params.reactionData as ReactionCollectorUpgradeItemReaction,
+				params.collectorData as ReactionCollectorCityData,
+				params.response
 			);
-			break;
-		case ReactionCollectorBlacksmithMenuReaction.name:
-			// Blacksmith menu reaction - handled by Discord frontend
-			break;
-		case ReactionCollectorBlacksmithUpgradeReaction.name:
+		}
+	],
+	[ReactionCollectorBlacksmithMenuReaction.name, NOOP_REACTION],
+	[
+		ReactionCollectorBlacksmithUpgradeReaction.name, async (params): Promise<void> => {
 			await handleBlacksmithUpgradeReaction(
-				player,
-				firstReaction.reaction.data as ReactionCollectorBlacksmithUpgradeReaction,
-				collector.creationPacket.data.data as ReactionCollectorCityData,
-				response
+				params.player,
+				params.reactionData as ReactionCollectorBlacksmithUpgradeReaction,
+				params.collectorData as ReactionCollectorCityData,
+				params.response
 			);
-			break;
-		case ReactionCollectorBlacksmithDisenchantReaction.name:
+		}
+	],
+	[
+		ReactionCollectorBlacksmithDisenchantReaction.name, async (params): Promise<void> => {
 			await handleBlacksmithDisenchantReaction(
-				player,
-				firstReaction.reaction.data as ReactionCollectorBlacksmithDisenchantReaction,
-				collector.creationPacket.data.data as ReactionCollectorCityData,
-				response
+				params.player,
+				params.reactionData as ReactionCollectorBlacksmithDisenchantReaction,
+				params.collectorData as ReactionCollectorCityData,
+				params.response
 			);
-			break;
-		case ReactionCollectorGardenHarvestReaction.name:
-			// Garden harvest — handled via async packet in GardenFeatureHandler
-			break;
-		default:
-			CrowniclesLogger.error(`Unknown city reaction: ${firstReaction.reaction.type}`);
-			break;
+		}
+	],
+	[ReactionCollectorGardenHarvestReaction.name, NOOP_REACTION]
+]);
+
+async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
+	const handler = CITY_REACTION_HANDLERS.get(reactionType);
+	if (!handler) {
+		CrowniclesLogger.error(`Unknown city reaction: ${reactionType}`);
+		return;
 	}
+	await handler(params);
 }
 
 async function sendCityCollector(
