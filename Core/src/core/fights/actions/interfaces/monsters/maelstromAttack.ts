@@ -30,7 +30,7 @@ const use: FightActionFunc = (sender, receiver, _fightAction) => {
 		},
 		{
 			critical: 0,
-			failure: 0
+			failure: 1
 		},
 		{
 			attackInfo: getAttackInfo(),
