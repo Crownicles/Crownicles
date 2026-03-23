@@ -303,6 +303,9 @@ export const CrowniclesIcons: {
 	cookingGrades: {
 		[gradeName: string]: string;
 	};
+	cookingStations: {
+		[stationIndex: number]: string;
+	};
 	defaultMaterial: string;
 	materials: {
 		[materialId: string]: string;
@@ -2705,6 +2708,13 @@ export const CrowniclesIcons: {
 		chefDesFourneaux: "🔥",
 		maitreDesCuisines: "👨‍🍳",
 		grandCuisinierRoyal: "👑"
+	},
+	cookingStations: {
+		0: "🏠",
+		1: "🫕",
+		2: "⚒️",
+		3: "🧪",
+		4: "🔥"
 	},
 	defaultMaterial: "🧱",
 	materials: {

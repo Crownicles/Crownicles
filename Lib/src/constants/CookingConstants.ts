@@ -54,6 +54,23 @@ export const CookingOutputType = {
 
 export type CookingOutputTypeValue = typeof CookingOutputType[keyof typeof CookingOutputType];
 
+/**
+ * Maps each RecipeType to its display emoji (based on output nature)
+ */
+export const RECIPE_TYPE_OUTPUT_EMOJI: Record<RecipeType, string> = {
+	[RecipeType.POTION_HEALTH]: CrowniclesIcons.unitValues.health,
+	[RecipeType.POTION_ENERGY]: CrowniclesIcons.unitValues.energy,
+	[RecipeType.POTION_TIME_SPEEDUP]: CrowniclesIcons.unitValues.timeGain,
+	[RecipeType.POTION_DEFENSE]: CrowniclesIcons.unitValues.defense,
+	[RecipeType.POTION_ATTACK]: CrowniclesIcons.unitValues.attack,
+	[RecipeType.POTION_SPEED]: CrowniclesIcons.unitValues.speed,
+	[RecipeType.PETFOOD_SALAD]: CrowniclesIcons.foods.herbivorousFood,
+	[RecipeType.PETFOOD_CANDY]: CrowniclesIcons.foods.commonFood,
+	[RecipeType.PETFOOD_MEAT]: CrowniclesIcons.foods.carnivorousFood,
+	[RecipeType.PETFOOD_ULTIMATE]: CrowniclesIcons.foods.ultimateFood,
+	[RecipeType.MATERIAL_CRAFT]: CrowniclesIcons.defaultMaterial
+};
+
 export interface CookingGradeDefinition {
 	name: string;
 	minLevel: number;

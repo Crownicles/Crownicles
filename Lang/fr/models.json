@@ -2244,6 +2244,13 @@
       "maitreDesCuisines": "Maître des cuisines",
       "grandCuisinierRoyal": "Grand cuisinier royal"
     },
+    "stations": {
+      "0": "Âtre",
+      "1": "Chaudron",
+      "2": "Forge",
+      "3": "Alambic",
+      "4": "Brasier"
+    },
     "recipes": {
       "potion_health_1": "Potion de soin basique",
       "potion_health_2": "Potion de soin légère",

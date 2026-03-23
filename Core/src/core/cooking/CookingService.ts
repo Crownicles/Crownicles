@@ -266,6 +266,9 @@ export class CookingService {
 					level: recipe.level,
 					isSecret: secret,
 					outputDescription: secret ? "???" : recipe.id,
+					outputType: recipe.outputType,
+					recipeType: recipe.recipeType,
+					petFoodType: recipe.petFoodType,
 					ingredients: {
 						plants: plantAvailability,
 						materials: materialAvailability

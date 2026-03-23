@@ -14,7 +14,7 @@ import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
 import {
-	getCookingGrade, CookingOutputType
+	getCookingGrade, CookingOutputType, RECIPE_TYPE_OUTPUT_EMOJI
 } from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
@@ -201,25 +201,25 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private buildSlotField(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): {
 		name: string; value: string;
 	} {
-		const slotLabel = i18n.t("commands:report.city.homes.cooking.slotLabel", {
-			lng: ctx.lng,
-			slot: slot.slotIndex + 1
-		});
+		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
+		const stationName = i18n.t(`models:cooking.stations.${slot.slotIndex}`, { lng: ctx.lng });
+		const stationLabel = `${stationEmoji} ${stationName}`;
 
 		if (!slot.recipe) {
 			return {
-				name: slotLabel,
+				name: stationLabel,
 				value: i18n.t("commands:report.city.homes.cooking.slotEmpty", { lng: ctx.lng })
 			};
 		}
 
 		const ingredientsList = this.buildIngredientsDescription(slot.recipe.ingredients, ctx.lng);
+		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[slot.recipe.recipeType] ?? "";
 
 		if (slot.recipe.isSecret) {
 			return {
 				name: i18n.t("commands:report.city.homes.cooking.slotSecretName", {
 					lng: ctx.lng,
-					slotLabel,
+					stationLabel,
 					level: slot.recipe.level
 				}),
 				value: ingredientsList
@@ -230,7 +230,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		return {
 			name: i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
 				lng: ctx.lng,
-				slotLabel,
+				stationLabel,
+				outputEmoji,
 				recipe: recipeName,
 				level: slot.recipe.level
 			}),
@@ -247,15 +248,15 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		for (const plant of ingredients.plants) {
 			const plantName = i18n.t(`models:plants.${plant.plantId}`, { lng });
 			const emoji = CrowniclesIcons.plants[plant.plantId];
-			const status = plant.playerHas >= plant.quantity ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse;
-			parts.push(`${emoji} ${plantName} ${plant.playerHas}/${plant.quantity} ${status}`);
+			const status = plant.playerHas >= plant.quantity ? ` ${CrowniclesIcons.collectors.accept}` : "";
+			parts.push(`${emoji} ${plantName} ${plant.playerHas}/${plant.quantity}${status}`);
 		}
 
 		for (const material of ingredients.materials) {
 			const materialName = i18n.t(`models:materials.${material.materialId}`, { lng });
 			const emoji = CrowniclesIcons.materials[material.materialId as keyof typeof CrowniclesIcons.materials] ?? CrowniclesIcons.defaultMaterial;
-			const status = material.playerHas >= material.quantity ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse;
-			parts.push(`${emoji} ${materialName} ${material.playerHas}/${material.quantity} ${status}`);
+			const status = material.playerHas >= material.quantity ? ` ${CrowniclesIcons.collectors.accept}` : "";
+			parts.push(`${emoji} ${materialName} ${material.playerHas}/${material.quantity}${status}`);
 		}
 
 		return parts.join("\n");
@@ -292,12 +293,12 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 		for (const slot of this.currentSlots) {
 			if (slot.recipe) {
+				const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
+				const stationName = i18n.t(`models:cooking.stations.${slot.slotIndex}`, { lng: ctx.lng });
 				addButtonToRow(rows, new ButtonBuilder()
 					.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
-					.setLabel(i18n.t("commands:report.city.homes.cooking.craftButton", {
-						lng: ctx.lng,
-						slot: slot.slotIndex + 1
-					}))
+					.setLabel(stationName)
+					.setEmoji(parseEmoji(stationEmoji)!)
 					.setStyle(slot.recipe.canCraft ? ButtonStyle.Primary : ButtonStyle.Secondary)
 					.setDisabled(!slot.recipe.canCraft));
 			}
