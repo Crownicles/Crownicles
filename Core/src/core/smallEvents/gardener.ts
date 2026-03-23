@@ -49,48 +49,28 @@ import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
-const FALLBACK_PROBABILITIES = {
-	ADVICE: 0.3,
-	GENERIC_ADVICE: 0.4,
-	PLANT: 0.8
-};
-
-const LUNAR_CYCLE_DAYS = 29.53058770576;
-const REFERENCE_NEW_MOON = new Date(2000, 0, 6, 18, 14, 0).getTime();
-const NIGHT_THRESHOLDS = {
-	EVENING: 21,
-	MORNING: 6
-};
-
-const MOON_API = {
-	BASE_URL: "https://api.met.no/weatherapi/sunrise/3.0/moon",
-	LAT: 48.8566,
-	LON: 2.3522,
-	USER_AGENT: "Crownicles/1.0",
-	CACHE_DURATION: TimeConstants.MS_TIME.HOUR
-} as const;
 
 let moonCache: {
 	illumination: number; fetchedAt: number;
 } | null = null;
 
 function getFallbackMoonIllumination(): number {
-	const daysSinceNewMoon = (Date.now() - REFERENCE_NEW_MOON) / TimeConstants.MS_TIME.DAY;
-	const phase = (daysSinceNewMoon % LUNAR_CYCLE_DAYS) / LUNAR_CYCLE_DAYS;
+	const daysSinceNewMoon = (Date.now() - PlantConstants.LUNAR_FALLBACK.REFERENCE_NEW_MOON) / TimeConstants.MS_TIME.DAY;
+	const phase = (daysSinceNewMoon % PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS) / PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS;
 	return (1 - Math.cos(2 * Math.PI * phase)) / 2;
 }
 
 async function getMoonIllumination(): Promise<number> {
-	if (moonCache && Date.now() - moonCache.fetchedAt < MOON_API.CACHE_DURATION) {
+	if (moonCache && Date.now() - moonCache.fetchedAt < PlantConstants.MOON_API.CACHE_DURATION) {
 		return moonCache.illumination;
 	}
 
 	try {
 		const today = new Date().toISOString()
 			.split("T")[0];
-		const url = `${MOON_API.BASE_URL}?lat=${MOON_API.LAT}&lon=${MOON_API.LON}&date=${today}&offset=+01:00`;
+		const url = `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=+01:00`;
 		const response = await fetch(url, {
-			headers: { "User-Agent": MOON_API.USER_AGENT }
+			headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
 		});
 
 		if (!response.ok) {
@@ -125,7 +105,7 @@ function getGameHour(): number {
 
 function isNight(): boolean {
 	const hour = getGameHour();
-	return hour >= NIGHT_THRESHOLDS.EVENING || hour < NIGHT_THRESHOLDS.MORNING;
+	return hour >= PlantConstants.NIGHT_THRESHOLDS.EVENING || hour < PlantConstants.NIGHT_THRESHOLDS.MORNING;
 }
 
 function isOnGardenerMapLink(mapLinkId: number): boolean {
@@ -154,7 +134,7 @@ async function getNextSeedId(player: Player, home: Home | null): Promise<PlantId
 
 	const highestPlanted = await getHighestPlantedSeedId(home!.id);
 	const nextSeed = highestPlanted + 1;
-	return nextSeed > 10 ? null : nextSeed as PlantId;
+	return nextSeed > PlantConstants.MAX_PLANT_ID ? null : nextSeed as PlantId;
 }
 
 type SeedConditionResult = {
@@ -187,7 +167,7 @@ function getDefaultSeedCondition(cost: number): SeedConditionResult {
 
 async function getNightSeedCondition(seedId: PlantId): Promise<SeedConditionResult> {
 	if (seedId === PlantId.LUNAR_MOSS) {
-		return !isNight() || await getMoonIllumination() <= 0.5
+		return !isNight() || await getMoonIllumination() <= PlantConstants.MOON_ILLUMINATION_THRESHOLD
 			? {
 				canObtain: false,
 				conditionKey: SEED_CONDITION_FAILURE.NEED_MOONLIGHT
@@ -468,7 +448,7 @@ async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 async function handleFallback(response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
 	const roll = RandomUtils.crowniclesRandom.real(0, 1);
 
-	if (roll < FALLBACK_PROBABILITIES.ADVICE) {
+	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.ADVICE) {
 		return {
 			interactionName: GARDENER_INTERACTIONS.ADVICE,
 			plantId: targetSeedId,
@@ -478,7 +458,7 @@ async function handleFallback(response: CrowniclesPacket[], player: Player, cond
 		};
 	}
 
-	if (roll < FALLBACK_PROBABILITIES.GENERIC_ADVICE) {
+	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.GENERIC_ADVICE) {
 		const genericKey = await getGenericAdviceKey(player);
 		return {
 			interactionName: GARDENER_INTERACTIONS.ADVICE,
@@ -489,7 +469,7 @@ async function handleFallback(response: CrowniclesPacket[], player: Player, cond
 		};
 	}
 
-	if (roll < FALLBACK_PROBABILITIES.PLANT) {
+	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.PLANT) {
 		return await handlePlantGift(player);
 	}
 

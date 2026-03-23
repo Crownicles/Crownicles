@@ -5,6 +5,18 @@ import {
 import { frac } from "../utils/MathUtils";
 
 /**
+ * Gardener interaction types sent in SmallEventGardenerPacket
+ */
+export const GARDENER_INTERACTIONS = {
+	SEED: "seed",
+	ADVICE: "advice",
+	PLANT: "plant",
+	MATERIAL: "material"
+} as const;
+
+export type GardenerInteractionName = typeof GARDENER_INTERACTIONS[keyof typeof GARDENER_INTERACTIONS];
+
+/**
  * Plant type IDs for the garden system.
  * Each plant has a unique ID (1-10), a growth time, and a fallback emoji.
  */
@@ -57,15 +69,6 @@ export const SEED_CONDITION_FAILURE = {
 	REFUSED: "refused",
 	NONE: "none"
 } as const;
-
-export const GARDENER_INTERACTIONS = {
-	SEED: "seed",
-	ADVICE: "advice",
-	PLANT: "plant",
-	MATERIAL: "material"
-} as const;
-
-export type GardenerInteractionName = typeof GARDENER_INTERACTIONS[keyof typeof GARDENER_INTERACTIONS];
 
 /**
  * Condition keys for gardener generic advice tips
@@ -432,4 +435,52 @@ export abstract class PlantConstants {
 		46,
 		32
 	];
+
+	/**
+	 * Gardener fallback probabilities when the player cannot receive a seed.
+	 * Thresholds are cumulative: 0–0.3 = advice, 0.3–0.4 = generic advice, 0.4–0.8 = plant gift.
+	 */
+	public static readonly GARDENER_FALLBACK_PROBABILITIES = {
+		ADVICE: 0.3,
+		GENERIC_ADVICE: 0.4,
+		PLANT: 0.8
+	} as const;
+
+	/**
+	 * Night thresholds.
+	 * Night = 21:00–06:00.
+	 */
+	public static readonly NIGHT_THRESHOLDS = {
+		EVENING: 21,
+		MORNING: 6
+	} as const;
+
+	/**
+	 * Moon API configuration for real moon phase data (Met.no).
+	 */
+	public static readonly MOON_API = {
+		BASE_URL: "https://api.met.no/weatherapi/sunrise/3.0/moon",
+		LAT: 48.8566,
+		LON: 2.3522,
+		USER_AGENT: "Crownicles/1.0",
+		CACHE_DURATION: TimeConstants.MS_TIME.HOUR
+	} as const;
+
+	/**
+	 * Fallback lunar constants used when the moon API is unavailable.
+	 */
+	public static readonly LUNAR_FALLBACK = {
+		CYCLE_DAYS: 29.53058770576,
+		REFERENCE_NEW_MOON: new Date(2000, 0, 6, 18, 14, 0).getTime()
+	} as const;
+
+	/**
+	 * Minimum moon illumination (0-1) required for LUNAR_MOSS seed.
+	 */
+	public static readonly MOON_ILLUMINATION_THRESHOLD = 0.5;
+
+	/**
+	 * Maximum plant ID value (ANCIENT_TREE = 10).
+	 */
+	public static readonly MAX_PLANT_ID = PlantId.ANCIENT_TREE;
 }
