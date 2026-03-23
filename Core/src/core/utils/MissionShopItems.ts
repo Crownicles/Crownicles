@@ -21,7 +21,7 @@ import {
 import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
 import { frac } from "../../../../Lib/src/utils/MathUtils";
 
-export function calculateGemsToMoneyRatio(dayOffset: number = 0): number {
+export function calculateGemsToMoneyRatio(dayOffset = 0): number {
 	return Constants.MISSION_SHOP.BASE_RATIO
 		+ Math.round(Constants.MISSION_SHOP.RANGE_MISSION_MONEY * 2
 			* frac(100 * Math.sin(Constants.MISSION_SHOP.SIN_RANDOMIZER * ((getDayNumber() + dayOffset) % Constants.MISSION_SHOP.SEED_RANGE) + 1))
