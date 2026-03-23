@@ -8,8 +8,8 @@ import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvent
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
-	PlantConstants, PlantId,
-	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE, GARDENER_INTERACTIONS
+	GARDENER_INTERACTIONS, PLANT_TYPES, PlantConstants, PlantId,
+	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import {
@@ -45,9 +45,12 @@ import { BlockingUtils } from "../utils/BlockingUtils";
 import {
 	ItemConstants, ItemRarity
 } from "../../../../Lib/src/constants/ItemConstants";
+import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
+import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
 
 const FALLBACK_PROBABILITIES = {
-	ADVICE: 0.4,
+	ADVICE: 0.3,
+	GENERIC_ADVICE: 0.4,
 	PLANT: 0.8
 };
 
@@ -361,6 +364,55 @@ function getPaidSeedEndCallback(player: Player, seedId: PlantId, _conditionKey: 
 	};
 }
 
+async function getGenericAdviceKey(player: Player): Promise<string> {
+	const home = await Homes.getOfPlayer(player.id);
+
+	if (!home) {
+		return "tipBuyHome";
+	}
+
+	const homeLevel = home.getLevel();
+	if (!homeLevel || homeLevel.features.gardenPlots === 0) {
+		return "tipUpgradeForGarden";
+	}
+
+	// Check if player has an unplanted seed
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
+	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
+	if (seedSlot && seedSlot.plantId !== 0) {
+		return "tipPlantSeed";
+	}
+
+	// Check if any plant is ready to harvest
+	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
+	const earthQuality = homeLevel.features.gardenEarthQuality;
+	for (const slot of gardenSlots) {
+		if (!slot.isEmpty() && slot.plantedAt) {
+			const plantType = PLANT_TYPES.find(p => p.id === slot.plantId);
+			if (plantType) {
+				const effectiveGrowth = GardenConstants.getEffectiveGrowthTime(plantType.growthTimeSeconds, earthQuality);
+				if (slot.isReady(effectiveGrowth)) {
+					return "tipHarvestReady";
+				}
+			}
+		}
+	}
+
+	// Check if garden has empty plots and player could plant
+	const emptyPlots = gardenSlots.filter(s => s.isEmpty());
+	if (emptyPlots.length > 0) {
+		return "tipEmptyPlots";
+	}
+
+	// Check if soil quality is poor
+	if (earthQuality === GardenEarthQuality.POOR) {
+		return "tipUpgradeSoil";
+	}
+
+	return "tipGeneric";
+}
+
 async function handleFallback(response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
 	const roll = RandomUtils.crowniclesRandom.real(0, 1);
 
@@ -371,6 +423,17 @@ async function handleFallback(response: CrowniclesPacket[], player: Player, cond
 			materialId: 0,
 			cost: 0,
 			conditionKey
+		};
+	}
+
+	if (roll < FALLBACK_PROBABILITIES.GENERIC_ADVICE) {
+		const genericKey = await getGenericAdviceKey(player);
+		return {
+			interactionName: GARDENER_INTERACTIONS.ADVICE,
+			plantId: 0,
+			materialId: 0,
+			cost: 0,
+			conditionKey: genericKey
 		};
 	}
 

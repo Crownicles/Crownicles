@@ -1308,8 +1308,10 @@ export default class SmallEventsHandler {
 		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!) : DiscordCache.getInteraction(context.discord!.interaction!);
 		const lng = context.discord!.language;
 
-		const story = getRandomSmallEventIntro(lng)
-			+ StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
+		const isFromCollector = !!context.discord!.buttonInteraction;
+		const story = isFromCollector
+			? ""
+			: getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
 
 		let rewardText: string;
 

@@ -2756,6 +2756,34 @@
         "refused": [
           "Vous déclinez poliment l'offre de Théobald. Le jardinier range la graine dans sa sacoche avec un sourire compréhensif et vous souhaite bonne route.",
           "Vous n'avez pas les moyens pour le moment. Théobald hoche la tête et vous invite à revenir quand vous serez prêt."
+        ],
+        "tipBuyHome": [
+          "Théobald vous observe un instant et vous demande si vous avez un endroit bien à vous. Devant votre silence, il vous conseille d'acquérir une **maison** pour y aménager un jardin.",
+          "Le jardinier s'étonne que vous n'ayez pas encore de maison. Il vous recommande d'en **acheter une** dès que possible pour pouvoir cultiver votre propre jardin."
+        ],
+        "tipUpgradeForGarden": [
+          "Théobald jette un regard désolé en apprenant que votre maison ne dispose pas encore de jardin. Il vous conseille d'**améliorer votre logement** pour y ajouter quelques parcelles.",
+          "Le jardinier vous suggère d'**agrandir votre maison** afin d'y aménager un espace de culture. Un bon jardin demande un bon terrain, dit-il."
+        ],
+        "tipPlantSeed": [
+          "Le jardinier remarque que vous transportez encore une graine. Il vous encourage à la **planter dès que possible** dans votre jardin pour qu'elle commence à pousser.",
+          "Théobald fronce les sourcils en voyant la graine dans votre sac. Il ne faut pas la laisser dormir, **plantez-la dans votre jardin** au plus vite, insiste-t-il."
+        ],
+        "tipHarvestReady": [
+          "Théobald renifle l'air et sourit. Il sent que certaines de vos plantes sont **prêtes à être récoltées**. Passez chez vous les cueillir avant qu'elles ne fanent, conseille-t-il.",
+          "Le jardinier, d'un air entendu, vous assure que votre jardin nécessite votre attention. Certaines plantes sont **mûres et prêtes à être récoltées**."
+        ],
+        "tipEmptyPlots": [
+          "Théobald vous rappelle que votre jardin comporte encore des **parcelles vides**. Il vous encourage à obtenir de nouvelles graines et à les planter pour remplir votre potager.",
+          "Le jardinier secoue la tête en pensant à vos parcelles inoccupées. Un bon jardinier ne laisse jamais la terre en friche, il vous conseille de **remplir vos emplacements vides**."
+        ],
+        "tipUpgradeSoil": [
+          "Théobald vous confie que la qualité de votre terre laisse à désirer. **Améliorez votre maison** pour obtenir une terre plus riche qui fera pousser vos plantes plus rapidement.",
+          "Le jardinier goûte un peu de terre imaginaire et grimace. Votre terre est pauvre, vos plantes poussent lentement. **Améliorez votre maison** pour enrichir votre sol, conseille-t-il."
+        ],
+        "tipGeneric": [
+          "Théobald s'assied un instant et vous partage un de ses secrets : la patience est la clé du jardinage. Les plantes les plus précieuses sont celles qui mettent le plus de temps à pousser.",
+          "Le jardinier contemple l'horizon et murmure que chaque plante raconte une histoire. Il vous invite à prendre soin de votre jardin régulièrement."
         ]
       },
       "plant": [
@@ -2764,8 +2792,8 @@
         "Le jardinier, ne pouvant vous donner de graine, vous offre généreusement une de ses plantes en souvenir de votre rencontre :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
       "material": [
-        "Théobald fouille dans sa besace et vous offre un matériau lié au jardinage avec un sourire bienveillant :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
-        "Le jardinier vous tend un matériau de jardinage tout en vous expliquant comment il pourrait vous être utile :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+        "Théobald fouille dans sa besace et en sort un matériau qu'il a trouvé en retournant la terre de son jardin. Il vous l'offre avec un sourire bienveillant :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+        "Le jardinier sort de sa poche un matériau qu'il a déterré en bêchant ce matin. Il vous le tend en vous expliquant qu'il n'en a pas l'utilité :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
       ]
     },
     "menu": [
