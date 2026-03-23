@@ -176,9 +176,52 @@ export abstract class CrowniclesLogger {
 		if (e instanceof Error) {
 			this.get().error(message, e);
 		}
-		else {
-			this.get().error(message, new Error(String(e)));
+		else if (e instanceof Response) {
+			void this.logResponseError(message, e);
 		}
+		else {
+			this.get().error(message, new Error(this.stringifyUnknownError(e)));
+		}
+	}
+
+	private static async logResponseError(message: string, response: Response): Promise<void> {
+		try {
+			const body = await response.clone().text();
+			this.get().error(message, new Error(this.formatResponseError(response, body)));
+		}
+		catch {
+			this.get().error(message, new Error(this.formatResponseError(response)));
+		}
+	}
+
+	private static formatResponseError(response: Response, body?: string): string {
+		const details = [
+			`HTTP ${response.status} ${response.statusText}`,
+			`URL: ${response.url}`
+		];
+
+		if (body) {
+			details.push(`Body: ${body.slice(0, 2000)}`);
+		}
+
+		return details.join("\n");
+	}
+
+	private static stringifyUnknownError(error: unknown): string {
+		if (typeof error === "string") {
+			return error;
+		}
+
+		if (error && typeof error === "object") {
+			try {
+				return JSON.stringify(error);
+			}
+			catch {
+				return String(error);
+			}
+		}
+
+		return String(error);
 	}
 
 	public static warn(message: string, metadata?: LogMetadata): void {
