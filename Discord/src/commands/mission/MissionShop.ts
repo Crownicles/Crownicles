@@ -224,7 +224,8 @@ export async function skipMissionShopResult(packet: CommandMissionShopSkipMissio
 }
 
 
-const TREND_KEYS = {
+const TREND_KEYS: Record<MarketTrend, string> = {
+	[MarketTrend.NON_APPLICABLE]: "stable",
 	[MarketTrend.BIG_DROP]: "bigDrop",
 	[MarketTrend.DROP]: "drop",
 	[MarketTrend.STABLE]: "stable",

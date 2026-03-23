@@ -65,7 +65,7 @@ import { getPetExpeditionPreferences } from "../../../../Lib/src/constants/Exped
 /**
  * Calculate the amount of money the player will have if he buys some with gems
  */
-function calculateGemsToMoneyRatio(dayOffset: number = 0): number {
+function calculateGemsToMoneyRatio(dayOffset = 0): number {
 	/**
 	 * Returns the decimal part of a number
 	 * @param x
