@@ -7,7 +7,6 @@ import {
 } from "../../../../../data/FightAction";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
 import {
-	customMessageActionResult,
 	defaultFightActionResult, FightStatBuffed
 } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
@@ -25,8 +24,9 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		}, receiver, fightAction);
 
 		return {
-			...customMessageActionResult(),
-			damages: 0
+			...result,
+			damages: 0,
+			customMessage: true
 		};
 	}
 
