@@ -1,14 +1,10 @@
 import Player from "../database/game/models/Player";
 import { Materials } from "../database/game/models/Material";
 import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
-import { Homes } from "../database/game/models/Home";
 import {
 	Guilds, Guild
 } from "../database/game/models/Guild";
-import { InventoryInfos } from "../database/game/models/InventoryInfo";
-import { InventorySlots } from "../database/game/models/InventorySlot";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
-import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialDataController } from "../../data/Material";
@@ -42,7 +38,6 @@ import {
 } from "./CookingSlotRotation";
 import { CookingSlotData } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
-import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
 
 interface WoodSelection {
 	materialId: number;
@@ -63,27 +58,6 @@ interface CraftResult {
 export class CookingService {
 	static async getPlayerGuild(player: Player): Promise<Guild | null> {
 		return player.guildId ? await Guilds.getById(player.guildId) : null;
-	}
-
-	static async canReceivePotionReward(player: Player): Promise<boolean> {
-		const inventorySlots = await InventorySlots.getOfPlayer(player.id);
-		const equippedPotionSlot = inventorySlots.find(slot => slot.itemCategory === ItemCategory.POTION && slot.isEquipped());
-		if (equippedPotionSlot?.itemId === 0) {
-			return true;
-		}
-
-		const backupPotionSlots = inventorySlots.filter(slot => slot.itemCategory === ItemCategory.POTION && slot.slot > 0);
-		if (backupPotionSlots.some(slot => slot.itemId === 0)) {
-			return true;
-		}
-
-		const inventoryInfo = await InventoryInfos.getOfPlayer(player.id);
-		const home = await Homes.getOfPlayer(player.id);
-		const homeBonus = home?.getLevel()?.features.inventoryBonus;
-		const bonusPotionSlots = homeBonus ? getSlotCountForCategory(homeBonus, ItemCategory.POTION) : 0;
-		const maxPotionSlots = inventoryInfo.slotLimitForCategory(ItemCategory.POTION) + bonusPotionSlots;
-
-		return backupPotionSlots.length < maxPotionSlots - 1;
 	}
 
 	static canStorePetFoodReward(recipe: CookingRecipe, guild: Guild | null): boolean {
