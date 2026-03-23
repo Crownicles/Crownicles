@@ -25,12 +25,12 @@
     },
     {
       "id": "chargeDeluge",
-      "minLevel": 120,
+      "minLevel": 115,
       "weight": 1
     },
     {
       "id": "chargeChargeMaelstromAttack",
-      "minLevel": 100,
+      "minLevel": 95,
       "weight": 1
     },
     {

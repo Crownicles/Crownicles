@@ -25,7 +25,7 @@
     },
     {
       "id": "chargeChargeMaelstromAttack",
-      "minLevel": 100,
+      "minLevel": 95,
       "weight": 2
     },
     {
