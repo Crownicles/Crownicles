@@ -88,7 +88,7 @@ async function getEnchantableItem(
 	response: CrowniclesPacket[]
 ): Promise<InventorySlot | null> {
 	const itemToEnchant = await InventorySlots.getItem(player.id, reaction.slot, reaction.itemCategory);
-	const canBeEnchanted = itemToEnchant && itemToEnchant.isWeaponOrArmor() && !itemToEnchant.itemEnchantmentId;
+	const canBeEnchanted = itemToEnchant?.isWeaponOrArmor() && !itemToEnchant.itemEnchantmentId;
 
 	if (!canBeEnchanted) {
 		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
