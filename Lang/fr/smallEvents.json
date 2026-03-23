@@ -2759,13 +2759,13 @@
         ]
       },
       "plant": [
-        "Impressionné par votre passage, le jardinier fouille dans ses réserves et vous offre généreusement une de ses plantes cultivées :\n\n{{plantEmoji}} **{{plantName}}**",
-        "Théobald sort une plante de son chariot et vous la tend avec un clin d'œil malicieux :\n\n{{plantEmoji}} **{{plantName}}**",
-        "Le jardinier, ne pouvant vous donner de graine, vous offre généreusement une de ses plantes en souvenir de votre rencontre :\n\n{{plantEmoji}} **{{plantName}}**"
+        "Impressionné par votre passage, le jardinier fouille dans ses réserves et vous offre généreusement une de ses plantes cultivées :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Théobald sort une plante de son chariot et vous la tend avec un clin d'œil malicieux :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Le jardinier, ne pouvant vous donner de graine, vous offre généreusement une de ses plantes en souvenir de votre rencontre :\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
       "material": [
-        "Théobald fouille dans sa besace et vous offre un matériau lié au jardinage avec un sourire bienveillant :\n\n{{materialEmoji}} **{{materialName}}**",
-        "Le jardinier vous tend un matériau de jardinage tout en vous expliquant comment il pourrait vous être utile :\n\n{{materialEmoji}} **{{materialName}}**"
+        "Théobald fouille dans sa besace et vous offre un matériau lié au jardinage avec un sourire bienveillant :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+        "Le jardinier vous tend un matériau de jardinage tout en vous expliquant comment il pourrait vous être utile :\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
       ]
     },
     "menu": [

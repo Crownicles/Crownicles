@@ -114,7 +114,9 @@ import {
 } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import { SmallEventFarmerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFarmerPacket";
 import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
-import { PlantConstants } from "../../../../Lib/src/constants/PlantConstants";
+import {
+	PlantConstants, SEED_CONDITION_FAILURE
+} from "../../../../Lib/src/constants/PlantConstants";
 import {
 	altarContributed, altarFirstEncounter, altarNoContribution
 } from "../../smallEvents/altar";
@@ -1305,10 +1307,10 @@ export default class SmallEventsHandler {
 				break;
 			case "advice": {
 				const adviceReplacements: Record<string, unknown> = {};
-				if (packet.conditionKey === "needLevel" && packet.plantId > 0) {
+				if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_LEVEL && packet.plantId > 0) {
 					adviceReplacements.level = PlantConstants.SEED_LEVEL_REQUIREMENTS[packet.plantId as keyof typeof PlantConstants.SEED_LEVEL_REQUIREMENTS];
 				}
-				if (packet.conditionKey === "needMoney" && packet.plantId > 0) {
+				if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_MONEY && packet.plantId > 0) {
 					adviceReplacements.cost = PlantConstants.SEED_COSTS[packet.plantId as keyof typeof PlantConstants.SEED_COSTS];
 				}
 				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.advice.${packet.conditionKey}`, lng, adviceReplacements);
@@ -1316,14 +1318,12 @@ export default class SmallEventsHandler {
 			}
 			case "plant":
 				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
-					plantEmoji: CrowniclesIcons.plants[packet.plantId],
-					plantName: i18n.t(`models:plants.${packet.plantId}`, { lng })
+					plantId: packet.plantId
 				});
 				break;
 			case "material":
 				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.material", lng, {
-					materialEmoji: CrowniclesIcons.materials[packet.materialId] ?? CrowniclesIcons.inventory.stock,
-					materialName: i18n.t(`models:materials.${packet.materialId}`, { lng })
+					materialId: packet.materialId
 				});
 				break;
 			default:

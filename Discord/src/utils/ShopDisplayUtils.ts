@@ -269,14 +269,9 @@ function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemT
 	if (shopItemId >= ShopItemType.WEEKLY_PLANT_TIER_1 && shopItemId <= ShopItemType.WEEKLY_PLANT_TIER_3) {
 		const tierIndex = shopItemId - ShopItemType.WEEKLY_PLANT_TIER_1;
 		const plantId = data.additionalShopData?.weeklyPlants?.[tierIndex];
-		const plantName = plantId
-			? i18n.t(`commands:report.city.homes.garden.plants.${plantId}`, { lng })
-			: "???";
-		const plantEmoji = plantId ? CrowniclesIcons.plants[plantId] ?? "🌱" : "🌱";
 		const bothNames = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.name`, {
 			lng,
-			plantName,
-			plantEmoji
+			plantId
 		});
 		return {
 			normal: `**${bothNames}**`,

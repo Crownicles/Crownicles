@@ -94,93 +94,110 @@ export function getMarketAnalysisShopItem(): ShopItem {
 		price: ShopConstants.MARKET_ANALYSIS_PRICE,
 		amounts: [1],
 		buyCallback: (response: CrowniclesPacket[]): boolean => {
-			const todayRatio = calculateGemsToMoneyRatio();
-			const kingsMoneyTrends = FORECAST_OFFSETS.map(offset => {
-				const futureRatio = calculateGemsToMoneyRatio(offset);
-				return percentageToTrend((futureRatio - todayRatio) / todayRatio);
-			}) as [MarketTrend, MarketTrend, MarketTrend];
-
-			const now = new Date();
-			const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants(now);
-
-			// Find the first horizon where plants rotate
-			let rotationHorizonIndex: number | null = null;
-			let newPlantIds: PlantId[] | null = null;
-			for (let i = 0; i < FORECAST_OFFSETS.length; i++) {
-				const futureDate = new Date(now.getTime() + FORECAST_OFFSETS[i] * TimeConstants.MS_TIME.DAY);
-				const futurePlants = PlantConstants.getWeeklyHerbalistPlants(futureDate);
-				if (!samePlants(weeklyPlants, futurePlants)) {
-					rotationHorizonIndex = i;
-					newPlantIds = futurePlants.map(p => p.id);
-					break;
-				}
-			}
-
-			// Build plant trends, setting null for horizons after rotation
-			const plantTrends = weeklyPlants.map(plant => {
-				const todayPrice = PlantConstants.getHerbalistPrice(plant);
-				const trends = FORECAST_OFFSETS.map((offset, i) => {
-					if (rotationHorizonIndex !== null && i >= rotationHorizonIndex) {
-						return null;
-					}
-					const futurePrice = PlantConstants.getHerbalistPrice(plant, offset);
-					return percentageToTrend((futurePrice - todayPrice) / todayPrice);
-				}) as [MarketTrend | null, MarketTrend | null, MarketTrend | null];
-				return {
-					plantId: plant.id,
-					trends
-				};
-			});
-
-			const packetData: {
-				kingsMoneyTrends: [MarketTrend, MarketTrend, MarketTrend];
-				plantTrends: {
-					plantId: PlantId; trends: [MarketTrend | null, MarketTrend | null, MarketTrend | null];
-				}[];
-				plantRotation?: {
-					horizonIndex: number;
-					newPlantIds: PlantId[];
-					newPlantForecasts: {
-						plantId: PlantId;
-						trends: (MarketTrend | null)[];
-					}[];
-				};
-			} = {
-				kingsMoneyTrends,
-				plantTrends
-			};
-
-			if (rotationHorizonIndex !== null && newPlantIds !== null) {
-				/*
-				 * Compute forecasts for new plants at post-rotation horizons.
-				 * Compare each horizon's price to the plant's base price to indicate if it's above or below average.
-				 */
-				const futureDate = new Date(now.getTime() + FORECAST_OFFSETS[rotationHorizonIndex] * TimeConstants.MS_TIME.DAY);
-				const newPlants = PlantConstants.getWeeklyHerbalistPlants(futureDate);
-				const newPlantForecasts = newPlants.map(plant => {
-					const basePrice = PlantConstants.HERBALIST_PRICES[plant.id - 1];
-					const trends = FORECAST_OFFSETS.map((offset, i) => {
-						if (i < rotationHorizonIndex!) {
-							return null; // Plant not available yet
-						}
-						const futurePrice = PlantConstants.getHerbalistPrice(plant, offset);
-						return percentageToTrend((futurePrice - basePrice) / basePrice);
-					});
-					return {
-						plantId: plant.id,
-						trends
-					};
-				});
-
-				packetData.plantRotation = {
-					horizonIndex: rotationHorizonIndex,
-					newPlantIds,
-					newPlantForecasts
-				};
-			}
-
+			const packetData = buildMarketAnalysisPacket();
 			response.push(makePacket(CommandMissionShopMarketAnalysis, packetData));
 			return true;
 		}
 	};
+}
+
+type PlantTrendData = {
+	plantId: PlantId;
+	trends: [MarketTrend, MarketTrend, MarketTrend];
+};
+
+type PlantRotationData = {
+	horizonIndex: number;
+	newPlantIds: PlantId[];
+	newPlantForecasts: {
+		plantId: PlantId;
+		trends: MarketTrend[];
+	}[];
+};
+
+type MarketAnalysisData = {
+	kingsMoneyTrends: [MarketTrend, MarketTrend, MarketTrend];
+	plantTrends: PlantTrendData[];
+	plantRotation?: PlantRotationData;
+};
+
+function computeKingsMoneyTrends(): [MarketTrend, MarketTrend, MarketTrend] {
+	const todayRatio = calculateGemsToMoneyRatio();
+	return FORECAST_OFFSETS.map(offset => {
+		const futureRatio = calculateGemsToMoneyRatio(offset);
+		return percentageToTrend((futureRatio - todayRatio) / todayRatio);
+	}) as [MarketTrend, MarketTrend, MarketTrend];
+}
+
+function findRotationHorizon(weeklyPlants: PlantType[], now: Date): {
+	index: number; newPlantIds: PlantId[];
+} | null {
+	for (let i = 0; i < FORECAST_OFFSETS.length; i++) {
+		const futureDate = new Date(now.getTime() + FORECAST_OFFSETS[i] * TimeConstants.MS_TIME.DAY);
+		const futurePlants = PlantConstants.getWeeklyHerbalistPlants(futureDate);
+		if (!samePlants(weeklyPlants, futurePlants)) {
+			return {
+				index: i,
+				newPlantIds: futurePlants.map(p => p.id)
+			};
+		}
+	}
+	return null;
+}
+
+function computePlantTrends(weeklyPlants: PlantType[], rotationHorizonIndex: number | null): PlantTrendData[] {
+	return weeklyPlants.map(plant => {
+		const todayPrice = PlantConstants.getHerbalistPrice(plant);
+		const trends = FORECAST_OFFSETS.map((offset, i) => {
+			if (rotationHorizonIndex !== null && i >= rotationHorizonIndex) {
+				return MarketTrend.NON_APPLICABLE;
+			}
+			const futurePrice = PlantConstants.getHerbalistPrice(plant, offset);
+			return percentageToTrend((futurePrice - todayPrice) / todayPrice);
+		}) as [MarketTrend, MarketTrend, MarketTrend];
+		return {
+			plantId: plant.id,
+			trends
+		};
+	});
+}
+
+function computeNewPlantForecasts(rotationHorizonIndex: number, now: Date): PlantRotationData["newPlantForecasts"] {
+	const futureDate = new Date(now.getTime() + FORECAST_OFFSETS[rotationHorizonIndex] * TimeConstants.MS_TIME.DAY);
+	const newPlants = PlantConstants.getWeeklyHerbalistPlants(futureDate);
+	return newPlants.map(plant => {
+		const basePrice = PlantConstants.HERBALIST_PRICES[plant.id - 1];
+		const trends = FORECAST_OFFSETS.map((offset, i) => {
+			if (i < rotationHorizonIndex) {
+				return MarketTrend.NON_APPLICABLE;
+			}
+			const futurePrice = PlantConstants.getHerbalistPrice(plant, offset);
+			return percentageToTrend((futurePrice - basePrice) / basePrice);
+		});
+		return {
+			plantId: plant.id,
+			trends
+		};
+	});
+}
+
+function buildMarketAnalysisPacket(): MarketAnalysisData {
+	const now = new Date();
+	const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants(now);
+	const rotation = findRotationHorizon(weeklyPlants, now);
+
+	const result: MarketAnalysisData = {
+		kingsMoneyTrends: computeKingsMoneyTrends(),
+		plantTrends: computePlantTrends(weeklyPlants, rotation?.index ?? null)
+	};
+
+	if (rotation) {
+		result.plantRotation = {
+			horizonIndex: rotation.index,
+			newPlantIds: rotation.newPlantIds,
+			newPlantForecasts: computeNewPlantForecasts(rotation.index, now)
+		};
+	}
+
+	return result;
 }

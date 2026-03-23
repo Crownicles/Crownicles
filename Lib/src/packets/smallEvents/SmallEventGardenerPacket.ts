@@ -2,6 +2,7 @@ import { SmallEventPacket } from "./SmallEventPacket";
 import {
 	PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import { SeedConditionKey } from "../../constants/PlantConstants";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventGardenerPacket extends SmallEventPacket {
@@ -13,5 +14,5 @@ export class SmallEventGardenerPacket extends SmallEventPacket {
 
 	cost!: number;
 
-	conditionKey!: string;
+	conditionKey!: SeedConditionKey;
 }

@@ -5,25 +5,28 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
+import {
+	PlantId, SeedConditionKey
+} from "../../constants/PlantConstants";
 
 export class ReactionCollectorGardenerData extends ReactionCollectorData {
-	seedId!: number;
+	seedId!: PlantId;
 
 	cost!: number;
 
-	conditionKey!: string;
+	conditionKey!: SeedConditionKey;
 }
 
 export type ReactionCollectorGardenerPacket = AcceptRefusePacket<ReactionCollectorGardenerData>;
 
 export class ReactionCollectorGardener extends ReactionCollector {
-	private readonly seedId: number;
+	private readonly seedId: PlantId;
 
 	private readonly cost: number;
 
-	private readonly conditionKey: string;
+	private readonly conditionKey: SeedConditionKey;
 
-	constructor(seedId: number, cost: number, conditionKey: string) {
+	constructor(seedId: PlantId, cost: number, conditionKey: SeedConditionKey) {
 		super();
 		this.seedId = seedId;
 		this.cost = cost;

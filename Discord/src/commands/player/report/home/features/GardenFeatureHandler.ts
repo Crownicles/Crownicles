@@ -31,6 +31,7 @@ import {
 } from "../../../../../../../Lib/src/constants/PlantConstants";
 import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
+import { GardenEarthQuality } from "../../../../../../../Lib/src/types/GardenEarthQuality";
 import { TimeConstants } from "../../../../../../../Lib/src/constants/TimeConstants";
 
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
@@ -310,7 +311,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Compute remaining seconds for a plant in a garden slot
 	 */
-	private computeRemainingSeconds(plantId: PlantId | 0, earthQuality: number): number {
+	private computeRemainingSeconds(plantId: PlantId | 0, earthQuality: GardenEarthQuality): number {
 		const plant = PlantConstants.getPlantById(plantId);
 		return plant
 			? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality)
