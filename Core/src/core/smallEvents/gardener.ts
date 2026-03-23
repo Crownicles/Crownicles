@@ -20,7 +20,9 @@ import {
 	Home, Homes
 } from "../database/game/models/Home";
 import { HomeGardenSlots } from "../database/game/models/HomeGardenSlot";
-import { PetEntities } from "../database/game/models/PetEntity";
+import {
+	PetEntities, PetEntity
+} from "../database/game/models/PetEntity";
 import {
 	PetDataController
 } from "../../data/Pet";
@@ -97,27 +99,16 @@ function isOnGardenerMapLink(mapLinkId: number): boolean {
 async function getNextSeedId(player: Player, home: Home | null): Promise<PlantId | null> {
 	const invInfo = await InventoryInfos.getOfPlayer(player.id);
 	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
-	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
 
-	if (seedSlot && seedSlot.plantId !== 0) {
+	if (await playerHasSeed(player.id)) {
 		return null;
 	}
 
-	const homeLevel = home?.getLevel();
-	const hasGarden = homeLevel !== null && homeLevel !== undefined && homeLevel.features.gardenPlots > 0;
-
-	if (!hasGarden) {
+	if (!hasGarden(home)) {
 		return PlantId.COMMON_HERB;
 	}
 
-	const gardenSlots = await HomeGardenSlots.getOfHome(home!.id);
-	let highestPlanted = 0;
-	for (const slot of gardenSlots) {
-		if (slot.plantId > highestPlanted) {
-			highestPlanted = slot.plantId;
-		}
-	}
-
+	const highestPlanted = await getHighestPlantedSeedId(home!.id);
 	const nextSeed = highestPlanted + 1;
 	return nextSeed > 10 ? null : nextSeed as PlantId;
 }
@@ -127,6 +118,88 @@ type SeedConditionResult = {
 	conditionKey: SeedConditionKey;
 };
 
+type SeedConditionChecker = (player: Player) => Promise<SeedConditionResult>;
+
+function hasGarden(home: Home | null): boolean {
+	return (home?.getLevel()?.features.gardenPlots ?? 0) > 0;
+}
+
+async function playerHasSeed(playerId: number): Promise<boolean> {
+	const seedSlot = await PlayerPlantSlots.getSeedSlot(playerId);
+	return seedSlot !== null && seedSlot.plantId !== 0;
+}
+
+async function getHighestPlantedSeedId(homeId: number): Promise<number> {
+	const gardenSlots = await HomeGardenSlots.getOfHome(homeId);
+	return gardenSlots.reduce((highestPlanted, slot) => Math.max(highestPlanted, slot.plantId), 0);
+}
+
+function getDefaultSeedCondition(cost: number): SeedConditionResult {
+	return {
+		canObtain: true,
+		conditionKey: cost > 0 ? SEED_CONDITION_SUCCESS.PAID : SEED_CONDITION_SUCCESS.FREE
+	};
+}
+
+function getNightSeedCondition(seedId: PlantId): SeedConditionResult {
+	if (seedId === PlantId.LUNAR_MOSS) {
+		return !isNight() || getMoonIllumination() <= 0.5
+			? {
+				canObtain: false,
+				conditionKey: SEED_CONDITION_FAILURE.NEED_MOONLIGHT
+			}
+			: {
+				canObtain: true,
+				conditionKey: SEED_CONDITION_SUCCESS.MOON
+			};
+	}
+
+	return !isNight()
+		? {
+			canObtain: false,
+			conditionKey: SEED_CONDITION_FAILURE.NEED_NIGHT
+		}
+		: {
+			canObtain: true,
+			conditionKey: SEED_CONDITION_SUCCESS.NIGHT
+		};
+}
+
+function getSpecialSeedChecker(seedId: PlantId): SeedConditionChecker | null {
+	switch (seedId) {
+		case PlantId.LUNAR_MOSS:
+		case PlantId.NIGHT_MUSHROOM:
+			return (): Promise<SeedConditionResult> => Promise.resolve(getNightSeedCondition(seedId));
+		case PlantId.VENOMOUS_LEAF:
+			return async (player: Player): Promise<SeedConditionResult> => await checkHerbivorePetCondition(player, false);
+		case PlantId.FIRE_BULB:
+			return async (player: Player): Promise<SeedConditionResult> => await checkFireAffinityCondition(player);
+		case PlantId.MEAT_PLANT:
+			return async (player: Player): Promise<SeedConditionResult> => await checkCarnivorePetCondition(player);
+		case PlantId.ANCIENT_TREE:
+			return async (player: Player): Promise<SeedConditionResult> => await checkHerbivorePetCondition(player, true);
+		default:
+			return null;
+	}
+}
+
+async function getOwnedPet(player: Player): Promise<PetEntity | null> {
+	return player.petId ? await PetEntities.getById(player.petId) : null;
+}
+
+function isHerbivorePetEligible(petEntity: PetEntity, requireLegendary: boolean): boolean {
+	const petData = PetDataController.instance.getById(petEntity.typeId);
+	if (!petData) {
+		return false;
+	}
+
+	const isHerbivore = petData.canEatVegetables();
+	const isTrained = petEntity.lovePoints >= PetConstants.TRAINED_LOVE_THRESHOLD;
+	const meetsRarityRequirement = !requireLegendary || petData.rarity >= ItemRarity.EPIC;
+
+	return isHerbivore && isTrained && meetsRarityRequirement;
+}
+
 async function checkSeedConditions(player: Player, seedId: PlantId, home: Home | null): Promise<SeedConditionResult> {
 	if (player.level < PlantConstants.SEED_LEVEL_REQUIREMENTS[seedId]) {
 		return {
@@ -135,14 +208,11 @@ async function checkSeedConditions(player: Player, seedId: PlantId, home: Home |
 		};
 	}
 
-	if (seedId > PlantId.COMMON_HERB) {
-		const homeLevel = home?.getLevel();
-		if (!homeLevel || homeLevel.features.gardenPlots === 0) {
-			return {
-				canObtain: false,
-				conditionKey: SEED_CONDITION_FAILURE.NEED_GARDEN
-			};
-		}
+	if (seedId > PlantId.COMMON_HERB && !hasGarden(home)) {
+		return {
+			canObtain: false,
+			conditionKey: SEED_CONDITION_FAILURE.NEED_GARDEN
+		};
 	}
 
 	const cost = PlantConstants.SEED_COSTS[seedId];
@@ -153,85 +223,22 @@ async function checkSeedConditions(player: Player, seedId: PlantId, home: Home |
 		};
 	}
 
-	switch (seedId) {
-		case PlantId.LUNAR_MOSS: {
-			if (!isNight() || getMoonIllumination() <= 0.5) {
-				return {
-					canObtain: false,
-					conditionKey: SEED_CONDITION_FAILURE.NEED_MOONLIGHT
-				};
-			}
-			return {
-				canObtain: true,
-				conditionKey: SEED_CONDITION_SUCCESS.MOON
-			};
-		}
-		case PlantId.NIGHT_MUSHROOM: {
-			if (!isNight()) {
-				return {
-					canObtain: false,
-					conditionKey: SEED_CONDITION_FAILURE.NEED_NIGHT
-				};
-			}
-			return {
-				canObtain: true,
-				conditionKey: SEED_CONDITION_SUCCESS.NIGHT
-			};
-		}
-		case PlantId.VENOMOUS_LEAF:
-			return await checkHerbivorePetCondition(player, false);
-		case PlantId.FIRE_BULB:
-			return await checkFireAffinityCondition(player);
-		case PlantId.MEAT_PLANT:
-			return await checkCarnivorePetCondition(player);
-		case PlantId.ANCIENT_TREE:
-			return await checkHerbivorePetCondition(player, true);
-		default:
-			break;
+	const specialChecker = getSpecialSeedChecker(seedId);
+	if (specialChecker) {
+		return await specialChecker(player);
 	}
 
-	if (cost > 0) {
-		return {
-			canObtain: true,
-			conditionKey: SEED_CONDITION_SUCCESS.PAID
-		};
-	}
-	return {
-		canObtain: true,
-		conditionKey: SEED_CONDITION_SUCCESS.FREE
-	};
+	return getDefaultSeedCondition(cost);
 }
 
 async function checkHerbivorePetCondition(player: Player, requireLegendary: boolean): Promise<SeedConditionResult> {
 	const failKey = requireLegendary ? SEED_CONDITION_FAILURE.NEED_LEGENDARY_HERBIVORE_PET : SEED_CONDITION_FAILURE.NEED_HERBIVORE_PET;
 
-	const petEntity = player.petId ? await PetEntities.getById(player.petId) : null;
-	if (!petEntity) {
+	const petEntity = await getOwnedPet(player);
+	if (!petEntity || !isHerbivorePetEligible(petEntity, requireLegendary)) {
 		return {
 			canObtain: false,
 			conditionKey: failKey
-		};
-	}
-
-	const petData = PetDataController.instance.getById(petEntity.typeId);
-	if (!petData || !petData.canEatVegetables()) {
-		return {
-			canObtain: false,
-			conditionKey: failKey
-		};
-	}
-
-	if (petEntity.lovePoints < PetConstants.TRAINED_LOVE_THRESHOLD) {
-		return {
-			canObtain: false,
-			conditionKey: failKey
-		};
-	}
-
-	if (requireLegendary && petData.rarity < ItemRarity.EPIC) {
-		return {
-			canObtain: false,
-			conditionKey: SEED_CONDITION_FAILURE.NEED_LEGENDARY_HERBIVORE_PET
 		};
 	}
 
