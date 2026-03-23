@@ -36,6 +36,86 @@ export interface UpgradeItemValidationResult {
 	logError?: string;
 }
 
+type InventoryMaterialStock = Map<number, number>;
+
+type BlacksmithUpgradeItem = NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][number];
+
+type BlacksmithUpgradeExecutionData = {
+	totalCost: number;
+	boughtMaterials: boolean;
+	hasAllMaterials: boolean;
+	materialsToConsume: {
+		materialId: number;
+		quantity: number;
+	}[];
+};
+
+function getBlacksmithUpgradeItem(
+	player: Player,
+	reaction: ReactionCollectorBlacksmithUpgradeReaction,
+	data: ReactionCollectorCityData
+): BlacksmithUpgradeItem | null {
+	const blacksmith = data.blacksmith;
+	if (!blacksmith) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use blacksmith but no blacksmith data available.`);
+		return null;
+	}
+
+	const itemToUpgrade = blacksmith.upgradeableItems.find(
+		item => item.slot === reaction.slot && item.category === reaction.itemCategory
+	);
+	if (!itemToUpgrade) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in the blacksmith.`);
+		return null;
+	}
+
+	return itemToUpgrade;
+}
+
+async function getPlayerMaterialStock(playerId: number): Promise<InventoryMaterialStock> {
+	const playerMaterials = await Materials.getPlayerMaterials(playerId);
+	return new Map(playerMaterials.map(material => [material.materialId, material.quantity]));
+}
+
+function buildBlacksmithUpgradeExecutionData(params: {
+	itemToUpgrade: BlacksmithUpgradeItem;
+	materialStock: InventoryMaterialStock;
+	buyMaterials: boolean;
+}): BlacksmithUpgradeExecutionData {
+	const {
+		itemToUpgrade, materialStock, buyMaterials
+	} = params;
+	const missingMaterials = itemToUpgrade.requiredMaterials
+		.filter(material => (materialStock.get(material.materialId) ?? 0) < material.quantity)
+		.map(material => ({
+			rarity: material.rarity,
+			quantity: material.quantity - (materialStock.get(material.materialId) ?? 0)
+		}));
+	const hasAllMaterials = missingMaterials.length === 0;
+	const boughtMaterials = buyMaterials && !hasAllMaterials;
+	const missingMaterialsCost = getMaterialsPurchasePrice(missingMaterials);
+
+	return {
+		totalCost: itemToUpgrade.upgradeCost + (boughtMaterials ? missingMaterialsCost : 0),
+		boughtMaterials,
+		hasAllMaterials,
+		materialsToConsume: itemToUpgrade.requiredMaterials
+			.map(material => ({
+				materialId: material.materialId,
+				quantity: Math.min(material.quantity, materialStock.get(material.materialId) ?? 0)
+			}))
+			.filter(material => material.quantity > 0)
+	};
+}
+
+async function findInventorySlotForReaction(playerId: number, reaction: {
+	slot: number;
+	itemCategory: number;
+}): Promise<Awaited<ReturnType<typeof InventorySlots.getOfPlayer>>[number] | undefined> {
+	return await InventorySlots.getOfPlayer(playerId)
+		.then(slots => slots.find(slot => slot.slot === reaction.slot && slot.itemCategory === reaction.itemCategory));
+}
+
 /**
  * Validate an upgrade item request from the upgrade station
  */
@@ -134,70 +214,32 @@ export async function handleBlacksmithUpgradeReaction(
 ): Promise<void> {
 	await player.reload();
 
-	const blacksmith = data.blacksmith;
-	if (!blacksmith) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use blacksmith but no blacksmith data available.`);
-		return;
-	}
-
-	const itemToUpgrade = blacksmith.upgradeableItems.find(
-		item => item.slot === reaction.slot && item.category === reaction.itemCategory
-	);
-
+	const itemToUpgrade = getBlacksmithUpgradeItem(player, reaction, data);
 	if (!itemToUpgrade) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in the blacksmith.`);
 		return;
 	}
 
-	// Re-fetch material quantities from DB to avoid relying on stale collector snapshot
-	const playerMaterials = await Materials.getPlayerMaterials(player.id);
-	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
+	const materialStock = await getPlayerMaterialStock(player.id);
+	const executionData = buildBlacksmithUpgradeExecutionData({
+		itemToUpgrade,
+		materialStock,
+		buyMaterials: reaction.buyMaterials
+	});
 
-	const freshHasAllMaterials = itemToUpgrade.requiredMaterials.every(
-		m => (playerMaterialMap.get(m.materialId) ?? 0) >= m.quantity
-	);
-
-	// Calculate fresh missing materials cost based on DB state
-	const freshMissingMaterials = itemToUpgrade.requiredMaterials
-		.filter(m => (playerMaterialMap.get(m.materialId) ?? 0) < m.quantity)
-		.map(m => ({
-			rarity: m.rarity,
-			quantity: m.quantity - (playerMaterialMap.get(m.materialId) ?? 0)
-		}));
-	const freshMissingMaterialsCost = getMaterialsPurchasePrice(freshMissingMaterials);
-
-	// Calculate total cost using fresh data
-	let totalCost = itemToUpgrade.upgradeCost;
-	const boughtMaterials = reaction.buyMaterials && !freshHasAllMaterials;
-
-	if (boughtMaterials) {
-		totalCost += freshMissingMaterialsCost;
-	}
-
-	// Check if player has enough money
-	if (player.money < totalCost) {
+	if (player.money < executionData.totalCost) {
 		response.push(makePacket(CommandReportBlacksmithNotEnoughMoneyRes, {
-			missingMoney: totalCost - player.money
+			missingMoney: executionData.totalCost - player.money
 		}));
 		return;
 	}
 
-	// If not buying materials, check if player still has all required materials
-	if (!boughtMaterials && !freshHasAllMaterials) {
+	if (!executionData.boughtMaterials && !executionData.hasAllMaterials) {
 		response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
 		return;
 	}
 
-	// Consume materials: consume full quantities required (at this point we know player has them or is buying them)
-	const materialsToConsume = itemToUpgrade.requiredMaterials
-		.map(m => ({
-			materialId: m.materialId,
-			quantity: Math.min(m.quantity, playerMaterialMap.get(m.materialId) ?? 0)
-		}))
-		.filter(m => m.quantity > 0);
-
-	if (materialsToConsume.length > 0) {
-		const consumed = await Materials.consumeMaterials(player.id, materialsToConsume);
+	if (executionData.materialsToConsume.length > 0) {
+		const consumed = await Materials.consumeMaterials(player.id, executionData.materialsToConsume);
 		if (!consumed) {
 			response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
 			return;
@@ -207,14 +249,11 @@ export async function handleBlacksmithUpgradeReaction(
 	// Spend money
 	await player.spendMoney({
 		response,
-		amount: totalCost,
+		amount: executionData.totalCost,
 		reason: NumberChangeReason.BLACKSMITH_UPGRADE
 	});
 
-	// Upgrade the item
-	const inventorySlot = await InventorySlots.getOfPlayer(player.id)
-		.then(slots => slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory));
-
+	const inventorySlot = await findInventorySlotForReaction(player.id, reaction);
 	if (!inventorySlot) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade an item that doesn't exist in their inventory.`);
 		return;
@@ -227,8 +266,8 @@ export async function handleBlacksmithUpgradeReaction(
 	response.push(makePacket(CommandReportBlacksmithUpgradeRes, {
 		itemCategory: reaction.itemCategory,
 		newItemLevel: itemToUpgrade.nextLevel,
-		totalCost,
-		boughtMaterials
+		totalCost: executionData.totalCost,
+		boughtMaterials: executionData.boughtMaterials
 	}));
 }
 

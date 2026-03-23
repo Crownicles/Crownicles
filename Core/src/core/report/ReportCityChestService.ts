@@ -27,6 +27,8 @@ import { buildChestData } from "./ReportCityService";
 
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
+type PlayerInventory = Awaited<ReturnType<typeof InventorySlots.getOfPlayer>>;
+
 function buildChestActionError(error: ChestError): ChestActionResult {
 	return {
 		success: false,
@@ -40,6 +42,53 @@ function buildChestActionError(error: ChestError): ChestActionResult {
 
 const INVALID_CHEST_ACTION = buildChestActionError(HomeConstants.CHEST_ERRORS.INVALID);
 
+function hasChestActionContext(params: {
+	player: Player | null;
+	home: Home | null;
+}): params is {
+	player: Player;
+	home: Home;
+} {
+	return params.player !== null && params.home !== null && params.home.getLevel() !== null;
+}
+
+function findEmptyActiveSlot(playerInventory: PlayerInventory, itemCategory: ItemCategory): InventorySlot | undefined {
+	return playerInventory.find(slot => slot.itemCategory === itemCategory && slot.slot === 0 && slot.itemId === 0);
+}
+
+function getBackupSlots(playerInventory: PlayerInventory, itemCategory: ItemCategory): InventorySlot[] {
+	return playerInventory.filter(slot => slot.itemCategory === itemCategory && slot.slot > 0);
+}
+
+async function getBackupInventoryCapacity(player: Player, home: Home, itemCategory: ItemCategory): Promise<number> {
+	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
+	const homeBonus = home.getLevel()?.features.inventoryBonus;
+	const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, itemCategory) : 0;
+	return inventoryInfo ? inventoryInfo.slotLimitForCategory(itemCategory) + bonusForCategory : 1;
+}
+
+async function placeItemInBackupSlot(backupSlots: InventorySlot[], item: ItemPlacement): Promise<boolean> {
+	const emptyBackupSlot = backupSlots.find(slot => slot.itemId === 0);
+	if (!emptyBackupSlot) {
+		return false;
+	}
+
+	await assignItemToSlot(emptyBackupSlot, item);
+	return true;
+}
+
+async function createBackupSlot(player: Player, itemCategory: ItemCategory, item: ItemPlacement, backupSlots: InventorySlot[]): Promise<void> {
+	const nextSlot = backupSlots.length > 0 ? Math.max(...backupSlots.map(slot => slot.slot)) + 1 : 1;
+	await InventorySlot.create({
+		playerId: player.id,
+		slot: nextSlot,
+		itemCategory,
+		itemId: item.itemId,
+		itemLevel: item.itemLevel,
+		itemEnchantmentId: item.itemEnchantmentId
+	});
+}
+
 /**
  * Handle a chest action request (deposit/withdraw) sent directly from Discord via AsyncPacketSender.
  * Returns refreshed chest data for the Discord side to update the view in-place.
@@ -50,20 +99,28 @@ export async function handleChestAction(
 ): Promise<ChestActionResult> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	const home = player ? await Homes.getOfPlayer(player.id) : null;
-	const homeLevel = home?.getLevel();
+	const chestActionContext = {
+		player,
+		home
+	};
 
-	if (!player || !home || !homeLevel) {
+	if (!hasChestActionContext(chestActionContext)) {
 		return INVALID_CHEST_ACTION;
 	}
 
-	const error = await executeChestAction(packet, player, home);
+	const {
+		player: validPlayer,
+		home: validHome
+	} = chestActionContext;
+
+	const error = await executeChestAction(packet, validPlayer, validHome);
 	if (error) {
 		return buildChestActionError(error);
 	}
 
 	// Build refreshed chest data
-	const playerInventory = await InventorySlots.getOfPlayer(player.id);
-	const refreshedData = await buildChestData(home, homeLevel, playerInventory, player);
+	const playerInventory = await InventorySlots.getOfPlayer(validPlayer.id);
+	const refreshedData = await buildChestData(validHome, validHome.getLevel()!, playerInventory, validPlayer);
 
 	return {
 		success: true,
@@ -185,37 +242,20 @@ async function placeItemInInventory(
 ): Promise<ChestError | null> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 
-	// Priority 1: active slot (slot 0) if empty
-	const activeSlot = playerInventory.find(s => s.itemCategory === itemCategory && s.slot === 0);
-	if (activeSlot && activeSlot.itemId === 0) {
+	const activeSlot = findEmptyActiveSlot(playerInventory, itemCategory);
+	if (activeSlot) {
 		await assignItemToSlot(activeSlot, item);
 		return null;
 	}
 
-	// Priority 2: backup slots
-	const backupSlots = playerInventory.filter(s => s.itemCategory === itemCategory && s.slot > 0);
-	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId: player.id } });
-	const homeBonus = home.getLevel()?.features.inventoryBonus;
-	const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, itemCategory) : 0;
-	const maxSlots = inventoryInfo ? inventoryInfo.slotLimitForCategory(itemCategory) + bonusForCategory : 1;
-
-	const emptyBackupSlot = backupSlots.find(s => s.itemId === 0);
-	if (emptyBackupSlot) {
-		await assignItemToSlot(emptyBackupSlot, item);
+	const backupSlots = getBackupSlots(playerInventory, itemCategory);
+	if (await placeItemInBackupSlot(backupSlots, item)) {
 		return null;
 	}
 
-	// maxSlots includes the equipped slot (slot 0), so backup capacity is maxSlots - 1
+	const maxSlots = await getBackupInventoryCapacity(player, home, itemCategory);
 	if (backupSlots.length < maxSlots - 1) {
-		const nextSlot = backupSlots.length > 0 ? Math.max(...backupSlots.map(s => s.slot)) + 1 : 1;
-		await InventorySlot.create({
-			playerId: player.id,
-			slot: nextSlot,
-			itemCategory,
-			itemId: item.itemId,
-			itemLevel: item.itemLevel,
-			itemEnchantmentId: item.itemEnchantmentId
-		});
+		await createBackupSlot(player, itemCategory, item, backupSlots);
 		return null;
 	}
 

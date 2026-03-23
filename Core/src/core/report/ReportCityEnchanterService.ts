@@ -32,6 +32,73 @@ interface EnchantItemParams {
 	response: CrowniclesPacket[];
 }
 
+type EnchantmentPricingData = {
+	enchantment: ItemEnchantment;
+	price: {
+		money: number; gems: number;
+	};
+	playerMissionsInfo: PlayerMissionsInfo | null;
+};
+
+async function getEnchantmentPricingData(player: Player): Promise<EnchantmentPricingData | null> {
+	const enchantment = ItemEnchantment.getById(await Settings.ENCHANTER_ENCHANTMENT_ID.getValue());
+	if (!enchantment) {
+		CrowniclesLogger.error("No enchantment found for enchanter. Check ENCHANTER_ENCHANTMENT_ID setting.");
+		return null;
+	}
+
+	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
+	const price = enchantment.getEnchantmentCost(isPlayerMage);
+	return {
+		enchantment,
+		price,
+		playerMissionsInfo: price.gems !== 0 ? await PlayerMissionsInfos.getOfPlayer(player.id) : null
+	};
+}
+
+function hasEnoughCurrencies(params: {
+	player: Player;
+	price: EnchantItemParams["price"];
+	playerMissionsInfo: PlayerMissionsInfo | null;
+}): boolean {
+	const {
+		player, price, playerMissionsInfo
+	} = params;
+	return player.money >= price.money && (playerMissionsInfo?.gems ?? price.gems) >= price.gems;
+}
+
+function pushMissingCurrenciesResponse(params: {
+	player: Player;
+	price: EnchantItemParams["price"];
+	playerMissionsInfo: PlayerMissionsInfo | null;
+	response: CrowniclesPacket[];
+}): void {
+	const {
+		player, price, playerMissionsInfo, response
+	} = params;
+	response.push(makePacket(CommandReportEnchantNotEnoughCurrenciesRes, {
+		missingMoney: Math.max(price.money - player.money, 0),
+		missingGems: Math.max(price.gems - (playerMissionsInfo?.gems ?? 0), 0)
+	}));
+}
+
+async function getEnchantableItem(
+	player: Player,
+	reaction: ReactionCollectorEnchantReaction,
+	response: CrowniclesPacket[]
+): Promise<InventorySlot | null> {
+	const itemToEnchant = await InventorySlots.getItem(player.id, reaction.slot, reaction.itemCategory);
+	const canBeEnchanted = itemToEnchant && itemToEnchant.isWeaponOrArmor() && !itemToEnchant.itemEnchantmentId;
+
+	if (!canBeEnchanted) {
+		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
+		response.push(makePacket(CommandReportItemCannotBeEnchantedRes, {}));
+		return null;
+	}
+
+	return itemToEnchant;
+}
+
 /**
  * Check if the enchantment conditions are met (enough currencies, valid item)
  */
@@ -47,35 +114,35 @@ async function checkEnchantmentConditions(
 	playerMissionsInfo: PlayerMissionsInfo | null;
 	itemToEnchant: InventorySlot;
 } | null> {
-	const enchantment = ItemEnchantment.getById(await Settings.ENCHANTER_ENCHANTMENT_ID.getValue());
-	if (!enchantment) {
-		CrowniclesLogger.error("No enchantment found for enchanter. Check ENCHANTER_ENCHANTMENT_ID setting.");
-		return null;
-	}
-	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
-	const price = enchantment.getEnchantmentCost(isPlayerMage);
-
-	const hasEnoughMoney = player.money >= price.money;
-	const playerMissionsInfo = price.gems !== 0 ? await PlayerMissionsInfos.getOfPlayer(player.id) : null;
-	const hasEnoughGems = playerMissionsInfo ? playerMissionsInfo.gems >= price.gems : true;
-
-	if (!hasEnoughMoney || !hasEnoughGems) {
-		response.push(makePacket(CommandReportEnchantNotEnoughCurrenciesRes, {
-			missingMoney: hasEnoughMoney ? 0 : price.money - player.money,
-			missingGems: hasEnoughGems ? 0 : price.gems - (playerMissionsInfo?.gems ?? 0)
-		}));
+	const pricingData = await getEnchantmentPricingData(player);
+	if (!pricingData) {
 		return null;
 	}
 
-	const itemToEnchant = await InventorySlots.getItem(player.id, reaction.slot, reaction.itemCategory);
-	if (!itemToEnchant || !itemToEnchant.isWeaponOrArmor() || itemToEnchant.itemEnchantmentId) {
-		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
-		response.push(makePacket(CommandReportItemCannotBeEnchantedRes, {}));
+	if (!hasEnoughCurrencies({
+		player,
+		price: pricingData.price,
+		playerMissionsInfo: pricingData.playerMissionsInfo
+	})) {
+		pushMissingCurrenciesResponse({
+			player,
+			price: pricingData.price,
+			playerMissionsInfo: pricingData.playerMissionsInfo,
+			response
+		});
+		return null;
+	}
+
+	const itemToEnchant = await getEnchantableItem(player, reaction, response);
+	if (!itemToEnchant) {
 		return null;
 	}
 
 	return {
-		enchantment, price, playerMissionsInfo, itemToEnchant
+		enchantment: pricingData.enchantment,
+		price: pricingData.price,
+		playerMissionsInfo: pricingData.playerMissionsInfo,
+		itemToEnchant
 	};
 }
 
