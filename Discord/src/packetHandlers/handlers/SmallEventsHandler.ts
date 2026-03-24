@@ -1273,15 +1273,29 @@ export default class SmallEventsHandler {
 	async smallEventFarmer(context: PacketContext, packet: SmallEventFarmerPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
+
+		let description = getRandomSmallEventIntro(lng)
+			+ StringUtils.getRandomTranslation("smallEvents:farmer.stories", lng)
+			+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, {
+				count: packet.amount
+			});
+
+		if (packet.discoveredRecipeId) {
+			let recipeMsg = i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
+				lng,
+				recipe: i18n.t(`models:cooking.recipes.${packet.discoveredRecipeId}`, { lng })
+			});
+			if (packet.recipeCost) {
+				recipeMsg += ` (${packet.recipeCost} :moneybag:)`;
+			}
+			description += `\n\n${recipeMsg}`;
+		}
+
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"farmer",
-					getRandomSmallEventIntro(lng)
-					+ StringUtils.getRandomTranslation("smallEvents:farmer.stories", lng)
-					+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, {
-						count: packet.amount
-					}),
+					description,
 					interaction.user,
 					lng
 				)
@@ -1294,8 +1308,10 @@ export default class SmallEventsHandler {
 		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!) : DiscordCache.getInteraction(context.discord!.interaction!);
 		const lng = context.discord!.language;
 
-		const story = getRandomSmallEventIntro(lng)
-			+ StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
+		const isFromCollector = !!context.discord!.buttonInteraction;
+		const story = isFromCollector
+			? ""
+			: getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
 
 		let rewardText: string;
 

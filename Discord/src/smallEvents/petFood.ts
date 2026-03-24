@@ -18,10 +18,10 @@ import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { SmallEventPetFoodPacket } from "../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
-import { Language } from "../../../Lib/src/Language";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
 import { StringConstants } from "../../../Lib/src/constants/StringConstants";
+import { Language } from "../../../Lib/src/Language";
 
 /**
  * Handle the pet food small event collector interaction
@@ -198,6 +198,17 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 			context: sexContext
 		});
 		result += `\n${loveMessage}`;
+	}
+
+	if (packet.discoveredRecipeId) {
+		let recipeMsg = i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
+			lng,
+			recipe: i18n.t(`models:cooking.recipes.${packet.discoveredRecipeId}`, { lng })
+		});
+		if (packet.recipeCost) {
+			recipeMsg += ` (${packet.recipeCost} :moneybag:)`;
+		}
+		result += `\n\n${recipeMsg}`;
 	}
 
 	return result;
