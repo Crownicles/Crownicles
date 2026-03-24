@@ -260,7 +260,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: [1],
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 						const picked = RandomUtils.crowniclesRandom.pick(commonWoods);
-						await Materials.giveMaterial(playerId, parseInt(picked.id as string), 5);
+						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 5);
 						return true;
 					}
 				},
@@ -270,7 +270,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: [1],
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 						const picked = RandomUtils.crowniclesRandom.pick(uncommonWoods);
-						await Materials.giveMaterial(playerId, parseInt(picked.id as string), 3);
+						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 3);
 						return true;
 					}
 				},
@@ -280,7 +280,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: [1],
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 						const picked = RandomUtils.crowniclesRandom.pick(rareWoods);
-						await Materials.giveMaterial(playerId, parseInt(picked.id as string), 2);
+						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 2);
 						return true;
 					}
 				}
