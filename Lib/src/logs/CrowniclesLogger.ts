@@ -3,7 +3,7 @@ import {
 } from "winston";
 import "winston-daily-rotate-file";
 import { Constants } from "../constants/Constants";
-import LokiTransport from "winston-loki";
+import LokiTransport = require("winston-loki");
 
 /**
  * Truncate ancestors array to remove objects no longer in the current traversal path.
