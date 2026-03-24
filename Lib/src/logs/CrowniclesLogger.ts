@@ -3,7 +3,7 @@ import {
 } from "winston";
 import "winston-daily-rotate-file";
 import { Constants } from "../constants/Constants";
-import LokiTransport = require("winston-loki");
+import LokiTransport from "winston-loki";
 
 /**
  * Truncate ancestors array to remove objects no longer in the current traversal path.
@@ -169,28 +169,30 @@ export abstract class CrowniclesLogger {
 	}
 
 	public static error(message: string, metadata?: LogMetadata): void {
-		this.get().error(message, metadata);
+		this.get().log("error", message, metadata);
 	}
 
 	public static errorWithObj(message: string, e: unknown): void {
 		if (e instanceof Error) {
-			this.get().error(message, e);
+			this.get().log("error", message, e);
 		}
 		else if (e instanceof Response) {
-			void this.logResponseError(message, e);
+			this.logResponseError(message, e).catch(() => {
+				// Ignore errors during error logging
+			});
 		}
 		else {
-			this.get().error(message, new Error(this.stringifyUnknownError(e)));
+			this.get().log("error", message, new Error(this.stringifyUnknownError(e)));
 		}
 	}
 
 	private static async logResponseError(message: string, response: Response): Promise<void> {
 		try {
 			const body = await response.clone().text();
-			this.get().error(message, new Error(this.formatResponseError(response, body)));
+			this.get().log("error", message, new Error(this.formatResponseError(response, body)));
 		}
 		catch {
-			this.get().error(message, new Error(this.formatResponseError(response)));
+			this.get().log("error", message, new Error(this.formatResponseError(response)));
 		}
 	}
 

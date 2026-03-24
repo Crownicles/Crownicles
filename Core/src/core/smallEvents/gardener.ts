@@ -19,7 +19,9 @@ import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import {
 	Home, Homes
 } from "../database/game/models/Home";
-import { HomeGardenSlots } from "../database/game/models/HomeGardenSlot";
+import {
+	HomeGardenSlot, HomeGardenSlots
+} from "../database/game/models/HomeGardenSlot";
 import {
 	PetEntities, PetEntity
 } from "../database/game/models/PetEntity";
@@ -396,6 +398,20 @@ function getPaidSeedEndCallback(player: Player, seedId: PlantId, _conditionKey: 
 	};
 }
 
+function hasReadyToHarvestPlant(gardenSlots: HomeGardenSlot[], earthQuality: GardenEarthQuality): boolean {
+	return gardenSlots.some(slot => {
+		if (slot.isEmpty() || !slot.plantedAt) {
+			return false;
+		}
+		const plantType = PLANT_TYPES.find(p => p.id === slot.plantId);
+		if (!plantType) {
+			return false;
+		}
+		const effectiveGrowth = GardenConstants.getEffectiveGrowthTime(plantType.growthTimeSeconds, earthQuality);
+		return slot.isReady(effectiveGrowth);
+	});
+}
+
 async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	const home = await Homes.getOfPlayer(player.id);
 
@@ -419,21 +435,12 @@ async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	// Check if any plant is ready to harvest
 	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
 	const earthQuality = homeLevel.features.gardenEarthQuality;
-	for (const slot of gardenSlots) {
-		if (!slot.isEmpty() && slot.plantedAt) {
-			const plantType = PLANT_TYPES.find(p => p.id === slot.plantId);
-			if (plantType) {
-				const effectiveGrowth = GardenConstants.getEffectiveGrowthTime(plantType.growthTimeSeconds, earthQuality);
-				if (slot.isReady(effectiveGrowth)) {
-					return GARDENER_ADVICE.TIP_HARVEST_READY;
-				}
-			}
-		}
+	if (hasReadyToHarvestPlant(gardenSlots, earthQuality)) {
+		return GARDENER_ADVICE.TIP_HARVEST_READY;
 	}
 
 	// Check if garden has empty plots and player could plant
-	const emptyPlots = gardenSlots.filter(s => s.isEmpty());
-	if (emptyPlots.length > 0) {
+	if (gardenSlots.some(s => s.isEmpty())) {
 		return GARDENER_ADVICE.TIP_EMPTY_PLOTS;
 	}
 
