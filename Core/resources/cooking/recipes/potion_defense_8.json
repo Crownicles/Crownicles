@@ -1,0 +1,37 @@
+{
+  "level": 8,
+  "recipeType": "POTION_DEFENSE",
+  "plants": [
+    {
+      "plantId": 4,
+      "quantity": 3
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 79,
+      "quantity": 1
+    },
+    {
+      "materialId": 85,
+      "quantity": 1
+    },
+    {
+      "materialId": 86,
+      "quantity": 1
+    },
+    {
+      "materialId": 70,
+      "quantity": 1
+    },
+    {
+      "materialId": 81,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 4,
+  "potionRarity": 7,
+  "discoveredByDefault": false,
+  "discoverySource": "CAMPAIGN_MILESTONE"
+}

@@ -1,0 +1,25 @@
+{
+  "level": 2,
+  "recipeType": "PETFOOD_CANDY",
+  "plants": [
+    {
+      "plantId": 1,
+      "quantity": 1
+    },
+    {
+      "plantId": 2,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 58,
+      "quantity": 1
+    }
+  ],
+  "outputType": "petFood",
+  "petFoodType": "commonFood",
+  "petFoodQuantity": 3,
+  "petFoodLovePoints": 3,
+  "discoveredByDefault": true
+}

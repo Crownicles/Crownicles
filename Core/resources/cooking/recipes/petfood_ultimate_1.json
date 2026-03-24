@@ -1,0 +1,21 @@
+{
+  "level": 4,
+  "recipeType": "PETFOOD_ULTIMATE",
+  "plants": [
+    {
+      "plantId": 10,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 58,
+      "quantity": 1
+    }
+  ],
+  "outputType": "petFood",
+  "petFoodType": "ultimateFood",
+  "petFoodQuantity": 1,
+  "petFoodLovePoints": 3,
+  "discoveredByDefault": true
+}

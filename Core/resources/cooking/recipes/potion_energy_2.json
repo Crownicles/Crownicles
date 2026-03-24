@@ -1,0 +1,25 @@
+{
+  "level": 2,
+  "recipeType": "POTION_ENERGY",
+  "plants": [
+    {
+      "plantId": 2,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 43,
+      "quantity": 1
+    },
+    {
+      "materialId": 59,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 7,
+  "potionRarity": 1,
+  "discoveredByDefault": false,
+  "discoverySource": "WITCH"
+}

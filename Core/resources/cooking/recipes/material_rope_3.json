@@ -1,0 +1,33 @@
+{
+  "level": 8,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 2,
+      "quantity": 4
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 20,
+      "quantity": 1
+    },
+    {
+      "materialId": 37,
+      "quantity": 1
+    },
+    {
+      "materialId": 25,
+      "quantity": 1
+    },
+    {
+      "materialId": 49,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 75,
+  "outputMaterialQuantity": 3,
+  "discoveredByDefault": false,
+  "discoverySource": "CAMPAIGN_MILESTONE"
+}

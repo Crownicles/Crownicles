@@ -1,0 +1,24 @@
+{
+  "level": 3,
+  "recipeType": "POTION_HEALTH",
+  "plants": [
+    {
+      "plantId": 1,
+      "quantity": 2
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 52,
+      "quantity": 1
+    },
+    {
+      "materialId": 30,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 1,
+  "potionRarity": 2,
+  "discoveredByDefault": true
+}
