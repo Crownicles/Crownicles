@@ -1,0 +1,29 @@
+{
+  "level": 6,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 6,
+      "quantity": 2
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 32,
+      "quantity": 1
+    },
+    {
+      "materialId": 55,
+      "quantity": 1
+    },
+    {
+      "materialId": 17,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 36,
+  "outputMaterialQuantity": 2,
+  "discoveredByDefault": false,
+  "discoverySource": "PLAYER_LEVEL_MILESTONE"
+}

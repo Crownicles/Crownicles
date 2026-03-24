@@ -1,0 +1,33 @@
+{
+  "level": 8,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 10,
+      "quantity": 2
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 51,
+      "quantity": 1
+    },
+    {
+      "materialId": 64,
+      "quantity": 1
+    },
+    {
+      "materialId": 58,
+      "quantity": 1
+    },
+    {
+      "materialId": 88,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 84,
+  "outputMaterialQuantity": 3,
+  "discoveredByDefault": false,
+  "discoverySource": "FARMER"
+}

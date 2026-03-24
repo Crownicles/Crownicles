@@ -1,0 +1,33 @@
+{
+  "level": 6,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 8,
+      "quantity": 3
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 42,
+      "quantity": 1
+    },
+    {
+      "materialId": 63,
+      "quantity": 1
+    },
+    {
+      "materialId": 48,
+      "quantity": 1
+    },
+    {
+      "materialId": 78,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 83,
+  "outputMaterialQuantity": 3,
+  "discoveredByDefault": false,
+  "discoverySource": "COOKING_LEVEL"
+}

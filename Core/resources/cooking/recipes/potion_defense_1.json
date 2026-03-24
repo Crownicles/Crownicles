@@ -1,0 +1,21 @@
+{
+  "level": 1,
+  "recipeType": "POTION_DEFENSE",
+  "plants": [
+    {
+      "plantId": 4,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 70,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 4,
+  "potionRarity": 1,
+  "discoveredByDefault": false,
+  "discoverySource": "WITCH"
+}

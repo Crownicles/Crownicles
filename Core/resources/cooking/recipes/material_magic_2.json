@@ -1,0 +1,29 @@
+{
+  "level": 7,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 9,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 35,
+      "quantity": 1
+    },
+    {
+      "materialId": 77,
+      "quantity": 1
+    },
+    {
+      "materialId": 53,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 69,
+  "outputMaterialQuantity": 2,
+  "discoveredByDefault": false,
+  "discoverySource": "GASPARD_JO"
+}

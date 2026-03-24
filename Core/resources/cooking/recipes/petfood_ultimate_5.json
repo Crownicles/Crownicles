@@ -1,0 +1,46 @@
+{
+  "level": 8,
+  "recipeType": "PETFOOD_ULTIMATE",
+  "plants": [
+    {
+      "plantId": 10,
+      "quantity": 3
+    },
+    {
+      "plantId": 9,
+      "quantity": 3
+    },
+    {
+      "plantId": 3,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 34,
+      "quantity": 1
+    },
+    {
+      "materialId": 80,
+      "quantity": 1
+    },
+    {
+      "materialId": 62,
+      "quantity": 1
+    },
+    {
+      "materialId": 35,
+      "quantity": 1
+    },
+    {
+      "materialId": 67,
+      "quantity": 1
+    }
+  ],
+  "outputType": "petFood",
+  "petFoodType": "ultimateFood",
+  "petFoodQuantity": 8,
+  "petFoodLovePoints": 40,
+  "discoveredByDefault": false,
+  "discoverySource": "GASPARD_JO"
+}

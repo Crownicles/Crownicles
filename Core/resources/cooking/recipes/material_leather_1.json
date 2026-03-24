@@ -1,0 +1,25 @@
+{
+  "level": 3,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 8,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 42,
+      "quantity": 1
+    },
+    {
+      "materialId": 48,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 11,
+  "outputMaterialQuantity": 1,
+  "discoveredByDefault": false,
+  "discoverySource": "WITCH"
+}

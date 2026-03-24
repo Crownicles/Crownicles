@@ -1,0 +1,24 @@
+{
+  "level": 4,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 1,
+      "quantity": 2
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 52,
+      "quantity": 1
+    },
+    {
+      "materialId": 54,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 19,
+  "outputMaterialQuantity": 1,
+  "discoveredByDefault": true
+}

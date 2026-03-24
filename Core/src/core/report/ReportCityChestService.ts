@@ -10,9 +10,6 @@ import {
 	EMPTY_SLOTS_PER_CATEGORY, getSlotCountForCategory
 } from "../../../../Lib/src/types/HomeFeatures";
 import {
-	ItemLevel
-} from "../../../../Lib/src/constants/BlacksmithConstants";
-import {
 	CommandReportHomeChestActionReq,
 	CommandReportHomeChestActionRes,
 	ChestError
@@ -216,14 +213,11 @@ function resetItemFields(target: {
  */
 interface ItemPlacement {
 	itemId: number;
-	itemLevel: ItemLevel;
+	itemLevel: number;
 	itemEnchantmentId: string | null;
 }
 
-type SaveableItemSlot = {
-	itemId: number;
-	itemLevel: number;
-	itemEnchantmentId: string | null;
+type SaveableItemSlot = ItemPlacement & {
 	save(): Promise<unknown>;
 };
 
@@ -279,7 +273,7 @@ async function processChestWithdraw(
 
 	const error = await placeItemInInventory(player, home, itemCategory, {
 		itemId: chestSlot.itemId,
-		itemLevel: chestSlot.itemLevel as ItemLevel,
+		itemLevel: chestSlot.itemLevel,
 		itemEnchantmentId: chestSlot.itemEnchantmentId
 	});
 
@@ -321,7 +315,7 @@ async function processChestSwap({
 	// Swap: exchange items between inventory slot and chest slot
 	const temp: ItemPlacement = {
 		itemId: inventorySlot.itemId,
-		itemLevel: inventorySlot.itemLevel as ItemLevel,
+		itemLevel: inventorySlot.itemLevel,
 		itemEnchantmentId: inventorySlot.itemEnchantmentId
 	};
 	await assignItemToSlot(inventorySlot, chestSlot);
