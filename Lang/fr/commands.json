@@ -746,6 +746,10 @@
       "fieldName": "Familier :",
       "fieldValue": "$t(commands:pet.shortPetField) | {{rarity}}"
     },
+    "cooking": {
+      "fieldName": "Cuisine :",
+      "fieldValue": "{emote:city.homeUpgrades.cooking} Niveau {{level}} — {{grade}}"
+    },
     "playerClass": {
       "fieldName": "Classe :",
       "fieldValue": "$t(models:classFormat)"
@@ -869,6 +873,10 @@
         "herbalist": {
           "label": "L'Herboriste",
           "description": "Achetez des plantes déjà cultivées, sélection renouvelée chaque semaine."
+        },
+        "lumberjack": {
+          "label": "Le Bûcheron",
+          "description": "Achetez du bois de chauffage et des bois de qualité pour la cuisine."
         }
       },
       "inns": {
@@ -1008,6 +1016,9 @@
         "manageHomeDescriptionNew": "Allez voir le notaire pour acheter une maison.",
         "manageHomeDescriptionUpgrade": "Allez voir le notaire pour améliorer votre maison.",
         "manageHomeDescriptionMove": "Allez voir le notaire pour déménager dans une nouvelle maison.",
+        "manageHomeDescriptionLevelRequired": "Niveau {{level}} requis pour la prochaine amélioration.",
+        "manageHomeDescriptionMaxLevel": "Votre maison est déjà au niveau maximum.",
+        "manageHomeDescriptionUnavailable": "Le notaire n'a rien à vous proposer pour le moment.",
         "notaryTitle": "{{pseudo}}, vous rencontrez le notaire",
         "notaryIntroduction": "{emote:city.manageHome} Vous entrez dans le bureau d'un notaire, une personne chargée de gérer les transactions immobilières. Il vous accueille chaleureusement et examine votre dossier avant de vous proposer ses services.",
         "notaryNewHomeNoMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous n'avez pas assez d'argent pour acheter une maison. En effet, une nouvelle maison coûte **{{cost}} {emote:unitValues.money}** et il vous manque donc **{{missingMoney}} {emote:unitValues.money}** pour pouvoir en acquérir une. Il vous explique les différentes options disponibles et vous encourage à revenir lorsque vous aurez économisé suffisamment.",
@@ -1016,6 +1027,8 @@
         "notaryUpgradeHomeEnoughMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous avez suffisamment d'argent pour améliorer votre maison. Cette amélioration vous coûtera **{{cost}} {emote:unitValues.money}** et apportera les changements suivants :\n{{upgradeChanges}}\nIl vous laisse le temps de réfléchir à votre décision et attend votre réponse.\n\nSouhaitez-vous améliorer votre maison ?",
         "notaryMoveHomeNoMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous n'avez pas assez d'argent pour déménager dans une nouvelle maison dans cette ville. En effet, un déménagement coûte **{{cost}} {emote:unitValues.money}** et il vous manque donc **{{missingMoney}} {emote:unitValues.money}** pour pouvoir procéder au transfert. Il vous explique les différentes options disponibles et vous encourage à revenir lorsque vous aurez économisé suffisamment.",
         "notaryMoveHomeEnoughMoney": "Après avoir consciencieusement analysé votre situation, le notaire vous informe que vous avez suffisamment d'argent pour déménager dans une nouvelle maison dans cette ville pour **{{cost}} {emote:unitValues.money}**. Celle-ci sera de même niveau que votre ancienne maison. Il vous informe bien que vous ne pouvez avoir **qu'une seule maison à la fois** et que votre ancienne maison sera automatiquement vendue. Il vous laisse le temps de réfléchir à votre décision et attend votre réponse.\n\nSouhaitez-vous déménager dans une nouvelle maison ?",
+        "notaryLevelRequired": "Après avoir consciencieusement analysé votre situation, le notaire vous informe qu'il ne peut malheureusement rien faire pour vous pour le moment. En effet, pour procéder à la prochaine amélioration de votre maison, vous devez atteindre le **niveau {{level}}**. Il vous encourage à poursuivre vos aventures et à revenir le voir lorsque vous aurez gagné en expérience.",
+        "notaryMaxLevel": "Après avoir consciencieusement analysé votre situation, le notaire vous félicite chaleureusement. Votre maison est déjà au **niveau maximum** et ne peut plus être améliorée. Il vous assure que vous possédez la plus belle demeure possible et vous souhaite d'en profiter pleinement.",
         "buyHome": "Acheter une maison",
         "buyHomeTitle": "{{pseudo}}, achat de maison réussi !",
         "buyHomeDescription": "Félicitations ! Vous êtes désormais propriétaire de votre propre maison dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** pour l'acquérir. Profitez bien de votre nouveau chez-vous !",
@@ -1109,18 +1122,56 @@
           "compostTitle": "{emote:city.gardenStatus.compost} **Compostage :**",
           "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})"
         },
+        "cooking": {
+          "menuLabel": "Cuisine",
+          "menuDescription": "Fourneau — Niveau {{level}} ({{grade}})",
+          "available": "{emote:city.homeUpgrades.cooking} Vous avez accès à un fourneau pour préparer des potions et de la nourriture pour familiers.",
+          "title": "{{pseudo}}, cuisine",
+          "placeholder": "Gérer votre fourneau",
+          "description_one": "{emote:city.homeUpgrades.cooking} Votre fourneau dispose de **{{count}} emplacement** de cuisson.\nAllumez-le pour voir les recettes disponibles.",
+          "description_other": "{emote:city.homeUpgrades.cooking} Votre fourneau dispose de **{{count}} emplacements** de cuisson.\nAllumez-le pour voir les recettes disponibles.",
+          "igniteButton": "Allumer le fourneau",
+          "reviveButton": "Relancer le fourneau",
+          "noWood": "{emote:messages.refuse} Vous n'avez pas de bois pour allumer le fourneau. Récoltez du bois lors de vos expéditions !",
+          "overheat": "{emote:messages.refuse} Le fourneau est en surchauffe ! Il sera de nouveau disponible {{time}}.",
+          "woodConfirm": "{emote:messages.info} Vous n'avez plus de bois commun. Du **{{material}}** sera utilisé pour allumer le fourneau. Confirmer ?",
+          "confirmButton": "Confirmer",
+          "cancelButton": "Annuler",
+          "usesRemaining": "{emote:city.homeUpgrades.cooking} **Fourneau allumé** — Utilisations restantes : **{{count}}**",
+          "slotEmpty": "*Aucune recette*",
+          "slotSecretName": "{{stationLabel}} — **???** (Niv. {{level}})",
+          "slotRecipeName": "{{stationLabel}} — {{outputEmoji}} **{{recipe}}** (Niv. {{level}})",
+          "craftSuccess": "{emote:messages.validate} Cuisson réussie ! Vous avez préparé **{{recipe}}** !",
+          "craftFailure": "{emote:messages.refuse} La cuisson a échoué... La recette **{{recipe}}** n'a pas donné le résultat escompté.",
+          "craftUnavailable": "{emote:messages.info} Cette recette n'est plus disponible dans l'état actuel du fourneau. Les propositions ont été rafraîchies.",
+          "inventoryFull": "{emote:messages.refuse} Vous n'avez plus de place dans votre inventaire de potions. Libérez un emplacement avant de cuisiner cette recette.",
+          "guildRequired": "{emote:messages.refuse} Cette nourriture pour familiers nécessite une guilde pour être stockée. Rejoignez une guilde pour la préparer.",
+          "guildStorageFull": "{emote:messages.refuse} Le stockage de nourriture de votre guilde est plein. Libérez de la place avant de cuisiner cette recette.",
+          "xpGained": "{emote:unitValues.xp} +**{{xp}}** XP de cuisine",
+          "levelUp": "{emote:messages.validate} Vous êtes passé au **niveau {{level}}** de cuisine ! Nouveau grade : **{{grade}}**",
+          "materialSaved": "{emote:messages.validate} Grâce à votre expertise, un **{{material}}** a été économisé !",
+          "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** ont été ajoutées au stockage de votre guilde.",
+          "backToCooking": "Retour à la cuisine",
+          "recipeDiscovered": "{emote:city.homeUpgrades.cooking} Vous avez appris une nouvelle recette : **{{recipe}}** !",
+          "recipesDiscovered": "{emote:city.homeUpgrades.cooking} Vous avez appris de nouvelles recettes : {{recipes}} !",
+          "petFedFromSurplus": "{emote:messages.validate} Votre familier a mangé une ration de **{{food}}** directement sortie du fourneau !",
+          "surplusRecycled": "{emote:messages.info} L'excédent de nourriture a été recyclé en **{{quantity}} {{material}}**.",
+          "materialCrafted": "{emote:messages.validate} Vous avez obtenu **{{quantity}} {{material}}** !",
+          "woodConsumed": "{{wood}} consommé",
+          "woodSaved": "{emote:messages.validate} Votre expertise vous a permis d'économiser du bois ! ({{wood}})"
+        },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
           "chest": "Un coffre pour y ranger vos affaires {emote:city.homeUpgrades.chest}",
           "biggerChest": "Un coffre plus grand pour y ranger encore plus d'affaires {emote:city.homeUpgrades.chest}",
-          "craftPotionStation": "Un établi d'alchimie pour créer des potions {emote:city.homeUpgrades.potionStation}",
-          "betterCraftPotionStation": "Un meilleur établi d'alchimie pour créer des potions plus rares {emote:city.homeUpgrades.potionStation}",
           "upgradeItemStation": "Un établi d'équipement pour améliorer vos armes et armures {emote:city.homeUpgrades.upgradeEquipment}",
           "betterUpgradeItemStation": "Un meilleur établi d'équipement pour améliorer des armes et armures plus puissantes {emote:city.homeUpgrades.upgradeEquipment}",
           "garden": "Un jardin pour cultiver des plantes {emote:city.homeUpgrades.garden}",
           "biggerGarden": "Un plus grand jardin pour cultiver encore plus de plantes {emote:city.homeUpgrades.garden}",
           "betterGardenEarth": "Une terre améliorée pour faire pousser des plantes plus rapidement {emote:city.homeUpgrades.earthQuality}",
-          "inventoryBonus": "Des emplacements d'inventaire supplémentaires permanents {emote:city.homeUpgrades.chest}"
+          "inventoryBonus": "Des emplacements d'inventaire supplémentaires permanents {emote:city.homeUpgrades.chest}",
+          "cookingStation": "Un fourneau pour préparer des potions et de la nourriture pour familiers {emote:city.homeUpgrades.cooking}",
+          "betterCookingStation": "Un fourneau amélioré avec plus d'emplacements de cuisson {emote:city.homeUpgrades.cooking}"
         }
       }
     },
@@ -1197,6 +1248,7 @@
     "fullRegen": "{emote:shopItems.regen} Vous avez été complétement soigné.",
     "alreadyHaveBadge": "Vous possédez déjà ce badge.",
     "badgeBought": "Vous avez reçu un nouveau badge : {emote:badges.{{badgeName}}} !",
+    "genericPurchase": "Vous avez obtenu : {{item}}.",
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Il n'y a plus aucune potion du jour disponible à la vente... Revenez demain !",
     "noPlantSlotAvailable": "Vous n'avez aucun emplacement de plante libre ! Libérez-en un ou améliorez votre équipement au tanneur.",
@@ -1228,6 +1280,7 @@
       "food": "Nourriture pour familiers",
       "guildXp": "Expérience de guilde",
       "resources": "Ressources",
+      "woodBundles": "Bois de chauffage",
       "utilitaries": "Utilitaires",
       "prestige": "Prestige",
       "services": "Services"
@@ -1370,6 +1423,18 @@
       },
       "dailyPotion": {
         "info": "Vous obtiendrez une potion que vous déciderez de garder ou non. Si vous l'avez déjà, elle sera jetée sans remboursement !"
+      },
+      "woodCommonBundle": {
+        "name": "{emote:shopItems.woodCommonBundle} Lot de bois de chauffage",
+        "info": "Un lot de bois commun, parfait pour alimenter votre fourneau de cuisine."
+      },
+      "woodUncommonBundle": {
+        "name": "{emote:shopItems.woodUncommonBundle} Lot de bois travaillé",
+        "info": "Un lot de bois de qualité intermédiaire, utile comme ingrédient dans certaines recettes."
+      },
+      "woodRareBundle": {
+        "name": "{emote:shopItems.woodRareBundle} Lot de bois précieux",
+        "info": "Un lot de bois rare et précieux, nécessaire pour les recettes les plus exigeantes."
       },
       "token": {
         "name": "{emote:unitValues.token} Jeton",

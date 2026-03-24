@@ -95,10 +95,32 @@ export const HomeMenuIds = {
 	/** Back to garden from storage */
 	GARDEN_BACK: "GARDEN_BACK",
 
+	// --- Cooking feature ---
+	/** Cooking feature menu */
+	COOKING_MENU: "HOME_COOKING_MENU",
+
+	/** Ignite furnace button */
+	COOKING_IGNITE: "COOKING_IGNITE",
+
+	/** Revive furnace button */
+	COOKING_REVIVE: "COOKING_REVIVE",
+
+	/** Prefix for craft action on a slot */
+	COOKING_CRAFT_PREFIX: "COOKING_CRAFT_",
+
+	/** Confirm rare wood usage */
+	COOKING_WOOD_CONFIRM: "COOKING_WOOD_CONFIRM",
+
+	/** Cancel rare wood usage */
+	COOKING_WOOD_CANCEL: "COOKING_WOOD_CANCEL",
+
 	// --- Feature IDs ---
 	/** Garden feature identifier */
 	FEATURE_GARDEN: "garden",
 
 	/** Chest feature identifier */
-	FEATURE_CHEST: "chest"
+	FEATURE_CHEST: "chest",
+
+	/** Cooking feature identifier */
+	FEATURE_COOKING: "cooking"
 } as const;
