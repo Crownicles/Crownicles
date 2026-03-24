@@ -13,7 +13,7 @@ import {
 } from "../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import {
-	PlayerPlantSlots
+	PlayerPlantSlot, PlayerPlantSlots
 } from "../database/game/models/PlayerPlantSlot";
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import {
@@ -49,6 +49,7 @@ import {
 } from "../../../../Lib/src/constants/ItemConstants";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
+import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 
@@ -412,6 +413,14 @@ function hasReadyToHarvestPlant(gardenSlots: HomeGardenSlot[], earthQuality: Gar
 	});
 }
 
+function hasNoGardenFeature(homeLevel: HomeLevel | null): boolean {
+	return !homeLevel || homeLevel.features.gardenPlots === 0;
+}
+
+function hasUnplantedSeed(seedSlot: PlayerPlantSlot | null): boolean {
+	return seedSlot !== null && seedSlot.plantId !== 0;
+}
+
 async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	const home = await Homes.getOfPlayer(player.id);
 
@@ -420,7 +429,7 @@ async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	}
 
 	const homeLevel = home.getLevel();
-	if (!homeLevel || homeLevel.features.gardenPlots === 0) {
+	if (hasNoGardenFeature(homeLevel)) {
 		return GARDENER_ADVICE.TIP_UPGRADE_FOR_GARDEN;
 	}
 
@@ -428,13 +437,13 @@ async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	const invInfo = await InventoryInfos.getOfPlayer(player.id);
 	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
 	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
-	if (seedSlot && seedSlot.plantId !== 0) {
+	if (hasUnplantedSeed(seedSlot)) {
 		return GARDENER_ADVICE.TIP_PLANT_SEED;
 	}
 
 	// Check if any plant is ready to harvest
 	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
-	const earthQuality = homeLevel.features.gardenEarthQuality;
+	const earthQuality = homeLevel!.features.gardenEarthQuality;
 	if (hasReadyToHarvestPlant(gardenSlots, earthQuality)) {
 		return GARDENER_ADVICE.TIP_HARVEST_READY;
 	}
