@@ -173,10 +173,7 @@ async function processChestDeposit(
 	}
 
 	// Move item to chest
-	emptyChestSlot.itemId = slot.itemId;
-	emptyChestSlot.itemLevel = slot.itemLevel;
-	emptyChestSlot.itemEnchantmentId = slot.itemEnchantmentId;
-	await emptyChestSlot.save();
+	await assignItemToSlot(emptyChestSlot, slot);
 
 	// Clear inventory slot
 	await clearInventorySlot(slot);
@@ -223,7 +220,14 @@ interface ItemPlacement {
 	itemEnchantmentId: string | null;
 }
 
-async function assignItemToSlot(slot: InventorySlot, item: ItemPlacement): Promise<void> {
+type SaveableItemSlot = {
+	itemId: number;
+	itemLevel: number;
+	itemEnchantmentId: string | null;
+	save(): Promise<unknown>;
+};
+
+async function assignItemToSlot(slot: SaveableItemSlot, item: ItemPlacement): Promise<void> {
 	slot.itemId = item.itemId;
 	slot.itemLevel = item.itemLevel;
 	slot.itemEnchantmentId = item.itemEnchantmentId;
@@ -315,20 +319,13 @@ async function processChestSwap({
 	}
 
 	// Swap: exchange items between inventory slot and chest slot
-	const tempItemId = inventorySlot.itemId;
-	const tempItemLevel = inventorySlot.itemLevel;
-	const tempItemEnchantmentId = inventorySlot.itemEnchantmentId;
-
-	inventorySlot.itemId = chestSlot.itemId;
-	inventorySlot.itemLevel = chestSlot.itemLevel;
-	inventorySlot.itemEnchantmentId = chestSlot.itemEnchantmentId;
-
-	chestSlot.itemId = tempItemId;
-	chestSlot.itemLevel = tempItemLevel;
-	chestSlot.itemEnchantmentId = tempItemEnchantmentId;
-
-	await inventorySlot.save();
-	await chestSlot.save();
+	const temp: ItemPlacement = {
+		itemId: inventorySlot.itemId,
+		itemLevel: inventorySlot.itemLevel as ItemLevel,
+		itemEnchantmentId: inventorySlot.itemEnchantmentId
+	};
+	await assignItemToSlot(inventorySlot, chestSlot);
+	await assignItemToSlot(chestSlot, temp);
 
 	return null;
 }
