@@ -33,6 +33,11 @@ import {
 	PlantConstants, PlantType
 } from "../../../../Lib/src/constants/PlantConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { MaterialDataController } from "../../data/Material";
+import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
+import { MaterialType } from "../../../../Lib/src/types/MaterialType";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { Materials } from "../database/game/models/Material";
 
 /**
  * Parameters for handleCityShopReaction
@@ -69,6 +74,9 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 			break;
 		case "herbalist":
 			await openHerbalist(player, context, response);
+			break;
+		case "lumberjack":
+			await openLumberjack(player, context, response);
 			break;
 		default:
 			CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
@@ -229,5 +237,60 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 		additionalShopData: {
 			weeklyPlants: weeklyPlants.map((p: PlantType) => p.id)
 		}
+	});
+}
+
+/**
+ * Open the lumberjack shop for the player (wood bundles)
+ */
+export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const woodMaterials = MaterialDataController.instance.getMaterialsFromType(MaterialType.WOOD);
+
+	const commonWoods = woodMaterials.filter(m => m.rarity === MaterialRarity.COMMON);
+	const uncommonWoods = woodMaterials.filter(m => m.rarity === MaterialRarity.UNCOMMON);
+	const rareWoods = woodMaterials.filter(m => m.rarity === MaterialRarity.RARE);
+
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "woodBundles",
+			items: [
+				{
+					id: ShopItemType.WOOD_COMMON_BUNDLE,
+					price: 50,
+					amounts: [1],
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
+						const picked = RandomUtils.crowniclesRandom.pick(commonWoods);
+						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 5);
+						return true;
+					}
+				},
+				{
+					id: ShopItemType.WOOD_UNCOMMON_BUNDLE,
+					price: 100,
+					amounts: [1],
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
+						const picked = RandomUtils.crowniclesRandom.pick(uncommonWoods);
+						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 3);
+						return true;
+					}
+				},
+				{
+					id: ShopItemType.WOOD_RARE_BUNDLE,
+					price: 200,
+					amounts: [1],
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
+						const picked = RandomUtils.crowniclesRandom.pick(rareWoods);
+						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 2);
+						return true;
+					}
+				}
+			]
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
 	});
 }
