@@ -1269,7 +1269,7 @@
         "name": "{emote:shopItems.plantSlotExtension} Nouvel emplacement de plante",
         "info": "Vous pourrez transporter une plante supplémentaire dans votre inventaire."
       },
-      "weeklyPlantName": "{emote:plants.{{plantId}}} $t(commands:report.city.homes.garden.plants.{{plantId}})",
+      "weeklyPlantName": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
       "weeklyPlantTier1": {
         "name": "$t(commands:shop.shopItems.weeklyPlantName)",
         "info": "Une plante commune déjà cultivée, prête à être compostée ou stockée."
@@ -1312,29 +1312,29 @@
           }
         },
         "plantsTitle": "{emote:shopItems.plantSlotExtension} **Marché des plantes :**",
-        "plantHeader": "{emote:plants.{{plantId}}} $t(commands:report.city.homes.garden.plants.{{plantId}})",
-        "plantHeader_bold": "{emote:plants.{{plantId}}} **$t(commands:report.city.homes.garden.plants.{{plantId}})** :",
+        "plantHeader": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
+        "plantHeader_bold": "{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** :",
         "plants": {
           "tomorrow": {
-            "bigDrop": "• **Demain** : Des stocks massifs de $t(commands:report.city.homes.garden.plants.{{plantId}}) arriveront sur les étals, les prix vont s'effondrer.",
-            "drop": "• **Demain** : L'offre de $t(commands:report.city.homes.garden.plants.{{plantId}}) sera un peu supérieure à la demande, les prix devraient baisser.",
+            "bigDrop": "• **Demain** : Des stocks massifs de $t(models:plants.{{plantId}}) arriveront sur les étals, les prix vont s'effondrer.",
+            "drop": "• **Demain** : L'offre de $t(models:plants.{{plantId}}) sera un peu supérieure à la demande, les prix devraient baisser.",
             "stable": "• **Demain** : Rien de particulier à signaler pour cette plante, les cours resteront stables.",
-            "rise": "• **Demain** : Les réserves de $t(commands:report.city.homes.garden.plants.{{plantId}}) s'amenuisent chez les herboristes, les prix vont monter.",
-            "bigRise": "• **Demain** : Une pénurie de $t(commands:report.city.homes.garden.plants.{{plantId}}) se profile, les prix vont flamber !"
+            "rise": "• **Demain** : Les réserves de $t(models:plants.{{plantId}}) s'amenuisent chez les herboristes, les prix vont monter.",
+            "bigRise": "• **Demain** : Une pénurie de $t(models:plants.{{plantId}}) se profile, les prix vont flamber !"
           },
           "threeDays": {
-            "bigDrop": "• **Dans 3 jours** : Le marché sera inondé de $t(commands:report.city.homes.garden.plants.{{plantId}}), les prix chuteront fortement.",
-            "drop": "• **Dans 3 jours** : Une légère surproduction de $t(commands:report.city.homes.garden.plants.{{plantId}}) fera baisser les prix.",
+            "bigDrop": "• **Dans 3 jours** : Le marché sera inondé de $t(models:plants.{{plantId}}), les prix chuteront fortement.",
+            "drop": "• **Dans 3 jours** : Une légère surproduction de $t(models:plants.{{plantId}}) fera baisser les prix.",
             "stable": "• **Dans 3 jours** : Le marché de cette plante restera équilibré.",
-            "rise": "• **Dans 3 jours** : La demande de $t(commands:report.city.homes.garden.plants.{{plantId}}) augmentera sensiblement, les prix grimperont.",
-            "bigRise": "• **Dans 3 jours** : Les herboristes peineront à trouver de la $t(commands:report.city.homes.garden.plants.{{plantId}}), les prix exploseront !"
+            "rise": "• **Dans 3 jours** : La demande de $t(models:plants.{{plantId}}) augmentera sensiblement, les prix grimperont.",
+            "bigRise": "• **Dans 3 jours** : Les herboristes peineront à trouver de la $t(models:plants.{{plantId}}), les prix exploseront !"
           },
           "oneWeek": {
-            "bigDrop": "• **Dans une semaine** : Une surproduction massive fera chuter les prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}).",
-            "drop": "• **Dans une semaine** : Le marché de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera légèrement en surplus.",
+            "bigDrop": "• **Dans une semaine** : Une surproduction massive fera chuter les prix de la $t(models:plants.{{plantId}}).",
+            "drop": "• **Dans une semaine** : Le marché de la $t(models:plants.{{plantId}}) sera légèrement en surplus.",
             "stable": "• **Dans une semaine** : Le marché de cette plante devrait maintenir son équilibre actuel.",
-            "rise": "• **Dans une semaine** : Les réserves de $t(commands:report.city.homes.garden.plants.{{plantId}}) s'épuiseront, les prix augmenteront.",
-            "bigRise": "• **Dans une semaine** : Une sécheresse frappera les cultures de $t(commands:report.city.homes.garden.plants.{{plantId}}), les prix seront au plus haut !"
+            "rise": "• **Dans une semaine** : Les réserves de $t(models:plants.{{plantId}}) s'épuiseront, les prix augmenteront.",
+            "bigRise": "• **Dans une semaine** : Une sécheresse frappera les cultures de $t(models:plants.{{plantId}}), les prix seront au plus haut !"
           }
         },
         "outro": "*Le conseiller roule le parchemin et vous le tend avec un sourire entendu.*",
@@ -1346,25 +1346,25 @@
         "rotation": "{emote:inventory.stock} **Changement de stock** : L'herboriste renouvellera sa sélection **{{horizon}}**. Les nouvelles plantes disponibles seront : {{newPlants}}.",
         "newPlants": {
           "tomorrow": {
-            "bigDrop": "• **Demain** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera très en dessous de sa valeur habituelle, une excellente affaire !",
-            "drop": "• **Demain** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera légèrement en dessous du prix courant.",
-            "stable": "• **Demain** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera conforme à sa valeur habituelle.",
-            "rise": "• **Demain** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera un peu élevé par rapport à la normale.",
-            "bigRise": "• **Demain** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera bien au-dessus de sa valeur habituelle, mieux vaut attendre."
+            "bigDrop": "• **Demain** : Le prix de la $t(models:plants.{{plantId}}) sera très en dessous de sa valeur habituelle, une excellente affaire !",
+            "drop": "• **Demain** : Le prix de la $t(models:plants.{{plantId}}) sera légèrement en dessous du prix courant.",
+            "stable": "• **Demain** : Le prix de la $t(models:plants.{{plantId}}) sera conforme à sa valeur habituelle.",
+            "rise": "• **Demain** : Le prix de la $t(models:plants.{{plantId}}) sera un peu élevé par rapport à la normale.",
+            "bigRise": "• **Demain** : Le prix de la $t(models:plants.{{plantId}}) sera bien au-dessus de sa valeur habituelle, mieux vaut attendre."
           },
           "threeDays": {
-            "bigDrop": "• **Dans 3 jours** : La $t(commands:report.city.homes.garden.plants.{{plantId}}) sera proposée à un prix très avantageux.",
-            "drop": "• **Dans 3 jours** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera un peu en dessous de la moyenne.",
-            "stable": "• **Dans 3 jours** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) n'aura rien de surprenant.",
-            "rise": "• **Dans 3 jours** : La $t(commands:report.city.homes.garden.plants.{{plantId}}) sera un peu plus chère que d'ordinaire.",
-            "bigRise": "• **Dans 3 jours** : La $t(commands:report.city.homes.garden.plants.{{plantId}}) coûtera bien plus cher que d'habitude."
+            "bigDrop": "• **Dans 3 jours** : La $t(models:plants.{{plantId}}) sera proposée à un prix très avantageux.",
+            "drop": "• **Dans 3 jours** : Le prix de la $t(models:plants.{{plantId}}) sera un peu en dessous de la moyenne.",
+            "stable": "• **Dans 3 jours** : Le prix de la $t(models:plants.{{plantId}}) n'aura rien de surprenant.",
+            "rise": "• **Dans 3 jours** : La $t(models:plants.{{plantId}}) sera un peu plus chère que d'ordinaire.",
+            "bigRise": "• **Dans 3 jours** : La $t(models:plants.{{plantId}}) coûtera bien plus cher que d'habitude."
           },
           "oneWeek": {
-            "bigDrop": "• **Dans une semaine** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera exceptionnellement bas.",
-            "drop": "• **Dans une semaine** : La $t(commands:report.city.homes.garden.plants.{{plantId}}) sera proposée à un prix légèrement réduit.",
-            "stable": "• **Dans une semaine** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera dans la moyenne.",
-            "rise": "• **Dans une semaine** : Le prix de la $t(commands:report.city.homes.garden.plants.{{plantId}}) sera un peu au-dessus de la normale.",
-            "bigRise": "• **Dans une semaine** : La $t(commands:report.city.homes.garden.plants.{{plantId}}) sera vendue à un prix exorbitant !"
+            "bigDrop": "• **Dans une semaine** : Le prix de la $t(models:plants.{{plantId}}) sera exceptionnellement bas.",
+            "drop": "• **Dans une semaine** : La $t(models:plants.{{plantId}}) sera proposée à un prix légèrement réduit.",
+            "stable": "• **Dans une semaine** : Le prix de la $t(models:plants.{{plantId}}) sera dans la moyenne.",
+            "rise": "• **Dans une semaine** : Le prix de la $t(models:plants.{{plantId}}) sera un peu au-dessus de la normale.",
+            "bigRise": "• **Dans une semaine** : La $t(models:plants.{{plantId}}) sera vendue à un prix exorbitant !"
           }
         }
       },

@@ -8,7 +8,7 @@ import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvent
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
-	GARDENER_ADVICE, GARDENER_INTERACTIONS, PLANT_TYPES, PlantConstants, PlantId,
+	GARDENER_ADVICE, GARDENER_INTERACTIONS, GardenerInteractionName, PLANT_TYPES, PlantConstants, PlantId,
 	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
@@ -52,6 +52,15 @@ import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
+function makeGardenerPacket(interactionName: GardenerInteractionName, conditionKey: SeedConditionKey, plantId: PlantId | 0 = 0, materialId = 0, cost = 0): SmallEventGardenerPacket {
+	return {
+		interactionName,
+		plantId,
+		materialId,
+		cost,
+		conditionKey
+	};
+}
 
 let moonCache: {
 	illumination: number; fetchedAt: number;
@@ -356,16 +365,10 @@ async function giveSeedToPlayer(response: CrowniclesPacket[], player: Player, se
 
 	await PlayerPlantSlots.setSeed(player.id, seedId);
 
-	return {
-		interactionName: GARDENER_INTERACTIONS.SEED,
-		plantId: seedId,
-		materialId: 0,
-		cost,
-		conditionKey
-	};
+	return makeGardenerPacket(GARDENER_INTERACTIONS.SEED, conditionKey, seedId, 0, cost);
 }
 
-function getPaidSeedEndCallback(player: Player, seedId: PlantId, _conditionKey: SeedConditionKey): EndCallback {
+function getPaidSeedEndCallback(player: Player, seedId: PlantId): EndCallback {
 	return async (collector, response): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 
@@ -461,35 +464,23 @@ async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
 	return GARDENER_ADVICE.TIP_GENERIC;
 }
 
-async function handleFallback(response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
+async function handleFallback(_response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
 	const roll = RandomUtils.crowniclesRandom.real(0, 1);
 
 	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.ADVICE) {
-		return {
-			interactionName: GARDENER_INTERACTIONS.ADVICE,
-			plantId: targetSeedId,
-			materialId: 0,
-			cost: 0,
-			conditionKey
-		};
+		return makeGardenerPacket(GARDENER_INTERACTIONS.ADVICE, conditionKey, targetSeedId);
 	}
 
 	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.GENERIC_ADVICE) {
 		const genericKey = await getGenericAdviceKey(player);
-		return {
-			interactionName: GARDENER_INTERACTIONS.ADVICE,
-			plantId: 0,
-			materialId: 0,
-			cost: 0,
-			conditionKey: genericKey
-		};
+		return makeGardenerPacket(GARDENER_INTERACTIONS.ADVICE, genericKey);
 	}
 
 	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.PLANT) {
 		return await handlePlantGift(player);
 	}
 
-	return await handleMaterialGift(response, player);
+	return await handleMaterialGift(player);
 }
 
 async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket> {
@@ -498,46 +489,23 @@ async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket
 	if (emptySlot) {
 		const randomPlantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
 		await PlayerPlantSlots.setPlant(player.id, emptySlot.slot, randomPlantId);
-		return {
-			interactionName: GARDENER_INTERACTIONS.PLANT,
-			plantId: randomPlantId,
-			materialId: 0,
-			cost: 0,
-			conditionKey: SEED_CONDITION_FAILURE.NONE
-		};
+		return makeGardenerPacket(GARDENER_INTERACTIONS.PLANT, SEED_CONDITION_FAILURE.NONE, randomPlantId);
 	}
 
-	return {
-		interactionName: GARDENER_INTERACTIONS.ADVICE,
-		plantId: 0,
-		materialId: 0,
-		cost: 0,
-		conditionKey: SEED_CONDITION_FAILURE.NO_PLANT_SPACE
-	};
+	return makeGardenerPacket(GARDENER_INTERACTIONS.ADVICE, SEED_CONDITION_FAILURE.NO_PLANT_SPACE);
 }
 
-async function handleMaterialGift(_response: CrowniclesPacket[], player: Player): Promise<SmallEventGardenerPacket> {
+async function handleMaterialGift(player: Player): Promise<SmallEventGardenerPacket> {
 	const material = MaterialDataController.instance.getRandomMaterialFromRarity(MaterialRarity.COMMON)
 		?? MaterialDataController.instance.getRandomMaterialFromRarity(MaterialRarity.UNCOMMON);
 
 	if (material) {
-		await Materials.giveMaterial(player.id, parseInt(material.id, 10), 1);
-		return {
-			interactionName: GARDENER_INTERACTIONS.MATERIAL,
-			plantId: 0,
-			materialId: parseInt(material.id, 10),
-			cost: 0,
-			conditionKey: SEED_CONDITION_FAILURE.NONE
-		};
+		const materialId = parseInt(material.id, 10);
+		await Materials.giveMaterial(player.id, materialId, 1);
+		return makeGardenerPacket(GARDENER_INTERACTIONS.MATERIAL, SEED_CONDITION_FAILURE.NONE, 0, materialId);
 	}
 
-	return {
-		interactionName: GARDENER_INTERACTIONS.ADVICE,
-		plantId: 0,
-		materialId: 0,
-		cost: 0,
-		conditionKey: SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED
-	};
+	return makeGardenerPacket(GARDENER_INTERACTIONS.ADVICE, SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED);
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
@@ -580,7 +548,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				{
 					allowedPlayerKeycloakIds: [player.keycloakId]
 				},
-				getPaidSeedEndCallback(player, nextSeedId, conditions.conditionKey)
+				getPaidSeedEndCallback(player, nextSeedId)
 			)
 				.block(player.keycloakId, BlockingConstants.REASONS.GARDENER_SMALL_EVENT)
 				.build();
