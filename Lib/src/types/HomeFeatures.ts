@@ -33,8 +33,8 @@ export function getSlotCountForCategory(slots: ChestSlotsPerCategory, category: 
 export interface HomeFeatures {
 	chestSlots: ChestSlotsPerCategory;
 	bedHealthRegeneration: number;
-	craftPotionMaximumRarity: ItemRarity;
 	upgradeItemMaximumRarity: ItemRarity;
+	cookingSlots: number;
 
 	/**
 	 * Maximum item level that can be achieved through upgrading at this home.

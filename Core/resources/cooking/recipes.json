@@ -1,0 +1,2904 @@
+[
+  {
+    "id": "potion_health_1",
+    "level": 1,
+    "recipeType": "POTION_HEALTH",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 68,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 1,
+    "potionRarity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_health_2",
+    "level": 2,
+    "recipeType": "POTION_HEALTH",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 68,
+        "quantity": 1
+      },
+      {
+        "materialId": 52,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 1,
+    "potionRarity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_health_3",
+    "level": 3,
+    "recipeType": "POTION_HEALTH",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 52,
+        "quantity": 1
+      },
+      {
+        "materialId": 30,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 1,
+    "potionRarity": 2,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_health_4",
+    "level": 4,
+    "recipeType": "POTION_HEALTH",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 54,
+        "quantity": 1
+      },
+      {
+        "materialId": 30,
+        "quantity": 1
+      },
+      {
+        "materialId": 37,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 1,
+    "potionRarity": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_health_5",
+    "level": 5,
+    "recipeType": "POTION_HEALTH",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 54,
+        "quantity": 1
+      },
+      {
+        "materialId": 41,
+        "quantity": 1
+      },
+      {
+        "materialId": 52,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 1,
+    "potionRarity": 4,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_health_6",
+    "level": 6,
+    "recipeType": "POTION_HEALTH",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 52,
+        "quantity": 1
+      },
+      {
+        "materialId": 30,
+        "quantity": 1
+      },
+      {
+        "materialId": 41,
+        "quantity": 1
+      },
+      {
+        "materialId": 54,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 1,
+    "potionRarity": 5,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_health_7",
+    "level": 7,
+    "recipeType": "POTION_HEALTH",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 54,
+        "quantity": 1
+      },
+      {
+        "materialId": 41,
+        "quantity": 1
+      },
+      {
+        "materialId": 5,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 1,
+    "potionRarity": 6,
+    "discoveredByDefault": false,
+    "discoverySource": "ISLAND_BOSS"
+  },
+  {
+    "id": "potion_health_8",
+    "level": 8,
+    "recipeType": "POTION_HEALTH",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 54,
+        "quantity": 1
+      },
+      {
+        "materialId": 41,
+        "quantity": 1
+      },
+      {
+        "materialId": 5,
+        "quantity": 1
+      },
+      {
+        "materialId": 37,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 1,
+    "potionRarity": 7,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_energy_1",
+    "level": 1,
+    "recipeType": "POTION_ENERGY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 43,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 7,
+    "potionRarity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_energy_2",
+    "level": 2,
+    "recipeType": "POTION_ENERGY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 43,
+        "quantity": 1
+      },
+      {
+        "materialId": 59,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 7,
+    "potionRarity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_energy_3",
+    "level": 3,
+    "recipeType": "POTION_ENERGY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 77,
+        "quantity": 1
+      },
+      {
+        "materialId": 53,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 7,
+    "potionRarity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_energy_4",
+    "level": 4,
+    "recipeType": "POTION_ENERGY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 43,
+        "quantity": 1
+      },
+      {
+        "materialId": 59,
+        "quantity": 1
+      },
+      {
+        "materialId": 25,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 7,
+    "potionRarity": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_energy_5",
+    "level": 5,
+    "recipeType": "POTION_ENERGY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 77,
+        "quantity": 1
+      },
+      {
+        "materialId": 53,
+        "quantity": 1
+      },
+      {
+        "materialId": 59,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 7,
+    "potionRarity": 4,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_energy_6",
+    "level": 6,
+    "recipeType": "POTION_ENERGY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 77,
+        "quantity": 1
+      },
+      {
+        "materialId": 53,
+        "quantity": 1
+      },
+      {
+        "materialId": 43,
+        "quantity": 1
+      },
+      {
+        "materialId": 25,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 7,
+    "potionRarity": 5,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "potion_energy_7",
+    "level": 7,
+    "recipeType": "POTION_ENERGY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 34,
+        "quantity": 1
+      },
+      {
+        "materialId": 80,
+        "quantity": 1
+      },
+      {
+        "materialId": 67,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 7,
+    "potionRarity": 6,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "potion_energy_8",
+    "level": 8,
+    "recipeType": "POTION_ENERGY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 34,
+        "quantity": 1
+      },
+      {
+        "materialId": 80,
+        "quantity": 1
+      },
+      {
+        "materialId": 67,
+        "quantity": 1
+      },
+      {
+        "materialId": 43,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 7,
+    "potionRarity": 7,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "potion_time_speedup_1",
+    "level": 1,
+    "recipeType": "POTION_TIME_SPEEDUP",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 89,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 5,
+    "potionRarity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_time_speedup_2",
+    "level": 2,
+    "recipeType": "POTION_TIME_SPEEDUP",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 89,
+        "quantity": 1
+      },
+      {
+        "materialId": 53,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 5,
+    "potionRarity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_time_speedup_3",
+    "level": 3,
+    "recipeType": "POTION_TIME_SPEEDUP",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 73,
+        "quantity": 1
+      },
+      {
+        "materialId": 60,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 5,
+    "potionRarity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_time_speedup_4",
+    "level": 4,
+    "recipeType": "POTION_TIME_SPEEDUP",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 89,
+        "quantity": 1
+      },
+      {
+        "materialId": 73,
+        "quantity": 1
+      },
+      {
+        "materialId": 60,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 5,
+    "potionRarity": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_time_speedup_5",
+    "level": 5,
+    "recipeType": "POTION_TIME_SPEEDUP",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 73,
+        "quantity": 1
+      },
+      {
+        "materialId": 60,
+        "quantity": 1
+      },
+      {
+        "materialId": 53,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 5,
+    "potionRarity": 4,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_time_speedup_6",
+    "level": 6,
+    "recipeType": "POTION_TIME_SPEEDUP",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 35,
+        "quantity": 1
+      },
+      {
+        "materialId": 74,
+        "quantity": 1
+      },
+      {
+        "materialId": 61,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 5,
+    "potionRarity": 5,
+    "discoveredByDefault": false,
+    "discoverySource": "ISLAND_BOSS"
+  },
+  {
+    "id": "potion_time_speedup_7",
+    "level": 7,
+    "recipeType": "POTION_TIME_SPEEDUP",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 35,
+        "quantity": 1
+      },
+      {
+        "materialId": 74,
+        "quantity": 1
+      },
+      {
+        "materialId": 61,
+        "quantity": 1
+      },
+      {
+        "materialId": 30,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 5,
+    "potionRarity": 6,
+    "discoveredByDefault": false,
+    "discoverySource": "ISLAND_BOSS"
+  },
+  {
+    "id": "potion_time_speedup_8",
+    "level": 8,
+    "recipeType": "POTION_TIME_SPEEDUP",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 35,
+        "quantity": 1
+      },
+      {
+        "materialId": 74,
+        "quantity": 1
+      },
+      {
+        "materialId": 61,
+        "quantity": 1
+      },
+      {
+        "materialId": 89,
+        "quantity": 1
+      },
+      {
+        "materialId": 30,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 5,
+    "potionRarity": 7,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_defense_1",
+    "level": 1,
+    "recipeType": "POTION_DEFENSE",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 70,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 4,
+    "potionRarity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_defense_2",
+    "level": 2,
+    "recipeType": "POTION_DEFENSE",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 70,
+        "quantity": 1
+      },
+      {
+        "materialId": 41,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 4,
+    "potionRarity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_defense_3",
+    "level": 3,
+    "recipeType": "POTION_DEFENSE",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 24,
+        "quantity": 1
+      },
+      {
+        "materialId": 81,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 4,
+    "potionRarity": 2,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_defense_4",
+    "level": 4,
+    "recipeType": "POTION_DEFENSE",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 70,
+        "quantity": 1
+      },
+      {
+        "materialId": 24,
+        "quantity": 1
+      },
+      {
+        "materialId": 81,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 4,
+    "potionRarity": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_defense_5",
+    "level": 5,
+    "recipeType": "POTION_DEFENSE",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 24,
+        "quantity": 1
+      },
+      {
+        "materialId": 81,
+        "quantity": 1
+      },
+      {
+        "materialId": 41,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 4,
+    "potionRarity": 4,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "potion_defense_6",
+    "level": 6,
+    "recipeType": "POTION_DEFENSE",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 79,
+        "quantity": 1
+      },
+      {
+        "materialId": 85,
+        "quantity": 1
+      },
+      {
+        "materialId": 86,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 4,
+    "potionRarity": 5,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "potion_defense_7",
+    "level": 7,
+    "recipeType": "POTION_DEFENSE",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 79,
+        "quantity": 1
+      },
+      {
+        "materialId": 85,
+        "quantity": 1
+      },
+      {
+        "materialId": 86,
+        "quantity": 1
+      },
+      {
+        "materialId": 70,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 4,
+    "potionRarity": 6,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "potion_defense_8",
+    "level": 8,
+    "recipeType": "POTION_DEFENSE",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 79,
+        "quantity": 1
+      },
+      {
+        "materialId": 85,
+        "quantity": 1
+      },
+      {
+        "materialId": 86,
+        "quantity": 1
+      },
+      {
+        "materialId": 70,
+        "quantity": 1
+      },
+      {
+        "materialId": 81,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 4,
+    "potionRarity": 7,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "potion_attack_1",
+    "level": 1,
+    "recipeType": "POTION_ATTACK",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 55,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 3,
+    "potionRarity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_attack_2",
+    "level": 2,
+    "recipeType": "POTION_ATTACK",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 55,
+        "quantity": 1
+      },
+      {
+        "materialId": 66,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 3,
+    "potionRarity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_attack_3",
+    "level": 3,
+    "recipeType": "POTION_ATTACK",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 10,
+        "quantity": 1
+      },
+      {
+        "materialId": 66,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 3,
+    "potionRarity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_attack_4",
+    "level": 4,
+    "recipeType": "POTION_ATTACK",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 55,
+        "quantity": 1
+      },
+      {
+        "materialId": 10,
+        "quantity": 1
+      },
+      {
+        "materialId": 66,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 3,
+    "potionRarity": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_attack_5",
+    "level": 5,
+    "recipeType": "POTION_ATTACK",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 10,
+        "quantity": 1
+      },
+      {
+        "materialId": 66,
+        "quantity": 1
+      },
+      {
+        "materialId": 36,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 3,
+    "potionRarity": 4,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_attack_6",
+    "level": 6,
+    "recipeType": "POTION_ATTACK",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 32,
+        "quantity": 1
+      },
+      {
+        "materialId": 38,
+        "quantity": 1
+      },
+      {
+        "materialId": 66,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 3,
+    "potionRarity": 5,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_attack_7",
+    "level": 7,
+    "recipeType": "POTION_ATTACK",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 32,
+        "quantity": 1
+      },
+      {
+        "materialId": 38,
+        "quantity": 1
+      },
+      {
+        "materialId": 36,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 3,
+    "potionRarity": 6,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "potion_attack_8",
+    "level": 8,
+    "recipeType": "POTION_ATTACK",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 32,
+        "quantity": 1
+      },
+      {
+        "materialId": 38,
+        "quantity": 1
+      },
+      {
+        "materialId": 36,
+        "quantity": 1
+      },
+      {
+        "materialId": 10,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 3,
+    "potionRarity": 7,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "potion_speed_1",
+    "level": 1,
+    "recipeType": "POTION_SPEED",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 82,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 2,
+    "potionRarity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_speed_2",
+    "level": 2,
+    "recipeType": "POTION_SPEED",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 82,
+        "quantity": 1
+      },
+      {
+        "materialId": 10,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 2,
+    "potionRarity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "potion_speed_3",
+    "level": 3,
+    "recipeType": "POTION_SPEED",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 21,
+        "quantity": 1
+      },
+      {
+        "materialId": 44,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 2,
+    "potionRarity": 2,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_speed_4",
+    "level": 4,
+    "recipeType": "POTION_SPEED",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 82,
+        "quantity": 1
+      },
+      {
+        "materialId": 21,
+        "quantity": 1
+      },
+      {
+        "materialId": 44,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 2,
+    "potionRarity": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "potion_speed_5",
+    "level": 5,
+    "recipeType": "POTION_SPEED",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 21,
+        "quantity": 1
+      },
+      {
+        "materialId": 44,
+        "quantity": 1
+      },
+      {
+        "materialId": 17,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 2,
+    "potionRarity": 4,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "potion_speed_6",
+    "level": 6,
+    "recipeType": "POTION_SPEED",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 1,
+        "quantity": 1
+      },
+      {
+        "materialId": 23,
+        "quantity": 1
+      },
+      {
+        "materialId": 56,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 2,
+    "potionRarity": 5,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "potion_speed_7",
+    "level": 7,
+    "recipeType": "POTION_SPEED",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 1,
+        "quantity": 1
+      },
+      {
+        "materialId": 23,
+        "quantity": 1
+      },
+      {
+        "materialId": 56,
+        "quantity": 1
+      },
+      {
+        "materialId": 82,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 2,
+    "potionRarity": 6,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "potion_speed_8",
+    "level": 8,
+    "recipeType": "POTION_SPEED",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 1,
+        "quantity": 1
+      },
+      {
+        "materialId": 23,
+        "quantity": 1
+      },
+      {
+        "materialId": 56,
+        "quantity": 1
+      },
+      {
+        "materialId": 82,
+        "quantity": 1
+      },
+      {
+        "materialId": 44,
+        "quantity": 1
+      }
+    ],
+    "outputType": "potion",
+    "potionNature": 2,
+    "potionRarity": 7,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "petfood_salad_1",
+    "level": 1,
+    "recipeType": "PETFOOD_SALAD",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 37,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "herbivorousFood",
+    "petFoodQuantity": 1,
+    "petFoodLovePoints": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "petfood_salad_2",
+    "level": 2,
+    "recipeType": "PETFOOD_SALAD",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 59,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "herbivorousFood",
+    "petFoodQuantity": 2,
+    "petFoodLovePoints": 6,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "petfood_salad_3",
+    "level": 4,
+    "recipeType": "PETFOOD_SALAD",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 4
+      },
+      {
+        "plantId": 2,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 64,
+        "quantity": 1
+      },
+      {
+        "materialId": 8,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "herbivorousFood",
+    "petFoodQuantity": 4,
+    "petFoodLovePoints": 12,
+    "discoveredByDefault": false,
+    "discoverySource": "FARMER"
+  },
+  {
+    "id": "petfood_salad_4",
+    "level": 6,
+    "recipeType": "PETFOOD_SALAD",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 4
+      },
+      {
+        "plantId": 2,
+        "quantity": 2
+      },
+      {
+        "plantId": 3,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 51,
+        "quantity": 1
+      },
+      {
+        "materialId": 15,
+        "quantity": 1
+      },
+      {
+        "materialId": 19,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "herbivorousFood",
+    "petFoodQuantity": 7,
+    "petFoodLovePoints": 21,
+    "discoveredByDefault": false,
+    "discoverySource": "FARMER"
+  },
+  {
+    "id": "petfood_salad_5",
+    "level": 8,
+    "recipeType": "PETFOOD_SALAD",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 4
+      },
+      {
+        "plantId": 2,
+        "quantity": 3
+      },
+      {
+        "plantId": 3,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 40,
+        "quantity": 1
+      },
+      {
+        "materialId": 19,
+        "quantity": 1
+      },
+      {
+        "materialId": 87,
+        "quantity": 1
+      },
+      {
+        "materialId": 15,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "herbivorousFood",
+    "petFoodQuantity": 10,
+    "petFoodLovePoints": 30,
+    "discoveredByDefault": false,
+    "discoverySource": "FARMER"
+  },
+  {
+    "id": "petfood_candy_1",
+    "level": 1,
+    "recipeType": "PETFOOD_CANDY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 20,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "commonFood",
+    "petFoodQuantity": 1,
+    "petFoodLovePoints": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "petfood_candy_2",
+    "level": 2,
+    "recipeType": "PETFOOD_CANDY",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 1
+      },
+      {
+        "plantId": 2,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 58,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "commonFood",
+    "petFoodQuantity": 3,
+    "petFoodLovePoints": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "petfood_candy_3",
+    "level": 4,
+    "recipeType": "PETFOOD_CANDY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 2
+      },
+      {
+        "plantId": 7,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 25,
+        "quantity": 1
+      },
+      {
+        "materialId": 9,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "commonFood",
+    "petFoodQuantity": 7,
+    "petFoodLovePoints": 7,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "petfood_candy_4",
+    "level": 6,
+    "recipeType": "PETFOOD_CANDY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 3
+      },
+      {
+        "plantId": 7,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 14,
+        "quantity": 1
+      },
+      {
+        "materialId": 88,
+        "quantity": 1
+      },
+      {
+        "materialId": 18,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "commonFood",
+    "petFoodQuantity": 12,
+    "petFoodLovePoints": 12,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "petfood_candy_5",
+    "level": 8,
+    "recipeType": "PETFOOD_CANDY",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 3
+      },
+      {
+        "plantId": 7,
+        "quantity": 3
+      },
+      {
+        "plantId": 9,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 84,
+        "quantity": 1
+      },
+      {
+        "materialId": 31,
+        "quantity": 1
+      },
+      {
+        "materialId": 18,
+        "quantity": 1
+      },
+      {
+        "materialId": 88,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "commonFood",
+    "petFoodQuantity": 18,
+    "petFoodLovePoints": 18,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "petfood_meat_1",
+    "level": 2,
+    "recipeType": "PETFOOD_MEAT",
+    "plants": [
+      {
+        "plantId": 8,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 48,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "carnivorousFood",
+    "petFoodQuantity": 1,
+    "petFoodLovePoints": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "petfood_meat_2",
+    "level": 3,
+    "recipeType": "PETFOOD_MEAT",
+    "plants": [
+      {
+        "plantId": 8,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 42,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "carnivorousFood",
+    "petFoodQuantity": 2,
+    "petFoodLovePoints": 6,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "petfood_meat_3",
+    "level": 5,
+    "recipeType": "PETFOOD_MEAT",
+    "plants": [
+      {
+        "plantId": 8,
+        "quantity": 2
+      },
+      {
+        "plantId": 4,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 48,
+        "quantity": 1
+      },
+      {
+        "materialId": 26,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "carnivorousFood",
+    "petFoodQuantity": 4,
+    "petFoodLovePoints": 12,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "petfood_meat_4",
+    "level": 7,
+    "recipeType": "PETFOOD_MEAT",
+    "plants": [
+      {
+        "plantId": 8,
+        "quantity": 3
+      },
+      {
+        "plantId": 4,
+        "quantity": 1
+      },
+      {
+        "plantId": 5,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 63,
+        "quantity": 1
+      },
+      {
+        "materialId": 78,
+        "quantity": 1
+      },
+      {
+        "materialId": 11,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "carnivorousFood",
+    "petFoodQuantity": 7,
+    "petFoodLovePoints": 21,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "petfood_meat_5",
+    "level": 8,
+    "recipeType": "PETFOOD_MEAT",
+    "plants": [
+      {
+        "plantId": 8,
+        "quantity": 3
+      },
+      {
+        "plantId": 4,
+        "quantity": 2
+      },
+      {
+        "plantId": 5,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 11,
+        "quantity": 1
+      },
+      {
+        "materialId": 27,
+        "quantity": 1
+      },
+      {
+        "materialId": 83,
+        "quantity": 1
+      },
+      {
+        "materialId": 78,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "carnivorousFood",
+    "petFoodQuantity": 10,
+    "petFoodLovePoints": 30,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "petfood_ultimate_1",
+    "level": 4,
+    "recipeType": "PETFOOD_ULTIMATE",
+    "plants": [
+      {
+        "plantId": 10,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 58,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "ultimateFood",
+    "petFoodQuantity": 1,
+    "petFoodLovePoints": 3,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "petfood_ultimate_2",
+    "level": 5,
+    "recipeType": "PETFOOD_ULTIMATE",
+    "plants": [
+      {
+        "plantId": 10,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 35,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "ultimateFood",
+    "petFoodQuantity": 1,
+    "petFoodLovePoints": 5,
+    "discoveredByDefault": false,
+    "discoverySource": "GASPARD_JO"
+  },
+  {
+    "id": "petfood_ultimate_3",
+    "level": 7,
+    "recipeType": "PETFOOD_ULTIMATE",
+    "plants": [
+      {
+        "plantId": 10,
+        "quantity": 2
+      },
+      {
+        "plantId": 9,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 77,
+        "quantity": 1
+      },
+      {
+        "materialId": 33,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "ultimateFood",
+    "petFoodQuantity": 3,
+    "petFoodLovePoints": 15,
+    "discoveredByDefault": false,
+    "discoverySource": "GASPARD_JO"
+  },
+  {
+    "id": "petfood_ultimate_4",
+    "level": 8,
+    "recipeType": "PETFOOD_ULTIMATE",
+    "plants": [
+      {
+        "plantId": 10,
+        "quantity": 3
+      },
+      {
+        "plantId": 9,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 34,
+        "quantity": 1
+      },
+      {
+        "materialId": 80,
+        "quantity": 1
+      },
+      {
+        "materialId": 62,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "ultimateFood",
+    "petFoodQuantity": 5,
+    "petFoodLovePoints": 25,
+    "discoveredByDefault": false,
+    "discoverySource": "GASPARD_JO"
+  },
+  {
+    "id": "petfood_ultimate_5",
+    "level": 8,
+    "recipeType": "PETFOOD_ULTIMATE",
+    "plants": [
+      {
+        "plantId": 10,
+        "quantity": 3
+      },
+      {
+        "plantId": 9,
+        "quantity": 3
+      },
+      {
+        "plantId": 3,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 34,
+        "quantity": 1
+      },
+      {
+        "materialId": 80,
+        "quantity": 1
+      },
+      {
+        "materialId": 62,
+        "quantity": 1
+      },
+      {
+        "materialId": 35,
+        "quantity": 1
+      },
+      {
+        "materialId": 67,
+        "quantity": 1
+      }
+    ],
+    "outputType": "petFood",
+    "petFoodType": "ultimateFood",
+    "petFoodQuantity": 8,
+    "petFoodLovePoints": 40,
+    "discoveredByDefault": false,
+    "discoverySource": "GASPARD_JO"
+  },
+  {
+    "id": "material_metal_1",
+    "level": 3,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 14,
+        "quantity": 1
+      },
+      {
+        "materialId": 24,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 4,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "material_metal_2",
+    "level": 5,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 14,
+        "quantity": 1
+      },
+      {
+        "materialId": 70,
+        "quantity": 1
+      },
+      {
+        "materialId": 81,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 16,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "material_metal_3",
+    "level": 7,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 4,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 24,
+        "quantity": 1
+      },
+      {
+        "materialId": 70,
+        "quantity": 1
+      },
+      {
+        "materialId": 14,
+        "quantity": 1
+      },
+      {
+        "materialId": 90,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 86,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "GASPARD_JO"
+  },
+  {
+    "id": "material_alloy_1",
+    "level": 3,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 7,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 7,
+        "quantity": 1
+      },
+      {
+        "materialId": 43,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 22,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "material_alloy_2",
+    "level": 6,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 7,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 43,
+        "quantity": 1
+      },
+      {
+        "materialId": 79,
+        "quantity": 1
+      },
+      {
+        "materialId": 50,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 39,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "material_alloy_3",
+    "level": 7,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 7,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 7,
+        "quantity": 1
+      },
+      {
+        "materialId": 79,
+        "quantity": 1
+      },
+      {
+        "materialId": 43,
+        "quantity": 1
+      },
+      {
+        "materialId": 85,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 67,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "material_nature_1",
+    "level": 4,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 52,
+        "quantity": 1
+      },
+      {
+        "materialId": 54,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 19,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "material_nature_2",
+    "level": 6,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 54,
+        "quantity": 1
+      },
+      {
+        "materialId": 59,
+        "quantity": 1
+      },
+      {
+        "materialId": 15,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 40,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "FARMER"
+  },
+  {
+    "id": "material_nature_3",
+    "level": 8,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 1,
+        "quantity": 4
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 52,
+        "quantity": 1
+      },
+      {
+        "materialId": 59,
+        "quantity": 1
+      },
+      {
+        "materialId": 54,
+        "quantity": 1
+      },
+      {
+        "materialId": 41,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 87,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "material_spiritual_1",
+    "level": 4,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 68,
+        "quantity": 1
+      },
+      {
+        "materialId": 73,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 5,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "material_spiritual_2",
+    "level": 7,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 73,
+        "quantity": 1
+      },
+      {
+        "materialId": 89,
+        "quantity": 1
+      },
+      {
+        "materialId": 30,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 61,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "material_spiritual_3",
+    "level": 8,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 3,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 68,
+        "quantity": 1
+      },
+      {
+        "materialId": 89,
+        "quantity": 1
+      },
+      {
+        "materialId": 73,
+        "quantity": 1
+      },
+      {
+        "materialId": 74,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 72,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "material_magic_1",
+    "level": 5,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 9,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 34,
+        "quantity": 1
+      },
+      {
+        "materialId": 77,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 62,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "material_magic_2",
+    "level": 7,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 9,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 35,
+        "quantity": 1
+      },
+      {
+        "materialId": 77,
+        "quantity": 1
+      },
+      {
+        "materialId": 53,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 69,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "GASPARD_JO"
+  },
+  {
+    "id": "material_magic_3",
+    "level": 8,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 9,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 34,
+        "quantity": 1
+      },
+      {
+        "materialId": 35,
+        "quantity": 1
+      },
+      {
+        "materialId": 77,
+        "quantity": 1
+      },
+      {
+        "materialId": 80,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 76,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "material_leather_1",
+    "level": 3,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 8,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 42,
+        "quantity": 1
+      },
+      {
+        "materialId": 48,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 11,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "material_leather_2",
+    "level": 5,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 8,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 48,
+        "quantity": 1
+      },
+      {
+        "materialId": 63,
+        "quantity": 1
+      },
+      {
+        "materialId": 26,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 27,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "FARMER"
+  },
+  {
+    "id": "material_leather_3",
+    "level": 6,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 8,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 42,
+        "quantity": 1
+      },
+      {
+        "materialId": 63,
+        "quantity": 1
+      },
+      {
+        "materialId": 48,
+        "quantity": 1
+      },
+      {
+        "materialId": 78,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 83,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "material_rope_1",
+    "level": 4,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 20,
+        "quantity": 1
+      },
+      {
+        "materialId": 25,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 12,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "material_rope_2",
+    "level": 6,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 25,
+        "quantity": 1
+      },
+      {
+        "materialId": 37,
+        "quantity": 1
+      },
+      {
+        "materialId": 45,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 57,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "material_rope_3",
+    "level": 8,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 2,
+        "quantity": 4
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 20,
+        "quantity": 1
+      },
+      {
+        "materialId": 37,
+        "quantity": 1
+      },
+      {
+        "materialId": 25,
+        "quantity": 1
+      },
+      {
+        "materialId": 49,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 75,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "material_poison_1",
+    "level": 5,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 10,
+        "quantity": 1
+      },
+      {
+        "materialId": 55,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 3,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "WITCH"
+  },
+  {
+    "id": "material_poison_2",
+    "level": 6,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 32,
+        "quantity": 1
+      },
+      {
+        "materialId": 55,
+        "quantity": 1
+      },
+      {
+        "materialId": 17,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 36,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "material_poison_3",
+    "level": 7,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 6,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 10,
+        "quantity": 1
+      },
+      {
+        "materialId": 32,
+        "quantity": 1
+      },
+      {
+        "materialId": 55,
+        "quantity": 1
+      },
+      {
+        "materialId": 38,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 65,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "CAMPAIGN_MILESTONE"
+  },
+  {
+    "id": "material_explosive_1",
+    "level": 3,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 1,
+        "quantity": 1
+      },
+      {
+        "materialId": 21,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 6,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": true
+  },
+  {
+    "id": "material_explosive_2",
+    "level": 5,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 21,
+        "quantity": 1
+      },
+      {
+        "materialId": 82,
+        "quantity": 1
+      },
+      {
+        "materialId": 44,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 28,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "COOKING_LEVEL"
+  },
+  {
+    "id": "material_explosive_3",
+    "level": 8,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 5,
+        "quantity": 3
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 1,
+        "quantity": 1
+      },
+      {
+        "materialId": 82,
+        "quantity": 1
+      },
+      {
+        "materialId": 21,
+        "quantity": 1
+      },
+      {
+        "materialId": 46,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 56,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  },
+  {
+    "id": "material_wood_1",
+    "level": 4,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 10,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 51,
+        "quantity": 1
+      },
+      {
+        "materialId": 58,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 18,
+    "outputMaterialQuantity": 1,
+    "discoveredByDefault": false,
+    "discoverySource": "FARMER"
+  },
+  {
+    "id": "material_wood_2",
+    "level": 5,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 10,
+        "quantity": 1
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 58,
+        "quantity": 1
+      },
+      {
+        "materialId": 64,
+        "quantity": 1
+      },
+      {
+        "materialId": 9,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 31,
+    "outputMaterialQuantity": 2,
+    "discoveredByDefault": false,
+    "discoverySource": "GASPARD_JO"
+  },
+  {
+    "id": "material_wood_3",
+    "level": 8,
+    "recipeType": "MATERIAL_CRAFT",
+    "plants": [
+      {
+        "plantId": 10,
+        "quantity": 2
+      }
+    ],
+    "materials": [
+      {
+        "materialId": 51,
+        "quantity": 1
+      },
+      {
+        "materialId": 64,
+        "quantity": 1
+      },
+      {
+        "materialId": 58,
+        "quantity": 1
+      },
+      {
+        "materialId": 88,
+        "quantity": 1
+      }
+    ],
+    "outputType": "material",
+    "outputMaterialId": 84,
+    "outputMaterialQuantity": 3,
+    "discoveredByDefault": false,
+    "discoverySource": "FARMER"
+  }
+]

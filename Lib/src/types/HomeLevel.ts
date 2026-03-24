@@ -10,12 +10,12 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 1, armor: 1, object: 0, potion: 0
 		},
-		craftPotionMaximumRarity: ItemRarity.BASIC,
 		upgradeItemMaximumRarity: ItemRarity.BASIC,
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 0,
 		gardenEarthQuality: GardenEarthQuality.POOR,
-		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY
+		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY,
+		cookingSlots: 0
 	});
 
 	public static readonly LEVEL_2 = new HomeLevel(2, 15, 5000, {
@@ -23,12 +23,12 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
-		craftPotionMaximumRarity: ItemRarity.UNCOMMON,
 		upgradeItemMaximumRarity: ItemRarity.UNCOMMON,
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 0,
 		gardenEarthQuality: GardenEarthQuality.POOR,
-		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY
+		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY,
+		cookingSlots: 0
 	});
 
 	public static readonly LEVEL_3 = new HomeLevel(3, 30, 20000, {
@@ -36,14 +36,14 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
-		craftPotionMaximumRarity: ItemRarity.EXOTIC,
 		upgradeItemMaximumRarity: ItemRarity.EXOTIC,
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 3,
 		gardenEarthQuality: GardenEarthQuality.POOR,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 0, potion: 0
-		}
+		},
+		cookingSlots: 1
 	});
 
 	public static readonly LEVEL_4 = new HomeLevel(4, 45, 50000, {
@@ -51,14 +51,14 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
-		craftPotionMaximumRarity: ItemRarity.RARE,
 		upgradeItemMaximumRarity: ItemRarity.RARE,
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 4,
 		gardenEarthQuality: GardenEarthQuality.POOR,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
-		}
+		},
+		cookingSlots: 2
 	});
 
 	public static readonly LEVEL_5 = new HomeLevel(5, 60, 75000, {
@@ -66,14 +66,14 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 2, armor: 2, object: 1, potion: 1
 		},
-		craftPotionMaximumRarity: ItemRarity.SPECIAL,
 		upgradeItemMaximumRarity: ItemRarity.SPECIAL,
 		maxItemUpgradeLevel: 2,
 		gardenPlots: 6,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
-		}
+		},
+		cookingSlots: 3
 	});
 
 	public static readonly LEVEL_6 = new HomeLevel(6, 85, 150000, {
@@ -81,14 +81,14 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 2, armor: 2, object: 1, potion: 2
 		},
-		craftPotionMaximumRarity: ItemRarity.EPIC,
 		upgradeItemMaximumRarity: ItemRarity.EPIC,
 		maxItemUpgradeLevel: 2,
 		gardenPlots: 8,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
-		}
+		},
+		cookingSlots: 4
 	});
 
 	public static readonly LEVEL_7 = new HomeLevel(7, 100, 250000, {
@@ -96,14 +96,14 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 3, armor: 3, object: 1, potion: 3
 		},
-		craftPotionMaximumRarity: ItemRarity.LEGENDARY,
 		upgradeItemMaximumRarity: ItemRarity.LEGENDARY,
 		maxItemUpgradeLevel: 2,
 		gardenPlots: 10,
 		gardenEarthQuality: GardenEarthQuality.RICH,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
-		}
+		},
+		cookingSlots: 5
 	});
 
 	public static readonly LEVEL_8 = new HomeLevel(8, 120, 450000, {
@@ -111,14 +111,14 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 3, armor: 3, object: 2, potion: 4
 		},
-		craftPotionMaximumRarity: ItemRarity.MYTHICAL,
 		upgradeItemMaximumRarity: ItemRarity.MYTHICAL,
 		maxItemUpgradeLevel: 2,
 		gardenPlots: 10,
 		gardenEarthQuality: GardenEarthQuality.RICH,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
-		}
+		},
+		cookingSlots: 5
 	});
 
 	private static readonly LEVELS: HomeLevel[] = [
@@ -158,6 +158,18 @@ export class HomeLevel {
 
 	public static getInitialLevel(): HomeLevel {
 		return HomeLevel.LEVEL_1;
+	}
+
+	/**
+	 * Get info about the next upgrade without filtering by player level.
+	 * Returns null if this is the max level, otherwise returns the next HomeLevel.
+	 */
+	public static getNextLevelInfo(currentLevel: HomeLevel): HomeLevel | null {
+		const nextLevelIndex = HomeLevel.LEVELS.indexOf(currentLevel) + 1;
+		if (nextLevelIndex >= HomeLevel.LEVELS.length) {
+			return null;
+		}
+		return HomeLevel.LEVELS[nextLevelIndex];
 	}
 
 

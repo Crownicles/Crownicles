@@ -81,5 +81,7 @@ export class CommandProfilePacketRes extends CrowniclesPacket {
 		money: number;
 		tokens?: number;
 		tokensMax?: number;
+		cookingLevel?: number;
+		cookingGrade?: string;
 	};
 }

@@ -270,6 +270,7 @@ export const CrowniclesIcons: {
 			upgradeEquipment: string;
 			garden: string;
 			earthQuality: string;
+			cooking: string;
 		};
 		gardenStatus: {
 			empty: string;
@@ -299,6 +300,13 @@ export const CrowniclesIcons: {
 		magic: string;
 		other: string;
 	};
+	cookingGrades: {
+		[gradeName: string]: string;
+	};
+	cookingStations: {
+		[stationIndex: number]: string;
+	};
+	defaultMaterial: string;
 	materials: {
 		[materialId: string]: string;
 	};
@@ -2255,7 +2263,10 @@ export const CrowniclesIcons: {
 		lovePointsValue: "🧑‍⚕️",
 		treasure: "👑",
 		plantSlotExtension: "🌿",
-		marketAnalysis: "📊"
+		marketAnalysis: "📊",
+		woodCommonBundle: "🪵",
+		woodUncommonBundle: "🪓",
+		woodRareBundle: "🌲"
 	},
 	badges: {
 		[Badge.BEST_V1_PLAYER]: "🏆",
@@ -2601,7 +2612,8 @@ export const CrowniclesIcons: {
 			generalShop: "🛒",
 			stockExchange: "💎",
 			tanner: "🧳",
-			herbalist: "🌿"
+			herbalist: "🌿",
+			lumberjack: "🪵"
 		},
 		home: {
 			1: "🏕️",
@@ -2626,7 +2638,8 @@ export const CrowniclesIcons: {
 			potionStation: "🧪",
 			upgradeEquipment: "🛠️",
 			garden: "🌱",
-			earthQuality: "↗️"
+			earthQuality: "↗️",
+			cooking: "🔥"
 		},
 		gardenStatus: {
 			empty: "🕳️",
@@ -2684,6 +2697,26 @@ export const CrowniclesIcons: {
 		magic: "📔",
 		other: "📒"
 	},
+	cookingGrades: {
+		aideCuisine: "🥄",
+		marmiton: "🍳",
+		cuisinier: "🔪",
+		rotisseur: "🍖",
+		saucier: "🍲",
+		maitreOffice: "📋",
+		chefDeTable: "🍽️",
+		chefDesFourneaux: "🔥",
+		maitreDesCuisines: "👨‍🍳",
+		grandCuisinierRoyal: "👑"
+	},
+	cookingStations: {
+		0: "🏠",
+		1: "🫕",
+		2: "⚒️",
+		3: "🧪",
+		4: "🔥"
+	},
+	defaultMaterial: "🧱",
 	materials: {
 		2: "🌿",
 		77: "✨",

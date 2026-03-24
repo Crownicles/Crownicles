@@ -65,6 +65,11 @@ export class CommandShopNotEnoughCurrency extends CrowniclesPacket {
 	currency!: ShopCurrency;
 }
 
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopGenericPurchase extends CrowniclesPacket {
+	shopItemId!: ShopItemType;
+}
+
 export class ReactionCollectorShopData extends ReactionCollectorData {
 	availableCurrency!: number;
 

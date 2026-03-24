@@ -72,6 +72,8 @@ import {
 import { BlessingManager } from "../../../blessings/BlessingManager";
 import { Homes } from "./Home";
 import { getSlotCountForCategory } from "../../../../../../Lib/src/types/HomeFeatures";
+import { RecipeDiscoveryService } from "../../../cooking/RecipeDiscoveryService";
+import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/CookingConstants";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -139,6 +141,18 @@ export class Player extends Model {
 	declare banned: boolean;
 
 	declare lastMealAt: Date;
+
+	declare cookingLevel: number;
+
+	declare cookingExperience: number;
+
+	declare furnaceUsesToday: number;
+
+	declare furnaceLastUseDate: Date | null;
+
+	declare furnaceOverheatUntil: Date | null;
+
+	declare furnacePosition: number;
 
 	declare updatedAt: Date;
 
@@ -458,6 +472,8 @@ export class Player extends Model {
 			set: true
 		}));
 
+		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
+
 		await this.addLevelUpPacket(response, newLevel, playerActiveObjects);
 
 		await this.levelUpIfNeeded(response, playerActiveObjects);
@@ -485,6 +501,8 @@ export class Player extends Model {
 			count: newLevel,
 			set: true
 		}));
+
+		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
 
 		await this.addLevelUpPacketSimple(response, newLevel);
 
@@ -1878,6 +1896,32 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.DATE,
 			allowNull: true,
 			defaultValue: null
+		},
+		cookingLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		cookingExperience: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		furnaceUsesToday: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		furnaceLastUseDate: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
+		},
+		furnaceOverheatUntil: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
+		},
+		furnacePosition: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
 		},
 		updatedAt: {
 			type: DataTypes.DATE,
