@@ -8,7 +8,7 @@ import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvent
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
-	GARDENER_ADVICE, GARDENER_INTERACTIONS, GardenerInteractionName, PLANT_TYPES, PlantConstants, PlantId,
+	GARDENER_ADVICE, GARDENER_INTERACTIONS, PLANT_TYPES, PlantConstants, PlantId,
 	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
@@ -52,13 +52,13 @@ import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
-function makeGardenerPacket(interactionName: GardenerInteractionName, conditionKey: SeedConditionKey, plantId: PlantId | 0 = 0, materialId = 0, cost = 0): SmallEventGardenerPacket {
+function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<SmallEventGardenerPacket, "interactionName" | "conditionKey">): SmallEventGardenerPacket {
 	return {
-		interactionName,
-		plantId,
-		materialId,
-		cost,
-		conditionKey
+		interactionName: packet.interactionName,
+		plantId: packet.plantId ?? 0,
+		materialId: packet.materialId ?? 0,
+		cost: packet.cost ?? 0,
+		conditionKey: packet.conditionKey
 	};
 }
 
@@ -78,9 +78,24 @@ async function getMoonIllumination(): Promise<number> {
 	}
 
 	try {
-		const today = new Date().toISOString()
-			.split("T")[0];
-		const url = `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=+01:00`;
+		const now = new Date();
+		const year = now.getFullYear();
+		const month = String(now.getMonth() + 1)
+			.padStart(2, "0");
+		const day = String(now.getDate())
+			.padStart(2, "0");
+		const today = `${year}-${month}-${day}`;
+
+		const timezoneOffsetMinutes = -now.getTimezoneOffset();
+		const offsetSign = timezoneOffsetMinutes >= 0 ? "+" : "-";
+		const absMinutes = Math.abs(timezoneOffsetMinutes);
+		const offsetHours = String(Math.floor(absMinutes / 60))
+			.padStart(2, "0");
+		const offsetMins = String(absMinutes % 60)
+			.padStart(2, "0");
+		const offset = `${offsetSign}${offsetHours}:${offsetMins}`;
+
+		const url = `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=${offset}`;
 		const response = await fetch(url, {
 			headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
 		});
@@ -365,7 +380,9 @@ async function giveSeedToPlayer(response: CrowniclesPacket[], player: Player, se
 
 	await PlayerPlantSlots.setSeed(player.id, seedId);
 
-	return makeGardenerPacket(GARDENER_INTERACTIONS.SEED, conditionKey, seedId, 0, cost);
+	return makeGardenerPacket({
+		interactionName: GARDENER_INTERACTIONS.SEED, conditionKey, plantId: seedId, cost
+	});
 }
 
 function getPaidSeedEndCallback(player: Player, seedId: PlantId): EndCallback {
@@ -468,12 +485,16 @@ async function handleFallback(_response: CrowniclesPacket[], player: Player, con
 	const roll = RandomUtils.crowniclesRandom.real(0, 1);
 
 	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.ADVICE) {
-		return makeGardenerPacket(GARDENER_INTERACTIONS.ADVICE, conditionKey, targetSeedId);
+		return makeGardenerPacket({
+			interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey, plantId: targetSeedId
+		});
 	}
 
 	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.GENERIC_ADVICE) {
 		const genericKey = await getGenericAdviceKey(player);
-		return makeGardenerPacket(GARDENER_INTERACTIONS.ADVICE, genericKey);
+		return makeGardenerPacket({
+			interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: genericKey
+		});
 	}
 
 	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.PLANT) {
@@ -489,10 +510,14 @@ async function handlePlantGift(player: Player): Promise<SmallEventGardenerPacket
 	if (emptySlot) {
 		const randomPlantId = PlantConstants.lootRandomPlant(RandomUtils.crowniclesRandom);
 		await PlayerPlantSlots.setPlant(player.id, emptySlot.slot, randomPlantId);
-		return makeGardenerPacket(GARDENER_INTERACTIONS.PLANT, SEED_CONDITION_FAILURE.NONE, randomPlantId);
+		return makeGardenerPacket({
+			interactionName: GARDENER_INTERACTIONS.PLANT, conditionKey: SEED_CONDITION_FAILURE.NONE, plantId: randomPlantId
+		});
 	}
 
-	return makeGardenerPacket(GARDENER_INTERACTIONS.ADVICE, SEED_CONDITION_FAILURE.NO_PLANT_SPACE);
+	return makeGardenerPacket({
+		interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.NO_PLANT_SPACE
+	});
 }
 
 async function handleMaterialGift(player: Player): Promise<SmallEventGardenerPacket> {
@@ -502,10 +527,14 @@ async function handleMaterialGift(player: Player): Promise<SmallEventGardenerPac
 	if (material) {
 		const materialId = parseInt(material.id, 10);
 		await Materials.giveMaterial(player.id, materialId, 1);
-		return makeGardenerPacket(GARDENER_INTERACTIONS.MATERIAL, SEED_CONDITION_FAILURE.NONE, 0, materialId);
+		return makeGardenerPacket({
+			interactionName: GARDENER_INTERACTIONS.MATERIAL, conditionKey: SEED_CONDITION_FAILURE.NONE, materialId
+		});
 	}
 
-	return makeGardenerPacket(GARDENER_INTERACTIONS.ADVICE, SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED);
+	return makeGardenerPacket({
+		interactionName: GARDENER_INTERACTIONS.ADVICE, conditionKey: SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED
+	});
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
