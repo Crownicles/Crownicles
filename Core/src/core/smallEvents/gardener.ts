@@ -8,8 +8,8 @@ import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvent
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
-	PlantConstants, PlantId,
-	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE, GARDENER_INTERACTIONS
+	GARDENER_ADVICE, GARDENER_INTERACTIONS, PLANT_TYPES, PlantConstants, PlantId,
+	SeedConditionKey, SEED_CONDITION_SUCCESS, SEED_CONDITION_FAILURE
 } from "../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import {
@@ -45,23 +45,58 @@ import { BlockingUtils } from "../utils/BlockingUtils";
 import {
 	ItemConstants, ItemRarity
 } from "../../../../Lib/src/constants/ItemConstants";
+import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
+import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
-const FALLBACK_PROBABILITIES = {
-	ADVICE: 0.4,
-	PLANT: 0.8
-};
 
-const LUNAR_CYCLE_DAYS = 29.53058770576;
-const REFERENCE_NEW_MOON = new Date(2000, 0, 6, 18, 14, 0).getTime();
-const NIGHT_THRESHOLDS = {
-	EVENING: 21,
-	MORNING: 6
-};
+let moonCache: {
+	illumination: number; fetchedAt: number;
+} | null = null;
 
-function getMoonIllumination(): number {
-	const daysSinceNewMoon = (Date.now() - REFERENCE_NEW_MOON) / TimeConstants.MS_TIME.DAY;
-	const phase = (daysSinceNewMoon % LUNAR_CYCLE_DAYS) / LUNAR_CYCLE_DAYS;
+function getFallbackMoonIllumination(): number {
+	const daysSinceNewMoon = (Date.now() - PlantConstants.LUNAR_FALLBACK.REFERENCE_NEW_MOON) / TimeConstants.MS_TIME.DAY;
+	const phase = (daysSinceNewMoon % PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS) / PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS;
 	return (1 - Math.cos(2 * Math.PI * phase)) / 2;
+}
+
+async function getMoonIllumination(): Promise<number> {
+	if (moonCache && Date.now() - moonCache.fetchedAt < PlantConstants.MOON_API.CACHE_DURATION) {
+		return moonCache.illumination;
+	}
+
+	try {
+		const today = new Date().toISOString()
+			.split("T")[0];
+		const url = `${PlantConstants.MOON_API.BASE_URL}?lat=${PlantConstants.MOON_API.LAT}&lon=${PlantConstants.MOON_API.LON}&date=${today}&offset=+01:00`;
+		const response = await fetch(url, {
+			headers: { "User-Agent": PlantConstants.MOON_API.USER_AGENT }
+		});
+
+		if (!response.ok) {
+			CrowniclesLogger.errorWithObj("Moon API returned non-OK status", response);
+			return getFallbackMoonIllumination();
+		}
+
+		const data = await response.json() as { properties?: { moonphase?: number } };
+		const moonphase = data.properties?.moonphase;
+
+		if (typeof moonphase !== "number") {
+			CrowniclesLogger.error("Moon API returned unexpected data format");
+			return getFallbackMoonIllumination();
+		}
+
+		const illumination = moonphase / 100;
+		moonCache = {
+			illumination,
+			fetchedAt: Date.now()
+		};
+		return illumination;
+	}
+	catch (e) {
+		CrowniclesLogger.errorWithObj("Failed to fetch moon phase from API", e);
+		return getFallbackMoonIllumination();
+	}
 }
 
 function getGameHour(): number {
@@ -70,7 +105,7 @@ function getGameHour(): number {
 
 function isNight(): boolean {
 	const hour = getGameHour();
-	return hour >= NIGHT_THRESHOLDS.EVENING || hour < NIGHT_THRESHOLDS.MORNING;
+	return hour >= PlantConstants.NIGHT_THRESHOLDS.EVENING || hour < PlantConstants.NIGHT_THRESHOLDS.MORNING;
 }
 
 function isOnGardenerMapLink(mapLinkId: number): boolean {
@@ -99,7 +134,7 @@ async function getNextSeedId(player: Player, home: Home | null): Promise<PlantId
 
 	const highestPlanted = await getHighestPlantedSeedId(home!.id);
 	const nextSeed = highestPlanted + 1;
-	return nextSeed > 10 ? null : nextSeed as PlantId;
+	return nextSeed > PlantConstants.MAX_PLANT_ID ? null : nextSeed as PlantId;
 }
 
 type SeedConditionResult = {
@@ -130,9 +165,9 @@ function getDefaultSeedCondition(cost: number): SeedConditionResult {
 	};
 }
 
-function getNightSeedCondition(seedId: PlantId): SeedConditionResult {
+async function getNightSeedCondition(seedId: PlantId): Promise<SeedConditionResult> {
 	if (seedId === PlantId.LUNAR_MOSS) {
-		return !isNight() || getMoonIllumination() <= 0.5
+		return !isNight() || await getMoonIllumination() <= PlantConstants.MOON_ILLUMINATION_THRESHOLD
 			? {
 				canObtain: false,
 				conditionKey: SEED_CONDITION_FAILURE.NEED_MOONLIGHT
@@ -158,7 +193,7 @@ function getSpecialSeedChecker(seedId: PlantId): SeedConditionChecker | null {
 	switch (seedId) {
 		case PlantId.LUNAR_MOSS:
 		case PlantId.NIGHT_MUSHROOM:
-			return (): Promise<SeedConditionResult> => Promise.resolve(getNightSeedCondition(seedId));
+			return async (): Promise<SeedConditionResult> => await getNightSeedCondition(seedId);
 		case PlantId.VENOMOUS_LEAF:
 			return async (player: Player): Promise<SeedConditionResult> => await checkHerbivorePetCondition(player, false);
 		case PlantId.FIRE_BULB:
@@ -361,10 +396,59 @@ function getPaidSeedEndCallback(player: Player, seedId: PlantId, _conditionKey: 
 	};
 }
 
+async function getGenericAdviceKey(player: Player): Promise<SeedConditionKey> {
+	const home = await Homes.getOfPlayer(player.id);
+
+	if (!home) {
+		return GARDENER_ADVICE.TIP_BUY_HOME;
+	}
+
+	const homeLevel = home.getLevel();
+	if (!homeLevel || homeLevel.features.gardenPlots === 0) {
+		return GARDENER_ADVICE.TIP_UPGRADE_FOR_GARDEN;
+	}
+
+	// Check if player has an unplanted seed
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	await PlayerPlantSlots.initializeSlots(player.id, invInfo.plantSlots);
+	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
+	if (seedSlot && seedSlot.plantId !== 0) {
+		return GARDENER_ADVICE.TIP_PLANT_SEED;
+	}
+
+	// Check if any plant is ready to harvest
+	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
+	const earthQuality = homeLevel.features.gardenEarthQuality;
+	for (const slot of gardenSlots) {
+		if (!slot.isEmpty() && slot.plantedAt) {
+			const plantType = PLANT_TYPES.find(p => p.id === slot.plantId);
+			if (plantType) {
+				const effectiveGrowth = GardenConstants.getEffectiveGrowthTime(plantType.growthTimeSeconds, earthQuality);
+				if (slot.isReady(effectiveGrowth)) {
+					return GARDENER_ADVICE.TIP_HARVEST_READY;
+				}
+			}
+		}
+	}
+
+	// Check if garden has empty plots and player could plant
+	const emptyPlots = gardenSlots.filter(s => s.isEmpty());
+	if (emptyPlots.length > 0) {
+		return GARDENER_ADVICE.TIP_EMPTY_PLOTS;
+	}
+
+	// Check if soil quality is poor
+	if (earthQuality === GardenEarthQuality.POOR) {
+		return GARDENER_ADVICE.TIP_UPGRADE_SOIL;
+	}
+
+	return GARDENER_ADVICE.TIP_GENERIC;
+}
+
 async function handleFallback(response: CrowniclesPacket[], player: Player, conditionKey: SeedConditionKey, targetSeedId: PlantId | 0 = 0): Promise<SmallEventGardenerPacket> {
 	const roll = RandomUtils.crowniclesRandom.real(0, 1);
 
-	if (roll < FALLBACK_PROBABILITIES.ADVICE) {
+	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.ADVICE) {
 		return {
 			interactionName: GARDENER_INTERACTIONS.ADVICE,
 			plantId: targetSeedId,
@@ -374,7 +458,18 @@ async function handleFallback(response: CrowniclesPacket[], player: Player, cond
 		};
 	}
 
-	if (roll < FALLBACK_PROBABILITIES.PLANT) {
+	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.GENERIC_ADVICE) {
+		const genericKey = await getGenericAdviceKey(player);
+		return {
+			interactionName: GARDENER_INTERACTIONS.ADVICE,
+			plantId: 0,
+			materialId: 0,
+			cost: 0,
+			conditionKey: genericKey
+		};
+	}
+
+	if (roll < PlantConstants.GARDENER_FALLBACK_PROBABILITIES.PLANT) {
 		return await handlePlantGift(player);
 	}
 
