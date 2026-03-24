@@ -28,6 +28,29 @@ const POTION_NATURE_TO_RECIPE_TYPE: Partial<Record<ItemNature, RecipeType>> = {
 
 export class RecipeDiscoveryService {
 	/**
+	 * Find and discover the first undiscovered recipe from a sorted list of candidates.
+	 * Returns the discovered recipe or null if all candidates are already known.
+	 */
+	private static async discoverFirstUndiscovered(player: Player, candidates: CookingRecipe[], sourceMapId?: number): Promise<CookingRecipe | null> {
+		for (const recipe of candidates) {
+			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipe.id)) {
+				await PlayerCookingRecipe.discoverRecipe(player, recipe.id, sourceMapId);
+				return recipe;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get sorted candidates for a given filter predicate
+	 */
+	private static getSortedCandidates(filter: (r: CookingRecipe) => boolean): CookingRecipe[] {
+		return recipeRegistry.getAll()
+			.filter(filter)
+			.sort((a, b) => a.level - b.level);
+	}
+
+	/**
 	 * Count how many recipes from a given source the player has already discovered
 	 */
 	static async countDiscoveredFromSource(player: Player, source: RecipeDiscoverySource): Promise<number> {
@@ -43,18 +66,11 @@ export class RecipeDiscoveryService {
 	 * Picks the lowest-level undiscovered recipe matching the source.
 	 * Returns the discovered recipe or null if none available.
 	 */
-	static async discoverFromSource(player: Player, source: RecipeDiscoverySource): Promise<CookingRecipe | null> {
-		const candidates = recipeRegistry.getAll()
-			.filter(r => !r.discoveredByDefault && r.discoverySource === source)
-			.sort((a, b) => a.level - b.level);
-
-		for (const recipe of candidates) {
-			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipe.id)) {
-				await PlayerCookingRecipe.discoverRecipe(player, recipe.id);
-				return recipe;
-			}
-		}
-		return null;
+	static discoverFromSource(player: Player, source: RecipeDiscoverySource): Promise<CookingRecipe | null> {
+		const candidates = RecipeDiscoveryService.getSortedCandidates(
+			r => !r.discoveredByDefault && r.discoverySource === source
+		);
+		return RecipeDiscoveryService.discoverFirstUndiscovered(player, candidates);
 	}
 
 	/**
@@ -66,17 +82,10 @@ export class RecipeDiscoveryService {
 			return null;
 		}
 
-		const candidates = recipeRegistry.getAll()
-			.filter(r => !r.discoveredByDefault && r.discoverySource === RecipeDiscoverySource.ISLAND_BOSS)
-			.sort((a, b) => a.level - b.level);
-
-		for (const recipe of candidates) {
-			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipe.id)) {
-				await PlayerCookingRecipe.discoverRecipe(player, recipe.id, bossMapId);
-				return recipe;
-			}
-		}
-		return null;
+		const candidates = RecipeDiscoveryService.getSortedCandidates(
+			r => !r.discoveredByDefault && r.discoverySource === RecipeDiscoverySource.ISLAND_BOSS
+		);
+		return RecipeDiscoveryService.discoverFirstUndiscovered(player, candidates, bossMapId);
 	}
 
 	/**
@@ -86,17 +95,15 @@ export class RecipeDiscoveryService {
 	static async discoverWitchRecipe(player: Player, potionNature: ItemNature): Promise<CookingRecipe | null> {
 		const recipeType = POTION_NATURE_TO_RECIPE_TYPE[potionNature];
 
-		const candidates = recipeRegistry.getAll()
-			.filter(r => !r.discoveredByDefault
+		const candidates = RecipeDiscoveryService.getSortedCandidates(
+			r => !r.discoveredByDefault
 				&& r.discoverySource === RecipeDiscoverySource.WITCH
-				&& (recipeType ? r.recipeType === recipeType : true))
-			.sort((a, b) => a.level - b.level);
+				&& (recipeType ? r.recipeType === recipeType : true)
+		);
 
-		for (const recipe of candidates) {
-			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipe.id)) {
-				await PlayerCookingRecipe.discoverRecipe(player, recipe.id);
-				return recipe;
-			}
+		const discovered = await RecipeDiscoveryService.discoverFirstUndiscovered(player, candidates);
+		if (discovered) {
+			return discovered;
 		}
 
 		// If no match for this nature, try any WITCH recipe
@@ -109,11 +116,11 @@ export class RecipeDiscoveryService {
 	 */
 	static async discoverCookingLevelRecipes(player: Player): Promise<CookingRecipe[]> {
 		const discovered: CookingRecipe[] = [];
-		const candidates = recipeRegistry.getAll()
-			.filter(r => !r.discoveredByDefault
+		const candidates = RecipeDiscoveryService.getSortedCandidates(
+			r => !r.discoveredByDefault
 				&& r.discoverySource === RecipeDiscoverySource.COOKING_LEVEL
-				&& r.level <= player.cookingLevel)
-			.sort((a, b) => a.level - b.level);
+				&& r.level <= player.cookingLevel
+		);
 
 		for (const recipe of candidates) {
 			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipe.id)) {

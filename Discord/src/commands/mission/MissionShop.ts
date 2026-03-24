@@ -251,21 +251,27 @@ const TIME_HORIZONS = [
 /**
  * Format trend forecasts for a plant
  */
-function formatPlantTrends(plantId: PlantId, trends: MarketTrend[], translationPrefix: string, lng: Language, breakOnNonApplicable: boolean): string {
+function formatPlantTrends(params: {
+	plantId: PlantId;
+	trends: MarketTrend[];
+	translationPrefix: string;
+	lng: Language;
+	breakOnNonApplicable: boolean;
+}): string {
 	let text = `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.plantHeader", {
-		lng, plantId, context: "bold"
+		lng: params.lng, plantId: params.plantId, context: "bold"
 	})}`;
 	for (let i = 0; i < TIME_HORIZONS.length; i++) {
-		if (trends[i] === MarketTrend.NON_APPLICABLE) {
-			if (breakOnNonApplicable) {
+		if (params.trends[i] === MarketTrend.NON_APPLICABLE) {
+			if (params.breakOnNonApplicable) {
 				break;
 			}
 			continue;
 		}
 		const horizon = TIME_HORIZONS[i];
-		const trendKey = getTrendKey(trends[i]);
-		text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.${translationPrefix}.${horizon}.${trendKey}`, {
-			lng, plantId
+		const trendKey = getTrendKey(params.trends[i]);
+		text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.${params.translationPrefix}.${horizon}.${trendKey}`, {
+			lng: params.lng, plantId: params.plantId
 		})}`;
 	}
 	return text;
@@ -293,7 +299,9 @@ function buildRotationSection(packet: CommandMissionShopMarketAnalysis, lng: Lan
 
 	// Show forecasts for each new plant at post-rotation horizons
 	for (const forecast of packet.plantRotation.newPlantForecasts) {
-		text += formatPlantTrends(forecast.plantId, forecast.trends, "newPlants", lng, false);
+		text += formatPlantTrends({
+			plantId: forecast.plantId, trends: forecast.trends, translationPrefix: "newPlants", lng, breakOnNonApplicable: false
+		});
 	}
 
 	return text;
@@ -321,7 +329,9 @@ function buildMarketAnalysisText(packet: CommandMissionShopMarketAnalysis, lng: 
 		if (!plant) {
 			continue;
 		}
-		text += formatPlantTrends(plantTrend.plantId, plantTrend.trends, "plants", lng, true);
+		text += formatPlantTrends({
+			plantId: plantTrend.plantId, trends: plantTrend.trends, translationPrefix: "plants", lng, breakOnNonApplicable: true
+		});
 	}
 
 	// Rotation notice and new plant forecasts if applicable
