@@ -7,10 +7,17 @@ import {
 } from "../../constants/HomeConstants";
 import { GardenConstants } from "../../constants/GardenConstants";
 import { ItemSlot } from "../../types/ItemSlot";
+import { CookingOutputTypeValue } from "../../constants/CookingConstants";
 import { PlantId } from "../../constants/PlantConstants";
 import {
 	PlantStorageEntry, PlayerPlantSlotEntry
 } from "../../types/PlantStorageEntry";
+export {
+	CookingSlotData, CookingCraftErrors, CookingCraftError
+} from "../../types/CookingTypes";
+import {
+	CookingSlotData, CookingCraftError
+} from "../../types/CookingTypes";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
 export type { ChestAction } from "../../constants/HomeConstants";
@@ -403,4 +410,120 @@ export class CommandReportPlantTransferRes extends CrowniclesPacket {
 
 	/** Updated player plant slots after transfer */
 	playerPlantSlots!: PlayerPlantSlotEntry[];
+}
+
+// ---- Cooking packets ----
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingIgniteReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingWoodConfirmReq extends CrowniclesPacket {
+	woodMaterialId!: number;
+
+	woodRarity!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingWoodConfirmRes extends CrowniclesPacket {
+	accepted!: boolean;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingIgniteRes extends CrowniclesPacket {
+	slots!: CookingSlotData[];
+
+	woodConsumed!: boolean;
+
+	woodMaterialId!: number;
+
+	furnaceUsesRemaining!: number;
+
+	cookingGrade!: string;
+
+	cookingLevel!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingNoWoodRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingOverheatRes extends CrowniclesPacket {
+	overheatUntil!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingReviveReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingReviveRes extends CrowniclesPacket {
+	slots!: CookingSlotData[];
+
+	woodConsumed!: boolean;
+
+	woodMaterialId!: number;
+
+	furnaceUsesRemaining!: number;
+
+	cookingGrade!: string;
+
+	cookingLevel!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingCraftReq extends CrowniclesPacket {
+	slotIndex!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingCraftRes extends CrowniclesPacket {
+	success!: boolean;
+
+	recipeId!: string;
+
+	wasSecret!: boolean;
+
+	outputType!: CookingOutputTypeValue;
+
+	potionId?: number;
+
+	petFoodType?: string;
+
+	petFoodQuantity?: number;
+
+	/** How much food was actually stored in guild (may be less than recipe output) */
+	petFoodStoredQuantity?: number;
+
+	/** Whether the player's pet was fed from surplus food */
+	petFedFromSurplus?: boolean;
+
+	/** Material ID returned from surplus food recycling */
+	surplusMaterialId?: number;
+
+	/** Quantity of materials returned from surplus food recycling */
+	surplusMaterialQuantity?: number;
+
+	/** Material ID crafted from a material recipe */
+	craftedMaterialId?: number;
+
+	/** Quantity of materials crafted from a material recipe */
+	craftedMaterialQuantity?: number;
+
+	failedPotionId?: number;
+
+	cookingXpGained!: number;
+
+	cookingLevelUp!: boolean;
+
+	newCookingLevel?: number;
+
+	newCookingGrade?: string;
+
+	materialSaved?: number;
+
+	discoveredRecipeIds?: string[];
+
+	error?: CookingCraftError;
+
+	updatedSlots?: CookingSlotData[];
 }
