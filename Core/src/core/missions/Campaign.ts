@@ -7,6 +7,8 @@ import { CampaignData } from "../../data/Campaign";
 import {
 	CompletedMission, MissionType
 } from "../../../../Lib/src/types/CompletedMission";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
 
 export class Campaign {
 	private static maxCampaignCache = -1;
@@ -84,7 +86,11 @@ export class Campaign {
 		const campaign = await MissionSlots.getCampaignOfPlayer(player.id);
 		const missionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 		if (Campaign.hasNextCampaign(missionsInfo.campaignBlob)) {
-			return await this.completeCampaignMissions(player, missionsInfo, completedCampaign, campaign);
+			const completedMissions = await this.completeCampaignMissions(player, missionsInfo, completedCampaign, campaign);
+			if (completedMissions.length > 0) {
+				await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.CAMPAIGN_MILESTONE);
+			}
+			return completedMissions;
 		}
 		return [];
 	}
