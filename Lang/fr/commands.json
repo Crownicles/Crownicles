@@ -2212,6 +2212,7 @@
     "noEquippedItem": "Aucun objet équipé",
     "noReserveItems": "Aucun objet en réserve",
     "reserveFull": "Réserve pleine",
+    "swapSection": "{emote:equipCommand.swap} **Échanger :**",
     "noItems": "Vous n'avez aucun équipement à gérer !",
     "closeTitle": "{{pseudo}}, fermeture de l'équipement",
     "closeDescription": "Vous avez fermé le menu d'équipement."

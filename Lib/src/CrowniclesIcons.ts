@@ -147,6 +147,7 @@ export const CrowniclesIcons: {
 	equipCommand: {
 		equipped: string;
 		reserve: string;
+		swap: string;
 	};
 	petCommand: {
 		petButton: string;
@@ -2396,7 +2397,8 @@ export const CrowniclesIcons: {
 	},
 	equipCommand: {
 		equipped: "🗡️",
-		reserve: "🎒"
+		reserve: "🎒",
+		swap: "🔄"
 	},
 	petCommand: {
 		petButton: "🖐️",
