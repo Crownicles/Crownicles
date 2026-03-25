@@ -33,5 +33,6 @@
   "potionNature": 2,
   "potionRarity": 7,
   "discoveredByDefault": false,
-  "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  "discoverySource": "PLAYER_LEVEL_MILESTONE",
+  "petFood": null
 }

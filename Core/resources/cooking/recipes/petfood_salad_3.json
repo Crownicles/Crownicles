@@ -22,9 +22,11 @@
     }
   ],
   "outputType": "petFood",
-  "petFoodType": "herbivorousFood",
-  "petFoodQuantity": 4,
-  "petFoodLovePoints": 12,
   "discoveredByDefault": false,
-  "discoverySource": "FARMER"
+  "discoverySource": "FARMER",
+  "petFood": {
+    "type": "herbivorousFood",
+    "quantity": 4,
+    "lovePoints": 12
+  }
 }

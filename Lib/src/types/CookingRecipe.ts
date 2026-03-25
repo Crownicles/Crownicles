@@ -17,6 +17,12 @@ export interface CookingRecipePlant {
 	quantity: number;
 }
 
+export interface PetFoodRecipe {
+	type: PetFood;
+	quantity: number;
+	lovePoints: number;
+}
+
 export interface CookingRecipe {
 	id: string;
 	level: number;
@@ -26,9 +32,7 @@ export interface CookingRecipe {
 	outputType: CookingOutputTypeValue;
 	potionNature?: ItemNature;
 	potionRarity?: ItemRarity;
-	petFoodType?: PetFood;
-	petFoodQuantity?: number;
-	petFoodLovePoints?: number;
+	petFood: PetFoodRecipe | null;
 	outputMaterialId?: number;
 	outputMaterialQuantity?: number;
 	discoveredByDefault: boolean;

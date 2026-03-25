@@ -6,6 +6,26 @@ import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 
+// Hash mixing primes for deterministic seed derivation
+const CANDIDATE_INDEX_PRIMES = {
+	DAY: 7,
+	FURNACE: 13,
+	SLOT: 97
+} as const;
+
+const SECRET_SEED_PRIMES = {
+	DAY: 11,
+	FURNACE: 23,
+	SLOT: 131
+} as const;
+
+// LCG (Linear Congruential Generator) constants for pseudo-random generation
+const LCG = {
+	MULTIPLIER: 1103515245,
+	INCREMENT: 12345,
+	MAX_VALUE: 0x7fffffff
+} as const;
+
 interface SlotRecipeSelectionOptions {
 	slotIndex: number;
 	furnacePosition: number;
@@ -72,7 +92,7 @@ function getBaseCandidateIndex({
 	daySeed,
 	candidatesLength
 }: BaseCandidateIndexOptions): number {
-	const tierSeed = daySeed * 7 + furnacePosition * 13 + slotIndex * 97;
+	const tierSeed = daySeed * CANDIDATE_INDEX_PRIMES.DAY + furnacePosition * CANDIDATE_INDEX_PRIMES.FURNACE + slotIndex * CANDIDATE_INDEX_PRIMES.SLOT;
 	return Math.abs(tierSeed) % candidatesLength;
 }
 
@@ -217,21 +237,6 @@ export function getUniqueRecipesForSlots({
 	return recipes;
 }
 
-/**
- * Determine which recipe should appear in a slot at a given furnace position
- */
-export function getRecipeForSlot(options: {
-	slotIndex: number;
-	furnacePosition: number;
-	daySeed: number;
-	discoveredRecipeIds: string[];
-}): CookingRecipe | null {
-	return getRecipeForSlotExcluding({
-		...options,
-		excludedRecipeIds: new Set<string>()
-	});
-}
-
 interface RecipeSecretOptions {
 	slotIndex: number;
 	furnacePosition: number;
@@ -248,8 +253,8 @@ export function isRecipeSecret({
 	daySeed,
 	secretRate
 }: RecipeSecretOptions): boolean {
-	const secretSeed = daySeed * 11 + furnacePosition * 23 + slotIndex * 131;
-	const pseudoRandom = ((secretSeed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
+	const secretSeed = daySeed * SECRET_SEED_PRIMES.DAY + furnacePosition * SECRET_SEED_PRIMES.FURNACE + slotIndex * SECRET_SEED_PRIMES.SLOT;
+	const pseudoRandom = ((secretSeed * LCG.MULTIPLIER + LCG.INCREMENT) & LCG.MAX_VALUE) / LCG.MAX_VALUE;
 	return pseudoRandom < secretRate;
 }
 

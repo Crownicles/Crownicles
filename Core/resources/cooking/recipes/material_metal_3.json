@@ -29,5 +29,6 @@
   "outputMaterialId": 86,
   "outputMaterialQuantity": 3,
   "discoveredByDefault": false,
-  "discoverySource": "GASPARD_JO"
+  "discoverySource": "GASPARD_JO",
+  "petFood": null
 }

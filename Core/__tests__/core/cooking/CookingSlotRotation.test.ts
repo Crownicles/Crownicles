@@ -2,7 +2,7 @@ import {
 	describe, expect, it
 } from "vitest";
 import {
-	getSlotCycle, getRecipeForSlot, getUniqueRecipesForSlots, isRecipeSecret, getCurrentDaySeed
+	getSlotCycle, getRecipeForSlotExcluding, getUniqueRecipesForSlots, isRecipeSecret, getCurrentDaySeed
 } from "../../../src/core/cooking/CookingSlotRotation";
 import {
 	SLOT_CONFIGS, RecipeType, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES, CookingOutputType
@@ -41,12 +41,12 @@ describe("CookingSlotRotation", () => {
 		});
 	});
 
-	describe("getRecipeForSlot", () => {
+	describe("getRecipeForSlotExcluding", () => {
 		it("should return null when no discovered recipes match", () => {
 			// Empty discovered list means only discoveredByDefault recipes
 			// Slot 3 (potions only, level 3-8) — may have no match for empty list
-			const result = getRecipeForSlot({
-				slotIndex: 3, furnacePosition: 0, daySeed: 12345, discoveredRecipeIds: []
+			const result = getRecipeForSlotExcluding({
+				slotIndex: 3, furnacePosition: 0, daySeed: 12345, discoveredRecipeIds: [], excludedRecipeIds: new Set()
 			});
 			// Result depends on data, but should not crash
 			expect(result === null || typeof result.id === "string").toBe(true);
@@ -54,11 +54,11 @@ describe("CookingSlotRotation", () => {
 
 		it("should be deterministic for same parameters", () => {
 			const discovered = ["potion_health_1", "potion_health_2", "potion_energy_1"];
-			const a = getRecipeForSlot({
-				slotIndex: 0, furnacePosition: 5, daySeed: 42, discoveredRecipeIds: discovered
+			const a = getRecipeForSlotExcluding({
+				slotIndex: 0, furnacePosition: 5, daySeed: 42, discoveredRecipeIds: discovered, excludedRecipeIds: new Set()
 			});
-			const b = getRecipeForSlot({
-				slotIndex: 0, furnacePosition: 5, daySeed: 42, discoveredRecipeIds: discovered
+			const b = getRecipeForSlotExcluding({
+				slotIndex: 0, furnacePosition: 5, daySeed: 42, discoveredRecipeIds: discovered, excludedRecipeIds: new Set()
 			});
 			expect(a?.id).toEqual(b?.id);
 		});
@@ -68,8 +68,8 @@ describe("CookingSlotRotation", () => {
 			const seed = 100;
 			const recipes = [];
 			for (let pos = 0; pos < 10; pos++) {
-				recipes.push(getRecipeForSlot({
-					slotIndex: 0, furnacePosition: pos, daySeed: seed, discoveredRecipeIds: discovered
+				recipes.push(getRecipeForSlotExcluding({
+					slotIndex: 0, furnacePosition: pos, daySeed: seed, discoveredRecipeIds: discovered, excludedRecipeIds: new Set()
 				}));
 			}
 			// Should have variation (not all the same recipe)

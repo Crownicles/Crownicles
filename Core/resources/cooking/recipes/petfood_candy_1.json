@@ -14,9 +14,11 @@
     }
   ],
   "outputType": "petFood",
-  "petFoodType": "commonFood",
-  "petFoodQuantity": 1,
-  "petFoodLovePoints": 1,
   "discoveredByDefault": false,
-  "discoverySource": "WITCH"
+  "discoverySource": "WITCH",
+  "petFood": {
+    "type": "commonFood",
+    "quantity": 1,
+    "lovePoints": 1
+  }
 }

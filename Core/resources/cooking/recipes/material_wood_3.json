@@ -29,5 +29,6 @@
   "outputMaterialId": 84,
   "outputMaterialQuantity": 3,
   "discoveredByDefault": false,
-  "discoverySource": "FARMER"
+  "discoverySource": "FARMER",
+  "petFood": null
 }

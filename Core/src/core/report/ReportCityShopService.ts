@@ -289,7 +289,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 				{
 					id: ShopItemType.WOOD_COMMON_BUNDLE,
 					price: ShopConstants.LUMBERJACK_PRICES.COMMON,
-					amounts: [...ShopConstants.LUMBERJACK_AMOUNTS],
+					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
 						await distributeWoodRandomly(playerId, commonWoods, amount);
 						return true;
@@ -298,7 +298,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 				{
 					id: ShopItemType.WOOD_UNCOMMON_BUNDLE,
 					price: ShopConstants.LUMBERJACK_PRICES.UNCOMMON,
-					amounts: [...ShopConstants.LUMBERJACK_AMOUNTS],
+					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
 						await distributeWoodRandomly(playerId, uncommonWoods, amount);
 						return true;
@@ -307,7 +307,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 				{
 					id: ShopItemType.WOOD_RARE_BUNDLE,
 					price: ShopConstants.LUMBERJACK_PRICES.RARE,
-					amounts: [...ShopConstants.LUMBERJACK_AMOUNTS],
+					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
 						await distributeWoodRandomly(playerId, rareWoods, amount);
 						return true;

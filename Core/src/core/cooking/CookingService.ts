@@ -26,8 +26,9 @@ import {
 	FAILURE_LEVEL_OFFSET,
 	NO_XP_LEVEL_THRESHOLD,
 	FURNACE_MAX_USES_PER_DAY,
-	FURNACE_MIN_OVERHEAT_HOURS,
-	CookingOutputType
+	FURNACE_MIN_OVERHEAT_MS,
+	CookingOutputType,
+	SECRET_RECIPE_PLACEHOLDER
 } from "../../../../Lib/src/constants/CookingConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
@@ -38,6 +39,7 @@ import {
 } from "./CookingSlotRotation";
 import { CookingSlotData } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
+import { getTomorrowMidnight } from "../../../../Lib/src/utils/TimeUtils";
 
 interface WoodSelection {
 	materialId: number;
@@ -64,6 +66,12 @@ interface RecipeSlotContext {
 	guild: Guild | null;
 }
 
+interface CookingLevelUpResult {
+	levelUp: boolean;
+	newLevel?: number;
+	newGrade?: string;
+}
+
 export class CookingService {
 	static async getPlayerGuild(player: Player): Promise<Guild | null> {
 		return player.guildId ? await Guilds.getById(player.guildId) : null;
@@ -74,12 +82,11 @@ export class CookingService {
 			return true;
 		}
 
-		const hasPetFoodConfig = guild && recipe.petFoodType && recipe.petFoodQuantity !== undefined;
-		if (!hasPetFoodConfig) {
+		if (!guild || !recipe.petFood) {
 			return false;
 		}
 
-		return !guild.isStorageFullFor(recipe.petFoodType!, recipe.petFoodQuantity!);
+		return !guild.isStorageFullFor(recipe.petFood.type, recipe.petFood.quantity);
 	}
 
 	/**
@@ -178,15 +185,12 @@ export class CookingService {
 
 		if (player.furnaceUsesToday >= FURNACE_MAX_USES_PER_DAY) {
 			const now = new Date();
-			const tomorrow = new Date(now);
-			tomorrow.setDate(tomorrow.getDate() + 1);
-			tomorrow.setHours(0, 0, 0, 0);
+			const tomorrow = getTomorrowMidnight();
 
 			const msUntilTomorrow = tomorrow.getTime() - now.getTime();
-			const minOverheatMs = FURNACE_MIN_OVERHEAT_HOURS * 60 * 60 * 1000;
 
 			player.furnaceOverheatUntil = new Date(
-				now.getTime() + Math.max(msUntilTomorrow, minOverheatMs)
+				now.getTime() + Math.max(msUntilTomorrow, FURNACE_MIN_OVERHEAT_MS)
 			);
 		}
 
@@ -273,10 +277,10 @@ export class CookingService {
 			id: recipe.id,
 			level: recipe.level,
 			isSecret: secret,
-			outputDescription: secret ? "???" : recipe.id,
+			outputDescription: secret ? SECRET_RECIPE_PLACEHOLDER : recipe.id,
 			outputType: recipe.outputType,
 			recipeType: recipe.recipeType,
-			petFoodType: recipe.petFoodType,
+			petFoodType: recipe.petFood?.type,
 			ingredients: {
 				plants: plantAvailability,
 				materials: materialAvailability
@@ -339,11 +343,7 @@ export class CookingService {
 	static async addCookingXp(params: {
 		player: Player;
 		xp: number;
-	}): Promise<{
-		levelUp: boolean;
-		newLevel?: number;
-		newGrade?: string;
-	}> {
+	}): Promise<CookingLevelUpResult> {
 		const {
 			player, xp
 		} = params;
@@ -416,9 +416,7 @@ export class CookingService {
 			success,
 			xpGained: xp,
 			materialSaved,
-			levelUp: levelResult.levelUp,
-			newLevel: levelResult.newLevel,
-			newGrade: levelResult.newGrade,
+			...levelResult,
 			discoveredRecipeIds
 		};
 	}
@@ -476,27 +474,6 @@ export class CookingService {
 	}
 
 	/**
-	 * Check if a pet food type is compatible with a pet's diet
-	 */
-	static isFoodCompatibleWithPet(foodType: string, petEntity: PetEntity): boolean {
-		const petModel = PetDataController.instance.getById(petEntity.typeId);
-		if (!petModel) {
-			return false;
-		}
-
-		if (foodType === PetConstants.PET_FOOD.COMMON_FOOD || foodType === PetConstants.PET_FOOD.ULTIMATE_FOOD) {
-			return true;
-		}
-		if (foodType === PetConstants.PET_FOOD.HERBIVOROUS_FOOD) {
-			return petModel.canEatVegetables();
-		}
-		if (foodType === PetConstants.PET_FOOD.CARNIVOROUS_FOOD) {
-			return petModel.canEatMeat();
-		}
-		return false;
-	}
-
-	/**
 	 * Check if the player's pet is hungry and can eat the given food type
 	 */
 	static async getHungryCompatiblePet(player: Player, foodType: string): Promise<PetEntity | null> {
@@ -519,7 +496,7 @@ export class CookingService {
 			return null;
 		}
 
-		if (!CookingService.isFoodCompatibleWithPet(foodType, petEntity)) {
+		if (!petModel.canEatFood(foodType)) {
 			return null;
 		}
 

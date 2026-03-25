@@ -26,9 +26,11 @@
     }
   ],
   "outputType": "petFood",
-  "petFoodType": "commonFood",
-  "petFoodQuantity": 12,
-  "petFoodLovePoints": 12,
   "discoveredByDefault": false,
-  "discoverySource": "COOKING_LEVEL"
+  "discoverySource": "COOKING_LEVEL",
+  "petFood": {
+    "type": "commonFood",
+    "quantity": 12,
+    "lovePoints": 12
+  }
 }

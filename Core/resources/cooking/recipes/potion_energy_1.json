@@ -16,5 +16,6 @@
   "outputType": "potion",
   "potionNature": 7,
   "potionRarity": 1,
-  "discoveredByDefault": true
+  "discoveredByDefault": true,
+  "petFood": null
 }

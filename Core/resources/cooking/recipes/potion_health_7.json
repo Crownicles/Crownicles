@@ -25,5 +25,6 @@
   "potionNature": 1,
   "potionRarity": 6,
   "discoveredByDefault": false,
-  "discoverySource": "ISLAND_BOSS"
+  "discoverySource": "ISLAND_BOSS",
+  "petFood": null
 }

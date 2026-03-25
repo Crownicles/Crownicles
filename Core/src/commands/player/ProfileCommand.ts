@@ -19,7 +19,9 @@ import { Campaign } from "../../core/missions/Campaign";
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
-import { Guilds } from "../../core/database/game/models/Guild";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
 import {
 	Pet, PetDataController
 } from "../../data/Pet";
@@ -33,7 +35,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 import { getCookingGrade } from "../../../../Lib/src/constants/CookingConstants";
-import { Homes } from "../../core/database/game/models/Home";
+import Home, { Homes } from "../../core/database/game/models/Home";
 
 /**
  * Get the current campaign progression of the player
@@ -45,15 +47,17 @@ function getCampaignProgression(missionsInfo: PlayerMissionsInfo): number {
 	return Math.round(Campaign.getAmountOfCampaignCompleted(missionsInfo.campaignBlob) / Campaign.getMaxCampaignNumber() * 100);
 }
 
-/**
- * Build pet data for profile
- */
-function buildPetData(petEntity: PetEntity, petModel: Pet): {
+interface ProfilePetData {
 	typeId: number;
 	sex: SexTypeShort;
 	nickname: string;
 	rarity: number;
-} {
+}
+
+/**
+ * Build pet data for profile
+ */
+function buildPetData(petEntity: PetEntity, petModel: Pet): ProfilePetData {
 	return {
 		typeId: petModel.id,
 		sex: petEntity.sex as SexTypeShort,
@@ -65,7 +69,7 @@ function buildPetData(petEntity: PetEntity, petModel: Pet): {
 /**
  * Resolve pet data from a pet entity, handling null cases
  */
-function resolvePetData(petEntity: PetEntity | null): ReturnType<typeof buildPetData> | undefined {
+function resolvePetData(petEntity: PetEntity | null): ProfilePetData | undefined {
 	if (!petEntity) {
 		return undefined;
 	}
@@ -79,11 +83,11 @@ function resolvePetData(petEntity: PetEntity | null): ReturnType<typeof buildPet
 /**
  * Resolve glory rank for a player
  */
-function resolveGloryRank(player: Player): Promise<number> | number {
+async function resolveGloryRank(player: Player): Promise<number> {
 	if (player.fightCountdown > FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE) {
 		return -1;
 	}
-	return Players.getGloryRankById(player.id);
+	return await Players.getGloryRankById(player.id);
 }
 
 /**
@@ -184,47 +188,51 @@ function buildRankData(rank: number, numberOfPlayers: number, score: number): {
 	};
 }
 
+interface ProfileCookingData {
+	level: number;
+	grade: string;
+}
+
 /**
  * Build cooking data for profile (only if home has cooking slots)
  */
-function buildCookingData(player: Player, home: Awaited<ReturnType<typeof Homes.getOfPlayer>>): {
-	cookingLevel: number;
-	cookingGrade: string;
-} | undefined {
+function buildCookingData(player: Player, home: Home | null): ProfileCookingData | undefined {
 	const hasCooking = home?.getLevel()?.features.cookingSlots;
 	if (!hasCooking) {
 		return undefined;
 	}
 	return {
-		cookingLevel: player.cookingLevel,
-		cookingGrade: getCookingGrade(player.cookingLevel).id
+		level: player.cookingLevel,
+		grade: getCookingGrade(player.cookingLevel).id
 	};
+}
+
+interface ProfileTokenData {
+	value: number;
+	max: number;
 }
 
 /**
  * Build token data for profile (only if player level is high enough)
  */
-function buildTokenData(player: Player): {
-	tokens: number;
-	tokensMax: number;
-} | undefined {
+function buildTokenData(player: Player): ProfileTokenData | undefined {
 	if (player.level < TokensConstants.LEVEL_TO_UNLOCK) {
 		return undefined;
 	}
 	return {
-		tokens: player.tokens,
-		tokensMax: TokensConstants.MAX
+		value: player.tokens,
+		max: TokensConstants.MAX
 	};
 }
 
 interface ProfileFetchedData {
-	guild: Awaited<ReturnType<typeof Guilds.getById>> | null;
+	guild: Guild | null;
 	rank: number;
 	numberOfPlayers: number;
 	petEntity: PetEntity | null;
 	missionsInfo: PlayerMissionsInfo;
 	playerActiveObjects: PlayerActiveObjects;
-	home: Awaited<ReturnType<typeof Homes.getOfPlayer>>;
+	home: Home | null;
 	gloryRank: number;
 }
 
@@ -269,10 +277,8 @@ async function buildProfilePacket(
 				max: toCheckPlayer.getMaxHealthBase()
 			},
 			money: toCheckPlayer.money,
-			tokens: tokenData?.tokens,
-			tokensMax: tokenData?.tokensMax,
-			cookingLevel: cookingData?.cookingLevel,
-			cookingGrade: cookingData?.cookingGrade
+			tokens: tokenData,
+			cooking: cookingData
 		}
 	});
 }

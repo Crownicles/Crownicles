@@ -25,5 +25,6 @@
   "potionNature": 4,
   "potionRarity": 4,
   "discoveredByDefault": false,
-  "discoverySource": "CAMPAIGN_MILESTONE"
+  "discoverySource": "CAMPAIGN_MILESTONE",
+  "petFood": null
 }

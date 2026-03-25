@@ -29,5 +29,6 @@
   "outputMaterialId": 65,
   "outputMaterialQuantity": 3,
   "discoveredByDefault": false,
-  "discoverySource": "CAMPAIGN_MILESTONE"
+  "discoverySource": "CAMPAIGN_MILESTONE",
+  "petFood": null
 }
