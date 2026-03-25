@@ -25,5 +25,6 @@
   "outputMaterialId": 16,
   "outputMaterialQuantity": 2,
   "discoveredByDefault": false,
-  "discoverySource": "COOKING_LEVEL"
+  "discoverySource": "COOKING_LEVEL",
+  "petFood": null
 }

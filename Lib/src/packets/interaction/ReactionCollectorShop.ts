@@ -19,7 +19,7 @@ export interface ShopItem {
 
 	price: number;
 
-	amounts: number[];
+	amounts: readonly number[];
 
 	buyCallback: (response: CrowniclesPacket[], player: number, context: PacketContext, amount: number) => boolean | Promise<boolean>;
 }

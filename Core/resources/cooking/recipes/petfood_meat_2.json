@@ -14,9 +14,11 @@
     }
   ],
   "outputType": "petFood",
-  "petFoodType": "carnivorousFood",
-  "petFoodQuantity": 2,
-  "petFoodLovePoints": 6,
   "discoveredByDefault": false,
-  "discoverySource": "WITCH"
+  "discoverySource": "WITCH",
+  "petFood": {
+    "type": "carnivorousFood",
+    "quantity": 2,
+    "lovePoints": 6
+  }
 }

@@ -14,8 +14,10 @@
     }
   ],
   "outputType": "petFood",
-  "petFoodType": "herbivorousFood",
-  "petFoodQuantity": 1,
-  "petFoodLovePoints": 3,
-  "discoveredByDefault": true
+  "discoveredByDefault": true,
+  "petFood": {
+    "type": "herbivorousFood",
+    "quantity": 1,
+    "lovePoints": 3
+  }
 }

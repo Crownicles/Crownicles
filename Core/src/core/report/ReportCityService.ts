@@ -10,7 +10,7 @@ import {
 } from "../database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import {
-	ChestSlotsPerCategory
+	ChestSlotsPerCategory, HomeFeatures
 } from "../../../../Lib/src/types/HomeFeatures";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
@@ -169,12 +169,23 @@ async function buildManageHomeData(params: {
 	const {
 		player, home, homeLevel, city
 	} = params;
-	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
 	const homesCount = await Homes.getHomesCount();
 
-	const manageOptions = buildManageOptions({
-		home, homeLevel, city, player, isHomeInCity, homesCount
-	});
+	// No home at all → only option is buying a new one
+	if (!home) {
+		return {
+			newPrice: city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount),
+			currentMoney: player.money
+		};
+	}
+
+	// Home but no level → should not happen, no options
+	if (!homeLevel) {
+		return undefined;
+	}
+
+	// Both home and homeLevel exist
+	const manageOptions = buildManageOptions(home, homeLevel, city, player, homesCount);
 	if (manageOptions) {
 		return {
 			...manageOptions,
@@ -182,100 +193,91 @@ async function buildManageHomeData(params: {
 		};
 	}
 
-	return buildNoOptionsReason(isHomeInCity, homeLevel, player);
+	return buildNoOptionsReason(home, homeLevel, city, player);
 }
 
 interface ManageOptions {
 	newPrice?: number;
 	upgrade?: {
 		price: number;
-		oldFeatures: HomeLevel["features"];
-		newFeatures: HomeLevel["features"];
+		oldFeatures: HomeFeatures;
+		newFeatures: HomeFeatures;
 	};
 	movePrice?: number;
 }
 
-interface BuildManageOptionsParams {
-	home: Home | null;
-	homeLevel: HomeLevel | null;
-	city: City;
-	player: Player;
-	isHomeInCity: boolean;
-	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>;
-}
+type HomesCount = Awaited<ReturnType<typeof Homes.getHomesCount>>;
 
 function getUpgradeOption(
-	homeLevel: HomeLevel | null,
+	homeLevel: HomeLevel,
 	player: Player,
-	isHomeInCity: boolean,
 	city: City,
-	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
+	homesCount: HomesCount
 ): ManageOptions["upgrade"] {
-	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
-	if (!nextHomeUpgrade || !isHomeInCity) {
+	const nextHomeUpgrade = HomeLevel.getNextUpgrade(homeLevel, player.level);
+	if (!nextHomeUpgrade) {
 		return undefined;
 	}
 	return {
 		price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
-		oldFeatures: homeLevel!.features,
+		oldFeatures: homeLevel.features,
 		newFeatures: nextHomeUpgrade.features
 	};
 }
 
 function getMovePrice(
-	home: Home | null,
-	homeLevel: HomeLevel | null,
+	home: Home,
+	homeLevel: HomeLevel,
 	city: City,
-	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
+	homesCount: HomesCount
 ): number | undefined {
-	const canMove = home && home.cityId !== city.id && homeLevel;
-	if (!canMove) {
+	if (home.cityId === city.id) {
 		return undefined;
 	}
-	return city.getHomeLevelPrice(homeLevel!, homesCount);
+	return city.getHomeLevelPrice(homeLevel, homesCount);
 }
 
-function buildManageOptions({
-	home,
-	homeLevel,
-	city,
-	player,
-	isHomeInCity,
-	homesCount
-}: BuildManageOptionsParams): ManageOptions | undefined {
-	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
-	const upgrade = getUpgradeOption(homeLevel, player, isHomeInCity, city, homesCount);
-	const movePrice = getMovePrice(home, homeLevel, city, homesCount);
-	const hasAnyOption = newPrice || upgrade || movePrice;
+function buildManageOptions(
+	home: Home,
+	homeLevel: HomeLevel,
+	city: City,
+	player: Player,
+	homesCount: HomesCount
+): ManageOptions | undefined {
+	const isHomeInCity = home.cityId === city.id;
+	const upgrade = isHomeInCity ? getUpgradeOption(homeLevel, player, city, homesCount) : undefined;
+	const movePrice = isHomeInCity ? undefined : getMovePrice(home, homeLevel, city, homesCount);
 
-	if (!hasAnyOption) {
+	if (!upgrade && !movePrice) {
 		return undefined;
 	}
 	return {
-		newPrice,
 		upgrade,
 		movePrice
 	};
 }
 
 function buildNoOptionsReason(
-	isHomeInCity: boolean,
-	homeLevel: HomeLevel | null,
+	home: Home,
+	homeLevel: HomeLevel,
+	city: City,
 	player: Player
 ): HomeData["manage"] {
-	if (!isHomeInCity || !homeLevel) {
+	if (home.cityId !== city.id) {
 		return undefined;
 	}
 
 	const nextLevel = HomeLevel.getNextLevelInfo(homeLevel);
 	return {
 		currentMoney: player.money,
-		isMaxLevel: nextLevel === null || undefined,
+		isMaxLevel: nextLevel === null,
 		requiredPlayerLevelForUpgrade: nextLevel && player.level < nextLevel.requiredPlayerLevel
 			? nextLevel.requiredPlayerLevel
 			: undefined
 	};
 }
+
+type UpgradeableItem = UpgradeStationData["upgradeableItems"][number];
 
 function getUpgradeableItem(
 	inventorySlot: InventorySlot,
@@ -283,7 +285,7 @@ function getUpgradeableItem(
 	maxUpgradeableRarity: number,
 	maxLevelAtHome: number,
 	player: Player
-): UpgradeStationData["upgradeableItems"][number] | undefined {
+): UpgradeableItem | undefined {
 	if (!inventorySlot.isPrimaryEquipment()) {
 		return undefined;
 	}
@@ -310,7 +312,7 @@ function getUpgradeableItem(
 		materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
 	}
 
-	const requiredMaterials: UpgradeStationData["upgradeableItems"][number]["requiredMaterials"] = [];
+	const requiredMaterials: UpgradeableItem["requiredMaterials"] = [];
 	let canUpgrade = true;
 
 	for (const [materialId, quantity] of materialAggregation) {

@@ -22,8 +22,10 @@
     }
   ],
   "outputType": "petFood",
-  "petFoodType": "commonFood",
-  "petFoodQuantity": 7,
-  "petFoodLovePoints": 7,
-  "discoveredByDefault": true
+  "discoveredByDefault": true,
+  "petFood": {
+    "type": "commonFood",
+    "quantity": 7,
+    "lovePoints": 7
+  }
 }

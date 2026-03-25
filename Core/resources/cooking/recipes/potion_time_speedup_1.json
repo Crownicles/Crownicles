@@ -17,5 +17,6 @@
   "potionNature": 5,
   "potionRarity": 1,
   "discoveredByDefault": false,
-  "discoverySource": "WITCH"
+  "discoverySource": "WITCH",
+  "petFood": null
 }

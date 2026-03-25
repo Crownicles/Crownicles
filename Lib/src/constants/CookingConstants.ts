@@ -237,12 +237,6 @@ export const CookingXpConstants = {
 export const FAILURE_LEVEL_OFFSET = 18;
 
 /**
- * Alias to preserve naming compatibility while clarifying intent.
- * This constant is an offset applied to recipe level in failure penalty.
- */
-export const FAILURE_LEVEL_PENALTY_OFFSET = FAILURE_LEVEL_OFFSET;
-
-/**
  * If the recipe level exceeds the grade's max by this amount or more, no XP is gained
  */
 export const NO_XP_LEVEL_THRESHOLD = 3;
@@ -350,6 +344,7 @@ export const MIN_GUARANTEED_PLAYER_LEVEL_RECIPES = 2;
  */
 export const FURNACE_MAX_USES_PER_DAY = 10;
 export const FURNACE_MIN_OVERHEAT_HOURS = 6;
+export const FURNACE_MIN_OVERHEAT_MS = FURNACE_MIN_OVERHEAT_HOURS * 60 * 60 * 1000;
 
 /**
  * Gaspard Jo recipe costs by grade index (0-9)

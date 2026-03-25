@@ -1,7 +1,7 @@
 import { DataControllerString } from "./DataController";
 import { Data } from "./Data";
 import {
-	CookingRecipeMaterial, CookingRecipePlant
+	CookingRecipeMaterial, CookingRecipePlant, PetFoodRecipe
 } from "../../../Lib/src/types/CookingRecipe";
 import {
 	CookingOutputTypeValue, RecipeDiscoverySource, RecipeType
@@ -9,7 +9,6 @@ import {
 import {
 	ItemNature, ItemRarity
 } from "../../../Lib/src/constants/ItemConstants";
-import { PetFood } from "../../../Lib/src/types/PetFood";
 
 export class CookingRecipeData extends Data<string> {
 	public readonly level!: number;
@@ -26,11 +25,7 @@ export class CookingRecipeData extends Data<string> {
 
 	public readonly potionRarity?: ItemRarity;
 
-	public readonly petFoodType?: PetFood;
-
-	public readonly petFoodQuantity?: number;
-
-	public readonly petFoodLovePoints?: number;
+	public readonly petFood!: PetFoodRecipe | null;
 
 	public readonly outputMaterialId?: number;
 

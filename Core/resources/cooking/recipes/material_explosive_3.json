@@ -29,5 +29,6 @@
   "outputMaterialId": 56,
   "outputMaterialQuantity": 3,
   "discoveredByDefault": false,
-  "discoverySource": "PLAYER_LEVEL_MILESTONE"
+  "discoverySource": "PLAYER_LEVEL_MILESTONE",
+  "petFood": null
 }

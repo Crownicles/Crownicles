@@ -26,9 +26,11 @@
     }
   ],
   "outputType": "petFood",
-  "petFoodType": "ultimateFood",
-  "petFoodQuantity": 5,
-  "petFoodLovePoints": 25,
   "discoveredByDefault": false,
-  "discoverySource": "GASPARD_JO"
+  "discoverySource": "GASPARD_JO",
+  "petFood": {
+    "type": "ultimateFood",
+    "quantity": 5,
+    "lovePoints": 25
+  }
 }

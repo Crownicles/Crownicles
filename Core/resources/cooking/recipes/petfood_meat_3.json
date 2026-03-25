@@ -22,9 +22,11 @@
     }
   ],
   "outputType": "petFood",
-  "petFoodType": "carnivorousFood",
-  "petFoodQuantity": 4,
-  "petFoodLovePoints": 12,
   "discoveredByDefault": false,
-  "discoverySource": "COOKING_LEVEL"
+  "discoverySource": "COOKING_LEVEL",
+  "petFood": {
+    "type": "carnivorousFood",
+    "quantity": 4,
+    "lovePoints": 12
+  }
 }

@@ -20,5 +20,6 @@
   "outputType": "material",
   "outputMaterialId": 62,
   "outputMaterialQuantity": 1,
-  "discoveredByDefault": true
+  "discoveredByDefault": true,
+  "petFood": null
 }
