@@ -5,9 +5,9 @@ import {
 	getSlotCycle, getRecipeForSlot, getUniqueRecipesForSlots, isRecipeSecret, getCurrentDaySeed
 } from "../../../src/core/cooking/CookingSlotRotation";
 import {
-	SLOT_CONFIGS, RecipeType
+	SLOT_CONFIGS, RecipeType, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES
 } from "../../../../Lib/src/constants/CookingConstants";
-import { recipeRegistry } from "../../../src/core/cooking/RecipeRegistry";
+import { CookingRecipeDataController } from "../../../src/data/CookingRecipeData";
 
 describe("CookingSlotRotation", () => {
 	describe("getSlotCycle", () => {
@@ -73,7 +73,7 @@ describe("CookingSlotRotation", () => {
 
 	describe("getUniqueRecipesForSlots", () => {
 		it("should not propose the same recipe in two slots at the same time", () => {
-			const discovered = recipeRegistry.getAll().map(recipe => recipe.id);
+			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
 			const daySeeds = [
 				1,
 				42,
@@ -95,7 +95,7 @@ describe("CookingSlotRotation", () => {
 		});
 
 		it("should exclude pet food recipes when guild storage is unavailable", () => {
-			const discovered = recipeRegistry.getAll().map(recipe => recipe.id);
+			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
 			const recipes = getUniqueRecipesForSlots({
 				cookingSlots: SLOT_CONFIGS.length,
 				furnacePosition: 12,
@@ -105,6 +105,78 @@ describe("CookingSlotRotation", () => {
 			});
 
 			expect(recipes.every(recipe => recipe === null || recipe.outputType !== "petFood")).toBe(true);
+		});
+
+		it("should guarantee at least 2 recipes at player level for low-level players", () => {
+			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
+			const maxRecipeLevelWithoutPenalty = 2; // Aide-cuisine grade
+
+			for (let furnacePosition = 0; furnacePosition < 40; furnacePosition++) {
+				const recipes = getUniqueRecipesForSlots({
+					cookingSlots: SLOT_CONFIGS.length,
+					furnacePosition,
+					daySeed: 42,
+					discoveredRecipeIds: discovered,
+					maxRecipeLevelWithoutPenalty
+				});
+
+				const playerLevelRecipes = recipes.filter(
+					recipe => recipe !== null && recipe.level <= maxRecipeLevelWithoutPenalty
+				);
+				expect(playerLevelRecipes.length).toBeGreaterThanOrEqual(MIN_GUARANTEED_PLAYER_LEVEL_RECIPES);
+			}
+		});
+
+		it("should guarantee player-level recipes across many day seeds", () => {
+			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
+			const maxRecipeLevelWithoutPenalty = 2;
+
+			for (const daySeed of [1, 42, 100, 999, 12345, 50000]) {
+				for (let furnacePosition = 0; furnacePosition < 20; furnacePosition++) {
+					const recipes = getUniqueRecipesForSlots({
+						cookingSlots: SLOT_CONFIGS.length,
+						furnacePosition,
+						daySeed,
+						discoveredRecipeIds: discovered,
+						maxRecipeLevelWithoutPenalty
+					});
+
+					const playerLevelRecipes = recipes.filter(
+						recipe => recipe !== null && recipe.level <= maxRecipeLevelWithoutPenalty
+					);
+					expect(playerLevelRecipes.length).toBeGreaterThanOrEqual(MIN_GUARANTEED_PLAYER_LEVEL_RECIPES);
+				}
+			}
+		});
+
+		it("should still produce no duplicates when using level guarantee", () => {
+			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
+
+			for (const daySeed of [1, 42, 12345]) {
+				for (let furnacePosition = 0; furnacePosition < 40; furnacePosition++) {
+					const recipes = getUniqueRecipesForSlots({
+						cookingSlots: SLOT_CONFIGS.length,
+						furnacePosition,
+						daySeed,
+						discoveredRecipeIds: discovered,
+						maxRecipeLevelWithoutPenalty: 2
+					});
+					const ids = recipes.filter(recipe => recipe !== null).map(recipe => recipe!.id);
+					expect(ids).toHaveLength(new Set(ids).size);
+				}
+			}
+		});
+
+		it("should behave identically without maxRecipeLevelWithoutPenalty parameter", () => {
+			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
+			const recipesWithout = getUniqueRecipesForSlots({
+				cookingSlots: SLOT_CONFIGS.length,
+				furnacePosition: 5,
+				daySeed: 42,
+				discoveredRecipeIds: discovered
+			});
+			// Without the param, should still work (backward compatible)
+			expect(recipesWithout).toHaveLength(SLOT_CONFIGS.length);
 		});
 	});
 

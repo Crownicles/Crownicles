@@ -332,6 +332,11 @@ export const SLOT_SEED_OFFSETS = [
 ] as const;
 
 /**
+ * Minimum number of recipes at or below the player's grade level that should be guaranteed across all slots
+ */
+export const MIN_GUARANTEED_PLAYER_LEVEL_RECIPES = 2;
+
+/**
  * Furnace overheat constants
  */
 export const FURNACE_MAX_USES_PER_DAY = 10;

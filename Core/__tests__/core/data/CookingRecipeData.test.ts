@@ -25,8 +25,16 @@ interface MonsterData {
 }
 
 describe("Cooking Recipe Data Validation", () => {
-	const recipesPath = resolve(__dirname, "../../../resources/cooking/recipes.json");
-	const recipes: RecipeData[] = JSON.parse(readFileSync(recipesPath, "utf-8"));
+	const recipesDir = resolve(__dirname, "../../../resources/cooking/recipes");
+	const recipes: RecipeData[] = readdirSync(recipesDir)
+		.filter(f => f.endsWith(".json"))
+		.map(f => {
+			const data = JSON.parse(readFileSync(resolve(recipesDir, f), "utf-8")) as Omit<RecipeData, "id">;
+			return {
+				...data,
+				id: f.replace(".json", "")
+			} as RecipeData;
+		});
 
 	it("should have the same number of ISLAND_BOSS recipes as final boss locations", () => {
 		const islandBossRecipes = recipes.filter(r => r.discoverySource === "ISLAND_BOSS");

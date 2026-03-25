@@ -5,7 +5,9 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ShopItemType } from "../../../../Lib/src/constants/LogsConstants";
 import { ShopUtils } from "../utils/ShopUtils";
-import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
+import {
+	ShopConstants, ShopCurrency
+} from "../../../../Lib/src/constants/ShopConstants";
 import {
 	ShopCategory, CommandShopNoPlantSlotAvailable
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
@@ -33,7 +35,9 @@ import {
 	PlantConstants, PlantType
 } from "../../../../Lib/src/constants/PlantConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { MaterialDataController } from "../../data/Material";
+import {
+	Material, MaterialDataController
+} from "../../data/Material";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -241,7 +245,22 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 }
 
 /**
- * Open the lumberjack shop for the player (wood bundles)
+ * Distribute a total quantity randomly among a list of wood materials and give them to the player.
+ */
+async function distributeWoodRandomly(playerId: number, woods: Material[], totalQuantity: number): Promise<void> {
+	const distribution = new Map<number, number>();
+	for (let i = 0; i < totalQuantity; i++) {
+		const picked = RandomUtils.crowniclesRandom.pick(woods);
+		const materialId = parseInt(picked.id as string, 10);
+		distribution.set(materialId, (distribution.get(materialId) ?? 0) + 1);
+	}
+	for (const [materialId, quantity] of distribution) {
+		await Materials.giveMaterial(playerId, materialId, quantity);
+	}
+}
+
+/**
+ * Open the lumberjack shop for the player (wood by rarity with quantity selection)
  */
 export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	const woodMaterials = MaterialDataController.instance.getMaterialsFromType(MaterialType.WOOD);
@@ -256,31 +275,28 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 			items: [
 				{
 					id: ShopItemType.WOOD_COMMON_BUNDLE,
-					price: 50,
-					amounts: [1],
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
-						const picked = RandomUtils.crowniclesRandom.pick(commonWoods);
-						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 5);
+					price: ShopConstants.LUMBERJACK_PRICES.COMMON,
+					amounts: [...ShopConstants.LUMBERJACK_AMOUNTS],
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
+						await distributeWoodRandomly(playerId, commonWoods, amount);
 						return true;
 					}
 				},
 				{
 					id: ShopItemType.WOOD_UNCOMMON_BUNDLE,
-					price: 100,
-					amounts: [1],
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
-						const picked = RandomUtils.crowniclesRandom.pick(uncommonWoods);
-						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 3);
+					price: ShopConstants.LUMBERJACK_PRICES.UNCOMMON,
+					amounts: [...ShopConstants.LUMBERJACK_AMOUNTS],
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
+						await distributeWoodRandomly(playerId, uncommonWoods, amount);
 						return true;
 					}
 				},
 				{
 					id: ShopItemType.WOOD_RARE_BUNDLE,
-					price: 200,
-					amounts: [1],
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
-						const picked = RandomUtils.crowniclesRandom.pick(rareWoods);
-						await Materials.giveMaterial(playerId, parseInt(picked.id as string, 10), 2);
+					price: ShopConstants.LUMBERJACK_PRICES.RARE,
+					amounts: [...ShopConstants.LUMBERJACK_AMOUNTS],
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
+						await distributeWoodRandomly(playerId, rareWoods, amount);
 						return true;
 					}
 				}

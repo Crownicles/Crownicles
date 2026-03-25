@@ -30,6 +30,20 @@ export abstract class ShopConstants {
 		5,
 		10
 	];
+
+	static readonly LUMBERJACK_PRICES = {
+		COMMON: 10,
+		UNCOMMON: 35,
+		RARE: 100
+	};
+
+	static readonly LUMBERJACK_AMOUNTS = [
+		5,
+		10,
+		15,
+		25,
+		50
+	];
 }
 
 export enum ShopCurrency {

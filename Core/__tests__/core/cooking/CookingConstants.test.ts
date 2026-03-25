@@ -10,31 +10,31 @@ import {
 
 describe("CookingConstants", () => {
 	describe("getCookingGrade", () => {
-		it("should return aideCuisine for level 0", () => {
-			expect(getCookingGrade(0).name).toBe("aideCuisine");
+		it("should return kitchenHelper for level 0", () => {
+			expect(getCookingGrade(0).id).toBe("kitchenHelper");
 		});
 
-		it("should return aideCuisine for level 10", () => {
-			expect(getCookingGrade(10).name).toBe("aideCuisine");
+		it("should return kitchenHelper for level 10", () => {
+			expect(getCookingGrade(10).id).toBe("kitchenHelper");
 		});
 
-		it("should return marmiton for level 11", () => {
-			expect(getCookingGrade(11).name).toBe("marmiton");
+		it("should return scullion for level 11", () => {
+			expect(getCookingGrade(11).id).toBe("scullion");
 		});
 
-		it("should return grandCuisinierRoyal for level 91", () => {
-			expect(getCookingGrade(91).name).toBe("grandCuisinierRoyal");
+		it("should return royalGrandChef for level 91", () => {
+			expect(getCookingGrade(91).id).toBe("royalGrandChef");
 		});
 
-		it("should return grandCuisinierRoyal for very high levels", () => {
-			expect(getCookingGrade(500).name).toBe("grandCuisinierRoyal");
+		it("should return royalGrandChef for very high levels", () => {
+			expect(getCookingGrade(500).id).toBe("royalGrandChef");
 		});
 
 		it("should return the last grade as fallback for unreachable levels", () => {
 			// getCookingGrade should always return a valid grade
 			const grade = getCookingGrade(999);
 			expect(grade).toBeDefined();
-			expect(grade.name).toBe("grandCuisinierRoyal");
+			expect(grade.id).toBe("royalGrandChef");
 		});
 	});
 

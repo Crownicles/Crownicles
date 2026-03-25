@@ -223,7 +223,7 @@ export default class ProfileCommand {
 				tokens: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? toCheckPlayer.tokens : undefined,
 				tokensMax: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? TokensConstants.MAX : undefined,
 				cookingLevel: home?.getLevel()?.features.cookingSlots ? toCheckPlayer.cookingLevel : undefined,
-				cookingGrade: home?.getLevel()?.features.cookingSlots ? getCookingGrade(toCheckPlayer.cookingLevel).name : undefined
+				cookingGrade: home?.getLevel()?.features.cookingSlots ? getCookingGrade(toCheckPlayer.cookingLevel).id : undefined
 			}
 		}));
 	}
