@@ -38,9 +38,8 @@ export abstract class ShopConstants {
 	};
 
 	static readonly LUMBERJACK_AMOUNTS = [
-		5,
+		1,
 		10,
-		15,
 		25,
 		50
 	];

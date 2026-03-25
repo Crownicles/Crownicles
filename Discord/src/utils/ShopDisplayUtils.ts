@@ -48,6 +48,7 @@ import {
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { ReactionCollectorResetTimerPacketReq } from "../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { escapeUsername } from "./StringUtils";
+import { DiscordConstants } from "../DiscordConstants";
 import { Badge } from "../../../Lib/src/types/Badge";
 
 export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
@@ -143,6 +144,22 @@ export async function handleCommandShopGenericPurchase(packet: CommandShopGeneri
 	const lng = interaction.userLanguage;
 	const itemName = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(packet.shopItemId)}.name`, { lng });
 
+	let description = i18n.t("commands:shop.genericPurchase", {
+		lng,
+		item: itemName,
+		count: packet.amount
+	});
+
+	if (packet.materials) {
+		const materialLines = Object.entries(packet.materials)
+			.map(([materialId, quantity]) => {
+				const emoji = CrowniclesIcons.materials[materialId] ?? CrowniclesIcons.inventory.stock;
+				const name = i18n.t(`models:materials.${materialId}`, { lng });
+				return `${emoji} **${name}** x${quantity}`;
+			});
+		description += `\n\n${materialLines.join("\n")}`;
+	}
+
 	await interaction.followUp({
 		embeds: [
 			new CrowniclesEmbed()
@@ -150,10 +167,7 @@ export async function handleCommandShopGenericPurchase(packet: CommandShopGeneri
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
 				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.genericPurchase", {
-					lng,
-					item: itemName
-				}))
+				.setDescription(description)
 		]
 	});
 }
@@ -374,12 +388,21 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 		}
 	}
 
-	const refuseRow = new ActionRowBuilder<ButtonBuilder>();
 	const buttonRefuse = new ButtonBuilder()
 		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 		.setCustomId("refuse")
 		.setStyle(ButtonStyle.Secondary);
-	refuseRow.addComponents(buttonRefuse);
+
+	const components: ActionRowBuilder<ButtonBuilder>[] = [];
+	if (row.components.length < DiscordConstants.MAX_BUTTONS_PER_ROW) {
+		row.addComponents(buttonRefuse);
+		components.push(row);
+	}
+	else {
+		const refuseRow = new ActionRowBuilder<ButtonBuilder>();
+		refuseRow.addComponents(buttonRefuse);
+		components.push(row, refuseRow);
+	}
 
 	const shopItemNames = getShopItemNames(data, shopItemId, lng);
 
@@ -400,7 +423,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 					})
 				}`)
 		],
-		components: [row, refuseRow]
+		components
 	});
 
 	if (!msg) {
@@ -418,9 +441,9 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 		}
 
 		// Disable buttons instead of removing them
-		disableRows([row, refuseRow]);
+		disableRows(components);
 
-		await buttonInteraction.update({ components: [row, refuseRow] });
+		await buttonInteraction.update({ components });
 
 		if (buttonInteraction.customId === "refuse") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, packet.reactions.findIndex(r =>
@@ -436,9 +459,9 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		disableRows([row, refuseRow]);
+		disableRows(components);
 
-		await msg.edit({ components: [row, refuseRow] });
+		await msg.edit({ components });
 	});
 }
 
