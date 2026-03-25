@@ -336,11 +336,17 @@ export class CookingService {
 	/**
 	 * Add cooking XP to player, handle level up
 	 */
-	static async addCookingXp(player: Player, xp: number): Promise<{
+	static async addCookingXp(params: {
+		player: Player;
+		xp: number;
+	}): Promise<{
 		levelUp: boolean;
 		newLevel?: number;
 		newGrade?: string;
 	}> {
+		const {
+			player, xp
+		} = params;
 		player.cookingExperience += xp;
 
 		let levelUp = false;
@@ -394,8 +400,12 @@ export class CookingService {
 
 		// Calculate result and XP
 		const success = !RandomUtils.crowniclesRandom.bool(Math.min(CookingService.getFailureRate(grade, recipe.level), 1));
-		const xp = CookingService.computeCraftXp(success, recipe, grade);
-		const levelResult = await CookingService.addCookingXp(player, xp);
+		const xp = CookingService.computeCraftXp({
+			success, recipe, grade
+		});
+		const levelResult = await CookingService.addCookingXp({
+			player, xp
+		});
 
 		// Discover cooking-level recipes on level up
 		const discoveredRecipeIds = levelResult.levelUp
@@ -423,8 +433,9 @@ export class CookingService {
 		} = params;
 		let materialSaved: number | undefined;
 		const materialsToConsume = [...materials];
+		const shouldSaveMaterial = materialSaveChance > 0 && materialsToConsume.length > 0 && RandomUtils.crowniclesRandom.bool(materialSaveChance);
 
-		if (materialSaveChance > 0 && materialsToConsume.length > 0 && RandomUtils.crowniclesRandom.bool(materialSaveChance)) {
+		if (shouldSaveMaterial) {
 			const savedIndex = RandomUtils.crowniclesRandom.integer(0, materialsToConsume.length - 1);
 			materialSaved = materialsToConsume[savedIndex].materialId;
 			materialsToConsume.splice(savedIndex, 1);
@@ -437,7 +448,14 @@ export class CookingService {
 		return materialSaved;
 	}
 
-	private static computeCraftXp(success: boolean, recipe: CookingRecipe, grade: CookingGradeDefinition): number {
+	private static computeCraftXp(params: {
+		success: boolean;
+		recipe: CookingRecipe;
+		grade: CookingGradeDefinition;
+	}): number {
+		const {
+			success, recipe, grade
+		} = params;
 		const levelDiff = recipe.level - grade.maxRecipeLevelWithoutPenalty;
 		if (levelDiff >= NO_XP_LEVEL_THRESHOLD) {
 			return 0;
