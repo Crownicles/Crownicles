@@ -58,7 +58,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			state = {
 				currentSlots: [],
 				furnaceUsesRemaining: 0,
-				cookingGrade: getCookingGrade(0).name,
+				cookingGrade: getCookingGrade(0).id,
 				cookingLevel: 0
 			};
 			this.sessions.set(ctx.user.id, state);
