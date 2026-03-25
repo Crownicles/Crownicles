@@ -2,6 +2,7 @@ import { PlantId } from "../constants/PlantConstants";
 import {
 	CookingOutputTypeValue, RecipeType
 } from "../constants/CookingConstants";
+import { PetFood } from "../types/PetFood";
 
 export interface CookingSlotData {
 	slotIndex: number;
@@ -12,7 +13,7 @@ export interface CookingSlotData {
 		outputDescription: string;
 		outputType: CookingOutputTypeValue;
 		recipeType: RecipeType;
-		petFoodType?: string;
+		petFoodType?: PetFood;
 		ingredients: {
 			plants: {
 				plantId: PlantId; quantity: number; playerHas: number;

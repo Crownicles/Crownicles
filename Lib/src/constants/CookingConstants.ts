@@ -72,10 +72,9 @@ export const RECIPE_TYPE_OUTPUT_EMOJI: Record<RecipeType, string> = {
 };
 
 export interface CookingGradeDefinition {
-	name: string;
+	id: string;
 	minLevel: number;
 	maxLevel: number;
-	emoji: string;
 	failureRate: number;
 	secretRecipeRate: number;
 	maxRecipeLevelWithoutPenalty: number;
@@ -85,10 +84,9 @@ export interface CookingGradeDefinition {
 
 export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 	{
-		name: "aideCuisine",
+		id: "kitchenHelper",
 		minLevel: 0,
 		maxLevel: 10,
-		emoji: CrowniclesIcons.cookingGrades.aideCuisine,
 		failureRate: 0.10,
 		secretRecipeRate: 0.20,
 		maxRecipeLevelWithoutPenalty: 2,
@@ -96,10 +94,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0
 	},
 	{
-		name: "marmiton",
+		id: "scullion",
 		minLevel: 11,
 		maxLevel: 20,
-		emoji: CrowniclesIcons.cookingGrades.marmiton,
 		failureRate: 0.05,
 		secretRecipeRate: 0.10,
 		maxRecipeLevelWithoutPenalty: 3,
@@ -107,10 +104,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0
 	},
 	{
-		name: "cuisinier",
+		id: "cook",
 		minLevel: 21,
 		maxLevel: 30,
-		emoji: CrowniclesIcons.cookingGrades.cuisinier,
 		failureRate: 0.05,
 		secretRecipeRate: 0.10,
 		maxRecipeLevelWithoutPenalty: 4,
@@ -118,10 +114,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0
 	},
 	{
-		name: "rotisseur",
+		id: "roaster",
 		minLevel: 31,
 		maxLevel: 40,
-		emoji: CrowniclesIcons.cookingGrades.rotisseur,
 		failureRate: 0.05,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 5,
@@ -129,10 +124,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0
 	},
 	{
-		name: "saucier",
+		id: "saucier",
 		minLevel: 41,
 		maxLevel: 50,
-		emoji: CrowniclesIcons.cookingGrades.saucier,
 		failureRate: 0.05,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 5,
@@ -140,10 +134,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0
 	},
 	{
-		name: "maitreOffice",
+		id: "steward",
 		minLevel: 51,
 		maxLevel: 60,
-		emoji: CrowniclesIcons.cookingGrades.maitreOffice,
 		failureRate: 0.05,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 6,
@@ -151,10 +144,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0
 	},
 	{
-		name: "chefDeTable",
+		id: "tableChef",
 		minLevel: 61,
 		maxLevel: 70,
-		emoji: CrowniclesIcons.cookingGrades.chefDeTable,
 		failureRate: 0.05,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 7,
@@ -162,10 +154,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0.05
 	},
 	{
-		name: "chefDesFourneaux",
+		id: "stoveChef",
 		minLevel: 71,
 		maxLevel: 80,
-		emoji: CrowniclesIcons.cookingGrades.chefDesFourneaux,
 		failureRate: 0.05,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 7,
@@ -173,10 +164,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0.05
 	},
 	{
-		name: "maitreDesCuisines",
+		id: "kitchenMaster",
 		minLevel: 81,
 		maxLevel: 90,
-		emoji: CrowniclesIcons.cookingGrades.maitreDesCuisines,
 		failureRate: 0.05,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 8,
@@ -184,10 +174,9 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		woodSaveChance: 0.05
 	},
 	{
-		name: "grandCuisinierRoyal",
+		id: "royalGrandChef",
 		minLevel: 91,
 		maxLevel: Infinity,
-		emoji: CrowniclesIcons.cookingGrades.grandCuisinierRoyal,
 		failureRate: 0.04,
 		secretRecipeRate: 0.005,
 		maxRecipeLevelWithoutPenalty: 8,

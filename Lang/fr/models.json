@@ -2233,16 +2233,16 @@
   },
   "cooking": {
     "grades": {
-      "aideCuisine": "Aide-cuisine",
-      "marmiton": "Marmiton",
-      "cuisinier": "Cuisinier",
-      "rotisseur": "Rôtisseur",
+      "kitchenHelper": "Aide-cuisine",
+      "scullion": "Marmiton",
+      "cook": "Cuisinier",
+      "roaster": "Rôtisseur",
       "saucier": "Saucier",
-      "maitreOffice": "Maître d'office",
-      "chefDeTable": "Chef de table",
-      "chefDesFourneaux": "Chef des fourneaux",
-      "maitreDesCuisines": "Maître des cuisines",
-      "grandCuisinierRoyal": "Grand cuisinier royal"
+      "steward": "Maître d'office",
+      "tableChef": "Chef de table",
+      "stoveChef": "Chef des fourneaux",
+      "kitchenMaster": "Maître des cuisines",
+      "royalGrandChef": "Grand cuisinier royal"
     },
     "stations": {
       "0": "Âtre",

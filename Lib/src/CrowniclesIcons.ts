@@ -2698,16 +2698,16 @@ export const CrowniclesIcons: {
 		other: "📒"
 	},
 	cookingGrades: {
-		aideCuisine: "🥄",
-		marmiton: "🍳",
-		cuisinier: "🔪",
-		rotisseur: "🍖",
+		kitchenHelper: "🥄",
+		scullion: "🍳",
+		cook: "🔪",
+		roaster: "🍖",
 		saucier: "🍲",
-		maitreOffice: "📋",
-		chefDeTable: "🍽️",
-		chefDesFourneaux: "🔥",
-		maitreDesCuisines: "👨‍🍳",
-		grandCuisinierRoyal: "👑"
+		steward: "📋",
+		tableChef: "🍽️",
+		stoveChef: "🔥",
+		kitchenMaster: "👨‍🍳",
+		royalGrandChef: "👑"
 	},
 	cookingStations: {
 		0: "🏠",

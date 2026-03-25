@@ -5,6 +5,7 @@ import {
 import {
 	RecipeType, RecipeDiscoverySource, CookingOutputTypeValue
 } from "../constants/CookingConstants";
+import { PetFood } from "../types/PetFood";
 
 export interface CookingRecipeMaterial {
 	materialId: number;
@@ -25,7 +26,7 @@ export interface CookingRecipe {
 	outputType: CookingOutputTypeValue;
 	potionNature?: ItemNature;
 	potionRarity?: ItemRarity;
-	petFoodType?: string;
+	petFoodType?: PetFood;
 	petFoodQuantity?: number;
 	petFoodLovePoints?: number;
 	outputMaterialId?: number;

@@ -9,6 +9,7 @@ import {
 import {
 	ItemNature, ItemRarity
 } from "../../../Lib/src/constants/ItemConstants";
+import { PetFood } from "../../../Lib/src/types/PetFood";
 
 export class CookingRecipeData extends Data<string> {
 	public readonly level!: number;
@@ -25,7 +26,7 @@ export class CookingRecipeData extends Data<string> {
 
 	public readonly potionRarity?: ItemRarity;
 
-	public readonly petFoodType?: string;
+	public readonly petFoodType?: PetFood;
 
 	public readonly petFoodQuantity?: number;
 
