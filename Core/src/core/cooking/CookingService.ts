@@ -27,7 +27,6 @@ import {
 	NO_XP_LEVEL_THRESHOLD,
 	FURNACE_MAX_USES_PER_DAY,
 	FURNACE_MIN_OVERHEAT_HOURS,
-	SLOT_CONFIGS,
 	CookingOutputType
 } from "../../../../Lib/src/constants/CookingConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -54,6 +53,15 @@ interface CraftResult {
 	newLevel: number | undefined;
 	newGrade: string | undefined;
 	discoveredRecipeIds: string[];
+}
+
+interface RecipeSlotContext {
+	furnacePosition: number;
+	daySeed: number;
+	grade: CookingGradeDefinition;
+	plantStorageMap: Map<number, number>;
+	materialMap: Map<number, number>;
+	guild: Guild | null;
 }
 
 export class CookingService {
@@ -189,11 +197,14 @@ export class CookingService {
 	/**
 	 * Get all slot recipes for the current furnace state
 	 */
-	static async getSlotRecipes(
-		player: Player,
-		homeId: number,
-		cookingSlots: number
-	): Promise<CookingSlotData[]> {
+	static async getSlotRecipes(params: {
+		player: Player;
+		homeId: number;
+		cookingSlots: number;
+	}): Promise<CookingSlotData[]> {
+		const {
+			player, homeId, cookingSlots
+		} = params;
 		const discoveredIds = await PlayerCookingRecipe.getDiscoveredRecipeIds(player);
 		const daySeed = getCurrentDaySeed();
 		const grade = getCookingGrade(player.cookingLevel);
@@ -209,69 +220,69 @@ export class CookingService {
 			maxRecipeLevelWithoutPenalty: grade.maxRecipeLevelWithoutPenalty
 		});
 
-		const slots: CookingSlotData[] = [];
-
 		// Load all plant storages once to avoid N+1 queries
 		const allPlantStorages = await HomePlantStorages.getOfHome(homeId);
 		const plantStorageMap = new Map(allPlantStorages.map(s => [s.plantId, s.quantity]));
 
-		for (let i = 0; i < cookingSlots && i < SLOT_CONFIGS.length; i++) {
-			const recipe = slotRecipes[i];
-			if (!recipe) {
-				slots.push({
-					slotIndex: i,
-					recipe: null
-				});
-				continue;
-			}
+		const context: RecipeSlotContext = {
+			furnacePosition: player.furnacePosition,
+			daySeed,
+			grade,
+			plantStorageMap,
+			materialMap,
+			guild
+		};
 
-			const secret = isRecipeSecret({
-				slotIndex: i,
-				furnacePosition: player.furnacePosition,
-				daySeed,
-				secretRate: grade.secretRecipeRate
-			});
+		return slotRecipes.map((recipe, i) => ({
+			slotIndex: i,
+			recipe: recipe ? CookingService.buildRecipeSlotData(i, recipe, context) : null
+		}));
+	}
 
-			// Check ingredient availability
-			const plantAvailability = recipe.plants.map(p => ({
-				plantId: p.plantId,
-				quantity: p.quantity,
-				playerHas: plantStorageMap.get(p.plantId) ?? 0
-			}));
+	private static buildRecipeSlotData(
+		slotIndex: number,
+		recipe: CookingRecipe,
+		context: RecipeSlotContext
+	): NonNullable<CookingSlotData["recipe"]> {
+		const secret = isRecipeSecret({
+			slotIndex,
+			furnacePosition: context.furnacePosition,
+			daySeed: context.daySeed,
+			secretRate: context.grade.secretRecipeRate
+		});
 
-			const materialAvailability = recipe.materials.map(m => ({
-				materialId: m.materialId,
-				quantity: m.quantity,
-				playerHas: materialMap.get(m.materialId) ?? 0
-			}));
+		const plantAvailability = recipe.plants.map(p => ({
+			plantId: p.plantId,
+			quantity: p.quantity,
+			playerHas: context.plantStorageMap.get(p.plantId) ?? 0
+		}));
 
-			const hasIngredients = plantAvailability.every(p => p.playerHas >= p.quantity)
-				&& materialAvailability.every(m => m.playerHas >= m.quantity);
-			const canCraftOutput = recipe.outputType === CookingOutputType.PET_FOOD
-				? Boolean(guild)
-				: true;
-			const canCraft = hasIngredients && canCraftOutput;
+		const materialAvailability = recipe.materials.map(m => ({
+			materialId: m.materialId,
+			quantity: m.quantity,
+			playerHas: context.materialMap.get(m.materialId) ?? 0
+		}));
 
-			slots.push({
-				slotIndex: i,
-				recipe: {
-					id: recipe.id,
-					level: recipe.level,
-					isSecret: secret,
-					outputDescription: secret ? "???" : recipe.id,
-					outputType: recipe.outputType,
-					recipeType: recipe.recipeType,
-					petFoodType: recipe.petFoodType,
-					ingredients: {
-						plants: plantAvailability,
-						materials: materialAvailability
-					},
-					canCraft
-				}
-			});
-		}
+		const hasIngredients = plantAvailability.every(p => p.playerHas >= p.quantity)
+			&& materialAvailability.every(m => m.playerHas >= m.quantity);
+		const canCraftOutput = recipe.outputType === CookingOutputType.PET_FOOD
+			? Boolean(context.guild)
+			: true;
 
-		return slots;
+		return {
+			id: recipe.id,
+			level: recipe.level,
+			isSecret: secret,
+			outputDescription: secret ? "???" : recipe.id,
+			outputType: recipe.outputType,
+			recipeType: recipe.recipeType,
+			petFoodType: recipe.petFoodType,
+			ingredients: {
+				plants: plantAvailability,
+				materials: materialAvailability
+			},
+			canCraft: hasIngredients && canCraftOutput
+		};
 	}
 
 	/**
@@ -355,11 +366,14 @@ export class CookingService {
 	/**
 	 * Execute a craft: consume ingredients, calculate result, give XP
 	 */
-	static async executeCraft(
-		player: Player,
-		recipe: CookingRecipe,
-		homeId: number
-	): Promise<CraftResult> {
+	static async executeCraft(params: {
+		player: Player;
+		recipe: CookingRecipe;
+		homeId: number;
+	}): Promise<CraftResult> {
+		const {
+			player, recipe, homeId
+		} = params;
 		const grade = getCookingGrade(player.cookingLevel);
 
 		// Consume plants (batched per plant type)
@@ -372,7 +386,11 @@ export class CookingService {
 		}
 
 		// Consume materials (with possible material save buff)
-		const materialSaved = await CookingService.consumeMaterialsWithSaveBuff(player.id, recipe.materials, grade.materialSaveChance);
+		const materialSaved = await CookingService.consumeMaterialsWithSaveBuff({
+			playerId: player.id,
+			materials: recipe.materials,
+			materialSaveChance: grade.materialSaveChance
+		});
 
 		// Calculate result and XP
 		const success = !RandomUtils.crowniclesRandom.bool(Math.min(CookingService.getFailureRate(grade, recipe.level), 1));
@@ -395,11 +413,14 @@ export class CookingService {
 		};
 	}
 
-	private static async consumeMaterialsWithSaveBuff(
-		playerId: number,
-		materials: CookingRecipe["materials"],
-		materialSaveChance: number
-	): Promise<number | undefined> {
+	private static async consumeMaterialsWithSaveBuff(params: {
+		playerId: number;
+		materials: CookingRecipe["materials"];
+		materialSaveChance: number;
+	}): Promise<number | undefined> {
+		const {
+			playerId, materials, materialSaveChance
+		} = params;
 		let materialSaved: number | undefined;
 		const materialsToConsume = [...materials];
 

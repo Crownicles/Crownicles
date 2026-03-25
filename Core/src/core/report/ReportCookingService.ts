@@ -133,7 +133,11 @@ async function buildBlockedCraftResponse(params: {
 	wasSecret: boolean;
 	outputType: CookingOutputTypeValue;
 }): Promise<CommandReportCookingCraftRes> {
-	const updatedSlots = await CookingService.getSlotRecipes(params.player, params.homeId, params.cookingSlots);
+	const updatedSlots = await CookingService.getSlotRecipes({
+		player: params.player,
+		homeId: params.homeId,
+		cookingSlots: params.cookingSlots
+	});
 
 	return makePacket(CommandReportCookingCraftRes, {
 		success: false,
@@ -198,7 +202,9 @@ async function igniteOrReviveFurnace(
 	player.furnacePosition++;
 	await CookingService.incrementFurnaceUsage(player);
 
-	const slots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
+	const slots = await CookingService.getSlotRecipes({
+		player, homeId: home.id, cookingSlots
+	});
 	response.push(buildIgniteOrReviveResponse(PacketClass, slots, !woodSaved, wood.materialId, player.furnaceUsesToday, player.cookingLevel));
 }
 
@@ -238,7 +244,9 @@ export async function handleCookingWoodConfirm(
 	player.furnacePosition++;
 	await CookingService.incrementFurnaceUsage(player);
 
-	const slots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
+	const slots = await CookingService.getSlotRecipes({
+		player, homeId: home.id, cookingSlots
+	});
 	const ResponseClass = pending.isRevive ? CommandReportCookingReviveRes : CommandReportCookingIgniteRes;
 	response.push(buildIgniteOrReviveResponse(ResponseClass, slots, true, pending.materialId, player.furnaceUsesToday, player.cookingLevel));
 	return response;
@@ -423,6 +431,21 @@ function processCraftOutput({
 	return processSuccessfulCraftOutput(context, player, recipe, guild);
 }
 
+function getCraftErrorInfo(
+	slot: Awaited<ReturnType<typeof CookingService.getSlotRecipes>>[number] | undefined,
+	recipe: CookingRecipeData | undefined
+): {
+	recipeId: string;
+	wasSecret: boolean;
+	outputType: CookingOutputTypeValue;
+} {
+	return {
+		recipeId: recipe?.id ?? "",
+		wasSecret: slot?.recipe?.isSecret ?? false,
+		outputType: recipe?.outputType ?? CookingOutputType.POTION
+	};
+}
+
 function validateCraftRequest(
 	slot: Awaited<ReturnType<typeof CookingService.getSlotRecipes>>[number] | undefined,
 	recipe: CookingRecipeData | undefined,
@@ -455,7 +478,9 @@ export async function handleCookingCraft(
 	} = data;
 
 	// Get the current slots to find the recipe at the requested slot
-	const slots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
+	const slots = await CookingService.getSlotRecipes({
+		player, homeId: home.id, cookingSlots
+	});
 	const slot = slots.find(s => s.slotIndex === packet.slotIndex);
 	const recipe = slot?.recipe ? CookingRecipeDataController.instance.getById(slot.recipe.id) : undefined;
 	const guild = await CookingService.getPlayerGuild(player);
@@ -467,9 +492,7 @@ export async function handleCookingCraft(
 			homeId: home.id,
 			cookingSlots,
 			error: validationError,
-			recipeId: recipe?.id ?? "",
-			wasSecret: slot?.recipe?.isSecret ?? false,
-			outputType: recipe?.outputType ?? CookingOutputType.POTION
+			...getCraftErrorInfo(slot, recipe)
 		}));
 		return response;
 	}
@@ -479,7 +502,9 @@ export async function handleCookingCraft(
 	const validatedSlotRecipe = slot!.recipe!;
 
 	// Execute the craft
-	const result = await CookingService.executeCraft(player, validatedRecipe, home.id);
+	const result = await CookingService.executeCraft({
+		player, recipe: validatedRecipe, homeId: home.id
+	});
 
 	// Determine and apply output
 	const {
@@ -492,7 +517,9 @@ export async function handleCookingCraft(
 		guild
 	});
 
-	const updatedSlots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
+	const updatedSlots = await CookingService.getSlotRecipes({
+		player, homeId: home.id, cookingSlots
+	});
 
 	response.push(makePacket(CommandReportCookingCraftRes, {
 		success: result.success,
