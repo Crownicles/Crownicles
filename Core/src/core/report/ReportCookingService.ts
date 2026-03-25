@@ -46,10 +46,11 @@ const WOOD_CONFIRMATION_TTL_MS = 5 * 60 * 1000;
 const pendingWoodConfirmations = new Map<string, {
 	materialId: number;
 	rarity: MaterialRarity;
+	isRevive: boolean;
 	timeout: ReturnType<typeof setTimeout>;
 }>();
 
-function setPendingWoodConfirmation(keycloakId: string, materialId: number, rarity: MaterialRarity): void {
+function setPendingWoodConfirmation(keycloakId: string, materialId: number, rarity: MaterialRarity, isRevive: boolean): void {
 	const existing = pendingWoodConfirmations.get(keycloakId);
 	if (existing) {
 		clearTimeout(existing.timeout);
@@ -58,6 +59,7 @@ function setPendingWoodConfirmation(keycloakId: string, materialId: number, rari
 	pendingWoodConfirmations.set(keycloakId, {
 		materialId,
 		rarity,
+		isRevive,
 		timeout
 	});
 }
@@ -65,6 +67,7 @@ function setPendingWoodConfirmation(keycloakId: string, materialId: number, rari
 function consumePendingWoodConfirmation(keycloakId: string): {
 	materialId: number;
 	rarity: MaterialRarity;
+	isRevive: boolean;
 } | undefined {
 	const pending = pendingWoodConfirmations.get(keycloakId);
 	if (!pending) {
@@ -74,7 +77,8 @@ function consumePendingWoodConfirmation(keycloakId: string): {
 	pendingWoodConfirmations.delete(keycloakId);
 	return {
 		materialId: pending.materialId,
-		rarity: pending.rarity
+		rarity: pending.rarity,
+		isRevive: pending.isRevive
 	};
 }
 
@@ -173,7 +177,8 @@ async function igniteOrReviveFurnace(
 
 	// Non-common wood needs confirmation
 	if (wood.needsConfirmation) {
-		setPendingWoodConfirmation(keycloakId, wood.materialId, wood.rarity);
+		const isRevive = PacketClass === CommandReportCookingReviveRes;
+		setPendingWoodConfirmation(keycloakId, wood.materialId, wood.rarity, isRevive);
 		response.push(makePacket(CommandReportCookingWoodConfirmReq, {
 			woodMaterialId: wood.materialId,
 			woodRarity: wood.rarity
@@ -234,7 +239,8 @@ export async function handleCookingWoodConfirm(
 	await CookingService.incrementFurnaceUsage(player);
 
 	const slots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
-	response.push(buildIgniteOrReviveResponse(CommandReportCookingIgniteRes, slots, true, pending.materialId, player.furnaceUsesToday, player.cookingLevel));
+	const ResponseClass = pending.isRevive ? CommandReportCookingReviveRes : CommandReportCookingIgniteRes;
+	response.push(buildIgniteOrReviveResponse(ResponseClass, slots, true, pending.materialId, player.furnaceUsesToday, player.cookingLevel));
 	return response;
 }
 
@@ -287,36 +293,49 @@ async function handlePetFoodOutput(
 	if (recipe.petFoodType === undefined || recipe.petFoodQuantity === undefined) {
 		return {};
 	}
-	const result: CraftOutputResult = {
-		petFoodType: recipe.petFoodType,
-		petFoodQuantity: recipe.petFoodQuantity
-	};
 
 	const availableSpace = CookingService.getAvailableFoodSpace(guild, recipe.petFoodType);
 	const storedQuantity = Math.min(recipe.petFoodQuantity, availableSpace);
-	result.petFoodStoredQuantity = storedQuantity;
 
 	if (storedQuantity > 0) {
 		guild.addFood(recipe.petFoodType, storedQuantity, NumberChangeReason.COOKING);
 		await guild.save();
 	}
 
-	let surplus = recipe.petFoodQuantity - storedQuantity;
-	if (surplus > 0) {
-		const hungryPet = await CookingService.getHungryCompatiblePet(player, recipe.petFoodType);
-		if (hungryPet) {
-			await CookingService.feedPetFromSurplus(player, hungryPet, recipe.petFoodType);
-			result.petFedFromSurplus = true;
-			surplus--;
-		}
+	const surplus = recipe.petFoodQuantity - storedQuantity;
+	const surplusResult = surplus > 0
+		? await handlePetFoodSurplus(player, recipe, surplus)
+		: {};
 
-		if (surplus > 0) {
-			const recycleMaterialId = CookingService.getSurplusRecycleMaterial(recipe);
-			if (recycleMaterialId !== undefined) {
-				await Materials.giveMaterial(player.id, recycleMaterialId, surplus);
-				result.surplusMaterialId = recycleMaterialId;
-				result.surplusMaterialQuantity = surplus;
-			}
+	return {
+		petFoodType: recipe.petFoodType,
+		petFoodQuantity: recipe.petFoodQuantity,
+		petFoodStoredQuantity: storedQuantity,
+		...surplusResult
+	};
+}
+
+async function handlePetFoodSurplus(
+	player: NonNullable<Awaited<ReturnType<typeof Players.getByKeycloakId>>>,
+	recipe: CookingRecipeData,
+	surplus: number
+): Promise<Partial<CraftOutputResult>> {
+	const result: Partial<CraftOutputResult> = {};
+	let remaining = surplus;
+
+	const hungryPet = await CookingService.getHungryCompatiblePet(player, recipe.petFoodType!);
+	if (hungryPet) {
+		await CookingService.feedPetFromSurplus(player, hungryPet, recipe.petFoodType!);
+		result.petFedFromSurplus = true;
+		remaining--;
+	}
+
+	if (remaining > 0) {
+		const recycleMaterialId = CookingService.getSurplusRecycleMaterial(recipe);
+		if (recycleMaterialId !== undefined) {
+			await Materials.giveMaterial(player.id, recycleMaterialId, remaining);
+			result.surplusMaterialId = recycleMaterialId;
+			result.surplusMaterialQuantity = remaining;
 		}
 	}
 
@@ -354,13 +373,21 @@ async function handleFailedPotionOutput(
 	return result;
 }
 
-function processCraftOutput(
-	context: PacketContext,
-	player: NonNullable<Awaited<ReturnType<typeof Players.getByKeycloakId>>>,
-	recipe: CookingRecipeData,
-	result: { success: boolean },
-	guild: Awaited<ReturnType<typeof CookingService.getPlayerGuild>>
-): Promise<CraftOutputResult> | CraftOutputResult {
+interface CraftOutputParams {
+	context: PacketContext;
+	player: NonNullable<Awaited<ReturnType<typeof Players.getByKeycloakId>>>;
+	recipe: CookingRecipeData;
+	result: { success: boolean };
+	guild: Awaited<ReturnType<typeof CookingService.getPlayerGuild>>;
+}
+
+function processCraftOutput({
+	context,
+	player,
+	recipe,
+	result,
+	guild
+}: CraftOutputParams): Promise<CraftOutputResult> | CraftOutputResult {
 	if (result.success && recipe.outputType === CookingOutputType.POTION) {
 		return handlePotionOutput(context, player, recipe);
 	}
@@ -446,7 +473,13 @@ export async function handleCookingCraft(
 	// Determine and apply output
 	const {
 		inventorySwapPackets, ...outputFields
-	} = await processCraftOutput(context, player, recipe, result, guild);
+	} = await processCraftOutput({
+		context,
+		player,
+		recipe,
+		result,
+		guild
+	});
 
 	const updatedSlots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
 

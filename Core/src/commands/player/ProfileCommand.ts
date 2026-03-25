@@ -150,6 +150,39 @@ function buildRankData(rank: number, numberOfPlayers: number, score: number): {
 	};
 }
 
+/**
+ * Build cooking data for profile (only if home has cooking slots)
+ */
+function buildCookingData(player: Player, home: Awaited<ReturnType<typeof Homes.getOfPlayer>>): {
+	cookingLevel: number;
+	cookingGrade: string;
+} | undefined {
+	const hasCooking = home?.getLevel()?.features.cookingSlots;
+	if (!hasCooking) {
+		return undefined;
+	}
+	return {
+		cookingLevel: player.cookingLevel,
+		cookingGrade: getCookingGrade(player.cookingLevel).id
+	};
+}
+
+/**
+ * Build token data for profile (only if player level is high enough)
+ */
+function buildTokenData(player: Player): {
+	tokens: number;
+	tokensMax: number;
+} | undefined {
+	if (player.level < TokensConstants.LEVEL_TO_UNLOCK) {
+		return undefined;
+	}
+	return {
+		tokens: player.tokens,
+		tokensMax: TokensConstants.MAX
+	};
+}
+
 export default class ProfileCommand {
 	@commandRequires(CommandProfilePacketReq, {
 		notBlocked: false,
@@ -191,6 +224,8 @@ export default class ProfileCommand {
 		const petData = petEntity && petModel ? buildPetData(petEntity, petModel) : undefined;
 		const destinationId = toCheckPlayer.getDestinationId();
 		const badges = await PlayerBadgesManager.getOfPlayer(toCheckPlayer.id);
+		const cookingData = buildCookingData(toCheckPlayer, home);
+		const tokenData = buildTokenData(toCheckPlayer);
 
 		response.push(makePacket(CommandProfilePacketRes, {
 			keycloakId: toCheckPlayer.keycloakId,
@@ -220,10 +255,10 @@ export default class ProfileCommand {
 					max: toCheckPlayer.getMaxHealthBase()
 				},
 				money: toCheckPlayer.money,
-				tokens: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? toCheckPlayer.tokens : undefined,
-				tokensMax: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? TokensConstants.MAX : undefined,
-				cookingLevel: home?.getLevel()?.features.cookingSlots ? toCheckPlayer.cookingLevel : undefined,
-				cookingGrade: home?.getLevel()?.features.cookingSlots ? getCookingGrade(toCheckPlayer.cookingLevel).id : undefined
+				tokens: tokenData?.tokens,
+				tokensMax: tokenData?.tokensMax,
+				cookingLevel: cookingData?.cookingLevel,
+				cookingGrade: cookingData?.cookingGrade
 			}
 		}));
 	}
