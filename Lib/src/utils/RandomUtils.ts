@@ -54,10 +54,10 @@ export abstract class RandomUtils {
 	 */
 	static deterministicShuffle<T>(array: T[], seed: number): T[] {
 		const result = [...array];
-		let s = Math.abs(seed) | 1;
+		let lcgState = Math.abs(seed) | 1;
 		for (let i = result.length - 1; i > 0; i--) {
-			s = (s * 1103515245 + 12345) & 0x7fffffff;
-			const j = s % (i + 1);
+			lcgState = (lcgState * 1103515245 + 12345) & 0x7fffffff;
+			const j = lcgState % (i + 1);
 			[result[i], result[j]] = [result[j], result[i]];
 		}
 		return result;
