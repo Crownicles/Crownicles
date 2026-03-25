@@ -5,7 +5,7 @@ import {
 import {
 	RecipeType, RecipeDiscoverySource, CookingOutputTypeValue
 } from "../constants/CookingConstants";
-import { PetFood } from "../types/PetFood";
+import { PetFood } from "./PetFood";
 
 export interface CookingRecipeMaterial {
 	materialId: number;

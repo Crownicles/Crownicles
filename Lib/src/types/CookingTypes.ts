@@ -2,7 +2,7 @@ import { PlantId } from "../constants/PlantConstants";
 import {
 	CookingOutputTypeValue, RecipeType
 } from "../constants/CookingConstants";
-import { PetFood } from "../types/PetFood";
+import { PetFood } from "./PetFood";
 
 export interface CookingSlotData {
 	slotIndex: number;
