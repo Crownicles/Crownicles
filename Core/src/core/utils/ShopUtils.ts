@@ -1,6 +1,8 @@
 import {
 	additionalShopData,
+	BuyCallbackResult,
 	CommandShopClosed,
+	CommandShopGenericPurchase,
 	CommandShopNotEnoughCurrency,
 	ReactionCollectorShop,
 	ReactionCollectorShopCloseReaction,
@@ -60,10 +62,16 @@ export abstract class ShopUtils {
 			const buyResult = await shopCategories
 				.find(category => category.id === reactionInstance.shopCategoryId)!.items
 				.find(item => item.id === reactionInstance.shopItemId)!.buyCallback(response, player.id, context, reactionInstance.amount);
-			if (buyResult) {
+			const parsed: BuyCallbackResult = typeof buyResult === "boolean" ? { success: buyResult } : buyResult;
+			if (parsed.success) {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
 				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
+				response.push(makePacket(CommandShopGenericPurchase, {
+					shopItemId: reactionInstance.shopItemId,
+					amount: reactionInstance.amount,
+					materials: parsed.materials
+				}));
 				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
 			}
 		};

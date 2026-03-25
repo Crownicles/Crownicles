@@ -1248,7 +1248,8 @@
     "fullRegen": "{emote:shopItems.regen} Vous avez été complétement soigné.",
     "alreadyHaveBadge": "Vous possédez déjà ce badge.",
     "badgeBought": "Vous avez reçu un nouveau badge : {emote:badges.{{badgeName}}} !",
-    "genericPurchase": "Vous avez obtenu : {{item}}.",
+    "genericPurchase_one": "Vous avez obtenu : {{item}}.",
+    "genericPurchase_other": "Vous avez obtenu **{{count}}x** {{item}}.",
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Il n'y a plus aucune potion du jour disponible à la vente... Revenez demain !",
     "noPlantSlotAvailable": "Vous n'avez aucun emplacement de plante libre ! Libérez-en un ou améliorez votre équipement au tanneur.",
@@ -1280,7 +1281,7 @@
       "food": "Nourriture pour familiers",
       "guildXp": "Expérience de guilde",
       "resources": "Ressources",
-      "woodBundles": "Bois de chauffage",
+      "woodBundles": "Bois",
       "utilitaries": "Utilitaires",
       "prestige": "Prestige",
       "services": "Services"
@@ -1425,16 +1426,16 @@
         "info": "Vous obtiendrez une potion que vous déciderez de garder ou non. Si vous l'avez déjà, elle sera jetée sans remboursement !"
       },
       "woodCommonBundle": {
-        "name": "{emote:shopItems.woodCommonBundle} Lot de bois de chauffage",
-        "info": "Un lot de bois commun, parfait pour alimenter votre fourneau de cuisine."
+        "name": "{emote:shopItems.woodCommonBundle} Bois de chauffage",
+        "info": "Du bois commun, parfait pour alimenter votre fourneau de cuisine."
       },
       "woodUncommonBundle": {
-        "name": "{emote:shopItems.woodUncommonBundle} Lot de bois travaillé",
-        "info": "Un lot de bois de qualité intermédiaire, utile comme ingrédient dans certaines recettes."
+        "name": "{emote:shopItems.woodUncommonBundle} Bois travaillé",
+        "info": "Du bois de qualité intermédiaire, utile comme ingrédient dans certaines recettes."
       },
       "woodRareBundle": {
-        "name": "{emote:shopItems.woodRareBundle} Lot de bois précieux",
-        "info": "Un lot de bois rare et précieux, nécessaire pour les recettes les plus exigeantes."
+        "name": "{emote:shopItems.woodRareBundle} Bois précieux",
+        "info": "Du bois rare et précieux, nécessaire pour les recettes les plus exigeantes."
       },
       "token": {
         "name": "{emote:unitValues.token} Jeton",

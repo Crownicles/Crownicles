@@ -14,6 +14,11 @@ import {
 } from "../../constants/LogsConstants";
 import { PlantId } from "../../constants/PlantConstants";
 
+export type BuyCallbackResult = {
+	success: boolean;
+	materials?: Record<string, number>;
+};
+
 export interface ShopItem {
 	id: ShopItemType;
 
@@ -21,7 +26,7 @@ export interface ShopItem {
 
 	amounts: readonly number[];
 
-	buyCallback: (response: CrowniclesPacket[], player: number, context: PacketContext, amount: number) => boolean | Promise<boolean>;
+	buyCallback: (response: CrowniclesPacket[], player: number, context: PacketContext, amount: number) => boolean | BuyCallbackResult | Promise<boolean | BuyCallbackResult>;
 }
 
 export interface ShopCategory {
@@ -68,6 +73,10 @@ export class CommandShopNotEnoughCurrency extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopGenericPurchase extends CrowniclesPacket {
 	shopItemId!: ShopItemType;
+
+	amount!: number;
+
+	materials?: Record<string, number>;
 }
 
 export class ReactionCollectorShopData extends ReactionCollectorData {

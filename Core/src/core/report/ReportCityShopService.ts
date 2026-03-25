@@ -9,7 +9,7 @@ import {
 	ShopConstants, ShopCurrency
 } from "../../../../Lib/src/constants/ShopConstants";
 import {
-	ShopCategory, CommandShopNoPlantSlotAvailable
+	BuyCallbackResult, ShopCategory, CommandShopNoPlantSlotAvailable
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
 	calculateGemsToMoneyRatio,
@@ -260,7 +260,7 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 /**
  * Distribute a total quantity randomly among a list of wood materials and give them to the player.
  */
-async function distributeWoodRandomly(playerId: number, woods: Material[], totalQuantity: number): Promise<void> {
+async function distributeWoodRandomly(playerId: number, woods: Material[], totalQuantity: number): Promise<Record<string, number>> {
 	const distribution = new Map<number, number>();
 	for (let i = 0; i < totalQuantity; i++) {
 		const picked = RandomUtils.crowniclesRandom.pick(woods);
@@ -270,6 +270,7 @@ async function distributeWoodRandomly(playerId: number, woods: Material[], total
 	for (const [materialId, quantity] of distribution) {
 		await Materials.giveMaterial(playerId, materialId, quantity);
 	}
+	return Object.fromEntries([...distribution].map(([k, v]) => [String(k), v]));
 }
 
 /**
@@ -290,28 +291,28 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					id: ShopItemType.WOOD_COMMON_BUNDLE,
 					price: ShopConstants.LUMBERJACK_PRICES.COMMON,
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
-						await distributeWoodRandomly(playerId, commonWoods, amount);
-						return true;
-					}
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
+						success: true,
+						materials: await distributeWoodRandomly(playerId, commonWoods, amount)
+					})
 				},
 				{
 					id: ShopItemType.WOOD_UNCOMMON_BUNDLE,
 					price: ShopConstants.LUMBERJACK_PRICES.UNCOMMON,
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
-						await distributeWoodRandomly(playerId, uncommonWoods, amount);
-						return true;
-					}
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
+						success: true,
+						materials: await distributeWoodRandomly(playerId, uncommonWoods, amount)
+					})
 				},
 				{
 					id: ShopItemType.WOOD_RARE_BUNDLE,
 					price: ShopConstants.LUMBERJACK_PRICES.RARE,
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<boolean> => {
-						await distributeWoodRandomly(playerId, rareWoods, amount);
-						return true;
-					}
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
+						success: true,
+						materials: await distributeWoodRandomly(playerId, rareWoods, amount)
+					})
 				}
 			]
 		}
