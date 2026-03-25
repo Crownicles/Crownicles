@@ -5,7 +5,7 @@ import {
 	getSlotCycle, getRecipeForSlot, getUniqueRecipesForSlots, isRecipeSecret, getCurrentDaySeed
 } from "../../../src/core/cooking/CookingSlotRotation";
 import {
-	SLOT_CONFIGS, RecipeType, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES
+	SLOT_CONFIGS, RecipeType, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES, CookingOutputType
 } from "../../../../Lib/src/constants/CookingConstants";
 import { CookingRecipeDataController } from "../../../src/data/CookingRecipeData";
 
@@ -104,7 +104,7 @@ describe("CookingSlotRotation", () => {
 				allowPetFoodRecipes: false
 			});
 
-			expect(recipes.every(recipe => recipe === null || recipe.outputType !== "petFood")).toBe(true);
+			expect(recipes.every(recipe => recipe === null || recipe.outputType !== CookingOutputType.PET_FOOD)).toBe(true);
 		});
 
 		it("should guarantee at least 2 recipes at player level for low-level players", () => {
@@ -215,6 +215,34 @@ describe("CookingSlotRotation", () => {
 			const seed = getCurrentDaySeed();
 			expect(seed).toBeGreaterThan(0);
 			expect(Number.isInteger(seed)).toBe(true);
+		});
+	});
+
+	describe("edge cases", () => {
+		it("should return an empty array when cookingSlots is 0", () => {
+			const discovered = CookingRecipeDataController.instance.getAll().map(recipe => recipe.id);
+			const recipes = getUniqueRecipesForSlots({
+				cookingSlots: 0,
+				furnacePosition: 5,
+				daySeed: 42,
+				discoveredRecipeIds: discovered
+			});
+			expect(recipes).toHaveLength(0);
+		});
+
+		it("should handle empty discoveredRecipeIds with no default recipes gracefully", () => {
+			const recipes = getUniqueRecipesForSlots({
+				cookingSlots: SLOT_CONFIGS.length,
+				furnacePosition: 0,
+				daySeed: 42,
+				discoveredRecipeIds: []
+			});
+			// Should not crash — recipes are either null or discoveredByDefault
+			for (const recipe of recipes) {
+				if (recipe !== null) {
+					expect(recipe.discoveredByDefault).toBe(true);
+				}
+			}
 		});
 	});
 });

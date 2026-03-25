@@ -23,11 +23,12 @@ import {
 	PLANT_COOKING_XP,
 	MATERIAL_RARITY_COOKING_XP,
 	CookingXpConstants,
-	FAILURE_PENALTY_BASE,
+	FAILURE_LEVEL_OFFSET,
 	NO_XP_LEVEL_THRESHOLD,
 	FURNACE_MAX_USES_PER_DAY,
 	FURNACE_MIN_OVERHEAT_HOURS,
-	SLOT_CONFIGS
+	SLOT_CONFIGS,
+	CookingOutputType
 } from "../../../../Lib/src/constants/CookingConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
@@ -41,7 +42,7 @@ import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 
 interface WoodSelection {
 	materialId: number;
-	rarity: number;
+	rarity: MaterialRarity;
 	needsConfirmation: boolean;
 }
 
@@ -61,7 +62,7 @@ export class CookingService {
 	}
 
 	static canStorePetFoodReward(recipe: CookingRecipe, guild: Guild | null): boolean {
-		if (recipe.outputType !== "petFood") {
+		if (recipe.outputType !== CookingOutputType.PET_FOOD) {
 			return true;
 		}
 
@@ -226,7 +227,7 @@ export class CookingService {
 
 			const hasIngredients = plantAvailability.every(p => p.playerHas >= p.quantity)
 				&& materialAvailability.every(m => m.playerHas >= m.quantity);
-			const canCraftOutput = recipe.outputType === "petFood"
+			const canCraftOutput = recipe.outputType === CookingOutputType.PET_FOOD
 				? Boolean(guild)
 				: true;
 			const canCraft = hasIngredients && canCraftOutput;
@@ -289,7 +290,7 @@ export class CookingService {
 		if (recipeLevel <= grade.maxRecipeLevelWithoutPenalty) {
 			return grade.failureRate;
 		}
-		return grade.failureRate * (FAILURE_PENALTY_BASE + recipeLevel);
+		return grade.failureRate * (FAILURE_LEVEL_OFFSET + recipeLevel);
 	}
 
 	/**

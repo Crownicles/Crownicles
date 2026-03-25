@@ -1,5 +1,6 @@
 import { PlantId } from "./PlantConstants";
 import { CrowniclesIcons } from "../CrowniclesIcons";
+import { MaterialRarity } from "../types/MaterialRarity";
 
 /**
  * Cooking recipe types — each maps to a specific base plant
@@ -216,10 +217,10 @@ export const PLANT_COOKING_XP: Record<PlantId, number> = {
 /**
  * XP per material rarity (MaterialRarity enum: COMMON=1, UNCOMMON=2, RARE=3)
  */
-export const MATERIAL_RARITY_COOKING_XP: Record<number, number> = {
-	1: 15,
-	2: 40,
-	3: 80
+export const MATERIAL_RARITY_COOKING_XP: Record<MaterialRarity, number> = {
+	[MaterialRarity.COMMON]: 15,
+	[MaterialRarity.UNCOMMON]: 40,
+	[MaterialRarity.RARE]: 80
 };
 
 export const CookingXpConstants = {
@@ -229,9 +230,11 @@ export const CookingXpConstants = {
 } as const;
 
 /**
- * Failure rate penalty multiplier when recipe is above grade limit
+ * Level offset added to recipe level when calculating the failure rate penalty
+ * for recipes above the grade's max level without penalty.
+ * Formula: failureRate * (FAILURE_LEVEL_OFFSET + recipeLevel)
  */
-export const FAILURE_PENALTY_BASE = 18;
+export const FAILURE_LEVEL_OFFSET = 18;
 
 /**
  * If the recipe level exceeds the grade's max by this amount or more, no XP is gained

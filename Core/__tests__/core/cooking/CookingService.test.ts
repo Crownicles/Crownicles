@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import { CookingService } from "../../../src/core/cooking/CookingService";
 import {
-	getCookingGrade, CookingXpConstants, FAILURE_PENALTY_BASE,
+	getCookingGrade, CookingXpConstants, FAILURE_LEVEL_OFFSET,
 	PLANT_COOKING_XP, MATERIAL_RARITY_COOKING_XP
 } from "../../../../Lib/src/constants/CookingConstants";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
@@ -121,7 +121,7 @@ describe("CookingService - pure functions", () => {
 		it("should apply penalty when recipe level exceeds grade limit", () => {
 			const grade = getCookingGrade(0); // failureRate = 0.10, maxRecipeLevelWithoutPenalty = 2
 			const rate = CookingService.getFailureRate(grade, 5);
-			const expected = grade.failureRate * (FAILURE_PENALTY_BASE + 5);
+			const expected = grade.failureRate * (FAILURE_LEVEL_OFFSET + 5);
 			expect(rate).toBe(expected);
 		});
 
