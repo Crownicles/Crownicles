@@ -374,11 +374,12 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 		}
 	}
 
+	const refuseRow = new ActionRowBuilder<ButtonBuilder>();
 	const buttonRefuse = new ButtonBuilder()
 		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 		.setCustomId("refuse")
 		.setStyle(ButtonStyle.Secondary);
-	row.addComponents(buttonRefuse);
+	refuseRow.addComponents(buttonRefuse);
 
 	const shopItemNames = getShopItemNames(data, shopItemId, lng);
 
@@ -399,7 +400,7 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 					})
 				}`)
 		],
-		components: [row]
+		components: [row, refuseRow]
 	});
 
 	if (!msg) {
@@ -417,9 +418,9 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 		}
 
 		// Disable buttons instead of removing them
-		disableRows([row]);
+		disableRows([row, refuseRow]);
 
-		await buttonInteraction.update({ components: [row] });
+		await buttonInteraction.update({ components: [row, refuseRow] });
 
 		if (buttonInteraction.customId === "refuse") {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, packet.reactions.findIndex(r =>
@@ -435,9 +436,9 @@ async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket,
 
 	buttonCollector.on("end", async () => {
 		// Disable buttons instead of removing them
-		disableRows([row]);
+		disableRows([row, refuseRow]);
 
-		await msg.edit({ components: [row] });
+		await msg.edit({ components: [row, refuseRow] });
 	});
 }
 
