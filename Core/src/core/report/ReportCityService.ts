@@ -246,8 +246,9 @@ function buildManageOptions({
 	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
 	const upgrade = getUpgradeOption(homeLevel, player, isHomeInCity, city, homesCount);
 	const movePrice = getMovePrice(home, homeLevel, city, homesCount);
+	const hasAnyOption = newPrice || upgrade || movePrice;
 
-	if (!newPrice && !upgrade && !movePrice) {
+	if (!hasAnyOption) {
 		return undefined;
 	}
 	return {
