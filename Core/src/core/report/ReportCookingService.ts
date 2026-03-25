@@ -2,6 +2,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PetFood } from "../../../../Lib/src/types/PetFood";
+import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import {
 	CommandReportCookingIgniteReq,
 	CommandReportCookingIgniteRes,
@@ -35,13 +36,45 @@ import { giveItemToPlayer } from "../utils/ItemUtils";
 
 /**
  * Temporary in-memory store for pending wood confirmations.
- * Maps keycloakId → { materialId, rarity } so that when a player
+ * Maps keycloakId → { materialId, rarity, timeout } so that when a player
  * confirms, we know which wood was originally selected.
+ * Entries auto-expire after 5 minutes to prevent memory leaks.
  */
+const WOOD_CONFIRMATION_TTL_MS = 5 * 60 * 1000;
 const pendingWoodConfirmations = new Map<string, {
 	materialId: number;
-	rarity: number;
+	rarity: MaterialRarity;
+	timeout: ReturnType<typeof setTimeout>;
 }>();
+
+function setPendingWoodConfirmation(keycloakId: string, materialId: number, rarity: MaterialRarity): void {
+	const existing = pendingWoodConfirmations.get(keycloakId);
+	if (existing) {
+		clearTimeout(existing.timeout);
+	}
+	const timeout = setTimeout(() => pendingWoodConfirmations.delete(keycloakId), WOOD_CONFIRMATION_TTL_MS);
+	pendingWoodConfirmations.set(keycloakId, {
+		materialId,
+		rarity,
+		timeout
+	});
+}
+
+function consumePendingWoodConfirmation(keycloakId: string): {
+	materialId: number;
+	rarity: MaterialRarity;
+} | undefined {
+	const pending = pendingWoodConfirmations.get(keycloakId);
+	if (!pending) {
+		return undefined;
+	}
+	clearTimeout(pending.timeout);
+	pendingWoodConfirmations.delete(keycloakId);
+	return {
+		materialId: pending.materialId,
+		rarity: pending.rarity
+	};
+}
 
 async function getPlayerAndHome(keycloakId: string): Promise<{
 	player: NonNullable<Awaited<ReturnType<typeof Players.getByKeycloakId>>>;
@@ -138,10 +171,7 @@ async function igniteOrReviveFurnace(
 
 	// Non-common wood needs confirmation
 	if (wood.needsConfirmation) {
-		pendingWoodConfirmations.set(keycloakId, {
-			materialId: wood.materialId,
-			rarity: wood.rarity
-		});
+		setPendingWoodConfirmation(keycloakId, wood.materialId, wood.rarity);
 		response.push(makePacket(CommandReportCookingWoodConfirmReq, {
 			woodMaterialId: wood.materialId,
 			woodRarity: wood.rarity
@@ -179,8 +209,7 @@ export async function handleCookingWoodConfirm(
 	packet: CommandReportCookingWoodConfirmRes
 ): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
-	const pending = pendingWoodConfirmations.get(keycloakId);
-	pendingWoodConfirmations.delete(keycloakId);
+	const pending = consumePendingWoodConfirmation(keycloakId);
 
 	if (!packet.accepted || !pending) {
 		// Cancelled — return empty so Discord goes back to cooking menu

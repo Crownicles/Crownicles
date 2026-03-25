@@ -1,8 +1,9 @@
 import {
-	SLOT_CONFIGS, SLOT_SEED_OFFSETS, RecipeType, SlotConfig, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES
+	SLOT_CONFIGS, SLOT_SEED_OFFSETS, RecipeType, SlotConfig, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES, CookingOutputType
 } from "../../../../Lib/src/constants/CookingConstants";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 
 interface SlotRecipeSelectionOptions {
@@ -25,26 +26,12 @@ interface UniqueSlotRecipesOptions {
 }
 
 /**
- * Deterministic Fisher-Yates shuffle using a simple LCG seeded PRNG
- */
-function deterministicShuffle<T>(array: T[], seed: number): T[] {
-	const result = [...array];
-	let s = Math.abs(seed) | 1;
-	for (let i = result.length - 1; i > 0; i--) {
-		s = (s * 1103515245 + 12345) & 0x7fffffff;
-		const j = s % (i + 1);
-		[result[i], result[j]] = [result[j], result[i]];
-	}
-	return result;
-}
-
-/**
  * Get the ordered cycle of recipe types for a given slot on a given day
  */
 export function getSlotCycle(slotIndex: number, daySeed: number): RecipeType[] {
 	const config = SLOT_CONFIGS[slotIndex];
 	const slotSeed = daySeed + SLOT_SEED_OFFSETS[slotIndex];
-	return deterministicShuffle([...config.eligibleTypes], slotSeed);
+	return RandomUtils.deterministicShuffle([...config.eligibleTypes], slotSeed);
 }
 
 function getCandidatesForSlotType(
@@ -61,7 +48,7 @@ function getCandidatesForSlotType(
 	return CookingRecipeDataController.instance
 		.getByTypeAndLevelRange(recipeType, slotConfig.minLevel, effectiveMaxLevel)
 		.filter(recipe => (recipe.discoveredByDefault || discoveredRecipeIds.includes(recipe.id))
-			&& (allowPetFoodRecipes || recipe.outputType !== "petFood"));
+			&& (allowPetFoodRecipes || recipe.outputType !== CookingOutputType.PET_FOOD));
 }
 
 function getBaseCandidateIndex(

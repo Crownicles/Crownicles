@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import {
 	getCookingGrade, COOKING_GRADES, CookingXpConstants,
-	FAILURE_PENALTY_BASE, FURNACE_MAX_USES_PER_DAY,
+	FAILURE_LEVEL_OFFSET, FURNACE_MAX_USES_PER_DAY,
 	GASPARD_JO_RECIPE_COSTS, FARMER_RECIPE_COSTS,
 	SLOT_CONFIGS, SLOT_SEED_OFFSETS
 } from "../../../../Lib/src/constants/CookingConstants";
