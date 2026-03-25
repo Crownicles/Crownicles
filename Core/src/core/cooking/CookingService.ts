@@ -60,8 +60,8 @@ interface CraftResult {
 	xpGained: number;
 	materialSaved: number | undefined;
 	levelUp: boolean;
-	newLevel: number | undefined;
-	newGrade: string | undefined;
+	newLevel?: number;
+	newGrade?: string;
 	discoveredRecipeIds: string[];
 }
 

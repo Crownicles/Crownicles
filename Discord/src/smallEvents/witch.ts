@@ -9,7 +9,9 @@ import {
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { ReactionCollectorWitchPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorWitch";
-import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
+import {
+	buildRecipeDiscoveryMessage, getRandomSmallEventIntro
+} from "../utils/SmallEventUtils";
 import { StringUtils } from "../utils/StringUtils";
 import { SmallEventWitchResultPacket } from "../../../Lib/src/packets/smallEvents/SmallEventWitchPacket";
 import { Effect } from "../../../Lib/src/types/Effect";
@@ -118,10 +120,7 @@ export async function witchResult(packet: SmallEventWitchResultPacket, context: 
 	})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${timeOutro}`;
 
 	if (packet.discoveredRecipeId) {
-		description += `\n\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
-			lng,
-			recipe: i18n.t(`models:cooking.recipes.${packet.discoveredRecipeId}`, { lng })
-		})}`;
+		description += `\n\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeId, lng)}`;
 	}
 
 	await (interaction.isRepliable() ? interaction.followUp : interaction.editReply).bind(interaction)({

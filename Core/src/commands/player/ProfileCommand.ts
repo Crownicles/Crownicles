@@ -93,7 +93,7 @@ async function resolveGloryRank(player: Player): Promise<number> {
 /**
  * Resolve map type ID from a destination
  */
-function resolveMapTypeId(destinationId: number | null): number | undefined {
+function resolveMapTypeId(destinationId: number | null): string | undefined {
 	if (!destinationId) {
 		return undefined;
 	}
