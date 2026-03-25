@@ -172,7 +172,9 @@ async function buildManageHomeData(params: {
 	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
 	const homesCount = await Homes.getHomesCount();
 
-	const manageOptions = buildManageOptions(home, homeLevel, city, player, isHomeInCity, homesCount);
+	const manageOptions = buildManageOptions({
+		home, homeLevel, city, player, isHomeInCity, homesCount
+	});
 	if (manageOptions) {
 		return {
 			...manageOptions,
@@ -193,26 +195,57 @@ interface ManageOptions {
 	movePrice?: number;
 }
 
-function buildManageOptions(
+interface BuildManageOptionsParams {
+	home: Home | null;
+	homeLevel: HomeLevel | null;
+	city: City;
+	player: Player;
+	isHomeInCity: boolean;
+	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>;
+}
+
+function getUpgradeOption(
+	homeLevel: HomeLevel | null,
+	player: Player,
+	isHomeInCity: boolean,
+	city: City,
+	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
+): ManageOptions["upgrade"] {
+	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
+	if (!nextHomeUpgrade || !isHomeInCity) {
+		return undefined;
+	}
+	return {
+		price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
+		oldFeatures: homeLevel!.features,
+		newFeatures: nextHomeUpgrade.features
+	};
+}
+
+function getMovePrice(
 	home: Home | null,
 	homeLevel: HomeLevel | null,
 	city: City,
-	player: Player,
-	isHomeInCity: boolean,
 	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
-): ManageOptions | undefined {
-	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
+): number | undefined {
+	const canMove = home && home.cityId !== city.id && homeLevel;
+	if (!canMove) {
+		return undefined;
+	}
+	return city.getHomeLevelPrice(homeLevel!, homesCount);
+}
+
+function buildManageOptions({
+	home,
+	homeLevel,
+	city,
+	player,
+	isHomeInCity,
+	homesCount
+}: BuildManageOptionsParams): ManageOptions | undefined {
 	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
-	const upgrade = nextHomeUpgrade && isHomeInCity
-		? {
-			price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
-			oldFeatures: homeLevel!.features,
-			newFeatures: nextHomeUpgrade.features
-		}
-		: undefined;
-	const movePrice = home && home.cityId !== city.id && homeLevel
-		? city.getHomeLevelPrice(homeLevel, homesCount)
-		: undefined;
+	const upgrade = getUpgradeOption(homeLevel, player, isHomeInCity, city, homesCount);
+	const movePrice = getMovePrice(home, homeLevel, city, homesCount);
 
 	if (!newPrice && !upgrade && !movePrice) {
 		return undefined;

@@ -59,12 +59,19 @@ function getCandidatesForSlotType({
 			&& (allowPetFoodRecipes || recipe.outputType !== CookingOutputType.PET_FOOD));
 }
 
-function getBaseCandidateIndex(
-	slotIndex: number,
-	furnacePosition: number,
-	daySeed: number,
-	candidatesLength: number
-): number {
+interface BaseCandidateIndexOptions {
+	slotIndex: number;
+	furnacePosition: number;
+	daySeed: number;
+	candidatesLength: number;
+}
+
+function getBaseCandidateIndex({
+	slotIndex,
+	furnacePosition,
+	daySeed,
+	candidatesLength
+}: BaseCandidateIndexOptions): number {
 	const tierSeed = daySeed * 7 + furnacePosition * 13 + slotIndex * 97;
 	return Math.abs(tierSeed) % candidatesLength;
 }
@@ -111,7 +118,12 @@ export function getRecipeForSlotExcluding({
 			continue;
 		}
 
-		const baseIndex = getBaseCandidateIndex(slotIndex, furnacePosition, daySeed, candidates.length);
+		const baseIndex = getBaseCandidateIndex({
+			slotIndex,
+			furnacePosition,
+			daySeed,
+			candidatesLength: candidates.length
+		});
 		const recipe = pickCandidateWithoutDuplicates(candidates, baseIndex, excludedRecipeIds);
 		if (recipe) {
 			return recipe;
@@ -121,13 +133,21 @@ export function getRecipeForSlotExcluding({
 	return null;
 }
 
-function guaranteePlayerLevelRecipes(
-	recipes: Array<CookingRecipe | null>,
-	usedRecipeIds: Set<string>,
-	slotCount: number,
-	maxRecipeLevelWithoutPenalty: number | undefined,
-	baseOptions: Pick<SlotRecipeSelectionOptions, "furnacePosition" | "daySeed" | "discoveredRecipeIds" | "allowPetFoodRecipes">
-): void {
+interface GuaranteePlayerLevelRecipesOptions {
+	recipes: Array<CookingRecipe | null>;
+	usedRecipeIds: Set<string>;
+	slotCount: number;
+	maxRecipeLevelWithoutPenalty: number | undefined;
+	baseOptions: Pick<SlotRecipeSelectionOptions, "furnacePosition" | "daySeed" | "discoveredRecipeIds" | "allowPetFoodRecipes">;
+}
+
+function guaranteePlayerLevelRecipes({
+	recipes,
+	usedRecipeIds,
+	slotCount,
+	maxRecipeLevelWithoutPenalty,
+	baseOptions
+}: GuaranteePlayerLevelRecipesOptions): void {
 	if (maxRecipeLevelWithoutPenalty === undefined) {
 		return;
 	}
@@ -172,7 +192,9 @@ export function getUniqueRecipesForSlots({
 	};
 
 	// Pass 1: guarantee player-level recipes in eligible slots
-	guaranteePlayerLevelRecipes(recipes, usedRecipeIds, slotCount, maxRecipeLevelWithoutPenalty, baseOptions);
+	guaranteePlayerLevelRecipes({
+		recipes, usedRecipeIds, slotCount, maxRecipeLevelWithoutPenalty, baseOptions
+	});
 
 	// Pass 2: normal selection for remaining slots
 	for (let slotIndex = 0; slotIndex < slotCount; slotIndex++) {
@@ -198,30 +220,34 @@ export function getUniqueRecipesForSlots({
 /**
  * Determine which recipe should appear in a slot at a given furnace position
  */
-export function getRecipeForSlot(
-	slotIndex: number,
-	furnacePosition: number,
-	daySeed: number,
-	discoveredRecipeIds: string[]
-): CookingRecipe | null {
+export function getRecipeForSlot(options: {
+	slotIndex: number;
+	furnacePosition: number;
+	daySeed: number;
+	discoveredRecipeIds: string[];
+}): CookingRecipe | null {
 	return getRecipeForSlotExcluding({
-		slotIndex,
-		furnacePosition,
-		daySeed,
-		discoveredRecipeIds,
+		...options,
 		excludedRecipeIds: new Set<string>()
 	});
+}
+
+interface RecipeSecretOptions {
+	slotIndex: number;
+	furnacePosition: number;
+	daySeed: number;
+	secretRate: number;
 }
 
 /**
  * Determine if a recipe in a slot should be secret (output hidden)
  */
-export function isRecipeSecret(
-	slotIndex: number,
-	furnacePosition: number,
-	daySeed: number,
-	secretRate: number
-): boolean {
+export function isRecipeSecret({
+	slotIndex,
+	furnacePosition,
+	daySeed,
+	secretRate
+}: RecipeSecretOptions): boolean {
 	const secretSeed = daySeed * 11 + furnacePosition * 23 + slotIndex * 131;
 	const pseudoRandom = ((secretSeed * 1103515245 + 12345) & 0x7fffffff) / 0x7fffffff;
 	return pseudoRandom < secretRate;

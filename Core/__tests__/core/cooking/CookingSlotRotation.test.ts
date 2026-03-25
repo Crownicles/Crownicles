@@ -45,15 +45,21 @@ describe("CookingSlotRotation", () => {
 		it("should return null when no discovered recipes match", () => {
 			// Empty discovered list means only discoveredByDefault recipes
 			// Slot 3 (potions only, level 3-8) — may have no match for empty list
-			const result = getRecipeForSlot(3, 0, 12345, []);
+			const result = getRecipeForSlot({
+				slotIndex: 3, furnacePosition: 0, daySeed: 12345, discoveredRecipeIds: []
+			});
 			// Result depends on data, but should not crash
 			expect(result === null || typeof result.id === "string").toBe(true);
 		});
 
 		it("should be deterministic for same parameters", () => {
 			const discovered = ["potion_health_1", "potion_health_2", "potion_energy_1"];
-			const a = getRecipeForSlot(0, 5, 42, discovered);
-			const b = getRecipeForSlot(0, 5, 42, discovered);
+			const a = getRecipeForSlot({
+				slotIndex: 0, furnacePosition: 5, daySeed: 42, discoveredRecipeIds: discovered
+			});
+			const b = getRecipeForSlot({
+				slotIndex: 0, furnacePosition: 5, daySeed: 42, discoveredRecipeIds: discovered
+			});
 			expect(a?.id).toEqual(b?.id);
 		});
 
@@ -62,7 +68,9 @@ describe("CookingSlotRotation", () => {
 			const seed = 100;
 			const recipes = [];
 			for (let pos = 0; pos < 10; pos++) {
-				recipes.push(getRecipeForSlot(0, pos, seed, discovered));
+				recipes.push(getRecipeForSlot({
+					slotIndex: 0, furnacePosition: pos, daySeed: seed, discoveredRecipeIds: discovered
+				}));
 			}
 			// Should have variation (not all the same recipe)
 			const ids = recipes.filter(r => r !== null).map(r => r!.id);
@@ -182,8 +190,12 @@ describe("CookingSlotRotation", () => {
 
 	describe("isRecipeSecret", () => {
 		it("should be deterministic for same inputs", () => {
-			const a = isRecipeSecret(0, 3, 42, 0.5);
-			const b = isRecipeSecret(0, 3, 42, 0.5);
+			const a = isRecipeSecret({
+				slotIndex: 0, furnacePosition: 3, daySeed: 42, secretRate: 0.5
+			});
+			const b = isRecipeSecret({
+				slotIndex: 0, furnacePosition: 3, daySeed: 42, secretRate: 0.5
+			});
 			expect(a).toBe(b);
 		});
 
@@ -191,7 +203,9 @@ describe("CookingSlotRotation", () => {
 			// With rate 0, no recipe should ever be secret
 			let anySecret = false;
 			for (let i = 0; i < 100; i++) {
-				if (isRecipeSecret(0, i, i * 7, 0)) {
+				if (isRecipeSecret({
+					slotIndex: 0, furnacePosition: i, daySeed: i * 7, secretRate: 0
+				})) {
 					anySecret = true;
 				}
 			}
@@ -202,7 +216,9 @@ describe("CookingSlotRotation", () => {
 			// With rate 1.0, all should be secret
 			let allSecret = true;
 			for (let i = 0; i < 100; i++) {
-				if (!isRecipeSecret(0, i, i * 7, 1)) {
+				if (!isRecipeSecret({
+					slotIndex: 0, furnacePosition: i, daySeed: i * 7, secretRate: 1
+				})) {
 					allSecret = false;
 				}
 			}

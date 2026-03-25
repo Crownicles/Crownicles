@@ -225,7 +225,12 @@ export class CookingService {
 				continue;
 			}
 
-			const secret = isRecipeSecret(i, player.furnacePosition, daySeed, grade.secretRecipeRate);
+			const secret = isRecipeSecret({
+				slotIndex: i,
+				furnacePosition: player.furnacePosition,
+				daySeed,
+				secretRate: grade.secretRecipeRate
+			});
 
 			// Check ingredient availability
 			const plantAvailability = recipe.plants.map(p => ({
