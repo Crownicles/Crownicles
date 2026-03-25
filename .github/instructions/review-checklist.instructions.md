@@ -15,17 +15,23 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Data tags over hardcoded ID lists** — when items share a property (e.g., fire affinity), add a tag to the data JSON files (e.g., `"tags": ["fire"]`) and check via `ItemConstants.TAGS.X` instead of maintaining a static list of IDs in constants
 - [ ] **Constants in the right location** — shared constants go in `Lib/src/constants/`, not duplicated across services
 - [ ] **No duplicate constants** — search for similar values already defined elsewhere before creating new ones
+- [ ] **Magic numbers as named constants** — any numeric literal in algorithms (primes, multipliers, masks) must be a named constant. Trivial values (0, 1, -1) in obvious contexts are acceptable
+- [ ] **Pre-compute derived constants** — when a constant is always used in a derived form (e.g., hours → milliseconds), compute the derived value at the constant definition level (`FOO_MS = FOO_HOURS * 3_600_000`) and use that directly. Don't repeat the conversion formula at every call site
 
 ## 2. TypeScript Types
 
 - [ ] **Explicit return types** on all functions (enforced by ESLint `@typescript-eslint/explicit-function-return-type`)
 - [ ] **Derived union types** from `as const` objects using `typeof Object[keyof typeof Object]` — avoid raw `string` when a finite set of values exists
 - [ ] **Type aliases for repeated inline types** — if an inline type `{ slot: number; category: ItemCategory }` appears 2+ times, extract it to a named type
+- [ ] **Extract nested type accessors** — avoid repeating `SomeType["nested"]["field"][number]` across functions; extract to a `type Alias = SomeType["nested"]["field"][number]` and reference the alias
 - [ ] **Shared types in `Lib/src/types/`** — types used across multiple packets or services must be extracted to a dedicated file in `Lib/src/types/`, not defined inline in packet files or duplicated across consumers
 - [ ] **No `any`** — use proper types or generics
 - [ ] **No unnecessary type assertions** — don't cast to `readonly T[]` or force types when the type is already correctly inferred; let TypeScript's inference do the work
+- [ ] **Avoid `NonNullable<Awaited<ReturnType<...>>>`** — when a concrete model type exists (e.g., `Player`, `Home`, `Guild`), import and use it directly instead of deriving the type from a function's return type
 - [ ] **Replace `null` with semantic values** — when `null` has a specific meaning (e.g., "not applicable"), use a named enum/constant (e.g., `NON_APPLICABLE = -3`) instead of `| null` everywhere
 - [ ] **Parameter object pattern** for functions with 4+ arguments — group related parameters into a single options object
+- [ ] **Group related optional fields into sub-objects** — instead of flat `petFoodType?`, `petFoodQuantity?`, `petFoodLovePoints?`, group into `petFood?: { type; quantity; lovePoints }`. This makes the relationship explicit and simplifies partial updates and spread operations
+- [ ] **Use TypeScript overloads** when a function accepts multiple input types and returns a correspondingly typed output (e.g., `buildResponse(IgniteRes, params): IgniteRes` / `buildResponse(ReviveRes, params): ReviveRes`)
 
 ## 3. Code Complexity
 
@@ -36,6 +42,10 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Inline collectors extracted** — `createCollector` callbacks in menu builders should be extracted to named functions, not defined inline in the return object
 - [ ] **Large files split by responsibility** — files with big switch statements covering many cases (e.g., one case per shop reaction) should be split into one file per case/handler
 - [ ] **Max 4 function arguments** (CodeScene "Excess Number of Function Arguments") — use parameter objects for 5+
+- [ ] **Early null checks / guard clauses** — when a nullable value is checked in 2+ downstream functions, validate it once at the top and pass guaranteed non-null values to sub-functions. Don't repeat the same `if (!x) return` in every helper
+- [ ] **Use spread for field forwarding** — when passing 3+ fields from one object to another with the same keys, use `...obj` spread instead of listing fields one by one. Also prefer destructuring `const { unwanted, ...rest } = obj` to separate fields
+- [ ] **Consistent parameter order across sibling functions** — related functions (e.g., handlers for the same feature) should use the same parameter order (e.g., `context, player, recipe` not `player, context, recipe` in one and `context, player` in another)
+- [ ] **No boolean expression bugs** — watch for `x === null || undefined` (always truthy) instead of `x === null` or `x == null`. These are subtle bugs that TypeScript may not catch
 
 ## 4. Imports & Module Organization
 
@@ -51,6 +61,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Cross-file duplicate functions** — search for identical or near-identical private functions across command files (e.g., `withUnlimitedMaxValue` in both EquipCommand and ChestFeatureHandler) and move to a shared utility class
 - [ ] **TypeScript overloads over duplicated functions** — when two functions differ only by type parameters/return types (e.g., `getBlacksmithUpgradeItem`/`getBlacksmithDisenchantItem`), use TypeScript function overloads with a single implementation
 - [ ] **Reuse existing Lib utilities** — before implementing utility logic (e.g., `frac()`, `getWeekNumber()`), check if a shared function already exists in `Lib/src/utils/`
+- [ ] **Domain logic belongs on the model** — if a check or computation is intrinsic to an entity (e.g., `isFoodCompatibleWithPet` belongs on `Pet`), place it as a method on the model class rather than in an unrelated service
 - [ ] **Translation keys shared when appropriate** — if multiple commands use the same labels (e.g., category names), put them in a shared namespace (`items.json` not `commands.json`)
 
 ## 6. Translations (i18n)
@@ -65,6 +76,8 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 ## 7. Dead Code & Cleanup
 
 - [ ] **Remove unused imports, variables, and functions** — don't leave commented-out code or unreachable paths
+- [ ] **Remove useless wrapper functions** — if a function only forwards to another with the exact same arguments and adds no logic, remove the wrapper and call the target directly
+- [ ] **No useless constant aliases** — don't create a local alias for an imported constant that adds no semantic value (e.g., `const RECIPES = CookingConstants.RECIPES;`); use the original directly
 - [ ] **Update related comments** when code changes — don't leave outdated "TODO" or "Future features" comments
 - [ ] **Remove default cases that are unreachable** — if a switch exhausts all enum values, the default clause is dead code (or use it for the last case)
 
