@@ -173,6 +173,34 @@ function createMainMenuCollector(ctx: EquipMenuContext): (nestedMenus: Crownicle
  */
 
 /**
+ * Build a simplified swap section when there is exactly 1 equipped item and 1 reserve item.
+ * Shows both items and a single swap button.
+ */
+function buildSwapSection(
+	ctx: EquipMenuContext,
+	categoryData: EquipCategoryData,
+	catInfo: typeof CATEGORY_INFO[number],
+	rows: ActionRowBuilder<ButtonBuilder>[]
+): string {
+	const reserveItem = categoryData.reserveItems[0];
+	const equippedDetails = DisplayUtils.withUnlimitedMaxValue(categoryData.equippedItem!.details, catInfo.category);
+	const reserveDetails = DisplayUtils.withUnlimitedMaxValue(reserveItem.details, catInfo.category);
+
+	let description = `\n\n${i18n.t("commands:equip.swapSection", { lng: ctx.lng })}`;
+	description += `\n${CrowniclesIcons.equipCommand.equipped} ${DisplayUtils.getItemDisplayWithStats(equippedDetails, ctx.lng)}`;
+	description += `\n${CrowniclesIcons.equipCommand.reserve} ${DisplayUtils.getItemDisplayWithStats(reserveDetails, ctx.lng)}`;
+
+	const button = new ButtonBuilder()
+		.setEmoji(parseEmoji(CrowniclesIcons.equipCommand.swap)!)
+		.setCustomId(`${EQUIP_MENU_IDS.EQUIP_PREFIX}${catInfo.category}_${reserveItem.slot}`)
+		.setStyle(ButtonStyle.Primary);
+
+	rows[rows.length - 1].addComponents(button);
+
+	return description;
+}
+
+/**
  * Build the "equipped item" section: description text + deposit button.
  */
 function buildEquippedSection(
@@ -335,9 +363,16 @@ function buildCategoryDetailMenu(
 		category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })
 	});
 
-	const equipped = buildEquippedSection(ctx, categoryData, catInfo, rows);
-	description += equipped.description;
-	description += buildReserveSection(ctx, categoryData, catInfo, rows, equipped.choiceIndex);
+	const isSingleSwap = categoryData.equippedItem !== null && categoryData.reserveItems.length === 1;
+
+	if (isSingleSwap) {
+		description += buildSwapSection(ctx, categoryData, catInfo, rows);
+	}
+	else {
+		const equipped = buildEquippedSection(ctx, categoryData, catInfo, rows);
+		description += equipped.description;
+		description += buildReserveSection(ctx, categoryData, catInfo, rows, equipped.choiceIndex);
+	}
 
 	addBackButton(rows);
 
