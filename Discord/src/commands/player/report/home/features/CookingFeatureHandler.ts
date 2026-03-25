@@ -669,8 +669,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (response.outputType === CookingOutputType.PET_FOOD && response.petFoodType !== undefined && response.petFoodQuantity !== undefined) {
-			const foodName = i18n.t(`commands:guildStorage.food.names.${response.petFoodType}`, { lng: ctx.lng });
 			const storedQuantity = response.petFoodStoredQuantity ?? response.petFoodQuantity;
+			const foodName = i18n.t(`models:foods.${response.petFoodType}`, {
+				lng: ctx.lng,
+				count: storedQuantity
+			});
 
 			if (storedQuantity > 0) {
 				message += `\n${i18n.t("commands:report.city.homes.cooking.petFoodStored", {
