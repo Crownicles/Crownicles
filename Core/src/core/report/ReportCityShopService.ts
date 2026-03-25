@@ -54,6 +54,15 @@ export interface CityShopReactionParams {
 	response: CrowniclesPacket[];
 }
 
+const SHOP_HANDLERS: Record<string, (player: Player, context: PacketContext, response: CrowniclesPacket[]) => Promise<void>> = {
+	royalMarket: openRoyalMarket,
+	generalShop: openGeneralShop,
+	stockExchange: openStockExchange,
+	tanner: openTanner,
+	herbalist: openHerbalist,
+	lumberjack: openLumberjack
+};
+
 export async function handleCityShopReaction(params: CityShopReactionParams): Promise<void> {
 	const {
 		player, city, shopId, context, response
@@ -63,41 +72,32 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		return;
 	}
 
-	switch (shopId) {
-		case "royalMarket":
-			await openRoyalMarket(player, context, response);
-			break;
-		case "generalShop":
-			await openGeneralShop(player, context, response);
-			break;
-		case "stockExchange":
-			await openStockExchange(player, context, response);
-			break;
-		case "tanner":
-			await openTanner(player, context, response);
-			break;
-		case "herbalist":
-			await openHerbalist(player, context, response);
-			break;
-		case "lumberjack":
-			await openLumberjack(player, context, response);
-			break;
-		default:
-			CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
-			break;
+	const handler = SHOP_HANDLERS[shopId];
+	if (!handler) {
+		CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
+		return;
 	}
+	await handler(player, context, response);
+}
+
+interface GemShopOptions {
+	player: Player;
+	context: PacketContext;
+	response: CrowniclesPacket[];
+	shopCategories: ShopCategory[];
+	additionalShopData?: Record<string, unknown>;
 }
 
 /**
  * Open a gem-based shop with gemToMoneyRatio in additional data
  */
-async function openGemShop(
-	player: Player,
-	context: PacketContext,
-	response: CrowniclesPacket[],
-	shopCategories: ShopCategory[],
-	additionalShopData?: Record<string, unknown>
-): Promise<void> {
+async function openGemShop({
+	player,
+	context,
+	response,
+	shopCategories,
+	additionalShopData
+}: GemShopOptions): Promise<void> {
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
@@ -113,19 +113,25 @@ async function openGemShop(
  * Open the royal market shop for the player
  */
 export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
-	await openGemShop(player, context, response, [
-		{
-			id: "resources",
-			items: [
-				getMoneyShopItem(),
-				getValuableItemShopItem()
-			]
-		},
-		{
-			id: "prestige",
-			items: [getAThousandPointsShopItem()]
-		}
-	], { currency: ShopCurrency.GEM });
+	await openGemShop({
+		player,
+		context,
+		response,
+		shopCategories: [
+			{
+				id: "resources",
+				items: [
+					getMoneyShopItem(),
+					getValuableItemShopItem()
+				]
+			},
+			{
+				id: "prestige",
+				items: [getAThousandPointsShopItem()]
+			}
+		],
+		additionalShopData: { currency: ShopCurrency.GEM }
+	});
 }
 
 /**
@@ -162,16 +168,21 @@ export async function openGeneralShop(player: Player, context: PacketContext, re
  * Open the stock exchange shop for the player (money mouth badge + gem exchange rate info)
  */
 export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
-	await openGemShop(player, context, response, [
-		{
-			id: "permanentItem",
-			items: [getBadgeShopItem()]
-		},
-		{
-			id: "services",
-			items: [getMarketAnalysisShopItem()]
-		}
-	]);
+	await openGemShop({
+		player,
+		context,
+		response,
+		shopCategories: [
+			{
+				id: "permanentItem",
+				items: [getBadgeShopItem()]
+			},
+			{
+				id: "services",
+				items: [getMarketAnalysisShopItem()]
+			}
+		]
+	});
 }
 
 /**

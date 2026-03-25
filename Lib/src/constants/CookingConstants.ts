@@ -237,6 +237,12 @@ export const CookingXpConstants = {
 export const FAILURE_LEVEL_OFFSET = 18;
 
 /**
+ * Alias to preserve naming compatibility while clarifying intent.
+ * This constant is an offset applied to recipe level in failure penalty.
+ */
+export const FAILURE_LEVEL_PENALTY_OFFSET = FAILURE_LEVEL_OFFSET;
+
+/**
  * If the recipe level exceeds the grade's max by this amount or more, no XP is gained
  */
 export const NO_XP_LEVEL_THRESHOLD = 3;

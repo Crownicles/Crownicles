@@ -381,6 +381,35 @@ interface CraftOutputParams {
 	guild: Awaited<ReturnType<typeof CookingService.getPlayerGuild>>;
 }
 
+function processSuccessfulCraftOutput(
+	context: PacketContext,
+	player: CraftOutputParams["player"],
+	recipe: CookingRecipeData,
+	guild: CraftOutputParams["guild"]
+): Promise<CraftOutputResult> | CraftOutputResult {
+	switch (recipe.outputType) {
+		case CookingOutputType.POTION:
+			return handlePotionOutput(context, player, recipe);
+		case CookingOutputType.PET_FOOD:
+			return guild ? handlePetFoodOutput(player, recipe, guild) : {};
+		case CookingOutputType.MATERIAL:
+			return handleMaterialOutput(player, recipe);
+		default:
+			return {};
+	}
+}
+
+function processFailedCraftOutput(
+	context: PacketContext,
+	player: CraftOutputParams["player"],
+	recipe: CookingRecipeData
+): Promise<CraftOutputResult> | CraftOutputResult {
+	if (recipe.outputType === CookingOutputType.POTION) {
+		return handleFailedPotionOutput(context, player);
+	}
+	return {};
+}
+
 function processCraftOutput({
 	context,
 	player,
@@ -388,19 +417,27 @@ function processCraftOutput({
 	result,
 	guild
 }: CraftOutputParams): Promise<CraftOutputResult> | CraftOutputResult {
-	if (result.success && recipe.outputType === CookingOutputType.POTION) {
-		return handlePotionOutput(context, player, recipe);
+	if (!result.success) {
+		return processFailedCraftOutput(context, player, recipe);
 	}
-	if (result.success && recipe.outputType === CookingOutputType.PET_FOOD && guild) {
-		return handlePetFoodOutput(player, recipe, guild);
+	return processSuccessfulCraftOutput(context, player, recipe, guild);
+}
+
+function validateCraftRequest(
+	slot: Awaited<ReturnType<typeof CookingService.getSlotRecipes>>[number] | undefined,
+	recipe: CookingRecipeData | undefined,
+	guild: Awaited<ReturnType<typeof CookingService.getPlayerGuild>>
+): CookingCraftError | null {
+	if (!slot?.recipe || !recipe) {
+		return CookingCraftErrors.CRAFT_UNAVAILABLE;
 	}
-	if (result.success && recipe.outputType === CookingOutputType.MATERIAL) {
-		return handleMaterialOutput(player, recipe);
+	if (recipe.outputType === CookingOutputType.PET_FOOD && !guild) {
+		return CookingCraftErrors.GUILD_REQUIRED;
 	}
-	if (!result.success && recipe.outputType === CookingOutputType.POTION) {
-		return handleFailedPotionOutput(context, player);
+	if (!slot.recipe.canCraft) {
+		return CookingCraftErrors.CRAFT_UNAVAILABLE;
 	}
-	return {};
+	return null;
 }
 
 export async function handleCookingCraft(
@@ -420,55 +457,29 @@ export async function handleCookingCraft(
 	// Get the current slots to find the recipe at the requested slot
 	const slots = await CookingService.getSlotRecipes(player, home.id, cookingSlots);
 	const slot = slots.find(s => s.slotIndex === packet.slotIndex);
-	if (!slot?.recipe) {
-		response.push(makePacket(CommandReportCookingCraftRes, {
-			success: false,
-			recipeId: "",
-			wasSecret: false,
-			outputType: CookingOutputType.POTION,
-			cookingXpGained: 0,
-			cookingLevelUp: false,
-			error: CookingCraftErrors.CRAFT_UNAVAILABLE,
-			updatedSlots: slots
-		}));
-		return response;
-	}
-
-	const recipe = CookingRecipeDataController.instance.getById(slot.recipe.id);
-	if (!recipe) {
-		return response;
-	}
-
+	const recipe = slot?.recipe ? CookingRecipeDataController.instance.getById(slot.recipe.id) : undefined;
 	const guild = await CookingService.getPlayerGuild(player);
-	if (recipe.outputType === CookingOutputType.PET_FOOD && !guild) {
+
+	const validationError = validateCraftRequest(slot, recipe, guild);
+	if (validationError) {
 		response.push(await buildBlockedCraftResponse({
 			player,
 			homeId: home.id,
 			cookingSlots,
-			error: CookingCraftErrors.GUILD_REQUIRED,
-			recipeId: recipe.id,
-			wasSecret: slot.recipe.isSecret,
-			outputType: recipe.outputType
+			error: validationError,
+			recipeId: recipe?.id ?? "",
+			wasSecret: slot?.recipe?.isSecret ?? false,
+			outputType: recipe?.outputType ?? CookingOutputType.POTION
 		}));
 		return response;
 	}
 
-	// Verify ingredients are still available
-	if (!slot.recipe.canCraft) {
-		response.push(await buildBlockedCraftResponse({
-			player,
-			homeId: home.id,
-			cookingSlots,
-			error: CookingCraftErrors.CRAFT_UNAVAILABLE,
-			recipeId: recipe.id,
-			wasSecret: slot.recipe.isSecret,
-			outputType: recipe.outputType
-		}));
-		return response;
-	}
+	// After validation, recipe and slot.recipe are guaranteed to exist
+	const validatedRecipe = recipe!;
+	const validatedSlotRecipe = slot!.recipe!;
 
 	// Execute the craft
-	const result = await CookingService.executeCraft(player, recipe, home.id);
+	const result = await CookingService.executeCraft(player, validatedRecipe, home.id);
 
 	// Determine and apply output
 	const {
@@ -476,7 +487,7 @@ export async function handleCookingCraft(
 	} = await processCraftOutput({
 		context,
 		player,
-		recipe,
+		recipe: validatedRecipe,
 		result,
 		guild
 	});
@@ -485,9 +496,9 @@ export async function handleCookingCraft(
 
 	response.push(makePacket(CommandReportCookingCraftRes, {
 		success: result.success,
-		recipeId: recipe.id,
-		wasSecret: slot.recipe.isSecret,
-		outputType: recipe.outputType,
+		recipeId: validatedRecipe.id,
+		wasSecret: validatedSlotRecipe.isSecret,
+		outputType: validatedRecipe.outputType,
 		...outputFields,
 		cookingXpGained: result.xpGained,
 		cookingLevelUp: result.levelUp,
