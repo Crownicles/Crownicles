@@ -188,7 +188,8 @@ export class CookingService {
 			furnacePosition: player.furnacePosition,
 			daySeed,
 			discoveredRecipeIds: discoveredIds,
-			allowPetFoodRecipes: Boolean(guild)
+			allowPetFoodRecipes: Boolean(guild),
+			maxRecipeLevelWithoutPenalty: grade.maxRecipeLevelWithoutPenalty
 		});
 
 		const slots: CookingSlotData[] = [];
@@ -319,7 +320,7 @@ export class CookingService {
 			player.cookingLevel++;
 			levelUp = true;
 			newLevel = player.cookingLevel;
-			newGrade = getCookingGrade(player.cookingLevel).name;
+			newGrade = getCookingGrade(player.cookingLevel).id;
 		}
 
 		await player.save();

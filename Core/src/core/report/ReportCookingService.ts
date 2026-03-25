@@ -1,6 +1,7 @@
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { PetFood } from "../../../../Lib/src/types/PetFood";
 import {
 	CommandReportCookingIgniteReq,
 	CommandReportCookingIgniteRes,
@@ -17,7 +18,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingService } from "../cooking/CookingService";
-import { recipeRegistry } from "../cooking/RecipeRegistry";
+import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 import {
 	Players
 } from "../database/game/models/Player";
@@ -79,7 +80,7 @@ function buildIgniteOrReviveResponse(
 		woodConsumed,
 		woodMaterialId,
 		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - furnaceUsesToday,
-		cookingGrade: getCookingGrade(cookingLevel).name,
+		cookingGrade: getCookingGrade(cookingLevel).id,
 		cookingLevel
 	});
 }
@@ -246,7 +247,7 @@ export async function handleCookingCraft(
 		return response;
 	}
 
-	const recipe = recipeRegistry.getById(slot.recipe.id);
+	const recipe = CookingRecipeDataController.instance.getById(slot.recipe.id);
 	if (!recipe) {
 		return response;
 	}
@@ -284,7 +285,7 @@ export async function handleCookingCraft(
 
 	// Determine output
 	let potionId: number | undefined;
-	let petFoodType: string | undefined;
+	let petFoodType: PetFood | undefined;
 	let petFoodQuantity: number | undefined;
 	let petFoodStoredQuantity: number | undefined;
 	let petFedFromSurplus: boolean | undefined;

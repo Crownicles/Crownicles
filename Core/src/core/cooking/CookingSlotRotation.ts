@@ -1,9 +1,9 @@
 import {
-	SLOT_CONFIGS, SLOT_SEED_OFFSETS, RecipeType, SlotConfig
+	SLOT_CONFIGS, SLOT_SEED_OFFSETS, RecipeType, SlotConfig, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES
 } from "../../../../Lib/src/constants/CookingConstants";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
-import { recipeRegistry } from "./RecipeRegistry";
+import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 
 interface SlotRecipeSelectionOptions {
 	slotIndex: number;
@@ -12,6 +12,7 @@ interface SlotRecipeSelectionOptions {
 	discoveredRecipeIds: string[];
 	excludedRecipeIds: ReadonlySet<string>;
 	allowPetFoodRecipes?: boolean;
+	maxRecipeLevel?: number;
 }
 
 interface UniqueSlotRecipesOptions {
@@ -20,6 +21,7 @@ interface UniqueSlotRecipesOptions {
 	daySeed: number;
 	discoveredRecipeIds: string[];
 	allowPetFoodRecipes?: boolean;
+	maxRecipeLevelWithoutPenalty?: number;
 }
 
 /**
@@ -49,11 +51,15 @@ function getCandidatesForSlotType(
 	slotIndex: number,
 	recipeType: RecipeType,
 	discoveredRecipeIds: string[],
-	allowPetFoodRecipes: boolean
+	allowPetFoodRecipes: boolean,
+	maxLevelOverride?: number
 ): CookingRecipe[] {
 	const slotConfig: SlotConfig = SLOT_CONFIGS[slotIndex];
-	return recipeRegistry
-		.getByTypeAndLevelRange(recipeType, slotConfig.minLevel, slotConfig.maxLevel)
+	const effectiveMaxLevel = maxLevelOverride !== undefined
+		? Math.min(maxLevelOverride, slotConfig.maxLevel)
+		: slotConfig.maxLevel;
+	return CookingRecipeDataController.instance
+		.getByTypeAndLevelRange(recipeType, slotConfig.minLevel, effectiveMaxLevel)
 		.filter(recipe => (recipe.discoveredByDefault || discoveredRecipeIds.includes(recipe.id))
 			&& (allowPetFoodRecipes || recipe.outputType !== "petFood"));
 }
@@ -89,7 +95,8 @@ export function getRecipeForSlotExcluding({
 	daySeed,
 	discoveredRecipeIds,
 	excludedRecipeIds,
-	allowPetFoodRecipes = true
+	allowPetFoodRecipes = true,
+	maxRecipeLevel
 }: SlotRecipeSelectionOptions): CookingRecipe | null {
 	const cycle = getSlotCycle(slotIndex, daySeed);
 	const startTypeIndex = furnacePosition % cycle.length;
@@ -97,7 +104,7 @@ export function getRecipeForSlotExcluding({
 	// Try each type in the cycle starting from the current rotation position
 	for (let offset = 0; offset < cycle.length; offset++) {
 		const recipeType = cycle[(startTypeIndex + offset) % cycle.length];
-		const candidates = getCandidatesForSlotType(slotIndex, recipeType, discoveredRecipeIds, allowPetFoodRecipes);
+		const candidates = getCandidatesForSlotType(slotIndex, recipeType, discoveredRecipeIds, allowPetFoodRecipes, maxRecipeLevel);
 
 		if (candidates.length === 0) {
 			continue;
@@ -118,12 +125,45 @@ export function getUniqueRecipesForSlots({
 	furnacePosition,
 	daySeed,
 	discoveredRecipeIds,
-	allowPetFoodRecipes = true
+	allowPetFoodRecipes = true,
+	maxRecipeLevelWithoutPenalty
 }: UniqueSlotRecipesOptions): Array<CookingRecipe | null> {
-	const recipes: Array<CookingRecipe | null> = [];
+	const slotCount = Math.min(cookingSlots, SLOT_CONFIGS.length);
+	const recipes: Array<CookingRecipe | null> = new Array(slotCount).fill(null);
 	const usedRecipeIds = new Set<string>();
 
-	for (let slotIndex = 0; slotIndex < cookingSlots && slotIndex < SLOT_CONFIGS.length; slotIndex++) {
+	// Pass 1: guarantee player-level recipes in eligible slots
+	if (maxRecipeLevelWithoutPenalty !== undefined) {
+		let guaranteed = 0;
+		for (let slotIndex = 0; slotIndex < slotCount && guaranteed < MIN_GUARANTEED_PLAYER_LEVEL_RECIPES; slotIndex++) {
+			if (SLOT_CONFIGS[slotIndex].minLevel > maxRecipeLevelWithoutPenalty) {
+				continue;
+			}
+
+			const recipe = getRecipeForSlotExcluding({
+				slotIndex,
+				furnacePosition,
+				daySeed,
+				discoveredRecipeIds,
+				excludedRecipeIds: usedRecipeIds,
+				allowPetFoodRecipes,
+				maxRecipeLevel: maxRecipeLevelWithoutPenalty
+			});
+
+			if (recipe) {
+				recipes[slotIndex] = recipe;
+				usedRecipeIds.add(recipe.id);
+				guaranteed++;
+			}
+		}
+	}
+
+	// Pass 2: normal selection for remaining slots
+	for (let slotIndex = 0; slotIndex < slotCount; slotIndex++) {
+		if (recipes[slotIndex] !== null) {
+			continue;
+		}
+
 		const recipe = getRecipeForSlotExcluding({
 			slotIndex,
 			furnacePosition,
@@ -133,7 +173,7 @@ export function getUniqueRecipesForSlots({
 			allowPetFoodRecipes
 		});
 
-		recipes.push(recipe);
+		recipes[slotIndex] = recipe;
 		if (recipe) {
 			usedRecipeIds.add(recipe.id);
 		}
