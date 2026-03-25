@@ -1,7 +1,7 @@
 import {
 	RecipeDiscoverySource, RecipeType
 } from "../../../../Lib/src/constants/CookingConstants";
-import { recipeRegistry } from "./RecipeRegistry";
+import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 import PlayerCookingRecipe from "../database/game/models/PlayerCookingRecipe";
 import Player from "../database/game/models/Player";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
@@ -45,7 +45,7 @@ export class RecipeDiscoveryService {
 	 * Get sorted candidates for a given filter predicate
 	 */
 	private static getSortedCandidates(filter: (r: CookingRecipe) => boolean): CookingRecipe[] {
-		return recipeRegistry.getAll()
+		return CookingRecipeDataController.instance.getAll()
 			.filter(filter)
 			.sort((a, b) => a.level - b.level);
 	}
@@ -54,7 +54,7 @@ export class RecipeDiscoveryService {
 	 * Count how many recipes from a given source the player has already discovered
 	 */
 	static async countDiscoveredFromSource(player: Player, source: RecipeDiscoverySource): Promise<number> {
-		const sourceRecipeIds = recipeRegistry.getAll()
+		const sourceRecipeIds = CookingRecipeDataController.instance.getAll()
 			.filter(r => !r.discoveredByDefault && r.discoverySource === source)
 			.map(r => r.id);
 		const discoveredIds = await PlayerCookingRecipe.getDiscoveredRecipeIds(player);

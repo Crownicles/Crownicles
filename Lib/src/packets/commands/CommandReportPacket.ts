@@ -12,6 +12,7 @@ import { PlantId } from "../../constants/PlantConstants";
 import {
 	PlantStorageEntry, PlayerPlantSlotEntry
 } from "../../types/PlantStorageEntry";
+import { PetFood } from "../../types/PetFood";
 export {
 	CookingSlotData, CookingCraftErrors, CookingCraftError
 } from "../../types/CookingTypes";
@@ -487,7 +488,7 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	potionId?: number;
 
-	petFoodType?: string;
+	petFoodType?: PetFood;
 
 	petFoodQuantity?: number;
 
