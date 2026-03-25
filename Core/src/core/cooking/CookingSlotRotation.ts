@@ -34,13 +34,21 @@ export function getSlotCycle(slotIndex: number, daySeed: number): RecipeType[] {
 	return RandomUtils.deterministicShuffle([...config.eligibleTypes], slotSeed);
 }
 
-function getCandidatesForSlotType(
-	slotIndex: number,
-	recipeType: RecipeType,
-	discoveredRecipeIds: string[],
-	allowPetFoodRecipes: boolean,
-	maxLevelOverride?: number
-): CookingRecipe[] {
+interface CandidateFilterOptions {
+	slotIndex: number;
+	recipeType: RecipeType;
+	discoveredRecipeIds: string[];
+	allowPetFoodRecipes: boolean;
+	maxLevelOverride?: number;
+}
+
+function getCandidatesForSlotType({
+	slotIndex,
+	recipeType,
+	discoveredRecipeIds,
+	allowPetFoodRecipes,
+	maxLevelOverride
+}: CandidateFilterOptions): CookingRecipe[] {
 	const slotConfig: SlotConfig = SLOT_CONFIGS[slotIndex];
 	const effectiveMaxLevel = maxLevelOverride !== undefined
 		? Math.min(maxLevelOverride, slotConfig.maxLevel)
@@ -91,7 +99,13 @@ export function getRecipeForSlotExcluding({
 	// Try each type in the cycle starting from the current rotation position
 	for (let offset = 0; offset < cycle.length; offset++) {
 		const recipeType = cycle[(startTypeIndex + offset) % cycle.length];
-		const candidates = getCandidatesForSlotType(slotIndex, recipeType, discoveredRecipeIds, allowPetFoodRecipes, maxRecipeLevel);
+		const candidates = getCandidatesForSlotType({
+			slotIndex,
+			recipeType,
+			discoveredRecipeIds,
+			allowPetFoodRecipes,
+			maxLevelOverride: maxRecipeLevel
+		});
 
 		if (candidates.length === 0) {
 			continue;
@@ -107,6 +121,37 @@ export function getRecipeForSlotExcluding({
 	return null;
 }
 
+function guaranteePlayerLevelRecipes(
+	recipes: Array<CookingRecipe | null>,
+	usedRecipeIds: Set<string>,
+	slotCount: number,
+	maxRecipeLevelWithoutPenalty: number | undefined,
+	baseOptions: Pick<SlotRecipeSelectionOptions, "furnacePosition" | "daySeed" | "discoveredRecipeIds" | "allowPetFoodRecipes">
+): void {
+	if (maxRecipeLevelWithoutPenalty === undefined) {
+		return;
+	}
+	let guaranteed = 0;
+	for (let slotIndex = 0; slotIndex < slotCount && guaranteed < MIN_GUARANTEED_PLAYER_LEVEL_RECIPES; slotIndex++) {
+		if (SLOT_CONFIGS[slotIndex].minLevel > maxRecipeLevelWithoutPenalty) {
+			continue;
+		}
+
+		const recipe = getRecipeForSlotExcluding({
+			slotIndex,
+			...baseOptions,
+			excludedRecipeIds: usedRecipeIds,
+			maxRecipeLevel: maxRecipeLevelWithoutPenalty
+		});
+
+		if (recipe) {
+			recipes[slotIndex] = recipe;
+			usedRecipeIds.add(recipe.id);
+			guaranteed++;
+		}
+	}
+}
+
 export function getUniqueRecipesForSlots({
 	cookingSlots,
 	furnacePosition,
@@ -119,31 +164,15 @@ export function getUniqueRecipesForSlots({
 	const recipes: Array<CookingRecipe | null> = new Array(slotCount).fill(null);
 	const usedRecipeIds = new Set<string>();
 
+	const baseOptions = {
+		furnacePosition,
+		daySeed,
+		discoveredRecipeIds,
+		allowPetFoodRecipes
+	};
+
 	// Pass 1: guarantee player-level recipes in eligible slots
-	if (maxRecipeLevelWithoutPenalty !== undefined) {
-		let guaranteed = 0;
-		for (let slotIndex = 0; slotIndex < slotCount && guaranteed < MIN_GUARANTEED_PLAYER_LEVEL_RECIPES; slotIndex++) {
-			if (SLOT_CONFIGS[slotIndex].minLevel > maxRecipeLevelWithoutPenalty) {
-				continue;
-			}
-
-			const recipe = getRecipeForSlotExcluding({
-				slotIndex,
-				furnacePosition,
-				daySeed,
-				discoveredRecipeIds,
-				excludedRecipeIds: usedRecipeIds,
-				allowPetFoodRecipes,
-				maxRecipeLevel: maxRecipeLevelWithoutPenalty
-			});
-
-			if (recipe) {
-				recipes[slotIndex] = recipe;
-				usedRecipeIds.add(recipe.id);
-				guaranteed++;
-			}
-		}
-	}
+	guaranteePlayerLevelRecipes(recipes, usedRecipeIds, slotCount, maxRecipeLevelWithoutPenalty, baseOptions);
 
 	// Pass 2: normal selection for remaining slots
 	for (let slotIndex = 0; slotIndex < slotCount; slotIndex++) {
@@ -153,11 +182,8 @@ export function getUniqueRecipesForSlots({
 
 		const recipe = getRecipeForSlotExcluding({
 			slotIndex,
-			furnacePosition,
-			daySeed,
-			discoveredRecipeIds,
-			excludedRecipeIds: usedRecipeIds,
-			allowPetFoodRecipes
+			...baseOptions,
+			excludedRecipeIds: usedRecipeIds
 		});
 
 		recipes[slotIndex] = recipe;

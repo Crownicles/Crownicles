@@ -170,9 +170,38 @@ async function buildManageHomeData(params: {
 		player, home, homeLevel, city
 	} = params;
 	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
-	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 	const homesCount = await Homes.getHomesCount();
 
+	const manageOptions = buildManageOptions(home, homeLevel, city, player, isHomeInCity, homesCount);
+	if (manageOptions) {
+		return {
+			...manageOptions,
+			currentMoney: player.money
+		};
+	}
+
+	return buildNoOptionsReason(isHomeInCity, homeLevel, player);
+}
+
+interface ManageOptions {
+	newPrice?: number;
+	upgrade?: {
+		price: number;
+		oldFeatures: HomeLevel["features"];
+		newFeatures: HomeLevel["features"];
+	};
+	movePrice?: number;
+}
+
+function buildManageOptions(
+	home: Home | null,
+	homeLevel: HomeLevel | null,
+	city: City,
+	player: Player,
+	isHomeInCity: boolean,
+	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
+): ManageOptions | undefined {
+	const nextHomeUpgrade = homeLevel ? HomeLevel.getNextUpgrade(homeLevel, player.level) : null;
 	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
 	const upgrade = nextHomeUpgrade && isHomeInCity
 		? {
@@ -185,32 +214,33 @@ async function buildManageHomeData(params: {
 		? city.getHomeLevelPrice(homeLevel, homesCount)
 		: undefined;
 
-	const hasManageOptions = newPrice || upgrade || movePrice;
+	if (!newPrice && !upgrade && !movePrice) {
+		return undefined;
+	}
+	return {
+		newPrice,
+		upgrade,
+		movePrice
+	};
+}
 
-	if (hasManageOptions) {
-		return {
-			newPrice,
-			upgrade,
-			movePrice,
-			currentMoney: player.money
-		};
+function buildNoOptionsReason(
+	isHomeInCity: boolean,
+	homeLevel: HomeLevel | null,
+	player: Player
+): HomeData["manage"] {
+	if (!isHomeInCity || !homeLevel) {
+		return undefined;
 	}
 
-	// When no actions are available but player has a home in this city, provide reason
-	if (isHomeInCity && homeLevel) {
-		const nextLevel = HomeLevel.getNextLevelInfo(homeLevel);
-		const isMaxLevel = nextLevel === null;
-
-		return {
-			currentMoney: player.money,
-			isMaxLevel: isMaxLevel || undefined,
-			requiredPlayerLevelForUpgrade: nextLevel && player.level < nextLevel.requiredPlayerLevel
-				? nextLevel.requiredPlayerLevel
-				: undefined
-		};
-	}
-
-	return undefined;
+	const nextLevel = HomeLevel.getNextLevelInfo(homeLevel);
+	return {
+		currentMoney: player.money,
+		isMaxLevel: nextLevel === null || undefined,
+		requiredPlayerLevelForUpgrade: nextLevel && player.level < nextLevel.requiredPlayerLevel
+			? nextLevel.requiredPlayerLevel
+			: undefined
+	};
 }
 
 /**

@@ -89,10 +89,31 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 }
 
 /**
+ * Open a gem-based shop with gemToMoneyRatio in additional data
+ */
+async function openGemShop(
+	player: Player,
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	shopCategories: ShopCategory[],
+	additionalShopData?: Record<string, unknown>
+): Promise<void> {
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		additionalShopData: {
+			gemToMoneyRatio: calculateGemsToMoneyRatio(),
+			...additionalShopData
+		}
+	});
+}
+
+/**
  * Open the royal market shop for the player
  */
 export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
-	const shopCategories: ShopCategory[] = [
+	await openGemShop(player, context, response, [
 		{
 			id: "resources",
 			items: [
@@ -104,17 +125,7 @@ export async function openRoyalMarket(player: Player, context: PacketContext, re
 			id: "prestige",
 			items: [getAThousandPointsShopItem()]
 		}
-	];
-
-	await ShopUtils.createAndSendShopCollector(context, response, {
-		shopCategories,
-		player,
-		logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout.bind(crowniclesInstance?.logsDatabase),
-		additionalShopData: {
-			currency: ShopCurrency.GEM,
-			gemToMoneyRatio: calculateGemsToMoneyRatio()
-		}
-	});
+	], { currency: ShopCurrency.GEM });
 }
 
 /**
@@ -151,7 +162,7 @@ export async function openGeneralShop(player: Player, context: PacketContext, re
  * Open the stock exchange shop for the player (money mouth badge + gem exchange rate info)
  */
 export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
-	const shopCategories: ShopCategory[] = [
+	await openGemShop(player, context, response, [
 		{
 			id: "permanentItem",
 			items: [getBadgeShopItem()]
@@ -160,16 +171,7 @@ export async function openStockExchange(player: Player, context: PacketContext, 
 			id: "services",
 			items: [getMarketAnalysisShopItem()]
 		}
-	];
-
-	await ShopUtils.createAndSendShopCollector(context, response, {
-		shopCategories,
-		player,
-		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
-		additionalShopData: {
-			gemToMoneyRatio: calculateGemsToMoneyRatio()
-		}
-	});
+	]);
 }
 
 /**

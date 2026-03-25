@@ -66,11 +66,12 @@ export class CookingService {
 			return true;
 		}
 
-		if (!guild || !recipe.petFoodType || recipe.petFoodQuantity === undefined) {
+		const hasPetFoodConfig = guild && recipe.petFoodType && recipe.petFoodQuantity !== undefined;
+		if (!hasPetFoodConfig) {
 			return false;
 		}
 
-		return !guild.isStorageFullFor(recipe.petFoodType, recipe.petFoodQuantity);
+		return !guild.isStorageFullFor(recipe.petFoodType!, recipe.petFoodQuantity!);
 	}
 
 	/**
@@ -78,26 +79,41 @@ export class CookingService {
 	 */
 	static async getWoodToConsume(playerId: number): Promise<WoodSelection | null> {
 		const playerMaterials = await Materials.getPlayerMaterials(playerId);
-		const woodMaterials = MaterialDataController.instance.getMaterialsFromType(MaterialType.WOOD);
+		const woodByRarity = CookingService.groupWoodByRarity(playerMaterials);
+		return CookingService.selectBestWood(woodByRarity);
+	}
 
-		// Group wood by rarity
+	private static groupWoodByRarity(playerMaterials: {
+		materialId: number; quantity: number;
+	}[]): Map<number, {
+		materialId: number; quantity: number;
+	}[]> {
+		const woodMaterials = MaterialDataController.instance.getMaterialsFromType(MaterialType.WOOD);
+		const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
 		const woodByRarity = new Map<number, {
-			materialId: number;
-			quantity: number;
+			materialId: number; quantity: number;
 		}[]>();
+
 		for (const wood of woodMaterials) {
 			const id = parseInt(wood.id, 10);
-			const playerMat = playerMaterials.find(m => m.materialId === id);
-			if (playerMat && playerMat.quantity > 0) {
-				const existing = woodByRarity.get(wood.rarity) ?? [];
-				existing.push({
-					materialId: id,
-					quantity: playerMat.quantity
-				});
-				woodByRarity.set(wood.rarity, existing);
+			const quantity = playerMaterialMap.get(id) ?? 0;
+			if (quantity <= 0) {
+				continue;
 			}
+			const existing = woodByRarity.get(wood.rarity) ?? [];
+			existing.push({
+				materialId: id,
+				quantity
+			});
+			woodByRarity.set(wood.rarity, existing);
 		}
 
+		return woodByRarity;
+	}
+
+	private static selectBestWood(woodByRarity: Map<number, {
+		materialId: number; quantity: number;
+	}[]>): WoodSelection | null {
 		// Priority: Common (1) → Uncommon (2) → Rare (3)
 		for (const rarity of [
 			MaterialRarity.COMMON,
@@ -195,6 +211,10 @@ export class CookingService {
 
 		const slots: CookingSlotData[] = [];
 
+		// Load all plant storages once to avoid N+1 queries
+		const allPlantStorages = await HomePlantStorages.getOfHome(homeId);
+		const plantStorageMap = new Map(allPlantStorages.map(s => [s.plantId, s.quantity]));
+
 		for (let i = 0; i < cookingSlots && i < SLOT_CONFIGS.length; i++) {
 			const recipe = slotRecipes[i];
 			if (!recipe) {
@@ -208,16 +228,11 @@ export class CookingService {
 			const secret = isRecipeSecret(i, player.furnacePosition, daySeed, grade.secretRecipeRate);
 
 			// Check ingredient availability
-			const plantAvailability = await Promise.all(
-				recipe.plants.map(async p => {
-					const storage = await HomePlantStorages.getForPlant(homeId, p.plantId);
-					return {
-						plantId: p.plantId,
-						quantity: p.quantity,
-						playerHas: storage?.quantity ?? 0
-					};
-				})
-			);
+			const plantAvailability = recipe.plants.map(p => ({
+				plantId: p.plantId,
+				quantity: p.quantity,
+				playerHas: plantStorageMap.get(p.plantId) ?? 0
+			}));
 
 			const materialAvailability = recipe.materials.map(m => ({
 				materialId: m.materialId,
@@ -267,7 +282,7 @@ export class CookingService {
 		for (const mat of recipe.materials) {
 			const matData = MaterialDataController.instance.getById(mat.materialId.toString());
 			if (matData) {
-				materialXp += MATERIAL_RARITY_COOKING_XP[matData.rarity] ?? 0;
+				materialXp += (MATERIAL_RARITY_COOKING_XP[matData.rarity] ?? 0) * mat.quantity;
 			}
 		}
 
@@ -342,49 +357,27 @@ export class CookingService {
 	): Promise<CraftResult> {
 		const grade = getCookingGrade(player.cookingLevel);
 
-		// Consume plants
+		// Consume plants (batched per plant type)
 		for (const plant of recipe.plants) {
-			for (let i = 0; i < plant.quantity; i++) {
-				await HomePlantStorages.removePlant(homeId, plant.plantId);
+			const storage = await HomePlantStorages.getForPlant(homeId, plant.plantId);
+			if (storage) {
+				storage.quantity = Math.max(0, storage.quantity - plant.quantity);
+				await storage.save();
 			}
 		}
 
 		// Consume materials (with possible material save buff)
-		let materialSaved: number | undefined;
-		const materialsToConsume = [...recipe.materials];
+		const materialSaved = await CookingService.consumeMaterialsWithSaveBuff(player.id, recipe.materials, grade.materialSaveChance);
 
-		if (grade.materialSaveChance > 0 && materialsToConsume.length > 0) {
-			if (RandomUtils.crowniclesRandom.bool(grade.materialSaveChance)) {
-				const savedIndex = RandomUtils.crowniclesRandom.integer(0, materialsToConsume.length - 1);
-				materialSaved = materialsToConsume[savedIndex].materialId;
-				materialsToConsume.splice(savedIndex, 1);
-			}
-		}
-
-		if (materialsToConsume.length > 0) {
-			await Materials.consumeMaterials(player.id, materialsToConsume);
-		}
-
-		// Calculate failure
-		const failureRate = CookingService.getFailureRate(grade, recipe.level);
-		const success = !RandomUtils.crowniclesRandom.bool(Math.min(failureRate, 1));
-
-		// Calculate XP (0 if recipe is too far above grade level)
-		const levelDiff = recipe.level - grade.maxRecipeLevelWithoutPenalty;
-		const xp = levelDiff >= NO_XP_LEVEL_THRESHOLD
-			? 0
-			: success
-				? CookingService.calculateCookingXp(recipe)
-				: CookingService.calculateFailureXp(recipe.level);
-
+		// Calculate result and XP
+		const success = !RandomUtils.crowniclesRandom.bool(Math.min(CookingService.getFailureRate(grade, recipe.level), 1));
+		const xp = CookingService.computeCraftXp(success, recipe, grade);
 		const levelResult = await CookingService.addCookingXp(player, xp);
 
 		// Discover cooking-level recipes on level up
-		let discoveredRecipeIds: string[] = [];
-		if (levelResult.levelUp) {
-			const discovered = await RecipeDiscoveryService.discoverCookingLevelRecipes(player);
-			discoveredRecipeIds = discovered.map(r => r.id);
-		}
+		const discoveredRecipeIds = levelResult.levelUp
+			? (await RecipeDiscoveryService.discoverCookingLevelRecipes(player)).map(r => r.id)
+			: [];
 
 		return {
 			success,
@@ -395,6 +388,37 @@ export class CookingService {
 			newGrade: levelResult.newGrade,
 			discoveredRecipeIds
 		};
+	}
+
+	private static async consumeMaterialsWithSaveBuff(
+		playerId: number,
+		materials: CookingRecipe["materials"],
+		materialSaveChance: number
+	): Promise<number | undefined> {
+		let materialSaved: number | undefined;
+		const materialsToConsume = [...materials];
+
+		if (materialSaveChance > 0 && materialsToConsume.length > 0 && RandomUtils.crowniclesRandom.bool(materialSaveChance)) {
+			const savedIndex = RandomUtils.crowniclesRandom.integer(0, materialsToConsume.length - 1);
+			materialSaved = materialsToConsume[savedIndex].materialId;
+			materialsToConsume.splice(savedIndex, 1);
+		}
+
+		if (materialsToConsume.length > 0) {
+			await Materials.consumeMaterials(playerId, materialsToConsume);
+		}
+
+		return materialSaved;
+	}
+
+	private static computeCraftXp(success: boolean, recipe: CookingRecipe, grade: CookingGradeDefinition): number {
+		const levelDiff = recipe.level - grade.maxRecipeLevelWithoutPenalty;
+		if (levelDiff >= NO_XP_LEVEL_THRESHOLD) {
+			return 0;
+		}
+		return success
+			? CookingService.calculateCookingXp(recipe)
+			: CookingService.calculateFailureXp(recipe.level);
 	}
 
 	/**
