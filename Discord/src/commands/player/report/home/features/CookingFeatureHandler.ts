@@ -188,7 +188,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		response: CommandReportCookingIgniteRes | CommandReportCookingReviveRes,
 		ctx: HomeFeatureHandlerContext
 	): string {
-		const woodEmoji = CrowniclesIcons.materials[response.woodMaterialId as unknown as keyof typeof CrowniclesIcons.materials] ?? CrowniclesIcons.defaultMaterial;
+		const woodEmoji = CrowniclesIcons.materials[String(response.woodMaterialId)] ?? CrowniclesIcons.defaultMaterial;
 		const woodName = i18n.t(`models:materials.${response.woodMaterialId}`, { lng: ctx.lng });
 		if (response.woodConsumed) {
 			return `\n${i18n.t("commands:report.city.homes.cooking.woodConsumed", {
@@ -271,7 +271,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 		for (const material of ingredients.materials) {
 			const materialName = i18n.t(`models:materials.${material.materialId}`, { lng });
-			const emoji = CrowniclesIcons.materials[material.materialId as keyof typeof CrowniclesIcons.materials] ?? CrowniclesIcons.defaultMaterial;
+			const emoji = CrowniclesIcons.materials[String(material.materialId)] ?? CrowniclesIcons.defaultMaterial;
 			const status = material.playerHas >= material.quantity ? ` ${CrowniclesIcons.collectors.accept}` : "";
 			parts.push(`${emoji} ${materialName} ${material.playerHas}/${material.quantity}${status}`);
 		}
@@ -472,7 +472,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		woodInfo: CommandReportCookingWoodConfirmReq,
 		nestedMenus: CrowniclesNestedMenus
 	): void {
-		const woodEmoji = CrowniclesIcons.materials[woodInfo.woodMaterialId as unknown as keyof typeof CrowniclesIcons.materials] ?? CrowniclesIcons.defaultMaterial;
+		const woodEmoji = CrowniclesIcons.materials[String(woodInfo.woodMaterialId)] ?? CrowniclesIcons.defaultMaterial;
 		const materialName = i18n.t(`models:materials.${woodInfo.woodMaterialId}`, { lng: ctx.lng });
 		const description = i18n.t("commands:report.city.homes.cooking.woodConfirm", {
 			lng: ctx.lng,

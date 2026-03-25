@@ -6,7 +6,9 @@ import { CrowniclesSmallEventEmbed } from "../../messages/CrowniclesSmallEventEm
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
-import { getRandomSmallEventIntro } from "../../utils/SmallEventUtils";
+import {
+	buildRecipeDiscoveryMessage, getRandomSmallEventIntro
+} from "../../utils/SmallEventUtils";
 import { SmallEventBigBadPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBigBadPacket";
 import {
 	SmallEventBadIssue,
@@ -1281,14 +1283,7 @@ export default class SmallEventsHandler {
 			});
 
 		if (packet.discoveredRecipeId) {
-			let recipeMsg = i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
-				lng,
-				recipe: i18n.t(`models:cooking.recipes.${packet.discoveredRecipeId}`, { lng })
-			});
-			if (packet.recipeCost) {
-				recipeMsg += ` (${packet.recipeCost} :moneybag:)`;
-			}
-			description += `\n\n${recipeMsg}`;
+			description += `\n\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeId, lng, packet.recipeCost)}`;
 		}
 
 		await interaction?.editReply({

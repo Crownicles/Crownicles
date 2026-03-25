@@ -56,6 +56,8 @@ export const CookingOutputType = {
 
 export type CookingOutputTypeValue = typeof CookingOutputType[keyof typeof CookingOutputType];
 
+export const SECRET_RECIPE_PLACEHOLDER = "???" as const;
+
 /**
  * Maps each RecipeType to its display emoji (based on output nature)
  */
