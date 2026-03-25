@@ -277,10 +277,64 @@ function buildNoOptionsReason(
 	};
 }
 
-/**
- * Build upgrade station data for the home feature in the city collector.
- * Determines which items can be upgraded at home and their material requirements.
- */
+function getUpgradeableItem(
+	inventorySlot: InventorySlot,
+	playerMaterialMap: Map<number, number>,
+	maxUpgradeableRarity: number,
+	maxLevelAtHome: number,
+	player: Player
+): UpgradeStationData["upgradeableItems"][number] | undefined {
+	if (!inventorySlot.isPrimaryEquipment()) {
+		return undefined;
+	}
+
+	const itemData = inventorySlot.isWeapon()
+		? WeaponDataController.instance.getById(inventorySlot.itemId)
+		: ArmorDataController.instance.getById(inventorySlot.itemId);
+
+	if (!itemData) {
+		return undefined;
+	}
+
+	const currentLevel = inventorySlot.itemLevel ?? 0;
+	if (currentLevel >= maxLevelAtHome || itemData.rarity > maxUpgradeableRarity) {
+		return undefined;
+	}
+
+	const nextLevel = currentLevel + 1;
+	const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
+
+	const materialAggregation = new Map<number, number>();
+	for (const material of requiredMaterialsRaw) {
+		const materialIdNum = parseInt(material.id, 10);
+		materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
+	}
+
+	const requiredMaterials: UpgradeStationData["upgradeableItems"][number]["requiredMaterials"] = [];
+	let canUpgrade = true;
+
+	for (const [materialId, quantity] of materialAggregation) {
+		const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
+		requiredMaterials.push({
+			materialId,
+			quantity,
+			playerQuantity
+		});
+		if (playerQuantity < quantity) {
+			canUpgrade = false;
+		}
+	}
+
+	return {
+		slot: inventorySlot.slot,
+		category: inventorySlot.itemCategory,
+		details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+		nextLevel,
+		requiredMaterials,
+		canUpgrade
+	};
+}
+
 export function buildUpgradeStationData(
 	playerInventory: InventorySlot[],
 	playerMaterialMap: Map<number, number>,
@@ -293,64 +347,10 @@ export function buildUpgradeStationData(
 	const upgradeableItems: UpgradeStationData["upgradeableItems"] = [];
 
 	for (const inventorySlot of playerInventory) {
-		// Only process weapons and armors with a valid item
-		if (!inventorySlot.isPrimaryEquipment()) {
-			continue;
+		const item = getUpgradeableItem(inventorySlot, playerMaterialMap, maxUpgradeableRarity, maxLevelAtHome, player);
+		if (item) {
+			upgradeableItems.push(item);
 		}
-
-		// Get the item data
-		const itemData = inventorySlot.isWeapon()
-			? WeaponDataController.instance.getById(inventorySlot.itemId)
-			: ArmorDataController.instance.getById(inventorySlot.itemId);
-
-		if (!itemData) {
-			continue;
-		}
-
-		// Check if item level allows upgrade at home (limited by home's maxItemUpgradeLevel)
-		const currentLevel = inventorySlot.itemLevel ?? 0;
-		if (currentLevel >= maxLevelAtHome) {
-			continue;
-		}
-
-		// Check if item rarity is allowed at this home level
-		if (itemData.rarity > maxUpgradeableRarity) {
-			continue;
-		}
-
-		const nextLevel = currentLevel + 1;
-		const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
-
-		// Aggregate materials (same material can appear multiple times)
-		const materialAggregation = new Map<number, number>();
-		for (const material of requiredMaterialsRaw) {
-			const materialIdNum = parseInt(material.id, 10);
-			materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
-		}
-
-		const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
-		let canUpgrade = true;
-
-		for (const [materialId, quantity] of materialAggregation) {
-			const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
-			requiredMaterials.push({
-				materialId,
-				quantity,
-				playerQuantity
-			});
-			if (playerQuantity < quantity) {
-				canUpgrade = false;
-			}
-		}
-
-		upgradeableItems.push({
-			slot: inventorySlot.slot,
-			category: inventorySlot.itemCategory,
-			details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-			nextLevel,
-			requiredMaterials,
-			canUpgrade
-		});
 	}
 
 	return {
