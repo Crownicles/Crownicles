@@ -209,8 +209,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private buildSlotFields(ctx: HomeFeatureHandlerContext): {
 		name: string; value: string;
 	}[] {
-		return this.getState(ctx).currentSlots
-			.map(slot => this.buildSlotField(slot, ctx));
+		const slots = this.getState(ctx).currentSlots;
+		return slots.map((slot, index) => {
+			const field = this.buildSlotField(slot, ctx);
+			if (index < slots.length - 1) {
+				field.value += "\n\u200B";
+			}
+			return field;
+		});
 	}
 
 	/**
