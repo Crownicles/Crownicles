@@ -67,6 +67,13 @@ export class PetEntity extends Model {
 	}
 
 	/**
+	 * Check if this pet can be fed with the given food type (not on cooldown + compatible diet)
+	 */
+	public canBeFed(petModel: Pet, foodType: string): boolean {
+		return this.getFeedCooldown(petModel) <= 0 && petModel.canEatFood(foodType);
+	}
+
+	/**
 	 * Get the love level of the pet
 	 */
 	public getLoveLevelNumber(): number {

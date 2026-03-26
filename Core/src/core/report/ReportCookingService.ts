@@ -1,7 +1,6 @@
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { PetFood } from "../../../../Lib/src/types/PetFood";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import {
 	CommandReportCookingIgniteReq,
@@ -15,7 +14,10 @@ import {
 	CommandReportCookingCraftReq,
 	CommandReportCookingCraftRes,
 	CookingCraftErrors,
-	CookingCraftError
+	CookingCraftError,
+	CookingSlotData,
+	CraftPetFoodResult,
+	CraftMaterialResult
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingService } from "../cooking/CookingService";
@@ -28,6 +30,7 @@ import {
 import {
 	Home, Homes
 } from "../database/game/models/Home";
+import { Guild } from "../database/game/models/Guild";
 import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -35,9 +38,7 @@ import {
 	getCookingGrade, FURNACE_MAX_USES_PER_DAY, CookingOutputType, CookingOutputTypeValue
 } from "../../../../Lib/src/constants/CookingConstants";
 import { giveItemToPlayer } from "../utils/ItemUtils";
-
-type CookingSlots = Awaited<ReturnType<typeof CookingService.getSlotRecipes>>;
-type PlayerGuild = NonNullable<Awaited<ReturnType<typeof CookingService.getPlayerGuild>>>;
+import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 
 interface PlayerAndHome {
 	player: Player;
@@ -51,7 +52,8 @@ interface PlayerAndHome {
  * confirms, we know which wood was originally selected.
  * Entries auto-expire after 5 minutes to prevent memory leaks.
  */
-const WOOD_CONFIRMATION_TTL_MS = 5 * 60 * 1000;
+const WOOD_CONFIRMATION_TTL_MINUTES = 5;
+const WOOD_CONFIRMATION_TTL_MS = minutesToMilliseconds(WOOD_CONFIRMATION_TTL_MINUTES);
 
 interface PendingWoodConfirmation {
 	materialId: number;
@@ -60,7 +62,7 @@ interface PendingWoodConfirmation {
 }
 
 const pendingWoodConfirmations = new Map<string, PendingWoodConfirmation & {
-	timeout: ReturnType<typeof setTimeout>;
+	timeout: NodeJS.Timeout;
 }>();
 
 function setPendingWoodConfirmation(keycloakId: string, materialId: number, rarity: MaterialRarity, isRevive: boolean): void {
@@ -109,7 +111,7 @@ async function getPlayerAndHome(keycloakId: string): Promise<PlayerAndHome | nul
 }
 
 interface IgniteOrReviveParams {
-	slots: CookingSlots;
+	slots: CookingSlotData[];
 	woodConsumed: boolean;
 	woodMaterialId: number;
 	furnaceUsesToday: number;
@@ -270,32 +272,18 @@ export async function handleCookingRevive(
 	return response;
 }
 
-interface PetFoodOutput {
-	type: PetFood;
-	quantity: number;
-	storedQuantity: number;
-	fedFromSurplus?: boolean;
-	surplusMaterialId?: number;
-	surplusMaterialQuantity?: number;
-}
-
-interface MaterialOutput {
-	materialId: number;
-	quantity: number;
-}
-
 interface CraftOutputResult {
 	potionId?: number;
-	petFood?: PetFoodOutput;
-	material?: MaterialOutput;
+	petFood?: CraftPetFoodResult;
+	material?: CraftMaterialResult;
 	failedPotionId?: number;
 	inventorySwapPackets?: CrowniclesPacket[];
 }
 
 async function handlePotionOutput(
-	context: PacketContext,
 	player: Player,
-	recipe: CookingRecipeData
+	recipe: CookingRecipeData,
+	context: PacketContext
 ): Promise<CraftOutputResult> {
 	if (recipe.potionNature === undefined || recipe.potionRarity === undefined) {
 		return {};
@@ -313,7 +301,7 @@ async function handlePotionOutput(
 async function handlePetFoodOutput(
 	player: Player,
 	recipe: CookingRecipeData,
-	guild: PlayerGuild
+	guild: Guild
 ): Promise<CraftOutputResult> {
 	if (!recipe.petFood) {
 		return {};
@@ -346,8 +334,8 @@ async function handlePetFoodSurplus(
 	player: Player,
 	recipe: CookingRecipeData,
 	surplus: number
-): Promise<Partial<PetFoodOutput>> {
-	const result: Partial<PetFoodOutput> = {};
+): Promise<Partial<CraftPetFoodResult>> {
+	const result: Partial<CraftPetFoodResult> = {};
 	let remaining = surplus;
 
 	const hungryPet = await CookingService.getHungryCompatiblePet(player, recipe.petFood!.type);
@@ -386,8 +374,8 @@ async function handleMaterialOutput(
 }
 
 async function handleFailedPotionOutput(
-	context: PacketContext,
-	player: Player
+	player: Player,
+	context: PacketContext
 ): Promise<CraftOutputResult> {
 	const noEffectPotion = PotionDataController.instance.getById(0);
 	if (!noEffectPotion) {
@@ -407,52 +395,44 @@ interface CraftOutputParams {
 	player: Player;
 	recipe: CookingRecipeData;
 	result: { success: boolean };
-	guild: Awaited<ReturnType<typeof CookingService.getPlayerGuild>>;
+	guild: Guild | null;
 }
 
-function processSuccessfulCraftOutput(
-	context: PacketContext,
-	player: Player,
-	recipe: CookingRecipeData,
-	guild: CraftOutputParams["guild"]
-): Promise<CraftOutputResult> | CraftOutputResult {
-	switch (recipe.outputType) {
-		case CookingOutputType.POTION:
-			return handlePotionOutput(context, player, recipe);
-		case CookingOutputType.PET_FOOD:
-			return guild ? handlePetFoodOutput(player, recipe, guild) : {};
-		case CookingOutputType.MATERIAL:
-			return handleMaterialOutput(player, recipe);
-		default:
-			return {};
-	}
-}
-
-function processFailedCraftOutput(
-	context: PacketContext,
-	player: Player,
-	recipe: CookingRecipeData
-): Promise<CraftOutputResult> | CraftOutputResult {
-	if (recipe.outputType === CookingOutputType.POTION) {
-		return handleFailedPotionOutput(context, player);
-	}
-	return {};
-}
-
-function processCraftOutput({
+function processSuccessfulCraftOutput({
 	context,
 	player,
 	recipe,
-	result,
 	guild
-}: CraftOutputParams): Promise<CraftOutputResult> | CraftOutputResult {
-	if (!result.success) {
-		return processFailedCraftOutput(context, player, recipe);
+}: Omit<CraftOutputParams, "result">): Promise<CraftOutputResult> {
+	switch (recipe.outputType) {
+		case CookingOutputType.POTION:
+			return handlePotionOutput(player, recipe, context);
+		case CookingOutputType.PET_FOOD:
+			return guild ? handlePetFoodOutput(player, recipe, guild) : Promise.resolve({});
+		case CookingOutputType.MATERIAL:
+			return handleMaterialOutput(player, recipe);
+		default:
+			return Promise.resolve({});
 	}
-	return processSuccessfulCraftOutput(context, player, recipe, guild);
 }
 
-type CookingSlotEntry = CookingSlots[number];
+function processFailedCraftOutput({
+	context,
+	player,
+	recipe
+}: Omit<CraftOutputParams, "result" | "guild">): Promise<CraftOutputResult> {
+	if (recipe.outputType === CookingOutputType.POTION) {
+		return handleFailedPotionOutput(player, context);
+	}
+	return Promise.resolve({});
+}
+
+function processCraftOutput(params: CraftOutputParams): Promise<CraftOutputResult> {
+	if (!params.result.success) {
+		return processFailedCraftOutput(params);
+	}
+	return processSuccessfulCraftOutput(params);
+}
 
 interface CraftErrorInfo {
 	recipeId: string;
@@ -461,7 +441,7 @@ interface CraftErrorInfo {
 }
 
 function getCraftErrorInfo(
-	slot: CookingSlotEntry | undefined,
+	slot: CookingSlotData | undefined,
 	recipe: CookingRecipeData | undefined
 ): CraftErrorInfo {
 	return {
@@ -472,9 +452,9 @@ function getCraftErrorInfo(
 }
 
 function validateCraftRequest(
-	slot: CookingSlotEntry | undefined,
+	slot: CookingSlotData | undefined,
 	recipe: CookingRecipeData | undefined,
-	guild: Awaited<ReturnType<typeof CookingService.getPlayerGuild>>
+	guild: Guild | null
 ): CookingCraftError | null {
 	if (!slot?.recipe || !recipe) {
 		return CookingCraftErrors.CRAFT_UNAVAILABLE;
@@ -489,9 +469,9 @@ function validateCraftRequest(
 }
 
 export async function handleCookingCraft(
-	context: PacketContext,
 	keycloakId: string,
-	packet: CommandReportCookingCraftReq
+	packet: CommandReportCookingCraftReq,
+	context: PacketContext
 ): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
 	const data = await getPlayerAndHome(keycloakId);
@@ -549,16 +529,7 @@ export async function handleCookingCraft(
 		recipeId: validatedRecipe.id,
 		wasSecret: validatedSlotRecipe.isSecret,
 		outputType: validatedRecipe.outputType,
-		potionId: outputResult.potionId,
-		failedPotionId: outputResult.failedPotionId,
-		petFoodType: outputResult.petFood?.type,
-		petFoodQuantity: outputResult.petFood?.quantity,
-		petFoodStoredQuantity: outputResult.petFood?.storedQuantity,
-		petFedFromSurplus: outputResult.petFood?.fedFromSurplus,
-		surplusMaterialId: outputResult.petFood?.surplusMaterialId,
-		surplusMaterialQuantity: outputResult.petFood?.surplusMaterialQuantity,
-		craftedMaterialId: outputResult.material?.materialId,
-		craftedMaterialQuantity: outputResult.material?.quantity,
+		...outputResult,
 		cookingXpGained: result.xpGained,
 		cookingLevelUp: result.levelUp,
 		newCookingLevel: result.newLevel,

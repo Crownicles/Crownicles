@@ -93,6 +93,6 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportCookingCraftReq)
 	async cookingCraft(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingCraftReq): Promise<void> {
-		response.push(...await handleCookingCraft(context, context.keycloakId!, packet));
+		response.push(...await handleCookingCraft(context.keycloakId!, packet, context));
 	}
 }

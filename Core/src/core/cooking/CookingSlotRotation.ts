@@ -2,7 +2,6 @@ import {
 	SLOT_CONFIGS, SLOT_SEED_OFFSETS, RecipeType, SlotConfig, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES, CookingOutputType
 } from "../../../../Lib/src/constants/CookingConstants";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
-import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 
@@ -258,9 +257,3 @@ export function isRecipeSecret({
 	return pseudoRandom < secretRate;
 }
 
-/**
- * Get the current day seed (changes daily)
- */
-export function getCurrentDaySeed(): number {
-	return getDayNumber();
-}

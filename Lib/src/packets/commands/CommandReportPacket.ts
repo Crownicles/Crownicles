@@ -476,6 +476,20 @@ export class CommandReportCookingCraftReq extends CrowniclesPacket {
 	slotIndex!: number;
 }
 
+export interface CraftPetFoodResult {
+	type: PetFood;
+	quantity: number;
+	storedQuantity: number;
+	fedFromSurplus?: boolean;
+	surplusMaterialId?: number;
+	surplusMaterialQuantity?: number;
+}
+
+export interface CraftMaterialResult {
+	materialId: number;
+	quantity: number;
+}
+
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingCraftRes extends CrowniclesPacket {
 	success!: boolean;
@@ -488,27 +502,9 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	potionId?: number;
 
-	petFoodType?: PetFood;
+	petFood?: CraftPetFoodResult;
 
-	petFoodQuantity?: number;
-
-	/** How much food was actually stored in guild (may be less than recipe output) */
-	petFoodStoredQuantity?: number;
-
-	/** Whether the player's pet was fed from surplus food */
-	petFedFromSurplus?: boolean;
-
-	/** Material ID returned from surplus food recycling */
-	surplusMaterialId?: number;
-
-	/** Quantity of materials returned from surplus food recycling */
-	surplusMaterialQuantity?: number;
-
-	/** Material ID crafted from a material recipe */
-	craftedMaterialId?: number;
-
-	/** Quantity of materials crafted from a material recipe */
-	craftedMaterialQuantity?: number;
+	material?: CraftMaterialResult;
 
 	failedPotionId?: number;
 
