@@ -289,6 +289,9 @@ async function handlePotionOutput(
 	if (recipe.potionNature === undefined || recipe.potionRarity === undefined) {
 		return {};
 	}
+	if (!PotionDataController.instance.hasItemWithNatureAndRarity(recipe.potionNature, recipe.potionRarity)) {
+		return {};
+	}
 	const potion = PotionDataController.instance.randomItem(recipe.potionNature, recipe.potionRarity);
 	const itemReceived = await player.giveItem(potion);
 	const result: CraftOutputResult = { potionId: potion.id };

@@ -45,8 +45,12 @@ export class PotionDataController extends ItemDataController<Potion> {
 	}
 
 	public randomItem(nature: number, rarity: number): ObjectItem {
-		return RandomUtils.crowniclesRandom.pick(this.getValuesArray()
-			.filter(item => item.nature === nature && item.rarity === rarity));
+		const candidates = this.getValuesArray()
+			.filter(item => item.nature === nature && item.rarity === rarity);
+		if (candidates.length === 0) {
+			throw new Error(`No potion found for nature=${nature} rarity=${rarity}`);
+		}
+		return RandomUtils.crowniclesRandom.pick(candidates);
 	}
 
 	/**
