@@ -96,11 +96,12 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	public async handleFeatureSelection(
-		_ctx: HomeFeatureHandlerContext,
+		ctx: HomeFeatureHandlerContext,
 		selectInteraction: StringSelectMenuInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		await selectInteraction.deferUpdate();
+		this.registerCookingMenu(ctx, nestedMenus);
 		await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 	}
 
@@ -141,9 +142,9 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.COOKING_CRAFT_PREFIX)) {
-			await componentInteraction.deferReply();
+			await componentInteraction.deferUpdate();
 			const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_CRAFT_PREFIX, ""), 10);
-			await this.sendCraftAction(ctx, slotIndex, nestedMenus, componentInteraction);
+			await this.sendCraftAction(ctx, slotIndex, nestedMenus);
 			return true;
 		}
 
@@ -514,8 +515,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			ctx.context,
 			makePacket(CommandReportCookingWoodConfirmRes, { accepted }),
 			async (_responseContext, packetName, responsePacket) => {
-				if (packetName === CommandReportCookingIgniteRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingIgniteRes;
+				if (packetName === CommandReportCookingIgniteRes.name || packetName === CommandReportCookingReviveRes.name) {
+					const response = responsePacket as unknown as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
 					this.updateStateFromIgniteResponse(ctx, response);
 					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
@@ -549,7 +550,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 						lng: ctx.lng,
 						time: finishInTimeDisplay(new Date(response.overheatUntil))
 					})}`;
-					this.registerIgnitedMenu(ctx, nestedMenus, overheatMessage);
+					this.getState(ctx).furnaceUsesRemaining = 0;
+					nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
+						embed: new CrowniclesEmbed()
+							.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
+							.setDescription(this.buildCookingDescription(ctx) + overheatMessage),
+						components: this.buildCookingButtons(ctx),
+						createCollector: this.createCookingCollector(ctx)
+					});
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 					return;
 				}
@@ -577,8 +585,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private async sendCraftAction(
 		ctx: HomeFeatureHandlerContext,
 		slotIndex: number,
-		nestedMenus: CrowniclesNestedMenus,
-		craftInteraction: ComponentInteraction
+		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
@@ -602,14 +609,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					state.cookingGrade = response.newCookingGrade;
 				}
 
-				await nestedMenus.stopCurrentCollector();
-				await craftInteraction.editReply({
-					embeds: [
-						new CrowniclesEmbed()
-							.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-							.setDescription(resultDescription)
-					]
-				});
+				this.registerIgnitedMenu(ctx, nestedMenus, `\n\n${resultDescription}`);
+				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 			}
 		);
 	}
