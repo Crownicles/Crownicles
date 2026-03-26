@@ -34,12 +34,13 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
 import {
 	getUniqueRecipesForSlots,
-	isRecipeSecret,
-	getCurrentDaySeed
+	isRecipeSecret
 } from "./CookingSlotRotation";
 import { CookingSlotData } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
-import { getTomorrowMidnight } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	getTomorrowMidnight, getDayNumber
+} from "../../../../Lib/src/utils/TimeUtils";
 
 interface WoodSelection {
 	materialId: number;
@@ -210,7 +211,7 @@ export class CookingService {
 			player, homeId, cookingSlots
 		} = params;
 		const discoveredIds = await PlayerCookingRecipe.getDiscoveredRecipeIds(player);
-		const daySeed = getCurrentDaySeed();
+		const daySeed = getDayNumber();
 		const grade = getCookingGrade(player.cookingLevel);
 		const playerMaterials = await Materials.getPlayerMaterials(player.id);
 		const materialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
@@ -273,13 +274,17 @@ export class CookingService {
 			? Boolean(context.guild)
 			: true;
 
+		const {
+			id, level, outputType, recipeType
+		} = recipe;
+
 		return {
-			id: recipe.id,
-			level: recipe.level,
+			id,
+			level,
+			outputType,
+			recipeType,
 			isSecret: secret,
-			outputDescription: secret ? SECRET_RECIPE_PLACEHOLDER : recipe.id,
-			outputType: recipe.outputType,
-			recipeType: recipe.recipeType,
+			outputDescription: secret ? SECRET_RECIPE_PLACEHOLDER : id,
 			petFoodType: recipe.petFood?.type,
 			ingredients: {
 				plants: plantAvailability,
@@ -487,16 +492,7 @@ export class CookingService {
 		}
 
 		const petModel = PetDataController.instance.getById(petEntity.typeId);
-		if (!petModel) {
-			return null;
-		}
-
-		const cooldown = petEntity.getFeedCooldown(petModel);
-		if (cooldown > 0) {
-			return null;
-		}
-
-		if (!petModel.canEatFood(foodType)) {
+		if (!petModel || !petEntity.canBeFed(petModel, foodType)) {
 			return null;
 		}
 

@@ -2,7 +2,7 @@ import {
 	describe, expect, it
 } from "vitest";
 import {
-	getSlotCycle, getRecipeForSlotExcluding, getUniqueRecipesForSlots, isRecipeSecret, getCurrentDaySeed
+	getSlotCycle, getRecipeForSlotExcluding, getUniqueRecipesForSlots, isRecipeSecret
 } from "../../../src/core/cooking/CookingSlotRotation";
 import {
 	SLOT_CONFIGS, RecipeType, MIN_GUARANTEED_PLAYER_LEVEL_RECIPES, CookingOutputType
@@ -226,13 +226,7 @@ describe("CookingSlotRotation", () => {
 		});
 	});
 
-	describe("getCurrentDaySeed", () => {
-		it("should return a positive integer", () => {
-			const seed = getCurrentDaySeed();
-			expect(seed).toBeGreaterThan(0);
-			expect(Number.isInteger(seed)).toBe(true);
-		});
-	});
+
 
 	describe("edge cases", () => {
 		it("should return an empty array when cookingSlots is 0", () => {

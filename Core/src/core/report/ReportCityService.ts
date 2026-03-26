@@ -185,7 +185,9 @@ async function buildManageHomeData(params: {
 	}
 
 	// Both home and homeLevel exist
-	const manageOptions = buildManageOptions(home, homeLevel, city, player, homesCount);
+	const manageOptions = buildManageOptions({
+		home, homeLevel, city, player, homesCount
+	});
 	if (manageOptions) {
 		return {
 			...manageOptions,
@@ -206,13 +208,16 @@ interface ManageOptions {
 	movePrice?: number;
 }
 
-type HomesCount = Awaited<ReturnType<typeof Homes.getHomesCount>>;
+interface CityPopulationCount {
+	cityId: string;
+	count: number;
+}
 
 function getUpgradeOption(
 	homeLevel: HomeLevel,
 	player: Player,
 	city: City,
-	homesCount: HomesCount
+	homesCount: CityPopulationCount[]
 ): ManageOptions["upgrade"] {
 	const nextHomeUpgrade = HomeLevel.getNextUpgrade(homeLevel, player.level);
 	if (!nextHomeUpgrade) {
@@ -229,7 +234,7 @@ function getMovePrice(
 	home: Home,
 	homeLevel: HomeLevel,
 	city: City,
-	homesCount: HomesCount
+	homesCount: CityPopulationCount[]
 ): number | undefined {
 	if (home.cityId === city.id) {
 		return undefined;
@@ -237,13 +242,17 @@ function getMovePrice(
 	return city.getHomeLevelPrice(homeLevel, homesCount);
 }
 
-function buildManageOptions(
-	home: Home,
-	homeLevel: HomeLevel,
-	city: City,
-	player: Player,
-	homesCount: HomesCount
-): ManageOptions | undefined {
+interface BuildManageOptionsParams {
+	home: Home;
+	homeLevel: HomeLevel;
+	city: City;
+	player: Player;
+	homesCount: CityPopulationCount[];
+}
+
+function buildManageOptions({
+	home, homeLevel, city, player, homesCount
+}: BuildManageOptionsParams): ManageOptions | undefined {
 	const isHomeInCity = home.cityId === city.id;
 	const upgrade = isHomeInCity ? getUpgradeOption(homeLevel, player, city, homesCount) : undefined;
 	const movePrice = isHomeInCity ? undefined : getMovePrice(home, homeLevel, city, homesCount);
@@ -279,13 +288,17 @@ function buildNoOptionsReason(
 
 type UpgradeableItem = UpgradeStationData["upgradeableItems"][number];
 
-function getUpgradeableItem(
-	inventorySlot: InventorySlot,
-	playerMaterialMap: Map<number, number>,
-	maxUpgradeableRarity: number,
-	maxLevelAtHome: number,
-	player: Player
-): UpgradeableItem | undefined {
+interface GetUpgradeableItemParams {
+	inventorySlot: InventorySlot;
+	playerMaterialMap: Map<number, number>;
+	maxUpgradeableRarity: number;
+	maxLevelAtHome: number;
+	player: Player;
+}
+
+function getUpgradeableItem({
+	inventorySlot, playerMaterialMap, maxUpgradeableRarity, maxLevelAtHome, player
+}: GetUpgradeableItemParams): UpgradeableItem | undefined {
 	if (!inventorySlot.isPrimaryEquipment()) {
 		return undefined;
 	}
@@ -349,7 +362,9 @@ export function buildUpgradeStationData(
 	const upgradeableItems: UpgradeStationData["upgradeableItems"] = [];
 
 	for (const inventorySlot of playerInventory) {
-		const item = getUpgradeableItem(inventorySlot, playerMaterialMap, maxUpgradeableRarity, maxLevelAtHome, player);
+		const item = getUpgradeableItem({
+			inventorySlot, playerMaterialMap, maxUpgradeableRarity, maxLevelAtHome, player
+		});
 		if (item) {
 			upgradeableItems.push(item);
 		}
