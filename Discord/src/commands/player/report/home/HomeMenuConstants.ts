@@ -114,6 +114,12 @@ export const HomeMenuIds = {
 	/** Cancel rare wood usage */
 	COOKING_WOOD_CANCEL: "COOKING_WOOD_CANCEL",
 
+	/** Relaunch furnace after craft */
+	COOKING_RELAUNCH: "COOKING_RELAUNCH",
+
+	/** Exit cooking after craft */
+	COOKING_EXIT: "COOKING_EXIT",
+
 	// --- Feature IDs ---
 	/** Garden feature identifier */
 	FEATURE_GARDEN: "garden",

@@ -1166,7 +1166,9 @@
           "surplusRecycled": "{emote:messages.info} L'excédent de nourriture a été recyclé en **{{quantity}} {{material}}**.",
           "materialCrafted": "{emote:messages.validate} Vous avez obtenu **{{quantity}} {{material}}** !",
           "woodConsumed": "{{wood}} consommé",
-          "woodSaved": "{emote:messages.validate} Votre expertise vous a permis d'économiser du bois ! ({{wood}})"
+          "woodSaved": "{emote:messages.validate} Votre expertise vous a permis d'économiser du bois ! ({{wood}})",
+          "relaunchButton": "Relancer le fourneau",
+          "exitButton": "Sortir"
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",

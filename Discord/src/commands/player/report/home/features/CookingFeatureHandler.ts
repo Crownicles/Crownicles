@@ -47,6 +47,7 @@ interface CookingSessionState {
 	furnaceUsesRemaining: number;
 	cookingGrade: string;
 	cookingLevel: number;
+	craftPending: boolean;
 }
 
 export class CookingFeatureHandler implements HomeFeatureHandler {
@@ -61,7 +62,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				currentSlots: [],
 				furnaceUsesRemaining: 0,
 				cookingGrade: getCookingGrade(0).id,
-				cookingLevel: 0
+				cookingLevel: 0,
+				craftPending: false
 			};
 			this.sessions.set(ctx.user.id, state);
 		}
@@ -143,7 +145,23 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			return true;
 		}
 
+		if (selectedValue === HomeMenuIds.COOKING_RELAUNCH) {
+			await componentInteraction.deferUpdate();
+			await this.sendReviveAction(ctx, nestedMenus);
+			return true;
+		}
+
+		if (selectedValue === HomeMenuIds.COOKING_EXIT) {
+			await componentInteraction.deferUpdate();
+			await nestedMenus.changeMenu(HomeMenuIds.HOME_MENU);
+			return true;
+		}
+
 		if (selectedValue.startsWith(HomeMenuIds.COOKING_CRAFT_PREFIX)) {
+			if (this.getState(ctx).craftPending) {
+				await componentInteraction.deferUpdate();
+				return true;
+			}
 			await componentInteraction.deferUpdate();
 			const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_CRAFT_PREFIX, ""), 10);
 			await this.sendCraftAction(ctx, slotIndex, nestedMenus);
@@ -344,26 +362,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
 			.setEmoji(CrowniclesIcons.collectors.back)
 			.setStyle(ButtonStyle.Danger));
-
-		return rows;
-	}
-
-	/**
-	 * Build buttons for wood confirmation prompt
-	 */
-	private buildWoodConfirmButtons(ctx: HomeFeatureHandlerContext): ActionRowBuilder<ButtonBuilder>[] {
-		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-
-		rows[0].addComponents(
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.COOKING_WOOD_CONFIRM)
-				.setLabel(i18n.t("commands:report.city.homes.cooking.confirmButton", { lng: ctx.lng }))
-				.setStyle(ButtonStyle.Success),
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.COOKING_WOOD_CANCEL)
-				.setLabel(i18n.t("commands:report.city.homes.cooking.cancelButton", { lng: ctx.lng }))
-				.setStyle(ButtonStyle.Danger)
-		);
 
 		return rows;
 	}
@@ -607,7 +605,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Register the wood confirmation prompt menu
+	 * Register the wood confirmation prompt menu using V2 container
 	 */
 	private registerWoodConfirmMenu(
 		ctx: HomeFeatureHandlerContext,
@@ -622,11 +620,35 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			rarity: woodInfo.woodRarity
 		});
 
+		const container = new ContainerBuilder();
+
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+		);
+
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(description)
+		);
+
+		container.addSeparatorComponents(
+			new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
+		);
+
+		const actionRow = new ActionRowBuilder<ButtonBuilder>();
+		actionRow.addComponents(
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.COOKING_WOOD_CONFIRM)
+				.setLabel(i18n.t("commands:report.city.homes.cooking.confirmButton", { lng: ctx.lng }))
+				.setStyle(ButtonStyle.Success),
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.COOKING_WOOD_CANCEL)
+				.setLabel(i18n.t("commands:report.city.homes.cooking.cancelButton", { lng: ctx.lng }))
+				.setStyle(ButtonStyle.Danger)
+		);
+		container.addActionRowComponents(actionRow);
+
 		nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-				.setDescription(description),
-			components: this.buildWoodConfirmButtons(ctx),
+			containers: [container],
 			createCollector: this.createCookingCollector(ctx)
 		});
 	}
@@ -728,6 +750,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		slotIndex: number,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
+		const state = this.getState(ctx);
+		state.craftPending = true;
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
 			makePacket(CommandReportCookingCraftReq, { slotIndex }),
@@ -737,11 +761,13 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				}
 
 				const response = responsePacket as unknown as CommandReportCookingCraftRes;
-				const resultDescription = this.buildCraftResultMessage(response, ctx);
-				const state = this.getState(ctx);
 
 				if (response.updatedSlots) {
 					state.currentSlots = response.updatedSlots;
+				}
+
+				if (response.furnaceUsesRemaining !== undefined) {
+					state.furnaceUsesRemaining = response.furnaceUsesRemaining;
 				}
 
 				// Update state after craft
@@ -750,10 +776,61 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					state.cookingGrade = response.newCookingGrade;
 				}
 
-				this.registerIgnitedMenu(ctx, nestedMenus, `\n\n${resultDescription}`);
+				// Build craft result + relaunch/exit buttons
+				const {
+					craftResult,
+					levelUpEmbed
+				} = this.buildCraftResultMessages(response, ctx);
+				this.registerCraftResultMenu(ctx, nestedMenus, craftResult, response.itemChoicePending);
 				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+
+				// Send level-up as separate embed reply if applicable
+				if (levelUpEmbed) {
+					const message = nestedMenus.message;
+					if (message) {
+						await message.reply({ embeds: [levelUpEmbed] });
+					}
+				}
+
+				state.craftPending = false;
 			}
 		);
+	}
+
+	/**
+	 * Register the craft result menu with relaunch/exit buttons
+	 */
+	private registerCraftResultMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus, resultText: string, itemChoicePending?: boolean): void {
+		const container = new ContainerBuilder();
+
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(resultText)
+		);
+
+		container.addSeparatorComponents(
+			new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
+		);
+
+		const actionRow = new ActionRowBuilder<ButtonBuilder>();
+		actionRow.addComponents(
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.COOKING_RELAUNCH)
+				.setLabel(i18n.t("commands:report.city.homes.cooking.relaunchButton", { lng: ctx.lng }))
+				.setStyle(ButtonStyle.Primary)
+				.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
+				.setDisabled(!!itemChoicePending),
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.COOKING_EXIT)
+				.setLabel(i18n.t("commands:report.city.homes.cooking.exitButton", { lng: ctx.lng }))
+				.setStyle(ButtonStyle.Secondary)
+		);
+
+		container.addActionRowComponents(actionRow);
+
+		nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
+			containers: [container],
+			createCollector: this.createCookingCollector(ctx)
+		});
 	}
 
 	private static readonly CRAFT_ERROR_KEYS: Record<string, string> = {
@@ -764,13 +841,16 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	};
 
 	/**
-	 * Build the craft result notification message
+	 * Build the craft result notification message and optional level-up embed
 	 */
-	private buildCraftResultMessage(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): string {
+	private buildCraftResultMessages(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): {
+		craftResult: string;
+		levelUpEmbed?: CrowniclesEmbed;
+	} {
 		if (response.error) {
 			const errorKey = CookingFeatureHandler.CRAFT_ERROR_KEYS[response.error];
 			if (errorKey) {
-				return i18n.t(`commands:report.city.homes.cooking.${errorKey}`, { lng: ctx.lng });
+				return { craftResult: i18n.t(`commands:report.city.homes.cooking.${errorKey}`, { lng: ctx.lng }) };
 			}
 		}
 
@@ -794,14 +874,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			lng: ctx.lng,
 			xp: response.cookingXpGained
 		})}`;
-
-		if (response.cookingLevelUp) {
-			message += `\n${i18n.t("commands:report.city.homes.cooking.levelUp", {
-				lng: ctx.lng,
-				level: response.newCookingLevel,
-				grade: i18n.t(`models:cooking.grades.${response.newCookingGrade}`, { lng: ctx.lng })
-			})}`;
-		}
 
 		if (response.materialSaved !== undefined) {
 			message += `\n${i18n.t("commands:report.city.homes.cooking.materialSaved", {
@@ -868,7 +940,21 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			}
 		}
 
-		return message;
+		let levelUpEmbed: CrowniclesEmbed | undefined;
+		if (response.cookingLevelUp) {
+			levelUpEmbed = new CrowniclesEmbed()
+				.setTitle(i18n.t("commands:report.city.homes.cooking.levelUpTitle", { lng: ctx.lng }))
+				.setDescription(i18n.t("commands:report.city.homes.cooking.levelUp", {
+					lng: ctx.lng,
+					level: response.newCookingLevel,
+					grade: i18n.t(`models:cooking.grades.${response.newCookingGrade}`, { lng: ctx.lng })
+				}));
+		}
+
+		return {
+			craftResult: message,
+			levelUpEmbed
+		};
 	}
 
 	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {
