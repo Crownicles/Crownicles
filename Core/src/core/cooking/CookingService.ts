@@ -42,6 +42,11 @@ import {
 	getTomorrowMidnight, getDayNumber
 } from "../../../../Lib/src/utils/TimeUtils";
 
+interface MaterialStock {
+	materialId: number;
+	quantity: number;
+}
+
 interface WoodSelection {
 	materialId: number;
 	rarity: MaterialRarity;
@@ -74,10 +79,6 @@ interface CookingLevelUpResult {
 }
 
 export class CookingService {
-	static async getPlayerGuild(player: Player): Promise<Guild | null> {
-		return player.guildId ? await Guilds.getById(player.guildId) : null;
-	}
-
 	static canStorePetFoodReward(recipe: CookingRecipe, guild: Guild | null): boolean {
 		if (recipe.outputType !== CookingOutputType.PET_FOOD) {
 			return true;
@@ -99,16 +100,10 @@ export class CookingService {
 		return CookingService.selectBestWood(woodByRarity);
 	}
 
-	private static groupWoodByRarity(playerMaterials: {
-		materialId: number; quantity: number;
-	}[]): Map<number, {
-		materialId: number; quantity: number;
-	}[]> {
+	private static groupWoodByRarity(playerMaterials: MaterialStock[]): Map<number, MaterialStock[]> {
 		const woodMaterials = MaterialDataController.instance.getMaterialsFromType(MaterialType.WOOD);
 		const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
-		const woodByRarity = new Map<number, {
-			materialId: number; quantity: number;
-		}[]>();
+		const woodByRarity = new Map<number, MaterialStock[]>();
 
 		for (const wood of woodMaterials) {
 			const id = parseInt(wood.id, 10);
@@ -127,9 +122,7 @@ export class CookingService {
 		return woodByRarity;
 	}
 
-	private static selectBestWood(woodByRarity: Map<number, {
-		materialId: number; quantity: number;
-	}[]>): WoodSelection | null {
+	private static selectBestWood(woodByRarity: Map<number, MaterialStock[]>): WoodSelection | null {
 		// Priority: Common (1) → Uncommon (2) → Rare (3)
 		for (const rarity of [
 			MaterialRarity.COMMON,
@@ -215,7 +208,7 @@ export class CookingService {
 		const grade = getCookingGrade(player.cookingLevel);
 		const playerMaterials = await Materials.getPlayerMaterials(player.id);
 		const materialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
-		const guild = await CookingService.getPlayerGuild(player);
+		const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 		const slotRecipes = getUniqueRecipesForSlots({
 			cookingSlots,
 			furnacePosition: player.furnacePosition,

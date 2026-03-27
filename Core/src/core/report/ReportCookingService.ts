@@ -30,7 +30,9 @@ import {
 import {
 	Home, Homes
 } from "../database/game/models/Home";
-import { Guild } from "../database/game/models/Guild";
+import {
+	Guilds, Guild
+} from "../database/game/models/Guild";
 import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -52,8 +54,7 @@ interface PlayerAndHome {
  * confirms, we know which wood was originally selected.
  * Entries auto-expire after 5 minutes to prevent memory leaks.
  */
-const WOOD_CONFIRMATION_TTL_MINUTES = 5;
-const WOOD_CONFIRMATION_TTL_MS = minutesToMilliseconds(WOOD_CONFIRMATION_TTL_MINUTES);
+const WOOD_CONFIRMATION_TTL = minutesToMilliseconds(5);
 
 interface PendingWoodConfirmation {
 	materialId: number;
@@ -70,7 +71,7 @@ function setPendingWoodConfirmation(keycloakId: string, materialId: number, rari
 	if (existing) {
 		clearTimeout(existing.timeout);
 	}
-	const timeout = setTimeout(() => pendingWoodConfirmations.delete(keycloakId), WOOD_CONFIRMATION_TTL_MS);
+	const timeout = setTimeout(() => pendingWoodConfirmations.delete(keycloakId), WOOD_CONFIRMATION_TTL);
 	pendingWoodConfirmations.set(keycloakId, {
 		materialId,
 		rarity,
@@ -398,7 +399,7 @@ interface CraftOutputParams {
 	guild: Guild | null;
 }
 
-function processSuccessfulCraftOutput({
+async function processSuccessfulCraftOutput({
 	context,
 	player,
 	recipe,
@@ -406,32 +407,32 @@ function processSuccessfulCraftOutput({
 }: Omit<CraftOutputParams, "result">): Promise<CraftOutputResult> {
 	switch (recipe.outputType) {
 		case CookingOutputType.POTION:
-			return handlePotionOutput(player, recipe, context);
+			return await handlePotionOutput(player, recipe, context);
 		case CookingOutputType.PET_FOOD:
-			return guild ? handlePetFoodOutput(player, recipe, guild) : Promise.resolve({});
+			return guild ? await handlePetFoodOutput(player, recipe, guild) : {};
 		case CookingOutputType.MATERIAL:
-			return handleMaterialOutput(player, recipe);
+			return await handleMaterialOutput(player, recipe);
 		default:
-			return Promise.resolve({});
+			return {};
 	}
 }
 
-function processFailedCraftOutput({
+async function processFailedCraftOutput({
 	context,
 	player,
 	recipe
 }: Omit<CraftOutputParams, "result" | "guild">): Promise<CraftOutputResult> {
 	if (recipe.outputType === CookingOutputType.POTION) {
-		return handleFailedPotionOutput(player, context);
+		return await handleFailedPotionOutput(player, context);
 	}
-	return Promise.resolve({});
+	return {};
 }
 
-function processCraftOutput(params: CraftOutputParams): Promise<CraftOutputResult> {
+async function processCraftOutput(params: CraftOutputParams): Promise<CraftOutputResult> {
 	if (!params.result.success) {
-		return processFailedCraftOutput(params);
+		return await processFailedCraftOutput(params);
 	}
-	return processSuccessfulCraftOutput(params);
+	return await processSuccessfulCraftOutput(params);
 }
 
 interface CraftErrorInfo {
@@ -488,7 +489,7 @@ export async function handleCookingCraft(
 	});
 	const slot = slots.find(s => s.slotIndex === packet.slotIndex);
 	const recipe = slot?.recipe ? CookingRecipeDataController.instance.getById(slot.recipe.id) : undefined;
-	const guild = await CookingService.getPlayerGuild(player);
+	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 
 	const validationError = validateCraftRequest(slot, recipe, guild);
 	if (validationError) {
