@@ -1135,7 +1135,7 @@
           "craftButton": {
             "0": "Cuire",
             "1": "Mijoter",
-            "2": "Forger",
+            "2": "Fondre",
             "3": "Distiller",
             "4": "Griller"
           },
@@ -1155,7 +1155,8 @@
           "guildRequired": "{emote:messages.refuse} Cette nourriture pour familiers nécessite une guilde pour être stockée. Rejoignez une guilde pour la préparer.",
           "guildStorageFull": "{emote:messages.refuse} Le stockage de nourriture de votre guilde est plein. Libérez de la place avant de cuisiner cette recette.",
           "xpGained": "{emote:unitValues.xp} +**{{xp}}** XP de cuisine",
-          "levelUp": "{emote:messages.validate} Vous êtes passé au **niveau {{level}}** de cuisine ! Nouveau grade : **{{grade}}**",
+          "levelUp": "Vous êtes passé au **niveau {{level}}** de cuisine ! Nouveau grade : **{{grade}}**",
+          "levelUpTitle": "{emote:city.homeUpgrades.cooking} Niveau de cuisine augmenté !",
           "materialSaved": "{emote:messages.validate} Grâce à votre expertise, un **{{material}}** a été économisé !",
           "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** ont été ajoutées au stockage de votre guilde.",
           "backToCooking": "Retour à la cuisine",
