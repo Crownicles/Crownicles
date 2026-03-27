@@ -1,5 +1,7 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
+	ContainerBuilder, SectionBuilder, SeparatorBuilder,
+	SeparatorSpacingSize, TextDisplayBuilder,
 	Message, parseEmoji, StringSelectMenuBuilder,
 	StringSelectMenuInteraction
 } from "discord.js";
@@ -400,19 +402,152 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Register the ignited furnace menu with slot recipes
+	 * Register the ignited furnace menu with slot recipes using Components V2
 	 */
 	private registerIgnitedMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus, extraMessage = ""): void {
-		const embed = new CrowniclesEmbed()
-			.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-			.setDescription(this.buildIgnitedDescription(ctx) + extraMessage)
-			.addFields(this.buildSlotFields(ctx));
+		const container = this.buildIgnitedContainer(ctx, extraMessage);
 
 		nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-			embed,
-			components: this.buildIgnitedButtons(ctx),
+			containers: [container],
 			createCollector: this.createCookingCollector(ctx)
 		});
+	}
+
+	/**
+	 * Build the V2 container for the ignited furnace
+	 */
+	private buildIgnitedContainer(ctx: HomeFeatureHandlerContext, extraMessage: string): ContainerBuilder {
+		const container = new ContainerBuilder();
+
+		// Title
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`
+			)
+		);
+
+		// Furnace uses remaining + extra message
+		let headerText = this.buildIgnitedDescription(ctx);
+		if (extraMessage) {
+			headerText += extraMessage;
+		}
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(headerText)
+		);
+
+		// Build slot sections
+		const state = this.getState(ctx);
+		for (let i = 0; i < state.currentSlots.length; i++) {
+			container.addSeparatorComponents(
+				new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
+			);
+			container.addSectionComponents(
+				this.buildSlotSection(state.currentSlots[i], ctx)
+			);
+		}
+
+		// Bottom action row
+		container.addSeparatorComponents(
+			new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
+		);
+		container.addActionRowComponents(this.buildIgnitedActionRow(ctx));
+
+		return container;
+	}
+
+	/**
+	 * Build a V2 Section for a single cooking slot with its craft button as accessory
+	 */
+	private buildSlotSection(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): SectionBuilder {
+		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
+		const stationName = i18n.t(`models:cooking.stations.${slot.slotIndex}`, { lng: ctx.lng });
+		const craftLabel = i18n.t(`commands:report.city.homes.cooking.craftButton.${slot.slotIndex}`, { lng: ctx.lng });
+
+		const section = new SectionBuilder();
+
+		if (!slot.recipe) {
+			const stationLabel = `${stationEmoji} **${stationName}**`;
+			section.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					`${stationLabel}\n${i18n.t("commands:report.city.homes.cooking.slotEmpty", { lng: ctx.lng })}`
+				)
+			);
+			section.setButtonAccessory(
+				new ButtonBuilder()
+					.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
+					.setLabel(craftLabel)
+					.setEmoji(parseEmoji(stationEmoji)!)
+					.setStyle(ButtonStyle.Secondary)
+					.setDisabled(true)
+			);
+			return section;
+		}
+
+		const ingredientsList = this.buildIngredientsDescription(slot.recipe.ingredients, ctx.lng);
+		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[slot.recipe.recipeType] ?? "";
+		const stationLabel = `${stationEmoji} **${stationName}**`;
+
+		let slotTitle: string;
+		if (slot.recipe.isSecret) {
+			slotTitle = i18n.t("commands:report.city.homes.cooking.slotSecretName", {
+				lng: ctx.lng,
+				stationLabel,
+				level: slot.recipe.level
+			});
+		}
+		else {
+			const recipeName = i18n.t(`models:cooking.recipes.${slot.recipe.id}`, { lng: ctx.lng });
+			slotTitle = i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
+				lng: ctx.lng,
+				stationLabel,
+				outputEmoji,
+				recipe: recipeName,
+				level: slot.recipe.level
+			});
+		}
+
+		section.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(`${slotTitle}\n${ingredientsList}`)
+		);
+
+		section.setButtonAccessory(
+			new ButtonBuilder()
+				.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
+				.setLabel(craftLabel)
+				.setEmoji(parseEmoji(stationEmoji)!)
+				.setStyle(slot.recipe.canCraft ? ButtonStyle.Primary : ButtonStyle.Secondary)
+				.setDisabled(!slot.recipe.canCraft)
+		);
+
+		return section;
+	}
+
+	/**
+	 * Build the bottom action row for the ignited menu (revive + back)
+	 */
+	private buildIgnitedActionRow(ctx: HomeFeatureHandlerContext): ActionRowBuilder<ButtonBuilder> {
+		const row = new ActionRowBuilder<ButtonBuilder>();
+		const state = this.getState(ctx);
+
+		if (state.furnaceUsesRemaining > 0) {
+			row.addComponents(
+				new ButtonBuilder()
+					.setCustomId(HomeMenuIds.COOKING_REVIVE)
+					.setLabel(i18n.t("commands:report.city.homes.cooking.reviveButton", { lng: ctx.lng }))
+					.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
+					.setStyle(ButtonStyle.Success)
+			);
+		}
+
+		row.addComponents(
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.BACK_TO_HOME)
+				.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
+				.setEmoji(CrowniclesIcons.collectors.back)
+				.setStyle(ButtonStyle.Danger)
+		);
+
+		return row;
 	}
 
 	/**

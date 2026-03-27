@@ -1,5 +1,7 @@
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
-import { MessageActionRowComponentBuilder } from "@discordjs/builders";
+import {
+	ContainerBuilder, MessageActionRowComponentBuilder
+} from "@discordjs/builders";
 import {
 	ActionRowBuilder, Collector, Message
 } from "discord.js";
@@ -14,7 +16,17 @@ export type CrowniclesNestedMenu = {
 	embed: CrowniclesEmbed;
 	components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 	createCollector?: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
+} | {
+	containers: ContainerBuilder[];
+	createCollector?: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
 };
+
+function isV2Menu(menu: CrowniclesNestedMenu): menu is {
+	containers: ContainerBuilder[];
+	createCollector?: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
+} {
+	return "containers" in menu;
+}
 
 export class CrowniclesNestedMenus {
 	private readonly _mainMenu: CrowniclesNestedMenu;
@@ -44,16 +56,23 @@ export class CrowniclesNestedMenus {
 	}
 
 	public async send(interaction: CrowniclesInteraction): Promise<Message> {
-		const msg = await interaction.editReply({
-			embeds: [this._mainMenu.embed],
-			components: this._mainMenu.components
-		});
+		const menu = this._mainMenu;
+		const msg = isV2Menu(menu)
+			? await interaction.editReply({
+				embeds: [],
+				components: menu.containers,
+				flags: ["IsComponentsV2"]
+			})
+			: await interaction.editReply({
+				embeds: [menu.embed],
+				components: menu.components
+			});
 		if (!msg) {
 			throw new Error("Failed to send message");
 		}
 		this._message = msg;
-		if (this._mainMenu.createCollector) {
-			this._currentCollector = this._mainMenu.createCollector(this, msg);
+		if (menu.createCollector) {
+			this._currentCollector = menu.createCollector(this, msg);
 		}
 		return msg;
 	}
@@ -82,11 +101,21 @@ export class CrowniclesNestedMenus {
 			this._currentCollector = undefined;
 		}
 		if (this._message) {
-			const components = this._currentMenu.components;
-			disableRows(components);
-			await this._message.edit({
-				components
-			});
+			const menu = this._currentMenu;
+			if (isV2Menu(menu)) {
+				// V2 menus: disable buttons inside containers
+				await this._message.edit({
+					components: menu.containers,
+					flags: ["IsComponentsV2"]
+				});
+			}
+			else {
+				const components = menu.components;
+				disableRows(components);
+				await this._message.edit({
+					components
+				});
+			}
 		}
 	}
 
@@ -94,10 +123,20 @@ export class CrowniclesNestedMenus {
 		if (!this._message) {
 			throw new Error("Message not sent yet");
 		}
-		await this._message.edit({
-			embeds: [menu.embed],
-			components: menu.components
-		});
+		if (isV2Menu(menu)) {
+			await this._message.edit({
+				embeds: [],
+				components: menu.containers,
+				flags: ["IsComponentsV2"]
+			});
+		}
+		else {
+			await this._message.edit({
+				embeds: [menu.embed],
+				components: menu.components,
+				flags: [] as const
+			});
+		}
 		this._currentMenu = menu;
 		if (this._currentCollector) {
 			this._currentCollector.stop();
