@@ -10,7 +10,7 @@ import {
 } from "../database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import {
-	ChestSlotsPerCategory, HomeFeatures
+	ChestSlotsPerCategory
 } from "../../../../Lib/src/types/HomeFeatures";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
@@ -169,24 +169,11 @@ async function buildManageHomeData(params: {
 	const {
 		player, home, homeLevel, city
 	} = params;
+	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
 	const homesCount = await Homes.getHomesCount();
 
-	// No home at all → only option is buying a new one
-	if (!home) {
-		return {
-			newPrice: city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount),
-			currentMoney: player.money
-		};
-	}
-
-	// Home but no level → should not happen, no options
-	if (!homeLevel) {
-		return undefined;
-	}
-
-	// Both home and homeLevel exist
 	const manageOptions = buildManageOptions({
-		home, homeLevel, city, player, homesCount
+		home, homeLevel, city, player, isHomeInCity, homesCount
 	});
 	if (manageOptions) {
 		return {
@@ -195,32 +182,37 @@ async function buildManageHomeData(params: {
 		};
 	}
 
-	return buildNoOptionsReason(home, homeLevel, city, player);
+	return homeLevel ? buildNoOptionsReason(isHomeInCity, homeLevel, player) : undefined;
 }
 
 interface ManageOptions {
 	newPrice?: number;
 	upgrade?: {
 		price: number;
-		oldFeatures: HomeFeatures;
-		newFeatures: HomeFeatures;
+		oldFeatures: HomeLevel["features"];
+		newFeatures: HomeLevel["features"];
 	};
 	movePrice?: number;
 }
 
-interface CityPopulationCount {
-	cityId: string;
-	count: number;
+interface BuildManageOptionsParams {
+	home: Home | null;
+	homeLevel: HomeLevel | null;
+	city: City;
+	player: Player;
+	isHomeInCity: boolean;
+	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>;
 }
 
 function getUpgradeOption(
 	homeLevel: HomeLevel,
 	player: Player,
+	isHomeInCity: boolean,
 	city: City,
-	homesCount: CityPopulationCount[]
+	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
 ): ManageOptions["upgrade"] {
 	const nextHomeUpgrade = HomeLevel.getNextUpgrade(homeLevel, player.level);
-	if (!nextHomeUpgrade) {
+	if (!nextHomeUpgrade || !isHomeInCity) {
 		return undefined;
 	}
 	return {
@@ -231,125 +223,63 @@ function getUpgradeOption(
 }
 
 function getMovePrice(
-	home: Home,
+	home: Home | null,
 	homeLevel: HomeLevel,
 	city: City,
-	homesCount: CityPopulationCount[]
+	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
 ): number | undefined {
-	if (home.cityId === city.id) {
+	const canMove = home && home.cityId !== city.id;
+	if (!canMove) {
 		return undefined;
 	}
 	return city.getHomeLevelPrice(homeLevel, homesCount);
 }
 
-interface BuildManageOptionsParams {
-	home: Home;
-	homeLevel: HomeLevel;
-	city: City;
-	player: Player;
-	homesCount: CityPopulationCount[];
-}
-
 function buildManageOptions({
-	home, homeLevel, city, player, homesCount
+	home,
+	homeLevel,
+	city,
+	player,
+	isHomeInCity,
+	homesCount
 }: BuildManageOptionsParams): ManageOptions | undefined {
-	const isHomeInCity = home.cityId === city.id;
-	const upgrade = isHomeInCity ? getUpgradeOption(homeLevel, player, city, homesCount) : undefined;
-	const movePrice = isHomeInCity ? undefined : getMovePrice(home, homeLevel, city, homesCount);
+	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
+	const upgrade = homeLevel ? getUpgradeOption(homeLevel, player, isHomeInCity, city, homesCount) : undefined;
+	const movePrice = homeLevel ? getMovePrice(home, homeLevel, city, homesCount) : undefined;
 
-	if (!upgrade && !movePrice) {
+	if (!newPrice && !upgrade && !movePrice) {
 		return undefined;
 	}
 	return {
+		newPrice,
 		upgrade,
 		movePrice
 	};
 }
 
 function buildNoOptionsReason(
-	home: Home,
+	isHomeInCity: boolean,
 	homeLevel: HomeLevel,
-	city: City,
 	player: Player
 ): HomeData["manage"] {
-	if (home.cityId !== city.id) {
+	if (!isHomeInCity) {
 		return undefined;
 	}
 
 	const nextLevel = HomeLevel.getNextLevelInfo(homeLevel);
 	return {
 		currentMoney: player.money,
-		isMaxLevel: nextLevel === null,
+		isMaxLevel: nextLevel === null || undefined,
 		requiredPlayerLevelForUpgrade: nextLevel && player.level < nextLevel.requiredPlayerLevel
 			? nextLevel.requiredPlayerLevel
 			: undefined
 	};
 }
 
-type UpgradeableItem = UpgradeStationData["upgradeableItems"][number];
-
-interface GetUpgradeableItemParams {
-	inventorySlot: InventorySlot;
-	playerMaterialMap: Map<number, number>;
-	maxUpgradeableRarity: number;
-	maxLevelAtHome: number;
-	player: Player;
-}
-
-function getUpgradeableItem({
-	inventorySlot, playerMaterialMap, maxUpgradeableRarity, maxLevelAtHome, player
-}: GetUpgradeableItemParams): UpgradeableItem | undefined {
-	if (!inventorySlot.isPrimaryEquipment()) {
-		return undefined;
-	}
-
-	const itemData = inventorySlot.isWeapon()
-		? WeaponDataController.instance.getById(inventorySlot.itemId)
-		: ArmorDataController.instance.getById(inventorySlot.itemId);
-
-	if (!itemData) {
-		return undefined;
-	}
-
-	const currentLevel = inventorySlot.itemLevel ?? 0;
-	if (currentLevel >= maxLevelAtHome || itemData.rarity > maxUpgradeableRarity) {
-		return undefined;
-	}
-
-	const nextLevel = currentLevel + 1;
-	const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
-
-	const materialAggregation = new Map<number, number>();
-	for (const material of requiredMaterialsRaw) {
-		const materialIdNum = parseInt(material.id, 10);
-		materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
-	}
-
-	const requiredMaterials: UpgradeableItem["requiredMaterials"] = [];
-	let canUpgrade = true;
-
-	for (const [materialId, quantity] of materialAggregation) {
-		const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
-		requiredMaterials.push({
-			materialId,
-			quantity,
-			playerQuantity
-		});
-		if (playerQuantity < quantity) {
-			canUpgrade = false;
-		}
-	}
-
-	return {
-		slot: inventorySlot.slot,
-		category: inventorySlot.itemCategory,
-		details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-		nextLevel,
-		requiredMaterials,
-		canUpgrade
-	};
-}
-
+/**
+ * Build upgrade station data for the home feature in the city collector.
+ * Determines which items can be upgraded at home and their material requirements.
+ */
 export function buildUpgradeStationData(
 	playerInventory: InventorySlot[],
 	playerMaterialMap: Map<number, number>,
@@ -362,12 +292,64 @@ export function buildUpgradeStationData(
 	const upgradeableItems: UpgradeStationData["upgradeableItems"] = [];
 
 	for (const inventorySlot of playerInventory) {
-		const item = getUpgradeableItem({
-			inventorySlot, playerMaterialMap, maxUpgradeableRarity, maxLevelAtHome, player
-		});
-		if (item) {
-			upgradeableItems.push(item);
+		// Only process weapons and armors with a valid item
+		if (!inventorySlot.isPrimaryEquipment()) {
+			continue;
 		}
+
+		// Get the item data
+		const itemData = inventorySlot.isWeapon()
+			? WeaponDataController.instance.getById(inventorySlot.itemId)
+			: ArmorDataController.instance.getById(inventorySlot.itemId);
+
+		if (!itemData) {
+			continue;
+		}
+
+		// Check if item level allows upgrade at home (limited by home's maxItemUpgradeLevel)
+		const currentLevel = inventorySlot.itemLevel ?? 0;
+		if (currentLevel >= maxLevelAtHome) {
+			continue;
+		}
+
+		// Check if item rarity is allowed at this home level
+		if (itemData.rarity > maxUpgradeableRarity) {
+			continue;
+		}
+
+		const nextLevel = currentLevel + 1;
+		const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
+
+		// Aggregate materials (same material can appear multiple times)
+		const materialAggregation = new Map<number, number>();
+		for (const material of requiredMaterialsRaw) {
+			const materialIdNum = parseInt(material.id, 10);
+			materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
+		}
+
+		const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
+		let canUpgrade = true;
+
+		for (const [materialId, quantity] of materialAggregation) {
+			const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
+			requiredMaterials.push({
+				materialId,
+				quantity,
+				playerQuantity
+			});
+			if (playerQuantity < quantity) {
+				canUpgrade = false;
+			}
+		}
+
+		upgradeableItems.push({
+			slot: inventorySlot.slot,
+			category: inventorySlot.itemCategory,
+			details: inventorySlot.itemWithDetails(player) as MainItemDetails,
+			nextLevel,
+			requiredMaterials,
+			canUpgrade
+		});
 	}
 
 	return {
