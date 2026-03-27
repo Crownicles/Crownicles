@@ -1,6 +1,7 @@
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import {
-	ContainerBuilder, MessageActionRowComponentBuilder
+	ContainerBuilder, MessageActionRowComponentBuilder,
+	TextDisplayBuilder
 } from "@discordjs/builders";
 import {
 	ActionRowBuilder, Collector, Message
@@ -28,6 +29,46 @@ function isV2Menu(menu: CrowniclesNestedMenu): menu is {
 	return "containers" in menu;
 }
 
+/**
+ * Convert an embed-based menu to a V2 container.
+ * Used as a fallback when a message is already in V2 mode and cannot switch back to embed.
+ */
+function embedMenuToV2Container(
+	menu: {
+		embed: CrowniclesEmbed;
+		components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
+	}
+): ContainerBuilder {
+	const container = new ContainerBuilder();
+
+	const author = menu.embed.data.author;
+	if (author?.name) {
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(`### ${author.name}`)
+		);
+	}
+
+	if (menu.embed.data.description) {
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(menu.embed.data.description)
+		);
+	}
+
+	if (menu.embed.data.fields) {
+		for (const field of menu.embed.data.fields) {
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(`**${field.name}**\n${field.value}`)
+			);
+		}
+	}
+
+	for (const row of menu.components) {
+		container.addActionRowComponents(row);
+	}
+
+	return container;
+}
+
 export class CrowniclesNestedMenus {
 	private readonly _mainMenu: CrowniclesNestedMenu;
 
@@ -40,6 +81,8 @@ export class CrowniclesNestedMenus {
 	private readonly _onChangeMenu: (() => void) | undefined;
 
 	private _currentMenu: CrowniclesNestedMenu;
+
+	private _isV2 = false;
 
 	constructor(mainMenu: CrowniclesNestedMenu, menus: Map<string, CrowniclesNestedMenu>, _onChangeMenu: (() => void) | undefined = undefined) {
 		this._menus = menus;
@@ -55,8 +98,15 @@ export class CrowniclesNestedMenus {
 		this._menus.set(id, menu);
 	}
 
+	public get message(): Message | undefined {
+		return this._message;
+	}
+
 	public async send(interaction: CrowniclesInteraction): Promise<Message> {
 		const menu = this._mainMenu;
+		if (isV2Menu(menu)) {
+			this._isV2 = true;
+		}
 		const msg = isV2Menu(menu)
 			? await interaction.editReply({
 				embeds: [],
@@ -103,9 +153,16 @@ export class CrowniclesNestedMenus {
 		if (this._message) {
 			const menu = this._currentMenu;
 			if (isV2Menu(menu)) {
-				// V2 menus: disable buttons inside containers
 				await this._message.edit({
 					components: menu.containers,
+					flags: ["IsComponentsV2"]
+				});
+			}
+			else if (this._isV2) {
+				// Message is V2 but current menu is embed — auto-convert
+				const container = embedMenuToV2Container(menu);
+				await this._message.edit({
+					components: [container],
 					flags: ["IsComponentsV2"]
 				});
 			}
@@ -124,9 +181,19 @@ export class CrowniclesNestedMenus {
 			throw new Error("Message not sent yet");
 		}
 		if (isV2Menu(menu)) {
+			this._isV2 = true;
 			await this._message.edit({
 				embeds: [],
 				components: menu.containers,
+				flags: ["IsComponentsV2"]
+			});
+		}
+		else if (this._isV2) {
+			// Message is already V2, can't switch back to embed — auto-convert
+			const container = embedMenuToV2Container(menu);
+			await this._message.edit({
+				embeds: [],
+				components: [container],
 				flags: ["IsComponentsV2"]
 			});
 		}

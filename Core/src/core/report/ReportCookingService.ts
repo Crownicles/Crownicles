@@ -430,6 +430,7 @@ async function processFailedCraftOutput({
 	}
 	return {};
 }
+}
 
 async function processCraftOutput(params: CraftOutputParams): Promise<CraftOutputResult> {
 	if (!params.result.success) {
@@ -540,7 +541,9 @@ export async function handleCookingCraft(
 		newCookingGrade: result.newGrade,
 		materialSaved: result.materialSaved,
 		discoveredRecipeIds: result.discoveredRecipeIds,
-		updatedSlots
+		updatedSlots,
+		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - player.furnaceUsesToday,
+		itemChoicePending: !!outputResult.inventorySwapPackets
 	}));
 	if (outputResult.inventorySwapPackets) {
 		response.push(...outputResult.inventorySwapPackets);
