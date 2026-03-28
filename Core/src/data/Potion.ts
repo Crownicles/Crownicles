@@ -4,7 +4,6 @@ import {
 import { ItemDataController } from "./DataController";
 import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
-import { ObjectItem } from "./ObjectItem";
 import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 
 export class Potion extends SupportItem {
@@ -44,7 +43,7 @@ export class PotionDataController extends ItemDataController<Potion> {
 		return new Potion();
 	}
 
-	public randomItem(nature: number, rarity: number): ObjectItem {
+	public randomItem(nature: number, rarity: number): Potion {
 		const candidates = this.getValuesArray()
 			.filter(item => item.nature === nature && item.rarity === rarity);
 		if (candidates.length === 0) {

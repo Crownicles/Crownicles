@@ -62,18 +62,21 @@ export abstract class ShopUtils {
 			const buyResult = await shopCategories
 				.find(category => category.id === reactionInstance.shopCategoryId)!.items
 				.find(item => item.id === reactionInstance.shopItemId)!.buyCallback(response, player.id, context, reactionInstance.amount);
+			const isDetailedResult = typeof buyResult !== "boolean";
 			const parsed: BuyCallbackResult = typeof buyResult === "boolean" ? { success: buyResult } : buyResult;
 			if (parsed.success) {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
 				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
-				const translationParams = this.getTranslationParams(reactionInstance.shopItemId, additionalShopData);
-				response.push(makePacket(CommandShopGenericPurchase, {
-					shopItemId: reactionInstance.shopItemId,
-					amount: reactionInstance.amount,
-					materials: parsed.materials,
-					translationParams
-				}));
+				if (isDetailedResult) {
+					const translationParams = this.getTranslationParams(reactionInstance.shopItemId, additionalShopData);
+					response.push(makePacket(CommandShopGenericPurchase, {
+						shopItemId: reactionInstance.shopItemId,
+						amount: reactionInstance.amount,
+						materials: parsed.materials,
+						translationParams
+					}));
+				}
 				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
 			}
 		};

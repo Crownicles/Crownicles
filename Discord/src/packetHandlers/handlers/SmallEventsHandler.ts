@@ -1276,15 +1276,10 @@ export default class SmallEventsHandler {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
 
-		let description = getRandomSmallEventIntro(lng)
+		const description = getRandomSmallEventIntro(lng)
 			+ StringUtils.getRandomTranslation("smallEvents:farmer.stories", lng)
-			+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, {
-				count: packet.amount
-			});
-
-		if (packet.discoveredRecipeId) {
-			description += `\n\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeId, lng, packet.recipeCost)}`;
-		}
+			+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, { count: packet.amount })
+			+ (packet.discoveredRecipeId ? `\n\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeId, lng, packet.recipeCost)}` : "");
 
 		await interaction?.editReply({
 			embeds: [
