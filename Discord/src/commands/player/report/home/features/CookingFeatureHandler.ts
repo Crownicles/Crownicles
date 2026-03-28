@@ -337,12 +337,12 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 		// Build slot sections
 		const state = this.getState(ctx);
-		for (let i = 0; i < state.currentSlots.length; i++) {
+		for (const slot of state.currentSlots) {
 			container.addSeparatorComponents(
 				new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
 			);
 			container.addSectionComponents(
-				this.buildSlotSection(state.currentSlots[i], ctx, allDisabled)
+				this.buildSlotSection(slot, ctx, allDisabled)
 			);
 		}
 
