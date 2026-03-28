@@ -553,8 +553,7 @@ export async function handleCookingCraft(
 		materialSaved: result.materialSaved,
 		discoveredRecipeIds: result.discoveredRecipeIds,
 		updatedSlots,
-		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - player.furnaceUsesToday,
-		itemChoicePending: !!outputResult.inventorySwapPackets
+		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - player.furnaceUsesToday
 	}));
 	if (outputResult.inventorySwapPackets) {
 		response.push(...outputResult.inventorySwapPackets);
