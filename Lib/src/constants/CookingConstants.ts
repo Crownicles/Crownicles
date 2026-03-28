@@ -245,6 +245,17 @@ export const FAILURE_LEVEL_OFFSET = 18;
 export const NO_XP_LEVEL_THRESHOLD = 3;
 
 /**
+ * Chance of receiving a consolation no-effect potion when a craft fails
+ */
+export const FAILED_CRAFT_CONSOLATION_CHANCE = 0.3;
+
+/**
+ * Min and max rarity of consolation potions given on failed crafts (inclusive)
+ */
+export const FAILED_CRAFT_CONSOLATION_MIN_RARITY = 1;
+export const FAILED_CRAFT_CONSOLATION_MAX_RARITY = 4;
+
+/**
  * Slot configurations for the furnace
  */
 export interface SlotConfig {
