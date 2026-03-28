@@ -37,8 +37,10 @@ import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	getCookingGrade, FURNACE_MAX_USES_PER_DAY, CookingOutputType, CookingOutputTypeValue
+	getCookingGrade, FURNACE_MAX_USES_PER_DAY, CookingOutputType, CookingOutputTypeValue,
+	FAILED_CRAFT_CONSOLATION_CHANCE, FAILED_CRAFT_CONSOLATION_MIN_RARITY, FAILED_CRAFT_CONSOLATION_MAX_RARITY
 } from "../../../../Lib/src/constants/CookingConstants";
+import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import { giveItemToPlayer } from "../utils/ItemUtils";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 
@@ -381,15 +383,25 @@ async function handleFailedPotionOutput(
 	player: Player,
 	context: PacketContext
 ): Promise<CraftOutputResult> {
-	const noEffectPotion = PotionDataController.instance.getById(0);
-	if (!noEffectPotion) {
+	if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() > FAILED_CRAFT_CONSOLATION_CHANCE) {
 		return {};
 	}
-	const itemReceived = await player.giveItem(noEffectPotion);
-	const result: CraftOutputResult = { failedPotionId: 0 };
+
+	const rarity = RandomUtils.crowniclesRandom.integer(
+		FAILED_CRAFT_CONSOLATION_MIN_RARITY,
+		FAILED_CRAFT_CONSOLATION_MAX_RARITY
+	);
+
+	if (!PotionDataController.instance.hasItemWithNatureAndRarity(ItemNature.NONE, rarity)) {
+		return {};
+	}
+
+	const potion = PotionDataController.instance.randomItem(ItemNature.NONE, rarity);
+	const itemReceived = await player.giveItem(potion);
+	const result: CraftOutputResult = { failedPotionId: potion.id };
 	if (!itemReceived) {
 		result.inventorySwapPackets = [];
-		await giveItemToPlayer(result.inventorySwapPackets, context, player, noEffectPotion);
+		await giveItemToPlayer(result.inventorySwapPackets, context, player, potion);
 	}
 	return result;
 }
@@ -429,7 +441,6 @@ async function processFailedCraftOutput({
 		return await handleFailedPotionOutput(player, context);
 	}
 	return {};
-}
 }
 
 async function processCraftOutput(params: CraftOutputParams): Promise<CraftOutputResult> {
