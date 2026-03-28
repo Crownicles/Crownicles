@@ -26,6 +26,8 @@ export interface CookingSlotData {
 	} | null;
 }
 
+export type RecipeSlotData = NonNullable<CookingSlotData["recipe"]>;
+
 export const CookingCraftErrors = {
 	CRAFT_UNAVAILABLE: "craftUnavailable",
 	INVENTORY_FULL: "inventoryFull",
