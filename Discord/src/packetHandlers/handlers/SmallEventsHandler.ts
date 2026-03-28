@@ -1303,7 +1303,7 @@ export default class SmallEventsHandler {
 		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!) : DiscordCache.getInteraction(context.discord!.interaction!);
 		const lng = context.discord!.language;
 
-		const isFromCollector = !!context.discord!.buttonInteraction;
+		const isFromCollector = Boolean(context.discord!.buttonInteraction);
 		const story = isFromCollector
 			? ""
 			: getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
