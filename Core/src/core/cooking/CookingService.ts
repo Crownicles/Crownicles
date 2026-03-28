@@ -36,7 +36,9 @@ import {
 	getUniqueRecipesForSlots,
 	isRecipeSecret
 } from "./CookingSlotRotation";
-import { CookingSlotData } from "../../../../Lib/src/packets/commands/CommandReportPacket";
+import {
+	CookingSlotData, RecipeSlotData
+} from "../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 import {
 	getTomorrowMidnight, getDayNumber
@@ -241,7 +243,7 @@ export class CookingService {
 		slotIndex: number,
 		recipe: CookingRecipe,
 		context: RecipeSlotContext
-	): NonNullable<CookingSlotData["recipe"]> {
+	): RecipeSlotData {
 		const secret = isRecipeSecret({
 			slotIndex,
 			furnacePosition: context.furnacePosition,

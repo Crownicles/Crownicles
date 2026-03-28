@@ -237,6 +237,13 @@ interface ProfileFetchedData {
 }
 
 /**
+ * Build guild data for profile (guild name)
+ */
+function buildGuildData(guild: Guild | null): string | undefined {
+	return guild?.name ?? undefined;
+}
+
+/**
  * Build the full profile response packet from fetched data
  */
 async function buildProfilePacket(
@@ -253,7 +260,7 @@ async function buildProfilePacket(
 		keycloakId: toCheckPlayer.keycloakId,
 		playerData: {
 			badges,
-			guild: data.guild?.name ?? undefined,
+			guild: buildGuildData(data.guild),
 			level: toCheckPlayer.level,
 			rank: buildRankData(data.rank, data.numberOfPlayers, toCheckPlayer.score),
 			classId: toCheckPlayer.class,

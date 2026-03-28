@@ -47,8 +47,13 @@ export { handleChestAction } from "./ReportCityChestService";
 // Type aliases for commonly used nested types from ReactionCollectorCityData
 type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
 type HomeData = ReactionCollectorCityData["home"];
-type UpgradeStationData = NonNullable<NonNullable<HomeData["owned"]>["upgradeStation"]>;
-type ChestData = NonNullable<NonNullable<HomeData["owned"]>["chest"]>;
+type OwnedHomeData = NonNullable<HomeData["owned"]>;
+type UpgradeStationData = NonNullable<OwnedHomeData["upgradeStation"]>;
+type ChestData = NonNullable<OwnedHomeData["chest"]>;
+type HomesCount = {
+	cityId: string;
+	count: number;
+}[];
 
 /**
  * Build enchanter data for the city reaction collector
@@ -201,16 +206,16 @@ interface BuildManageOptionsParams {
 	city: City;
 	player: Player;
 	isHomeInCity: boolean;
-	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>;
+	homesCount: HomesCount;
 }
 
-function getUpgradeOption(
-	homeLevel: HomeLevel,
-	player: Player,
-	isHomeInCity: boolean,
-	city: City,
-	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
-): ManageOptions["upgrade"] {
+function getUpgradeOption(params: BuildManageOptionsParams): ManageOptions["upgrade"] {
+	const {
+		homeLevel, player, isHomeInCity, city, homesCount
+	} = params;
+	if (!homeLevel) {
+		return undefined;
+	}
 	const nextHomeUpgrade = HomeLevel.getNextUpgrade(homeLevel, player.level);
 	if (!nextHomeUpgrade || !isHomeInCity) {
 		return undefined;
@@ -222,30 +227,24 @@ function getUpgradeOption(
 	};
 }
 
-function getMovePrice(
-	home: Home | null,
-	homeLevel: HomeLevel,
-	city: City,
-	homesCount: Awaited<ReturnType<typeof Homes.getHomesCount>>
-): number | undefined {
-	const canMove = home && home.cityId !== city.id;
+function getMovePrice(params: BuildManageOptionsParams): number | undefined {
+	const {
+		home, homeLevel, city, homesCount
+	} = params;
+	const canMove = home && homeLevel && home.cityId !== city.id;
 	if (!canMove) {
 		return undefined;
 	}
 	return city.getHomeLevelPrice(homeLevel, homesCount);
 }
 
-function buildManageOptions({
-	home,
-	homeLevel,
-	city,
-	player,
-	isHomeInCity,
-	homesCount
-}: BuildManageOptionsParams): ManageOptions | undefined {
+function buildManageOptions(params: BuildManageOptionsParams): ManageOptions | undefined {
+	const {
+		home, city, homesCount
+	} = params;
 	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
-	const upgrade = homeLevel ? getUpgradeOption(homeLevel, player, isHomeInCity, city, homesCount) : undefined;
-	const movePrice = homeLevel ? getMovePrice(home, homeLevel, city, homesCount) : undefined;
+	const upgrade = getUpgradeOption(params);
+	const movePrice = getMovePrice(params);
 
 	if (!newPrice && !upgrade && !movePrice) {
 		return undefined;
@@ -269,7 +268,7 @@ function buildNoOptionsReason(
 	const nextLevel = HomeLevel.getNextLevelInfo(homeLevel);
 	return {
 		currentMoney: player.money,
-		isMaxLevel: nextLevel === null || undefined,
+		isMaxLevel: nextLevel === null,
 		requiredPlayerLevelForUpgrade: nextLevel && player.level < nextLevel.requiredPlayerLevel
 			? nextLevel.requiredPlayerLevel
 			: undefined
