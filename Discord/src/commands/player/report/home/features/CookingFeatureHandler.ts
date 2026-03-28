@@ -38,9 +38,12 @@ import {
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
-import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
+import {
+	addButtonToRow, DiscordCollectorUtils
+} from "../../../../../utils/DiscordCollectorUtils";
 import { finishInTimeDisplay } from "../../../../../../../Lib/src/utils/TimeUtils";
 import { PacketUtils } from "../../../../../utils/PacketUtils";
+import { ReactionCollectorHomeMenuReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
 interface CookingSessionState {
 	currentSlots: CookingSlotData[];
@@ -142,18 +145,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (selectedValue === HomeMenuIds.COOKING_WOOD_CANCEL) {
 			await componentInteraction.deferUpdate();
 			await this.sendWoodConfirmResponse(ctx, false, nestedMenus);
-			return true;
-		}
-
-		if (selectedValue === HomeMenuIds.COOKING_RELAUNCH) {
-			await componentInteraction.deferUpdate();
-			await this.sendReviveAction(ctx, nestedMenus);
-			return true;
-		}
-
-		if (selectedValue === HomeMenuIds.COOKING_EXIT) {
-			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu(HomeMenuIds.HOME_MENU);
 			return true;
 		}
 
@@ -402,19 +393,19 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Register the ignited furnace menu with slot recipes using Components V2
 	 */
-	private registerIgnitedMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus, extraMessage = ""): void {
-		const container = this.buildIgnitedContainer(ctx, extraMessage);
+	private registerIgnitedMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus, extraMessage = "", allDisabled = false): void {
+		const container = this.buildIgnitedContainer(ctx, extraMessage, allDisabled);
 
 		nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
 			containers: [container],
-			createCollector: this.createCookingCollector(ctx)
+			createCollector: allDisabled ? undefined : this.createCookingCollector(ctx)
 		});
 	}
 
 	/**
 	 * Build the V2 container for the ignited furnace
 	 */
-	private buildIgnitedContainer(ctx: HomeFeatureHandlerContext, extraMessage: string): ContainerBuilder {
+	private buildIgnitedContainer(ctx: HomeFeatureHandlerContext, extraMessage: string, allDisabled = false): ContainerBuilder {
 		const container = new ContainerBuilder();
 
 		// Title
@@ -440,7 +431,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
 			);
 			container.addSectionComponents(
-				this.buildSlotSection(state.currentSlots[i], ctx)
+				this.buildSlotSection(state.currentSlots[i], ctx, allDisabled)
 			);
 		}
 
@@ -448,7 +439,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		container.addSeparatorComponents(
 			new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
 		);
-		container.addActionRowComponents(this.buildIgnitedActionRow(ctx));
+		container.addActionRowComponents(this.buildIgnitedActionRow(ctx, allDisabled));
 
 		return container;
 	}
@@ -456,7 +447,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build a V2 Section for a single cooking slot with its craft button as accessory
 	 */
-	private buildSlotSection(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): SectionBuilder {
+	private buildSlotSection(slot: CookingSlotData, ctx: HomeFeatureHandlerContext, allDisabled = false): SectionBuilder {
 		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
 		const stationName = i18n.t(`models:cooking.stations.${slot.slotIndex}`, { lng: ctx.lng });
 		const craftLabel = i18n.t(`commands:report.city.homes.cooking.craftButton.${slot.slotIndex}`, { lng: ctx.lng });
@@ -513,8 +504,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
 				.setLabel(craftLabel)
 				.setEmoji(parseEmoji(stationEmoji)!)
-				.setStyle(slot.recipe.canCraft ? ButtonStyle.Primary : ButtonStyle.Secondary)
-				.setDisabled(!slot.recipe.canCraft)
+				.setStyle(slot.recipe.canCraft && !allDisabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
+				.setDisabled(!slot.recipe.canCraft || allDisabled)
 		);
 
 		return section;
@@ -523,7 +514,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build the bottom action row for the ignited menu (revive + back)
 	 */
-	private buildIgnitedActionRow(ctx: HomeFeatureHandlerContext): ActionRowBuilder<ButtonBuilder> {
+	private buildIgnitedActionRow(ctx: HomeFeatureHandlerContext, allDisabled = false): ActionRowBuilder<ButtonBuilder> {
 		const row = new ActionRowBuilder<ButtonBuilder>();
 		const state = this.getState(ctx);
 
@@ -534,6 +525,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					.setLabel(i18n.t("commands:report.city.homes.cooking.reviveButton", { lng: ctx.lng }))
 					.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
 					.setStyle(ButtonStyle.Success)
+					.setDisabled(allDisabled)
 			);
 		}
 
@@ -543,6 +535,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
 				.setEmoji(CrowniclesIcons.collectors.back)
 				.setStyle(ButtonStyle.Danger)
+				.setDisabled(allDisabled)
 		);
 
 		return row;
@@ -776,61 +769,35 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					state.cookingGrade = response.newCookingGrade;
 				}
 
-				// Build craft result + relaunch/exit buttons
+				// Build craft result and send as a separate followup message
 				const {
 					craftResult,
 					levelUpEmbed
 				} = this.buildCraftResultMessages(response, ctx);
-				this.registerCraftResultMenu(ctx, nestedMenus, craftResult, response.itemChoicePending);
+
+				// Register disabled ignited menu and switch to it to visually disable buttons
+				this.registerIgnitedMenu(ctx, nestedMenus, "", true);
 				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 
-				// Send level-up as separate embed reply if applicable
-				if (levelUpEmbed) {
-					const message = nestedMenus.message;
-					if (message) {
+				const message = nestedMenus.message;
+				if (message) {
+					await message.reply({ content: craftResult });
+					if (levelUpEmbed) {
 						await message.reply({ embeds: [levelUpEmbed] });
 					}
+				}
+
+				// End the city collector to release the command
+				const homeMenuReactionIndex = ctx.packet.reactions.findIndex(
+					reaction => reaction.type === ReactionCollectorHomeMenuReaction.name
+				);
+				if (homeMenuReactionIndex !== -1) {
+					DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, null, homeMenuReactionIndex);
 				}
 
 				state.craftPending = false;
 			}
 		);
-	}
-
-	/**
-	 * Register the craft result menu with relaunch/exit buttons
-	 */
-	private registerCraftResultMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus, resultText: string, itemChoicePending?: boolean): void {
-		const container = new ContainerBuilder();
-
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(resultText)
-		);
-
-		container.addSeparatorComponents(
-			new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small)
-		);
-
-		const actionRow = new ActionRowBuilder<ButtonBuilder>();
-		actionRow.addComponents(
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.COOKING_RELAUNCH)
-				.setLabel(i18n.t("commands:report.city.homes.cooking.relaunchButton", { lng: ctx.lng }))
-				.setStyle(ButtonStyle.Primary)
-				.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
-				.setDisabled(!!itemChoicePending),
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.COOKING_EXIT)
-				.setLabel(i18n.t("commands:report.city.homes.cooking.exitButton", { lng: ctx.lng }))
-				.setStyle(ButtonStyle.Secondary)
-		);
-
-		container.addActionRowComponents(actionRow);
-
-		nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-			containers: [container],
-			createCollector: this.createCookingCollector(ctx)
-		});
 	}
 
 	private static readonly CRAFT_ERROR_KEYS: Record<string, string> = {

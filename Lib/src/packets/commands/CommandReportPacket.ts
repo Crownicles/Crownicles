@@ -525,6 +525,4 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 	updatedSlots?: CookingSlotData[];
 
 	furnaceUsesRemaining?: number;
-
-	itemChoicePending?: boolean;
 }
