@@ -30,22 +30,27 @@ function isV2Menu(menu: CrowniclesNestedMenu): menu is {
 }
 
 /**
+ * Disable all button children in an action row
+ */
+function disableActionRowButtons(row: ActionRowBuilder): void {
+	for (const child of row.components) {
+		if (child instanceof ButtonBuilder) {
+			child.setDisabled(true);
+		}
+	}
+}
+
+/**
  * Disable all interactive components in V2 containers (buttons in action rows and section accessories)
  */
 function disableV2Containers(containers: ContainerBuilder[]): void {
 	for (const container of containers) {
 		for (const component of container.components) {
 			if (component instanceof ActionRowBuilder) {
-				for (const child of component.components) {
-					if (child instanceof ButtonBuilder) {
-						child.setDisabled(true);
-					}
-				}
+				disableActionRowButtons(component);
 			}
-			else if (component instanceof SectionBuilder) {
-				if (component.accessory instanceof ButtonBuilder) {
-					component.accessory.setDisabled(true);
-				}
+			else if (component instanceof SectionBuilder && component.accessory instanceof ButtonBuilder) {
+				component.accessory.setDisabled(true);
 			}
 		}
 	}
@@ -143,9 +148,7 @@ export class CrowniclesNestedMenus {
 			throw new Error("Failed to send message");
 		}
 		this._message = msg;
-		if (menu.createCollector) {
-			this._currentCollector = menu.createCollector(this, msg);
-		}
+		this._currentCollector = menu.createCollector?.(this, msg);
 		return msg;
 	}
 
@@ -168,10 +171,8 @@ export class CrowniclesNestedMenus {
 	}
 
 	public async stopCurrentCollector(): Promise<void> {
-		if (this._currentCollector) {
-			this._currentCollector.stop();
-			this._currentCollector = undefined;
-		}
+		this._currentCollector?.stop();
+		this._currentCollector = undefined;
 		if (this._message) {
 			const menu = this._currentMenu;
 			if (isV2Menu(menu)) {
@@ -229,15 +230,8 @@ export class CrowniclesNestedMenus {
 			});
 		}
 		this._currentMenu = menu;
-		if (this._currentCollector) {
-			this._currentCollector.stop();
-			this._currentCollector = undefined;
-		}
-		if (menu.createCollector) {
-			this._currentCollector = menu.createCollector(this, this._message);
-		}
-		if (this._onChangeMenu) {
-			this._onChangeMenu();
-		}
+		this._currentCollector?.stop();
+		this._currentCollector = menu.createCollector?.(this, this._message);
+		this._onChangeMenu?.();
 	}
 }

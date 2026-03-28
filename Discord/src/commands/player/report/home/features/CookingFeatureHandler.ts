@@ -149,20 +149,30 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.COOKING_CRAFT_PREFIX)) {
-			if (this.getState(ctx).craftPending) {
-				await componentInteraction.deferUpdate();
-				return true;
-			}
 			await componentInteraction.deferUpdate();
-			const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_CRAFT_PREFIX, ""), 10);
-			if (isNaN(slotIndex)) {
-				return true;
-			}
-			await this.sendCraftAction(ctx, slotIndex, nestedMenus);
-			return true;
+			return this.handleCraftSelection(ctx, selectedValue, nestedMenus);
 		}
 
 		return false;
+	}
+
+	/**
+	 * Handle craft slot selection from the ignited menu
+	 */
+	private async handleCraftSelection(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<boolean> {
+		if (this.getState(ctx).craftPending) {
+			return true;
+		}
+		const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_CRAFT_PREFIX, ""), 10);
+		if (isNaN(slotIndex)) {
+			return true;
+		}
+		await this.sendCraftAction(ctx, slotIndex, nestedMenus);
+		return true;
 	}
 
 	/**
