@@ -67,10 +67,12 @@ export abstract class ShopUtils {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
 				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
+				const translationParams = this.getTranslationParams(reactionInstance.shopItemId, additionalShopData);
 				response.push(makePacket(CommandShopGenericPurchase, {
 					shopItemId: reactionInstance.shopItemId,
 					amount: reactionInstance.amount,
-					materials: parsed.materials
+					materials: parsed.materials,
+					translationParams
 				}));
 				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
 			}
@@ -123,5 +125,16 @@ export abstract class ShopUtils {
 			await player.spendGems(reactionInstance.price, response, NumberChangeReason.MISSION_SHOP);
 		}
 		await player.save();
+	}
+
+	private static getTranslationParams(shopItemId: ShopItemType, shopData: additionalShopData): Record<string, string> | undefined {
+		if (shopItemId >= ShopItemType.WEEKLY_PLANT_TIER_1 && shopItemId <= ShopItemType.WEEKLY_PLANT_TIER_3) {
+			const tierIndex = shopItemId - ShopItemType.WEEKLY_PLANT_TIER_1;
+			const plantId = shopData.weeklyPlants?.[tierIndex];
+			if (plantId) {
+				return { plantId: String(plantId) };
+			}
+		}
+		return undefined;
 	}
 }
