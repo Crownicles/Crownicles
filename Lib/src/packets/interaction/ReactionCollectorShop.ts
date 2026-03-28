@@ -77,6 +77,8 @@ export class CommandShopGenericPurchase extends CrowniclesPacket {
 	amount!: number;
 
 	materials?: Record<string, number>;
+
+	translationParams?: Record<string, string>;
 }
 
 export class ReactionCollectorShopData extends ReactionCollectorData {

@@ -142,7 +142,10 @@ export async function handleCommandShopGenericPurchase(packet: CommandShopGeneri
 		return;
 	}
 	const lng = interaction.userLanguage;
-	const itemName = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(packet.shopItemId)}.name`, { lng });
+	const itemName = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(packet.shopItemId)}.name`, {
+		lng,
+		...packet.translationParams
+	});
 
 	let description = i18n.t("commands:shop.genericPurchase", {
 		lng,
