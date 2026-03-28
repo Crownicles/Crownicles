@@ -1,10 +1,10 @@
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import {
 	ContainerBuilder, MessageActionRowComponentBuilder,
-	TextDisplayBuilder
+	SectionBuilder, TextDisplayBuilder
 } from "@discordjs/builders";
 import {
-	ActionRowBuilder, Collector, Message
+	ActionRowBuilder, ButtonBuilder, Collector, Message
 } from "discord.js";
 import { CrowniclesInteraction } from "./CrowniclesInteraction";
 import { disableRows } from "../utils/DiscordCollectorUtils";
@@ -27,6 +27,28 @@ function isV2Menu(menu: CrowniclesNestedMenu): menu is {
 	createCollector?: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
 } {
 	return "containers" in menu;
+}
+
+/**
+ * Disable all interactive components in V2 containers (buttons in action rows and section accessories)
+ */
+function disableV2Containers(containers: ContainerBuilder[]): void {
+	for (const container of containers) {
+		for (const component of container.components) {
+			if (component instanceof ActionRowBuilder) {
+				for (const child of component.components) {
+					if (child instanceof ButtonBuilder) {
+						child.setDisabled(true);
+					}
+				}
+			}
+			else if (component instanceof SectionBuilder) {
+				if (component.accessory instanceof ButtonBuilder) {
+					component.accessory.setDisabled(true);
+				}
+			}
+		}
+	}
 }
 
 /**
@@ -153,6 +175,7 @@ export class CrowniclesNestedMenus {
 		if (this._message) {
 			const menu = this._currentMenu;
 			if (isV2Menu(menu)) {
+				disableV2Containers(menu.containers);
 				await this._message.edit({
 					components: menu.containers,
 					flags: ["IsComponentsV2"]
@@ -161,6 +184,7 @@ export class CrowniclesNestedMenus {
 			else if (this._isV2) {
 				// Message is V2 but current menu is embed — auto-convert
 				const container = embedMenuToV2Container(menu);
+				disableV2Containers([container]);
 				await this._message.edit({
 					components: [container],
 					flags: ["IsComponentsV2"]

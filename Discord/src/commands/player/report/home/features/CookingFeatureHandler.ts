@@ -155,6 +155,9 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			}
 			await componentInteraction.deferUpdate();
 			const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_CRAFT_PREFIX, ""), 10);
+			if (isNaN(slotIndex)) {
+				return true;
+			}
 			await this.sendCraftAction(ctx, slotIndex, nestedMenus);
 			return true;
 		}
@@ -215,66 +218,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Build embed fields for each cooking slot
-	 */
-	private buildSlotFields(ctx: HomeFeatureHandlerContext): {
-		name: string; value: string;
-	}[] {
-		const slots = this.getState(ctx).currentSlots;
-		return slots.map((slot, index) => {
-			const field = this.buildSlotField(slot, ctx);
-			if (index < slots.length - 1) {
-				field.value += "\n\u200B";
-			}
-			return field;
-		});
-	}
-
-	/**
-	 * Build a single slot embed field
-	 */
-	private buildSlotField(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): {
-		name: string; value: string;
-	} {
-		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
-		const stationName = i18n.t(`models:cooking.stations.${slot.slotIndex}`, { lng: ctx.lng });
-		const stationLabel = `${stationEmoji} ${stationName}`;
-
-		if (!slot.recipe) {
-			return {
-				name: stationLabel,
-				value: i18n.t("commands:report.city.homes.cooking.slotEmpty", { lng: ctx.lng })
-			};
-		}
-
-		const ingredientsList = this.buildIngredientsDescription(slot.recipe.ingredients, ctx.lng);
-		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[slot.recipe.recipeType] ?? "";
-
-		if (slot.recipe.isSecret) {
-			return {
-				name: i18n.t("commands:report.city.homes.cooking.slotSecretName", {
-					lng: ctx.lng,
-					stationLabel,
-					level: slot.recipe.level
-				}),
-				value: ingredientsList
-			};
-		}
-
-		const recipeName = i18n.t(`models:cooking.recipes.${slot.recipe.id}`, { lng: ctx.lng });
-		return {
-			name: i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
-				lng: ctx.lng,
-				stationLabel,
-				outputEmoji,
-				recipe: recipeName,
-				level: slot.recipe.level
-			}),
-			value: ingredientsList
-		};
-	}
-
-	/**
 	 * Build a human-readable ingredient list
 	 */
 	private buildIngredientsDescription(ingredients: NonNullable<CookingSlotData["recipe"]>["ingredients"], lng: Language): string {
@@ -321,43 +264,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Build buttons for the ignited furnace (slot craft buttons + revive)
-	 */
-	private buildIgnitedButtons(ctx: HomeFeatureHandlerContext): ActionRowBuilder<ButtonBuilder>[] {
-		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-
-		const state = this.getState(ctx);
-		for (const slot of state.currentSlots) {
-			if (slot.recipe) {
-				const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
-				const stationName = i18n.t(`models:cooking.stations.${slot.slotIndex}`, { lng: ctx.lng });
-				addButtonToRow(rows, new ButtonBuilder()
-					.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
-					.setLabel(stationName)
-					.setEmoji(parseEmoji(stationEmoji)!)
-					.setStyle(slot.recipe.canCraft ? ButtonStyle.Primary : ButtonStyle.Secondary)
-					.setDisabled(!slot.recipe.canCraft));
-			}
-		}
-
-		if (state.furnaceUsesRemaining > 0) {
-			addButtonToRow(rows, new ButtonBuilder()
-				.setCustomId(HomeMenuIds.COOKING_REVIVE)
-				.setLabel(i18n.t("commands:report.city.homes.cooking.reviveButton", { lng: ctx.lng }))
-				.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
-				.setStyle(ButtonStyle.Success));
-		}
-
-		addButtonToRow(rows, new ButtonBuilder()
-			.setCustomId(HomeMenuIds.BACK_TO_HOME)
-			.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
-			.setEmoji(CrowniclesIcons.collectors.back)
-			.setStyle(ButtonStyle.Danger));
-
-		return rows;
-	}
-
-	/**
 	 * Create a collector that delegates interactions to handleSubMenuSelection
 	 */
 	private createCookingCollector(ctx: HomeFeatureHandlerContext): (menus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
@@ -371,6 +277,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 				if (interaction.isButton()) {
 					await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
+				}
+			});
+			collector.on("end", (_collected, reason) => {
+				if (reason === "time") {
+					this.sessions.delete(ctx.user.id);
 				}
 			});
 			return collector;
@@ -545,26 +456,52 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 * Send ignite request to Core
 	 */
 	private async sendIgniteAction(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+		await this.sendIgniteOrReviveAction(ctx, nestedMenus, false);
+	}
+
+	/**
+	 * Send revive request to Core to re-roll recipes
+	 */
+	private async sendReviveAction(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+		await this.sendIgniteOrReviveAction(ctx, nestedMenus, true);
+	}
+
+	/**
+	 * Shared logic for ignite and revive actions
+	 */
+	private async sendIgniteOrReviveAction(
+		ctx: HomeFeatureHandlerContext,
+		nestedMenus: CrowniclesNestedMenus,
+		isRevive: boolean
+	): Promise<void> {
+		const reqPacket = isRevive ? CommandReportCookingReviveReq : CommandReportCookingIgniteReq;
+		const successPacketName = isRevive ? CommandReportCookingReviveRes.name : CommandReportCookingIgniteRes.name;
+
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
-			makePacket(CommandReportCookingIgniteReq, {}),
+			makePacket(reqPacket, {}),
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportCookingNoWoodRes.name) {
-					this.registerCookingMenu(ctx, nestedMenus);
 					const noWoodMessage = `\n\n${i18n.t("commands:report.city.homes.cooking.noWood", { lng: ctx.lng })}`;
-					nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-						embed: new CrowniclesEmbed()
-							.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-							.setDescription(this.buildCookingDescription(ctx) + noWoodMessage),
-						components: this.buildCookingButtons(ctx),
-						createCollector: this.createCookingCollector(ctx)
-					});
+					if (isRevive) {
+						this.registerIgnitedMenu(ctx, nestedMenus, noWoodMessage);
+					}
+					else {
+						nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
+							embed: new CrowniclesEmbed()
+								.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
+								.setDescription(this.buildCookingDescription(ctx) + noWoodMessage),
+							components: this.buildCookingButtons(ctx),
+							createCollector: this.createCookingCollector(ctx)
+						});
+					}
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 					return;
 				}
 
 				if (packetName === CommandReportCookingOverheatRes.name) {
 					const response = responsePacket as unknown as CommandReportCookingOverheatRes;
+					this.getState(ctx).furnaceUsesRemaining = 0;
 					const overheatMessage = `\n\n${i18n.t("commands:report.city.homes.cooking.overheat", {
 						lng: ctx.lng,
 						time: finishInTimeDisplay(new Date(response.overheatUntil))
@@ -587,8 +524,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					return;
 				}
 
-				if (packetName === CommandReportCookingIgniteRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingIgniteRes;
+				if (packetName === successPacketName) {
+					const response = responsePacket as unknown as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
 					this.updateStateFromIgniteResponse(ctx, response);
 					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
@@ -686,53 +623,51 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Send revive request to Core to re-roll recipes
+	 * Update local cooking state from a craft response
 	 */
-	private async sendReviveAction(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): Promise<void> {
-		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-			ctx.context,
-			makePacket(CommandReportCookingReviveReq, {}),
-			async (_responseContext, packetName, responsePacket) => {
-				if (packetName === CommandReportCookingNoWoodRes.name) {
-					const noWoodMessage = `\n\n${i18n.t("commands:report.city.homes.cooking.noWood", { lng: ctx.lng })}`;
-					this.registerIgnitedMenu(ctx, nestedMenus, noWoodMessage);
-					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
-					return;
-				}
+	private updateStateFromCraftResponse(state: CookingSessionState, response: CommandReportCookingCraftRes): void {
+		if (response.updatedSlots) {
+			state.currentSlots = response.updatedSlots;
+		}
 
-				if (packetName === CommandReportCookingOverheatRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingOverheatRes;
-					const overheatMessage = `\n\n${i18n.t("commands:report.city.homes.cooking.overheat", {
-						lng: ctx.lng,
-						time: finishInTimeDisplay(new Date(response.overheatUntil))
-					})}`;
-					this.getState(ctx).furnaceUsesRemaining = 0;
-					nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-						embed: new CrowniclesEmbed()
-							.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-							.setDescription(this.buildCookingDescription(ctx) + overheatMessage),
-						components: this.buildCookingButtons(ctx),
-						createCollector: this.createCookingCollector(ctx)
-					});
-					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
-					return;
-				}
+		if (response.furnaceUsesRemaining !== undefined) {
+			state.furnaceUsesRemaining = response.furnaceUsesRemaining;
+		}
 
-				if (packetName === CommandReportCookingWoodConfirmReq.name) {
-					const response = responsePacket as unknown as CommandReportCookingWoodConfirmReq;
-					this.registerWoodConfirmMenu(ctx, response, nestedMenus);
-					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
-					return;
-				}
-
-				if (packetName === CommandReportCookingReviveRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingReviveRes;
-					this.updateStateFromIgniteResponse(ctx, response);
-					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
-					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
-				}
+		if (response.cookingLevelUp && response.newCookingLevel !== undefined) {
+			state.cookingLevel = response.newCookingLevel;
+			if (response.newCookingGrade !== undefined) {
+				state.cookingGrade = response.newCookingGrade;
 			}
+		}
+	}
+
+	/**
+	 * Send craft result as a followup reply and end the home collector
+	 */
+	private async sendCraftFollowup(
+		ctx: HomeFeatureHandlerContext,
+		nestedMenus: CrowniclesNestedMenus,
+		craftResult: string,
+		levelUpEmbed?: CrowniclesEmbed
+	): Promise<void> {
+		this.registerIgnitedMenu(ctx, nestedMenus, "", true);
+		await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+
+		const message = nestedMenus.message;
+		if (message) {
+			await message.reply({ content: craftResult });
+			if (levelUpEmbed) {
+				await message.reply({ embeds: [levelUpEmbed] });
+			}
+		}
+
+		const homeMenuReactionIndex = ctx.packet.reactions.findIndex(
+			reaction => reaction.type === ReactionCollectorHomeMenuReaction.name
 		);
+		if (homeMenuReactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, null, homeMenuReactionIndex);
+		}
 	}
 
 	/**
@@ -745,61 +680,31 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	): Promise<void> {
 		const state = this.getState(ctx);
 		state.craftPending = true;
-		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-			ctx.context,
-			makePacket(CommandReportCookingCraftReq, { slotIndex }),
-			async (_responseContext, packetName, responsePacket) => {
-				if (packetName !== CommandReportCookingCraftRes.name) {
-					return;
-				}
-
-				const response = responsePacket as unknown as CommandReportCookingCraftRes;
-
-				if (response.updatedSlots) {
-					state.currentSlots = response.updatedSlots;
-				}
-
-				if (response.furnaceUsesRemaining !== undefined) {
-					state.furnaceUsesRemaining = response.furnaceUsesRemaining;
-				}
-
-				// Update state after craft
-				if (response.cookingLevelUp && response.newCookingLevel !== undefined) {
-					state.cookingLevel = response.newCookingLevel;
-					if (response.newCookingGrade !== undefined) {
-						state.cookingGrade = response.newCookingGrade;
+		try {
+			await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+				ctx.context,
+				makePacket(CommandReportCookingCraftReq, { slotIndex }),
+				async (_responseContext, packetName, responsePacket) => {
+					if (packetName !== CommandReportCookingCraftRes.name) {
+						return;
 					}
+
+					const response = responsePacket as unknown as CommandReportCookingCraftRes;
+					this.updateStateFromCraftResponse(state, response);
+
+					const {
+						craftResult,
+						levelUpEmbed
+					} = this.buildCraftResultMessages(response, ctx);
+
+					await this.sendCraftFollowup(ctx, nestedMenus, craftResult, levelUpEmbed);
 				}
-
-				// Build craft result and send as a separate followup message
-				const {
-					craftResult,
-					levelUpEmbed
-				} = this.buildCraftResultMessages(response, ctx);
-
-				// Register disabled ignited menu and switch to it to visually disable buttons
-				this.registerIgnitedMenu(ctx, nestedMenus, "", true);
-				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
-
-				const message = nestedMenus.message;
-				if (message) {
-					await message.reply({ content: craftResult });
-					if (levelUpEmbed) {
-						await message.reply({ embeds: [levelUpEmbed] });
-					}
-				}
-
-				// End the city collector to release the command
-				const homeMenuReactionIndex = ctx.packet.reactions.findIndex(
-					reaction => reaction.type === ReactionCollectorHomeMenuReaction.name
-				);
-				if (homeMenuReactionIndex !== -1) {
-					DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, null, homeMenuReactionIndex);
-				}
-
-				state.craftPending = false;
-			}
-		);
+			);
+		}
+		finally {
+			state.craftPending = false;
+			this.sessions.delete(ctx.user.id);
+		}
 	}
 
 	private static readonly CRAFT_ERROR_KEYS: Record<string, string> = {
@@ -821,23 +726,34 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			if (errorKey) {
 				return { craftResult: i18n.t(`commands:report.city.homes.cooking.${errorKey}`, { lng: ctx.lng }) };
 			}
+			return { craftResult: i18n.t("commands:report.city.homes.cooking.craftUnavailable", { lng: ctx.lng }) };
 		}
 
-		let message = "";
+		let message = this.buildCraftBaseMessage(response, ctx);
+		message += this.buildCraftOutputMessage(response, ctx);
+		message += this.buildDiscoveredRecipesMessage(response, ctx);
 
-		if (response.success) {
-			message += i18n.t("commands:report.city.homes.cooking.craftSuccess", {
+		return {
+			craftResult: message,
+			levelUpEmbed: this.buildLevelUpEmbed(response, ctx)
+		};
+	}
+
+	/**
+	 * Build the base craft message (success/failure + XP + material saved)
+	 */
+	private buildCraftBaseMessage(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): string {
+		const recipeName = i18n.t(`models:cooking.recipes.${response.recipeId}`, { lng: ctx.lng });
+		let message = response.success
+			? i18n.t("commands:report.city.homes.cooking.craftSuccess", {
 				lng: ctx.lng,
-				recipe: i18n.t(`models:cooking.recipes.${response.recipeId}`, { lng: ctx.lng }),
+				recipe: recipeName,
 				wasSecret: response.wasSecret
-			});
-		}
-		else {
-			message += i18n.t("commands:report.city.homes.cooking.craftFailure", {
+			})
+			: i18n.t("commands:report.city.homes.cooking.craftFailure", {
 				lng: ctx.lng,
-				recipe: i18n.t(`models:cooking.recipes.${response.recipeId}`, { lng: ctx.lng })
+				recipe: recipeName
 			});
-		}
 
 		message += `\n${i18n.t("commands:report.city.homes.cooking.xpGained", {
 			lng: ctx.lng,
@@ -851,85 +767,111 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			})}`;
 		}
 
+		return message;
+	}
+
+	/**
+	 * Build the craft output message (pet food or material)
+	 */
+	private buildCraftOutputMessage(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): string {
 		if (response.outputType === CookingOutputType.PET_FOOD && response.petFood !== undefined) {
-			const storedQuantity = response.petFood.storedQuantity;
-			const foodName = i18n.t(`models:foods.${response.petFood.type}`, {
-				lng: ctx.lng,
-				count: storedQuantity
-			});
-
-			if (storedQuantity > 0) {
-				message += `\n${i18n.t("commands:report.city.homes.cooking.petFoodStored", {
-					lng: ctx.lng,
-					quantity: storedQuantity,
-					food: foodName
-				})}`;
-			}
-
-			if (response.petFood.fedFromSurplus) {
-				message += `\n${i18n.t("commands:report.city.homes.cooking.petFedFromSurplus", {
-					lng: ctx.lng,
-					food: foodName
-				})}`;
-			}
-
-			if (response.petFood.surplusMaterialId !== undefined && response.petFood.surplusMaterialQuantity !== undefined) {
-				message += `\n${i18n.t("commands:report.city.homes.cooking.surplusRecycled", {
-					lng: ctx.lng,
-					quantity: response.petFood.surplusMaterialQuantity,
-					material: i18n.t(`models:materials.${response.petFood.surplusMaterialId}`, { lng: ctx.lng })
-				})}`;
-			}
+			return this.buildPetFoodMessage(response.petFood, ctx);
 		}
 
 		if (response.outputType === CookingOutputType.MATERIAL && response.material !== undefined) {
 			const materialName = i18n.t(`models:materials.${response.material.materialId}`, { lng: ctx.lng });
-			message += `\n${i18n.t("commands:report.city.homes.cooking.materialCrafted", {
+			return `\n${i18n.t("commands:report.city.homes.cooking.materialCrafted", {
 				lng: ctx.lng,
 				quantity: response.material.quantity,
 				material: materialName
 			})}`;
 		}
 
-		if (response.discoveredRecipeIds && response.discoveredRecipeIds.length > 0) {
-			if (response.discoveredRecipeIds.length === 1) {
-				message += `\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
-					lng: ctx.lng,
-					recipe: i18n.t(`models:cooking.recipes.${response.discoveredRecipeIds[0]}`, { lng: ctx.lng })
-				})}`;
-			}
-			else {
-				const recipeNames = response.discoveredRecipeIds
-					.map(id => `**${i18n.t(`models:cooking.recipes.${id}`, { lng: ctx.lng })}**`)
-					.join(", ");
-				message += `\n${i18n.t("commands:report.city.homes.cooking.recipesDiscovered", {
-					lng: ctx.lng,
-					recipes: recipeNames
-				})}`;
-			}
+		return "";
+	}
+
+	/**
+	 * Build the pet food output message
+	 */
+	private buildPetFoodMessage(petFood: NonNullable<CommandReportCookingCraftRes["petFood"]>, ctx: HomeFeatureHandlerContext): string {
+		let message = "";
+		const foodName = i18n.t(`models:foods.${petFood.type}`, {
+			lng: ctx.lng,
+			count: petFood.storedQuantity
+		});
+
+		if (petFood.storedQuantity > 0) {
+			message += `\n${i18n.t("commands:report.city.homes.cooking.petFoodStored", {
+				lng: ctx.lng,
+				quantity: petFood.storedQuantity,
+				food: foodName
+			})}`;
 		}
 
-		let levelUpEmbed: CrowniclesEmbed | undefined;
-		if (response.cookingLevelUp) {
-			const description = response.newCookingGrade
-				? i18n.t("commands:report.city.homes.cooking.levelUpWithGrade", {
-					lng: ctx.lng,
-					level: response.newCookingLevel,
-					grade: i18n.t(`models:cooking.grades.${response.newCookingGrade}`, { lng: ctx.lng })
-				})
-				: i18n.t("commands:report.city.homes.cooking.levelUp", {
-					lng: ctx.lng,
-					level: response.newCookingLevel
-				});
-			levelUpEmbed = new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:report.city.homes.cooking.levelUpTitle", { lng: ctx.lng }))
-				.setDescription(description);
+		if (petFood.fedFromSurplus) {
+			message += `\n${i18n.t("commands:report.city.homes.cooking.petFedFromSurplus", {
+				lng: ctx.lng,
+				food: foodName
+			})}`;
 		}
 
-		return {
-			craftResult: message,
-			levelUpEmbed
-		};
+		if (petFood.surplusMaterialId !== undefined && petFood.surplusMaterialQuantity !== undefined) {
+			message += `\n${i18n.t("commands:report.city.homes.cooking.surplusRecycled", {
+				lng: ctx.lng,
+				quantity: petFood.surplusMaterialQuantity,
+				material: i18n.t(`models:materials.${petFood.surplusMaterialId}`, { lng: ctx.lng })
+			})}`;
+		}
+
+		return message;
+	}
+
+	/**
+	 * Build the discovered recipes message
+	 */
+	private buildDiscoveredRecipesMessage(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): string {
+		if (!response.discoveredRecipeIds || response.discoveredRecipeIds.length === 0) {
+			return "";
+		}
+
+		if (response.discoveredRecipeIds.length === 1) {
+			return `\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
+				lng: ctx.lng,
+				recipe: i18n.t(`models:cooking.recipes.${response.discoveredRecipeIds[0]}`, { lng: ctx.lng })
+			})}`;
+		}
+
+		const recipeNames = response.discoveredRecipeIds
+			.map(id => `**${i18n.t(`models:cooking.recipes.${id}`, { lng: ctx.lng })}**`)
+			.join(", ");
+		return `\n${i18n.t("commands:report.city.homes.cooking.recipesDiscovered", {
+			lng: ctx.lng,
+			recipes: recipeNames
+		})}`;
+	}
+
+	/**
+	 * Build the level-up embed if applicable
+	 */
+	private buildLevelUpEmbed(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): CrowniclesEmbed | undefined {
+		if (!response.cookingLevelUp) {
+			return undefined;
+		}
+
+		const description = response.newCookingGrade
+			? i18n.t("commands:report.city.homes.cooking.levelUpWithGrade", {
+				lng: ctx.lng,
+				level: response.newCookingLevel,
+				grade: i18n.t(`models:cooking.grades.${response.newCookingGrade}`, { lng: ctx.lng })
+			})
+			: i18n.t("commands:report.city.homes.cooking.levelUp", {
+				lng: ctx.lng,
+				level: response.newCookingLevel
+			});
+
+		return new CrowniclesEmbed()
+			.setTitle(i18n.t("commands:report.city.homes.cooking.levelUpTitle", { lng: ctx.lng }))
+			.setDescription(description);
 	}
 
 	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {

@@ -1160,16 +1160,13 @@
           "levelUpTitle": "{emote:city.homeUpgrades.cooking} Niveau de cuisine augmenté !",
           "materialSaved": "{emote:messages.validate} Grâce à votre expertise, un **{{material}}** a été économisé !",
           "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** ont été ajoutées au stockage de votre guilde.",
-          "backToCooking": "Retour à la cuisine",
           "recipeDiscovered": "{emote:city.homeUpgrades.cooking} Vous avez appris une nouvelle recette : **{{recipe}}** !",
           "recipesDiscovered": "{emote:city.homeUpgrades.cooking} Vous avez appris de nouvelles recettes : {{recipes}} !",
           "petFedFromSurplus": "{emote:messages.validate} Votre familier a mangé une ration de **{{food}}** directement sortie du fourneau !",
           "surplusRecycled": "{emote:messages.info} L'excédent de nourriture a été recyclé en **{{quantity}} {{material}}**.",
           "materialCrafted": "{emote:messages.validate} Vous avez obtenu **{{quantity}} {{material}}** !",
           "woodConsumed": "{{wood}} consommé",
-          "woodSaved": "{emote:messages.validate} Votre expertise vous a permis d'économiser du bois ! ({{wood}})",
-          "relaunchButton": "Relancer le fourneau",
-          "exitButton": "Sortir"
+          "woodSaved": "{emote:messages.validate} Votre expertise vous a permis d'économiser du bois ! ({{wood}})"
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
