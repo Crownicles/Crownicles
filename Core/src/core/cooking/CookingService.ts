@@ -352,13 +352,18 @@ export class CookingService {
 		let levelUp = false;
 		let newLevel: number | undefined;
 		let newGrade: string | undefined;
+		const initialGrade = getCookingGrade(player.cookingLevel).id;
 
 		while (player.cookingExperience >= CookingService.getXpNeededForLevel(player.cookingLevel)) {
 			player.cookingExperience -= CookingService.getXpNeededForLevel(player.cookingLevel);
 			player.cookingLevel++;
 			levelUp = true;
 			newLevel = player.cookingLevel;
-			newGrade = getCookingGrade(player.cookingLevel).id;
+		}
+
+		const finalGrade = getCookingGrade(player.cookingLevel).id;
+		if (finalGrade !== initialGrade) {
+			newGrade = finalGrade;
 		}
 
 		await player.save();
