@@ -200,22 +200,19 @@ interface ManageOptions {
 	movePrice?: number;
 }
 
-interface BuildManageOptionsParams {
-	home: Home | null;
-	homeLevel: HomeLevel | null;
+interface ExistingHomeManageParams {
+	home: Home;
+	homeLevel: HomeLevel;
 	city: City;
 	player: Player;
 	isHomeInCity: boolean;
 	homesCount: HomesCount;
 }
 
-function getUpgradeOption(params: BuildManageOptionsParams): ManageOptions["upgrade"] {
+function getUpgradeOption(params: ExistingHomeManageParams): ManageOptions["upgrade"] {
 	const {
 		homeLevel, player, isHomeInCity, city, homesCount
 	} = params;
-	if (!homeLevel) {
-		return undefined;
-	}
 	const nextHomeUpgrade = HomeLevel.getNextUpgrade(homeLevel, player.level);
 	if (!nextHomeUpgrade || !isHomeInCity) {
 		return undefined;
@@ -227,33 +224,52 @@ function getUpgradeOption(params: BuildManageOptionsParams): ManageOptions["upgr
 	};
 }
 
-function getMovePrice(params: BuildManageOptionsParams): number | undefined {
+function getMovePrice(params: ExistingHomeManageParams): number | undefined {
 	const {
 		home, homeLevel, city, homesCount
 	} = params;
-	const canMove = home && homeLevel && home.cityId !== city.id;
-	if (!canMove) {
+	if (home.cityId === city.id) {
 		return undefined;
 	}
 	return city.getHomeLevelPrice(homeLevel, homesCount);
 }
 
-function buildManageOptions(params: BuildManageOptionsParams): ManageOptions | undefined {
-	const {
-		home, city, homesCount
-	} = params;
-	const newPrice = home ? undefined : city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount);
+function buildExistingHomeOptions(params: ExistingHomeManageParams): ManageOptions | undefined {
 	const upgrade = getUpgradeOption(params);
 	const movePrice = getMovePrice(params);
 
-	if (!newPrice && !upgrade && !movePrice) {
+	if (!upgrade && !movePrice) {
 		return undefined;
 	}
 	return {
-		newPrice,
 		upgrade,
 		movePrice
 	};
+}
+
+function buildManageOptions(params: {
+	home: Home | null;
+	homeLevel: HomeLevel | null;
+	city: City;
+	player: Player;
+	isHomeInCity: boolean;
+	homesCount: HomesCount;
+}): ManageOptions | undefined {
+	const {
+		home, homeLevel, city, player, isHomeInCity, homesCount
+	} = params;
+
+	if (!home) {
+		return { newPrice: city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount) };
+	}
+
+	if (!homeLevel) {
+		return undefined;
+	}
+
+	return buildExistingHomeOptions({
+		home, homeLevel, city, player, isHomeInCity, homesCount
+	});
 }
 
 function buildNoOptionsReason(
