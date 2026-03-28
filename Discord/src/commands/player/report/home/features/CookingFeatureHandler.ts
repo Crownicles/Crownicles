@@ -764,9 +764,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				}
 
 				// Update state after craft
-				if (response.cookingLevelUp && response.newCookingLevel !== undefined && response.newCookingGrade !== undefined) {
+				if (response.cookingLevelUp && response.newCookingLevel !== undefined) {
 					state.cookingLevel = response.newCookingLevel;
-					state.cookingGrade = response.newCookingGrade;
+					if (response.newCookingGrade !== undefined) {
+						state.cookingGrade = response.newCookingGrade;
+					}
 				}
 
 				// Build craft result and send as a separate followup message
@@ -909,13 +911,19 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 		let levelUpEmbed: CrowniclesEmbed | undefined;
 		if (response.cookingLevelUp) {
-			levelUpEmbed = new CrowniclesEmbed()
-				.setTitle(i18n.t("commands:report.city.homes.cooking.levelUpTitle", { lng: ctx.lng }))
-				.setDescription(i18n.t("commands:report.city.homes.cooking.levelUp", {
+			const description = response.newCookingGrade
+				? i18n.t("commands:report.city.homes.cooking.levelUpWithGrade", {
 					lng: ctx.lng,
 					level: response.newCookingLevel,
 					grade: i18n.t(`models:cooking.grades.${response.newCookingGrade}`, { lng: ctx.lng })
-				}));
+				})
+				: i18n.t("commands:report.city.homes.cooking.levelUp", {
+					lng: ctx.lng,
+					level: response.newCookingLevel
+				});
+			levelUpEmbed = new CrowniclesEmbed()
+				.setTitle(i18n.t("commands:report.city.homes.cooking.levelUpTitle", { lng: ctx.lng }))
+				.setDescription(description);
 		}
 
 		return {
