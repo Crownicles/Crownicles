@@ -18,7 +18,7 @@ export function buildRecipeDiscoveryMessage(recipeId: string, lng: Language, rec
 		lng,
 		recipe: i18n.t(`models:cooking.recipes.${recipeId}`, { lng })
 	});
-	if (recipeCost) {
+	if (recipeCost !== undefined) {
 		recipeMsg += ` (${recipeCost} ${CrowniclesIcons.unitValues.money})`;
 	}
 	return recipeMsg;

@@ -47,6 +47,33 @@ import {
 import { HomeMenuParams } from "./home/HomeMenuTypes";
 import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
 
+type ManageHomeData = NonNullable<ReactionCollectorCityData["home"]["manage"]>;
+
+/**
+ * Get the description for the manage home option in the main menu
+ */
+function getManageHomeMenuOptionDescription(manage: ManageHomeData, lng: Language): string {
+	if (manage.newPrice) {
+		return i18n.t("commands:report.city.homes.manageHomeDescriptionNew", { lng });
+	}
+	if (manage.upgrade) {
+		return i18n.t("commands:report.city.homes.manageHomeDescriptionUpgrade", { lng });
+	}
+	if (manage.movePrice) {
+		return i18n.t("commands:report.city.homes.manageHomeDescriptionMove", { lng });
+	}
+	if (manage.isMaxLevel) {
+		return i18n.t("commands:report.city.homes.manageHomeDescriptionMaxLevel", { lng });
+	}
+	if (manage.requiredPlayerLevelForUpgrade) {
+		return i18n.t("commands:report.city.homes.manageHomeDescriptionLevelRequired", {
+			lng,
+			level: manage.requiredPlayerLevelForUpgrade
+		});
+	}
+	return i18n.t("commands:report.city.homes.manageHomeDescriptionUnavailable", { lng });
+}
+
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
@@ -67,32 +94,9 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 
 	// Manage home option
 	if (data.home.manage) {
-		let description: string;
-		if (data.home.manage.newPrice) {
-			description = i18n.t("commands:report.city.homes.manageHomeDescriptionNew", { lng });
-		}
-		else if (data.home.manage.upgrade) {
-			description = i18n.t("commands:report.city.homes.manageHomeDescriptionUpgrade", { lng });
-		}
-		else if (data.home.manage.movePrice) {
-			description = i18n.t("commands:report.city.homes.manageHomeDescriptionMove", { lng });
-		}
-		else if (data.home.manage.isMaxLevel) {
-			description = i18n.t("commands:report.city.homes.manageHomeDescriptionMaxLevel", { lng });
-		}
-		else if (data.home.manage.requiredPlayerLevelForUpgrade) {
-			description = i18n.t("commands:report.city.homes.manageHomeDescriptionLevelRequired", {
-				lng,
-				level: data.home.manage.requiredPlayerLevelForUpgrade
-			});
-		}
-		else {
-			description = i18n.t("commands:report.city.homes.manageHomeDescriptionUnavailable", { lng });
-		}
-
 		selectMenu.addOptions({
 			label: i18n.t("commands:report.city.homes.manageHome", { lng }),
-			description,
+			description: getManageHomeMenuOptionDescription(data.home.manage, lng),
 			value: HomeMenuIds.MANAGE_HOME_MENU,
 			emoji: CrowniclesIcons.city.manageHome
 		});
@@ -607,6 +611,12 @@ const UPGRADE_CHECKS: UpgradeCheck[] = [
 		isNew: (): boolean => false,
 		newKey: "betterGardenEarth",
 		upgradeKey: "betterGardenEarth"
+	},
+	{
+		hasChanged: (o, n): boolean => o.cookingSlots !== n.cookingSlots,
+		isNew: (o): boolean => o.cookingSlots === 0,
+		newKey: "cookingStation",
+		upgradeKey: "betterCookingStation"
 	}
 ];
 
@@ -623,81 +633,66 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 	return changes.map(change => `- ${change}`).join("\n");
 };
 
-function getManageHomeMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
-	const data = (packet.data.data as ReactionCollectorCityData).home.manage!;
-	const lng = interaction.userLanguage;
-
-	const title = i18n.t("commands:report.city.homes.notaryTitle", {
-		lng,
-		pseudo
-	});
-	let description = `${i18n.t("commands:report.city.homes.notaryIntroduction", { lng })}\n\n`;
-
+/**
+ * Build the notary description text based on available home actions
+ */
+function buildNotaryDescription(data: ManageHomeData, lng: Language): string {
 	if (data.newPrice) {
-		if (data.newPrice > data.currentMoney) {
-			description += i18n.t("commands:report.city.homes.notaryNewHomeNoMoney", {
+		return data.newPrice > data.currentMoney
+			? i18n.t("commands:report.city.homes.notaryNewHomeNoMoney", {
 				lng,
 				cost: data.newPrice,
 				missingMoney: data.newPrice - data.currentMoney
-			});
-		}
-		else {
-			description += i18n.t("commands:report.city.homes.notaryNewHomeEnoughMoney", {
+			})
+			: i18n.t("commands:report.city.homes.notaryNewHomeEnoughMoney", {
 				lng,
 				cost: data.newPrice
 			});
-		}
 	}
-	else if (data.upgrade) {
+	if (data.upgrade) {
 		if (data.upgrade.price > data.currentMoney) {
-			description += i18n.t("commands:report.city.homes.notaryUpgradeHomeNoMoney", {
+			return i18n.t("commands:report.city.homes.notaryUpgradeHomeNoMoney", {
 				lng,
 				cost: data.upgrade.price,
 				missingMoney: data.upgrade.price - data.currentMoney
 			});
 		}
-		else {
-			const upgradeChanges = formatHomeUpgradeChanges(data.upgrade.oldFeatures, data.upgrade.newFeatures, lng);
-			description += i18n.t("commands:report.city.homes.notaryUpgradeHomeEnoughMoney", {
-				lng,
-				cost: data.upgrade.price,
-				upgradeChanges
-			});
-		}
+		const upgradeChanges = formatHomeUpgradeChanges(data.upgrade.oldFeatures, data.upgrade.newFeatures, lng);
+		return i18n.t("commands:report.city.homes.notaryUpgradeHomeEnoughMoney", {
+			lng,
+			cost: data.upgrade.price,
+			upgradeChanges
+		});
 	}
-	else if (data.movePrice) {
-		if (data.movePrice > data.currentMoney) {
-			description += i18n.t("commands:report.city.homes.notaryMoveHomeNoMoney", {
+	if (data.movePrice) {
+		return data.movePrice > data.currentMoney
+			? i18n.t("commands:report.city.homes.notaryMoveHomeNoMoney", {
 				lng,
 				cost: data.movePrice,
 				missingMoney: data.movePrice - data.currentMoney
-			});
-		}
-		else {
-			description += i18n.t("commands:report.city.homes.notaryMoveHomeEnoughMoney", {
+			})
+			: i18n.t("commands:report.city.homes.notaryMoveHomeEnoughMoney", {
 				lng,
 				cost: data.movePrice
 			});
-		}
 	}
-	else if (data.requiredPlayerLevelForUpgrade) {
-		description += i18n.t("commands:report.city.homes.notaryLevelRequired", {
+	if (data.requiredPlayerLevelForUpgrade) {
+		return i18n.t("commands:report.city.homes.notaryLevelRequired", {
 			lng,
 			level: data.requiredPlayerLevelForUpgrade
 		});
 	}
-	else if (data.isMaxLevel) {
-		description += i18n.t("commands:report.city.homes.notaryMaxLevel", { lng });
+	if (data.isMaxLevel) {
+		return i18n.t("commands:report.city.homes.notaryMaxLevel", { lng });
 	}
-	else {
-		console.warn("Manage home menu opened without any available action");
-	}
+	console.warn("Manage home menu opened without any available action");
+	return "";
+}
 
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId(HomeMenuIds.MANAGE_HOME_MENU)
-		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }));
-
-	// Add action option based on what's available
+/**
+ * Add the appropriate action option to the notary select menu
+ */
+function addNotaryActionOption(selectMenu: StringSelectMenuBuilder, data: ManageHomeData, lng: Language): void {
 	if (data.newPrice && data.newPrice <= data.currentMoney) {
 		selectMenu.addOptions({
 			label: i18n.t("commands:report.city.homes.buyHome", { lng }),
@@ -719,6 +714,23 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 			emoji: CrowniclesIcons.collectors.accept
 		});
 	}
+}
+
+function getManageHomeMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
+	const data = (packet.data.data as ReactionCollectorCityData).home.manage!;
+	const lng = interaction.userLanguage;
+
+	const title = i18n.t("commands:report.city.homes.notaryTitle", {
+		lng,
+		pseudo
+	});
+	const description = `${i18n.t("commands:report.city.homes.notaryIntroduction", { lng })}\n\n${buildNotaryDescription(data, lng)}`;
+
+	const selectMenu = new StringSelectMenuBuilder()
+		.setCustomId(HomeMenuIds.MANAGE_HOME_MENU)
+		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }));
+
+	addNotaryActionOption(selectMenu, data, lng);
 
 	// Back option
 	selectMenu.addOptions({
