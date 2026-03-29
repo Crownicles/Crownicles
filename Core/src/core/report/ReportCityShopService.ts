@@ -9,7 +9,7 @@ import {
 	ShopConstants, ShopCurrency
 } from "../../../../Lib/src/constants/ShopConstants";
 import {
-	BuyCallbackResult, ShopCategory, CommandShopNoPlantSlotAvailable
+	BuyCallbackResult, MaterialDistribution, ShopCategory, CommandShopNoPlantSlotAvailable
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
 	calculateGemsToMoneyRatio,
@@ -42,6 +42,20 @@ import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Materials } from "../database/game/models/Material";
+
+/**
+ * Cached wood materials by rarity (constant after data loading, computed once per rarity)
+ */
+const woodsByRarityCache = new Map<MaterialRarity, Material[]>();
+
+function getWoodsByRarity(rarity: MaterialRarity): Material[] {
+	let woods = woodsByRarityCache.get(rarity);
+	if (!woods) {
+		woods = MaterialDataController.instance.getMaterialsFromType(MaterialType.WOOD).filter(m => m.rarity === rarity);
+		woodsByRarityCache.set(rarity, woods);
+	}
+	return woods;
+}
 
 /**
  * Parameters for handleCityShopReaction
@@ -260,7 +274,7 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 /**
  * Distribute a total quantity randomly among a list of wood materials and give them to the player.
  */
-async function distributeWoodRandomly(playerId: number, woods: Material[], totalQuantity: number): Promise<Record<string, number>> {
+async function distributeWoodRandomly(playerId: number, woods: Material[], totalQuantity: number): Promise<MaterialDistribution> {
 	const distribution = new Map<number, number>();
 	for (let i = 0; i < totalQuantity; i++) {
 		const picked = RandomUtils.crowniclesRandom.pick(woods);
@@ -277,11 +291,9 @@ async function distributeWoodRandomly(playerId: number, woods: Material[], total
  * Open the lumberjack shop for the player (wood by rarity with quantity selection)
  */
 export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
-	const woodMaterials = MaterialDataController.instance.getMaterialsFromType(MaterialType.WOOD);
-
-	const commonWoods = woodMaterials.filter(m => m.rarity === MaterialRarity.COMMON);
-	const uncommonWoods = woodMaterials.filter(m => m.rarity === MaterialRarity.UNCOMMON);
-	const rareWoods = woodMaterials.filter(m => m.rarity === MaterialRarity.RARE);
+	const commonWoods = getWoodsByRarity(MaterialRarity.COMMON);
+	const uncommonWoods = getWoodsByRarity(MaterialRarity.UNCOMMON);
+	const rareWoods = getWoodsByRarity(MaterialRarity.RARE);
 
 	const shopCategories: ShopCategory[] = [
 		{

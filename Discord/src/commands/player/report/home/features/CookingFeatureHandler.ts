@@ -2,7 +2,7 @@ import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
 	ContainerBuilder, SectionBuilder, SeparatorBuilder,
 	SeparatorSpacingSize, TextDisplayBuilder,
-	Message, parseEmoji, StringSelectMenuBuilder,
+	Message, parseEmoji,
 	StringSelectMenuInteraction
 } from "discord.js";
 import {
@@ -213,17 +213,10 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		response: CommandReportCookingIgniteRes | CommandReportCookingReviveRes,
 		ctx: HomeFeatureHandlerContext
 	): string {
-		const woodEmoji = CrowniclesIcons.materials[String(response.woodMaterialId)] ?? CrowniclesIcons.defaultMaterial;
-		const woodName = i18n.t(`models:materials.${response.woodMaterialId}`, { lng: ctx.lng });
-		if (response.woodConsumed) {
-			return `\n${i18n.t("commands:report.city.homes.cooking.woodConsumed", {
-				lng: ctx.lng,
-				wood: `${woodEmoji} ${woodName}`
-			})}`;
-		}
-		return `\n${i18n.t("commands:report.city.homes.cooking.woodSaved", {
+		const key = response.woodConsumed ? "woodConsumed" : "woodSaved";
+		return `\n${i18n.t(`commands:report.city.homes.cooking.${key}`, {
 			lng: ctx.lng,
-			wood: `${woodEmoji} ${woodName}`
+			woodId: response.woodMaterialId
 		})}`;
 	}
 
@@ -234,17 +227,23 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		const parts: string[] = [];
 
 		for (const plant of ingredients.plants) {
-			const plantName = i18n.t(`models:plants.${plant.plantId}`, { lng });
-			const emoji = CrowniclesIcons.plants[plant.plantId];
 			const status = plant.playerHas >= plant.quantity ? ` ${CrowniclesIcons.collectors.accept}` : "";
-			parts.push(`${emoji} ${plantName} ${plant.playerHas}/${plant.quantity}${status}`);
+			parts.push(i18n.t("commands:report.city.homes.cooking.ingredientPlant", {
+				lng,
+				plantId: plant.plantId,
+				playerHas: plant.playerHas,
+				quantity: plant.quantity
+			}) + status);
 		}
 
 		for (const material of ingredients.materials) {
-			const materialName = i18n.t(`models:materials.${material.materialId}`, { lng });
-			const emoji = CrowniclesIcons.materials[String(material.materialId)] ?? CrowniclesIcons.defaultMaterial;
 			const status = material.playerHas >= material.quantity ? ` ${CrowniclesIcons.collectors.accept}` : "";
-			parts.push(`${emoji} ${materialName} ${material.playerHas}/${material.quantity}${status}`);
+			parts.push(i18n.t("commands:report.city.homes.cooking.ingredientMaterial", {
+				lng,
+				materialId: material.materialId,
+				playerHas: material.playerHas,
+				quantity: material.quantity
+			}) + status);
 		}
 
 		return parts.join("\n");
@@ -370,16 +369,17 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildSlotSection(slot: CookingSlotData, ctx: HomeFeatureHandlerContext, allDisabled = false): SectionBuilder {
 		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
-		const stationName = i18n.t(`models:cooking.stations.${slot.slotIndex}`, { lng: ctx.lng });
 		const craftLabel = i18n.t(`commands:report.city.homes.cooking.craftButton.${slot.slotIndex}`, { lng: ctx.lng });
 
 		const section = new SectionBuilder();
 
 		if (!slot.recipe) {
-			const stationLabel = `${stationEmoji} **${stationName}**`;
 			section.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(
-					`${stationLabel}\n${i18n.t("commands:report.city.homes.cooking.slotEmpty", { lng: ctx.lng })}`
+					i18n.t("commands:report.city.homes.cooking.slotEmptyContent", {
+						lng: ctx.lng,
+						stationId: slot.slotIndex
+					})
 				)
 			);
 			section.setButtonAccessory(
@@ -395,13 +395,12 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 		const ingredientsList = this.buildIngredientsDescription(slot.recipe.ingredients, ctx.lng);
 		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[slot.recipe.recipeType] ?? "";
-		const stationLabel = `${stationEmoji} **${stationName}**`;
 
 		let slotTitle: string;
 		if (slot.recipe.isSecret) {
 			slotTitle = i18n.t("commands:report.city.homes.cooking.slotSecretName", {
 				lng: ctx.lng,
-				stationLabel,
+				stationId: slot.slotIndex,
 				level: slot.recipe.level
 			});
 		}
@@ -409,7 +408,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			const recipeName = i18n.t(`models:cooking.recipes.${slot.recipe.id}`, { lng: ctx.lng });
 			slotTitle = i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
 				lng: ctx.lng,
-				stationLabel,
+				stationId: slot.slotIndex,
 				outputEmoji,
 				recipe: recipeName,
 				level: slot.recipe.level
@@ -485,7 +484,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		isRevive: boolean
 	): Promise<void> {
 		const reqPacket = isRevive ? CommandReportCookingReviveReq : CommandReportCookingIgniteReq;
-		const successPacketName = isRevive ? CommandReportCookingReviveRes.name : CommandReportCookingIgniteRes.name;
+		const resPacket = isRevive ? CommandReportCookingReviveRes : CommandReportCookingIgniteRes;
 
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			ctx.context,
@@ -534,7 +533,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					return;
 				}
 
-				if (packetName === successPacketName) {
+				if (packetName === resPacket.name) {
 					const response = responsePacket as unknown as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
 					this.updateStateFromIgniteResponse(ctx, response);
 					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
@@ -552,11 +551,9 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		woodInfo: CommandReportCookingWoodConfirmReq,
 		nestedMenus: CrowniclesNestedMenus
 	): void {
-		const woodEmoji = CrowniclesIcons.materials[String(woodInfo.woodMaterialId)] ?? CrowniclesIcons.defaultMaterial;
-		const materialName = i18n.t(`models:materials.${woodInfo.woodMaterialId}`, { lng: ctx.lng });
 		const description = i18n.t("commands:report.city.homes.cooking.woodConfirm", {
 			lng: ctx.lng,
-			material: `${woodEmoji} ${materialName}`,
+			materialId: woodInfo.woodMaterialId,
 			rarity: woodInfo.woodRarity
 		});
 
@@ -773,7 +770,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (response.materialSaved !== undefined) {
 			message += `\n${i18n.t("commands:report.city.homes.cooking.materialSaved", {
 				lng: ctx.lng,
-				material: i18n.t(`models:materials.${response.materialSaved}`, { lng: ctx.lng })
+				materialId: response.materialSaved
 			})}`;
 		}
 
@@ -789,11 +786,10 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 
 		if (response.outputType === CookingOutputType.MATERIAL && response.material !== undefined) {
-			const materialName = i18n.t(`models:materials.${response.material.materialId}`, { lng: ctx.lng });
 			return `\n${i18n.t("commands:report.city.homes.cooking.materialCrafted", {
 				lng: ctx.lng,
 				quantity: response.material.quantity,
-				material: materialName
+				materialId: response.material.materialId
 			})}`;
 		}
 
@@ -829,7 +825,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			message += `\n${i18n.t("commands:report.city.homes.cooking.surplusRecycled", {
 				lng: ctx.lng,
 				quantity: petFood.surplusMaterialQuantity,
-				material: i18n.t(`models:materials.${petFood.surplusMaterialId}`, { lng: ctx.lng })
+				materialId: petFood.surplusMaterialId
 			})}`;
 		}
 
@@ -884,7 +880,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			.setDescription(description);
 	}
 
-	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {
+	public addSubMenuOptions(): void {
 		// Cooking uses custom button components instead of select menu options
 	}
 

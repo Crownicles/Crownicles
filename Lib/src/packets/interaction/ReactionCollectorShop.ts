@@ -14,9 +14,14 @@ import {
 } from "../../constants/LogsConstants";
 import { PlantId } from "../../constants/PlantConstants";
 
+/**
+ * Map of materialId (as string) to quantity received
+ */
+export type MaterialDistribution = Record<string, number>;
+
 export type BuyCallbackResult = {
 	success: boolean;
-	materials?: Record<string, number>;
+	materials?: MaterialDistribution;
 };
 
 export interface ShopItem {
@@ -76,7 +81,7 @@ export class CommandShopGenericPurchase extends CrowniclesPacket {
 
 	amount!: number;
 
-	materials?: Record<string, number>;
+	materials?: MaterialDistribution;
 
 	translationParams?: Record<string, string>;
 }
