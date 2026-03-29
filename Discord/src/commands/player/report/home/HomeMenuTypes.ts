@@ -81,7 +81,7 @@ export interface HomeFeatureHandler {
 	 */
 	handleFeatureSelection(
 		ctx: HomeFeatureHandlerContext,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void>;
 

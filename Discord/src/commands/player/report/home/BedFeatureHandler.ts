@@ -1,4 +1,3 @@
-import { StringSelectMenuInteraction } from "discord.js";
 import {
 	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
@@ -39,15 +38,15 @@ export class BedFeatureHandler implements HomeFeatureHandler {
 
 	public async handleFeatureSelection(
 		ctx: HomeFeatureHandlerContext,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		_nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await selectInteraction.deferReply();
+		await componentInteraction.deferReply();
 		const reactionIndex = ctx.packet.reactions.findIndex(
 			reaction => reaction.type === ReactionCollectorHomeBedReaction.name
 		);
 		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, selectInteraction, reactionIndex);
+			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
 		}
 	}
 

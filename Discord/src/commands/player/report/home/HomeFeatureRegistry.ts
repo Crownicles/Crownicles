@@ -1,4 +1,5 @@
 import {
+	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "./HomeMenuTypes";
 import { UpgradeStationFeatureHandler } from "./UpgradeStationFeatureHandler";
@@ -7,7 +8,6 @@ import { ChestFeatureHandler } from "./features/ChestFeatureHandler";
 import { GardenFeatureHandler } from "./features/GardenFeatureHandler";
 import { CookingFeatureHandler } from "./features/CookingFeatureHandler";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
-import { StringSelectMenuInteraction } from "discord.js";
 
 /**
  * Registry for all home feature handlers.
@@ -77,13 +77,13 @@ class HomeFeatureRegistry {
 	public async handleMainMenuSelection(
 		ctx: HomeFeatureHandlerContext,
 		selectedValue: string,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
 		const handler = this.getHandlerByMenuValue(ctx, selectedValue);
 
 		if (handler) {
-			await handler.handleFeatureSelection(ctx, selectInteraction, nestedMenus);
+			await handler.handleFeatureSelection(ctx, componentInteraction, nestedMenus);
 			return true;
 		}
 

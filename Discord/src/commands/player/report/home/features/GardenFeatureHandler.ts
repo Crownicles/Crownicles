@@ -1,7 +1,6 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
-	Message, parseEmoji, StringSelectMenuBuilder,
-	StringSelectMenuInteraction
+	Message, parseEmoji, StringSelectMenuBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -71,10 +70,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 
 	public async handleFeatureSelection(
 		_ctx: HomeFeatureHandlerContext,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await selectInteraction.deferUpdate();
+		await componentInteraction.deferUpdate();
 		await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 	}
 

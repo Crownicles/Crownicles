@@ -2,8 +2,7 @@ import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
 	ContainerBuilder, SectionBuilder, SeparatorBuilder,
 	SeparatorSpacingSize, TextDisplayBuilder,
-	Message, parseEmoji,
-	StringSelectMenuInteraction
+	Message, parseEmoji
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -104,10 +103,10 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 	public async handleFeatureSelection(
 		ctx: HomeFeatureHandlerContext,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await selectInteraction.deferUpdate();
+		await componentInteraction.deferUpdate();
 		this.registerCookingMenu(ctx, nestedMenus);
 		await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 	}
