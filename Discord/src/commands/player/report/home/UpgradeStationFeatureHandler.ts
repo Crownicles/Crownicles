@@ -1,5 +1,5 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuInteraction
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, StringSelectMenuBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -69,10 +69,10 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 
 	public async handleFeatureSelection(
 		_ctx: HomeFeatureHandlerContext,
-		selectInteraction: StringSelectMenuInteraction,
+		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
-		await selectInteraction.deferUpdate();
+		await componentInteraction.deferUpdate();
 		await nestedMenus.changeMenu(HomeMenuIds.UPGRADE_STATION_MENU);
 	}
 

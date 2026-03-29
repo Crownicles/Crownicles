@@ -1,5 +1,9 @@
 import {
-	ActionRowBuilder, ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle,
+	ContainerBuilder, Message,
+	SectionBuilder, SeparatorBuilder, SeparatorSpacingSize,
+	StringSelectMenuBuilder, StringSelectMenuInteraction,
+	TextDisplayBuilder
 } from "discord.js";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
@@ -123,65 +127,86 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 		descriptionParts.push("", ...featureDescriptions);
 	}
 
-	// Build main select menu
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId(HomeMenuIds.MAIN_MENU)
-		.setPlaceholder(i18n.t("commands:report.city.homes.homePlaceholder", { lng }));
+	// Build V2 container
+	const container = new ContainerBuilder();
 
-	// Add feature options
+	// Title
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.homes.homeTitle", {
+				lng, pseudo
+			})}`
+		)
+	);
+
+	// Description
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(descriptionParts.join("\n"))
+	);
+
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+	// Feature sections
 	const featureOptions = homeFeatureRegistry.getMenuOptions(handlerContext);
 	for (const option of featureOptions) {
-		selectMenu.addOptions({
-			label: option.label,
-			description: option.description,
-			value: option.value,
-			emoji: option.emoji
-		});
+		container.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder().setContent(
+						`${option.emoji} **${option.label}**${option.description ? `\n${option.description}` : ""}`
+					)
+				)
+				.setButtonAccessory(
+					new ButtonBuilder()
+						.setCustomId(option.value)
+						.setLabel(i18n.t("commands:report.city.buttons.enter", { lng }))
+						.setStyle(ButtonStyle.Primary)
+				)
+		);
 	}
 
-	// Add leave option
-	selectMenu.addOptions({
-		label: i18n.t("commands:report.city.homes.leaveHome", { lng }),
-		value: HomeMenuIds.LEAVE_HOME,
-		emoji: CrowniclesIcons.collectors.back
-	});
+	// Leave button
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.LEAVE_HOME)
+				.setLabel(i18n.t("commands:report.city.homes.leaveHome", { lng }))
+				.setEmoji(CrowniclesIcons.collectors.back)
+				.setStyle(ButtonStyle.Secondary)
+		)
+	);
 
 	return {
-		embed: new CrowniclesEmbed()
-			.formatAuthor(i18n.t("commands:report.city.homes.homeTitle", {
-				lng,
-				pseudo
-			}), interaction.user)
-			.setDescription(descriptionParts.join("\n")),
-		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
-		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const selectMenuCollector = message.createMessageComponentCollector({ time: collectorTime });
+		containers: [container],
+		createCollector: (nestedMenus, message: Message): CrowniclesNestedMenuCollector => {
+			const collector = message.createMessageComponentCollector({ time: collectorTime });
 
-			selectMenuCollector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
-				if (selectInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+			collector.on("collect", async (componentInteraction: ButtonInteraction) => {
+				if (componentInteraction.user.id !== interaction.user.id) {
+					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
 					return;
 				}
 
-				const selectedValue = selectInteraction.values[0];
+				const selectedValue = componentInteraction.customId;
 
 				// Handle leave home
 				if (selectedValue === HomeMenuIds.LEAVE_HOME) {
-					await selectInteraction.deferUpdate();
+					await componentInteraction.deferUpdate();
 					await nestedMenus.changeToMainMenu();
 					return;
 				}
 
-				// Handle feature selection
+				// Handle feature selection (each handler decides its own defer strategy)
 				await homeFeatureRegistry.handleMainMenuSelection(
 					handlerContext,
 					selectedValue,
-					selectInteraction,
+					componentInteraction,
 					nestedMenus
 				);
 			});
 
-			return selectMenuCollector;
+			return collector;
 		}
 	};
 }

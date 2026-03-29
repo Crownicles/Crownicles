@@ -22,7 +22,10 @@ import {
 	ReactionCollectorInnRoomReaction
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
-	ActionRowBuilder, StringSelectMenuBuilder, StringSelectMenuInteraction
+	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, Message,
+	MessageComponentInteraction, SectionBuilder, SeparatorBuilder,
+	SeparatorSpacingSize, StringSelectMenuBuilder, StringSelectMenuInteraction,
+	TextDisplayBuilder
 } from "discord.js";
 import { CrowniclesIcons } from "../../../../../Lib/src/CrowniclesIcons";
 import {
@@ -74,113 +77,153 @@ function getManageHomeMenuOptionDescription(manage: ManageHomeData, lng: Languag
 	return i18n.t("commands:report.city.homes.manageHomeDescriptionUnavailable", { lng });
 }
 
+function addCitySection(container: ContainerBuilder, text: string, customId: string, buttonLabel: string, buttonStyle: ButtonStyle = ButtonStyle.Secondary): void {
+	container.addSectionComponents(
+		new SectionBuilder()
+			.addTextDisplayComponents(new TextDisplayBuilder().setContent(text))
+			.setButtonAccessory(
+				new ButtonBuilder()
+					.setCustomId(customId)
+					.setLabel(buttonLabel)
+					.setStyle(buttonStyle)
+			)
+	);
+}
+
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
 
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId(ReactionCollectorExitCityReaction.name)
-		.setPlaceholder(i18n.t("commands:report.city.placeholder", { lng }));
+	const container = new ContainerBuilder();
 
-	// Owned home option
-	if (data.home.owned) {
-		selectMenu.addOptions({
-			label: i18n.t("commands:report.city.homes.goToOwnedHome", { lng }),
-			description: i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng }),
-			value: HomeMenuIds.HOME_MENU,
-			emoji: CrowniclesIcons.city.home[data.home.owned.level]
-		});
-	}
+	// Title
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.title", {
+				lng, pseudo
+			})}`
+		)
+	);
 
-	// Manage home option
-	if (data.home.manage) {
-		selectMenu.addOptions({
-			label: i18n.t("commands:report.city.homes.manageHome", { lng }),
-			description: getManageHomeMenuOptionDescription(data.home.manage, lng),
-			value: HomeMenuIds.MANAGE_HOME_MENU,
-			emoji: CrowniclesIcons.city.manageHome
-		});
-	}
-
-	// Enchanter option
-	if (data.enchanter) {
-		selectMenu.addOptions({
-			label: i18n.t("commands:report.city.reactions.enchanter.label", { lng }),
-			description: i18n.t("commands:report.city.reactions.enchanter.description", { lng }),
-			value: "ENCHANTER_MENU",
-			emoji: CrowniclesIcons.city.enchanter
-		});
-	}
-
-	if (data.blacksmith) {
-		selectMenu.addOptions({
-			label: i18n.t("commands:report.city.blacksmith.menuLabel", { lng }),
-			description: i18n.t("commands:report.city.blacksmith.menuDescription", { lng }),
-			value: "BLACKSMITH_MENU",
-			emoji: CrowniclesIcons.city.blacksmith.menu
-		});
-	}
-
-	// Shops
-	for (const shop of data.shops || []) {
-		selectMenu.addOptions({
-			label: i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng }),
-			description: i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng }),
-			value: `CITY_SHOP_${shop.shopId}`,
-			emoji: CrowniclesIcons.city.shops[shop.shopId] ?? CrowniclesIcons.city.shops.generalShop
-		});
-	}
-
-	// Inn option
-	if (data.inns) {
-		for (const inn of data.inns) {
-			selectMenu.addOptions({
-				label: i18n.t("commands:report.city.reactions.inn.label", {
-					lng, innId: inn.innId
-				}),
-				description: i18n.t("commands:report.city.reactions.inn.description", { lng }),
-				value: `MAIN_MENU_INN_${inn.innId}`,
-				emoji: CrowniclesIcons.city.inn
-			});
-		}
-	}
-
-	// Other options
-	for (const reaction of packet.reactions) {
-		switch (reaction.type) {
-			case ReactionCollectorExitCityReaction.name:
-				selectMenu.addOptions({
-					label: i18n.t("commands:report.city.reactions.exit.label", { lng }),
-					description: i18n.t("commands:report.city.reactions.exit.description", { lng }),
-					value: "MAIN_MENU_EXIT_CITY",
-					emoji: CrowniclesIcons.city.exit
-				});
-				break;
-			case ReactionCollectorRefuseReaction.name:
-				selectMenu.addOptions({
-					label: i18n.t("commands:report.city.reactions.stay.label", { lng }),
-					description: i18n.t("commands:report.city.reactions.stay.description", { lng }),
-					value: "MAIN_MENU_STAY_CITY",
-					emoji: CrowniclesIcons.city.stay
-				});
-				break;
-			default:
-				break;
-		}
-	}
-
-	return {
-		embed: new CrowniclesEmbed().formatAuthor(i18n.t("commands:report.city.title", {
-			lng,
-			pseudo
-		}), interaction.user)
-			.setDescription(i18n.t("commands:report.city.description", {
+	// Description
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.description", {
 				lng,
 				mapLocationId: data.mapLocationId,
 				mapTypeId: data.mapTypeId,
 				enterCityTimestamp: millisecondsToSeconds(data.enterCityTimestamp)
-			})),
-		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
+			})
+		)
+	);
+
+	// --- Home & Notary ---
+	if (data.home.owned || data.home.manage) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+		if (data.home.owned) {
+			addCitySection(
+				container,
+				`${CrowniclesIcons.city.home[data.home.owned.level]} **${i18n.t("commands:report.city.homes.goToOwnedHome", { lng })}**\n${i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng })}`,
+				HomeMenuIds.HOME_MENU,
+				i18n.t("commands:report.city.buttons.enter", { lng }),
+				ButtonStyle.Primary
+			);
+		}
+
+		if (data.home.manage) {
+			addCitySection(
+				container,
+				`${CrowniclesIcons.city.manageHome} **${i18n.t("commands:report.city.homes.manageHome", { lng })}**\n${getManageHomeMenuOptionDescription(data.home.manage, lng)}`,
+				HomeMenuIds.MANAGE_HOME_MENU,
+				i18n.t("commands:report.city.buttons.visit", { lng })
+			);
+		}
+	}
+
+	// --- Services (Blacksmith, Enchanter) ---
+	if (data.blacksmith || data.enchanter) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+		if (data.blacksmith) {
+			addCitySection(
+				container,
+				`${CrowniclesIcons.city.blacksmith.menu} **${i18n.t("commands:report.city.blacksmith.menuLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.menuDescription", { lng })}`,
+				"BLACKSMITH_MENU",
+				i18n.t("commands:report.city.buttons.visit", { lng })
+			);
+		}
+
+		if (data.enchanter) {
+			addCitySection(
+				container,
+				`${CrowniclesIcons.city.enchanter} **${i18n.t("commands:report.city.reactions.enchanter.label", { lng })}**\n${i18n.t("commands:report.city.reactions.enchanter.description", { lng })}`,
+				"ENCHANTER_MENU",
+				i18n.t("commands:report.city.buttons.visit", { lng })
+			);
+		}
+	}
+
+	// --- Shops ---
+	if (data.shops && data.shops.length > 0) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+		for (const shop of data.shops) {
+			const shopEmoji = CrowniclesIcons.city.shops[shop.shopId] ?? CrowniclesIcons.city.shops.generalShop;
+			addCitySection(
+				container,
+				`${shopEmoji} **${i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng })}**\n${i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng })}`,
+				`CITY_SHOP_${shop.shopId}`,
+				i18n.t("commands:report.city.buttons.enter", { lng })
+			);
+		}
+	}
+
+	// --- Inns ---
+	if (data.inns && data.inns.length > 0) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+		for (const inn of data.inns) {
+			addCitySection(
+				container,
+				`${CrowniclesIcons.city.inn} **${i18n.t("commands:report.city.reactions.inn.label", {
+					lng, innId: inn.innId
+				})}**\n${i18n.t("commands:report.city.reactions.inn.description", { lng })}`,
+				`MAIN_MENU_INN_${inn.innId}`,
+				i18n.t("commands:report.city.buttons.enter", { lng })
+			);
+		}
+	}
+
+	// --- Exit / Stay buttons ---
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	const actionRow = new ActionRowBuilder<ButtonBuilder>();
+
+	for (const reaction of packet.reactions) {
+		if (reaction.type === ReactionCollectorExitCityReaction.name) {
+			actionRow.addComponents(
+				new ButtonBuilder()
+					.setCustomId("MAIN_MENU_EXIT_CITY")
+					.setLabel(i18n.t("commands:report.city.reactions.exit.label", { lng }))
+					.setEmoji(CrowniclesIcons.city.exit)
+					.setStyle(ButtonStyle.Danger)
+			);
+		}
+		else if (reaction.type === ReactionCollectorRefuseReaction.name) {
+			actionRow.addComponents(
+				new ButtonBuilder()
+					.setCustomId("MAIN_MENU_STAY_CITY")
+					.setLabel(i18n.t("commands:report.city.reactions.stay.label", { lng }))
+					.setEmoji(CrowniclesIcons.city.stay)
+					.setStyle(ButtonStyle.Secondary)
+			);
+		}
+	}
+
+	container.addActionRowComponents(actionRow);
+
+	return {
+		containers: [container],
 		createCollector: createMainMenuCollector(context, interaction, packet, collectorTime)
 	};
 }
@@ -191,7 +234,7 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 async function handleMainMenuSelection(
 	selectedValue: string,
 	nestedMenus: CrowniclesNestedMenus,
-	selectInteraction: StringSelectMenuInteraction,
+	componentInteraction: MessageComponentInteraction,
 	context: PacketContext,
 	packet: ReactionCollectorCreationPacket
 ): Promise<void> {
@@ -215,7 +258,7 @@ async function handleMainMenuSelection(
 				&& (reaction.data as ReactionCollectorCityShopReaction).shopId === shopId
 		);
 		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, componentInteraction, reactionIndex);
 		}
 		return;
 	}
@@ -235,7 +278,7 @@ async function handleMainMenuSelection(
 	if (reactionRoutes[selectedValue]) {
 		const reactionIndex = packet.reactions.findIndex(reaction => reaction.type === reactionRoutes[selectedValue]);
 		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, selectInteraction, reactionIndex);
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, componentInteraction, reactionIndex);
 		}
 	}
 }
@@ -248,25 +291,25 @@ function createMainMenuCollector(
 	interaction: CrowniclesInteraction,
 	packet: ReactionCollectorCreationPacket,
 	collectorTime: number
-): (nestedMenus: CrowniclesNestedMenus, message: import("discord.js").Message) => CrowniclesNestedMenuCollector {
+): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 	const lng = interaction.userLanguage;
 
 	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const selectMenuCollector = message.createMessageComponentCollector({
+		const collector = message.createMessageComponentCollector({
 			time: collectorTime
 		});
 
-		selectMenuCollector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
-			if (selectInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
+			if (buttonInteraction.user.id !== interaction.user.id) {
+				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 				return;
 			}
 
-			await selectInteraction.deferUpdate();
-			await handleMainMenuSelection(selectInteraction.values[0], nestedMenus, selectInteraction, context, packet);
+			await buttonInteraction.deferUpdate();
+			await handleMainMenuSelection(buttonInteraction.customId, nestedMenus, buttonInteraction, context, packet);
 		});
 
-		return selectMenuCollector;
+		return collector;
 	};
 }
 
