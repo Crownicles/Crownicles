@@ -155,11 +155,11 @@ export async function handleCommandShopGenericPurchase(packet: CommandShopGeneri
 
 	if (packet.materials) {
 		const materialLines = Object.entries(packet.materials)
-			.map(([materialId, quantity]) => {
-				const emoji = CrowniclesIcons.materials[materialId] ?? CrowniclesIcons.inventory.stock;
-				const name = i18n.t(`models:materials.${materialId}`, { lng });
-				return `${emoji} **${name}** x${quantity}`;
-			});
+			.map(([materialId, quantity]) => i18n.t("commands:shop.materialLine", {
+				lng,
+				materialId,
+				quantity
+			}));
 		description += `\n\n${materialLines.join("\n")}`;
 	}
 

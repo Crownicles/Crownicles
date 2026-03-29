@@ -63,7 +63,7 @@ export abstract class ShopUtils {
 				.find(category => category.id === reactionInstance.shopCategoryId)!.items
 				.find(item => item.id === reactionInstance.shopItemId)!.buyCallback(response, player.id, context, reactionInstance.amount);
 			const isDetailedResult = typeof buyResult !== "boolean";
-			const parsed: BuyCallbackResult = typeof buyResult === "boolean" ? { success: buyResult } : buyResult;
+			const parsed: BuyCallbackResult = isDetailedResult ? buyResult as BuyCallbackResult : { success: buyResult as boolean };
 			if (parsed.success) {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
 				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
