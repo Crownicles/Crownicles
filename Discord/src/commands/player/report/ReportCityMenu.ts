@@ -76,16 +76,20 @@ function getManageHomeMenuOptionDescription(manage: ManageHomeData, lng: Languag
 	return i18n.t("commands:report.city.homes.manageHomeDescriptionUnavailable", { lng });
 }
 
-export function addCitySection(container: ContainerBuilder, text: string, customId: string, buttonLabel: string, buttonStyle: ButtonStyle = ButtonStyle.Secondary): void {
+export function addCitySection(container: ContainerBuilder, text: string, customId: string, buttonLabel: string, buttonStyle: ButtonStyle = ButtonStyle.Secondary, emoji?: string): void {
+	const button = new ButtonBuilder()
+		.setCustomId(customId)
+		.setLabel(buttonLabel)
+		.setStyle(buttonStyle);
+
+	if (emoji) {
+		button.setEmoji(emoji);
+	}
+
 	container.addSectionComponents(
 		new SectionBuilder()
 			.addTextDisplayComponents(new TextDisplayBuilder().setContent(text))
-			.setButtonAccessory(
-				new ButtonBuilder()
-					.setCustomId(customId)
-					.setLabel(buttonLabel)
-					.setStyle(buttonStyle)
-			)
+			.setButtonAccessory(button)
 	);
 }
 
@@ -125,8 +129,9 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 				container,
 				`${CrowniclesIcons.city.home[data.home.owned.level]} **${i18n.t("commands:report.city.homes.goToOwnedHome", { lng })}**\n${i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng })}`,
 				HomeMenuIds.HOME_MENU,
-				i18n.t("commands:report.city.buttons.enter", { lng }),
-				ButtonStyle.Primary
+				i18n.t("commands:report.city.buttons.goHome", { lng }),
+				ButtonStyle.Primary,
+				CrowniclesIcons.city.home[data.home.owned.level]
 			);
 		}
 
@@ -135,7 +140,9 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 				container,
 				`${CrowniclesIcons.city.manageHome} **${i18n.t("commands:report.city.homes.manageHome", { lng })}**\n${getManageHomeMenuOptionDescription(data.home.manage, lng)}`,
 				HomeMenuIds.MANAGE_HOME_MENU,
-				i18n.t("commands:report.city.buttons.visit", { lng })
+				i18n.t("commands:report.city.buttons.seeNotary", { lng }),
+				ButtonStyle.Secondary,
+				CrowniclesIcons.city.manageHome
 			);
 		}
 	}
@@ -149,7 +156,9 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 				container,
 				`${CrowniclesIcons.city.blacksmith.menu} **${i18n.t("commands:report.city.blacksmith.menuLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.menuDescription", { lng })}`,
 				"BLACKSMITH_MENU",
-				i18n.t("commands:report.city.buttons.visit", { lng })
+				i18n.t("commands:report.city.buttons.enterForge", { lng }),
+				ButtonStyle.Secondary,
+				CrowniclesIcons.city.blacksmith.menu
 			);
 		}
 
@@ -158,7 +167,9 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 				container,
 				`${CrowniclesIcons.city.enchanter} **${i18n.t("commands:report.city.reactions.enchanter.label", { lng })}**\n${i18n.t("commands:report.city.reactions.enchanter.description", { lng })}`,
 				"ENCHANTER_MENU",
-				i18n.t("commands:report.city.buttons.visit", { lng })
+				i18n.t("commands:report.city.buttons.talkToEnchanter", { lng }),
+				ButtonStyle.Secondary,
+				CrowniclesIcons.city.enchanter
 			);
 		}
 	}
@@ -173,7 +184,9 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 				container,
 				`${shopEmoji} **${i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng })}**\n${i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng })}`,
 				`CITY_SHOP_${shop.shopId}`,
-				i18n.t("commands:report.city.buttons.enter", { lng })
+				i18n.t("commands:report.city.buttons.browseShop", { lng }),
+				ButtonStyle.Secondary,
+				shopEmoji
 			);
 		}
 	}
@@ -189,7 +202,9 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 					lng, innId: inn.innId
 				})}**\n${i18n.t("commands:report.city.reactions.inn.description", { lng })}`,
 				`MAIN_MENU_INN_${inn.innId}`,
-				i18n.t("commands:report.city.buttons.enter", { lng })
+				i18n.t("commands:report.city.buttons.sitDown", { lng }),
+				ButtonStyle.Secondary,
+				CrowniclesIcons.city.inn
 			);
 		}
 	}
@@ -357,7 +372,9 @@ function getInnMenu(
 				energy: meal.energy
 			})}`,
 			`MEAL_${meal.mealId}`,
-			i18n.t("commands:report.city.buttons.order", { lng })
+			i18n.t("commands:report.city.buttons.order", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.meals[meal.mealId]
 		);
 	}
 
@@ -374,7 +391,9 @@ function getInnMenu(
 				health: room.health
 			})}`,
 			`ROOM_${room.roomId}`,
-			i18n.t("commands:report.city.buttons.rent", { lng })
+			i18n.t("commands:report.city.buttons.rent", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.rooms[room.roomId]
 		);
 	}
 
@@ -731,7 +750,8 @@ function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData
 			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.buyHome", { lng })}**`,
 			"BUY_HOME",
 			i18n.t("commands:report.city.buttons.confirm", { lng }),
-			ButtonStyle.Success
+			ButtonStyle.Success,
+			CrowniclesIcons.collectors.accept
 		);
 	}
 	else if (data.upgrade && data.upgrade.price <= data.currentMoney) {
@@ -741,7 +761,8 @@ function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData
 			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.upgradeHome", { lng })}**`,
 			"UPGRADE_HOME",
 			i18n.t("commands:report.city.buttons.confirm", { lng }),
-			ButtonStyle.Success
+			ButtonStyle.Success,
+			CrowniclesIcons.collectors.accept
 		);
 	}
 	else if (data.movePrice && data.movePrice <= data.currentMoney) {
@@ -751,7 +772,8 @@ function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData
 			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.moveHome", { lng })}**`,
 			"MOVE_HOME",
 			i18n.t("commands:report.city.buttons.confirm", { lng }),
-			ButtonStyle.Success
+			ButtonStyle.Success,
+			CrowniclesIcons.collectors.accept
 		);
 	}
 }

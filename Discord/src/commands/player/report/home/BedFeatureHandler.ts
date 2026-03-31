@@ -23,7 +23,8 @@ export class BedFeatureHandler implements HomeFeatureHandler {
 				health: ctx.homeData.features.bedHealthRegeneration
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.bed,
-			value: this.featureId
+			value: this.featureId,
+			buttonLabel: i18n.t("commands:report.city.homes.bed.buttonLabel", { lng: ctx.lng })
 		};
 	}
 

@@ -90,7 +90,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				grade: i18n.t(`models:cooking.grades.${state.cookingGrade}`, { lng: ctx.lng })
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.cooking,
-			value: HomeMenuIds.COOKING_MENU
+			value: HomeMenuIds.COOKING_MENU,
+			buttonLabel: i18n.t("commands:report.city.homes.cooking.buttonLabel", { lng: ctx.lng })
 		};
 	}
 

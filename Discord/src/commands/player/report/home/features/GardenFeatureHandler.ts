@@ -57,7 +57,8 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				lng: ctx.lng, ready: readyCount, total: garden.totalPlots
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.garden,
-			value: HomeMenuIds.GARDEN_MENU
+			value: HomeMenuIds.GARDEN_MENU,
+			buttonLabel: i18n.t("commands:report.city.homes.garden.buttonLabel", { lng: ctx.lng })
 		};
 	}
 

@@ -91,7 +91,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				lng: ctx.lng, filled: filledCount, total: totalSlots
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.chest,
-			value: HomeMenuIds.CHEST_MENU
+			value: HomeMenuIds.CHEST_MENU,
+			buttonLabel: i18n.t("commands:report.city.homes.chest.buttonLabel", { lng: ctx.lng })
 		};
 	}
 

@@ -199,7 +199,8 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 				.setButtonAccessory(
 					new ButtonBuilder()
 						.setCustomId(option.value)
-						.setLabel(i18n.t("commands:report.city.buttons.enter", { lng }))
+						.setLabel(option.buttonLabel)
+						.setEmoji(option.emoji)
 						.setStyle(ButtonStyle.Primary)
 				)
 		);
