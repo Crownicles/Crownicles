@@ -828,7 +828,14 @@
       "description": "{emote:commands.report} Vous êtes entré $t(models:map_locations.{{mapLocationId}}.atParticle) **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nVous pouvez accéder à beaucoup de services ici, mais vous pouvez également choisir de partir pour continuer votre aventure.",
       "buttons": {
         "enter": "Entrer",
-        "visit": "Visiter"
+        "visit": "Visiter",
+        "order": "Commander",
+        "rent": "Louer",
+        "back": "Retour",
+        "enchant": "Enchanter",
+        "confirm": "Confirmer",
+        "upgrade": "Améliorer",
+        "disenchant": "Désenchanter"
       },
       "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
       "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",

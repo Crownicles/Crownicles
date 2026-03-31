@@ -30,6 +30,46 @@ function createFeatureSubMenu(
 ): CrowniclesNestedMenu {
 	const lng = params.interaction.userLanguage;
 
+	// V2 container path: handler builds its own container content
+	if (handler.addSubMenuContainerContent) {
+		const container = new ContainerBuilder();
+
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				`### ${handler.getSubMenuTitle(handlerContext, params.pseudo)}`
+			)
+		);
+
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(handler.getSubMenuDescription(handlerContext))
+		);
+
+		handler.addSubMenuContainerContent(handlerContext, container);
+
+		return {
+			containers: [container],
+			createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
+				const componentCollector = message.createMessageComponentCollector({ time: params.collectorTime });
+
+				componentCollector.on("collect", async (componentInteraction: ButtonInteraction) => {
+					if (componentInteraction.user.id !== params.interaction.user.id) {
+						await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
+						return;
+					}
+
+					await handler.handleSubMenuSelection(
+						handlerContext,
+						componentInteraction.customId,
+						componentInteraction,
+						nestedMenus
+					);
+				});
+
+				return componentCollector;
+			}
+		};
+	}
+
 	// Use custom components if the handler provides them, otherwise build default select menu
 	let components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
 
