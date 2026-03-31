@@ -20,11 +20,10 @@ describe("City menu translation lengths", () => {
 			}
 			const models = loadModelsJson(langDir, locale);
 			const t = await buildTranslator(locale, commands, models);
-			const { city } = commands.report;
 
-			checkMainMenuReactions(city, locale, t);
-			checkInnMenu(city, locale, t);
-			checkShopEntries(city, locale, t);
+			// Main menu reactions and shops are now rendered in v2 TextDisplay components
+			// (no 100-char select-option limit), so only check inn sub-menu labels/descriptions
+			checkInnMenu(commands.report.city, locale, t);
 		});
 	}
 });

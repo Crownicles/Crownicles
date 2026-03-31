@@ -121,7 +121,9 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 			container,
 			`${CrowniclesIcons.city.blacksmith.upgrade} **${i18n.t("commands:report.city.blacksmith.upgradeLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.upgradeDescription", { lng })}`,
 			BlacksmithMenuIds.UPGRADE_MENU,
-			i18n.t("commands:report.city.buttons.upgrade", { lng })
+			i18n.t("commands:report.city.buttons.upgrade", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.city.blacksmith.upgrade
 		);
 	}
 
@@ -132,7 +134,9 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 			container,
 			`${CrowniclesIcons.city.blacksmith.disenchant} **${i18n.t("commands:report.city.blacksmith.disenchantLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.disenchantDescription", { lng })}`,
 			BlacksmithMenuIds.DISENCHANT_MENU,
-			i18n.t("commands:report.city.buttons.disenchant", { lng })
+			i18n.t("commands:report.city.buttons.disenchant", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.city.blacksmith.disenchant
 		);
 	}
 
@@ -225,7 +229,9 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 				cost: item.upgradeCost
 			})}`,
 			`${BlacksmithMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
-			i18n.t("commands:report.city.buttons.upgrade", { lng })
+			i18n.t("commands:report.city.buttons.upgrade", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.city.blacksmith.upgrade
 		);
 	}
 
@@ -355,6 +361,7 @@ export function getBlacksmithUpgradeDetailMenu(
 			}))
 			.setStyle(canUpgradeWithMaterials ? ButtonStyle.Success : ButtonStyle.Secondary)
 			.setDisabled(!canUpgradeWithMaterials)
+			.setEmoji(CrowniclesIcons.city.blacksmith.upgrade)
 	);
 
 	// Buy materials and upgrade button (if missing materials and has enough money)
@@ -370,6 +377,7 @@ export function getBlacksmithUpgradeDetailMenu(
 				}))
 				.setStyle(canBuyAndUpgrade ? ButtonStyle.Primary : ButtonStyle.Secondary)
 				.setDisabled(!canBuyAndUpgrade)
+				.setEmoji(CrowniclesIcons.collectors.accept)
 		);
 	}
 
@@ -378,6 +386,7 @@ export function getBlacksmithUpgradeDetailMenu(
 		new ButtonBuilder()
 			.setCustomId(BlacksmithMenuIds.BACK_TO_UPGRADE_LIST)
 			.setLabel(i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
+			.setEmoji(CrowniclesIcons.city.back)
 			.setStyle(ButtonStyle.Secondary)
 	);
 
@@ -476,7 +485,9 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 				cost: item.disenchantCost
 			})}`,
 			`${BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX}${i}`,
-			i18n.t("commands:report.city.buttons.disenchant", { lng })
+			i18n.t("commands:report.city.buttons.disenchant", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.city.blacksmith.disenchant
 		);
 	}
 
@@ -569,10 +580,12 @@ export function getBlacksmithDisenchantDetailMenu(
 				cost: item.disenchantCost
 			}))
 			.setStyle(canDisenchant ? ButtonStyle.Danger : ButtonStyle.Secondary)
-			.setDisabled(!canDisenchant),
+			.setDisabled(!canDisenchant)
+			.setEmoji(CrowniclesIcons.city.blacksmith.disenchant),
 		new ButtonBuilder()
 			.setCustomId(BlacksmithMenuIds.BACK_TO_DISENCHANT_LIST)
 			.setLabel(i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
+			.setEmoji(CrowniclesIcons.city.back)
 			.setStyle(ButtonStyle.Secondary)
 	];
 

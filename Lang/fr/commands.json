@@ -825,7 +825,7 @@
     "city": {
       "placeholder": "Choisissez quelque chose à faire",
       "title": "{{pseudo}}, vous êtes en ville !",
-      "description": "{emote:commands.report} Vous êtes entré $t(models:map_locations.{{mapLocationId}}.atParticle) **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nVous pouvez accéder à beaucoup de services ici, mais vous pouvez également choisir de partir pour continuer votre aventure.",
+      "description": "{emote:commands.report} Vous avez rejoint **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nLes rues pavées s'animent autour de vous : marchands, aventuriers et artisans vaquent à leurs occupations. De nombreux services s'offrent à vous, mais la route, elle, n'attend personne.",
       "buttons": {
         "enter": "Entrer",
         "visit": "Visiter",
@@ -835,7 +835,13 @@
         "enchant": "Enchanter",
         "confirm": "Confirmer",
         "upgrade": "Améliorer",
-        "disenchant": "Désenchanter"
+        "disenchant": "Désenchanter",
+        "goHome": "Rentrer chez soi",
+        "seeNotary": "Consulter",
+        "enterForge": "Entrer dans la forge",
+        "talkToEnchanter": "Lui parler",
+        "browseShop": "Examiner l'étal",
+        "sitDown": "S'attabler"
       },
       "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
       "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",
@@ -849,7 +855,7 @@
         },
         "inn": {
           "label": "Aller à l'auberge $t(commands:report.city.inns.names.{{innId}})",
-          "description": "Entrez dans l'auberge pour y manger et reprendre des forces."
+          "description": "Une odeur alléchante et des éclats de rire s'échappent de l'établissement. L'endroit idéal pour reprendre des forces."
         },
         "stay": {
           "label": "Rester en ville",
@@ -857,7 +863,7 @@
         },
         "enchanter": {
           "label": "Aller voir l'enchanteur",
-          "description": "Allez voir l'enchanteur itinérant pour améliorer vos équipements."
+          "description": "Un voyageur aux mains couvertes de runes lumineuses attire votre attention. Il prétend pouvoir enchanter n'importe quel équipement."
         },
         "blacksmith": {
           "label": "Aller chez le forgeron",
@@ -867,27 +873,27 @@
       "shops": {
         "royalMarket": {
           "label": "Marché royal",
-          "description": "Convertissez vos gemmes en or et trésors exclusifs dans la boutique privée du château."
+          "description": "La boutique privée du château regorge de trésors exclusifs. On y échange gemmes contre or et objets rares."
         },
         "generalShop": {
           "label": "Boutique générale",
-          "description": "Achetez la potion du jour à prix réduit ou un équipement aléatoire."
+          "description": "Un étalage coloré déborde de potions scintillantes et d'équipements singuliers. La sélection change chaque jour."
         },
         "stockExchange": {
           "label": "La Bourse",
-          "description": "Consultez le taux de change des gemmes et achetez des objets de prestige."
+          "description": "Des gemmes de toutes tailles scintillent derrière les vitrines. On y échange pierres précieuses contre objets de prestige."
         },
         "tanner": {
           "label": "Le Tanneur",
-          "description": "Agrandissez votre inventaire grâce aux sacoches en cuir de cet artisan."
+          "description": "L'odeur du cuir fraîchement tanné flotte dans l'air. Cet artisan fabrique des sacoches qui agrandissent votre inventaire."
         },
         "herbalist": {
           "label": "L'Herboriste",
-          "description": "Achetez des plantes déjà cultivées, sélection renouvelée chaque semaine."
+          "description": "Des rangées de plantes soigneusement cultivées garnissent l'échoppe parfumée. La sélection est renouvelée chaque semaine."
         },
         "lumberjack": {
           "label": "Le Bûcheron",
-          "description": "Achetez du bois de chauffage et des bois de qualité pour la cuisine."
+          "description": "Un colosse taillé comme un chêne empile des bûches devant son étal. Son bois est réputé pour alimenter les fourneaux."
         }
       },
       "inns": {
@@ -980,7 +986,7 @@
       },
       "blacksmith": {
         "menuLabel": "Aller chez le forgeron",
-        "menuDescription": "Rendez-vous chez le forgeron pour améliorer ou désenchanter vos équipements.",
+        "menuDescription": "Le son régulier de l'enclume résonne depuis la forge. Le forgeron peut renforcer vos équipements ou en retirer les enchantements.",
         "placeholder": "Choisissez un service",
         "title": "{{pseudo}}, vous rencontrez le forgeron",
         "upgradeLabel": "Améliorer un équipement",
@@ -1018,7 +1024,7 @@
       },
       "homes": {
         "goToOwnedHome": "Aller à votre maison",
-        "goToOwnedHomeDescription": "Entrez dans votre maison pour y accéder à vos services personnels.",
+        "goToOwnedHomeDescription": "Un havre de paix vous attend derrière cette porte, avec tout le confort nécessaire pour préparer vos prochaines aventures.",
         "homeTitle": "{{pseudo}}, bienvenue chez vous !",
         "homeIntroduction": "{emote:city.home.1} Vous entrez dans votre maison. Le calme et la sérénité de ce lieu vous apaisent.",
         "homePlaceholder": "Choisissez une action",
@@ -1063,6 +1069,7 @@
         "upgradeStation": {
           "menuLabel": "Établi d'équipement",
           "menuDescription": "Améliorez vos armes et armures",
+          "buttonLabel": "Forger",
           "available": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement vous permet d'améliorer vos armes et armures.",
           "title": "{{pseudo}}, établi d'équipement",
           "itemDetails": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} → niv. {{nextLevel}}\n\n**Matériaux nécessaires :**\n{{materials}}",
@@ -1080,6 +1087,7 @@
         "bed": {
           "menuLabel": "Se reposer dans votre lit",
           "menuDescription": "Récupérez {{health}} {emote:unitValues.health} gratuitement",
+          "buttonLabel": "Se reposer",
           "available": "{emote:city.homeUpgrades.bed} Votre lit vous permet de récupérer **{{health}}** {emote:unitValues.health} gratuitement.",
           "restTitle": "{{pseudo}}, vous vous reposez !",
           "restDescription": "{emote:city.homeUpgrades.bed} Vous vous allongez dans votre lit et fermez les yeux quelques instants. Ce petit repos vous fait le plus grand bien ! Vous récupérez **{{health}}** {emote:unitValues.health}.",
@@ -1088,6 +1096,7 @@
         "chest": {
           "menuLabel": "Coffre de rangement",
           "menuDescription": "{{filled}}/{{total}} emplacements utilisés",
+          "buttonLabel": "Ouvrir",
           "available": "{emote:city.homeUpgrades.chest} Votre coffre vous permet de stocker des objets de rechange.",
           "title": "{{pseudo}}, coffre de rangement",
           "placeholder": "Choisissez une catégorie",
@@ -1115,6 +1124,7 @@
         "garden": {
           "menuLabel": "Jardin",
           "menuDescription": "{{ready}}/{{total}} plantes prêtes à être récoltées",
+          "buttonLabel": "Jardiner",
           "available": "{emote:city.homeUpgrades.garden} Votre jardin vous permet de cultiver des plantes.",
           "title": "{{pseudo}}, jardin",
           "placeholder": "Gérer votre jardin",
@@ -1136,6 +1146,7 @@
         "cooking": {
           "menuLabel": "Cuisine",
           "menuDescription": "Fourneau — Niveau {{level}} ({{grade}})",
+          "buttonLabel": "Cuisiner",
           "available": "{emote:city.homeUpgrades.cooking} Vous avez accès à un fourneau pour préparer des potions et de la nourriture pour familiers.",
           "title": "{{pseudo}}, cuisine",
           "placeholder": "Gérer votre fourneau",

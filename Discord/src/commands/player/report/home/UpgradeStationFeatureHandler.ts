@@ -57,7 +57,8 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				count: itemCount
 			}),
 			emoji: CrowniclesIcons.city.homeUpgrades.upgradeEquipment,
-			value: HomeMenuIds.UPGRADE_STATION_MENU
+			value: HomeMenuIds.UPGRADE_STATION_MENU,
+			buttonLabel: i18n.t("commands:report.city.homes.upgradeStation.buttonLabel", { lng: ctx.lng })
 		};
 	}
 
@@ -302,7 +303,9 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				container,
 				`${itemDisplay}\n+${item.details.itemLevel ?? 0} → +${item.nextLevel}`,
 				`${HomeMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
-				i18n.t("commands:report.city.buttons.upgrade", { lng: ctx.lng })
+				i18n.t("commands:report.city.buttons.upgrade", { lng: ctx.lng }),
+				ButtonStyle.Secondary,
+				CrowniclesIcons.city.blacksmith.upgrade
 			);
 		}
 

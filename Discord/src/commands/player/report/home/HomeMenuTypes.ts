@@ -46,6 +46,7 @@ export interface HomeFeatureMenuOption {
 	description?: string;
 	emoji: string;
 	value: string;
+	buttonLabel: string;
 }
 
 /**
