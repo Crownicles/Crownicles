@@ -1,5 +1,5 @@
 import {
-	ActionRowBuilder, ButtonInteraction, StringSelectMenuBuilder, StringSelectMenuInteraction, User
+	ActionRowBuilder, ButtonInteraction, ContainerBuilder, MessageComponentInteraction, StringSelectMenuBuilder, User
 } from "discord.js";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { Language } from "../../../../../../Lib/src/Language";
@@ -12,7 +12,7 @@ import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteractio
 /**
  * Union type for component interactions (select menu or button)
  */
-export type ComponentInteraction = StringSelectMenuInteraction | ButtonInteraction;
+export type ComponentInteraction = MessageComponentInteraction | ButtonInteraction;
 
 /**
  * Parameters for creating home menus
@@ -117,6 +117,13 @@ export interface HomeFeatureHandler {
 	 * If implemented, the default select menu will not be built.
 	 */
 	getSubMenuComponents?(ctx: HomeFeatureHandlerContext): ActionRowBuilder<MessageActionRowComponentBuilder>[];
+
+	/**
+	 * Build v2 container content for the sub-menu.
+	 * Adds sections, separators, and buttons directly to the container.
+	 * If implemented, takes priority over getSubMenuComponents and addSubMenuOptions.
+	 */
+	addSubMenuContainerContent?(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void;
 
 	/**
 	 * Get the sub-menu title

@@ -3,14 +3,16 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
-	StringSelectMenuBuilder,
-	StringSelectMenuInteraction
+	ContainerBuilder,
+	MessageComponentInteraction,
+	SeparatorBuilder,
+	SeparatorSpacingSize,
+	TextDisplayBuilder
 } from "discord.js";
 import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector
 } from "../../../../messages/CrowniclesNestedMenus";
-import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
@@ -27,6 +29,7 @@ import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 import { BlacksmithMenuIds } from "./BlacksmithMenuConstants";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
+import { addCitySection } from "../ReportCityMenu";
 
 export interface BlacksmithMenuParams {
 	context: PacketContext;
@@ -96,61 +99,70 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 	const lng = interaction.userLanguage;
 	const blacksmith = data.blacksmith!;
 
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId(BlacksmithMenuIds.BLACKSMITH_MENU)
-		.setPlaceholder(i18n.t("commands:report.city.blacksmith.placeholder", { lng }));
+	const container = new ContainerBuilder();
 
-	// Add upgrade items option if there are upgradeable items
-	if (blacksmith.upgradeableItems.length > 0) {
-		selectMenu.addOptions({
-			label: i18n.t("commands:report.city.blacksmith.upgradeLabel", { lng }),
-			description: i18n.t("commands:report.city.blacksmith.upgradeDescription", { lng }),
-			value: BlacksmithMenuIds.UPGRADE_MENU,
-			emoji: CrowniclesIcons.city.blacksmith.upgrade
-		});
-	}
-
-	// Add disenchant items option if there are disenchantable items
-	if (blacksmith.disenchantableItems.length > 0) {
-		selectMenu.addOptions({
-			label: i18n.t("commands:report.city.blacksmith.disenchantLabel", { lng }),
-			description: i18n.t("commands:report.city.blacksmith.disenchantDescription", { lng }),
-			value: BlacksmithMenuIds.DISENCHANT_MENU,
-			emoji: CrowniclesIcons.city.blacksmith.disenchant
-		});
-	}
-
-	// Add back to city option
-	selectMenu.addOptions({
-		label: i18n.t("commands:report.city.blacksmith.backToCity", { lng }),
-		description: i18n.t("commands:report.city.blacksmith.backToCityDescription", { lng }),
-		value: BlacksmithMenuIds.BACK_TO_CITY,
-		emoji: CrowniclesIcons.city.back
-	});
+	// Title
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.blacksmith.title", { lng, pseudo })}`
+		)
+	);
 
 	// Build description based on available services
 	const descriptionKey = getDescriptionKeyBlacksmithMenu(blacksmith);
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(i18n.t(descriptionKey, { lng }))
+	);
+
+	// Add upgrade option if there are upgradeable items
+	if (blacksmith.upgradeableItems.length > 0) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		addCitySection(
+			container,
+			`${CrowniclesIcons.city.blacksmith.upgrade} **${i18n.t("commands:report.city.blacksmith.upgradeLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.upgradeDescription", { lng })}`,
+			BlacksmithMenuIds.UPGRADE_MENU,
+			i18n.t("commands:report.city.buttons.upgrade", { lng })
+		);
+	}
+
+	// Add disenchant option if there are disenchantable items
+	if (blacksmith.disenchantableItems.length > 0) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		addCitySection(
+			container,
+			`${CrowniclesIcons.city.blacksmith.disenchant} **${i18n.t("commands:report.city.blacksmith.disenchantLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.disenchantDescription", { lng })}`,
+			BlacksmithMenuIds.DISENCHANT_MENU,
+			i18n.t("commands:report.city.buttons.disenchant", { lng })
+		);
+	}
+
+	// Back to city button
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(BlacksmithMenuIds.BACK_TO_CITY)
+				.setLabel(i18n.t("commands:report.city.blacksmith.backToCity", { lng }))
+				.setEmoji(CrowniclesIcons.city.exit)
+				.setStyle(ButtonStyle.Secondary)
+		)
+	);
 
 	return {
-		embed: new CrowniclesEmbed().formatAuthor(i18n.t("commands:report.city.blacksmith.title", {
-			lng,
-			pseudo
-		}), interaction.user)
-			.setDescription(i18n.t(descriptionKey, { lng })),
-		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
+		containers: [container],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const collector = message.createMessageComponentCollector({
 				time: collectorTime
 			});
 
-			collector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
-				if (selectInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+			collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
+				if (buttonInteraction.user.id !== interaction.user.id) {
+					await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 					return;
 				}
 
-				await selectInteraction.deferUpdate();
-				const selectedValue = selectInteraction.values[0];
+				await buttonInteraction.deferUpdate();
+				const selectedValue = buttonInteraction.customId;
 
 				if (selectedValue === BlacksmithMenuIds.UPGRADE_MENU) {
 					await nestedMenus.changeMenu(BlacksmithMenuIds.UPGRADE_MENU);
@@ -179,61 +191,71 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 	const lng = interaction.userLanguage;
 	const blacksmith = data.blacksmith!;
 
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId(BlacksmithMenuIds.UPGRADE_SELECT)
-		.setPlaceholder(i18n.t("commands:report.city.blacksmith.selectItemPlaceholder", { lng }));
+	const container = new ContainerBuilder();
 
-	// Add each upgradeable item
+	// Title
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.blacksmith.upgradeTitle", { lng, pseudo })}`
+		)
+	);
+
+	// Description with player money
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.blacksmith.upgradeSelectDescription", {
+				lng,
+				money: blacksmith.playerMoney
+			})
+		)
+	);
+
+	// Add each upgradeable item as a section
 	for (let i = 0; i < blacksmith.upgradeableItems.length; i++) {
 		const item = blacksmith.upgradeableItems[i];
-		const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, lng);
-		const parts = itemDisplay.split(" | ");
-		const label = parts[0].split("**")[1] || parts[0].substring(0, 50);
+		const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
 
-		selectMenu.addOptions({
-			label: label.substring(0, 100),
-			description: i18n.t("commands:report.city.blacksmith.itemUpgradePreview", {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		addCitySection(
+			container,
+			`${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemUpgradePreview", {
 				lng,
 				currentLevel: item.details.itemLevel ?? 0,
 				nextLevel: item.nextLevel,
 				cost: item.upgradeCost
-			}),
-			value: `${BlacksmithMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
-			emoji: CrowniclesIcons.city.blacksmith.upgrade
-		});
+			})}`,
+			`${BlacksmithMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
+			i18n.t("commands:report.city.buttons.upgrade", { lng })
+		);
 	}
 
-	// Add back option
-	selectMenu.addOptions({
-		label: i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }),
-		description: i18n.t("commands:report.city.blacksmith.backToBlacksmithDescription", { lng }),
-		value: BlacksmithMenuIds.BACK_TO_BLACKSMITH,
-		emoji: CrowniclesIcons.city.back
-	});
+	// Back to blacksmith button
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(BlacksmithMenuIds.BACK_TO_BLACKSMITH)
+				.setLabel(i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }))
+				.setEmoji(CrowniclesIcons.city.back)
+				.setStyle(ButtonStyle.Secondary)
+		)
+	);
 
 	return {
-		embed: new CrowniclesEmbed().formatAuthor(i18n.t("commands:report.city.blacksmith.upgradeTitle", {
-			lng,
-			pseudo
-		}), interaction.user)
-			.setDescription(i18n.t("commands:report.city.blacksmith.upgradeSelectDescription", {
-				lng,
-				money: blacksmith.playerMoney
-			})),
-		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
+		containers: [container],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const collector = message.createMessageComponentCollector({
 				time: collectorTime
 			});
 
-			collector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
-				if (selectInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+			collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
+				if (buttonInteraction.user.id !== interaction.user.id) {
+					await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 					return;
 				}
 
-				await selectInteraction.deferUpdate();
-				const selectedValue = selectInteraction.values[0];
+				await buttonInteraction.deferUpdate();
+				const selectedValue = buttonInteraction.customId;
 
 				if (selectedValue === BlacksmithMenuIds.BACK_TO_BLACKSMITH) {
 					await nestedMenus.changeMenu(BlacksmithMenuIds.BLACKSMITH_MENU);
@@ -305,6 +327,20 @@ export function getBlacksmithUpgradeDetailMenu(
 
 	const description = buildUpgradeDetailDescription(item, lng);
 
+	const container = new ContainerBuilder();
+
+	// Title
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.blacksmith.upgradeTitle", { lng, pseudo })}`
+		)
+	);
+
+	// Description
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(description)
+	);
+
 	// Build buttons
 	const buttons: ButtonBuilder[] = [];
 
@@ -345,13 +381,13 @@ export function getBlacksmithUpgradeDetailMenu(
 			.setStyle(ButtonStyle.Secondary)
 	);
 
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)
+	);
+
 	return {
-		embed: new CrowniclesEmbed().formatAuthor(i18n.t("commands:report.city.blacksmith.upgradeTitle", {
-			lng,
-			pseudo
-		}), interaction.user)
-			.setDescription(description),
-		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)],
+		containers: [container],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const collector = message.createMessageComponentCollector({
 				time: collectorTime
@@ -407,60 +443,70 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 	const lng = interaction.userLanguage;
 	const blacksmith = data.blacksmith!;
 
-	const selectMenu = new StringSelectMenuBuilder()
-		.setCustomId(BlacksmithMenuIds.DISENCHANT_SELECT)
-		.setPlaceholder(i18n.t("commands:report.city.blacksmith.selectItemPlaceholder", { lng }));
+	const container = new ContainerBuilder();
 
-	// Add each disenchantable item
+	// Title
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.blacksmith.disenchantTitle", { lng, pseudo })}`
+		)
+	);
+
+	// Description with player money
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.blacksmith.disenchantSelectDescription", {
+				lng,
+				money: blacksmith.playerMoney
+			})
+		)
+	);
+
+	// Add each disenchantable item as a section
 	for (let i = 0; i < blacksmith.disenchantableItems.length; i++) {
 		const item = blacksmith.disenchantableItems[i];
-		const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, lng);
-		const parts = itemDisplay.split(" | ");
-		const label = parts[0].split("**")[1] || parts[0].substring(0, 50);
+		const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
 
-		selectMenu.addOptions({
-			label: label.substring(0, 100),
-			description: i18n.t("commands:report.city.blacksmith.itemDisenchantPreview", {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		addCitySection(
+			container,
+			`${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemDisenchantPreview", {
 				lng,
 				enchantmentType: item.enchantmentType,
 				cost: item.disenchantCost
-			}),
-			value: `${BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX}${i}`,
-			emoji: CrowniclesIcons.city.blacksmith.disenchant
-		});
+			})}`,
+			`${BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX}${i}`,
+			i18n.t("commands:report.city.buttons.disenchant", { lng })
+		);
 	}
 
-	// Add back option
-	selectMenu.addOptions({
-		label: i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }),
-		description: i18n.t("commands:report.city.blacksmith.backToBlacksmithDescription", { lng }),
-		value: BlacksmithMenuIds.BACK_TO_BLACKSMITH,
-		emoji: CrowniclesIcons.city.back
-	});
+	// Back to blacksmith button
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(BlacksmithMenuIds.BACK_TO_BLACKSMITH)
+				.setLabel(i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }))
+				.setEmoji(CrowniclesIcons.city.back)
+				.setStyle(ButtonStyle.Secondary)
+		)
+	);
 
 	return {
-		embed: new CrowniclesEmbed().formatAuthor(i18n.t("commands:report.city.blacksmith.disenchantTitle", {
-			lng,
-			pseudo
-		}), interaction.user)
-			.setDescription(i18n.t("commands:report.city.blacksmith.disenchantSelectDescription", {
-				lng,
-				money: blacksmith.playerMoney
-			})),
-		components: [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)],
+		containers: [container],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const collector = message.createMessageComponentCollector({
 				time: collectorTime
 			});
 
-			collector.on("collect", async (selectInteraction: StringSelectMenuInteraction) => {
-				if (selectInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(selectInteraction.user, selectInteraction, lng);
+			collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
+				if (buttonInteraction.user.id !== interaction.user.id) {
+					await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
 					return;
 				}
 
-				await selectInteraction.deferUpdate();
-				const selectedValue = selectInteraction.values[0];
+				await buttonInteraction.deferUpdate();
+				const selectedValue = buttonInteraction.customId;
 
 				if (selectedValue === BlacksmithMenuIds.BACK_TO_BLACKSMITH) {
 					await nestedMenus.changeMenu(BlacksmithMenuIds.BLACKSMITH_MENU);
@@ -499,6 +545,20 @@ export function getBlacksmithDisenchantDetailMenu(
 		cost: item.disenchantCost
 	});
 
+	const container = new ContainerBuilder();
+
+	// Title
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.blacksmith.disenchantTitle", { lng, pseudo })}`
+		)
+	);
+
+	// Description
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(description)
+	);
+
 	// Build buttons
 	const canDisenchant = blacksmith.playerMoney >= item.disenchantCost;
 	const buttons: ButtonBuilder[] = [
@@ -516,13 +576,13 @@ export function getBlacksmithDisenchantDetailMenu(
 			.setStyle(ButtonStyle.Secondary)
 	];
 
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)
+	);
+
 	return {
-		embed: new CrowniclesEmbed().formatAuthor(i18n.t("commands:report.city.blacksmith.disenchantTitle", {
-			lng,
-			pseudo
-		}), interaction.user)
-			.setDescription(description),
-		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)],
+		containers: [container],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const collector = message.createMessageComponentCollector({
 				time: collectorTime

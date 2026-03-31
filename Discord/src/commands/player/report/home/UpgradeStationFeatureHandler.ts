@@ -1,5 +1,6 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, StringSelectMenuBuilder
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle,
+	ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, StringSelectMenuBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -17,6 +18,7 @@ import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "./HomeMenuConstants";
 import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
+import { addCitySection } from "../ReportCityMenu";
 
 /**
  * Handler for the upgrade station feature in the home.
@@ -282,6 +284,39 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		if (reactionIndex !== -1) {
 			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
 		}
+	}
+
+	public addSubMenuContainerContent(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
+		const upgradeStation = ctx.homeData.upgradeStation;
+
+		if (!upgradeStation) {
+			return;
+		}
+
+		for (let i = 0; i < upgradeStation.upgradeableItems.length; i++) {
+			const item = upgradeStation.upgradeableItems[i];
+			const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, ctx.lng);
+
+			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+			addCitySection(
+				container,
+				`${itemDisplay}\n+${item.details.itemLevel ?? 0} → +${item.nextLevel}`,
+				`${HomeMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
+				i18n.t("commands:report.city.buttons.upgrade", { lng: ctx.lng })
+			);
+		}
+
+		// Back button
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addActionRowComponents(
+			new ActionRowBuilder<ButtonBuilder>().addComponents(
+				new ButtonBuilder()
+					.setCustomId(HomeMenuIds.BACK_TO_HOME)
+					.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
+					.setEmoji(CrowniclesIcons.collectors.back)
+					.setStyle(ButtonStyle.Secondary)
+			)
+		);
 	}
 
 	public addSubMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
