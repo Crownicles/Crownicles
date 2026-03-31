@@ -291,10 +291,6 @@ async function distributeWoodRandomly(playerId: number, woods: Material[], total
  * Open the lumberjack shop for the player (wood by rarity with quantity selection)
  */
 export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
-	const commonWoods = getWoodsByRarity(MaterialRarity.COMMON);
-	const uncommonWoods = getWoodsByRarity(MaterialRarity.UNCOMMON);
-	const rareWoods = getWoodsByRarity(MaterialRarity.RARE);
-
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "woodBundles",
@@ -305,7 +301,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
 						success: true,
-						materials: await distributeWoodRandomly(playerId, commonWoods, amount)
+						materials: await distributeWoodRandomly(playerId, getWoodsByRarity(MaterialRarity.COMMON), amount)
 					})
 				},
 				{
@@ -314,7 +310,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
 						success: true,
-						materials: await distributeWoodRandomly(playerId, uncommonWoods, amount)
+						materials: await distributeWoodRandomly(playerId, getWoodsByRarity(MaterialRarity.UNCOMMON), amount)
 					})
 				},
 				{
@@ -323,7 +319,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
 						success: true,
-						materials: await distributeWoodRandomly(playerId, rareWoods, amount)
+						materials: await distributeWoodRandomly(playerId, getWoodsByRarity(MaterialRarity.RARE), amount)
 					})
 				}
 			]
