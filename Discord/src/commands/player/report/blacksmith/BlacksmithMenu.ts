@@ -29,7 +29,9 @@ import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 import { BlacksmithMenuIds } from "./BlacksmithMenuConstants";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
-import { addCitySection } from "../ReportCityMenu";
+import {
+	addCitySection, createStayInCityButton, handleStayInCityInteraction, STAY_IN_CITY_ID
+} from "../ReportCityMenu";
 
 export interface BlacksmithMenuParams {
 	context: PacketContext;
@@ -93,7 +95,7 @@ function getDescriptionKeyBlacksmithMenu(blacksmith: NonNullable<ReactionCollect
  */
 export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNestedMenu {
 	const {
-		interaction, packet, collectorTime, pseudo
+		context, interaction, packet, collectorTime, pseudo
 	} = params;
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
@@ -104,7 +106,9 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.title", { lng, pseudo })}`
+			`### ${i18n.t("commands:report.city.blacksmith.title", {
+				lng, pseudo
+			})}`
 		)
 	);
 
@@ -140,7 +144,7 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 		);
 	}
 
-	// Back to city button
+	// Back to city + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -148,7 +152,8 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 				.setCustomId(BlacksmithMenuIds.BACK_TO_CITY)
 				.setLabel(i18n.t("commands:report.city.blacksmith.backToCity", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
-				.setStyle(ButtonStyle.Secondary)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
 		)
 	);
 
@@ -177,6 +182,9 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 				else if (selectedValue === BlacksmithMenuIds.BACK_TO_CITY) {
 					await nestedMenus.changeToMainMenu();
 				}
+				else if (selectedValue === STAY_IN_CITY_ID) {
+					handleStayInCityInteraction(packet, context, buttonInteraction);
+				}
 			});
 
 			return collector;
@@ -189,7 +197,7 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
  */
 export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): CrowniclesNestedMenu {
 	const {
-		interaction, packet, collectorTime, pseudo
+		context, interaction, packet, collectorTime, pseudo
 	} = params;
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
@@ -200,7 +208,9 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.upgradeTitle", { lng, pseudo })}`
+			`### ${i18n.t("commands:report.city.blacksmith.upgradeTitle", {
+				lng, pseudo
+			})}`
 		)
 	);
 
@@ -235,7 +245,7 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 		);
 	}
 
-	// Back to blacksmith button
+	// Back to blacksmith + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -243,7 +253,8 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 				.setCustomId(BlacksmithMenuIds.BACK_TO_BLACKSMITH)
 				.setLabel(i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }))
 				.setEmoji(CrowniclesIcons.city.back)
-				.setStyle(ButtonStyle.Secondary)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
 		)
 	);
 
@@ -269,6 +280,9 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 				else if (selectedValue.startsWith(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX)) {
 					const itemIndex = parseInt(selectedValue.replace(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX, ""), 10);
 					await nestedMenus.changeMenu(`${BlacksmithMenuIds.UPGRADE_MENU}_DETAIL_${itemIndex}`);
+				}
+				else if (selectedValue === STAY_IN_CITY_ID) {
+					handleStayInCityInteraction(packet, context, buttonInteraction);
 				}
 			});
 
@@ -338,7 +352,9 @@ export function getBlacksmithUpgradeDetailMenu(
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.upgradeTitle", { lng, pseudo })}`
+			`### ${i18n.t("commands:report.city.blacksmith.upgradeTitle", {
+				lng, pseudo
+			})}`
 		)
 	);
 
@@ -387,7 +403,8 @@ export function getBlacksmithUpgradeDetailMenu(
 			.setCustomId(BlacksmithMenuIds.BACK_TO_UPGRADE_LIST)
 			.setLabel(i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
 			.setEmoji(CrowniclesIcons.city.back)
-			.setStyle(ButtonStyle.Secondary)
+			.setStyle(ButtonStyle.Secondary),
+		createStayInCityButton(lng)
 	);
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -411,6 +428,12 @@ export function getBlacksmithUpgradeDetailMenu(
 				if (buttonInteraction.customId === BlacksmithMenuIds.BACK_TO_UPGRADE_LIST) {
 					await buttonInteraction.deferUpdate();
 					await nestedMenus.changeMenu(BlacksmithMenuIds.UPGRADE_MENU);
+					return;
+				}
+
+				if (buttonInteraction.customId === STAY_IN_CITY_ID) {
+					await buttonInteraction.deferUpdate();
+					handleStayInCityInteraction(packet, context, buttonInteraction);
 					return;
 				}
 
@@ -446,7 +469,7 @@ export function getBlacksmithUpgradeDetailMenu(
  */
 export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): CrowniclesNestedMenu {
 	const {
-		interaction, packet, collectorTime, pseudo
+		context, interaction, packet, collectorTime, pseudo
 	} = params;
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
@@ -457,7 +480,9 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.disenchantTitle", { lng, pseudo })}`
+			`### ${i18n.t("commands:report.city.blacksmith.disenchantTitle", {
+				lng, pseudo
+			})}`
 		)
 	);
 
@@ -491,7 +516,7 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 		);
 	}
 
-	// Back to blacksmith button
+	// Back to blacksmith + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -499,7 +524,8 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 				.setCustomId(BlacksmithMenuIds.BACK_TO_BLACKSMITH)
 				.setLabel(i18n.t("commands:report.city.blacksmith.backToBlacksmith", { lng }))
 				.setEmoji(CrowniclesIcons.city.back)
-				.setStyle(ButtonStyle.Secondary)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
 		)
 	);
 
@@ -525,6 +551,9 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 				else if (selectedValue.startsWith(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX)) {
 					const itemIndex = parseInt(selectedValue.replace(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX, ""), 10);
 					await nestedMenus.changeMenu(`${BlacksmithMenuIds.DISENCHANT_MENU}_DETAIL_${itemIndex}`);
+				}
+				else if (selectedValue === STAY_IN_CITY_ID) {
+					handleStayInCityInteraction(packet, context, buttonInteraction);
 				}
 			});
 
@@ -561,7 +590,9 @@ export function getBlacksmithDisenchantDetailMenu(
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.disenchantTitle", { lng, pseudo })}`
+			`### ${i18n.t("commands:report.city.blacksmith.disenchantTitle", {
+				lng, pseudo
+			})}`
 		)
 	);
 
@@ -586,7 +617,8 @@ export function getBlacksmithDisenchantDetailMenu(
 			.setCustomId(BlacksmithMenuIds.BACK_TO_DISENCHANT_LIST)
 			.setLabel(i18n.t("commands:report.city.blacksmith.backToItems", { lng }))
 			.setEmoji(CrowniclesIcons.city.back)
-			.setStyle(ButtonStyle.Secondary)
+			.setStyle(ButtonStyle.Secondary),
+		createStayInCityButton(lng)
 	];
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -610,6 +642,12 @@ export function getBlacksmithDisenchantDetailMenu(
 				if (buttonInteraction.customId === BlacksmithMenuIds.BACK_TO_DISENCHANT_LIST) {
 					await buttonInteraction.deferUpdate();
 					await nestedMenus.changeMenu(BlacksmithMenuIds.DISENCHANT_MENU);
+					return;
+				}
+
+				if (buttonInteraction.customId === STAY_IN_CITY_ID) {
+					await buttonInteraction.deferUpdate();
+					handleStayInCityInteraction(packet, context, buttonInteraction);
 					return;
 				}
 

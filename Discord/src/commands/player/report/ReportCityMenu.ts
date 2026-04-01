@@ -93,6 +93,39 @@ export function addCitySection(container: ContainerBuilder, text: string, custom
 	);
 }
 
+/**
+ * Custom ID used for the "stay in city" button across all city sub-menus
+ */
+export const STAY_IN_CITY_ID = "STAY_IN_CITY";
+
+/**
+ * Create a "stay in city" button for use in sub-menu action rows
+ */
+export function createStayInCityButton(lng: Language): ButtonBuilder {
+	return new ButtonBuilder()
+		.setCustomId(STAY_IN_CITY_ID)
+		.setLabel(i18n.t("commands:report.city.reactions.stay.label", { lng }))
+		.setEmoji(CrowniclesIcons.city.stay)
+		.setStyle(ButtonStyle.Secondary);
+}
+
+/**
+ * Handle the "stay in city" button click from any sub-menu.
+ * Sends the refuse reaction to end the city interaction.
+ */
+export function handleStayInCityInteraction(
+	packet: ReactionCollectorCreationPacket,
+	context: PacketContext,
+	componentInteraction: MessageComponentInteraction
+): void {
+	const reactionIndex = packet.reactions.findIndex(
+		reaction => reaction.type === ReactionCollectorRefuseReaction.name
+	);
+	if (reactionIndex !== -1) {
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, componentInteraction, reactionIndex);
+	}
+}
+
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
@@ -344,7 +377,9 @@ function getInnMenu(
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.inns.embedTitle", { lng, pseudo })}`
+			`### ${i18n.t("commands:report.city.inns.embedTitle", {
+				lng, pseudo
+			})}`
 		)
 	);
 
@@ -397,7 +432,7 @@ function getInnMenu(
 		);
 	}
 
-	// Back to city button
+	// Back to city + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -405,7 +440,8 @@ function getInnMenu(
 				.setCustomId("BACK_TO_CITY")
 				.setLabel(i18n.t("commands:report.city.exitInn", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
-				.setStyle(ButtonStyle.Secondary)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
 		)
 	);
 
@@ -466,6 +502,10 @@ function createInnMenuCollector(
 				await buttonInteraction.deferUpdate();
 				await nestedMenus.changeToMainMenu();
 			}
+			else if (selectedValue === STAY_IN_CITY_ID) {
+				await buttonInteraction.deferUpdate();
+				handleStayInCityInteraction(packet, context, buttonInteraction);
+			}
 		});
 
 		return collector;
@@ -481,7 +521,9 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.enchanter.title", { lng, pseudo })}`
+			`### ${i18n.t("commands:report.city.enchanter.title", {
+				lng, pseudo
+			})}`
 		)
 	);
 
@@ -540,7 +582,7 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 		}
 	}
 
-	// Back to city button
+	// Back to city + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -548,7 +590,8 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 				.setCustomId("BACK_TO_CITY")
 				.setLabel(i18n.t("commands:report.city.enchanter.leave", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
-				.setStyle(ButtonStyle.Secondary)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
 		)
 	);
 
@@ -600,6 +643,10 @@ function createEnchanterMenuCollector(
 			else if (selectedValue === "BACK_TO_CITY") {
 				await buttonInteraction.deferUpdate();
 				await nestedMenus.changeToMainMenu();
+			}
+			else if (selectedValue === STAY_IN_CITY_ID) {
+				await buttonInteraction.deferUpdate();
+				handleStayInCityInteraction(packet, context, buttonInteraction);
 			}
 		});
 
@@ -787,7 +834,9 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.homes.notaryTitle", { lng, pseudo })}`
+			`### ${i18n.t("commands:report.city.homes.notaryTitle", {
+				lng, pseudo
+			})}`
 		)
 	);
 
@@ -801,7 +850,7 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 	// Action button (buy/upgrade/move if affordable)
 	addNotaryActionButton(container, data, lng);
 
-	// Back to city button
+	// Back to city + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -809,7 +858,8 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 				.setCustomId("BACK_TO_CITY")
 				.setLabel(i18n.t("commands:report.city.homes.leaveNotary", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
-				.setStyle(ButtonStyle.Secondary)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
 		)
 	);
 
@@ -859,6 +909,10 @@ function createManageHomeMenuCollector(
 			else if (selectedValue === "BACK_TO_CITY") {
 				await buttonInteraction.deferUpdate();
 				await nestedMenus.changeToMainMenu();
+			}
+			else if (selectedValue === STAY_IN_CITY_ID) {
+				await buttonInteraction.deferUpdate();
+				handleStayInCityInteraction(packet, context, buttonInteraction);
 			}
 		});
 
