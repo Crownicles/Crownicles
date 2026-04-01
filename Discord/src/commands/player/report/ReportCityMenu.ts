@@ -52,6 +52,39 @@ import { ReportCityMenuIds } from "./ReportCityMenuConstants";
 
 type ManageHomeData = NonNullable<ReactionCollectorCityData["home"]["manage"]>;
 
+type CityCollectorHandler = (
+	customId: string,
+	buttonInteraction: MessageComponentInteraction,
+	nestedMenus: CrowniclesNestedMenus
+) => Promise<void>;
+
+/**
+ * Creates a standard collector factory for city sub-menus.
+ * Handles user ID validation and routes button interactions to the provided handler.
+ */
+function createCityCollector(
+	interaction: CrowniclesInteraction,
+	collectorTime: number,
+	handler: CityCollectorHandler
+): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	const lng = interaction.userLanguage;
+
+	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
+		const collector = message.createMessageComponentCollector({ time: collectorTime });
+
+		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
+			if (buttonInteraction.user.id !== interaction.user.id) {
+				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+				return;
+			}
+
+			await handler(buttonInteraction.customId, buttonInteraction, nestedMenus);
+		});
+
+		return collector;
+	};
+}
+
 /**
  * Get the description for the manage home option in the main menu
  */
@@ -352,25 +385,10 @@ function createMainMenuCollector(
 	packet: ReactionCollectorCreationPacket,
 	collectorTime: number
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	const lng = interaction.userLanguage;
-
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({
-			time: collectorTime
-		});
-
-		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			await buttonInteraction.deferUpdate();
-			await handleMainMenuSelection(buttonInteraction.customId, nestedMenus, buttonInteraction, context, packet);
-		});
-
-		return collector;
-	};
+	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
+		await buttonInteraction.deferUpdate();
+		await handleMainMenuSelection(customId, nestedMenus, buttonInteraction, context, packet);
+	});
 }
 
 function getInnMenu(
@@ -532,22 +550,9 @@ function createInnMenuCollector(
 	innId: string,
 	collectorTime: number
 ): (nestedMenus: CrowniclesNestedMenus, message: import("discord.js").Message) => CrowniclesNestedMenuCollector {
-	const lng = interaction.userLanguage;
-
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({ time: collectorTime });
-
-		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			await handleInnCollectorInteraction(buttonInteraction.customId, buttonInteraction, nestedMenus, context, packet, innId);
-		});
-
-		return collector;
-	};
+	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
+		await handleInnCollectorInteraction(customId, buttonInteraction, nestedMenus, context, packet, innId);
+	});
 }
 
 function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
@@ -691,22 +696,9 @@ function createEnchanterMenuCollector(
 	data: ReactionCollectorCityData["enchanter"] & object,
 	collectorTime: number
 ): (nestedMenus: CrowniclesNestedMenus, message: import("discord.js").Message) => CrowniclesNestedMenuCollector {
-	const lng = interaction.userLanguage;
-
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({ time: collectorTime });
-
-		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			await handleEnchanterCollectorInteraction(buttonInteraction.customId, buttonInteraction, nestedMenus, context, packet, data);
-		});
-
-		return collector;
-	};
+	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
+		await handleEnchanterCollectorInteraction(customId, buttonInteraction, nestedMenus, context, packet, data);
+	});
 }
 
 function hasSlotsChanged(oldSlots: ChestSlotsPerCategory, newSlots: ChestSlotsPerCategory): boolean {
@@ -925,6 +917,45 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 }
 
 /**
+ * Handle a manage home menu selection.
+ */
+async function handleManageHomeCollectorInteraction(
+	selectedValue: string,
+	buttonInteraction: MessageComponentInteraction,
+	nestedMenus: CrowniclesNestedMenus,
+	context: PacketContext,
+	packet: ReactionCollectorCreationPacket
+): Promise<void> {
+	const homeActionRoutes: Record<string, string> = {
+		[ReportCityMenuIds.BUY_HOME]: ReactionCollectorCityBuyHomeReaction.name,
+		[ReportCityMenuIds.UPGRADE_HOME]: ReactionCollectorCityUpgradeHomeReaction.name,
+		[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name
+	};
+
+	if (homeActionRoutes[selectedValue]) {
+		await buttonInteraction.deferReply();
+		const reactionIndex = packet.reactions.findIndex(
+			reaction => reaction.type === homeActionRoutes[selectedValue]
+		);
+		if (reactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+		}
+		return;
+	}
+
+	if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
+		await buttonInteraction.deferUpdate();
+		await nestedMenus.changeToMainMenu();
+		return;
+	}
+
+	if (selectedValue === STAY_IN_CITY_ID) {
+		await buttonInteraction.deferUpdate();
+		handleStayInCityInteraction(packet, context, buttonInteraction);
+	}
+}
+
+/**
  * Create the collector for the manage home sub-menu.
  */
 function createManageHomeMenuCollector(
@@ -933,46 +964,9 @@ function createManageHomeMenuCollector(
 	packet: ReactionCollectorCreationPacket,
 	collectorTime: number
 ): (nestedMenus: CrowniclesNestedMenus, message: import("discord.js").Message) => CrowniclesNestedMenuCollector {
-	const lng = interaction.userLanguage;
-
-	const homeActionRoutes: Record<string, string> = {
-		[ReportCityMenuIds.BUY_HOME]: ReactionCollectorCityBuyHomeReaction.name,
-		[ReportCityMenuIds.UPGRADE_HOME]: ReactionCollectorCityUpgradeHomeReaction.name,
-		[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name
-	};
-
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({ time: collectorTime });
-
-		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
-			if (buttonInteraction.user.id !== interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-				return;
-			}
-
-			const selectedValue = buttonInteraction.customId;
-
-			if (homeActionRoutes[selectedValue]) {
-				await buttonInteraction.deferReply();
-				const reactionIndex = packet.reactions.findIndex(
-					reaction => reaction.type === homeActionRoutes[selectedValue]
-				);
-				if (reactionIndex !== -1) {
-					DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-				}
-			}
-			else if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
-				await buttonInteraction.deferUpdate();
-				await nestedMenus.changeToMainMenu();
-			}
-			else if (selectedValue === STAY_IN_CITY_ID) {
-				await buttonInteraction.deferUpdate();
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-			}
-		});
-
-		return collector;
-	};
+	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
+		await handleManageHomeCollectorInteraction(customId, buttonInteraction, nestedMenus, context, packet);
+	});
 }
 
 /**
