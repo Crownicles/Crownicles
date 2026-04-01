@@ -109,10 +109,12 @@ function createFeatureSubMenu(
 		components = [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)];
 	}
 
-	// Add stay in city button for all legacy sub-menus
-	components.push(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(createStayInCityButton(lng)) as ActionRowBuilder<MessageActionRowComponentBuilder>
-	);
+	// Add stay in city button for legacy sub-menus (except garden which has its own navigation)
+	if (handler.featureId !== HomeMenuIds.FEATURE_GARDEN) {
+		components.push(
+			new ActionRowBuilder<ButtonBuilder>().addComponents(createStayInCityButton(lng)) as ActionRowBuilder<MessageActionRowComponentBuilder>
+		);
+	}
 
 	return {
 		embed: new CrowniclesEmbed()
