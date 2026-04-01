@@ -1,18 +1,17 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
-	Message, parseEmoji, StringSelectMenuBuilder
+	parseEmoji, StringSelectMenuBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "../HomeMenuTypes";
-import {
-	CrowniclesNestedMenuCollector, CrowniclesNestedMenus
-} from "../../../../../messages/CrowniclesNestedMenus";
+import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "../HomeMenuConstants";
+import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -24,7 +23,6 @@ import {
 	CommandReportGardenErrorRes
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
-import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import {
 	PlantConstants, PlantId
 } from "../../../../../../../Lib/src/constants/PlantConstants";
@@ -235,21 +233,8 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Create a collector that delegates interactions to handleSubMenuSelection
 	 */
-	private createGardenCollector(ctx: HomeFeatureHandlerContext): (menus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-		return (menus: CrowniclesNestedMenus, message: Message): CrowniclesNestedMenuCollector => {
-			const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-			collector.on("collect", async interaction => {
-				if (interaction.user.id !== ctx.user.id) {
-					await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
-					return;
-				}
-
-				if (interaction.isButton()) {
-					await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
-				}
-			});
-			return collector;
-		};
+	private createGardenCollector(ctx: HomeFeatureHandlerContext): ReturnType<typeof createHomeFeatureCollector> {
+		return createHomeFeatureCollector(this, ctx);
 	}
 
 	/**

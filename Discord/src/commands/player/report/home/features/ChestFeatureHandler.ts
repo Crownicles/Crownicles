@@ -1,14 +1,13 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
-	Message, parseEmoji, StringSelectMenuBuilder
+	parseEmoji, StringSelectMenuBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "../HomeMenuTypes";
-import {
-	CrowniclesNestedMenuCollector, CrowniclesNestedMenus
-} from "../../../../../messages/CrowniclesNestedMenus";
+import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedMenus";
+import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import i18n from "../../../../../translations/i18n";
 import { DisplayUtils } from "../../../../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
@@ -32,7 +31,6 @@ import {
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConstants";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
-import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
 import {
 	PlantConstants, PlantId
@@ -350,21 +348,8 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Create a collector that delegates button interactions to handleSubMenuSelection.
 	 */
-	private createChestCollector(ctx: HomeFeatureHandlerContext): (menus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-		return (menus: CrowniclesNestedMenus, message: Message) => {
-			const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-			collector.on("collect", async interaction => {
-				if (interaction.user.id !== ctx.user.id) {
-					await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
-					return;
-				}
-
-				if (interaction.isButton()) {
-					await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
-				}
-			});
-			return collector;
-		};
+	private createChestCollector(ctx: HomeFeatureHandlerContext): ReturnType<typeof createHomeFeatureCollector> {
+		return createHomeFeatureCollector(this, ctx);
 	}
 
 	/**
