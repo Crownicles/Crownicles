@@ -302,11 +302,15 @@ describe("getHomeSubMenus", () => {
 		}
 	});
 
-	it("legacy sub-menus should include stay-in-city button", () => {
+	it("legacy sub-menus should include stay-in-city button (except garden)", () => {
 		const params = createMockHomeMenuParams();
 		const subMenus = getHomeSubMenus(params);
 
-		for (const [, subMenu] of subMenus) {
+		for (const [key, subMenu] of subMenus) {
+			// Skip garden — it doesn't have the stay button
+			if (key === HomeMenuIds.GARDEN_MENU) {
+				continue;
+			}
 			// Check legacy menus (have components property, not containers)
 			if ("components" in subMenu && subMenu.components) {
 				const allButtons = subMenu.components.flatMap(
@@ -314,6 +318,20 @@ describe("getHomeSubMenus", () => {
 				);
 				expect(allButtons).toContain(STAY_IN_CITY_ID);
 			}
+		}
+	});
+
+	it("garden sub-menu should NOT include stay-in-city button", () => {
+		const params = createMockHomeMenuParams();
+		const subMenus = getHomeSubMenus(params);
+		const gardenMenu = subMenus.get(HomeMenuIds.GARDEN_MENU);
+
+		expect(gardenMenu).toBeDefined();
+		if (gardenMenu && "components" in gardenMenu && gardenMenu.components) {
+			const allButtons = gardenMenu.components.flatMap(
+				(row: any) => (row.components ?? []).map((b: any) => b.data?.custom_id)
+			);
+			expect(allButtons).not.toContain(STAY_IN_CITY_ID);
 		}
 	});
 });
