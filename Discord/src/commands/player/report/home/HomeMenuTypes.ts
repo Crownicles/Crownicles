@@ -1,7 +1,6 @@
 import {
-	ActionRowBuilder, ButtonInteraction, ContainerBuilder, MessageComponentInteraction, StringSelectMenuBuilder, User
+	ButtonInteraction, ContainerBuilder, MessageComponentInteraction, User
 } from "discord.js";
-import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { Language } from "../../../../../../Lib/src/Language";
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
@@ -98,33 +97,15 @@ export interface HomeFeatureHandler {
 	): Promise<boolean>;
 
 	/**
-	 * Add options to the feature's sub-menu
-	 */
-	addSubMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void;
-
-	/**
 	 * Get the sub-menu description
 	 */
 	getSubMenuDescription(ctx: HomeFeatureHandlerContext): string;
 
 	/**
-	 * Get the sub-menu placeholder for the select menu.
-	 * If not implemented, a generic placeholder will be used.
-	 */
-	getSubMenuPlaceholder?(ctx: HomeFeatureHandlerContext): string;
-
-	/**
-	 * Get custom components for the sub-menu instead of the default select menu.
-	 * If implemented, the default select menu will not be built.
-	 */
-	getSubMenuComponents?(ctx: HomeFeatureHandlerContext): ActionRowBuilder<MessageActionRowComponentBuilder>[];
-
-	/**
 	 * Build v2 container content for the sub-menu.
 	 * Adds sections, separators, and buttons directly to the container.
-	 * If implemented, takes priority over getSubMenuComponents and addSubMenuOptions.
 	 */
-	addSubMenuContainerContent?(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void;
+	addSubMenuContainerContent(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void;
 
 	/**
 	 * Get the sub-menu title

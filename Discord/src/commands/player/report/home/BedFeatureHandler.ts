@@ -60,8 +60,8 @@ export class BedFeatureHandler implements HomeFeatureHandler {
 		return Promise.resolve(false); // No sub-menu
 	}
 
-	public addSubMenuOptions(): void {
-		// No sub-menu
+	public addSubMenuContainerContent(): void {
+		// No sub-menu - bed uses handleFeatureSelection directly
 	}
 
 	public getSubMenuTitle(ctx: HomeFeatureHandlerContext): string {

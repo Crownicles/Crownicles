@@ -851,16 +851,6 @@ describe("CookingFeatureHandler", () => {
 		});
 	});
 
-	describe("getSubMenuPlaceholder", () => {
-		it("should return cooking placeholder", () => {
-			const ctx = createHandlerContext({
-				homeData: createCookingHomeData(2)
-			});
-			const placeholder = handler.getSubMenuPlaceholder!(ctx);
-			expect(placeholder).toContain("commands:report.city.homes.cooking.placeholder");
-		});
-	});
-
 	describe("getSubMenuTitle", () => {
 		it("should include pseudo", () => {
 			const ctx = createHandlerContext({
@@ -868,16 +858,6 @@ describe("CookingFeatureHandler", () => {
 			});
 			const title = handler.getSubMenuTitle(ctx, "TestPlayer");
 			expect(title).toContain("commands:report.city.homes.cooking.title");
-		});
-	});
-
-	describe("addSubMenuOptions", () => {
-		it("should be a no-op (cooking uses buttons not select)", () => {
-			const ctx = createHandlerContext({
-				homeData: createCookingHomeData(2)
-			});
-			// Should not throw
-			handler.addSubMenuOptions(ctx, [] as any, {} as any);
 		});
 	});
 

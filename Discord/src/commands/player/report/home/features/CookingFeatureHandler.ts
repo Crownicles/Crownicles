@@ -868,20 +868,12 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			.setDescription(description);
 	}
 
-	public addSubMenuOptions(): void {
-		// Cooking uses custom button components instead of select menu options
-	}
-
 	public addSubMenuContainerContent(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		this.addCookingButtons(ctx, container);
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
 		return this.buildCookingDescription(ctx);
-	}
-
-	public getSubMenuPlaceholder(ctx: HomeFeatureHandlerContext): string {
-		return i18n.t("commands:report.city.homes.cooking.placeholder", { lng: ctx.lng });
 	}
 
 	public getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string {

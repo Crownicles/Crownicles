@@ -2,11 +2,8 @@ import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle,
 	ContainerBuilder, Message,
 	SectionBuilder, SeparatorBuilder, SeparatorSpacingSize,
-	StringSelectMenuBuilder, StringSelectMenuInteraction,
 	TextDisplayBuilder
 } from "discord.js";
-import { MessageActionRowComponentBuilder } from "@discordjs/builders";
-import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
@@ -33,117 +30,40 @@ function createFeatureSubMenu(
 ): CrowniclesNestedMenu {
 	const lng = params.interaction.userLanguage;
 
-	// V2 container path: handler builds its own container content
-	if (handler.addSubMenuContainerContent) {
-		const container = new ContainerBuilder();
+	const container = new ContainerBuilder();
 
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				`### ${handler.getSubMenuTitle(handlerContext, params.pseudo)}`
-			)
-		);
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${handler.getSubMenuTitle(handlerContext, params.pseudo)}`
+		)
+	);
 
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(handler.getSubMenuDescription(handlerContext))
-		);
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(handler.getSubMenuDescription(handlerContext))
+	);
 
-		handler.addSubMenuContainerContent(handlerContext, container);
-
-		return {
-			containers: [container],
-			createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-				const componentCollector = message.createMessageComponentCollector({ time: params.collectorTime });
-
-				componentCollector.on("collect", async (componentInteraction: ButtonInteraction) => {
-					if (componentInteraction.user.id !== params.interaction.user.id) {
-						await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
-						return;
-					}
-
-					if (componentInteraction.customId === STAY_IN_CITY_ID) {
-						await componentInteraction.deferUpdate();
-						handleStayInCityInteraction(params.packet, params.context, componentInteraction);
-						return;
-					}
-
-					await handler.handleSubMenuSelection(
-						handlerContext,
-						componentInteraction.customId,
-						componentInteraction,
-						nestedMenus
-					);
-				});
-
-				return componentCollector;
-			}
-		};
-	}
-
-	// Use custom components if the handler provides them, otherwise build default select menu
-	let components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
-
-	if (handler.getSubMenuComponents) {
-		components = handler.getSubMenuComponents(handlerContext);
-	}
-	else {
-		// Determine placeholder: allow handler to provide a feature-specific one, fallback to generic
-		const placeholder = handler.getSubMenuPlaceholder
-			? handler.getSubMenuPlaceholder(handlerContext)
-			: i18n.t("commands:report.city.homes.featurePlaceholder", { lng });
-
-		// Build select menu with feature options
-		const selectMenu = new StringSelectMenuBuilder()
-			.setCustomId(`HOME_${handler.featureId.toUpperCase()}`)
-			.setPlaceholder(placeholder);
-
-		// Add feature-specific options
-		handler.addSubMenuOptions(handlerContext, selectMenu);
-
-		// Add back option
-		selectMenu.addOptions({
-			label: i18n.t("commands:report.city.homes.backToHome", { lng }),
-			value: HomeMenuIds.BACK_TO_HOME,
-			emoji: CrowniclesIcons.collectors.back
-		});
-
-		components = [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)];
-	}
-
-	// Add stay in city button for legacy sub-menus (except garden which has its own navigation)
-	if (handler.featureId !== HomeMenuIds.FEATURE_GARDEN) {
-		components.push(
-			new ActionRowBuilder<ButtonBuilder>().addComponents(createStayInCityButton(lng)) as ActionRowBuilder<MessageActionRowComponentBuilder>
-		);
-	}
+	handler.addSubMenuContainerContent(handlerContext, container);
 
 	return {
-		embed: new CrowniclesEmbed()
-			.formatAuthor(handler.getSubMenuTitle(handlerContext, params.pseudo), params.interaction.user)
-			.setDescription(handler.getSubMenuDescription(handlerContext)),
-		components,
+		containers: [container],
 		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
 			const componentCollector = message.createMessageComponentCollector({ time: params.collectorTime });
 
-			componentCollector.on("collect", async (componentInteraction: StringSelectMenuInteraction | ButtonInteraction) => {
+			componentCollector.on("collect", async (componentInteraction: ButtonInteraction) => {
 				if (componentInteraction.user.id !== params.interaction.user.id) {
 					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
 					return;
 				}
 
-				if (!componentInteraction.isStringSelectMenu() && componentInteraction.customId === STAY_IN_CITY_ID) {
+				if (componentInteraction.customId === STAY_IN_CITY_ID) {
 					await componentInteraction.deferUpdate();
 					handleStayInCityInteraction(params.packet, params.context, componentInteraction);
 					return;
 				}
 
-				// Get the selected value from either select menu or button
-				const selectedValue = componentInteraction.isStringSelectMenu()
-					? componentInteraction.values[0]
-					: componentInteraction.customId;
-
 				await handler.handleSubMenuSelection(
 					handlerContext,
-					selectedValue,
+					componentInteraction.customId,
 					componentInteraction,
 					nestedMenus
 				);
