@@ -68,6 +68,9 @@ import {
 } from "./homeTestUtils";
 import { DiscordMQTT } from "../../src/bot/DiscordMQTT";
 import {
+	ActionRowBuilder, ContainerBuilder
+} from "discord.js";
+import {
 	CommandReportGardenErrorRes,
 	CommandReportGardenHarvestRes,
 	CommandReportGardenPlantRes
@@ -75,6 +78,15 @@ import {
 
 describe("GardenFeatureHandler", () => {
 	let handler: GardenFeatureHandler;
+
+	/**
+	 * Extract all buttons from a ContainerBuilder's ActionRow components
+	 */
+	function getButtonsFromContainer(container: ContainerBuilder): any[] {
+		return container.components
+			.filter((c): c is ActionRowBuilder<any> => c instanceof ActionRowBuilder)
+			.flatMap(row => row.components);
+	}
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -215,8 +227,7 @@ describe("GardenFeatureHandler", () => {
 			expect(menus.registerMenu).toHaveBeenCalledWith(
 				HomeMenuIds.GARDEN_STORAGE,
 				expect.objectContaining({
-					embed: expect.anything(),
-					components: expect.any(Array),
+					containers: expect.any(Array),
 					createCollector: expect.any(Function)
 				})
 			);
@@ -401,7 +412,7 @@ describe("GardenFeatureHandler", () => {
 		});
 	});
 
-	describe("getSubMenuComponents", () => {
+	describe("addSubMenuContainerContent", () => {
 		it("should include harvest button (disabled when no ready plants)", () => {
 			const garden = createGardenData({
 				plots: [
@@ -411,11 +422,10 @@ describe("GardenFeatureHandler", () => {
 				]
 			});
 			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			expect(components.length).toBeGreaterThanOrEqual(1);
-			// Find the harvest button
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			const harvestButton = allButtons.find(
 				(b: any) => b.data?.custom_id === HomeMenuIds.GARDEN_HARVEST
 			);
@@ -432,9 +442,10 @@ describe("GardenFeatureHandler", () => {
 				]
 			});
 			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			const harvestButton = allButtons.find(
 				(b: any) => b.data?.custom_id === HomeMenuIds.GARDEN_HARVEST
 			);
@@ -453,9 +464,10 @@ describe("GardenFeatureHandler", () => {
 				seedPlantId: 2
 			});
 			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			const plantButton = allButtons.find(
 				(b: any) => b.data?.custom_id?.startsWith(HomeMenuIds.GARDEN_PLANT_PREFIX)
 			);
@@ -472,9 +484,10 @@ describe("GardenFeatureHandler", () => {
 				hasSeed: false
 			});
 			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			const plantButton = allButtons.find(
 				(b: any) => b.data?.custom_id?.startsWith(HomeMenuIds.GARDEN_PLANT_PREFIX)
 			);
@@ -483,9 +496,10 @@ describe("GardenFeatureHandler", () => {
 
 		it("should include storage button", () => {
 			const ctx = createHandlerContext();
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			const storageButton = allButtons.find(
 				(b: any) => b.data?.custom_id === HomeMenuIds.GARDEN_STORAGE
 			);
@@ -494,9 +508,10 @@ describe("GardenFeatureHandler", () => {
 
 		it("should include back button", () => {
 			const ctx = createHandlerContext();
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			const backButton = allButtons.find(
 				(b: any) => b.data?.custom_id === HomeMenuIds.BACK_TO_HOME
 			);
@@ -578,15 +593,14 @@ describe("GardenFeatureHandler", () => {
 			expect(menus.registerMenu).toHaveBeenCalledWith(
 				HomeMenuIds.GARDEN_STORAGE,
 				expect.objectContaining({
-					embed: expect.anything(),
-					components: expect.any(Array),
+					containers: expect.any(Array),
 					createCollector: expect.any(Function)
 				})
 			);
 
-			// Verify the registered menu has a back button
+			// Verify the registered menu has a back button in its container
 			const registeredMenu = menus.registerMenu.mock.calls[0][1];
-			const allButtons = registeredMenu.components.flatMap((row: any) => row.components);
+			const allButtons = getButtonsFromContainer(registeredMenu.containers[0]);
 			const backButton = allButtons.find(
 				(b: any) => b.data?.custom_id === HomeMenuIds.GARDEN_BACK
 			);

@@ -1,6 +1,7 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonStyle,
-	parseEmoji, StringSelectMenuBuilder
+	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder,
+	parseEmoji, SeparatorBuilder, SeparatorSpacingSize,
+	StringSelectMenuBuilder, TextDisplayBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -12,7 +13,6 @@ import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { createHomeFeatureCollector } from "../HomeCollectorUtils";
-import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -22,11 +22,9 @@ import {
 	CommandReportGardenPlantRes,
 	CommandReportGardenErrorRes
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
-import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import {
 	PlantConstants, PlantId
 } from "../../../../../../../Lib/src/constants/PlantConstants";
-import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../../../../Lib/src/types/GardenEarthQuality";
 import { TimeConstants } from "../../../../../../../Lib/src/constants/TimeConstants";
@@ -181,14 +179,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build buttons for the garden main view
 	 */
-	private buildGardenButtons(ctx: HomeFeatureHandlerContext): ActionRowBuilder<ButtonBuilder>[] {
+	private addGardenButtons(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		const garden = ctx.homeData.garden!;
-		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-
 		const hasReadyPlants = garden.plots.some(p => p.isReady);
+		const buttons: ButtonBuilder[] = [];
 
 		// Harvest button
-		rows[0].addComponents(
+		buttons.push(
 			new ButtonBuilder()
 				.setCustomId(HomeMenuIds.GARDEN_HARVEST)
 				.setLabel(i18n.t("commands:report.city.homes.garden.harvestButton", { lng: ctx.lng }))
@@ -201,7 +198,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		if (garden.hasSeed) {
 			const hasEmptyPlot = garden.plots.some(p => p.plantId === 0);
 			if (hasEmptyPlot) {
-				rows[0].addComponents(
+				buttons.push(
 					new ButtonBuilder()
 						.setCustomId(`${HomeMenuIds.GARDEN_PLANT_PREFIX}auto`)
 						.setLabel(i18n.t("commands:report.city.homes.garden.plantButton", { lng: ctx.lng }))
@@ -212,7 +209,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 
 		// Storage button
 		const totalStored = garden.plantStorage.reduce((sum, s) => sum + s.quantity, 0);
-		addButtonToRow(rows, new ButtonBuilder()
+		buttons.push(new ButtonBuilder()
 			.setCustomId(HomeMenuIds.GARDEN_STORAGE)
 			.setLabel(i18n.t("commands:report.city.homes.garden.storageButton", {
 				lng: ctx.lng,
@@ -221,13 +218,14 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			.setStyle(ButtonStyle.Secondary));
 
 		// Back button
-		addButtonToRow(rows, new ButtonBuilder()
+		buttons.push(new ButtonBuilder()
 			.setCustomId(HomeMenuIds.BACK_TO_HOME)
 			.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
 			.setEmoji(CrowniclesIcons.collectors.back)
 			.setStyle(ButtonStyle.Danger));
 
-		return rows;
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addActionRowComponents(new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons));
 	}
 
 	/**
@@ -237,15 +235,24 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		return createHomeFeatureCollector(this, ctx);
 	}
 
+	private buildGardenContainer(ctx: HomeFeatureHandlerContext, extraMessage = ""): ContainerBuilder {
+		const container = new ContainerBuilder();
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+		);
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(this.buildGardenDescription(ctx) + extraMessage)
+		);
+		this.addGardenButtons(ctx, container);
+		return container;
+	}
+
 	/**
 	 * Register the garden main menu
 	 */
 	private registerGardenMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus, extraMessage = ""): void {
 		nestedMenus.registerMenu(HomeMenuIds.GARDEN_MENU, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-				.setDescription(this.buildGardenDescription(ctx) + extraMessage),
-			components: this.buildGardenButtons(ctx),
+			containers: [this.buildGardenContainer(ctx, extraMessage)],
 			createCollector: this.createGardenCollector(ctx)
 		});
 	}
@@ -275,20 +282,27 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			}
 		}
 
-		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-		rows[0].addComponents(
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.GARDEN_BACK)
-				.setLabel(i18n.t("commands:report.city.homes.garden.backToGarden", { lng: ctx.lng }))
-				.setEmoji(CrowniclesIcons.collectors.back)
-				.setStyle(ButtonStyle.Secondary)
+		const container = new ContainerBuilder();
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+		);
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(description)
+		);
+
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addActionRowComponents(
+			new ActionRowBuilder<ButtonBuilder>().addComponents(
+				new ButtonBuilder()
+					.setCustomId(HomeMenuIds.GARDEN_BACK)
+					.setLabel(i18n.t("commands:report.city.homes.garden.backToGarden", { lng: ctx.lng }))
+					.setEmoji(CrowniclesIcons.collectors.back)
+					.setStyle(ButtonStyle.Secondary)
+			)
 		);
 
 		nestedMenus.registerMenu(HomeMenuIds.GARDEN_STORAGE, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-				.setDescription(description),
-			components: rows,
+			containers: [container],
 			createCollector: this.createGardenCollector(ctx)
 		});
 	}
@@ -407,11 +421,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {
-		// Garden uses custom button components instead of select menu options
+		// Garden uses V2 container content instead of select menu options
 	}
 
-	public getSubMenuComponents(ctx: HomeFeatureHandlerContext): ActionRowBuilder<MessageActionRowComponentBuilder>[] {
-		return this.buildGardenButtons(ctx);
+	public addSubMenuContainerContent(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
+		this.addGardenButtons(ctx, container);
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {

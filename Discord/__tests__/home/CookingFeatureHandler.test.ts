@@ -90,6 +90,7 @@ import {
 	createMockNestedMenus,
 	createMockPacket
 } from "./homeTestUtils";
+import { ActionRowBuilder, ContainerBuilder } from "discord.js";
 import { DiscordMQTT } from "../../src/bot/DiscordMQTT";
 import { PacketUtils } from "../../src/utils/PacketUtils";
 import {
@@ -167,6 +168,12 @@ async function simulateMqttResponse(
 
 describe("CookingFeatureHandler", () => {
 	let handler: CookingFeatureHandler;
+
+	function getButtonsFromContainer(container: ContainerBuilder): any[] {
+		return container.components
+			.filter((c): c is ActionRowBuilder<any> => c instanceof ActionRowBuilder)
+			.flatMap(row => row.components);
+	}
 
 	beforeEach(() => {
 		vi.clearAllMocks();
@@ -258,8 +265,7 @@ describe("CookingFeatureHandler", () => {
 			expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
 				HomeMenuIds.COOKING_MENU,
 				expect.objectContaining({
-					embed: expect.anything(),
-					components: expect.any(Array),
+					containers: expect.any(Array),
 					createCollector: expect.any(Function)
 				})
 			);
@@ -338,7 +344,7 @@ describe("CookingFeatureHandler", () => {
 			expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
 				HomeMenuIds.COOKING_MENU,
 				expect.objectContaining({
-					embed: expect.anything()
+					containers: expect.any(Array)
 				})
 			);
 			expect(nestedMenus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.COOKING_MENU);
@@ -432,8 +438,7 @@ describe("CookingFeatureHandler", () => {
 				expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
 					HomeMenuIds.COOKING_MENU,
 					expect.objectContaining({
-						embed: expect.anything(),
-						components: expect.any(Array)
+						containers: expect.any(Array)
 					})
 				);
 				expect(nestedMenus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.COOKING_MENU);
@@ -455,7 +460,7 @@ describe("CookingFeatureHandler", () => {
 				expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
 					HomeMenuIds.COOKING_MENU,
 					expect.objectContaining({
-						embed: expect.anything()
+						containers: expect.any(Array)
 					})
 				);
 				expect(nestedMenus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.COOKING_MENU);
@@ -590,7 +595,7 @@ describe("CookingFeatureHandler", () => {
 				expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
 					HomeMenuIds.COOKING_MENU,
 					expect.objectContaining({
-						embed: expect.anything()
+						containers: expect.any(Array)
 					})
 				);
 			});
@@ -822,15 +827,15 @@ describe("CookingFeatureHandler", () => {
 		});
 	});
 
-	describe("getSubMenuComponents", () => {
-		it("should return buttons including ignite and back", () => {
+	describe("addSubMenuContainerContent", () => {
+		it("should add buttons including ignite and back to container", () => {
 			const ctx = createHandlerContext({
 				homeData: createCookingHomeData(2)
 			});
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			expect(components).toHaveLength(1);
-			const buttons = components[0].components;
+			const buttons = getButtonsFromContainer(container);
 			expect(buttons.length).toBeGreaterThanOrEqual(2);
 		});
 	});

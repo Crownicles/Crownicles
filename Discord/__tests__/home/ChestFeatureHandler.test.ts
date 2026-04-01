@@ -66,6 +66,9 @@ import {
 } from "./homeTestUtils";
 import { DiscordMQTT } from "../../src/bot/DiscordMQTT";
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
+import {
+	ActionRowBuilder, ContainerBuilder
+} from "discord.js";
 
 /**
  * Create home data with chest configuration.
@@ -438,7 +441,13 @@ describe("ChestFeatureHandler", () => {
 		});
 	});
 
-	describe("getSubMenuComponents", () => {
+	describe("addSubMenuContainerContent", () => {
+		function getButtonsFromContainer(container: ContainerBuilder): any[] {
+			return container.components
+				.filter((c): c is ActionRowBuilder<any> => c instanceof ActionRowBuilder)
+				.flatMap(row => row.components);
+		}
+
 		it("should include category buttons for available categories", () => {
 			const ctx = createHandlerContext({
 				homeData: createChestHomeData({
@@ -447,9 +456,10 @@ describe("ChestFeatureHandler", () => {
 					}
 				})
 			});
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			// Should have category buttons + back button
 			expect(allButtons.length).toBeGreaterThanOrEqual(2);
 		});
@@ -458,9 +468,10 @@ describe("ChestFeatureHandler", () => {
 			const ctx = createHandlerContext({
 				homeData: createChestHomeData()
 			});
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			const backButton = allButtons.find(
 				(b: any) => b.data?.custom_id === HomeMenuIds.BACK_TO_HOME
 			);
@@ -474,9 +485,10 @@ describe("ChestFeatureHandler", () => {
 					plantMaxCapacity: 10
 				})
 			});
-			const components = handler.getSubMenuComponents(ctx);
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
 
-			const allButtons = components.flatMap(row => row.components);
+			const allButtons = getButtonsFromContainer(container);
 			const plantButton = allButtons.find(
 				(b: any) => b.data?.custom_id === HomeMenuIds.CHEST_PLANT_TAB
 			);

@@ -17,7 +17,7 @@ import {
 	getCookingGrade, CookingOutputType, RECIPE_TYPE_OUTPUT_EMOJI
 } from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
-import { MessageActionRowComponentBuilder } from "@discordjs/builders";
+
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
 import { makePacket } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -35,9 +35,7 @@ import {
 	CookingSlotData
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
-import {
-	addButtonToRow, DiscordCollectorUtils
-} from "../../../../../utils/DiscordCollectorUtils";
+import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 import { finishInTimeDisplay } from "../../../../../../../Lib/src/utils/TimeUtils";
 import { PacketUtils } from "../../../../../utils/PacketUtils";
 import { ReactionCollectorHomeMenuReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
@@ -250,24 +248,37 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build buttons for the initial cooking menu (before ignite)
 	 */
-	private buildCookingButtons(ctx: HomeFeatureHandlerContext): ActionRowBuilder<ButtonBuilder>[] {
-		const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
-
-		rows[0].addComponents(
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.COOKING_IGNITE)
-				.setLabel(i18n.t("commands:report.city.homes.cooking.igniteButton", { lng: ctx.lng }))
-				.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
-				.setStyle(ButtonStyle.Success)
+	private addCookingButtons(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addActionRowComponents(
+			new ActionRowBuilder<ButtonBuilder>().addComponents(
+				new ButtonBuilder()
+					.setCustomId(HomeMenuIds.COOKING_IGNITE)
+					.setLabel(i18n.t("commands:report.city.homes.cooking.igniteButton", { lng: ctx.lng }))
+					.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
+					.setStyle(ButtonStyle.Success),
+				new ButtonBuilder()
+					.setCustomId(HomeMenuIds.BACK_TO_HOME)
+					.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
+					.setEmoji(CrowniclesIcons.collectors.back)
+					.setStyle(ButtonStyle.Danger)
+			)
 		);
+	}
 
-		addButtonToRow(rows, new ButtonBuilder()
-			.setCustomId(HomeMenuIds.BACK_TO_HOME)
-			.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
-			.setEmoji(CrowniclesIcons.collectors.back)
-			.setStyle(ButtonStyle.Danger));
-
-		return rows;
+	/**
+	 * Build a V2 container for the pre-ignite cooking menu
+	 */
+	private buildCookingContainer(ctx: HomeFeatureHandlerContext, extraMessage = ""): ContainerBuilder {
+		const container = new ContainerBuilder();
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+		);
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(this.buildCookingDescription(ctx) + extraMessage)
+		);
+		this.addCookingButtons(ctx, container);
+		return container;
 	}
 
 	/**
@@ -288,10 +299,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private registerCookingMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): void {
 		nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-				.setDescription(this.buildCookingDescription(ctx)),
-			components: this.buildCookingButtons(ctx),
+			containers: [this.buildCookingContainer(ctx)],
 			createCollector: this.createCookingCollector(ctx)
 		});
 	}
@@ -483,10 +491,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					}
 					else {
 						nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-							embed: new CrowniclesEmbed()
-								.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-								.setDescription(this.buildCookingDescription(ctx) + noWoodMessage),
-							components: this.buildCookingButtons(ctx),
+							containers: [this.buildCookingContainer(ctx, noWoodMessage)],
 							createCollector: this.createCookingCollector(ctx)
 						});
 					}
@@ -502,10 +507,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 						time: finishInTimeDisplay(new Date(response.overheatUntil))
 					})}`;
 					nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-						embed: new CrowniclesEmbed()
-							.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-							.setDescription(this.buildCookingDescription(ctx) + overheatMessage),
-						components: this.buildCookingButtons(ctx),
+						containers: [this.buildCookingContainer(ctx, overheatMessage)],
 						createCollector: this.createCookingCollector(ctx)
 					});
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
@@ -870,8 +872,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		// Cooking uses custom button components instead of select menu options
 	}
 
-	public getSubMenuComponents(ctx: HomeFeatureHandlerContext): ActionRowBuilder<MessageActionRowComponentBuilder>[] {
-		return this.buildCookingButtons(ctx);
+	public addSubMenuContainerContent(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
+		this.addCookingButtons(ctx, container);
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
