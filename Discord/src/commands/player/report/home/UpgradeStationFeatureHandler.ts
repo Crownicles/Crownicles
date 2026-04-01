@@ -18,7 +18,9 @@ import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "./HomeMenuConstants";
 import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
-import { addCitySection } from "../ReportCityMenu";
+import {
+	addCitySection, createStayInCityButton, handleStayInCityInteraction, STAY_IN_CITY_ID
+} from "../ReportCityMenu";
 
 /**
  * Handler for the upgrade station feature in the home.
@@ -200,7 +202,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			.setStyle(ButtonStyle.Secondary)
 			.setEmoji(CrowniclesIcons.collectors.back);
 
-		return new ActionRowBuilder<ButtonBuilder>().addComponents(backButton, confirmButton);
+		return new ActionRowBuilder<ButtonBuilder>().addComponents(backButton, confirmButton, createStayInCityButton(ctx.lng));
 	}
 
 	/**
@@ -243,6 +245,12 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 					if (buttonInteraction.customId === HomeMenuIds.UPGRADE_BACK_TO_ITEMS) {
 						await buttonInteraction.deferUpdate();
 						await menus.changeMenu(HomeMenuIds.UPGRADE_STATION_MENU);
+						return;
+					}
+
+					if (buttonInteraction.customId === STAY_IN_CITY_ID) {
+						await buttonInteraction.deferUpdate();
+						handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 						return;
 					}
 
@@ -309,7 +317,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			);
 		}
 
-		// Back button
+		// Back to home + Stay in city buttons
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 		container.addActionRowComponents(
 			new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -317,7 +325,8 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 					.setCustomId(HomeMenuIds.BACK_TO_HOME)
 					.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
 					.setEmoji(CrowniclesIcons.collectors.back)
-					.setStyle(ButtonStyle.Secondary)
+					.setStyle(ButtonStyle.Secondary),
+				createStayInCityButton(ctx.lng)
 			)
 		);
 	}

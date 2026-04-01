@@ -19,6 +19,9 @@ import {
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeMenuParams
 } from "./HomeMenuTypes";
 import { HomeMenuIds } from "./HomeMenuConstants";
+import {
+	createStayInCityButton, handleStayInCityInteraction, STAY_IN_CITY_ID
+} from "../ReportCityMenu";
 
 /**
  * Creates a sub-menu for a specific home feature
@@ -54,6 +57,12 @@ function createFeatureSubMenu(
 				componentCollector.on("collect", async (componentInteraction: ButtonInteraction) => {
 					if (componentInteraction.user.id !== params.interaction.user.id) {
 						await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
+						return;
+					}
+
+					if (componentInteraction.customId === STAY_IN_CITY_ID) {
+						await componentInteraction.deferUpdate();
+						handleStayInCityInteraction(params.packet, params.context, componentInteraction);
 						return;
 					}
 
@@ -100,6 +109,11 @@ function createFeatureSubMenu(
 		components = [new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(selectMenu)];
 	}
 
+	// Add stay in city button for all legacy sub-menus
+	components.push(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(createStayInCityButton(lng)) as ActionRowBuilder<MessageActionRowComponentBuilder>
+	);
+
 	return {
 		embed: new CrowniclesEmbed()
 			.formatAuthor(handler.getSubMenuTitle(handlerContext, params.pseudo), params.interaction.user)
@@ -111,6 +125,12 @@ function createFeatureSubMenu(
 			componentCollector.on("collect", async (componentInteraction: StringSelectMenuInteraction | ButtonInteraction) => {
 				if (componentInteraction.user.id !== params.interaction.user.id) {
 					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
+					return;
+				}
+
+				if (!componentInteraction.isStringSelectMenu() && componentInteraction.customId === STAY_IN_CITY_ID) {
+					await componentInteraction.deferUpdate();
+					handleStayInCityInteraction(params.packet, params.context, componentInteraction);
 					return;
 				}
 
@@ -206,7 +226,7 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 		);
 	}
 
-	// Leave button
+	// Leave home + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -214,7 +234,8 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 				.setCustomId(HomeMenuIds.LEAVE_HOME)
 				.setLabel(i18n.t("commands:report.city.homes.leaveHome", { lng }))
 				.setEmoji(CrowniclesIcons.collectors.back)
-				.setStyle(ButtonStyle.Secondary)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
 		)
 	);
 
@@ -235,6 +256,13 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 				if (selectedValue === HomeMenuIds.LEAVE_HOME) {
 					await componentInteraction.deferUpdate();
 					await nestedMenus.changeToMainMenu();
+					return;
+				}
+
+				// Handle stay in city
+				if (selectedValue === STAY_IN_CITY_ID) {
+					await componentInteraction.deferUpdate();
+					handleStayInCityInteraction(packet, context, componentInteraction);
 					return;
 				}
 
