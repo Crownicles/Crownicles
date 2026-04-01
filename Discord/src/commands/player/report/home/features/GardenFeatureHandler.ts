@@ -1,7 +1,7 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder,
 	parseEmoji, SeparatorBuilder, SeparatorSpacingSize,
-	StringSelectMenuBuilder, TextDisplayBuilder
+	TextDisplayBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -420,20 +420,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		);
 	}
 
-	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {
-		// Garden uses V2 container content instead of select menu options
-	}
-
 	public addSubMenuContainerContent(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		this.addGardenButtons(ctx, container);
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
 		return this.buildGardenDescription(ctx);
-	}
-
-	public getSubMenuPlaceholder(ctx: HomeFeatureHandlerContext): string {
-		return i18n.t("commands:report.city.homes.garden.placeholder", { lng: ctx.lng });
 	}
 
 	public getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string {

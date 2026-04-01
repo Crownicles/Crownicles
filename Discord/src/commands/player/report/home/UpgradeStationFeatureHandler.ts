@@ -1,6 +1,6 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle,
-	ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, StringSelectMenuBuilder
+	ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -331,47 +331,6 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 		);
 	}
 
-	public addSubMenuOptions(ctx: HomeFeatureHandlerContext, selectMenu: StringSelectMenuBuilder): void {
-		const upgradeStation = ctx.homeData.upgradeStation;
-
-		if (!upgradeStation) {
-			return;
-		}
-
-		for (let i = 0; i < upgradeStation.upgradeableItems.length; i++) {
-			const item = upgradeStation.upgradeableItems[i];
-
-			// Set maxValue to Infinity to not display max values in stats
-			item.details.attack.maxValue = Infinity;
-			item.details.defense.maxValue = Infinity;
-			item.details.speed.maxValue = Infinity;
-
-			const itemDisplay = DisplayUtils.getItemDisplayWithStats(item.details, ctx.lng);
-			const parts = itemDisplay.split(" | ");
-			const label = parts[0].split("**")[1];
-
-			// Simple description: level transition only
-			const rawDescription = `+${item.details.itemLevel ?? 0} → +${item.nextLevel}`;
-
-			const option: {
-				label: string;
-				value: string;
-				emoji: string;
-				description?: string;
-			} = {
-				label,
-				value: `${HomeMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
-				emoji: DisplayUtils.getItemIcon({
-					id: item.details.id,
-					category: item.details.itemCategory
-				}),
-				description: rawDescription
-			};
-
-			selectMenu.addOptions(option);
-		}
-	}
-
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
 		const upgradeStation = ctx.homeData.upgradeStation;
 		const hasItems = upgradeStation && upgradeStation.upgradeableItems.length > 0;
@@ -422,10 +381,6 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			lng,
 			maxLevel
 		});
-	}
-
-	public getSubMenuPlaceholder(ctx: HomeFeatureHandlerContext): string {
-		return i18n.t("commands:report.city.homes.upgradeStation.placeholder", { lng: ctx.lng });
 	}
 
 	public getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string {

@@ -1,7 +1,7 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder,
 	parseEmoji, SeparatorBuilder, SeparatorSpacingSize,
-	StringSelectMenuBuilder, TextDisplayBuilder
+	TextDisplayBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -953,10 +953,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		);
 	}
 
-	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {
-		// Chest uses V2 container content instead of select menu options
-	}
-
 	public addSubMenuContainerContent(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		this.addChestCategoryButtons(ctx, container);
 	}
@@ -1023,10 +1019,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		return hasItems
 			? i18n.t("commands:report.city.homes.chest.descriptionWithItems", { lng: ctx.lng })
 			: i18n.t("commands:report.city.homes.chest.descriptionEmpty", { lng: ctx.lng });
-	}
-
-	public getSubMenuPlaceholder(ctx: HomeFeatureHandlerContext): string {
-		return i18n.t("commands:report.city.homes.chest.placeholder", { lng: ctx.lng });
 	}
 
 	public getSubMenuTitle(ctx: HomeFeatureHandlerContext, pseudo: string): string {
