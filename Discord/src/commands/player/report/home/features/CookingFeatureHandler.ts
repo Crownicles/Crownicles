@@ -286,10 +286,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private createCookingCollector(ctx: HomeFeatureHandlerContext): ReturnType<typeof createHomeFeatureCollector> {
 		return createHomeFeatureCollector(this, ctx, {
-			onEnd: reason => {
-				if (reason === "time") {
-					this.sessions.delete(ctx.user.id);
-				}
+			onEnd: () => {
+				this.sessions.delete(ctx.user.id);
 			}
 		});
 	}
