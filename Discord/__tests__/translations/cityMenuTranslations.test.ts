@@ -3,17 +3,14 @@ import path from "node:path";
 import i18next, { TFunction } from "i18next";
 import { describe, expect, it } from "vitest";
 
-const DISCORD_SELECT_OPTION_MAX_LENGTH = 100;
-const SAMPLE_PRICE = 999999;
-const SAMPLE_ENERGY = 9999;
-const SAMPLE_HEALTH = 9999;
+const DISCORD_BUTTON_LABEL_MAX_LENGTH = 80;
 
 describe("City menu translation lengths", () => {
 	const langDir = path.resolve(__dirname, "../../../Lang");
 	const locales = getLocales(langDir);
 
 	for (const locale of locales) {
-		it(`keeps select options within Discord limits for ${locale}`, async () => {
+		it(`keeps V2 button labels within Discord limits for ${locale}`, async () => {
 			const commands = loadCommandsJson(langDir, locale);
 			if (!commands?.report?.city) {
 				return;
@@ -21,8 +18,8 @@ describe("City menu translation lengths", () => {
 			const models = loadModelsJson(langDir, locale);
 			const t = await buildTranslator(locale, commands, models);
 
-			// Main menu reactions and shops are now rendered in v2 TextDisplay components
-			// (no 100-char select-option limit), so only check inn sub-menu labels/descriptions
+			// City menus are rendered with V2 components (TextDisplay + Buttons)
+			// Only check button labels which have Discord limits
 			checkInnMenu(commands.report.city, locale, t);
 		});
 	}
@@ -89,66 +86,18 @@ async function buildTranslator(locale: Locale, commands: CommandsJson, models: M
 	return instance.getFixedT(locale);
 }
 
-function checkMainMenuReactions(city: CityTranslations, locale: Locale, t: TFunction): void {
-	const reactionKeys = Object.keys(city.reactions ?? {});
-	for (const reactionKey of reactionKeys) {
-		if (reactionKey === "inn") {
-			const innIds = Object.keys(city.inns?.names ?? {});
-			for (const innId of innIds) {
-				const label = t("commands:report.city.reactions.inn.label", { innId });
-				validateLength(label, locale, `commands.report.city.reactions.inn.label(${innId})`);
-			}
-			const description = t("commands:report.city.reactions.inn.description");
-			validateLength(description, locale, "commands.report.city.reactions.inn.description");
-			continue;
-		}
+function checkInnMenu(_city: CityTranslations, locale: Locale, t: TFunction): void {
+	// Inn menus use V2 SectionBuilder: meal/room names and descriptions are in TextDisplay (no limit)
+	// Only button labels have a Discord limit
+	const buttonLabels = [
+		"commands:report.city.buttons.order",
+		"commands:report.city.buttons.rent",
+		"commands:report.city.exitInn",
+		"commands:report.city.reactions.stay.label"
+	];
 
-		const label = t(`commands:report.city.reactions.${reactionKey}.label`);
-		const description = t(`commands:report.city.reactions.${reactionKey}.description`);
-		validateLength(label, locale, `commands.report.city.reactions.${reactionKey}.label`);
-		validateLength(description, locale, `commands.report.city.reactions.${reactionKey}.description`);
-	}
-
-	validateLength(t("commands:report.city.placeholder"), locale, "commands.report.city.placeholder");
-}
-
-function checkInnMenu(city: CityTranslations, locale: Locale, t: TFunction): void {
-	if (city.inns?.meals) {
-		for (const [mealId, _mealName] of Object.entries(city.inns.meals)) {
-			const mealLabel = t(`commands:report.city.inns.meals.${mealId}`);
-			validateLength(mealLabel, locale, `commands.report.city.inns.meals.${mealId}`);
-			const mealDescription = t("commands:report.city.inns.mealDescription", {
-				price: SAMPLE_PRICE,
-				energy: SAMPLE_ENERGY
-			});
-			validateLength(mealDescription, locale, "commands.report.city.inns.mealDescription");
-		}
-	}
-
-	if (city.inns?.rooms) {
-		for (const [roomId, _roomName] of Object.entries(city.inns.rooms)) {
-			const roomLabel = t(`commands:report.city.inns.rooms.${roomId}`);
-			validateLength(roomLabel, locale, `commands.report.city.inns.rooms.${roomId}`);
-			const roomDescription = t("commands:report.city.inns.roomDescription", {
-				price: SAMPLE_PRICE,
-				health: SAMPLE_HEALTH
-			});
-			validateLength(roomDescription, locale, "commands.report.city.inns.roomDescription");
-		}
-	}
-
-	validateLength(t("commands:report.city.exitInn"), locale, "commands.report.city.exitInn");
-}
-
-function checkShopEntries(city: CityTranslations, locale: Locale, t: TFunction): void {
-	if (!city.shops) {
-		return;
-	}
-	for (const shopId of Object.keys(city.shops)) {
-		const label = t(`commands:report.city.shops.${shopId}.label`);
-		const description = t(`commands:report.city.shops.${shopId}.description`);
-		validateLength(label, locale, `commands.report.city.shops.${shopId}.label`);
-		validateLength(description, locale, `commands.report.city.shops.${shopId}.description`);
+	for (const key of buttonLabels) {
+		validateLength(t(key), locale, key);
 	}
 }
 
@@ -159,6 +108,6 @@ function validateLength(value: unknown, locale: Locale, key: string): void {
 	const trimmedValue = value.trim();
 	expect(
 		trimmedValue.length,
-		`${locale}:${key} (“${trimmedValue}”) exceeds Discord's ${DISCORD_SELECT_OPTION_MAX_LENGTH} character select-option limit.`
-	).toBeLessThanOrEqual(DISCORD_SELECT_OPTION_MAX_LENGTH);
+		`${locale}:${key} ("${trimmedValue}") exceeds Discord's ${DISCORD_BUTTON_LABEL_MAX_LENGTH} character button label limit.`
+	).toBeLessThanOrEqual(DISCORD_BUTTON_LABEL_MAX_LENGTH);
 }

@@ -18,7 +18,7 @@ interface HomeCollectorOptions {
 
 /**
  * Creates a standard collector factory for home feature sub-menus.
- * Handles user ID validation, deferUpdate delegation, and routes button interactions
+ * Handles user ID validation and routes button interactions
  * to the handler's handleSubMenuSelection.
  */
 export function createHomeFeatureCollector(

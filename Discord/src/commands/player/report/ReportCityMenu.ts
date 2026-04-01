@@ -48,6 +48,7 @@ import {
 } from "./home";
 import { HomeMenuParams } from "./home/HomeMenuTypes";
 import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
+import { ReportCityMenuIds } from "./ReportCityMenuConstants";
 
 type ManageHomeData = NonNullable<ReactionCollectorCityData["home"]["manage"]>;
 
@@ -165,7 +166,7 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 		addCitySection(
 			container,
 			`${CrowniclesIcons.city.blacksmith.menu} **${i18n.t("commands:report.city.blacksmith.menuLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.menuDescription", { lng })}`,
-			"BLACKSMITH_MENU",
+			ReportCityMenuIds.BLACKSMITH_MENU,
 			i18n.t("commands:report.city.buttons.enterForge", { lng }),
 			ButtonStyle.Secondary,
 			CrowniclesIcons.city.blacksmith.menu
@@ -176,7 +177,7 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 		addCitySection(
 			container,
 			`${CrowniclesIcons.city.enchanter} **${i18n.t("commands:report.city.reactions.enchanter.label", { lng })}**\n${i18n.t("commands:report.city.reactions.enchanter.description", { lng })}`,
-			"ENCHANTER_MENU",
+			ReportCityMenuIds.ENCHANTER_MENU,
 			i18n.t("commands:report.city.buttons.talkToEnchanter", { lng }),
 			ButtonStyle.Secondary,
 			CrowniclesIcons.city.enchanter
@@ -195,7 +196,7 @@ function addShopsSection(container: ContainerBuilder, data: ReactionCollectorCit
 		addCitySection(
 			container,
 			`${shopEmoji} **${i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng })}**\n${i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng })}`,
-			`CITY_SHOP_${shop.shopId}`,
+			`${ReportCityMenuIds.CITY_SHOP_PREFIX}${shop.shopId}`,
 			i18n.t("commands:report.city.buttons.browseShop", { lng }),
 			ButtonStyle.Secondary,
 			shopEmoji
@@ -215,7 +216,7 @@ function addInnsSection(container: ContainerBuilder, data: ReactionCollectorCity
 			`${CrowniclesIcons.city.inn} **${i18n.t("commands:report.city.reactions.inn.label", {
 				lng, innId: inn.innId
 			})}**\n${i18n.t("commands:report.city.reactions.inn.description", { lng })}`,
-			`MAIN_MENU_INN_${inn.innId}`,
+			`${ReportCityMenuIds.MAIN_MENU_INN_PREFIX}${inn.innId}`,
 			i18n.t("commands:report.city.buttons.sitDown", { lng }),
 			ButtonStyle.Secondary,
 			CrowniclesIcons.city.inn
@@ -229,12 +230,12 @@ function addExitStayButtons(container: ContainerBuilder, packet: ReactionCollect
 
 	const reactionButtonMap: Record<string, () => ButtonBuilder> = {
 		[ReactionCollectorExitCityReaction.name]: () => new ButtonBuilder()
-			.setCustomId("MAIN_MENU_EXIT_CITY")
+			.setCustomId(ReportCityMenuIds.MAIN_MENU_EXIT_CITY)
 			.setLabel(i18n.t("commands:report.city.reactions.exit.label", { lng }))
 			.setEmoji(CrowniclesIcons.city.exit)
 			.setStyle(ButtonStyle.Danger),
 		[ReactionCollectorRefuseReaction.name]: () => new ButtonBuilder()
-			.setCustomId("MAIN_MENU_STAY_CITY")
+			.setCustomId(ReportCityMenuIds.MAIN_MENU_STAY_CITY)
 			.setLabel(i18n.t("commands:report.city.reactions.stay.label", { lng }))
 			.setEmoji(CrowniclesIcons.city.stay)
 			.setStyle(ButtonStyle.Secondary)
@@ -299,10 +300,10 @@ async function handleMainMenuSelection(
 ): Promise<void> {
 	// Simple navigation routes
 	const navigationRoutes: Record<string, string> = {
-		ENCHANTER_MENU: "ENCHANTER_MENU",
+		[ReportCityMenuIds.ENCHANTER_MENU]: ReportCityMenuIds.ENCHANTER_MENU,
 		[HomeMenuIds.HOME_MENU]: HomeMenuIds.HOME_MENU,
 		[HomeMenuIds.MANAGE_HOME_MENU]: HomeMenuIds.MANAGE_HOME_MENU,
-		BLACKSMITH_MENU: "BLACKSMITH_MENU"
+		[ReportCityMenuIds.BLACKSMITH_MENU]: ReportCityMenuIds.BLACKSMITH_MENU
 	};
 
 	if (navigationRoutes[selectedValue]) {
@@ -310,8 +311,8 @@ async function handleMainMenuSelection(
 		return;
 	}
 
-	if (selectedValue.startsWith("CITY_SHOP_")) {
-		const shopId = selectedValue.replace("CITY_SHOP_", "");
+	if (selectedValue.startsWith(ReportCityMenuIds.CITY_SHOP_PREFIX)) {
+		const shopId = selectedValue.replace(ReportCityMenuIds.CITY_SHOP_PREFIX, "");
 		const reactionIndex = packet.reactions.findIndex(
 			reaction => reaction.type === ReactionCollectorCityShopReaction.name
 				&& (reaction.data as ReactionCollectorCityShopReaction).shopId === shopId
@@ -322,16 +323,16 @@ async function handleMainMenuSelection(
 		return;
 	}
 
-	if (selectedValue.startsWith("MAIN_MENU_INN_")) {
-		const innId = selectedValue.replace("MAIN_MENU_INN_", "");
-		await nestedMenus.changeMenu(`INN_${innId}`);
+	if (selectedValue.startsWith(ReportCityMenuIds.MAIN_MENU_INN_PREFIX)) {
+		const innId = selectedValue.replace(ReportCityMenuIds.MAIN_MENU_INN_PREFIX, "");
+		await nestedMenus.changeMenu(`${ReportCityMenuIds.INN_PREFIX}${innId}`);
 		return;
 	}
 
 	// Reaction-based actions
 	const reactionRoutes: Record<string, string> = {
-		MAIN_MENU_EXIT_CITY: ReactionCollectorExitCityReaction.name,
-		MAIN_MENU_STAY_CITY: ReactionCollectorRefuseReaction.name
+		[ReportCityMenuIds.MAIN_MENU_EXIT_CITY]: ReactionCollectorExitCityReaction.name,
+		[ReportCityMenuIds.MAIN_MENU_STAY_CITY]: ReactionCollectorRefuseReaction.name
 	};
 
 	if (reactionRoutes[selectedValue]) {
@@ -418,7 +419,7 @@ function getInnMenu(
 				price: meal.price,
 				energy: meal.energy
 			})}`,
-			`MEAL_${meal.mealId}`,
+			`${ReportCityMenuIds.MEAL_PREFIX}${meal.mealId}`,
 			i18n.t("commands:report.city.buttons.order", { lng }),
 			ButtonStyle.Secondary,
 			CrowniclesIcons.meals[meal.mealId]
@@ -437,7 +438,7 @@ function getInnMenu(
 				price: room.price,
 				health: room.health
 			})}`,
-			`ROOM_${room.roomId}`,
+			`${ReportCityMenuIds.ROOM_PREFIX}${room.roomId}`,
 			i18n.t("commands:report.city.buttons.rent", { lng }),
 			ButtonStyle.Secondary,
 			CrowniclesIcons.rooms[room.roomId]
@@ -449,7 +450,7 @@ function getInnMenu(
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
-				.setCustomId("BACK_TO_CITY")
+				.setCustomId(ReportCityMenuIds.BACK_TO_CITY)
 				.setLabel(i18n.t("commands:report.city.exitInn", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
 				.setStyle(ButtonStyle.Secondary),
@@ -471,7 +472,7 @@ async function handleInnCollectorInteraction(
 	packet: ReactionCollectorCreationPacket,
 	innId: string
 ): Promise<void> {
-	if (selectedValue === "BACK_TO_CITY") {
+	if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
 		await buttonInteraction.deferUpdate();
 		await nestedMenus.changeToMainMenu();
 		return;
@@ -487,7 +488,7 @@ async function handleInnCollectorInteraction(
 		prefix: string; reactionType: string; idExtractor: (id: string) => boolean;
 	}[] = [
 		{
-			prefix: "MEAL_",
+			prefix: ReportCityMenuIds.MEAL_PREFIX,
 			reactionType: ReactionCollectorInnMealReaction.name,
 			idExtractor: (mealId): boolean => packet.reactions.some(r =>
 				r.type === ReactionCollectorInnMealReaction.name
@@ -495,7 +496,7 @@ async function handleInnCollectorInteraction(
 				&& (r.data as ReactionCollectorInnMealReaction).innId === innId)
 		},
 		{
-			prefix: "ROOM_",
+			prefix: ReportCityMenuIds.ROOM_PREFIX,
 			reactionType: ReactionCollectorInnRoomReaction.name,
 			idExtractor: (roomId): boolean => packet.reactions.some(r =>
 				r.type === ReactionCollectorInnRoomReaction.name
@@ -613,7 +614,7 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 			addCitySection(
 				container,
 				itemDisplay,
-				`ENCHANT_ITEM_${i}`,
+				`${ReportCityMenuIds.ENCHANT_ITEM_PREFIX}${i}`,
 				i18n.t("commands:report.city.buttons.enchant", { lng })
 			);
 		}
@@ -624,7 +625,7 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
-				.setCustomId("BACK_TO_CITY")
+				.setCustomId(ReportCityMenuIds.BACK_TO_CITY)
 				.setLabel(i18n.t("commands:report.city.enchanter.leave", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
 				.setStyle(ButtonStyle.Secondary),
@@ -649,7 +650,7 @@ async function handleEnchanterCollectorInteraction(
 	packet: ReactionCollectorCreationPacket,
 	data: ReactionCollectorCityData["enchanter"] & object
 ): Promise<void> {
-	if (selectedValue === "BACK_TO_CITY") {
+	if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
 		await buttonInteraction.deferUpdate();
 		await nestedMenus.changeToMainMenu();
 		return;
@@ -661,12 +662,12 @@ async function handleEnchanterCollectorInteraction(
 		return;
 	}
 
-	if (!selectedValue.startsWith("ENCHANT_ITEM_")) {
+	if (!selectedValue.startsWith(ReportCityMenuIds.ENCHANT_ITEM_PREFIX)) {
 		return;
 	}
 
 	await buttonInteraction.deferReply();
-	const index = parseInt(selectedValue.replace("ENCHANT_ITEM_", ""), 10);
+	const index = parseInt(selectedValue.replace(ReportCityMenuIds.ENCHANT_ITEM_PREFIX, ""), 10);
 	if (index < 0 || index >= data.enchantableItems.length) {
 		return;
 	}
@@ -849,7 +850,7 @@ function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData
 		addCitySection(
 			container,
 			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.buyHome", { lng })}**`,
-			"BUY_HOME",
+			ReportCityMenuIds.BUY_HOME,
 			i18n.t("commands:report.city.buttons.confirm", { lng }),
 			ButtonStyle.Success,
 			CrowniclesIcons.collectors.accept
@@ -860,7 +861,7 @@ function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData
 		addCitySection(
 			container,
 			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.upgradeHome", { lng })}**`,
-			"UPGRADE_HOME",
+			ReportCityMenuIds.UPGRADE_HOME,
 			i18n.t("commands:report.city.buttons.confirm", { lng }),
 			ButtonStyle.Success,
 			CrowniclesIcons.collectors.accept
@@ -871,7 +872,7 @@ function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData
 		addCitySection(
 			container,
 			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.moveHome", { lng })}**`,
-			"MOVE_HOME",
+			ReportCityMenuIds.MOVE_HOME,
 			i18n.t("commands:report.city.buttons.confirm", { lng }),
 			ButtonStyle.Success,
 			CrowniclesIcons.collectors.accept
@@ -909,7 +910,7 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
-				.setCustomId("BACK_TO_CITY")
+				.setCustomId(ReportCityMenuIds.BACK_TO_CITY)
 				.setLabel(i18n.t("commands:report.city.homes.leaveNotary", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
 				.setStyle(ButtonStyle.Secondary),
@@ -935,9 +936,9 @@ function createManageHomeMenuCollector(
 	const lng = interaction.userLanguage;
 
 	const homeActionRoutes: Record<string, string> = {
-		BUY_HOME: ReactionCollectorCityBuyHomeReaction.name,
-		UPGRADE_HOME: ReactionCollectorCityUpgradeHomeReaction.name,
-		MOVE_HOME: ReactionCollectorCityMoveHomeReaction.name
+		[ReportCityMenuIds.BUY_HOME]: ReactionCollectorCityBuyHomeReaction.name,
+		[ReportCityMenuIds.UPGRADE_HOME]: ReactionCollectorCityUpgradeHomeReaction.name,
+		[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name
 	};
 
 	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
@@ -960,7 +961,7 @@ function createManageHomeMenuCollector(
 					DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
 				}
 			}
-			else if (selectedValue === "BACK_TO_CITY") {
+			else if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
 				await buttonInteraction.deferUpdate();
 				await nestedMenus.changeToMainMenu();
 			}
@@ -986,12 +987,12 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 
 	// Add inn menus
 	for (const inn of cityData.inns || []) {
-		menus.set(`INN_${inn.innId}`, getInnMenu(context, interaction, packet, inn.innId, collectorTime, pseudo));
+		menus.set(`${ReportCityMenuIds.INN_PREFIX}${inn.innId}`, getInnMenu(context, interaction, packet, inn.innId, collectorTime, pseudo));
 	}
 
 	// Add enchanter menu
 	if (cityData.enchanter) {
-		menus.set("ENCHANTER_MENU", getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
+		menus.set(ReportCityMenuIds.ENCHANTER_MENU, getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
 	}
 
 	// Add blacksmith menus

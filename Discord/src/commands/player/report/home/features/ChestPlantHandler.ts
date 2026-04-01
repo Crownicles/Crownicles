@@ -99,6 +99,11 @@ export class ChestPlantHandler {
 		if (selectedValue.startsWith(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX)) {
 			await componentInteraction.deferUpdate();
 			const targetPage = parseInt(selectedValue.replace(HomeMenuIds.CHEST_PLANT_PAGE_PREFIX, ""), 10);
+
+			if (Number.isNaN(targetPage) || targetPage < 0) {
+				return true;
+			}
+
 			this.registerPlantTabMenu(ctx, nestedMenus, targetPage);
 			await nestedMenus.changeMenu(HomeMenuIds.CHEST_PLANT_TAB);
 			return true;
@@ -294,7 +299,16 @@ export class ChestPlantHandler {
 
 		const parts = params.selectedValue.replace(params.prefix, "").split("_");
 		const plantId = parseInt(parts[0], 10);
+
+		if (Number.isNaN(plantId) || plantId < 0) {
+			return;
+		}
+
 		const playerSlot = parts[1] !== undefined ? parseInt(parts[1], 10) : -1;
+
+		if (parts[1] !== undefined && Number.isNaN(playerSlot)) {
+			return;
+		}
 
 		await this.sendPlantTransferAction(ctx, {
 			action: params.action, plantId, playerSlot
