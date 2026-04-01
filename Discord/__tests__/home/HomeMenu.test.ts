@@ -81,6 +81,7 @@ import {
 } from "./homeTestUtils";
 import { ReactionCollectorCityData } from "../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { STAY_IN_CITY_ID } from "../../src/commands/player/report/ReportCityMenu";
+import { ActionRowBuilder } from "discord.js";
 
 /**
  * Create mock HomeMenuParams for testing
@@ -327,10 +328,13 @@ describe("getHomeSubMenus", () => {
 		const gardenMenu = subMenus.get(HomeMenuIds.GARDEN_MENU);
 
 		expect(gardenMenu).toBeDefined();
-		if (gardenMenu && "components" in gardenMenu && gardenMenu.components) {
-			const allButtons = gardenMenu.components.flatMap(
-				(row: any) => (row.components ?? []).map((b: any) => b.data?.custom_id)
-			);
+		// Garden is now V2 (containers), check the container for no stay button
+		if (gardenMenu && "containers" in gardenMenu && gardenMenu.containers) {
+			const allButtons = gardenMenu.containers
+				.flatMap((c: any) => c.components)
+				.filter((c: any) => c instanceof ActionRowBuilder)
+				.flatMap((row: any) => row.components)
+				.map((b: any) => b.data?.custom_id);
 			expect(allButtons).not.toContain(STAY_IN_CITY_ID);
 		}
 	});

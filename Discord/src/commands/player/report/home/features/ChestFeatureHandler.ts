@@ -1,6 +1,7 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonStyle,
-	parseEmoji, StringSelectMenuBuilder
+	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder,
+	parseEmoji, SeparatorBuilder, SeparatorSpacingSize,
+	StringSelectMenuBuilder, TextDisplayBuilder
 } from "discord.js";
 import {
 	ComponentInteraction,
@@ -16,7 +17,6 @@ import { Language } from "../../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { getSlotCountForCategory } from "../../../../../../../Lib/src/types/HomeFeatures";
 import { ItemWithDetails } from "../../../../../../../Lib/src/types/ItemWithDetails";
-import { MessageActionRowComponentBuilder } from "@discordjs/builders";
 import { addButtonToRow } from "../../../../../utils/DiscordCollectorUtils";
 import { DiscordConstants } from "../../../../../DiscordConstants";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
@@ -30,7 +30,6 @@ import {
 	PlantTransferAction
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { HomeConstants } from "../../../../../../../Lib/src/constants/HomeConstants";
-import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { CATEGORY_INFO } from "../../../../../utils/ItemCategoryInfo";
 import {
 	PlantConstants, PlantId
@@ -329,6 +328,20 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
+	 * Build a V2 container from title, description text, and button rows.
+	 */
+	private buildV2Container(title: string, description: string, rows: ActionRowBuilder<ButtonBuilder>[]): ContainerBuilder {
+		const container = new ContainerBuilder();
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ${title}`));
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(description));
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		for (const row of rows) {
+			container.addActionRowComponents(row);
+		}
+		return container;
+	}
+
+	/**
 	 * Re-register the chest categories menu (HOME_CHEST_MENU) with updated item counts.
 	 * Called after a deposit/withdraw to keep category buttons in sync.
 	 */
@@ -336,11 +349,17 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		ctx: HomeFeatureHandlerContext,
 		nestedMenus: CrowniclesNestedMenus
 	): void {
+		const container = new ContainerBuilder();
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+		);
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(this.getSubMenuDescription(ctx))
+		);
+		this.addChestCategoryButtons(ctx, container);
+
 		nestedMenus.registerMenu(HomeMenuIds.CHEST_MENU, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(this.getSubMenuTitle(ctx, ctx.pseudo), ctx.user)
-				.setDescription(this.getSubMenuDescription(ctx)),
-			components: this.getSubMenuComponents(ctx),
+			containers: [container],
 			createCollector: this.createChestCollector(ctx)
 		});
 	}
@@ -379,15 +398,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		});
 
 		nestedMenus.registerMenu(menuId, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(
+			containers: [
+				this.buildV2Container(
 					i18n.t("commands:report.city.homes.chest.title", {
 						lng: ctx.lng, pseudo: ctx.pseudo
 					}),
-					ctx.user
+					description.text,
+					description.rows
 				)
-				.setDescription(description.text),
-			components: description.rows,
+			],
 			createCollector: this.createChestCollector(ctx)
 		});
 	}
@@ -642,15 +661,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			.setStyle(ButtonStyle.Secondary));
 
 		nestedMenus.registerMenu(menuId, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(
+			containers: [
+				this.buildV2Container(
 					i18n.t("commands:report.city.homes.chest.title", {
 						lng: ctx.lng, pseudo: ctx.pseudo
 					}),
-					ctx.user
+					description,
+					rows
 				)
-				.setDescription(description),
-			components: rows,
+			],
 			createCollector: this.createChestCollector(ctx)
 		});
 	}
@@ -769,16 +788,15 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			.setStyle(ButtonStyle.Secondary));
 
 		nestedMenus.registerMenu(HomeMenuIds.CHEST_PLANT_TAB, {
-			embed: new CrowniclesEmbed()
-				.formatAuthor(
+			containers: [
+				this.buildV2Container(
 					i18n.t("commands:report.city.homes.chest.title", {
 						lng: ctx.lng, pseudo: ctx.pseudo
 					}),
-
-					ctx.user
+					description,
+					rows
 				)
-				.setDescription(description),
-			components: rows,
+			],
 			createCollector: this.createChestCollector(ctx)
 		});
 	}
@@ -936,13 +954,20 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	}
 
 	public addSubMenuOptions(_ctx: HomeFeatureHandlerContext, _selectMenu: StringSelectMenuBuilder): void {
-		// Chest uses custom button components instead of select menu options
+		// Chest uses V2 container content instead of select menu options
 	}
 
-	public getSubMenuComponents(ctx: HomeFeatureHandlerContext): ActionRowBuilder<MessageActionRowComponentBuilder>[] {
+	public addSubMenuContainerContent(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
+		this.addChestCategoryButtons(ctx, container);
+	}
+
+	/**
+	 * Build and add category buttons to a V2 container.
+	 */
+	private addChestCategoryButtons(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		const chest = ctx.homeData.chest;
 		if (!chest) {
-			return [];
+			return;
 		}
 
 		const buttons: ButtonBuilder[] = [];
@@ -984,13 +1009,11 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		);
 
 		// Split buttons into rows of max 5 (Discord limit)
-		const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 		for (let i = 0; i < buttons.length; i += DiscordConstants.MAX_BUTTONS_PER_ROW) {
-			rows.push(new ActionRowBuilder<ButtonBuilder>()
+			container.addActionRowComponents(new ActionRowBuilder<ButtonBuilder>()
 				.addComponents(buttons.slice(i, i + DiscordConstants.MAX_BUTTONS_PER_ROW)));
 		}
-
-		return rows;
 	}
 
 	public getSubMenuDescription(ctx: HomeFeatureHandlerContext): string {
