@@ -2,15 +2,14 @@ import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle,
 	ContainerBuilder, SectionBuilder, SeparatorBuilder,
 	SeparatorSpacingSize, TextDisplayBuilder,
-	Message, parseEmoji
+	parseEmoji
 } from "discord.js";
 import {
 	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "../HomeMenuTypes";
-import {
-	CrowniclesNestedMenuCollector, CrowniclesNestedMenus
-} from "../../../../../messages/CrowniclesNestedMenus";
+import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedMenus";
+import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
@@ -36,7 +35,6 @@ import {
 	CookingSlotData
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
-import { sendInteractionNotForYou } from "../../../../../utils/ErrorUtils";
 import {
 	addButtonToRow, DiscordCollectorUtils
 } from "../../../../../utils/DiscordCollectorUtils";
@@ -275,26 +273,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Create a collector that delegates interactions to handleSubMenuSelection
 	 */
-	private createCookingCollector(ctx: HomeFeatureHandlerContext): (menus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-		return (menus: CrowniclesNestedMenus, message: Message): CrowniclesNestedMenuCollector => {
-			const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-			collector.on("collect", async interaction => {
-				if (interaction.user.id !== ctx.user.id) {
-					await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
-					return;
-				}
-
-				if (interaction.isButton()) {
-					await this.handleSubMenuSelection(ctx, interaction.customId, interaction, menus);
-				}
-			});
-			collector.on("end", (_collected, reason) => {
+	private createCookingCollector(ctx: HomeFeatureHandlerContext): ReturnType<typeof createHomeFeatureCollector> {
+		return createHomeFeatureCollector(this, ctx, {
+			onEnd: reason => {
 				if (reason === "time") {
 					this.sessions.delete(ctx.user.id);
 				}
-			});
-			return collector;
-		};
+			}
+		});
 	}
 
 	/**
