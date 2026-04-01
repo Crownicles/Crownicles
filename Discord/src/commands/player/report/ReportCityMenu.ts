@@ -126,13 +126,136 @@ export function handleStayInCityInteraction(
 	}
 }
 
+function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
+	if (!data.home.owned && !data.home.manage) {
+		return;
+	}
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+	if (data.home.owned) {
+		addCitySection(
+			container,
+			`${CrowniclesIcons.city.home[data.home.owned.level]} **${i18n.t("commands:report.city.homes.goToOwnedHome", { lng })}**\n${i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng })}`,
+			HomeMenuIds.HOME_MENU,
+			i18n.t("commands:report.city.buttons.goHome", { lng }),
+			ButtonStyle.Primary,
+			CrowniclesIcons.city.home[data.home.owned.level]
+		);
+	}
+
+	if (data.home.manage) {
+		addCitySection(
+			container,
+			`${CrowniclesIcons.city.manageHome} **${i18n.t("commands:report.city.homes.manageHome", { lng })}**\n${getManageHomeMenuOptionDescription(data.home.manage, lng)}`,
+			HomeMenuIds.MANAGE_HOME_MENU,
+			i18n.t("commands:report.city.buttons.seeNotary", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.city.manageHome
+		);
+	}
+}
+
+function addServicesSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
+	if (!data.blacksmith && !data.enchanter) {
+		return;
+	}
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+	if (data.blacksmith) {
+		addCitySection(
+			container,
+			`${CrowniclesIcons.city.blacksmith.menu} **${i18n.t("commands:report.city.blacksmith.menuLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.menuDescription", { lng })}`,
+			"BLACKSMITH_MENU",
+			i18n.t("commands:report.city.buttons.enterForge", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.city.blacksmith.menu
+		);
+	}
+
+	if (data.enchanter) {
+		addCitySection(
+			container,
+			`${CrowniclesIcons.city.enchanter} **${i18n.t("commands:report.city.reactions.enchanter.label", { lng })}**\n${i18n.t("commands:report.city.reactions.enchanter.description", { lng })}`,
+			"ENCHANTER_MENU",
+			i18n.t("commands:report.city.buttons.talkToEnchanter", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.city.enchanter
+		);
+	}
+}
+
+function addShopsSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
+	if (!data.shops || data.shops.length === 0) {
+		return;
+	}
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+	for (const shop of data.shops) {
+		const shopEmoji = CrowniclesIcons.city.shops[shop.shopId] ?? CrowniclesIcons.city.shops.generalShop;
+		addCitySection(
+			container,
+			`${shopEmoji} **${i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng })}**\n${i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng })}`,
+			`CITY_SHOP_${shop.shopId}`,
+			i18n.t("commands:report.city.buttons.browseShop", { lng }),
+			ButtonStyle.Secondary,
+			shopEmoji
+		);
+	}
+}
+
+function addInnsSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
+	if (!data.inns || data.inns.length === 0) {
+		return;
+	}
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+	for (const inn of data.inns) {
+		addCitySection(
+			container,
+			`${CrowniclesIcons.city.inn} **${i18n.t("commands:report.city.reactions.inn.label", {
+				lng, innId: inn.innId
+			})}**\n${i18n.t("commands:report.city.reactions.inn.description", { lng })}`,
+			`MAIN_MENU_INN_${inn.innId}`,
+			i18n.t("commands:report.city.buttons.sitDown", { lng }),
+			ButtonStyle.Secondary,
+			CrowniclesIcons.city.inn
+		);
+	}
+}
+
+function addExitStayButtons(container: ContainerBuilder, packet: ReactionCollectorCreationPacket, lng: Language): void {
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	const actionRow = new ActionRowBuilder<ButtonBuilder>();
+
+	const reactionButtonMap: Record<string, () => ButtonBuilder> = {
+		[ReactionCollectorExitCityReaction.name]: () => new ButtonBuilder()
+			.setCustomId("MAIN_MENU_EXIT_CITY")
+			.setLabel(i18n.t("commands:report.city.reactions.exit.label", { lng }))
+			.setEmoji(CrowniclesIcons.city.exit)
+			.setStyle(ButtonStyle.Danger),
+		[ReactionCollectorRefuseReaction.name]: () => new ButtonBuilder()
+			.setCustomId("MAIN_MENU_STAY_CITY")
+			.setLabel(i18n.t("commands:report.city.reactions.stay.label", { lng }))
+			.setEmoji(CrowniclesIcons.city.stay)
+			.setStyle(ButtonStyle.Secondary)
+	};
+
+	for (const reaction of packet.reactions) {
+		const buttonFactory = reactionButtonMap[reaction.type];
+		if (buttonFactory) {
+			actionRow.addComponents(buttonFactory());
+		}
+	}
+
+	container.addActionRowComponents(actionRow);
+}
+
 function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
 
 	const container = new ContainerBuilder();
 
-	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			`### ${i18n.t("commands:report.city.title", {
@@ -141,7 +264,6 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 		)
 	);
 
-	// Description
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.description", {
@@ -153,121 +275,11 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 		)
 	);
 
-	// --- Home & Notary ---
-	if (data.home.owned || data.home.manage) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-
-		if (data.home.owned) {
-			addCitySection(
-				container,
-				`${CrowniclesIcons.city.home[data.home.owned.level]} **${i18n.t("commands:report.city.homes.goToOwnedHome", { lng })}**\n${i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng })}`,
-				HomeMenuIds.HOME_MENU,
-				i18n.t("commands:report.city.buttons.goHome", { lng }),
-				ButtonStyle.Primary,
-				CrowniclesIcons.city.home[data.home.owned.level]
-			);
-		}
-
-		if (data.home.manage) {
-			addCitySection(
-				container,
-				`${CrowniclesIcons.city.manageHome} **${i18n.t("commands:report.city.homes.manageHome", { lng })}**\n${getManageHomeMenuOptionDescription(data.home.manage, lng)}`,
-				HomeMenuIds.MANAGE_HOME_MENU,
-				i18n.t("commands:report.city.buttons.seeNotary", { lng }),
-				ButtonStyle.Secondary,
-				CrowniclesIcons.city.manageHome
-			);
-		}
-	}
-
-	// --- Services (Blacksmith, Enchanter) ---
-	if (data.blacksmith || data.enchanter) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-
-		if (data.blacksmith) {
-			addCitySection(
-				container,
-				`${CrowniclesIcons.city.blacksmith.menu} **${i18n.t("commands:report.city.blacksmith.menuLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.menuDescription", { lng })}`,
-				"BLACKSMITH_MENU",
-				i18n.t("commands:report.city.buttons.enterForge", { lng }),
-				ButtonStyle.Secondary,
-				CrowniclesIcons.city.blacksmith.menu
-			);
-		}
-
-		if (data.enchanter) {
-			addCitySection(
-				container,
-				`${CrowniclesIcons.city.enchanter} **${i18n.t("commands:report.city.reactions.enchanter.label", { lng })}**\n${i18n.t("commands:report.city.reactions.enchanter.description", { lng })}`,
-				"ENCHANTER_MENU",
-				i18n.t("commands:report.city.buttons.talkToEnchanter", { lng }),
-				ButtonStyle.Secondary,
-				CrowniclesIcons.city.enchanter
-			);
-		}
-	}
-
-	// --- Shops ---
-	if (data.shops && data.shops.length > 0) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-
-		for (const shop of data.shops) {
-			const shopEmoji = CrowniclesIcons.city.shops[shop.shopId] ?? CrowniclesIcons.city.shops.generalShop;
-			addCitySection(
-				container,
-				`${shopEmoji} **${i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng })}**\n${i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng })}`,
-				`CITY_SHOP_${shop.shopId}`,
-				i18n.t("commands:report.city.buttons.browseShop", { lng }),
-				ButtonStyle.Secondary,
-				shopEmoji
-			);
-		}
-	}
-
-	// --- Inns ---
-	if (data.inns && data.inns.length > 0) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-
-		for (const inn of data.inns) {
-			addCitySection(
-				container,
-				`${CrowniclesIcons.city.inn} **${i18n.t("commands:report.city.reactions.inn.label", {
-					lng, innId: inn.innId
-				})}**\n${i18n.t("commands:report.city.reactions.inn.description", { lng })}`,
-				`MAIN_MENU_INN_${inn.innId}`,
-				i18n.t("commands:report.city.buttons.sitDown", { lng }),
-				ButtonStyle.Secondary,
-				CrowniclesIcons.city.inn
-			);
-		}
-	}
-
-	// --- Exit / Stay buttons ---
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	const actionRow = new ActionRowBuilder<ButtonBuilder>();
-
-	for (const reaction of packet.reactions) {
-		if (reaction.type === ReactionCollectorExitCityReaction.name) {
-			actionRow.addComponents(
-				new ButtonBuilder()
-					.setCustomId("MAIN_MENU_EXIT_CITY")
-					.setLabel(i18n.t("commands:report.city.reactions.exit.label", { lng }))
-					.setEmoji(CrowniclesIcons.city.exit)
-					.setStyle(ButtonStyle.Danger)
-			);
-		}
-		else if (reaction.type === ReactionCollectorRefuseReaction.name) {
-			actionRow.addComponents(
-				new ButtonBuilder()
-					.setCustomId("MAIN_MENU_STAY_CITY")
-					.setLabel(i18n.t("commands:report.city.reactions.stay.label", { lng }))
-					.setEmoji(CrowniclesIcons.city.stay)
-					.setStyle(ButtonStyle.Secondary)
-			);
-		}
-	}
-
-	container.addActionRowComponents(actionRow);
+	addHomeSection(container, data, lng);
+	addServicesSection(container, data, lng);
+	addShopsSection(container, data, lng);
+	addInnsSection(container, data, lng);
+	addExitStayButtons(container, packet, lng);
 
 	return {
 		containers: [container],
@@ -451,6 +463,64 @@ function getInnMenu(
 	};
 }
 
+async function handleInnCollectorInteraction(
+	selectedValue: string,
+	buttonInteraction: MessageComponentInteraction,
+	nestedMenus: CrowniclesNestedMenus,
+	context: PacketContext,
+	packet: ReactionCollectorCreationPacket,
+	innId: string
+): Promise<void> {
+	if (selectedValue === "BACK_TO_CITY") {
+		await buttonInteraction.deferUpdate();
+		await nestedMenus.changeToMainMenu();
+		return;
+	}
+
+	if (selectedValue === STAY_IN_CITY_ID) {
+		await buttonInteraction.deferUpdate();
+		handleStayInCityInteraction(packet, context, buttonInteraction);
+		return;
+	}
+
+	const innReactionRoutes: {
+		prefix: string; reactionType: string; idExtractor: (id: string) => boolean;
+	}[] = [
+		{
+			prefix: "MEAL_",
+			reactionType: ReactionCollectorInnMealReaction.name,
+			idExtractor: (mealId): boolean => packet.reactions.some(r =>
+				r.type === ReactionCollectorInnMealReaction.name
+				&& (r.data as ReactionCollectorInnMealReaction).meal.mealId === mealId
+				&& (r.data as ReactionCollectorInnMealReaction).innId === innId)
+		},
+		{
+			prefix: "ROOM_",
+			reactionType: ReactionCollectorInnRoomReaction.name,
+			idExtractor: (roomId): boolean => packet.reactions.some(r =>
+				r.type === ReactionCollectorInnRoomReaction.name
+				&& (r.data as ReactionCollectorInnRoomReaction).room.roomId === roomId
+				&& (r.data as ReactionCollectorInnRoomReaction).innId === innId)
+		}
+	];
+
+	for (const route of innReactionRoutes) {
+		if (!selectedValue.startsWith(route.prefix)) {
+			continue;
+		}
+		await buttonInteraction.deferReply();
+		const id = selectedValue.replace(route.prefix, "");
+		const reactionIndex = packet.reactions.findIndex(
+			reaction => reaction.type === route.reactionType
+				&& route.idExtractor(id)
+		);
+		if (reactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+		}
+		return;
+	}
+}
+
 /**
  * Create the collector for an inn sub-menu.
  */
@@ -472,40 +542,7 @@ function createInnMenuCollector(
 				return;
 			}
 
-			const selectedValue = buttonInteraction.customId;
-
-			if (selectedValue.startsWith("MEAL_")) {
-				await buttonInteraction.deferReply();
-				const mealId = selectedValue.replace("MEAL_", "");
-				const reactionIndex = packet.reactions.findIndex(
-					reaction => reaction.type === ReactionCollectorInnMealReaction.name
-						&& (reaction.data as ReactionCollectorInnMealReaction).meal.mealId === mealId
-						&& (reaction.data as ReactionCollectorInnMealReaction).innId === innId
-				);
-				if (reactionIndex !== -1) {
-					DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-				}
-			}
-			else if (selectedValue.startsWith("ROOM_")) {
-				await buttonInteraction.deferReply();
-				const roomId = selectedValue.replace("ROOM_", "");
-				const reactionIndex = packet.reactions.findIndex(
-					reaction => reaction.type === ReactionCollectorInnRoomReaction.name
-						&& (reaction.data as ReactionCollectorInnRoomReaction).room.roomId === roomId
-						&& (reaction.data as ReactionCollectorInnRoomReaction).innId === innId
-				);
-				if (reactionIndex !== -1) {
-					DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-				}
-			}
-			else if (selectedValue === "BACK_TO_CITY") {
-				await buttonInteraction.deferUpdate();
-				await nestedMenus.changeToMainMenu();
-			}
-			else if (selectedValue === STAY_IN_CITY_ID) {
-				await buttonInteraction.deferUpdate();
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-			}
+			await handleInnCollectorInteraction(buttonInteraction.customId, buttonInteraction, nestedMenus, context, packet, innId);
 		});
 
 		return collector;
@@ -604,6 +641,48 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 /**
  * Create the collector for the enchanter sub-menu.
  */
+async function handleEnchanterCollectorInteraction(
+	selectedValue: string,
+	buttonInteraction: MessageComponentInteraction,
+	nestedMenus: CrowniclesNestedMenus,
+	context: PacketContext,
+	packet: ReactionCollectorCreationPacket,
+	data: ReactionCollectorCityData["enchanter"] & object
+): Promise<void> {
+	if (selectedValue === "BACK_TO_CITY") {
+		await buttonInteraction.deferUpdate();
+		await nestedMenus.changeToMainMenu();
+		return;
+	}
+
+	if (selectedValue === STAY_IN_CITY_ID) {
+		await buttonInteraction.deferUpdate();
+		handleStayInCityInteraction(packet, context, buttonInteraction);
+		return;
+	}
+
+	if (!selectedValue.startsWith("ENCHANT_ITEM_")) {
+		return;
+	}
+
+	await buttonInteraction.deferReply();
+	const index = parseInt(selectedValue.replace("ENCHANT_ITEM_", ""), 10);
+	if (index < 0 || index >= data.enchantableItems.length) {
+		return;
+	}
+
+	const slot = data.enchantableItems[index].slot;
+	const itemCategory = data.enchantableItems[index].category;
+	const reactionIndex = packet.reactions.findIndex(
+		reaction => reaction.type === ReactionCollectorEnchantReaction.name
+			&& (reaction.data as ReactionCollectorEnchantReaction).slot === slot
+			&& (reaction.data as ReactionCollectorEnchantReaction).itemCategory === itemCategory
+	);
+	if (reactionIndex !== -1) {
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+	}
+}
+
 function createEnchanterMenuCollector(
 	context: PacketContext,
 	interaction: CrowniclesInteraction,
@@ -622,32 +701,7 @@ function createEnchanterMenuCollector(
 				return;
 			}
 
-			const selectedValue = buttonInteraction.customId;
-
-			if (selectedValue.startsWith("ENCHANT_ITEM_")) {
-				await buttonInteraction.deferReply();
-				const index = parseInt(selectedValue.replace("ENCHANT_ITEM_", ""), 10);
-				if (index >= 0 && index < data.enchantableItems.length) {
-					const slot = data.enchantableItems[index].slot;
-					const itemCategory = data.enchantableItems[index].category;
-					const reactionIndex = packet.reactions.findIndex(
-						reaction => reaction.type === ReactionCollectorEnchantReaction.name
-							&& (reaction.data as ReactionCollectorEnchantReaction).slot === slot
-							&& (reaction.data as ReactionCollectorEnchantReaction).itemCategory === itemCategory
-					);
-					if (reactionIndex !== -1) {
-						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-					}
-				}
-			}
-			else if (selectedValue === "BACK_TO_CITY") {
-				await buttonInteraction.deferUpdate();
-				await nestedMenus.changeToMainMenu();
-			}
-			else if (selectedValue === STAY_IN_CITY_ID) {
-				await buttonInteraction.deferUpdate();
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-			}
+			await handleEnchanterCollectorInteraction(buttonInteraction.customId, buttonInteraction, nestedMenus, context, packet, data);
 		});
 
 		return collector;
