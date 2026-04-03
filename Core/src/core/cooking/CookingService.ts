@@ -24,7 +24,7 @@ import {
 	PLANT_COOKING_XP,
 	MATERIAL_RARITY_COOKING_XP,
 	CookingXpConstants,
-	FAILURE_LEVEL_OFFSET,
+	FAILURE_RATE_PER_EXTRA_LEVEL,
 	NO_XP_LEVEL_THRESHOLD,
 	FURNACE_MAX_USES_PER_DAY,
 	FURNACE_MIN_OVERHEAT_MS,
@@ -337,7 +337,8 @@ export class CookingService {
 		if (recipeLevel <= grade.maxRecipeLevelWithoutPenalty) {
 			return grade.failureRate;
 		}
-		return grade.failureRate * (FAILURE_LEVEL_OFFSET + recipeLevel);
+		const levelDiff = recipeLevel - grade.maxRecipeLevelWithoutPenalty;
+		return grade.failureRate + FAILURE_RATE_PER_EXTRA_LEVEL * levelDiff;
 	}
 
 	/**
