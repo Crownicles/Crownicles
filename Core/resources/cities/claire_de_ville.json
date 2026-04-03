@@ -9,7 +9,8 @@
   ],
   "shops": [
     "generalShop",
-    "stockExchange"
+    "stockExchange",
+    "veterinarian"
   ],
   "inns": [
     {
