@@ -15,7 +15,7 @@ import { RightGroup } from "../../Lib/src/types/RightGroup";
 import { MqttTopicUtils } from "../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesCoreMetrics } from "./core/bot/CrowniclesCoreMetrics";
 import {
-	millisecondsToSeconds, resetIsNow
+	asMilliseconds, millisecondsToSeconds, resetIsNow
 } from "../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 import "source-map-support/register";
@@ -133,7 +133,7 @@ mqttClient.on("message", async (topic, message) => {
 				response.push(makePacket(ErrorPacket, { message: error instanceof Error ? error.message : String(error) }));
 				CrowniclesCoreMetrics.incrementPacketErrorCount(dataJson.packet.name);
 			}
-			CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(Date.now() - startTime));
+			CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(asMilliseconds(Date.now() - startTime)));
 		}
 	}
 

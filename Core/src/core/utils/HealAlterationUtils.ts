@@ -1,6 +1,8 @@
 import { Player } from "../database/game/models/Player";
 import { ShopConstants } from "../../../../Lib/src/constants/ShopConstants";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToMinutes
+} from "../../../../Lib/src/utils/TimeUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../maps/TravelTime";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -18,7 +20,7 @@ import {
  */
 export function calculateHealAlterationPrice(player: Player): number {
 	let price = ShopConstants.ALTERATION_HEAL_BASE_PRICE;
-	const remainingTime = millisecondsToMinutes(player.effectRemainingTime());
+	const remainingTime = millisecondsToMinutes(asMilliseconds(player.effectRemainingTime()));
 
 	/*
 	 * If the remaining time is under one hour,

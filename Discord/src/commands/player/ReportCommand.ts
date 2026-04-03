@@ -41,6 +41,7 @@ import {
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import {
+	asMilliseconds,
 	millisecondsToHours,
 	millisecondsToMinutes,
 	minutesDisplayIntl,
@@ -327,8 +328,8 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
 
 	let percentage = playerTravelledTime / tripDuration;
 
-	const remainingHours = Math.max(Math.floor(millisecondsToHours(playerRemainingTravelTime)), 0);
-	let remainingMinutes = Math.floor(millisecondsToMinutes(playerRemainingTravelTime - remainingHours * 3600000));
+	const remainingHours = Math.max(Math.floor(millisecondsToHours(asMilliseconds(playerRemainingTravelTime))), 0);
+	let remainingMinutes = Math.floor(millisecondsToMinutes(asMilliseconds(playerRemainingTravelTime - remainingHours * 3600000)));
 	if (remainingMinutes === 60) {
 		remainingMinutes = 59;
 	}

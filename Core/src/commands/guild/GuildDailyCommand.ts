@@ -19,7 +19,7 @@ import { crowniclesInstance } from "../../index";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import {
-	hoursToMilliseconds, hoursToMinutes, millisecondsToHours
+	asMilliseconds, hoursToMilliseconds, hoursToMinutes, millisecondsToHours
 } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { GuildDailyNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildDailyNotificationPacket";
@@ -446,7 +446,7 @@ export default class GuildDailyCommand {
 
 			// Verify if the cooldown is over (re-check after acquiring lock)
 			const time = Date.now() - guild.lastDailyAt.valueOf();
-			if (millisecondsToHours(time) < GuildDailyConstants.TIME_BETWEEN_DAILIES) {
+			if (millisecondsToHours(asMilliseconds(time)) < GuildDailyConstants.TIME_BETWEEN_DAILIES) {
 				response.push(makePacket(CommandGuildDailyCooldownErrorPacket, {
 					totalTime: GuildDailyConstants.TIME_BETWEEN_DAILIES,
 					remainingTime: hoursToMilliseconds(GuildDailyConstants.TIME_BETWEEN_DAILIES) - time

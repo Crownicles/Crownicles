@@ -2,6 +2,16 @@ import {
 	DAYS,
 	TimeConstants
 } from "../constants/TimeConstants";
+import {
+	asMilliseconds, Millisecond, Second
+} from "../types/TimeTypes";
+
+export {
+	asMilliseconds, asSeconds
+} from "../types/TimeTypes";
+export type {
+	Millisecond, Second
+} from "../types/TimeTypes";
 
 /**
  * Get the current date for logging purposes
@@ -48,7 +58,7 @@ export function getDayNumber(): number {
  * Convert milliseconds to minutes
  * @param milliseconds
  */
-export function millisecondsToMinutes(milliseconds: number): number {
+export function millisecondsToMinutes(milliseconds: Millisecond): number {
 	return Math.round(milliseconds / TimeConstants.MS_TIME.MINUTE);
 }
 
@@ -56,16 +66,16 @@ export function millisecondsToMinutes(milliseconds: number): number {
  * Convert minutes to seconds
  * @param minutes
  */
-export function minutesToMilliseconds(minutes: number): number {
-	return minutes * TimeConstants.MS_TIME.MINUTE;
+export function minutesToMilliseconds(minutes: number): Millisecond {
+	return minutes * TimeConstants.MS_TIME.MINUTE as Millisecond;
 }
 
 /**
  * Convert hours to milliseconds
  * @param hours
  */
-export function hoursToMilliseconds(hours: number): number {
-	return hours * TimeConstants.MS_TIME.HOUR;
+export function hoursToMilliseconds(hours: number): Millisecond {
+	return hours * TimeConstants.MS_TIME.HOUR as Millisecond;
 }
 
 /**
@@ -88,7 +98,7 @@ export function minutesToHours(minutes: number): number {
  * Convert minutes to hours
  * @param milliseconds
  */
-export function millisecondsToHours(milliseconds: number): number {
+export function millisecondsToHours(milliseconds: Millisecond): number {
 	return milliseconds / TimeConstants.MS_TIME.HOUR;
 }
 
@@ -96,31 +106,31 @@ export function millisecondsToHours(milliseconds: number): number {
  * Convert milliseconds to seconds
  * @param milliseconds
  */
-export function millisecondsToSeconds(milliseconds: number): number {
-	return milliseconds / TimeConstants.MS_TIME.SECOND;
+export function millisecondsToSeconds(milliseconds: Millisecond): Second {
+	return milliseconds / TimeConstants.MS_TIME.SECOND as Second;
 }
 
 /**
  * Convert seconds to milliseconds
  * @param seconds
  */
-export function secondsToMilliseconds(seconds: number): number {
-	return seconds * TimeConstants.MS_TIME.SECOND;
+export function secondsToMilliseconds(seconds: Second): Millisecond {
+	return seconds * TimeConstants.MS_TIME.SECOND as Millisecond;
 }
 
 /**
  * Convert days to milliseconds
  * @param days
  */
-export function daysToMilliseconds(days: number): number {
-	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR;
+export function daysToMilliseconds(days: number): Millisecond {
+	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR as Millisecond;
 }
 
 /**
  * Convert milliseconds to days
  * @param milliseconds
  */
-export function millisecondsToDays(milliseconds: number): number {
+export function millisecondsToDays(milliseconds: Millisecond): number {
 	return milliseconds / (TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR);
 }
 
@@ -128,8 +138,8 @@ export function millisecondsToDays(milliseconds: number): number {
  * Convert hours to seconds
  * @param hours
  */
-export function hoursToSeconds(hours: number): number {
-	return hours * TimeConstants.S_TIME.HOUR;
+export function hoursToSeconds(hours: number): Second {
+	return hours * TimeConstants.S_TIME.HOUR as Second;
 }
 
 /**
@@ -144,8 +154,8 @@ export function daysToMinutes(days: number): number {
  * Convert days to seconds
  * @param days
  */
-export function daysToSeconds(days: number): number {
-	return days * TimeConstants.S_TIME.DAY;
+export function daysToSeconds(days: number): Second {
+	return days * TimeConstants.S_TIME.DAY as Second;
 }
 
 /**
@@ -164,7 +174,7 @@ export function datesAreOnSameDay(first: Date, second: Date): boolean {
  * @param finishDate - the date to use
  */
 export function finishInTimeDisplay(finishDate: Date): string {
-	return `<t:${Math.floor(millisecondsToSeconds(finishDate.valueOf()))
+	return `<t:${Math.floor(millisecondsToSeconds(asMilliseconds(finishDate.valueOf())))
 		.toString()}:R>`;
 }
 
@@ -173,7 +183,7 @@ export function finishInTimeDisplay(finishDate: Date): string {
  * @param finishDate - the date to use
  */
 export function dateDisplay(finishDate: Date): string {
-	return `<t:${Math.floor(millisecondsToSeconds(finishDate.valueOf()))
+	return `<t:${Math.floor(millisecondsToSeconds(asMilliseconds(finishDate.valueOf())))
 		.toString()}:F>`;
 }
 

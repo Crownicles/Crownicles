@@ -8,6 +8,7 @@ import { InventoryInfos } from "./InventoryInfo";
 import { MissionsController } from "../../../missions/MissionsController";
 import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
+	asMilliseconds,
 	daysToMilliseconds,
 	getOneDayAgo,
 	millisecondsToSeconds,
@@ -1148,7 +1149,7 @@ export class Player extends Model {
 		const dateOfLastLeagueReward = await LogsReadRequests.getDateOfLastLeagueReward(this.keycloakId);
 
 		// Beware, the date of the last league reward is in seconds
-		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
+		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(asMilliseconds(getOneDayAgo())));
 	}
 
 	public async addRage(parameters: EditValueParameters): Promise<void> {

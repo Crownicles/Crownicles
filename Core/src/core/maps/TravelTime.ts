@@ -1,6 +1,6 @@
 import Player from "../database/game/models/Player";
 import {
-	millisecondsToMinutes, minutesToMilliseconds
+	asMilliseconds, millisecondsToMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { Maps } from "./Maps";
@@ -112,7 +112,7 @@ export abstract class TravelTime {
 		 * At the start of the travel
 		 */
 		if (effectEndTime - effectDuration < travelStartTime) {
-			effectDuration = effectEndTime - travelStartTime;
+			effectDuration = asMilliseconds(effectEndTime - travelStartTime);
 		}
 
 		// Basic variables
@@ -180,7 +180,7 @@ export abstract class TravelTime {
 		}
 
 		// Log
-		crowniclesInstance?.logsDatabase.logTimeWarp(player.keycloakId, isMilliseconds ? millisecondsToMinutes(time) : time, reason)
+		crowniclesInstance?.logsDatabase.logTimeWarp(player.keycloakId, isMilliseconds ? millisecondsToMinutes(asMilliseconds(time)) : time, reason)
 			.then();
 	}
 
@@ -267,7 +267,7 @@ export abstract class TravelTime {
 	 */
 	static async joinBoatScore(player: Player): Promise<number> {
 		const travelData = TravelTime.getTravelDataSimplified(player, new Date());
-		let timeTravelled = millisecondsToMinutes(travelData.playerTravelledTime); // Convert the time in minutes to calculate the score
+		let timeTravelled = millisecondsToMinutes(asMilliseconds(travelData.playerTravelledTime)); // Convert the time in minutes to calculate the score
 
 		// Calculate score from small event
 		let scoreFromSmallEvent = 0;

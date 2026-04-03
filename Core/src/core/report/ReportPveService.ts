@@ -29,7 +29,9 @@ import { ReactionCollectorPveFight } from "../../../../Lib/src/packets/interacti
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { Maps } from "../maps/Maps";
 import { Effect } from "../../../../Lib/src/types/Effect";
-import { millisecondsToSeconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToSeconds
+} from "../../../../Lib/src/utils/TimeUtils";
 import { crowniclesInstance } from "../../index";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
@@ -193,7 +195,7 @@ export async function doPVEBoss(
 ): Promise<void> {
 	// Use a hash of keycloakId rather than the sequential player.id to prevent seed prediction
 	const keycloakIdHash = Math.abs(Array.from(player.keycloakId).reduce((hash, char) => (hash << 5) - hash + char.charCodeAt(0) | 0, 0));
-	const seed = keycloakIdHash + millisecondsToSeconds(player.startTravelDate.valueOf());
+	const seed = keycloakIdHash + millisecondsToSeconds(asMilliseconds(player.startTravelDate.valueOf()));
 	const mapId = player.getDestination()!.id;
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
 	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
