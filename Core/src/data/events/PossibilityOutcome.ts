@@ -1,7 +1,7 @@
 import Player from "../../core/database/game/models/Player";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	generateRandomItem, generateRandomLootLevel, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../../core/utils/ItemUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerSmallEvents } from "../../core/database/game/models/PlayerSmallEvent";
@@ -153,12 +153,15 @@ async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Playe
 	if (!outcome.randomItem) {
 		return;
 	}
-	await giveItemToPlayer(response, context, player, generateRandomItem({
+	const item = generateRandomItem({
 		itemCategory: outcome.randomItem.category,
 		minRarity: outcome.randomItem.rarity?.min,
 		maxRarity: outcome.randomItem.rarity?.max
-	}), {
-		canDrinkImmediately: false, itemLevel: generateRandomLootLevel()
+	});
+	await giveItemToPlayer(response, context, player, item, {
+		canDrinkImmediately: false,
+		itemLevel: generateRandomLootLevel(),
+		itemEnchantmentId: generateRandomLootEnchantment(item)
 	});
 }
 
