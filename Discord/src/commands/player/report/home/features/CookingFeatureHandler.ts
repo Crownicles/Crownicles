@@ -14,7 +14,7 @@ import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
 import {
-	getCookingGrade, CookingOutputType, RECIPE_TYPE_OUTPUT_EMOJI
+	getCookingGrade, CookingOutputType, RECIPE_TYPE_OUTPUT_EMOJI, CookingGradeDefinition
 } from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 
@@ -31,14 +31,21 @@ import {
 	CommandReportCookingReviveRes,
 	CommandReportCookingCraftReq,
 	CommandReportCookingCraftRes,
+	CommandReportCookingMenuReq,
+	CommandReportCookingMenuRes,
+	CommandReportCookingPinReq,
+	CommandReportCookingPinRes,
+	CommandReportCookingUnpinReq,
+	CommandReportCookingUnpinRes,
 	CookingCraftErrors,
-	CookingSlotData
+	CookingSlotData,
+	PinnedRecipeInfo
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
-import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 import { finishInTimeDisplay } from "../../../../../../../Lib/src/utils/TimeUtils";
 import { PacketUtils } from "../../../../../utils/PacketUtils";
-import { ReactionCollectorHomeMenuReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
+import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 
 interface CookingSessionState {
 	currentSlots: CookingSlotData[];
@@ -46,6 +53,7 @@ interface CookingSessionState {
 	cookingGrade: string;
 	cookingLevel: number;
 	craftPending: boolean;
+	pinnedRecipe?: PinnedRecipeInfo;
 }
 
 export class CookingFeatureHandler implements HomeFeatureHandler {
@@ -104,8 +112,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		await componentInteraction.deferUpdate();
-		this.registerCookingMenu(ctx, nestedMenus);
-		await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+		await this.fetchAndShowCookingMenu(ctx, nestedMenus);
 	}
 
 	public async handleSubMenuSelection(
@@ -149,6 +156,17 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			return this.handleCraftSelection(ctx, selectedValue, nestedMenus);
 		}
 
+		if (selectedValue.startsWith(HomeMenuIds.COOKING_PIN_PREFIX)) {
+			await componentInteraction.deferUpdate();
+			return this.handlePinSelection(ctx, selectedValue, nestedMenus);
+		}
+
+		if (selectedValue === HomeMenuIds.COOKING_UNPIN) {
+			await componentInteraction.deferUpdate();
+			await this.sendUnpinAction(ctx, nestedMenus);
+			return true;
+		}
+
 		return false;
 	}
 
@@ -169,6 +187,91 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 		await this.sendCraftAction(ctx, slotIndex, nestedMenus);
 		return true;
+	}
+
+	/**
+	 * Handle pin slot selection from the ignited menu
+	 */
+	private async handlePinSelection(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<boolean> {
+		const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_PIN_PREFIX, ""), 10);
+		if (isNaN(slotIndex)) {
+			return true;
+		}
+		const state = this.getState(ctx);
+		const slot = state.currentSlots.find(s => s.slotIndex === slotIndex);
+		if (!slot?.recipe || slot.recipe.isSecret) {
+			return true;
+		}
+		await this.sendPinAction(ctx, slot.recipe.id, nestedMenus);
+		return true;
+	}
+
+	/**
+	 * Fetch cooking menu info (level, grade, pinned recipe) from Core and show the pre-ignite menu
+	 */
+	private async fetchAndShowCookingMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			ctx.context,
+			makePacket(CommandReportCookingMenuReq, {}),
+			async (_responseContext, packetName, responsePacket) => {
+				if (packetName === CommandReportCookingMenuRes.name) {
+					const response = responsePacket as unknown as CommandReportCookingMenuRes;
+					const state = this.getState(ctx);
+					state.cookingLevel = response.cookingLevel;
+					state.cookingGrade = response.cookingGrade;
+					state.pinnedRecipe = response.pinnedRecipe;
+				}
+				this.registerCookingMenu(ctx, nestedMenus);
+				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+			}
+		);
+	}
+
+	/**
+	 * Send pin request to Core
+	 */
+	private async sendPinAction(ctx: HomeFeatureHandlerContext, recipeId: string, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			ctx.context,
+			makePacket(CommandReportCookingPinReq, { recipeId }),
+			async (_responseContext, packetName, responsePacket) => {
+				if (packetName === CommandReportCookingPinRes.name) {
+					const response = responsePacket as unknown as CommandReportCookingPinRes;
+					const state = this.getState(ctx);
+					state.pinnedRecipe = response.pinnedRecipe;
+				}
+				this.registerIgnitedMenu(ctx, nestedMenus);
+				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+			}
+		);
+	}
+
+	/**
+	 * Send unpin request to Core
+	 */
+	private async sendUnpinAction(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			ctx.context,
+			makePacket(CommandReportCookingUnpinReq, {}),
+			async (_responseContext, packetName) => {
+				if (packetName === CommandReportCookingUnpinRes.name) {
+					const state = this.getState(ctx);
+					state.pinnedRecipe = undefined;
+				}
+				const state = this.getState(ctx);
+				if (state.currentSlots.length > 0) {
+					this.registerIgnitedMenu(ctx, nestedMenus);
+				}
+				else {
+					this.registerCookingMenu(ctx, nestedMenus);
+				}
+				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+			}
+		);
 	}
 
 	/**
@@ -193,13 +296,22 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Build the ignited furnace header description (uses remaining)
+	 * Build the ignited furnace header description (uses remaining + level + advice)
 	 */
 	private buildIgnitedDescription(ctx: HomeFeatureHandlerContext): string {
-		return i18n.t("commands:report.city.homes.cooking.usesRemaining", {
+		const state = this.getState(ctx);
+		const grade: CookingGradeDefinition = getCookingGrade(state.cookingLevel);
+		let description = i18n.t("commands:report.city.homes.cooking.usesRemaining", {
 			lng: ctx.lng,
-			count: this.getState(ctx).furnaceUsesRemaining
+			count: state.furnaceUsesRemaining
 		});
+		description += `\n${i18n.t("commands:report.city.homes.cooking.levelInfo", {
+			lng: ctx.lng,
+			level: state.cookingLevel,
+			grade: i18n.t(`models:cooking.grades.${state.cookingGrade}`, { lng: ctx.lng }),
+			maxLevel: grade.maxRecipeLevelWithoutPenalty
+		})}`;
+		return description;
 	}
 
 	/**
@@ -250,20 +362,57 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private addCookingButtons(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		container.addActionRowComponents(
-			new ActionRowBuilder<ButtonBuilder>().addComponents(
-				new ButtonBuilder()
-					.setCustomId(HomeMenuIds.COOKING_IGNITE)
-					.setLabel(i18n.t("commands:report.city.homes.cooking.igniteButton", { lng: ctx.lng }))
-					.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
-					.setStyle(ButtonStyle.Success),
-				new ButtonBuilder()
-					.setCustomId(HomeMenuIds.BACK_TO_HOME)
-					.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
-					.setEmoji(CrowniclesIcons.collectors.back)
-					.setStyle(ButtonStyle.Danger)
-			)
+		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.COOKING_IGNITE)
+				.setLabel(i18n.t("commands:report.city.homes.cooking.igniteButton", { lng: ctx.lng }))
+				.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
+				.setStyle(ButtonStyle.Success)
 		);
+
+		const state = this.getState(ctx);
+		if (state.pinnedRecipe) {
+			row.addComponents(
+				new ButtonBuilder()
+					.setCustomId(HomeMenuIds.COOKING_UNPIN)
+					.setLabel(i18n.t("commands:report.city.homes.cooking.unpinButton", { lng: ctx.lng }))
+					.setStyle(ButtonStyle.Secondary)
+			);
+		}
+
+		row.addComponents(
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.BACK_TO_HOME)
+				.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
+				.setEmoji(CrowniclesIcons.collectors.back)
+				.setStyle(ButtonStyle.Danger)
+		);
+
+		container.addActionRowComponents(row);
+	}
+
+	/**
+	 * Build pinned recipe display for the pre-ignite menu
+	 */
+	private buildPinnedRecipeDisplay(ctx: HomeFeatureHandlerContext): string {
+		const state = this.getState(ctx);
+		if (!state.pinnedRecipe) {
+			return "";
+		}
+
+		const recipeName = i18n.t(`models:cooking.recipes.${state.pinnedRecipe.recipeId}`, { lng: ctx.lng });
+		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[state.pinnedRecipe.recipeType] ?? "";
+		const ingredientsList = this.buildIngredientsDescription(state.pinnedRecipe.ingredients, ctx.lng);
+		const readyStatus = state.pinnedRecipe.canCraft
+			? i18n.t("commands:report.city.homes.cooking.pinnedReady", { lng: ctx.lng })
+			: "";
+
+		return `\n\n${i18n.t("commands:report.city.homes.cooking.pinnedRecipeTitle", {
+			lng: ctx.lng,
+			outputEmoji,
+			recipe: recipeName,
+			level: state.pinnedRecipe.level
+		})}\n${ingredientsList}${readyStatus}`;
 	}
 
 	/**
@@ -274,8 +423,9 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
 		);
+		const pinnedDisplay = this.buildPinnedRecipeDisplay(ctx);
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(this.buildCookingDescription(ctx) + extraMessage)
+			new TextDisplayBuilder().setContent(this.buildCookingDescription(ctx) + pinnedDisplay + extraMessage)
 		);
 		this.addCookingButtons(ctx, container);
 		return container;
@@ -286,8 +436,10 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private createCookingCollector(ctx: HomeFeatureHandlerContext): ReturnType<typeof createHomeFeatureCollector> {
 		return createHomeFeatureCollector(this, ctx, {
-			onEnd: () => {
-				this.sessions.delete(ctx.user.id);
+			onEnd: reason => {
+				if (reason === "time") {
+					this.sessions.delete(ctx.user.id);
+				}
 			}
 		});
 	}
@@ -411,14 +563,39 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			new TextDisplayBuilder().setContent(`${slotTitle}\n${ingredientsList}`)
 		);
 
-		section.setButtonAccessory(
-			new ButtonBuilder()
-				.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
-				.setLabel(craftLabel)
-				.setEmoji(parseEmoji(stationEmoji)!)
-				.setStyle(slot.recipe.canCraft && !allDisabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
-				.setDisabled(!slot.recipe.canCraft || allDisabled)
-		);
+		if (!slot.recipe.canCraft && !slot.recipe.isSecret && !allDisabled) {
+			const state = this.getState(ctx);
+			const isPinned = state.pinnedRecipe?.recipeId === slot.recipe.id;
+			if (isPinned) {
+				section.setButtonAccessory(
+					new ButtonBuilder()
+						.setCustomId(HomeMenuIds.COOKING_UNPIN)
+						.setLabel(i18n.t("commands:report.city.homes.cooking.unpinButton", { lng: ctx.lng }))
+						.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
+						.setStyle(ButtonStyle.Success)
+				);
+			}
+			else {
+				const recipeName = i18n.t(`models:cooking.recipes.${slot.recipe.id}`, { lng: ctx.lng });
+				section.setButtonAccessory(
+					new ButtonBuilder()
+						.setCustomId(`${HomeMenuIds.COOKING_PIN_PREFIX}${slot.slotIndex}`)
+						.setLabel(recipeName.substring(0, 80))
+						.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
+						.setStyle(ButtonStyle.Secondary)
+				);
+			}
+		}
+		else {
+			section.setButtonAccessory(
+				new ButtonBuilder()
+					.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
+					.setLabel(craftLabel)
+					.setEmoji(parseEmoji(stationEmoji)!)
+					.setStyle(slot.recipe.canCraft && !allDisabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
+					.setDisabled(!slot.recipe.canCraft || allDisabled)
+			);
+		}
 
 		return section;
 	}
@@ -636,7 +813,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Send craft result as a followup reply and end the home collector
+	 * Send craft result as a followup reply and release the player
 	 */
 	private async sendCraftFollowup(
 		ctx: HomeFeatureHandlerContext,
@@ -655,11 +832,13 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			}
 		}
 
-		const homeMenuReactionIndex = ctx.packet.reactions.findIndex(
-			reaction => reaction.type === ReactionCollectorHomeMenuReaction.name
+		this.sessions.delete(ctx.user.id);
+
+		const reactionIndex = ctx.packet.reactions.findIndex(
+			reaction => reaction.type === ReactionCollectorRefuseReaction.name
 		);
-		if (homeMenuReactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, null, homeMenuReactionIndex);
+		if (reactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, null, reactionIndex);
 		}
 	}
 
@@ -696,7 +875,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 		finally {
 			state.craftPending = false;
-			this.sessions.delete(ctx.user.id);
 		}
 	}
 

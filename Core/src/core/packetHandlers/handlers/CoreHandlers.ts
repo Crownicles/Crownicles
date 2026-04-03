@@ -17,7 +17,10 @@ import {
 	CommandReportCookingIgniteReq,
 	CommandReportCookingWoodConfirmRes,
 	CommandReportCookingReviveReq,
-	CommandReportCookingCraftReq
+	CommandReportCookingCraftReq,
+	CommandReportCookingMenuReq,
+	CommandReportCookingPinReq,
+	CommandReportCookingUnpinReq
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	handleChestAction
@@ -26,7 +29,8 @@ import {
 	handleGardenHarvest, handleGardenPlant, handlePlantTransfer
 } from "../../report/ReportGardenService";
 import {
-	handleCookingIgnite, handleCookingWoodConfirm, handleCookingRevive, handleCookingCraft
+	handleCookingIgnite, handleCookingWoodConfirm, handleCookingRevive, handleCookingCraft,
+	handleCookingMenu, handleCookingPin, handleCookingUnpin
 } from "../../report/ReportCookingService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
@@ -94,5 +98,20 @@ export default class CoreHandlers {
 	@packetHandler(CommandReportCookingCraftReq)
 	async cookingCraft(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingCraftReq): Promise<void> {
 		response.push(...await handleCookingCraft(context.keycloakId!, packet, context));
+	}
+
+	@packetHandler(CommandReportCookingMenuReq)
+	async cookingMenu(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingMenuReq): Promise<void> {
+		response.push(...await handleCookingMenu(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingPinReq)
+	async cookingPin(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingPinReq): Promise<void> {
+		response.push(...await handleCookingPin(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportCookingUnpinReq)
+	async cookingUnpin(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingUnpinReq): Promise<void> {
+		response.push(...await handleCookingUnpin(context.keycloakId!, packet));
 	}
 }

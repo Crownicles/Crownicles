@@ -114,6 +114,12 @@ export const HomeMenuIds = {
 	/** Cancel rare wood usage */
 	COOKING_WOOD_CANCEL: "COOKING_WOOD_CANCEL",
 
+	/** Prefix for pin action on a slot */
+	COOKING_PIN_PREFIX: "COOKING_PIN_",
+
+	/** Unpin recipe button */
+	COOKING_UNPIN: "COOKING_UNPIN",
+
 	// --- Feature IDs ---
 	/** Garden feature identifier */
 	FEATURE_GARDEN: "garden",

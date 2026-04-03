@@ -99,7 +99,8 @@ import {
 	CommandReportCookingOverheatRes,
 	CommandReportCookingWoodConfirmReq,
 	CommandReportCookingReviveRes,
-	CommandReportCookingCraftRes
+	CommandReportCookingCraftRes,
+	CommandReportCookingMenuRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
 import { CookingCraftErrors, CookingSlotData } from "../../../Lib/src/types/CookingTypes";
 import { CookingOutputType, RecipeType } from "../../../Lib/src/constants/CookingConstants";
@@ -260,6 +261,11 @@ describe("CookingFeatureHandler", () => {
 			const nestedMenus = createMockNestedMenus();
 
 			await handler.handleFeatureSelection(ctx, interaction as any, nestedMenus as any);
+
+			await simulateMqttResponse(CommandReportCookingMenuRes.name, {
+				cookingLevel: 5,
+				cookingGrade: "apprentice"
+			} as CommandReportCookingMenuRes);
 
 			expect(interaction.deferUpdate).toHaveBeenCalled();
 			expect(nestedMenus.registerMenu).toHaveBeenCalledWith(

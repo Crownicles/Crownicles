@@ -36,3 +36,21 @@ export const CookingCraftErrors = {
 } as const;
 
 export type CookingCraftError = typeof CookingCraftErrors[keyof typeof CookingCraftErrors];
+
+export interface PinnedRecipeIngredients {
+	plants: {
+		plantId: PlantId; quantity: number; playerHas: number;
+	}[];
+	materials: {
+		materialId: number; quantity: number; playerHas: number;
+	}[];
+}
+
+export interface PinnedRecipeInfo {
+	recipeId: string;
+	level: number;
+	recipeType: RecipeType;
+	outputType: CookingOutputTypeValue;
+	ingredients: PinnedRecipeIngredients;
+	canCraft: boolean;
+}

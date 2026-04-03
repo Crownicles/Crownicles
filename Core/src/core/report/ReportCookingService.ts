@@ -13,11 +13,18 @@ import {
 	CommandReportCookingReviveRes,
 	CommandReportCookingCraftReq,
 	CommandReportCookingCraftRes,
+	CommandReportCookingMenuReq,
+	CommandReportCookingMenuRes,
+	CommandReportCookingPinReq,
+	CommandReportCookingPinRes,
+	CommandReportCookingUnpinReq,
+	CommandReportCookingUnpinRes,
 	CookingCraftErrors,
 	CookingCraftError,
 	CookingSlotData,
 	CraftPetFoodResult,
-	CraftMaterialResult
+	CraftMaterialResult,
+	PinnedRecipeInfo
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { CookingService } from "../cooking/CookingService";
@@ -558,5 +565,91 @@ export async function handleCookingCraft(
 	if (outputResult.inventorySwapPackets) {
 		response.push(...outputResult.inventorySwapPackets);
 	}
+	return response;
+}
+
+export async function handleCookingMenu(
+	keycloakId: string,
+	_packet: CommandReportCookingMenuReq
+): Promise<CrowniclesPacket[]> {
+	const response: CrowniclesPacket[] = [];
+	const data = await getPlayerAndHome(keycloakId);
+	if (!data) {
+		return response;
+	}
+	const {
+		player, home
+	} = data;
+	const grade = getCookingGrade(player.cookingLevel);
+
+	let pinnedRecipe: PinnedRecipeInfo | undefined;
+	if (player.pinnedCookingRecipeId) {
+		pinnedRecipe = await CookingService.getPinnedRecipeInfo({
+			player,
+			homeId: home.id,
+			recipeId: player.pinnedCookingRecipeId
+		});
+		if (!pinnedRecipe) {
+			// Recipe no longer exists, clear the pin
+			player.pinnedCookingRecipeId = null;
+			await player.save();
+		}
+	}
+
+	response.push(makePacket(CommandReportCookingMenuRes, {
+		cookingLevel: player.cookingLevel,
+		cookingGrade: grade.id,
+		pinnedRecipe
+	}));
+	return response;
+}
+
+export async function handleCookingPin(
+	keycloakId: string,
+	packet: CommandReportCookingPinReq
+): Promise<CrowniclesPacket[]> {
+	const response: CrowniclesPacket[] = [];
+	const data = await getPlayerAndHome(keycloakId);
+	if (!data) {
+		return response;
+	}
+	const {
+		player, home
+	} = data;
+
+	// Validate recipe exists
+	const pinnedRecipe = await CookingService.getPinnedRecipeInfo({
+		player,
+		homeId: home.id,
+		recipeId: packet.recipeId
+	});
+	if (!pinnedRecipe) {
+		return response;
+	}
+
+	player.pinnedCookingRecipeId = packet.recipeId;
+	await player.save();
+
+	response.push(makePacket(CommandReportCookingPinRes, {
+		pinnedRecipe
+	}));
+	return response;
+}
+
+export async function handleCookingUnpin(
+	keycloakId: string,
+	_packet: CommandReportCookingUnpinReq
+): Promise<CrowniclesPacket[]> {
+	const response: CrowniclesPacket[] = [];
+	const data = await getPlayerAndHome(keycloakId);
+	if (!data) {
+		return response;
+	}
+	const { player } = data;
+
+	player.pinnedCookingRecipeId = null;
+	await player.save();
+
+	response.push(makePacket(CommandReportCookingUnpinRes, {}));
 	return response;
 }

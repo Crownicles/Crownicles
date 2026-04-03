@@ -154,6 +154,8 @@ export class Player extends Model {
 
 	declare furnacePosition: number;
 
+	declare pinnedCookingRecipeId: string | null;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -1922,6 +1924,11 @@ export function initModel(sequelize: Sequelize): void {
 		furnacePosition: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
+		},
+		pinnedCookingRecipeId: {
+			type: DataTypes.STRING(64), // eslint-disable-line new-cap
+			allowNull: true,
+			defaultValue: null
 		},
 		updatedAt: {
 			type: DataTypes.DATE,

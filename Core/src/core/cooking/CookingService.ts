@@ -8,6 +8,7 @@ import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialDataController } from "../../data/Material";
+import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import {
 	PetEntities, PetEntity
@@ -37,7 +38,7 @@ import {
 	isRecipeSecret
 } from "./CookingSlotRotation";
 import {
-	CookingSlotData, RecipeSlotData
+	CookingSlotData, RecipeSlotData, PinnedRecipeInfo
 } from "../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 import {
@@ -219,6 +220,17 @@ export class CookingService {
 			allowPetFoodRecipes: Boolean(guild),
 			maxRecipeLevelWithoutPenalty: grade.maxRecipeLevelWithoutPenalty
 		});
+
+		// Ensure pinned recipe appears in one of the slots
+		if (player.pinnedCookingRecipeId) {
+			const alreadyPresent = slotRecipes.some(r => r?.id === player.pinnedCookingRecipeId);
+			if (!alreadyPresent) {
+				const pinnedRecipe = CookingRecipeDataController.instance.getById(player.pinnedCookingRecipeId);
+				if (pinnedRecipe) {
+					slotRecipes[slotRecipes.length - 1] = pinnedRecipe;
+				}
+			}
+		}
 
 		// Load all plant storages once to avoid N+1 queries
 		const allPlantStorages = await HomePlantStorages.getOfHome(homeId);
@@ -523,5 +535,51 @@ export class CookingService {
 			return undefined;
 		}
 		return recipe.materials[0].materialId;
+	}
+
+	/**
+	 * Build pinned recipe info with current ingredient availability
+	 */
+	static async getPinnedRecipeInfo(params: {
+		player: Player;
+		homeId: number;
+		recipeId: string;
+	}): Promise<PinnedRecipeInfo | undefined> {
+		const recipe = CookingRecipeDataController.instance.getById(params.recipeId);
+		if (!recipe) {
+			return undefined;
+		}
+
+		const playerMaterials = await Materials.getPlayerMaterials(params.player.id);
+		const materialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
+		const allPlantStorages = await HomePlantStorages.getOfHome(params.homeId);
+		const plantStorageMap = new Map(allPlantStorages.map(s => [s.plantId, s.quantity]));
+
+		const plants = recipe.plants.map(p => ({
+			plantId: p.plantId,
+			quantity: p.quantity,
+			playerHas: plantStorageMap.get(p.plantId) ?? 0
+		}));
+
+		const materials = recipe.materials.map(m => ({
+			materialId: m.materialId,
+			quantity: m.quantity,
+			playerHas: materialMap.get(m.materialId) ?? 0
+		}));
+
+		const canCraft = plants.every(p => p.playerHas >= p.quantity)
+			&& materials.every(m => m.playerHas >= m.quantity);
+
+		return {
+			recipeId: recipe.id,
+			level: recipe.level,
+			recipeType: recipe.recipeType,
+			outputType: recipe.outputType,
+			ingredients: {
+				plants,
+				materials
+			},
+			canCraft
+		};
 	}
 }
