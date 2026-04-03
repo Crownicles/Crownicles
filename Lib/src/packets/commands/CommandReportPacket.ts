@@ -14,10 +14,10 @@ import {
 } from "../../types/PlantStorageEntry";
 import { PetFood } from "../../types/PetFood";
 export {
-	CookingSlotData, CookingCraftErrors, CookingCraftError
+	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo
 } from "../../types/CookingTypes";
 import {
-	CookingSlotData, CookingCraftError
+	CookingSlotData, CookingCraftError, PinnedRecipeInfo
 } from "../../types/CookingTypes";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
@@ -526,3 +526,33 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	furnaceUsesRemaining?: number;
 }
+
+// ---- Cooking menu & pin packets ----
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingMenuReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingMenuRes extends CrowniclesPacket {
+	cookingLevel!: number;
+
+	cookingGrade!: string;
+
+	pinnedRecipe?: PinnedRecipeInfo;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingPinReq extends CrowniclesPacket {
+	recipeId!: string;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingPinRes extends CrowniclesPacket {
+	pinnedRecipe!: PinnedRecipeInfo;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingUnpinReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingUnpinRes extends CrowniclesPacket {}

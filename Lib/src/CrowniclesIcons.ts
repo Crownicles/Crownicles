@@ -126,6 +126,7 @@ export const CrowniclesIcons: {
 		description: string;
 		item: string;
 		info: string;
+		pin: string;
 	};
 	fightPetActions: {
 		[actionId: string]: string;
@@ -2338,7 +2339,8 @@ export const CrowniclesIcons: {
 		dm: "💌",
 		description: "📜",
 		item: "▶️",
-		info: "ℹ️"
+		info: "ℹ️",
+		pin: "📌"
 	},
 	fightPetActions: {
 		fistHit: "👊",
