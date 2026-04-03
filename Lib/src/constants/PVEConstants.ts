@@ -79,4 +79,136 @@ export abstract class PVEConstants {
 	static readonly GUILD_POINTS_LOST_ON_DEATH = 150;
 
 	static readonly RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH = 20;
+
+	static readonly BOSS_LOOT = {
+		MIN_DROPS: 5,
+		MAX_DROPS: 10,
+		RARITY_WEIGHTS: {
+			1: 60, // COMMON
+			2: 30, // UNCOMMON
+			3: 10 // RARE
+		} as Record<number, number>
+	};
+
+	/**
+	 * Loot tables for each PVE boss map location.
+	 * Each entry maps a map ID to an array of material IDs that can drop.
+	 */
+	static readonly BOSS_LOOT_TABLES: Record<number, readonly number[]> = {
+		// Island 1 - Tropical
+		1001: [
+			52,
+			40,
+			45,
+			8,
+			58,
+			2,
+			51
+		], // Forest: nature + wood + rope
+		1002: [
+			14,
+			7,
+			24,
+			13,
+			29,
+			22,
+			81
+		], // Ruins: metal + alloy + leather
+		1003: [
+			70,
+			1,
+			50,
+			21,
+			39,
+			4,
+			16,
+			44
+		], // Mine: metal + explosive
+		1004: [
+			70,
+			24,
+			29,
+			63,
+			41,
+			11,
+			42
+		], // Mountain: metal + leather + nature
+		1005: [
+			35,
+			1,
+			21,
+			80,
+			82,
+			56,
+			86,
+			65
+		], // Volcano (final): explosive + magic + metal
+		// Island 2 - Ice
+		1101: [
+			54,
+			25,
+			55,
+			12,
+			15,
+			48,
+			26
+		], // Tundra: nature + leather + rope
+		1102: [
+			53,
+			89,
+			30,
+			71,
+			5,
+			67,
+			69,
+			34
+		], // Crystal Cavern: magic + spiritual
+		1103: [
+			72,
+			89,
+			60,
+			73,
+			33,
+			62,
+			61
+		], // Blessed Doors: spiritual + magic
+		1104: [
+			50,
+			70,
+			23,
+			90,
+			79,
+			85,
+			87
+		], // Ice Peak: metal + nature
+		1105: [
+			40,
+			55,
+			32,
+			28,
+			68,
+			36,
+			3
+		], // Underground Lake: nature + poison
+		1106: [
+			7,
+			20,
+			9,
+			75,
+			43,
+			27,
+			31
+		], // Ruins: alloy + leather + wood
+		1107: [
+			35,
+			1,
+			80,
+			39,
+			76,
+			77,
+			56,
+			6,
+			46
+		] // Dragon's Nest (final): magic + explosive
+	};
 }

@@ -102,6 +102,11 @@ export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 		petSex: string;
 		petNickname?: string;
 	};
+
+	materialLoot?: {
+		materialId: number;
+		quantity: number;
+	}[];
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

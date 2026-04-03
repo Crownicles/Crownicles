@@ -477,6 +477,16 @@ export async function displayMonsterReward(
 		descriptionParts.push(`\n${petReactionText}`);
 	}
 
+	if (packet.materialLoot && packet.materialLoot.length > 0) {
+		const materialLines = packet.materialLoot.map(entry =>
+			i18n.t("commands:report.monsterRewardsMaterialLine", {
+				lng,
+				materialId: entry.materialId,
+				quantity: entry.quantity
+			})).join("\n");
+		descriptionParts.push(`\n${i18n.t("commands:report.monsterRewardsMaterialTitle", { lng })}\n${materialLines}`);
+	}
+
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(
 			i18n.t("commands:report.rewardEmbedTitle", {

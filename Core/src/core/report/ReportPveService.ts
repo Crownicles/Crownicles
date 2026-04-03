@@ -37,6 +37,9 @@ import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { chooseDestination } from "./ReportDestinationService";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import {
+	applyBossLoot, BossLootEntry, generateBossLoot
+} from "../utils/BossLootUtils";
 
 /**
  * PVE fight rewards structure
@@ -163,7 +166,8 @@ function sendMonsterRewardPacket(
 	endFightResponse: CrowniclesPacket[],
 	rewards: PveFightRewards,
 	guildResult: GuildRewardsResult,
-	fight: FightController
+	fight: FightController,
+	materialLoot?: BossLootEntry[]
 ): void {
 	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
 		money: BlessingManager.getInstance().applyMoneyBlessing(rewards.money),
@@ -178,7 +182,8 @@ function sendMonsterRewardPacket(
 				petSex: fight.petReactionData.petSex,
 				petNickname: fight.petReactionData.petNickname
 			}
-			: undefined
+			: undefined,
+		materialLoot: materialLoot && materialLoot.length > 0 ? materialLoot : undefined
 	}));
 }
 
@@ -213,7 +218,14 @@ export async function doPVEBoss(
 			// Only give reward if draw or win
 			if (fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter) {
 				const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
-				sendMonsterRewardPacket(endFightResponse, rewards, result, fight);
+
+				// Generate and apply material loot from boss
+				const materialLoot = generateBossLoot(mapId);
+				if (materialLoot.length > 0) {
+					await applyBossLoot(player.id, materialLoot);
+				}
+
+				sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);
 				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 				await MissionsController.update(player, endFightResponse, {
 					missionId: "winAnyBossWithDifferentClasses",
