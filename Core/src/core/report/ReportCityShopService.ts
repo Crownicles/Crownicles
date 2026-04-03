@@ -349,6 +349,9 @@ export async function openVeterinarian(player: Player, context: PacketContext, r
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
+		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		additionalShopData: {
+			currency: ShopCurrency.GEM
+		}
 	});
 }
