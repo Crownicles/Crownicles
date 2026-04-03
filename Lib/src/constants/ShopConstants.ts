@@ -44,7 +44,7 @@ export abstract class ShopConstants {
 		50
 	];
 
-	static readonly VETERINARIAN_PRICE = 350;
+	static readonly VETERINARIAN_PRICE = 3;
 
 	static readonly VETERINARIAN_LOVE_POINTS_GAIN = 15;
 
