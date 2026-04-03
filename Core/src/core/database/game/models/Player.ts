@@ -661,18 +661,21 @@ export class Player extends Model {
 	 * @param item
 	 * @param itemLevel - Optional level for the item (only applied to weapons/armors)
 	 */
-	public async giveItem(item: GenericItem, itemLevel = 0): Promise<boolean> {
+	public async giveItem(item: GenericItem, itemLevel = 0, itemEnchantmentId: string | null = null): Promise<boolean> {
 		const invSlots = await InventorySlots.getOfPlayer(this.id);
 		const invInfo = await InventoryInfos.getOfPlayer(this.id);
 		const category = item.getCategory();
 		const equippedItem = invSlots.filter(slot => slot.itemCategory === category && slot.isEquipped())[0];
 
-		// Only apply level for weapons and armors
-		const effectiveLevel = category === ItemCategory.WEAPON || category === ItemCategory.ARMOR ? itemLevel : 0;
+		// Only apply level and enchantment for weapons and armors
+		const isWeaponOrArmor = category === ItemCategory.WEAPON || category === ItemCategory.ARMOR;
+		const effectiveLevel = isWeaponOrArmor ? itemLevel : 0;
+		const effectiveEnchantmentId = isWeaponOrArmor ? itemEnchantmentId : null;
 		if (equippedItem && equippedItem.itemId === 0) {
 			await InventorySlot.update({
 				itemId: item.id,
-				itemLevel: effectiveLevel
+				itemLevel: effectiveLevel,
+				itemEnchantmentId: effectiveEnchantmentId
 			}, {
 				where: {
 					playerId: this.id,
@@ -696,7 +699,8 @@ export class Player extends Model {
 					itemCategory: category,
 					itemId: item.id,
 					slot: i,
-					itemLevel: effectiveLevel
+					itemLevel: effectiveLevel,
+					itemEnchantmentId: effectiveEnchantmentId
 				});
 				return true;
 			}

@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { giveItemToPlayer, toItemWithDetails } from '../../../src/core/utils/ItemUtils';
+import {
+	generateRandomLootEnchantment, giveItemToPlayer, toItemWithDetails
+} from '../../../src/core/utils/ItemUtils';
 import { InventorySlots } from '../../../src/core/database/game/models/InventorySlot';
 import { InventoryInfos } from '../../../src/core/database/game/models/InventoryInfo';
 import { MissionsController } from '../../../src/core/missions/MissionsController';
@@ -10,6 +12,7 @@ import { BlockingConstants } from '../../../../Lib/src/constants/BlockingConstan
 import { CrowniclesPacket, PacketContext } from '../../../../Lib/src/packets/CrowniclesPacket';
 import { ItemFoundPacket } from '../../../../Lib/src/packets/events/ItemFoundPacket';
 import { ReactionCollectorInstance } from '../../../src/core/utils/ReactionsCollector';
+import { RandomUtils } from '../../../../Lib/src/utils/RandomUtils';
 
 // Mock all external dependencies
 vi.mock('../../../src/core/database/game/models/InventorySlot');
@@ -191,7 +194,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0, null);
 			expect(MissionsController.update).toHaveBeenCalledWith(
 				mockPlayer,
 				mockResponse,
@@ -238,7 +241,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0, null);
 			// Auto-sell should trigger, response may still contain ReactionCollector for confirmation
 			expect(mockResponse.length).toBeGreaterThanOrEqual(1);
 		});
@@ -381,7 +384,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0, null);
 			expect(mockResponse).toHaveLength(1);
 		});
 
@@ -743,5 +746,49 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			// Assert - Should create collector but without drink option
 			expect(mockResponse.length).toBeGreaterThanOrEqual(2);
 		});
+	});
+});
+
+describe('generateRandomLootEnchantment', () => {
+	it('should return null for potions', () => {
+		const mockPotion = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+		};
+		expect(generateRandomLootEnchantment(mockPotion as any)).toBeNull();
+	});
+
+	it('should return null for objects', () => {
+		const mockObject = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.OBJECT)
+		};
+		expect(generateRandomLootEnchantment(mockObject as any)).toBeNull();
+	});
+
+	it('should return null for weapons when roll is above enchantment chance', () => {
+		const mockWeapon = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+		};
+		vi.spyOn(RandomUtils.crowniclesRandom, 'realZeroToOneInclusive').mockReturnValue(0.10);
+		expect(generateRandomLootEnchantment(mockWeapon as any)).toBeNull();
+	});
+
+	it('should return an enchantment id for weapons when roll is below enchantment chance', () => {
+		const mockWeapon = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+		};
+		vi.spyOn(RandomUtils.crowniclesRandom, 'realZeroToOneInclusive').mockReturnValue(0.01);
+		const result = generateRandomLootEnchantment(mockWeapon as any);
+		expect(result).not.toBeNull();
+		expect(typeof result).toBe('string');
+	});
+
+	it('should return an enchantment id for armors when roll is below enchantment chance', () => {
+		const mockArmor = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.ARMOR)
+		};
+		vi.spyOn(RandomUtils.crowniclesRandom, 'realZeroToOneInclusive').mockReturnValue(0.01);
+		const result = generateRandomLootEnchantment(mockArmor as any);
+		expect(result).not.toBeNull();
+		expect(typeof result).toBe('string');
 	});
 });

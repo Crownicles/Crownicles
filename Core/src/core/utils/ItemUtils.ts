@@ -23,6 +23,7 @@ import { ItemDataController } from "../../data/DataController";
 import { crowniclesInstance } from "../../index";
 import { ItemRefusePacket } from "../../../../Lib/src/packets/events/ItemRefusePacket";
 import { ItemAcceptPacket } from "../../../../Lib/src/packets/events/ItemAcceptPacket";
+import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { ItemFoundPacket } from "../../../../Lib/src/packets/events/ItemFoundPacket";
 import { BlessingManager } from "../blessings/BlessingManager";
 import {
@@ -417,6 +418,7 @@ type GiveItemOptions = {
 	resaleMultiplier?: number;
 	canDrinkImmediately?: boolean;
 	itemLevel?: number;
+	itemEnchantmentId?: string | null;
 };
 
 /**
@@ -435,7 +437,7 @@ export async function giveItemToPlayer(
 	options: GiveItemOptions = {}
 ): Promise<void> {
 	const {
-		resaleMultiplier = 1, canDrinkImmediately = true, itemLevel = 0
+		resaleMultiplier = 1, canDrinkImmediately = true, itemLevel = 0, itemEnchantmentId = null
 	} = options;
 	const inventorySlots = await InventorySlots.getOfPlayer(player.id);
 	const whoIsConcerned = {
@@ -444,10 +446,10 @@ export async function giveItemToPlayer(
 	};
 
 	response.push(makePacket(ItemFoundPacket, {
-		itemWithDetails: toItemWithDetails(player, item, itemLevel, null)
+		itemWithDetails: toItemWithDetails(player, item, itemLevel, itemEnchantmentId)
 	}));
 
-	if (await player.giveItem(item, itemLevel)) {
+	if (await player.giveItem(item, itemLevel, itemEnchantmentId)) {
 		await manageGiveItemRelateds(response, player, item);
 		return;
 	}
@@ -709,6 +711,23 @@ export function generateRandomLootLevel(): number {
 	return 0;
 }
 
+const LOOT_ENCHANTMENT_CHANCE = 5;
+
+/**
+ * Generate a random enchantment for a looted item (weapons and armors only)
+ * @returns The enchantment ID or null if no enchantment
+ */
+export function generateRandomLootEnchantment(item: GenericItem): string | null {
+	if (item.getCategory() !== ItemCategory.WEAPON && item.getCategory() !== ItemCategory.ARMOR) {
+		return null;
+	}
+	const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * 100;
+	if (roll >= LOOT_ENCHANTMENT_CHANCE) {
+		return null;
+	}
+	return ItemEnchantment.getRandomEnchantment().id;
+}
+
 /**
  * Give a random item
  * @param context
@@ -716,7 +735,11 @@ export function generateRandomLootLevel(): number {
  * @param player
  */
 export async function giveRandomItem(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
-	await giveItemToPlayer(response, context, player, generateRandomItem({}), { itemLevel: generateRandomLootLevel() });
+	const item = generateRandomItem({});
+	await giveItemToPlayer(response, context, player, item, {
+		itemLevel: generateRandomLootLevel(),
+		itemEnchantmentId: generateRandomLootEnchantment(item)
+	});
 }
 
 type TemporarySlotAndItemType = {

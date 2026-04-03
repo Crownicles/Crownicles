@@ -8,7 +8,7 @@ import {
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { giveFoodToGuild } from "../utils/FoodUtils";
 import {
-	generateRandomItem, generateRandomLootLevel, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import {
 	CrowniclesPacket, makePacket, PacketContext
@@ -89,12 +89,17 @@ async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response
 			packet.amount = foodAmount(player, guild!.ultimateFood, true);
 			await giveFoodToGuild(response, player, SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 			break;
-		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ITEM:
-			await giveItemToPlayer(response, context, player, generateRandomItem({
+		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ITEM: {
+			const item = generateRandomItem({
 				minRarity: minRarity(player),
 				maxRarity: maxRarity(player)
-			}), { itemLevel: generateRandomLootLevel() });
+			});
+			await giveItemToPlayer(response, context, player, item, {
+				itemLevel: generateRandomLootLevel(),
+				itemEnchantmentId: generateRandomLootEnchantment(item)
+			});
 			break;
+		}
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD:
 			packet.amount = foodAmount(player, guild!.commonFood, false);
 			await giveFoodToGuild(response, player, SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
