@@ -20,7 +20,9 @@ import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import { MqttTopicUtils } from "../../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesDiscordMetrics } from "./CrowniclesDiscordMetrics";
-import { millisecondsToSeconds } from "../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToSeconds
+} from "../../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { AsyncCorePacketSender } from "./AsyncCorePacketSender";
 import { DiscordConstants } from "../DiscordConstants";
@@ -185,7 +187,7 @@ export class DiscordMQTT {
 				}
 				const startTime = Date.now();
 				await listener(context as PacketContext, packet.packet as CrowniclesPacket);
-				CrowniclesDiscordMetrics.observePacketTime(packet.name, millisecondsToSeconds(Date.now() - startTime));
+				CrowniclesDiscordMetrics.observePacketTime(packet.name, millisecondsToSeconds(asMilliseconds(Date.now() - startTime)));
 			}
 			catch (error) {
 				CrowniclesLogger.errorWithObj("Error while handling packet", error);

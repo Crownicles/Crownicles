@@ -12,7 +12,7 @@ import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
 import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
 import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
-	dateToLogs,
+	asMilliseconds,	dateToLogs,
 	daysToMilliseconds,
 	getNextSaturdayMidnight,
 	getNextSundayMidnight,
@@ -112,7 +112,7 @@ export class LogsReadRequests {
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
-		const startOfWeek = Math.floor(millisecondsToSeconds(getNextSundayMidnight() - daysToMilliseconds(TimeConstants.DAYS_IN_WEEK)));
+		const startOfWeek = Math.floor(millisecondsToSeconds(asMilliseconds(getNextSundayMidnight() - daysToMilliseconds(TimeConstants.DAYS_IN_WEEK))));
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
 		if (!logPlayer) {
 			return 0;

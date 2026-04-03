@@ -11,7 +11,9 @@ import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { calculateHealAlterationPrice } from "../utils/HealAlterationUtils";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToMinutes
+} from "../../../../Lib/src/utils/TimeUtils";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
@@ -49,7 +51,7 @@ export function calculateTokenCost(effectId: string, effectRemainingTime: number
 
 	// If occupied, add 1 token per 20 minutes of remaining time
 	if (activeEffectId === Effect.OCCUPIED.id) {
-		const remainingMinutes = millisecondsToMinutes(effectRemainingTime);
+		const remainingMinutes = millisecondsToMinutes(asMilliseconds(effectRemainingTime));
 		cost += Math.ceil(remainingMinutes / TokensConstants.REPORT.MINUTES_PER_ADDITIONAL_TOKEN);
 	}
 

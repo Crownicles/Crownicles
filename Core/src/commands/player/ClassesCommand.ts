@@ -28,7 +28,9 @@ import { MissionsController } from "../../core/missions/MissionsController";
 import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
-import { secondsToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asSeconds, secondsToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
 
 function getEndCallback(player: Player) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -95,9 +97,9 @@ export default class ClassesCommand {
 		const currentClass = ClassDataController.instance.getById(player.class);
 		const currentClassGroup = currentClass!.classGroup;
 		const lastTimeThePlayerHasEditedHisClass = await LogsReadRequests.getLastTimeThePlayerHasEditedHisClass(player.keycloakId);
-		if (Date.now() - lastTimeThePlayerHasEditedHisClass.getTime() < secondsToMilliseconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup])) {
+		if (Date.now() - lastTimeThePlayerHasEditedHisClass.getTime() < secondsToMilliseconds(asSeconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup]))) {
 			response.push(makePacket(CommandClassesCooldownErrorPacket, {
-				timestamp: lastTimeThePlayerHasEditedHisClass.valueOf() + secondsToMilliseconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup])
+				timestamp: lastTimeThePlayerHasEditedHisClass.valueOf() + secondsToMilliseconds(asSeconds(ClassConstants.TIME_BEFORE_CHANGE_CLASS[currentClassGroup]))
 			}));
 			return;
 		}

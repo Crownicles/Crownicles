@@ -38,7 +38,9 @@ import { DiscordCollectorUtils } from "../../../utils/DiscordCollectorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { PacketUtils } from "../../../utils/PacketUtils";
 import { ReactionCollectorResetTimerPacketReq } from "../../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
-import { millisecondsToSeconds } from "../../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToSeconds
+} from "../../../../../Lib/src/utils/TimeUtils";
 import {
 	ChestSlotsPerCategory, HomeFeatures
 } from "../../../../../Lib/src/types/HomeFeatures";
@@ -335,7 +337,7 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 				lng,
 				mapLocationId: data.mapLocationId,
 				mapTypeId: data.mapTypeId,
-				enterCityTimestamp: millisecondsToSeconds(data.enterCityTimestamp)
+				enterCityTimestamp: millisecondsToSeconds(asMilliseconds(data.enterCityTimestamp))
 			})
 		)
 	);
