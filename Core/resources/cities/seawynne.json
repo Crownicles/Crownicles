@@ -9,7 +9,8 @@
   ],
   "shops": [
     "generalShop",
-    "tanner"
+    "tanner",
+    "veterinarian"
   ],
   "inns": [
     {

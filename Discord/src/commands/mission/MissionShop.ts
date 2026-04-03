@@ -132,6 +132,37 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 
 	const expeditionSection = buildExpeditionSection(packet, lng);
 
+	const description = i18n.t("commands:shop.shopItems.lovePointsValue.giveDesc", {
+		lng,
+		petName: PetUtils.petToShortString(lng, packet.nickname, packet.typeId, packet.sex),
+		commentOnPetAge: i18n.t("commands:shop.shopItems.lovePointsValue.ageComment", {
+			lng,
+			context: packet.ageCategory,
+			age: packet.petId - 1
+		}),
+		actualLP: packet.lovePoints,
+		maxLovePoints: PetConstants.MAX_LOVE_POINTS,
+		diet: PetUtils.getDietDisplay(packet.diet, lng),
+		force: packet.force,
+		speed: packet.speed,
+		feedDelay: i18n.formatDuration(millisecondsToMinutes(asMilliseconds(packet.feedDelay)), lng),
+		nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
+		commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
+		commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),
+		expeditionSection,
+		dwarfPet: packet.randomPetDwarf
+			? StringUtils.getRandomTranslation("commands:shop.shopItems.lovePointsValue.dwarf", lng, {
+				pet: PetUtils.petToShortString(lng, undefined, packet.randomPetDwarf.typeId, packet.randomPetDwarf.sex),
+				numberOfPetsNotSeen: packet.randomPetDwarf.numberOfPetsNotSeen
+			})
+			: ""
+	}) + (packet.lovePointsGained
+		? i18n.t("commands:shop.shopItems.lovePointsValue.lovePointsGained", {
+			lng,
+			amount: packet.lovePointsGained
+		})
+		: "");
+
 	await interaction.followUp({
 		embeds: [
 			new CrowniclesEmbed()
@@ -139,31 +170,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
 				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.shopItems.lovePointsValue.giveDesc", {
-					lng,
-					petName: PetUtils.petToShortString(lng, packet.nickname, packet.typeId, packet.sex),
-					commentOnPetAge: i18n.t("commands:shop.shopItems.lovePointsValue.ageComment", {
-						lng,
-						context: packet.ageCategory,
-						age: packet.petId - 1
-					}),
-					actualLP: packet.lovePoints,
-					maxLovePoints: PetConstants.MAX_LOVE_POINTS,
-					diet: PetUtils.getDietDisplay(packet.diet, lng),
-					force: packet.force,
-					speed: packet.speed,
-					feedDelay: i18n.formatDuration(millisecondsToMinutes(asMilliseconds(packet.feedDelay)), lng),
-					nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
-					commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
-					commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),
-					expeditionSection,
-					dwarfPet: packet.randomPetDwarf
-						? StringUtils.getRandomTranslation("commands:shop.shopItems.lovePointsValue.dwarf", lng, {
-							pet: PetUtils.petToShortString(lng, undefined, packet.randomPetDwarf.typeId, packet.randomPetDwarf.sex),
-							numberOfPetsNotSeen: packet.randomPetDwarf.numberOfPetsNotSeen
-						})
-						: ""
-				}))
+				.setDescription(description)
 		]
 	});
 }

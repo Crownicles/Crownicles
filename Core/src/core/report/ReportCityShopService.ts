@@ -42,6 +42,7 @@ import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Materials } from "../database/game/models/Material";
+import { getVeterinarianShopItem } from "../utils/VeterinarianShopItems";
 
 /**
  * Cached wood materials by rarity (constant after data loading, computed once per rarity)
@@ -74,7 +75,8 @@ const SHOP_HANDLERS: Record<string, (player: Player, context: PacketContext, res
 	stockExchange: openStockExchange,
 	tanner: openTanner,
 	herbalist: openHerbalist,
-	lumberjack: openLumberjack
+	lumberjack: openLumberjack,
+	veterinarian: openVeterinarian
 };
 
 export async function handleCityShopReaction(params: CityShopReactionParams): Promise<void> {
@@ -323,6 +325,24 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					})
 				}
 			]
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
+	});
+}
+
+/**
+ * Open the veterinarian shop for the player (pet information + love points boost)
+ */
+export async function openVeterinarian(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "services",
+			items: [getVeterinarianShopItem()]
 		}
 	];
 

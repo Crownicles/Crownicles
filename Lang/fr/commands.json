@@ -894,6 +894,10 @@
         "lumberjack": {
           "label": "Le Bûcheron",
           "description": "Un colosse taillé comme un chêne empile des bûches devant son étal. Son bois est réputé pour alimenter les fourneaux."
+        },
+        "veterinarian": {
+          "label": "Le Vétérinaire",
+          "description": "Un praticien attentionné examine les familiers et peut leur redonner de l'affection s'ils en manquent."
         }
       },
       "inns": {
@@ -1541,6 +1545,7 @@
         "dislikedLocations": "\n{emote:expedition.disliked} Se méfie de : {{locations}}",
         "noPreferences": "\n\n{emote:expedition.map} **Affinités d'exploration** : J'observe chez votre familier une remarquable capacité d'adaptation. Son instinct lui permet de s'acclimater à tous types de terrains sans difficulté particulière.",
         "petIsHungry": "{emote:effects.starving} affamé",
+        "lovePointsGained": "\n\n{emote:petInformation.loveScore} Le vétérinaire a prodigué des soins affectueux à votre familier, lui rendant **{{amount, number}}** points d'amour !",
         "commentOnFightEffect": {
           "bite": [
             "Ce familier possède des crocs impressionnants ! En combat, il n'hésitera pas à mordre vos adversaires avec une précision redoutable.",
