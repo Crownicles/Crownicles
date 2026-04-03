@@ -233,11 +233,10 @@ export const CookingXpConstants = {
 } as const;
 
 /**
- * Level offset added to recipe level when calculating the failure rate penalty
- * for recipes above the grade's max level without penalty.
- * Formula: failureRate * (FAILURE_LEVEL_OFFSET + recipeLevel)
+ * Additional failure rate added per recipe level above the grade's max level without penalty.
+ * Formula: failureRate + FAILURE_RATE_PER_EXTRA_LEVEL * (recipeLevel - maxRecipeLevelWithoutPenalty)
  */
-export const FAILURE_LEVEL_OFFSET = 18;
+export const FAILURE_RATE_PER_EXTRA_LEVEL = 0.15;
 
 /**
  * If the recipe level exceeds the grade's max by this amount or more, no XP is gained
