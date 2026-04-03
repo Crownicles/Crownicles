@@ -808,6 +808,8 @@
     "monsterRewardGuildXp": "{emote:unitValues.xp} Expérience de guilde gagnée : **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Argent gagné : **{{money, number}}**\n{emote:unitValues.xp} XP gagnée : **{{experience, number}}**",
     "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints, number}}**",
+    "monsterRewardsMaterialTitle": "{emote:inventory.materials} Matériaux récupérés :",
+    "monsterRewardsMaterialLine": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**",
     "monsterRewardsTitle": "{{pseudo}}, récompenses de combat",
     "newBigEvent": "{emote:languages.fr} Vous êtes arrivé à **{{destination}}** !",
     "noFight": "{emote:commands.report} **Journal de {{pseudo}} :** {emote:pveFights.waitABit} | Vous vous enfuyez rapidement et trouvez une petite cachette ! Le monstre vous attend patiemment dehors...",
