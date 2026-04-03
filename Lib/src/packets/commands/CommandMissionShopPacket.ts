@@ -80,6 +80,11 @@ export class CommandMissionShopPetInformation extends CrowniclesPacket {
 		sex: SexTypeShort;
 		numberOfPetsNotSeen: number;
 	};
+
+	/**
+	 * Love points gained by visiting the veterinarian (only when pet has low LP)
+	 */
+	lovePointsGained?: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

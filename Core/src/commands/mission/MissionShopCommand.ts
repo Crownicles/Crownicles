@@ -18,9 +18,7 @@ import {
 	CommandMissionShopKingsFavor,
 	CommandMissionShopMoney,
 	CommandMissionShopNoMissionToSkip,
-	CommandMissionShopNoPet,
 	CommandMissionShopPacketReq,
-	CommandMissionShopPetInformation,
 	CommandMissionShopSkipMissionResult
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
@@ -37,8 +35,7 @@ import {
 } from "../../core/utils/ItemUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
-import { PetDataController } from "../../data/Pet";
+
 import {
 	MissionSlot, MissionSlots
 } from "../../core/database/game/models/MissionSlot";
@@ -50,17 +47,9 @@ import {
 	ReactionCollectorSkipMissionShopItemCloseReaction,
 	ReactionCollectorSkipMissionShopItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSkipMissionShopItem";
-import {
-	PetConstants, PetDiet
-} from "../../../../Lib/src/constants/PetConstants";
-import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
-import { getAiPetBehavior } from "../../core/fights/PetAssistManager";
-import { PetUtils } from "../../core/utils/PetUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { DwarfPetsSeen } from "../../core/database/game/models/DwarfPetsSeen";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
-import { getPetExpeditionPreferences } from "../../../../Lib/src/constants/ExpeditionConstants";
 
 /**
  * Calculate the amount of money the player will have if he buys some with gems
@@ -154,64 +143,6 @@ function getAThousandPointsShopItem(): ShopItem {
 			missionsInfo.hasBoughtPointsThisWeek = true;
 			response.push(makePacket(CommandMissionShopKingsFavor, { score: scoreParameters.amount }));
 			await Promise.all([player.save(), missionsInfo.save()]);
-			return true;
-		}
-	};
-}
-
-/**
- * Creates the pet information shop item configuration
- * @returns Shop item for viewing detailed pet information and preferences
- */
-function getValueLovePointsPetShopItem(): ShopItem {
-	return {
-		id: ShopItemType.LOVE_POINTS_VALUE,
-		price: Constants.MISSION_SHOP.PRICES.PET_INFORMATION,
-		amounts: [1],
-		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => {
-			const player = await Players.getById(playerId);
-			if (player.petId === null) {
-				response.push(makePacket(CommandMissionShopNoPet, {}));
-				return false;
-			}
-			const pet = await PetEntities.getById(player.petId);
-			if (!pet) {
-				response.push(makePacket(CommandMissionShopNoPet, {}));
-				return false;
-			}
-			const petModel = PetDataController.instance.getById(pet.typeId)!;
-			const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
-			const randomPetDwarfModel = randomPetNotShownToDwarfId !== 0 ? PetDataController.instance.getById(randomPetNotShownToDwarfId) : null;
-
-			// Get pet expedition preferences
-			const preferences = getPetExpeditionPreferences(pet.typeId);
-			const likedExpeditionTypes = preferences?.liked ? [...preferences.liked] : [];
-			const dislikedExpeditionTypes = preferences?.disliked ? [...preferences.disliked] : [];
-
-			response.push(makePacket(CommandMissionShopPetInformation, {
-				nickname: pet.nickname,
-				petId: pet.id,
-				typeId: petModel.id,
-				sex: pet.sex as SexTypeShort,
-				loveLevel: pet.getLoveLevelNumber(),
-				lovePoints: pet.lovePoints,
-				diet: petModel.diet as PetDiet,
-				nextFeed: pet.getFeedCooldown(petModel),
-				force: petModel.force,
-				speed: petModel.speed,
-				feedDelay: (petModel.feedDelay ?? 1) * PetConstants.BREED_COOLDOWN,
-				fightAssistId: getAiPetBehavior(petModel.id)?.id ?? "",
-				ageCategory: PetUtils.getAgeCategory(pet.id),
-				likedExpeditionTypes,
-				dislikedExpeditionTypes,
-				...randomPetDwarfModel && {
-					randomPetDwarf: {
-						typeId: randomPetDwarfModel.id,
-						sex: PetConstants.SEX.MALE as SexTypeShort,
-						numberOfPetsNotSeen: await DwarfPetsSeen.getNumberOfPetsNotSeen(player)
-					}
-				}
-			}));
 			return true;
 		}
 	};
@@ -331,10 +262,7 @@ export default class MissionShopCommand {
 			},
 			{
 				id: "utilitaries",
-				items: [
-					getSkipMapMissionShopItem(),
-					getValueLovePointsPetShopItem()
-				]
+				items: [getSkipMapMissionShopItem()]
 			},
 			{
 				id: "prestige",
