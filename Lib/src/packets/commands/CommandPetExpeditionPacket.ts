@@ -300,6 +300,14 @@ export interface ExpeditionRewardData {
 	 * Whether an item was given during this expedition
 	 */
 	itemGiven?: boolean;
+
+	/**
+	 * Material loot earned during the expedition
+	 */
+	materialLoot?: {
+		materialId: number;
+		quantity: number;
+	}[];
 }
 
 /**

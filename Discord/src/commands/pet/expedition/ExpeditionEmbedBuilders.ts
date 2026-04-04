@@ -211,6 +211,18 @@ function formatRewards(
 		lines.push(i18n.t("commands:petExpedition.rewards.badgeEarned", { lng }));
 	}
 
+	// Material loot
+	if (rewards.materialLoot && rewards.materialLoot.length > 0) {
+		lines.push(i18n.t("commands:petExpedition.rewards.materialTitle", { lng }));
+		for (const entry of rewards.materialLoot) {
+			lines.push(i18n.t("commands:petExpedition.rewards.materialLine", {
+				lng,
+				materialId: entry.materialId,
+				quantity: entry.quantity
+			}));
+		}
+	}
+
 	return lines.join("\n");
 }
 

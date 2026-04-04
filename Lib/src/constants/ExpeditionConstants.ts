@@ -556,6 +556,115 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Material loot configuration for expeditions
+	 * Each location type has a pool of materials that can drop
+	 * Number of drops scales with reward index
+	 */
+	static readonly MATERIAL_LOOT = {
+		/**
+		 * Number of material drops based on reward index (0-9)
+		 */
+		DROPS_BY_REWARD_INDEX: [
+			1,
+			1,
+			2,
+			2,
+			3,
+			3,
+			4,
+			4,
+			5,
+			5
+		] as const,
+
+		/**
+		 * Rarity weights for weighted random material selection (same as boss loot)
+		 */
+		RARITY_WEIGHTS: {
+			1: 60,
+			2: 30,
+			3: 10
+		} as Record<number, number>,
+
+		/**
+		 * Minimum reward index required to receive material loot
+		 */
+		MIN_REWARD_INDEX: 1
+	};
+
+	/**
+	 * Material loot tables by location type
+	 * Each location has 6 materials with a mix of rarities
+	 * Prioritizes materials not obtainable from boss loot
+	 */
+	static readonly EXPEDITION_LOOT_TABLES: Record<(typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES], readonly number[]> = {
+		forest: [
+			14,
+			20,
+			29,
+			45,
+			6,
+			40
+		],
+		mountain: [
+			32,
+			34,
+			44,
+			47,
+			11,
+			31
+		],
+		desert: [
+			54,
+			55,
+			49,
+			50,
+			61,
+			65
+		],
+		swamp: [
+			63,
+			64,
+			53,
+			60,
+			67,
+			72
+		],
+		ruins: [
+			77,
+			79,
+			66,
+			71,
+			75,
+			76
+		],
+		cave: [
+			82,
+			89,
+			74,
+			78,
+			83,
+			84
+		],
+		plains: [
+			35,
+			42,
+			80,
+			81,
+			85,
+			86
+		],
+		coast: [
+			52,
+			58,
+			70,
+			2,
+			88,
+			90
+		]
+	};
+
+	/**
 	 * Terrain difficulty configuration for risk generation
 	 * Each terrain has a skew factor that biases the probability distribution
 	 * All terrains can generate risk values from 0 to 100, but with different probabilities
