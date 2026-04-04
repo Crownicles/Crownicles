@@ -69,8 +69,7 @@ export const ReportCityMenuIds = {
 	GUILD_DOMAIN_UPGRADE_PREFIX: "GUILD_DOMAIN_UPGRADE_",
 
 	/** Guild domain mission sub-menu */
-	GUILD_DOMAIN_MISSION_MENU: "GUILD_DOMAIN_MISSION_MENU"
 
-	/** Custom ID used for the "stay in city" button across all city sub-menus */
 	STAY_IN_CITY: "STAY_IN_CITY"
+	/** Custom ID used for the "stay in city" button across all city sub-menus */
 } as const;
