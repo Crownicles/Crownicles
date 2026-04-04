@@ -48,8 +48,12 @@ import {
 	ReactionCollectorBlacksmithMenuReaction,
 	ReactionCollectorBlacksmithUpgradeReaction,
 	ReactionCollectorBlacksmithDisenchantReaction,
-	ReactionCollectorGardenHarvestReaction
+	ReactionCollectorGardenHarvestReaction,
+	ReactionCollectorGuildDomainMenuReaction,
+	ReactionCollectorGuildDomainNotaryReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { Guilds } from "../../core/database/game/models/Guild";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { Settings } from "../../core/database/game/models/Setting";
@@ -87,6 +91,7 @@ import {
 	handleUpgradeHomeReaction,
 	handleUpgradeItemReaction
 } from "../../core/report/ReportCityService";
+import { handleGuildDomainNotaryReaction } from "../../core/report/ReportCityGuildDomainService";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -340,7 +345,13 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 			);
 		}
 	],
-	[ReactionCollectorGardenHarvestReaction.name, NOOP_REACTION]
+	[ReactionCollectorGardenHarvestReaction.name, NOOP_REACTION],
+	[ReactionCollectorGuildDomainMenuReaction.name, NOOP_REACTION],
+	[
+		ReactionCollectorGuildDomainNotaryReaction.name, async (params): Promise<void> => {
+			await handleGuildDomainNotaryReaction(params.player, params.city, params.response);
+		}
+	]
 ]);
 
 async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
@@ -376,6 +387,31 @@ async function sendCityCollector(
 	// Build blacksmith data if city has a blacksmith
 	const blacksmith = city.blacksmithAvailable
 		? buildBlacksmithData(playerInventory, playerMaterialMap, player)
+		: undefined;
+
+	// Build guild domain data if player has a guild
+	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+	const guildDomain = guild?.domainCityId === city.id
+		? {
+			isInCity: true,
+			guildName: guild.name,
+			shopLevel: guild.shopLevel,
+			shelterLevel: guild.shelterLevel,
+			pantryLevel: guild.pantryLevel,
+			trainingGroundLevel: guild.trainingGroundLevel
+		}
+		: undefined;
+
+	const isGuildChief = guild !== null && guild.chiefId === player.id;
+	const guildDomainNotary = isGuildChief
+		? {
+			hasDomain: guild.domainCityId !== null,
+			cost: guild.domainCityId
+				? GuildDomainConstants.DOMAIN_RELOCATION_COST
+				: GuildDomainConstants.DOMAIN_PURCHASE_COST,
+			treasury: guild.treasury,
+			isChief: true
+		}
 		: undefined;
 
 	const collectorData: ReactionCollectorCityData = {
@@ -426,6 +462,8 @@ async function sendCityCollector(
 			city
 		),
 		blacksmith,
+		guildDomain,
+		guildDomainNotary,
 		initialMenu: options.initialMenu
 	};
 

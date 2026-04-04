@@ -845,7 +845,9 @@
         "enterForge": "Entrer dans la forge",
         "talkToEnchanter": "Lui parler",
         "browseShop": "Examiner l'étal",
-        "sitDown": "S'attabler"
+        "sitDown": "S'attabler",
+        "visitDomain": "Visiter le domaine",
+        "seeGuildNotary": "Consulter le notaire"
       },
       "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
       "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",
@@ -1222,9 +1224,30 @@
           "cookingStation": "Un fourneau pour préparer des potions et de la nourriture pour familiers {emote:city.homeUpgrades.cooking}",
           "betterCookingStation": "Un fourneau amélioré avec plus d'emplacements de cuisson {emote:city.homeUpgrades.cooking}"
         }
+      },
+      "guildDomain": {
+        "label": "Domaine de guilde",
+        "description": "Le domaine de votre guilde **{{guildName}}** se trouve dans cette ville.",
+        "notaryLabel": "Notaire de guilde",
+        "notaryDescription": "Achetez ou déplacez le domaine de votre guilde dans cette ville.",
+        "menuTitle": "{{pseudo}}, domaine de {{guildName}}",
+        "menuDescription": "{emote:city.guildDomain} Vous entrez dans le domaine de votre guilde **{{guildName}}**. Les bâtiments s'étendent autour de vous :\n\n• **Boutique** : Niv. {{shopLevel}}\n• **Refuge** : Niv. {{shelterLevel}}\n• **Garde-manger** : Niv. {{pantryLevel}}\n• **Terrain d'entraînement** : Niv. {{trainingGroundLevel}}",
+        "leaveDomain": "Quitter le domaine",
+        "notaryTitle": "{{pseudo}}, notaire de guilde",
+        "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Le notaire de guilde vous accueille et examine les finances de votre guilde. Pour installer le domaine de votre guilde dans cette ville, il faudra débourser **{{cost}} {emote:unitValues.money}** depuis la trésorerie de guilde.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
+        "notaryRelocateDescription": "{emote:city.guildDomainNotary} Le notaire de guilde vous accueille et examine les finances de votre guilde. Pour déplacer le domaine de votre guilde vers cette ville, il faudra débourser **{{cost}} {emote:unitValues.money}** depuis la trésorerie de guilde.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
+        "notaryConfirmLabel": "Coût : **{{cost}} {emote:unitValues.money}** depuis la trésorerie",
+        "confirmPurchase": "Installer le domaine",
+        "confirmRelocate": "Déplacer le domaine",
+        "leaveNotary": "Quitter le notaire",
+        "purchaseTitle": "{{pseudo}}, domaine installé !",
+        "purchaseDescription": "{emote:city.guildDomain} Félicitations ! Le domaine de votre guilde a été installé dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
+        "relocateTitle": "{{pseudo}}, domaine déplacé !",
+        "relocateDescription": "{emote:city.guildDomain} Le domaine de votre guilde a été déplacé dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
+        "notEnoughTreasuryTitle": "{{pseudo}}, fonds insuffisants !",
+        "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} La trésorerie de votre guilde ne contient pas assez de fonds pour cette opération. Il manque **{{missingTreasury}} {emote:unitValues.money}**."
       }
     },
-    "useTokensButton": "Avancer",
     "notEnoughTokensButton": "Jetons insuffisants",
     "useTokensLoading": "Chargement...",
     "useTokensConfirmTitle": "{{pseudo}}, confirmation",

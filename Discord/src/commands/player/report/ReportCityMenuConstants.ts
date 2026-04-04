@@ -49,6 +49,16 @@ export const ReportCityMenuIds = {
 	/** Move home to current city */
 	MOVE_HOME: "MOVE_HOME",
 
+	// --- Guild domain ---
+	/** Guild domain sub-menu */
+	GUILD_DOMAIN_MENU: "GUILD_DOMAIN_MENU",
+
+	/** Guild domain notary sub-menu */
+	GUILD_DOMAIN_NOTARY_MENU: "GUILD_DOMAIN_NOTARY_MENU",
+
+	/** Confirm guild domain purchase or relocation */
+	GUILD_DOMAIN_CONFIRM: "GUILD_DOMAIN_CONFIRM"
+
 	/** Custom ID used for the "stay in city" button across all city sub-menus */
 	STAY_IN_CITY: "STAY_IN_CITY"
 } as const;

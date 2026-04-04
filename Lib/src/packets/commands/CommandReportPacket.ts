@@ -561,3 +561,20 @@ export class CommandReportCookingUnpinReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingUnpinRes extends CrowniclesPacket {}
+
+// Guild domain notary packets
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportGuildDomainPurchaseRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportGuildDomainRelocateRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportGuildDomainNotEnoughTreasuryRes extends CrowniclesPacket {
+	missingTreasury!: number;
+}
