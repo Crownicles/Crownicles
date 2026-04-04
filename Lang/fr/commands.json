@@ -902,6 +902,10 @@
         "veterinarian": {
           "label": "Le Vétérinaire",
           "description": "Un praticien attentionné examine les familiers et peut leur redonner de l'affection s'ils en manquent."
+        },
+        "materialMerchant": {
+          "label": "Le Marchand de matériaux",
+          "description": "Un négociant baroudeur étale des caisses de matériaux récupérés aux quatre coins du royaume. Ses lots sont variés mais le contenu reste une surprise."
         }
       },
       "inns": {
@@ -1330,6 +1334,7 @@
       "guildXp": "Expérience de guilde",
       "resources": "Ressources",
       "woodBundles": "Bois",
+      "materialPacks": "Matériaux",
       "utilitaries": "Utilitaires",
       "prestige": "Prestige",
       "services": "Services"
@@ -1484,6 +1489,10 @@
       "woodRareBundle": {
         "name": "{emote:shopItems.woodRareBundle} Bois précieux",
         "info": "Du bois rare et précieux, nécessaire pour les recettes les plus exigeantes."
+      },
+      "randomMaterialPack": {
+        "name": "{emote:shopItems.randomMaterialPack} Lot de matériaux",
+        "info": "Un assortiment de matériaux variés, récoltés aux quatre coins du royaume. Le contenu est aléatoire et peut inclure des matériaux rares."
       },
       "token": {
         "name": "{emote:unitValues.token} Jeton",
