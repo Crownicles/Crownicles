@@ -1003,11 +1003,11 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
-				`${CrowniclesIcons.city.guildDomainNotary} ${i18n.t(descriptionKey, {
+				i18n.t(descriptionKey, {
 					lng,
 					cost: guildNotaryData.cost,
 					treasury: guildNotaryData.treasury
-				})}`
+				})
 			)
 		);
 
@@ -1015,11 +1015,14 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 			const actionLabel = guildNotaryData.hasDomain
 				? i18n.t("commands:report.city.guildDomain.confirmRelocate", { lng })
 				: i18n.t("commands:report.city.guildDomain.confirmPurchase", { lng });
+			const confirmLabel = guildNotaryData.cost > 0
+				? i18n.t("commands:report.city.guildDomain.notaryConfirmLabel", {
+					lng, cost: guildNotaryData.cost
+				})
+				: actionLabel;
 			addCitySection(
 				container,
-				i18n.t("commands:report.city.guildDomain.notaryConfirmLabel", {
-					lng, cost: guildNotaryData.cost
-				}),
+				confirmLabel,
 				ReportCityMenuIds.GUILD_DOMAIN_CONFIRM,
 				actionLabel,
 				ButtonStyle.Success,
