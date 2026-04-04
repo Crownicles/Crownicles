@@ -8,7 +8,6 @@ import {
 	CommandReportFoodShopBuyReq,
 	CommandReportFoodShopBuyRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
-import { GuildShopConstants } from "../../../../Lib/src/constants/GuildShopConstants";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { getFoodIndexOf } from "../utils/FoodUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -32,7 +31,7 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 
 	const amount = Math.max(1, Math.floor(packet.amount));
 	const foodIndex = getFoodIndexOf(foodType);
-	const pricePerUnit = GuildShopConstants.PRICES.FOOD[foodIndex];
+	const pricePerUnit = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
 	const totalCost = pricePerUnit * amount;
 
 	if (player.money < totalCost) {

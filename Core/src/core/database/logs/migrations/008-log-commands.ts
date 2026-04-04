@@ -8,7 +8,6 @@ import { CommandMissionsPacketReq } from "../../../../../../Lib/src/packets/comm
 import { CommandTopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandTopPacket";
 import { CommandReportPacketReq } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CommandDailyBonusPacketReq } from "../../../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
-import { CommandGuildShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildShopPacket";
 import { CommandUpdatePacketReq } from "../../../../../../Lib/src/packets/commands/CommandUpdatePacket";
 import { CommandGuildLeavePacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
 import { CommandGuildDescriptionPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildDescriptionPacket";
@@ -55,7 +54,7 @@ const commandsToPacketNames: Map<string, string> = new Map([
 	["language", "[OLD] language"], // Front end command now
 	["dailybonus", CommandDailyBonusPacketReq.name],
 	["petfeed", CommandPetFeedPacketReq.name],
-	["guildshop", CommandGuildShopPacketReq.name],
+	["guildshop", "[OLD] guildshop"], // Command removed — migrated to domain shop
 	["guilddailybonus", CommandGuildDailyPacketReq.name],
 	["switch", "[OLD] switch"],
 	["equip", CommandEquipPacketReq.name],
