@@ -96,7 +96,8 @@ export enum ShopItemType {
 	MARKET_ANALYSIS,
 	WOOD_COMMON_BUNDLE,
 	WOOD_UNCOMMON_BUNDLE,
-	WOOD_RARE_BUNDLE
+	WOOD_RARE_BUNDLE,
+	RANDOM_MATERIAL_PACK
 }
 
 export const ShopItemTypeToString: Record<ShopItemType, string> = {
@@ -127,5 +128,6 @@ export const ShopItemTypeToString: Record<ShopItemType, string> = {
 	[ShopItemType.MARKET_ANALYSIS]: "marketAnalysis",
 	[ShopItemType.WOOD_COMMON_BUNDLE]: "woodCommonBundle",
 	[ShopItemType.WOOD_UNCOMMON_BUNDLE]: "woodUncommonBundle",
-	[ShopItemType.WOOD_RARE_BUNDLE]: "woodRareBundle"
+	[ShopItemType.WOOD_RARE_BUNDLE]: "woodRareBundle",
+	[ShopItemType.RANDOM_MATERIAL_PACK]: "randomMaterialPack"
 };
