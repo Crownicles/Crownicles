@@ -30,6 +30,7 @@ import {
 import { CrowniclesIcons } from "../../../../../Lib/src/CrowniclesIcons";
 import {
 	ReactionCollectorCreationPacket,
+	ReactionCollectorReaction,
 	ReactionCollectorRefuseReaction
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCache } from "../../../bot/DiscordCache";
@@ -536,23 +537,26 @@ async function handleInnCollectorInteraction(
 	}
 
 	const innReactionRoutes: {
-		prefix: string; reactionType: string; idExtractor: (id: string) => boolean;
+		prefix: string;
+		reactionType: string;
+		idExtractor: (id: string, reaction: {
+			type: string;
+			data: ReactionCollectorReaction;
+		}) => boolean;
 	}[] = [
 		{
 			prefix: ReportCityMenuIds.MEAL_PREFIX,
 			reactionType: ReactionCollectorInnMealReaction.name,
-			idExtractor: (mealId): boolean => packet.reactions.some(r =>
-				r.type === ReactionCollectorInnMealReaction.name
-				&& (r.data as ReactionCollectorInnMealReaction).meal.mealId === mealId
-				&& (r.data as ReactionCollectorInnMealReaction).innId === innId)
+			idExtractor: (mealId, reaction): boolean =>
+				(reaction.data as ReactionCollectorInnMealReaction).meal.mealId === mealId
+				&& (reaction.data as ReactionCollectorInnMealReaction).innId === innId
 		},
 		{
 			prefix: ReportCityMenuIds.ROOM_PREFIX,
 			reactionType: ReactionCollectorInnRoomReaction.name,
-			idExtractor: (roomId): boolean => packet.reactions.some(r =>
-				r.type === ReactionCollectorInnRoomReaction.name
-				&& (r.data as ReactionCollectorInnRoomReaction).room.roomId === roomId
-				&& (r.data as ReactionCollectorInnRoomReaction).innId === innId)
+			idExtractor: (roomId, reaction): boolean =>
+				(reaction.data as ReactionCollectorInnRoomReaction).room.roomId === roomId
+				&& (reaction.data as ReactionCollectorInnRoomReaction).innId === innId
 		}
 	];
 
@@ -564,7 +568,7 @@ async function handleInnCollectorInteraction(
 		const id = selectedValue.replace(route.prefix, "");
 		const reactionIndex = packet.reactions.findIndex(
 			reaction => reaction.type === route.reactionType
-				&& route.idExtractor(id)
+				&& route.idExtractor(id, reaction)
 		);
 		if (reactionIndex !== -1) {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
