@@ -210,7 +210,7 @@ export function handleStayInCityInteraction(
 }
 
 function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (!data.home.owned && !data.home.manage) {
+	if (!data.home.owned && !data.home.manage && !data.guildDomainNotary?.isChief) {
 		return;
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -227,12 +227,12 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 		});
 	}
 
-	if (data.home.manage) {
+	if (data.home.manage || data.guildDomainNotary?.isChief) {
 		addCitySection({
 			container,
 			emote: CrowniclesIcons.city.manageHome,
 			title: i18n.t("commands:report.city.homes.manageHome", { lng }),
-			description: getManageHomeMenuOptionDescription(data.home.manage, lng),
+			description: data.home.manage ? getManageHomeMenuOptionDescription(data.home.manage, lng) : undefined,
 			customId: HomeMenuIds.MANAGE_HOME_MENU,
 			buttonLabel: i18n.t("commands:report.city.buttons.seeNotary", { lng })
 		});
@@ -308,35 +308,22 @@ function addInnsSection(container: ContainerBuilder, data: ReactionCollectorCity
 }
 
 function addGuildDomainSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (!data.guildDomain && !data.guildDomainNotary) {
+	if (!data.guildDomain?.isInCity) {
 		return;
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
-	if (data.guildDomain?.isInCity) {
-		addCitySection(
-			container,
-			`${CrowniclesIcons.city.guildDomain} **${i18n.t("commands:report.city.guildDomain.label", { lng })}**\n${i18n.t("commands:report.city.guildDomain.description", {
-				lng,
-				guildName: data.guildDomain.guildName
-			})}`,
-			ReportCityMenuIds.GUILD_DOMAIN_MENU,
-			i18n.t("commands:report.city.buttons.visitDomain", { lng }),
-			ButtonStyle.Primary,
-			CrowniclesIcons.city.guildDomain
-		);
-	}
-
-	if (data.guildDomainNotary?.isChief) {
-		addCitySection(
-			container,
-			`${CrowniclesIcons.city.guildDomainNotary} **${i18n.t("commands:report.city.guildDomain.notaryLabel", { lng })}**\n${i18n.t("commands:report.city.guildDomain.notaryDescription", { lng })}`,
-			ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU,
-			i18n.t("commands:report.city.buttons.seeGuildNotary", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.guildDomainNotary
-		);
-	}
+	addCitySection(
+		container,
+		`${CrowniclesIcons.city.guildDomain} **${i18n.t("commands:report.city.guildDomain.label", { lng })}**\n${i18n.t("commands:report.city.guildDomain.description", {
+			lng,
+			guildName: data.guildDomain.guildName
+		})}`,
+		ReportCityMenuIds.GUILD_DOMAIN_MENU,
+		i18n.t("commands:report.city.buttons.visitDomain", { lng }),
+		ButtonStyle.Primary,
+		CrowniclesIcons.city.guildDomain
+	);
 }
 
 function addGuildFoodShopSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
@@ -440,7 +427,6 @@ async function handleMainMenuSelection(
 		[HomeMenuIds.MANAGE_HOME_MENU]: HomeMenuIds.MANAGE_HOME_MENU,
 		[ReportCityMenuIds.BLACKSMITH_MENU]: ReportCityMenuIds.BLACKSMITH_MENU,
 		[ReportCityMenuIds.GUILD_DOMAIN_MENU]: ReportCityMenuIds.GUILD_DOMAIN_MENU,
-		[ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU]: ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU,
 		[ReportCityMenuIds.GUILD_FOOD_SHOP_MENU]: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU
 	};
 
@@ -981,7 +967,9 @@ function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData
 }
 
 function getManageHomeMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
-	const data = (packet.data.data as ReactionCollectorCityData).home.manage!;
+	const cityData = packet.data.data as ReactionCollectorCityData;
+	const homeData = cityData.home.manage;
+	const guildNotaryData = cityData.guildDomainNotary;
 	const lng = interaction.userLanguage;
 
 	const container = new ContainerBuilder();
@@ -995,15 +983,50 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 		)
 	);
 
-	// Story
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`${i18n.t("commands:report.city.homes.notaryIntroduction", { lng })}\n\n${buildNotaryDescription(data, lng)}`
-		)
-	);
+	// Personal home section
+	if (homeData) {
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				`${i18n.t("commands:report.city.homes.notaryIntroduction", { lng })}\n\n${buildNotaryDescription(homeData, lng)}`
+			)
+		);
+		addNotaryActionButton(container, homeData, lng);
+	}
 
-	// Action button (buy/upgrade/move if affordable)
-	addNotaryActionButton(container, data, lng);
+	// Guild domain section
+	if (guildNotaryData?.isChief) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+		const descriptionKey = guildNotaryData.hasDomain
+			? "commands:report.city.guildDomain.notaryRelocateDescription"
+			: "commands:report.city.guildDomain.notaryPurchaseDescription";
+
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				`${CrowniclesIcons.city.guildDomainNotary} ${i18n.t(descriptionKey, {
+					lng,
+					cost: guildNotaryData.cost,
+					treasury: guildNotaryData.treasury
+				})}`
+			)
+		);
+
+		if (guildNotaryData.treasury >= guildNotaryData.cost) {
+			const actionLabel = guildNotaryData.hasDomain
+				? i18n.t("commands:report.city.guildDomain.confirmRelocate", { lng })
+				: i18n.t("commands:report.city.guildDomain.confirmPurchase", { lng });
+			addCitySection(
+				container,
+				i18n.t("commands:report.city.guildDomain.notaryConfirmLabel", {
+					lng, cost: guildNotaryData.cost
+				}),
+				ReportCityMenuIds.GUILD_DOMAIN_CONFIRM,
+				actionLabel,
+				ButtonStyle.Success,
+				CrowniclesIcons.city.guildDomainNotary
+			);
+		}
+	}
 
 	// Back to city + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -1044,6 +1067,17 @@ async function handleManageHomeCollectorInteraction(
 		await buttonInteraction.deferReply();
 		const reactionIndex = packet.reactions.findIndex(
 			reaction => reaction.type === homeActionRoutes[selectedValue]
+		);
+		if (reactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+		}
+		return;
+	}
+
+	if (selectedValue === ReportCityMenuIds.GUILD_DOMAIN_CONFIRM) {
+		await buttonInteraction.deferReply();
+		const reactionIndex = packet.reactions.findIndex(
+			reaction => reaction.type === ReactionCollectorGuildDomainNotaryReaction.name
 		);
 		if (reactionIndex !== -1) {
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
@@ -1566,95 +1600,6 @@ function getGuildDomainMenu(
 	};
 }
 
-function getGuildDomainNotaryMenu(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): CrowniclesNestedMenu {
-	const data = (packet.data.data as ReactionCollectorCityData).guildDomainNotary!;
-	const lng = interaction.userLanguage;
-
-	const container = new ContainerBuilder();
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.notaryTitle", {
-				lng, pseudo
-			})}`
-		)
-	);
-
-	const descriptionKey = data.hasDomain
-		? "commands:report.city.guildDomain.notaryRelocateDescription"
-		: "commands:report.city.guildDomain.notaryPurchaseDescription";
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t(descriptionKey, {
-				lng,
-				cost: data.cost,
-				treasury: data.treasury
-			})
-		)
-	);
-
-	if (data.treasury >= data.cost) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		const actionLabel = data.hasDomain
-			? i18n.t("commands:report.city.guildDomain.confirmRelocate", { lng })
-			: i18n.t("commands:report.city.guildDomain.confirmPurchase", { lng });
-		addCitySection(
-			container,
-			i18n.t("commands:report.city.guildDomain.notaryConfirmLabel", {
-				lng, cost: data.cost
-			}),
-			ReportCityMenuIds.GUILD_DOMAIN_CONFIRM,
-			actionLabel,
-			ButtonStyle.Success,
-			CrowniclesIcons.city.guildDomainNotary
-		);
-	}
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder()
-				.setCustomId(ReportCityMenuIds.BACK_TO_CITY)
-				.setLabel(i18n.t("commands:report.city.guildDomain.leaveNotary", { lng }))
-				.setEmoji(CrowniclesIcons.city.exit)
-				.setStyle(ButtonStyle.Secondary),
-			createStayInCityButton(lng)
-		)
-	);
-
-	return {
-		containers: [container],
-		createCollector: createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-			if (customId === ReportCityMenuIds.GUILD_DOMAIN_CONFIRM) {
-				await buttonInteraction.deferReply();
-				const reactionIndex = packet.reactions.findIndex(
-					reaction => reaction.type === ReactionCollectorGuildDomainNotaryReaction.name
-				);
-				if (reactionIndex !== -1) {
-					DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-				}
-				return;
-			}
-
-			await buttonInteraction.deferUpdate();
-			if (customId === ReportCityMenuIds.BACK_TO_CITY) {
-				await nestedMenus.changeToMainMenu();
-				return;
-			}
-			if (customId === STAY_IN_CITY_ID) {
-				handleStayInCityInteraction(packet, context, buttonInteraction);
-			}
-		})
-	};
-}
-
 type FoodShopData = ReactionCollectorCityData["guildFoodShop"] & object;
 
 function buildFoodShopBuyButtons(data: FoodShopData, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
@@ -2061,19 +2006,14 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 		}
 	}
 
-	// Add manage home menu
-	if (cityData.home.manage) {
+	// Add manage home menu (also shown for guild chiefs for domain notary)
+	if (cityData.home.manage || cityData.guildDomainNotary?.isChief) {
 		menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
 	}
 
 	// Add guild domain menu
 	if (cityData.guildDomain?.isInCity) {
 		menus.set(ReportCityMenuIds.GUILD_DOMAIN_MENU, getGuildDomainMenu(context, interaction, packet, collectorTime, pseudo));
-	}
-
-	// Add guild domain notary menu
-	if (cityData.guildDomainNotary?.isChief) {
-		menus.set(ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU, getGuildDomainNotaryMenu(context, interaction, packet, collectorTime, pseudo));
 	}
 
 	// Add guild food shop menu (non-domain cities)
