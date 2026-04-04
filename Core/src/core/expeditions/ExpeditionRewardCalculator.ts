@@ -287,7 +287,7 @@ function generateMaterialLoot(locationType: ExpeditionLocationType, rewardIndex:
 		return [];
 	}
 
-	let totalDrops = ExpeditionConstants.MATERIAL_LOOT.DROPS_BY_REWARD_INDEX[rewardIndex];
+	let totalDrops: number = ExpeditionConstants.MATERIAL_LOOT.DROPS_BY_REWARD_INDEX[rewardIndex];
 	if (isPartialSuccess) {
 		totalDrops = Math.max(1, Math.round(totalDrops / ExpeditionConstants.PARTIAL_SUCCESS_PENALTY_DIVISOR));
 	}
@@ -297,7 +297,7 @@ function generateMaterialLoot(locationType: ExpeditionLocationType, rewardIndex:
 		materialId: number; weight: number;
 	}[] = [];
 	for (const materialId of lootTable) {
-		const material = MaterialDataController.instance.getById(materialId);
+		const material = MaterialDataController.instance.getById(String(materialId));
 		if (material) {
 			const weight = ExpeditionConstants.MATERIAL_LOOT.RARITY_WEIGHTS[material.rarity] ?? 0;
 			weightedEntries.push({

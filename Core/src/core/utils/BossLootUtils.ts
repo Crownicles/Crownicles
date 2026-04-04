@@ -24,7 +24,7 @@ export function generateBossLoot(mapId: number): BossLootEntry[] {
 		materialId: number; weight: number;
 	}[] = [];
 	for (const materialId of lootTable) {
-		const material = MaterialDataController.instance.getById(materialId);
+		const material = MaterialDataController.instance.getById(String(materialId));
 		if (material) {
 			const weight = PVEConstants.BOSS_LOOT.RARITY_WEIGHTS[material.rarity] ?? 0;
 			weightedEntries.push({
