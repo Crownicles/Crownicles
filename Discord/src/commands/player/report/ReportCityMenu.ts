@@ -54,6 +54,17 @@ import {
 import { HomeMenuParams } from "./home/HomeMenuTypes";
 import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
 import { ReportCityMenuIds } from "./ReportCityMenuConstants";
+import { DiscordMQTT } from "../../../bot/DiscordMQTT";
+import {
+	CommandReportGuildDomainDepositReq,
+	CommandReportGuildDomainDepositRes,
+	CommandReportGuildDomainUpgradeReq,
+	CommandReportGuildDomainUpgradeRes
+} from "../../../../../Lib/src/packets/commands/CommandReportPacket";
+import {
+	GuildBuilding, GuildDomainConstants
+} from "../../../../../Lib/src/constants/GuildDomainConstants";
+
 
 type ManageHomeData = NonNullable<ReactionCollectorCityData["home"]["manage"]>;
 
@@ -1042,16 +1053,14 @@ function createManageHomeMenuCollector(
 	});
 }
 
-function getGuildDomainMenu(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): CrowniclesNestedMenu {
-	const data = (packet.data.data as ReactionCollectorCityData).guildDomain!;
-	const lng = interaction.userLanguage;
+const DEPOSIT_AMOUNTS = [
+	100,
+	500,
+	1000,
+	5000
+] as const;
 
+function buildGuildDomainContainer(data: ReactionCollectorCityData["guildDomain"] & object, lng: Language, pseudo: string): ContainerBuilder {
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
@@ -1062,6 +1071,7 @@ function getGuildDomainMenu(
 		)
 	);
 
+	// Building levels overview
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.guildDomain.menuDescription", {
@@ -1075,6 +1085,337 @@ function getGuildDomainMenu(
 		)
 	);
 
+	// Treasury and food
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildDomain.treasuryInfo", {
+				lng,
+				treasury: data.treasury,
+				playerMoney: data.playerMoney
+			})
+		)
+	);
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildDomain.foodInfo", {
+				lng,
+				common: data.food.common,
+				commonCap: data.foodCaps[0],
+				carnivorous: data.food.carnivorous,
+				carnivorousCap: data.foodCaps[1],
+				herbivorous: data.food.herbivorous,
+				herbivorousCap: data.foodCaps[2],
+				ultimate: data.food.ultimate,
+				ultimateCap: data.foodCaps[3]
+			})
+		)
+	);
+
+	return container;
+}
+
+function buildDomainDepositButtons(data: ReactionCollectorCityData["guildDomain"] & object, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
+	const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+	const buttons: ButtonBuilder[] = [];
+
+	for (const amount of DEPOSIT_AMOUNTS) {
+		if (data.playerMoney >= amount) {
+			buttons.push(
+				new ButtonBuilder()
+					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_PREFIX}${amount}`)
+					.setLabel(i18n.t("commands:report.city.guildDomain.depositAmount", {
+						lng, amount
+					}))
+					.setStyle(ButtonStyle.Success)
+			);
+		}
+	}
+
+	if (data.playerMoney >= GuildDomainConstants.MIN_CONTRIBUTE_AMOUNT) {
+		buttons.push(
+			new ButtonBuilder()
+				.setCustomId(ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_ALL)
+				.setLabel(i18n.t("commands:report.city.guildDomain.depositAll", { lng }))
+				.setStyle(ButtonStyle.Success)
+		);
+	}
+
+	// Split buttons into rows of 5
+	for (let i = 0; i < buttons.length; i += 5) {
+		rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(buttons.slice(i, i + 5)));
+	}
+
+	return rows;
+}
+
+function buildDomainUpgradeButtons(data: ReactionCollectorCityData["guildDomain"] & object, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
+	const buttons: ButtonBuilder[] = [];
+
+	for (const building of Object.values(GuildBuilding)) {
+		const currentLevel = data[`${building}Level` as keyof typeof data] as number;
+		const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
+		const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
+
+		if (upgradeCost === null) {
+			continue;
+		}
+
+		const canAfford = data.treasury >= upgradeCost;
+		const meetsLevel = requiredGuildLevel === null || data.guildLevel >= requiredGuildLevel;
+
+		buttons.push(
+			new ButtonBuilder()
+				.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX}${building}`)
+				.setLabel(i18n.t(`commands:report.city.guildDomain.upgradeBuilding.${building}`, {
+					lng,
+					cost: upgradeCost,
+					level: currentLevel + 1
+				}))
+				.setStyle(ButtonStyle.Primary)
+				.setDisabled(!canAfford || !meetsLevel)
+		);
+	}
+
+	if (buttons.length === 0) {
+		return [];
+	}
+
+	const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+	for (let i = 0; i < buttons.length; i += 5) {
+		rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(buttons.slice(i, i + 5)));
+	}
+	return rows;
+}
+
+interface DomainMenuParams {
+	data: ReactionCollectorCityData["guildDomain"] & object;
+	lng: Language;
+	pseudo: string;
+	context: PacketContext;
+	interaction: CrowniclesInteraction;
+	packet: ReactionCollectorCreationPacket;
+	collectorTime: number;
+	nestedMenus: CrowniclesNestedMenus;
+	statusMessage?: string;
+}
+
+function registerDomainMenu({
+	data,
+	lng,
+	pseudo,
+	context,
+	interaction,
+	packet,
+	collectorTime,
+	nestedMenus,
+	statusMessage
+}: DomainMenuParams): void {
+	const container = buildGuildDomainContainer(data, lng, pseudo);
+
+	if (statusMessage) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(statusMessage)
+		);
+	}
+
+	// Deposit section
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildDomain.depositLabel", { lng })
+		)
+	);
+	const depositRows = buildDomainDepositButtons(data, lng);
+	for (const row of depositRows) {
+		container.addActionRowComponents(row);
+	}
+
+	// Upgrade section (chief/elder only)
+	if (data.isChief || data.isElder) {
+		const upgradeRows = buildDomainUpgradeButtons(data, lng);
+		if (upgradeRows.length > 0) {
+			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					i18n.t("commands:report.city.guildDomain.upgradeLabel", { lng })
+				)
+			);
+			for (const row of upgradeRows) {
+				container.addActionRowComponents(row);
+			}
+		}
+	}
+
+	// Navigation buttons
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(ReportCityMenuIds.BACK_TO_CITY)
+				.setLabel(i18n.t("commands:report.city.guildDomain.leaveDomain", { lng }))
+				.setEmoji(CrowniclesIcons.city.exit)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
+		)
+	);
+
+	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU, {
+		containers: [container],
+		createCollector: createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, menus) => {
+			await buttonInteraction.deferUpdate();
+
+			if (customId === ReportCityMenuIds.BACK_TO_CITY) {
+				await menus.changeToMainMenu();
+				return;
+			}
+			if (customId === STAY_IN_CITY_ID) {
+				handleStayInCityInteraction(packet, context, buttonInteraction);
+				return;
+			}
+
+			// Handle deposit buttons
+			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_PREFIX) || customId === ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_ALL) {
+				const amount = customId === ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_ALL
+					? data.playerMoney
+					: parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_PREFIX, ""), 10);
+
+				await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+					context,
+					makePacket(CommandReportGuildDomainDepositReq, { amount }),
+					async (_responseContext, packetName, responsePacket) => {
+						if (packetName === CommandReportGuildDomainDepositRes.name) {
+							const res = responsePacket as unknown as CommandReportGuildDomainDepositRes;
+							data.treasury = res.newTreasury;
+							data.playerMoney = res.newPlayerMoney;
+							registerDomainMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus: menus,
+								statusMessage: i18n.t("commands:report.city.guildDomain.depositSuccess", {
+									lng,
+									amount: res.amountDeposited
+								})
+							});
+							await menus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
+						}
+						else {
+							registerDomainMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus: menus,
+								statusMessage: i18n.t("commands:report.city.guildDomain.depositError", { lng })
+							});
+							await menus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
+						}
+					}
+				);
+				return;
+			}
+
+			// Handle upgrade buttons
+			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX)) {
+				const building = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "");
+
+				await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+					context,
+					makePacket(CommandReportGuildDomainUpgradeReq, { building }),
+					async (_responseContext, packetName, responsePacket) => {
+						if (packetName === CommandReportGuildDomainUpgradeRes.name) {
+							const res = responsePacket as unknown as CommandReportGuildDomainUpgradeRes;
+							data.treasury = res.newTreasury;
+							const levelField = `${res.building}Level` as keyof typeof data;
+							(data as Record<string, unknown>)[levelField] = res.newLevel;
+							registerDomainMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus: menus,
+								statusMessage: i18n.t("commands:report.city.guildDomain.upgradeSuccess", {
+									lng,
+									building: i18n.t(`commands:report.city.guildDomain.buildings.${res.building}`, { lng }),
+									level: res.newLevel
+								})
+							});
+							await menus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
+						}
+						else {
+							registerDomainMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus: menus,
+								statusMessage: i18n.t("commands:report.city.guildDomain.upgradeError", { lng })
+							});
+							await menus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
+						}
+					}
+				);
+			}
+		})
+	});
+}
+
+function getGuildDomainMenu(
+	context: PacketContext,
+	interaction: CrowniclesInteraction,
+	packet: ReactionCollectorCreationPacket,
+	collectorTime: number,
+	pseudo: string
+): CrowniclesNestedMenu {
+	const data = (packet.data.data as ReactionCollectorCityData).guildDomain!;
+	const lng = interaction.userLanguage;
+
+	const container = buildGuildDomainContainer(data, lng, pseudo);
+
+	// Deposit section
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildDomain.depositLabel", { lng })
+		)
+	);
+	const depositRows = buildDomainDepositButtons(data, lng);
+	for (const row of depositRows) {
+		container.addActionRowComponents(row);
+	}
+
+	// Upgrade section (chief/elder only)
+	if (data.isChief || data.isElder) {
+		const upgradeRows = buildDomainUpgradeButtons(data, lng);
+		if (upgradeRows.length > 0) {
+			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					i18n.t("commands:report.city.guildDomain.upgradeLabel", { lng })
+				)
+			);
+			for (const row of upgradeRows) {
+				container.addActionRowComponents(row);
+			}
+		}
+	}
+
+	// Navigation buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -1091,12 +1432,111 @@ function getGuildDomainMenu(
 		containers: [container],
 		createCollector: createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
 			await buttonInteraction.deferUpdate();
+
 			if (customId === ReportCityMenuIds.BACK_TO_CITY) {
 				await nestedMenus.changeToMainMenu();
 				return;
 			}
 			if (customId === STAY_IN_CITY_ID) {
 				handleStayInCityInteraction(packet, context, buttonInteraction);
+				return;
+			}
+
+			// Handle deposit buttons
+			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_PREFIX) || customId === ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_ALL) {
+				const amount = customId === ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_ALL
+					? data.playerMoney
+					: parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_PREFIX, ""), 10);
+
+				await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+					context,
+					makePacket(CommandReportGuildDomainDepositReq, { amount }),
+					async (_responseContext, packetName, responsePacket) => {
+						if (packetName === CommandReportGuildDomainDepositRes.name) {
+							const res = responsePacket as unknown as CommandReportGuildDomainDepositRes;
+							data.treasury = res.newTreasury;
+							data.playerMoney = res.newPlayerMoney;
+							registerDomainMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus,
+								statusMessage: i18n.t("commands:report.city.guildDomain.depositSuccess", {
+									lng,
+									amount: res.amountDeposited
+								})
+							});
+							await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
+						}
+						else {
+							registerDomainMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus,
+								statusMessage: i18n.t("commands:report.city.guildDomain.depositError", { lng })
+							});
+							await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
+						}
+					}
+				);
+				return;
+			}
+
+			// Handle upgrade buttons
+			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX)) {
+				const building = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "");
+
+				await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+					context,
+					makePacket(CommandReportGuildDomainUpgradeReq, { building }),
+					async (_responseContext, packetName, responsePacket) => {
+						if (packetName === CommandReportGuildDomainUpgradeRes.name) {
+							const res = responsePacket as unknown as CommandReportGuildDomainUpgradeRes;
+							data.treasury = res.newTreasury;
+							const levelField = `${res.building}Level` as keyof typeof data;
+							(data as Record<string, unknown>)[levelField] = res.newLevel;
+							registerDomainMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus,
+								statusMessage: i18n.t("commands:report.city.guildDomain.upgradeSuccess", {
+									lng,
+									building: i18n.t(`commands:report.city.guildDomain.buildings.${res.building}`, { lng }),
+									level: res.newLevel
+								})
+							});
+							await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
+						}
+						else {
+							registerDomainMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus,
+								statusMessage: i18n.t("commands:report.city.guildDomain.upgradeError", { lng })
+							});
+							await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
+						}
+					}
+				);
 			}
 		})
 	};
