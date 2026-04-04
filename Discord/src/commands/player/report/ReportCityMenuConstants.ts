@@ -53,9 +53,6 @@ export const ReportCityMenuIds = {
 	/** Guild domain sub-menu */
 	GUILD_DOMAIN_MENU: "GUILD_DOMAIN_MENU",
 
-	/** Guild domain notary sub-menu */
-	GUILD_DOMAIN_NOTARY_MENU: "GUILD_DOMAIN_NOTARY_MENU",
-
 	/** Confirm guild domain purchase or relocation */
 	GUILD_DOMAIN_CONFIRM: "GUILD_DOMAIN_CONFIRM",
 

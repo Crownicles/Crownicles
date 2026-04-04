@@ -2020,13 +2020,6 @@
     }
   },
   "guildMission": {
-    "title": "Weekly guild quest",
-    "missionName": "{emote:unitValues.mission} **Objective**: {{missionName}}",
-    "progress": "{emote:unitValues.progress} **Progress**: {{numberDone, number}}/{{objective, number}} ({{percent, number}}%)",
-    "contribution": "{emote:unitValues.star} **Your contribution**: {{contribution, number}}",
-    "completed": "{emote:unitValues.check} **Quest completed!** Rewards have been distributed.",
-    "expiresIn": "{emote:unitValues.clock} Expires in **{{hours, number}}h**",
-    "noMission": "There is no guild quest available at the moment.",
     "completedTitle": "Guild quest completed!",
     "completedRewards": "The guild quest has been completed! Here are the rewards:\n{emote:unitValues.xp} **+{{guildXp, number}}** guild XP\n{emote:unitValues.score} **+{{guildScore, number}}** guild points\n{emote:guild.treasury} **+{{treasuryGold, number}}** gold to the treasury\n{emote:unitValues.personalXp} **+{{personalXp, number}}** personal XP",
     "missions": {
