@@ -1256,19 +1256,17 @@
           "trainingGround": "Terrain d'entraînement"
         },
         "leaveDomain": "Quitter le domaine",
-        "notaryTitle": "{{pseudo}}, notaire de guilde",
-        "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Le notaire de guilde vous accueille. L'installation du domaine de votre guilde dans cette ville est **gratuite** !",
-        "notaryRelocateDescription": "{emote:city.guildDomainNotary} Le notaire de guilde vous accueille et examine les finances de votre guilde. Pour déplacer le domaine de votre guilde vers cette ville, il faudra débourser **{{cost}} {emote:unitValues.money}** depuis la trésorerie de guilde.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
+        "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Le notaire examine attentivement les registres de votre guilde et hoche la tête avec satisfaction. Il vous informe que la ville propose actuellement l'installation gratuite de domaines de guilde pour encourager le développement de la région. Il vous laisse le temps de réfléchir et attend votre décision.",
+        "notaryRelocateDescription": "{emote:city.guildDomainNotary} Le notaire examine attentivement les registres de votre guilde et consulte les finances de la trésorerie. Après avoir consciencieusement analysé votre situation, il vous informe que le déménagement du domaine vers cette ville coûtera **{{cost}} {emote:unitValues.money}** depuis la trésorerie de guilde. Il vous laisse le temps de réfléchir à votre décision.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
         "notaryConfirmLabel": "Coût : **{{cost}} {emote:unitValues.money}** depuis la trésorerie",
         "confirmPurchase": "Installer le domaine",
         "confirmRelocate": "Déplacer le domaine",
-        "leaveNotary": "Quitter le notaire",
         "purchaseTitle": "{{pseudo}}, domaine installé !",
-        "purchaseDescription": "{emote:city.guildDomain} Félicitations ! Le domaine de votre guilde a été installé dans cette ville.",
+        "purchaseDescription": "{emote:city.guildDomain} Le notaire vous félicite chaleureusement et vous remet les actes officiels. Le domaine de votre guilde est désormais installé dans cette ville. Il vous souhaite bonne chance dans le développement de votre domaine.",
         "relocateTitle": "{{pseudo}}, domaine déplacé !",
-        "relocateDescription": "{emote:city.guildDomain} Le domaine de votre guilde a été déplacé dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
+        "relocateDescription": "{emote:city.guildDomain} Le notaire finalise les documents de transfert et vous les remet avec un sourire. Le domaine de votre guilde a été déplacé dans cette ville pour **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
         "notEnoughTreasuryTitle": "{{pseudo}}, fonds insuffisants !",
-        "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} La trésorerie de votre guilde ne contient pas assez de fonds pour cette opération. Il manque **{{missingTreasury}} {emote:unitValues.money}**."
+        "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} Après avoir consciencieusement examiné les finances de votre guilde, le notaire secoue la tête avec regret. La trésorerie ne contient pas assez de fonds pour cette opération — il vous manque **{{missingTreasury}} {emote:unitValues.money}**. Il vous encourage à revenir lorsque la guilde aura économisé suffisamment."
       },
       "guildFoodShop": {
         "label": "Ravitaillement de guilde",

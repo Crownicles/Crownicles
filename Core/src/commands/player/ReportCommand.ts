@@ -415,7 +415,7 @@ async function sendCityCollector(
 		: undefined;
 
 	const isGuildChief = guild !== null && guild.chiefId === player.id;
-	const guildDomainNotary = isGuildChief
+	const guildDomainNotary = isGuildChief && guild.domainCityId !== city.id
 		? {
 			hasDomain: guild.domainCityId !== null,
 			cost: guild.domainCityId
