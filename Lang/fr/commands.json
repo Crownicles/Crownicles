@@ -1232,15 +1232,18 @@
         "notaryLabel": "Notaire de guilde",
         "notaryDescription": "Achetez ou déplacez le domaine de votre guilde dans cette ville.",
         "menuTitle": "{{pseudo}}, domaine de {{guildName}}",
-        "menuDescription": "{emote:city.guildDomain} Vous entrez dans le domaine de votre guilde **{{guildName}}**. Les bâtiments s'étendent autour de vous :\n\n• **Boutique** : Niv. {{shopLevel}}\n• **Refuge** : Niv. {{shelterLevel}}\n• **Garde-manger** : Niv. {{pantryLevel}}\n• **Terrain d'entraînement** : Niv. {{trainingGroundLevel}}",
-        "treasuryInfo": "{emote:unitValues.money} **Trésorerie** : {{treasury}} | **Votre argent** : {{playerMoney}}",
+        "menuIntro": "{emote:city.guildDomain} Vous pénétrez dans le domaine de votre guilde **{{guildName}}**.",
+        "guildLevelAndTreasury": "**Guilde niv. {{guildLevel}}** | {emote:unitValues.money} **Trésorerie** : {{treasury, number}} | **Votre argent** : {{playerMoney, number}}",
+        "buildingUpgrade": "↳ Niv. {{nextLevel}} : **{{cost, number}}** {emote:unitValues.money}",
+        "buildingUpgradeBlocked": " — {emote:collectors.warning} Guilde niv. **{{required}}** requis",
+        "buildingUpgradeTreasuryLow": " — {emote:unitValues.money} Trésorerie insuffisante",
+        "buildingMaxLevel": "↳ {emote:collectors.accept} Niveau maximum",
         "foodInfo": "{emote:expedition.food} **Réserves alimentaires** :\n• Commune : {{common}}/{{commonCap}}\n• Carnivore : {{carnivorous}}/{{carnivorousCap}}\n• Herbivore : {{herbivorous}}/{{herbivorousCap}}\n• Ultime : {{ultimate}}/{{ultimateCap}}",
         "depositLabel": "{emote:unitValues.money} **Déposer de l'argent dans la trésorerie**",
         "depositAmount": "{{amount}}",
         "depositAll": "Tout déposer",
         "depositSuccess": "{emote:messages.info} Vous avez déposé **{{amount}} {emote:unitValues.money}** dans la trésorerie de guilde.",
         "depositError": "{emote:messages.error} Le dépôt a échoué.",
-        "upgradeLabel": "{emote:city.guildDomain} **Améliorer un bâtiment**",
         "upgradeBuilding": {
           "shop": "Boutique Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "shelter": "Refuge Niv.{{level}} ({{cost}} {emote:unitValues.money})",
@@ -1266,7 +1269,51 @@
         "relocateTitle": "{{pseudo}}, domaine déplacé !",
         "relocateDescription": "{emote:city.guildDomain} Le notaire finalise les documents de transfert et vous les remet avec un sourire. Le domaine de votre guilde a été déplacé dans cette ville pour **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
         "notEnoughTreasuryTitle": "{{pseudo}}, fonds insuffisants !",
-        "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} Après avoir consciencieusement examiné les finances de votre guilde, le notaire secoue la tête avec regret. La trésorerie ne contient pas assez de fonds pour cette opération — il vous manque **{{missingTreasury}} {emote:unitValues.money}**. Il vous encourage à revenir lorsque la guilde aura économisé suffisamment."
+        "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} Après avoir consciencieusement examiné les finances de votre guilde, le notaire secoue la tête avec regret. La trésorerie ne contient pas assez de fonds pour cette opération — il vous manque **{{missingTreasury}} {emote:unitValues.money}**. Il vous encourage à revenir lorsque la guilde aura économisé suffisamment.",
+        "levelDisplay": "Niv. {{level}}/{{maxLevel}}",
+        "enterBuilding": "Entrer",
+        "backToDomain": "Retour au domaine",
+        "buildingSummary": {
+          "shop": {
+            "locked": "Non construite.",
+            "built": "Achat de nourriture et XP de guilde."
+          },
+          "shelter": "{{slots}} emplacements pour les familiers.",
+          "pantry": "Stocke la nourriture des familiers.",
+          "trainingGround": {
+            "inactive": "Inactif.",
+            "active": "+{{love}} points d'amour par jour."
+          }
+        },
+        "subMenus": {
+          "shop": {
+            "title": "Boutique de guilde",
+            "description": "{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}",
+            "notBuilt": "La boutique n'est pas encore construite. Améliorez-la pour pouvoir acheter de la nourriture et de l'expérience de guilde.",
+            "buyFoodLabel": "{emote:expedition.food} **Acheter de la nourriture**",
+            "buyXpLabel": "{emote:city.guildDomain} **Acheter de l'expérience de guilde**",
+            "buyFoodButton": "{{amount}}x {{food}} ({{cost}})",
+            "buyXpSmall": "Petite XP ({{cost}})",
+            "buyXpBig": "Grande XP ({{cost}})",
+            "buyFoodSuccess": "{emote:messages.info} **{{amount}}x {{food}}** ajouté(e)s au garde-manger.",
+            "buyFoodError": "{emote:messages.error} L'achat a échoué.",
+            "buyXpSuccess": "{emote:messages.info} **+{{xp}} XP** de guilde !",
+            "buyXpError": "{emote:messages.error} L'achat a échoué."
+          },
+          "shelter": {
+            "title": "Refuge de guilde",
+            "description": "Le refuge accueille et protège les familiers de la guilde.\n\n**Capacité :** {{slots}} emplacements"
+          },
+          "pantry": {
+            "title": "Garde-manger de guilde",
+            "description": "Le garde-manger stocke la nourriture des familiers de la guilde."
+          },
+          "training": {
+            "title": "Terrain d'entraînement",
+            "descriptionInactive": "Le terrain d'entraînement est inactif. Les familiers au refuge ne gagnent pas de points d'amour.",
+            "descriptionActive": "Le terrain d'entraînement est actif. Les familiers au refuge gagnent **+{{love}}** points d'amour par jour."
+          }
+        }
       },
       "guildFoodShop": {
         "label": "Ravitaillement de guilde",
@@ -1988,12 +2035,6 @@
     "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
     "guildMissionDisplay": "{{missionName}} — {{numberDone, number}}/{{objective, number}} ({{percent, number}}%)\nContribution : {{contribution, number}} | Expire dans {{hours, number}}h",
     "guildMissionCompleted": "{{missionName}} — Terminée ! ({{objective, number}}/{{objective, number}})"
-  },
-  "guildShop": {
-    "noFoodStorageSpace": "Vous n'avez pas assez de place dans votre réserve pour stocker cette nourriture.",
-    "empty": "Il n'y a plus rien à acheter pour le moment. Votre guilde est au niveau maximum et son stock de nourriture est plein.",
-    "giveXpTitle": "Succès de l'achat",
-    "giveXp": "{emote:unitValues.xp} Votre guilde a reçu **{{xp, number}}** points d'expérience."
   },
   "guildDaily": {
     "rewardTitle": "Récompense de la guilde {{guildName}} :",

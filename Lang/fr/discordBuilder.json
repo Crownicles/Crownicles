@@ -213,10 +213,6 @@
       }
     }
   },
-  "guildShop": {
-    "description": "Afficher le magasin de guilde.",
-    "name": "magasinguilde"
-  },
   "guildKick": {
     "description": "Exclure un membre de la guilde.",
     "name": "exclureguilde",

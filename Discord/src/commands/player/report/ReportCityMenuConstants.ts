@@ -65,8 +65,37 @@ export const ReportCityMenuIds = {
 	/** Prefix for guild domain building upgrade buttons (followed by building name) */
 	GUILD_DOMAIN_UPGRADE_PREFIX: "GUILD_DOMAIN_UPGRADE_",
 
-	/** Guild domain mission sub-menu */
+	/** Prefix for entering a guild domain building (followed by building name) */
+	GUILD_DOMAIN_ENTER_PREFIX: "GUILD_DOMAIN_ENTER_",
 
-	STAY_IN_CITY: "STAY_IN_CITY"
+	/** Back to guild domain main menu from a building sub-menu */
+	GUILD_DOMAIN_BACK: "GUILD_DOMAIN_BACK",
+
+	/** Guild domain shop sub-menu */
+	GUILD_DOMAIN_SHOP_MENU: "GUILD_DOMAIN_SHOP_MENU",
+
+	/** Guild domain shelter sub-menu */
+	GUILD_DOMAIN_SHELTER_MENU: "GUILD_DOMAIN_SHELTER_MENU",
+
+	/** Guild domain pantry sub-menu */
+	GUILD_DOMAIN_PANTRY_MENU: "GUILD_DOMAIN_PANTRY_MENU",
+
+	/** Guild domain training ground sub-menu */
+	GUILD_DOMAIN_TRAINING_MENU: "GUILD_DOMAIN_TRAINING_MENU",
+
+	/** Prefix for guild domain shop food buy buttons (followed by foodType_amount) */
+	GUILD_DOMAIN_SHOP_FOOD_PREFIX: "GUILD_DOMAIN_SHOP_FOOD_",
+
+	/** Prefix for guild domain shop XP buy buttons (followed by tier) */
+	GUILD_DOMAIN_SHOP_XP_PREFIX: "GUILD_DOMAIN_SHOP_XP_",
+
+	// --- Guild food shop (non-domain cities) ---
+	/** Guild food shop sub-menu */
+	GUILD_FOOD_SHOP_MENU: "GUILD_FOOD_SHOP_MENU",
+
+	/** Prefix for food shop buy buttons (followed by foodType_amount) */
+	GUILD_FOOD_SHOP_BUY_PREFIX: "GUILD_FOOD_SHOP_BUY_",
+
 	/** Custom ID used for the "stay in city" button across all city sub-menus */
+	STAY_IN_CITY: "STAY_IN_CITY"
 } as const;
