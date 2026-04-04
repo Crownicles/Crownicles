@@ -52,6 +52,8 @@ export class Guild extends Model {
 
 	declare treasury: number;
 
+	declare domainCityId: string | null;
+
 	declare shopLevel: number;
 
 	declare shelterLevel: number;
@@ -424,6 +426,11 @@ export function initModel(sequelize: Sequelize): void {
 		treasury: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
+		},
+		domainCityId: {
+			type: DataTypes.STRING(64), // eslint-disable-line new-cap
+			allowNull: true,
+			defaultValue: null
 		},
 		shopLevel: {
 			type: DataTypes.INTEGER,

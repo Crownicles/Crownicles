@@ -31,7 +31,10 @@ import {
 	CommandReportUpgradeItemMissingMaterialsRes,
 	CommandReportUpgradeItemRes,
 	CommandReportUseTokensAcceptPacketRes,
-	CommandReportUseTokensRefusePacketRes
+	CommandReportUseTokensRefusePacketRes,
+	CommandReportGuildDomainPurchaseRes,
+	CommandReportGuildDomainRelocateRes,
+	CommandReportGuildDomainNotEnoughTreasuryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -60,7 +63,10 @@ import {
 	refusePveFight,
 	reportResult,
 	reportTravelSummary,
-	stayInCity
+	stayInCity,
+	handleGuildDomainPurchase,
+	handleGuildDomainRelocate,
+	handleGuildDomainNotEnoughTreasury
 } from "../../../../commands/player/ReportCommand";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 
@@ -230,5 +236,20 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportHomeBedAlreadyFullRes)
 	async reportHomeBedAlreadyFullRes(context: PacketContext, _packet: CommandReportHomeBedAlreadyFullRes): Promise<void> {
 		await handleClassicError(context, "commands:report.city.homes.bed.alreadyFull");
+	}
+
+	@packetHandler(CommandReportGuildDomainPurchaseRes)
+	async reportGuildDomainPurchaseRes(context: PacketContext, packet: CommandReportGuildDomainPurchaseRes): Promise<void> {
+		await handleGuildDomainPurchase(packet, context);
+	}
+
+	@packetHandler(CommandReportGuildDomainRelocateRes)
+	async reportGuildDomainRelocateRes(context: PacketContext, packet: CommandReportGuildDomainRelocateRes): Promise<void> {
+		await handleGuildDomainRelocate(packet, context);
+	}
+
+	@packetHandler(CommandReportGuildDomainNotEnoughTreasuryRes)
+	async reportGuildDomainNotEnoughTreasuryRes(context: PacketContext, packet: CommandReportGuildDomainNotEnoughTreasuryRes): Promise<void> {
+		await handleGuildDomainNotEnoughTreasury(packet, context);
 	}
 }

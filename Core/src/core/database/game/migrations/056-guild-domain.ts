@@ -30,6 +30,13 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		defaultValue: 0
 	});
 
+	// Guild domain city location
+	await context.addColumn("guilds", "domainCityId", {
+		type: DataTypes.STRING(64), // eslint-disable-line new-cap
+		allowNull: true,
+		defaultValue: null
+	});
+
 	// Guild weekly mission (collective) on guilds table
 	await context.addColumn("guilds", "guildMissionId", {
 		type: DataTypes.STRING(64), // eslint-disable-line new-cap
@@ -84,6 +91,7 @@ export async function down({ context }: { context: QueryInterface }): Promise<vo
 	await context.removeColumn("guilds", "guildMissionObjective");
 	await context.removeColumn("guilds", "guildMissionVariant");
 	await context.removeColumn("guilds", "guildMissionId");
+	await context.removeColumn("guilds", "domainCityId");
 	await context.removeColumn("guilds", "trainingGroundLevel");
 	await context.removeColumn("guilds", "pantryLevel");
 	await context.removeColumn("guilds", "shelterLevel");
