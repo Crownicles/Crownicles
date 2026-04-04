@@ -1999,6 +1999,7 @@
     "alreadyMaxLevel": "**{{buildingName}}** is already at maximum level.",
     "notEnoughTreasury": "The guild treasury is insufficient to upgrade **{{buildingName}}**. Cost: **{{cost, number}}** — Treasury: **{{treasury, number}}**.",
     "guildLevelTooLow": "The guild must be level **{{requiredLevel, number}}** to upgrade **{{buildingName}}**. Current level: **{{currentLevel, number}}**.",
+    "buildingRequired": "The **{{building}}** building must be built to access this feature. Use {command:guilddomain} to build it.",
     "buildings": {
       "shop": {
         "name": "Guild Shop",
@@ -2016,6 +2017,25 @@
         "name": "Training ground",
         "description": "Level {{level, number}}/{{maxLevel, number}}\nPets in the shelter gain love points daily."
       }
+    }
+  },
+  "guildMission": {
+    "title": "Weekly guild quest",
+    "missionName": "{emote:unitValues.mission} **Objective**: {{missionName}}",
+    "progress": "{emote:unitValues.progress} **Progress**: {{numberDone, number}}/{{objective, number}} ({{percent, number}}%)",
+    "contribution": "{emote:unitValues.star} **Your contribution**: {{contribution, number}}",
+    "completed": "{emote:unitValues.check} **Quest completed!** Rewards have been distributed.",
+    "expiresIn": "{emote:unitValues.clock} Expires in **{{hours, number}}h**",
+    "noMission": "There is no guild quest available at the moment.",
+    "completedTitle": "Guild quest completed!",
+    "completedRewards": "The guild quest has been completed! Here are the rewards:\n{emote:unitValues.xp} **+{{guildXp, number}}** guild XP\n{emote:unitValues.score} **+{{guildScore, number}}** guild points\n{emote:guild.treasury} **+{{treasuryGold, number}}** gold to the treasury\n{emote:unitValues.personalXp} **+{{personalXp, number}}** personal XP",
+    "missions": {
+      "doReports": "Complete adventure reports",
+      "earnPoints": "Earn score points",
+      "earnMoney": "Earn money",
+      "earnXP": "Earn experience",
+      "petCaress": "Pet your familiars",
+      "doExpeditions": "Complete expeditions"
     }
   }
 }

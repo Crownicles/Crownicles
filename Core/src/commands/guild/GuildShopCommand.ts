@@ -5,6 +5,7 @@ import {
 	CommandGuildShopEmpty,
 	CommandGuildShopGiveXp,
 	CommandGuildShopNoFoodStorageSpace,
+	CommandGuildShopNotBuilt,
 	CommandGuildShopPacketReq
 } from "../../../../Lib/src/packets/commands/CommandGuildShopPacket";
 import {
@@ -133,6 +134,12 @@ export default class GuildShopCommand {
 		const shopCategories: ShopCategory[] = [];
 
 		const guild = (await Guilds.getById(player.guildId))!;
+
+		if (guild.shopLevel === 0) {
+			response.push(makePacket(CommandGuildShopNotBuilt, {}));
+			return;
+		}
+
 		const foodCaps = GuildDomainConstants.getFoodCaps(guild.pantryLevel);
 		const commonFoodRemainingSlots = foodCaps[0] - guild.commonFood;
 		const herbivorousFoodRemainingSlots = foodCaps[2] - guild.herbivorousFood;

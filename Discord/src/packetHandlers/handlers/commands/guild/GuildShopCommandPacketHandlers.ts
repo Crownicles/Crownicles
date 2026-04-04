@@ -1,15 +1,20 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
 	CommandGuildShopEmpty, CommandGuildShopGiveXp,
-	CommandGuildShopNoFoodStorageSpace
+	CommandGuildShopNoFoodStorageSpace, CommandGuildShopNotBuilt
 } from "../../../../../../Lib/src/packets/commands/CommandGuildShopPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandGuildShopEmpty, handleCommandGuildShopGiveXp,
-	handleCommandGuildShopNoFoodStorageSpace
+	handleCommandGuildShopNoFoodStorageSpace, handleCommandGuildShopNotBuilt
 } from "../../../../commands/guild/GuildShopCommand";
 
 export default class GuildShopCommandPacketHandlers {
+	@packetHandler(CommandGuildShopNotBuilt)
+	async guildShopNotBuilt(context: PacketContext, _packet: CommandGuildShopNotBuilt): Promise<void> {
+		await handleCommandGuildShopNotBuilt(context);
+	}
+
 	@packetHandler(CommandGuildShopNoFoodStorageSpace)
 	async guildShopNoFoodStorageSpace(context: PacketContext, _packet: CommandGuildShopNoFoodStorageSpace): Promise<void> {
 		await handleCommandGuildShopNoFoodStorageSpace(context);
