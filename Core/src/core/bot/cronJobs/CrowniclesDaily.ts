@@ -13,6 +13,11 @@ import { ItemEnchantment } from "../../../../../Lib/src/types/ItemEnchantment";
 import { CityDataController } from "../../../data/City";
 import Player from "../../database/game/models/Player";
 import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
+import Guild from "../../database/game/models/Guild";
+import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
+import { GuildPets } from "../../database/game/models/GuildPet";
+import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
+import { PetDataController } from "../../../data/Pet";
 
 export class CrowniclesDaily {
 	public static async programCronJob(): Promise<void> {
@@ -48,6 +53,8 @@ export class CrowniclesDaily {
 			.then(petLoveChange => crowniclesInstance?.logsDatabase.logDailyTimeout(petLoveChange)
 				.then());
 		CrowniclesDaily.reloadEnchanter().then();
+		CrowniclesDaily.trainingGroundLoveBonus().then();
+		CrowniclesDaily.pantryAutoFeed().then();
 		crowniclesInstance?.logsDatabase.log15BestTopWeek()
 			.then();
 	}
@@ -109,6 +116,78 @@ export class CrowniclesDaily {
 		}
 		catch (error) {
 			CrowniclesLogger.error(`Something went wrong when reloading the enchanter: ${error}`);
+		}
+	}
+
+	/**
+	 * Add love points to all pets in guild shelters based on training ground level
+	 */
+	static async trainingGroundLoveBonus(): Promise<void> {
+		try {
+			await Guild.sequelize!.query(
+				`UPDATE pet_entities pe
+				JOIN guild_pets gp ON gp.petEntityId = pe.id
+				JOIN guilds g ON gp.guildId = g.id
+				SET pe.lovePoints = LEAST(pe.lovePoints + g.trainingGroundLevel, ${PetConstants.MAX_LOVE_POINTS})
+				WHERE g.trainingGroundLevel > 0`
+			);
+			CrowniclesLogger.info("Training ground love bonus applied");
+		}
+		catch (error) {
+			CrowniclesLogger.error(`Training ground love bonus failed: ${error}`);
+		}
+	}
+
+	/**
+	 * Auto-feed all shelter pets in guilds with pantry level >= AUTO_FEED_PANTRY_LEVEL using common food
+	 */
+	static async pantryAutoFeed(): Promise<void> {
+		try {
+			const guilds = await Guild.findAll({
+				where: {
+					pantryLevel: { [Op.gte]: GuildDomainConstants.AUTO_FEED_PANTRY_LEVEL },
+					commonFood: { [Op.gt]: 0 }
+				}
+			});
+
+			for (const guild of guilds) {
+				const guildPets = await GuildPets.getOfGuild(guild.id);
+				let fedCount = 0;
+
+				for (const guildPet of guildPets) {
+					if (guild.commonFood <= 0) {
+						break;
+					}
+
+					const petEntity = await PetEntity.findByPk(guildPet.petEntityId);
+					if (!petEntity) {
+						continue;
+					}
+
+					const petModel = PetDataController.instance.getById(petEntity.typeId);
+					if (!petModel || !petEntity.canBeFed(petModel, PetConstants.PET_FOOD.COMMON_FOOD)) {
+						continue;
+					}
+
+					guild.removeFood(PetConstants.PET_FOOD.COMMON_FOOD, 1, NumberChangeReason.GUILD_DAILY);
+					petEntity.hungrySince = new Date();
+					petEntity.lovePoints = Math.min(
+						petEntity.lovePoints + PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[0],
+						PetConstants.MAX_LOVE_POINTS
+					);
+					await petEntity.save();
+					fedCount++;
+				}
+
+				if (fedCount > 0) {
+					await guild.save();
+				}
+			}
+
+			CrowniclesLogger.info("Pantry auto-feed completed");
+		}
+		catch (error) {
+			CrowniclesLogger.error(`Pantry auto-feed failed: ${error}`);
 		}
 	}
 }
