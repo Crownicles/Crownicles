@@ -15,9 +15,7 @@ import Player from "../../database/game/models/Player";
 import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
 import Guild from "../../database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
-import { GuildPets } from "../../database/game/models/GuildPet";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
-import { PetDataController } from "../../../data/Pet";
 
 export class CrowniclesDaily {
 	public static async programCronJob(): Promise<void> {
@@ -54,7 +52,7 @@ export class CrowniclesDaily {
 				.then());
 		CrowniclesDaily.reloadEnchanter().then();
 		CrowniclesDaily.trainingGroundLoveBonus().then();
-		CrowniclesDaily.pantryAutoFeed().then();
+		CrowniclesDaily.pantryAutoFill().then();
 		crowniclesInstance?.logsDatabase.log15BestTopWeek()
 			.then();
 	}
@@ -139,55 +137,44 @@ export class CrowniclesDaily {
 	}
 
 	/**
-	 * Auto-feed all shelter pets in guilds with pantry level >= AUTO_FEED_PANTRY_LEVEL using common food
+	 * Auto-fill pantry food for guilds with a pantry building, based on pantry level
 	 */
-	static async pantryAutoFeed(): Promise<void> {
+	static async pantryAutoFill(): Promise<void> {
 		try {
 			const guilds = await Guild.findAll({
 				where: {
-					pantryLevel: { [Op.gte]: GuildDomainConstants.AUTO_FEED_PANTRY_LEVEL },
-					commonFood: { [Op.gt]: 0 }
+					pantryLevel: { [Op.gte]: 1 },
+					domainCityId: { [Op.not]: null }
 				}
 			});
 
+			const foodFields = [
+				"commonFood",
+				"carnivorousFood",
+				"herbivorousFood",
+				"ultimateFood"
+			] as const;
+
 			for (const guild of guilds) {
-				const guildPets = await GuildPets.getOfGuild(guild.id);
-				let fedCount = 0;
+				const rates = GuildDomainConstants.getAutoFillRates(guild.pantryLevel);
+				let changed = false;
 
-				for (const guildPet of guildPets) {
-					if (guild.commonFood <= 0) {
-						break;
+				for (let i = 0; i < foodFields.length; i++) {
+					if (rates[i] > 0) {
+						guild.addFood(foodFields[i], rates[i], NumberChangeReason.GUILD_DAILY);
+						changed = true;
 					}
-
-					const petEntity = await PetEntity.findByPk(guildPet.petEntityId);
-					if (!petEntity) {
-						continue;
-					}
-
-					const petModel = PetDataController.instance.getById(petEntity.typeId);
-					if (!petModel || !petEntity.canBeFed(petModel, PetConstants.PET_FOOD.COMMON_FOOD)) {
-						continue;
-					}
-
-					guild.removeFood(PetConstants.PET_FOOD.COMMON_FOOD, 1, NumberChangeReason.GUILD_DAILY);
-					petEntity.hungrySince = new Date();
-					petEntity.lovePoints = Math.min(
-						petEntity.lovePoints + PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[0],
-						PetConstants.MAX_LOVE_POINTS
-					);
-					await petEntity.save();
-					fedCount++;
 				}
 
-				if (fedCount > 0) {
+				if (changed) {
 					await guild.save();
 				}
 			}
 
-			CrowniclesLogger.info("Pantry auto-feed completed");
+			CrowniclesLogger.info("Pantry auto-fill completed");
 		}
 		catch (error) {
-			CrowniclesLogger.error(`Pantry auto-feed failed: ${error}`);
+			CrowniclesLogger.error(`Pantry auto-fill failed: ${error}`);
 		}
 	}
 }
