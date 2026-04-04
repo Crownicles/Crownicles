@@ -402,19 +402,5 @@
   "blessing": {
     "name": "benediction",
     "description": "Voir l'état actuel de la bénédiction globale."
-  },
-  "guildContribute": {
-    "name": "contribuerguilde",
-    "description": "Contribuer de l'argent au trésor de votre guilde.",
-    "options": {
-      "amount": {
-        "name": "montant",
-        "description": "Le montant d'argent à verser au trésor de la guilde."
-      }
-    }
-  },
-  "guildDomain": {
-    "name": "domaineguilde",
-    "description": "Voir et gérer le domaine de votre guilde."
   }
 }

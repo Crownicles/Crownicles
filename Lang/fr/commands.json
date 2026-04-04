@@ -1257,14 +1257,14 @@
         },
         "leaveDomain": "Quitter le domaine",
         "notaryTitle": "{{pseudo}}, notaire de guilde",
-        "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Le notaire de guilde vous accueille et examine les finances de votre guilde. Pour installer le domaine de votre guilde dans cette ville, il faudra débourser **{{cost}} {emote:unitValues.money}** depuis la trésorerie de guilde.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
+        "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Le notaire de guilde vous accueille. L'installation du domaine de votre guilde dans cette ville est **gratuite** !",
         "notaryRelocateDescription": "{emote:city.guildDomainNotary} Le notaire de guilde vous accueille et examine les finances de votre guilde. Pour déplacer le domaine de votre guilde vers cette ville, il faudra débourser **{{cost}} {emote:unitValues.money}** depuis la trésorerie de guilde.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
         "notaryConfirmLabel": "Coût : **{{cost}} {emote:unitValues.money}** depuis la trésorerie",
         "confirmPurchase": "Installer le domaine",
         "confirmRelocate": "Déplacer le domaine",
         "leaveNotary": "Quitter le notaire",
         "purchaseTitle": "{{pseudo}}, domaine installé !",
-        "purchaseDescription": "{emote:city.guildDomain} Félicitations ! Le domaine de votre guilde a été installé dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
+        "purchaseDescription": "{emote:city.guildDomain} Félicitations ! Le domaine de votre guilde a été installé dans cette ville.",
         "relocateTitle": "{{pseudo}}, domaine déplacé !",
         "relocateDescription": "{emote:city.guildDomain} Le domaine de votre guilde a été déplacé dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
         "notEnoughTreasuryTitle": "{{pseudo}}, fonds insuffisants !",
@@ -2581,23 +2581,8 @@
     "contributors_one": "{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventurier a contribué jusqu'à présent.",
     "contributors_other": "{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventuriers ont contribué jusqu'à présent."
   },
-  "guildContribute": {
-    "title": "Contribution au trésor",
-    "success": "{emote:unitValues.money} Vous avez versé **{{amount, number}}** au trésor de votre guilde.\n{emote:guild.treasury} Nouveau trésor : **{{newTreasury, number}}**.",
-    "notEnoughMoney": "Vous n'avez pas assez d'argent pour contribuer ce montant.",
-    "tooLow": "Le montant minimum de contribution est de **{{minAmount, number}}**."
-  },
   "guildDomain": {
-    "title": "Domaine de la guilde {{guildName}}",
-    "treasury": "{emote:guild.treasury} **Trésor de la guilde** : {{treasury, number}}",
-    "maxLevel": "Niveau maximum atteint.",
-    "upgradeInfo": "{emote:unitValues.money} Amélioration : **{{cost, number}}** (guilde niveau **{{requiredLevel, number}}** requis)",
-    "upgradeSuccessTitle": "Amélioration réussie !",
-    "upgradeSuccess": "Le bâtiment **{{buildingName}}** a été amélioré au **niveau {{newLevel, number}}** !\n{emote:unitValues.money} Coût : **{{cost, number}}**\n{emote:guild.treasury} Trésor restant : **{{remainingTreasury, number}}**.",
-    "alreadyMaxLevel": "Le bâtiment **{{buildingName}}** est déjà au niveau maximum.",
-    "notEnoughTreasury": "Le trésor de la guilde est insuffisant pour améliorer **{{buildingName}}**. Coût : **{{cost, number}}** — Trésor : **{{treasury, number}}**.",
-    "guildLevelTooLow": "La guilde doit être au niveau **{{requiredLevel, number}}** pour améliorer **{{buildingName}}**. Niveau actuel : **{{currentLevel, number}}**.",
-    "buildingRequired": "Le bâtiment **{{building}}** doit être construit pour accéder à cette fonctionnalité. Utilisez {command:guilddomain} pour le construire.",
+    "buildingRequired": "Le bâtiment **{{building}}** doit être construit pour accéder à cette fonctionnalité. Rendez-vous dans le domaine de votre guilde pour le construire.",
     "buildings": {
       "shop": {
         "name": "Magasin de Guilde",

@@ -192,7 +192,7 @@ export abstract class GuildDomainConstants {
 	/**
 	 * Cost to purchase the guild domain (from treasury)
 	 */
-	static readonly DOMAIN_PURCHASE_COST = 5_000;
+	static readonly DOMAIN_PURCHASE_COST = 0;
 
 	/**
 	 * Cost to relocate the guild domain to another city (from treasury)
