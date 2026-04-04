@@ -29,44 +29,48 @@ export abstract class GuildDomainConstants {
 			levels: [
 				{
 					guildLevel: 15,
-					cost: 30_000
-				},
-				{
-					guildLevel: 25,
-					cost: 60_000
+					cost: 25_000
 				},
 				{
 					guildLevel: 40,
-					cost: 120_000
+					cost: 50_000
 				},
 				{
-					guildLevel: 60,
-					cost: 200_000
-				},
-				{
-					guildLevel: 80,
-					cost: 300_000
+					guildLevel: 75,
+					cost: 100_000
 				},
 				{
 					guildLevel: 100,
-					cost: 370_000
+					cost: 200_000
+				},
+				{
+					guildLevel: 120,
+					cost: 300_000
+				},
+				{
+					guildLevel: 150,
+					cost: 400_000
 				}
 			]
 		},
 		[GuildBuilding.PANTRY]: {
-			maxLevel: 3,
+			maxLevel: 4,
 			levels: [
 				{
 					guildLevel: 15,
-					cost: 80_000
+					cost: 100_000
 				},
 				{
 					guildLevel: 40,
-					cost: 240_000
+					cost: 150_000
 				},
 				{
 					guildLevel: 75,
-					cost: 480_000
+					cost: 250_000
+				},
+				{
+					guildLevel: 100,
+					cost: 300_000
 				}
 			]
 		},
@@ -79,11 +83,11 @@ export abstract class GuildDomainConstants {
 				},
 				{
 					guildLevel: 100,
-					cost: 1_200_000
+					cost: 800_000
 				},
 				{
-					guildLevel: 140,
-					cost: 2_400_000
+					guildLevel: 150,
+					cost: 1_600_000
 				}
 			]
 		}
@@ -107,28 +111,34 @@ export abstract class GuildDomainConstants {
 	 */
 	static readonly PANTRY_FOOD_CAPS = [
 		[
-			25,
-			15,
-			15,
-			5
+			150,
+			90,
+			90,
+			30
 		],
 		[
-			35,
-			20,
-			20,
-			8
+			250,
+			150,
+			150,
+			50
 		],
 		[
-			50,
-			30,
-			30,
-			12
+			400,
+			240,
+			240,
+			80
 		],
 		[
-			70,
-			40,
-			40,
-			15
+			700,
+			420,
+			420,
+			140
+		],
+		[
+			1000,
+			600,
+			600,
+			200
 		]
 	] as const;
 
@@ -143,9 +153,41 @@ export abstract class GuildDomainConstants {
 	] as const;
 
 	/**
-	 * Auto-feed feature unlocked at this pantry level
+	 * Daily auto-fill food generation per pantry level: [common, carnivorous, herbivorous, ultimate]
+	 * Level 0 has no auto-fill (no pantry building)
 	 */
-	static readonly AUTO_FEED_PANTRY_LEVEL = 3;
+	static readonly PANTRY_AUTO_FILL = [
+		[
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			3,
+			0,
+			0,
+			0
+		],
+		[
+			3,
+			0,
+			0,
+			0
+		],
+		[
+			5,
+			1,
+			1,
+			0
+		],
+		[
+			6,
+			2,
+			2,
+			1
+		]
+	] as const;
 
 	/**
 	 * Cost to purchase the guild domain (from treasury)
@@ -219,6 +261,10 @@ export abstract class GuildDomainConstants {
 
 	static getTrainingLovePerDay(trainingGroundLevel: number): number {
 		return GuildDomainConstants.TRAINING_LOVE_PER_DAY[trainingGroundLevel] ?? 0;
+	}
+
+	static getAutoFillRates(pantryLevel: number): readonly number[] {
+		return GuildDomainConstants.PANTRY_AUTO_FILL[pantryLevel] ?? GuildDomainConstants.PANTRY_AUTO_FILL[0];
 	}
 
 	static getBuildingUpgradeCost(building: GuildBuilding, currentLevel: number): number | null {
