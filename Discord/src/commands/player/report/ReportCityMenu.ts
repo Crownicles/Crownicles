@@ -59,11 +59,15 @@ import {
 	CommandReportGuildDomainDepositReq,
 	CommandReportGuildDomainDepositRes,
 	CommandReportGuildDomainUpgradeReq,
-	CommandReportGuildDomainUpgradeRes
+	CommandReportGuildDomainUpgradeRes,
+	CommandReportFoodShopBuyReq,
+	CommandReportFoodShopBuyRes
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	GuildBuilding, GuildDomainConstants
 } from "../../../../../Lib/src/constants/GuildDomainConstants";
+import { GuildShopConstants } from "../../../../../Lib/src/constants/GuildShopConstants";
+import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 
 
 type ManageHomeData = NonNullable<ReactionCollectorCityData["home"]["manage"]>;
@@ -335,6 +339,24 @@ function addGuildDomainSection(container: ContainerBuilder, data: ReactionCollec
 	}
 }
 
+function addGuildFoodShopSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
+	if (!data.guildFoodShop) {
+		return;
+	}
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	addCitySection(
+		container,
+		`${CrowniclesIcons.expedition.food} **${i18n.t("commands:report.city.guildFoodShop.label", { lng })}**\n${i18n.t("commands:report.city.guildFoodShop.description", {
+			lng,
+			guildName: data.guildFoodShop.guildName
+		})}`,
+		ReportCityMenuIds.GUILD_FOOD_SHOP_MENU,
+		i18n.t("commands:report.city.buttons.visitFoodShop", { lng }),
+		ButtonStyle.Secondary,
+		CrowniclesIcons.expedition.food
+	);
+}
+
 function addExitStayButtons(container: ContainerBuilder, packet: ReactionCollectorCreationPacket, lng: Language): void {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	const actionRow = new ActionRowBuilder<ButtonBuilder>();
@@ -392,6 +414,7 @@ function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction,
 	addShopsSection(container, data, lng);
 	addInnsSection(container, data, lng);
 	addGuildDomainSection(container, data, lng);
+	addGuildFoodShopSection(container, data, lng);
 	addExitStayButtons(container, packet, lng);
 
 	return {
@@ -417,7 +440,8 @@ async function handleMainMenuSelection(
 		[HomeMenuIds.MANAGE_HOME_MENU]: HomeMenuIds.MANAGE_HOME_MENU,
 		[ReportCityMenuIds.BLACKSMITH_MENU]: ReportCityMenuIds.BLACKSMITH_MENU,
 		[ReportCityMenuIds.GUILD_DOMAIN_MENU]: ReportCityMenuIds.GUILD_DOMAIN_MENU,
-		[ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU]: ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU
+		[ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU]: ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU,
+		[ReportCityMenuIds.GUILD_FOOD_SHOP_MENU]: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU
 	};
 
 	if (navigationRoutes[selectedValue]) {
@@ -1232,8 +1256,8 @@ function registerDomainMenu({
 		container.addActionRowComponents(row);
 	}
 
-	// Upgrade section (chief/elder only)
-	if (data.isChief || data.isElder) {
+	// Upgrade section (chief only)
+	if (data.isChief) {
 		const upgradeRows = buildDomainUpgradeButtons(data, lng);
 		if (upgradeRows.length > 0) {
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -1399,8 +1423,8 @@ function getGuildDomainMenu(
 		container.addActionRowComponents(row);
 	}
 
-	// Upgrade section (chief/elder only)
-	if (data.isChief || data.isElder) {
+	// Upgrade section (chief only)
+	if (data.isChief) {
 		const upgradeRows = buildDomainUpgradeButtons(data, lng);
 		if (upgradeRows.length > 0) {
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -1631,6 +1655,376 @@ function getGuildDomainNotaryMenu(
 	};
 }
 
+type FoodShopData = ReactionCollectorCityData["guildFoodShop"] & object;
+
+function buildFoodShopBuyButtons(data: FoodShopData, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
+	const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+	const foodTypes = PetConstants.PET_FOOD_BY_ID;
+
+	for (let i = 0; i < foodTypes.length; i++) {
+		const foodType = foodTypes[i];
+		const foodKey = foodType.replace("Food", "") as "common" | "carnivorous" | "herbivorous" | "ultimate";
+		const currentStock = data.food[foodKey];
+		const cap = data.foodCaps[i];
+		const remainingSlots = cap - currentStock;
+		const price = GuildShopConstants.PRICES.FOOD[i];
+		const maxAffordable = Math.floor(data.playerMoney / price);
+		const maxBuyable = Math.min(remainingSlots, maxAffordable);
+
+		if (maxBuyable <= 0) {
+			continue;
+		}
+
+		const amounts = [
+			...new Set([
+				1,
+				Math.min(5, maxBuyable),
+				Math.min(10, maxBuyable),
+				maxBuyable
+			].filter(a => a > 0))
+		];
+
+		const row = new ActionRowBuilder<ButtonBuilder>();
+		for (const amount of amounts) {
+			row.addComponents(
+				new ButtonBuilder()
+					.setCustomId(`${ReportCityMenuIds.GUILD_FOOD_SHOP_BUY_PREFIX}${foodType}_${amount}`)
+					.setLabel(i18n.t("commands:report.city.guildFoodShop.buyButton", {
+						lng,
+						amount,
+						food: i18n.t(`models:foods.${foodType}`, {
+							lng, count: amount
+						}),
+						cost: price * amount
+					}))
+					.setStyle(ButtonStyle.Primary)
+			);
+		}
+		rows.push(row);
+	}
+
+	return rows;
+}
+
+interface FoodShopMenuParams {
+	data: FoodShopData;
+	lng: Language;
+	pseudo: string;
+	context: PacketContext;
+	interaction: CrowniclesInteraction;
+	packet: ReactionCollectorCreationPacket;
+	collectorTime: number;
+	nestedMenus: CrowniclesNestedMenus;
+	statusMessage?: string;
+}
+
+function registerFoodShopMenu({
+	data,
+	lng,
+	pseudo,
+	context,
+	interaction,
+	packet,
+	collectorTime,
+	nestedMenus,
+	statusMessage
+}: FoodShopMenuParams): void {
+	const container = new ContainerBuilder();
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.guildFoodShop.menuTitle", {
+				lng, pseudo, guildName: data.guildName
+			})}`
+		)
+	);
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildFoodShop.menuDescription", { lng })
+		)
+	);
+
+	// Food stock display
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildFoodShop.stockInfo", {
+				lng,
+				common: data.food.common,
+				commonCap: data.foodCaps[0],
+				herbivorous: data.food.herbivorous,
+				herbivorousCap: data.foodCaps[1],
+				carnivorous: data.food.carnivorous,
+				carnivorousCap: data.foodCaps[2],
+				ultimate: data.food.ultimate,
+				ultimateCap: data.foodCaps[3],
+				playerMoney: data.playerMoney
+			})
+		)
+	);
+
+	if (statusMessage) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(statusMessage)
+		);
+	}
+
+	// Buy buttons
+	const buyRows = buildFoodShopBuyButtons(data, lng);
+	if (buyRows.length > 0) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:report.city.guildFoodShop.buyLabel", { lng })
+			)
+		);
+		for (const row of buyRows) {
+			container.addActionRowComponents(row);
+		}
+	}
+	else {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:report.city.guildFoodShop.noFoodAvailable", { lng })
+			)
+		);
+	}
+
+	// Navigation
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(ReportCityMenuIds.BACK_TO_CITY)
+				.setLabel(i18n.t("commands:report.city.guildFoodShop.leaveShop", { lng }))
+				.setEmoji(CrowniclesIcons.city.exit)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
+		)
+	);
+
+	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU, {
+		containers: [container],
+		createCollector: createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, menus) => {
+			if (customId === ReportCityMenuIds.BACK_TO_CITY) {
+				await buttonInteraction.deferUpdate();
+				await menus.changeToMainMenu();
+				return;
+			}
+			if (customId === STAY_IN_CITY_ID) {
+				await buttonInteraction.deferUpdate();
+				handleStayInCityInteraction(packet, context, buttonInteraction);
+				return;
+			}
+
+			if (customId.startsWith(ReportCityMenuIds.GUILD_FOOD_SHOP_BUY_PREFIX)) {
+				await buttonInteraction.deferUpdate();
+				const parts = customId.replace(ReportCityMenuIds.GUILD_FOOD_SHOP_BUY_PREFIX, "").split("_");
+				const foodType = parts[0];
+				const amount = parseInt(parts[1], 10);
+
+				await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+					context,
+					makePacket(CommandReportFoodShopBuyReq, {
+						foodType, amount
+					}),
+					async (_responseContext, packetName, responsePacket) => {
+						if (packetName === CommandReportFoodShopBuyRes.name) {
+							const res = responsePacket as unknown as CommandReportFoodShopBuyRes;
+							const foodKey = res.foodType.replace("Food", "") as "common" | "carnivorous" | "herbivorous" | "ultimate";
+							data.food[foodKey] = res.newFoodStock;
+							data.playerMoney = res.newPlayerMoney;
+
+							registerFoodShopMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus: menus,
+								statusMessage: i18n.t("commands:report.city.guildFoodShop.buySuccess", {
+									lng,
+									amount: res.amountBought,
+									food: i18n.t(`models:foods.${res.foodType}`, {
+										lng, count: res.amountBought
+									})
+								})
+							});
+							await menus.changeMenu(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU);
+						}
+						else {
+							registerFoodShopMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus: menus,
+								statusMessage: i18n.t("commands:report.city.guildFoodShop.buyError", { lng })
+							});
+							await menus.changeMenu(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU);
+						}
+					}
+				);
+			}
+		})
+	});
+}
+
+function getGuildFoodShopMenu(
+	context: PacketContext,
+	interaction: CrowniclesInteraction,
+	packet: ReactionCollectorCreationPacket,
+	collectorTime: number,
+	pseudo: string
+): CrowniclesNestedMenu {
+	const data = (packet.data.data as ReactionCollectorCityData).guildFoodShop!;
+	const lng = interaction.userLanguage;
+
+	const container = new ContainerBuilder();
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.guildFoodShop.menuTitle", {
+				lng, pseudo, guildName: data.guildName
+			})}`
+		)
+	);
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildFoodShop.menuDescription", { lng })
+		)
+	);
+
+	// Food stock display
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildFoodShop.stockInfo", {
+				lng,
+				common: data.food.common,
+				commonCap: data.foodCaps[0],
+				herbivorous: data.food.herbivorous,
+				herbivorousCap: data.foodCaps[1],
+				carnivorous: data.food.carnivorous,
+				carnivorousCap: data.foodCaps[2],
+				ultimate: data.food.ultimate,
+				ultimateCap: data.foodCaps[3],
+				playerMoney: data.playerMoney
+			})
+		)
+	);
+
+	// Buy buttons
+	const buyRows = buildFoodShopBuyButtons(data, lng);
+	if (buyRows.length > 0) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:report.city.guildFoodShop.buyLabel", { lng })
+			)
+		);
+		for (const row of buyRows) {
+			container.addActionRowComponents(row);
+		}
+	}
+	else {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:report.city.guildFoodShop.noFoodAvailable", { lng })
+			)
+		);
+	}
+
+	// Navigation
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(ReportCityMenuIds.BACK_TO_CITY)
+				.setLabel(i18n.t("commands:report.city.guildFoodShop.leaveShop", { lng }))
+				.setEmoji(CrowniclesIcons.city.exit)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(lng)
+		)
+	);
+
+	return {
+		containers: [container],
+		createCollector: createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
+			if (customId === ReportCityMenuIds.BACK_TO_CITY) {
+				await nestedMenus.changeToMainMenu();
+				return;
+			}
+			if (customId === STAY_IN_CITY_ID) {
+				handleStayInCityInteraction(packet, context, buttonInteraction);
+				return;
+			}
+
+			if (customId.startsWith(ReportCityMenuIds.GUILD_FOOD_SHOP_BUY_PREFIX)) {
+				const parts = customId.replace(ReportCityMenuIds.GUILD_FOOD_SHOP_BUY_PREFIX, "").split("_");
+				const foodType = parts[0];
+				const amount = parseInt(parts[1], 10);
+
+				await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+					context,
+					makePacket(CommandReportFoodShopBuyReq, {
+						foodType, amount
+					}),
+					async (_responseContext, packetName, responsePacket) => {
+						if (packetName === CommandReportFoodShopBuyRes.name) {
+							const res = responsePacket as unknown as CommandReportFoodShopBuyRes;
+							const foodKey = res.foodType.replace("Food", "") as "common" | "carnivorous" | "herbivorous" | "ultimate";
+							data.food[foodKey] = res.newFoodStock;
+							data.playerMoney = res.newPlayerMoney;
+
+							registerFoodShopMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus,
+								statusMessage: i18n.t("commands:report.city.guildFoodShop.buySuccess", {
+									lng,
+									amount: res.amountBought,
+									food: i18n.t(`models:foods.${res.foodType}`, {
+										lng, count: res.amountBought
+									})
+								})
+							});
+							await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU);
+						}
+						else {
+							registerFoodShopMenu({
+								data,
+								lng,
+								pseudo,
+								context,
+								interaction,
+								packet,
+								collectorTime,
+								nestedMenus,
+								statusMessage: i18n.t("commands:report.city.guildFoodShop.buyError", { lng })
+							});
+							await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU);
+						}
+					}
+				);
+			}
+		})
+	};
+}
+
 /**
  * Build the city sub-menus (inns, enchanter, home, manage home)
  */
@@ -1680,6 +2074,11 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 	// Add guild domain notary menu
 	if (cityData.guildDomainNotary?.isChief) {
 		menus.set(ReportCityMenuIds.GUILD_DOMAIN_NOTARY_MENU, getGuildDomainNotaryMenu(context, interaction, packet, collectorTime, pseudo));
+	}
+
+	// Add guild food shop menu (non-domain cities)
+	if (cityData.guildFoodShop) {
+		menus.set(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU, getGuildFoodShopMenu(context, interaction, packet, collectorTime, pseudo));
 	}
 
 	return menus;

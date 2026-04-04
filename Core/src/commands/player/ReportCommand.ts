@@ -426,6 +426,21 @@ async function sendCityCollector(
 		}
 		: undefined;
 
+	// Guild food shop: available when the guild has a shop but is NOT in the domain city
+	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id
+		? {
+			guildName: guild.name,
+			food: {
+				common: guild.commonFood,
+				carnivorous: guild.carnivorousFood,
+				herbivorous: guild.herbivorousFood,
+				ultimate: guild.ultimateFood
+			},
+			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
+			playerMoney: player.money
+		}
+		: undefined;
+
 	const collectorData: ReactionCollectorCityData = {
 		enterCityTimestamp: TravelTime.getTravelDataSimplified(player, currentDate).travelStartTime,
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
@@ -475,6 +490,7 @@ async function sendCityCollector(
 		),
 		blacksmith,
 		guildDomain,
+		guildFoodShop,
 		guildDomainNotary,
 		initialMenu: options.initialMenu
 	};

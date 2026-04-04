@@ -847,7 +847,8 @@
         "browseShop": "Examiner l'étal",
         "sitDown": "S'attabler",
         "visitDomain": "Visiter le domaine",
-        "seeGuildNotary": "Consulter le notaire"
+        "seeGuildNotary": "Consulter le notaire",
+        "visitFoodShop": "Ravitailler"
       },
       "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
       "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",
@@ -1268,6 +1269,19 @@
         "relocateDescription": "{emote:city.guildDomain} Le domaine de votre guilde a été déplacé dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
         "notEnoughTreasuryTitle": "{{pseudo}}, fonds insuffisants !",
         "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} La trésorerie de votre guilde ne contient pas assez de fonds pour cette opération. Il manque **{{missingTreasury}} {emote:unitValues.money}**."
+      },
+      "guildFoodShop": {
+        "label": "Ravitaillement de guilde",
+        "description": "Achetez de la nourriture pour les familiers de **{{guildName}}**.",
+        "menuTitle": "{{pseudo}}, ravitaillement de {{guildName}}",
+        "menuDescription": "{emote:expedition.food} Un marchand itinérant propose de la nourriture pour familiers. Les provisions seront envoyées directement au garde-manger de votre guilde.",
+        "stockInfo": "{emote:expedition.food} **Réserves actuelles** :\n• Friandise : {{common}}/{{commonCap}}\n• Herbivore : {{herbivorous}}/{{herbivorousCap}}\n• Carnivore : {{carnivorous}}/{{carnivorousCap}}\n• Ultime : {{ultimate}}/{{ultimateCap}}\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney}}",
+        "buyLabel": "{emote:expedition.food} **Acheter de la nourriture**",
+        "buyButton": "{{amount}}x {{food}} ({{cost}} {emote:unitValues.money})",
+        "buySuccess": "{emote:messages.info} Vous avez acheté **{{amount}}x {{food}}** et envoyé le tout au garde-manger de votre guilde.",
+        "buyError": "{emote:messages.error} L'achat a échoué.",
+        "noFoodAvailable": "{emote:messages.info} Le garde-manger de votre guilde est plein ou vous n'avez pas assez d'argent.",
+        "leaveShop": "Quitter le marchand"
       }
     },
     "notEnoughTokensButton": "Jetons insuffisants",

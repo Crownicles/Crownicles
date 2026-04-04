@@ -106,7 +106,7 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "noDomain" });
 	}
 
-	if (guild.chiefId !== player.id && guild.elderId !== player.id) {
+	if (guild.chiefId !== player.id) {
 		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "notAuthorized" });
 	}
 

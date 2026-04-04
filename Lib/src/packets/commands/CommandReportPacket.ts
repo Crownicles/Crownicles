@@ -620,3 +620,28 @@ export class CommandReportGuildDomainUpgradeRes extends CrowniclesPacket {
 export class CommandReportGuildDomainUpgradeErrorRes extends CrowniclesPacket {
 	error!: string;
 }
+
+// Guild food shop packets (for buying food from non-domain cities)
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportFoodShopBuyReq extends CrowniclesPacket {
+	foodType!: string;
+
+	amount!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportFoodShopBuyRes extends CrowniclesPacket {
+	foodType!: string;
+
+	newFoodStock!: number;
+
+	newPlayerMoney!: number;
+
+	amountBought!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
+	error!: string;
+}

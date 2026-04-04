@@ -249,6 +249,29 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	};
 
 	/**
+	 * Guild food shop - shown when the player has a guild with a shop but is NOT in the domain city
+	 */
+	guildFoodShop?: {
+
+		/** Guild name */
+		guildName: string;
+
+		/** Food storage */
+		food: {
+			common: number;
+			carnivorous: number;
+			herbivorous: number;
+			ultimate: number;
+		};
+
+		/** Food caps based on pantry level */
+		foodCaps: readonly number[];
+
+		/** Player money */
+		playerMoney: number;
+	};
+
+	/**
 	 * Guild domain notary options - shown when the player is a guild chief
 	 */
 	guildDomainNotary?: {
