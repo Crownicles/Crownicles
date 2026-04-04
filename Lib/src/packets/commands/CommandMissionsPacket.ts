@@ -22,6 +22,15 @@ export class CommandMissionsPacketRes extends CrowniclesPacket {
 	maxCampaignNumber!: number;
 
 	maxSideMissionSlots!: number;
+
+	guildMission!: {
+		missionId: string;
+		objective: number;
+		numberDone: number;
+		playerContribution: number;
+		expiresAt: number;
+		completed: boolean;
+	} | null;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

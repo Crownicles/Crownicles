@@ -20,7 +20,9 @@ import {
 	CommandReportCookingCraftReq,
 	CommandReportCookingMenuReq,
 	CommandReportCookingPinReq,
-	CommandReportCookingUnpinReq
+	CommandReportCookingUnpinReq,
+	CommandReportGuildDomainDepositReq,
+	CommandReportGuildDomainUpgradeReq
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	handleChestAction
@@ -32,6 +34,9 @@ import {
 	handleCookingIgnite, handleCookingWoodConfirm, handleCookingRevive, handleCookingCraft,
 	handleCookingMenu, handleCookingPin, handleCookingUnpin
 } from "../../report/ReportCookingService";
+import {
+	handleGuildDomainDeposit, handleGuildDomainUpgrade
+} from "../../report/ReportCityGuildDomainService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
@@ -113,5 +118,15 @@ export default class CoreHandlers {
 	@packetHandler(CommandReportCookingUnpinReq)
 	async cookingUnpin(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingUnpinReq): Promise<void> {
 		response.push(...await handleCookingUnpin(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportGuildDomainDepositReq)
+	async guildDomainDeposit(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainDepositReq): Promise<void> {
+		response.push(await handleGuildDomainDeposit(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportGuildDomainUpgradeReq)
+	async guildDomainUpgrade(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainUpgradeReq): Promise<void> {
+		response.push(await handleGuildDomainUpgrade(context.keycloakId!, packet));
 	}
 }
