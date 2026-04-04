@@ -57,7 +57,19 @@ export const ReportCityMenuIds = {
 	GUILD_DOMAIN_NOTARY_MENU: "GUILD_DOMAIN_NOTARY_MENU",
 
 	/** Confirm guild domain purchase or relocation */
-	GUILD_DOMAIN_CONFIRM: "GUILD_DOMAIN_CONFIRM"
+	GUILD_DOMAIN_CONFIRM: "GUILD_DOMAIN_CONFIRM",
+
+	/** Prefix for guild domain deposit buttons (followed by amount) */
+	GUILD_DOMAIN_DEPOSIT_PREFIX: "GUILD_DOMAIN_DEPOSIT_",
+
+	/** Guild domain deposit all money */
+	GUILD_DOMAIN_DEPOSIT_ALL: "GUILD_DOMAIN_DEPOSIT_ALL",
+
+	/** Prefix for guild domain building upgrade buttons (followed by building name) */
+	GUILD_DOMAIN_UPGRADE_PREFIX: "GUILD_DOMAIN_UPGRADE_",
+
+	/** Guild domain mission sub-menu */
+	GUILD_DOMAIN_MISSION_MENU: "GUILD_DOMAIN_MISSION_MENU"
 
 	/** Custom ID used for the "stay in city" button across all city sub-menus */
 	STAY_IN_CITY: "STAY_IN_CITY"

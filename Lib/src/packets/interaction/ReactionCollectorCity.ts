@@ -220,6 +220,32 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		shelterLevel: number;
 		pantryLevel: number;
 		trainingGroundLevel: number;
+
+		/** Guild level (for upgrade requirements) */
+		guildLevel: number;
+
+		/** Treasury balance */
+		treasury: number;
+
+		/** Player money */
+		playerMoney: number;
+
+		/** Whether the player is the guild chief */
+		isChief: boolean;
+
+		/** Whether the player is the guild elder */
+		isElder: boolean;
+
+		/** Food storage */
+		food: {
+			common: number;
+			carnivorous: number;
+			herbivorous: number;
+			ultimate: number;
+		};
+
+		/** Food caps based on pantry level */
+		foodCaps: readonly number[];
 	};
 
 	/**

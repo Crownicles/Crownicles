@@ -398,7 +398,19 @@ async function sendCityCollector(
 			shopLevel: guild.shopLevel,
 			shelterLevel: guild.shelterLevel,
 			pantryLevel: guild.pantryLevel,
-			trainingGroundLevel: guild.trainingGroundLevel
+			trainingGroundLevel: guild.trainingGroundLevel,
+			guildLevel: guild.level,
+			treasury: guild.treasury,
+			playerMoney: player.money,
+			isChief: guild.chiefId === player.id,
+			isElder: guild.elderId === player.id,
+			food: {
+				common: guild.commonFood,
+				carnivorous: guild.carnivorousFood,
+				herbivorous: guild.herbivorousFood,
+				ultimate: guild.ultimateFood
+			},
+			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel)
 		}
 		: undefined;
 

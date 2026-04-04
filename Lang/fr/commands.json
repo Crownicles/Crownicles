@@ -1232,6 +1232,28 @@
         "notaryDescription": "Achetez ou déplacez le domaine de votre guilde dans cette ville.",
         "menuTitle": "{{pseudo}}, domaine de {{guildName}}",
         "menuDescription": "{emote:city.guildDomain} Vous entrez dans le domaine de votre guilde **{{guildName}}**. Les bâtiments s'étendent autour de vous :\n\n• **Boutique** : Niv. {{shopLevel}}\n• **Refuge** : Niv. {{shelterLevel}}\n• **Garde-manger** : Niv. {{pantryLevel}}\n• **Terrain d'entraînement** : Niv. {{trainingGroundLevel}}",
+        "treasuryInfo": "{emote:unitValues.money} **Trésorerie** : {{treasury}} | **Votre argent** : {{playerMoney}}",
+        "foodInfo": "{emote:expedition.food} **Réserves alimentaires** :\n• Commune : {{common}}/{{commonCap}}\n• Carnivore : {{carnivorous}}/{{carnivorousCap}}\n• Herbivore : {{herbivorous}}/{{herbivorousCap}}\n• Ultime : {{ultimate}}/{{ultimateCap}}",
+        "depositLabel": "{emote:unitValues.money} **Déposer de l'argent dans la trésorerie**",
+        "depositAmount": "{{amount}}",
+        "depositAll": "Tout déposer",
+        "depositSuccess": "{emote:messages.info} Vous avez déposé **{{amount}} {emote:unitValues.money}** dans la trésorerie de guilde.",
+        "depositError": "{emote:messages.error} Le dépôt a échoué.",
+        "upgradeLabel": "{emote:city.guildDomain} **Améliorer un bâtiment**",
+        "upgradeBuilding": {
+          "shop": "Boutique Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "shelter": "Refuge Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "pantry": "Garde-manger Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "trainingGround": "Entraînement Niv.{{level}} ({{cost}} {emote:unitValues.money})"
+        },
+        "upgradeSuccess": "{emote:messages.info} **{{building}}** a été amélioré au niveau **{{level}}** !",
+        "upgradeError": "{emote:messages.error} L'amélioration a échoué.",
+        "buildings": {
+          "shop": "Boutique",
+          "shelter": "Refuge",
+          "pantry": "Garde-manger",
+          "trainingGround": "Terrain d'entraînement"
+        },
         "leaveDomain": "Quitter le domaine",
         "notaryTitle": "{{pseudo}}, notaire de guilde",
         "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Le notaire de guilde vous accueille et examine les finances de votre guilde. Pour installer le domaine de votre guilde dans cette ville, il faudra débourser **{{cost}} {emote:unitValues.money}** depuis la trésorerie de guilde.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
@@ -1945,12 +1967,15 @@
       "campaignCurrent": "{emote:missions.campaign} **Campagne ({{current}}/{{max}})**",
       "campaignCompleted": "{emote:missions.campaign} **Campagne terminée**",
       "daily": "\n{emote:missions.daily} **Mission quotidienne**",
-      "sideMissions": "\n{emote:missions.sideMission} **Missions secondaires ({{current}}/{{max}})**"
+      "sideMissions": "\n{emote:missions.sideMission} **Missions secondaires ({{current}}/{{max}})**",
+      "guildMission": "\n{emote:missions.sideMission} **Quête de guilde**"
     },
     "dailyFinished": "Vous avez complété la mission du jour ! Revenez {{time}}.",
     "noCurrentMissions": "Vous pouvez occasionnellement trouver des missions supplémentaires à réaliser en demandant un rapport.",
     "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
-    "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
+    "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
+    "guildMissionDisplay": "{{missionName}} — {{numberDone, number}}/{{objective, number}} ({{percent, number}}%)\nContribution : {{contribution, number}} | Expire dans {{hours, number}}h",
+    "guildMissionCompleted": "{{missionName}} — Terminée ! ({{objective, number}}/{{objective, number}})"
   },
   "guildShop": {
     "noFoodStorageSpace": "Vous n'avez pas assez de place dans votre réserve pour stocker cette nourriture.",

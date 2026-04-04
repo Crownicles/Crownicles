@@ -18,6 +18,7 @@ import { MissionType } from "../../../../Lib/src/types/CompletedMission";
 import { DailyMissions } from "../../core/database/game/models/DailyMission";
 import { Campaign } from "../../core/missions/Campaign";
 import { MissionsController } from "../../core/missions/MissionsController";
+import { Guilds } from "../../core/database/game/models/Guild";
 
 export default class MissionsCommand {
 	@commandRequires(CommandMissionsPacketReq, {
@@ -57,12 +58,28 @@ export default class MissionsCommand {
 			numberDone: missionInfo.dailyMissionNumberDone
 		}));
 
+		const guild = await Guilds.ofPlayer(toCheckPlayer);
+		const hasActiveGuildMission = guild !== null
+			&& guild.guildMissionId !== null
+			&& guild.guildMissionExpiry !== null
+			&& new Date(guild.guildMissionExpiry) > new Date();
+
 		response.push(makePacket(CommandMissionsPacketRes, {
 			keycloakId: toCheckPlayer.keycloakId,
 			missions: baseMissions,
 			maxCampaignNumber: Campaign.getMaxCampaignNumber(),
 			campaignProgression: missionInfo.campaignProgression,
-			maxSideMissionSlots: toCheckPlayer.getMissionSlotsNumber()
+			maxSideMissionSlots: toCheckPlayer.getMissionSlotsNumber(),
+			guildMission: hasActiveGuildMission
+				? {
+					missionId: guild.guildMissionId!,
+					objective: guild.guildMissionObjective,
+					numberDone: guild.guildMissionNumberDone,
+					playerContribution: missionInfo.guildMissionContribution,
+					expiresAt: guild.guildMissionExpiry!.getTime(),
+					completed: guild.guildMissionNumberDone >= guild.guildMissionObjective
+				}
+				: null
 		}));
 	}
 }
