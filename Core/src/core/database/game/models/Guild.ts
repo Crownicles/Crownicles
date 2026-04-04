@@ -18,7 +18,7 @@ import { TopConstants } from "../../../../../../Lib/src/constants/TopConstants";
 import { Constants } from "../../../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
 import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
-import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
+import { GuildDomainConstants } from "../../../../../../Lib/src/constants/GuildDomainConstants";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -49,6 +49,16 @@ export class Guild extends Model {
 	declare chiefId: number;
 
 	declare elderId: number | null;
+
+	declare treasury: number;
+
+	declare shopLevel: number;
+
+	declare shelterLevel: number;
+
+	declare pantryLevel: number;
+
+	declare trainingGroundLevel: number;
 
 	declare creationDate: Date;
 
@@ -192,7 +202,7 @@ export class Guild extends Model {
 		if (!guildPets) {
 			return true;
 		}
-		return guildPets.length >= PetConstants.SLOTS;
+		return guildPets.length >= GuildDomainConstants.getShelterSlots(this.shelterLevel);
 	}
 
 	/**
@@ -208,7 +218,7 @@ export class Guild extends Model {
 	 * @param quantity the quantity that need to be available
 	 */
 	public isStorageFullFor(selectedItemType: string, quantity: number): boolean {
-		return this.getDataValue(selectedItemType) + quantity > GuildConstants.MAX_PET_FOOD[getFoodIndexOf(selectedItemType)];
+		return this.getDataValue(selectedItemType) + quantity > GuildDomainConstants.getFoodCaps(this.pantryLevel)[getFoodIndexOf(selectedItemType)];
 	}
 
 	/**
@@ -220,7 +230,7 @@ export class Guild extends Model {
 	public addFood(selectedItemType: string, quantity: number, reason: NumberChangeReason): void {
 		this.setDataValue(selectedItemType, this.getDataValue(selectedItemType) + quantity);
 		if (this.isStorageFullFor(selectedItemType, 0)) {
-			this.setDataValue(selectedItemType, GuildConstants.MAX_PET_FOOD[getFoodIndexOf(selectedItemType)]);
+			this.setDataValue(selectedItemType, GuildDomainConstants.getFoodCaps(this.pantryLevel)[getFoodIndexOf(selectedItemType)]);
 		}
 		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getDataValue(selectedItemType), reason)
 			.then();
@@ -399,6 +409,26 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		chiefId: DataTypes.INTEGER,
 		elderId: DataTypes.INTEGER,
+		treasury: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		shopLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		shelterLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		pantryLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		trainingGroundLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
 		creationDate: {
 			type: DataTypes.DATE,
 			defaultValue: DataTypes.NOW

@@ -2518,5 +2518,40 @@
     "collecting": "Les aventuriers se cotisent pour invoquer une bénédiction.\n\n{{moneyEmote}} Progression : **{{poolAmount, number}}** / **{{poolThreshold, number}}**\n{emote:blessingCommand.timeLeft} Expiration de la cagnotte : {{poolExpiresAt}}\n\nContribuez en rencontrant l'Oracle lors de vos voyages !",
     "contributors_one": "{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventurier a contribué jusqu'à présent.",
     "contributors_other": "{emote:blessingCommand.topContributor} **Plus gros contributeur :** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** aventuriers ont contribué jusqu'à présent."
+  },
+  "guildContribute": {
+    "title": "Contribution au trésor",
+    "success": "{emote:unitValues.money} Vous avez versé **{{amount, number}}** au trésor de votre guilde.\n{emote:guild.treasury} Nouveau trésor : **{{newTreasury, number}}**.",
+    "notEnoughMoney": "Vous n'avez pas assez d'argent pour contribuer ce montant.",
+    "tooLow": "Le montant minimum de contribution est de **{{minAmount, number}}**."
+  },
+  "guildDomain": {
+    "title": "Domaine de la guilde {{guildName}}",
+    "treasury": "{emote:guild.treasury} **Trésor de la guilde** : {{treasury, number}}",
+    "maxLevel": "Niveau maximum atteint.",
+    "upgradeInfo": "{emote:unitValues.money} Amélioration : **{{cost, number}}** (guilde niveau **{{requiredLevel, number}}** requis)",
+    "upgradeSuccessTitle": "Amélioration réussie !",
+    "upgradeSuccess": "Le bâtiment **{{buildingName}}** a été amélioré au **niveau {{newLevel, number}}** !\n{emote:unitValues.money} Coût : **{{cost, number}}**\n{emote:guild.treasury} Trésor restant : **{{remainingTreasury, number}}**.",
+    "alreadyMaxLevel": "Le bâtiment **{{buildingName}}** est déjà au niveau maximum.",
+    "notEnoughTreasury": "Le trésor de la guilde est insuffisant pour améliorer **{{buildingName}}**. Coût : **{{cost, number}}** — Trésor : **{{treasury, number}}**.",
+    "guildLevelTooLow": "La guilde doit être au niveau **{{requiredLevel, number}}** pour améliorer **{{buildingName}}**. Niveau actuel : **{{currentLevel, number}}**.",
+    "buildings": {
+      "shop": {
+        "name": "Magasin de Guilde",
+        "description": "Niveau {{level, number}}/{{maxLevel, number}}\nPermet d'acheter de la nourriture et de l'expérience de guilde."
+      },
+      "shelter": {
+        "name": "Refuge",
+        "description": "Niveau {{level, number}}/{{maxLevel, number}}\nAbrite les familiers de la guilde."
+      },
+      "pantry": {
+        "name": "Garde-manger",
+        "description": "Niveau {{level, number}}/{{maxLevel, number}}\nStocke la nourriture des familiers."
+      },
+      "trainingGround": {
+        "name": "Terrain d'entraînement",
+        "description": "Niveau {{level, number}}/{{maxLevel, number}}\nLes familiers au refuge gagnent des points d'amour quotidiennement."
+      }
+    }
   }
 }

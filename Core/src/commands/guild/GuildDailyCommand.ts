@@ -12,6 +12,7 @@ import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { GuildPets } from "../../core/database/game/models/GuildPet";
 import Player, { Players } from "../../core/database/game/models/Player";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { GuildDailyConstants } from "../../../../Lib/src/constants/GuildDailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -205,7 +206,7 @@ async function awardGuildXp(guildLike: GuildLike, response: CrowniclesPacket[], 
  * @param rewardPacket
  */
 async function awardCommonFood(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
-	if (guildLike.guild.commonFood + GuildDailyConstants.FIXED_PET_FOOD > GuildConstants.MAX_COMMON_PET_FOOD) {
+	if (guildLike.guild.commonFood + GuildDailyConstants.FIXED_PET_FOOD > GuildDomainConstants.getFoodCaps(guildLike.guild.pantryLevel)[0]) {
 		await awardMoneyToMembers(guildLike, response, rewardPacket);
 		return;
 	}

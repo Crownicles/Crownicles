@@ -15,7 +15,7 @@ import {
 } from "../database/game/models/PetEntity";
 import { PetDataController } from "../../data/Pet";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { getFoodIndexOf } from "../utils/FoodUtils";
 import {
@@ -478,7 +478,7 @@ export class CookingService {
 	 */
 	static getAvailableFoodSpace(guild: Guild, foodType: string): number {
 		const foodIndex = getFoodIndexOf(foodType);
-		const max = GuildConstants.MAX_PET_FOOD[foodIndex];
+		const max = GuildDomainConstants.getFoodCaps(guild.pantryLevel)[foodIndex];
 		const current = guild.getDataValue(foodType) as number;
 		return Math.max(0, max - current);
 	}

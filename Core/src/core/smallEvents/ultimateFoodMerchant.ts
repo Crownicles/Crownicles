@@ -1,5 +1,5 @@
 import Player from "../database/game/models/Player";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
@@ -42,12 +42,12 @@ function maxRarity(player: Player): number {
  * @param currentFoodLevel
  * @param ultimate
  */
-function foodAmount(player: Player, currentFoodLevel: number, ultimate: boolean): number {
+function foodAmount(player: Player, currentFoodLevel: number, ultimate: boolean, foodCaps: readonly number[]): number {
 	const food = ultimate ? SmallEventConstants.ULTIMATE_FOOD_MERCHANT.ULTIMATE_FOOD : SmallEventConstants.ULTIMATE_FOOD_MERCHANT.COMMON_FOOD;
 	return Math.max(Math.min(
 		Math.ceil(food.MULTIPLIER * Math.tanh(player.level / 100))
 		+ RandomUtils.variationInt(food.VARIATION),
-		(ultimate ? GuildConstants.MAX_ULTIMATE_PET_FOOD : GuildConstants.MAX_COMMON_PET_FOOD) - currentFoodLevel
+		(ultimate ? foodCaps[3] : foodCaps[0]) - currentFoodLevel
 	), 1);
 }
 
@@ -60,15 +60,16 @@ function generateReward(player: Player, guild: Guild | null): string {
 	if (!guild) {
 		return SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.MONEY;
 	}
+	const foodCaps = GuildDomainConstants.getFoodCaps(guild.pantryLevel);
 	if (player.level >= SmallEventConstants.ULTIMATE_FOOD_MERCHANT.MINIMUM_LEVEL_GOOD_PLAYER) {
 		return RandomUtils.crowniclesRandom.bool()
-			? guild.ultimateFood < GuildConstants.MAX_ULTIMATE_PET_FOOD
+			? guild.ultimateFood < foodCaps[3]
 				? SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD
 				: SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.FULL_ULTIMATE_FOOD
 			: SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ITEM;
 	}
 
-	if (GuildConstants.MAX_COMMON_PET_FOOD > guild.commonFood) {
+	if (foodCaps[0] > guild.commonFood) {
 		return SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD;
 	}
 
@@ -84,9 +85,10 @@ function generateReward(player: Player, guild: Guild | null): string {
  * @param guild
  */
 async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response: CrowniclesPacket[], context: PacketContext, player: Player, guild: Guild | null): Promise<void> {
+	const foodCaps = guild ? GuildDomainConstants.getFoodCaps(guild.pantryLevel) : null;
 	switch (packet.interactionName) {
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD:
-			packet.amount = foodAmount(player, guild!.ultimateFood, true);
+			packet.amount = foodAmount(player, guild!.ultimateFood, true, foodCaps!);
 			await giveFoodToGuild(response, player, SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ULTIMATE_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 			break;
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.ITEM: {
@@ -101,7 +103,7 @@ async function giveReward(packet: SmallEventUltimateFoodMerchantPacket, response
 			break;
 		}
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD:
-			packet.amount = foodAmount(player, guild!.commonFood, false);
+			packet.amount = foodAmount(player, guild!.commonFood, false, foodCaps!);
 			await giveFoodToGuild(response, player, SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.COMMON_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 			break;
 		case SmallEventConstants.ULTIMATE_FOOD_MERCHANT.INTERACTIONS_NAMES.MONEY:
