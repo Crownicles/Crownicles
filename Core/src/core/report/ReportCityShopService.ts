@@ -45,17 +45,18 @@ import { Materials } from "../database/game/models/Material";
 import { getVeterinarianShopItem } from "../utils/VeterinarianShopItems";
 
 /**
- * Cached wood materials by rarity (constant after data loading, computed once per rarity)
+ * Cached materials by type and rarity (constant after data loading, computed once per key)
  */
-const woodsByRarityCache = new Map<MaterialRarity, Material[]>();
+const materialsByTypeAndRarityCache = new Map<string, Material[]>();
 
-function getWoodsByRarity(rarity: MaterialRarity): Material[] {
-	let woods = woodsByRarityCache.get(rarity);
-	if (!woods) {
-		woods = MaterialDataController.instance.getMaterialsFromType(MaterialType.WOOD).filter(m => m.rarity === rarity);
-		woodsByRarityCache.set(rarity, woods);
+function getMaterialsByTypeAndRarity(type: MaterialType, rarity: MaterialRarity): Material[] {
+	const key = `${type}_${rarity}`;
+	let materials = materialsByTypeAndRarityCache.get(key);
+	if (!materials) {
+		materials = MaterialDataController.instance.getMaterialsFromType(type).filter(m => m.rarity === rarity);
+		materialsByTypeAndRarityCache.set(key, materials);
 	}
-	return woods;
+	return materials;
 }
 
 /**
@@ -69,14 +70,15 @@ export interface CityShopReactionParams {
 	response: CrowniclesPacket[];
 }
 
-const SHOP_HANDLERS: Record<string, (player: Player, context: PacketContext, response: CrowniclesPacket[]) => Promise<void>> = {
+const SHOP_HANDLERS: Record<string, (player: Player, context: PacketContext, response: CrowniclesPacket[], city: City) => Promise<void>> = {
 	royalMarket: openRoyalMarket,
 	generalShop: openGeneralShop,
 	stockExchange: openStockExchange,
 	tanner: openTanner,
 	herbalist: openHerbalist,
 	lumberjack: openLumberjack,
-	veterinarian: openVeterinarian
+	veterinarian: openVeterinarian,
+	materialMerchant: openMaterialMerchant
 };
 
 export async function handleCityShopReaction(params: CityShopReactionParams): Promise<void> {
@@ -93,7 +95,7 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
 		return;
 	}
-	await handler(player, context, response);
+	await handler(player, context, response, city);
 }
 
 interface GemShopOptions {
@@ -128,7 +130,7 @@ async function openGemShop({
 /**
  * Open the royal market shop for the player
  */
-export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	await openGemShop({
 		player,
 		context,
@@ -153,7 +155,7 @@ export async function openRoyalMarket(player: Player, context: PacketContext, re
 /**
  * Open the general shop for the player (daily potion + random equipment)
  */
-export async function openGeneralShop(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function openGeneralShop(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	const {
 		potion, remainingPotions
 	} = await getGeneralShopData(player.keycloakId);
@@ -183,7 +185,7 @@ export async function openGeneralShop(player: Player, context: PacketContext, re
 /**
  * Open the stock exchange shop for the player (money mouth badge + gem exchange rate info)
  */
-export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	await openGemShop({
 		player,
 		context,
@@ -204,7 +206,7 @@ export async function openStockExchange(player: Player, context: PacketContext, 
 /**
  * Open the tanner shop for the player (inventory slot extensions + plant slot extensions)
  */
-export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	const slotExtensionItem = await getSlotExtensionShopItem(player.id);
 	const plantSlotExtensionItem = await getPlantSlotExtensionShopItem(player.id);
 
@@ -234,7 +236,7 @@ export async function openTanner(player: Player, context: PacketContext, respons
 /**
  * Open the herbalist shop for the player (weekly rotating plants)
  */
-export async function openHerbalist(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function openHerbalist(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants();
 
 	const tierTypes: ShopItemType[] = [
@@ -274,12 +276,12 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 }
 
 /**
- * Distribute a total quantity randomly among a list of wood materials and give them to the player.
+ * Distribute a total quantity randomly among a list of materials and give them to the player.
  */
-async function distributeWoodRandomly(playerId: number, woods: Material[], totalQuantity: number): Promise<MaterialDistribution> {
+async function distributeMaterialsRandomly(playerId: number, materials: Material[], totalQuantity: number): Promise<MaterialDistribution> {
 	const distribution = new Map<number, number>();
 	for (let i = 0; i < totalQuantity; i++) {
-		const picked = RandomUtils.crowniclesRandom.pick(woods);
+		const picked = RandomUtils.crowniclesRandom.pick(materials);
 		const materialId = parseInt(picked.id as string, 10);
 		distribution.set(materialId, (distribution.get(materialId) ?? 0) + 1);
 	}
@@ -292,7 +294,7 @@ async function distributeWoodRandomly(playerId: number, woods: Material[], total
 /**
  * Open the lumberjack shop for the player (wood by rarity with quantity selection)
  */
-export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "woodBundles",
@@ -303,7 +305,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
 						success: true,
-						materials: await distributeWoodRandomly(playerId, getWoodsByRarity(MaterialRarity.COMMON), amount)
+						materials: await distributeMaterialsRandomly(playerId, getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.COMMON), amount)
 					})
 				},
 				{
@@ -312,7 +314,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
 						success: true,
-						materials: await distributeWoodRandomly(playerId, getWoodsByRarity(MaterialRarity.UNCOMMON), amount)
+						materials: await distributeMaterialsRandomly(playerId, getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.UNCOMMON), amount)
 					})
 				},
 				{
@@ -321,7 +323,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
 					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
 						success: true,
-						materials: await distributeWoodRandomly(playerId, getWoodsByRarity(MaterialRarity.RARE), amount)
+						materials: await distributeMaterialsRandomly(playerId, getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.RARE), amount)
 					})
 				}
 			]
@@ -338,7 +340,7 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 /**
  * Open the veterinarian shop for the player (pet information + love points boost)
  */
-export async function openVeterinarian(player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+export async function openVeterinarian(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "services",
@@ -353,5 +355,58 @@ export async function openVeterinarian(player: Player, context: PacketContext, r
 		additionalShopData: {
 			currency: ShopCurrency.GEM
 		}
+	});
+}
+
+/**
+ * Generate a random material following natural drop rates and give it to the player.
+ * Drop rates: 60% common, 30% uncommon, 10% rare.
+ */
+async function generateRandomMaterialsForPlayer(playerId: number, totalQuantity: number): Promise<MaterialDistribution> {
+	const distribution = new Map<number, number>();
+	for (let i = 0; i < totalQuantity; i++) {
+		const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
+		const rarity = roll < ShopConstants.MATERIAL_MERCHANT_DROP_RATES.RARE_PROBABILITY
+			? MaterialRarity.RARE
+			: roll < ShopConstants.MATERIAL_MERCHANT_DROP_RATES.RARE_PROBABILITY + ShopConstants.MATERIAL_MERCHANT_DROP_RATES.UNCOMMON_PROBABILITY
+				? MaterialRarity.UNCOMMON
+				: MaterialRarity.COMMON;
+		const material = MaterialDataController.instance.getRandomMaterialFromRarity(rarity);
+		if (material) {
+			const materialId = parseInt(material.id, 10);
+			distribution.set(materialId, (distribution.get(materialId) ?? 0) + 1);
+		}
+	}
+	for (const [materialId, quantity] of distribution) {
+		await Materials.giveMaterial(playerId, materialId, quantity);
+	}
+	return Object.fromEntries([...distribution].map(([k, v]) => [String(k), v]));
+}
+
+/**
+ * Open the material merchant shop for the player (random material packs)
+ */
+export async function openMaterialMerchant(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
+	const shopCategories: ShopCategory[] = [
+		{
+			id: "materialPacks",
+			items: [
+				{
+					id: ShopItemType.RANDOM_MATERIAL_PACK,
+					price: ShopConstants.MATERIAL_MERCHANT_PRICE_PER_UNIT,
+					amounts: ShopConstants.MATERIAL_MERCHANT_AMOUNTS,
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
+						success: true,
+						materials: await generateRandomMaterialsForPlayer(playerId, amount)
+					})
+				}
+			]
+		}
+	];
+
+	await ShopUtils.createAndSendShopCollector(context, response, {
+		shopCategories,
+		player,
+		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
 	});
 }
