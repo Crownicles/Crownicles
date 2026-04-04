@@ -1983,23 +1983,8 @@
     "contributors_one": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurer have contributed so far.",
     "contributors_other": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurers have contributed so far."
   },
-  "guildContribute": {
-    "title": "Treasury contribution",
-    "success": "{emote:unitValues.money} You deposited **{{amount, number}}** to your guild's treasury.\n{emote:guild.treasury} New treasury: **{{newTreasury, number}}**.",
-    "notEnoughMoney": "You don't have enough money to contribute that amount.",
-    "tooLow": "The minimum contribution amount is **{{minAmount, number}}**."
-  },
   "guildDomain": {
-    "title": "{{guildName}} guild domain",
-    "treasury": "{emote:guild.treasury} **Guild treasury**: {{treasury, number}}",
-    "maxLevel": "Maximum level reached.",
-    "upgradeInfo": "{emote:unitValues.money} Upgrade: **{{cost, number}}** (guild level **{{requiredLevel, number}}** required)",
-    "upgradeSuccessTitle": "Upgrade successful!",
-    "upgradeSuccess": "**{{buildingName}}** has been upgraded to **level {{newLevel, number}}**!\n{emote:unitValues.money} Cost: **{{cost, number}}**\n{emote:guild.treasury} Remaining treasury: **{{remainingTreasury, number}}**.",
-    "alreadyMaxLevel": "**{{buildingName}}** is already at maximum level.",
-    "notEnoughTreasury": "The guild treasury is insufficient to upgrade **{{buildingName}}**. Cost: **{{cost, number}}** — Treasury: **{{treasury, number}}**.",
-    "guildLevelTooLow": "The guild must be level **{{requiredLevel, number}}** to upgrade **{{buildingName}}**. Current level: **{{currentLevel, number}}**.",
-    "buildingRequired": "The **{{building}}** building must be built to access this feature. Use {command:guilddomain} to build it.",
+    "buildingRequired": "The **{{building}}** building must be built to access this feature. Visit your guild's domain to build it.",
     "buildings": {
       "shop": {
         "name": "Guild Shop",
