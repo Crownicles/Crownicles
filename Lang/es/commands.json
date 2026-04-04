@@ -1392,12 +1392,6 @@
     "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
     "missionDisplay_other": "{{mission}} (caduca {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
   },
-  "guildShop": {
-    "noFoodStorageSpace": "No tienes espacio suficiente en tu almacén para guardar esta comida.",
-    "empty": "De momento no queda nada que comprar. Tu gremio está al máximo nivel y sus reservas de comida están llenas.",
-    "giveXpTitle": "Compra con éxito",
-    "giveXp": "{emote:unitValues.xp} Tu gremio ha recibido **{{xp, number}}** puntos de experiencia."
-  },
   "guildDaily": {
     "rewardTitle": "{{guildName}} Recompensa del gremio :",
     "coolDown": "{{coolDownTime}} La recompensa del gremio sólo está disponible una vez cada hora. Al añadir un nuevo miembro al gremio se reinicia el contador. {{time}}Siguiente recompensa .",

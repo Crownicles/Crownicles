@@ -213,10 +213,6 @@
       }
     }
   },
-  "guildShop": {
-    "description": "Muestra la tienda del gremio.",
-    "name": "tiendagremio"
-  },
   "guildKick": {
     "description": "Excluir a un miembro del gremio.",
     "name": "excluirgremio",

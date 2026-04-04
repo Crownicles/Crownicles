@@ -335,15 +335,6 @@ export abstract class HelpConstants {
 			"entrepotdeguild",
 			"entrepot"
 		],
-		GUILD_SHOP: [
-			"guildshop",
-			"guildeshop",
-			"gs",
-			"magasindeguilde",
-			"magasindeguild",
-			"guildemagasin",
-			"guildmagasin"
-		],
 		UPDATE: [
 			"update",
 			"changelog",
@@ -788,12 +779,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":pencil:",
 				NAME: "guildstorage",
-				CATEGORY: "guild"
-			},
-		GUILD_SHOP:
-			{
-				EMOTE: ":shopping_cart:",
-				NAME: "guildshop",
 				CATEGORY: "guild"
 			},
 		UPDATE:

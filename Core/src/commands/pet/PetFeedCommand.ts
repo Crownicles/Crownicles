@@ -24,7 +24,7 @@ import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorPetFeedWithoutGuild } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithoutGuild";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import { GuildShopConstants } from "../../../../Lib/src/constants/GuildShopConstants";
+
 import { getFoodIndexOf } from "../../core/utils/FoodUtils";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -51,7 +51,7 @@ function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity)
 		}
 
 		const candyIndex = getFoodIndexOf(PetConstants.PET_FOOD.COMMON_FOOD);
-		const candyPrice = GuildShopConstants.PRICES.FOOD[candyIndex];
+		const candyPrice = GuildDomainConstants.SHOP_PRICES.FOOD[candyIndex];
 
 		await player.reload();
 		await authorPet.reload();
@@ -98,7 +98,7 @@ function withoutGuildPetFeed(context: PacketContext, response: CrowniclesPacket[
 	const collector = new ReactionCollectorPetFeedWithoutGuild(
 		authorPet.asOwnedPet(),
 		PetFood.CANDY,
-		GuildShopConstants.PRICES.FOOD[getFoodIndexOf(PetConstants.PET_FOOD.COMMON_FOOD)]
+		GuildDomainConstants.SHOP_PRICES.FOOD[getFoodIndexOf(PetConstants.PET_FOOD.COMMON_FOOD)]
 	);
 
 	const collectorPacket = new ReactionCollectorInstance(

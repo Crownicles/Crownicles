@@ -1386,12 +1386,6 @@
     "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
     "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
   },
-  "guildShop": {
-    "noFoodStorageSpace": "You don't have enough room in your storage to store this food.",
-    "empty": "There's nothing left to buy at the moment. Your guild is at maximum level and its food stock is full.",
-    "giveXpTitle": "Purchase successful",
-    "giveXp": "{emote:unitValues.xp} Your guild has received **{{xp, number}}** experience points."
-  },
   "guildDaily": {
     "rewardTitle": "{{guildName}} guild's reward:",
     "coolDown": "Guild reward is only available once every {{coolDownTime}} hours. Adding a new member to the guild resets the counter. Next reward {{time}}.",

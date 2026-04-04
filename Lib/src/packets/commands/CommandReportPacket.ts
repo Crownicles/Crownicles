@@ -643,3 +643,22 @@ export class CommandReportFoodShopBuyRes extends CrowniclesPacket {
 export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
 	error!: string;
 }
+
+// Guild domain shop XP buy packets
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportGuildDomainBuyXpReq extends CrowniclesPacket {
+	tier!: string;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGuildDomainBuyXpRes extends CrowniclesPacket {
+	xp!: number;
+
+	newPlayerMoney!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGuildDomainBuyXpErrorRes extends CrowniclesPacket {
+	error!: string;
+}

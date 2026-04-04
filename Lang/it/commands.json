@@ -1392,12 +1392,6 @@
     "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
     "missionDisplay_other": "{{mission}} (scadere {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
   },
-  "guildShop": {
-    "noFoodStorageSpace": "Non avete abbastanza spazio nel vostro magazzino per conservare questo cibo.",
-    "empty": "Al momento non c'è più nulla da comprare. La tua gilda è al livello massimo e le sue scorte di cibo sono piene.",
-    "giveXpTitle": "Acquisto riuscito",
-    "giveXp": "{emote:unitValues.xp} La tua gilda ha ricevuto **{{xp, number}}** punti esperienza."
-  },
   "guildDaily": {
     "rewardTitle": "{{guildName}} Ricompensa della gilda :",
     "coolDown": "{{coolDownTime}} La ricompensa della gilda è disponibile solo una volta ogni ora. L'aggiunta di un nuovo membro alla gilda azzera il contatore. {{time}}Prossima ricompensa.",
