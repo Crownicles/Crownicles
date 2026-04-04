@@ -10,6 +10,7 @@ import {
 } from "../utils/ItemUtils";
 import { MissionsController } from "../missions/MissionsController";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
+import { Materials } from "../database/game/models/Material";
 
 /**
  * Apply a currency reward to the player if amount is positive
@@ -122,5 +123,11 @@ export async function applyExpeditionRewards(
 		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 		talismans.hasCloneTalisman = true;
 		await talismans.save();
+	}
+
+	if (rewards.materialLoot) {
+		for (const entry of rewards.materialLoot) {
+			await Materials.giveMaterial(player.id, entry.materialId, entry.quantity);
+		}
 	}
 }

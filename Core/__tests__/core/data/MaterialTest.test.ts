@@ -6,6 +6,7 @@ import models from "../../../../Lang/fr/models.json";
 import {describe, expect, it} from "vitest";
 import {CrowniclesIcons} from "../../../../Lib/src/CrowniclesIcons";
 import {PVEConstants} from "../../../../Lib/src/constants/PVEConstants";
+import {ExpeditionConstants} from "../../../../Lib/src/constants/ExpeditionConstants";
 
 // Helper to get material ID from filename (without extension)
 const getMaterialIdFromFile = (fileName: string): string => {
@@ -219,6 +220,30 @@ describe("Materials consistency", () => {
 
 		if (errors.length > 0) {
 			throw new Error(`Invalid boss loot table entries:\n${errors.join("\n")}`);
+		}
+	});
+
+	it("expedition loot tables only reference valid material IDs", () => {
+		const materialsDir = path.join(__dirname, "../../../../Core/resources/materials");
+		const materialFiles = readdirSync(materialsDir).filter((file) => file.endsWith(".json"));
+		const validMaterialIds = new Set(materialFiles.map((f) => parseInt(getMaterialIdFromFile(f), 10)));
+
+		const lootTables = ExpeditionConstants.EXPEDITION_LOOT_TABLES;
+
+		const errors: string[] = [];
+		for (const [locationType, materialIds] of Object.entries(lootTables)) {
+			for (const materialId of materialIds as number[]) {
+				if (!validMaterialIds.has(materialId)) {
+					errors.push(`Location ${locationType}: material ID ${materialId} does not exist`);
+				}
+			}
+			if ((materialIds as number[]).length < 3 || (materialIds as number[]).length > 10) {
+				errors.push(`Location ${locationType}: expected 3-10 materials, found ${(materialIds as number[]).length}`);
+			}
+		}
+
+		if (errors.length > 0) {
+			throw new Error(`Invalid expedition loot table entries:\n${errors.join("\n")}`);
 		}
 	});
 });
