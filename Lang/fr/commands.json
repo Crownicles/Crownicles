@@ -2618,13 +2618,6 @@
     }
   },
   "guildMission": {
-    "title": "Quête de guilde hebdomadaire",
-    "missionName": "{emote:unitValues.mission} **Objectif** : {{missionName}}",
-    "progress": "{emote:unitValues.progress} **Progression** : {{numberDone, number}}/{{objective, number}} ({{percent, number}}%)",
-    "contribution": "{emote:unitValues.star} **Ta contribution** : {{contribution, number}}",
-    "completed": "{emote:unitValues.check} **Quête accomplie !** Les récompenses ont été distribuées.",
-    "expiresIn": "{emote:unitValues.clock} Expire dans **{{hours, number}}h**",
-    "noMission": "Aucune quête de guilde n'est disponible pour le moment.",
     "completedTitle": "Quête de guilde accomplie !",
     "completedRewards": "La quête de guilde a été accomplie ! Voici les récompenses :\n{emote:unitValues.xp} **+{{guildXp, number}}** XP de guilde\n{emote:unitValues.score} **+{{guildScore, number}}** points de guilde\n{emote:guild.treasury} **+{{treasuryGold, number}}** or au coffre\n{emote:unitValues.personalXp} **+{{personalXp, number}}** XP personnelle",
     "missions": {

@@ -217,10 +217,6 @@
     "description": "Display the guild store.",
     "name": "guildshop"
   },
-  "guildMission": {
-    "description": "View the weekly guild quest.",
-    "name": "guildmission"
-  },
   "guildKick": {
     "description": "Kick a player from the guild.",
     "name": "guildkick",
