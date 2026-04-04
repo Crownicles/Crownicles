@@ -1,0 +1,187 @@
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import Guild, { Guilds } from "../database/game/models/Guild";
+import Player, { Players } from "../database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
+import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { hoursToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import { MissionsController } from "./MissionsController";
+import { LockManager } from "../../../../Lib/src/locks/LockManager";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { InventorySlots } from "../database/game/models/InventorySlot";
+import { GuildMissionCompletedPacket } from "../../../../Lib/src/packets/events/GuildMissionCompletedPacket";
+
+const guildMissionLockManager = new LockManager();
+
+export abstract class GuildMissionService {
+	/**
+	 * Check if the given guild has an active (non-expired) mission
+	 */
+	static hasActiveMission(guild: Guild): boolean {
+		return guild.guildMissionId !== null
+			&& guild.guildMissionExpiry !== null
+			&& new Date(guild.guildMissionExpiry) > new Date();
+	}
+
+	/**
+	 * Check if the guild mission is completed
+	 */
+	static isMissionCompleted(guild: Guild): boolean {
+		return guild.guildMissionId !== null
+			&& guild.guildMissionNumberDone >= guild.guildMissionObjective;
+	}
+
+	/**
+	 * Generate a new weekly mission for the guild
+	 */
+	static generateMission(guild: Guild): void {
+		const availableMissions = GuildDomainConstants.GUILD_MISSIONS.AVAILABLE;
+		const missionId = RandomUtils.crowniclesRandom.pick(availableMissions);
+		const objectiveIndex = Math.min(
+			Math.floor(guild.level / 50),
+			GuildDomainConstants.GUILD_MISSIONS.OBJECTIVES.length - 1
+		);
+		const objective = GuildDomainConstants.GUILD_MISSIONS.OBJECTIVES[objectiveIndex];
+
+		guild.guildMissionId = missionId;
+		guild.guildMissionVariant = 0;
+		guild.guildMissionObjective = objective;
+		guild.guildMissionNumberDone = 0;
+		guild.guildMissionBlob = null;
+		guild.guildMissionExpiry = new Date(Date.now() + hoursToMilliseconds(GuildDomainConstants.GUILD_MISSIONS.DURATION_HOURS));
+	}
+
+	/**
+	 * Ensure the guild has an active mission, generating one if needed
+	 */
+	static ensureActiveMission(guild: Guild): void {
+		if (!GuildMissionService.hasActiveMission(guild) && !GuildMissionService.isMissionCompleted(guild)) {
+			GuildMissionService.generateMission(guild);
+		}
+	}
+
+	/**
+	 * Update the guild mission progress when the player performs an action.
+	 * Called from MissionsController.updateMissionsCounts after daily mission handling.
+	 */
+	static async updateGuildMission(
+		missionId: string,
+		count: number,
+		player: Player,
+		missionInfo: PlayerMissionsInfo
+	): Promise<boolean> {
+		if (!player.guildId) {
+			return false;
+		}
+
+		const lock = guildMissionLockManager.getLock(player.guildId);
+		const release = await lock.acquire();
+		try {
+			const guild = (await Guilds.getById(player.guildId))!;
+
+			if (!GuildMissionService.hasActiveMission(guild)) {
+				return false;
+			}
+
+			if (GuildMissionService.isMissionCompleted(guild)) {
+				return false;
+			}
+
+			if (guild.guildMissionId !== missionId) {
+				return false;
+			}
+
+			const missionInterface = MissionsController.getMissionInterface(missionId);
+			if (!missionInterface.areParamsMatchingVariantAndBlob(guild.guildMissionVariant, {}, guild.guildMissionBlob)) {
+				return false;
+			}
+
+			guild.guildMissionNumberDone += count;
+			if (guild.guildMissionNumberDone > guild.guildMissionObjective) {
+				guild.guildMissionNumberDone = guild.guildMissionObjective;
+			}
+
+			missionInfo.guildMissionContribution += count;
+			await missionInfo.save();
+			await guild.save();
+
+			return guild.guildMissionNumberDone >= guild.guildMissionObjective;
+		}
+		finally {
+			release();
+		}
+	}
+
+	/**
+	 * Distribute rewards to all guild members who contributed, then reset the mission state
+	 */
+	static async distributeRewards(
+		player: Player,
+		response: CrowniclesPacket[]
+	): Promise<void> {
+		if (!player.guildId) {
+			return;
+		}
+
+		const guild = (await Guilds.getById(player.guildId))!;
+		const rewards = GuildDomainConstants.GUILD_MISSIONS.REWARDS;
+
+		// Guild-level rewards (applied once)
+		await guild.addExperience({
+			amount: rewards.GUILD_XP,
+			response,
+			reason: NumberChangeReason.GUILD_MISSION
+		});
+		guild.treasury += rewards.TREASURY_GOLD;
+		await guild.addScore({
+			amount: rewards.GUILD_SCORE,
+			response,
+			reason: NumberChangeReason.GUILD_MISSION
+		});
+
+		// Personal XP for ALL guild members who contributed
+		const guildMembers = await Players.getByGuild(player.guildId);
+		const now = new Date();
+
+		for (const member of guildMembers) {
+			const missionInfo = await PlayerMissionsInfos.getOfPlayer(member.id);
+
+			if (missionInfo.guildMissionContribution <= 0) {
+				continue;
+			}
+
+			// Give personal XP
+			const updatedMember = await member.addExperience({
+				amount: rewards.PERSONAL_XP,
+				response,
+				reason: NumberChangeReason.GUILD_MISSION
+			}, await InventorySlots.getPlayerActiveObjects(member.id));
+			await updatedMember.save();
+
+			// Mark completion and reset contribution
+			missionInfo.lastGuildMissionCompleted = now;
+			missionInfo.guildMissionContribution = 0;
+			await missionInfo.save();
+
+			// Notify each contributing member
+			response.push(makePacket(GuildMissionCompletedPacket, {
+				guildXp: rewards.GUILD_XP,
+				guildScore: rewards.GUILD_SCORE,
+				treasuryGold: rewards.TREASURY_GOLD,
+				personalXp: rewards.PERSONAL_XP,
+				keycloakId: member.keycloakId
+			}));
+		}
+
+		// Reset guild mission state for next week
+		guild.guildMissionId = null;
+		guild.guildMissionNumberDone = 0;
+		guild.guildMissionObjective = 0;
+		guild.guildMissionVariant = 0;
+		guild.guildMissionBlob = null;
+		guild.guildMissionExpiry = null;
+		await guild.save();
+	}
+}

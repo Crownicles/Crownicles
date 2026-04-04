@@ -7,6 +7,7 @@ import {
 	CommandGuildShopGiveXp,
 	CommandGuildShopPacketReq
 } from "../../../../Lib/src/packets/commands/CommandGuildShopPacket";
+import { GuildBuilding } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { DiscordCache } from "../../bot/DiscordCache";
 import {
 	sendErrorMessage, SendManner
@@ -16,6 +17,23 @@ import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 
 function getPacket(): CommandGuildShopPacketReq {
 	return makePacket(CommandGuildShopPacketReq, {});
+}
+
+export async function handleCommandGuildShopNotBuilt(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+
+	if (interaction) {
+		await sendErrorMessage(
+			interaction.user,
+			context,
+			interaction,
+			i18n.t("commands:guildDomain.buildingRequired", {
+				lng: interaction.userLanguage,
+				building: i18n.t(`commands:guildDomain.buildings.${GuildBuilding.SHOP}.name`, { lng: interaction.userLanguage })
+			}),
+			{ sendManner: SendManner.REPLY }
+		);
+	}
 }
 
 export async function handleCommandGuildShopNoFoodStorageSpace(context: PacketContext): Promise<void> {

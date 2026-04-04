@@ -30,23 +30,40 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		defaultValue: 0
 	});
 
-	// Guild mission fields on player_missions_info table
-	await context.addColumn("player_missions_info", "guildMissionId", {
+	// Guild weekly mission (collective) on guilds table
+	await context.addColumn("guilds", "guildMissionId", {
 		type: DataTypes.STRING(64), // eslint-disable-line new-cap
 		allowNull: true,
 		defaultValue: null
 	});
-	await context.addColumn("player_missions_info", "guildMissionVariant", {
+	await context.addColumn("guilds", "guildMissionVariant", {
 		type: DataTypes.INTEGER,
 		allowNull: false,
 		defaultValue: 0
 	});
-	await context.addColumn("player_missions_info", "guildMissionObjective", {
+	await context.addColumn("guilds", "guildMissionObjective", {
 		type: DataTypes.INTEGER,
 		allowNull: false,
 		defaultValue: 0
 	});
-	await context.addColumn("player_missions_info", "guildMissionNumberDone", {
+	await context.addColumn("guilds", "guildMissionNumberDone", {
+		type: DataTypes.INTEGER,
+		allowNull: false,
+		defaultValue: 0
+	});
+	await context.addColumn("guilds", "guildMissionBlob", {
+		type: DataTypes.BLOB,
+		allowNull: true,
+		defaultValue: null
+	});
+	await context.addColumn("guilds", "guildMissionExpiry", {
+		type: DataTypes.DATE,
+		allowNull: true,
+		defaultValue: null
+	});
+
+	// Per-player guild mission tracking on player_missions_info
+	await context.addColumn("player_missions_info", "guildMissionContribution", {
 		type: DataTypes.INTEGER,
 		allowNull: false,
 		defaultValue: 0
@@ -56,20 +73,17 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		allowNull: true,
 		defaultValue: null
 	});
-	await context.addColumn("player_missions_info", "guildMissionBlob", {
-		type: DataTypes.BLOB,
-		allowNull: true,
-		defaultValue: null
-	});
 }
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {
-	await context.removeColumn("player_missions_info", "guildMissionBlob");
 	await context.removeColumn("player_missions_info", "lastGuildMissionCompleted");
-	await context.removeColumn("player_missions_info", "guildMissionNumberDone");
-	await context.removeColumn("player_missions_info", "guildMissionObjective");
-	await context.removeColumn("player_missions_info", "guildMissionVariant");
-	await context.removeColumn("player_missions_info", "guildMissionId");
+	await context.removeColumn("player_missions_info", "guildMissionContribution");
+	await context.removeColumn("guilds", "guildMissionExpiry");
+	await context.removeColumn("guilds", "guildMissionBlob");
+	await context.removeColumn("guilds", "guildMissionNumberDone");
+	await context.removeColumn("guilds", "guildMissionObjective");
+	await context.removeColumn("guilds", "guildMissionVariant");
+	await context.removeColumn("guilds", "guildMissionId");
 	await context.removeColumn("guilds", "trainingGroundLevel");
 	await context.removeColumn("guilds", "pantryLevel");
 	await context.removeColumn("guilds", "shelterLevel");

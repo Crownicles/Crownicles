@@ -12,6 +12,7 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { minutesToHours } from "../../../../Lib/src/utils/TimeUtils";
 import { GuildLevelUpPacket } from "../../../../Lib/src/packets/events/GuildLevelUpPacket";
 import { MissionsCompletedPacket } from "../../../../Lib/src/packets/events/MissionsCompletedPacket";
+import { GuildMissionCompletedPacket } from "../../../../Lib/src/packets/events/GuildMissionCompletedPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
 import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { PlayerLeavePveIslandPacket } from "../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
@@ -460,5 +461,38 @@ export default class EventsHandlers {
 				)
 			]
 		});
+	}
+
+	@packetHandler(GuildMissionCompletedPacket)
+	async guildMissionCompleted(context: PacketContext, packet: GuildMissionCompletedPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+
+		const lng = interaction.userLanguage;
+		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
+		if (getUser.isError) {
+			return;
+		}
+		const user = getUser.payload.user;
+		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
+		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
+
+		const embed = discordUser
+			? new CrowniclesEmbed().formatAuthor(i18n.t("commands:guildMission.completedTitle", { lng }), discordUser)
+			: new CrowniclesEmbed().setTitle(i18n.t("commands:guildMission.completedTitle", { lng }));
+
+		embed.setDescription(
+			i18n.t("commands:guildMission.completedRewards", {
+				lng,
+				guildXp: packet.guildXp,
+				guildScore: packet.guildScore,
+				treasuryGold: packet.treasuryGold,
+				personalXp: packet.personalXp
+			})
+		);
+
+		await interaction.followUp({ embeds: [embed] });
 	}
 }
