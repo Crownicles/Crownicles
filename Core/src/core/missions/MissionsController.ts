@@ -35,6 +35,8 @@ import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 
+import { GuildMissionService } from "./GuildMissionService";
+
 type MissionInformations = {
 	missionId: string;
 	count?: number;
@@ -57,6 +59,7 @@ type GenerateMissionPropertiesOptions = {
 type SpecialMissionCompletion = {
 	daily: boolean;
 	campaign: boolean;
+	guild: boolean;
 };
 
 export abstract class MissionsController {
@@ -87,7 +90,8 @@ export abstract class MissionsController {
 		response: CrowniclesPacket[],
 		specialMissionCompletion: SpecialMissionCompletion = {
 			daily: false,
-			campaign: false
+			campaign: false,
+			guild: false
 		}
 	): Promise<Player> {
 		const completedMissions = await MissionsController.completeAndUpdateMissions(player, missionSlots, specialMissionCompletion);
@@ -192,6 +196,10 @@ export abstract class MissionsController {
 		}, missionSlots, missionInfo, player, response);
 		player = await MissionsController.checkCompletedMissions(player, missionSlots, missionInfo, response, specialMissionCompletion);
 
+		if (specialMissionCompletion.guild) {
+			await GuildMissionService.distributeRewards(player, response);
+		}
+
 		await player.save();
 		return player;
 	}
@@ -229,6 +237,8 @@ export abstract class MissionsController {
 			crowniclesInstance?.logsDatabase.logMissionDailyFinished(player.keycloakId)
 				.then();
 		}
+
+		// Guild mission completion is handled separately via GuildMissionService.distributeRewards
 		await player.save();
 		return completedMissions;
 	}
@@ -432,10 +442,24 @@ export abstract class MissionsController {
 		response: CrowniclesPacket[]
 	): Promise<SpecialMissionCompletion> {
 		const missionInterface = this.getMissionInterface(missionInformation.missionId);
+		const count = missionInformation.count ?? 1;
 		const specialMissionCompletion: SpecialMissionCompletion = {
 			daily: false,
-			campaign: await this.checkMissionSlots(missionInterface, missionInformation, missionSlots)
+			campaign: await this.checkMissionSlots(missionInterface, missionInformation, missionSlots),
+			guild: false
 		};
+
+		// Guild weekly mission (independent of daily)
+		if (player?.guildId) {
+			const guildCompleted = await GuildMissionService.updateGuildMission(
+				missionInformation.missionId, count, player, missionInfo
+			);
+			if (guildCompleted) {
+				specialMissionCompletion.guild = true;
+			}
+		}
+
+		// Daily mission
 		if (missionInfo.hasCompletedDailyMission()) {
 			return specialMissionCompletion;
 		}
@@ -449,7 +473,6 @@ export abstract class MissionsController {
 		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params!);
 
 		// Handle set mode (replace) vs increment mode for daily missions
-		const count = missionInformation.count ?? 1;
 		if (missionInformation.set) {
 			// For "set" missions (like earnTokensInOneExpedition), only update if the new value is higher
 			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, count);

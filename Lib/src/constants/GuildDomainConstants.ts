@@ -25,19 +25,31 @@ export abstract class GuildDomainConstants {
 			]
 		},
 		[GuildBuilding.SHELTER]: {
-			maxLevel: 3,
+			maxLevel: 6,
 			levels: [
 				{
-					guildLevel: 20,
+					guildLevel: 15,
+					cost: 30_000
+				},
+				{
+					guildLevel: 25,
+					cost: 60_000
+				},
+				{
+					guildLevel: 40,
 					cost: 120_000
 				},
 				{
-					guildLevel: 50,
-					cost: 320_000
+					guildLevel: 60,
+					cost: 200_000
 				},
 				{
-					guildLevel: 90,
-					cost: 640_000
+					guildLevel: 80,
+					cost: 300_000
+				},
+				{
+					guildLevel: 100,
+					cost: 370_000
 				}
 			]
 		},
@@ -84,7 +96,10 @@ export abstract class GuildDomainConstants {
 		6,
 		8,
 		10,
-		12
+		12,
+		14,
+		16,
+		18
 	] as const;
 
 	/**
@@ -141,6 +156,48 @@ export abstract class GuildDomainConstants {
 	 * Guild mission reward: love points added to player's active pet
 	 */
 	static readonly GUILD_MISSION_PET_LOVE_REWARD = 3;
+
+	/**
+	 * Guild weekly mission configuration
+	 */
+	static readonly GUILD_MISSIONS = {
+		/**
+		 * Mission IDs that can be selected as guild weekly missions.
+		 * These should be simple count-based missions using the default interface.
+		 */
+		AVAILABLE: [
+			"doReports",
+			"earnPoints",
+			"earnMoney",
+			"earnXP",
+			"petCaress",
+			"doExpeditions"
+		],
+
+		/**
+		 * Guild mission objectives per difficulty (indexed). Applied to the selected mission.
+		 */
+		OBJECTIVES: [
+			50,
+			100,
+			200
+		] as const,
+
+		/**
+		 * Rewards for completing the guild weekly mission
+		 */
+		REWARDS: {
+			GUILD_XP: 500,
+			GUILD_SCORE: 200,
+			TREASURY_GOLD: 10_000,
+			PERSONAL_XP: 150
+		},
+
+		/**
+		 * Duration of a guild weekly mission in hours
+		 */
+		DURATION_HOURS: 168
+	} as const;
 
 	static getShelterSlots(shelterLevel: number): number {
 		return GuildDomainConstants.SHELTER_SLOTS[shelterLevel] ?? GuildDomainConstants.SHELTER_SLOTS[0];

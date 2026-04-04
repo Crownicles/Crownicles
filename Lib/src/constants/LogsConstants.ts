@@ -32,6 +32,7 @@ export enum NumberChangeReason {
 	GUILD_DAILY,
 	GUILD_CREATE,
 	GUILD_CONTRIBUTE,
+	GUILD_MISSION,
 
 	// Items
 	ITEM_SELL,

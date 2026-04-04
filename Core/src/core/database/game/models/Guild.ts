@@ -60,6 +60,18 @@ export class Guild extends Model {
 
 	declare trainingGroundLevel: number;
 
+	declare guildMissionId: string | null;
+
+	declare guildMissionVariant: number;
+
+	declare guildMissionObjective: number;
+
+	declare guildMissionNumberDone: number;
+
+	declare guildMissionBlob: Buffer | null;
+
+	declare guildMissionExpiry: Date | null;
+
 	declare creationDate: Date;
 
 	declare updatedAt: Date;
@@ -428,6 +440,33 @@ export function initModel(sequelize: Sequelize): void {
 		trainingGroundLevel: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
+		},
+		guildMissionId: {
+			type: DataTypes.STRING(64), // eslint-disable-line new-cap
+			allowNull: true,
+			defaultValue: null
+		},
+		guildMissionVariant: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		guildMissionObjective: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		guildMissionNumberDone: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		guildMissionBlob: {
+			type: DataTypes.BLOB,
+			allowNull: true,
+			defaultValue: null
+		},
+		guildMissionExpiry: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
 		},
 		creationDate: {
 			type: DataTypes.DATE,

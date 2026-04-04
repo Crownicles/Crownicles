@@ -6,6 +6,9 @@ import {
 export class CommandGuildShopPacketReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandGuildShopNotBuilt extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandGuildShopNoFoodStorageSpace extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

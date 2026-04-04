@@ -217,6 +217,10 @@
     "description": "Afficher le magasin de guilde.",
     "name": "magasinguilde"
   },
+  "guildMission": {
+    "description": "Voir la quête hebdomadaire de la guilde.",
+    "name": "queteguilde"
+  },
   "guildKick": {
     "description": "Exclure un membre de la guilde.",
     "name": "exclureguilde",
