@@ -268,7 +268,9 @@
       "tokens_other": "{emote:unitValues.token} Jetons gagnés : **{{count}}** !",
       "item": "{emote:rewards.item} Vous recevez un équipement aléatoire !",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le $t(models:talisman.clone) !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
-      "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !"
+      "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !",
+      "materialTitle": "{emote:inventory.materials} Matériaux récupérés :",
+      "materialLine": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**"
     },
     "riskCategories": {
       "trivial": "Tranquille",

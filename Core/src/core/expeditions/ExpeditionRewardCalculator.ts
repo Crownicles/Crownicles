@@ -12,6 +12,7 @@ import {
 	generateRandomItem
 } from "../utils/ItemUtils";
 import { MathUtils } from "../utils/MathUtils";
+import { MaterialDataController } from "../../data/Material";
 
 /**
  * Extended reward data with item details for Core-side use
@@ -271,6 +272,67 @@ function generateItemReward(rewardIndex: number): ItemReward {
 }
 
 /**
+ * Generate material loot for expedition based on location type and reward index
+ * Uses weighted random selection based on material rarity
+ */
+function generateMaterialLoot(locationType: ExpeditionLocationType, rewardIndex: number, isPartialSuccess: boolean): {
+	materialId: number; quantity: number;
+}[] {
+	if (rewardIndex < ExpeditionConstants.MATERIAL_LOOT.MIN_REWARD_INDEX) {
+		return [];
+	}
+
+	const lootTable = ExpeditionConstants.EXPEDITION_LOOT_TABLES[locationType];
+	if (!lootTable || lootTable.length === 0) {
+		return [];
+	}
+
+	let totalDrops = ExpeditionConstants.MATERIAL_LOOT.DROPS_BY_REWARD_INDEX[rewardIndex];
+	if (isPartialSuccess) {
+		totalDrops = Math.max(1, Math.round(totalDrops / ExpeditionConstants.PARTIAL_SUCCESS_PENALTY_DIVISOR));
+	}
+
+	// Build weighted entries
+	const weightedEntries: {
+		materialId: number; weight: number;
+	}[] = [];
+	for (const materialId of lootTable) {
+		const material = MaterialDataController.instance.getById(materialId);
+		if (material) {
+			const weight = ExpeditionConstants.MATERIAL_LOOT.RARITY_WEIGHTS[material.rarity] ?? 0;
+			weightedEntries.push({
+				materialId,
+				weight
+			});
+		}
+	}
+
+	if (weightedEntries.length === 0) {
+		return [];
+	}
+
+	const totalWeight = weightedEntries.reduce((sum, entry) => sum + entry.weight, 0);
+
+	// Roll each drop independently
+	const lootMap = new Map<number, number>();
+	for (let i = 0; i < totalDrops; i++) {
+		let roll = RandomUtils.randInt(0, totalWeight);
+		for (const entry of weightedEntries) {
+			roll -= entry.weight;
+			if (roll < 0) {
+				lootMap.set(entry.materialId, (lootMap.get(entry.materialId) ?? 0) + 1);
+				break;
+			}
+		}
+	}
+
+	return Array.from(lootMap.entries()).map(([materialId, quantity]) => ({
+		materialId,
+		quantity
+	}));
+}
+
+/**
  * Calculate rewards based on expedition parameters and location
  * Applies pet preference multipliers to money, experience, and points (not tokens)
  */
@@ -302,6 +364,9 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 	// Generate random item reward (always given on success)
 	const itemReward = generateItemReward(rewardIndex);
 
+	// Generate material loot based on location type
+	const materialLoot = generateMaterialLoot(expedition.locationType, rewardIndex, isPartialSuccess);
+
 	return {
 		...rewards,
 		itemId: itemReward.itemId,
@@ -313,6 +378,7 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 			hasCloneTalisman,
 			isPartialSuccess
 		}),
-		itemGiven: true
+		itemGiven: true,
+		materialLoot: materialLoot.length > 0 ? materialLoot : undefined
 	};
 }
