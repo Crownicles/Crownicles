@@ -203,6 +203,42 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		/** Current player money for UI display */
 		playerMoney: number;
 	};
+
+	/**
+	 * Guild domain data - shown when the guild has its domain in this city
+	 */
+	guildDomain?: {
+
+		/** Whether the player's guild has its domain in this city */
+		isInCity: boolean;
+
+		/** Guild name */
+		guildName: string;
+
+		/** Building levels */
+		shopLevel: number;
+		shelterLevel: number;
+		pantryLevel: number;
+		trainingGroundLevel: number;
+	};
+
+	/**
+	 * Guild domain notary options - shown when the player is a guild chief
+	 */
+	guildDomainNotary?: {
+
+		/** Whether the guild already has a domain */
+		hasDomain: boolean;
+
+		/** Cost to purchase (first time) or relocate */
+		cost: number;
+
+		/** Guild treasury balance */
+		treasury: number;
+
+		/** Whether the player is the guild chief */
+		isChief: boolean;
+	};
 }
 
 export type EnchanterCityData = NonNullable<ReactionCollectorCityData["enchanter"]>;
@@ -278,6 +314,12 @@ export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionColle
 /** Reaction for harvesting all ready plants from the garden */
 export class ReactionCollectorGardenHarvestReaction extends ReactionCollectorReaction {}
 
+/** Reaction for opening the guild domain menu (player is in the domain's city) */
+export class ReactionCollectorGuildDomainMenuReaction extends ReactionCollectorReaction {}
+
+/** Reaction for purchasing or relocating the guild domain via the notary */
+export class ReactionCollectorGuildDomainNotaryReaction extends ReactionCollectorReaction {}
+
 /**
  * Union type for all city reactions
  */
@@ -296,7 +338,9 @@ type CityReaction =
 	| ReactionCollectorBlacksmithMenuReaction
 	| ReactionCollectorBlacksmithUpgradeReaction
 	| ReactionCollectorBlacksmithDisenchantReaction
-	| ReactionCollectorGardenHarvestReaction;
+	| ReactionCollectorGardenHarvestReaction
+	| ReactionCollectorGuildDomainMenuReaction
+	| ReactionCollectorGuildDomainNotaryReaction;
 
 /**
  * Packet type for the city reaction collector
@@ -455,6 +499,24 @@ export class ReactionCollectorCity extends ReactionCollector {
 		];
 	}
 
+	private buildGuildDomainReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		const reactions: {
+			type: string; data: ReactionCollectorReaction;
+		}[] = [];
+
+		if (this.data.guildDomain?.isInCity) {
+			reactions.push(this.buildReaction(ReactionCollectorGuildDomainMenuReaction, {}));
+		}
+
+		if (this.data.guildDomainNotary?.isChief) {
+			reactions.push(this.buildReaction(ReactionCollectorGuildDomainNotaryReaction, {}));
+		}
+
+		return reactions;
+	}
+
 	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
 		return {
 			id,
@@ -467,7 +529,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildShopReactions(),
 				...this.buildHomeManageReaction(),
 				...this.buildHomeFeatureReactions(),
-				...this.buildBlacksmithReactions()
+				...this.buildBlacksmithReactions(),
+				...this.buildGuildDomainReactions()
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data

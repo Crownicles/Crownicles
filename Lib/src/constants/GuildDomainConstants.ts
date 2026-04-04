@@ -148,6 +148,16 @@ export abstract class GuildDomainConstants {
 	static readonly AUTO_FEED_PANTRY_LEVEL = 3;
 
 	/**
+	 * Cost to purchase the guild domain (from treasury)
+	 */
+	static readonly DOMAIN_PURCHASE_COST = 5_000;
+
+	/**
+	 * Cost to relocate the guild domain to another city (from treasury)
+	 */
+	static readonly DOMAIN_RELOCATION_COST = 100_000;
+
+	/**
 	 * Minimum amount a player can contribute to the guild treasury
 	 */
 	static readonly MIN_CONTRIBUTE_AMOUNT = 100;
