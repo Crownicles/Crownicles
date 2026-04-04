@@ -35,7 +35,7 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import {
 	GuildPet, GuildPets
 } from "../../core/database/game/models/GuildPet";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
@@ -119,15 +119,14 @@ async function deposePetToGuild(
 	}
 
 	const guildPets = await GuildPets.getOfGuild(player.guildId!);
-	if (guildPets.length >= PetConstants.SLOTS) {
-		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
-		return;
-	}
-
 	const guild = await Guilds.getById(player.guildId);
 	if (!guild) {
 		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but guild not found");
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return;
+	}
+	if (guildPets.length >= GuildDomainConstants.getShelterSlots(guild.shelterLevel)) {
+		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}

@@ -31,6 +31,7 @@ export enum NumberChangeReason {
 	// Guild
 	GUILD_DAILY,
 	GUILD_CREATE,
+	GUILD_CONTRIBUTE,
 
 	// Items
 	ITEM_SELL,
