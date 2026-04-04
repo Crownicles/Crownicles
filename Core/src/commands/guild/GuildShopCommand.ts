@@ -27,7 +27,7 @@ import {
 	getFoodIndexOf, giveFoodToGuild
 } from "../../core/utils/FoodUtils";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { ShopUtils } from "../../core/utils/ShopUtils";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { shopItemTypeFromId } from "../../../../Lib/src/utils/ShopUtils";
@@ -133,10 +133,11 @@ export default class GuildShopCommand {
 		const shopCategories: ShopCategory[] = [];
 
 		const guild = (await Guilds.getById(player.guildId))!;
-		const commonFoodRemainingSlots = GuildConstants.MAX_COMMON_PET_FOOD - guild.commonFood;
-		const herbivorousFoodRemainingSlots = GuildConstants.MAX_HERBIVOROUS_PET_FOOD - guild.herbivorousFood;
-		const carnivorousFoodRemainingSlots = GuildConstants.MAX_CARNIVOROUS_PET_FOOD - guild.carnivorousFood;
-		const ultimateFoodRemainingSlots = GuildConstants.MAX_ULTIMATE_PET_FOOD - guild.ultimateFood;
+		const foodCaps = GuildDomainConstants.getFoodCaps(guild.pantryLevel);
+		const commonFoodRemainingSlots = foodCaps[0] - guild.commonFood;
+		const herbivorousFoodRemainingSlots = foodCaps[2] - guild.herbivorousFood;
+		const carnivorousFoodRemainingSlots = foodCaps[1] - guild.carnivorousFood;
+		const ultimateFoodRemainingSlots = foodCaps[3] - guild.ultimateFood;
 
 		if (!guild.isAtMaxLevel()) {
 			shopCategories.push({

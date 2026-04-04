@@ -10,7 +10,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandGuildStoragePacket";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 
 export default class GuildStorageCommand {
 	@commandRequires(CommandGuildStoragePacketReq, {
@@ -20,12 +20,13 @@ export default class GuildStorageCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD
 	}) async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
 		const guild = (await Guilds.getById(player.guildId))!;
+		const foodCaps = GuildDomainConstants.getFoodCaps(guild.pantryLevel);
 		const foods: FoodStorage[] = [];
 		for (const foodKey of Object.values(PetConstants.PET_FOOD)) {
 			foods.push({
 				id: foodKey,
 				amount: guild[foodKey as keyof Guilds],
-				maxAmount: GuildConstants.MAX_PET_FOOD[Object.values(PetConstants.PET_FOOD)
+				maxAmount: foodCaps[Object.values(PetConstants.PET_FOOD)
 					.indexOf(foodKey)]
 			});
 		}

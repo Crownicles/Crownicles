@@ -37,7 +37,7 @@ import {
 import {
 	Guild, Guilds
 } from "../../core/database/game/models/Guild";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
 
 function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity) {
@@ -188,6 +188,7 @@ async function withGuildPetFeed(context: PacketContext, response: CrowniclesPack
 	}
 	const reactions = [];
 
+	const foodCaps = GuildDomainConstants.getFoodCaps(guild.pantryLevel);
 	for (const food of Object.values(PetConstants.PET_FOOD)) {
 		const foodIndex = getFoodIndexOf(food);
 		const foodAmount = guild.getDataValue(food);
@@ -195,7 +196,7 @@ async function withGuildPetFeed(context: PacketContext, response: CrowniclesPack
 			reactions.push({
 				food: food as PetFood,
 				amount: foodAmount,
-				maxAmount: GuildConstants.MAX_PET_FOOD[foodIndex]
+				maxAmount: foodCaps[foodIndex]
 			});
 		}
 	}

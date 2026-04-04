@@ -34,7 +34,7 @@ import {
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import Guild, { Guilds } from "../../core/database/game/models/Guild";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { getFoodIndexOf } from "../../core/utils/FoodUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
@@ -75,7 +75,7 @@ function getMissingMoneyToFreePet(player: Player, playerPet: PetEntity): number 
  * @param pPet
  */
 function generateLuckyMeat(guild: Guild | null, pPet: PetEntity): boolean {
-	return guild !== null && guild.carnivorousFood + 1 <= GuildConstants.MAX_PET_FOOD[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
+	return guild !== null && guild.carnivorousFood + 1 <= GuildDomainConstants.getFoodCaps(guild.pantryLevel)[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
 		&& RandomUtils.crowniclesRandom.realZeroToOneInclusive() <= PetFreeConstants.GIVE_MEAT_PROBABILITY
 		&& !pPet.isFeisty();
 }

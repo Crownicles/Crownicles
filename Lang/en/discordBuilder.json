@@ -402,5 +402,19 @@
   "blessing": {
     "name": "blessing",
     "description": "See the current state of the global blessing."
+  },
+  "guildContribute": {
+    "name": "guildcontribute",
+    "description": "Contribute money to your guild's treasury.",
+    "options": {
+      "amount": {
+        "name": "amount",
+        "description": "The amount of money to deposit into the guild treasury."
+      }
+    }
+  },
+  "guildDomain": {
+    "name": "guilddomain",
+    "description": "View and manage your guild's domain."
   }
 }
