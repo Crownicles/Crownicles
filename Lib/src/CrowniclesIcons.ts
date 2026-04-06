@@ -259,7 +259,13 @@ export const CrowniclesIcons: {
 		shops: { [shopId: string]: string };
 		home: { [level: number]: string };
 		manageHome: string;
-		guildDomain: string;
+		guildDomain: {
+			menu: string;
+			shop: string;
+			shelter: string;
+			pantry: string;
+			trainingGround: string;
+		};
 		guildDomainNotary: string;
 		back: string;
 		blacksmith: {
@@ -2676,7 +2682,13 @@ export const CrowniclesIcons: {
 			8: "🏡"
 		},
 		manageHome: "🧑‍💼",
-		guildDomain: "🏰",
+		guildDomain: {
+			menu: "🏰",
+			shop: "🛒",
+			shelter: "🐾",
+			pantry: "🍖",
+			trainingGround: "⚔️"
+		},
 		guildDomainNotary: "📋",
 		back: "↩️",
 		blacksmith: {
