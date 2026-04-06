@@ -1228,35 +1228,35 @@
       },
       "guildDomain": {
         "label": "Domaine de guilde",
-        "description": "Le domaine de votre guilde **{{guildName}}** se trouve dans cette ville.",
+        "description": "Les bannières de **{{guildName}}** flottent au-dessus des murs d'enceinte du domaine. L'activité y bat son plein.",
         "notaryLabel": "Notaire de guilde",
-        "notaryDescription": "Achetez ou déplacez le domaine de votre guilde dans cette ville.",
+        "notaryDescription": "Un clerc en toge sombre vous fait signe depuis son étude. Il gère les titres de propriété des domaines de guilde.",
         "menuTitle": "{{pseudo}}, domaine de {{guildName}}",
-        "menuIntro": "{emote:city.guildDomain} Vous pénétrez dans le domaine de votre guilde **{{guildName}}**.",
+        "menuIntro": "{emote:city.guildDomain.menu} Vous franchissez les lourdes portes du domaine de **{{guildName}}**. L'enceinte fortifiée abrite les bâtiments que votre fraternité a patiemment érigés au fil des saisons. Des membres de la guilde vaquent à leurs occupations entre les murs de pierre, et l'emblème de votre ordre veille depuis le donjon central.",
         "guildLevelAndTreasury": "**Guilde niv. {{guildLevel}}** | {emote:unitValues.money} **Trésorerie** : {{treasury, number}} | **Votre argent** : {{playerMoney, number}}",
         "buildingUpgrade": "↳ Niv. {{nextLevel}} : **{{cost, number}}** {emote:unitValues.money}",
         "buildingUpgradeBlocked": " — {emote:collectors.warning} Guilde niv. **{{required}}** requis",
         "buildingUpgradeTreasuryLow": " — {emote:unitValues.money} Trésorerie insuffisante",
-        "buildingMaxLevel": "↳ {emote:collectors.accept} Niveau maximum",
-        "foodInfo": "{emote:expedition.food} **Réserves alimentaires** :\n• Commune : {{common}}/{{commonCap}}\n• Carnivore : {{carnivorous}}/{{carnivorousCap}}\n• Herbivore : {{herbivorous}}/{{herbivorousCap}}\n• Ultime : {{ultimate}}/{{ultimateCap}}",
-        "depositLabel": "{emote:unitValues.money} **Déposer de l'argent dans la trésorerie**",
+        "buildingMaxLevel": "↳ {emote:collectors.accept} Niveau maximum atteint",
+        "foodInfo": "{emote:expedition.food} **Réserves alimentaires** :\n{emote:foods.commonFood} Commune : {{common}}/{{commonCap}}\n{emote:foods.carnivorousFood} Carnivore : {{carnivorous}}/{{carnivorousCap}}\n{emote:foods.herbivorousFood} Herbivore : {{herbivorous}}/{{herbivorousCap}}\n{emote:foods.ultimateFood} Ultime : {{ultimate}}/{{ultimateCap}}",
+        "depositLabel": "{emote:unitValues.money} **Contribuer à la trésorerie**",
         "depositAmount": "{{amount}}",
         "depositAll": "Tout déposer",
-        "depositSuccess": "{emote:messages.info} Vous avez déposé **{{amount}} {emote:unitValues.money}** dans la trésorerie de guilde.",
+        "depositSuccess": "{emote:messages.info} Vous déposez **{{amount}} {emote:unitValues.money}** dans le coffre de la trésorerie. Le trésorier note soigneusement la transaction dans le registre.",
         "depositError": "{emote:messages.error} Le dépôt a échoué.",
         "upgradeBuilding": {
-          "shop": "Boutique Niv.{{level}} ({{cost}} {emote:unitValues.money})",
-          "shelter": "Refuge Niv.{{level}} ({{cost}} {emote:unitValues.money})",
-          "pantry": "Garde-manger Niv.{{level}} ({{cost}} {emote:unitValues.money})",
-          "trainingGround": "Entraînement Niv.{{level}} ({{cost}} {emote:unitValues.money})"
+          "shop": "{emote:city.guildDomain.shop} Boutique Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "shelter": "{emote:city.guildDomain.shelter} Refuge Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "pantry": "{emote:city.guildDomain.pantry} Garde-manger Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "trainingGround": "{emote:city.guildDomain.trainingGround} Ménagerie Niv.{{level}} ({{cost}} {emote:unitValues.money})"
         },
-        "upgradeSuccess": "{emote:messages.info} **{{building}}** a été amélioré au niveau **{{level}}** !",
+        "upgradeSuccess": "{emote:messages.info} Les ouvriers ont terminé les travaux ! **{{building}}** a été amélioré au **niveau {{level}}**.",
         "upgradeError": "{emote:messages.error} L'amélioration a échoué.",
         "buildings": {
           "shop": "Boutique",
           "shelter": "Refuge",
           "pantry": "Garde-manger",
-          "trainingGround": "Terrain d'entraînement"
+          "trainingGround": "Ménagerie"
         },
         "leaveDomain": "Quitter le domaine",
         "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Le notaire examine attentivement les registres de votre guilde et hoche la tête avec satisfaction. Il vous informe que la ville propose actuellement l'installation gratuite de domaines de guilde pour encourager le développement de la région. Il vous laisse le temps de réfléchir et attend votre décision.",
@@ -1265,53 +1265,60 @@
         "confirmPurchase": "Installer le domaine",
         "confirmRelocate": "Déplacer le domaine",
         "purchaseTitle": "{{pseudo}}, domaine installé !",
-        "purchaseDescription": "{emote:city.guildDomain} Le notaire vous félicite chaleureusement et vous remet les actes officiels. Le domaine de votre guilde est désormais installé dans cette ville. Il vous souhaite bonne chance dans le développement de votre domaine.",
+        "purchaseDescription": "{emote:city.guildDomain.menu} Le notaire vous félicite chaleureusement et vous remet les actes officiels scellés du sceau de la ville. Le domaine de votre guilde est désormais enraciné dans cette cité. Les premiers ouvriers se mettent déjà au travail pour préparer le terrain.",
         "relocateTitle": "{{pseudo}}, domaine déplacé !",
-        "relocateDescription": "{emote:city.guildDomain} Le notaire finalise les documents de transfert et vous les remet avec un sourire. Le domaine de votre guilde a été déplacé dans cette ville pour **{{cost}} {emote:unitValues.money}** de la trésorerie de guilde.",
+        "relocateDescription": "{emote:city.guildDomain.menu} Le notaire finalise les documents de transfert et vous les remet avec un sourire professionnel. Les chariots de déménagement sont déjà en route. Le domaine de votre guilde s'installera bientôt dans cette ville, pour **{{cost}} {emote:unitValues.money}** de la trésorerie.",
         "notEnoughTreasuryTitle": "{{pseudo}}, fonds insuffisants !",
         "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} Après avoir consciencieusement examiné les finances de votre guilde, le notaire secoue la tête avec regret. La trésorerie ne contient pas assez de fonds pour cette opération — il vous manque **{{missingTreasury}} {emote:unitValues.money}**. Il vous encourage à revenir lorsque la guilde aura économisé suffisamment.",
         "levelDisplay": "Niv. {{level}}/{{maxLevel}}",
-        "enterBuilding": "Entrer",
+        "enterBuilding": {
+          "shop": "Acheter",
+          "shelter": "Visiter",
+          "pantry": "Inspecter",
+          "trainingGround": "Observer"
+        },
         "backToDomain": "Retour au domaine",
         "buildingSummary": {
           "shop": {
-            "locked": "Non construite.",
-            "built": "Achat de nourriture et XP de guilde."
+            "locked": "Portes closes et volets fermés. Le bâtiment attend d'être construit.",
+            "built": "Un intendant gère les approvisionnements de la guilde."
           },
-          "shelter": "{{slots}} emplacements pour les familiers.",
-          "pantry": "Stocke la nourriture des familiers.",
+          "shelter": "Les enclos accueillent jusqu'à **{{slots}}** familiers confiés par les membres.",
+          "pantry": "Les réserves de nourriture de la guilde sont entreposées ici.",
           "trainingGround": {
-            "inactive": "Inactif.",
-            "active": "+{{love}} points d'amour par jour."
+            "inactive": "L'enclos est à l'abandon. Les familiers ne peuvent pas s'y exercer.",
+            "active": "Les familiers s'exercent chaque jour et gagnent **+{{love}}** {emote:expedition.love} par jour."
           }
         },
         "subMenus": {
           "shop": {
-            "title": "Boutique de guilde",
-            "description": "{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}",
-            "notBuilt": "La boutique n'est pas encore construite. Améliorez-la pour pouvoir acheter de la nourriture et de l'expérience de guilde.",
+            "title": "{emote:city.guildDomain.shop} Boutique de guilde",
+            "description": "{emote:city.guildDomain.shop} L'intendant de la guilde se tient derrière son comptoir, entouré de caisses et de sacs de provisions. Il fournit nourriture pour les familiers et parchemins d'expérience pour renforcer la guilde.\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}",
+            "notBuilt": "{emote:city.guildDomain.shop} L'emplacement de la boutique n'est qu'un terrain vague jonché de pierres. Des plans d'architecte attendent sur un chevalet, mais la construction n'a pas encore débuté. Améliorez ce bâtiment pour débloquer l'approvisionnement de la guilde.",
             "buyFoodLabel": "{emote:expedition.food} **Acheter de la nourriture**",
-            "buyXpLabel": "{emote:city.guildDomain} **Acheter de l'expérience de guilde**",
+            "buyXpLabel": "**Parchemins d'expérience**",
+            "buyXpSmallDescription": "Un modeste parchemin enluminé. En le brisant, il libère une énergie qui renforce les liens de votre guilde.",
+            "buyXpBigDescription": "Un imposant tome scellé, chargé de l'expérience de héros oubliés. Sa puissance renforce considérablement la guilde.",
             "buyFoodButton": "{{amount}}x {{food}} ({{cost}})",
-            "buyXpSmall": "Petite XP ({{cost}})",
-            "buyXpBig": "Grande XP ({{cost}})",
-            "buyFoodSuccess": "{emote:messages.info} **{{amount}}x {{food}}** ajouté(e)s au garde-manger.",
+            "buyXpSmall": "Parchemin ({{cost}})",
+            "buyXpBig": "Tome ancien ({{cost}})",
+            "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** dans le garde-manger de la guilde.",
             "buyFoodError": "{emote:messages.error} L'achat a échoué.",
-            "buyXpSuccess": "{emote:messages.info} **+{{xp}} XP** de guilde !",
+            "buyXpSuccess": "{emote:messages.info} Le parchemin se consume en libérant son énergie. **+{{xp}} XP** pour la guilde !",
             "buyXpError": "{emote:messages.error} L'achat a échoué."
           },
           "shelter": {
-            "title": "Refuge de guilde",
-            "description": "Le refuge accueille et protège les familiers de la guilde.\n\n**Capacité :** {{slots}} emplacements"
+            "title": "{emote:city.guildDomain.shelter} Refuge de guilde",
+            "description": "{emote:city.guildDomain.shelter} Des enclos en bois renforcé bordent une cour intérieure tapissée de paille fraîche. Les familiers de la guilde sommeillent ou jouent paisiblement sous l'œil attentif d'un gardien. L'air est imprégné de l'odeur rassurante de foin et de fourrure.\n\n**Capacité :** {{slots}} emplacements"
           },
           "pantry": {
-            "title": "Garde-manger de guilde",
-            "description": "Le garde-manger stocke la nourriture des familiers de la guilde."
+            "title": "{emote:city.guildDomain.pantry} Garde-manger de guilde",
+            "description": "{emote:city.guildDomain.pantry} Une cave voûtée aux murs épais garde la nourriture à l'abri de la chaleur et des nuisibles. Des étagères en chêne massif croulent sous les tonneaux de viande séchée, les paniers de baies et les caisses de provisions soigneusement étiquetées."
           },
           "training": {
-            "title": "Terrain d'entraînement",
-            "descriptionInactive": "Le terrain d'entraînement est inactif. Les familiers au refuge ne gagnent pas de points d'amour.",
-            "descriptionActive": "Le terrain d'entraînement est actif. Les familiers au refuge gagnent **+{{love}}** points d'amour par jour."
+            "title": "{emote:city.guildDomain.trainingGround} Ménagerie",
+            "descriptionInactive": "{emote:city.guildDomain.trainingGround} La ménagerie est un vaste espace clos aux palissades branlantes et à la paille rance. Les abreuvoirs sont à sec et les parcours d'agilité couverts de mousse. Les familiers ne peuvent pas s'y exercer dans ces conditions.",
+            "descriptionActive": "{emote:city.guildDomain.trainingGround} La ménagerie bourdonne d'activité. Un ancien dresseur royal supervise les exercices quotidiens des familiers, entre parcours d'obstacles en bois et cibles rembourrées. L'air est empli de cris enthousiastes et de battements d'ailes.\n\nLes familiers au refuge gagnent **+{{love}}** {emote:expedition.love} points d'amour par jour."
           }
         }
       },
@@ -2636,7 +2643,7 @@
         "description": "Niveau {{level, number}}/{{maxLevel, number}}\nStocke la nourriture des familiers."
       },
       "trainingGround": {
-        "name": "Terrain d'entraînement",
+        "name": "Ménagerie",
         "description": "Niveau {{level, number}}/{{maxLevel, number}}\nLes familiers au refuge gagnent des points d'amour quotidiennement."
       }
     }

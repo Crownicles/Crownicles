@@ -312,14 +312,14 @@ function addGuildDomainSection(container: ContainerBuilder, data: ReactionCollec
 
 	addCitySection(
 		container,
-		`${CrowniclesIcons.city.guildDomain} **${i18n.t("commands:report.city.guildDomain.label", { lng })}**\n${i18n.t("commands:report.city.guildDomain.description", {
+		`${CrowniclesIcons.city.guildDomain.menu} **${i18n.t("commands:report.city.guildDomain.label", { lng })}**\n${i18n.t("commands:report.city.guildDomain.description", {
 			lng,
 			guildName: data.guildDomain.guildName
 		})}`,
 		ReportCityMenuIds.GUILD_DOMAIN_MENU,
 		i18n.t("commands:report.city.buttons.visitDomain", { lng }),
 		ButtonStyle.Primary,
-		CrowniclesIcons.city.guildDomain
+		CrowniclesIcons.city.guildDomain.menu
 	);
 }
 

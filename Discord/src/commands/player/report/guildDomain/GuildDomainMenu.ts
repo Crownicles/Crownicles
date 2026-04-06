@@ -72,6 +72,13 @@ const BUILDING_MENU_IDS: Record<GuildBuilding, string> = {
 	[GuildBuilding.TRAINING_GROUND]: ReportCityMenuIds.GUILD_DOMAIN_TRAINING_MENU
 };
 
+const BUILDING_ICONS: Record<GuildBuilding, string> = {
+	[GuildBuilding.SHOP]: CrowniclesIcons.city.guildDomain.shop,
+	[GuildBuilding.SHELTER]: CrowniclesIcons.city.guildDomain.shelter,
+	[GuildBuilding.PANTRY]: CrowniclesIcons.city.guildDomain.pantry,
+	[GuildBuilding.TRAINING_GROUND]: CrowniclesIcons.city.guildDomain.trainingGround
+};
+
 // ─── Collector helper ────────────────────────────────────────────────────────
 
 function createDomainCollector(
@@ -164,12 +171,13 @@ function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMessage?: s
 		const maxLevel = GuildDomainConstants.BUILDINGS[building].maxLevel;
 		const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${building}`, { lng });
 		const description = getBuildingSummary(building, currentLevel, data, lng);
+		const buildingIcon = BUILDING_ICONS[building];
 
 		container.addSectionComponents(
 			new SectionBuilder()
 				.addTextDisplayComponents(
 					new TextDisplayBuilder().setContent(
-						`**${buildingName}** — ${i18n.t("commands:report.city.guildDomain.levelDisplay", {
+						`${buildingIcon} **${buildingName}** — ${i18n.t("commands:report.city.guildDomain.levelDisplay", {
 							lng, level: currentLevel, maxLevel
 						})}\n${description}`
 					)
@@ -177,7 +185,7 @@ function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMessage?: s
 				.setButtonAccessory(
 					new ButtonBuilder()
 						.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_ENTER_PREFIX}${building}`)
-						.setLabel(i18n.t("commands:report.city.guildDomain.enterBuilding", { lng }))
+						.setLabel(i18n.t(`commands:report.city.guildDomain.enterBuilding.${building}`, { lng }))
 						.setStyle(ButtonStyle.Primary)
 				)
 		);
@@ -367,128 +375,117 @@ function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: string)
 		)
 	);
 
-	// Food stock
+	// Food sections — one SectionBuilder per food type
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.foodInfo", {
-				lng,
-				common: data.food.common,
-				commonCap: data.foodCaps[0],
-				carnivorous: data.food.carnivorous,
-				carnivorousCap: data.foodCaps[1],
-				herbivorous: data.food.herbivorous,
-				herbivorousCap: data.foodCaps[2],
-				ultimate: data.food.ultimate,
-				ultimateCap: data.foodCaps[3]
-			})
+			i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodLabel", { lng })
 		)
 	);
 
-	// Buy food buttons
-	const foodRows = buildFoodBuyButtons(data, lng);
-	if (foodRows.length > 0) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodLabel", { lng })
-			)
-		);
-		for (const row of foodRows) {
-			container.addActionRowComponents(row);
-		}
-	}
+	addFoodSections(container, data, lng);
 
-	// Buy guild XP buttons
+	// XP sections — one SectionBuilder per tier
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpLabel", { lng })
 		)
 	);
-	container.addActionRowComponents(buildXpBuyButtons(data, lng));
 
+	container.addSectionComponents(
+		new SectionBuilder()
+			.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					`${CrowniclesIcons.shopItems.smallGuildXp} **${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmall", {
+						lng, cost: GuildDomainConstants.SHOP_PRICES.SMALL_XP
+					})}**\n${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmallDescription", { lng })}`
+				)
+			)
+			.setButtonAccessory(
+				new ButtonBuilder()
+					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}small`)
+					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmall", {
+						lng, cost: GuildDomainConstants.SHOP_PRICES.SMALL_XP
+					}))
+					.setStyle(ButtonStyle.Success)
+					.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.SMALL_XP)
+			)
+	);
+
+	container.addSectionComponents(
+		new SectionBuilder()
+			.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					`${CrowniclesIcons.shopItems.bigGuildXp} **${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBig", {
+						lng, cost: GuildDomainConstants.SHOP_PRICES.BIG_XP
+					})}**\n${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBigDescription", { lng })}`
+				)
+			)
+			.setButtonAccessory(
+				new ButtonBuilder()
+					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}big`)
+					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBig", {
+						lng, cost: GuildDomainConstants.SHOP_PRICES.BIG_XP
+					}))
+					.setStyle(ButtonStyle.Success)
+					.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.BIG_XP)
+			)
+	);
+
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	addUpgradeSection(container, GuildBuilding.SHOP, ctx);
 	addStatusMessage(container, statusMessage);
 	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
 
 	return container;
 }
 
-function buildFoodBuyButtons(data: GuildDomainData, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
-	const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+const FOOD_KEYS: readonly string[] = [
+	"common",
+	"carnivorous",
+	"herbivorous",
+	"ultimate"
+] as const;
+
+function addFoodSections(container: ContainerBuilder, data: GuildDomainData, lng: Language): void {
 	const foodTypes = PetConstants.PET_FOOD_BY_ID;
 
 	for (let i = 0; i < foodTypes.length; i++) {
 		const foodType = foodTypes[i];
-		const foodKey = foodType.replace("Food", "") as "common" | "carnivorous" | "herbivorous" | "ultimate";
+		const foodKey = FOOD_KEYS[i] as "common" | "carnivorous" | "herbivorous" | "ultimate";
 		const currentStock = data.food[foodKey];
 		const cap = data.foodCaps[i];
 		const remainingSlots = cap - currentStock;
 		const price = GuildDomainConstants.SHOP_PRICES.FOOD[i];
 		const maxAffordable = Math.floor(data.playerMoney / price);
 		const maxBuyable = Math.min(remainingSlots, maxAffordable);
+		const foodName = i18n.t(`models:foods.${foodType}`, {
+			lng, count: 1
+		});
+		const foodEmoji = CrowniclesIcons.foods[foodType] ?? "";
 
-		if (maxBuyable <= 0) {
-			continue;
-		}
-
-		const amounts = [
-			...new Set([
-				1,
-				Math.min(5, maxBuyable),
-				Math.min(10, maxBuyable),
-				maxBuyable
-			].filter(a => a > 0))
-		];
-
-		const row = new ActionRowBuilder<ButtonBuilder>();
-		for (const amount of amounts) {
-			row.addComponents(
-				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${foodType}_${amount}`)
-					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodButton", {
-						lng,
-						amount,
-						food: i18n.t(`models:foods.${foodType}`, {
-							lng, count: amount
-						}),
-						cost: price * amount
-					}))
-					.setStyle(ButtonStyle.Primary)
-			);
-		}
-		rows.push(row);
+		container.addSectionComponents(
+			new SectionBuilder()
+				.addTextDisplayComponents(
+					new TextDisplayBuilder().setContent(
+						`${foodEmoji} **${foodName}** — ${currentStock}/${cap}\n*${price} ${CrowniclesIcons.unitValues.money} l'unité*`
+					)
+				)
+				.setButtonAccessory(
+					new ButtonBuilder()
+						.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${foodType}_${Math.max(maxBuyable, 1)}`)
+						.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodButton", {
+							lng,
+							amount: Math.max(maxBuyable, 1),
+							food: foodName,
+							cost: price * Math.max(maxBuyable, 1)
+						}))
+						.setStyle(ButtonStyle.Primary)
+						.setDisabled(maxBuyable <= 0)
+				)
+		);
 	}
-
-	return rows;
-}
-
-function buildXpBuyButtons(data: GuildDomainData, lng: Language): ActionRowBuilder<ButtonBuilder> {
-	const row = new ActionRowBuilder<ButtonBuilder>();
-
-	row.addComponents(
-		new ButtonBuilder()
-			.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}small`)
-			.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmall", {
-				lng,
-				cost: GuildDomainConstants.SHOP_PRICES.SMALL_XP
-			}))
-			.setStyle(ButtonStyle.Success)
-			.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.SMALL_XP)
-	);
-
-	row.addComponents(
-		new ButtonBuilder()
-			.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}big`)
-			.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBig", {
-				lng,
-				cost: GuildDomainConstants.SHOP_PRICES.BIG_XP
-			}))
-			.setStyle(ButtonStyle.Success)
-			.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.BIG_XP)
-	);
-
-	return row;
 }
 
 // ─── Simple building sub-menus ───────────────────────────────────────────────
