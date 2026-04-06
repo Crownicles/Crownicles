@@ -137,7 +137,7 @@ export class ChestPlantHandler {
 	public registerPlantTabMenu(
 		ctx: HomeFeatureHandlerContext,
 		nestedMenus: CrowniclesNestedMenus,
-		page: number = 0
+		page = 0
 	): void {
 		const chest = ctx.homeData.chest!;
 		const plantStorage = chest.plantStorage ?? [];
