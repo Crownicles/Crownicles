@@ -30,8 +30,9 @@ import { Language } from "../../../../../../Lib/src/Language";
 import { BlacksmithMenuIds } from "./BlacksmithMenuConstants";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import {
-	addCitySection, createStayInCityButton, handleStayInCityInteraction, STAY_IN_CITY_ID
+	addCitySection, createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
+import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 
 export interface BlacksmithMenuParams {
 	context: PacketContext;
@@ -121,27 +122,27 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 	// Add upgrade option if there are upgradeable items
 	if (blacksmith.upgradeableItems.length > 0) {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.city.blacksmith.upgrade} **${i18n.t("commands:report.city.blacksmith.upgradeLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.upgradeDescription", { lng })}`,
-			BlacksmithMenuIds.UPGRADE_MENU,
-			i18n.t("commands:report.city.buttons.upgrade", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.blacksmith.upgrade
-		);
+			emote: CrowniclesIcons.city.blacksmith.upgrade,
+			title: i18n.t("commands:report.city.blacksmith.upgradeLabel", { lng }),
+			description: i18n.t("commands:report.city.blacksmith.upgradeDescription", { lng }),
+			customId: BlacksmithMenuIds.UPGRADE_MENU,
+			buttonLabel: i18n.t("commands:report.city.buttons.upgrade", { lng })
+		});
 	}
 
 	// Add disenchant option if there are disenchantable items
 	if (blacksmith.disenchantableItems.length > 0) {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.city.blacksmith.disenchant} **${i18n.t("commands:report.city.blacksmith.disenchantLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.disenchantDescription", { lng })}`,
-			BlacksmithMenuIds.DISENCHANT_MENU,
-			i18n.t("commands:report.city.buttons.disenchant", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.blacksmith.disenchant
-		);
+			emote: CrowniclesIcons.city.blacksmith.disenchant,
+			title: i18n.t("commands:report.city.blacksmith.disenchantLabel", { lng }),
+			description: i18n.t("commands:report.city.blacksmith.disenchantDescription", { lng }),
+			customId: BlacksmithMenuIds.DISENCHANT_MENU,
+			buttonLabel: i18n.t("commands:report.city.buttons.disenchant", { lng })
+		});
 	}
 
 	// Back to city + Stay in city buttons
@@ -182,7 +183,7 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 				else if (selectedValue === BlacksmithMenuIds.BACK_TO_CITY) {
 					await nestedMenus.changeToMainMenu();
 				}
-				else if (selectedValue === STAY_IN_CITY_ID) {
+				else if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 					handleStayInCityInteraction(packet, context, buttonInteraction);
 				}
 			});
@@ -230,19 +231,18 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 		const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
 
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection(
+		addCitySection({
 			container,
-			`${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemUpgradePreview", {
+			text: `${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemUpgradePreview", {
 				lng,
 				currentLevel: item.details.itemLevel ?? 0,
 				nextLevel: item.nextLevel,
 				cost: item.upgradeCost
 			})}`,
-			`${BlacksmithMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
-			i18n.t("commands:report.city.buttons.upgrade", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.blacksmith.upgrade
-		);
+			customId: `${BlacksmithMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
+			buttonLabel: i18n.t("commands:report.city.buttons.upgrade", { lng }),
+			emoji: CrowniclesIcons.city.blacksmith.upgrade
+		});
 	}
 
 	// Back to blacksmith + Stay in city buttons
@@ -281,7 +281,7 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 					const itemIndex = parseInt(selectedValue.replace(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX, ""), 10);
 					await nestedMenus.changeMenu(`${BlacksmithMenuIds.UPGRADE_MENU}_DETAIL_${itemIndex}`);
 				}
-				else if (selectedValue === STAY_IN_CITY_ID) {
+				else if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 					handleStayInCityInteraction(packet, context, buttonInteraction);
 				}
 			});
@@ -431,7 +431,7 @@ export function getBlacksmithUpgradeDetailMenu(
 					return;
 				}
 
-				if (buttonInteraction.customId === STAY_IN_CITY_ID) {
+				if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
 					await buttonInteraction.deferUpdate();
 					handleStayInCityInteraction(packet, context, buttonInteraction);
 					return;
@@ -502,18 +502,17 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 		const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
 
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection(
+		addCitySection({
 			container,
-			`${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemDisenchantPreview", {
+			text: `${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemDisenchantPreview", {
 				lng,
 				enchantmentType: item.enchantmentType,
 				cost: item.disenchantCost
 			})}`,
-			`${BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX}${i}`,
-			i18n.t("commands:report.city.buttons.disenchant", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.blacksmith.disenchant
-		);
+			customId: `${BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX}${i}`,
+			buttonLabel: i18n.t("commands:report.city.buttons.disenchant", { lng }),
+			emoji: CrowniclesIcons.city.blacksmith.disenchant
+		});
 	}
 
 	// Back to blacksmith + Stay in city buttons
@@ -552,7 +551,7 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 					const itemIndex = parseInt(selectedValue.replace(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX, ""), 10);
 					await nestedMenus.changeMenu(`${BlacksmithMenuIds.DISENCHANT_MENU}_DETAIL_${itemIndex}`);
 				}
-				else if (selectedValue === STAY_IN_CITY_ID) {
+				else if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 					handleStayInCityInteraction(packet, context, buttonInteraction);
 				}
 			});
@@ -645,7 +644,7 @@ export function getBlacksmithDisenchantDetailMenu(
 					return;
 				}
 
-				if (buttonInteraction.customId === STAY_IN_CITY_ID) {
+				if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
 					await buttonInteraction.deferUpdate();
 					handleStayInCityInteraction(packet, context, buttonInteraction);
 					return;

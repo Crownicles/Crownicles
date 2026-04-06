@@ -48,7 +48,9 @@ type PlantTransferData = {
  * Manages plant deposit, withdraw, and the plant tab UI.
  */
 export class ChestPlantHandler {
-	private readonly buildItemButton: (emoteIndex: number, customId: string, disabled?: boolean) => ButtonBuilder;
+	private readonly buildItemButton: (params: {
+		emoteIndex: number; customId: string; disabled?: boolean;
+	}) => ButtonBuilder;
 
 	private readonly buildV2Container: (title: string, description: string, rows: ActionRowBuilder<ButtonBuilder>[]) => ContainerBuilder;
 
@@ -57,7 +59,9 @@ export class ChestPlantHandler {
 	private readonly refreshChestCategoriesMenu: (ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus) => void;
 
 	constructor(deps: {
-		buildItemButton: (emoteIndex: number, customId: string, disabled?: boolean) => ButtonBuilder;
+		buildItemButton: (params: {
+			emoteIndex: number; customId: string; disabled?: boolean;
+		}) => ButtonBuilder;
 		buildV2Container: (title: string, description: string, rows: ActionRowBuilder<ButtonBuilder>[]) => ContainerBuilder;
 		createChestCollector: (ctx: HomeFeatureHandlerContext) => ReturnType<typeof createHomeFeatureCollector>;
 		refreshChestCategoriesMenu: (ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus) => void;
@@ -218,19 +222,19 @@ export class ChestPlantHandler {
 
 			if (entry.section === "deposit") {
 				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName}`;
-				addButtonToRow(rows, this.buildItemButton(
+				addButtonToRow(rows, this.buildItemButton({
 					emoteIndex,
-					`${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${entry.plantId}_${entry.slot}`,
-					entry.disabled
-				));
+					customId: `${HomeMenuIds.CHEST_PLANT_DEPOSIT_PREFIX}${entry.plantId}_${entry.slot}`,
+					disabled: entry.disabled
+				}));
 			}
 			else {
 				description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${icon} ${plantName} (${entry.quantity}/${maxCapacity})`;
-				addButtonToRow(rows, this.buildItemButton(
+				addButtonToRow(rows, this.buildItemButton({
 					emoteIndex,
-					`${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${entry.plantId}`,
-					entry.disabled
-				));
+					customId: `${HomeMenuIds.CHEST_PLANT_WITHDRAW_PREFIX}${entry.plantId}`,
+					disabled: entry.disabled
+				}));
 			}
 			emoteIndex++;
 		}

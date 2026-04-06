@@ -80,7 +80,7 @@ import {
 	createMockUser
 } from "./homeTestUtils";
 import { ReactionCollectorCityData } from "../../../Lib/src/packets/interaction/ReactionCollectorCity";
-import { STAY_IN_CITY_ID } from "../../src/commands/player/report/ReportCityMenu";
+import { ReportCityMenuIds } from "../../src/commands/player/report/ReportCityMenuConstants";
 import { ActionRowBuilder } from "discord.js";
 
 /**
@@ -240,7 +240,7 @@ describe("getHomeMenu", () => {
 		const allButtons = actionRows.flatMap((row: any) =>
 			(row.components ?? []).map((b: any) => b.data?.custom_id)
 		);
-		expect(allButtons).toContain(STAY_IN_CITY_ID);
+		expect(allButtons).toContain(ReportCityMenuIds.STAY_IN_CITY);
 	});
 
 	it("should include feature sections for available features", () => {
@@ -317,7 +317,7 @@ describe("getHomeSubMenus", () => {
 				const allButtons = subMenu.components.flatMap(
 					(row: any) => (row.components ?? []).map((b: any) => b.data?.custom_id)
 				);
-				expect(allButtons).toContain(STAY_IN_CITY_ID);
+				expect(allButtons).toContain(ReportCityMenuIds.STAY_IN_CITY);
 			}
 		}
 	});
@@ -335,7 +335,7 @@ describe("getHomeSubMenus", () => {
 				.filter((c: any) => c instanceof ActionRowBuilder)
 				.flatMap((row: any) => row.components)
 				.map((b: any) => b.data?.custom_id);
-			expect(allButtons).not.toContain(STAY_IN_CITY_ID);
+			expect(allButtons).not.toContain(ReportCityMenuIds.STAY_IN_CITY);
 		}
 	});
 });

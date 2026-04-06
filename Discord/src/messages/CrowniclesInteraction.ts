@@ -249,12 +249,6 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 			&& options.flags.includes("IsComponentsV2");
 	}
 
-	private static isLegacyContent(options: string | MessagePayload | InteractionEditReplyOptions): boolean {
-		return typeof options === "object"
-			&& !(options instanceof MessagePayload)
-			&& !("flags" in options);
-	}
-
 	public async editReply(options: string | MessagePayload | InteractionEditReplyOptions, fallback?: () => void | Promise<void>): Promise<Message | null> {
 		this._replyEdited = true;
 
@@ -267,7 +261,7 @@ export class CrowniclesInteraction extends CrowniclesInteractionWithoutSendComma
 		 * When message is V2 and caller sends legacy content, use followUp instead
 		 * to avoid conflicts — V2 flag is permanent and cannot be removed
 		 */
-		if (this._isV2 && CrowniclesInteraction.isLegacyContent(options)) {
+		if (this._isV2 && !CrowniclesInteraction.isV2FlaggedOptions(options)) {
 			return await this.followUp(options as InteractionReplyOptions, fallback);
 		}
 		return await (CrowniclesInteraction.prototype.commonSendCommand<string | MessagePayload | InteractionEditReplyOptions>).call(
