@@ -205,6 +205,8 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	};
 }
 
+export type EnchanterCityData = NonNullable<ReactionCollectorCityData["enchanter"]>;
+
 export class ReactionCollectorExitCityReaction extends ReactionCollectorReaction {}
 
 export class ReactionCollectorInnMealReaction extends ReactionCollectorReaction {

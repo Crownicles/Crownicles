@@ -18,7 +18,8 @@ import {
 	ReactionCollectorEnchantReaction,
 	ReactionCollectorExitCityReaction,
 	ReactionCollectorInnMealReaction,
-	ReactionCollectorInnRoomReaction
+	ReactionCollectorInnRoomReaction,
+	EnchanterCityData
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, Message,
@@ -110,17 +111,51 @@ function getManageHomeMenuOptionDescription(manage: ManageHomeData, lng: Languag
 	return i18n.t("commands:report.city.homes.manageHomeDescriptionUnavailable", { lng });
 }
 
-export function addCitySection(container: ContainerBuilder, text: string, customId: string, buttonLabel: string, buttonStyle: ButtonStyle = ButtonStyle.Secondary, emoji?: string): void {
+type AddCitySectionBaseParams = {
+	container: ContainerBuilder;
+	customId: string;
+	buttonLabel: string;
+	buttonStyle?: ButtonStyle;
+};
+
+type AddCitySectionWithTitle = AddCitySectionBaseParams & {
+	emote: string;
+	title: string;
+	description?: string;
+};
+
+type AddCitySectionWithText = AddCitySectionBaseParams & {
+	text: string;
+	emoji?: string;
+};
+
+export type AddCitySectionParams = AddCitySectionWithTitle | AddCitySectionWithText;
+
+export function addCitySection(params: AddCitySectionParams): void {
+	let text: string;
+	let emoji: string | undefined;
+
+	if ("title" in params) {
+		text = params.description
+			? `${params.emote} **${params.title}**\n${params.description}`
+			: `${params.emote} **${params.title}**`;
+		emoji = params.emote;
+	}
+	else {
+		text = params.text;
+		emoji = params.emoji;
+	}
+
 	const button = new ButtonBuilder()
-		.setCustomId(customId)
-		.setLabel(buttonLabel)
-		.setStyle(buttonStyle);
+		.setCustomId(params.customId)
+		.setLabel(params.buttonLabel)
+		.setStyle(params.buttonStyle ?? ButtonStyle.Secondary);
 
 	if (emoji) {
 		button.setEmoji(emoji);
 	}
 
-	container.addSectionComponents(
+	params.container.addSectionComponents(
 		new SectionBuilder()
 			.addTextDisplayComponents(new TextDisplayBuilder().setContent(text))
 			.setButtonAccessory(button)
@@ -128,16 +163,11 @@ export function addCitySection(container: ContainerBuilder, text: string, custom
 }
 
 /**
- * Custom ID used for the "stay in city" button across all city sub-menus
- */
-export const STAY_IN_CITY_ID = "STAY_IN_CITY";
-
-/**
  * Create a "stay in city" button for use in sub-menu action rows
  */
 export function createStayInCityButton(lng: Language): ButtonBuilder {
 	return new ButtonBuilder()
-		.setCustomId(STAY_IN_CITY_ID)
+		.setCustomId(ReportCityMenuIds.STAY_IN_CITY)
 		.setLabel(i18n.t("commands:report.city.reactions.stay.label", { lng }))
 		.setEmoji(CrowniclesIcons.city.stay)
 		.setStyle(ButtonStyle.Secondary);
@@ -167,25 +197,26 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
 	if (data.home.owned) {
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.city.home[data.home.owned.level]} **${i18n.t("commands:report.city.homes.goToOwnedHome", { lng })}**\n${i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng })}`,
-			HomeMenuIds.HOME_MENU,
-			i18n.t("commands:report.city.buttons.goHome", { lng }),
-			ButtonStyle.Primary,
-			CrowniclesIcons.city.home[data.home.owned.level]
-		);
+			emote: CrowniclesIcons.city.home[data.home.owned.level],
+			title: i18n.t("commands:report.city.homes.goToOwnedHome", { lng }),
+			description: i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng }),
+			customId: HomeMenuIds.HOME_MENU,
+			buttonLabel: i18n.t("commands:report.city.buttons.goHome", { lng }),
+			buttonStyle: ButtonStyle.Primary
+		});
 	}
 
 	if (data.home.manage) {
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.city.manageHome} **${i18n.t("commands:report.city.homes.manageHome", { lng })}**\n${getManageHomeMenuOptionDescription(data.home.manage, lng)}`,
-			HomeMenuIds.MANAGE_HOME_MENU,
-			i18n.t("commands:report.city.buttons.seeNotary", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.manageHome
-		);
+			emote: CrowniclesIcons.city.manageHome,
+			title: i18n.t("commands:report.city.homes.manageHome", { lng }),
+			description: getManageHomeMenuOptionDescription(data.home.manage, lng),
+			customId: HomeMenuIds.MANAGE_HOME_MENU,
+			buttonLabel: i18n.t("commands:report.city.buttons.seeNotary", { lng })
+		});
 	}
 }
 
@@ -196,25 +227,25 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
 	if (data.blacksmith) {
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.city.blacksmith.menu} **${i18n.t("commands:report.city.blacksmith.menuLabel", { lng })}**\n${i18n.t("commands:report.city.blacksmith.menuDescription", { lng })}`,
-			ReportCityMenuIds.BLACKSMITH_MENU,
-			i18n.t("commands:report.city.buttons.enterForge", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.blacksmith.menu
-		);
+			emote: CrowniclesIcons.city.blacksmith.menu,
+			title: i18n.t("commands:report.city.blacksmith.menuLabel", { lng }),
+			description: i18n.t("commands:report.city.blacksmith.menuDescription", { lng }),
+			customId: ReportCityMenuIds.BLACKSMITH_MENU,
+			buttonLabel: i18n.t("commands:report.city.buttons.enterForge", { lng })
+		});
 	}
 
 	if (data.enchanter) {
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.city.enchanter} **${i18n.t("commands:report.city.reactions.enchanter.label", { lng })}**\n${i18n.t("commands:report.city.reactions.enchanter.description", { lng })}`,
-			ReportCityMenuIds.ENCHANTER_MENU,
-			i18n.t("commands:report.city.buttons.talkToEnchanter", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.enchanter
-		);
+			emote: CrowniclesIcons.city.enchanter,
+			title: i18n.t("commands:report.city.reactions.enchanter.label", { lng }),
+			description: i18n.t("commands:report.city.reactions.enchanter.description", { lng }),
+			customId: ReportCityMenuIds.ENCHANTER_MENU,
+			buttonLabel: i18n.t("commands:report.city.buttons.talkToEnchanter", { lng })
+		});
 	}
 }
 
@@ -226,14 +257,14 @@ function addShopsSection(container: ContainerBuilder, data: ReactionCollectorCit
 
 	for (const shop of data.shops) {
 		const shopEmoji = CrowniclesIcons.city.shops[shop.shopId] ?? CrowniclesIcons.city.shops.generalShop;
-		addCitySection(
+		addCitySection({
 			container,
-			`${shopEmoji} **${i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng })}**\n${i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng })}`,
-			`${ReportCityMenuIds.CITY_SHOP_PREFIX}${shop.shopId}`,
-			i18n.t("commands:report.city.buttons.browseShop", { lng }),
-			ButtonStyle.Secondary,
-			shopEmoji
-		);
+			emote: shopEmoji,
+			title: i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng }),
+			description: i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng }),
+			customId: `${ReportCityMenuIds.CITY_SHOP_PREFIX}${shop.shopId}`,
+			buttonLabel: i18n.t("commands:report.city.buttons.browseShop", { lng })
+		});
 	}
 }
 
@@ -244,16 +275,16 @@ function addInnsSection(container: ContainerBuilder, data: ReactionCollectorCity
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
 	for (const inn of data.inns) {
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.city.inn} **${i18n.t("commands:report.city.reactions.inn.label", {
+			emote: CrowniclesIcons.city.inn,
+			title: i18n.t("commands:report.city.reactions.inn.label", {
 				lng, innId: inn.innId
-			})}**\n${i18n.t("commands:report.city.reactions.inn.description", { lng })}`,
-			`${ReportCityMenuIds.MAIN_MENU_INN_PREFIX}${inn.innId}`,
-			i18n.t("commands:report.city.buttons.sitDown", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.city.inn
-		);
+			}),
+			description: i18n.t("commands:report.city.reactions.inn.description", { lng }),
+			customId: `${ReportCityMenuIds.MAIN_MENU_INN_PREFIX}${inn.innId}`,
+			buttonLabel: i18n.t("commands:report.city.buttons.sitDown", { lng })
+		});
 	}
 }
 
@@ -430,18 +461,18 @@ function getInnMenu(
 	// Meals
 	for (const meal of inn?.meals || []) {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.meals[meal.mealId]} **${i18n.t(`commands:report.city.inns.meals.${meal.mealId}`, { lng })}**\n${i18n.t("commands:report.city.inns.mealDescription", {
+			emote: CrowniclesIcons.meals[meal.mealId],
+			title: i18n.t(`commands:report.city.inns.meals.${meal.mealId}`, { lng }),
+			description: i18n.t("commands:report.city.inns.mealDescription", {
 				lng,
 				price: meal.price,
 				energy: meal.energy
-			})}`,
-			`${ReportCityMenuIds.MEAL_PREFIX}${meal.mealId}`,
-			i18n.t("commands:report.city.buttons.order", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.meals[meal.mealId]
-		);
+			}),
+			customId: `${ReportCityMenuIds.MEAL_PREFIX}${meal.mealId}`,
+			buttonLabel: i18n.t("commands:report.city.buttons.order", { lng })
+		});
 	}
 
 	// Rooms
@@ -449,18 +480,18 @@ function getInnMenu(
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	}
 	for (const room of inn?.rooms || []) {
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.rooms[room.roomId]} **${i18n.t(`commands:report.city.inns.rooms.${room.roomId}`, { lng })}**\n${i18n.t("commands:report.city.inns.roomDescription", {
+			emote: CrowniclesIcons.rooms[room.roomId],
+			title: i18n.t(`commands:report.city.inns.rooms.${room.roomId}`, { lng }),
+			description: i18n.t("commands:report.city.inns.roomDescription", {
 				lng,
 				price: room.price,
 				health: room.health
-			})}`,
-			`${ReportCityMenuIds.ROOM_PREFIX}${room.roomId}`,
-			i18n.t("commands:report.city.buttons.rent", { lng }),
-			ButtonStyle.Secondary,
-			CrowniclesIcons.rooms[room.roomId]
-		);
+			}),
+			customId: `${ReportCityMenuIds.ROOM_PREFIX}${room.roomId}`,
+			buttonLabel: i18n.t("commands:report.city.buttons.rent", { lng })
+		});
 	}
 
 	// Back to city + Stay in city buttons
@@ -496,7 +527,7 @@ async function handleInnCollectorInteraction(
 		return;
 	}
 
-	if (selectedValue === STAY_IN_CITY_ID) {
+	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 		await buttonInteraction.deferUpdate();
 		handleStayInCityInteraction(packet, context, buttonInteraction);
 		return;
@@ -616,12 +647,12 @@ function getEnchanterMenu(context: PacketContext, interaction: CrowniclesInterac
 			const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
 
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-			addCitySection(
+			addCitySection({
 				container,
-				itemDisplay,
-				`${ReportCityMenuIds.ENCHANT_ITEM_PREFIX}${i}`,
-				i18n.t("commands:report.city.buttons.enchant", { lng })
-			);
+				text: itemDisplay,
+				customId: `${ReportCityMenuIds.ENCHANT_ITEM_PREFIX}${i}`,
+				buttonLabel: i18n.t("commands:report.city.buttons.enchant", { lng })
+			});
 		}
 	}
 
@@ -653,7 +684,7 @@ async function handleEnchanterCollectorInteraction(
 	nestedMenus: CrowniclesNestedMenus,
 	context: PacketContext,
 	packet: ReactionCollectorCreationPacket,
-	data: ReactionCollectorCityData["enchanter"] & object
+	data: EnchanterCityData
 ): Promise<void> {
 	if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
 		await buttonInteraction.deferUpdate();
@@ -661,7 +692,7 @@ async function handleEnchanterCollectorInteraction(
 		return;
 	}
 
-	if (selectedValue === STAY_IN_CITY_ID) {
+	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 		await buttonInteraction.deferUpdate();
 		handleStayInCityInteraction(packet, context, buttonInteraction);
 		return;
@@ -693,7 +724,7 @@ function createEnchanterMenuCollector(
 	context: PacketContext,
 	interaction: CrowniclesInteraction,
 	packet: ReactionCollectorCreationPacket,
-	data: ReactionCollectorCityData["enchanter"] & object,
+	data: EnchanterCityData,
 	collectorTime: number
 ): (nestedMenus: CrowniclesNestedMenus, message: import("discord.js").Message) => CrowniclesNestedMenuCollector {
 	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
@@ -839,36 +870,36 @@ function buildNotaryDescription(data: ManageHomeData, lng: Language): string {
 function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData, lng: Language): void {
 	if (data.newPrice && data.newPrice <= data.currentMoney) {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.buyHome", { lng })}**`,
-			ReportCityMenuIds.BUY_HOME,
-			i18n.t("commands:report.city.buttons.confirm", { lng }),
-			ButtonStyle.Success,
-			CrowniclesIcons.collectors.accept
-		);
+			emote: CrowniclesIcons.collectors.accept,
+			title: i18n.t("commands:report.city.homes.buyHome", { lng }),
+			customId: ReportCityMenuIds.BUY_HOME,
+			buttonLabel: i18n.t("commands:report.city.buttons.confirm", { lng }),
+			buttonStyle: ButtonStyle.Success
+		});
 	}
 	else if (data.upgrade && data.upgrade.price <= data.currentMoney) {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.upgradeHome", { lng })}**`,
-			ReportCityMenuIds.UPGRADE_HOME,
-			i18n.t("commands:report.city.buttons.confirm", { lng }),
-			ButtonStyle.Success,
-			CrowniclesIcons.collectors.accept
-		);
+			emote: CrowniclesIcons.collectors.accept,
+			title: i18n.t("commands:report.city.homes.upgradeHome", { lng }),
+			customId: ReportCityMenuIds.UPGRADE_HOME,
+			buttonLabel: i18n.t("commands:report.city.buttons.confirm", { lng }),
+			buttonStyle: ButtonStyle.Success
+		});
 	}
 	else if (data.movePrice && data.movePrice <= data.currentMoney) {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection(
+		addCitySection({
 			container,
-			`${CrowniclesIcons.collectors.accept} **${i18n.t("commands:report.city.homes.moveHome", { lng })}**`,
-			ReportCityMenuIds.MOVE_HOME,
-			i18n.t("commands:report.city.buttons.confirm", { lng }),
-			ButtonStyle.Success,
-			CrowniclesIcons.collectors.accept
-		);
+			emote: CrowniclesIcons.collectors.accept,
+			title: i18n.t("commands:report.city.homes.moveHome", { lng }),
+			customId: ReportCityMenuIds.MOVE_HOME,
+			buttonLabel: i18n.t("commands:report.city.buttons.confirm", { lng }),
+			buttonStyle: ButtonStyle.Success
+		});
 	}
 }
 
@@ -949,7 +980,7 @@ async function handleManageHomeCollectorInteraction(
 		return;
 	}
 
-	if (selectedValue === STAY_IN_CITY_ID) {
+	if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 		await buttonInteraction.deferUpdate();
 		handleStayInCityInteraction(packet, context, buttonInteraction);
 	}

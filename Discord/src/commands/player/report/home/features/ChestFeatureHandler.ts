@@ -186,12 +186,14 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build a button for an item action (deposit/withdraw/swap).
 	 */
-	private buildItemButton(emoteIndex: number, customId: string, disabled?: boolean): ButtonBuilder {
+	private buildItemButton(params: {
+		emoteIndex: number; customId: string; disabled?: boolean;
+	}): ButtonBuilder {
 		return new ButtonBuilder()
-			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[emoteIndex])!)
-			.setCustomId(customId)
+			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[params.emoteIndex])!)
+			.setCustomId(params.customId)
 			.setStyle(ButtonStyle.Secondary)
-			.setDisabled(disabled ?? false);
+			.setDisabled(params.disabled ?? false);
 	}
 
 	/**
@@ -221,11 +223,11 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, params.lng);
 			description += `\n${CrowniclesIcons.choiceEmotes[emoteIndex]} - ${itemDisplay}`;
 
-			const button = this.buildItemButton(
+			const button = this.buildItemButton({
 				emoteIndex,
-				`${params.customIdPrefix}${params.category}_${item.slot}`,
-				params.disabled
-			);
+				customId: `${params.customIdPrefix}${params.category}_${item.slot}`,
+				disabled: params.disabled
+			});
 
 			addButtonToRow(params.rows, button);
 			emoteIndex++;
@@ -607,7 +609,10 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			const details = DisplayUtils.withUnlimitedMaxValue(chestItem.details, catInfo.category);
 			description += `\n${CrowniclesIcons.choiceEmotes[j]} - ${DisplayUtils.getItemDisplayWithStats(details, ctx.lng)}`;
 
-			const button = this.buildItemButton(j, `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`);
+			const button = this.buildItemButton({
+				emoteIndex: j,
+				customId: `${HomeMenuIds.CHEST_SWAP_TARGET_PREFIX}${catInfo.category}_${inventorySlot}_${chestItem.slot}`
+			});
 
 			addButtonToRow(rows, button);
 		}

@@ -47,5 +47,8 @@ export const ReportCityMenuIds = {
 	UPGRADE_HOME: "UPGRADE_HOME",
 
 	/** Move home to current city */
-	MOVE_HOME: "MOVE_HOME"
+	MOVE_HOME: "MOVE_HOME",
+
+	/** Custom ID used for the "stay in city" button across all city sub-menus */
+	STAY_IN_CITY: "STAY_IN_CITY"
 } as const;

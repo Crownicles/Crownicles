@@ -17,8 +17,9 @@ import {
 } from "./HomeMenuTypes";
 import { HomeMenuIds } from "./HomeMenuConstants";
 import {
-	createStayInCityButton, handleStayInCityInteraction, STAY_IN_CITY_ID
+	createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
+import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 
 /**
  * Creates a sub-menu for a specific home feature
@@ -55,7 +56,7 @@ function createFeatureSubMenu(
 					return;
 				}
 
-				if (componentInteraction.customId === STAY_IN_CITY_ID) {
+				if (componentInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
 					await componentInteraction.deferUpdate();
 					handleStayInCityInteraction(params.packet, params.context, componentInteraction);
 					return;
@@ -182,7 +183,7 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 				}
 
 				// Handle stay in city
-				if (selectedValue === STAY_IN_CITY_ID) {
+				if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 					await componentInteraction.deferUpdate();
 					handleStayInCityInteraction(packet, context, componentInteraction);
 					return;

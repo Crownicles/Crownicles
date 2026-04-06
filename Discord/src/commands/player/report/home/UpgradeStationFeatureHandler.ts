@@ -19,8 +19,9 @@ import { Language } from "../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "./HomeMenuConstants";
 import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
 import {
-	addCitySection, createStayInCityButton, handleStayInCityInteraction, STAY_IN_CITY_ID
+	addCitySection, createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
+import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 
 /**
  * Handler for the upgrade station feature in the home.
@@ -248,7 +249,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 						return;
 					}
 
-					if (buttonInteraction.customId === STAY_IN_CITY_ID) {
+					if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
 						await buttonInteraction.deferUpdate();
 						handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 						return;
@@ -307,14 +308,13 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, ctx.lng);
 
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-			addCitySection(
+			addCitySection({
 				container,
-				`${itemDisplay}\n+${item.details.itemLevel ?? 0} → +${item.nextLevel}`,
-				`${HomeMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
-				i18n.t("commands:report.city.buttons.upgrade", { lng: ctx.lng }),
-				ButtonStyle.Secondary,
-				CrowniclesIcons.city.blacksmith.upgrade
-			);
+				text: `${itemDisplay}\n+${item.details.itemLevel ?? 0} → +${item.nextLevel}`,
+				customId: `${HomeMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
+				buttonLabel: i18n.t("commands:report.city.buttons.upgrade", { lng: ctx.lng }),
+				emoji: CrowniclesIcons.city.blacksmith.upgrade
+			});
 		}
 
 		// Back to home + Stay in city buttons
