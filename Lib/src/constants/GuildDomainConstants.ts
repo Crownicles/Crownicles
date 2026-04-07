@@ -223,28 +223,6 @@ export abstract class GuildDomainConstants {
 	 */
 	static readonly GUILD_MISSIONS = {
 		/**
-		 * Mission IDs that can be selected as guild weekly missions.
-		 * These should be simple count-based missions using the default interface.
-		 */
-		AVAILABLE: [
-			"doReports",
-			"earnPoints",
-			"earnMoney",
-			"earnXP",
-			"petCaress",
-			"doExpeditions"
-		],
-
-		/**
-		 * Guild mission objectives per difficulty (indexed). Applied to the selected mission.
-		 */
-		OBJECTIVES: [
-			50,
-			100,
-			200
-		] as const,
-
-		/**
 		 * Rewards for completing the guild weekly mission
 		 */
 		REWARDS: {

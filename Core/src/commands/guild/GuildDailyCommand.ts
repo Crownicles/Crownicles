@@ -337,6 +337,7 @@ async function notifyAndUpdatePlayers(initiatorKeycloakId: string, members: Play
 			}));
 		}
 		await MissionsController.update(member, response, { missionId: "guildDaily" });
+		await MissionsController.update(member, response, { missionId: "guildDailyStreak" });
 	}
 
 	PacketUtils.sendNotifications(notifications);
