@@ -11,7 +11,7 @@ import {
 } from "../../../../messages/CrowniclesNestedMenus";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import {
-	createStayInCityButton, handleStayInCityInteraction, STAY_IN_CITY_ID
+	createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
@@ -27,8 +27,6 @@ import {
 import { Language } from "../../../../../../Lib/src/Language";
 import { DiscordMQTT } from "../../../../bot/DiscordMQTT";
 import {
-	CommandReportGuildDomainDepositReq,
-	CommandReportGuildDomainDepositRes,
 	CommandReportGuildDomainUpgradeReq,
 	CommandReportGuildDomainUpgradeRes,
 	CommandReportFoodShopBuyReq,
@@ -57,13 +55,6 @@ interface GuildDomainMenuContext {
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
-
-const DEPOSIT_AMOUNTS = [
-	100,
-	500,
-	1000,
-	5000
-] as const;
 
 const BUILDING_MENU_IDS: Record<GuildBuilding, string> = {
 	[GuildBuilding.SHOP]: ReportCityMenuIds.GUILD_DOMAIN_SHOP_MENU,
@@ -191,17 +182,6 @@ function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMessage?: s
 		);
 	}
 
-	// Deposit section
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.depositLabel", { lng })
-		)
-	);
-	for (const row of buildDepositButtons(data, lng)) {
-		container.addActionRowComponents(row);
-	}
-
 	addStatusMessage(container, statusMessage);
 
 	// Navigation
@@ -239,41 +219,6 @@ function getBuildingSummary(building: GuildBuilding, level: number, _data: Guild
 		default:
 			return "";
 	}
-}
-
-// ─── Deposit buttons ─────────────────────────────────────────────────────────
-
-function buildDepositButtons(data: GuildDomainData, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
-	const rows: ActionRowBuilder<ButtonBuilder>[] = [];
-	const buttons: ButtonBuilder[] = [];
-
-	for (const amount of DEPOSIT_AMOUNTS) {
-		if (data.playerMoney >= amount) {
-			buttons.push(
-				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_PREFIX}${amount}`)
-					.setLabel(i18n.t("commands:report.city.guildDomain.depositAmount", {
-						lng, amount
-					}))
-					.setStyle(ButtonStyle.Success)
-			);
-		}
-	}
-
-	if (data.playerMoney >= GuildDomainConstants.MIN_CONTRIBUTE_AMOUNT) {
-		buttons.push(
-			new ButtonBuilder()
-				.setCustomId(ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_ALL)
-				.setLabel(i18n.t("commands:report.city.guildDomain.depositAll", { lng }))
-				.setStyle(ButtonStyle.Success)
-		);
-	}
-
-	for (let i = 0; i < buttons.length; i += 5) {
-		rows.push(new ActionRowBuilder<ButtonBuilder>().addComponents(buttons.slice(i, i + 5)));
-	}
-
-	return rows;
 }
 
 // ─── Upgrade section ─────────────────────────────────────────────────────────
@@ -636,34 +581,6 @@ function buildBuildingContainer(building: GuildBuilding, ctx: GuildDomainMenuCon
 
 // ─── Interaction handlers ────────────────────────────────────────────────────
 
-async function handleDeposit(
-	ctx: GuildDomainMenuContext,
-	amount: number,
-	nestedMenus: CrowniclesNestedMenus,
-	returnMenuId: string
-): Promise<void> {
-	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-		ctx.context,
-		makePacket(CommandReportGuildDomainDepositReq, { amount }),
-		async (_responseContext, packetName, responsePacket) => {
-			if (packetName === CommandReportGuildDomainDepositRes.name) {
-				const res = responsePacket as unknown as CommandReportGuildDomainDepositRes;
-				ctx.data.treasury = res.newTreasury;
-				ctx.data.playerMoney = res.newPlayerMoney;
-				registerAllDomainMenus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.depositSuccess", {
-					lng: ctx.lng,
-					amount: res.amountDeposited
-				}), returnMenuId);
-				await nestedMenus.changeMenu(returnMenuId);
-			}
-			else {
-				registerAllDomainMenus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.depositError", { lng: ctx.lng }), returnMenuId);
-				await nestedMenus.changeMenu(returnMenuId);
-			}
-		}
-	);
-}
-
 async function handleUpgrade(
 	ctx: GuildDomainMenuContext,
 	building: string,
@@ -773,7 +690,7 @@ function createMainMenuCollector(ctx: GuildDomainMenuContext): (nestedMenus: Cro
 		}
 
 		// Stay in city
-		if (customId === STAY_IN_CITY_ID) {
+		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 			return;
 		}
@@ -785,15 +702,6 @@ function createMainMenuCollector(ctx: GuildDomainMenuContext): (nestedMenus: Cro
 			if (menuId) {
 				await nestedMenus.changeMenu(menuId);
 			}
-			return;
-		}
-
-		// Deposit
-		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_PREFIX) || customId === ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_ALL) {
-			const amount = customId === ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_ALL
-				? ctx.data.playerMoney
-				: parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_DEPOSIT_PREFIX, ""), 10);
-			await handleDeposit(ctx, amount, nestedMenus, ReportCityMenuIds.GUILD_DOMAIN_MENU);
 		}
 	});
 }
@@ -811,7 +719,7 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 		}
 
 		// Stay in city
-		if (customId === STAY_IN_CITY_ID) {
+		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 			return;
 		}

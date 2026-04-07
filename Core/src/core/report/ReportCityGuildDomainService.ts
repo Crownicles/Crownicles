@@ -10,9 +10,6 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandReportGuildDomainDepositErrorRes,
-	CommandReportGuildDomainDepositReq,
-	CommandReportGuildDomainDepositRes,
 	CommandReportGuildDomainNotEnoughTreasuryRes,
 	CommandReportGuildDomainPurchaseRes,
 	CommandReportGuildDomainRelocateRes,
@@ -21,7 +18,6 @@ import {
 	CommandReportGuildDomainUpgradeRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 
 const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
 	[GuildBuilding.SHOP]: "shopLevel",
@@ -61,38 +57,6 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 	else {
 		response.push(makePacket(CommandReportGuildDomainPurchaseRes, { cost }));
 	}
-}
-
-export async function handleGuildDomainDeposit(keycloakId: string, packet: CommandReportGuildDomainDepositReq): Promise<CrowniclesPacket> {
-	const player = await Players.getByKeycloakId(keycloakId);
-	if (!player || !player.guildId) {
-		return makePacket(CommandReportGuildDomainDepositErrorRes, { error: "noGuild" });
-	}
-
-	const guild = await Guilds.getById(player.guildId);
-	if (!guild || guild.domainCityId === null) {
-		return makePacket(CommandReportGuildDomainDepositErrorRes, { error: "noDomain" });
-	}
-
-	const amount = Math.min(packet.amount, player.money);
-	if (amount < GuildDomainConstants.MIN_CONTRIBUTE_AMOUNT) {
-		return makePacket(CommandReportGuildDomainDepositErrorRes, { error: "tooLow" });
-	}
-
-	await player.spendMoney({
-		amount,
-		response: [],
-		reason: NumberChangeReason.GUILD_CONTRIBUTE
-	});
-	guild.treasury += amount;
-	await guild.save();
-	await player.save();
-
-	return makePacket(CommandReportGuildDomainDepositRes, {
-		newTreasury: guild.treasury,
-		newPlayerMoney: player.money,
-		amountDeposited: amount
-	});
 }
 
 export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq): Promise<CrowniclesPacket> {

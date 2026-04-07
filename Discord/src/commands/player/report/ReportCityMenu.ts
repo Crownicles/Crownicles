@@ -310,17 +310,18 @@ function addGuildDomainSection(container: ContainerBuilder, data: ReactionCollec
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
-	addCitySection(
+	addCitySection({
 		container,
-		`${CrowniclesIcons.city.guildDomain.menu} **${i18n.t("commands:report.city.guildDomain.label", { lng })}**\n${i18n.t("commands:report.city.guildDomain.description", {
+		emote: CrowniclesIcons.city.guildDomain.menu,
+		title: i18n.t("commands:report.city.guildDomain.label", { lng }),
+		description: i18n.t("commands:report.city.guildDomain.description", {
 			lng,
 			guildName: data.guildDomain.guildName
-		})}`,
-		ReportCityMenuIds.GUILD_DOMAIN_MENU,
-		i18n.t("commands:report.city.buttons.visitDomain", { lng }),
-		ButtonStyle.Primary,
-		CrowniclesIcons.city.guildDomain.menu
-	);
+		}),
+		customId: ReportCityMenuIds.GUILD_DOMAIN_MENU,
+		buttonLabel: i18n.t("commands:report.city.buttons.visitDomain", { lng }),
+		buttonStyle: ButtonStyle.Primary
+	});
 }
 
 function addGuildFoodShopSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
@@ -328,17 +329,18 @@ function addGuildFoodShopSection(container: ContainerBuilder, data: ReactionColl
 		return;
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addCitySection(
+	addCitySection({
 		container,
-		`${CrowniclesIcons.expedition.food} **${i18n.t("commands:report.city.guildFoodShop.label", { lng })}**\n${i18n.t("commands:report.city.guildFoodShop.description", {
+		emote: CrowniclesIcons.expedition.food,
+		title: i18n.t("commands:report.city.guildFoodShop.label", { lng }),
+		description: i18n.t("commands:report.city.guildFoodShop.description", {
 			lng,
 			guildName: data.guildFoodShop.guildName
-		})}`,
-		ReportCityMenuIds.GUILD_FOOD_SHOP_MENU,
-		i18n.t("commands:report.city.buttons.visitFoodShop", { lng }),
-		ButtonStyle.Secondary,
-		CrowniclesIcons.expedition.food
-	);
+		}),
+		customId: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU,
+		buttonLabel: i18n.t("commands:report.city.buttons.visitFoodShop", { lng }),
+		buttonStyle: ButtonStyle.Secondary
+	});
 }
 
 function addExitStayButtons(container: ContainerBuilder, packet: ReactionCollectorCreationPacket, lng: Language): void {
@@ -1017,14 +1019,14 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 					lng, cost: guildNotaryData.cost
 				})
 				: actionLabel;
-			addCitySection(
+			addCitySection({
 				container,
-				confirmLabel,
-				ReportCityMenuIds.GUILD_DOMAIN_CONFIRM,
-				actionLabel,
-				ButtonStyle.Success,
-				CrowniclesIcons.city.guildDomainNotary
-			);
+				text: confirmLabel,
+				emoji: CrowniclesIcons.city.guildDomainNotary,
+				customId: ReportCityMenuIds.GUILD_DOMAIN_CONFIRM,
+				buttonLabel: actionLabel,
+				buttonStyle: ButtonStyle.Success
+			});
 		}
 	}
 
@@ -1269,7 +1271,7 @@ function registerFoodShopMenu({
 				await menus.changeToMainMenu();
 				return;
 			}
-			if (customId === STAY_IN_CITY_ID) {
+			if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 				await buttonInteraction.deferUpdate();
 				handleStayInCityInteraction(packet, context, buttonInteraction);
 				return;
@@ -1419,7 +1421,7 @@ function getGuildFoodShopMenu(
 				await nestedMenus.changeToMainMenu();
 				return;
 			}
-			if (customId === STAY_IN_CITY_ID) {
+			if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 				handleStayInCityInteraction(packet, context, buttonInteraction);
 				return;
 			}
