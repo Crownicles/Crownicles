@@ -21,7 +21,6 @@ import {
 	CommandReportCookingMenuReq,
 	CommandReportCookingPinReq,
 	CommandReportCookingUnpinReq,
-	CommandReportGuildDomainDepositReq,
 	CommandReportGuildDomainUpgradeReq,
 	CommandReportFoodShopBuyReq,
 	CommandReportGuildDomainBuyXpReq
@@ -37,7 +36,7 @@ import {
 	handleCookingMenu, handleCookingPin, handleCookingUnpin
 } from "../../report/ReportCookingService";
 import {
-	handleGuildDomainDeposit, handleGuildDomainUpgrade
+	handleGuildDomainUpgrade
 } from "../../report/ReportCityGuildDomainService";
 import { handleFoodShopBuy } from "../../report/ReportCityFoodShopService";
 import { handleGuildDomainBuyXp } from "../../report/ReportCityGuildDomainShopService";
@@ -122,11 +121,6 @@ export default class CoreHandlers {
 	@packetHandler(CommandReportCookingUnpinReq)
 	async cookingUnpin(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingUnpinReq): Promise<void> {
 		response.push(...await handleCookingUnpin(context.keycloakId!, packet));
-	}
-
-	@packetHandler(CommandReportGuildDomainDepositReq)
-	async guildDomainDeposit(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainDepositReq): Promise<void> {
-		response.push(await handleGuildDomainDeposit(context.keycloakId!, packet));
 	}
 
 	@packetHandler(CommandReportGuildDomainUpgradeReq)
