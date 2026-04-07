@@ -19,6 +19,7 @@ import { DailyMissions } from "../../core/database/game/models/DailyMission";
 import { Campaign } from "../../core/missions/Campaign";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { Guilds } from "../../core/database/game/models/Guild";
+import { GuildMissionService } from "../../core/missions/GuildMissionService";
 
 export default class MissionsCommand {
 	@commandRequires(CommandMissionsPacketReq, {
@@ -59,6 +60,10 @@ export default class MissionsCommand {
 		}));
 
 		const guild = await Guilds.ofPlayer(toCheckPlayer);
+		if (guild && toCheckPlayer.id === player.id) {
+			GuildMissionService.ensureActiveMission(guild);
+			await guild.save();
+		}
 		const hasActiveGuildMission = guild !== null
 			&& guild.guildMissionId !== null
 			&& guild.guildMissionExpiry !== null
