@@ -1,5 +1,8 @@
 {
   "campaignOnly": false,
+  "guildMission": {
+    "objectives": [30, 60, 120]
+  },
   "difficulties": {
     "easy": [
       0,

@@ -6,12 +6,15 @@ import Player, { Players } from "../database/game/models/Player";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { hoursToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	hoursToMilliseconds, getDayNumber
+} from "../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "./MissionsController";
 import { LockManager } from "../../../../Lib/src/locks/LockManager";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { GuildMissionCompletedPacket } from "../../../../Lib/src/packets/events/GuildMissionCompletedPacket";
+import { MissionDataController } from "../../data/Mission";
 
 const guildMissionLockManager = new LockManager();
 
@@ -37,17 +40,17 @@ export abstract class GuildMissionService {
 	 * Generate a new weekly mission for the guild
 	 */
 	static generateMission(guild: Guild): void {
-		const availableMissions = GuildDomainConstants.GUILD_MISSIONS.AVAILABLE;
-		const missionId = RandomUtils.crowniclesRandom.pick(availableMissions);
+		const guildMissions = MissionDataController.instance.getGuildMissions();
+		const mission = RandomUtils.crowniclesRandom.pick(guildMissions);
+		const objectives = mission.guildMission!.objectives;
 		const objectiveIndex = Math.min(
 			Math.floor(guild.level / 50),
-			GuildDomainConstants.GUILD_MISSIONS.OBJECTIVES.length - 1
+			objectives.length - 1
 		);
-		const objective = GuildDomainConstants.GUILD_MISSIONS.OBJECTIVES[objectiveIndex];
 
-		guild.guildMissionId = missionId;
+		guild.guildMissionId = mission.id;
 		guild.guildMissionVariant = 0;
-		guild.guildMissionObjective = objective;
+		guild.guildMissionObjective = objectives[objectiveIndex];
 		guild.guildMissionNumberDone = 0;
 		guild.guildMissionBlob = null;
 		guild.guildMissionExpiry = new Date(Date.now() + hoursToMilliseconds(GuildDomainConstants.GUILD_MISSIONS.DURATION_HOURS));
@@ -81,6 +84,9 @@ export abstract class GuildMissionService {
 		try {
 			const guild = (await Guilds.getById(player.guildId))!;
 
+			GuildMissionService.ensureActiveMission(guild);
+			await guild.save();
+
 			if (!GuildMissionService.hasActiveMission(guild)) {
 				return false;
 			}
@@ -98,7 +104,31 @@ export abstract class GuildMissionService {
 				return false;
 			}
 
-			guild.guildMissionNumberDone += count;
+			// Handle streak-based missions (e.g., guildDailyStreak)
+			const missionData = MissionDataController.instance.getById(missionId);
+			let effectiveCount = count;
+			if (missionData?.guildMission?.streak) {
+				const today = getDayNumber();
+				if (guild.guildMissionBlob) {
+					const lastDay = guild.guildMissionBlob.readInt32LE(0);
+					if (lastDay === today) {
+						// Already counted today — only track contribution
+						missionInfo.guildMissionContribution += 1;
+						await missionInfo.save();
+						return false;
+					}
+					if (lastDay !== today - 1) {
+						// Streak broken — reset progress
+						guild.guildMissionNumberDone = 0;
+					}
+				}
+				const buffer = Buffer.alloc(4);
+				buffer.writeInt32LE(today);
+				guild.guildMissionBlob = buffer;
+				effectiveCount = 1;
+			}
+
+			guild.guildMissionNumberDone += effectiveCount;
 			if (guild.guildMissionNumberDone > guild.guildMissionObjective) {
 				guild.guildMissionNumberDone = guild.guildMissionObjective;
 			}

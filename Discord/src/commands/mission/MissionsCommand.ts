@@ -147,8 +147,6 @@ function getGuildMissionPart(packet: CommandMissionsPacketRes, lng: Language): s
 
 	const mission = packet.guildMission;
 	const missionName = i18n.t(`commands:guildMission.missions.${mission.missionId}`, { lng });
-	const progressPercent = Math.floor(mission.numberDone / mission.objective * 100);
-	const expiresIn = Math.max(0, Math.floor((mission.expiresAt - Date.now()) / 3_600_000));
 
 	return `${i18n.t("commands:missions.subcategories.guildMission", { lng })}\n${
 		mission.completed
@@ -159,12 +157,12 @@ function getGuildMissionPart(packet: CommandMissionsPacketRes, lng: Language): s
 			})
 			: i18n.t("commands:missions.guildMissionDisplay", {
 				lng,
-				missionName,
-				numberDone: mission.numberDone,
+				mission: missionName,
+				time: finishInTimeDisplay(new Date(mission.expiresAt)),
+				progressionBar: MissionUtils.generateDisplayProgression(mission.numberDone, mission.objective),
+				current: mission.numberDone,
 				objective: mission.objective,
-				percent: progressPercent,
-				contribution: mission.playerContribution,
-				hours: expiresIn
+				contribution: mission.playerContribution
 			})
 	}`;
 }

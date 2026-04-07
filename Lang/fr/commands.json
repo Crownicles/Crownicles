@@ -2029,13 +2029,13 @@
       "campaignCompleted": "{emote:missions.campaign} **Campagne terminée**",
       "daily": "\n{emote:missions.daily} **Mission quotidienne**",
       "sideMissions": "\n{emote:missions.sideMission} **Missions secondaires ({{current}}/{{max}})**",
-      "guildMission": "\n{emote:missions.sideMission} **Quête de guilde**"
+      "guildMission": "\n{emote:guild.icon} **Quête de guilde**"
     },
     "dailyFinished": "Vous avez complété la mission du jour ! Revenez {{time}}.",
     "noCurrentMissions": "Vous pouvez occasionnellement trouver des missions supplémentaires à réaliser en demandant un rapport.",
     "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
     "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}",
-    "guildMissionDisplay": "{{missionName}} — {{numberDone, number}}/{{objective, number}} ({{percent, number}}%)\nContribution : {{contribution, number}} | Expire dans {{hours, number}}h",
+    "guildMissionDisplay": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}\nContribution : {{contribution, number}}",
     "guildMissionCompleted": "{{missionName}} — Terminée ! ({{objective, number}}/{{objective, number}})"
   },
   "guildDaily": {
@@ -2648,11 +2648,13 @@
     "completedRewards": "La quête de guilde a été accomplie ! Voici les récompenses :\n{emote:unitValues.xp} **+{{guildXp, number}}** XP de guilde\n{emote:unitValues.score} **+{{guildScore, number}}** points de guilde\n{emote:guild.treasury} **+{{treasuryGold, number}}** or au coffre\n{emote:unitValues.personalXp} **+{{personalXp, number}}** XP personnelle",
     "missions": {
       "doReports": "Effectuer des rapports d'aventure",
-      "earnPoints": "Gagner des points de score",
-      "earnMoney": "Gagner de l'argent",
-      "earnXP": "Gagner de l'expérience",
-      "petCaress": "Caresser des familiers",
-      "doExpeditions": "Effectuer des expéditions"
+      "anyFight": "Participer à des combats",
+      "winBoss": "Vaincre des boss",
+      "sellItems": "Vendre des objets",
+      "contributeToBlessing": "Contribuer à la bénédiction",
+      "guildDaily": "Recevoir le bonus de guilde quotidien",
+      "joinPVEIsland": "Explorer les îles mystérieuses",
+      "guildDailyStreak": "Recevoir le bonus quotidien plusieurs jours de suite"
     }
   }
 }
