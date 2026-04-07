@@ -582,25 +582,6 @@ export class CommandReportGuildDomainNotEnoughTreasuryRes extends CrowniclesPack
 // Guild domain interactive packets (async bidirectional)
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandReportGuildDomainDepositReq extends CrowniclesPacket {
-	amount!: number;
-}
-
-@sendablePacket(PacketDirection.NONE)
-export class CommandReportGuildDomainDepositRes extends CrowniclesPacket {
-	newTreasury!: number;
-
-	newPlayerMoney!: number;
-
-	amountDeposited!: number;
-}
-
-@sendablePacket(PacketDirection.NONE)
-export class CommandReportGuildDomainDepositErrorRes extends CrowniclesPacket {
-	error!: string;
-}
-
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainUpgradeReq extends CrowniclesPacket {
 	building!: string;
 }

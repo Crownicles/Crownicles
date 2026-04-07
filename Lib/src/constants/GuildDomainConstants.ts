@@ -214,11 +214,6 @@ export abstract class GuildDomainConstants {
 	static readonly DOMAIN_RELOCATION_COST = 100_000;
 
 	/**
-	 * Minimum amount a player can contribute to the guild treasury
-	 */
-	static readonly MIN_CONTRIBUTE_AMOUNT = 100;
-
-	/**
 	 * Guild mission reward: love points added to player's active pet
 	 */
 	static readonly GUILD_MISSION_PET_LOVE_REWARD = 3;

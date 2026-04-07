@@ -269,6 +269,7 @@ export class Guild extends Model {
 	public async addScore(parameters: EditValueParameters): Promise<void> {
 		this.score += parameters.amount;
 		if (parameters.amount > 0) {
+			this.treasury += parameters.amount;
 			for (const member of await Players.getByGuild(this.id)) {
 				await MissionsController.update(member, parameters.response, {
 					missionId: "guildHasPoints",
