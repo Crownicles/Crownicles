@@ -29,7 +29,8 @@ import {
 	FURNACE_MAX_USES_PER_DAY,
 	FURNACE_MIN_OVERHEAT_MS,
 	CookingOutputType,
-	SECRET_RECIPE_PLACEHOLDER
+	SECRET_RECIPE_PLACEHOLDER,
+	SLOT_CONFIGS
 } from "../../../../Lib/src/constants/CookingConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
@@ -221,13 +222,24 @@ export class CookingService {
 			maxRecipeLevelWithoutPenalty: grade.maxRecipeLevelWithoutPenalty
 		});
 
-		// Ensure pinned recipe appears in one of the slots
+		// Ensure pinned recipe appears in one of the slots if it is eligible
 		if (player.pinnedCookingRecipeId) {
 			const alreadyPresent = slotRecipes.some(r => r?.id === player.pinnedCookingRecipeId);
 			if (!alreadyPresent) {
 				const pinnedRecipe = CookingRecipeDataController.instance.getById(player.pinnedCookingRecipeId);
 				if (pinnedRecipe) {
-					slotRecipes[slotRecipes.length - 1] = pinnedRecipe;
+					const isDiscovered = pinnedRecipe.discoveredByDefault || discoveredIds.includes(pinnedRecipe.id);
+					const isPetFoodAllowed = pinnedRecipe.outputType !== CookingOutputType.PET_FOOD || Boolean(guild);
+					if (isDiscovered && isPetFoodAllowed) {
+						const compatibleSlotIndex = SLOT_CONFIGS.findIndex((config, idx) =>
+							idx < cookingSlots
+							&& pinnedRecipe.level >= config.minLevel
+							&& pinnedRecipe.level <= config.maxLevel
+							&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
+						if (compatibleSlotIndex !== -1) {
+							slotRecipes[compatibleSlotIndex] = pinnedRecipe;
+						}
+					}
 				}
 			}
 		}
@@ -545,6 +557,7 @@ export class CookingService {
 		player: Player;
 		homeId: number;
 		recipeId: string;
+		guild?: Guild | null;
 	}): Promise<PinnedRecipeInfo | undefined> {
 		const recipe = CookingRecipeDataController.instance.getById(params.recipeId);
 		if (!recipe) {
@@ -568,8 +581,9 @@ export class CookingService {
 			playerHas: materialMap.get(m.materialId) ?? 0
 		}));
 
-		const canCraft = plants.every(p => p.playerHas >= p.quantity)
+		const hasIngredients = plants.every(p => p.playerHas >= p.quantity)
 			&& materials.every(m => m.playerHas >= m.quantity);
+		const canCraftOutput = CookingService.canStorePetFoodReward(recipe, params.guild ?? null);
 
 		return {
 			recipeId: recipe.id,
@@ -580,7 +594,7 @@ export class CookingService {
 				plants,
 				materials
 			},
-			canCraft
+			canCraft: hasIngredients && canCraftOutput
 		};
 	}
 }
