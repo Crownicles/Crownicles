@@ -222,27 +222,7 @@ export class CookingService {
 			maxRecipeLevelWithoutPenalty: grade.maxRecipeLevelWithoutPenalty
 		});
 
-		// Ensure pinned recipe appears in one of the slots if it is eligible
-		if (player.pinnedCookingRecipeId) {
-			const alreadyPresent = slotRecipes.some(r => r?.id === player.pinnedCookingRecipeId);
-			if (!alreadyPresent) {
-				const pinnedRecipe = CookingRecipeDataController.instance.getById(player.pinnedCookingRecipeId);
-				if (pinnedRecipe) {
-					const isDiscovered = pinnedRecipe.discoveredByDefault || discoveredIds.includes(pinnedRecipe.id);
-					const isPetFoodAllowed = pinnedRecipe.outputType !== CookingOutputType.PET_FOOD || Boolean(guild);
-					if (isDiscovered && isPetFoodAllowed) {
-						const compatibleSlotIndex = SLOT_CONFIGS.findIndex((config, idx) =>
-							idx < cookingSlots
-							&& pinnedRecipe.level >= config.minLevel
-							&& pinnedRecipe.level <= config.maxLevel
-							&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
-						if (compatibleSlotIndex !== -1) {
-							slotRecipes[compatibleSlotIndex] = pinnedRecipe;
-						}
-					}
-				}
-			}
-		}
+		CookingService.injectPinnedRecipeIfEligible(slotRecipes, player, discoveredIds, guild, cookingSlots);
 
 		// Load all plant storages once to avoid N+1 queries
 		const allPlantStorages = await HomePlantStorages.getOfHome(homeId);
@@ -548,6 +528,41 @@ export class CookingService {
 			return undefined;
 		}
 		return recipe.materials[0].materialId;
+	}
+
+	/**
+	 * Inject the player's pinned recipe into slot recipes if it is eligible for at least one slot
+	 */
+	private static injectPinnedRecipeIfEligible(
+		slotRecipes: Array<CookingRecipe | null>,
+		player: Player,
+		discoveredIds: string[],
+		guild: Guild | null,
+		cookingSlots: number
+	): void {
+		if (!player.pinnedCookingRecipeId) {
+			return;
+		}
+		if (slotRecipes.some(r => r?.id === player.pinnedCookingRecipeId)) {
+			return;
+		}
+		const pinnedRecipe = CookingRecipeDataController.instance.getById(player.pinnedCookingRecipeId);
+		if (!pinnedRecipe) {
+			return;
+		}
+		const isDiscovered = pinnedRecipe.discoveredByDefault || discoveredIds.includes(pinnedRecipe.id);
+		const isPetFoodAllowed = pinnedRecipe.outputType !== CookingOutputType.PET_FOOD || Boolean(guild);
+		if (!isDiscovered || !isPetFoodAllowed) {
+			return;
+		}
+		const compatibleSlotIndex = SLOT_CONFIGS.findIndex((config, idx) =>
+			idx < cookingSlots
+			&& pinnedRecipe.level >= config.minLevel
+			&& pinnedRecipe.level <= config.maxLevel
+			&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
+		if (compatibleSlotIndex !== -1) {
+			slotRecipes[compatibleSlotIndex] = pinnedRecipe;
+		}
 	}
 
 	/**
