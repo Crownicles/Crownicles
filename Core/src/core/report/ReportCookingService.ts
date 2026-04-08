@@ -611,6 +611,28 @@ export async function handleCookingMenu(
 	return response;
 }
 
+async function validatePinRecipe(player: Player, recipeId: string): Promise<{
+	recipe: CookingRecipeData; guild: Guild | null;
+} | null> {
+	const recipe = CookingRecipeDataController.instance.getById(recipeId);
+	if (!recipe) {
+		return null;
+	}
+	if (!recipe.discoveredByDefault) {
+		const discoveredIds = await PlayerCookingRecipe.getDiscoveredRecipeIds(player);
+		if (!discoveredIds.includes(recipe.id)) {
+			return null;
+		}
+	}
+	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+	if (recipe.outputType === CookingOutputType.PET_FOOD && !guild) {
+		return null;
+	}
+	return {
+		recipe, guild
+	};
+}
+
 export async function handleCookingPin(
 	keycloakId: string,
 	packet: CommandReportCookingPinReq
@@ -624,23 +646,8 @@ export async function handleCookingPin(
 		player, home
 	} = data;
 
-	// Validate recipe exists
-	const recipe = CookingRecipeDataController.instance.getById(packet.recipeId);
-	if (!recipe) {
-		return response;
-	}
-
-	// Validate recipe is discovered by this player
-	if (!recipe.discoveredByDefault) {
-		const discoveredIds = await PlayerCookingRecipe.getDiscoveredRecipeIds(player);
-		if (!discoveredIds.includes(recipe.id)) {
-			return response;
-		}
-	}
-
-	// Validate pet food recipes require a guild
-	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-	if (recipe.outputType === CookingOutputType.PET_FOOD && !guild) {
+	const validated = await validatePinRecipe(player, packet.recipeId);
+	if (!validated) {
 		return response;
 	}
 
@@ -648,7 +655,7 @@ export async function handleCookingPin(
 		player,
 		homeId: home.id,
 		recipeId: packet.recipeId,
-		guild
+		guild: validated.guild
 	});
 	if (!pinnedRecipe) {
 		return response;
