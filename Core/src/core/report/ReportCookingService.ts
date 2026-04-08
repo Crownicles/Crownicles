@@ -50,6 +50,7 @@ import {
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import { giveItemToPlayer } from "../utils/ItemUtils";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
 
 interface PlayerAndHome {
 	player: Player;
@@ -588,10 +589,12 @@ export async function handleCookingMenu(
 
 	let pinnedRecipe: PinnedRecipeInfo | undefined;
 	if (player.pinnedCookingRecipeId) {
+		const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 		pinnedRecipe = await CookingService.getPinnedRecipeInfo({
 			player,
 			homeId: home.id,
-			recipeId: player.pinnedCookingRecipeId
+			recipeId: player.pinnedCookingRecipeId,
+			guild
 		});
 		if (!pinnedRecipe) {
 			// Recipe no longer exists, clear the pin
@@ -622,10 +625,30 @@ export async function handleCookingPin(
 	} = data;
 
 	// Validate recipe exists
+	const recipe = CookingRecipeDataController.instance.getById(packet.recipeId);
+	if (!recipe) {
+		return response;
+	}
+
+	// Validate recipe is discovered by this player
+	if (!recipe.discoveredByDefault) {
+		const discoveredIds = await PlayerCookingRecipe.getDiscoveredRecipeIds(player);
+		if (!discoveredIds.includes(recipe.id)) {
+			return response;
+		}
+	}
+
+	// Validate pet food recipes require a guild
+	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+	if (recipe.outputType === CookingOutputType.PET_FOOD && !guild) {
+		return response;
+	}
+
 	const pinnedRecipe = await CookingService.getPinnedRecipeInfo({
 		player,
 		homeId: home.id,
-		recipeId: packet.recipeId
+		recipeId: packet.recipeId,
+		guild
 	});
 	if (!pinnedRecipe) {
 		return response;
