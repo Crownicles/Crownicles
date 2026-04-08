@@ -75,16 +75,16 @@ const pendingWoodConfirmations = new Map<string, PendingWoodConfirmation & {
 	timeout: NodeJS.Timeout;
 }>();
 
-function setPendingWoodConfirmation(keycloakId: string, materialId: number, rarity: MaterialRarity, isRevive: boolean): void {
+function setPendingWoodConfirmation(keycloakId: string, pending: PendingWoodConfirmation): void {
 	const existing = pendingWoodConfirmations.get(keycloakId);
 	if (existing) {
 		clearTimeout(existing.timeout);
 	}
 	const timeout = setTimeout(() => pendingWoodConfirmations.delete(keycloakId), WOOD_CONFIRMATION_TTL);
 	pendingWoodConfirmations.set(keycloakId, {
-		materialId,
-		rarity,
-		isRevive,
+		materialId: pending.materialId,
+		rarity: pending.rarity,
+		isRevive: pending.isRevive,
 		timeout
 	});
 }
@@ -199,7 +199,11 @@ async function igniteOrReviveFurnace(
 	// Non-common wood needs confirmation
 	if (wood.needsConfirmation) {
 		const isRevive = PacketClass === CommandReportCookingReviveRes;
-		setPendingWoodConfirmation(keycloakId, wood.materialId, wood.rarity, isRevive);
+		setPendingWoodConfirmation(keycloakId, {
+			materialId: wood.materialId,
+			rarity: wood.rarity,
+			isRevive
+		});
 		response.push(makePacket(CommandReportCookingWoodConfirmReq, {
 			woodMaterialId: wood.materialId,
 			woodRarity: wood.rarity

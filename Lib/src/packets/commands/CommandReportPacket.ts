@@ -14,7 +14,7 @@ import {
 } from "../../types/PlantStorageEntry";
 import { PetFood } from "../../types/PetFood";
 export {
-	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo
+	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients
 } from "../../types/CookingTypes";
 import {
 	CookingSlotData, CookingCraftError, PinnedRecipeInfo

@@ -39,7 +39,8 @@ import {
 	CommandReportCookingUnpinRes,
 	CookingCraftErrors,
 	CookingSlotData,
-	PinnedRecipeInfo
+	PinnedRecipeInfo,
+	RecipeIngredients
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { finishInTimeDisplay } from "../../../../../../../Lib/src/utils/TimeUtils";
@@ -121,53 +122,57 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		if (selectedValue === HomeMenuIds.BACK_TO_HOME) {
-			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu(HomeMenuIds.HOME_MENU);
+		await componentInteraction.deferUpdate();
+
+		if (await this.handleExactMenuAction(ctx, selectedValue, nestedMenus)) {
 			return true;
 		}
 
-		if (selectedValue === HomeMenuIds.COOKING_IGNITE) {
-			await componentInteraction.deferUpdate();
-			await this.sendIgniteAction(ctx, nestedMenus);
+		return this.handlePrefixMenuAction(ctx, selectedValue, nestedMenus);
+	}
+
+	/**
+	 * Handle exact-match menu actions using a lookup table
+	 */
+	private async handleExactMenuAction(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<boolean> {
+		const actions: Record<string, () => Promise<void>> = {
+			[HomeMenuIds.BACK_TO_HOME]: () => nestedMenus.changeMenu(HomeMenuIds.HOME_MENU),
+			[HomeMenuIds.COOKING_IGNITE]: () => this.sendIgniteAction(ctx, nestedMenus),
+			[HomeMenuIds.COOKING_REVIVE]: () => this.sendReviveAction(ctx, nestedMenus),
+			[HomeMenuIds.COOKING_WOOD_CONFIRM]: () => this.sendWoodConfirmResponse(ctx, true, nestedMenus),
+			[HomeMenuIds.COOKING_WOOD_CANCEL]: () => this.sendWoodConfirmResponse(ctx, false, nestedMenus),
+			[HomeMenuIds.COOKING_UNPIN]: () => this.sendUnpinAction(ctx, nestedMenus)
+		};
+
+		const action = actions[selectedValue];
+		if (action) {
+			await action();
 			return true;
 		}
+		return false;
+	}
 
-		if (selectedValue === HomeMenuIds.COOKING_REVIVE) {
-			await componentInteraction.deferUpdate();
-			await this.sendReviveAction(ctx, nestedMenus);
-			return true;
-		}
-
-		if (selectedValue === HomeMenuIds.COOKING_WOOD_CONFIRM) {
-			await componentInteraction.deferUpdate();
-			await this.sendWoodConfirmResponse(ctx, true, nestedMenus);
-			return true;
-		}
-
-		if (selectedValue === HomeMenuIds.COOKING_WOOD_CANCEL) {
-			await componentInteraction.deferUpdate();
-			await this.sendWoodConfirmResponse(ctx, false, nestedMenus);
-			return true;
-		}
-
+	/**
+	 * Handle prefix-based menu actions (craft, pin)
+	 */
+	private handlePrefixMenuAction(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<boolean> {
 		if (selectedValue.startsWith(HomeMenuIds.COOKING_CRAFT_PREFIX)) {
-			await componentInteraction.deferUpdate();
 			return this.handleCraftSelection(ctx, selectedValue, nestedMenus);
 		}
 
 		if (selectedValue.startsWith(HomeMenuIds.COOKING_PIN_PREFIX)) {
-			await componentInteraction.deferUpdate();
 			return this.handlePinSelection(ctx, selectedValue, nestedMenus);
 		}
 
-		if (selectedValue === HomeMenuIds.COOKING_UNPIN) {
-			await componentInteraction.deferUpdate();
-			await this.sendUnpinAction(ctx, nestedMenus);
-			return true;
-		}
-
-		return false;
+		return Promise.resolve(false);
 	}
 
 	/**
@@ -258,11 +263,10 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			ctx.context,
 			makePacket(CommandReportCookingUnpinReq, {}),
 			async (_responseContext, packetName) => {
+				const state = this.getState(ctx);
 				if (packetName === CommandReportCookingUnpinRes.name) {
-					const state = this.getState(ctx);
 					state.pinnedRecipe = undefined;
 				}
-				const state = this.getState(ctx);
 				if (state.currentSlots.length > 0) {
 					this.registerIgnitedMenu(ctx, nestedMenus);
 				}
@@ -331,7 +335,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build a human-readable ingredient list
 	 */
-	private buildIngredientsDescription(ingredients: NonNullable<CookingSlotData["recipe"]>["ingredients"], lng: Language): string {
+	private buildIngredientsDescription(ingredients: RecipeIngredients, lng: Language): string {
 		const parts: string[] = [];
 
 		for (const plant of ingredients.plants) {
@@ -512,92 +516,111 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 * Build a V2 Section for a single cooking slot with its craft button as accessory
 	 */
 	private buildSlotSection(slot: CookingSlotData, ctx: HomeFeatureHandlerContext, allDisabled = false): SectionBuilder {
-		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
-		const craftLabel = i18n.t(`commands:report.city.homes.cooking.craftButton.${slot.slotIndex}`, { lng: ctx.lng });
-
 		const section = new SectionBuilder();
 
 		if (!slot.recipe) {
-			section.addTextDisplayComponents(
-				new TextDisplayBuilder().setContent(
-					i18n.t("commands:report.city.homes.cooking.slotEmptyContent", {
-						lng: ctx.lng,
-						stationId: slot.slotIndex
-					})
-				)
-			);
-			section.setButtonAccessory(
-				new ButtonBuilder()
-					.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
-					.setLabel(craftLabel)
-					.setEmoji(parseEmoji(stationEmoji)!)
-					.setStyle(ButtonStyle.Secondary)
-					.setDisabled(true)
-			);
-			return section;
+			return this.buildEmptySlotSection(section, slot, ctx);
 		}
 
+		const slotTitle = this.buildSlotTitle(slot.recipe, slot.slotIndex, ctx);
 		const ingredientsList = this.buildIngredientsDescription(slot.recipe.ingredients, ctx.lng);
-		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[slot.recipe.recipeType] ?? "";
-
-		let slotTitle: string;
-		if (slot.recipe.isSecret) {
-			slotTitle = i18n.t("commands:report.city.homes.cooking.slotSecretName", {
-				lng: ctx.lng,
-				stationId: slot.slotIndex,
-				level: slot.recipe.level
-			});
-		}
-		else {
-			const recipeName = i18n.t(`models:cooking.recipes.${slot.recipe.id}`, { lng: ctx.lng });
-			slotTitle = i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
-				lng: ctx.lng,
-				stationId: slot.slotIndex,
-				outputEmoji,
-				recipe: recipeName,
-				level: slot.recipe.level
-			});
-		}
-
 		section.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(`${slotTitle}\n${ingredientsList}`)
 		);
-
-		if (!slot.recipe.canCraft && !slot.recipe.isSecret && !allDisabled) {
-			const state = this.getState(ctx);
-			const isPinned = state.pinnedRecipe?.recipeId === slot.recipe.id;
-			if (isPinned) {
-				section.setButtonAccessory(
-					new ButtonBuilder()
-						.setCustomId(HomeMenuIds.COOKING_UNPIN)
-						.setLabel(i18n.t("commands:report.city.homes.cooking.unpinButton", { lng: ctx.lng }))
-						.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
-						.setStyle(ButtonStyle.Success)
-				);
-			}
-			else {
-				const recipeName = i18n.t(`models:cooking.recipes.${slot.recipe.id}`, { lng: ctx.lng });
-				section.setButtonAccessory(
-					new ButtonBuilder()
-						.setCustomId(`${HomeMenuIds.COOKING_PIN_PREFIX}${slot.slotIndex}`)
-						.setLabel(recipeName.substring(0, 80))
-						.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
-						.setStyle(ButtonStyle.Secondary)
-				);
-			}
-		}
-		else {
-			section.setButtonAccessory(
-				new ButtonBuilder()
-					.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
-					.setLabel(craftLabel)
-					.setEmoji(parseEmoji(stationEmoji)!)
-					.setStyle(slot.recipe.canCraft && !allDisabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
-					.setDisabled(!slot.recipe.canCraft || allDisabled)
-			);
-		}
+		section.setButtonAccessory(this.buildSlotAccessoryButton(slot, ctx, allDisabled));
 
 		return section;
+	}
+
+	/**
+	 * Build an empty slot section with a disabled craft button
+	 */
+	private buildEmptySlotSection(section: SectionBuilder, slot: CookingSlotData, ctx: HomeFeatureHandlerContext): SectionBuilder {
+		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
+		const craftLabel = i18n.t(`commands:report.city.homes.cooking.craftButton.${slot.slotIndex}`, { lng: ctx.lng });
+		section.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:report.city.homes.cooking.slotEmptyContent", {
+					lng: ctx.lng,
+					stationId: slot.slotIndex
+				})
+			)
+		);
+		section.setButtonAccessory(
+			new ButtonBuilder()
+				.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
+				.setLabel(craftLabel)
+				.setEmoji(parseEmoji(stationEmoji)!)
+				.setStyle(ButtonStyle.Secondary)
+				.setDisabled(true)
+		);
+		return section;
+	}
+
+	/**
+	 * Build the title line for a recipe slot
+	 */
+	private buildSlotTitle(recipe: NonNullable<CookingSlotData["recipe"]>, slotIndex: number, ctx: HomeFeatureHandlerContext): string {
+		if (recipe.isSecret) {
+			return i18n.t("commands:report.city.homes.cooking.slotSecretName", {
+				lng: ctx.lng,
+				stationId: slotIndex,
+				level: recipe.level
+			});
+		}
+		const recipeName = i18n.t(`models:cooking.recipes.${recipe.id}`, { lng: ctx.lng });
+		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[recipe.recipeType] ?? "";
+		return i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
+			lng: ctx.lng,
+			stationId: slotIndex,
+			outputEmoji,
+			recipe: recipeName,
+			level: recipe.level
+		});
+	}
+
+	/**
+	 * Build the appropriate button accessory for a recipe slot (craft, pin, or unpin)
+	 */
+	private buildSlotAccessoryButton(slot: CookingSlotData, ctx: HomeFeatureHandlerContext, allDisabled: boolean): ButtonBuilder {
+		const recipe = slot.recipe!;
+		const canShowPinButton = !recipe.canCraft && !recipe.isSecret && !allDisabled;
+
+		if (canShowPinButton) {
+			return this.buildPinOrUnpinButton(slot, ctx);
+		}
+
+		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
+		const craftLabel = i18n.t(`commands:report.city.homes.cooking.craftButton.${slot.slotIndex}`, { lng: ctx.lng });
+		return new ButtonBuilder()
+			.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
+			.setLabel(craftLabel)
+			.setEmoji(parseEmoji(stationEmoji)!)
+			.setStyle(recipe.canCraft && !allDisabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
+			.setDisabled(!recipe.canCraft || allDisabled);
+	}
+
+	/**
+	 * Build a pin or unpin button depending on whether the recipe is currently pinned
+	 */
+	private buildPinOrUnpinButton(slot: CookingSlotData, ctx: HomeFeatureHandlerContext): ButtonBuilder {
+		const recipe = slot.recipe!;
+		const isPinned = this.getState(ctx).pinnedRecipe?.recipeId === recipe.id;
+
+		if (isPinned) {
+			return new ButtonBuilder()
+				.setCustomId(HomeMenuIds.COOKING_UNPIN)
+				.setLabel(i18n.t("commands:report.city.homes.cooking.unpinButton", { lng: ctx.lng }))
+				.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
+				.setStyle(ButtonStyle.Success);
+		}
+
+		const recipeName = i18n.t(`models:cooking.recipes.${recipe.id}`, { lng: ctx.lng });
+		return new ButtonBuilder()
+			.setCustomId(`${HomeMenuIds.COOKING_PIN_PREFIX}${slot.slotIndex}`)
+			.setLabel(recipeName.substring(0, 80))
+			.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
+			.setStyle(ButtonStyle.Secondary);
 	}
 
 	/**

@@ -4,6 +4,15 @@ import {
 } from "../constants/CookingConstants";
 import { PetFood } from "./PetFood";
 
+export interface RecipeIngredients {
+	plants: {
+		plantId: PlantId; quantity: number; playerHas: number;
+	}[];
+	materials: {
+		materialId: number; quantity: number; playerHas: number;
+	}[];
+}
+
 export interface CookingSlotData {
 	slotIndex: number;
 	recipe: {
@@ -14,14 +23,7 @@ export interface CookingSlotData {
 		outputType: CookingOutputTypeValue;
 		recipeType: RecipeType;
 		petFoodType?: PetFood;
-		ingredients: {
-			plants: {
-				plantId: PlantId; quantity: number; playerHas: number;
-			}[];
-			materials: {
-				materialId: number; quantity: number; playerHas: number;
-			}[];
-		};
+		ingredients: RecipeIngredients;
 		canCraft: boolean;
 	} | null;
 }
@@ -37,20 +39,11 @@ export const CookingCraftErrors = {
 
 export type CookingCraftError = typeof CookingCraftErrors[keyof typeof CookingCraftErrors];
 
-export interface PinnedRecipeIngredients {
-	plants: {
-		plantId: PlantId; quantity: number; playerHas: number;
-	}[];
-	materials: {
-		materialId: number; quantity: number; playerHas: number;
-	}[];
-}
-
 export interface PinnedRecipeInfo {
 	recipeId: string;
 	level: number;
 	recipeType: RecipeType;
 	outputType: CookingOutputTypeValue;
-	ingredients: PinnedRecipeIngredients;
+	ingredients: RecipeIngredients;
 	canCraft: boolean;
 }
