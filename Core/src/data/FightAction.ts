@@ -23,47 +23,33 @@ export class FightAction extends Data<string> {
 		}
 		const result = fightActionFunc(sender, receiver, this, turn, fight);
 
-		// Apply resistance multiplier to damages
-		if (result.damages !== undefined) {
-			const originalDamages = result.damages;
-			const resistanceMultiplier = receiver.getResistanceMultiplier(this.type);
-			result.damages = Math.round(result.damages * resistanceMultiplier);
-
-			// Check if damage should be reflected
-			const reflectedDamage = receiver.getReflectedDamage(this.type, originalDamages);
-			if (reflectedDamage > 0) {
-				sender.damage(reflectedDamage);
-				if (!result.reflectedDamages) {
-					result.reflectedDamages = 0;
-				}
-				result.reflectedDamages += reflectedDamage;
-			}
-		}
-
+		FightAction.applyResistanceAndReflect(result, sender, receiver, this.type);
 		receiver.damage(result.damages ?? 0);
 
 		if (result.usedAction) {
-			// Get the type of the used action
 			const usedAction = FightActionDataController.instance.getById(result.usedAction.id);
-			if (usedAction && result.usedAction.result.damages !== undefined) {
-				const originalUsedActionDamages = result.usedAction.result.damages;
-				const usedActionResistanceMultiplier = receiver.getResistanceMultiplier(usedAction.type);
-				result.usedAction.result.damages = Math.round(result.usedAction.result.damages * usedActionResistanceMultiplier);
-
-				// Check if damage should be reflected for used action
-				const reflectedUsedActionDamage = receiver.getReflectedDamage(usedAction.type, originalUsedActionDamages);
-				if (reflectedUsedActionDamage > 0) {
-					sender.damage(reflectedUsedActionDamage);
-					if (!result.usedAction.result.reflectedDamages) {
-						result.usedAction.result.reflectedDamages = 0;
-					}
-					result.usedAction.result.reflectedDamages += reflectedUsedActionDamage;
-				}
+			if (usedAction) {
+				FightAction.applyResistanceAndReflect(result.usedAction.result, sender, receiver, usedAction.type);
 			}
 			receiver.damage(result.usedAction.result.damages ?? 0);
 		}
 
 		return result;
+	}
+
+	private static applyResistanceAndReflect(result: FightActionResult, sender: Fighter, receiver: Fighter, type: FightActionType): void {
+		if (result.damages === undefined) {
+			return;
+		}
+
+		const originalDamages = result.damages;
+		result.damages = Math.round(result.damages * receiver.getResistanceMultiplier(type));
+
+		const reflectedDamage = receiver.getReflectedDamage(type, originalDamages);
+		if (reflectedDamage > 0) {
+			sender.damage(reflectedDamage);
+			result.reflectedDamages = (result.reflectedDamages ?? 0) + reflectedDamage;
+		}
 	}
 
 	/**
