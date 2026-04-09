@@ -135,7 +135,7 @@ export abstract class FightActionController {
 		target.applyResistance({
 			type: resistance.type,
 			value: resistance.value,
-			turns: resistance.duration ?? 0,
+			turns: resistance.duration ?? 1,
 			reflectDamage: resistance.reflectDamage
 		});
 		if (result.resistances === undefined) {

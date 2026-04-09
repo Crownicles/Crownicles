@@ -706,7 +706,7 @@
       "failure": "appelle **{{petNickname}}** qui tente de mordre son adversaire, mais sa cible semble insensible à ce type d'attaque."
     },
     "petPetrified": {
-      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire les plus raet le pétrifie.",
+      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire les plus et le pétrifie.",
       "failure": "est assisté par **{{petNickname}}** qui regarde son adversaire, mais cela n'a aucun effet contre cet adversaire."
     },
     "petPoison": {
@@ -929,7 +929,7 @@
       "name": "submergé",
       "new": "est submergé.",
       "active": "est submergé et a du mal à respirer.",
-      "stop": "a réussi à s'extraire de l'eau mais en finit complétement trempé."
+      "stop": "a réussi à s'extraire de l'eau mais en finit complètement trempé."
       },
     "summonAttack": {
       "name_one": "Invocation d'alliés",
