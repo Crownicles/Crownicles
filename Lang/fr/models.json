@@ -422,7 +422,6 @@
       "stop": "est condamné par les eaux maudites."
     },
     "cursedOfTheSea": {
-      "description": "La mer maudit son adversaire, le condamnant à un destin funeste.",
       "customMessage": "condamne son adversaire à être damné par la mer.",
       "name_one": "Malédiction de la mer",
       "name_other": "Malédictions de la mer"
