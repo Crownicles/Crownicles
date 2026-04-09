@@ -1,4 +1,7 @@
 {
   "rarity": 5,
-  "rawAttack": 6
+  "rawAttack": 6,
+  "tags": [
+    "ranged"
+  ]
 }
