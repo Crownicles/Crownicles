@@ -198,10 +198,40 @@
     "9": "Uma classe centrada na velocidade. Pouca saúde e pontos de energia, mas muita velocidade e ataque."
   },
   "fight_actions": {
+    "drowning": {
+      "customMessage": "saisit son adversaire avec l'une de ses tentacules et le plonge sous l'eau, seuls les adversaires ayant du souffle s'extirpent sans dommage.",
+      "name_one": "Noyade",
+      "name_other": "Noyades"
+    },
+    "sepulcralHunger": {
+      "customMessage": "sent la faiblesse de sa proie et attaque avec une férocité redoublée, ses yeux brillant d'une lueur prédatrice.",
+      "name_one": "Faim sépulcrale",
+      "name_other": "Faims sépulcrales"
+    },
+    "aerialDiveAttack": {
+      "customMessage": "salta no ar para mergulhar sobre o seu adversário, mas este consegue mantê-lo à distância com os seus ataques.",
+      "name_one": "Ataque de mergulho aéreo",
+      "name_other": "Ataques aéreos de mergulho"
+    },
+    "abyssalAura": {
+      "customMessage": "exerce une pression abyssale qui comprime les poumons de son adversaire, réduisant sa régénération de souffle.",
+      "name_one": "Aura abyssale",
+      "name_other": "Auras abyssales"
+    },
     "alliesArePresent": {
       "name": "vítima dos aliados",
       "new": "é vítima dos aliados do seu adversário.",
       "active": "sofre ataques dos aliados do seu adversário."
+    },
+    "ambush": {
+      "customMessage": "está a esconder-se para preparar uma emboscada...",
+      "name_one": "Emboscada",
+      "name_other": "Emboscadas"
+    },
+    "aqueousEvasion": {
+      "customMessage": "glisse hors de portée dans un tourbillon aqueux et ralentit son adversaire.",
+      "name_one": "Esquive aquatique",
+      "name_other": "Esquives aquatiques"
     },
     "benediction": {
       "description": "Faz parte do grupo \"acções dos deuses\". Falha se uma ação divina já tiver sido executada em combate. Aumenta todos os atributos de quem a usa. Quanto mais tarde no combate a bênção for usada, maior será o aumento dos atributos.",
@@ -211,12 +241,23 @@
     "bite": {
       "success": "é ajudado por **{{petNickname}}** que decide morder o seu adversário com força."
     },
+    "bleeding": {
+      "name": "sangramento",
+      "new": "sangramento.",
+      "active": "sangramento.",
+      "stop": "já não está a sangrar."
+    },
     "blind": {
       "name": "cego",
       "new": "está cego.",
       "active": "fica cego e ataca ao acaso à sua volta.",
       "noAction": "fica cego e falha completamente o alvo.",
       "stop": "recupera a visão."
+    },
+    "blizzardRageAttack": {
+      "customMessage": "invoca a fúria do nevão no seu adversário, mas os ventos gelados já estão a assolar a arena.",
+      "name_one": "Ataque de fúria do Blizzard",
+      "name_other": "Ataques de fúria do Blizzard"
     },
     "boomerangAttack": {
       "description": "Este ataque pode infligir até 2 retornos de dano.",
@@ -229,13 +270,13 @@
     "boostSpeed": {
       "success": "cavalga nas costas de **{{petNickname}}** para andar mais depressa."
     },
-    "breakArmor": {
-      "failure": "chama **{{petNickname}}** que ataca o seu adversário. Infelizmente, falha completamente o alvo.",
-      "success": "pede ajuda ao seu familiar, que ataca o seu adversário. Este último protege-se do ataque, mas o seu equipamento é levado por **{{petNickname}}** !"
-    },
     "boulderTossAttack": {
       "name_one": "Ataque com pedras",
       "name_other": "Ataques com pedras"
+    },
+    "breakArmor": {
+      "failure": "chama **{{petNickname}}** que ataca o seu adversário. Infelizmente, falha completamente o alvo.",
+      "success": "pede ajuda ao seu familiar, que ataca o seu adversário. Este último protege-se do ataque, mas o seu equipamento é levado por **{{petNickname}}** !"
     },
     "breathTakingAttack": {
       "description": "Causa poucos danos, mas pode roubar o fôlego ou abrandar o ritmo do adversário.",
@@ -251,10 +292,29 @@
       "active": "sofre com a sua queimadura.",
       "stop": "já não está queimado."
     },
+    "callOfTheSea": {
+      "name_one": "Attaque appel de la mer",
+      "name_other": "Attaques appels des mers"
+    },
+    "callPack": {
+      "customMessage": "chama a sua alcateia com um uivo estridente.",
+      "name_one": "Chamar a matilha",
+      "name_other": "Chamadas para a matilha"
+    },
     "canonAttack": {
       "description": "A precisão deste ataque é reduzida em adversários que se movam rapidamente. Um bónus de dano é aplicado a este ataque se o adversário for muito lento. O adversário pode ser abrandado por este ataque. Causa mais danos se for usado várias vezes seguidas.",
       "name_one": "Ataque de canhão",
       "name_other": "Ataques de canhão"
+    },
+    "chargeChargeMaelstromAttack": {
+      "customMessage": "s'immobilise et se prépare à déclencher un désastre.",
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
+    },
+    "chargeChargeRadiantBlastAttack": {
+      "customMessage": "carrega a sua energia e prepara-se para lançar um ataque poderoso.",
+      "name_one": "Ataque de Raio Explosivo Radiante",
+      "name_other": "Ataques explosivos de raios radiantes"
     },
     "chargeChargingAttack": {
       "description": "Ataque de 2 turnos. Durante a primeira ronda, a defesa do jogador é aumentada em 50%. Durante a segunda ronda, a defesa é reduzida, infligindo danos pesados no processo.",
@@ -265,6 +325,21 @@
       "name_one": "Ataque a um clube",
       "name_other": "Ataques a clubes"
     },
+    "chargeDeluge": {
+      "customMessage": "concentre son énergie primordiale, le ciel s'obscurcit et des éclairs commencent à zébrer le ciel.",
+      "name_one": "Déluge",
+      "name_other": "Déluges"
+    },
+    "chargeMaelstromAttack": {
+      "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
+    },
+    "chargeRadiantBlastAttack": {
+      "customMessage": "continua a carregar a sua energia e prepara-se para lançar um ataque poderoso.",
+      "name_one": "Ataque de Raio Explosivo Radiante",
+      "name_other": "Ataques explosivos de raios radiantes"
+    },
     "chargeUltimateAttack": {
       "description": "Requer um turno para carregar o ataque. Se o atacante tiver menos de 45% da sua energia, este ataque não pode falhar. Este ataque só pode ser usado uma vez por jogador e por batalha.",
       "name_one": "Ataque final",
@@ -273,6 +348,10 @@
     "chargingAttack": {
       "name_one": "Ataque carregado",
       "name_other": "Ataques carregados"
+    },
+    "clawAttack": {
+      "name_one": "Ataque com garras",
+      "name_other": "Ataques com garras"
     },
     "claws": {
       "success": "é apoiado na sua luta por **{{petNickname}}** que dá ao seu adversário um grande golpe de garra."
@@ -316,6 +395,15 @@
       "success": "é ajudado por **{{petNickname}}** que esmaga o seu adversário sob o seu peso.",
       "failure": "é ajudado pelo **{{petNickname}}** que se despenha no campo de batalha, mas falha completamente o seu alvo que escapou graças à sua velocidade."
     },
+    "crystallineArmorAttack": {
+      "customMessage": "brilha a sua armadura cristalina na esperança de ferir o seu adversário, mas as pontas afiadas permanecem intactas.",
+      "name_one": "Ataque de armadura cristalina",
+      "name_other": "Ataques de armaduras cristalinas"
+    },
+    "crystalShardAttack": {
+      "name_one": "Ataque com fragmento de cristal",
+      "name_other": "Ataques de estilhaços de cristal"
+    },
     "cursed": {
       "name": "amaldiçoado",
       "new": "está amaldiçoado...",
@@ -326,6 +414,17 @@
       "description": "Amaldiçoa o adversário, talvez sofrendo as consequências no futuro... Cura o jogador se o adversário tiver mais de 40% da sua energia.",
       "name_one": "Ataque amaldiçoado",
       "name_other": "Ataques amaldiçoados"
+    },
+    "cursedByTheSea": {
+      "name": "damné par la mer",
+      "new": "est damné par la mer...",
+      "active": "est damné par la mer...",
+      "stop": "est condamné par les eaux maudites."
+    },
+    "cursedOfTheSea": {
+      "customMessage": "condamne son adversaire à être damné par la mer.",
+      "name_one": "Malédiction de la mer",
+      "name_other": "Malédictions de la mer"
     },
     "darkAttack": {
       "description": "Ignora a defesa do adversário. Mais eficaz contra um jogador com um ataque elevado. Cega o oponente ou restaura parte do fôlego perdido. A alteração \"cego\" dura pelo menos 1 turno e torna o adversário incapaz de atacar por vezes, reduzindo a sua defesa e velocidade.",
@@ -338,6 +437,11 @@
       "name_one": "Reforço da defesa",
       "name_other": "Reforço da defesa"
     },
+    "deluge": {
+      "customMessage": "déchaîne une tempête cataclysmique, la foudre et les trombes d'eau s'abattent sur vous.",
+      "name_one": "Déluge",
+      "name_other": "Déluges"
+    },
     "dirty": {
       "name": "nojento",
       "new": "é absolutamente repugnante, os seus ataques são reforçados.",
@@ -348,6 +452,16 @@
       "description": "A precisão deste ataque aumenta com a duração do combate. Faz parte do grupo \"acções dos deuses\". Falha se 2 acções dos deuses já tiverem sido executadas no combate.",
       "name_one": "Ataque divino",
       "name_other": "Ataques divinos"
+    },
+    "celestialLightning": {
+      "customMessage": "invoque la foudre céleste qui s'abat sur l'adversaire.",
+      "name_one": "Foudre céleste",
+      "name_other": "Foudres célestes"
+    },
+    "earthquake": {
+      "customMessage": "fait trembler la terre, seul les adversaires les plus solides parviennent à y résister.",
+      "name_one": "Séisme",
+      "name_other": "Séismes"
     },
     "elephantRememberLastAction": {
       "success": "é ajudado por **{{petNickname}}**, cuja memória profunda dos acontecimentos recentes lhe permite recuperar o espírito perdido do seu mestre.",
@@ -368,6 +482,12 @@
       "name_one": "Refeições em família",
       "name_other": "Refeições em família"
     },
+    "fatalFlight": {
+      "customMessageFail": "invoque des corbeaux spectraux mais votre familier ordonne à ceux-ci de retourner au néant.",
+      "customMessage": "invoque des corbeaux spectraux qui fondent sur son adversaire et le lacèrent de toute part.",
+      "name_one": "Volée funeste",
+      "name_other": "Volées funestes"
+    },
     "fireAttack": {
       "description": "Queima o teu adversário. A alteração \"queimado\" inflige danos ao teu adversário ao longo do tempo.",
       "name_one": "Ataque de incêndio",
@@ -382,6 +502,15 @@
       "active": "está congelado.",
       "stop": "já não está congelado."
     },
+    "aceratedFangs": {
+      "customMessage": "mord violemment avec ses crocs acérés, laissant une marque sanglante.",
+      "name_one": "Crocs acérés",
+      "name_other": "Crocs acérés"
+    },
+    "frozenKissAttack": {
+      "name_one": "Ataque de beijo congelado",
+      "name_other": "Ataques de beijos congelados"
+    },
     "full": {
       "name": "reparadas e cuidadas",
       "new": "está cheio e precisa de descansar. velocidade: 0",
@@ -394,6 +523,15 @@
       "name_one": "Sujidade",
       "name_other": "Sujidade"
     },
+    "glacialBreathAttack": {
+      "name_one": "Ataque de explosão de gelo",
+      "name_other": "Ataques de rajada de gelo"
+    },
+    "glacialCaveCollapseAttack": {
+      "customMessage": "ruge tão alto que as estalactites de gelo saltam do teto! Mas o inimigo está suficientemente perto para evitar o ataque.",
+      "name_one": "Ataque de colapso por congelamento",
+      "name_other": "Ataques de colapso arrepiantes"
+    },
     "goesWild": {
       "success": "ordena a **{{petNickname}}** que ataque. O animal fica furioso e começa a bater em tudo o que se aproxima dele."
     },
@@ -405,6 +543,15 @@
       "description": "Os jogadores do grémio juntam-se para levar a cabo um poderoso ataque de grupo.",
       "name_one": "Ataque do grémio",
       "name_other": "Ataques de guildas"
+    },
+    "hammerQuakeAttack": {
+      "customMessage": "atinge o chão com uma força titânica, provocando um terramoto! Mas o inimigo levanta-se no ar com o seu companheiro alado, escapando aos tremores.",
+      "name_one": "Ataque de martelo sísmico",
+      "name_other": "Ataque de martelo sísmico"
+    },
+    "hardBiteAttack": {
+      "name_one": "Poderoso ataque de mordida",
+      "name_other": "Poderosos ataques de mordida"
     },
     "healEveryone": {
       "generalEffect": "chama **{{petNickname}}** que, com um olhar benevolente, vê que ninguém se magoou e volta alegremente a descansar.",
@@ -427,6 +574,10 @@
       "name_one": "Ataque pesado",
       "name_other": "Ataques pesados"
     },
+    "hellishScream": {
+      "name_one": "Attaque cri infernal",
+      "name_other": "Attaques cris infernaux"
+    },
     "helpBreathe": {
       "success": "é ajudado por **{{petNickname}}** que, graças aos seus dotes de mergulhador, transmite um pouco de fôlego ao seu dono."
     },
@@ -434,13 +585,43 @@
       "success": "tinha razão em chamar **{{petNickname}}** ! O animal acaba de empalar o seu adversário no seu corno, e não é uma visão bonita.",
       "generalEffect": "chama **{{petNickname}}** para o resgate, o animal levanta voo e ataca diretamente o seu adversário..."
     },
+    "howlAttack": {
+      "customMessage": "grita para o céu.",
+      "name_one": "Uivando",
+      "name_other": "Uivando"
+    },
+    "hydraulicHeal": {
+      "customMessage": "fait appel aux forces de l'eau pour récupérer des forces.",
+      "name_one": "Soin hydraulique",
+      "name_other": "Soins hydrauliques"
+    },
     "hypnosis": {
       "success": "é ajudado por **{{petNickname}}** que utiliza os seus poderes hipnóticos para confundir o inimigo."
+    },
+    "icySeductionAttack": {
+      "name_one": "Ataque de sedução gelado",
+      "name_other": "Ataque de sedução gelado"
+    },
+    "inkJet": {
+      "customMessage": "lance un puissant jet d'encre sur son adversaire.",
+      "name_one": "Jet d'encre",
+      "name_other": "Jet d'encre"
     },
     "intenseAttack": {
       "description": "Defende-te eficazmente contra este ataque. Nunca falha contra um adversário mais rápido. Funciona melhor num adversário rápido. Força o lançador a usar a ação \"descansar\" no próximo turno. Não pode matar o oponente.",
       "name_one": "Ataque intenso",
       "name_other": "Ataques intensos"
+    },
+    "blackCorrosion": {
+      "name": "corrodé",
+      "new": "est corrodé.",
+      "active": "est rongé par la corrosion noire.",
+      "stop": "n'est plus corrodé."
+    },
+    "isStuckInPolarEmbrace": {
+      "customMessage": "não consegue segurar o seu adversário, que se consegue libertar com os seus ataques",
+      "name_one": "Ataque do abraço polar",
+      "name_other": "Ataques do abraço polar"
     },
     "isUseless": {
       "generalEffect": "pede ajuda a **{{petNickname}}** que, com notável indiferença, olha fixamente para o seu adversário."
@@ -448,6 +629,15 @@
     "lavaWaveAttack": {
       "name_one": "Ataque da onda de lava",
       "name_other": "Ataque da onda de lava"
+    },
+    "lightRayAttack": {
+      "name_one": "Ataque de raio de luz",
+      "name_other": "Ataques com feixes de luz"
+    },
+    "maelstromAttack": {
+      "customMessage": "déchaîne un maelström, mêlant vents et courants dans un tourbillon ravageur.",
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
     },
     "magicMimicAttack": {
       "name_one": "Ataque mágico mímico",
@@ -465,6 +655,11 @@
       "name_one": "Ataque com tiro de lama",
       "name_other": "Ataques com tiros de lama"
     },
+    "mutiny": {
+      "customMessage": "invoque les fantômes de son vieil équipage, c'est une bataille générale !",
+      "name_one": "Mutinerie",
+      "name_other": "Mutineries"
+    },
     "none": {
       "customMessage": "não pode atacar."
     },
@@ -481,6 +676,10 @@
       "customMessage": "fica zangado.",
       "name_one": "Raiva",
       "name_other": "Raiva"
+    },
+    "packAttack": {
+      "name_one": "Ataque de matilha",
+      "name_other": "Ataques de matilha"
     },
     "paralyzed": {
       "name": "paralisado",
@@ -502,12 +701,16 @@
     "petHit": {
       "success": "precisa da ajuda de **{{petNickname}}** após o violento ataque que acaba de receber. Por vingança, **{{petNickname}}** bate com força no seu adversário."
     },
+    "petMakeBleed": {
+      "success": "é ajudado por **{{petNickname}}** que morde o pescoço do seu adversário.",
+      "failure": "chama **{{petNickname}}** que tenta morder o seu adversário, mas o seu alvo parece ser imune a este tipo de ataque."
+    },
+    "petPetrified": {
+      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire les plus et le pétrifie.",
+      "failure": "é assistido por **{{petNickname}}** que olha para o seu adversário, mas isto não tem qualquer efeito contra esse adversário."
+    },
     "petPoison": {
       "success": "usa **{{petNickname}}** para envenenar o seu adversário."
-    },
-    "petSmallCharge": {
-      "generalEffect": "ordena a **{{petNickname}}** que ataque. O animal esfrega as patas com impaciência, pronto para atacar.",
-      "success": "é ajudado por **{{petNickname}}** que decide finalmente atacar o seu adversário com força."
     },
     "petrificationAttack": {
       "customMessage": "petrifica o seu oponente.",
@@ -519,6 +722,10 @@
       "new": "está petrificado.",
       "noAction": "está petrificado e incapaz de atacar.",
       "stop": "já não está petrificado."
+    },
+    "petSmallCharge": {
+      "generalEffect": "ordena a **{{petNickname}}** que ataque. O animal esfrega as patas com impaciência, pronto para atacar.",
+      "success": "é ajudado por **{{petNickname}}** que decide finalmente atacar o seu adversário com força."
     },
     "piercingAttack": {
       "description": "Ignora quase por completo a defesa do adversário. É provável que o atacante reduza ligeiramente a defesa do adversário.",
@@ -568,6 +775,10 @@
       "name_one": "Ataque rápido",
       "name_other": "Ataques rápidos"
     },
+    "radiantBlastAttack": {
+      "name_one": "Ataque de Raio Explosivo Radiante",
+      "name_other": "Ataques explosivos de raios radiantes"
+    },
     "rageExplosion": {
       "description": "Liberta a raiva que acumulaste ao longo do caminho no teu inimigo.",
       "customMessage": "liberta a sua fúria sobre o inimigo!",
@@ -587,6 +798,11 @@
       "customMessage": "está a descansar...",
       "name_one": "Descanso",
       "name_other": "Descanso"
+    },
+    "retreat": {
+      "customMessage": "se retire dans sa carapace.",
+      "name_one": "Repli",
+      "name_other": "Replis"
     },
     "revenge": {
       "success": "é apoiado por **{{petNickname}}** que fere o seu adversário após o seu ataque."
@@ -621,105 +837,20 @@
       "name_one": "Ataque simples",
       "name_other": "Ataques simples"
     },
-    "glacialCaveCollapseAttack": {
-      "customMessage": "ruge tão alto que as estalactites de gelo saltam do teto! Mas o inimigo está suficientemente perto para evitar o ataque.",
-      "name_one": "Ataque de colapso por congelamento",
-      "name_other": "Ataques de colapso arrepiantes"
-    },
-    "chargeChargeRadiantBlastAttack": {
-      "customMessage": "carrega a sua energia e prepara-se para lançar um ataque poderoso.",
-      "name_one": "Ataque de Raio Explosivo Radiante",
-      "name_other": "Ataques explosivos de raios radiantes"
-    },
-    "chargeRadiantBlastAttack": {
-      "customMessage": "continua a carregar a sua energia e prepara-se para lançar um ataque poderoso.",
-      "name_one": "Ataque de Raio Explosivo Radiante",
-      "name_other": "Ataques explosivos de raios radiantes"
-    },
-    "radiantBlastAttack": {
-      "name_one": "Ataque de Raio Explosivo Radiante",
-      "name_other": "Ataques explosivos de raios radiantes"
-    },
-    "hammerQuakeAttack": {
-      "customMessage": "atinge o chão com uma força titânica, provocando um terramoto! Mas o inimigo levanta-se no ar com o seu companheiro alado, escapando aos tremores.",
-      "name_one": "Ataque de martelo sísmico",
-      "name_other": "Ataque de martelo sísmico"
-    },
-    "startPolarEmbraceAttack": {
-      "customMessage": "não consegue apanhar a sua adversária, que a mantém a uma distância respeitável com os seus ataques",
-      "name_one": "Ataque do abraço polar",
-      "name_other": "Ataques do abraço polar"
-    },
-    "isStuckInPolarEmbrace": {
-      "customMessage": "não consegue segurar o seu adversário, que se consegue libertar com os seus ataques",
-      "name_one": "Ataque do abraço polar",
-      "name_other": "Ataques do abraço polar"
-    },
-    "glacialBreathAttack": {
-      "name_one": "Ataque de explosão de gelo",
-      "name_other": "Ataques de rajada de gelo"
-    },
-    "blizzardRageAttack": {
-      "customMessage": "invoca a fúria do nevão no seu adversário, mas os ventos gelados já estão a assolar a arena.",
-      "name_one": "Ataque de fúria do Blizzard",
-      "name_other": "Ataques de fúria do Blizzard"
-    },
-    "aerialDiveAttack": {
-      "customMessage": "salta no ar para mergulhar sobre o seu adversário, mas este consegue mantê-lo à distância com os seus ataques.",
-      "name_one": "Ataque de mergulho aéreo",
-      "name_other": "Ataques aéreos de mergulho"
-    },
-    "crystallineArmorAttack": {
-      "customMessage": "brilha a sua armadura cristalina na esperança de ferir o seu adversário, mas as pontas afiadas permanecem intactas.",
-      "name_one": "Ataque de armadura cristalina",
-      "name_other": "Ataques de armaduras cristalinas"
-    },
-    "icySeductionAttack": {
-      "name_one": "Ataque de sedução gelado",
-      "name_other": "Ataque de sedução gelado"
-    },
-    "frozenKissAttack": {
-      "name_one": "Ataque de beijo congelado",
-      "name_other": "Ataques de beijos congelados"
-    },
-    "spectralRevengeAttack": {
-      "customMessage": "não consegue vingar-se do seu adversário.",
-      "name_one": "Vingança espetral",
-      "name_other": "Vingança espetral"
-    },
-    "ambush": {
-      "customMessage": "está a esconder-se para preparar uma emboscada...",
-      "name_one": "Emboscada",
-      "name_other": "Emboscadas"
-    },
-    "tailWhipAttack": {
-      "name_one": "Golpe de cauda",
-      "name_other": "Ataques de Cue"
-    },
-    "lightRayAttack": {
-      "name_one": "Ataque de raio de luz",
-      "name_other": "Ataques com feixes de luz"
-    },
-    "crystalShardAttack": {
-      "name_one": "Ataque com fragmento de cristal",
-      "name_other": "Ataques de estilhaços de cristal"
-    },
-    "clawAttack": {
-      "name_one": "Ataque com garras",
-      "name_other": "Ataques com garras"
-    },
-    "callPack": {
-      "customMessage": "chama a sua alcateia com um uivo estridente.",
-      "name_one": "Chamar a matilha",
-      "name_other": "Chamadas para a matilha"
-    },
-    "packAttack": {
-      "name_one": "Ataque de matilha",
-      "name_other": "Ataques de matilha"
+    "sing": {
+      "customMessage": "se met à chanter.",
+      "name_one": "Chant de la mer",
+      "name_other": "Chants de la mer"
     },
     "slamAttack": {
       "name_one": "Ataque de impacto",
       "name_other": "Impactos"
+    },
+    "sleeping": {
+      "name": "endormi",
+      "new": "est endormi.",
+      "active": "dort profondément.",
+      "stop": "s'est réveillé."
     },
     "slipping": {
       "failure": "utiliza o **{{petNickname}}** para deslizar no solo. Este último não é o que desliza mais longe no bloco de gelo, pelo que atinge o adversário com pouca força.",
@@ -743,6 +874,22 @@
     "snowBall": {
       "success": "é ajudado por **{{petNickname}}** que atira uma bola de neve ao seu adversário."
     },
+    "soaked": {
+      "name": "trempé",
+      "new": "est trempé.",
+      "active": "est trempé.",
+      "stop": "n'est plus trempé."
+    },
+    "solidification": {
+      "customMessage": "se solidifie et renvoie une partie des dégâts physiques.",
+      "name_one": "Solidification",
+      "name_other": "Solidifications"
+    },
+    "spectralRevengeAttack": {
+      "customMessage": "não consegue vingar-se do seu adversário.",
+      "name_one": "Vingança espetral",
+      "name_other": "Vingança espetral"
+    },
     "spit": {
       "failure": "é ajudado por **{{petNickname}}** que cospe no seu adversário.",
       "success": "é apoiado por **{{petNickname}}** que cospe no seu adversário. Felizmente, o cuspo cai perfeitamente nos olhos do seu inimigo!"
@@ -753,14 +900,19 @@
     "spitInk": {
       "success": "chamar **{{petNickname}}** que cospe tinta no adversário."
     },
-    "stealWeapon": {
-      "failure": "pede uma pequena ajuda a **{{petNickname}}**, mas a criatura, não encontrando no inimigo nenhum tesouro digno do seu interesse, recusa-se a aventurar-se em território hostil.",
-      "success": "pede ajuda a **{{petNickname}}** que avança corajosamente e agarra a arma inimiga num ato de ousadia."
+    "startPolarEmbraceAttack": {
+      "customMessage": "não consegue apanhar a sua adversária, que a mantém a uma distância respeitável com os seus ataques",
+      "name_one": "Ataque do abraço polar",
+      "name_other": "Ataques do abraço polar"
     },
     "stealth": {
       "customMessage": "esconde-se discretamente para fazer os preparativos que aumentarão o dano do seu próximo ataque...",
       "name_one": "Discrição",
       "name_other": "Discrições"
+    },
+    "stealWeapon": {
+      "failure": "pede uma pequena ajuda a **{{petNickname}}**, mas a criatura, não encontrando no inimigo nenhum tesouro digno do seu interesse, recusa-se a aventurar-se em território hostil.",
+      "success": "pede ajuda a **{{petNickname}}** que avança corajosamente e agarra a arma inimiga num ato de ousadia."
     },
     "stoneSkinAttack": {
       "customMessage": "endurece a sua pele e protege-se.",
@@ -772,6 +924,12 @@
       "active": "está atordoado.",
       "noAction": "está atordoado e incapaz de atacar.",
       "stop": "já não tem tonturas."
+    },
+    "submerged": {
+      "name": "submergé",
+      "new": "est submergé.",
+      "active": "est submergé et a du mal à respirer.",
+      "stop": "a réussi à s'extraire de l'eau mais en finit complètement trempé."
     },
     "summonAttack": {
       "name_one": "Convocação de aliados",
@@ -786,11 +944,29 @@
       "noAction": "está num estômago e não pode atacar.",
       "stop": "saiu ileso do animal."
     },
+    "tailWhipAttack": {
+      "name_one": "Golpe de cauda",
+      "name_other": "Ataques de Cue"
+    },
     "targeted": {
       "name": "alvo de um boomerang",
       "new": "olha para o boomerang a girar ao longe.",
       "stop": "já não é alvo de um boomerang.",
       "active": "é atingido pelo boomerang."
+    },
+    "tentacleBlowAttack": {
+      "customMessage": "balance un tentacule sur son adversaire.",
+      "name_one": "Attaque coup de tentacule",
+      "name_other": "Attaques coups de tentacules"
+    },
+    "tentacleShield": {
+      "customMessage": "agite ses tentacules dans tous les sens, renvoyant une partie des projectiles.",
+      "name_one": "Bouclier tentacule",
+      "name_other": "Boucliers tentacules"
+    },
+    "tidalWave": {
+      "name_one": "Attaque raz-de-marée",
+      "name_other": "Attaques raz-de-marée"
     },
     "triesToHelp": {
       "success": "recorre a **{{petNickname}}** que, apesar de uma determinação feroz e de esforços incessantes, apenas consegue causar um impacto insignificante no combate."
@@ -811,6 +987,14 @@
     "fairyHeal": {
       "success": "é envolvido por um suave brilho dourado enquanto **{{petNickname}}** polvilha pó de fada nas suas feridas, restaurando um pouco da sua energia."
     },
+    "waterJet": {
+      "name_one": "Attaque jet d'eau",
+      "name_other": "Attaques jet d'eau"
+    },
+    "wateryGust": {
+      "name_one": "Attaque rafale aqueuse",
+      "name_other": "Attaques rafales aqueuses"
+    },
     "weak": {
       "name": "prejudicado",
       "new": "está enfraquecido.",
@@ -820,29 +1004,6 @@
     "webShotAttack": {
       "name_one": "Ataque de lançamento da Web",
       "name_other": "Ataques de lançamento de teia"
-    },
-    "hardBiteAttack": {
-      "name_one": "Poderoso ataque de mordida",
-      "name_other": "Poderosos ataques de mordida"
-    },
-    "bleeding": {
-      "name": "sangramento",
-      "new": "sangramento.",
-      "active": "sangramento.",
-      "stop": "já não está a sangrar."
-    },
-    "howlAttack": {
-      "customMessage": "grita para o céu.",
-      "name_one": "Uivando",
-      "name_other": "Uivando"
-    },
-    "petMakeBleed": {
-      "success": "é ajudado por **{{petNickname}}** que morde o pescoço do seu adversário.",
-      "failure": "chama **{{petNickname}}** que tenta morder o seu adversário, mas o seu alvo parece ser imune a este tipo de ataque."
-    },
-    "petPetrified": {
-      "success": "é ajudado por **{{petNickname}}** que olha para o seu adversário e o petrifica.",
-      "failure": "é assistido por **{{petNickname}}** que olha para o seu adversário, mas isto não tem qualquer efeito contra esse adversário."
     }
   },
   "leagues": {
@@ -942,6 +1103,41 @@
     "1107": {
       "description": "Ainda ninguém se aventurou tão longe. Ao longe, vê-se uma silhueta gigantesca reflectida numa parede de gelo.",
       "name": "Ninho congelado",
+      "particle": "para o"
+    },
+    "1108": {
+      "description": "Une plage paradisiaque recouverte de coquillages de toutes les couleurs. On dit que chaque coquillage garde en lui l'écho de l'océan. Le sable fin et blanc contraste avec les eaux turquoise du lagon voisin. Attention où vous mettez les pieds, certains coquillages sont tranchants comme des lames.",
+      "name": "Plage de coquillage",
+      "particle": "para o"
+    },
+    "1109": {
+      "description": "Un lagon aux eaux d'un bleu cristallin protégé par une barrière de corail. Derrière la limpidité de l'onde, des courants sournois, nés des battements de l'océan, guettent la moindre imprudence pour entraîner les égarés vers l'abysse. Dans ce fragile écrin marin, les tortues millénaires viennent chercher un repos que l'agitation du large leur refuse.",
+      "name": "Creux du Lagon",
+      "particle": "para o"
+    },
+    "1110": {
+      "description": "Une grotte marine qui ne se laisse conquérir qu'à marée basse, révélant une gueule de calcaire aux parois ruisselantes. À l'intérieur, des lueurs éthérées naissent de la roche, jetant des reflets d'azur sur les voûtes. Entre les ondes et les ombres, des silhouettes de brume et d'écume dansent un ballet muet, comme si l'âme de la mer elle-même s'était réfugiée dans ce sanctuaire.",
+      "name": "Caverne Maritime",
+      "particle": "para o"
+    },
+    "1111": {
+      "description": "Une crique isolée qui déploie ses récifs comme des lames de granit noir, à peine dissimulées sous un ressac écumeux qui ne s'apaise jamais. La nuit, des feux follets d'un bleu spectral flottent au-dessus des vagues comme les âmes de marins perdus, esquissant une danse macabre. Une aura sinistre plane sur ce lieu maudit.",
+      "name": "Crique du Revenant",
+      "particle": "para o"
+    },
+    "1112": {
+      "description": "Une cathédrale sous-marine sculptée pour amplifier le souffle des marées en un coeur envoûtant. Ce n'est pas le vent, c'est l'appel d'un chant mélodieux qui s'adresse directement à votre âme. Dans cette pénombre sonore, la frontière entre vos propres pensées et les murmures de la roche s'efface doucement, et ceux qui s'y attardent n'en ressortent jamais tout à fait seuls.",
+      "name": "Cave des murmures",
+      "particle": "para o"
+    },
+    "1113": {
+      "description": "À mesure que l'on s'approche du bord, l'eau vire au noir d'encre, un miroir sombre qui ne reflète que votre propre peur. Parfois, une ondulation démesurée brise la surface, passage fugace d'un tentacule géant qui remonte des tréfonds avant de replonger dans l'oubli. Nul n'a jamais sondé le coeur de cette fosse, car le Gouffre n'accepte aucun témoin.",
+      "name": "Gouffre des Profondeurs",
+      "particle": "para o"
+    },
+    "1114": {
+      "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
+      "name": "Ravin des Abysses",
       "particle": "para o"
     },
     "12": {
@@ -1106,6 +1302,10 @@
     }
   },
   "map_types": {
+    "abyss": {
+      "name": "",
+      "prefix": "de"
+    },
     "be": {
       "name": "Praia",
       "prefix": "do"
@@ -1118,6 +1318,10 @@
       "name": "",
       "prefix": "do"
     },
+    "cavern": {
+      "name": "",
+      "prefix": "do"
+    },
     "ci": {
       "name": "Cidade",
       "prefix": "do"
@@ -1125,6 +1329,10 @@
     "continent": {
       "name": "",
       "prefix": "de"
+    },
+    "creek": {
+      "name": "",
+      "prefix": "do"
     },
     "crystalCavern": {
       "name": "Gruta de cristal",
@@ -1403,6 +1611,10 @@
       "name": "Yuki-Onna",
       "description": "Um espírito da neve feminino. É muito bonita, mas também muito perigosa. Consegue congelar as suas presas num relance e fazê-las desaparecer na neve."
     },
+    "captainCrow": {
+      "name": "Capitaine Crow",
+      "description": "Âme damnée du plus redouté des pirates, le Capitaine Crow hante la Crique du Revenant depuis sa mort tragique. Son regard de braise et son rire sinistre glacent le sang de ceux qui osent fouler ses eaux maudites."
+    },
     "celestialGuardian": {
       "name": "Guardião Celestial",
       "description": "O guardião dos portões sagrados. O seu dever é impedir a passagem de aventureiros, e ele usará o seu martelo divino para vos fazer compreender que não são bem-vindos."
@@ -1414,6 +1626,26 @@
     "femaleIceDragon": {
       "name": "Rainha do Gelo",
       "description": "Uma dragonesa temível que protege ferozmente o seu tesouro e a sua prole nas profundezas geladas do seu covil. Mais agressiva do que a sua companheira, não hesita em libertar a sua fúria sobre qualquer um que se atreva a aproximar-se do seu ninho. As suas escamas brilham como diamantes e a sua cauda pode quebrar o gelo mais espesso com um único golpe."
+    },
+    "turtle": {
+      "name": "Tortue Géante",
+      "description": "Une gigantesque tortue se reposant paisiblement dans son lagon. Lorsqu’elle est menacée, elle se retranche dans sa carapace avant de libérer de puissants jets d’eau capables de renverser ses ennemis. Mille ans de survie ont transformé cette carapace en une forteresse de corne et de lichen que le temps lui-même semble avoir renoncé à user."
+    },
+    "waterSpirit": {
+      "name": "Esprit des mers",
+      "description": "Une entité dotée d'une vivacité de prédateur, capable de surgir de nulle part pour tendre des embuscades mortelles. Son souffle glacial gèle ses adversaires sur place, tandis que ses puissants jets d'eau et ses raz-de-marée dévastateurs ne laissent aucun répit. Elle peut même puiser dans les flots pour soigner ses blessures."
+    },
+    "mermaid": {
+      "name": "Sirène",
+      "description": "Mi-femme mi-poisson, cette créature enchanteresse attire ses proies par son chant envoûtant avant de les achever d'un baiser glacé. Son cri strident résonne comme un appel des profondeurs, et sa séduction glaciale paralyse même les plus braves. Rares sont ceux qui ne finissent par succomber à la tentation qu'elle incarne."
+    },
+    "kraken": {
+      "name": "Kraken",
+      "description": "Un titan des profondeurs marines dont les tentacules massifs frappent avec une force dévastatrice. Il corrode ses proies avec des jets d'encre noire, les étouffe dans son étreinte abyssale et peut déclencher des maelströms capables de tout engloutir. Sa progression est pesante mais elle cache une puissance colossale."
+    },
+    "leviathan": {
+      "name": "Léviathan",
+      "description": "Le seigneur incontesté des océans, capable d'invoquer la foudre céleste et de déchaîner des déluges apocalyptiques. Ses crocs acérés déchirent tout sur leur passage, et sa faim sépulcrale est insatiable. Parfois emporté par une fureur aveugle, il engendre alors un maelström si violent qu'il ne laisse derrière lui qu'un sillage de débris et de silence."
     }
   },
   "objects": {
@@ -2024,6 +2256,24 @@
     },
     "1107": {
       "femaleIceDragon": "Percorremos esta região inexplorada, guiados por uma curiosidade misturada com apreensão. A parede de gelo diante de ti reflecte uma figura tão imponente que desafia a imaginação. Quanto mais nos aproximamos na escuridão gelada, mais nos apercebemos da dimensão da criatura que se esconde por detrás desta barreira. De repente, surgem fendas no gelo, que se espalham como teias de aranha. Um rugido surdo faz vibrar as paredes rochosas. A parede explode com um estrondo apocalítico, atirando para o ar enormes blocos de gelo. Através desta cortina de cristais estilhaçados emerge a mais majestosa das criaturas: um dragão de gelo de proporções faraónicas. A sua presença parece imponente, as suas asas dobradas quase tocam as abóbadas de pedra. Tem uma beleza aterradora, as suas escamas iridescentes captam a luz ténue em arco-íris gelados. Os seus olhos, de um azul profundo como o abismo, brilham com sabedoria antiga e fúria maternal. Atrás dela, podes ver um ovo gigantesco com um brilho perolado, pulsando com um brilho misterioso. Acabaste de entrar no seu berçário, e nenhum intruso ficará impune no santuário da Rainha do Gelo..."
+    },
+    "1109": {
+      "turtle": "Vous arrivez près d'un bassin naturel protégé par une barrière de corail. Le calme du lieu vous incite à vous approcher pour admirer les fonds marins. Vous remarquez alors un rocher imposant recouvert d'algues au centre du bassin. Soudain, il se met en mouvement. Une tête massive en émerge, suivie de quatre pattes colossales. Une Tortue Géante se dresse devant vous, sa taille rivalisant avec celle d'un petit navire. Ses grands yeux vous fixent avec une sagesse ancestrale. Puis elle ouvre sa gueule et un puissant jet d'eau vous frôle, vous faisant comprendre que ce paisible lagon est son territoire..."
+    },
+    "1110": {
+      "waterSpirit": "Vous pénétrez dans une grotte marine à marée basse. D'étranges échos résonnent dans les profondeurs et des lueurs bleutées dansent dans l'obscurité, vous attirant plus loin. Soudain, l'eau stagnante se met à tourbillonner et des myriades de gouttelettes sur les parois convergent vers ce point central. Une forme translucide prend vie devant vous, mi-brume mi-eau. L'Esprit des mers vous fixe de ses yeux d'un bleu abyssal. Avant que vous ne puissiez réagir, il disparaît et réapparaît dans votre dos. Ce gardien évanescent ne vous laissera pas quitter son sanctuaire si facilement..."
+    },
+    "1111": {
+      "captainCrow": "La brume s'épaissit à mesure que vous approchez de la Crique du Revenant. Le soleil s'est couché depuis longtemps et seuls des feux follets éclairent votre chemin. Vous avancez prudemment sur les galets mouillés tandis que votre regard accroche les carcasses de plusieurs navires éventrés, leurs coques pourries sans cesse léchées par le flux et le reflux des vagues. Tout à coup, la brume se condense en une forme humanoïde à quelques mètres devant vous. Des yeux se dessinent, deux braises rougeoyantes dans le néant. Le Capitaine Crow, spectre du pirate le plus redouté des mers, matérialise sa silhouette devant vous, son sabre crépitant d'une énergie maudite. Il n'a pas fini de réclamer des âmes."
+    },
+    "1112": {
+      "mermaid": "Vous explorez une caverne sous-marine et plus vous avancez, plus vous percevez une mélodie envoûtante. Vos jambes vous portent malgré vous vers sa source. Au détour d'un passage, vous découvrez un bassin d'eau turquoise. Et là, assise sur un rocher, elle vous attend. Mi-femme mi-poisson, la Sirène vous observe de ses yeux hypnotiques. Sa beauté est saisissante, mais son sourire vous glace le sang. Ses griffes acérées tapotent la pierre, marquant une mesure sourde qui se répercute contre les parois. Son chant change de tonalité : il ne cherche plus à vous séduire, mais à entrer en résonance avec la structure même de la caverne. C'est un piège, et il se referme sur vous..."
+    },
+    "1113": {
+      "kraken": "Vous vous tenez au bord d'un gouffre marin, scrutant les eaux d'un noir d'encre. Rien ne semble bouger dans cet abîme sans fond. Puis des bulles commencent à remonter à la surface. D'abord quelques-unes, puis des centaines. L'eau se met à bouillonner violemment. Soudain, un tentacule massif jaillit des profondeurs, aussi large qu'un tronc d'arbre. Puis un autre. Et encore un autre. Le Kraken émerge de son antre, ses yeux jaunes luisant d'une intelligence malveillante. Ses ventouses claquent contre la roche avec une force capable de broyer les os, une force primordiale. L'abysse est remonté à la surface, et il a faim..."
+    },
+    "1114": {
+      "leviathan": "Vous descendez dans un ravin sous-marin où la lumière n'a plus cours. Les ténèbres vous enveloppent, le silence est oppressant. Puis vous la sentez avant de la voir : une présence titanesque émettant une vibration basse qui fait trembler tous vos os. Deux pupilles s'ouvrent, larges comme des boucliers, d'un bleu électrique qui grésille dans l'eau noire. Le Léviathan s'éveille, il se déploie lentement, sa taille défiant l'entendement. Des éclairs commencent à crépiter entre ses crocs tandis que l'eau tourbillonne en un maelström naissant. Vous venez de commettre l'erreur de le réveiller..."
     }
   }
 }
