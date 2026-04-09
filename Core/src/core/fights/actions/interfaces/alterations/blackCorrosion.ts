@@ -56,7 +56,7 @@ function getAttackInfo(): attackInfo {
 function getStatsInfo(affected: Fighter, opponent: Fighter): statsInfo {
 	return {
 		attackerStats: [opponent.getAttack()],
-		defenderStats: [affected.getDefense() / 4],
+		defenderStats: [affected.getDefense() * 0.33],
 		statsEffect: [1]
 	};
 }
