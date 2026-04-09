@@ -12,9 +12,10 @@ import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedM
 import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
+import { DiscordConstants } from "../../../../../DiscordConstants";
 import { Language } from "../../../../../../../Lib/src/Language";
 import {
-	getCookingGrade, CookingOutputType, RECIPE_TYPE_OUTPUT_EMOJI, CookingGradeDefinition
+	getCookingGrade, CookingOutputType, CookingGradeDefinition
 } from "../../../../../../../Lib/src/constants/CookingConstants";
 import { HomeMenuIds } from "../HomeMenuConstants";
 
@@ -404,8 +405,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			return "";
 		}
 
-		const recipeName = i18n.t(`models:cooking.recipes.${state.pinnedRecipe.recipeId}`, { lng: ctx.lng });
-		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[state.pinnedRecipe.recipeType] ?? "";
 		const ingredientsList = this.buildIngredientsDescription(state.pinnedRecipe.ingredients, ctx.lng);
 		const readyStatus = state.pinnedRecipe.canCraft
 			? i18n.t("commands:report.city.homes.cooking.pinnedReady", { lng: ctx.lng })
@@ -413,8 +412,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 		return `\n\n${i18n.t("commands:report.city.homes.cooking.pinnedRecipeTitle", {
 			lng: ctx.lng,
-			outputEmoji,
-			recipe: recipeName,
+			recipeId: state.pinnedRecipe.recipeId,
+			recipeType: state.pinnedRecipe.recipeType,
 			level: state.pinnedRecipe.level
 		})}\n${ingredientsList}${readyStatus}`;
 	}
@@ -566,13 +565,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				level: recipe.level
 			});
 		}
-		const recipeName = i18n.t(`models:cooking.recipes.${recipe.id}`, { lng: ctx.lng });
-		const outputEmoji = RECIPE_TYPE_OUTPUT_EMOJI[recipe.recipeType] ?? "";
 		return i18n.t("commands:report.city.homes.cooking.slotRecipeName", {
 			lng: ctx.lng,
 			stationId: slotIndex,
-			outputEmoji,
-			recipe: recipeName,
+			recipeId: recipe.id,
+			recipeType: recipe.recipeType,
 			level: recipe.level
 		});
 	}
@@ -616,7 +613,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		const recipeName = i18n.t(`models:cooking.recipes.${recipe.id}`, { lng: ctx.lng });
 		return new ButtonBuilder()
 			.setCustomId(`${HomeMenuIds.COOKING_PIN_PREFIX}${slot.slotIndex}`)
-			.setLabel(recipeName.substring(0, 80))
+			.setLabel(recipeName.slice(0, DiscordConstants.MAX_BUTTON_LABEL_LENGTH))
 			.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
 			.setStyle(ButtonStyle.Secondary);
 	}

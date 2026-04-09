@@ -3,14 +3,24 @@ import {
 	CookingOutputTypeValue, RecipeType
 } from "../constants/CookingConstants";
 import { PetFood } from "./PetFood";
+import { MaterialQuantity } from "./MaterialQuantity";
+
+export interface PlantQuantity {
+	plantId: PlantId;
+	quantity: number;
+}
+
+export interface RecipePlantIngredient extends PlantQuantity {
+	playerHas: number;
+}
+
+export interface RecipeMaterialIngredient extends MaterialQuantity {
+	playerHas: number;
+}
 
 export interface RecipeIngredients {
-	plants: {
-		plantId: PlantId; quantity: number; playerHas: number;
-	}[];
-	materials: {
-		materialId: number; quantity: number; playerHas: number;
-	}[];
+	plants: RecipePlantIngredient[];
+	materials: RecipeMaterialIngredient[];
 }
 
 export interface CookingSlotData {
