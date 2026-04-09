@@ -6,5 +6,6 @@ export enum FightActionType {
 	STATS = "stats",
 	ALTERATION = "alteration",
 	PET_ASSISTANCE = "petAssistance",
-	OTHER = "other"
+	OTHER = "other",
+	STATUS = "status"
 }
