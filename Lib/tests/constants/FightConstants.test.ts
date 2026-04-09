@@ -106,6 +106,9 @@ describe("FightConstants fight_actions models.json validation", () => {
 			"chargeChargeRadiantBlastAttack", // Multiple turns attack is merged into one entry
 			"chargeRadiantBlastAttack", // Multiple turns attacks are merged into one entry
 			"chargeClubSmashAttack", // Multiple turns attacks are merged into one entry
+			"chargeChargeMaelstromAttack", // Multiple turns attacks are merged into one entry
+			"chargeDeluge", // Multiple turns attacks are merged into one entry
+			"chargeMaelstromAttack", // Multiple turns attacks are merged into one entry
 		];
 
 		function hasFightActionEntry(id) {
