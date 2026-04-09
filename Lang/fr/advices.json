@@ -286,7 +286,7 @@
     "Certains terrains d'expédition sont plus risqués que d'autres : les plaines et les côtes sont relativement sûres, tandis que les grottes et les ruines présentent plus de dangers.",
     "Si vous êtes membre d'une guilde, vous pouvez libérer les familiers du refuge en plus du vôtre grâce à la commande {command:petfree}.",
     "Au cours de vos voyages, vous pouvez tomber sur un oracle gardant un ancien autel. Il vous proposera de contribuer à une cagnotte collective : lorsqu'elle est pleine, une bénédiction s'active pour tous les joueurs !",
-    "Face à l'oracle, trois options de contribution s'offrent à vous : un montant fixe, un pourcentage de votre argent, ou un montant basé sur votre niveau. Choisissez selon vos moyens !",
+    "Face à l'oracle, plusieurs options de contribution s'offrent à vous, par exemple : un montant fixe ou un montant basé sur votre niveau. Choisissez selon vos moyens !",
     "Les bénédictions profitent à tous les aventuriers du monde, pas seulement à ceux qui ont contribué. Même une petite offrande aide la communauté entière !",
     "Il existe neuf types de bénédictions différentes : elles peuvent améliorer vos gains d'argent, de score, de butin de combat, l'affection de votre familier, et bien d'autres choses. Utilisez {command:blessing} pour voir la bénédiction active.",
     "Lorsque vous contribuez généreusement à l'autel de l'oracle, vous avez une chance de recevoir un bonus : des gemmes ou un objet mystérieux en récompense de votre dévotion.",

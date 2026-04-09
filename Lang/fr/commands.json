@@ -852,6 +852,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}, libération d'un familier",
+    "acceptedTitle": "{{pseudo}}, familier libéré !",
     "canceledTitle": "{{pseudo}}, annulation de la libération.",
     "canceledDesc": "Le familier n'a pas été libéré.",
     "confirmDesc": "{emote:collectors.warning} Êtes-vous sur de vouloir libérer **{{pet}}** ? Il n'est pas possible d'annuler une fois l'action effectuée.",
