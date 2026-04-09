@@ -1637,6 +1637,7 @@
         "self": {
           "newAlteration": " Ora siete {{effect}} !",
           "damages": " Danno ricevuto: {{amount, number}}`.",
+          "reflectedDamages": " Danno ricevuto: {{amount, number}}`.",
           "defense": " Difesa: {{operator}} {{amount, number}} %`",
           "breath": " Respiro: {{operator}} {{amount, number}}`",
           "speed": " Velocità: {{operator}} {{amount, number}} %`.",
@@ -1646,6 +1647,7 @@
         "opponent": {
           "newAlteration": " Il vostro avversario è ora {{effect}} .",
           "damages": " Danno inflitto: {{amount, number}}`.",
+          "reflectedDamages": " Danno ricevuto: {{amount, number}}`.",
           "defense": " Difesa dell'avversario: {{operator}} {{amount, number}} %`.",
           "breath": " Respiro dell'avversario: {{operator}} {{amount, number}}`.",
           "speed": " Velocità dell'avversario: {{operator}} {{amount, number}} %`.",
