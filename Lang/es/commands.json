@@ -1637,6 +1637,7 @@
         "self": {
           "newAlteration": " ¡Ahora eres {{effect}}!",
           "damages": " `Daño recibido: {{amount, number}}`",
+          "reflectedDamages": " `Daño recibido: {{amount, number}}`",
           "defense": " `Defensa: {{operator}} {{amount, number}} %`",
           "breath": " `Aliento: {{operator}} {{amount, number}}`",
           "speed": " `Velocidad: {{operator}} {{amount, number}} %`",
@@ -1646,6 +1647,7 @@
         "opponent": {
           "newAlteration": " Tu oponente ahora es {{effect}}.",
           "damages": " `Daño infligido: {{amount, number}}`",
+          "reflectedDamages": " `Daño recibido: {{amount, number}}`",
           "defense": " `Defensa del adversario: {{operator}} {{amount, number}} %`",
           "breath": " `Aliento del adversario: {{operator}} {{amount, number}}`",
           "speed": " `Velocidad del adversario: {{operator}} {{amount, number}} %`",
