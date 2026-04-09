@@ -22,11 +22,34 @@ export class FightAction extends Data<string> {
 			throw new Error(`Fight action function not found for id: ${this.id}`);
 		}
 		const result = fightActionFunc(sender, receiver, this, turn, fight);
+
+		FightAction.applyResistanceAndReflect(result, sender, receiver, this.type);
 		receiver.damage(result.damages ?? 0);
+
 		if (result.usedAction) {
+			const usedAction = FightActionDataController.instance.getById(result.usedAction.id);
+			if (usedAction) {
+				FightAction.applyResistanceAndReflect(result.usedAction.result, sender, receiver, usedAction.type);
+			}
 			receiver.damage(result.usedAction.result.damages ?? 0);
 		}
+
 		return result;
+	}
+
+	private static applyResistanceAndReflect(result: FightActionResult, sender: Fighter, receiver: Fighter, type: FightActionType): void {
+		if (result.damages === undefined) {
+			return;
+		}
+
+		const originalDamages = result.damages;
+		result.damages = Math.round(result.damages * receiver.getResistanceMultiplier(type));
+
+		const reflectedDamage = receiver.getReflectedDamage(type, originalDamages);
+		if (reflectedDamage > 0) {
+			sender.damage(reflectedDamage);
+			result.reflectedDamages = (result.reflectedDamages ?? 0) + reflectedDamage;
+		}
 	}
 
 	/**

@@ -7,6 +7,7 @@ import { FightAlteration } from "../../../data/FightAlteration";
 import { FightAction } from "../../../data/FightAction";
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
+import { FightActionType } from "../../../../../Lib/src/types/FightActionType";
 
 type FighterStats = {
 	energy: number | null;
@@ -28,6 +29,18 @@ export type FightStatModifier = {
 type FightDamageMultiplier = {
 	value: number;
 	turns: number;
+};
+
+type FightBreathRegenModifier = {
+	value: number;
+	turns: number;
+};
+
+type FightTypeResistance = {
+	type: FightActionType;
+	value: number;
+	turns: number;
+	reflectDamage?: boolean;
 };
 
 export abstract class Fighter {
@@ -53,9 +66,13 @@ export abstract class Fighter {
 
 	private speedModifiers: FightStatModifier[];
 
+	private resistances: FightTypeResistance[];
+
 	private ready: boolean;
 
 	private damageMultipliers: FightDamageMultiplier[];
+
+	private breathRegenModifiers: FightBreathRegenModifier[];
 
 	protected constructor(level: number, availableFightActions: FightAction[]) {
 		this.stats = {
@@ -79,6 +96,8 @@ export abstract class Fighter {
 		this.alterationTurn = 0;
 		this.level = level;
 		this.damageMultipliers = [];
+		this.breathRegenModifiers = [];
+		this.resistances = [];
 
 		this.availableFightActions = new Map();
 		for (const fightAction of availableFightActions) {
@@ -175,7 +194,17 @@ export abstract class Fighter {
 	 * Get the regeneration amount breath of the fighter per turn
 	 */
 	public getRegenBreath(): number {
-		return this.stats.breathRegen!;
+		let regen = this.stats.breathRegen!;
+		for (const modifier of this.breathRegenModifiers) {
+			regen += modifier.value;
+		}
+		return Math.max(0, regen);
+	}
+
+	public applyBreathRegenModifier(value: number, turns: number): void {
+		this.breathRegenModifiers.push({
+			value, turns
+		});
 	}
 
 	/**
@@ -231,6 +260,10 @@ export abstract class Fighter {
 	 */
 	public applySpeedModifier(modifier: FightStatModifier): void {
 		this.speedModifiers.push(modifier);
+	}
+
+	public applyResistance(resistance: FightTypeResistance): void {
+		this.resistances.push(resistance);
 	}
 
 	/**
@@ -305,6 +338,27 @@ export abstract class Fighter {
 
 		return multiplier;
 	}
+
+	public getResistanceMultiplier(type: FightActionType): number {
+		let multiplier = 1;
+		for (const resistance of this.resistances) {
+			if (resistance.type === type) {
+				multiplier *= 1 - resistance.value;
+			}
+		}
+		return multiplier;
+	}
+
+	public getReflectedDamage(type: FightActionType, originalDamage: number): number {
+		let reflectedDamage = 0;
+		for (const resistance of this.resistances) {
+			if (resistance.type === type && resistance.reflectDamage) {
+				reflectedDamage += Math.round(originalDamage * resistance.value);
+			}
+		}
+		return reflectedDamage;
+	}
+
 
 	/**
 	 * Damage the fighter
@@ -486,6 +540,16 @@ export abstract class Fighter {
 		this.damageMultipliers = this.damageMultipliers.filter(damageMultiplier => {
 			damageMultiplier.turns--;
 			return damageMultiplier.turns >= 0;
+		});
+
+		this.resistances = this.resistances.filter(resistance => {
+			resistance.turns--;
+			return resistance.turns > 0;
+		});
+
+		this.breathRegenModifiers = this.breathRegenModifiers.filter(modifier => {
+			modifier.turns--;
+			return modifier.turns > 0;
 		});
 	}
 

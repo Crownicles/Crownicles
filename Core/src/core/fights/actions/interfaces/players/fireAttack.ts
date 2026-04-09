@@ -4,7 +4,9 @@ import {
 } from "../../FightActionController";
 import { FightAlterations } from "../../FightAlterations";
 import { FightActionFunc } from "../../../../../data/FightAction";
-import { FightActionResult } from "../../../../../../../Lib/src/types/FightActionResult";
+import {
+	FightActionResult
+} from "../../../../../../../Lib/src/types/FightActionResult";
 
 const use: FightActionFunc = (sender, receiver) => {
 	const initialDamage = FightActionController.getAttackDamage(getStatsInfo(sender, receiver), sender, getAttackInfo());

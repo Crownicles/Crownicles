@@ -1,5 +1,6 @@
 import { FightStatModifierOperation } from "./FightStatModifierOperation";
 import { FightActionStatus } from "./FightActionStatus";
+import { FightActionType } from "./FightActionType";
 
 export enum FightStatBuffed {
 	ATTACK,
@@ -9,7 +10,8 @@ export enum FightStatBuffed {
 	ENERGY,
 	DAMAGE,
 	SUMMON,
-	DAMAGE_BOOST
+	DAMAGE_BOOST,
+	BREATH_REGEN
 }
 
 export interface FightActionBuff {
@@ -20,13 +22,24 @@ export interface FightActionBuff {
 	duration?: number;
 }
 
+export interface FightActionTypeResistance {
+	selfTarget: boolean;
+	type: FightActionType;
+	value: number;
+	duration?: number;
+	reflectDamage?: boolean; // if true, reflect the damages
+}
+
 export interface FightActionResult {
 	fail?: boolean;
 	buffs?: FightActionBuff[];
+	resistances?: FightActionTypeResistance[];
 	damages?: number;
+	reflectedDamages?: number; // Dégâts renvoyés à l'attaquant
 	attackStatus: FightActionStatus;
 	alterations?: FightAlterationApplied[];
 	customMessage?: boolean; // If true, the attack should be displayed with a custom message
+	customMessageFail?: boolean; // If true, the failed attack should be displayed with a custom fail message
 	usedAction?: {
 		id: string;
 		result: FightActionResult;
@@ -59,6 +72,19 @@ export function defaultFailFightActionResult(): FightActionResult {
 	return {
 		fail: true,
 		attackStatus: FightActionStatus.MISSED
+	};
+}
+
+/**
+ * Create a custom message fail FightActionResult,
+ * For example, an action that fails but should display a specific custom message
+ * instead of the default "XXX missed with Attack YYY"
+ */
+export function customMessageFailActionResult(): FightActionResult {
+	return {
+		fail: true,
+		attackStatus: FightActionStatus.MISSED,
+		customMessageFail: true
 	};
 }
 
