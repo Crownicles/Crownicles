@@ -23,7 +23,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		}
 	);
 
-	// 15% chance to paralyze the defender
+	// 30% chance to paralyze the defender
 	if (RandomUtils.crowniclesRandom.bool(0.3)) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,

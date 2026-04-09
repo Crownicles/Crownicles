@@ -202,7 +202,9 @@ export abstract class Fighter {
 	}
 
 	public applyBreathRegenModifier(value: number, turns: number): void {
-		this.breathRegenModifiers.push({ value, turns });
+		this.breathRegenModifiers.push({
+			value, turns
+		});
 	}
 
 	/**

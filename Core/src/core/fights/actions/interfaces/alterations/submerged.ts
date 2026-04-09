@@ -1,7 +1,9 @@
 import {
 	FightActionController
 } from "../../FightActionController";
-import { FightAlterationFunc } from "../../../../../data/FightAlteration";
+import {
+	FightAlterationFunc, FightAlterationDataController
+} from "../../../../../data/FightAlteration";
 import {
 	defaultFightAlterationResult, defaultHealFightAlterationResult
 } from "../../../FightController";
@@ -9,7 +11,6 @@ import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 import { FightAlterationState } from "../../../../../../../Lib/src/types/FightAlterationResult";
-import { FightAlterationDataController } from "../../../../../data/FightAlteration";
 import { FightAlterations } from "../../FightAlterations";
 
 const turnsToHeal = 2;

@@ -6,7 +6,7 @@ import {
 import { Fighter } from "../../../fighter/Fighter";
 
 const use: FightActionFunc = (sender, receiver, _fightAction) => {
-	const defenseRatio = receiver.getDefense() / receiver.level;
+	const defenseRatio = receiver.getDefense() / Math.max(1, receiver.level);
 	const failureProbability =
 		defenseRatio < 2
 			? 0
