@@ -534,7 +534,7 @@ export class CookingService {
 	 * Inject the player's pinned recipe into slot recipes if it is eligible for at least one slot
 	 */
 	private static injectPinnedRecipeIfEligible(
-		slotRecipes: Array<CookingRecipe | null>,
+		slotRecipes: (CookingRecipe | null)[],
 		player: Player,
 		discoveredIds: string[],
 		guild: Guild | null,
@@ -573,10 +573,10 @@ export class CookingService {
 		homeId: number;
 		recipeId: string;
 		guild?: Guild | null;
-	}): Promise<PinnedRecipeInfo | undefined> {
+	}): Promise<PinnedRecipeInfo | null> {
 		const recipe = CookingRecipeDataController.instance.getById(params.recipeId);
 		if (!recipe) {
-			return undefined;
+			return null;
 		}
 
 		const playerMaterials = await Materials.getPlayerMaterials(params.player.id);

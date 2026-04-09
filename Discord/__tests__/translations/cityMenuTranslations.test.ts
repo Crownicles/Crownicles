@@ -2,8 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import i18next, { TFunction } from "i18next";
 import { describe, expect, it } from "vitest";
-
-const DISCORD_BUTTON_LABEL_MAX_LENGTH = 80;
+import { DiscordConstants } from "../../src/DiscordConstants";
 
 describe("City menu translation lengths", () => {
 	const langDir = path.resolve(__dirname, "../../../Lang");
@@ -108,6 +107,6 @@ function validateLength(value: unknown, locale: Locale, key: string): void {
 	const trimmedValue = value.trim();
 	expect(
 		trimmedValue.length,
-		`${locale}:${key} ("${trimmedValue}") exceeds Discord's ${DISCORD_BUTTON_LABEL_MAX_LENGTH} character button label limit.`
-	).toBeLessThanOrEqual(DISCORD_BUTTON_LABEL_MAX_LENGTH);
+		`${locale}:${key} ("${trimmedValue}") exceeds Discord's ${DiscordConstants.MAX_BUTTON_LABEL_LENGTH} character button label limit.`
+	).toBeLessThanOrEqual(DiscordConstants.MAX_BUTTON_LABEL_LENGTH);
 }

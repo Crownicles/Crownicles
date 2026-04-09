@@ -1171,7 +1171,7 @@
           "slotEmpty": "*Aucune recette*",
           "slotEmptyContent": "{emote:cookingStations.{{stationId}}} **$t(models:cooking.stations.{{stationId}})**\n$t(commands:report.city.homes.cooking.slotEmpty)",
           "slotSecretName": "{emote:cookingStations.{{stationId}}} **$t(models:cooking.stations.{{stationId}})** — ??? (Niv. {{level}})",
-          "slotRecipeName": "{emote:cookingStations.{{stationId}}} **$t(models:cooking.stations.{{stationId}})** — {{outputEmoji}} {{recipe}} (Niv. {{level}})",
+          "slotRecipeName": "{emote:cookingStations.{{stationId}}} **$t(models:cooking.stations.{{stationId}})** — {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
           "ingredientPlant": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) {{playerHas}}/{{quantity}}",
           "ingredientMaterial": "{emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) {{playerHas}}/{{quantity}}",
           "craftSuccess": "{emote:messages.validate} Cuisson réussie ! Vous avez préparé **{{recipe}}** !",
@@ -1193,7 +1193,7 @@
           "materialCrafted": "{emote:messages.validate} Vous avez obtenu **{{quantity}} {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** !",
           "woodConsumed": "{emote:materials.{{woodId}}} $t(models:materials.{{woodId}}) consommé",
           "woodSaved": "{emote:messages.validate} Votre expertise vous a permis d'économiser du bois ! ({emote:materials.{{woodId}}} $t(models:materials.{{woodId}}))",
-          "pinnedRecipeTitle": "{emote:messages.pin} **Recette épinglée** — {{outputEmoji}} {{recipe}} (Niv. {{level}})",
+          "pinnedRecipeTitle": "{emote:messages.pin} **Recette épinglée** — {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
           "pinnedReady": "\n{emote:messages.validate} Vous avez tous les ingrédients pour cette recette !",
           "unpinButton": "Désépingler"
         },

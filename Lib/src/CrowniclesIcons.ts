@@ -308,6 +308,9 @@ export const CrowniclesIcons: {
 	cookingStations: {
 		[stationIndex: number]: string;
 	};
+	cookingRecipeTypes: {
+		[recipeType: string]: string;
+	};
 	defaultMaterial: string;
 	materials: {
 		[materialId: string]: string;
@@ -2719,6 +2722,19 @@ export const CrowniclesIcons: {
 		2: "⚒️",
 		3: "🧪",
 		4: "🔥"
+	},
+	cookingRecipeTypes: {
+		POTION_HEALTH: "❤️",
+		POTION_ENERGY: "⚡",
+		POTION_TIME_SPEEDUP: "⌛",
+		POTION_DEFENSE: "🛡️",
+		POTION_ATTACK: "🗡️",
+		POTION_SPEED: "🚀",
+		PETFOOD_SALAD: "🥬",
+		PETFOOD_CANDY: "🍬",
+		PETFOOD_MEAT: "🍖",
+		PETFOOD_ULTIMATE: "🍲",
+		MATERIAL_CRAFT: "🧱"
 	},
 	defaultMaterial: "🧱",
 	materials: {

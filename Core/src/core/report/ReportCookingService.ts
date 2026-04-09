@@ -58,6 +58,11 @@ interface PlayerAndHome {
 	cookingSlots: number;
 }
 
+interface ValidatedPinRecipe {
+	recipe: CookingRecipeData;
+	guild: Guild | null;
+}
+
 /**
  * Temporary in-memory store for pending wood confirmations.
  * Maps keycloakId → { materialId, rarity, timeout } so that when a player
@@ -97,11 +102,8 @@ function consumePendingWoodConfirmation(keycloakId: string): PendingWoodConfirma
 	}
 	clearTimeout(pending.timeout);
 	pendingWoodConfirmations.delete(keycloakId);
-	return {
-		materialId: pending.materialId,
-		rarity: pending.rarity,
-		isRevive: pending.isRevive
-	};
+	const { timeout: _, ...confirmation } = pending;
+	return confirmation;
 }
 
 async function getPlayerAndHome(keycloakId: string): Promise<PlayerAndHome | null> {
@@ -611,9 +613,7 @@ export async function handleCookingMenu(
 	return response;
 }
 
-async function validatePinRecipe(player: Player, recipeId: string): Promise<{
-	recipe: CookingRecipeData; guild: Guild | null;
-} | null> {
+async function validatePinRecipe(player: Player, recipeId: string): Promise<ValidatedPinRecipe | null> {
 	const recipe = CookingRecipeDataController.instance.getById(recipeId);
 	if (!recipe) {
 		return null;
