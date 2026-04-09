@@ -189,7 +189,7 @@ async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInf
 		}
 	);
 
-	return scoreBonus;
+	return Math.round(scoreBonus * BlessingManager.getInstance().getScoreMultiplier());
 }
 
 /**
