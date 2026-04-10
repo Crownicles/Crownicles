@@ -102,7 +102,9 @@ function consumePendingWoodConfirmation(keycloakId: string): PendingWoodConfirma
 	}
 	clearTimeout(pending.timeout);
 	pendingWoodConfirmations.delete(keycloakId);
-	const { timeout: _, ...confirmation } = pending;
+	const {
+		timeout: _, ...confirmation
+	} = pending;
 	return confirmation;
 }
 
@@ -597,7 +599,7 @@ export async function handleCookingMenu(
 			homeId: home.id,
 			recipeId: player.pinnedCookingRecipeId,
 			guild
-		});
+		}) ?? undefined;
 		if (!pinnedRecipe) {
 			// Recipe no longer exists, clear the pin
 			player.pinnedCookingRecipeId = null;
