@@ -128,7 +128,7 @@ export abstract class PetUtils {
 		if (options?.enraged) {
 			return MathUtils.clamp(
 				Math.round((pet.force * PetConstants.VIGOR.ENRAGED_MULTIPLIER) / PetConstants.VIGOR.DIVIDER),
-				PetConstants.VIGOR.MIN + 1,
+				PetConstants.VIGOR.MIN,
 				PetConstants.VIGOR.MAX
 			);
 		}

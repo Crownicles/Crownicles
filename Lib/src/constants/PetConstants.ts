@@ -150,7 +150,7 @@ export abstract class PetConstants {
 
 	static readonly VIGOR = {
 		MAX: 6,
-		MIN: 0,
+		MIN: 1,
 		LOVE_DIVIDER: 3,
 		DIVIDER: 10,
 		ENRAGED_MULTIPLIER: 2

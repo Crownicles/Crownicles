@@ -57,13 +57,15 @@ export default class LeagueRewardCommand {
 			const scoreParameters = {
 				response,
 				amount: scoreToAward,
-				reason: NumberChangeReason.LEAGUE_REWARD
+				reason: NumberChangeReason.LEAGUE_REWARD,
+				ignoreBlessing: true
 			};
 			await player.addScore(scoreParameters);
 			await player.addMoney({
 				response,
 				amount: moneyToAward,
-				reason: NumberChangeReason.LEAGUE_REWARD
+				reason: NumberChangeReason.LEAGUE_REWARD,
+				ignoreBlessing: true
 			});
 			await player.addExperience({
 				response,
