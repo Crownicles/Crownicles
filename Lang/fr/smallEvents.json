@@ -691,7 +691,7 @@
             "À peine la formule prononcée, vous goûtez déjà le liquide. Pris d'une crise de panique, vous n'êtes pas long à regretter votre choix. {emote:effects.scared}"
           ],
           "drunk": [
-            "Vous décidez de goûter à la potion et le regrettez rapidement... Il semblerait qu'un des ingrédient vous reste en travers de la gorge. {emote:effects.drunk}",
+            "Vous décidez de goûter à la potion et le regrettez rapidement... Il semblerait qu'un des ingrédients vous reste en travers de la gorge. {emote:effects.drunk}",
             "Il semblerait que la potion ait un effet surprenant. Vous vous sentez un peu ivre... {emote:effects.drunk}"
           ],
           "sick": [
