@@ -51,7 +51,7 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	return {
 		attackerStats: [
 			sender.getAttack(),
-			sender.getSpeed()
+			sender.getDefense()
 		],
 		defenderStats: [
 			receiver.getDefense(),
