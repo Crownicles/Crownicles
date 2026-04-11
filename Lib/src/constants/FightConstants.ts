@@ -89,6 +89,7 @@ export abstract class FightConstants {
 				SUBMERGED: "submerged",
 				SWALLOWED: "swallowed",
 				TARGETED: "targeted",
+				TETANIZED: "tetanized",
 				WEAK: "weak"
 			},
 			MONSTER: {
