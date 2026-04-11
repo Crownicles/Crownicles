@@ -15,7 +15,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		},
 		{
 			critical: 25,
-			failure: 15
+			failure: 10
 		},
 		{
 			attackInfo: getAttackInfo(),
@@ -54,8 +54,8 @@ function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 			receiver.getSpeed()
 		],
 		statsEffect: [
-			0.7,
-			0.3
+			0.8,
+			0.2
 		]
 	};
 }
