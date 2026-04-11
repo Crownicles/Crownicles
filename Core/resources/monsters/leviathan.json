@@ -16,12 +16,12 @@
     {
       "id": "aceratedFangs",
       "minLevel": 0,
-      "weight": 2
+      "weight": 3
     },
     {
       "id": "sepulcralHunger",
       "minLevel": 80,
-      "weight": 3
+      "weight": 2
     },
     {
       "id": "chargeDeluge",
