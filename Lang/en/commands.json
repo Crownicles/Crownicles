@@ -852,6 +852,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}, pet release",
+    "acceptedTitle": "{{pseudo}}, familier libéré !",
     "canceledTitle": "{{pseudo}}, cancellation of the release.",
     "canceledDesc": "The pet has not been released.",
     "confirmDesc": "{emote:collectors.warning} Are you sure you want to release **{{pet}}**? It is not possible to undo once the action has been done.",
@@ -1637,6 +1638,7 @@
         "self": {
           "newAlteration": " `You are now {{effect}}!`",
           "damages": " `Damage received: {{amount, number}}`",
+          "reflectedDamages": " `Damage received: {{amount, number}}`",
           "defense": " `Defense: {{operator}} {{amount, number}}%`",
           "breath": " `Breath: {{operator}} {{amount, number}}`",
           "speed": " `Speed: {{operator}} {{amount, number}}%`",
@@ -1646,6 +1648,7 @@
         "opponent": {
           "newAlteration": " `Your opponent is now {{effect}}!`",
           "damages": " `Damage inflicted: {{amount, number}}`",
+          "reflectedDamages": " `Damage received: {{amount, number}}`",
           "defense": " `Opponent's defense: {{operator}} {{amount, number}}%`",
           "breath": " `Opponent's breath: {{operator}} {{amount, number}}`",
           "speed": " `Opponent's speed: {{operator}} {{amount, number}}%`",
