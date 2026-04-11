@@ -22,7 +22,7 @@ function isPaladin(fighter: Fighter): boolean {
 
 const use: FightAlterationFunc = (affected, fightAlteration) => {
 	// Paladins shake off the fear more easily, other classes endure longer
-	const heroicHealChance = isPaladin(affected) ? 0.6 : 0.3;
+	const heroicHealChance = isPaladin(affected) ? 0.8 : 0.3;
 	if (affected.alterationTurn > 3 || (affected.alterationTurn > 1 && RandomUtils.crowniclesRandom.bool(heroicHealChance))) {
 		affected.removeAttackModifiers(fightAlteration);
 		affected.removeSpeedModifiers(fightAlteration);
