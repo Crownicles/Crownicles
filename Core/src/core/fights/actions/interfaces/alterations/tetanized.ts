@@ -30,7 +30,7 @@ function isMage(fighter: Fighter): boolean {
 const use: FightAlterationFunc = (affected, fightAlteration) => {
 	/*
 	 * Paladins shake off the fear more easily and have less nerf
-	 * Mage is almost immunized but have full nerf
+	 * Mages are almost immunized but have full nerf
 	 */
 	const affectedIsPaladin = isPaladin(affected);
 	const heroicHealChance = affectedIsPaladin ? 0.8 : 0.3;
