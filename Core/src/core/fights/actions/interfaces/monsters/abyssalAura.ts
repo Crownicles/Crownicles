@@ -32,7 +32,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		operator: FightStatModifierOperation.ADDITION,
 		value: 1.15,
 		duration: 2
-	}, receiver, fightAction);
+	}, sender, fightAction);
 
 	FightActionController.applyAlteration(result, {
 		selfTarget: false,
