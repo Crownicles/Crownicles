@@ -327,8 +327,8 @@
     },
     "chargeDeluge": {
       "customMessage": "concentre son énergie primordiale, le ciel s'obscurcit et des éclairs commencent à zébrer le ciel.",
-      "name_one": "Déluge",
-      "name_other": "Déluges"
+      "name_one": "Attaque Déluge",
+      "name_other": "Attaques Déluges"
     },
     "chargeMaelstromAttack": {
       "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
