@@ -25,6 +25,14 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		duration: 3
 	}, receiver, fightAction);
 
+	FightActionController.applyBuff(result, {
+		selfTarget: true,
+		stat: FightStatBuffed.DAMAGE_BOOST,
+		operator: FightStatModifierOperation.ADDITION,
+		value: 1.5,
+		duration: 2
+	}, receiver, fightAction);
+
 	return {
 		...result,
 		customMessage: true
