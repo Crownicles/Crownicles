@@ -1,8 +1,8 @@
 {
-  "baseEnergyValue": 700,
+  "baseEnergyValue": 710,
   "attackRatio": 250,
-  "defenseRatio": 70,
-  "speedRatio": 180,
+  "defenseRatio": 75,
+  "speedRatio": 200,
   "breath": 10,
   "maxBreath": 60,
   "breathRegen": 12,
@@ -11,17 +11,17 @@
     {
       "id": "celestialLightning",
       "minLevel": 0,
-      "weight": 5
+      "weight": 4
     },
     {
       "id": "aceratedFangs",
       "minLevel": 0,
-      "weight": 3
+      "weight": 2
     },
     {
       "id": "sepulcralHunger",
       "minLevel": 80,
-      "weight": 2
+      "weight": 3
     },
     {
       "id": "chargeDeluge",
@@ -36,7 +36,7 @@
     {
       "id": "abyssalAura",
       "minLevel": 0,
-      "weight": 3
+      "weight": 2
     }
   ],
   "maps": [
