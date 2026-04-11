@@ -30,7 +30,7 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		selfTarget: true,
 		stat: FightStatBuffed.DAMAGE_BOOST,
 		operator: FightStatModifierOperation.ADDITION,
-		value: 1.5,
+		value: 1.15,
 		duration: 2
 	}, receiver, fightAction);
 
