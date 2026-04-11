@@ -6,6 +6,7 @@ import { FightAlterations } from "../../FightAlterations";
 import { FightActionFunc } from "../../../../../data/FightAction";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
+import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 
 const use: FightActionFunc = (sender, receiver) => {
 	const result = simpleDamageFightAction(
@@ -29,6 +30,14 @@ const use: FightActionFunc = (sender, receiver) => {
 			selfTarget: false,
 			alteration: FightAlterations.BLEEDING
 		}, receiver);
+	}
+
+	// If the defender's last action was a shield attack, the biter gets stunned by the impact
+	if (receiver.getLastFightActionUsed()?.id === FightConstants.FIGHT_ACTIONS.PLAYER.SHIELD_ATTACK) {
+		FightActionController.applyAlteration(result, {
+			selfTarget: true,
+			alteration: FightAlterations.STUNNED
+		}, sender);
 	}
 
 	return {

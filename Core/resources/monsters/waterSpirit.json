@@ -1,7 +1,7 @@
 {
   "baseEnergyValue": 0,
   "attackRatio": 50,
-  "defenseRatio": 70,
+  "defenseRatio": 50,
   "speedRatio": 300,
   "breath": 6,
   "maxBreath": 18,
