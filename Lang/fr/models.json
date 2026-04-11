@@ -935,7 +935,7 @@
       "name": "submergé",
       "new": "est submergé.",
       "active": "est submergé et a du mal à respirer.",
-      "stop": "a réussi à s'extraire de l'eau mais en finit complètement trempé."
+      "stop": "a réussi à s'extraire de l'eau mais en sort complètement trempé."
       },
     "summonAttack": {
       "name_one": "Invocation d'alliés",
