@@ -256,7 +256,7 @@ export async function handleCommandPetFreeAcceptPacketRes(packet: CommandPetFree
 		const lng = originalInteraction.userLanguage ?? context.discord?.language ?? LANGUAGE.DEFAULT_LANGUAGE;
 		const embed = buildSimpleResponseEmbed({
 			interaction: originalInteraction,
-			titleKey: "commands:petFree.title",
+			titleKey: "commands:petFree.acceptedTitle",
 			description: i18n.t("commands:petFree.acceptedDesc", {
 				lng,
 				pet: PetUtils.petToShortString(lng, packet.petNickname, packet.petId, packet.petSex)
@@ -292,7 +292,7 @@ export async function handleCommandPetFreeShelterSuccessPacketRes(packet: Comman
 	}
 
 	const embed = buildSimpleResponseEmbed({
-		interaction, titleKey: "commands:petFree.title", description
+		interaction, titleKey: "commands:petFree.acceptedTitle", description
 	});
 	await interaction.editReply({
 		embeds: [embed], components: []

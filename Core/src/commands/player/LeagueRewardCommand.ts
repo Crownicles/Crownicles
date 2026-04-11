@@ -22,8 +22,6 @@ import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
-import { BlessingManager } from "../../core/blessings/BlessingManager";
-
 export default class LeagueRewardCommand {
 	@commandRequires(CommandLeagueRewardPacketReq, {
 		notBlocked: true,
@@ -59,13 +57,15 @@ export default class LeagueRewardCommand {
 			const scoreParameters = {
 				response,
 				amount: scoreToAward,
-				reason: NumberChangeReason.LEAGUE_REWARD
+				reason: NumberChangeReason.LEAGUE_REWARD,
+				ignoreBlessing: true
 			};
 			await player.addScore(scoreParameters);
 			await player.addMoney({
 				response,
 				amount: moneyToAward,
-				reason: NumberChangeReason.LEAGUE_REWARD
+				reason: NumberChangeReason.LEAGUE_REWARD,
+				ignoreBlessing: true
 			});
 			await player.addExperience({
 				response,
@@ -81,7 +81,7 @@ export default class LeagueRewardCommand {
 
 			response.push(makePacket(CommandLeagueRewardSuccessPacketRes, {
 				score: scoreParameters.amount,
-				money: BlessingManager.getInstance().applyMoneyBlessing(moneyToAward),
+				money: moneyToAward,
 				xp: xpToAward,
 				gloryPoints: player.gloryPointsLastSeason,
 				oldLeagueId: leagueLastSeason.id,

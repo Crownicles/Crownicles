@@ -6,7 +6,7 @@ import { PetUtils } from "../../utils/PetUtils";
 
 export const fightPetAction: FightPetActionFunc = async (player, pet) => RandomUtils.crowniclesRandom.bool(
 	Math.max(
-		player.getCumulativeDefense(await InventorySlots.getPlayerActiveObjects(player.id)) / SmallEventConstants.FIGHT_PET.PROTECT_DEFENSE_NEEDED * PetUtils.getPetVigor(pet, 0, { enraged: true }),
+		player.getCumulativeDefense(await InventorySlots.getPlayerActiveObjects(player.id)) / (SmallEventConstants.FIGHT_PET.PROTECT_DEFENSE_NEEDED * PetUtils.getPetVigor(pet, 0, { enraged: true })),
 		SmallEventConstants.FIGHT_PET.MAXIMUM_STATS_BASED_ACTIONS_CHANCES
 	)
 );

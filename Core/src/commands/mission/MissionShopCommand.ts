@@ -147,7 +147,8 @@ function getAThousandPointsShopItem(): ShopItem {
 			const scoreParameters = {
 				amount: Constants.MISSION_SHOP.THOUSAND_POINTS,
 				response,
-				reason: NumberChangeReason.MISSION_SHOP
+				reason: NumberChangeReason.MISSION_SHOP,
+				ignoreBlessing: true
 			};
 			await player.addScore(scoreParameters);
 			missionsInfo.hasBoughtPointsThisWeek = true;

@@ -191,7 +191,7 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addScore(parameters: EditValueParameters): Promise<Player> {
-		if (parameters.amount > 0) {
+		if (parameters.amount > 0 && !parameters.ignoreBlessing) {
 			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getScoreMultiplier());
 		}
 		this.score += parameters.amount;
@@ -214,7 +214,9 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addMoney(parameters: EditValueParameters): Promise<Player> {
-		parameters.amount = BlessingManager.getInstance().applyMoneyBlessing(parameters.amount);
+		if (!parameters.ignoreBlessing) {
+			parameters.amount = BlessingManager.getInstance().applyMoneyBlessing(parameters.amount);
+		}
 		this.money += parameters.amount;
 		if (parameters.amount > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
