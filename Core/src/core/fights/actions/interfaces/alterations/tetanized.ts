@@ -28,8 +28,10 @@ function isMage(fighter: Fighter): boolean {
 }
 
 const use: FightAlterationFunc = (affected, fightAlteration) => {
-	// Paladins shake off the fear more easily and have less nerf
-	// Mage is almost immunized but have full nerf
+	/*
+	 * Paladins shake off the fear more easily and have less nerf
+	 * Mage is almost immunized but have full nerf
+	 */
 	const affectedIsPaladin = isPaladin(affected);
 	const heroicHealChance = affectedIsPaladin ? 0.8 : 0.3;
 	if (isMage(affected) && RandomUtils.crowniclesRandom.bool(0.8) || (affected.alterationTurn > 3 || (affected.alterationTurn > 1 && RandomUtils.crowniclesRandom.bool(heroicHealChance)))) {
@@ -40,7 +42,7 @@ const use: FightAlterationFunc = (affected, fightAlteration) => {
 	}
 
 	const result = defaultFightAlterationResult();
-	
+
 	if (!affected.hasAttackModifier(fightAlteration)) {
 		result.state = FightAlterationState.NEW;
 		FightActionController.applyBuff(result, {
