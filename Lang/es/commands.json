@@ -852,6 +852,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}liberar a un familiar",
+    "acceptedTitle": "{{pseudo}}, familier libéré !",
     "canceledTitle": "{{pseudo}}cancelación de la liberación.",
     "canceledDesc": "La mascota no ha sido liberada.",
     "confirmDesc": ":warning:{{pet}}¿Está seguro de que desea liberar ** **? No es posible cancelar una vez que la acción se ha completado.",
@@ -1637,6 +1638,7 @@
         "self": {
           "newAlteration": " ¡Ahora eres {{effect}}!",
           "damages": " `Daño recibido: {{amount, number}}`",
+          "reflectedDamages": " `Daño recibido: {{amount, number}}`",
           "defense": " `Defensa: {{operator}} {{amount, number}} %`",
           "breath": " `Aliento: {{operator}} {{amount, number}}`",
           "speed": " `Velocidad: {{operator}} {{amount, number}} %`",
@@ -1646,6 +1648,7 @@
         "opponent": {
           "newAlteration": " Tu oponente ahora es {{effect}}.",
           "damages": " `Daño infligido: {{amount, number}}`",
+          "reflectedDamages": " `Daño recibido: {{amount, number}}`",
           "defense": " `Defensa del adversario: {{operator}} {{amount, number}} %`",
           "breath": " `Aliento del adversario: {{operator}} {{amount, number}}`",
           "speed": " `Velocidad del adversario: {{operator}} {{amount, number}} %`",
