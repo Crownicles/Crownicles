@@ -214,7 +214,7 @@
       "name_other": "Attaques plongées aériennes"
     },
     "abyssalAura": {
-      "customMessage": "exerce une pression abyssale qui comprime les poumons de son adversaire, réduisant sa régénération de souffle.",
+      "customMessage": "déploie une aura abyssale qui comprime les poumons de son adversaire et plonge son âme dans une terreur paralysante, réduisant sa régénération de souffle.",
       "name_one": "Aura abyssale",
       "name_other": "Auras abyssales"
     },
@@ -924,6 +924,12 @@
       "active": "est étourdi.",
       "noAction": "est étourdi et ne parvient pas à attaquer.",
       "stop": "n'est plus étourdi."
+    },
+    "tetanized": {
+      "name": "tétanisé",
+      "new": "est tétanisé de peur, ses gestes deviennent maladroits et hésitants.",
+      "active": "est encore tétanisé de peur, son corps refuse de répondre normalement.",
+      "stop": "reprend ses esprits et n'est plus tétanisé."
     },
     "submerged": {
       "name": "submergé",

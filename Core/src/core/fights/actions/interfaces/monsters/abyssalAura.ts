@@ -7,6 +7,7 @@ import {
 import { FightActionController } from "../../FightActionController";
 import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
+import { FightAlterations } from "../../FightAlterations";
 
 const MAX_USES = 2;
 
@@ -32,6 +33,11 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		value: 1.5,
 		duration: 2
 	}, receiver, fightAction);
+
+	FightActionController.applyAlteration(result, {
+		selfTarget: false,
+		alteration: FightAlterations.TETANIZED
+	}, receiver);
 
 	return {
 		...result,
