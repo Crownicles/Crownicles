@@ -59,7 +59,7 @@ function getAttackInfo(receiverIsPaladin: boolean): attackInfo {
 	return {
 		minDamage: Math.round(30 * paladinReduction),
 		averageDamage: Math.round(45 * paladinReduction),
-		maxDamage: Math.round(100 * paladinReduction)
+		maxDamage: Math.round(85 * paladinReduction)
 	};
 }
 
