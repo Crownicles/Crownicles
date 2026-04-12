@@ -88,9 +88,7 @@ function setPendingWoodConfirmation(keycloakId: string, pending: PendingWoodConf
 	}
 	const timeout = setTimeout(() => pendingWoodConfirmations.delete(keycloakId), WOOD_CONFIRMATION_TTL);
 	pendingWoodConfirmations.set(keycloakId, {
-		materialId: pending.materialId,
-		rarity: pending.rarity,
-		isRevive: pending.isRevive,
+		...pending,
 		timeout
 	});
 }
