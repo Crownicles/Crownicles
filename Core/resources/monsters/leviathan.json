@@ -1,0 +1,45 @@
+{
+  "baseEnergyValue": 700,
+  "attackRatio": 250,
+  "defenseRatio": 70,
+  "speedRatio": 180,
+  "breath": 10,
+  "maxBreath": 60,
+  "breathRegen": 12,
+  "rewardFactor": 1.6,
+  "attacks": [
+    {
+      "id": "celestialLightning",
+      "minLevel": 0,
+      "weight": 5
+    },
+    {
+      "id": "aceratedFangs",
+      "minLevel": 0,
+      "weight": 3
+    },
+    {
+      "id": "sepulcralHunger",
+      "minLevel": 80,
+      "weight": 2
+    },
+    {
+      "id": "chargeDeluge",
+      "minLevel": 115,
+      "weight": 1
+    },
+    {
+      "id": "chargeChargeMaelstromAttack",
+      "minLevel": 95,
+      "weight": 1
+    },
+    {
+      "id": "abyssalAura",
+      "minLevel": 0,
+      "weight": 3
+    }
+  ],
+  "maps": [
+    1114
+  ]
+}

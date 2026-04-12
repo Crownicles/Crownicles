@@ -17,6 +17,8 @@ export class CommandFightHistoryItemPacket extends CrowniclesPacket {
 
 	customMessage?: boolean; // True if the fight action has an associated custom message instead of the default (only for attacks)
 
+	customMessageFail?: boolean; // True if the failed fight action has an associated custom fail message instead of the default (only for attacks)
+
 	status?: string; // See constants in FightAlterationResult or FightActionStatus for values
 
 	pet?: OwnedPet;
@@ -24,6 +26,7 @@ export class CommandFightHistoryItemPacket extends CrowniclesPacket {
 	fightActionEffectDealt?: { // Stat change for the opponent in % (10 = 10%) can be negative
 		newAlteration?: string;
 		damages?: number;
+		reflectedDamages?: number;
 		defense?: number;
 		attack?: number;
 		speed?: number;

@@ -155,7 +155,6 @@ async function calculateMoneyReward(
 	// Apply fight loot blessing multiplier
 	extraMoneyBonus = Math.round(extraMoneyBonus * BlessingManager.getInstance().getFightLootMultiplier());
 
-	// Add money to the appropriate player
 	await fightInitiatorInformation.initiatorPlayer.addMoney({
 		amount: extraMoneyBonus,
 		response,
@@ -181,15 +180,13 @@ async function calculateScoreReward(fightInitiatorInformation: FightInitiatorInf
 	 */
 	const scoreBonus = Math.round(FightConstants.REWARDS.SCORE_BONUS_AWARD * BlessingManager.getInstance().getFightLootMultiplier());
 
-	await fightInitiatorInformation.initiatorPlayer.addScore(
-		{
-			amount: scoreBonus,
-			response,
-			reason: NumberChangeReason.FIGHT
-		}
-	);
+	await fightInitiatorInformation.initiatorPlayer.addScore({
+		amount: scoreBonus,
+		response,
+		reason: NumberChangeReason.FIGHT
+	});
 
-	return scoreBonus;
+	return Math.round(scoreBonus * BlessingManager.getInstance().getScoreMultiplier());
 }
 
 /**

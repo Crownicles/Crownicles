@@ -119,6 +119,11 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 				lng
 			});
 		}
+		else if (packet.customMessageFail) {
+			return i18n.t(`models:fight_actions.${packet.fightActionId}.customMessageFail`, {
+				lng
+			});
+		}
 
 		// The fightAction is an attack
 		return StringUtils.getRandomTranslation(

@@ -1,0 +1,5 @@
+{
+  "type": "be",
+  "canBeGoToPlaceMissionDestination": false,
+  "attribute": "pve_island_entry"
+}

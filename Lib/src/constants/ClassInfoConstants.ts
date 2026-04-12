@@ -21,6 +21,7 @@ export abstract class ClassInfoConstants {
 		ClassConstants.CLASSES_ID.ARCHER,
 		ClassConstants.CLASSES_ID.GUNNER,
 		ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER,
+		ClassConstants.CLASSES_ID.VETERAN,
 		ClassConstants.CLASSES_ID.EXPERIENCED_VETERAN
 	];
 

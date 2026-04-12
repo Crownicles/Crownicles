@@ -62,7 +62,7 @@ describe("FightConstants fight_actions models.json validation", () => {
 			it(`${id} should have only success, customMessage or afraid`, () => {
 				const entry = fightActions[id];
 				expect(entry).toBeDefined();
-				const allowed = ["success", "customMessage", "afraid", "generalEffect", "failure"];
+				const allowed = ["success", "customMessage", "customMessageFail", "afraid", "generalEffect", "failure"];
 				for (const key of Object.keys(entry)) {
 					expect(allowed).toContain(key);
 				}
@@ -106,6 +106,9 @@ describe("FightConstants fight_actions models.json validation", () => {
 			"chargeChargeRadiantBlastAttack", // Multiple turns attack is merged into one entry
 			"chargeRadiantBlastAttack", // Multiple turns attacks are merged into one entry
 			"chargeClubSmashAttack", // Multiple turns attacks are merged into one entry
+			"chargeChargeMaelstromAttack", // Multiple turns attacks are merged into one entry
+			"chargeDeluge", // Multiple turns attacks are merged into one entry
+			"chargeMaelstromAttack", // Multiple turns attacks are merged into one entry
 		];
 
 		function hasFightActionEntry(id) {

@@ -5,6 +5,7 @@ export type EditValueParameters = {
 	amount: number;
 	response: CrowniclesPacket[];
 	reason: NumberChangeReason;
+	ignoreBlessing?: boolean;
 };
 
 export type MissionHealthParameter = {

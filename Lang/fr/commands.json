@@ -1255,6 +1255,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}, libération d'un familier",
+    "acceptedTitle": "{{pseudo}}, familier libéré !",
     "canceledTitle": "{{pseudo}}, annulation de la libération.",
     "canceledDesc": "Le familier n'a pas été libéré.",
     "confirmDesc": "{emote:collectors.warning} Êtes-vous sur de vouloir libérer **{{pet}}** ? Il n'est pas possible d'annuler une fois l'action effectuée.",
@@ -2153,6 +2154,7 @@
         "self": {
           "newAlteration": " `Vous êtes désormais {{effect}} !`",
           "damages": " `Dégâts reçus : {{amount, number}}`",
+          "reflectedDamages": " `Dégâts reçus : {{amount, number}}`",
           "defense": " `Défense : {{operator}} {{amount, number}} %`",
           "breath": " `Souffle : {{operator}} {{amount, number}}`",
           "speed": " `Vitesse : {{operator}} {{amount, number}} %`",
@@ -2162,6 +2164,7 @@
         "opponent": {
           "newAlteration": " `Votre adversaire est désormais {{effect}} !`",
           "damages": " `Dégâts infligés : {{amount, number}}`",
+          "reflectedDamages": " `Dégâts reçus : {{amount, number}}`",
           "defense": " `Défense de l'adversaire : {{operator}} {{amount, number}} %`",
           "breath": " `Souffle de l'adversaire : {{operator}} {{amount, number}}`",
           "speed": " `Vitesse de l'adversaire : {{operator}} {{amount, number}} %`",
