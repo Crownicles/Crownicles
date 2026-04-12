@@ -25,15 +25,22 @@ export function asMilliseconds(n: number): Millisecond {
 }
 
 /**
- * Convert a Second value to Millisecond
+ * Convert a Date to a Millisecond timestamp
  */
-export function secondsToMs(s: Second): Millisecond {
-	return (s * 1000) as Millisecond;
+export function dateToMs(date: Date): Millisecond {
+	return date.valueOf() as Millisecond;
 }
 
 /**
- * Convert a Millisecond value to Second
+ * Get the current time as a Millisecond timestamp
  */
-export function msToSeconds(ms: Millisecond): Second {
-	return (ms / 1000) as Second;
+export function nowMs(): Millisecond {
+	return Date.now() as Millisecond;
+}
+
+/**
+ * Compute the difference between two Millisecond timestamps
+ */
+export function msDiff(a: Millisecond, b: Millisecond): Millisecond {
+	return (a - b) as Millisecond;
 }

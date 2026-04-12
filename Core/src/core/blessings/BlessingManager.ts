@@ -15,7 +15,7 @@ import {
 	botConfig, crowniclesInstance
 } from "../../index";
 import {
-	asMilliseconds, datesAreOnSameDay, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds
+	datesAreOnSameDay, dateToMs, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds, msDiff, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { Op } from "sequelize";
@@ -223,7 +223,7 @@ export class BlessingManager {
 			const endOfToday = getTomorrowMidnight();
 			if (blessingEnd > endOfToday) {
 				blessingEnd = endOfToday;
-				durationHours = Math.max(1, Math.floor(millisecondsToHours(asMilliseconds(endOfToday.getTime() - Date.now()))));
+				durationHours = Math.max(1, Math.floor(millisecondsToHours(msDiff(dateToMs(endOfToday), nowMs()))));
 			}
 		}
 
@@ -233,8 +233,8 @@ export class BlessingManager {
 
 		// Calculate new threshold using dynamic pricing
 		const currentThreshold = this.cachedBlessing!.poolThreshold;
-		const fillDurationMs = Date.now() - this.cachedBlessing!.poolStartedAt.getTime();
-		const fillDurationDays = millisecondsToDays(asMilliseconds(fillDurationMs));
+		const fillDurationMs = msDiff(nowMs(), dateToMs(this.cachedBlessing!.poolStartedAt));
+		const fillDurationDays = millisecondsToDays(fillDurationMs);
 		const newThreshold = this.calculateNewThreshold(currentThreshold, fillDurationDays);
 
 		// Update state
@@ -350,7 +350,7 @@ export class BlessingManager {
 			return;
 		}
 
-		const poolAgeDays = millisecondsToDays(asMilliseconds(Date.now() - this.cachedBlessing.poolStartedAt.getTime()));
+		const poolAgeDays = millisecondsToDays(msDiff(nowMs(), dateToMs(this.cachedBlessing.poolStartedAt)));
 		if (poolAgeDays < BlessingConstants.POOL_EXPIRY_DAYS) {
 			return;
 		}

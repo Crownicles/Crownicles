@@ -12,7 +12,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { calculateHealAlterationPrice } from "../utils/HealAlterationUtils";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import {
-	asMilliseconds, millisecondsToMinutes
+	Millisecond, millisecondsToMinutes
 } from "../../../../Lib/src/utils/TimeUtils";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
@@ -37,7 +37,7 @@ export interface TokenCostUnavailable {
  * @param effectId - The current effect of the player
  * @param effectRemainingTime - The remaining time of the effect in milliseconds
  */
-export function calculateTokenCost(effectId: string, effectRemainingTime: number): TokenCostResult | TokenCostUnavailable {
+export function calculateTokenCost(effectId: string, effectRemainingTime: Millisecond): TokenCostResult | TokenCostUnavailable {
 	// If the effect has expired (remaining time <= 0), treat it as no effect
 	const activeEffectId = effectRemainingTime <= 0 ? Effect.NO_EFFECT.id : effectId;
 
@@ -51,7 +51,7 @@ export function calculateTokenCost(effectId: string, effectRemainingTime: number
 
 	// If occupied, add 1 token per 20 minutes of remaining time
 	if (activeEffectId === Effect.OCCUPIED.id) {
-		const remainingMinutes = millisecondsToMinutes(asMilliseconds(effectRemainingTime));
+		const remainingMinutes = millisecondsToMinutes(effectRemainingTime);
 		cost += Math.ceil(remainingMinutes / TokensConstants.REPORT.MINUTES_PER_ADDITIONAL_TOKEN);
 	}
 

@@ -15,7 +15,7 @@ import { RightGroup } from "../../Lib/src/types/RightGroup";
 import { MqttTopicUtils } from "../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesCoreMetrics } from "./core/bot/CrowniclesCoreMetrics";
 import {
-	asMilliseconds, millisecondsToSeconds, resetIsNow
+	millisecondsToSeconds, msDiff, nowMs, resetIsNow
 } from "../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 import "source-map-support/register";
@@ -124,7 +124,7 @@ mqttClient.on("message", async (topic, message) => {
 				CrowniclesLogger.debug(`Skipping command usage logging for packet '${dataJson.packet.name}' without keycloakId`, { context });
 			}
 			CrowniclesCoreMetrics.incrementPacketCount(dataJson.packet.name);
-			const startTime = Date.now();
+			const startTime = nowMs();
 			try {
 				await listener(response, context, dataJson.packet.data);
 			}
@@ -133,7 +133,7 @@ mqttClient.on("message", async (topic, message) => {
 				response.push(makePacket(ErrorPacket, { message: error instanceof Error ? error.message : String(error) }));
 				CrowniclesCoreMetrics.incrementPacketErrorCount(dataJson.packet.name);
 			}
-			CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(asMilliseconds(Date.now() - startTime)));
+			CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(msDiff(nowMs(), startTime)));
 		}
 	}
 

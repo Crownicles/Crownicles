@@ -3,11 +3,11 @@ import {
 	TimeConstants
 } from "../constants/TimeConstants";
 import {
-	asMilliseconds, Millisecond, Second
+	asMilliseconds, dateToMs, Millisecond, msDiff, nowMs, Second
 } from "../types/TimeTypes";
 
 export {
-	asMilliseconds, asSeconds
+	asMilliseconds, asSeconds, dateToMs, msDiff, nowMs
 } from "../types/TimeTypes";
 export type {
 	Millisecond, Second
@@ -174,7 +174,7 @@ export function datesAreOnSameDay(first: Date, second: Date): boolean {
  * @param finishDate - the date to use
  */
 export function finishInTimeDisplay(finishDate: Date): string {
-	return `<t:${Math.floor(millisecondsToSeconds(asMilliseconds(finishDate.valueOf())))
+	return `<t:${Math.floor(millisecondsToSeconds(dateToMs(finishDate)))
 		.toString()}:R>`;
 }
 
@@ -183,14 +183,14 @@ export function finishInTimeDisplay(finishDate: Date): string {
  * @param finishDate - the date to use
  */
 export function dateDisplay(finishDate: Date): string {
-	return `<t:${Math.floor(millisecondsToSeconds(asMilliseconds(finishDate.valueOf())))
+	return `<t:${Math.floor(millisecondsToSeconds(dateToMs(finishDate)))
 		.toString()}:F>`;
 }
 
 /**
  * Get the next week's start
  */
-export function getNextSundayMidnight(): number {
+export function getNextSundayMidnight(): Millisecond {
 	const now = new Date();
 	const dateOfReset = new Date();
 	dateOfReset.setDate(now.getDate() + (7 - now.getDay()) % 7);
@@ -199,14 +199,14 @@ export function getNextSundayMidnight(): number {
 	while (dateOfResetTimestamp < now.valueOf()) {
 		dateOfResetTimestamp += hoursToMilliseconds(24 * 7);
 	}
-	return dateOfResetTimestamp;
+	return asMilliseconds(dateOfResetTimestamp);
 }
 
 /**
  * Get the date from one day ago as a timestamp
  */
-export function getOneDayAgo(): number {
-	return Date.now() - TimeConstants.MS_TIME.DAY;
+export function getOneDayAgo(): Millisecond {
+	return msDiff(nowMs(), TimeConstants.MS_TIME.DAY);
 }
 
 /**
@@ -220,7 +220,7 @@ export function todayIsSunday(): boolean {
 /**
  * Get the next season's start
  */
-export function getNextSaturdayMidnight(): number {
+export function getNextSaturdayMidnight(): Millisecond {
 	const now = new Date();
 	const dateOfReset = new Date();
 	dateOfReset.setDate(now.getDate() + (6 - now.getDay()) % 7);
@@ -229,7 +229,7 @@ export function getNextSaturdayMidnight(): number {
 	while (dateOfResetTimestamp < now.valueOf()) {
 		dateOfResetTimestamp += TimeConstants.MS_TIME.DAY * TimeConstants.DAYS_IN_WEEK;
 	}
-	return dateOfResetTimestamp;
+	return asMilliseconds(dateOfResetTimestamp);
 }
 
 /**

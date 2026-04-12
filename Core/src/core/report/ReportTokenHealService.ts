@@ -13,6 +13,7 @@ import { Player } from "../database/game/models/Player";
 import { TravelTime } from "../maps/TravelTime";
 import { Maps } from "../maps/Maps";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import { Millisecond } from "../../../../Lib/src/types/TimeTypes";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
@@ -233,7 +234,7 @@ interface InvalidTokenCostResult {
 export function validateUseTokensRequest(
 	player: Player,
 	effectId: string,
-	effectRemainingTime: number
+	effectRemainingTime: Millisecond
 ): ValidTokenCostResult | InvalidTokenCostResult {
 	// Check if the player can use tokens at their current location
 	if (!canUseTokensAtLocation(player)) {

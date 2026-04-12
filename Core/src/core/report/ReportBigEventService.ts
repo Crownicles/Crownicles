@@ -35,7 +35,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { crowniclesInstance } from "../../index";
 import {
-	asMilliseconds, millisecondsToMinutes
+	millisecondsToMinutes
 } from "../../../../Lib/src/utils/TimeUtils";
 import { chooseDestination } from "./ReportDestinationService";
 
@@ -211,7 +211,7 @@ export async function doRandomBigEvent(
 ): Promise<void> {
 	await completeMissionsBigEvent(player, response);
 	const travelData = TravelTime.getTravelDataSimplified(player, new Date());
-	let time = millisecondsToMinutes(asMilliseconds(travelData.playerTravelledTime));
+	let time = millisecondsToMinutes(travelData.playerTravelledTime);
 	if (time > ReportConstants.TIME_LIMIT) {
 		time = ReportConstants.TIME_LIMIT;
 	}

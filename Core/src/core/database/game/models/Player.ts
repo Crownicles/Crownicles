@@ -11,6 +11,7 @@ import {
 	asMilliseconds,
 	daysToMilliseconds,
 	getOneDayAgo,
+	Millisecond,
 	millisecondsToSeconds,
 	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
@@ -581,18 +582,18 @@ export class Player extends Model {
 	/**
 	 * Get the amount of time remaining before the effect ends
 	 */
-	public effectRemainingTime(): number {
+	public effectRemainingTime(): Millisecond {
 		let remainingTime = 0;
 		if (Effect.getById(this.effectId)) {
 			if (!this.effectEndDate || this.effectEndDate.valueOf() === 0) {
-				return 0;
+				return asMilliseconds(0);
 			}
 			remainingTime = this.effectEndDate.valueOf() - Date.now();
 		}
 		if (remainingTime < 0) {
 			remainingTime = 0;
 		}
-		return remainingTime;
+		return asMilliseconds(remainingTime);
 	}
 
 	/**
@@ -1149,7 +1150,7 @@ export class Player extends Model {
 		const dateOfLastLeagueReward = await LogsReadRequests.getDateOfLastLeagueReward(this.keycloakId);
 
 		// Beware, the date of the last league reward is in seconds
-		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(asMilliseconds(getOneDayAgo())));
+		return dateOfLastLeagueReward !== null && !(dateOfLastLeagueReward < millisecondsToSeconds(getOneDayAgo()));
 	}
 
 	public async addRage(parameters: EditValueParameters): Promise<void> {

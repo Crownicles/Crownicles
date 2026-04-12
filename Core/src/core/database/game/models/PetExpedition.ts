@@ -8,7 +8,7 @@ import {
 	ExpeditionData, ExpeditionInProgressData
 } from "../../../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
-	asMilliseconds, millisecondsToMinutes, minutesToMilliseconds
+	dateToMs, millisecondsToMinutes, minutesToMilliseconds, msDiff
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { PetBasicInfo } from "../../../../../../Lib/src/types/PetBasicInfo";
 
@@ -57,7 +57,7 @@ export class PetExpedition extends Model {
 	 * Returns the absolute value to prevent negative durations
 	 */
 	public getDurationMinutes(): number {
-		return Math.max(0, millisecondsToMinutes(asMilliseconds(this.endDate.getTime() - this.startDate.getTime())));
+		return Math.max(0, millisecondsToMinutes(msDiff(dateToMs(this.endDate), dateToMs(this.startDate))));
 	}
 
 	/**

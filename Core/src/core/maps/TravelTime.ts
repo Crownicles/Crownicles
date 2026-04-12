@@ -1,6 +1,6 @@
 import Player from "../database/game/models/Player";
 import {
-	asMilliseconds, millisecondsToMinutes, minutesToMilliseconds
+	asMilliseconds, Millisecond, millisecondsToMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { Maps } from "./Maps";
@@ -49,14 +49,14 @@ export abstract class TravelTime {
 	 * @param date
 	 */
 	static async getTravelData(player: Player, date: Date): Promise<{
-		travelStartTime: number;
-		travelEndTime: number;
-		effectStartTime: number;
-		effectEndTime: number;
-		effectDuration: number;
-		effectRemainingTime: number;
-		playerTravelledTime: number;
-		nextSmallEventTime: number;
+		travelStartTime: Millisecond;
+		travelEndTime: Millisecond;
+		effectStartTime: Millisecond;
+		effectEndTime: Millisecond;
+		effectDuration: Millisecond;
+		effectRemainingTime: Millisecond;
+		playerTravelledTime: Millisecond;
+		nextSmallEventTime: Millisecond;
 	}> {
 		const data = this.getTravelDataSimplified(player, date);
 
@@ -64,11 +64,11 @@ export abstract class TravelTime {
 		const timeBetweenSmallEvents = Maps.isOnPveIsland(player) ? PVEConstants.TIME_BETWEEN_SMALL_EVENTS : Constants.REPORT.TIME_BETWEEN_MINI_EVENTS;
 
 		// The next small event in 9min45 after the last thing that happened between the last start of the travel, small event (if there's one since the start of the travel) and end of alteration
-		const nextSmallEventTime = Math.max(
+		const nextSmallEventTime = asMilliseconds(Math.max(
 			data.travelStartTime,
 			lastSmallEvent ? lastSmallEvent.time : -1,
 			data.effectEndTime
-		) + timeBetweenSmallEvents;
+		) + timeBetweenSmallEvents);
 
 		return {
 			travelStartTime: data.travelStartTime,
@@ -89,13 +89,13 @@ export abstract class TravelTime {
 	 * @param date
 	 */
 	static getTravelDataSimplified(player: Player, date: Date): {
-		travelStartTime: number;
-		travelEndTime: number;
-		effectStartTime: number;
-		effectEndTime: number;
-		effectDuration: number;
-		effectRemainingTime: number;
-		playerTravelledTime: number;
+		travelStartTime: Millisecond;
+		travelEndTime: Millisecond;
+		effectStartTime: Millisecond;
+		effectEndTime: Millisecond;
+		effectDuration: Millisecond;
+		effectRemainingTime: Millisecond;
+		playerTravelledTime: Millisecond;
 	} {
 		// Basic variables
 		const travelStartTime = player.startTravelDate.valueOf();
@@ -134,13 +134,13 @@ export abstract class TravelTime {
 		}
 
 		return {
-			travelStartTime,
-			travelEndTime,
-			effectStartTime,
-			effectEndTime,
+			travelStartTime: asMilliseconds(travelStartTime),
+			travelEndTime: asMilliseconds(travelEndTime),
+			effectStartTime: asMilliseconds(effectStartTime),
+			effectEndTime: asMilliseconds(effectEndTime),
 			effectDuration,
-			effectRemainingTime,
-			playerTravelledTime
+			effectRemainingTime: asMilliseconds(effectRemainingTime),
+			playerTravelledTime: asMilliseconds(playerTravelledTime)
 		};
 	}
 
@@ -267,7 +267,7 @@ export abstract class TravelTime {
 	 */
 	static async joinBoatScore(player: Player): Promise<number> {
 		const travelData = TravelTime.getTravelDataSimplified(player, new Date());
-		let timeTravelled = millisecondsToMinutes(asMilliseconds(travelData.playerTravelledTime)); // Convert the time in minutes to calculate the score
+		let timeTravelled = millisecondsToMinutes(travelData.playerTravelledTime); // Convert the time in minutes to calculate the score
 
 		// Calculate score from small event
 		let scoreFromSmallEvent = 0;
