@@ -1,5 +1,6 @@
 import { ItemEnchantmentType } from "./ItemEnchantmentType";
 import { EnchantmentConstants } from "../constants/EnchantmentConstants";
+import { RandomUtils } from "../utils/RandomUtils";
 
 export class ItemEnchantmentKind {
 	public static readonly PVP_ATTACK = new ItemEnchantmentKind("pvpAttack", ItemEnchantmentType.DAMAGE);
@@ -122,7 +123,7 @@ export class ItemEnchantment {
 	public static getRandomEnchantment(): ItemEnchantment {
 		const allEnchantments = this.getAllEnchantments();
 		const totalWeight = allEnchantments.reduce((sum, enchantment) => sum + enchantment.probabilityWeight, 0);
-		let randomValue = Math.random() * totalWeight;
+		let randomValue = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * totalWeight;
 
 		for (const enchantment of allEnchantments) {
 			if (randomValue < enchantment.probabilityWeight) {

@@ -79,4 +79,6 @@ export abstract class EnchantmentConstants {
 	};
 
 	static ENCHANTMENT_MAGE_REDUCTION = 0.8;
+
+	static LOOT_ENCHANTMENT_CHANCE_PERCENT = 5;
 }
