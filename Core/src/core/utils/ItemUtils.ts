@@ -24,6 +24,7 @@ import { crowniclesInstance } from "../../index";
 import { ItemRefusePacket } from "../../../../Lib/src/packets/events/ItemRefusePacket";
 import { ItemAcceptPacket } from "../../../../Lib/src/packets/events/ItemAcceptPacket";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+import { EnchantmentConstants } from "../../../../Lib/src/constants/EnchantmentConstants";
 import { ItemFoundPacket } from "../../../../Lib/src/packets/events/ItemFoundPacket";
 import { BlessingManager } from "../blessings/BlessingManager";
 import {
@@ -711,8 +712,6 @@ export function generateRandomLootLevel(): number {
 	return 0;
 }
 
-const LOOT_ENCHANTMENT_CHANCE = 5;
-
 /**
  * Generate a random enchantment for a looted item (weapons and armors only)
  * @returns The enchantment ID or null if no enchantment
@@ -722,7 +721,7 @@ export function generateRandomLootEnchantment(item: GenericItem): string | null 
 		return null;
 	}
 	const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * 100;
-	if (roll >= LOOT_ENCHANTMENT_CHANCE) {
+	if (roll >= EnchantmentConstants.LOOT_ENCHANTMENT_CHANCE_PERCENT) {
 		return null;
 	}
 	return ItemEnchantment.getRandomEnchantment().id;
