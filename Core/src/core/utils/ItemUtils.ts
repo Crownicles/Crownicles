@@ -720,8 +720,8 @@ export function generateRandomLootEnchantment(item: GenericItem): string | null 
 	if (item.getCategory() !== ItemCategory.WEAPON && item.getCategory() !== ItemCategory.ARMOR) {
 		return null;
 	}
-	const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * 100;
-	if (roll >= EnchantmentConstants.LOOT_ENCHANTMENT_CHANCE_PERCENT) {
+	const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
+	if (roll >= EnchantmentConstants.LOOT_ENCHANTMENT_CHANCE) {
 		return null;
 	}
 	return ItemEnchantment.getRandomEnchantment().id;

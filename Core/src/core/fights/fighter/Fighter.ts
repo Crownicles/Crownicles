@@ -68,8 +68,6 @@ export abstract class Fighter {
 
 	private resistances: FightTypeResistance[];
 
-	private ready: boolean;
-
 	private damageMultipliers: FightDamageMultiplier[];
 
 	private alterationsMultipliers: Map<string, number>;
