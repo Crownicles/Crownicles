@@ -33,8 +33,8 @@ importers:
         specifier: 15.1.3
         version: 15.1.3
       protobufjs:
-        specifier: 7.5.4
-        version: 7.5.4
+        specifier: 7.5.5
+        version: 7.5.5
       random-js:
         specifier: 2.1.0
         version: 2.1.0
@@ -89,7 +89,7 @@ importers:
         version: 61.5.0(eslint@9.39.2)
       protobufjs-cli:
         specifier: 1.2.0
-        version: 1.2.0(protobufjs@7.5.4)
+        version: 1.2.0(protobufjs@7.5.5)
       typescript:
         specifier: 5.9.3
         version: 5.9.3
@@ -715,6 +715,7 @@ packages:
 
   dottie@2.0.6:
     resolution: {integrity: sha512-iGCHkfUc5kFekGiqhe8B/mdaurD+lakO9txNnTvKtA6PISrw86LgqHvRzWYPyoE2Ph5aMIrCw9/uko6XHTKCwA==}
+    deprecated: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
 
   emittery@0.13.1:
     resolution: {integrity: sha512-DeWwawk6r5yR9jFgnDKYt4sLS0LmHJJi3ZOnb5/JdbYwj3nW+FxQnHIjhBKz8YLC7oRNPVM9NQ47I3CVx34eqQ==}
@@ -906,7 +907,7 @@ packages:
   glob@8.1.0:
     resolution: {integrity: sha512-r8hpEjiQEYlF2QU0df3dS+nxxSIreXQS1qRhMJM0Q5NDdR386C7jb7Hwwod8Fgiuex+k0GFjgft18yvxm5XoCQ==}
     engines: {node: '>=12'}
-    deprecated: Glob versions prior to v9 are no longer supported
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   globals@14.0.0:
     resolution: {integrity: sha512-oahGvuMGQlPw/ivIYBjVSrWAfWLBeku5tpPE2fOPLi+WHffIWbuh2tCjhyQhTBPMf5E9jDEH4FOmTYgYwbKwtQ==}
@@ -1272,8 +1273,8 @@ packages:
     peerDependencies:
       protobufjs: ^7.0.0
 
-  protobufjs@7.5.4:
-    resolution: {integrity: sha512-CvexbZtbov6jW2eXAvLukXjXUW1TzFaivC46BpWc/3BpcCysb5Vffu+B3XHMm8lVEuy2Mm4XGex8hBSg1yapPg==}
+  protobufjs@7.5.5:
+    resolution: {integrity: sha512-3wY1AxV+VBNW8Yypfd1yQY9pXnqTAN+KwQxL8iYm3/BjKYMNg4i0owhEe26PWDOMaIrzeeF98Lqd5NGz4omiIg==}
     engines: {node: '>=12.0.0'}
 
   punycode.js@2.3.1:
@@ -2904,7 +2905,7 @@ snapshots:
       '@opentelemetry/api': 1.9.0
       tdigest: 0.1.2
 
-  protobufjs-cli@1.2.0(protobufjs@7.5.4):
+  protobufjs-cli@1.2.0(protobufjs@7.5.5):
     dependencies:
       chalk: 4.1.2
       escodegen: 1.14.3
@@ -2913,12 +2914,12 @@ snapshots:
       glob: 8.1.0
       jsdoc: 4.0.5
       minimist: 1.2.8
-      protobufjs: 7.5.4
+      protobufjs: 7.5.5
       semver: 7.7.3
       tmp: 0.2.5
       uglify-js: 3.19.3
 
-  protobufjs@7.5.4:
+  protobufjs@7.5.5:
     dependencies:
       '@protobufjs/aspromise': 1.1.2
       '@protobufjs/base64': 1.1.2
@@ -3227,7 +3228,7 @@ snapshots:
     dependencies:
       async-exit-hook: 2.0.1
       btoa: 1.2.1
-      protobufjs: 7.5.4
+      protobufjs: 7.5.5
       url-polyfill: 1.1.13
       winston-transport: 4.9.0
     optionalDependencies:
