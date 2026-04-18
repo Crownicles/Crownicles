@@ -40,7 +40,7 @@ import { LogsDatabase } from "../database/logs/LogsDatabase";
 import { LogsPveFightsResults } from "../database/logs/models/LogsPveFightsResults";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
-import {TokensConstants} from "../../../../Lib/src/constants/TokensConstants";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 
 /**
  * Check top interactions
@@ -318,7 +318,7 @@ function checkGems(gems: number, interactionsList: InteractOtherPlayerInteractio
  * @param interactionsList
  */
 function checkTokens(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	if (otherPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK  && otherPlayer.tokens >= SmallEventConstants.INTERACT_OTHER_PLAYERS.MANY_TOKENS_MIN) {
+	if (otherPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK && otherPlayer.tokens >= SmallEventConstants.INTERACT_OTHER_PLAYERS.MANY_TOKENS_MIN) {
 		interactionsList.push(InteractOtherPlayerInteraction.MANY_TOKENS);
 	}
 }
