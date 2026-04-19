@@ -1,6 +1,9 @@
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
-	ReactionCollectorPetFoodSmallEventPacket, ReactionCollectorPetFoodInvestigateReaction, ReactionCollectorPetFoodSendPetReaction, ReactionCollectorPetFoodContinueReaction
+	ReactionCollectorPetFoodContinueReaction,
+	ReactionCollectorPetFoodInvestigateReaction,
+	ReactionCollectorPetFoodSendPetReaction,
+	ReactionCollectorPetFoodSmallEventPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorPetFoodSmallEvent";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
@@ -15,10 +18,11 @@ import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../bot/CrowniclesShard";
 import { sendInteractionNotForYou } from "../utils/ErrorUtils";
 import { SmallEventPetFoodPacket } from "../../../Lib/src/packets/smallEvents/SmallEventPetFoodPacket";
-import { Language } from "../../../Lib/src/Language";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
 import { StringConstants } from "../../../Lib/src/constants/StringConstants";
+import { Language } from "../../../Lib/src/Language";
+import { buildRecipeDiscoveryMessage } from "../utils/SmallEventUtils";
 
 /**
  * Handle the pet food small event collector interaction
@@ -169,8 +173,11 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 		? i18n.formatDuration(packet.timeLost, lng)
 		: "";
 
-	// Base outcome message (always present) - pass time for outcomes where player investigated
-	const baseMessage = i18n.t(
+	/*
+	 * Base outcome message (always present) - pass time for outcomes where player investigated
+	 * Build the result message
+	 */
+	let result = i18n.t(
 		`smallEvents:petFood.outcomes.${outcomeKey}`,
 		{
 			lng,
@@ -179,9 +186,6 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 			time: timeDisplay
 		}
 	);
-
-	// Build the result message
-	let result = baseMessage;
 
 	// Some outcomes also include a pet-love change message appended on a newline
 	if (outcomeIsFound) {
@@ -195,6 +199,10 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 			context: sexContext
 		});
 		result += `\n${loveMessage}`;
+	}
+
+	if (packet.discoveredRecipeId) {
+		result += `\n\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeId, lng, packet.recipeCost)}`;
 	}
 
 	return result;

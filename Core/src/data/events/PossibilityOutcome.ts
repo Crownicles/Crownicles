@@ -1,7 +1,7 @@
 import Player from "../../core/database/game/models/Player";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../../core/utils/ItemUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerSmallEvents } from "../../core/database/game/models/PlayerSmallEvent";
@@ -20,6 +20,8 @@ import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PossibilityOutcomeCondition } from "./PossibilityOutcomeCondition";
 import { BigEventConstants } from "../../../../Lib/src/constants/BigEventConstants";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
@@ -61,7 +63,7 @@ async function applyOutcomeExperience(outcome: PossibilityOutcome, player: Playe
 	}
 	experienceChange += outcome.bonusExperience ?? 0;
 	if (experienceChange !== 0) {
-		await player.addExperience({
+		await player.addExperienceSimple({
 			amount: experienceChange,
 			reason: NumberChangeReason.BIG_EVENT,
 			response
@@ -130,9 +132,9 @@ async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, play
 	return BlessingManager.getInstance().applyMoneyBlessing(moneyChange);
 }
 
-function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player): number {
+function applyOutcomeEnergy(outcome: PossibilityOutcome, player: Player, playerActiveObjects: PlayerActiveObjects): number {
 	if (outcome.energy && outcome.energy !== 0) {
-		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT);
+		player.addEnergy(outcome.energy, NumberChangeReason.BIG_EVENT, playerActiveObjects);
 		return outcome.energy;
 	}
 	return 0;
@@ -151,11 +153,16 @@ async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Playe
 	if (!outcome.randomItem) {
 		return;
 	}
-	await giveItemToPlayer(response, context, player, generateRandomItem({
+	const item = generateRandomItem({
 		itemCategory: outcome.randomItem.category,
 		minRarity: outcome.randomItem.rarity?.min,
 		maxRarity: outcome.randomItem.rarity?.max
-	}), 1, false);
+	});
+	await giveItemToPlayer(response, context, player, item, {
+		canDrinkImmediately: false,
+		itemLevel: generateRandomLootLevel(),
+		itemEnchantmentId: generateRandomLootEnchantment(item)
+	});
 }
 
 async function applyOutcomeRandomPet(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
@@ -180,7 +187,7 @@ async function applyOutcomeGivePet(outcome: PossibilityOutcome, player: Player, 
 async function applyOutcomeOneshot(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	if (outcome.oneshot === true) {
 		await player.addHealth({
-			amount: -player.health,
+			amount: -player.getHealthValue(),
 			response,
 			reason: NumberChangeReason.BIG_EVENT
 		});
@@ -234,6 +241,9 @@ type ApplyOutcome = {
  * @param response
  */
 export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<MapLink | null> {
+	// Get player active objects for energy changes
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 	// Score
 	const score = await applyOutcomeScore(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
@@ -244,7 +254,7 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
 
 	// Energy
-	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player);
+	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
 
 	// Gems
 	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);

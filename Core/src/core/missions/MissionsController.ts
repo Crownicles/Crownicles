@@ -29,6 +29,7 @@ import {
 import { FightActionController } from "../fights/actions/FightActionController";
 import { MissionUtils } from "../../../../Lib/src/utils/MissionUtils";
 import { MapLocationDataController } from "../../data/MapLocation";
+import { InventorySlots } from "../database/game/models/InventorySlot";
 import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
@@ -209,7 +210,7 @@ export abstract class MissionsController {
 				missionType: MissionType.NORMAL,
 				gemsToWin: 0 // Don't win gems in secondary missions
 			});
-			crowniclesInstance.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
+			crowniclesInstance?.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
 				.then();
 			await mission.destroy();
 		}
@@ -224,7 +225,7 @@ export abstract class MissionsController {
 				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER * blessingMultiplier),
 				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER * blessingMultiplier)
 			});
-			crowniclesInstance.logsDatabase.logMissionDailyFinished(player.keycloakId)
+			crowniclesInstance?.logsDatabase.logMissionDailyFinished(player.keycloakId)
 				.then();
 		}
 		await player.save();
@@ -242,7 +243,7 @@ export abstract class MissionsController {
 			amount: totalizer(m => m.xpToWin),
 			response,
 			reason: NumberChangeReason.MISSION_FINISHED
-		});
+		}, await InventorySlots.getPlayerActiveObjects(player.id));
 		player = await player.addMoney({
 			amount: totalizer(m => m.moneyToWin),
 			response,
@@ -262,7 +263,7 @@ export abstract class MissionsController {
 		for (const mission of missionSlots) {
 			if (mission.hasExpired()) {
 				expiredMissions.push(mission);
-				crowniclesInstance.logsDatabase.logMissionFailed(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
+				crowniclesInstance?.logsDatabase.logMissionFailed(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
 					.then();
 				await mission.destroy();
 			}
@@ -374,7 +375,7 @@ export abstract class MissionsController {
 			moneyToWin: missionData.money![prop.index]
 		});
 		const retMission = await MissionSlots.getById(missionSlot.id);
-		crowniclesInstance.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
+		crowniclesInstance?.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
 			.then();
 		return retMission;
 	}

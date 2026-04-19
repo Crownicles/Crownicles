@@ -16,7 +16,7 @@ export default class MaintenanceCommand {
 	})
 	execute(response: CrowniclesPacket[], packet: CommandMaintenancePacketReq): void {
 		try {
-			crowniclesInstance.setMaintenance(packet.enable, packet.save);
+			crowniclesInstance!.setMaintenance(packet.enable, packet.save);
 
 			response.push(makePacket(CommandMaintenancePacketRes, { enabled: packet.enable }));
 		}

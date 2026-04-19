@@ -69,6 +69,7 @@ const EXCLUDED_TABLES = {
 	// Reference/lookup tables (no personal data, just game configuration)
 	"DailyMission": "Global daily mission, not player-specific",
 	"Setting": "Global game settings, not player data",
+	"PlayerCookingRecipe": "Cooking recipe discovery tracking - to be added to GDPR export",
 
 	// ============ LOGS DATABASE - Reference Tables ============
 	// These are lookup/definition tables, not player activity logs
@@ -125,6 +126,9 @@ const EXPORTED_TABLES = {
 	"ScheduledExpeditionNotification": "12_scheduled_notifications.csv",
 	"Guild": "13_guild_membership.csv",
 	"GuildPet": "14_guild_pets.csv",
+	"Material": "15_materials.csv",
+	"Home": "16_home.csv",
+	"PlayerPlantSlot": "17_plant_slots.csv",
 
 	// ============ LOGS DATABASE - Player Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersScore": "logs/15_score_history.csv",

@@ -2,20 +2,12 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import Player from "../../../../core/database/game/models/Player";
-import {
-	InventorySlots
-} from "../../../../core/database/game/models/InventorySlot";
-import {
-	PetEntities
-} from "../../../../core/database/game/models/PetEntity";
+import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
+import { PetEntities } from "../../../../core/database/game/models/PetEntity";
 import { writeFileSync } from "fs";
 import { Op } from "sequelize";
-import {
-	makePacket
-} from "../../../../../../Lib/src/packets/CrowniclesPacket";
-import {
-	CommandTestPacketRes
-} from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
+import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import { CommandTestPacketRes } from "../../../../../../Lib/src/packets/commands/CommandTestPacket";
 
 export const commandInfo: ITestCommand = {
 	name: "exportPlayers",
@@ -74,11 +66,12 @@ async function exportPlayerInventory(playerId: number): Promise<unknown[]> {
  * Export single player with their data
  */
 async function exportSinglePlayer(player: Player): Promise<ExportPlayerData> {
-	const playerData: ExportPlayerData = {
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+	return {
 		keycloakId: player.keycloakId,
 		level: player.level,
 		class: player.class,
-		health: player.health,
+		health: player.getHealth(playerActiveObjects),
 		experience: player.experience,
 		money: player.money,
 		score: player.score,
@@ -86,8 +79,6 @@ async function exportSinglePlayer(player: Player): Promise<ExportPlayerData> {
 		pet: await exportPlayerPet(player.petId),
 		inventory: await exportPlayerInventory(player.id)
 	};
-
-	return playerData;
 }
 
 /**

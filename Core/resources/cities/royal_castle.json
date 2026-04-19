@@ -1,0 +1,54 @@
+{
+  "mapLinks": [
+    116,
+    117
+  ],
+  "maps": [
+    41,
+    42
+  ],
+  "hasBlacksmith": false,
+  "inns": [
+    {
+      "id": "royalPavilion",
+      "meals": [
+        {
+          "id": "lobsterRoll",
+          "price": 1800,
+          "energy": 1600
+        },
+        {
+          "id": "oysterPlatter",
+          "price": 2100,
+          "energy": 1900
+        },
+        {
+          "id": "jellyfishCarpaccio",
+          "price": 2600,
+          "energy": 2300
+        },
+        {
+          "id": "lordPie",
+          "price": 3200,
+          "energy": 2600
+        }
+      ],
+      "rooms": [
+        {
+          "id": "royalSuite",
+          "price": 3500,
+          "health": 200
+        },
+        {
+          "id": "imperialSuite",
+          "price": 5000,
+          "health": 300
+        }
+      ]
+    }
+  ],
+  "shops": [
+    "royalMarket",
+    "generalShop"
+  ]
+}

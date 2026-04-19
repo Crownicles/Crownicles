@@ -30,6 +30,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { WitchActionOutcomeType } from "../../../../Lib/src/types/WitchActionOutcomeType";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 
 
 type WitchEventSelection = {
@@ -91,7 +92,7 @@ async function givePotion(context: PacketContext, player: Player, potionToGive: 
  * @param player
  * @param response
  */
-async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<void> {
+async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<string | undefined> {
 	if (selectedEvent.forceEffect || outcome === WitchActionOutcomeType.EFFECT) {
 		await selectedEvent.giveEffect(player);
 	}
@@ -111,8 +112,17 @@ async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: Witc
 			generateRandomItem(potionToGive),
 			response
 		);
+
+		// Discover a cooking recipe matching the potion nature
+		const potionNature = potionToGive.subType ?? ItemNature.NONE;
+		const discovered = await RecipeDiscoveryService.discoverWitchRecipe(player, potionNature);
+		if (discovered) {
+			await player.save();
+			return discovered.id;
+		}
 	}
 	await player.save();
+	return undefined;
 }
 
 function getEndCallback(player: Player): EndCallback {
@@ -142,6 +152,7 @@ function getEndCallback(player: Player): EndCallback {
 				await selectedEvent.giveEffect(player);
 			}
 			resultPacket.outcome = WitchActionOutcomeType.POTION;
+
 			response.push(resultPacket);
 			const potionToGive = generateRandomItem({
 				itemCategory: ItemCategory.POTION,
@@ -151,9 +162,12 @@ function getEndCallback(player: Player): EndCallback {
 			return;
 		}
 
-		response.push(resultPacket);
+		const discoveredRecipeId = await applyOutcome(outcome, selectedEvent, collector.context, player, response);
+		if (discoveredRecipeId) {
+			resultPacket.discoveredRecipeId = discoveredRecipeId;
+		}
 
-		await applyOutcome(outcome, selectedEvent, collector.context, player, response);
+		response.push(resultPacket);
 
 		await selectedEvent.checkMissionsWitchAction(player, outcome, response);
 	};
@@ -162,7 +176,7 @@ function getEndCallback(player: Player): EndCallback {
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent: (response, player, context, testArgs?: string[]) => {
+	executeSmallEvent: (response, player, context, _playerActiveObjects, testArgs?: string[]) => {
 		const events: WitchEventSelection = testArgs
 			? {
 				randomAdvice: WitchActionDataController.instance.getById(testArgs[0])!,

@@ -65,7 +65,7 @@ import { getPetExpeditionPreferences } from "../../../../Lib/src/constants/Exped
 /**
  * Calculate the amount of money the player will have if he buys some with gems
  */
-function calculateGemsToMoneyRatio(): number {
+function calculateGemsToMoneyRatio(dayOffset = 0): number {
 	/**
 	 * Returns the decimal part of a number
 	 * @param x
@@ -75,7 +75,7 @@ function calculateGemsToMoneyRatio(): number {
 	};
 	return Constants.MISSION_SHOP.BASE_RATIO
 		+ Math.round(Constants.MISSION_SHOP.RANGE_MISSION_MONEY * 2
-			* frac(100 * Math.sin(Constants.MISSION_SHOP.SIN_RANDOMIZER * (getDayNumber() % Constants.MISSION_SHOP.SEED_RANGE) + 1))
+			* frac(100 * Math.sin(Constants.MISSION_SHOP.SIN_RANDOMIZER * ((getDayNumber() + dayOffset) % Constants.MISSION_SHOP.SEED_RANGE) + 1))
 			- Constants.MISSION_SHOP.RANGE_MISSION_MONEY);
 }
 
@@ -345,7 +345,7 @@ export default class MissionShopCommand {
 		await ShopUtils.createAndSendShopCollector(context, response, {
 			shopCategories,
 			player,
-			logger: crowniclesInstance.logsDatabase.logMissionShopBuyout,
+			logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout,
 			additionalShopData: {
 				currency: ShopCurrency.GEM,
 				gemToMoneyRatio: calculateGemsToMoneyRatio()

@@ -11,6 +11,8 @@ export class ReactionCollectorChooseDestinationReaction extends ReactionCollecto
 	mapTypeId!: string;
 
 	tripDuration?: number;
+
+	enterInCity!: boolean;
 }
 
 export class ReactionCollectorChooseDestinationData extends ReactionCollectorData {

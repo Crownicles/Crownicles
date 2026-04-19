@@ -46,7 +46,7 @@ export class PlayerMissionsInfo extends Model {
 	public async addGems(amount: number, keycloakId: string, reason: NumberChangeReason): Promise<void> {
 		this.gems += amount;
 		await this.save();
-		crowniclesInstance.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
+		crowniclesInstance?.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
 			.then();
 	}
 

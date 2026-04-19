@@ -126,6 +126,7 @@ export const CrowniclesIcons: {
 		description: string;
 		item: string;
 		info: string;
+		pin: string;
 	};
 	fightPetActions: {
 		[actionId: string]: string;
@@ -143,6 +144,11 @@ export const CrowniclesIcons: {
 	diet: { [dietId: string]: string };
 	petInformation: {
 		[petInfoId: string]: string;
+	};
+	equipCommand: {
+		equipped: string;
+		reserve: string;
+		swap: string;
 	};
 	petCommand: {
 		petButton: string;
@@ -199,7 +205,6 @@ export const CrowniclesIcons: {
 		deposit: string;
 		switch: string;
 		withdraw: string;
-		free: string;
 	};
 	other: { [otherId: string]: string };
 	guild: {
@@ -233,6 +238,7 @@ export const CrowniclesIcons: {
 	};
 	itemNatures: string[];
 	itemCategories: string[];
+	choiceEmotes: string[];
 	profile: {
 		displayAllBadgeEmote: string;
 	};
@@ -241,7 +247,77 @@ export const CrowniclesIcons: {
 		lost: string;
 		draw: string;
 	};
-	items: { drinkPotion: string };
+	items: {
+		drinkPotion: string;
+	};
+	city: {
+		exit: string;
+		stay: string;
+		inn: string;
+		innSleep: string;
+		enchanter: string;
+		shops: { [shopId: string]: string };
+		home: { [level: number]: string };
+		manageHome: string;
+		back: string;
+		blacksmith: {
+			menu: string;
+			upgrade: string;
+			disenchant: string;
+		};
+		homeUpgrades: {
+			bed: string;
+			chest: string;
+			potionStation: string;
+			upgradeEquipment: string;
+			garden: string;
+			earthQuality: string;
+			cooking: string;
+		};
+		gardenStatus: {
+			empty: string;
+			ready: string;
+			growing: string;
+			seed: string;
+			compost: string;
+		};
+		chestActions: {
+			inventory: string;
+			deposit: string;
+			withdraw: string;
+			swap: string;
+		};
+	};
+	meals: {
+		[mealId: string]: string;
+	};
+	rooms: {
+		[roomId: string]: string;
+	};
+	enchantmentTypes: {
+		damage: string;
+		health: string;
+		defense: string;
+		speed: string;
+		magic: string;
+		other: string;
+	};
+	cookingGrades: {
+		[gradeName: string]: string;
+	};
+	cookingStations: {
+		[stationIndex: number]: string;
+	};
+	cookingRecipeTypes: {
+		[recipeType: string]: string;
+	};
+	defaultMaterial: string;
+	materials: {
+		[materialId: string]: string;
+	};
+	plants: {
+		[plantId: string]: string;
+	};
 } = {
 	effects: {
 		notStarted: "👶",
@@ -920,6 +996,56 @@ export const CrowniclesIcons: {
 			randomRoom: "🚪",
 			end: { 0: "🚶" }
 		},
+		82: {
+			takeLetter: "📩",
+			openLetter: "📜",
+			deliver: "📮",
+			end: { 0: "🚶" }
+		},
+		83: {
+			skip: "🚶",
+			buy: "💶",
+			steal: "🕵️",
+			haggle: "🤝",
+			end: { 0: "🚶" }
+		},
+		84: {
+			help: "🤝",
+			ask: "🗣️",
+			end: { 0: "🚶" }
+		},
+		85: {
+			report: "📰",
+			stealFromThief: "🕵️",
+			fight: "⚔️",
+			ignore: "🚶",
+			end: { 0: "🚶" }
+		},
+		86: {
+			dance: "💃",
+			drink: "🍺",
+			pickPocket: "🕵️",
+			end: { 0: "🚶" }
+		},
+		87: {
+			skip: "🚶",
+			buyHorse: "🐴",
+			trade: "👥",
+			stealHorse: "🕵️",
+			end: { 0: "🚶" }
+		},
+		88: {
+			touchStatue: "🤚",
+			pray: "🙏",
+			break: "🔨",
+			end: { 0: "🚶" }
+		},
+		89: {
+			listen: "👂",
+			followMelody: "🎵",
+			coverEars: "🙉",
+			end: { 0: "🚶" }
+		},
 		9: {
 			end: { 0: "🚶" },
 			help: "🔎",
@@ -997,10 +1123,12 @@ export const CrowniclesIcons: {
 		witch: "🧹",
 		infoFight: "🏰",
 		haunted: "🦴",
+		findMaterial: "🔎",
 		expeditionAdvice: "🗺️",
 		petDropToken: "🪙",
 		altar: "⛩️",
-		farmer: "🧑‍🌾"
+		farmer: "🧑‍🌾",
+		gardener: "🌱"
 	},
 	pets: {
 		0: {
@@ -1743,8 +1871,7 @@ export const CrowniclesIcons: {
 		91: "🌊",
 		92: "🧌",
 		93: "🌋",
-		94: "🍫",
-		95: "🏎️"
+		94: "🍫"
 	},
 	weapons: {
 		0: "👊",
@@ -2149,7 +2276,6 @@ export const CrowniclesIcons: {
 	unitValues: {
 		score: "🏅",
 		money: "💰",
-		token: "🪙",
 		lostMoney: "💸",
 		xp: "⭐",
 		gem: "💎",
@@ -2166,7 +2292,8 @@ export const CrowniclesIcons: {
 		breathRegen: "🫁",
 		glory: "✨",
 		timeGain: "⌛",
-		none: "❌"
+		none: "❌",
+		token: "🪙"
 	},
 	shopItems: {
 		randomItem: "❓",
@@ -2179,7 +2306,12 @@ export const CrowniclesIcons: {
 		bigGuildXp: "🌟",
 		skipMission: "🧾",
 		lovePointsValue: "🧑‍⚕️",
-		treasure: "👑"
+		treasure: "👑",
+		plantSlotExtension: "🌿",
+		marketAnalysis: "📊",
+		woodCommonBundle: "🪵",
+		woodUncommonBundle: "🪓",
+		woodRareBundle: "🌲"
 	},
 	badges: {
 		[Badge.BEST_V1_PLAYER]: "🏆",
@@ -2250,7 +2382,8 @@ export const CrowniclesIcons: {
 		dm: "💌",
 		description: "📜",
 		item: "▶️",
-		info: "ℹ️"
+		info: "ℹ️",
+		pin: "📌"
 	},
 	fightPetActions: {
 		fistHit: "👊",
@@ -2286,8 +2419,7 @@ export const CrowniclesIcons: {
 	goblets: {
 		metal: "🐲",
 		biggest: "🪣",
-		sparkling: "✨",
-		cracked: "💀"
+		sparkling: "✨"
 	},
 	sex: {
 		male: "♂️",
@@ -2307,6 +2439,11 @@ export const CrowniclesIcons: {
 		force: "💪",
 		speed: "🚀",
 		feedDelay: "⏳"
+	},
+	equipCommand: {
+		equipped: "🗡️",
+		reserve: "🎒",
+		swap: "🔄"
 	},
 	petCommand: {
 		petButton: "🖐️",
@@ -2388,8 +2525,7 @@ export const CrowniclesIcons: {
 	petTransfer: {
 		deposit: "📥",
 		switch: "🔄",
-		withdraw: "📤",
-		free: "🕊️"
+		withdraw: "📤"
 	},
 	other: {
 		trash: "🗑️",
@@ -2473,7 +2609,8 @@ export const CrowniclesIcons: {
 	},
 	inventory: {
 		empty: "⬛",
-		stock: "📦"
+		stock: "📦",
+		materials: "🧱"
 	},
 	itemNatures: [
 		"❌",
@@ -2491,6 +2628,17 @@ export const CrowniclesIcons: {
 		"⚗️",
 		"🧸"
 	],
+	choiceEmotes: [
+		"1️⃣",
+		"2️⃣",
+		"3️⃣",
+		"4️⃣",
+		"5️⃣",
+		"6️⃣",
+		"7️⃣",
+		"8️⃣",
+		"9️⃣"
+	],
 	profile: {
 		displayAllBadgeEmote: "🎖️"
 	},
@@ -2499,5 +2647,238 @@ export const CrowniclesIcons: {
 		lost: "🔴",
 		draw: "🟡"
 	},
-	items: { drinkPotion: "🥤" }
+	items: { drinkPotion: "🥤" },
+	city: {
+		exit: "🏃‍➡️",
+		stay: "👀",
+		inn: "🍺",
+		innSleep: "😴",
+		enchanter: "🔮",
+		shops: {
+			royalMarket: "💎",
+			generalShop: "🛒",
+			stockExchange: "💎",
+			tanner: "🧳",
+			herbalist: "🌿",
+			lumberjack: "🪵"
+		},
+		home: {
+			1: "🏕️",
+			2: "🏕️",
+			3: "🏚️",
+			4: "🏚️",
+			5: "🏠",
+			6: "🏠",
+			7: "🏡",
+			8: "🏡"
+		},
+		manageHome: "🧑‍💼",
+		back: "↩️",
+		blacksmith: {
+			menu: "⚒️",
+			upgrade: "🔧",
+			disenchant: "✨"
+		},
+		homeUpgrades: {
+			bed: "🛏️",
+			chest: "📦",
+			potionStation: "🧪",
+			upgradeEquipment: "🛠️",
+			garden: "🌱",
+			earthQuality: "↗️",
+			cooking: "🔥"
+		},
+		gardenStatus: {
+			empty: "🕳️",
+			ready: "✅",
+			growing: "⏳",
+			seed: "🌰",
+			compost: "♻️"
+		},
+		chestActions: {
+			inventory: "🎒",
+			deposit: "📥",
+			withdraw: "📤",
+			swap: "🔄"
+		}
+	},
+	meals: {
+		breadAndCheese: "🧀",
+		roastedFowl: "🍗",
+		roastedBeef: "🥩",
+		stew: "🍲",
+		lordPie: "🥧",
+		potatoSoup: "🥔",
+		friedEggs: "🍳",
+		curryRice: "🍛",
+		sushi: "🍣",
+		bravesPanOfFood: "🍳",
+		fishAndChips: "🍟",
+		coldVegetableStew: "🥗",
+		roastedPork: "🍖",
+		oysterPlatter: "🦪",
+		tamale: "🫔",
+		friedShrimp: "🍤",
+		clamChowder: "🍲",
+		grilledFish: "🐟",
+		lobsterRoll: "🦞",
+		jellyfishCarpaccio: "🪼",
+		bread: "🍞",
+		pretzels: "🥨",
+		simpleSalad: "🥗"
+	},
+	rooms: {
+		horribleRoom: "🕸️",
+		simpleRoom: "🛋️",
+		comfortableRoom: "🛏️",
+		luxuryRoom: "👑",
+		royalSuite: "💠",
+		imperialSuite: "💎",
+		commonRoom: "🚪"
+	},
+	enchantmentTypes: {
+		damage: "📕",
+		health: "📗",
+		defense: "📘",
+		speed: "📓",
+		magic: "📔",
+		other: "📒"
+	},
+	cookingGrades: {
+		kitchenHelper: "🥄",
+		scullion: "🍳",
+		cook: "🔪",
+		roaster: "🍖",
+		saucier: "🍲",
+		steward: "📋",
+		tableChef: "🍽️",
+		stoveChef: "🔥",
+		kitchenMaster: "👨‍🍳",
+		royalGrandChef: "👑"
+	},
+	cookingStations: {
+		0: "🏠",
+		1: "🫕",
+		2: "⚒️",
+		3: "🧪",
+		4: "🔥"
+	},
+	cookingRecipeTypes: {
+		POTION_HEALTH: "❤️",
+		POTION_ENERGY: "⚡",
+		POTION_TIME_SPEEDUP: "⌛",
+		POTION_DEFENSE: "🛡️",
+		POTION_ATTACK: "🗡️",
+		POTION_SPEED: "🚀",
+		PETFOOD_SALAD: "🥬",
+		PETFOOD_CANDY: "🍬",
+		PETFOOD_MEAT: "🍖",
+		PETFOOD_ULTIMATE: "🍲",
+		MATERIAL_CRAFT: "🧱"
+	},
+	defaultMaterial: "🧱",
+	materials: {
+		2: "🌿",
+		77: "✨",
+		34: "💎",
+		35: "🔥",
+		53: "🌙",
+		80: "🌟",
+		33: "💧",
+		69: "🌈",
+		62: "🐦‍🔥",
+		76: "🐉",
+		70: "⚒️",
+		14: "🟤",
+		24: "🍂",
+		90: "🪙",
+		13: "🟡",
+		86: "🧳",
+		16: "🔧",
+		4: "🔩",
+		58: "🌰",
+		64: "🌲",
+		51: "🍁",
+		88: "🌰",
+		9: "🌳",
+		84: "🪵",
+		18: "🌲",
+		31: "⚫",
+		37: "🌱",
+		25: "🧶",
+		20: "👕",
+		47: "🧵",
+		45: "🌾",
+		49: "🪢",
+		75: "🕸️",
+		12: "🪢",
+		57: "🪢",
+		7: "🟠",
+		43: "🟡",
+		50: "🪶",
+		71: "🍂",
+		39: "🛠️",
+		22: "⚙️",
+		67: "💎",
+		55: "🍄‍🟫",
+		32: "🫐",
+		10: "🌿",
+		66: "🍄",
+		38: "🐡",
+		17: "🌰",
+		36: "🍄",
+		65: "☢️",
+		3: "🦠",
+		21: "🧨",
+		82: "🧂",
+		1: "🧪",
+		46: "💧",
+		44: "⚔️",
+		23: "🫙",
+		56: "🧪",
+		28: "🛢️",
+		6: "🧴",
+		48: "🐑",
+		42: "🐐",
+		63: "🐖",
+		26: "🐄",
+		29: "🦌",
+		78: "🐍",
+		83: "🌱",
+		27: "🐊",
+		11: "🦬",
+		59: "🌳",
+		52: "🍃",
+		54: "🌱",
+		15: "🏜️",
+		8: "🎋",
+		41: "🌿",
+		19: "🌌",
+		87: "🌹",
+		40: "👻",
+		73: "🌿",
+		89: "🕯️",
+		68: "💧",
+		74: "🌲",
+		30: "🌸",
+		60: "🌑",
+		61: "📔",
+		72: "🔥",
+		5: "💜",
+		81: "🔩",
+		85: "🛠️",
+		79: "🛡️"
+	},
+	plants: {
+		1: "🌿",
+		2: "☘️",
+		3: "🌙",
+		4: "🌱",
+		5: "🍄",
+		6: "🍃",
+		7: "🔥",
+		8: "🥩",
+		9: "💎",
+		10: "🌳"
+	}
 };

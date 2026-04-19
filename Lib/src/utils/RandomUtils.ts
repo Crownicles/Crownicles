@@ -47,4 +47,22 @@ export abstract class RandomUtils {
 		const randomIndex = RandomUtils.randInt(0, enumValues.length);
 		return enumValues[randomIndex];
 	};
+
+	/**
+	 * Deterministic Fisher-Yates shuffle using a simple LCG seeded PRNG.
+	 * Always produces the same output for the same input array and seed.
+	 */
+	static deterministicShuffle<T>(array: T[], seed: number): T[] {
+		const result = [...array];
+		let lcgState = seed >>> 0;
+		if (lcgState === 0) {
+			lcgState = 1;
+		}
+		for (let i = result.length - 1; i > 0; i--) {
+			lcgState = (lcgState * 1103515245 + 12345) >>> 0;
+			const j = lcgState % (i + 1);
+			[result[i], result[j]] = [result[j], result[i]];
+		}
+		return result;
+	}
 }

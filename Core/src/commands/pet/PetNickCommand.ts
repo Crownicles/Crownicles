@@ -60,6 +60,6 @@ export default class PetNickCommand {
 		playerPet.nickname = newPetNickName ?? "";
 		await playerPet.save();
 
-		crowniclesInstance.logsDatabase.logPetNickname(playerPet).then();
+		crowniclesInstance?.logsDatabase.logPetNickname(playerPet).then();
 	}
 }

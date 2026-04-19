@@ -27,7 +27,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
@@ -241,9 +241,13 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 
 		// Give bonus item after unblocking altar (giveItemToPlayer creates its own blocking for ACCEPT_ITEM)
 		if (bonusItemGiven) {
-			await giveItemToPlayer(response, context, player, generateRandomItem({
+			const bonusItem = generateRandomItem({
 				minRarity: ItemRarity.SPECIAL
-			}));
+			});
+			await giveItemToPlayer(response, context, player, bonusItem, {
+				itemLevel: generateRandomLootLevel(),
+				itemEnchantmentId: generateRandomLootEnchantment(bonusItem)
+			});
 		}
 
 		await player.save();

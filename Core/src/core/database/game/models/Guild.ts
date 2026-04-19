@@ -89,7 +89,7 @@ export class Guild extends Model {
 			}
 		}
 
-		crowniclesInstance.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
+		crowniclesInstance?.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
 			.then();
 		const guildPetsToDestroy: Promise<void>[] = [];
 		const petsEntitiesToDestroy: Promise<number>[] = [];
@@ -130,7 +130,7 @@ export class Guild extends Model {
 		}
 		this.experience += experience;
 		this.setExperience(this.experience);
-		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logGuildExperienceChange(this, parameters.reason)
 			.then();
 		await this.levelUpIfNeeded(parameters.response);
 	}
@@ -152,9 +152,9 @@ export class Guild extends Model {
 		}
 		this.experience -= this.getExperienceNeededToLevelUp();
 		this.level++;
-		crowniclesInstance.logsDatabase.logGuildLevelUp(this)
+		crowniclesInstance?.logsDatabase.logGuildLevelUp(this)
 			.then();
-		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, NumberChangeReason.LEVEL_UP)
+		crowniclesInstance?.logsDatabase.logGuildExperienceChange(this, NumberChangeReason.LEVEL_UP)
 			.then();
 		response.push(makePacket(GuildLevelUpPacket, {
 			guildName: this.name,
@@ -222,7 +222,7 @@ export class Guild extends Model {
 		if (this.isStorageFullFor(selectedItemType, 0)) {
 			this.setDataValue(selectedItemType, GuildConstants.MAX_PET_FOOD[getFoodIndexOf(selectedItemType)]);
 		}
-		crowniclesInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getDataValue(selectedItemType), reason)
+		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getDataValue(selectedItemType), reason)
 			.then();
 	}
 
@@ -234,7 +234,7 @@ export class Guild extends Model {
 	 */
 	public removeFood(item: string, quantity: number, reason: NumberChangeReason): void {
 		this.setDataValue(item, this.getDataValue(item) - quantity);
-		crowniclesInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(item), this.getDataValue(item), reason)
+		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(item), this.getDataValue(item), reason)
 			.then();
 	}
 
@@ -253,7 +253,7 @@ export class Guild extends Model {
 				});
 			}
 		}
-		crowniclesInstance.logsDatabase.logGuildPointsChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logGuildPointsChange(this, parameters.reason)
 			.then();
 	}
 

@@ -82,7 +82,7 @@ async function genericAwardingFunction(members: Player[], awardingFunctionForAMe
  * @param guildLike
  */
 function doesSomeoneNeedsHeal(guildLike: GuildLike): boolean {
-	return guildLike.members.some(member => member.health < member.getMaxHealth());
+	return guildLike.members.some(member => member.getHealthValue() < member.getMaxHealthBase());
 }
 
 /**
@@ -103,7 +103,7 @@ async function healEveryMember(guildLike: GuildLike, response: CrowniclesPacket[
 	await genericAwardingFunction(guildLike.members, async member => {
 		if (member.effectId !== Effect.DEAD.id) {
 			await member.addHealth({
-				amount: fullHeal ? member.getMaxHealth() : healthWon,
+				amount: fullHeal ? member.getMaxHealthBase() : healthWon,
 				response,
 				reason: NumberChangeReason.GUILD_DAILY,
 				missionHealthParameter: {
@@ -119,7 +119,7 @@ async function healEveryMember(guildLike: GuildLike, response: CrowniclesPacket[
 	else {
 		rewardPacket.heal = healthWon;
 	}
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, fullHeal ? GuildDailyConstants.REWARD_TYPES.FULL_HEAL : GuildDailyConstants.REWARD_TYPES.PARTIAL_HEAL).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, fullHeal ? GuildDailyConstants.REWARD_TYPES.FULL_HEAL : GuildDailyConstants.REWARD_TYPES.PARTIAL_HEAL).then();
 }
 
 /**
@@ -160,7 +160,7 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: Crownic
 
 	rewardPacket.alteration = healthWon > 0 ? { healAmount: healthWon } : {};
 
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.ALTERATION).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.ALTERATION).then();
 }
 
 /**
@@ -172,14 +172,14 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: Crownic
 async function awardPersonalXpToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const xpWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
 	await genericAwardingFunction(guildLike.members, member => {
-		member.addExperience({
+		member.addExperienceSimple({
 			amount: xpWon,
 			response,
 			reason: NumberChangeReason.GUILD_DAILY
 		});
 	});
 	rewardPacket.personalXp = xpWon;
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.PERSONAL_XP).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.PERSONAL_XP).then();
 }
 
 /**
@@ -195,7 +195,7 @@ async function awardGuildXp(guildLike: GuildLike, response: CrowniclesPacket[], 
 	});
 	await guildLike.guild.save();
 	rewardPacket.guildXp = xpGuildWon;
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.GUILD_XP).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.GUILD_XP).then();
 }
 
 /**
@@ -212,7 +212,7 @@ async function awardCommonFood(guildLike: GuildLike, response: CrowniclesPacket[
 	guildLike.guild.commonFood += GuildDailyConstants.FIXED_PET_FOOD;
 	await Promise.all([guildLike.guild.save()]);
 	rewardPacket.commonFood = GuildDailyConstants.FIXED_PET_FOOD;
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.PET_FOOD).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.PET_FOOD).then();
 }
 
 /**
@@ -244,7 +244,7 @@ async function awardGuildBadgeToMembers(guildLike: GuildLike, response: Crownicl
 		return;
 	}
 	rewardPacket.badge = true;
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.BADGE).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.BADGE).then();
 }
 
 /**
@@ -257,7 +257,7 @@ async function advanceTimeOfEveryMember(guildLike: GuildLike, _response: Crownic
 	const timeAdvanced = Math.ceil((guildLike.guild.level + 1) * GuildDailyConstants.TIME_ADVANCED_MULTIPLIER);
 	await genericAwardingFunction(guildLike.members, async member => await TravelTime.timeTravel(member, hoursToMinutes(timeAdvanced), NumberChangeReason.GUILD_DAILY));
 	rewardPacket.advanceTime = timeAdvanced;
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.HOSPITAL).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.HOSPITAL).then();
 }
 
 /**
@@ -289,7 +289,7 @@ async function awardGuildSuperBadgeToMembers(guildLike: GuildLike, response: Cro
 	}
 
 	rewardPacket.superBadge = true;
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.SUPER_BADGE).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.SUPER_BADGE).then();
 }
 
 /**
@@ -378,7 +378,7 @@ async function awardMoneyToMembers(guildLike: GuildLike, response: CrowniclesPac
 		});
 	});
 	rewardPacket.money = BlessingManager.getInstance().applyMoneyBlessing(moneyWon);
-	crowniclesInstance.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.MONEY).then();
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.MONEY).then();
 }
 
 /**

@@ -85,7 +85,7 @@ export abstract class DailyMissions {
 				lastDate: new Date()
 			}, { returning: true });
 		}
-		crowniclesInstance.logsDatabase.logMissionDailyRefreshed(dailyMission.missionId, dailyMission.missionVariant, dailyMission.missionObjective)
+		crowniclesInstance?.logsDatabase.logMissionDailyRefreshed(dailyMission.missionId, dailyMission.missionVariant, dailyMission.missionObjective)
 			.then();
 		return (await this.queryDailyMission())!;
 	}

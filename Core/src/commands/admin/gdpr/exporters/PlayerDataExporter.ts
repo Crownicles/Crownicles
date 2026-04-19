@@ -18,6 +18,9 @@ import { ScheduledReportNotification } from "../../../../core/database/game/mode
 import { ScheduledExpeditionNotification } from "../../../../core/database/game/models/ScheduledExpeditionNotification";
 import { DwarfPetsSeen } from "../../../../core/database/game/models/DwarfPetsSeen";
 import { PlayerTalismansManager } from "../../../../core/database/game/models/PlayerTalismans";
+import { Material } from "../../../../core/database/game/models/Material";
+import { Homes } from "../../../../core/database/game/models/Home";
+import { PlayerPlantSlot } from "../../../../core/database/game/models/PlayerPlantSlot";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
 
@@ -188,6 +191,40 @@ async function exportMiscData(
 	if (notifications.length > 0) {
 		csvFiles["12_scheduled_notifications.csv"] = toCSV(notifications);
 	}
+
+	// Player materials (crafting resources)
+	const materials = await Material.findAll({ where: { playerId: player.id } });
+	if (materials.length > 0) {
+		csvFiles["15_materials.csv"] = toCSV(materials.map(m => ({
+			materialId: m.materialId,
+			quantity: m.quantity
+		})));
+	}
+
+	// Player home
+	const home = await Homes.getOfPlayer(player.id);
+	if (home) {
+		csvFiles["16_home.csv"] = toCSV([
+			{
+				cityId: home.cityId,
+				level: home.level
+			}
+		]);
+	}
+
+	// Player plant slots
+	await exportPlayerPlantSlots(player.id, csvFiles);
+}
+
+async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const plantSlots = await PlayerPlantSlot.findAll({ where: { playerId } });
+	if (plantSlots.length > 0) {
+		csvFiles["17_plant_slots.csv"] = toCSV(plantSlots.map(slot => ({
+			slotType: slot.slotType,
+			slot: slot.slot,
+			plantId: slot.plantId
+		})));
+	}
 }
 
 /**
@@ -235,7 +272,7 @@ export async function exportPlayerData(
 	csvFiles["01_player.csv"] = toCSV([
 		{
 			anonymizedId: anonymizer.getAnonymizedPlayerId(),
-			health: player.health,
+			health: player.getHealthValue(),
 			score: player.score,
 			weeklyScore: player.weeklyScore,
 			level: player.level,

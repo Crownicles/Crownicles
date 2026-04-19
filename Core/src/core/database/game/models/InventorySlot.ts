@@ -21,6 +21,8 @@ import Player from "./Player";
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
+import { ItemWithDetails } from "../../../../../../Lib/src/types/ItemWithDetails";
+import { toItemWithDetails } from "../../../utils/ItemUtils";
 
 type DepositCandidate = {
 	slot: InventorySlot;
@@ -35,6 +37,10 @@ export class InventorySlot extends Model {
 	declare itemCategory: number;
 
 	declare itemId: number;
+
+	declare itemLevel: number;
+
+	declare itemEnchantmentId: string | null;
 
 	declare remainingPotionUsages: number;
 
@@ -70,6 +76,17 @@ export class InventorySlot extends Model {
 		return this.itemCategory === ItemCategory.ARMOR;
 	}
 
+	isWeaponOrArmor(): boolean {
+		return this.isWeapon() || this.isArmor();
+	}
+
+	/**
+	 * Check if this slot contains a valid primary equipment (weapon or armor with a valid item)
+	 */
+	isPrimaryEquipment(): boolean {
+		return this.isWeaponOrArmor() && this.itemId !== 0;
+	}
+
 	isPotion(): boolean {
 		return this.itemCategory === ItemCategory.POTION;
 	}
@@ -77,9 +94,13 @@ export class InventorySlot extends Model {
 	isObject(): boolean {
 		return this.itemCategory === ItemCategory.OBJECT;
 	}
+
+	itemWithDetails(player: Player): ItemWithDetails {
+		return toItemWithDetails(player, this.getItem()!, this.itemLevel, this.itemEnchantmentId);
+	}
 }
 
-export abstract class InventorySlots {
+export class InventorySlots {
 	public static async getOfPlayer(playerId: number): Promise<InventorySlot[]> {
 		const slots: InventorySlot[] = await InventorySlot.findAll({
 			where: { playerId }
@@ -91,25 +112,33 @@ export abstract class InventorySlots {
 						playerId,
 						itemId: 0,
 						slot: 0,
-						itemCategory: 0
+						itemCategory: 0,
+						itemLevel: 0,
+						itemEnchantmentId: null
 					},
 					{
 						playerId,
 						itemId: 0,
 						slot: 0,
-						itemCategory: 1
+						itemCategory: 1,
+						itemLevel: 0,
+						itemEnchantmentId: null
 					},
 					{
 						playerId,
 						itemId: 0,
 						slot: 0,
-						itemCategory: 2
+						itemCategory: 2,
+						itemLevel: 0,
+						itemEnchantmentId: null
 					},
 					{
 						playerId,
 						itemId: 0,
 						slot: 0,
-						itemCategory: 3
+						itemCategory: 3,
+						itemLevel: 0,
+						itemEnchantmentId: null
 					}
 				]
 			);
@@ -177,12 +206,30 @@ export abstract class InventorySlots {
 	 * Return the current active items a player hold
 	 */
 	static async getMainSlotsItems(playerId: number): Promise<PlayerActiveObjects> {
-		await this.getOfPlayer(playerId);
+		const slots = await this.getOfPlayer(playerId);
+
+		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped())!;
+		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped())!;
+		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped())!;
+		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped())!;
+
 		return {
-			weapon: <Weapon>(await InventorySlots.getMainWeaponSlot(playerId))!.getItem(),
-			armor: <Armor>(await InventorySlots.getMainArmorSlot(playerId))!.getItem(),
-			potion: <Potion>(await InventorySlots.getMainPotionSlot(playerId))!.getItem(),
-			object: <ObjectItem>(await InventorySlots.getMainObjectSlot(playerId))!.getItem()
+			weapon: {
+				item: weaponSlot.getItem() as Weapon,
+				itemLevel: weaponSlot.itemLevel,
+				itemEnchantmentId: weaponSlot.itemEnchantmentId
+			},
+			armor: {
+				item: armorSlot.getItem() as Armor,
+				itemLevel: armorSlot.itemLevel,
+				itemEnchantmentId: armorSlot.itemEnchantmentId
+			},
+			potion: {
+				item: potionSlot.getItem() as Potion
+			},
+			object: {
+				item: objectSlot.getItem() as ObjectItem
+			}
 		};
 	}
 
@@ -249,7 +296,8 @@ export abstract class InventorySlots {
 		else {
 			await InventorySlot.update({
 				itemId: itemToPutInReserve.itemId,
-				remainingPotionUsages: itemToPutInReserve.remainingPotionUsages
+				itemLevel: itemToPutInReserve.itemLevel,
+				itemEnchantmentId: itemToPutInReserve.itemEnchantmentId
 			}, {
 				where: {
 					playerId: player.id,
@@ -260,7 +308,8 @@ export abstract class InventorySlots {
 		}
 		await InventorySlot.update({
 			itemId: itemToPutInMain.itemId,
-			remainingPotionUsages: itemToPutInMain.remainingPotionUsages
+			itemLevel: itemToPutInMain.itemLevel,
+			itemEnchantmentId: itemToPutInMain.itemEnchantmentId
 		}, {
 			where: {
 				playerId: player.id,
@@ -275,17 +324,51 @@ export abstract class InventorySlots {
 			playerId: player.id,
 			itemCategory: itemToDeposit.slot.itemCategory,
 			itemId: itemToDeposit.slot.itemId,
-			slot: itemToDeposit.freeSlot,
-			remainingPotionUsages: itemToDeposit.slot.remainingPotionUsages
+			slot: itemToDeposit.freeSlot
 		});
 		await InventorySlot.update({
-			itemId: 0,
-			remainingPotionUsages: null
+			itemId: 0
 		}, {
 			where: {
 				playerId: player.id,
 				itemCategory: itemToDeposit.slot.itemCategory,
 				slot: InventoryConstants.DEFAULT_SLOT_VALUE
+			}
+		});
+	}
+
+	static slotsToActiveObjects(slots: InventorySlot[]): PlayerActiveObjects {
+		const weaponSlot = slots.find(s => s.itemCategory === ItemCategory.WEAPON && s.isEquipped())!;
+		const armorSlot = slots.find(s => s.itemCategory === ItemCategory.ARMOR && s.isEquipped())!;
+		const potionSlot = slots.find(s => s.itemCategory === ItemCategory.POTION && s.isEquipped())!;
+		const objectSlot = slots.find(s => s.itemCategory === ItemCategory.OBJECT && s.isEquipped())!;
+
+		return {
+			weapon: {
+				item: weaponSlot.getItem() as Weapon,
+				itemLevel: weaponSlot.itemLevel,
+				itemEnchantmentId: weaponSlot.itemEnchantmentId
+			},
+			armor: {
+				item: armorSlot.getItem() as Armor,
+				itemLevel: armorSlot.itemLevel,
+				itemEnchantmentId: armorSlot.itemEnchantmentId
+			},
+			potion: {
+				item: potionSlot.getItem() as Potion
+			},
+			object: {
+				item: objectSlot.getItem() as ObjectItem
+			}
+		};
+	}
+
+	static async getItem(playerId: number, slot: number, category: number): Promise<InventorySlot | null> {
+		return await InventorySlot.findOne({
+			where: {
+				playerId,
+				slot,
+				itemCategory: category
 			}
 		});
 	}
@@ -309,8 +392,12 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
 		},
-		remainingPotionUsages: {
+		itemLevel: {
 			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		itemEnchantmentId: {
+			type: DataTypes.STRING,
 			allowNull: true,
 			defaultValue: null
 		},

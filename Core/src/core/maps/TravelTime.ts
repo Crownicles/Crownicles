@@ -180,7 +180,7 @@ export abstract class TravelTime {
 		}
 
 		// Log
-		crowniclesInstance.logsDatabase.logTimeWarp(player.keycloakId, isMilliseconds ? millisecondsToMinutes(time) : time, reason)
+		crowniclesInstance?.logsDatabase.logTimeWarp(player.keycloakId, isMilliseconds ? millisecondsToMinutes(time) : time, reason)
 			.then();
 	}
 
@@ -248,7 +248,7 @@ export abstract class TravelTime {
 
 		// Save and log
 		await player.save();
-		crowniclesInstance.logsDatabase.logAlteration(player.keycloakId, effect.id, reason, time)
+		crowniclesInstance?.logsDatabase.logAlteration(player.keycloakId, effect.id, reason, time)
 			.then();
 	}
 

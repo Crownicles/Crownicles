@@ -2,5 +2,6 @@
   "rarity": 8,
   "rawDefense": 8,
   "attack": -15,
-  "speed": -50
+  "speed": -50,
+  "type": "alloy"
 }

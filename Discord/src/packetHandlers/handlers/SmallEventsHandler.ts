@@ -6,7 +6,9 @@ import { CrowniclesSmallEventEmbed } from "../../messages/CrowniclesSmallEventEm
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
-import { getRandomSmallEventIntro } from "../../utils/SmallEventUtils";
+import {
+	buildRecipeDiscoveryMessage, getRandomSmallEventIntro
+} from "../../utils/SmallEventUtils";
 import { SmallEventBigBadPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventBigBadPacket";
 import {
 	SmallEventBadIssue,
@@ -105,6 +107,7 @@ import {
 	SmallEventExpeditionAdvicePacket,
 	ExpeditionAdviceInteractionType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
+import { SmallEventFindMaterialPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMaterialPacket";
 import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetDropTokenPacket";
 import {
 	SmallEventAltarContributedPacket,
@@ -112,6 +115,10 @@ import {
 	SmallEventAltarNoContributionPacket
 } from "../../../../Lib/src/packets/smallEvents/SmallEventAltarPacket";
 import { SmallEventFarmerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFarmerPacket";
+import { SmallEventGardenerPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
+import {
+	GARDENER_INTERACTIONS, PlantConstants, SEED_CONDITION_FAILURE
+} from "../../../../Lib/src/constants/PlantConstants";
 import {
 	altarContributed, altarFirstEncounter, altarNoContribution
 } from "../../smallEvents/altar";
@@ -1199,6 +1206,31 @@ export default class SmallEventsHandler {
 		});
 	}
 
+	@packetHandler(SmallEventFindMaterialPacket)
+	async smallEventFindMaterial(context: PacketContext, packet: SmallEventFindMaterialPacket): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		const lng = interaction!.userLanguage;
+
+		const typeStory = i18n.t(`smallEvents:findMaterial.typesStories.${packet.materialType}`, { lng });
+		const foundStory = i18n.t(`smallEvents:findMaterial.foundStories.${packet.materialRarity}`, {
+			lng,
+			materialId: packet.materialId,
+			materialEmote: CrowniclesIcons.materials[packet.materialId],
+			rarityEmote: CrowniclesIcons.rarity[packet.materialRarity - 1]
+		});
+
+		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"findMaterial",
+					`${getRandomSmallEventIntro(lng)}${typeStory}\n\n${foundStory}`,
+					interaction.user,
+					lng
+				)
+			]
+		});
+	}
+
 	@packetHandler(SmallEventPetDropTokenPacket)
 	async smallEventPetDropToken(context: PacketContext, packet: SmallEventPetDropTokenPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -1243,15 +1275,72 @@ export default class SmallEventsHandler {
 	async smallEventFarmer(context: PacketContext, packet: SmallEventFarmerPacket): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const lng = interaction!.userLanguage;
+
+		const description = getRandomSmallEventIntro(lng)
+			+ StringUtils.getRandomTranslation("smallEvents:farmer.stories", lng)
+			+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, { count: packet.amount })
+			+ (packet.discoveredRecipeId ? `\n\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeId, lng, packet.recipeCost)}` : "");
+
 		await interaction?.editReply({
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"farmer",
-					getRandomSmallEventIntro(lng)
-					+ StringUtils.getRandomTranslation("smallEvents:farmer.stories", lng)
-					+ StringUtils.getRandomTranslation(`smallEvents:farmer.rewards.${packet.interactionName}`, lng, {
-						count: packet.amount
-					}),
+					description,
+					interaction.user,
+					lng
+				)
+			]
+		});
+	}
+
+	@packetHandler(SmallEventGardenerPacket)
+	async smallEventGardener(context: PacketContext, packet: SmallEventGardenerPacket): Promise<void> {
+		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!) : DiscordCache.getInteraction(context.discord!.interaction!);
+		const lng = context.discord!.language;
+
+		const isFromCollector = Boolean(context.discord!.buttonInteraction);
+		const story = isFromCollector
+			? ""
+			: getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
+
+		let rewardText: string;
+
+		switch (packet.interactionName) {
+			case GARDENER_INTERACTIONS.SEED:
+				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.seed.${packet.conditionKey}`, lng, {
+					cost: packet.cost
+				});
+				break;
+			case GARDENER_INTERACTIONS.ADVICE: {
+				const adviceReplacements: Record<string, unknown> = {};
+				if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_LEVEL && packet.plantId > 0) {
+					adviceReplacements.level = PlantConstants.SEED_LEVEL_REQUIREMENTS[packet.plantId as keyof typeof PlantConstants.SEED_LEVEL_REQUIREMENTS];
+				}
+				if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_MONEY && packet.plantId > 0) {
+					adviceReplacements.cost = PlantConstants.SEED_COSTS[packet.plantId as keyof typeof PlantConstants.SEED_COSTS];
+				}
+				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.advice.${packet.conditionKey}`, lng, adviceReplacements);
+				break;
+			}
+			case GARDENER_INTERACTIONS.PLANT:
+				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
+					plantId: packet.plantId
+				});
+				break;
+			case GARDENER_INTERACTIONS.MATERIAL:
+				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.material", lng, {
+					materialId: packet.materialId
+				});
+				break;
+			default:
+				rewardText = "";
+		}
+
+		await interaction?.editReply({
+			embeds: [
+				new CrowniclesSmallEventEmbed(
+					"gardener",
+					story + rewardText,
 					interaction.user,
 					lng
 				)

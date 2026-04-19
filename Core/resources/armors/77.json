@@ -2,5 +2,6 @@
   "rarity": 7,
   "rawDefense": 5,
   "attack": 35,
-  "speed": -10
+  "speed": -10,
+  "type": "nature"
 }

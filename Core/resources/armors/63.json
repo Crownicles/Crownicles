@@ -1,5 +1,6 @@
 {
   "rarity": 5,
   "rawDefense": 1,
-  "speed": 36
+  "speed": 36,
+  "type": "magic"
 }

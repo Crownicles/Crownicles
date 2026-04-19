@@ -21,6 +21,10 @@ import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import {
+	FARMER_RECIPE_COSTS, RecipeDiscoverySource
+} from "../../../../Lib/src/constants/CookingConstants";
 
 const FARMER_INTERACTIONS = {
 	SALAD: "salad",
@@ -79,6 +83,16 @@ export const smallEventFuncs: SmallEventFuncs = {
 			const maxGiveable = GuildConstants.MAX_HERBIVOROUS_PET_FOOD - guild.herbivorousFood;
 			packet.amount = Math.min(RandomUtils.randInt(SALAD_AMOUNT.MIN, SALAD_AMOUNT.MAX + 1), maxGiveable);
 			await giveFoodToGuild(response, player, PetConstants.PET_FOOD.HERBIVOROUS_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
+
+			// Discover a farmer recipe (costs money)
+			const discovery = await RecipeDiscoveryService.tryDiscoverAndPay({
+				player,
+				source: RecipeDiscoverySource.FARMER,
+				costs: FARMER_RECIPE_COSTS,
+				response
+			});
+			packet.discoveredRecipeId = discovery.discoveredRecipeId;
+			packet.recipeCost = discovery.recipeCost;
 		}
 
 		response.push(makePacket(SmallEventFarmerPacket, packet));

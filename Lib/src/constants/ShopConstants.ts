@@ -15,6 +15,8 @@ export abstract class ShopConstants {
 
 	static readonly MONEY_MOUTH_BADGE_PRICE = 25000;
 
+	static readonly MARKET_ANALYSIS_PRICE = 1000;
+
 	static readonly DAILY_POTION_DISCOUNT_MULTIPLIER = 0.7;
 
 	static readonly TOKEN_PRICE = 375;
@@ -27,6 +29,19 @@ export abstract class ShopConstants {
 		1,
 		5,
 		10
+	];
+
+	static readonly LUMBERJACK_PRICES = {
+		COMMON: 10,
+		UNCOMMON: 35,
+		RARE: 100
+	};
+
+	static readonly LUMBERJACK_AMOUNTS = [
+		1,
+		10,
+		25,
+		50
 	];
 }
 

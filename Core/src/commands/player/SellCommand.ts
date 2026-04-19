@@ -48,7 +48,7 @@ function getEndCallback(player: Player) {
 			return;
 		}
 
-		crowniclesInstance.logsDatabase.logItemSell(player.keycloakId, itemInstance).then();
+		crowniclesInstance?.logsDatabase.logItemSell(player.keycloakId, itemInstance).then();
 
 		await player.reload();
 

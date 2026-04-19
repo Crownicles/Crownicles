@@ -1,0 +1,51 @@
+{
+  "possibilities": {
+    "end": {
+      "outcomes": {
+        "0": {}
+      }
+    },
+    "dance": {
+      "outcomes": {
+        "0": {
+          "health": 10,
+          "money": -20,
+          "effect": "occupied",
+          "lostTime": 30
+        },
+        "1": {
+          "health": -10,
+          "effect": "sick",
+          "lostTime": 60
+        }
+      }
+    },
+    "drink": {
+      "outcomes": {
+        "0": {
+          "effect": "sick",
+          "health": -30
+        },
+        "1": {
+          "money": -100,
+          "randomItem": {}
+        }
+      }
+    },
+    "pickPocket": {
+      "outcomes": {
+        "0": {
+          "money": 500
+        },
+        "1": {
+          "effect": "jailed"
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 42
+    }
+  ]
+}

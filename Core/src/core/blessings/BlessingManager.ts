@@ -407,7 +407,7 @@ export class BlessingManager {
 			const discardedResponse: CrowniclesPacket[] = [];
 
 			await missionInfo.addGems(gemsWon, player.keycloakId, NumberChangeReason.BLESSING);
-			await player.addExperience({
+			await player.addExperienceSimple({
 				amount: xpWon,
 				response: discardedResponse,
 				reason: NumberChangeReason.BLESSING

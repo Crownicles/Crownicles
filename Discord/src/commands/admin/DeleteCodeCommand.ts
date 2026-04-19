@@ -2,6 +2,7 @@ import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
+import { MessageFlags } from "discord.js";
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { RightGroup } from "../../../../Lib/src/types/RightGroup";
@@ -47,7 +48,7 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 					i18n.t("commands:deletecode.userNotFound", { lng })
 				)
 			],
-			ephemeral: true
+			flags: MessageFlags.Ephemeral
 		});
 		return null;
 	}
@@ -67,7 +68,7 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 					code: deletionCode
 				}))
 		],
-		ephemeral: true
+		flags: MessageFlags.Ephemeral
 	});
 	return null;
 }

@@ -2848,6 +2848,246 @@
     },
     "text": "Vous franchissez le seuil d'une vieille demeure à l'allure délabrée. La brume épaisse qui l'entoure semble avaler les contours monde extérieur, comme si la maison existait en dehors de toute réalité. L'air est froid et stagnant, chaque pas fait gémir le vieux plancher. Une étrange présence semble vous observer depuis l'ombre des couloirs."
   },
+  "82": {
+    "possibilities": {
+      "takeLetter": {
+        "outcomes": {
+          "0": "Vous confiez la lettre à votre sacoche et partez à la recherche du destinataire.",
+          "1": "La lettre renferme un petit présent et vous promet une récompense si vous la livrez à temps."
+        },
+        "text": "Prendre la lettre"
+      },
+      "openLetter": {
+        "outcomes": {
+          "0": "Vous ouvrez la lettre en toute curiosité, mais un garde vous repère et vous grillera pour votre indiscrétion !",
+          "1": "La lettre contient un message insultant qui choque un passant. Vous vous attirez des ennuis !"
+        },
+        "text": "Ouvrir la lettre"
+      },
+      "deliver": {
+        "outcomes": {
+          "0": "Le destinataire vous remercie et vous offre une petite récompense en signe de gratitude.",
+          "1": "Vous perdez du temps à chercher le destinataire mais finissez par recevoir une bourse bien garnie."
+        },
+        "text": "Remettre la lettre au destinataire"
+      },
+      "end": {
+        "outcomes": {
+          "0": "Le héraut repart pressé. Vous reprenez votre chemin sans en savoir plus."
+        }
+      }
+    },
+    "text": "Un héraut en livrée se tient devant vous, tenant une lettre scellée. Il a l'air pressé, mais il vous regarde avec insistance."
+  },
+  "83": {
+    "possibilities": {
+      "skip": {
+        "outcomes": {
+          "0": "Vous ne prêtez pas attention aux marchandises et continuez votre route."
+        }
+      },
+      "buy": {
+        "outcomes": {
+          "0": "Vous achetez un petit objet curieux qui s'avère plus utile que prévu.",
+          "1": "L'achat était trop cher, mais vous avez fait une bonne affaire, paraît-il..."
+        },
+        "text": "Acheter un objet"
+      },
+      "steal": {
+        "outcomes": {
+          "0": "Prise la main dans le sac ! Le marchand avertit les gardes.",
+          "1": "Vous dérobez discrètement un objet de valeur et prenez la fuite sans être vu."
+        },
+        "text": "Tenter de dérober un objet"
+      },
+      "haggle": {
+        "outcomes": {
+          "0": "Vos talents de négociateur payent : vous repartez avec une belle réduction et l'objet convoité.",
+          "1": "Le marchand s'offense et préfère vous voir partir plutôt que continuer la discussion."
+        },
+        "text": "Marchander"
+      }
+    },
+    "text": "Un marchand ambulant s'évertue à attirer l'attention des passants avec ses babioles exotiques."
+  },
+  "84": {
+    "possibilities": {
+      "help": {
+        "outcomes": {
+          "0": "Vous retrouvez l'enfant et ses parents vous remercient chaleureusement, puis vous remettent une petite récompense.",
+          "1": "L'enfant mène rapidement à un petit trésor oublié : un objet ancien que vous pouvez emporter."
+        },
+        "text": "Aider l'enfant"
+      },
+      "ask": {
+        "outcomes": {
+          "0": "La famille vous offre une maigre pièce en remerciement, mais semble plus soulagée par votre aide que par vos attentes."
+        },
+        "text": "Demander une récompense"
+      },
+      "end": {
+        "outcomes": {
+          "0": "L'enfant pleure toujours, et vous repartez sans intervenir."
+        }
+      }
+    },
+    "text": "Un enfant perdu cherche désespérément du regard. Il pleure et appelle quelqu'un à l'aide."
+  },
+  "85": {
+    "possibilities": {
+      "report": {
+        "outcomes": {
+          "0": "Vous signalez le voleur aux gardes. Ils attrapent le malfrat qui perd sa bourse devant vous.",
+          "1": "La conversation avec les gardes vous retarde, mais vous recevez une petite récompense de la part du marchand."
+        },
+        "text": "Signaler le pickpocket"
+      },
+      "stealFromThief": {
+        "outcomes": {
+          "0": "Vous surprenez le voleur et lui reprenez son butin, que vous conservez pour vous.",
+          "1": "Le voleur se défend violemment et vous vous retrouvez blessé."
+        },
+        "text": "Profiter pour voler le pickpocket"
+      },
+      "fight": {
+        "outcomes": {
+          "0": "Vous maîtrisez le voleur et récupérez ses possessions, mais vous êtes blessé dans la mêlée.",
+          "1": "Le combat dégénère et vous perdez plus que vous n'auriez espéré."
+        },
+        "text": "Intervenir et combattre"
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Vous préférez ne pas vous en mêler. Le vol se déroule sans encombre."
+        },
+        "text": "Ne rien faire"
+      }
+    },
+    "text": "Un voleur profite de la foule pour dérober la bourse d'un passant. Vous le voyez au coin de l'œil."
+  },
+  "86": {
+    "possibilities": {
+      "dance": {
+        "outcomes": {
+          "0": "La danse vous revigore et vous repartez plein d'entrain.",
+          "1": "Vous êtes victime d'un malaise dû à l'alcool et devez vous reposer."
+        },
+        "text": "Danser avec la foule"
+      },
+      "drink": {
+        "outcomes": {
+          "0": "La boisson vous rend nostalgique et vous laisse un souvenir inattendu.",
+          "1": "Vous prenez un mauvais breuvage et vous sentez mal après quelques gorgées."
+        },
+        "text": "Prendre un verre"
+      },
+      "pickPocket": {
+        "outcomes": {
+          "0": "Vous faites un coup discret et repartez plus riche, personne ne vous a vu.",
+          "1": "Un garde vous attrape la main dans un sac et vous payez cher votre audace."
+        },
+        "text": "Tenter un petit larcin"
+      },
+      "end": {
+        "outcomes": {
+          "0": "La fête bat son plein, mais vous n'avez aucune envie de vous mêler à la foule et vous vous écartez."
+        }
+      }
+    },
+    "text": "La place est occupée par un marché festif où des ménestrels jouent et des grappins attendent leurs victuailles."
+  },
+  "87": {
+    "possibilities": {
+      "skip": {
+        "outcomes": {
+          "0": "Vous décidez de ne pas vous attarder au marché aux chevaux et reprenez votre route."
+        }
+      },
+      "buyHorse": {
+        "outcomes": {
+          "0": "Vous trouvez un cheval vigoureux et repartez à cheval, fier de votre achat.",
+          "1": "Le cheval est moins docile que prévu et vous coûtera un effort considérable."
+        },
+        "text": "Acheter un cheval"
+      },
+      "trade": {
+        "outcomes": {
+          "0": "Votre échange est jugé honnête et vous repartez avec un nouvel équipement.",
+          "1": "La négociation échoue : vous perdez votre temps et repartez bredouille."
+        },
+        "text": "Tenter un échange"
+      },
+      "stealHorse": {
+        "outcomes": {
+          "0": "Vous parvenez à dérober un cheval, mais l'escapade sera mouvementée.",
+          "1": "On vous attrape, et vous subissez le sort des voleurs de bêtes : la prison."
+        },
+        "text": "Essayer de voler un cheval"
+      }
+    },
+    "text": "Des étals et des enclos forment un marché animé où l'on négocie montures et équipements."
+  },
+  "88": {
+    "possibilities": {
+      "touchStatue": {
+        "outcomes": {
+          "0": "Votre main effleure la pierre et une petite récompense matérielle vous trouve à portée.",
+          "1": "La statue se met à mordre votre intérêt : un malus s'abat sur vous."
+        },
+        "text": "Toucher la statue"
+      },
+      "pray": {
+        "outcomes": {
+          "0": "Un calme vous envahit et vous regagnez un peu de vigueur.",
+          "1": "La prière est dérangée par un passant bruyant et vous repartez déçu."
+        },
+        "text": "Prier devant la statue"
+      },
+      "break": {
+        "outcomes": {
+          "0": "Vous cassez l'objet mais déclenchez l'ire des voisins, qui vous poursuivent.",
+          "1": "La statue se défend d'une manière inexplicable et vous met en fâcheuse posture."
+        },
+        "text": "Endommager la statue"
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous détournez le regard, jugeant qu'il vaut mieux ne pas toucher à l'inconnu."
+        }
+      }
+    },
+    "text": "Une statue curieuse trône à flanc de rue, sculptée avec une précision qui frise l'obsession."
+  },
+  "89": {
+    "possibilities": {
+      "listen": {
+        "outcomes": {
+          "0": "La mélodie vous apaise et vous repartissez plus serein.",
+          "1": "La musique vous prend au point faible et vous donne un étrange vertige."
+        },
+        "text": "S'arrêter pour écouter"
+      },
+      "followMelody": {
+        "outcomes": {
+          "0": "La musique vous mène à un petit trésor caché, dissimulé près d'un banc.",
+          "1": "La musique vous attire loin de la route, vous perdez de précieuses minutes."
+        },
+        "text": "Suivre la mélodie"
+      },
+      "coverEars": {
+        "outcomes": {
+          "0": "La mélodie étant vive, vous vous protégez et continuez votre route sereinement."
+        },
+        "text": "Se boucher les oreilles"
+      },
+      "end": {
+        "outcomes": {
+          "0": "La mélodie s'éteint dans la distance. Vous rallumez votre vigilance et poursuivez votre chemin."
+        }
+      }
+    },
+    "text": "Une mélodie étrange s'élève entre les ruelles de la ville, douce mais insidieuse."
+  },
   "9": {
     "possibilities": {
       "end": {

@@ -36,6 +36,10 @@ import { Maps } from "../maps/Maps";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { PetUtils } from "../utils/PetUtils";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import {
+	GASPARD_JO_RECIPE_COSTS, RecipeDiscoverySource
+} from "../../../../Lib/src/constants/CookingConstants";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
 
@@ -200,12 +204,32 @@ async function applyOutcome(
 		await petEntity.save();
 	}
 
+	// Discover a Gaspard Jo recipe when successfully finding soup (costs money)
+	let discoveredRecipeId: string | undefined;
+	let recipeCost: number | undefined;
+	if (foodType === SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP && [
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PLAYER,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY
+	].includes(outcome)) {
+		const discovery = await RecipeDiscoveryService.tryDiscoverAndPay({
+			player,
+			source: RecipeDiscoverySource.GASPARD_JO,
+			costs: GASPARD_JO_RECIPE_COSTS,
+			response
+		});
+		discoveredRecipeId = discovery.discoveredRecipeId;
+		recipeCost = discovery.recipeCost;
+	}
+
 	response.push(makePacket(SmallEventPetFoodPacket, {
 		outcome,
 		foodType,
 		loveChange,
 		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined,
-		petSex: petEntity.sex
+		petSex: petEntity.sex,
+		discoveredRecipeId,
+		recipeCost
 	}));
 }
 
@@ -263,6 +287,7 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 
 /**
  * Handle the continue reaction outcome
+ * @param _player
  * @param properties
  */
 function handleContinueReaction(_player: Player, properties: PetFoodProperties): Promise<string> {

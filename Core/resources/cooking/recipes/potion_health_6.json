@@ -1,0 +1,33 @@
+{
+  "level": 6,
+  "recipeType": "POTION_HEALTH",
+  "plants": [
+    {
+      "plantId": 1,
+      "quantity": 3
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 52,
+      "quantity": 1
+    },
+    {
+      "materialId": 30,
+      "quantity": 1
+    },
+    {
+      "materialId": 41,
+      "quantity": 1
+    },
+    {
+      "materialId": 54,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 1,
+  "potionRarity": 5,
+  "discoveredByDefault": true,
+  "petFood": null
+}

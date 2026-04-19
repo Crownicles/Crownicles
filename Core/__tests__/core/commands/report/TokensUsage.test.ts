@@ -1,15 +1,14 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { crowniclesInstance } from "../../../../src";
-import { TravelTime } from "../../../../src/core/maps/TravelTime";
-import { Effect } from "../../../../../Lib/src/types/Effect";
-import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
-import { MapLinkDataController } from "../../../../src/data/MapLink";
-import { PlayerSmallEvents } from "../../../../src/core/database/game/models/PlayerSmallEvent";
-import { Maps } from "../../../../src/core/maps/Maps";
-import { Constants } from "../../../../../Lib/src/constants/Constants";
-import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
-import { PlayerSmallEvent } from "../../../../src/core/database/game/models/PlayerSmallEvent";
-import { canUseTokensAtLocation } from "../../../../src/core/report/ReportTravelService";
+import {beforeEach, describe, expect, it, vi} from "vitest";
+import {crowniclesInstance} from "../../../../src";
+import {TravelTime} from "../../../../src/core/maps/TravelTime";
+import {Effect} from "../../../../../Lib/src/types/Effect";
+import {TokensConstants} from "../../../../../Lib/src/constants/TokensConstants";
+import {MapLinkDataController} from "../../../../src/data/MapLink";
+import {PlayerSmallEvent, PlayerSmallEvents} from "../../../../src/core/database/game/models/PlayerSmallEvent";
+import {Maps} from "../../../../src/core/maps/Maps";
+import {Constants} from "../../../../../Lib/src/constants/Constants";
+import {NumberChangeReason} from "../../../../../Lib/src/constants/LogsConstants";
+import {canUseTokensAtLocation} from "../../../../src/core/report/ReportTravelService";
 
 // Use fake timers so that `Date.now()` and `new Date()` both return our controlled `now`
 vi.useFakeTimers();
@@ -60,7 +59,7 @@ interface MockPlayer {
  */
 function createMockPlayer(overrides: Partial<MockPlayer> = {}): MockPlayer {
 	const now = Date.now();
-	const player: MockPlayer = {
+	return {
 		id: 1,
 		keycloakId: "test-user-123",
 		tokens: 10,
@@ -87,7 +86,6 @@ function createMockPlayer(overrides: Partial<MockPlayer> = {}): MockPlayer {
 		}),
 		...overrides
 	};
-	return player;
 }
 
 describe("Tokens Usage", () => {

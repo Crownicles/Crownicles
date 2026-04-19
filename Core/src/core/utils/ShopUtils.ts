@@ -1,6 +1,8 @@
 import {
 	additionalShopData,
+	BuyCallbackResult,
 	CommandShopClosed,
+	CommandShopGenericPurchase,
 	CommandShopNotEnoughCurrency,
 	ReactionCollectorShop,
 	ReactionCollectorShopCloseReaction,
@@ -26,7 +28,7 @@ export type ShopInformations = {
 	shopCategories: ShopCategory[];
 	player: Player;
 	additionalShopData?: additionalShopData & { currency?: ShopCurrency };
-	logger: (keycloakId: string, shopItemName: ShopItemType, amount?: number) => Promise<void>;
+	logger?: (keycloakId: string, shopItemName: ShopItemType, amount?: number) => Promise<void>;
 };
 
 export abstract class ShopUtils {
@@ -60,11 +62,22 @@ export abstract class ShopUtils {
 			const buyResult = await shopCategories
 				.find(category => category.id === reactionInstance.shopCategoryId)!.items
 				.find(item => item.id === reactionInstance.shopItemId)!.buyCallback(response, player.id, context, reactionInstance.amount);
-			if (buyResult) {
+			const isDetailedResult = typeof buyResult !== "boolean";
+			const parsed: BuyCallbackResult = isDetailedResult ? buyResult as BuyCallbackResult : { success: buyResult as boolean };
+			if (parsed.success) {
 				// Get fresh PlayerMissionsInfo after buyCallback in case missions updated gem count
 				const currentPlayerInfo = additionalShopData.currency === ShopCurrency.MONEY ? player : await PlayerMissionsInfos.getOfPlayer(player.id);
 				await this.manageCurrencySpending(currentPlayerInfo, reactionInstance, response);
-				logger(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
+				if (isDetailedResult) {
+					const translationParams = this.getTranslationParams(reactionInstance.shopItemId, additionalShopData);
+					response.push(makePacket(CommandShopGenericPurchase, {
+						shopItemId: reactionInstance.shopItemId,
+						amount: reactionInstance.amount,
+						materials: parsed.materials,
+						translationParams
+					}));
+				}
+				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
 			}
 		};
 
@@ -82,10 +95,10 @@ export abstract class ShopUtils {
 		response.push(packet);
 	}
 
-	private static canBuyItem<T extends ShopCurrency>(
-		player: T extends ShopCurrency.MONEY ? Player : PlayerMissionsInfo,
+	private static canBuyItem(
+		player: Player | PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
-		currency: T,
+		currency: ShopCurrency,
 		response: CrowniclesPacket[]
 	): boolean {
 		const valueToCheck = player instanceof Player ? player.money : player.gems;
@@ -99,8 +112,8 @@ export abstract class ShopUtils {
 		return true;
 	}
 
-	private static async manageCurrencySpending<T extends ShopCurrency>(
-		player: T extends ShopCurrency.MONEY ? Player : PlayerMissionsInfo,
+	private static async manageCurrencySpending(
+		player: Player | PlayerMissionsInfo,
 		reactionInstance: ReactionCollectorShopItemReaction,
 		response: CrowniclesPacket[]
 	): Promise<void> {
@@ -115,5 +128,16 @@ export abstract class ShopUtils {
 			await player.spendGems(reactionInstance.price, response, NumberChangeReason.MISSION_SHOP);
 		}
 		await player.save();
+	}
+
+	private static getTranslationParams(shopItemId: ShopItemType, shopData: additionalShopData): Record<string, string> | undefined {
+		if (shopItemId >= ShopItemType.WEEKLY_PLANT_TIER_1 && shopItemId <= ShopItemType.WEEKLY_PLANT_TIER_3) {
+			const tierIndex = shopItemId - ShopItemType.WEEKLY_PLANT_TIER_1;
+			const plantId = shopData.weeklyPlants?.[tierIndex];
+			if (plantId) {
+				return { plantId: String(plantId) };
+			}
+		}
+		return undefined;
 	}
 }

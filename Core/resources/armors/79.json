@@ -1,5 +1,6 @@
 {
   "rarity": 6,
   "rawDefense": 1,
-  "speed": 10
+  "speed": 10,
+  "type": "rope"
 }

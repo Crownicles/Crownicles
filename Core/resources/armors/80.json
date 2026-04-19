@@ -2,5 +2,6 @@
   "rarity": 6,
   "rawDefense": 5,
   "attack": 10,
-  "speed": 10
+  "speed": 10,
+  "type": "magic"
 }

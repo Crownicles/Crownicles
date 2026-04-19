@@ -32,7 +32,7 @@ export abstract class GuildPets {
 	 */
 	static addPet(guild: Guild, petEntity: PetEntity, logInDatabase: boolean): GuildPet {
 		if (logInDatabase) {
-			crowniclesInstance.logsDatabase.logGuildNewPet(guild, petEntity)
+			crowniclesInstance?.logsDatabase.logGuildNewPet(guild, petEntity)
 				.then();
 		}
 		return GuildPet.build({

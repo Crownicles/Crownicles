@@ -1,0 +1,549 @@
+import {
+	ActionRowBuilder, ButtonBuilder, ButtonStyle,
+	Message, parseEmoji
+} from "discord.js";
+import { ICommand } from "../ICommand";
+import {
+	makePacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
+import { DiscordCache } from "../../bot/DiscordCache";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
+import {
+	CommandEquipPacketReq, CommandEquipActionReq, CommandEquipActionRes, EquipAction
+} from "../../../../Lib/src/packets/commands/CommandEquipPacket";
+import { EquipCategoryData } from "../../../../Lib/src/types/EquipCategoryData";
+import {
+	CrowniclesNestedMenus, CrowniclesNestedMenu, CrowniclesNestedMenuCollector
+} from "../../messages/CrowniclesNestedMenus";
+import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
+import i18n from "../../translations/i18n";
+import { DisplayUtils } from "../../utils/DisplayUtils";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import {
+	ItemCategory, ItemConstants
+} from "../../../../Lib/src/constants/ItemConstants";
+import { DiscordMQTT } from "../../bot/DiscordMQTT";
+import { PacketUtils } from "../../utils/PacketUtils";
+import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
+import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import {
+	ReactionCollectorEquipData, ReactionCollectorEquipCloseReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorEquip";
+import {
+	ReactionCollectorResetTimerPacketReq
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
+import { Language } from "../../../../Lib/src/Language";
+import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
+import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
+import { CATEGORY_INFO } from "../../utils/ItemCategoryInfo";
+
+/*
+ * =============================================
+ * Constants
+ * =============================================
+ */
+
+const EQUIP_MENU_IDS = {
+	MAIN: "EQUIP_MAIN",
+	CATEGORY_PREFIX: "EQUIP_CAT_",
+	CATEGORY_DETAIL_PREFIX: "EQUIP_DETAIL_",
+	EQUIP_PREFIX: "EQUIP_ITEM_",
+	DEPOSIT_PREFIX: "EQUIP_DEPOSIT_",
+	BACK_TO_CATEGORIES: "EQUIP_BACK_CATS",
+	CLOSE: "EQUIP_CLOSE"
+} as const;
+
+/*
+ * =============================================
+ * Context for the equip menu
+ * =============================================
+ */
+
+interface EquipMenuContext {
+	context: PacketContext;
+	interaction: CrowniclesInteraction;
+	lng: Language;
+	pseudo: string;
+	collectorTime: number;
+	collectorId: string;
+	categories: EquipCategoryData[];
+	packet: ReactionCollectorCreationPacket;
+	closeReactionIndex: number;
+}
+
+/*
+ * =============================================
+ * Slash command setup
+ * =============================================
+ */
+
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandEquipPacketReq> {
+	await interaction.deferReply();
+	return makePacket(CommandEquipPacketReq, {});
+}
+
+/*
+ * =============================================
+ * Main menu builder
+ * =============================================
+ */
+
+function buildMainMenu(ctx: EquipMenuContext): CrowniclesNestedMenu {
+	const buttons: ButtonBuilder[] = [];
+
+	for (let i = 0; i < CATEGORY_INFO.length; i++) {
+		const catInfo = CATEGORY_INFO[i];
+		const categoryData = ctx.categories.find(c => c.category === catInfo.category);
+		if (!categoryData) {
+			continue;
+		}
+
+		const itemCount = (categoryData.equippedItem ? 1 : 0) + categoryData.reserveItems.length;
+		buttons.push(
+			new ButtonBuilder()
+				.setCustomId(`${EQUIP_MENU_IDS.CATEGORY_PREFIX}${i}`)
+				.setLabel(`${i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })} (${itemCount})`)
+				.setEmoji(CrowniclesIcons.itemCategories[catInfo.category])
+				.setStyle(ButtonStyle.Primary)
+		);
+	}
+
+	buttons.push(
+		new ButtonBuilder()
+			.setCustomId(EQUIP_MENU_IDS.CLOSE)
+			.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+			.setStyle(ButtonStyle.Secondary)
+	);
+
+	return {
+		embed: new CrowniclesEmbed()
+			.formatAuthor(i18n.t("commands:equip.title", {
+				lng: ctx.lng, pseudo: ctx.pseudo
+			}), ctx.interaction.user)
+			.setDescription(i18n.t("commands:equip.mainDescription", { lng: ctx.lng })),
+		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(buttons)],
+		createCollector: createMainMenuCollector(ctx)
+	};
+}
+
+/**
+ * Create a collector for the main menu button interactions.
+ */
+function createMainMenuCollector(ctx: EquipMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
+		const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+		collector.on("collect", async interaction => {
+			if (interaction.user.id !== ctx.interaction.user.id) {
+				await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
+				return;
+			}
+
+			if (!interaction.isButton()) {
+				return;
+			}
+
+			const value = interaction.customId;
+
+			if (value === EQUIP_MENU_IDS.CLOSE) {
+				await interaction.deferUpdate();
+				DiscordCollectorUtils.sendReaction(
+					ctx.packet, ctx.context, ctx.context.keycloakId!, interaction, ctx.closeReactionIndex
+				);
+				return;
+			}
+
+			if (value.startsWith(EQUIP_MENU_IDS.CATEGORY_PREFIX)) {
+				const categoryIndex = parseInt(value.replace(EQUIP_MENU_IDS.CATEGORY_PREFIX, ""), 10);
+				if (!Number.isNaN(categoryIndex)) {
+					await interaction.deferUpdate();
+					registerCategoryMenu(ctx, categoryIndex, nestedMenus);
+					await nestedMenus.changeMenu(`${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
+				}
+			}
+		});
+		return collector;
+	};
+}
+
+/*
+ * =============================================
+ * Category detail menu builder
+ * =============================================
+ */
+
+/**
+ * Build a simplified swap section when there is exactly 1 equipped item and 1 reserve item.
+ * Shows both items and a single swap button.
+ */
+function buildSwapSection(
+	ctx: EquipMenuContext,
+	categoryData: EquipCategoryData,
+	catInfo: typeof CATEGORY_INFO[number],
+	rows: ActionRowBuilder<ButtonBuilder>[]
+): string {
+	const reserveItem = categoryData.reserveItems[0];
+	const equippedDetails = DisplayUtils.withUnlimitedMaxValue(categoryData.equippedItem!.details, catInfo.category);
+	const reserveDetails = DisplayUtils.withUnlimitedMaxValue(reserveItem.details, catInfo.category);
+
+	let description = `\n\n${i18n.t("commands:equip.swapSection", { lng: ctx.lng })}`;
+	description += `\n${CrowniclesIcons.equipCommand.equipped} ${DisplayUtils.getItemDisplayWithStats(equippedDetails, ctx.lng)}`;
+	description += `\n${CrowniclesIcons.equipCommand.reserve} ${DisplayUtils.getItemDisplayWithStats(reserveDetails, ctx.lng)}`;
+
+	const button = new ButtonBuilder()
+		.setEmoji(parseEmoji(CrowniclesIcons.equipCommand.swap)!)
+		.setCustomId(`${EQUIP_MENU_IDS.EQUIP_PREFIX}${catInfo.category}_${reserveItem.slot}`)
+		.setStyle(ButtonStyle.Primary);
+
+	rows[rows.length - 1].addComponents(button);
+
+	return description;
+}
+
+/**
+ * Build the "equipped item" section: description text + deposit button.
+ */
+function buildEquippedSection(
+	ctx: EquipMenuContext,
+	categoryData: EquipCategoryData,
+	catInfo: typeof CATEGORY_INFO[number],
+	rows: ActionRowBuilder<ButtonBuilder>[]
+): {
+	description: string; choiceIndex: number;
+} {
+	let description = `\n\n${i18n.t("commands:equip.equippedSection", { lng: ctx.lng })}`;
+	let choiceIndex = 0;
+
+	if (categoryData.equippedItem) {
+		const details = DisplayUtils.withUnlimitedMaxValue(categoryData.equippedItem.details, catInfo.category);
+		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
+		description += `\n${CrowniclesIcons.choiceEmotes[choiceIndex]} - ${itemDisplay}`;
+
+		const canDeposit = categoryData.reserveItems.length < categoryData.maxReserveSlots;
+		const button = new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[choiceIndex])!)
+			.setCustomId(`${EQUIP_MENU_IDS.DEPOSIT_PREFIX}${catInfo.category}`)
+			.setStyle(ButtonStyle.Secondary)
+			.setDisabled(!canDeposit);
+
+		rows[rows.length - 1].addComponents(button);
+		choiceIndex++;
+
+		if (!canDeposit) {
+			description += ` *(${i18n.t("commands:equip.reserveFull", { lng: ctx.lng })})*`;
+		}
+	}
+	else {
+		description += `\n*${i18n.t("commands:equip.noEquippedItem", { lng: ctx.lng })}*`;
+	}
+
+	return {
+		description, choiceIndex
+	};
+}
+
+/**
+ * Build the "reserve items" section: description text + equip buttons.
+ */
+function buildReserveSection(
+	ctx: EquipMenuContext,
+	categoryData: EquipCategoryData,
+	catInfo: typeof CATEGORY_INFO[number],
+	rows: ActionRowBuilder<ButtonBuilder>[],
+	startChoiceIndex: number
+): string {
+	let description = `\n\n${i18n.t("commands:equip.reserveSection", {
+		lng: ctx.lng,
+		count: categoryData.reserveItems.length,
+		max: categoryData.maxReserveSlots
+	})}`;
+
+	let choiceIndex = startChoiceIndex;
+	for (const item of categoryData.reserveItems) {
+		if (choiceIndex >= CrowniclesIcons.choiceEmotes.length) {
+			break;
+		}
+
+		const details = DisplayUtils.withUnlimitedMaxValue(item.details, catInfo.category);
+		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
+		description += `\n${CrowniclesIcons.choiceEmotes[choiceIndex]} - ${itemDisplay}`;
+
+		const button = new ButtonBuilder()
+			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[choiceIndex])!)
+			.setCustomId(`${EQUIP_MENU_IDS.EQUIP_PREFIX}${catInfo.category}_${item.slot}`)
+			.setStyle(ButtonStyle.Secondary);
+
+		DiscordCollectorUtils.addButtonToRow(rows, button);
+		choiceIndex++;
+	}
+
+	if (categoryData.reserveItems.length === 0) {
+		description += `\n*${i18n.t("commands:equip.noReserveItems", { lng: ctx.lng })}*`;
+	}
+
+	return description;
+}
+
+/**
+ * Create collector for category detail menu interactions.
+ */
+function createEquipCategoryCollector(
+	ctx: EquipMenuContext,
+	categoryIndex: number
+): (menus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return (menus, message) => {
+		const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+		collector.on("collect", async interaction => {
+			if (interaction.user.id !== ctx.interaction.user.id) {
+				await sendInteractionNotForYou(interaction.user, interaction, ctx.lng);
+				return;
+			}
+
+			if (!interaction.isButton()) {
+				return;
+			}
+
+			const value = interaction.customId;
+
+			if (value === EQUIP_MENU_IDS.BACK_TO_CATEGORIES) {
+				await interaction.deferUpdate();
+				refreshMainMenu(ctx, menus);
+				await menus.changeToMainMenu();
+				return;
+			}
+
+			if (value.startsWith(EQUIP_MENU_IDS.EQUIP_PREFIX)) {
+				const parts = value.replace(EQUIP_MENU_IDS.EQUIP_PREFIX, "").split("_");
+				const category = parseInt(parts[0], 10) as ItemCategory;
+				const slot = parseInt(parts[1], 10);
+				await interaction.deferUpdate();
+				await sendEquipAction({
+					ctx, action: ItemConstants.EQUIP_ACTIONS.EQUIP, itemCategory: category, slot, categoryIndex, nestedMenus: menus
+				});
+				return;
+			}
+
+			if (value.startsWith(EQUIP_MENU_IDS.DEPOSIT_PREFIX)) {
+				const category = parseInt(value.replace(EQUIP_MENU_IDS.DEPOSIT_PREFIX, ""), 10) as ItemCategory;
+				await interaction.deferUpdate();
+				await sendEquipAction({
+					ctx, action: ItemConstants.EQUIP_ACTIONS.DEPOSIT, itemCategory: category, slot: 0, categoryIndex, nestedMenus: menus
+				});
+			}
+		});
+		return collector;
+	};
+}
+
+/**
+ * Add a back button to the last row, creating a new row if needed.
+ */
+function addBackButton(rows: ActionRowBuilder<ButtonBuilder>[]): void {
+	const backButton = new ButtonBuilder()
+		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+		.setCustomId(EQUIP_MENU_IDS.BACK_TO_CATEGORIES)
+		.setStyle(ButtonStyle.Secondary);
+
+	DiscordCollectorUtils.addButtonToRow(rows, backButton);
+}
+
+/**
+ * Build the full category detail menu (embed + buttons + collector).
+ */
+function buildCategoryDetailMenu(
+	ctx: EquipMenuContext,
+	categoryData: EquipCategoryData,
+	catInfo: typeof CATEGORY_INFO[number],
+	categoryIndex: number
+): CrowniclesNestedMenu {
+	const rows: ActionRowBuilder<ButtonBuilder>[] = [new ActionRowBuilder<ButtonBuilder>()];
+
+	let description = i18n.t("commands:equip.categoryHeader", {
+		lng: ctx.lng,
+		category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng })
+	});
+
+	const isSingleSwap = categoryData.equippedItem !== null && categoryData.reserveItems.length === 1;
+
+	if (isSingleSwap) {
+		description += buildSwapSection(ctx, categoryData, catInfo, rows);
+	}
+	else {
+		const equipped = buildEquippedSection(ctx, categoryData, catInfo, rows);
+		description += equipped.description;
+		description += buildReserveSection(ctx, categoryData, catInfo, rows, equipped.choiceIndex);
+	}
+
+	addBackButton(rows);
+
+	return {
+		embed: new CrowniclesEmbed()
+			.formatAuthor(i18n.t("commands:equip.title", {
+				lng: ctx.lng, pseudo: ctx.pseudo
+			}), ctx.interaction.user)
+			.setDescription(description),
+		components: rows,
+		createCollector: createEquipCategoryCollector(ctx, categoryIndex)
+	};
+}
+
+function registerCategoryMenu(
+	ctx: EquipMenuContext,
+	categoryIndex: number,
+	nestedMenus: CrowniclesNestedMenus
+): void {
+	const catInfo = CATEGORY_INFO[categoryIndex];
+	const categoryData = ctx.categories.find(c => c.category === catInfo.category);
+	if (!categoryData) {
+		return;
+	}
+
+	nestedMenus.registerMenu(
+		`${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`,
+		buildCategoryDetailMenu(ctx, categoryData, catInfo, categoryIndex)
+	);
+}
+
+/*
+ * =============================================
+ * AsyncPacketSender for actions
+ * =============================================
+ */
+
+interface EquipActionParams {
+	ctx: EquipMenuContext;
+	action: EquipAction;
+	itemCategory: ItemCategory;
+	slot: number;
+	categoryIndex: number;
+	nestedMenus: CrowniclesNestedMenus;
+}
+
+async function sendEquipAction({
+	ctx,
+	action,
+	itemCategory,
+	slot,
+	categoryIndex,
+	nestedMenus
+}: EquipActionParams): Promise<void> {
+	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+		ctx.context,
+		makePacket(CommandEquipActionReq, {
+			action, itemCategory, slot
+		}),
+		async (_responseContext, _packetName, responsePacket) => {
+			const response = responsePacket as unknown as CommandEquipActionRes;
+
+			if (!response.success) {
+				return;
+			}
+
+			// Update categories in context
+			ctx.categories = response.categories;
+
+			// Refresh the main menu (category buttons with updated counts)
+			refreshMainMenu(ctx, nestedMenus);
+
+			// Refresh the category detail view
+			registerCategoryMenu(ctx, categoryIndex, nestedMenus);
+			await nestedMenus.changeMenu(`${EQUIP_MENU_IDS.CATEGORY_DETAIL_PREFIX}${categoryIndex}`);
+		}
+	);
+}
+
+/*
+ * =============================================
+ * Menu refresh helpers
+ * =============================================
+ */
+
+function refreshMainMenu(ctx: EquipMenuContext, nestedMenus: CrowniclesNestedMenus): void {
+	const mainMenu = buildMainMenu(ctx);
+
+	/*
+	 * Re-register the main menu by accessing it through changeToMainMenu's internal state
+	 * We need to rebuild and re-register instead
+	 */
+	nestedMenus.registerMenu(EQUIP_MENU_IDS.MAIN, mainMenu);
+}
+
+/*
+ * =============================================
+ * Collector entry point
+ * =============================================
+ */
+
+export async function equipCollector(
+	context: PacketContext,
+	packet: ReactionCollectorCreationPacket
+): Promise<ReactionCollectorReturnTypeOrNull> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return null;
+	}
+
+	const collectorTime = packet.endTime - Date.now();
+	const pseudo = await DisplayUtils.getEscapedUsername(context.keycloakId!, interaction.userLanguage);
+	const equipData = packet.data.data as ReactionCollectorEquipData;
+	const closeReactionIndex = packet.reactions.findIndex(
+		reaction => reaction.type === ReactionCollectorEquipCloseReaction.name
+	);
+
+	const ctx: EquipMenuContext = {
+		context,
+		interaction,
+		lng: interaction.userLanguage,
+		pseudo,
+		collectorTime,
+		collectorId: packet.id,
+		categories: equipData.categories,
+		packet,
+		closeReactionIndex
+	};
+
+	const mainMenu = buildMainMenu(ctx);
+	const menus = new Map<string, CrowniclesNestedMenu>();
+
+	const nestedMenus = new CrowniclesNestedMenus(
+		mainMenu,
+		menus,
+		() => {
+			PacketUtils.sendPacketToBackend(context, makePacket(
+				ReactionCollectorResetTimerPacketReq,
+				{ reactionCollectorId: packet.id }
+			));
+		}
+	);
+
+	const msg = await nestedMenus.send(interaction);
+
+	// Dummy collector to sync lifecycle with backend
+	const dummyCollector = msg.createReactionCollector();
+	dummyCollector.on("end", async () => {
+		await nestedMenus.stopCurrentCollector();
+		await interaction.followUp({
+			embeds: [
+				new CrowniclesEmbed()
+					.formatAuthor(i18n.t("commands:equip.closeTitle", {
+						lng: ctx.lng, pseudo
+					}), interaction.user)
+					.setDescription(i18n.t("commands:equip.closeDescription", { lng: ctx.lng }))
+			]
+		});
+	});
+
+	return [dummyCollector];
+}
+
+/*
+ * =============================================
+ * Command export
+ * =============================================
+ */
+
+export const commandInfo: ICommand = {
+	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("equip"),
+	getPacket,
+	mainGuildCommand: false
+};

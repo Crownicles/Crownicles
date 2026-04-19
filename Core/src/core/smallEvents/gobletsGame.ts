@@ -23,7 +23,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorGobletsGame";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 
@@ -137,7 +137,10 @@ async function applyMalus(
 			});
 			packet.itemId = item.id;
 			packet.itemCategory = item.getCategory();
-			await giveItemToPlayer(response, context, player, item);
+			await giveItemToPlayer(response, context, player, item, {
+				itemLevel: generateRandomLootLevel(),
+				itemEnchantmentId: generateRandomLootEnchantment(item)
+			});
 			break;
 		}
 		case SmallEventGobletsGameMalus.NOTHING:

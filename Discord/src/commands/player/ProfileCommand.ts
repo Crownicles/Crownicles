@@ -109,7 +109,7 @@ function addField(fields: EmbedField[], fieldKey: string, shouldBeFielded: boole
  * Add information field (health, money, experience, tokens)
  */
 function addInformationField(fields: EmbedField[], packet: CommandProfilePacketRes, lng: Language): void {
-	const showTokens = packet.playerData.level >= TokensConstants.LEVEL_TO_UNLOCK;
+	const showTokens = packet.playerData.tokens !== undefined;
 	addField(fields, showTokens ? "information" : "informationNoTokens", true, {
 		lng,
 		health: packet.playerData.health.value,
@@ -117,8 +117,8 @@ function addInformationField(fields: EmbedField[], packet: CommandProfilePacketR
 		money: packet.playerData.money,
 		experience: packet.playerData.experience.value,
 		experienceNeededToLevelUp: packet.playerData.experience.max,
-		tokens: packet.playerData.tokens ?? 0,
-		tokensMax: packet.playerData.tokensMax ?? TokensConstants.MAX
+		tokens: packet.playerData.tokens?.value ?? 0,
+		tokensMax: packet.playerData.tokens?.max ?? TokensConstants.MAX
 	});
 }
 
@@ -234,6 +234,14 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 	addLocationFields(fields, packet, lng);
 	addFightRankingField(fields, packet, lng);
 	addPetField(fields, packet, lng);
+
+	addField(fields, "cooking", packet.playerData.cooking !== undefined, {
+		lng,
+		level: packet.playerData.cooking?.level ?? 0,
+		grade: packet.playerData.cooking?.grade
+			? i18n.t(`models:cooking.grades.${packet.playerData.cooking.grade}`, { lng })
+			: ""
+	});
 
 	return fields;
 }

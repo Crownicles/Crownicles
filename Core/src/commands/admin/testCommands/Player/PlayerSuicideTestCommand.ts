@@ -14,7 +14,7 @@ export const commandInfo: ITestCommand = {
  */
 const playerSuicideTestCommand: ExecuteTestCommandLike = async (player, _args, response) => {
 	await player.addHealth({
-		amount: -player.health,
+		amount: -player.getHealthValue(),
 		response,
 		reason: NumberChangeReason.TEST,
 		missionHealthParameter: {

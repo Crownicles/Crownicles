@@ -1,6 +1,7 @@
 {
   "rarity": 3,
   "rawAttack": 1,
+  "type": "nature",
   "tags": [
     "ranged"
   ]
