@@ -691,7 +691,7 @@
             "En cuanto dices la fórmula, pruebas el líquido. No tardas en arrepentirte de tu elección. {emote:effects.scared}"
           ],
           "drunk": [
-            "Vous décidez de goûter à la potion et le regrettez rapidement... Il semblerait qu'un des ingrédients vous reste en travers de la gorge. {emote:effects.drunk}",
+            "Decides probar la poción, pero pronto te arrepientes... Parece que uno de los ingredientes se te ha atascado en la garganta. {emote:effects.drunk}",
             "Parece que la poción tiene un efecto sorprendente. Te sientes un poco borracho... {emote:effects.drunk}"
           ],
           "sick": [
