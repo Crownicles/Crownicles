@@ -86,11 +86,23 @@ function getEmote(emote: string): string | null {
 }
 
 /**
+ * Resolve i18next $t() nesting references that are not resolved when using returnObjects
+ * @param str
+ * @param lng
+ */
+function resolveNesting(str: string, lng: Language): string {
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	return str.replace(/\$t\(([^)]+)\)/g, (_match, key) => (i18next as any).t(key, { lng }) as string);
+}
+
+/**
  * Apply all the crownicles formatting to the given string
  * @param str
+ * @param lng
  */
-function crowniclesFormat(str: string): string {
-	return convertCommandFormat(convertEmoteFormat(str));
+function crowniclesFormat(str: string, lng?: Language): string {
+	const resolved = lng ? resolveNesting(str, lng) : str;
+	return convertCommandFormat(convertEmoteFormat(resolved));
 }
 
 i18next.init(getI18nOptions())
@@ -141,14 +153,14 @@ export class I18nCrownicles {
 		if (options.returnObjects && !Array.isArray(value)) {
 			return Object.entries(value)
 				.reduce((acc, [k, v]) => {
-					acc[k] = crowniclesFormat(v as string);
+					acc[k] = crowniclesFormat(v as string, options.lng);
 					return acc;
 				}, {} as Record<string, string>);
 		}
 		if (Array.isArray(value)) {
-			return (value as string[]).map(crowniclesFormat);
+			return (value as string[]).map(s => crowniclesFormat(s, options.lng));
 		}
-		return crowniclesFormat(value);
+		return crowniclesFormat(value, options.lng);
 	}
 
 	/**
