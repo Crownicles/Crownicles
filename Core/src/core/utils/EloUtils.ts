@@ -1,6 +1,7 @@
 import Player from "../database/game/models/Player";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
+import { LeagueInfoConstants } from "../../../../Lib/src/constants/LeagueInfoConstants";
 
 export abstract class EloUtils {
 	/**
@@ -27,6 +28,25 @@ export abstract class EloUtils {
 		}
 
 		return FightConstants.ELO.MINIMAL_K_FACTOR;
+	}
+
+	/**
+	 * Get the k-factor for an attacker, boosted when the attacker is returning from inactivity.
+	 * Similar to FIDE chess: inactive players get a higher k-factor to converge faster to their true level.
+	 * The boost gradually decreases as fightCountdown goes down with each fight.
+	 * @param attacker
+	 */
+	static getAttackerKFactor(attacker: Player): number {
+		const baseFactor = EloUtils.getKFactor(attacker);
+		if (attacker.fightCountdown >= FightConstants.ELO.INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD
+			&& attacker.getLeague().id < LeagueInfoConstants.ROYAL_LEAGUE_ID) {
+			const multiplier = Math.min(
+				attacker.fightCountdown - 1,
+				FightConstants.ELO.INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER
+			);
+			return baseFactor * multiplier;
+		}
+		return baseFactor;
 	}
 
 	/**

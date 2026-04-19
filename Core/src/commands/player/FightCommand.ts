@@ -207,7 +207,7 @@ async function updatePlayersEloAndCooldowns(
 	fightLogId: number | null
 ): Promise<void> {
 	// Calculate elo
-	const player1KFactor = EloUtils.getKFactor(attacker);
+	const player1KFactor = EloUtils.getAttackerKFactor(attacker);
 	const player2KFactor = EloUtils.getKFactor(defender);
 	const player1NewRating = EloUtils.calculateNewRating(attacker.attackGloryPoints, defender.defenseGloryPoints, attackerGameResult, player1KFactor);
 	const player2NewRating = EloUtils.calculateNewRating(defender.defenseGloryPoints, attacker.attackGloryPoints, defenderGameResult, player2KFactor);

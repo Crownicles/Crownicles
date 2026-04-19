@@ -297,7 +297,9 @@ export abstract class FightConstants {
 		MINIMAL_K_FACTOR_THRESHOLD: 3800,
 		LOW_LEVEL_BONUS_THRESHOLD: 1000,
 		MAX_RANK_FOR_LEAGUE_POINTS_REWARD: 200,
-		ELO_DIFFERENCE_FOR_SAME_ELO: 30
+		ELO_DIFFERENCE_FOR_SAME_ELO: 30,
+		INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER: 4,
+		INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD: 3
 	};
 
 	// If a player has a fight countdown higher than this value, he will not appear in the glory top
