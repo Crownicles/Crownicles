@@ -723,7 +723,8 @@
           "Infelizmente, a poção parece estar completamente carbonizada e não pode ser bebida. Decide não se arriscar a bebê-la e vai-se embora rapidamente.",
           "Termina a poção com a velhota, mas decide não a consumir, preferindo poupar a sua saúde para o resto da sua aventura."
         ]
-      }
+      },
+      "effectOutro": "Sofrerá os efeitos desta alteração durante **{{effectDuration}}**."
     },
     "witchEventNames": {
       "bat": "Adicionar um taco",

@@ -723,7 +723,8 @@
           "Purtroppo la pozione sembra completamente carbonizzata e imbevibile. Decidete di non rischiare di berla e ve ne andate in fretta.",
           "Finite la pozione con l'anziana signora, ma decidete di non consumarla, preferendo conservare la vostra salute per il resto della vostra avventura."
         ]
-      }
+      },
+      "effectOutro": "Subirai gli effetti di questa alterazione per **{{effectDuration}}**."
     },
     "witchEventNames": {
       "bat": "Aggiungere un pipistrello",
