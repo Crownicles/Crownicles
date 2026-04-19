@@ -66,7 +66,7 @@ describe("Pet feed cooldown validation", () => {
 		const constantsContent = readFileSync(constantsPath, "utf8");
 		
 		// Check that BREED_COOLDOWN is set to 30 * 60 * 1000
-		const cooldownMatch = constantsContent.match(/BREED_COOLDOWN\s*=\s*(\d+)\s*\*\s*(\d+)\s*\*\s*(\d+)/);
+		const cooldownMatch = constantsContent.match(/BREED_COOLDOWN\s*=\s*asMilliseconds\((\d+)\s*\*\s*(\d+)\s*\*\s*(\d+)\)/);
 		expect(cooldownMatch).not.toBeNull();
 		
 		if (cooldownMatch) {

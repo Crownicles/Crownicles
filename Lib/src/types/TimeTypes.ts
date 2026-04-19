@@ -1,4 +1,22 @@
 /**
+ * Branded type for values representing minutes.
+ * Use `asMinutes()` to create from a raw number.
+ */
+export type Minute = number & { readonly __brand: "Minute" };
+
+/**
+ * Branded type for values representing hours.
+ * Use `asHours()` to create from a raw number.
+ */
+export type Hour = number & { readonly __brand: "Hour" };
+
+/**
+ * Branded type for values representing days.
+ * Use `asDays()` to create from a raw number.
+ */
+export type Day = number & { readonly __brand: "Day" };
+
+/**
  * Branded type for values representing seconds.
  * Use `asSeconds()` to create from a raw number.
  */
@@ -9,6 +27,27 @@ export type Second = number & { readonly __brand: "Second" };
  * Use `asMilliseconds()` to create from a raw number.
  */
 export type Millisecond = number & { readonly __brand: "Millisecond" };
+
+/**
+ * Cast a raw number as a Minute value
+ */
+export function asMinutes(n: number): Minute {
+	return n as Minute;
+}
+
+/**
+ * Cast a raw number as an Hour value
+ */
+export function asHours(n: number): Hour {
+	return n as Hour;
+}
+
+/**
+ * Cast a raw number as a Day value
+ */
+export function asDays(n: number): Day {
+	return n as Day;
+}
 
 /**
  * Cast a raw number as a Second value

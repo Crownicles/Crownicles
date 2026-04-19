@@ -3,14 +3,14 @@ import {
 	TimeConstants
 } from "../constants/TimeConstants";
 import {
-	asMilliseconds, dateToMs, Millisecond, msDiff, nowMs, Second
+	asMilliseconds, Day, dateToMs, Hour, Millisecond, Minute, msDiff, nowMs, Second
 } from "../types/TimeTypes";
 
 export {
-	asMilliseconds, asSeconds, dateToMs, msDiff, nowMs
+	asMilliseconds, asMinutes, asHours, asDays, asSeconds, dateToMs, msDiff, nowMs
 } from "../types/TimeTypes";
 export type {
-	Millisecond, Second
+	Millisecond, Second, Minute, Hour, Day
 } from "../types/TimeTypes";
 
 /**
@@ -58,8 +58,8 @@ export function getDayNumber(): number {
  * Convert milliseconds to minutes
  * @param milliseconds
  */
-export function millisecondsToMinutes(milliseconds: Millisecond): number {
-	return Math.round(milliseconds / TimeConstants.MS_TIME.MINUTE);
+export function millisecondsToMinutes(milliseconds: Millisecond): Minute {
+	return Math.round(milliseconds / TimeConstants.MS_TIME.MINUTE) as Minute;
 }
 
 /**
@@ -82,24 +82,24 @@ export function hoursToMilliseconds(hours: number): Millisecond {
  * Convert hours to minutes
  * @param hours
  */
-export function hoursToMinutes(hours: number): number {
-	return hours * TimeConstants.S_TIME.MINUTE;
+export function hoursToMinutes(hours: number): Minute {
+	return hours * TimeConstants.S_TIME.MINUTE as Minute;
 }
 
 /**
  * Convert minutes to hours
  * @param minutes
  */
-export function minutesToHours(minutes: number): number {
-	return minutes / TimeConstants.S_TIME.MINUTE;
+export function minutesToHours(minutes: number): Hour {
+	return minutes / TimeConstants.S_TIME.MINUTE as Hour;
 }
 
 /**
  * Convert minutes to hours
  * @param milliseconds
  */
-export function millisecondsToHours(milliseconds: Millisecond): number {
-	return milliseconds / TimeConstants.MS_TIME.HOUR;
+export function millisecondsToHours(milliseconds: Millisecond): Hour {
+	return milliseconds / TimeConstants.MS_TIME.HOUR as Hour;
 }
 
 /**
@@ -130,8 +130,8 @@ export function daysToMilliseconds(days: number): Millisecond {
  * Convert milliseconds to days
  * @param milliseconds
  */
-export function millisecondsToDays(milliseconds: Millisecond): number {
-	return milliseconds / (TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR);
+export function millisecondsToDays(milliseconds: Millisecond): Day {
+	return milliseconds / (TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR) as Day;
 }
 
 /**
@@ -146,8 +146,8 @@ export function hoursToSeconds(hours: number): Second {
  * Convert days to minutes
  * @param days
  */
-export function daysToMinutes(days: number): number {
-	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.S_TIME.MINUTE;
+export function daysToMinutes(days: number): Minute {
+	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.S_TIME.MINUTE as Minute;
 }
 
 /**

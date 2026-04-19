@@ -1,6 +1,6 @@
 import Player from "../database/game/models/Player";
 import {
-	asMilliseconds, Millisecond, millisecondsToMinutes, minutesToMilliseconds
+	asMilliseconds, asMinutes, Millisecond, millisecondsToMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { Maps } from "./Maps";
@@ -279,8 +279,7 @@ export abstract class TravelTime {
 		if (timeTravelled >= Constants.JOIN_BOAT.TIME_TRAVELLED_ONE_HOUR) {
 			scoreFromSmallEvent = await PlayerSmallEvents.calculateCurrentScore(player);
 		}
-
-		timeTravelled -= Constants.JOIN_BOAT.TIME_TRAVELLED_SUBTRAHEND;
+		timeTravelled = asMinutes(timeTravelled - Constants.JOIN_BOAT.TIME_TRAVELLED_SUBTRAHEND);
 		if (timeTravelled > ReportConstants.TIME_LIMIT) {
 			timeTravelled = ReportConstants.TIME_LIMIT;
 		}

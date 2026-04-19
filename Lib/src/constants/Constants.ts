@@ -1,3 +1,5 @@
+import { asMinutes, Minute } from "../types/TimeTypes";
+
 export class Constants {
 	static readonly MESSAGES = {
 		COLLECTOR_TIME: 120000,
@@ -132,10 +134,15 @@ export class Constants {
 	};
 
 
-	static readonly JOIN_BOAT = {
-		TIME_TRAVELLED_SUBTRAHEND: 30,
-		TIME_TRAVELLED_THIRTY_MINUTES: 30,
-		TIME_TRAVELLED_ONE_HOUR: 60,
+	static readonly JOIN_BOAT: {
+		readonly TIME_TRAVELLED_SUBTRAHEND: Minute;
+		readonly TIME_TRAVELLED_THIRTY_MINUTES: Minute;
+		readonly TIME_TRAVELLED_ONE_HOUR: Minute;
+		readonly DIVISOR_TIME_TRAVELLED_LESS_THAN_ONE_HOUR: number;
+	} = {
+		TIME_TRAVELLED_SUBTRAHEND: asMinutes(30),
+		TIME_TRAVELLED_THIRTY_MINUTES: asMinutes(30),
+		TIME_TRAVELLED_ONE_HOUR: asMinutes(60),
 		DIVISOR_TIME_TRAVELLED_LESS_THAN_ONE_HOUR: 3 // The divisor if the time travelled is less than one hour
 	};
 
