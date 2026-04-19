@@ -691,7 +691,7 @@
             "Appena pronunciata la formula, si assaggia il liquido. Non ci vuole molto perché ci si penta della propria scelta. {emote:effects.scared}"
           ],
           "drunk": [
-            "Vous décidez de goûter à la potion et le regrettez rapidement... Il semblerait qu'un des ingrédients vous reste en travers de la gorge. {emote:effects.drunk}",
+            "Decidete di provare la pozione, ma presto ve ne pentite... Sembra che uno degli ingredienti si sia bloccato in gola. {emote:effects.drunk}",
             "Sembra che la pozione abbia un effetto sorprendente. Ti senti un po' ubriaco... {emote:effects.drunk}"
           ],
           "sick": [
