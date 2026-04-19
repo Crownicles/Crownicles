@@ -101,11 +101,18 @@ export async function witchResult(packet: SmallEventWitchResultPacket, context: 
 	const lng = context.discord!.language;
 	const introToLoad = packet.isIngredient ? "smallEvents:witch.witchEventResults.ingredientIntros" : "smallEvents:witch.witchEventResults.adviceIntros";
 	const isTimePenalty = packet.effectId === Effect.OCCUPIED.id && packet.timeLost > 0;
+	const isAlteration = packet.outcome === WitchActionOutcomeType.EFFECT && packet.effectId !== Effect.OCCUPIED.id;
 	const lostTimeDisplay = isTimePenalty ? i18n.formatDuration(packet.timeLost, lng) : null;
 	const timeOutro = isTimePenalty
 		? ` ${StringUtils.getRandomTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", lng, {
 			lostTime: packet.timeLost,
 			lostTimeDisplay
+		})}`
+		: "";
+	const effectOutro = isAlteration
+		? ` ${i18n.t("smallEvents:witch.witchEventResults.effectOutro", {
+			lng,
+			effectDuration: i18n.formatDuration(Effect.getById(packet.effectId)?.timeMinutes ?? 0, lng)
 		})}`
 		: "";
 	const outcomeTranslationToLoad = packet.outcome === WitchActionOutcomeType.EFFECT
@@ -118,7 +125,7 @@ export async function witchResult(packet: SmallEventWitchResultPacket, context: 
 				`${StringUtils.getRandomTranslation(introToLoad, lng, {
 					witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${CrowniclesIcons.witchSmallEvent[packet.ingredientId]}`
 						.toLowerCase()
-				})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${timeOutro}`,
+				})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${timeOutro}${effectOutro}`,
 				interaction.user,
 				lng
 			)
