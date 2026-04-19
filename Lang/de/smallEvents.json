@@ -691,7 +691,7 @@
             "Kaum haben Sie die Formel ausgesprochen, probieren Sie auch schon die Flüssigkeit. Sie werden von einer Panikattacke gepackt und bereuen Ihre Entscheidung bald. {emote:effects.scared}"
           ],
           "drunk": [
-            "Vous décidez de goûter à la potion et le regrettez rapidement... Il semblerait qu'un des ingrédients vous reste en travers de la gorge. {emote:effects.drunk}",
+            "Du beschließt, den Trank zu probieren und bereust es schnell... Es scheint, als würde Ihnen eine der Zutaten im Hals stecken bleiben. {emote:effects.drunk}",
             "Es scheint, dass der Trank eine überraschende Wirkung hat. Sie fühlen sich ein wenig betrunken... {emote:effects.drunk}"
           ],
           "sick": [
