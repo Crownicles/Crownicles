@@ -4,11 +4,24 @@ import {
 import { crowniclesMetricsRegistry } from "./CrowniclesDiscordMetrics";
 import { discordConfig } from "./CrowniclesShard";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
+import { DiscordMQTT } from "./DiscordMQTT";
 import express = require("express");
 
 export abstract class CrowniclesDiscordWebServer {
 	static start(shardId: number): void {
 		const app: Express = express();
+
+		app.get("/health", (_req: Request, res: Response) => {
+			const checks: Record<string, boolean> = {
+				mqtt: DiscordMQTT.globalMqttClient?.connected ?? false
+			};
+
+			const healthy = Object.values(checks).every(Boolean);
+			res.status(healthy ? 200 : 503).json({
+				status: healthy ? "healthy" : "unhealthy",
+				checks
+			});
+		});
 
 		app.get("/metrics", async (_req: Request, res: Response) => {
 			res.setHeader("Content-Type", crowniclesMetricsRegistry.contentType);
