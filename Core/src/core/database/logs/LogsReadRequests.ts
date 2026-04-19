@@ -22,7 +22,9 @@ import {
 	minutesToMilliseconds,
 	msDiff
 } from "../../../../../Lib/src/utils/TimeUtils";
-import { asDays } from "../../../../../Lib/src/types/TimeTypes";
+import {
+	asDays, asHours, asMinutes
+} from "../../../../../Lib/src/types/TimeTypes";
 import { LogsMapLinks } from "./models/LogsMapLinks";
 import { MapConstants } from "../../../../../Lib/src/constants/MapConstants";
 import { LogsFightsResults } from "./models/LogsFightsResults";
@@ -165,7 +167,7 @@ export class LogsReadRequests {
 					[Op.in]: logsPlayersIds
 				},
 				date: {
-					[Op.gt]: Math.floor((Date.now() - minutesToMilliseconds(PVEConstants.MINUTES_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND)) / 1000)
+					[Op.gt]: Math.floor((Date.now() - minutesToMilliseconds(asMinutes(PVEConstants.MINUTES_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND))) / 1000)
 				}
 			},
 			group: ["playerId"],
@@ -300,7 +302,7 @@ export class LogsReadRequests {
 			attributes: [],
 			where: {
 				date: {
-					[Op.gt]: Math.floor((Date.now() - minutesToMilliseconds(minutes)) / 1000)
+					[Op.gt]: Math.floor((Date.now() - minutesToMilliseconds(asMinutes(minutes))) / 1000)
 				},
 				friendly: false
 			},
@@ -459,7 +461,7 @@ export class LogsReadRequests {
 			where: {
 				"$LogsPlayer.keycloakId$": keycloakId,
 				"date": {
-					[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000)
+					[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(asHours(7 * 24))) / 1000)
 				},
 				"$LogsMapLink.start$": MapLocationDataController.instance.getWithAttributes([MapConstants.MAP_ATTRIBUTES.MAIN_CONTINENT])[0].id,
 				"$LogsMapLink.end$": {
@@ -496,7 +498,7 @@ export class LogsReadRequests {
 				"$LogsPlayer.keycloakId$": keycloakId,
 				"$LogsGuild.gameId$": guildId,
 				"date": {
-					[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000)
+					[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(asHours(7 * 24))) / 1000)
 				}
 			},
 			include: [

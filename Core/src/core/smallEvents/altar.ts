@@ -40,7 +40,9 @@ import { MissionsController } from "../missions/MissionsController";
 import {
 	daysToMilliseconds, hoursToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
-import { asDays } from "../../../../Lib/src/types/TimeTypes";
+import {
+	asDays, asHours
+} from "../../../../Lib/src/types/TimeTypes";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 
 /**
@@ -76,10 +78,10 @@ function getRemainingFactor(remaining: number): SmartContributionRemainingFactor
  * Calculate time factor based on urgency.
  */
 function getTimeFactor(timeRemaining: number): SmartContributionTimeFactor {
-	if (timeRemaining <= hoursToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_URGENT_TIME_HOURS)) {
+	if (timeRemaining <= hoursToMilliseconds(asHours(BlessingConstants.SMART_CONTRIBUTION_URGENT_TIME_HOURS))) {
 		return SmartContributionTimeFactor.URGENT;
 	}
-	if (timeRemaining <= hoursToMilliseconds(BlessingConstants.SMART_CONTRIBUTION_MEDIUM_TIME_HOURS)) {
+	if (timeRemaining <= hoursToMilliseconds(asHours(BlessingConstants.SMART_CONTRIBUTION_MEDIUM_TIME_HOURS))) {
 		return SmartContributionTimeFactor.LESS_TIME;
 	}
 	if (timeRemaining <= daysToMilliseconds(asDays(BlessingConstants.SMART_CONTRIBUTION_RELAXED_TIME_DAYS))) {

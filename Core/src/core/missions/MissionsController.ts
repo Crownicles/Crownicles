@@ -7,6 +7,7 @@ import {
 	getTodayMidnight,
 	hoursToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
+import { asHours } from "../../../../Lib/src/types/TimeTypes";
 import { MissionDifficulty } from "./MissionDifficulty";
 import { Campaign } from "./Campaign";
 import { Constants } from "../../../../Lib/src/constants/Constants";
@@ -366,7 +367,7 @@ export abstract class MissionsController {
 			missionId: prop.mission.id,
 			missionVariant: prop.variant,
 			missionObjective: missionData.objectives![prop.index],
-			expiresAt: new Date(Date.now() + hoursToMilliseconds(missionData.expirations![prop.index])),
+			expiresAt: new Date(Date.now() + hoursToMilliseconds(asHours(missionData.expirations![prop.index]))),
 			numberDone: await this.getMissionInterface(missionId)
 				.initialNumberDone(player, prop.variant),
 			gemsToWin: missionData.gems![prop.index],

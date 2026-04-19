@@ -100,7 +100,7 @@ export abstract class TravelTime {
 		// Basic variables
 		const travelStartTime = player.startTravelDate.valueOf();
 		let effectEndTime = player.effectEndDate.valueOf();
-		let effectDuration = minutesToMilliseconds(player.effectDuration);
+		let effectDuration = minutesToMilliseconds(asMinutes(player.effectDuration));
 
 		// Check to avoid errors. If the effect is before the travel starts, move it to the beginning of the start travel
 		if (effectEndTime < travelStartTime) {
@@ -117,7 +117,7 @@ export abstract class TravelTime {
 
 		// Basic variables
 		const effectStartTime = effectEndTime - effectDuration;
-		const tripDuration = minutesToMilliseconds(MapLinkDataController.instance.getById(player.mapLinkId)!.tripDuration);
+		const tripDuration = minutesToMilliseconds(asMinutes(MapLinkDataController.instance.getById(player.mapLinkId)!.tripDuration));
 		const travelEndTime = travelStartTime + effectDuration + tripDuration;
 		let effectRemainingTime = effectEndTime - date.valueOf();
 		if (effectRemainingTime < 0) {
@@ -155,7 +155,7 @@ export abstract class TravelTime {
 	 * @param isMilliseconds
 	 */
 	static async timeTravel(player: Player, time: number, reason: NumberChangeReason, isMilliseconds = false): Promise<void> {
-		let timeMs = isMilliseconds ? time : minutesToMilliseconds(time);
+		let timeMs = isMilliseconds ? time : minutesToMilliseconds(asMinutes(time));
 		const initialEffectEndDate = player.effectEndDate.valueOf();
 
 		// Move the end date of the effect
@@ -194,7 +194,7 @@ export abstract class TravelTime {
 		await TravelTime.timeTravel(player, player.effectRemainingTime(), reason, true);
 
 		// Move the start of the travel because the effect will have a duration of 0
-		player.startTravelDate = new Date(player.startTravelDate.valueOf() + minutesToMilliseconds(player.effectDuration));
+		player.startTravelDate = new Date(player.startTravelDate.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)));
 
 		// Now we can safely remove the effect, as the player is after the effect
 		player.effectId = Effect.NO_EFFECT.id;
@@ -244,7 +244,7 @@ export abstract class TravelTime {
 		else {
 			player.effectDuration = effect.timeMinutes;
 		}
-		player.effectEndDate = new Date(date.valueOf() + minutesToMilliseconds(player.effectDuration));
+		player.effectEndDate = new Date(date.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)));
 
 		// Save and log
 		await player.save();

@@ -10,6 +10,7 @@ import {
 	asMilliseconds,	hoursToMilliseconds,
 	millisecondsToHours, nowMs
 } from "../../../../../../Lib/src/utils/TimeUtils";
+import { asHours } from "../../../../../../Lib/src/types/TimeTypes";
 import { DailyConstants } from "../../../../../../Lib/src/constants/DailyConstants";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Players } from "./Player";
@@ -160,7 +161,7 @@ export function initModel(sequelize: Sequelize): void {
 				await ScheduledDailyBonusNotifications.scheduleNotification(
 					instance.playerId,
 					player.keycloakId,
-					new Date(lastDailyTimestamp + hoursToMilliseconds(DailyConstants.TIME_BETWEEN_DAILIES))
+					new Date(lastDailyTimestamp + hoursToMilliseconds(asHours(DailyConstants.TIME_BETWEEN_DAILIES)))
 				);
 			}
 		};

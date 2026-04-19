@@ -5,6 +5,7 @@ import { BlessingManager } from "../../../../core/blessings/BlessingManager";
 import {
 	dateToMs, hoursToMilliseconds, millisecondsToHours, msDiff, nowMs
 } from "../../../../../../Lib/src/utils/TimeUtils";
+import { asHours } from "../../../../../../Lib/src/types/TimeTypes";
 
 export const commandInfo: ITestCommand = {
 	name: "setpoolage",
@@ -25,7 +26,7 @@ const setPoolAgeTestCommand: ExecuteTestCommandLike = async (_player, args) => {
 	}
 
 	const blessingManager = BlessingManager.getInstance();
-	const newStartDate = new Date(Date.now() - hoursToMilliseconds(hours));
+	const newStartDate = new Date(Date.now() - hoursToMilliseconds(asHours(hours)));
 	await blessingManager.forceSetPoolStartedAt(newStartDate);
 
 	const actualAgeHours = Math.round(millisecondsToHours(msDiff(nowMs(), dateToMs(newStartDate))) * 100) / 100;

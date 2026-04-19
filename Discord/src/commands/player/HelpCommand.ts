@@ -14,7 +14,9 @@ import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
 import {
 	crowniclesClient, discordConfig
 } from "../../bot/CrowniclesShard";
-import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMinutes, minutesToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { escapeUsername } from "../../utils/StringUtils";
 import { DiscordConstants } from "../../DiscordConstants";
@@ -198,7 +200,7 @@ function sendHelpDm(interaction: CrowniclesInteraction, lng: Language): void {
 					});
 			}
 
-			dmHelpCooldowns.set(interaction.user.id, new Date(Date.now() + minutesToMilliseconds(HelpConstants.HELP_DM_COOLDOWN_TIME_MINUTES)));
+			dmHelpCooldowns.set(interaction.user.id, new Date(Date.now() + minutesToMilliseconds(asMinutes(HelpConstants.HELP_DM_COOLDOWN_TIME_MINUTES))));
 		})
 		.catch(error => {
 			CrowniclesLogger.errorWithObj("Error while broadcasting the message in help command", error);

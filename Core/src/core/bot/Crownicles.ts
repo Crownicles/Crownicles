@@ -10,7 +10,9 @@ import {
 import {
 	daysToMilliseconds, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
-import { asDays } from "../../../../Lib/src/types/TimeTypes";
+import {
+	asDays, asMinutes
+} from "../../../../Lib/src/types/TimeTypes";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { MapCache } from "../maps/MapCache";
 import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
@@ -242,7 +244,7 @@ export class Crownicles {
 			.finally(() => null);
 		setTimeout(
 			Crownicles.fightPowerRegenerationLoop,
-			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
+			minutesToMilliseconds(asMinutes(FightConstants.POINTS_REGEN_MINUTES))
 		);
 	}
 
@@ -424,7 +426,7 @@ export class Crownicles {
 
 		setTimeout(
 			Crownicles.fightPowerRegenerationLoop,
-			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
+			minutesToMilliseconds(asMinutes(FightConstants.POINTS_REGEN_MINUTES))
 		);
 	}
 }

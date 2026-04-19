@@ -66,7 +66,7 @@ export function millisecondsToMinutes(milliseconds: Millisecond): Minute {
  * Convert minutes to seconds
  * @param minutes
  */
-export function minutesToMilliseconds(minutes: number): Millisecond {
+export function minutesToMilliseconds(minutes: Minute): Millisecond {
 	return minutes * TimeConstants.MS_TIME.MINUTE as Millisecond;
 }
 
@@ -74,7 +74,7 @@ export function minutesToMilliseconds(minutes: number): Millisecond {
  * Convert hours to milliseconds
  * @param hours
  */
-export function hoursToMilliseconds(hours: number): Millisecond {
+export function hoursToMilliseconds(hours: Hour): Millisecond {
 	return hours * TimeConstants.MS_TIME.HOUR as Millisecond;
 }
 
@@ -90,7 +90,7 @@ export function hoursToMinutes(hours: Hour): Minute {
  * Convert minutes to hours
  * @param minutes
  */
-export function minutesToHours(minutes: number): Hour {
+export function minutesToHours(minutes: Minute): Hour {
 	return minutes / TimeConstants.S_TIME.MINUTE as Hour;
 }
 
@@ -271,7 +271,7 @@ export function getTimeFromXHoursAgo(hours: number): Date {
  * Fallback duration formatting for runtimes without Intl.DurationFormat
  */
 function minutesDisplayFallback(minutes: number, lng: string): string {
-	let hours = Math.floor(minutesToHours(minutes));
+	let hours = Math.floor(minutesToHours(asMinutes(minutes)));
 	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
 	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
 	hours %= TimeConstants.HOURS_IN_DAY;
@@ -315,7 +315,7 @@ export function minutesDisplayIntl(minutes: number, lng: string): string {
 	}
 
 	// Compute components
-	let hours = Math.floor(minutesToHours(minutes));
+	let hours = Math.floor(minutesToHours(asMinutes(minutes)));
 	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
 	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
 	hours %= TimeConstants.HOURS_IN_DAY;

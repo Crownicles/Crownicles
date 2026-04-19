@@ -17,7 +17,9 @@ import {
 import {
 	datesAreOnSameDay, dateToMs, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds, msDiff, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";
-import { asDays } from "../../../../Lib/src/types/TimeTypes";
+import {
+	asDays, asHours, asMinutes
+} from "../../../../Lib/src/types/TimeTypes";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { Op } from "sequelize";
 import { DailyMissions } from "../database/game/models/DailyMission";
@@ -69,7 +71,7 @@ export class BlessingManager {
 			this.checkForExpiredBlessing()
 				.then(() => this.checkForExpiredPool())
 				.catch(e => CrowniclesLogger.errorWithObj("Error in blessing expiry check", e));
-		}, minutesToMilliseconds(5));
+		}, minutesToMilliseconds(asMinutes(5)));
 	}
 
 	/**
@@ -217,7 +219,7 @@ export class BlessingManager {
 	private async triggerBlessing(triggeredByKeycloakId: string): Promise<void> {
 		const blessingType = RandomUtils.randInt(1, BlessingConstants.TOTAL_BLESSING_TYPES + 1) as BlessingType;
 		let durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
-		let blessingEnd = new Date(Date.now() + hoursToMilliseconds(durationHours));
+		let blessingEnd = new Date(Date.now() + hoursToMilliseconds(asHours(durationHours)));
 
 		// Daily mission blessing must not span across two days to prevent doubling two different daily missions
 		if (blessingType === BlessingType.DAILY_MISSION) {
@@ -531,7 +533,7 @@ export class BlessingManager {
 		}
 
 		const durationHours = 12;
-		const blessingEnd = new Date(Date.now() + hoursToMilliseconds(durationHours));
+		const blessingEnd = new Date(Date.now() + hoursToMilliseconds(asHours(durationHours)));
 
 		this.contributionsTracker.clear();
 		this.cachedBlessing.activeBlessingType = type;

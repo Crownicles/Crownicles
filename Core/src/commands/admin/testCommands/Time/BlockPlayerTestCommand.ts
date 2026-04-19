@@ -5,6 +5,7 @@ import Player from "../../../../core/database/game/models/Player";
 import { BlockingUtils } from "../../../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../../../Lib/src/constants/BlockingConstants";
 import { minutesToMilliseconds } from "../../../../../../Lib/src/utils/TimeUtils";
+import { asMinutes } from "../../../../../../Lib/src/types/TimeTypes";
 
 export const commandInfo: ITestCommand = {
 	name: "blockplayer",
@@ -22,7 +23,7 @@ const blockPlayerTestCommand: ExecuteTestCommandLike = (player: Player, args: st
 	if (blockTime <= 0) {
 		throw new Error("Erreur block : on ne peut pas vous bloquer pendant un temps négatif ou nul !");
 	}
-	BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.TEST, minutesToMilliseconds(parseInt(args[0], 10)));
+	BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.TEST, minutesToMilliseconds(asMinutes(parseInt(args[0], 10))));
 	return `Vous êtes maintenant bloqué pendant ${args[0]} secondes !`;
 };
 
