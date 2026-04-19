@@ -6,6 +6,7 @@ import { ExpeditionConstants } from "../../../../../Lib/src/constants/Expedition
 import {
 	daysToSeconds, getDateLogs
 } from "../../../../../Lib/src/utils/TimeUtils";
+import { asDays } from "../../../../../Lib/src/types/TimeTypes";
 import {
 	ExpeditionCompleteParams,
 	ExpeditionLogData,
@@ -166,7 +167,7 @@ export class LogsExpeditionLogger {
 		if (!logPlayer) {
 			return 0;
 		}
-		const cutoffDate = getDateLogs() - daysToSeconds(days);
+		const cutoffDate = getDateLogs() - daysToSeconds(asDays(days));
 
 		return LogsExpeditions.count({
 			where: {

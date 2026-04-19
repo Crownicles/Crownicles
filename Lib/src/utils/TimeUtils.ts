@@ -3,7 +3,7 @@ import {
 	TimeConstants
 } from "../constants/TimeConstants";
 import {
-	asMilliseconds, Day, dateToMs, Hour, Millisecond, Minute, msDiff, nowMs, Second
+	asHours, asMilliseconds, asMinutes, Day, dateToMs, Hour, Millisecond, Minute, msDiff, nowMs, Second
 } from "../types/TimeTypes";
 
 export {
@@ -82,7 +82,7 @@ export function hoursToMilliseconds(hours: number): Millisecond {
  * Convert hours to minutes
  * @param hours
  */
-export function hoursToMinutes(hours: number): Minute {
+export function hoursToMinutes(hours: Hour): Minute {
 	return hours * TimeConstants.S_TIME.MINUTE as Minute;
 }
 
@@ -122,7 +122,7 @@ export function secondsToMilliseconds(seconds: Second): Millisecond {
  * Convert days to milliseconds
  * @param days
  */
-export function daysToMilliseconds(days: number): Millisecond {
+export function daysToMilliseconds(days: Day): Millisecond {
 	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR as Millisecond;
 }
 
@@ -138,7 +138,7 @@ export function millisecondsToDays(milliseconds: Millisecond): Day {
  * Convert hours to seconds
  * @param hours
  */
-export function hoursToSeconds(hours: number): Second {
+export function hoursToSeconds(hours: Hour): Second {
 	return hours * TimeConstants.S_TIME.HOUR as Second;
 }
 
@@ -146,7 +146,7 @@ export function hoursToSeconds(hours: number): Second {
  * Convert days to minutes
  * @param days
  */
-export function daysToMinutes(days: number): Minute {
+export function daysToMinutes(days: Day): Minute {
 	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.S_TIME.MINUTE as Minute;
 }
 
@@ -154,7 +154,7 @@ export function daysToMinutes(days: number): Minute {
  * Convert days to seconds
  * @param days
  */
-export function daysToSeconds(days: number): Second {
+export function daysToSeconds(days: Day): Second {
 	return days * TimeConstants.S_TIME.DAY as Second;
 }
 
@@ -197,7 +197,7 @@ export function getNextSundayMidnight(): Millisecond {
 	dateOfReset.setHours(23, 59, 59, 999);
 	let dateOfResetTimestamp = dateOfReset.valueOf();
 	while (dateOfResetTimestamp < now.valueOf()) {
-		dateOfResetTimestamp += hoursToMilliseconds(24 * 7);
+		dateOfResetTimestamp += hoursToMilliseconds(asHours(24 * 7));
 	}
 	return asMilliseconds(dateOfResetTimestamp);
 }
@@ -236,14 +236,14 @@ export function getNextSaturdayMidnight(): Millisecond {
  * Check if the reset is being done currently
  */
 export function resetIsNow(): boolean {
-	return getNextSundayMidnight() - Date.now() <= minutesToMilliseconds(5);
+	return getNextSundayMidnight() - Date.now() <= minutesToMilliseconds(asMinutes(5));
 }
 
 /**
  * Check if the reset of the season end is being done currently
  */
 export function seasonEndIsNow(): boolean {
-	return getNextSaturdayMidnight() - Date.now() <= minutesToMilliseconds(20);
+	return getNextSaturdayMidnight() - Date.now() <= minutesToMilliseconds(asMinutes(20));
 }
 
 /**

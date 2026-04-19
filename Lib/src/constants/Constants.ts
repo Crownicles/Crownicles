@@ -1,4 +1,6 @@
-import { asMinutes, Minute } from "../types/TimeTypes";
+import {
+	asMinutes, Minute
+} from "../types/TimeTypes";
 
 export class Constants {
 	static readonly MESSAGES = {

@@ -1,6 +1,7 @@
 import { FightConstants } from "./FightConstants";
 import { ItemRarity } from "./ItemConstants";
-import { asMilliseconds } from "../types/TimeTypes";
+import { asMinutes } from "../types/TimeTypes";
+import { minutesToMilliseconds } from "../utils/TimeUtils";
 
 export type PetInteraction = {
 	name: string;
@@ -139,7 +140,7 @@ export abstract class PetConstants {
 		}
 	};
 
-	static readonly BREED_COOLDOWN = asMilliseconds(30 * 60 * 1000); // 30 minutes
+	static readonly BREED_COOLDOWN = minutesToMilliseconds(asMinutes(30));
 
 	static readonly MAX_LOVE_POINTS = 110;
 

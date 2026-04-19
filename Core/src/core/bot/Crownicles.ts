@@ -10,6 +10,7 @@ import {
 import {
 	daysToMilliseconds, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
+import { asDays } from "../../../../Lib/src/types/TimeTypes";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { MapCache } from "../maps/MapCache";
 import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
@@ -75,7 +76,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(1));
+		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(asDays(1)));
 
 		Crownicles.randomPotion()
 			.finally(() => null);
@@ -141,7 +142,7 @@ export class Crownicles {
 		 * so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date
 		 * (at 1 s max of difference)
 		 */
-		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + daysToMilliseconds(7));
+		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + daysToMilliseconds(asDays(7)));
 
 		crowniclesInstance?.logsDatabase.log15BestSeason()
 			.then();
@@ -261,7 +262,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + daysToMilliseconds(7));
+		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + daysToMilliseconds(asDays(7)));
 		Crownicles.topWeekEnd()
 			.then();
 		Crownicles.newPveIsland()
