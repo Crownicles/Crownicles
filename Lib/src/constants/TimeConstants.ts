@@ -21,12 +21,14 @@ export abstract class TimeConstants {
 		readonly MINUTE: Millisecond;
 		readonly HOUR: Millisecond;
 		readonly DAY: Millisecond;
+		readonly WEEK: Millisecond;
 	} = {
 		MILLISECOND: 1 as Millisecond,
 		SECOND: 1000 as Millisecond,
 		MINUTE: 60000 as Millisecond,
 		HOUR: 3600000 as Millisecond,
-		DAY: 86400000 as Millisecond
+		DAY: 86400000 as Millisecond,
+		WEEK: 604800000 as Millisecond
 	};
 
 	static readonly S_TIME: {

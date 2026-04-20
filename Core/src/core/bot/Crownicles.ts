@@ -8,11 +8,9 @@ import {
 	Op, Sequelize
 } from "sequelize";
 import {
-	daysToMilliseconds, minutesToMilliseconds
+	minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
-import {
-	asDays, asMinutes
-} from "../../../../Lib/src/types/TimeTypes";
+import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { MapCache } from "../maps/MapCache";
 import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
@@ -78,7 +76,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(asDays(1)));
+		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + TimeConstants.MS_TIME.DAY);
 
 		Crownicles.randomPotion()
 			.finally(() => null);
@@ -144,7 +142,7 @@ export class Crownicles {
 		 * so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date
 		 * (at 1 s max of difference)
 		 */
-		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + daysToMilliseconds(asDays(7)));
+		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + TimeConstants.MS_TIME.WEEK);
 
 		crowniclesInstance?.logsDatabase.log15BestSeason()
 			.then();
@@ -244,7 +242,7 @@ export class Crownicles {
 			.finally(() => null);
 		setTimeout(
 			Crownicles.fightPowerRegenerationLoop,
-			minutesToMilliseconds(asMinutes(FightConstants.POINTS_REGEN_MINUTES))
+			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
 	}
 
@@ -264,7 +262,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + daysToMilliseconds(asDays(7)));
+		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + TimeConstants.MS_TIME.WEEK);
 		Crownicles.topWeekEnd()
 			.then();
 		Crownicles.newPveIsland()
@@ -426,7 +424,7 @@ export class Crownicles {
 
 		setTimeout(
 			Crownicles.fightPowerRegenerationLoop,
-			minutesToMilliseconds(asMinutes(FightConstants.POINTS_REGEN_MINUTES))
+			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
 	}
 }

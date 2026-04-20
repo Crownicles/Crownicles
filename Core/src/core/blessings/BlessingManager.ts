@@ -18,7 +18,7 @@ import {
 	datesAreOnSameDay, dateToMs, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds, msDiff, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";
 import {
-	asDays, asHours, asMinutes
+	asHours, asMinutes
 } from "../../../../Lib/src/types/TimeTypes";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { Op } from "sequelize";
@@ -140,7 +140,7 @@ export class BlessingManager {
 	 */
 	getPoolExpiresAt(): Date {
 		const startedAt = this.cachedBlessing?.poolStartedAt ?? new Date();
-		return new Date(startedAt.getTime() + daysToMilliseconds(asDays(BlessingConstants.POOL_EXPIRY_DAYS)));
+		return new Date(dateToMs(startedAt) + daysToMilliseconds(BlessingConstants.POOL_EXPIRY_DAYS));
 	}
 
 	/**

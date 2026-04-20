@@ -7,7 +7,7 @@ import {
 } from "../types/TimeTypes";
 
 export {
-	asMilliseconds, asMinutes, asHours, asDays, asSeconds, dateToMs, msDiff, nowMs
+	asMilliseconds, asMinutes, asHours, asDays, asSeconds, dateToMs, msDiff, sDiff, nowMs
 } from "../types/TimeTypes";
 export type {
 	Millisecond, Second, Minute, Hour, Day
@@ -16,16 +16,16 @@ export type {
 /**
  * Get the current date for logging purposes
  */
-export function getDateLogs(): number {
-	return Math.trunc(Date.now() / TimeConstants.MS_TIME.SECOND);
+export function getDateLogs(): Second {
+	return Math.trunc(Date.now() / TimeConstants.MS_TIME.SECOND) as Second;
 }
 
 /**
  * Convert a date to a timestamp for logging purposes
  * @param date
  */
-export function dateToLogs(date: Date): number {
-	return Math.trunc(date.valueOf() / TimeConstants.MS_TIME.SECOND);
+export function dateToLogs(date: Date): Second {
+	return Math.trunc(date.valueOf() / TimeConstants.MS_TIME.SECOND) as Second;
 }
 
 /**

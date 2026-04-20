@@ -16,7 +16,7 @@ import {
 	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import {
-	asDays, asMinutes
+	asMinutes
 } from "../../../../../../Lib/src/types/TimeTypes";
 import { TravelTime } from "../../../maps/TravelTime";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
@@ -1780,7 +1780,7 @@ export class Players {
 	 * @param offset - offset in case the found players are not enough and an offset search is necessary
 	 */
 	static async findActivePotentialOpponents(player: Player, amountOfPlayersToRetrieve: number, offset: number): Promise<Player[]> {
-		const twoWeeksAgo = new Date(Date.now() - daysToMilliseconds(asDays(FightConstants.ACTIVE_PLAYER_TIME_LIMIT_DAYS)));
+		const twoWeeksAgo = new Date(Date.now() - daysToMilliseconds(FightConstants.ACTIVE_PLAYER_TIME_LIMIT_DAYS));
 		return await Player.findAll({
 			where: {
 				id: { [Op.ne]: player.id },

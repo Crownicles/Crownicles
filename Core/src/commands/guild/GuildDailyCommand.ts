@@ -450,7 +450,7 @@ export default class GuildDailyCommand {
 			if (millisecondsToHours(time) < GuildDailyConstants.TIME_BETWEEN_DAILIES) {
 				response.push(makePacket(CommandGuildDailyCooldownErrorPacket, {
 					totalTime: GuildDailyConstants.TIME_BETWEEN_DAILIES,
-					remainingTime: hoursToMilliseconds(asHours(GuildDailyConstants.TIME_BETWEEN_DAILIES)) - time
+					remainingTime: hoursToMilliseconds(GuildDailyConstants.TIME_BETWEEN_DAILIES) - time
 				}));
 				return;
 			}

@@ -39,7 +39,6 @@ import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewar
 import { LeagueDataController } from "../../data/League";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
-import { asMinutes } from "../../../../Lib/src/types/TimeTypes";
 import { EloGameResult } from "../../../../Lib/src/types/EloGameResult";
 import { PacketUtils } from "../../core/utils/PacketUtils";
 import { PlayerWasAttackedNotificationPacket } from "../../../../Lib/src/packets/notifications/PlayerWasAttackedNotificationPacket";
@@ -535,7 +534,7 @@ function fightValidationEndCallback(player: Player, context: PacketContext): End
 				context
 			);
 			fightController.setEndCallback(fightEndCallback);
-			fightsDefenderCooldowns.set(opponent.keycloakId, Date.now() + minutesToMilliseconds(asMinutes(FightConstants.DEFENDER_COOLDOWN_MINUTES)));
+			fightsDefenderCooldowns.set(opponent.keycloakId, Date.now() + minutesToMilliseconds(FightConstants.DEFENDER_COOLDOWN_MINUTES));
 			await fightController.startFight(response);
 		}
 		else {

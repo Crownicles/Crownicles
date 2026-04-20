@@ -1,3 +1,7 @@
+import {
+	asDays, asMinutes, Day, Minute
+} from "../types/TimeTypes";
+
 export abstract class FightConstants {
 	static readonly RARE_SUB_TEXT_INTRO = 0.001; // Chance of having a rare subtext in the fight intro message (1=100%)
 
@@ -5,7 +9,7 @@ export abstract class FightConstants {
 
 	static readonly REQUIRED_LEVEL = 8;
 
-	static readonly POINTS_REGEN_MINUTES = 7;
+	static readonly POINTS_REGEN_MINUTES: Minute = asMinutes(7);
 
 	static readonly POINTS_REGEN_AMOUNT = 130;
 
@@ -322,7 +326,7 @@ export abstract class FightConstants {
 
 
 	// Time needed to wait before being able to fight again after a ranked fight as a defender
-	static DEFENDER_COOLDOWN_MINUTES = 30;
+	static DEFENDER_COOLDOWN_MINUTES: Minute = asMinutes(30);
 
 	// Maximum offset for opponent search
 	static MAX_OFFSET_FOR_OPPONENT_SEARCH = 5;
@@ -352,7 +356,7 @@ export abstract class FightConstants {
 	static HISTORY_DISPLAY_LIMIT = 5;
 
 	// Time limit for a player to be considered active for opponent search (in days)
-	static readonly ACTIVE_PLAYER_TIME_LIMIT_DAYS = 14;
+	static readonly ACTIVE_PLAYER_TIME_LIMIT_DAYS: Day = asDays(14);
 
 	/**
 	 * Fight roles for determining pet availability during expedition

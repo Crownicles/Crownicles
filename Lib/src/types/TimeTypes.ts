@@ -83,3 +83,10 @@ export function nowMs(): Millisecond {
 export function msDiff(a: Millisecond, b: Millisecond): Millisecond {
 	return (a - b) as Millisecond;
 }
+
+/**
+ * Compute the difference between two Second timestamps
+ */
+export function sDiff(a: Second, b: Second): Second {
+	return (a - b) as Second;
+}
