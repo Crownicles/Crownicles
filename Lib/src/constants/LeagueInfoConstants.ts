@@ -1,6 +1,4 @@
 export abstract class LeagueInfoConstants {
-	static readonly ROYAL_LEAGUE_ID = 10;
-
 	static readonly MONEY_TO_AWARD = [
 		250, // Wood
 		300, // Rock
@@ -56,4 +54,6 @@ export abstract class LeagueInfoConstants {
 		8, // Legendary
 		8 // Royal
 	];
+
+	static readonly ROYAL_LEAGUE_ID = LeagueInfoConstants.MONEY_TO_AWARD.length - 1;
 }
