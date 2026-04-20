@@ -8,6 +8,7 @@ import {RandomUtils} from '../../../../Lib/src/utils/RandomUtils';
 import {Maps} from '../../../src/core/maps/Maps';
 import {TravelTime} from '../../../src/core/maps/TravelTime';
 import {Effect} from '../../../../Lib/src/types/Effect';
+import {asMilliseconds} from '../../../../Lib/src/utils/TimeUtils';
 
 // Use fake timers so that `Date.now()` and `new Date()` both return our controlled `now`
 vi.useFakeTimers();
@@ -116,7 +117,7 @@ describe('TravelTime', () => {
 		const small = {time: now + 3_000, save: vi.fn()};
 		vi.spyOn(PlayerSmallEvents, 'getLastOfPlayer').mockResolvedValueOnce(small as any);
 
-		await TravelTime.timeTravel(player, 500_000, 0, true);
+		await TravelTime.timeTravelMilliseconds(player, asMilliseconds(500_000), 0);
 
 		// 1 minute = 60_000ms
 		expect(player.effectEndDate.valueOf()).toBe(now - 495_000);
@@ -125,7 +126,7 @@ describe('TravelTime', () => {
 	});
 
 	it('removeEffect clears effect and moves travel start', async () => {
-		const tt = vi.spyOn(TravelTime, 'timeTravel').mockResolvedValue();
+		const tt = vi.spyOn(TravelTime, 'timeTravelMilliseconds').mockResolvedValue();
 		const save = vi.fn().mockResolvedValue(undefined);
 		const player: any = {
 			effectRemainingTime: () => 2,

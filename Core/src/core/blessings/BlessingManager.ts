@@ -532,8 +532,8 @@ export class BlessingManager {
 			return;
 		}
 
-		const durationHours = 12;
-		const blessingEnd = new Date(Date.now() + hoursToMilliseconds(asHours(durationHours)));
+		const durationHours = asHours(12);
+		const blessingEnd = new Date(nowMs() + hoursToMilliseconds(durationHours));
 
 		this.contributionsTracker.clear();
 		this.cachedBlessing.activeBlessingType = type;

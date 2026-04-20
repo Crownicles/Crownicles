@@ -165,7 +165,7 @@ export class LogsReadRequests {
 					[Op.in]: logsPlayersIds
 				},
 				date: {
-					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), minutesToMilliseconds(PVEConstants.MINUTES_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND))))
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND)))
 				}
 			},
 			group: ["playerId"],

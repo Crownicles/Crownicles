@@ -1,7 +1,7 @@
 import { Player } from "../database/game/models/Player";
 import { ShopConstants } from "../../../../Lib/src/constants/ShopConstants";
 import {
-	millisecondsToMinutes
+	asMilliseconds, millisecondsToMinutes
 } from "../../../../Lib/src/utils/TimeUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../maps/TravelTime";
@@ -94,11 +94,10 @@ export async function healAlterationAndAdvance(
 	const timeData = await TravelTime.getTravelData(player, currentDate);
 
 	// Make the player time travel to the next small event
-	await TravelTime.timeTravel(
+	await TravelTime.timeTravelMilliseconds(
 		player,
-		timeData.nextSmallEventTime - currentDate.valueOf(),
-		reason,
-		true
+		asMilliseconds(timeData.nextSmallEventTime - currentDate.valueOf()),
+		reason
 	);
 
 	await player.save();

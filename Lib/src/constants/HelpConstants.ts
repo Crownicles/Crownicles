@@ -1,11 +1,10 @@
-import {
-	asMinutes, Minute
-} from "../types/TimeTypes";
+import { asMinutes } from "../types/TimeTypes";
+import { minutesToMilliseconds } from "../utils/TimeUtils";
 
 export abstract class HelpConstants {
 	static readonly HELP_INVITE_LINK = "https://discord.gg/USnCxg4";
 
-	static readonly HELP_DM_COOLDOWN_TIME_MINUTES: Minute = asMinutes(5);
+	static readonly HELP_DM_COOLDOWN_TIME = minutesToMilliseconds(asMinutes(5));
 
 	static readonly COMMAND_SEPARATOR_FOR_GENERAL_DESCRIPTION = " • ";
 

@@ -17,6 +17,7 @@ import { Millisecond } from "../../../../Lib/src/types/TimeTypes";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
+import { asMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
@@ -72,11 +73,10 @@ async function acceptUseTokens(
 	const updatedTimeData = await TravelTime.getTravelData(player, updatedDate);
 
 	// Make the player time travel to the next small event
-	await TravelTime.timeTravel(
+	await TravelTime.timeTravelMilliseconds(
 		player,
-		updatedTimeData.nextSmallEventTime - updatedDate.valueOf(),
-		NumberChangeReason.REPORT_TOKENS,
-		true
+		asMilliseconds(updatedTimeData.nextSmallEventTime - updatedDate.valueOf()),
+		NumberChangeReason.REPORT_TOKENS
 	);
 
 	await player.save();
