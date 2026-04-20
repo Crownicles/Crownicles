@@ -3,6 +3,7 @@ import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
+import { Language } from "../../../Lib/src/Language";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Message, parseEmoji
 } from "discord.js";
@@ -93,39 +94,48 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 	return [buttonCollector];
 }
 
+function buildTimeOutro(packet: SmallEventWitchResultPacket, lng: Language): string {
+	if (packet.effectId !== Effect.OCCUPIED.id || packet.timeLost <= 0) {
+		return "";
+	}
+	return ` ${StringUtils.getRandomTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", lng, {
+		lostTime: packet.timeLost,
+		lostTimeDisplay: i18n.formatDuration(packet.timeLost, lng)
+	})}`;
+}
+
+function buildEffectOutro(packet: SmallEventWitchResultPacket, lng: Language): string {
+	if (packet.outcome !== WitchActionOutcomeType.EFFECT || packet.effectId === Effect.OCCUPIED.id) {
+		return "";
+	}
+	return ` ${i18n.t("smallEvents:witch.witchEventResults.effectOutro", {
+		lng,
+		effectDuration: i18n.formatDuration(Effect.getById(packet.effectId)?.timeMinutes ?? 0, lng)
+	})}`;
+}
+
+function buildWitchResultDescription(packet: SmallEventWitchResultPacket, lng: Language): string {
+	const introToLoad = packet.isIngredient ? "smallEvents:witch.witchEventResults.ingredientIntros" : "smallEvents:witch.witchEventResults.adviceIntros";
+	const outcomeTranslationToLoad = packet.outcome === WitchActionOutcomeType.EFFECT
+		? `smallEvents:witch.witchEventResults.outcomes.2.${packet.effectId}`
+		: `smallEvents:witch.witchEventResults.outcomes.${packet.outcome + 1}`;
+	return `${StringUtils.getRandomTranslation(introToLoad, lng, {
+		witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${CrowniclesIcons.witchSmallEvent[packet.ingredientId]}`
+			.toLowerCase()
+	})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${buildTimeOutro(packet, lng)}${buildEffectOutro(packet, lng)}`;
+}
+
 export async function witchResult(packet: SmallEventWitchResultPacket, context: PacketContext): Promise<void> {
 	const interaction = MessagesUtils.getCurrentInteraction(context);
 	if (!interaction) {
 		return;
 	}
 	const lng = context.discord!.language;
-	const introToLoad = packet.isIngredient ? "smallEvents:witch.witchEventResults.ingredientIntros" : "smallEvents:witch.witchEventResults.adviceIntros";
-	const isTimePenalty = packet.effectId === Effect.OCCUPIED.id && packet.timeLost > 0;
-	const isAlteration = packet.outcome === WitchActionOutcomeType.EFFECT && packet.effectId !== Effect.OCCUPIED.id;
-	const lostTimeDisplay = isTimePenalty ? i18n.formatDuration(packet.timeLost, lng) : null;
-	const timeOutro = isTimePenalty
-		? ` ${StringUtils.getRandomTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", lng, {
-			lostTime: packet.timeLost,
-			lostTimeDisplay
-		})}`
-		: "";
-	const effectOutro = isAlteration
-		? ` ${i18n.t("smallEvents:witch.witchEventResults.effectOutro", {
-			lng,
-			effectDuration: i18n.formatDuration(Effect.getById(packet.effectId)?.timeMinutes ?? 0, lng)
-		})}`
-		: "";
-	const outcomeTranslationToLoad = packet.outcome === WitchActionOutcomeType.EFFECT
-		? `smallEvents:witch.witchEventResults.outcomes.2.${packet.effectId}`
-		: `smallEvents:witch.witchEventResults.outcomes.${packet.outcome + 1}`;
 	await (interaction.isRepliable() ? interaction.followUp : interaction.editReply).bind(interaction)({
 		embeds: [
 			new CrowniclesSmallEventEmbed(
 				"witch",
-				`${StringUtils.getRandomTranslation(introToLoad, lng, {
-					witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${CrowniclesIcons.witchSmallEvent[packet.ingredientId]}`
-						.toLowerCase()
-				})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${timeOutro}${effectOutro}`,
+				buildWitchResultDescription(packet, lng),
 				interaction.user,
 				lng
 			)
