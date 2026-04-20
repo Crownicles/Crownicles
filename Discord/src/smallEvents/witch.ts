@@ -94,6 +94,11 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 	return [buttonCollector];
 }
 
+/**
+ * Build the time penalty outro text for OCCUPIED effects with time loss
+ * @param packet
+ * @param lng
+ */
 function buildTimeOutro(packet: SmallEventWitchResultPacket, lng: Language): string {
 	if (packet.effectId !== Effect.OCCUPIED.id || packet.timeLost <= 0) {
 		return "";
@@ -104,6 +109,11 @@ function buildTimeOutro(packet: SmallEventWitchResultPacket, lng: Language): str
 	})}`;
 }
 
+/**
+ * Build the effect outro text showing alteration duration for non-OCCUPIED effects
+ * @param packet
+ * @param lng
+ */
 function buildEffectOutro(packet: SmallEventWitchResultPacket, lng: Language): string {
 	if (packet.outcome !== WitchActionOutcomeType.EFFECT || packet.effectId === Effect.OCCUPIED.id) {
 		return "";
@@ -114,6 +124,11 @@ function buildEffectOutro(packet: SmallEventWitchResultPacket, lng: Language): s
 	})}`;
 }
 
+/**
+ * Build the full description text for the witch result embed
+ * @param packet
+ * @param lng
+ */
 function buildWitchResultDescription(packet: SmallEventWitchResultPacket, lng: Language): string {
 	const introToLoad = packet.isIngredient ? "smallEvents:witch.witchEventResults.ingredientIntros" : "smallEvents:witch.witchEventResults.adviceIntros";
 	const outcomeTranslationToLoad = packet.outcome === WitchActionOutcomeType.EFFECT
