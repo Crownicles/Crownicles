@@ -281,7 +281,7 @@ export abstract class TravelTime {
 	 * Calculates a score based on the time traveled
 	 * @param time - time must be in milliseconds
 	 */
-	static timeTravelledToScore(time: Millisecond): number {
+	static timeTravelledToScore(time: number): number {
 		const timeMinutes = millisecondsToMinutes(time);
 		const score = timeMinutes + RandomUtils.crowniclesRandom.integer(0, timeMinutes / Constants.REPORT.BONUS_POINT_TIME_DIVIDER);
 		return score > 0 ? score : 0; // Return 0 if the score is negative
