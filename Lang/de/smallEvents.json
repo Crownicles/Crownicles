@@ -723,8 +723,7 @@
           "Leider scheint der Trank völlig verkohlt und ungenießbar zu sein. Sie beschließen, nicht das Risiko einzugehen, ihn zu trinken, und machen sich schnell wieder auf den Weg.",
           "Sie beenden den Trank mit der alten Frau, entscheiden sich aber, ihn nicht zu konsumieren, da Sie Ihre Gesundheit lieber für den Rest Ihres Abenteuers aufsparen möchten."
         ]
-      },
-      "effectOutro": "Du wirst die Auswirkungen dieser Veränderung **{{effectDuration}}** lang erleiden."
+      }
     },
     "witchEventNames": {
       "bat": "Fledermaus hinzufügen",

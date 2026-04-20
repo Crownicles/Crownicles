@@ -73,41 +73,47 @@ export abstract class Database {
 		for (let attempt = 1; attempt <= DB_RETRY_MAX_ATTEMPTS; attempt++) {
 			try {
 				if (this.databaseConfiguration.rootPassword) {
-					const mariadbConnection = await createConnection({
-						host: this.databaseConfiguration.host,
-						port: this.databaseConfiguration.port,
-						user: this.databaseConfiguration.rootUser,
-						password: this.databaseConfiguration.rootPassword
-					});
-					await mariadbConnection.execute(`CREATE DATABASE IF NOT EXISTS ${dbName} CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;`);
+					let mariadbConnection;
 					try {
-						await mariadbConnection.execute(
-							`GRANT ALL PRIVILEGES ON ${dbName}.* TO '${this.databaseConfiguration.user}'@${this.databaseConfiguration.host};`
-						);
+						mariadbConnection = await createConnection({
+							host: this.databaseConfiguration.host,
+							port: this.databaseConfiguration.port,
+							user: this.databaseConfiguration.rootUser,
+							password: this.databaseConfiguration.rootPassword
+						});
+						await mariadbConnection.execute(`CREATE DATABASE IF NOT EXISTS ${dbName} CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;`);
+						try {
+							await mariadbConnection.execute(
+								`GRANT ALL PRIVILEGES ON ${dbName}.* TO '${this.databaseConfiguration.user}'@${this.databaseConfiguration.host};`
+							);
+						}
+						catch {
+							await mariadbConnection.execute(`GRANT ALL PRIVILEGES ON ${dbName}.* TO '${this.databaseConfiguration.user}';`);
+						}
 					}
-					catch {
-						await mariadbConnection.execute(`GRANT ALL PRIVILEGES ON ${dbName}.* TO '${this.databaseConfiguration.user}';`);
+					finally {
+						await mariadbConnection?.end();
 					}
-					await mariadbConnection.end();
 				}
 
-				this.sequelize = new Sequelize(`${dbName}`, this.databaseConfiguration.user, this.databaseConfiguration.userPassword, {
+				const sequelize = new Sequelize(`${dbName}`, this.databaseConfiguration.user, this.databaseConfiguration.userPassword, {
 					dialect: "mariadb",
 					host: this.databaseConfiguration.host,
 					port: this.databaseConfiguration.port,
 					logging: false,
 					transactionType: TYPES.IMMEDIATE
 				});
-				await this.sequelize.authenticate();
+				await sequelize.authenticate();
+				this.sequelize = sequelize;
 
 				// Create umzug instance. See https://github.com/sequelize/umzug
 				this.umzug = new Umzug({
-					context: this.sequelize.getQueryInterface(),
+					context: sequelize.getQueryInterface(),
 					logger: console,
 					migrations: {
 						glob: ["*.js", { cwd: this.migrationsPath.replace("\\", "/") }]
 					},
-					storage: new SequelizeStorage({ sequelize: this.sequelize })
+					storage: new SequelizeStorage({ sequelize })
 				});
 				return;
 			}

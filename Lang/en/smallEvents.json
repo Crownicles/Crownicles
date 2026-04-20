@@ -723,8 +723,7 @@
           "Unfortunately, the potion seems completely charred and undrinkable. You decide not to take the risk of drinking it and leave quickly.",
           "You finish the potion with the old lady, but choose not to consume it, preferring to keep your health for the rest of your adventure."
         ]
-      },
-      "effectOutro": "You will suffer from this alteration for **{{effectDuration}}**."
+      }
     },
     "witchEventNames": {
       "bat": "Add Bat",

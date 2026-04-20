@@ -265,6 +265,10 @@ export class Player extends Model {
 			// Block all non-expedition gains when already at or above max
 			return this;
 		}
+		else if (parameters.amount < 0) {
+			// When spending, don't clamp to MAX (preserve over-cap tokens from expeditions)
+			newTokens = Math.max(0, this.tokens + parameters.amount);
+		}
 		else {
 			newTokens = MathUtils.clamp(
 				this.tokens + parameters.amount,
