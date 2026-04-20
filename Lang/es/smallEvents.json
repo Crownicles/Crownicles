@@ -723,8 +723,7 @@
           "Desgraciadamente, la poción parece completamente carbonizada e imbebible. Decides no arriesgarte a beberla y te marchas rápidamente.",
           "Terminas la poción con la anciana, pero decides no consumirla, prefiriendo guardar tu salud para el resto de tu aventura."
         ]
-      },
-      "effectOutro": "Sufrirás los efectos de esta alteración durante **{{effectDuration}}**."
+      }
     },
     "witchEventNames": {
       "bat": "Añadir un murciélago",

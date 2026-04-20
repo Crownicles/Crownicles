@@ -3,7 +3,7 @@ import { EloUtils } from "../../../src/core/utils/EloUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { LeagueInfoConstants } from "../../../../Lib/src/constants/LeagueInfoConstants";
 
-describe('MathUtils', () => {
+describe('EloUtils', () => {
     describe('getKFactor', () => {
         it('should return the correct K factor', () => {
             const mockPlayer1 = { getGloryPoints: () => 1500 } as any;
