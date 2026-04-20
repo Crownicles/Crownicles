@@ -8,7 +8,7 @@ import { LogsPlayersGloryPoints } from "../models/LogsPlayersGloryPoints";
 import { LeagueDataController } from "../../../../data/League";
 import { FightHistoryItem } from "../../../../../../Lib/src/packets/commands/CommandFightHistoryPacket";
 import {
-	asSeconds, secondsToMilliseconds
+	secondsToMilliseconds
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../../../../Lib/src/types/EloGameResult";
 
@@ -89,7 +89,7 @@ export abstract class LogsFightHistoryRequests {
 		return {
 			initiator: isInitiator,
 			opponentKeycloakId: isInitiator ? fight.LogsPlayer2.keycloakId : fight.LogsPlayer1.keycloakId,
-			date: secondsToMilliseconds(asSeconds(fight.date)),
+			date: secondsToMilliseconds(fight.date),
 			result: fight.winner === 0
 				? EloGameResult.DRAW
 				: (fight.winner === 1 && isInitiator) || (fight.winner === 2 && fight.player2Id === logPlayer.id)

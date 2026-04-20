@@ -15,9 +15,6 @@ import {
 	millisecondsToSeconds,
 	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
-import {
-	asMinutes
-} from "../../../../../../Lib/src/types/TimeTypes";
 import { TravelTime } from "../../../maps/TravelTime";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
 import { Maps } from "../../../maps/Maps";
@@ -202,7 +199,7 @@ export class Player extends Model {
 	 */
 	public getCurrentTripDuration(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
-		return link ? minutesToHours(asMinutes(link.tripDuration)) : null;
+		return link ? minutesToHours(link.tripDuration) : null;
 	}
 
 	/**

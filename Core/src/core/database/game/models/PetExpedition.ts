@@ -10,7 +10,6 @@ import {
 import {
 	dateToMs, millisecondsToMinutes, minutesToMilliseconds, msDiff
 } from "../../../../../../Lib/src/utils/TimeUtils";
-import { asMinutes } from "../../../../../../Lib/src/types/TimeTypes";
 import { PetBasicInfo } from "../../../../../../Lib/src/types/PetBasicInfo";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
@@ -164,7 +163,7 @@ export abstract class PetExpeditions {
 			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex
 		} = params;
 		const startDate = new Date();
-		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(asMinutes(durationMinutes)));
+		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(durationMinutes));
 
 		return PetExpedition.build({
 			playerId,

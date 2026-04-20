@@ -50,7 +50,6 @@ import {
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import { giveItemToPlayer } from "../utils/ItemUtils";
 import { minutesToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
-import { asMinutes } from "../../../../Lib/src/types/TimeTypes";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
 
 interface PlayerAndHome {
@@ -70,7 +69,7 @@ interface ValidatedPinRecipe {
  * confirms, we know which wood was originally selected.
  * Entries auto-expire after 5 minutes to prevent memory leaks.
  */
-const WOOD_CONFIRMATION_TTL = minutesToMilliseconds(asMinutes(5));
+const WOOD_CONFIRMATION_TTL = minutesToMilliseconds(5);
 
 interface PendingWoodConfirmation {
 	materialId: number;

@@ -20,9 +20,6 @@ import {
 	minutesToMilliseconds,
 	msDiff, nowMs
 } from "../../../../../Lib/src/utils/TimeUtils";
-import {
-	asMinutes
-} from "../../../../../Lib/src/types/TimeTypes";
 import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsMapLinks } from "./models/LogsMapLinks";
 import { MapConstants } from "../../../../../Lib/src/constants/MapConstants";
@@ -300,7 +297,7 @@ export class LogsReadRequests {
 			attributes: [],
 			where: {
 				date: {
-					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), minutesToMilliseconds(asMinutes(minutes)))))
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), minutesToMilliseconds(minutes))))
 				},
 				friendly: false
 			},

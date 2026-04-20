@@ -2,7 +2,6 @@ import { PlantId } from "./PlantConstants";
 import { CrowniclesIcons } from "../CrowniclesIcons";
 import { MaterialRarity } from "../types/MaterialRarity";
 import { hoursToMilliseconds } from "../utils/TimeUtils";
-import { asHours } from "../types/TimeTypes";
 
 /**
  * Cooking recipe types — each maps to a specific base plant
@@ -357,7 +356,7 @@ export const MIN_GUARANTEED_PLAYER_LEVEL_RECIPES = 2;
  * Furnace overheat constants
  */
 export const FURNACE_MAX_USES_PER_DAY = 10;
-export const FURNACE_MIN_OVERHEAT_MS = hoursToMilliseconds(asHours(6));
+export const FURNACE_MIN_OVERHEAT_MS = hoursToMilliseconds(6);
 
 /**
  * Gaspard Jo recipe costs by grade index (0-9)

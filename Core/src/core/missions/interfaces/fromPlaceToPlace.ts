@@ -1,6 +1,5 @@
 import { IMission } from "../IMission";
 import { hoursToMilliseconds } from "../../../../../Lib/src/utils/TimeUtils";
-import { asHours } from "../../../../../Lib/src/types/TimeTypes";
 import {
 	FromPlaceToPlaceParams, MissionUtils
 } from "../../../../../Lib/src/utils/MissionUtils";
@@ -34,7 +33,7 @@ export const missionInterface: IMission = {
 		}
 		const otherMap = params.mapId as number;
 
-		return saveData.startTimestamp + hoursToMilliseconds(asHours(variantParams.time)) > Date.now()
+		return saveData.startTimestamp + hoursToMilliseconds(variantParams.time) > Date.now()
 			&& (checkLink(variantParams, saveData.startMap, otherMap)
 				|| !variantParams.orderMatter && checkLink(variantParams, otherMap, saveData.startMap));
 	},
@@ -60,7 +59,7 @@ export const missionInterface: IMission = {
 		if (saveData.startMap === params.mapId) {
 			return saveBlobFromData(Date.now(), params.mapId);
 		}
-		if (saveData.startTimestamp + hoursToMilliseconds(asHours(variantParams.time)) < Date.now()) {
+		if (saveData.startTimestamp + hoursToMilliseconds(variantParams.time) < Date.now()) {
 			if (saveData.startMap === params.mapId) {
 				return saveBlobFromData(Date.now(), params.mapId);
 			}

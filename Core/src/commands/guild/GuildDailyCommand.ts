@@ -21,7 +21,6 @@ import { TravelTime } from "../../core/maps/TravelTime";
 import {
 	dateToMs, hoursToMilliseconds, hoursToMinutes, millisecondsToHours, msDiff, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";
-import { asHours } from "../../../../Lib/src/types/TimeTypes";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { GuildDailyNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildDailyNotificationPacket";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
@@ -256,7 +255,7 @@ async function awardGuildBadgeToMembers(guildLike: GuildLike, response: Crownicl
  */
 async function advanceTimeOfEveryMember(guildLike: GuildLike, _response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const timeAdvanced = Math.ceil((guildLike.guild.level + 1) * GuildDailyConstants.TIME_ADVANCED_MULTIPLIER);
-	await genericAwardingFunction(guildLike.members, async member => await TravelTime.timeTravel(member, hoursToMinutes(asHours(timeAdvanced)), NumberChangeReason.GUILD_DAILY));
+	await genericAwardingFunction(guildLike.members, async member => await TravelTime.timeTravel(member, hoursToMinutes(timeAdvanced), NumberChangeReason.GUILD_DAILY));
 	rewardPacket.advanceTime = timeAdvanced;
 	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.HOSPITAL).then();
 }
