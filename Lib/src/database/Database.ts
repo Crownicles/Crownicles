@@ -123,8 +123,8 @@ export abstract class Database {
 					reason: error instanceof Error ? error.message : String(error)
 				});
 				if (attempt === DB_RETRY_MAX_ATTEMPTS) {
-					CrowniclesLogger.error("All database connection attempts failed, exiting");
-					process.exit(1);
+					CrowniclesLogger.error("All database connection attempts failed");
+					throw error;
 				}
 				await new Promise(resolve => setTimeout(resolve, delay));
 			}

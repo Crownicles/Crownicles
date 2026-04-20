@@ -32,7 +32,7 @@ export abstract class EloUtils {
 
 	/**
 	 * Get the k-factor for an attacker, boosted when the attacker is returning from inactivity.
-	 * Similar to FIDE chess: inactive players get a higher k-factor to converge faster to their true level.
+	 * This is a custom Crownicles balancing rule to help stale attacker ratings converge faster.
 	 * The boost gradually decreases as fightCountdown goes down with each fight.
 	 * @param attacker
 	 */

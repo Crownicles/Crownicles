@@ -257,17 +257,17 @@ export class Player extends Model {
 		const previousTokens = this.tokens;
 
 		let newTokens;
-		if (parameters.amount > 0 && parameters.reason === NumberChangeReason.EXPEDITION) {
+		if (parameters.amount <= 0) {
+			// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
+			newTokens = Math.max(0, this.tokens + parameters.amount);
+		}
+		else if (parameters.reason === NumberChangeReason.EXPEDITION) {
 			// Expedition rewards can exceed the max token cap
 			newTokens = this.tokens + parameters.amount;
 		}
-		else if (parameters.amount > 0 && this.tokens >= TokensConstants.MAX) {
+		else if (this.tokens >= TokensConstants.MAX) {
 			// Block all non-expedition gains when already at or above max
 			return this;
-		}
-		else if (parameters.amount < 0) {
-			// When spending, don't clamp to MAX (preserve over-cap tokens from expeditions)
-			newTokens = Math.max(0, this.tokens + parameters.amount);
 		}
 		else {
 			newTokens = MathUtils.clamp(
