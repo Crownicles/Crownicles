@@ -1940,7 +1940,9 @@
     "alreadyHaveBadge": "Le joueur a déjà tous les badges qui existent dans le jeu.",
     "selectBadgePlaceholder": "Sélectionnez un badge à donner au joueur",
     "selectBadgeTitle": "{{pseudo}}, sélection d'un badge à donner",
-    "selectBadgeDesc": "Choisissez un badge à donner au joueur dans une des listes ci-dessous :"
+    "selectBadgeDesc": "Choisissez un badge à donner au joueur dans une des listes ci-dessous :",
+    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}, modification d'un joueur",
