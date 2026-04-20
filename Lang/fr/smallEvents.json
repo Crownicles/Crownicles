@@ -723,8 +723,7 @@
           "Malheureusement, la potion semble complètement carbonisée et imbuvable. Vous décidez de ne pas prendre le risque de la boire et repartez rapidement.",
           "Vous terminez la potion avec la vieille dame, mais décidez de ne pas la consommer, préférant garder votre santé pour la suite de votre aventure."
         ]
-      },
-      "effectOutro": "Vous subirez les effets de cette altération pendant **{{effectDuration}}**."
+      }
     },
     "witchEventNames": {
       "bat": "Ajouter une chauve-souris",

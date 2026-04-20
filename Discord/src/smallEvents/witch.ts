@@ -3,7 +3,6 @@ import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import i18n from "../translations/i18n";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
-import { Language } from "../../../Lib/src/Language";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Message, parseEmoji
 } from "discord.js";
@@ -13,10 +12,9 @@ import { ReactionCollectorWitchPacket } from "../../../Lib/src/packets/interacti
 import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
 import { StringUtils } from "../utils/StringUtils";
 import { SmallEventWitchResultPacket } from "../../../Lib/src/packets/smallEvents/SmallEventWitchPacket";
-import { Effect } from "../../../Lib/src/types/Effect";
-import { WitchActionOutcomeType } from "../../../Lib/src/types/WitchActionOutcomeType";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { MessagesUtils } from "../utils/MessagesUtils";
+import { buildWitchResultDescription } from "./WitchResultDescription";
 
 export async function witchCollector(context: PacketContext, packet: ReactionCollectorWitchPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
@@ -92,52 +90,6 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 	});
 
 	return [buttonCollector];
-}
-
-/**
- * Build the time penalty outro text for OCCUPIED effects with time loss
- * @param packet
- * @param lng
- */
-function buildTimeOutro(packet: SmallEventWitchResultPacket, lng: Language): string {
-	if (packet.effectId !== Effect.OCCUPIED.id || packet.timeLost <= 0) {
-		return "";
-	}
-	return ` ${StringUtils.getRandomTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", lng, {
-		lostTime: packet.timeLost,
-		lostTimeDisplay: i18n.formatDuration(packet.timeLost, lng)
-	})}`;
-}
-
-/**
- * Build the effect outro text showing alteration duration for non-OCCUPIED effects
- * @param packet
- * @param lng
- */
-function buildEffectOutro(packet: SmallEventWitchResultPacket, lng: Language): string {
-	if (packet.outcome !== WitchActionOutcomeType.EFFECT || packet.effectId === Effect.OCCUPIED.id) {
-		return "";
-	}
-	return ` ${i18n.t("smallEvents:witch.witchEventResults.effectOutro", {
-		lng,
-		effectDuration: i18n.formatDuration(Effect.getById(packet.effectId)?.timeMinutes ?? 0, lng)
-	})}`;
-}
-
-/**
- * Build the full description text for the witch result embed
- * @param packet
- * @param lng
- */
-function buildWitchResultDescription(packet: SmallEventWitchResultPacket, lng: Language): string {
-	const introToLoad = packet.isIngredient ? "smallEvents:witch.witchEventResults.ingredientIntros" : "smallEvents:witch.witchEventResults.adviceIntros";
-	const outcomeTranslationToLoad = packet.outcome === WitchActionOutcomeType.EFFECT
-		? `smallEvents:witch.witchEventResults.outcomes.2.${packet.effectId}`
-		: `smallEvents:witch.witchEventResults.outcomes.${packet.outcome + 1}`;
-	return `${StringUtils.getRandomTranslation(introToLoad, lng, {
-		witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${CrowniclesIcons.witchSmallEvent[packet.ingredientId]}`
-			.toLowerCase()
-	})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${buildTimeOutro(packet, lng)}${buildEffectOutro(packet, lng)}`;
 }
 
 export async function witchResult(packet: SmallEventWitchResultPacket, context: PacketContext): Promise<void> {
