@@ -5,7 +5,7 @@ import { crowniclesMetricsRegistry } from "./CrowniclesDiscordMetrics";
 import { discordConfig } from "./CrowniclesShard";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { DiscordMQTT } from "./DiscordMQTT";
-import express = require("express");
+import * as express from "express";
 
 export abstract class CrowniclesDiscordWebServer {
 	static start(shardId: number): void {
