@@ -20,13 +20,6 @@ function isPaladin(fighter: Fighter): boolean {
 		|| fighter.player.class === ClassConstants.CLASSES_ID.LUMINOUS_PALADIN;
 }
 
-function isMage(fighter: Fighter): boolean {
-	if (!(fighter instanceof PlayerFighter || fighter instanceof AiPlayerFighter)) {
-		return false;
-	}
-	return fighter.player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
-}
-
 const use: FightAlterationFunc = (affected, fightAlteration) => {
 	/*
 	 * Paladins shake off the fear more easily and have less nerf
@@ -34,7 +27,7 @@ const use: FightAlterationFunc = (affected, fightAlteration) => {
 	 */
 	const affectedIsPaladin = isPaladin(affected);
 	const heroicHealChance = affectedIsPaladin ? 0.8 : 0.3;
-	if (isMage(affected) && RandomUtils.crowniclesRandom.bool(0.8) || (affected.alterationTurn > 3 || (affected.alterationTurn > 1 && RandomUtils.crowniclesRandom.bool(heroicHealChance)))) {
+	if (affected.alterationTurn > 3 || (affected.alterationTurn > 1 && RandomUtils.crowniclesRandom.bool(heroicHealChance))) {
 		affected.removeAttackModifiers(fightAlteration);
 		affected.removeSpeedModifiers(fightAlteration);
 		affected.removeDefenseModifiers(fightAlteration);
