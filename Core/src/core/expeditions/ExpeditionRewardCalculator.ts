@@ -56,7 +56,7 @@ interface ItemReward {
 	itemCategory: number;
 }
 
-function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, playerCurrentTokens: number, durationMinutes: number): number {
+function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, durationMinutes: number): number {
 	// Calculate base tokens from reward index
 	let tokens = rewardIndex - TokensConstants.EXPEDITION.REWARD_INDEX_OFFSET;
 
@@ -92,9 +92,7 @@ function calculateTokensReward(rewardIndex: number, hasBonusTokens: boolean, pla
 		tokens += 1;
 	}
 
-	// Limit to available capacity
-	const availableSlots = TokensConstants.MAX - playerCurrentTokens;
-	return MathUtils.clamp(tokens, 0, availableSlots);
+	return Math.max(0, tokens);
 }
 
 /**
@@ -115,7 +113,6 @@ export interface RewardCalculationParams {
 	rewardIndex: number;
 	isPartialSuccess: boolean;
 	hasCloneTalisman: boolean;
-	playerCurrentTokens: number;
 	petTypeId: number;
 }
 
@@ -279,11 +276,11 @@ function generateItemReward(rewardIndex: number): ItemReward {
  */
 export function calculateRewards(params: RewardCalculationParams): ExpeditionRewardDataWithItem {
 	const {
-		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, playerCurrentTokens, petTypeId
+		expedition, rewardIndex, isPartialSuccess, hasCloneTalisman, petTypeId
 	} = params;
 
 	// Calculate tokens first
-	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false, playerCurrentTokens, expedition.durationMinutes);
+	const tokens = calculateTokensReward(rewardIndex, expedition.hasBonusTokens ?? false, expedition.durationMinutes);
 
 	const rewards = calculateBaseRewards(rewardIndex, expedition.locationType);
 
