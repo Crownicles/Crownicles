@@ -6,7 +6,7 @@
   "breath": 10,
   "maxBreath": 60,
   "breathRegen": 12,
-  "rewardFactor": 1.7,
+  "rewardFactor": 1.6,
   "attacks": [
     {
       "id": "celestialLightning",
