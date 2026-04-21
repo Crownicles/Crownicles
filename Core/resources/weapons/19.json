@@ -1,4 +1,7 @@
 {
   "rarity": 2,
-  "rawAttack": 5
+  "rawAttack": 5,
+  "tags": [
+    "metallic"
+  ]
 }

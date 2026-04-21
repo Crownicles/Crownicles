@@ -2,5 +2,8 @@
   "rarity": 6,
   "rawDefense": 10,
   "attack": -30,
-  "speed": -40
+  "speed": -40,
+  "tags": [
+    "metallic"
+  ]
 }

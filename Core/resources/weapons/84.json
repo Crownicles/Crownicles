@@ -1,5 +1,8 @@
 {
   "rarity": 6,
   "rawAttack": 3,
-  "speed": 55
+  "speed": 55,
+  "tags": [
+    "metallic"
+  ]
 }
