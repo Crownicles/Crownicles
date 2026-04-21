@@ -17,6 +17,7 @@ import { FighterStatus } from "../FighterStatus";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../utils/PetUtils";
+import { ItemConstants } from "../../../../../Lib/src/constants/ItemConstants";
 
 type AiPlayerFighterOptions = {
 	allowPotionConsumption?: boolean;
@@ -101,6 +102,7 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 		this.stats.maxBreath = this.player.getMaxBreath();
 		this.stats.breathRegen = this.player.getBreathRegen();
 		this.glory = this.player.getGloryPoints();
+		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
 		await this.loadPetEntity();
 	}
 

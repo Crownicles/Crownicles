@@ -22,6 +22,11 @@ const use: FightActionFunc = (sender, receiver) => {
 	// Paladins channel divine power and resist celestial energy
 	const receiverIsPaladin = isPaladin(receiver);
 
+	// Metal conducts lightning: more metallic gear on the target means stronger hits
+	const receiverMetallicCount = receiver instanceof PlayerFighter || receiver instanceof AiPlayerFighter
+		? receiver.metallicItemCount
+		: 0;
+
 	const result = simpleDamageFightAction(
 		{
 			sender,
@@ -32,7 +37,7 @@ const use: FightActionFunc = (sender, receiver) => {
 			failure: 0
 		},
 		{
-			attackInfo: getAttackInfo(receiverIsPaladin),
+			attackInfo: getAttackInfo(receiverIsPaladin, receiverMetallicCount),
 			statsInfo: getStatsInfo(sender, receiver)
 		}
 	);
@@ -53,13 +58,18 @@ const use: FightActionFunc = (sender, receiver) => {
 
 export default use;
 
-function getAttackInfo(receiverIsPaladin: boolean): attackInfo {
+function getAttackInfo(receiverIsPaladin: boolean, metallicCount: number): attackInfo {
 	// Paladins channel divine power and take reduced damage from celestial energy
 	const paladinReduction = receiverIsPaladin ? 0.6 : 1;
+
+	// Each metallic item on the target amplifies the strike (+10% per item)
+	const metallicMultiplier = 1 + 0.1 * metallicCount;
+	const totalMultiplier = paladinReduction * metallicMultiplier;
+
 	return {
-		minDamage: Math.round(30 * paladinReduction),
-		averageDamage: Math.round(45 * paladinReduction),
-		maxDamage: Math.round(85 * paladinReduction)
+		minDamage: Math.round(30 * totalMultiplier),
+		averageDamage: Math.round(45 * totalMultiplier),
+		maxDamage: Math.round(85 * totalMultiplier)
 	};
 }
 
