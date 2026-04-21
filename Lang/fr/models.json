@@ -214,7 +214,7 @@
       "name_other": "Attaques plongées aériennes"
     },
     "abyssalAura": {
-      "customMessage": "exerce une pression abyssale qui comprime les poumons de son adversaire, réduisant sa régénération de souffle.",
+      "customMessage": "déploie une aura abyssale qui comprime les poumons de son adversaire et plonge son âme dans une terreur paralysante, réduisant sa régénération de souffle.",
       "name_one": "Aura abyssale",
       "name_other": "Auras abyssales"
     },
@@ -327,8 +327,8 @@
     },
     "chargeDeluge": {
       "customMessage": "concentre son énergie primordiale, le ciel s'obscurcit et des éclairs commencent à zébrer le ciel.",
-      "name_one": "Déluge",
-      "name_other": "Déluges"
+      "name_one": "Attaque Déluge",
+      "name_other": "Attaques Déluges"
     },
     "chargeMaelstromAttack": {
       "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
@@ -925,11 +925,17 @@
       "noAction": "est étourdi et ne parvient pas à attaquer.",
       "stop": "n'est plus étourdi."
     },
+    "tetanized": {
+      "name": "tétanisé",
+      "new": "est tétanisé de peur, ses gestes deviennent maladroits et hésitants.",
+      "active": "est encore tétanisé de peur, son corps refuse de répondre normalement.",
+      "stop": "reprend ses esprits et n'est plus tétanisé."
+    },
     "submerged": {
       "name": "submergé",
       "new": "est submergé.",
       "active": "est submergé et a du mal à respirer.",
-      "stop": "a réussi à s'extraire de l'eau mais en finit complètement trempé."
+      "stop": "a réussi à s'extraire de l'eau mais en sort complètement trempé."
       },
     "summonAttack": {
       "name_one": "Invocation d'alliés",
