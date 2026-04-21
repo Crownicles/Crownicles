@@ -22,6 +22,7 @@ import { PetEntities } from "../../database/game/models/PetEntity";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../utils/PetUtils";
+import { ItemConstants } from "../../../../../Lib/src/constants/ItemConstants";
 
 /**
  * Fighter
@@ -130,6 +131,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 		this.stats.breath = this.player.getBaseBreath();
 		this.stats.maxBreath = this.player.getMaxBreath();
 		this.stats.breathRegen = this.player.getBreathRegen();
+		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
 		if (this.player.petId) {
 			// Check if pet is available based on fight role
 			const petAvailabilityContext = this.fightRole === FightConstants.FIGHT_ROLES.ATTACKER
