@@ -64,11 +64,10 @@ function getAttackInfo(receiverIsPaladin: boolean): attackInfo {
 }
 
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
-	// Lightning is attracted to fast targets: the faster the receiver, the more damage
 	return {
 		attackerStats: [
 			sender.getAttack(),
-			sender.getSpeed() + receiver.getSpeed()
+			sender.getSpeed()
 		],
 		defenderStats: [
 			receiver.getDefense() * 0.5,

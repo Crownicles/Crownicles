@@ -4,6 +4,7 @@
   "attack": 20,
   "speed": -40,
   "tags": [
-    "ranged"
+    "ranged",
+    "metallic"
   ]
 }
