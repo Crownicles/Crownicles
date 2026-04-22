@@ -1940,7 +1940,9 @@
     "alreadyHaveBadge": "O jogador já tem todos os emblemas do jogo.",
     "selectBadgePlaceholder": "Selecionar um crachá para oferecer ao jogador",
     "selectBadgeTitle": "{{pseudo}}selecionar um crachá para doar",
-    "selectBadgeDesc": "Escolhe um crachá para oferecer ao jogador de uma das listas abaixo:"
+    "selectBadgeDesc": "Escolhe um crachá para oferecer ao jogador de uma das listas abaixo:",
+    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}modificar um jogador",
