@@ -1941,7 +1941,7 @@
     "selectBadgePlaceholder": "Wählen Sie ein Abzeichen, das der Spieler erhalten soll",
     "selectBadgeTitle": "{{pseudo}}Auswahl eines Namensschildes",
     "selectBadgeDesc": "Wählen Sie aus einer der folgenden Listen ein Abzeichen aus, das Sie dem Spieler geben möchten:",
-    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmTitle": "{{pseudo}}Bestätigung",
     "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
