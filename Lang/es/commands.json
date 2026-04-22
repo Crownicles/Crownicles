@@ -1941,7 +1941,7 @@
     "selectBadgePlaceholder": "Selecciona una insignia para dársela al jugador",
     "selectBadgeTitle": "{{pseudo}}seleccione una insignia para donar",
     "selectBadgeDesc": "Elige una insignia para dársela al jugador de una de las listas siguientes:",
-    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmTitle": "{{pseudo}}confirmación",
     "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
