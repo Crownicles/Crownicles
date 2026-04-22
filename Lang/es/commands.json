@@ -852,7 +852,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}liberar a un familiar",
-    "acceptedTitle": "{{pseudo}}, familier libéré !",
+    "acceptedTitle": "{{pseudo}}el familiar liberado",
     "canceledTitle": "{{pseudo}}cancelación de la liberación.",
     "canceledDesc": "La mascota no ha sido liberada.",
     "confirmDesc": ":warning:{{pet}}¿Está seguro de que desea liberar ** **? No es posible cancelar una vez que la acción se ha completado.",
@@ -1942,7 +1942,7 @@
     "selectBadgeTitle": "{{pseudo}}seleccione una insignia para donar",
     "selectBadgeDesc": "Elige una insignia para dársela al jugador de una de las listas siguientes:",
     "confirmTitle": "{{pseudo}}confirmación",
-    "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
+    "confirmDesc": "¿De verdad quieres darle al jugador la insignia {{badge}}?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}modificar un jugador",
