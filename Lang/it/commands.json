@@ -1941,7 +1941,7 @@
     "selectBadgePlaceholder": "Selezionare un badge da consegnare al giocatore",
     "selectBadgeTitle": "{{pseudo}}selezionare un distintivo da donare",
     "selectBadgeDesc": "Scegliere un distintivo da dare al giocatore da uno degli elenchi sottostanti:",
-    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmTitle": "{{pseudo}}conferma",
     "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
