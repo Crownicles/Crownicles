@@ -1941,7 +1941,7 @@
     "selectBadgePlaceholder": "Selecionar um crachá para oferecer ao jogador",
     "selectBadgeTitle": "{{pseudo}}selecionar um crachá para doar",
     "selectBadgeDesc": "Escolhe um crachá para oferecer ao jogador de uma das listas abaixo:",
-    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmTitle": "{{pseudo}}confirmação",
     "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
