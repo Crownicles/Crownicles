@@ -852,7 +852,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}Befreiung eines Vertrauten",
-    "acceptedTitle": "{{pseudo}}, familier libéré !",
+    "acceptedTitle": "{{pseudo}}, Vertrauter befreit!",
     "canceledTitle": "{{pseudo}}Die Befreiung wird aufgehoben.",
     "canceledDesc": "Der Vertraute wurde nicht befreit.",
     "confirmDesc": ":warning: Sind Sie sicher, dass Sie **{{pet}}** befreien wollen? Es ist nicht möglich, eine einmal durchgeführte Aktion rückgängig zu machen.",
@@ -1942,7 +1942,7 @@
     "selectBadgeTitle": "{{pseudo}}Auswahl eines Namensschildes",
     "selectBadgeDesc": "Wählen Sie aus einer der folgenden Listen ein Abzeichen aus, das Sie dem Spieler geben möchten:",
     "confirmTitle": "{{pseudo}}Bestätigung",
-    "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
+    "confirmDesc": "Möchten Sie dem Spieler wirklich das Abzeichen {{badge}} geben?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}Änderung eines Spielers",
