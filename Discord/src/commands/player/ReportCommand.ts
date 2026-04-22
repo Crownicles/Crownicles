@@ -626,10 +626,11 @@ export async function handleBuyHealRefuse(context: PacketContext): Promise<void>
 	const lng = interaction.userLanguage;
 
 	const embed = new CrowniclesEmbed()
-		.setDescription(i18n.t("commands:report.healRefused", {
+		.formatAuthor(i18n.t("commands:report.healRefusedTitle", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
-		}))
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.healRefusedDescription", { lng }))
 		.setErrorColor();
 
 	await buttonInteraction?.editReply({ embeds: [embed] });
