@@ -59,9 +59,10 @@ function convertEmoteFormat(str: string): string {
 type EmotePathFolder = Record<string, unknown> | string[];
 type EmotePath = EmotePathFolder | string;
 
-export type TranslationOption = {
+export type TranslationOption = Omit<i18next.TOptions, "context"> & {
 	lng: Language;
-} & i18next.TOptions;
+	context?: string;
+};
 
 /**
  * Get the corresponding to emote for the given emote name
@@ -105,7 +106,7 @@ export class I18nCrownicles {
 	static t(key: string | string[], options: {
 		lng: Language;
 		returnObjects: true;
-	} & i18next.TOptions): string[];
+	} & Omit<i18next.TOptions, "context"> & { context?: string }): string[];
 
 	/**
 	 * Translate the given key with the given options
@@ -115,7 +116,7 @@ export class I18nCrownicles {
 	static t(key: string | string[], options: {
 		lng: Language;
 		returnObjects?: false;
-	} & i18next.TOptions): string;
+	} & Omit<i18next.TOptions, "context"> & { context?: string }): string;
 
 	/**
 	 * Translate the given key with the given options
@@ -125,7 +126,7 @@ export class I18nCrownicles {
 	static t(key: string | string[], options: {
 		lng: Language;
 		returnObjects: true;
-	} & i18next.TOptions): Record<string, string>;
+	} & Omit<i18next.TOptions, "context"> & { context?: string }): Record<string, string>;
 
 	/**
 	 * Translate the given key with the given options

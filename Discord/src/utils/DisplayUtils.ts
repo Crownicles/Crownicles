@@ -252,7 +252,7 @@ export abstract class DisplayUtils {
 	static getPetLoveLevelDisplay(loveLevel: number, sex: SexTypeShort, lng: Language, withIcon = true): string {
 		const sexStringContext: string = sex === StringConstants.SEX.MALE.short ? StringConstants.SEX.MALE.long : StringConstants.SEX.FEMALE.long;
 		const text = i18n.t(`commands:pet.loveLevels.${loveLevel}`, {
-			context: sexStringContext as unknown,
+			context: sexStringContext,
 			lng
 		});
 
