@@ -852,6 +852,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}liberar a un familiar",
+    "acceptedTitle": "{{pseudo}}, familier libéré !",
     "canceledTitle": "{{pseudo}}cancelación de la liberación.",
     "canceledDesc": "La mascota no ha sido liberada.",
     "confirmDesc": ":warning:{{pet}}¿Está seguro de que desea liberar ** **? No es posible cancelar una vez que la acción se ha completado.",
@@ -1637,6 +1638,7 @@
         "self": {
           "newAlteration": " ¡Ahora eres {{effect}}!",
           "damages": " `Daño recibido: {{amount, number}}`",
+          "reflectedDamages": " `Daño recibido: {{amount, number}}`",
           "defense": " `Defensa: {{operator}} {{amount, number}} %`",
           "breath": " `Aliento: {{operator}} {{amount, number}}`",
           "speed": " `Velocidad: {{operator}} {{amount, number}} %`",
@@ -1646,6 +1648,7 @@
         "opponent": {
           "newAlteration": " Tu oponente ahora es {{effect}}.",
           "damages": " `Daño infligido: {{amount, number}}`",
+          "reflectedDamages": " `Daño recibido: {{amount, number}}`",
           "defense": " `Defensa del adversario: {{operator}} {{amount, number}} %`",
           "breath": " `Aliento del adversario: {{operator}} {{amount, number}}`",
           "speed": " `Velocidad del adversario: {{operator}} {{amount, number}} %`",
@@ -1937,7 +1940,9 @@
     "alreadyHaveBadge": "El jugador ya tiene todas las insignias del juego.",
     "selectBadgePlaceholder": "Selecciona una insignia para dársela al jugador",
     "selectBadgeTitle": "{{pseudo}}seleccione una insignia para donar",
-    "selectBadgeDesc": "Elige una insignia para dársela al jugador de una de las listas siguientes:"
+    "selectBadgeDesc": "Elige una insignia para dársela al jugador de una de las listas siguientes:",
+    "confirmTitle": "{{pseudo}}confirmación",
+    "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}modificar un jugador",
