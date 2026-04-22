@@ -199,14 +199,14 @@
   },
   "fight_actions": {
     "drowning": {
-      "customMessage": "saisit son adversaire avec l'une de ses tentacules et le plonge sous l'eau, seuls les adversaires ayant du souffle s'extirpent sans dommage.",
-      "name_one": "Noyade",
-      "name_other": "Noyades"
+      "customMessage": "grabs his opponent with one of his tentacles and plunges him underwater, with only those with breath escaping unscathed.",
+      "name_one": "Drowning",
+      "name_other": "Drownings"
     },
     "sepulcralHunger": {
-      "customMessage": "sent la faiblesse de sa proie et attaque avec une férocité redoublée, ses yeux brillant d'une lueur prédatrice.",
-      "name_one": "Faim sépulcrale",
-      "name_other": "Faims sépulcrales"
+      "customMessage": "senses its prey's weakness and attacks with redoubled ferocity, its eyes shining with a predatory gleam.",
+      "name_one": "Sepulchral hunger",
+      "name_other": "Sepulchral hungers"
     },
     "aerialDiveAttack": {
       "customMessage": "launches into the air to dive at its opponent, but the opponent manages to keep it at bay thanks to its attacks.",
@@ -214,9 +214,9 @@
       "name_other": "Aerial Dive Attacks"
     },
     "abyssalAura": {
-      "customMessage": "déploie une aura abyssale qui comprime les poumons de son adversaire et plonge son âme dans une terreur paralysante, réduisant sa régénération de souffle.",
-      "name_one": "Aura abyssale",
-      "name_other": "Auras abyssales"
+      "customMessage": "deploys an abyssal aura that compresses his opponent's lungs and plunges his soul into paralyzing terror, reducing his breath regeneration.",
+      "name_one": "Abyssal aura",
+      "name_other": "Abyssal auras"
     },
     "alliesArePresent": {
       "name": "victim of the allies",
@@ -229,9 +229,9 @@
       "name_other": "Ambushes"
     },
     "aqueousEvasion": {
-      "customMessage": "glisse hors de portée dans un tourbillon aqueux et ralentit son adversaire.",
-      "name_one": "Esquive aquatique",
-      "name_other": "Esquives aquatiques"
+      "customMessage": "slides out of range in a watery vortex and slows down his opponent.",
+      "name_one": "Water dodge",
+      "name_other": "Water dodges"
     },
     "benediction": {
       "description": "Part of the \"actions of the gods\" group. Fails if 1 god action has already been performed in combat. Increases all the caster's stats. The later in the fight the blessing is used, the greater the increase in stats.",
@@ -293,8 +293,8 @@
       "stop": "is no longer burnt."
     },
     "callOfTheSea": {
-      "name_one": "Attaque appel de la mer",
-      "name_other": "Attaques appels des mers"
+      "name_one": "Attack call from the sea",
+      "name_other": "Attack calls from the seas"
     },
     "callPack": {
       "customMessage": "calls his pack with a strident howl.",
@@ -307,7 +307,7 @@
       "name_other": "Cannon attacks"
     },
     "chargeChargeMaelstromAttack": {
-      "customMessage": "s'immobilise et se prépare à déclencher un désastre.",
+      "customMessage": "comes to a standstill and prepares to unleash a disaster.",
       "name_one": "Maelström",
       "name_other": "Maelströms"
     },
@@ -326,12 +326,12 @@
       "name_other": "Club smashes"
     },
     "chargeDeluge": {
-      "customMessage": "concentre son énergie primordiale, le ciel s'obscurcit et des éclairs commencent à zébrer le ciel.",
-      "name_one": "Attaque Déluge",
-      "name_other": "Attaques Déluges"
+      "customMessage": "concentrates its primordial energy, the sky darkens and lightning begins to streak across it.",
+      "name_one": "Deluge attack",
+      "name_other": "Deluge attacks"
     },
     "chargeMaelstromAttack": {
-      "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
+      "customMessage": "continues to concentrate its energy, ready to unleash devastating power.",
       "name_one": "Maelström",
       "name_other": "Maelströms"
     },
@@ -416,15 +416,15 @@
       "name_other": "Cursed attacks"
     },
     "cursedByTheSea": {
-      "name": "damné par la mer",
-      "new": "est damné par la mer...",
-      "active": "est damné par la mer...",
-      "stop": "est condamné par les eaux maudites."
+      "name": "damned by the sea",
+      "new": "is damned by the sea...",
+      "active": "is damned by the sea...",
+      "stop": "is condemned by the cursed waters."
     },
     "cursedOfTheSea": {
-      "customMessage": "condamne son adversaire à être damné par la mer.",
-      "name_one": "Malédiction de la mer",
-      "name_other": "Malédictions de la mer"
+      "customMessage": "condemns his opponent to damnation by the sea.",
+      "name_one": "Curse of the sea",
+      "name_other": "Curses from the sea"
     },
     "darkAttack": {
       "description": "Ignores the opponent's defense. Most effective against a player with high attack. Blinds the opponent or restores some of the user's lost breath. The \"blinded\" debuff lasts at least 1 turn and sometimes renders the opponent unable to attack, while also reducing their defense and speed.",
@@ -438,9 +438,9 @@
       "name_other": "Defense boosts"
     },
     "deluge": {
-      "customMessage": "déchaîne une tempête cataclysmique, la foudre et les trombes d'eau s'abattent sur vous.",
-      "name_one": "Déluge",
-      "name_other": "Déluges"
+      "customMessage": "unleashes a cataclysmic storm, lightning and waterspouts fall on you.",
+      "name_one": "Flood",
+      "name_other": "Floods"
     },
     "dirty": {
       "name": "disgusting",
@@ -454,14 +454,14 @@
       "name_other": "Divine attacks"
     },
     "celestialLightning": {
-      "customMessage": "invoque la foudre céleste qui s'abat sur l'adversaire.",
-      "name_one": "Foudre céleste",
-      "name_other": "Foudres célestes"
+      "customMessage": "summons heavenly lightning to strike the opponent.",
+      "name_one": "Heavenly lightning",
+      "name_other": "Heavenly lightning"
     },
     "earthquake": {
-      "customMessage": "fait trembler la terre, seul les adversaires les plus solides parviennent à y résister.",
-      "name_one": "Séisme",
-      "name_other": "Séismes"
+      "customMessage": "shakes the earth, and only the strongest opponents can withstand it.",
+      "name_one": "Earthquake",
+      "name_other": "Earthquakes"
     },
     "elephantRememberLastAction": {
       "success": "is helped by **{{petNickname}}** whose searing memory of recent events enables him to restore his master's lost breath.",
@@ -483,10 +483,10 @@
       "name_other": "Family meals"
     },
     "fatalFlight": {
-      "customMessageFail": "invoque des corbeaux spectraux mais votre familier ordonne à ceux-ci de retourner au néant.",
-      "customMessage": "invoque des corbeaux spectraux qui fondent sur son adversaire et le lacèrent de toute part.",
-      "name_one": "Volée funeste",
-      "name_other": "Volées funestes"
+      "customMessageFail": "summons spectral ravens, but your pet orders them to return to nothingness.",
+      "customMessage": "summons spectral ravens that swoop down on his opponent, lacerating him all over.",
+      "name_one": "Fateful flight",
+      "name_other": "Fateful flights"
     },
     "fireAttack": {
       "description": "Burns the opponent. The \"burned\" condition inflicts damage to your opponent over time.",
@@ -503,9 +503,9 @@
       "stop": "is no longer frozen."
     },
     "aceratedFangs": {
-      "customMessage": "mord violemment avec ses crocs acérés, laissant une marque sanglante.",
-      "name_one": "Crocs acérés",
-      "name_other": "Crocs acérés"
+      "customMessage": "bites violently with its sharp fangs, leaving a bloody mark.",
+      "name_one": "Sharp fangs",
+      "name_other": "Sharp fangs"
     },
     "frozenKissAttack": {
       "name_one": "Frozen Kiss Attack",
@@ -575,8 +575,8 @@
       "name_other": "Heavy attacks"
     },
     "hellishScream": {
-      "name_one": "Attaque cri infernal",
-      "name_other": "Attaques cris infernaux"
+      "name_one": "Infernal scream attack",
+      "name_other": "Infernal screams attacks"
     },
     "helpBreathe": {
       "success": "is helped by **{{petNickname}}** who, thanks to his diving skills, passes on a little breath to his owner."
@@ -591,9 +591,9 @@
       "name_other": "Howls"
     },
     "hydraulicHeal": {
-      "customMessage": "fait appel aux forces de l'eau pour récupérer des forces.",
-      "name_one": "Soin hydraulique",
-      "name_other": "Soins hydrauliques"
+      "customMessage": "calls on the forces of water to regain strength.",
+      "name_one": "Hydraulic care",
+      "name_other": "Hydraulic care"
     },
     "hypnosis": {
       "success": "is helped by **{{petNickname}}** who uses his hypnotic powers to confuse the enemy."
@@ -603,9 +603,9 @@
       "name_other": "Icy Seduction Attacks"
     },
     "inkJet": {
-      "customMessage": "lance un puissant jet d'encre sur son adversaire.",
-      "name_one": "Jet d'encre",
-      "name_other": "Jet d'encre"
+      "customMessage": "launches a powerful jet of ink at his opponent.",
+      "name_one": "Inkjet",
+      "name_other": "Inkjet"
     },
     "intenseAttack": {
       "description": "Defense effectively protects against this attack. Never fails on a faster opponent. Works best on a faster opponent. Forces the user to use the \"rest\" action on the next turn. Cannot kill the opponent.",
@@ -613,10 +613,10 @@
       "name_other": "Intense attacks"
     },
     "blackCorrosion": {
-      "name": "corrodé",
-      "new": "est corrodé.",
-      "active": "est rongé par la corrosion noire.",
-      "stop": "n'est plus corrodé."
+      "name": "corroded",
+      "new": "is corroded.",
+      "active": "is eaten away by black corrosion.",
+      "stop": "is no longer corroded."
     },
     "isStuckInPolarEmbrace": {
       "customMessage": "fails to maintain its grip on its opponent, who manages to break free thanks to its attacks",
@@ -635,7 +635,7 @@
       "name_other": "Light Ray Attacks"
     },
     "maelstromAttack": {
-      "customMessage": "déchaîne un maelström, mêlant vents et courants dans un tourbillon ravageur.",
+      "customMessage": "unleashes a maelstrom, combining winds and currents in a devastating whirlwind.",
       "name_one": "Maelström",
       "name_other": "Maelströms"
     },
@@ -656,9 +656,9 @@
       "name_other": "Mud shot attacks"
     },
     "mutiny": {
-      "customMessage": "invoque les fantômes de son vieil équipage, c'est une bataille générale !",
-      "name_one": "Mutinerie",
-      "name_other": "Mutineries"
+      "customMessage": "summons the ghosts of his old crew, it's a general battle!",
+      "name_one": "Mutiny",
+      "name_other": "Mutiny"
     },
     "none": {
       "customMessage": "cannot attack."
@@ -706,7 +706,7 @@
       "failure": "calls **{{petNickname}}** who tries to bite his opponent, but his target seems impervious to this type of attack."
     },
     "petPetrified": {
-      "success": "se fait aider par **{{petNickname}}** qui regarde son adversaire les plus et le pétrifie.",
+      "success": "is helped by **{{petNickname}}** who looks at his opponent the most and petrifies him.",
       "failure": "is assisted by **{{petNickname}}** who looks at his opponent, but this has no effect against that opponent."
     },
     "petPoison": {
@@ -800,9 +800,9 @@
       "name_other": "Rests"
     },
     "retreat": {
-      "customMessage": "se retire dans sa carapace.",
-      "name_one": "Repli",
-      "name_other": "Replis"
+      "customMessage": "withdraws into its shell.",
+      "name_one": "Withdrawal",
+      "name_other": "Folds"
     },
     "revenge": {
       "success": "is supported by **{{petNickname}}** who injures his opponent following his attack."
@@ -838,19 +838,19 @@
       "name_other": "Simple attacks"
     },
     "sing": {
-      "customMessage": "se met à chanter.",
-      "name_one": "Chant de la mer",
-      "name_other": "Chants de la mer"
+      "customMessage": "begins to sing.",
+      "name_one": "Song of the sea",
+      "name_other": "Songs of the sea"
     },
     "slamAttack": {
       "name_one": "Slam attack",
       "name_other": "Slam attacks"
     },
     "sleeping": {
-      "name": "endormi",
-      "new": "est endormi.",
-      "active": "dort profondément.",
-      "stop": "s'est réveillé."
+      "name": "asleep",
+      "new": "is asleep.",
+      "active": "sleeps deeply.",
+      "stop": "woke up."
     },
     "slipping": {
       "failure": "uses **{{petNickname}}** to slide along the ground. He's not the one who slides the furthest on the ice floe, so he hits his opponent with little force.",
@@ -875,13 +875,13 @@
       "success": "is helped by **{{petNickname}}** who throws a snowball at his opponent."
     },
     "soaked": {
-      "name": "trempé",
-      "new": "est trempé.",
-      "active": "est trempé.",
-      "stop": "n'est plus trempé."
+      "name": "tempered",
+      "new": "is soaked.",
+      "active": "is soaked.",
+      "stop": "is no longer soaked."
     },
     "solidification": {
-      "customMessage": "se solidifie et renvoie une partie des dégâts physiques.",
+      "customMessage": "solidifies and returns some of the physical damage.",
       "name_one": "Solidification",
       "name_other": "Solidifications"
     },
@@ -926,16 +926,16 @@
       "stop": "is no longer stunned."
     },
     "tetanized": {
-      "name": "tétanisé",
-      "new": "est tétanisé de peur, ses gestes deviennent maladroits et hésitants.",
-      "active": "est encore tétanisé de peur, son corps refuse de répondre normalement.",
-      "stop": "reprend ses esprits et n'est plus tétanisé."
+      "name": "tetanized",
+      "new": "is tetanized with fear, and his gestures become clumsy and hesitant.",
+      "active": "is still tetanized with fear, his body refusing to respond normally.",
+      "stop": "comes to his senses and is no longer tetanized."
     },
     "submerged": {
-      "name": "submergé",
-      "new": "est submergé.",
-      "active": "est submergé et a du mal à respirer.",
-      "stop": "a réussi à s'extraire de l'eau mais en sort complètement trempé."
+      "name": "submerged",
+      "new": "is overwhelmed.",
+      "active": "is overwhelmed and finds it hard to breathe.",
+      "stop": "managed to extricate himself from the water, but came out completely soaked."
     },
     "summonAttack": {
       "name_one": "Ally Summoning",
@@ -961,18 +961,18 @@
       "active": "is hit by the boomerang."
     },
     "tentacleBlowAttack": {
-      "customMessage": "balance un tentacule sur son adversaire.",
-      "name_one": "Attaque coup de tentacule",
-      "name_other": "Attaques coups de tentacules"
+      "customMessage": "swings a tentacle at his opponent.",
+      "name_one": "Tentacle strike",
+      "name_other": "Tentacle attacks"
     },
     "tentacleShield": {
-      "customMessage": "agite ses tentacules dans tous les sens, renvoyant une partie des projectiles.",
-      "name_one": "Bouclier tentacule",
-      "name_other": "Boucliers tentacules"
+      "customMessage": "shakes its tentacles in all directions, deflecting some of the projectiles.",
+      "name_one": "Tentacle shield",
+      "name_other": "Tentacle shields"
     },
     "tidalWave": {
-      "name_one": "Attaque raz-de-marée",
-      "name_other": "Attaques raz-de-marée"
+      "name_one": "Tidal wave attack",
+      "name_other": "Tidal wave attacks"
     },
     "triesToHelp": {
       "success": "calls on **{{petNickname}}** who, despite fierce determination and relentless efforts, only manages to inflict a negligible impact on the fight."
@@ -994,12 +994,12 @@
       "success": "is enveloped in a soft golden glow as **{{petNickname}}** sprinkles fairy dust on his wounds, restoring some of his energy."
     },
     "waterJet": {
-      "name_one": "Attaque jet d'eau",
-      "name_other": "Attaques jet d'eau"
+      "name_one": "Water jet attack",
+      "name_other": "Water jet attacks"
     },
     "wateryGust": {
-      "name_one": "Attaque rafale aqueuse",
-      "name_other": "Attaques rafales aqueuses"
+      "name_one": "Watery burst attack",
+      "name_other": "Aqueous burst attacks"
     },
     "weak": {
       "name": "weakened",
@@ -1112,37 +1112,37 @@
       "particle": "of"
     },
     "1108": {
-      "description": "Une plage paradisiaque recouverte de coquillages de toutes les couleurs. On dit que chaque coquillage garde en lui l'écho de l'océan. Le sable fin et blanc contraste avec les eaux turquoise du lagon voisin. Attention où vous mettez les pieds, certains coquillages sont tranchants comme des lames.",
-      "name": "Plage de coquillage",
+      "description": "A heavenly beach covered with shells of every color. It is said that each shell holds within it the echo of the ocean. The fine white sand contrasts with the turquoise waters of the nearby lagoon. Be careful where you step: some shells are as sharp as blades.",
+      "name": "Shell beach",
       "particle": "of the"
     },
     "1109": {
-      "description": "Un lagon aux eaux d'un bleu cristallin protégé par une barrière de corail. Derrière la limpidité de l'onde, des courants sournois, nés des battements de l'océan, guettent la moindre imprudence pour entraîner les égarés vers l'abysse. Dans ce fragile écrin marin, les tortues millénaires viennent chercher un repos que l'agitation du large leur refuse.",
+      "description": "A crystal-blue lagoon protected by a coral reef. Behind the limpidity of the waves, devious currents, born of the beating of the ocean, lie in wait for the slightest imprudence to drag the lost into the abyss. In this fragile marine setting, thousand-year-old turtles come to seek a rest that the turmoil of the open sea denies them.",
       "name": "Creux du Lagon",
       "particle": "of"
     },
     "1110": {
-      "description": "Une grotte marine qui ne se laisse conquérir qu'à marée basse, révélant une gueule de calcaire aux parois ruisselantes. À l'intérieur, des lueurs éthérées naissent de la roche, jetant des reflets d'azur sur les voûtes. Entre les ondes et les ombres, des silhouettes de brume et d'écume dansent un ballet muet, comme si l'âme de la mer elle-même s'était réfugiée dans ce sanctuaire.",
-      "name": "Caverne Maritime",
+      "description": "A sea cave that can only be conquered at low tide, revealing a limestone maw with dripping walls. Inside, ethereal gleams emerge from the rock, casting azure reflections on the vaults. Between waves and shadows, silhouettes of mist and foam dance a silent ballet, as if the soul of the sea itself had taken refuge in this sanctuary.",
+      "name": "Sea Cave",
       "particle": "of the"
     },
     "1111": {
-      "description": "Une crique isolée qui déploie ses récifs comme des lames de granit noir, à peine dissimulées sous un ressac écumeux qui ne s'apaise jamais. La nuit, des feux follets d'un bleu spectral flottent au-dessus des vagues comme les âmes de marins perdus, esquissant une danse macabre. Une aura sinistre plane sur ce lieu maudit.",
+      "description": "A secluded cove that unfurls its reefs like blades of black granite, barely concealed beneath a frothy surf that never subsides. At night, spectral blue will-o'-the-wisps float over the waves like the souls of lost sailors, performing a macabre dance. A sinister aura hangs over this cursed place.",
       "name": "Crique du Revenant",
       "particle": "of the"
     },
     "1112": {
-      "description": "Une cathédrale sous-marine sculptée pour amplifier le souffle des marées en un coeur envoûtant. Ce n'est pas le vent, c'est l'appel d'un chant mélodieux qui s'adresse directement à votre âme. Dans cette pénombre sonore, la frontière entre vos propres pensées et les murmures de la roche s'efface doucement, et ceux qui s'y attardent n'en ressortent jamais tout à fait seuls.",
+      "description": "An underwater cathedral sculpted to amplify the breath of the tides into a bewitching heart. It's not the wind, it's the call of a melodious song that speaks directly to your soul. In this sonorous penumbra, the boundary between your own thoughts and the murmurings of the rock gently fades, and those who linger there never emerge quite alone.",
       "name": "Cave des murmures",
       "particle": "of the"
     },
     "1113": {
-      "description": "À mesure que l'on s'approche du bord, l'eau vire au noir d'encre, un miroir sombre qui ne reflète que votre propre peur. Parfois, une ondulation démesurée brise la surface, passage fugace d'un tentacule géant qui remonte des tréfonds avant de replonger dans l'oubli. Nul n'a jamais sondé le coeur de cette fosse, car le Gouffre n'accepte aucun témoin.",
+      "description": "As you approach the edge, the water turns inky black, a dark mirror reflecting only your own fear. Occasionally, a disproportionate ripple breaks the surface, the fleeting passage of a giant tentacle rising from the depths before sinking back into oblivion. No one has ever probed the heart of this pit, for the Abyss accepts no witnesses.",
       "name": "Gouffre des Profondeurs",
       "particle": "of"
     },
     "1114": {
-      "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
+      "description": "The deepest point of these waters, an underwater ravine that plunges into absolute darkness. The pressure here is such that few creatures can survive. It is rumored that a primordial beast has slumbered there since the dawn of time, guardian of the world's most ancient secrets. Only the boldest dare approach it.",
       "name": "Ravin des Abysses",
       "particle": "of"
     },
@@ -1618,8 +1618,8 @@
       "description": "A female snow spirit who lures travelers with an enchanting melody. Behind her beauty hides a relentless force. Taking on human form, she can freeze anything in her path."
     },
     "captainCrow": {
-      "name": "Capitaine Crow",
-      "description": "Âme damnée du plus redouté des pirates, le Capitaine Crow hante la Crique du Revenant depuis sa mort tragique. Son regard de braise et son rire sinistre glacent le sang de ceux qui osent fouler ses eaux maudites."
+      "name": "Captain Crow",
+      "description": "The damned soul of the most feared of pirates, Captain Crow has haunted Revenant's Cove since his tragic death. His fiery gaze and sinister laugh chill the blood of all who dare tread his cursed waters."
     },
     "celestialGuardian": {
       "name": "Celestial Guardian",
@@ -1634,24 +1634,24 @@
       "description": "The female ice dragon fiercely protects her nest. She does not hesitate to unleash her fury on anyone who threatens her offspring. More aggressive than her male counterpart, she has a much wider range of attacks."
     },
     "turtle": {
-      "name": "Tortue Géante",
-      "description": "Une gigantesque tortue se reposant paisiblement dans son lagon. Lorsqu’elle est menacée, elle se retranche dans sa carapace avant de libérer de puissants jets d’eau capables de renverser ses ennemis. Mille ans de survie ont transformé cette carapace en une forteresse de corne et de lichen que le temps lui-même semble avoir renoncé à user."
+      "name": "Giant Tortoise",
+      "description": "A gigantic turtle resting peacefully in its lagoon. When threatened, it retreats into its shell before unleashing powerful jets of water capable of toppling its enemies. A thousand years of survival have transformed this carapace into a fortress of horn and lichen that time itself seems to have failed to wear away."
     },
     "waterSpirit": {
-      "name": "Esprit des mers",
-      "description": "Une entité dotée d'une vivacité de prédateur, capable de surgir de nulle part pour tendre des embuscades mortelles. Son souffle glacial gèle ses adversaires sur place, tandis que ses puissants jets d'eau et ses raz-de-marée dévastateurs ne laissent aucun répit. Elle peut même puiser dans les flots pour soigner ses blessures."
+      "name": "Spirit of the seas",
+      "description": "An entity endowed with predatory vivacity, capable of appearing from nowhere to set deadly ambushes. Her icy breath freezes opponents in place, while her powerful jets of water and devastating tidal waves leave no respite. She can even draw from the waves to heal her wounds."
     },
     "mermaid": {
-      "name": "Sirène",
-      "description": "Mi-femme mi-poisson, cette créature enchanteresse attire ses proies par son chant envoûtant avant de les achever d'un baiser glacé. Son cri strident résonne comme un appel des profondeurs, et sa séduction glaciale paralyse même les plus braves. Rares sont ceux qui ne finissent par succomber à la tentation qu'elle incarne."
+      "name": "Siren",
+      "description": "Half-female, half-fish, this enchanting creature lures her prey with her bewitching song before finishing them off with an icy kiss. Her shrill cry echoes like a call from the depths, and her icy seduction paralyzes even the bravest. Few would fail to succumb to the temptation she embodies."
     },
     "kraken": {
       "name": "Kraken",
-      "description": "Un titan des profondeurs marines dont les tentacules massifs frappent avec une force dévastatrice. Il corrode ses proies avec des jets d'encre noire, les étouffe dans son étreinte abyssale et peut déclencher des maelströms capables de tout engloutir. Sa progression est pesante mais elle cache une puissance colossale."
+      "description": "A titan of the deep sea whose massive tentacles strike with devastating force. It corrodes its prey with jets of black ink, suffocates them in its abyssal embrace and can unleash maelstroms capable of engulfing everything. Its progress is cumbersome, but it conceals a colossal power."
     },
     "leviathan": {
-      "name": "Léviathan",
-      "description": "Le seigneur incontesté des océans, capable d'invoquer la foudre céleste et de déchaîner des déluges apocalyptiques. Ses crocs acérés déchirent tout sur leur passage, et sa faim sépulcrale est insatiable. Parfois emporté par une fureur aveugle, il engendre alors un maelström si violent qu'il ne laisse derrière lui qu'un sillage de débris et de silence."
+      "name": "Leviathan",
+      "description": "The undisputed lord of the oceans, capable of summoning heavenly lightning and unleashing apocalyptic deluges. His sharp fangs tear everything in their path, and his sepulchral hunger is insatiable. Sometimes carried away by blind fury, he unleashes a maelstrom so violent that it leaves behind only a wake of debris and silence."
     }
   },
   "objects": {
@@ -2264,22 +2264,22 @@
       "femaleIceDragon": "You advance into this unexplored region, guided by a curiosity mixed with apprehension. The ice wall before you reflects a silhouette so imposing it defies the imagination. The closer you get in the frozen gloom, the more you grasp the sheer magnitude of the creature hidden behind this barrier. Suddenly, cracks appear in the ice, spreading like spider webs. A deep rumble makes the rocky walls vibrate. The wall explodes in an apocalyptic crash, hurling massive ice blocks. Through this curtain of shattered crystals emerges the most majestic of creatures: a female ice dragon of colossal proportions. Her presence is awe-inspiring, her folded wings nearly touching the stone vaults above. She possesses a terrifying beauty, her iridescent scales catching the faint light in frozen rainbows. Her eyes, deep blue like the abyss, shine with ancient wisdom and maternal fury. Behind her, you spot a gigantic egg with pearlescent reflections, pulsing with a mysterious glow. You have just entered her nursery, and no intrusion will go unpunished in the sanctuary of the Ice Queen..."
     },
     "1109": {
-      "turtle": "Vous arrivez près d'un bassin naturel protégé par une barrière de corail. Le calme du lieu vous incite à vous approcher pour admirer les fonds marins. Vous remarquez alors un rocher imposant recouvert d'algues au centre du bassin. Soudain, il se met en mouvement. Une tête massive en émerge, suivie de quatre pattes colossales. Une Tortue Géante se dresse devant vous, sa taille rivalisant avec celle d'un petit navire. Ses grands yeux vous fixent avec une sagesse ancestrale. Puis elle ouvre sa gueule et un puissant jet d'eau vous frôle, vous faisant comprendre que ce paisible lagon est son territoire..."
+      "turtle": "You arrive near a natural pool protected by a coral reef. The calmness of the place encourages you to come closer and admire the seabed. You notice an imposing rock covered in algae in the center of the pool. Suddenly, it starts to move. A massive head emerges, followed by four colossal legs. A Giant Tortoise stands before you, its size rivaling that of a small ship. Its large eyes stare back at you with ancestral wisdom. Then it opens its mouth and a powerful jet of water brushes against you, letting you know that this peaceful lagoon is its territory..."
     },
     "1110": {
-      "waterSpirit": "Vous pénétrez dans une grotte marine à marée basse. D'étranges échos résonnent dans les profondeurs et des lueurs bleutées dansent dans l'obscurité, vous attirant plus loin. Soudain, l'eau stagnante se met à tourbillonner et des myriades de gouttelettes sur les parois convergent vers ce point central. Une forme translucide prend vie devant vous, mi-brume mi-eau. L'Esprit des mers vous fixe de ses yeux d'un bleu abyssal. Avant que vous ne puissiez réagir, il disparaît et réapparaît dans votre dos. Ce gardien évanescent ne vous laissera pas quitter son sanctuaire si facilement..."
+      "waterSpirit": "You enter a sea cave at low tide. Strange echoes echo in the depths and bluish glows dance in the darkness, drawing you further in. Suddenly, the stagnant water begins to swirl and myriads of droplets on the walls converge on this central point. A translucent form comes to life before you, half mist, half water. The Spirit of the Seas stares back at you with its abysmal blue eyes. Before you can react, he disappears and reappears behind your back. This evanescent guardian won't let you leave his sanctuary so easily..."
     },
     "1111": {
-      "captainCrow": "La brume s'épaissit à mesure que vous approchez de la Crique du Revenant. Le soleil s'est couché depuis longtemps et seuls des feux follets éclairent votre chemin. Vous avancez prudemment sur les galets mouillés tandis que votre regard accroche les carcasses de plusieurs navires éventrés, leurs coques pourries sans cesse léchées par le flux et le reflux des vagues. Tout à coup, la brume se condense en une forme humanoïde à quelques mètres devant vous. Des yeux se dessinent, deux braises rougeoyantes dans le néant. Le Capitaine Crow, spectre du pirate le plus redouté des mers, matérialise sa silhouette devant vous, son sabre crépitant d'une énergie maudite. Il n'a pas fini de réclamer des âmes."
+      "captainCrow": "The mist thickens as you approach Crique du Revenant. The sun has long since set and only a few will-o'-the-wisps light your way. You make your way cautiously over the wet pebbles, your gaze catching the carcasses of several gutted ships, their rotting hulls constantly licked by the ebb and flow of the waves. Suddenly, the mist condenses into a humanoid shape a few meters ahead. Eyes appear, two glowing embers in the void. Captain Crow, specter of the most feared pirate on the seas, materializes his silhouette before you, his saber crackling with cursed energy. He's not done claiming souls."
     },
     "1112": {
-      "mermaid": "Vous explorez une caverne sous-marine et plus vous avancez, plus vous percevez une mélodie envoûtante. Vos jambes vous portent malgré vous vers sa source. Au détour d'un passage, vous découvrez un bassin d'eau turquoise. Et là, assise sur un rocher, elle vous attend. Mi-femme mi-poisson, la Sirène vous observe de ses yeux hypnotiques. Sa beauté est saisissante, mais son sourire vous glace le sang. Ses griffes acérées tapotent la pierre, marquant une mesure sourde qui se répercute contre les parois. Son chant change de tonalité : il ne cherche plus à vous séduire, mais à entrer en résonance avec la structure même de la caverne. C'est un piège, et il se referme sur vous..."
+      "mermaid": "You're exploring an underwater cavern, and the further you go, the more you hear a haunting melody. Despite yourself, your legs carry you towards its source. At the bend of a passage, you discover a pool of turquoise water. And there, sitting on a rock, she awaits you. Half-female, half-fish, the Siren watches you with hypnotic eyes. Her beauty is striking, but her smile is bloodcurdling. Her sharp claws tap the stone, marking a dull beat that reverberates against the walls. Her song changes key: it no longer seeks to seduce you, but to resonate with the very structure of the cavern. It's a trap, and it's closing in on you..."
     },
     "1113": {
-      "kraken": "Vous vous tenez au bord d'un gouffre marin, scrutant les eaux d'un noir d'encre. Rien ne semble bouger dans cet abîme sans fond. Puis des bulles commencent à remonter à la surface. D'abord quelques-unes, puis des centaines. L'eau se met à bouillonner violemment. Soudain, un tentacule massif jaillit des profondeurs, aussi large qu'un tronc d'arbre. Puis un autre. Et encore un autre. Le Kraken émerge de son antre, ses yeux jaunes luisant d'une intelligence malveillante. Ses ventouses claquent contre la roche avec une force capable de broyer les os, une force primordiale. L'abysse est remonté à la surface, et il a faim..."
+      "kraken": "You're standing on the edge of an ocean abyss, scanning the inky black waters. Nothing seems to move in this bottomless abyss. Then bubbles begin to rise to the surface. First a few, then hundreds. The water begins to bubble violently. Suddenly, a massive tentacle bursts from the depths, as wide as a tree trunk. Then another. And another. The Kraken emerges from its lair, its yellow eyes gleaming with malevolent intelligence. Its suction cups slam against the rock with bone-crushing, primordial force. The abyss has risen to the surface, and it's hungry..."
     },
     "1114": {
-      "leviathan": "Vous descendez dans un ravin sous-marin où la lumière n'a plus cours. Les ténèbres vous enveloppent, le silence est oppressant. Puis vous la sentez avant de la voir : une présence titanesque émettant une vibration basse qui fait trembler tous vos os. Deux pupilles s'ouvrent, larges comme des boucliers, d'un bleu électrique qui grésille dans l'eau noire. Le Léviathan s'éveille, il se déploie lentement, sa taille défiant l'entendement. Des éclairs commencent à crépiter entre ses crocs tandis que l'eau tourbillonne en un maelström naissant. Vous venez de commettre l'erreur de le réveiller..."
+      "leviathan": "You descend into an underwater ravine where there is no longer any light. Darkness envelops you, the silence oppressive. Then you feel it before you see it: a titanic presence emitting a low vibration that shakes every bone in your body. Two pupils open, as wide as shields, an electric blue that sizzles in the black water. Leviathan awakens, slowly unfurling, its size defying belief. Lightning begins to crackle between its fangs as the water swirls in a nascent maelstrom. You've just made the mistake of waking him up..."
     }
   }
 }
