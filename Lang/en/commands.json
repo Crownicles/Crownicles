@@ -831,7 +831,8 @@
     "healSuccessDescription": "{emote:shopItems.healAlteration} You have spent **{{price, number}}** {emote:unitValues.money} to treat yourself.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what's waiting for you.",
     "healNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
-    "healRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to heal.",
+    "healRefusedTitle": "{{pseudo}}, cancellation",
+    "healRefusedDescription": "{emote:messages.refuse} You decided not to heal.",
     "healNoAlteration": "{emote:effects.none} You are not a victim of any status condition.",
     "healCannotHealOccupied": "{emote:effects.occupied} You are currently busy. This status condition cannot be cured."
   },
