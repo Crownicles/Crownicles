@@ -852,6 +852,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}Befreiung eines Vertrauten",
+    "acceptedTitle": "{{pseudo}}, Vertrauter befreit!",
     "canceledTitle": "{{pseudo}}Die Befreiung wird aufgehoben.",
     "canceledDesc": "Der Vertraute wurde nicht befreit.",
     "confirmDesc": ":warning: Sind Sie sicher, dass Sie **{{pet}}** befreien wollen? Es ist nicht möglich, eine einmal durchgeführte Aktion rückgängig zu machen.",
@@ -1637,6 +1638,7 @@
         "self": {
           "newAlteration": " `Sie sind jetzt {{effect}} !`",
           "damages": " `Empfangene Schäden: {{amount, number}}`",
+          "reflectedDamages": " `Empfangene Schäden: {{amount, number}}`",
           "defense": " `Verteidigung: {{operator}} {{amount, number}} %`",
           "breath": " `Atem: {{operator}} {{amount, number}}`",
           "speed": " `Geschwindigkeit: {{operator}} {{amount, number}} %`",
@@ -1646,6 +1648,7 @@
         "opponent": {
           "newAlteration": " `Ihr Gegner ist nun {{effect}} !`",
           "damages": " `Angerichteter Schaden: {{amount, number}}`",
+          "reflectedDamages": " `Empfangene Schäden: {{amount, number}}`",
           "defense": " `Verteidigung des Gegners: {{operator}} {{amount, number}} %`",
           "breath": " `Atem des Gegners: {{operator}} {{amount, number}}`",
           "speed": " `Gegnerische Geschwindigkeit: {{operator}} {{amount, number}} %`",
@@ -1937,7 +1940,9 @@
     "alreadyHaveBadge": "Der Spieler hat bereits alle Abzeichen, die es im Spiel gibt.",
     "selectBadgePlaceholder": "Wählen Sie ein Abzeichen, das der Spieler erhalten soll",
     "selectBadgeTitle": "{{pseudo}}Auswahl eines Namensschildes",
-    "selectBadgeDesc": "Wählen Sie aus einer der folgenden Listen ein Abzeichen aus, das Sie dem Spieler geben möchten:"
+    "selectBadgeDesc": "Wählen Sie aus einer der folgenden Listen ein Abzeichen aus, das Sie dem Spieler geben möchten:",
+    "confirmTitle": "{{pseudo}}Bestätigung",
+    "confirmDesc": "Möchten Sie dem Spieler wirklich das Abzeichen {{badge}} geben?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}Änderung eines Spielers",

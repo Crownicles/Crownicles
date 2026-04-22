@@ -852,6 +852,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}, liberare un animale di compagnia",
+    "acceptedTitle": "{{pseudo}}il familiare liberato!",
     "canceledTitle": "{{pseudo}}, cancellazione del rilascio.",
     "canceledDesc": "L'animale non è stato rilasciato.",
     "confirmDesc": ":warning: Siete sicuri di voler rilasciare **{{pet}}** ? Non è possibile annullare una volta completata l'azione.",
@@ -1637,6 +1638,7 @@
         "self": {
           "newAlteration": " Ora siete {{effect}} !",
           "damages": " Danno ricevuto: {{amount, number}}`.",
+          "reflectedDamages": " Danno ricevuto: {{amount, number}}`.",
           "defense": " Difesa: {{operator}} {{amount, number}} %`",
           "breath": " Respiro: {{operator}} {{amount, number}}`",
           "speed": " Velocità: {{operator}} {{amount, number}} %`.",
@@ -1646,6 +1648,7 @@
         "opponent": {
           "newAlteration": " Il vostro avversario è ora {{effect}} .",
           "damages": " Danno inflitto: {{amount, number}}`.",
+          "reflectedDamages": " Danno ricevuto: {{amount, number}}`.",
           "defense": " Difesa dell'avversario: {{operator}} {{amount, number}} %`.",
           "breath": " Respiro dell'avversario: {{operator}} {{amount, number}}`.",
           "speed": " Velocità dell'avversario: {{operator}} {{amount, number}} %`.",
@@ -1937,7 +1940,9 @@
     "alreadyHaveBadge": "Il giocatore possiede già tutti i distintivi del gioco.",
     "selectBadgePlaceholder": "Selezionare un badge da consegnare al giocatore",
     "selectBadgeTitle": "{{pseudo}}selezionare un distintivo da donare",
-    "selectBadgeDesc": "Scegliere un distintivo da dare al giocatore da uno degli elenchi sottostanti:"
+    "selectBadgeDesc": "Scegliere un distintivo da dare al giocatore da uno degli elenchi sottostanti:",
+    "confirmTitle": "{{pseudo}}conferma",
+    "confirmDesc": "Vuoi davvero dare al giocatore il distintivo {{badge}}?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}modificare un giocatore",
