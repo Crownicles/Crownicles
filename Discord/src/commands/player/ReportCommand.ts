@@ -625,12 +625,15 @@ export async function handleBuyHealRefuse(context: PacketContext): Promise<void>
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 	const lng = interaction.userLanguage;
 
-	await buttonInteraction?.editReply({
-		content: i18n.t("commands:report.healRefused", {
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.healRefusedTitle", {
 			lng,
 			pseudo: escapeUsername(interaction.user.displayName)
-		})
-	});
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.healRefusedDescription", { lng }))
+		.setErrorColor();
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
 }
 
 /**
