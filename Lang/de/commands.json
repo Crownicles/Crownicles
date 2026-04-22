@@ -1940,7 +1940,9 @@
     "alreadyHaveBadge": "Der Spieler hat bereits alle Abzeichen, die es im Spiel gibt.",
     "selectBadgePlaceholder": "Wählen Sie ein Abzeichen, das der Spieler erhalten soll",
     "selectBadgeTitle": "{{pseudo}}Auswahl eines Namensschildes",
-    "selectBadgeDesc": "Wählen Sie aus einer der folgenden Listen ein Abzeichen aus, das Sie dem Spieler geben möchten:"
+    "selectBadgeDesc": "Wählen Sie aus einer der folgenden Listen ein Abzeichen aus, das Sie dem Spieler geben möchten:",
+    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}Änderung eines Spielers",
