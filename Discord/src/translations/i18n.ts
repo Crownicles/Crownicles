@@ -139,7 +139,7 @@ export class I18nCrownicles {
 		// Even with typed call-sites, missing keys or resource drift can still return the wrong shape at runtime.
 		const value = getReturnObjectsTranslation(key, options);
 		if (!Array.isArray(value)) {
-			throw new TypeError(`Expected translation array for key \"${getTranslationKeyForError(key)}\" in language \"${options.lng}\"`);
+			throw new TypeError(`Expected translation array for key "${getTranslationKeyForError(key)}" in language "${options.lng}"`);
 		}
 		return value.map(crowniclesFormat);
 	}
@@ -153,7 +153,7 @@ export class I18nCrownicles {
 		// Even with typed call-sites, missing keys or resource drift can still return the wrong shape at runtime.
 		const value = getReturnObjectsTranslation(key, options);
 		if (!isTranslationRecord(value)) {
-			throw new TypeError(`Expected translation record for key \"${getTranslationKeyForError(key)}\" in language \"${options.lng}\"`);
+			throw new TypeError(`Expected translation record for key "${getTranslationKeyForError(key)}" in language "${options.lng}"`);
 		}
 		return Object.entries(value)
 			.reduce((acc, [recordKey, value]) => {
