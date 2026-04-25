@@ -66,7 +66,7 @@ describe('StringUtils', () => {
 			randomSpy.mockRestore();
 		});
 
-		it('should pass replacements to i18n.t', () => {
+		it('should pass replacements to i18n.tArray', () => {
 			// Setup
 			const mockTranslations = ['Hello {{name}}', 'Hi {{name}}'];
 			(i18n.tArray as any).mockReturnValue(mockTranslations);
