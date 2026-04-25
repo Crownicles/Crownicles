@@ -59,9 +59,13 @@ function convertEmoteFormat(str: string): string {
 type EmotePathFolder = Record<string, unknown> | string[];
 type EmotePath = EmotePathFolder | string;
 
-export type TranslationOption = Omit<i18next.TOptions, "context"> & {
+export type I18nCrowniclesOptions = Omit<i18next.TOptions, "context" | "returnObjects"> & {
 	lng: Language;
 	context?: string;
+};
+
+export type I18nCrowniclesReturnObjectsOptions = I18nCrowniclesOptions & {
+	returnObjects: true;
 };
 
 /**
@@ -99,57 +103,39 @@ i18next.init(getI18nOptions())
 
 export class I18nCrownicles {
 	/**
-	 * Translate the given key with the given options and returns all the objects found
-	 * @param key
-	 * @param options
-	 */
-	static t(key: string | string[], options: {
-		lng: Language;
-		returnObjects: true;
-	} & Omit<i18next.TOptions, "context"> & { context?: string }): string[];
-
-	/**
-	 * Translate the given key with the given options
-	 * @param key
-	 * @param options
-	 */
-	static t(key: string | string[], options: {
-		lng: Language;
-		returnObjects?: false;
-	} & Omit<i18next.TOptions, "context"> & { context?: string }): string;
-
-	/**
-	 * Translate the given key with the given options
-	 * @param key
-	 * @param options
-	 */
-	static t(key: string | string[], options: {
-		lng: Language;
-		returnObjects: true;
-	} & Omit<i18next.TOptions, "context"> & { context?: string }): Record<string, string>;
-
-	/**
-	 * Translate the given key with the given options
-	 * Override of the i18next.t function to allow the following :
+	 * Translate the given key with the given options.
+	 * Use tArray or tRecord for returnObjects translations.
+	 * Override of the i18next.t function to allow the following:
 	 * - replace the "{command:...}" format by the corresponding discord command
 	 * - force lng to be a Language value and being required
-	 * - force the return type to be a string (and not a never)
+	 * - force the return type to be a string
 	 * @param key
 	 * @param options
 	 */
-	static t(key: string | string[], options: TranslationOption): string | string[] | Record<string, string> {
-		const value: string | string[] | object = i18next.t(key, options);
-		if (options.returnObjects && !Array.isArray(value)) {
-			return Object.entries(value)
-				.reduce((acc, [k, v]) => {
-					acc[k] = crowniclesFormat(v as string);
-					return acc;
-				}, {} as Record<string, string>);
-		}
-		if (Array.isArray(value)) {
-			return (value as string[]).map(crowniclesFormat);
-		}
-		return crowniclesFormat(value);
+	static t(key: string | string[], options: I18nCrowniclesOptions): string {
+		return crowniclesFormat(i18next.t(key, options) as string);
+	}
+
+	/**
+	 * Translate the given key with returnObjects=true and return a string array.
+	 * @param key
+	 * @param options
+	 */
+	static tArray(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): string[] {
+		return (i18next.t(key, options) as string[]).map(crowniclesFormat);
+	}
+
+	/**
+	 * Translate the given key with returnObjects=true and return a string record.
+	 * @param key
+	 * @param options
+	 */
+	static tRecord(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): Record<string, string> {
+		return Object.entries(i18next.t(key, options) as Record<string, string>)
+			.reduce((acc, [recordKey, value]) => {
+				acc[recordKey] = crowniclesFormat(value);
+				return acc;
+			}, {} as Record<string, string>);
 	}
 
 	/**

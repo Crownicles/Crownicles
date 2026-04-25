@@ -32,7 +32,7 @@ export async function smallShopCollector(context: PacketContext, packet: Reactio
 		+ StringUtils.getRandomTranslation("smallEvents:shop.end", lng, {
 			item: DisplayUtils.getItemDisplayWithStats(data.item, lng),
 			price: data.price,
-			type: `${CrowniclesIcons.itemCategories[data.item.category]}${i18n.t("smallEvents:shop.types", {
+			type: `${CrowniclesIcons.itemCategories[data.item.category]}${i18n.tArray("smallEvents:shop.types", {
 				returnObjects: true,
 				lng
 			})[data.item.category]}`

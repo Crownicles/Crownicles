@@ -5,7 +5,8 @@ import i18n from "../../src/translations/i18n";
 vi.mock('../../src/translations/i18n', () => {
 	return {
 		default: {
-			t: vi.fn()
+			t: vi.fn(),
+			tArray: vi.fn()
 		}
 	};
 });
@@ -46,7 +47,7 @@ describe('StringUtils', () => {
 		it('should return a random item from the translation array', () => {
 			// Setup
 			const mockTranslations = ['Hello', 'Hi', 'Hey'];
-			(i18n.t as any).mockReturnValue(mockTranslations);
+			(i18n.tArray as any).mockReturnValue(mockTranslations);
 
 			// Mock Math.random to return a predictable value
 			const randomSpy = vi.spyOn(Math, 'floor');
@@ -56,7 +57,7 @@ describe('StringUtils', () => {
 			const result = StringUtils.getRandomTranslation('greeting', "en");
 
 			// Assert
-			expect(i18n.t).toHaveBeenCalledWith('greeting', {
+			expect(i18n.tArray).toHaveBeenCalledWith('greeting', {
 				returnObjects: true,
 				lng: "en"
 			});
@@ -69,14 +70,14 @@ describe('StringUtils', () => {
 		it('should pass replacements to i18n.t', () => {
 			// Setup
 			const mockTranslations = ['Hello {{name}}', 'Hi {{name}}'];
-			(i18n.t as any).mockReturnValue(mockTranslations);
+			(i18n.tArray as any).mockReturnValue(mockTranslations);
 			const randomSpy = vi.spyOn(Math, 'floor').mockReturnValue(0);
 
 			// Execute
 			const result = StringUtils.getRandomTranslation('greeting', "fr", {name: 'John'});
 
 			// Assert
-			expect(i18n.t).toHaveBeenCalledWith('greeting', {
+			expect(i18n.tArray).toHaveBeenCalledWith('greeting', {
 				returnObjects: true,
 				lng: "fr",
 				name: 'John'

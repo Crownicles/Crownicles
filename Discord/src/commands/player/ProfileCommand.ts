@@ -3,7 +3,7 @@ import {
 	makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
-import i18n, { TranslationOption } from "../../translations/i18n";
+import i18n, { I18nCrowniclesOptions } from "../../translations/i18n";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandProfilePacketReq,
@@ -93,9 +93,7 @@ async function displayBadges(badges: Badge[], msg: Message): Promise<void> {
  * @param shouldBeFielded
  * @param replacements
  */
-function addField(fields: EmbedField[], fieldKey: string, shouldBeFielded: boolean, replacements: TranslationOption & {
-	returnObjects?: false;
-}): void {
+function addField(fields: EmbedField[], fieldKey: string, shouldBeFielded: boolean, replacements: I18nCrowniclesOptions): void {
 	if (shouldBeFielded) {
 		fields.push({
 			name: i18n.t(`commands:profile.${fieldKey}.fieldName`, replacements),

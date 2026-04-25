@@ -460,7 +460,7 @@ export default class SmallEventsHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		const staffMember = RandomUtils.crowniclesRandom.pick(Object.keys(i18n.t("smallEvents:staffMember.members", {
+		const staffMember = RandomUtils.crowniclesRandom.pick(Object.keys(i18n.tRecord("smallEvents:staffMember.members", {
 			returnObjects: true,
 			lng
 		})));
@@ -645,7 +645,7 @@ export default class SmallEventsHandler {
 						action: StringUtils.getRandomTranslation("smallEvents:space.action", lng),
 						specific: StringUtils.getRandomTranslation(`smallEvents:space.specific.${packet.chosenEvent}`, lng, {
 							mainValue: packet.chosenEvent === "moonPhase"
-								? i18n.t("smallEvents:space.moonPhases", {
+								? i18n.tArray("smallEvents:space.moonPhases", {
 									returnObjects: true,
 									lng
 								})[packet.values.mainValue]
@@ -1095,7 +1095,7 @@ export default class SmallEventsHandler {
 		switch (packet.interactionType) {
 			case ExpeditionAdviceInteractionType.TALISMAN_INTRO: {
 				// Talisman introduction (first 2 encounters, displayed in order)
-				const introTexts: string[] = i18n.t("smallEvents:expeditionAdvice.talismanIntro", {
+				const introTexts = i18n.tArray("smallEvents:expeditionAdvice.talismanIntro", {
 					returnObjects: true,
 					lng
 				});
