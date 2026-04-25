@@ -153,8 +153,7 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 	const foodName = outcomeIsFound
 		? RandomUtils.crowniclesRandom.pick(
 			i18n.tArray(`smallEvents:petFood.foodNames.${packet.foodType}`, {
-				lng,
-				returnObjects: true
+				lng
 			})
 		)
 		: "";

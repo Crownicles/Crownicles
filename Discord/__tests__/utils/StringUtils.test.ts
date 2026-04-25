@@ -58,7 +58,6 @@ describe('StringUtils', () => {
 
 			// Assert
 			expect(i18n.tArray).toHaveBeenCalledWith('greeting', {
-				returnObjects: true,
 				lng: "en"
 			});
 			expect(result).toBe('Hi');
@@ -78,7 +77,6 @@ describe('StringUtils', () => {
 
 			// Assert
 			expect(i18n.tArray).toHaveBeenCalledWith('greeting', {
-				returnObjects: true,
 				lng: "fr",
 				name: 'John'
 			});

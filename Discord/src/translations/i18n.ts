@@ -64,9 +64,7 @@ export type I18nCrowniclesOptions = Omit<i18next.TOptions, "context" | "returnOb
 	context?: string;
 };
 
-export type I18nCrowniclesReturnObjectsOptions = I18nCrowniclesOptions & {
-	returnObjects: true;
-};
+export type I18nCrowniclesReturnObjectsOptions = I18nCrowniclesOptions;
 
 /**
  * Get the corresponding to emote for the given emote name
@@ -98,6 +96,17 @@ function crowniclesFormat(str: string): string {
 	return convertCommandFormat(convertEmoteFormat(str));
 }
 
+function getTranslationKeyForError(key: string | string[]): string {
+	return Array.isArray(key) ? key.join(", ") : key;
+}
+
+function getReturnObjectsTranslation(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): string[] | Record<string, string> {
+	return i18next.t(key, {
+		...options,
+		returnObjects: true
+	}) as string[] | Record<string, string>;
+}
+
 i18next.init(getI18nOptions())
 	.then();
 
@@ -109,6 +118,7 @@ export class I18nCrownicles {
 	 * - replace the "{command:...}" format by the corresponding discord command
 	 * - force lng to be a Language value and being required
 	 * - force the return type to be a string
+	 * - apply crowniclesFormat per value in tArray and tRecord variants
 	 * @param key
 	 * @param options
 	 */
@@ -122,7 +132,11 @@ export class I18nCrownicles {
 	 * @param options
 	 */
 	static tArray(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): string[] {
-		return (i18next.t(key, options) as string[]).map(crowniclesFormat);
+		const value = getReturnObjectsTranslation(key, options);
+		if (!Array.isArray(value)) {
+			throw new TypeError(`Expected translation array for key \"${getTranslationKeyForError(key)}\"`);
+		}
+		return value.map(crowniclesFormat);
 	}
 
 	/**
@@ -131,7 +145,11 @@ export class I18nCrownicles {
 	 * @param options
 	 */
 	static tRecord(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): Record<string, string> {
-		return Object.entries(i18next.t(key, options) as Record<string, string>)
+		const value = getReturnObjectsTranslation(key, options);
+		if (Array.isArray(value) || typeof value !== "object" || value === null) {
+			throw new TypeError(`Expected translation record for key \"${getTranslationKeyForError(key)}\"`);
+		}
+		return Object.entries(value)
 			.reduce((acc, [recordKey, value]) => {
 				acc[recordKey] = crowniclesFormat(value);
 				return acc;

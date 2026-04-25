@@ -735,7 +735,6 @@ function addEnergyAndPointsFields(
  */
 function addAdviceField(travelEmbed: CrowniclesEmbed, lng: Language): void {
 	const advices = i18n.tArray("advices:advices", {
-		returnObjects: true,
 		lng
 	});
 	travelEmbed.addFields({

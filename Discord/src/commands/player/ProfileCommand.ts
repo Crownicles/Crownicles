@@ -91,7 +91,7 @@ async function displayBadges(badges: Badge[], msg: Message): Promise<void> {
  * @param fields
  * @param fieldKey
  * @param shouldBeFielded
- * @param replacements
+ * @param replacements interpolation values reused for both translated field keys
  */
 function addField(fields: EmbedField[], fieldKey: string, shouldBeFielded: boolean, replacements: I18nCrowniclesOptions): void {
 	if (shouldBeFielded) {
