@@ -831,7 +831,8 @@
     "healSuccessDescription": "{emote:shopItems.healAlteration} Sie haben **{{price, number}}** {emote:unitValues.money} ausgegeben, um sich zu heilen.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} Sie sind am Ziel angekommen! Nutzen Sie {command:report} , um zu sehen, was Sie erwartet.",
     "healNextStepSmallEvent": "{emote:messages.info} Auf der Straße wartet ein Ereignis auf Sie. Nutzen Sie {command:report} , um es herauszufinden.",
-    "healRefused": "{emote:messages.refuse} **{{pseudo}}** hat sich entschieden, sich nicht behandeln zu lassen.",
+    "healRefusedTitle": "{{pseudo}}, Annullierung",
+    "healRefusedDescription": "{emote:messages.refuse} Sie haben sich entschieden, sich nicht behandeln zu lassen.",
     "healNoAlteration": "{emote:effects.none} Sie sind nicht Opfer einer Zustandsveränderung.",
     "healCannotHealOccupied": "{emote:effects.occupied} Sie sind derzeit beschäftigt. Diese Alteration kann nicht geheilt werden."
   },
