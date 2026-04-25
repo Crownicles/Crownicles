@@ -107,6 +107,10 @@ function getReturnObjectsTranslation(key: string | string[], options: I18nCrowni
 	}) as string[] | Record<string, string>;
 }
 
+function isTranslationRecord(value: string[] | Record<string, string>): value is Record<string, string> {
+	return !Array.isArray(value) && typeof value === "object" && value !== null;
+}
+
 i18next.init(getI18nOptions())
 	.then();
 
@@ -148,7 +152,7 @@ export class I18nCrownicles {
 	static tRecord(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): Record<string, string> {
 		// Even with typed call-sites, missing keys or resource drift can still return the wrong shape at runtime.
 		const value = getReturnObjectsTranslation(key, options);
-		if (Array.isArray(value) || typeof value !== "object" || value === null) {
+		if (!isTranslationRecord(value)) {
 			throw new TypeError(`Expected translation record for key \"${getTranslationKeyForError(key)}\" in language \"${options.lng}\"`);
 		}
 		return Object.entries(value)
