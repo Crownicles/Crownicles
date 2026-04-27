@@ -2241,6 +2241,7 @@ export const CrowniclesIcons: {
 		swallowed: "👄",
 		tailWhipAttack: "🐊",
 		targeted: "↩️",
+		tetanized: "😱",
 		tentacleBlowAttack: "🪢",
 		tentacleShield: "🐙",
 		tidalWave: "🌊",

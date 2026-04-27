@@ -22,8 +22,7 @@ export abstract class StringUtils {
 		const {
 			context: _, ...remainingReplacements
 		} = replacements;
-		const intros: string[] = i18n.t(translationKey, {
-			returnObjects: true,
+		const intros = i18n.tArray(translationKey, {
 			lng,
 			...remainingReplacements
 		});

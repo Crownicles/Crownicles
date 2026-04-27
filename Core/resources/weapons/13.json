@@ -2,7 +2,8 @@
   "rarity": 5,
   "rawAttack": 9,
   "tags": [
-    "ranged"
+    "ranged",
+    "metallic"
   ],
   "type": "explosive"
 }

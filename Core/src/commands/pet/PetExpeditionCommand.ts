@@ -205,7 +205,6 @@ async function calculateOutcome(
 		expedition: expeditionData,
 		rewardIndex: activeExpedition.rewardIndex,
 		hasCloneTalisman: talismans.hasCloneTalisman,
-		playerCurrentTokens: player.tokens,
 		petTypeId: petEntity.typeId
 	});
 }

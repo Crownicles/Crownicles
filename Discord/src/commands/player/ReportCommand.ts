@@ -29,7 +29,7 @@ import {
 	ReactionCollectorBigEventData,
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
-import i18n, { TranslationOption } from "../../translations/i18n";
+import i18n, { I18nCrowniclesOptions } from "../../translations/i18n";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
 } from "discord.js";
@@ -162,7 +162,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 }
 
 type Condition = boolean | number | undefined;
-type ConditionTriplet = [Condition, string, Omit<TranslationOption, "lng">];
+type ConditionTriplet = [Condition, string, Omit<I18nCrowniclesOptions, "lng">];
 
 function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes, lng: Language): ConditionTriplet[] {
 	return [

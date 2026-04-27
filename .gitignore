@@ -11,6 +11,7 @@
 .run
 mqtt5
 bdd
+.claude
 
 # Test command export files
 players-export-*.json

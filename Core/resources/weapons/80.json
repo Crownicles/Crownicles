@@ -3,7 +3,8 @@
   "rawAttack": 7,
   "speed": 50,
   "tags": [
-    "holy"
+    "holy",
+    "metallic"
   ],
   "type": "magic"
 }

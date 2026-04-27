@@ -61,6 +61,8 @@ function getEndCallback(player: Player) {
 				itemCategory: sellItem.item.category
 			}
 		}) > 0) {
+			const shouldCountAsSoldItem = sellItem.item.category !== ItemCategory.POTION;
+
 			await player.addMoney({
 				amount: sellItem.price,
 				response,
@@ -68,13 +70,15 @@ function getEndCallback(player: Player) {
 			});
 			await player.save();
 
-			await MissionsController.update(player, response, {
-				missionId: "sellItemWithGivenCost",
-				params: { itemCost: sellItem.price }
-			});
-			await MissionsController.update(player, response, {
-				missionId: "sellItems"
-			});
+			if (shouldCountAsSoldItem) {
+				await MissionsController.update(player, response, {
+					missionId: "sellItemWithGivenCost",
+					params: { itemCost: sellItem.price }
+				});
+				await MissionsController.update(player, response, {
+					missionId: "sellItems"
+				});
+			}
 			await MissionsController.update(player, response, {
 				missionId: "havePotions",
 				count: countNbOfPotions(await InventorySlots.getOfPlayer(player.id)),

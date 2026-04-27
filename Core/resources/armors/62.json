@@ -2,5 +2,8 @@
   "rarity": 7,
   "rawDefense": 2,
   "speed": 50,
-  "type": "alloy"
+  "type": "alloy",
+  "tags": [
+    "metallic"
+  ]
 }

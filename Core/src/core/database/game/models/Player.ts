@@ -279,11 +279,27 @@ export class Player extends Model {
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
 		const previousTokens = this.tokens;
-		const newTokens = MathUtils.clamp(
-			this.tokens + parameters.amount,
-			0,
-			TokensConstants.MAX
-		);
+
+		let newTokens;
+		if (parameters.amount <= 0) {
+			// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
+			newTokens = Math.max(0, this.tokens + parameters.amount);
+		}
+		else if (parameters.reason === NumberChangeReason.EXPEDITION) {
+			// Expedition rewards can exceed the max token cap
+			newTokens = this.tokens + parameters.amount;
+		}
+		else if (this.tokens >= TokensConstants.MAX) {
+			// Block all non-expedition gains when already at or above max
+			return this;
+		}
+		else {
+			newTokens = MathUtils.clamp(
+				this.tokens + parameters.amount,
+				0,
+				TokensConstants.MAX
+			);
+		}
 
 		if (newTokens === previousTokens) {
 			return this;
@@ -307,7 +323,7 @@ export class Player extends Model {
 			Object.assign(this, newPlayer);
 
 			// Check if max tokens reached
-			if (this.tokens === TokensConstants.MAX) {
+			if (this.tokens >= TokensConstants.MAX) {
 				newPlayer = await MissionsController.update(this, parameters.response, {
 					missionId: "maxTokensReached"
 				});

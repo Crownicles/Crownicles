@@ -2,5 +2,8 @@
   "rarity": 1,
   "rawDefense": 5,
   "attack": 6,
-  "type": "metal"
+  "type": "metal",
+  "tags": [
+    "metallic"
+  ]
 }

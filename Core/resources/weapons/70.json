@@ -2,7 +2,8 @@
   "rarity": 7,
   "rawAttack": 3,
   "tags": [
-    "ranged"
+    "ranged",
+    "metallic"
   ],
   "type": "alloy"
 }

@@ -1,5 +1,8 @@
 {
   "rarity": 8,
   "power": 120,
-  "nature": 5
+  "nature": 5,
+  "tags": [
+    "metallic"
+  ]
 }

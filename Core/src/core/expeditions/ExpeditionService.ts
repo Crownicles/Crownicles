@@ -375,7 +375,6 @@ export interface ExpeditionOutcomeParams {
 	expedition: ExpeditionData;
 	rewardIndex: number;
 	hasCloneTalisman: boolean;
-	playerCurrentTokens: number;
 	petTypeId: number;
 }
 
@@ -418,7 +417,6 @@ export function determineExpeditionOutcome(params: ExpeditionOutcomeParams): Exp
 		rewardIndex: params.rewardIndex,
 		isPartialSuccess: partialSuccess,
 		hasCloneTalisman: params.hasCloneTalisman,
-		playerCurrentTokens: params.playerCurrentTokens,
 		petTypeId: params.petTypeId
 	});
 

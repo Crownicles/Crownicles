@@ -141,6 +141,7 @@ function getEndCallback(player: Player): EndCallback {
 			outcome,
 			ingredientId: selectedEvent.id,
 			isIngredient: selectedEvent.isIngredient,
+			forceEffect: selectedEvent.forceEffect,
 			effectId: selectedEvent.effectName ?? Effect.OCCUPIED.id,
 			timeLost: selectedEvent.timePenalty,
 			lifeLoss: SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT

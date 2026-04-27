@@ -3,5 +3,8 @@
   "rawDefense": 9,
   "attack": 50,
   "speed": -60,
-  "type": "magic"
+  "type": "magic",
+  "tags": [
+    "metallic"
+  ]
 }

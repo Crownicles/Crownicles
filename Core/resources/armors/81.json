@@ -3,5 +3,8 @@
   "rawDefense": 8,
   "attack": -15,
   "speed": -50,
-  "type": "alloy"
+  "type": "alloy",
+  "tags": [
+    "metallic"
+  ]
 }

@@ -831,7 +831,8 @@
     "healSuccessDescription": "{emote:shopItems.healAlteration} Gastou **{{price, number}}** {emote:unitValues.money} no seu tratamento.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} Chegou ao seu destino! Utilize {command:report} para ver o que o espera.",
     "healNextStepSmallEvent": "{emote:messages.info} Há um evento à sua espera na estrada. Utilize {command:report} para o descobrir.",
-    "healRefused": "{emote:messages.refuse} **{{pseudo}}** decidiu não se tratar.",
+    "healRefusedTitle": "{{pseudo}}anulação",
+    "healRefusedDescription": "{Decidiu não se tratar.",
     "healNoAlteration": "{emote:effects.none} Não é vítima de uma mudança de estado.",
     "healCannotHealOccupied": "{emote:effects.occupied} Está atualmente ocupado. Esta alteração não pode ser curada."
   },
@@ -852,6 +853,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}libertar um familiar",
+    "acceptedTitle": "{{pseudo}}o familiar libertado!",
     "canceledTitle": "{{pseudo}}cancelamento da libertação.",
     "canceledDesc": "O animal de estimação não foi libertado.",
     "confirmDesc": ":warning:{{pet}}Tem a certeza de que pretende libertar ** **? Não é possível cancelar uma vez que a ação tenha sido concluída.",
@@ -1637,6 +1639,7 @@
         "self": {
           "newAlteration": " Agora és {{effect}} !",
           "damages": " Dano recebido: {{amount, number}}`",
+          "reflectedDamages": " Dano recebido: {{amount, number}}`",
           "defense": " Defesa: {{operator}} {{amount, number}} %`",
           "breath": " Respiração: {{operator}} {{amount, number}}`",
           "speed": " Velocidade: {{operator}} {{amount, number}} %`",
@@ -1646,6 +1649,7 @@
         "opponent": {
           "newAlteration": " O teu adversário é agora {{effect}} .",
           "damages": " Dano infligido: {{amount, number}}`",
+          "reflectedDamages": " Dano recebido: {{amount, number}}`",
           "defense": " Defender o adversário: {{operator}} {{amount, number}} %`",
           "breath": " Sopro do oponente: {{operator}} {{amount, number}}`",
           "speed": " Velocidade do oponente: {{operator}} {{amount, number}} %`",
@@ -1937,7 +1941,9 @@
     "alreadyHaveBadge": "O jogador já tem todos os emblemas do jogo.",
     "selectBadgePlaceholder": "Selecionar um crachá para oferecer ao jogador",
     "selectBadgeTitle": "{{pseudo}}selecionar um crachá para doar",
-    "selectBadgeDesc": "Escolhe um crachá para oferecer ao jogador de uma das listas abaixo:"
+    "selectBadgeDesc": "Escolhe um crachá para oferecer ao jogador de uma das listas abaixo:",
+    "confirmTitle": "{{pseudo}}confirmação",
+    "confirmDesc": "Quer mesmo dar ao jogador o emblema {{badge}}?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}modificar um jogador",

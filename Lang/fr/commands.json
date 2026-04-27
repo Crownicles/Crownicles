@@ -1234,7 +1234,8 @@
     "healSuccessDescription": "{emote:shopItems.healAlteration} Vous avez dépensé **{{price, number}}** {emote:unitValues.money} pour vous soigner.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} Vous êtes arrivé à destination ! Utilisez {command:report} pour voir ce qui vous attend.",
     "healNextStepSmallEvent": "{emote:messages.info} Un événement vous attend sur la route. Utilisez {command:report} pour le découvrir.",
-    "healRefused": "{emote:messages.refuse} **{{pseudo}}** a décidé de ne pas se soigner.",
+    "healRefusedTitle": "{{pseudo}}, annulation",
+    "healRefusedDescription": "{emote:messages.refuse} Vous avez décidé de ne pas vous soigner.",
     "healNoAlteration": "{emote:effects.none} Vous n'êtes victime d'aucune altération d'état.",
     "healCannotHealOccupied": "{emote:effects.occupied} Vous êtes actuellement occupé. Cette altération ne peut pas être soignée."
   },
@@ -2452,7 +2453,9 @@
     "alreadyHaveBadge": "Le joueur a déjà tous les badges qui existent dans le jeu.",
     "selectBadgePlaceholder": "Sélectionnez un badge à donner au joueur",
     "selectBadgeTitle": "{{pseudo}}, sélection d'un badge à donner",
-    "selectBadgeDesc": "Choisissez un badge à donner au joueur dans une des listes ci-dessous :"
+    "selectBadgeDesc": "Choisissez un badge à donner au joueur dans une des listes ci-dessous :",
+    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmDesc": "Voulez-vous vraiment donner le badge {{badge}} au joueur ?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}, modification d'un joueur",

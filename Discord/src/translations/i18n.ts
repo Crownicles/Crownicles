@@ -59,9 +59,12 @@ function convertEmoteFormat(str: string): string {
 type EmotePathFolder = Record<string, unknown> | string[];
 type EmotePath = EmotePathFolder | string;
 
-export type TranslationOption = {
+export type I18nCrowniclesOptions = Omit<i18next.TOptions, "context" | "returnObjects"> & {
 	lng: Language;
-} & i18next.TOptions;
+	context?: string;
+};
+
+export type I18nCrowniclesReturnObjectsOptions = I18nCrowniclesOptions;
 
 /**
  * Get the corresponding to emote for the given emote name
@@ -93,62 +96,70 @@ function crowniclesFormat(str: string): string {
 	return convertCommandFormat(convertEmoteFormat(str));
 }
 
+function getTranslationKeyForError(key: string | string[]): string {
+	return Array.isArray(key) ? key.join(", ") : key;
+}
+
+function getReturnObjectsTranslation(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): string[] | Record<string, string> {
+	return i18next.t(key, {
+		...options,
+		returnObjects: true
+	}) as string[] | Record<string, string>;
+}
+
+function isTranslationRecord(value: string[] | Record<string, string>): value is Record<string, string> {
+	return !Array.isArray(value) && typeof value === "object" && value !== null;
+}
+
 i18next.init(getI18nOptions())
 	.then();
 
 export class I18nCrownicles {
 	/**
-	 * Translate the given key with the given options and returns all the objects found
-	 * @param key
-	 * @param options
-	 */
-	static t(key: string | string[], options: {
-		lng: Language;
-		returnObjects: true;
-	} & i18next.TOptions): string[];
-
-	/**
-	 * Translate the given key with the given options
-	 * @param key
-	 * @param options
-	 */
-	static t(key: string | string[], options: {
-		lng: Language;
-		returnObjects?: false;
-	} & i18next.TOptions): string;
-
-	/**
-	 * Translate the given key with the given options
-	 * @param key
-	 * @param options
-	 */
-	static t(key: string | string[], options: {
-		lng: Language;
-		returnObjects: true;
-	} & i18next.TOptions): Record<string, string>;
-
-	/**
-	 * Translate the given key with the given options
-	 * Override of the i18next.t function to allow the following :
+	 * Translate the given key with the given options.
+	 * Use tArray or tRecord for returnObjects translations.
+	 * Override of the i18next.t function to allow the following:
 	 * - replace the "{command:...}" format by the corresponding discord command
 	 * - force lng to be a Language value and being required
-	 * - force the return type to be a string (and not a never)
+	 * - force the return type to be a string
+	 * - apply crowniclesFormat per value in tArray and tRecord variants
 	 * @param key
 	 * @param options
 	 */
-	static t(key: string | string[], options: TranslationOption): string | string[] | Record<string, string> {
-		const value: string | string[] | object = i18next.t(key, options);
-		if (options.returnObjects && !Array.isArray(value)) {
-			return Object.entries(value)
-				.reduce((acc, [k, v]) => {
-					acc[k] = crowniclesFormat(v as string);
-					return acc;
-				}, {} as Record<string, string>);
+	static t(key: string | string[], options: I18nCrowniclesOptions): string {
+		return crowniclesFormat(i18next.t(key, options) as string);
+	}
+
+	/**
+	 * Translate the given key with returnObjects=true and return a string array.
+	 * @param key
+	 * @param options
+	 */
+	static tArray(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): string[] {
+		// Even with typed call-sites, missing keys or resource drift can still return the wrong shape at runtime.
+		const value = getReturnObjectsTranslation(key, options);
+		if (!Array.isArray(value)) {
+			throw new TypeError(`Expected translation array for key "${getTranslationKeyForError(key)}" in language "${options.lng}"`);
 		}
-		if (Array.isArray(value)) {
-			return (value as string[]).map(crowniclesFormat);
+		return value.map(crowniclesFormat);
+	}
+
+	/**
+	 * Translate the given key with returnObjects=true and return a string record.
+	 * @param key
+	 * @param options
+	 */
+	static tRecord(key: string | string[], options: I18nCrowniclesReturnObjectsOptions): Record<string, string> {
+		// Even with typed call-sites, missing keys or resource drift can still return the wrong shape at runtime.
+		const value = getReturnObjectsTranslation(key, options);
+		if (!isTranslationRecord(value)) {
+			throw new TypeError(`Expected translation record for key "${getTranslationKeyForError(key)}" in language "${options.lng}"`);
 		}
-		return crowniclesFormat(value);
+		return Object.entries(value)
+			.reduce((acc, [recordKey, value]) => {
+				acc[recordKey] = crowniclesFormat(value);
+				return acc;
+			}, {} as Record<string, string>);
 	}
 
 	/**

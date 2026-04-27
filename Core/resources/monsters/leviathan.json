@@ -2,7 +2,7 @@
   "baseEnergyValue": 700,
   "attackRatio": 250,
   "defenseRatio": 70,
-  "speedRatio": 180,
+  "speedRatio": 200,
   "breath": 10,
   "maxBreath": 60,
   "breathRegen": 12,
@@ -11,7 +11,7 @@
     {
       "id": "celestialLightning",
       "minLevel": 0,
-      "weight": 5
+      "weight": 4
     },
     {
       "id": "aceratedFangs",
@@ -36,10 +36,10 @@
     {
       "id": "abyssalAura",
       "minLevel": 0,
-      "weight": 3
+      "weight": 2
     }
   ],
   "maps": [
-    1114
+    1206
   ]
 }
