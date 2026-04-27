@@ -12,7 +12,8 @@ import { StringUtils } from "../utils/StringUtils";
  * @param lng
  */
 function buildTimeOutro(packet: SmallEventWitchResultPacket, lng: Language): string {
-	if (packet.effectId !== Effect.OCCUPIED.id || packet.timeLost <= 0) {
+	const effectApplied = packet.forceEffect || packet.outcome === WitchActionOutcomeType.EFFECT;
+	if (!effectApplied || packet.effectId !== Effect.OCCUPIED.id || !packet.timeLost || packet.timeLost <= 0) {
 		return "";
 	}
 	return ` ${StringUtils.getRandomTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", lng, {
