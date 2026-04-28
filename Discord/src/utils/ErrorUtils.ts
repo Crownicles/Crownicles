@@ -10,7 +10,7 @@ import i18n from "../translations/i18n";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import { escapeUsername } from "../../../Lib/src/utils/StringUtils";
 import {
-	millisecondsToMinutes
+	asMilliseconds, millisecondsToMinutes
 } from "../../../Lib/src/utils/TimeUtils";
 import { Effect } from "../../../Lib/src/types/Effect";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
@@ -142,7 +142,7 @@ export function effectsErrorTextValue(escapedPseudo: string, lng: Language, self
 		}),
 		description: i18n.t(`{emote:effects.${effectId}} $t(${getDescriptionTranslationKey(effectId, self)})`, {
 			lng,
-			time: i18n.formatDuration(millisecondsToMinutes(effectRemainingTime), lng)
+			time: i18n.formatDuration(millisecondsToMinutes(asMilliseconds(effectRemainingTime)), lng)
 		})
 	};
 }

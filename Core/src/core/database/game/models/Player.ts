@@ -13,6 +13,7 @@ import {
 	getOneDayAgo,
 	Millisecond,
 	millisecondsToSeconds,
+	asMinutes,
 	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { TravelTime } from "../../../maps/TravelTime";
@@ -199,7 +200,7 @@ export class Player extends Model {
 	 */
 	public getCurrentTripDuration(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
-		return link ? minutesToHours(link.tripDuration) : null;
+		return link ? minutesToHours(asMinutes(link.tripDuration)) : null;
 	}
 
 	/**

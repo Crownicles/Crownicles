@@ -3,7 +3,7 @@ import {
 	TimeConstants
 } from "../constants/TimeConstants";
 import {
-	asMilliseconds, Day, dateToMs, Hour, Millisecond, Minute, msDiff, nowMs, Second
+	asHours, asMilliseconds, asMinutes, Day, dateToMs, Hour, Millisecond, Minute, msDiff, nowMs, Second
 } from "../types/TimeTypes";
 
 export {
@@ -59,7 +59,7 @@ export function getDayNumber(): number {
  * Keep rounding explicit here because many callers treat any sub-minute remainder as a started minute.
  * @param milliseconds
  */
-export function millisecondsToMinutes(milliseconds: number): Minute {
+export function millisecondsToMinutes(milliseconds: Millisecond): Minute {
 	return Math.round(milliseconds / TimeConstants.MS_TIME.MINUTE) as Minute;
 }
 
@@ -67,7 +67,7 @@ export function millisecondsToMinutes(milliseconds: number): Minute {
  * Convert minutes to seconds
  * @param minutes
  */
-export function minutesToMilliseconds(minutes: number): Millisecond {
+export function minutesToMilliseconds(minutes: Minute): Millisecond {
 	return minutes * TimeConstants.MS_TIME.MINUTE as Millisecond;
 }
 
@@ -75,7 +75,7 @@ export function minutesToMilliseconds(minutes: number): Millisecond {
  * Convert hours to milliseconds
  * @param hours
  */
-export function hoursToMilliseconds(hours: number): Millisecond {
+export function hoursToMilliseconds(hours: Hour): Millisecond {
 	return hours * TimeConstants.MS_TIME.HOUR as Millisecond;
 }
 
@@ -83,7 +83,7 @@ export function hoursToMilliseconds(hours: number): Millisecond {
  * Convert hours to minutes
  * @param hours
  */
-export function hoursToMinutes(hours: number): Minute {
+export function hoursToMinutes(hours: Hour): Minute {
 	return hours * TimeConstants.S_TIME.MINUTE as Minute;
 }
 
@@ -91,7 +91,7 @@ export function hoursToMinutes(hours: number): Minute {
  * Convert minutes to hours while keeping fractional precision.
  * @param minutes
  */
-export function minutesToHours(minutes: number): Hour {
+export function minutesToHours(minutes: Minute): Hour {
 	return minutes / TimeConstants.S_TIME.MINUTE as Hour;
 }
 
@@ -99,7 +99,7 @@ export function minutesToHours(minutes: number): Hour {
  * Convert minutes to hours
  * @param milliseconds
  */
-export function millisecondsToHours(milliseconds: number): Hour {
+export function millisecondsToHours(milliseconds: Millisecond): Hour {
 	return milliseconds / TimeConstants.MS_TIME.HOUR as Hour;
 }
 
@@ -107,7 +107,7 @@ export function millisecondsToHours(milliseconds: number): Hour {
  * Convert milliseconds to seconds
  * @param milliseconds
  */
-export function millisecondsToSeconds(milliseconds: number): Second {
+export function millisecondsToSeconds(milliseconds: Millisecond): Second {
 	return milliseconds / TimeConstants.MS_TIME.SECOND as Second;
 }
 
@@ -115,7 +115,7 @@ export function millisecondsToSeconds(milliseconds: number): Second {
  * Convert seconds to milliseconds
  * @param seconds
  */
-export function secondsToMilliseconds(seconds: number): Millisecond {
+export function secondsToMilliseconds(seconds: Second): Millisecond {
 	return seconds * TimeConstants.MS_TIME.SECOND as Millisecond;
 }
 
@@ -123,7 +123,7 @@ export function secondsToMilliseconds(seconds: number): Millisecond {
  * Convert days to milliseconds
  * @param days
  */
-export function daysToMilliseconds(days: number): Millisecond {
+export function daysToMilliseconds(days: Day): Millisecond {
 	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR as Millisecond;
 }
 
@@ -131,7 +131,7 @@ export function daysToMilliseconds(days: number): Millisecond {
  * Convert milliseconds to days
  * @param milliseconds
  */
-export function millisecondsToDays(milliseconds: number): Day {
+export function millisecondsToDays(milliseconds: Millisecond): Day {
 	return milliseconds / (TimeConstants.HOURS_IN_DAY * TimeConstants.MS_TIME.HOUR) as Day;
 }
 
@@ -139,7 +139,7 @@ export function millisecondsToDays(milliseconds: number): Day {
  * Convert hours to seconds
  * @param hours
  */
-export function hoursToSeconds(hours: number): Second {
+export function hoursToSeconds(hours: Hour): Second {
 	return hours * TimeConstants.S_TIME.HOUR as Second;
 }
 
@@ -147,7 +147,7 @@ export function hoursToSeconds(hours: number): Second {
  * Convert days to minutes
  * @param days
  */
-export function daysToMinutes(days: number): Minute {
+export function daysToMinutes(days: Day): Minute {
 	return days * TimeConstants.HOURS_IN_DAY * TimeConstants.S_TIME.MINUTE as Minute;
 }
 
@@ -155,7 +155,7 @@ export function daysToMinutes(days: number): Minute {
  * Convert days to seconds
  * @param days
  */
-export function daysToSeconds(days: number): Second {
+export function daysToSeconds(days: Day): Second {
 	return days * TimeConstants.S_TIME.DAY as Second;
 }
 
@@ -198,7 +198,7 @@ export function getNextSundayMidnight(): Millisecond {
 	dateOfReset.setHours(23, 59, 59, 999);
 	let dateOfResetTimestamp = dateOfReset.valueOf();
 	while (dateOfResetTimestamp < now.valueOf()) {
-		dateOfResetTimestamp += hoursToMilliseconds(24 * 7);
+		dateOfResetTimestamp += hoursToMilliseconds(asHours(24 * 7));
 	}
 	return asMilliseconds(dateOfResetTimestamp);
 }
@@ -237,14 +237,14 @@ export function getNextSaturdayMidnight(): Millisecond {
  * Check if the reset is being done currently
  */
 export function resetIsNow(): boolean {
-	return getNextSundayMidnight() - Date.now() <= minutesToMilliseconds(5);
+	return getNextSundayMidnight() - Date.now() <= minutesToMilliseconds(asMinutes(5));
 }
 
 /**
  * Check if the reset of the season end is being done currently
  */
 export function seasonEndIsNow(): boolean {
-	return getNextSaturdayMidnight() - Date.now() <= minutesToMilliseconds(20);
+	return getNextSaturdayMidnight() - Date.now() <= minutesToMilliseconds(asMinutes(20));
 }
 
 /**
@@ -272,7 +272,7 @@ export function getTimeFromXHoursAgo(hours: number): Date {
  * Fallback duration formatting for runtimes without Intl.DurationFormat
  */
 function minutesDisplayFallback(minutes: number, lng: string): string {
-	let hours = Math.floor(minutesToHours(minutes));
+	let hours = Math.floor(minutesToHours(asMinutes(minutes)));
 	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
 	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
 	hours %= TimeConstants.HOURS_IN_DAY;
@@ -316,7 +316,7 @@ export function minutesDisplayIntl(minutes: number, lng: string): string {
 	}
 
 	// Compute components
-	let hours = Math.floor(minutesToHours(minutes));
+	let hours = Math.floor(minutesToHours(asMinutes(minutes)));
 	const mins = Math.floor(minutes % TimeConstants.S_TIME.MINUTE);
 	const days = Math.floor(hours / TimeConstants.HOURS_IN_DAY);
 	hours %= TimeConstants.HOURS_IN_DAY;

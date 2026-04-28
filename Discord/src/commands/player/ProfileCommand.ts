@@ -22,7 +22,7 @@ import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import {
-	millisecondsToMinutes
+	asMilliseconds, millisecondsToMinutes
 } from "../../../../Lib/src/utils/TimeUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
@@ -188,7 +188,7 @@ function addRankAndEffectFields(fields: EmbedField[], packet: CommandProfilePack
 	addField(fields, effectFieldKey, Boolean(packet.playerData.effect.hasTimeDisplay), {
 		lng,
 		effectId: packet.playerData.effect.effect,
-		timeLeft: i18n.formatDuration(millisecondsToMinutes(packet.playerData.effect.timeLeft), lng)
+		timeLeft: i18n.formatDuration(millisecondsToMinutes(asMilliseconds(packet.playerData.effect.timeLeft)), lng)
 	});
 }
 

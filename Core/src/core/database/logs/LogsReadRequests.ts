@@ -12,6 +12,7 @@ import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
 import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
 import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
+	asMinutes,
 	dateToLogs,
 	getNextSaturdayMidnight,
 	getNextSundayMidnight,
@@ -297,7 +298,7 @@ export class LogsReadRequests {
 			attributes: [],
 			where: {
 				date: {
-					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), minutesToMilliseconds(minutes))))
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), minutesToMilliseconds(asMinutes(minutes)))))
 				},
 				friendly: false
 			},

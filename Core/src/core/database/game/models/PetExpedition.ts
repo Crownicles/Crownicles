@@ -8,7 +8,7 @@ import {
 	ExpeditionData, ExpeditionInProgressData
 } from "../../../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
-	dateToMs, millisecondsToMinutes, minutesToMilliseconds, msDiff
+	asMinutes, dateToMs, millisecondsToMinutes, minutesToMilliseconds, msDiff
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { PetBasicInfo } from "../../../../../../Lib/src/types/PetBasicInfo";
 
@@ -163,7 +163,7 @@ export abstract class PetExpeditions {
 			playerId, petId, expeditionData, durationMinutes, foodConsumed, rewardIndex
 		} = params;
 		const startDate = new Date();
-		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(durationMinutes));
+		const endDate = new Date(startDate.getTime() + minutesToMilliseconds(asMinutes(durationMinutes)));
 
 		return PetExpedition.build({
 			playerId,

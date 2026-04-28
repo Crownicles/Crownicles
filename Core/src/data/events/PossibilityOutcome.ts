@@ -23,9 +23,10 @@ import { BigEventConstants } from "../../../../Lib/src/constants/BigEventConstan
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
+import { asMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
-	const scoreChange = TravelTime.timeTravelledToScore(time)
+	const scoreChange = TravelTime.timeTravelledToScore(asMilliseconds(time))
 		+ await PlayerSmallEvents.calculateCurrentScore(player)
 		+ (outcome.bonusPoints ?? 0);
 	const scoreParameters = {

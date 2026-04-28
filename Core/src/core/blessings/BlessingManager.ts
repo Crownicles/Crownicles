@@ -18,7 +18,7 @@ import {
 	datesAreOnSameDay, dateToMs, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds, msDiff, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";
 import {
-	asHours
+	asHours, asMinutes
 } from "../../../../Lib/src/types/TimeTypes";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { Op } from "sequelize";
@@ -27,6 +27,8 @@ import { Constants } from "../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Players } from "../database/game/models/Player";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+
+const FORCED_BLESSING_DURATION_HOURS = asHours(12);
 
 /**
  * Singleton manager for global blessing state.
@@ -71,7 +73,7 @@ export class BlessingManager {
 			this.checkForExpiredBlessing()
 				.then(() => this.checkForExpiredPool())
 				.catch(e => CrowniclesLogger.errorWithObj("Error in blessing expiry check", e));
-		}, minutesToMilliseconds(5));
+		}, minutesToMilliseconds(asMinutes(5)));
 	}
 
 	/**
@@ -218,7 +220,7 @@ export class BlessingManager {
 	 */
 	private async triggerBlessing(triggeredByKeycloakId: string): Promise<void> {
 		const blessingType = RandomUtils.randInt(1, BlessingConstants.TOTAL_BLESSING_TYPES + 1) as BlessingType;
-		let durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
+		let durationHours = asHours(RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1));
 		let blessingEnd = new Date(Date.now() + hoursToMilliseconds(durationHours));
 
 		// Daily mission blessing must not span across two days to prevent doubling two different daily missions
@@ -226,7 +228,7 @@ export class BlessingManager {
 			const endOfToday = getTomorrowMidnight();
 			if (blessingEnd > endOfToday) {
 				blessingEnd = endOfToday;
-				durationHours = Math.max(1, Math.floor(millisecondsToHours(msDiff(dateToMs(endOfToday), nowMs()))));
+				durationHours = asHours(Math.max(1, Math.floor(millisecondsToHours(msDiff(dateToMs(endOfToday), nowMs())))));
 			}
 		}
 
@@ -532,7 +534,7 @@ export class BlessingManager {
 			return;
 		}
 
-		const durationHours = asHours(12);
+		const durationHours = FORCED_BLESSING_DURATION_HOURS;
 		const blessingEnd = new Date(nowMs() + hoursToMilliseconds(durationHours));
 
 		this.contributionsTracker.clear();
