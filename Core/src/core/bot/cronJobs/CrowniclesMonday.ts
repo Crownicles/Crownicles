@@ -13,6 +13,7 @@ import { makePacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { TopWeekAnnouncementPacket } from "../../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
 import { MqttTopicUtils } from "../../../../../Lib/src/utils/MqttTopicUtils";
 import { Badge } from "../../../../../Lib/src/types/Badge";
+import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import PlayerMissionsInfo from "../../database/game/models/PlayerMissionsInfo";
 import { MapCache } from "../../maps/MapCache";
 import { PlayerBadgesManager } from "../../database/game/models/PlayerBadges";
@@ -35,7 +36,7 @@ export class CrowniclesMonday {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
+		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + TimeConstants.MS_TIME.WEEK);
 		CrowniclesMonday.topWeekEnd()
 			.then();
 		CrowniclesMonday.newPveIsland()

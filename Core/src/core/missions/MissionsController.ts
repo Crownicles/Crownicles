@@ -3,6 +3,7 @@ import { IMission } from "./IMission";
 import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { DailyMissions } from "../database/game/models/DailyMission";
 import {
+	asHours,
 	datesAreOnSameDay,
 	getTodayMidnight,
 	hoursToMilliseconds
@@ -366,7 +367,7 @@ export abstract class MissionsController {
 			missionId: prop.mission.id,
 			missionVariant: prop.variant,
 			missionObjective: missionData.objectives![prop.index],
-			expiresAt: new Date(Date.now() + hoursToMilliseconds(missionData.expirations![prop.index])),
+			expiresAt: new Date(Date.now() + hoursToMilliseconds(asHours(missionData.expirations![prop.index]))),
 			numberDone: await this.getMissionInterface(missionId)
 				.initialNumberDone(player, prop.variant),
 			gemsToWin: missionData.gems![prop.index],

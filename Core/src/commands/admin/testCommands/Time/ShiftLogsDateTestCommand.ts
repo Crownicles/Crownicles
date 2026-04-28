@@ -4,6 +4,7 @@ import {
 import { crowniclesInstance } from "../../../../index";
 import { QueryTypes } from "sequelize";
 import { daysToSeconds } from "../../../../../../Lib/src/utils/TimeUtils";
+import { asDays } from "../../../../../../Lib/src/types/TimeTypes";
 
 export const commandInfo: ITestCommand = {
 	name: "shiftlogsdate",
@@ -29,7 +30,7 @@ const shiftLogsDateTestCommand: ExecuteTestCommandLike = async (_player, args) =
 	}
 
 	// Calculate seconds to subtract (dates in logs are stored as Unix timestamps in seconds)
-	const secondsToShift = daysToSeconds(days);
+	const secondsToShift = daysToSeconds(asDays(days));
 
 	try {
 		// Get all tables that have a 'date' column

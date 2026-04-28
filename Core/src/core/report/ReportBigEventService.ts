@@ -34,7 +34,9 @@ import { Maps } from "../maps/Maps";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { crowniclesInstance } from "../../index";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	millisecondsToMinutes
+} from "../../../../Lib/src/utils/TimeUtils";
 import { chooseDestination } from "./ReportDestinationService";
 
 /**

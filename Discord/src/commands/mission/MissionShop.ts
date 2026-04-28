@@ -30,7 +30,9 @@ import {
 } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToMinutes
+} from "../../../../Lib/src/utils/TimeUtils";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { Language } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
@@ -150,7 +152,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 					diet: PetUtils.getDietDisplay(packet.diet, lng),
 					force: packet.force,
 					speed: packet.speed,
-					feedDelay: i18n.formatDuration(millisecondsToMinutes(packet.feedDelay), lng),
+					feedDelay: i18n.formatDuration(millisecondsToMinutes(asMilliseconds(packet.feedDelay)), lng),
 					nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
 					commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
 					commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),

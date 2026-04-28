@@ -4,7 +4,9 @@ import {
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
-import { minutesToMilliseconds } from "../../../Lib/src/utils/TimeUtils";
+import {
+	asMinutes, minutesToMilliseconds
+} from "../../../Lib/src/utils/TimeUtils";
 import { DiscordCache } from "../bot/DiscordCache";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 
@@ -74,7 +76,7 @@ export abstract class CrowniclesCachedMessages {
 		CrowniclesCachedMessages.cachedMessages.set(message.cacheKey, message);
 		setTimeout(() => {
 			CrowniclesCachedMessages.remove(message.cacheKey);
-		}, minutesToMilliseconds(message.duration));
+		}, minutesToMilliseconds(asMinutes(message.duration)));
 	}
 
 	/**

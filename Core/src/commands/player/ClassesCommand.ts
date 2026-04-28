@@ -28,7 +28,9 @@ import { MissionsController } from "../../core/missions/MissionsController";
 import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
-import { secondsToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	secondsToMilliseconds
+} from "../../../../Lib/src/utils/TimeUtils";
 
 function getEndCallback(player: Player) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {

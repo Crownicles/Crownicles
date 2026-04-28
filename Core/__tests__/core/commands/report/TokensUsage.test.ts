@@ -9,6 +9,7 @@ import {Maps} from "../../../../src/core/maps/Maps";
 import {Constants} from "../../../../../Lib/src/constants/Constants";
 import {NumberChangeReason} from "../../../../../Lib/src/constants/LogsConstants";
 import {canUseTokensAtLocation} from "../../../../src/core/report/ReportTravelService";
+import {asMilliseconds} from "../../../../../Lib/src/utils/TimeUtils";
 
 // Use fake timers so that `Date.now()` and `new Date()` both return our controlled `now`
 vi.useFakeTimers();
@@ -436,7 +437,7 @@ describe("Tokens Usage", () => {
 				const timeToNextEvent = updatedTimeData.nextSmallEventTime - updatedDate.valueOf();
 
 				// Time travel to the next event
-				await TravelTime.timeTravel(player, timeToNextEvent, NumberChangeReason.REPORT_TOKENS, true);
+				await TravelTime.timeTravelMilliseconds(player, asMilliseconds(timeToNextEvent), NumberChangeReason.REPORT_TOKENS);
 
 				// Verify player was moved forward in time
 				expect(crowniclesInstance.logsDatabase.logTimeWarp).toHaveBeenCalled();
@@ -462,7 +463,7 @@ describe("Tokens Usage", () => {
 
 				// Time travel to next event
 				const timeToNextEvent = timeData.nextSmallEventTime - now;
-				await TravelTime.timeTravel(player, timeToNextEvent, NumberChangeReason.REPORT_TOKENS, true);
+				await TravelTime.timeTravelMilliseconds(player, asMilliseconds(timeToNextEvent), NumberChangeReason.REPORT_TOKENS);
 
 				// Should only have one time warp logged
 				expect(crowniclesInstance.logsDatabase.logTimeWarp).toHaveBeenCalledTimes(1);

@@ -19,7 +19,9 @@ import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import {
 	InventoryInfo, InventoryInfos
 } from "../../core/database/game/models/InventoryInfo";
-import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToHours, msDiff, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 import { DailyConstants } from "../../../../Lib/src/constants/DailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
@@ -60,7 +62,7 @@ function isWrongObjectForDaily(activeObject: ObjectItem): boolean {
  */
 function dailyNotReady(inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): boolean {
 	const lastDailyTimestamp = inventoryInfo.getLastDailyAtTimestamp();
-	if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
+	if (millisecondsToHours(msDiff(nowMs(), asMilliseconds(lastDailyTimestamp))) < DailyConstants.TIME_BETWEEN_DAILIES) {
 		response.push(makePacket(CommandDailyBonusInCooldown, {
 			timeBetweenDailies: DailyConstants.TIME_BETWEEN_DAILIES,
 			lastDailyTimestamp

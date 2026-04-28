@@ -4,8 +4,9 @@ import { LogsPlayers } from "./models/LogsPlayers";
 import { Op } from "sequelize";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import {
-	daysToSeconds, getDateLogs
+	daysToSeconds, getDateLogs, sDiff
 } from "../../../../../Lib/src/utils/TimeUtils";
+import { asDays } from "../../../../../Lib/src/types/TimeTypes";
 import {
 	ExpeditionCompleteParams,
 	ExpeditionLogData,
@@ -166,7 +167,7 @@ export class LogsExpeditionLogger {
 		if (!logPlayer) {
 			return 0;
 		}
-		const cutoffDate = getDateLogs() - daysToSeconds(days);
+		const cutoffDate = sDiff(getDateLogs(), daysToSeconds(asDays(days)));
 
 		return LogsExpeditions.count({
 			where: {

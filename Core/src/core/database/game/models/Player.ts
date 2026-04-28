@@ -8,9 +8,12 @@ import { InventoryInfos } from "./InventoryInfo";
 import { MissionsController } from "../../../missions/MissionsController";
 import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
+	asMilliseconds,
 	daysToMilliseconds,
 	getOneDayAgo,
+	Millisecond,
 	millisecondsToSeconds,
+	asMinutes,
 	minutesToHours
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { TravelTime } from "../../../maps/TravelTime";
@@ -197,7 +200,7 @@ export class Player extends Model {
 	 */
 	public getCurrentTripDuration(): number | null {
 		const link = MapLinkDataController.instance.getById(this.mapLinkId);
-		return link ? minutesToHours(link.tripDuration) : null;
+		return link ? minutesToHours(asMinutes(link.tripDuration)) : null;
 	}
 
 	/**
@@ -580,18 +583,18 @@ export class Player extends Model {
 	/**
 	 * Get the amount of time remaining before the effect ends
 	 */
-	public effectRemainingTime(): number {
+	public effectRemainingTime(): Millisecond {
 		let remainingTime = 0;
 		if (Effect.getById(this.effectId)) {
 			if (!this.effectEndDate || this.effectEndDate.valueOf() === 0) {
-				return 0;
+				return asMilliseconds(0);
 			}
 			remainingTime = this.effectEndDate.valueOf() - Date.now();
 		}
 		if (remainingTime < 0) {
 			remainingTime = 0;
 		}
-		return remainingTime;
+		return asMilliseconds(remainingTime);
 	}
 
 	/**

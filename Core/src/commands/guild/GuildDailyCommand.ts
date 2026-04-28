@@ -19,7 +19,7 @@ import { crowniclesInstance } from "../../index";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import {
-	hoursToMilliseconds, hoursToMinutes, millisecondsToHours
+	asHours, dateToMs, hoursToMilliseconds, hoursToMinutes, millisecondsToHours, msDiff, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { GuildDailyNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildDailyNotificationPacket";
@@ -255,7 +255,7 @@ async function awardGuildBadgeToMembers(guildLike: GuildLike, response: Crownicl
  */
 async function advanceTimeOfEveryMember(guildLike: GuildLike, _response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const timeAdvanced = Math.ceil((guildLike.guild.level + 1) * GuildDailyConstants.TIME_ADVANCED_MULTIPLIER);
-	await genericAwardingFunction(guildLike.members, async member => await TravelTime.timeTravel(member, hoursToMinutes(timeAdvanced), NumberChangeReason.GUILD_DAILY));
+	await genericAwardingFunction(guildLike.members, async member => await TravelTime.timeTravel(member, hoursToMinutes(asHours(timeAdvanced)), NumberChangeReason.GUILD_DAILY));
 	rewardPacket.advanceTime = timeAdvanced;
 	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.HOSPITAL).then();
 }
@@ -445,7 +445,7 @@ export default class GuildDailyCommand {
 			const guild = (await Guilds.getById(player.guildId))!;
 
 			// Verify if the cooldown is over (re-check after acquiring lock)
-			const time = Date.now() - guild.lastDailyAt.valueOf();
+			const time = msDiff(nowMs(), dateToMs(guild.lastDailyAt));
 			if (millisecondsToHours(time) < GuildDailyConstants.TIME_BETWEEN_DAILIES) {
 				response.push(makePacket(CommandGuildDailyCooldownErrorPacket, {
 					totalTime: GuildDailyConstants.TIME_BETWEEN_DAILIES,
