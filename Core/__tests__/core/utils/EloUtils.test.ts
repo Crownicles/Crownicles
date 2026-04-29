@@ -23,44 +23,45 @@ describe('EloUtils', () => {
     describe('getAttackerKFactor', () => {
         const nonRoyalLeague = { id: 5 };
         const royalLeague = { id: LeagueInfoConstants.ROYAL_LEAGUE_ID };
+        const threshold = FightConstants.ELO.INACTIVE_ATTACKER_ATTACK_COUNT_THRESHOLD;
 
-        it('should return base k-factor when attacker is active (attackCount >= REGEN_LIMIT)', () => {
+        it('should return base k-factor when attacker is active (attackCount >= threshold)', () => {
             const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
 
-            // 7+ attacks in window → attackBasedCountdown = 0 → no boost
-            expect(EloUtils.getAttackerKFactor(attacker, 7)).toBe(32);
-            expect(EloUtils.getAttackerKFactor(attacker, 10)).toBe(32);
+            // threshold+ attacks in window → attackBasedCountdown = 0 → no boost
+            expect(EloUtils.getAttackerKFactor(attacker, threshold)).toBe(32);
+            expect(EloUtils.getAttackerKFactor(attacker, threshold + 3)).toBe(32);
         });
 
         it('should return base k-factor when attacker has recent activity (attackBasedCountdown <= 2)', () => {
             const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
 
-            // 5 attacks → attackBasedCountdown = max(0, 7-5) = 2 → no boost
-            expect(EloUtils.getAttackerKFactor(attacker, 5)).toBe(32);
-            // 6 attacks → attackBasedCountdown = 1 → no boost
-            expect(EloUtils.getAttackerKFactor(attacker, 6)).toBe(32);
+            // threshold-2 attacks → attackBasedCountdown = 2 → no boost
+            expect(EloUtils.getAttackerKFactor(attacker, threshold - 2)).toBe(32);
+            // threshold-1 attacks → attackBasedCountdown = 1 → no boost
+            expect(EloUtils.getAttackerKFactor(attacker, threshold - 1)).toBe(32);
         });
 
         it('should return boosted k-factor when attacker is returning from inactivity (attackBasedCountdown >= 3)', () => {
             const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
 
-            // 4 attacks → attackBasedCountdown = max(0, 7-4) = 3 → multiplier = min(3-1, 4) = 2
-            expect(EloUtils.getAttackerKFactor(attacker, 4)).toBe(32 * 2);
+            // threshold-3 attacks → attackBasedCountdown = 3 → multiplier = min(3-1, 4) = 2
+            expect(EloUtils.getAttackerKFactor(attacker, threshold - 3)).toBe(32 * 2);
         });
 
         it('should increase multiplier with higher inactivity', () => {
             const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
 
-            // 3 attacks → attackBasedCountdown = 4 → multiplier = min(4-1, 4) = 3
-            expect(EloUtils.getAttackerKFactor(attacker, 3)).toBe(32 * 3);
+            // threshold-4 attacks → attackBasedCountdown = 4 → multiplier = min(4-1, 4) = 3
+            expect(EloUtils.getAttackerKFactor(attacker, threshold - 4)).toBe(32 * 3);
         });
 
         it('should cap the multiplier at INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER', () => {
             const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
 
-            // 2 attacks → attackBasedCountdown = 5 → multiplier = min(5-1, 4) = 4 (capped)
-            expect(EloUtils.getAttackerKFactor(attacker, 2)).toBe(32 * 4);
-            // 0 attacks → attackBasedCountdown = 7 → multiplier = min(7-1, 4) = 4 (still capped)
+            // threshold-5 attacks → attackBasedCountdown = 5 → multiplier = min(5-1, 4) = 4 (capped)
+            expect(EloUtils.getAttackerKFactor(attacker, threshold - 5)).toBe(32 * 4);
+            // 0 attacks → attackBasedCountdown = threshold → multiplier capped at max
             expect(EloUtils.getAttackerKFactor(attacker, 0)).toBe(32 * FightConstants.ELO.INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER);
         });
 
@@ -75,15 +76,15 @@ describe('EloUtils', () => {
             // Player with 2200 glory → K = 24 (LOW_K_FACTOR)
             const highGloryAttacker = { getGloryPoints: () => 2200, getLeague: () => nonRoyalLeague } as any;
 
-            // 0 attacks → attackBasedCountdown = 7 → multiplier = 4 (capped)
+            // 0 attacks → attackBasedCountdown = threshold → multiplier = 4 (capped)
             expect(EloUtils.getAttackerKFactor(highGloryAttacker, 0)).toBe(24 * 4);
         });
 
-        it('should handle exact boundary at REGEN_LIMIT (7 attacks → no boost)', () => {
+        it('should handle exact boundary at threshold (threshold attacks → no boost)', () => {
             const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
 
-            // 7 attacks → attackBasedCountdown = max(0, 7-7) = 0 → below threshold → no boost
-            expect(EloUtils.getAttackerKFactor(attacker, 7)).toBe(32);
+            // threshold attacks → attackBasedCountdown = 0 → below FIGHT_COUNTDOWN_THRESHOLD → no boost
+            expect(EloUtils.getAttackerKFactor(attacker, threshold)).toBe(32);
         });
     });
 

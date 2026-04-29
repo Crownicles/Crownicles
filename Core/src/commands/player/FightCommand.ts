@@ -208,10 +208,13 @@ async function updatePlayersEloAndCooldowns(
 	fightLogId: number | null
 ): Promise<void> {
 	// Calculate elo
-	const attackCountInWindow = await LogsFightHistoryRequests.getAttackCountInLastNWeeks(
+	const rawAttackCountInWindow = await LogsFightHistoryRequests.getAttackCountInLastNWeeks(
 		attacker.keycloakId,
 		FightConstants.ELO.ATTACK_COUNT_WINDOW_WEEKS
 	);
+
+	// The current fight is already logged at this point, subtract 1 to count only previous attacks
+	const attackCountInWindow = Math.max(0, rawAttackCountInWindow - (fightLogId !== null ? 1 : 0));
 	const player1KFactor = EloUtils.getAttackerKFactor(attacker, attackCountInWindow);
 	const player2KFactor = EloUtils.getKFactor(defender);
 	const player1NewRating = EloUtils.calculateNewRating(attacker.attackGloryPoints, defender.defenseGloryPoints, attackerGameResult, player1KFactor);

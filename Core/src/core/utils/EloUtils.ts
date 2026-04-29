@@ -40,7 +40,7 @@ export abstract class EloUtils {
 	 */
 	static getAttackerKFactor(attacker: Player, attackCountInWindow: number): number {
 		const baseFactor = EloUtils.getKFactor(attacker);
-		const attackBasedCountdown = Math.max(0, FightConstants.FIGHT_COUNTDOWN_REGEN_LIMIT - attackCountInWindow);
+		const attackBasedCountdown = Math.max(0, FightConstants.ELO.INACTIVE_ATTACKER_ATTACK_COUNT_THRESHOLD - attackCountInWindow);
 		if (attackBasedCountdown >= FightConstants.ELO.INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD
 			&& attacker.getLeague().id < LeagueInfoConstants.ROYAL_LEAGUE_ID) {
 			const multiplier = Math.min(
