@@ -33,15 +33,18 @@ export abstract class EloUtils {
 	/**
 	 * Get the k-factor for an attacker, boosted when the attacker is returning from inactivity.
 	 * This is a custom Crownicles balancing rule to help stale attacker ratings converge faster.
-	 * The boost gradually decreases as fightCountdown goes down with each fight.
+	 * The boost is based on how many ranked fights the player has initiated in the last
+	 * ATTACK_COUNT_WINDOW_WEEKS weeks: fewer attacks means a higher multiplier.
 	 * @param attacker
+	 * @param attackCountInWindow - Number of ranked fights initiated in the last ATTACK_COUNT_WINDOW_WEEKS weeks
 	 */
-	static getAttackerKFactor(attacker: Player): number {
+	static getAttackerKFactor(attacker: Player, attackCountInWindow: number): number {
 		const baseFactor = EloUtils.getKFactor(attacker);
-		if (attacker.fightCountdown >= FightConstants.ELO.INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD
+		const attackBasedCountdown = Math.max(0, FightConstants.ELO.INACTIVE_ATTACKER_ATTACK_COUNT_THRESHOLD - attackCountInWindow);
+		if (attackBasedCountdown >= FightConstants.ELO.INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD
 			&& attacker.getLeague().id < LeagueInfoConstants.ROYAL_LEAGUE_ID) {
 			const multiplier = Math.min(
-				attacker.fightCountdown - 1,
+				attackBasedCountdown - 1,
 				FightConstants.ELO.INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER
 			);
 			return baseFactor * multiplier;

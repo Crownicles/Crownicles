@@ -299,7 +299,14 @@ export abstract class FightConstants {
 		MAX_RANK_FOR_LEAGUE_POINTS_REWARD: 200,
 		ELO_DIFFERENCE_FOR_SAME_ELO: 30,
 		INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER: 4,
-		INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD: 3
+		INACTIVE_ATTACKER_FIGHT_COUNTDOWN_THRESHOLD: 3,
+		ATTACK_COUNT_WINDOW_WEEKS: 10,
+
+		/*
+		 * Number of attacks below which a player is considered inactive and gets a K-factor boost.
+		 * Must be independent from FIGHT_COUNTDOWN_REGEN_LIMIT to avoid accidental balance coupling.
+		 */
+		INACTIVE_ATTACKER_ATTACK_COUNT_THRESHOLD: 7
 	};
 
 	// If a player has a fight countdown higher than this value, he will not appear in the glory top
