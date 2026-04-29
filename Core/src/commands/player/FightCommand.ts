@@ -24,6 +24,7 @@ import {
 	PersonalFightDailySummary,
 	RankedFightResult
 } from "../../core/database/logs/LogsReadRequests";
+import { LogsFightHistoryRequests } from "../../core/database/logs/requests/LogsFightHistoryRequests";
 import {
 	FightController
 } from "../../core/fights/FightController";
@@ -207,7 +208,11 @@ async function updatePlayersEloAndCooldowns(
 	fightLogId: number | null
 ): Promise<void> {
 	// Calculate elo
-	const player1KFactor = EloUtils.getAttackerKFactor(attacker);
+	const attackCountInWindow = await LogsFightHistoryRequests.getAttackCountInLastNWeeks(
+		attacker.keycloakId,
+		FightConstants.ELO.ATTACK_COUNT_WINDOW_WEEKS
+	);
+	const player1KFactor = EloUtils.getAttackerKFactor(attacker, attackCountInWindow);
 	const player2KFactor = EloUtils.getKFactor(defender);
 	const player1NewRating = EloUtils.calculateNewRating(attacker.attackGloryPoints, defender.defenseGloryPoints, attackerGameResult, player1KFactor);
 	const player2NewRating = EloUtils.calculateNewRating(defender.defenseGloryPoints, attacker.attackGloryPoints, defenderGameResult, player2KFactor);
