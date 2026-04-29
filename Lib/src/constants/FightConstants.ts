@@ -306,7 +306,7 @@ export abstract class FightConstants {
 	static readonly FIGHT_COUNTDOWN_MAXIMAL_VALUE = 0;
 
 	// A player will not earn more fightCountdown than this value
-	static readonly FIGHT_COUNTDOWN_REGEN_LIMIT = 7;
+	static readonly FIGHT_COUNTDOWN_REGEN_LIMIT = 10;
 
 	// FightCountdown value for new players
 	static readonly DEFAULT_FIGHT_COUNTDOWN = 10;

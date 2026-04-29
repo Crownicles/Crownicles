@@ -49,11 +49,14 @@ describe('EloUtils', () => {
         it('should cap the multiplier at INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER', () => {
             const attacker5 = { getGloryPoints: () => 1500, fightCountdown: 5, getLeague: () => nonRoyalLeague } as any;
             const attacker7 = { getGloryPoints: () => 1500, fightCountdown: 7, getLeague: () => nonRoyalLeague } as any;
+            const attacker10 = { getGloryPoints: () => 1500, fightCountdown: 10, getLeague: () => nonRoyalLeague } as any;
 
             // fightCountdown=5 → multiplier = min(5-1, 4) = 4 (capped)
             expect(EloUtils.getAttackerKFactor(attacker5)).toBe(32 * 4);
             // fightCountdown=7 → multiplier = min(7-1, 4) = 4 (still capped)
             expect(EloUtils.getAttackerKFactor(attacker7)).toBe(32 * FightConstants.ELO.INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER);
+            // fightCountdown=10 (DEFAULT_FIGHT_COUNTDOWN / FIGHT_COUNTDOWN_REGEN_LIMIT) → multiplier = min(10-1, 4) = 4 (still capped)
+            expect(EloUtils.getAttackerKFactor(attacker10)).toBe(32 * FightConstants.ELO.INACTIVE_ATTACKER_K_FACTOR_MAX_MULTIPLIER);
         });
 
         it('should NOT boost k-factor for Royal league players even when inactive', () => {
