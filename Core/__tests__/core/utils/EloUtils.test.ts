@@ -70,6 +70,21 @@ describe('EloUtils', () => {
             // Royal league → no boost, just base k-factor (12 for 3500 glory)
             expect(EloUtils.getAttackerKFactor(attacker, 0)).toBe(12);
         });
+
+        it('should apply lower base k-factor for high-glory players even with boost', () => {
+            // Player with 2200 glory → K = 24 (LOW_K_FACTOR)
+            const highGloryAttacker = { getGloryPoints: () => 2200, getLeague: () => nonRoyalLeague } as any;
+
+            // 0 attacks → attackBasedCountdown = 7 → multiplier = 4 (capped)
+            expect(EloUtils.getAttackerKFactor(highGloryAttacker, 0)).toBe(24 * 4);
+        });
+
+        it('should handle exact boundary at REGEN_LIMIT (7 attacks → no boost)', () => {
+            const attacker = { getGloryPoints: () => 1500, getLeague: () => nonRoyalLeague } as any;
+
+            // 7 attacks → attackBasedCountdown = max(0, 7-7) = 0 → below threshold → no boost
+            expect(EloUtils.getAttackerKFactor(attacker, 7)).toBe(32);
+        });
     });
 
     describe('calculateNewRating', () => {
