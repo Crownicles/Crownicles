@@ -1129,22 +1129,22 @@
     "1203": {
       "description": "Une crique isolée qui déploie ses récifs comme des lames de granit noir, à peine dissimulées sous un ressac écumeux qui ne s'apaise jamais. La nuit, des feux follets d'un bleu spectral flottent au-dessus des vagues comme les âmes de marins perdus, esquissant une danse macabre. Une aura sinistre plane sur ce lieu maudit.",
       "name": "Crique du Revenant",
-      "particle": "vers la"
+      "particle": "in Richtung"
     },
     "1204": {
       "description": "Une cathédrale sous-marine sculptée pour amplifier le souffle des marées en un coeur envoûtant. Ce n'est pas le vent, c'est l'appel d'un chant mélodieux qui s'adresse directement à votre âme. Dans cette pénombre sonore, la frontière entre vos propres pensées et les murmures de la roche s'efface doucement, et ceux qui s'y attardent n'en ressortent jamais tout à fait seuls.",
       "name": "Cave des murmures",
-      "particle": "vers la"
+      "particle": "in Richtung"
     },
     "1205": {
       "description": "À mesure que l'on s'approche du bord, l'eau vire au noir d'encre, un miroir sombre qui ne reflète que votre propre peur. Parfois, une ondulation démesurée brise la surface, passage fugace d'un tentacule géant qui remonte des tréfonds avant de replonger dans l'oubli. Nul n'a jamais sondé le coeur de cette fosse, car le Gouffre n'accepte aucun témoin.",
       "name": "Gouffre des Profondeurs",
-      "particle": "vers le"
+      "particle": "in Richtung"
     },
     "1206": {
       "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
       "name": "Ravin des Abysses",
-      "particle": "vers le"
+      "particle": "in Richtung"
     },
     "12": {
       "description": "Ein großes, leeres, nordisches Plädot ohne großes Interesse.",
