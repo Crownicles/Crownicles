@@ -1111,40 +1111,40 @@
       "name": "Eisiges Nest",
       "particle": "in Richtung"
     },
-    "1108": {
-      "description": "Ein paradiesischer Strand, der mit Muscheln in allen Farben bedeckt ist. Man sagt, dass jede Muschel das Echo des Ozeans in sich trägt. Der feine, weiße Sand steht im Kontrast zum türkisfarbenen Wasser der nahe gelegenen Lagune. Passen Sie auf, wo Sie hintreten, denn einige Muscheln sind scharf wie Klingen.",
-      "name": "Muschelstrand",
+    "1200": {
+      "description": "Une plage paradisiaque recouverte de coquillages de toutes les couleurs. On dit que chaque coquillage garde en lui l'écho de l'océan. Le sable fin et blanc contraste avec les eaux turquoise du lagon voisin. Attention où vous mettez les pieds, certains coquillages sont tranchants comme des lames.",
+      "name": "Plage de coquillage",
       "particle": "in Richtung"
     },
-    "1109": {
-      "description": "Eine Lagune mit kristallklarem, blauem Wasser, das von einem Korallenriff geschützt wird. Hinter den klaren Wellen lauern heimtückische Strömungen, die durch das Schlagen des Ozeans entstehen, auf die geringste Unvorsichtigkeit, um die Verirrten in den Abgrund zu ziehen. In diesem zerbrechlichen Meereskästchen suchen tausendjährige Schildkröten Ruhe, die ihnen die Hektik des Meeres verwehrt.",
-      "name": "Lagon Hollow",
+    "1201": {
+      "description": "Un lagon aux eaux d'un bleu cristallin protégé par une barrière de corail. Derrière la limpidité de l'onde, des courants sournois, nés des battements de l'océan, guettent la moindre imprudence pour entraîner les égarés vers l'abysse. Dans ce fragile écrin marin, les tortues millénaires viennent chercher un repos que l'agitation du large leur refuse.",
+      "name": "Creux du Lagon",
       "particle": "in Richtung"
     },
-    "1110": {
-      "description": "Eine Meereshöhle, die nur bei Ebbe erobert werden kann und ein Kalksteinmaul mit triefenden Wänden enthüllt. Im Inneren entspringt ein ätherischer Schimmer aus dem Gestein und wirft azurblaue Reflexe auf die Gewölbe. Zwischen den Wellen und Schatten tanzen Silhouetten aus Nebel und Schaum ein stummes Ballett, als ob die Seele des Meeres selbst in diesem Heiligtum Zuflucht gesucht hätte.",
-      "name": "Maritime Höhle",
+    "1202": {
+      "description": "Une grotte marine qui ne se laisse conquérir qu'à marée basse, révélant une gueule de calcaire aux parois ruisselantes. À l'intérieur, des lueurs éthérées naissent de la roche, jetant des reflets d'azur sur les voûtes. Entre les ondes et les ombres, des silhouettes de brume et d'écume dansent un ballet muet, comme si l'âme de la mer elle-même s'était réfugiée dans ce sanctuaire.",
+      "name": "Caverne Maritime",
       "particle": "in Richtung"
     },
-    "1111": {
-      "description": "Eine einsame Bucht, die ihre Riffe wie schwarze Granitklingen ausbreitet, die kaum von der schäumenden Brandung verdeckt werden, die niemals abflaut. Nachts schweben gespenstisch blaue Irrlichter über den Wellen, wie die Seelen verlorener Seeleute, die einen Totentanz aufführen. Eine unheimliche Aura liegt über diesem verfluchten Ort.",
-      "name": "Revenant-Bucht",
-      "particle": "in Richtung"
+    "1203": {
+      "description": "Une crique isolée qui déploie ses récifs comme des lames de granit noir, à peine dissimulées sous un ressac écumeux qui ne s'apaise jamais. La nuit, des feux follets d'un bleu spectral flottent au-dessus des vagues comme les âmes de marins perdus, esquissant une danse macabre. Une aura sinistre plane sur ce lieu maudit.",
+      "name": "Crique du Revenant",
+      "particle": "vers la"
     },
-    "1112": {
-      "description": "Eine Unterwasserkathedrale, die geformt wurde, um den Atem der Gezeiten zu einem betörenden Herzen zu verstärken. Das ist kein Wind, das ist der Ruf eines melodischen Gesangs, der sich direkt an Ihre Seele wendet. In diesem klangvollen Halbdunkel verschwimmt die Grenze zwischen Ihren eigenen Gedanken und dem Flüstern des Felsens sanft, und wer hier verweilt, kommt nie wieder ganz allein heraus.",
-      "name": "Flüsterkeller",
-      "particle": "in Richtung"
+    "1204": {
+      "description": "Une cathédrale sous-marine sculptée pour amplifier le souffle des marées en un coeur envoûtant. Ce n'est pas le vent, c'est l'appel d'un chant mélodieux qui s'adresse directement à votre âme. Dans cette pénombre sonore, la frontière entre vos propres pensées et les murmures de la roche s'efface doucement, et ceux qui s'y attardent n'en ressortent jamais tout à fait seuls.",
+      "name": "Cave des murmures",
+      "particle": "vers la"
     },
-    "1113": {
-      "description": "Je näher du dem Ufer kommst, desto tintenschwarzer wird das Wasser, ein dunkler Spiegel, der nur deine eigene Angst widerspiegelt. Manchmal durchbricht eine übergroße Welle die Oberfläche, der flüchtige Durchgang eines riesigen Tentakels, der aus der Tiefe aufsteigt und dann wieder in die Vergessenheit versinkt. Niemand hat je das Herz dieser Grube erforscht, denn der Schlund akzeptiert keine Zeugen.",
-      "name": "Schlucht der Tiefe",
-      "particle": "in Richtung"
+    "1205": {
+      "description": "À mesure que l'on s'approche du bord, l'eau vire au noir d'encre, un miroir sombre qui ne reflète que votre propre peur. Parfois, une ondulation démesurée brise la surface, passage fugace d'un tentacule géant qui remonte des tréfonds avant de replonger dans l'oubli. Nul n'a jamais sondé le coeur de cette fosse, car le Gouffre n'accepte aucun témoin.",
+      "name": "Gouffre des Profondeurs",
+      "particle": "vers le"
     },
-    "1114": {
-      "description": "Der tiefste Punkt dieser Gewässer ist eine Unterwasserschlucht, die in absolute Finsternis stürzt. Der Druck dort ist so hoch, dass nur wenige Lebewesen überleben können. Man munkelt, dass dort seit Anbeginn der Zeit eine Urbestie schlummert, die die ältesten Geheimnisse dieser Welt hütet. Nur die Mutigsten wagen es, sich ihr zu nähern.",
-      "name": "Schlucht des Abgrunds",
-      "particle": "in Richtung"
+    "1206": {
+      "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
+      "name": "Ravin des Abysses",
+      "particle": "vers le"
     },
     "12": {
       "description": "Ein großes, leeres, nordisches Plädot ohne großes Interesse.",
@@ -2263,23 +2263,23 @@
     "1107": {
       "femaleIceDragon": "Sie dringen in diese unerforschte Region vor, geleitet von einer Mischung aus Neugier und Angst. Die Eiswand, die sich vor Ihnen erhebt, spiegelt eine Silhouette wider, die so gewaltig ist, dass sie sich jeder Vorstellungskraft entzieht. Je näher Sie in der eisigen Dunkelheit kommen, desto mehr wird Ihnen das Ausmaß der Kreatur bewusst, die sich hinter dieser Barriere verbirgt. Plötzlich tauchen Risse im Eis auf, die sich wie Spinnweben ausbreiten. Ein dumpfes Grollen lässt die Felswände vibrieren. Die Mauer explodiert mit einem apokalyptischen Krachen und schleudert massive Eisblöcke durch die Luft. Durch diesen Vorhang aus zerbrochenen Kristallen taucht die majestätischste aller Kreaturen auf: ein Eisdrache von pharaonischen Ausmaßen. Ihre Präsenz ist gewaltig, ihre gefalteten Flügel berühren fast die steinernen Gewölbe. Sie ist von erschreckender Schönheit, denn ihre schillernden Schuppen fangen das schwache Licht in eisigen Regenbögen ein. Ihre Augen, tiefblau wie der Abgrund, strahlen uralte Weisheit und mütterlichen Zorn aus. Hinter ihr erblicken Sie ein riesiges, perlmuttfarbenes Ei, das in einem geheimnisvollen Licht pulsiert. Sie haben soeben ihre Kinderstube betreten und kein Eindringen in das Heiligtum der Eiskönigin wird ungestraft bleiben..."
     },
-    "1109": {
-      "turtle": "Sie kommen in der Nähe eines natürlichen Beckens an, das durch ein Korallenriff geschützt ist. Die Ruhe des Ortes verleitet Sie dazu, näher heranzugehen, um den Meeresboden zu bewundern. In der Mitte des Beckens befindet sich ein großer, mit Algen bewachsener Felsen. Plötzlich setzt er sich in Bewegung. Ein großer Kopf ragt aus ihm heraus, gefolgt von vier riesigen Beinen. Eine Riesenschildkröte erhebt sich vor Ihnen, deren Größe mit der eines kleinen Schiffes konkurrieren kann. Ihre großen Augen starren Sie mit uralter Weisheit an. Dann öffnet sie ihr Maul und ein kräftiger Wasserstrahl streift Sie und macht Ihnen klar, dass diese friedliche Lagune ihr Territorium ist..."
+    "1201": {
+      "turtle": "Vous arrivez près d'un bassin naturel protégé par une barrière de corail. Le calme du lieu vous incite à vous approcher pour admirer les fonds marins. Vous remarquez alors un rocher imposant recouvert d'algues au centre du bassin. Soudain, il se met en mouvement. Une tête massive en émerge, suivie de quatre pattes colossales. Une Tortue Géante se dresse devant vous, sa taille rivalisant avec celle d'un petit navire. Ses grands yeux vous fixent avec une sagesse ancestrale. Puis elle ouvre sa gueule et un puissant jet d'eau vous frôle, vous faisant comprendre que ce paisible lagon est son territoire..."
     },
-    "1110": {
-      "waterSpirit": "Sie betreten bei Ebbe eine Meereshöhle. Seltsame Echos hallen in der Tiefe wider und ein bläulicher Schimmer tanzt in der Dunkelheit und zieht Sie weiter nach unten. Plötzlich beginnt das stehende Wasser zu wirbeln und Myriaden von Tröpfchen an den Wänden laufen in diesem zentralen Punkt zusammen. Eine durchscheinende Gestalt erwacht vor Ihnen zum Leben, halb Blätter, halb Wasser. Der Geist der Meere starrt Sie aus seinen abgrundtief blauen Augen an. Bevor Sie reagieren können, verschwindet er und taucht hinter Ihrem Rücken wieder auf. Dieser verschwommene Wächter wird Sie nicht so leicht aus seinem Heiligtum lassen ..."
+    "1202": {
+      "waterSpirit": "Vous pénétrez dans une grotte marine à marée basse. D'étranges échos résonnent dans les profondeurs et des lueurs bleutées dansent dans l'obscurité, vous attirant plus loin. Soudain, l'eau stagnante se met à tourbillonner et des myriades de gouttelettes sur les parois convergent vers ce point central. Une forme translucide prend vie devant vous, mi-brume mi-eau. L'Esprit des mers vous fixe de ses yeux d'un bleu abyssal. Avant que vous ne puissiez réagir, il disparaît et réapparaît dans votre dos. Ce gardien évanescent ne vous laissera pas quitter son sanctuaire si facilement..."
     },
-    "1111": {
-      "captainCrow": "Der Nebel wird immer dichter, je näher Sie der Revenant Creek kommen. Die Sonne ist schon lange untergegangen und nur ein paar Irrlichter beleuchten Ihren Weg. Sie gehen vorsichtig über die nassen Kieselsteine, während Ihr Blick an den Wracks mehrerer Schiffe hängen bleibt, deren verrottete Rümpfe immer wieder von der Ebbe und Flut der Wellen abgeleckt werden. Plötzlich verdichtet sich der Nebel zu einer humanoiden Gestalt, die sich nur wenige Meter vor Ihnen befindet. Augen zeichnen sich ab, zwei glühende Kohlen im Nichts. Kapitän Crow, der Geist des gefürchtetsten Piraten der Meere, materialisiert seine Silhouette vor Ihnen, sein Schwert knistert mit verfluchter Energie. Er ist noch nicht fertig damit, Seelen zu fordern."
+    "1203": {
+      "captainCrow": "La brume s'épaissit à mesure que vous approchez de la Crique du Revenant. Le soleil s'est couché depuis longtemps et seuls des feux follets éclairent votre chemin. Vous avancez prudemment sur les galets mouillés tandis que votre regard accroche les carcasses de plusieurs navires éventrés, leurs coques pourries sans cesse léchées par le flux et le reflux des vagues. Tout à coup, la brume se condense en une forme humanoïde à quelques mètres devant vous. Des yeux se dessinent, deux braises rougeoyantes dans le néant. Le Capitaine Crow, spectre du pirate le plus redouté des mers, matérialise sa silhouette devant vous, son sabre crépitant d'une énergie maudite. Il n'a pas fini de réclamer des âmes."
     },
-    "1112": {
-      "mermaid": "Sie erforschen eine Unterwasserhöhle und je weiter Sie vordringen, desto mehr hören Sie eine eindringliche Melodie. Ihre Beine tragen Sie unwillkürlich zu ihrer Quelle. An einer Stelle entdecken Sie ein Becken mit türkisfarbenem Wasser. Dort sitzt sie auf einem Felsen und wartet auf Sie. Die Meerjungfrau, halb Frau, halb Fisch, beobachtet Sie mit ihren hypnotischen Augen. Ihre Schönheit ist atemberaubend, aber ihr Lächeln lässt Ihnen das Blut in den Adern gefrieren. Ihre scharfen Krallen klopfen auf den Stein und markieren einen dumpfen Takt, der von den Wänden widerhallt. Sein Gesang ändert die Tonlage: Er will Sie nicht mehr verführen, sondern mit der Struktur der Höhle selbst in Resonanz treten. Es ist eine Falle, und sie schnappt zu..."
+    "1204": {
+      "mermaid": "Vous explorez une caverne sous-marine et plus vous avancez, plus vous percevez une mélodie envoûtante. Vos jambes vous portent malgré vous vers sa source. Au détour d'un passage, vous découvrez un bassin d'eau turquoise. Et là, assise sur un rocher, elle vous attend. Mi-femme mi-poisson, la Sirène vous observe de ses yeux hypnotiques. Sa beauté est saisissante, mais son sourire vous glace le sang. Ses griffes acérées tapotent la pierre, marquant une mesure sourde qui se répercute contre les parois. Son chant change de tonalité : il ne cherche plus à vous séduire, mais à entrer en résonance avec la structure même de la caverne. C'est un piège, et il se referme sur vous..."
     },
-    "1113": {
-      "kraken": "Sie stehen am Rand eines Meeresabgrunds und blicken in das tintenschwarze Wasser. Nichts scheint sich in diesem bodenlosen Abgrund zu bewegen. Dann beginnen Blasen an die Oberfläche zu steigen. Erst ein paar, dann Hunderte. Das Wasser beginnt heftig zu brodeln. Plötzlich schießt ein massiver Tentakel aus der Tiefe, so breit wie ein Baumstamm. Dann noch einer. Und noch ein weiterer. Der Krake taucht aus seiner Höhle auf, seine gelben Augen glühen mit bösartiger Intelligenz. Seine Saugnäpfe klatschen mit einer Kraft gegen den Fels, die Knochen zermalmen kann, eine Urkraft. Der Abgrund ist an die Oberfläche gekommen, und er ist hungrig..."
+    "1205": {
+      "kraken": "Vous vous tenez au bord d'un gouffre marin, scrutant les eaux d'un noir d'encre. Rien ne semble bouger dans cet abîme sans fond. Puis des bulles commencent à remonter à la surface. D'abord quelques-unes, puis des centaines. L'eau se met à bouillonner violemment. Soudain, un tentacule massif jaillit des profondeurs, aussi large qu'un tronc d'arbre. Puis un autre. Et encore un autre. Le Kraken émerge de son antre, ses yeux jaunes luisant d'une intelligence malveillante. Ses ventouses claquent contre la roche avec une force capable de broyer les os, une force primordiale. L'abysse est remonté à la surface, et il a faim..."
     },
-    "1114": {
-      "leviathan": "Sie steigen in eine Unterwasserschlucht hinab, in der es kein Licht mehr gibt. Die Dunkelheit umhüllt Sie, die Stille ist bedrückend. Dann spüren Sie es, bevor Sie es sehen: eine titanische Präsenz, die eine tiefe Vibration aussendet, die jeden Knochen in Ihrem Körper erzittern lässt. Zwei Pupillen öffnen sich, groß wie Schilde, in einem elektrischen Blau, das im schwarzen Wasser zischt. Der Leviathan erwacht, er entfaltet sich langsam, seine Größe trotzt jeder Vorstellungskraft. Blitze beginnen zwischen seinen Fängen zu knistern, während das Wasser in einem aufkommenden Mahlstrom herumwirbelt. Sie haben gerade den Fehler begangen, ihn zu wecken..."
+    "1206": {
+      "leviathan": "Vous descendez dans un ravin sous-marin où la lumière n'a plus cours. Les ténèbres vous enveloppent, le silence est oppressant. Puis vous la sentez avant de la voir : une présence titanesque émettant une vibration basse qui fait trembler tous vos os. Deux pupilles s'ouvrent, larges comme des boucliers, d'un bleu électrique qui grésille dans l'eau noire. Le Léviathan s'éveille, il se déploie lentement, sa taille défiant l'entendement. Des éclairs commencent à crépiter entre ses crocs tandis que l'eau tourbillonne en un maelström naissant. Vous venez de commettre l'erreur de le réveiller..."
     }
   }
 }
