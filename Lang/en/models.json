@@ -1111,38 +1111,38 @@
       "name": "Ice Nest",
       "particle": "of"
     },
-    "1108": {
-      "description": "A heavenly beach covered with shells of every color. It is said that each shell holds within it the echo of the ocean. The fine white sand contrasts with the turquoise waters of the nearby lagoon. Be careful where you step: some shells are as sharp as blades.",
-      "name": "Shell beach",
+    "1200": {
+      "description": "Une plage paradisiaque recouverte de coquillages de toutes les couleurs. On dit que chaque coquillage garde en lui l'écho de l'océan. Le sable fin et blanc contraste avec les eaux turquoise du lagon voisin. Attention où vous mettez les pieds, certains coquillages sont tranchants comme des lames.",
+      "name": "Plage de coquillage",
       "particle": "of the"
     },
-    "1109": {
-      "description": "A crystal-blue lagoon protected by a coral reef. Behind the limpidity of the waves, devious currents, born of the beating of the ocean, lie in wait for the slightest imprudence to drag the lost into the abyss. In this fragile marine setting, thousand-year-old turtles come to seek a rest that the turmoil of the open sea denies them.",
+    "1201": {
+      "description": "Un lagon aux eaux d'un bleu cristallin protégé par une barrière de corail. Derrière la limpidité de l'onde, des courants sournois, nés des battements de l'océan, guettent la moindre imprudence pour entraîner les égarés vers l'abysse. Dans ce fragile écrin marin, les tortues millénaires viennent chercher un repos que l'agitation du large leur refuse.",
       "name": "Creux du Lagon",
       "particle": "of"
     },
-    "1110": {
-      "description": "A sea cave that can only be conquered at low tide, revealing a limestone maw with dripping walls. Inside, ethereal gleams emerge from the rock, casting azure reflections on the vaults. Between waves and shadows, silhouettes of mist and foam dance a silent ballet, as if the soul of the sea itself had taken refuge in this sanctuary.",
-      "name": "Sea Cave",
+    "1202": {
+      "description": "Une grotte marine qui ne se laisse conquérir qu'à marée basse, révélant une gueule de calcaire aux parois ruisselantes. À l'intérieur, des lueurs éthérées naissent de la roche, jetant des reflets d'azur sur les voûtes. Entre les ondes et les ombres, des silhouettes de brume et d'écume dansent un ballet muet, comme si l'âme de la mer elle-même s'était réfugiée dans ce sanctuaire.",
+      "name": "Caverne Maritime",
       "particle": "of the"
     },
-    "1111": {
-      "description": "A secluded cove that unfurls its reefs like blades of black granite, barely concealed beneath a frothy surf that never subsides. At night, spectral blue will-o'-the-wisps float over the waves like the souls of lost sailors, performing a macabre dance. A sinister aura hangs over this cursed place.",
+    "1203": {
+      "description": "Une crique isolée qui déploie ses récifs comme des lames de granit noir, à peine dissimulées sous un ressac écumeux qui ne s'apaise jamais. La nuit, des feux follets d'un bleu spectral flottent au-dessus des vagues comme les âmes de marins perdus, esquissant une danse macabre. Une aura sinistre plane sur ce lieu maudit.",
       "name": "Crique du Revenant",
       "particle": "of the"
     },
-    "1112": {
-      "description": "An underwater cathedral sculpted to amplify the breath of the tides into a bewitching heart. It's not the wind, it's the call of a melodious song that speaks directly to your soul. In this sonorous penumbra, the boundary between your own thoughts and the murmurings of the rock gently fades, and those who linger there never emerge quite alone.",
+    "1204": {
+      "description": "Une cathédrale sous-marine sculptée pour amplifier le souffle des marées en un coeur envoûtant. Ce n'est pas le vent, c'est l'appel d'un chant mélodieux qui s'adresse directement à votre âme. Dans cette pénombre sonore, la frontière entre vos propres pensées et les murmures de la roche s'efface doucement, et ceux qui s'y attardent n'en ressortent jamais tout à fait seuls.",
       "name": "Cave des murmures",
       "particle": "of the"
     },
-    "1113": {
-      "description": "As you approach the edge, the water turns inky black, a dark mirror reflecting only your own fear. Occasionally, a disproportionate ripple breaks the surface, the fleeting passage of a giant tentacle rising from the depths before sinking back into oblivion. No one has ever probed the heart of this pit, for the Abyss accepts no witnesses.",
+    "1205": {
+      "description": "À mesure que l'on s'approche du bord, l'eau vire au noir d'encre, un miroir sombre qui ne reflète que votre propre peur. Parfois, une ondulation démesurée brise la surface, passage fugace d'un tentacule géant qui remonte des tréfonds avant de replonger dans l'oubli. Nul n'a jamais sondé le coeur de cette fosse, car le Gouffre n'accepte aucun témoin.",
       "name": "Gouffre des Profondeurs",
       "particle": "of"
     },
-    "1114": {
-      "description": "The deepest point of these waters, an underwater ravine that plunges into absolute darkness. The pressure here is such that few creatures can survive. It is rumored that a primordial beast has slumbered there since the dawn of time, guardian of the world's most ancient secrets. Only the boldest dare approach it.",
+    "1206": {
+      "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
       "name": "Ravin des Abysses",
       "particle": "of"
     },
@@ -2263,23 +2263,23 @@
     "1107": {
       "femaleIceDragon": "You advance into this unexplored region, guided by a curiosity mixed with apprehension. The ice wall before you reflects a silhouette so imposing it defies the imagination. The closer you get in the frozen gloom, the more you grasp the sheer magnitude of the creature hidden behind this barrier. Suddenly, cracks appear in the ice, spreading like spider webs. A deep rumble makes the rocky walls vibrate. The wall explodes in an apocalyptic crash, hurling massive ice blocks. Through this curtain of shattered crystals emerges the most majestic of creatures: a female ice dragon of colossal proportions. Her presence is awe-inspiring, her folded wings nearly touching the stone vaults above. She possesses a terrifying beauty, her iridescent scales catching the faint light in frozen rainbows. Her eyes, deep blue like the abyss, shine with ancient wisdom and maternal fury. Behind her, you spot a gigantic egg with pearlescent reflections, pulsing with a mysterious glow. You have just entered her nursery, and no intrusion will go unpunished in the sanctuary of the Ice Queen..."
     },
-    "1109": {
-      "turtle": "You arrive near a natural pool protected by a coral reef. The calmness of the place encourages you to come closer and admire the seabed. You notice an imposing rock covered in algae in the center of the pool. Suddenly, it starts to move. A massive head emerges, followed by four colossal legs. A Giant Tortoise stands before you, its size rivaling that of a small ship. Its large eyes stare back at you with ancestral wisdom. Then it opens its mouth and a powerful jet of water brushes against you, letting you know that this peaceful lagoon is its territory..."
+    "1201": {
+      "turtle": "Vous arrivez près d'un bassin naturel protégé par une barrière de corail. Le calme du lieu vous incite à vous approcher pour admirer les fonds marins. Vous remarquez alors un rocher imposant recouvert d'algues au centre du bassin. Soudain, il se met en mouvement. Une tête massive en émerge, suivie de quatre pattes colossales. Une Tortue Géante se dresse devant vous, sa taille rivalisant avec celle d'un petit navire. Ses grands yeux vous fixent avec une sagesse ancestrale. Puis elle ouvre sa gueule et un puissant jet d'eau vous frôle, vous faisant comprendre que ce paisible lagon est son territoire..."
     },
-    "1110": {
-      "waterSpirit": "You enter a sea cave at low tide. Strange echoes echo in the depths and bluish glows dance in the darkness, drawing you further in. Suddenly, the stagnant water begins to swirl and myriads of droplets on the walls converge on this central point. A translucent form comes to life before you, half mist, half water. The Spirit of the Seas stares back at you with its abysmal blue eyes. Before you can react, he disappears and reappears behind your back. This evanescent guardian won't let you leave his sanctuary so easily..."
+    "1202": {
+      "waterSpirit": "Vous pénétrez dans une grotte marine à marée basse. D'étranges échos résonnent dans les profondeurs et des lueurs bleutées dansent dans l'obscurité, vous attirant plus loin. Soudain, l'eau stagnante se met à tourbillonner et des myriades de gouttelettes sur les parois convergent vers ce point central. Une forme translucide prend vie devant vous, mi-brume mi-eau. L'Esprit des mers vous fixe de ses yeux d'un bleu abyssal. Avant que vous ne puissiez réagir, il disparaît et réapparaît dans votre dos. Ce gardien évanescent ne vous laissera pas quitter son sanctuaire si facilement..."
     },
-    "1111": {
-      "captainCrow": "The mist thickens as you approach Crique du Revenant. The sun has long since set and only a few will-o'-the-wisps light your way. You make your way cautiously over the wet pebbles, your gaze catching the carcasses of several gutted ships, their rotting hulls constantly licked by the ebb and flow of the waves. Suddenly, the mist condenses into a humanoid shape a few meters ahead. Eyes appear, two glowing embers in the void. Captain Crow, specter of the most feared pirate on the seas, materializes his silhouette before you, his saber crackling with cursed energy. He's not done claiming souls."
+    "1203": {
+      "captainCrow": "La brume s'épaissit à mesure que vous approchez de la Crique du Revenant. Le soleil s'est couché depuis longtemps et seuls des feux follets éclairent votre chemin. Vous avancez prudemment sur les galets mouillés tandis que votre regard accroche les carcasses de plusieurs navires éventrés, leurs coques pourries sans cesse léchées par le flux et le reflux des vagues. Tout à coup, la brume se condense en une forme humanoïde à quelques mètres devant vous. Des yeux se dessinent, deux braises rougeoyantes dans le néant. Le Capitaine Crow, spectre du pirate le plus redouté des mers, matérialise sa silhouette devant vous, son sabre crépitant d'une énergie maudite. Il n'a pas fini de réclamer des âmes."
     },
-    "1112": {
-      "mermaid": "You're exploring an underwater cavern, and the further you go, the more you hear a haunting melody. Despite yourself, your legs carry you towards its source. At the bend of a passage, you discover a pool of turquoise water. And there, sitting on a rock, she awaits you. Half-female, half-fish, the Siren watches you with hypnotic eyes. Her beauty is striking, but her smile is bloodcurdling. Her sharp claws tap the stone, marking a dull beat that reverberates against the walls. Her song changes key: it no longer seeks to seduce you, but to resonate with the very structure of the cavern. It's a trap, and it's closing in on you..."
+    "1204": {
+      "mermaid": "Vous explorez une caverne sous-marine et plus vous avancez, plus vous percevez une mélodie envoûtante. Vos jambes vous portent malgré vous vers sa source. Au détour d'un passage, vous découvrez un bassin d'eau turquoise. Et là, assise sur un rocher, elle vous attend. Mi-femme mi-poisson, la Sirène vous observe de ses yeux hypnotiques. Sa beauté est saisissante, mais son sourire vous glace le sang. Ses griffes acérées tapotent la pierre, marquant une mesure sourde qui se répercute contre les parois. Son chant change de tonalité : il ne cherche plus à vous séduire, mais à entrer en résonance avec la structure même de la caverne. C'est un piège, et il se referme sur vous..."
     },
-    "1113": {
-      "kraken": "You're standing on the edge of an ocean abyss, scanning the inky black waters. Nothing seems to move in this bottomless abyss. Then bubbles begin to rise to the surface. First a few, then hundreds. The water begins to bubble violently. Suddenly, a massive tentacle bursts from the depths, as wide as a tree trunk. Then another. And another. The Kraken emerges from its lair, its yellow eyes gleaming with malevolent intelligence. Its suction cups slam against the rock with bone-crushing, primordial force. The abyss has risen to the surface, and it's hungry..."
+    "1205": {
+      "kraken": "Vous vous tenez au bord d'un gouffre marin, scrutant les eaux d'un noir d'encre. Rien ne semble bouger dans cet abîme sans fond. Puis des bulles commencent à remonter à la surface. D'abord quelques-unes, puis des centaines. L'eau se met à bouillonner violemment. Soudain, un tentacule massif jaillit des profondeurs, aussi large qu'un tronc d'arbre. Puis un autre. Et encore un autre. Le Kraken émerge de son antre, ses yeux jaunes luisant d'une intelligence malveillante. Ses ventouses claquent contre la roche avec une force capable de broyer les os, une force primordiale. L'abysse est remonté à la surface, et il a faim..."
     },
-    "1114": {
-      "leviathan": "You descend into an underwater ravine where there is no longer any light. Darkness envelops you, the silence oppressive. Then you feel it before you see it: a titanic presence emitting a low vibration that shakes every bone in your body. Two pupils open, as wide as shields, an electric blue that sizzles in the black water. Leviathan awakens, slowly unfurling, its size defying belief. Lightning begins to crackle between its fangs as the water swirls in a nascent maelstrom. You've just made the mistake of waking him up..."
+    "1206": {
+      "leviathan": "Vous descendez dans un ravin sous-marin où la lumière n'a plus cours. Les ténèbres vous enveloppent, le silence est oppressant. Puis vous la sentez avant de la voir : une présence titanesque émettant une vibration basse qui fait trembler tous vos os. Deux pupilles s'ouvrent, larges comme des boucliers, d'un bleu électrique qui grésille dans l'eau noire. Le Léviathan s'éveille, il se déploie lentement, sa taille défiant l'entendement. Des éclairs commencent à crépiter entre ses crocs tandis que l'eau tourbillonne en un maelström naissant. Vous venez de commettre l'erreur de le réveiller..."
     }
   }
 }
