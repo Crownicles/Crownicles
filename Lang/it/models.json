@@ -1112,39 +1112,39 @@
       "particle": "verso lo"
     },
     "1200": {
-      "description": "Une plage paradisiaque recouverte de coquillages de toutes les couleurs. On dit que chaque coquillage garde en lui l'écho de l'océan. Le sable fin et blanc contraste avec les eaux turquoise du lagon voisin. Attention où vous mettez les pieds, certains coquillages sont tranchants comme des lames.",
-      "name": "Plage de coquillage",
+      "description": "Una spiaggia paradisiaca ricoperta di conchiglie di ogni colore. Si dice che ogni conchiglia custodisca al suo interno l'eco dell'oceano. La sabbia fine e bianca fa da contrasto alle acque turchesi della laguna vicina. Attenzione a dove mettete i piedi: alcune conchiglie sono affilate come lame.",
+      "name": "Spiaggia di conchiglie",
       "particle": "verso la"
     },
     "1201": {
-      "description": "Un lagon aux eaux d'un bleu cristallin protégé par une barrière de corail. Derrière la limpidité de l'onde, des courants sournois, nés des battements de l'océan, guettent la moindre imprudence pour entraîner les égarés vers l'abysse. Dans ce fragile écrin marin, les tortues millénaires viennent chercher un repos que l'agitation du large leur refuse.",
-      "name": "Creux du Lagon",
+      "description": "Una laguna dalle acque cristalline protetta da una barriera corallina. Dietro la limpidezza delle onde, correnti insidiose, generate dal battito dell'oceano, sono in agguato, pronte a trascinare verso l'abisso chiunque commetta la minima imprudenza. In questo fragile scrigno marino, le tartarughe millenarie vengono a cercare quel riposo che l'agitazione del mare aperto non concede loro.",
+      "name": "Fossa della Laguna",
       "particle": "verso lo"
     },
     "1202": {
-      "description": "Une grotte marine qui ne se laisse conquérir qu'à marée basse, révélant une gueule de calcaire aux parois ruisselantes. À l'intérieur, des lueurs éthérées naissent de la roche, jetant des reflets d'azur sur les voûtes. Entre les ondes et les ombres, des silhouettes de brume et d'écume dansent un ballet muet, comme si l'âme de la mer elle-même s'était réfugiée dans ce sanctuaire.",
-      "name": "Caverne Maritime",
+      "description": "Una grotta marina che si lascia conquistare solo con la bassa marea, rivelando una bocca calcarea dalle pareti bagnate a filo d'acqua. All'interno, luci eteree nascono dalla roccia, proiettando riflessi azzurri sulle volte. Tra le onde e le ombre, sagome di nebbia e schiuma danzano un balletto muto, come se l'anima stessa del mare si fosse rifugiata in questo santuario.",
+      "name": "Caverna marina",
       "particle": "verso la"
     },
     "1203": {
-      "description": "Une crique isolée qui déploie ses récifs comme des lames de granit noir, à peine dissimulées sous un ressac écumeux qui ne s'apaise jamais. La nuit, des feux follets d'un bleu spectral flottent au-dessus des vagues comme les âmes de marins perdus, esquissant une danse macabre. Une aura sinistre plane sur ce lieu maudit.",
-      "name": "Crique du Revenant",
+      "description": "Una baia isolata che dispiega le sue scogliere come lame di granito nero, appena nascoste sotto una risacca schiumosa che non si placa mai. Di notte, fuochi fatui di un blu spettrale fluttuano sopra le onde come le anime dei marinai dispersi, danzando in una danza macabra. Un'aura sinistra aleggia su questo luogo maledetto.",
+      "name": "Baia dello Spirito",
       "particle": "verso la"
     },
     "1204": {
-      "description": "Une cathédrale sous-marine sculptée pour amplifier le souffle des marées en un coeur envoûtant. Ce n'est pas le vent, c'est l'appel d'un chant mélodieux qui s'adresse directement à votre âme. Dans cette pénombre sonore, la frontière entre vos propres pensées et les murmures de la roche s'efface doucement, et ceux qui s'y attardent n'en ressortent jamais tout à fait seuls.",
-      "name": "Cave des murmures",
+      "description": "Una cattedrale sottomarina scolpita per amplificare il respiro delle maree in un cuore ammaliante. Non è il vento, è il richiamo di un canto melodioso che si rivolge direttamente alla vostra anima. In questa penombra sonora, il confine tra i vostri pensieri e i sussurri della roccia svanisce dolcemente, e chi vi indugia non ne esce mai del tutto solo.",
+      "name": "Cantina dei sussurri",
       "particle": "verso la"
     },
     "1205": {
-      "description": "À mesure que l'on s'approche du bord, l'eau vire au noir d'encre, un miroir sombre qui ne reflète que votre propre peur. Parfois, une ondulation démesurée brise la surface, passage fugace d'un tentacule géant qui remonte des tréfonds avant de replonger dans l'oubli. Nul n'a jamais sondé le coeur de cette fosse, car le Gouffre n'accepte aucun témoin.",
-      "name": "Gouffre des Profondeurs",
+      "description": "Quando ci si avvicina alla riva, l'acqua diventa nera come l'inchiostro, uno specchio scuro che riflette solo la propria paura. Di tanto in tanto, un'increspatura sproporzionata rompe la superficie, il passaggio fugace di un tentacolo gigante che emerge dalle profondità prima di sprofondare nuovamente nell'oblio. Nessuno ha mai sondato il cuore di questa fossa, perché l'Abisso non accetta testimoni.",
+      "name": "Abisso delle Profondità",
       "particle": "verso lo"
     },
     "1206": {
-      "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
-      "name": "Ravin des Abysses",
-      "particle": "vers le"
+      "description": "Il punto più profondo di queste acque, una gola sottomarina che sprofonda nel buio più assoluto. Qui la pressione è tale che poche creature possono sopravvivere. Si dice che una bestia primordiale vi si sia assopita fin dall'alba dei tempi, custode dei più antichi segreti del mondo. Solo i più audaci osano avvicinarsi.",
+      "name": "Burrone degli Abissi",
+      "particle": "verso lo"
     },
     "12": {
       "description": "Una vasta pianura vuota settentrionale di scarso interesso.",
