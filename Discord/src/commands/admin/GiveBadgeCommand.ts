@@ -144,6 +144,8 @@ async function handleGetPlayerInfoResponse(
 				components: [confirmRow]
 			});
 
+			let confirmationHandled = false;
+
 			const confirmCollector = msg.createMessageComponentCollector({
 				time: Constants.MESSAGES.COLLECTOR_TIME
 			});
@@ -154,14 +156,32 @@ async function handleGetPlayerInfoResponse(
 					return;
 				}
 
+				if (confirmationHandled) {
+					await buttonInteraction.deferUpdate().catch(() => null);
+					return;
+				}
+
+				confirmationHandled = true;
+
 				confirmCollector.stop();
 
 				disableRows([confirmRow]);
 				await buttonInteraction.update({ components: [confirmRow] });
 
 				if (buttonInteraction.customId === "accept") {
-					const newBadges = getPlayerInfoPacket.data.badges!.concat(selectedOption);
-					PacketUtils.sendPacketToBackend(context, makePacket(CommandSetPlayerInfoReq, {
+					const newBadges = Array.from(new Set<Badge>(getPlayerInfoPacket.data.badges!.concat(selectedOption)));
+					const setPlayerInfoContext: PacketContext = {
+						...context,
+						packetId: undefined,
+						discord: context.discord
+							? {
+								...context.discord,
+								buttonInteraction: buttonInteraction.id
+							}
+							: undefined
+					};
+
+					PacketUtils.sendPacketToBackend(setPlayerInfoContext, makePacket(CommandSetPlayerInfoReq, {
 						keycloakId: targetKeycloakId,
 						dataToSet: { badges: newBadges }
 					}));
