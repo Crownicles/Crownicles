@@ -26,6 +26,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	ComponentType,
 	parseEmoji,
 	StringSelectMenuBuilder,
 	StringSelectMenuInteraction,
@@ -111,7 +112,7 @@ async function handleGetPlayerInfoResponse(
 				return;
 			}
 
-			selectCollector.stop();
+			selectCollector.stop("badgeSelected");
 
 			const selectedOption = selectMenuInteraction.values[0] as Badge;
 			const badgeName = i18n.t(`commands:profile.badges.${selectedOption}`, { lng: interaction.userLanguage });
@@ -144,8 +145,12 @@ async function handleGetPlayerInfoResponse(
 				components: [confirmRow]
 			});
 
+			let confirmationHandled = false;
+
 			const confirmCollector = msg.createMessageComponentCollector({
-				time: Constants.MESSAGES.COLLECTOR_TIME
+				componentType: ComponentType.Button,
+				time: Constants.MESSAGES.COLLECTOR_TIME,
+				max: 1
 			});
 
 			confirmCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
@@ -154,14 +159,32 @@ async function handleGetPlayerInfoResponse(
 					return;
 				}
 
+				if (confirmationHandled) {
+					await buttonInteraction.deferUpdate().catch(() => null);
+					return;
+				}
+
+				confirmationHandled = true;
+
 				confirmCollector.stop();
 
 				disableRows([confirmRow]);
 				await buttonInteraction.update({ components: [confirmRow] });
 
 				if (buttonInteraction.customId === "accept") {
-					const newBadges = getPlayerInfoPacket.data.badges!.concat(selectedOption);
-					PacketUtils.sendPacketToBackend(context, makePacket(CommandSetPlayerInfoReq, {
+					const newBadges = Array.from(new Set<Badge>(getPlayerInfoPacket.data.badges!.concat(selectedOption)));
+					const setPlayerInfoContext: PacketContext = {
+						...context,
+						packetId: undefined,
+						discord: context.discord
+							? {
+								...context.discord,
+								buttonInteraction: buttonInteraction.id
+							}
+							: undefined
+					};
+
+					PacketUtils.sendPacketToBackend(setPlayerInfoContext, makePacket(CommandSetPlayerInfoReq, {
 						keycloakId: targetKeycloakId,
 						dataToSet: { badges: newBadges }
 					}));
@@ -174,7 +197,10 @@ async function handleGetPlayerInfoResponse(
 			});
 		});
 
-		selectCollector.on("end", async () => {
+		selectCollector.on("end", async (_, reason) => {
+			if (reason === "badgeSelected") {
+				return;
+			}
 			disableRows(rows);
 
 			await msg.edit({ components: rows }).catch(() => null);

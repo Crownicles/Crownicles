@@ -10,7 +10,7 @@ export class CommandGetPlayerInfoReq extends CrowniclesPacket {
 	dataToGet!: { badges?: boolean };
 }
 
-@sendablePacket(PacketDirection.NONE)
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandGetPlayerInfoRes extends CrowniclesPacket {
 	exists!: boolean;
 
