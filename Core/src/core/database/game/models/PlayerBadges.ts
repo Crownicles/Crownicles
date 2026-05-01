@@ -2,6 +2,7 @@ import {
 	DataTypes, Model, Sequelize
 } from "sequelize";
 import { Badge } from "../../../../../../Lib/src/types/Badge";
+import { LockManager } from "../../../../../../Lib/src/locks/LockManager";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -20,6 +21,8 @@ export class PlayerBadges extends Model {
  * This class is used to manage the badges of players
  */
 export class PlayerBadgesManager {
+	private static readonly setBadgesLocks = new LockManager();
+
 	/**
 	 * Get all badges of a player
 	 * @param playerId
@@ -66,18 +69,25 @@ export class PlayerBadgesManager {
 	 * @param badges
 	 */
 	public static async setBadges(playerId: number, badges: Badge[]): Promise<void> {
+		const lock = this.setBadgesLocks.getLock(playerId);
+		const release = await lock.acquire();
 		const uniqueBadges = Array.from(new Set(badges));
 
-		await PlayerBadges.destroy({
-			where: { playerId }
-		});
-		if (uniqueBadges.length > 0) {
-			await PlayerBadges.bulkCreate(
-				uniqueBadges.map(badge => ({
-					playerId, badge
-				})),
-				{ ignoreDuplicates: true }
-			);
+		try {
+			await PlayerBadges.destroy({
+				where: { playerId }
+			});
+			if (uniqueBadges.length > 0) {
+				await PlayerBadges.bulkCreate(
+					uniqueBadges.map(badge => ({
+						playerId, badge
+					})),
+					{ ignoreDuplicates: true }
+				);
+			}
+		}
+		finally {
+			release();
 		}
 	}
 }
