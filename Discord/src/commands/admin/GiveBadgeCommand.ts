@@ -26,6 +26,7 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	ComponentType,
 	parseEmoji,
 	StringSelectMenuBuilder,
 	StringSelectMenuInteraction,
@@ -147,7 +148,9 @@ async function handleGetPlayerInfoResponse(
 			let confirmationHandled = false;
 
 			const confirmCollector = msg.createMessageComponentCollector({
-				time: Constants.MESSAGES.COLLECTOR_TIME
+				componentType: ComponentType.Button,
+				time: Constants.MESSAGES.COLLECTOR_TIME,
+				max: 1
 			});
 
 			confirmCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
