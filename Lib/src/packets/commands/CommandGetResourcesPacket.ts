@@ -8,7 +8,7 @@ export class CommandGetResourcesReq extends CrowniclesPacket {
 	badges?: boolean;
 }
 
-@sendablePacket(PacketDirection.NONE)
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandGetResourcesRes extends CrowniclesPacket {
 	badges?: Badge[];
 }
