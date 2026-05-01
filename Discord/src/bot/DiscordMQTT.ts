@@ -28,7 +28,10 @@ import { CommandTestListPacketReq } from "../../../Lib/src/packets/commands/Comm
 import { PacketUtils } from "../utils/PacketUtils";
 
 const DEFAULT_MQTT_CLIENT_OPTIONS = {
-	connectTimeout: MqttConstants.CONNECTION_TIMEOUT
+	connectTimeout: MqttConstants.CONNECTION_TIMEOUT,
+
+	// We resubscribe explicitly in each connect handler; letting mqtt.js resubscribe too creates duplicates after reconnects.
+	resubscribe: false
 };
 
 export class DiscordMQTT {
