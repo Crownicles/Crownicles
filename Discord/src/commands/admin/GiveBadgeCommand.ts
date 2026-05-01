@@ -111,7 +111,7 @@ async function handleGetPlayerInfoResponse(
 				return;
 			}
 
-			selectCollector.stop();
+			selectCollector.stop("badgeSelected");
 
 			const selectedOption = selectMenuInteraction.values[0] as Badge;
 			const badgeName = i18n.t(`commands:profile.badges.${selectedOption}`, { lng: interaction.userLanguage });
@@ -174,7 +174,10 @@ async function handleGetPlayerInfoResponse(
 			});
 		});
 
-		selectCollector.on("end", async () => {
+		selectCollector.on("end", async (_, reason) => {
+			if (reason === "badgeSelected") {
+				return;
+			}
 			disableRows(rows);
 
 			await msg.edit({ components: rows }).catch(() => null);
