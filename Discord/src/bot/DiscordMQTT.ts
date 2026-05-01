@@ -28,13 +28,8 @@ import { CommandTestListPacketReq } from "../../../Lib/src/packets/commands/Comm
 import { PacketUtils } from "../utils/PacketUtils";
 
 const DEFAULT_MQTT_CLIENT_OPTIONS = {
-	connectTimeout: MqttConstants.CONNECTION_TIMEOUT,
-
-	// We resubscribe explicitly in each connect handler; letting mqtt.js resubscribe too creates duplicates after reconnects.
-	resubscribe: false
+	connectTimeout: MqttConstants.CONNECTION_TIMEOUT
 };
-
-const DUPLICATE_GLOBAL_MESSAGE_TTL_MS = 2_000;
 
 export class DiscordMQTT {
 	static globalMqttClient: MqttClient;
@@ -52,8 +47,6 @@ export class DiscordMQTT {
 	static packetListener: PacketListenerClient = new PacketListenerClient();
 
 	static asyncPacketSender: AsyncCorePacketSender = new AsyncCorePacketSender();
-
-	private static readonly recentGlobalMessages = new Map<string, number>();
 
 	static async init(isMainShard: boolean): Promise<void> {
 		await registerAllPacketHandlers();
@@ -215,23 +208,6 @@ export class DiscordMQTT {
 		}
 	}
 
-	private static isDuplicateGlobalMessage(messageString: string): boolean {
-		const now = Date.now();
-
-		for (const [seenMessage, seenAt] of DiscordMQTT.recentGlobalMessages.entries()) {
-			if (now - seenAt > DUPLICATE_GLOBAL_MESSAGE_TTL_MS) {
-				DiscordMQTT.recentGlobalMessages.delete(seenMessage);
-			}
-		}
-
-		if (DiscordMQTT.recentGlobalMessages.has(messageString)) {
-			return true;
-		}
-
-		DiscordMQTT.recentGlobalMessages.set(messageString, now);
-		return false;
-	}
-
 	private static handleGlobalMqttMessage(): void {
 		DiscordMQTT.globalMqttClient.on("message", async (_topic, message) => {
 			const messageString = message.toString();
@@ -241,11 +217,6 @@ export class DiscordMQTT {
 
 			if (messageString.startsWith(DiscordConstants.MQTT.SHARD_CONNECTION_MSG)) {
 				await DiscordMQTT.handleDuplicatedShardMessage(messageString);
-				return;
-			}
-
-			if (DiscordMQTT.isDuplicateGlobalMessage(messageString)) {
-				CrowniclesLogger.warn("Ignored duplicate global MQTT message");
 				return;
 			}
 
