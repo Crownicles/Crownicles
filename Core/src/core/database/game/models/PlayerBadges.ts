@@ -66,14 +66,17 @@ export class PlayerBadgesManager {
 	 * @param badges
 	 */
 	public static async setBadges(playerId: number, badges: Badge[]): Promise<void> {
+		const uniqueBadges = Array.from(new Set(badges));
+
 		await PlayerBadges.destroy({
 			where: { playerId }
 		});
-		if (badges.length > 0) {
+		if (uniqueBadges.length > 0) {
 			await PlayerBadges.bulkCreate(
-				badges.map(badge => ({
+				uniqueBadges.map(badge => ({
 					playerId, badge
-				}))
+				})),
+				{ ignoreDuplicates: true }
 			);
 		}
 	}
