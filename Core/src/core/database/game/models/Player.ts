@@ -261,13 +261,13 @@ export class Player extends Model {
 			// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
 			newTokens = Math.max(0, this.tokens + parameters.amount);
 		}
-		else if (parameters.reason === NumberChangeReason.EXPEDITION) {
-			// Expedition rewards can exceed the max token cap
-			newTokens = this.tokens + parameters.amount;
-		}
 		else if (this.tokens >= TokensConstants.MAX) {
-			// Block all non-expedition gains when already at or above max
+			// Block all gains when already at or above max (including expeditions)
 			return this;
+		}
+		else if (parameters.reason === NumberChangeReason.EXPEDITION) {
+			// Expedition rewards can exceed the max cap, but only when current tokens are below MAX
+			newTokens = this.tokens + parameters.amount;
 		}
 		else {
 			newTokens = MathUtils.clamp(
@@ -1087,11 +1087,12 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Set the tokens of a player clamped between 0 and the maximum capacity
+	 * Set the tokens of a player. Callers are responsible for the upper bound; expedition rewards
+	 * are allowed to push tokens above TokensConstants.MAX, so this only enforces the lower bound.
 	 * @param tokens
 	 */
 	private setTokens(tokens: number): void {
-		this.tokens = MathUtils.clamp(tokens, 0, TokensConstants.MAX);
+		this.tokens = Math.max(0, tokens);
 	}
 
 	/**
