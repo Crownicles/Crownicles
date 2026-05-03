@@ -1111,37 +1111,37 @@
       "name": "Ninho congelado",
       "particle": "para o"
     },
-    "1108": {
+    "1200": {
       "description": "Uma praia paradisíaca coberta de conchas de todas as cores. Diz-se que cada concha contém um eco do oceano. A areia branca e fina contrasta com as águas azul-turquesa da lagoa próxima. Cuidado onde pisa, algumas conchas são tão afiadas como lâminas.",
       "name": "Praia das conchas",
       "particle": "para o"
     },
-    "1109": {
+    "1201": {
       "description": "Uma lagoa azul cristalina protegida por um recife de coral. Por detrás da limpidez das ondas, correntes tortuosas, nascidas do bater do oceano, aguardam o mais pequeno descuido para arrastar os perdidos em direção ao abismo. Neste frágil cenário marinho, as tartarugas milenares vêm procurar um descanso que a agitação do mar alto lhes nega.",
       "name": "Creux du Lagon",
       "particle": "para o"
     },
-    "1110": {
+    "1202": {
       "description": "Uma caverna marítima que só pode ser conquistada na maré baixa, revelando uma fossa calcária com paredes gotejantes. No interior, brilhos etéreos emergem da rocha, lançando reflexos azuis sobre as abóbadas. Entre as ondas e as sombras, silhuetas de névoa e espuma dançam um bailado silencioso, como se a alma do próprio mar se tivesse refugiado neste santuário.",
       "name": "Caverna do mar",
       "particle": "para o"
     },
-    "1111": {
+    "1203": {
       "description": "Uma enseada isolada com recifes que parecem lâminas de granito negro, mal escondidos por uma onda espumosa que nunca acalma. À noite, fantasmas azuis flutuam sobre as ondas como as almas de marinheiros perdidos, executando uma dança macabra. Uma aura sinistra paira sobre este lugar amaldiçoado.",
       "name": "Crise do Vencimento",
       "particle": "para o"
     },
-    "1112": {
+    "1204": {
       "description": "Uma catedral subaquática esculpida para amplificar o sopro das marés num coração encantador. Não é o vento, é o apelo de uma canção melodiosa que fala diretamente à nossa alma. Nesta penumbra sónica, a fronteira entre os nossos próprios pensamentos e os murmúrios da rocha desvanece-se suavemente, e aqueles que aí permanecem nunca saem completamente sós.",
       "name": "Gruta dos murmúrios",
       "particle": "para o"
     },
-    "1113": {
+    "1205": {
       "description": "À medida que se aproxima da margem, a água torna-se negra como tinta, um espelho escuro que reflecte apenas o seu próprio medo. Ocasionalmente, uma ondulação desproporcionada rompe a superfície, a passagem fugaz de um tentáculo gigante que se ergue das profundezas antes de se afundar de novo no esquecimento. Ninguém jamais sondou o coração desse poço, pois o Abismo não aceita testemunhas.",
       "name": "Gouffre des Profondeurs",
       "particle": "para o"
     },
-    "1114": {
+    "1206": {
       "description": "O ponto mais profundo destas águas, uma ravina submarina que mergulha na escuridão absoluta. A pressão aqui é tal que poucas criaturas conseguem sobreviver. Há rumores de que uma besta primordial dormiu lá desde o início dos tempos, guardiã dos segredos mais antigos do mundo. Apenas os mais ousados se atrevem a aproximar-se dela.",
       "name": "Ravina dos Abismos",
       "particle": "para o"
@@ -2263,22 +2263,22 @@
     "1107": {
       "femaleIceDragon": "Percorremos esta região inexplorada, guiados por uma curiosidade misturada com apreensão. A parede de gelo diante de ti reflecte uma figura tão imponente que desafia a imaginação. Quanto mais nos aproximamos na escuridão gelada, mais nos apercebemos da dimensão da criatura que se esconde por detrás desta barreira. De repente, surgem fendas no gelo, que se espalham como teias de aranha. Um rugido surdo faz vibrar as paredes rochosas. A parede explode com um estrondo apocalítico, atirando para o ar enormes blocos de gelo. Através desta cortina de cristais estilhaçados emerge a mais majestosa das criaturas: um dragão de gelo de proporções faraónicas. A sua presença parece imponente, as suas asas dobradas quase tocam as abóbadas de pedra. Tem uma beleza aterradora, as suas escamas iridescentes captam a luz ténue em arco-íris gelados. Os seus olhos, de um azul profundo como o abismo, brilham com sabedoria antiga e fúria maternal. Atrás dela, podes ver um ovo gigantesco com um brilho perolado, pulsando com um brilho misterioso. Acabaste de entrar no seu berçário, e nenhum intruso ficará impune no santuário da Rainha do Gelo..."
     },
-    "1109": {
+    "1201": {
       "turtle": "Chega-se perto de uma piscina natural protegida por um recife de coral. A calma do local incita-o a aproximar-se para admirar o fundo do mar. Repara então numa imponente rocha coberta de algas no centro da piscina. De repente, começa a mexer-se. Surge uma cabeça enorme, seguida de quatro patas colossais. Uma tartaruga gigante surge diante de ti, com um tamanho equivalente ao de um pequeno navio. Os seus grandes olhos fitam-te com uma sabedoria ancestral. Depois abre a boca e um poderoso jato de água roça em ti, fazendo-te saber que esta lagoa pacífica é o seu território..."
     },
-    "1110": {
+    "1202": {
       "waterSpirit": "Entramos numa gruta marítima na maré baixa. Ecos estranhos ecoam nas profundezas e luzes azuladas dançam na escuridão, atraindo-o ainda mais para dentro. De repente, a água estagnada começa a rodopiar e miríades de gotículas nas paredes convergem para um ponto central. Uma forma translúcida ganha vida à tua frente, metade névoa, metade água. O Espírito dos Mares olha para ti com os seus olhos azuis abismais. Antes que possas reagir, ele desaparece e reaparece nas tuas costas. Este guardião evanescente não te vai deixar sair do seu santuário tão facilmente..."
     },
-    "1111": {
+    "1203": {
       "captainCrow": "O nevoeiro adensa-se à medida que nos aproximamos da Crique du Revenant. O sol já se pôs há muito tempo e apenas alguns vapores iluminam o vosso caminho. Avançam cautelosamente sobre os seixos molhados, enquanto o vosso olhar capta as carcaças de vários navios esventrados, com os seus cascos apodrecidos a serem constantemente banhados pelo fluxo e refluxo das ondas. De repente, a névoa condensa-se numa forma humanoide alguns metros à vossa frente. Os olhos aparecem, duas brasas incandescentes no vazio. O Capitão Corvo, o espetro do pirata mais temido dos mares, materializa-se à tua frente, com a sua espada a crepitar de energia amaldiçoada. Ele ainda não acabou de reclamar almas."
     },
-    "1112": {
+    "1204": {
       "mermaid": "Estás a explorar uma caverna subaquática e quanto mais avanças, mais ouves uma melodia assombrosa. Apesar de tudo, as tuas pernas levam-te até à sua origem. Ao virar de uma passagem, descobres uma piscina de água azul-turquesa. E ali, sentada numa rocha, ela espera por si. Metade mulher, metade peixe, a sereia observa-te com olhos hipnóticos. A sua beleza é impressionante, mas o seu sorriso é de gelar o sangue. As suas garras afiadas batem na pedra, marcando um ritmo monótono que reverbera contra as paredes. A sua canção muda de tom: já não procura seduzir-te, mas ressoar com a própria estrutura da caverna. É uma armadilha, e está a aproximar-se de ti..."
     },
-    "1113": {
+    "1205": {
       "kraken": "Estás à beira de um abismo oceânico, a olhar para a água negra e escura. Nada parece mover-se neste abismo sem fundo. Então as bolhas começam a subir à superfície. Primeiro algumas, depois centenas. A água começa a borbulhar violentamente. De repente, um enorme tentáculo irrompe das profundezas, tão largo como um tronco de árvore. Depois outro. E mais outro. O Kraken emerge do seu covil, os seus olhos amarelos brilham com uma inteligência malévola. As suas ventosas batem contra a rocha com uma força primordial e esmagadora de ossos. O abismo subiu à superfície e está esfomeado..."
     },
-    "1114": {
+    "1206": {
       "leviathan": "Desces a uma ravina submarina onde já não há luz. A escuridão envolve-te, o silêncio é opressivo. Depois, sente-o antes de o ver: uma presença titânica que emite uma vibração baixa que faz tremer todos os ossos do seu corpo. Duas pupilas abrem-se, tão largas como escudos, de um azul elétrico que brilha na água negra. O Leviatã desperta, desdobrando-se lentamente, com um tamanho que desafia qualquer crença. Um relâmpago começa a crepitar entre as suas presas enquanto a água se agita num turbilhão nascente. Acabaste de cometer o erro de o acordar..."
     }
   }

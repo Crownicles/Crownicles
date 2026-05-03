@@ -1111,37 +1111,37 @@
       "name": "Eisiges Nest",
       "particle": "in Richtung"
     },
-    "1108": {
+    "1200": {
       "description": "Ein paradiesischer Strand, der mit Muscheln in allen Farben bedeckt ist. Man sagt, dass jede Muschel das Echo des Ozeans in sich trägt. Der feine, weiße Sand steht im Kontrast zum türkisfarbenen Wasser der nahe gelegenen Lagune. Passen Sie auf, wo Sie hintreten, denn einige Muscheln sind scharf wie Klingen.",
       "name": "Muschelstrand",
       "particle": "in Richtung"
     },
-    "1109": {
+    "1201": {
       "description": "Eine Lagune mit kristallklarem, blauem Wasser, das von einem Korallenriff geschützt wird. Hinter den klaren Wellen lauern heimtückische Strömungen, die durch das Schlagen des Ozeans entstehen, auf die geringste Unvorsichtigkeit, um die Verirrten in den Abgrund zu ziehen. In diesem zerbrechlichen Meereskästchen suchen tausendjährige Schildkröten Ruhe, die ihnen die Hektik des Meeres verwehrt.",
       "name": "Lagon Hollow",
       "particle": "in Richtung"
     },
-    "1110": {
+    "1202": {
       "description": "Eine Meereshöhle, die nur bei Ebbe erobert werden kann und ein Kalksteinmaul mit triefenden Wänden enthüllt. Im Inneren entspringt ein ätherischer Schimmer aus dem Gestein und wirft azurblaue Reflexe auf die Gewölbe. Zwischen den Wellen und Schatten tanzen Silhouetten aus Nebel und Schaum ein stummes Ballett, als ob die Seele des Meeres selbst in diesem Heiligtum Zuflucht gesucht hätte.",
       "name": "Maritime Höhle",
       "particle": "in Richtung"
     },
-    "1111": {
+    "1203": {
       "description": "Eine einsame Bucht, die ihre Riffe wie schwarze Granitklingen ausbreitet, die kaum von der schäumenden Brandung verdeckt werden, die niemals abflaut. Nachts schweben gespenstisch blaue Irrlichter über den Wellen, wie die Seelen verlorener Seeleute, die einen Totentanz aufführen. Eine unheimliche Aura liegt über diesem verfluchten Ort.",
       "name": "Revenant-Bucht",
       "particle": "in Richtung"
     },
-    "1112": {
+    "1204": {
       "description": "Eine Unterwasserkathedrale, die geformt wurde, um den Atem der Gezeiten zu einem betörenden Herzen zu verstärken. Das ist kein Wind, das ist der Ruf eines melodischen Gesangs, der sich direkt an Ihre Seele wendet. In diesem klangvollen Halbdunkel verschwimmt die Grenze zwischen Ihren eigenen Gedanken und dem Flüstern des Felsens sanft, und wer hier verweilt, kommt nie wieder ganz allein heraus.",
       "name": "Flüsterkeller",
       "particle": "in Richtung"
     },
-    "1113": {
+    "1205": {
       "description": "Je näher du dem Ufer kommst, desto tintenschwarzer wird das Wasser, ein dunkler Spiegel, der nur deine eigene Angst widerspiegelt. Manchmal durchbricht eine übergroße Welle die Oberfläche, der flüchtige Durchgang eines riesigen Tentakels, der aus der Tiefe aufsteigt und dann wieder in die Vergessenheit versinkt. Niemand hat je das Herz dieser Grube erforscht, denn der Schlund akzeptiert keine Zeugen.",
       "name": "Schlucht der Tiefe",
       "particle": "in Richtung"
     },
-    "1114": {
+    "1206": {
       "description": "Der tiefste Punkt dieser Gewässer ist eine Unterwasserschlucht, die in absolute Finsternis stürzt. Der Druck dort ist so hoch, dass nur wenige Lebewesen überleben können. Man munkelt, dass dort seit Anbeginn der Zeit eine Urbestie schlummert, die die ältesten Geheimnisse dieser Welt hütet. Nur die Mutigsten wagen es, sich ihr zu nähern.",
       "name": "Schlucht des Abgrunds",
       "particle": "in Richtung"
@@ -2263,22 +2263,22 @@
     "1107": {
       "femaleIceDragon": "Sie dringen in diese unerforschte Region vor, geleitet von einer Mischung aus Neugier und Angst. Die Eiswand, die sich vor Ihnen erhebt, spiegelt eine Silhouette wider, die so gewaltig ist, dass sie sich jeder Vorstellungskraft entzieht. Je näher Sie in der eisigen Dunkelheit kommen, desto mehr wird Ihnen das Ausmaß der Kreatur bewusst, die sich hinter dieser Barriere verbirgt. Plötzlich tauchen Risse im Eis auf, die sich wie Spinnweben ausbreiten. Ein dumpfes Grollen lässt die Felswände vibrieren. Die Mauer explodiert mit einem apokalyptischen Krachen und schleudert massive Eisblöcke durch die Luft. Durch diesen Vorhang aus zerbrochenen Kristallen taucht die majestätischste aller Kreaturen auf: ein Eisdrache von pharaonischen Ausmaßen. Ihre Präsenz ist gewaltig, ihre gefalteten Flügel berühren fast die steinernen Gewölbe. Sie ist von erschreckender Schönheit, denn ihre schillernden Schuppen fangen das schwache Licht in eisigen Regenbögen ein. Ihre Augen, tiefblau wie der Abgrund, strahlen uralte Weisheit und mütterlichen Zorn aus. Hinter ihr erblicken Sie ein riesiges, perlmuttfarbenes Ei, das in einem geheimnisvollen Licht pulsiert. Sie haben soeben ihre Kinderstube betreten und kein Eindringen in das Heiligtum der Eiskönigin wird ungestraft bleiben..."
     },
-    "1109": {
+    "1201": {
       "turtle": "Sie kommen in der Nähe eines natürlichen Beckens an, das durch ein Korallenriff geschützt ist. Die Ruhe des Ortes verleitet Sie dazu, näher heranzugehen, um den Meeresboden zu bewundern. In der Mitte des Beckens befindet sich ein großer, mit Algen bewachsener Felsen. Plötzlich setzt er sich in Bewegung. Ein großer Kopf ragt aus ihm heraus, gefolgt von vier riesigen Beinen. Eine Riesenschildkröte erhebt sich vor Ihnen, deren Größe mit der eines kleinen Schiffes konkurrieren kann. Ihre großen Augen starren Sie mit uralter Weisheit an. Dann öffnet sie ihr Maul und ein kräftiger Wasserstrahl streift Sie und macht Ihnen klar, dass diese friedliche Lagune ihr Territorium ist..."
     },
-    "1110": {
+    "1202": {
       "waterSpirit": "Sie betreten bei Ebbe eine Meereshöhle. Seltsame Echos hallen in der Tiefe wider und ein bläulicher Schimmer tanzt in der Dunkelheit und zieht Sie weiter nach unten. Plötzlich beginnt das stehende Wasser zu wirbeln und Myriaden von Tröpfchen an den Wänden laufen in diesem zentralen Punkt zusammen. Eine durchscheinende Gestalt erwacht vor Ihnen zum Leben, halb Blätter, halb Wasser. Der Geist der Meere starrt Sie aus seinen abgrundtief blauen Augen an. Bevor Sie reagieren können, verschwindet er und taucht hinter Ihrem Rücken wieder auf. Dieser verschwommene Wächter wird Sie nicht so leicht aus seinem Heiligtum lassen ..."
     },
-    "1111": {
+    "1203": {
       "captainCrow": "Der Nebel wird immer dichter, je näher Sie der Revenant Creek kommen. Die Sonne ist schon lange untergegangen und nur ein paar Irrlichter beleuchten Ihren Weg. Sie gehen vorsichtig über die nassen Kieselsteine, während Ihr Blick an den Wracks mehrerer Schiffe hängen bleibt, deren verrottete Rümpfe immer wieder von der Ebbe und Flut der Wellen abgeleckt werden. Plötzlich verdichtet sich der Nebel zu einer humanoiden Gestalt, die sich nur wenige Meter vor Ihnen befindet. Augen zeichnen sich ab, zwei glühende Kohlen im Nichts. Kapitän Crow, der Geist des gefürchtetsten Piraten der Meere, materialisiert seine Silhouette vor Ihnen, sein Schwert knistert mit verfluchter Energie. Er ist noch nicht fertig damit, Seelen zu fordern."
     },
-    "1112": {
+    "1204": {
       "mermaid": "Sie erforschen eine Unterwasserhöhle und je weiter Sie vordringen, desto mehr hören Sie eine eindringliche Melodie. Ihre Beine tragen Sie unwillkürlich zu ihrer Quelle. An einer Stelle entdecken Sie ein Becken mit türkisfarbenem Wasser. Dort sitzt sie auf einem Felsen und wartet auf Sie. Die Meerjungfrau, halb Frau, halb Fisch, beobachtet Sie mit ihren hypnotischen Augen. Ihre Schönheit ist atemberaubend, aber ihr Lächeln lässt Ihnen das Blut in den Adern gefrieren. Ihre scharfen Krallen klopfen auf den Stein und markieren einen dumpfen Takt, der von den Wänden widerhallt. Sein Gesang ändert die Tonlage: Er will Sie nicht mehr verführen, sondern mit der Struktur der Höhle selbst in Resonanz treten. Es ist eine Falle, und sie schnappt zu..."
     },
-    "1113": {
+    "1205": {
       "kraken": "Sie stehen am Rand eines Meeresabgrunds und blicken in das tintenschwarze Wasser. Nichts scheint sich in diesem bodenlosen Abgrund zu bewegen. Dann beginnen Blasen an die Oberfläche zu steigen. Erst ein paar, dann Hunderte. Das Wasser beginnt heftig zu brodeln. Plötzlich schießt ein massiver Tentakel aus der Tiefe, so breit wie ein Baumstamm. Dann noch einer. Und noch ein weiterer. Der Krake taucht aus seiner Höhle auf, seine gelben Augen glühen mit bösartiger Intelligenz. Seine Saugnäpfe klatschen mit einer Kraft gegen den Fels, die Knochen zermalmen kann, eine Urkraft. Der Abgrund ist an die Oberfläche gekommen, und er ist hungrig..."
     },
-    "1114": {
+    "1206": {
       "leviathan": "Sie steigen in eine Unterwasserschlucht hinab, in der es kein Licht mehr gibt. Die Dunkelheit umhüllt Sie, die Stille ist bedrückend. Dann spüren Sie es, bevor Sie es sehen: eine titanische Präsenz, die eine tiefe Vibration aussendet, die jeden Knochen in Ihrem Körper erzittern lässt. Zwei Pupillen öffnen sich, groß wie Schilde, in einem elektrischen Blau, das im schwarzen Wasser zischt. Der Leviathan erwacht, er entfaltet sich langsam, seine Größe trotzt jeder Vorstellungskraft. Blitze beginnen zwischen seinen Fängen zu knistern, während das Wasser in einem aufkommenden Mahlstrom herumwirbelt. Sie haben gerade den Fehler begangen, ihn zu wecken..."
     }
   }

@@ -1111,39 +1111,39 @@
       "name": "Nido congelato",
       "particle": "verso lo"
     },
-    "1108": {
-      "description": "Una spiaggia paradisiaca ricoperta di conchiglie di ogni colore. Si dice che ogni conchiglia contenga un'eco dell'oceano. La fine sabbia bianca contrasta con le acque turchesi della vicina laguna. Fate attenzione a dove mettete i piedi, alcune conchiglie sono affilate come lame.",
-      "name": "Spiaggia delle conchiglie",
+    "1200": {
+      "description": "Una spiaggia paradisiaca ricoperta di conchiglie di ogni colore. Si dice che ogni conchiglia custodisca al suo interno l'eco dell'oceano. La sabbia fine e bianca fa da contrasto alle acque turchesi della laguna vicina. Attenzione a dove mettete i piedi: alcune conchiglie sono affilate come lame.",
+      "name": "Spiaggia di conchiglie",
       "particle": "verso la"
     },
-    "1109": {
-      "description": "Una laguna blu cristallina protetta da una barriera corallina. Dietro la limpidezza delle onde, correnti subdole, nate dal battito dell'oceano, attendono la minima disattenzione per trascinare i dispersi verso l'abisso. In questo fragile ambiente marino, le tartarughe millenarie vengono a cercare il riposo che il tumulto del mare aperto nega loro.",
-      "name": "Creux du Lagon",
+    "1201": {
+      "description": "Una laguna dalle acque cristalline protetta da una barriera corallina. Dietro la limpidezza delle onde, correnti insidiose, generate dal battito dell'oceano, sono in agguato, pronte a trascinare verso l'abisso chiunque commetta la minima imprudenza. In questo fragile scrigno marino, le tartarughe millenarie vengono a cercare quel riposo che l'agitazione del mare aperto non concede loro.",
+      "name": "Fossa della Laguna",
       "particle": "verso lo"
     },
-    "1110": {
-      "description": "Una grotta marina che può essere conquistata solo con la bassa marea e che rivela una fossa calcarea con pareti gocciolanti. All'interno, bagliori eterei emergono dalla roccia, proiettando riflessi azzurri sulle volte. Tra le onde e le ombre, sagome di nebbia e schiuma danzano un balletto silenzioso, come se l'anima stessa del mare si fosse rifugiata in questo santuario.",
-      "name": "Grotta marina",
+    "1202": {
+      "description": "Una grotta marina che si lascia conquistare solo con la bassa marea, rivelando una bocca calcarea dalle pareti bagnate a filo d'acqua. All'interno, luci eteree nascono dalla roccia, proiettando riflessi azzurri sulle volte. Tra le onde e le ombre, sagome di nebbia e schiuma danzano un balletto muto, come se l'anima stessa del mare si fosse rifugiata in questo santuario.",
+      "name": "Caverna marina",
       "particle": "verso la"
     },
-    "1111": {
-      "description": "Un'insenatura appartata con scogliere come lame di granito nero, appena nascoste da un'onda spumeggiante che non si calma mai. Di notte, spettrali veggenti blu fluttuano sopra le onde come le anime di marinai perduti, eseguendo una danza macabra. Un'aura sinistra incombe su questo luogo maledetto.",
-      "name": "Il Codice del Revenant",
+    "1203": {
+      "description": "Una baia isolata che dispiega le sue scogliere come lame di granito nero, appena nascoste sotto una risacca schiumosa che non si placa mai. Di notte, fuochi fatui di un blu spettrale fluttuano sopra le onde come le anime dei marinai dispersi, danzando in una danza macabra. Un'aura sinistra aleggia su questo luogo maledetto.",
+      "name": "Baia dello Spirito",
       "particle": "verso la"
     },
-    "1112": {
-      "description": "Una cattedrale sottomarina scolpita per amplificare il respiro delle maree in un cuore ammaliante. Non è il vento, è il richiamo di una canzone melodiosa che parla direttamente alla vostra anima. In questa penombra sonora, il confine tra i propri pensieri e i mormorii della roccia svanisce dolcemente, e chi vi si sofferma non ne esce mai del tutto solo.",
-      "name": "Grotta dei Mormorii",
+    "1204": {
+      "description": "Una cattedrale sottomarina scolpita per amplificare il respiro delle maree in un cuore ammaliante. Non è il vento, è il richiamo di un canto melodioso che si rivolge direttamente alla vostra anima. In questa penombra sonora, il confine tra i vostri pensieri e i sussurri della roccia svanisce dolcemente, e chi vi indugia non ne esce mai del tutto solo.",
+      "name": "Cantina dei sussurri",
       "particle": "verso la"
     },
-    "1113": {
+    "1205": {
       "description": "Quando ci si avvicina alla riva, l'acqua diventa nera come l'inchiostro, uno specchio scuro che riflette solo la propria paura. Di tanto in tanto, un'increspatura sproporzionata rompe la superficie, il passaggio fugace di un tentacolo gigante che emerge dalle profondità prima di sprofondare nuovamente nell'oblio. Nessuno ha mai sondato il cuore di questa fossa, perché l'Abisso non accetta testimoni.",
-      "name": "Gouffre des Profondeurs",
+      "name": "Abisso delle Profondità",
       "particle": "verso lo"
     },
-    "1114": {
+    "1206": {
       "description": "Il punto più profondo di queste acque, una gola sottomarina che sprofonda nel buio più assoluto. Qui la pressione è tale che poche creature possono sopravvivere. Si dice che una bestia primordiale vi si sia assopita fin dall'alba dei tempi, custode dei più antichi segreti del mondo. Solo i più audaci osano avvicinarsi.",
-      "name": "Il burrone degli abissi",
+      "name": "Burrone degli Abissi",
       "particle": "verso lo"
     },
     "12": {
@@ -2263,22 +2263,22 @@
     "1107": {
       "femaleIceDragon": "Vi fate strada in questa regione inesplorata, guidati da curiosità mista ad apprensione. La parete di ghiaccio davanti a voi riflette una figura così imponente da sfidare l'immaginazione. Più ci si avvicina nel buio gelido, più ci si rende conto delle dimensioni della creatura nascosta dietro questa barriera. Improvvisamente, nel ghiaccio appaiono delle crepe che si allargano come ragnatele. Un ruggito sordo fa vibrare le pareti di roccia. La parete esplode con uno schianto apocalittico, scagliando enormi blocchi di ghiaccio. Attraverso questa cortina di cristalli frantumati emerge la più maestosa delle creature: un drago di ghiaccio di proporzioni faraoniche. La sua presenza sembra imponente, le sue ali ripiegate quasi toccano le volte di pietra. Ha una bellezza terrificante, le sue scaglie iridescenti catturano la debole luce in arcobaleni ghiacciati. I suoi occhi, di un blu profondo come l'abisso, brillano di antica saggezza e di furia materna. Dietro di lei si intravede un gigantesco uovo dalla lucentezza perlacea, che pulsa di un bagliore misterioso. Siete appena entrati nella sua nursery, e nessuna intrusione resterà impunita nel santuario della Regina dei Ghiacci..."
     },
-    "1109": {
+    "1201": {
       "turtle": "Si arriva in prossimità di una piscina naturale protetta da una barriera corallina. La calma del luogo vi incoraggia ad avvicinarvi per ammirare il fondale marino. Si nota poi un'imponente roccia ricoperta di alghe al centro della piscina. Improvvisamente, inizia a muoversi. Emerge una testa massiccia, seguita da quattro zampe colossali. Davanti a voi si erge una tartaruga gigante, le cui dimensioni sono pari a quelle di una piccola nave. I suoi grandi occhi vi fissano con saggezza ancestrale. Poi apre la bocca e un potente getto d'acqua vi sfiora, facendovi capire che questa tranquilla laguna è il suo territorio..."
     },
-    "1110": {
+    "1202": {
       "waterSpirit": "Si entra in una grotta marina durante la bassa marea. Strani echi risuonano nelle profondità e luci bluastre danzano nell'oscurità, attirandovi ancora di più. All'improvviso, l'acqua stagnante inizia a vorticare e miriadi di gocce sulle pareti convergono verso un punto centrale. Davanti a voi prende vita una forma traslucida, metà nebbia e metà acqua. Lo Spirito dei Mari vi fissa con i suoi abissali occhi blu. Prima che possiate reagire, scompare e riappare alle vostre spalle. Questo guardiano evanescente non vi lascerà lasciare il suo santuario così facilmente..."
     },
-    "1111": {
+    "1203": {
       "captainCrow": "La nebbia si addensa man mano che ci si avvicina alla Crique du Revenant. Il sole è tramontato da tempo e solo pochi spiragli illuminano il vostro cammino. Vi fate strada con cautela sui ciottoli bagnati, mentre il vostro sguardo cattura le carcasse di diverse navi sventrate, i cui scafi in decomposizione sono costantemente lambiti dal flusso e riflusso delle onde. All'improvviso, la nebbia si condensa in una forma umanoide a pochi metri di fronte a voi. Gli occhi appaiono, due braci incandescenti nel vuoto. Capitan Corvo, lo spettro del pirata più temuto dei mari, si materializza davanti a voi, con la sua spada che crepita di energia maledetta. Non ha ancora finito di reclamare anime."
     },
-    "1112": {
+    "1204": {
       "mermaid": "State esplorando una caverna sottomarina e più vi inoltrate, più sentite una melodia ammaliante. Le vostre gambe vi portano, vostro malgrado, verso la sua sorgente. Alla svolta di un passaggio, scoprite una vasca di acqua turchese. E lì, seduta su una roccia, vi aspetta lei. Metà donna e metà pesce, la Sirena vi osserva con occhi ipnotici. La sua bellezza è impressionante, ma il suo sorriso è straziante. Le sue chele affilate picchiettano sulla pietra, scandendo un ritmo sordo che si riverbera sulle pareti. Il suo canto cambia tonalità: non cerca più di sedurvi, ma di risuonare con la struttura stessa della caverna. È una trappola e si sta avvicinando a voi..."
     },
-    "1113": {
+    "1205": {
       "kraken": "Siete in piedi sull'orlo di un abisso oceanico e state fissando l'acqua nera come l'inchiostro. Nulla sembra muoversi in questo abisso senza fondo. Poi le bolle cominciano a salire in superficie. Prima poche, poi centinaia. L'acqua inizia a ribollire violentemente. All'improvviso, un enorme tentacolo irrompe dalle profondità, largo come un tronco d'albero. Poi un altro. E un altro ancora. Il Kraken emerge dalla sua tana, con gli occhi gialli che brillano di intelligenza malevola. Le sue ventose sbattono contro la roccia con una forza primordiale che frantuma le ossa. L'abisso è salito in superficie ed è affamato..."
     },
-    "1114": {
+    "1206": {
       "leviathan": "Scendete in una gola sottomarina dove non c'è più luce. L'oscurità vi avvolge, il silenzio è opprimente. Poi lo sentite prima di vederlo: una presenza titanica che emette una bassa vibrazione che scuote ogni osso del vostro corpo. Due pupille si aprono, larghe come scudi, di un blu elettrico che sfrigola nell'acqua nera. Il Leviatano si risveglia, dispiegandosi lentamente, le sue dimensioni sfidano l'immaginazione. I fulmini iniziano a crepitare tra le zanne, mentre l'acqua vortica in un vortice nascente. Avete appena commesso l'errore di svegliarlo..."
     }
   }
