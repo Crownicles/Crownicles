@@ -232,21 +232,14 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	const lng = interaction.userLanguage;
 	const isDm = !interaction.inGuild();
 
-	let skipHelpDm = false;
-	if (!askedCommand) {
-		generateGenericHelpMessage(helpMessage, interaction);
+	const aliasedCommand = askedCommand ? resolveAliasedCommand(askedCommand) : null;
+	const skipHelpDm = askedCommand !== null && aliasedCommand === null;
+
+	if (aliasedCommand) {
+		buildSpecificCommandEmbed(helpMessage, aliasedCommand, lng, interaction.userLanguage);
 	}
 	else {
-		const helpAlias = getCommandAliasMap();
-		const aliasedCommand = helpAlias.get(askedCommand.toLowerCase()
-			.replace(" ", ""));
-		if (!aliasedCommand) {
-			generateGenericHelpMessage(helpMessage, interaction);
-			skipHelpDm = true;
-		}
-		else {
-			buildSpecificCommandEmbed(helpMessage, aliasedCommand, lng, interaction.userLanguage);
-		}
+		generateGenericHelpMessage(helpMessage, interaction);
 	}
 
 	if (isDm) {
@@ -265,6 +258,14 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	}
 
 	return null;
+}
+
+/**
+ * Resolve an asked command name to a known command key via the alias map, or null if unknown.
+ */
+function resolveAliasedCommand(askedCommand: string): string | null {
+	return getCommandAliasMap().get(askedCommand.toLowerCase()
+		.replace(" ", "")) ?? null;
 }
 
 /**
