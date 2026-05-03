@@ -232,64 +232,32 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	const lng = interaction.userLanguage;
 	const isDm = !interaction.inGuild();
 
+	let skipHelpDm = false;
 	if (!askedCommand) {
 		generateGenericHelpMessage(helpMessage, interaction);
-		if (isDm) {
-			helpMessage.addFields([buildDmNoticeField(lng)]);
-		}
-		await interaction.reply({
-			embeds: [helpMessage]
-		});
 	}
 	else {
 		const helpAlias = getCommandAliasMap();
-		const command = helpAlias.get(askedCommand.toLowerCase()
+		const aliasedCommand = helpAlias.get(askedCommand.toLowerCase()
 			.replace(" ", ""));
-		if (!command) {
+		if (!aliasedCommand) {
 			generateGenericHelpMessage(helpMessage, interaction);
-			if (isDm) {
-				helpMessage.addFields([buildDmNoticeField(lng)]);
-			}
-			await interaction.reply({
-				embeds: [helpMessage]
-			});
-			return null;
+			skipHelpDm = true;
 		}
-
-		const commandMention = BotUtils.commandsMentions.get(HelpConstants.COMMANDS_DATA[command as keyof typeof HelpConstants.COMMANDS_DATA].NAME);
-		const commandMentionString: string = commandMention ? commandMention : i18n.t("error:commandDoesntExist", { lng });
-
-
-		if (command === "FIGHT") {
-			helpMessage.setImage(i18n.t("commands:help.commands.FIGHT.image", { lng }));
+		else {
+			buildSpecificCommandEmbed(helpMessage, aliasedCommand, lng, interaction.userLanguage);
 		}
-
-		helpMessage.setTitle(
-			i18n.t("commands:help.commandEmbedTitle", {
-				lng,
-				emote: HelpConstants.COMMANDS_DATA[command as keyof typeof HelpConstants.COMMANDS_DATA].EMOTE
-			})
-		)
-			.setDescription(i18n.t(`commands:help.commands.${command}.description`, {
-				lng: interaction.userLanguage,
-				petSellMinPrice: PetConstants.SELL_PRICE.MIN,
-				petSellMaxPrice: PetConstants.SELL_PRICE.MAX
-			}))
-			.addFields({
-				name: i18n.t("commands:help.usageFieldTitle", { lng }),
-				value: commandMentionString,
-				inline: true
-			});
-		if (isDm) {
-			helpMessage.addFields([buildDmNoticeField(lng)]);
-		}
-		await interaction.reply({
-			embeds: [helpMessage]
-		});
 	}
 
-	// Send help DM if the user is not in the main server (skipped when already in DM)
-	if (!isDm) {
+	if (isDm) {
+		helpMessage.addFields([buildDmNoticeField(lng)]);
+	}
+	await interaction.reply({
+		embeds: [helpMessage]
+	});
+
+	// Send help DM if the user is not in the main server (skipped when already in DM, in DM, or when the command was unknown)
+	if (!isDm && !skipHelpDm) {
 		const dmCooldown = dmHelpCooldowns.get(interaction.user.id);
 		if (!dmCooldown || dmCooldown && dmCooldown.valueOf() < Date.now()) {
 			sendHelpDm(interaction, lng);
@@ -297,6 +265,40 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	}
 
 	return null;
+}
+
+/**
+ * Build the embed body for a specific command help (title, description and usage field).
+ */
+function buildSpecificCommandEmbed(
+	helpMessage: CrowniclesEmbed,
+	command: string,
+	lng: Language,
+	userLanguage: Language
+): void {
+	const commandMention = BotUtils.commandsMentions.get(HelpConstants.COMMANDS_DATA[command as keyof typeof HelpConstants.COMMANDS_DATA].NAME);
+	const commandMentionString: string = commandMention ? commandMention : i18n.t("error:commandDoesntExist", { lng });
+
+	if (command === "FIGHT") {
+		helpMessage.setImage(i18n.t("commands:help.commands.FIGHT.image", { lng }));
+	}
+
+	helpMessage.setTitle(
+		i18n.t("commands:help.commandEmbedTitle", {
+			lng,
+			emote: HelpConstants.COMMANDS_DATA[command as keyof typeof HelpConstants.COMMANDS_DATA].EMOTE
+		})
+	)
+		.setDescription(i18n.t(`commands:help.commands.${command}.description`, {
+			lng: userLanguage,
+			petSellMinPrice: PetConstants.SELL_PRICE.MIN,
+			petSellMaxPrice: PetConstants.SELL_PRICE.MAX
+		}))
+		.addFields({
+			name: i18n.t("commands:help.usageFieldTitle", { lng }),
+			value: commandMentionString,
+			inline: true
+		});
 }
 
 /**
