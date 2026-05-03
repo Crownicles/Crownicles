@@ -245,14 +245,14 @@ export function getNextSaturdayMidnight(): Millisecond {
  * Check if the reset is being done currently
  */
 export function resetIsNow(): boolean {
-	return getNextSundayMidnight() - Date.now() <= minutesToMilliseconds(asMinutes(5));
+	return msDiff(getNextSundayMidnight(), nowMs()) <= minutesToMilliseconds(asMinutes(5));
 }
 
 /**
  * Check if the reset of the season end is being done currently
  */
 export function seasonEndIsNow(): boolean {
-	return getNextSaturdayMidnight() - Date.now() <= minutesToMilliseconds(asMinutes(20));
+	return msDiff(getNextSaturdayMidnight(), nowMs()) <= minutesToMilliseconds(asMinutes(20));
 }
 
 /**

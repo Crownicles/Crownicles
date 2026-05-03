@@ -8,9 +8,8 @@ import {
 	Op, Sequelize
 } from "sequelize";
 import {
-	minutesToMilliseconds
+	asDays, asWeeks, daysToMilliseconds, minutesToMilliseconds, weeksToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
-import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { MapCache } from "../maps/MapCache";
 import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
@@ -76,7 +75,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + TimeConstants.MS_TIME.DAY);
+		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(asDays(1)));
 
 		Crownicles.randomPotion()
 			.finally(() => null);
@@ -142,7 +141,7 @@ export class Crownicles {
 		 * so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date
 		 * (at 1 s max of difference)
 		 */
-		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + TimeConstants.MS_TIME.WEEK);
+		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + weeksToMilliseconds(asWeeks(1)));
 
 		crowniclesInstance?.logsDatabase.log15BestSeason()
 			.then();
@@ -262,7 +261,7 @@ export class Crownicles {
 		 *
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
-		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + TimeConstants.MS_TIME.WEEK);
+		await Settings.NEXT_WEEKLY_RESET.setValue(await Settings.NEXT_WEEKLY_RESET.getValue() + weeksToMilliseconds(asWeeks(1)));
 		Crownicles.topWeekEnd()
 			.then();
 		Crownicles.newPveIsland()
