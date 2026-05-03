@@ -1111,39 +1111,39 @@
       "name": "Ninho congelado",
       "particle": "para o"
     },
-    "1108": {
-      "description": "Uma praia paradisíaca coberta de conchas de todas as cores. Diz-se que cada concha contém um eco do oceano. A areia branca e fina contrasta com as águas azul-turquesa da lagoa próxima. Cuidado onde pisa, algumas conchas são tão afiadas como lâminas.",
-      "name": "Praia das conchas",
+    "1200": {
+      "description": "Une plage paradisiaque recouverte de coquillages de toutes les couleurs. On dit que chaque coquillage garde en lui l'écho de l'océan. Le sable fin et blanc contraste avec les eaux turquoise du lagon voisin. Attention où vous mettez les pieds, certains coquillages sont tranchants comme des lames.",
+      "name": "Plage de coquillage",
       "particle": "para o"
     },
-    "1109": {
-      "description": "Uma lagoa azul cristalina protegida por um recife de coral. Por detrás da limpidez das ondas, correntes tortuosas, nascidas do bater do oceano, aguardam o mais pequeno descuido para arrastar os perdidos em direção ao abismo. Neste frágil cenário marinho, as tartarugas milenares vêm procurar um descanso que a agitação do mar alto lhes nega.",
+    "1201": {
+      "description": "Un lagon aux eaux d'un bleu cristallin protégé par une barrière de corail. Derrière la limpidité de l'onde, des courants sournois, nés des battements de l'océan, guettent la moindre imprudence pour entraîner les égarés vers l'abysse. Dans ce fragile écrin marin, les tortues millénaires viennent chercher un repos que l'agitation du large leur refuse.",
       "name": "Creux du Lagon",
       "particle": "para o"
     },
-    "1110": {
-      "description": "Uma caverna marítima que só pode ser conquistada na maré baixa, revelando uma fossa calcária com paredes gotejantes. No interior, brilhos etéreos emergem da rocha, lançando reflexos azuis sobre as abóbadas. Entre as ondas e as sombras, silhuetas de névoa e espuma dançam um bailado silencioso, como se a alma do próprio mar se tivesse refugiado neste santuário.",
-      "name": "Caverna do mar",
+    "1202": {
+      "description": "Une grotte marine qui ne se laisse conquérir qu'à marée basse, révélant une gueule de calcaire aux parois ruisselantes. À l'intérieur, des lueurs éthérées naissent de la roche, jetant des reflets d'azur sur les voûtes. Entre les ondes et les ombres, des silhouettes de brume et d'écume dansent un ballet muet, comme si l'âme de la mer elle-même s'était réfugiée dans ce sanctuaire.",
+      "name": "Caverne Maritime",
       "particle": "para o"
     },
-    "1111": {
-      "description": "Uma enseada isolada com recifes que parecem lâminas de granito negro, mal escondidos por uma onda espumosa que nunca acalma. À noite, fantasmas azuis flutuam sobre as ondas como as almas de marinheiros perdidos, executando uma dança macabra. Uma aura sinistra paira sobre este lugar amaldiçoado.",
-      "name": "Crise do Vencimento",
+    "1203": {
+      "description": "Une crique isolée qui déploie ses récifs comme des lames de granit noir, à peine dissimulées sous un ressac écumeux qui ne s'apaise jamais. La nuit, des feux follets d'un bleu spectral flottent au-dessus des vagues comme les âmes de marins perdus, esquissant une danse macabre. Une aura sinistre plane sur ce lieu maudit.",
+      "name": "Crique du Revenant",
       "particle": "para o"
     },
-    "1112": {
-      "description": "Uma catedral subaquática esculpida para amplificar o sopro das marés num coração encantador. Não é o vento, é o apelo de uma canção melodiosa que fala diretamente à nossa alma. Nesta penumbra sónica, a fronteira entre os nossos próprios pensamentos e os murmúrios da rocha desvanece-se suavemente, e aqueles que aí permanecem nunca saem completamente sós.",
-      "name": "Gruta dos murmúrios",
+    "1204": {
+      "description": "Une cathédrale sous-marine sculptée pour amplifier le souffle des marées en un coeur envoûtant. Ce n'est pas le vent, c'est l'appel d'un chant mélodieux qui s'adresse directement à votre âme. Dans cette pénombre sonore, la frontière entre vos propres pensées et les murmures de la roche s'efface doucement, et ceux qui s'y attardent n'en ressortent jamais tout à fait seuls.",
+      "name": "Cave des murmures",
       "particle": "para o"
     },
-    "1113": {
-      "description": "À medida que se aproxima da margem, a água torna-se negra como tinta, um espelho escuro que reflecte apenas o seu próprio medo. Ocasionalmente, uma ondulação desproporcionada rompe a superfície, a passagem fugaz de um tentáculo gigante que se ergue das profundezas antes de se afundar de novo no esquecimento. Ninguém jamais sondou o coração desse poço, pois o Abismo não aceita testemunhas.",
+    "1205": {
+      "description": "À mesure que l'on s'approche du bord, l'eau vire au noir d'encre, un miroir sombre qui ne reflète que votre propre peur. Parfois, une ondulation démesurée brise la surface, passage fugace d'un tentacule géant qui remonte des tréfonds avant de replonger dans l'oubli. Nul n'a jamais sondé le coeur de cette fosse, car le Gouffre n'accepte aucun témoin.",
       "name": "Gouffre des Profondeurs",
       "particle": "para o"
     },
-    "1114": {
-      "description": "O ponto mais profundo destas águas, uma ravina submarina que mergulha na escuridão absoluta. A pressão aqui é tal que poucas criaturas conseguem sobreviver. Há rumores de que uma besta primordial dormiu lá desde o início dos tempos, guardiã dos segredos mais antigos do mundo. Apenas os mais ousados se atrevem a aproximar-se dela.",
-      "name": "Ravina dos Abismos",
+    "1206": {
+      "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
+      "name": "Ravin des Abysses",
       "particle": "para o"
     },
     "12": {
@@ -2263,23 +2263,23 @@
     "1107": {
       "femaleIceDragon": "Percorremos esta região inexplorada, guiados por uma curiosidade misturada com apreensão. A parede de gelo diante de ti reflecte uma figura tão imponente que desafia a imaginação. Quanto mais nos aproximamos na escuridão gelada, mais nos apercebemos da dimensão da criatura que se esconde por detrás desta barreira. De repente, surgem fendas no gelo, que se espalham como teias de aranha. Um rugido surdo faz vibrar as paredes rochosas. A parede explode com um estrondo apocalítico, atirando para o ar enormes blocos de gelo. Através desta cortina de cristais estilhaçados emerge a mais majestosa das criaturas: um dragão de gelo de proporções faraónicas. A sua presença parece imponente, as suas asas dobradas quase tocam as abóbadas de pedra. Tem uma beleza aterradora, as suas escamas iridescentes captam a luz ténue em arco-íris gelados. Os seus olhos, de um azul profundo como o abismo, brilham com sabedoria antiga e fúria maternal. Atrás dela, podes ver um ovo gigantesco com um brilho perolado, pulsando com um brilho misterioso. Acabaste de entrar no seu berçário, e nenhum intruso ficará impune no santuário da Rainha do Gelo..."
     },
-    "1109": {
-      "turtle": "Chega-se perto de uma piscina natural protegida por um recife de coral. A calma do local incita-o a aproximar-se para admirar o fundo do mar. Repara então numa imponente rocha coberta de algas no centro da piscina. De repente, começa a mexer-se. Surge uma cabeça enorme, seguida de quatro patas colossais. Uma tartaruga gigante surge diante de ti, com um tamanho equivalente ao de um pequeno navio. Os seus grandes olhos fitam-te com uma sabedoria ancestral. Depois abre a boca e um poderoso jato de água roça em ti, fazendo-te saber que esta lagoa pacífica é o seu território..."
+    "1201": {
+      "turtle": "Vous arrivez près d'un bassin naturel protégé par une barrière de corail. Le calme du lieu vous incite à vous approcher pour admirer les fonds marins. Vous remarquez alors un rocher imposant recouvert d'algues au centre du bassin. Soudain, il se met en mouvement. Une tête massive en émerge, suivie de quatre pattes colossales. Une Tortue Géante se dresse devant vous, sa taille rivalisant avec celle d'un petit navire. Ses grands yeux vous fixent avec une sagesse ancestrale. Puis elle ouvre sa gueule et un puissant jet d'eau vous frôle, vous faisant comprendre que ce paisible lagon est son territoire..."
     },
-    "1110": {
-      "waterSpirit": "Entramos numa gruta marítima na maré baixa. Ecos estranhos ecoam nas profundezas e luzes azuladas dançam na escuridão, atraindo-o ainda mais para dentro. De repente, a água estagnada começa a rodopiar e miríades de gotículas nas paredes convergem para um ponto central. Uma forma translúcida ganha vida à tua frente, metade névoa, metade água. O Espírito dos Mares olha para ti com os seus olhos azuis abismais. Antes que possas reagir, ele desaparece e reaparece nas tuas costas. Este guardião evanescente não te vai deixar sair do seu santuário tão facilmente..."
+    "1202": {
+      "waterSpirit": "Vous pénétrez dans une grotte marine à marée basse. D'étranges échos résonnent dans les profondeurs et des lueurs bleutées dansent dans l'obscurité, vous attirant plus loin. Soudain, l'eau stagnante se met à tourbillonner et des myriades de gouttelettes sur les parois convergent vers ce point central. Une forme translucide prend vie devant vous, mi-brume mi-eau. L'Esprit des mers vous fixe de ses yeux d'un bleu abyssal. Avant que vous ne puissiez réagir, il disparaît et réapparaît dans votre dos. Ce gardien évanescent ne vous laissera pas quitter son sanctuaire si facilement..."
     },
-    "1111": {
-      "captainCrow": "O nevoeiro adensa-se à medida que nos aproximamos da Crique du Revenant. O sol já se pôs há muito tempo e apenas alguns vapores iluminam o vosso caminho. Avançam cautelosamente sobre os seixos molhados, enquanto o vosso olhar capta as carcaças de vários navios esventrados, com os seus cascos apodrecidos a serem constantemente banhados pelo fluxo e refluxo das ondas. De repente, a névoa condensa-se numa forma humanoide alguns metros à vossa frente. Os olhos aparecem, duas brasas incandescentes no vazio. O Capitão Corvo, o espetro do pirata mais temido dos mares, materializa-se à tua frente, com a sua espada a crepitar de energia amaldiçoada. Ele ainda não acabou de reclamar almas."
+    "1203": {
+      "captainCrow": "La brume s'épaissit à mesure que vous approchez de la Crique du Revenant. Le soleil s'est couché depuis longtemps et seuls des feux follets éclairent votre chemin. Vous avancez prudemment sur les galets mouillés tandis que votre regard accroche les carcasses de plusieurs navires éventrés, leurs coques pourries sans cesse léchées par le flux et le reflux des vagues. Tout à coup, la brume se condense en une forme humanoïde à quelques mètres devant vous. Des yeux se dessinent, deux braises rougeoyantes dans le néant. Le Capitaine Crow, spectre du pirate le plus redouté des mers, matérialise sa silhouette devant vous, son sabre crépitant d'une énergie maudite. Il n'a pas fini de réclamer des âmes."
     },
-    "1112": {
-      "mermaid": "Estás a explorar uma caverna subaquática e quanto mais avanças, mais ouves uma melodia assombrosa. Apesar de tudo, as tuas pernas levam-te até à sua origem. Ao virar de uma passagem, descobres uma piscina de água azul-turquesa. E ali, sentada numa rocha, ela espera por si. Metade mulher, metade peixe, a sereia observa-te com olhos hipnóticos. A sua beleza é impressionante, mas o seu sorriso é de gelar o sangue. As suas garras afiadas batem na pedra, marcando um ritmo monótono que reverbera contra as paredes. A sua canção muda de tom: já não procura seduzir-te, mas ressoar com a própria estrutura da caverna. É uma armadilha, e está a aproximar-se de ti..."
+    "1204": {
+      "mermaid": "Vous explorez une caverne sous-marine et plus vous avancez, plus vous percevez une mélodie envoûtante. Vos jambes vous portent malgré vous vers sa source. Au détour d'un passage, vous découvrez un bassin d'eau turquoise. Et là, assise sur un rocher, elle vous attend. Mi-femme mi-poisson, la Sirène vous observe de ses yeux hypnotiques. Sa beauté est saisissante, mais son sourire vous glace le sang. Ses griffes acérées tapotent la pierre, marquant une mesure sourde qui se répercute contre les parois. Son chant change de tonalité : il ne cherche plus à vous séduire, mais à entrer en résonance avec la structure même de la caverne. C'est un piège, et il se referme sur vous..."
     },
-    "1113": {
-      "kraken": "Estás à beira de um abismo oceânico, a olhar para a água negra e escura. Nada parece mover-se neste abismo sem fundo. Então as bolhas começam a subir à superfície. Primeiro algumas, depois centenas. A água começa a borbulhar violentamente. De repente, um enorme tentáculo irrompe das profundezas, tão largo como um tronco de árvore. Depois outro. E mais outro. O Kraken emerge do seu covil, os seus olhos amarelos brilham com uma inteligência malévola. As suas ventosas batem contra a rocha com uma força primordial e esmagadora de ossos. O abismo subiu à superfície e está esfomeado..."
+    "1205": {
+      "kraken": "Vous vous tenez au bord d'un gouffre marin, scrutant les eaux d'un noir d'encre. Rien ne semble bouger dans cet abîme sans fond. Puis des bulles commencent à remonter à la surface. D'abord quelques-unes, puis des centaines. L'eau se met à bouillonner violemment. Soudain, un tentacule massif jaillit des profondeurs, aussi large qu'un tronc d'arbre. Puis un autre. Et encore un autre. Le Kraken émerge de son antre, ses yeux jaunes luisant d'une intelligence malveillante. Ses ventouses claquent contre la roche avec une force capable de broyer les os, une force primordiale. L'abysse est remonté à la surface, et il a faim..."
     },
-    "1114": {
-      "leviathan": "Desces a uma ravina submarina onde já não há luz. A escuridão envolve-te, o silêncio é opressivo. Depois, sente-o antes de o ver: uma presença titânica que emite uma vibração baixa que faz tremer todos os ossos do seu corpo. Duas pupilas abrem-se, tão largas como escudos, de um azul elétrico que brilha na água negra. O Leviatã desperta, desdobrando-se lentamente, com um tamanho que desafia qualquer crença. Um relâmpago começa a crepitar entre as suas presas enquanto a água se agita num turbilhão nascente. Acabaste de cometer o erro de o acordar..."
+    "1206": {
+      "leviathan": "Vous descendez dans un ravin sous-marin où la lumière n'a plus cours. Les ténèbres vous enveloppent, le silence est oppressant. Puis vous la sentez avant de la voir : une présence titanesque émettant une vibration basse qui fait trembler tous vos os. Deux pupilles s'ouvrent, larges comme des boucliers, d'un bleu électrique qui grésille dans l'eau noire. Le Léviathan s'éveille, il se déploie lentement, sa taille défiant l'entendement. Des éclairs commencent à crépiter entre ses crocs tandis que l'eau tourbillonne en un maelström naissant. Vous venez de commettre l'erreur de le réveiller..."
     }
   }
 }
