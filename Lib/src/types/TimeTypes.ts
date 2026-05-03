@@ -17,6 +17,12 @@ export type Hour = number & { readonly __brand: "Hour" };
 export type Day = number & { readonly __brand: "Day" };
 
 /**
+ * Branded type for values representing weeks.
+ * Use `asWeeks()` to create from a raw number.
+ */
+export type Week = number & { readonly __brand: "Week" };
+
+/**
  * Branded type for values representing seconds.
  * Use `asSeconds()` to create from a raw number.
  */
@@ -47,6 +53,13 @@ export function asHours(n: number): Hour {
  */
 export function asDays(n: number): Day {
 	return n as Day;
+}
+
+/**
+ * Cast a raw number as a Week value
+ */
+export function asWeeks(n: number): Week {
+	return n as Week;
 }
 
 /**

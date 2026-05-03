@@ -3,14 +3,14 @@ import {
 	TimeConstants
 } from "../constants/TimeConstants";
 import {
-	asHours, asMilliseconds, asMinutes, Day, dateToMs, Hour, Millisecond, Minute, msDiff, nowMs, Second
+	asMilliseconds, asMinutes, asWeeks, Day, dateToMs, Hour, Millisecond, Minute, msDiff, nowMs, Second, Week
 } from "../types/TimeTypes";
 
 export {
-	asMilliseconds, asMinutes, asHours, asDays, asSeconds, dateToMs, msDiff, sDiff, nowMs
+	asMilliseconds, asMinutes, asHours, asDays, asSeconds, asWeeks, dateToMs, msDiff, sDiff, nowMs
 } from "../types/TimeTypes";
 export type {
-	Millisecond, Second, Minute, Hour, Day
+	Millisecond, Second, Minute, Hour, Day, Week
 } from "../types/TimeTypes";
 
 /**
@@ -128,6 +128,14 @@ export function daysToMilliseconds(days: Day): Millisecond {
 }
 
 /**
+ * Convert weeks to milliseconds
+ * @param weeks
+ */
+export function weeksToMilliseconds(weeks: Week): Millisecond {
+	return weeks * TimeConstants.MS_TIME.WEEK as Millisecond;
+}
+
+/**
  * Convert milliseconds to days
  * @param milliseconds
  */
@@ -198,7 +206,7 @@ export function getNextSundayMidnight(): Millisecond {
 	dateOfReset.setHours(23, 59, 59, 999);
 	let dateOfResetTimestamp = dateOfReset.valueOf();
 	while (dateOfResetTimestamp < now.valueOf()) {
-		dateOfResetTimestamp += hoursToMilliseconds(asHours(24 * 7));
+		dateOfResetTimestamp += weeksToMilliseconds(asWeeks(1));
 	}
 	return asMilliseconds(dateOfResetTimestamp);
 }
@@ -228,7 +236,7 @@ export function getNextSaturdayMidnight(): Millisecond {
 	dateOfReset.setHours(23, 59, 59, 999);
 	let dateOfResetTimestamp = dateOfReset.valueOf();
 	while (dateOfResetTimestamp < now.valueOf()) {
-		dateOfResetTimestamp += TimeConstants.MS_TIME.DAY * TimeConstants.DAYS_IN_WEEK;
+		dateOfResetTimestamp += weeksToMilliseconds(asWeeks(1));
 	}
 	return asMilliseconds(dateOfResetTimestamp);
 }

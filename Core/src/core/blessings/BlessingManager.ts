@@ -534,8 +534,7 @@ export class BlessingManager {
 			return;
 		}
 
-		const durationHours = FORCED_BLESSING_DURATION_HOURS;
-		const blessingEnd = new Date(nowMs() + hoursToMilliseconds(durationHours));
+		const blessingEnd = new Date(nowMs() + hoursToMilliseconds(FORCED_BLESSING_DURATION_HOURS));
 
 		this.contributionsTracker.clear();
 		this.cachedBlessing.activeBlessingType = type;
@@ -550,7 +549,7 @@ export class BlessingManager {
 			makePacket(BlessingAnnouncementPacket, {
 				blessingType: type,
 				triggeredByKeycloakId: keycloakId,
-				durationHours,
+				durationHours: FORCED_BLESSING_DURATION_HOURS,
 				topContributorKeycloakId: keycloakId,
 				topContributorAmount: 0,
 				totalContributors: 0
