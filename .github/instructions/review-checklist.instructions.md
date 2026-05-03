@@ -78,6 +78,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Remove unused imports, variables, and functions** — don't leave commented-out code or unreachable paths
 - [ ] **Remove useless wrapper functions** — if a function only forwards to another with the exact same arguments and adds no logic, remove the wrapper and call the target directly
 - [ ] **No useless constant aliases** — don't create a local alias for an imported constant that adds no semantic value (e.g., `const RECIPES = CookingConstants.RECIPES;`); use the original directly
+- [ ] **No pass-through local variables** — don't assign a constant (or any value that doesn't depend on local context/computation) to a local variable just to reference it 1–N times. Inline the constant at every call site instead. Only keep a local binding when it is the result of a non-trivial computation, a renamed/narrowed value, or genuinely improves readability of a long expression.
 - [ ] **Update related comments** when code changes — don't leave outdated "TODO" or "Future features" comments
 - [ ] **Remove default cases that are unreachable** — if a switch exhausts all enum values, the default clause is dead code (or use it for the last case)
 

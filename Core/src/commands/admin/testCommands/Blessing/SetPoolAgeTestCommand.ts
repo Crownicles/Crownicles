@@ -3,7 +3,7 @@ import {
 } from "../../../../core/CommandsTest";
 import { BlessingManager } from "../../../../core/blessings/BlessingManager";
 import {
-	hoursToMilliseconds, millisecondsToHours
+	asHours, dateToMs, hoursToMilliseconds, millisecondsToHours, msDiff, nowMs
 } from "../../../../../../Lib/src/utils/TimeUtils";
 
 export const commandInfo: ITestCommand = {
@@ -25,10 +25,10 @@ const setPoolAgeTestCommand: ExecuteTestCommandLike = async (_player, args) => {
 	}
 
 	const blessingManager = BlessingManager.getInstance();
-	const newStartDate = new Date(Date.now() - hoursToMilliseconds(hours));
+	const newStartDate = new Date(Date.now() - hoursToMilliseconds(asHours(hours)));
 	await blessingManager.forceSetPoolStartedAt(newStartDate);
 
-	const actualAgeHours = Math.round(millisecondsToHours(Date.now() - newStartDate.getTime()) * 100) / 100;
+	const actualAgeHours = Math.round(millisecondsToHours(msDiff(nowMs(), dateToMs(newStartDate))) * 100) / 100;
 
 	return `Date de début de la cagnotte reculée de ${hours}h.\nNouvelle date : ${newStartDate.toISOString()}\nÂge effectif : ${actualAgeHours}h\nCagnotte : ${blessingManager.getPoolAmount()} / ${blessingManager.getPoolThreshold()}`;
 };

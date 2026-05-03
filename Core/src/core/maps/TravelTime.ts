@@ -1,6 +1,6 @@
 import Player from "../database/game/models/Player";
 import {
-	millisecondsToMinutes, minutesToMilliseconds
+	asMilliseconds, asMinutes, Millisecond, millisecondsToMinutes, minutesToMilliseconds, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { Maps } from "./Maps";
@@ -49,14 +49,14 @@ export abstract class TravelTime {
 	 * @param date
 	 */
 	static async getTravelData(player: Player, date: Date): Promise<{
-		travelStartTime: number;
-		travelEndTime: number;
-		effectStartTime: number;
-		effectEndTime: number;
-		effectDuration: number;
-		effectRemainingTime: number;
-		playerTravelledTime: number;
-		nextSmallEventTime: number;
+		travelStartTime: Millisecond;
+		travelEndTime: Millisecond;
+		effectStartTime: Millisecond;
+		effectEndTime: Millisecond;
+		effectDuration: Millisecond;
+		effectRemainingTime: Millisecond;
+		playerTravelledTime: Millisecond;
+		nextSmallEventTime: Millisecond;
 	}> {
 		const data = this.getTravelDataSimplified(player, date);
 
@@ -64,11 +64,11 @@ export abstract class TravelTime {
 		const timeBetweenSmallEvents = Maps.isOnPveIsland(player) ? PVEConstants.TIME_BETWEEN_SMALL_EVENTS : Constants.REPORT.TIME_BETWEEN_MINI_EVENTS;
 
 		// The next small event in 9min45 after the last thing that happened between the last start of the travel, small event (if there's one since the start of the travel) and end of alteration
-		const nextSmallEventTime = Math.max(
+		const nextSmallEventTime = asMilliseconds(Math.max(
 			data.travelStartTime,
 			lastSmallEvent ? lastSmallEvent.time : -1,
 			data.effectEndTime
-		) + timeBetweenSmallEvents;
+		) + timeBetweenSmallEvents);
 
 		return {
 			travelStartTime: data.travelStartTime,
@@ -89,18 +89,18 @@ export abstract class TravelTime {
 	 * @param date
 	 */
 	static getTravelDataSimplified(player: Player, date: Date): {
-		travelStartTime: number;
-		travelEndTime: number;
-		effectStartTime: number;
-		effectEndTime: number;
-		effectDuration: number;
-		effectRemainingTime: number;
-		playerTravelledTime: number;
+		travelStartTime: Millisecond;
+		travelEndTime: Millisecond;
+		effectStartTime: Millisecond;
+		effectEndTime: Millisecond;
+		effectDuration: Millisecond;
+		effectRemainingTime: Millisecond;
+		playerTravelledTime: Millisecond;
 	} {
 		// Basic variables
 		const travelStartTime = player.startTravelDate.valueOf();
 		let effectEndTime = player.effectEndDate.valueOf();
-		let effectDuration = minutesToMilliseconds(player.effectDuration);
+		let effectDuration = minutesToMilliseconds(asMinutes(player.effectDuration));
 
 		// Check to avoid errors. If the effect is before the travel starts, move it to the beginning of the start travel
 		if (effectEndTime < travelStartTime) {
@@ -112,12 +112,12 @@ export abstract class TravelTime {
 		 * At the start of the travel
 		 */
 		if (effectEndTime - effectDuration < travelStartTime) {
-			effectDuration = effectEndTime - travelStartTime;
+			effectDuration = asMilliseconds(effectEndTime - travelStartTime);
 		}
 
 		// Basic variables
 		const effectStartTime = effectEndTime - effectDuration;
-		const tripDuration = minutesToMilliseconds(MapLinkDataController.instance.getById(player.mapLinkId)!.tripDuration);
+		const tripDuration = minutesToMilliseconds(asMinutes(MapLinkDataController.instance.getById(player.mapLinkId)!.tripDuration));
 		const travelEndTime = travelStartTime + effectDuration + tripDuration;
 		let effectRemainingTime = effectEndTime - date.valueOf();
 		if (effectRemainingTime < 0) {
@@ -134,14 +134,53 @@ export abstract class TravelTime {
 		}
 
 		return {
-			travelStartTime,
-			travelEndTime,
-			effectStartTime,
-			effectEndTime,
+			travelStartTime: asMilliseconds(travelStartTime),
+			travelEndTime: asMilliseconds(travelEndTime),
+			effectStartTime: asMilliseconds(effectStartTime),
+			effectEndTime: asMilliseconds(effectEndTime),
 			effectDuration,
-			effectRemainingTime,
-			playerTravelledTime
+			effectRemainingTime: asMilliseconds(effectRemainingTime),
+			playerTravelledTime: asMilliseconds(playerTravelledTime)
 		};
+	}
+
+	/**
+	 * Move travel-related timers by a duration expressed in milliseconds.
+	 *
+	 * @param player The player
+	 * @param timeMs The time in milliseconds in the future (negative for the past)
+	 * @param loggedTime The time in minutes to log
+	 * @param reason The reason of the time travel
+	 */
+	private static async applyTimeTravel(player: Player, timeMs: Millisecond, loggedTime: number, reason: NumberChangeReason): Promise<void> {
+		let adjustedTimeMs = timeMs;
+		const initialEffectEndDate = player.effectEndDate.valueOf();
+		const currentTime = nowMs();
+
+		// Move the end date of the effect
+		player.effectEndDate = new Date(Math.max(player.effectEndDate.valueOf() - adjustedTimeMs, 0));
+
+		// Move the start date
+		player.startTravelDate = new Date(Math.max(player.startTravelDate.valueOf() - adjustedTimeMs, 0));
+
+		// If the effect is not active anymore and was active before
+		if ((player.effectEndDate.valueOf() < currentTime) && (initialEffectEndDate > currentTime)) {
+			// We only want to move the start travel date by the amount of the time travel
+			adjustedTimeMs = asMilliseconds(currentTime - player.effectEndDate.valueOf());
+		}
+
+		if (currentTime > player.effectEndDate.valueOf()) {
+			// Move the last small event
+			const lastSmallEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
+			if (lastSmallEvent) {
+				lastSmallEvent.time -= adjustedTimeMs;
+				await lastSmallEvent.save();
+			}
+		}
+
+		// Log
+		crowniclesInstance?.logsDatabase.logTimeWarp(player.keycloakId, loggedTime, reason)
+			.then();
 	}
 
 	/**
@@ -152,36 +191,22 @@ export abstract class TravelTime {
 	 * @param player The player
 	 * @param time The time in minutes in the future (negative for the past)
 	 * @param reason The reason of the time travel
-	 * @param isMilliseconds
 	 */
-	static async timeTravel(player: Player, time: number, reason: NumberChangeReason, isMilliseconds = false): Promise<void> {
-		let timeMs = isMilliseconds ? time : minutesToMilliseconds(time);
-		const initialEffectEndDate = player.effectEndDate.valueOf();
+	static async timeTravel(player: Player, time: number, reason: NumberChangeReason): Promise<void> {
+		await TravelTime.applyTimeTravel(player, minutesToMilliseconds(asMinutes(time)), time, reason);
+	}
 
-		// Move the end date of the effect
-		player.effectEndDate = new Date(Math.max(player.effectEndDate.valueOf() - timeMs, 0));
-
-		// Move the start date
-		player.startTravelDate = new Date(Math.max(player.startTravelDate.valueOf() - timeMs, 0));
-
-		// If the effect is not active anymore and was active before
-		if ((player.effectEndDate.valueOf() < Date.now()) && (initialEffectEndDate > Date.now())) {
-			// We only want to move the start travel date by the amount of the time travel
-			timeMs = Date.now() - player.effectEndDate.valueOf();
-		}
-
-		if (Date.now() > player.effectEndDate.valueOf()) {
-			// Move the last small event
-			const lastSmallEvent = await PlayerSmallEvents.getLastOfPlayer(player.id);
-			if (lastSmallEvent) {
-				lastSmallEvent.time -= timeMs;
-				await lastSmallEvent.save();
-			}
-		}
-
-		// Log
-		crowniclesInstance?.logsDatabase.logTimeWarp(player.keycloakId, isMilliseconds ? millisecondsToMinutes(time) : time, reason)
-			.then();
+	/**
+	 * Make a player execute a time travel in milliseconds
+	 * Basically, all the variables are moved to the left (future positive time) or right (past, negative time)
+	 * See the schema at the beginning of the file
+	 *
+	 * @param player The player
+	 * @param time The time in milliseconds in the future (negative for the past)
+	 * @param reason The reason of the time travel
+	 */
+	static async timeTravelMilliseconds(player: Player, time: Millisecond, reason: NumberChangeReason): Promise<void> {
+		await TravelTime.applyTimeTravel(player, time, millisecondsToMinutes(time), reason);
 	}
 
 	/**
@@ -191,10 +216,10 @@ export abstract class TravelTime {
 	 */
 	static async removeEffect(player: Player, reason: NumberChangeReason): Promise<void> {
 		// Make the player time travel to the end of the effect
-		await TravelTime.timeTravel(player, player.effectRemainingTime(), reason, true);
+		await TravelTime.timeTravelMilliseconds(player, player.effectRemainingTime(), reason);
 
 		// Move the start of the travel because the effect will have a duration of 0
-		player.startTravelDate = new Date(player.startTravelDate.valueOf() + minutesToMilliseconds(player.effectDuration));
+		player.startTravelDate = new Date(player.startTravelDate.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)));
 
 		// Now we can safely remove the effect, as the player is after the effect
 		player.effectId = Effect.NO_EFFECT.id;
@@ -244,7 +269,7 @@ export abstract class TravelTime {
 		else {
 			player.effectDuration = effect.timeMinutes;
 		}
-		player.effectEndDate = new Date(date.valueOf() + minutesToMilliseconds(player.effectDuration));
+		player.effectEndDate = new Date(date.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)));
 
 		// Save and log
 		await player.save();
@@ -254,10 +279,11 @@ export abstract class TravelTime {
 
 	/**
 	 * Calculates a score based on the time traveled
-	 * @param time - time must be in minutes
+	 * @param time - time must be in milliseconds
 	 */
-	static timeTravelledToScore(time: number): number {
-		const score = time + RandomUtils.crowniclesRandom.integer(0, time / Constants.REPORT.BONUS_POINT_TIME_DIVIDER);
+	static timeTravelledToScore(time: Millisecond): number {
+		const timeMinutes = millisecondsToMinutes(time);
+		const score = timeMinutes + RandomUtils.crowniclesRandom.integer(0, timeMinutes / Constants.REPORT.BONUS_POINT_TIME_DIVIDER);
 		return score > 0 ? score : 0; // Return 0 if the score is negative
 	}
 
@@ -267,7 +293,7 @@ export abstract class TravelTime {
 	 */
 	static async joinBoatScore(player: Player): Promise<number> {
 		const travelData = TravelTime.getTravelDataSimplified(player, new Date());
-		let timeTravelled = millisecondsToMinutes(travelData.playerTravelledTime); // Convert the time in minutes to calculate the score
+		const timeTravelled = travelData.playerTravelledTime;
 
 		// Calculate score from small event
 		let scoreFromSmallEvent = 0;
@@ -279,11 +305,11 @@ export abstract class TravelTime {
 		if (timeTravelled >= Constants.JOIN_BOAT.TIME_TRAVELLED_ONE_HOUR) {
 			scoreFromSmallEvent = await PlayerSmallEvents.calculateCurrentScore(player);
 		}
-
-		timeTravelled -= Constants.JOIN_BOAT.TIME_TRAVELLED_SUBTRAHEND;
-		if (timeTravelled > ReportConstants.TIME_LIMIT) {
-			timeTravelled = ReportConstants.TIME_LIMIT;
+		let adjustedTravelTime = asMilliseconds(Math.max(timeTravelled - Constants.JOIN_BOAT.TIME_TRAVELLED_SUBTRAHEND, 0));
+		const maxTravelTime = minutesToMilliseconds(ReportConstants.TIME_LIMIT);
+		if (adjustedTravelTime > maxTravelTime) {
+			adjustedTravelTime = maxTravelTime;
 		}
-		return TravelTime.timeTravelledToScore(timeTravelled) + scoreFromSmallEvent;
+		return TravelTime.timeTravelledToScore(adjustedTravelTime) + scoreFromSmallEvent;
 	}
 }

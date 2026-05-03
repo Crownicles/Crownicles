@@ -17,6 +17,9 @@ import {
 } from "sequelize";
 import { FightConstants } from "../../../../../Lib/src/constants/FightConstants";
 import { PlayerBadgesManager } from "../../database/game/models/PlayerBadges";
+import {
+	asWeeks, weeksToMilliseconds
+} from "../../../../../Lib/src/utils/TimeUtils";
 
 export class CrowniclesSunday {
 	public static async programCronJob(): Promise<void> {
@@ -38,7 +41,7 @@ export class CrowniclesSunday {
 		 * so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date
 		 * (at 1 s max of difference)
 		 */
-		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + 7 * 24 * 60 * 60 * 1000);
+		await Settings.NEXT_SEASON_RESET.setValue(await Settings.NEXT_SEASON_RESET.getValue() + weeksToMilliseconds(asWeeks(1)));
 
 		crowniclesInstance?.logsDatabase.log15BestSeason()
 			.then();

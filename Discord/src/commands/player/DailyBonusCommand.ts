@@ -12,7 +12,7 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import i18n from "../../translations/i18n";
 import {
-	hoursToMilliseconds, printTimeBeforeDate
+	asHours, hoursToMilliseconds, printTimeBeforeDate
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
@@ -65,7 +65,7 @@ export async function handleDailyBonusCooldownError(context: PacketContext, last
 				interaction,
 				i18n.t("commands:daily.errors.cooldown", {
 					cooldownTime,
-					time: printTimeBeforeDate(lastDailyTimestamp + hoursToMilliseconds(cooldownTime)),
+					time: printTimeBeforeDate(lastDailyTimestamp + hoursToMilliseconds(asHours(cooldownTime))),
 					lng: interaction.userLanguage
 				})
 			)

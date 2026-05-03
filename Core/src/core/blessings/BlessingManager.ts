@@ -15,8 +15,11 @@ import {
 	botConfig, crowniclesInstance
 } from "../../index";
 import {
-	datesAreOnSameDay, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds
+	datesAreOnSameDay, dateToMs, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds, msDiff, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asHours, asMinutes
+} from "../../../../Lib/src/types/TimeTypes";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { Op } from "sequelize";
 import { DailyMissions } from "../database/game/models/DailyMission";
@@ -24,6 +27,8 @@ import { Constants } from "../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { Players } from "../database/game/models/Player";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+
+const FORCED_BLESSING_DURATION_HOURS = asHours(12);
 
 /**
  * Singleton manager for global blessing state.
@@ -68,7 +73,7 @@ export class BlessingManager {
 			this.checkForExpiredBlessing()
 				.then(() => this.checkForExpiredPool())
 				.catch(e => CrowniclesLogger.errorWithObj("Error in blessing expiry check", e));
-		}, minutesToMilliseconds(5));
+		}, minutesToMilliseconds(asMinutes(5)));
 	}
 
 	/**
@@ -137,7 +142,7 @@ export class BlessingManager {
 	 */
 	getPoolExpiresAt(): Date {
 		const startedAt = this.cachedBlessing?.poolStartedAt ?? new Date();
-		return new Date(startedAt.getTime() + daysToMilliseconds(BlessingConstants.POOL_EXPIRY_DAYS));
+		return new Date(dateToMs(startedAt) + daysToMilliseconds(BlessingConstants.POOL_EXPIRY_DAYS));
 	}
 
 	/**
@@ -215,7 +220,7 @@ export class BlessingManager {
 	 */
 	private async triggerBlessing(triggeredByKeycloakId: string): Promise<void> {
 		const blessingType = RandomUtils.randInt(1, BlessingConstants.TOTAL_BLESSING_TYPES + 1) as BlessingType;
-		let durationHours = RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1);
+		let durationHours = asHours(RandomUtils.randInt(BlessingConstants.MIN_DURATION_HOURS, BlessingConstants.MAX_DURATION_HOURS + 1));
 		let blessingEnd = new Date(Date.now() + hoursToMilliseconds(durationHours));
 
 		// Daily mission blessing must not span across two days to prevent doubling two different daily missions
@@ -223,7 +228,7 @@ export class BlessingManager {
 			const endOfToday = getTomorrowMidnight();
 			if (blessingEnd > endOfToday) {
 				blessingEnd = endOfToday;
-				durationHours = Math.max(1, Math.floor(millisecondsToHours(endOfToday.getTime() - Date.now())));
+				durationHours = asHours(Math.max(1, Math.floor(millisecondsToHours(msDiff(dateToMs(endOfToday), nowMs())))));
 			}
 		}
 
@@ -233,7 +238,7 @@ export class BlessingManager {
 
 		// Calculate new threshold using dynamic pricing
 		const currentThreshold = this.cachedBlessing!.poolThreshold;
-		const fillDurationMs = Date.now() - this.cachedBlessing!.poolStartedAt.getTime();
+		const fillDurationMs = msDiff(nowMs(), dateToMs(this.cachedBlessing!.poolStartedAt));
 		const fillDurationDays = millisecondsToDays(fillDurationMs);
 		const newThreshold = this.calculateNewThreshold(currentThreshold, fillDurationDays);
 
@@ -350,7 +355,7 @@ export class BlessingManager {
 			return;
 		}
 
-		const poolAgeDays = millisecondsToDays(Date.now() - this.cachedBlessing.poolStartedAt.getTime());
+		const poolAgeDays = millisecondsToDays(msDiff(nowMs(), dateToMs(this.cachedBlessing.poolStartedAt)));
 		if (poolAgeDays < BlessingConstants.POOL_EXPIRY_DAYS) {
 			return;
 		}
@@ -529,8 +534,7 @@ export class BlessingManager {
 			return;
 		}
 
-		const durationHours = 12;
-		const blessingEnd = new Date(Date.now() + hoursToMilliseconds(durationHours));
+		const blessingEnd = new Date(nowMs() + hoursToMilliseconds(FORCED_BLESSING_DURATION_HOURS));
 
 		this.contributionsTracker.clear();
 		this.cachedBlessing.activeBlessingType = type;
@@ -545,7 +549,7 @@ export class BlessingManager {
 			makePacket(BlessingAnnouncementPacket, {
 				blessingType: type,
 				triggeredByKeycloakId: keycloakId,
-				durationHours,
+				durationHours: FORCED_BLESSING_DURATION_HOURS,
 				topContributorKeycloakId: keycloakId,
 				topContributorAmount: 0,
 				totalContributors: 0

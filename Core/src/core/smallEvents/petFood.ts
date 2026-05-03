@@ -4,7 +4,9 @@ import {
 import { MapLocationDataController } from "../../data/MapLocation";
 import { MapLinkDataController } from "../../data/MapLink";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToHours, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
@@ -255,10 +257,10 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 	// Pet existence is guaranteed by canBeExecuted
 	const petEntity = (await PetEntity.findByPk(player.petId!))!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
-	const now = Date.now();
+	const now = nowMs();
 	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince).getTime() : now;
-	const diffHours = millisecondsToHours(now - hungrySince);
-	const feedDelay = millisecondsToHours(PetConstants.BREED_COOLDOWN * (petModel.feedDelay ?? 1));
+	const diffHours = millisecondsToHours(asMilliseconds(now - hungrySince));
+	const feedDelay = millisecondsToHours(asMilliseconds(PetConstants.BREED_COOLDOWN * (petModel.feedDelay ?? 1)));
 
 	let probability;
 	if (diffHours < feedDelay) {

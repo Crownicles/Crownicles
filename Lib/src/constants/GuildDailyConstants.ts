@@ -1,3 +1,7 @@
+import {
+	asHours, Hour
+} from "../types/TimeTypes";
+
 export abstract class GuildDailyConstants {
 	static readonly REWARD_TYPES = {
 		PERSONAL_XP: "personalXP",
@@ -32,7 +36,7 @@ export abstract class GuildDailyConstants {
 
 	static readonly TIME_ADVANCED_MULTIPLIER = 0.05;
 
-	static readonly TIME_BETWEEN_DAILIES = 22;
+	static readonly TIME_BETWEEN_DAILIES: Hour = asHours(22);
 
 	static readonly SIZE_PALIER = 10;
 

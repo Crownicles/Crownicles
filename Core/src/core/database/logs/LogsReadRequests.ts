@@ -12,15 +12,16 @@ import { LogsPlayersTravels } from "./models/LogsPlayersTravels";
 import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
 import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
+	asMinutes,
 	dateToLogs,
-	daysToMilliseconds,
 	getNextSaturdayMidnight,
 	getNextSundayMidnight,
 	getTodayMidnight,
-	hoursToMilliseconds,
 	millisecondsToSeconds,
-	minutesToMilliseconds
+	minutesToMilliseconds,
+	msDiff, nowMs
 } from "../../../../../Lib/src/utils/TimeUtils";
+import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsMapLinks } from "./models/LogsMapLinks";
 import { MapConstants } from "../../../../../Lib/src/constants/MapConstants";
 import { LogsFightsResults } from "./models/LogsFightsResults";
@@ -30,7 +31,6 @@ import { LogsPlayersClassChanges } from "./models/LogsPlayersClassChanges";
 import Player from "../game/models/Player";
 import { MapCache } from "../../maps/MapCache";
 import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
-import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsGuildsJoins } from "./models/LogsGuildJoins";
 import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
@@ -112,7 +112,7 @@ export class LogsReadRequests {
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
-		const startOfWeek = Math.floor(millisecondsToSeconds(getNextSundayMidnight() - daysToMilliseconds(TimeConstants.DAYS_IN_WEEK)));
+		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)));
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
 		if (!logPlayer) {
 			return 0;
@@ -163,7 +163,7 @@ export class LogsReadRequests {
 					[Op.in]: logsPlayersIds
 				},
 				date: {
-					[Op.gt]: Math.floor((Date.now() - minutesToMilliseconds(PVEConstants.MINUTES_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND)) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND)))
 				}
 			},
 			group: ["playerId"],
@@ -298,7 +298,7 @@ export class LogsReadRequests {
 			attributes: [],
 			where: {
 				date: {
-					[Op.gt]: Math.floor((Date.now() - minutesToMilliseconds(minutes)) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), minutesToMilliseconds(asMinutes(minutes)))))
 				},
 				friendly: false
 			},
@@ -382,7 +382,7 @@ export class LogsReadRequests {
 				"$LogsPlayer1.keycloakId$": attackerKeycloakId,
 				"$LogsPlayer2.keycloakId$": { [Op.in]: defenderKeycloakIds },
 				"date": {
-					[Op.gt]: Math.floor((getNextSaturdayMidnight() - 7 * 24 * 60 * 60 * 1000) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSaturdayMidnight(), TimeConstants.MS_TIME.WEEK)))
 				},
 				"friendly": false
 			},
@@ -457,7 +457,7 @@ export class LogsReadRequests {
 			where: {
 				"$LogsPlayer.keycloakId$": keycloakId,
 				"date": {
-					[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)))
 				},
 				"$LogsMapLink.start$": MapLocationDataController.instance.getWithAttributes([MapConstants.MAP_ATTRIBUTES.MAIN_CONTINENT])[0].id,
 				"$LogsMapLink.end$": {
@@ -494,7 +494,7 @@ export class LogsReadRequests {
 				"$LogsPlayer.keycloakId$": keycloakId,
 				"$LogsGuild.gameId$": guildId,
 				"date": {
-					[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000)
+					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)))
 				}
 			},
 			include: [

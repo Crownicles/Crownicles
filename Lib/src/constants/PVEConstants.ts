@@ -1,3 +1,5 @@
+import { TimeConstants } from "./TimeConstants";
+
 export abstract class PVEConstants {
 	static readonly TIME_AFTER_INACTIVITY_ON_BOAT_IS_NOT_ACCEPTED = 24 * 3 * 3600 * 1000; // 3 days;
 
@@ -62,7 +64,7 @@ export abstract class PVEConstants {
 
 	static readonly RAGE_MIN_MULTIPLIER = 1;
 
-	static readonly MINUTES_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND = 60;
+	static readonly TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND = TimeConstants.MS_TIME.HOUR;
 
 	static readonly RAGE_MAX_DAMAGE = 250;
 

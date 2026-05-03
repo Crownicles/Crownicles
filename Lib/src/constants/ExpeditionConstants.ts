@@ -1,6 +1,9 @@
 import {
 	daysToMinutes, hoursToMinutes
 } from "../utils/TimeUtils";
+import {
+	asDays, asHours
+} from "../types/TimeTypes";
 import { MapLocationConstants } from "./MapLocationConstants";
 
 /**
@@ -13,7 +16,7 @@ export abstract class ExpeditionConstants {
 	 */
 	static readonly DURATION = {
 		MIN_MINUTES: 10,
-		MAX_MINUTES: daysToMinutes(3)
+		MAX_MINUTES: daysToMinutes(asDays(3))
 	};
 
 	/**
@@ -705,15 +708,15 @@ export abstract class ExpeditionConstants {
 	static readonly DURATION_RANGES = {
 		SHORT: {
 			MIN: 10,
-			MAX: hoursToMinutes(1)
+			MAX: hoursToMinutes(asHours(1))
 		},
 		MEDIUM: {
 			MIN: 15,
-			MAX: hoursToMinutes(10)
+			MAX: hoursToMinutes(asHours(10))
 		},
 		LONG: {
-			MIN: hoursToMinutes(12),
-			MAX: daysToMinutes(3)
+			MIN: hoursToMinutes(asHours(12)),
+			MAX: daysToMinutes(asDays(3))
 		}
 	};
 

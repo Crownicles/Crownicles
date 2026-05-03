@@ -7,8 +7,9 @@ import {
 } from "sequelize";
 import {
 	getNextSundayMidnight,
-	hoursToMilliseconds
+	millisecondsToSeconds, msDiff
 } from "../../../../../../Lib/src/utils/TimeUtils";
+import { TimeConstants } from "../../../../../../Lib/src/constants/TimeConstants";
 import { MapLocationDataController } from "../../../../data/MapLocation";
 import { MapConstants } from "../../../../../../Lib/src/constants/MapConstants";
 import { LogsPlayers } from "../../../../core/database/logs/models/LogsPlayers";
@@ -33,7 +34,7 @@ const resetJoinBoatTestCommand: ExecuteTestCommandLike = async player => {
 	const travelLogs = await LogsPlayersTravels.findAll({
 		where: {
 			date: {
-				[Op.gt]: Math.floor((getNextSundayMidnight() - hoursToMilliseconds(7 * 24)) / 1000)
+				[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)))
 			}
 		},
 		include: [
