@@ -9,6 +9,7 @@ import {
 	LANGUAGE, Language
 } from "../../../../Lib/src/Language";
 import { AutocompleteInteraction } from "discord.js";
+import { InteractionContextType } from "discord-api-types/v10";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { HelpConstants } from "../../../../Lib/src/constants/HelpConstants";
 import {
@@ -212,9 +213,21 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 	const command = interaction.options.get(i18n.t("discordBuilder:help.options.commandName.name", { lng: LANGUAGE.ENGLISH }));
 	const askedCommand = command ? command.value as string : null;
 	const lng = interaction.userLanguage;
+	const isDm = !interaction.inGuild();
 
 	if (!askedCommand) {
 		generateGenericHelpMessage(helpMessage, interaction);
+		if (isDm) {
+			helpMessage.addFields([
+				{
+					name: i18n.t("commands:help.dmNoticeTitle", { lng }),
+					value: i18n.t("commands:help.dmNoticeValue", {
+						lng,
+						inviteLink: HelpConstants.HELP_INVITE_LINK
+					})
+				}
+			]);
+		}
 		await interaction.reply({
 			embeds: [helpMessage]
 		});
@@ -225,6 +238,17 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 			.replace(" ", ""));
 		if (!command) {
 			generateGenericHelpMessage(helpMessage, interaction);
+			if (isDm) {
+				helpMessage.addFields([
+					{
+						name: i18n.t("commands:help.dmNoticeTitle", { lng }),
+						value: i18n.t("commands:help.dmNoticeValue", {
+							lng,
+							inviteLink: HelpConstants.HELP_INVITE_LINK
+						})
+					}
+				]);
+			}
 			await interaction.reply({
 				embeds: [helpMessage]
 			});
@@ -255,15 +279,28 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<null> {
 				value: commandMentionString,
 				inline: true
 			});
+		if (isDm) {
+			helpMessage.addFields([
+				{
+					name: i18n.t("commands:help.dmNoticeTitle", { lng }),
+					value: i18n.t("commands:help.dmNoticeValue", {
+						lng,
+						inviteLink: HelpConstants.HELP_INVITE_LINK
+					})
+				}
+			]);
+		}
 		await interaction.reply({
 			embeds: [helpMessage]
 		});
 	}
 
-	// Send help DM if the user is not in the main server
-	const dmCooldown = dmHelpCooldowns.get(interaction.user.id);
-	if (!dmCooldown || dmCooldown && dmCooldown.valueOf() < Date.now()) {
-		sendHelpDm(interaction, lng);
+	// Send help DM if the user is not in the main server (skipped when already in DM)
+	if (!isDm) {
+		const dmCooldown = dmHelpCooldowns.get(interaction.user.id);
+		if (!dmCooldown || dmCooldown && dmCooldown.valueOf() < Date.now()) {
+			sendHelpDm(interaction, lng);
+		}
 	}
 
 	return null;
@@ -318,8 +355,10 @@ export const commandInfo: ICommand = {
 	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("help")
 		.addStringOption(option => SlashCommandBuilderGenerator.generateOption("help", "commandName", option)
 			.setRequired(false)
-			.setAutocomplete(true)) as SlashCommandBuilder,
+			.setAutocomplete(true))
+		.setContexts(InteractionContextType.Guild, InteractionContextType.BotDM) as SlashCommandBuilder,
 	getPacket,
 	handleAutocomplete,
-	mainGuildCommand: false
+	mainGuildCommand: false,
+	allowedInDM: true
 };
