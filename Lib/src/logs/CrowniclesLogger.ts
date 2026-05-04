@@ -116,7 +116,6 @@ export abstract class CrowniclesLogger {
 							&& lokiSettings.password !== ""
 							? `${lokiSettings.username}:${lokiSettings.password}`
 							: undefined,
-						format: format.simple(),
 						json: true,
 						onConnectionError: console.error,
 						interval: 5,
