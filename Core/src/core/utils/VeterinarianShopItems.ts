@@ -46,14 +46,40 @@ async function applyVeterinarianCare(pet: PetEntity, player: Player, response: C
 	return pet.lovePoints - lovePointsBefore;
 }
 
+async function buildRandomPetDwarfInfo(player: Player): Promise<{
+	typeId: number; sex: SexTypeShort; numberOfPetsNotSeen: number;
+} | undefined> {
+	const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
+	if (randomPetNotShownToDwarfId === 0) {
+		return undefined;
+	}
+	const randomPetDwarfModel = PetDataController.instance.getById(randomPetNotShownToDwarfId);
+	if (!randomPetDwarfModel) {
+		return undefined;
+	}
+	return {
+		typeId: randomPetDwarfModel.id,
+		sex: PetConstants.SEX.MALE as SexTypeShort,
+		numberOfPetsNotSeen: await DwarfPetsSeen.getNumberOfPetsNotSeen(player)
+	};
+}
+
+function getExpeditionPreferenceLists(typeId: number): {
+	likedExpeditionTypes: string[]; dislikedExpeditionTypes: string[];
+} {
+	const preferences = getPetExpeditionPreferences(typeId);
+	return {
+		likedExpeditionTypes: preferences?.liked ? [...preferences.liked] : [],
+		dislikedExpeditionTypes: preferences?.disliked ? [...preferences.disliked] : []
+	};
+}
+
 async function buildPetInformationPacket(pet: PetEntity, player: Player, lovePointsGained: number): Promise<CrowniclesPacket> {
 	const petModel = PetDataController.instance.getById(pet.typeId)!;
-	const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
-	const randomPetDwarfModel = randomPetNotShownToDwarfId !== 0 ? PetDataController.instance.getById(randomPetNotShownToDwarfId) : null;
-
-	const preferences = getPetExpeditionPreferences(pet.typeId);
-	const likedExpeditionTypes = preferences?.liked ? [...preferences.liked] : [];
-	const dislikedExpeditionTypes = preferences?.disliked ? [...preferences.disliked] : [];
+	const randomPetDwarf = await buildRandomPetDwarfInfo(player);
+	const {
+		likedExpeditionTypes, dislikedExpeditionTypes
+	} = getExpeditionPreferenceLists(pet.typeId);
 
 	return makePacket(CommandMissionShopPetInformation, {
 		nickname: pet.nickname,
@@ -72,13 +98,7 @@ async function buildPetInformationPacket(pet: PetEntity, player: Player, lovePoi
 		likedExpeditionTypes,
 		dislikedExpeditionTypes,
 		lovePointsGained: lovePointsGained > 0 ? lovePointsGained : undefined,
-		...randomPetDwarfModel && {
-			randomPetDwarf: {
-				typeId: randomPetDwarfModel.id,
-				sex: PetConstants.SEX.MALE as SexTypeShort,
-				numberOfPetsNotSeen: await DwarfPetsSeen.getNumberOfPetsNotSeen(player)
-			}
-		}
+		...randomPetDwarf && { randomPetDwarf }
 	});
 }
 
