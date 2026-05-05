@@ -6,8 +6,12 @@ import { ShopConstants } from "../../../../Lib/src/constants/ShopConstants";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { Players } from "../database/game/models/Player";
-import { PetEntities } from "../database/game/models/PetEntity";
+import {
+	Player, Players
+} from "../database/game/models/Player";
+import {
+	PetEntities, PetEntity
+} from "../database/game/models/PetEntity";
 import { PetDataController } from "../../data/Pet";
 import {
 	CommandMissionShopNoPet,
@@ -21,6 +25,62 @@ import { getAiPetBehavior } from "../fights/PetAssistManager";
 import { PetUtils } from "./PetUtils";
 import { DwarfPetsSeen } from "../database/game/models/DwarfPetsSeen";
 import { getPetExpeditionPreferences } from "../../../../Lib/src/constants/ExpeditionConstants";
+
+/**
+ * Apply veterinarian care to the pet if it needs it.
+ * Returns the actual love points gained (0 if no care needed), accounting for
+ * blessing multipliers and the MAX_LOVE_POINTS cap.
+ */
+async function applyVeterinarianCare(pet: PetEntity, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	if (!pet.needsVeterinarianCare()) {
+		return 0;
+	}
+	const lovePointsBefore = pet.lovePoints;
+	await pet.changeLovePoints({
+		player,
+		amount: ShopConstants.VETERINARIAN_LOVE_POINTS_GAIN,
+		response,
+		reason: NumberChangeReason.SHOP
+	});
+	await pet.save({ fields: ["lovePoints"] });
+	return pet.lovePoints - lovePointsBefore;
+}
+
+async function buildPetInformationPacket(pet: PetEntity, player: Player, lovePointsGained: number): Promise<CrowniclesPacket> {
+	const petModel = PetDataController.instance.getById(pet.typeId)!;
+	const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
+	const randomPetDwarfModel = randomPetNotShownToDwarfId !== 0 ? PetDataController.instance.getById(randomPetNotShownToDwarfId) : null;
+
+	const preferences = getPetExpeditionPreferences(pet.typeId);
+	const likedExpeditionTypes = preferences?.liked ? [...preferences.liked] : [];
+	const dislikedExpeditionTypes = preferences?.disliked ? [...preferences.disliked] : [];
+
+	return makePacket(CommandMissionShopPetInformation, {
+		nickname: pet.nickname,
+		petId: pet.id,
+		typeId: petModel.id,
+		sex: pet.sex as SexTypeShort,
+		loveLevel: pet.getLoveLevelNumber(),
+		lovePoints: pet.lovePoints,
+		diet: petModel.diet as PetDiet,
+		nextFeed: pet.getFeedCooldown(petModel),
+		force: petModel.force,
+		speed: petModel.speed,
+		feedDelay: (petModel.feedDelay ?? 1) * PetConstants.BREED_COOLDOWN,
+		fightAssistId: getAiPetBehavior(petModel.id)?.id ?? "",
+		ageCategory: PetUtils.getAgeCategory(pet.id),
+		likedExpeditionTypes,
+		dislikedExpeditionTypes,
+		lovePointsGained: lovePointsGained > 0 ? lovePointsGained : undefined,
+		...randomPetDwarfModel && {
+			randomPetDwarf: {
+				typeId: randomPetDwarfModel.id,
+				sex: PetConstants.SEX.MALE as SexTypeShort,
+				numberOfPetsNotSeen: await DwarfPetsSeen.getNumberOfPetsNotSeen(player)
+			}
+		}
+	});
+}
 
 export function getVeterinarianShopItem(): ShopItem {
 	return {
@@ -38,51 +98,9 @@ export function getVeterinarianShopItem(): ShopItem {
 				response.push(makePacket(CommandMissionShopNoPet, {}));
 				return false;
 			}
-			const petModel = PetDataController.instance.getById(pet.typeId)!;
-			const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
-			const randomPetDwarfModel = randomPetNotShownToDwarfId !== 0 ? PetDataController.instance.getById(randomPetNotShownToDwarfId) : null;
 
-			const preferences = getPetExpeditionPreferences(pet.typeId);
-			const likedExpeditionTypes = preferences?.liked ? [...preferences.liked] : [];
-			const dislikedExpeditionTypes = preferences?.disliked ? [...preferences.disliked] : [];
-
-			let lovePointsGained: number | undefined;
-			if (pet.lovePoints < ShopConstants.VETERINARIAN_LOVE_POINTS_THRESHOLD) {
-				lovePointsGained = ShopConstants.VETERINARIAN_LOVE_POINTS_GAIN;
-				await pet.changeLovePoints({
-					player,
-					amount: lovePointsGained,
-					response,
-					reason: NumberChangeReason.SHOP
-				});
-				await pet.save({ fields: ["lovePoints"] });
-			}
-
-			response.push(makePacket(CommandMissionShopPetInformation, {
-				nickname: pet.nickname,
-				petId: pet.id,
-				typeId: petModel.id,
-				sex: pet.sex as SexTypeShort,
-				loveLevel: pet.getLoveLevelNumber(),
-				lovePoints: pet.lovePoints,
-				diet: petModel.diet as PetDiet,
-				nextFeed: pet.getFeedCooldown(petModel),
-				force: petModel.force,
-				speed: petModel.speed,
-				feedDelay: (petModel.feedDelay ?? 1) * PetConstants.BREED_COOLDOWN,
-				fightAssistId: getAiPetBehavior(petModel.id)?.id ?? "",
-				ageCategory: PetUtils.getAgeCategory(pet.id),
-				likedExpeditionTypes,
-				dislikedExpeditionTypes,
-				lovePointsGained,
-				...randomPetDwarfModel && {
-					randomPetDwarf: {
-						typeId: randomPetDwarfModel.id,
-						sex: PetConstants.SEX.MALE as SexTypeShort,
-						numberOfPetsNotSeen: await DwarfPetsSeen.getNumberOfPetsNotSeen(player)
-					}
-				}
-			}));
+			const lovePointsGained = await applyVeterinarianCare(pet, player, response);
+			response.push(await buildPetInformationPacket(pet, player, lovePointsGained));
 			return true;
 		}
 	};
