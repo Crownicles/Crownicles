@@ -268,9 +268,7 @@
       "tokens_other": "{emote:unitValues.token} Jetons gagnés : **{{count}}** !",
       "item": "{emote:rewards.item} Vous recevez un équipement aléatoire !",
       "cloneTalisman": "{emote:expedition.cloneTalisman} **DÉCOUVERTE EXCEPTIONNELLE !**\nVotre familier a découvert un ancien artefact enfoui : le $t(models:talisman.clone) !\nCet objet mystique permettra à votre compagnon de vous assister en défense et dans les petits événements, même lorsqu'il est en expédition !",
-      "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !",
-      "materialTitle": "{emote:inventory.materials} Matériaux récupérés :",
-      "materialLine": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**"
+      "badgeEarned": "{emote:badges.expert_expediteur} Un badge vous a été offert : **Expéditeur Expert** !"
     },
     "riskCategories": {
       "trivial": "Tranquille",
@@ -668,6 +666,10 @@
     "selectLanguage": "Sélectionnez une langue",
     "title": "{emote:commands.language} Sélection de la langue"
   },
+  "materialLoot": {
+    "title": "{emote:inventory.materials} Matériaux récupérés :",
+    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**"
+  },
   "ping": {
     "discord": {
       "create": "{emote:commands.ping} Pong",
@@ -810,8 +812,6 @@
     "monsterRewardGuildXp": "{emote:unitValues.xp} Expérience de guilde gagnée : **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Argent gagné : **{{money, number}}**\n{emote:unitValues.xp} XP gagnée : **{{experience, number}}**",
     "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints, number}}**",
-    "monsterRewardsMaterialTitle": "{emote:inventory.materials} Matériaux récupérés :",
-    "monsterRewardsMaterialLine": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**",
     "monsterRewardsTitle": "{{pseudo}}, récompenses de combat",
     "newBigEvent": "{emote:languages.fr} Vous êtes arrivé à **{{destination}}** !",
     "noFight": "{emote:commands.report} **Journal de {{pseudo}} :** {emote:pveFights.waitABit} | Vous vous enfuyez rapidement et trouvez une petite cachette ! Le monstre vous attend patiemment dehors...",

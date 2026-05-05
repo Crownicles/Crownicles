@@ -62,6 +62,7 @@ import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { PetUtils } from "../../utils/PetUtils";
+import { formatMaterialLoot } from "../../utils/MaterialLootDisplayUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { ReactionCollectorUseTokensPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
 import { ReactionCollectorBuyHealPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
@@ -477,14 +478,9 @@ export async function displayMonsterReward(
 		descriptionParts.push(`\n${petReactionText}`);
 	}
 
-	if (packet.materialLoot && packet.materialLoot.length > 0) {
-		const materialLines = packet.materialLoot.map(entry =>
-			i18n.t("commands:report.monsterRewardsMaterialLine", {
-				lng,
-				materialId: entry.materialId,
-				quantity: entry.quantity
-			})).join("\n");
-		descriptionParts.push(`\n${i18n.t("commands:report.monsterRewardsMaterialTitle", { lng })}\n${materialLines}`);
+	const materialLootText = formatMaterialLoot(packet.materialLoot, lng);
+	if (materialLootText) {
+		descriptionParts.push(`\n${materialLootText}`);
 	}
 
 	const embed = new CrowniclesEmbed()
