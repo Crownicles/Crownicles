@@ -4,6 +4,7 @@ import {
 import { BaseMission } from "../../types/CompletedMission";
 import { PetDiet } from "../../constants/PetConstants";
 import { SexTypeShort } from "../../constants/StringConstants";
+import { RandomPetDwarfInfo } from "../../types/RandomPetDwarfInfo";
 import { PlantId } from "../../constants/PlantConstants";
 
 /**
@@ -75,11 +76,7 @@ export class CommandMissionShopPetInformation extends CrowniclesPacket {
 	 */
 	dislikedExpeditionTypes?: string[];
 
-	randomPetDwarf?: {
-		typeId: number;
-		sex: SexTypeShort;
-		numberOfPetsNotSeen: number;
-	};
+	randomPetDwarf?: RandomPetDwarfInfo;
 
 	/**
 	 * Love points gained by visiting the veterinarian (only when pet has low LP)

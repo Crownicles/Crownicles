@@ -19,7 +19,6 @@ import {
 import { PetUtils } from "../../../utils/PetUtils";
 import { crowniclesInstance } from "../../../../index";
 import { BlessingManager } from "../../../blessings/BlessingManager";
-import { ShopConstants } from "../../../../../../Lib/src/constants/ShopConstants";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -118,7 +117,7 @@ export class PetEntity extends Model {
 	}
 
 	public needsVeterinarianCare(): boolean {
-		return this.lovePoints < ShopConstants.VETERINARIAN_LOVE_POINTS_THRESHOLD;
+		return this.getLoveLevelNumber() < PetConstants.LOVE_LEVEL.TAMED;
 	}
 
 	/**
