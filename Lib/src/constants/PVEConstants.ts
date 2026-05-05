@@ -82,12 +82,7 @@ export abstract class PVEConstants {
 
 	static readonly BOSS_LOOT = {
 		MIN_DROPS: 5,
-		MAX_DROPS: 10,
-		RARITY_WEIGHTS: {
-			1: 60, // COMMON
-			2: 30, // UNCOMMON
-			3: 10 // RARE
-		} as Record<number, number>
+		MAX_DROPS: 10
 	};
 
 	/**

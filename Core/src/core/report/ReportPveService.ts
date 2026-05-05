@@ -38,8 +38,9 @@ import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects
 import { chooseDestination } from "./ReportDestinationService";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import {
-	applyBossLoot, BossLootEntry, generateBossLoot
-} from "../utils/BossLootUtils";
+	applyMaterialLoot, generateBossLoot
+} from "../utils/MaterialLootUtils";
+import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 
 /**
  * PVE fight rewards structure
@@ -167,7 +168,7 @@ function sendMonsterRewardPacket(
 	rewards: PveFightRewards,
 	guildResult: GuildRewardsResult,
 	fight: FightController,
-	materialLoot?: BossLootEntry[]
+	materialLoot?: MaterialQuantity[]
 ): void {
 	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
 		money: BlessingManager.getInstance().applyMoneyBlessing(rewards.money),
@@ -222,7 +223,7 @@ export async function doPVEBoss(
 				// Generate and apply material loot from boss
 				const materialLoot = generateBossLoot(mapId);
 				if (materialLoot.length > 0) {
-					await applyBossLoot(player.id, materialLoot);
+					await applyMaterialLoot(player.id, materialLoot);
 				}
 
 				sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);

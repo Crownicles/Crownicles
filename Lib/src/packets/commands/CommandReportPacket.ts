@@ -13,6 +13,7 @@ import {
 	PlantStorageEntry, PlayerPlantSlotEntry
 } from "../../types/PlantStorageEntry";
 import { PetFood } from "../../types/PetFood";
+import { MaterialQuantity } from "../../types/MaterialQuantity";
 export {
 	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients
 } from "../../types/CookingTypes";
@@ -103,10 +104,7 @@ export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 		petNickname?: string;
 	};
 
-	materialLoot?: {
-		materialId: number;
-		quantity: number;
-	}[];
+	materialLoot?: MaterialQuantity[];
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

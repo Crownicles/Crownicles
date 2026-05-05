@@ -23,6 +23,7 @@ import {
 	buildInProgressDescription
 } from "./ExpeditionDisplayUtils";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
+import { formatMaterialLoot } from "../../../utils/MaterialLootDisplayUtils";
 
 /**
  * Build error embed for missing talisman
@@ -212,15 +213,9 @@ function formatRewards(
 	}
 
 	// Material loot
-	if (rewards.materialLoot && rewards.materialLoot.length > 0) {
-		lines.push(i18n.t("commands:petExpedition.rewards.materialTitle", { lng }));
-		for (const entry of rewards.materialLoot) {
-			lines.push(i18n.t("commands:petExpedition.rewards.materialLine", {
-				lng,
-				materialId: entry.materialId,
-				quantity: entry.quantity
-			}));
-		}
+	const materialLootText = formatMaterialLoot(rewards.materialLoot, lng);
+	if (materialLootText) {
+		lines.push(materialLootText);
 	}
 
 	return lines.join("\n");

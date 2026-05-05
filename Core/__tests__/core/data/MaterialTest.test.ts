@@ -7,6 +7,7 @@ import {describe, expect, it} from "vitest";
 import {CrowniclesIcons} from "../../../../Lib/src/CrowniclesIcons";
 import {PVEConstants} from "../../../../Lib/src/constants/PVEConstants";
 import {ExpeditionConstants} from "../../../../Lib/src/constants/ExpeditionConstants";
+import {MaterialLootConstants} from "../../../../Lib/src/constants/MaterialLootConstants";
 
 // Helper to get material ID from filename (without extension)
 const getMaterialIdFromFile = (fileName: string): string => {
@@ -207,14 +208,14 @@ describe("Materials consistency", () => {
 		const lootTables: Record<number, readonly number[]> = PVEConstants.BOSS_LOOT_TABLES;
 
 		const errors: string[] = [];
-		for (const [mapIdStr, materialIds] of Object.entries(lootTables)) {
-			for (const materialId of materialIds as number[]) {
+		for (const [mapIdStr, materialIds] of Object.entries(lootTables) as [string, readonly number[]][]) {
+			for (const materialId of materialIds) {
 				if (!validMaterialIds.has(materialId)) {
 					errors.push(`Map ${mapIdStr}: material ID ${materialId} does not exist`);
 				}
 			}
-			if ((materialIds as number[]).length < 3 || (materialIds as number[]).length > 10) {
-				errors.push(`Map ${mapIdStr}: expected 3-10 materials, found ${(materialIds as number[]).length}`);
+			if (materialIds.length < MaterialLootConstants.LOOT_TABLE_MIN_SIZE || materialIds.length > MaterialLootConstants.LOOT_TABLE_MAX_SIZE) {
+				errors.push(`Map ${mapIdStr}: expected ${MaterialLootConstants.LOOT_TABLE_MIN_SIZE}-${MaterialLootConstants.LOOT_TABLE_MAX_SIZE} materials, found ${materialIds.length}`);
 			}
 		}
 
@@ -231,14 +232,14 @@ describe("Materials consistency", () => {
 		const lootTables = ExpeditionConstants.EXPEDITION_LOOT_TABLES;
 
 		const errors: string[] = [];
-		for (const [locationType, materialIds] of Object.entries(lootTables)) {
-			for (const materialId of materialIds as number[]) {
+		for (const [locationType, materialIds] of Object.entries(lootTables) as [string, readonly number[]][]) {
+			for (const materialId of materialIds) {
 				if (!validMaterialIds.has(materialId)) {
 					errors.push(`Location ${locationType}: material ID ${materialId} does not exist`);
 				}
 			}
-			if ((materialIds as number[]).length < 3 || (materialIds as number[]).length > 10) {
-				errors.push(`Location ${locationType}: expected 3-10 materials, found ${(materialIds as number[]).length}`);
+			if (materialIds.length < MaterialLootConstants.LOOT_TABLE_MIN_SIZE || materialIds.length > MaterialLootConstants.LOOT_TABLE_MAX_SIZE) {
+				errors.push(`Location ${locationType}: expected ${MaterialLootConstants.LOOT_TABLE_MIN_SIZE}-${MaterialLootConstants.LOOT_TABLE_MAX_SIZE} materials, found ${materialIds.length}`);
 			}
 		}
 

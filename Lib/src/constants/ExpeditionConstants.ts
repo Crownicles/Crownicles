@@ -578,18 +578,9 @@ export abstract class ExpeditionConstants {
 		] as const,
 
 		/**
-		 * Rarity weights for weighted random material selection (same as boss loot)
-		 */
-		RARITY_WEIGHTS: {
-			1: 60,
-			2: 30,
-			3: 10
-		} as Record<number, number>,
-
-		/**
 		 * Minimum reward index required to receive material loot
 		 */
-		MIN_REWARD_INDEX: 1
+		MIN_REWARD_INDEX_FOR_MATERIAL_LOOT: 1
 	};
 
 	/**

@@ -10,7 +10,7 @@ import {
 } from "../utils/ItemUtils";
 import { MissionsController } from "../missions/MissionsController";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
-import { Materials } from "../database/game/models/Material";
+import { applyMaterialLoot } from "../utils/MaterialLootUtils";
 
 /**
  * Apply a currency reward to the player if amount is positive
@@ -128,8 +128,6 @@ export async function applyExpeditionRewards(
 	}
 
 	if (rewards.materialLoot) {
-		for (const entry of rewards.materialLoot) {
-			await Materials.giveMaterial(player.id, entry.materialId, entry.quantity);
-		}
+		await applyMaterialLoot(player.id, rewards.materialLoot);
 	}
 }

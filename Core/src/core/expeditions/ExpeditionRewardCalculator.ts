@@ -12,7 +12,9 @@ import {
 	generateRandomItem
 } from "../utils/ItemUtils";
 import { MathUtils } from "../utils/MathUtils";
-import { MaterialDataController } from "../../data/Material";
+import { MaterialLootConstants } from "../../../../Lib/src/constants/MaterialLootConstants";
+import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
+import { generateWeightedMaterialLoot } from "../utils/MaterialLootUtils";
 
 /**
  * Extended reward data with item details for Core-side use
@@ -275,10 +277,8 @@ function generateItemReward(rewardIndex: number): ItemReward {
  * Generate material loot for expedition based on location type and reward index
  * Uses weighted random selection based on material rarity
  */
-function generateMaterialLoot(locationType: ExpeditionLocationType, rewardIndex: number, isPartialSuccess: boolean): {
-	materialId: number; quantity: number;
-}[] {
-	if (rewardIndex < ExpeditionConstants.MATERIAL_LOOT.MIN_REWARD_INDEX) {
+function generateMaterialLoot(locationType: ExpeditionLocationType, rewardIndex: number, isPartialSuccess: boolean): MaterialQuantity[] {
+	if (rewardIndex < ExpeditionConstants.MATERIAL_LOOT.MIN_REWARD_INDEX_FOR_MATERIAL_LOOT) {
 		return [];
 	}
 
@@ -292,44 +292,7 @@ function generateMaterialLoot(locationType: ExpeditionLocationType, rewardIndex:
 		totalDrops = Math.max(1, Math.round(totalDrops / ExpeditionConstants.PARTIAL_SUCCESS_PENALTY_DIVISOR));
 	}
 
-	// Build weighted entries
-	const weightedEntries: {
-		materialId: number; weight: number;
-	}[] = [];
-	for (const materialId of lootTable) {
-		const material = MaterialDataController.instance.getById(String(materialId));
-		if (material) {
-			const weight = ExpeditionConstants.MATERIAL_LOOT.RARITY_WEIGHTS[material.rarity] ?? 0;
-			weightedEntries.push({
-				materialId,
-				weight
-			});
-		}
-	}
-
-	if (weightedEntries.length === 0) {
-		return [];
-	}
-
-	const totalWeight = weightedEntries.reduce((sum, entry) => sum + entry.weight, 0);
-
-	// Roll each drop independently
-	const lootMap = new Map<number, number>();
-	for (let i = 0; i < totalDrops; i++) {
-		let roll = RandomUtils.randInt(0, totalWeight);
-		for (const entry of weightedEntries) {
-			roll -= entry.weight;
-			if (roll < 0) {
-				lootMap.set(entry.materialId, (lootMap.get(entry.materialId) ?? 0) + 1);
-				break;
-			}
-		}
-	}
-
-	return Array.from(lootMap.entries()).map(([materialId, quantity]) => ({
-		materialId,
-		quantity
-	}));
+	return generateWeightedMaterialLoot(lootTable, totalDrops, MaterialLootConstants.RARITY_WEIGHTS);
 }
 
 /**
