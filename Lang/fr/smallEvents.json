@@ -429,6 +429,16 @@
       "Le regard de {{playerDisplay}} trahit une expérience hors du commun : il a terrassé la Reine des glaces au niveau **{{bossLevel, number}}** ! Peu peuvent se vanter d'un tel exploit.",
       "Vous croisez {{playerDisplay}}, qui a accompli l'impossible en battant la Reine des glaces au niveau **{{bossLevel, number}}**. Vous vous inclinez respectueusement."
     ],
+    "beaten_kraken": [
+      "Les tentacules sectionnés accrochés à la cape de {{playerDisplay}} attestent de son combat contre le Kraken au niveau **{{bossLevel, number}}**. Une victoire arrachée aux abysses !",
+      "{{playerDisplay}} sent encore l'iode et l'encre noire : il a terrassé le Kraken au niveau **{{bossLevel, number}}** ! Les océans ne lui font plus peur.",
+      "Vous rencontrez {{playerDisplay}}, un aventurier ayant survécu aux profondeurs et vaincu le terrible Kraken au niveau **{{bossLevel, number}}**. Son regard porte le poids des abysses."
+    ],
+    "beaten_leviathan": [
+      "Les écailles colossales accrochées à l'armure de {{playerDisplay}} proviennent de son combat contre le Léviathan au niveau **{{bossLevel, number}}**. Une légende vivante !",
+      "{{playerDisplay}} vous raconte sobrement avoir terrassé le Léviathan au niveau **{{bossLevel, number}}**. Les vagues ne semblent plus pouvoir l'engloutir.",
+      "Vous croisez {{playerDisplay}}, qui a fait taire à jamais le rugissement du Léviathan au niveau **{{bossLevel, number}}**. Le silence des mers profondes vous saisit."
+    ],
     "effect": {
       "sick": [
         "Vous entendez un bruit au loin... C'est {{playerDisplay}} qui vomit dans un buisson... Vous reprenez votre route bouleversé.",

@@ -32,6 +32,7 @@
   "outputType": "potion",
   "potionNature": 5,
   "potionRarity": 7,
-  "discoveredByDefault": true,
+  "discoveredByDefault": false,
+  "discoverySource": "ISLAND_BOSS",
   "petFood": null
 }

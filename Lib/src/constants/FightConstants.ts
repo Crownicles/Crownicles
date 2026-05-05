@@ -382,7 +382,9 @@ export abstract class FightConstants {
 	static readonly FINAL_BOSS_MONSTER_IDS = {
 		MAGMA_TITAN: "magmaTitan",
 		MALE_ICE_DRAGON: "maleIceDragon",
-		FEMALE_ICE_DRAGON: "femaleIceDragon"
+		FEMALE_ICE_DRAGON: "femaleIceDragon",
+		KRAKEN: "kraken",
+		LEVIATHAN: "leviathan"
 	} as const;
 }
 

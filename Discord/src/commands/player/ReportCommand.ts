@@ -931,29 +931,8 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 	};
 	manageEndPathDescriptions(fieldsArguments);
 	manageMainSummaryText(fieldsArguments, await DisplayUtils.getEscapedUsername(context.keycloakId!, lng), now);
-	if (packet.energy.show) {
-		travelEmbed.addFields({
-			name: i18n.t("commands:report.remainingEnergyTitle", { lng }),
-			value: `${CrowniclesIcons.unitValues.energy} ${packet.energy.current} / ${packet.energy.max}`,
-			inline: true
-		});
-	}
-	if (packet.points.show) {
-		travelEmbed.addFields({
-			name: i18n.t("commands:report.collectedPointsTitle", { lng }),
-			value: `${CrowniclesIcons.unitValues.score} ${DisplayUtils.formatNumber(packet.points.cumulated, lng)}`,
-			inline: true
-		});
-	}
-	const advices = i18n.t("advices:advices", {
-		returnObjects: true,
-		lng
-	});
-	travelEmbed.addFields({
-		name: i18n.t("commands:report.adviceTitle", { lng }),
-		value: advices[Math.floor(Math.random() * advices.length)],
-		inline: true
-	});
+	addEnergyAndPointsFields(travelEmbed, packet, lng);
+	addAdviceField(travelEmbed, lng);
 
 	// Build action row
 	const row = buildTravelActionRow(packet, lng);
