@@ -47,8 +47,6 @@ export abstract class ShopConstants {
 	static readonly VETERINARIAN_PRICE = 3;
 
 	static readonly VETERINARIAN_LOVE_POINTS_GAIN = 15;
-
-	static readonly VETERINARIAN_LOVE_POINTS_THRESHOLD = 50;
 }
 
 export enum ShopCurrency {

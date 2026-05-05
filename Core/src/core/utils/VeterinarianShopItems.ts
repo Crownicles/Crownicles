@@ -21,6 +21,7 @@ import {
 	PetConstants, PetDiet
 } from "../../../../Lib/src/constants/PetConstants";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { RandomPetDwarfInfo } from "../../../../Lib/src/types/RandomPetDwarfInfo";
 import { getAiPetBehavior } from "../fights/PetAssistManager";
 import { PetUtils } from "./PetUtils";
 import { DwarfPetsSeen } from "../database/game/models/DwarfPetsSeen";
@@ -46,9 +47,7 @@ async function applyVeterinarianCare(pet: PetEntity, player: Player, response: C
 	return pet.lovePoints - lovePointsBefore;
 }
 
-async function buildRandomPetDwarfInfo(player: Player): Promise<{
-	typeId: number; sex: SexTypeShort; numberOfPetsNotSeen: number;
-} | undefined> {
+async function buildRandomPetDwarfInfo(player: Player): Promise<RandomPetDwarfInfo | undefined> {
 	const randomPetNotShownToDwarfId = await DwarfPetsSeen.getRandomPetNotSeenId(player);
 	if (randomPetNotShownToDwarfId === 0) {
 		return undefined;

@@ -69,7 +69,18 @@ export interface CityShopReactionParams {
 	response: CrowniclesPacket[];
 }
 
-const SHOP_HANDLERS: Record<string, (player: Player, context: PacketContext, response: CrowniclesPacket[]) => Promise<void>> = {
+const CITY_SHOP_TYPES = [
+	"royalMarket",
+	"generalShop",
+	"stockExchange",
+	"tanner",
+	"herbalist",
+	"lumberjack",
+	"veterinarian"
+] as const;
+type CityShopType = typeof CITY_SHOP_TYPES[number];
+
+const SHOP_HANDLERS: Record<CityShopType, (player: Player, context: PacketContext, response: CrowniclesPacket[]) => Promise<void>> = {
 	royalMarket: openRoyalMarket,
 	generalShop: openGeneralShop,
 	stockExchange: openStockExchange,
@@ -78,6 +89,10 @@ const SHOP_HANDLERS: Record<string, (player: Player, context: PacketContext, res
 	lumberjack: openLumberjack,
 	veterinarian: openVeterinarian
 };
+
+function isCityShopType(shopId: string): shopId is CityShopType {
+	return (CITY_SHOP_TYPES as readonly string[]).includes(shopId);
+}
 
 export async function handleCityShopReaction(params: CityShopReactionParams): Promise<void> {
 	const {
@@ -88,7 +103,7 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		return;
 	}
 
-	const handler = SHOP_HANDLERS[shopId];
+	const handler = isCityShopType(shopId) ? SHOP_HANDLERS[shopId] : undefined;
 	if (!handler) {
 		CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
 		return;
