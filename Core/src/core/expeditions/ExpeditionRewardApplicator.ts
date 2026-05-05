@@ -45,28 +45,30 @@ async function applyScoreReward(player: Player, response: CrowniclesPacket[], am
 }
 
 /**
- * Apply token reward to the player if amount is positive
+ * Apply token reward to the player if amount is positive. Returns the actual change applied
+ * (may be 0 when the player is already at the cap, since gains are blocked in that case).
  */
-async function applyTokensReward(player: Player, response: CrowniclesPacket[], amount: number): Promise<void> {
-	if (amount > 0) {
-		const previousTokens = player.tokens;
-		await player.addTokens({
-			amount, response, reason: NumberChangeReason.EXPEDITION
-		});
-		const newTokens = player.tokens;
-
-		// Only track mission if tokens were actually added
-		const actualChange = newTokens - previousTokens;
-		if (actualChange > 0) {
-			// Track mission for earning tokens in a single expedition (set: true replaces progression instead of incrementing)
-			const newPlayer = await MissionsController.update(player, response, {
-				missionId: "earnTokensInOneExpedition",
-				count: actualChange,
-				set: true
-			});
-			Object.assign(player, newPlayer);
-		}
+async function applyTokensReward(player: Player, response: CrowniclesPacket[], amount: number): Promise<number> {
+	if (amount <= 0) {
+		return 0;
 	}
+	const previousTokens = player.tokens;
+	await player.addTokens({
+		amount, response, reason: NumberChangeReason.EXPEDITION
+	});
+	const actualChange = player.tokens - previousTokens;
+
+	if (actualChange > 0) {
+		// Track mission for earning tokens in a single expedition (set: true replaces progression instead of incrementing)
+		const newPlayer = await MissionsController.update(player, response, {
+			missionId: "earnTokensInOneExpedition",
+			count: actualChange,
+			set: true
+		});
+		Object.assign(player, newPlayer);
+	}
+
+	return actualChange;
 }
 
 /**
@@ -109,7 +111,7 @@ export async function applyExpeditionRewards(
 	await applyMoneyReward(player, response, rewards.money);
 	await applyExperienceReward(player, response, rewards.experience, playerActiveObjects);
 	await applyScoreReward(player, response, rewards.points);
-	await applyTokensReward(player, response, rewards.tokens ?? 0);
+	rewards.tokens = await applyTokensReward(player, response, rewards.tokens ?? 0);
 	await applyItemReward({
 		player,
 		response,

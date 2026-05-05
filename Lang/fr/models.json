@@ -214,7 +214,7 @@
       "name_other": "Attaques plongées aériennes"
     },
     "abyssalAura": {
-      "customMessage": "exerce une pression abyssale qui comprime les poumons de son adversaire, réduisant sa régénération de souffle.",
+      "customMessage": "déploie une aura abyssale qui comprime les poumons de son adversaire et plonge son âme dans une terreur paralysante, réduisant sa régénération de souffle.",
       "name_one": "Aura abyssale",
       "name_other": "Auras abyssales"
     },
@@ -327,8 +327,8 @@
     },
     "chargeDeluge": {
       "customMessage": "concentre son énergie primordiale, le ciel s'obscurcit et des éclairs commencent à zébrer le ciel.",
-      "name_one": "Déluge",
-      "name_other": "Déluges"
+      "name_one": "Attaque Déluge",
+      "name_other": "Attaques Déluges"
     },
     "chargeMaelstromAttack": {
       "customMessage": "continue de concentrer son énergie, prêt à libérer une puissance dévastatrice.",
@@ -925,11 +925,17 @@
       "noAction": "est étourdi et ne parvient pas à attaquer.",
       "stop": "n'est plus étourdi."
     },
+    "tetanized": {
+      "name": "tétanisé",
+      "new": "est tétanisé de peur, ses gestes deviennent maladroits et hésitants.",
+      "active": "est encore tétanisé de peur, son corps refuse de répondre normalement.",
+      "stop": "reprend ses esprits et n'est plus tétanisé."
+    },
     "submerged": {
       "name": "submergé",
       "new": "est submergé.",
       "active": "est submergé et a du mal à respirer.",
-      "stop": "a réussi à s'extraire de l'eau mais en finit complètement trempé."
+      "stop": "a réussi à s'extraire de l'eau mais en sort complètement trempé."
       },
     "summonAttack": {
       "name_one": "Invocation d'alliés",
@@ -1123,37 +1129,37 @@
       "particle": "vers le",
       "atParticle": "au"
     },
-    "1108": {
+    "1200": {
       "description": "Une plage paradisiaque recouverte de coquillages de toutes les couleurs. On dit que chaque coquillage garde en lui l'écho de l'océan. Le sable fin et blanc contraste avec les eaux turquoise du lagon voisin. Attention où vous mettez les pieds, certains coquillages sont tranchants comme des lames.",
       "name": "Plage de coquillage",
       "particle": "vers la"
     },
-    "1109": {
+    "1201": {
       "description": "Un lagon aux eaux d'un bleu cristallin protégé par une barrière de corail. Derrière la limpidité de l'onde, des courants sournois, nés des battements de l'océan, guettent la moindre imprudence pour entraîner les égarés vers l'abysse. Dans ce fragile écrin marin, les tortues millénaires viennent chercher un repos que l'agitation du large leur refuse.",
       "name": "Creux du Lagon",
       "particle": "vers le"
     },
-    "1110": {
+    "1202": {
       "description": "Une grotte marine qui ne se laisse conquérir qu'à marée basse, révélant une gueule de calcaire aux parois ruisselantes. À l'intérieur, des lueurs éthérées naissent de la roche, jetant des reflets d'azur sur les voûtes. Entre les ondes et les ombres, des silhouettes de brume et d'écume dansent un ballet muet, comme si l'âme de la mer elle-même s'était réfugiée dans ce sanctuaire.",
       "name": "Caverne Maritime",
       "particle": "vers la"
     },
-    "1111": {
+    "1203": {
       "description": "Une crique isolée qui déploie ses récifs comme des lames de granit noir, à peine dissimulées sous un ressac écumeux qui ne s'apaise jamais. La nuit, des feux follets d'un bleu spectral flottent au-dessus des vagues comme les âmes de marins perdus, esquissant une danse macabre. Une aura sinistre plane sur ce lieu maudit.",
       "name": "Crique du Revenant",
       "particle": "vers la"
     },
-    "1112": {
+    "1204": {
       "description": "Une cathédrale sous-marine sculptée pour amplifier le souffle des marées en un coeur envoûtant. Ce n'est pas le vent, c'est l'appel d'un chant mélodieux qui s'adresse directement à votre âme. Dans cette pénombre sonore, la frontière entre vos propres pensées et les murmures de la roche s'efface doucement, et ceux qui s'y attardent n'en ressortent jamais tout à fait seuls.",
       "name": "Cave des murmures",
       "particle": "vers la"
     },
-    "1113": {
+    "1205": {
       "description": "À mesure que l'on s'approche du bord, l'eau vire au noir d'encre, un miroir sombre qui ne reflète que votre propre peur. Parfois, une ondulation démesurée brise la surface, passage fugace d'un tentacule géant qui remonte des tréfonds avant de replonger dans l'oubli. Nul n'a jamais sondé le coeur de cette fosse, car le Gouffre n'accepte aucun témoin.",
       "name": "Gouffre des Profondeurs",
       "particle": "vers le"
     },
-    "1114": {
+    "1206": {
       "description": "Le point le plus profond de ces eaux, un ravin sous-marin qui plonge dans les ténèbres absolues. La pression y est telle que peu de créatures peuvent y survivre. On murmure qu'une bête primordiale y sommeille depuis l'aube des temps, gardienne des secrets les plus anciens de ce monde. Seuls les plus téméraires osent s'en approcher.",
       "name": "Ravin des Abysses",
       "particle": "vers le"
@@ -2360,22 +2366,22 @@
     "1107": {
       "femaleIceDragon": "Vous avancez dans cette région inexplorée, guidé par une curiosité mêlée d'appréhension. Le mur de glace qui se dresse devant vous reflète une silhouette si imposante qu'elle défie l'imagination. Plus vous approchez dans la pénombre glacée, plus vous réalisez l'ampleur de la créature cachée derrière cette barrière. Soudain, des fissures apparaissent dans la glace, s'étendant comme des toiles d'araignée. Un grondement sourd fait vibrer les parois rocheuses. Le mur explose dans un fracas apocalyptique, projetant des blocs de glace massifs. À travers ce rideau de cristaux brisés émerge la plus majestueuse des créatures : une dragonne de glace aux dimensions pharaoniques. Sa présence semble imposante, ses ailes repliées touchant presque les voûtes de pierre. Elle possède une beauté terrifiante, ses écailles irisées captant la faible lumière en arcs-en-ciel glacés. Ses yeux, d'un bleu profond comme les abysses, brillent d'une sagesse ancienne et d'une fureur maternelle. Derrière elle, vous apercevez un œuf gigantesque aux reflets nacrés, pulsant d'une lueur mystérieuse. Vous venez de pénétrer dans sa nurserie, et aucune intrusion ne restera impunie dans le sanctuaire de la Reine des Glaces..."
     },
-    "1109": {
+    "1201": {
       "turtle": "Vous arrivez près d'un bassin naturel protégé par une barrière de corail. Le calme du lieu vous incite à vous approcher pour admirer les fonds marins. Vous remarquez alors un rocher imposant recouvert d'algues au centre du bassin. Soudain, il se met en mouvement. Une tête massive en émerge, suivie de quatre pattes colossales. Une Tortue Géante se dresse devant vous, sa taille rivalisant avec celle d'un petit navire. Ses grands yeux vous fixent avec une sagesse ancestrale. Puis elle ouvre sa gueule et un puissant jet d'eau vous frôle, vous faisant comprendre que ce paisible lagon est son territoire..."
     },
-    "1110": {
+    "1202": {
       "waterSpirit": "Vous pénétrez dans une grotte marine à marée basse. D'étranges échos résonnent dans les profondeurs et des lueurs bleutées dansent dans l'obscurité, vous attirant plus loin. Soudain, l'eau stagnante se met à tourbillonner et des myriades de gouttelettes sur les parois convergent vers ce point central. Une forme translucide prend vie devant vous, mi-brume mi-eau. L'Esprit des mers vous fixe de ses yeux d'un bleu abyssal. Avant que vous ne puissiez réagir, il disparaît et réapparaît dans votre dos. Ce gardien évanescent ne vous laissera pas quitter son sanctuaire si facilement..."
     },
-    "1111": {
+    "1203": {
       "captainCrow": "La brume s'épaissit à mesure que vous approchez de la Crique du Revenant. Le soleil s'est couché depuis longtemps et seuls des feux follets éclairent votre chemin. Vous avancez prudemment sur les galets mouillés tandis que votre regard accroche les carcasses de plusieurs navires éventrés, leurs coques pourries sans cesse léchées par le flux et le reflux des vagues. Tout à coup, la brume se condense en une forme humanoïde à quelques mètres devant vous. Des yeux se dessinent, deux braises rougeoyantes dans le néant. Le Capitaine Crow, spectre du pirate le plus redouté des mers, matérialise sa silhouette devant vous, son sabre crépitant d'une énergie maudite. Il n'a pas fini de réclamer des âmes."
     },
-    "1112": {
+    "1204": {
       "mermaid": "Vous explorez une caverne sous-marine et plus vous avancez, plus vous percevez une mélodie envoûtante. Vos jambes vous portent malgré vous vers sa source. Au détour d'un passage, vous découvrez un bassin d'eau turquoise. Et là, assise sur un rocher, elle vous attend. Mi-femme mi-poisson, la Sirène vous observe de ses yeux hypnotiques. Sa beauté est saisissante, mais son sourire vous glace le sang. Ses griffes acérées tapotent la pierre, marquant une mesure sourde qui se répercute contre les parois. Son chant change de tonalité : il ne cherche plus à vous séduire, mais à entrer en résonance avec la structure même de la caverne. C'est un piège, et il se referme sur vous..."
     },
-    "1113": {
+    "1205": {
       "kraken": "Vous vous tenez au bord d'un gouffre marin, scrutant les eaux d'un noir d'encre. Rien ne semble bouger dans cet abîme sans fond. Puis des bulles commencent à remonter à la surface. D'abord quelques-unes, puis des centaines. L'eau se met à bouillonner violemment. Soudain, un tentacule massif jaillit des profondeurs, aussi large qu'un tronc d'arbre. Puis un autre. Et encore un autre. Le Kraken émerge de son antre, ses yeux jaunes luisant d'une intelligence malveillante. Ses ventouses claquent contre la roche avec une force capable de broyer les os, une force primordiale. L'abysse est remonté à la surface, et il a faim..."
     },
-    "1114": {
+    "1206": {
       "leviathan": "Vous descendez dans un ravin sous-marin où la lumière n'a plus cours. Les ténèbres vous enveloppent, le silence est oppressant. Puis vous la sentez avant de la voir : une présence titanesque émettant une vibration basse qui fait trembler tous vos os. Deux pupilles s'ouvrent, larges comme des boucliers, d'un bleu électrique qui grésille dans l'eau noire. Le Léviathan s'éveille, il se déploie lentement, sa taille défiant l'entendement. Des éclairs commencent à crépiter entre ses crocs tandis que l'eau tourbillonne en un maelström naissant. Vous venez de commettre l'erreur de le réveiller..."
     }
   },

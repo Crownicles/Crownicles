@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import {getWeekNumber, minutesDisplayIntl} from "../../src/utils/TimeUtils";
+import { getWeekNumber, minutesDisplayIntl, weeksToSeconds } from "../../src/utils/TimeUtils";
 import {LANGUAGE} from "../../src/Language";
 
 
@@ -131,5 +131,19 @@ describe("minutesDisplayIntl", () => {
 		expect(minutesDisplayIntl(125, "es")).toBe("2 horas y 5 minutos");
 		// Italian
 		expect(minutesDisplayIntl(125, "it")).toBe("2 ore e 5 minuti");
+	});
+});
+
+describe("weeksToSeconds", () => {
+	it("should return 604800 seconds for 1 week", () => {
+		expect(weeksToSeconds(1)).toBe(604800);
+	});
+
+	it("should return 0 for 0 weeks", () => {
+		expect(weeksToSeconds(0)).toBe(0);
+	});
+
+	it("should scale linearly", () => {
+		expect(weeksToSeconds(10)).toBe(10 * 604800);
 	});
 });

@@ -3,5 +3,8 @@
   "rawDefense": 10,
   "defense": 9,
   "speed": -10,
-  "type": "metal"
+  "type": "metal",
+  "tags": [
+    "metallic"
+  ]
 }

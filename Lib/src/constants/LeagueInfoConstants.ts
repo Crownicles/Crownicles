@@ -54,4 +54,6 @@ export abstract class LeagueInfoConstants {
 		8, // Legendary
 		8 // Royal
 	];
+
+	static readonly ROYAL_LEAGUE_ID = LeagueInfoConstants.MONEY_TO_AWARD.length - 1;
 }

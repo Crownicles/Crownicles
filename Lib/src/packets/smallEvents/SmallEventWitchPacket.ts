@@ -9,6 +9,8 @@ export class SmallEventWitchResultPacket extends SmallEventPacket {
 
 	isIngredient!: boolean;
 
+	forceEffect!: boolean;
+
 	effectId!: string;
 
 	timeLost!: number;

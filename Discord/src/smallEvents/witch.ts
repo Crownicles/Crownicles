@@ -14,11 +14,9 @@ import {
 } from "../utils/SmallEventUtils";
 import { StringUtils } from "../utils/StringUtils";
 import { SmallEventWitchResultPacket } from "../../../Lib/src/packets/smallEvents/SmallEventWitchPacket";
-import { Effect } from "../../../Lib/src/types/Effect";
-import { WitchActionOutcomeType } from "../../../Lib/src/types/WitchActionOutcomeType";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { MessagesUtils } from "../utils/MessagesUtils";
-import { Language } from "../../../Lib/src/Language";
+import { buildWitchResultDescription } from "./WitchResultDescription";
 
 export async function witchCollector(context: PacketContext, packet: ReactionCollectorWitchPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
@@ -96,34 +94,13 @@ export async function witchCollector(context: PacketContext, packet: ReactionCol
 	return [buttonCollector];
 }
 
-/**
- * Build the time penalty outro text for a witch event result
- */
-function buildTimePenaltyOutro(packet: SmallEventWitchResultPacket, lng: Language): string {
-	if (packet.effectId !== Effect.OCCUPIED.id || packet.timeLost <= 0) {
-		return "";
-	}
-	return ` ${StringUtils.getRandomTranslation("smallEvents:witch.witchEventResults.outcomes.2.time", lng, {
-		lostTime: packet.timeLost,
-		lostTimeDisplay: i18n.formatDuration(packet.timeLost, lng)
-	})}`;
-}
-
 export async function witchResult(packet: SmallEventWitchResultPacket, context: PacketContext): Promise<void> {
 	const interaction = MessagesUtils.getCurrentInteraction(context);
 	if (!interaction) {
 		return;
 	}
 	const lng = context.discord!.language;
-	const introToLoad = packet.isIngredient ? "smallEvents:witch.witchEventResults.ingredientIntros" : "smallEvents:witch.witchEventResults.adviceIntros";
-	const outcomeTranslationToLoad = packet.outcome === WitchActionOutcomeType.EFFECT
-		? `smallEvents:witch.witchEventResults.outcomes.2.${packet.effectId}`
-		: `smallEvents:witch.witchEventResults.outcomes.${packet.outcome + 1}`;
-
-	let description = `${StringUtils.getRandomTranslation(introToLoad, lng, {
-		witchEvent: `${i18n.t(`smallEvents:witch.witchEventNames.${packet.ingredientId}`, { lng })} ${CrowniclesIcons.witchSmallEvent[packet.ingredientId]}`
-			.toLowerCase()
-	})} ${StringUtils.getRandomTranslation(outcomeTranslationToLoad, lng, { lifeLoss: packet.lifeLoss })}${buildTimePenaltyOutro(packet, lng)}`;
+	let description = buildWitchResultDescription(packet, lng);
 
 	if (packet.discoveredRecipeId) {
 		description += `\n\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeId, lng)}`;

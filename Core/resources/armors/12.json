@@ -1,5 +1,8 @@
 {
   "rarity": 7,
   "rawDefense": 7,
-  "type": "alloy"
+  "type": "alloy",
+  "tags": [
+    "metallic"
+  ]
 }

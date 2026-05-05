@@ -7,7 +7,12 @@ import {
 import { promises } from "fs";
 import { createConnection } from "mariadb";
 import { DatabaseConfiguration } from "./DatabaseConfiguration";
+import { CrowniclesLogger } from "../logs/CrowniclesLogger";
 import TYPES = Transaction.TYPES;
+
+const DB_RETRY_MAX_ATTEMPTS = 10;
+const DB_RETRY_BASE_DELAY_MS = 1000;
+const DB_RETRY_MAX_DELAY_MS = 30000;
 
 export abstract class Database {
 	/**
@@ -65,44 +70,65 @@ export abstract class Database {
 
 		const dbName = `${this.databaseConfiguration.prefix}_${this.databaseConfiguration.databaseName}`;
 
-		if (this.databaseConfiguration.rootPassword) {
-			// Initialize the connection
-			const mariadbConnection = await createConnection({
-				host: this.databaseConfiguration.host,
-				port: this.databaseConfiguration.port,
-				user: this.databaseConfiguration.rootUser,
-				password: this.databaseConfiguration.rootPassword
-			});
-			await mariadbConnection.execute(`CREATE DATABASE IF NOT EXISTS ${dbName} CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;`);
+		for (let attempt = 1; attempt <= DB_RETRY_MAX_ATTEMPTS; attempt++) {
 			try {
-				await mariadbConnection.execute(
-					`GRANT ALL PRIVILEGES ON ${dbName}.* TO '${this.databaseConfiguration.user}'@${this.databaseConfiguration.host};`
-				);
+				if (this.databaseConfiguration.rootPassword) {
+					let mariadbConnection;
+					try {
+						mariadbConnection = await createConnection({
+							host: this.databaseConfiguration.host,
+							port: this.databaseConfiguration.port,
+							user: this.databaseConfiguration.rootUser,
+							password: this.databaseConfiguration.rootPassword
+						});
+						await mariadbConnection.execute(`CREATE DATABASE IF NOT EXISTS ${dbName} CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;`);
+						try {
+							await mariadbConnection.execute(
+								`GRANT ALL PRIVILEGES ON ${dbName}.* TO '${this.databaseConfiguration.user}'@${this.databaseConfiguration.host};`
+							);
+						}
+						catch {
+							await mariadbConnection.execute(`GRANT ALL PRIVILEGES ON ${dbName}.* TO '${this.databaseConfiguration.user}';`);
+						}
+					}
+					finally {
+						await mariadbConnection?.end();
+					}
+				}
+
+				const sequelize = new Sequelize(`${dbName}`, this.databaseConfiguration.user, this.databaseConfiguration.userPassword, {
+					dialect: "mariadb",
+					host: this.databaseConfiguration.host,
+					port: this.databaseConfiguration.port,
+					logging: false,
+					transactionType: TYPES.IMMEDIATE
+				});
+				await sequelize.authenticate();
+				this.sequelize = sequelize;
+
+				// Create umzug instance. See https://github.com/sequelize/umzug
+				this.umzug = new Umzug({
+					context: sequelize.getQueryInterface(),
+					logger: console,
+					migrations: {
+						glob: ["*.js", { cwd: this.migrationsPath.replace("\\", "/") }]
+					},
+					storage: new SequelizeStorage({ sequelize })
+				});
+				return;
 			}
-			catch {
-				await mariadbConnection.execute(`GRANT ALL PRIVILEGES ON ${dbName}.* TO '${this.databaseConfiguration.user}';`);
+			catch (error) {
+				const delay = Math.min(DB_RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1), DB_RETRY_MAX_DELAY_MS);
+				CrowniclesLogger.error(`Database connection attempt ${attempt}/${DB_RETRY_MAX_ATTEMPTS} failed, retrying in ${delay}ms...`, {
+					reason: error instanceof Error ? error.message : String(error)
+				});
+				if (attempt === DB_RETRY_MAX_ATTEMPTS) {
+					CrowniclesLogger.error("All database connection attempts failed");
+					throw error;
+				}
+				await new Promise(resolve => setTimeout(resolve, delay));
 			}
-			await mariadbConnection.end();
 		}
-
-		this.sequelize = new Sequelize(`${dbName}`, this.databaseConfiguration.user, this.databaseConfiguration.userPassword, {
-			dialect: "mariadb",
-			host: this.databaseConfiguration.host,
-			port: this.databaseConfiguration.port,
-			logging: false,
-			transactionType: TYPES.IMMEDIATE
-		});
-		await this.sequelize.authenticate();
-
-		// Create umzug instance. See https://github.com/sequelize/umzug
-		this.umzug = new Umzug({
-			context: this.sequelize.getQueryInterface(),
-			logger: console,
-			migrations: {
-				glob: ["*.js", { cwd: this.migrationsPath.replace("\\", "/") }]
-			},
-			storage: new SequelizeStorage({ sequelize: this.sequelize })
-		});
 	}
 
 	/**

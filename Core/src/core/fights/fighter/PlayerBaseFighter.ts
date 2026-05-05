@@ -21,6 +21,8 @@ export abstract class PlayerBaseFighter extends Fighter {
 
 	public pet?: PetEntity;
 
+	public metallicItemCount = 0;
+
 	protected fightRole: FightRole = FightConstants.FIGHT_ROLES.ATTACKER;
 
 	protected constructor(player: Player, availableFightActions: FightAction[]) {

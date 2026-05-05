@@ -23,5 +23,6 @@ export const FightAlterations = {
 	SUBMERGED: "submerged",
 	SWALLOWED: "swallowed",
 	TARGETED: "targeted",
+	TETANIZED: "tetanized",
 	WEAK: "weak"
 };

@@ -148,7 +148,6 @@ export function createUseTokensCollector(
 
 	const endCallback: EndCallback = async (collector, response) => {
 		const reaction = collector.getFirstReaction();
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_USE_TOKENS);
 
 		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 			await acceptUseTokens(player, tokenCost, response);
@@ -156,6 +155,8 @@ export function createUseTokensCollector(
 		else {
 			response.push(makePacket(CommandReportUseTokensRefusePacketRes, {}));
 		}
+
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_USE_TOKENS);
 	};
 
 	const collectorPacket = new ReactionCollectorInstance(
@@ -187,7 +188,6 @@ export function createBuyHealCollector(
 
 	const endCallback: EndCallback = async (collector, response) => {
 		const reaction = collector.getFirstReaction();
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_BUY_HEAL);
 
 		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
 			await acceptBuyHeal(player, healPrice, response);
@@ -195,6 +195,8 @@ export function createBuyHealCollector(
 		else {
 			response.push(makePacket(CommandReportBuyHealRefusePacketRes, {}));
 		}
+
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_BUY_HEAL);
 	};
 
 	const collectorPacket = new ReactionCollectorInstance(

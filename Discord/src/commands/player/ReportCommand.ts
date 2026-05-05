@@ -29,7 +29,7 @@ import {
 	ReactionCollectorBigEventData,
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
-import i18n, { TranslationOption } from "../../translations/i18n";
+import i18n, { I18nCrowniclesOptions } from "../../translations/i18n";
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
 } from "discord.js";
@@ -163,7 +163,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 }
 
 type Condition = boolean | number | undefined;
-type ConditionTriplet = [Condition, string, Omit<TranslationOption, "lng">];
+type ConditionTriplet = [Condition, string, Omit<I18nCrowniclesOptions, "lng">];
 
 function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes, lng: Language): ConditionTriplet[] {
 	return [
@@ -553,6 +553,218 @@ function manageEndPathDescriptions({
 }
 
 /**
+ * Handle the response when player successfully uses tokens to advance
+ * @param packet
+ * @param context
+ */
+export async function handleUseTokensAccept(packet: CommandReportUseTokensAcceptPacketRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.tokensUsedSuccessTitle", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.tokensUsedSuccessDescription", {
+			lng,
+			count: packet.tokensSpent,
+			nextStep: packet.isArrived
+				? i18n.t("commands:report.tokensNextStepArrived", { lng })
+				: i18n.t("commands:report.tokensNextStepSmallEvent", { lng })
+		}));
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
+}
+
+/**
+ * Handle the response when player refuses to use tokens
+ * @param context
+ */
+export async function handleUseTokensRefuse(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.tokensUsedRefusedTitle", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.tokensUsedRefusedDescription", { lng }))
+		.setErrorColor();
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
+}
+
+/**
+ * Handle the response when player successfully buys heal
+ * @param packet
+ * @param context
+ */
+export async function handleBuyHealAccept(packet: CommandReportBuyHealAcceptPacketRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.healSuccessTitle", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.healSuccessDescription", {
+			lng,
+			price: packet.healPrice,
+			nextStep: packet.isArrived
+				? i18n.t("commands:report.healNextStepArrived", { lng })
+				: i18n.t("commands:report.healNextStepSmallEvent", { lng })
+		}));
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
+}
+
+/**
+ * Handle the response when player refuses to buy heal
+ * @param context
+ */
+export async function handleBuyHealRefuse(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.healRefusedTitle", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.healRefusedDescription", { lng }))
+		.setErrorColor();
+
+	await buttonInteraction?.editReply({ embeds: [embed] });
+}
+
+/**
+ * Handle the response when player has no alteration to heal
+ * @param context
+ */
+export async function handleBuyHealNoAlteration(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	await buttonInteraction?.editReply({
+		content: i18n.t("commands:report.healNoAlteration", { lng })
+	});
+}
+
+/**
+ * Handle the response when player tries to heal occupied alteration
+ * @param context
+ */
+export async function handleBuyHealCannotHealOccupied(context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+	if (!interaction) {
+		return;
+	}
+	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const lng = interaction.userLanguage;
+
+	await buttonInteraction?.editReply({
+		content: i18n.t("commands:report.healCannotHealOccupied", { lng })
+	});
+}
+
+/**
+ * Create the confirmation collector for buying heal
+ * @param context
+ * @param packet
+ */
+export async function createBuyHealCollector(context: PacketContext, packet: ReactionCollectorBuyHealPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const data = packet.data.data;
+
+	return await createConfirmationCollector(context, packet, {
+		titleKey: "commands:report.buyHealConfirmTitle",
+		descriptionKey: "commands:report.buyHealConfirmDescription",
+		descriptionParams: {
+			price: data.healPrice,
+			playerMoney: data.playerMoney
+		}
+	});
+}
+
+/**
+ * Create the confirmation collector for using tokens
+ * @param context
+ * @param packet
+ */
+export async function createUseTokensCollector(context: PacketContext, packet: ReactionCollectorUseTokensPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+	const data = packet.data.data;
+
+	return await createConfirmationCollector(context, packet, {
+		titleKey: "commands:report.useTokensConfirmTitle",
+		descriptionKey: "commands:report.useTokensConfirmDescription",
+		descriptionParams: {
+			count: data.cost,
+			playerTokens: data.playerTokens
+		}
+	});
+}
+
+/**
+ * Add optional energy and points fields to the travel embed
+ */
+function addEnergyAndPointsFields(
+	travelEmbed: CrowniclesEmbed,
+	packet: CommandReportTravelSummaryRes,
+	lng: Language
+): void {
+	if (packet.energy.show) {
+		travelEmbed.addFields({
+			name: i18n.t("commands:report.remainingEnergyTitle", { lng }),
+			value: `${CrowniclesIcons.unitValues.energy} ${packet.energy.current} / ${packet.energy.max}`,
+			inline: true
+		});
+	}
+	if (packet.points.show) {
+		travelEmbed.addFields({
+			name: i18n.t("commands:report.collectedPointsTitle", { lng }),
+			value: `${CrowniclesIcons.unitValues.score} ${DisplayUtils.formatNumber(packet.points.cumulated, lng)}`,
+			inline: true
+		});
+	}
+}
+
+/**
+ * Add a random advice field to the travel embed
+ */
+function addAdviceField(travelEmbed: CrowniclesEmbed, lng: Language): void {
+	const advices = i18n.tArray("advices:advices", {
+		lng
+	});
+	travelEmbed.addFields({
+		name: i18n.t("commands:report.adviceTitle", { lng }),
+		value: advices[Math.floor(Math.random() * advices.length)],
+		inline: true
+	});
+}
+
+/**
  * Generic button creation with currency check
  */
 interface ButtonConfig {
@@ -937,165 +1149,6 @@ export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: 
 
 	await interaction.editReply({
 		embeds: [embed]
-	});
-}
-
-/**
- * Handle the response when player successfully uses tokens
- */
-export async function handleUseTokensAccept(packet: CommandReportUseTokensAcceptPacketRes, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	if (!interaction) {
-		return;
-	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	const lng = interaction.userLanguage;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.tokensUsedSuccessTitle", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.tokensUsedSuccessDescription", {
-			lng,
-			count: packet.tokensSpent,
-			nextStep: packet.isArrived
-				? i18n.t("commands:report.tokensNextStepArrived", { lng })
-				: i18n.t("commands:report.tokensNextStepSmallEvent", { lng })
-		}));
-
-	await buttonInteraction?.editReply({ embeds: [embed] });
-}
-
-/**
- * Handle the response when player refuses to use tokens
- */
-export async function handleUseTokensRefuse(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	if (!interaction) {
-		return;
-	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	const lng = interaction.userLanguage;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.tokensUsedRefusedTitle", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.tokensUsedRefusedDescription", { lng }))
-		.setErrorColor();
-
-	await buttonInteraction?.editReply({ embeds: [embed] });
-}
-
-/**
- * Handle the response when player successfully buys heal
- */
-export async function handleBuyHealAccept(packet: CommandReportBuyHealAcceptPacketRes, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	if (!interaction) {
-		return;
-	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	const lng = interaction.userLanguage;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.healSuccessTitle", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.healSuccessDescription", {
-			lng,
-			price: packet.healPrice,
-			nextStep: packet.isArrived
-				? i18n.t("commands:report.healNextStepArrived", { lng })
-				: i18n.t("commands:report.healNextStepSmallEvent", { lng })
-		}));
-
-	await buttonInteraction?.editReply({ embeds: [embed] });
-}
-
-/**
- * Handle the response when player refuses to buy heal
- */
-export async function handleBuyHealRefuse(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	if (!interaction) {
-		return;
-	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	const lng = interaction.userLanguage;
-
-	await buttonInteraction?.editReply({
-		content: i18n.t("commands:report.healRefused", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		})
-	});
-}
-
-/**
- * Handle the response when player has no alteration to heal
- */
-export async function handleBuyHealNoAlteration(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	if (!interaction) {
-		return;
-	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	const lng = interaction.userLanguage;
-
-	await buttonInteraction?.editReply({
-		content: i18n.t("commands:report.healNoAlteration", { lng })
-	});
-}
-
-/**
- * Handle the response when player tries to heal occupied alteration
- */
-export async function handleBuyHealCannotHealOccupied(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	if (!interaction) {
-		return;
-	}
-	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
-	const lng = interaction.userLanguage;
-
-	await buttonInteraction?.editReply({
-		content: i18n.t("commands:report.healCannotHealOccupied", { lng })
-	});
-}
-
-/**
- * Create the confirmation collector for buying heal
- */
-export async function createBuyHealCollector(context: PacketContext, packet: ReactionCollectorBuyHealPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const data = packet.data.data;
-
-	return await createConfirmationCollector(context, packet, {
-		titleKey: "commands:report.buyHealConfirmTitle",
-		descriptionKey: "commands:report.buyHealConfirmDescription",
-		descriptionParams: {
-			price: data.healPrice,
-			playerMoney: data.playerMoney
-		}
-	});
-}
-
-/**
- * Create the confirmation collector for using tokens
- */
-export async function createUseTokensCollector(context: PacketContext, packet: ReactionCollectorUseTokensPacket): Promise<ReactionCollectorReturnTypeOrNull> {
-	const data = packet.data.data;
-
-	return await createConfirmationCollector(context, packet, {
-		titleKey: "commands:report.useTokensConfirmTitle",
-		descriptionKey: "commands:report.useTokensConfirmDescription",
-		descriptionParams: {
-			count: data.cost,
-			playerTokens: data.playerTokens
-		}
 	});
 }
 

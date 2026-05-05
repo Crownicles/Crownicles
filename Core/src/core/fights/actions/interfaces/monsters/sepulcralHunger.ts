@@ -15,7 +15,7 @@ const use: FightActionFunc = (sender, receiver) => {
 		},
 		{
 			critical: 10,
-			failure: 5
+			failure: 4
 		},
 		{
 			attackInfo: getAttackInfo(receiver),
@@ -23,9 +23,9 @@ const use: FightActionFunc = (sender, receiver) => {
 		}
 	);
 
-	// 50% chance to apply weak status when prey is below 50% HP
+	// 70% chance to apply weak status when prey is below 50% HP
 	if (receiver.getEnergy() < receiver.getMaxEnergy() * 0.5
-		&& RandomUtils.crowniclesRandom.bool(0.5)) {
+		&& RandomUtils.crowniclesRandom.bool(0.7)) {
 		FightActionController.applyAlteration(result, {
 			selfTarget: false,
 			alteration: FightAlterations.WEAK

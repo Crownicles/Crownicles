@@ -23,6 +23,10 @@ import i18n from "../../translations/i18n";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import {
 	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonInteraction,
+	ButtonStyle,
+	ComponentType,
 	parseEmoji,
 	StringSelectMenuBuilder,
 	StringSelectMenuInteraction,
@@ -108,27 +112,78 @@ async function handleGetPlayerInfoResponse(
 				return;
 			}
 
-			selectCollector.stop();
+			selectCollector.stop("badgeSelected");
 
-			disableRows(rows);
+			const selectedOption = selectMenuInteraction.values[0] as Badge;
+			const badgeName = i18n.t(`commands:profile.badges.${selectedOption}`, { lng: interaction.userLanguage });
+			const badgeEmote = CrowniclesIcons.badges[selectedOption];
+
+			const confirmRow = new ActionRowBuilder<ButtonBuilder>();
+			confirmRow.addComponents(
+				new ButtonBuilder()
+					.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
+					.setCustomId("accept")
+					.setStyle(ButtonStyle.Secondary),
+				new ButtonBuilder()
+					.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+					.setCustomId("refuse")
+					.setStyle(ButtonStyle.Secondary)
+			);
 
 			await selectMenuInteraction.update({
-				components: rows
+				embeds: [
+					new CrowniclesEmbed()
+						.formatAuthor(i18n.t("commands:giveBadge.confirmTitle", {
+							lng: interaction.userLanguage,
+							pseudo: escapeUsername(interaction.user.displayName)
+						}), interaction.user)
+						.setDescription(i18n.t("commands:giveBadge.confirmDesc", {
+							lng: interaction.userLanguage,
+							badge: `${badgeEmote} ${badgeName}`
+						}))
+				],
+				components: [confirmRow]
 			});
 
-			const selectedOption = selectMenuInteraction.values[0];
+			const confirmCollector = msg.createMessageComponentCollector({
+				componentType: ComponentType.Button,
+				time: Constants.MESSAGES.COLLECTOR_TIME,
+				max: 1
+			});
 
-			const newBadges = getPlayerInfoPacket.data.badges!.concat(selectedOption as Badge);
-			PacketUtils.sendPacketToBackend(context, makePacket(CommandSetPlayerInfoReq, {
-				keycloakId: targetKeycloakId,
-				dataToSet: { badges: newBadges }
-			}));
+			confirmCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+				if (buttonInteraction.user.id !== context.discord?.user) {
+					await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, interaction.userLanguage);
+					return;
+				}
+
+				confirmCollector.stop();
+
+				disableRows([confirmRow]);
+				await buttonInteraction.update({ components: [confirmRow] });
+
+				if (buttonInteraction.customId === "accept") {
+					const newBadges = getPlayerInfoPacket.data.badges!.concat(selectedOption);
+					PacketUtils.sendPacketToBackend(context, makePacket(CommandSetPlayerInfoReq, {
+						keycloakId: targetKeycloakId,
+						dataToSet: { badges: newBadges }
+					}));
+				}
+			});
+
+			confirmCollector.on("end", async () => {
+				disableRows([confirmRow]);
+				await msg.edit({ components: [confirmRow] }).catch(() => null);
+			});
 		});
 
-		selectCollector.on("end", async () => {
+		selectCollector.on("end", async (_, reason) => {
+			if (reason === "badgeSelected") {
+				return;
+			}
 			disableRows(rows);
 
-			await msg.edit({ components: rows });
+			await msg.edit({ components: rows }).catch(() => null);
 		});
 	}
 }

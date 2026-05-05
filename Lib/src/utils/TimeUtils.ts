@@ -168,6 +168,14 @@ export function daysToSeconds(days: Day): Second {
 }
 
 /**
+ * Convert weeks to seconds
+ * @param weeks
+ */
+export function weeksToSeconds(weeks: number): number {
+	return weeks * TimeConstants.S_TIME.WEEK;
+}
+
+/**
  * Check if two dates are the same day
  * @param first - first date
  * @param second - second date

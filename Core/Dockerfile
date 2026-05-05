@@ -65,5 +65,12 @@ RUN mkdir -p /.cache/node/corepack
 RUN chmod -R 777 /.cache/node/corepack
 RUN chmod o+rx /root
 
+# Install wget for healthcheck
+RUN apk add --no-cache wget
+
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD wget -qO- http://localhost:10123/health || exit 1
+
 # Command used to start the app
 CMD [ "pnpm", "dockerStart" ]

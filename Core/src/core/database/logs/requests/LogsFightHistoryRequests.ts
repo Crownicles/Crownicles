@@ -8,7 +8,7 @@ import { LogsPlayersGloryPoints } from "../models/LogsPlayersGloryPoints";
 import { LeagueDataController } from "../../../../data/League";
 import { FightHistoryItem } from "../../../../../../Lib/src/packets/commands/CommandFightHistoryPacket";
 import {
-	asSeconds, secondsToMilliseconds
+	asSeconds, getDateLogs, secondsToMilliseconds, weeksToSeconds
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { EloGameResult } from "../../../../../../Lib/src/types/EloGameResult";
 
@@ -162,5 +162,25 @@ export abstract class LogsFightHistoryRequests {
 			],
 			limit: count
 		}) as unknown as HistoryCombinedLogsFightsResults[];
+	}
+
+	/**
+	 * Count the number of ranked fights a player has initiated in the last N weeks
+	 * @param keycloakId
+	 * @param weeks
+	 */
+	static async getAttackCountInLastNWeeks(keycloakId: string, weeks: number): Promise<number> {
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
+		const since = getDateLogs() - weeksToSeconds(weeks);
+		return await LogsFightsResults.count({
+			where: {
+				fightInitiatorId: logPlayer.id,
+				friendly: false,
+				date: { [Op.gte]: since }
+			}
+		});
 	}
 }

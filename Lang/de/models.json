@@ -198,10 +198,40 @@
     "9": "Eine auf Geschwindigkeit ausgerichtete Klasse. Wenig Lebens- und Energiepunkte, aber hohe Geschwindigkeit und Angriffsstärke."
   },
   "fight_actions": {
+    "drowning": {
+      "customMessage": "packt seinen Gegner mit einem seiner Tentakel und taucht ihn unter Wasser, nur Gegner mit Atem kommen unbeschadet wieder heraus.",
+      "name_one": "Ertrinken",
+      "name_other": "Ertrinken"
+    },
+    "sepulcralHunger": {
+      "customMessage": "spürt die Schwäche seiner Beute und greift mit verdoppelter Wildheit an, wobei seine Augen in einem raubtierhaften Glanz erstrahlen.",
+      "name_one": "Sepulkraler Hunger",
+      "name_other": "Sepulkraler Hunger"
+    },
+    "aerialDiveAttack": {
+      "customMessage": "schwingt sich in die Luft, um sich auf seinen Gegner zu stürzen, doch dieser kann ihn mit seinen Angriffen auf Distanz halten.",
+      "name_one": "Angriff Lufttauchgang",
+      "name_other": "Angriffe aus der Luft tauchen"
+    },
+    "abyssalAura": {
+      "customMessage": "entfaltet eine abgrundtiefe Aura, die die Lungen des Gegners zusammenpresst und seine Seele in lähmenden Schrecken versetzt, wodurch seine Atemregeneration verringert wird.",
+      "name_one": "Abyssale Aura",
+      "name_other": "Abyssale Auras"
+    },
     "alliesArePresent": {
       "name": "Opfer der Verbündeten",
       "new": "wird Opfer der Verbündeten seines Gegners.",
       "active": "erleidet die Angriffe von den Verbündeten seines Gegners."
+    },
+    "ambush": {
+      "customMessage": "versteckt sich, um einen Hinterhalt vorzubereiten...",
+      "name_one": "Hinterhalt",
+      "name_other": "Hinterhalte"
+    },
+    "aqueousEvasion": {
+      "customMessage": "gleitet in einem Wasserwirbel außer Reichweite und verlangsamt seinen Gegner.",
+      "name_one": "Ausweichen im Wasser",
+      "name_other": "Ausweichen im Wasser"
     },
     "benediction": {
       "description": "Gehört zur Gruppe der \"Aktionen der Götter\". Scheitert, wenn im Kampf bereits 1 Aktion der Götter ausgeführt wurde. Erhöht alle Statistiken des Werfers. Je später im Kampf der Segen eingesetzt wird, desto höher ist die Erhöhung der Statistiken.",
@@ -211,12 +241,23 @@
     "bite": {
       "success": "wird von **{{petNickname}}** unterstützt, der sich dazu entschließt, seinen Gegner heftig zu beißen."
     },
+    "bleeding": {
+      "name": "blutend",
+      "new": "blutet.",
+      "active": "blutet.",
+      "stop": "nicht mehr blutet."
+    },
     "blind": {
       "name": "blind",
       "new": "ist geblendet.",
       "active": "ist geblendet und schlägt zufällig alles um ihn herum.",
       "noAction": "wird geblendet und verfehlt sein Ziel völlig.",
       "stop": "wieder sehen kann."
+    },
+    "blizzardRageAttack": {
+      "customMessage": "beschwört den Zorn des Blizzards auf seinen Gegner, aber die eisigen Winde wüten bereits in der Arena.",
+      "name_one": "Angriff Blizzardwut",
+      "name_other": "Blizzard-Rage-Attacken"
     },
     "boomerangAttack": {
       "description": "Dieser Angriff kann bis zu 2 Returns of Damage verursachen.",
@@ -229,13 +270,13 @@
     "boostSpeed": {
       "success": "steigt auf den Rücken von **{{petNickname}}**, um sich schneller fortzubewegen."
     },
-    "breakArmor": {
-      "failure": "ruft **{{petNickname}}** an, der den Gegner angreift. Leider verfehlt er sein Ziel völlig.",
-      "success": "bittet seinen Vertrauten um Hilfe, der den Gegner schwer belastet. Dieser schützt sich vor dem Angriff, aber seine Ausrüstung wird von **{{petNickname}}** weggetragen!"
-    },
     "boulderTossAttack": {
       "name_one": "Felsangriff",
       "name_other": "Felsangriffe"
+    },
+    "breakArmor": {
+      "failure": "ruft **{{petNickname}}** an, der den Gegner angreift. Leider verfehlt er sein Ziel völlig.",
+      "success": "bittet seinen Vertrauten um Hilfe, der den Gegner schwer belastet. Dieser schützt sich vor dem Angriff, aber seine Ausrüstung wird von **{{petNickname}}** weggetragen!"
     },
     "breathTakingAttack": {
       "description": "Verursacht eine kleine Menge Schaden, kann aber den Atem des Gegners stehlen oder ihn verlangsamen.",
@@ -251,10 +292,29 @@
       "active": "leidet unter seiner Verbrennung.",
       "stop": "nicht mehr verbrannt wird."
     },
+    "callOfTheSea": {
+      "name_one": "Attacke Ruf des Meeres",
+      "name_other": "Angriffe Anrufe von den Meeren"
+    },
+    "callPack": {
+      "customMessage": "ruft sein Rudel mit einem schrillen Heulen.",
+      "name_one": "Aufruf an das Rudel",
+      "name_other": "Appelle an das Rudel"
+    },
     "canonAttack": {
       "description": "Die Genauigkeit dieses Angriffs sinkt bei schnellen Gegnern. Ein Schadensbonus wird auf diesen Angriff angewendet, wenn der Gegner sehr langsam ist. Der Gegner kann durch den Angriff verlangsamt werden. Verursacht mehr Schaden, wenn er mehrmals hintereinander eingesetzt wird.",
       "name_one": "Kanonenangriff",
       "name_other": "Kanonenschläge"
+    },
+    "chargeChargeMaelstromAttack": {
+      "customMessage": "steht still und bereitet sich darauf vor, eine Katastrophe auszulösen.",
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
+    },
+    "chargeChargeRadiantBlastAttack": {
+      "customMessage": "lädt seine Energie auf und bereitet sich auf einen mächtigen Angriff vor.",
+      "name_one": "Explosiver Strahlungsstrahlenangriff",
+      "name_other": "Explosive Strahlenangriffe"
     },
     "chargeChargingAttack": {
       "description": "Angriff über zwei Runden. In der ersten Runde wird die Verteidigung des Werfers um 50 % erhöht. In der zweiten Runde wird die Verteidigung des Werfers verringert und verursacht dabei hohen Schaden.",
@@ -265,6 +325,21 @@
       "name_one": "Keulen Angriff",
       "name_other": "Keulen Angriffe"
     },
+    "chargeDeluge": {
+      "customMessage": "konzentriert seine Urenergie, der Himmel verdunkelt sich und Blitze beginnen, den Himmel zu durchzucken.",
+      "name_one": "Angriff Flut",
+      "name_other": "Angriffe Sintfluten"
+    },
+    "chargeMaelstromAttack": {
+      "customMessage": "konzentriert seine Energie weiterhin und ist bereit, eine verheerende Kraft zu entfesseln.",
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
+    },
+    "chargeRadiantBlastAttack": {
+      "customMessage": "lädt weiterhin seine Energie auf und bereitet sich auf einen mächtigen Angriff vor.",
+      "name_one": "Explosiver Strahlungsstrahlenangriff",
+      "name_other": "Explosive Strahlenangriffe"
+    },
     "chargeUltimateAttack": {
       "description": "Benötigt eine Runde, um den Angriff aufzuladen. Wenn der Angreifer weniger als 45% seiner Energie verfügt, kann dieser Angriff nicht fehlschlagen. Dieser Angriff kann nur einmal pro Spieler und Kampf eingesetzt werden.",
       "name_one": "Ultimativer Angriff",
@@ -273,6 +348,10 @@
     "chargingAttack": {
       "name_one": "Geladener Angriff",
       "name_other": "Geladene Angriffe"
+    },
+    "clawAttack": {
+      "name_one": "Krallenangriff",
+      "name_other": "Krallenangriffe"
     },
     "claws": {
       "success": "wird in seinem Kampf von **{{petNickname}}** unterstützt, der seinem Gegner einen großen Prankenhieb versetzt."
@@ -316,6 +395,15 @@
       "success": "wird von **{{petNickname}}** unterstützt, der den Gegner unter seinem Gewicht zerquetscht.",
       "failure": "wird von **{{petNickname}}** unterstützt, der auf das Schlachtfeld stürzt, aber sein Ziel, das dank seiner Geschwindigkeit entkommen konnte, völlig verfehlt."
     },
+    "crystallineArmorAttack": {
+      "customMessage": "lässt seine kristalline Rüstung leuchten, in der Hoffnung, seinen Gegner zu verletzen, doch die scharfen Spitzen bleiben unberührt.",
+      "name_one": "Angriff Kristallrüstung",
+      "name_other": "Angriffe Kristalline Rüstungen"
+    },
+    "crystalShardAttack": {
+      "name_one": "Angriff Kristallsplitter",
+      "name_other": "Angriffe Kristallsplitter"
+    },
     "cursed": {
       "name": "verflucht",
       "new": "ist verflucht...",
@@ -326,6 +414,17 @@
       "description": "Verflucht den Gegner, vielleicht wird er in der Zukunft die Konsequenzen zu spüren bekommen... Heilt den Werfer, wenn der Gegner mehr als 40% seiner Energie hat.",
       "name_one": "Verfluchung",
       "name_other": "Verfluchungen"
+    },
+    "cursedByTheSea": {
+      "name": "vom Meer verdammt",
+      "new": "wird vom Meer verdammt",
+      "active": "wird vom Meer verdammt",
+      "stop": "wird von den verfluchten Wassern verurteilt."
+    },
+    "cursedOfTheSea": {
+      "customMessage": "verurteilt seinen Gegner zur Verdammung durch das Meer.",
+      "name_one": "Fluch des Meeres",
+      "name_other": "Flüche des Meeres"
     },
     "darkAttack": {
       "description": "Ignoriert die Verteidigung des Gegners. Wirkt am besten gegen einen Spieler mit hohem Angriffswert. Blendet den Gegner oder gibt dem Werfer einen Teil seines verlorenen Atems zurück. Die Veränderung \"Geblendet\" hält mindestens 1 Runde an und macht den Gegner manchmal unfähig anzugreifen, während seine Verteidigung und Geschwindigkeit verringert werden.",
@@ -338,6 +437,11 @@
       "name_one": "Boost de la Defense",
       "name_other": "Boosts der Verteidigung"
     },
+    "deluge": {
+      "customMessage": "einen kataklysmischen Sturm entfesselt, Blitze und Regengüsse auf Sie niederprasseln.",
+      "name_one": "Sintflut",
+      "name_other": "Sintfluten"
+    },
     "dirty": {
       "name": "widerlich",
       "new": "absolut abstoßend ist, werden seine Angriffe dadurch verstärkt.",
@@ -348,6 +452,16 @@
       "description": "Die Genauigkeit dieses Angriffs erhöht sich mit der Dauer des Kampfes. Teil der Gruppe \"Aktionen der Dieuxten\". Echt, wenn zwei Aktionen der Götter bereits im Kampf getätigt wurden.",
       "name_one": "Göttlicher Angriff",
       "name_other": "Göttliche Angriffe"
+    },
+    "celestialLightning": {
+      "customMessage": "beschwört einen himmlischen Blitz, der auf den Gegner niedergeht.",
+      "name_one": "Himmlischer Blitz",
+      "name_other": "Himmlische Blitze"
+    },
+    "earthquake": {
+      "customMessage": "lässt die Erde erbeben, nur die stärksten Gegner können ihm standhalten.",
+      "name_one": "Erdbeben",
+      "name_other": "Erdbeben"
     },
     "elephantRememberLastAction": {
       "success": "wird von **{{petNickname}}** unterstützt, dessen blitzschnelle Erinnerung an die jüngsten Ereignisse es ihm ermöglicht, seinem Meister den verlorenen Atem zurückzugeben.",
@@ -368,6 +482,12 @@
       "name_one": "Familienessen",
       "name_other": "Familienessen"
     },
+    "fatalFlight": {
+      "customMessageFail": "beschwört Spektralkrähen, aber Ihr Vertrauter befiehlt ihnen, ins Nichts zurückzukehren.",
+      "customMessage": "beschwört Spektralkrähen, die sich auf seinen Gegner stürzen und ihn von allen Seiten aufschlitzen.",
+      "name_one": "Verhängnisvoller Diebstahl",
+      "name_other": "Verhängnisvolle Flüge"
+    },
     "fireAttack": {
       "description": "Verbrennt den Gegner. Die Veränderung \"Verbrannt\" fügt deinem Gegner über einen längeren Zeitraum Schaden zu.",
       "name_one": "Feuerangriff",
@@ -382,6 +502,15 @@
       "active": "ist gefroren.",
       "stop": "nicht mehr gefroren ist."
     },
+    "aceratedFangs": {
+      "customMessage": "beißt heftig mit seinen scharfen Reißzähnen zu und hinterlässt eine blutige Spur.",
+      "name_one": "Scharfe Reißzähne",
+      "name_other": "Scharfe Reißzähne"
+    },
+    "frozenKissAttack": {
+      "name_one": "Attacke Gefrorener Kuss",
+      "name_other": "Angriffe gefrorene Küsse"
+    },
     "full": {
       "name": "satt und gepflegt von Ihren Veränderungen",
       "new": "ist satt und muss sich ausruhen. `Geschwindigkeit: 0`",
@@ -394,6 +523,15 @@
       "name_one": "Verschmutzung",
       "name_other": "Verschmutzungen"
     },
+    "glacialBreathAttack": {
+      "name_one": "Attacke Eishauch",
+      "name_other": "Angriffe Eishauch"
+    },
+    "glacialCaveCollapseAttack": {
+      "customMessage": "brüllt so laut, dass sich Eiszapfen von der Decke lösen! Doch der Feind ist nah genug, um dem Angriff auszuweichen.",
+      "name_one": "Eiskollaps-Angriff",
+      "name_other": "Eiseinsturzangriffe"
+    },
     "goesWild": {
       "success": "befiehlt **{{petNickname}}** anzugreifen. Das Tier bricht vor Wut aus und schlägt auf alles ein, was in seiner Nähe vorbeikommt."
     },
@@ -405,6 +543,15 @@
       "description": "Die Gilde werden zusammenkommen, um einen mächtigen Gruppenangriff zu erreichen.",
       "name_one": "Gilde-Angriff",
       "name_other": "Gilde-Attacken"
+    },
+    "hammerQuakeAttack": {
+      "customMessage": "schlägt mit titanischer Kraft auf den Boden und löst ein Erdbeben aus! Doch der Feind erhebt sich mit seinem geflügelten Begleiter in die Luft und entgeht so den Erschütterungen.",
+      "name_one": "Seismische Hammerattacke",
+      "name_other": "Seismische Hammerattacke"
+    },
+    "hardBiteAttack": {
+      "name_one": "Angriff mit mächtigem Biss",
+      "name_other": "Starke Bissattacken"
     },
     "healEveryone": {
       "generalEffect": "ruft **{{petNickname}}** an, die mit wohlwollendem Blick feststellt, dass sich niemand verletzt hat, und sich daher fröhlich wieder zur Ruhe begibt.",
@@ -427,6 +574,10 @@
       "name_one": "Schwerter Angriff",
       "name_other": "Schwerter Angriff"
     },
+    "hellishScream": {
+      "name_one": "Attacke Höllenschrei",
+      "name_other": "Angriffe Höllenschreie"
+    },
     "helpBreathe": {
       "success": "wird von **{{petNickname}}** unterstützt, der dank seiner Tauchfähigkeiten seinem Besitzer ein wenig Atem vermittelt."
     },
@@ -434,13 +585,43 @@
       "success": "hat gut daran getan, **{{petNickname}}** zu rufen! Das Tier hat den Gegner gerade auf seinem Horn aufgespießt, das ist kein schöner Anblick.",
       "generalEffect": "ruft **{{petNickname}}** zur Rettung, das Tier nimmt Anlauf und rennt direkt auf den Gegner zu..."
     },
+    "howlAttack": {
+      "customMessage": "brüllt in den Himmel.",
+      "name_one": "Schreien",
+      "name_other": "Schreie"
+    },
+    "hydraulicHeal": {
+      "customMessage": "wendet sich an die Kräfte des Wassers, um wieder zu Kräften zu kommen.",
+      "name_one": "Hydraulische Pflege",
+      "name_other": "Hydraulische Pflege"
+    },
     "hypnosis": {
       "success": "wird von **{{petNickname}}** unterstützt, der seine hypnotischen Kräfte einsetzt, um den Feind zu verwirren."
+    },
+    "icySeductionAttack": {
+      "name_one": "Angriff der eisigen Verführung",
+      "name_other": "Angriff Eiskalte Verführung"
+    },
+    "inkJet": {
+      "customMessage": "schleudert einen mächtigen Tintenstrahl auf seinen Gegner.",
+      "name_one": "Tintenstrahl",
+      "name_other": "Tintenstrahl"
     },
     "intenseAttack": {
       "description": "Durch Verteidigung kann man sich effektiv vor diesem Angriff schützen. Scheitert nie an einem schnelleren Gegner. Funktioniert am besten bei einem schnellen Gegner. Zwingt den Werfer, in der nächsten Runde die Aktion \"Ausruhen\" zu verwenden. Kann den Gegner nicht töten.",
       "name_one": "Intensive Attae",
       "name_other": "Intensive Attacken"
+    },
+    "blackCorrosion": {
+      "name": "korrodiert",
+      "new": "korrodiert ist.",
+      "active": "wird von Schwarzkorrosion zerfressen.",
+      "stop": "nicht mehr korrodiert ist."
+    },
+    "isStuckInPolarEmbrace": {
+      "customMessage": "kann seinen Griff um seinen Gegner nicht aufrechterhalten, der sich durch seine Angriffe befreien kann",
+      "name_one": "Angriff Polarumarmung",
+      "name_other": "Angriffe polare Umarmungen"
     },
     "isUseless": {
       "generalEffect": "bittet **{{petNickname}}** um Hilfe, der mit bemerkenswerter Gleichgültigkeit den Gegner mit leerem Blick anstarrt."
@@ -448,6 +629,15 @@
     "lavaWaveAttack": {
       "name_one": "Angriff Lavawelle",
       "name_other": "Angriff Lavawellen"
+    },
+    "lightRayAttack": {
+      "name_one": "Attacke Lichtstrahl",
+      "name_other": "Angriffe Lichtstrahl"
+    },
+    "maelstromAttack": {
+      "customMessage": "entfesselt einen Mahlstrom, der Winde und Strömungen in einem verheerenden Strudel vermischt.",
+      "name_one": "Maelström",
+      "name_other": "Maelströms"
     },
     "magicMimicAttack": {
       "name_one": "Angriff magische Mimik",
@@ -465,6 +655,11 @@
       "name_one": "Attacke Schlammfeuer",
       "name_other": "Angriffe Schlammfeuer"
     },
+    "mutiny": {
+      "customMessage": "beschwört die Geister seiner alten Mannschaft, es kommt zu einer Generalschlacht!",
+      "name_one": "Meuterei",
+      "name_other": "Meutereien"
+    },
     "none": {
       "customMessage": "kann nicht angreifen."
     },
@@ -481,6 +676,10 @@
       "customMessage": "wird wütend.",
       "name_one": "Color",
       "name_other": "Colères"
+    },
+    "packAttack": {
+      "name_one": "Rudelangriff",
+      "name_other": "Rudelangriffe"
     },
     "paralyzed": {
       "name": "gelähmt",
@@ -502,12 +701,16 @@
     "petHit": {
       "success": "braucht nach einem heftigen Angriff, den er gerade erlitten hat, die Hilfe von **{{petNickname}}**. Aus Rache schlägt **{{petNickname}}** den Gegner heftig."
     },
+    "petMakeBleed": {
+      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner in den Hals beißt.",
+      "failure": "ruft **{{petNickname}}** auf, der versucht, seinen Gegner zu beißen, aber sein Ziel scheint gegen diese Art von Angriff unempfindlich zu sein."
+    },
+    "petPetrified": {
+      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner am meisten ansieht und ihn versteinern lässt.",
+      "failure": "wird von **{{petNickname}}** unterstützt, der seinen Gegner anschaut, aber das hat keine Wirkung gegen diesen Gegner."
+    },
     "petPoison": {
       "success": "verwendet **{{petNickname}}**, um seinen Gegner zu vergiften."
-    },
-    "petSmallCharge": {
-      "generalEffect": "befiehlt **{{petNickname}}** anzugreifen. Das Tier reibt ungeduldig seine Pfoten und ist bereit, anzugreifen.",
-      "success": "wird von **{{petNickname}}** unterstützt, der sich schließlich dazu entschließt, den Gegner mit aller Kraft zu stürmen."
     },
     "petrificationAttack": {
       "customMessage": "versteinert seinen Gegner.",
@@ -519,6 +722,10 @@
       "new": "ist versteinert.",
       "noAction": "ist versteinert und kann nicht angreifen.",
       "stop": "ist nicht mehr versteinert."
+    },
+    "petSmallCharge": {
+      "generalEffect": "befiehlt **{{petNickname}}** anzugreifen. Das Tier reibt ungeduldig seine Pfoten und ist bereit, anzugreifen.",
+      "success": "wird von **{{petNickname}}** unterstützt, der sich schließlich dazu entschließt, den Gegner mit aller Kraft zu stürmen."
     },
     "piercingAttack": {
       "description": "Ignoriert die Verteidigung des Gegners fast vollständig. Der Angreifer hat eine Wahrscheinlichkeit, die Verteidigung des Gegners leicht zu reduzieren.",
@@ -568,6 +775,10 @@
       "name_one": "Schnell-Attacke",
       "name_other": "Schnell-Attacken"
     },
+    "radiantBlastAttack": {
+      "name_one": "Explosiver Strahlungsstrahlenangriff",
+      "name_other": "Explosive Strahlenangriffe"
+    },
     "rageExplosion": {
       "description": "Lassen Sie die Tollwut explodieren, die während des Weges auf dem Feind gesammelt wurde",
       "customMessage": "entlädt seine Wut über den Feind!",
@@ -587,6 +798,11 @@
       "customMessage": "ruht sich aus",
       "name_one": "Ruhezeit",
       "name_other": "Ruhezeit"
+    },
+    "retreat": {
+      "customMessage": "zieht sich in seinen Panzer zurück.",
+      "name_one": "Rückzug",
+      "name_other": "Falten"
     },
     "revenge": {
       "success": "wird von **{{petNickname}}** unterstützt, der seinen Gegner infolge seines Angriffs verletzt."
@@ -621,105 +837,20 @@
       "name_one": "Einfache Attacke",
       "name_other": "Einfache Attacken"
     },
-    "glacialCaveCollapseAttack": {
-      "customMessage": "brüllt so laut, dass sich Eiszapfen von der Decke lösen! Doch der Feind ist nah genug, um dem Angriff auszuweichen.",
-      "name_one": "Eiskollaps-Angriff",
-      "name_other": "Eiseinsturzangriffe"
-    },
-    "chargeChargeRadiantBlastAttack": {
-      "customMessage": "lädt seine Energie auf und bereitet sich auf einen mächtigen Angriff vor.",
-      "name_one": "Explosiver Strahlungsstrahlenangriff",
-      "name_other": "Explosive Strahlenangriffe"
-    },
-    "chargeRadiantBlastAttack": {
-      "customMessage": "lädt weiterhin seine Energie auf und bereitet sich auf einen mächtigen Angriff vor.",
-      "name_one": "Explosiver Strahlungsstrahlenangriff",
-      "name_other": "Explosive Strahlenangriffe"
-    },
-    "radiantBlastAttack": {
-      "name_one": "Explosiver Strahlungsstrahlenangriff",
-      "name_other": "Explosive Strahlenangriffe"
-    },
-    "hammerQuakeAttack": {
-      "customMessage": "schlägt mit titanischer Kraft auf den Boden und löst ein Erdbeben aus! Doch der Feind erhebt sich mit seinem geflügelten Begleiter in die Luft und entgeht so den Erschütterungen.",
-      "name_one": "Seismische Hammerattacke",
-      "name_other": "Seismische Hammerattacke"
-    },
-    "startPolarEmbraceAttack": {
-      "customMessage": "schafft es nicht, ihre Gegnerin zu erwischen, die sie mit ihren Angriffen auf respektablem Abstand hält",
-      "name_one": "Angriff Polarumarmung",
-      "name_other": "Angriffe polare Umarmungen"
-    },
-    "isStuckInPolarEmbrace": {
-      "customMessage": "kann seinen Griff um seinen Gegner nicht aufrechterhalten, der sich durch seine Angriffe befreien kann",
-      "name_one": "Angriff Polarumarmung",
-      "name_other": "Angriffe polare Umarmungen"
-    },
-    "glacialBreathAttack": {
-      "name_one": "Attacke Eishauch",
-      "name_other": "Angriffe Eishauch"
-    },
-    "blizzardRageAttack": {
-      "customMessage": "beschwört den Zorn des Blizzards auf seinen Gegner, aber die eisigen Winde wüten bereits in der Arena.",
-      "name_one": "Angriff Blizzardwut",
-      "name_other": "Blizzard-Rage-Attacken"
-    },
-    "aerialDiveAttack": {
-      "customMessage": "schwingt sich in die Luft, um sich auf seinen Gegner zu stürzen, doch dieser kann ihn mit seinen Angriffen auf Distanz halten.",
-      "name_one": "Angriff Lufttauchgang",
-      "name_other": "Angriffe aus der Luft tauchen"
-    },
-    "crystallineArmorAttack": {
-      "customMessage": "lässt seine kristalline Rüstung leuchten, in der Hoffnung, seinen Gegner zu verletzen, doch die scharfen Spitzen bleiben unberührt.",
-      "name_one": "Angriff Kristallrüstung",
-      "name_other": "Angriffe Kristalline Rüstungen"
-    },
-    "icySeductionAttack": {
-      "name_one": "Angriff der eisigen Verführung",
-      "name_other": "Angriff Eiskalte Verführung"
-    },
-    "frozenKissAttack": {
-      "name_one": "Attacke Gefrorener Kuss",
-      "name_other": "Angriffe gefrorene Küsse"
-    },
-    "spectralRevengeAttack": {
-      "customMessage": "gelingt es nicht, sich an seinem Gegner zu rächen.",
-      "name_one": "Spektrale Rache",
-      "name_other": "Spektrale Rachefeldzüge"
-    },
-    "ambush": {
-      "customMessage": "versteckt sich, um einen Hinterhalt vorzubereiten...",
-      "name_one": "Hinterhalt",
-      "name_other": "Hinterhalte"
-    },
-    "tailWhipAttack": {
-      "name_one": "Attacke Schwanzschlag",
-      "name_other": "Angriffe mit Schwanzschlägen"
-    },
-    "lightRayAttack": {
-      "name_one": "Attacke Lichtstrahl",
-      "name_other": "Angriffe Lichtstrahl"
-    },
-    "crystalShardAttack": {
-      "name_one": "Angriff Kristallsplitter",
-      "name_other": "Angriffe Kristallsplitter"
-    },
-    "clawAttack": {
-      "name_one": "Krallenangriff",
-      "name_other": "Krallenangriffe"
-    },
-    "callPack": {
-      "customMessage": "ruft sein Rudel mit einem schrillen Heulen.",
-      "name_one": "Aufruf an das Rudel",
-      "name_other": "Appelle an das Rudel"
-    },
-    "packAttack": {
-      "name_one": "Rudelangriff",
-      "name_other": "Rudelangriffe"
+    "sing": {
+      "customMessage": "beginnt zu singen.",
+      "name_one": "Lied vom Meer",
+      "name_other": "Lieder vom Meer"
     },
     "slamAttack": {
       "name_one": "Auswirkung zuordnen",
       "name_other": "Auswirkungen"
+    },
+    "sleeping": {
+      "name": "schlafend",
+      "new": "eingeschlafen ist.",
+      "active": "schläft tief und fest.",
+      "stop": "erwachte."
     },
     "slipping": {
       "failure": "greift auf **{{petNickname}}** zurück, der über den Boden gleitet. Er ist nicht der, der am weitesten über die Eisscholle gleitet, also trifft er den Gegner nur mit geringer Kraft.",
@@ -743,6 +874,22 @@
     "snowBall": {
       "success": "wird von **{{petNickname}}** unterstützt, der einen Schneeball auf den Gegner wirft."
     },
+    "soaked": {
+      "name": "gehärtet",
+      "new": "ist durchnässt.",
+      "active": "ist durchnässt.",
+      "stop": "nicht mehr eingeweicht ist."
+    },
+    "solidification": {
+      "customMessage": "verfestigt sich und wirft einen Teil des physischen Schadens zurück.",
+      "name_one": "Verfestigung",
+      "name_other": "Verfestigungen"
+    },
+    "spectralRevengeAttack": {
+      "customMessage": "gelingt es nicht, sich an seinem Gegner zu rächen.",
+      "name_one": "Spektrale Rache",
+      "name_other": "Spektrale Rachefeldzüge"
+    },
     "spit": {
       "failure": "wird von **{{petNickname}}** unterstützt, der seinen Gegner anspuckt.",
       "success": "wird von **{{petNickname}}** unterstützt, der seinen Gegner anspuckt. Zum Glück landet die Spucke perfekt in den Augen des Gegners!"
@@ -753,14 +900,19 @@
     "spitInk": {
       "success": "ruft **{{petNickname}}** an, der Tinte auf den Gegner spuckt."
     },
-    "stealWeapon": {
-      "failure": "ruft **{{petNickname}}** um ein wenig Hilfe an, aber die Kreatur, die keinen nennenswerten Schatz bei ihrem Gegner findet, weigert sich, sich in feindliches Gebiet zu begeben.",
-      "success": "bittet um die Hilfe von **{{petNickname}}**, der mutig losstürmt und in einem Akt der Kühnheit die feindliche Waffe an sich nimmt."
+    "startPolarEmbraceAttack": {
+      "customMessage": "schafft es nicht, ihre Gegnerin zu erwischen, die sie mit ihren Angriffen auf respektablem Abstand hält",
+      "name_one": "Angriff Polarumarmung",
+      "name_other": "Angriffe polare Umarmungen"
     },
     "stealth": {
       "customMessage": "versteckt sich unauffällig, um Vorbereitungen zu treffen, die den Schaden seines nächsten Angriffs erhöhen...",
       "name_one": "Ausscheidung",
       "name_other": "Erschöpung"
+    },
+    "stealWeapon": {
+      "failure": "ruft **{{petNickname}}** um ein wenig Hilfe an, aber die Kreatur, die keinen nennenswerten Schatz bei ihrem Gegner findet, weigert sich, sich in feindliches Gebiet zu begeben.",
+      "success": "bittet um die Hilfe von **{{petNickname}}**, der mutig losstürmt und in einem Akt der Kühnheit die feindliche Waffe an sich nimmt."
     },
     "stoneSkinAttack": {
       "customMessage": "härtet seine Haut ab und schützt sich",
@@ -772,6 +924,18 @@
       "active": "ist betäubt.",
       "noAction": "ist benommen und kann nicht angreifen.",
       "stop": "nicht mehr schwindelig ist."
+    },
+    "tetanized": {
+      "name": "tetanisiert",
+      "new": "ist vor Angst wie gelähmt, seine Bewegungen werden ungeschickt und zögerlich.",
+      "active": "ist noch immer wie gelähmt vor Angst, sein Körper weigert sich, normal zu reagieren.",
+      "stop": "kommt wieder zu sich und ist nicht mehr wie gelähmt."
+    },
+    "submerged": {
+      "name": "untergetaucht",
+      "new": "wird überflutet.",
+      "active": "ist überwältigt und hat Schwierigkeiten zu atmen.",
+      "stop": "konnte sich aus dem Wasser retten, kam aber völlig durchnässt wieder heraus."
     },
     "summonAttack": {
       "name_one": "Einberufung von Verbündeten",
@@ -786,11 +950,29 @@
       "noAction": "befindet sich in einem Magen und kann nicht angreifen.",
       "stop": "kam gesund und munter aus dem Tier heraus."
     },
+    "tailWhipAttack": {
+      "name_one": "Attacke Schwanzschlag",
+      "name_other": "Angriffe mit Schwanzschlägen"
+    },
     "targeted": {
       "name": "von einem Bumerang ins Visier genommen",
       "new": "beobachtet, wie der Bumerang in der Ferne herumwirbelt.",
       "stop": "nicht mehr von einem Bumerang anvisiert wird.",
       "active": "wird vom Bumerang getroffen."
+    },
+    "tentacleBlowAttack": {
+      "customMessage": "schwingt einen Tentakel auf seinen Gegner.",
+      "name_one": "Attacke Tentakelschlag",
+      "name_other": "Angriffe mit Tentakelschlägen"
+    },
+    "tentacleShield": {
+      "customMessage": "fuchtelt mit seinen Tentakeln in alle Richtungen und wirft einen Teil der Geschosse zurück.",
+      "name_one": "Tentakel-Schild",
+      "name_other": "Tentakelschilde"
+    },
+    "tidalWave": {
+      "name_one": "Angriff auf eine Flutwelle",
+      "name_other": "Angriffe auf Flutwellen"
     },
     "triesToHelp": {
       "success": "ruft **{{petNickname}}** auf, der trotz wilder Entschlossenheit und zäher Bemühungen nur einen vernachlässigbaren Einfluss auf den Kampf zufügen kann."
@@ -811,6 +993,14 @@
     "fairyHeal": {
       "success": "wird von einem sanften goldenen Schimmer umhüllt, während **{{petNickname}}** Feenstaub auf seine Wunden streut und ihm so ein wenig Energie zurückgibt."
     },
+    "waterJet": {
+      "name_one": "Wasserstrahl-Attacke",
+      "name_other": "Wasserstrahl-Attacken"
+    },
+    "wateryGust": {
+      "name_one": "Wässriger Burst-Angriff",
+      "name_other": "Angriffe mit wässrigen Böen"
+    },
     "weak": {
       "name": "geschwächt",
       "new": "geschwächt ist.",
@@ -820,29 +1010,6 @@
     "webShotAttack": {
       "name_one": "Leinwandwurf Attacke",
       "name_other": "Leinwandwurf Attacken"
-    },
-    "hardBiteAttack": {
-      "name_one": "Angriff mit mächtigem Biss",
-      "name_other": "Starke Bissattacken"
-    },
-    "bleeding": {
-      "name": "blutend",
-      "new": "blutet.",
-      "active": "blutet.",
-      "stop": "nicht mehr blutet."
-    },
-    "howlAttack": {
-      "customMessage": "brüllt in den Himmel.",
-      "name_one": "Schreien",
-      "name_other": "Schreie"
-    },
-    "petMakeBleed": {
-      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner in den Hals beißt.",
-      "failure": "ruft **{{petNickname}}** auf, der versucht, seinen Gegner zu beißen, aber sein Ziel scheint gegen diese Art von Angriff unempfindlich zu sein."
-    },
-    "petPetrified": {
-      "success": "bekommt Hilfe von **{{petNickname}}**, der seinen Gegner anschaut und ihn versteinern lässt.",
-      "failure": "wird von **{{petNickname}}** unterstützt, der seinen Gegner anschaut, aber das hat keine Wirkung gegen diesen Gegner."
     }
   },
   "leagues": {
@@ -942,6 +1109,41 @@
     "1107": {
       "description": "Bisher hat sich noch niemand bis dorthin gewagt. In der Ferne siehst du eine riesige Silhouette, die sich an einer Eiswand spiegelt.",
       "name": "Eisiges Nest",
+      "particle": "in Richtung"
+    },
+    "1200": {
+      "description": "Ein paradiesischer Strand, der mit Muscheln in allen Farben bedeckt ist. Man sagt, dass jede Muschel das Echo des Ozeans in sich trägt. Der feine, weiße Sand steht im Kontrast zum türkisfarbenen Wasser der nahe gelegenen Lagune. Passen Sie auf, wo Sie hintreten, denn einige Muscheln sind scharf wie Klingen.",
+      "name": "Muschelstrand",
+      "particle": "in Richtung"
+    },
+    "1201": {
+      "description": "Eine Lagune mit kristallklarem, blauem Wasser, das von einem Korallenriff geschützt wird. Hinter den klaren Wellen lauern heimtückische Strömungen, die durch das Schlagen des Ozeans entstehen, auf die geringste Unvorsichtigkeit, um die Verirrten in den Abgrund zu ziehen. In diesem zerbrechlichen Meereskästchen suchen tausendjährige Schildkröten Ruhe, die ihnen die Hektik des Meeres verwehrt.",
+      "name": "Lagon Hollow",
+      "particle": "in Richtung"
+    },
+    "1202": {
+      "description": "Eine Meereshöhle, die nur bei Ebbe erobert werden kann und ein Kalksteinmaul mit triefenden Wänden enthüllt. Im Inneren entspringt ein ätherischer Schimmer aus dem Gestein und wirft azurblaue Reflexe auf die Gewölbe. Zwischen den Wellen und Schatten tanzen Silhouetten aus Nebel und Schaum ein stummes Ballett, als ob die Seele des Meeres selbst in diesem Heiligtum Zuflucht gesucht hätte.",
+      "name": "Maritime Höhle",
+      "particle": "in Richtung"
+    },
+    "1203": {
+      "description": "Eine einsame Bucht, die ihre Riffe wie schwarze Granitklingen ausbreitet, die kaum von der schäumenden Brandung verdeckt werden, die niemals abflaut. Nachts schweben gespenstisch blaue Irrlichter über den Wellen, wie die Seelen verlorener Seeleute, die einen Totentanz aufführen. Eine unheimliche Aura liegt über diesem verfluchten Ort.",
+      "name": "Revenant-Bucht",
+      "particle": "in Richtung"
+    },
+    "1204": {
+      "description": "Eine Unterwasserkathedrale, die geformt wurde, um den Atem der Gezeiten zu einem betörenden Herzen zu verstärken. Das ist kein Wind, das ist der Ruf eines melodischen Gesangs, der sich direkt an Ihre Seele wendet. In diesem klangvollen Halbdunkel verschwimmt die Grenze zwischen Ihren eigenen Gedanken und dem Flüstern des Felsens sanft, und wer hier verweilt, kommt nie wieder ganz allein heraus.",
+      "name": "Flüsterkeller",
+      "particle": "in Richtung"
+    },
+    "1205": {
+      "description": "Je näher du dem Ufer kommst, desto tintenschwarzer wird das Wasser, ein dunkler Spiegel, der nur deine eigene Angst widerspiegelt. Manchmal durchbricht eine übergroße Welle die Oberfläche, der flüchtige Durchgang eines riesigen Tentakels, der aus der Tiefe aufsteigt und dann wieder in die Vergessenheit versinkt. Niemand hat je das Herz dieser Grube erforscht, denn der Schlund akzeptiert keine Zeugen.",
+      "name": "Schlucht der Tiefe",
+      "particle": "in Richtung"
+    },
+    "1206": {
+      "description": "Der tiefste Punkt dieser Gewässer ist eine Unterwasserschlucht, die in absolute Finsternis stürzt. Der Druck dort ist so hoch, dass nur wenige Lebewesen überleben können. Man munkelt, dass dort seit Anbeginn der Zeit eine Urbestie schlummert, die die ältesten Geheimnisse dieser Welt hütet. Nur die Mutigsten wagen es, sich ihr zu nähern.",
+      "name": "Schlucht des Abgrunds",
       "particle": "in Richtung"
     },
     "12": {
@@ -1106,6 +1308,10 @@
     }
   },
   "map_types": {
+    "abyss": {
+      "name": "",
+      "prefix": "von"
+    },
     "be": {
       "name": "Bereich",
       "prefix": "von"
@@ -1118,11 +1324,19 @@
       "name": "",
       "prefix": "von"
     },
+    "cavern": {
+      "name": "",
+      "prefix": "von"
+    },
     "ci": {
       "name": "Stadt",
       "prefix": "von"
     },
     "continent": {
+      "name": "",
+      "prefix": "von"
+    },
+    "creek": {
       "name": "",
       "prefix": "von"
     },
@@ -1403,6 +1617,10 @@
       "name": "Yuki-Onna",
       "description": "Eine Frau Schneegeist. Sie ist sehr schön, aber auch sehr gefährlich. Sie kann ihre Beute mit einem einzigen Blick einfrieren und sie im Schnee verschwinden lassen."
     },
+    "captainCrow": {
+      "name": "Kapitän Crow",
+      "description": "Kapitän Crow, die verdammte Seele des gefürchtetsten aller Piraten, sucht seit seinem tragischen Tod die Revenant Cove heim. Seine glühenden Augen und sein unheimliches Lachen lassen jedem das Blut in den Adern gefrieren, der es wagt, die verfluchten Gewässer zu betreten."
+    },
     "celestialGuardian": {
       "name": "Himmlischer Wächter",
       "description": "Der Wächter der heiligen Tore. Abenteurer daran zu hindern, hindurchzugehen, ist seine Pflicht und er wird seinen göttlichen Hammer einsetzen, um Ihnen klarzumachen, dass Sie nicht erwünscht sind."
@@ -1414,6 +1632,26 @@
     "femaleIceDragon": {
       "name": "Eiskönigin",
       "description": "Eine furchterregende Drachin, die ihren Schatz und ihre Brut in den eisigen Tiefen ihrer Höhle streng bewacht. Sie ist aggressiver als ihr Gefährte und zögert nicht, ihre Wut gegen jeden zu entfesseln, der es wagt, sich ihrem Nest zu nähern. Ihre Schuppen glitzern wie Diamanten und ihr Schwanz kann mit einem einzigen Schlag das dickste Eis durchbrechen."
+    },
+    "turtle": {
+      "name": "Riesenschildkröte",
+      "description": "Eine riesige Schildkröte ruht friedlich in ihrer Lagune. Wenn sie bedroht wird, zieht sie sich in ihren Panzer zurück, bevor sie einen gewaltigen Wasserstrahl ausstößt, der ihre Feinde umwerfen kann. Tausend Jahre des Überlebens haben diesen Panzer in eine Festung aus Horn und Flechten verwandelt, die selbst die Zeit nicht mehr zu nutzen scheint."
+    },
+    "waterSpirit": {
+      "name": "Geist der Meere",
+      "description": "Ein Wesen mit der Lebendigkeit eines Raubtiers, das aus dem Nichts auftaucht, um tödliche Hinterhalte zu legen. Ihr eisiger Atem lässt ihre Gegner an Ort und Stelle gefrieren, während ihre mächtigen Wasserstrahlen und verheerenden Flutwellen keine Ruhe lassen. Sie kann sogar aus den Fluten schöpfen, um ihre Wunden zu heilen."
+    },
+    "mermaid": {
+      "name": "Sirene",
+      "description": "Diese bezaubernde Kreatur, halb Frau, halb Fisch, lockt ihre Beute mit ihrem betörenden Gesang an, um sie dann mit einem eiskalten Kuss zu erledigen. Ihr schriller Schrei klingt wie ein Ruf aus der Tiefe, und ihre eisige Verführung lähmt selbst die Mutigsten. Es gibt nur wenige, die der Versuchung, die sie verkörpert, nicht schließlich erliegen."
+    },
+    "kraken": {
+      "name": "Krake",
+      "description": "Ein Titan aus den Tiefen des Meeres, dessen massive Tentakel mit verheerender Kraft zuschlagen. Er verätzt seine Beute mit Strahlen aus schwarzer Tinte, erstickt sie in seiner abgrundtiefen Umarmung und kann Mahlströme auslösen, die alles verschlingen können. Sein Fortschreiten ist schwerfällig, doch dahinter verbirgt sich eine kolossale Macht."
+    },
+    "leviathan": {
+      "name": "Leviathan",
+      "description": "Der unbestrittene Herrscher der Ozeane, der himmlische Blitze beschwören und apokalyptische Fluten entfesseln kann. Seine scharfen Zähne zerfetzen alles, was sich ihm in den Weg stellt, und sein Hunger ist unersättlich. Manchmal wird er von blinder Wut getrieben und erzeugt einen so gewaltigen Mahlstrom, dass er nur eine Spur aus Trümmern und Stille hinterlässt."
     }
   },
   "objects": {
@@ -2024,6 +2262,24 @@
     },
     "1107": {
       "femaleIceDragon": "Sie dringen in diese unerforschte Region vor, geleitet von einer Mischung aus Neugier und Angst. Die Eiswand, die sich vor Ihnen erhebt, spiegelt eine Silhouette wider, die so gewaltig ist, dass sie sich jeder Vorstellungskraft entzieht. Je näher Sie in der eisigen Dunkelheit kommen, desto mehr wird Ihnen das Ausmaß der Kreatur bewusst, die sich hinter dieser Barriere verbirgt. Plötzlich tauchen Risse im Eis auf, die sich wie Spinnweben ausbreiten. Ein dumpfes Grollen lässt die Felswände vibrieren. Die Mauer explodiert mit einem apokalyptischen Krachen und schleudert massive Eisblöcke durch die Luft. Durch diesen Vorhang aus zerbrochenen Kristallen taucht die majestätischste aller Kreaturen auf: ein Eisdrache von pharaonischen Ausmaßen. Ihre Präsenz ist gewaltig, ihre gefalteten Flügel berühren fast die steinernen Gewölbe. Sie ist von erschreckender Schönheit, denn ihre schillernden Schuppen fangen das schwache Licht in eisigen Regenbögen ein. Ihre Augen, tiefblau wie der Abgrund, strahlen uralte Weisheit und mütterlichen Zorn aus. Hinter ihr erblicken Sie ein riesiges, perlmuttfarbenes Ei, das in einem geheimnisvollen Licht pulsiert. Sie haben soeben ihre Kinderstube betreten und kein Eindringen in das Heiligtum der Eiskönigin wird ungestraft bleiben..."
+    },
+    "1201": {
+      "turtle": "Sie kommen in der Nähe eines natürlichen Beckens an, das durch ein Korallenriff geschützt ist. Die Ruhe des Ortes verleitet Sie dazu, näher heranzugehen, um den Meeresboden zu bewundern. In der Mitte des Beckens befindet sich ein großer, mit Algen bewachsener Felsen. Plötzlich setzt er sich in Bewegung. Ein großer Kopf ragt aus ihm heraus, gefolgt von vier riesigen Beinen. Eine Riesenschildkröte erhebt sich vor Ihnen, deren Größe mit der eines kleinen Schiffes konkurrieren kann. Ihre großen Augen starren Sie mit uralter Weisheit an. Dann öffnet sie ihr Maul und ein kräftiger Wasserstrahl streift Sie und macht Ihnen klar, dass diese friedliche Lagune ihr Territorium ist..."
+    },
+    "1202": {
+      "waterSpirit": "Sie betreten bei Ebbe eine Meereshöhle. Seltsame Echos hallen in der Tiefe wider und ein bläulicher Schimmer tanzt in der Dunkelheit und zieht Sie weiter nach unten. Plötzlich beginnt das stehende Wasser zu wirbeln und Myriaden von Tröpfchen an den Wänden laufen in diesem zentralen Punkt zusammen. Eine durchscheinende Gestalt erwacht vor Ihnen zum Leben, halb Blätter, halb Wasser. Der Geist der Meere starrt Sie aus seinen abgrundtief blauen Augen an. Bevor Sie reagieren können, verschwindet er und taucht hinter Ihrem Rücken wieder auf. Dieser verschwommene Wächter wird Sie nicht so leicht aus seinem Heiligtum lassen ..."
+    },
+    "1203": {
+      "captainCrow": "Der Nebel wird immer dichter, je näher Sie der Revenant Creek kommen. Die Sonne ist schon lange untergegangen und nur ein paar Irrlichter beleuchten Ihren Weg. Sie gehen vorsichtig über die nassen Kieselsteine, während Ihr Blick an den Wracks mehrerer Schiffe hängen bleibt, deren verrottete Rümpfe immer wieder von der Ebbe und Flut der Wellen abgeleckt werden. Plötzlich verdichtet sich der Nebel zu einer humanoiden Gestalt, die sich nur wenige Meter vor Ihnen befindet. Augen zeichnen sich ab, zwei glühende Kohlen im Nichts. Kapitän Crow, der Geist des gefürchtetsten Piraten der Meere, materialisiert seine Silhouette vor Ihnen, sein Schwert knistert mit verfluchter Energie. Er ist noch nicht fertig damit, Seelen zu fordern."
+    },
+    "1204": {
+      "mermaid": "Sie erforschen eine Unterwasserhöhle und je weiter Sie vordringen, desto mehr hören Sie eine eindringliche Melodie. Ihre Beine tragen Sie unwillkürlich zu ihrer Quelle. An einer Stelle entdecken Sie ein Becken mit türkisfarbenem Wasser. Dort sitzt sie auf einem Felsen und wartet auf Sie. Die Meerjungfrau, halb Frau, halb Fisch, beobachtet Sie mit ihren hypnotischen Augen. Ihre Schönheit ist atemberaubend, aber ihr Lächeln lässt Ihnen das Blut in den Adern gefrieren. Ihre scharfen Krallen klopfen auf den Stein und markieren einen dumpfen Takt, der von den Wänden widerhallt. Sein Gesang ändert die Tonlage: Er will Sie nicht mehr verführen, sondern mit der Struktur der Höhle selbst in Resonanz treten. Es ist eine Falle, und sie schnappt zu..."
+    },
+    "1205": {
+      "kraken": "Sie stehen am Rand eines Meeresabgrunds und blicken in das tintenschwarze Wasser. Nichts scheint sich in diesem bodenlosen Abgrund zu bewegen. Dann beginnen Blasen an die Oberfläche zu steigen. Erst ein paar, dann Hunderte. Das Wasser beginnt heftig zu brodeln. Plötzlich schießt ein massiver Tentakel aus der Tiefe, so breit wie ein Baumstamm. Dann noch einer. Und noch ein weiterer. Der Krake taucht aus seiner Höhle auf, seine gelben Augen glühen mit bösartiger Intelligenz. Seine Saugnäpfe klatschen mit einer Kraft gegen den Fels, die Knochen zermalmen kann, eine Urkraft. Der Abgrund ist an die Oberfläche gekommen, und er ist hungrig..."
+    },
+    "1206": {
+      "leviathan": "Sie steigen in eine Unterwasserschlucht hinab, in der es kein Licht mehr gibt. Die Dunkelheit umhüllt Sie, die Stille ist bedrückend. Dann spüren Sie es, bevor Sie es sehen: eine titanische Präsenz, die eine tiefe Vibration aussendet, die jeden Knochen in Ihrem Körper erzittern lässt. Zwei Pupillen öffnen sich, groß wie Schilde, in einem elektrischen Blau, das im schwarzen Wasser zischt. Der Leviathan erwacht, er entfaltet sich langsam, seine Größe trotzt jeder Vorstellungskraft. Blitze beginnen zwischen seinen Fängen zu knistern, während das Wasser in einem aufkommenden Mahlstrom herumwirbelt. Sie haben gerade den Fehler begangen, ihn zu wecken..."
     }
   }
 }

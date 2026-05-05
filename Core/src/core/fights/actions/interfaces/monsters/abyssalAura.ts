@@ -7,6 +7,7 @@ import {
 import { FightActionController } from "../../FightActionController";
 import { FightConstants } from "../../../../../../../Lib/src/constants/FightConstants";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
+import { FightAlterations } from "../../FightAlterations";
 
 const MAX_USES = 2;
 
@@ -24,6 +25,19 @@ const use: FightActionFunc = (sender, receiver, fightAction) => {
 		value: -1,
 		duration: 3
 	}, receiver, fightAction);
+
+	FightActionController.applyBuff(result, {
+		selfTarget: true,
+		stat: FightStatBuffed.DAMAGE_BOOST,
+		operator: FightStatModifierOperation.ADDITION,
+		value: 1.15,
+		duration: 2
+	}, sender, fightAction);
+
+	FightActionController.applyAlteration(result, {
+		selfTarget: false,
+		alteration: FightAlterations.TETANIZED
+	}, receiver);
 
 	return {
 		...result,

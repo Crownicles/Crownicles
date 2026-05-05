@@ -2,18 +2,38 @@ import {
 	Express, Request, Response
 } from "express";
 import {
-	botConfig, crowniclesInstance
+	botConfig, crowniclesInstance, mqttClient
 } from "../../index";
 import {
 	CrowniclesCoreMetrics, crowniclesMetricsRegistry
 } from "./CrowniclesCoreMetrics";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import express = require("express");
+import * as express from "express";
 
 export abstract class CrowniclesCoreWebServer {
 	static start(): void {
 		const app: Express = express();
+
+		app.get("/health", async (_req: Request, res: Response) => {
+			const checks: Record<string, boolean> = {
+				mqtt: mqttClient.connected
+			};
+
+			try {
+				await crowniclesInstance.gameDatabase.sequelize.authenticate();
+				checks.database = true;
+			}
+			catch {
+				checks.database = false;
+			}
+
+			const healthy = Object.values(checks).every(Boolean);
+			res.status(healthy ? 200 : 503).json({
+				status: healthy ? "healthy" : "unhealthy",
+				checks
+			});
+		});
 
 		app.get("/metrics", async (_req: Request, res: Response) => {
 			CrowniclesCoreMetrics.computeSporadicMetrics();

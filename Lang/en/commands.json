@@ -825,7 +825,8 @@
     "healSuccessDescription": "{emote:shopItems.healAlteration} You have spent **{{price, number}}** {emote:unitValues.money} to treat yourself.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what's waiting for you.",
     "healNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
-    "healRefused": "{emote:messages.refuse} **{{pseudo}}** has decided not to heal.",
+    "healRefusedTitle": "{{pseudo}}, cancellation",
+    "healRefusedDescription": "{emote:messages.refuse} You have decided not to treat yourself.",
     "healNoAlteration": "{emote:effects.none} You are not a victim of any status condition.",
     "healCannotHealOccupied": "{emote:effects.occupied} You are currently busy. This status condition cannot be cured."
   },
@@ -846,6 +847,7 @@
   },
   "petFree": {
     "title": "{{pseudo}}, pet release",
+    "acceptedTitle": "{{pseudo}}, pet liberated!",
     "canceledTitle": "{{pseudo}}, cancellation of the release.",
     "canceledDesc": "The pet has not been released.",
     "confirmDesc": "{emote:collectors.warning} Are you sure you want to release **{{pet}}**? It is not possible to undo once the action has been done.",
@@ -1631,6 +1633,7 @@
         "self": {
           "newAlteration": " `You are now {{effect}}!`",
           "damages": " `Damage received: {{amount, number}}`",
+          "reflectedDamages": " `Damage received: {{amount, number}}`",
           "defense": " `Defense: {{operator}} {{amount, number}}%`",
           "breath": " `Breath: {{operator}} {{amount, number}}`",
           "speed": " `Speed: {{operator}} {{amount, number}}%`",
@@ -1640,6 +1643,7 @@
         "opponent": {
           "newAlteration": " `Your opponent is now {{effect}}!`",
           "damages": " `Damage inflicted: {{amount, number}}`",
+          "reflectedDamages": " `Damage received: {{amount, number}}`",
           "defense": " `Opponent's defense: {{operator}} {{amount, number}}%`",
           "breath": " `Opponent's breath: {{operator}} {{amount, number}}`",
           "speed": " `Opponent's speed: {{operator}} {{amount, number}}%`",
@@ -1931,7 +1935,9 @@
     "alreadyHaveBadge": "The player already has all the badges in the game.",
     "selectBadgePlaceholder": "Select a badge to give to the player",
     "selectBadgeTitle": "{{pseudo}}, select a badge to give",
-    "selectBadgeDesc": "Choose a badge to give to the player from one of the lists below:"
+    "selectBadgeDesc": "Choose a badge to give to the player from one of the lists below:",
+    "confirmTitle": "{{pseudo}}, confirmation",
+    "confirmDesc": "Do you really want to give the {{badge}} badge to the player?"
   },
   "setPlayerInfo": {
     "playerModifiedTitle": "{{pseudo}}, player modification",

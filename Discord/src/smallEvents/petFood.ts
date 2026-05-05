@@ -156,9 +156,8 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 	// If the food was actually found, pick a readable display name for it from translations
 	const foodName = outcomeIsFound
 		? RandomUtils.crowniclesRandom.pick(
-			i18n.t(`smallEvents:petFood.foodNames.${packet.foodType}`, {
-				lng,
-				returnObjects: true
+			i18n.tArray(`smallEvents:petFood.foodNames.${packet.foodType}`, {
+				lng
 			})
 		)
 		: "";
