@@ -47,6 +47,23 @@ export const BUILDING_ICONS: Record<GuildBuilding, string> = {
 	[GuildBuilding.TRAINING_GROUND]: CrowniclesIcons.city.guildDomain.trainingGround
 };
 
+type BuildingLevelField = "shopLevel" | "shelterLevel" | "pantryLevel" | "trainingGroundLevel";
+
+const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, BuildingLevelField> = {
+	[GuildBuilding.SHOP]: "shopLevel",
+	[GuildBuilding.SHELTER]: "shelterLevel",
+	[GuildBuilding.PANTRY]: "pantryLevel",
+	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+};
+
+export function getBuildingLevel(data: GuildDomainData, building: GuildBuilding): number {
+	return data[BUILDING_LEVEL_FIELDS[building]];
+}
+
+export function setBuildingLevel(data: GuildDomainData, building: GuildBuilding, level: number): void {
+	data[BUILDING_LEVEL_FIELDS[building]] = level;
+}
+
 /**
  * Food keys aligned with PetConstants.PET_FOOD_BY_ID order: [common, herbivorous, carnivorous, ultimate]
  */
@@ -135,7 +152,7 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 		return;
 	}
 
-	const currentLevel = data[`${building}Level` as keyof typeof data] as number;
+	const currentLevel = getBuildingLevel(data, building);
 	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
 
 	if (upgradeCost === null) {

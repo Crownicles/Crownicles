@@ -178,8 +178,10 @@ export abstract class GuildDomainConstants {
 	] as const;
 
 	/**
-	 * Daily auto-fill food generation per pantry level: [common, carnivorous, herbivorous, ultimate]
-	 * Level 0 has no auto-fill (no pantry building)
+	 * Daily auto-fill food generation per pantry level, indexed by PetConstants.PET_FOOD_BY_ID:
+	 * [common, herbivorous, carnivorous, ultimate]
+	 * NB: herbivorous and carnivorous rates are intentionally identical at every level.
+	 * Level 0 has no auto-fill (no pantry building).
 	 */
 	static readonly PANTRY_AUTO_FILL = [
 		[
