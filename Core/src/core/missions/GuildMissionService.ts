@@ -116,7 +116,10 @@ export abstract class GuildMissionService {
 	}
 
 	private static canProgressMission(guild: Guild, missionId: string): boolean {
-		if (!GuildMissionService.hasActiveMission(guild) || GuildMissionService.isMissionCompleted(guild) || guild.guildMissionId !== missionId) {
+		const isActive = GuildMissionService.hasActiveMission(guild);
+		const isCompleted = GuildMissionService.isMissionCompleted(guild);
+		const matchesId = guild.guildMissionId === missionId;
+		if (!isActive || isCompleted || !matchesId) {
 			return false;
 		}
 		const missionInterface = MissionsController.getMissionInterface(missionId);
