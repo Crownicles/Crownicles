@@ -29,8 +29,9 @@ import {
 	CommandReportGuildDomainBuyXpRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	GuildBuilding
+	GuildBuilding, XpTier
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
+import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
 import {
 	BUILDING_MENU_IDS, createDomainCollector,
 	GuildDomainMenuContext
@@ -62,13 +63,13 @@ function registerAllDomainMenus(
 
 async function handleUpgrade(
 	ctx: GuildDomainMenuContext,
-	building: string,
+	building: GuildBuilding,
 	nestedMenus: CrowniclesNestedMenus,
 	returnMenuId: string
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
-		makePacket(CommandReportGuildDomainUpgradeReq, { building: building as GuildBuilding }),
+		makePacket(CommandReportGuildDomainUpgradeReq, { building }),
 		async (_responseContext, packetName, responsePacket) => {
 			if (packetName === CommandReportGuildDomainUpgradeRes.name) {
 				const res = responsePacket as unknown as CommandReportGuildDomainUpgradeRes;
@@ -94,14 +95,14 @@ async function handleUpgrade(
 
 async function handleFoodBuy(
 	ctx: GuildDomainMenuContext,
-	foodType: string,
+	foodType: PetFood,
 	amount: number,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
 		makePacket(CommandReportFoodShopBuyReq, {
-			foodType: foodType as CommandReportFoodShopBuyReq["foodType"],
+			foodType,
 			amount
 		}),
 		async (_responseContext, packetName, responsePacket) => {
@@ -131,12 +132,12 @@ async function handleFoodBuy(
 
 async function handleXpBuy(
 	ctx: GuildDomainMenuContext,
-	tier: string,
+	tier: XpTier,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
-		makePacket(CommandReportGuildDomainBuyXpReq, { tier: tier as CommandReportGuildDomainBuyXpReq["tier"] }),
+		makePacket(CommandReportGuildDomainBuyXpReq, { tier }),
 		async (_responseContext, packetName, responsePacket) => {
 			const shopMenuId = BUILDING_MENU_IDS[GuildBuilding.SHOP];
 			if (packetName === CommandReportGuildDomainBuyXpRes.name) {
@@ -198,7 +199,7 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 		}
 
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX)) {
-			const upgradedBuilding = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "");
+			const upgradedBuilding = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "") as GuildBuilding;
 			await handleUpgrade(ctx, upgradedBuilding, nestedMenus, menuId);
 			return;
 		}
@@ -206,14 +207,14 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 		if (building === GuildBuilding.SHOP) {
 			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX)) {
 				const parts = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX, "").split("_");
-				const foodType = parts[0];
+				const foodType = parts[0] as PetFood;
 				const amount = parseInt(parts[1], 10);
 				await handleFoodBuy(ctx, foodType, amount, nestedMenus);
 				return;
 			}
 
 			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX)) {
-				const tier = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX, "");
+				const tier = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX, "") as XpTier;
 				await handleXpBuy(ctx, tier, nestedMenus);
 			}
 		}
