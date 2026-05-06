@@ -1110,24 +1110,15 @@ function addGuildDomainSubMenus(menus: Map<string, CrowniclesNestedMenu>, params
 	if (!cityData.guildDomain?.isInCity) {
 		return;
 	}
-	const {
-		context, interaction, packet, collectorTime, pseudo
-	} = params;
-	const domainOptions = {
-		context, interaction, packet, collectorTime, pseudo
-	};
-	menus.set(ReportCityMenuIds.GUILD_DOMAIN_MENU, getGuildDomainMenu(domainOptions));
-	for (const [key, menu] of getGuildDomainSubMenus(domainOptions)) {
+	menus.set(ReportCityMenuIds.GUILD_DOMAIN_MENU, getGuildDomainMenu(params));
+	for (const [key, menu] of getGuildDomainSubMenus(params)) {
 		menus.set(key, menu);
 	}
 }
 
 function addInnSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
-	const {
-		context, interaction, packet, collectorTime, pseudo
-	} = params;
 	for (const inn of cityData.inns || []) {
-		menus.set(`${ReportCityMenuIds.INN_PREFIX}${inn.innId}`, getInnMenu(context, interaction, packet, inn.innId, collectorTime, pseudo));
+		menus.set(`${ReportCityMenuIds.INN_PREFIX}${inn.innId}`, getInnMenu(params.context, params.interaction, params.packet, inn.innId, params.collectorTime, params.pseudo));
 	}
 }
 
@@ -1135,10 +1126,7 @@ function addEnchanterSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: H
 	if (!cityData.enchanter) {
 		return;
 	}
-	const {
-		context, interaction, packet, collectorTime, pseudo
-	} = params;
-	menus.set(ReportCityMenuIds.ENCHANTER_MENU, getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
+	menus.set(ReportCityMenuIds.ENCHANTER_MENU, getEnchanterMenu(params.context, params.interaction, params.packet, params.collectorTime, params.pseudo));
 }
 
 function addBlacksmithSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
@@ -1160,26 +1148,22 @@ function addHomeSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeM
 	}
 }
 
+function shouldShowManageHomeMenu(cityData: ReactionCollectorCityData): boolean {
+	return Boolean(cityData.home.manage) || Boolean(cityData.guildDomainNotary?.isChief);
+}
+
 function addManageHomeSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
-	if (!cityData.home.manage && !cityData.guildDomainNotary?.isChief) {
+	if (!shouldShowManageHomeMenu(cityData)) {
 		return;
 	}
-	const {
-		context, interaction, packet, collectorTime, pseudo
-	} = params;
-	menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
+	menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(params.context, params.interaction, params.packet, params.collectorTime, params.pseudo));
 }
 
 function addGuildFoodShopSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
 	if (!cityData.guildFoodShop) {
 		return;
 	}
-	const {
-		context, interaction, packet, collectorTime, pseudo
-	} = params;
-	menus.set(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU, getGuildFoodShopMenu({
-		context, interaction, packet, collectorTime, pseudo
-	}));
+	menus.set(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU, getGuildFoodShopMenu(params));
 }
 
 function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNestedMenu> {
