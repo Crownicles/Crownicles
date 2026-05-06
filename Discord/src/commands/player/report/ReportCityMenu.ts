@@ -962,72 +962,69 @@ function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData
 	}
 }
 
-function getManageHomeMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
-	const cityData = packet.data.data as ReactionCollectorCityData;
-	const homeData = cityData.home.manage;
-	const guildNotaryData = cityData.guildDomainNotary;
-	const lng = interaction.userLanguage;
-
-	const container = new ContainerBuilder();
-
-	// Title
+function addPersonalNotarySection(container: ContainerBuilder, homeData: ManageHomeData | undefined, lng: Language): void {
+	if (!homeData) {
+		return;
+	}
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.homes.notaryTitle", {
-				lng, pseudo
-			})}`
+			`${i18n.t("commands:report.city.homes.notaryIntroduction", { lng })}\n\n${buildNotaryDescription(homeData, lng)}`
+		)
+	);
+	addNotaryActionButton(container, homeData, lng);
+}
+
+type GuildNotaryData = NonNullable<ReactionCollectorCityData["guildDomainNotary"]>;
+
+function buildGuildNotaryConfirmLabel(guildNotaryData: GuildNotaryData, lng: Language): string {
+	const actionLabel = guildNotaryData.hasDomain
+		? i18n.t("commands:report.city.guildDomain.confirmRelocate", { lng })
+		: i18n.t("commands:report.city.guildDomain.confirmPurchase", { lng });
+	if (guildNotaryData.cost > 0) {
+		return i18n.t("commands:report.city.guildDomain.notaryConfirmLabel", {
+			lng, cost: guildNotaryData.cost
+		});
+	}
+	return actionLabel;
+}
+
+function addGuildNotarySection(container: ContainerBuilder, guildNotaryData: GuildNotaryData | undefined, lng: Language): void {
+	if (!guildNotaryData?.isChief) {
+		return;
+	}
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+
+	const descriptionKey = guildNotaryData.hasDomain
+		? "commands:report.city.guildDomain.notaryRelocateDescription"
+		: "commands:report.city.guildDomain.notaryPurchaseDescription";
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t(descriptionKey, {
+				lng,
+				cost: guildNotaryData.cost,
+				treasury: guildNotaryData.treasury
+			})
 		)
 	);
 
-	// Personal home section
-	if (homeData) {
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				`${i18n.t("commands:report.city.homes.notaryIntroduction", { lng })}\n\n${buildNotaryDescription(homeData, lng)}`
-			)
-		);
-		addNotaryActionButton(container, homeData, lng);
+	if (guildNotaryData.treasury < guildNotaryData.cost) {
+		return;
 	}
+	const actionLabel = guildNotaryData.hasDomain
+		? i18n.t("commands:report.city.guildDomain.confirmRelocate", { lng })
+		: i18n.t("commands:report.city.guildDomain.confirmPurchase", { lng });
+	addCitySection({
+		container,
+		text: buildGuildNotaryConfirmLabel(guildNotaryData, lng),
+		emoji: CrowniclesIcons.city.guildDomainNotary,
+		customId: ReportCityMenuIds.GUILD_DOMAIN_CONFIRM,
+		buttonLabel: actionLabel,
+		buttonStyle: ButtonStyle.Success
+	});
+}
 
-	// Guild domain section
-	if (guildNotaryData?.isChief) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-
-		const descriptionKey = guildNotaryData.hasDomain
-			? "commands:report.city.guildDomain.notaryRelocateDescription"
-			: "commands:report.city.guildDomain.notaryPurchaseDescription";
-
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t(descriptionKey, {
-					lng,
-					cost: guildNotaryData.cost,
-					treasury: guildNotaryData.treasury
-				})
-			)
-		);
-
-		if (guildNotaryData.treasury >= guildNotaryData.cost) {
-			const actionLabel = guildNotaryData.hasDomain
-				? i18n.t("commands:report.city.guildDomain.confirmRelocate", { lng })
-				: i18n.t("commands:report.city.guildDomain.confirmPurchase", { lng });
-			const confirmLabel = guildNotaryData.cost > 0
-				? i18n.t("commands:report.city.guildDomain.notaryConfirmLabel", {
-					lng, cost: guildNotaryData.cost
-				})
-				: actionLabel;
-			addCitySection({
-				container,
-				text: confirmLabel,
-				emoji: CrowniclesIcons.city.guildDomainNotary,
-				customId: ReportCityMenuIds.GUILD_DOMAIN_CONFIRM,
-				buttonLabel: actionLabel,
-				buttonStyle: ButtonStyle.Success
-			});
-		}
-	}
-
-	// Back to city + Stay in city buttons
+function addNotaryNavigation(container: ContainerBuilder, lng: Language): void {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -1039,6 +1036,24 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 			createStayInCityButton(lng)
 		)
 	);
+}
+
+function getManageHomeMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
+	const cityData = packet.data.data as ReactionCollectorCityData;
+	const lng = interaction.userLanguage;
+	const container = new ContainerBuilder();
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t("commands:report.city.homes.notaryTitle", {
+				lng, pseudo
+			})}`
+		)
+	);
+
+	addPersonalNotarySection(container, cityData.home.manage, lng);
+	addGuildNotarySection(container, cityData.guildDomainNotary, lng);
+	addNotaryNavigation(container, lng);
 
 	return {
 		containers: [container],
