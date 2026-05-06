@@ -3,15 +3,19 @@ import {
 	ButtonBuilder, ButtonStyle,
 	ContainerBuilder,
 	SectionBuilder, SeparatorBuilder, SeparatorSpacingSize,
+	StringSelectMenuBuilder, StringSelectMenuOptionBuilder,
 	TextDisplayBuilder
 } from "discord.js";
 import i18n from "../../../../translations/i18n";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
 import {
 	GuildBuilding, GuildDomainConstants
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
-import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetFood
+} from "../../../../../../Lib/src/constants/PetConstants";
 import {
 	addDomainNavigation, addStatusMessage, addUpgradeSection,
 	BUILDING_ICONS, FOOD_KEYS, getBuildingLevel, getBuildingSummary,
@@ -97,72 +101,96 @@ const FOOD_BUY_QUICK_PRESETS = [
 	10
 ] as const;
 
-function buildFoodActionRows(data: GuildDomainData, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
-	const rows: ActionRowBuilder<ButtonBuilder>[] = [];
-	const foodTypes = PetConstants.PET_FOOD_BY_ID;
+function getMaxBuyableFood(data: GuildDomainData, foodIndex: number): number {
+	const foodKey = FOOD_KEYS[foodIndex];
+	const remainingSlots = data.foodCaps[foodIndex] - data.food[foodKey];
+	const maxAffordable = Math.floor(data.treasury / GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex]);
+	return Math.max(0, Math.min(remainingSlots, maxAffordable));
+}
 
+function buildShopCatalogText(data: GuildDomainData, lng: Language): string {
+	const foodTypes = PetConstants.PET_FOOD_BY_ID;
+	const foodLines: string[] = [];
 	for (let i = 0; i < foodTypes.length; i++) {
 		const foodType = foodTypes[i];
 		const foodKey = FOOD_KEYS[i];
-		const currentStock = data.food[foodKey];
+		const stock = data.food[foodKey];
 		const cap = data.foodCaps[i];
-		const remainingSlots = cap - currentStock;
 		const price = GuildDomainConstants.SHOP_PRICES.FOOD[i];
-		const maxAffordable = Math.floor(data.treasury / price);
-		const maxBuyable = Math.min(remainingSlots, maxAffordable);
-
-		if (maxBuyable <= 0) {
-			continue;
-		}
-
-		const amounts = [
-			...new Set([
-				...FOOD_BUY_QUICK_PRESETS.map(preset => Math.min(preset, maxBuyable)),
-				maxBuyable
-			].filter(a => a > 0))
-		];
-
-		const row = new ActionRowBuilder<ButtonBuilder>();
-		for (const amount of amounts) {
-			row.addComponents(
-				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${foodType}_${amount}`)
-					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodButton", {
-						lng,
-						amount,
-						food: i18n.t(`models:foods.${foodType}`, {
-							lng, count: amount
-						}),
-						cost: price * amount
-					}))
-					.setStyle(ButtonStyle.Primary)
-			);
-		}
-		rows.push(row);
+		const foodName = i18n.t(`models:foods.${foodType}`, {
+			lng, count: 1
+		});
+		foodLines.push(i18n.t("commands:report.city.guildDomain.subMenus.shop.catalogFoodLine", {
+			lng, food: foodName, stock, cap, price
+		}));
 	}
-
-	return rows;
-}
-
-function buildDepositActionRow(lng: Language, playerMoney: number): ActionRowBuilder<ButtonBuilder> {
-	const buildButton = (cost: number, titleKey: "depositTreasurySmall" | "depositTreasuryBig"): ButtonBuilder => {
+	const depositLines: string[] = [];
+	for (const cost of [GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT, GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT]) {
 		const penalty = Math.min(
 			Math.round(cost * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
 			GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
 		);
 		const treasuryGain = cost - penalty;
-		return new ButtonBuilder()
-			.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX}${cost}`)
-			.setLabel(i18n.t(`commands:report.city.guildDomain.subMenus.shop.${titleKey}`, {
+		const labelKey = cost === GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT ? "depositSmallName" : "depositBigName";
+		depositLines.push(i18n.t("commands:report.city.guildDomain.subMenus.shop.catalogDepositLine", {
+			lng, name: i18n.t(`commands:report.city.guildDomain.subMenus.shop.${labelKey}`, { lng }), cost, treasury: treasuryGain
+		}));
+	}
+	return i18n.t("commands:report.city.guildDomain.subMenus.shop.catalog", {
+		lng,
+		foodLines: foodLines.join("\n"),
+		depositLines: depositLines.join("\n"),
+		playerMoney: data.playerMoney,
+		treasury: data.treasury
+	});
+}
+
+function buildShopSelectMenu(data: GuildDomainData, lng: Language): StringSelectMenuBuilder | null {
+	const select = new StringSelectMenuBuilder()
+		.setCustomId(ReportCityMenuIds.GUILD_DOMAIN_SHOP_SELECT)
+		.setPlaceholder(i18n.t("commands:report.city.guildDomain.subMenus.shop.selectPlaceholder", { lng }));
+
+	const foodTypes = PetConstants.PET_FOOD_BY_ID;
+	let optionCount = 0;
+
+	for (let i = 0; i < foodTypes.length; i++) {
+		if (getMaxBuyableFood(data, i) <= 0) {
+			continue;
+		}
+		const foodType = foodTypes[i];
+		const foodName = i18n.t(`models:foods.${foodType}`, {
+			lng, count: 1
+		});
+		const price = GuildDomainConstants.SHOP_PRICES.FOOD[i];
+		select.addOptions(new StringSelectMenuOptionBuilder()
+			.setLabel(foodName)
+			.setDescription(i18n.t("commands:report.city.guildDomain.subMenus.shop.selectFoodDescription", {
+				lng, price
+			}))
+			.setValue(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_SELECT_FOOD_PREFIX}${foodType}`));
+		optionCount++;
+	}
+
+	for (const cost of [GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT, GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT]) {
+		if (data.playerMoney < cost) {
+			continue;
+		}
+		const labelKey = cost === GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT ? "depositSmallName" : "depositBigName";
+		const penalty = Math.min(
+			Math.round(cost * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
+			GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
+		);
+		const treasuryGain = cost - penalty;
+		select.addOptions(new StringSelectMenuOptionBuilder()
+			.setLabel(i18n.t(`commands:report.city.guildDomain.subMenus.shop.${labelKey}`, { lng }))
+			.setDescription(i18n.t("commands:report.city.guildDomain.subMenus.shop.selectDepositDescription", {
 				lng, cost, treasury: treasuryGain
 			}))
-			.setStyle(ButtonStyle.Success)
-			.setDisabled(playerMoney < cost);
-	};
-	return new ActionRowBuilder<ButtonBuilder>().addComponents(
-		buildButton(GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT, "depositTreasurySmall"),
-		buildButton(GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT, "depositTreasuryBig")
-	);
+			.setValue(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_SELECT_DEPOSIT_PREFIX}${cost}`));
+		optionCount++;
+	}
+
+	return optionCount > 0 ? select : null;
 }
 
 function addReimburseSection(container: ContainerBuilder, lng: Language, playerMoney: number, pendingAmount: number): void {
@@ -200,42 +228,16 @@ function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext)
 	const {
 		data, lng
 	} = ctx;
+
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shop.description", {
-				lng, playerMoney: data.playerMoney, treasury: data.treasury
-			})
-		)
+		new TextDisplayBuilder().setContent(buildShopCatalogText(data, lng))
 	);
 
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shop.stockInfo", {
-				lng,
-				common: data.food.common,
-				commonCap: data.foodCaps[0],
-				herbivorous: data.food.herbivorous,
-				herbivorousCap: data.foodCaps[1],
-				carnivorous: data.food.carnivorous,
-				carnivorousCap: data.foodCaps[2],
-				ultimate: data.food.ultimate,
-				ultimateCap: data.foodCaps[3]
-			})
-		)
-	);
-
-	const foodRows = buildFoodActionRows(data, lng);
-	if (foodRows.length > 0) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodLabel", { lng })
-			)
+	const select = buildShopSelectMenu(data, lng);
+	if (select) {
+		container.addActionRowComponents(
+			new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select)
 		);
-		for (const row of foodRows) {
-			container.addActionRowComponents(row);
-		}
 	}
 	else {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -249,14 +251,70 @@ function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext)
 	if (data.pendingReimburseAmount && data.pendingReimburseAmount > 0) {
 		addReimburseSection(container, lng, data.playerMoney, data.pendingReimburseAmount);
 	}
+}
 
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+export function buildShopQuantityContainer(ctx: GuildDomainMenuContext, foodType: PetFood): ContainerBuilder {
+	const {
+		data, lng
+	} = ctx;
+	const foodIndex = PetConstants.PET_FOOD_BY_ID.indexOf(foodType);
+	const foodKey = FOOD_KEYS[foodIndex];
+	const price = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
+	const maxBuyable = getMaxBuyableFood(data, foodIndex);
+	const foodName = i18n.t(`models:foods.${foodType}`, {
+		lng, count: 1
+	});
+
+	const container = new ContainerBuilder();
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(`### ${i18n.t("commands:report.city.guildDomain.subMenus.shop.title", { lng })}`)
+	);
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryLabel", { lng })
+			i18n.t("commands:report.city.guildDomain.subMenus.shop.quantityPrompt", {
+				lng,
+				food: foodName,
+				stock: data.food[foodKey],
+				cap: data.foodCaps[foodIndex],
+				price,
+				treasury: data.treasury
+			})
 		)
 	);
-	container.addActionRowComponents(buildDepositActionRow(lng, data.playerMoney));
+
+	const amounts = [
+		...new Set([
+			...FOOD_BUY_QUICK_PRESETS.map(preset => Math.min(preset, maxBuyable)),
+			maxBuyable
+		].filter(a => a > 0))
+	];
+
+	if (amounts.length > 0) {
+		const row = new ActionRowBuilder<ButtonBuilder>();
+		for (const amount of amounts) {
+			row.addComponents(
+				new ButtonBuilder()
+					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${foodType}_${amount}`)
+					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.quantityButton", {
+						lng, amount, cost: price * amount
+					}))
+					.setStyle(ButtonStyle.Primary)
+			);
+		}
+		container.addActionRowComponents(row);
+	}
+
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_CANCEL)
+				.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.quantityCancel", { lng }))
+				.setEmoji(CrowniclesIcons.collectors.back)
+				.setStyle(ButtonStyle.Secondary)
+		)
+	);
+
+	return container;
 }
 
 export function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
