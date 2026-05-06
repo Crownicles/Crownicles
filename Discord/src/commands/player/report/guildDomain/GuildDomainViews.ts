@@ -229,107 +229,113 @@ export function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: 
 	return container;
 }
 
-export function buildShelterContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
-	const {
-		data, lng
-	} = ctx;
+/**
+ * Helper to factor out the common building sub-menu skeleton:
+ * title + description + separator + upgrade + status + nav.
+ */
+function buildSimpleBuildingContainer(
+	ctx: GuildDomainMenuContext,
+	building: GuildBuilding,
+	titleKey: string,
+	body: (container: ContainerBuilder) => void,
+	statusMessage?: string
+): ContainerBuilder {
+	const { lng } = ctx;
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.subMenus.shelter.title", { lng })}`
-		)
+		new TextDisplayBuilder().setContent(`### ${i18n.t(titleKey, { lng })}`)
 	);
 
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shelter.description", {
-				lng,
-				slots: GuildDomainConstants.getShelterSlots(data.shelterLevel)
-			})
-		)
-	);
+	body(container);
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addUpgradeSection(container, GuildBuilding.SHELTER, ctx);
+	addUpgradeSection(container, building, ctx);
 	addStatusMessage(container, statusMessage);
 	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
 
 	return container;
+}
+
+export function buildShelterContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
+	const {
+		data, lng
+	} = ctx;
+	return buildSimpleBuildingContainer(
+		ctx,
+		GuildBuilding.SHELTER,
+		"commands:report.city.guildDomain.subMenus.shelter.title",
+		container => {
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					i18n.t("commands:report.city.guildDomain.subMenus.shelter.description", {
+						lng,
+						slots: GuildDomainConstants.getShelterSlots(data.shelterLevel)
+					})
+				)
+			);
+		},
+		statusMessage
+	);
 }
 
 export function buildPantryContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
 	const {
 		data, lng
 	} = ctx;
-	const container = new ContainerBuilder();
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.subMenus.pantry.title", { lng })}`
-		)
+	return buildSimpleBuildingContainer(
+		ctx,
+		GuildBuilding.PANTRY,
+		"commands:report.city.guildDomain.subMenus.pantry.title",
+		container => {
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					i18n.t("commands:report.city.guildDomain.subMenus.pantry.description", { lng })
+				)
+			);
+			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					i18n.t("commands:report.city.guildDomain.foodInfo", {
+						lng,
+						common: data.food.common,
+						commonCap: data.foodCaps[0],
+						herbivorous: data.food.herbivorous,
+						herbivorousCap: data.foodCaps[1],
+						carnivorous: data.food.carnivorous,
+						carnivorousCap: data.foodCaps[2],
+						ultimate: data.food.ultimate,
+						ultimateCap: data.foodCaps[3]
+					})
+				)
+			);
+		},
+		statusMessage
 	);
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.pantry.description", { lng })
-		)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.foodInfo", {
-				lng,
-				common: data.food.common,
-				commonCap: data.foodCaps[0],
-				herbivorous: data.food.herbivorous,
-				herbivorousCap: data.foodCaps[1],
-				carnivorous: data.food.carnivorous,
-				carnivorousCap: data.foodCaps[2],
-				ultimate: data.food.ultimate,
-				ultimateCap: data.foodCaps[3]
-			})
-		)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addUpgradeSection(container, GuildBuilding.PANTRY, ctx);
-	addStatusMessage(container, statusMessage);
-	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-
-	return container;
 }
 
 export function buildTrainingGroundContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
 	const {
 		data, lng
 	} = ctx;
-	const container = new ContainerBuilder();
 	const love = GuildDomainConstants.getTrainingLovePerDay(data.trainingGroundLevel);
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.subMenus.training.title", { lng })}`
-		)
+	return buildSimpleBuildingContainer(
+		ctx,
+		GuildBuilding.TRAINING_GROUND,
+		"commands:report.city.guildDomain.subMenus.training.title",
+		container => {
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					love === 0
+						? i18n.t("commands:report.city.guildDomain.subMenus.training.descriptionInactive", { lng })
+						: i18n.t("commands:report.city.guildDomain.subMenus.training.descriptionActive", {
+							lng, love
+						})
+				)
+			);
+		},
+		statusMessage
 	);
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			love === 0
-				? i18n.t("commands:report.city.guildDomain.subMenus.training.descriptionInactive", { lng })
-				: i18n.t("commands:report.city.guildDomain.subMenus.training.descriptionActive", {
-					lng, love
-				})
-		)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addUpgradeSection(container, GuildBuilding.TRAINING_GROUND, ctx);
-	addStatusMessage(container, statusMessage);
-	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-
-	return container;
 }
 
 export function buildBuildingContainer(building: GuildBuilding, ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {

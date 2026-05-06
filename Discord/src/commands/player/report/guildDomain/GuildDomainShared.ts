@@ -100,6 +100,24 @@ export function addStatusMessage(container: ContainerBuilder, statusMessage?: st
 	}
 }
 
+function buildUpgradeText(
+	lng: Language, currentLevel: number, upgradeCost: number,
+	requiredGuildLevel: number | null, meetsLevel: boolean, canAfford: boolean
+): string {
+	let upgradeText = i18n.t("commands:report.city.guildDomain.buildingUpgrade", {
+		lng, nextLevel: currentLevel + 1, cost: upgradeCost
+	});
+	if (!meetsLevel && requiredGuildLevel !== null) {
+		upgradeText += i18n.t("commands:report.city.guildDomain.buildingUpgradeBlocked", {
+			lng, required: requiredGuildLevel
+		});
+	}
+	else if (!canAfford) {
+		upgradeText += i18n.t("commands:report.city.guildDomain.buildingUpgradeTreasuryLow", { lng });
+	}
+	return upgradeText;
+}
+
 export function addUpgradeSection(container: ContainerBuilder, building: GuildBuilding, ctx: GuildDomainMenuContext): void {
 	const {
 		data, lng
@@ -124,24 +142,8 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 	const canAfford = data.treasury >= upgradeCost;
 	const meetsLevel = requiredGuildLevel === null || data.guildLevel >= requiredGuildLevel;
 
-	let upgradeText = i18n.t("commands:report.city.guildDomain.buildingUpgrade", {
-		lng,
-		nextLevel: currentLevel + 1,
-		cost: upgradeCost
-	});
-
-	if (!meetsLevel && requiredGuildLevel !== null) {
-		upgradeText += i18n.t("commands:report.city.guildDomain.buildingUpgradeBlocked", {
-			lng,
-			required: requiredGuildLevel
-		});
-	}
-	else if (!canAfford) {
-		upgradeText += i18n.t("commands:report.city.guildDomain.buildingUpgradeTreasuryLow", { lng });
-	}
-
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(upgradeText)
+		new TextDisplayBuilder().setContent(buildUpgradeText(lng, currentLevel, upgradeCost, requiredGuildLevel, meetsLevel, canAfford))
 	);
 
 	container.addActionRowComponents(
