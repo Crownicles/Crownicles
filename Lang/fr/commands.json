@@ -1297,6 +1297,7 @@
             "treasuryPrompt": "{emote:city.guildDomain.shop} L'intendant peut transformer votre or en trésorerie de guilde, moyennant une commission de {{penaltyPercent, number}}% (plafonnée à {{penaltyMax, number}} {emote:unitValues.money}).\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Trésorerie de la guilde** : {{treasury, number}} {emote:unitValues.money}",
             "depositSmallNameButton": "Bourse ({{cost}} → +{{treasury}})",
             "depositBigNameButton": "Sac d'or ({{cost}} → +{{treasury}})",
+            "depositHugeNameButton": "Coffre ({{cost}} → +{{treasury}})",
             "noFoodAvailable": "{emote:messages.info} Le garde-manger de la guilde est plein ou la trésorerie est insuffisante.",
             "quantityPrompt": "Combien de **{{food}}** souhaitez-vous acheter ?\n\nRéserves actuelles : **{{stock}}/{{cap}}**\nPrix unitaire : **{{price, number}}** {emote:unitValues.money}\nTrésorerie disponible : **{{treasury, number}}** {emote:unitValues.money}",
             "quantityButton": "x{{amount}} ({{cost, number}})",
