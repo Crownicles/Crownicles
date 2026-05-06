@@ -10,7 +10,9 @@ import {
 	CrowniclesNestedMenuCollector, CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
-import { createStayInCityButton } from "../ReportCityMenu";
+import {
+	createStayInCityButton, handleStayInCityInteraction
+} from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -122,6 +124,26 @@ export function createDomainCollector(
 
 		return collector;
 	};
+}
+
+/**
+ * Wrap createDomainCollector to factor the boilerplate every guild domain collector shares:
+ * - defer the button update,
+ * - intercept the STAY_IN_CITY button to end the report.
+ * The provided handler is only invoked for unhandled customIds.
+ */
+export function createDomainCollectorWithStayHandling(
+	ctx: GuildDomainMenuContext,
+	handler: (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => Promise<void>
+): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return createDomainCollector(ctx, async (customId, buttonInteraction, nestedMenus) => {
+		await buttonInteraction.deferUpdate();
+		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
+			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
+			return;
+		}
+		await handler(customId, buttonInteraction, nestedMenus);
+	});
 }
 
 export function addDomainNavigation(container: ContainerBuilder, ctx: GuildDomainMenuContext, backLabel: string, backId: string): void {
