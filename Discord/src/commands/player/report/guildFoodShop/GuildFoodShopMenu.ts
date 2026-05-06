@@ -30,6 +30,7 @@ import {
 	buildShopBody, buildShopQuantityContainer, buildShopReimburseContainer
 } from "../guildDomain/GuildDomainViews";
 import { FoodShopUIContext } from "../guildDomain/GuildDomainShared";
+import { CrowniclesErrorEmbed } from "../../../../messages/CrowniclesErrorEmbed";
 
 type CityCollectorFactory = ReturnType<typeof createCityCollector>;
 
@@ -131,6 +132,18 @@ function finishReportWithMessage(ctx: FoodShopMenuContext, nestedMenus: Crownicl
 	handleStayInCityInteraction(ctx.packet, ctx.context, null);
 }
 
+function finishReportWithErrorEmbed(ctx: FoodShopMenuContext, nestedMenus: CrowniclesNestedMenus, reason: string): void {
+	const message = nestedMenus.message;
+	if (message) {
+		const errorEmbed = new CrowniclesErrorEmbed(ctx.interaction.user, ctx.context, ctx.interaction, reason, false, false);
+		message.reply({ embeds: [errorEmbed] })
+			.catch(() => {
+				// Ignore reply errors; we still want to end the report.
+			});
+	}
+	handleStayInCityInteraction(ctx.packet, ctx.context, null);
+}
+
 async function showQuantityMenu(ctx: FoodShopMenuContext, nestedMenus: CrowniclesNestedMenus, foodType: PetFood): Promise<void> {
 	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU, {
 		containers: [buildShopQuantityContainer(toUIContext(ctx), foodType)],
@@ -161,8 +174,8 @@ async function handleFoodBuy(ctx: FoodShopMenuContext, foodType: PetFood, amount
 				await showReimburseMenu(ctx, nestedMenus);
 			}
 			else {
-				// Buy failed: go back to the main menu (the dynamic registration of the main menu happens at top-level open).
-				await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU);
+				// Buy failed (e.g., another member just drained the treasury): end the report with a clear error.
+				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodError", { lng: ctx.lng }));
 			}
 		}
 	);
@@ -174,7 +187,7 @@ async function handleReimburse(ctx: FoodShopMenuContext, amount: number, nestedM
 		makePacket(CommandReportGuildDomainDepositTreasuryReq, {
 			amount, isReimburse: true
 		}),
-		async (_responseContext, packetName, responsePacket) => {
+		(_responseContext, packetName, responsePacket) => {
 			if (packetName === CommandReportGuildDomainDepositTreasuryRes.name) {
 				const res = responsePacket as unknown as CommandReportGuildDomainDepositTreasuryRes;
 				ctx.data.playerMoney = res.newPlayerMoney;
@@ -188,7 +201,7 @@ async function handleReimburse(ctx: FoodShopMenuContext, amount: number, nestedM
 				finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n\n${successMessage}` : successMessage);
 			}
 			else {
-				await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU);
+				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryError", { lng: ctx.lng }));
 			}
 		}
 	);

@@ -40,37 +40,7 @@ import {
 	buildBuildingContainer, buildMainDomainContainer, buildShopQuantityContainer,
 	buildShopReimburseContainer, buildShopTreasuryContainer
 } from "./GuildDomainViews";
-
-function registerAllDomainMenus(
-	ctx: GuildDomainMenuContext,
-	nestedMenus: CrowniclesNestedMenus,
-	statusMessage?: string,
-	statusMenuId?: string
-): void {
-	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU, {
-		containers: [buildMainDomainContainer(ctx, statusMenuId === ReportCityMenuIds.GUILD_DOMAIN_MENU ? statusMessage : undefined)],
-		createCollector: createMainMenuCollector(ctx)
-	});
-
-	for (const building of Object.values(GuildBuilding)) {
-		const menuId = BUILDING_MENU_IDS[building];
-		const container = buildBuildingContainer(building, ctx, statusMenuId === menuId ? statusMessage : undefined);
-		nestedMenus.registerMenu(menuId, {
-			containers: [container],
-			createCollector: createBuildingMenuCollector(building, ctx)
-		});
-	}
-}
-
-async function refreshAndShowStatus(
-	ctx: GuildDomainMenuContext,
-	nestedMenus: CrowniclesNestedMenus,
-	statusMessage: string,
-	menuId: string
-): Promise<void> {
-	registerAllDomainMenus(ctx, nestedMenus, statusMessage, menuId);
-	await nestedMenus.changeMenu(menuId);
-}
+import { CrowniclesErrorEmbed } from "../../../../messages/CrowniclesErrorEmbed";
 
 /**
  * Send the final action result as a followup reply and end the /rapport command.
@@ -92,16 +62,36 @@ function finishReportWithMessage(
 	handleStayInCityInteraction(ctx.packet, ctx.context, null);
 }
 
+/**
+ * Send the action failure as a CrowniclesErrorEmbed followup reply and end the /rapport command.
+ * Used when a transactional action fails (e.g. concurrent buy that drained the treasury) so the
+ * player gets a clear error and has to run /rapport again to see refreshed state.
+ */
+function finishReportWithErrorEmbed(
+	ctx: GuildDomainMenuContext,
+	nestedMenus: CrowniclesNestedMenus,
+	reason: string
+): void {
+	const message = nestedMenus.message;
+	if (message) {
+		const errorEmbed = new CrowniclesErrorEmbed(ctx.interaction.user, ctx.context, ctx.interaction, reason, false, false);
+		message.reply({ embeds: [errorEmbed] })
+			.catch(() => {
+				// Ignore reply errors (e.g., message deleted): we still want to end the report.
+			});
+	}
+	handleStayInCityInteraction(ctx.packet, ctx.context, null);
+}
+
 async function handleUpgrade(
 	ctx: GuildDomainMenuContext,
 	building: GuildBuilding,
-	nestedMenus: CrowniclesNestedMenus,
-	returnMenuId: string
+	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
 		makePacket(CommandReportGuildDomainUpgradeReq, { building }),
-		async (_responseContext, packetName, responsePacket) => {
+		(_responseContext, packetName, responsePacket) => {
 			if (packetName === CommandReportGuildDomainUpgradeRes.name) {
 				const res = responsePacket as unknown as CommandReportGuildDomainUpgradeRes;
 				ctx.data.treasury = res.newTreasury;
@@ -117,7 +107,7 @@ async function handleUpgrade(
 				finishReportWithMessage(ctx, nestedMenus, successMessage);
 			}
 			else {
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.upgradeError", { lng: ctx.lng }), returnMenuId);
+				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.upgradeError", { lng: ctx.lng }));
 			}
 		}
 	);
@@ -136,7 +126,6 @@ async function handleFoodBuy(
 			amount
 		}),
 		async (_responseContext, packetName, responsePacket) => {
-			const shopMenuId = BUILDING_MENU_IDS[GuildBuilding.SHOP];
 			if (packetName === CommandReportFoodShopBuyRes.name) {
 				const res = responsePacket as unknown as CommandReportFoodShopBuyRes;
 				const foodKey = res.foodType.replace("Food", "") as keyof typeof ctx.data.food;
@@ -156,7 +145,7 @@ async function handleFoodBuy(
 				await showShopReimburseMenu(ctx, nestedMenus);
 			}
 			else {
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodError", { lng: ctx.lng }), shopMenuId);
+				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodError", { lng: ctx.lng }));
 			}
 		}
 	);
@@ -173,8 +162,7 @@ async function handleTreasuryDeposit(
 		makePacket(CommandReportGuildDomainDepositTreasuryReq, {
 			amount, isReimburse
 		}),
-		async (_responseContext, packetName, responsePacket) => {
-			const shopMenuId = BUILDING_MENU_IDS[GuildBuilding.SHOP];
+		(_responseContext, packetName, responsePacket) => {
 			if (packetName === CommandReportGuildDomainDepositTreasuryRes.name) {
 				const res = responsePacket as unknown as CommandReportGuildDomainDepositTreasuryRes;
 				ctx.data.playerMoney = res.newPlayerMoney;
@@ -195,7 +183,7 @@ async function handleTreasuryDeposit(
 				finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n\n${successMessage}` : successMessage);
 			}
 			else {
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryError", { lng: ctx.lng }), shopMenuId);
+				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryError", { lng: ctx.lng }));
 			}
 		}
 	);
@@ -318,8 +306,6 @@ async function showShopReimburseMenu(
 }
 
 function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	const menuId = BUILDING_MENU_IDS[building];
-
 	return createDomainCollector(ctx, async (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => {
 		await buttonInteraction.deferUpdate();
 
@@ -335,7 +321,7 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX)) {
 			const upgradedBuilding = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "") as GuildBuilding;
-			await handleUpgrade(ctx, upgradedBuilding, nestedMenus, menuId);
+			await handleUpgrade(ctx, upgradedBuilding, nestedMenus);
 			return;
 		}
 
