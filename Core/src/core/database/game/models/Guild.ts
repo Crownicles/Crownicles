@@ -216,7 +216,35 @@ export class Guild extends Model {
 		if (!guildPets) {
 			return true;
 		}
-		return guildPets.length >= GuildDomainConstants.getShelterSlots(this.shelterLevel);
+		return guildPets.length >= this.getShelterCapacity();
+	}
+
+	/**
+	 * Maximum number of pets the guild shelter can hold (computed from shelterLevel)
+	 */
+	public getShelterCapacity(): number {
+		return GuildDomainConstants.getShelterSlots(this.shelterLevel);
+	}
+
+	/**
+	 * Pre-resolved food cap array for the guild's current pantry level (indexed by food type order)
+	 */
+	public getFoodCaps(): readonly number[] {
+		return GuildDomainConstants.getFoodCaps(this.pantryLevel);
+	}
+
+	/**
+	 * Maximum amount of a given food type the guild pantry can hold
+	 */
+	public getFoodCapacityFor(foodType: string): number {
+		return this.getFoodCaps()[getFoodIndexOf(foodType)];
+	}
+
+	/**
+	 * Current amount of a given food type stored in the guild pantry
+	 */
+	public getFoodAmount(foodType: string): number {
+		return this.getDataValue(foodType) as number;
 	}
 
 	/**
@@ -232,7 +260,7 @@ export class Guild extends Model {
 	 * @param quantity the quantity that need to be available
 	 */
 	public isStorageFullFor(selectedItemType: string, quantity: number): boolean {
-		return this.getDataValue(selectedItemType) + quantity > GuildDomainConstants.getFoodCaps(this.pantryLevel)[getFoodIndexOf(selectedItemType)];
+		return this.getFoodAmount(selectedItemType) + quantity > this.getFoodCapacityFor(selectedItemType);
 	}
 
 	/**
@@ -242,11 +270,11 @@ export class Guild extends Model {
 	 * @param reason change reason
 	 */
 	public addFood(selectedItemType: string, quantity: number, reason: NumberChangeReason): void {
-		this.setDataValue(selectedItemType, this.getDataValue(selectedItemType) + quantity);
+		this.setDataValue(selectedItemType, this.getFoodAmount(selectedItemType) + quantity);
 		if (this.isStorageFullFor(selectedItemType, 0)) {
-			this.setDataValue(selectedItemType, GuildDomainConstants.getFoodCaps(this.pantryLevel)[getFoodIndexOf(selectedItemType)]);
+			this.setDataValue(selectedItemType, this.getFoodCapacityFor(selectedItemType));
 		}
-		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getDataValue(selectedItemType), reason)
+		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getFoodAmount(selectedItemType), reason)
 			.then();
 	}
 
