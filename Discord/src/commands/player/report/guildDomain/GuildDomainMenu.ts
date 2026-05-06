@@ -148,6 +148,7 @@ async function handleFoodBuy(
 					food: i18n.t(`models:foods.${res.foodType}`, {
 						lng: ctx.lng, count: res.amountBought
 					}),
+					foodType: res.foodType,
 					totalCost: res.totalCost
 				});
 
@@ -190,7 +191,7 @@ async function handleTreasuryDeposit(
 				});
 				const recap = isReimburse ? ctx.data.pendingPurchaseRecap : undefined;
 				ctx.data.pendingPurchaseRecap = undefined;
-				finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n${successMessage}` : successMessage);
+				finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n\n${successMessage}` : successMessage);
 			}
 			else {
 				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryError", { lng: ctx.lng }), shopMenuId);
@@ -293,7 +294,7 @@ function createShopReimburseCollector(
 			const declineMessage = i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng });
 			const recap = ctx.data.pendingPurchaseRecap;
 			ctx.data.pendingPurchaseRecap = undefined;
-			finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n${declineMessage}` : declineMessage);
+			finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n\n${declineMessage}` : declineMessage);
 			return;
 		}
 

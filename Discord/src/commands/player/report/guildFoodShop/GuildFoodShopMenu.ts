@@ -220,6 +220,7 @@ function buildBuySuccessMessage(res: CommandReportFoodShopBuyRes, lng: Language)
 		food: i18n.t(`models:foods.${res.foodType}`, {
 			lng, count: res.amountBought
 		}),
+		foodType: res.foodType,
 		totalCost: res.totalCost
 	});
 }
@@ -368,7 +369,7 @@ async function handleReimburse(reimburseContext: ReimburseContext): Promise<void
 				// End the report after a successful reimburse so the next /rapport shows fresh stats.
 				const recap = data.pendingPurchaseRecap;
 				data.pendingPurchaseRecap = undefined;
-				const finalMessage = recap ? `${recap}\n${statusMessage}` : statusMessage;
+				const finalMessage = recap ? `${recap}\n\n${statusMessage}` : statusMessage;
 				const message = nestedMenus.message;
 				if (message) {
 					message.reply({ content: finalMessage })
@@ -428,7 +429,7 @@ export function getGuildFoodShopMenu(options: GuildFoodShopMenuOptions): Crownic
 				const declineMessage = i18n.t("commands:report.city.guildFoodShop.reimburseDeclined", { lng });
 				const recap = data.pendingPurchaseRecap;
 				data.pendingPurchaseRecap = undefined;
-				const finalMessage = recap ? `${recap}\n${declineMessage}` : declineMessage;
+				const finalMessage = recap ? `${recap}\n\n${declineMessage}` : declineMessage;
 				const message = nestedMenus.message;
 				if (message) {
 					message.reply({ content: finalMessage })
