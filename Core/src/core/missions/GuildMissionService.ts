@@ -115,11 +115,14 @@ export abstract class GuildMissionService {
 		return guild.guildMissionNumberDone >= guild.guildMissionObjective;
 	}
 
+	private static isMissionActiveAndMatching(guild: Guild, missionId: string): boolean {
+		return GuildMissionService.hasActiveMission(guild)
+			&& !GuildMissionService.isMissionCompleted(guild)
+			&& guild.guildMissionId === missionId;
+	}
+
 	private static canProgressMission(guild: Guild, missionId: string): boolean {
-		const isActive = GuildMissionService.hasActiveMission(guild);
-		const isCompleted = GuildMissionService.isMissionCompleted(guild);
-		const matchesId = guild.guildMissionId === missionId;
-		if (!isActive || isCompleted || !matchesId) {
+		if (!GuildMissionService.isMissionActiveAndMatching(guild, missionId)) {
 			return false;
 		}
 		const missionInterface = MissionsController.getMissionInterface(missionId);

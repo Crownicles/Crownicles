@@ -1526,9 +1526,12 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 
 	// Add guild domain menu and sub-menus
 	if (cityData.guildDomain?.isInCity) {
-		menus.set(ReportCityMenuIds.GUILD_DOMAIN_MENU, getGuildDomainMenu(context, interaction, packet, collectorTime, pseudo));
+		const domainOptions = {
+			context, interaction, packet, collectorTime, pseudo
+		};
+		menus.set(ReportCityMenuIds.GUILD_DOMAIN_MENU, getGuildDomainMenu(domainOptions));
 
-		for (const [key, menu] of getGuildDomainSubMenus(context, interaction, packet, collectorTime, pseudo)) {
+		for (const [key, menu] of getGuildDomainSubMenus(domainOptions)) {
 			menus.set(key, menu);
 		}
 	}

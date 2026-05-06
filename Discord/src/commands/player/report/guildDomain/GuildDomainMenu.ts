@@ -221,40 +221,40 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 	});
 }
 
-export function getGuildDomainMenu(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): CrowniclesNestedMenu {
+export interface GuildDomainMenuOptions {
+	context: PacketContext;
+	interaction: CrowniclesInteraction;
+	packet: ReactionCollectorCreationPacket;
+	collectorTime: number;
+	pseudo: string;
+}
+
+function buildContextFromOptions(options: GuildDomainMenuOptions): GuildDomainMenuContext {
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = options;
 	const data = (packet.data.data as ReactionCollectorCityData).guildDomain!;
-	const lng = interaction.userLanguage;
-
-	const ctx: GuildDomainMenuContext = {
-		data, lng, pseudo, context, interaction, packet, collectorTime
+	return {
+		data,
+		lng: interaction.userLanguage,
+		pseudo,
+		context,
+		interaction,
+		packet,
+		collectorTime
 	};
+}
 
+export function getGuildDomainMenu(options: GuildDomainMenuOptions): CrowniclesNestedMenu {
+	const ctx = buildContextFromOptions(options);
 	return {
 		containers: [buildMainDomainContainer(ctx)],
 		createCollector: createMainMenuCollector(ctx)
 	};
 }
 
-export function getGuildDomainSubMenus(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): Map<string, CrowniclesNestedMenu> {
-	const data = (packet.data.data as ReactionCollectorCityData).guildDomain!;
-	const lng = interaction.userLanguage;
-
-	const ctx: GuildDomainMenuContext = {
-		data, lng, pseudo, context, interaction, packet, collectorTime
-	};
-
+export function getGuildDomainSubMenus(options: GuildDomainMenuOptions): Map<string, CrowniclesNestedMenu> {
+	const ctx = buildContextFromOptions(options);
 	const subMenus = new Map<string, CrowniclesNestedMenu>();
 
 	for (const building of Object.values(GuildBuilding)) {
