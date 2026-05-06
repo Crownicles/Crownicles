@@ -83,21 +83,26 @@ export const ReportCityMenuIds = {
 	/** Guild domain training ground sub-menu */
 	GUILD_DOMAIN_TRAINING_MENU: "GUILD_DOMAIN_TRAINING_MENU",
 
-	/** Custom ID for the guild domain shop string select menu */
-	GUILD_DOMAIN_SHOP_SELECT: "GUILD_DOMAIN_SHOP_SELECT",
+	/** Prefix for the per-food-type buttons on the shop main menu (followed by foodType) */
+	GUILD_DOMAIN_SHOP_FOOD_OPEN_PREFIX: "GUILD_DOMAIN_SHOP_FOODOPEN_",
 
-	/** Prefix for select option values targeting a food type */
-	GUILD_DOMAIN_SHOP_SELECT_FOOD_PREFIX: "food:",
-
-	/** Prefix for select option values targeting a treasury deposit amount */
-	GUILD_DOMAIN_SHOP_SELECT_DEPOSIT_PREFIX: "deposit:",
+	/** Custom ID for the treasury button on the shop main menu */
+	GUILD_DOMAIN_SHOP_TREASURY_OPEN: "GUILD_DOMAIN_SHOP_TREASURY_OPEN",
 
 	/** Prefix for guild domain shop food buy buttons (followed by foodType_amount) */
 	GUILD_DOMAIN_SHOP_FOOD_PREFIX: "GUILD_DOMAIN_SHOP_FOOD_",
 
-	/** Custom ID for the back-to-shop button on the quantity selection screen */
+	/** Prefix for guild domain shop treasury deposit buttons (followed by gross amount) */
+	GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX: "GUILD_DOMAIN_SHOP_DEPOSIT_",
+
+	/** Custom ID for the back-to-shop button on the quantity / treasury sub-menus */
 	GUILD_DOMAIN_SHOP_QUANTITY_CANCEL: "GUILD_DOMAIN_SHOP_QUANTITY_CANCEL",
+
+	/** Dynamically registered quantity sub-menu (food or treasury) */
 	GUILD_DOMAIN_SHOP_QUANTITY_MENU: "GUILD_DOMAIN_SHOP_QUANTITY_MENU",
+
+	/** Dynamically registered post-purchase reimburse menu */
+	GUILD_DOMAIN_SHOP_REIMBURSE_MENU: "GUILD_DOMAIN_SHOP_REIMBURSE_MENU",
 
 	/** Prefix for guild domain shop reimburse buttons (followed by gross amount) */
 	GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX: "GUILD_DOMAIN_SHOP_REIMBURSE_",

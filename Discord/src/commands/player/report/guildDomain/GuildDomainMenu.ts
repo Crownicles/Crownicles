@@ -1,5 +1,5 @@
 import {
-	Message, MessageComponentInteraction, StringSelectMenuInteraction
+	Message, MessageComponentInteraction
 } from "discord.js";
 import i18n from "../../../../translations/i18n";
 import {
@@ -37,7 +37,8 @@ import {
 	GuildDomainMenuContext, setBuildingLevel
 } from "./GuildDomainShared";
 import {
-	buildBuildingContainer, buildMainDomainContainer, buildShopQuantityContainer
+	buildBuildingContainer, buildMainDomainContainer, buildShopQuantityContainer,
+	buildShopReimburseContainer, buildShopTreasuryContainer
 } from "./GuildDomainViews";
 
 function registerAllDomainMenus(
@@ -121,14 +122,7 @@ async function handleFoodBuy(
 				ctx.data.treasury = res.newTreasury;
 				ctx.data.pendingReimburseAmount = res.totalCost;
 
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodSuccess", {
-					lng: ctx.lng,
-					amount: res.amountBought,
-					food: i18n.t(`models:foods.${res.foodType}`, {
-						lng: ctx.lng, count: res.amountBought
-					}),
-					totalCost: res.totalCost
-				}), shopMenuId);
+				await showShopReimburseMenu(ctx, nestedMenus);
 			}
 			else {
 				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodError", { lng: ctx.lng }), shopMenuId);
@@ -216,11 +210,17 @@ function createShopQuantityCollector(
 			const foodType = parts[0] as PetFood;
 			const amount = parseInt(parts[1], 10);
 			await handleFoodBuy(ctx, foodType, amount, nestedMenus);
+			return;
+		}
+
+		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX)) {
+			const amount = parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX, ""), 10);
+			await handleTreasuryDeposit(ctx, amount, nestedMenus, false);
 		}
 	});
 }
 
-async function showShopQuantityMenu(
+async function showShopFoodQuantityMenu(
 	ctx: GuildDomainMenuContext,
 	nestedMenus: CrowniclesNestedMenus,
 	foodType: PetFood
@@ -230,6 +230,52 @@ async function showShopQuantityMenu(
 		createCollector: createShopQuantityCollector(ctx)
 	});
 	await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU);
+}
+
+async function showShopTreasuryMenu(
+	ctx: GuildDomainMenuContext,
+	nestedMenus: CrowniclesNestedMenus
+): Promise<void> {
+	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU, {
+		containers: [buildShopTreasuryContainer(ctx)],
+		createCollector: createShopQuantityCollector(ctx)
+	});
+	await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU);
+}
+
+function createShopReimburseCollector(
+	ctx: GuildDomainMenuContext
+): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return createDomainCollector(ctx, async (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => {
+		await buttonInteraction.deferUpdate();
+
+		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
+			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
+			return;
+		}
+
+		if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE) {
+			ctx.data.pendingReimburseAmount = undefined;
+			await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng }), BUILDING_MENU_IDS[GuildBuilding.SHOP]);
+			return;
+		}
+
+		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX)) {
+			const amount = parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX, ""), 10);
+			await handleTreasuryDeposit(ctx, amount, nestedMenus, true);
+		}
+	});
+}
+
+async function showShopReimburseMenu(
+	ctx: GuildDomainMenuContext,
+	nestedMenus: CrowniclesNestedMenus
+): Promise<void> {
+	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_MENU, {
+		containers: [buildShopReimburseContainer(ctx)],
+		createCollector: createShopReimburseCollector(ctx)
+	});
+	await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_MENU);
 }
 
 function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
@@ -255,29 +301,14 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 		}
 
 		if (building === GuildBuilding.SHOP) {
-			if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_SELECT) {
-				const selectInteraction = buttonInteraction as StringSelectMenuInteraction;
-				const value = selectInteraction.values[0];
-				if (value.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_SELECT_FOOD_PREFIX)) {
-					const foodType = value.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_SELECT_FOOD_PREFIX, "") as PetFood;
-					await showShopQuantityMenu(ctx, nestedMenus, foodType);
-				}
-				else if (value.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_SELECT_DEPOSIT_PREFIX)) {
-					const amount = parseInt(value.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_SELECT_DEPOSIT_PREFIX, ""), 10);
-					await handleTreasuryDeposit(ctx, amount, nestedMenus, false);
-				}
+			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_OPEN_PREFIX)) {
+				const foodType = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_OPEN_PREFIX, "") as PetFood;
+				await showShopFoodQuantityMenu(ctx, nestedMenus, foodType);
 				return;
 			}
 
-			if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE) {
-				ctx.data.pendingReimburseAmount = undefined;
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng }), BUILDING_MENU_IDS[GuildBuilding.SHOP]);
-				return;
-			}
-
-			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX)) {
-				const amount = parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX, ""), 10);
-				await handleTreasuryDeposit(ctx, amount, nestedMenus, true);
+			if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_TREASURY_OPEN) {
+				await showShopTreasuryMenu(ctx, nestedMenus);
 			}
 		}
 	});
