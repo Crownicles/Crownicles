@@ -1246,7 +1246,7 @@
           "trainingGround": "{emote:city.guildDomain.trainingGround} Ménagerie Niv.{{level}} ({{cost}} {emote:unitValues.money})"
         },
         "upgradeSuccess": "{emote:messages.info} Les ouvriers ont terminé les travaux ! **{{building}}** a été amélioré au **niveau {{level}}**.\n{emote:unitValues.xp} La guilde gagne **{{xpGained, number}}** points d'expérience.",
-        "upgradeError": "L'amélioration a échoué : un autre membre vient peut-être d'effectuer une opération sur la guilde. Relancez {command:rapport} pour voir l'état actuel.",
+        "upgradeError": "L'amélioration a échoué : un autre membre vient peut-être d'effectuer une opération sur la guilde. Relancez {command:report} pour voir l'état actuel.",
         "buildings": {
           "shop": "Boutique",
           "shelter": "Refuge",
@@ -1304,9 +1304,9 @@
             "quantityCancel": "Retour",
             "reimburseTitle": "{emote:unitValues.money} Rembourser la guilde ?",
             "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** {emote:foods.{{foodType}}} dans le garde-manger de la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
-            "buyFoodError": "L'achat a échoué : la trésorerie est insuffisante ou le garde-manger est plein. Un autre membre vient peut-être d'acheter de la nourriture en même temps que vous. Relancez {command:rapport} pour voir l'état actuel.",
+            "buyFoodError": "L'achat a échoué : la trésorerie est insuffisante ou le garde-manger est plein. Un autre membre vient peut-être d'acheter de la nourriture en même temps que vous. Relancez {command:report} pour voir l'état actuel.",
             "depositTreasurySuccess": "{emote:messages.info} L'intendant verse votre offrande dans le coffre. **+{{treasury, number}} {emote:unitValues.money}** dans la trésorerie de la guilde !",
-            "depositTreasuryError": "Le versement a échoué : votre solde a peut-être changé entre temps. Relancez {command:rapport} pour voir l'état actuel.",
+            "depositTreasuryError": "Le versement a échoué : votre solde a peut-être changé entre temps. Relancez {command:report} pour voir l'état actuel.",
             "reimbursePrompt": "{emote:messages.info} Voulez-vous rembourser la guilde des **{{cost, number}} {emote:unitValues.money}** que vous venez d'utiliser ? L'intendant vous fait grâce de sa commission habituelle : l'intégralité de la somme rejoindra la trésorerie.",
             "reimburseAccept": "Rembourser ({{cost, number}} {emote:unitValues.money})",
             "reimburseDecline": "Garder l'argent",
