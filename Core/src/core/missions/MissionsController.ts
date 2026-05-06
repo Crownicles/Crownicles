@@ -433,6 +433,49 @@ export abstract class MissionsController {
 	 * @param response
 	 * @returns true if the daily mission is finished and needs to be said to the player
 	 */
+	private static async updateDailyMissionCount(
+		ctx: {
+			missionInformation: MissionInformations;
+			missionInterface: IMission;
+			missionInfo: PlayerMissionsInfo;
+			missionSlots: MissionSlot[];
+			player: Player;
+			response: CrowniclesPacket[];
+			count: number;
+		}
+	): Promise<boolean> {
+		const {
+			missionInformation, missionInterface, missionInfo, missionSlots, player, response, count
+		} = ctx;
+		if (missionInfo.hasCompletedDailyMission()) {
+			return false;
+		}
+		const dailyMission = await DailyMissions.getOrGenerate();
+		if (dailyMission.missionId !== missionInformation.missionId
+			|| !missionInterface.areParamsMatchingVariantAndBlob(dailyMission.missionVariant, missionInformation.params!, missionInfo.dailyMissionBlob)) {
+			return false;
+		}
+
+		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params!);
+
+		if (missionInformation.set) {
+			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, count);
+		}
+		else {
+			missionInfo.dailyMissionNumberDone += count;
+		}
+		missionInfo.dailyMissionNumberDone = Math.min(missionInfo.dailyMissionNumberDone, dailyMission.missionObjective);
+		await missionInfo.save();
+
+		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
+			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
+			missionInfo.lastDailyMissionCompleted = new Date();
+			await missionInfo.save();
+			return true;
+		}
+		return false;
+	}
+
 	private static async updateMissionsCounts(
 		missionInformation: MissionInformations,
 		missionSlots: MissionSlot[],
@@ -442,58 +485,17 @@ export abstract class MissionsController {
 	): Promise<SpecialMissionCompletion> {
 		const missionInterface = this.getMissionInterface(missionInformation.missionId);
 		const count = missionInformation.count ?? 1;
-		const specialMissionCompletion: SpecialMissionCompletion = {
-			daily: false,
+		const guildCompleted = player?.guildId
+			? await GuildMissionService.updateGuildMission(missionInformation.missionId, count, player, missionInfo)
+			: false;
+		const dailyCompleted = await this.updateDailyMissionCount({
+			missionInformation, missionInterface, missionInfo, missionSlots, player, response, count
+		});
+		return {
+			daily: dailyCompleted,
 			campaign: await this.checkMissionSlots(missionInterface, missionInformation, missionSlots),
-			guild: false
+			guild: guildCompleted
 		};
-
-		// Guild weekly mission (independent of daily)
-		if (player?.guildId) {
-			const guildCompleted = await GuildMissionService.updateGuildMission(
-				missionInformation.missionId, count, player, missionInfo
-			);
-			if (guildCompleted) {
-				specialMissionCompletion.guild = true;
-			}
-		}
-
-		// Daily mission
-		if (missionInfo.hasCompletedDailyMission()) {
-			return specialMissionCompletion;
-		}
-		const dailyMission = await DailyMissions.getOrGenerate();
-		if (dailyMission.missionId !== missionInformation.missionId
-			|| !missionInterface.areParamsMatchingVariantAndBlob(dailyMission.missionVariant, missionInformation.params!, missionInfo.dailyMissionBlob)) {
-			return specialMissionCompletion;
-		}
-
-		// Update the daily mission blob if the params match
-		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params!);
-
-		// Handle set mode (replace) vs increment mode for daily missions
-		if (missionInformation.set) {
-			// For "set" missions (like earnTokensInOneExpedition), only update if the new value is higher
-			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, count);
-		}
-		else {
-			missionInfo.dailyMissionNumberDone += count;
-		}
-
-		if (missionInfo.dailyMissionNumberDone > dailyMission.missionObjective) {
-			missionInfo.dailyMissionNumberDone = dailyMission.missionObjective;
-		}
-		await missionInfo.save();
-		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
-			// Handle daily streak mission BEFORE updating lastDailyMissionCompleted
-			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
-
-			missionInfo.lastDailyMissionCompleted = new Date();
-			await missionInfo.save();
-			specialMissionCompletion.daily = true;
-			return specialMissionCompletion;
-		}
-		return specialMissionCompletion;
 	}
 
 	/**

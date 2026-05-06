@@ -86,6 +86,46 @@ export abstract class GuildMissionService {
 		return Math.min(count, 1);
 	}
 
+	private static async tryProgressGuildMission(
+		guild: Guild,
+		missionId: string,
+		count: number,
+		missionInfo: PlayerMissionsInfo
+	): Promise<boolean> {
+		GuildMissionService.ensureActiveMission(guild);
+		await guild.save();
+
+		if (!GuildMissionService.hasActiveMission(guild) || GuildMissionService.isMissionCompleted(guild) || guild.guildMissionId !== missionId) {
+			return false;
+		}
+
+		const missionInterface = MissionsController.getMissionInterface(missionId);
+		if (!missionInterface.areParamsMatchingVariantAndBlob(guild.guildMissionVariant, {}, guild.guildMissionBlob)) {
+			return false;
+		}
+
+		const missionData = MissionDataController.instance.getById(missionId);
+		let effectiveCount = count;
+		if (missionData?.guildMission?.streak) {
+			effectiveCount = GuildMissionService.applyStreakLogic(guild, count);
+			if (effectiveCount === 0) {
+				missionInfo.guildMissionContribution += count;
+				await missionInfo.save();
+				return false;
+			}
+		}
+
+		guild.guildMissionNumberDone = Math.min(
+			guild.guildMissionNumberDone + effectiveCount,
+			guild.guildMissionObjective
+		);
+		missionInfo.guildMissionContribution += count;
+		await missionInfo.save();
+		await guild.save();
+
+		return guild.guildMissionNumberDone >= guild.guildMissionObjective;
+	}
+
 	/**
 	 * Update the guild mission progress when the player performs an action.
 	 * Called from MissionsController.updateMissionsCounts after daily mission handling.
@@ -99,45 +139,11 @@ export abstract class GuildMissionService {
 		if (!player.guildId) {
 			return false;
 		}
-
 		const lock = guildMissionLockManager.getLock(player.guildId);
 		const release = await lock.acquire();
 		try {
 			const guild = (await Guilds.getById(player.guildId))!;
-
-			GuildMissionService.ensureActiveMission(guild);
-			await guild.save();
-
-			if (!GuildMissionService.hasActiveMission(guild) || GuildMissionService.isMissionCompleted(guild) || guild.guildMissionId !== missionId) {
-				return false;
-			}
-
-			const missionInterface = MissionsController.getMissionInterface(missionId);
-			if (!missionInterface.areParamsMatchingVariantAndBlob(guild.guildMissionVariant, {}, guild.guildMissionBlob)) {
-				return false;
-			}
-
-			const missionData = MissionDataController.instance.getById(missionId);
-			let effectiveCount = count;
-			if (missionData?.guildMission?.streak) {
-				effectiveCount = GuildMissionService.applyStreakLogic(guild, count);
-				if (effectiveCount === 0) {
-					missionInfo.guildMissionContribution += count;
-					await missionInfo.save();
-					return false;
-				}
-			}
-
-			guild.guildMissionNumberDone = Math.min(
-				guild.guildMissionNumberDone + effectiveCount,
-				guild.guildMissionObjective
-			);
-
-			missionInfo.guildMissionContribution += count;
-			await missionInfo.save();
-			await guild.save();
-
-			return guild.guildMissionNumberDone >= guild.guildMissionObjective;
+			return await GuildMissionService.tryProgressGuildMission(guild, missionId, count, missionInfo);
 		}
 		finally {
 			release();
