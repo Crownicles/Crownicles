@@ -15,6 +15,7 @@ import {
 	PetConstants, PetFood
 } from "../../../../../../Lib/src/constants/PetConstants";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
+import { Language } from "../../../../../../Lib/src/Language";
 import {
 	addBuildingLevelAndCostInfo, addDomainNavigation, addStatusMessage, addUpgradeSection,
 	BUILDING_ICONS, FOOD_KEYS, FoodShopUIContext, getBuildingLevel, getBuildingSummary,
@@ -465,6 +466,33 @@ export function buildShelterContainer(ctx: GuildDomainMenuContext, statusMessage
 	});
 }
 
+/**
+ * Build the auto-fill explanation text for the pantry menu, adapted to the current pantry level.
+ * Lists daily auto-fill amounts per food category, hiding categories with zero rate.
+ * If the pantry isn't built yet (level 0), explains how to unlock the feature.
+ */
+function buildAutoFillText(pantryLevel: number, lng: Language): string {
+	const rates = GuildDomainConstants.getAutoFillRates(pantryLevel);
+	const lines: string[] = [];
+	for (let i = 0; i < FOOD_KEYS.length; i++) {
+		const rate = rates[i] ?? 0;
+		if (rate > 0) {
+			lines.push(i18n.t("commands:report.city.guildDomain.subMenus.pantry.autoFillLine", {
+				lng,
+				amount: rate,
+				food: i18n.t(`models:foods.${PetConstants.PET_FOOD_BY_ID[i]}`, {
+					lng, count: rate
+				}),
+				foodType: PetConstants.PET_FOOD_BY_ID[i]
+			}));
+		}
+	}
+	if (lines.length === 0) {
+		return i18n.t("commands:report.city.guildDomain.subMenus.pantry.autoFillNone", { lng });
+	}
+	return `${i18n.t("commands:report.city.guildDomain.subMenus.pantry.autoFillHeader", { lng })}\n${lines.join("\n")}`;
+}
+
 export function buildPantryContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
 	const {
 		data, lng
@@ -494,6 +522,10 @@ export function buildPantryContainer(ctx: GuildDomainMenuContext, statusMessage?
 						ultimateCap: data.foodCaps[3]
 					})
 				)
+			);
+			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(buildAutoFillText(data.pantryLevel, lng))
 			);
 		},
 		statusMessage
