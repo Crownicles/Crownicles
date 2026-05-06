@@ -6,7 +6,9 @@ import {
 	ChestAction, HomeConstants
 } from "../../constants/HomeConstants";
 import { GardenConstants } from "../../constants/GardenConstants";
-import { GuildBuilding, GuildDomainError, XpTier } from "../../constants/GuildDomainConstants";
+import {
+	GuildBuilding, GuildDomainError, XpTier
+} from "../../constants/GuildDomainConstants";
 import { ItemSlot } from "../../types/ItemSlot";
 import { CookingOutputTypeValue } from "../../constants/CookingConstants";
 import { PlantId } from "../../constants/PlantConstants";
