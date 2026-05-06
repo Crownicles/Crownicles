@@ -16,8 +16,8 @@ import {
 } from "../../../../../../Lib/src/constants/PetConstants";
 import {
 	addDomainNavigation, addStatusMessage, addUpgradeSection,
-	BUILDING_ICONS, FOOD_KEYS, getBuildingLevel, getBuildingSummary,
-	GuildDomainData, GuildDomainMenuContext
+	BUILDING_ICONS, FOOD_KEYS, FoodShopUIContext, getBuildingLevel, getBuildingSummary,
+	GuildDomainMenuContext
 } from "./GuildDomainShared";
 
 export function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
@@ -99,21 +99,30 @@ const FOOD_BUY_QUICK_PRESETS = [
 	10
 ] as const;
 
-function getMaxBuyableFood(data: GuildDomainData, foodIndex: number): number {
+function getMaxBuyableFood(data: FoodShopUIContext["data"], foodIndex: number): number {
 	const foodKey = FOOD_KEYS[foodIndex];
 	const remainingSlots = data.foodCaps[foodIndex] - data.food[foodKey];
 	const maxAffordable = Math.floor(data.treasury / GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex]);
 	return Math.max(0, Math.min(remainingSlots, maxAffordable));
 }
 
-function getMaxAffordableDeposits(data: GuildDomainData, cost: number): number {
+function getMaxAffordableDeposits(data: FoodShopUIContext["data"], cost: number): number {
 	return Math.floor(data.playerMoney / cost);
 }
 
-function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext): void {
+/**
+ * Build the shared shop body (description, stock info, food choose buttons, optional treasury button).
+ * Used both inside the guild domain shop submenu and inside the standalone mobile food shop.
+ */
+export function buildShopBody(
+	container: ContainerBuilder,
+	ctx: FoodShopUIContext,
+	options: { withTreasuryButton?: boolean } = {}
+): void {
 	const {
 		data, lng
 	} = ctx;
+	const withTreasuryButton = options.withTreasuryButton ?? true;
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
@@ -173,10 +182,12 @@ function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext)
 			.setStyle(ButtonStyle.Success)
 			.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT)
 	);
-	container.addActionRowComponents(treasuryRow);
+	if (withTreasuryButton) {
+		container.addActionRowComponents(treasuryRow);
+	}
 }
 
-export function buildShopQuantityContainer(ctx: GuildDomainMenuContext, foodType: PetFood): ContainerBuilder {
+export function buildShopQuantityContainer(ctx: FoodShopUIContext, foodType: PetFood): ContainerBuilder {
 	const {
 		data, lng
 	} = ctx;
@@ -240,7 +251,7 @@ export function buildShopQuantityContainer(ctx: GuildDomainMenuContext, foodType
 	return container;
 }
 
-export function buildShopTreasuryContainer(ctx: GuildDomainMenuContext): ContainerBuilder {
+export function buildShopTreasuryContainer(ctx: FoodShopUIContext): ContainerBuilder {
 	const {
 		data, lng
 	} = ctx;
@@ -308,7 +319,7 @@ export function buildShopTreasuryContainer(ctx: GuildDomainMenuContext): Contain
 	return container;
 }
 
-export function buildShopReimburseContainer(ctx: GuildDomainMenuContext): ContainerBuilder {
+export function buildShopReimburseContainer(ctx: FoodShopUIContext): ContainerBuilder {
 	const {
 		data, lng
 	} = ctx;

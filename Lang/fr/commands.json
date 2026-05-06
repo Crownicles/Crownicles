@@ -1332,20 +1332,7 @@
         "label": "Ravitaillement de guilde",
         "description": "Achetez de la nourriture pour les familiers de **{{guildName}}**.",
         "menuTitle": "{{pseudo}}, ravitaillement de {{guildName}}",
-        "menuDescription": "{emote:expedition.food} Un marchand itinérant propose de la nourriture pour familiers. Les achats sont prélevés sur la trésorerie de votre guilde, et les provisions partent directement au garde-manger.",
-        "stockInfo": "{emote:expedition.food} **Réserves actuelles** :\n• Friandise : {{common}}/{{commonCap}}\n• Herbivore : {{herbivorous}}/{{herbivorousCap}}\n• Carnivore : {{carnivorous}}/{{carnivorousCap}}\n• Ultime : {{ultimate}}/{{ultimateCap}}\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney}}\n{emote:city.guildDomain.shop} **Trésorerie de la guilde** : {{treasury, number}} {emote:unitValues.money}",
-        "buyLabel": "{emote:expedition.food} **Acheter de la nourriture**",
-        "buyButton": "{{amount}}x {{food}} ({{cost}} {emote:unitValues.money})",
-        "buySuccess": "{emote:messages.info} Vous avez acheté **{{amount}}x {{food}}** {emote:foods.{{foodType}}} pour la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
-        "buyError": "{emote:messages.error} L'achat a échoué (trésorerie insuffisante ou garde-manger plein).",
-        "noFoodAvailable": "{emote:messages.info} Le garde-manger de votre guilde est plein ou la trésorerie est insuffisante.",
-        "leaveShop": "Quitter le marchand",
-        "reimbursePrompt": "{emote:messages.info} Voulez-vous rembourser la guilde des **{{cost, number}} {emote:unitValues.money}** prélevés sur la trésorerie ? L'intendant vous fait grâce de sa commission habituelle : l'intégralité de la somme rejoindra la trésorerie.",
-        "reimburseAccept": "Rembourser ({{cost, number}} {emote:unitValues.money})",
-        "reimburseDecline": "Garder l'argent",
-        "reimburseSuccess": "{emote:messages.info} Vous remboursez la guilde. **+{{treasury, number}} {emote:unitValues.money}** dans la trésorerie !",
-        "reimburseDeclined": "{emote:messages.refuse} Vous gardez l'argent pour vous.",
-        "reimburseError": "{emote:messages.error} Le remboursement a échoué."
+        "leaveShop": "Quitter le marchand"
       }
     },
     "notEnoughTokensButton": "Jetons insuffisants",

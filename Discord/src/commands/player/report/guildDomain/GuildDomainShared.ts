@@ -30,6 +30,29 @@ export type GuildDomainData = ReactionCollectorCityData["guildDomain"] & object 
 	pendingPurchaseRecap?: string;
 };
 
+/**
+ * Minimal data shape required by the shared shop UI builders (food list, quantity menu, reimburse menu).
+ * Both `GuildDomainData` and the standalone food shop data satisfy this shape.
+ */
+export interface FoodShopUIData {
+	food: {
+		common: number;
+		carnivorous: number;
+		herbivorous: number;
+		ultimate: number;
+	};
+	foodCaps: readonly number[];
+	treasury: number;
+	playerMoney: number;
+	pendingReimburseAmount?: number;
+	pendingPurchaseRecap?: string;
+}
+
+export interface FoodShopUIContext {
+	data: FoodShopUIData;
+	lng: Language;
+}
+
 export interface GuildDomainMenuContext {
 	data: GuildDomainData;
 	lng: Language;
