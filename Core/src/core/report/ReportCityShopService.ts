@@ -43,6 +43,7 @@ import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Materials } from "../database/game/models/Material";
 import { getVeterinarianShopItem } from "../utils/VeterinarianShopItems";
+import { pickMaterialDistribution } from "./MaterialLootGenerator";
 
 /**
  * Cached materials by type and rarity (constant after data loading, computed once per key)
@@ -379,20 +380,7 @@ export async function openVeterinarian(player: Player, context: PacketContext, r
  * Drop rates: 60% common, 30% uncommon, 10% rare.
  */
 async function generateRandomMaterialsForPlayer(playerId: number, totalQuantity: number): Promise<MaterialDistribution> {
-	const distribution = new Map<number, number>();
-	for (let i = 0; i < totalQuantity; i++) {
-		const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
-		const rarity = roll < ShopConstants.MATERIAL_MERCHANT_DROP_RATES.RARE_PROBABILITY
-			? MaterialRarity.RARE
-			: roll < ShopConstants.MATERIAL_MERCHANT_DROP_RATES.RARE_PROBABILITY + ShopConstants.MATERIAL_MERCHANT_DROP_RATES.UNCOMMON_PROBABILITY
-				? MaterialRarity.UNCOMMON
-				: MaterialRarity.COMMON;
-		const material = MaterialDataController.instance.getRandomMaterialFromRarity(rarity);
-		if (material) {
-			const materialId = parseInt(material.id, 10);
-			distribution.set(materialId, (distribution.get(materialId) ?? 0) + 1);
-		}
-	}
+	const distribution = pickMaterialDistribution(totalQuantity);
 	for (const [materialId, quantity] of distribution) {
 		await Materials.giveMaterial(playerId, materialId, quantity);
 	}
