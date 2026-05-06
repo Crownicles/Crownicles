@@ -83,32 +83,51 @@ function finishReportWithErrorEmbed(
 	handleStayInCityInteraction(ctx.packet, ctx.context, null);
 }
 
+/**
+ * Send a packet, then either run the success handler with a typed response
+ * or finish the report with an error embed when the response packet doesn't match.
+ * Centralises the boilerplate shared by handleUpgrade / handleFoodBuy / handleTreasuryDeposit.
+ */
+async function sendDomainAction<TRes>(
+	ctx: GuildDomainMenuContext,
+	nestedMenus: CrowniclesNestedMenus,
+	requestPacket: ReturnType<typeof makePacket>,
+	expectedResponseName: string,
+	errorTranslationKey: string,
+	onSuccess: (res: TRes) => void | Promise<void>
+): Promise<void> {
+	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+		ctx.context,
+		requestPacket,
+		async (_responseContext, packetName, responsePacket) => {
+			if (packetName === expectedResponseName) {
+				await onSuccess(responsePacket as unknown as TRes);
+			}
+			else {
+				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t(errorTranslationKey, { lng: ctx.lng }));
+			}
+		}
+	);
+}
+
 async function handleUpgrade(
 	ctx: GuildDomainMenuContext,
 	building: GuildBuilding,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
-	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-		ctx.context,
+	await sendDomainAction<CommandReportGuildDomainUpgradeRes>(
+		ctx, nestedMenus,
 		makePacket(CommandReportGuildDomainUpgradeReq, { building }),
-		(_responseContext, packetName, responsePacket) => {
-			if (packetName === CommandReportGuildDomainUpgradeRes.name) {
-				const res = responsePacket as unknown as CommandReportGuildDomainUpgradeRes;
-				ctx.data.treasury = res.newTreasury;
-				setBuildingLevel(ctx.data, res.building, res.newLevel);
-
-				const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${res.building}`, { lng: ctx.lng });
-				const successMessage = i18n.t("commands:report.city.guildDomain.upgradeSuccess", {
-					lng: ctx.lng,
-					building: buildingName,
-					level: res.newLevel,
-					xpGained: res.xpGained
-				});
-				finishReportWithMessage(ctx, nestedMenus, successMessage);
-			}
-			else {
-				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.upgradeError", { lng: ctx.lng }));
-			}
+		CommandReportGuildDomainUpgradeRes.name,
+		"commands:report.city.guildDomain.upgradeError",
+		res => {
+			ctx.data.treasury = res.newTreasury;
+			setBuildingLevel(ctx.data, res.building, res.newLevel);
+			const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${res.building}`, { lng: ctx.lng });
+			const successMessage = i18n.t("commands:report.city.guildDomain.upgradeSuccess", {
+				lng: ctx.lng, building: buildingName, level: res.newLevel, xpGained: res.xpGained
+			});
+			finishReportWithMessage(ctx, nestedMenus, successMessage);
 		}
 	);
 }
@@ -119,34 +138,28 @@ async function handleFoodBuy(
 	amount: number,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
-	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-		ctx.context,
+	await sendDomainAction<CommandReportFoodShopBuyRes>(
+		ctx, nestedMenus,
 		makePacket(CommandReportFoodShopBuyReq, {
-			foodType,
-			amount
+			foodType, amount
 		}),
-		async (_responseContext, packetName, responsePacket) => {
-			if (packetName === CommandReportFoodShopBuyRes.name) {
-				const res = responsePacket as unknown as CommandReportFoodShopBuyRes;
-				const foodKey = res.foodType.replace("Food", "") as keyof typeof ctx.data.food;
-				ctx.data.food[foodKey] = res.newFoodStock;
-				ctx.data.treasury = res.newTreasury;
-				ctx.data.pendingReimburseAmount = res.totalCost;
-				ctx.data.pendingPurchaseRecap = i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodSuccess", {
-					lng: ctx.lng,
-					amount: res.amountBought,
-					food: i18n.t(`models:foods.${res.foodType}`, {
-						lng: ctx.lng, count: res.amountBought
-					}),
-					foodType: res.foodType,
-					totalCost: res.totalCost
-				});
-
-				await showShopReimburseMenu(ctx, nestedMenus);
-			}
-			else {
-				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodError", { lng: ctx.lng }));
-			}
+		CommandReportFoodShopBuyRes.name,
+		"commands:report.city.guildDomain.subMenus.shop.buyFoodError",
+		async res => {
+			const foodKey = res.foodType.replace("Food", "") as keyof typeof ctx.data.food;
+			ctx.data.food[foodKey] = res.newFoodStock;
+			ctx.data.treasury = res.newTreasury;
+			ctx.data.pendingReimburseAmount = res.totalCost;
+			ctx.data.pendingPurchaseRecap = i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodSuccess", {
+				lng: ctx.lng,
+				amount: res.amountBought,
+				food: i18n.t(`models:foods.${res.foodType}`, {
+					lng: ctx.lng, count: res.amountBought
+				}),
+				foodType: res.foodType,
+				totalCost: res.totalCost
+			});
+			await showShopReimburseMenu(ctx, nestedMenus);
 		}
 	);
 }
@@ -157,34 +170,28 @@ async function handleTreasuryDeposit(
 	nestedMenus: CrowniclesNestedMenus,
 	isReimburse: boolean
 ): Promise<void> {
-	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-		ctx.context,
+	await sendDomainAction<CommandReportGuildDomainDepositTreasuryRes>(
+		ctx, nestedMenus,
 		makePacket(CommandReportGuildDomainDepositTreasuryReq, {
 			amount, isReimburse
 		}),
-		(_responseContext, packetName, responsePacket) => {
-			if (packetName === CommandReportGuildDomainDepositTreasuryRes.name) {
-				const res = responsePacket as unknown as CommandReportGuildDomainDepositTreasuryRes;
-				ctx.data.playerMoney = res.newPlayerMoney;
-				ctx.data.treasury = res.newTreasury;
-				if (isReimburse) {
-					ctx.data.pendingReimburseAmount = undefined;
-				}
-
-				const successKey = isReimburse
-					? "commands:report.city.guildDomain.subMenus.shop.reimburseSuccess"
-					: "commands:report.city.guildDomain.subMenus.shop.depositTreasurySuccess";
-				const successMessage = i18n.t(successKey, {
-					lng: ctx.lng,
-					treasury: res.treasuryDeposited
-				});
-				const recap = isReimburse ? ctx.data.pendingPurchaseRecap : undefined;
-				ctx.data.pendingPurchaseRecap = undefined;
-				finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n\n${successMessage}` : successMessage);
+		CommandReportGuildDomainDepositTreasuryRes.name,
+		"commands:report.city.guildDomain.subMenus.shop.depositTreasuryError",
+		res => {
+			ctx.data.playerMoney = res.newPlayerMoney;
+			ctx.data.treasury = res.newTreasury;
+			if (isReimburse) {
+				ctx.data.pendingReimburseAmount = undefined;
 			}
-			else {
-				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryError", { lng: ctx.lng }));
-			}
+			const successKey = isReimburse
+				? "commands:report.city.guildDomain.subMenus.shop.reimburseSuccess"
+				: "commands:report.city.guildDomain.subMenus.shop.depositTreasurySuccess";
+			const successMessage = i18n.t(successKey, {
+				lng: ctx.lng, treasury: res.treasuryDeposited
+			});
+			const recap = isReimburse ? ctx.data.pendingPurchaseRecap : undefined;
+			ctx.data.pendingPurchaseRecap = undefined;
+			finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n\n${successMessage}` : successMessage);
 		}
 	);
 }
