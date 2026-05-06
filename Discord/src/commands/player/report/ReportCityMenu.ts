@@ -1052,6 +1052,19 @@ function getManageHomeMenu(context: PacketContext, interaction: CrowniclesIntera
 /**
  * Handle a manage home menu selection.
  */
+async function sendReactionByType(
+	buttonInteraction: MessageComponentInteraction,
+	packet: ReactionCollectorCreationPacket,
+	context: PacketContext,
+	reactionType: string
+): Promise<void> {
+	await buttonInteraction.deferReply();
+	const reactionIndex = packet.reactions.findIndex(reaction => reaction.type === reactionType);
+	if (reactionIndex !== -1) {
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+	}
+}
+
 async function handleManageHomeCollectorInteraction(
 	selectedValue: string,
 	buttonInteraction: MessageComponentInteraction,
@@ -1062,28 +1075,12 @@ async function handleManageHomeCollectorInteraction(
 	const homeActionRoutes: Record<string, string> = {
 		[ReportCityMenuIds.BUY_HOME]: ReactionCollectorCityBuyHomeReaction.name,
 		[ReportCityMenuIds.UPGRADE_HOME]: ReactionCollectorCityUpgradeHomeReaction.name,
-		[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name
+		[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name,
+		[ReportCityMenuIds.GUILD_DOMAIN_CONFIRM]: ReactionCollectorGuildDomainNotaryReaction.name
 	};
 
 	if (homeActionRoutes[selectedValue]) {
-		await buttonInteraction.deferReply();
-		const reactionIndex = packet.reactions.findIndex(
-			reaction => reaction.type === homeActionRoutes[selectedValue]
-		);
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-		}
-		return;
-	}
-
-	if (selectedValue === ReportCityMenuIds.GUILD_DOMAIN_CONFIRM) {
-		await buttonInteraction.deferReply();
-		const reactionIndex = packet.reactions.findIndex(
-			reaction => reaction.type === ReactionCollectorGuildDomainNotaryReaction.name
-		);
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-		}
+		await sendReactionByType(buttonInteraction, packet, context, homeActionRoutes[selectedValue]);
 		return;
 	}
 
