@@ -1,6 +1,3 @@
 {
-  "campaignOnly": true,
-  "guildMission": {
-    "objectives": [15, 30, 45]
-  }
+  "campaignOnly": true
 }

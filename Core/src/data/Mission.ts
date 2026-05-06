@@ -28,12 +28,6 @@ export class Mission extends Data<string> {
 
 	public readonly dailyIndexes?: number[];
 
-	public readonly guildMission?: {
-		objectives: number[];
-
-		streak?: boolean;
-	};
-
 
 	public canBeEasy(): boolean {
 		return (this.difficulties?.easy?.length ?? 0) > 0;
@@ -74,10 +68,5 @@ export class MissionDataController extends DataControllerString<Mission> {
 			this.getValuesArray()
 				.filter(mission => mission.dailyIndexes && mission.dailyIndexes.length > 0 && !mission.campaignOnly)
 		);
-	}
-
-	public getGuildMissions(): Mission[] {
-		return this.getValuesArray()
-			.filter(mission => mission.guildMission !== undefined);
 	}
 }

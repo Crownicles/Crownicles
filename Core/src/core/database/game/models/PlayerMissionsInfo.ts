@@ -29,10 +29,6 @@ export class PlayerMissionsInfo extends Model {
 
 	declare campaignBlob: string;
 
-	declare guildMissionContribution: number;
-
-	declare lastGuildMissionCompleted: Date | null;
-
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -112,14 +108,6 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		campaignBlob: {
 			type: DataTypes.STRING
-		},
-		guildMissionContribution: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0
-		},
-		lastGuildMissionCompleted: {
-			type: DataTypes.DATE,
-			defaultValue: null
 		},
 		updatedAt: {
 			type: DataTypes.DATE,
