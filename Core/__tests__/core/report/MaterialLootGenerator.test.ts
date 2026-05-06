@@ -2,6 +2,7 @@ import {
 	beforeEach, describe, expect, it, vi
 } from "vitest";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
+import { ShopConstants } from "../../../../Lib/src/constants/ShopConstants";
 
 // Mock RandomUtils.crowniclesRandom.realZeroToOneInclusive so we can control rolls
 const realZeroToOneInclusiveMock = vi.fn();
@@ -30,6 +31,12 @@ const fakeMaterial = (id: string) => ({ id });
 
 describe("pickRarityFromRoll", () => {
 	// Default constants: RARE_PROBABILITY = 0.1, UNCOMMON_PROBABILITY = 0.3
+	it("MATERIAL_MERCHANT_DROP_RATES sum exactly to 1", () => {
+		const rates = ShopConstants.MATERIAL_MERCHANT_DROP_RATES;
+		const sum = rates.RARE_PROBABILITY + rates.UNCOMMON_PROBABILITY + rates.COMMON_PROBABILITY;
+		expect(sum).toBeCloseTo(1, 10);
+	});
+
 	it("returns RARE for rolls strictly below RARE_PROBABILITY", () => {
 		expect(pickRarityFromRoll(0)).toBe(MaterialRarity.RARE);
 		expect(pickRarityFromRoll(0.05)).toBe(MaterialRarity.RARE);
