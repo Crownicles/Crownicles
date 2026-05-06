@@ -7,6 +7,14 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 
 ---
 
+## 0. Reporting Rules (for AI agents performing reviews)
+
+- [ ] **Never post review comments on GitHub** (no `gh pr comment`, no `gh pr review`, no inline review threads). Reviews produced by an AI agent are intended for the human author only.
+- [ ] **Always deliver review findings via the `ask_user` channel** — write the full findings (bug analysis, checklist results, suggestions, CI status) directly in the `ask_user` message, never in an external system.
+- [ ] If a previous run accidentally posted a review on GitHub, mention it in the `ask_user` message so the author can delete it.
+
+---
+
 ## 1. Magic Strings & Constants
 
 - [ ] **No hardcoded strings** used as identifiers, action names, or error codes — use `as const` objects (e.g., `CHEST_ACTIONS.DEPOSIT`, `EQUIP_ERRORS.INVALID`)
