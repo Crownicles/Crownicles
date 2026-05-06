@@ -1,17 +1,12 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle,
-	ContainerBuilder, Message,
-	SectionBuilder, SeparatorBuilder, SeparatorSpacingSize,
-	TextDisplayBuilder
+	ButtonInteraction, Message
 } from "discord.js";
 import i18n from "../../../../translations/i18n";
-import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import {
 	CrowniclesNestedMenu, CrowniclesNestedMenuCollector, CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
-import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import {
-	createStayInCityButton, handleStayInCityInteraction
+	handleStayInCityInteraction
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
@@ -24,7 +19,6 @@ import {
 import {
 	ReactionCollectorCreationPacket
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { Language } from "../../../../../../Lib/src/Language";
 import { DiscordMQTT } from "../../../../bot/DiscordMQTT";
 import {
 	CommandReportGuildDomainUpgradeReq,
@@ -35,511 +29,15 @@ import {
 	CommandReportGuildDomainBuyXpRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	GuildBuilding, GuildDomainConstants
+	GuildBuilding
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
-
-import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
-
-// ─── Types ───────────────────────────────────────────────────────────────────
-
-type GuildDomainData = ReactionCollectorCityData["guildDomain"] & object;
-
-interface GuildDomainMenuContext {
-	data: GuildDomainData;
-	lng: Language;
-	pseudo: string;
-	context: PacketContext;
-	interaction: CrowniclesInteraction;
-	packet: ReactionCollectorCreationPacket;
-	collectorTime: number;
-}
-
-// ─── Constants ───────────────────────────────────────────────────────────────
-
-const BUILDING_MENU_IDS: Record<GuildBuilding, string> = {
-	[GuildBuilding.SHOP]: ReportCityMenuIds.GUILD_DOMAIN_SHOP_MENU,
-	[GuildBuilding.SHELTER]: ReportCityMenuIds.GUILD_DOMAIN_SHELTER_MENU,
-	[GuildBuilding.PANTRY]: ReportCityMenuIds.GUILD_DOMAIN_PANTRY_MENU,
-	[GuildBuilding.TRAINING_GROUND]: ReportCityMenuIds.GUILD_DOMAIN_TRAINING_MENU
-};
-
-const BUILDING_ICONS: Record<GuildBuilding, string> = {
-	[GuildBuilding.SHOP]: CrowniclesIcons.city.guildDomain.shop,
-	[GuildBuilding.SHELTER]: CrowniclesIcons.city.guildDomain.shelter,
-	[GuildBuilding.PANTRY]: CrowniclesIcons.city.guildDomain.pantry,
-	[GuildBuilding.TRAINING_GROUND]: CrowniclesIcons.city.guildDomain.trainingGround
-};
-
-// ─── Collector helper ────────────────────────────────────────────────────────
-
-function createDomainCollector(
-	ctx: GuildDomainMenuContext,
-	handler: (customId: string, buttonInteraction: ButtonInteraction, nestedMenus: CrowniclesNestedMenus) => Promise<void>
-): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
-		const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-
-		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-			if (buttonInteraction.user.id !== ctx.interaction.user.id) {
-				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, ctx.lng);
-				return;
-			}
-
-			await handler(buttonInteraction.customId, buttonInteraction, nestedMenus);
-		});
-
-		return collector;
-	};
-}
-
-// ─── Navigation helpers ──────────────────────────────────────────────────────
-
-function addDomainNavigation(container: ContainerBuilder, ctx: GuildDomainMenuContext, backLabel: string, backId: string): void {
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder()
-				.setCustomId(backId)
-				.setLabel(backLabel)
-				.setEmoji(CrowniclesIcons.collectors.back)
-				.setStyle(ButtonStyle.Secondary),
-			createStayInCityButton(ctx.lng)
-		)
-	);
-}
-
-function addStatusMessage(container: ContainerBuilder, statusMessage?: string): void {
-	if (statusMessage) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(statusMessage)
-		);
-	}
-}
-
-// ─── Main domain menu ────────────────────────────────────────────────────────
-
-function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
-	const {
-		data, lng, pseudo
-	} = ctx;
-	const container = new ContainerBuilder();
-
-	// Title
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.menuTitle", {
-				lng, pseudo, guildName: data.guildName
-			})}`
-		)
-	);
-
-	// Intro + guild level & treasury
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.menuIntro", {
-				lng, guildName: data.guildName
-			})
-		)
-	);
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.guildLevelAndTreasury", {
-				lng,
-				guildLevel: data.guildLevel,
-				treasury: data.treasury,
-				playerMoney: data.playerMoney
-			})
-		)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-
-	// Building sections with enter buttons
-	for (const building of Object.values(GuildBuilding)) {
-		const currentLevel = data[`${building}Level` as keyof typeof data] as number;
-		const maxLevel = GuildDomainConstants.BUILDINGS[building].maxLevel;
-		const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${building}`, { lng });
-		const description = getBuildingSummary(building, currentLevel, data, lng);
-		const buildingIcon = BUILDING_ICONS[building];
-
-		container.addSectionComponents(
-			new SectionBuilder()
-				.addTextDisplayComponents(
-					new TextDisplayBuilder().setContent(
-						`${buildingIcon} **${buildingName}** — ${i18n.t("commands:report.city.guildDomain.levelDisplay", {
-							lng, level: currentLevel, maxLevel
-						})}\n${description}`
-					)
-				)
-				.setButtonAccessory(
-					new ButtonBuilder()
-						.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_ENTER_PREFIX}${building}`)
-						.setLabel(i18n.t(`commands:report.city.guildDomain.enterBuilding.${building}`, { lng }))
-						.setStyle(ButtonStyle.Primary)
-				)
-		);
-	}
-
-	addStatusMessage(container, statusMessage);
-
-	// Navigation
-	addDomainNavigation(
-		container,
-		ctx,
-		i18n.t("commands:report.city.guildDomain.leaveDomain", { lng }),
-		ReportCityMenuIds.BACK_TO_CITY
-	);
-
-	return container;
-}
-
-function getBuildingSummary(building: GuildBuilding, level: number, _data: GuildDomainData, lng: Language): string {
-	switch (building) {
-		case GuildBuilding.SHOP:
-			return level === 0
-				? i18n.t("commands:report.city.guildDomain.buildingSummary.shop.locked", { lng })
-				: i18n.t("commands:report.city.guildDomain.buildingSummary.shop.built", { lng });
-		case GuildBuilding.SHELTER:
-			return i18n.t("commands:report.city.guildDomain.buildingSummary.shelter", {
-				lng,
-				slots: GuildDomainConstants.getShelterSlots(level)
-			});
-		case GuildBuilding.PANTRY:
-			return i18n.t("commands:report.city.guildDomain.buildingSummary.pantry", { lng });
-		case GuildBuilding.TRAINING_GROUND: {
-			const love = GuildDomainConstants.getTrainingLovePerDay(level);
-			return love === 0
-				? i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.inactive", { lng })
-				: i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.active", {
-					lng, love
-				});
-		}
-		default:
-			return "";
-	}
-}
-
-// ─── Upgrade section ─────────────────────────────────────────────────────────
-
-function addUpgradeSection(container: ContainerBuilder, building: GuildBuilding, ctx: GuildDomainMenuContext): void {
-	const {
-		data, lng
-	} = ctx;
-	if (!data.isChief && !data.isElder) {
-		return;
-	}
-
-	const currentLevel = data[`${building}Level` as keyof typeof data] as number;
-	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
-
-	if (upgradeCost === null) {
-		// Max level
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t("commands:report.city.guildDomain.buildingMaxLevel", { lng })
-			)
-		);
-		return;
-	}
-
-	const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
-	const canAfford = data.treasury >= upgradeCost;
-	const meetsLevel = requiredGuildLevel === null || data.guildLevel >= requiredGuildLevel;
-
-	let upgradeText = i18n.t("commands:report.city.guildDomain.buildingUpgrade", {
-		lng,
-		nextLevel: currentLevel + 1,
-		cost: upgradeCost
-	});
-
-	if (!meetsLevel && requiredGuildLevel !== null) {
-		upgradeText += i18n.t("commands:report.city.guildDomain.buildingUpgradeBlocked", {
-			lng,
-			required: requiredGuildLevel
-		});
-	}
-	else if (!canAfford) {
-		upgradeText += i18n.t("commands:report.city.guildDomain.buildingUpgradeTreasuryLow", { lng });
-	}
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(upgradeText)
-	);
-
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder()
-				.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX}${building}`)
-				.setLabel(i18n.t(`commands:report.city.guildDomain.upgradeBuilding.${building}`, {
-					lng,
-					cost: upgradeCost,
-					level: currentLevel + 1
-				}))
-				.setStyle(ButtonStyle.Primary)
-				.setDisabled(!canAfford || !meetsLevel)
-		)
-	);
-}
-
-// ─── Shop sub-menu ───────────────────────────────────────────────────────────
-
-function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
-	const {
-		data, lng
-	} = ctx;
-	const container = new ContainerBuilder();
-	const shopLevel = data.shopLevel;
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.subMenus.shop.title", { lng })}`
-		)
-	);
-
-	if (shopLevel === 0) {
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t("commands:report.city.guildDomain.subMenus.shop.notBuilt", { lng })
-			)
-		);
-
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addUpgradeSection(container, GuildBuilding.SHOP, ctx);
-		addStatusMessage(container, statusMessage);
-		addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-		return container;
-	}
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shop.description", {
-				lng, playerMoney: data.playerMoney
-			})
-		)
-	);
-
-	// Food sections — one SectionBuilder per food type
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodLabel", { lng })
-		)
-	);
-
-	addFoodSections(container, data, lng);
-
-	// XP sections — one SectionBuilder per tier
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpLabel", { lng })
-		)
-	);
-
-	container.addSectionComponents(
-		new SectionBuilder()
-			.addTextDisplayComponents(
-				new TextDisplayBuilder().setContent(
-					`${CrowniclesIcons.shopItems.smallGuildXp} **${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmall", {
-						lng, cost: GuildDomainConstants.SHOP_PRICES.SMALL_XP
-					})}**\n${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmallDescription", { lng })}`
-				)
-			)
-			.setButtonAccessory(
-				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}small`)
-					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmall", {
-						lng, cost: GuildDomainConstants.SHOP_PRICES.SMALL_XP
-					}))
-					.setStyle(ButtonStyle.Success)
-					.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.SMALL_XP)
-			)
-	);
-
-	container.addSectionComponents(
-		new SectionBuilder()
-			.addTextDisplayComponents(
-				new TextDisplayBuilder().setContent(
-					`${CrowniclesIcons.shopItems.bigGuildXp} **${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBig", {
-						lng, cost: GuildDomainConstants.SHOP_PRICES.BIG_XP
-					})}**\n${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBigDescription", { lng })}`
-				)
-			)
-			.setButtonAccessory(
-				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}big`)
-					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBig", {
-						lng, cost: GuildDomainConstants.SHOP_PRICES.BIG_XP
-					}))
-					.setStyle(ButtonStyle.Success)
-					.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.BIG_XP)
-			)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addUpgradeSection(container, GuildBuilding.SHOP, ctx);
-	addStatusMessage(container, statusMessage);
-	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-
-	return container;
-}
-
-const FOOD_KEYS: readonly string[] = [
-	"common",
-	"carnivorous",
-	"herbivorous",
-	"ultimate"
-] as const;
-
-function addFoodSections(container: ContainerBuilder, data: GuildDomainData, lng: Language): void {
-	const foodTypes = PetConstants.PET_FOOD_BY_ID;
-
-	for (let i = 0; i < foodTypes.length; i++) {
-		const foodType = foodTypes[i];
-		const foodKey = FOOD_KEYS[i] as "common" | "carnivorous" | "herbivorous" | "ultimate";
-		const currentStock = data.food[foodKey];
-		const cap = data.foodCaps[i];
-		const remainingSlots = cap - currentStock;
-		const price = GuildDomainConstants.SHOP_PRICES.FOOD[i];
-		const maxAffordable = Math.floor(data.playerMoney / price);
-		const maxBuyable = Math.min(remainingSlots, maxAffordable);
-		const foodName = i18n.t(`models:foods.${foodType}`, {
-			lng, count: 1
-		});
-		const foodEmoji = CrowniclesIcons.foods[foodType] ?? "";
-
-		container.addSectionComponents(
-			new SectionBuilder()
-				.addTextDisplayComponents(
-					new TextDisplayBuilder().setContent(
-						`${foodEmoji} **${foodName}** — ${currentStock}/${cap}\n*${price} ${CrowniclesIcons.unitValues.money} l'unité*`
-					)
-				)
-				.setButtonAccessory(
-					new ButtonBuilder()
-						.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${foodType}_${Math.max(maxBuyable, 1)}`)
-						.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodButton", {
-							lng,
-							amount: Math.max(maxBuyable, 1),
-							food: foodName,
-							cost: price * Math.max(maxBuyable, 1)
-						}))
-						.setStyle(ButtonStyle.Primary)
-						.setDisabled(maxBuyable <= 0)
-				)
-		);
-	}
-}
-
-// ─── Simple building sub-menus ───────────────────────────────────────────────
-
-function buildShelterContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
-	const {
-		data, lng
-	} = ctx;
-	const container = new ContainerBuilder();
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.subMenus.shelter.title", { lng })}`
-		)
-	);
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shelter.description", {
-				lng,
-				slots: GuildDomainConstants.getShelterSlots(data.shelterLevel)
-			})
-		)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addUpgradeSection(container, GuildBuilding.SHELTER, ctx);
-	addStatusMessage(container, statusMessage);
-	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-
-	return container;
-}
-
-function buildPantryContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
-	const {
-		data, lng
-	} = ctx;
-	const container = new ContainerBuilder();
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.subMenus.pantry.title", { lng })}`
-		)
-	);
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.pantry.description", { lng })
-		)
-	);
-
-	// Food stock
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.foodInfo", {
-				lng,
-				common: data.food.common,
-				commonCap: data.foodCaps[0],
-				carnivorous: data.food.carnivorous,
-				carnivorousCap: data.foodCaps[1],
-				herbivorous: data.food.herbivorous,
-				herbivorousCap: data.foodCaps[2],
-				ultimate: data.food.ultimate,
-				ultimateCap: data.foodCaps[3]
-			})
-		)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addUpgradeSection(container, GuildBuilding.PANTRY, ctx);
-	addStatusMessage(container, statusMessage);
-	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-
-	return container;
-}
-
-function buildTrainingGroundContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
-	const {
-		data, lng
-	} = ctx;
-	const container = new ContainerBuilder();
-	const love = GuildDomainConstants.getTrainingLovePerDay(data.trainingGroundLevel);
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.subMenus.training.title", { lng })}`
-		)
-	);
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			love === 0
-				? i18n.t("commands:report.city.guildDomain.subMenus.training.descriptionInactive", { lng })
-				: i18n.t("commands:report.city.guildDomain.subMenus.training.descriptionActive", {
-					lng, love
-				})
-		)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addUpgradeSection(container, GuildBuilding.TRAINING_GROUND, ctx);
-	addStatusMessage(container, statusMessage);
-	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-
-	return container;
-}
-
-// ─── Menu registration ───────────────────────────────────────────────────────
+import {
+	BUILDING_MENU_IDS, createDomainCollector,
+	GuildDomainMenuContext
+} from "./GuildDomainShared";
+import {
+	buildBuildingContainer, buildMainDomainContainer
+} from "./GuildDomainViews";
 
 function registerAllDomainMenus(
 	ctx: GuildDomainMenuContext,
@@ -547,13 +45,11 @@ function registerAllDomainMenus(
 	statusMessage?: string,
 	statusMenuId?: string
 ): void {
-	// Main domain menu
 	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU, {
 		containers: [buildMainDomainContainer(ctx, statusMenuId === ReportCityMenuIds.GUILD_DOMAIN_MENU ? statusMessage : undefined)],
 		createCollector: createMainMenuCollector(ctx)
 	});
 
-	// Building sub-menus
 	for (const building of Object.values(GuildBuilding)) {
 		const menuId = BUILDING_MENU_IDS[building];
 		const container = buildBuildingContainer(building, ctx, statusMenuId === menuId ? statusMessage : undefined);
@@ -564,23 +60,6 @@ function registerAllDomainMenus(
 	}
 }
 
-function buildBuildingContainer(building: GuildBuilding, ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
-	switch (building) {
-		case GuildBuilding.SHOP:
-			return buildShopContainer(ctx, statusMessage);
-		case GuildBuilding.SHELTER:
-			return buildShelterContainer(ctx, statusMessage);
-		case GuildBuilding.PANTRY:
-			return buildPantryContainer(ctx, statusMessage);
-		case GuildBuilding.TRAINING_GROUND:
-			return buildTrainingGroundContainer(ctx, statusMessage);
-		default:
-			return new ContainerBuilder();
-	}
-}
-
-// ─── Interaction handlers ────────────────────────────────────────────────────
-
 async function handleUpgrade(
 	ctx: GuildDomainMenuContext,
 	building: string,
@@ -589,12 +68,12 @@ async function handleUpgrade(
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
-		makePacket(CommandReportGuildDomainUpgradeReq, { building }),
+		makePacket(CommandReportGuildDomainUpgradeReq, { building: building as GuildBuilding }),
 		async (_responseContext, packetName, responsePacket) => {
 			if (packetName === CommandReportGuildDomainUpgradeRes.name) {
 				const res = responsePacket as unknown as CommandReportGuildDomainUpgradeRes;
 				ctx.data.treasury = res.newTreasury;
-				const levelField = `${res.building}Level` as keyof GuildDomainData;
+				const levelField = `${res.building}Level`;
 				(ctx.data as Record<string, unknown>)[levelField] = res.newLevel;
 
 				const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${res.building}`, { lng: ctx.lng });
@@ -622,13 +101,14 @@ async function handleFoodBuy(
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
 		makePacket(CommandReportFoodShopBuyReq, {
-			foodType, amount
+			foodType: foodType as CommandReportFoodShopBuyReq["foodType"],
+			amount
 		}),
 		async (_responseContext, packetName, responsePacket) => {
 			const shopMenuId = BUILDING_MENU_IDS[GuildBuilding.SHOP];
 			if (packetName === CommandReportFoodShopBuyRes.name) {
 				const res = responsePacket as unknown as CommandReportFoodShopBuyRes;
-				const foodKey = res.foodType.replace("Food", "") as "common" | "carnivorous" | "herbivorous" | "ultimate";
+				const foodKey = res.foodType.replace("Food", "") as keyof typeof ctx.data.food;
 				ctx.data.food[foodKey] = res.newFoodStock;
 				ctx.data.playerMoney = res.newPlayerMoney;
 
@@ -656,7 +136,7 @@ async function handleXpBuy(
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
-		makePacket(CommandReportGuildDomainBuyXpReq, { tier }),
+		makePacket(CommandReportGuildDomainBuyXpReq, { tier: tier as CommandReportGuildDomainBuyXpReq["tier"] }),
 		async (_responseContext, packetName, responsePacket) => {
 			const shopMenuId = BUILDING_MENU_IDS[GuildBuilding.SHOP];
 			if (packetName === CommandReportGuildDomainBuyXpRes.name) {
@@ -677,25 +157,20 @@ async function handleXpBuy(
 	);
 }
 
-// ─── Collectors ──────────────────────────────────────────────────────────────
-
 function createMainMenuCollector(ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	return createDomainCollector(ctx, async (customId, buttonInteraction, nestedMenus) => {
+	return createDomainCollector(ctx, async (customId: string, buttonInteraction: ButtonInteraction, nestedMenus: CrowniclesNestedMenus) => {
 		await buttonInteraction.deferUpdate();
 
-		// Navigate to city
 		if (customId === ReportCityMenuIds.BACK_TO_CITY) {
 			await nestedMenus.changeToMainMenu();
 			return;
 		}
 
-		// Stay in city
 		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 			return;
 		}
 
-		// Enter a building
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_ENTER_PREFIX)) {
 			const building = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_ENTER_PREFIX, "") as GuildBuilding;
 			const menuId = BUILDING_MENU_IDS[building];
@@ -709,31 +184,26 @@ function createMainMenuCollector(ctx: GuildDomainMenuContext): (nestedMenus: Cro
 function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 	const menuId = BUILDING_MENU_IDS[building];
 
-	return createDomainCollector(ctx, async (customId, buttonInteraction, nestedMenus) => {
+	return createDomainCollector(ctx, async (customId: string, buttonInteraction: ButtonInteraction, nestedMenus: CrowniclesNestedMenus) => {
 		await buttonInteraction.deferUpdate();
 
-		// Back to domain
 		if (customId === ReportCityMenuIds.GUILD_DOMAIN_BACK) {
 			await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
 			return;
 		}
 
-		// Stay in city
 		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
 			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 			return;
 		}
 
-		// Upgrade building
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX)) {
 			const upgradedBuilding = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "");
 			await handleUpgrade(ctx, upgradedBuilding, nestedMenus, menuId);
 			return;
 		}
 
-		// Shop-specific interactions
 		if (building === GuildBuilding.SHOP) {
-			// Buy food
 			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX)) {
 				const parts = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX, "").split("_");
 				const foodType = parts[0];
@@ -742,7 +212,6 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 				return;
 			}
 
-			// Buy XP
 			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX)) {
 				const tier = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX, "");
 				await handleXpBuy(ctx, tier, nestedMenus);
@@ -750,8 +219,6 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 		}
 	});
 }
-
-// ─── Public API ──────────────────────────────────────────────────────────────
 
 export function getGuildDomainMenu(
 	context: PacketContext,
