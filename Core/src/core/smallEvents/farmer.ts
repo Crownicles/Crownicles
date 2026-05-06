@@ -5,7 +5,7 @@ import { MapLocationDataController } from "../../data/MapLocation";
 import {
 	Guilds
 } from "../database/game/models/Guild";
-import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
+
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { giveFoodToGuild } from "../utils/FoodUtils";
 import {
@@ -73,15 +73,14 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 		const packet: SmallEventFarmerPacket = { interactionName: FARMER_INTERACTIONS.SALAD };
 
-		const foodCaps = guild ? GuildDomainConstants.getFoodCaps(guild.pantryLevel) : null;
-		if (!guild || !foodCaps || guild.herbivorousFood >= foodCaps[2]) {
+		if (!guild || guild.herbivorousFood >= guild.getFoodCapacityFor(PetConstants.PET_FOOD.HERBIVOROUS_FOOD)) {
 			// Salad storage is full or no guild — farmer gives a random item instead
 			packet.interactionName = FARMER_INTERACTIONS.ITEM;
 			await giveItemToPlayer(response, context, player, generateRandomItem({ maxRarity: ItemRarity.RARE }));
 		}
 		else {
 			// Give salad to the guild
-			const maxGiveable = foodCaps[2] - guild.herbivorousFood;
+			const maxGiveable = guild.getFoodCapacityFor(PetConstants.PET_FOOD.HERBIVOROUS_FOOD) - guild.herbivorousFood;
 			packet.amount = Math.min(RandomUtils.randInt(SALAD_AMOUNT.MIN, SALAD_AMOUNT.MAX + 1), maxGiveable);
 			await giveFoodToGuild(response, player, PetConstants.PET_FOOD.HERBIVOROUS_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 

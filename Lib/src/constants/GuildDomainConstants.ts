@@ -130,7 +130,9 @@ export abstract class GuildDomainConstants {
 	] as const;
 
 	/**
-	 * Food caps per pantry level: [common, carnivorous, herbivorous, ultimate]
+	 * Food caps per pantry level, indexed by PetConstants.PET_FOOD_BY_ID:
+	 * [common, herbivorous, carnivorous, ultimate]
+	 * NB: herbivorous and carnivorous caps are intentionally identical at every level.
 	 */
 	static readonly PANTRY_FOOD_CAPS = [
 		[
