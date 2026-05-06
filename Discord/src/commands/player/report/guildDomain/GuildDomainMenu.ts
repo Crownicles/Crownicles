@@ -72,6 +72,26 @@ async function refreshAndShowStatus(
 	await nestedMenus.changeMenu(menuId);
 }
 
+/**
+ * Send the final action result as a followup reply and end the /rapport command.
+ * Mirrors the pattern used by CookingFeatureHandler.sendCraftFollowup so the player
+ * has to run /rapport again to see fully refreshed stats (avoids partial UI updates).
+ */
+function finishReportWithMessage(
+	ctx: GuildDomainMenuContext,
+	nestedMenus: CrowniclesNestedMenus,
+	finalMessage: string
+): void {
+	const message = nestedMenus.message;
+	if (message) {
+		message.reply({ content: finalMessage })
+			.catch(() => {
+				// Ignore reply errors (e.g., message deleted): we still want to end the report.
+			});
+	}
+	handleStayInCityInteraction(ctx.packet, ctx.context, null);
+}
+
 async function handleUpgrade(
 	ctx: GuildDomainMenuContext,
 	building: GuildBuilding,
@@ -93,16 +113,7 @@ async function handleUpgrade(
 					building: buildingName,
 					level: res.newLevel
 				});
-
-				/*
-				 * End the report after a successful upgrade so the player runs /rapport
-				 * again and sees fully refreshed stats (mirrors the cooking flow).
-				 */
-				const message = nestedMenus.message;
-				if (message) {
-					await message.reply({ content: successMessage });
-				}
-				handleStayInCityInteraction(ctx.packet, ctx.context, null);
+				finishReportWithMessage(ctx, nestedMenus, successMessage);
 			}
 			else {
 				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.upgradeError", { lng: ctx.lng }), returnMenuId);
@@ -165,10 +176,10 @@ async function handleTreasuryDeposit(
 				const successKey = isReimburse
 					? "commands:report.city.guildDomain.subMenus.shop.reimburseSuccess"
 					: "commands:report.city.guildDomain.subMenus.shop.depositTreasurySuccess";
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t(successKey, {
+				finishReportWithMessage(ctx, nestedMenus, i18n.t(successKey, {
 					lng: ctx.lng,
 					treasury: res.treasuryDeposited
-				}), shopMenuId);
+				}));
 			}
 			else {
 				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryError", { lng: ctx.lng }), shopMenuId);
@@ -268,7 +279,7 @@ function createShopReimburseCollector(
 
 		if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE) {
 			ctx.data.pendingReimburseAmount = undefined;
-			await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng }), BUILDING_MENU_IDS[GuildBuilding.SHOP]);
+			finishReportWithMessage(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng }));
 			return;
 		}
 

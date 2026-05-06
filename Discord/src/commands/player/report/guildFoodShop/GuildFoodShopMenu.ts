@@ -359,6 +359,20 @@ async function handleReimburse(reimburseContext: ReimburseContext): Promise<void
 			else {
 				statusMessage = i18n.t("commands:report.city.guildFoodShop.reimburseError", { lng });
 			}
+
+			if (isSuccess) {
+				// End the report after a successful reimburse so the next /rapport shows fresh stats.
+				const message = nestedMenus.message;
+				if (message) {
+					message.reply({ content: statusMessage })
+						.catch(() => {
+							// Ignore reply errors; we still want to end the report.
+						});
+				}
+				handleStayInCityInteraction(packet, context, null);
+				return;
+			}
+
 			registerFoodShopMenu({
 				data, lng, pseudo, context, interaction, packet, collectorTime, nestedMenus, statusMessage
 			});
@@ -404,18 +418,15 @@ export function getGuildFoodShopMenu(options: GuildFoodShopMenuOptions): Crownic
 
 			if (customId === ReportCityMenuIds.GUILD_FOOD_SHOP_REIMBURSE_DECLINE) {
 				data.pendingReimburseAmount = undefined;
-				registerFoodShopMenu({
-					data,
-					lng,
-					pseudo,
-					context,
-					interaction,
-					packet,
-					collectorTime,
-					nestedMenus,
-					statusMessage: i18n.t("commands:report.city.guildFoodShop.reimburseDeclined", { lng })
-				});
-				await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU);
+				const declineMessage = i18n.t("commands:report.city.guildFoodShop.reimburseDeclined", { lng });
+				const message = nestedMenus.message;
+				if (message) {
+					message.reply({ content: declineMessage })
+						.catch(() => {
+							// Ignore reply errors; we still want to end the report.
+						});
+				}
+				handleStayInCityInteraction(packet, context, null);
 				return;
 			}
 
