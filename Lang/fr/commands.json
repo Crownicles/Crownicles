@@ -1333,6 +1333,7 @@
         "label": "Ravitaillement de guilde",
         "description": "Achetez de la nourriture pour les familiers de **{{guildName}}**.",
         "menuTitle": "{{pseudo}}, ravitaillement de {{guildName}}",
+        "menuDescription": "{emote:city.guildDomain.shop} Un marchand itinérant propose de la nourriture pour familiers, réglée sur la trésorerie de votre guilde.\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Trésorerie de la guilde** : {{treasury, number}} {emote:unitValues.money}",
         "leaveShop": "Quitter le marchand"
       }
     },
