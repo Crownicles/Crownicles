@@ -54,6 +54,8 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
+import { GuildPets } from "../../core/database/game/models/GuildPet";
+import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { Settings } from "../../core/database/game/models/Setting";
@@ -390,6 +392,11 @@ async function sendCityCollector(
 		: undefined;
 
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+	let shelterPets: Awaited<ReturnType<typeof PetEntities.getById>>[] = [];
+	if (guild?.domainCityId === city.id) {
+		const guildPetEntries = await GuildPets.getOfGuild(guild.id);
+		shelterPets = await Promise.all(guildPetEntries.map(gp => PetEntities.getById(gp.petEntityId)));
+	}
 	const guildDomain = guild?.domainCityId === city.id
 		? {
 			isInCity: true,
@@ -409,7 +416,9 @@ async function sendCityCollector(
 				herbivorous: guild.herbivorousFood,
 				ultimate: guild.ultimateFood
 			},
-			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel)
+			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
+			shelterPets: shelterPets.filter(pe => pe !== null).map(pe => pe!.asOwnedPet()),
+			shelterMaxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel)
 		}
 		: undefined;
 

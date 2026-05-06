@@ -19,6 +19,7 @@ import { PlantId } from "../../constants/PlantConstants";
 import {
 	PlantStorageEntry, PlayerPlantSlotEntry
 } from "../../types/PlantStorageEntry";
+import { OwnedPet } from "../../types/OwnedPet";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -246,6 +247,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Food caps based on pantry level */
 		foodCaps: readonly number[];
+
+		/** Pets currently in the guild shelter */
+		shelterPets: OwnedPet[];
+
+		/** Maximum number of pets the shelter can hold */
+		shelterMaxCount: number;
 	};
 
 	/**

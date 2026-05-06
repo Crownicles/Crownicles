@@ -1316,6 +1316,8 @@
           "shelter": {
             "title": "{emote:city.guildDomain.shelter} Refuge de guilde",
             "description": "{emote:city.guildDomain.shelter} Des enclos en bois renforcé bordent une cour intérieure tapissée de paille fraîche. Les familiers de la guilde sommeillent ou jouent paisiblement sous l'œil attentif d'un gardien. L'air est imprégné de l'odeur rassurante de foin et de fourrure.\n\n**Capacité :** {{slots}} emplacements",
+            "petListHeader": "{emote:city.guildDomain.shelter} **Familiers du refuge** ({{count}}/{{max}}) :",
+            "empty": "{emote:messages.info} Le refuge est vide pour le moment.",
             "petTransferHint": "{emote:messages.info} Utilisez la commande {command:pettransfer} pour déplacer un familier entre votre inventaire et le refuge de la guilde."
           },
           "pantry": {

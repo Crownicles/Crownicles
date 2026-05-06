@@ -14,6 +14,7 @@ import {
 import {
 	PetConstants, PetFood
 } from "../../../../../../Lib/src/constants/PetConstants";
+import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import {
 	addBuildingLevelAndCostInfo, addDomainNavigation, addStatusMessage, addUpgradeSection,
 	BUILDING_ICONS, FOOD_KEYS, FoodShopUIContext, getBuildingLevel, getBuildingSummary,
@@ -431,6 +432,28 @@ export function buildShelterContainer(ctx: GuildDomainMenuContext, statusMessage
 					})
 				)
 			);
+			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+			if (data.shelterPets.length === 0) {
+				container.addTextDisplayComponents(
+					new TextDisplayBuilder().setContent(
+						i18n.t("commands:report.city.guildDomain.subMenus.shelter.empty", { lng })
+					)
+				);
+			}
+			else {
+				const list = data.shelterPets
+					.map((pet, index) => `**${index + 1}.** ${DisplayUtils.getOwnedPetInlineDisplay(pet, lng)}`)
+					.join("\n");
+				container.addTextDisplayComponents(
+					new TextDisplayBuilder().setContent(
+						`${i18n.t("commands:report.city.guildDomain.subMenus.shelter.petListHeader", {
+							lng,
+							count: data.shelterPets.length,
+							max: data.shelterMaxCount
+						})}\n${list}`
+					)
+				);
+			}
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 			container.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(
