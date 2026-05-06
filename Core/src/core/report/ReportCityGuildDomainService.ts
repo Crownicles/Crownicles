@@ -79,7 +79,7 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "invalidBuilding" });
 	}
 
-	const currentLevel = guild[BUILDING_LEVEL_FIELDS[building]] as number;
+	const currentLevel = guild.getDataValue(BUILDING_LEVEL_FIELDS[building]) as number;
 	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
 	if (upgradeCost === null) {
 		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "maxLevel" });

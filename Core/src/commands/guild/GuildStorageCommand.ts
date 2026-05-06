@@ -8,7 +8,7 @@ import Player from "../../core/database/game/models/Player";
 import {
 	CommandGuildStoragePacketReq, CommandGuildStoragePacketRes, FoodStorage
 } from "../../../../Lib/src/packets/commands/CommandGuildStoragePacket";
-import { Guilds } from "../../core/database/game/models/Guild";
+import Guild, { Guilds } from "../../core/database/game/models/Guild";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 
@@ -25,7 +25,7 @@ export default class GuildStorageCommand {
 		for (const foodKey of Object.values(PetConstants.PET_FOOD)) {
 			foods.push({
 				id: foodKey,
-				amount: guild[foodKey as keyof Guilds],
+				amount: guild.getDataValue(foodKey as keyof Guild) as number,
 				maxAmount: foodCaps[Object.values(PetConstants.PET_FOOD)
 					.indexOf(foodKey)]
 			});

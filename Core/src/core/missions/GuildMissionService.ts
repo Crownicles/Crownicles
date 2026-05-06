@@ -7,7 +7,7 @@ import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
-	hoursToMilliseconds, getDayNumber, asHours
+	getDayNumber
 } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "./MissionsController";
 import { LockManager } from "../../../../Lib/src/locks/LockManager";
@@ -44,7 +44,7 @@ export abstract class GuildMissionService {
 		const mission = RandomUtils.crowniclesRandom.pick(guildMissions);
 		const objectives = mission.guildMission!.objectives;
 		const objectiveIndex = Math.min(
-			Math.floor(guild.level / 50),
+			Math.floor(guild.level / GuildDomainConstants.GUILD_MISSIONS.GUILD_LEVELS_PER_OBJECTIVE_TIER),
 			objectives.length - 1
 		);
 
@@ -53,7 +53,7 @@ export abstract class GuildMissionService {
 		guild.guildMissionObjective = objectives[objectiveIndex];
 		guild.guildMissionNumberDone = 0;
 		guild.guildMissionBlob = null;
-		guild.guildMissionExpiry = new Date(Date.now() + hoursToMilliseconds(asHours(GuildDomainConstants.GUILD_MISSIONS.DURATION_HOURS)));
+		guild.guildMissionExpiry = new Date(Date.now() + GuildDomainConstants.GUILD_MISSIONS.DURATION_MS);
 	}
 
 	/**
@@ -112,8 +112,7 @@ export abstract class GuildMissionService {
 				if (guild.guildMissionBlob) {
 					const lastDay = guild.guildMissionBlob.readInt32LE(0);
 					if (lastDay === today) {
-						// Already counted today — only track contribution
-						missionInfo.guildMissionContribution += 1;
+						missionInfo.guildMissionContribution += count;
 						await missionInfo.save();
 						return false;
 					}
@@ -155,7 +154,27 @@ export abstract class GuildMissionService {
 			return;
 		}
 
-		const guild = (await Guilds.getById(player.guildId))!;
+		const lock = guildMissionLockManager.getLock(player.guildId);
+		const release = await lock.acquire();
+		try {
+			await GuildMissionService.distributeRewardsLocked(player, response);
+		}
+		finally {
+			release();
+		}
+	}
+
+	private static async distributeRewardsLocked(
+		player: Player,
+		response: CrowniclesPacket[]
+	): Promise<void> {
+		const guild = (await Guilds.getById(player.guildId!))!;
+
+		// Idempotency: another concurrent caller may already have distributed and reset the mission
+		if (guild.guildMissionId === null) {
+			return;
+		}
+
 		const rewards = GuildDomainConstants.GUILD_MISSIONS.REWARDS;
 
 		// Guild-level rewards (applied once)
@@ -172,7 +191,7 @@ export abstract class GuildMissionService {
 		});
 
 		// Personal XP for ALL guild members who contributed
-		const guildMembers = await Players.getByGuild(player.guildId);
+		const guildMembers = await Players.getByGuild(guild.id);
 		const now = new Date();
 
 		for (const member of guildMembers) {

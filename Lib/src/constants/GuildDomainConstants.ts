@@ -233,9 +233,14 @@ export abstract class GuildDomainConstants {
 		},
 
 		/**
-		 * Duration of a guild weekly mission in hours
+		 * Duration of a guild weekly mission, pre-converted to milliseconds
 		 */
-		DURATION_HOURS: 168
+		DURATION_MS: 168 * 3_600_000,
+
+		/**
+		 * Number of guild levels per objective tier (mission difficulty scales with guild level / this constant)
+		 */
+		GUILD_LEVELS_PER_OBJECTIVE_TIER: 50
 	} as const;
 
 	static getShelterSlots(shelterLevel: number): number {
