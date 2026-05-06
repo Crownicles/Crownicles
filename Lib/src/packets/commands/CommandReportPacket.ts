@@ -7,7 +7,7 @@ import {
 } from "../../constants/HomeConstants";
 import { GardenConstants } from "../../constants/GardenConstants";
 import {
-	GuildBuilding, GuildDomainError, DepositTier
+	GuildBuilding, GuildDomainError
 } from "../../constants/GuildDomainConstants";
 import { ItemSlot } from "../../types/ItemSlot";
 import { CookingOutputTypeValue } from "../../constants/CookingConstants";
@@ -618,9 +618,11 @@ export class CommandReportFoodShopBuyRes extends CrowniclesPacket {
 
 	newFoodStock!: number;
 
-	newPlayerMoney!: number;
+	newTreasury!: number;
 
 	amountBought!: number;
+
+	totalCost!: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
@@ -632,7 +634,7 @@ export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainDepositTreasuryReq extends CrowniclesPacket {
-	tier!: DepositTier;
+	amount!: number;
 }
 
 @sendablePacket(PacketDirection.NONE)

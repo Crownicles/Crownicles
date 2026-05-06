@@ -86,8 +86,14 @@ export const ReportCityMenuIds = {
 	/** Prefix for guild domain shop food buy buttons (followed by foodType_amount) */
 	GUILD_DOMAIN_SHOP_FOOD_PREFIX: "GUILD_DOMAIN_SHOP_FOOD_",
 
-	/** Prefix for guild domain shop treasury deposit buttons (followed by tier) */
+	/** Prefix for guild domain shop treasury deposit buttons (followed by gross amount) */
 	GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX: "GUILD_DOMAIN_SHOP_DEPOSIT_",
+
+	/** Prefix for guild domain shop reimburse buttons (followed by gross amount) */
+	GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX: "GUILD_DOMAIN_SHOP_REIMBURSE_",
+
+	/** Custom ID used to decline the post-purchase reimbursement prompt */
+	GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE: "GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE",
 
 	// --- Guild food shop (non-domain cities) ---
 	/** Guild food shop sub-menu */
@@ -95,6 +101,12 @@ export const ReportCityMenuIds = {
 
 	/** Prefix for food shop buy buttons (followed by foodType_amount) */
 	GUILD_FOOD_SHOP_BUY_PREFIX: "GUILD_FOOD_SHOP_BUY_",
+
+	/** Prefix for guild food shop reimburse buttons (followed by gross amount) */
+	GUILD_FOOD_SHOP_REIMBURSE_PREFIX: "GUILD_FOOD_SHOP_REIMBURSE_",
+
+	/** Custom ID used to decline reimbursement after a guild food shop purchase */
+	GUILD_FOOD_SHOP_REIMBURSE_DECLINE: "GUILD_FOOD_SHOP_REIMBURSE_DECLINE",
 
 	/** Custom ID used for the "stay in city" button across all city sub-menus */
 	STAY_IN_CITY: "STAY_IN_CITY"

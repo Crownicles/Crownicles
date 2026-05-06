@@ -436,7 +436,8 @@ async function sendCityCollector(
 				ultimate: guild.ultimateFood
 			},
 			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
-			playerMoney: player.money
+			playerMoney: player.money,
+			treasury: guild.treasury
 		}
 		: undefined;
 

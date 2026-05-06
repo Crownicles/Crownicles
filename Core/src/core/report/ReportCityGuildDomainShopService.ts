@@ -7,7 +7,7 @@ import {
 	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	DEPOSIT_TIER, DepositTier, GUILD_DOMAIN_ERROR, GuildDomainConstants
+	GUILD_DOMAIN_ERROR, GuildDomainConstants
 } from "../../../../Lib/src/constants/GuildDomainConstants";
 import {
 	Players
@@ -18,11 +18,6 @@ import {
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { LockManager } from "../../../../Lib/src/locks/LockManager";
 
-const DEPOSIT_AMOUNTS: Record<DepositTier, number> = {
-	[DEPOSIT_TIER.SMALL]: GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT,
-	[DEPOSIT_TIER.BIG]: GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT
-};
-
 const treasuryDepositLockManager = new LockManager();
 
 export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<CrowniclesPacket> {
@@ -31,8 +26,8 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
 	}
 
-	const grossAmount = DEPOSIT_AMOUNTS[packet.tier];
-	if (grossAmount === undefined) {
+	const grossAmount = Math.floor(packet.amount);
+	if (!Number.isFinite(grossAmount) || grossAmount <= 0) {
 		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_TIER });
 	}
 
@@ -44,8 +39,8 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 	const release = await lock.acquire();
 	try {
 		const guild = await Guilds.getById(player.guildId);
-		if (!guild || guild.shopLevel < 1) {
-			return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_SHOP });
+		if (!guild) {
+			return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
 		}
 
 		const penalty = Math.min(

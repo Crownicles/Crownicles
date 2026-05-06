@@ -269,6 +269,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Player money */
 		playerMoney: number;
+
+		/** Guild treasury balance (used to fund purchases) */
+		treasury: number;
 	};
 
 	/**
