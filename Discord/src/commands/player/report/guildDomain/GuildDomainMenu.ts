@@ -139,7 +139,9 @@ async function handleTreasuryDeposit(
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
-		makePacket(CommandReportGuildDomainDepositTreasuryReq, { amount }),
+		makePacket(CommandReportGuildDomainDepositTreasuryReq, {
+			amount, isReimburse
+		}),
 		async (_responseContext, packetName, responsePacket) => {
 			const shopMenuId = BUILDING_MENU_IDS[GuildBuilding.SHOP];
 			if (packetName === CommandReportGuildDomainDepositTreasuryRes.name) {
