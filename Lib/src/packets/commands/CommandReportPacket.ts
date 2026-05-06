@@ -635,6 +635,9 @@ export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainDepositTreasuryReq extends CrowniclesPacket {
 	amount!: number;
+
+	/** When true, the deposit is treated as a refund of a previous treasury withdrawal: no commission is taken. */
+	isReimburse?: boolean;
 }
 
 @sendablePacket(PacketDirection.NONE)

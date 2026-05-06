@@ -163,16 +163,11 @@ function buildFoodShopContainer(data: FoodShopData, lng: Language, pseudo: strin
 
 	if (data.pendingReimburseAmount && data.pendingReimburseAmount > 0) {
 		const pending = data.pendingReimburseAmount;
-		const penalty = Math.min(
-			Math.round(pending * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
-			GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
-		);
-		const treasuryGain = pending - penalty;
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
 				i18n.t("commands:report.city.guildFoodShop.reimbursePrompt", {
-					lng, cost: pending, treasury: treasuryGain, penalty
+					lng, cost: pending, treasury: pending
 				})
 			)
 		);
@@ -181,7 +176,7 @@ function buildFoodShopContainer(data: FoodShopData, lng: Language, pseudo: strin
 				new ButtonBuilder()
 					.setCustomId(`${ReportCityMenuIds.GUILD_FOOD_SHOP_REIMBURSE_PREFIX}${pending}`)
 					.setLabel(i18n.t("commands:report.city.guildFoodShop.reimburseAccept", {
-						lng, cost: pending, treasury: treasuryGain
+						lng, cost: pending, treasury: pending
 					}))
 					.setStyle(ButtonStyle.Success)
 					.setDisabled(data.playerMoney < pending),
@@ -346,7 +341,9 @@ async function handleReimburse(reimburseContext: ReimburseContext): Promise<void
 
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		context,
-		makePacket(CommandReportGuildDomainDepositTreasuryReq, { amount }),
+		makePacket(CommandReportGuildDomainDepositTreasuryReq, {
+			amount, isReimburse: true
+		}),
 		async (_responseContext, packetName, responsePacket) => {
 			const isSuccess = packetName === CommandReportGuildDomainDepositTreasuryRes.name;
 			let statusMessage: string;

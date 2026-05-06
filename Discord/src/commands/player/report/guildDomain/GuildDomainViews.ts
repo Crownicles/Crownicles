@@ -299,11 +299,6 @@ export function buildShopReimburseContainer(ctx: GuildDomainMenuContext): Contai
 		data, lng
 	} = ctx;
 	const pendingAmount = data.pendingReimburseAmount ?? 0;
-	const penalty = Math.min(
-		Math.round(pendingAmount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
-		GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
-	);
-	const treasuryGain = pendingAmount - penalty;
 
 	const container = new ContainerBuilder();
 	container.addTextDisplayComponents(
@@ -312,7 +307,7 @@ export function buildShopReimburseContainer(ctx: GuildDomainMenuContext): Contai
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.guildDomain.subMenus.shop.reimbursePrompt", {
-				lng, cost: pendingAmount, treasury: treasuryGain, penalty
+				lng, cost: pendingAmount, treasury: pendingAmount
 			})
 		)
 	);
@@ -321,7 +316,7 @@ export function buildShopReimburseContainer(ctx: GuildDomainMenuContext): Contai
 			new ButtonBuilder()
 				.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX}${pendingAmount}`)
 				.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseAccept", {
-					lng, cost: pendingAmount, treasury: treasuryGain
+					lng, cost: pendingAmount, treasury: pendingAmount
 				}))
 				.setStyle(ButtonStyle.Success)
 				.setDisabled(data.playerMoney < pendingAmount),

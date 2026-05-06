@@ -43,10 +43,12 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 			return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
 		}
 
-		const penalty = Math.min(
-			Math.round(grossAmount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
-			GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
-		);
+		const penalty = packet.isReimburse
+			? 0
+			: Math.min(
+				Math.round(grossAmount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
+				GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
+			);
 		const treasuryDeposited = grossAmount - penalty;
 		guild.treasury += treasuryDeposited;
 		await guild.save();
