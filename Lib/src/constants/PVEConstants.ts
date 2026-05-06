@@ -204,6 +204,73 @@ export abstract class PVEConstants {
 			56,
 			6,
 			46
-		] // Dragon's Nest (final): magic + explosive
+		], // Dragon's Nest (final): magic + explosive
+
+		// Island 3 - Oceanic
+		1201: [
+			68,
+			54,
+			8,
+			78,
+			11,
+			27,
+			67
+		], // Lagoon Hollow (Turtle): water + leather/shell + coral
+		1202: [
+			68,
+			35,
+			77,
+			33,
+			53,
+			80,
+			5,
+			69
+		], // Maritime Cavern (Water Spirit): magic + spiritual + crystals
+		1203: [
+			21,
+			14,
+			25,
+			44,
+			81,
+			47,
+			35,
+			56,
+			75
+		], // Revenant's Cove (Captain Crow): explosive + metal + rope + spectral
+		1204: [
+			89,
+			68,
+			30,
+			60,
+			78,
+			33,
+			53,
+			76,
+			75
+		], // Whispering Cave (Mermaid): spiritual + magic + scales/silk
+		1205: [
+			47,
+			78,
+			50,
+			49,
+			38,
+			27,
+			28,
+			86,
+			67,
+			11
+		], // Depths Chasm (Kraken): leather/tentacles + alloy + ink + abyssal pressure
+		1206: [
+			34,
+			68,
+			35,
+			80,
+			74,
+			22,
+			76,
+			62,
+			69,
+			87
+		] // Abyssal Ravine (Leviathan): magic + primordial scales + electric
 	};
 }

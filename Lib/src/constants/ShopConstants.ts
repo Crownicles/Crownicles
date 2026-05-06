@@ -58,7 +58,8 @@ export abstract class ShopConstants {
 
 	static readonly MATERIAL_MERCHANT_DROP_RATES = {
 		RARE_PROBABILITY: 0.1,
-		UNCOMMON_PROBABILITY: 0.3
+		UNCOMMON_PROBABILITY: 0.3,
+		COMMON_PROBABILITY: 0.6
 	};
 }
 
