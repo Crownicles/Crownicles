@@ -73,6 +73,7 @@ export function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMess
 					new ButtonBuilder()
 						.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_ENTER_PREFIX}${building}`)
 						.setLabel(i18n.t(`commands:report.city.guildDomain.enterBuilding.${building}`, { lng }))
+						.setEmoji(buildingIcon)
 						.setStyle(ButtonStyle.Primary)
 				)
 		);
