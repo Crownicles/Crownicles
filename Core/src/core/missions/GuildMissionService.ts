@@ -7,7 +7,7 @@ import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
-	hoursToMilliseconds, getDayNumber
+	hoursToMilliseconds, getDayNumber, asHours
 } from "../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "./MissionsController";
 import { LockManager } from "../../../../Lib/src/locks/LockManager";
@@ -53,7 +53,7 @@ export abstract class GuildMissionService {
 		guild.guildMissionObjective = objectives[objectiveIndex];
 		guild.guildMissionNumberDone = 0;
 		guild.guildMissionBlob = null;
-		guild.guildMissionExpiry = new Date(Date.now() + hoursToMilliseconds(GuildDomainConstants.GUILD_MISSIONS.DURATION_HOURS));
+		guild.guildMissionExpiry = new Date(Date.now() + hoursToMilliseconds(asHours(GuildDomainConstants.GUILD_MISSIONS.DURATION_HOURS)));
 	}
 
 	/**
