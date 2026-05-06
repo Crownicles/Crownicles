@@ -1486,6 +1486,22 @@ function getGuildFoodShopMenu(
 /**
  * Build the city sub-menus (inns, enchanter, home, manage home)
  */
+function addGuildDomainSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.guildDomain?.isInCity) {
+		return;
+	}
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = params;
+	const domainOptions = {
+		context, interaction, packet, collectorTime, pseudo
+	};
+	menus.set(ReportCityMenuIds.GUILD_DOMAIN_MENU, getGuildDomainMenu(domainOptions));
+	for (const [key, menu] of getGuildDomainSubMenus(domainOptions)) {
+		menus.set(key, menu);
+	}
+}
+
 function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNestedMenu> {
 	const {
 		context, interaction, packet, collectorTime, pseudo
@@ -1524,17 +1540,7 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 		menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
 	}
 
-	// Add guild domain menu and sub-menus
-	if (cityData.guildDomain?.isInCity) {
-		const domainOptions = {
-			context, interaction, packet, collectorTime, pseudo
-		};
-		menus.set(ReportCityMenuIds.GUILD_DOMAIN_MENU, getGuildDomainMenu(domainOptions));
-
-		for (const [key, menu] of getGuildDomainSubMenus(domainOptions)) {
-			menus.set(key, menu);
-		}
-	}
+	addGuildDomainSubMenus(menus, params, cityData);
 
 	// Add guild food shop menu (non-domain cities)
 	if (cityData.guildFoodShop) {
