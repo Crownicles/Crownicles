@@ -5,11 +5,11 @@ export enum GuildBuilding {
 	TRAINING_GROUND = "trainingGround"
 }
 
-export const XP_TIER = {
+export const DEPOSIT_TIER = {
 	SMALL: "small",
 	BIG: "big"
 } as const;
-export type XpTier = typeof XP_TIER[keyof typeof XP_TIER];
+export type DepositTier = typeof DEPOSIT_TIER[keyof typeof DEPOSIT_TIER];
 
 export const GUILD_DOMAIN_ERROR = {
 	NO_GUILD: "noGuild",
@@ -217,17 +217,26 @@ export abstract class GuildDomainConstants {
 	] as const;
 
 	/**
-	 * Shop prices for food and guild XP
+	 * Shop prices for food and treasury deposits
 	 */
 	static readonly SHOP_PRICES = {
-		SMALL_XP: 1000,
-		BIG_XP: 15000,
+		SMALL_DEPOSIT: 1000,
+		BIG_DEPOSIT: 15000,
 		FOOD: [
 			20,
 			250,
 			250,
 			600
 		]
+	} as const;
+
+	/**
+	 * Penalty applied when money is added to the treasury (player deposit, pet sale, ...):
+	 * a percentage of the gross amount is withheld and capped at a fixed maximum.
+	 */
+	static readonly TREASURY_DEPOSIT_PENALTY = {
+		PERCENT: 0.05,
+		MAX: 350
 	} as const;
 
 	/**

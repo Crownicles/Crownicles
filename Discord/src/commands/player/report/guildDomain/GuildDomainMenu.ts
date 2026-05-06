@@ -25,11 +25,11 @@ import {
 	CommandReportGuildDomainUpgradeRes,
 	CommandReportFoodShopBuyReq,
 	CommandReportFoodShopBuyRes,
-	CommandReportGuildDomainBuyXpReq,
-	CommandReportGuildDomainBuyXpRes
+	CommandReportGuildDomainDepositTreasuryReq,
+	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	GuildBuilding, XpTier
+	GuildBuilding, DepositTier
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
 import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
 import {
@@ -135,27 +135,28 @@ async function handleFoodBuy(
 	);
 }
 
-async function handleXpBuy(
+async function handleTreasuryDeposit(
 	ctx: GuildDomainMenuContext,
-	tier: XpTier,
+	tier: DepositTier,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
-		makePacket(CommandReportGuildDomainBuyXpReq, { tier }),
+		makePacket(CommandReportGuildDomainDepositTreasuryReq, { tier }),
 		async (_responseContext, packetName, responsePacket) => {
 			const shopMenuId = BUILDING_MENU_IDS[GuildBuilding.SHOP];
-			if (packetName === CommandReportGuildDomainBuyXpRes.name) {
-				const res = responsePacket as unknown as CommandReportGuildDomainBuyXpRes;
+			if (packetName === CommandReportGuildDomainDepositTreasuryRes.name) {
+				const res = responsePacket as unknown as CommandReportGuildDomainDepositTreasuryRes;
 				ctx.data.playerMoney = res.newPlayerMoney;
+				ctx.data.treasury = res.newTreasury;
 
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSuccess", {
+				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasurySuccess", {
 					lng: ctx.lng,
-					xp: res.xp
+					treasury: res.treasuryDeposited
 				}), shopMenuId);
 			}
 			else {
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpError", { lng: ctx.lng }), shopMenuId);
+				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryError", { lng: ctx.lng }), shopMenuId);
 			}
 		}
 	);
@@ -216,9 +217,9 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 				return;
 			}
 
-			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX)) {
-				const tier = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX, "") as XpTier;
-				await handleXpBuy(ctx, tier, nestedMenus);
+			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX)) {
+				const tier = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX, "") as DepositTier;
+				await handleTreasuryDeposit(ctx, tier, nestedMenus);
 			}
 		}
 	});

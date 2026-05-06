@@ -23,7 +23,7 @@ import {
 	CommandReportCookingUnpinReq,
 	CommandReportGuildDomainUpgradeReq,
 	CommandReportFoodShopBuyReq,
-	CommandReportGuildDomainBuyXpReq
+	CommandReportGuildDomainDepositTreasuryReq
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	handleChestAction
@@ -39,7 +39,7 @@ import {
 	handleGuildDomainUpgrade
 } from "../../report/ReportCityGuildDomainService";
 import { handleFoodShopBuy } from "../../report/ReportCityFoodShopService";
-import { handleGuildDomainBuyXp } from "../../report/ReportCityGuildDomainShopService";
+import { handleGuildDomainDepositTreasury } from "../../report/ReportCityGuildDomainShopService";
 import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
@@ -133,8 +133,8 @@ export default class CoreHandlers {
 		response.push(await handleFoodShopBuy(context.keycloakId!, packet));
 	}
 
-	@packetHandler(CommandReportGuildDomainBuyXpReq)
-	async guildDomainBuyXp(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainBuyXpReq): Promise<void> {
-		response.push(await handleGuildDomainBuyXp(context.keycloakId!, packet));
+	@packetHandler(CommandReportGuildDomainDepositTreasuryReq)
+	async guildDomainDepositTreasury(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<void> {
+		response.push(await handleGuildDomainDepositTreasury(context.keycloakId!, packet));
 	}
 }

@@ -1288,19 +1288,19 @@
         "subMenus": {
           "shop": {
             "title": "{emote:city.guildDomain.shop} Boutique de guilde",
-            "description": "{emote:city.guildDomain.shop} L'intendant de la guilde se tient derrière son comptoir, entouré de caisses et de sacs de provisions. Il fournit nourriture pour les familiers et parchemins d'expérience pour renforcer la guilde.\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}",
+            "description": "{emote:city.guildDomain.shop} L'intendant de la guilde se tient derrière son comptoir, entouré de caisses et de sacs de provisions. Il fournit nourriture pour les familiers et accepte les dons d'or pour la trésorerie de la guilde.\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}",
             "notBuilt": "{emote:city.guildDomain.shop} L'emplacement de la boutique n'est qu'un terrain vague jonché de pierres. Des plans d'architecte attendent sur un chevalet, mais la construction n'a pas encore débuté. Améliorez ce bâtiment pour débloquer l'approvisionnement de la guilde.",
             "buyFoodLabel": "{emote:expedition.food} **Acheter de la nourriture**",
-            "buyXpLabel": "**Parchemins d'expérience**",
-            "buyXpSmallDescription": "Un modeste parchemin enluminé. En le brisant, il libère une énergie qui renforce les liens de votre guilde.",
-            "buyXpBigDescription": "Un imposant tome scellé, chargé de l'expérience de héros oubliés. Sa puissance renforce considérablement la guilde.",
+            "depositTreasuryLabel": "**Verser de l'or à la trésorerie**",
+            "depositTreasurySmallDescription": "Une bourse de pièces déposée discrètement dans le coffre de la guilde. L'intendant prélève une petite commission de **{{penalty, number}} {emote:unitValues.money}**, le reste **({{treasury, number}} {emote:unitValues.money})** rejoint la trésorerie.",
+            "depositTreasuryBigDescription": "Un sac d'or massif scellé du sceau de la guilde. La commission de l'intendant reste plafonnée, et **{{treasury, number}} {emote:unitValues.money}** alimentent directement la trésorerie.",
             "buyFoodButton": "{{amount}}x {{food}} ({{cost}})",
-            "buyXpSmall": "Parchemin ({{cost}})",
-            "buyXpBig": "Tome ancien ({{cost}})",
+            "depositTreasurySmall": "Bourse ({{cost}} → {{treasury}})",
+            "depositTreasuryBig": "Sac d'or ({{cost}} → {{treasury}})",
             "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** dans le garde-manger de la guilde.",
             "buyFoodError": "{emote:messages.error} L'achat a échoué.",
-            "buyXpSuccess": "{emote:messages.info} Le parchemin se consume en libérant son énergie. **+{{xp}} XP** pour la guilde !",
-            "buyXpError": "{emote:messages.error} L'achat a échoué."
+            "depositTreasurySuccess": "{emote:messages.info} L'intendant verse votre offrande dans le coffre. **+{{treasury, number}} {emote:unitValues.money}** dans la trésorerie de la guilde !",
+            "depositTreasuryError": "{emote:messages.error} Le versement a échoué."
           },
           "shelter": {
             "title": "{emote:city.guildDomain.shelter} Refuge de guilde",

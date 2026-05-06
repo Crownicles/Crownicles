@@ -131,25 +131,32 @@ function addFoodSections(container: ContainerBuilder, data: GuildDomainData, lng
 	}
 }
 
-function addXpShopSection(container: ContainerBuilder, lng: Language, playerMoney: number, sizeKey: "small" | "big"): void {
-	const cost = sizeKey === "small" ? GuildDomainConstants.SHOP_PRICES.SMALL_XP : GuildDomainConstants.SHOP_PRICES.BIG_XP;
-	const titleKey = sizeKey === "small" ? "buyXpSmall" : "buyXpBig";
-	const descKey = sizeKey === "small" ? "buyXpSmallDescription" : "buyXpBigDescription";
-	const icon = sizeKey === "small" ? CrowniclesIcons.shopItems.smallGuildXp : CrowniclesIcons.shopItems.bigGuildXp;
+function addTreasuryDepositSection(container: ContainerBuilder, lng: Language, playerMoney: number, sizeKey: "small" | "big"): void {
+	const cost = sizeKey === "small" ? GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT : GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT;
+	const penalty = Math.min(
+		Math.round(cost * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
+		GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
+	);
+	const treasuryGain = cost - penalty;
+	const titleKey = sizeKey === "small" ? "depositTreasurySmall" : "depositTreasuryBig";
+	const descKey = sizeKey === "small" ? "depositTreasurySmallDescription" : "depositTreasuryBigDescription";
+	const icon = CrowniclesIcons.unitValues.money;
 	container.addSectionComponents(
 		new SectionBuilder()
 			.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(
 					`${icon} **${i18n.t(`commands:report.city.guildDomain.subMenus.shop.${titleKey}`, {
-						lng, cost
-					})}**\n${i18n.t(`commands:report.city.guildDomain.subMenus.shop.${descKey}`, { lng })}`
+						lng, cost, treasury: treasuryGain
+					})}**\n${i18n.t(`commands:report.city.guildDomain.subMenus.shop.${descKey}`, {
+						lng, cost, treasury: treasuryGain, penalty
+					})}`
 				)
 			)
 			.setButtonAccessory(
 				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}${sizeKey}`)
+					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX}${sizeKey}`)
 					.setLabel(i18n.t(`commands:report.city.guildDomain.subMenus.shop.${titleKey}`, {
-						lng, cost
+						lng, cost, treasury: treasuryGain
 					}))
 					.setStyle(ButtonStyle.Success)
 					.setDisabled(playerMoney < cost)
@@ -179,11 +186,11 @@ function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext)
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpLabel", { lng })
+			i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryLabel", { lng })
 		)
 	);
-	addXpShopSection(container, lng, data.playerMoney, "small");
-	addXpShopSection(container, lng, data.playerMoney, "big");
+	addTreasuryDepositSection(container, lng, data.playerMoney, "small");
+	addTreasuryDepositSection(container, lng, data.playerMoney, "big");
 }
 
 export function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
