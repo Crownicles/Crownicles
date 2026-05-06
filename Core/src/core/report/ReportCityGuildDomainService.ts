@@ -128,6 +128,17 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 	guild.treasury -= upgradeCost;
 	guild.setDataValue(BUILDING_LEVEL_FIELDS[building] as string, currentLevel + 1);
 
+	/*
+	 * Push the upgrade response first so the awaiting front-end correlation callback
+	 * resolves on this packet (and not on a potential GuildLevelUpPacket emitted by addExperience).
+	 */
+	response.push(makePacket(CommandReportGuildDomainUpgradeRes, {
+		building,
+		newLevel: currentLevel + 1,
+		cost: upgradeCost,
+		newTreasury: guild.treasury
+	}));
+
 	// Spending treasury on a building upgrade also grants guild experience (10% of the cost).
 	await guild.addExperience({
 		amount: Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO),
@@ -136,11 +147,4 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 	});
 
 	await guild.save();
-
-	response.push(makePacket(CommandReportGuildDomainUpgradeRes, {
-		building,
-		newLevel: currentLevel + 1,
-		cost: upgradeCost,
-		newTreasury: guild.treasury
-	}));
 }
