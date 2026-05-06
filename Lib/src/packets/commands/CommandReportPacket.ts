@@ -596,6 +596,8 @@ export class CommandReportGuildDomainUpgradeRes extends CrowniclesPacket {
 	cost!: number;
 
 	newTreasury!: number;
+
+	xpGained!: number;
 }
 
 @sendablePacket(PacketDirection.NONE)

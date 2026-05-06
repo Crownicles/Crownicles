@@ -129,6 +129,8 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 	guild.treasury -= upgradeCost;
 	guild.setDataValue(BUILDING_LEVEL_FIELDS[building] as string, currentLevel + 1);
 
+	const xpGained = GuildUtils.calculateAmountOfXPToAdd(Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO));
+
 	/*
 	 * Push the upgrade response first so the awaiting front-end correlation callback
 	 * resolves on this packet (and not on a potential GuildLevelUpPacket emitted by addExperience).
@@ -137,7 +139,8 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 		building,
 		newLevel: currentLevel + 1,
 		cost: upgradeCost,
-		newTreasury: guild.treasury
+		newTreasury: guild.treasury,
+		xpGained
 	}));
 
 	/*
@@ -146,7 +149,7 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 	 * and would otherwise grant disproportionately large amounts of XP).
 	 */
 	await guild.addExperience({
-		amount: GuildUtils.calculateAmountOfXPToAdd(Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO)),
+		amount: xpGained,
 		response,
 		reason: NumberChangeReason.GUILD_DOMAIN_UPGRADE
 	});
