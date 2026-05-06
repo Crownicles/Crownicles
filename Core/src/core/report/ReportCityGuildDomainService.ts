@@ -18,6 +18,7 @@ import {
 	CommandReportGuildDomainUpgradeRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { GuildUtils } from "../utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 
 const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
@@ -139,9 +140,13 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 		newTreasury: guild.treasury
 	}));
 
-	// Spending treasury on a building upgrade also grants guild experience (10% of the cost).
+	/*
+	 * Spending treasury on a building upgrade also grants guild experience.
+	 * We use the regular XP formula but on only 10% of the cost (upgrades are expensive
+	 * and would otherwise grant disproportionately large amounts of XP).
+	 */
 	await guild.addExperience({
-		amount: Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO),
+		amount: GuildUtils.calculateAmountOfXPToAdd(Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO)),
 		response,
 		reason: NumberChangeReason.GUILD_DOMAIN_UPGRADE
 	});
