@@ -18,6 +18,8 @@ import {
 	CommandReportGuildDomainUpgradeRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { GuildUtils } from "../utils/GuildUtils";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 
 const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
 	[GuildBuilding.SHOP]: "shopLevel",
@@ -114,10 +116,11 @@ async function resolveUpgrade(
 	return validateBuildingUpgrade(authResult.guild, packet.building);
 }
 
-export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq): Promise<CrowniclesPacket> {
+export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq, response: CrowniclesPacket[]): Promise<void> {
 	const resolved = await resolveUpgrade(keycloakId, packet);
 	if (typeof resolved === "string") {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: resolved });
+		response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: resolved }));
+		return;
 	}
 
 	const {
@@ -125,12 +128,20 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 	} = resolved;
 	guild.treasury -= upgradeCost;
 	guild.setDataValue(BUILDING_LEVEL_FIELDS[building] as string, currentLevel + 1);
+
+	// Spending treasury on a building upgrade also grants guild experience.
+	await guild.addExperience({
+		amount: GuildUtils.calculateAmountOfXPToAdd(upgradeCost),
+		response,
+		reason: NumberChangeReason.GUILD_DOMAIN_UPGRADE
+	});
+
 	await guild.save();
 
-	return makePacket(CommandReportGuildDomainUpgradeRes, {
+	response.push(makePacket(CommandReportGuildDomainUpgradeRes, {
 		building,
 		newLevel: currentLevel + 1,
 		cost: upgradeCost,
 		newTreasury: guild.treasury
-	});
+	}));
 }

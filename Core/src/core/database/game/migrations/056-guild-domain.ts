@@ -9,6 +9,12 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		allowNull: false,
 		defaultValue: 0
 	});
+
+	/*
+	 * Initialize treasury with the current guild score so existing guilds start
+	 * with available points equal to the points they have already earned.
+	 */
+	await context.sequelize.query("UPDATE guilds SET treasury = score");
 	await context.addColumn("guilds", "shopLevel", {
 		type: DataTypes.INTEGER,
 		allowNull: false,

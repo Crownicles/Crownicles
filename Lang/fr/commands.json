@@ -2391,7 +2391,7 @@
   "petSell": {
     "noPet": "Vous n'avez aucun familier à vendre !",
     "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être vendu.",
-    "noGuild": "Vous ne pouvez pas vendre votre familier car vous n'êtes pas dans une guilde. En effet, la vente de familier permet de générer de l'expérience de guilde.",
+    "noGuild": "Vous ne pouvez pas vendre votre familier car vous n'êtes pas dans une guilde. En effet, la vente de familier alimente la trésorerie de votre guilde.",
     "isFeisty": "Vous ne pouvez pas vendre un familier fielleux.",
     "badPrice": "Le prix doit être supérieur à `{{minPrice}}{emote:unitValues.money}` et inférieur à `{{maxPrice}}{emote:unitValues.money}`.",
     "onlyInitiatorCanCancel": "Seul l'initiateur d'une vente peut l'annuler !",
@@ -2405,11 +2405,10 @@
     "sellTitle": "Vente d'un familier",
     "sellTitleWithBuyer": "{{buyer}}, {{seller}} souhaite vous vendre un familier :",
     "sellDescription": "{{pseudo}} souhaite vendre un familier pour `{{price, number}}{emote:unitValues.money}`",
-    "maxLevelWarning": "{emote:collectors.warning} Votre guilde est au niveau maximal, vous ne recevrez pas d'expérience !",
     "petFieldName": "Familier vendu :",
     "sellFooter": "Pour plus d'informations à propos des ventes de familiers, utilisez la commande help petsell.",
     "successTitle": "{{pseudo}}, transaction réussie !",
-    "successDescription": "{{pet}} vous suit désormais. Occupez-vous en bien !"
+    "successDescription": "{{pet}} vous suit désormais. Occupez-vous en bien !\n\n{emote:unitValues.money} **{{treasury, number}}** ont été ajoutés à la trésorerie de la guilde **{{guildName}}**."
   },
   "classes": {
     "description": {
