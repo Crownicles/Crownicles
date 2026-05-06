@@ -224,6 +224,36 @@ describe("Materials consistency", () => {
 		}
 	});
 
+	it("every boss monster map has a loot table entry", () => {
+		const monstersDir = path.join(__dirname, "../../../../Core/resources/monsters");
+		const monsterFiles = readdirSync(monstersDir).filter((file) => file.endsWith(".json"));
+
+		const lootTableMapIds = new Set(
+			Object.keys(PVEConstants.BOSS_LOOT_TABLES).map((id) => parseInt(id, 10))
+		);
+
+		const missing: string[] = [];
+		for (const file of monsterFiles) {
+			const monster = loadJsonFile(monstersDir, file) as { maps?: unknown };
+			if (!Array.isArray(monster.maps)) {
+				throw new Error(`Monster '${file}' is missing a valid 'maps' array`);
+			}
+			for (const mapId of monster.maps as number[]) {
+				if (!lootTableMapIds.has(mapId)) {
+					missing.push(`${file} -> map ${mapId}`);
+				}
+			}
+		}
+
+		if (missing.length > 0) {
+			throw new Error(
+				`Boss monsters reference maps with no entry in PVEConstants.BOSS_LOOT_TABLES (forgot to add loot for a new island/boss?):\n${missing
+					.sort()
+					.join("\n")}`
+			);
+		}
+	});
+
 	it("expedition loot tables only reference valid material IDs", () => {
 		const materialsDir = path.join(__dirname, "../../../../Core/resources/materials");
 		const materialFiles = readdirSync(materialsDir).filter((file) => file.endsWith(".json"));
