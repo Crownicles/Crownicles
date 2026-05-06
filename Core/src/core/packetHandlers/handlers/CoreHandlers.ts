@@ -125,7 +125,7 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportGuildDomainUpgradeReq)
 	async guildDomainUpgrade(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainUpgradeReq): Promise<void> {
-		response.push(await handleGuildDomainUpgrade(context.keycloakId!, packet));
+		await handleGuildDomainUpgrade(context.keycloakId!, packet, response);
 	}
 
 	@packetHandler(CommandReportFoodShopBuyReq)

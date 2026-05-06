@@ -42,7 +42,6 @@ import {
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorPetSell } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetSell";
-import { GuildUtils } from "../../core/utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
@@ -111,11 +110,13 @@ async function verifyBuyerRequirements(response: CrowniclesPacket[], sellerInfor
 }
 
 async function executePetSell(collector: ReactionCollectorInstance, response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
-	// Add guild XP
-	const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(sellerInformation.petCost);
-	await sellerInformation.guild.addExperience({
-		amount: xpToAdd, response, reason: NumberChangeReason.PET_SELL
-	});
+	// Compute treasury reward: pet price minus a small penalty (gold sink)
+	const penalty = Math.min(
+		Math.round(sellerInformation.petCost * PetSellConstants.TREASURY_PENALTY.PERCENT),
+		PetSellConstants.TREASURY_PENALTY.MAX
+	);
+	const treasuryEarned = sellerInformation.petCost - penalty;
+	sellerInformation.guild.treasury += treasuryEarned;
 
 	// Make buyer spend money
 	await buyer.spendMoney({
@@ -148,9 +149,8 @@ async function executePetSell(collector: ReactionCollectorInstance, response: Cr
 	// Success packet
 	response.push(makePacket(CommandPetSellSuccessPacket, {
 		guildName: sellerInformation.guild.name,
-		xpEarned: xpToAdd,
-		pet: sellerInformation.pet.asOwnedPet(),
-		isGuildMax: sellerInformation.guild.isAtMaxLevel()
+		treasuryEarned,
+		pet: sellerInformation.pet.asOwnedPet()
 	}));
 
 	await collector.end(response);
@@ -217,12 +217,11 @@ function refusePetSellCallback(initiatorPlayerKeycloakId: string, reactingPlayer
 	return true;
 }
 
-function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq, guild: Guild, pet: PetEntity, context: PacketContext, response: CrowniclesPacket[]): void {
+function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq, pet: PetEntity, context: PacketContext, response: CrowniclesPacket[]): void {
 	// Send collector
 	const collector = new ReactionCollectorPetSell(
 		player.keycloakId,
 		packet.price,
-		guild.isAtMaxLevel(),
 		pet.asOwnedPet(),
 		packet.askedPlayer.keycloakId
 	);
@@ -310,6 +309,6 @@ export default class PetSellCommand {
 			return;
 		}
 
-		createAndPushCollector(player, packet, guild, pet, context, response);
+		createAndPushCollector(player, packet, pet, context, response);
 	}
 }

@@ -67,7 +67,8 @@ export enum NumberChangeReason {
 	BLACKSMITH_UPGRADE,
 	BLACKSMITH_DISENCHANT,
 	HOME_BED,
-	COOKING
+	COOKING,
+	GUILD_DOMAIN_UPGRADE
 }
 
 export enum ShopItemType {

@@ -14,8 +14,6 @@ export class ReactionCollectorPetSellData extends ReactionCollectorData {
 
 	price!: number;
 
-	isGuildAtMaxLevel!: boolean;
-
 	pet!: OwnedPet;
 }
 
@@ -28,15 +26,12 @@ export class ReactionCollectorPetSell extends ReactionCollector {
 
 	private readonly price: number;
 
-	private readonly isGuildAtMaxLevel: boolean;
-
 	private readonly pet: OwnedPet;
 
-	constructor(sellerKeycloakId: string, price: number, isGuildAtMaxLevel: boolean, pet: OwnedPet, buyerKeycloakId?: string) {
+	constructor(sellerKeycloakId: string, price: number, pet: OwnedPet, buyerKeycloakId?: string) {
 		super();
 		this.sellerKeycloakId = sellerKeycloakId;
 		this.price = price;
-		this.isGuildAtMaxLevel = isGuildAtMaxLevel;
 		this.pet = pet;
 		this.buyerKeycloakId = buyerKeycloakId;
 	}
@@ -52,7 +47,6 @@ export class ReactionCollectorPetSell extends ReactionCollector {
 			data: this.buildData(ReactionCollectorPetSellData, {
 				sellerKeycloakId: this.sellerKeycloakId,
 				price: this.price,
-				isGuildAtMaxLevel: this.isGuildAtMaxLevel,
 				pet: this.pet,
 				buyerKeycloakId: this.buyerKeycloakId
 			})
