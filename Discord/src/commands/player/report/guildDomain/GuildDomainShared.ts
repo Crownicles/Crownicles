@@ -1,6 +1,6 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle,
-	ContainerBuilder, Message,
+	ActionRowBuilder, ButtonBuilder, ButtonStyle,
+	ContainerBuilder, Message, MessageComponentInteraction,
 	SeparatorBuilder, SeparatorSpacingSize,
 	TextDisplayBuilder
 } from "discord.js";
@@ -80,12 +80,12 @@ export const FOOD_KEYS: readonly ("common" | "herbivorous" | "carnivorous" | "ul
 
 export function createDomainCollector(
 	ctx: GuildDomainMenuContext,
-	handler: (customId: string, buttonInteraction: ButtonInteraction, nestedMenus: CrowniclesNestedMenus) => Promise<void>
+	handler: (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => Promise<void>
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
 		const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
 
-		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
 			if (buttonInteraction.user.id !== ctx.interaction.user.id) {
 				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, ctx.lng);
 				return;
