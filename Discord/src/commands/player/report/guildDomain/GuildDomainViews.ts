@@ -262,8 +262,22 @@ export function buildShopTreasuryContainer(ctx: GuildDomainMenuContext): Contain
 	);
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
-	for (const cost of [GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT, GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT]) {
-		const labelKey = cost === GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT ? "depositSmallName" : "depositBigName";
+	const depositTiers: Array<{
+		cost: number; labelKey: string;
+	}> = [
+		{
+			cost: GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT, labelKey: "depositSmallName"
+		},
+		{
+			cost: GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT, labelKey: "depositBigName"
+		},
+		{
+			cost: GuildDomainConstants.SHOP_PRICES.HUGE_DEPOSIT, labelKey: "depositHugeName"
+		}
+	];
+	for (const {
+		cost, labelKey
+	} of depositTiers) {
 		const penalty = Math.min(
 			Math.round(cost * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
 			GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX

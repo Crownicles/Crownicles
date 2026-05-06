@@ -216,6 +216,7 @@ export abstract class GuildDomainConstants {
 	static readonly SHOP_PRICES = {
 		SMALL_DEPOSIT: 1000,
 		BIG_DEPOSIT: 15000,
+		HUGE_DEPOSIT: 50000,
 		FOOD: [
 			20,
 			250,
