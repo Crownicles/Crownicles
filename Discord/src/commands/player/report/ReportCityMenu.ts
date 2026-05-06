@@ -189,7 +189,7 @@ export function createStayInCityButton(lng: Language): ButtonBuilder {
 export function handleStayInCityInteraction(
 	packet: ReactionCollectorCreationPacket,
 	context: PacketContext,
-	componentInteraction: MessageComponentInteraction
+	componentInteraction: MessageComponentInteraction | null
 ): void {
 	const reactionIndex = packet.reactions.findIndex(
 		reaction => reaction.type === ReactionCollectorRefuseReaction.name
