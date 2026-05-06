@@ -217,7 +217,7 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 		});
 	}
 
-	if (data.home.manage || data.guildDomainNotary?.isChief) {
+	if (shouldShowManageHomeMenu(data)) {
 		addCitySection({
 			container,
 			emote: CrowniclesIcons.city.manageHome,
