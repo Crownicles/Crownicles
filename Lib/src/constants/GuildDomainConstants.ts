@@ -191,7 +191,7 @@ export abstract class GuildDomainConstants {
 			0
 		],
 		[
-			3,
+			4,
 			0,
 			0,
 			0
