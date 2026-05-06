@@ -49,14 +49,17 @@ import {
  * or finish the report with an error embed when the response packet doesn't match.
  * Centralises the boilerplate shared by handleUpgrade / handleFoodBuy / handleTreasuryDeposit.
  */
-async function sendDomainAction<TRes>(
-	ctx: GuildDomainMenuContext,
-	nestedMenus: CrowniclesNestedMenus,
-	requestPacket: ReturnType<typeof makePacket>,
-	expectedResponseName: string,
-	errorTranslationKey: string,
-	onSuccess: (res: TRes) => void | Promise<void>
-): Promise<void> {
+async function sendDomainAction<TRes>(options: {
+	ctx: GuildDomainMenuContext;
+	nestedMenus: CrowniclesNestedMenus;
+	requestPacket: ReturnType<typeof makePacket>;
+	expectedResponseName: string;
+	errorTranslationKey: string;
+	onSuccess: (res: TRes) => void | Promise<void>;
+}): Promise<void> {
+	const {
+		ctx, nestedMenus, requestPacket, expectedResponseName, errorTranslationKey, onSuccess
+	} = options;
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
 		requestPacket,
@@ -76,12 +79,13 @@ async function handleUpgrade(
 	building: GuildBuilding,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
-	await sendDomainAction<CommandReportGuildDomainUpgradeRes>(
-		ctx, nestedMenus,
-		makePacket(CommandReportGuildDomainUpgradeReq, { building }),
-		CommandReportGuildDomainUpgradeRes.name,
-		"commands:report.city.guildDomain.upgradeError",
-		res => {
+	await sendDomainAction<CommandReportGuildDomainUpgradeRes>({
+		ctx,
+		nestedMenus,
+		requestPacket: makePacket(CommandReportGuildDomainUpgradeReq, { building }),
+		expectedResponseName: CommandReportGuildDomainUpgradeRes.name,
+		errorTranslationKey: "commands:report.city.guildDomain.upgradeError",
+		onSuccess: res => {
 			ctx.data.treasury = res.newTreasury;
 			setBuildingLevel(ctx.data, res.building, res.newLevel);
 			const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${res.building}`, { lng: ctx.lng });
@@ -90,7 +94,7 @@ async function handleUpgrade(
 			});
 			finishReportWithMessage(ctx, nestedMenus, successMessage);
 		}
-	);
+	});
 }
 
 async function handleFoodBuy(
@@ -99,14 +103,15 @@ async function handleFoodBuy(
 	amount: number,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
-	await sendDomainAction<CommandReportFoodShopBuyRes>(
-		ctx, nestedMenus,
-		makePacket(CommandReportFoodShopBuyReq, {
+	await sendDomainAction<CommandReportFoodShopBuyRes>({
+		ctx,
+		nestedMenus,
+		requestPacket: makePacket(CommandReportFoodShopBuyReq, {
 			foodType, amount
 		}),
-		CommandReportFoodShopBuyRes.name,
-		"commands:report.city.guildDomain.subMenus.shop.buyFoodError",
-		async res => {
+		expectedResponseName: CommandReportFoodShopBuyRes.name,
+		errorTranslationKey: "commands:report.city.guildDomain.subMenus.shop.buyFoodError",
+		onSuccess: async res => {
 			const foodKey = res.foodType.replace("Food", "") as keyof typeof ctx.data.food;
 			ctx.data.food[foodKey] = res.newFoodStock;
 			ctx.data.treasury = res.newTreasury;
@@ -122,7 +127,7 @@ async function handleFoodBuy(
 			});
 			await showShopReimburseMenu(ctx, nestedMenus);
 		}
-	);
+	});
 }
 
 async function handleTreasuryDeposit(
@@ -131,14 +136,15 @@ async function handleTreasuryDeposit(
 	nestedMenus: CrowniclesNestedMenus,
 	isReimburse: boolean
 ): Promise<void> {
-	await sendDomainAction<CommandReportGuildDomainDepositTreasuryRes>(
-		ctx, nestedMenus,
-		makePacket(CommandReportGuildDomainDepositTreasuryReq, {
+	await sendDomainAction<CommandReportGuildDomainDepositTreasuryRes>({
+		ctx,
+		nestedMenus,
+		requestPacket: makePacket(CommandReportGuildDomainDepositTreasuryReq, {
 			amount, isReimburse
 		}),
-		CommandReportGuildDomainDepositTreasuryRes.name,
-		"commands:report.city.guildDomain.subMenus.shop.depositTreasuryError",
-		res => {
+		expectedResponseName: CommandReportGuildDomainDepositTreasuryRes.name,
+		errorTranslationKey: "commands:report.city.guildDomain.subMenus.shop.depositTreasuryError",
+		onSuccess: res => {
 			ctx.data.playerMoney = res.newPlayerMoney;
 			ctx.data.treasury = res.newTreasury;
 			if (isReimburse) {
@@ -154,7 +160,7 @@ async function handleTreasuryDeposit(
 			ctx.data.pendingPurchaseRecap = undefined;
 			finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n\n${successMessage}` : successMessage);
 		}
-	);
+	});
 }
 
 function createMainMenuCollector(ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
