@@ -1,13 +1,8 @@
-import {
-	Message, MessageComponentInteraction
-} from "discord.js";
+import { Message } from "discord.js";
 import i18n from "../../../../translations/i18n";
 import {
 	CrowniclesNestedMenu, CrowniclesNestedMenuCollector, CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
-import {
-	handleStayInCityInteraction
-} from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import {
@@ -33,7 +28,7 @@ import {
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
 import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
 import {
-	BUILDING_MENU_IDS, createDomainCollector,
+	BUILDING_MENU_IDS, createDomainCollectorWithStayHandling,
 	GuildDomainMenuContext, setBuildingLevel
 } from "./GuildDomainShared";
 import {
@@ -164,16 +159,9 @@ async function handleTreasuryDeposit(
 }
 
 function createMainMenuCollector(ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	return createDomainCollector(ctx, async (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => {
-		await buttonInteraction.deferUpdate();
-
+	return createDomainCollectorWithStayHandling(ctx, async (customId, _buttonInteraction, nestedMenus) => {
 		if (customId === ReportCityMenuIds.BACK_TO_CITY) {
 			await nestedMenus.changeToMainMenu();
-			return;
-		}
-
-		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
-			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 			return;
 		}
 
@@ -190,14 +178,7 @@ function createMainMenuCollector(ctx: GuildDomainMenuContext): (nestedMenus: Cro
 function createShopQuantityCollector(
 	ctx: GuildDomainMenuContext
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	return createDomainCollector(ctx, async (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => {
-		await buttonInteraction.deferUpdate();
-
-		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
-			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
-			return;
-		}
-
+	return createDomainCollectorWithStayHandling(ctx, async (customId, _buttonInteraction, nestedMenus) => {
 		if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_CANCEL) {
 			await nestedMenus.changeMenu(BUILDING_MENU_IDS[GuildBuilding.SHOP]);
 			return;
@@ -244,14 +225,7 @@ async function showShopTreasuryMenu(
 function createShopReimburseCollector(
 	ctx: GuildDomainMenuContext
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	return createDomainCollector(ctx, async (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => {
-		await buttonInteraction.deferUpdate();
-
-		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
-			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
-			return;
-		}
-
+	return createDomainCollectorWithStayHandling(ctx, async (customId, _buttonInteraction, nestedMenus) => {
 		if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE) {
 			ctx.data.pendingReimburseAmount = undefined;
 			const declineMessage = i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng });
@@ -280,16 +254,9 @@ async function showShopReimburseMenu(
 }
 
 function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	return createDomainCollector(ctx, async (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => {
-		await buttonInteraction.deferUpdate();
-
+	return createDomainCollectorWithStayHandling(ctx, async (customId, _buttonInteraction, nestedMenus) => {
 		if (customId === ReportCityMenuIds.GUILD_DOMAIN_BACK) {
 			await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
-			return;
-		}
-
-		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
-			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
 			return;
 		}
 
