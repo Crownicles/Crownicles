@@ -4,7 +4,7 @@ import {
 import { City } from "../../data/City";
 import Guild, { Guilds } from "../database/game/models/Guild";
 import {
-	GuildBuilding, GuildDomainConstants
+	GUILD_DOMAIN_ERROR, GuildBuilding, GuildDomainConstants
 } from "../../../../Lib/src/constants/GuildDomainConstants";
 import {
 	CrowniclesPacket, makePacket
@@ -62,36 +62,36 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player || !player.guildId) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "noGuild" });
+		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
 	}
 
 	const guild = await Guilds.getById(player.guildId);
 	if (!guild || guild.domainCityId === null) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "noDomain" });
+		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NO_DOMAIN });
 	}
 
 	if (guild.chiefId !== player.id) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "notAuthorized" });
+		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_AUTHORIZED });
 	}
 
-	const building = packet.building as GuildBuilding;
+	const building = packet.building;
 	if (!Object.values(GuildBuilding).includes(building)) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "invalidBuilding" });
+		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_BUILDING });
 	}
 
 	const currentLevel = guild.getDataValue(BUILDING_LEVEL_FIELDS[building]) as number;
 	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
 	if (upgradeCost === null) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "maxLevel" });
+		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.MAX_LEVEL });
 	}
 
 	const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel)!;
 	if (guild.level < requiredGuildLevel) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "guildLevelTooLow" });
+		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.GUILD_LEVEL_TOO_LOW });
 	}
 
 	if (guild.treasury < upgradeCost) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: "notEnoughTreasury" });
+		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_TREASURY });
 	}
 
 	guild.treasury -= upgradeCost;

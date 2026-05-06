@@ -11,22 +11,24 @@ import {
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { getFoodIndexOf } from "../utils/FoodUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
+import {
+	GUILD_DOMAIN_ERROR, GuildDomainConstants
+} from "../../../../Lib/src/constants/GuildDomainConstants";
 
 export async function handleFoodShopBuy(keycloakId: string, packet: CommandReportFoodShopBuyReq): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player || !player.guildId) {
-		return makePacket(CommandReportFoodShopBuyErrorRes, { error: "noGuild" });
+		return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
 	}
 
 	const guild = await Guilds.getById(player.guildId);
 	if (!guild || guild.shopLevel < 1) {
-		return makePacket(CommandReportFoodShopBuyErrorRes, { error: "noShop" });
+		return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.NO_SHOP });
 	}
 
 	const foodType = packet.foodType;
-	if (!PetConstants.PET_FOOD_BY_ID.includes(foodType as typeof PetConstants.PET_FOOD_BY_ID[number])) {
-		return makePacket(CommandReportFoodShopBuyErrorRes, { error: "invalidFood" });
+	if (!PetConstants.PET_FOOD_BY_ID.includes(foodType)) {
+		return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_FOOD });
 	}
 
 	const amount = Math.max(1, Math.floor(packet.amount));
@@ -35,14 +37,13 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 	const totalCost = pricePerUnit * amount;
 
 	if (player.money < totalCost) {
-		return makePacket(CommandReportFoodShopBuyErrorRes, { error: "notEnoughMoney" });
+		return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY });
 	}
 
 	if (guild.isStorageFullFor(foodType, amount)) {
-		return makePacket(CommandReportFoodShopBuyErrorRes, { error: "storageFull" });
+		return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.STORAGE_FULL });
 	}
 
-	// Compute max affordable and storable amount
 	const foodCap = GuildDomainConstants.getFoodCaps(guild.pantryLevel)[foodIndex];
 	const currentStock = guild.getDataValue(foodType) as number;
 	const maxStorable = foodCap - currentStock;
@@ -50,7 +51,7 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 	const actualAmount = Math.min(amount, maxStorable, maxAffordable);
 
 	if (actualAmount <= 0) {
-		return makePacket(CommandReportFoodShopBuyErrorRes, { error: "cannotBuy" });
+		return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY });
 	}
 
 	const actualCost = pricePerUnit * actualAmount;
