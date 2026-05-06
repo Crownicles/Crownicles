@@ -66,6 +66,27 @@ export abstract class GuildMissionService {
 	}
 
 	/**
+	 * Apply streak-mission specific logic on the guild mission state.
+	 * Returns the count to add to numberDone (0 if it's a same-day repeat that should only bump contribution).
+	 */
+	private static applyStreakLogic(guild: Guild, count: number): number {
+		const today = getDayNumber();
+		if (guild.guildMissionBlob) {
+			const lastDay = guild.guildMissionBlob.readInt32LE(0);
+			if (lastDay === today) {
+				return 0;
+			}
+			if (lastDay !== today - 1) {
+				guild.guildMissionNumberDone = 0;
+			}
+		}
+		const buffer = Buffer.alloc(4);
+		buffer.writeInt32LE(today);
+		guild.guildMissionBlob = buffer;
+		return Math.min(count, 1);
+	}
+
+	/**
 	 * Update the guild mission progress when the player performs an action.
 	 * Called from MissionsController.updateMissionsCounts after daily mission handling.
 	 */
@@ -87,15 +108,7 @@ export abstract class GuildMissionService {
 			GuildMissionService.ensureActiveMission(guild);
 			await guild.save();
 
-			if (!GuildMissionService.hasActiveMission(guild)) {
-				return false;
-			}
-
-			if (GuildMissionService.isMissionCompleted(guild)) {
-				return false;
-			}
-
-			if (guild.guildMissionId !== missionId) {
+			if (!GuildMissionService.hasActiveMission(guild) || GuildMissionService.isMissionCompleted(guild) || guild.guildMissionId !== missionId) {
 				return false;
 			}
 
@@ -104,33 +117,21 @@ export abstract class GuildMissionService {
 				return false;
 			}
 
-			// Handle streak-based missions (e.g., guildDailyStreak)
 			const missionData = MissionDataController.instance.getById(missionId);
 			let effectiveCount = count;
 			if (missionData?.guildMission?.streak) {
-				const today = getDayNumber();
-				if (guild.guildMissionBlob) {
-					const lastDay = guild.guildMissionBlob.readInt32LE(0);
-					if (lastDay === today) {
-						missionInfo.guildMissionContribution += count;
-						await missionInfo.save();
-						return false;
-					}
-					if (lastDay !== today - 1) {
-						// Streak broken — reset progress
-						guild.guildMissionNumberDone = 0;
-					}
+				effectiveCount = GuildMissionService.applyStreakLogic(guild, count);
+				if (effectiveCount === 0) {
+					missionInfo.guildMissionContribution += count;
+					await missionInfo.save();
+					return false;
 				}
-				const buffer = Buffer.alloc(4);
-				buffer.writeInt32LE(today);
-				guild.guildMissionBlob = buffer;
-				effectiveCount = 1;
 			}
 
-			guild.guildMissionNumberDone += effectiveCount;
-			if (guild.guildMissionNumberDone > guild.guildMissionObjective) {
-				guild.guildMissionNumberDone = guild.guildMissionObjective;
-			}
+			guild.guildMissionNumberDone = Math.min(
+				guild.guildMissionNumberDone + effectiveCount,
+				guild.guildMissionObjective
+			);
 
 			missionInfo.guildMissionContribution += count;
 			await missionInfo.save();

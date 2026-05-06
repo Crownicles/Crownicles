@@ -59,41 +59,62 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 	}
 }
 
-export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq): Promise<CrowniclesPacket> {
+interface ResolvedUpgrade {
+	guild: Guild;
+	building: GuildBuilding;
+	currentLevel: number;
+	upgradeCost: number;
+}
+
+async function resolveUpgrade(
+	keycloakId: string, packet: CommandReportGuildDomainUpgradeReq
+): Promise<ResolvedUpgrade | typeof GUILD_DOMAIN_ERROR[keyof typeof GUILD_DOMAIN_ERROR]> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player || !player.guildId) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
+		return GUILD_DOMAIN_ERROR.NO_GUILD;
 	}
 
 	const guild = await Guilds.getById(player.guildId);
 	if (!guild || guild.domainCityId === null) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NO_DOMAIN });
+		return GUILD_DOMAIN_ERROR.NO_DOMAIN;
 	}
-
 	if (guild.chiefId !== player.id) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_AUTHORIZED });
+		return GUILD_DOMAIN_ERROR.NOT_AUTHORIZED;
 	}
 
 	const building = packet.building;
 	if (!Object.values(GuildBuilding).includes(building)) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_BUILDING });
+		return GUILD_DOMAIN_ERROR.INVALID_BUILDING;
 	}
 
 	const currentLevel = guild.getDataValue(BUILDING_LEVEL_FIELDS[building]) as number;
 	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
 	if (upgradeCost === null) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.MAX_LEVEL });
+		return GUILD_DOMAIN_ERROR.MAX_LEVEL;
 	}
 
 	const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel)!;
 	if (guild.level < requiredGuildLevel) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.GUILD_LEVEL_TOO_LOW });
+		return GUILD_DOMAIN_ERROR.GUILD_LEVEL_TOO_LOW;
 	}
-
 	if (guild.treasury < upgradeCost) {
-		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_TREASURY });
+		return GUILD_DOMAIN_ERROR.NOT_ENOUGH_TREASURY;
 	}
 
+	return {
+		guild, building, currentLevel, upgradeCost
+	};
+}
+
+export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq): Promise<CrowniclesPacket> {
+	const resolved = await resolveUpgrade(keycloakId, packet);
+	if (typeof resolved === "string") {
+		return makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: resolved });
+	}
+
+	const {
+		guild, building, currentLevel, upgradeCost
+	} = resolved;
 	guild.treasury -= upgradeCost;
 	guild.setDataValue(BUILDING_LEVEL_FIELDS[building] as string, currentLevel + 1);
 	await guild.save();
