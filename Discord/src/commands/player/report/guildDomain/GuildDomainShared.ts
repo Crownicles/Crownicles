@@ -25,6 +25,9 @@ export type GuildDomainData = ReactionCollectorCityData["guildDomain"] & object 
 
 	/** Pending reimbursement amount displayed after a treasury-funded food purchase (frontend-only state) */
 	pendingReimburseAmount?: number;
+
+	/** Recap of the food purchase that triggered the pending reimbursement (frontend-only state, used to build a final summary message) */
+	pendingPurchaseRecap?: string;
 };
 
 export interface GuildDomainMenuContext {
