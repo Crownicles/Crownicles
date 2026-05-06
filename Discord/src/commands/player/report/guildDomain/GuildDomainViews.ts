@@ -15,7 +15,7 @@ import {
 	PetConstants, PetFood
 } from "../../../../../../Lib/src/constants/PetConstants";
 import {
-	addDomainNavigation, addStatusMessage, addUpgradeSection,
+	addBuildingLevelAndCostInfo, addDomainNavigation, addStatusMessage, addUpgradeSection,
 	BUILDING_ICONS, FOOD_KEYS, FoodShopUIContext, getBuildingLevel, getBuildingSummary,
 	GuildDomainMenuContext
 } from "./GuildDomainShared";
@@ -403,6 +403,7 @@ function buildSimpleBuildingContainer(args: SimpleBuildingArgs): ContainerBuilde
 	body(container);
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	addBuildingLevelAndCostInfo(container, building, ctx);
 	addUpgradeSection(container, building, ctx);
 	addStatusMessage(container, statusMessage);
 	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
@@ -425,6 +426,12 @@ export function buildShelterContainer(ctx: GuildDomainMenuContext, statusMessage
 						lng,
 						slots: GuildDomainConstants.getShelterSlots(data.shelterLevel)
 					})
+				)
+			);
+			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					i18n.t("commands:report.city.guildDomain.subMenus.shelter.petTransferHint", { lng })
 				)
 			);
 		},
@@ -484,6 +491,22 @@ export function buildTrainingGroundContainer(ctx: GuildDomainMenuContext, status
 						: i18n.t("commands:report.city.guildDomain.subMenus.training.descriptionActive", {
 							lng, love
 						})
+				)
+			);
+			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+			container.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					i18n.t("commands:report.city.guildDomain.foodInfo", {
+						lng,
+						common: data.food.common,
+						commonCap: data.foodCaps[0],
+						herbivorous: data.food.herbivorous,
+						herbivorousCap: data.foodCaps[1],
+						carnivorous: data.food.carnivorous,
+						carnivorousCap: data.foodCaps[2],
+						ultimate: data.food.ultimate,
+						ultimateCap: data.foodCaps[3]
+					})
 				)
 			);
 		},

@@ -1315,7 +1315,8 @@
           },
           "shelter": {
             "title": "{emote:city.guildDomain.shelter} Refuge de guilde",
-            "description": "{emote:city.guildDomain.shelter} Des enclos en bois renforcé bordent une cour intérieure tapissée de paille fraîche. Les familiers de la guilde sommeillent ou jouent paisiblement sous l'œil attentif d'un gardien. L'air est imprégné de l'odeur rassurante de foin et de fourrure.\n\n**Capacité :** {{slots}} emplacements"
+            "description": "{emote:city.guildDomain.shelter} Des enclos en bois renforcé bordent une cour intérieure tapissée de paille fraîche. Les familiers de la guilde sommeillent ou jouent paisiblement sous l'œil attentif d'un gardien. L'air est imprégné de l'odeur rassurante de foin et de fourrure.\n\n**Capacité :** {{slots}} emplacements",
+            "petTransferHint": "{emote:messages.info} Utilisez la commande {command:pettransfer} pour déplacer un familier entre votre inventaire et le refuge de la guilde."
           },
           "pantry": {
             "title": "{emote:city.guildDomain.pantry} Garde-manger de guilde",
