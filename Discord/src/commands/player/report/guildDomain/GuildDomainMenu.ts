@@ -111,7 +111,8 @@ async function handleUpgrade(
 				const successMessage = i18n.t("commands:report.city.guildDomain.upgradeSuccess", {
 					lng: ctx.lng,
 					building: buildingName,
-					level: res.newLevel
+					level: res.newLevel,
+					xpGained: res.xpGained
 				});
 				finishReportWithMessage(ctx, nestedMenus, successMessage);
 			}
