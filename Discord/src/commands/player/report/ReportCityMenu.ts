@@ -199,8 +199,12 @@ export function handleStayInCityInteraction(
 	}
 }
 
+function shouldShowHomeSection(data: ReactionCollectorCityData): boolean {
+	return Boolean(data.home.owned) || shouldShowManageHomeMenu(data);
+}
+
 function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (!data.home.owned && !data.home.manage && !data.guildDomainNotary?.isChief) {
+	if (!shouldShowHomeSection(data)) {
 		return;
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
