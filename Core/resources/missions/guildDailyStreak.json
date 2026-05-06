@@ -1,7 +1,0 @@
-{
-  "campaignOnly": true,
-  "guildMission": {
-    "objectives": [3, 5, 7],
-    "streak": true
-  }
-}

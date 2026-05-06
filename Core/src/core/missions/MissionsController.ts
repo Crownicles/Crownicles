@@ -35,7 +35,6 @@ import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 
-import { GuildMissionService } from "./GuildMissionService";
 
 type MissionInformations = {
 	missionId: string;
@@ -59,7 +58,6 @@ type GenerateMissionPropertiesOptions = {
 type SpecialMissionCompletion = {
 	daily: boolean;
 	campaign: boolean;
-	guild: boolean;
 };
 
 export abstract class MissionsController {
@@ -90,8 +88,7 @@ export abstract class MissionsController {
 		response: CrowniclesPacket[],
 		specialMissionCompletion: SpecialMissionCompletion = {
 			daily: false,
-			campaign: false,
-			guild: false
+			campaign: false
 		}
 	): Promise<Player> {
 		const completedMissions = await MissionsController.completeAndUpdateMissions(player, missionSlots, specialMissionCompletion);
@@ -195,10 +192,6 @@ export abstract class MissionsController {
 			set
 		}, missionSlots, missionInfo, player, response);
 		player = await MissionsController.checkCompletedMissions(player, missionSlots, missionInfo, response, specialMissionCompletion);
-
-		if (specialMissionCompletion.guild) {
-			await GuildMissionService.distributeRewards(player, response);
-		}
 
 		await player.save();
 		return player;
@@ -485,16 +478,12 @@ export abstract class MissionsController {
 	): Promise<SpecialMissionCompletion> {
 		const missionInterface = this.getMissionInterface(missionInformation.missionId);
 		const count = missionInformation.count ?? 1;
-		const guildCompleted = player?.guildId
-			? await GuildMissionService.updateGuildMission(missionInformation.missionId, count, player, missionInfo)
-			: false;
 		const dailyCompleted = await this.updateDailyMissionCount({
 			missionInformation, missionInterface, missionInfo, missionSlots, player, response, count
 		});
 		return {
 			daily: dailyCompleted,
-			campaign: await this.checkMissionSlots(missionInterface, missionInformation, missionSlots),
-			guild: guildCompleted
+			campaign: await this.checkMissionSlots(missionInterface, missionInformation, missionSlots)
 		};
 	}
 

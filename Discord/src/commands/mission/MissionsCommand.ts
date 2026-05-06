@@ -136,38 +136,6 @@ function getSideMissionsPart(packet: CommandMissionsPacketRes, lng: Language): s
 }
 
 /**
- * Get the guild mission part of the missions command's response
- * @param packet
- * @param lng
- */
-function getGuildMissionPart(packet: CommandMissionsPacketRes, lng: Language): string | null {
-	if (!packet.guildMission) {
-		return null;
-	}
-
-	const mission = packet.guildMission;
-	const missionName = i18n.t(`commands:guildMission.missions.${mission.missionId}`, { lng });
-
-	return `${i18n.t("commands:missions.subcategories.guildMission", { lng })}\n${
-		mission.completed
-			? i18n.t("commands:missions.guildMissionCompleted", {
-				lng,
-				missionName,
-				objective: mission.objective
-			})
-			: i18n.t("commands:missions.guildMissionDisplay", {
-				lng,
-				mission: missionName,
-				time: finishInTimeDisplay(new Date(mission.expiresAt)),
-				progressionBar: MissionUtils.generateDisplayProgression(mission.numberDone, mission.objective),
-				current: mission.numberDone,
-				objective: mission.objective,
-				contribution: mission.playerContribution
-			})
-	}`;
-}
-
-/**
  * Handle the response of the missions command
  * @param packet
  * @param context
@@ -203,8 +171,7 @@ export async function handleCommandMissionsPacketRes(packet: CommandMissionsPack
 	missionCommandEmbed.setDescription([
 		getCampaignMissionPart(packet, lng),
 		getDailyMissionPart(packet, lng),
-		getSideMissionsPart(packet, lng),
-		getGuildMissionPart(packet, lng)
+		getSideMissionsPart(packet, lng)
 	].filter(Boolean).join("\n"));
 	await interaction.reply({
 		embeds: [missionCommandEmbed]
