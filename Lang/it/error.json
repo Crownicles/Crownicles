@@ -21,6 +21,8 @@
     "guildInvite": "unirsi a una gilda",
     "guildKick": "espulsione di un membro della gilda",
     "guildLeave": "partenza di una gilda",
+    "guildShop": "scelta nel negozio della gilda",
+    "guildShopConfirmation": "conferma della scelta nel negozio della gilda",
     "leagueReward": "recupero del premio di lega",
     "lottery": "lotteria mini-eolico",
     "merchant": "scelta dal mercante",

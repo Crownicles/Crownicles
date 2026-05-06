@@ -213,6 +213,10 @@
       }
     }
   },
+  "guildShop": {
+    "description": "Exibir a loja do grémio.",
+    "name": "magasinguilde"
+  },
   "guildKick": {
     "description": "Excluir um membro da guilda.",
     "name": "excluirguilde",

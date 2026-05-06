@@ -389,7 +389,6 @@ async function sendCityCollector(
 		? buildBlacksmithData(playerInventory, playerMaterialMap, player)
 		: undefined;
 
-	// Build guild domain data if player has a guild
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 	const guildDomain = guild?.domainCityId === city.id
 		? {
