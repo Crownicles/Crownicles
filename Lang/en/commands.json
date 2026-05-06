@@ -1386,6 +1386,12 @@
     "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
     "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
   },
+  "guildShop": {
+    "noFoodStorageSpace": "You don't have enough room in your storage to store this food.",
+    "empty": "There's nothing left to buy at the moment. Your guild is at maximum level and its food stock is full.",
+    "giveXpTitle": "Purchase successful",
+    "giveXp": "{emote:unitValues.xp} Your guild has received **{{xp, number}}** experience points."
+  },
   "guildDaily": {
     "rewardTitle": "{{guildName}} guild's reward:",
     "coolDown": "Guild reward is only available once every {{coolDownTime}} hours. Adding a new member to the guild resets the counter. Next reward {{time}}.",
@@ -1976,38 +1982,5 @@
     "collecting": "Adventurers join together to invoke a blessing.\n\n{{moneyEmote}} Progression: **{{poolAmount, number}}** / **{{poolThreshold, number}}**\n{emote:blessingCommand.timeLeft} Pot expiration: {{poolExpiresAt}}\n\nContribute by meeting the Oracle on your travels!",
     "contributors_one": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurer have contributed so far.",
     "contributors_other": "{emote:blessingCommand.topContributor} **Largest contributor:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** adventurers have contributed so far."
-  },
-  "guildDomain": {
-    "buildingRequired": "The **{{building}}** building must be built to access this feature. Visit your guild's domain to build it.",
-    "buildings": {
-      "shop": {
-        "name": "Guild Shop",
-        "description": "Level {{level, number}}/{{maxLevel, number}}\nAllows purchasing food and guild experience."
-      },
-      "shelter": {
-        "name": "Shelter",
-        "description": "Level {{level, number}}/{{maxLevel, number}}\nHouses the guild's pets."
-      },
-      "pantry": {
-        "name": "Pantry",
-        "description": "Level {{level, number}}/{{maxLevel, number}}\nStores pet food."
-      },
-      "trainingGround": {
-        "name": "Training ground",
-        "description": "Level {{level, number}}/{{maxLevel, number}}\nPets in the shelter gain love points daily."
-      }
-    }
-  },
-  "guildMission": {
-    "completedTitle": "Guild quest completed!",
-    "completedRewards": "The guild quest has been completed! Here are the rewards:\n{emote:unitValues.xp} **+{{guildXp, number}}** guild XP\n{emote:unitValues.score} **+{{guildScore, number}}** guild points\n{emote:guild.treasury} **+{{treasuryGold, number}}** gold to the treasury\n{emote:unitValues.personalXp} **+{{personalXp, number}}** personal XP",
-    "missions": {
-      "doReports": "Complete adventure reports",
-      "earnPoints": "Earn score points",
-      "earnMoney": "Earn money",
-      "earnXP": "Earn experience",
-      "petCaress": "Pet your familiars",
-      "doExpeditions": "Complete expeditions"
-    }
   }
 }

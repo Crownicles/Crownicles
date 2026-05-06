@@ -213,6 +213,10 @@
       }
     }
   },
+  "guildShop": {
+    "description": "Display the guild store.",
+    "name": "guildshop"
+  },
   "guildKick": {
     "description": "Kick a player from the guild.",
     "name": "guildkick",
