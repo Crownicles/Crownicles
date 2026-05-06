@@ -6,6 +6,7 @@ import {
 	ChestAction, HomeConstants
 } from "../../constants/HomeConstants";
 import { GardenConstants } from "../../constants/GardenConstants";
+import { GuildBuilding, GuildDomainError, XpTier } from "../../constants/GuildDomainConstants";
 import { ItemSlot } from "../../types/ItemSlot";
 import { CookingOutputTypeValue } from "../../constants/CookingConstants";
 import { PlantId } from "../../constants/PlantConstants";
@@ -581,12 +582,12 @@ export class CommandReportGuildDomainNotEnoughTreasuryRes extends CrowniclesPack
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainUpgradeReq extends CrowniclesPacket {
-	building!: string;
+	building!: GuildBuilding;
 }
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportGuildDomainUpgradeRes extends CrowniclesPacket {
-	building!: string;
+	building!: GuildBuilding;
 
 	newLevel!: number;
 
@@ -597,21 +598,21 @@ export class CommandReportGuildDomainUpgradeRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportGuildDomainUpgradeErrorRes extends CrowniclesPacket {
-	error!: string;
+	error!: GuildDomainError;
 }
 
 // Guild food shop packets (for buying food from non-domain cities)
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportFoodShopBuyReq extends CrowniclesPacket {
-	foodType!: string;
+	foodType!: PetFood;
 
 	amount!: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportFoodShopBuyRes extends CrowniclesPacket {
-	foodType!: string;
+	foodType!: PetFood;
 
 	newFoodStock!: number;
 
@@ -622,14 +623,14 @@ export class CommandReportFoodShopBuyRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
-	error!: string;
+	error!: GuildDomainError;
 }
 
 // Guild domain shop XP buy packets
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportGuildDomainBuyXpReq extends CrowniclesPacket {
-	tier!: string;
+	tier!: XpTier;
 }
 
 @sendablePacket(PacketDirection.NONE)
@@ -641,5 +642,5 @@ export class CommandReportGuildDomainBuyXpRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportGuildDomainBuyXpErrorRes extends CrowniclesPacket {
-	error!: string;
+	error!: GuildDomainError;
 }

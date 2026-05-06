@@ -5,6 +5,29 @@ export enum GuildBuilding {
 	TRAINING_GROUND = "trainingGround"
 }
 
+export const XP_TIER = {
+	SMALL: "small",
+	BIG: "big"
+} as const;
+export type XpTier = typeof XP_TIER[keyof typeof XP_TIER];
+
+export const GUILD_DOMAIN_ERROR = {
+	NO_GUILD: "noGuild",
+	NO_DOMAIN: "noDomain",
+	NO_SHOP: "noShop",
+	NOT_AUTHORIZED: "notAuthorized",
+	INVALID_BUILDING: "invalidBuilding",
+	MAX_LEVEL: "maxLevel",
+	GUILD_LEVEL_TOO_LOW: "guildLevelTooLow",
+	NOT_ENOUGH_TREASURY: "notEnoughTreasury",
+	NOT_ENOUGH_MONEY: "notEnoughMoney",
+	INVALID_TIER: "invalidTier",
+	INVALID_FOOD: "invalidFood",
+	STORAGE_FULL: "storageFull",
+	CANNOT_BUY: "cannotBuy"
+} as const;
+export type GuildDomainError = typeof GUILD_DOMAIN_ERROR[keyof typeof GUILD_DOMAIN_ERROR];
+
 type BuildingLevelRequirement = {
 	guildLevel: number;
 	cost: number;
@@ -201,7 +224,7 @@ export abstract class GuildDomainConstants {
 			250,
 			600
 		]
-	};
+	} as const;
 
 	/**
 	 * Cost to purchase the guild domain (from treasury)
