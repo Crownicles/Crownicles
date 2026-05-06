@@ -14,7 +14,7 @@ import {
 import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 import {
 	addDomainNavigation, addStatusMessage, addUpgradeSection,
-	BUILDING_ICONS, FOOD_KEYS, getBuildingSummary,
+	BUILDING_ICONS, FOOD_KEYS, getBuildingLevel, getBuildingSummary,
 	GuildDomainData, GuildDomainMenuContext
 } from "./GuildDomainShared";
 
@@ -54,7 +54,7 @@ export function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMess
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
 	for (const building of Object.values(GuildBuilding)) {
-		const currentLevel = data[`${building}Level` as keyof typeof data] as number;
+		const currentLevel = getBuildingLevel(data, building);
 		const maxLevel = GuildDomainConstants.BUILDINGS[building].maxLevel;
 		const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${building}`, { lng });
 		const description = getBuildingSummary(building, currentLevel, lng);

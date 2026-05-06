@@ -148,12 +148,7 @@ export class CrowniclesDaily {
 				}
 			});
 
-			const foodFields = [
-				"commonFood",
-				"carnivorousFood",
-				"herbivorousFood",
-				"ultimateFood"
-			] as const;
+			const foodFields = PetConstants.PET_FOOD_BY_ID;
 
 			for (const guild of guilds) {
 				const rates = GuildDomainConstants.getAutoFillRates(guild.pantryLevel);
