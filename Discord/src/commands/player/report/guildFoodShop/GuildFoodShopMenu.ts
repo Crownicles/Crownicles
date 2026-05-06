@@ -30,7 +30,10 @@ import {
 	buildShopBody, buildShopQuantityContainer, buildShopReimburseContainer
 } from "../guildDomain/GuildDomainViews";
 import { FoodShopUIContext } from "../guildDomain/GuildDomainShared";
-import { CrowniclesErrorEmbed } from "../../../../messages/CrowniclesErrorEmbed";
+
+import {
+	finishReportWithErrorEmbed, finishReportWithMessage
+} from "../ReportFlowHelpers";
 
 type CityCollectorFactory = ReturnType<typeof createCityCollector>;
 
@@ -121,29 +124,6 @@ function buildBuySuccessRecap(res: CommandReportFoodShopBuyRes, lng: Language): 
  * Reply with a final message and end the report (mirrors the cooking pattern).
  * Used after reimburse / decline, so the player runs /rapport again to get a fresh state.
  */
-function finishReportWithMessage(ctx: FoodShopMenuContext, nestedMenus: CrowniclesNestedMenus, finalMessage: string): void {
-	const message = nestedMenus.message;
-	if (message) {
-		message.reply({ content: finalMessage })
-			.catch(() => {
-				// Ignore reply errors; we still want to end the report.
-			});
-	}
-	handleStayInCityInteraction(ctx.packet, ctx.context, null);
-}
-
-function finishReportWithErrorEmbed(ctx: FoodShopMenuContext, nestedMenus: CrowniclesNestedMenus, reason: string): void {
-	const message = nestedMenus.message;
-	if (message) {
-		const errorEmbed = new CrowniclesErrorEmbed(ctx.interaction.user, ctx.context, ctx.interaction, reason, false, false);
-		message.reply({ embeds: [errorEmbed] })
-			.catch(() => {
-				// Ignore reply errors; we still want to end the report.
-			});
-	}
-	handleStayInCityInteraction(ctx.packet, ctx.context, null);
-}
-
 async function showQuantityMenu(ctx: FoodShopMenuContext, nestedMenus: CrowniclesNestedMenus, foodType: PetFood): Promise<void> {
 	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU, {
 		containers: [buildShopQuantityContainer(toUIContext(ctx), foodType)],
