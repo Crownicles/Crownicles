@@ -30,6 +30,9 @@ import {
 
 type FoodShopData = ReactionCollectorCityData["guildFoodShop"] & object & {
 	pendingReimburseAmount?: number;
+
+	/** Recap of the food purchase that triggered the pending reimbursement (used to build a final summary message) */
+	pendingPurchaseRecap?: string;
 };
 type FoodKey = "common" | "carnivorous" | "herbivorous" | "ultimate";
 
@@ -310,6 +313,7 @@ async function handleFoodShopBuy(buyContext: FoodShopBuyContext): Promise<void> 
 				const res = responsePacket as unknown as CommandReportFoodShopBuyRes;
 				applyBuyResult(data, res);
 				statusMessage = buildBuySuccessMessage(res, lng);
+				data.pendingPurchaseRecap = statusMessage;
 			}
 			else {
 				statusMessage = i18n.t("commands:report.city.guildFoodShop.buyError", { lng });
@@ -362,9 +366,12 @@ async function handleReimburse(reimburseContext: ReimburseContext): Promise<void
 
 			if (isSuccess) {
 				// End the report after a successful reimburse so the next /rapport shows fresh stats.
+				const recap = data.pendingPurchaseRecap;
+				data.pendingPurchaseRecap = undefined;
+				const finalMessage = recap ? `${recap}\n${statusMessage}` : statusMessage;
 				const message = nestedMenus.message;
 				if (message) {
-					message.reply({ content: statusMessage })
+					message.reply({ content: finalMessage })
 						.catch(() => {
 							// Ignore reply errors; we still want to end the report.
 						});
@@ -419,9 +426,12 @@ export function getGuildFoodShopMenu(options: GuildFoodShopMenuOptions): Crownic
 			if (customId === ReportCityMenuIds.GUILD_FOOD_SHOP_REIMBURSE_DECLINE) {
 				data.pendingReimburseAmount = undefined;
 				const declineMessage = i18n.t("commands:report.city.guildFoodShop.reimburseDeclined", { lng });
+				const recap = data.pendingPurchaseRecap;
+				data.pendingPurchaseRecap = undefined;
+				const finalMessage = recap ? `${recap}\n${declineMessage}` : declineMessage;
 				const message = nestedMenus.message;
 				if (message) {
-					message.reply({ content: declineMessage })
+					message.reply({ content: finalMessage })
 						.catch(() => {
 							// Ignore reply errors; we still want to end the report.
 						});

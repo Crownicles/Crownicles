@@ -142,6 +142,14 @@ async function handleFoodBuy(
 				ctx.data.food[foodKey] = res.newFoodStock;
 				ctx.data.treasury = res.newTreasury;
 				ctx.data.pendingReimburseAmount = res.totalCost;
+				ctx.data.pendingPurchaseRecap = i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodSuccess", {
+					lng: ctx.lng,
+					amount: res.amountBought,
+					food: i18n.t(`models:foods.${res.foodType}`, {
+						lng: ctx.lng, count: res.amountBought
+					}),
+					totalCost: res.totalCost
+				});
 
 				await showShopReimburseMenu(ctx, nestedMenus);
 			}
@@ -176,10 +184,13 @@ async function handleTreasuryDeposit(
 				const successKey = isReimburse
 					? "commands:report.city.guildDomain.subMenus.shop.reimburseSuccess"
 					: "commands:report.city.guildDomain.subMenus.shop.depositTreasurySuccess";
-				finishReportWithMessage(ctx, nestedMenus, i18n.t(successKey, {
+				const successMessage = i18n.t(successKey, {
 					lng: ctx.lng,
 					treasury: res.treasuryDeposited
-				}));
+				});
+				const recap = isReimburse ? ctx.data.pendingPurchaseRecap : undefined;
+				ctx.data.pendingPurchaseRecap = undefined;
+				finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n${successMessage}` : successMessage);
 			}
 			else {
 				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryError", { lng: ctx.lng }), shopMenuId);
@@ -279,7 +290,10 @@ function createShopReimburseCollector(
 
 		if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE) {
 			ctx.data.pendingReimburseAmount = undefined;
-			finishReportWithMessage(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng }));
+			const declineMessage = i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng });
+			const recap = ctx.data.pendingPurchaseRecap;
+			ctx.data.pendingPurchaseRecap = undefined;
+			finishReportWithMessage(ctx, nestedMenus, recap ? `${recap}\n${declineMessage}` : declineMessage);
 			return;
 		}
 
