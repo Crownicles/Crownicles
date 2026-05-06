@@ -425,8 +425,8 @@ async function sendCityCollector(
 		}
 		: undefined;
 
-	// Guild food shop: available when the guild has a shop but is NOT in the domain city
-	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id
+	// Guild food shop: available in every city as long as the guild has a shop building
+	const guildFoodShop = guild && guild.shopLevel >= 1
 		? {
 			guildName: guild.name,
 			food: {
