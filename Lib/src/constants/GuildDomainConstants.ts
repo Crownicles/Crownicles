@@ -237,7 +237,7 @@ export abstract class GuildDomainConstants {
 	/**
 	 * Ratio of the upgrade cost converted into guild XP when a building is upgraded.
 	 */
-	static readonly UPGRADE_XP_RATIO = 0.15;
+	static readonly UPGRADE_XP_RATIO = 0.20;
 
 	/**
 	 * Cost to purchase the guild domain (from treasury)
