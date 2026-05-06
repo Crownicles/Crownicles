@@ -1,4 +1,5 @@
 import {
+	ActionRowBuilder,
 	ButtonBuilder, ButtonStyle,
 	ContainerBuilder,
 	SectionBuilder, SeparatorBuilder, SeparatorSpacingSize,
@@ -101,7 +102,7 @@ function addFoodSections(container: ContainerBuilder, data: GuildDomainData, lng
 		const cap = data.foodCaps[i];
 		const remainingSlots = cap - currentStock;
 		const price = GuildDomainConstants.SHOP_PRICES.FOOD[i];
-		const maxAffordable = Math.floor(data.playerMoney / price);
+		const maxAffordable = Math.floor(data.treasury / price);
 		const maxBuyable = Math.min(remainingSlots, maxAffordable);
 		const foodName = i18n.t(`models:foods.${foodType}`, {
 			lng, count: 1
@@ -154,13 +155,44 @@ function addTreasuryDepositSection(container: ContainerBuilder, lng: Language, p
 			)
 			.setButtonAccessory(
 				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX}${sizeKey}`)
+					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX}${cost}`)
 					.setLabel(i18n.t(`commands:report.city.guildDomain.subMenus.shop.${titleKey}`, {
 						lng, cost, treasury: treasuryGain
 					}))
 					.setStyle(ButtonStyle.Success)
 					.setDisabled(playerMoney < cost)
 			)
+	);
+}
+
+function addReimburseSection(container: ContainerBuilder, lng: Language, playerMoney: number, pendingAmount: number): void {
+	const penalty = Math.min(
+		Math.round(pendingAmount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
+		GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
+	);
+	const treasuryGain = pendingAmount - penalty;
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildDomain.subMenus.shop.reimbursePrompt", {
+				lng, cost: pendingAmount, treasury: treasuryGain, penalty
+			})
+		)
+	);
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX}${pendingAmount}`)
+				.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseAccept", {
+					lng, cost: pendingAmount, treasury: treasuryGain
+				}))
+				.setStyle(ButtonStyle.Success)
+				.setDisabled(playerMoney < pendingAmount),
+			new ButtonBuilder()
+				.setCustomId(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE)
+				.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDecline", { lng }))
+				.setStyle(ButtonStyle.Danger)
+		)
 	);
 }
 
@@ -171,7 +203,7 @@ function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext)
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.guildDomain.subMenus.shop.description", {
-				lng, playerMoney: data.playerMoney
+				lng, playerMoney: data.playerMoney, treasury: data.treasury
 			})
 		)
 	);
@@ -182,6 +214,10 @@ function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext)
 		)
 	);
 	addFoodSections(container, data, lng);
+
+	if (data.pendingReimburseAmount && data.pendingReimburseAmount > 0) {
+		addReimburseSection(container, lng, data.playerMoney, data.pendingReimburseAmount);
+	}
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(

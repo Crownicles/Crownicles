@@ -5,12 +5,6 @@ export enum GuildBuilding {
 	TRAINING_GROUND = "trainingGround"
 }
 
-export const DEPOSIT_TIER = {
-	SMALL: "small",
-	BIG: "big"
-} as const;
-export type DepositTier = typeof DEPOSIT_TIER[keyof typeof DEPOSIT_TIER];
-
 export const GUILD_DOMAIN_ERROR = {
 	NO_GUILD: "noGuild",
 	NO_DOMAIN: "noDomain",

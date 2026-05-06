@@ -48,8 +48,8 @@ async function resolveFoodShopRequest(
 	const foodIndex = getFoodIndexOf(foodType);
 	const pricePerUnit = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
 
-	if (player.money < pricePerUnit * amount) {
-		return GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY;
+	if (guild.treasury < pricePerUnit * amount) {
+		return GUILD_DOMAIN_ERROR.NOT_ENOUGH_TREASURY;
 	}
 
 	if (guild.isStorageFullFor(foodType, amount)) {
@@ -63,7 +63,7 @@ async function resolveFoodShopRequest(
 
 function computeAffordableAmount(req: ResolvedFoodShop): number {
 	const maxStorable = req.guild.getFoodCapacityFor(req.foodType) - req.guild.getFoodAmount(req.foodType);
-	const maxAffordable = Math.floor(req.player.money / req.pricePerUnit);
+	const maxAffordable = Math.floor(req.guild.treasury / req.pricePerUnit);
 	return Math.min(req.amount, maxStorable, maxAffordable);
 }
 
@@ -79,19 +79,18 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 	}
 
 	const {
-		player, guild, foodType, pricePerUnit
+		guild, foodType, pricePerUnit
 	} = resolved;
-	await player.spendMoney({
-		amount: pricePerUnit * actualAmount, response: [], reason: NumberChangeReason.SHOP
-	});
+	const totalCost = pricePerUnit * actualAmount;
+	guild.treasury -= totalCost;
 	guild.addFood(foodType, actualAmount, NumberChangeReason.SHOP);
 	await guild.save();
-	await player.save();
 
 	return makePacket(CommandReportFoodShopBuyRes, {
 		foodType,
 		newFoodStock: guild.getFoodAmount(foodType),
-		newPlayerMoney: player.money,
-		amountBought: actualAmount
+		newTreasury: guild.treasury,
+		amountBought: actualAmount,
+		totalCost
 	});
 }

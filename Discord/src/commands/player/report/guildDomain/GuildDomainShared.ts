@@ -21,7 +21,11 @@ import {
 	GuildBuilding, GuildDomainConstants
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
 
-export type GuildDomainData = ReactionCollectorCityData["guildDomain"] & object;
+export type GuildDomainData = ReactionCollectorCityData["guildDomain"] & object & {
+
+	/** Pending reimbursement amount displayed after a treasury-funded food purchase (frontend-only state) */
+	pendingReimburseAmount?: number;
+};
 
 export interface GuildDomainMenuContext {
 	data: GuildDomainData;

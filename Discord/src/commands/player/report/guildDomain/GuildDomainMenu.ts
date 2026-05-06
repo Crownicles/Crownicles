@@ -29,7 +29,7 @@ import {
 	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	GuildBuilding, DepositTier
+	GuildBuilding
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
 import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
 import {
@@ -118,14 +118,16 @@ async function handleFoodBuy(
 				const res = responsePacket as unknown as CommandReportFoodShopBuyRes;
 				const foodKey = res.foodType.replace("Food", "") as keyof typeof ctx.data.food;
 				ctx.data.food[foodKey] = res.newFoodStock;
-				ctx.data.playerMoney = res.newPlayerMoney;
+				ctx.data.treasury = res.newTreasury;
+				ctx.data.pendingReimburseAmount = res.totalCost;
 
 				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodSuccess", {
 					lng: ctx.lng,
 					amount: res.amountBought,
 					food: i18n.t(`models:foods.${res.foodType}`, {
 						lng: ctx.lng, count: res.amountBought
-					})
+					}),
+					totalCost: res.totalCost
 				}), shopMenuId);
 			}
 			else {
@@ -137,20 +139,27 @@ async function handleFoodBuy(
 
 async function handleTreasuryDeposit(
 	ctx: GuildDomainMenuContext,
-	tier: DepositTier,
-	nestedMenus: CrowniclesNestedMenus
+	amount: number,
+	nestedMenus: CrowniclesNestedMenus,
+	isReimburse: boolean
 ): Promise<void> {
 	await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 		ctx.context,
-		makePacket(CommandReportGuildDomainDepositTreasuryReq, { tier }),
+		makePacket(CommandReportGuildDomainDepositTreasuryReq, { amount }),
 		async (_responseContext, packetName, responsePacket) => {
 			const shopMenuId = BUILDING_MENU_IDS[GuildBuilding.SHOP];
 			if (packetName === CommandReportGuildDomainDepositTreasuryRes.name) {
 				const res = responsePacket as unknown as CommandReportGuildDomainDepositTreasuryRes;
 				ctx.data.playerMoney = res.newPlayerMoney;
 				ctx.data.treasury = res.newTreasury;
+				if (isReimburse) {
+					ctx.data.pendingReimburseAmount = undefined;
+				}
 
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasurySuccess", {
+				const successKey = isReimburse
+					? "commands:report.city.guildDomain.subMenus.shop.reimburseSuccess"
+					: "commands:report.city.guildDomain.subMenus.shop.depositTreasurySuccess";
+				await refreshAndShowStatus(ctx, nestedMenus, i18n.t(successKey, {
 					lng: ctx.lng,
 					treasury: res.treasuryDeposited
 				}), shopMenuId);
@@ -217,9 +226,21 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 				return;
 			}
 
+			if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_DECLINE) {
+				ctx.data.pendingReimburseAmount = undefined;
+				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseDeclined", { lng: ctx.lng }), BUILDING_MENU_IDS[GuildBuilding.SHOP]);
+				return;
+			}
+
+			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX)) {
+				const amount = parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX, ""), 10);
+				await handleTreasuryDeposit(ctx, amount, nestedMenus, true);
+				return;
+			}
+
 			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX)) {
-				const tier = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX, "") as DepositTier;
-				await handleTreasuryDeposit(ctx, tier, nestedMenus);
+				const amount = parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX, ""), 10);
+				await handleTreasuryDeposit(ctx, amount, nestedMenus, false);
 			}
 		}
 	});

@@ -1288,7 +1288,7 @@
         "subMenus": {
           "shop": {
             "title": "{emote:city.guildDomain.shop} Boutique de guilde",
-            "description": "{emote:city.guildDomain.shop} L'intendant de la guilde se tient derrière son comptoir, entouré de caisses et de sacs de provisions. Il fournit nourriture pour les familiers et accepte les dons d'or pour la trésorerie de la guilde.\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}",
+            "description": "{emote:city.guildDomain.shop} L'intendant de la guilde se tient derrière son comptoir, entouré de caisses et de sacs de provisions. Il fournit nourriture pour les familiers (réglée sur la trésorerie de la guilde) et accepte vos dons d'or pour la renflouer.\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Trésorerie de la guilde** : {{treasury, number}} {emote:unitValues.money}",
             "notBuilt": "{emote:city.guildDomain.shop} L'emplacement de la boutique n'est qu'un terrain vague jonché de pierres. Des plans d'architecte attendent sur un chevalet, mais la construction n'a pas encore débuté. Améliorez ce bâtiment pour débloquer l'approvisionnement de la guilde.",
             "buyFoodLabel": "{emote:expedition.food} **Acheter de la nourriture**",
             "depositTreasuryLabel": "**Verser de l'or à la trésorerie**",
@@ -1297,10 +1297,15 @@
             "buyFoodButton": "{{amount}}x {{food}} ({{cost}})",
             "depositTreasurySmall": "Bourse ({{cost}} → {{treasury}})",
             "depositTreasuryBig": "Sac d'or ({{cost}} → {{treasury}})",
-            "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** dans le garde-manger de la guilde.",
-            "buyFoodError": "{emote:messages.error} L'achat a échoué.",
+            "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** dans le garde-manger de la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
+            "buyFoodError": "{emote:messages.error} L'achat a échoué (trésorerie insuffisante ou garde-manger plein).",
             "depositTreasurySuccess": "{emote:messages.info} L'intendant verse votre offrande dans le coffre. **+{{treasury, number}} {emote:unitValues.money}** dans la trésorerie de la guilde !",
-            "depositTreasuryError": "{emote:messages.error} Le versement a échoué."
+            "depositTreasuryError": "{emote:messages.error} Le versement a échoué.",
+            "reimbursePrompt": "{emote:messages.info} Voulez-vous rembourser la guilde des **{{cost, number}} {emote:unitValues.money}** que vous venez d'utiliser ? L'intendant prélèvera **{{penalty, number}} {emote:unitValues.money}** de commission, et **{{treasury, number}} {emote:unitValues.money}** rejoindront la trésorerie.",
+            "reimburseAccept": "Rembourser ({{cost}} → {{treasury}})",
+            "reimburseDecline": "Garder l'argent",
+            "reimburseSuccess": "{emote:messages.info} Vous remboursez la guilde. **+{{treasury, number}} {emote:unitValues.money}** dans la trésorerie !",
+            "reimburseDeclined": "{emote:messages.refuse} Vous gardez l'argent pour vous."
           },
           "shelter": {
             "title": "{emote:city.guildDomain.shelter} Refuge de guilde",
@@ -1321,14 +1326,20 @@
         "label": "Ravitaillement de guilde",
         "description": "Achetez de la nourriture pour les familiers de **{{guildName}}**.",
         "menuTitle": "{{pseudo}}, ravitaillement de {{guildName}}",
-        "menuDescription": "{emote:expedition.food} Un marchand itinérant propose de la nourriture pour familiers. Les provisions seront envoyées directement au garde-manger de votre guilde.",
-        "stockInfo": "{emote:expedition.food} **Réserves actuelles** :\n• Friandise : {{common}}/{{commonCap}}\n• Herbivore : {{herbivorous}}/{{herbivorousCap}}\n• Carnivore : {{carnivorous}}/{{carnivorousCap}}\n• Ultime : {{ultimate}}/{{ultimateCap}}\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney}}",
+        "menuDescription": "{emote:expedition.food} Un marchand itinérant propose de la nourriture pour familiers. Les achats sont prélevés sur la trésorerie de votre guilde, et les provisions partent directement au garde-manger.",
+        "stockInfo": "{emote:expedition.food} **Réserves actuelles** :\n• Friandise : {{common}}/{{commonCap}}\n• Herbivore : {{herbivorous}}/{{herbivorousCap}}\n• Carnivore : {{carnivorous}}/{{carnivorousCap}}\n• Ultime : {{ultimate}}/{{ultimateCap}}\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney}}\n{emote:city.guildDomain.shop} **Trésorerie de la guilde** : {{treasury, number}} {emote:unitValues.money}",
         "buyLabel": "{emote:expedition.food} **Acheter de la nourriture**",
         "buyButton": "{{amount}}x {{food}} ({{cost}} {emote:unitValues.money})",
-        "buySuccess": "{emote:messages.info} Vous avez acheté **{{amount}}x {{food}}** et envoyé le tout au garde-manger de votre guilde.",
-        "buyError": "{emote:messages.error} L'achat a échoué.",
-        "noFoodAvailable": "{emote:messages.info} Le garde-manger de votre guilde est plein ou vous n'avez pas assez d'argent.",
-        "leaveShop": "Quitter le marchand"
+        "buySuccess": "{emote:messages.info} Vous avez acheté **{{amount}}x {{food}}** pour la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
+        "buyError": "{emote:messages.error} L'achat a échoué (trésorerie insuffisante ou garde-manger plein).",
+        "noFoodAvailable": "{emote:messages.info} Le garde-manger de votre guilde est plein ou la trésorerie est insuffisante.",
+        "leaveShop": "Quitter le marchand",
+        "reimbursePrompt": "{emote:messages.info} Voulez-vous rembourser la guilde des **{{cost, number}} {emote:unitValues.money}** prélevés sur la trésorerie ? L'intendant prélèvera **{{penalty, number}} {emote:unitValues.money}** de commission et **{{treasury, number}} {emote:unitValues.money}** rejoindront la trésorerie.",
+        "reimburseAccept": "Rembourser ({{cost}} → {{treasury}})",
+        "reimburseDecline": "Garder l'argent",
+        "reimburseSuccess": "{emote:messages.info} Vous remboursez la guilde. **+{{treasury, number}} {emote:unitValues.money}** dans la trésorerie !",
+        "reimburseDeclined": "{emote:messages.refuse} Vous gardez l'argent pour vous.",
+        "reimburseError": "{emote:messages.error} Le remboursement a échoué."
       }
     },
     "notEnoughTokensButton": "Jetons insuffisants",
