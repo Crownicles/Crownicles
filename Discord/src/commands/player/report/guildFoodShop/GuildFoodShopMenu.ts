@@ -77,7 +77,10 @@ function buildFoodShopMainContainer(ctx: FoodShopMenuContext): ContainerBuilder 
 		)
 	);
 
-	buildShopBody(container, toUIContext(ctx), { withTreasuryButton: false });
+	buildShopBody(container, toUIContext(ctx), {
+		withTreasuryButton: false,
+		descriptionKey: "commands:report.city.guildFoodShop.menuDescription"
+	});
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(

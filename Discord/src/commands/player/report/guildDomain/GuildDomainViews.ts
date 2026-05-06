@@ -117,16 +117,19 @@ function getMaxAffordableDeposits(data: FoodShopUIContext["data"], cost: number)
 export function buildShopBody(
 	container: ContainerBuilder,
 	ctx: FoodShopUIContext,
-	options: { withTreasuryButton?: boolean } = {}
+	options: {
+		withTreasuryButton?: boolean; descriptionKey?: string;
+	} = {}
 ): void {
 	const {
 		data, lng
 	} = ctx;
 	const withTreasuryButton = options.withTreasuryButton ?? true;
+	const descriptionKey = options.descriptionKey ?? "commands:report.city.guildDomain.subMenus.shop.description";
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			i18n.t("commands:report.city.guildDomain.subMenus.shop.description", {
+			i18n.t(descriptionKey, {
 				lng, playerMoney: data.playerMoney, treasury: data.treasury
 			})
 		)
