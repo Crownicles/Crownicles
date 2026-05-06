@@ -213,6 +213,10 @@
       }
     }
   },
+  "guildShop": {
+    "description": "Gildenladen anzeigen.",
+    "name": "magasinguilde"
+  },
   "guildKick": {
     "description": "Ein Mitglied aus der Gilde ausschließen.",
     "name": "ausschließengilde",

@@ -238,7 +238,6 @@ export abstract class MissionsController {
 				.then();
 		}
 
-		// Guild mission completion is handled separately via GuildMissionService.distributeRewards
 		await player.save();
 		return completedMissions;
 	}

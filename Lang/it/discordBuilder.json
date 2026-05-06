@@ -213,6 +213,10 @@
       }
     }
   },
+  "guildShop": {
+    "description": "Visualizzare il negozio della gilda.",
+    "name": "magasinguilde"
+  },
   "guildKick": {
     "description": "Escludere un membro della gilda.",
     "name": "escludereilde",
