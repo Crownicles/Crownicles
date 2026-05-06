@@ -1322,7 +1322,10 @@
           },
           "pantry": {
             "title": "{emote:city.guildDomain.pantry} Garde-manger de guilde",
-            "description": "{emote:city.guildDomain.pantry} Une cave voûtée aux murs épais garde la nourriture à l'abri de la chaleur et des nuisibles. Des étagères en chêne massif croulent sous les tonneaux de viande séchée, les paniers de baies et les caisses de provisions soigneusement étiquetées."
+            "description": "{emote:city.guildDomain.pantry} Une cave voûtée aux murs épais garde la nourriture à l'abri de la chaleur et des nuisibles. Des étagères en chêne massif croulent sous les tonneaux de viande séchée, les paniers de baies et les caisses de provisions soigneusement étiquetées.",
+            "autoFillHeader": "{emote:messages.info} **Approvisionnement quotidien** : chaque jour à minuit, l'intendant ajoute automatiquement à vos réserves (dans la limite des capacités) :",
+            "autoFillLine": "• **+{{amount}} {{food}}** {emote:foods.{{foodType}}}",
+            "autoFillNone": "{emote:messages.info} Améliorez le garde-manger pour bénéficier d'un approvisionnement quotidien automatique en nourriture pour familiers."
           },
           "training": {
             "title": "{emote:city.guildDomain.trainingGround} Ménagerie",
