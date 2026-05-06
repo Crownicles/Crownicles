@@ -18,7 +18,6 @@ import {
 	CommandReportGuildDomainUpgradeRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { GuildUtils } from "../utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 
 const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
@@ -129,9 +128,9 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 	guild.treasury -= upgradeCost;
 	guild.setDataValue(BUILDING_LEVEL_FIELDS[building] as string, currentLevel + 1);
 
-	// Spending treasury on a building upgrade also grants guild experience.
+	// Spending treasury on a building upgrade also grants guild experience (10% of the cost).
 	await guild.addExperience({
-		amount: GuildUtils.calculateAmountOfXPToAdd(upgradeCost),
+		amount: Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO),
 		response,
 		reason: NumberChangeReason.GUILD_DOMAIN_UPGRADE
 	});
