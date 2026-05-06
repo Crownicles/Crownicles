@@ -130,33 +130,36 @@ function addFoodSections(container: ContainerBuilder, data: GuildDomainData, lng
 	}
 }
 
-export function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
+function addXpShopSection(container: ContainerBuilder, lng: Language, playerMoney: number, sizeKey: "small" | "big"): void {
+	const cost = sizeKey === "small" ? GuildDomainConstants.SHOP_PRICES.SMALL_XP : GuildDomainConstants.SHOP_PRICES.BIG_XP;
+	const titleKey = sizeKey === "small" ? "buyXpSmall" : "buyXpBig";
+	const descKey = sizeKey === "small" ? "buyXpSmallDescription" : "buyXpBigDescription";
+	const icon = sizeKey === "small" ? CrowniclesIcons.shopItems.smallGuildXp : CrowniclesIcons.shopItems.bigGuildXp;
+	container.addSectionComponents(
+		new SectionBuilder()
+			.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(
+					`${icon} **${i18n.t(`commands:report.city.guildDomain.subMenus.shop.${titleKey}`, {
+						lng, cost
+					})}**\n${i18n.t(`commands:report.city.guildDomain.subMenus.shop.${descKey}`, { lng })}`
+				)
+			)
+			.setButtonAccessory(
+				new ButtonBuilder()
+					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}${sizeKey}`)
+					.setLabel(i18n.t(`commands:report.city.guildDomain.subMenus.shop.${titleKey}`, {
+						lng, cost
+					}))
+					.setStyle(ButtonStyle.Success)
+					.setDisabled(playerMoney < cost)
+			)
+	);
+}
+
+function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext): void {
 	const {
 		data, lng
 	} = ctx;
-	const container = new ContainerBuilder();
-	const shopLevel = data.shopLevel;
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.subMenus.shop.title", { lng })}`
-		)
-	);
-
-	if (shopLevel === 0) {
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t("commands:report.city.guildDomain.subMenus.shop.notBuilt", { lng })
-			)
-		);
-
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addUpgradeSection(container, GuildBuilding.SHOP, ctx);
-		addStatusMessage(container, statusMessage);
-		addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-		return container;
-	}
-
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.guildDomain.subMenus.shop.description", {
@@ -164,14 +167,12 @@ export function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: 
 			})
 		)
 	);
-
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodLabel", { lng })
 		)
 	);
-
 	addFoodSections(container, data, lng);
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -180,53 +181,30 @@ export function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: 
 			i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpLabel", { lng })
 		)
 	);
+	addXpShopSection(container, lng, data.playerMoney, "small");
+	addXpShopSection(container, lng, data.playerMoney, "big");
+}
 
-	container.addSectionComponents(
-		new SectionBuilder()
-			.addTextDisplayComponents(
-				new TextDisplayBuilder().setContent(
-					`${CrowniclesIcons.shopItems.smallGuildXp} **${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmall", {
-						lng, cost: GuildDomainConstants.SHOP_PRICES.SMALL_XP
-					})}**\n${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmallDescription", { lng })}`
-				)
-			)
-			.setButtonAccessory(
-				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}small`)
-					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpSmall", {
-						lng, cost: GuildDomainConstants.SHOP_PRICES.SMALL_XP
-					}))
-					.setStyle(ButtonStyle.Success)
-					.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.SMALL_XP)
-			)
+export function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
+	const { lng } = ctx;
+	if (ctx.data.shopLevel === 0) {
+		return buildSimpleBuildingContainer(
+			ctx,
+			GuildBuilding.SHOP,
+			"commands:report.city.guildDomain.subMenus.shop.title",
+			c => c.addTextDisplayComponents(
+				new TextDisplayBuilder().setContent(i18n.t("commands:report.city.guildDomain.subMenus.shop.notBuilt", { lng }))
+			),
+			statusMessage
+		);
+	}
+	return buildSimpleBuildingContainer(
+		ctx,
+		GuildBuilding.SHOP,
+		"commands:report.city.guildDomain.subMenus.shop.title",
+		c => buildShopBody(c, ctx),
+		statusMessage
 	);
-
-	container.addSectionComponents(
-		new SectionBuilder()
-			.addTextDisplayComponents(
-				new TextDisplayBuilder().setContent(
-					`${CrowniclesIcons.shopItems.bigGuildXp} **${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBig", {
-						lng, cost: GuildDomainConstants.SHOP_PRICES.BIG_XP
-					})}**\n${i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBigDescription", { lng })}`
-				)
-			)
-			.setButtonAccessory(
-				new ButtonBuilder()
-					.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_XP_PREFIX}big`)
-					.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.buyXpBig", {
-						lng, cost: GuildDomainConstants.SHOP_PRICES.BIG_XP
-					}))
-					.setStyle(ButtonStyle.Success)
-					.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.BIG_XP)
-			)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addUpgradeSection(container, GuildBuilding.SHOP, ctx);
-	addStatusMessage(container, statusMessage);
-	addDomainNavigation(container, ctx, i18n.t("commands:report.city.guildDomain.backToDomain", { lng }), ReportCityMenuIds.GUILD_DOMAIN_BACK);
-
-	return container;
 }
 
 /**
