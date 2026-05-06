@@ -342,6 +342,6 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 			isPartialSuccess
 		}),
 		itemGiven: true,
-		materialLoot: materialLoot.length > 0 ? materialLoot : undefined
+		...materialLoot.length > 0 ? { materialLoot } : {}
 	};
 }

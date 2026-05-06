@@ -184,7 +184,7 @@ function sendMonsterRewardPacket(
 				petNickname: fight.petReactionData.petNickname
 			}
 			: undefined,
-		materialLoot: materialLoot && materialLoot.length > 0 ? materialLoot : undefined
+		...materialLoot && materialLoot.length > 0 ? { materialLoot } : {}
 	}));
 }
 

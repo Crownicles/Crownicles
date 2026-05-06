@@ -50,8 +50,12 @@ import { pickMaterialDistribution } from "./MaterialLootGenerator";
  */
 const materialsByTypeAndRarityCache = new Map<string, Material[]>();
 
+function buildMaterialCacheKey(type: MaterialType, rarity: MaterialRarity): string {
+	return `${type}_${rarity}`;
+}
+
 function getMaterialsByTypeAndRarity(type: MaterialType, rarity: MaterialRarity): Material[] {
-	const key = `${type}_${rarity}`;
+	const key = buildMaterialCacheKey(type, rarity);
 	let materials = materialsByTypeAndRarityCache.get(key);
 	if (!materials) {
 		materials = MaterialDataController.instance.getMaterialsFromType(type).filter(m => m.rarity === rarity);
