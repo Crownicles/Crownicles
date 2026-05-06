@@ -32,6 +32,7 @@ import {
 	Pet, PetDataController
 } from "../../data/Pet";
 import { PetSellConstants } from "../../../../Lib/src/constants/PetSellConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import {
 	CollectCallback, EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
@@ -112,8 +113,8 @@ async function verifyBuyerRequirements(response: CrowniclesPacket[], sellerInfor
 async function executePetSell(collector: ReactionCollectorInstance, response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
 	// Compute treasury reward: pet price minus a small penalty (gold sink)
 	const penalty = Math.min(
-		Math.round(sellerInformation.petCost * PetSellConstants.TREASURY_PENALTY.PERCENT),
-		PetSellConstants.TREASURY_PENALTY.MAX
+		Math.round(sellerInformation.petCost * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
+		GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
 	);
 	const treasuryEarned = sellerInformation.petCost - penalty;
 	sellerInformation.guild.treasury += treasuryEarned;

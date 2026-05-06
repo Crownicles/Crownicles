@@ -7,7 +7,7 @@ import {
 } from "../../constants/HomeConstants";
 import { GardenConstants } from "../../constants/GardenConstants";
 import {
-	GuildBuilding, GuildDomainError, XpTier
+	GuildBuilding, GuildDomainError, DepositTier
 } from "../../constants/GuildDomainConstants";
 import { ItemSlot } from "../../types/ItemSlot";
 import { CookingOutputTypeValue } from "../../constants/CookingConstants";
@@ -628,21 +628,23 @@ export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
 	error!: GuildDomainError;
 }
 
-// Guild domain shop XP buy packets
+// Guild domain shop treasury deposit packets
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandReportGuildDomainBuyXpReq extends CrowniclesPacket {
-	tier!: XpTier;
+export class CommandReportGuildDomainDepositTreasuryReq extends CrowniclesPacket {
+	tier!: DepositTier;
 }
 
 @sendablePacket(PacketDirection.NONE)
-export class CommandReportGuildDomainBuyXpRes extends CrowniclesPacket {
-	xp!: number;
+export class CommandReportGuildDomainDepositTreasuryRes extends CrowniclesPacket {
+	treasuryDeposited!: number;
 
 	newPlayerMoney!: number;
+
+	newTreasury!: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
-export class CommandReportGuildDomainBuyXpErrorRes extends CrowniclesPacket {
+export class CommandReportGuildDomainDepositTreasuryErrorRes extends CrowniclesPacket {
 	error!: GuildDomainError;
 }

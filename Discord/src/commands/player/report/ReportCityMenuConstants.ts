@@ -86,8 +86,8 @@ export const ReportCityMenuIds = {
 	/** Prefix for guild domain shop food buy buttons (followed by foodType_amount) */
 	GUILD_DOMAIN_SHOP_FOOD_PREFIX: "GUILD_DOMAIN_SHOP_FOOD_",
 
-	/** Prefix for guild domain shop XP buy buttons (followed by tier) */
-	GUILD_DOMAIN_SHOP_XP_PREFIX: "GUILD_DOMAIN_SHOP_XP_",
+	/** Prefix for guild domain shop treasury deposit buttons (followed by tier) */
+	GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX: "GUILD_DOMAIN_SHOP_DEPOSIT_",
 
 	// --- Guild food shop (non-domain cities) ---
 	/** Guild food shop sub-menu */

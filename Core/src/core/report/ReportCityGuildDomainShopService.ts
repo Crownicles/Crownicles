@@ -2,12 +2,12 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandReportGuildDomainBuyXpErrorRes,
-	CommandReportGuildDomainBuyXpReq,
-	CommandReportGuildDomainBuyXpRes
+	CommandReportGuildDomainDepositTreasuryErrorRes,
+	CommandReportGuildDomainDepositTreasuryReq,
+	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	GUILD_DOMAIN_ERROR, GuildDomainConstants, XP_TIER, XpTier
+	DEPOSIT_TIER, DepositTier, GUILD_DOMAIN_ERROR, GuildDomainConstants
 } from "../../../../Lib/src/constants/GuildDomainConstants";
 import {
 	Players
@@ -15,58 +15,56 @@ import {
 import {
 	Guilds
 } from "../database/game/models/Guild";
-import { GuildUtils } from "../utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { LockManager } from "../../../../Lib/src/locks/LockManager";
 
-const XP_TIERS: Record<XpTier, number> = {
-	[XP_TIER.SMALL]: GuildDomainConstants.SHOP_PRICES.SMALL_XP,
-	[XP_TIER.BIG]: GuildDomainConstants.SHOP_PRICES.BIG_XP
+const DEPOSIT_AMOUNTS: Record<DepositTier, number> = {
+	[DEPOSIT_TIER.SMALL]: GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT,
+	[DEPOSIT_TIER.BIG]: GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT
 };
 
-const guildXpLockManager = new LockManager();
+const treasuryDepositLockManager = new LockManager();
 
-export async function handleGuildDomainBuyXp(keycloakId: string, packet: CommandReportGuildDomainBuyXpReq): Promise<CrowniclesPacket> {
+export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player || !player.guildId) {
-		return makePacket(CommandReportGuildDomainBuyXpErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
+		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
 	}
 
-	const price = XP_TIERS[packet.tier];
-	if (price === undefined) {
-		return makePacket(CommandReportGuildDomainBuyXpErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_TIER });
+	const grossAmount = DEPOSIT_AMOUNTS[packet.tier];
+	if (grossAmount === undefined) {
+		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_TIER });
 	}
 
-	if (player.money < price) {
-		return makePacket(CommandReportGuildDomainBuyXpErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY });
+	if (player.money < grossAmount) {
+		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY });
 	}
 
-	const lock = guildXpLockManager.getLock(player.guildId);
+	const lock = treasuryDepositLockManager.getLock(player.guildId);
 	const release = await lock.acquire();
 	try {
 		const guild = await Guilds.getById(player.guildId);
 		if (!guild || guild.shopLevel < 1) {
-			return makePacket(CommandReportGuildDomainBuyXpErrorRes, { error: GUILD_DOMAIN_ERROR.NO_SHOP });
+			return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_SHOP });
 		}
 
-		if (guild.isAtMaxLevel()) {
-			return makePacket(CommandReportGuildDomainBuyXpErrorRes, { error: GUILD_DOMAIN_ERROR.MAX_LEVEL });
-		}
-
-		const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(price);
-		await guild.addExperience({
-			amount: xpToAdd, response: [], reason: NumberChangeReason.SHOP
-		});
+		const penalty = Math.min(
+			Math.round(grossAmount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
+			GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
+		);
+		const treasuryDeposited = grossAmount - penalty;
+		guild.treasury += treasuryDeposited;
 		await guild.save();
 
 		await player.spendMoney({
-			amount: price, response: [], reason: NumberChangeReason.SHOP
+			amount: grossAmount, response: [], reason: NumberChangeReason.SHOP
 		});
 		await player.save();
 
-		return makePacket(CommandReportGuildDomainBuyXpRes, {
-			xp: xpToAdd,
-			newPlayerMoney: player.money
+		return makePacket(CommandReportGuildDomainDepositTreasuryRes, {
+			treasuryDeposited,
+			newPlayerMoney: player.money,
+			newTreasury: guild.treasury
 		});
 	}
 	finally {
