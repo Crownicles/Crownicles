@@ -95,35 +95,40 @@ export abstract class GuildMissionService {
 		GuildMissionService.ensureActiveMission(guild);
 		await guild.save();
 
-		if (!GuildMissionService.hasActiveMission(guild) || GuildMissionService.isMissionCompleted(guild) || guild.guildMissionId !== missionId) {
+		if (!GuildMissionService.canProgressMission(guild, missionId)) {
 			return false;
 		}
 
-		const missionInterface = MissionsController.getMissionInterface(missionId);
-		if (!missionInterface.areParamsMatchingVariantAndBlob(guild.guildMissionVariant, {}, guild.guildMissionBlob)) {
+		const effectiveCount = GuildMissionService.computeEffectiveCount(guild, missionId, count);
+		missionInfo.guildMissionContribution += count;
+		await missionInfo.save();
+		if (effectiveCount === 0) {
 			return false;
-		}
-
-		const missionData = MissionDataController.instance.getById(missionId);
-		let effectiveCount = count;
-		if (missionData?.guildMission?.streak) {
-			effectiveCount = GuildMissionService.applyStreakLogic(guild, count);
-			if (effectiveCount === 0) {
-				missionInfo.guildMissionContribution += count;
-				await missionInfo.save();
-				return false;
-			}
 		}
 
 		guild.guildMissionNumberDone = Math.min(
 			guild.guildMissionNumberDone + effectiveCount,
 			guild.guildMissionObjective
 		);
-		missionInfo.guildMissionContribution += count;
-		await missionInfo.save();
 		await guild.save();
 
 		return guild.guildMissionNumberDone >= guild.guildMissionObjective;
+	}
+
+	private static canProgressMission(guild: Guild, missionId: string): boolean {
+		if (!GuildMissionService.hasActiveMission(guild) || GuildMissionService.isMissionCompleted(guild) || guild.guildMissionId !== missionId) {
+			return false;
+		}
+		const missionInterface = MissionsController.getMissionInterface(missionId);
+		return missionInterface.areParamsMatchingVariantAndBlob(guild.guildMissionVariant, {}, guild.guildMissionBlob);
+	}
+
+	private static computeEffectiveCount(guild: Guild, missionId: string, count: number): number {
+		const missionData = MissionDataController.instance.getById(missionId);
+		if (missionData?.guildMission?.streak) {
+			return GuildMissionService.applyStreakLogic(guild, count);
+		}
+		return count;
 	}
 
 	/**
