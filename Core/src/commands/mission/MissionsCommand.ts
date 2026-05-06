@@ -13,13 +13,46 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { MissionSlots } from "../../core/database/game/models/MissionSlot";
-import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
+import {
+	PlayerMissionsInfo, PlayerMissionsInfos
+} from "../../core/database/game/models/PlayerMissionsInfo";
 import { MissionType } from "../../../../Lib/src/types/CompletedMission";
 import { DailyMissions } from "../../core/database/game/models/DailyMission";
 import { Campaign } from "../../core/missions/Campaign";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { Guilds } from "../../core/database/game/models/Guild";
+import Guild, { Guilds } from "../../core/database/game/models/Guild";
 import { GuildMissionService } from "../../core/missions/GuildMissionService";
+
+async function resolveActiveGuildMission(
+	toCheckPlayer: Player, isSelf: boolean
+): Promise<Guild | null> {
+	const guild = await Guilds.ofPlayer(toCheckPlayer);
+	if (!guild) {
+		return null;
+	}
+	if (isSelf) {
+		GuildMissionService.ensureActiveMission(guild);
+		await guild.save();
+	}
+	const hasActiveGuildMission = guild.guildMissionId !== null
+		&& guild.guildMissionExpiry !== null
+		&& new Date(guild.guildMissionExpiry) > new Date();
+	return hasActiveGuildMission ? guild : null;
+}
+
+function buildGuildMissionPayload(guild: Guild | null, missionInfo: PlayerMissionsInfo): CommandMissionsPacketRes["guildMission"] {
+	if (!guild) {
+		return null;
+	}
+	return {
+		missionId: guild.guildMissionId!,
+		objective: guild.guildMissionObjective,
+		numberDone: guild.guildMissionNumberDone,
+		playerContribution: missionInfo.guildMissionContribution,
+		expiresAt: guild.guildMissionExpiry!.getTime(),
+		completed: guild.guildMissionNumberDone >= guild.guildMissionObjective
+	};
+}
 
 export default class MissionsCommand {
 	@commandRequires(CommandMissionsPacketReq, {
@@ -44,7 +77,6 @@ export default class MissionsCommand {
 		}
 
 		const missionInfo = await PlayerMissionsInfos.getOfPlayer(toCheckPlayer.id);
-
 		const baseMissions = MissionsController.prepareMissionSlots(await MissionSlots.getOfPlayer(toCheckPlayer.id));
 
 		baseMissions.push(MissionsController.prepareBaseMission({
@@ -59,15 +91,7 @@ export default class MissionsCommand {
 			numberDone: missionInfo.dailyMissionNumberDone
 		}));
 
-		const guild = await Guilds.ofPlayer(toCheckPlayer);
-		if (guild && toCheckPlayer.id === player.id) {
-			GuildMissionService.ensureActiveMission(guild);
-			await guild.save();
-		}
-		const hasActiveGuildMission = guild !== null
-			&& guild.guildMissionId !== null
-			&& guild.guildMissionExpiry !== null
-			&& new Date(guild.guildMissionExpiry) > new Date();
+		const activeGuild = await resolveActiveGuildMission(toCheckPlayer, toCheckPlayer.id === player.id);
 
 		response.push(makePacket(CommandMissionsPacketRes, {
 			keycloakId: toCheckPlayer.keycloakId,
@@ -75,16 +99,7 @@ export default class MissionsCommand {
 			maxCampaignNumber: Campaign.getMaxCampaignNumber(),
 			campaignProgression: missionInfo.campaignProgression,
 			maxSideMissionSlots: toCheckPlayer.getMissionSlotsNumber(),
-			guildMission: hasActiveGuildMission
-				? {
-					missionId: guild.guildMissionId!,
-					objective: guild.guildMissionObjective,
-					numberDone: guild.guildMissionNumberDone,
-					playerContribution: missionInfo.guildMissionContribution,
-					expiresAt: guild.guildMissionExpiry!.getTime(),
-					completed: guild.guildMissionNumberDone >= guild.guildMissionObjective
-				}
-				: null
+			guildMission: buildGuildMissionPayload(activeGuild, missionInfo)
 		}));
 	}
 }
