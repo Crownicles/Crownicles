@@ -2312,7 +2312,8 @@ export const CrowniclesIcons: {
 		marketAnalysis: "📊",
 		woodCommonBundle: "🪵",
 		woodUncommonBundle: "🪓",
-		woodRareBundle: "🌲"
+		woodRareBundle: "🌲",
+		randomMaterialPack: "🎁"
 	},
 	badges: {
 		[Badge.BEST_V1_PLAYER]: "🏆",

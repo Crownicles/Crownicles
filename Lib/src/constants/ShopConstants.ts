@@ -48,8 +48,6 @@ export abstract class ShopConstants {
 
 	static readonly VETERINARIAN_LOVE_POINTS_GAIN = 15;
 
-	static readonly VETERINARIAN_LOVE_POINTS_THRESHOLD = 50;
-
 	static readonly MATERIAL_MERCHANT_PRICE_PER_UNIT = 133;
 
 	static readonly MATERIAL_MERCHANT_AMOUNTS = [
