@@ -97,8 +97,8 @@ export function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMess
 
 const FOOD_BUY_QUICK_PRESETS = [
 	1,
-	5,
-	10
+	10,
+	100
 ] as const;
 
 function getMaxBuyableFood(data: FoodShopUIContext["data"], foodIndex: number): number {
