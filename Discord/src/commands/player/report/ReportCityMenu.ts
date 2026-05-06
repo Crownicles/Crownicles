@@ -1122,50 +1122,77 @@ function addGuildDomainSubMenus(menus: Map<string, CrowniclesNestedMenu>, params
 	}
 }
 
-function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNestedMenu> {
+function addInnSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
 	const {
 		context, interaction, packet, collectorTime, pseudo
 	} = params;
-	const menus = new Map<string, CrowniclesNestedMenu>();
-	const cityData = packet.data.data as ReactionCollectorCityData;
-
-	// Add inn menus
 	for (const inn of cityData.inns || []) {
 		menus.set(`${ReportCityMenuIds.INN_PREFIX}${inn.innId}`, getInnMenu(context, interaction, packet, inn.innId, collectorTime, pseudo));
 	}
+}
 
-	// Add enchanter menu
-	if (cityData.enchanter) {
-		menus.set(ReportCityMenuIds.ENCHANTER_MENU, getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
+function addEnchanterSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.enchanter) {
+		return;
 	}
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = params;
+	menus.set(ReportCityMenuIds.ENCHANTER_MENU, getEnchanterMenu(context, interaction, packet, collectorTime, pseudo));
+}
 
-	// Add blacksmith menus
-	if (cityData.blacksmith) {
-		for (const [key, menu] of getBlacksmithMenus(params)) {
-			menus.set(key, menu);
-		}
+function addBlacksmithSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.blacksmith) {
+		return;
 	}
-
-	// Add home menus
-	if (cityData.home.owned) {
-		menus.set(HomeMenuIds.HOME_MENU, getHomeMenu(params));
-
-		for (const [key, menu] of getHomeSubMenus(params)) {
-			menus.set(key, menu);
-		}
+	for (const [key, menu] of getBlacksmithMenus(params)) {
+		menus.set(key, menu);
 	}
+}
 
-	// Add manage home menu (also shown for guild chiefs for domain notary)
-	if (cityData.home.manage || cityData.guildDomainNotary?.isChief) {
-		menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
+function addHomeSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.home.owned) {
+		return;
 	}
+	menus.set(HomeMenuIds.HOME_MENU, getHomeMenu(params));
+	for (const [key, menu] of getHomeSubMenus(params)) {
+		menus.set(key, menu);
+	}
+}
 
+function addManageHomeSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.home.manage && !cityData.guildDomainNotary?.isChief) {
+		return;
+	}
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = params;
+	menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(context, interaction, packet, collectorTime, pseudo));
+}
+
+function addGuildFoodShopSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.guildFoodShop) {
+		return;
+	}
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = params;
+	menus.set(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU, getGuildFoodShopMenu({
+		context, interaction, packet, collectorTime, pseudo
+	}));
+}
+
+function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNestedMenu> {
+	const menus = new Map<string, CrowniclesNestedMenu>();
+	const cityData = params.packet.data.data as ReactionCollectorCityData;
+
+	addInnSubMenus(menus, params, cityData);
+	addEnchanterSubMenu(menus, params, cityData);
+	addBlacksmithSubMenus(menus, params, cityData);
+	addHomeSubMenus(menus, params, cityData);
+	addManageHomeSubMenu(menus, params, cityData);
 	addGuildDomainSubMenus(menus, params, cityData);
-
-	// Add guild food shop menu (non-domain cities)
-	if (cityData.guildFoodShop) {
-		menus.set(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU, getGuildFoodShopMenu(context, interaction, packet, collectorTime, pseudo));
-	}
+	addGuildFoodShopSubMenu(menus, params, cityData);
 
 	return menus;
 }

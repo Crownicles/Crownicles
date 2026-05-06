@@ -257,13 +257,18 @@ async function handleFoodShopBuy(buyContext: FoodShopBuyContext): Promise<void> 
 	);
 }
 
-export function getGuildFoodShopMenu(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number,
-	pseudo: string
-): CrowniclesNestedMenu {
+export interface GuildFoodShopMenuOptions {
+	context: PacketContext;
+	interaction: CrowniclesInteraction;
+	packet: ReactionCollectorCreationPacket;
+	collectorTime: number;
+	pseudo: string;
+}
+
+export function getGuildFoodShopMenu(options: GuildFoodShopMenuOptions): CrowniclesNestedMenu {
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = options;
 	const data = (packet.data.data as ReactionCollectorCityData).guildFoodShop!;
 	const lng = interaction.userLanguage;
 	const container = buildFoodShopContainer(data, lng, pseudo);
