@@ -51,16 +51,16 @@ export async function handleGuildDomainBuyXp(keycloakId: string, packet: Command
 			return makePacket(CommandReportGuildDomainBuyXpErrorRes, { error: "maxLevel" });
 		}
 
-		await player.spendMoney({
-			amount: price, response: [], reason: NumberChangeReason.SHOP
-		});
-		await player.save();
-
 		const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(price);
 		await guild.addExperience({
 			amount: xpToAdd, response: [], reason: NumberChangeReason.SHOP
 		});
 		await guild.save();
+
+		await player.spendMoney({
+			amount: price, response: [], reason: NumberChangeReason.SHOP
+		});
+		await player.save();
 
 		return makePacket(CommandReportGuildDomainBuyXpRes, {
 			xp: xpToAdd,
