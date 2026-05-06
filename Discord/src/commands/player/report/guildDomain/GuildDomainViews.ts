@@ -188,36 +188,41 @@ function buildShopBody(container: ContainerBuilder, ctx: GuildDomainMenuContext)
 export function buildShopContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
 	const { lng } = ctx;
 	if (ctx.data.shopLevel === 0) {
-		return buildSimpleBuildingContainer(
+		return buildSimpleBuildingContainer({
 			ctx,
-			GuildBuilding.SHOP,
-			"commands:report.city.guildDomain.subMenus.shop.title",
-			c => c.addTextDisplayComponents(
+			building: GuildBuilding.SHOP,
+			titleKey: "commands:report.city.guildDomain.subMenus.shop.title",
+			body: c => c.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(i18n.t("commands:report.city.guildDomain.subMenus.shop.notBuilt", { lng }))
 			),
 			statusMessage
-		);
+		});
 	}
-	return buildSimpleBuildingContainer(
+	return buildSimpleBuildingContainer({
 		ctx,
-		GuildBuilding.SHOP,
-		"commands:report.city.guildDomain.subMenus.shop.title",
-		c => buildShopBody(c, ctx),
+		building: GuildBuilding.SHOP,
+		titleKey: "commands:report.city.guildDomain.subMenus.shop.title",
+		body: c => buildShopBody(c, ctx),
 		statusMessage
-	);
+	});
+}
+
+interface SimpleBuildingArgs {
+	ctx: GuildDomainMenuContext;
+	building: GuildBuilding;
+	titleKey: string;
+	body: (container: ContainerBuilder) => void;
+	statusMessage?: string;
 }
 
 /**
  * Helper to factor out the common building sub-menu skeleton:
  * title + description + separator + upgrade + status + nav.
  */
-function buildSimpleBuildingContainer(
-	ctx: GuildDomainMenuContext,
-	building: GuildBuilding,
-	titleKey: string,
-	body: (container: ContainerBuilder) => void,
-	statusMessage?: string
-): ContainerBuilder {
+function buildSimpleBuildingContainer(args: SimpleBuildingArgs): ContainerBuilder {
+	const {
+		ctx, building, titleKey, body, statusMessage
+	} = args;
 	const { lng } = ctx;
 	const container = new ContainerBuilder();
 
@@ -239,11 +244,11 @@ export function buildShelterContainer(ctx: GuildDomainMenuContext, statusMessage
 	const {
 		data, lng
 	} = ctx;
-	return buildSimpleBuildingContainer(
+	return buildSimpleBuildingContainer({
 		ctx,
-		GuildBuilding.SHELTER,
-		"commands:report.city.guildDomain.subMenus.shelter.title",
-		container => {
+		building: GuildBuilding.SHELTER,
+		titleKey: "commands:report.city.guildDomain.subMenus.shelter.title",
+		body: container => {
 			container.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(
 					i18n.t("commands:report.city.guildDomain.subMenus.shelter.description", {
@@ -254,18 +259,18 @@ export function buildShelterContainer(ctx: GuildDomainMenuContext, statusMessage
 			);
 		},
 		statusMessage
-	);
+	});
 }
 
 export function buildPantryContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
 	const {
 		data, lng
 	} = ctx;
-	return buildSimpleBuildingContainer(
+	return buildSimpleBuildingContainer({
 		ctx,
-		GuildBuilding.PANTRY,
-		"commands:report.city.guildDomain.subMenus.pantry.title",
-		container => {
+		building: GuildBuilding.PANTRY,
+		titleKey: "commands:report.city.guildDomain.subMenus.pantry.title",
+		body: container => {
 			container.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(
 					i18n.t("commands:report.city.guildDomain.subMenus.pantry.description", { lng })
@@ -289,7 +294,7 @@ export function buildPantryContainer(ctx: GuildDomainMenuContext, statusMessage?
 			);
 		},
 		statusMessage
-	);
+	});
 }
 
 export function buildTrainingGroundContainer(ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {
@@ -297,11 +302,11 @@ export function buildTrainingGroundContainer(ctx: GuildDomainMenuContext, status
 		data, lng
 	} = ctx;
 	const love = GuildDomainConstants.getTrainingLovePerDay(data.trainingGroundLevel);
-	return buildSimpleBuildingContainer(
+	return buildSimpleBuildingContainer({
 		ctx,
-		GuildBuilding.TRAINING_GROUND,
-		"commands:report.city.guildDomain.subMenus.training.title",
-		container => {
+		building: GuildBuilding.TRAINING_GROUND,
+		titleKey: "commands:report.city.guildDomain.subMenus.training.title",
+		body: container => {
 			container.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(
 					love === 0
@@ -313,7 +318,7 @@ export function buildTrainingGroundContainer(ctx: GuildDomainMenuContext, status
 			);
 		},
 		statusMessage
-	);
+	});
 }
 
 export function buildBuildingContainer(building: GuildBuilding, ctx: GuildDomainMenuContext, statusMessage?: string): ContainerBuilder {

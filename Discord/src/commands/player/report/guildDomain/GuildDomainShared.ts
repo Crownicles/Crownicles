@@ -100,10 +100,19 @@ export function addStatusMessage(container: ContainerBuilder, statusMessage?: st
 	}
 }
 
-function buildUpgradeText(
-	lng: Language, currentLevel: number, upgradeCost: number,
-	requiredGuildLevel: number | null, meetsLevel: boolean, canAfford: boolean
-): string {
+interface UpgradeTextArgs {
+	lng: Language;
+	currentLevel: number;
+	upgradeCost: number;
+	requiredGuildLevel: number | null;
+	meetsLevel: boolean;
+	canAfford: boolean;
+}
+
+function buildUpgradeText(args: UpgradeTextArgs): string {
+	const {
+		lng, currentLevel, upgradeCost, requiredGuildLevel, meetsLevel, canAfford
+	} = args;
 	let upgradeText = i18n.t("commands:report.city.guildDomain.buildingUpgrade", {
 		lng, nextLevel: currentLevel + 1, cost: upgradeCost
 	});
@@ -143,7 +152,9 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 	const meetsLevel = requiredGuildLevel === null || data.guildLevel >= requiredGuildLevel;
 
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(buildUpgradeText(lng, currentLevel, upgradeCost, requiredGuildLevel, meetsLevel, canAfford))
+		new TextDisplayBuilder().setContent(buildUpgradeText({
+			lng, currentLevel, upgradeCost, requiredGuildLevel, meetsLevel, canAfford
+		}))
 	);
 
 	container.addActionRowComponents(
