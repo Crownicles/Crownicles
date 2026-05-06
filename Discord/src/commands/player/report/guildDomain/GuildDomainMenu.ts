@@ -88,11 +88,21 @@ async function handleUpgrade(
 				setBuildingLevel(ctx.data, res.building, res.newLevel);
 
 				const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${res.building}`, { lng: ctx.lng });
-				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.upgradeSuccess", {
+				const successMessage = i18n.t("commands:report.city.guildDomain.upgradeSuccess", {
 					lng: ctx.lng,
 					building: buildingName,
 					level: res.newLevel
-				}), returnMenuId);
+				});
+
+				/*
+				 * End the report after a successful upgrade so the player runs /rapport
+				 * again and sees fully refreshed stats (mirrors the cooking flow).
+				 */
+				const message = nestedMenus.message;
+				if (message) {
+					await message.reply({ content: successMessage });
+				}
+				handleStayInCityInteraction(ctx.packet, ctx.context, null);
 			}
 			else {
 				await refreshAndShowStatus(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.upgradeError", { lng: ctx.lng }), returnMenuId);
