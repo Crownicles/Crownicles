@@ -29,6 +29,12 @@ import {
 type FoodShopData = ReactionCollectorCityData["guildFoodShop"] & object;
 type FoodKey = "common" | "carnivorous" | "herbivorous" | "ultimate";
 
+const FOOD_BUY_QUICK_PRESETS = [
+	1,
+	5,
+	10
+] as const;
+
 function buildFoodShopBuyButtons(data: FoodShopData, lng: Language): ActionRowBuilder<ButtonBuilder>[] {
 	const rows: ActionRowBuilder<ButtonBuilder>[] = [];
 	const foodTypes = PetConstants.PET_FOOD_BY_ID;
@@ -49,9 +55,7 @@ function buildFoodShopBuyButtons(data: FoodShopData, lng: Language): ActionRowBu
 
 		const amounts = [
 			...new Set([
-				1,
-				Math.min(5, maxBuyable),
-				Math.min(10, maxBuyable),
+				...FOOD_BUY_QUICK_PRESETS.map(preset => Math.min(preset, maxBuyable)),
 				maxBuyable
 			].filter(a => a > 0))
 		];

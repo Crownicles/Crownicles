@@ -57,7 +57,7 @@ export function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMess
 		const currentLevel = data[`${building}Level` as keyof typeof data] as number;
 		const maxLevel = GuildDomainConstants.BUILDINGS[building].maxLevel;
 		const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${building}`, { lng });
-		const description = getBuildingSummary(building, currentLevel, data, lng);
+		const description = getBuildingSummary(building, currentLevel, lng);
 		const buildingIcon = BUILDING_ICONS[building];
 
 		container.addSectionComponents(

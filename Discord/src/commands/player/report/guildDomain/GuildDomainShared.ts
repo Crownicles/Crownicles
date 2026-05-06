@@ -172,7 +172,7 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 	);
 }
 
-export function getBuildingSummary(building: GuildBuilding, level: number, _data: GuildDomainData, lng: Language): string {
+export function getBuildingSummary(building: GuildBuilding, level: number, lng: Language): string {
 	switch (building) {
 		case GuildBuilding.SHOP:
 			return level === 0
