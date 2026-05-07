@@ -42,6 +42,7 @@ import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import {
 	GASPARD_JO_RECIPE_COSTS, RecipeDiscoverySource
 } from "../../../../Lib/src/constants/CookingConstants";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
 
@@ -307,19 +308,21 @@ function handleContinueReaction(_player: Player, properties: PetFoodProperties):
  */
 function getEndCallback(player: Player, foodType: string, properties: PetFoodProperties): EndCallback {
 	return async (collector, response) => {
-		const reactionType = collector.getFirstReaction()?.reaction.type;
-		const handler = reactionType ? REACTION_HANDLERS[reactionType] : undefined;
-		const outcome = handler
-			? await handler(player, properties)
-			: SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
-
-		// Check if the player chose to investigate (which applies the time penalty)
-		const wasInvestigating = reactionType === ReactionCollectorPetFoodInvestigateReaction.name;
-
-		await applyOutcome(player, {
-			foodType, outcome, properties, wasInvestigating
-		}, response);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FOOD_SMALL_EVENT);
+		await withLockedPlayerSafe(player, "petFood endCallback", async lockedPlayer => {
+			const reactionType = collector.getFirstReaction()?.reaction.type;
+			const handler = reactionType ? REACTION_HANDLERS[reactionType] : undefined;
+			const outcome = handler
+				? await handler(lockedPlayer, properties)
+				: SmallEventConstants.PET_FOOD.OUTCOMES.NOTHING;
+
+			// Check if the player chose to investigate (which applies the time penalty)
+			const wasInvestigating = reactionType === ReactionCollectorPetFoodInvestigateReaction.name;
+
+			await applyOutcome(lockedPlayer, {
+				foodType, outcome, properties, wasInvestigating
+			}, response);
+		});
 	};
 }
 
