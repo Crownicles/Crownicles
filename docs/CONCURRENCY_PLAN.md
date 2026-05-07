@@ -181,6 +181,11 @@ Generated from `grep player.save / guild.save` + manual review.
 - Cron jobs (`CrowniclesDaily`) — already single-fire.
 - `LogsDatabase` — append-only.
 
+### 4.6 Known follow-ups (not blocking the PR-AB…PR-H merge train)
+
+- [ ] **`ReportPveService.doPVEBoss.fightCallback` final `player.save()`** — the post-fight reward chain mutates `player.fightPointsLost` (line 240) and `player.setEnergyLost(...)` (loss branch), then issues `await player.save()` outside any explicit `withLockedPlayerSafe`. The inner `addMoney` / `addExperience` / `MissionsController.update` paths already each acquire the Player lock through PR-H1 and persist their own mutations atomically, so the residual lost-update window only covers `fightPointsLost` and the loss-branch energy state. `BlockingUtils` provides single-flight per player for the PVE flow. Tracked here as a future refactor (probably part of a future "PvE / adventure single-player sweep") so we can re-fetch the locked instance and replay only the post-rewards scalar mutations against it. Marked in code with `// TODO(concurrency)` next to the `eslint-disable-next-line crownicles/no-unguarded-save`.
+- [ ] **Extend the `crownicles/no-unguarded-save` scope** — currently scoped to the four orchestration files (`MissionsController`, `Report{SmallEvent,Pve,Cooking}Service`) plus `withLockedPlayerSafe` itself. Expanding to `src/core/smallEvents/**` would surface ~29 violations that are all transitively under PR-H1's `loadAndExecuteSmallEvent` lock — the rule cannot prove that statically. Two viable strategies for a future PR: (a) bulk-add `eslint-disable-next-line crownicles/no-unguarded-save -- under loadAndExecuteSmallEvent lock (PR-H1)` comments on each leaf save, or (b) extend the rule with an `inferredLockMarker` option (e.g. a top-of-file `// @lock-inherited` marker that opts the whole file in). Strategy (b) is preferred: zero per-line noise and a single audit point per file.
+
 ## 5. Implementation stages (one PR per stage in the merge train)
 
 Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:integration` (where applicable) all pass.
