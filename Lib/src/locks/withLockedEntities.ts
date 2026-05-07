@@ -17,6 +17,27 @@ export interface LockKey<M extends Model = Model> {
 }
 
 /**
+ * Thrown by {@link withLockedEntities} when one of the requested rows
+ * cannot be loaded inside the transaction (typically because a
+ * concurrent transaction already destroyed it). Callers can catch
+ * this specific error to convert "the row I was about to mutate is
+ * gone" into a graceful "situation changed" response instead of an
+ * internal-server error.
+ */
+export class LockedRowNotFoundError extends Error {
+	readonly tableName: string;
+
+	readonly id: number;
+
+	constructor(tableName: string, id: number) {
+		super(`withLockedEntities: row not found for ${tableName}#${id}`);
+		this.name = "LockedRowNotFoundError";
+		this.tableName = tableName;
+		this.id = id;
+	}
+}
+
+/**
  * Maps a tuple of `LockKey` to the matching tuple of model instances.
  * `withLockedEntities` returns instances in the caller's *original*
  * order, regardless of the canonical lock-acquisition order.
@@ -114,7 +135,7 @@ export async function withLockedEntities<
 				transaction
 			});
 			if (!instance) {
-				throw new Error(`withLockedEntities: row not found for ${cacheKey}`);
+				throw new LockedRowNotFoundError(key.model.tableName, key.id);
 			}
 			lockedByKey.set(cacheKey, instance);
 		}
