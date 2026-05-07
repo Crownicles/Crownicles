@@ -128,8 +128,8 @@ async function loadAndExecuteSmallEvent(
 
 			// Save the small event BEFORE execution so it gets affected by timeTravel() if the event succeeds
 			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());
+			// eslint-disable-next-line crownicles/no-unguarded-save -- fresh INSERT of a new PlayerSmallEvent row; no concurrent writer can target a row that does not exist yet
 			await smallEventRecord.save();
-
 			await runSmallEventUnderPlayerLock(player, smallEvent, response, context, playerActiveObjects);
 		}
 		catch (e) {
