@@ -122,6 +122,22 @@ async function applyMemberLeavesGuild(
 }
 
 /**
+ * Predicate that captures the "the elder we snapshotted at
+ * prompt time is still the elder of this guild on the locked
+ * row" rule, so the lock body can stay flat.
+ */
+function isStillThePromotableElder(
+	guild: Guild,
+	elder: Player | undefined,
+	expectedElderId: number | null
+): elder is Player {
+	if (elder === undefined) {
+		return false;
+	}
+	return guild.elderId === elder.id && guild.elderId === expectedElderId;
+}
+
+/**
  * In-lock body shared by both lock paths. Re-validates that the
  * leaving player still belongs to the guild we read at prompt
  * time, then dispatches to the correct sub-flow (chief promotes
@@ -145,11 +161,9 @@ async function applyLockedAcceptGuildLeave(
 	}
 
 	const isChief = player.id === guild.chiefId;
-	const elderStillElder = elder !== undefined
-		&& guild.elderId === elder.id
-		&& guild.elderId === expected.elderId;
+	const elderStillElder = isStillThePromotableElder(guild, elder, expected.elderId);
 
-	if (isChief && elderStillElder && elder) {
+	if (isChief && elderStillElder) {
 		await applyChiefPromotesElder(response, {
 			chief: player, elder, guild
 		});
