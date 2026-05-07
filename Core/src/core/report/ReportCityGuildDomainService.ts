@@ -31,33 +31,63 @@ const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
 export async function handleGuildDomainNotaryReaction(player: Player, city: City, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
 
-	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-	if (!guild || guild.chiefId !== player.id) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use guild domain notary but is not guild chief.`);
+	if (!player.guildId) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use guild domain notary but has no guild.`);
 		return;
 	}
 
-	const isRelocation = guild.domainCityId !== null;
-	const cost = isRelocation
-		? GuildDomainConstants.DOMAIN_RELOCATION_COST
-		: GuildDomainConstants.DOMAIN_PURCHASE_COST;
+	const guildId = player.guildId;
 
-	if (guild.treasury < cost) {
+	/*
+	 * Lock the guild row for the entire validate-mutate-save sequence so
+	 * two concurrent notary calls (e.g. the chief clicking from two
+	 * clients) cannot both pass the treasury check on the same stale
+	 * snapshot and end up double-debiting (or worse, taking the
+	 * treasury negative). The chief eligibility check is also moved
+	 * inside the lock since chiefId can change concurrently.
+	 */
+	const outcome = await Guild.withLocked(guildId, async guild => {
+		if (guild.chiefId !== player.id) {
+			CrowniclesLogger.error(`Player ${player.keycloakId} tried to use guild domain notary but is not guild chief.`);
+			return null;
+		}
+
+		const isRelocation = guild.domainCityId !== null;
+		const cost = isRelocation
+			? GuildDomainConstants.DOMAIN_RELOCATION_COST
+			: GuildDomainConstants.DOMAIN_PURCHASE_COST;
+
+		if (guild.treasury < cost) {
+			return {
+				kind: "insufficient" as const, missing: cost - guild.treasury
+			};
+		}
+
+		guild.treasury -= cost;
+		guild.domainCityId = city.id;
+		await guild.save();
+
+		return {
+			kind: "ok" as const, isRelocation, cost
+		};
+	});
+
+	if (outcome === null) {
+		return;
+	}
+
+	if (outcome.kind === "insufficient") {
 		response.push(makePacket(CommandReportGuildDomainNotEnoughTreasuryRes, {
-			missingTreasury: cost - guild.treasury
+			missingTreasury: outcome.missing
 		}));
 		return;
 	}
 
-	guild.treasury -= cost;
-	guild.domainCityId = city.id;
-	await guild.save();
-
-	if (isRelocation) {
-		response.push(makePacket(CommandReportGuildDomainRelocateRes, { cost }));
+	if (outcome.isRelocation) {
+		response.push(makePacket(CommandReportGuildDomainRelocateRes, { cost: outcome.cost }));
 	}
 	else {
-		response.push(makePacket(CommandReportGuildDomainPurchaseRes, { cost }));
+		response.push(makePacket(CommandReportGuildDomainPurchaseRes, { cost: outcome.cost }));
 	}
 }
 
@@ -117,42 +147,55 @@ async function resolveUpgrade(
 }
 
 export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq, response: CrowniclesPacket[]): Promise<void> {
-	const resolved = await resolveUpgrade(keycloakId, packet);
-	if (typeof resolved === "string") {
-		response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: resolved }));
+	const fastResolved = await resolveUpgrade(keycloakId, packet);
+	if (typeof fastResolved === "string") {
+		response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: fastResolved }));
 		return;
 	}
 
-	const {
-		guild, building, currentLevel, upgradeCost
-	} = resolved;
-	guild.treasury -= upgradeCost;
-	guild.setDataValue(BUILDING_LEVEL_FIELDS[building] as string, currentLevel + 1);
-
-	const xpGained = GuildUtils.calculateAmountOfXPToAdd(Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO));
-
 	/*
-	 * Push the upgrade response first so the awaiting front-end correlation callback
-	 * resolves on this packet (and not on a potential GuildLevelUpPacket emitted by addExperience).
+	 * Re-validate against the locked guild row before mutating: another
+	 * concurrent upgrade or treasury-spending handler may have changed
+	 * `treasury` / building level / guild level between our fast-fail
+	 * and the lock acquisition. The packet ordering (Upgrade response
+	 * pushed BEFORE GuildLevelUpPacket from addExperience) is preserved
+	 * inside the lock so the front-end correlation callback still
+	 * resolves on the upgrade packet.
 	 */
-	response.push(makePacket(CommandReportGuildDomainUpgradeRes, {
-		building,
-		newLevel: currentLevel + 1,
-		cost: upgradeCost,
-		newTreasury: guild.treasury,
-		xpGained
-	}));
+	await Guild.withLocked(fastResolved.guild.id, async guild => {
+		const revalidated = validateBuildingUpgrade(guild, packet.building);
+		if (typeof revalidated === "string") {
+			response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: revalidated }));
+			return;
+		}
 
-	/*
-	 * Spending treasury on a building upgrade also grants guild experience.
-	 * We use the regular XP formula but on only 10% of the cost (upgrades are expensive
-	 * and would otherwise grant disproportionately large amounts of XP).
-	 */
-	await guild.addExperience({
-		amount: xpGained,
-		response,
-		reason: NumberChangeReason.GUILD_DOMAIN_UPGRADE
+		const {
+			building, currentLevel, upgradeCost
+		} = revalidated;
+		guild.treasury -= upgradeCost;
+		guild.setDataValue(BUILDING_LEVEL_FIELDS[building] as string, currentLevel + 1);
+
+		const xpGained = GuildUtils.calculateAmountOfXPToAdd(Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO));
+
+		response.push(makePacket(CommandReportGuildDomainUpgradeRes, {
+			building,
+			newLevel: currentLevel + 1,
+			cost: upgradeCost,
+			newTreasury: guild.treasury,
+			xpGained
+		}));
+
+		/*
+		 * Spending treasury on a building upgrade also grants guild experience.
+		 * We use the regular XP formula but on only 10% of the cost (upgrades are expensive
+		 * and would otherwise grant disproportionately large amounts of XP).
+		 */
+		await guild.addExperience({
+			amount: xpGained,
+			response,
+			reason: NumberChangeReason.GUILD_DOMAIN_UPGRADE
+		});
+
+		await guild.save();
 	});
-
-	await guild.save();
 }
