@@ -40,8 +40,8 @@ export default defineConfig([
 		// `withLockedPlayerSafe`. Any new `.save()` introduced into one
 		// of these files without going through a lock helper is a
 		// regression — the rule below catches that statically.
-		// See docs/CONCURRENCY.md for the rationale, patterns and the
-		// `*UnderLock` naming convention.
+		// See §10 of the review checklist for the rationale, patterns
+		// and the `*UnderLock` naming convention.
 		// Scope is intentionally narrow: many leaf helpers (small
 		// events, command handlers) are reached from a locked
 		// orchestration path but the rule cannot trace that across
