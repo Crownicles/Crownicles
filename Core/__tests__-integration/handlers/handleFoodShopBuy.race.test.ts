@@ -24,7 +24,7 @@ import {
 	beforeAll, afterAll, beforeEach, describe, expect, it
 } from "vitest";
 import {
-	DataTypes, Model, ModelStatic, Sequelize
+	DataTypes, Model, ModelStatic
 } from "sequelize";
 import { setupIntegrationDb, IntegrationTestEnvironment } from "../_setup";
 import {
