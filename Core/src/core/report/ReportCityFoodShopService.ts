@@ -19,18 +19,30 @@ import {
 
 interface ResolvedFoodShop {
 	player: Player;
-	guild: Guild;
+	guildId: number;
 	foodType: PetFood;
 	amount: number;
 	foodIndex: number;
 	pricePerUnit: number;
 }
 
+/**
+ * First-pass resolution: cheap precondition checks that *don't* mutate
+ * state, run outside the lock.
+ *
+ * The values read from `guild` here (`shopLevel`, `treasury`,
+ * `getFoodAmount`) are intentionally treated as **hints**: they only
+ * gate fast-failure errors (no-shop, invalid-food). The authoritative
+ * affordability + capacity check is re-done inside
+ * {@link handleFoodShopBuy}'s `Guild.withLocked` block, against the
+ * row-locked guild instance, so two concurrent buyers cannot both pass
+ * a stale check (the bug PR-C fixes).
+ */
 async function resolveFoodShopRequest(
 	keycloakId: string, packet: CommandReportFoodShopBuyReq
 ): Promise<ResolvedFoodShop | GuildDomainError> {
 	const player = await Players.getByKeycloakId(keycloakId);
-	if (!player || !player.guildId) {
+	if (!player?.guildId) {
 		return GUILD_DOMAIN_ERROR.NO_GUILD;
 	}
 
@@ -48,23 +60,29 @@ async function resolveFoodShopRequest(
 	const foodIndex = getFoodIndexOf(foodType);
 	const pricePerUnit = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
 
-	if (guild.treasury < pricePerUnit * amount) {
+	// Fast-failure hints — re-validated under the lock below.
+	if (guild.treasury < pricePerUnit * amount && guild.treasury < pricePerUnit) {
 		return GUILD_DOMAIN_ERROR.NOT_ENOUGH_TREASURY;
 	}
 
-	if (guild.isStorageFullFor(foodType, amount)) {
+	if (guild.isStorageFullFor(foodType, 1)) {
 		return GUILD_DOMAIN_ERROR.STORAGE_FULL;
 	}
 
 	return {
-		player, guild, foodType, amount, foodIndex, pricePerUnit
+		player, guildId: player.guildId, foodType, amount, foodIndex, pricePerUnit
 	};
 }
 
-function computeAffordableAmount(req: ResolvedFoodShop): number {
-	const maxStorable = req.guild.getFoodCapacityFor(req.foodType) - req.guild.getFoodAmount(req.foodType);
-	const maxAffordable = Math.floor(req.guild.treasury / req.pricePerUnit);
-	return Math.min(req.amount, maxStorable, maxAffordable);
+/**
+ * Maximum amount the buyer can actually take given the *currently
+ * locked* `guild` row. Computed inside the critical section so the
+ * inputs are never stale.
+ */
+function computeAffordableAmount(guild: Guild, request: ResolvedFoodShop): number {
+	const maxStorable = guild.getFoodCapacityFor(request.foodType) - guild.getFoodAmount(request.foodType);
+	const maxAffordable = Math.floor(guild.treasury / request.pricePerUnit);
+	return Math.min(request.amount, maxStorable, maxAffordable);
 }
 
 export async function handleFoodShopBuy(keycloakId: string, packet: CommandReportFoodShopBuyReq): Promise<CrowniclesPacket> {
@@ -73,24 +91,34 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 		return makePacket(CommandReportFoodShopBuyErrorRes, { error: resolved });
 	}
 
-	const actualAmount = computeAffordableAmount(resolved);
-	if (actualAmount <= 0) {
-		return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY });
-	}
+	/*
+	 * Critical section: lock the guild row with `SELECT … FOR UPDATE`,
+	 * recompute affordability from the freshly-locked state (any value
+	 * read in `resolveFoodShopRequest` could be stale by now), then
+	 * mutate + save inside the same transaction.
+	 *
+	 * Concurrent food-shop buyers on the same guild now serialise on
+	 * this row instead of both passing a stale treasury check and
+	 * over-spending it (the PR-C bug — see
+	 * `Core/__tests__-integration/handlers/handleFoodShopBuy.race.test.ts`).
+	 */
+	return await Guild.withLocked(resolved.guildId, async guild => {
+		const actualAmount = computeAffordableAmount(guild, resolved);
+		if (actualAmount <= 0) {
+			return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY });
+		}
 
-	const {
-		guild, foodType, pricePerUnit
-	} = resolved;
-	const totalCost = pricePerUnit * actualAmount;
-	guild.treasury -= totalCost;
-	guild.addFood(foodType, actualAmount, NumberChangeReason.SHOP);
-	await guild.save();
+		const totalCost = resolved.pricePerUnit * actualAmount;
+		guild.treasury -= totalCost;
+		guild.addFood(resolved.foodType, actualAmount, NumberChangeReason.SHOP);
+		await guild.save();
 
-	return makePacket(CommandReportFoodShopBuyRes, {
-		foodType,
-		newFoodStock: guild.getFoodAmount(foodType),
-		newTreasury: guild.treasury,
-		amountBought: actualAmount,
-		totalCost
+		return makePacket(CommandReportFoodShopBuyRes, {
+			foodType: resolved.foodType,
+			newFoodStock: guild.getFoodAmount(resolved.foodType),
+			newTreasury: guild.treasury,
+			amountBought: actualAmount,
+			totalCost
+		});
 	});
 }
