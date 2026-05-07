@@ -34,6 +34,30 @@ export default defineConfig([
 		}
 	},
 	{
+		// Concurrency hardening sweep (PR-E … PR-H): the orchestration
+		// files below sit at the top of every gameplay flow and route
+		// state mutations through `withLockedEntities` /
+		// `withLockedPlayerSafe`. Any new `.save()` introduced into one
+		// of these files without going through a lock helper is a
+		// regression — the rule below catches that statically.
+		// See docs/CONCURRENCY.md for the rationale, patterns and the
+		// `*UnderLock` naming convention.
+		// Scope is intentionally narrow: many leaf helpers (small
+		// events, command handlers) are reached from a locked
+		// orchestration path but the rule cannot trace that across
+		// files. They are protected at the call site, not at the leaf.
+		files: [
+			"src/core/missions/MissionsController.ts",
+			"src/core/report/ReportSmallEventService.ts",
+			"src/core/report/ReportPveService.ts",
+			"src/core/report/ReportCookingService.ts",
+			"src/core/utils/withLockedPlayerSafe.ts"
+		],
+		rules: {
+			"crownicles/no-unguarded-save": "error"
+		}
+	},
+	{
 		rules: {
 			"no-restricted-imports": [
 				"error",
