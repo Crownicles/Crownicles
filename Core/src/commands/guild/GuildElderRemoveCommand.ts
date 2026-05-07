@@ -2,7 +2,9 @@ import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { Guilds } from "../../core/database/game/models/Guild";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
 import {
 	CommandGuildElderRemoveAcceptPacketRes,
 	CommandGuildElderRemoveNoElderPacket,
@@ -24,41 +26,106 @@ import { ReactionCollectorGuildElderRemove } from "../../../../Lib/src/packets/i
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import { GuildStatusChangeNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildStatusChangeNotificationPacket";
 import { PacketUtils } from "../../core/utils/PacketUtils";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
- * Demote demotedElder as a simple member of the guild
+ * In-lock body that clears the elder slot of the locked guild
+ * after revalidating chief authority and elder presence.
+ */
+async function applyLockedAcceptElderRemove(
+	response: CrowniclesPacket[],
+	locked: {
+		chief: Player; guild: Guild;
+	},
+	expected: {
+		guildId: number;
+	}
+): Promise<{
+	ok: boolean; demotedKeycloakId?: string;
+}> {
+	const {
+		chief, guild
+	} = locked;
+
+	if (chief.guildId !== expected.guildId || chief.id !== guild.chiefId) {
+		return { ok: false };
+	}
+	if (!guild.elderId) {
+		return { ok: false };
+	}
+
+	const demotedElderId = guild.elderId;
+	const demotedElder = await Players.getById(demotedElderId);
+	const demotedKeycloakId = demotedElder.keycloakId;
+
+	guild.elderId = null;
+	await guild.save();
+
+	crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, demotedElderId)
+		.then();
+
+	response.push(makePacket(CommandGuildElderRemoveAcceptPacketRes, {
+		demotedKeycloakId,
+		guildName: guild.name
+	}));
+
+	PacketUtils.sendNotifications([
+		makePacket(GuildStatusChangeNotificationPacket, {
+			keycloakId: demotedKeycloakId,
+			guildName: guild.name
+		})
+	]);
+	return {
+		ok: true, demotedKeycloakId
+	};
+}
+
+/**
+ * Demote demotedElder as a simple member of the guild under a
+ * row lock. Locks chief + guild so a concurrent elder leave /
+ * promotion / demotion cannot duplicate or contradict the change.
+ *
  * @param player
- * @param demotedElder
+ * @param _demotedElder
  * @param response
  */
-async function acceptGuildElderRemove(player: Player, demotedElder: Player, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
-	await demotedElder.reload();
-	const guild = (await Guilds.getById(player.guildId))!;
-
-	// Do all necessary checks again just in case something changed during the menu
-	if (!guild.elderId) {
+async function acceptGuildElderRemove(player: Player, _demotedElder: Player, response: CrowniclesPacket[]): Promise<void> {
+	const freshChief = await Players.getById(player.id);
+	if (freshChief.guildId === null) {
 		response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
 		return;
 	}
-	guild.elderId = null;
+	const guildSnapshot = await Guilds.getById(freshChief.guildId);
+	if (!guildSnapshot) {
+		response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
+		return;
+	}
 
-	await Promise.all([
-		demotedElder.save(),
-		guild.save()
-	]);
-	crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, demotedElder.id).then();
+	try {
+		const outcome = await withLockedEntities(
+			[Player.lockKey(freshChief.id), Guild.lockKey(guildSnapshot.id)] as const,
+			async ([lockedChief, lockedGuild]) => await applyLockedAcceptElderRemove(
+				response,
+				{
+					chief: lockedChief, guild: lockedGuild
+				},
+				{ guildId: guildSnapshot.id }
+			)
+		);
 
-	response.push(makePacket(CommandGuildElderRemoveAcceptPacketRes, {
-		demotedKeycloakId: demotedElder.keycloakId,
-		guildName: guild.name
-	}));
-	const notifications: GuildStatusChangeNotificationPacket[] = [];
-	notifications.push(makePacket(GuildStatusChangeNotificationPacket, {
-		keycloakId: demotedElder.keycloakId,
-		guildName: guild.name
-	}));
-	PacketUtils.sendNotifications(notifications);
+		if (!outcome.ok) {
+			response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
+		}
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
+			return;
+		}
+		throw error;
+	}
 }
 
 function endCallback(player: Player, demotedElder: Player): EndCallback {
