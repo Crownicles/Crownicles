@@ -19,11 +19,32 @@ import { Constants } from "../../../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
 import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
 import { GuildDomainConstants } from "../../../../../../Lib/src/constants/GuildDomainConstants";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 
 export class Guild extends Model {
+	/**
+	 * Build a {@link LockKey} for this guild so it can participate in a
+	 * `withLockedEntities([...])` composite critical section.
+	 */
+	static lockKey(id: number): LockKey<Guild> {
+		return {
+			model: Guild, id
+		};
+	}
+
+	/**
+	 * Convenience helper for the common case of locking a single guild.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(id: number, fn: (guild: Guild) => Promise<R>): Promise<R> {
+		return withLockedEntities([Guild.lockKey(id)], ([guild]) => fn(guild));
+	}
+
 	declare readonly id: number;
 
 	declare name: string;

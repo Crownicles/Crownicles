@@ -11,6 +11,9 @@ export default defineConfig({
 		globals: true,
 		setupFiles: ['./vitest.setup.ts'],
 		include: ['**/*.{test,spec}.{js,ts}'],
+		// Integration tests run via `pnpm test:integration` against a real
+		// MariaDB and must not be picked up by the default unit-test run.
+		exclude: ['node_modules/**', 'dist/**', '__tests__-integration/**'],
 		reporters: [
 			'default',
 			['junit', { outputFile: 'test-results.xml' }]
