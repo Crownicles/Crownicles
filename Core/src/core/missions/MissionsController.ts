@@ -13,7 +13,7 @@ import { Campaign } from "./Campaign";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
 import {
 	CrowniclesPacket,
 	makePacket
@@ -34,6 +34,10 @@ import { InventorySlots } from "../database/game/models/InventorySlot";
 import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 
 type MissionInformations = {
@@ -181,20 +185,48 @@ export abstract class MissionsController {
 			set = false
 		}: MissionInformations
 	): Promise<Player> {
+		const info: MissionInformations = {
+			missionId, count, params, set
+		};
+		try {
+			return await withLockedEntities(
+				[
+					Player.lockKey(player.id),
+					PlayerMissionsInfo.lockKey(player.id)
+				] as const,
+				([lockedPlayer, lockedMissionInfo]) =>
+					MissionsController.runUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, info)
+			);
+		}
+		catch (e) {
+			if (e instanceof LockedRowNotFoundError) {
+				CrowniclesLogger.warn(
+					`MissionsController.update: locked row vanished for player ${player.id} — skipping mission update`
+				);
+				return player;
+			}
+			throw e;
+		}
+	}
+
+	private static async runUpdateUnderLock(
+		player: Player,
+		missionInfo: PlayerMissionsInfo,
+		response: CrowniclesPacket[],
+		info: MissionInformations
+	): Promise<Player> {
 		const missionSlots = await MissionSlots.getOfPlayer(player.id);
-		const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 
 		await MissionsController.handleExpiredMissions(player, missionSlots, response);
-		const specialMissionCompletion = await MissionsController.updateMissionsCounts({
-			missionId,
-			count,
-			params,
-			set
-		}, missionSlots, missionInfo, player, response);
-		player = await MissionsController.checkCompletedMissions(player, missionSlots, missionInfo, response, specialMissionCompletion);
+		const specialMissionCompletion = await MissionsController.updateMissionsCounts(
+			info, missionSlots, missionInfo, player, response
+		);
+		const updated = await MissionsController.checkCompletedMissions(
+			player, missionSlots, missionInfo, response, specialMissionCompletion
+		);
 
-		await player.save();
-		return player;
+		await updated.save();
+		return updated;
 	}
 
 	/**
