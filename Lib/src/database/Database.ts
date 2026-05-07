@@ -8,6 +8,7 @@ import { promises } from "fs";
 import { createConnection } from "mariadb";
 import { DatabaseConfiguration } from "./DatabaseConfiguration";
 import { CrowniclesLogger } from "../logs/CrowniclesLogger";
+import { useCLSOnSequelize } from "../locks/CLSNamespace";
 import TYPES = Transaction.TYPES;
 
 const DB_RETRY_MAX_ATTEMPTS = 10;
@@ -67,6 +68,15 @@ export abstract class Database {
 		if (this.sequelize) {
 			return;
 		}
+
+		/*
+		 * Wire the shared CLS namespace into Sequelize so transactions opened
+		 * by `withLockedEntities` automatically propagate to nested
+		 * `model.save()` calls. Must run before any `new Sequelize(...)`.
+		 * The ctor is passed explicitly: pnpm may resolve several physical
+		 * copies of `sequelize` and `useCLS` only affects the one we hand it.
+		 */
+		useCLSOnSequelize(Sequelize);
 
 		const dbName = `${this.databaseConfiguration.prefix}_${this.databaseConfiguration.databaseName}`;
 

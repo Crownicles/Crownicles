@@ -6,8 +6,29 @@ import * as moment from "moment";
 import { HomeChestSlots } from "./HomeChestSlot";
 import { HomeGardenSlots } from "./HomeGardenSlot";
 import { HomePlantStorages } from "./HomePlantStorage";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 export class Home extends Model {
+	/**
+	 * Build a {@link LockKey} for this home so it can participate in a
+	 * `withLockedEntities([...])` composite critical section.
+	 */
+	static lockKey(id: number): LockKey<Home> {
+		return {
+			model: Home, id
+		};
+	}
+
+	/**
+	 * Convenience helper for the common case of locking a single home.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(id: number, fn: (home: Home) => Promise<R>): Promise<R> {
+		return withLockedEntities([Home.lockKey(id)], ([home]) => fn(home));
+	}
+
 	declare readonly id: number;
 
 	declare readonly ownerId: number;

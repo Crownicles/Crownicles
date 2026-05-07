@@ -39,6 +39,9 @@ import {
 	Class, ClassDataController
 } from "../../../../data/Class";
 import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
+import {
 	League, LeagueDataController
 } from "../../../../data/League";
 import { TopConstants } from "../../../../../../Lib/src/constants/TopConstants";
@@ -91,6 +94,29 @@ type ressourcesLostOnPveFaint = {
 };
 
 export class Player extends Model {
+	/**
+	 * Build a {@link LockKey} for this player so it can participate in a
+	 * `withLockedEntities([...])` composite critical section.
+	 *
+	 * @param id Primary key of the player to lock.
+	 */
+	static lockKey(id: number): LockKey<Player> {
+		return {
+			model: Player, id
+		};
+	}
+
+	/**
+	 * Convenience helper for the common case of locking a single player.
+	 * Opens a Sequelize transaction, acquires `SELECT … FOR UPDATE` on the
+	 * row, re-fetches it, and passes the fresh instance to `fn`. Any
+	 * `player.save()` inside `fn` (directly or transitively) inherits the
+	 * transaction through the shared CLS namespace.
+	 */
+	static withLocked<R>(id: number, fn: (player: Player) => Promise<R>): Promise<R> {
+		return withLockedEntities([Player.lockKey(id)], ([player]) => fn(player));
+	}
+
 	declare readonly id: number;
 
 	declare keycloakId: string;

@@ -1,0 +1,103 @@
+name: Integration Tests
+
+on:
+  pull_request:
+    branches: [ '**' ]
+    paths: [ Lib/**, Core/**, .github/workflows/integration-tests.yml ]
+  push:
+    branches: [ develop, master ]
+    paths: [ Lib/**, Core/**, .github/workflows/integration-tests.yml ]
+  workflow_dispatch:
+
+jobs:
+  core-integration:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: super_secret_password
+          MARIADB_DATABASE: crownicles_bootstrap
+          MARIADB_USER: draftbot
+          MARIADB_PASSWORD: secret_password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      TEST_DB_HOST: 127.0.0.1
+      TEST_DB_PORT: 3306
+      TEST_DB_ROOT_USER: root
+      TEST_DB_ROOT_PASSWORD: super_secret_password
+      TEST_DB_USER: draftbot
+      TEST_DB_PASSWORD: secret_password
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Setup PNPM
+        run: |
+          npm install --global corepack@latest
+          corepack enable
+          corepack use pnpm@latest-10
+
+      - name: Cache PNPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            **/node_modules
+          key: ${{ runner.os }}-integration-deps-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-integration-deps-
+
+      - name: Install dependencies
+        run: |
+          pnpm --dir ./Lib install
+          pnpm --dir ./Core install
+
+      - name: Wait for MariaDB to be ready
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -P 3306 -uroot -psuper_secret_password --silent; then
+              echo "MariaDB is up"
+              exit 0
+            fi
+            echo "Waiting for MariaDB ($i/30)…"
+            sleep 2
+          done
+          echo "MariaDB never became ready"
+          exit 1
+
+      - name: Grant test user privileges
+        # The integration test setup also issues GRANTs per generated schema,
+        # but we make sure the user can be discovered with `%` host first.
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -psuper_secret_password -e "
+            CREATE USER IF NOT EXISTS 'draftbot'@'%' IDENTIFIED BY 'secret_password';
+            GRANT ALL PRIVILEGES ON *.* TO 'draftbot'@'%' WITH GRANT OPTION;
+            FLUSH PRIVILEGES;
+          "
+
+      - name: Create config file for Core
+        run: cp config/config.default.toml config/config.toml
+        working-directory: ./Core
+
+      - name: Run Core integration tests
+        run: pnpm --dir ./Core test:integration
+
+      - name: Upload integration test results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: core-integration-results
+          path: Core/test-integration-results.xml
