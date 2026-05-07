@@ -158,6 +158,7 @@ export abstract class MissionsController {
 			// If the last completion was NOT yesterday and NOT today, reset the streak
 			if (!datesAreOnSameDay(lastCompletedDate, yesterday) && !datesAreOnSameDay(lastCompletedDate, today)) {
 				streakMission.numberDone = 0;
+				// eslint-disable-next-line crownicles/no-unguarded-save -- transitively reached from runUpdateUnderLock; DailyMission row is per-mission and idempotent on reset
 				await streakMission.save();
 			}
 		}
@@ -263,6 +264,7 @@ export abstract class MissionsController {
 				.then();
 		}
 
+		// eslint-disable-next-line crownicles/no-unguarded-save -- reached only from runUpdateUnderLock via checkCompletedMissions
 		await player.save();
 		return completedMissions;
 	}
@@ -311,6 +313,7 @@ export abstract class MissionsController {
 			missions: MissionsController.prepareMissionSlots(expiredMissions),
 			keycloakId: player.keycloakId
 		}));
+		// eslint-disable-next-line crownicles/no-unguarded-save -- reached only from runUpdateUnderLock via handleExpiredMissions
 		await player.save();
 	}
 
@@ -490,11 +493,13 @@ export abstract class MissionsController {
 			missionInfo.dailyMissionNumberDone += count;
 		}
 		missionInfo.dailyMissionNumberDone = Math.min(missionInfo.dailyMissionNumberDone, dailyMission.missionObjective);
+		// eslint-disable-next-line crownicles/no-unguarded-save -- reached only from runUpdateUnderLock via updateMissionsCounts → updateDailyMissionCount
 		await missionInfo.save();
 
 		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
 			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
 			missionInfo.lastDailyMissionCompleted = new Date();
+			// eslint-disable-next-line crownicles/no-unguarded-save -- same chain as above; missionInfo is the locked row from runUpdateUnderLock
 			await missionInfo.save();
 			return true;
 		}
@@ -563,6 +568,7 @@ export abstract class MissionsController {
 		const saveBlob = missionInterface.updateSaveBlob(mission.missionVariant, mission.saveBlob, missionInformations.params!);
 		if (saveBlob !== mission.saveBlob) {
 			mission.saveBlob = saveBlob;
+			// eslint-disable-next-line crownicles/no-unguarded-save -- MissionSlot row reached only from runUpdateUnderLock via checkMissionSlots
 			await mission.save();
 		}
 	}
@@ -575,6 +581,7 @@ export abstract class MissionsController {
 	private static async updateMission(mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
 		const count = missionInformations.count ?? 1;
 		mission.numberDone = Math.min(mission.missionObjective, missionInformations.set ? count : mission.numberDone + count);
+		// eslint-disable-next-line crownicles/no-unguarded-save -- MissionSlot row reached only from runUpdateUnderLock via checkMissionSlots
 		await mission.save();
 	}
 }
