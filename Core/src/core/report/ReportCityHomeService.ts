@@ -1,7 +1,9 @@
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Player } from "../database/game/models/Player";
 import { City } from "../../data/City";
-import { Homes } from "../database/game/models/Home";
+import {
+	Home, Homes
+} from "../database/game/models/Home";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import {
 	ReactionCollectorCityData
@@ -21,13 +23,17 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Handle buy home reaction — player purchases a new home in the city
+ *
+ * Concurrency: the read-validate-spend sequence on `player.money`
+ * runs inside `Player.withLocked`. The home creation happens inside
+ * the same transaction (via CLS propagation) so a partial failure
+ * after spending money rolls everything back atomically.
  */
 export async function handleBuyHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
-
 	if (!data.home.manage?.newPrice) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to buy a home in city ${city.id} but no home is available to buy. It shouldn't happen because the player must not be able to switch while in the collector.`);
 		return;
@@ -37,28 +43,36 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 		return;
 	}
 
-	await Promise.all([
-		player.spendMoney({
+	const newPrice = data.home.manage.newPrice;
+	await Player.withLocked(player.id, async lockedPlayer => {
+		// Re-validate against the freshly-locked row.
+		if (newPrice > lockedPlayer.money) {
+			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: newPrice - lockedPlayer.money }));
+			return;
+		}
+
+		await lockedPlayer.spendMoney({
 			response,
-			amount: data.home.manage.newPrice,
+			amount: newPrice,
 			reason: NumberChangeReason.BUY_HOME
-		}),
-		Homes.createOrUpdateHome(player.id, city.id, HomeLevel.getInitialLevel().level)
-	]);
+		});
+		await Homes.createOrUpdateHome(lockedPlayer.id, city.id, HomeLevel.getInitialLevel().level);
+		await lockedPlayer.save();
 
-	await player.save();
-
-	response.push(makePacket(CommandReportBuyHomeRes, {
-		cost: data.home.manage.newPrice
-	}));
+		response.push(makePacket(CommandReportBuyHomeRes, {
+			cost: newPrice
+		}));
+	});
 }
 
 /**
  * Handle upgrade home reaction — player upgrades their home level
+ *
+ * Concurrency: holds row locks on both the Player wallet AND the Home
+ * row so a concurrent move-home, upgrade-home, or buy-home cannot
+ * conflict on the same `home` row while we mutate `home.level`.
  */
 export async function handleUpgradeHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
-
 	if (!data.home.manage?.upgrade) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to upgrade a home in city ${city.id} but no upgrade is available. It shouldn't happen because the player must not be able to switch while in the collector.`);
 		return;
@@ -76,37 +90,58 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 		return;
 	}
 
-	const oldLevel = home.getLevel()!;
-	const newLevel = HomeLevel.getNextUpgrade(oldLevel, player.level)!;
-	home.level = newLevel.level;
+	const upgradePrice = data.home.manage.upgrade.price;
+	await withLockedEntities(
+		[Home.lockKey(home.id), Player.lockKey(player.id)] as const,
+		async ([lockedHome, lockedPlayer]) => {
+			/*
+			 * Re-validate against the freshly-locked rows. The home
+			 * could have been moved/deleted by a concurrent reaction,
+			 * or the player could have spent the money elsewhere.
+			 */
+			if (upgradePrice > lockedPlayer.money) {
+				response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: upgradePrice - lockedPlayer.money }));
+				return;
+			}
+			if (lockedHome.cityId !== city.id) {
+				CrowniclesLogger.error(`Player ${player.keycloakId} home was moved to a different city before the upgrade lock was acquired.`);
+				return;
+			}
 
-	/*
-	 * Note: inventory bonus is now calculated dynamically based on home level,
-	 * so we no longer modify InventoryInfo during upgrades
-	 */
+			const oldLevel = lockedHome.getLevel()!;
+			const newLevel = HomeLevel.getNextUpgrade(oldLevel, lockedPlayer.level)!;
+			lockedHome.level = newLevel.level;
 
-	await player.spendMoney({
-		response,
-		amount: data.home.manage.upgrade.price,
-		reason: NumberChangeReason.UPGRADE_HOME
-	});
+			/*
+			 * Note: inventory bonus is now calculated dynamically based on home level,
+			 * so we no longer modify InventoryInfo during upgrades
+			 */
 
-	await Promise.all([
-		home.save(),
-		player.save()
-	]);
+			await lockedPlayer.spendMoney({
+				response,
+				amount: upgradePrice,
+				reason: NumberChangeReason.UPGRADE_HOME
+			});
 
-	response.push(makePacket(CommandReportUpgradeHomeRes, {
-		cost: data.home.manage.upgrade.price
-	}));
+			await Promise.all([
+				lockedHome.save(),
+				lockedPlayer.save()
+			]);
+
+			response.push(makePacket(CommandReportUpgradeHomeRes, {
+				cost: upgradePrice
+			}));
+		}
+	);
 }
 
 /**
  * Handle move home reaction — player moves their home to a different city
+ *
+ * Concurrency: locks both the Player wallet and the Home row to
+ * serialise concurrent move/upgrade requests on the same home.
  */
 export async function handleMoveHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
-
 	if (!data.home.manage?.movePrice) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to move a home to city ${city.id} but no home is available to move. It shouldn't happen because the player must not be able to switch while in the collector.`);
 		return;
@@ -124,22 +159,33 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 		return;
 	}
 
-	home.cityId = city.id;
+	const movePrice = data.home.manage.movePrice;
+	await withLockedEntities(
+		[Home.lockKey(home.id), Player.lockKey(player.id)] as const,
+		async ([lockedHome, lockedPlayer]) => {
+			if (movePrice > lockedPlayer.money) {
+				response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: movePrice - lockedPlayer.money }));
+				return;
+			}
 
-	await player.spendMoney({
-		response,
-		amount: data.home.manage.movePrice,
-		reason: NumberChangeReason.MOVE_HOME
-	});
+			lockedHome.cityId = city.id;
 
-	await Promise.all([
-		home.save(),
-		player.save()
-	]);
+			await lockedPlayer.spendMoney({
+				response,
+				amount: movePrice,
+				reason: NumberChangeReason.MOVE_HOME
+			});
 
-	response.push(makePacket(CommandReportMoveHomeRes, {
-		cost: data.home.manage.movePrice
-	}));
+			await Promise.all([
+				lockedHome.save(),
+				lockedPlayer.save()
+			]);
+
+			response.push(makePacket(CommandReportMoveHomeRes, {
+				cost: movePrice
+			}));
+		}
+	);
 }
 
 /**
