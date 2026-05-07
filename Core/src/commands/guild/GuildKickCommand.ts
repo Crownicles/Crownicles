@@ -4,7 +4,9 @@ import {
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
-import { Guilds } from "../../core/database/game/models/Guild";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
 import {
 	CommandGuildKickAcceptPacketRes,
 	CommandGuildKickBlockedErrorPacket,
@@ -27,6 +29,9 @@ import { ReactionCollectorGuildKick } from "../../../../Lib/src/packets/interact
 import { crowniclesInstance } from "../../index";
 import { GuildKickNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildKickNotificationPacket";
 import { PacketUtils } from "../../core/utils/PacketUtils";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Check if the kicked player is only blocked by this command
@@ -37,41 +42,122 @@ function isOnlyBlockedByGuildKick(kickedPlayer: Player): boolean {
 	return blockingReasons.length === 1 && blockingReasons[0] === BlockingConstants.REASONS.GUILD_KICK;
 }
 
-async function acceptGuildKick(player: Player, kickedPlayer: Player, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
+/**
+ * In-lock body for the kick flow. Re-validates that the chief
+ * still leads the guild and that the kicked player is still a
+ * member, then atomically detaches the kicked player and clears
+ * the elder slot when applicable.
+ */
+async function applyLockedAcceptGuildKick(
+	response: CrowniclesPacket[],
+	locked: {
+		chief: Player; kicked: Player; guild: Guild;
+	},
+	expected: {
+		guildId: number;
+	}
+): Promise<{ ok: boolean }> {
+	const {
+		chief, kicked, guild
+	} = locked;
 
-	// Do all necessary checks again just in case something changed during the menu
-	if (await isNotEligible(player, kickedPlayer, response)) {
-		return;
+	if (chief.guildId !== expected.guildId || chief.id !== guild.chiefId) {
+		return { ok: false };
+	}
+	if (kicked.guildId !== expected.guildId) {
+		return { ok: false };
 	}
 
-	const guild = await Guilds.getById(player.guildId);
-	if (!guild) {
-		return;
-	}
-	kickedPlayer.guildId = null;
+	kicked.guildId = null;
 
-	if (guild.elderId === kickedPlayer.id) {
-		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
+	if (guild.elderId === kicked.id) {
+		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId)
+			.then();
 		guild.elderId = null;
 	}
+
 	await Promise.all([
-		kickedPlayer.save(),
+		kicked.save(),
 		guild.save()
 	]);
-	crowniclesInstance?.logsDatabase.logGuildKick(player.keycloakId, guild).then();
+
+	crowniclesInstance?.logsDatabase.logGuildKick(chief.keycloakId, guild)
+		.then();
 
 	response.push(makePacket(CommandGuildKickAcceptPacketRes, {
-		kickedKeycloakId: kickedPlayer.keycloakId,
+		kickedKeycloakId: kicked.keycloakId,
 		guildName: guild.name
 	}));
-	const notifications: GuildKickNotificationPacket[] = [];
-	notifications.push(makePacket(GuildKickNotificationPacket, {
-		keycloakId: kickedPlayer.keycloakId,
-		keycloakIdOfExecutor: player.keycloakId,
-		guildName: guild.name
-	}));
-	PacketUtils.sendNotifications(notifications);
+
+	PacketUtils.sendNotifications([
+		makePacket(GuildKickNotificationPacket, {
+			keycloakId: kicked.keycloakId,
+			keycloakIdOfExecutor: chief.keycloakId,
+			guildName: guild.name
+		})
+	]);
+	return { ok: true };
+}
+
+async function acceptGuildKick(player: Player, kickedPlayer: Player, response: CrowniclesPacket[]): Promise<void> {
+	const freshChief = await Players.getById(player.id);
+	const freshKicked = await Players.getById(kickedPlayer.id);
+
+	// Re-run the eligibility checks against the freshly read rows
+	if (await isNotEligible(freshChief, freshKicked, response)) {
+		return;
+	}
+
+	const guildSnapshot = await Guilds.getById(freshChief.guildId);
+	if (!guildSnapshot) {
+		return;
+	}
+
+	try {
+		const outcome = await withLockedEntities(
+			[
+				Player.lockKey(freshChief.id),
+				Player.lockKey(freshKicked.id),
+				Guild.lockKey(guildSnapshot.id)
+			] as const,
+			async ([
+				lockedChief,
+				lockedKicked,
+				lockedGuild
+			]) => await applyLockedAcceptGuildKick(
+				response,
+				{
+					chief: lockedChief, kicked: lockedKicked, guild: lockedGuild
+				},
+				{ guildId: guildSnapshot.id }
+			)
+		);
+
+		if (!outcome.ok) {
+			response.push(makePacket(CommandGuildKickPacketRes, {
+				foundPlayer: true,
+				sameGuild: false,
+				himself: false
+			}));
+		}
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			/*
+			 * Guild was destroyed between the prompt and the
+			 * accept, or the kicked player row vanished. Surface
+			 * the same "different guild" outcome the player would
+			 * have seen if the guild had already changed.
+			 */
+			response.push(makePacket(CommandGuildKickPacketRes, {
+				foundPlayer: true,
+				sameGuild: false,
+				himself: false
+			}));
+			return;
+		}
+		throw error;
+	}
 }
 
 /**
