@@ -22,6 +22,7 @@ import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import Player from "../database/game/models/Player";
 import { InventorySlots } from "../database/game/models/InventorySlot";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 const PENALTY_TYPES: SmallEventLimogesPenaltyType[] = [
 	SmallEventLimogesPenaltyType.HEALTH,
@@ -159,24 +160,26 @@ function getEndCallback(
 	return async (collector, response): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT);
 
-		const reaction = collector.getFirstReaction();
-		const playerAccepted = reaction?.reaction.type === ReactionCollectorAcceptReaction.name;
-		const hasAnswered = Boolean(reaction);
-		const isFavorable = hasAnswered && playerAccepted === question.shouldAccept;
-		const packet: SmallEventLimogesPacket = {
-			questionId: question.id,
-			shouldHaveAccepted: question.shouldAccept,
-			isSuccess: isFavorable
-		};
+		await withLockedPlayerSafe(player, "limoges endCallback", async lockedPlayer => {
+			const reaction = collector.getFirstReaction();
+			const playerAccepted = reaction?.reaction.type === ReactionCollectorAcceptReaction.name;
+			const hasAnswered = Boolean(reaction);
+			const isFavorable = hasAnswered && playerAccepted === question.shouldAccept;
+			const packet: SmallEventLimogesPacket = {
+				questionId: question.id,
+				shouldHaveAccepted: question.shouldAccept,
+				isSuccess: isFavorable
+			};
 
-		if (isFavorable) {
-			packet.reward = await applyFavorableOutcome(player, response, properties);
-		}
-		else {
-			packet.penalty = await applyUnfavorableOutcome(player, response, properties);
-		}
+			if (isFavorable) {
+				packet.reward = await applyFavorableOutcome(lockedPlayer, response, properties);
+			}
+			else {
+				packet.penalty = await applyUnfavorableOutcome(lockedPlayer, response, properties);
+			}
 
-		response.push(makePacket(SmallEventLimogesPacket, packet));
+			response.push(makePacket(SmallEventLimogesPacket, packet));
+		});
 	};
 }
 
