@@ -1,3 +1,4 @@
+/* @lock-inherited — every small-event body runs inside `loadAndExecuteSmallEvent`s `withLockedEntities([Player.lockKey])` callback (PR-H1). The `crownicles/no-unguarded-save` rule treats every `.save()` in this file as guarded by that outer lock. */
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Maps } from "../maps/Maps";
