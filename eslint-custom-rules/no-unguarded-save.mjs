@@ -59,74 +59,82 @@ function getEnclosingCallExpression(node) {
 	return current;
 }
 
+function isSimpleLockHelperIdentifier(callee, lockHelpers) {
+	return callee.type === "Identifier" && lockHelpers.includes(callee.name);
+}
+
+function isLockHelperMemberCall(callee, lockMemberCalls) {
+	return callee.type === "MemberExpression"
+		&& callee.property.type === "Identifier"
+		&& lockMemberCalls.includes(callee.property.name);
+}
+
 function isLockHelperCall(callExpression, lockHelpers, lockMemberCalls) {
 	if (!callExpression) {
 		return false;
 	}
 	const { callee } = callExpression;
-	if (callee.type === "Identifier" && lockHelpers.includes(callee.name)) {
-		return true;
-	}
-	if (
-		callee.type === "MemberExpression"
-		&& callee.property.type === "Identifier"
-		&& lockMemberCalls.includes(callee.property.name)
-	) {
-		return true;
-	}
-	return false;
+	return isSimpleLockHelperIdentifier(callee, lockHelpers)
+		|| isLockHelperMemberCall(callee, lockMemberCalls);
 }
+
+const PARENT_NAME_EXTRACTORS = {
+	VariableDeclarator: parent => (parent.id.type === "Identifier" ? parent.id.name : null),
+	Property: parent => (parent.key.type === "Identifier" ? parent.key.name : null),
+	MethodDefinition: parent => (parent.key.type === "Identifier" ? parent.key.name : null)
+};
 
 function getEnclosingFunctionName(functionNode) {
 	if (!functionNode) {
 		return null;
 	}
-	if (functionNode.id && functionNode.id.name) {
-		return functionNode.id.name;
+	const directName = functionNode.id?.name;
+	if (directName) {
+		return directName;
 	}
 	const { parent } = functionNode;
-	if (!parent) {
-		return null;
+	const extractor = parent && PARENT_NAME_EXTRACTORS[parent.type];
+	return extractor ? extractor(parent) : null;
+}
+
+function isFunctionNode(node) {
+	return node.type === "FunctionDeclaration"
+		|| node.type === "FunctionExpression"
+		|| node.type === "ArrowFunctionExpression";
+}
+
+function isFunctionPassedToLockHelper(functionNode, lockHelpers, lockMemberCalls) {
+	const enclosingCall = getEnclosingCallExpression(functionNode);
+	if (!enclosingCall || !enclosingCall.arguments.includes(functionNode)) {
+		return false;
 	}
-	if (parent.type === "VariableDeclarator" && parent.id.type === "Identifier") {
-		return parent.id.name;
+	return isLockHelperCall(enclosingCall, lockHelpers, lockMemberCalls);
+}
+
+function isFunctionGuarded(functionNode, options) {
+	const fnName = getEnclosingFunctionName(functionNode);
+	if (fnName && options.allowedRegex.test(fnName)) {
+		return true;
 	}
-	if (parent.type === "Property" && parent.key.type === "Identifier") {
-		return parent.key.name;
-	}
-	if (parent.type === "MethodDefinition" && parent.key.type === "Identifier") {
-		return parent.key.name;
-	}
-	return null;
+	return isFunctionPassedToLockHelper(functionNode, options.lockHelpers, options.lockMemberCalls);
 }
 
 function isGuardedByLock(node, options) {
-	const {
-		lockHelpers, lockMemberCalls, allowedRegex
-	} = options;
 	let current = node.parent;
 	while (current) {
-		if (
-			current.type === "FunctionDeclaration"
-			|| current.type === "FunctionExpression"
-			|| current.type === "ArrowFunctionExpression"
-		) {
-			const fnName = getEnclosingFunctionName(current);
-			if (fnName && allowedRegex.test(fnName)) {
-				return true;
-			}
-			const enclosingCall = getEnclosingCallExpression(current);
-			if (
-				enclosingCall
-				&& enclosingCall.arguments.includes(current)
-				&& isLockHelperCall(enclosingCall, lockHelpers, lockMemberCalls)
-			) {
-				return true;
-			}
+		if (isFunctionNode(current) && isFunctionGuarded(current, options)) {
+			return true;
 		}
 		current = current.parent;
 	}
 	return false;
+}
+
+function isZeroArgSaveCall(node) {
+	return node.callee.type === "MemberExpression"
+		&& node.callee.property.type === "Identifier"
+		&& node.callee.property.name === "save"
+		&& node.arguments.length === 0;
 }
 
 export default {
@@ -171,12 +179,7 @@ export default {
 
 		return {
 			CallExpression(node) {
-				if (
-					node.callee.type !== "MemberExpression"
-					|| node.callee.property.type !== "Identifier"
-					|| node.callee.property.name !== "save"
-					|| node.arguments.length !== 0
-				) {
+				if (!isZeroArgSaveCall(node)) {
 					return;
 				}
 				if (isGuardedByLock(node, {
