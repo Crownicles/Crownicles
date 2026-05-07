@@ -26,6 +26,7 @@ import {
 	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 /**
  * Get strategy config based on the chosen strategy
@@ -171,11 +172,13 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const collector = new ReactionCollectorGobletsGame();
 
 		const endCallback: EndCallback = async (collector, response) => {
-			const firstReaction = collector.getFirstReaction()?.reaction as {
-				data: ReactionCollectorGobletsGameReaction;
-			} | undefined;
-			await applyMalus(response, player, firstReaction, context);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GOBLET_CHOOSE);
+			await withLockedPlayerSafe(player, "gobletsGame endCallback", async lockedPlayer => {
+				const firstReaction = collector.getFirstReaction()?.reaction as {
+					data: ReactionCollectorGobletsGameReaction;
+				} | undefined;
+				await applyMalus(response, lockedPlayer, firstReaction, context);
+			});
 		};
 
 		const packet = new ReactionCollectorInstance(
