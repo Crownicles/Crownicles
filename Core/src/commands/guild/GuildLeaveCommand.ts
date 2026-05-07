@@ -187,6 +187,63 @@ async function applyLockedAcceptGuildLeave(
 }
 
 /**
+ * Run the in-lock leave body in the 3-key path (chief leaving
+ * with a still-elder candidate). Splits the lock-acquisition
+ * boilerplate out of the orchestrator so it stays flat.
+ */
+async function runLeaveUnderThreeKeyLock(
+	response: CrowniclesPacket[],
+	keys: {
+		playerId: number; elderId: number; guildId: number;
+	}
+): Promise<LeaveOutcome> {
+	return await withLockedEntities(
+		[
+			Player.lockKey(keys.playerId),
+			Player.lockKey(keys.elderId),
+			Guild.lockKey(keys.guildId)
+		] as const,
+		async ([
+			lockedPlayer,
+			lockedElder,
+			lockedGuild
+		]) => await applyLockedAcceptGuildLeave(
+			response,
+			{
+				player: lockedPlayer, guild: lockedGuild, elder: lockedElder
+			},
+			{
+				guildId: keys.guildId, elderId: keys.elderId
+			}
+		)
+	);
+}
+
+/**
+ * Run the in-lock leave body in the 2-key path (no elder to
+ * promote, or the leaving player is not the chief).
+ */
+async function runLeaveUnderTwoKeyLock(
+	response: CrowniclesPacket[],
+	keys: {
+		playerId: number; guildId: number;
+	}
+): Promise<LeaveOutcome> {
+	return await withLockedEntities(
+		[Player.lockKey(keys.playerId), Guild.lockKey(keys.guildId)] as const,
+		async ([lockedPlayer, lockedGuild]) => await applyLockedAcceptGuildLeave(
+			response,
+			{
+				player: lockedPlayer, guild: lockedGuild
+			},
+			{
+				guildId: keys.guildId, elderId: null
+			}
+		)
+	);
+}
+
+/**
  * Allow the player to leave its guild. Locks the player + guild
  * (and the elder when the chief is leaving with a successor)
  * with \`withLockedEntities\` so a concurrent leave / kick /
@@ -214,38 +271,12 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 
 	try {
 		const outcome = elderIdAtRead !== null
-			? await withLockedEntities(
-				[
-					Player.lockKey(fresh.id),
-					Player.lockKey(elderIdAtRead),
-					Guild.lockKey(guildSnapshot.id)
-				] as const,
-				async ([
-					lockedPlayer,
-					lockedElder,
-					lockedGuild
-				]) => await applyLockedAcceptGuildLeave(
-					response,
-					{
-						player: lockedPlayer, guild: lockedGuild, elder: lockedElder
-					},
-					{
-						guildId: guildSnapshot.id, elderId: elderIdAtRead
-					}
-				)
-			)
-			: await withLockedEntities(
-				[Player.lockKey(fresh.id), Guild.lockKey(guildSnapshot.id)] as const,
-				async ([lockedPlayer, lockedGuild]) => await applyLockedAcceptGuildLeave(
-					response,
-					{
-						player: lockedPlayer, guild: lockedGuild
-					},
-					{
-						guildId: guildSnapshot.id, elderId: null
-					}
-				)
-			);
+			? await runLeaveUnderThreeKeyLock(response, {
+				playerId: fresh.id, elderId: elderIdAtRead, guildId: guildSnapshot.id
+			})
+			: await runLeaveUnderTwoKeyLock(response, {
+				playerId: fresh.id, guildId: guildSnapshot.id
+			});
 
 		if (outcome.kind === "notInGuild") {
 			response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
