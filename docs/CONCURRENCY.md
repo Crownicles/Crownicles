@@ -41,14 +41,17 @@
    ```ts
    import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
-   await withLockedPlayerSafe(player, async lockedPlayer => {
+   await withLockedPlayerSafe(player, "altar endCallback", async lockedPlayer => {
        // …mutate + save lockedPlayer
    });
    ```
 
    Same semantics as the snippet above, plus a `LockedRowNotFoundError`
    safety net (warn-and-skip) for the rare case where the player row was
-   deleted between the read and the lock acquisition.
+   deleted between the read and the lock acquisition. The middle string
+   argument is a human-readable label that surfaces in the warning log
+   line if the row vanished — pass the call-site name (e.g. command +
+   step) so you can grep it in production logs.
 
 3. Multiple entities — sort-by-key is automatic:
 
