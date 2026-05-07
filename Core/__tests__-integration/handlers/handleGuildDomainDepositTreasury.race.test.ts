@@ -8,7 +8,7 @@
  * guild treasury *and* the player's money. Two flaws:
  *
  *  1. The in-process lock is invisible to a second Core instance — the
- *     production target is multi-instance (see `docs/CONCURRENCY_PLAN.md`),
+ *     production target is multi-instance (see `docs/CONCURRENCY.md`),
  *     so concurrent deposits across pods can both pass the money check.
  *  2. Even single-instance, the lock is keyed on `guildId`, so a
  *     parallel handler that mutates the same `Player.money` (e.g.
