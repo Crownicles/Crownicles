@@ -25,14 +25,14 @@ export type ResolveEntities<K extends readonly LockKey<Model>[]> = {
 	[I in keyof K]: K[I] extends LockKey<infer M> ? M : never;
 };
 
-const lockCacheKey = (k: LockKey<Model>): string => `${k.model.tableName}#${k.id}`;
+const lockCacheKey = (key: LockKey<Model>): string => `${key.model.tableName}#${key.id}`;
 
-const compareKeys = (a: LockKey<Model>, b: LockKey<Model>): number => {
-	const tableCmp = a.model.tableName.localeCompare(b.model.tableName);
+const compareKeys = (left: LockKey<Model>, right: LockKey<Model>): number => {
+	const tableCmp = left.model.tableName.localeCompare(right.model.tableName);
 	if (tableCmp !== 0) {
 		return tableCmp;
 	}
-	return a.id - b.id;
+	return left.id - right.id;
 };
 
 /**
@@ -91,35 +91,35 @@ export async function withLockedEntities<
 	 * Sanity check: all keys must share the same Sequelize instance, otherwise
 	 * we cannot lock them in a single transaction.
 	 */
-	for (const k of keys) {
-		if (k.model.sequelize !== sequelize) {
+	for (const key of keys) {
+		if (key.model.sequelize !== sequelize) {
 			throw new Error(
-				`withLockedEntities: model ${k.model.name} is bound to a different Sequelize instance than ${keys[0].model.name}`
+				`withLockedEntities: model ${key.model.name} is bound to a different Sequelize instance than ${keys[0].model.name}`
 			);
 		}
 	}
 
 	const sorted = [...keys].sort(compareKeys);
 
-	return await sequelize.transaction(async (t: Transaction) => {
+	return await sequelize.transaction(async (transaction: Transaction) => {
 		const lockedByKey = new Map<string, Model>();
 
 		for (const key of sorted) {
-			const ck = lockCacheKey(key);
-			if (lockedByKey.has(ck)) {
+			const cacheKey = lockCacheKey(key);
+			if (lockedByKey.has(cacheKey)) {
 				continue;
 			}
 			const instance = await key.model.findByPk(key.id, {
-				lock: t.LOCK.UPDATE,
-				transaction: t
+				lock: transaction.LOCK.UPDATE,
+				transaction
 			});
 			if (!instance) {
-				throw new Error(`withLockedEntities: row not found for ${ck}`);
+				throw new Error(`withLockedEntities: row not found for ${cacheKey}`);
 			}
-			lockedByKey.set(ck, instance);
+			lockedByKey.set(cacheKey, instance);
 		}
 
-		const entities = keys.map(k => lockedByKey.get(lockCacheKey(k))!);
+		const entities = keys.map(key => lockedByKey.get(lockCacheKey(key))!);
 		return fn(entities as unknown as ResolveEntities<K>);
 	});
 }

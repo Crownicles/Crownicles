@@ -21,7 +21,7 @@ interface FakeSequelize {
 
 function makeFakeSequelize(): FakeSequelize {
 	return {
-		transaction: async fn => fn({ LOCK: { UPDATE: "FOR UPDATE" } })
+		transaction: fn => fn({ LOCK: { UPDATE: "FOR UPDATE" } })
 	};
 }
 
