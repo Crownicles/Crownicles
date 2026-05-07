@@ -181,6 +181,36 @@ type GuildFeedOutcome =
 	};
 
 /**
+ * Pure helper that maps a pet/food combination to the feed-result
+ * label and whether the food contributes love points. Extracted to
+ * keep `applyLockedGuildFeed` cyclomatic complexity below the
+ * CodeScene module mean threshold.
+ */
+function evaluateFeedResult(
+	petModel: ReturnType<typeof PetDataController.instance.getById> | undefined,
+	food: PetFood
+): {
+	gainsLove: boolean; result: CommandPetFeedResult;
+} {
+	const isDietFood = food === PetFood.SALAD || food === PetFood.MEAT;
+	if (petModel?.diet && isDietFood) {
+		const eats = (petModel.canEatMeat() && food === PetFood.MEAT)
+			|| (petModel.canEatVegetables() && food === PetFood.SALAD);
+		return eats
+			? {
+				gainsLove: true, result: CommandPetFeedResult.VERY_HAPPY
+			}
+			: {
+				gainsLove: false, result: CommandPetFeedResult.DISLIKE
+			};
+	}
+	return {
+		gainsLove: true,
+		result: food === PetFood.CANDY ? CommandPetFeedResult.HAPPY : CommandPetFeedResult.VERY_VERY_HAPPY
+	};
+}
+
+/**
  * In-lock body for the guild-pantry feed flow. Re-validates that
  * the player still owns this pet, that the picked food is still
  * available in the locked guild row, then atomically debits the
@@ -201,7 +231,6 @@ async function applyLockedGuildFeed(
 	const {
 		petId, foodReaction
 	} = expected;
-	const foodIndex = getFoodIndexOf(foodReaction.food);
 
 	if (player.petId !== petId) {
 		return {
@@ -217,27 +246,17 @@ async function applyLockedGuildFeed(
 	guild.removeFood(foodReaction.food, 1, NumberChangeReason.PET_FEED);
 
 	const petModel = PetDataController.instance.getById(pet.typeId);
-	const changeLovePointsParameters = {
-		response,
-		player,
-		amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[foodIndex],
-		reason: NumberChangeReason.PET_FEED
-	};
+	const {
+		gainsLove, result
+	} = evaluateFeedResult(petModel, foodReaction.food);
 
-	let result: CommandPetFeedResult;
-	if (petModel?.diet && (foodReaction.food === PetFood.SALAD || foodReaction.food === PetFood.MEAT)) {
-		if ((petModel.canEatMeat() && foodReaction.food === PetFood.MEAT)
-			|| (petModel.canEatVegetables() && foodReaction.food === PetFood.SALAD)) {
-			await pet.changeLovePoints(changeLovePointsParameters);
-			result = CommandPetFeedResult.VERY_HAPPY;
-		}
-		else {
-			result = CommandPetFeedResult.DISLIKE;
-		}
-	}
-	else {
-		await pet.changeLovePoints(changeLovePointsParameters);
-		result = foodReaction.food === PetFood.CANDY ? CommandPetFeedResult.HAPPY : CommandPetFeedResult.VERY_VERY_HAPPY;
+	if (gainsLove) {
+		await pet.changeLovePoints({
+			response,
+			player,
+			amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[getFoodIndexOf(foodReaction.food)],
+			reason: NumberChangeReason.PET_FEED
+		});
 	}
 
 	pet.hungrySince = new Date();
@@ -315,27 +334,39 @@ function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, gu
  * @param authorPet
  * @returns
  */
+/**
+ * Build the food-reaction list offered to the player from the
+ * guild pantry. Extracted to keep `withGuildPetFeed` cyclomatic
+ * complexity below the CodeScene module mean threshold.
+ */
+function buildGuildFoodReactions(guild: Guild): Array<{
+	food: PetFood; amount: number; maxAmount: number;
+}> {
+	const foodCaps = GuildDomainConstants.getFoodCaps(guild.pantryLevel);
+	const reactions: Array<{
+		food: PetFood; amount: number; maxAmount: number;
+	}> = [];
+	for (const food of Object.values(PetConstants.PET_FOOD)) {
+		const foodAmount = guild.getDataValue(food);
+		if (foodAmount > 0) {
+			reactions.push({
+				food: food as PetFood,
+				amount: foodAmount,
+				maxAmount: foodCaps[getFoodIndexOf(food)]
+			});
+		}
+	}
+	return reactions;
+}
+
 async function withGuildPetFeed(context: PacketContext, response: CrowniclesPacket[], player: Player, authorPet: PetEntity): Promise<void> {
 	const guild = await Guilds.getById(player.guildId);
 	if (!guild) {
 		response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
 		return;
 	}
-	const reactions = [];
 
-	const foodCaps = GuildDomainConstants.getFoodCaps(guild.pantryLevel);
-	for (const food of Object.values(PetConstants.PET_FOOD)) {
-		const foodIndex = getFoodIndexOf(food);
-		const foodAmount = guild.getDataValue(food);
-		if (guild.getDataValue(food) > 0) {
-			reactions.push({
-				food: food as PetFood,
-				amount: foodAmount,
-				maxAmount: foodCaps[foodIndex]
-			});
-		}
-	}
-
+	const reactions = buildGuildFoodReactions(guild);
 	if (reactions.length === 0) {
 		response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
 		return;
