@@ -30,7 +30,9 @@ import {
 	ReactionCollectorPetTransferSwitchReaction,
 	ReactionCollectorPetTransferWithdrawReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetTransfer";
-import { Guilds } from "../../core/database/game/models/Guild";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import {
 	GuildPet, GuildPets
@@ -42,6 +44,35 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { PetUtils } from "../../core/utils/PetUtils";
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
+import {
+	LockedRowNotFoundError, withLockedEntities, type LockKey, type ResolveEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import { Model } from "sequelize";
+
+/**
+ * Run a withLockedEntities call, converting a `LockedRowNotFoundError`
+ * (the row was destroyed by a concurrent transaction) into a
+ * "situation changed" response. Used by withdraw / switch flows where
+ * a peer guild member may legitimately destroy a guild_pet row out
+ * from under us.
+ */
+async function withGuildPetLockOrSituationChanged<K extends readonly LockKey<Model>[]>(
+	response: CrowniclesPacket[],
+	keys: K,
+	fn: (entities: ResolveEntities<K>) => Promise<void>
+): Promise<void> {
+	try {
+		await withLockedEntities(keys, fn);
+	}
+	catch (err) {
+		if (err instanceof LockedRowNotFoundError) {
+			CrowniclesLogger.warn(`Pet transfer aborted: ${err.tableName}#${err.id} was destroyed by a concurrent transaction`);
+			response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+			return;
+		}
+		throw err;
+	}
+}
 
 /**
  * Validation result for player's pet before transfer
@@ -108,6 +139,11 @@ async function findGuildPetOrFail(
 
 /**
  * Transfer your pet to the guild's shelter
+ *
+ * Concurrency: locks both the Player (mutates `petId`) and the Guild
+ * (re-validates shelter capacity). The new GuildPet row is inserted
+ * inside the same transaction (CLS propagation) so a partial failure
+ * rolls everything back atomically.
  */
 async function deposePetToGuild(
 	response: CrowniclesPacket[],
@@ -118,31 +154,48 @@ async function deposePetToGuild(
 		return;
 	}
 
-	const guildPets = await GuildPets.getOfGuild(player.guildId!);
-	const guild = await Guilds.getById(player.guildId);
-	if (!guild) {
-		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but guild not found");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
-		return;
-	}
-	if (guildPets.length >= GuildDomainConstants.getShelterSlots(guild.shelterLevel)) {
-		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
-		return;
-	}
+	const guildId = player.guildId!;
+	await withLockedEntities(
+		[Player.lockKey(player.id), Guild.lockKey(guildId)] as const,
+		async ([lockedPlayer, lockedGuild]) => {
+			/*
+			 * Re-validate against the freshly-locked rows: the player
+			 * could have lost the pet, and the shelter may have been
+			 * filled by a concurrent deposit.
+			 */
+			if (lockedPlayer.petId !== validation.playerPet!.id) {
+				CrowniclesLogger.warn("Player pet changed before transfer lock was acquired");
+				response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+				return;
+			}
+			const guildPets = await GuildPets.getOfGuild(guildId);
+			if (guildPets.length >= GuildDomainConstants.getShelterSlots(lockedGuild.shelterLevel)) {
+				CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full (re-validated)");
+				response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+				return;
+			}
 
-	(player.petId as number | null) = null;
-	await player.save();
-	await GuildPets.addPet(guild, validation.playerPet, false).save();
-	crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet, null!).then();
+			(lockedPlayer.petId as number | null) = null;
+			await lockedPlayer.save();
+			await GuildPets.addPet(lockedGuild, validation.playerPet!, false).save();
+			crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet!, null!).then();
 
-	await MissionsController.update(player, response, { missionId: "depositPetInShelter" });
+			await MissionsController.update(lockedPlayer, response, { missionId: "depositPetInShelter" });
 
-	response.push(makePacket(CommandPetTransferSuccessPacket, {
-		oldPet: validation.playerPet.asOwnedPet()
-	}));
+			response.push(makePacket(CommandPetTransferSuccessPacket, {
+				oldPet: validation.playerPet!.asOwnedPet()
+			}));
+		}
+	);
 }
 
+/**
+ * Withdraw a pet from the guild's shelter onto the player slot
+ *
+ * Concurrency: locks both the Player (mutates `petId`) and the
+ * GuildPet row being destroyed so two members cannot both withdraw
+ * the same pet from the shelter.
+ */
 async function withdrawPetFromGuild(
 	response: CrowniclesPacket[],
 	player: Player,
@@ -159,24 +212,53 @@ async function withdrawPetFromGuild(
 		return;
 	}
 
-	player.petId = toWithdrawPet.petEntityId;
-	await player.save();
-	await MissionsController.update(player, response, { missionId: "havePet" });
-	await toWithdrawPet.destroy();
-	PetEntities.getById(toWithdrawPet.petEntityId).then(petEntity => {
-		if (petEntity) {
-			crowniclesInstance?.logsDatabase.logPetTransfer(null!, petEntity).then();
-		}
-	});
+	await withGuildPetLockOrSituationChanged(
+		response,
+		[Player.lockKey(player.id), GuildPet.lockKey(toWithdrawPet.id)] as const,
+		async ([lockedPlayer, lockedGuildPet]) => {
+			/*
+			 * Re-validate against the freshly-locked rows: the player
+			 * may have just received a pet via another flow, and the
+			 * guild-pet slot may have been moved or reassigned.
+			 */
+			if (lockedPlayer.petId) {
+				CrowniclesLogger.warn("Player already has a pet (re-validated under lock)");
+				response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+				return;
+			}
+			if (lockedGuildPet.petEntityId !== petEntityId) {
+				CrowniclesLogger.warn("Guild pet slot changed before withdraw lock was acquired");
+				response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+				return;
+			}
 
-	const newPet = await PetEntities.getById(toWithdrawPet.petEntityId);
-	if (newPet) {
-		response.push(makePacket(CommandPetTransferSuccessPacket, {
-			newPet: newPet.asOwnedPet()
-		}));
-	}
+			lockedPlayer.petId = lockedGuildPet.petEntityId;
+			await lockedPlayer.save();
+			await MissionsController.update(lockedPlayer, response, { missionId: "havePet" });
+			await lockedGuildPet.destroy();
+			PetEntities.getById(petEntityId).then(petEntity => {
+				if (petEntity) {
+					crowniclesInstance?.logsDatabase.logPetTransfer(null!, petEntity).then();
+				}
+			});
+
+			const newPet = await PetEntities.getById(petEntityId);
+			if (newPet) {
+				response.push(makePacket(CommandPetTransferSuccessPacket, {
+					newPet: newPet.asOwnedPet()
+				}));
+			}
+		}
+	);
 }
 
+/**
+ * Switch the player's current pet with one stored in the guild shelter
+ *
+ * Concurrency: locks both the Player (mutates `petId`) and the
+ * GuildPet row being swapped so a concurrent withdraw / switch on the
+ * same shelter slot cannot duplicate or lose a pet.
+ */
 async function switchPetWithGuild(
 	response: CrowniclesPacket[],
 	player: Player,
@@ -192,25 +274,46 @@ async function switchPetWithGuild(
 		return;
 	}
 
-	player.petId = toSwitchPet.petEntityId;
-	toSwitchPet.petEntityId = validation.playerPet.id;
-	await player.save();
-	await toSwitchPet.save();
+	await withGuildPetLockOrSituationChanged(
+		response,
+		[Player.lockKey(player.id), GuildPet.lockKey(toSwitchPet.id)] as const,
+		async ([lockedPlayer, lockedGuildPet]) => {
+			/*
+			 * Re-validate under lock: the player's pet must still be
+			 * the one we validated, and the shelter slot must still
+			 * hold the pet we expected.
+			 */
+			if (lockedPlayer.petId !== validation.playerPet!.id) {
+				CrowniclesLogger.warn("Player pet changed before switch lock was acquired");
+				response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+				return;
+			}
+			if (lockedGuildPet.petEntityId !== petEntityId) {
+				CrowniclesLogger.warn("Guild pet slot changed before switch lock was acquired");
+				response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+				return;
+			}
 
-	const newPlayerPet = await PetEntities.getById(player.petId);
+			lockedPlayer.petId = lockedGuildPet.petEntityId;
+			lockedGuildPet.petEntityId = validation.playerPet!.id;
+			await Promise.all([lockedPlayer.save(), lockedGuildPet.save()]);
 
-	if (!newPlayerPet) {
-		CrowniclesLogger.warn("Player tried to switch a pet with the guild but the new pet was not found");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
-		return;
-	}
+			const newPlayerPet = await PetEntities.getById(lockedPlayer.petId);
 
-	crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet, newPlayerPet).then();
+			if (!newPlayerPet) {
+				CrowniclesLogger.warn("Player tried to switch a pet with the guild but the new pet was not found");
+				response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+				return;
+			}
 
-	response.push(makePacket(CommandPetTransferSuccessPacket, {
-		oldPet: validation.playerPet.asOwnedPet(),
-		newPet: newPlayerPet.asOwnedPet()
-	}));
+			crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet!, newPlayerPet).then();
+
+			response.push(makePacket(CommandPetTransferSuccessPacket, {
+				oldPet: validation.playerPet!.asOwnedPet(),
+				newPet: newPlayerPet.asOwnedPet()
+			}));
+		}
+	);
 }
 
 function getEndCallback(player: Player) {
