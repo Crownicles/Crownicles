@@ -647,6 +647,7 @@ export async function handleCookingMenu(
 		if (!pinnedRecipe) {
 			// Recipe no longer exists, clear the pin
 			player.pinnedCookingRecipeId = null;
+			// eslint-disable-next-line crownicles/no-unguarded-save -- single-field UI preference; not a resource sink (no money / score / energy)
 			await player.save();
 		}
 	}
@@ -708,6 +709,7 @@ export async function handleCookingPin(
 	}
 
 	player.pinnedCookingRecipeId = packet.recipeId;
+	// eslint-disable-next-line crownicles/no-unguarded-save -- single-field UI preference; not a resource sink (no money / score / energy)
 	await player.save();
 
 	response.push(makePacket(CommandReportCookingPinRes, {
@@ -728,6 +730,7 @@ export async function handleCookingUnpin(
 	const { player } = data;
 
 	player.pinnedCookingRecipeId = null;
+	// eslint-disable-next-line crownicles/no-unguarded-save -- single-field UI preference; not a resource sink (no money / score / energy)
 	await player.save();
 
 	response.push(makePacket(CommandReportCookingUnpinRes, {}));
