@@ -94,11 +94,28 @@ A static AST rule (`eslint-custom-rules/no-unguarded-save.mjs`) flags any
 - a `<Model>.withLocked(…, async (…) => { … })` callback,
 - a function whose name matches `/UnderLock$/`.
 
-It is **scoped narrowly** in `Core/eslint.config.mjs` to the orchestration
-files where regression risk is highest (mission update, report services,
-the lock helper itself). Leaf files are protected at the call site.
+It is **scoped** in `Core/eslint.config.mjs` to the orchestration files
+where regression risk is highest (mission update, report services, the
+lock helper itself) plus `src/core/smallEvents/**` (every small event
+runs inside the outer lock acquired by `loadAndExecuteSmallEvent`).
+Leaf files outside that scope are protected at the call site.
 
-### Opting out (legitimately)
+### File-level opt-out: `@lock-inherited`
+
+Some files contain saves that are guaranteed to run under a lock
+acquired in a **caller** the rule cannot see (across-file lock
+inheritance). Add a top-of-file block comment containing the
+`@lock-inherited` marker and the rule short-circuits the entire file:
+
+```ts
+/* @lock-inherited — every small-event body runs inside loadAndExecuteSmallEvent's withLockedEntities([Player.lockKey]) callback (PR-H1). The crownicles/no-unguarded-save rule treats every .save() in this file as guarded by that outer lock. */
+```
+
+The marker comment is **mandatory documentation** of the lock chain
+that owns the file's saves. Reviewers must read it and verify the
+chain is real.
+
+### Opting out at the line (legitimately)
 
 The rule is syntactic — it cannot follow private helpers across method
 boundaries. When you've manually verified a `.save()` is reached only from
@@ -115,8 +132,6 @@ Other accepted justifications:
   that does not exist yet`
 - `single-field UI preference; not a resource sink (no money / score /
   energy)`
-- `TODO(concurrency): not yet under withLockedEntities; tracked
-  separately` — only when there is an open follow-up.
 
 The justification is **mandatory** in code review. "It works" is not one.
 
@@ -137,8 +152,6 @@ A flow without a race test is a flow we'll regress on the next refactor.
 
 ## See also
 
-- [`docs/CONCURRENCY_PLAN.md`](CONCURRENCY_PLAN.md) — multi-PR migration plan
-  and per-flow checklist.
 - [`Lib/src/locks/withLockedEntities.ts`](../Lib/src/locks/withLockedEntities.ts)
   — implementation.
 - [`Core/src/core/utils/withLockedPlayerSafe.ts`](../Core/src/core/utils/withLockedPlayerSafe.ts)
