@@ -5,7 +5,7 @@ import Player from "../database/game/models/Player";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Maps } from "../maps/Maps";
 import {
-	EndCallback, ReactionCollectorInstance
+	EndCallback, ReactionCollectorInstance, ReactionInfo
 } from "../utils/ReactionsCollector";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
@@ -27,6 +27,7 @@ import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 type LotteryProperties = {
 	successRate: {
@@ -137,6 +138,75 @@ async function giveRewardToPlayer(
 	}
 }
 
+async function runLotteryEndCallbackUnderLock(
+	player: Player,
+	reaction: ReactionInfo,
+	response: CrowniclesPacket[],
+	dataLottery: LotteryProperties
+): Promise<void> {
+	let levelKey: LotteryLevelKey;
+
+	if (reaction.reaction.type === ReactionCollectorLotteryHardReaction.name) {
+		levelKey = "hard";
+	}
+	else if (reaction.reaction.type === ReactionCollectorLotteryMediumReaction.name) {
+		levelKey = "medium";
+	}
+	else {
+		levelKey = "easy";
+	}
+
+	if (player.money < SmallEventConstants.LOTTERY.MONEY_MALUS && levelKey === "hard") {
+		response.push(makePacket(SmallEventLotteryPoorPacket, {}));
+		return;
+	}
+
+	let rewardTypes = Object.values(SmallEventConstants.LOTTERY.REWARD_TYPES);
+	const guild = await Guilds.ofPlayer(player);
+	if (!guild || guild.isAtMaxLevel()) {
+		rewardTypes = rewardTypes.filter(r => r !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP);
+	}
+
+	const lostTime = await effectIfGoodRisk(levelKey, player, dataLottery);
+
+	const rewardType = RandomUtils.crowniclesRandom.pick(rewardTypes)!;
+
+	if (RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey]) && (guild || rewardType !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP)) {
+		const coefficient = dataLottery.coefficients[levelKey];
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+		await giveRewardToPlayer(response, {
+			player,
+			guild: guild!
+		}, rewardType, {
+			coefficient,
+			lostTime,
+			levelKey
+		}, playerActiveObjects);
+
+		await player.save();
+	}
+	else if (levelKey === "hard" && RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey])) {
+		await player.addMoney({
+			amount: -SmallEventConstants.LOTTERY.MONEY_MALUS,
+			response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+		await player.save();
+		response.push(makePacket(SmallEventLotteryLosePacket, {
+			moneyLost: Math.abs(SmallEventConstants.LOTTERY.MONEY_MALUS),
+			lostTime,
+			level: levelKey
+		}));
+	}
+	else {
+		response.push(makePacket(SmallEventLotteryLosePacket, {
+			moneyLost: 0,
+			lostTime,
+			level: levelKey
+		}));
+	}
+}
+
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
@@ -153,70 +223,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 			if (reaction === null) {
 				response.push(makePacket(SmallEventLotteryNoAnswerPacket, {}));
+				return;
 			}
-			else {
-				let levelKey: LotteryLevelKey;
 
-				if (reaction.reaction.type === ReactionCollectorLotteryHardReaction.name) {
-					levelKey = "hard";
-				}
-				else if (reaction.reaction.type === ReactionCollectorLotteryMediumReaction.name) {
-					levelKey = "medium";
-				}
-				else {
-					levelKey = "easy";
-				}
-
-				if (player.money < SmallEventConstants.LOTTERY.MONEY_MALUS && levelKey === "hard") {
-					response.push(makePacket(SmallEventLotteryPoorPacket, {}));
-					return;
-				}
-
-				let rewardTypes = Object.values(SmallEventConstants.LOTTERY.REWARD_TYPES);
-				const guild = await Guilds.ofPlayer(player);
-				if (!guild || guild.isAtMaxLevel()) {
-					rewardTypes = rewardTypes.filter(r => r !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP);
-				}
-
-				const lostTime = await effectIfGoodRisk(levelKey, player, dataLottery);
-
-				const rewardType = RandomUtils.crowniclesRandom.pick(rewardTypes)!;
-
-				if (RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey]) && (guild || rewardType !== SmallEventConstants.LOTTERY.REWARD_TYPES.GUILD_XP)) {
-					const coefficient = dataLottery.coefficients[levelKey];
-					const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-					await giveRewardToPlayer(response, {
-						player,
-						guild: guild!
-					}, rewardType, {
-						coefficient,
-						lostTime,
-						levelKey
-					}, playerActiveObjects);
-
-					await player.save();
-				}
-				else if (levelKey === "hard" && RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey])) {
-					await player.addMoney({
-						amount: -SmallEventConstants.LOTTERY.MONEY_MALUS,
-						response,
-						reason: NumberChangeReason.SMALL_EVENT
-					});
-					await player.save();
-					response.push(makePacket(SmallEventLotteryLosePacket, {
-						moneyLost: Math.abs(SmallEventConstants.LOTTERY.MONEY_MALUS),
-						lostTime,
-						level: levelKey
-					}));
-				}
-				else {
-					response.push(makePacket(SmallEventLotteryLosePacket, {
-						moneyLost: 0,
-						lostTime,
-						level: levelKey
-					}));
-				}
-			}
+			await withLockedPlayerSafe(player, "lottery endCallback", lockedPlayer =>
+				runLotteryEndCallbackUnderLock(lockedPlayer, reaction, response, dataLottery));
 		};
 
 		const packet = new ReactionCollectorInstance(
