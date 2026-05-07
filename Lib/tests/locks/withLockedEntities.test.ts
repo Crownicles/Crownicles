@@ -39,7 +39,7 @@ function makeFakeModel(
 		tableName,
 		name: tableName,
 		sequelize,
-		findByPk: vi.fn(async (id: number) => rows[id] ?? null)
+		findByPk: vi.fn((id: number): Promise<FakeRow | null> => Promise.resolve(rows[id] ?? null))
 	};
 }
 
@@ -68,13 +68,13 @@ describe("withLockedEntities (unit)", () => {
 	it("rejects when keys come from different Sequelize instances", async () => {
 		const seqA = makeFakeSequelize();
 		const seqB = makeFakeSequelize();
-		const a = makeFakeModel("a", { 1: { id: 1, tag: "a1" } }, seqA);
-		const b = makeFakeModel("b", { 1: { id: 1, tag: "b1" } }, seqB);
+		const modelA = makeFakeModel("a", { 1: { id: 1, tag: "a1" } }, seqA);
+		const modelB = makeFakeModel("b", { 1: { id: 1, tag: "b1" } }, seqB);
 
 		await expect(withLockedEntities(
 			[
-				{ model: a as never, id: 1 },
-				{ model: b as never, id: 1 }
+				{ model: modelA as never, id: 1 },
+				{ model: modelB as never, id: 1 }
 			],
 			async () => "never"
 		)).rejects.toThrow(/different Sequelize instance/);
@@ -147,7 +147,7 @@ describe("withLockedEntities (unit)", () => {
 			}
 		);
 
-		expect(received.map(r => r.tag)).toEqual(["p7", "g5", "p2"]);
+		expect(received.map(row => row.tag)).toEqual(["p7", "g5", "p2"]);
 	});
 
 	it("dedupes identical keys but still surfaces them at every position", async () => {
