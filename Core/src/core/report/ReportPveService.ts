@@ -11,7 +11,9 @@ import { FightController } from "../fights/FightController";
 import { FightOvertimeBehavior } from "../fights/FightOvertimeBehavior";
 import { RealPlayerFighter } from "../fights/fighter/RealPlayerFighter";
 import { MonsterFighter } from "../fights/fighter/MonsterFighter";
-import { MonsterDataController } from "../../data/Monster";
+import {
+	Monster, MonsterDataController
+} from "../../data/Monster";
 import { ClassDataController } from "../../data/Class";
 import { MissionsController } from "../missions/MissionsController";
 import {
@@ -212,6 +214,84 @@ function sendMonsterRewardPacket(
 }
 
 /**
+ * Apply the win/draw branch of a PvE boss fight: rewards, material loot, and
+ * the related missions / recipe-discovery side effects. Extracted from
+ * `doPVEBoss.fightCallback` to keep the callback's cyclomatic complexity low.
+ */
+async function applyPveBossWinRewards(
+	fight: FightController,
+	player: Player,
+	rewards: ReturnType<Monster["getRewards"]>,
+	endFightResponse: CrowniclesPacket[],
+	playerActiveObjects: PlayerActiveObjects,
+	mapId: number
+): Promise<void> {
+	const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
+
+	// Generate and apply material loot from boss
+	const materialLoot = generateBossLoot(mapId);
+	if (materialLoot.length > 0) {
+		await applyMaterialLoot(player.id, materialLoot);
+	}
+
+	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);
+	await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
+	await MissionsController.update(player, endFightResponse, {
+		missionId: "winAnyBossWithDifferentClasses",
+		params: { classId: player.class }
+	});
+
+	// Only count final island bosses for the different classes mission
+	if (Maps.isAtFinalPveBoss(player)) {
+		await MissionsController.update(player, endFightResponse, {
+			missionId: "winBossWithDifferentClasses",
+			params: { classId: player.class }
+		});
+
+		// Discover an island boss cooking recipe
+		await RecipeDiscoveryService.discoverFromBoss(player, mapId);
+	}
+}
+
+/**
+ * Persist the post-fight scalar state under a row-level lock. The inner
+ * addMoney / addExperience / MissionsController.update chains in
+ * `applyPveBossWinRewards` already committed money / XP / score / missions on
+ * freshly-locked rows (PR-H1). The only mutation that survived all those
+ * Object.assign(this, newPlayer) calls and still needs to be persisted here
+ * is the fight-points-lost / energy-lost scalar — which we re-derive against
+ * the freshly-locked instance to avoid lost-update on concurrent writers and
+ * to dodge the latent clobber-by-Object.assign on the local `player`.
+ */
+async function persistPveBossPostFightUnderLock(
+	player: Player,
+	initialFightPointsLost: number,
+	isWinOrDraw: boolean,
+	playerActiveObjects: PlayerActiveObjects
+): Promise<void> {
+	await withLockedPlayerSafe(player, "doPVEBoss post-fight save", async lockedPlayer => {
+		if (isWinOrDraw) {
+			lockedPlayer.fightPointsLost = initialFightPointsLost;
+		}
+		else {
+			// Make sure the player has no energy left after a loss even if they levelled up
+			lockedPlayer.setEnergyLost(
+				lockedPlayer.getMaxCumulativeEnergy(playerActiveObjects),
+				NumberChangeReason.PVE_FIGHT,
+				playerActiveObjects
+			);
+		}
+		await lockedPlayer.save();
+
+		/*
+		 * Reflect the persisted state on the local instance for downstream readers
+		 * (`leavePVEIslandIfNoEnergy` below reads `player.fightPointsLost`).
+		 */
+		player.fightPointsLost = lockedPlayer.fightPointsLost;
+	});
+}
+
+/**
  * Do a PVE boss fight
  * @param player
  * @param response
@@ -242,65 +322,11 @@ export async function doPVEBoss(
 
 			const isWinOrDraw = fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter;
 
-			// Only give reward if draw or win
 			if (isWinOrDraw) {
-				const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
-
-				// Generate and apply material loot from boss
-				const materialLoot = generateBossLoot(mapId);
-				if (materialLoot.length > 0) {
-					await applyMaterialLoot(player.id, materialLoot);
-				}
-
-				sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);
-				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
-				await MissionsController.update(player, endFightResponse, {
-					missionId: "winAnyBossWithDifferentClasses",
-					params: { classId: player.class }
-				});
-
-				// Only count final island bosses for the different classes mission
-				if (Maps.isAtFinalPveBoss(player)) {
-					await MissionsController.update(player, endFightResponse, {
-						missionId: "winBossWithDifferentClasses",
-						params: { classId: player.class }
-					});
-
-					// Discover an island boss cooking recipe
-					await RecipeDiscoveryService.discoverFromBoss(player, mapId);
-				}
+				await applyPveBossWinRewards(fight, player, rewards, endFightResponse, playerActiveObjects, mapId);
 			}
 
-			/*
-			 * Persist the post-fight scalar state under a row-level lock. The inner
-			 * addMoney / addExperience / MissionsController.update chains above
-			 * already committed money / XP / score / missions on freshly-locked rows
-			 * (PR-H1). The only mutation that survived all those Object.assign(this,
-			 * newPlayer) calls and still needs to be persisted here is the
-			 * fight-points-lost / energy-lost scalar — which we re-derive against the
-			 * freshly-locked instance to avoid lost-update on concurrent writers and
-			 * to dodge the latent clobber-by-Object.assign on the local `player`.
-			 */
-			await withLockedPlayerSafe(player, "doPVEBoss post-fight save", async lockedPlayer => {
-				if (isWinOrDraw) {
-					lockedPlayer.fightPointsLost = initialFightPointsLost;
-				}
-				else {
-					// Make sure the player has no energy left after a loss even if they levelled up
-					lockedPlayer.setEnergyLost(
-						lockedPlayer.getMaxCumulativeEnergy(playerActiveObjects),
-						NumberChangeReason.PVE_FIGHT,
-						playerActiveObjects
-					);
-				}
-				await lockedPlayer.save();
-
-				/*
-				 * Reflect the persisted state on the local instance for downstream readers
-				 * (`leavePVEIslandIfNoEnergy` below reads `player.fightPointsLost`).
-				 */
-				player.fightPointsLost = lockedPlayer.fightPointsLost;
-			});
+			await persistPveBossPostFightUnderLock(player, initialFightPointsLost, isWinOrDraw, playerActiveObjects);
 
 			crowniclesInstance?.logsDatabase.logPveFight(fight)
 				.then();
