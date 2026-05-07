@@ -87,48 +87,66 @@ async function applyLockedCandyFeed(
 	return { revalidated: true };
 }
 
+/**
+ * Returns true (and pushes the cancel packet) when the user
+ * either timed out or refused. Extracted to keep both feed
+ * end-callbacks below the CodeScene module mean threshold.
+ */
+function isFeedCancelled(collector: ReactionCollectorInstance, response: CrowniclesPacket[]): boolean {
+	const firstReaction = collector.getFirstReaction();
+	if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+		response.push(makePacket(CommandPetFeedCancelErrorPacket, {}));
+		return true;
+	}
+	return false;
+}
+
+/**
+ * Runs the candy-feed critical section under a Player+PetEntity
+ * row lock. Returns null (and pushes the no-pet packet) if the
+ * pet row was destroyed under us. Extracted to keep
+ * `getWithoutGuildPetFeedEndCallback` below the CodeScene module
+ * mean threshold.
+ */
+async function runCandyFeedUnderLock(
+	response: CrowniclesPacket[],
+	player: Player,
+	authorPet: PetEntity
+): Promise<{ revalidated: false } | { revalidated: true } | null> {
+	try {
+		return await withLockedEntities(
+			[Player.lockKey(player.id), PetEntity.lockKey(authorPet.id)] as const,
+			async ([lockedPlayer, lockedPet]) => await applyLockedCandyFeed(
+				response,
+				{
+					player: lockedPlayer, pet: lockedPet
+				},
+				authorPet.id
+			)
+		);
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			response.push(makePacket(CommandPetFeedNoPetErrorPacket, {}));
+			return null;
+		}
+		throw error;
+	}
+}
+
 function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FEED);
 
-		const firstReaction = collector.getFirstReaction();
-		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
-			response.push(makePacket(CommandPetFeedCancelErrorPacket, {}));
+		if (isFeedCancelled(collector, response)) {
 			return;
 		}
 
-		/*
-		 * Critical section: lock player + pet so a concurrent
-		 * pet-free / sell / transfer cannot strand the feed on a
-		 * destroyed pet row, and a concurrent money-sink cannot
-		 * leave the player with negative money.
-		 */
-		let outcome: { revalidated: false } | { revalidated: true };
-		try {
-			outcome = await withLockedEntities(
-				[Player.lockKey(player.id), PetEntity.lockKey(authorPet.id)] as const,
-				async ([lockedPlayer, lockedPet]) => await applyLockedCandyFeed(
-					response,
-					{
-						player: lockedPlayer, pet: lockedPet
-					},
-					authorPet.id
-				)
-			);
+		const outcome = await runCandyFeedUnderLock(response, player, authorPet);
+		if (outcome === null) {
+			return;
 		}
-		catch (error) {
-			if (error instanceof LockedRowNotFoundError) {
-				response.push(makePacket(CommandPetFeedNoPetErrorPacket, {}));
-				return;
-			}
-			throw error;
-		}
-
 		if (!outcome.revalidated) {
-			/*
-			 * Either the pet changed hands or money sank below the
-			 * candy price between the prompt and the answer.
-			 */
 			response.push(makePacket(CommandPetFeedNoMoneyFeedErrorPacket, {}));
 			return;
 		}
@@ -266,55 +284,65 @@ async function applyLockedGuildFeed(
 	};
 }
 
+/**
+ * Runs the guild-feed critical section under a Player+PetEntity+
+ * Guild row lock. Returns null (and pushes the storage-empty
+ * packet) if any locked row was destroyed under us. Extracted to
+ * keep `getWithGuildPetFeedEndCallback` below the CodeScene
+ * module mean threshold.
+ */
+async function runGuildFeedUnderLock(
+	response: CrowniclesPacket[],
+	player: Player,
+	authorPet: PetEntity,
+	guild: Guild,
+	foodReaction: ReactionCollectorPetFeedWithGuildFoodReaction
+): Promise<GuildFeedOutcome | null> {
+	try {
+		return await withLockedEntities(
+			[
+				Player.lockKey(player.id),
+				PetEntity.lockKey(authorPet.id),
+				Guild.lockKey(guild.id)
+			] as const,
+			async ([
+				lockedPlayer,
+				lockedPet,
+				lockedGuild
+			]) => await applyLockedGuildFeed(
+				response,
+				{
+					player: lockedPlayer, pet: lockedPet, guild: lockedGuild
+				},
+				{
+					petId: authorPet.id, foodReaction
+				}
+			)
+		);
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
+			return null;
+		}
+		throw error;
+	}
+}
+
 function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, guild: Guild) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FEED);
 
-		const firstReaction = collector.getFirstReaction();
-		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
-			response.push(makePacket(CommandPetFeedCancelErrorPacket, {}));
+		if (isFeedCancelled(collector, response)) {
 			return;
 		}
 
-		const foodReaction = firstReaction.reaction.data as ReactionCollectorPetFeedWithGuildFoodReaction;
+		const foodReaction = collector.getFirstReaction()!.reaction.data as ReactionCollectorPetFeedWithGuildFoodReaction;
 
-		/*
-		 * Critical section: lock player + pet + guild together so a
-		 * concurrent pet-free / sell / transfer cannot strand the
-		 * feed on a destroyed pet, and a concurrent guild-shop
-		 * transaction cannot drain the pantry under us.
-		 */
-		let outcome: GuildFeedOutcome;
-		try {
-			outcome = await withLockedEntities(
-				[
-					Player.lockKey(player.id),
-					PetEntity.lockKey(authorPet.id),
-					Guild.lockKey(guild.id)
-				] as const,
-				async ([
-					lockedPlayer,
-					lockedPet,
-					lockedGuild
-				]) => await applyLockedGuildFeed(
-					response,
-					{
-						player: lockedPlayer, pet: lockedPet, guild: lockedGuild
-					},
-					{
-						petId: authorPet.id, foodReaction
-					}
-				)
-			);
+		const outcome = await runGuildFeedUnderLock(response, player, authorPet, guild, foodReaction);
+		if (outcome === null) {
+			return;
 		}
-		catch (error) {
-			if (error instanceof LockedRowNotFoundError) {
-				response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
-				return;
-			}
-			throw error;
-		}
-
 		if (!outcome.revalidated) {
 			response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
 			return;
@@ -392,6 +420,36 @@ async function withGuildPetFeed(context: PacketContext, response: CrowniclesPack
 	response.push(collectorPacket);
 }
 
+/**
+ * Validates the static feed prerequisites (pet exists, not on
+ * expedition, not on cooldown). Returns the resolved pet entity
+ * or null when a refusal packet has already been pushed.
+ * Extracted to keep `execute` below the CodeScene module mean
+ * threshold.
+ */
+async function validateFeedPrerequisites(player: Player, response: CrowniclesPacket[]): Promise<PetEntity | null> {
+	const authorPet = await PetEntities.getById(player.petId);
+	if (!authorPet) {
+		response.push(makePacket(CommandPetFeedNoPetErrorPacket, {}));
+		return null;
+	}
+
+	if (await PetUtils.isPetOnExpedition(player.id)) {
+		response.push(makePacket(CommandPetFeedPetOnExpeditionErrorPacket, {}));
+		return null;
+	}
+
+	const cooldownTime = authorPet.getFeedCooldown(PetDataController.instance.getById(authorPet.typeId)!);
+	if (cooldownTime > 0) {
+		response.push(makePacket(CommandPetFeedNotHungryErrorPacket, {
+			pet: authorPet.asOwnedPet()
+		}));
+		return null;
+	}
+
+	return authorPet;
+}
+
 export default class PetFeedCommand {
 	@commandRequires(CommandPetFeedPacketReq, {
 		notBlocked: true,
@@ -399,23 +457,8 @@ export default class PetFeedCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetFeedPacketReq, context: PacketContext): Promise<void> {
-		const authorPet = await PetEntities.getById(player.petId);
+		const authorPet = await validateFeedPrerequisites(player, response);
 		if (!authorPet) {
-			response.push(makePacket(CommandPetFeedNoPetErrorPacket, {}));
-			return;
-		}
-
-		// Check if pet is on expedition
-		if (await PetUtils.isPetOnExpedition(player.id)) {
-			response.push(makePacket(CommandPetFeedPetOnExpeditionErrorPacket, {}));
-			return;
-		}
-
-		const cooldownTime = authorPet.getFeedCooldown(PetDataController.instance.getById(authorPet.typeId)!);
-		if (cooldownTime > 0) {
-			response.push(makePacket(CommandPetFeedNotHungryErrorPacket, {
-				pet: authorPet.asOwnedPet()
-			}));
 			return;
 		}
 
