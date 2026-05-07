@@ -3,8 +3,7 @@
  *
  * Flags Sequelize-style `<expr>.save()` calls that are not statically
  * provable to be running inside a row-level lock. Concurrent
- * lost-update bugs covered by the concurrency hardening sweep (see
- * `docs/CONCURRENCY.md`) all
+ * lost-update bugs all
  * reduce to a `.save()` call whose preceding read happened outside any
  * `SELECT … FOR UPDATE`, so the read-validate-mutate-save sequence is
  * not atomic.
@@ -179,7 +178,7 @@ export default {
 		],
 		messages: {
 			unguardedSave:
-				"`.save()` outside a row-level lock — wrap the read-validate-save sequence in `withLockedEntities([…])` (or `withLockedPlayerSafe`) so concurrent writers cannot lose updates. See docs/CONCURRENCY.md."
+				"`.save()` outside a row-level lock — wrap the read-validate-save sequence in `withLockedEntities([…])` (or `withLockedPlayerSafe`) so concurrent writers cannot lose updates."
 		}
 	},
 

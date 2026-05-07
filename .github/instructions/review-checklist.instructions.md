@@ -105,6 +105,16 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **New logic has test coverage** where applicable — especially for utility functions and data transformations
 - [ ] **No test regressions** — verify test count hasn't dropped
 
+## 10. Concurrency (DB writes)
+
+- [ ] **Every `.save()` on `Player` / `Guild` / `Home` / `PetEntity` / `PlayerMissionsInfo` / `GuildPet` runs under a row-level lock** — wrap the read-validate-save sequence in `withLockedEntities([...])` (multi-entity), `withLockedPlayerSafe(player, ctx, body)` (single-player, warn-and-skip on `LockedRowNotFoundError`), or `<Model>.withLocked(id, body)`. Same for `addMoney` / `addExperience` / `setEnergyLost` / `MissionsController.update` chains that ultimately persist.
+- [ ] **Helpers extracted from a locked critical section are named `*UnderLock`** (e.g. `runUpdateUnderLock`, `applyLockedPetSell`). The `crownicles/no-unguarded-save` rule whitelists this suffix.
+- [ ] **Cross-file lock inheritance is documented** — if a file's saves are guarded by a lock acquired in a caller, add the `@lock-inherited` block comment at the top of the file explaining the chain, and ensure the file is in the rule's scope in `Core/eslint.config.mjs`.
+- [ ] **Lock keys are sorted by `(tableName, id)`** — handled automatically by `withLockedEntities`. Never acquire locks manually in a different order (deadlock risk).
+- [ ] **`LockedRowNotFoundError` is handled** — for fire-and-forget callbacks (small events, fight callbacks, scheduled tasks) use `withLockedPlayerSafe` which warn-and-skips. For user-facing handlers, surface a sensible error reply.
+- [ ] **Race integration test added when bringing a flow under lock** — `Core/__tests__-integration/handlers/<flow>.race.test.ts` with N concurrent invocations and an assertion on the conserved invariant (no negative balance, exactly-once consumption, etc.). MariaDB Docker is required (`pnpm test:integration`).
+- [ ] **No new per-line `eslint-disable crownicles/no-unguarded-save` without a justification comment** — accepted reasons: fresh INSERT of a new row, single-field UI preference (no resource sink), or a documented `*UnderLock` chain the rule cannot follow.
+
 ---
 
 ## Quick Pre-PR Verification
