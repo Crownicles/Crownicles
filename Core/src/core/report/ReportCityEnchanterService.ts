@@ -148,6 +148,75 @@ async function checkEnchantmentConditions(
 }
 
 /**
+ * Re-validate currency availability against the freshly-locked rows.
+ * Returns true when both currencies still cover the price, false (and
+ * pushes the missing-currencies response) otherwise.
+ */
+function hasLockedCurrencies(params: {
+	lockedPlayer: Player;
+	lockedMissionsInfo: PlayerMissionsInfo | null;
+	price: EnchantItemParams["price"];
+	response: CrowniclesPacket[];
+}): boolean {
+	const {
+		lockedPlayer, lockedMissionsInfo, price, response
+	} = params;
+	const moneyOk = price.money <= 0 || lockedPlayer.money >= price.money;
+	const gemsOk = price.gems <= 0 || (lockedMissionsInfo?.gems ?? 0) >= price.gems;
+	if (moneyOk && gemsOk) {
+		return true;
+	}
+	pushMissingCurrenciesResponse({
+		player: lockedPlayer,
+		price,
+		playerMissionsInfo: lockedMissionsInfo,
+		response
+	});
+	return false;
+}
+
+/**
+ * Inside-lock body of {@link enchantItem}: spend currencies, mutate
+ * the item, persist all three rows, and push the success packet.
+ * Extracted to keep `enchantItem` below the complexity threshold.
+ */
+async function executeEnchant(params: {
+	lockedPlayer: Player;
+	lockedMissionsInfo: PlayerMissionsInfo | null;
+	enchantment: ItemEnchantment;
+	price: EnchantItemParams["price"];
+	itemToEnchant: InventorySlot;
+	response: CrowniclesPacket[];
+}): Promise<void> {
+	const {
+		lockedPlayer, lockedMissionsInfo, enchantment, price, itemToEnchant, response
+	} = params;
+
+	itemToEnchant.itemEnchantmentId = enchantment.id;
+	if (price.money > 0) {
+		await lockedPlayer.spendMoney({
+			response,
+			amount: price.money,
+			reason: NumberChangeReason.ENCHANT_ITEM
+		});
+	}
+	if (price.gems > 0 && lockedMissionsInfo) {
+		await lockedMissionsInfo.spendGems(price.gems, response, NumberChangeReason.ENCHANT_ITEM);
+	}
+
+	await Promise.all([
+		itemToEnchant.save(),
+		lockedPlayer.save(),
+		lockedMissionsInfo ? lockedMissionsInfo.save() : Promise.resolve()
+	]);
+
+	response.push(makePacket(CommandReportItemEnchantedRes, {
+		enchantmentId: enchantment.id,
+		enchantmentType: enchantment.kind.type.id
+	}));
+}
+
+/**
  * Apply the enchantment to the item and spend currencies
  *
  * Concurrency: locks both the Player wallet and (when gems are
@@ -167,51 +236,15 @@ async function enchantItem(params: EnchantItemParams): Promise<void> {
 		const lockedPlayer = locked[0] as Player;
 		const lockedMissionsInfo = (locked.length > 1 ? locked[1] : null) as PlayerMissionsInfo | null;
 
-		/*
-		 * Re-validate currency availability against the freshly-locked
-		 * rows: a concurrent reaction may have drained either currency.
-		 */
-		if (price.money > 0 && lockedPlayer.money < price.money) {
-			pushMissingCurrenciesResponse({
-				player: lockedPlayer,
-				price,
-				playerMissionsInfo: lockedMissionsInfo,
-				response
-			});
-			return;
-		}
-		if (price.gems > 0 && (lockedMissionsInfo?.gems ?? 0) < price.gems) {
-			pushMissingCurrenciesResponse({
-				player: lockedPlayer,
-				price,
-				playerMissionsInfo: lockedMissionsInfo,
-				response
-			});
+		if (!hasLockedCurrencies({
+			lockedPlayer, lockedMissionsInfo, price, response
+		})) {
 			return;
 		}
 
-		itemToEnchant.itemEnchantmentId = enchantment.id;
-		if (price.money > 0) {
-			await lockedPlayer.spendMoney({
-				response,
-				amount: price.money,
-				reason: NumberChangeReason.ENCHANT_ITEM
-			});
-		}
-		if (price.gems > 0 && lockedMissionsInfo) {
-			await lockedMissionsInfo.spendGems(price.gems, response, NumberChangeReason.ENCHANT_ITEM);
-		}
-
-		await Promise.all([
-			itemToEnchant.save(),
-			lockedPlayer.save(),
-			lockedMissionsInfo ? lockedMissionsInfo.save() : Promise.resolve()
-		]);
-
-		response.push(makePacket(CommandReportItemEnchantedRes, {
-			enchantmentId: enchantment.id,
-			enchantmentType: enchantment.kind.type.id
-		}));
+		await executeEnchant({
+			lockedPlayer, lockedMissionsInfo, enchantment, price, itemToEnchant, response
+		});
 	});
 }
 
