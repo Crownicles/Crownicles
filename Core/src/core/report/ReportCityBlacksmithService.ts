@@ -252,6 +252,15 @@ export async function handleUpgradeItemReaction(
 
 /**
  * Handle blacksmith upgrade reaction — player upgrades an item at the blacksmith
+ *
+ * Concurrency: the read-validate-spend-save sequence on `player.money`
+ * runs inside `Player.withLocked` so two concurrent blacksmith
+ * operations cannot both pass the affordability check on the same
+ * stale snapshot and cause a lost-update on the player's wallet. The
+ * material consumption (`Materials.consumeMaterials`) and the
+ * inventory slot mutation guard their own rows and are kept inside
+ * the critical section so a failed material check still bails out
+ * cleanly.
  */
 export async function handleBlacksmithUpgradeReaction(
 	player: Player,
@@ -283,40 +292,51 @@ export async function handleBlacksmithUpgradeReaction(
 		return;
 	}
 
-	if (executionData.materialsToConsume.length > 0) {
-		const consumed = await Materials.consumeMaterials(player.id, executionData.materialsToConsume);
-		if (!consumed) {
-			response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
+	await Player.withLocked(player.id, async lockedPlayer => {
+		// Re-validate against the freshly-locked row.
+		if (lockedPlayer.money < executionData.totalCost) {
+			pushBlacksmithMissingMoneyResponse(response, executionData.totalCost, lockedPlayer.money);
 			return;
 		}
-	}
 
-	// Spend money
-	await player.spendMoney({
-		response,
-		amount: executionData.totalCost,
-		reason: NumberChangeReason.BLACKSMITH_UPGRADE
+		if (executionData.materialsToConsume.length > 0) {
+			const consumed = await Materials.consumeMaterials(lockedPlayer.id, executionData.materialsToConsume);
+			if (!consumed) {
+				response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
+				return;
+			}
+		}
+
+		// Spend money
+		await lockedPlayer.spendMoney({
+			response,
+			amount: executionData.totalCost,
+			reason: NumberChangeReason.BLACKSMITH_UPGRADE
+		});
+
+		const inventorySlot = await getInventorySlotForReaction(lockedPlayer, reaction, "upgrade");
+		if (!inventorySlot) {
+			return;
+		}
+
+		inventorySlot.itemLevel = itemToUpgrade.nextLevel;
+		await inventorySlot.save();
+		await lockedPlayer.save();
+
+		response.push(makePacket(CommandReportBlacksmithUpgradeRes, {
+			itemCategory: reaction.itemCategory,
+			newItemLevel: itemToUpgrade.nextLevel,
+			totalCost: executionData.totalCost,
+			boughtMaterials: executionData.boughtMaterials
+		}));
 	});
-
-	const inventorySlot = await getInventorySlotForReaction(player, reaction, "upgrade");
-	if (!inventorySlot) {
-		return;
-	}
-
-	inventorySlot.itemLevel = itemToUpgrade.nextLevel;
-	await inventorySlot.save();
-	await player.save();
-
-	response.push(makePacket(CommandReportBlacksmithUpgradeRes, {
-		itemCategory: reaction.itemCategory,
-		newItemLevel: itemToUpgrade.nextLevel,
-		totalCost: executionData.totalCost,
-		boughtMaterials: executionData.boughtMaterials
-	}));
 }
 
 /**
  * Handle blacksmith disenchant reaction — player removes an enchantment at the blacksmith
+ *
+ * Concurrency: same `Player.withLocked` rationale as
+ * `handleBlacksmithUpgradeReaction`.
  */
 export async function handleBlacksmithDisenchantReaction(
 	player: Player,
@@ -336,23 +356,31 @@ export async function handleBlacksmithDisenchantReaction(
 		return;
 	}
 
-	await player.spendMoney({
-		response,
-		amount: itemToDisenchant.disenchantCost,
-		reason: NumberChangeReason.BLACKSMITH_DISENCHANT
+	await Player.withLocked(player.id, async lockedPlayer => {
+		// Re-validate against the freshly-locked row.
+		if (lockedPlayer.money < itemToDisenchant.disenchantCost) {
+			pushBlacksmithMissingMoneyResponse(response, itemToDisenchant.disenchantCost, lockedPlayer.money);
+			return;
+		}
+
+		await lockedPlayer.spendMoney({
+			response,
+			amount: itemToDisenchant.disenchantCost,
+			reason: NumberChangeReason.BLACKSMITH_DISENCHANT
+		});
+
+		const inventorySlot = await getInventorySlotForReaction(lockedPlayer, reaction, "disenchant");
+		if (!inventorySlot) {
+			return;
+		}
+
+		inventorySlot.itemEnchantmentId = null;
+		await inventorySlot.save();
+		await lockedPlayer.save();
+
+		response.push(makePacket(CommandReportBlacksmithDisenchantRes, {
+			itemCategory: reaction.itemCategory,
+			cost: itemToDisenchant.disenchantCost
+		}));
 	});
-
-	const inventorySlot = await getInventorySlotForReaction(player, reaction, "disenchant");
-	if (!inventorySlot) {
-		return;
-	}
-
-	inventorySlot.itemEnchantmentId = null;
-	await inventorySlot.save();
-	await player.save();
-
-	response.push(makePacket(CommandReportBlacksmithDisenchantRes, {
-		itemCategory: reaction.itemCategory,
-		cost: itemToDisenchant.disenchantCost
-	}));
 }
