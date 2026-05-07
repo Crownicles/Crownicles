@@ -199,9 +199,14 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
   - [x] `Core/README.md`: how to run integration tests locally
   - [x] No call site is migrated yet — purely additive
 
-- [ ] **PR-C — Fix the reported bug**
-  - [ ] Race integration test for `handleFoodShopBuy` (red)
-  - [ ] Migrate `handleFoodShopBuy` to `withLockedEntities` (green)
+- [x] **PR-C — Fix the reported bug**
+  - [x] Race integration test for `handleFoodShopBuy`
+        (`Core/__tests__-integration/handlers/handleFoodShopBuy.race.test.ts`,
+        4 cases: bug demonstrator + 3 lock invariants)
+  - [x] Migrate `handleFoodShopBuy` to `Guild.withLocked` — affordability
+        + capacity re-validated **inside** the lock so two concurrent
+        buyers serialise on the same row instead of both passing a stale
+        check.
 
 - [ ] **PR-D — Migrate `handleGuildDomainDepositTreasury`**
 
@@ -237,4 +242,4 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
 
 ---
 
-*Last update: PR-AB foundation **complete and green** — `cls-hooked` dep installed, CLS namespace + `useCLSOnSequelize(SequelizeCtor)` wired into `Lib/Database.ts`, `withLockedEntities()` + `Player/Guild/PetEntity/Home.lockKey/withLocked()` statics in place, unit tests + 7/7 MariaDB integration tests green (`pnpm test:integration`), GitHub Actions `integration-tests.yml` added, Core README updated. No call site migrated yet — that lands in PR-C.*
+*Last update: PR-C **complete and green** — `handleFoodShopBuy` now wraps its critical section in `Guild.withLocked` (affordability + capacity re-validated inside the lock). Race integration test (`handleFoodShopBuy.race.test.ts`, 4 cases) demonstrates the lost-update bug on the unsafe variant and the fix on the locked variant. Lib + Core unit + 11/11 integration tests green.*
