@@ -187,48 +187,43 @@ async function applyLockedAcceptGuildLeave(
 }
 
 /**
- * Run the in-lock leave body in the 3-key path (chief leaving
- * with a still-elder candidate). Splits the lock-acquisition
- * boilerplate out of the orchestrator so it stays flat.
+ * Run the in-lock leave body. The lock set is sized from the
+ * caller's snapshot: when an elder candidate exists we lock the
+ * elder row alongside the leaving player + guild so the
+ * promotion swap commits atomically; otherwise we only need the
+ * 2-key set. Both branches funnel into the same
+ * \`applyLockedAcceptGuildLeave\` body so the in-lock semantics
+ * are shared.
  */
-async function runLeaveUnderThreeKeyLock(
+async function runLeaveUnderLock(
 	response: CrowniclesPacket[],
 	keys: {
-		playerId: number; elderId: number; guildId: number;
+		playerId: number; elderId: number | null; guildId: number;
 	}
 ): Promise<LeaveOutcome> {
-	return await withLockedEntities(
-		[
-			Player.lockKey(keys.playerId),
-			Player.lockKey(keys.elderId),
-			Guild.lockKey(keys.guildId)
-		] as const,
-		async ([
-			lockedPlayer,
-			lockedElder,
-			lockedGuild
-		]) => await applyLockedAcceptGuildLeave(
-			response,
-			{
-				player: lockedPlayer, guild: lockedGuild, elder: lockedElder
-			},
-			{
-				guildId: keys.guildId, elderId: keys.elderId
-			}
-		)
-	);
-}
-
-/**
- * Run the in-lock leave body in the 2-key path (no elder to
- * promote, or the leaving player is not the chief).
- */
-async function runLeaveUnderTwoKeyLock(
-	response: CrowniclesPacket[],
-	keys: {
-		playerId: number; guildId: number;
+	if (keys.elderId !== null) {
+		const elderId = keys.elderId;
+		return await withLockedEntities(
+			[
+				Player.lockKey(keys.playerId),
+				Player.lockKey(elderId),
+				Guild.lockKey(keys.guildId)
+			] as const,
+			async ([
+				lockedPlayer,
+				lockedElder,
+				lockedGuild
+			]) => await applyLockedAcceptGuildLeave(
+				response,
+				{
+					player: lockedPlayer, guild: lockedGuild, elder: lockedElder
+				},
+				{
+					guildId: keys.guildId, elderId
+				}
+			)
+		);
 	}
-): Promise<LeaveOutcome> {
 	return await withLockedEntities(
 		[Player.lockKey(keys.playerId), Guild.lockKey(keys.guildId)] as const,
 		async ([lockedPlayer, lockedGuild]) => await applyLockedAcceptGuildLeave(
@@ -241,6 +236,13 @@ async function runLeaveUnderTwoKeyLock(
 			}
 		)
 	);
+}
+
+/**
+ * Push the canonical "you are not in a guild" response packet.
+ */
+function respondNotInAGuild(response: CrowniclesPacket[]): void {
+	response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
 }
 
 /**
@@ -257,29 +259,25 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 	const fresh = await Players.getById(player.id);
 
 	if (fresh.guildId === null) {
-		response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+		respondNotInAGuild(response);
 		return;
 	}
 
 	const guildSnapshot = await Guilds.getById(fresh.guildId);
 	if (!guildSnapshot) {
-		response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+		respondNotInAGuild(response);
 		return;
 	}
 
 	const elderIdAtRead = fresh.id === guildSnapshot.chiefId ? guildSnapshot.elderId : null;
 
 	try {
-		const outcome = elderIdAtRead !== null
-			? await runLeaveUnderThreeKeyLock(response, {
-				playerId: fresh.id, elderId: elderIdAtRead, guildId: guildSnapshot.id
-			})
-			: await runLeaveUnderTwoKeyLock(response, {
-				playerId: fresh.id, guildId: guildSnapshot.id
-			});
+		const outcome = await runLeaveUnderLock(response, {
+			playerId: fresh.id, elderId: elderIdAtRead, guildId: guildSnapshot.id
+		});
 
 		if (outcome.kind === "notInGuild") {
-			response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+			respondNotInAGuild(response);
 		}
 	}
 	catch (error) {
@@ -289,7 +287,7 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 			 * elder candidate row vanished. Either way the leave
 			 * is moot: surface the same "not in a guild" outcome.
 			 */
-			response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+			respondNotInAGuild(response);
 			return;
 		}
 		throw error;
