@@ -36,6 +36,7 @@ import { crowniclesInstance } from "../../index";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { Maps } from "../maps/Maps";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 import { MissionsController } from "../missions/MissionsController";
 import {
 	daysToMilliseconds, hoursToMilliseconds
@@ -192,72 +193,82 @@ function sendNoContribution(
 
 function getEndCallback(player: Player, context: PacketContext): EndCallback {
 	return async (collector, response) => {
-		const reaction = collector.getFirstReaction();
-		const blessingManager = BlessingManager.getInstance();
-
-		if (!reaction || reaction.reaction.type !== ReactionCollectorAltarContributeReaction.name) {
-			// Player refused or timeout
-			sendNoContribution(response, player, blessingManager);
-			return;
-		}
-
-		const chosenAmount = (reaction.reaction.data as ReactionCollectorAltarContributeReaction).amount;
-
-		// Check if player has enough money
-		if (player.money < chosenAmount) {
-			sendNoContribution(response, player, blessingManager, {
-				amount: chosenAmount, hasEnoughMoney: false
-			});
-			return;
-		}
-
-		// Spend money
-		await player.spendMoney({
-			amount: chosenAmount,
-			response,
-			reason: NumberChangeReason.BLESSING
-		});
-
-		// Contribute to pool
-		const blessingTriggered = await blessingManager.contribute(chosenAmount, player.keycloakId);
-
-		const {
-			bonusGems, bonusItemGiven
-		} = await calculateBonusRewards(chosenAmount, player);
-		const badgeAwarded = await checkAndAwardOraclePatronBadge(player, chosenAmount);
-
-		response.push(makePacket(SmallEventAltarContributedPacket, {
-			amount: chosenAmount,
-			blessingTriggered,
-			blessingType: blessingTriggered ? blessingManager.getActiveBlessingType() : 0,
-			newPoolAmount: blessingManager.getPoolAmount(),
-			poolThreshold: blessingManager.getPoolThreshold(),
-			bonusGems,
-			bonusItemGiven,
-			badgeAwarded
-		}));
-
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
-
-		// Give bonus item after unblocking altar (giveItemToPlayer creates its own blocking for ACCEPT_ITEM)
-		if (bonusItemGiven) {
-			const bonusItem = generateRandomItem({
-				minRarity: ItemRarity.SPECIAL
-			});
-			await giveItemToPlayer(response, context, player, bonusItem, {
-				itemLevel: generateRandomLootLevel(),
-				itemEnchantmentId: generateRandomLootEnchantment(bonusItem)
-			});
-		}
-
-		await player.save();
-
-		// Update blessing contribution mission
-		await MissionsController.update(player, response, {
-			missionId: "contributeToBlessing",
-			count: chosenAmount
-		});
+		await withLockedPlayerSafe(player, "altar endCallback", lockedPlayer =>
+			runAltarEndCallbackUnderLock(lockedPlayer, context, collector, response));
 	};
+}
+
+async function runAltarEndCallbackUnderLock(
+	player: Player,
+	context: PacketContext,
+	collector: ReactionCollectorInstance,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const reaction = collector.getFirstReaction();
+	const blessingManager = BlessingManager.getInstance();
+
+	if (!reaction || reaction.reaction.type !== ReactionCollectorAltarContributeReaction.name) {
+		// Player refused or timeout
+		sendNoContribution(response, player, blessingManager);
+		return;
+	}
+
+	const chosenAmount = (reaction.reaction.data as ReactionCollectorAltarContributeReaction).amount;
+
+	// Check if player has enough money — re-evaluated against the locked row.
+	if (player.money < chosenAmount) {
+		sendNoContribution(response, player, blessingManager, {
+			amount: chosenAmount, hasEnoughMoney: false
+		});
+		return;
+	}
+
+	// Spend money
+	await player.spendMoney({
+		amount: chosenAmount,
+		response,
+		reason: NumberChangeReason.BLESSING
+	});
+
+	// Contribute to pool
+	const blessingTriggered = await blessingManager.contribute(chosenAmount, player.keycloakId);
+
+	const {
+		bonusGems, bonusItemGiven
+	} = await calculateBonusRewards(chosenAmount, player);
+	const badgeAwarded = await checkAndAwardOraclePatronBadge(player, chosenAmount);
+
+	response.push(makePacket(SmallEventAltarContributedPacket, {
+		amount: chosenAmount,
+		blessingTriggered,
+		blessingType: blessingTriggered ? blessingManager.getActiveBlessingType() : 0,
+		newPoolAmount: blessingManager.getPoolAmount(),
+		poolThreshold: blessingManager.getPoolThreshold(),
+		bonusGems,
+		bonusItemGiven,
+		badgeAwarded
+	}));
+
+	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.ALTAR_SMALL_EVENT);
+
+	// Give bonus item after unblocking altar (giveItemToPlayer creates its own blocking for ACCEPT_ITEM)
+	if (bonusItemGiven) {
+		const bonusItem = generateRandomItem({
+			minRarity: ItemRarity.SPECIAL
+		});
+		await giveItemToPlayer(response, context, player, bonusItem, {
+			itemLevel: generateRandomLootLevel(),
+			itemEnchantmentId: generateRandomLootEnchantment(bonusItem)
+		});
+	}
+
+	await player.save();
+
+	// Update blessing contribution mission
+	await MissionsController.update(player, response, {
+		missionId: "contributeToBlessing",
+		count: chosenAmount
+	});
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
