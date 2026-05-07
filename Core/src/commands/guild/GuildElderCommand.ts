@@ -2,7 +2,9 @@ import Player, { Players } from "../../core/database/game/models/Player";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { Guilds } from "../../core/database/game/models/Guild";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
 import {
 	CommandGuildElderAcceptPacketRes,
 	CommandGuildElderAlreadyElderPacketRes,
@@ -27,6 +29,9 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { ReactionCollectorGuildElder } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElder";
 import { GuildStatusChangeNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildStatusChangeNotificationPacket";
 import { PacketUtils } from "../../core/utils/PacketUtils";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Return true if promotedPlayer can be promoted
@@ -66,39 +71,107 @@ async function isEligible(player: Player, promotedPlayer: Player | null, respons
 }
 
 /**
- * Promote promotedPlayer as elder of the guild
+ * In-lock body for the elder-promotion flow. Re-validates that
+ * the chief still leads the guild and that the promoted player
+ * still belongs to it before atomically setting the elder slot.
+ */
+async function applyLockedAcceptGuildElder(
+	response: CrowniclesPacket[],
+	locked: {
+		chief: Player; promoted: Player; guild: Guild;
+	},
+	expected: {
+		guildId: number;
+	}
+): Promise<{ ok: boolean }> {
+	const {
+		chief, promoted, guild
+	} = locked;
+
+	if (chief.guildId !== expected.guildId || chief.id !== guild.chiefId) {
+		return { ok: false };
+	}
+	if (promoted.guildId !== expected.guildId) {
+		return { ok: false };
+	}
+	if (promoted.id === guild.chiefId || promoted.id === guild.elderId) {
+		return { ok: false };
+	}
+
+	guild.elderId = promoted.id;
+	await guild.save();
+
+	crowniclesInstance?.logsDatabase.logGuildElderAdd(guild, promoted.keycloakId)
+		.then();
+
+	response.push(makePacket(CommandGuildElderAcceptPacketRes, {
+		promotedKeycloakId: promoted.keycloakId,
+		guildName: guild.name
+	}));
+
+	PacketUtils.sendNotifications([
+		makePacket(GuildStatusChangeNotificationPacket, {
+			keycloakId: promoted.keycloakId,
+			becomeElder: true,
+			guildName: guild.name
+		})
+	]);
+	return { ok: true };
+}
+
+/**
+ * Promote promotedPlayer as elder of the guild under a row lock.
+ *
  * @param player
  * @param promotedPlayer
  * @param response
  */
 async function acceptGuildElder(player: Player, promotedPlayer: Player, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
-	await promotedPlayer.reload();
+	const freshChief = await Players.getById(player.id);
+	const freshPromoted = await Players.getById(promotedPlayer.id);
 
-	// Do all necessary checks again just in case something changed during the menu
-	if (!await isEligible(player, promotedPlayer, response)) {
+	if (!await isEligible(freshChief, freshPromoted, response)) {
 		return;
 	}
-	const guild = (await Guilds.getById(player.guildId))!;
-	guild.elderId = promotedPlayer.id;
 
-	await Promise.all([
-		promotedPlayer.save(),
-		guild.save()
-	]);
-	crowniclesInstance?.logsDatabase.logGuildElderAdd(guild, promotedPlayer.keycloakId).then();
+	const guildSnapshot = (await Guilds.getById(freshChief.guildId))!;
 
-	response.push(makePacket(CommandGuildElderAcceptPacketRes, {
-		promotedKeycloakId: promotedPlayer.keycloakId,
-		guildName: guild.name
-	}));
-	const notifications: GuildStatusChangeNotificationPacket[] = [];
-	notifications.push(makePacket(GuildStatusChangeNotificationPacket, {
-		keycloakId: promotedPlayer.keycloakId,
-		becomeElder: true,
-		guildName: guild.name
-	}));
-	PacketUtils.sendNotifications(notifications);
+	try {
+		const outcome = await withLockedEntities(
+			[
+				Player.lockKey(freshChief.id),
+				Player.lockKey(freshPromoted.id),
+				Guild.lockKey(guildSnapshot.id)
+			] as const,
+			async ([
+				lockedChief,
+				lockedPromoted,
+				lockedGuild
+			]) => await applyLockedAcceptGuildElder(
+				response,
+				{
+					chief: lockedChief, promoted: lockedPromoted, guild: lockedGuild
+				},
+				{ guildId: guildSnapshot.id }
+			)
+		);
+
+		if (!outcome.ok) {
+			response.push(makePacket(CommandGuildElderSameGuildPacketRes, {}));
+		}
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			/*
+			 * The guild was destroyed between the prompt and the
+			 * accept. Surface the same "different guild" outcome
+			 * the user would have seen if they had been kicked.
+			 */
+			response.push(makePacket(CommandGuildElderSameGuildPacketRes, {}));
+			return;
+		}
+		throw error;
+	}
 }
 
 export default class GuildElderCommand {
