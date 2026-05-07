@@ -27,6 +27,66 @@ interface ResolvedFoodShop {
 }
 
 /**
+ * Resolve the (player, guild) pair from the request author and verify
+ * the guild has a working shop. Pulled out of {@link resolveFoodShopRequest}
+ * to keep the latter's cyclomatic complexity low (CodeScene
+ * "Complex Method" advisory).
+ */
+async function resolveBuyerAndShop(
+	keycloakId: string
+): Promise<{
+	player: Player; guild: Guild;
+} | GuildDomainError> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	if (!player?.guildId) {
+		return GUILD_DOMAIN_ERROR.NO_GUILD;
+	}
+
+	const guild = await Guilds.getById(player.guildId);
+	if (!guild || guild.shopLevel < 1) {
+		return GUILD_DOMAIN_ERROR.NO_SHOP;
+	}
+
+	return {
+		player, guild
+	};
+}
+
+/**
+ * Validate the requested food line against the (already-loaded) guild,
+ * applying the cheap fast-fail checks. Authoritative affordability +
+ * capacity is re-checked under the row lock — see
+ * {@link handleFoodShopBuy}.
+ */
+function buildFoodShopRequest(
+	player: Player,
+	guild: Guild,
+	packet: CommandReportFoodShopBuyReq
+): ResolvedFoodShop | GuildDomainError {
+	const foodType = packet.foodType;
+	if (!PetConstants.PET_FOOD_BY_ID.includes(foodType)) {
+		return GUILD_DOMAIN_ERROR.INVALID_FOOD;
+	}
+
+	const amount = Math.max(1, Math.floor(packet.amount));
+	const foodIndex = getFoodIndexOf(foodType);
+	const pricePerUnit = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
+
+	// Hint-only treasury check: re-validated under the lock below.
+	if (guild.treasury < pricePerUnit * amount && guild.treasury < pricePerUnit) {
+		return GUILD_DOMAIN_ERROR.NOT_ENOUGH_TREASURY;
+	}
+
+	if (guild.isStorageFullFor(foodType, 1)) {
+		return GUILD_DOMAIN_ERROR.STORAGE_FULL;
+	}
+
+	return {
+		player, guildId: player.guildId!, foodType, amount, foodIndex, pricePerUnit
+	};
+}
+
+/**
  * First-pass resolution: cheap precondition checks that *don't* mutate
  * state, run outside the lock.
  *
@@ -41,37 +101,11 @@ interface ResolvedFoodShop {
 async function resolveFoodShopRequest(
 	keycloakId: string, packet: CommandReportFoodShopBuyReq
 ): Promise<ResolvedFoodShop | GuildDomainError> {
-	const player = await Players.getByKeycloakId(keycloakId);
-	if (!player?.guildId) {
-		return GUILD_DOMAIN_ERROR.NO_GUILD;
+	const buyerAndShop = await resolveBuyerAndShop(keycloakId);
+	if (typeof buyerAndShop === "string") {
+		return buyerAndShop;
 	}
-
-	const guild = await Guilds.getById(player.guildId);
-	if (!guild || guild.shopLevel < 1) {
-		return GUILD_DOMAIN_ERROR.NO_SHOP;
-	}
-
-	const foodType = packet.foodType;
-	if (!PetConstants.PET_FOOD_BY_ID.includes(foodType)) {
-		return GUILD_DOMAIN_ERROR.INVALID_FOOD;
-	}
-
-	const amount = Math.max(1, Math.floor(packet.amount));
-	const foodIndex = getFoodIndexOf(foodType);
-	const pricePerUnit = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
-
-	// Fast-failure hints — re-validated under the lock below.
-	if (guild.treasury < pricePerUnit * amount && guild.treasury < pricePerUnit) {
-		return GUILD_DOMAIN_ERROR.NOT_ENOUGH_TREASURY;
-	}
-
-	if (guild.isStorageFullFor(foodType, 1)) {
-		return GUILD_DOMAIN_ERROR.STORAGE_FULL;
-	}
-
-	return {
-		player, guildId: player.guildId, foodType, amount, foodIndex, pricePerUnit
-	};
+	return buildFoodShopRequest(buyerAndShop.player, buyerAndShop.guild, packet);
 }
 
 /**
