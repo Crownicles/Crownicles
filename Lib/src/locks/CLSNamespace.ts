@@ -1,7 +1,6 @@
 import {
 	createNamespace, getNamespace, Namespace
 } from "cls-hooked";
-import type { Sequelize } from "sequelize";
 
 /**
  * Minimal shape of `Sequelize` we depend on here. Typed as a structural
@@ -9,9 +8,13 @@ import type { Sequelize } from "sequelize";
  * resolve several physical instances of `sequelize` across packages
  * (different `mariadb` peer-dep selectors), and the CLS namespace must
  * be registered on each one that actually instantiates connections.
+ *
+ * The return value of `useCLS` is unused and intentionally typed as
+ * `unknown`; this keeps us free of any value-position reference to the
+ * `Sequelize` constructor (which would force a runtime import).
  */
 type SequelizeCtor = {
-	useCLS(ns: Namespace): typeof Sequelize;
+	useCLS(ns: Namespace): unknown;
 };
 
 /**
