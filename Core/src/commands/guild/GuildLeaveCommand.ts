@@ -12,7 +12,9 @@ import {
 	CommandGuildLeavePacketReq,
 	CommandGuildLeaveRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildLeavePacket";
-import { Guilds } from "../../core/database/game/models/Guild";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
 import { ReactionCollectorGuildLeave } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -24,75 +26,92 @@ import { crowniclesInstance } from "../../index";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { PacketUtils } from "../../core/utils/PacketUtils";
 import { GuildStatusChangeNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildStatusChangeNotificationPacket";
-
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
- * Allow the player to leave its guild
- * @param player
- * @param response
+ * Outcome of the in-lock leave-flow body. Lets the outer caller
+ * dispatch the right response packet without re-deriving state
+ * outside of the critical section.
  */
-async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
-
-	// The player is no longer in a guild since the menu
-	if (player.guildId === null) {
-		response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
-		return;
+type LeaveOutcome =
+	| {
+		kind: "notInGuild";
 	}
-	const guild = await Guilds.getById(player.guildId);
+	| {
+		kind: "chiefPromotedElder" | "guildDestroyed" | "left";
+	};
 
-	// Guild no longer exists
-	if (!guild) {
-		response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
-		return;
+/**
+ * Promote the locked elder to chief and detach the locked
+ * leaving chief. The three rows (chief, elder, guild) are
+ * already held under \`SELECT ... FOR UPDATE\` so the swap commits
+ * atomically.
+ */
+async function applyChiefPromotesElder(
+	response: CrowniclesPacket[],
+	locked: {
+		chief: Player; elder: Player; guild: Guild;
 	}
+): Promise<void> {
+	const {
+		chief, elder, guild
+	} = locked;
 
-	if (player.id === guild.chiefId) {
-		// The guild's chief is leaving
-		if (guild.elderId !== null) {
-			crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
-			crowniclesInstance?.logsDatabase.logGuildChiefChange(guild, guild.elderId).then();
+	crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, elder.id)
+		.then();
+	crowniclesInstance?.logsDatabase.logGuildChiefChange(guild, elder.id)
+		.then();
 
-			// An elder can recover the guild
-			player.guildId = null;
-			const elder = await Players.getById(guild.elderId);
-			guild.elderId = null;
-			guild.chiefId = elder.id;
-			response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
-				newChiefKeycloakId: elder.keycloakId,
-				guildName: guild.name
-			}));
+	chief.guildId = null;
+	guild.elderId = null;
+	guild.chiefId = elder.id;
 
-			await Promise.all([
-				elder.save(),
-				guild.save(),
-				player.save()
-			]);
-			const notifications: GuildStatusChangeNotificationPacket[] = [];
-			notifications.push(makePacket(GuildStatusChangeNotificationPacket, {
-				keycloakId: elder.keycloakId,
-				becomeChief: true,
-				guildName: guild.name
-			}));
-			PacketUtils.sendNotifications(notifications);
-			return;
-		}
+	response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
+		newChiefKeycloakId: elder.keycloakId,
+		guildName: guild.name
+	}));
 
-		// No elder => the guild will be destroyed
-		await guild.completelyDestroyAndDeleteFromTheDatabase();
-		response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
-			guildName: guild.name,
-			isGuildDestroyed: true
-		}));
-		return;
+	await Promise.all([
+		elder.save(),
+		guild.save(),
+		chief.save()
+	]);
+
+	PacketUtils.sendNotifications([
+		makePacket(GuildStatusChangeNotificationPacket, {
+			keycloakId: elder.keycloakId,
+			becomeChief: true,
+			guildName: guild.name
+		})
+	]);
+}
+
+/**
+ * Detach a non-chief player from the locked guild. Also clears
+ * the elder slot when the leaving member is the elder.
+ */
+async function applyMemberLeavesGuild(
+	response: CrowniclesPacket[],
+	locked: {
+		player: Player; guild: Guild;
 	}
+): Promise<void> {
+	const {
+		player, guild
+	} = locked;
+
 	if (guild.elderId === player.id) {
-		// The guild's elder is leaving
-		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId).then();
+		crowniclesInstance?.logsDatabase.logGuildElderRemove(guild, guild.elderId)
+			.then();
 		guild.elderId = null;
 	}
-	LogsDatabase.logGuildLeave(guild, player.keycloakId).then();
+
+	LogsDatabase.logGuildLeave(guild, player.keycloakId)
+		.then();
 	player.guildId = null;
+
 	response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
 		guildName: guild.name
 	}));
@@ -100,6 +119,136 @@ async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): P
 		player.save(),
 		guild.save()
 	]);
+}
+
+/**
+ * In-lock body shared by both lock paths. Re-validates that the
+ * leaving player still belongs to the guild we read at prompt
+ * time, then dispatches to the correct sub-flow (chief promotes
+ * elder / chief destroys guild / regular leave).
+ */
+async function applyLockedAcceptGuildLeave(
+	response: CrowniclesPacket[],
+	locked: {
+		player: Player; guild: Guild; elder?: Player;
+	},
+	expected: {
+		guildId: number; elderId: number | null;
+	}
+): Promise<LeaveOutcome> {
+	const {
+		player, guild, elder
+	} = locked;
+
+	if (player.guildId !== expected.guildId) {
+		return { kind: "notInGuild" };
+	}
+
+	const isChief = player.id === guild.chiefId;
+	const elderStillElder = elder !== undefined
+		&& guild.elderId === elder.id
+		&& guild.elderId === expected.elderId;
+
+	if (isChief && elderStillElder && elder) {
+		await applyChiefPromotesElder(response, {
+			chief: player, elder, guild
+		});
+		return { kind: "chiefPromotedElder" };
+	}
+
+	if (isChief) {
+		const guildName = guild.name;
+		await guild.completelyDestroyAndDeleteFromTheDatabase();
+		response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
+			guildName,
+			isGuildDestroyed: true
+		}));
+		return { kind: "guildDestroyed" };
+	}
+
+	await applyMemberLeavesGuild(response, {
+		player, guild
+	});
+	return { kind: "left" };
+}
+
+/**
+ * Allow the player to leave its guild. Locks the player + guild
+ * (and the elder when the chief is leaving with a successor)
+ * with \`withLockedEntities\` so a concurrent leave / kick /
+ * promotion cannot leave the guild orphaned, with two chiefs, or
+ * promote a stale elder.
+ *
+ * @param player
+ * @param response
+ */
+async function acceptGuildLeave(player: Player, response: CrowniclesPacket[]): Promise<void> {
+	const fresh = await Players.getById(player.id);
+
+	if (fresh.guildId === null) {
+		response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+		return;
+	}
+
+	const guildSnapshot = await Guilds.getById(fresh.guildId);
+	if (!guildSnapshot) {
+		response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+		return;
+	}
+
+	const elderIdAtRead = fresh.id === guildSnapshot.chiefId ? guildSnapshot.elderId : null;
+
+	try {
+		const outcome = elderIdAtRead !== null
+			? await withLockedEntities(
+				[
+					Player.lockKey(fresh.id),
+					Player.lockKey(elderIdAtRead),
+					Guild.lockKey(guildSnapshot.id)
+				] as const,
+				async ([
+					lockedPlayer,
+					lockedElder,
+					lockedGuild
+				]) => await applyLockedAcceptGuildLeave(
+					response,
+					{
+						player: lockedPlayer, guild: lockedGuild, elder: lockedElder
+					},
+					{
+						guildId: guildSnapshot.id, elderId: elderIdAtRead
+					}
+				)
+			)
+			: await withLockedEntities(
+				[Player.lockKey(fresh.id), Guild.lockKey(guildSnapshot.id)] as const,
+				async ([lockedPlayer, lockedGuild]) => await applyLockedAcceptGuildLeave(
+					response,
+					{
+						player: lockedPlayer, guild: lockedGuild
+					},
+					{
+						guildId: guildSnapshot.id, elderId: null
+					}
+				)
+			);
+
+		if (outcome.kind === "notInGuild") {
+			response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+		}
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			/*
+			 * Either the guild was destroyed concurrently or the
+			 * elder candidate row vanished. Either way the leave
+			 * is moot: surface the same "not in a guild" outcome.
+			 */
+			response.push(makePacket(CommandGuildLeaveNotInAGuildPacketRes, {}));
+			return;
+		}
+		throw error;
+	}
 }
 
 function endCallback(player: Player): EndCallback {
