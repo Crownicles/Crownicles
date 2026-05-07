@@ -49,6 +49,9 @@ import { resetExpeditionStreakMission } from "../../core/missions/ExpeditionStre
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Expedition log parameters
@@ -252,6 +255,80 @@ function checkStartRequirements(
 	return null;
 }
 
+/**
+ * Payload returned by {@link applyLockedResolveExpedition} when the
+ * expedition was actually resolved inside the lock. Captures every
+ * piece of state needed to build the response packet outside the
+ * critical section.
+ */
+type ResolvedExpeditionPayload = {
+	resolved: true;
+	outcome: ReturnType<typeof determineExpeditionOutcome>;
+	expeditionSuccess: boolean;
+	expeditionData: ExpeditionData;
+	petInfo: ReturnType<PetEntity["getBasicInfo"]>;
+	badgeEarned: string | undefined;
+};
+
+/**
+ * In-lock body for `doResolveExpedition`. Re-validates that the
+ * player still owns the same pet and that the active expedition row
+ * still exists (no concurrent resolution happened) before mutating
+ * any state. All side-effecting work — love change, reward
+ * application, expedition cleanup, mission updates, badge award —
+ * runs against the locked instances inside a single transaction.
+ */
+async function applyLockedResolveExpedition(
+	response: CrowniclesPacket[],
+	context: PacketContext,
+	locked: {
+		player: Player; pet: PetEntity;
+	},
+	expectedExpeditionId: number
+): Promise<ResolvedExpeditionPayload | { resolved: false }> {
+	const {
+		player, pet
+	} = locked;
+
+	if (player.petId !== pet.id) {
+		return { resolved: false };
+	}
+
+	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
+	if (!activeExpedition || activeExpedition.id !== expectedExpeditionId) {
+		return { resolved: false };
+	}
+
+	const expeditionData = activeExpedition.toExpeditionData();
+
+	const outcome = await calculateOutcome(pet, activeExpedition, expeditionData, player);
+
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
+	await applyOutcomeEffects(outcome, player, pet, response, context, playerActiveObjects);
+
+	if (outcome.rewards) {
+		outcome.rewards.money = BlessingManager.getInstance().applyMoneyBlessing(outcome.rewards.money);
+		outcome.rewards.points = Math.round(outcome.rewards.points * BlessingManager.getInstance().getScoreMultiplier());
+	}
+
+	const expeditionSuccess = !outcome.totalFailure;
+	await finalizeExpedition(player, pet, activeExpedition, expeditionData, expeditionSuccess, outcome);
+
+	await updateExpeditionMissions(player, response, expeditionData, expeditionSuccess);
+
+	const badgeEarned = await checkAndAwardExpeditionBadge(player, expeditionSuccess);
+
+	return {
+		resolved: true,
+		outcome,
+		expeditionSuccess,
+		expeditionData,
+		petInfo: pet.getBasicInfo(),
+		badgeEarned
+	};
+}
+
 export default class PetExpeditionCommand {
 	/**
 	 * Check expedition status and requirements
@@ -327,7 +404,7 @@ export default class PetExpeditionCommand {
 			return;
 		}
 
-		// Validate prerequisites
+		// Outer fast-fail: validate prerequisites without locking.
 		const validation = await validateExpeditionPrerequisites(player.id, player.petId);
 		if (!validation.success) {
 			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: validation.errorCode }));
@@ -337,39 +414,48 @@ export default class PetExpeditionCommand {
 		const {
 			activeExpedition, petEntity
 		} = validation;
-		const expeditionData = activeExpedition.toExpeditionData();
 
-		// Calculate risk and determine outcome
-		const outcome = await calculateOutcome(petEntity, activeExpedition, expeditionData, player);
-
-		// Get player active objects for experience rewards
-		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-
-		// Apply outcome effects (love change and rewards)
-		await applyOutcomeEffects(outcome, player, petEntity, response, context, playerActiveObjects);
-
-		// Update displayed values to include blessing multipliers
-		if (outcome.rewards) {
-			outcome.rewards.money = BlessingManager.getInstance().applyMoneyBlessing(outcome.rewards.money);
-			outcome.rewards.points = Math.round(outcome.rewards.points * BlessingManager.getInstance().getScoreMultiplier());
+		/*
+		 * Critical section: lock player + pet so two concurrent
+		 * `doResolveExpedition` calls (or a concurrent pet-free /
+		 * sell / transfer) can't double-credit rewards or mutate a
+		 * destroyed pet row. The active expedition is keyed by
+		 * player.id, so locking the player serialises every
+		 * resolution for that player.
+		 */
+		let resolved: ResolvedExpeditionPayload | { resolved: false };
+		try {
+			resolved = await withLockedEntities(
+				[Player.lockKey(player.id), PetEntity.lockKey(petEntity.id)] as const,
+				async ([lockedPlayer, lockedPet]) => await applyLockedResolveExpedition(
+					response,
+					context,
+					{
+						player: lockedPlayer, pet: lockedPet
+					},
+					activeExpedition.id
+				)
+			);
+		}
+		catch (error) {
+			if (error instanceof LockedRowNotFoundError) {
+				response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: ExpeditionConstants.ERROR_CODES.NO_PET }));
+				return;
+			}
+			throw error;
 		}
 
-		// Finalize expedition (log, cleanup, mark completed)
-		const expeditionSuccess = !outcome.totalFailure;
-		await finalizeExpedition(player, petEntity, activeExpedition, expeditionData, expeditionSuccess, outcome);
-
-		// Update expedition missions
-		await updateExpeditionMissions(player, response, expeditionData, expeditionSuccess);
-
-		// Check for expert expediteur badge
-		const badgeEarned = await checkAndAwardExpeditionBadge(player, expeditionSuccess);
+		if (!resolved.resolved) {
+			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: ExpeditionConstants.ERROR_CODES.NO_EXPEDITION }));
+			return;
+		}
 
 		response.push(makePacket(CommandPetExpeditionResolvePacketRes, {
-			success: expeditionSuccess,
-			...outcome,
-			pet: petEntity.getBasicInfo(),
-			expedition: expeditionData,
-			badgeEarned
+			success: resolved.expeditionSuccess,
+			...resolved.outcome,
+			pet: resolved.petInfo,
+			expedition: resolved.expeditionData,
+			badgeEarned: resolved.badgeEarned
 		}));
 	}
 

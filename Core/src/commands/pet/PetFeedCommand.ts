@@ -39,6 +39,53 @@ import {
 } from "../../core/database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+
+/**
+ * In-lock body for the no-guild candy-feed flow. Re-validates that
+ * the player still owns this pet and can still afford the candy
+ * before mutating state, so a concurrent pet transfer / sell / free
+ * or money sink cannot cause a lost-update.
+ */
+async function applyLockedCandyFeed(
+	response: CrowniclesPacket[],
+	locked: {
+		player: Player; pet: PetEntity;
+	},
+	expectedPetId: number
+): Promise<{ revalidated: false } | { revalidated: true }> {
+	const {
+		player, pet
+	} = locked;
+	const candyIndex = getFoodIndexOf(PetConstants.PET_FOOD.COMMON_FOOD);
+	const candyPrice = GuildDomainConstants.SHOP_PRICES.FOOD[candyIndex];
+
+	if (player.petId !== expectedPetId) {
+		return { revalidated: false };
+	}
+	if (player.money < candyPrice) {
+		return { revalidated: false };
+	}
+
+	await player.spendMoney({
+		response,
+		amount: candyPrice,
+		reason: NumberChangeReason.PET_FEED
+	});
+
+	pet.hungrySince = new Date();
+	await pet.changeLovePoints({
+		response,
+		player,
+		amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[candyIndex],
+		reason: NumberChangeReason.PET_FEED
+	});
+
+	await Promise.all([pet.save(), player.save()]);
+	return { revalidated: true };
+}
 
 function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -50,35 +97,41 @@ function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity)
 			return;
 		}
 
-		const candyIndex = getFoodIndexOf(PetConstants.PET_FOOD.COMMON_FOOD);
-		const candyPrice = GuildDomainConstants.SHOP_PRICES.FOOD[candyIndex];
+		/*
+		 * Critical section: lock player + pet so a concurrent
+		 * pet-free / sell / transfer cannot strand the feed on a
+		 * destroyed pet row, and a concurrent money-sink cannot
+		 * leave the player with negative money.
+		 */
+		let outcome: { revalidated: false } | { revalidated: true };
+		try {
+			outcome = await withLockedEntities(
+				[Player.lockKey(player.id), PetEntity.lockKey(authorPet.id)] as const,
+				async ([lockedPlayer, lockedPet]) => await applyLockedCandyFeed(
+					response,
+					{
+						player: lockedPlayer, pet: lockedPet
+					},
+					authorPet.id
+				)
+			);
+		}
+		catch (error) {
+			if (error instanceof LockedRowNotFoundError) {
+				response.push(makePacket(CommandPetFeedNoPetErrorPacket, {}));
+				return;
+			}
+			throw error;
+		}
 
-		await player.reload();
-		await authorPet.reload();
-
-		if (player.money - candyPrice < 0) {
+		if (!outcome.revalidated) {
+			/*
+			 * Either the pet changed hands or money sank below the
+			 * candy price between the prompt and the answer.
+			 */
 			response.push(makePacket(CommandPetFeedNoMoneyFeedErrorPacket, {}));
 			return;
 		}
-
-		await player.spendMoney({
-			response,
-			amount: candyPrice,
-			reason: NumberChangeReason.PET_FEED
-		});
-
-		authorPet.hungrySince = new Date();
-		await authorPet.changeLovePoints({
-			response,
-			player,
-			amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[candyIndex],
-			reason: NumberChangeReason.PET_FEED
-		});
-
-		await Promise.all([
-			authorPet.save(),
-			player.save()
-		]);
 
 		response.push(makePacket(CommandPetFeedSuccessPacket, {
 			result: CommandPetFeedResult.HAPPY
@@ -116,6 +169,84 @@ function withoutGuildPetFeed(context: PacketContext, response: CrowniclesPacket[
 	response.push(collectorPacket);
 }
 
+/**
+ * Result of the in-lock guild-feed body.
+ */
+type GuildFeedOutcome =
+	| {
+		revalidated: false; reason: "petChanged" | "storageEmpty";
+	}
+	| {
+		revalidated: true; result: CommandPetFeedResult;
+	};
+
+/**
+ * In-lock body for the guild-pantry feed flow. Re-validates that
+ * the player still owns this pet, that the picked food is still
+ * available in the locked guild row, then atomically debits the
+ * pantry and credits love points to the locked pet entity.
+ */
+async function applyLockedGuildFeed(
+	response: CrowniclesPacket[],
+	locked: {
+		player: Player; pet: PetEntity; guild: Guild;
+	},
+	expected: {
+		petId: number; foodReaction: ReactionCollectorPetFeedWithGuildFoodReaction;
+	}
+): Promise<GuildFeedOutcome> {
+	const {
+		player, pet, guild
+	} = locked;
+	const {
+		petId, foodReaction
+	} = expected;
+	const foodIndex = getFoodIndexOf(foodReaction.food);
+
+	if (player.petId !== petId) {
+		return {
+			revalidated: false, reason: "petChanged"
+		};
+	}
+	if (guild.getDataValue(foodReaction.food) < foodReaction.amount) {
+		return {
+			revalidated: false, reason: "storageEmpty"
+		};
+	}
+
+	guild.removeFood(foodReaction.food, 1, NumberChangeReason.PET_FEED);
+
+	const petModel = PetDataController.instance.getById(pet.typeId);
+	const changeLovePointsParameters = {
+		response,
+		player,
+		amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[foodIndex],
+		reason: NumberChangeReason.PET_FEED
+	};
+
+	let result: CommandPetFeedResult;
+	if (petModel?.diet && (foodReaction.food === PetFood.SALAD || foodReaction.food === PetFood.MEAT)) {
+		if ((petModel.canEatMeat() && foodReaction.food === PetFood.MEAT)
+			|| (petModel.canEatVegetables() && foodReaction.food === PetFood.SALAD)) {
+			await pet.changeLovePoints(changeLovePointsParameters);
+			result = CommandPetFeedResult.VERY_HAPPY;
+		}
+		else {
+			result = CommandPetFeedResult.DISLIKE;
+		}
+	}
+	else {
+		await pet.changeLovePoints(changeLovePointsParameters);
+		result = foodReaction.food === PetFood.CANDY ? CommandPetFeedResult.HAPPY : CommandPetFeedResult.VERY_VERY_HAPPY;
+	}
+
+	pet.hungrySince = new Date();
+	await Promise.all([pet.save(), guild.save()]);
+	return {
+		revalidated: true, result
+	};
+}
+
 function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, guild: Guild) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FEED);
@@ -127,48 +258,52 @@ function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, gu
 		}
 
 		const foodReaction = firstReaction.reaction.data as ReactionCollectorPetFeedWithGuildFoodReaction;
-		const foodIndex = getFoodIndexOf(foodReaction.food);
 
-		await player.reload();
-		await authorPet.reload();
-		await guild.reload();
+		/*
+		 * Critical section: lock player + pet + guild together so a
+		 * concurrent pet-free / sell / transfer cannot strand the
+		 * feed on a destroyed pet, and a concurrent guild-shop
+		 * transaction cannot drain the pantry under us.
+		 */
+		let outcome: GuildFeedOutcome;
+		try {
+			outcome = await withLockedEntities(
+				[
+					Player.lockKey(player.id),
+					PetEntity.lockKey(authorPet.id),
+					Guild.lockKey(guild.id)
+				] as const,
+				async ([
+					lockedPlayer,
+					lockedPet,
+					lockedGuild
+				]) => await applyLockedGuildFeed(
+					response,
+					{
+						player: lockedPlayer, pet: lockedPet, guild: lockedGuild
+					},
+					{
+						petId: authorPet.id, foodReaction
+					}
+				)
+			);
+		}
+		catch (error) {
+			if (error instanceof LockedRowNotFoundError) {
+				response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
+				return;
+			}
+			throw error;
+		}
 
-		if (guild.getDataValue(foodReaction.food) < foodReaction.amount) {
+		if (!outcome.revalidated) {
 			response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
 			return;
 		}
 
-		guild.removeFood(foodReaction.food, 1, NumberChangeReason.PET_FEED);
-
-		const petModel = PetDataController.instance.getById(authorPet.typeId);
-		const changeLovePointsParameters = {
-			response,
-			player,
-			amount: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[foodIndex],
-			reason: NumberChangeReason.PET_FEED
-		};
-		if (petModel?.diet && (foodReaction.food === PetFood.SALAD || foodReaction.food === PetFood.MEAT)) {
-			let result = CommandPetFeedResult.DISLIKE;
-			if ((petModel.canEatMeat() && foodReaction.food === PetFood.MEAT) || (petModel.canEatVegetables() && foodReaction.food === PetFood.SALAD)) {
-				await authorPet.changeLovePoints(changeLovePointsParameters);
-				result = CommandPetFeedResult.VERY_HAPPY;
-			}
-			response.push(makePacket(CommandPetFeedSuccessPacket, {
-				result
-			}));
-		}
-		else {
-			await authorPet.changeLovePoints(changeLovePointsParameters);
-			response.push(makePacket(CommandPetFeedSuccessPacket, {
-				result: foodReaction.food === PetFood.CANDY ? CommandPetFeedResult.HAPPY : CommandPetFeedResult.VERY_VERY_HAPPY
-			}));
-		}
-
-		authorPet.hungrySince = new Date();
-		await Promise.all([
-			authorPet.save(),
-			guild.save()
-		]);
+		response.push(makePacket(CommandPetFeedSuccessPacket, {
+			result: outcome.result
+		}));
 	};
 }
 
