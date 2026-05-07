@@ -41,6 +41,9 @@ import { LogsPveFightsResults } from "../database/logs/models/LogsPveFightsResul
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Check top interactions
@@ -541,28 +544,53 @@ function buildPoorInteractionResponse(
 }
 
 /**
- * Send a coin from the current player to the interacted one
- * @param otherPlayer
- * @param player
- * @param response
+ * Send a coin from the current player to the interacted one.
+ *
+ * Critical section: lock both player rows so a concurrent money
+ * sink can't drain `player.money` below zero, and a concurrent
+ * deletion of `otherPlayer` can't strand the credit.
  */
 async function sendACoin(otherPlayer: Player, player: Player, response: CrowniclesPacket[]): Promise<void> {
-	await Promise.all([
-		otherPlayer.addMoney({
-			amount: 1,
-			response,
-			reason: NumberChangeReason.RECEIVE_COIN
-		}),
-		player.spendMoney({
-			amount: 1,
-			response,
-			reason: NumberChangeReason.SMALL_EVENT
-		})
-	]);
-	await Promise.all([
-		otherPlayer.save(),
-		player.save()
-	]);
+	try {
+		await withLockedEntities(
+			[Player.lockKey(otherPlayer.id), Player.lockKey(player.id)] as const,
+			async ([lockedOther, lockedSelf]) => {
+				if (lockedSelf.money < 1) {
+					/*
+					 * Player no longer has a coin to give; silently
+					 * abort — the calling collector already pushed
+					 * the AcceptToGivePoor packet, but no transfer
+					 * actually happens.
+					 */
+					return;
+				}
+
+				await Promise.all([
+					lockedOther.addMoney({
+						amount: 1,
+						response,
+						reason: NumberChangeReason.RECEIVE_COIN
+					}),
+					lockedSelf.spendMoney({
+						amount: 1,
+						response,
+						reason: NumberChangeReason.SMALL_EVENT
+					})
+				]);
+				await Promise.all([
+					lockedOther.save(),
+					lockedSelf.save()
+				]);
+			}
+		);
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			// One of the player rows vanished concurrently; skip.
+			return;
+		}
+		throw error;
+	}
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
