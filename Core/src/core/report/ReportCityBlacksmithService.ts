@@ -293,43 +293,64 @@ export async function handleBlacksmithUpgradeReaction(
 	}
 
 	await Player.withLocked(player.id, async lockedPlayer => {
-		// Re-validate against the freshly-locked row.
-		if (lockedPlayer.money < executionData.totalCost) {
-			pushBlacksmithMissingMoneyResponse(response, executionData.totalCost, lockedPlayer.money);
-			return;
-		}
-
-		if (executionData.materialsToConsume.length > 0) {
-			const consumed = await Materials.consumeMaterials(lockedPlayer.id, executionData.materialsToConsume);
-			if (!consumed) {
-				response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
-				return;
-			}
-		}
-
-		// Spend money
-		await lockedPlayer.spendMoney({
-			response,
-			amount: executionData.totalCost,
-			reason: NumberChangeReason.BLACKSMITH_UPGRADE
+		await executeBlacksmithUpgrade({
+			lockedPlayer, reaction, itemToUpgrade, executionData, response
 		});
+	});
+}
 
-		const inventorySlot = await getInventorySlotForReaction(lockedPlayer, reaction, "upgrade");
-		if (!inventorySlot) {
+/**
+ * Inside-lock body of `handleBlacksmithUpgradeReaction`: re-validate
+ * affordability against the locked row, consume materials, spend
+ * money, mutate the inventory slot, and persist. Extracted as a
+ * helper to keep `handleBlacksmithUpgradeReaction` below the
+ * complexity threshold.
+ */
+async function executeBlacksmithUpgrade(params: {
+	lockedPlayer: Player;
+	reaction: ReactionCollectorBlacksmithUpgradeReaction;
+	itemToUpgrade: BlacksmithUpgradeItem;
+	executionData: BlacksmithUpgradeExecutionData;
+	response: CrowniclesPacket[];
+}): Promise<void> {
+	const {
+		lockedPlayer, reaction, itemToUpgrade, executionData, response
+	} = params;
+
+	if (lockedPlayer.money < executionData.totalCost) {
+		pushBlacksmithMissingMoneyResponse(response, executionData.totalCost, lockedPlayer.money);
+		return;
+	}
+
+	if (executionData.materialsToConsume.length > 0) {
+		const consumed = await Materials.consumeMaterials(lockedPlayer.id, executionData.materialsToConsume);
+		if (!consumed) {
+			response.push(makePacket(CommandReportBlacksmithMissingMaterialsRes, {}));
 			return;
 		}
+	}
 
-		inventorySlot.itemLevel = itemToUpgrade.nextLevel;
-		await inventorySlot.save();
-		await lockedPlayer.save();
-
-		response.push(makePacket(CommandReportBlacksmithUpgradeRes, {
-			itemCategory: reaction.itemCategory,
-			newItemLevel: itemToUpgrade.nextLevel,
-			totalCost: executionData.totalCost,
-			boughtMaterials: executionData.boughtMaterials
-		}));
+	await lockedPlayer.spendMoney({
+		response,
+		amount: executionData.totalCost,
+		reason: NumberChangeReason.BLACKSMITH_UPGRADE
 	});
+
+	const inventorySlot = await getInventorySlotForReaction(lockedPlayer, reaction, "upgrade");
+	if (!inventorySlot) {
+		return;
+	}
+
+	inventorySlot.itemLevel = itemToUpgrade.nextLevel;
+	await inventorySlot.save();
+	await lockedPlayer.save();
+
+	response.push(makePacket(CommandReportBlacksmithUpgradeRes, {
+		itemCategory: reaction.itemCategory,
+		newItemLevel: itemToUpgrade.nextLevel,
+		totalCost: executionData.totalCost,
+		boughtMaterials: executionData.boughtMaterials
+	}));
 }
 
 /**
