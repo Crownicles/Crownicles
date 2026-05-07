@@ -88,6 +88,24 @@ async function applyLockedCandyFeed(
 }
 
 /**
+ * Unified resolution returned by both feed lock-runners. Lets a
+ * single end-callback wrapper dispatch the success / error
+ * packet, removing the AST-level duplication between the two
+ * factories.
+ */
+type FeedResolution =
+	| {
+		ok: true; result: CommandPetFeedResult;
+	}
+	| {
+		ok: false;
+		errorPacket:
+			| typeof CommandPetFeedNoPetErrorPacket
+			| typeof CommandPetFeedNoMoneyFeedErrorPacket
+			| typeof CommandPetFeedGuildStorageEmptyErrorPacket;
+	};
+
+/**
  * Returns true (and pushes the cancel packet) when the user
  * either timed out or refused. Extracted to keep both feed
  * end-callbacks below the CodeScene module mean threshold.
@@ -102,19 +120,46 @@ function isFeedCancelled(collector: ReactionCollectorInstance, response: Crownic
 }
 
 /**
+ * Higher-order wrapper shared by both feed end-callbacks. Owns
+ * the unblock + cancel-guard + resolution-dispatch boilerplate so
+ * the two factories carry only their unique critical-section
+ * code, removing the structural duplication CodeScene flagged.
+ */
+function runFeedEndCallback(
+	player: Player,
+	doFeed: (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => Promise<FeedResolution>
+): (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => Promise<void> {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FEED);
+
+		if (isFeedCancelled(collector, response)) {
+			return;
+		}
+
+		const resolution = await doFeed(collector, response);
+		if (!resolution.ok) {
+			response.push(makePacket(resolution.errorPacket, {}));
+			return;
+		}
+
+		response.push(makePacket(CommandPetFeedSuccessPacket, {
+			result: resolution.result
+		}));
+	};
+}
+
+/**
  * Runs the candy-feed critical section under a Player+PetEntity
- * row lock. Returns null (and pushes the no-pet packet) if the
- * pet row was destroyed under us. Extracted to keep
- * `getWithoutGuildPetFeedEndCallback` below the CodeScene module
- * mean threshold.
+ * row lock. Always returns a `FeedResolution` so the caller can
+ * dispatch the success / error packet uniformly.
  */
 async function runCandyFeedUnderLock(
 	response: CrowniclesPacket[],
 	player: Player,
 	authorPet: PetEntity
-): Promise<{ revalidated: false } | { revalidated: true } | null> {
+): Promise<FeedResolution> {
 	try {
-		return await withLockedEntities(
+		const outcome = await withLockedEntities(
 			[Player.lockKey(player.id), PetEntity.lockKey(authorPet.id)] as const,
 			async ([lockedPlayer, lockedPet]) => await applyLockedCandyFeed(
 				response,
@@ -124,37 +169,30 @@ async function runCandyFeedUnderLock(
 				authorPet.id
 			)
 		);
+		if (!outcome.revalidated) {
+			return {
+				ok: false, errorPacket: CommandPetFeedNoMoneyFeedErrorPacket
+			};
+		}
+		return {
+			ok: true, result: CommandPetFeedResult.HAPPY
+		};
 	}
 	catch (error) {
 		if (error instanceof LockedRowNotFoundError) {
-			response.push(makePacket(CommandPetFeedNoPetErrorPacket, {}));
-			return null;
+			return {
+				ok: false, errorPacket: CommandPetFeedNoPetErrorPacket
+			};
 		}
 		throw error;
 	}
 }
 
-function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity) {
-	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FEED);
-
-		if (isFeedCancelled(collector, response)) {
-			return;
-		}
-
-		const outcome = await runCandyFeedUnderLock(response, player, authorPet);
-		if (outcome === null) {
-			return;
-		}
-		if (!outcome.revalidated) {
-			response.push(makePacket(CommandPetFeedNoMoneyFeedErrorPacket, {}));
-			return;
-		}
-
-		response.push(makePacket(CommandPetFeedSuccessPacket, {
-			result: CommandPetFeedResult.HAPPY
-		}));
-	};
+function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity): (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => Promise<void> {
+	return runFeedEndCallback(
+		player,
+		async (_collector, response) => await runCandyFeedUnderLock(response, player, authorPet)
+	);
 }
 
 /**
@@ -286,20 +324,23 @@ async function applyLockedGuildFeed(
 
 /**
  * Runs the guild-feed critical section under a Player+PetEntity+
- * Guild row lock. Returns null (and pushes the storage-empty
- * packet) if any locked row was destroyed under us. Extracted to
- * keep `getWithGuildPetFeedEndCallback` below the CodeScene
- * module mean threshold.
+ * Guild row lock. Always returns a `FeedResolution` so the
+ * caller can dispatch the success / error packet uniformly.
  */
 async function runGuildFeedUnderLock(
-	response: CrowniclesPacket[],
-	player: Player,
-	authorPet: PetEntity,
-	guild: Guild,
-	foodReaction: ReactionCollectorPetFeedWithGuildFoodReaction
-): Promise<GuildFeedOutcome | null> {
+	args: {
+		response: CrowniclesPacket[];
+		player: Player;
+		authorPet: PetEntity;
+		guild: Guild;
+		foodReaction: ReactionCollectorPetFeedWithGuildFoodReaction;
+	}
+): Promise<FeedResolution> {
+	const {
+		response, player, authorPet, guild, foodReaction
+	} = args;
 	try {
-		return await withLockedEntities(
+		const outcome = await withLockedEntities(
 			[
 				Player.lockKey(player.id),
 				PetEntity.lockKey(authorPet.id),
@@ -319,39 +360,32 @@ async function runGuildFeedUnderLock(
 				}
 			)
 		);
+		if (!outcome.revalidated) {
+			return {
+				ok: false, errorPacket: CommandPetFeedGuildStorageEmptyErrorPacket
+			};
+		}
+		return {
+			ok: true, result: outcome.result
+		};
 	}
 	catch (error) {
 		if (error instanceof LockedRowNotFoundError) {
-			response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
-			return null;
+			return {
+				ok: false, errorPacket: CommandPetFeedGuildStorageEmptyErrorPacket
+			};
 		}
 		throw error;
 	}
 }
 
-function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, guild: Guild) {
-	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_FEED);
-
-		if (isFeedCancelled(collector, response)) {
-			return;
-		}
-
+function getWithGuildPetFeedEndCallback(player: Player, authorPet: PetEntity, guild: Guild): (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => Promise<void> {
+	return runFeedEndCallback(player, async (collector, response) => {
 		const foodReaction = collector.getFirstReaction()!.reaction.data as ReactionCollectorPetFeedWithGuildFoodReaction;
-
-		const outcome = await runGuildFeedUnderLock(response, player, authorPet, guild, foodReaction);
-		if (outcome === null) {
-			return;
-		}
-		if (!outcome.revalidated) {
-			response.push(makePacket(CommandPetFeedGuildStorageEmptyErrorPacket, {}));
-			return;
-		}
-
-		response.push(makePacket(CommandPetFeedSuccessPacket, {
-			result: outcome.result
-		}));
-	};
+		return await runGuildFeedUnderLock({
+			response, player, authorPet, guild, foodReaction
+		});
+	});
 }
 
 /**
