@@ -40,6 +40,9 @@ import {
 import {
 	Guilds, Guild
 } from "../database/game/models/Guild";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -320,6 +323,46 @@ async function handlePotionOutput(
 	return result;
 }
 
+/**
+ * Run the locked critical section that re-reads the guild
+ * pantry, computes available space, and stores as much pet food
+ * as fits before saving the guild row. Returns the actually
+ * stored quantity so the caller can compute the surplus.
+ */
+async function runPetFoodOutputUnderLock(
+	guildId: number,
+	recipe: CookingRecipeData
+): Promise<{ storedQuantity: number }> {
+	if (!recipe.petFood) {
+		return { storedQuantity: 0 };
+	}
+	try {
+		return await withLockedEntities(
+			[Guild.lockKey(guildId)] as const,
+			async ([lockedGuild]) => {
+				const availableSpace = CookingService.getAvailableFoodSpace(lockedGuild, recipe.petFood!.type);
+				const storedQuantity = Math.min(recipe.petFood!.quantity, availableSpace);
+				if (storedQuantity > 0) {
+					lockedGuild.addFood(recipe.petFood!.type, storedQuantity, NumberChangeReason.COOKING);
+					await lockedGuild.save();
+				}
+				return { storedQuantity };
+			}
+		);
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			/*
+			 * The guild was destroyed between the recipe choice
+			 * and the storage. Nothing was stored; the caller
+			 * will route the entire batch as surplus.
+			 */
+			return { storedQuantity: 0 };
+		}
+		throw error;
+	}
+}
+
 async function handlePetFoodOutput(
 	player: Player,
 	recipe: CookingRecipeData,
@@ -329,15 +372,16 @@ async function handlePetFoodOutput(
 		return {};
 	}
 
-	const availableSpace = CookingService.getAvailableFoodSpace(guild, recipe.petFood.type);
-	const storedQuantity = Math.min(recipe.petFood.quantity, availableSpace);
+	/*
+	 * Lock the guild row so two concurrent cookings from
+	 * different members cannot race the addFood + save sequence
+	 * and lose increments. The locked guild instance is the one
+	 * we read inside the critical section so the available-space
+	 * check is consistent with the eventual save.
+	 */
+	const lockOutcome = await runPetFoodOutputUnderLock(guild.id, recipe);
 
-	if (storedQuantity > 0) {
-		guild.addFood(recipe.petFood.type, storedQuantity, NumberChangeReason.COOKING);
-		await guild.save();
-	}
-
-	const surplus = recipe.petFood.quantity - storedQuantity;
+	const surplus = recipe.petFood.quantity - lockOutcome.storedQuantity;
 	const surplusResult = surplus > 0
 		? await handlePetFoodSurplus(player, recipe, surplus)
 		: {};
@@ -346,7 +390,7 @@ async function handlePetFoodOutput(
 		petFood: {
 			type: recipe.petFood.type,
 			quantity: recipe.petFood.quantity,
-			storedQuantity,
+			storedQuantity: lockOutcome.storedQuantity,
 			...surplusResult
 		}
 	};
