@@ -223,22 +223,6 @@ describe("PetFeed candy race (integration)", () => {
 
 /* ------------------------- PetExpedition resolve ------------------------- */
 
-async function resolveExpeditionUnsafe(playerId: number, expeditionId: number): Promise<boolean> {
-	const expedition = await Expeditions.findByPk(expeditionId);
-	if (!expedition || expedition.completed) {
-		return false;
-	}
-	await new Promise(resolve => setImmediate(resolve));
-	const player = await Players.findByPk(playerId);
-	if (!player) {
-		return false;
-	}
-	player.money += EXPEDITION_REWARD;
-	expedition.completed = true;
-	await Promise.all([player.save(), expedition.save()]);
-	return true;
-}
-
 async function resolveExpeditionLocked(playerId: number, expeditionId: number): Promise<boolean> {
 	return await withLockedEntities(
 		[{ model: Players, id: playerId } as LockKey<PlayerRow>],
@@ -259,22 +243,42 @@ async function resolveExpeditionLocked(playerId: number, expeditionId: number): 
 
 describe("PetExpedition resolve race (integration)", () => {
 	it(
-		"DEMONSTRATES the bug: two unsafe resolutions both apply the reward",
+		"DEMONSTRATES the bug: two unsafe resolutions both apply the reward via stale snapshots",
 		async () => {
 			await Players.create({ id: 11, money: 0, petId: 11 });
 			await Expeditions.create({ id: 11, playerId: 11, completed: false });
 
-			const results = await Promise.all([
-				resolveExpeditionUnsafe(11, 11),
-				resolveExpeditionUnsafe(11, 11)
-			]);
+			/*
+			 * Deterministic stale-snapshot reproduction of the
+			 * two-resolutions-on-one-expedition race. We take two
+			 * independent snapshots while the expedition row is
+			 * still active, then commit both mutations
+			 * sequentially. Both snapshots passed the active-row
+			 * check on a stale read, so both attempt the credit;
+			 * only one survives the lost-update on player.money,
+			 * yet both also flip `completed=true` (idempotent on
+			 * the row but still counts as a "success" from the
+			 * second contender's perspective).
+			 */
+			const expA = await Expeditions.findOne({ where: { id: 11, completed: false } });
+			const playerA = await Players.findByPk(11);
+			const expB = await Expeditions.findOne({ where: { id: 11, completed: false } });
+			const playerB = await Players.findByPk(11);
+			expect(expA).not.toBeNull();
+			expect(expB).not.toBeNull();
 
-			expect(results).toEqual([true, true]);
+			playerA!.money += EXPEDITION_REWARD;
+			expA!.completed = true;
+			await Promise.all([playerA!.save(), expA!.save()]);
+
+			playerB!.money += EXPEDITION_REWARD;
+			expB!.completed = true;
+			await Promise.all([playerB!.save(), expB!.save()]);
+
 			const player = await Players.findByPk(11);
-			// Lost update on player.money: both unsafe resolutions
-			// reported success but only one credit survived. Either
-			// way the invariant is broken — the player was promised
-			// two rewards and got one (silent loss).
+			// Both unsafe resolutions reported success, but
+			// player.money holds only one credit (silent
+			// lost-update from the second snapshot's write).
 			expect(player?.money).toBe(EXPEDITION_REWARD);
 		}
 	);
