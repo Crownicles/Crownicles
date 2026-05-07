@@ -11,8 +11,30 @@ import * as moment from "moment";
 import { MissionsController } from "../../../missions/MissionsController";
 import { Players } from "./Player";
 import { CrowniclesPacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 export class PlayerMissionsInfo extends Model {
+	/**
+	 * Build a {@link LockKey} for this PlayerMissionsInfo row so it
+	 * can participate in a `withLockedEntities([...])` composite
+	 * critical section. The primary key is `playerId`.
+	 */
+	static lockKey(playerId: number): LockKey<PlayerMissionsInfo> {
+		return {
+			model: PlayerMissionsInfo, id: playerId
+		};
+	}
+
+	/**
+	 * Convenience helper for locking a single PlayerMissionsInfo row.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(playerId: number, fn: (info: PlayerMissionsInfo) => Promise<R>): Promise<R> {
+		return withLockedEntities([PlayerMissionsInfo.lockKey(playerId)], ([info]) => fn(info));
+	}
+
 	declare readonly playerId: number;
 
 	declare gems: number;
