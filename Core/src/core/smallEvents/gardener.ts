@@ -40,6 +40,7 @@ import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 import { ReactionCollectorGardener } from "../../../../Lib/src/packets/interaction/ReactionCollectorGardener";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
@@ -387,13 +388,25 @@ async function giveSeedToPlayer(response: CrowniclesPacket[], player: Player, se
 
 function getPaidSeedEndCallback(player: Player, seedId: PlantId): EndCallback {
 	return async (collector, response): Promise<void> => {
-		const reaction = collector.getFirstReaction();
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GARDENER_SMALL_EVENT);
+		await withLockedPlayerSafe(player, "gardener paid seed endCallback", async lockedPlayer => {
+			const reaction = collector.getFirstReaction();
 
-		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-			const cost = PlantConstants.SEED_COSTS[seedId];
-			if (player.money >= cost) {
-				const packet = await giveSeedToPlayer(response, player, seedId, SEED_CONDITION_SUCCESS.PAID_ACCEPTED);
-				response.push(makePacket(SmallEventGardenerPacket, packet));
+			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+				const cost = PlantConstants.SEED_COSTS[seedId];
+				if (lockedPlayer.money >= cost) {
+					const packet = await giveSeedToPlayer(response, lockedPlayer, seedId, SEED_CONDITION_SUCCESS.PAID_ACCEPTED);
+					response.push(makePacket(SmallEventGardenerPacket, packet));
+				}
+				else {
+					response.push(makePacket(SmallEventGardenerPacket, {
+						interactionName: GARDENER_INTERACTIONS.ADVICE,
+						plantId: seedId,
+						materialId: 0,
+						cost: 0,
+						conditionKey: SEED_CONDITION_FAILURE.NEED_MONEY
+					}));
+				}
 			}
 			else {
 				response.push(makePacket(SmallEventGardenerPacket, {
@@ -401,21 +414,10 @@ function getPaidSeedEndCallback(player: Player, seedId: PlantId): EndCallback {
 					plantId: seedId,
 					materialId: 0,
 					cost: 0,
-					conditionKey: SEED_CONDITION_FAILURE.NEED_MONEY
+					conditionKey: SEED_CONDITION_FAILURE.REFUSED
 				}));
 			}
-		}
-		else {
-			response.push(makePacket(SmallEventGardenerPacket, {
-				interactionName: GARDENER_INTERACTIONS.ADVICE,
-				plantId: seedId,
-				materialId: 0,
-				cost: 0,
-				conditionKey: SEED_CONDITION_FAILURE.REFUSED
-			}));
-		}
-
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GARDENER_SMALL_EVENT);
+		});
 	};
 }
 
