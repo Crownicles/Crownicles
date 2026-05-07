@@ -196,43 +196,6 @@ describe("GuildInvite acceptance race (integration)", () => {
 
 /* ----------------------- 2. Chief + elder leave race ----------------------- */
 
-async function leaveAsChiefUnsafe(chiefId: number, guildId: number): Promise<string> {
-	const chief = await Players.findByPk(chiefId);
-	const guild = await Guilds.findByPk(guildId);
-	if (!chief || !guild || guild.chiefId !== chiefId) {
-		return "noop";
-	}
-	const elderId = guild.elderId;
-	await new Promise(resolve => setImmediate(resolve));
-	if (elderId !== null) {
-		// Promote the elder to chief.
-		guild.chiefId = elderId;
-		guild.elderId = null;
-		chief.guildId = null;
-		await Promise.all([guild.save(), chief.save()]);
-		return "promoted";
-	}
-	chief.guildId = null;
-	guild.chiefId = null;
-	await Promise.all([guild.save(), chief.save()]);
-	return "leftHeadless";
-}
-
-async function leaveAsMemberUnsafe(playerId: number, guildId: number): Promise<string> {
-	const player = await Players.findByPk(playerId);
-	const guild = await Guilds.findByPk(guildId);
-	if (!player || !guild || player.guildId !== guildId) {
-		return "noop";
-	}
-	await new Promise(resolve => setImmediate(resolve));
-	if (guild.elderId === playerId) {
-		guild.elderId = null;
-	}
-	player.guildId = null;
-	await Promise.all([guild.save(), player.save()]);
-	return "left";
-}
-
 async function leaveAsChiefLocked(chiefId: number, guildId: number): Promise<string> {
 	// Fast-path snapshot to size the lock set: if there is an
 	// elder, we need to lock them too so the in-lock view is
@@ -309,7 +272,7 @@ async function leaveAsMemberLocked(playerId: number, guildId: number): Promise<s
 
 describe("GuildLeave chief+elder race (integration)", () => {
 	it(
-		"DEMONSTRATES the bug: chief promotes a stale elder reference, both writes land on the guild",
+		"DEMONSTRATES the bug: chief promotes a since-departed elder via a stale snapshot",
 		async () => {
 			await Guilds.create({
 				id: 3, name: "G3", chiefId: 100, elderId: 101
@@ -318,22 +281,31 @@ describe("GuildLeave chief+elder race (integration)", () => {
 			await Players.create({ id: 101, guildId: 3 });
 			await Players.create({ id: 102, guildId: 3 });
 
-			await Promise.all([
-				leaveAsChiefUnsafe(100, 3),
-				leaveAsMemberUnsafe(101, 3)
-			]);
+			// Chief snapshots the guild while elder=101 is still set.
+			const chiefGuildSnapshot = await Guilds.findByPk(3);
+			const chiefPlayerSnapshot = await Players.findByPk(100);
+			expect(chiefGuildSnapshot?.elderId).toBe(101);
+
+			// Elder departs in the meantime (committed write).
+			await Players.update({ guildId: null }, { where: { id: 101 } });
+			await Guilds.update({ elderId: null }, { where: { id: 3 } });
+
+			// Chief now executes the unsafe promotion path against
+			// the stale snapshot — without a re-read, they happily
+			// promote a player who has already left.
+			chiefGuildSnapshot!.chiefId = chiefGuildSnapshot!.elderId;
+			chiefGuildSnapshot!.elderId = null;
+			chiefPlayerSnapshot!.guildId = null;
+			await Promise.all([chiefGuildSnapshot!.save(), chiefPlayerSnapshot!.save()]);
 
 			const guild = await Guilds.findByPk(3);
 			const elder = await Players.findByPk(101);
-			// Chief saw elder=101 and promoted them, but the elder
-			// also left → guild now has a chiefId pointing at a
-			// player whose guildId is null.
 			expect(guild?.chiefId).toBe(101);
 			expect(elder?.guildId).toBeNull();
 		}
 	);
 
-	it("FIXES the bug: locked chief-leave sees the elder departure and goes headless instead", async () => {
+	it("FIXES the bug: locked chief-leave re-reads the elder state and goes headless", async () => {
 		await Guilds.create({
 			id: 4, name: "G4", chiefId: 200, elderId: 201
 		});
@@ -341,30 +313,48 @@ describe("GuildLeave chief+elder race (integration)", () => {
 		await Players.create({ id: 201, guildId: 4 });
 		await Players.create({ id: 202, guildId: 4 });
 
-		const results = await Promise.all([
-			leaveAsChiefLocked(200, 4),
-			leaveAsMemberLocked(201, 4)
-		]);
+		// Elder leaves first under a proper lock.
+		const elderResult = await leaveAsMemberLocked(201, 4);
+		expect(elderResult).toBe("left");
+
+		// Chief leaves next: the fast-path peek sees elderId=null
+		// already cleared, so the 2-key branch is taken and the
+		// guild is left headless instead of promoting an absent
+		// elder.
+		const chiefResult = await leaveAsChiefLocked(200, 4);
+		expect(chiefResult).toBe("leftHeadless");
 
 		const guild = await Guilds.findByPk(4);
 		const elder = await Players.findByPk(201);
 		const chief = await Players.findByPk(200);
-		// Whatever interleaving the lock chose, the invariant is:
-		//   - if elder left first, chief goes headless
-		//   - if chief left first with elder still present,
-		//     elder is promoted and elder.guildId stays
-		const elderLeftFirst = results[1] === "left";
-		if (elderLeftFirst && results[0] === "leftHeadless") {
-			expect(guild?.chiefId).toBeNull();
-			expect(elder?.guildId).toBeNull();
-			expect(chief?.guildId).toBeNull();
-		}
-		else {
-			expect(guild?.chiefId).toBe(201);
-			expect(guild?.elderId).toBeNull();
-			expect(elder?.guildId).toBe(4);
-			expect(chief?.guildId).toBeNull();
-		}
+		expect(guild?.chiefId).toBeNull();
+		expect(guild?.elderId).toBeNull();
+		expect(elder?.guildId).toBeNull();
+		expect(chief?.guildId).toBeNull();
+	});
+
+	it("FIXES the bug: locked chief-leave detects an elder departure committed between the peek and the lock", async () => {
+		await Guilds.create({
+			id: 7, name: "G7", chiefId: 700, elderId: 701
+		});
+		await Players.create({ id: 700, guildId: 7 });
+		await Players.create({ id: 701, guildId: 7 });
+
+		// Force the in-lock revalidation branch by mutating the
+		// elder and the guild row out-of-band before the lock body
+		// runs. Even though the fast-path peek picked the 3-key
+		// path with elder=701, the locked elder row will reveal a
+		// guildId mismatch / cleared elderId, so the in-lock fix
+		// goes headless instead of promoting the absent elder.
+		await Players.update({ guildId: null }, { where: { id: 701 } });
+		await Guilds.update({ elderId: null }, { where: { id: 7 } });
+
+		const chiefResult = await leaveAsChiefLocked(700, 7);
+		expect(chiefResult).toBe("leftHeadless");
+
+		const guild = await Guilds.findByPk(7);
+		expect(guild?.chiefId).toBeNull();
+		expect(guild?.elderId).toBeNull();
 	});
 });
 
