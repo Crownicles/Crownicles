@@ -208,7 +208,16 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
         buyers serialise on the same row instead of both passing a stale
         check.
 
-- [ ] **PR-D — Migrate `handleGuildDomainDepositTreasury`**
+- [x] **PR-D — Migrate `handleGuildDomainDepositTreasury`**
+  - [x] Race integration test
+        (`Core/__tests__-integration/handlers/handleGuildDomainDepositTreasury.race.test.ts`,
+        4 cases: bug demonstrator on the in-process `LockManager`
+        variant + 3 lock invariants)
+  - [x] Migrate `handleGuildDomainDepositTreasury` to a 2-key composite
+        lock (`withLockedEntities([Guild.lockKey, Player.lockKey], …)`).
+        `player.money` is re-validated **inside** the lock against the
+        freshly-loaded row, and `LockManager` is removed from the
+        handler.
 
 - [ ] **PR-E — Migrate critical money/treasury/storage handlers (§4.1)**
 
@@ -242,4 +251,4 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
 
 ---
 
-*Last update: PR-C **complete and green** — `handleFoodShopBuy` now wraps its critical section in `Guild.withLocked` (affordability + capacity re-validated inside the lock). Race integration test (`handleFoodShopBuy.race.test.ts`, 4 cases) demonstrates the lost-update bug on the unsafe variant and the fix on the locked variant. Lib + Core unit + 11/11 integration tests green.*
+*Last update: PR-D **complete and green** — `handleGuildDomainDepositTreasury` now wraps its critical section in `withLockedEntities([Guild.lockKey, Player.lockKey], …)` with in-lock re-validation of `player.money` against the freshly-loaded row. Race integration test (`handleGuildDomainDepositTreasury.race.test.ts`, 4 cases) demonstrates the lost-update bug on the unsafe variant and the fix on the locked variant. Lib + Core unit + 15/15 integration tests green.*
