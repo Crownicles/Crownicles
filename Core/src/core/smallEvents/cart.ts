@@ -19,6 +19,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { crowniclesInstance } from "../../index";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 type CartResult = {
 	destination: MapLink;
@@ -30,44 +31,54 @@ type CartResult = {
 
 function getEndCallback(player: Player, destination: CartResult): EndCallback {
 	return async (collector, response) => {
-		const reaction = collector.getFirstReaction();
-		const packet: SmallEventCartPacket = {
-			isScam: destination.isScam,
-			isDisplayed: destination.isDisplayed,
-			travelDone: {
-				isAccepted: true,
-				hasEnoughMoney: player.money >= destination.price
-			},
-			pointsWon: 0
-		};
-
-		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-			if (packet.travelDone.hasEnoughMoney) {
-				const gainScore = await PlayerSmallEvents.calculateCurrentScore(player);
-				const scoreParameters = {
-					amount: gainScore,
-					response,
-					reason: NumberChangeReason.SMALL_EVENT
-				};
-				await player.addScore(scoreParameters);
-				await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
-				packet.pointsWon = scoreParameters.amount;
-				const newMapLinkId = destination.isScam ? destination.scamDestination!.id : destination.destination.id;
-				crowniclesInstance?.logsDatabase.logTeleportation(player.keycloakId, player.mapLinkId, newMapLinkId).then();
-				player.mapLinkId = newMapLinkId;
-				await player.spendMoney({
-					amount: destination.price, response, reason: NumberChangeReason.SMALL_EVENT
-				});
-			}
-			response.push(makePacket(SmallEventCartPacket, packet));
-		}
-		else {
-			packet.travelDone.isAccepted = false;
-			response.push(makePacket(SmallEventCartPacket, packet));
-		}
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CART_SMALL_EVENT);
-		await player.save();
+		await withLockedPlayerSafe(player, "cart endCallback", lockedPlayer =>
+			runCartEndCallbackUnderLock(lockedPlayer, destination, collector, response));
 	};
+}
+
+async function runCartEndCallbackUnderLock(
+	player: Player,
+	destination: CartResult,
+	collector: ReactionCollectorInstance,
+	response: Parameters<EndCallback>[1]
+): Promise<void> {
+	const reaction = collector.getFirstReaction();
+	const packet: SmallEventCartPacket = {
+		isScam: destination.isScam,
+		isDisplayed: destination.isDisplayed,
+		travelDone: {
+			isAccepted: true,
+			hasEnoughMoney: player.money >= destination.price
+		},
+		pointsWon: 0
+	};
+
+	if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
+		if (packet.travelDone.hasEnoughMoney) {
+			const gainScore = await PlayerSmallEvents.calculateCurrentScore(player);
+			const scoreParameters = {
+				amount: gainScore,
+				response,
+				reason: NumberChangeReason.SMALL_EVENT
+			};
+			await player.addScore(scoreParameters);
+			await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
+			packet.pointsWon = scoreParameters.amount;
+			const newMapLinkId = destination.isScam ? destination.scamDestination!.id : destination.destination.id;
+			crowniclesInstance?.logsDatabase.logTeleportation(player.keycloakId, player.mapLinkId, newMapLinkId).then();
+			player.mapLinkId = newMapLinkId;
+			await player.spendMoney({
+				amount: destination.price, response, reason: NumberChangeReason.SMALL_EVENT
+			});
+		}
+		response.push(makePacket(SmallEventCartPacket, packet));
+	}
+	else {
+		packet.travelDone.isAccepted = false;
+		response.push(makePacket(SmallEventCartPacket, packet));
+	}
+	await player.save();
 }
 
 function generateRandomDestination(player: Player): CartResult {
