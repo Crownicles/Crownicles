@@ -150,7 +150,7 @@ Generated from `grep player.save / guild.save` + manual review.
 ### 4.2 Critical — cross-entity (item / pet duplication possible)
 
 - [x] `Core/src/commands/pet/PetTransferCommand.ts`
-- [ ] `Core/src/commands/pet/PetSellCommand.ts`
+- [x] `Core/src/commands/pet/PetSellCommand.ts`
 - [ ] `Core/src/commands/pet/PetFreeCommand.ts`
 - [ ] `Core/src/commands/pet/PetExpeditionCommand.ts`
 - [ ] `Core/src/commands/pet/PetFeedCommand.ts`
@@ -251,6 +251,7 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
 
 - [ ] **PR-F — Migrate cross-entity pet handlers (§4.2)** (pet trade gets a 3-key lock)
   - [x] **PR-F1 — `PetTransferCommand` (deposit / withdraw / switch)** with `LockedRowNotFoundError → SituationChanged`
+  - [x] **PR-F2 — `PetSellCommand`** (4-row trade: seller + buyer + pet + guild)
 
 - [ ] **PR-G — Migrate guild membership handlers (§4.3)**
 
@@ -280,4 +281,4 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
 
 ---
 
-*Last update: PR-F1 **complete and green** — `PetTransferCommand` deposit / withdraw / switch flows now wrap their cross-entity critical sections in `withLockedEntities([Player.lockKey, Guild.lockKey | GuildPet.lockKey])` with in-lock revalidation of `petId`, `shelterLevel` capacity, and `guildPet.petEntityId`. Added `GuildPet.lockKey` / `GuildPet.withLocked` statics, plus a new `LockedRowNotFoundError` class so concurrent destroys map gracefully to `CommandPetTransferSituationChangedErrorPacket` instead of an internal-server error. Race integration test (`petTransfer.race.test.ts`, 3 cases — duplication-bug demo + lock-serialised invariant + non-blocking parallel slots) protects against the pet-duplication footgun. Core 1006/1006 unit + 30/30 integration, Lib 547/547. Next: PR-F2 (PetSell + PetExpedition).*1006 unit + 27/27 integration tests green. §4.1 sweep complete; mission shops & shop utils remain for a future PR (likely §4.4 sweep or PR-H).*
+*Last update: PR-F2 **complete and green** — `PetSellCommand` now wraps the trade critical section in `withLockedEntities([Player(seller), Player(buyer), PetEntity, Guild])` with in-lock revalidation of every actor's invariants (seller still owns pet & guild; buyer still petless, in a different guild, with enough money). The buyer money debit, pet ownership swap, love-points reset, and guild treasury credit now commit atomically in a single TX. Helper `applyLockedPetSell` keeps `executePetSell` cyclomatic complexity below CodeScene threshold. Race integration test (`petSell.race.test.ts`, 3 cases — 4-row duplication-bug demo, lock-serialised invariant, parallel non-blocking sales) protects against the cross-guild pet-duplication footgun. Core 1006/1006 unit + 33/33 integration, Lib 547/547. Next: PR-F3 (PetExpedition + PetFreeCommand + PetFeedCommand + interactOtherPlayers).* — `PetTransferCommand` deposit / withdraw / switch flows now wrap their cross-entity critical sections in `withLockedEntities([Player.lockKey, Guild.lockKey | GuildPet.lockKey])` with in-lock revalidation of `petId`, `shelterLevel` capacity, and `guildPet.petEntityId`. Added `GuildPet.lockKey` / `GuildPet.withLocked` statics, plus a new `LockedRowNotFoundError` class so concurrent destroys map gracefully to `CommandPetTransferSituationChangedErrorPacket` instead of an internal-server error. Race integration test (`petTransfer.race.test.ts`, 3 cases — duplication-bug demo + lock-serialised invariant + non-blocking parallel slots) protects against the pet-duplication footgun. Core 1006/1006 unit + 30/30 integration, Lib 547/547. Next: PR-F2 (PetSell + PetExpedition).*1006 unit + 27/27 integration tests green. §4.1 sweep complete; mission shops & shop utils remain for a future PR (likely §4.4 sweep or PR-H).*
