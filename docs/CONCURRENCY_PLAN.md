@@ -149,7 +149,7 @@ Generated from `grep player.save / guild.save` + manual review.
 
 ### 4.2 Critical — cross-entity (item / pet duplication possible)
 
-- [ ] `Core/src/commands/pet/PetTransferCommand.ts`
+- [x] `Core/src/commands/pet/PetTransferCommand.ts`
 - [ ] `Core/src/commands/pet/PetSellCommand.ts`
 - [ ] `Core/src/commands/pet/PetFreeCommand.ts`
 - [ ] `Core/src/commands/pet/PetExpeditionCommand.ts`
@@ -250,6 +250,7 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
         fix.
 
 - [ ] **PR-F — Migrate cross-entity pet handlers (§4.2)** (pet trade gets a 3-key lock)
+  - [x] **PR-F1 — `PetTransferCommand` (deposit / withdraw / switch)** with `LockedRowNotFoundError → SituationChanged`
 
 - [ ] **PR-G — Migrate guild membership handlers (§4.3)**
 
@@ -279,4 +280,4 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
 
 ---
 
-*Last update: PR-E3 **complete and green** — `enchantItem` (Player + PlayerMissionsInfo gems) and Home buy/upgrade/move (Player + Home) now wrap their critical sections in `withLockedEntities([Player.lockKey, …])`. Added `PlayerMissionsInfo.lockKey` / `PlayerMissionsInfo.withLocked` statics. Race integration test (`playerAuxiliarySinks.race.test.ts`, 4 cases — bug demo + locked invariants + cross-pair non-blocking + shared-aux serialisation) covers the multi-row pattern shared by all three flows. Core 1006/1006 unit + 27/27 integration tests green. §4.1 sweep complete; mission shops & shop utils remain for a future PR (likely §4.4 sweep or PR-H).*
+*Last update: PR-F1 **complete and green** — `PetTransferCommand` deposit / withdraw / switch flows now wrap their cross-entity critical sections in `withLockedEntities([Player.lockKey, Guild.lockKey | GuildPet.lockKey])` with in-lock revalidation of `petId`, `shelterLevel` capacity, and `guildPet.petEntityId`. Added `GuildPet.lockKey` / `GuildPet.withLocked` statics, plus a new `LockedRowNotFoundError` class so concurrent destroys map gracefully to `CommandPetTransferSituationChangedErrorPacket` instead of an internal-server error. Race integration test (`petTransfer.race.test.ts`, 3 cases — duplication-bug demo + lock-serialised invariant + non-blocking parallel slots) protects against the pet-duplication footgun. Core 1006/1006 unit + 30/30 integration, Lib 547/547. Next: PR-F2 (PetSell + PetExpedition).*1006 unit + 27/27 integration tests green. §4.1 sweep complete; mission shops & shop utils remain for a future PR (likely §4.4 sweep or PR-H).*
