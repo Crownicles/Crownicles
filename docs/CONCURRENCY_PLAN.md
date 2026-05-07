@@ -236,8 +236,18 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
         integration test
         (`__tests__-integration/handlers/playerMoneySinks.race.test.ts`,
         4 cases) demonstrates the generic lost-update bug and the fix.
-  - [ ] **PR-E3 — Enchanter + Home (multi-row) + Mission shops & shop
-        utils** sweep
+  - [x] **PR-E3 — Enchanter (Player + PlayerMissionsInfo) + Home
+        (Player + Home, multi-row)** — `enchantItem`,
+        `handleBuyHomeReaction`, `handleUpgradeHomeReaction`,
+        `handleMoveHomeReaction` now wrap their critical sections in
+        `withLockedEntities([Player.lockKey, …])` (or
+        `Player.withLocked` for buy-home which only mutates the
+        wallet plus an idempotent home create). New
+        `PlayerMissionsInfo.lockKey` / `PlayerMissionsInfo.withLocked`
+        statics. Race integration test
+        (`__tests__-integration/handlers/playerAuxiliarySinks.race.test.ts`,
+        4 cases) demonstrates the multi-row lost-update bug and the
+        fix.
 
 - [ ] **PR-F — Migrate cross-entity pet handlers (§4.2)** (pet trade gets a 3-key lock)
 
@@ -269,4 +279,4 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
 
 ---
 
-*Last update: PR-E2 **complete and green** — Inn meal/room, TokenHeal `acceptUseTokens` + `acceptBuyHeal`, and Blacksmith upgrade/disenchant now wrap their read-validate-spend-save critical sections in `Player.withLocked(...)` with in-lock re-validation of `money`/`tokens`/`canEat`/`canHealAlteration`. Race integration test (`playerMoneySinks.race.test.ts`, 4 cases — generic lost-update demo + locked invariants) covers the pattern shared by all five handlers. Core 1006/1006 unit + 23/23 integration tests green. Remaining §4.1 sweep handlers (Enchanter single-row, Home multi-row, mission shops) deferred to PR-E3.*
+*Last update: PR-E3 **complete and green** — `enchantItem` (Player + PlayerMissionsInfo gems) and Home buy/upgrade/move (Player + Home) now wrap their critical sections in `withLockedEntities([Player.lockKey, …])`. Added `PlayerMissionsInfo.lockKey` / `PlayerMissionsInfo.withLocked` statics. Race integration test (`playerAuxiliarySinks.race.test.ts`, 4 cases — bug demo + locked invariants + cross-pair non-blocking + shared-aux serialisation) covers the multi-row pattern shared by all three flows. Core 1006/1006 unit + 27/27 integration tests green. §4.1 sweep complete; mission shops & shop utils remain for a future PR (likely §4.4 sweep or PR-H).*
