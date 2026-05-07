@@ -43,11 +43,11 @@
 |---|---|---|
 | Locking mechanism | **Sequelize transaction + `SELECT … FOR UPDATE`** via `findByPk(..., { lock: true, transaction: t })` | Native Sequelize/MariaDB. Works mono- and multi-instance. Zero custom logic. |
 | Transaction threading to existing `xxx.save()` calls | **`Sequelize.useCLS(namespace)`** with **`cls-hooked`** dep | Documented Sequelize v6 path. Reviewer accepts the dep for the zero-maintenance / battle-tested upside. ~175 call sites are not touched. |
-| Composite locks | Deterministic ordering: `(scope, id)` lexicographic, applied **inside** `withEntityLock` | Prevents deadlocks; callers can pass keys in any order. |
-| Re-fetch inside critical section | **Mandatory** — `withEntityLock` does the re-fetch and passes fresh entities to the callback | Closes the bug pattern: any value read before the lock is discarded. |
+| Composite locks | Deterministic ordering: `(tableName, id)` lexicographic, applied **inside** `withLockedEntities` | Prevents deadlocks; callers can pass keys in any order. |
+| Re-fetch inside critical section | **Mandatory** — `withLockedEntities` does the re-fetch and passes fresh entities to the callback | Closes the bug pattern: any value read before the lock is discarded. |
 | In-process `AsyncLock` | Kept as an **opt-in coalescing optimisation** layered above DB locks | Cheap insurance; not on the critical correctness path. |
 | Integration tests | New `pnpm test:integration` against a real **MariaDB** (local: reuse dev DB with a randomised `prefix`; CI: a `mariadb` service in GitHub Actions) | No `testcontainers` dep. Must run on every PR. |
-| ESLint guard rail | Custom rule forbidding `xxx.save()` outside `withEntityLock`, with allow-list (cron / admin / GDPR / read-only) | Prevents regression after the migration. |
+| ESLint guard rail | Custom rule forbidding `xxx.save()` outside `withLockedEntities`, with allow-list (cron / admin / GDPR / read-only) | Prevents regression after the migration. |
 | Delivery | **Merge train of PRs**, not one mega-PR. This MD ships with every PR. | Faster review, easier revert. Reviewer confirmed: "fais bien toutes les PRs". |
 
 ## 2. Public API of the new module
@@ -110,7 +110,7 @@ return withLockedEntities(
 | Layer | Tool | Goal |
 |---|---|---|
 | `AsyncLock`, `LockManager`, key-ordering | Unit (Vitest, no DB) | Behavioural contract |
-| `withEntityLock` end-to-end | **Integration** (Vitest + real MariaDB) | Two parallel callers serialise; rollback on throw; CLS propagation to nested `save()` |
+| `withLockedEntities` end-to-end | **Integration** (Vitest + real MariaDB) | Two parallel callers serialise; rollback on throw; CLS propagation to nested `save()` |
 | Per-handler race tests | **Integration** | For each migrated handler: two concurrent calls + assert at most one passes when only one fits the budget / capacity |
 | Existing unit tests | Vitest | Stay green |
 
@@ -222,7 +222,7 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
 - [ ] `pnpm test` green in every modified service
 - [ ] `pnpm test:integration` green (from PR-B onwards)
 - [ ] Race integration test added for any handler newly migrated
-- [ ] No new `xxx.save()` outside a `withEntityLock` (or allow-listed)
+- [ ] No new `xxx.save()` outside a `withLockedEntities` (or allow-listed)
 - [ ] **This document** updated in the same commit
 
 ## 7. Open questions

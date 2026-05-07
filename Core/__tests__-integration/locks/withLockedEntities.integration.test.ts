@@ -83,7 +83,7 @@ beforeEach(async () => {
 describe("withLockedEntities (integration)", () => {
 	it("commits the callback's mutations to the locked row", async () => {
 		const result = await withLockedEntities(
-			[AccountModel.lockKey ? AccountModel.lockKey(1) : { model: AccountModel, id: 1 }],
+			[{ model: AccountModel, id: 1 }],
 			async ([account]) => {
 				account.balance += 25;
 				await account.save();
@@ -122,7 +122,7 @@ describe("withLockedEntities (integration)", () => {
 
 		const events: string[] = [];
 
-		const a = withLockedEntities(
+		const txA = withLockedEntities(
 			[{ model: AccountModel, id: 1 }],
 			async ([account]) => {
 				events.push("A:locked");
@@ -137,7 +137,7 @@ describe("withLockedEntities (integration)", () => {
 		// Make sure A enters first.
 		await waitFor(() => events.includes("A:locked"));
 
-		const b = withLockedEntities(
+		const txB = withLockedEntities(
 			[{ model: AccountModel, id: 1 }],
 			async ([account]) => {
 				events.push("B:locked");
@@ -147,7 +147,7 @@ describe("withLockedEntities (integration)", () => {
 			}
 		);
 
-		await Promise.all([a, b]);
+		await Promise.all([txA, txB]);
 
 		// A must have fully committed before B even sees the lock.
 		expect(events).toEqual(["A:locked", "A:committed", "B:locked", "B:committed"]);
@@ -232,7 +232,7 @@ describe("withLockedEntities (integration)", () => {
 	it("throws and rolls back when a locked row does not exist", async () => {
 		await expect(withLockedEntities(
 			[{ model: AccountModel, id: 9999 }],
-			async () => "never reached"
+			() => Promise.resolve("never reached")
 		)).rejects.toThrow(/row not found/);
 
 		// Sanity: existing rows untouched.
