@@ -13,6 +13,9 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../index";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Small event eligibility result
@@ -127,8 +130,7 @@ async function loadAndExecuteSmallEvent(
 			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());
 			await smallEventRecord.save();
 
-			await smallEvent.executeSmallEvent(response, player, context, playerActiveObjects);
-			await MissionsController.update(player, response, { missionId: "doReports" });
+			await runSmallEventUnderPlayerLock(player, smallEvent, response, context, playerActiveObjects);
 		}
 		catch (e) {
 			CrowniclesLogger.errorWithObj(`Error while executing ${filename} small event`, e);
@@ -137,6 +139,40 @@ async function loadAndExecuteSmallEvent(
 	}
 	catch {
 		response.push(makePacket(ErrorPacket, { message: `${filename} doesn't exist` }));
+	}
+}
+
+/**
+ * Run the small event implementation and the subsequent mission update
+ * inside a single Player row lock. All synchronous mutations (and any
+ * `player.save()` invoked transitively) inherit the surrounding
+ * transaction through cls-hooked, so concurrent reports for the same
+ * player are serialised on the database side. Small events that defer
+ * their mutations to a later collector callback acquire the lock for
+ * their setup phase only — the deferred callback re-locks itself
+ * (handled per file in PR-H2).
+ */
+async function runSmallEventUnderPlayerLock(
+	player: Player,
+	smallEvent: SmallEventFuncs,
+	response: CrowniclesPacket[],
+	context: PacketContext,
+	playerActiveObjects: PlayerActiveObjects
+): Promise<void> {
+	try {
+		await withLockedEntities([Player.lockKey(player.id)], async ([lockedPlayer]) => {
+			await smallEvent.executeSmallEvent(response, lockedPlayer, context, playerActiveObjects);
+			await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
+		});
+	}
+	catch (e) {
+		if (e instanceof LockedRowNotFoundError) {
+			CrowniclesLogger.warn(
+				`runSmallEventUnderPlayerLock: locked row vanished for player ${player.id} — small event aborted`
+			);
+			return;
+		}
+		throw e;
 	}
 }
 
