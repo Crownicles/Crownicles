@@ -225,9 +225,19 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
         (`handleGuildDomainNotaryReaction` + `handleGuildDomainUpgrade`
         wrapped in `Guild.withLocked`, race integration test
         `handleGuildDomainTreasuryUpgrades.race.test.ts` with 4 cases)
-  - [ ] **PR-E2 — Player money sinks** (Inn, Home, Blacksmith,
-        Enchanter, TokenHeal — single-key `Player.withLocked`)
-  - [ ] **PR-E3 — Mission shops & shop utils** sweep
+  - [x] **PR-E2 — Player money/tokens sinks (Inn, TokenHeal,
+        Blacksmith)** — `handleInnMealReaction`,
+        `handleInnRoomReaction`, `acceptUseTokens`, `acceptBuyHeal`,
+        `handleBlacksmithUpgradeReaction`,
+        `handleBlacksmithDisenchantReaction` now wrap their
+        read-validate-spend-save critical section in
+        `Player.withLocked(...)` with in-lock re-validation of
+        `money`/`tokens`/`canEat`/`canHealAlteration`. Race
+        integration test
+        (`__tests__-integration/handlers/playerMoneySinks.race.test.ts`,
+        4 cases) demonstrates the generic lost-update bug and the fix.
+  - [ ] **PR-E3 — Enchanter + Home (multi-row) + Mission shops & shop
+        utils** sweep
 
 - [ ] **PR-F — Migrate cross-entity pet handlers (§4.2)** (pet trade gets a 3-key lock)
 
@@ -259,4 +269,4 @@ Each PR must keep the project green: `pnpm eslint` + `pnpm test` + `pnpm test:in
 
 ---
 
-*Last update: PR-E1 **complete and green** — `handleGuildDomainNotaryReaction` and `handleGuildDomainUpgrade` now wrap their critical sections in `Guild.withLocked(...)` with in-lock re-validation of treasury, chief eligibility, building level, and guild level. Race integration test (`handleGuildDomainTreasuryUpgrades.race.test.ts`, 4 cases — 2 unsafe demos + 2 locked invariants) demonstrates the lost-update bug and the fix. Lib + Core unit + 19/19 integration tests green.*
+*Last update: PR-E2 **complete and green** — Inn meal/room, TokenHeal `acceptUseTokens` + `acceptBuyHeal`, and Blacksmith upgrade/disenchant now wrap their read-validate-spend-save critical sections in `Player.withLocked(...)` with in-lock re-validation of `money`/`tokens`/`canEat`/`canHealAlteration`. Race integration test (`playerMoneySinks.race.test.ts`, 4 cases — generic lost-update demo + locked invariants) covers the pattern shared by all five handlers. Core 1006/1006 unit + 23/23 integration tests green. Remaining §4.1 sweep handlers (Enchanter single-row, Home multi-row, mission shops) deferred to PR-E3.*
