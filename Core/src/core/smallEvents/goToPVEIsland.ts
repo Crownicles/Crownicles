@@ -28,6 +28,7 @@ import { InventorySlots } from "../database/game/models/InventorySlot";
 import { ReactionCollectorGoToPVEIsland } from "../../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { TravelTime } from "../maps/TravelTime";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	async canBeExecuted(player: Player): Promise<boolean> {
@@ -61,9 +62,17 @@ export const smallEventFuncs: SmallEventFuncs = {
 			if (reaction === null) {
 				// Timeout - no response from user
 				response.push(makePacket(SmallEventGoToPVEIslandNoAnswerPacket, {}));
+				return;
 			}
-			else if (reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+
+			if (reaction.reaction.type !== ReactionCollectorAcceptReaction.name) {
+				// User clicked refuse button
+				response.push(makePacket(SmallEventGoToPVEIslandRefusePacket, {}));
+				return;
+			}
+
+			await withLockedPlayerSafe(player, "goToPVEIsland endCallback", async lockedPlayer => {
+				const missionInfo = await PlayerMissionsInfos.getOfPlayer(lockedPlayer.id);
 				if (missionInfo.gems < price) {
 					response.push(makePacket(SmallEventGoToPVEIslandNotEnoughGemsPacket, {}));
 					return;
@@ -73,27 +82,23 @@ export const smallEventFuncs: SmallEventFuncs = {
 					anotherMemberOnBoat: anotherMemberOnBoat[0],
 					price
 				};
-				const gainScore = await TravelTime.joinBoatScore(player);
+				const gainScore = await TravelTime.joinBoatScore(lockedPlayer);
 				const scoreParameters = {
 					amount: gainScore,
 					response,
 					reason: NumberChangeReason.SMALL_EVENT
 				};
-				await player.addScore(scoreParameters);
+				await lockedPlayer.addScore(scoreParameters);
 
-				await Maps.startBoatTravel(player, options, NumberChangeReason.SMALL_EVENT, response);
-				await MissionsController.update(player, response, {
+				await Maps.startBoatTravel(lockedPlayer, options, NumberChangeReason.SMALL_EVENT, response);
+				await MissionsController.update(lockedPlayer, response, {
 					missionId: "joinPVEIsland",
 					set: true
 				});
 				response.push(makePacket(SmallEventGoToPVEIslandAcceptPacket, {
 					alone: !anotherMemberOnBoat.length, pointsWon: scoreParameters.amount
 				}));
-			}
-			else {
-				// User clicked refuse button
-				response.push(makePacket(SmallEventGoToPVEIslandRefusePacket, {}));
-			}
+			});
 		};
 
 		const packet = new ReactionCollectorInstance(
