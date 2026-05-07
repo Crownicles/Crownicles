@@ -27,6 +27,7 @@ import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConst
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
@@ -236,10 +237,13 @@ export async function doPVEBoss(
 		if (fight) {
 			const rewards = monsterObj.getRewards(randomLevel);
 
-			player.fightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
+			const initialFightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
+			player.fightPointsLost = initialFightPointsLost;
+
+			const isWinOrDraw = fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter;
 
 			// Only give reward if draw or win
-			if (fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter) {
+			if (isWinOrDraw) {
 				const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
 
 				// Generate and apply material loot from boss
@@ -266,13 +270,37 @@ export async function doPVEBoss(
 					await RecipeDiscoveryService.discoverFromBoss(player, mapId);
 				}
 			}
-			else {
-				// Make sure the player has no energy left after a loss even if he leveled up
-				player.setEnergyLost(player.getMaxCumulativeEnergy(playerActiveObjects), NumberChangeReason.PVE_FIGHT, playerActiveObjects);
-			}
 
-			// eslint-disable-next-line crownicles/no-unguarded-save -- TODO(concurrency): PvE fight player-side reward not yet under withLockedEntities; tracked separately from §4.4. Guild-side rewards already locked in PR-G.
-			await player.save();
+			/*
+			 * Persist the post-fight scalar state under a row-level lock. The inner
+			 * addMoney / addExperience / MissionsController.update chains above
+			 * already committed money / XP / score / missions on freshly-locked rows
+			 * (PR-H1). The only mutation that survived all those Object.assign(this,
+			 * newPlayer) calls and still needs to be persisted here is the
+			 * fight-points-lost / energy-lost scalar — which we re-derive against the
+			 * freshly-locked instance to avoid lost-update on concurrent writers and
+			 * to dodge the latent clobber-by-Object.assign on the local `player`.
+			 */
+			await withLockedPlayerSafe(player, "doPVEBoss post-fight save", async lockedPlayer => {
+				if (isWinOrDraw) {
+					lockedPlayer.fightPointsLost = initialFightPointsLost;
+				}
+				else {
+					// Make sure the player has no energy left after a loss even if they levelled up
+					lockedPlayer.setEnergyLost(
+						lockedPlayer.getMaxCumulativeEnergy(playerActiveObjects),
+						NumberChangeReason.PVE_FIGHT,
+						playerActiveObjects
+					);
+				}
+				await lockedPlayer.save();
+
+				/*
+				 * Reflect the persisted state on the local instance for downstream readers
+				 * (`leavePVEIslandIfNoEnergy` below reads `player.fightPointsLost`).
+				 */
+				player.fightPointsLost = lockedPlayer.fightPointsLost;
+			});
 
 			crowniclesInstance?.logsDatabase.logPveFight(fight)
 				.then();
