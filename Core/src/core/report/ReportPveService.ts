@@ -271,6 +271,7 @@ export async function doPVEBoss(
 				player.setEnergyLost(player.getMaxCumulativeEnergy(playerActiveObjects), NumberChangeReason.PVE_FIGHT, playerActiveObjects);
 			}
 
+			// eslint-disable-next-line crownicles/no-unguarded-save -- TODO(concurrency): PvE fight player-side reward not yet under withLockedEntities; tracked separately from §4.4. Guild-side rewards already locked in PR-G.
 			await player.save();
 
 			crowniclesInstance?.logsDatabase.logPveFight(fight)
