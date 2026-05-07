@@ -3,7 +3,8 @@
  *
  * Flags Sequelize-style `<expr>.save()` calls that are not statically
  * provable to be running inside a row-level lock. Concurrent
- * lost-update bugs covered by §3-§4 of `docs/CONCURRENCY_PLAN.md` all
+ * lost-update bugs covered by the concurrency hardening sweep (see
+ * `docs/CONCURRENCY.md`) all
  * reduce to a `.save()` call whose preceding read happened outside any
  * `SELECT … FOR UPDATE`, so the read-validate-mutate-save sequence is
  * not atomic.
@@ -50,6 +51,18 @@ const DEFAULT_LOCK_HELPERS = [
 const DEFAULT_LOCK_MEMBER_CALLS = ["withLocked"];
 
 const DEFAULT_ALLOWED_REGEX = /UnderLock$/;
+
+const DEFAULT_INHERITED_LOCK_MARKER = "@lock-inherited";
+
+function hasInheritedLockMarker(sourceCode, marker) {
+	const comments = sourceCode.getAllComments();
+	for (const comment of comments) {
+		if (comment.value.includes(marker)) {
+			return true;
+		}
+	}
+	return false;
+}
 
 function getEnclosingCallExpression(node) {
 	let current = node.parent;
@@ -158,14 +171,15 @@ export default {
 						type: "array",
 						items: { type: "string" }
 					},
-					allowedEnclosingFunctionRegex: { type: "string" }
+					allowedEnclosingFunctionRegex: { type: "string" },
+					inheritedLockMarker: { type: "string" }
 				},
 				additionalProperties: false
 			}
 		],
 		messages: {
 			unguardedSave:
-				"`.save()` outside a row-level lock — wrap the read-validate-save sequence in `withLockedEntities([…])` (or `withLockedPlayerSafe`) so concurrent writers cannot lose updates. See docs/CONCURRENCY_PLAN.md."
+				"`.save()` outside a row-level lock — wrap the read-validate-save sequence in `withLockedEntities([…])` (or `withLockedPlayerSafe`) so concurrent writers cannot lose updates. See docs/CONCURRENCY.md."
 		}
 	},
 
@@ -176,6 +190,20 @@ export default {
 		const allowedRegex = options.allowedEnclosingFunctionRegex
 			? new RegExp(options.allowedEnclosingFunctionRegex)
 			: DEFAULT_ALLOWED_REGEX;
+		const inheritedLockMarker = options.inheritedLockMarker ?? DEFAULT_INHERITED_LOCK_MARKER;
+
+		// File-level opt-out: if the source contains an `@lock-inherited`
+		// marker comment anywhere (typically a top-of-file block comment),
+		// the whole file is treated as running under an outer lock acquired
+		// at one of its call sites. This matches the PR-H1 contract for
+		// `loadAndExecuteSmallEvent`, where every small-event body executes
+		// inside a `withLockedEntities([Player.lockKey])` callback in the
+		// caller. Use sparingly and document the lock chain in the marker
+		// comment.
+		const sourceCode = context.sourceCode ?? context.getSourceCode();
+		if (hasInheritedLockMarker(sourceCode, inheritedLockMarker)) {
+			return {};
+		}
 
 		return {
 			CallExpression(node) {
