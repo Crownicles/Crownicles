@@ -13,7 +13,9 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import { ReactionCollectorCart } from "../../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import Player from "../database/game/models/Player";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventCartPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
@@ -41,7 +43,7 @@ async function runCartEndCallbackUnderLock(
 	player: Player,
 	destination: CartResult,
 	collector: ReactionCollectorInstance,
-	response: Parameters<EndCallback>[1]
+	response: CrowniclesPacket[]
 ): Promise<void> {
 	const reaction = collector.getFirstReaction();
 	const packet: SmallEventCartPacket = {
