@@ -14,8 +14,13 @@ import { MonsterFighter } from "../fights/fighter/MonsterFighter";
 import { MonsterDataController } from "../../data/Monster";
 import { ClassDataController } from "../../data/Class";
 import { MissionsController } from "../missions/MissionsController";
-import { Guilds } from "../database/game/models/Guild";
+import {
+	Guild
+} from "../database/game/models/Guild";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
@@ -100,7 +105,10 @@ async function handleWinnerPetLovePoints(
 }
 
 /**
- * Handle guild rewards (score + XP) after a PVE fight
+ * Handle guild rewards (score + XP) after a PVE fight. The
+ * read+mutate+save sequence is wrapped in a Guild row lock so
+ * two concurrent PVE rewards from different guild members
+ * cannot lose each other's score / XP increments.
  */
 async function applyGuildRewards(
 	player: Player,
@@ -113,25 +121,39 @@ async function applyGuildRewards(
 		};
 	}
 
-	const guild = await Guilds.getById(player.guildId);
-	if (!guild) {
-		return {
-			guildXp: 0, guildPoints: 0
-		};
+	const guildId = player.guildId;
+	try {
+		return await withLockedEntities(
+			[Guild.lockKey(guildId)] as const,
+			async ([guild]) => {
+				await guild.addScore({
+					amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+				});
+				await guild.addExperience({
+					amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+				});
+				await guild.save();
+
+				return {
+					guildXp: guild.level < GuildConstants.MAX_LEVEL ? rewards.guildXp : 0,
+					guildPoints: rewards.guildScore
+				};
+			}
+		);
 	}
-
-	await guild.addScore({
-		amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
-	});
-	await guild.addExperience({
-		amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
-	});
-	await guild.save();
-
-	return {
-		guildXp: guild.level < GuildConstants.MAX_LEVEL ? rewards.guildXp : 0,
-		guildPoints: rewards.guildScore
-	};
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			/*
+			 * The guild was destroyed between the fight and the
+			 * reward. Surface a no-guild result so the client
+			 * still gets a coherent recap packet.
+			 */
+			return {
+				guildXp: 0, guildPoints: 0
+			};
+		}
+		throw error;
+	}
 }
 
 /**
