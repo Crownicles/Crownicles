@@ -51,7 +51,8 @@ export default defineConfig([
 			"src/core/report/ReportSmallEventService.ts",
 			"src/core/report/ReportPveService.ts",
 			"src/core/report/ReportCookingService.ts",
-			"src/core/utils/withLockedPlayerSafe.ts"
+			"src/core/utils/withLockedPlayerSafe.ts",
+			"src/core/smallEvents/**/*.ts"
 		],
 		rules: {
 			"crownicles/no-unguarded-save": "error"
