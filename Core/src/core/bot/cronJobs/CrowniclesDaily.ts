@@ -113,7 +113,7 @@ export class CrowniclesDaily {
 			});
 		}
 		catch (error) {
-			CrowniclesLogger.error(`Something went wrong when reloading the enchanter: ${error}`);
+			CrowniclesLogger.errorWithObj("Something went wrong when reloading the enchanter", error);
 		}
 	}
 
@@ -132,7 +132,7 @@ export class CrowniclesDaily {
 			CrowniclesLogger.info("Training ground love bonus applied");
 		}
 		catch (error) {
-			CrowniclesLogger.error(`Training ground love bonus failed: ${error}`);
+			CrowniclesLogger.errorWithObj("Training ground love bonus failed", error);
 		}
 	}
 
@@ -169,7 +169,7 @@ export class CrowniclesDaily {
 			CrowniclesLogger.info("Pantry auto-fill completed");
 		}
 		catch (error) {
-			CrowniclesLogger.error(`Pantry auto-fill failed: ${error}`);
+			CrowniclesLogger.errorWithObj("Pantry auto-fill failed", error);
 		}
 	}
 }

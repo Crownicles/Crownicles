@@ -146,6 +146,28 @@ export function createDomainCollectorWithStayHandling(
 	});
 }
 
+/**
+ * Render the shared "Réserves alimentaires" panel (current stocks vs caps for
+ * each food type). Used by the Pantry and Training Ground sub-menus.
+ */
+export function addFoodInfoBlock(container: ContainerBuilder, data: FoodShopUIData, lng: Language): void {
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildDomain.foodInfo", {
+				lng,
+				common: data.food.common,
+				commonCap: data.foodCaps[0],
+				herbivorous: data.food.herbivorous,
+				herbivorousCap: data.foodCaps[1],
+				carnivorous: data.food.carnivorous,
+				carnivorousCap: data.foodCaps[2],
+				ultimate: data.food.ultimate,
+				ultimateCap: data.foodCaps[3]
+			})
+		)
+	);
+}
+
 export function addDomainNavigation(container: ContainerBuilder, ctx: GuildDomainMenuContext, backLabel: string, backId: string): void {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(

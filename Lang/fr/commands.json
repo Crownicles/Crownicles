@@ -1234,10 +1234,10 @@
         "menuTitle": "{{pseudo}}, domaine de {{guildName}}",
         "menuIntro": "{emote:city.guildDomain.menu} Vous franchissez les lourdes portes du domaine de **{{guildName}}**. L'enceinte fortifiée abrite les bâtiments que votre fraternité a patiemment érigés au fil des saisons. Des membres de la guilde vaquent à leurs occupations entre les murs de pierre, et l'emblème de votre ordre veille depuis le donjon central.",
         "guildLevelAndTreasury": "**Guilde niv. {{guildLevel}}** | {emote:unitValues.money} **Trésorerie** : {{treasury, number}}",
-        "buildingUpgrade": "↳ Niv. {{nextLevel}} : **{{cost, number}}** {emote:unitValues.money}",
+        "buildingUpgrade": "Niv. {{nextLevel}} : **{{cost, number}}** {emote:unitValues.money}",
         "buildingUpgradeBlocked": " — {emote:collectors.warning} Guilde niv. **{{required}}** requis",
         "buildingUpgradeTreasuryLow": " — {emote:unitValues.money} Trésorerie insuffisante",
-        "buildingMaxLevel": "↳ {emote:collectors.accept} Niveau maximum atteint",
+        "buildingMaxLevel": "{emote:collectors.accept} Niveau maximum atteint",
         "foodInfo": "{emote:expedition.food} **Réserves alimentaires** :\n{emote:foods.commonFood} Commune : {{common}}/{{commonCap}}\n{emote:foods.carnivorousFood} Carnivore : {{carnivorous}}/{{carnivorousCap}}\n{emote:foods.herbivorousFood} Herbivore : {{herbivorous}}/{{herbivorousCap}}\n{emote:foods.ultimateFood} Ultime : {{ultimate}}/{{ultimateCap}}",
         "upgradeBuilding": {
           "shop": "{emote:city.guildDomain.shop} Boutique Niv.{{level}} ({{cost}} {emote:unitValues.money})",
