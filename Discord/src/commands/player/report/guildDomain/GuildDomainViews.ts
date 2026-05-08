@@ -17,7 +17,7 @@ import {
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 import {
-	addBuildingLevelAndCostInfo, addDomainNavigation, addStatusMessage, addUpgradeSection,
+	addBuildingLevelAndCostInfo, addDomainNavigation, addFoodInfoBlock, addStatusMessage, addUpgradeSection,
 	BUILDING_ICONS, FOOD_KEYS, FoodShopUIContext, getBuildingLevel, getBuildingSummary,
 	GuildDomainMenuContext
 } from "./GuildDomainShared";
@@ -508,21 +508,7 @@ export function buildPantryContainer(ctx: GuildDomainMenuContext, statusMessage?
 				)
 			);
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-			container.addTextDisplayComponents(
-				new TextDisplayBuilder().setContent(
-					i18n.t("commands:report.city.guildDomain.foodInfo", {
-						lng,
-						common: data.food.common,
-						commonCap: data.foodCaps[0],
-						herbivorous: data.food.herbivorous,
-						herbivorousCap: data.foodCaps[1],
-						carnivorous: data.food.carnivorous,
-						carnivorousCap: data.foodCaps[2],
-						ultimate: data.food.ultimate,
-						ultimateCap: data.foodCaps[3]
-					})
-				)
-			);
+			addFoodInfoBlock(container, data, lng);
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 			container.addTextDisplayComponents(
 				new TextDisplayBuilder().setContent(buildAutoFillText(data.pantryLevel, lng))
@@ -552,21 +538,7 @@ export function buildTrainingGroundContainer(ctx: GuildDomainMenuContext, status
 				)
 			);
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-			container.addTextDisplayComponents(
-				new TextDisplayBuilder().setContent(
-					i18n.t("commands:report.city.guildDomain.foodInfo", {
-						lng,
-						common: data.food.common,
-						commonCap: data.foodCaps[0],
-						herbivorous: data.food.herbivorous,
-						herbivorousCap: data.foodCaps[1],
-						carnivorous: data.food.carnivorous,
-						carnivorousCap: data.foodCaps[2],
-						ultimate: data.food.ultimate,
-						ultimateCap: data.foodCaps[3]
-					})
-				)
-			);
+			addFoodInfoBlock(container, data, lng);
 		},
 		statusMessage
 	});

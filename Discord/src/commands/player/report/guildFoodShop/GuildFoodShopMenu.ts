@@ -278,5 +278,3 @@ export function getGuildFoodShopMenu(options: GuildFoodShopMenuOptions): Crownic
 		createCollector: createMainCollector(ctx)
 	};
 }
-
-// (no end-of-file shims needed)
