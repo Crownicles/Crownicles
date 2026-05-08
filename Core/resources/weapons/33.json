@@ -1,6 +1,7 @@
 {
   "rarity": 2,
   "rawAttack": 9,
+  "type": "metal",
   "tags": [
     "metallic"
   ]

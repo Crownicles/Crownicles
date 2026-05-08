@@ -5,7 +5,7 @@ import { MapLocationDataController } from "../../data/MapLocation";
 import {
 	Guilds
 } from "../database/game/models/Guild";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { giveFoodToGuild } from "../utils/FoodUtils";
 import {
@@ -21,6 +21,10 @@ import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import {
+	FARMER_RECIPE_COSTS, RecipeDiscoverySource
+} from "../../../../Lib/src/constants/CookingConstants";
 
 const FARMER_INTERACTIONS = {
 	SALAD: "salad",
@@ -69,16 +73,26 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 		const packet: SmallEventFarmerPacket = { interactionName: FARMER_INTERACTIONS.SALAD };
 
-		if (!guild || guild.herbivorousFood >= GuildConstants.MAX_HERBIVOROUS_PET_FOOD) {
+		if (!guild || guild.herbivorousFood >= guild.getFoodCapacityFor(PetConstants.PET_FOOD.HERBIVOROUS_FOOD)) {
 			// Salad storage is full or no guild — farmer gives a random item instead
 			packet.interactionName = FARMER_INTERACTIONS.ITEM;
 			await giveItemToPlayer(response, context, player, generateRandomItem({ maxRarity: ItemRarity.RARE }));
 		}
 		else {
 			// Give salad to the guild
-			const maxGiveable = GuildConstants.MAX_HERBIVOROUS_PET_FOOD - guild.herbivorousFood;
+			const maxGiveable = guild.getFoodCapacityFor(PetConstants.PET_FOOD.HERBIVOROUS_FOOD) - guild.herbivorousFood;
 			packet.amount = Math.min(RandomUtils.randInt(SALAD_AMOUNT.MIN, SALAD_AMOUNT.MAX + 1), maxGiveable);
 			await giveFoodToGuild(response, player, PetConstants.PET_FOOD.HERBIVOROUS_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
+
+			// Discover a farmer recipe (costs money)
+			const discovery = await RecipeDiscoveryService.tryDiscoverAndPay({
+				player,
+				source: RecipeDiscoverySource.FARMER,
+				costs: FARMER_RECIPE_COSTS,
+				response
+			});
+			packet.discoveredRecipeId = discovery.discoveredRecipeId;
+			packet.recipeCost = discovery.recipeCost;
 		}
 
 		response.push(makePacket(SmallEventFarmerPacket, packet));

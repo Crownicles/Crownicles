@@ -47,7 +47,7 @@ import { createGuildInviteCollector } from "../../commands/guild/GuildInviteComm
 import { ReactionCollectorShopData } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
 	shopCollector, shopInventoryExtensionCollector
-} from "../../commands/player/ShopCommand";
+} from "../../utils/ShopDisplayUtils";
 import { ReactionCollectorBuyCategorySlotData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 import { ReactionCollectorCartData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCart";
 import { cartCollector } from "../../smallEvents/cart";
@@ -77,8 +77,6 @@ import {
 import { ReactionCollectorFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
 import { ReactionCollectorGuildLeaveData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildLeave";
 import { createGuildLeaveCollector } from "../../commands/guild/GuildLeaveCommand";
-import { ReactionCollectorSwitchItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorSwitchItem";
-import { switchItemCollector } from "../../commands/player/SwitchCommand";
 import { ReactionCollectorGuildElderRemoveData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildElderRemove";
 import { createGuildElderRemoveCollector } from "../../commands/guild/GuildElderRemoveCommand";
 import { ReactionCollectorGuildDescriptionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
@@ -108,10 +106,10 @@ import { ReactionCollectorJoinBoatData } from "../../../../Lib/src/packets/inter
 import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { ReportCityMenu } from "../../commands/player/report/ReportCityMenu";
 import { ReactionCollectorDailyBonusData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
 import { handleDailyBonusCollector } from "../../commands/player/DailyBonusCommand";
-import { ReactionCollectorDeposeItemData } from "../../../../Lib/src/packets/interaction/ReactionCollectorDeposeItem";
-import { deposeItemCollector } from "../../commands/player/DepositCommand";
 import { ReactionCollectorPetExpeditionData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpedition";
 import { ReactionCollectorPetExpeditionChoiceData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionChoice";
 import { ReactionCollectorPetExpeditionFinishedData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetExpeditionFinished";
@@ -122,6 +120,10 @@ import {
 } from "../../commands/pet/expedition/PetExpeditionCollectors";
 import { ReactionCollectorAltarData } from "../../../../Lib/src/packets/interaction/ReactionCollectorAltar";
 import { altarCollector } from "../../smallEvents/altar";
+import { ReactionCollectorEquipData } from "../../../../Lib/src/packets/interaction/ReactionCollectorEquip";
+import { equipCollector } from "../../commands/player/EquipCommand";
+import { ReactionCollectorGardenerData } from "../../../../Lib/src/packets/interaction/ReactionCollectorGardener";
+import { gardenerCollector } from "../../smallEvents/gardener";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -176,8 +178,6 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorEpicShopSmallEventData.name, epicItemShopCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSkipMissionShopItemData.name, skipMissionShopItemCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorFightData.name, createFightCollector);
-		ReactionCollectorHandler.collectorMap.set(ReactionCollectorSwitchItemData.name, switchItemCollector);
-		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDeposeItemData.name, deposeItemCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDrinkData.name, drinkAcceptCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetSellData.name, createPetSellCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorChangeClassData.name, handleChangeClassReactionCollector);
@@ -187,6 +187,7 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFeedWithGuildData.name, handleCommandPetFeedWithGuildCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetFeedWithoutGuildData.name, handleCommandPetFeedWithoutGuildCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPveFightData.name, handleStartPveFight);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorCityData.name, ReportCityMenu.handleCityCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorDailyBonusData.name, handleDailyBonusCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorLimogesData.name, limogesCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorPetExpeditionData.name, createPetExpeditionCollector);
@@ -195,6 +196,8 @@ export default class ReactionCollectorHandler {
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorUseTokensData.name, createUseTokensCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorBuyHealData.name, createBuyHealCollector);
 		ReactionCollectorHandler.collectorMap.set(ReactionCollectorAltarData.name, altarCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorEquipData.name, equipCollector);
+		ReactionCollectorHandler.collectorMap.set(ReactionCollectorGardenerData.name, gardenerCollector);
 	}
 
 	@packetHandler(ReactionCollectorCreationPacket)

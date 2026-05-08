@@ -1,5 +1,6 @@
 {
   "rarity": 6,
   "rawAttack": 6,
-  "defense": 15
+  "defense": 15,
+  "type": "magic"
 }

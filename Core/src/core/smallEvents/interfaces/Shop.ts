@@ -52,9 +52,9 @@ export abstract class Shop<
 
 	/**
 	 * Called after a successful purchase. Override this method to add custom logic after buying an item.
-	 * @param player
-	 * @param shopItem
-	 * @param response
+	 * @param _player
+	 * @param _shopItem
+	 * @param _response
 	 */
 	async afterPurchase(_player: Player, _shopItem: ShopSmallEventItem, _response: CrowniclesPacket[]): Promise<void> {
 		// Default implementation does nothing
@@ -71,7 +71,7 @@ export abstract class Shop<
 		};
 
 		const collector = this.getPopulatedReactionCollector({
-			item: toItemWithDetails(randomItem),
+			item: toItemWithDetails(player, randomItem, 0, null),
 			price: itemPrice
 		}, shopItem);
 
@@ -99,7 +99,7 @@ export abstract class Shop<
 			if (!isValidated || !canBuy) {
 				return;
 			}
-			await giveItemToPlayer(response, collector.context, player, shopItem.item, SmallEventConstants.SHOP.RESALE_MULTIPLIER);
+			await giveItemToPlayer(response, collector.context, player, shopItem.item, { resaleMultiplier: SmallEventConstants.SHOP.RESALE_MULTIPLIER });
 			await player.spendMoney({
 				amount: shopItem.price,
 				response,

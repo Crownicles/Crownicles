@@ -26,7 +26,9 @@ import { CommandFightHistoryItemPacket } from "../../../../Lib/src/packets/fight
 import { CrowniclesHistoryCachedMessage } from "../../messages/CrowniclesHistoryCachedMessage";
 import { CrowniclesActionChooseCachedMessage } from "../../messages/CrowniclesActionChooseCachedMessage";
 import { CommandFightEndOfFightPacket } from "../../../../Lib/src/packets/fights/EndOfFightPacket";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToMinutes, msDiff, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 import { FightRewardPacket } from "../../../../Lib/src/packets/fights/FightRewardPacket";
 import {
 	resolveKeycloakPlayerName
@@ -356,7 +358,7 @@ export async function handleEndOfFight(context: PacketContext, packet: CommandFi
 		lng,
 		turn: packet.turns,
 		maxTurn: packet.maxTurns,
-		time: i18n.formatDuration(millisecondsToMinutes(new Date().valueOf() - interaction.createdTimestamp), lng)
+		time: i18n.formatDuration(millisecondsToMinutes(msDiff(nowMs(), asMilliseconds(interaction.createdTimestamp))), lng)
 	});
 
 	// Add fighter statistics for both fighters

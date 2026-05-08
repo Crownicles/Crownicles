@@ -18,7 +18,7 @@ import { TopConstants } from "../../../../../../Lib/src/constants/TopConstants";
 import { Constants } from "../../../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
 import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
-import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
+import { GuildDomainConstants } from "../../../../../../Lib/src/constants/GuildDomainConstants";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
@@ -49,6 +49,18 @@ export class Guild extends Model {
 	declare chiefId: number;
 
 	declare elderId: number | null;
+
+	declare treasury: number;
+
+	declare domainCityId: string | null;
+
+	declare shopLevel: number;
+
+	declare shelterLevel: number;
+
+	declare pantryLevel: number;
+
+	declare trainingGroundLevel: number;
 
 	declare creationDate: Date;
 
@@ -89,7 +101,7 @@ export class Guild extends Model {
 			}
 		}
 
-		crowniclesInstance.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
+		crowniclesInstance?.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
 			.then();
 		const guildPetsToDestroy: Promise<void>[] = [];
 		const petsEntitiesToDestroy: Promise<number>[] = [];
@@ -130,7 +142,7 @@ export class Guild extends Model {
 		}
 		this.experience += experience;
 		this.setExperience(this.experience);
-		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logGuildExperienceChange(this, parameters.reason)
 			.then();
 		await this.levelUpIfNeeded(parameters.response);
 	}
@@ -152,9 +164,9 @@ export class Guild extends Model {
 		}
 		this.experience -= this.getExperienceNeededToLevelUp();
 		this.level++;
-		crowniclesInstance.logsDatabase.logGuildLevelUp(this)
+		crowniclesInstance?.logsDatabase.logGuildLevelUp(this)
 			.then();
-		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, NumberChangeReason.LEVEL_UP)
+		crowniclesInstance?.logsDatabase.logGuildExperienceChange(this, NumberChangeReason.LEVEL_UP)
 			.then();
 		response.push(makePacket(GuildLevelUpPacket, {
 			guildName: this.name,
@@ -192,7 +204,35 @@ export class Guild extends Model {
 		if (!guildPets) {
 			return true;
 		}
-		return guildPets.length >= PetConstants.SLOTS;
+		return guildPets.length >= this.getShelterCapacity();
+	}
+
+	/**
+	 * Maximum number of pets the guild shelter can hold (computed from shelterLevel)
+	 */
+	public getShelterCapacity(): number {
+		return GuildDomainConstants.getShelterSlots(this.shelterLevel);
+	}
+
+	/**
+	 * Pre-resolved food cap array for the guild's current pantry level (indexed by food type order)
+	 */
+	public getFoodCaps(): readonly number[] {
+		return GuildDomainConstants.getFoodCaps(this.pantryLevel);
+	}
+
+	/**
+	 * Maximum amount of a given food type the guild pantry can hold
+	 */
+	public getFoodCapacityFor(foodType: string): number {
+		return this.getFoodCaps()[getFoodIndexOf(foodType)];
+	}
+
+	/**
+	 * Current amount of a given food type stored in the guild pantry
+	 */
+	public getFoodAmount(foodType: string): number {
+		return this.getDataValue(foodType) as number;
 	}
 
 	/**
@@ -208,7 +248,7 @@ export class Guild extends Model {
 	 * @param quantity the quantity that need to be available
 	 */
 	public isStorageFullFor(selectedItemType: string, quantity: number): boolean {
-		return this.getDataValue(selectedItemType) + quantity > GuildConstants.MAX_PET_FOOD[getFoodIndexOf(selectedItemType)];
+		return this.getFoodAmount(selectedItemType) + quantity > this.getFoodCapacityFor(selectedItemType);
 	}
 
 	/**
@@ -218,11 +258,11 @@ export class Guild extends Model {
 	 * @param reason change reason
 	 */
 	public addFood(selectedItemType: string, quantity: number, reason: NumberChangeReason): void {
-		this.setDataValue(selectedItemType, this.getDataValue(selectedItemType) + quantity);
+		this.setDataValue(selectedItemType, this.getFoodAmount(selectedItemType) + quantity);
 		if (this.isStorageFullFor(selectedItemType, 0)) {
-			this.setDataValue(selectedItemType, GuildConstants.MAX_PET_FOOD[getFoodIndexOf(selectedItemType)]);
+			this.setDataValue(selectedItemType, this.getFoodCapacityFor(selectedItemType));
 		}
-		crowniclesInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getDataValue(selectedItemType), reason)
+		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getFoodAmount(selectedItemType), reason)
 			.then();
 	}
 
@@ -234,7 +274,7 @@ export class Guild extends Model {
 	 */
 	public removeFood(item: string, quantity: number, reason: NumberChangeReason): void {
 		this.setDataValue(item, this.getDataValue(item) - quantity);
-		crowniclesInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(item), this.getDataValue(item), reason)
+		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(item), this.getDataValue(item), reason)
 			.then();
 	}
 
@@ -245,6 +285,7 @@ export class Guild extends Model {
 	public async addScore(parameters: EditValueParameters): Promise<void> {
 		this.score += parameters.amount;
 		if (parameters.amount > 0) {
+			this.treasury += parameters.amount;
 			for (const member of await Players.getByGuild(this.id)) {
 				await MissionsController.update(member, parameters.response, {
 					missionId: "guildHasPoints",
@@ -253,7 +294,7 @@ export class Guild extends Model {
 				});
 			}
 		}
-		crowniclesInstance.logsDatabase.logGuildPointsChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logGuildPointsChange(this, parameters.reason)
 			.then();
 	}
 
@@ -399,6 +440,31 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		chiefId: DataTypes.INTEGER,
 		elderId: DataTypes.INTEGER,
+		treasury: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		domainCityId: {
+			type: DataTypes.STRING(64), // eslint-disable-line new-cap
+			allowNull: true,
+			defaultValue: null
+		},
+		shopLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		shelterLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		pantryLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		trainingGroundLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
 		creationDate: {
 			type: DataTypes.DATE,
 			defaultValue: DataTypes.NOW

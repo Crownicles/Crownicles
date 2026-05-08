@@ -183,7 +183,7 @@ export abstract class NotificationsHandler {
 			case ExpeditionFinishedNotificationPacket.name: {
 				const packet = notification.packet as ExpeditionFinishedNotificationPacket;
 				const petIcon = DisplayUtils.getPetIcon(packet.petId, packet.petSex as SexTypeShort);
-				const petName = DisplayUtils.getPetNicknameOrTypeName(packet.petNickname, packet.petId, packet.petSex as SexTypeShort, lng);
+				const petName = DisplayUtils.getPetNicknameOrTypeName(packet.petNickname ?? null, packet.petId, packet.petSex as SexTypeShort, lng);
 				notificationContent = i18n.t("bot:notificationPetExpedition", {
 					lng,
 					petDisplay: `${petIcon} **${petName}**`

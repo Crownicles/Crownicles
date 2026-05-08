@@ -23,6 +23,8 @@ import { ItemDataController } from "../../data/DataController";
 import { crowniclesInstance } from "../../index";
 import { ItemRefusePacket } from "../../../../Lib/src/packets/events/ItemRefusePacket";
 import { ItemAcceptPacket } from "../../../../Lib/src/packets/events/ItemAcceptPacket";
+import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+import { EnchantmentConstants } from "../../../../Lib/src/constants/EnchantmentConstants";
 import { ItemFoundPacket } from "../../../../Lib/src/packets/events/ItemFoundPacket";
 import { BlessingManager } from "../blessings/BlessingManager";
 import {
@@ -39,11 +41,11 @@ import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/int
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { MainItem } from "../../data/MainItem";
 import { SupportItem } from "../../data/SupportItem";
-import { StatValues } from "../../../../Lib/src/types/StatValues";
-import {
-	CommandDrinkPacketRes
-} from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
+import { CommandDrinkPacketRes } from "../../../../Lib/src/packets/commands/CommandDrinkPacket";
 import { TravelTime } from "../maps/TravelTime";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
+import { Homes } from "../database/game/models/Home";
+import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
 
 
 /**
@@ -99,43 +101,10 @@ export async function checkDrinkPotionMissions(response: CrowniclesPacket[], pla
 	});
 }
 
-function getSupportItemDetails(item: SupportItem): {
-	nature: ItemNature; power: number;
-} {
-	return {
-		nature: item.nature,
-		power: item.power
-	};
-}
-
-function getMainItemDetails(item: MainItem): { stats: StatValues } {
-	return {
-		stats: {
-			attack: item.getAttack(),
-			defense: item.getDefense(),
-			speed: item.getSpeed()
-		}
-	};
-}
-
-export function toItemWithDetails(item: GenericItem): ItemWithDetails {
-	const category = item.getCategory();
-	return {
-		id: item.id,
-		category,
-		rarity: item.rarity,
-		detailsSupportItem: category === ItemCategory.POTION
-			? getSupportItemDetails(PotionDataController.instance.getById(item.id)!)
-			: category === ItemCategory.OBJECT
-				? getSupportItemDetails(ObjectItemDataController.instance.getById(item.id)!)
-				: undefined,
-		detailsMainItem: category === ItemCategory.WEAPON
-			? getMainItemDetails(WeaponDataController.instance.getById(item.id)!)
-			: category === ItemCategory.ARMOR
-				? getMainItemDetails(ArmorDataController.instance.getById(item.id)!)
-				: undefined,
-		maxStats: undefined
-	};
+export function toItemWithDetails(player: Player, item: GenericItem, itemLevel: number, itemEnchantmentId: string | null): ItemWithDetails {
+	return item instanceof MainItem
+		? (item as MainItem).getDisplayPacket(itemLevel, itemEnchantmentId ?? undefined, player.getMaxStatsValue())
+		: (item as SupportItem).getDisplayPacket(player.getMaxStatsValue());
 }
 
 type WhoIsConcerned = {
@@ -164,18 +133,12 @@ type SellKeepItemOptions = {
  */
 async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player, item: GenericItem, itemToReplace: InventorySlot): Promise<void> {
 	response.push(makePacket(ItemAcceptPacket, {
-		itemWithDetails: toItemWithDetails(item)
+		itemWithDetails: toItemWithDetails(player, item, 0, null)
 	}));
-
-	// Calculate remainingPotionUsages for fight potions
-	let remainingPotionUsages: number | null = null;
-	if (item instanceof Potion && item.isFightPotion()) {
-		remainingPotionUsages = item.usages || 1;
-	}
-
 	await InventorySlot.update({
 		itemId: item.id,
-		remainingPotionUsages
+		itemLevel: 0,
+		itemEnchantmentId: null
 	}, {
 		where: {
 			slot: itemToReplace.slot,
@@ -187,7 +150,7 @@ async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player
 		missionId: "haveItemRarity",
 		params: { rarity: item.rarity }
 	});
-	crowniclesInstance.logsDatabase.logItemGain(player.keycloakId, item)
+	crowniclesInstance?.logsDatabase.logItemGain(player.keycloakId, item)
 		.then();
 }
 
@@ -212,7 +175,7 @@ async function manageMoneyPayment(response: CrowniclesPacket[], player: Player, 
 		missionId: "sellItems"
 	});
 	await player.save();
-	crowniclesInstance.logsDatabase.logItemSell(player.keycloakId, item)
+	crowniclesInstance?.logsDatabase.logItemSell(player.keycloakId, item)
 		.then();
 }
 
@@ -238,6 +201,7 @@ async function manageItemRefusal(response: CrowniclesPacket[], {
 		soldMoney: BlessingManager.getInstance().applyMoneyBlessing(money)
 	}));
 	await MissionsController.update(player, response, { missionId: "findOrBuyItem" });
+	await player.reload();
 	await MissionsController.update(player, response, {
 		missionId: "havePotions",
 		count: countNbOfPotions(inventorySlots),
@@ -319,7 +283,7 @@ function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, t
 		BlockingUtils.unblockPlayer(whoIsConcerned.player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM);
 
 		if (reaction?.reaction.type === ReactionCollectorItemChoiceDrinkPotionReaction.name) {
-			await consumePotion(response, toTradeItem as Potion, whoIsConcerned.player);
+			await consumePotion(response, toTradeItem as Potion, whoIsConcerned.player, InventorySlots.slotsToActiveObjects(whoIsConcerned.inventorySlots));
 			await whoIsConcerned.player.save();
 			await MissionsController.update(whoIsConcerned.player, response, { missionId: "findOrBuyItem" });
 			await checkDrinkPotionMissions(response, whoIsConcerned.player, toTradeItem as Potion, await InventorySlots.getOfPlayer(whoIsConcerned.player.id));
@@ -368,7 +332,7 @@ function manageMoreThan2ItemsSwitching(
 	},
 	tradableItems.map(i => ({
 		slot: i.slot,
-		itemWithDetails: toItemWithDetails(i.getItem()!)
+		itemWithDetails: toItemWithDetails(whoIsConcerned.player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)
 	})),
 	canDrinkThisPotion);
 
@@ -398,7 +362,7 @@ async function manageGiveItemRelateds(response: CrowniclesPacket[], player: Play
 		missionId: "haveItemRarity",
 		params: { rarity: item.rarity }
 	});
-	crowniclesInstance.logsDatabase.logItemGain(player.keycloakId, item)
+	crowniclesInstance?.logsDatabase.logItemGain(player.keycloakId, item)
 		.then();
 }
 
@@ -411,7 +375,7 @@ function getGiveItemToPlayerEndCallback(whoIsConcerned: WhoIsConcerned, concerne
 		BlockingUtils.unblockPlayer(whoIsConcerned.player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM);
 
 		if (reaction?.reaction.type === ReactionCollectorItemAcceptDrinkPotionReaction.name) {
-			await consumePotion(response, concernedItems.item as Potion, whoIsConcerned.player);
+			await consumePotion(response, concernedItems.item as Potion, whoIsConcerned.player, InventorySlots.slotsToActiveObjects(whoIsConcerned.inventorySlots));
 			await whoIsConcerned.player.save();
 			await MissionsController.update(whoIsConcerned.player, response, { missionId: "findOrBuyItem" });
 			await checkDrinkPotionMissions(response, whoIsConcerned.player, concernedItems.item as Potion, await InventorySlots.getOfPlayer(whoIsConcerned.player.id));
@@ -451,57 +415,12 @@ function canPotionBeDrunkImmediately(item: GenericItem, canDrinkImmediately: boo
 	return canDrinkImmediately;
 }
 
-/**
- * Checks if a fight potion has been partially used (has remaining usages less than max)
- * @param slot - The inventory slot containing the potion
- * @param maxUsages - The maximum usages for this potion type
- * @returns true if the potion has been partially used
- */
-function isPotionPartiallyUsed(slot: InventorySlot, maxUsages: number): boolean {
-	const remaining = slot.remainingPotionUsages;
-
-	// If remaining is null/undefined, it's considered full (legacy or freshly added)
-	return remaining !== null && remaining !== undefined && remaining < maxUsages;
-}
-
-/**
- * Checks if any fight potion in the inventory has been partially used
- * @param potion - The potion type to check against
- * @param slots - All potion slots to check
- * @returns true if any potion has been partially used
- */
-function hasAnyPartiallyUsedPotion(potion: Potion, slots: InventorySlot[]): boolean {
-	const maxUsages = potion.usages || 1;
-	return slots.some(slot => isPotionPartiallyUsed(slot, maxUsages));
-}
-
-/**
- * Determines if an item should be auto-sold when player gets it
- * Auto-sell happens when all inventory slots of that category already have the same item
- * Exception: Fight potions won't auto-sell if any copy has been partially used (to allow "refill")
- * @param item - The new item being given to the player
- * @param sameTypeSlots - All inventory slots of the same item category
- * @returns true if the item should be auto-sold
- */
-function shouldAutoSellItem(item: GenericItem, sameTypeSlots: InventorySlot[]): boolean {
-	// Drinkable potions are never auto-sold (player can drink them)
-	if (item.getCategory() === ItemCategory.POTION && !(item as Potion).isFightPotion()) {
-		return false;
-	}
-
-	// Check if all slots have the same item ID as the new item
-	const allSameItem = sameTypeSlots.every(slot => slot.itemId === item.id);
-	if (!allSameItem) {
-		return false;
-	}
-
-	// For fight potions, don't auto-sell if any potion has been partially used
-	if ((item as Potion).isFightPotion?.()) {
-		return !hasAnyPartiallyUsedPotion(item as Potion, sameTypeSlots);
-	}
-
-	return true;
-}
+type GiveItemOptions = {
+	resaleMultiplier?: number;
+	canDrinkImmediately?: boolean;
+	itemLevel?: number;
+	itemEnchantmentId?: string | null;
+};
 
 /**
  * Gives an item to a player
@@ -509,17 +428,18 @@ function shouldAutoSellItem(item: GenericItem, sameTypeSlots: InventorySlot[]): 
  * @param context
  * @param player
  * @param item
- * @param resaleMultiplier
- * @param canDrinkImmediately
+ * @param options - Optional settings for giving the item
  */
 export async function giveItemToPlayer(
 	response: CrowniclesPacket[],
 	context: PacketContext,
 	player: Player,
 	item: GenericItem,
-	resaleMultiplier = 1,
-	canDrinkImmediately = true
+	options: GiveItemOptions = {}
 ): Promise<void> {
+	const {
+		resaleMultiplier = 1, canDrinkImmediately = true, itemLevel = 0, itemEnchantmentId = null
+	} = options;
 	const inventorySlots = await InventorySlots.getOfPlayer(player.id);
 	const whoIsConcerned = {
 		player,
@@ -527,21 +447,27 @@ export async function giveItemToPlayer(
 	};
 
 	response.push(makePacket(ItemFoundPacket, {
-		itemWithDetails: toItemWithDetails(item)
+		itemWithDetails: toItemWithDetails(player, item, itemLevel, itemEnchantmentId)
 	}));
 
-	if (await player.giveItem(item) === true) {
+	if (await player.giveItem(item, itemLevel, itemEnchantmentId)) {
 		await manageGiveItemRelateds(response, player, item);
 		return;
 	}
 
 	const category = item.getCategory();
-	const maxSlots = (await InventoryInfos.getOfPlayer(player.id)).slotLimitForCategory(category);
+	const invInfo = await InventoryInfos.getOfPlayer(player.id);
+	const home = await Homes.getOfPlayer(player.id);
+	const homeBonus = home?.getLevel()?.features.inventoryBonus;
+	const maxSlots = invInfo.slotLimitForCategory(category) + (homeBonus ? getSlotCountForCategory(homeBonus, category) : 0);
 	const items = inventorySlots.filter((slot: InventorySlot) => slot.itemCategory === category);
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 	const canDrinkThisPotion = canPotionBeDrunkImmediately(item, canDrinkImmediately);
+	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
+		? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
+		: false;
 
-	if (shouldAutoSellItem(item, items)) {
+	if (autoSell) {
 		await sellOrKeepItem(response, whoIsConcerned, {
 			item
 		}, {
@@ -564,7 +490,7 @@ export async function giveItemToPlayer(
 
 	response.push(new ReactionCollectorInstance(
 		new ReactionCollectorItemAccept(
-			toItemWithDetails(itemToReplaceInstance),
+			toItemWithDetails(player, itemToReplaceInstance, itemToReplace.itemLevel, itemToReplace.itemEnchantmentId),
 			canDrinkThisPotion
 		),
 		context,
@@ -766,6 +692,40 @@ export function generateRandomItem(
 	return selectRandomItemFromController(controller, rarity, effectiveSubType);
 }
 
+const LOOT_LEVEL_CHANCES: Record<1 | 2, number> = {
+	1: 5,
+	2: 1
+};
+
+/**
+ * Generate a random level for a looted item based on LOOT_LEVEL_CHANCES
+ * @returns The generated level (0, 1, or 2)
+ */
+export function generateRandomLootLevel(): number {
+	const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive() * 100;
+	if (roll < LOOT_LEVEL_CHANCES[2]) {
+		return 2;
+	}
+	if (roll < LOOT_LEVEL_CHANCES[1] + LOOT_LEVEL_CHANCES[2]) {
+		return 1;
+	}
+	return 0;
+}
+
+/**
+ * Generate a random enchantment for a looted item (weapons and armors only)
+ * @returns The enchantment ID or null if no enchantment
+ */
+export function generateRandomLootEnchantment(item: GenericItem): string | null {
+	if (item.getCategory() !== ItemCategory.WEAPON && item.getCategory() !== ItemCategory.ARMOR) {
+		return null;
+	}
+	const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
+	if (roll >= EnchantmentConstants.LOOT_ENCHANTMENT_CHANCE) {
+		return null;
+	}
+	return ItemEnchantment.getRandomEnchantment().id;
+}
 
 /**
  * Give a random item
@@ -774,7 +734,11 @@ export function generateRandomItem(
  * @param player
  */
 export async function giveRandomItem(context: PacketContext, response: CrowniclesPacket[], player: Player): Promise<void> {
-	await giveItemToPlayer(response, context, player, generateRandomItem({}));
+	const item = generateRandomItem({});
+	await giveItemToPlayer(response, context, player, item, {
+		itemLevel: generateRandomLootLevel(),
+		itemEnchantmentId: generateRandomLootEnchantment(item)
+	});
 }
 
 type TemporarySlotAndItemType = {
@@ -815,7 +779,7 @@ export function haveRarityOrMore(slots: InventorySlot[], rarity: ItemRarity): bo
  * Get a portion of the model corresponding to the category number
  * @param category
  */
-function getCategoryDataByName(category: ItemCategory): ItemDataController<GenericItem> | undefined {
+function getCategoryDataByName(category: ItemCategory): ItemDataController<GenericItem> | null {
 	switch (category) {
 		case ItemCategory.WEAPON:
 			return WeaponDataController.instance;
@@ -826,7 +790,7 @@ function getCategoryDataByName(category: ItemCategory): ItemDataController<Gener
 		case ItemCategory.OBJECT:
 			return ObjectItemDataController.instance;
 		default:
-			return undefined;
+			return null;
 	}
 }
 
@@ -835,12 +799,12 @@ function getCategoryDataByName(category: ItemCategory): ItemDataController<Gener
  * @param itemId
  * @param category
  */
-export function getItemByIdAndCategory(itemId: number, category: ItemCategory): GenericItem | undefined {
+export function getItemByIdAndCategory(itemId: number, category: ItemCategory): GenericItem | null {
 	const categoryDataController = getCategoryDataByName(category);
 	if (!categoryDataController) {
-		return undefined;
+		return null;
 	}
-	return itemId <= categoryDataController.getMaxId() && itemId > 0 ? categoryDataController.getById(itemId) : undefined;
+	return itemId <= categoryDataController.getMaxId() && itemId > 0 ? categoryDataController.getById(itemId) ?? null : null;
 }
 
 /**
@@ -848,23 +812,26 @@ export function getItemByIdAndCategory(itemId: number, category: ItemCategory): 
  * @param response
  * @param potion
  * @param player
+ * @param playerActiveObjects
  */
-export async function consumePotion(response: CrowniclesPacket[], potion: Potion, player: Player): Promise<void> {
+export async function consumePotion(response: CrowniclesPacket[], potion: Potion, player: Player, playerActiveObjects: PlayerActiveObjects): Promise<void> {
 	const packet = makePacket(CommandDrinkPacketRes, {
 		value: potion.power,
 		itemNature: potion.nature
 	});
 	response.push(packet);
+
 	switch (potion.nature) {
 		case ItemNature.HEALTH:
 			await player.addHealth({
 				amount: Math.round(potion.power * BlessingManager.getInstance().getHealthPotionMultiplier()),
 				response,
-				reason: NumberChangeReason.DRINK
+				reason: NumberChangeReason.DRINK,
+				playerActiveObjects
 			});
 			break;
 		case ItemNature.ENERGY:
-			player.addEnergy(potion.power, NumberChangeReason.DRINK);
+			player.addEnergy(potion.power, NumberChangeReason.DRINK, playerActiveObjects);
 			break;
 		case ItemNature.TIME_SPEEDUP:
 			await TravelTime.timeTravel(player, potion.power, NumberChangeReason.DRINK);

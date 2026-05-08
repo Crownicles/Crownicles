@@ -17,9 +17,7 @@ import { Language } from "../../../../Lib/src/Language";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import {
 	CommandInventoryPacketReq,
-	CommandInventoryPacketRes,
-	MainItemDisplayPacket,
-	SupportItemDisplayPacket
+	CommandInventoryPacketRes
 } from "../../../../Lib/src/packets/commands/CommandInventoryPacket";
 import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
@@ -27,6 +25,16 @@ import { PacketUtils } from "../../utils/PacketUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { disableRows } from "../../utils/DiscordCollectorUtils";
+import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { DiscordConstants } from "../../DiscordConstants";
+
+enum InventoryView {
+	EQUIPPED = 0,
+	BACKUP = 1,
+	MATERIALS = 2,
+	PLANTS = 3
+}
 
 async function getPacket(interaction: CrowniclesInteraction, keycloakUser: KeycloakUser): Promise<CommandInventoryPacketReq | null> {
 	const askedPlayer = await PacketUtils.prepareAskedPlayer(interaction, keycloakUser);
@@ -37,7 +45,7 @@ async function getPacket(interaction: CrowniclesInteraction, keycloakUser: Keycl
 	return makePacket(CommandInventoryPacketReq, { askedPlayer });
 }
 
-function getBackupField<T = MainItemDisplayPacket | SupportItemDisplayPacket>(
+function getBackupField<T = ItemWithDetails>(
 	lng: Language,
 	items: {
 		display: T;
@@ -95,7 +103,7 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 			talismanValue = i18n.t("commands:inventory.talismanNotOwned", { lng });
 		}
 
-		const embed = new CrowniclesEmbed()
+		return new CrowniclesEmbed()
 			.setTitle(i18n.t("commands:inventory.title", {
 				lng,
 				pseudo
@@ -111,7 +119,6 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 					inline: false
 				}
 			]);
-		return embed;
 	}
 
 	throw new Error("Inventory packet data must not be undefined");
@@ -133,6 +140,199 @@ function getBackupEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: 
 	}
 
 	throw new Error("Inventory packet data must not be undefined");
+}
+
+/**
+ * Splits an array into chunks of specified size
+ */
+function splitIntoColumns<T>(array: T[], columnCount: number): T[][] {
+	const itemsPerColumn = Math.ceil(array.length / columnCount);
+	const columns: T[][] = [];
+
+	for (let i = 0; i < columnCount; i++) {
+		const start = i * itemsPerColumn;
+		if (start < array.length) {
+			columns.push(array.slice(start, start + itemsPerColumn));
+		}
+	}
+
+	return columns;
+}
+
+interface BuildColumnFieldParams {
+	column: string[];
+	isFirstColumn: boolean;
+	materialsCount: number;
+	lng: Language;
+}
+
+/**
+ * Builds a field from a column of material lines, respecting the character limit
+ */
+function buildColumnField(params: BuildColumnFieldParams): EmbedField[] {
+	const {
+		column, isFirstColumn, materialsCount, lng
+	} = params;
+	const fields: EmbedField[] = [];
+	let currentFieldValue = "";
+
+	const getFieldName = (fieldsLength: number): string => isFirstColumn && fieldsLength === 0
+		? i18n.t("commands:inventory.materialsField", {
+			lng, count: materialsCount
+		})
+		: DiscordConstants.EMBED.EMPTY_FIELD_NAME;
+
+	for (const line of column) {
+		const potentialValue = currentFieldValue ? `${currentFieldValue}\n${line}` : line;
+
+		if (potentialValue.length > DiscordConstants.EMBED.FIELD_VALUE_MAX_LENGTH && currentFieldValue) {
+			fields.push({
+				name: getFieldName(fields.length),
+				value: currentFieldValue,
+				inline: true
+			});
+			currentFieldValue = line;
+		}
+		else {
+			currentFieldValue = potentialValue;
+		}
+	}
+
+	if (currentFieldValue) {
+		fields.push({
+			name: getFieldName(fields.length),
+			value: currentFieldValue,
+			inline: true
+		});
+	}
+
+	return fields;
+}
+
+function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+	if (!packet.data) {
+		throw new Error("Inventory packet data must not be undefined");
+	}
+
+	const materials = packet.data.materials;
+	const embed = new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:inventory.materialsTitle", {
+			lng,
+			pseudo
+		}));
+
+	if (materials.length === 0) {
+		embed.addFields([
+			{
+				name: i18n.t("commands:inventory.materialsField", {
+					lng, count: 0
+				}),
+				value: i18n.t("commands:inventory.noMaterials", { lng }),
+				inline: false
+			}
+		]);
+		return embed;
+	}
+
+	// Sort materials alphabetically by name
+	const sortedMaterials = [...materials].sort((a, b) => {
+		const nameA = i18n.t(`models:materials.${a.materialId}`, { lng });
+		const nameB = i18n.t(`models:materials.${b.materialId}`, { lng });
+		return nameA.localeCompare(nameB, lng);
+	});
+	const materialLines = sortedMaterials.map(m => {
+		const emoji = CrowniclesIcons.materials[m.materialId] ?? CrowniclesIcons.inventory.stock;
+		const name = i18n.t(`models:materials.${m.materialId}`, { lng });
+		return `${emoji} **${name}** x${m.quantity}`;
+	});
+
+	// Split into columns and build fields
+	const columns = splitIntoColumns(materialLines, 3);
+	const fields: EmbedField[] = [];
+
+	for (let i = 0; i < columns.length; i++) {
+		fields.push(...buildColumnField({
+			column: columns[i],
+			isFirstColumn: i === 0,
+			materialsCount: materials.length,
+			lng
+		}));
+	}
+
+	embed.addFields(fields);
+	return embed;
+}
+
+function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+	if (!packet.data) {
+		throw new Error("Inventory packet data must not be undefined");
+	}
+
+	const embed = new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:inventory.plantsTitle", {
+			lng,
+			pseudo
+		}));
+
+	const plants = packet.data.plants;
+	if (!plants) {
+		embed.addFields([
+			{
+				name: i18n.t("commands:inventory.plantsField", {
+					lng, count: 0
+				}),
+				value: i18n.t("commands:inventory.noPlants", { lng }),
+				inline: false
+			}
+		]);
+		return embed;
+	}
+
+	// Seed slot
+	let seedValue: string;
+	if (plants.seed) {
+		const seedEmoji = CrowniclesIcons.plants[plants.seed] ?? CrowniclesIcons.city.homeUpgrades.garden;
+		const seedName = i18n.t(`models:plants.${plants.seed}`, { lng });
+		seedValue = `${seedEmoji} **${seedName}**`;
+	}
+	else {
+		seedValue = i18n.t("commands:inventory.emptySlot", { lng });
+	}
+	embed.addFields([
+		{
+			name: i18n.t("commands:inventory.seedSlot", { lng }),
+			value: seedValue,
+			inline: false
+		}
+	]);
+
+	// Plant slots
+	const plantEntries: string[] = [];
+	for (let slot = 0; slot < plants.maxPlantSlots; slot++) {
+		const found = plants.plantSlots.find(p => p.slot === slot);
+		if (found) {
+			const plantEmoji = CrowniclesIcons.plants[found.plantId] ?? CrowniclesIcons.city.homeUpgrades.garden;
+			const plantName = i18n.t(`models:plants.${found.plantId}`, { lng });
+			plantEntries.push(`${plantEmoji} **${plantName}**`);
+		}
+		else {
+			plantEntries.push(i18n.t("commands:inventory.emptySlot", { lng }));
+		}
+	}
+
+	embed.addFields([
+		{
+			name: i18n.t("commands:inventory.plantSlots", {
+				lng,
+				count: plants.plantSlots.length,
+				max: plants.maxPlantSlots
+			}),
+			value: plantEntries.join("\n"),
+			inline: false
+		}
+	]);
+
+	return embed;
 }
 
 export async function handleCommandInventoryPacketRes(packet: CommandInventoryPacketRes, context: PacketContext): Promise<void> {
@@ -157,19 +357,56 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		return;
 	}
 	const username = await DisplayUtils.getEscapedUsername(packet.keycloakId!, lng);
-	let equippedView = true;
-	const buttonId = "switchItems";
-	const equippedButtonLabel = i18n.t("commands:inventory.seeEquippedItems", { lng });
-	const backupButtonLabel = i18n.t("commands:inventory.seeBackupItems", { lng });
-	const switchItemsButton = new ButtonBuilder()
-		.setCustomId(buttonId)
-		.setLabel(backupButtonLabel)
-		.setStyle(ButtonStyle.Primary);
-	const equippedEmbed = getEquippedEmbed(packet, username, lng);
-	const backupEmbed = getBackupEmbed(packet, username, lng);
+	let currentView = InventoryView.EQUIPPED;
+
+	const embeds = [
+		getEquippedEmbed(packet, username, lng),
+		getBackupEmbed(packet, username, lng),
+		getMaterialsEmbed(packet, username, lng),
+		getPlantsEmbed(packet, username, lng)
+	];
+
+	/**
+	 * All views with their button labels and custom IDs, in fixed display order
+	 */
+	const viewButtons = [
+		{
+			view: InventoryView.EQUIPPED,
+			customId: "viewEquipped",
+			label: i18n.t("commands:inventory.seeEquippedItems", { lng })
+		},
+		{
+			view: InventoryView.BACKUP,
+			customId: "viewBackup",
+			label: i18n.t("commands:inventory.seeBackupItems", { lng })
+		},
+		{
+			view: InventoryView.MATERIALS,
+			customId: "viewMaterials",
+			label: i18n.t("commands:inventory.seeMaterials", { lng })
+		},
+		{
+			view: InventoryView.PLANTS,
+			customId: "viewPlants",
+			label: i18n.t("commands:inventory.seePlants", { lng })
+		}
+	];
+
+	const allCustomIds = viewButtons.map(v => v.customId);
+
+	function createButtons(view: InventoryView): ActionRowBuilder<ButtonBuilder> {
+		const buttons = viewButtons
+			.filter(v => v.view !== view)
+			.map(v => new ButtonBuilder()
+				.setCustomId(v.customId)
+				.setLabel(v.label)
+				.setStyle(ButtonStyle.Secondary));
+		return new ActionRowBuilder<ButtonBuilder>().addComponents(buttons);
+	}
+
 	const reply = await interaction.reply({
-		embeds: [equippedEmbed],
-		components: [new ActionRowBuilder<ButtonBuilder>().addComponents(switchItemsButton)],
+		embeds: [embeds[currentView]],
+		components: [createButtons(currentView)],
 		withResponse: true
 	});
 	if (!reply?.resource?.message) {
@@ -177,7 +414,7 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 	}
 	const msg = reply.resource.message;
 	const collector = msg.createMessageComponentCollector({
-		filter: buttonInteraction => buttonInteraction.customId === buttonId,
+		filter: buttonInteraction => allCustomIds.includes(buttonInteraction.customId),
 		time: Constants.MESSAGES.COLLECTOR_TIME
 	});
 	collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
@@ -186,16 +423,18 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 			return;
 		}
 
-		equippedView = !equippedView;
-		switchItemsButton.setLabel(equippedView ? backupButtonLabel : equippedButtonLabel);
+		const targetView = viewButtons.find(v => v.customId === buttonInteraction.customId);
+		if (targetView) {
+			currentView = targetView.view;
+		}
+
 		await buttonInteraction.update({
-			embeds: [equippedView ? equippedEmbed : backupEmbed],
-			components: [new ActionRowBuilder<ButtonBuilder>().addComponents(switchItemsButton)]
+			embeds: [embeds[currentView]],
+			components: [createButtons(currentView)]
 		});
 	});
 	collector.on("end", async () => {
-		// Disable buttons instead of removing them
-		const row = new ActionRowBuilder<ButtonBuilder>().addComponents(switchItemsButton.setDisabled(true));
+		const row = createButtons(currentView);
 		disableRows([row]);
 
 		await msg.edit({ components: [row] });

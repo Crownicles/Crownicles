@@ -47,6 +47,8 @@ import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { resetExpeditionStreakMission } from "../../core/missions/ExpeditionStreakUtils";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 
 /**
  * Expedition log parameters
@@ -157,7 +159,8 @@ async function applyOutcomeEffects(
 	player: Player,
 	petEntity: PetEntity,
 	response: CrowniclesPacket[],
-	context: PacketContext
+	context: PacketContext,
+	playerActiveObjects: PlayerActiveObjects
 ): Promise<void> {
 	if (outcome.loveChange) {
 		await petEntity.changeLovePoints({
@@ -170,7 +173,7 @@ async function applyOutcomeEffects(
 	await petEntity.save();
 
 	if (outcome.rewards) {
-		await applyExpeditionRewards(outcome.rewards, player, response, context);
+		await applyExpeditionRewards(outcome.rewards, player, response, context, playerActiveObjects);
 	}
 	await player.save();
 }
@@ -326,7 +329,7 @@ export default class PetExpeditionCommand {
 
 		// Validate prerequisites
 		const validation = await validateExpeditionPrerequisites(player.id, player.petId);
-		if (validation.success === false) {
+		if (!validation.success) {
 			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: validation.errorCode }));
 			return;
 		}
@@ -339,8 +342,11 @@ export default class PetExpeditionCommand {
 		// Calculate risk and determine outcome
 		const outcome = await calculateOutcome(petEntity, activeExpedition, expeditionData, player);
 
+		// Get player active objects for experience rewards
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+
 		// Apply outcome effects (love change and rewards)
-		await applyOutcomeEffects(outcome, player, petEntity, response, context);
+		await applyOutcomeEffects(outcome, player, petEntity, response, context, playerActiveObjects);
 
 		// Update displayed values to include blessing multipliers
 		if (outcome.rewards) {

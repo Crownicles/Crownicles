@@ -1,6 +1,9 @@
 import {
 	daysToMinutes, hoursToMinutes
 } from "../utils/TimeUtils";
+import {
+	asDays, asHours
+} from "../types/TimeTypes";
 import { MapLocationConstants } from "./MapLocationConstants";
 
 /**
@@ -13,7 +16,7 @@ export abstract class ExpeditionConstants {
 	 */
 	static readonly DURATION = {
 		MIN_MINUTES: 10,
-		MAX_MINUTES: daysToMinutes(3)
+		MAX_MINUTES: daysToMinutes(asDays(3))
 	};
 
 	/**
@@ -553,6 +556,106 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
+	 * Material loot configuration for expeditions
+	 * Each location type has a pool of materials that can drop
+	 * Number of drops scales with reward index
+	 */
+	static readonly MATERIAL_LOOT = {
+		/**
+		 * Number of material drops based on reward index (0-9)
+		 */
+		DROPS_BY_REWARD_INDEX: [
+			1,
+			1,
+			2,
+			2,
+			3,
+			3,
+			4,
+			4,
+			5,
+			5
+		] as const,
+
+		/**
+		 * Minimum reward index required to receive material loot
+		 */
+		MIN_REWARD_INDEX_FOR_MATERIAL_LOOT: 1
+	};
+
+	/**
+	 * Material loot tables by location type
+	 * Each location has 6 materials with a mix of rarities
+	 * Prioritizes materials not obtainable from boss loot
+	 */
+	static readonly EXPEDITION_LOOT_TABLES: Record<(typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES)[keyof typeof ExpeditionConstants.EXPEDITION_LOCATION_TYPES], readonly number[]> = {
+		forest: [
+			14,
+			20,
+			29,
+			45,
+			6,
+			40
+		],
+		mountain: [
+			32,
+			34,
+			44,
+			47,
+			11,
+			31
+		],
+		desert: [
+			54,
+			55,
+			49,
+			50,
+			61,
+			65
+		],
+		swamp: [
+			63,
+			64,
+			53,
+			60,
+			67,
+			72
+		],
+		ruins: [
+			77,
+			79,
+			66,
+			71,
+			75,
+			76
+		],
+		cave: [
+			82,
+			89,
+			74,
+			78,
+			83,
+			84
+		],
+		plains: [
+			35,
+			42,
+			80,
+			81,
+			85,
+			86
+		],
+		coast: [
+			52,
+			58,
+			70,
+			2,
+			88,
+			90
+		]
+	};
+
+	/**
 	 * Terrain difficulty configuration for risk generation
 	 * Each terrain has a skew factor that biases the probability distribution
 	 * All terrains can generate risk values from 0 to 100, but with different probabilities
@@ -697,78 +800,6 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
-	 * Get the risk category name based on risk rate value
-	 * @param riskRate - Risk rate percentage (0-100)
-	 * @returns The category name key for translations
-	 */
-	static getRiskCategoryName(riskRate: number): string {
-		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.TRIVIAL.MAX) {
-			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.TRIVIAL.NAME;
-		}
-		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_LOW.MAX) {
-			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_LOW.NAME;
-		}
-		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.LOW.MAX) {
-			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.LOW.NAME;
-		}
-		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MODERATE.MAX) {
-			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.MODERATE.NAME;
-		}
-		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.HIGH.MAX) {
-			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.HIGH.NAME;
-		}
-		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_HIGH.MAX) {
-			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.VERY_HIGH.NAME;
-		}
-		if (riskRate <= ExpeditionConstants.RISK_DISPLAY_CATEGORIES.EXTREME.MAX) {
-			return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.EXTREME.NAME;
-		}
-		return ExpeditionConstants.RISK_DISPLAY_CATEGORIES.DESPERATE.NAME;
-	}
-
-	/**
-	 * Get the difficulty category name based on difficulty value
-	 * @param difficulty - Difficulty value (0-100)
-	 * @returns The category name key for translations
-	 */
-	static getDifficultyCategoryName(difficulty: number): string {
-		if (difficulty <= ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.TRIVIAL.MAX) {
-			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.TRIVIAL.NAME;
-		}
-		if (difficulty <= ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.EASY.MAX) {
-			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.EASY.NAME;
-		}
-		if (difficulty <= ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.MODERATE.MAX) {
-			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.MODERATE.NAME;
-		}
-		if (difficulty <= ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.CHALLENGING.MAX) {
-			return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.CHALLENGING.NAME;
-		}
-		return ExpeditionConstants.DIFFICULTY_DISPLAY_CATEGORIES.TREACHEROUS.NAME;
-	}
-
-	/**
-	 * Get the reward category name based on reward index value
-	 * @param rewardIndex - Reward index value (0-9)
-	 * @returns The category name key for translations
-	 */
-	static getRewardCategoryName(rewardIndex: number): string {
-		if (rewardIndex <= ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.MEAGER.MAX) {
-			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.MEAGER.NAME;
-		}
-		if (rewardIndex <= ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.MODEST.MAX) {
-			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.MODEST.NAME;
-		}
-		if (rewardIndex <= ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.SUBSTANTIAL.MAX) {
-			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.SUBSTANTIAL.NAME;
-		}
-		if (rewardIndex <= ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.BOUNTIFUL.MAX) {
-			return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.BOUNTIFUL.NAME;
-		}
-		return ExpeditionConstants.REWARD_DISPLAY_CATEGORIES.LEGENDARY.NAME;
-	}
-
-	/**
 	 * Duration ranges for each expedition slot
 	 * Slot 0 (SHORT): Quick expeditions (10 min - 1 hour)
 	 * Slot 1 (MEDIUM): Standard expeditions (15 min - 10 hours)
@@ -777,41 +808,17 @@ export abstract class ExpeditionConstants {
 	static readonly DURATION_RANGES = {
 		SHORT: {
 			MIN: 10,
-			MAX: hoursToMinutes(1)
+			MAX: hoursToMinutes(asHours(1))
 		},
 		MEDIUM: {
 			MIN: 15,
-			MAX: hoursToMinutes(10)
+			MAX: hoursToMinutes(asHours(10))
 		},
 		LONG: {
-			MIN: hoursToMinutes(12),
-			MAX: daysToMinutes(3)
+			MIN: hoursToMinutes(asHours(12)),
+			MAX: daysToMinutes(asDays(3))
 		}
 	};
-
-	/**
-	 * Get duration range as array for indexed access
-	 * @returns Array of duration ranges [SHORT, MEDIUM, LONG]
-	 */
-	static getDurationRangesArray(): Array<{
-		min: number;
-		max: number;
-	}> {
-		return [
-			{
-				min: ExpeditionConstants.DURATION_RANGES.SHORT.MIN,
-				max: ExpeditionConstants.DURATION_RANGES.SHORT.MAX
-			},
-			{
-				min: ExpeditionConstants.DURATION_RANGES.MEDIUM.MIN,
-				max: ExpeditionConstants.DURATION_RANGES.MEDIUM.MAX
-			},
-			{
-				min: ExpeditionConstants.DURATION_RANGES.LONG.MIN,
-				max: ExpeditionConstants.DURATION_RANGES.LONG.MAX
-			}
-		];
-	}
 
 	/**
 	 * Speed categories for expedition duration comparison

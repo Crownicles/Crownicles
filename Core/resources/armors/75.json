@@ -2,5 +2,6 @@
   "rarity": 2,
   "rawDefense": 8,
   "attack": 3,
-  "speed": 10
+  "speed": 10,
+  "type": "poison"
 }

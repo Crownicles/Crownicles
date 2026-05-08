@@ -3,7 +3,9 @@
   "rawAttack": 0,
   "defense": 117,
   "speed": 18,
+  "type": "alloy",
   "tags": [
+    "fire",
     "metallic"
   ]
 }

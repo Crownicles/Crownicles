@@ -6,7 +6,7 @@ import { FightActionController } from "../../FightActionController";
 import { FightStatBuffed } from "../../../../../../../Lib/src/types/FightActionResult";
 import { FightStatModifierOperation } from "../../../../../../../Lib/src/types/FightStatModifierOperation";
 import { RandomUtils } from "../../../../../../../Lib/src/utils/RandomUtils";
-import { PlayerFighter } from "../../../fighter/PlayerFighter";
+import { RealPlayerFighter } from "../../../fighter/RealPlayerFighter";
 import { AiPlayerFighter } from "../../../fighter/AiPlayerFighter";
 import { InventorySlots } from "../../../../database/game/models/InventorySlot";
 
@@ -23,11 +23,11 @@ const use: PetAssistanceFunc = async (_fighter, opponent, turn, _fightController
 	let weaponSpeed = 0;
 
 	// Check if the opponent is a player or an AI player
-	if (opponent instanceof PlayerFighter || opponent instanceof AiPlayerFighter) {
+	if (opponent instanceof RealPlayerFighter || opponent instanceof AiPlayerFighter) {
 		const memberActiveObjects = await InventorySlots.getMainSlotsItems(opponent.player.id);
-		weaponDamages = memberActiveObjects.weapon.getAttack();
-		weaponDefense = memberActiveObjects.weapon.getDefense();
-		weaponSpeed = memberActiveObjects.weapon.getSpeed();
+		weaponDamages = memberActiveObjects.weapon.item.getAttack(memberActiveObjects.weapon.itemLevel);
+		weaponDefense = memberActiveObjects.weapon.item.getDefense(memberActiveObjects.weapon.itemLevel);
+		weaponSpeed = memberActiveObjects.weapon.item.getSpeed(memberActiveObjects.weapon.itemLevel);
 	}
 
 	// 10% chance to fail to steal the weapon

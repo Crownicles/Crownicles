@@ -213,10 +213,6 @@
       }
     }
   },
-  "guildShop": {
-    "description": "Afficher le magasin de guilde.",
-    "name": "magasinguilde"
-  },
   "guildKick": {
     "description": "Exclure un membre de la guilde.",
     "name": "exclureguilde",
@@ -311,13 +307,9 @@
     "description": "Lancer un combat.",
     "name": "combat"
   },
-  "switch": {
-    "name": "intervertir",
-    "description": "Intervertir l'objet actif avec l'un des objets présent dans votre réserve."
-  },
-  "deposit": {
-    "name": "deposer",
-    "description": "Déposer un de vos objets actifs."
+  "equip": {
+    "name": "equiper",
+    "description": "Gérer votre équipement : équiper, ranger ou intervertir vos objets."
   },
   "drink": {
     "name": "boire",

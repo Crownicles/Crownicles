@@ -1,5 +1,6 @@
 {
   "rarity": 6,
   "rawDefense": 6,
-  "attack": 17
+  "attack": 17,
+  "type": "nature"
 }

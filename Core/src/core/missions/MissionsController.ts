@@ -3,6 +3,7 @@ import { IMission } from "./IMission";
 import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { DailyMissions } from "../database/game/models/DailyMission";
 import {
+	asHours,
 	datesAreOnSameDay,
 	getTodayMidnight,
 	hoursToMilliseconds
@@ -29,9 +30,11 @@ import {
 import { FightActionController } from "../fights/actions/FightActionController";
 import { MissionUtils } from "../../../../Lib/src/utils/MissionUtils";
 import { MapLocationDataController } from "../../data/MapLocation";
+import { InventorySlots } from "../database/game/models/InventorySlot";
 import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+
 
 type MissionInformations = {
 	missionId: string;
@@ -209,7 +212,7 @@ export abstract class MissionsController {
 				missionType: MissionType.NORMAL,
 				gemsToWin: 0 // Don't win gems in secondary missions
 			});
-			crowniclesInstance.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
+			crowniclesInstance?.logsDatabase.logMissionFinished(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
 				.then();
 			await mission.destroy();
 		}
@@ -224,9 +227,10 @@ export abstract class MissionsController {
 				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER * blessingMultiplier),
 				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER * blessingMultiplier)
 			});
-			crowniclesInstance.logsDatabase.logMissionDailyFinished(player.keycloakId)
+			crowniclesInstance?.logsDatabase.logMissionDailyFinished(player.keycloakId)
 				.then();
 		}
+
 		await player.save();
 		return completedMissions;
 	}
@@ -242,7 +246,7 @@ export abstract class MissionsController {
 			amount: totalizer(m => m.xpToWin),
 			response,
 			reason: NumberChangeReason.MISSION_FINISHED
-		});
+		}, await InventorySlots.getPlayerActiveObjects(player.id));
 		player = await player.addMoney({
 			amount: totalizer(m => m.moneyToWin),
 			response,
@@ -262,7 +266,7 @@ export abstract class MissionsController {
 		for (const mission of missionSlots) {
 			if (mission.hasExpired()) {
 				expiredMissions.push(mission);
-				crowniclesInstance.logsDatabase.logMissionFailed(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
+				crowniclesInstance?.logsDatabase.logMissionFailed(player.keycloakId, mission.missionId, mission.missionVariant, mission.missionObjective)
 					.then();
 				await mission.destroy();
 			}
@@ -365,7 +369,7 @@ export abstract class MissionsController {
 			missionId: prop.mission.id,
 			missionVariant: prop.variant,
 			missionObjective: missionData.objectives![prop.index],
-			expiresAt: new Date(Date.now() + hoursToMilliseconds(missionData.expirations![prop.index])),
+			expiresAt: new Date(Date.now() + hoursToMilliseconds(asHours(missionData.expirations![prop.index]))),
 			numberDone: await this.getMissionInterface(missionId)
 				.initialNumberDone(player, prop.variant),
 			gemsToWin: missionData.gems![prop.index],
@@ -374,7 +378,7 @@ export abstract class MissionsController {
 			moneyToWin: missionData.money![prop.index]
 		});
 		const retMission = await MissionSlots.getById(missionSlot.id);
-		crowniclesInstance.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
+		crowniclesInstance?.logsDatabase.logMissionFound(player.keycloakId, retMission.missionId, retMission.missionVariant, retMission.missionObjective)
 			.then();
 		return retMission;
 	}
@@ -422,6 +426,49 @@ export abstract class MissionsController {
 	 * @param response
 	 * @returns true if the daily mission is finished and needs to be said to the player
 	 */
+	private static async updateDailyMissionCount(
+		ctx: {
+			missionInformation: MissionInformations;
+			missionInterface: IMission;
+			missionInfo: PlayerMissionsInfo;
+			missionSlots: MissionSlot[];
+			player: Player;
+			response: CrowniclesPacket[];
+			count: number;
+		}
+	): Promise<boolean> {
+		const {
+			missionInformation, missionInterface, missionInfo, missionSlots, player, response, count
+		} = ctx;
+		if (missionInfo.hasCompletedDailyMission()) {
+			return false;
+		}
+		const dailyMission = await DailyMissions.getOrGenerate();
+		if (dailyMission.missionId !== missionInformation.missionId
+			|| !missionInterface.areParamsMatchingVariantAndBlob(dailyMission.missionVariant, missionInformation.params!, missionInfo.dailyMissionBlob)) {
+			return false;
+		}
+
+		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params!);
+
+		if (missionInformation.set) {
+			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, count);
+		}
+		else {
+			missionInfo.dailyMissionNumberDone += count;
+		}
+		missionInfo.dailyMissionNumberDone = Math.min(missionInfo.dailyMissionNumberDone, dailyMission.missionObjective);
+		await missionInfo.save();
+
+		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
+			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
+			missionInfo.lastDailyMissionCompleted = new Date();
+			await missionInfo.save();
+			return true;
+		}
+		return false;
+	}
+
 	private static async updateMissionsCounts(
 		missionInformation: MissionInformations,
 		missionSlots: MissionSlot[],
@@ -430,46 +477,14 @@ export abstract class MissionsController {
 		response: CrowniclesPacket[]
 	): Promise<SpecialMissionCompletion> {
 		const missionInterface = this.getMissionInterface(missionInformation.missionId);
-		const specialMissionCompletion: SpecialMissionCompletion = {
-			daily: false,
+		const count = missionInformation.count ?? 1;
+		const dailyCompleted = await this.updateDailyMissionCount({
+			missionInformation, missionInterface, missionInfo, missionSlots, player, response, count
+		});
+		return {
+			daily: dailyCompleted,
 			campaign: await this.checkMissionSlots(missionInterface, missionInformation, missionSlots)
 		};
-		if (missionInfo.hasCompletedDailyMission()) {
-			return specialMissionCompletion;
-		}
-		const dailyMission = await DailyMissions.getOrGenerate();
-		if (dailyMission.missionId !== missionInformation.missionId
-			|| !missionInterface.areParamsMatchingVariantAndBlob(dailyMission.missionVariant, missionInformation.params!, missionInfo.dailyMissionBlob)) {
-			return specialMissionCompletion;
-		}
-
-		// Update the daily mission blob if the params match
-		missionInfo.dailyMissionBlob = missionInterface.updateSaveBlob(dailyMission.missionVariant, missionInfo.dailyMissionBlob, missionInformation.params!);
-
-		// Handle set mode (replace) vs increment mode for daily missions
-		const count = missionInformation.count ?? 1;
-		if (missionInformation.set) {
-			// For "set" missions (like earnTokensInOneExpedition), only update if the new value is higher
-			missionInfo.dailyMissionNumberDone = Math.max(missionInfo.dailyMissionNumberDone, count);
-		}
-		else {
-			missionInfo.dailyMissionNumberDone += count;
-		}
-
-		if (missionInfo.dailyMissionNumberDone > dailyMission.missionObjective) {
-			missionInfo.dailyMissionNumberDone = dailyMission.missionObjective;
-		}
-		await missionInfo.save();
-		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
-			// Handle daily streak mission BEFORE updating lastDailyMissionCompleted
-			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
-
-			missionInfo.lastDailyMissionCompleted = new Date();
-			await missionInfo.save();
-			specialMissionCompletion.daily = true;
-			return specialMissionCompletion;
-		}
-		return specialMissionCompletion;
 	}
 
 	/**

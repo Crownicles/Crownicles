@@ -11,7 +11,11 @@ import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { calculateHealAlterationPrice } from "../utils/HealAlterationUtils";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	Millisecond, millisecondsToMinutes
+} from "../../../../Lib/src/utils/TimeUtils";
+import { InventorySlots } from "../database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 
 /**
  * Token cost calculation result
@@ -33,7 +37,7 @@ export interface TokenCostUnavailable {
  * @param effectId - The current effect of the player
  * @param effectRemainingTime - The remaining time of the effect in milliseconds
  */
-export function calculateTokenCost(effectId: string, effectRemainingTime: number): TokenCostResult | TokenCostUnavailable {
+export function calculateTokenCost(effectId: string, effectRemainingTime: Millisecond): TokenCostResult | TokenCostUnavailable {
 	// If the effect has expired (remaining time <= 0), treat it as no effect
 	const activeEffectId = effectRemainingTime <= 0 ? Effect.NO_EFFECT.id : effectId;
 
@@ -103,11 +107,11 @@ interface EnergyDisplayData {
 /**
  * Build energy display data
  */
-function buildEnergyData(player: Player, showEnergy: boolean): EnergyDisplayData {
+function buildEnergyData(player: Player, showEnergy: boolean, playerActiveObjects: PlayerActiveObjects): EnergyDisplayData {
 	return {
 		show: showEnergy,
-		current: showEnergy ? player.getCumulativeEnergy() : 0,
-		max: showEnergy ? player.getMaxCumulativeEnergy() : 0
+		current: showEnergy ? player.getCumulativeEnergy(playerActiveObjects) : 0,
+		max: showEnergy ? player.getMaxCumulativeEnergy(playerActiveObjects) : 0
 	};
 }
 
@@ -218,6 +222,7 @@ export async function sendTravelPath(
 ): Promise<void> {
 	const timeData = await TravelTime.getTravelData(player, date);
 	const showEnergy = Maps.isOnPveIsland(player) || Maps.isOnBoat(player);
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 
 	const travelSummaryData = await buildTravelSummaryData(player, date, effectId);
 	const endMap = player.getDestination();
@@ -233,7 +238,7 @@ export async function sendTravelPath(
 		effectEndTime: travelSummaryData.effectEndTime ?? undefined,
 		effectDuration: travelSummaryData.effectDuration,
 		points: await buildPointsData(player, showEnergy),
-		energy: buildEnergyData(player, showEnergy),
+		energy: buildEnergyData(player, showEnergy, playerActiveObjects),
 		endMap: {
 			id: endMap?.id ?? 0,
 			type: endMap?.type ?? ""

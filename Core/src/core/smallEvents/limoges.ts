@@ -21,6 +21,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import Player from "../database/game/models/Player";
+import { InventorySlots } from "../database/game/models/InventorySlot";
 
 const PENALTY_TYPES: SmallEventLimogesPenaltyType[] = [
 	SmallEventLimogesPenaltyType.HEALTH,
@@ -65,23 +66,24 @@ async function applyFavorableOutcome(
 	properties: LimogesProperties
 ): Promise<Required<SmallEventLimogesPacket>["reward"]> {
 	const experience = RandomUtils.rangedInt(properties.reward.experience);
-	const scoreParameters = {
-		amount: RandomUtils.rangedInt(properties.reward.score),
-		response,
-		reason: NumberChangeReason.SMALL_EVENT
-	};
+	const score = RandomUtils.rangedInt(properties.reward.score);
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 
 	await player.addExperience({
 		amount: experience,
 		response,
 		reason: NumberChangeReason.SMALL_EVENT
+	}, playerActiveObjects);
+	await player.addScore({
+		amount: score,
+		response,
+		reason: NumberChangeReason.SMALL_EVENT
 	});
-	await player.addScore(scoreParameters);
 	await player.save();
 
 	return {
 		experience,
-		score: scoreParameters.amount
+		score
 	};
 }
 

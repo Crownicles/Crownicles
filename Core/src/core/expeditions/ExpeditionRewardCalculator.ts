@@ -12,6 +12,9 @@ import {
 	generateRandomItem
 } from "../utils/ItemUtils";
 import { MathUtils } from "../utils/MathUtils";
+import { MaterialLootConstants } from "../../../../Lib/src/constants/MaterialLootConstants";
+import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
+import { generateWeightedMaterialLoot } from "../utils/MaterialLootUtils";
 
 /**
  * Extended reward data with item details for Core-side use
@@ -271,6 +274,28 @@ function generateItemReward(rewardIndex: number): ItemReward {
 }
 
 /**
+ * Generate material loot for expedition based on location type and reward index
+ * Uses weighted random selection based on material rarity
+ */
+function generateMaterialLoot(locationType: ExpeditionLocationType, rewardIndex: number, isPartialSuccess: boolean): MaterialQuantity[] {
+	if (rewardIndex < ExpeditionConstants.MATERIAL_LOOT.MIN_REWARD_INDEX_FOR_MATERIAL_LOOT) {
+		return [];
+	}
+
+	const lootTable = ExpeditionConstants.EXPEDITION_LOOT_TABLES[locationType];
+	if (!lootTable || lootTable.length === 0) {
+		return [];
+	}
+
+	let totalDrops: number = ExpeditionConstants.MATERIAL_LOOT.DROPS_BY_REWARD_INDEX[rewardIndex];
+	if (isPartialSuccess) {
+		totalDrops = Math.max(1, Math.round(totalDrops / ExpeditionConstants.PARTIAL_SUCCESS_PENALTY_DIVISOR));
+	}
+
+	return generateWeightedMaterialLoot(lootTable, totalDrops, MaterialLootConstants.RARITY_WEIGHTS);
+}
+
+/**
  * Calculate rewards based on expedition parameters and location
  * Applies pet preference multipliers to money, experience, and points (not tokens)
  */
@@ -302,6 +327,9 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 	// Generate random item reward (always given on success)
 	const itemReward = generateItemReward(rewardIndex);
 
+	// Generate material loot based on location type
+	const materialLoot = generateMaterialLoot(expedition.locationType, rewardIndex, isPartialSuccess);
+
 	return {
 		...rewards,
 		itemId: itemReward.itemId,
@@ -313,6 +341,7 @@ export function calculateRewards(params: RewardCalculationParams): ExpeditionRew
 			hasCloneTalisman,
 			isPartialSuccess
 		}),
-		itemGiven: true
+		itemGiven: true,
+		...materialLoot.length > 0 ? { materialLoot } : {}
 	};
 }

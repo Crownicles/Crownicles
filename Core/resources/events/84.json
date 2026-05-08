@@ -1,0 +1,38 @@
+{
+  "possibilities": {
+    "end": {
+      "outcomes": {
+        "0": {}
+      }
+    },
+    "help": {
+      "outcomes": {
+        "0": {
+          "money": 100
+        },
+        "1": {
+          "randomItem": {},
+          "health": 10
+        },
+        "2": {
+          "health": -10,
+          "effect": "occupied",
+          "lostTime": 45
+        }
+      }
+    },
+    "ask": {
+      "outcomes": {
+        "0": {
+          "money": -10,
+          "lostTime": 30
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 41
+    }
+  ]
+}

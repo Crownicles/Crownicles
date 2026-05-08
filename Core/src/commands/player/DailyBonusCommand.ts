@@ -19,7 +19,9 @@ import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import {
 	InventoryInfo, InventoryInfos
 } from "../../core/database/game/models/InventoryInfo";
-import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToHours, msDiff, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 import { DailyConstants } from "../../../../Lib/src/constants/DailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
@@ -60,7 +62,7 @@ function isWrongObjectForDaily(activeObject: ObjectItem): boolean {
  */
 function dailyNotReady(inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): boolean {
 	const lastDailyTimestamp = inventoryInfo.getLastDailyAtTimestamp();
-	if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
+	if (millisecondsToHours(msDiff(nowMs(), asMilliseconds(lastDailyTimestamp))) < DailyConstants.TIME_BETWEEN_DAILIES) {
 		response.push(makePacket(CommandDailyBonusInCooldown, {
 			timeBetweenDailies: DailyConstants.TIME_BETWEEN_DAILIES,
 			lastDailyTimestamp
@@ -83,9 +85,10 @@ async function activateDailyItem(player: Player, activeObject: ObjectItem, inven
 		itemNature: activeObject.nature
 	});
 	response.push(packet);
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	switch (packet.itemNature) {
 		case ItemNature.ENERGY:
-			player.addEnergy(activeObject.power, NumberChangeReason.DAILY);
+			player.addEnergy(activeObject.power, NumberChangeReason.DAILY, playerActiveObjects);
 			break;
 		case ItemNature.HEALTH:
 			await player.addHealth({
@@ -150,13 +153,13 @@ export default class DailyBonusCommand {
 		if (equippedUsableObject) {
 			const item = equippedUsableObject.getItem() as ObjectItem;
 			await activateDailyItem(player, item, inventoryInfo, response);
-			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, item)
+			crowniclesInstance?.logsDatabase.logPlayerDaily(player.keycloakId, item)
 				.then();
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
 			return;
 		}
 
-		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(i.getItem()!)));
+		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)));
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
@@ -168,7 +171,7 @@ export default class DailyBonusCommand {
 			}
 
 			const objectDetails = (reaction.reaction.data as ReactionCollectorDailyBonusReaction).object;
-			const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.category);
+			const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.itemCategory);
 			if (!usableObject) {
 				return;
 			}
@@ -182,7 +185,7 @@ export default class DailyBonusCommand {
 				freshInventoryInfo,
 				response
 			);
-			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
+			crowniclesInstance?.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
 				.then();
 		};
 

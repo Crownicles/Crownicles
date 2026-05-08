@@ -1,5 +1,5 @@
 import {
-	ItemCategory, ItemConstants, itemCategoryToString, ItemNature
+	ItemCategory, itemCategoryToString, ItemConstants
 } from "../../../Lib/src/constants/ItemConstants";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
@@ -14,39 +14,27 @@ import { PetFood } from "../../../Lib/src/types/PetFood";
 import {
 	StringUtils
 } from "./StringUtils";
+import { DiscordItemUtils } from "./DiscordItemUtils";
+import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
+import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 import { resolveKeycloakPlayerName } from "./KeycloakPlayerUtils";
-import { NO_STAT_COMPARISON } from "../../../Lib/src/types/StatValues";
 
-/**
- * Format potion usages prefix for display (e.g., "**3/4** | ")
- * @param usages Current remaining usages
- * @param maxUsages Maximum usages for the potion
- * @returns Formatted prefix string or empty string if not applicable
- */
-export function formatPotionUsagesPrefix(usages: number | undefined, maxUsages: number | undefined): string {
-	if (!maxUsages || maxUsages <= 1) {
-		return "";
-	}
-	const current = usages ?? maxUsages;
-	return `**${current}/${maxUsages}** | `;
-}
-
-export abstract class DisplayUtils {
+export class DisplayUtils {
 	/**
 	 * Display the item name with its icon
 	 * @param item
 	 * @param language
 	 */
-	static getItemDisplay(item: Item, language: Language): string {
+	static getSimpleItemDisplay(item: Item, language: Language): string {
 		switch (item.category) {
 			case ItemCategory.WEAPON:
-				return DisplayUtils.getWeaponDisplay(item.id, language);
+				return DisplayUtils.getSimpleWeaponDisplay(item.id, language);
 			case ItemCategory.ARMOR:
-				return DisplayUtils.getArmorDisplay(item.id, language);
+				return DisplayUtils.getSimpleArmorDisplay(item.id, language);
 			case ItemCategory.POTION:
-				return DisplayUtils.getPotionDisplay(item.id, language);
+				return DisplayUtils.getSimplePotionDisplay(item.id, language);
 			case ItemCategory.OBJECT:
-				return DisplayUtils.getObjectDisplay(item.id, language);
+				return DisplayUtils.getSimpleObjectDisplay(item.id, language);
 			default:
 				return "Missing no";
 		}
@@ -83,7 +71,7 @@ export abstract class DisplayUtils {
 	 * @param weaponId
 	 * @param lng
 	 */
-	static getWeaponDisplay(weaponId: number, lng: Language): string {
+	static getSimpleWeaponDisplay(weaponId: number, lng: Language): string {
 		return `${DisplayUtils.getItemIcon({
 			category: ItemCategory.WEAPON,
 			id: weaponId
@@ -95,7 +83,7 @@ export abstract class DisplayUtils {
 	 * @param armorId
 	 * @param lng
 	 */
-	static getArmorDisplay(armorId: number, lng: Language): string {
+	static getSimpleArmorDisplay(armorId: number, lng: Language): string {
 		return `${DisplayUtils.getItemIcon({
 			category: ItemCategory.ARMOR,
 			id: armorId
@@ -107,7 +95,7 @@ export abstract class DisplayUtils {
 	 * @param potionId
 	 * @param lng
 	 */
-	static getPotionDisplay(potionId: number, lng: Language): string {
+	static getSimplePotionDisplay(potionId: number, lng: Language): string {
 		return `${DisplayUtils.getItemIcon({
 			category: ItemCategory.POTION,
 			id: potionId
@@ -119,7 +107,7 @@ export abstract class DisplayUtils {
 	 * @param objectId
 	 * @param lng
 	 */
-	static getObjectDisplay(objectId: number, lng: Language): string {
+	static getSimpleObjectDisplay(objectId: number, lng: Language): string {
 		return `${DisplayUtils.getItemIcon({
 			category: ItemCategory.OBJECT,
 			id: objectId
@@ -132,18 +120,41 @@ export abstract class DisplayUtils {
 	 * @param language
 	 */
 	static getItemDisplayWithStats(itemWithDetails: ItemWithDetails, language: Language): string {
-		switch (itemWithDetails.category) {
+		switch (itemWithDetails.itemCategory) {
 			case ItemCategory.WEAPON:
-				return this.getMainItemDisplayWithStats("weapons", itemWithDetails, language);
+				return DiscordItemUtils.getWeaponField(itemWithDetails as MainItemDetails, language).value;
 			case ItemCategory.ARMOR:
-				return this.getMainItemDisplayWithStats("armors", itemWithDetails, language);
+				return DiscordItemUtils.getArmorField(itemWithDetails as MainItemDetails, language).value;
 			case ItemCategory.POTION:
-				return this.getPotionDisplayWithStats(itemWithDetails, language);
+				return DiscordItemUtils.getPotionField(itemWithDetails as SupportItemDetails, language).value;
 			case ItemCategory.OBJECT:
-				return this.getObjectDisplayWithStats(itemWithDetails, language);
+				return DiscordItemUtils.getObjectField(itemWithDetails as SupportItemDetails, language).value;
 			default:
 				return "Missing no";
 		}
+	}
+
+	/**
+	 * Display the item name with its icon and stats, without showing max value caps.
+	 * This creates a copy of the details to avoid mutating the original data.
+	 * Useful for select menu descriptions where showing stat caps is not desired.
+	 * @param details
+	 * @param language
+	 */
+	static getItemDisplayWithStatsWithoutMaxValues(details: MainItemDetails, language: Language): string {
+		const detailsWithoutMax: MainItemDetails = {
+			...details,
+			attack: {
+				...details.attack, maxValue: Infinity
+			},
+			defense: {
+				...details.defense, maxValue: Infinity
+			},
+			speed: {
+				...details.speed, maxValue: Infinity
+			}
+		};
+		return DisplayUtils.getItemDisplayWithStats(detailsWithoutMax, language);
 	}
 
 	/**
@@ -201,7 +212,7 @@ export abstract class DisplayUtils {
 		});
 	}
 
-	static getPetNicknameOrTypeName(nickname: string | null | undefined, typeId: number, sex: SexTypeShort, lng: Language): string {
+	static getPetNicknameOrTypeName(nickname: string | null, typeId: number, sex: SexTypeShort, lng: Language): string {
 		return nickname ? DisplayUtils.getPetDisplayNickname(lng, nickname) : DisplayUtils.getPetTypeName(lng, typeId, sex);
 	}
 
@@ -319,133 +330,6 @@ export abstract class DisplayUtils {
 		return await resolveKeycloakPlayerName(keycloakId, lng);
 	}
 
-	private static getStringValueFor(values: string[], maxValue: number | null, value: number, typeValue: "attack" | "defense" | "speed", lng: Language): void {
-		if (value !== 0) {
-			values.push(i18n.t(`items:${typeValue}`, {
-				lng,
-				value: maxValue ?? Infinity >= value
-					? value
-					: i18n.t("items:nerfDisplay", {
-						old: value,
-						max: maxValue,
-						lng
-					})
-			}));
-		}
-	}
-
-	private static getMainItemDisplayWithStats(itemType: "weapons" | "armors", itemWithDetails: ItemWithDetails, lng: Language): string {
-		const values: string[] = [];
-		this.getStringValueFor(values, itemWithDetails.maxStats?.attack ?? null, itemWithDetails.detailsMainItem!.stats.attack, "attack", lng);
-		this.getStringValueFor(values, itemWithDetails.maxStats?.defense ?? null, itemWithDetails.detailsMainItem!.stats.defense, "defense", lng);
-		this.getStringValueFor(values, itemWithDetails.maxStats?.speed ?? null, itemWithDetails.detailsMainItem!.stats.speed, "speed", lng);
-		return i18n.t("items:itemsField", {
-			lng,
-			name: i18n.t(`models:${itemType}.${itemWithDetails.id}`, {
-				lng
-			}),
-			emote: CrowniclesIcons[itemType][itemWithDetails.id],
-			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
-			values: values.join(" ")
-		});
-	}
-
-	private static getPotionDisplayWithStats(itemWithDetails: ItemWithDetails, lng: Language): string {
-		const details = itemWithDetails.detailsSupportItem!;
-		const natureValue = i18n.t(`items:potionsNatures.${details.nature}`, {
-			power: details.nature === ItemNature.TIME_SPEEDUP
-				? i18n.formatDuration(details.power, lng)
-				: details.power,
-			lng
-		});
-		const usagesPrefix = formatPotionUsagesPrefix(details.usages, details.maxUsages);
-		const values = `${usagesPrefix}${natureValue}`;
-		const itemField: string = i18n.t("items:itemsField", {
-			name: i18n.t(`models:potions.${itemWithDetails.id}`, {
-				lng
-			}),
-			emote: DisplayUtils.getItemIcon({
-				category: itemWithDetails.category,
-				id: itemWithDetails.id
-			}),
-			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
-			values,
-			lng
-		});
-		return itemWithDetails.id === 0 ? itemField.split("|")[0] : itemField;
-	}
-
-	private static getObjectNatureTranslation(itemWithDetails: ItemWithDetails, lng: Language): string {
-		const nature = itemWithDetails.detailsSupportItem!.nature;
-		const power = itemWithDetails.detailsSupportItem!.power;
-
-		// Default max stats values if not provided
-		const maxStats = itemWithDetails.maxStats ?? NO_STAT_COMPARISON;
-
-		switch (nature) {
-			case ItemNature.TIME_SPEEDUP:
-				return i18n.t(`items:objectsNatures.${nature}`, {
-					power: i18n.formatDuration(power, lng),
-					lng
-				});
-
-			case ItemNature.SPEED: {
-				const display = maxStats.speed >= power / 2
-					? power
-					: i18n.t("items:nerfDisplay", {
-						old: power,
-						max: maxStats.speed * 2,
-						lng
-					});
-				return i18n.t(`items:objectsNatures.${nature}`, {
-					power: display, lng
-				});
-			}
-			case ItemNature.ATTACK: {
-				const display = maxStats.attack >= power / 2
-					? power
-					: i18n.t("items:nerfDisplay", {
-						old: power,
-						max: maxStats.attack * 2,
-						lng
-					});
-				return i18n.t(`items:objectsNatures.${nature}`, {
-					power: display, lng
-				});
-			}
-			case ItemNature.DEFENSE: {
-				const display = maxStats.defense >= power / 2
-					? power
-					: i18n.t("items:nerfDisplay", {
-						old: power,
-						max: maxStats.defense * 2,
-						lng
-					});
-				return i18n.t(`items:objectsNatures.${nature}`, {
-					power: display, lng
-				});
-			}
-			default:
-				return i18n.t(`items:objectsNatures.${nature}`, {
-					power,
-					lng
-				});
-		}
-	}
-
-	private static getObjectDisplayWithStats(itemWithDetails: ItemWithDetails, lng: Language): string {
-		const itemField: string = i18n.t("items:itemsField", {
-			name: i18n.t(`models:objects.${itemWithDetails.id}`, {
-				lng
-			}),
-			emote: CrowniclesIcons.objects[itemWithDetails.id],
-			rarity: i18n.t(`items:rarities.${itemWithDetails.rarity}`, { lng }),
-			values: DisplayUtils.getObjectNatureTranslation(itemWithDetails, lng),
-			lng
-		});
-		return itemWithDetails.id === 0 ? itemField.split("|")[0] : itemField;
-	}
-
 	/**
 	 * Format a number with thousands separators according to the language
 	 * @param value
@@ -456,5 +340,28 @@ export abstract class DisplayUtils {
 			return String(value);
 		}
 		return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
+	}
+
+	/**
+	 * Clone item details with unlimited maxValue for display purposes.
+	 * Only applies to MainItemDetails (weapons/armors); support items are returned as-is.
+	 */
+	static withUnlimitedMaxValue(details: ItemWithDetails, category: ItemCategory): ItemWithDetails {
+		if (category === ItemCategory.WEAPON || category === ItemCategory.ARMOR) {
+			const mainDetails = details as MainItemDetails;
+			return {
+				...mainDetails,
+				attack: {
+					...mainDetails.attack, maxValue: Infinity
+				},
+				defense: {
+					...mainDetails.defense, maxValue: Infinity
+				},
+				speed: {
+					...mainDetails.speed, maxValue: Infinity
+				}
+			};
+		}
+		return details;
 	}
 }

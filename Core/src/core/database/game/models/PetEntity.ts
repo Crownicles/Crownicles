@@ -67,6 +67,13 @@ export class PetEntity extends Model {
 	}
 
 	/**
+	 * Check if this pet can be fed with the given food type (not on cooldown + compatible diet)
+	 */
+	public canBeFed(petModel: Pet, foodType: string): boolean {
+		return this.getFeedCooldown(petModel) <= 0 && petModel.canEatFood(foodType);
+	}
+
+	/**
 	 * Get the love level of the pet
 	 */
 	public getLoveLevelNumber(): number {
@@ -93,7 +100,7 @@ export class PetEntity extends Model {
 		else if (this.lovePoints < 0) {
 			this.lovePoints = 0;
 		}
-		crowniclesInstance.logsDatabase.logPetLoveChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logPetLoveChange(this, parameters.reason)
 			.then();
 		await MissionsController.update(parameters.player, parameters.response, {
 			missionId: "tamedPet",
@@ -107,6 +114,10 @@ export class PetEntity extends Model {
 
 	public isFeisty(): boolean {
 		return this.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.FEISTY;
+	}
+
+	public needsVeterinarianCare(): boolean {
+		return this.getLoveLevelNumber() < PetConstants.LOVE_LEVEL.TAMED;
 	}
 
 	/**

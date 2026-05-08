@@ -16,7 +16,7 @@ export const commandInfo: ITestCommand = {
 const clearLogsTestCommand: ExecuteTestCommandLike = async () => {
 	try {
 		// Get all table names from the logs database (excluding migration tracking table)
-		const tables = await crowniclesInstance.logsDatabase.sequelize.query<{ TABLE_NAME: string }>(
+		const tables = await crowniclesInstance?.logsDatabase.sequelize.query<{ TABLE_NAME: string }>(
 			"SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME != 'SequelizeMeta'",
 			{ type: QueryTypes.SELECT }
 		);
@@ -26,15 +26,15 @@ const clearLogsTestCommand: ExecuteTestCommandLike = async () => {
 		}
 
 		// Disable foreign key checks temporarily to allow truncating tables with foreign key relationships
-		await crowniclesInstance.logsDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
+		await crowniclesInstance?.logsDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 0");
 
 		// Truncate each table (empties the table but keeps its structure)
 		for (const table of tables) {
-			await crowniclesInstance.logsDatabase.sequelize.query(`TRUNCATE TABLE \`${table.TABLE_NAME}\``);
+			await crowniclesInstance?.logsDatabase.sequelize.query(`TRUNCATE TABLE \`${table.TABLE_NAME}\``);
 		}
 
 		// Re-enable foreign key checks
-		await crowniclesInstance.logsDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
+		await crowniclesInstance?.logsDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
 
 		return `✅ Données des logs supprimées avec succès ! ${tables.length} tables ont été vidées (structure conservée).`;
 	}

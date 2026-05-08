@@ -1,5 +1,6 @@
 {
   "rarity": 3,
   "rawDefense": 7,
-  "speed": -5
+  "speed": -5,
+  "type": "wood"
 }

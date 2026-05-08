@@ -7,8 +7,8 @@ import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants"
 import * as moment from "moment";
 import { ScheduledDailyBonusNotifications } from "./ScheduledDailyBonusNotification";
 import {
-	hoursToMilliseconds,
-	millisecondsToHours
+	asMilliseconds, hoursToMilliseconds,
+	millisecondsToHours, msDiff, nowMs
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { DailyConstants } from "../../../../../../Lib/src/constants/DailyConstants";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
@@ -26,6 +26,8 @@ export class InventoryInfo extends Model {
 	declare potionSlots: number;
 
 	declare objectSlots: number;
+
+	declare plantSlots: number;
 
 	declare updatedAt: Date;
 
@@ -118,6 +120,10 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.INTEGER,
 			defaultValue: 1
 		},
+		plantSlots: {
+			type: DataTypes.INTEGER,
+			defaultValue: 1
+		},
 		updatedAt: {
 			type: DataTypes.DATE,
 			defaultValue: moment()
@@ -150,7 +156,7 @@ export function initModel(sequelize: Sequelize): void {
 			const lastDailyTimestamp = instance.getLastDailyAtTimestamp();
 			const player = await Players.getById(instance.playerId);
 
-			if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
+			if (millisecondsToHours(msDiff(nowMs(), asMilliseconds(lastDailyTimestamp))) < DailyConstants.TIME_BETWEEN_DAILIES) {
 				await ScheduledDailyBonusNotifications.scheduleNotification(
 					instance.playerId,
 					player.keycloakId,

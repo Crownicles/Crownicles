@@ -35,7 +35,7 @@ import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import {
 	GuildPet, GuildPets
 } from "../../core/database/game/models/GuildPet";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { crowniclesInstance } from "../../index";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
@@ -119,15 +119,14 @@ async function deposePetToGuild(
 	}
 
 	const guildPets = await GuildPets.getOfGuild(player.guildId!);
-	if (guildPets.length >= PetConstants.SLOTS) {
-		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
-		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
-		return;
-	}
-
 	const guild = await Guilds.getById(player.guildId);
 	if (!guild) {
 		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but guild not found");
+		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
+		return;
+	}
+	if (guildPets.length >= GuildDomainConstants.getShelterSlots(guild.shelterLevel)) {
+		CrowniclesLogger.warn("Player tried to transfer a pet to the guild but the shelter is full");
 		response.push(makePacket(CommandPetTransferSituationChangedErrorPacket, {}));
 		return;
 	}
@@ -135,7 +134,7 @@ async function deposePetToGuild(
 	(player.petId as number | null) = null;
 	await player.save();
 	await GuildPets.addPet(guild, validation.playerPet, false).save();
-	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, null!).then();
+	crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet, null!).then();
 
 	await MissionsController.update(player, response, { missionId: "depositPetInShelter" });
 
@@ -166,7 +165,7 @@ async function withdrawPetFromGuild(
 	await toWithdrawPet.destroy();
 	PetEntities.getById(toWithdrawPet.petEntityId).then(petEntity => {
 		if (petEntity) {
-			crowniclesInstance.logsDatabase.logPetTransfer(null!, petEntity).then();
+			crowniclesInstance?.logsDatabase.logPetTransfer(null!, petEntity).then();
 		}
 	});
 
@@ -206,7 +205,7 @@ async function switchPetWithGuild(
 		return;
 	}
 
-	crowniclesInstance.logsDatabase.logPetTransfer(validation.playerPet, newPlayerPet).then();
+	crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet, newPlayerPet).then();
 
 	response.push(makePacket(CommandPetTransferSuccessPacket, {
 		oldPet: validation.playerPet.asOwnedPet(),

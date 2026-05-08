@@ -1,7 +1,9 @@
 {
   "rarity": 4,
   "rawAttack": 5,
+  "type": "explosive",
   "tags": [
+    "fire",
     "metallic"
   ]
 }

@@ -19,7 +19,9 @@ import { Campaign } from "../../core/missions/Campaign";
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
-import { Guilds } from "../../core/database/game/models/Guild";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
 import {
 	Pet, PetDataController
 } from "../../data/Pet";
@@ -32,6 +34,8 @@ import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import { getCookingGrade } from "../../../../Lib/src/constants/CookingConstants";
+import Home, { Homes } from "../../core/database/game/models/Home";
 
 /**
  * Get the current campaign progression of the player
@@ -43,21 +47,57 @@ function getCampaignProgression(missionsInfo: PlayerMissionsInfo): number {
 	return Math.round(Campaign.getAmountOfCampaignCompleted(missionsInfo.campaignBlob) / Campaign.getMaxCampaignNumber() * 100);
 }
 
-/**
- * Build pet data for profile
- */
-function buildPetData(petEntity: PetEntity, petModel: Pet): {
+interface ProfilePetData {
 	typeId: number;
 	sex: SexTypeShort;
 	nickname: string;
 	rarity: number;
-} {
+}
+
+/**
+ * Build pet data for profile
+ */
+function buildPetData(petEntity: PetEntity, petModel: Pet): ProfilePetData {
 	return {
 		typeId: petModel.id,
 		sex: petEntity.sex as SexTypeShort,
 		nickname: petEntity.nickname,
 		rarity: petModel.rarity
 	};
+}
+
+/**
+ * Resolve pet data from a pet entity, handling null cases
+ */
+function resolvePetData(petEntity: PetEntity | null): ProfilePetData | undefined {
+	if (!petEntity) {
+		return undefined;
+	}
+	const petModel = PetDataController.instance.getById(petEntity.typeId);
+	if (!petModel) {
+		return undefined;
+	}
+	return buildPetData(petEntity, petModel);
+}
+
+/**
+ * Resolve glory rank for a player
+ */
+async function resolveGloryRank(player: Player): Promise<number> {
+	if (player.fightCountdown > FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE) {
+		return -1;
+	}
+	return await Players.getGloryRankById(player.id);
+}
+
+/**
+ * Resolve map type ID from a destination
+ */
+function resolveMapTypeId(destinationId: number | null): string | undefined {
+	if (!destinationId) {
+		return undefined;
+	}
+	return MapLocationDataController.instance.getById(destinationId)?.type;
 }
 
 /**
@@ -119,8 +159,8 @@ function buildStatsData(player: Player, playerActiveObjects: PlayerActiveObjects
 		defense: player.getCumulativeDefense(playerActiveObjects),
 		speed: player.getCumulativeSpeed(playerActiveObjects),
 		energy: {
-			value: player.getCumulativeEnergy(),
-			max: player.getMaxCumulativeEnergy()
+			value: player.getCumulativeEnergy(playerActiveObjects),
+			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
 		breath: {
 			base: player.getBaseBreath(),
@@ -148,6 +188,108 @@ function buildRankData(rank: number, numberOfPlayers: number, score: number): {
 	};
 }
 
+interface ProfileCookingData {
+	level: number;
+	grade: string;
+}
+
+/**
+ * Build cooking data for profile (only if home has cooking slots)
+ */
+function buildCookingData(player: Player, home: Home | null): ProfileCookingData | undefined {
+	const hasCooking = home?.getLevel()?.features.cookingSlots;
+	if (!hasCooking) {
+		return undefined;
+	}
+	return {
+		level: player.cookingLevel,
+		grade: getCookingGrade(player.cookingLevel).id
+	};
+}
+
+interface ProfileTokenData {
+	value: number;
+	max: number;
+}
+
+/**
+ * Build token data for profile (only if player level is high enough)
+ */
+function buildTokenData(player: Player): ProfileTokenData | undefined {
+	if (player.level < TokensConstants.LEVEL_TO_UNLOCK) {
+		return undefined;
+	}
+	return {
+		value: player.tokens,
+		max: TokensConstants.MAX
+	};
+}
+
+interface ProfileFetchedData {
+	guild: Guild | null;
+	rank: number;
+	numberOfPlayers: number;
+	petEntity: PetEntity | null;
+	missionsInfo: PlayerMissionsInfo;
+	playerActiveObjects: PlayerActiveObjects;
+	home: Home | null;
+	gloryRank: number;
+}
+
+/**
+ * Build guild data for profile (guild name)
+ */
+function buildGuildData(guild: Guild | null): string | undefined {
+	return guild?.name ?? undefined;
+}
+
+/**
+ * Build the full profile response packet from fetched data
+ */
+async function buildProfilePacket(
+	toCheckPlayer: Player,
+	data: ProfileFetchedData
+): Promise<CommandProfilePacketRes> {
+	const petData = resolvePetData(data.petEntity);
+	const destinationId = toCheckPlayer.getDestinationId();
+	const badges = await PlayerBadgesManager.getOfPlayer(toCheckPlayer.id);
+	const cookingData = buildCookingData(toCheckPlayer, data.home);
+	const tokenData = buildTokenData(toCheckPlayer);
+
+	return makePacket(CommandProfilePacketRes, {
+		keycloakId: toCheckPlayer.keycloakId,
+		playerData: {
+			badges,
+			guild: buildGuildData(data.guild),
+			level: toCheckPlayer.level,
+			rank: buildRankData(data.rank, data.numberOfPlayers, toCheckPlayer.score),
+			classId: toCheckPlayer.class,
+			color: toCheckPlayer.getProfileColor() ?? undefined,
+			pet: petData,
+			destinationId: destinationId ?? undefined,
+			mapTypeId: resolveMapTypeId(destinationId),
+			effect: buildEffectData(toCheckPlayer),
+			fightRanking: await buildFightRankingData(toCheckPlayer, data.gloryRank) ?? undefined,
+			missions: {
+				gems: data.missionsInfo.gems,
+				campaignProgression: getCampaignProgression(data.missionsInfo)
+			},
+			stats: buildStatsData(toCheckPlayer, data.playerActiveObjects) ?? undefined,
+			experience: {
+				value: toCheckPlayer.experience,
+				max: toCheckPlayer.getExperienceNeededToLevelUp()
+			},
+			health: {
+				value: toCheckPlayer.getHealthValue(),
+				max: toCheckPlayer.getMaxHealthBase()
+			},
+			money: toCheckPlayer.money,
+			tokens: tokenData,
+			cooking: cookingData
+		}
+	});
+}
+
 export default class ProfileCommand {
 	@commandRequires(CommandProfilePacketReq, {
 		notBlocked: false,
@@ -169,56 +311,22 @@ export default class ProfileCommand {
 			numberOfPlayers,
 			petEntity,
 			missionsInfo,
-			playerActiveObjects
+			playerActiveObjects,
+			home
 		] = await Promise.all([
 			toCheckPlayer.guildId ? Guilds.getById(toCheckPlayer.guildId) : null,
 			Players.getRankById(toCheckPlayer.id),
 			Players.getNbPlayersHaveStartedTheAdventure(),
 			toCheckPlayer.petId ? PetEntities.getById(toCheckPlayer.petId) : null,
 			PlayerMissionsInfos.getOfPlayer(toCheckPlayer.id),
-			InventorySlots.getPlayerActiveObjects(toCheckPlayer.id)
+			InventorySlots.getPlayerActiveObjects(toCheckPlayer.id),
+			Homes.getOfPlayer(toCheckPlayer.id)
 		]);
 
-		const gloryRank = toCheckPlayer.fightCountdown > FightConstants.FIGHT_COUNTDOWN_MAXIMAL_VALUE
-			? -1
-			: await Players.getGloryRankById(toCheckPlayer.id);
+		const gloryRank = await resolveGloryRank(toCheckPlayer);
 
-		const petModel = petEntity ? PetDataController.instance.getById(petEntity.typeId) : null;
-		const petData = petEntity && petModel ? buildPetData(petEntity, petModel) : undefined;
-		const destinationId = toCheckPlayer.getDestinationId();
-		const badges = await PlayerBadgesManager.getOfPlayer(toCheckPlayer.id);
-
-		response.push(makePacket(CommandProfilePacketRes, {
-			keycloakId: toCheckPlayer.keycloakId,
-			playerData: {
-				badges,
-				guild: guild?.name ?? undefined,
-				level: toCheckPlayer.level,
-				rank: buildRankData(rank, numberOfPlayers, toCheckPlayer.score),
-				classId: toCheckPlayer.class,
-				color: toCheckPlayer.getProfileColor() ?? undefined,
-				pet: petData,
-				destinationId: destinationId ?? undefined,
-				mapTypeId: destinationId ? MapLocationDataController.instance.getById(destinationId)?.type : undefined,
-				effect: buildEffectData(toCheckPlayer),
-				fightRanking: await buildFightRankingData(toCheckPlayer, gloryRank) ?? undefined,
-				missions: {
-					gems: missionsInfo.gems,
-					campaignProgression: getCampaignProgression(missionsInfo)
-				},
-				stats: buildStatsData(toCheckPlayer, playerActiveObjects) ?? undefined,
-				experience: {
-					value: toCheckPlayer.experience,
-					max: toCheckPlayer.getExperienceNeededToLevelUp()
-				},
-				health: {
-					value: toCheckPlayer.health,
-					max: toCheckPlayer.getMaxHealth()
-				},
-				money: toCheckPlayer.money,
-				tokens: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? toCheckPlayer.tokens : undefined,
-				tokensMax: toCheckPlayer.level >= TokensConstants.LEVEL_TO_UNLOCK ? TokensConstants.MAX : undefined
-			}
+		response.push(await buildProfilePacket(toCheckPlayer, {
+			guild, rank, numberOfPlayers, petEntity, missionsInfo, playerActiveObjects, home, gloryRank
 		}));
 	}
 }

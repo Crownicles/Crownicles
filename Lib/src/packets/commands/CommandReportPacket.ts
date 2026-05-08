@@ -1,6 +1,39 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import { ChestSlotsPerCategory } from "../../types/HomeFeatures";
+import {
+	ChestAction, HomeConstants
+} from "../../constants/HomeConstants";
+import { GardenConstants } from "../../constants/GardenConstants";
+import {
+	GuildBuilding, GuildDomainError
+} from "../../constants/GuildDomainConstants";
+import { ItemSlot } from "../../types/ItemSlot";
+import { CookingOutputTypeValue } from "../../constants/CookingConstants";
+import { PlantId } from "../../constants/PlantConstants";
+import {
+	PlantStorageEntry, PlayerPlantSlotEntry
+} from "../../types/PlantStorageEntry";
+import { PetFood } from "../../types/PetFood";
+import { MaterialQuantity } from "../../types/MaterialQuantity";
+export {
+	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients
+} from "../../types/CookingTypes";
+import {
+	CookingSlotData, CookingCraftError, PinnedRecipeInfo
+} from "../../types/CookingTypes";
+
+export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
+export type { ChestAction } from "../../constants/HomeConstants";
+
+export type GardenError = typeof GardenConstants.GARDEN_ERRORS[keyof typeof GardenConstants.GARDEN_ERRORS];
+
+export type PlantTransferAction = typeof HomeConstants.PLANT_TRANSFER_ACTIONS[keyof typeof HomeConstants.PLANT_TRANSFER_ACTIONS];
+
+export type PlantTransferError = typeof HomeConstants.PLANT_TRANSFER_ERRORS[keyof typeof HomeConstants.PLANT_TRANSFER_ERRORS];
+
+export type { ItemSlot };
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportPacketReq extends CrowniclesPacket {
@@ -73,6 +106,8 @@ export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 		petSex: string;
 		petNickname?: string;
 	};
+
+	materialLoot?: MaterialQuantity[];
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -158,4 +193,465 @@ export class CommandReportBuyHealNoAlterationPacketRes extends CrowniclesPacket 
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportBuyHealCannotHealOccupiedPacketRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportStayInCity extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportChooseDestinationCityRes extends CrowniclesPacket {
+	mapId!: number;
+
+	mapTypeId!: string;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEatInnMealRes extends CrowniclesPacket {
+	energy!: number;
+
+	moneySpent!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEatInnMealCooldownRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportSleepRoomRes extends CrowniclesPacket {
+	roomId!: string;
+
+	health!: number;
+
+	moneySpent!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportNotEnoughMoneyRes extends CrowniclesPacket {
+	missingMoney!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportEnchantNotEnoughCurrenciesRes extends CrowniclesPacket {
+	missingMoney!: number;
+
+	missingGems!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportItemCannotBeEnchantedRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportItemEnchantedRes extends CrowniclesPacket {
+	enchantmentId!: string;
+
+	enchantmentType!: string;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBuyHomeRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeHomeRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportMoveHomeRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeItemRes extends CrowniclesPacket {
+	itemCategory!: number;
+
+	newItemLevel!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeItemMissingMaterialsRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportUpgradeItemMaxLevelRes extends CrowniclesPacket {}
+
+// Blacksmith packets
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBlacksmithUpgradeRes extends CrowniclesPacket {
+	itemCategory!: number;
+
+	newItemLevel!: number;
+
+	/** Total gold spent (upgrade cost + materials if bought) */
+	totalCost!: number;
+
+	/** Whether materials were purchased from the blacksmith */
+	boughtMaterials!: boolean;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBlacksmithNotEnoughMoneyRes extends CrowniclesPacket {
+	/** Amount of money missing */
+	missingMoney!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBlacksmithMissingMaterialsRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBlacksmithDisenchantRes extends CrowniclesPacket {
+	itemCategory!: number;
+
+	/** Gold cost paid for disenchanting */
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeBedRes extends CrowniclesPacket {
+	health!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportHomeBedAlreadyFullRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportHomeChestActionReq extends CrowniclesPacket {
+	action!: ChestAction;
+
+	/** The inventory slot (for deposit/swap) or chest slot (for withdraw) */
+	slot!: number;
+
+	itemCategory!: number;
+
+	/** The chest slot to swap with (only for swap action, -1 otherwise) */
+	chestSlot!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportHomeChestActionRes extends CrowniclesPacket {
+	/** Whether the action succeeded */
+	success!: boolean;
+
+	/** Error type if failed */
+	error?: ChestError;
+
+	/** Refreshed chest items list */
+	chestItems!: ItemSlot[];
+
+	/** Refreshed depositable items from inventory */
+	depositableItems!: ItemSlot[];
+
+	/** Slots per category (unchanged but included for completeness) */
+	slotsPerCategory!: ChestSlotsPerCategory;
+
+	/** Max backup slots per category in the player's inventory */
+	inventoryCapacity!: ChestSlotsPerCategory;
+}
+
+// Garden packets
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportGardenHarvestReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenHarvestRes extends CrowniclesPacket {
+	/** Number of plants successfully stored in the chest */
+	plantsHarvested!: number;
+
+	/** Number of plants that didn't fit and were composted */
+	plantsComposted!: number;
+
+	/** Materials generated from composting (plantId → materialId) */
+	compostResults!: {
+		plantId: PlantId;
+		materialId: number;
+	}[];
+
+	/** Updated plant storage after harvest */
+	plantStorage!: PlantStorageEntry[];
+
+	/** Slots that were harvested (reset to growing) */
+	harvestedSlots!: number[];
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportGardenPlantReq extends CrowniclesPacket {
+	/** The garden slot to plant in */
+	gardenSlot!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenPlantRes extends CrowniclesPacket {
+	/** The plant type that was planted */
+	plantId!: PlantId;
+
+	/** The garden slot that was planted */
+	gardenSlot!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenErrorRes extends CrowniclesPacket {
+	error!: GardenError;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportPlantTransferReq extends CrowniclesPacket {
+	/** The transfer action: deposit or withdraw */
+	action!: PlantTransferAction;
+
+	/** The plant type to transfer (required for withdraw; ignored for deposit) */
+	plantId!: PlantId | 0;
+
+	/** The player slot involved (for deposit: source slot; for withdraw: target slot) */
+	playerSlot!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportPlantTransferRes extends CrowniclesPacket {
+	success!: boolean;
+
+	error?: PlantTransferError;
+
+	/** Updated plant storage after transfer */
+	plantStorage!: PlantStorageEntry[];
+
+	/** Updated player plant slots after transfer */
+	playerPlantSlots!: PlayerPlantSlotEntry[];
+}
+
+// ---- Cooking packets ----
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingIgniteReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingWoodConfirmReq extends CrowniclesPacket {
+	woodMaterialId!: number;
+
+	woodRarity!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingWoodConfirmRes extends CrowniclesPacket {
+	accepted!: boolean;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingIgniteRes extends CrowniclesPacket {
+	slots!: CookingSlotData[];
+
+	woodConsumed!: boolean;
+
+	woodMaterialId!: number;
+
+	furnaceUsesRemaining!: number;
+
+	cookingGrade!: string;
+
+	cookingLevel!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingNoWoodRes extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingOverheatRes extends CrowniclesPacket {
+	overheatUntil!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingReviveReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingReviveRes extends CrowniclesPacket {
+	slots!: CookingSlotData[];
+
+	woodConsumed!: boolean;
+
+	woodMaterialId!: number;
+
+	furnaceUsesRemaining!: number;
+
+	cookingGrade!: string;
+
+	cookingLevel!: number;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingCraftReq extends CrowniclesPacket {
+	slotIndex!: number;
+}
+
+export interface CraftPetFoodResult {
+	type: PetFood;
+	quantity: number;
+	storedQuantity: number;
+	fedFromSurplus?: boolean;
+	surplusMaterialId?: number;
+	surplusMaterialQuantity?: number;
+}
+
+export interface CraftMaterialResult {
+	materialId: number;
+	quantity: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingCraftRes extends CrowniclesPacket {
+	success!: boolean;
+
+	recipeId!: string;
+
+	wasSecret!: boolean;
+
+	outputType!: CookingOutputTypeValue;
+
+	potionId?: number;
+
+	petFood?: CraftPetFoodResult;
+
+	material?: CraftMaterialResult;
+
+	failedPotionId?: number;
+
+	cookingXpGained!: number;
+
+	cookingLevelUp!: boolean;
+
+	newCookingLevel?: number;
+
+	newCookingGrade?: string;
+
+	materialSaved?: number;
+
+	discoveredRecipeIds?: string[];
+
+	error?: CookingCraftError;
+
+	updatedSlots?: CookingSlotData[];
+
+	furnaceUsesRemaining?: number;
+}
+
+// ---- Cooking menu & pin packets ----
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingMenuReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingMenuRes extends CrowniclesPacket {
+	cookingLevel!: number;
+
+	cookingGrade!: string;
+
+	pinnedRecipe?: PinnedRecipeInfo;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingPinReq extends CrowniclesPacket {
+	recipeId!: string;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingPinRes extends CrowniclesPacket {
+	pinnedRecipe!: PinnedRecipeInfo;
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportCookingUnpinReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportCookingUnpinRes extends CrowniclesPacket {}
+
+// Guild domain notary packets
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportGuildDomainPurchaseRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportGuildDomainRelocateRes extends CrowniclesPacket {
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportGuildDomainNotEnoughTreasuryRes extends CrowniclesPacket {
+	missingTreasury!: number;
+}
+
+// Guild domain interactive packets (async bidirectional)
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportGuildDomainUpgradeReq extends CrowniclesPacket {
+	building!: GuildBuilding;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGuildDomainUpgradeRes extends CrowniclesPacket {
+	building!: GuildBuilding;
+
+	newLevel!: number;
+
+	cost!: number;
+
+	newTreasury!: number;
+
+	xpGained!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGuildDomainUpgradeErrorRes extends CrowniclesPacket {
+	error!: GuildDomainError;
+}
+
+// Guild food shop packets (for buying food from non-domain cities)
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportFoodShopBuyReq extends CrowniclesPacket {
+	foodType!: PetFood;
+
+	amount!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportFoodShopBuyRes extends CrowniclesPacket {
+	foodType!: PetFood;
+
+	newFoodStock!: number;
+
+	newTreasury!: number;
+
+	amountBought!: number;
+
+	totalCost!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportFoodShopBuyErrorRes extends CrowniclesPacket {
+	error!: GuildDomainError;
+}
+
+// Guild domain shop treasury deposit packets
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportGuildDomainDepositTreasuryReq extends CrowniclesPacket {
+	amount!: number;
+
+	/** When true, the deposit is treated as a refund of a previous treasury withdrawal: no commission is taken. */
+	isReimburse?: boolean;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGuildDomainDepositTreasuryRes extends CrowniclesPacket {
+	treasuryDeposited!: number;
+
+	newPlayerMoney!: number;
+
+	newTreasury!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGuildDomainDepositTreasuryErrorRes extends CrowniclesPacket {
+	error!: GuildDomainError;
 }

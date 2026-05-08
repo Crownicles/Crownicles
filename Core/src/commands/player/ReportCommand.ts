@@ -6,6 +6,7 @@ import {
 	CommandReportBuyHealNoAlterationPacketRes,
 	CommandReportBuyHealPacketReq,
 	CommandReportPacketReq,
+	CommandReportStayInCity,
 	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { Player } from "../../core/database/game/models/Player";
@@ -16,69 +17,83 @@ import { getTimeFromXHoursAgo } from "../../../../Lib/src/utils/TimeUtils";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
+import {
+	EndCallback, ReactionCollectorInstance
+} from "../../core/utils/ReactionsCollector";
 import { TravelTime } from "../../core/maps/TravelTime";
+import { MapLocationDataController } from "../../data/MapLocation";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
+import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import {
-	HEAL_VALIDATION_REASONS
-} from "../../core/report/ReportValidationConstants";
-import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
-
-// Import refactored services
-import { sendTravelPath } from "../../core/report/ReportTravelService";
-import { doPVEBoss } from "../../core/report/ReportPveService";
-import { doRandomBigEvent } from "../../core/report/ReportBigEventService";
+	City, CityDataController
+} from "../../data/City";
+import {
+	ReactionCollectorCity,
+	ReactionCollectorCityBuyHomeReaction,
+	ReactionCollectorCityData,
+	ReactionCollectorCityMoveHomeReaction,
+	ReactionCollectorCityShopReaction,
+	ReactionCollectorCityUpgradeHomeReaction,
+	ReactionCollectorEnchantReaction,
+	ReactionCollectorExitCityReaction,
+	ReactionCollectorHomeBedReaction,
+	ReactionCollectorHomeMenuReaction,
+	ReactionCollectorInnMealReaction,
+	ReactionCollectorInnRoomReaction,
+	ReactionCollectorUpgradeItemReaction,
+	ReactionCollectorBlacksmithMenuReaction,
+	ReactionCollectorBlacksmithUpgradeReaction,
+	ReactionCollectorBlacksmithDisenchantReaction,
+	ReactionCollectorGardenHarvestReaction,
+	ReactionCollectorGuildDomainMenuReaction,
+	ReactionCollectorGuildDomainNotaryReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { Guilds } from "../../core/database/game/models/Guild";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
+import { GuildPets } from "../../core/database/game/models/GuildPet";
+import { PetEntities } from "../../core/database/game/models/PetEntity";
+import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
+import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { Settings } from "../../core/database/game/models/Setting";
+import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
+import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
+import { Homes } from "../../core/database/game/models/Home";
+import { Materials } from "../../core/database/game/models/Material";
+import {
+	createBuyHealCollector,
+	createUseTokensCollector,
+	validateBuyHealRequest,
+	validateUseTokensRequest
+} from "../../core/report/ReportTokenHealService";
+import { HEAL_VALIDATION_REASONS } from "../../core/report/ReportValidationConstants";
 import { executeSmallEvent } from "../../core/report/ReportSmallEventService";
 import { chooseDestination } from "../../core/report/ReportDestinationService";
+import { doRandomBigEvent } from "../../core/report/ReportBigEventService";
+import { doPVEBoss } from "../../core/report/ReportPveService";
+import { sendTravelPath } from "../../core/report/ReportTravelService";
 import {
-	createUseTokensCollector,
-	createBuyHealCollector,
-	validateUseTokensRequest,
-	validateBuyHealRequest
-} from "../../core/report/ReportTokenHealService";
-
-/**
- * Initiates a new player on the map
- */
-async function initiateNewPlayerOnTheAdventure(player: Player): Promise<void> {
-	const startMapLink = MapLinkDataController.instance.getById(Constants.BEGINNING.START_MAP_LINK);
-	if (!startMapLink) {
-		throw new Error("Start map link not found");
-	}
-	await Maps.startTravel(
-		player,
-		startMapLink,
-		getTimeFromXHoursAgo(Constants.REPORT.HOURS_USED_TO_CALCULATE_FIRST_REPORT_REWARD).valueOf()
-	);
-	await player.save();
-}
-
-/**
- * Returns if the player reached a stopping point (= small event)
- */
-async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
-	return (await TravelTime.getTravelData(player, date)).nextSmallEventTime <= date.valueOf();
-}
-
-/**
- * Check for missions that can be completed passively (without player action).
- * Currently checks:
- * - maxTokensReached: if tokens have passively reached max (e.g., from daily free tokens via bulk SQL update)
- *
- * Note: Daily free tokens are added via Sequelize.literal bulk update which bypasses Player.addTokens,
- * so we need to check for maxTokensReached here when the player does a report.
- *
- * @param player - The player whose passive missions to check
- * @param response - The response packets
- */
-async function checkPassiveMissions(player: Player, response: CrowniclesPacket[]): Promise<void> {
-	// Check if tokens are at max - mission may have been completed passively through daily free tokens
-	if (player.level >= TokensConstants.LEVEL_TO_UNLOCK && player.tokens >= TokensConstants.MAX) {
-		await MissionsController.update(player, response, { missionId: "maxTokensReached" });
-	}
-}
+	buildBlacksmithData
+} from "../../core/report/ReportBlacksmithService";
+import {
+	buildEnchanterData,
+	buildHomeData,
+	handleBlacksmithDisenchantReaction,
+	handleBlacksmithUpgradeReaction,
+	handleBuyHomeReaction,
+	handleCityShopReaction,
+	handleEnchantReaction,
+	handleHomeBedReaction,
+	handleInnMealReaction,
+	handleInnRoomReaction,
+	handleMoveHomeReaction,
+	handleUpgradeHomeReaction,
+	handleUpgradeItemReaction
+} from "../../core/report/ReportCityService";
+import { handleGuildDomainNotaryReaction } from "../../core/report/ReportCityGuildDomainService";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -98,65 +113,67 @@ export default class ReportCommand {
 			await initiateNewPlayerOnTheAdventure(player);
 		}
 
-		// Block player to prevent concurrent executions
-		BlockingUtils.blockPlayer(
-			player.keycloakId,
-			BlockingConstants.REASONS.REPORT_COMMAND,
-			Constants.MESSAGES.COLLECTOR_TIME * 3
-		);
+		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND, Constants.MESSAGES.COLLECTOR_TIME * 3); // MaxTime here is to prevent any accident permanent blocking
 
 		await MissionsController.update(player, response, { missionId: "commandReport" });
 
-		// Check for passively completable missions (e.g., tokens reaching max from daily free tokens)
-		await checkPassiveMissions(player, response);
-
 		const currentDate = new Date();
 
-		if (player.effectId !== Effect.NO_EFFECT.id && player.currentEffectFinished(currentDate)) {
+		const currentEffectFinished = player.currentEffectFinished(currentDate);
+		if (player.effectId !== Effect.NO_EFFECT.id && currentEffectFinished) {
 			await MissionsController.update(player, response, { missionId: "recoverAlteration" });
 		}
 
-		// Handle arrival at destination
-		if (Maps.isArrived(player, currentDate)) {
-			if (Maps.isOnPveIsland(player)) {
-				await doPVEBoss(player, response, context, chooseDestination);
+		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
+		if (city) {
+			if (currentEffectFinished) {
+				await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
 			}
 			else {
-				await doRandomBigEvent(context, response, player, chooseDestination, forceSpecificEvent);
+				response.push(makePacket(RequirementEffectPacket, {
+					currentEffectId: player.effectId,
+					remainingTime: player.effectRemainingTime()
+				}));
+				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+			}
+			return;
+		}
+
+		if (Maps.isArrived(player, currentDate)) {
+			if (Maps.isOnPveIsland(player)) {
+				await doPVEBoss(player, response, context);
+			}
+			else {
+				await doRandomBigEvent(context, response, player, forceSpecificEvent);
 			}
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
 
-		// Handle small events
 		if (forceSmallEvent || await needSmallEvent(player, currentDate)) {
 			await executeSmallEvent(response, player, context, forceSmallEvent);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
 
-		// Handle active effect
-		if (!player.currentEffectFinished(currentDate)) {
+		if (!currentEffectFinished) {
 			await sendTravelPath(player, response, currentDate, player.effectId);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
 
-		// Handle no current travel
 		if (!player.mapLinkId) {
 			await Maps.startTravel(player, MapLinkDataController.instance.getRandomLinkOnMainContinent(), Date.now());
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
 
-		// Handle not travelling
 		if (!Maps.isTravelling(player)) {
 			await chooseDestination(context, player, null, response);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 			return;
 		}
 
-		// Default: show travel path
 		await sendTravelPath(player, response, currentDate, null);
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 	}
@@ -210,4 +227,320 @@ export default class ReportCommand {
 
 		createBuyHealCollector(player, validation.healPrice, context, response);
 	}
+}
+
+function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number, city: City): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+		const firstReaction = collector.getFirstReaction();
+		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+			response.push(makePacket(CommandReportStayInCity, {}));
+		}
+		else {
+			await player.reload();
+			await handleCityReaction(firstReaction.reaction.type, {
+				context,
+				player,
+				forceSpecificEvent,
+				city,
+				response,
+				reactionData: firstReaction.reaction.data,
+				collectorData: collector.creationPacket.data.data
+			});
+		}
+	};
+}
+
+type CityReactionParams = {
+	context: PacketContext;
+	player: Player;
+	forceSpecificEvent: number;
+	city: City;
+	response: CrowniclesPacket[];
+	reactionData: unknown;
+	collectorData: unknown;
+};
+
+const NOOP_REACTION = (): Promise<void> => Promise.resolve();
+
+const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => Promise<void>>([
+	[
+		ReactionCollectorExitCityReaction.name, async (params): Promise<void> => {
+			await doRandomBigEvent(params.context, params.response, params.player, params.forceSpecificEvent);
+		}
+	],
+	[
+		ReactionCollectorInnMealReaction.name, async (params): Promise<void> => {
+			await handleInnMealReaction(params.player, params.reactionData as ReactionCollectorInnMealReaction, params.response);
+		}
+	],
+	[
+		ReactionCollectorInnRoomReaction.name, async (params): Promise<void> => {
+			await handleInnRoomReaction(params.player, params.reactionData as ReactionCollectorInnRoomReaction, params.response);
+		}
+	],
+	[
+		ReactionCollectorEnchantReaction.name, async (params): Promise<void> => {
+			await handleEnchantReaction(params.player, params.reactionData as ReactionCollectorEnchantReaction, params.response);
+		}
+	],
+	[
+		ReactionCollectorCityBuyHomeReaction.name, async (params): Promise<void> => {
+			await handleBuyHomeReaction(params.player, params.city, params.collectorData as ReactionCollectorCityData, params.response);
+		}
+	],
+	[
+		ReactionCollectorCityUpgradeHomeReaction.name, async (params): Promise<void> => {
+			await handleUpgradeHomeReaction(params.player, params.city, params.collectorData as ReactionCollectorCityData, params.response);
+		}
+	],
+	[
+		ReactionCollectorCityMoveHomeReaction.name, async (params): Promise<void> => {
+			await handleMoveHomeReaction(params.player, params.city, params.collectorData as ReactionCollectorCityData, params.response);
+		}
+	],
+	[
+		ReactionCollectorCityShopReaction.name, async (params): Promise<void> => {
+			await handleCityShopReaction({
+				player: params.player,
+				city: params.city,
+				shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
+				context: params.context,
+				response: params.response
+			});
+		}
+	],
+	[ReactionCollectorHomeMenuReaction.name, NOOP_REACTION],
+	[
+		ReactionCollectorHomeBedReaction.name, async (params): Promise<void> => {
+			await handleHomeBedReaction(params.player, params.collectorData as ReactionCollectorCityData, params.response);
+		}
+	],
+	[
+		ReactionCollectorUpgradeItemReaction.name, async (params): Promise<void> => {
+			await handleUpgradeItemReaction(
+				params.player,
+				params.reactionData as ReactionCollectorUpgradeItemReaction,
+				params.collectorData as ReactionCollectorCityData,
+				params.response
+			);
+		}
+	],
+	[ReactionCollectorBlacksmithMenuReaction.name, NOOP_REACTION],
+	[
+		ReactionCollectorBlacksmithUpgradeReaction.name, async (params): Promise<void> => {
+			await handleBlacksmithUpgradeReaction(
+				params.player,
+				params.reactionData as ReactionCollectorBlacksmithUpgradeReaction,
+				params.collectorData as ReactionCollectorCityData,
+				params.response
+			);
+		}
+	],
+	[
+		ReactionCollectorBlacksmithDisenchantReaction.name, async (params): Promise<void> => {
+			await handleBlacksmithDisenchantReaction(
+				params.player,
+				params.reactionData as ReactionCollectorBlacksmithDisenchantReaction,
+				params.collectorData as ReactionCollectorCityData,
+				params.response
+			);
+		}
+	],
+	[ReactionCollectorGardenHarvestReaction.name, NOOP_REACTION],
+	[ReactionCollectorGuildDomainMenuReaction.name, NOOP_REACTION],
+	[
+		ReactionCollectorGuildDomainNotaryReaction.name, async (params): Promise<void> => {
+			await handleGuildDomainNotaryReaction(params.player, params.city, params.response);
+		}
+	]
+]);
+
+async function handleCityReaction(reactionType: string, params: CityReactionParams): Promise<void> {
+	const handler = CITY_REACTION_HANDLERS.get(reactionType);
+	if (!handler) {
+		CrowniclesLogger.error(`Unknown city reaction: ${reactionType}`);
+		return;
+	}
+	await handler(params);
+}
+
+async function sendCityCollector(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player,
+	currentDate: Date,
+	city: City,
+	options: {
+		forceSpecificEvent: number; initialMenu?: string;
+	} = { forceSpecificEvent: 0 }
+): Promise<void> {
+	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
+	const isEnchanterHere = await Settings.ENCHANTER_CITY.getValue() === city.id;
+	const enchantmentId = isEnchanterHere ? await Settings.ENCHANTER_ENCHANTMENT_ID.getValue() : null;
+	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
+	const enchantment = enchantmentId ? ItemEnchantment.getById(enchantmentId) : null;
+	const home = await Homes.getOfPlayer(player.id);
+	const homeLevel = home?.getLevel() ?? null;
+	const playerMaterials = await Materials.getPlayerMaterials(player.id);
+	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
+
+	// Build blacksmith data if city has a blacksmith
+	const blacksmith = city.blacksmithAvailable
+		? buildBlacksmithData(playerInventory, playerMaterialMap, player)
+		: undefined;
+
+	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+	let shelterPets: Awaited<ReturnType<typeof PetEntities.getById>>[] = [];
+	if (guild?.domainCityId === city.id) {
+		const guildPetEntries = await GuildPets.getOfGuild(guild.id);
+		shelterPets = await Promise.all(guildPetEntries.map(gp => PetEntities.getById(gp.petEntityId)));
+	}
+	const guildDomain = guild?.domainCityId === city.id
+		? {
+			isInCity: true,
+			guildName: guild.name,
+			shopLevel: guild.shopLevel,
+			shelterLevel: guild.shelterLevel,
+			pantryLevel: guild.pantryLevel,
+			trainingGroundLevel: guild.trainingGroundLevel,
+			guildLevel: guild.level,
+			treasury: guild.treasury,
+			playerMoney: player.money,
+			isChief: guild.chiefId === player.id,
+			isElder: guild.elderId === player.id,
+			food: {
+				common: guild.commonFood,
+				carnivorous: guild.carnivorousFood,
+				herbivorous: guild.herbivorousFood,
+				ultimate: guild.ultimateFood
+			},
+			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
+			shelterPets: shelterPets.filter(pe => pe !== null).map(pe => pe!.asOwnedPet()),
+			shelterMaxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel)
+		}
+		: undefined;
+
+	const isGuildChief = guild !== null && guild.chiefId === player.id;
+	const guildDomainNotary = isGuildChief && guild.domainCityId !== city.id
+		? {
+			hasDomain: guild.domainCityId !== null,
+			cost: guild.domainCityId
+				? GuildDomainConstants.DOMAIN_RELOCATION_COST
+				: GuildDomainConstants.DOMAIN_PURCHASE_COST,
+			treasury: guild.treasury,
+			isChief: true
+		}
+		: undefined;
+
+	// Guild food shop: available when the guild has a shop but is NOT in the domain city (where the full shop is available via the domain entrance).
+	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id
+		? {
+			guildName: guild.name,
+			food: {
+				common: guild.commonFood,
+				carnivorous: guild.carnivorousFood,
+				herbivorous: guild.herbivorousFood,
+				ultimate: guild.ultimateFood
+			},
+			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
+			playerMoney: player.money,
+			treasury: guild.treasury
+		}
+		: undefined;
+
+	const collectorData: ReactionCollectorCityData = {
+		enterCityTimestamp: TravelTime.getTravelDataSimplified(player, currentDate).travelStartTime,
+		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
+		mapLocationId: player.getDestinationId()!,
+		inns: city.inns.map(inn => ({
+			innId: inn.id,
+			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
+				mealId: meal.id,
+				price: meal.price,
+				energy: meal.energy
+			})),
+			rooms: inn.rooms.map(room => ({
+				roomId: room.id,
+				price: room.price,
+				health: room.health
+			}))
+		})),
+		shops: (city.shops || []).map(shopId => ({
+			shopId
+		})),
+		energy: {
+			current: player.getCumulativeEnergy(playerActiveObjects),
+			max: player.getMaxCumulativeEnergy(playerActiveObjects)
+		},
+		health: {
+			current: player.getHealth(playerActiveObjects),
+			max: player.getMaxHealth(playerActiveObjects)
+		},
+		enchanter: isEnchanterHere && enchantment
+			? buildEnchanterData(
+				{
+					inventory: playerInventory, player
+				},
+				{
+					enchantment, enchantmentId: enchantmentId!, isPlayerMage
+				}
+			)
+			: undefined,
+		home: await buildHomeData(
+			{
+				player, inventory: playerInventory, materialMap: playerMaterialMap
+			},
+			{
+				home, homeLevel
+			},
+			city
+		),
+		blacksmith,
+		guildDomain,
+		guildFoodShop,
+		guildDomainNotary,
+		initialMenu: options.initialMenu
+	};
+
+	const collector = new ReactionCollectorCity(collectorData);
+
+	const collectorPacket = new ReactionCollectorInstance(
+		collector,
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1
+		},
+		cityCollectorEndCallback(context, player, options.forceSpecificEvent, city)
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND)
+		.build();
+
+	response.push(collectorPacket);
+}
+
+/**
+ * Initiates a new player on the map
+ * @param player
+ */
+async function initiateNewPlayerOnTheAdventure(player: Player): Promise<void> {
+	await Maps.startTravel(
+		player,
+		MapLinkDataController.instance.getById(Constants.BEGINNING.START_MAP_LINK)!,
+		getTimeFromXHoursAgo(Constants.REPORT.HOURS_USED_TO_CALCULATE_FIRST_REPORT_REWARD)
+			.valueOf()
+	);
+	await player.save();
+}
+
+/**
+ * Returns if the player reached a stopping point (= small event)
+ * @param player
+ * @param date
+ * @returns
+ */
+async function needSmallEvent(player: Player, date: Date): Promise<boolean> {
+	return (await TravelTime.getTravelData(player, date)).nextSmallEventTime <= date.valueOf();
 }

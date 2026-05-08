@@ -1,5 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { giveItemToPlayer, toItemWithDetails } from '../../../src/core/utils/ItemUtils';
+import {
+	generateRandomLootEnchantment, giveItemToPlayer, toItemWithDetails
+} from '../../../src/core/utils/ItemUtils';
 import { InventorySlots } from '../../../src/core/database/game/models/InventorySlot';
 import { InventoryInfos } from '../../../src/core/database/game/models/InventoryInfo';
 import { MissionsController } from '../../../src/core/missions/MissionsController';
@@ -10,10 +12,17 @@ import { BlockingConstants } from '../../../../Lib/src/constants/BlockingConstan
 import { CrowniclesPacket, PacketContext } from '../../../../Lib/src/packets/CrowniclesPacket';
 import { ItemFoundPacket } from '../../../../Lib/src/packets/events/ItemFoundPacket';
 import { ReactionCollectorInstance } from '../../../src/core/utils/ReactionsCollector';
+import { RandomUtils } from '../../../../Lib/src/utils/RandomUtils';
 
 // Mock all external dependencies
 vi.mock('../../../src/core/database/game/models/InventorySlot');
 vi.mock('../../../src/core/database/game/models/InventoryInfo');
+vi.mock('../../../src/core/database/game/models/Home', () => ({
+	Home: class {},
+	Homes: {
+		getOfPlayer: vi.fn().mockResolvedValue(null)
+	}
+}));
 vi.mock('../../../src/core/missions/MissionsController');
 vi.mock('../../../src/core/utils/BlockingUtils');
 vi.mock('../../../src/core/utils/ReactionsCollector', () => ({
@@ -115,7 +124,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			giveItem: vi.fn(),
 			addMoney: vi.fn(),
 			save: vi.fn(),
-			reload: vi.fn()
+			reload: vi.fn(),
+			getMaxStatsValue: vi.fn().mockReturnValue(100)
 		};
 
 		// Mock basic item
@@ -123,7 +133,15 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			id: 100,
 			rarity: ItemRarity.COMMON,
 			getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
-			getItemAddedValue: vi.fn().mockReturnValue(10)
+			getItemAddedValue: vi.fn().mockReturnValue(10),
+			getDisplayPacket: vi.fn().mockReturnValue({
+				id: 100,
+				category: ItemCategory.WEAPON,
+				rarity: ItemRarity.COMMON,
+				detailsSupportItem: null,
+				detailsMainItem: null,
+				maxStats: null
+			})
 		};
 
 		// Mock inventory slots
@@ -138,7 +156,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				getItem: vi.fn().mockReturnValue({
 					id: 50,
 					rarity: ItemRarity.BASIC,
-					getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+					getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
+					getDisplayPacket: vi.fn().mockReturnValue({ id: 50, name: 'Slot Item' })
 				})
 			}
 		];
@@ -175,7 +194,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0, null);
 			expect(MissionsController.update).toHaveBeenCalledWith(
 				mockPlayer,
 				mockResponse,
@@ -222,7 +241,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0, null);
 			// Auto-sell should trigger, response may still contain ReactionCollector for confirmation
 			expect(mockResponse.length).toBeGreaterThanOrEqual(1);
 		});
@@ -253,7 +272,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 					getItem: vi.fn().mockReturnValue({
 						id: 60,
 						rarity: ItemRarity.COMMON,
-						getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+						getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
+						getDisplayPacket: vi.fn().mockReturnValue({ id: 60, name: 'Second Weapon' })
 					})
 				}
 			);
@@ -273,7 +293,15 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				id: 200,
 				rarity: ItemRarity.RARE,
 				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
-				isFightPotion: vi.fn().mockReturnValue(false)
+				isFightPotion: vi.fn().mockReturnValue(false),
+				getDisplayPacket: vi.fn().mockReturnValue({
+					id: 200,
+					category: ItemCategory.POTION,
+					rarity: ItemRarity.RARE,
+					detailsSupportItem: null,
+					detailsMainItem: null,
+					maxStats: null
+				})
 			};
 			mockPlayer.giveItem.mockResolvedValue(false);
 		});
@@ -297,16 +325,14 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
 		});
 
-		it('should auto-sell fight potions when all are same and fully charged', async () => {
+		it('should auto-sell fight potions when all are same', async () => {
 			// Arrange
 			mockItem.isFightPotion.mockReturnValue(true);
-			mockItem.usages = 5;
 			mockInventorySlots[0] = {
 				playerId: 1,
 				slot: 0,
 				itemCategory: ItemCategory.POTION,
 				itemId: mockItem.id,
-				remainingPotionUsages: null, // null means full (legacy or freshly added)
 				isEquipped: vi.fn().mockReturnValue(true),
 				isPotion: vi.fn().mockReturnValue(true),
 				getItem: vi.fn().mockReturnValue(mockItem)
@@ -315,30 +341,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			// Act
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
-			// Assert - should trigger auto-sell since potion is at full usages
+			// Assert - should trigger auto-sell
 			expect(mockResponse.length).toBeGreaterThanOrEqual(1);
-		});
-
-		it('should not auto-sell fight potions when partially used', async () => {
-			// Arrange
-			mockItem.isFightPotion.mockReturnValue(true);
-			mockItem.usages = 5;
-			mockInventorySlots[0] = {
-				playerId: 1,
-				slot: 0,
-				itemCategory: ItemCategory.POTION,
-				itemId: mockItem.id,
-				remainingPotionUsages: 3, // Partially used (3 out of 5)
-				isEquipped: vi.fn().mockReturnValue(true),
-				isPotion: vi.fn().mockReturnValue(true),
-				getItem: vi.fn().mockReturnValue(mockItem)
-			};
-
-			// Act
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
-
-			// Assert - should NOT auto-sell, allow player to refill
-			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
 		});
 	});
 
@@ -353,7 +357,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			const customMultiplier = 0.5;
 
 			// Act
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem, customMultiplier);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem, { resaleMultiplier: customMultiplier });
 
 			// Assert
 			expect(mockResponse).toHaveLength(2);
@@ -380,7 +384,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
 
 			// Assert
-			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem);
+			expect(mockPlayer.giveItem).toHaveBeenCalledWith(mockItem, 0, null);
 			expect(mockResponse).toHaveLength(1);
 		});
 
@@ -493,21 +497,31 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			const weaponItem = {
 				id: 1,
 				rarity: ItemRarity.LEGENDARY,
-				getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+				getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
+				getDisplayPacket: vi.fn().mockReturnValue({
+					id: 1,
+					category: ItemCategory.WEAPON,
+					rarity: ItemRarity.LEGENDARY,
+					detailsSupportItem: null,
+					detailsMainItem: { attack: 100, defense: 50, speed: 75 },
+					maxStats: null
+				})
 			};
 
 			// Act
-			const result = toItemWithDetails(weaponItem as any);
+			const result = toItemWithDetails(mockPlayer, weaponItem as any, 5, null);
 
 			// Assert
 			expect(result).toEqual({
 				id: 1,
 				category: ItemCategory.WEAPON,
 				rarity: ItemRarity.LEGENDARY,
-				detailsSupportItem: undefined,
-				detailsMainItem: expect.any(Object),
-				maxStats: undefined
+				detailsSupportItem: null,
+				detailsMainItem: { attack: 100, defense: 50, speed: 75 },
+				maxStats: null
 			});
+			// Note: Since weaponItem is not an actual instance of MainItem, it falls through to SupportItem branch
+			expect(weaponItem.getDisplayPacket).toHaveBeenCalledWith(100);
 		});
 
 		it('should correctly convert potion item to ItemWithDetails', () => {
@@ -515,21 +529,30 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			const potionItem = {
 				id: 2,
 				rarity: ItemRarity.RARE,
-				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+				getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+				getDisplayPacket: vi.fn().mockReturnValue({
+					id: 2,
+					category: ItemCategory.POTION,
+					rarity: ItemRarity.RARE,
+					detailsSupportItem: { nature: 1, power: 50 },
+					detailsMainItem: null,
+					maxStats: null
+				})
 			};
 
 			// Act
-			const result = toItemWithDetails(potionItem as any);
+			const result = toItemWithDetails(mockPlayer, potionItem as any, 0, null);
 
 			// Assert
 			expect(result).toEqual({
 				id: 2,
 				category: ItemCategory.POTION,
 				rarity: ItemRarity.RARE,
-				detailsSupportItem: expect.any(Object),
-				detailsMainItem: undefined,
-				maxStats: undefined
+				detailsSupportItem: { nature: 1, power: 50 },
+				detailsMainItem: null,
+				maxStats: null
 			});
+			expect(potionItem.getDisplayPacket).toHaveBeenCalledWith(100);
 		});
 	});
 
@@ -555,7 +578,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isFightPotion: vi.fn().mockReturnValue(false),
 				getAttack: vi.fn().mockReturnValue(0),
 				getDefense: vi.fn().mockReturnValue(0),
-				getSpeed: vi.fn().mockReturnValue(0)
+				getSpeed: vi.fn().mockReturnValue(0),
+				getDisplayPacket: vi.fn().mockReturnValue({ id: 200, name: 'Time Potion' })
 			};
 
 			// Setup potion inventory slot
@@ -572,7 +596,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 						rarity: ItemRarity.BASIC,
 						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
 						nature: 1, // Regular potion
-						isFightPotion: vi.fn().mockReturnValue(false)
+						isFightPotion: vi.fn().mockReturnValue(false),
+						getDisplayPacket: vi.fn().mockReturnValue({ id: 50, name: 'Slot Potion' })
 					})
 				}
 			];
@@ -593,7 +618,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isFightPotion: vi.fn().mockReturnValue(false),
 				getAttack: vi.fn().mockReturnValue(0),
 				getDefense: vi.fn().mockReturnValue(0),
-				getSpeed: vi.fn().mockReturnValue(0)
+				getSpeed: vi.fn().mockReturnValue(0),
+				getDisplayPacket: vi.fn().mockReturnValue({ id: 201, name: 'Health Potion' })
 			};
 
 			// Act
@@ -607,7 +633,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 
 		it('should NOT allow drinking TIME_SPEEDUP potions when canDrinkImmediately is false', async () => {
 			// Act - Call with canDrinkImmediately = false (simulates big event before destination choice)
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, false);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, { resaleMultiplier: 1, canDrinkImmediately: false });
 
 			// Assert - Should NOT allow drinking (ReactionCollectorItemAccept with canDrink = false)
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
@@ -619,7 +645,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 
 		it('should allow drinking TIME_SPEEDUP potions when canDrinkImmediately is true', async () => {
 			// Act - Call with canDrinkImmediately = true (default behavior, normal gameplay)
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, true);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, { resaleMultiplier: 1, canDrinkImmediately: true });
 
 			// Assert - Should NOT allow drinking because TIME_SPEEDUP potions cannot be drunk immediately
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
@@ -641,11 +667,12 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isFightPotion: vi.fn().mockReturnValue(true),
 				getAttack: vi.fn().mockReturnValue(0),
 				getDefense: vi.fn().mockReturnValue(0),
-				getSpeed: vi.fn().mockReturnValue(10) // Fight potion has speed
+				getSpeed: vi.fn().mockReturnValue(10), // Fight potion has speed
+				getDisplayPacket: vi.fn().mockReturnValue({ id: 202, name: 'Fight Potion' })
 			};
 
 			// Act
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, fightPotion, 1, false);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, fightPotion, { resaleMultiplier: 1, canDrinkImmediately: false });
 
 			// Assert - Fight potions cannot be drunk immediately anyway
 			expect(mockResponse).toHaveLength(2);
@@ -667,11 +694,12 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isFightPotion: vi.fn().mockReturnValue(false),
 				getAttack: vi.fn().mockReturnValue(0),
 				getDefense: vi.fn().mockReturnValue(0),
-				getSpeed: vi.fn().mockReturnValue(0)
+				getSpeed: vi.fn().mockReturnValue(0),
+				getDisplayPacket: vi.fn().mockReturnValue({ id: 203, name: 'Money Potion' })
 			};
 
 			// Act - Even with canDrinkImmediately = false, non-TIME_SPEEDUP potions should be drinkable
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, moneyPotion, 1, false);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, moneyPotion, { resaleMultiplier: 1, canDrinkImmediately: false });
 
 			// Assert - Should allow drinking (not a TIME_SPEEDUP potion)
 			expect(mockResponse).toHaveLength(2);
@@ -692,7 +720,8 @@ describe('ItemUtils - giveItemToPlayer', () => {
 					getItem: vi.fn().mockReturnValue({
 						id: 100,
 						rarity: ItemRarity.BASIC,
-						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+						getDisplayPacket: vi.fn().mockReturnValue({ id: 100, name: 'Potion 100' })
 					})
 				},
 				{
@@ -704,17 +733,62 @@ describe('ItemUtils - giveItemToPlayer', () => {
 					getItem: vi.fn().mockReturnValue({
 						id: 101,
 						rarity: ItemRarity.COMMON,
-						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+						getCategory: vi.fn().mockReturnValue(ItemCategory.POTION),
+						getDisplayPacket: vi.fn().mockReturnValue({ id: 101, name: 'Potion 101' })
 					})
 				}
 			];
 			vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue(mockInventorySlots);
 
 			// Act - Give TIME_SPEEDUP potion with canDrinkImmediately = false
-			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, 1, false);
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockTimePotion, { resaleMultiplier: 1, canDrinkImmediately: false });
 
 			// Assert - Should create collector but without drink option
 			expect(mockResponse.length).toBeGreaterThanOrEqual(2);
 		});
+	});
+});
+
+describe('generateRandomLootEnchantment', () => {
+	it('should return null for potions', () => {
+		const mockPotion = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.POTION)
+		};
+		expect(generateRandomLootEnchantment(mockPotion as any)).toBeNull();
+	});
+
+	it('should return null for objects', () => {
+		const mockObject = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.OBJECT)
+		};
+		expect(generateRandomLootEnchantment(mockObject as any)).toBeNull();
+	});
+
+	it('should return null for weapons when roll is above enchantment chance', () => {
+		const mockWeapon = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+		};
+		vi.spyOn(RandomUtils.crowniclesRandom, 'realZeroToOneInclusive').mockReturnValue(0.10);
+		expect(generateRandomLootEnchantment(mockWeapon as any)).toBeNull();
+	});
+
+	it('should return an enchantment id for weapons when roll is below enchantment chance', () => {
+		const mockWeapon = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON)
+		};
+		vi.spyOn(RandomUtils.crowniclesRandom, 'realZeroToOneInclusive').mockReturnValue(0.01);
+		const result = generateRandomLootEnchantment(mockWeapon as any);
+		expect(result).not.toBeNull();
+		expect(typeof result).toBe('string');
+	});
+
+	it('should return an enchantment id for armors when roll is below enchantment chance', () => {
+		const mockArmor = {
+			getCategory: vi.fn().mockReturnValue(ItemCategory.ARMOR)
+		};
+		vi.spyOn(RandomUtils.crowniclesRandom, 'realZeroToOneInclusive').mockReturnValue(0.01);
+		const result = generateRandomLootEnchantment(mockArmor as any);
+		expect(result).not.toBeNull();
+		expect(typeof result).toBe('string');
 	});
 });

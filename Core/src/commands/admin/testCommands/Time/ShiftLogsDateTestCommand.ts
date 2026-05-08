@@ -4,6 +4,7 @@ import {
 import { crowniclesInstance } from "../../../../index";
 import { QueryTypes } from "sequelize";
 import { daysToSeconds } from "../../../../../../Lib/src/utils/TimeUtils";
+import { asDays } from "../../../../../../Lib/src/types/TimeTypes";
 
 export const commandInfo: ITestCommand = {
 	name: "shiftlogsdate",
@@ -29,11 +30,11 @@ const shiftLogsDateTestCommand: ExecuteTestCommandLike = async (_player, args) =
 	}
 
 	// Calculate seconds to subtract (dates in logs are stored as Unix timestamps in seconds)
-	const secondsToShift = daysToSeconds(days);
+	const secondsToShift = daysToSeconds(asDays(days));
 
 	try {
 		// Get all tables that have a 'date' column
-		const tablesWithDate = await crowniclesInstance.logsDatabase.sequelize.query<{ TABLE_NAME: string }>(
+		const tablesWithDate = await crowniclesInstance?.logsDatabase.sequelize.query<{ TABLE_NAME: string }>(
 			`SELECT DISTINCT TABLE_NAME 
 			 FROM information_schema.COLUMNS 
 			 WHERE TABLE_SCHEMA = DATABASE() 
@@ -50,7 +51,7 @@ const shiftLogsDateTestCommand: ExecuteTestCommandLike = async (_player, args) =
 
 		// Update each table
 		for (const table of tablesWithDate) {
-			const [, rowsAffected] = await crowniclesInstance.logsDatabase.sequelize.query(
+			const [, rowsAffected] = await crowniclesInstance!.logsDatabase!.sequelize.query(
 				`UPDATE \`${table.TABLE_NAME}\` SET date = date - :seconds`,
 				{
 					replacements: { seconds: secondsToShift },

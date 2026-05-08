@@ -31,6 +31,8 @@ export enum NumberChangeReason {
 	// Guild
 	GUILD_DAILY,
 	GUILD_CREATE,
+	GUILD_CONTRIBUTE,
+	GUILD_MISSION,
 
 	// Items
 	ITEM_SELL,
@@ -53,7 +55,20 @@ export enum NumberChangeReason {
 	JOIN_BOAT,
 	REPORT_TOKENS,
 	EXPEDITION,
-	BLESSING
+	BLESSING,
+
+	// Cities feature
+	INN_MEAL,
+	INN_ROOM,
+	ENCHANT_ITEM,
+	BUY_HOME,
+	UPGRADE_HOME,
+	MOVE_HOME,
+	BLACKSMITH_UPGRADE,
+	BLACKSMITH_DISENCHANT,
+	HOME_BED,
+	COOKING,
+	GUILD_DOMAIN_UPGRADE
 }
 
 export enum ShopItemType {
@@ -76,7 +91,16 @@ export enum ShopItemType {
 	ENERGY_HEAL,
 	BIG_GUILD_XP,
 	QUEST_MASTER_BADGE,
-	TOKEN
+	TOKEN,
+	PLANT_SLOT_EXTENSION,
+	WEEKLY_PLANT_TIER_1,
+	WEEKLY_PLANT_TIER_2,
+	WEEKLY_PLANT_TIER_3,
+	MARKET_ANALYSIS,
+	WOOD_COMMON_BUNDLE,
+	WOOD_UNCOMMON_BUNDLE,
+	WOOD_RARE_BUNDLE,
+	RANDOM_MATERIAL_PACK
 }
 
 export const ShopItemTypeToString: Record<ShopItemType, string> = {
@@ -99,5 +123,14 @@ export const ShopItemTypeToString: Record<ShopItemType, string> = {
 	[ShopItemType.ENERGY_HEAL]: "energyHeal",
 	[ShopItemType.BIG_GUILD_XP]: "bigGuildXp",
 	[ShopItemType.QUEST_MASTER_BADGE]: "questMasterBadge",
-	[ShopItemType.TOKEN]: "token"
+	[ShopItemType.TOKEN]: "token",
+	[ShopItemType.PLANT_SLOT_EXTENSION]: "plantSlotExtension",
+	[ShopItemType.WEEKLY_PLANT_TIER_1]: "weeklyPlantTier1",
+	[ShopItemType.WEEKLY_PLANT_TIER_2]: "weeklyPlantTier2",
+	[ShopItemType.WEEKLY_PLANT_TIER_3]: "weeklyPlantTier3",
+	[ShopItemType.MARKET_ANALYSIS]: "marketAnalysis",
+	[ShopItemType.WOOD_COMMON_BUNDLE]: "woodCommonBundle",
+	[ShopItemType.WOOD_UNCOMMON_BUNDLE]: "woodUncommonBundle",
+	[ShopItemType.WOOD_RARE_BUNDLE]: "woodRareBundle",
+	[ShopItemType.RANDOM_MATERIAL_PACK]: "randomMaterialPack"
 };

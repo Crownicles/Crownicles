@@ -1,21 +1,37 @@
 import {
-	ReactionCollector, ReactionCollectorCreationPacket, ReactionCollectorData, ReactionCollectorReaction
+	ReactionCollector,
+	ReactionCollectorCreationPacket,
+	ReactionCollectorData,
+	ReactionCollectorReaction
 } from "./ReactionCollectorPacket";
 import {
 	CrowniclesPacket, PacketContext, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { ItemWithDetails } from "../../types/ItemWithDetails";
 import { ShopCurrency } from "../../constants/ShopConstants";
-import { ShopItemType } from "../../constants/LogsConstants";
+import {
+	ShopItemType
+} from "../../constants/LogsConstants";
+import { PlantId } from "../../constants/PlantConstants";
+
+/**
+ * Map of materialId (as string) to quantity received
+ */
+export type MaterialDistribution = Record<string, number>;
+
+export type BuyCallbackResult = {
+	success: boolean;
+	materials?: MaterialDistribution;
+};
 
 export interface ShopItem {
 	id: ShopItemType;
 
 	price: number;
 
-	amounts: number[];
+	amounts: readonly number[];
 
-	buyCallback: (response: CrowniclesPacket[], player: number, context: PacketContext, amount: number) => boolean | Promise<boolean>;
+	buyCallback: (response: CrowniclesPacket[], player: number, context: PacketContext, amount: number) => boolean | BuyCallbackResult | Promise<boolean | BuyCallbackResult>;
 }
 
 export interface ShopCategory {
@@ -33,27 +49,7 @@ export class CommandShopNoAlterationToHeal extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopCannotHealOccupied extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopHealAlterationDone extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopTooManyEnergyBought extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopNoEnergyToHeal extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopEnergyHeal extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopFullRegen extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -69,16 +65,7 @@ export class CommandShopBoughtTooMuchDailyPotions extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopBoughtTooMuchTokens extends CrowniclesPacket {
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopTokensBought extends CrowniclesPacket {
-	amount!: number;
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandShopTokensFull extends CrowniclesPacket {
+export class CommandShopNoPlantSlotAvailable extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -86,6 +73,17 @@ export class CommandShopNotEnoughCurrency extends CrowniclesPacket {
 	missingCurrency!: number;
 
 	currency!: ShopCurrency;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopGenericPurchase extends CrowniclesPacket {
+	shopItemId!: ShopItemType;
+
+	amount!: number;
+
+	materials?: MaterialDistribution;
+
+	translationParams?: Record<string, string>;
 }
 
 export class ReactionCollectorShopData extends ReactionCollectorData {
@@ -115,6 +113,7 @@ export type additionalShopData = {
 	dailyPotion?: ItemWithDetails;
 	gemToMoneyRatio?: number;
 	remainingTokens?: number;
+	weeklyPlants?: PlantId[];
 };
 
 type ShopReaction = ReactionCollectorShopItemReaction | ReactionCollectorShopCloseReaction;

@@ -1,0 +1,34 @@
+{
+  "level": 7,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 6,
+      "quantity": 3
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 10,
+      "quantity": 1
+    },
+    {
+      "materialId": 32,
+      "quantity": 1
+    },
+    {
+      "materialId": 55,
+      "quantity": 1
+    },
+    {
+      "materialId": 38,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 65,
+  "outputMaterialQuantity": 3,
+  "discoveredByDefault": false,
+  "discoverySource": "CAMPAIGN_MILESTONE",
+  "petFood": null
+}

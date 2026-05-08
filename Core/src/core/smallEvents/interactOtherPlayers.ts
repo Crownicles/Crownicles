@@ -146,8 +146,9 @@ function checkTopWeek(otherPlayerWeeklyRank: number, interactionsList: InteractO
  * @param otherPlayer
  * @param interactionsList
  */
-function checkHealth(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
-	const healthPercentage = otherPlayer.health / otherPlayer.getMaxHealth();
+async function checkHealth(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
+	const activeObjects = await InventorySlots.getPlayerActiveObjects(otherPlayer.id);
+	const healthPercentage = otherPlayer.getHealth(activeObjects) / otherPlayer.getMaxHealth(activeObjects);
 	if (healthPercentage < SmallEventConstants.INTERACT_OTHER_PLAYERS.HEALTH.LOW_HP_THRESHOLD) {
 		interactionsList.push(InteractOtherPlayerInteraction.LOW_HP);
 	}
@@ -371,13 +372,17 @@ function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, i
 const FINAL_BOSS_IDS = [
 	FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN,
 	FightConstants.FINAL_BOSS_MONSTER_IDS.MALE_ICE_DRAGON,
-	FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON
+	FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON,
+	FightConstants.FINAL_BOSS_MONSTER_IDS.KRAKEN,
+	FightConstants.FINAL_BOSS_MONSTER_IDS.LEVIATHAN
 ] as const;
 
 const BOSS_INTERACTION_MAP: Record<string, InteractOtherPlayerInteraction> = {
 	[FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN]: InteractOtherPlayerInteraction.BEATEN_MAGMA_TITAN,
 	[FightConstants.FINAL_BOSS_MONSTER_IDS.MALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_MALE_ICE_DRAGON,
-	[FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_FEMALE_ICE_DRAGON
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.FEMALE_ICE_DRAGON]: InteractOtherPlayerInteraction.BEATEN_FEMALE_ICE_DRAGON,
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.KRAKEN]: InteractOtherPlayerInteraction.BEATEN_KRAKEN,
+	[FightConstants.FINAL_BOSS_MONSTER_IDS.LEVIATHAN]: InteractOtherPlayerInteraction.BEATEN_LEVIATHAN
 };
 
 /**
@@ -468,7 +473,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	checkClass(otherPlayer, player, interactionsList);
 	checkGuild(otherPlayer, player, interactionsList);
 	checkTopWeek(otherPlayerWeeklyRank, interactionsList);
-	checkHealth(otherPlayer, interactionsList);
+	await checkHealth(otherPlayer, interactionsList);
 	checkRanking(otherPlayerRank, numberOfPlayers, interactionsList, playerRank);
 	checkMoney(otherPlayer, interactionsList, player);
 	await checkPet(player, otherPlayer, interactionsList);

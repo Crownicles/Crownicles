@@ -2,5 +2,6 @@
   "rarity": 1,
   "rawAttack": 6,
   "speed": 10,
-  "defense": -20
+  "defense": -20,
+  "type": "wood"
 }

@@ -15,6 +15,8 @@ export abstract class ShopConstants {
 
 	static readonly MONEY_MOUTH_BADGE_PRICE = 25000;
 
+	static readonly MARKET_ANALYSIS_PRICE = 1000;
+
 	static readonly DAILY_POTION_DISCOUNT_MULTIPLIER = 0.7;
 
 	static readonly TOKEN_PRICE = 375;
@@ -28,6 +30,37 @@ export abstract class ShopConstants {
 		5,
 		10
 	];
+
+	static readonly LUMBERJACK_PRICES = {
+		COMMON: 10,
+		UNCOMMON: 35,
+		RARE: 100
+	};
+
+	static readonly LUMBERJACK_AMOUNTS = [
+		1,
+		10,
+		25,
+		50
+	];
+
+	static readonly VETERINARIAN_PRICE = 3;
+
+	static readonly VETERINARIAN_LOVE_POINTS_GAIN = 15;
+
+	static readonly MATERIAL_MERCHANT_PRICE_PER_UNIT = 133;
+
+	static readonly MATERIAL_MERCHANT_AMOUNTS = [
+		10,
+		15,
+		30
+	];
+
+	static readonly MATERIAL_MERCHANT_DROP_RATES = {
+		RARE_PROBABILITY: 0.1,
+		UNCOMMON_PROBABILITY: 0.3,
+		COMMON_PROBABILITY: 0.6
+	};
 }
 
 export enum ShopCurrency {

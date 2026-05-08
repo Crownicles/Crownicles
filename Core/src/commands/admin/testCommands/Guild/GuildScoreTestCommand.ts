@@ -30,7 +30,7 @@ const guildScoreTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		throw new Error("Erreur gpoints : score de guilde invalide ! Il doit être supérieur à 0 !");
 	}
 	guild.score = guildScore;
-	crowniclesInstance.logsDatabase.logGuildPointsChange(guild, NumberChangeReason.TEST).then();
+	crowniclesInstance?.logsDatabase.logGuildPointsChange(guild, NumberChangeReason.TEST).then();
 	await guild.save();
 	return `Votre guilde a maintenant ${args[0]} points !`;
 };

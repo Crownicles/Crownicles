@@ -3,6 +3,7 @@
   "rawDefense": 5,
   "attack": 35,
   "speed": -10,
+  "type": "nature",
   "tags": [
     "metallic"
   ]

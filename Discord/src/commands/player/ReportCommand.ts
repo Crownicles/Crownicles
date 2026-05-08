@@ -8,15 +8,29 @@ import {
 	CommandReportBigEventResultRes,
 	CommandReportBuyHealAcceptPacketRes,
 	CommandReportBuyHealPacketReq,
+	CommandReportBuyHomeRes,
+	CommandReportChooseDestinationCityRes,
+	CommandReportEatInnMealRes,
+	CommandReportGuildDomainNotEnoughTreasuryRes,
+	CommandReportGuildDomainPurchaseRes,
+	CommandReportGuildDomainRelocateRes,
+	CommandReportHomeBedRes,
+	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
+	CommandReportMoveHomeRes,
 	CommandReportPacketReq,
 	CommandReportRefusePveFightRes,
+	CommandReportSleepRoomRes,
 	CommandReportTravelSummaryRes,
+	CommandReportUpgradeHomeRes,
+	CommandReportUpgradeItemRes,
 	CommandReportUseTokensAcceptPacketRes,
 	CommandReportUseTokensPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
+import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import {
-	ReactionCollectorBigEventPacket
+	ReactionCollectorBigEventData,
+	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import i18n, { I18nCrowniclesOptions } from "../../translations/i18n";
 import {
@@ -30,31 +44,31 @@ import {
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import {
+	asMilliseconds,
 	millisecondsToHours,
 	millisecondsToMinutes,
+	minutesDisplayIntl,
 	printTimeBeforeDate
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
+import { ReactionCollectorChooseDestinationReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import {
-	ReactionCollectorChooseDestinationPacket
-} from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
-import {
-	DiscordCollectorUtils,
-	disableRows
+	disableRows, DiscordCollectorUtils
 } from "../../utils/DiscordCollectorUtils";
-import { ReactionCollectorUseTokensPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
-import { ReactionCollectorBuyHealPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
-import { DiscordConstants } from "../../DiscordConstants";
-import { ReactionCollectorPveFightPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
+import { ReactionCollectorPveFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorPveFight";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
 import { Language } from "../../../../Lib/src/Language";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { MessagesUtils } from "../../utils/MessagesUtils";
 import { PetUtils } from "../../utils/PetUtils";
+import { formatMaterialLoot } from "../../utils/MaterialLootDisplayUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
+import { ReactionCollectorUseTokensPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
+import { ReactionCollectorBuyHealPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { createConfirmationCollector } from "../../utils/ReportConfirmationCollector";
 
@@ -68,11 +82,11 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandRep
  * @param context
  * @param packet
  */
-export async function createBigEventCollector(context: PacketContext, packet: ReactionCollectorBigEventPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function createBigEventCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
-	const data = packet.data.data;
-	const reactions = packet.reactions.map(reaction => reaction.data);
+	const data = packet.data.data as ReactionCollectorBigEventData;
+	const reactions = packet.reactions.map(reaction => reaction.data) as ReactionCollectorBigEventPossibilityReaction[];
 
 	const rows = [new ActionRowBuilder<ButtonBuilder>()];
 	let eventText = `${i18n.t(`events:${data.eventId}.text`, {
@@ -87,10 +101,7 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 				.setCustomId(possibility.name)
 				.setStyle(ButtonStyle.Secondary);
 
-			if (rows[rows.length - 1].components.length >= DiscordConstants.MAX_BUTTONS_PER_ROW) {
-				rows.push(new ActionRowBuilder<ButtonBuilder>());
-			}
-			rows[rows.length - 1].addComponents(button);
+			DiscordCollectorUtils.addButtonToRow(rows, button);
 
 			const reactionText = `${emoji} ${i18n.t(`events:${data.eventId}.possibilities.${possibility.name}.text`, {
 				lng
@@ -99,14 +110,20 @@ export async function createBigEventCollector(context: PacketContext, packet: Re
 		}
 	}
 
-	const msg = (await interaction.editReply({
+	const msgOptions = {
 		content: i18n.t("commands:report.doEvent", {
 			lng,
 			event: eventText,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}),
 		components: rows
-	}))!;
+	};
+
+	// Can be from a string select menu when the player started the event from a city
+	const msg = context.discord?.stringSelectMenuInteraction ? await interaction.followUp(msgOptions) : await interaction.editReply(msgOptions);
+	if (!msg) {
+		return null;
+	}
 
 	let responded = false; // To avoid concurrence between the button controller and reaction controller
 	const respondToEvent = (possibilityName: string, buttonInteraction: ButtonInteraction | null): void => {
@@ -197,7 +214,7 @@ function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes
 		[
 			packet.effect?.name === Effect.OCCUPIED.id,
 			"timeLost",
-			{ timeLost: packet.effect ? i18n.formatDuration(packet.effect.time, lng) : 0 }
+			{ timeLost: packet.effect ? minutesDisplayIntl(packet.effect.time, lng) : 0 }
 		]
 	];
 }
@@ -246,7 +263,7 @@ export async function reportResult(packet: CommandReportBigEventResultRes, conte
  * @param context
  * @param packet
  */
-export async function chooseDestinationCollector(context: PacketContext, packet: ReactionCollectorChooseDestinationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function chooseDestinationCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction.userLanguage;
 
@@ -263,19 +280,26 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 	}, {
 		embed,
 		items: packet.reactions.map(reaction => {
-			const destinationReaction = reaction.data;
+			const destinationReaction = reaction.data as ReactionCollectorChooseDestinationReaction;
 
 			// If the trip duration is hidden, the translation module is used with a 2 hours placeholder and the 2 is replaced by a ? afterward
 			const duration = destinationReaction.tripDuration
-				? i18n.formatDuration(destinationReaction.tripDuration, lng)
-				: i18n.formatDuration(120, lng)
+				? minutesDisplayIntl(destinationReaction.tripDuration, lng)
+				: minutesDisplayIntl(120, lng)
 					.replace("2", "?");
 			return `${
 				CrowniclesIcons.mapTypes[destinationReaction.mapTypeId]
-			} ${
-				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} (${duration})`;
+			} ${destinationReaction.enterInCity
+				? i18n.t("commands:report.city.enterIn", {
+					lng, mapLocationId: destinationReaction.mapId
+				})
+				: ""}${
+				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} ${destinationReaction.enterInCity ? "" : `(${duration})`}`;
 		})
-	}, { refuse: { can: false } });
+	}, {
+		refuse: { can: false },
+		deferUpdate: true
+	});
 }
 
 function isCurrentlyInEffect(packet: CommandReportTravelSummaryRes, now: number): boolean {
@@ -308,8 +332,8 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
 
 	let percentage = playerTravelledTime / tripDuration;
 
-	const remainingHours = Math.max(Math.floor(millisecondsToHours(playerRemainingTravelTime)), 0);
-	let remainingMinutes = Math.floor(millisecondsToMinutes(playerRemainingTravelTime - remainingHours * 3600000));
+	const remainingHours = Math.max(Math.floor(millisecondsToHours(asMilliseconds(playerRemainingTravelTime))), 0);
+	let remainingMinutes = Math.floor(millisecondsToMinutes(asMilliseconds(playerRemainingTravelTime - remainingHours * 3600000)));
 	if (remainingMinutes === 60) {
 		remainingMinutes = 59;
 	}
@@ -352,9 +376,9 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
  * @param context
  * @param packet
  */
-export async function handleStartPveFight(context: PacketContext, packet: ReactionCollectorPveFightPacket): Promise<ReactionCollectorReturnTypeOrNull> {
+export async function handleStartPveFight(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	const data = packet.data.data;
+	const data = packet.data.data as ReactionCollectorPveFightData;
 	const lng = interaction.userLanguage;
 	const msg = i18n.t("commands:report.pveEvent", {
 		lng,
@@ -455,6 +479,11 @@ export async function displayMonsterReward(
 			pet: petDisplay
 		});
 		descriptionParts.push(`\n${petReactionText}`);
+	}
+
+	const materialLootText = formatMaterialLoot(packet.materialLoot, lng);
+	if (materialLootText) {
+		descriptionParts.push(`\n${materialLootText}`);
 	}
 
 	const embed = new CrowniclesEmbed()
@@ -899,15 +928,11 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 	if (!interaction) {
 		return;
 	}
-
 	const lng = interaction.userLanguage;
 	const now = Date.now();
-
-	// Build embed
 	const travelEmbed = new CrowniclesEmbed();
 	travelEmbed.formatAuthor(i18n.t("commands:report.travelPathTitle", { lng }), interaction.user);
 	travelEmbed.setDescription(generateTravelPathString(packet, now));
-
 	const fieldsArguments = {
 		packet,
 		lng,
@@ -934,6 +959,437 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 	if (hasInteractiveButton(packet) && msg) {
 		setupTravelButtonCollector(msg, row, context, lng);
 	}
+}
+
+export async function stayInCity(context: PacketContext): Promise<void> {
+	const lng = context.discord!.language!;
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.stayTitle", {
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng),
+			lng
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.stayDescription", {
+			lng
+		}));
+	await interaction.followUp({
+		embeds: [embed]
+	});
+}
+
+export async function handleChooseDestinationCity(packet: CommandReportChooseDestinationCityRes, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+
+	const embed = new CrowniclesEmbed();
+	embed.formatAuthor(i18n.t("commands:report.destinationTitle", {
+		lng,
+		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+	}), interaction.user);
+	embed.setDescription(i18n.t("commands:report.city.destination", {
+		lng,
+		mapLocationId: packet.mapId,
+		mapTypeId: packet.mapTypeId
+	}));
+
+	await interaction.followUp({
+		embeds: [embed]
+	});
+}
+
+export async function handleEatInnMeal(packet: CommandReportEatInnMealRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.inns.eatMealTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.inns.eatMealDescription", {
+			lng,
+			energy: packet.energy,
+			price: packet.moneySpent
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleInnRoom(packet: CommandReportSleepRoomRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.inns.roomTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(`${i18n.t(`commands:report.city.inns.roomsStories.${packet.roomId}`, {
+			lng
+		})}\n\n${i18n.t("commands:report.city.inns.roomEndStory", {
+			lng,
+			health: packet.health,
+			price: packet.moneySpent
+		})}`);
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleItemEnchanted(packet: CommandReportItemEnchantedRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.enchanter.acceptTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.enchanter.acceptStory", {
+			lng,
+			enchantmentId: packet.enchantmentId,
+			enchantmentType: packet.enchantmentType
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleBuyHome(packet: CommandReportBuyHomeRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.buyHomeTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.buyHomeDescription", {
+			lng,
+			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleUpgradeHome(packet: CommandReportUpgradeHomeRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.upgradeHomeTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.upgradeHomeDescription", {
+			lng,
+			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.moveHomeTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.moveHomeDescription", {
+			lng,
+			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleUpgradeItem(packet: CommandReportUpgradeItemRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.upgradeItemDescription", {
+			lng,
+			newLevel: packet.newItemLevel
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleUpgradeItemMissingMaterials(context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemMissingMaterialsTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.upgradeItemMissingMaterialsDescription", { lng }));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleUpgradeItemMaxLevel(context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemMaxLevelTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.upgradeItemMaxLevelDescription", { lng }));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+// Blacksmith handlers
+export async function handleBlacksmithUpgrade(
+	packet: {
+		newItemLevel: number; totalCost: number; boughtMaterials: boolean;
+	},
+	context: PacketContext
+): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+	const descriptionKey = packet.boughtMaterials
+		? "commands:report.city.blacksmith.upgradeSuccessWithBuy"
+		: "commands:report.city.blacksmith.upgradeSuccess";
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.blacksmith.upgradeTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t(descriptionKey, {
+			lng,
+			newLevel: packet.newItemLevel
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleBlacksmithDisenchant(
+	_packet: { cost: number },
+	context: PacketContext
+): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.blacksmith.disenchantTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.blacksmith.disenchantSuccess", { lng }));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleBlacksmithNotEnoughMoney(
+	packet: { missingMoney: number },
+	context: PacketContext
+): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.blacksmith.title", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.blacksmith.notEnoughMoney", {
+			lng,
+			missingMoney: packet.missingMoney
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleBlacksmithMissingMaterials(context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.blacksmith.missingMaterialsTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.blacksmith.missingMaterialsDescription", { lng }));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleHomeBed(packet: CommandReportHomeBedRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.homes.bed.restTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.homes.bed.restDescription", {
+			lng,
+			health: packet.health
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleGuildDomainPurchase(packet: CommandReportGuildDomainPurchaseRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.guildDomain.purchaseTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.guildDomain.purchaseDescription", {
+			lng,
+			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleGuildDomainRelocate(packet: CommandReportGuildDomainRelocateRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.guildDomain.relocateTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.guildDomain.relocateDescription", {
+			lng,
+			cost: packet.cost
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
+}
+
+export async function handleGuildDomainNotEnoughTreasury(packet: CommandReportGuildDomainNotEnoughTreasuryRes, context: PacketContext): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	if (!interaction) {
+		return;
+	}
+	const lng = context.discord!.language;
+
+	const embed = new CrowniclesEmbed()
+		.formatAuthor(i18n.t("commands:report.city.guildDomain.notEnoughTreasuryTitle", {
+			lng,
+			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+		}), interaction.user)
+		.setDescription(i18n.t("commands:report.city.guildDomain.notEnoughTreasuryDescription", {
+			lng,
+			missingTreasury: packet.missingTreasury
+		}));
+
+	await interaction.editReply({
+		embeds: [embed]
+	});
 }
 
 export const commandInfo: ICommand = {

@@ -1,0 +1,25 @@
+{
+  "level": 3,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 4,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 14,
+      "quantity": 1
+    },
+    {
+      "materialId": 24,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 4,
+  "outputMaterialQuantity": 1,
+  "discoveredByDefault": true,
+  "petFood": null
+}

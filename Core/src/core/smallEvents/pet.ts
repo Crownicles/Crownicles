@@ -23,6 +23,8 @@ import {
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { InventorySlots } from "../database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { MissionsController } from "../missions/MissionsController";
 import { giveFoodToGuild } from "../utils/FoodUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
@@ -41,6 +43,7 @@ interface InteractionContext {
 	context: PacketContext;
 	player: Player;
 	petEntity: PetEntity;
+	playerActiveObjects: PlayerActiveObjects;
 }
 
 /**
@@ -107,10 +110,10 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 		canExecute: ({ player }) => player.fightPointsLost > 0,
 		range: SmallEventConstants.PET.ENERGY,
 		execute: ({
-			packet, player
+			packet, player, playerActiveObjects
 		}, amount) => {
 			packet.amount = amount;
-			player.addEnergy(amount!, NumberChangeReason.SMALL_EVENT);
+			player.addEnergy(amount!, NumberChangeReason.SMALL_EVENT, playerActiveObjects);
 		}
 	},
 	[PetConstants.PET_INTERACTIONS_NAMES.WIN_FOOD]: {
@@ -164,7 +167,9 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 	},
 	[PetConstants.PET_INTERACTIONS_NAMES.WIN_HEALTH]: createStatInteraction({
 		range: SmallEventConstants.PET.HEALTH,
-		canExecute: ({ player }) => player.health < player.getMaxHealth(),
+		canExecute: ({
+			player, playerActiveObjects
+		}) => player.getHealthValue() < player.getMaxHealth(playerActiveObjects),
 		apply: ({
 			response, player
 		}, amount) => player.addHealth({
@@ -296,8 +301,9 @@ async function managePickedInteraction(packet: SmallEventPetPacket, response: Cr
 		return;
 	}
 
+	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	const ctx: InteractionContext = {
-		packet, response, context, player, petEntity
+		packet, response, context, player, petEntity, playerActiveObjects
 	};
 
 	// Check if the interaction can be executed

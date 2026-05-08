@@ -103,8 +103,8 @@ async function getPlayerStats(player: Player): Promise<PlayerStats> {
 			glory: player.getGloryPoints()
 		},
 		energy: {
-			value: player.getCumulativeEnergy(),
-			max: player.getMaxCumulativeEnergy()
+			value: player.getCumulativeEnergy(playerActiveObjects),
+			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
 		attack: player.getCumulativeAttack(playerActiveObjects),
 		defense: player.getCumulativeDefense(playerActiveObjects),
@@ -337,7 +337,7 @@ function buildPlayerGloryInfo(player: Player, oldGlory: number): FightRewardPack
 async function fightEndCallback(fight: FightController, response: CrowniclesPacket[]): Promise<void> {
 	notifyDefenderOfAttack(fight);
 
-	const fightLogId = await crowniclesInstance.logsDatabase.logFight(fight);
+	const fightLogId = await crowniclesInstance?.logsDatabase.logFight(fight) ?? null;
 	const gameResults = getGameResultFromFight(fight);
 
 	const fightInitiator = fight.fightInitiator;
@@ -560,7 +560,8 @@ export default class FightCommand {
 		level: FightConstants.REQUIRED_LEVEL
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandFightPacketReq, context: PacketContext): Promise<void> {
-		if (!player.hasEnoughEnergyToFight()) {
+		const playerActiveObjects = await InventorySlots.getMainSlotsItems(player.id);
+		if (!player.hasEnoughEnergyToFight(playerActiveObjects)) {
 			response.push(makePacket(CommandFightNotEnoughEnergyPacketRes, {}));
 			return;
 		}

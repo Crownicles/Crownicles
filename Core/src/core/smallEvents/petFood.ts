@@ -4,7 +4,9 @@ import {
 import { MapLocationDataController } from "../../data/MapLocation";
 import { MapLinkDataController } from "../../data/MapLink";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToHours, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
@@ -36,6 +38,10 @@ import { Maps } from "../maps/Maps";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { PetUtils } from "../utils/PetUtils";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import {
+	GASPARD_JO_RECIPE_COSTS, RecipeDiscoverySource
+} from "../../../../Lib/src/constants/CookingConstants";
 
 type ReactionHandler = (player: Player, properties: PetFoodProperties) => Promise<string>;
 
@@ -200,12 +206,32 @@ async function applyOutcome(
 		await petEntity.save();
 	}
 
+	// Discover a Gaspard Jo recipe when successfully finding soup (costs money)
+	let discoveredRecipeId: string | undefined;
+	let recipeCost: number | undefined;
+	if (foodType === SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP && [
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PLAYER,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_BY_PET,
+		SmallEventConstants.PET_FOOD.OUTCOMES.FOUND_ANYWAY
+	].includes(outcome)) {
+		const discovery = await RecipeDiscoveryService.tryDiscoverAndPay({
+			player,
+			source: RecipeDiscoverySource.GASPARD_JO,
+			costs: GASPARD_JO_RECIPE_COSTS,
+			response
+		});
+		discoveredRecipeId = discovery.discoveredRecipeId;
+		recipeCost = discovery.recipeCost;
+	}
+
 	response.push(makePacket(SmallEventPetFoodPacket, {
 		outcome,
 		foodType,
 		loveChange,
 		timeLost: wasInvestigating ? SmallEventConstants.PET_FOOD.TRAVEL_TIME_PENALTY_MINUTES : undefined,
-		petSex: petEntity.sex
+		petSex: petEntity.sex,
+		discoveredRecipeId,
+		recipeCost
 	}));
 }
 
@@ -231,10 +257,10 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 	// Pet existence is guaranteed by canBeExecuted
 	const petEntity = (await PetEntity.findByPk(player.petId!))!;
 	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
-	const now = Date.now();
+	const now = nowMs();
 	const hungrySince = petEntity.hungrySince ? new Date(petEntity.hungrySince).getTime() : now;
-	const diffHours = millisecondsToHours(now - hungrySince);
-	const feedDelay = millisecondsToHours(PetConstants.BREED_COOLDOWN * (petModel.feedDelay ?? 1));
+	const diffHours = millisecondsToHours(asMilliseconds(now - hungrySince));
+	const feedDelay = millisecondsToHours(asMilliseconds(PetConstants.BREED_COOLDOWN * (petModel.feedDelay ?? 1)));
 
 	let probability;
 	if (diffHours < feedDelay) {
@@ -263,6 +289,7 @@ async function handleSendPetReaction(player: Player): Promise<string> {
 
 /**
  * Handle the continue reaction outcome
+ * @param _player
  * @param properties
  */
 function handleContinueReaction(_player: Player, properties: PetFoodProperties): Promise<string> {

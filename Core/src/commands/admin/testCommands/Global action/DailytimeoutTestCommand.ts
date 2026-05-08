@@ -1,7 +1,7 @@
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
-import { Crownicles } from "../../../../core/bot/Crownicles";
+import { CrowniclesDaily } from "../../../../core/bot/cronJobs/CrowniclesDaily";
 
 export const commandInfo: ITestCommand = {
 	name: "dailytimeout",
@@ -12,7 +12,7 @@ export const commandInfo: ITestCommand = {
  * Do a dailytimeout
  */
 const dailyTimeoutTestCommand: ExecuteTestCommandLike = async () => {
-	await Crownicles.dailyTimeout();
+	await CrowniclesDaily.job();
 	return "Vous avez effectué un dailytimeout !";
 };
 

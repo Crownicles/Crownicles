@@ -1,5 +1,6 @@
 {
   "rarity": 4,
   "rawDefense": 9,
-  "speed": -30
+  "speed": -30,
+  "type": "metal"
 }

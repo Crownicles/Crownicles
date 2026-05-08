@@ -24,7 +24,7 @@ import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorPetFeedWithoutGuild } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFeedWithoutGuild";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import { GuildShopConstants } from "../../../../Lib/src/constants/GuildShopConstants";
+
 import { getFoodIndexOf } from "../../core/utils/FoodUtils";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -37,7 +37,7 @@ import {
 import {
 	Guild, Guilds
 } from "../../core/database/game/models/Guild";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
 
 function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity) {
@@ -51,7 +51,7 @@ function getWithoutGuildPetFeedEndCallback(player: Player, authorPet: PetEntity)
 		}
 
 		const candyIndex = getFoodIndexOf(PetConstants.PET_FOOD.COMMON_FOOD);
-		const candyPrice = GuildShopConstants.PRICES.FOOD[candyIndex];
+		const candyPrice = GuildDomainConstants.SHOP_PRICES.FOOD[candyIndex];
 
 		await player.reload();
 		await authorPet.reload();
@@ -98,7 +98,7 @@ function withoutGuildPetFeed(context: PacketContext, response: CrowniclesPacket[
 	const collector = new ReactionCollectorPetFeedWithoutGuild(
 		authorPet.asOwnedPet(),
 		PetFood.CANDY,
-		GuildShopConstants.PRICES.FOOD[getFoodIndexOf(PetConstants.PET_FOOD.COMMON_FOOD)]
+		GuildDomainConstants.SHOP_PRICES.FOOD[getFoodIndexOf(PetConstants.PET_FOOD.COMMON_FOOD)]
 	);
 
 	const collectorPacket = new ReactionCollectorInstance(
@@ -188,6 +188,7 @@ async function withGuildPetFeed(context: PacketContext, response: CrowniclesPack
 	}
 	const reactions = [];
 
+	const foodCaps = GuildDomainConstants.getFoodCaps(guild.pantryLevel);
 	for (const food of Object.values(PetConstants.PET_FOOD)) {
 		const foodIndex = getFoodIndexOf(food);
 		const foodAmount = guild.getDataValue(food);
@@ -195,7 +196,7 @@ async function withGuildPetFeed(context: PacketContext, response: CrowniclesPack
 			reactions.push({
 				food: food as PetFood,
 				amount: foodAmount,
-				maxAmount: GuildConstants.MAX_PET_FOOD[foodIndex]
+				maxAmount: foodCaps[foodIndex]
 			});
 		}
 	}

@@ -3,5 +3,6 @@
   "rawDefense": 10,
   "attack": -20,
   "speed": -20,
-  "defense": 5
+  "defense": 5,
+  "type": "nature"
 }

@@ -6,7 +6,7 @@ import {
 import {
 	PetConstants, PetFood
 } from "../../../../Lib/src/constants/PetConstants";
-import { GuildShopConstants } from "../../../../Lib/src/constants/GuildShopConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 
 /**
  * Re-export PetFood as FoodType for backward compatibility
@@ -24,28 +24,28 @@ interface FoodConfig {
 
 /**
  * All food types configuration indexed by type
- * Uses existing constants from PetConstants and GuildShopConstants
+ * Uses existing constants from PetConstants and GuildDomainConstants
  */
 const FOOD_CONFIG_MAP: Record<FoodType, FoodConfig> = {
 	[PetConstants.PET_FOOD.COMMON_FOOD]: {
 		type: PetConstants.PET_FOOD.COMMON_FOOD,
 		rations: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[0],
-		price: GuildShopConstants.PRICES.FOOD[0]
+		price: GuildDomainConstants.SHOP_PRICES.FOOD[0]
 	},
 	[PetConstants.PET_FOOD.HERBIVOROUS_FOOD]: {
 		type: PetConstants.PET_FOOD.HERBIVOROUS_FOOD,
 		rations: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[1],
-		price: GuildShopConstants.PRICES.FOOD[1]
+		price: GuildDomainConstants.SHOP_PRICES.FOOD[1]
 	},
 	[PetConstants.PET_FOOD.CARNIVOROUS_FOOD]: {
 		type: PetConstants.PET_FOOD.CARNIVOROUS_FOOD,
 		rations: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[2],
-		price: GuildShopConstants.PRICES.FOOD[2]
+		price: GuildDomainConstants.SHOP_PRICES.FOOD[2]
 	},
 	[PetConstants.PET_FOOD.ULTIMATE_FOOD]: {
 		type: PetConstants.PET_FOOD.ULTIMATE_FOOD,
 		rations: PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[3],
-		price: GuildShopConstants.PRICES.FOOD[3]
+		price: GuildDomainConstants.SHOP_PRICES.FOOD[3]
 	}
 };
 

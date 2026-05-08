@@ -5,10 +5,12 @@ import {
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandMissionShopKingsFavor,
+	CommandMissionShopMarketAnalysis,
 	CommandMissionShopMoney,
 	CommandMissionShopPacketReq,
 	CommandMissionShopPetInformation,
-	CommandMissionShopSkipMissionResult
+	CommandMissionShopSkipMissionResult,
+	MarketTrend
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
@@ -28,11 +30,16 @@ import {
 } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { millisecondsToMinutes } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToMinutes
+} from "../../../../Lib/src/utils/TimeUtils";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { Language } from "../../../../Lib/src/Language";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { ExpeditionLocationType } from "../../../../Lib/src/constants/ExpeditionConstants";
+import {
+	PlantConstants, PlantId
+} from "../../../../Lib/src/constants/PlantConstants";
 
 /**
  * Get the packet to send to the server
@@ -125,6 +132,37 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 
 	const expeditionSection = buildExpeditionSection(packet, lng);
 
+	const description = i18n.t("commands:shop.shopItems.lovePointsValue.giveDesc", {
+		lng,
+		petName: PetUtils.petToShortString(lng, packet.nickname, packet.typeId, packet.sex),
+		commentOnPetAge: i18n.t("commands:shop.shopItems.lovePointsValue.ageComment", {
+			lng,
+			context: packet.ageCategory,
+			age: packet.petId - 1
+		}),
+		actualLP: packet.lovePoints,
+		maxLovePoints: PetConstants.MAX_LOVE_POINTS,
+		diet: PetUtils.getDietDisplay(packet.diet, lng),
+		force: packet.force,
+		speed: packet.speed,
+		feedDelay: i18n.formatDuration(millisecondsToMinutes(asMilliseconds(packet.feedDelay)), lng),
+		nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
+		commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
+		commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),
+		expeditionSection,
+		dwarfPet: packet.randomPetDwarf
+			? StringUtils.getRandomTranslation("commands:shop.shopItems.lovePointsValue.dwarf", lng, {
+				pet: PetUtils.petToShortString(lng, undefined, packet.randomPetDwarf.typeId, packet.randomPetDwarf.sex),
+				numberOfPetsNotSeen: packet.randomPetDwarf.numberOfPetsNotSeen
+			})
+			: ""
+	}) + (packet.lovePointsGained
+		? i18n.t("commands:shop.shopItems.lovePointsValue.lovePointsGained", {
+			lng,
+			amount: packet.lovePointsGained
+		})
+		: "");
+
 	await interaction.followUp({
 		embeds: [
 			new CrowniclesEmbed()
@@ -132,31 +170,7 @@ export async function handleLovePointsValueShopItem(packet: CommandMissionShopPe
 					lng,
 					pseudo: escapeUsername(interaction.user.displayName)
 				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.shopItems.lovePointsValue.giveDesc", {
-					lng,
-					petName: PetUtils.petToShortString(lng, packet.nickname, packet.typeId, packet.sex),
-					commentOnPetAge: i18n.t("commands:shop.shopItems.lovePointsValue.ageComment", {
-						lng,
-						context: packet.ageCategory,
-						age: packet.petId - 1
-					}),
-					actualLP: packet.lovePoints,
-					maxLovePoints: PetConstants.MAX_LOVE_POINTS,
-					diet: PetUtils.getDietDisplay(packet.diet, lng),
-					force: packet.force,
-					speed: packet.speed,
-					feedDelay: i18n.formatDuration(millisecondsToMinutes(packet.feedDelay), lng),
-					nextFeed: PetUtils.getFeedCooldownDisplay(packet.nextFeed, lng),
-					commentOnFightEffect: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.commentOnFightEffect.${packet.fightAssistId}`, lng),
-					commentOnResult: StringUtils.getRandomTranslation(`commands:shop.shopItems.lovePointsValue.advice.${packet.loveLevel}`, lng),
-					expeditionSection,
-					dwarfPet: packet.randomPetDwarf
-						? StringUtils.getRandomTranslation("commands:shop.shopItems.lovePointsValue.dwarf", lng, {
-							pet: PetUtils.petToShortString(lng, undefined, packet.randomPetDwarf.typeId, packet.randomPetDwarf.sex),
-							numberOfPetsNotSeen: packet.randomPetDwarf.numberOfPetsNotSeen
-						})
-						: ""
-				}))
+				.setDescription(description)
 		]
 	});
 }
@@ -214,6 +228,144 @@ export async function skipMissionShopResult(packet: CommandMissionShopSkipMissio
 					lng,
 					mission: MissionUtils.formatBaseMission(packet.newMission, lng)
 				})}`)
+		]
+	});
+}
+
+
+const TREND_KEYS: Record<MarketTrend, string> = {
+	[MarketTrend.NON_APPLICABLE]: "stable",
+	[MarketTrend.BIG_DROP]: "bigDrop",
+	[MarketTrend.DROP]: "drop",
+	[MarketTrend.STABLE]: "stable",
+	[MarketTrend.RISE]: "rise",
+	[MarketTrend.BIG_RISE]: "bigRise"
+} as const;
+
+type TrendKey = typeof TREND_KEYS[keyof typeof TREND_KEYS];
+
+/**
+ * Get the translation key suffix for a given market trend
+ */
+function getTrendKey(trend: MarketTrend): TrendKey {
+	return TREND_KEYS[trend] ?? "stable";
+}
+
+const TIME_HORIZONS = [
+	"tomorrow",
+	"threeDays",
+	"oneWeek"
+] as const;
+
+/**
+ * Format trend forecasts for a plant
+ */
+function formatPlantTrends(params: {
+	plantId: PlantId;
+	trends: MarketTrend[];
+	translationPrefix: string;
+	lng: Language;
+	breakOnNonApplicable: boolean;
+}): string {
+	let text = `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.plantHeader", {
+		lng: params.lng, plantId: params.plantId, context: "bold"
+	})}`;
+	for (let i = 0; i < TIME_HORIZONS.length; i++) {
+		if (params.trends[i] === MarketTrend.NON_APPLICABLE) {
+			if (params.breakOnNonApplicable) {
+				break;
+			}
+			continue;
+		}
+		const horizon = TIME_HORIZONS[i];
+		const trendKey = getTrendKey(params.trends[i]);
+		text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.${params.translationPrefix}.${horizon}.${trendKey}`, {
+			lng: params.lng, plantId: params.plantId
+		})}`;
+	}
+	return text;
+}
+
+/**
+ * Build the plant rotation notice and new plant forecasts
+ */
+function buildRotationSection(packet: CommandMissionShopMarketAnalysis, lng: Language): string {
+	if (!packet.plantRotation) {
+		return "";
+	}
+
+	const horizonLabel = i18n.t(`commands:shop.shopItems.marketAnalysis.horizonLabels.${TIME_HORIZONS[packet.plantRotation.horizonIndex]}`, { lng });
+	const newPlantsList = packet.plantRotation.newPlantIds.map(plantId =>
+		i18n.t("commands:shop.shopItems.marketAnalysis.plantHeader", {
+			lng, plantId
+		})).join(", ");
+
+	let text = `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.rotation", {
+		lng,
+		horizon: horizonLabel,
+		newPlants: newPlantsList
+	})}`;
+
+	// Show forecasts for each new plant at post-rotation horizons
+	for (const forecast of packet.plantRotation.newPlantForecasts) {
+		text += formatPlantTrends({
+			plantId: forecast.plantId, trends: forecast.trends, translationPrefix: "newPlants", lng, breakOnNonApplicable: false
+		});
+	}
+
+	return text;
+}
+
+/**
+ * Build the market analysis text from the packet data
+ */
+function buildMarketAnalysisText(packet: CommandMissionShopMarketAnalysis, lng: Language): string {
+	// Intro
+	let text = i18n.t("commands:shop.shopItems.marketAnalysis.intro", { lng });
+
+	// King's money section
+	text += `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.kingsMoneyTitle", { lng })}`;
+	for (let i = 0; i < TIME_HORIZONS.length; i++) {
+		const horizon = TIME_HORIZONS[i];
+		const trendKey = getTrendKey(packet.kingsMoneyTrends[i]);
+		text += `\n${i18n.t(`commands:shop.shopItems.marketAnalysis.kingsMoney.${horizon}.${trendKey}`, { lng })}`;
+	}
+
+	// Plants section
+	text += `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.plantsTitle", { lng })}`;
+	for (const plantTrend of packet.plantTrends) {
+		const plant = PlantConstants.getPlantById(plantTrend.plantId);
+		if (!plant) {
+			continue;
+		}
+		text += formatPlantTrends({
+			plantId: plantTrend.plantId, trends: plantTrend.trends, translationPrefix: "plants", lng, breakOnNonApplicable: true
+		});
+	}
+
+	// Rotation notice and new plant forecasts if applicable
+	text += buildRotationSection(packet, lng);
+
+	// Outro
+	text += `\n\n${i18n.t("commands:shop.shopItems.marketAnalysis.outro", { lng })}`;
+
+	return text;
+}
+
+export async function handleMarketAnalysis(packet: CommandMissionShopMarketAnalysis, context: PacketContext): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+	await interaction.followUp({
+		embeds: [
+			new CrowniclesEmbed()
+				.formatAuthor(i18n.t("commands:shop.shopItems.marketAnalysis.giveTitle", {
+					lng,
+					pseudo: escapeUsername(interaction.user.displayName)
+				}), interaction.user)
+				.setDescription(buildMarketAnalysisText(packet, lng))
 		]
 	});
 }

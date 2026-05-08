@@ -3,6 +3,7 @@
   "rawDefense": 10,
   "attack": -30,
   "speed": -40,
+  "type": "poison",
   "tags": [
     "metallic"
   ]

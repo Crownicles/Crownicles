@@ -1,3 +1,7 @@
+import {
+	asMilliseconds, Millisecond
+} from "../types/TimeTypes";
+
 export class Constants {
 	static readonly MESSAGES = {
 		COLLECTOR_TIME: 120000,
@@ -50,7 +54,8 @@ export class Constants {
 			THOUSAND_POINTS: 5,
 			PET_INFORMATION: 3,
 			MISSION_SKIP: 10,
-			BADGE: 150
+			BADGE: 150,
+			MARKET_ANALYSIS: 5
 		},
 		THOUSAND_POINTS: 1000
 	};
@@ -131,10 +136,15 @@ export class Constants {
 	};
 
 
-	static readonly JOIN_BOAT = {
-		TIME_TRAVELLED_SUBTRAHEND: 30,
-		TIME_TRAVELLED_THIRTY_MINUTES: 30,
-		TIME_TRAVELLED_ONE_HOUR: 60,
+	static readonly JOIN_BOAT: {
+		readonly TIME_TRAVELLED_SUBTRAHEND: Millisecond;
+		readonly TIME_TRAVELLED_THIRTY_MINUTES: Millisecond;
+		readonly TIME_TRAVELLED_ONE_HOUR: Millisecond;
+		readonly DIVISOR_TIME_TRAVELLED_LESS_THAN_ONE_HOUR: number;
+	} = {
+		TIME_TRAVELLED_SUBTRAHEND: asMilliseconds(30 * 60 * 1000),
+		TIME_TRAVELLED_THIRTY_MINUTES: asMilliseconds(30 * 60 * 1000),
+		TIME_TRAVELLED_ONE_HOUR: asMilliseconds(60 * 60 * 1000),
 		DIVISOR_TIME_TRAVELLED_LESS_THAN_ONE_HOUR: 3 // The divisor if the time travelled is less than one hour
 	};
 

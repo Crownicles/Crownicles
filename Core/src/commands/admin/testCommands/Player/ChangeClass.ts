@@ -22,7 +22,7 @@ const changeClassTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		throw new Error("Erreur class : choisissez une classe qui existe !");
 	}
 	player.class = newClassId;
-	crowniclesInstance.logsDatabase.logPlayerClassChange(player.keycloakId, newClassId).then();
+	crowniclesInstance?.logsDatabase.logPlayerClassChange(player.keycloakId, newClassId).then();
 	await player.save();
 	return `Vous avez maintenant la classe d'id : ${newClassId} !`;
 };

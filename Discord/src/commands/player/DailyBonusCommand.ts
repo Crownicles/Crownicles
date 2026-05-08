@@ -12,7 +12,7 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import i18n from "../../translations/i18n";
 import {
-	hoursToMilliseconds, printTimeBeforeDate
+	asHours, hoursToMilliseconds, printTimeBeforeDate
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
@@ -38,6 +38,7 @@ import { DiscordItemUtils } from "../../utils/DiscordItemUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
+import { SupportItemDetails } from "../../../../Lib/src/types/SupportItemDetails";
 
 /**
  * Get the daily bonus packet to send to the server
@@ -64,7 +65,7 @@ export async function handleDailyBonusCooldownError(context: PacketContext, last
 				interaction,
 				i18n.t("commands:daily.errors.cooldown", {
 					cooldownTime,
-					time: printTimeBeforeDate(lastDailyTimestamp + hoursToMilliseconds(cooldownTime)),
+					time: printTimeBeforeDate(lastDailyTimestamp + hoursToMilliseconds(asHours(cooldownTime))),
 					lng: interaction.userLanguage
 				})
 			)
@@ -155,14 +156,17 @@ export async function handleDailyBonusCollector(context: PacketContext, packet: 
 			...objects.map((reaction, i) => new StringSelectMenuOptionBuilder()
 				.setEmoji(DisplayUtils.getItemIcon({
 					id: reaction.object.id,
-					category: reaction.object.category
+					category: reaction.object.itemCategory
 				}))
-				.setLabel(DisplayUtils.getSimpleItemName(reaction.object, lng))
+				.setLabel(DisplayUtils.getSimpleItemName({
+					id: reaction.object.id,
+					category: reaction.object.itemCategory
+				}, lng))
 				.setValue(i.toString(10))
 				.setDescription(DiscordItemUtils.getObjectNatureDisplay(
-					reaction.object.detailsSupportItem!.nature,
-					reaction.object.detailsSupportItem!.power,
-					reaction.object.detailsSupportItem!.power, lng
+					(reaction.object as SupportItemDetails).nature,
+					(reaction.object as SupportItemDetails).power,
+					(reaction.object as SupportItemDetails).power, lng
 				))),
 			new StringSelectMenuOptionBuilder()
 				.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
