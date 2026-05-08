@@ -83,7 +83,7 @@ export class Crownicles {
 
 		await Player.update(
 			{
-				tokens: Sequelize.literal(`LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY})`)
+				tokens: Sequelize.literal(`GREATEST(tokens, LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY}))`)
 			},
 			{ where: {} }
 		);

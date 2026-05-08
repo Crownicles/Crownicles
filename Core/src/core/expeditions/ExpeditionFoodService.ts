@@ -50,7 +50,10 @@ const FOOD_CONFIG_MAP: Record<FoodType, FoodConfig> = {
 };
 
 /**
- * Get the diet food type based on whether the pet can eat meat
+ * Get the primary diet food type based on whether the pet can eat meat.
+ * Note: omnivorous pets can use BOTH carnivorous and herbivorous food (see
+ * `getAvailableFoodSlots` / `calculateTotalAvailableRations`); this helper
+ * is kept for callers that need a single representative type.
  */
 export function getDietFoodType(petModel: Pet): FoodType {
 	return petModel.canEatMeat() ? PetConstants.PET_FOOD.CARNIVOROUS_FOOD : PetConstants.PET_FOOD.HERBIVOROUS_FOOD;
@@ -86,7 +89,8 @@ interface AvailableFoodSlot {
  */
 interface FoodCombination {
 	treats: number;
-	diet: number;
+	dietCarn: number;
+	dietHerb: number;
 	soup: number;
 	totalRations: number;
 	totalCost: number;
@@ -94,18 +98,24 @@ interface FoodCombination {
 }
 
 /**
- * Get available food slots for a pet from guild storage
- * Returns [treats, diet, soup] in order
+ * Get available food slots for a pet from guild storage.
+ * Returns [treats, dietCarn, dietHerb, soup] in order. For non-omnivorous
+ * pets, the unsupported diet slot has `available = 0`, so the optimisation
+ * loop collapses naturally on that dimension.
  */
-function getAvailableFoodSlots(guild: Guild, dietType: FoodType): [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot] {
+function getAvailableFoodSlots(guild: Guild, petModel: Pet): [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot] {
 	return [
 		{
 			config: FOOD_CONFIG_MAP.commonFood,
 			available: guild.commonFood
 		},
 		{
-			config: FOOD_CONFIG_MAP[dietType],
-			available: guild[dietType]
+			config: FOOD_CONFIG_MAP.carnivorousFood,
+			available: petModel.canEatMeat() ? guild.carnivorousFood : 0
+		},
+		{
+			config: FOOD_CONFIG_MAP.herbivorousFood,
+			available: petModel.canEatVegetables() ? guild.herbivorousFood : 0
 		},
 		{
 			config: FOOD_CONFIG_MAP.ultimateFood,
@@ -119,7 +129,8 @@ function getAvailableFoodSlots(guild: Guild, dietType: FoodType): [AvailableFood
  */
 interface FoodAmounts {
 	treats: number;
-	diet: number;
+	dietCarn: number;
+	dietHerb: number;
 	soup: number;
 }
 
@@ -127,7 +138,7 @@ interface FoodAmounts {
  * Context for evaluating food combinations
  */
 interface FoodEvaluationContext {
-	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot];
+	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot];
 	rationsRequired: number;
 }
 
@@ -136,23 +147,26 @@ interface FoodEvaluationContext {
  */
 function evaluateCombination(amounts: FoodAmounts, context: FoodEvaluationContext): FoodCombination {
 	const {
-		treats, diet, soup
+		treats, dietCarn, dietHerb, soup
 	} = amounts;
 	const {
 		slots, rationsRequired
 	} = context;
 
 	const totalRations = treats * slots[0].config.rations
-		+ diet * slots[1].config.rations
-		+ soup * slots[2].config.rations;
+		+ dietCarn * slots[1].config.rations
+		+ dietHerb * slots[2].config.rations
+		+ soup * slots[3].config.rations;
 
 	const totalCost = treats * slots[0].config.price
-		+ diet * slots[1].config.price
-		+ soup * slots[2].config.price;
+		+ dietCarn * slots[1].config.price
+		+ dietHerb * slots[2].config.price
+		+ soup * slots[3].config.price;
 
 	return {
 		treats,
-		diet,
+		dietCarn,
+		dietHerb,
 		soup,
 		totalRations,
 		totalCost,
@@ -211,21 +225,22 @@ function tryAndUpdateBest(
  *
  * Algorithm: Smart bounded iteration
  * For each amount of soup (0 to min(available, ceil(required/soupRations)))
- * For each amount of diet (0 to min(available, ceil(remaining/dietRations)))
+ * For each amount of dietCarn (0 to min(available, ceil(remaining/dietRations)))
+ * For each amount of dietHerb (0 to min(available, ceil(remaining/dietRations)))
  * Calculate exact treats needed (with rounding up)
  * If valid, evaluate and compare
  *
- * Complexity: O(S * D) where S = soup items needed, D = diet items needed
- * In practice, this is very small (typically < 10 * 10 = 100 iterations max)
- * Much better than the original O(T * D * S) brute-force with T up to required rations
+ * The two diet dimensions only both expand for omnivorous pets (otherwise
+ * one of them is bounded to 0 by the slot's `available = 0`).
  */
 function findOptimalCombination(
-	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot],
+	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot],
 	rationsRequired: number
 ): FoodCombination {
 	const [
 		treatSlot,
-		dietSlot,
+		dietCarnSlot,
+		dietHerbSlot,
 		soupSlot
 	] = slots;
 	const evalContext: FoodEvaluationContext = {
@@ -234,14 +249,18 @@ function findOptimalCombination(
 
 	// Calculate total available rations
 	const totalAvailableRations = treatSlot.available * treatSlot.config.rations
-		+ dietSlot.available * dietSlot.config.rations
+		+ dietCarnSlot.available * dietCarnSlot.config.rations
+		+ dietHerbSlot.available * dietHerbSlot.config.rations
 		+ soupSlot.available * soupSlot.config.rations;
 
 	// If not enough food, return all available
 	if (totalAvailableRations < rationsRequired) {
 		return evaluateCombination(
 			{
-				treats: treatSlot.available, diet: dietSlot.available, soup: soupSlot.available
+				treats: treatSlot.available,
+				dietCarn: dietCarnSlot.available,
+				dietHerb: dietHerbSlot.available,
+				soup: soupSlot.available
 			},
 			evalContext
 		);
@@ -249,7 +268,12 @@ function findOptimalCombination(
 
 	// Bound search space intelligently
 	const maxSoup = Math.min(soupSlot.available, Math.ceil(rationsRequired / soupSlot.config.rations));
-	const maxDiet = Math.min(dietSlot.available, Math.ceil(rationsRequired / dietSlot.config.rations));
+	const maxDietCarn = dietCarnSlot.config.rations > 0
+		? Math.min(dietCarnSlot.available, Math.ceil(rationsRequired / dietCarnSlot.config.rations))
+		: 0;
+	const maxDietHerb = dietHerbSlot.config.rations > 0
+		? Math.min(dietHerbSlot.available, Math.ceil(rationsRequired / dietHerbSlot.config.rations))
+		: 0;
 
 	let best: FoodCombination | null = null;
 
@@ -257,21 +281,25 @@ function findOptimalCombination(
 	for (let soup = 0; soup <= maxSoup; soup++) {
 		const remainingAfterSoup = rationsRequired - soup * soupSlot.config.rations;
 
-		for (let diet = 0; diet <= maxDiet; diet++) {
-			const remainingAfterDiet = remainingAfterSoup - diet * dietSlot.config.rations;
-			const treatsNeeded = calculateTreatsNeeded(remainingAfterDiet, treatSlot);
+		for (let dietCarn = 0; dietCarn <= maxDietCarn; dietCarn++) {
+			const remainingAfterCarn = remainingAfterSoup - dietCarn * dietCarnSlot.config.rations;
 
-			if (treatsNeeded !== null) {
-				best = tryAndUpdateBest({
-					treats: treatsNeeded, diet, soup
-				}, evalContext, best);
+			for (let dietHerb = 0; dietHerb <= maxDietHerb; dietHerb++) {
+				const remainingAfterHerb = remainingAfterCarn - dietHerb * dietHerbSlot.config.rations;
+				const treatsNeeded = calculateTreatsNeeded(remainingAfterHerb, treatSlot);
+
+				if (treatsNeeded !== null) {
+					best = tryAndUpdateBest({
+						treats: treatsNeeded, dietCarn, dietHerb, soup
+					}, evalContext, best);
+				}
 			}
 		}
 	}
 
 	// Fallback (should not happen if totalAvailable >= required)
 	return best ?? evaluateCombination({
-		treats: 0, diet: 0, soup: 0
+		treats: 0, dietCarn: 0, dietHerb: 0, soup: 0
 	}, evalContext);
 }
 
@@ -280,7 +308,7 @@ function findOptimalCombination(
  */
 function buildPlanFromCombination(
 	combination: FoodCombination,
-	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot]
+	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot]
 ): FoodConsumptionPlan {
 	const plan: FoodConsumptionPlan = {
 		totalRations: combination.totalRations,
@@ -295,19 +323,27 @@ function buildPlanFromCombination(
 		});
 	}
 
-	if (combination.diet > 0) {
+	if (combination.dietCarn > 0) {
 		plan.consumption.push({
 			foodType: slots[1].config.type,
-			itemsToConsume: combination.diet,
-			rationsProvided: combination.diet * slots[1].config.rations
+			itemsToConsume: combination.dietCarn,
+			rationsProvided: combination.dietCarn * slots[1].config.rations
+		});
+	}
+
+	if (combination.dietHerb > 0) {
+		plan.consumption.push({
+			foodType: slots[2].config.type,
+			itemsToConsume: combination.dietHerb,
+			rationsProvided: combination.dietHerb * slots[2].config.rations
 		});
 	}
 
 	if (combination.soup > 0) {
 		plan.consumption.push({
-			foodType: slots[2].config.type,
+			foodType: slots[3].config.type,
 			itemsToConsume: combination.soup,
-			rationsProvided: combination.soup * slots[2].config.rations
+			rationsProvided: combination.soup * slots[3].config.rations
 		});
 	}
 
@@ -339,8 +375,7 @@ export async function calculateFoodConsumptionPlan(
 		return emptyPlan;
 	}
 
-	const dietType = getDietFoodType(petModel);
-	const slots = getAvailableFoodSlots(guild, dietType);
+	const slots = getAvailableFoodSlots(guild, petModel);
 	const optimal = findOptimalCombination(slots, rationsRequired);
 
 	return buildPlanFromCombination(optimal, slots);
@@ -367,11 +402,17 @@ export async function applyFoodConsumptionPlan(guildId: number, plan: FoodConsum
 }
 
 /**
- * Calculate total available rations in a guild for a specific pet's diet
+ * Calculate total available rations in a guild for a specific pet's diet.
+ * Omnivorous pets count both carnivorous and herbivorous food.
  */
 export function calculateTotalAvailableRations(guild: Guild, petModel: Pet): number {
-	const dietType = getDietFoodType(petModel);
-	return guild.commonFood * FOOD_CONFIG_MAP.commonFood.rations
-		+ guild[dietType] * FOOD_CONFIG_MAP[dietType].rations
+	let total = guild.commonFood * FOOD_CONFIG_MAP.commonFood.rations
 		+ guild.ultimateFood * FOOD_CONFIG_MAP.ultimateFood.rations;
+	if (petModel.canEatMeat()) {
+		total += guild.carnivorousFood * FOOD_CONFIG_MAP.carnivorousFood.rations;
+	}
+	if (petModel.canEatVegetables()) {
+		total += guild.herbivorousFood * FOOD_CONFIG_MAP.herbivorousFood.rations;
+	}
+	return total;
 }
