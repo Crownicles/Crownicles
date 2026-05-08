@@ -16,6 +16,7 @@ export const GUILD_DOMAIN_ERROR = {
 	NOT_ENOUGH_TREASURY: "notEnoughTreasury",
 	NOT_ENOUGH_MONEY: "notEnoughMoney",
 	INVALID_TIER: "invalidTier",
+	INVALID_AMOUNT: "invalidAmount",
 	INVALID_FOOD: "invalidFood",
 	STORAGE_FULL: "storageFull",
 	CANNOT_BUY: "cannotBuy"

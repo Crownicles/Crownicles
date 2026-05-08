@@ -28,7 +28,7 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 
 	const grossAmount = Math.floor(packet.amount);
 	if (!Number.isFinite(grossAmount) || grossAmount <= 0) {
-		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_TIER });
+		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_AMOUNT });
 	}
 
 	if (player.money < grossAmount) {
