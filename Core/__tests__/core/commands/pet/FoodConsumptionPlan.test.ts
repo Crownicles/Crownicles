@@ -308,6 +308,27 @@ describe("Food Consumption Plan", () => {
 				expect(herbivorousUsed).toBe(2);
 				expect(plan.totalRations).toBe(9);
 			});
+
+			it("should split consumption across carnivorous and herbivorous when both are available (balanced tie-break)", async () => {
+				// 6 rations, 0 treats / 5 carn / 5 herb / 0 soup. With the current
+				// pricing (carn = herb = 250 cost / 3 rations), three equally-good
+				// combinations exist: (2 carn, 0 herb), (0 carn, 2 herb) and
+				// (1 carn, 1 herb). The planner should pick the balanced one so
+				// omnivores don't silently drain a single diet stock.
+				vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(0, 5, 5, 0) as never);
+
+				const plan = await calculateFoodConsumptionPlan(
+					createMockPlayer(1),
+					createMockPet(true, true), // Omnivorous
+					6
+				);
+
+				const carnivorousUsed = plan.consumption.find(c => c.foodType === "carnivorousFood")?.itemsToConsume ?? 0;
+				const herbivorousUsed = plan.consumption.find(c => c.foodType === "herbivorousFood")?.itemsToConsume ?? 0;
+				expect(carnivorousUsed).toBe(1);
+				expect(herbivorousUsed).toBe(1);
+				expect(plan.totalRations).toBe(6);
+			});
 		});
 	});
 });
