@@ -233,7 +233,7 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 	const {
 		data, lng
 	} = ctx;
-	if (!data.isChief && !data.isElder) {
+	if (!data.isChief) {
 		return;
 	}
 

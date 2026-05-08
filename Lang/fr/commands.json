@@ -1343,6 +1343,7 @@
       }
     },
     "notEnoughTokensButton": "Jetons insuffisants",
+    "useTokensButton": "Avancer",
     "useTokensLoading": "Chargement...",
     "useTokensConfirmTitle": "{{pseudo}}, confirmation",
     "useTokensConfirmDescription_one": "Voulez-vous dépenser **{{count}} jeton** {emote:unitValues.token} pour avancer jusqu'à la prochaine étape de l'aventure ?\n\nVous avez actuellement **{{playerTokens, number}} jetons** {emote:unitValues.token}.",

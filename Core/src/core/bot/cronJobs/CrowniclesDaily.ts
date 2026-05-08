@@ -155,10 +155,20 @@ export class CrowniclesDaily {
 				let changed = false;
 
 				for (let i = 0; i < foodFields.length; i++) {
-					if (rates[i] > 0) {
-						guild.addFood(foodFields[i], rates[i], NumberChangeReason.GUILD_DAILY);
-						changed = true;
+					if (rates[i] <= 0) {
+						continue;
 					}
+					const foodType = foodFields[i];
+
+					/*
+					 * Skip when the storage is already at cap — adding 0 effective
+					 * food would still trigger a log entry and force a guild save.
+					 */
+					if (guild.getFoodAmount(foodType) >= guild.getFoodCapacityFor(foodType)) {
+						continue;
+					}
+					guild.addFood(foodType, rates[i], NumberChangeReason.GUILD_DAILY);
+					changed = true;
 				}
 
 				if (changed) {
