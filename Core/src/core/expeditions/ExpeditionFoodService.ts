@@ -241,6 +241,41 @@ function tryAndUpdateBest(
  * The two diet dimensions only both expand for omnivorous pets (otherwise
  * one of them is bounded to 0 by the slot's `available = 0`).
  */
+/**
+ * Inner loop of the optimisation: iterate over all viable herbivorous-food
+ * counts for a fixed (soup, dietCarn) pair and return the best combination
+ * found so far. Extracted to keep `findOptimalCombination` shallow.
+ */
+function exploreHerbDimension(args: {
+	soup: number;
+	dietCarn: number;
+	remainingAfterCarn: number;
+	maxDietHerb: number;
+	dietHerbSlot: AvailableFoodSlot;
+	treatSlot: AvailableFoodSlot;
+	evalContext: FoodEvaluationContext;
+	best: FoodCombination | null;
+}): FoodCombination | null {
+	const {
+		soup, dietCarn, remainingAfterCarn, maxDietHerb,
+		dietHerbSlot, treatSlot, evalContext
+	} = args;
+	let best = args.best;
+
+	for (let dietHerb = 0; dietHerb <= maxDietHerb; dietHerb++) {
+		const remainingAfterHerb = remainingAfterCarn - dietHerb * dietHerbSlot.config.rations;
+		const treatsNeeded = calculateTreatsNeeded(remainingAfterHerb, treatSlot);
+		if (treatsNeeded === null) {
+			continue;
+		}
+		best = tryAndUpdateBest({
+			treats: treatsNeeded, dietCarn, dietHerb, soup
+		}, evalContext, best);
+	}
+
+	return best;
+}
+
 function findOptimalCombination(
 	slots: [AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot, AvailableFoodSlot],
 	rationsRequired: number
@@ -291,17 +326,16 @@ function findOptimalCombination(
 
 		for (let dietCarn = 0; dietCarn <= maxDietCarn; dietCarn++) {
 			const remainingAfterCarn = remainingAfterSoup - dietCarn * dietCarnSlot.config.rations;
-
-			for (let dietHerb = 0; dietHerb <= maxDietHerb; dietHerb++) {
-				const remainingAfterHerb = remainingAfterCarn - dietHerb * dietHerbSlot.config.rations;
-				const treatsNeeded = calculateTreatsNeeded(remainingAfterHerb, treatSlot);
-
-				if (treatsNeeded !== null) {
-					best = tryAndUpdateBest({
-						treats: treatsNeeded, dietCarn, dietHerb, soup
-					}, evalContext, best);
-				}
-			}
+			best = exploreHerbDimension({
+				soup,
+				dietCarn,
+				remainingAfterCarn,
+				maxDietHerb,
+				dietHerbSlot,
+				treatSlot,
+				evalContext,
+				best
+			});
 		}
 	}
 
