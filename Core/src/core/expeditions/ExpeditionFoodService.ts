@@ -175,13 +175,21 @@ function evaluateCombination(amounts: FoodAmounts, context: FoodEvaluationContex
 }
 
 /**
- * Compare two combinations: prefer lower excess, then lower cost
+ * Compare two combinations: prefer lower excess, then lower cost, then —
+ * for omnivores — a more balanced split across the two diet types so that
+ * the planner does not silently drain one diet stock while the other sits
+ * untouched.
  */
 function isBetterCombination(candidate: FoodCombination, current: FoodCombination): boolean {
-	if (candidate.excess < current.excess) {
-		return true;
+	if (candidate.excess !== current.excess) {
+		return candidate.excess < current.excess;
 	}
-	return candidate.excess === current.excess && candidate.totalCost < current.totalCost;
+	if (candidate.totalCost !== current.totalCost) {
+		return candidate.totalCost < current.totalCost;
+	}
+	const candidateImbalance = Math.abs(candidate.dietCarn - candidate.dietHerb);
+	const currentImbalance = Math.abs(current.dietCarn - current.dietHerb);
+	return candidateImbalance < currentImbalance;
 }
 
 /**
