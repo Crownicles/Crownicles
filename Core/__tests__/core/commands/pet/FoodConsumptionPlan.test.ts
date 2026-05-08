@@ -22,9 +22,10 @@ function createMockPlayer(guildId: number | null): Player {
 /**
  * Helper to create a mock pet
  */
-function createMockPet(canEatMeat: boolean): Pet {
+function createMockPet(canEatMeat: boolean, canEatVegetables: boolean = !canEatMeat): Pet {
 	return {
-		canEatMeat: () => canEatMeat
+		canEatMeat: () => canEatMeat,
+		canEatVegetables: () => canEatVegetables
 	} as Pet;
 }
 
@@ -272,6 +273,41 @@ describe("Food Consumption Plan", () => {
 			expect(PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[2]).toBe(3);
 			expect(PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[1]).toBe(3);
 			expect(PetConstants.PET_FOOD_LOVE_POINTS_AMOUNT[3]).toBe(5);
+		});
+
+		describe("Omnivorous pets", () => {
+			it("should consume herbivorous food when no carnivorous food is available (regression #4177)", async () => {
+				// Guild has 0 commonFood, 0 carnivorousFood, 4 herbivorousFood, 0 ultimateFood
+				// An omnivorous pet should be able to use the salads (4 * 3 = 12 rations).
+				vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(0, 0, 4, 0) as never);
+
+				const plan = await calculateFoodConsumptionPlan(
+					createMockPlayer(1),
+					createMockPet(true, true), // Omnivorous
+					6
+				);
+
+				const herbivorousUsed = plan.consumption.find(c => c.foodType === "herbivorousFood")?.itemsToConsume ?? 0;
+				expect(herbivorousUsed).toBe(2);
+				expect(plan.totalRations).toBe(6);
+			});
+
+			it("should consume both carnivorous and herbivorous food when needed", async () => {
+				// 9 rations required, only 1 carn + 2 herb available => need both diets.
+				vi.mocked(Guilds.getById).mockResolvedValue(createMockGuild(0, 1, 2, 0) as never);
+
+				const plan = await calculateFoodConsumptionPlan(
+					createMockPlayer(1),
+					createMockPet(true, true), // Omnivorous
+					9
+				);
+
+				const carnivorousUsed = plan.consumption.find(c => c.foodType === "carnivorousFood")?.itemsToConsume ?? 0;
+				const herbivorousUsed = plan.consumption.find(c => c.foodType === "herbivorousFood")?.itemsToConsume ?? 0;
+				expect(carnivorousUsed).toBe(1);
+				expect(herbivorousUsed).toBe(2);
+				expect(plan.totalRations).toBe(9);
+			});
 		});
 	});
 });
