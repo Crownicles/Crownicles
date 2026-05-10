@@ -29,7 +29,9 @@ import {
 import {
 	buildShopBody, buildShopQuantityContainer, buildShopReimburseContainer
 } from "../guildDomain/GuildDomainViews";
-import { FoodShopUIContext } from "../guildDomain/GuildDomainShared";
+import {
+	FoodShopUIContext, FoodKey, PET_FOOD_TO_KEY
+} from "../guildDomain/GuildDomainShared";
 
 import {
 	finishReportWithErrorEmbed, finishReportWithMessage
@@ -43,7 +45,6 @@ type FoodShopData = ReactionCollectorCityData["guildFoodShop"] & object & {
 	/** Recap of the food purchase that triggered the pending reimbursement (used to build a final summary message) */
 	pendingPurchaseRecap?: string;
 };
-type FoodKey = "common" | "carnivorous" | "herbivorous" | "ultimate";
 
 interface FoodShopMenuContext {
 	data: FoodShopData;
@@ -102,7 +103,7 @@ function buildFoodShopMainContainer(ctx: FoodShopMenuContext): ContainerBuilder 
 }
 
 function applyBuyResult(data: FoodShopData, res: CommandReportFoodShopBuyRes): void {
-	const foodKey = res.foodType.replace("Food", "") as FoodKey;
+	const foodKey: FoodKey = PET_FOOD_TO_KEY[res.foodType];
 	data.food[foodKey] = res.newFoodStock;
 	data.treasury = res.newTreasury;
 	data.pendingReimburseAmount = res.totalCost;
