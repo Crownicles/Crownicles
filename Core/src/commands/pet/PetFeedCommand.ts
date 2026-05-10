@@ -43,6 +43,10 @@ import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 
+type CandyFeedReason = "OK" | "petChanged" | "tooPoor";
+
+type GuildFeedReason = "OK" | "petChanged" | "storageEmpty";
+
 /**
  * In-lock body for the no-guild candy-feed flow. Re-validates that
  * the player still owns this pet and can still afford the candy
@@ -55,7 +59,7 @@ async function applyLockedCandyFeed(
 		player: Player; pet: PetEntity;
 	},
 	expectedPetId: number
-): Promise<{ revalidated: false } | { revalidated: true }> {
+): Promise<CandyFeedReason> {
 	const {
 		player, pet
 	} = locked;
@@ -63,10 +67,10 @@ async function applyLockedCandyFeed(
 	const candyPrice = GuildDomainConstants.SHOP_PRICES.FOOD[candyIndex];
 
 	if (player.petId !== expectedPetId) {
-		return { revalidated: false };
+		return "petChanged";
 	}
 	if (player.money < candyPrice) {
-		return { revalidated: false };
+		return "tooPoor";
 	}
 
 	await player.spendMoney({
@@ -84,7 +88,7 @@ async function applyLockedCandyFeed(
 	});
 
 	await Promise.all([pet.save(), player.save()]);
-	return { revalidated: true };
+	return "OK";
 }
 
 /**
@@ -169,7 +173,7 @@ async function runCandyFeedUnderLock(
 				authorPet.id
 			)
 		);
-		if (!outcome.revalidated) {
+		if (outcome !== "OK") {
 			return {
 				ok: false, errorPacket: CommandPetFeedNoMoneyFeedErrorPacket
 			};
@@ -230,10 +234,10 @@ function withoutGuildPetFeed(context: PacketContext, response: CrowniclesPacket[
  */
 type GuildFeedOutcome =
 	| {
-		revalidated: false; reason: "petChanged" | "storageEmpty";
+		reason: "OK"; result: CommandPetFeedResult;
 	}
 	| {
-		revalidated: true; result: CommandPetFeedResult;
+		reason: Exclude<GuildFeedReason, "OK">;
 	};
 
 /**
@@ -289,14 +293,10 @@ async function applyLockedGuildFeed(
 	} = expected;
 
 	if (player.petId !== petId) {
-		return {
-			revalidated: false, reason: "petChanged"
-		};
+		return { reason: "petChanged" };
 	}
 	if (guild.getDataValue(foodReaction.food) < foodReaction.amount) {
-		return {
-			revalidated: false, reason: "storageEmpty"
-		};
+		return { reason: "storageEmpty" };
 	}
 
 	guild.removeFood(foodReaction.food, 1, NumberChangeReason.PET_FEED);
@@ -318,7 +318,7 @@ async function applyLockedGuildFeed(
 	pet.hungrySince = new Date();
 	await Promise.all([pet.save(), guild.save()]);
 	return {
-		revalidated: true, result
+		reason: "OK", result
 	};
 }
 
@@ -360,7 +360,7 @@ async function runGuildFeedUnderLock(
 				}
 			)
 		);
-		if (!outcome.revalidated) {
+		if (outcome.reason !== "OK") {
 			return {
 				ok: false, errorPacket: CommandPetFeedGuildStorageEmptyErrorPacket
 			};
