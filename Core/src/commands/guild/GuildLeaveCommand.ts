@@ -35,13 +35,23 @@ import {
  * dispatch the right response packet without re-deriving state
  * outside of the critical section.
  */
-type LeaveOutcome =
-	| {
-		kind: "notInGuild";
-	}
-	| {
-		kind: "chiefPromotedElder" | "guildDestroyed" | "left";
-	};
+type LeaveOutcomeKind = "notInGuild" | "chiefPromotedElder" | "guildDestroyed" | "left";
+
+type ChiefPromotesElderLocked = {
+	chief: Player; elder: Player; guild: Guild;
+};
+
+type MemberLeavesLocked = {
+	player: Player; guild: Guild;
+};
+
+type GuildLeaveLocked = {
+	player: Player; guild: Guild; elder?: Player;
+};
+
+type GuildLeaveExpected = {
+	guildId: number; elderId: number | null;
+};
 
 /**
  * Promote the locked elder to chief and detach the locked
@@ -51,9 +61,7 @@ type LeaveOutcome =
  */
 async function applyChiefPromotesElder(
 	response: CrowniclesPacket[],
-	locked: {
-		chief: Player; elder: Player; guild: Guild;
-	}
+	locked: ChiefPromotesElderLocked
 ): Promise<void> {
 	const {
 		chief, elder, guild
@@ -94,9 +102,7 @@ async function applyChiefPromotesElder(
  */
 async function applyMemberLeavesGuild(
 	response: CrowniclesPacket[],
-	locked: {
-		player: Player; guild: Guild;
-	}
+	locked: MemberLeavesLocked
 ): Promise<void> {
 	const {
 		player, guild
@@ -145,13 +151,9 @@ function isStillThePromotableElder(
  */
 async function applyLockedAcceptGuildLeave(
 	response: CrowniclesPacket[],
-	locked: {
-		player: Player; guild: Guild; elder?: Player;
-	},
-	expected: {
-		guildId: number; elderId: number | null;
-	}
-): Promise<LeaveOutcome> {
+	locked: GuildLeaveLocked,
+	expected: GuildLeaveExpected
+): Promise<{ kind: LeaveOutcomeKind }> {
 	const {
 		player, guild, elder
 	} = locked;
@@ -200,7 +202,7 @@ async function runLeaveUnderLock(
 	keys: {
 		playerId: number; elderId: number | null; guildId: number;
 	}
-): Promise<LeaveOutcome> {
+): Promise<{ kind: LeaveOutcomeKind }> {
 	if (keys.elderId !== null) {
 		const elderId = keys.elderId;
 		return await withLockedEntities(

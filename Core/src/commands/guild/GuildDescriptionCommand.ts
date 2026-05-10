@@ -34,7 +34,11 @@ import {
 /**
  * Outcome of the in-lock description-edit flow.
  */
-type DescriptionOutcome = "ok" | "noGuild" | "notAnElder";
+type GuildDescriptionOutcome = "OK" | "noGuild" | "notAnElder";
+
+type GuildDescriptionLocked = {
+	player: Player; guild: Guild;
+};
 
 /**
  * In-lock body for the description-edit flow. Re-validates that
@@ -42,19 +46,15 @@ type DescriptionOutcome = "ok" | "noGuild" | "notAnElder";
  * committing the description change.
  */
 async function applyLockedAcceptGuildDescription(
-	locked: {
-		player: Player; guild: Guild;
-	},
-	expected: {
-		guildId: number;
-	},
+	locked: GuildDescriptionLocked,
+	expectedGuildId: number,
 	description: string
-): Promise<DescriptionOutcome> {
+): Promise<GuildDescriptionOutcome> {
 	const {
 		player, guild
 	} = locked;
 
-	if (player.guildId !== expected.guildId) {
+	if (player.guildId !== expectedGuildId) {
 		return "noGuild";
 	}
 	if (!guild.isChiefOrElder(player)) {
@@ -67,7 +67,7 @@ async function applyLockedAcceptGuildDescription(
 	crowniclesInstance?.logsDatabase.logGuildDescriptionChange(player.keycloakId, guild)
 		.then();
 
-	return "ok";
+	return "OK";
 }
 
 async function acceptGuildDescription(player: Player, description: string, response: CrowniclesPacket[]): Promise<void> {
@@ -84,7 +84,7 @@ async function acceptGuildDescription(player: Player, description: string, respo
 				{
 					player: lockedPlayer, guild: lockedGuild
 				},
-				{ guildId: fresh.guildId! },
+				fresh.guildId!,
 				description
 			)
 		);

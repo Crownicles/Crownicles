@@ -43,6 +43,8 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 
+type AltarMissionId = "contributeToBlessing";
+
 /**
  * Calculate money factor based on player's wealth.
  */
@@ -265,8 +267,9 @@ async function runAltarEndCallbackUnderLock(
 	await player.save();
 
 	// Update blessing contribution mission
+	const missionId: AltarMissionId = "contributeToBlessing";
 	await MissionsController.update(player, response, {
-		missionId: "contributeToBlessing",
+		missionId,
 		count: chosenAmount
 	});
 }

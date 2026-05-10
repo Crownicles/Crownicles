@@ -42,6 +42,10 @@ function isOnlyBlockedByGuildKick(kickedPlayer: Player): boolean {
 	return blockingReasons.length === 1 && blockingReasons[0] === BlockingConstants.REASONS.GUILD_KICK;
 }
 
+type GuildKickLocked = {
+	chief: Player; kicked: Player; guild: Guild;
+};
+
 /**
  * In-lock body for the kick flow. Re-validates that the chief
  * still leads the guild and that the kicked player is still a
@@ -50,22 +54,18 @@ function isOnlyBlockedByGuildKick(kickedPlayer: Player): boolean {
  */
 async function applyLockedAcceptGuildKick(
 	response: CrowniclesPacket[],
-	locked: {
-		chief: Player; kicked: Player; guild: Guild;
-	},
-	expected: {
-		guildId: number;
-	}
-): Promise<{ ok: boolean }> {
+	locked: GuildKickLocked,
+	expectedGuildId: number
+): Promise<boolean> {
 	const {
 		chief, kicked, guild
 	} = locked;
 
-	if (chief.guildId !== expected.guildId || chief.id !== guild.chiefId) {
-		return { ok: false };
+	if (chief.guildId !== expectedGuildId || chief.id !== guild.chiefId) {
+		return false;
 	}
-	if (kicked.guildId !== expected.guildId) {
-		return { ok: false };
+	if (kicked.guildId !== expectedGuildId) {
+		return false;
 	}
 
 	kicked.guildId = null;
@@ -96,7 +96,7 @@ async function applyLockedAcceptGuildKick(
 			guildName: guild.name
 		})
 	]);
-	return { ok: true };
+	return true;
 }
 
 async function acceptGuildKick(player: Player, kickedPlayer: Player, response: CrowniclesPacket[]): Promise<void> {
@@ -114,7 +114,7 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: C
 	}
 
 	try {
-		const outcome = await withLockedEntities(
+		const ok = await withLockedEntities(
 			[
 				Player.lockKey(freshChief.id),
 				Player.lockKey(freshKicked.id),
@@ -129,11 +129,11 @@ async function acceptGuildKick(player: Player, kickedPlayer: Player, response: C
 				{
 					chief: lockedChief, kicked: lockedKicked, guild: lockedGuild
 				},
-				{ guildId: guildSnapshot.id }
+				guildSnapshot.id
 			)
 		);
 
-		if (!outcome.ok) {
+		if (!ok) {
 			response.push(makePacket(CommandGuildKickPacketRes, {
 				foundPlayer: true,
 				sameGuild: false,
