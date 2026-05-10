@@ -3,6 +3,7 @@ import { MissionsController } from "../../../src/core/missions/MissionsControlle
 import { DailyMission, DailyMissions } from "../../../src/core/database/game/models/DailyMission";
 import type PlayerMissionsInfo from "../../../src/core/database/game/models/PlayerMissionsInfo";
 import { missionInterface as exploreDifferentPlacesInterface } from "../../../src/core/missions/interfaces/exploreDifferentPlaces";
+import { getCrowniclesNamespace } from "../../../../Lib/src/locks/CLSNamespace";
 
 // This test targets the regression where daily missions progressed multiple times for the same location.
 describe("MissionsController daily mission blob handling", () => {
@@ -28,13 +29,13 @@ describe("MissionsController daily mission blob handling", () => {
 			lastDailyMissionCompleted: null
 		} as unknown as PlayerMissionsInfo;
 
-		const updateMissionsCounts = (MissionsController as unknown as {
-			updateMissionsCounts: (
+		const updateMissionsCountsUnderLock = (MissionsController as unknown as {
+			updateMissionsCountsUnderLock: (
 				missionInformation: { missionId: string; count?: number; params?: Record<string, unknown>; set?: boolean; },
 				missionSlots: unknown[],
 				missionInfo: PlayerMissionsInfo
 			) => Promise<{ daily: boolean; campaign: boolean; }>;
-		}).updateMissionsCounts.bind(MissionsController);
+		}).updateMissionsCountsUnderLock.bind(MissionsController);
 
 		const missionInformation = {
 			missionId: "exploreDifferentPlaces",
@@ -42,14 +43,25 @@ describe("MissionsController daily mission blob handling", () => {
 			params: { placeId: 26 }
 		};
 
-		const firstResult = await updateMissionsCounts(missionInformation, [], missionInfo);
+		// `*UnderLock` helpers assert they are running inside a Sequelize CLS
+		// transaction; this unit test mocks the DB layer entirely, so we
+		// install a fake `transaction` value on the shared namespace just for
+		// the duration of the call to satisfy `assertUnderLock`.
+		const namespace = getCrowniclesNamespace();
+		const runWithFakeLockContext = async <R>(fn: () => Promise<R>): Promise<R> =>
+			await namespace.runAndReturn(async () => {
+				namespace.set("transaction", {});
+				return fn();
+			});
+
+		const firstResult = await runWithFakeLockContext(() => updateMissionsCountsUnderLock(missionInformation, [], missionInfo));
 
 		expect(firstResult.daily).toBe(false);
 		expect(missionInfo.dailyMissionNumberDone).toBe(1);
 		expect(missionInfo.dailyMissionBlob?.toString()).toBe("26");
 		expect(missionInfo.save).toHaveBeenCalledTimes(1);
 
-		const secondResult = await updateMissionsCounts(missionInformation, [], missionInfo);
+		const secondResult = await runWithFakeLockContext(() => updateMissionsCountsUnderLock(missionInformation, [], missionInfo));
 
 		expect(secondResult.daily).toBe(false);
 		expect(missionInfo.dailyMissionNumberDone).toBe(1);
