@@ -332,9 +332,9 @@ async function handlePotionOutput(
 async function runPetFoodOutputUnderLock(
 	guildId: number,
 	recipe: CookingRecipeData
-): Promise<{ storedQuantity: number }> {
+): Promise<number> {
 	if (!recipe.petFood) {
-		return { storedQuantity: 0 };
+		return 0;
 	}
 	try {
 		return await withLockedEntities(
@@ -346,7 +346,7 @@ async function runPetFoodOutputUnderLock(
 					lockedGuild.addFood(recipe.petFood!.type, storedQuantity, NumberChangeReason.COOKING);
 					await lockedGuild.save();
 				}
-				return { storedQuantity };
+				return storedQuantity;
 			}
 		);
 	}
@@ -357,7 +357,7 @@ async function runPetFoodOutputUnderLock(
 			 * and the storage. Nothing was stored; the caller
 			 * will route the entire batch as surplus.
 			 */
-			return { storedQuantity: 0 };
+			return 0;
 		}
 		throw error;
 	}
@@ -379,9 +379,9 @@ async function handlePetFoodOutput(
 	 * we read inside the critical section so the available-space
 	 * check is consistent with the eventual save.
 	 */
-	const lockOutcome = await runPetFoodOutputUnderLock(guild.id, recipe);
+	const storedQuantity = await runPetFoodOutputUnderLock(guild.id, recipe);
 
-	const surplus = recipe.petFood.quantity - lockOutcome.storedQuantity;
+	const surplus = recipe.petFood.quantity - storedQuantity;
 	const surplusResult = surplus > 0
 		? await handlePetFoodSurplus(player, recipe, surplus)
 		: {};
@@ -390,7 +390,7 @@ async function handlePetFoodOutput(
 		petFood: {
 			type: recipe.petFood.type,
 			quantity: recipe.petFood.quantity,
-			storedQuantity: lockOutcome.storedQuantity,
+			storedQuantity,
 			...surplusResult
 		}
 	};

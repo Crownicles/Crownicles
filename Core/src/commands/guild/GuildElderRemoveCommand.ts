@@ -30,30 +30,30 @@ import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 
+type GuildElderRemoveLocked = {
+	chief: Player; guild: Guild;
+};
+
 /**
  * In-lock body that clears the elder slot of the locked guild
  * after revalidating chief authority and elder presence.
+ * Returns the demoted player's keycloakId on success, or null
+ * when the revalidation failed.
  */
 async function applyLockedAcceptElderRemove(
 	response: CrowniclesPacket[],
-	locked: {
-		chief: Player; guild: Guild;
-	},
-	expected: {
-		guildId: number;
-	}
-): Promise<{
-	ok: boolean; demotedKeycloakId?: string;
-}> {
+	locked: GuildElderRemoveLocked,
+	expectedGuildId: number
+): Promise<string | null> {
 	const {
 		chief, guild
 	} = locked;
 
-	if (chief.guildId !== expected.guildId || chief.id !== guild.chiefId) {
-		return { ok: false };
+	if (chief.guildId !== expectedGuildId || chief.id !== guild.chiefId) {
+		return null;
 	}
 	if (!guild.elderId) {
-		return { ok: false };
+		return null;
 	}
 
 	const demotedElderId = guild.elderId;
@@ -77,9 +77,7 @@ async function applyLockedAcceptElderRemove(
 			guildName: guild.name
 		})
 	]);
-	return {
-		ok: true, demotedKeycloakId
-	};
+	return demotedKeycloakId;
 }
 
 /**
@@ -88,10 +86,9 @@ async function applyLockedAcceptElderRemove(
  * promotion / demotion cannot duplicate or contradict the change.
  *
  * @param player
- * @param _demotedElder
  * @param response
  */
-async function acceptGuildElderRemove(player: Player, _demotedElder: Player, response: CrowniclesPacket[]): Promise<void> {
+async function acceptGuildElderRemove(player: Player, response: CrowniclesPacket[]): Promise<void> {
 	const freshChief = await Players.getById(player.id);
 	if (freshChief.guildId === null) {
 		response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
@@ -104,18 +101,18 @@ async function acceptGuildElderRemove(player: Player, _demotedElder: Player, res
 	}
 
 	try {
-		const outcome = await withLockedEntities(
+		const demotedKeycloakId = await withLockedEntities(
 			[Player.lockKey(freshChief.id), Guild.lockKey(guildSnapshot.id)] as const,
 			async ([lockedChief, lockedGuild]) => await applyLockedAcceptElderRemove(
 				response,
 				{
 					chief: lockedChief, guild: lockedGuild
 				},
-				{ guildId: guildSnapshot.id }
+				guildSnapshot.id
 			)
 		);
 
-		if (!outcome.ok) {
+		if (demotedKeycloakId === null) {
 			response.push(makePacket(CommandGuildElderRemoveNoElderPacket, {}));
 		}
 	}
@@ -132,7 +129,7 @@ function endCallback(player: Player, demotedElder: Player): EndCallback {
 	return async (collector, response): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 		if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-			await acceptGuildElderRemove(player, demotedElder, response);
+			await acceptGuildElderRemove(player, response);
 		}
 		else {
 			response.push(makePacket(CommandGuildElderRemoveRefusePacketRes, { demotedKeycloakId: demotedElder.keycloakId }));

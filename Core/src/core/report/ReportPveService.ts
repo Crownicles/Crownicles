@@ -218,14 +218,26 @@ function sendMonsterRewardPacket(
  * the related missions / recipe-discovery side effects. Extracted from
  * `doPVEBoss.fightCallback` to keep the callback's cyclomatic complexity low.
  */
-async function applyPveBossWinRewards(
-	fight: FightController,
-	player: Player,
-	rewards: ReturnType<Monster["getRewards"]>,
-	endFightResponse: CrowniclesPacket[],
-	playerActiveObjects: PlayerActiveObjects,
-	mapId: number
-): Promise<void> {
+const PVE_BOSS_MISSION_IDS = {
+	WIN_BOSS: "winBoss",
+	WIN_ANY_BOSS_WITH_DIFFERENT_CLASSES: "winAnyBossWithDifferentClasses",
+	WIN_BOSS_WITH_DIFFERENT_CLASSES: "winBossWithDifferentClasses"
+} as const;
+type PveBossMissionId = typeof PVE_BOSS_MISSION_IDS[keyof typeof PVE_BOSS_MISSION_IDS];
+
+type ApplyPveBossWinRewardsCtx = {
+	fight: FightController;
+	player: Player;
+	rewards: ReturnType<Monster["getRewards"]>;
+	endFightResponse: CrowniclesPacket[];
+	playerActiveObjects: PlayerActiveObjects;
+	mapId: number;
+};
+
+async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<void> {
+	const {
+		fight, player, rewards, endFightResponse, playerActiveObjects, mapId
+	} = ctx;
 	const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
 
 	// Generate and apply material loot from boss
@@ -235,16 +247,18 @@ async function applyPveBossWinRewards(
 	}
 
 	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);
-	await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
 	await MissionsController.update(player, endFightResponse, {
-		missionId: "winAnyBossWithDifferentClasses",
+		missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS satisfies PveBossMissionId
+	});
+	await MissionsController.update(player, endFightResponse, {
+		missionId: PVE_BOSS_MISSION_IDS.WIN_ANY_BOSS_WITH_DIFFERENT_CLASSES satisfies PveBossMissionId,
 		params: { classId: player.class }
 	});
 
 	// Only count final island bosses for the different classes mission
 	if (Maps.isAtFinalPveBoss(player)) {
 		await MissionsController.update(player, endFightResponse, {
-			missionId: "winBossWithDifferentClasses",
+			missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS_WITH_DIFFERENT_CLASSES satisfies PveBossMissionId,
 			params: { classId: player.class }
 		});
 
@@ -323,7 +337,9 @@ export async function doPVEBoss(
 			const isWinOrDraw = fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter;
 
 			if (isWinOrDraw) {
-				await applyPveBossWinRewards(fight, player, rewards, endFightResponse, playerActiveObjects, mapId);
+				await applyPveBossWinRewards({
+					fight, player, rewards, endFightResponse, playerActiveObjects, mapId
+				});
 			}
 
 			await persistPveBossPostFightUnderLock(player, initialFightPointsLost, isWinOrDraw, playerActiveObjects);
