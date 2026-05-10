@@ -40,10 +40,16 @@ type LotteryProperties = {
 	lostTime: number;
 };
 
-type LotteryLevelKey = "hard" | "medium" | "easy";
+const LOTTERY_LEVELS = {
+	HARD: "hard",
+	MEDIUM: "medium",
+	EASY: "easy"
+} as const;
+
+type LotteryLevelKey = typeof LOTTERY_LEVELS[keyof typeof LOTTERY_LEVELS];
 
 async function effectIfGoodRisk(levelKey: LotteryLevelKey, player: Player, dataLottery: LotteryProperties): Promise<number> {
-	if (levelKey !== "easy") {
+	if (levelKey !== LOTTERY_LEVELS.EASY) {
 		await TravelTime.applyEffect(
 			player,
 			Effect.OCCUPIED,
@@ -148,16 +154,16 @@ async function runLotteryEndCallbackUnderLock(
 	let levelKey: LotteryLevelKey;
 
 	if (reaction.reaction.type === ReactionCollectorLotteryHardReaction.name) {
-		levelKey = "hard";
+		levelKey = LOTTERY_LEVELS.HARD;
 	}
 	else if (reaction.reaction.type === ReactionCollectorLotteryMediumReaction.name) {
-		levelKey = "medium";
+		levelKey = LOTTERY_LEVELS.MEDIUM;
 	}
 	else {
-		levelKey = "easy";
+		levelKey = LOTTERY_LEVELS.EASY;
 	}
 
-	if (player.money < SmallEventConstants.LOTTERY.MONEY_MALUS && levelKey === "hard") {
+	if (player.money < SmallEventConstants.LOTTERY.MONEY_MALUS && levelKey === LOTTERY_LEVELS.HARD) {
 		response.push(makePacket(SmallEventLotteryPoorPacket, {}));
 		return;
 	}
@@ -186,7 +192,7 @@ async function runLotteryEndCallbackUnderLock(
 
 		await player.save();
 	}
-	else if (levelKey === "hard" && RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey])) {
+	else if (levelKey === LOTTERY_LEVELS.HARD && RandomUtils.crowniclesRandom.bool(dataLottery.successRate[levelKey])) {
 		await player.addMoney({
 			amount: -SmallEventConstants.LOTTERY.MONEY_MALUS,
 			response,
