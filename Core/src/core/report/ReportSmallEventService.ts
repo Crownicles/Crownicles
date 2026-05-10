@@ -126,11 +126,7 @@ async function loadAndExecuteSmallEvent(
 			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
 			await crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event);
 
-			// Save the small event BEFORE execution so it gets affected by timeTravel() if the event succeeds
-			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(player.id, event, Date.now());
-			// eslint-disable-next-line crownicles/no-unguarded-save -- fresh INSERT of a new PlayerSmallEvent row; no concurrent writer can target a row that does not exist yet
-			await smallEventRecord.save();
-			await runSmallEventUnderPlayerLock(player, smallEvent, response, context, playerActiveObjects);
+			await runSmallEventUnderPlayerLock(player, event, smallEvent, response, context, playerActiveObjects);
 		}
 		catch (e) {
 			CrowniclesLogger.errorWithObj(`Error while executing ${filename} small event`, e);
@@ -144,8 +140,11 @@ async function loadAndExecuteSmallEvent(
 
 /**
  * Run the small event implementation and the subsequent mission update
- * inside a single Player row lock. All synchronous mutations (and any
- * `player.save()` invoked transitively) inherit the surrounding
+ * inside a single Player row lock. The fresh `PlayerSmallEvent` row is
+ * inserted *inside* the same critical section so the record + the body
+ * mutations form a single atomic unit (and a concurrent report racing
+ * for the same player observes either both writes or neither). All
+ * `player.save()` invoked transitively inherit the surrounding
  * transaction through cls-hooked, so concurrent reports for the same
  * player are serialised on the database side. Small events that defer
  * their mutations to a later collector callback acquire the lock for
@@ -154,6 +153,7 @@ async function loadAndExecuteSmallEvent(
  */
 async function runSmallEventUnderPlayerLock(
 	player: Player,
+	event: string,
 	smallEvent: SmallEventFuncs,
 	response: CrowniclesPacket[],
 	context: PacketContext,
@@ -161,6 +161,14 @@ async function runSmallEventUnderPlayerLock(
 ): Promise<void> {
 	try {
 		await withLockedEntities([Player.lockKey(player.id)], async ([lockedPlayer]) => {
+			/*
+			 * Insert the small-event record BEFORE the body so it is affected
+			 * by timeTravel() when the event mutates it. Same transaction as
+			 * the body, so a concurrent racer never observes a half-applied
+			 * effect (record present but body not yet committed, or vice-versa).
+			 */
+			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(lockedPlayer.id, event, Date.now());
+			await smallEventRecord.save();
 			await smallEvent.executeSmallEvent(response, lockedPlayer, context, playerActiveObjects);
 			await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
 		});
