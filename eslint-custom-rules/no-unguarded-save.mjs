@@ -15,7 +15,16 @@
  *     static helper exposed on `Player`, `Guild`, `Home`, …),
  *   - a function whose declared name ends in `UnderLock` (the project
  *     convention for helpers manually extracted out of a locked
- *     critical section, e.g. `runWitchEndCallbackUnderLock`).
+ *     critical section, e.g. `runWitchEndCallbackUnderLock`),
+ *   - a function whose first executable statement is a runtime guard
+ *     `assertUnderLock("...")` (or `await assertUnderLock(...)`) — the
+ *     guard throws at runtime if the helper is reached without an
+ *     active CLS transaction, so the rule trusts the contract,
+ *   - any function in a file whose first block comment carries the
+ *     `@lockInherited` marker (file-level opt-out: every `.save()` in
+ *     the file is assumed to run under an outer lock acquired by every
+ *     caller — the marker is *only* honoured when it sits at the very
+ *     top of the file, not inside random function comments).
  *
  * Anything else is flagged. Audited legacy call sites can opt out
  * locally with `// eslint-disable-next-line crownicles/no-unguarded-save`
@@ -49,18 +58,36 @@ const DEFAULT_LOCK_HELPERS = [
 
 const DEFAULT_LOCK_MEMBER_CALLS = ["withLocked"];
 
+const DEFAULT_LOCK_ASSERTIONS = ["assertUnderLock"];
+
 const DEFAULT_ALLOWED_REGEX = /UnderLock$/;
 
-const DEFAULT_INHERITED_LOCK_MARKER = "@lock-inherited";
+// Hyphenated tags like `@lock-inherited` are rendered as `@lock` by GitHub's
+// markdown lexer (it treats the hyphen as a word boundary), which makes them
+// effectively undetectable in code review. Use camelCase to keep the marker
+// visible end-to-end in the GitHub UI.
+const DEFAULT_INHERITED_LOCK_MARKER = "@lockInherited";
 
-function hasInheritedLockMarker(sourceCode, marker) {
+/**
+ * The marker is only honoured when it appears in a *file-level* block comment
+ * (the first block comment of the source, before any code). This prevents the
+ * tag from being abused as a per-function escape hatch — a guarantee about an
+ * "outer lock acquired by every caller" only makes sense at file scope.
+ */
+function hasFileLevelInheritedLockMarker(sourceCode, marker) {
 	const comments = sourceCode.getAllComments();
-	for (const comment of comments) {
-		if (comment.value.includes(marker)) {
-			return true;
-		}
+	if (comments.length === 0) {
+		return false;
 	}
-	return false;
+	const firstComment = comments[0];
+	if (firstComment.type !== "Block") {
+		return false;
+	}
+	const firstToken = sourceCode.getFirstToken(sourceCode.ast);
+	if (firstToken && firstToken.range[0] < firstComment.range[1]) {
+		return false;
+	}
+	return firstComment.value.includes(marker);
 }
 
 function getEnclosingCallExpression(node) {
@@ -115,6 +142,48 @@ function isFunctionNode(node) {
 		|| node.type === "ArrowFunctionExpression";
 }
 
+/**
+ * Returns the list of statements directly executed at the start of
+ * `functionNode`'s body. Arrow functions with an expression body have
+ * no statements (they cannot host an assertion call), so this returns
+ * an empty list in that case.
+ */
+function getFunctionPrologueStatements(functionNode) {
+	const { body } = functionNode;
+	if (!body || body.type !== "BlockStatement") {
+		return [];
+	}
+	return body.body;
+}
+
+/**
+ * Detects the runtime guard pattern recommended for helpers that need
+ * to be called under a lock but cannot be wrapped statically: a leading
+ * `assertUnderLock(...)` (or `await assertUnderLock(...)`) call as the
+ * very first statement of the function body. The presence of this call
+ * documents the contract at the call site *and* enforces it at runtime,
+ * so `*save()` invocations inside the same function body are treated as
+ * guarded for the purposes of this rule.
+ */
+function hasLockAssertionPrologue(functionNode, assertNames) {
+	const [firstStatement] = getFunctionPrologueStatements(functionNode);
+	if (!firstStatement || firstStatement.type !== "ExpressionStatement") {
+		return false;
+	}
+	let expression = firstStatement.expression;
+	if (expression.type === "AwaitExpression") {
+		expression = expression.argument;
+	}
+	if (!expression || expression.type !== "CallExpression") {
+		return false;
+	}
+	const { callee } = expression;
+	if (callee.type !== "Identifier") {
+		return false;
+	}
+	return assertNames.includes(callee.name);
+}
+
 function isFunctionPassedToLockHelper(functionNode, lockHelpers, lockMemberCalls) {
 	const enclosingCall = getEnclosingCallExpression(functionNode);
 	if (!enclosingCall || !enclosingCall.arguments.includes(functionNode)) {
@@ -126,6 +195,9 @@ function isFunctionPassedToLockHelper(functionNode, lockHelpers, lockMemberCalls
 function isFunctionGuarded(functionNode, options) {
 	const fnName = getEnclosingFunctionName(functionNode);
 	if (fnName && options.allowedRegex.test(fnName)) {
+		return true;
+	}
+	if (hasLockAssertionPrologue(functionNode, options.lockAssertions)) {
 		return true;
 	}
 	return isFunctionPassedToLockHelper(functionNode, options.lockHelpers, options.lockMemberCalls);
@@ -170,6 +242,10 @@ export default {
 						type: "array",
 						items: { type: "string" }
 					},
+					lockAssertions: {
+						type: "array",
+						items: { type: "string" }
+					},
 					allowedEnclosingFunctionRegex: { type: "string" },
 					inheritedLockMarker: { type: "string" }
 				},
@@ -186,6 +262,7 @@ export default {
 		const options = context.options[0] || {};
 		const lockHelpers = options.lockHelpers ?? DEFAULT_LOCK_HELPERS;
 		const lockMemberCalls = options.lockMemberCalls ?? DEFAULT_LOCK_MEMBER_CALLS;
+		const lockAssertions = options.lockAssertions ?? DEFAULT_LOCK_ASSERTIONS;
 		const allowedRegex = options.allowedEnclosingFunctionRegex
 			? new RegExp(options.allowedEnclosingFunctionRegex)
 			: DEFAULT_ALLOWED_REGEX;
@@ -200,7 +277,7 @@ export default {
 		// caller. Use sparingly and document the lock chain in the marker
 		// comment.
 		const sourceCode = context.sourceCode ?? context.getSourceCode();
-		if (hasInheritedLockMarker(sourceCode, inheritedLockMarker)) {
+		if (hasFileLevelInheritedLockMarker(sourceCode, inheritedLockMarker)) {
 			return {};
 		}
 
@@ -210,7 +287,7 @@ export default {
 					return;
 				}
 				if (isGuardedByLock(node, {
-					lockHelpers, lockMemberCalls, allowedRegex
+					lockHelpers, lockMemberCalls, lockAssertions, allowedRegex
 				})) {
 					return;
 				}

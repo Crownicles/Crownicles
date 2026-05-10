@@ -92,3 +92,44 @@ export function useCLSOnSequelize(sequelizeCtor: SequelizeCtor): void {
 export function _resetUseCLSForTests(): void {
 	wiredCtors = new WeakSet<SequelizeCtor>();
 }
+
+/**
+ * Thrown by {@link assertUnderLock} when a `*UnderLock` helper is invoked
+ * without an active Sequelize transaction in the CLS context — meaning
+ * the caller forgot to wrap the call site in `withLockedEntities` /
+ * `withLockedPlayerSafe` / `<Model>.withLocked`. Treat it as a
+ * programming error: the read-validate-save sequence the helper relies
+ * on would not be atomic.
+ */
+export class MissingLockContextError extends Error {
+	constructor(helperName: string) {
+		super(
+			`${helperName}: called outside any withLockedEntities / withLockedPlayerSafe / <Model>.withLocked critical section. `
+			+ "Helpers suffixed with 'UnderLock' assume their caller already holds a row-level lock; wrap the call site accordingly."
+		);
+		this.name = "MissingLockContextError";
+	}
+}
+
+/**
+ * Runtime guard for `*UnderLock` helpers. Throws
+ * {@link MissingLockContextError} if the current async context has no
+ * active transaction in the Crownicles CLS namespace (i.e. the caller
+ * is not inside a `withLockedEntities` / `withLockedPlayerSafe` /
+ * `<Model>.withLocked` callback).
+ *
+ * The lookup matches the key Sequelize stores its CLS-bound transaction
+ * under (`"transaction"`, see Sequelize v6's
+ * `lib/sequelize.js#useCLS`). This is the same value `model.save()`
+ * picks up automatically inside a guarded section, so checking its
+ * presence is a reliable proxy for "I am being called under a lock".
+ *
+ * @param helperName Name of the helper being asserted, used in the
+ * thrown error message to make the call site obvious in stack traces.
+ */
+export function assertUnderLock(helperName: string): void {
+	const namespace = getCrowniclesNamespace();
+	if (!namespace.get("transaction")) {
+		throw new MissingLockContextError(helperName);
+	}
+}
