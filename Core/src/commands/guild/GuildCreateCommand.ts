@@ -93,13 +93,11 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
  * surface the right error packet without re-deriving state
  * outside of the critical section.
  */
-type CreateOutcome =
-	| {
-		ok: true;
-	}
-	| {
-		ok: false; reason: "alreadyInGuild" | "nameTaken" | "noMoney";
-	};
+type GuildCreateOutcome = "OK" | "alreadyInGuild" | "nameTaken" | "noMoney";
+
+type GuildCreateLocked = {
+	player: Player;
+};
 
 /**
  * In-lock body for the guild-create flow. Re-validates that the
@@ -110,17 +108,13 @@ type CreateOutcome =
  */
 async function applyLockedAcceptGuildCreate(
 	response: CrowniclesPacket[],
-	locked: {
-		player: Player;
-	},
+	locked: GuildCreateLocked,
 	guildName: string
-): Promise<CreateOutcome> {
+): Promise<GuildCreateOutcome> {
 	const { player } = locked;
 
 	if (player.guildId !== null) {
-		return {
-			ok: false, reason: "alreadyInGuild"
-		};
+		return "alreadyInGuild";
 	}
 
 	let existingGuild;
@@ -131,15 +125,11 @@ async function applyLockedAcceptGuildCreate(
 		existingGuild = null;
 	}
 	if (existingGuild) {
-		return {
-			ok: false, reason: "nameTaken"
-		};
+		return "nameTaken";
 	}
 
 	if (player.money < GuildCreateConstants.PRICE) {
-		return {
-			ok: false, reason: "noMoney"
-		};
+		return "noMoney";
 	}
 
 	const newGuild = await Guild.create({
@@ -167,7 +157,7 @@ async function applyLockedAcceptGuildCreate(
 	});
 
 	response.push(makePacket(CommandGuildCreateAcceptPacketRes, { guildName }));
-	return { ok: true };
+	return "OK";
 }
 
 async function acceptGuildCreate(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<void> {
@@ -180,18 +170,18 @@ async function acceptGuildCreate(player: Player, guildName: string, response: Cr
 		)
 	);
 
-	if (outcome.ok) {
+	if (outcome === "OK") {
 		return;
 	}
 
 	const playerMoney = player.money;
-	if (outcome.reason === "alreadyInGuild") {
+	if (outcome === "alreadyInGuild") {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
 			playerMoney,
 			foundGuild: true
 		}));
 	}
-	else if (outcome.reason === "nameTaken") {
+	else if (outcome === "nameTaken") {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
 			playerMoney,
 			foundGuild: false,

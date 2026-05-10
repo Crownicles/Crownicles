@@ -30,6 +30,10 @@ import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/int
 import { TravelTime } from "../maps/TravelTime";
 import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
+type GoToPveIslandMissionId = "joinPVEIsland";
+
+const GO_TO_PVE_ISLAND_MISSION_ID: GoToPveIslandMissionId = "joinPVEIsland";
+
 export const smallEventFuncs: SmallEventFuncs = {
 	async canBeExecuted(player: Player): Promise<boolean> {
 		if (!player.guildId) {
@@ -92,7 +96,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 				await Maps.startBoatTravel(lockedPlayer, options, NumberChangeReason.SMALL_EVENT, response);
 				await MissionsController.update(lockedPlayer, response, {
-					missionId: "joinPVEIsland",
+					missionId: GO_TO_PVE_ISLAND_MISSION_ID,
 					set: true
 				});
 				response.push(makePacket(SmallEventGoToPVEIslandAcceptPacket, {
