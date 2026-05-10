@@ -645,10 +645,16 @@ export async function handleCookingMenu(
 			guild
 		}) ?? undefined;
 		if (!pinnedRecipe) {
-			// Recipe no longer exists, clear the pin
+			/*
+			 * Recipe no longer exists, clear the pin under the row lock
+			 * so a concurrent pin/unpin from another device cannot re-emerge
+			 * after we believe we cleared it.
+			 */
+			await Player.withLocked(player.id, async lockedPlayer => {
+				lockedPlayer.pinnedCookingRecipeId = null;
+				await lockedPlayer.save();
+			});
 			player.pinnedCookingRecipeId = null;
-			// eslint-disable-next-line crownicles/no-unguarded-save -- single-field UI preference; not a resource sink (no money / score / energy)
-			await player.save();
 		}
 	}
 
@@ -708,9 +714,10 @@ export async function handleCookingPin(
 		return response;
 	}
 
-	player.pinnedCookingRecipeId = packet.recipeId;
-	// eslint-disable-next-line crownicles/no-unguarded-save -- single-field UI preference; not a resource sink (no money / score / energy)
-	await player.save();
+	await Player.withLocked(player.id, async lockedPlayer => {
+		lockedPlayer.pinnedCookingRecipeId = packet.recipeId;
+		await lockedPlayer.save();
+	});
 
 	response.push(makePacket(CommandReportCookingPinRes, {
 		pinnedRecipe
@@ -729,9 +736,10 @@ export async function handleCookingUnpin(
 	}
 	const { player } = data;
 
-	player.pinnedCookingRecipeId = null;
-	// eslint-disable-next-line crownicles/no-unguarded-save -- single-field UI preference; not a resource sink (no money / score / energy)
-	await player.save();
+	await Player.withLocked(player.id, async lockedPlayer => {
+		lockedPlayer.pinnedCookingRecipeId = null;
+		await lockedPlayer.save();
+	});
 
 	response.push(makePacket(CommandReportCookingUnpinRes, {}));
 	return response;
