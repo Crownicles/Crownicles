@@ -37,6 +37,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
+import { assertUnderLock } from "../../../../Lib/src/locks/CLSNamespace";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 
@@ -85,7 +86,7 @@ export abstract class MissionsController {
 	 * @param response the response packets
 	 * @param specialMissionCompletion
 	 */
-	static async checkCompletedMissions(
+	static async checkCompletedMissionsUnderLock(
 		player: Player,
 		missionSlots: MissionSlot[],
 		missionInfo: PlayerMissionsInfo,
@@ -95,7 +96,8 @@ export abstract class MissionsController {
 			campaign: false
 		}
 	): Promise<Player> {
-		const completedMissions = await MissionsController.completeAndUpdateMissions(player, missionSlots, specialMissionCompletion);
+		assertUnderLock("MissionsController.checkCompletedMissionsUnderLock");
+		const completedMissions = await MissionsController.completeAndUpdateMissionsUnderLock(player, missionSlots, specialMissionCompletion);
 		if (completedMissions.length !== 0) {
 			player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
 			for (const mission of completedMissions) {
@@ -132,12 +134,13 @@ export abstract class MissionsController {
 	 * @param missionInfo
 	 * @param response
 	 */
-	private static async handleDailyStreakMission(
+	private static async handleDailyStreakMissionUnderLock(
 		player: Player,
 		missionSlots: MissionSlot[],
 		missionInfo: PlayerMissionsInfo,
 		response: CrowniclesPacket[]
 	): Promise<void> {
+		assertUnderLock("MissionsController.handleDailyStreakMissionUnderLock");
 		const streakMission = missionSlots.find(slot => slot.missionId === "dailyStreak");
 		if (!streakMission || streakMission.isCompleted()) {
 			// Update the mission if the player doesn't have it or has already completed it
@@ -158,7 +161,6 @@ export abstract class MissionsController {
 			// If the last completion was NOT yesterday and NOT today, reset the streak
 			if (!datesAreOnSameDay(lastCompletedDate, yesterday) && !datesAreOnSameDay(lastCompletedDate, today)) {
 				streakMission.numberDone = 0;
-				// eslint-disable-next-line crownicles/no-unguarded-save -- transitively reached from runUpdateUnderLock; DailyMission row is per-mission and idempotent on reset
 				await streakMission.save();
 			}
 		}
@@ -218,11 +220,11 @@ export abstract class MissionsController {
 	): Promise<Player> {
 		const missionSlots = await MissionSlots.getOfPlayer(player.id);
 
-		await MissionsController.handleExpiredMissions(player, missionSlots, response);
-		const specialMissionCompletion = await MissionsController.updateMissionsCounts(
+		await MissionsController.handleExpiredMissionsUnderLock(player, missionSlots, response);
+		const specialMissionCompletion = await MissionsController.updateMissionsCountsUnderLock(
 			info, missionSlots, missionInfo, player, response
 		);
-		const updated = await MissionsController.checkCompletedMissions(
+		const updated = await MissionsController.checkCompletedMissionsUnderLock(
 			player, missionSlots, missionInfo, response, specialMissionCompletion
 		);
 
@@ -236,7 +238,8 @@ export abstract class MissionsController {
 	 * @param missionSlots
 	 * @param specialMissionCompletion
 	 */
-	static async completeAndUpdateMissions(player: Player, missionSlots: MissionSlot[], specialMissionCompletion: SpecialMissionCompletion): Promise<CompletedMission[]> {
+	static async completeAndUpdateMissionsUnderLock(player: Player, missionSlots: MissionSlot[], specialMissionCompletion: SpecialMissionCompletion): Promise<CompletedMission[]> {
+		assertUnderLock("MissionsController.completeAndUpdateMissionsUnderLock");
 		const completedMissions: CompletedMission[] = [];
 		completedMissions.push(...await Campaign.updatePlayerCampaign(specialMissionCompletion.campaign, player));
 		for (const mission of missionSlots.filter(mission => mission.isCompleted() && !mission.isCampaign())) {
@@ -264,7 +267,6 @@ export abstract class MissionsController {
 				.then();
 		}
 
-		// eslint-disable-next-line crownicles/no-unguarded-save -- reached only from runUpdateUnderLock via checkCompletedMissions
 		await player.save();
 		return completedMissions;
 	}
@@ -295,7 +297,8 @@ export abstract class MissionsController {
 		return player;
 	}
 
-	static async handleExpiredMissions(player: Player, missionSlots: MissionSlot[], response: CrowniclesPacket[]): Promise<void> {
+	static async handleExpiredMissionsUnderLock(player: Player, missionSlots: MissionSlot[], response: CrowniclesPacket[]): Promise<void> {
+		assertUnderLock("MissionsController.handleExpiredMissionsUnderLock");
 		const expiredMissions: MissionSlot[] = [];
 		for (const mission of missionSlots) {
 			if (mission.hasExpired()) {
@@ -313,7 +316,6 @@ export abstract class MissionsController {
 			missions: MissionsController.prepareMissionSlots(expiredMissions),
 			keycloakId: player.keycloakId
 		}));
-		// eslint-disable-next-line crownicles/no-unguarded-save -- reached only from runUpdateUnderLock via handleExpiredMissions
 		await player.save();
 	}
 
@@ -461,7 +463,7 @@ export abstract class MissionsController {
 	 * @param response
 	 * @returns true if the daily mission is finished and needs to be said to the player
 	 */
-	private static async updateDailyMissionCount(
+	private static async updateDailyMissionCountUnderLock(
 		ctx: {
 			missionInformation: MissionInformations;
 			missionInterface: IMission;
@@ -472,6 +474,7 @@ export abstract class MissionsController {
 			count: number;
 		}
 	): Promise<boolean> {
+		assertUnderLock("MissionsController.updateDailyMissionCountUnderLock");
 		const {
 			missionInformation, missionInterface, missionInfo, missionSlots, player, response, count
 		} = ctx;
@@ -493,34 +496,33 @@ export abstract class MissionsController {
 			missionInfo.dailyMissionNumberDone += count;
 		}
 		missionInfo.dailyMissionNumberDone = Math.min(missionInfo.dailyMissionNumberDone, dailyMission.missionObjective);
-		// eslint-disable-next-line crownicles/no-unguarded-save -- reached only from runUpdateUnderLock via updateMissionsCounts → updateDailyMissionCount
 		await missionInfo.save();
 
 		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
-			await MissionsController.handleDailyStreakMission(player, missionSlots, missionInfo, response);
+			await MissionsController.handleDailyStreakMissionUnderLock(player, missionSlots, missionInfo, response);
 			missionInfo.lastDailyMissionCompleted = new Date();
-			// eslint-disable-next-line crownicles/no-unguarded-save -- same chain as above; missionInfo is the locked row from runUpdateUnderLock
 			await missionInfo.save();
 			return true;
 		}
 		return false;
 	}
 
-	private static async updateMissionsCounts(
+	private static async updateMissionsCountsUnderLock(
 		missionInformation: MissionInformations,
 		missionSlots: MissionSlot[],
 		missionInfo: PlayerMissionsInfo,
 		player: Player,
 		response: CrowniclesPacket[]
 	): Promise<SpecialMissionCompletion> {
+		assertUnderLock("MissionsController.updateMissionsCountsUnderLock");
 		const missionInterface = this.getMissionInterface(missionInformation.missionId);
 		const count = missionInformation.count ?? 1;
-		const dailyCompleted = await this.updateDailyMissionCount({
+		const dailyCompleted = await this.updateDailyMissionCountUnderLock({
 			missionInformation, missionInterface, missionInfo, missionSlots, player, response, count
 		});
 		return {
 			daily: dailyCompleted,
-			campaign: await this.checkMissionSlots(missionInterface, missionInformation, missionSlots)
+			campaign: await this.checkMissionSlotsUnderLock(missionInterface, missionInformation, missionSlots)
 		};
 	}
 
@@ -530,18 +532,19 @@ export abstract class MissionsController {
 	 * @param missionInformations
 	 * @param missionSlots
 	 */
-	private static async checkMissionSlots(missionInterface: IMission, missionInformations: MissionInformations, missionSlots: MissionSlot[]): Promise<boolean> {
+	private static async checkMissionSlotsUnderLock(missionInterface: IMission, missionInformations: MissionInformations, missionSlots: MissionSlot[]): Promise<boolean> {
+		assertUnderLock("MissionsController.checkMissionSlotsUnderLock");
 		let completedCampaign = false;
 		for (const mission of missionSlots.filter(missionSlot => missionSlot.missionId === missionInformations.missionId)) {
 			const paramsMatch = missionInterface.areParamsMatchingVariantAndBlob(mission.missionVariant, missionInformations.params!, mission.saveBlob);
 			if (paramsMatch && !mission.hasExpired() && !mission.isCompleted()) {
-				await this.updateMission(mission, missionInformations);
+				await this.updateMissionUnderLock(mission, missionInformations);
 				completedCampaign = completedCampaign || mission.isCampaign() && mission.isCompleted();
 			}
 
 			// Update blob if mission is not completed AND either params match OR mission explicitly wants to always update blob
 			if (this.shouldUpdateBlob(mission, paramsMatch, missionInterface.alwaysUpdateBlob!)) {
-				await this.updateBlob(missionInterface, mission, missionInformations);
+				await this.updateBlobUnderLock(missionInterface, mission, missionInformations);
 			}
 		}
 		return completedCampaign;
@@ -564,11 +567,11 @@ export abstract class MissionsController {
 	 * @param mission
 	 * @param missionInformations
 	 */
-	private static async updateBlob(missionInterface: IMission, mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
+	private static async updateBlobUnderLock(missionInterface: IMission, mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
+		assertUnderLock("MissionsController.updateBlobUnderLock");
 		const saveBlob = missionInterface.updateSaveBlob(mission.missionVariant, mission.saveBlob, missionInformations.params!);
 		if (saveBlob !== mission.saveBlob) {
 			mission.saveBlob = saveBlob;
-			// eslint-disable-next-line crownicles/no-unguarded-save -- MissionSlot row reached only from runUpdateUnderLock via checkMissionSlots
 			await mission.save();
 		}
 	}
@@ -578,10 +581,10 @@ export abstract class MissionsController {
 	 * @param mission
 	 * @param missionInformations
 	 */
-	private static async updateMission(mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
+	private static async updateMissionUnderLock(mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
+		assertUnderLock("MissionsController.updateMissionUnderLock");
 		const count = missionInformations.count ?? 1;
 		mission.numberDone = Math.min(mission.missionObjective, missionInformations.set ? count : mission.numberDone + count);
-		// eslint-disable-next-line crownicles/no-unguarded-save -- MissionSlot row reached only from runUpdateUnderLock via checkMissionSlots
 		await mission.save();
 	}
 }
