@@ -29,7 +29,7 @@ import {
 import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
 import {
 	BUILDING_MENU_IDS, createDomainCollectorWithStayHandling,
-	GuildDomainMenuContext, setBuildingLevel
+	GuildDomainMenuContext, PET_FOOD_TO_KEY, setBuildingLevel
 } from "./GuildDomainShared";
 import {
 	buildBuildingContainer, buildMainDomainContainer, buildShopQuantityContainer,
@@ -107,7 +107,7 @@ async function handleFoodBuy(
 		expectedResponseName: CommandReportFoodShopBuyRes.name,
 		errorTranslationKey: "commands:report.city.guildDomain.subMenus.shop.buyFoodError",
 		onSuccess: async res => {
-			const foodKey = res.foodType.replace("Food", "") as keyof typeof ctx.data.food;
+			const foodKey = PET_FOOD_TO_KEY[res.foodType];
 			ctx.data.food[foodKey] = res.newFoodStock;
 			ctx.data.treasury = res.newTreasury;
 			ctx.data.pendingReimburseAmount = res.totalCost;
