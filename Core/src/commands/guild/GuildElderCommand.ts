@@ -70,6 +70,10 @@ async function isEligible(player: Player, promotedPlayer: Player | null, respons
 	return true;
 }
 
+type GuildElderLocked = {
+	chief: Player; promoted: Player; guild: Guild;
+};
+
 /**
  * In-lock body for the elder-promotion flow. Re-validates that
  * the chief still leads the guild and that the promoted player
@@ -77,25 +81,21 @@ async function isEligible(player: Player, promotedPlayer: Player | null, respons
  */
 async function applyLockedAcceptGuildElder(
 	response: CrowniclesPacket[],
-	locked: {
-		chief: Player; promoted: Player; guild: Guild;
-	},
-	expected: {
-		guildId: number;
-	}
-): Promise<{ ok: boolean }> {
+	locked: GuildElderLocked,
+	expectedGuildId: number
+): Promise<boolean> {
 	const {
 		chief, promoted, guild
 	} = locked;
 
-	if (chief.guildId !== expected.guildId || chief.id !== guild.chiefId) {
-		return { ok: false };
+	if (chief.guildId !== expectedGuildId || chief.id !== guild.chiefId) {
+		return false;
 	}
-	if (promoted.guildId !== expected.guildId) {
-		return { ok: false };
+	if (promoted.guildId !== expectedGuildId) {
+		return false;
 	}
 	if (promoted.id === guild.chiefId || promoted.id === guild.elderId) {
-		return { ok: false };
+		return false;
 	}
 
 	guild.elderId = promoted.id;
@@ -116,7 +116,7 @@ async function applyLockedAcceptGuildElder(
 			guildName: guild.name
 		})
 	]);
-	return { ok: true };
+	return true;
 }
 
 /**
@@ -137,7 +137,7 @@ async function acceptGuildElder(player: Player, promotedPlayer: Player, response
 	const guildSnapshot = (await Guilds.getById(freshChief.guildId))!;
 
 	try {
-		const outcome = await withLockedEntities(
+		const ok = await withLockedEntities(
 			[
 				Player.lockKey(freshChief.id),
 				Player.lockKey(freshPromoted.id),
@@ -152,11 +152,11 @@ async function acceptGuildElder(player: Player, promotedPlayer: Player, response
 				{
 					chief: lockedChief, promoted: lockedPromoted, guild: lockedGuild
 				},
-				{ guildId: guildSnapshot.id }
+				guildSnapshot.id
 			)
 		);
 
-		if (!outcome.ok) {
+		if (!ok) {
 			response.push(makePacket(CommandGuildElderSameGuildPacketRes, {}));
 		}
 	}
