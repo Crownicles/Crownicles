@@ -22,6 +22,9 @@ import { Language } from "../../../../../../Lib/src/Language";
 import {
 	GuildBuilding, GuildDomainConstants
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
+import {
+	PetConstants, PetFood
+} from "../../../../../../Lib/src/constants/PetConstants";
 
 export type GuildDomainData = ReactionCollectorCityData["guildDomain"] & object & {
 
@@ -99,12 +102,25 @@ export function setBuildingLevel(data: GuildDomainData, building: GuildBuilding,
 /**
  * Food keys aligned with PetConstants.PET_FOOD_BY_ID order: [common, herbivorous, carnivorous, ultimate]
  */
-export const FOOD_KEYS: readonly ("common" | "herbivorous" | "carnivorous" | "ultimate")[] = [
+export const FOOD_KEYS = [
 	"common",
 	"herbivorous",
 	"carnivorous",
 	"ultimate"
 ] as const;
+
+export type FoodKey = typeof FOOD_KEYS[number];
+
+/**
+ * Maps a PetFood enum value (e.g. "commonFood") to its FoodKey (e.g. "common").
+ * Single source of truth — avoids fragile `.replace("Food", "")` string surgery at call sites.
+ */
+export const PET_FOOD_TO_KEY: Record<PetFood, FoodKey> = {
+	[PetConstants.PET_FOOD.COMMON_FOOD]: "common",
+	[PetConstants.PET_FOOD.HERBIVOROUS_FOOD]: "herbivorous",
+	[PetConstants.PET_FOOD.CARNIVOROUS_FOOD]: "carnivorous",
+	[PetConstants.PET_FOOD.ULTIMATE_FOOD]: "ultimate"
+};
 
 export function createDomainCollector(
 	ctx: GuildDomainMenuContext,

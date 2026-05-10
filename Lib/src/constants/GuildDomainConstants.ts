@@ -215,9 +215,9 @@ export abstract class GuildDomainConstants {
 	 * Shop prices for food and treasury deposits
 	 */
 	static readonly SHOP_PRICES = {
-		SMALL_DEPOSIT: 1000,
-		BIG_DEPOSIT: 15000,
-		HUGE_DEPOSIT: 50000,
+		SMALL_DEPOSIT: 1_000,
+		BIG_DEPOSIT: 15_000,
+		HUGE_DEPOSIT: 50_000,
 		FOOD: [
 			20,
 			250,
