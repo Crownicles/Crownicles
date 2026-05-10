@@ -140,6 +140,12 @@ async function canSendInvite(invitedPlayer: Player, guild: Guild | null, respons
 	return true;
 }
 
+type GuildInviteReason = "OK" | "alreadyInGuild" | "guildFull";
+
+type GuildInviteLocked = {
+	invited: Player; guild: Guild;
+};
+
 /**
  * In-lock body for the invite-accept flow. Re-validates that the
  * invited player has not joined another guild and that the guild
@@ -147,28 +153,20 @@ async function canSendInvite(invitedPlayer: Player, guild: Guild | null, respons
  */
 async function applyLockedAcceptInvitation(
 	response: CrowniclesPacket[],
-	locked: {
-		invited: Player; guild: Guild;
-	},
+	locked: GuildInviteLocked,
 	invitingPlayer: Player
-): Promise<{
-	ok: boolean; reason?: "alreadyInGuild" | "guildFull";
-}> {
+): Promise<GuildInviteReason> {
 	const {
 		invited, guild
 	} = locked;
 
 	if (invited.hasAGuild()) {
-		return {
-			ok: false, reason: "alreadyInGuild"
-		};
+		return "alreadyInGuild";
 	}
 
 	const memberCount = (await Players.getByGuild(guild.id)).length;
 	if (memberCount >= GuildConstants.MAX_GUILD_MEMBERS) {
-		return {
-			ok: false, reason: "guildFull"
-		};
+		return "guildFull";
 	}
 
 	invited.guildId = guild.id;
@@ -191,7 +189,7 @@ async function applyLockedAcceptInvitation(
 		guildName: guild.name,
 		invitedPlayerKeycloakId: invited.keycloakId
 	}));
-	return { ok: true };
+	return "OK";
 }
 
 /**
@@ -211,7 +209,7 @@ async function runAcceptInvitationUnderLock(
 	};
 
 	try {
-		const outcome = await withLockedEntities(
+		const reason = await withLockedEntities(
 			[Player.lockKey(invitedPlayer.id), Guild.lockKey(guild.id)] as const,
 			async ([lockedInvited, lockedGuild]) => await applyLockedAcceptInvitation(
 				response,
@@ -222,9 +220,9 @@ async function runAcceptInvitationUnderLock(
 			)
 		);
 
-		if (!outcome.ok) {
+		if (reason !== "OK") {
 			response.push(makePacket(
-				outcome.reason === "guildFull"
+				reason === "guildFull"
 					? CommandGuildInviteGuildIsFull
 					: CommandGuildInviteAlreadyInAGuild,
 				packetData
