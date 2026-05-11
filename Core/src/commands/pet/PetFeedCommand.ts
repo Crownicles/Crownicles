@@ -43,8 +43,6 @@ import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 
-type CandyFeedReason = "OK" | "petChanged" | "tooPoor";
-
 type GuildFeedReason = "OK" | "petChanged" | "storageEmpty";
 
 /**
@@ -59,7 +57,7 @@ async function applyLockedCandyFeed(
 		player: Player; pet: PetEntity;
 	},
 	expectedPetId: number
-): Promise<CandyFeedReason> {
+): Promise<boolean> {
 	const {
 		player, pet
 	} = locked;
@@ -67,10 +65,10 @@ async function applyLockedCandyFeed(
 	const candyPrice = GuildDomainConstants.SHOP_PRICES.FOOD[candyIndex];
 
 	if (player.petId !== expectedPetId) {
-		return "petChanged";
+		return false;
 	}
 	if (player.money < candyPrice) {
-		return "tooPoor";
+		return false;
 	}
 
 	await player.spendMoney({
@@ -88,7 +86,7 @@ async function applyLockedCandyFeed(
 	});
 
 	await Promise.all([pet.save(), player.save()]);
-	return "OK";
+	return true;
 }
 
 /**
@@ -173,7 +171,7 @@ async function runCandyFeedUnderLock(
 				authorPet.id
 			)
 		);
-		if (outcome !== "OK") {
+		if (!outcome) {
 			return {
 				ok: false, errorPacket: CommandPetFeedNoMoneyFeedErrorPacket
 			};
