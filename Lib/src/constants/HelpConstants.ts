@@ -15,7 +15,6 @@ export abstract class HelpConstants {
 		"report",
 		"fight",
 		"inventory",
-		"shop",
 		"guild",
 		"pet",
 		"daily"
@@ -179,12 +178,6 @@ export abstract class HelpConstants {
 			"boire",
 			"boir",
 			"br"
-		],
-		SHOP: [
-			"shop",
-			"s",
-			"magasin",
-			"buy"
 		],
 		GUILD_CREATE: [
 			"guildcreate",
@@ -696,12 +689,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":tropical_drink:",
 				NAME: "drink",
-				CATEGORY: "player"
-			},
-		SHOP:
-			{
-				EMOTE: ":shopping_cart:",
-				NAME: "shop",
 				CATEGORY: "player"
 			},
 		GUILD_CREATE:

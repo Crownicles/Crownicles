@@ -562,9 +562,6 @@
       "SELL": {
         "description": "Permet de vendre l'objet qui se trouve dans votre réserve, la valeur de l'objet est déterminée en fonction de sa puissance. Les potions n'ont pas de valeur de revente, mais peuvent être jetées grace à cette commande."
       },
-      "SHOP": {
-        "description": "Cette commande permet de dépenser votre argent pour faciliter votre aventure. En plus des 4 choix de base qui seront disponible de façon permanente, vous pourrez, chaque jour, profiter d'une potion exclusive, disponible à la vente durant 24 heures uniquement."
-      },
       "TOP": {
         "description": "Affiche le classement général du jeu par tranche de 15 joueurs. Les joueurs dans le même serveur que vous sont marqués par une pastille bleue."
       },
