@@ -20,12 +20,11 @@ export enum MarketTrend {
 	BIG_RISE = 2
 }
 
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
 /**
  * @deprecated The /missionsshop slash command has been replaced by the
- * `missionManager` city shop NPC. This packet is kept only because the
- * historical logs migration (008-log-commands) references its class name
- * to back-fill old log rows.
+ * `missionManager` city shop NPC. This packet class is kept (without the
+ * `@sendablePacket` decorator) only because the historical logs migration
+ * (008-log-commands) references its class name to back-fill old log rows.
  */
 export class CommandMissionShopPacketReq extends CrowniclesPacket {
 }
