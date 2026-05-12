@@ -44,7 +44,8 @@ import {
 	buildShopConfirmationContainer,
 	buildShopMainContainer,
 	CITY_SHOP_CUSTOM_IDS,
-	groupReactionsByItem
+	groupReactionsByItem,
+	parseShopAmountCustomId
 } from "./cityShop/CityShopV2Views";
 
 export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
@@ -335,14 +336,11 @@ async function handleShopAmountButton(buttonInteraction: ButtonInteraction, deps
 	if (deps.getState().kind !== "confirmation") {
 		return;
 	}
-	const payload = deps.customId.slice(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX.length);
-	const lastUnderscore = payload.lastIndexOf("_");
-	if (lastUnderscore === -1) {
+	const parsed = parseShopAmountCustomId(deps.customId);
+	if (!parsed) {
 		return;
 	}
-	const itemIdStr = payload.slice(0, lastUnderscore);
-	const amount = parseInt(payload.slice(lastUnderscore + 1), 10);
-	const itemId = shopItemTypeFromId(itemIdStr);
+	const itemId = shopItemTypeFromId(parsed.itemIdStr);
 	await deps.consumeAndDisable(buttonInteraction);
 	DiscordCollectorUtils.sendReaction(
 		deps.packet,
@@ -351,7 +349,7 @@ async function handleShopAmountButton(buttonInteraction: ButtonInteraction, deps
 		null,
 		deps.packet.reactions.findIndex(r => r.type === ReactionCollectorShopItemReaction.name
 			&& (r.data as ReactionCollectorShopItemReaction).shopItemId === itemId
-			&& (r.data as ReactionCollectorShopItemReaction).amount === amount)
+			&& (r.data as ReactionCollectorShopItemReaction).amount === parsed.amount)
 	);
 }
 

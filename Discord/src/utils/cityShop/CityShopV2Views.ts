@@ -23,6 +23,38 @@ export const CITY_SHOP_CUSTOM_IDS = {
 	CLOSE: "cityShopClose"
 } as const;
 
+/**
+ * Separator between the item id and the amount inside an amount custom id.
+ * Must not appear in any value returned by `shopItemTypeToId`. Using `|` instead
+ * of `_` keeps the parsing robust even if a future item id contains underscores.
+ */
+const AMOUNT_ID_SEPARATOR = "|";
+
+export function buildShopAmountCustomId(itemIdStr: string, amount: number): string {
+	return `${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}${itemIdStr}${AMOUNT_ID_SEPARATOR}${amount}`;
+}
+
+export function parseShopAmountCustomId(customId: string): {
+	itemIdStr: string; amount: number;
+} | null {
+	if (!customId.startsWith(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX)) {
+		return null;
+	}
+	const payload = customId.slice(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX.length);
+	const sep = payload.indexOf(AMOUNT_ID_SEPARATOR);
+	if (sep === -1) {
+		return null;
+	}
+	const itemIdStr = payload.slice(0, sep);
+	const amount = parseInt(payload.slice(sep + 1), 10);
+	if (Number.isNaN(amount)) {
+		return null;
+	}
+	return {
+		itemIdStr, amount
+	};
+}
+
 export type CityShopReactionsByItem = Map<ShopItemType, ReactionCollectorShopItemReaction[]>;
 
 interface ShopItemDisplay {
@@ -353,7 +385,7 @@ function buildConfirmationActionRow(
 	if (isSingleUnit) {
 		actionRow.addComponents(
 			new ButtonBuilder()
-				.setCustomId(`${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}${itemIdStr}_${itemReactions[0].amount}`)
+				.setCustomId(buildShopAmountCustomId(itemIdStr, itemReactions[0].amount))
 				.setEmoji(CrowniclesIcons.collectors.accept)
 				.setLabel(i18n.t("commands:shop.v2.confirmButton", { lng }))
 				.setStyle(ButtonStyle.Success)
@@ -364,7 +396,7 @@ function buildConfirmationActionRow(
 		for (const reaction of itemReactions) {
 			actionRow.addComponents(
 				new ButtonBuilder()
-					.setCustomId(`${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}${itemIdStr}_${reaction.amount}`)
+					.setCustomId(buildShopAmountCustomId(itemIdStr, reaction.amount))
 					.setLabel(i18n.t("commands:shop.v2.amountButton", {
 						lng,
 						amount: reaction.amount,
