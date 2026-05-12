@@ -51,15 +51,6 @@ export abstract class HelpConstants {
 			"me",
 			"info"
 		],
-		SWITCH: [
-			"switch",
-			"sw",
-			"échanger",
-			"echanger",
-			"échange",
-			"echange",
-			"intervertir"
-		],
 		FIGHT: [
 			"fight",
 			"f",
@@ -605,12 +596,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":bust_in_silhouette:",
 				NAME: "profile",
-				CATEGORY: "player"
-			},
-		SWITCH:
-			{
-				EMOTE: ":repeat:",
-				NAME: "switch",
 				CATEGORY: "player"
 			},
 		FIGHT:

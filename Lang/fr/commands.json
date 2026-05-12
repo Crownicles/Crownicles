@@ -490,9 +490,6 @@
       "GUILD_SHELTER": {
         "description": "Affiche le refuge d'animaux de la guilde."
       },
-      "GUILD_SHOP": {
-        "description": "Affiche le magasin de votre guilde."
-      },
       "GUILD_STORAGE": {
         "description": "Affiche le contenu de l'entrepôt de la guilde."
       },
