@@ -871,7 +871,7 @@
       "shops": {
         "royalMarket": {
           "label": "Marché royal",
-          "description": "La boutique privée du château regorge de trésors exclusifs. On y échange gemmes contre or et objets rares, et un érudit au regard perçant y tient les registres des quêtes du royaume — il peut en troquer une qui vous échappe contre une autre, plus à votre goût."
+          "description": "La boutique privée du château regorge de trésors exclusifs. On y échange gemmes contre or et objets rares. Un érudit au regard perçant y tient les registres des quêtes du royaume, et peut troquer une quête qui vous échappe contre une autre, plus à votre goût."
         },
         "generalShop": {
           "label": "Boutique générale",
