@@ -149,13 +149,18 @@ function clampButtonLabel(label: string): string {
 	return `${label.slice(0, MAX - 1)}…`;
 }
 
-function buildItemSection(
-	display: ShopItemDisplay,
-	itemReactions: ReactionCollectorShopItemReaction[],
-	data: ReactionCollectorShopData,
-	lng: Language,
-	disabled: boolean
-): SectionBuilder {
+interface ItemSectionArgs {
+	display: ShopItemDisplay;
+	itemReactions: ReactionCollectorShopItemReaction[];
+	data: ReactionCollectorShopData;
+	lng: Language;
+	disabled: boolean;
+}
+
+function buildItemSection(args: ItemSectionArgs): SectionBuilder {
+	const {
+		display, itemReactions, data, lng, disabled
+	} = args;
 	const hasMultipleAmounts = display.amounts.length > 1 || display.amounts[0] !== 1;
 	const priceLine = hasMultipleAmounts
 		? i18n.t("commands:shop.v2.itemPriceUnit", {
@@ -238,7 +243,9 @@ function appendCategoryBlock(args: CategoryBlockArgs): void {
 	for (const itemId of itemIds) {
 		const itemReactions = reactionsByItem.get(itemId)!;
 		const display = buildItemDisplay(data, itemReactions, lng);
-		container.addSectionComponents(buildItemSection(display, itemReactions, data, lng, disabled));
+		container.addSectionComponents(buildItemSection({
+			display, itemReactions, data, lng, disabled
+		}));
 	}
 }
 
@@ -373,13 +380,18 @@ function buildConfirmationInfo(
  * Build the action row for the confirmation view: either a single confirm button (single
  * unit items) or one button per amount, always followed by a cancel button.
  */
-function buildConfirmationActionRow(
-	itemReactions: ReactionCollectorShopItemReaction[],
-	isSingleUnit: boolean,
-	data: ReactionCollectorShopData,
-	lng: Language,
-	disabled: boolean
-): ActionRowBuilder<ButtonBuilder> {
+interface ConfirmationActionRowArgs {
+	itemReactions: ReactionCollectorShopItemReaction[];
+	isSingleUnit: boolean;
+	data: ReactionCollectorShopData;
+	lng: Language;
+	disabled: boolean;
+}
+
+function buildConfirmationActionRow(args: ConfirmationActionRowArgs): ActionRowBuilder<ButtonBuilder> {
+	const {
+		itemReactions, isSingleUnit, data, lng, disabled
+	} = args;
 	const actionRow = new ActionRowBuilder<ButtonBuilder>();
 	const itemIdStr = shopItemTypeToId(itemReactions[0].shopItemId);
 	if (isSingleUnit) {
@@ -461,7 +473,9 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 		)
 	);
 
-	container.addActionRowComponents(buildConfirmationActionRow(itemReactions, isSingleUnit, data, lng, disabled));
+	container.addActionRowComponents(buildConfirmationActionRow({
+		itemReactions, isSingleUnit, data, lng, disabled
+	}));
 
 	return container;
 }
