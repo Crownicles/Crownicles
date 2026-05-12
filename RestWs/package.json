@@ -47,7 +47,7 @@
     "@typescript-eslint/parser": "8.59.0",
     "eslint": "9.39.4",
     "eslint-plugin-jsdoc": "62.9.0",
-    "protobufjs-cli": "1.2.0",
+    "protobufjs-cli": "1.2.1",
     "typescript": "5.9.3",
     "typescript-eslint": "8.59.0"
   }
