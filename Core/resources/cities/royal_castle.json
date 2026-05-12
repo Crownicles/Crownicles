@@ -49,7 +49,6 @@
   ],
   "shops": [
     "royalMarket",
-    "missionManager",
     "generalShop"
   ]
 }
