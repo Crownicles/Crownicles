@@ -289,6 +289,91 @@ export async function handleCommandShopClosed(context: PacketContext): Promise<v
 	await (interaction.replied ? interaction.followUp(args) : interaction.reply(args));
 }
 
+type ShopUiState =
+	| {
+		kind: "main"; container: ContainerBuilder;
+	}
+	| {
+		kind: "confirmation"; container: ContainerBuilder; itemReactions: ReactionCollectorShopItemReaction[];
+	};
+
+interface ShopDispatchDeps {
+	customId: string;
+	packet: ReactionCollectorCreationPacket;
+	context: PacketContext;
+	reactionsByItem: ReturnType<typeof groupReactionsByItem>;
+	showMainView: (buttonInteraction: ButtonInteraction) => Promise<void>;
+	showConfirmationView: (
+		buttonInteraction: ButtonInteraction,
+		itemReactions: ReactionCollectorShopItemReaction[]
+	) => Promise<void>;
+	consumeAndDisable: (buttonInteraction: ButtonInteraction) => Promise<void>;
+	getState: () => ShopUiState;
+}
+
+async function handleShopCloseButton(buttonInteraction: ButtonInteraction, deps: ShopDispatchDeps): Promise<void> {
+	await deps.consumeAndDisable(buttonInteraction);
+	DiscordCollectorUtils.sendReaction(
+		deps.packet,
+		deps.context,
+		deps.context.keycloakId!,
+		buttonInteraction,
+		deps.packet.reactions.findIndex(r => r.type === ReactionCollectorShopCloseReaction.name)
+	);
+}
+
+async function handleShopBuyButton(buttonInteraction: ButtonInteraction, deps: ShopDispatchDeps): Promise<void> {
+	const itemIdStr = deps.customId.slice(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX.length);
+	const itemId = shopItemTypeFromId(itemIdStr);
+	const itemReactions = deps.reactionsByItem.get(itemId);
+	if (!itemReactions) {
+		return;
+	}
+	await deps.showConfirmationView(buttonInteraction, itemReactions);
+}
+
+async function handleShopAmountButton(buttonInteraction: ButtonInteraction, deps: ShopDispatchDeps): Promise<void> {
+	if (deps.getState().kind !== "confirmation") {
+		return;
+	}
+	const payload = deps.customId.slice(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX.length);
+	const lastUnderscore = payload.lastIndexOf("_");
+	if (lastUnderscore === -1) {
+		return;
+	}
+	const itemIdStr = payload.slice(0, lastUnderscore);
+	const amount = parseInt(payload.slice(lastUnderscore + 1), 10);
+	const itemId = shopItemTypeFromId(itemIdStr);
+	await deps.consumeAndDisable(buttonInteraction);
+	DiscordCollectorUtils.sendReaction(
+		deps.packet,
+		deps.context,
+		deps.context.keycloakId!,
+		null,
+		deps.packet.reactions.findIndex(r => r.type === ReactionCollectorShopItemReaction.name
+			&& (r.data as ReactionCollectorShopItemReaction).shopItemId === itemId
+			&& (r.data as ReactionCollectorShopItemReaction).amount === amount)
+	);
+}
+
+async function dispatchShopButton(buttonInteraction: ButtonInteraction, deps: ShopDispatchDeps): Promise<void> {
+	if (deps.customId === CITY_SHOP_CUSTOM_IDS.CLOSE) {
+		await handleShopCloseButton(buttonInteraction, deps);
+		return;
+	}
+	if (deps.customId === CITY_SHOP_CUSTOM_IDS.CANCEL_PURCHASE) {
+		await deps.showMainView(buttonInteraction);
+		return;
+	}
+	if (deps.customId.startsWith(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX)) {
+		await handleShopBuyButton(buttonInteraction, deps);
+		return;
+	}
+	if (deps.customId.startsWith(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX)) {
+		await handleShopAmountButton(buttonInteraction, deps);
+	}
+}
+
 export async function shopCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
@@ -327,14 +412,6 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 	if (!msg) {
 		return null;
 	}
-
-	type ShopUiState =
-		| {
-			kind: "main"; container: ContainerBuilder;
-		}
-		| {
-			kind: "confirmation"; container: ContainerBuilder; itemReactions: ReactionCollectorShopItemReaction[];
-		};
 
 	let state: ShopUiState = {
 		kind: "main",
@@ -410,52 +487,16 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 			await sendInteractionNotForYou(msgComponentInteraction.user, msgComponentInteraction, lng);
 			return;
 		}
-		const buttonInteraction = msgComponentInteraction;
-		const { customId } = buttonInteraction;
-
-		if (customId === CITY_SHOP_CUSTOM_IDS.CLOSE) {
-			await consumeAndDisable(buttonInteraction);
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, msgComponentInteraction, packet.reactions.findIndex(r =>
-				r.type === ReactionCollectorShopCloseReaction.name));
-			return;
-		}
-
-		if (customId.startsWith(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX)) {
-			const itemIdStr = customId.slice(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX.length);
-			const itemId = shopItemTypeFromId(itemIdStr);
-			const itemReactions = reactionsByItem.get(itemId);
-			if (!itemReactions) {
-				return;
-			}
-			await showConfirmationView(buttonInteraction, itemReactions);
-			return;
-		}
-
-		if (customId === CITY_SHOP_CUSTOM_IDS.CANCEL_PURCHASE) {
-			await showMainView(buttonInteraction);
-			return;
-		}
-
-		if (customId.startsWith(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX) && state.kind === "confirmation") {
-			const payload = customId.slice(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX.length);
-			const lastUnderscore = payload.lastIndexOf("_");
-			if (lastUnderscore === -1) {
-				return;
-			}
-			const itemIdStr = payload.slice(0, lastUnderscore);
-			const amount = parseInt(payload.slice(lastUnderscore + 1), 10);
-			const itemId = shopItemTypeFromId(itemIdStr);
-			await consumeAndDisable(buttonInteraction);
-			DiscordCollectorUtils.sendReaction(
-				packet,
-				context,
-				context.keycloakId!,
-				null,
-				packet.reactions.findIndex(r => r.type === ReactionCollectorShopItemReaction.name
-					&& (r.data as ReactionCollectorShopItemReaction).shopItemId === itemId
-					&& (r.data as ReactionCollectorShopItemReaction).amount === amount)
-			);
-		}
+		await dispatchShopButton(msgComponentInteraction, {
+			customId: msgComponentInteraction.customId,
+			packet,
+			context,
+			reactionsByItem,
+			showMainView,
+			showConfirmationView,
+			consumeAndDisable,
+			getState: () => state
+		});
 	});
 
 	buttonCollector.on("end", async () => {

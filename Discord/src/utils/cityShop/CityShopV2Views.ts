@@ -157,6 +157,51 @@ interface MainShopViewArgs {
 }
 
 /**
+ * Group items by their category id, preserving discovery order within each category.
+ */
+function groupItemsByCategory(reactionsByItem: CityShopReactionsByItem): Map<string, ShopItemType[]> {
+	const categoryToItems = new Map<string, ShopItemType[]>();
+	for (const [itemId, reactions] of reactionsByItem) {
+		const categoryId = reactions[0].shopCategoryId;
+		const list = categoryToItems.get(categoryId);
+		if (list) {
+			list.push(itemId);
+		}
+		else {
+			categoryToItems.set(categoryId, [itemId]);
+		}
+	}
+	return categoryToItems;
+}
+
+/**
+ * Append a category block (separator + title + per-item sections) to the container.
+ */
+function appendCategoryBlock(
+	container: ContainerBuilder,
+	categoryId: string,
+	itemIds: ShopItemType[],
+	data: ReactionCollectorShopData,
+	reactionsByItem: CityShopReactionsByItem,
+	lng: Language
+): void {
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
+				lng,
+				count: data.additionalShopData?.remainingPotions
+			})}**`
+		)
+	);
+	for (const itemId of itemIds) {
+		const itemReactions = reactionsByItem.get(itemId)!;
+		const display = buildItemDisplay(data, itemReactions, lng);
+		container.addSectionComponents(buildItemSection(display, itemReactions, data, lng));
+	}
+}
+
+/**
  * Main shop view rendered as a Components V2 container.
  * One section per item with a "buy" button accessory; a single close button at the bottom.
  */
@@ -179,34 +224,11 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 		)
 	);
 
-	const categoryToItems = new Map<string, ShopItemType[]>();
-	for (const [itemId, reactions] of reactionsByItem) {
-		const categoryId = reactions[0].shopCategoryId;
-		const list = categoryToItems.get(categoryId);
-		if (list) {
-			list.push(itemId);
-		}
-		else {
-			categoryToItems.set(categoryId, [itemId]);
-		}
-	}
+	const categoryToItems = groupItemsByCategory(reactionsByItem);
 	const categories = [...categoryToItems.keys()].sort((a, b) => a.localeCompare(b));
 
 	for (const categoryId of categories) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
-					lng,
-					count: data.additionalShopData?.remainingPotions
-				})}**`
-			)
-		);
-		for (const itemId of categoryToItems.get(categoryId)!) {
-			const itemReactions = reactionsByItem.get(itemId)!;
-			const display = buildItemDisplay(data, itemReactions, lng);
-			container.addSectionComponents(buildItemSection(display, itemReactions, data, lng));
-		}
+		appendCategoryBlock(container, categoryId, categoryToItems.get(categoryId)!, data, reactionsByItem, lng);
 	}
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -240,80 +262,66 @@ interface ConfirmationViewArgs {
 }
 
 /**
- * Confirmation view shown after a player clicks "Buy" on an item. Renders the item
- * recap with its informational text, then either a single confirm button (when the
- * item has a unique amount) or one button per amount (e.g. wood bundles).
+ * Build the "item recap" text shown above the confirmation buttons.
  */
-export function buildShopConfirmationContainer(args: ConfirmationViewArgs): ContainerBuilder {
-	const {
-		data, itemReactions, pseudo, lng
-	} = args;
-	const display = buildItemDisplay(data, itemReactions, lng);
-	const isSingleUnit = display.amounts.length === 1 && display.amounts[0] === 1;
-	const container = new ContainerBuilder();
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`### ${i18n.t(
-				isSingleUnit ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple",
-				{
-					lng,
-					pseudo: escapeUsername(pseudo)
-				}
-			)}`
-		)
-	);
-
+function buildConfirmationItemRecap(
+	display: ShopItemDisplay,
+	isSingleUnit: boolean,
+	data: ReactionCollectorShopData,
+	itemReactions: ReactionCollectorShopItemReaction[],
+	lng: Language
+): TextDisplayBuilder {
 	if (isSingleUnit) {
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t("commands:shop.shopItemsDisplaySingle", {
-					lng,
-					name: display.fullName,
-					price: itemReactions[0].price,
-					currency: data.currency,
-					remainingPotions: data.additionalShopData?.remainingPotions
-				})
-			)
-		);
-	}
-	else {
-		const lines = itemReactions.map(reaction => i18n.t("commands:shop.shopItemsDisplayMultiple", {
-			lng,
-			name: display.fullName,
-			amount: reaction.amount,
-			price: reaction.price,
-			currency: data.currency
-		}));
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(lines.join("\n"))
-		);
-	}
-
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			`${CrowniclesIcons.collectors.warning} ${i18n.t(
-				`commands:shop.shopItems.${shopItemTypeToId(itemReactions[0].shopItemId)}.info`,
-				{
-					lng,
-					kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio,
-					thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS
-				}
-			)}`
-		)
-	);
-
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:shop.currentMoney", {
+		return new TextDisplayBuilder().setContent(
+			i18n.t("commands:shop.shopItemsDisplaySingle", {
 				lng,
-				money: data.availableCurrency,
-				currency: data.currency
+				name: display.fullName,
+				price: itemReactions[0].price,
+				currency: data.currency,
+				remainingPotions: data.additionalShopData?.remainingPotions
 			})
-		)
-	);
+		);
+	}
+	const lines = itemReactions.map(reaction => i18n.t("commands:shop.shopItemsDisplayMultiple", {
+		lng,
+		name: display.fullName,
+		amount: reaction.amount,
+		price: reaction.price,
+		currency: data.currency
+	}));
+	return new TextDisplayBuilder().setContent(lines.join("\n"));
+}
 
+/**
+ * Build the warning info block describing what the item does once purchased.
+ */
+function buildConfirmationInfo(
+	data: ReactionCollectorShopData,
+	itemReactions: ReactionCollectorShopItemReaction[],
+	lng: Language
+): TextDisplayBuilder {
+	return new TextDisplayBuilder().setContent(
+		`${CrowniclesIcons.collectors.warning} ${i18n.t(
+			`commands:shop.shopItems.${shopItemTypeToId(itemReactions[0].shopItemId)}.info`,
+			{
+				lng,
+				kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio,
+				thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS
+			}
+		)}`
+	);
+}
+
+/**
+ * Build the action row for the confirmation view: either a single confirm button (single
+ * unit items) or one button per amount, always followed by a cancel button.
+ */
+function buildConfirmationActionRow(
+	itemReactions: ReactionCollectorShopItemReaction[],
+	isSingleUnit: boolean,
+	data: ReactionCollectorShopData,
+	lng: Language
+): ActionRowBuilder<ButtonBuilder> {
 	const actionRow = new ActionRowBuilder<ButtonBuilder>();
 	const itemIdStr = shopItemTypeToId(itemReactions[0].shopItemId);
 	if (isSingleUnit) {
@@ -347,9 +355,68 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 			.setLabel(i18n.t("commands:shop.v2.cancelButton", { lng }))
 			.setStyle(ButtonStyle.Secondary)
 	);
-	container.addActionRowComponents(actionRow);
+	return actionRow;
+}
+
+/**
+ * Confirmation view shown after a player clicks "Buy" on an item. Renders the item
+ * recap with its informational text, then either a single confirm button (when the
+ * item has a unique amount) or one button per amount (e.g. wood bundles).
+ */
+export function buildShopConfirmationContainer(args: ConfirmationViewArgs): ContainerBuilder {
+	const {
+		data, itemReactions, pseudo, lng
+	} = args;
+	const display = buildItemDisplay(data, itemReactions, lng);
+	const isSingleUnit = display.amounts.length === 1 && display.amounts[0] === 1;
+	const container = new ContainerBuilder();
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t(
+				isSingleUnit ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple",
+				{
+					lng,
+					pseudo: escapeUsername(pseudo)
+				}
+			)}`
+		)
+	);
+
+	container.addTextDisplayComponents(buildConfirmationItemRecap(display, isSingleUnit, data, itemReactions, lng));
+	container.addTextDisplayComponents(buildConfirmationInfo(data, itemReactions, lng));
+
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:shop.currentMoney", {
+				lng,
+				money: data.availableCurrency,
+				currency: data.currency
+			})
+		)
+	);
+
+	container.addActionRowComponents(buildConfirmationActionRow(itemReactions, isSingleUnit, data, lng));
 
 	return container;
+}
+
+/**
+ * Disable every button inside a top-level component of the container.
+ */
+function disableButtonsInComponent(component: unknown): void {
+	if (component instanceof ActionRowBuilder) {
+		for (const child of component.components) {
+			if (child instanceof ButtonBuilder) {
+				child.setDisabled(true);
+			}
+		}
+		return;
+	}
+	if (component instanceof SectionBuilder && component.accessory instanceof ButtonBuilder) {
+		component.accessory.setDisabled(true);
+	}
 }
 
 /**
@@ -358,15 +425,6 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
  */
 export function disableContainerButtons(container: ContainerBuilder): void {
 	for (const component of container.components) {
-		if (component instanceof ActionRowBuilder) {
-			for (const child of component.components) {
-				if (child instanceof ButtonBuilder) {
-					child.setDisabled(true);
-				}
-			}
-		}
-		else if (component instanceof SectionBuilder && component.accessory instanceof ButtonBuilder) {
-			component.accessory.setDisabled(true);
-		}
+		disableButtonsInComponent(component);
 	}
 }
