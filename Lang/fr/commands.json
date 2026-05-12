@@ -1432,6 +1432,15 @@
     "closeShopButton": "{emote:messages.refuse} Fermer le magasin",
     "shopConfirmationTitle": "{{pseudo}}, vous avez sélectionné le produit suivant :",
     "shopConfirmationTitleMultiple": "{{pseudo}}, sélectionnez une quantité pour ce produit :",
+    "v2": {
+      "greeting": "{{pseudo}}, parcourez les rayons et appuyez sur **Acheter** à côté de l'article qui vous intéresse.",
+      "buyButton": "Acheter",
+      "confirmButton": "Confirmer",
+      "cancelButton": "Annuler",
+      "itemPrice": "Prix : `{{price, number}}{emote:unitValues.{{currency}}}`",
+      "itemPriceUnit": "Prix unitaire : `{{price, number}}{emote:unitValues.{{currency}}}`",
+      "amountButton": "x{{amount, number}} — {{price, number}} {emote:unitValues.{{currency}}}"
+    },
     "shopCategories": {
       "permanentItem": "Ventes permanentes",
       "dailyPotion_zero": "Potion du jour (rupture de stock)",

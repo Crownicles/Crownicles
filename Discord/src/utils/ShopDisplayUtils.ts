@@ -1,5 +1,5 @@
 import {
-	makePacket, PacketContext
+	PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
@@ -20,20 +20,12 @@ import {
 	ButtonBuilder,
 	ButtonInteraction,
 	ButtonStyle,
+	ContainerBuilder,
 	Message,
 	MessageComponentInteraction,
-	parseEmoji,
-	SelectMenuInteraction,
-	StringSelectMenuBuilder,
-	StringSelectMenuOptionBuilder
+	parseEmoji
 } from "discord.js";
-import { DisplayUtils } from "./DisplayUtils";
-import { Constants } from "../../../Lib/src/constants/Constants";
-import { PacketUtils } from "./PacketUtils";
-import { ChangeBlockingReasonPacket } from "../../../Lib/src/packets/utils/ChangeBlockingReasonPacket";
-import { BlockingConstants } from "../../../Lib/src/constants/BlockingConstants";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
-import { Language } from "../../../Lib/src/Language";
 import {
 	disableRows, DiscordCollectorUtils
 } from "./DiscordCollectorUtils";
@@ -41,15 +33,20 @@ import {
 	ReactionCollectorBuyCategorySlotCancelReaction,
 	ReactionCollectorBuyCategorySlotReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
-import { ShopItemType } from "../../../Lib/src/constants/LogsConstants";
 import {
 	shopItemTypeFromId, shopItemTypeToId
 } from "../../../Lib/src/utils/ShopUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
-import { ReactionCollectorResetTimerPacketReq } from "../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import { escapeUsername } from "./StringUtils";
-import { DiscordConstants } from "../DiscordConstants";
 import { Badge } from "../../../Lib/src/types/Badge";
+import { Constants } from "../../../Lib/src/constants/Constants";
+import {
+	buildShopConfirmationContainer,
+	buildShopMainContainer,
+	CITY_SHOP_CUSTOM_IDS,
+	disableContainerButtons,
+	groupReactionsByItem
+} from "./cityShop/CityShopV2Views";
 
 export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
@@ -292,253 +289,24 @@ export async function handleCommandShopClosed(context: PacketContext): Promise<v
 	await (interaction.replied ? interaction.followUp(args) : interaction.reply(args));
 }
 
-type ShopItemNames = {
-	normal: string;
-	short: string;
-};
-
-function getShopItemNames(data: ReactionCollectorShopData, shopItemId: ShopItemType, lng: Language): ShopItemNames {
-	if (shopItemId === ShopItemType.DAILY_POTION) {
-		return {
-			normal: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
-			short: DisplayUtils.getSimpleItemDisplay({
-				id: data.additionalShopData!.dailyPotion!.id,
-				category: data.additionalShopData!.dailyPotion!.itemCategory
-			}, lng)
-		};
-	}
-	if (shopItemId >= ShopItemType.WEEKLY_PLANT_TIER_1 && shopItemId <= ShopItemType.WEEKLY_PLANT_TIER_3) {
-		const tierIndex = shopItemId - ShopItemType.WEEKLY_PLANT_TIER_1;
-		const plantId = data.additionalShopData?.weeklyPlants?.[tierIndex];
-		const bothNames = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.name`, {
-			lng,
-			plantId
-		});
-		return {
-			normal: `**${bothNames}**`,
-			short: bothNames
-		};
-	}
-	const bothNames = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.name`, {
-		lng
-	});
-	return {
-		normal: `**${bothNames}**`,
-		short: bothNames
-	};
-}
-
-function getShopItemDisplay(data: ReactionCollectorShopData, reaction: ReactionCollectorShopItemReaction, lng: Language, shopItemNames: ShopItemNames, amounts: number[]): string {
-	if (amounts.length === 1 && amounts[0] === 1) {
-		return `${i18n.t("commands:shop.shopItemsDisplaySingle", {
-			lng,
-			name: shopItemNames.normal,
-			price: reaction.price,
-			currency: data.currency,
-			remainingPotions: data.additionalShopData!.remainingPotions
-		})}\n`;
-	}
-
-	let desc = "";
-	for (const amount of amounts) {
-		desc += `${i18n.t("commands:shop.shopItemsDisplayMultiple", {
-			lng,
-			name: shopItemNames.normal,
-			amount,
-			price: reaction.price * amount,
-			currency: data.currency
-		})}\n`;
-	}
-	return desc;
-}
-
-async function manageBuyoutConfirmation(packet: ReactionCollectorCreationPacket, context: PacketContext, data: ReactionCollectorShopData, reaction: ReactionCollectorShopItemReaction): Promise<void> {
-	PacketUtils.sendPacketToBackend(context, makePacket(ChangeBlockingReasonPacket, {
-		oldReason: BlockingConstants.REASONS.SHOP,
-		newReason: BlockingConstants.REASONS.SHOP_CONFIRMATION
-	}));
-	PacketUtils.sendPacketToBackend(context, makePacket(ReactionCollectorResetTimerPacketReq, { reactionCollectorId: packet.id }));
-
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-	const shopItemId = reaction.shopItemId;
-
-	const amounts = packet.reactions.filter(r => {
-		const shopData = r.data as ReactionCollectorShopItemReaction;
-		return r.type === ReactionCollectorShopItemReaction.name && shopData.shopItemId === reaction.shopItemId;
-	})
-		.map(r => (r.data as ReactionCollectorShopItemReaction).amount);
-
-	const row = new ActionRowBuilder<ButtonBuilder>();
-
-	if (amounts.length === 1 && amounts[0] === 1) {
-		const buttonAccept = new ButtonBuilder()
-			.setEmoji(parseEmoji(CrowniclesIcons.collectors.accept)!)
-			.setCustomId("accept")
-			.setStyle(ButtonStyle.Secondary);
-		row.addComponents(buttonAccept);
-	}
-	else {
-		for (const amount of amounts) {
-			const buttonAccept = new ButtonBuilder()
-				.setLabel(amount.toString(10))
-				.setCustomId(amount.toString(10))
-				.setStyle(ButtonStyle.Secondary);
-			row.addComponents(buttonAccept);
-		}
-	}
-
-	const buttonRefuse = new ButtonBuilder()
-		.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
-		.setCustomId("refuse")
-		.setStyle(ButtonStyle.Secondary);
-
-	const components: ActionRowBuilder<ButtonBuilder>[] = [];
-	if (row.components.length < DiscordConstants.MAX_BUTTONS_PER_ROW) {
-		row.addComponents(buttonRefuse);
-		components.push(row);
-	}
-	else {
-		const refuseRow = new ActionRowBuilder<ButtonBuilder>();
-		refuseRow.addComponents(buttonRefuse);
-		components.push(row, refuseRow);
-	}
-
-	const shopItemNames = getShopItemNames(data, shopItemId, lng);
-
-	const msg = await interaction.followUp({
-		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t(amounts.length === 1 && amounts[0] === 1 ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(`${
-					getShopItemDisplay(data, reaction, lng, shopItemNames, amounts)
-				}\n${CrowniclesIcons.collectors.warning} ${
-					i18n.t(`commands:shop.shopItems.${shopItemTypeToId(shopItemId)}.info`, {
-						lng,
-						kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio,
-						thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS
-					})
-				}`)
-		],
-		components
-	});
-
-	if (!msg) {
-		return;
-	}
-
-	const buttonCollector = msg.createMessageComponentCollector({
-		time: Constants.MESSAGES.COLLECTOR_TIME
-	});
-
-	buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-		if (buttonInteraction.user.id !== context.discord?.user) {
-			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-			return;
-		}
-
-		// Disable buttons instead of removing them
-		disableRows(components);
-
-		await buttonInteraction.update({ components });
-
-		if (buttonInteraction.customId === "refuse") {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, packet.reactions.findIndex(r =>
-				r.type === ReactionCollectorShopCloseReaction.name));
-			return;
-		}
-
-		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, null, packet.reactions.findIndex(r =>
-			r.type === ReactionCollectorShopItemReaction.name
-			&& (r.data as ReactionCollectorShopItemReaction).shopItemId === reaction.shopItemId
-			&& (amounts.length === 1 || (r.data as ReactionCollectorShopItemReaction).amount === parseInt(buttonInteraction!.customId, 10))));
-	});
-
-	buttonCollector.on("end", async () => {
-		// Disable buttons instead of removing them
-		disableRows(components);
-
-		await msg.edit({ components });
-	});
-}
-
 export async function shopCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
 	const data = packet.data.data as ReactionCollectorShopData;
 
-	const categories: string[] = [];
-	for (const reaction of packet.reactions) {
-		if (reaction.type === ReactionCollectorShopItemReaction.name && categories.indexOf((reaction.data as ReactionCollectorShopItemReaction).shopCategoryId) === -1) {
-			categories.push((reaction.data as ReactionCollectorShopItemReaction).shopCategoryId);
-		}
-	}
-	categories.sort((a, b) => a.localeCompare(b));
-	let shopText = "";
-	const select = new StringSelectMenuBuilder()
-		.setCustomId("shop")
-		.setPlaceholder(i18n.t("commands:shop.shopSelectPlaceholder", { lng }));
-	for (const categoryId of categories) {
-		let categoryItemsIds = packet.reactions.filter(
-			reaction => reaction.type === ReactionCollectorShopItemReaction.name && (reaction.data as ReactionCollectorShopItemReaction).shopCategoryId === categoryId
-		)
-			.map(reaction => (reaction.data as ReactionCollectorShopItemReaction).shopItemId);
-
-		// Remove duplicates from categoryItemsIds (in case of multiple amounts for the same item)
-		categoryItemsIds = categoryItemsIds.filter((item, index) => categoryItemsIds.indexOf(item) === index);
-
-		shopText += `${`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
-			lng,
-			count: data.additionalShopData?.remainingPotions
-		})}** :\n`
-			.concat(...categoryItemsIds.map(id => {
-				const reaction = packet.reactions.find(reaction => (reaction.data as ReactionCollectorShopItemReaction).shopItemId === id)!.data as ReactionCollectorShopItemReaction;
-				const shopItemName = getShopItemNames(data, reaction.shopItemId, lng);
-
-				select.addOptions(new StringSelectMenuOptionBuilder()
-					.setLabel(shopItemName.short)
-					.setDescription(i18n.t("commands:shop.shopItemsSelectDescription", {
-						lng,
-						price: reaction.price,
-						currency: data.currency
-					}))
-					.setValue(shopItemTypeToId(reaction.shopItemId)));
-				return getShopItemDisplay(data, reaction, lng, shopItemName, [1]);
-			}))}\n`;
-	}
-
-	const closeShopButton = new ButtonBuilder()
-		.setCustomId("closeShop")
-		.setLabel(i18n.t("commands:shop.closeShopButton", { lng }))
-		.setStyle(ButtonStyle.Secondary);
-
-	const buttonRow = new ActionRowBuilder<ButtonBuilder>().addComponents(closeShopButton);
-	const hasItems = categories.length > 0;
-	const components: ActionRowBuilder<ButtonBuilder | StringSelectMenuBuilder>[] = [buttonRow];
-	let selectRow: ActionRowBuilder<StringSelectMenuBuilder> | undefined;
-
-	if (hasItems) {
-		selectRow = new ActionRowBuilder<StringSelectMenuBuilder>().addComponents(select);
-		components.unshift(selectRow);
-	}
-
-	const embed = new CrowniclesEmbed()
-		.setTitle(i18n.t("commands:shop.title", { lng }))
-		.setDescription(shopText + i18n.t("commands:shop.currentMoney", {
-			lng,
-			money: data.availableCurrency,
-			currency: data.currency
-		}));
+	const reactionsByItem = groupReactionsByItem(packet);
+	const mainContainer = buildShopMainContainer({
+		packet,
+		data,
+		reactionsByItem,
+		pseudo: interaction.user.displayName,
+		lng
+	});
 
 	const messagePayload = {
-		embeds: [embed],
-		components
+		embeds: [],
+		components: [mainContainer],
+		flags: ["IsComponentsV2"] as const
 	};
 
 	let msg: Message | null;
@@ -560,63 +328,145 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		return null;
 	}
 
+	type ShopUiState =
+		| {
+			kind: "main"; container: ContainerBuilder;
+		}
+		| {
+			kind: "confirmation"; container: ContainerBuilder; itemReactions: ReactionCollectorShopItemReaction[];
+		};
+
+	let state: ShopUiState = {
+		kind: "main",
+		container: mainContainer
+	};
+
 	const buttonCollector = msg.createMessageComponentCollector({
 		time: packet.endTime - Date.now()
 	});
 
-	// It's always Core that ends the collector, so we can use a boolean to check if the collector has ended locally
-	let hasEnded = false;
+	/*
+	 * Core controls the collector lifecycle (purchase end or close reaction). Track local
+	 * "consumed" state to prevent double-clicks racing during the network round-trip.
+	 */
+	let isConsumed = false;
+
+	const showMainView = async (buttonInteraction: ButtonInteraction): Promise<void> => {
+		const freshMain = buildShopMainContainer({
+			packet,
+			data,
+			reactionsByItem,
+			pseudo: interaction.user.displayName,
+			lng
+		});
+		state = {
+			kind: "main",
+			container: freshMain
+		};
+		await buttonInteraction.update({
+			embeds: [],
+			components: [freshMain],
+			flags: ["IsComponentsV2"]
+		});
+	};
+
+	const showConfirmationView = async (
+		buttonInteraction: ButtonInteraction,
+		itemReactions: ReactionCollectorShopItemReaction[]
+	): Promise<void> => {
+		const container = buildShopConfirmationContainer({
+			data,
+			itemReactions,
+			pseudo: interaction.user.displayName,
+			lng
+		});
+		state = {
+			kind: "confirmation",
+			container,
+			itemReactions
+		};
+		await buttonInteraction.update({
+			embeds: [],
+			components: [container],
+			flags: ["IsComponentsV2"]
+		});
+	};
+
+	const consumeAndDisable = async (buttonInteraction: ButtonInteraction): Promise<void> => {
+		isConsumed = true;
+		disableContainerButtons(state.container);
+		await buttonInteraction.update({
+			embeds: [],
+			components: [state.container],
+			flags: ["IsComponentsV2"]
+		});
+	};
 
 	buttonCollector.on("collect", async (msgComponentInteraction: MessageComponentInteraction) => {
-		if (hasEnded) {
+		if (isConsumed || !msgComponentInteraction.isButton()) {
 			return;
 		}
 		if (msgComponentInteraction.user.id !== context.discord?.user) {
 			await sendInteractionNotForYou(msgComponentInteraction.user, msgComponentInteraction, lng);
 			return;
 		}
+		const buttonInteraction = msgComponentInteraction;
+		const { customId } = buttonInteraction;
 
-		hasEnded = true;
-
-		if (selectRow) {
-			selectRow.components[0].setDisabled(true);
-		}
-
-		buttonRow.components.forEach(component => {
-			component.setDisabled(true);
-		});
-
-		await msgComponentInteraction.update({ components: selectRow ? [selectRow, buttonRow] : [buttonRow] });
-
-		if (msgComponentInteraction.customId === "closeShop") {
+		if (customId === CITY_SHOP_CUSTOM_IDS.CLOSE) {
+			await consumeAndDisable(buttonInteraction);
 			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, msgComponentInteraction, packet.reactions.findIndex(r =>
 				r.type === ReactionCollectorShopCloseReaction.name));
 			return;
 		}
 
-		await manageBuyoutConfirmation(
-			packet,
-			context,
-			data,
-			packet.reactions.find(
-				reaction =>
-					reaction.type === ReactionCollectorShopItemReaction.name
-					&& (reaction.data as ReactionCollectorShopItemReaction).shopItemId === shopItemTypeFromId((msgComponentInteraction as SelectMenuInteraction).values[0])
-			)!.data as ReactionCollectorShopItemReaction
-		);
+		if (customId.startsWith(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX)) {
+			const itemIdStr = customId.slice(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX.length);
+			const itemId = shopItemTypeFromId(itemIdStr);
+			const itemReactions = reactionsByItem.get(itemId);
+			if (!itemReactions) {
+				return;
+			}
+			await showConfirmationView(buttonInteraction, itemReactions);
+			return;
+		}
+
+		if (customId === CITY_SHOP_CUSTOM_IDS.CANCEL_PURCHASE) {
+			await showMainView(buttonInteraction);
+			return;
+		}
+
+		if (customId.startsWith(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX) && state.kind === "confirmation") {
+			const payload = customId.slice(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX.length);
+			const lastUnderscore = payload.lastIndexOf("_");
+			if (lastUnderscore === -1) {
+				return;
+			}
+			const itemIdStr = payload.slice(0, lastUnderscore);
+			const amount = parseInt(payload.slice(lastUnderscore + 1), 10);
+			const itemId = shopItemTypeFromId(itemIdStr);
+			await consumeAndDisable(buttonInteraction);
+			DiscordCollectorUtils.sendReaction(
+				packet,
+				context,
+				context.keycloakId!,
+				null,
+				packet.reactions.findIndex(r => r.type === ReactionCollectorShopItemReaction.name
+					&& (r.data as ReactionCollectorShopItemReaction).shopItemId === itemId
+					&& (r.data as ReactionCollectorShopItemReaction).amount === amount)
+			);
+		}
 	});
 
 	buttonCollector.on("end", async () => {
-		if (selectRow) {
-			selectRow.components[0].setDisabled(true);
+		if (isConsumed) {
+			return;
 		}
-
-		buttonRow.components.forEach(component => {
-			component.setDisabled(true);
-		});
-
+		disableContainerButtons(state.container);
 		await msg.edit({
-			components: selectRow ? [selectRow, buttonRow] : [buttonRow]
+			embeds: [],
+			components: [state.container],
+			flags: ["IsComponentsV2"]
 		});
 	});
 
