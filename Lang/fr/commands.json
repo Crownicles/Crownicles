@@ -900,6 +900,10 @@
         "materialMerchant": {
           "label": "Le Marchand de matériaux",
           "description": "Un négociant baroudeur étale des caisses de matériaux récupérés aux quatre coins du royaume. Ses lots sont variés mais le contenu reste une surprise."
+        },
+        "missionManager": {
+          "label": "Le Maître des quêtes",
+          "description": "Un érudit au regard perçant compulse de lourds registres reliés de cuir. Il connaît chaque quête en cours dans le royaume et peut vous proposer d'en troquer une qui vous échappe contre une autre, plus à votre goût."
         }
       },
       "inns": {

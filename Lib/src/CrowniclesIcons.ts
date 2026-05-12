@@ -2670,7 +2670,8 @@ export const CrowniclesIcons: {
 			stockExchange: "💎",
 			tanner: "🧳",
 			herbalist: "🌿",
-			lumberjack: "🪵"
+			lumberjack: "🪵",
+			missionManager: "📜"
 		},
 		home: {
 			1: "🏕️",

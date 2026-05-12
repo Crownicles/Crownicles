@@ -87,7 +87,8 @@ const CITY_SHOP_TYPES = [
 	"herbalist",
 	"lumberjack",
 	"veterinarian",
-	"materialMerchant"
+	"materialMerchant",
+	"missionManager"
 ] as const;
 type CityShopType = typeof CITY_SHOP_TYPES[number];
 
@@ -99,7 +100,8 @@ const SHOP_HANDLERS: Record<CityShopType, (player: Player, context: PacketContex
 	herbalist: openHerbalist,
 	lumberjack: openLumberjack,
 	veterinarian: openVeterinarian,
-	materialMerchant: openMaterialMerchant
+	materialMerchant: openMaterialMerchant,
+	missionManager: openMissionManager
 };
 
 function isCityShopType(shopId: string): shopId is CityShopType {
@@ -429,5 +431,28 @@ export async function openMaterialMerchant(player: Player, context: PacketContex
 		shopCategories,
 		player,
 		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase)
+	});
+}
+
+/**
+ * Open the mission manager shop for the player (mission skips + quest master badge)
+ */
+export async function openMissionManager(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
+	const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+	await openGemShop({
+		player,
+		context,
+		response,
+		shopCategories: [
+			{
+				id: "services",
+				items: [getMissionSkipShopItem(playerMissionsInfo.missionSkipsUsedThisWeek)]
+			},
+			{
+				id: "prestige",
+				items: [getQuestMasterBadgeShopItem()]
+			}
+		],
+		additionalShopData: { currency: ShopCurrency.GEM }
 	});
 }
