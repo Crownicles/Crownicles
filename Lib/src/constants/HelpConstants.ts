@@ -563,23 +563,6 @@ export abstract class HelpConstants {
 			"quêtes",
 			"quetes"
 		],
-		MISSIONS_SHOP: [
-			"missionshop",
-			"ms",
-			"mshop",
-			"questshop",
-			"missionsshop",
-			"questsshop",
-			"qs",
-			"shopmissions",
-			"shopmission",
-			"magasindemissions",
-			"magasindemission",
-			"missionmagasin",
-			"missionsmagasin",
-			"magasinmissions",
-			"magasinmission"
-		],
 		LEAGUE_BONUS: [
 			"leaguereward",
 			"leaguerewards",
@@ -881,12 +864,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":scroll:",
 				NAME: "missions",
-				CATEGORY: "mission"
-			},
-		MISSIONS_SHOP:
-			{
-				EMOTE: ":shopping_cart:",
-				NAME: "missionsshop",
 				CATEGORY: "mission"
 			},
 		LEAGUE_BONUS:

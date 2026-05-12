@@ -267,10 +267,6 @@
       }
     }
   },
-  "missionsshop": {
-    "description": "Afficher le magasin de missions.",
-    "name": "magasinmissions"
-  },
   "top": {
     "description": "Afficher les classements du jeu.",
     "name": "classement",

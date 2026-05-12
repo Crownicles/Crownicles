@@ -1,13 +1,8 @@
-import { ICommand } from "../ICommand";
-import {
-	makePacket, PacketContext
-} from "../../../../Lib/src/packets/CrowniclesPacket";
-import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandMissionShopKingsFavor,
 	CommandMissionShopMarketAnalysis,
 	CommandMissionShopMoney,
-	CommandMissionShopPacketReq,
 	CommandMissionShopPetInformation,
 	CommandMissionShopSkipMissionResult,
 	MarketTrend
@@ -40,13 +35,6 @@ import { ExpeditionLocationType } from "../../../../Lib/src/constants/Expedition
 import {
 	PlantConstants, PlantId
 } from "../../../../Lib/src/constants/PlantConstants";
-
-/**
- * Get the packet to send to the server
- */
-function getPacket(): CommandMissionShopPacketReq {
-	return makePacket(CommandMissionShopPacketReq, {});
-}
 
 async function handleBasicMissionShopItem(context: PacketContext, descriptionString: string, descriptionFormat: {
 	[keys: string]: string | number;
@@ -369,10 +357,3 @@ export async function handleMarketAnalysis(packet: CommandMissionShopMarketAnaly
 		]
 	});
 }
-
-
-export const commandInfo: ICommand = {
-	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("missionsshop"),
-	getPacket,
-	mainGuildCommand: false
-};
