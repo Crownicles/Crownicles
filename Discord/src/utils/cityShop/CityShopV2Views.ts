@@ -121,7 +121,8 @@ function buildItemSection(
 	display: ShopItemDisplay,
 	itemReactions: ReactionCollectorShopItemReaction[],
 	data: ReactionCollectorShopData,
-	lng: Language
+	lng: Language,
+	disabled: boolean
 ): SectionBuilder {
 	const hasMultipleAmounts = display.amounts.length > 1 || display.amounts[0] !== 1;
 	const priceLine = hasMultipleAmounts
@@ -145,6 +146,7 @@ function buildItemSection(
 				.setCustomId(`${CITY_SHOP_CUSTOM_IDS.BUY_PREFIX}${shopItemTypeToId(itemReactions[0].shopItemId)}`)
 				.setLabel(clampButtonLabel(i18n.t("commands:shop.v2.buyButton", { lng })))
 				.setStyle(ButtonStyle.Primary)
+				.setDisabled(disabled)
 		);
 }
 
@@ -154,6 +156,7 @@ interface MainShopViewArgs {
 	reactionsByItem: CityShopReactionsByItem;
 	pseudo: string;
 	lng: Language;
+	disabled?: boolean;
 }
 
 /**
@@ -181,6 +184,7 @@ interface CategoryBlockArgs {
 	data: ReactionCollectorShopData;
 	reactionsByItem: CityShopReactionsByItem;
 	lng: Language;
+	disabled: boolean;
 }
 
 /**
@@ -188,7 +192,7 @@ interface CategoryBlockArgs {
  */
 function appendCategoryBlock(args: CategoryBlockArgs): void {
 	const {
-		container, categoryId, itemIds, data, reactionsByItem, lng
+		container, categoryId, itemIds, data, reactionsByItem, lng, disabled
 	} = args;
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(
@@ -202,7 +206,7 @@ function appendCategoryBlock(args: CategoryBlockArgs): void {
 	for (const itemId of itemIds) {
 		const itemReactions = reactionsByItem.get(itemId)!;
 		const display = buildItemDisplay(data, itemReactions, lng);
-		container.addSectionComponents(buildItemSection(display, itemReactions, data, lng));
+		container.addSectionComponents(buildItemSection(display, itemReactions, data, lng, disabled));
 	}
 }
 
@@ -214,6 +218,7 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 	const {
 		data, reactionsByItem, pseudo, lng
 	} = args;
+	const disabled = args.disabled ?? false;
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
@@ -239,7 +244,8 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 			itemIds: categoryToItems.get(categoryId)!,
 			data,
 			reactionsByItem,
-			lng
+			lng,
+			disabled
 		});
 	}
 
@@ -260,6 +266,7 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 				.setCustomId(CITY_SHOP_CUSTOM_IDS.CLOSE)
 				.setLabel(i18n.t("commands:shop.closeShopButton", { lng }))
 				.setStyle(ButtonStyle.Secondary)
+				.setDisabled(disabled)
 		)
 	);
 
@@ -271,6 +278,7 @@ interface ConfirmationViewArgs {
 	itemReactions: ReactionCollectorShopItemReaction[];
 	pseudo: string;
 	lng: Language;
+	disabled?: boolean;
 }
 
 interface ConfirmationRecapArgs {
@@ -337,7 +345,8 @@ function buildConfirmationActionRow(
 	itemReactions: ReactionCollectorShopItemReaction[],
 	isSingleUnit: boolean,
 	data: ReactionCollectorShopData,
-	lng: Language
+	lng: Language,
+	disabled: boolean
 ): ActionRowBuilder<ButtonBuilder> {
 	const actionRow = new ActionRowBuilder<ButtonBuilder>();
 	const itemIdStr = shopItemTypeToId(itemReactions[0].shopItemId);
@@ -348,6 +357,7 @@ function buildConfirmationActionRow(
 				.setEmoji(CrowniclesIcons.collectors.accept)
 				.setLabel(i18n.t("commands:shop.v2.confirmButton", { lng }))
 				.setStyle(ButtonStyle.Success)
+				.setDisabled(disabled)
 		);
 	}
 	else {
@@ -362,6 +372,7 @@ function buildConfirmationActionRow(
 						currency: data.currency
 					}))
 					.setStyle(ButtonStyle.Primary)
+					.setDisabled(disabled)
 			);
 		}
 	}
@@ -371,6 +382,7 @@ function buildConfirmationActionRow(
 			.setEmoji(CrowniclesIcons.collectors.refuse)
 			.setLabel(i18n.t("commands:shop.v2.cancelButton", { lng }))
 			.setStyle(ButtonStyle.Secondary)
+			.setDisabled(disabled)
 	);
 	return actionRow;
 }
@@ -384,6 +396,7 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 	const {
 		data, itemReactions, pseudo, lng
 	} = args;
+	const disabled = args.disabled ?? false;
 	const display = buildItemDisplay(data, itemReactions, lng);
 	const isSingleUnit = display.amounts.length === 1 && display.amounts[0] === 1;
 	const container = new ContainerBuilder();
@@ -416,34 +429,7 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 		)
 	);
 
-	container.addActionRowComponents(buildConfirmationActionRow(itemReactions, isSingleUnit, data, lng));
+	container.addActionRowComponents(buildConfirmationActionRow(itemReactions, isSingleUnit, data, lng, disabled));
 
 	return container;
-}
-
-/**
- * Disable every button inside a top-level component of the container.
- */
-function disableButtonsInComponent(component: unknown): void {
-	if (component instanceof ActionRowBuilder) {
-		for (const child of component.components) {
-			if (child instanceof ButtonBuilder) {
-				child.setDisabled(true);
-			}
-		}
-		return;
-	}
-	if (component instanceof SectionBuilder && component.accessory instanceof ButtonBuilder) {
-		component.accessory.setDisabled(true);
-	}
-}
-
-/**
- * Disable every button inside the given container in-place. Used to mark the message
- * as inert when the collector ends or when Core finalizes the transaction.
- */
-export function disableContainerButtons(container: ContainerBuilder): void {
-	for (const component of container.components) {
-		disableButtonsInComponent(component);
-	}
 }

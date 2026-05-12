@@ -44,7 +44,6 @@ import {
 	buildShopConfirmationContainer,
 	buildShopMainContainer,
 	CITY_SHOP_CUSTOM_IDS,
-	disableContainerButtons,
 	groupReactionsByItem
 } from "./cityShop/CityShopV2Views";
 
@@ -469,12 +468,29 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		});
 	};
 
+	const buildDisabledContainer = (): ContainerBuilder => state.kind === "main"
+		? buildShopMainContainer({
+			packet,
+			data,
+			reactionsByItem,
+			pseudo: interaction.user.displayName,
+			lng,
+			disabled: true
+		})
+		: buildShopConfirmationContainer({
+			data,
+			itemReactions: state.itemReactions,
+			pseudo: interaction.user.displayName,
+			lng,
+			disabled: true
+		});
+
 	const consumeAndDisable = async (buttonInteraction: ButtonInteraction): Promise<void> => {
 		isConsumed = true;
-		disableContainerButtons(state.container);
+		const disabledContainer = buildDisabledContainer();
 		await buttonInteraction.update({
 			embeds: [],
-			components: [state.container],
+			components: [disabledContainer],
 			flags: ["IsComponentsV2"]
 		});
 	};
@@ -503,10 +519,10 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		if (isConsumed) {
 			return;
 		}
-		disableContainerButtons(state.container);
+		const disabledContainer = buildDisabledContainer();
 		await msg.edit({
 			embeds: [],
-			components: [state.container],
+			components: [disabledContainer],
 			flags: ["IsComponentsV2"]
 		});
 	});
