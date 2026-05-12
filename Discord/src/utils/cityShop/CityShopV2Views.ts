@@ -174,17 +174,22 @@ function groupItemsByCategory(reactionsByItem: CityShopReactionsByItem): Map<str
 	return categoryToItems;
 }
 
+interface CategoryBlockArgs {
+	container: ContainerBuilder;
+	categoryId: string;
+	itemIds: ShopItemType[];
+	data: ReactionCollectorShopData;
+	reactionsByItem: CityShopReactionsByItem;
+	lng: Language;
+}
+
 /**
  * Append a category block (separator + title + per-item sections) to the container.
  */
-function appendCategoryBlock(
-	container: ContainerBuilder,
-	categoryId: string,
-	itemIds: ShopItemType[],
-	data: ReactionCollectorShopData,
-	reactionsByItem: CityShopReactionsByItem,
-	lng: Language
-): void {
+function appendCategoryBlock(args: CategoryBlockArgs): void {
+	const {
+		container, categoryId, itemIds, data, reactionsByItem, lng
+	} = args;
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
@@ -228,7 +233,14 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 	const categories = [...categoryToItems.keys()].sort((a, b) => a.localeCompare(b));
 
 	for (const categoryId of categories) {
-		appendCategoryBlock(container, categoryId, categoryToItems.get(categoryId)!, data, reactionsByItem, lng);
+		appendCategoryBlock({
+			container,
+			categoryId,
+			itemIds: categoryToItems.get(categoryId)!,
+			data,
+			reactionsByItem,
+			lng
+		});
 	}
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -261,16 +273,21 @@ interface ConfirmationViewArgs {
 	lng: Language;
 }
 
+interface ConfirmationRecapArgs {
+	display: ShopItemDisplay;
+	isSingleUnit: boolean;
+	data: ReactionCollectorShopData;
+	itemReactions: ReactionCollectorShopItemReaction[];
+	lng: Language;
+}
+
 /**
  * Build the "item recap" text shown above the confirmation buttons.
  */
-function buildConfirmationItemRecap(
-	display: ShopItemDisplay,
-	isSingleUnit: boolean,
-	data: ReactionCollectorShopData,
-	itemReactions: ReactionCollectorShopItemReaction[],
-	lng: Language
-): TextDisplayBuilder {
+function buildConfirmationItemRecap(args: ConfirmationRecapArgs): TextDisplayBuilder {
+	const {
+		display, isSingleUnit, data, itemReactions, lng
+	} = args;
 	if (isSingleUnit) {
 		return new TextDisplayBuilder().setContent(
 			i18n.t("commands:shop.shopItemsDisplaySingle", {
@@ -383,7 +400,9 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 		)
 	);
 
-	container.addTextDisplayComponents(buildConfirmationItemRecap(display, isSingleUnit, data, itemReactions, lng));
+	container.addTextDisplayComponents(buildConfirmationItemRecap({
+		display, isSingleUnit, data, itemReactions, lng
+	}));
 	container.addTextDisplayComponents(buildConfirmationInfo(data, itemReactions, lng));
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
