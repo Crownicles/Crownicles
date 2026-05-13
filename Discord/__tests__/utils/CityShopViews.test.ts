@@ -231,4 +231,28 @@ describe("buildItemDisplay", () => {
 		// And the short label is the raw i18n key (since mocked t() returns the key).
 		expect(display.shortLabel).toContain("shop.shopItems.");
 	});
+
+	it("falls back to the generic label when DAILY_POTION resolver has no potion data", () => {
+		const display = buildItemDisplay(
+			baseData, // additionalShopData = {} → no dailyPotion field
+			reactionsFor(ShopItemType.DAILY_POTION, [{
+				amount: 1, price: 100
+			}]),
+			"en"
+		);
+		expect(display.fullName).toBe(`**${display.shortLabel}**`);
+		expect(display.shortLabel).toContain("shop.shopItems.");
+	});
+
+	it("falls back to the generic label when a weekly plant tier has no plantId data", () => {
+		const display = buildItemDisplay(
+			baseData, // additionalShopData = {} → no weeklyPlants array
+			reactionsFor(ShopItemType.WEEKLY_PLANT_TIER_2, [{
+				amount: 1, price: 1
+			}]),
+			"en"
+		);
+		expect(display.fullName).toBe(`**${display.shortLabel}**`);
+		expect(display.shortLabel).not.toMatch(/:\d+$/); // Generic fallback doesn't append a plantId marker.
+	});
 });

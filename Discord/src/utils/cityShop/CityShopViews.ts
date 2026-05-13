@@ -82,10 +82,12 @@ type ItemLabels = Pick<ShopItemDisplay, "fullName" | "shortLabel">;
 
 /**
  * Resolve the labels (full + short) for a shop item that needs item-specific
- * rendering (e.g. daily potion stats, plant tier names). Items not registered
- * here fall through to the generic i18n-based naming in `resolveItemLabels`.
+ * rendering (e.g. daily potion stats, plant tier names). Returning `null`
+ * signals that the resolver couldn't produce a meaningful label (the
+ * matching field of `additionalShopData` was absent); callers then fall
+ * through to the generic i18n-based naming in `resolveItemLabels`.
  */
-type ItemLabelResolver = (data: ReactionCollectorShopData, lng: Language) => ItemLabels;
+type ItemLabelResolver = (data: ReactionCollectorShopData, lng: Language) => ItemLabels | null;
 
 /**
  * Order-preserving list of weekly plant tiers. Used both to register one
@@ -99,12 +101,11 @@ const WEEKLY_PLANT_TIERS: readonly ShopItemType[] = [
 	ShopItemType.WEEKLY_PLANT_TIER_3
 ];
 
-function dailyPotionLabels(data: ReactionCollectorShopData, lng: Language): ItemLabels {
-	/*
-	 * Producer (`ReactionCollectorShop`) always sets `dailyPotion` when a
-	 * daily-potion reaction is emitted; narrow once.
-	 */
-	const dailyPotion = data.additionalShopData.dailyPotion!;
+function dailyPotionLabels(data: ReactionCollectorShopData, lng: Language): ItemLabels | null {
+	const dailyPotion = data.additionalShopData.dailyPotion;
+	if (!dailyPotion) {
+		return null;
+	}
 	return {
 		fullName: DisplayUtils.getItemDisplayWithStats(dailyPotion, lng),
 		shortLabel: DisplayUtils.getSimpleItemDisplay({
@@ -117,6 +118,9 @@ function dailyPotionLabels(data: ReactionCollectorShopData, lng: Language): Item
 function weeklyPlantLabelsFor(itemId: ShopItemType, tierIndex: number): ItemLabelResolver {
 	return (data, lng) => {
 		const plantId = data.additionalShopData.weeklyPlants?.[tierIndex];
+		if (plantId === undefined) {
+			return null;
+		}
 		const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, {
 			lng, plantId
 		});
@@ -133,9 +137,9 @@ const ITEM_LABEL_RESOLVERS: ReadonlyMap<ShopItemType, ItemLabelResolver> = new M
 ]);
 
 function resolveItemLabels(data: ReactionCollectorShopData, itemId: ShopItemType, lng: Language): ItemLabels {
-	const resolver = ITEM_LABEL_RESOLVERS.get(itemId);
-	if (resolver) {
-		return resolver(data, lng);
+	const resolved = ITEM_LABEL_RESOLVERS.get(itemId)?.(data, lng);
+	if (resolved) {
+		return resolved;
 	}
 	const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, { lng });
 	return {
