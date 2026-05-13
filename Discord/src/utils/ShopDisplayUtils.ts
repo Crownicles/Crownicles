@@ -274,6 +274,119 @@ type ShopUiState =
 		kind: "confirmation"; container: ContainerBuilder; itemReactions: ReactionCollectorShopItemReaction[];
 	};
 
+interface ShopUiControllerArgs {
+	data: ReactionCollectorShopData;
+	reactionsByItem: ReturnType<typeof groupReactionsByItem>;
+	pseudo: string;
+	lng: Language;
+	initialContainer: ContainerBuilder;
+	msg: Message;
+}
+
+/**
+ * Encapsulates the city-shop view state machine: tracks whether the UI is
+ * currently showing the main item list or a purchase confirmation, holds the
+ * "consumed" flag that prevents double clicks racing with the network round
+ * trip to Core, and owns the rebuild logic for every state transition.
+ *
+ * `shopCollector` wires the discord.js collector events to instance methods;
+ * keeping the mutable state inside a class makes the transitions and their
+ * invariants explicit and self-contained.
+ */
+class ShopUiController {
+	private state: ShopUiState;
+
+	private consumed = false;
+
+	constructor(private readonly args: ShopUiControllerArgs) {
+		this.state = {
+			kind: "main",
+			container: args.initialContainer
+		};
+	}
+
+	isConsumed(): boolean {
+		return this.consumed;
+	}
+
+	getState(): ShopUiState {
+		return this.state;
+	}
+
+	async showMainView(buttonInteraction: ButtonInteraction): Promise<void> {
+		const freshMain = this.buildMain(false);
+		this.state = {
+			kind: "main",
+			container: freshMain
+		};
+		await buttonInteraction.update({
+			embeds: [],
+			components: [freshMain],
+			flags: COMPONENTS_V2_FLAGS
+		});
+	}
+
+	async showConfirmationView(
+		buttonInteraction: ButtonInteraction,
+		itemReactions: ReactionCollectorShopItemReaction[]
+	): Promise<void> {
+		const container = this.buildConfirmation(itemReactions, false);
+		this.state = {
+			kind: "confirmation",
+			container,
+			itemReactions
+		};
+		await buttonInteraction.update({
+			embeds: [],
+			components: [container],
+			flags: COMPONENTS_V2_FLAGS
+		});
+	}
+
+	async consumeAndDisable(buttonInteraction: ButtonInteraction): Promise<void> {
+		this.consumed = true;
+		await buttonInteraction.update({
+			embeds: [],
+			components: [this.buildDisabledContainer()],
+			flags: COMPONENTS_V2_FLAGS
+		});
+	}
+
+	async disableOnEnd(): Promise<void> {
+		await this.args.msg.edit({
+			embeds: [],
+			components: [this.buildDisabledContainer()],
+			flags: COMPONENTS_V2_FLAGS
+		});
+	}
+
+	private buildMain(disabled: boolean): ContainerBuilder {
+		return buildShopMainContainer({
+			data: this.args.data,
+			reactionsByItem: this.args.reactionsByItem,
+			pseudo: this.args.pseudo,
+			lng: this.args.lng,
+			disabled
+		});
+	}
+
+	private buildConfirmation(itemReactions: ReactionCollectorShopItemReaction[], disabled: boolean): ContainerBuilder {
+		return buildShopConfirmationContainer({
+			data: this.args.data,
+			itemReactions,
+			pseudo: this.args.pseudo,
+			lng: this.args.lng,
+			disabled
+		});
+	}
+
+	private buildDisabledContainer(): ContainerBuilder {
+		return this.state.kind === "main"
+			? this.buildMain(true)
+			: this.buildConfirmation(this.state.itemReactions, true);
+	}
+}
+
 interface ShopDispatchDeps {
 	customId: string;
 	packet: ReactionCollectorCreationPacket;
@@ -387,89 +500,15 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		return null;
 	}
 
-	let state: ShopUiState = {
-		kind: "main",
-		container: mainContainer
-	};
-
+	const controller = new ShopUiController({
+		data, reactionsByItem, pseudo, lng, initialContainer: mainContainer, msg
+	});
 	const buttonCollector = msg.createMessageComponentCollector({
 		time: packet.endTime - Date.now()
 	});
 
-	/*
-	 * Core controls the collector lifecycle (purchase end or close reaction). Track local
-	 * "consumed" state to prevent double-clicks racing during the network round-trip.
-	 */
-	let isConsumed = false;
-
-	const showMainView = async (buttonInteraction: ButtonInteraction): Promise<void> => {
-		const freshMain = buildShopMainContainer({
-			data,
-			reactionsByItem,
-			pseudo,
-			lng
-		});
-		state = {
-			kind: "main",
-			container: freshMain
-		};
-		await buttonInteraction.update({
-			embeds: [],
-			components: [freshMain],
-			flags: COMPONENTS_V2_FLAGS
-		});
-	};
-
-	const showConfirmationView = async (
-		buttonInteraction: ButtonInteraction,
-		itemReactions: ReactionCollectorShopItemReaction[]
-	): Promise<void> => {
-		const container = buildShopConfirmationContainer({
-			data,
-			itemReactions,
-			pseudo,
-			lng
-		});
-		state = {
-			kind: "confirmation",
-			container,
-			itemReactions
-		};
-		await buttonInteraction.update({
-			embeds: [],
-			components: [container],
-			flags: COMPONENTS_V2_FLAGS
-		});
-	};
-
-	const buildDisabledContainer = (): ContainerBuilder => state.kind === "main"
-		? buildShopMainContainer({
-			data,
-			reactionsByItem,
-			pseudo,
-			lng,
-			disabled: true
-		})
-		: buildShopConfirmationContainer({
-			data,
-			itemReactions: state.itemReactions,
-			pseudo,
-			lng,
-			disabled: true
-		});
-
-	const consumeAndDisable = async (buttonInteraction: ButtonInteraction): Promise<void> => {
-		isConsumed = true;
-		const disabledContainer = buildDisabledContainer();
-		await buttonInteraction.update({
-			embeds: [],
-			components: [disabledContainer],
-			flags: COMPONENTS_V2_FLAGS
-		});
-	};
-
 	buttonCollector.on("collect", async (msgComponentInteraction: MessageComponentInteraction) => {
-		if (isConsumed || !msgComponentInteraction.isButton()) {
+		if (controller.isConsumed() || !msgComponentInteraction.isButton()) {
 			return;
 		}
 		if (msgComponentInteraction.user.id !== context.discord?.user) {
@@ -481,23 +520,18 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 			packet,
 			context,
 			reactionsByItem,
-			showMainView,
-			showConfirmationView,
-			consumeAndDisable,
-			getState: () => state
+			showMainView: i => controller.showMainView(i),
+			showConfirmationView: (i, r) => controller.showConfirmationView(i, r),
+			consumeAndDisable: i => controller.consumeAndDisable(i),
+			getState: () => controller.getState()
 		});
 	});
 
 	buttonCollector.on("end", async () => {
-		if (isConsumed) {
+		if (controller.isConsumed()) {
 			return;
 		}
-		const disabledContainer = buildDisabledContainer();
-		await msg.edit({
-			embeds: [],
-			components: [disabledContainer],
-			flags: COMPONENTS_V2_FLAGS
-		});
+		await controller.disableOnEnd();
 	});
 
 	return [buttonCollector];
