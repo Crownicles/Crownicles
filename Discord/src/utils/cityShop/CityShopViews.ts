@@ -62,6 +62,79 @@ interface ShopItemDisplay {
 	shortLabel: string;
 	unitPrice: number;
 	amounts: number[];
+
+	/**
+	 * `true` iff the item is a single, non-stackable unit (no amount picker
+	 * needed). Computed once in `buildItemDisplay` so both the main view and
+	 * the confirmation view share the exact same rule.
+	 */
+	isSingleUnit: boolean;
+}
+
+type ItemLabels = Pick<ShopItemDisplay, "fullName" | "shortLabel">;
+
+/**
+ * Resolve the labels (full + short) for a shop item that needs item-specific
+ * rendering (e.g. daily potion stats, plant tier names). Items not registered
+ * here fall through to the generic i18n-based naming in `resolveItemLabels`.
+ */
+type ItemLabelResolver = (data: ReactionCollectorShopData, lng: Language) => ItemLabels;
+
+/**
+ * Order-preserving list of weekly plant tiers. Used both to register one
+ * resolver per tier and to recover the tier index when querying
+ * `additionalShopData.weeklyPlants` — without relying on the underlying enum
+ * values being contiguous or sorted.
+ */
+const WEEKLY_PLANT_TIERS: readonly ShopItemType[] = [
+	ShopItemType.WEEKLY_PLANT_TIER_1,
+	ShopItemType.WEEKLY_PLANT_TIER_2,
+	ShopItemType.WEEKLY_PLANT_TIER_3
+];
+
+function dailyPotionLabels(data: ReactionCollectorShopData, lng: Language): ItemLabels {
+	/*
+	 * Producer (`ReactionCollectorShop`) always sets `dailyPotion` when a
+	 * daily-potion reaction is emitted; narrow once.
+	 */
+	const dailyPotion = data.additionalShopData.dailyPotion!;
+	return {
+		fullName: DisplayUtils.getItemDisplayWithStats(dailyPotion, lng),
+		shortLabel: DisplayUtils.getSimpleItemDisplay({
+			id: dailyPotion.id,
+			category: dailyPotion.itemCategory
+		}, lng)
+	};
+}
+
+function weeklyPlantLabelsFor(itemId: ShopItemType, tierIndex: number): ItemLabelResolver {
+	return (data, lng) => {
+		const plantId = data.additionalShopData.weeklyPlants?.[tierIndex];
+		const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, {
+			lng, plantId
+		});
+		return {
+			fullName: `**${name}**`,
+			shortLabel: name
+		};
+	};
+}
+
+const ITEM_LABEL_RESOLVERS: ReadonlyMap<ShopItemType, ItemLabelResolver> = new Map([
+	[ShopItemType.DAILY_POTION, dailyPotionLabels],
+	...WEEKLY_PLANT_TIERS.map((itemId, tierIndex): [ShopItemType, ItemLabelResolver] => [itemId, weeklyPlantLabelsFor(itemId, tierIndex)])
+]);
+
+function resolveItemLabels(data: ReactionCollectorShopData, itemId: ShopItemType, lng: Language): ItemLabels {
+	const resolver = ITEM_LABEL_RESOLVERS.get(itemId);
+	if (resolver) {
+		return resolver(data, lng);
+	}
+	const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, { lng });
+	return {
+		fullName: `**${name}**`,
+		shortLabel: name
+	};
 }
 
 /**
@@ -88,9 +161,10 @@ export function groupReactionsByItem(packet: ReactionCollectorCreationPacket): C
 }
 
 /**
- * Build the display info (name, short label, unit price, amounts) for a single shop item.
- * The short label is reused as the "Buy" button label, hence must stay under Discord's
- * 80-character limit.
+ * Build the display info (labels, unit price, amounts) for a single shop item.
+ * The labels themselves are resolved via the `ITEM_LABEL_RESOLVERS` registry —
+ * this function only owns the price/amount derivation and the `isSingleUnit`
+ * flag that drives the confirmation view branching.
  */
 function buildItemDisplay(
 	data: ReactionCollectorShopData,
@@ -107,42 +181,13 @@ function buildItemDisplay(
 	 */
 	const unitReaction = itemReactions.reduce((a, b) => a.amount <= b.amount ? a : b);
 	const unitPrice = unitReaction.price / unitReaction.amount;
+	const isSingleUnit = amounts.length === 1 && amounts[0] === 1;
 
-	if (itemId === ShopItemType.DAILY_POTION) {
-		/*
-		 * Producer (`ReactionCollectorShop`) always sets `dailyPotion` when a
-		 * daily-potion reaction is emitted; narrow once.
-		 */
-		const dailyPotion = data.additionalShopData.dailyPotion!;
-		return {
-			fullName: DisplayUtils.getItemDisplayWithStats(dailyPotion, lng),
-			shortLabel: DisplayUtils.getSimpleItemDisplay({
-				id: dailyPotion.id,
-				category: dailyPotion.itemCategory
-			}, lng),
-			unitPrice,
-			amounts
-		};
-	}
-	if (itemId >= ShopItemType.WEEKLY_PLANT_TIER_1 && itemId <= ShopItemType.WEEKLY_PLANT_TIER_3) {
-		const tierIndex = itemId - ShopItemType.WEEKLY_PLANT_TIER_1;
-		const plantId = data.additionalShopData.weeklyPlants?.[tierIndex];
-		const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, {
-			lng, plantId
-		});
-		return {
-			fullName: `**${name}**`,
-			shortLabel: name,
-			unitPrice,
-			amounts
-		};
-	}
-	const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, { lng });
 	return {
-		fullName: `**${name}**`,
-		shortLabel: name,
+		...resolveItemLabels(data, itemId, lng),
 		unitPrice,
-		amounts
+		amounts,
+		isSingleUnit
 	};
 }
 
@@ -171,16 +216,15 @@ function buildItemSection(args: ItemSectionArgs): SectionBuilder {
 	const {
 		display, itemReactions, data, lng, disabled
 	} = args;
-	const hasMultipleAmounts = display.amounts.length > 1 || display.amounts[0] !== 1;
-	const priceLine = hasMultipleAmounts
-		? i18n.t("commands:shop.itemPriceUnit", {
-			lng,
-			price: display.unitPrice,
-			currency: data.currency
-		})
-		: i18n.t("commands:shop.itemPrice", {
+	const priceLine = display.isSingleUnit
+		? i18n.t("commands:shop.itemPrice", {
 			lng,
 			price: itemReactions[0].price,
+			currency: data.currency
+		})
+		: i18n.t("commands:shop.itemPriceUnit", {
+			lng,
+			price: display.unitPrice,
 			currency: data.currency
 		});
 
@@ -341,7 +385,6 @@ interface ConfirmationViewArgs {
 
 interface ConfirmationRecapArgs {
 	display: ShopItemDisplay;
-	isSingleUnit: boolean;
 	data: ReactionCollectorShopData;
 	itemReactions: ReactionCollectorShopItemReaction[];
 	lng: Language;
@@ -352,9 +395,9 @@ interface ConfirmationRecapArgs {
  */
 function buildConfirmationItemRecap(args: ConfirmationRecapArgs): TextDisplayBuilder {
 	const {
-		display, isSingleUnit, data, itemReactions, lng
+		display, data, itemReactions, lng
 	} = args;
-	if (isSingleUnit) {
+	if (display.isSingleUnit) {
 		return new TextDisplayBuilder().setContent(
 			i18n.t("commands:shop.shopItemsDisplaySingle", {
 				lng,
@@ -400,8 +443,8 @@ function buildConfirmationInfo(
  * unit items) or one button per amount, always followed by a cancel button.
  */
 interface ConfirmationActionRowArgs {
+	display: ShopItemDisplay;
 	itemReactions: ReactionCollectorShopItemReaction[];
-	isSingleUnit: boolean;
 	data: ReactionCollectorShopData;
 	lng: Language;
 	disabled: boolean;
@@ -409,11 +452,11 @@ interface ConfirmationActionRowArgs {
 
 function buildConfirmationActionRow(args: ConfirmationActionRowArgs): ActionRowBuilder<ButtonBuilder> {
 	const {
-		itemReactions, isSingleUnit, data, lng, disabled
+		display, itemReactions, data, lng, disabled
 	} = args;
 	const actionRow = new ActionRowBuilder<ButtonBuilder>();
 	const itemIdStr = shopItemTypeToId(itemReactions[0].shopItemId);
-	if (isSingleUnit) {
+	if (display.isSingleUnit) {
 		actionRow.addComponents(
 			new ButtonBuilder()
 				.setCustomId(buildShopAmountCustomId(itemIdStr, itemReactions[0].amount))
@@ -461,13 +504,12 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 	} = args;
 	const disabled = args.disabled ?? false;
 	const display = buildItemDisplay(data, itemReactions, lng);
-	const isSingleUnit = display.amounts.length === 1 && display.amounts[0] === 1;
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			`### ${i18n.t(
-				isSingleUnit ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple",
+				display.isSingleUnit ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple",
 				{
 					lng,
 					pseudo: escapeUsername(pseudo)
@@ -477,7 +519,7 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 	);
 
 	container.addTextDisplayComponents(buildConfirmationItemRecap({
-		display, isSingleUnit, data, itemReactions, lng
+		display, data, itemReactions, lng
 	}));
 	container.addTextDisplayComponents(buildConfirmationInfo(data, itemReactions, lng));
 
@@ -493,7 +535,7 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 	);
 
 	container.addActionRowComponents(buildConfirmationActionRow({
-		itemReactions, isSingleUnit, data, lng, disabled
+		display, itemReactions, data, lng, disabled
 	}));
 
 	return container;
