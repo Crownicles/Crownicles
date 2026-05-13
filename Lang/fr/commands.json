@@ -1438,7 +1438,7 @@
     "cancelButton": "Annuler",
     "itemPrice": "Prix : `{{price, number}}{emote:unitValues.{{currency}}}`",
     "itemPriceUnit": "Prix unitaire : `{{price, number}}{emote:unitValues.{{currency}}}`",
-    "amountButton": "x{{amount, number}} — {{price, number}} {emote:unitValues.{{currency}}}",
+    "amountButton": "x{{amount, number}} ({{price, number}}{emote:unitValues.{{currency}}})",
     "shopCategories": {
       "permanentItem": "Ventes permanentes",
       "dailyPotion_zero": "Potion du jour (rupture de stock)",

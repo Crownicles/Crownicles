@@ -1,7 +1,27 @@
 import {
-	describe, expect, it
+	describe, expect, it, vi
 } from "vitest";
+
+/*
+ * Keep i18n + DisplayUtils stubbed so the tests focus on the dispatch logic
+ * (registry lookup, isSingleUnit, baseUnitPrice) without pulling the full
+ * Discord rendering stack.
+ */
+vi.mock("../../src/translations/i18n", () => ({
+	default: {
+		t: (key: string, opts?: { plantId?: number }) =>
+			(opts?.plantId !== undefined ? `${key}:${opts.plantId}` : key)
+	}
+}));
+vi.mock("../../src/utils/DisplayUtils", () => ({
+	DisplayUtils: {
+		getItemDisplayWithStats: () => "DAILY_FULL",
+		getSimpleItemDisplay: () => "DAILY_SHORT"
+	}
+}));
+
 import {
+	buildItemDisplay,
 	buildShopAmountCustomId,
 	CITY_SHOP_CUSTOM_IDS,
 	groupReactionsByItem,
@@ -10,6 +30,7 @@ import {
 import { ShopItemType } from "../../../Lib/src/constants/LogsConstants";
 import { ReactionCollectorShopItemReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ShopCurrency } from "../../../Lib/src/constants/ShopConstants";
 
 function buildItemReaction(shopItemId: ShopItemType, amount: number, price: number): {
 	type: string; data: ReactionCollectorShopItemReaction;
@@ -102,5 +123,112 @@ describe("groupReactionsByItem", () => {
 	it("returns an empty map when no shop item reactions are present", () => {
 		const packet = { reactions: [] } as unknown as ReactionCollectorCreationPacket;
 		expect(groupReactionsByItem(packet).size).toBe(0);
+	});
+});
+
+describe("buildItemDisplay", () => {
+	const baseData = {
+		availableCurrency: 0,
+		currency: ShopCurrency.MONEY,
+		additionalShopData: {}
+	} as unknown as Parameters<typeof buildItemDisplay>[0];
+
+	function reactionsFor(shopItemId: ShopItemType, amounts: Array<{ amount: number; price: number }>): ReactionCollectorShopItemReaction[] {
+		return amounts.map(({ amount, price }) => ({
+			shopCategoryId: "cat",
+			shopItemId,
+			amount,
+			price
+		}));
+	}
+
+	it("flags single-unit items and uses the unique reaction price as base unit price", () => {
+		const display = buildItemDisplay(
+			baseData,
+			reactionsFor(ShopItemType.RANDOM_ITEM, [{
+				amount: 1, price: 200
+			}]),
+			"en"
+		);
+		expect(display.isSingleUnit).toBe(true);
+		expect(display.amounts).toEqual([1]);
+		expect(display.baseUnitPrice).toBe(200);
+	});
+
+	it("derives base unit price from the smallest-amount reaction for multi-bundle items", () => {
+		// 1@100 + 10@500 → smallest bundle drives baseUnitPrice = 100 (not the bulk-discount 50).
+		const display = buildItemDisplay(
+			baseData,
+			reactionsFor(ShopItemType.RANDOM_ITEM, [
+				{
+					amount: 10, price: 500
+				},
+				{
+					amount: 1, price: 100
+				}
+			]),
+			"en"
+		);
+		expect(display.isSingleUnit).toBe(false);
+		expect(display.amounts).toEqual([10, 1]);
+		expect(display.baseUnitPrice).toBe(100);
+	});
+
+	it("uses the DAILY_POTION resolver (DisplayUtils stats) when available", () => {
+		const dataWithPotion = {
+			...baseData,
+			additionalShopData: {
+				dailyPotion: {
+					id: 42, itemCategory: 1
+				}
+			}
+		} as unknown as Parameters<typeof buildItemDisplay>[0];
+		const display = buildItemDisplay(
+			dataWithPotion,
+			reactionsFor(ShopItemType.DAILY_POTION, [{
+				amount: 1, price: 300
+			}]),
+			"en"
+		);
+		expect(display.fullName).toBe("DAILY_FULL");
+		expect(display.shortLabel).toBe("DAILY_SHORT");
+	});
+
+	it("resolves each weekly plant tier with its own plantId from additionalShopData", () => {
+		const dataWithPlants = {
+			...baseData,
+			additionalShopData: {
+				weeklyPlants: [10, 20, 30]
+			}
+		} as unknown as Parameters<typeof buildItemDisplay>[0];
+
+		const tier1 = buildItemDisplay(dataWithPlants, reactionsFor(ShopItemType.WEEKLY_PLANT_TIER_1, [{
+			amount: 1, price: 1
+		}]), "en");
+		const tier2 = buildItemDisplay(dataWithPlants, reactionsFor(ShopItemType.WEEKLY_PLANT_TIER_2, [{
+			amount: 1, price: 1
+		}]), "en");
+		const tier3 = buildItemDisplay(dataWithPlants, reactionsFor(ShopItemType.WEEKLY_PLANT_TIER_3, [{
+			amount: 1, price: 1
+		}]), "en");
+
+		// Mocked i18n echoes the key + plantId — verifies the right plant index is forwarded per tier.
+		expect(tier1.shortLabel).toContain(":10");
+		expect(tier2.shortLabel).toContain(":20");
+		expect(tier3.shortLabel).toContain(":30");
+	});
+
+	it("falls back to the generic i18n-based label for unregistered item types", () => {
+		const display = buildItemDisplay(
+			baseData,
+			reactionsFor(ShopItemType.RANDOM_ITEM, [{
+				amount: 1, price: 50
+			}]),
+			"en"
+		);
+		// Generic resolver wraps the short label in bold for fullName.
+		expect(display.fullName).toBe(`**${display.shortLabel}**`);
+		// And the short label is the raw i18n key (since mocked t() returns the key).
+		expect(display.shortLabel).toContain("shop.shopItems.");
 	});
 });

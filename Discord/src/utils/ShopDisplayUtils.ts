@@ -48,6 +48,13 @@ import {
 	parseShopAmountCustomId
 } from "./cityShop/CityShopViews";
 
+/**
+ * discord.js message flag enabling the Components V2 layout (containers,
+ * sections, separators...). Centralised here to keep the magic string in a
+ * single place across all `update` / `edit` / `reply` calls of the shop flow.
+ */
+const COMPONENTS_V2_FLAGS = ["IsComponentsV2"] as const;
+
 export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 
@@ -375,19 +382,20 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
 	const data = packet.data.data as ReactionCollectorShopData;
+	const pseudo = interaction.user.displayName;
 
 	const reactionsByItem = groupReactionsByItem(packet);
 	const mainContainer = buildShopMainContainer({
 		data,
 		reactionsByItem,
-		pseudo: interaction.user.displayName,
+		pseudo,
 		lng
 	});
 
 	const messagePayload = {
 		embeds: [],
 		components: [mainContainer],
-		flags: ["IsComponentsV2"] as const
+		flags: COMPONENTS_V2_FLAGS
 	};
 
 	let msg: Message | null;
@@ -428,7 +436,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		const freshMain = buildShopMainContainer({
 			data,
 			reactionsByItem,
-			pseudo: interaction.user.displayName,
+			pseudo,
 			lng
 		});
 		state = {
@@ -438,7 +446,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		await buttonInteraction.update({
 			embeds: [],
 			components: [freshMain],
-			flags: ["IsComponentsV2"]
+			flags: COMPONENTS_V2_FLAGS
 		});
 	};
 
@@ -449,7 +457,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		const container = buildShopConfirmationContainer({
 			data,
 			itemReactions,
-			pseudo: interaction.user.displayName,
+			pseudo,
 			lng
 		});
 		state = {
@@ -460,7 +468,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		await buttonInteraction.update({
 			embeds: [],
 			components: [container],
-			flags: ["IsComponentsV2"]
+			flags: COMPONENTS_V2_FLAGS
 		});
 	};
 
@@ -468,14 +476,14 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		? buildShopMainContainer({
 			data,
 			reactionsByItem,
-			pseudo: interaction.user.displayName,
+			pseudo,
 			lng,
 			disabled: true
 		})
 		: buildShopConfirmationContainer({
 			data,
 			itemReactions: state.itemReactions,
-			pseudo: interaction.user.displayName,
+			pseudo,
 			lng,
 			disabled: true
 		});
@@ -486,7 +494,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		await buttonInteraction.update({
 			embeds: [],
 			components: [disabledContainer],
-			flags: ["IsComponentsV2"]
+			flags: COMPONENTS_V2_FLAGS
 		});
 	};
 
@@ -518,7 +526,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		await msg.edit({
 			embeds: [],
 			components: [disabledContainer],
-			flags: ["IsComponentsV2"]
+			flags: COMPONENTS_V2_FLAGS
 		});
 	});
 

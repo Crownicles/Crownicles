@@ -902,7 +902,7 @@
     "cancelButton": "Cancel",
     "itemPrice": "Price: `{{price, number}}{emote:unitValues.{{currency}}}`",
     "itemPriceUnit": "Unit price: `{{price, number}}{emote:unitValues.{{currency}}}`",
-    "amountButton": "x{{amount, number}} — {{price, number}} {emote:unitValues.{{currency}}}",
+    "amountButton": "x{{amount, number}} ({{price, number}}{emote:unitValues.{{currency}}})",
     "shopCategories": {
       "permanentItem": "Permanent sales",
       "dailyPotion_zero": "Today's potion (Out of stock)",

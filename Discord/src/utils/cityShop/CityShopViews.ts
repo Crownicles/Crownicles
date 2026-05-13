@@ -60,7 +60,14 @@ export type CityShopReactionsByItem = Map<ShopItemType, ReactionCollectorShopIte
 interface ShopItemDisplay {
 	fullName: string;
 	shortLabel: string;
-	unitPrice: number;
+
+	/**
+	 * Price per single unit, derived from the smallest-amount reaction. For items
+	 * that only expose a single bundle this is just `price`; for multi-bundle items
+	 * (e.g. wood packs) this is the base unit price, NOT necessarily the best deal —
+	 * larger bundles may offer a discount. Used purely as a display reference.
+	 */
+	baseUnitPrice: number;
 	amounts: number[];
 
 	/**
@@ -165,8 +172,10 @@ export function groupReactionsByItem(packet: ReactionCollectorCreationPacket): C
  * The labels themselves are resolved via the `ITEM_LABEL_RESOLVERS` registry —
  * this function only owns the price/amount derivation and the `isSingleUnit`
  * flag that drives the confirmation view branching.
+ *
+ * Exported for unit testing — not part of the public view-builder surface.
  */
-function buildItemDisplay(
+export function buildItemDisplay(
 	data: ReactionCollectorShopData,
 	itemReactions: ReactionCollectorShopItemReaction[],
 	lng: Language
@@ -180,12 +189,12 @@ function buildItemDisplay(
 	 * amount reaction without resorting to a non-null assertion.
 	 */
 	const unitReaction = itemReactions.reduce((a, b) => a.amount <= b.amount ? a : b);
-	const unitPrice = unitReaction.price / unitReaction.amount;
+	const baseUnitPrice = unitReaction.price / unitReaction.amount;
 	const isSingleUnit = amounts.length === 1 && amounts[0] === 1;
 
 	return {
 		...resolveItemLabels(data, itemId, lng),
-		unitPrice,
+		baseUnitPrice,
 		amounts,
 		isSingleUnit
 	};
@@ -224,7 +233,7 @@ function buildItemSection(args: ItemSectionArgs): SectionBuilder {
 		})
 		: i18n.t("commands:shop.itemPriceUnit", {
 			lng,
-			price: display.unitPrice,
+			price: display.baseUnitPrice,
 			currency: data.currency
 		});
 
@@ -249,10 +258,10 @@ interface MainShopViewArgs {
 	disabled?: boolean;
 }
 
-type CategoryItem = {
+interface CategoryItem {
 	itemId: ShopItemType;
 	reactions: ReactionCollectorShopItemReaction[];
-};
+}
 
 /**
  * Group items by their category id, preserving discovery order within each category.
@@ -336,7 +345,7 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 	);
 
 	const categoryToItems = groupItemsByCategory(reactionsByItem);
-	const sortedCategories = [...categoryToItems.entries()].sort(([a], [b]) => a.localeCompare(b));
+	const sortedCategories = [...categoryToItems.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
 
 	for (const [categoryId, items] of sortedCategories) {
 		appendCategoryBlock({
