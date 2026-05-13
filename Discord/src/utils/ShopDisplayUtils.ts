@@ -40,6 +40,7 @@ import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/Re
 import { escapeUsername } from "./StringUtils";
 import { Badge } from "../../../Lib/src/types/Badge";
 import { Constants } from "../../../Lib/src/constants/Constants";
+import { Language } from "../../../Lib/src/Language";
 import {
 	buildShopConfirmationContainer,
 	buildShopMainContainer,
@@ -54,6 +55,39 @@ import {
  * single place across all `update` / `edit` / `reply` calls of the shop flow.
  */
 const COMPONENTS_V2_FLAGS = ["IsComponentsV2"] as const;
+
+/**
+ * Common scaffolding for "shop success" notifications. Resolves the
+ * interaction, formats the title with the user pseudo and posts the
+ * description as a followUp (or as a reply when the interaction has not
+ * been answered yet — e.g. when Core forwards a packet without the player
+ * having opened the shop UI in the current command flow).
+ */
+async function sendShopSuccess(
+	context: PacketContext,
+	options: {
+		titleKey?: string;
+		buildDescription: (lng: Language) => string;
+	}
+): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
+	if (!interaction) {
+		return;
+	}
+	const lng = interaction.userLanguage;
+	const titleKey = options.titleKey ?? "commands:shop.success";
+	const payload = {
+		embeds: [
+			new CrowniclesEmbed()
+				.formatAuthor(i18n.t(titleKey, {
+					lng,
+					pseudo: escapeUsername(interaction.user.displayName)
+				}), interaction.user)
+				.setDescription(options.buildDescription(lng))
+		]
+	};
+	await (interaction.replied ? interaction.followUp(payload) : interaction.reply(payload));
+}
 
 export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
@@ -100,82 +134,43 @@ export async function handleCommandShopNotEnoughMoney(packet: CommandShopNotEnou
 }
 
 export async function handleCommandShopHealAlterationDone(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-
-	await interaction.followUp({
-		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t("commands:shop.success", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.healAlteration", { lng }))
-		]
+	await sendShopSuccess(context, {
+		buildDescription: lng => i18n.t("commands:shop.healAlteration", { lng })
 	});
 }
 
 export async function handleCommandShopBadgeBought(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-
-	await interaction.followUp({
-		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t("commands:shop.success", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.badgeBought", {
-					lng,
-					badgeName: Badge.RICH
-				}))
-		]
+	await sendShopSuccess(context, {
+		buildDescription: lng => i18n.t("commands:shop.badgeBought", {
+			lng,
+			badgeName: Badge.RICH
+		})
 	});
 }
 
 export async function handleCommandShopGenericPurchase(packet: CommandShopGenericPurchase, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-	const itemName = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(packet.shopItemId)}.name`, {
-		lng,
-		...packet.translationParams
-	});
-
-	let description = i18n.t("commands:shop.genericPurchase", {
-		lng,
-		item: itemName,
-		count: packet.amount
-	});
-
-	if (packet.materials) {
-		const materialLines = Object.entries(packet.materials)
-			.map(([materialId, quantity]) => i18n.t("commands:shop.materialLine", {
+	await sendShopSuccess(context, {
+		buildDescription: lng => {
+			const itemName = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(packet.shopItemId)}.name`, {
 				lng,
-				materialId,
-				quantity
-			}));
-		description += `\n\n${materialLines.join("\n")}`;
-	}
-
-	await interaction.followUp({
-		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t("commands:shop.success", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(description)
-		]
+				...packet.translationParams
+			});
+			let description = i18n.t("commands:shop.genericPurchase", {
+				lng,
+				item: itemName,
+				count: packet.amount
+			});
+			if (packet.materials) {
+				const materialLines = Object.entries(packet.materials)
+					.map(([materialId, quantity]) => i18n.t("commands:shop.materialLine", {
+						lng,
+						materialId,
+						quantity
+					}));
+				description += `\n\n${materialLines.join("\n")}`;
+			}
+			return description;
+		}
 	});
 }
 
@@ -259,41 +254,16 @@ export async function shopInventoryExtensionCollector(context: PacketContext, pa
 }
 
 export async function handleReactionCollectorBuyCategorySlotBuySuccess(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-	await interaction.followUp({
-		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t("commands:shop.success", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.buyCategorySlotSuccess", { lng }))
-		]
+	await sendShopSuccess(context, {
+		buildDescription: lng => i18n.t("commands:shop.buyCategorySlotSuccess", { lng })
 	});
 }
 
 export async function handleCommandShopClosed(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-
-	const args = {
-		embeds: [
-			new CrowniclesEmbed()
-				.formatAuthor(i18n.t("commands:shop.closeShopTitle", {
-					lng,
-					pseudo: escapeUsername(interaction.user.displayName)
-				}), interaction.user)
-				.setDescription(i18n.t("commands:shop.closeShop", { lng }))
-		]
-	};
-	await (interaction.replied ? interaction.followUp(args) : interaction.reply(args));
+	await sendShopSuccess(context, {
+		titleKey: "commands:shop.closeShopTitle",
+		buildDescription: lng => i18n.t("commands:shop.closeShop", { lng })
+	});
 }
 
 type ShopUiState =
