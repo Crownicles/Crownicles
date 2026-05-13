@@ -255,9 +255,11 @@ interface CategoryItem {
 }
 
 /**
- * Group items by their category id, preserving discovery order within each category.
- * Returning the reactions alongside the item id (instead of just ids) lets the
- * caller render a category block without re-querying `reactionsByItem`.
+ * Group items by their category id, preserving discovery order both within
+ * each category and between categories (the upstream packet defines the
+ * order in which items are listed — we honour it here). Returning the
+ * reactions alongside the item id (instead of just ids) lets the caller
+ * render a category block without re-querying `reactionsByItem`.
  */
 function groupItemsByCategory(reactionsByItem: CityShopReactionsByItem): Map<string, CategoryItem[]> {
 	const categoryToItems = new Map<string, CategoryItem[]>();
@@ -352,9 +354,8 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 	);
 
 	const categoryToItems = groupItemsByCategory(reactionsByItem);
-	const sortedCategories = [...categoryToItems.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
 
-	for (const [categoryId, items] of sortedCategories) {
+	for (const [categoryId, items] of categoryToItems) {
 		appendCategoryBlock({
 			container,
 			categoryId,
