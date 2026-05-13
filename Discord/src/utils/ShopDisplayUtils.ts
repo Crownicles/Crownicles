@@ -378,7 +378,6 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 	const reactionsByItem = groupReactionsByItem(packet);
 	const mainContainer = buildShopMainContainer({
-		packet,
 		data,
 		reactionsByItem,
 		pseudo: interaction.user.displayName,
@@ -427,7 +426,6 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 	const showMainView = async (buttonInteraction: ButtonInteraction): Promise<void> => {
 		const freshMain = buildShopMainContainer({
-			packet,
 			data,
 			reactionsByItem,
 			pseudo: interaction.user.displayName,
@@ -468,7 +466,6 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 
 	const buildDisabledContainer = (): ContainerBuilder => state.kind === "main"
 		? buildShopMainContainer({
-			packet,
 			data,
 			reactionsByItem,
 			pseudo: interaction.user.displayName,

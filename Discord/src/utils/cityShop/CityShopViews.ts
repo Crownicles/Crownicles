@@ -242,7 +242,6 @@ function buildItemSection(args: ItemSectionArgs): SectionBuilder {
 }
 
 interface MainShopViewArgs {
-	packet: ReactionCollectorCreationPacket;
 	data: ReactionCollectorShopData;
 	reactionsByItem: CityShopReactionsByItem;
 	pseudo: string;
