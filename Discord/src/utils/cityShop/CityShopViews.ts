@@ -138,13 +138,20 @@ function weeklyPlantLabelsFor(itemId: ShopItemType, tierIndex: number): ItemLabe
 	};
 }
 
-const ITEM_LABEL_RESOLVERS: ReadonlyMap<ShopItemType, ItemLabelResolver> = new Map([
-	[ShopItemType.DAILY_POTION, dailyPotionLabels],
-	...WEEKLY_PLANT_TIERS.map((itemId, tierIndex): [ShopItemType, ItemLabelResolver] => [itemId, weeklyPlantLabelsFor(itemId, tierIndex)])
-]);
+function buildItemLabelResolvers(): Partial<Record<ShopItemType, ItemLabelResolver>> {
+	const registry: Partial<Record<ShopItemType, ItemLabelResolver>> = {
+		[ShopItemType.DAILY_POTION]: dailyPotionLabels
+	};
+	WEEKLY_PLANT_TIERS.forEach((itemId, tierIndex): void => {
+		registry[itemId] = weeklyPlantLabelsFor(itemId, tierIndex);
+	});
+	return registry;
+}
+
+const ITEM_LABEL_RESOLVERS: Partial<Record<ShopItemType, ItemLabelResolver>> = buildItemLabelResolvers();
 
 function resolveItemLabels(data: ReactionCollectorShopData, itemId: ShopItemType, lng: Language): ItemLabels {
-	const resolved = ITEM_LABEL_RESOLVERS.get(itemId)?.(data, lng);
+	const resolved = ITEM_LABEL_RESOLVERS[itemId]?.(data, lng);
 	if (resolved) {
 		return resolved;
 	}
