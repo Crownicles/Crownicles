@@ -99,16 +99,26 @@ function buildItemDisplay(
 ): ShopItemDisplay {
 	const itemId = itemReactions[0].shopItemId;
 	const amounts = itemReactions.map(r => r.amount);
-	const unitAmount = Math.min(...amounts);
-	const unitReaction = itemReactions.find(r => r.amount === unitAmount)!;
-	const unitPrice = unitReaction.price / unitAmount;
+
+	/*
+	 * `itemReactions` is non-empty (caller iterates a map populated from packet
+	 * reactions), so reduce-without-seed is safe and lets us pick the smallest-
+	 * amount reaction without resorting to a non-null assertion.
+	 */
+	const unitReaction = itemReactions.reduce((a, b) => a.amount <= b.amount ? a : b);
+	const unitPrice = unitReaction.price / unitReaction.amount;
 
 	if (itemId === ShopItemType.DAILY_POTION) {
+		/*
+		 * Producer (`ReactionCollectorShop`) always sets `dailyPotion` when a
+		 * daily-potion reaction is emitted; narrow once.
+		 */
+		const dailyPotion = data.additionalShopData.dailyPotion!;
 		return {
-			fullName: DisplayUtils.getItemDisplayWithStats(data.additionalShopData.dailyPotion!, lng),
+			fullName: DisplayUtils.getItemDisplayWithStats(dailyPotion, lng),
 			shortLabel: DisplayUtils.getSimpleItemDisplay({
-				id: data.additionalShopData.dailyPotion!.id,
-				category: data.additionalShopData.dailyPotion!.itemCategory
+				id: dailyPotion.id,
+				category: dailyPotion.itemCategory
 			}, lng),
 			unitPrice,
 			amounts
@@ -196,19 +206,29 @@ interface MainShopViewArgs {
 	disabled?: boolean;
 }
 
+type CategoryItem = {
+	itemId: ShopItemType;
+	reactions: ReactionCollectorShopItemReaction[];
+};
+
 /**
  * Group items by their category id, preserving discovery order within each category.
+ * Returning the reactions alongside the item id (instead of just ids) lets the
+ * caller render a category block without re-querying `reactionsByItem`.
  */
-function groupItemsByCategory(reactionsByItem: CityShopReactionsByItem): Map<string, ShopItemType[]> {
-	const categoryToItems = new Map<string, ShopItemType[]>();
+function groupItemsByCategory(reactionsByItem: CityShopReactionsByItem): Map<string, CategoryItem[]> {
+	const categoryToItems = new Map<string, CategoryItem[]>();
 	for (const [itemId, reactions] of reactionsByItem) {
 		const categoryId = reactions[0].shopCategoryId;
+		const entry: CategoryItem = {
+			itemId, reactions
+		};
 		const list = categoryToItems.get(categoryId);
 		if (list) {
-			list.push(itemId);
+			list.push(entry);
 		}
 		else {
-			categoryToItems.set(categoryId, [itemId]);
+			categoryToItems.set(categoryId, [entry]);
 		}
 	}
 	return categoryToItems;
@@ -217,9 +237,8 @@ function groupItemsByCategory(reactionsByItem: CityShopReactionsByItem): Map<str
 interface CategoryBlockArgs {
 	container: ContainerBuilder;
 	categoryId: string;
-	itemIds: ShopItemType[];
+	items: CategoryItem[];
 	data: ReactionCollectorShopData;
-	reactionsByItem: CityShopReactionsByItem;
 	lng: Language;
 	disabled: boolean;
 }
@@ -229,7 +248,7 @@ interface CategoryBlockArgs {
  */
 function appendCategoryBlock(args: CategoryBlockArgs): void {
 	const {
-		container, categoryId, itemIds, data, reactionsByItem, lng, disabled
+		container, categoryId, items, data, lng, disabled
 	} = args;
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(
@@ -240,8 +259,9 @@ function appendCategoryBlock(args: CategoryBlockArgs): void {
 			})}**`
 		)
 	);
-	for (const itemId of itemIds) {
-		const itemReactions = reactionsByItem.get(itemId)!;
+	for (const {
+		reactions: itemReactions
+	} of items) {
 		const display = buildItemDisplay(data, itemReactions, lng);
 		container.addSectionComponents(buildItemSection({
 			display, itemReactions, data, lng, disabled
@@ -274,15 +294,14 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 	);
 
 	const categoryToItems = groupItemsByCategory(reactionsByItem);
-	const categories = [...categoryToItems.keys()].sort((a, b) => a.localeCompare(b));
+	const sortedCategories = [...categoryToItems.entries()].sort(([a], [b]) => a.localeCompare(b));
 
-	for (const categoryId of categories) {
+	for (const [categoryId, items] of sortedCategories) {
 		appendCategoryBlock({
 			container,
 			categoryId,
-			itemIds: categoryToItems.get(categoryId)!,
+			items,
 			data,
-			reactionsByItem,
 			lng,
 			disabled
 		});
