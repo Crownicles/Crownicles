@@ -4,8 +4,11 @@ import { LogsPlayers } from "./models/LogsPlayers";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
-	Model, ModelStatic
+	Model, ModelStatic, Sequelize, Transaction
 } from "sequelize";
+import {
+	CLS_TRANSACTION_KEY, getTransactionSequelize
+} from "../../../../../Lib/src/locks/CLSNamespace";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
 import { LogsPlayersGems } from "./models/LogsPlayersGems";
@@ -186,6 +189,120 @@ export class LogsDatabase extends Database {
 
 	constructor() {
 		super(getDatabaseConfiguration(botConfig, "logs"), `${__dirname}/models`, `${__dirname}/migrations`);
+	}
+
+	/**
+	 * Override of {@link Database.init} to install a defensive Sequelize-hook
+	 * boundary that prevents the logs sequelize instance from picking up a
+	 * transaction belonging to **another** sequelize instance via the shared
+	 * CLS namespace.
+	 *
+	 * ### Why this exists
+	 *
+	 * `Sequelize.useCLS(ns)` is a **static** method on the `Sequelize`
+	 * constructor (see {@link useCLSOnSequelize} and the v6 docs). pnpm
+	 * resolves a single physical copy of `sequelize`, so both
+	 * {@link GameDatabase} and `LogsDatabase` share the **same** CLS
+	 * namespace — there is no per-instance opt-out.
+	 *
+	 * As a consequence, when game-side code opens a transaction inside
+	 * `withLockedEntities`, that transaction is stored in CLS under the
+	 * `"transaction"` key. Any subsequent **fire-and-forget**
+	 * `crowniclesInstance.logsDatabase.logXxx(...).then()` call performed in
+	 * the same async context inherits that transaction and routes its
+	 * INSERT through the **game** connection pool — hitting
+	 * `draftbot_X_game` instead of `draftbot_X_logs` and raising
+	 * `ER_NO_SUCH_TABLE` (1146). The resulting unhandled rejection corrupts
+	 * the game-side commit/rollback sequencing and leaves row locks
+	 * orphaned, eventually surfacing as `ER_LOCK_WAIT_TIMEOUT` (1205) on a
+	 * later `/rapport`.
+	 *
+	 * The hook strips any inherited `options.transaction` that does not
+	 * belong to the logs Sequelize instance, restoring the expected
+	 * "each DB owns its own transactions" invariant. Logs writes always
+	 * run with `transaction: undefined` from the perspective of game-side
+	 * TXs, which is the correct behaviour — they target a different
+	 * physical database.
+	 *
+	 * Remove this override only after Sequelize gains per-instance CLS
+	 * support (or after migrating off the static `useCLS` API entirely).
+	 *
+	 * @param doMigrations Forwarded to {@link Database.init}.
+	 */
+	public override async init(doMigrations: boolean): Promise<void> {
+		await super.init(doMigrations);
+		this.installForeignTransactionGuard();
+	}
+
+	/**
+	 * Wraps `this.sequelize.query` so that any `options.transaction`
+	 * inherited from the shared CLS namespace but belonging to **another**
+	 * Sequelize instance is forced to `null` before the original `query`
+	 * runs.
+	 *
+	 * ### Why instance-level wrapping (not hooks)
+	 *
+	 * Looking at the Sequelize v6 `Sequelize#query` body:
+	 *
+	 * ```js
+	 * // 1. CLS lookup populates options.transaction
+	 * if (options.transaction === undefined && this.constructor._cls) {
+	 *   options.transaction = this.constructor._cls.get("transaction");
+	 * }
+	 * // 2. Connection is resolved from that transaction
+	 * const connection = await (options.transaction
+	 *   ? options.transaction.connection
+	 *   : this.connectionManager.getConnection(...));
+	 * // 3. ONLY THEN beforeQuery fires
+	 * await this.runHooks("beforeQuery", options, query);
+	 * ```
+	 *
+	 * Both the `beforeCreate/beforeFind/...` model hooks (fire before step
+	 * 1) and the `beforeQuery` sequelize hook (fires after step 2) are
+	 * unusable: the foreign connection is already locked in by the time
+	 * any hook runs. The only way to neutralise the foreign transaction
+	 * is to intercept **before** `Sequelize#query` is entered — which
+	 * means wrapping `this.sequelize.query` itself.
+	 *
+	 * Setting `options.transaction = null` (not `undefined`) prevents the
+	 * subsequent CLS lookup inside the original `query`: Sequelize only
+	 * consults CLS when the value is strictly `undefined`. `null` is
+	 * treated as "explicitly no transaction" and forces the connection
+	 * manager to pick a fresh connection from this instance's pool —
+	 * hitting `draftbot_X_logs` instead of `draftbot_X_game`.
+	 *
+	 * The wrapper is installed once per instance, after `super.init()`
+	 * has created `this.sequelize`. It shadows the prototype method via
+	 * an own property, so the game-side Sequelize (a different instance)
+	 * keeps its unmodified `query` method.
+	 */
+	private installForeignTransactionGuard(): void {
+		const ownSequelize = this.sequelize;
+		const originalQuery = ownSequelize.query.bind(ownSequelize);
+		const clsHolder = Sequelize as unknown as { _cls?: { get: (key: string) => unknown } };
+
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		ownSequelize.query = function patchedQuery(this: Sequelize, ...args: any[]): Promise<unknown> {
+			const rawOptions = (args[1] ?? {}) as { transaction?: Transaction | null | undefined };
+			const opts: { transaction?: Transaction | null | undefined } & Record<string, unknown> = { ...rawOptions };
+
+			let tx = opts.transaction;
+			if (tx === undefined && clsHolder._cls) {
+				tx = clsHolder._cls.get(CLS_TRANSACTION_KEY) as Transaction | undefined;
+			}
+			if (tx && getTransactionSequelize(tx) !== ownSequelize) {
+				/*
+				 * Foreign transaction (from a different Sequelize instance, e.g. the
+				 * game DB) leaked into this logs-DB query via the shared CLS
+				 * namespace. Force `null` to bypass the CLS lookup inside the
+				 * original `query` so a fresh connection from this instance's pool
+				 * is used instead of the foreign transaction's connection.
+				 */
+				opts.transaction = null;
+			}
+
+			return originalQuery(args[0], opts);
+		} as unknown as typeof ownSequelize.query;
 	}
 
 	/**
