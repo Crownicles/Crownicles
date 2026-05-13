@@ -200,19 +200,6 @@ export function buildItemDisplay(
 	};
 }
 
-/**
- * Truncate the button label so it fits Discord's 80-character limit while keeping
- * the leading emoji marker intact when possible. Items with long names (e.g. potions
- * with stat lines) are rendered as buttons here so we have to be defensive.
- */
-function clampButtonLabel(label: string): string {
-	const MAX = 80;
-	if (label.length <= MAX) {
-		return label;
-	}
-	return `${label.slice(0, MAX - 1)}…`;
-}
-
 interface ItemSectionArgs {
 	display: ShopItemDisplay;
 	itemReactions: ReactionCollectorShopItemReaction[];
@@ -244,7 +231,7 @@ function buildItemSection(args: ItemSectionArgs): SectionBuilder {
 		.setButtonAccessory(
 			new ButtonBuilder()
 				.setCustomId(`${CITY_SHOP_CUSTOM_IDS.BUY_PREFIX}${shopItemTypeToId(itemReactions[0].shopItemId)}`)
-				.setLabel(clampButtonLabel(i18n.t("commands:shop.buyButton", { lng })))
+				.setLabel(i18n.t("commands:shop.buyButton", { lng }))
 				.setStyle(ButtonStyle.Primary)
 				.setDisabled(disabled)
 		);
