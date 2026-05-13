@@ -105,10 +105,10 @@ function buildItemDisplay(
 
 	if (itemId === ShopItemType.DAILY_POTION) {
 		return {
-			fullName: DisplayUtils.getItemDisplayWithStats(data.additionalShopData!.dailyPotion!, lng),
+			fullName: DisplayUtils.getItemDisplayWithStats(data.additionalShopData.dailyPotion!, lng),
 			shortLabel: DisplayUtils.getSimpleItemDisplay({
-				id: data.additionalShopData!.dailyPotion!.id,
-				category: data.additionalShopData!.dailyPotion!.itemCategory
+				id: data.additionalShopData.dailyPotion!.id,
+				category: data.additionalShopData.dailyPotion!.itemCategory
 			}, lng),
 			unitPrice,
 			amounts
@@ -116,7 +116,7 @@ function buildItemDisplay(
 	}
 	if (itemId >= ShopItemType.WEEKLY_PLANT_TIER_1 && itemId <= ShopItemType.WEEKLY_PLANT_TIER_3) {
 		const tierIndex = itemId - ShopItemType.WEEKLY_PLANT_TIER_1;
-		const plantId = data.additionalShopData?.weeklyPlants?.[tierIndex];
+		const plantId = data.additionalShopData.weeklyPlants?.[tierIndex];
 		const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, {
 			lng, plantId
 		});
@@ -236,7 +236,7 @@ function appendCategoryBlock(args: CategoryBlockArgs): void {
 		new TextDisplayBuilder().setContent(
 			`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
 				lng,
-				count: data.additionalShopData?.remainingPotions
+				count: data.additionalShopData.remainingPotions
 			})}**`
 		)
 	);
@@ -342,7 +342,7 @@ function buildConfirmationItemRecap(args: ConfirmationRecapArgs): TextDisplayBui
 				name: display.fullName,
 				price: itemReactions[0].price,
 				currency: data.currency,
-				remainingPotions: data.additionalShopData?.remainingPotions
+				remainingPotions: data.additionalShopData.remainingPotions
 			})
 		);
 	}
@@ -369,7 +369,7 @@ function buildConfirmationInfo(
 			`commands:shop.shopItems.${shopItemTypeToId(itemReactions[0].shopItemId)}.info`,
 			{
 				lng,
-				kingsMoneyAmount: data.additionalShopData?.gemToMoneyRatio,
+				kingsMoneyAmount: data.additionalShopData.gemToMoneyRatio,
 				thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS
 			}
 		)}`

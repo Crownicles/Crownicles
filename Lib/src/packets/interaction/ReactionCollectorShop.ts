@@ -91,7 +91,7 @@ export class ReactionCollectorShopData extends ReactionCollectorData {
 
 	currency!: ShopCurrency;
 
-	additionalShopData?: additionalShopData;
+	additionalShopData!: additionalShopData;
 }
 
 export class ReactionCollectorShopItemReaction extends ReactionCollectorReaction {
