@@ -4,6 +4,7 @@ import {
 import {
 	withLockedEntities, LockKey
 } from "../../src/locks/withLockedEntities";
+import { CLS_TRANSACTION_KEY, getCrowniclesNamespace } from "../../src/locks/CLSNamespace";
 
 /**
  * Minimal "model double" mimicking the slice of Sequelize's `ModelStatic`
@@ -205,5 +206,55 @@ describe("withLockedEntities (unit)", () => {
 			async () => 1234
 		);
 		expect(result).toBe(1234);
+	});
+
+	/*
+	 * Regression: nested `withLockedEntities` used to open a *second*
+	 * Sequelize transaction on a separate connection. If the outer
+	 * transaction was holding a `FOR UPDATE` row lock the inner one
+	 * needed, the second connection blocked forever (the outer is
+	 * parked awaiting its own callback), MariaDB saw no cycle, and the
+	 * inner transaction timed out after 50 s with `ER_LOCK_WAIT_TIMEOUT`
+	 * (1205). The fix makes `withLockedEntities` reentrant via the
+	 * shared CLS namespace: when a transaction is already active on the
+	 * same Sequelize instance, the inner call reuses it instead of
+	 * opening a new one.
+	 */
+	it("reuses an existing CLS transaction when nested on the same sequelize (no second transaction)", async () => {
+		const seq = makeFakeSequelize();
+		const transactionSpy = vi.spyOn(seq, "transaction");
+		const player = makeFakeModel("player", {
+			1: { id: 1, tag: "p1" },
+			2: { id: 2, tag: "p2" }
+		}, seq);
+
+		const namespace = getCrowniclesNamespace();
+		// Forge an "outer transaction" matching the same sequelize and
+		// drop it into the CLS namespace as Sequelize would do inside a
+		// `sequelize.transaction(autoCallback)` autoCallback frame.
+		const outerTransaction = {
+			LOCK: { UPDATE: "FOR UPDATE" },
+			sequelize: seq
+		};
+
+		await namespace.runPromise(async () => {
+			namespace.set(CLS_TRANSACTION_KEY, outerTransaction);
+			await withLockedEntities(
+				[{ model: player as never, id: 1 }, { model: player as never, id: 2 }],
+				async () => "ok"
+			);
+		});
+
+		// The inner call must NOT have opened a new transaction.
+		expect(transactionSpy).not.toHaveBeenCalled();
+		// But it still acquires FOR UPDATE locks on every requested row,
+		// piggybacking on the existing transaction.
+		expect(player.findByPk).toHaveBeenCalledTimes(2);
+		for (const call of player.findByPk.mock.calls) {
+			expect(call[1]).toMatchObject({
+				lock: "FOR UPDATE",
+				transaction: outerTransaction
+			});
+		}
 	});
 });

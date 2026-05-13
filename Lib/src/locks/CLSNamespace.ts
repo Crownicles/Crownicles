@@ -1,6 +1,9 @@
 import {
 	createNamespace, getNamespace, Namespace
 } from "cls-hooked";
+import type {
+	Sequelize, Transaction
+} from "sequelize";
 
 /**
  * Minimal shape of `Sequelize` we depend on here. Typed as a structural
@@ -16,6 +19,16 @@ import {
 type SequelizeCtor = {
 	useCLS(ns: Namespace): unknown;
 };
+
+/**
+ * Key under which Sequelize stores the currently-active transaction in
+ * the CLS namespace (see Sequelize v6 `lib/sequelize.js#useCLS`). All
+ * Crownicles code that reads or writes the active transaction MUST go
+ * through this constant rather than hardcoding the literal string, so
+ * that the coupling with the Sequelize CLS contract lives in exactly
+ * one place.
+ */
+export const CLS_TRANSACTION_KEY = "transaction" as const;
 
 /**
  * Name of the shared CLS (Continuation-Local Storage) namespace used by
@@ -119,7 +132,7 @@ export class MissingLockContextError extends Error {
  * `<Model>.withLocked` callback).
  *
  * The lookup matches the key Sequelize stores its CLS-bound transaction
- * under (`"transaction"`, see Sequelize v6's
+ * under ({@link CLS_TRANSACTION_KEY}, see Sequelize v6's
  * `lib/sequelize.js#useCLS`). This is the same value `model.save()`
  * picks up automatically inside a guarded section, so checking its
  * presence is a reliable proxy for "I am being called under a lock".
@@ -128,8 +141,38 @@ export class MissingLockContextError extends Error {
  * thrown error message to make the call site obvious in stack traces.
  */
 export function assertUnderLock(helperName: string): void {
-	const namespace = getCrowniclesNamespace();
-	if (!namespace.get("transaction")) {
+	if (!getCurrentTransaction()) {
 		throw new MissingLockContextError(helperName);
 	}
+}
+
+/**
+ * Returns the Sequelize transaction currently bound to the shared CLS
+ * namespace, or `undefined` when the caller is not inside any
+ * `withLockedEntities` / `withLockedPlayerSafe` / `<Model>.withLocked`
+ * critical section.
+ *
+ * This is the single supported way to read the active transaction from
+ * Crownicles code. Centralising the CLS lookup keeps the coupling with
+ * Sequelize's internal CLS key in {@link CLS_TRANSACTION_KEY} alone.
+ */
+export function getCurrentTransaction(): Transaction | undefined {
+	return getCrowniclesNamespace().get(CLS_TRANSACTION_KEY) as Transaction | undefined;
+}
+
+/**
+ * Returns the {@link Sequelize} instance a given transaction belongs to.
+ *
+ * Sequelize v6 attaches the owning Sequelize instance to every
+ * `Transaction` as the (undeclared but stable) `sequelize` own property
+ * — that's how Sequelize itself routes queries back to the right
+ * connection pool. This helper exposes the property in a typed way so
+ * callers don't have to repeat the `as unknown as { sequelize?: Sequelize }`
+ * cast (and don't accidentally rely on a different undocumented field).
+ *
+ * Returns `undefined` if the runtime Transaction unexpectedly lacks the
+ * `sequelize` field (defensive: should not happen with sequelize@6).
+ */
+export function getTransactionSequelize(transaction: Transaction): Sequelize | undefined {
+	return (transaction as unknown as { sequelize?: Sequelize }).sequelize;
 }

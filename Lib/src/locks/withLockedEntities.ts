@@ -1,6 +1,9 @@
 import {
 	Model, ModelStatic, Transaction
 } from "sequelize";
+import {
+	getCurrentTransaction, getTransactionSequelize
+} from "./CLSNamespace";
 
 /**
  * A handle on a row that the caller wants to lock with
@@ -122,25 +125,61 @@ export async function withLockedEntities<
 
 	const sorted = [...keys].sort(compareKeys);
 
-	return await sequelize.transaction(async (transaction: Transaction) => {
-		const lockedByKey = new Map<string, Model>();
+	/*
+	 * Reentrancy: if the caller is already running inside an active
+	 * `withLockedEntities` (the CLS namespace holds a transaction bound
+	 * to the same Sequelize instance), reuse that transaction instead of
+	 * opening a new one.
+	 *
+	 * Why this matters: `sequelize.transaction(autoCallback)` ALWAYS
+	 * grabs a fresh connection from the pool — it does NOT auto-promote
+	 * to a savepoint when an outer transaction is already in CLS. So a
+	 * nested call would run on a second physical connection, and any
+	 * row already `FOR UPDATE`-locked by the outer transaction would
+	 * make the inner one wait forever (50 s `innodb_lock_wait_timeout`,
+	 * surfaced as `ER_LOCK_WAIT_TIMEOUT`). Since the outer is parked
+	 * awaiting its own callback to return, the inner times out alone:
+	 * MariaDB sees no cycle, so it cannot trigger deadlock detection.
+	 *
+	 * Reusing the existing transaction is safe: `SELECT ... FOR UPDATE`
+	 * on a row already locked by the same transaction is a no-op, and
+	 * any additional rows are simply locked alongside the existing
+	 * lockset inside that single transaction.
+	 */
+	const existing = getCurrentTransaction();
+	if (existing && getTransactionSequelize(existing) === sequelize) {
+		return await acquireAndRun(sorted, keys, existing, fn);
+	}
 
-		for (const key of sorted) {
-			const cacheKey = lockCacheKey(key);
-			if (lockedByKey.has(cacheKey)) {
-				continue;
-			}
-			const instance = await key.model.findByPk(key.id, {
-				lock: transaction.LOCK.UPDATE,
-				transaction
-			});
-			if (!instance) {
-				throw new LockedRowNotFoundError(key.model.tableName, key.id);
-			}
-			lockedByKey.set(cacheKey, instance);
+	return await sequelize.transaction(transaction => acquireAndRun(sorted, keys, transaction, fn));
+}
+
+async function acquireAndRun<
+	K extends readonly LockKey<Model>[],
+	R
+>(
+	sorted: LockKey<Model>[],
+	keys: K,
+	transaction: Transaction,
+	fn: (entities: ResolveEntities<K>) => Promise<R>
+): Promise<R> {
+	const lockedByKey = new Map<string, Model>();
+
+	for (const key of sorted) {
+		const cacheKey = lockCacheKey(key);
+		if (lockedByKey.has(cacheKey)) {
+			continue;
 		}
+		const instance = await key.model.findByPk(key.id, {
+			lock: transaction.LOCK.UPDATE,
+			transaction
+		});
+		if (!instance) {
+			throw new LockedRowNotFoundError(key.model.tableName, key.id);
+		}
+		lockedByKey.set(cacheKey, instance);
+	}
 
-		const entities = keys.map(key => lockedByKey.get(lockCacheKey(key))!);
-		return fn(entities as unknown as ResolveEntities<K>);
-	});
+	const entities = keys.map(key => lockedByKey.get(lockCacheKey(key))!);
+	return fn(entities as unknown as ResolveEntities<K>);
 }
