@@ -6,7 +6,7 @@ import {
 	CITY_SHOP_CUSTOM_IDS,
 	groupReactionsByItem,
 	parseShopAmountCustomId
-} from "../../src/utils/cityShop/CityShopV2Views";
+} from "../../src/utils/cityShop/CityShopViews";
 import { ShopItemType } from "../../../Lib/src/constants/LogsConstants";
 import { ReactionCollectorShopItemReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";

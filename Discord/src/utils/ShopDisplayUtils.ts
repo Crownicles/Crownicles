@@ -46,7 +46,7 @@ import {
 	CITY_SHOP_CUSTOM_IDS,
 	groupReactionsByItem,
 	parseShopAmountCustomId
-} from "./cityShop/CityShopV2Views";
+} from "./cityShop/CityShopViews";
 
 export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);

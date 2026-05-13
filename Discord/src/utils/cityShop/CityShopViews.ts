@@ -250,7 +250,7 @@ function appendCategoryBlock(args: CategoryBlockArgs): void {
 }
 
 /**
- * Main shop view rendered as a Components V2 container.
+ * Main shop view rendered as a container with header, item list and footer.
  * One section per item with a "buy" button accessory; a single close button at the bottom.
  */
 export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder {
