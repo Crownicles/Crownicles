@@ -38,36 +38,50 @@ import {
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	displayMonsterReward,
+	handleChooseDestinationCity,
+	reportResult,
+	stayInCity
+} from "../../../../commands/player/ReportCommand";
+import {
 	handleBlacksmithDisenchant,
 	handleBlacksmithMissingMaterials,
 	handleBlacksmithNotEnoughMoney,
 	handleBlacksmithUpgrade,
+	handleItemEnchanted,
+	handleUpgradeItem,
+	handleUpgradeItemMaxLevel,
+	handleUpgradeItemMissingMaterials
+} from "../../../../commands/player/report/blacksmith/BlacksmithHandlers";
+import {
 	handleBuyHealAccept,
 	handleBuyHealCannotHealOccupied,
 	handleBuyHealNoAlteration,
-	handleBuyHealRefuse,
-	handleBuyHome,
-	handleChooseDestinationCity,
-	handleEatInnMeal,
-	handleHomeBed,
-	handleInnRoom,
-	handleItemEnchanted,
-	handleMoveHome,
-	handleUpgradeHome,
-	handleUpgradeItem,
-	handleUpgradeItemMaxLevel,
-	handleUpgradeItemMissingMaterials,
-	handleUseTokensAccept,
-	handleUseTokensRefuse,
-	refusePveFight,
-	reportResult,
-	reportTravelSummary,
-	stayInCity,
+	handleBuyHealRefuse
+} from "../../../../commands/player/report/buyHeal/BuyHealHandlers";
+import {
+	handleGuildDomainNotEnoughTreasury,
 	handleGuildDomainPurchase,
-	handleGuildDomainRelocate,
-	handleGuildDomainNotEnoughTreasury
-} from "../../../../commands/player/ReportCommand";
+	handleGuildDomainRelocate
+} from "../../../../commands/player/report/guildDomain/GuildDomainHandlers";
+import {
+	handleBuyHome,
+	handleHomeBed,
+	handleMoveHome,
+	handleUpgradeHome
+} from "../../../../commands/player/report/home/HomeHandlers";
+import {
+	handleEatInnMeal,
+	handleInnRoom
+} from "../../../../commands/player/report/inn/InnHandlers";
+import {
+	displayMonsterReward,
+	refusePveFight
+} from "../../../../commands/player/report/pveFight/PveFightHandlers";
+import { reportTravelSummary } from "../../../../commands/player/report/travel/TravelSummary";
+import {
+	handleUseTokensAccept,
+	handleUseTokensRefuse
+} from "../../../../commands/player/report/useTokens/UseTokensHandlers";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 
 export default class ReportCommandPacketHandlers {
