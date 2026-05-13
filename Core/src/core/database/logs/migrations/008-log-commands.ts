@@ -32,7 +32,6 @@ import { CommandGuildShelterPacketReq } from "../../../../../../Lib/src/packets/
 import { CommandGuildDailyPacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildDailyPacket";
 import { CommandGuildStoragePacketReq } from "../../../../../../Lib/src/packets/commands/CommandGuildStoragePacket";
 import { CommandSellPacketReq } from "../../../../../../Lib/src/packets/commands/CommandSellPacket";
-import { CommandMissionShopPacketReq } from "../../../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { CommandClassesPacketReq } from "../../../../../../Lib/src/packets/commands/CommandClassesPacket";
 import { CommandPetTransferPacketReq } from "../../../../../../Lib/src/packets/commands/CommandPetTransferPacket";
 import { CommandPetNickPacketReq } from "../../../../../../Lib/src/packets/commands/CommandPetNickPacket";
@@ -73,7 +72,7 @@ const commandsToPacketNames: Map<string, string> = new Map([
 	["prefix", "[OLD] prefix"], // Removed command
 	["classesinfo", CommandClassesInfoPacketReq.name],
 	["map", CommandMapPacketReq.name],
-	["missionsshop", CommandMissionShopPacketReq.name],
+	["missionsshop", "[OLD] missionsshop"], // Command removed — migrated to missionManager city shop
 	["invitedraftbot", "[OLD] invitedraftbot"], // Front end command now
 	["vote", "[OLD] vote"], // Front end command now
 	["idea", "[OLD] idea"], // Front end command now

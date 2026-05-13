@@ -43,6 +43,10 @@ import { MaterialType } from "../../../../Lib/src/types/MaterialType";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Materials } from "../database/game/models/Material";
 import { getVeterinarianShopItem } from "../utils/VeterinarianShopItems";
+import {
+	getMissionSkipShopItem, getQuestMasterBadgeShopItem
+} from "../utils/MissionManagerShopItems";
+import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { pickMaterialDistribution } from "./MaterialLootGenerator";
 
 /**
@@ -149,9 +153,11 @@ async function openGemShop({
 }
 
 /**
- * Open the royal market shop for the player
+ * Open the royal market shop for the player (gem exchanges, king's favor and
+ * the Maître des quêtes services: mission skip and quest master badge).
  */
 export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
+	const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 	await openGemShop({
 		player,
 		context,
@@ -165,8 +171,15 @@ export async function openRoyalMarket(player: Player, context: PacketContext, re
 				]
 			},
 			{
+				id: "services",
+				items: [getMissionSkipShopItem(playerMissionsInfo.missionSkipsUsedThisWeek)]
+			},
+			{
 				id: "prestige",
-				items: [getAThousandPointsShopItem()]
+				items: [
+					getAThousandPointsShopItem(),
+					getQuestMasterBadgeShopItem()
+				]
 			}
 		],
 		additionalShopData: { currency: ShopCurrency.GEM }

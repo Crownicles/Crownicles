@@ -41,6 +41,8 @@ export class PlayerMissionsInfo extends Model {
 
 	declare hasBoughtPointsThisWeek: boolean;
 
+	declare missionSkipsUsedThisWeek: number;
+
 	declare dailyMissionNumberDone: number;
 
 	declare lastDailyMissionCompleted: Date;
@@ -57,7 +59,8 @@ export class PlayerMissionsInfo extends Model {
 
 	static async resetShopBuyout(): Promise<void> {
 		await PlayerMissionsInfo.update({
-			hasBoughtPointsThisWeek: false
+			hasBoughtPointsThisWeek: false,
+			missionSkipsUsedThisWeek: 0
 		}, { where: {} });
 	}
 
@@ -111,6 +114,11 @@ export function initModel(sequelize: Sequelize): void {
 		hasBoughtPointsThisWeek: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
+		},
+		missionSkipsUsedThisWeek: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0,
+			allowNull: false
 		},
 		dailyMissionNumberDone: {
 			type: DataTypes.INTEGER,

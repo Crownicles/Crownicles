@@ -1,13 +1,8 @@
-import { ICommand } from "../ICommand";
-import {
-	makePacket, PacketContext
-} from "../../../../Lib/src/packets/CrowniclesPacket";
-import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
+import { PacketContext } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandMissionShopKingsFavor,
 	CommandMissionShopMarketAnalysis,
 	CommandMissionShopMoney,
-	CommandMissionShopPacketReq,
 	CommandMissionShopPetInformation,
 	CommandMissionShopSkipMissionResult,
 	MarketTrend
@@ -41,13 +36,6 @@ import {
 	PlantConstants, PlantId
 } from "../../../../Lib/src/constants/PlantConstants";
 
-/**
- * Get the packet to send to the server
- */
-function getPacket(): CommandMissionShopPacketReq {
-	return makePacket(CommandMissionShopPacketReq, {});
-}
-
 async function handleBasicMissionShopItem(context: PacketContext, descriptionString: string, descriptionFormat: {
 	[keys: string]: string | number;
 }): Promise<void> {
@@ -80,7 +68,7 @@ export async function handleMissionShopMoney(packet: CommandMissionShopMoney, co
 }
 
 export async function handleMissionShopKingsFavor(packet: CommandMissionShopKingsFavor, context: PacketContext): Promise<void> {
-	await handleBasicMissionShopItem(context, "commands:shop.shopItems.kingsFavor.giveDescription", { thousandPoints: packet.score });
+	await handleBasicMissionShopItem(context, "commands:shop.shopItems.kingsFavor.giveDescription", { thousandPoints: packet.amount });
 }
 
 /**
@@ -369,10 +357,3 @@ export async function handleMarketAnalysis(packet: CommandMissionShopMarketAnaly
 		]
 	});
 }
-
-
-export const commandInfo: ICommand = {
-	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("missionsshop"),
-	getPacket,
-	mainGuildCommand: false
-};

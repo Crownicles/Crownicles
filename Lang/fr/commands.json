@@ -490,9 +490,6 @@
       "GUILD_SHELTER": {
         "description": "Affiche le refuge d'animaux de la guilde."
       },
-      "GUILD_SHOP": {
-        "description": "Affiche le magasin de votre guilde."
-      },
       "GUILD_STORAGE": {
         "description": "Affiche le contenu de l'entrepôt de la guilde."
       },
@@ -522,9 +519,6 @@
       },
       "MISSIONS": {
         "description": "Affiche la liste des missions qui vous sont assignées."
-      },
-      "MISSIONS_SHOP": {
-        "description": "Affiche le magasin des missions."
       },
       "NOTIFICATIONS": {
         "description": "Permet de paramétrer la réception des notifications du bot. Vous pouvez choisir de recevoir des notifications (et déterminer où les afficher) pour l'arrivée à un lieu dit, les récompenses de guilde, la libération de prison, les attaques d'autres joueurs, les exclusions de guilde, les changements de statut au sein de la guilde, la régénération totale de l'énergie, la disponibilité de votre bonus journalier et la fin des expéditions de familier."
@@ -564,9 +558,6 @@
       },
       "SELL": {
         "description": "Permet de vendre l'objet qui se trouve dans votre réserve, la valeur de l'objet est déterminée en fonction de sa puissance. Les potions n'ont pas de valeur de revente, mais peuvent être jetées grace à cette commande."
-      },
-      "SHOP": {
-        "description": "Cette commande permet de dépenser votre argent pour faciliter votre aventure. En plus des 4 choix de base qui seront disponible de façon permanente, vous pourrez, chaque jour, profiter d'une potion exclusive, disponible à la vente durant 24 heures uniquement."
       },
       "TOP": {
         "description": "Affiche le classement général du jeu par tranche de 15 joueurs. Les joueurs dans le même serveur que vous sont marqués par une pastille bleue."
@@ -880,7 +871,7 @@
       "shops": {
         "royalMarket": {
           "label": "Marché royal",
-          "description": "La boutique privée du château regorge de trésors exclusifs. On y échange gemmes contre or et objets rares."
+          "description": "La boutique privée du château regorge de trésors exclusifs. On y échange gemmes contre or et objets rares. Un érudit au regard perçant y tient les registres des quêtes du royaume, et peut troquer une quête qui vous échappe contre une autre, plus à votre goût."
         },
         "generalShop": {
           "label": "Boutique générale",

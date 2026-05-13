@@ -20,10 +20,6 @@ export enum MarketTrend {
 	BIG_RISE = 2
 }
 
-@sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandMissionShopPacketReq extends CrowniclesPacket {
-}
-
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandMissionShopAlreadyBoughtPointsThisWeek extends CrowniclesPacket {
 }
@@ -35,7 +31,7 @@ export class CommandMissionShopMoney extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandMissionShopKingsFavor extends CrowniclesPacket {
-	score!: number;
+	amount!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

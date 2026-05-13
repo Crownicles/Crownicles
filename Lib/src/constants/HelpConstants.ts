@@ -15,7 +15,6 @@ export abstract class HelpConstants {
 		"report",
 		"fight",
 		"inventory",
-		"shop",
 		"guild",
 		"pet",
 		"daily"
@@ -51,15 +50,6 @@ export abstract class HelpConstants {
 			"p",
 			"me",
 			"info"
-		],
-		SWITCH: [
-			"switch",
-			"sw",
-			"échanger",
-			"echanger",
-			"échange",
-			"echange",
-			"intervertir"
 		],
 		FIGHT: [
 			"fight",
@@ -179,12 +169,6 @@ export abstract class HelpConstants {
 			"boire",
 			"boir",
 			"br"
-		],
-		SHOP: [
-			"shop",
-			"s",
-			"magasin",
-			"buy"
 		],
 		GUILD_CREATE: [
 			"guildcreate",
@@ -563,23 +547,6 @@ export abstract class HelpConstants {
 			"quêtes",
 			"quetes"
 		],
-		MISSIONS_SHOP: [
-			"missionshop",
-			"ms",
-			"mshop",
-			"questshop",
-			"missionsshop",
-			"questsshop",
-			"qs",
-			"shopmissions",
-			"shopmission",
-			"magasindemissions",
-			"magasindemission",
-			"missionmagasin",
-			"missionsmagasin",
-			"magasinmissions",
-			"magasinmission"
-		],
 		LEAGUE_BONUS: [
 			"leaguereward",
 			"leaguerewards",
@@ -629,12 +596,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":bust_in_silhouette:",
 				NAME: "profile",
-				CATEGORY: "player"
-			},
-		SWITCH:
-			{
-				EMOTE: ":repeat:",
-				NAME: "switch",
 				CATEGORY: "player"
 			},
 		FIGHT:
@@ -713,12 +674,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":tropical_drink:",
 				NAME: "drink",
-				CATEGORY: "player"
-			},
-		SHOP:
-			{
-				EMOTE: ":shopping_cart:",
-				NAME: "shop",
 				CATEGORY: "player"
 			},
 		GUILD_CREATE:
@@ -881,12 +836,6 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":scroll:",
 				NAME: "missions",
-				CATEGORY: "mission"
-			},
-		MISSIONS_SHOP:
-			{
-				EMOTE: ":shopping_cart:",
-				NAME: "missionsshop",
 				CATEGORY: "mission"
 			},
 		LEAGUE_BONUS:

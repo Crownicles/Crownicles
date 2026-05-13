@@ -21,8 +21,6 @@ export abstract class BlockingConstants {
 		LEAGUE_REWARD: "leagueReward",
 		LOTTERY: "lottery",
 		MERCHANT: "merchant",
-		MISSION_SHOP: "missionShop",
-		MISSION_SHOP_CONFIRMATION: "missionShopConfirmation",
 		NONE: "none",
 		PET_FEED: "petFeed",
 		PET_FREE: "petFree",

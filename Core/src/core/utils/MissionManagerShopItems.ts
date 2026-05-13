@@ -3,44 +3,35 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	Player, Players
-} from "../../core/database/game/models/Player";
+} from "../database/game/models/Player";
 import {
-	commandRequires, CommandUtils
-} from "../../core/utils/CommandUtils";
-import {
-	CommandShopClosed, ShopCategory, ShopItem
+	CommandShopClosed, ShopItem
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
-import { ShopUtils } from "../../core/utils/ShopUtils";
 import {
 	CommandMissionShopAlreadyHadBadge,
 	CommandMissionShopBadge,
 	CommandMissionShopNoMissionToSkip,
-	CommandMissionShopPacketReq,
 	CommandMissionShopSkipMissionResult
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
-import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
-import { MissionsController } from "../../core/missions/MissionsController";
-import { crowniclesInstance } from "../../index";
-import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
-
+import { MissionsController } from "../missions/MissionsController";
+import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
 	MissionSlot, MissionSlots
-} from "../../core/database/game/models/MissionSlot";
-import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
+} from "../database/game/models/MissionSlot";
+import { ReactionCollectorInstance } from "./ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
-import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { BlockingUtils } from "./BlockingUtils";
 import {
 	ReactionCollectorSkipMissionShopItem,
 	ReactionCollectorSkipMissionShopItemCloseReaction,
 	ReactionCollectorSkipMissionShopItemReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSkipMissionShopItem";
-import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
+import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
 /**
  * Creates the end callback for the skip mission shop item
@@ -65,18 +56,26 @@ function getEndCallbackSkipMissionShopItem(player: Player, missionList: MissionS
 			newMission: MissionsController.prepareMissionSlot(newMission)
 		}));
 		const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
-		await playerMissionsInfo.spendGems(Constants.MISSION_SHOP.PRICES.MISSION_SKIP, response, NumberChangeReason.MISSION_SHOP);
+		const price = playerMissionsInfo.missionSkipsUsedThisWeek;
+		if (price > 0) {
+			await playerMissionsInfo.spendGems(price, response, NumberChangeReason.MISSION_SHOP);
+		}
+		playerMissionsInfo.missionSkipsUsedThisWeek += 1;
+		await playerMissionsInfo.save();
 	};
 }
 
 /**
- * Creates the skip mission shop item configuration
+ * Creates the skip mission shop item configuration.
+ * Price is dynamic: it equals the number of skips already used this week
+ * (so the first skip of the week is free, the second costs 1 gem, etc.).
+ * @param missionSkipsUsedThisWeek - Skip count already used by the player this week
  * @returns Shop item for skipping and replacing a current mission
  */
-function getSkipMapMissionShopItem(): ShopItem {
+export function getMissionSkipShopItem(missionSkipsUsedThisWeek: number): ShopItem {
 	return {
 		id: ShopItemType.SKIP_MISSION,
-		price: Constants.MISSION_SHOP.PRICES.MISSION_SKIP,
+		price: missionSkipsUsedThisWeek,
 		amounts: [1],
 		buyCallback: async (response: CrowniclesPacket[], playerId: number, context: PacketContext): Promise<boolean> => {
 			const player = await Players.getById(playerId);
@@ -110,10 +109,10 @@ function getSkipMapMissionShopItem(): ShopItem {
 }
 
 /**
- * Creates the badge shop item configuration
+ * Creates the quest master badge shop item configuration
  * @returns Shop item for purchasing the quest master badge
  */
-function getBadgeShopItem(): ShopItem {
+export function getQuestMasterBadgeShopItem(): ShopItem {
 	return {
 		id: ShopItemType.QUEST_MASTER_BADGE,
 		price: Constants.MISSION_SHOP.PRICES.BADGE,
@@ -129,38 +128,4 @@ function getBadgeShopItem(): ShopItem {
 			return true;
 		}
 	};
-}
-
-export default class MissionShopCommand {
-	@commandRequires(CommandMissionShopPacketReq, {
-		notBlocked: true,
-		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
-		whereAllowed: [WhereAllowed.CONTINENT]
-	})
-	static async execute(
-		response: CrowniclesPacket[],
-		player: Player,
-		_packet: CommandMissionShopPacketReq,
-		context: PacketContext
-	): Promise<void> {
-		const shopCategories: ShopCategory[] = [
-			{
-				id: "utilitaries",
-				items: [getSkipMapMissionShopItem()]
-			},
-			{
-				id: "prestige",
-				items: [getBadgeShopItem()]
-			}
-		];
-
-		await ShopUtils.createAndSendShopCollector(context, response, {
-			shopCategories,
-			player,
-			logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout,
-			additionalShopData: {
-				currency: ShopCurrency.GEM
-			}
-		});
-	}
 }
