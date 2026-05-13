@@ -7,11 +7,11 @@ import {
 import { ReactionCollectorBigEventData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import {
 	chooseDestinationCollector,
-	createBigEventCollector,
-	createBuyHealCollector,
-	createUseTokensCollector,
-	handleStartPveFight
+	createBigEventCollector
 } from "../../commands/player/ReportCommand";
+import { createBuyHealCollector } from "../../commands/player/report/buyHeal/BuyHealHandlers";
+import { handleStartPveFight } from "../../commands/player/report/pveFight/PveFightHandlers";
+import { createUseTokensCollector } from "../../commands/player/report/useTokens/UseTokensHandlers";
 import { ReactionCollectorChooseDestinationData } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import { ReactionCollectorUseTokensData } from "../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
 import { ReactionCollectorBuyHealData } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
