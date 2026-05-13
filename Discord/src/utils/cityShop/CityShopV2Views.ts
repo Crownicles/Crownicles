@@ -163,12 +163,12 @@ function buildItemSection(args: ItemSectionArgs): SectionBuilder {
 	} = args;
 	const hasMultipleAmounts = display.amounts.length > 1 || display.amounts[0] !== 1;
 	const priceLine = hasMultipleAmounts
-		? i18n.t("commands:shop.v2.itemPriceUnit", {
+		? i18n.t("commands:shop.itemPriceUnit", {
 			lng,
 			price: display.unitPrice,
 			currency: data.currency
 		})
-		: i18n.t("commands:shop.v2.itemPrice", {
+		: i18n.t("commands:shop.itemPrice", {
 			lng,
 			price: itemReactions[0].price,
 			currency: data.currency
@@ -181,7 +181,7 @@ function buildItemSection(args: ItemSectionArgs): SectionBuilder {
 		.setButtonAccessory(
 			new ButtonBuilder()
 				.setCustomId(`${CITY_SHOP_CUSTOM_IDS.BUY_PREFIX}${shopItemTypeToId(itemReactions[0].shopItemId)}`)
-				.setLabel(clampButtonLabel(i18n.t("commands:shop.v2.buyButton", { lng })))
+				.setLabel(clampButtonLabel(i18n.t("commands:shop.buyButton", { lng })))
 				.setStyle(ButtonStyle.Primary)
 				.setDisabled(disabled)
 		);
@@ -266,7 +266,7 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			i18n.t("commands:shop.v2.greeting", {
+			i18n.t("commands:shop.greeting", {
 				lng,
 				pseudo: escapeUsername(pseudo)
 			})
@@ -399,7 +399,7 @@ function buildConfirmationActionRow(args: ConfirmationActionRowArgs): ActionRowB
 			new ButtonBuilder()
 				.setCustomId(buildShopAmountCustomId(itemIdStr, itemReactions[0].amount))
 				.setEmoji(CrowniclesIcons.collectors.accept)
-				.setLabel(i18n.t("commands:shop.v2.confirmButton", { lng }))
+				.setLabel(i18n.t("commands:shop.confirmButton", { lng }))
 				.setStyle(ButtonStyle.Success)
 				.setDisabled(disabled)
 		);
@@ -409,7 +409,7 @@ function buildConfirmationActionRow(args: ConfirmationActionRowArgs): ActionRowB
 			actionRow.addComponents(
 				new ButtonBuilder()
 					.setCustomId(buildShopAmountCustomId(itemIdStr, reaction.amount))
-					.setLabel(i18n.t("commands:shop.v2.amountButton", {
+					.setLabel(i18n.t("commands:shop.amountButton", {
 						lng,
 						amount: reaction.amount,
 						price: reaction.price,
@@ -424,7 +424,7 @@ function buildConfirmationActionRow(args: ConfirmationActionRowArgs): ActionRowB
 		new ButtonBuilder()
 			.setCustomId(CITY_SHOP_CUSTOM_IDS.CANCEL_PURCHASE)
 			.setEmoji(CrowniclesIcons.collectors.refuse)
-			.setLabel(i18n.t("commands:shop.v2.cancelButton", { lng }))
+			.setLabel(i18n.t("commands:shop.cancelButton", { lng }))
 			.setStyle(ButtonStyle.Secondary)
 			.setDisabled(disabled)
 	);
