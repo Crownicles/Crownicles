@@ -64,7 +64,7 @@ interface ShopItemDisplay {
 	amounts: number[];
 
 	/**
-	 * `true` iff the item is a single, non-stackable unit (no amount picker
+	 * `true` if the item is a single, non-stackable unit (no amount picker
 	 * needed). Computed once in `buildItemDisplay` so both the main view and
 	 * the confirmation view share the exact same rule.
 	 */
@@ -319,9 +319,8 @@ function appendCategoryBlock(args: CategoryBlockArgs): void {
  */
 export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder {
 	const {
-		data, reactionsByItem, pseudo, lng
+		data, reactionsByItem, pseudo, lng, disabled = false
 	} = args;
-	const disabled = args.disabled ?? false;
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
@@ -500,9 +499,8 @@ function buildConfirmationActionRow(args: ConfirmationActionRowArgs): ActionRowB
  */
 export function buildShopConfirmationContainer(args: ConfirmationViewArgs): ContainerBuilder {
 	const {
-		data, itemReactions, pseudo, lng
+		data, itemReactions, pseudo, lng, disabled = false
 	} = args;
-	const disabled = args.disabled ?? false;
 	const display = buildItemDisplay(data, itemReactions, lng);
 	const container = new ContainerBuilder();
 
