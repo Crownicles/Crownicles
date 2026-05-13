@@ -33,7 +33,10 @@ describe("MissionsController daily mission blob handling", () => {
 			updateMissionsCountsUnderLock: (
 				missionInformation: { missionId: string; count?: number; params?: Record<string, unknown>; set?: boolean; },
 				missionSlots: unknown[],
-				missionInfo: PlayerMissionsInfo
+				missionInfo: PlayerMissionsInfo,
+				player: unknown,
+				response: unknown[],
+				dailyMission: DailyMission
 			) => Promise<{ daily: boolean; campaign: boolean; }>;
 		}).updateMissionsCountsUnderLock.bind(MissionsController);
 
@@ -54,14 +57,14 @@ describe("MissionsController daily mission blob handling", () => {
 				return fn();
 			});
 
-		const firstResult = await runWithFakeLockContext(() => updateMissionsCountsUnderLock(missionInformation, [], missionInfo));
+		const firstResult = await runWithFakeLockContext(() => updateMissionsCountsUnderLock(missionInformation, [], missionInfo, {}, [], dailyMission));
 
 		expect(firstResult.daily).toBe(false);
 		expect(missionInfo.dailyMissionNumberDone).toBe(1);
 		expect(missionInfo.dailyMissionBlob?.toString()).toBe("26");
 		expect(missionInfo.save).toHaveBeenCalledTimes(1);
 
-		const secondResult = await runWithFakeLockContext(() => updateMissionsCountsUnderLock(missionInformation, [], missionInfo));
+		const secondResult = await runWithFakeLockContext(() => updateMissionsCountsUnderLock(missionInformation, [], missionInfo, {}, [], dailyMission));
 
 		expect(secondResult.daily).toBe(false);
 		expect(missionInfo.dailyMissionNumberDone).toBe(1);
