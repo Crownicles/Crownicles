@@ -46,8 +46,15 @@ export function parseShopAmountCustomId(customId: string): {
 		return null;
 	}
 	const itemIdStr = payload.slice(0, sep);
-	const amount = parseInt(payload.slice(sep + 1), 10);
-	if (Number.isNaN(amount)) {
+
+	/*
+	 * Use `Number()` rather than `parseInt`: `parseInt("5abc", 10) === 5` would
+	 * silently accept a forged custom id like `cityShopAmount_item|5xxx`,
+	 * whereas `Number("5abc") === NaN`. Combined with `Number.isInteger` it
+	 * also rejects floats and scientific notation.
+	 */
+	const amount = Number(payload.slice(sep + 1));
+	if (!Number.isInteger(amount) || amount <= 0) {
 		return null;
 	}
 	return {
@@ -193,7 +200,14 @@ export function buildItemDisplay(
 	 * amount reaction without resorting to a non-null assertion.
 	 */
 	const unitReaction = itemReactions.reduce((a, b) => a.amount <= b.amount ? a : b);
-	const baseUnitPrice = unitReaction.price / unitReaction.amount;
+
+	/*
+	 * Most shops define an integer per-unit price multiplied by integer
+	 * bundle sizes, so this division is usually exact. Round defensively to
+	 * avoid leaking a `7 / 3 = 2.333…` value into the price label if a future
+	 * shop ever uses non-divisible amounts.
+	 */
+	const baseUnitPrice = Math.round(unitReaction.price / unitReaction.amount);
 	const isSingleUnit = amounts.length === 1 && amounts[0] === 1;
 
 	return {

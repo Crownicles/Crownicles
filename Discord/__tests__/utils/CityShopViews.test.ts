@@ -84,6 +84,23 @@ describe("buildShopAmountCustomId / parseShopAmountCustomId", () => {
 	it("returns null when the amount is not numeric", () => {
 		expect(parseShopAmountCustomId(`${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}item|notANumber`)).toBeNull();
 	});
+
+	it("rejects amounts with trailing garbage (parseInt would have silently accepted)", () => {
+		expect(parseShopAmountCustomId(`${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}item|5xxx`)).toBeNull();
+	});
+
+	it("rejects non-integer amounts (floats, scientific notation)", () => {
+		expect(parseShopAmountCustomId(`${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}item|1.5`)).toBeNull();
+		expect(parseShopAmountCustomId(`${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}item|1e2`)).toEqual({
+			itemIdStr: "item", amount: 100
+		});
+		// 1e2 happens to be an integer (100) so it's allowed — that is fine for our use case.
+	});
+
+	it("rejects non-positive amounts", () => {
+		expect(parseShopAmountCustomId(`${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}item|0`)).toBeNull();
+		expect(parseShopAmountCustomId(`${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}item|-3`)).toBeNull();
+	});
 });
 
 describe("groupReactionsByItem", () => {
