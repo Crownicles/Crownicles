@@ -287,6 +287,25 @@ interface CategoryBlockArgs {
 }
 
 /**
+ * Build the i18n interpolation args for a category title. Most categories
+ * only need `lng`, but the daily-potion category title uses pluralization
+ * driven by the `remainingPotions` count. The decision is taken from the
+ * actual item content (presence of a `DAILY_POTION` reaction) so it does
+ * not couple the title resolution to the category id string.
+ */
+function buildCategoryTitleArgs(items: CategoryItem[], data: ReactionCollectorShopData, lng: Language): {
+	lng: Language; count?: number;
+} {
+	if (items.some(item => item.itemId === ShopItemType.DAILY_POTION)) {
+		return {
+			lng,
+			count: data.additionalShopData.remainingPotions
+		};
+	}
+	return { lng };
+}
+
+/**
  * Append a category block (separator + title + per-item sections) to the container.
  */
 function appendCategoryBlock(args: CategoryBlockArgs): void {
@@ -296,10 +315,7 @@ function appendCategoryBlock(args: CategoryBlockArgs): void {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, {
-				lng,
-				count: data.additionalShopData.remainingPotions
-			})}**`
+			`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, buildCategoryTitleArgs(items, data, lng))}**`
 		)
 	);
 	for (const {
