@@ -1,5 +1,6 @@
 import {
 	CrowniclesNestedMenu,
+	CrowniclesNestedMenuCollector,
 	CrowniclesNestedMenus
 } from "../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../translations/i18n";
@@ -55,7 +56,7 @@ export function createCityCollector(
 	interaction: CrowniclesInteraction,
 	collectorTime: number,
 	handler: CityCollectorHandler
-): (nestedMenus: CrowniclesNestedMenus, message: Message) => import("../../../messages/CrowniclesNestedMenus").CrowniclesNestedMenuCollector {
+): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 	const lng = interaction.userLanguage;
 
 	return (nestedMenus, message) => {

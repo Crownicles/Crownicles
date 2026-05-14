@@ -124,11 +124,8 @@ export abstract class MissionsController {
 		missionSlots: MissionSlot[],
 		missionInfo: PlayerMissionsInfo,
 		response: CrowniclesPacket[],
-		specialMissionCompletion: SpecialMissionCompletion = {
-			daily: false,
-			campaign: false
-		},
-		dailyMission: DailyMission | null = null
+		specialMissionCompletion: SpecialMissionCompletion,
+		dailyMission: DailyMission
 	): Promise<Player> {
 		assertUnderLock("MissionsController.checkCompletedMissionsUnderLock");
 		const completedMissions = await MissionsController.completeAndUpdateMissionsUnderLock(player, missionSlots, specialMissionCompletion, dailyMission);
@@ -294,7 +291,7 @@ export abstract class MissionsController {
 		player: Player,
 		missionSlots: MissionSlot[],
 		specialMissionCompletion: SpecialMissionCompletion,
-		dailyMission: DailyMission | null = null
+		dailyMission: DailyMission
 	): Promise<CompletedMission[]> {
 		assertUnderLock("MissionsController.completeAndUpdateMissionsUnderLock");
 		const completedMissions: CompletedMission[] = [];
@@ -310,15 +307,14 @@ export abstract class MissionsController {
 			await mission.destroy();
 		}
 		if (specialMissionCompletion.daily) {
-			const resolvedDailyMission = dailyMission ?? await DailyMissions.getOrGenerate();
 			const blessingMultiplier = BlessingManager.getInstance().getDailyMissionMultiplier();
 			completedMissions.push({
-				...resolvedDailyMission.toJSON(),
+				...dailyMission.toJSON(),
 				missionType: MissionType.DAILY,
-				gemsToWin: Math.round(resolvedDailyMission.gemsToWin * blessingMultiplier),
-				xpToWin: Math.round(resolvedDailyMission.xpToWin * blessingMultiplier),
-				moneyToWin: Math.round(resolvedDailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER * blessingMultiplier),
-				pointsToWin: Math.round(resolvedDailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER * blessingMultiplier)
+				gemsToWin: Math.round(dailyMission.gemsToWin * blessingMultiplier),
+				xpToWin: Math.round(dailyMission.xpToWin * blessingMultiplier),
+				moneyToWin: Math.round(dailyMission.moneyToWin * Constants.MISSIONS.DAILY_MISSION_MONEY_MULTIPLIER * blessingMultiplier),
+				pointsToWin: Math.round(dailyMission.pointsToWin * Constants.MISSIONS.DAILY_MISSION_POINTS_MULTIPLIER * blessingMultiplier)
 			});
 			crowniclesInstance?.logsDatabase.logMissionDailyFinished(player.keycloakId)
 				.then();

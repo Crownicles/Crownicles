@@ -34,8 +34,7 @@ import {
 	handleStayInCityInteraction
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
-
-type ManageHomeData = NonNullable<ReactionCollectorCityData["home"]["manage"]>;
+import { ManageHomeData } from "../ReportCityMenuTypes";
 
 function hasSlotsChanged(oldSlots: ChestSlotsPerCategory, newSlots: ChestSlotsPerCategory): boolean {
 	return oldSlots.weapon !== newSlots.weapon

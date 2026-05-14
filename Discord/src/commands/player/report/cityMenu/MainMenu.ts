@@ -34,8 +34,7 @@ import {
 	shouldShowManageHomeMenu
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
-
-type ManageHomeData = NonNullable<ReactionCollectorCityData["home"]["manage"]>;
+import { ManageHomeData } from "../ReportCityMenuTypes";
 
 function getManageHomeMenuOptionDescription(manage: ManageHomeData, lng: Language): string {
 	if (manage.newPrice) {
