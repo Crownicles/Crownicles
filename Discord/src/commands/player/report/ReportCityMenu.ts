@@ -178,7 +178,9 @@ function addGuildDomainSubMenus(menus: Map<string, CrowniclesNestedMenu>, params
 
 function addInnSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
 	for (const inn of cityData.inns || []) {
-		menus.set(`${ReportCityMenuIds.INN_PREFIX}${inn.innId}`, getInnMenu(params.context, params.interaction, params.packet, inn.innId, params.collectorTime, params.pseudo));
+		menus.set(`${ReportCityMenuIds.INN_PREFIX}${inn.innId}`, getInnMenu({
+			...params, innId: inn.innId
+		}));
 	}
 }
 
@@ -186,7 +188,7 @@ function addEnchanterSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: H
 	if (!cityData.enchanter) {
 		return;
 	}
-	menus.set(ReportCityMenuIds.ENCHANTER_MENU, getEnchanterMenu(params.context, params.interaction, params.packet, params.collectorTime, params.pseudo));
+	menus.set(ReportCityMenuIds.ENCHANTER_MENU, getEnchanterMenu(params));
 }
 
 function addBlacksmithSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
@@ -212,7 +214,7 @@ function addManageHomeSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: 
 	if (!shouldShowManageHomeMenu(cityData)) {
 		return;
 	}
-	menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(params.context, params.interaction, params.packet, params.collectorTime, params.pseudo));
+	menus.set(HomeMenuIds.MANAGE_HOME_MENU, getManageHomeMenu(params));
 }
 
 function addGuildFoodShopSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
@@ -252,7 +254,7 @@ export class ReportCityMenu {
 		const menus = buildCitySubMenus(menuParams);
 
 		const nestedMenus = new CrowniclesNestedMenus(
-			getMainMenu(context, interaction, packet, collectorTime, pseudo),
+			getMainMenu(menuParams),
 			menus,
 			() => {
 				PacketUtils.sendPacketToBackend(context, makePacket(ReactionCollectorResetTimerPacketReq, { reactionCollectorId: packet.id }));
