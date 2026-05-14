@@ -41,6 +41,7 @@ export {
 } from "./ReportCityBlacksmithService";
 export type { UpgradeItemValidationResult } from "./ReportCityBlacksmithService";
 export { handleCityShopReaction } from "./ReportCityShopService";
+export { isCityShopEmpty } from "./ReportCityShopService";
 export type { CityShopReactionParams } from "./ReportCityShopService";
 export { handleChestAction } from "./ReportCityChestService";
 

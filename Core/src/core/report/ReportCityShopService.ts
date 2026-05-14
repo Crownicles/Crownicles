@@ -123,6 +123,22 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 	await handler(player, context, response, city);
 }
 
+/**
+ * Returns true if the given shop has nothing to offer to the player.
+ * Currently only the tanner can be empty (when all inventory and plant slot
+ * extensions have been bought).
+ */
+export async function isCityShopEmpty(player: Player, shopId: string): Promise<boolean> {
+	if (shopId === "tanner") {
+		const [slotExtension, plantSlotExtension] = await Promise.all([
+			getSlotExtensionShopItem(player.id),
+			getPlantSlotExtensionShopItem(player.id)
+		]);
+		return slotExtension === null && plantSlotExtension === null;
+	}
+	return false;
+}
+
 interface GemShopOptions {
 	player: Player;
 	context: PacketContext;
