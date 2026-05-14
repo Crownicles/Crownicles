@@ -124,19 +124,30 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 }
 
 /**
- * Returns true if the given shop has nothing to offer to the player.
- * Currently only the tanner can be empty (when all inventory and plant slot
- * extensions have been bought).
+ * Per-shop emptiness predicates. A shop is considered empty when it has nothing
+ * to offer to the given player — currently only the tanner is dynamic (inventory
+ * and plant slot extensions can both be fully bought out); other shops are never
+ * empty and therefore have no entry here.
  */
-export async function isCityShopEmpty(player: Player, shopId: string): Promise<boolean> {
-	if (shopId === "tanner") {
+const SHOP_EMPTY_CHECKS: Partial<Record<CityShopType, (player: Player) => Promise<boolean>>> = {
+	tanner: async player => {
 		const [slotExtension, plantSlotExtension] = await Promise.all([
 			getSlotExtensionShopItem(player.id),
 			getPlantSlotExtensionShopItem(player.id)
 		]);
 		return slotExtension === null && plantSlotExtension === null;
 	}
-	return false;
+};
+
+/**
+ * Returns true if the given shop has nothing to offer to the player.
+ */
+export function isCityShopEmpty(player: Player, shopId: string): Promise<boolean> {
+	if (!isCityShopType(shopId)) {
+		return Promise.resolve(false);
+	}
+	const check = SHOP_EMPTY_CHECKS[shopId];
+	return check ? check(player) : Promise.resolve(false);
 }
 
 interface GemShopOptions {
