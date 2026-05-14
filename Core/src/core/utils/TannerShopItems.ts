@@ -1,4 +1,5 @@
 import {
+	BuyCallbackResult,
 	CommandShopClosed,
 	ShopItem
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
@@ -122,7 +123,7 @@ export async function getPlantSlotExtensionShopItem(playerId: number): Promise<S
 		id: ShopItemType.PLANT_SLOT_EXTENSION,
 		price,
 		amounts: [1],
-		buyCallback: async (_response, _playerId, _context): Promise<boolean> => {
+		buyCallback: async (_response, _playerId, _context): Promise<BuyCallbackResult> => {
 			const player = await Players.getById(playerId);
 			const freshInvInfo = await InventoryInfos.getOfPlayer(player.id);
 
@@ -135,7 +136,11 @@ export async function getPlantSlotExtensionShopItem(playerId: number): Promise<S
 			crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.PLANT_SLOT_EXTENSION)
 				.then();
 
-			return true;
+			/*
+			 * Return a detailed result so ShopUtils pushes CommandShopGenericPurchase
+			 * and the player sees a confirmation message (issue #4208).
+			 */
+			return { success: true };
 		}
 	};
 }
