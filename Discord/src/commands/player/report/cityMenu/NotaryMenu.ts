@@ -113,9 +113,18 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 	return changes.map(change => `- ${change}`).join("\n");
 };
 
-function buildSimpleCostNotaryDescription(
-	cost: number, currentMoney: number, lng: Language, noMoneyKey: string, enoughMoneyKey: string
-): string {
+type SimpleCostNotaryParams = {
+	cost: number;
+	currentMoney: number;
+	lng: Language;
+	noMoneyKey: string;
+	enoughMoneyKey: string;
+};
+
+function buildSimpleCostNotaryDescription(params: SimpleCostNotaryParams): string {
+	const {
+		cost, currentMoney, lng, noMoneyKey, enoughMoneyKey
+	} = params;
 	if (cost > currentMoney) {
 		return i18n.t(noMoneyKey, {
 			lng, cost, missingMoney: cost - currentMoney
@@ -127,13 +136,13 @@ function buildSimpleCostNotaryDescription(
 }
 
 function buildNotaryNewHomeDescription(data: ManageHomeData, lng: Language): string {
-	return buildSimpleCostNotaryDescription(
-		data.newPrice!,
-		data.currentMoney,
+	return buildSimpleCostNotaryDescription({
+		cost: data.newPrice!,
+		currentMoney: data.currentMoney,
 		lng,
-		"commands:report.city.homes.notaryNewHomeNoMoney",
-		"commands:report.city.homes.notaryNewHomeEnoughMoney"
-	);
+		noMoneyKey: "commands:report.city.homes.notaryNewHomeNoMoney",
+		enoughMoneyKey: "commands:report.city.homes.notaryNewHomeEnoughMoney"
+	});
 }
 
 function buildNotaryUpgradeDescription(data: ManageHomeData, lng: Language): string {
@@ -154,13 +163,13 @@ function buildNotaryUpgradeDescription(data: ManageHomeData, lng: Language): str
 }
 
 function buildNotaryMoveDescription(data: ManageHomeData, lng: Language): string {
-	return buildSimpleCostNotaryDescription(
-		data.movePrice!,
-		data.currentMoney,
+	return buildSimpleCostNotaryDescription({
+		cost: data.movePrice!,
+		currentMoney: data.currentMoney,
 		lng,
-		"commands:report.city.homes.notaryMoveHomeNoMoney",
-		"commands:report.city.homes.notaryMoveHomeEnoughMoney"
-	);
+		noMoneyKey: "commands:report.city.homes.notaryMoveHomeNoMoney",
+		enoughMoneyKey: "commands:report.city.homes.notaryMoveHomeEnoughMoney"
+	});
 }
 
 type NotaryDescriptionBuilder = {
