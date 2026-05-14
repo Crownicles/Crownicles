@@ -216,41 +216,54 @@ function addGuildSections(container: ContainerBuilder, data: ReactionCollectorCi
 	}
 }
 
+type ExitStayButtonConfig = {
+	customId: string;
+	labelKey: string;
+	emoji: string;
+	style: ButtonStyle;
+};
+
+const EXIT_STAY_BUTTON_CONFIGS: Record<string, ExitStayButtonConfig> = {
+	[ReactionCollectorExitCityReaction.name]: {
+		customId: ReportCityMenuIds.MAIN_MENU_EXIT_CITY,
+		labelKey: "commands:report.city.reactions.exit.label",
+		emoji: CrowniclesIcons.city.exit,
+		style: ButtonStyle.Danger
+	},
+	[ReactionCollectorRefuseReaction.name]: {
+		customId: ReportCityMenuIds.MAIN_MENU_STAY_CITY,
+		labelKey: "commands:report.city.reactions.stay.label",
+		emoji: CrowniclesIcons.city.stay,
+		style: ButtonStyle.Secondary
+	}
+};
+
 function addExitStayButtons(container: ContainerBuilder, packet: ReactionCollectorCreationPacket, lng: Language): void {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	const actionRow = new ActionRowBuilder<ButtonBuilder>();
 
-	const reactionButtonMap: Record<string, () => ButtonBuilder> = {
-		[ReactionCollectorExitCityReaction.name]: () => new ButtonBuilder()
-			.setCustomId(ReportCityMenuIds.MAIN_MENU_EXIT_CITY)
-			.setLabel(i18n.t("commands:report.city.reactions.exit.label", { lng }))
-			.setEmoji(CrowniclesIcons.city.exit)
-			.setStyle(ButtonStyle.Danger),
-		[ReactionCollectorRefuseReaction.name]: () => new ButtonBuilder()
-			.setCustomId(ReportCityMenuIds.MAIN_MENU_STAY_CITY)
-			.setLabel(i18n.t("commands:report.city.reactions.stay.label", { lng }))
-			.setEmoji(CrowniclesIcons.city.stay)
-			.setStyle(ButtonStyle.Secondary)
-	};
-
 	for (const reaction of packet.reactions) {
-		const buttonFactory = reactionButtonMap[reaction.type];
-		if (buttonFactory) {
-			actionRow.addComponents(buttonFactory());
+		const config = EXIT_STAY_BUTTON_CONFIGS[reaction.type];
+		if (config) {
+			actionRow.addComponents(new ButtonBuilder()
+				.setCustomId(config.customId)
+				.setLabel(i18n.t(config.labelKey, { lng }))
+				.setEmoji(config.emoji)
+				.setStyle(config.style));
 		}
 	}
 
 	container.addActionRowComponents(actionRow);
 }
 
-const MAIN_MENU_NAVIGATION_ROUTES: Record<string, string> = {
-	[ReportCityMenuIds.ENCHANTER_MENU]: ReportCityMenuIds.ENCHANTER_MENU,
-	[HomeMenuIds.HOME_MENU]: HomeMenuIds.HOME_MENU,
-	[HomeMenuIds.MANAGE_HOME_MENU]: HomeMenuIds.MANAGE_HOME_MENU,
-	[ReportCityMenuIds.BLACKSMITH_MENU]: ReportCityMenuIds.BLACKSMITH_MENU,
-	[ReportCityMenuIds.GUILD_DOMAIN_MENU]: ReportCityMenuIds.GUILD_DOMAIN_MENU,
-	[ReportCityMenuIds.GUILD_FOOD_SHOP_MENU]: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU
-};
+const MAIN_MENU_NAVIGATION_TARGETS = new Set<string>([
+	ReportCityMenuIds.ENCHANTER_MENU,
+	HomeMenuIds.HOME_MENU,
+	HomeMenuIds.MANAGE_HOME_MENU,
+	ReportCityMenuIds.BLACKSMITH_MENU,
+	ReportCityMenuIds.GUILD_DOMAIN_MENU,
+	ReportCityMenuIds.GUILD_FOOD_SHOP_MENU
+]);
 
 const MAIN_MENU_REACTION_ROUTES: Record<string, string> = {
 	[ReportCityMenuIds.MAIN_MENU_EXIT_CITY]: ReactionCollectorExitCityReaction.name,
@@ -299,8 +312,8 @@ async function handleMainMenuSelection(params: CityCollectorHandlerParams): Prom
 		selectedValue, buttonInteraction: componentInteraction, nestedMenus, context, packet
 	} = params;
 
-	if (MAIN_MENU_NAVIGATION_ROUTES[selectedValue]) {
-		await nestedMenus.changeMenu(MAIN_MENU_NAVIGATION_ROUTES[selectedValue]);
+	if (MAIN_MENU_NAVIGATION_TARGETS.has(selectedValue)) {
+		await nestedMenus.changeMenu(selectedValue);
 		return;
 	}
 
