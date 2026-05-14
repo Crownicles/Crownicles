@@ -25,6 +25,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **No duplicate constants** — search for similar values already defined elsewhere before creating new ones
 - [ ] **Magic numbers as named constants** — any numeric literal in algorithms (primes, multipliers, masks) must be a named constant. Trivial values (0, 1, -1) in obvious contexts are acceptable
 - [ ] **Pre-compute derived constants** — when a constant is always used in a derived form (e.g., hours → milliseconds), compute the derived value at the constant definition level (`FOO_MS = FOO_HOURS * 3_600_000`) and use that directly. Don't repeat the conversion formula at every call site
+- [ ] **No redundant unit conversion round-trips** — chains like `millisecondsToHours(asMilliseconds(x))` cancel out and reveal that `x` is already in the target unit (or that the conversion functions are misused). Use the unit-typed helpers from `Lib/src/utils/TimeUtils` / `TimeTypes` directly, and avoid hardcoding raw factors like `3600000` next to them — combine them with the existing helpers (`asMilliseconds(Hour(remainingHours))`, etc.)
 
 ## 2. TypeScript Types
 
@@ -35,6 +36,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Shared types in `Lib/src/types/`** — types used across multiple packets or services must be extracted to a dedicated file in `Lib/src/types/`, not defined inline in packet files or duplicated across consumers
 - [ ] **No `any`** — use proper types or generics
 - [ ] **No unnecessary type assertions** — don't cast to `readonly T[]` or force types when the type is already correctly inferred; let TypeScript's inference do the work
+- [ ] **No `as unknown as T` double-casts** — these are a code smell. Before writing one, try: (1) **module augmentation** for missing fields on third-party types (e.g. `declare module "sequelize" { interface Transaction { sequelize: Sequelize; } }` instead of `(tx as unknown as { sequelize: Sequelize }).sequelize`), (2) **tighter generics** so TS narrows the type at the call site, (3) a **type guard** that returns `value is T`. If the double-cast is truly unavoidable (e.g. mapped types over heterogeneous tuples that TS cannot express), leave an inline comment explaining *why* TS cannot infer the type.
 - [ ] **Avoid `NonNullable<Awaited<ReturnType<...>>>`** — when a concrete model type exists (e.g., `Player`, `Home`, `Guild`), import and use it directly instead of deriving the type from a function's return type
 - [ ] **Replace `null` with semantic values** — when `null` has a specific meaning (e.g., "not applicable"), use a named enum/constant (e.g., `NON_APPLICABLE = -3`) instead of `| null` everywhere
 - [ ] **No explicit `: undefined` for optional fields** — when a property is typed as optional (`field?: T`) and the value may be absent, prefer **conditional spread** to omit the key entirely instead of writing `field: cond ? value : undefined`. Example: `...(items.length > 0 ? { items } : {})` rather than `items: items.length > 0 ? items : undefined`. The omitting form is cleaner, avoids leaking `undefined` keys in JSON serialization, and keeps consumers honest about presence checks
@@ -82,6 +84,8 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Entity IDs as i18n parameters** — pass entity IDs (plantId, materialId, etc.) as interpolation parameters to translation keys instead of concatenating strings or emoji names in code
 - [ ] **No dead/unused translation keys** — remove keys that are no longer referenced in code
 - [ ] **No duplicate translation keys** — check if a similar key already exists before adding a new one
+- [ ] **No hardcoded Markdown formatting around translations** — Discord markdown tokens (`###`, `**`, `__`, `*`, backticks, etc.) used as **structural formatting** (headers, separators) must NOT be hardcoded in TS code around `i18n.t(...)` calls. Either include the formatting inside the translation value itself (so translators control it) or go through a typed helper (e.g. `formatHeader(title)`, `formatSeparator()`). Inline emphasis that is part of a sentence (e.g. wrapping a single dynamic value in `**...**` for visual highlight) is acceptable when consistent across the codebase.
+- [ ] **No hardcoded `\n` / `\n\n` between translation calls** — line breaks that act as paragraph separators around `i18n.t(...)` results should live inside the translation keys (trailing/leading newline in the value) or be applied via a `joinParagraphs([...])` helper. Concatenating `` `${i18n.t("a")}\n\n${i18n.t("b")}` `` couples French-specific layout to TS code and prevents translators from adjusting spacing per language.
 
 ## 7. Dead Code & Cleanup
 

@@ -281,7 +281,16 @@ export class LogsDatabase extends Database {
 		const originalQuery = ownSequelize.query.bind(ownSequelize);
 		const clsHolder = Sequelize as unknown as { _cls?: { get: (key: string) => unknown } };
 
-		const patchedQuery: typeof ownSequelize.query = ((sql: Parameters<typeof originalQuery>[0], rawOptions?: Parameters<typeof originalQuery>[1]): Promise<unknown> => {
+		/*
+		 * We replace `ownSequelize.query` with a wrapper that filters out foreign
+		 * transactions before forwarding to the original implementation. The cast
+		 * at the end is needed because `query` is a heavily overloaded function
+		 * (multiple return-type signatures depending on `options.type`), and a
+		 * plain arrow function returning `Promise<unknown>` cannot be inferred as
+		 * matching every overload — TypeScript only widens the call site to the
+		 * last overload of an intersection.
+		 */
+		const patchedQuery = ((sql: Parameters<typeof originalQuery>[0], rawOptions?: Parameters<typeof originalQuery>[1]): Promise<unknown> => {
 			const opts: { transaction?: Transaction | null | undefined } & Record<string, unknown> = { ...rawOptions ?? {} };
 
 			let tx = opts.transaction;

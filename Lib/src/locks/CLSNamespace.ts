@@ -5,6 +5,20 @@ import type {
 	Sequelize, Transaction
 } from "sequelize";
 
+/*
+ * Sequelize v6 attaches the owning `Sequelize` instance to every `Transaction`
+ * as an own property named `sequelize` (see `lib/transaction.js` in the
+ * sequelize@6 source). The official `Transaction` typings omit this field —
+ * we add it back here with a module augmentation so call sites can read
+ * `transaction.sequelize` directly instead of resorting to
+ * `(transaction as unknown as { sequelize: Sequelize }).sequelize`.
+ */
+declare module "sequelize" {
+	interface Transaction {
+		readonly sequelize: Sequelize;
+	}
+}
+
 /**
  * Minimal shape of `Sequelize` we depend on here. Typed as a structural
  * interface so callers can pass any copy of the constructor — pnpm may
@@ -164,15 +178,12 @@ export function getCurrentTransaction(): Transaction | undefined {
  * Returns the {@link Sequelize} instance a given transaction belongs to.
  *
  * Sequelize v6 attaches the owning Sequelize instance to every
- * `Transaction` as the (undeclared but stable) `sequelize` own property
- * — that's how Sequelize itself routes queries back to the right
- * connection pool. This helper exposes the property in a typed way so
- * callers don't have to repeat the `as unknown as { sequelize?: Sequelize }`
- * cast (and don't accidentally rely on a different undocumented field).
- *
- * Returns `undefined` if the runtime Transaction unexpectedly lacks the
- * `sequelize` field (defensive: should not happen with sequelize@6).
+ * `Transaction` as the (undeclared in v6's public types but stable)
+ * `sequelize` own property — that's how Sequelize itself routes queries
+ * back to the right connection pool. We re-declare the field via module
+ * augmentation at the top of this file so this helper can return it in
+ * a typed way without any double cast.
  */
-export function getTransactionSequelize(transaction: Transaction): Sequelize | undefined {
-	return (transaction as unknown as { sequelize?: Sequelize }).sequelize;
+export function getTransactionSequelize(transaction: Transaction): Sequelize {
+	return transaction.sequelize;
 }
