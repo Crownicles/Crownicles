@@ -52,7 +52,9 @@
     "test": "teste",
     "unlock": "libertar alguém",
     "witchChoose": "escolher uma ação para a bruxa",
-    "altarSmallEvent": "contribuição para o altar do Oráculo"
+    "altarSmallEvent": "contribuição para o altar do Oráculo",
+    "badPetSmallEvent": "réaction face au nain hostile Moltiar",
+    "limogesSmallEvent": "réponse aux questions du voyageur encapuchonné"
   },
   "commandDoesntExist": "ERRO: Comando desconhecido",
   "interactionNotForYou": "Esta interação não é para si!",

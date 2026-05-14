@@ -52,7 +52,9 @@
     "test": "Test",
     "unlock": "Person freigeben",
     "witchChoose": "Entscheidung für eine Aktion für die Hexe",
-    "altarSmallEvent": "Beitrag zum Altar des Orakels"
+    "altarSmallEvent": "Beitrag zum Altar des Orakels",
+    "badPetSmallEvent": "réaction face au nain hostile Moltiar",
+    "limogesSmallEvent": "réponse aux questions du voyageur encapuchonné"
   },
   "commandDoesntExist": "FEHLER: Unbekannter Befehl",
   "interactionNotForYou": "Diese Interaktion ist nicht für Sie!",

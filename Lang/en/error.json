@@ -52,7 +52,9 @@
     "test": "test",
     "unlock": "releasing someone",
     "witchChoose": "witch event choice",
-    "altarSmallEvent": "contribution to the Oracle altar"
+    "altarSmallEvent": "contribution to the Oracle altar",
+    "badPetSmallEvent": "réaction face au nain hostile Moltiar",
+    "limogesSmallEvent": "réponse aux questions du voyageur encapuchonné"
   },
   "commandDoesntExist": "ERROR: Unknown command",
   "interactionNotForYou": "This interaction is not intended for you!",
