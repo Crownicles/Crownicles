@@ -42,16 +42,7 @@ import {
 	reportResult,
 	stayInCity
 } from "../../../../commands/player/ReportCommand";
-import {
-	handleBlacksmithDisenchant,
-	handleBlacksmithMissingMaterials,
-	handleBlacksmithNotEnoughMoney,
-	handleBlacksmithUpgrade,
-	handleItemEnchanted,
-	handleUpgradeItem,
-	handleUpgradeItemMaxLevel,
-	handleUpgradeItemMissingMaterials
-} from "../../../../commands/player/report/blacksmith/BlacksmithHandlers";
+import { sendBlacksmithReply } from "../../../../commands/player/report/blacksmith/BlacksmithHandlers";
 import {
 	handleBuyHealAccept,
 	handleBuyHealCannotHealOccupied,
@@ -154,7 +145,15 @@ export default class ReportCommandPacketHandlers {
 
 	@packetHandler(CommandReportItemEnchantedRes)
 	async reportItemEnchantedRes(context: PacketContext, packet: CommandReportItemEnchantedRes): Promise<void> {
-		await handleItemEnchanted(packet, context);
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.enchanter.acceptTitle",
+			descriptionKey: "commands:report.city.enchanter.acceptStory",
+			descriptionParams: {
+				enchantmentId: packet.enchantmentId,
+				enchantmentType: packet.enchantmentType
+			}
+		});
 	}
 
 	@packetHandler(CommandReportItemCannotBeEnchantedRes)
@@ -209,37 +208,70 @@ export default class ReportCommandPacketHandlers {
 
 	@packetHandler(CommandReportUpgradeItemRes)
 	async reportUpgradeItemRes(context: PacketContext, packet: CommandReportUpgradeItemRes): Promise<void> {
-		await handleUpgradeItem(packet, context);
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.homes.upgradeItemTitle",
+			descriptionKey: "commands:report.city.homes.upgradeItemDescription",
+			descriptionParams: { newLevel: packet.newItemLevel }
+		});
 	}
 
 	@packetHandler(CommandReportUpgradeItemMissingMaterialsRes)
 	async reportUpgradeItemMissingMaterialsRes(context: PacketContext, _packet: CommandReportUpgradeItemMissingMaterialsRes): Promise<void> {
-		await handleUpgradeItemMissingMaterials(context);
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.homes.upgradeItemMissingMaterialsTitle",
+			descriptionKey: "commands:report.city.homes.upgradeItemMissingMaterialsDescription"
+		});
 	}
 
 	@packetHandler(CommandReportUpgradeItemMaxLevelRes)
 	async reportUpgradeItemMaxLevelRes(context: PacketContext, _packet: CommandReportUpgradeItemMaxLevelRes): Promise<void> {
-		await handleUpgradeItemMaxLevel(context);
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.homes.upgradeItemMaxLevelTitle",
+			descriptionKey: "commands:report.city.homes.upgradeItemMaxLevelDescription"
+		});
 	}
 
 	@packetHandler(CommandReportBlacksmithUpgradeRes)
 	async reportBlacksmithUpgradeRes(context: PacketContext, packet: CommandReportBlacksmithUpgradeRes): Promise<void> {
-		await handleBlacksmithUpgrade(packet, context);
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.blacksmith.upgradeTitle",
+			descriptionKey: packet.boughtMaterials
+				? "commands:report.city.blacksmith.upgradeSuccessWithBuy"
+				: "commands:report.city.blacksmith.upgradeSuccess",
+			descriptionParams: { newLevel: packet.newItemLevel }
+		});
 	}
 
 	@packetHandler(CommandReportBlacksmithNotEnoughMoneyRes)
 	async reportBlacksmithNotEnoughMoneyRes(context: PacketContext, packet: CommandReportBlacksmithNotEnoughMoneyRes): Promise<void> {
-		await handleBlacksmithNotEnoughMoney(packet, context);
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.blacksmith.title",
+			descriptionKey: "commands:report.city.blacksmith.notEnoughMoney",
+			descriptionParams: { missingMoney: packet.missingMoney }
+		});
 	}
 
 	@packetHandler(CommandReportBlacksmithMissingMaterialsRes)
 	async reportBlacksmithMissingMaterialsRes(context: PacketContext, _packet: CommandReportBlacksmithMissingMaterialsRes): Promise<void> {
-		await handleBlacksmithMissingMaterials(context);
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.blacksmith.missingMaterialsTitle",
+			descriptionKey: "commands:report.city.blacksmith.missingMaterialsDescription"
+		});
 	}
 
 	@packetHandler(CommandReportBlacksmithDisenchantRes)
-	async reportBlacksmithDisenchantRes(context: PacketContext, packet: CommandReportBlacksmithDisenchantRes): Promise<void> {
-		await handleBlacksmithDisenchant(packet, context);
+	async reportBlacksmithDisenchantRes(context: PacketContext, _packet: CommandReportBlacksmithDisenchantRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.blacksmith.disenchantTitle",
+			descriptionKey: "commands:report.city.blacksmith.disenchantSuccess"
+		});
 	}
 
 	@packetHandler(CommandReportHomeBedRes)

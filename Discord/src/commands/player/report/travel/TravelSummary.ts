@@ -229,8 +229,8 @@ function createCurrencyButtonFromPacket(config: CurrencyButtonConfig, lng: Langu
 	});
 }
 
-function createHealButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
-	return createCurrencyButtonFromPacket({
+const TRAVEL_CURRENCY_BUTTONS: ((packet: CommandReportTravelSummaryRes) => CurrencyButtonConfig)[] = [
+	(packet): CurrencyButtonConfig => ({
 		resource: packet.heal && {
 			playerAmount: packet.heal.playerMoney, cost: packet.heal.price
 		},
@@ -239,11 +239,8 @@ function createHealButton(packet: CommandReportTravelSummaryRes, lng: Language):
 		insufficientLabelKey: "commands:report.notEnoughMoneyHealButton",
 		emoji: CrowniclesIcons.shopItems.healAlteration,
 		sufficientStyle: ButtonStyle.Success
-	}, lng);
-}
-
-function createTokenButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
-	return createCurrencyButtonFromPacket({
+	}),
+	(packet): CurrencyButtonConfig => ({
 		resource: packet.tokens && {
 			playerAmount: packet.tokens.playerTokens, cost: packet.tokens.cost
 		},
@@ -252,22 +249,17 @@ function createTokenButton(packet: CommandReportTravelSummaryRes, lng: Language)
 		insufficientLabelKey: "commands:report.notEnoughTokensButton",
 		emoji: CrowniclesIcons.unitValues.token,
 		sufficientStyle: ButtonStyle.Primary
-	}, lng);
-}
+	})
+];
 
 function buildTravelActionRow(packet: CommandReportTravelSummaryRes, lng: Language): ActionRowBuilder<ButtonBuilder> | null {
 	const row = new ActionRowBuilder<ButtonBuilder>();
-
-	const healButton = createHealButton(packet, lng);
-	if (healButton) {
-		row.addComponents(healButton);
+	for (const buildConfig of TRAVEL_CURRENCY_BUTTONS) {
+		const button = createCurrencyButtonFromPacket(buildConfig(packet), lng);
+		if (button) {
+			row.addComponents(button);
+		}
 	}
-
-	const tokenButton = createTokenButton(packet, lng);
-	if (tokenButton) {
-		row.addComponents(tokenButton);
-	}
-
 	return row.components.length > 0 ? row : null;
 }
 
