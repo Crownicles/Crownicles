@@ -896,6 +896,13 @@
     "closeShopButton": "{emote:messages.refuse} Close the shop",
     "shopConfirmationTitle": "{{pseudo}}, you selected the following item:",
     "shopConfirmationTitleMultiple": "{{pseudo}}, select a quantity for this item:",
+    "greeting": "{{pseudo}}, browse the shelves and press **Buy** next to the item you want.",
+    "buyButton": "Buy",
+    "confirmButton": "Confirm",
+    "cancelButton": "Cancel",
+    "itemPrice": "Price: `{{price, number}}{emote:unitValues.{{currency}}}`",
+    "itemPriceUnit": "Unit price: `{{price, number}}{emote:unitValues.{{currency}}}`",
+    "amountButton": "x{{amount, number}} ({{price, number}}{emote:unitValues.{{currency}}})",
     "shopCategories": {
       "permanentItem": "Permanent sales",
       "dailyPotion_zero": "Today's potion (Out of stock)",

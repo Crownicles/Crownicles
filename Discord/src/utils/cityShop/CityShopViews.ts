@@ -1,0 +1,577 @@
+import {
+	ActionRowBuilder, ButtonBuilder, ButtonStyle,
+	ContainerBuilder, SectionBuilder, SeparatorBuilder, SeparatorSpacingSize,
+	TextDisplayBuilder
+} from "discord.js";
+import i18n from "../../translations/i18n";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { Language } from "../../../../Lib/src/Language";
+import { Constants } from "../../../../Lib/src/constants/Constants";
+import { ShopItemType } from "../../../../Lib/src/constants/LogsConstants";
+import {
+	ReactionCollectorShopData, ReactionCollectorShopItemReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
+import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { DisplayUtils } from "../DisplayUtils";
+import { shopItemTypeToId } from "../../../../Lib/src/utils/ShopUtils";
+import { escapeUsername } from "../StringUtils";
+
+export const CITY_SHOP_CUSTOM_IDS = {
+	BUY_PREFIX: "cityShopBuy_",
+	AMOUNT_PREFIX: "cityShopAmount_",
+	CANCEL_PURCHASE: "cityShopCancelPurchase",
+	CLOSE: "cityShopClose"
+} as const;
+
+/**
+ * Separator between the item id and the amount inside an amount custom id.
+ * Must not appear in any value returned by `shopItemTypeToId`. Using `|` instead
+ * of `_` keeps the parsing robust even if a future item id contains underscores.
+ */
+const AMOUNT_ID_SEPARATOR = "|";
+
+export function buildShopAmountCustomId(itemIdStr: string, amount: number): string {
+	return `${CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX}${itemIdStr}${AMOUNT_ID_SEPARATOR}${amount}`;
+}
+
+export function parseShopAmountCustomId(customId: string): {
+	itemIdStr: string; amount: number;
+} | null {
+	if (!customId.startsWith(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX)) {
+		return null;
+	}
+	const payload = customId.slice(CITY_SHOP_CUSTOM_IDS.AMOUNT_PREFIX.length);
+	const sep = payload.indexOf(AMOUNT_ID_SEPARATOR);
+	if (sep === -1) {
+		return null;
+	}
+	const itemIdStr = payload.slice(0, sep);
+
+	/*
+	 * Use `Number()` rather than `parseInt`: `parseInt("5abc", 10) === 5` would
+	 * silently accept a forged custom id like `cityShopAmount_item|5xxx`,
+	 * whereas `Number("5abc") === NaN`. Combined with `Number.isInteger` it
+	 * also rejects floats and scientific notation.
+	 */
+	const amount = Number(payload.slice(sep + 1));
+	if (!Number.isInteger(amount) || amount <= 0) {
+		return null;
+	}
+	return {
+		itemIdStr, amount
+	};
+}
+
+export type CityShopReactionsByItem = Map<ShopItemType, ReactionCollectorShopItemReaction[]>;
+
+interface ShopItemDisplay {
+	fullName: string;
+	shortLabel: string;
+
+	/**
+	 * Price per single unit, derived from the smallest-amount reaction. For items
+	 * that only expose a single bundle this is just `price`; for multi-bundle items
+	 * (e.g. wood packs) this is the base unit price, NOT necessarily the best deal —
+	 * larger bundles may offer a discount. Used purely as a display reference.
+	 */
+	baseUnitPrice: number;
+	amounts: number[];
+
+	/**
+	 * `true` if the item is a single, non-stackable unit (no amount picker
+	 * needed). Computed once in `buildItemDisplay` so both the main view and
+	 * the confirmation view share the exact same rule.
+	 */
+	isSingleUnitaryPurchase: boolean;
+}
+
+type ItemLabels = Pick<ShopItemDisplay, "fullName" | "shortLabel">;
+
+/**
+ * Resolve the labels (full + short) for a shop item that needs item-specific
+ * rendering (e.g. daily potion stats, plant tier names). Returning `null`
+ * signals that the resolver couldn't produce a meaningful label (the
+ * matching field of `additionalShopData` was absent); callers then fall
+ * through to the generic i18n-based naming in `resolveItemLabels`.
+ */
+type ItemLabelResolver = (data: ReactionCollectorShopData, lng: Language) => ItemLabels | null;
+
+/**
+ * Order-preserving list of weekly plant tiers. Used both to register one
+ * resolver per tier and to recover the tier index when querying
+ * `additionalShopData.weeklyPlants` — without relying on the underlying enum
+ * values being contiguous or sorted.
+ */
+const WEEKLY_PLANT_TIERS: readonly ShopItemType[] = [
+	ShopItemType.WEEKLY_PLANT_TIER_1,
+	ShopItemType.WEEKLY_PLANT_TIER_2,
+	ShopItemType.WEEKLY_PLANT_TIER_3
+];
+
+function dailyPotionLabels(data: ReactionCollectorShopData, lng: Language): ItemLabels | null {
+	const dailyPotion = data.additionalShopData.dailyPotion;
+	if (!dailyPotion) {
+		return null;
+	}
+	return {
+		fullName: DisplayUtils.getItemDisplayWithStats(dailyPotion, lng),
+		shortLabel: DisplayUtils.getSimpleItemDisplay({
+			id: dailyPotion.id,
+			category: dailyPotion.itemCategory
+		}, lng)
+	};
+}
+
+function weeklyPlantLabelsFor(itemId: ShopItemType, tierIndex: number): ItemLabelResolver {
+	return (data, lng) => {
+		const plantId = data.additionalShopData.weeklyPlants?.[tierIndex];
+		if (plantId === undefined) {
+			return null;
+		}
+		const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, {
+			lng, plantId
+		});
+		return {
+			fullName: `**${name}**`,
+			shortLabel: name
+		};
+	};
+}
+
+function buildItemLabelResolvers(): Partial<Record<ShopItemType, ItemLabelResolver>> {
+	const registry: Partial<Record<ShopItemType, ItemLabelResolver>> = {
+		[ShopItemType.DAILY_POTION]: dailyPotionLabels
+	};
+	WEEKLY_PLANT_TIERS.forEach((itemId, tierIndex): void => {
+		registry[itemId] = weeklyPlantLabelsFor(itemId, tierIndex);
+	});
+	return registry;
+}
+
+const ITEM_LABEL_RESOLVERS: Partial<Record<ShopItemType, ItemLabelResolver>> = buildItemLabelResolvers();
+
+function resolveItemLabels(data: ReactionCollectorShopData, itemId: ShopItemType, lng: Language): ItemLabels {
+	const resolved = ITEM_LABEL_RESOLVERS[itemId]?.(data, lng);
+	if (resolved) {
+		return resolved;
+	}
+	const name = i18n.t(`commands:shop.shopItems.${shopItemTypeToId(itemId)}.name`, { lng });
+	return {
+		fullName: `**${name}**`,
+		shortLabel: name
+	};
+}
+
+/**
+ * Group shop item reactions by `shopItemId`. Each item can expose several amounts
+ * which appear as separate reactions; here we keep them ordered together so we can
+ * later present a single "buy" button per item that opens an amount picker.
+ */
+export function groupReactionsByItem(packet: ReactionCollectorCreationPacket): CityShopReactionsByItem {
+	const byItem: CityShopReactionsByItem = new Map();
+	for (const reaction of packet.reactions) {
+		if (reaction.type !== ReactionCollectorShopItemReaction.name) {
+			continue;
+		}
+		const data = reaction.data as ReactionCollectorShopItemReaction;
+		const list = byItem.get(data.shopItemId);
+		if (list) {
+			list.push(data);
+		}
+		else {
+			byItem.set(data.shopItemId, [data]);
+		}
+	}
+	return byItem;
+}
+
+/**
+ * Build the display info (labels, unit price, amounts) for a single shop item.
+ * The labels themselves are resolved via the `ITEM_LABEL_RESOLVERS` registry —
+ * this function only owns the price/amount derivation and the `isSingleUnitaryPurchase`
+ * flag that drives the confirmation view branching.
+ *
+ * Exported for unit testing — not part of the public view-builder surface.
+ */
+export function buildItemDisplay(
+	data: ReactionCollectorShopData,
+	itemReactions: ReactionCollectorShopItemReaction[],
+	lng: Language
+): ShopItemDisplay {
+	const itemId = itemReactions[0].shopItemId;
+	const amounts = itemReactions.map(r => r.amount);
+
+	/*
+	 * `itemReactions` is non-empty (caller iterates a map populated from packet
+	 * reactions), so reduce-without-seed is safe and lets us pick the smallest-
+	 * amount reaction without resorting to a non-null assertion.
+	 */
+	const unitReaction = itemReactions.reduce((a, b) => a.amount <= b.amount ? a : b);
+
+	/*
+	 * Most shops define an integer per-unit price multiplied by integer
+	 * bundle sizes, so this division is usually exact. Round defensively to
+	 * avoid leaking a `7 / 3 = 2.333…` value into the price label if a future
+	 * shop ever uses non-divisible amounts.
+	 */
+	const baseUnitPrice = Math.round(unitReaction.price / unitReaction.amount);
+	const isSingleUnitaryPurchase = amounts.length === 1 && amounts[0] === 1;
+
+	return {
+		...resolveItemLabels(data, itemId, lng),
+		baseUnitPrice,
+		amounts,
+		isSingleUnitaryPurchase
+	};
+}
+
+interface ItemSectionArgs {
+	display: ShopItemDisplay;
+	itemReactions: ReactionCollectorShopItemReaction[];
+	data: ReactionCollectorShopData;
+	lng: Language;
+	disabled: boolean;
+}
+
+function buildItemSection(args: ItemSectionArgs): SectionBuilder {
+	const {
+		display, itemReactions, data, lng, disabled
+	} = args;
+	const priceLine = display.isSingleUnitaryPurchase
+		? i18n.t("commands:shop.itemPrice", {
+			lng,
+			price: itemReactions[0].price,
+			currency: data.currency
+		})
+		: i18n.t("commands:shop.itemPriceUnit", {
+			lng,
+			price: display.baseUnitPrice,
+			currency: data.currency
+		});
+
+	return new SectionBuilder()
+		.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(`${display.fullName}\n${priceLine}`)
+		)
+		.setButtonAccessory(
+			new ButtonBuilder()
+				.setCustomId(`${CITY_SHOP_CUSTOM_IDS.BUY_PREFIX}${shopItemTypeToId(itemReactions[0].shopItemId)}`)
+				.setLabel(i18n.t("commands:shop.buyButton", { lng }))
+				.setStyle(ButtonStyle.Primary)
+				.setDisabled(disabled)
+		);
+}
+
+interface MainShopViewArgs {
+	data: ReactionCollectorShopData;
+	reactionsByItem: CityShopReactionsByItem;
+	pseudo: string;
+	lng: Language;
+	disabled?: boolean;
+}
+
+interface CategoryItem {
+	itemId: ShopItemType;
+	reactions: ReactionCollectorShopItemReaction[];
+}
+
+/**
+ * Group items by their category id, preserving discovery order both within
+ * each category and between categories (the upstream packet defines the
+ * order in which items are listed — we honour it here). Returning the
+ * reactions alongside the item id (instead of just ids) lets the caller
+ * render a category block without re-querying `reactionsByItem`.
+ */
+function groupItemsByCategory(reactionsByItem: CityShopReactionsByItem): Map<string, CategoryItem[]> {
+	const categoryToItems = new Map<string, CategoryItem[]>();
+	for (const [itemId, reactions] of reactionsByItem) {
+		const categoryId = reactions[0].shopCategoryId;
+		const entry: CategoryItem = {
+			itemId, reactions
+		};
+		const list = categoryToItems.get(categoryId);
+		if (list) {
+			list.push(entry);
+		}
+		else {
+			categoryToItems.set(categoryId, [entry]);
+		}
+	}
+	return categoryToItems;
+}
+
+interface CategoryBlockArgs {
+	container: ContainerBuilder;
+	categoryId: string;
+	items: CategoryItem[];
+	data: ReactionCollectorShopData;
+	lng: Language;
+	disabled: boolean;
+}
+
+/**
+ * Build the i18n interpolation args for a category title. Most categories
+ * only need `lng`, but the daily-potion category title uses pluralization
+ * driven by the `remainingPotions` count. The decision is taken from the
+ * actual item content (presence of a `DAILY_POTION` reaction) so it does
+ * not couple the title resolution to the category id string.
+ */
+function buildCategoryTitleArgs(items: CategoryItem[], data: ReactionCollectorShopData, lng: Language): {
+	lng: Language; count?: number;
+} {
+	if (items.some(item => item.itemId === ShopItemType.DAILY_POTION)) {
+		return {
+			lng,
+			count: data.additionalShopData.remainingPotions
+		};
+	}
+	return { lng };
+}
+
+/**
+ * Append a category block (separator + title + per-item sections) to the container.
+ */
+function appendCategoryBlock(args: CategoryBlockArgs): void {
+	const {
+		container, categoryId, items, data, lng, disabled
+	} = args;
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`**${i18n.t(`commands:shop.shopCategories.${categoryId}`, buildCategoryTitleArgs(items, data, lng))}**`
+		)
+	);
+	for (const {
+		reactions: itemReactions
+	} of items) {
+		const display = buildItemDisplay(data, itemReactions, lng);
+		container.addSectionComponents(buildItemSection({
+			display, itemReactions, data, lng, disabled
+		}));
+	}
+}
+
+/**
+ * Append the shared "current money" footer block (separator + currentMoney line)
+ * used at the bottom of both the main view and the confirmation view. Centralised
+ * here so the two containers stay in sync if the formatting ever changes.
+ */
+function appendCurrencyFooter(container: ContainerBuilder, data: ReactionCollectorShopData, lng: Language): void {
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:shop.currentMoney", {
+				lng,
+				money: data.availableCurrency,
+				currency: data.currency
+			})
+		)
+	);
+}
+
+/**
+ * Main shop view rendered as a container with header, item list and footer.
+ * One section per item with a "buy" button accessory; a single close button at the bottom.
+ */
+export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder {
+	const {
+		data, reactionsByItem, pseudo, lng, disabled = false
+	} = args;
+	const container = new ContainerBuilder();
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(`### ${i18n.t("commands:shop.title", { lng })}`)
+	);
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:shop.greeting", {
+				lng,
+				pseudo: escapeUsername(pseudo)
+			})
+		)
+	);
+
+	const categoryToItems = groupItemsByCategory(reactionsByItem);
+
+	for (const [categoryId, items] of categoryToItems) {
+		appendCategoryBlock({
+			container,
+			categoryId,
+			items,
+			data,
+			lng,
+			disabled
+		});
+	}
+
+	appendCurrencyFooter(container, data, lng);
+
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(CITY_SHOP_CUSTOM_IDS.CLOSE)
+				.setLabel(i18n.t("commands:shop.closeShopButton", { lng }))
+				.setStyle(ButtonStyle.Secondary)
+				.setDisabled(disabled)
+		)
+	);
+
+	return container;
+}
+
+interface ConfirmationViewArgs {
+	data: ReactionCollectorShopData;
+	itemReactions: ReactionCollectorShopItemReaction[];
+	pseudo: string;
+	lng: Language;
+	disabled?: boolean;
+}
+
+interface ConfirmationRecapArgs {
+	display: ShopItemDisplay;
+	data: ReactionCollectorShopData;
+	itemReactions: ReactionCollectorShopItemReaction[];
+	lng: Language;
+}
+
+/**
+ * Build the "item recap" text shown above the confirmation buttons.
+ */
+function buildConfirmationItemRecap(args: ConfirmationRecapArgs): TextDisplayBuilder {
+	const {
+		display, data, itemReactions, lng
+	} = args;
+	if (display.isSingleUnitaryPurchase) {
+		return new TextDisplayBuilder().setContent(
+			i18n.t("commands:shop.shopItemsDisplaySingle", {
+				lng,
+				name: display.fullName,
+				price: itemReactions[0].price,
+				currency: data.currency,
+				remainingPotions: data.additionalShopData.remainingPotions
+			})
+		);
+	}
+	const lines = itemReactions.map(reaction => i18n.t("commands:shop.shopItemsDisplayMultiple", {
+		lng,
+		name: display.fullName,
+		amount: reaction.amount,
+		price: reaction.price,
+		currency: data.currency
+	}));
+	return new TextDisplayBuilder().setContent(lines.join("\n"));
+}
+
+/**
+ * Build the warning info block describing what the item does once purchased.
+ */
+function buildConfirmationInfo(
+	data: ReactionCollectorShopData,
+	itemReactions: ReactionCollectorShopItemReaction[],
+	lng: Language
+): TextDisplayBuilder {
+	return new TextDisplayBuilder().setContent(
+		`${CrowniclesIcons.collectors.warning} ${i18n.t(
+			`commands:shop.shopItems.${shopItemTypeToId(itemReactions[0].shopItemId)}.info`,
+			{
+				lng,
+				kingsMoneyAmount: data.additionalShopData.gemToMoneyRatio,
+				thousandPoints: Constants.MISSION_SHOP.THOUSAND_POINTS
+			}
+		)}`
+	);
+}
+
+/**
+ * Build the action row for the confirmation view: either a single confirm button (single
+ * unit items) or one button per amount, always followed by a cancel button.
+ */
+interface ConfirmationActionRowArgs {
+	display: ShopItemDisplay;
+	itemReactions: ReactionCollectorShopItemReaction[];
+	data: ReactionCollectorShopData;
+	lng: Language;
+	disabled: boolean;
+}
+
+function buildConfirmationActionRow(args: ConfirmationActionRowArgs): ActionRowBuilder<ButtonBuilder> {
+	const {
+		display, itemReactions, data, lng, disabled
+	} = args;
+	const actionRow = new ActionRowBuilder<ButtonBuilder>();
+	const itemIdStr = shopItemTypeToId(itemReactions[0].shopItemId);
+	if (display.isSingleUnitaryPurchase) {
+		actionRow.addComponents(
+			new ButtonBuilder()
+				.setCustomId(buildShopAmountCustomId(itemIdStr, itemReactions[0].amount))
+				.setEmoji(CrowniclesIcons.collectors.accept)
+				.setLabel(i18n.t("commands:shop.confirmButton", { lng }))
+				.setStyle(ButtonStyle.Success)
+				.setDisabled(disabled)
+		);
+	}
+	else {
+		for (const reaction of itemReactions) {
+			actionRow.addComponents(
+				new ButtonBuilder()
+					.setCustomId(buildShopAmountCustomId(itemIdStr, reaction.amount))
+					.setLabel(i18n.t("commands:shop.amountButton", {
+						lng,
+						amount: reaction.amount,
+						price: reaction.price,
+						currency: data.currency
+					}))
+					.setStyle(ButtonStyle.Primary)
+					.setDisabled(disabled)
+			);
+		}
+	}
+	actionRow.addComponents(
+		new ButtonBuilder()
+			.setCustomId(CITY_SHOP_CUSTOM_IDS.CANCEL_PURCHASE)
+			.setEmoji(CrowniclesIcons.collectors.refuse)
+			.setLabel(i18n.t("commands:shop.cancelButton", { lng }))
+			.setStyle(ButtonStyle.Secondary)
+			.setDisabled(disabled)
+	);
+	return actionRow;
+}
+
+/**
+ * Confirmation view shown after a player clicks "Buy" on an item. Renders the item
+ * recap with its informational text, then either a single confirm button (when the
+ * item has a unique amount) or one button per amount (e.g. wood bundles).
+ */
+export function buildShopConfirmationContainer(args: ConfirmationViewArgs): ContainerBuilder {
+	const {
+		data, itemReactions, pseudo, lng, disabled = false
+	} = args;
+	const display = buildItemDisplay(data, itemReactions, lng);
+	const container = new ContainerBuilder();
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			`### ${i18n.t(
+				display.isSingleUnitaryPurchase ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple",
+				{
+					lng,
+					pseudo: escapeUsername(pseudo)
+				}
+			)}`
+		)
+	);
+
+	container.addTextDisplayComponents(buildConfirmationItemRecap({
+		display, data, itemReactions, lng
+	}));
+	container.addTextDisplayComponents(buildConfirmationInfo(data, itemReactions, lng));
+
+	appendCurrencyFooter(container, data, lng);
+
+	container.addActionRowComponents(buildConfirmationActionRow({
+		display, itemReactions, data, lng, disabled
+	}));
+
+	return container;
+}
