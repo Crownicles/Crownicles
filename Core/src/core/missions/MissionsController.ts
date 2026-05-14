@@ -46,6 +46,25 @@ type MissionInformations = {
 	count?: number;
 	params?: { [key: string]: unknown };
 	set?: boolean;
+
+	/**
+	 * Optional mutation applied to the freshly-locked `Player` instance
+	 * BEFORE the mission logic runs and BEFORE the lock-owned `.save()`.
+	 *
+	 * Use this when the caller's reason for triggering the mission is itself
+	 * a player update (e.g. `lockedPlayer.money += amount` for `earnMoney`).
+	 * Routing the mutation through this callback keeps the read-mutate-save
+	 * sequence inside the same row lock, so the field cannot be clobbered
+	 * by the re-fetch nor lost to a concurrent writer.
+	 *
+	 * Do NOT mutate the caller's player before invoking `update`; let this
+	 * callback own the mutation. The caller will receive the up-to-date
+	 * locked instance back from `update` and can mirror it onto its own
+	 * reference via `Object.assign`.
+	 *
+	 * @see https://github.com/Crownicles/Crownicles/issues/4207
+	 */
+	applyOnLockedPlayer?: (lockedPlayer: Player) => void;
 };
 
 export type GeneratedMission = {
@@ -185,11 +204,12 @@ export abstract class MissionsController {
 			missionId,
 			count = 1,
 			params = {},
-			set = false
+			set = false,
+			applyOnLockedPlayer
 		}: MissionInformations
 	): Promise<Player> {
 		const info: MissionInformations = {
-			missionId, count, params, set
+			missionId, count, params, set, applyOnLockedPlayer
 		};
 		try {
 			return await withLockedEntities(
@@ -199,14 +219,11 @@ export abstract class MissionsController {
 				] as const,
 				([lockedPlayer, lockedMissionInfo]) => {
 					/*
-					 * Propagate the caller's in-memory mutations (e.g. `player.money += amount`
-					 * applied right before this call) onto the freshly fetched locked instance
-					 * before running mission logic. Without this, the locked instance would
-					 * persist the OLD field values and silently clobber the caller's mutation
-					 * once the caller does `Object.assign(this, returnedPlayer)`.
-					 * See https://github.com/Crownicles/Crownicles/issues/4207.
+					 * Apply the caller-supplied mutation on the locked instance so
+					 * the change is persisted under the same row lock as the mission
+					 * progression — see `applyOnLockedPlayer` JSDoc and #4207.
 					 */
-					MissionsController.propagateDirtyFieldsUnderLock(player, lockedPlayer);
+					applyOnLockedPlayer?.(lockedPlayer);
 					return MissionsController.runUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, info);
 				}
 			);
@@ -219,28 +236,6 @@ export abstract class MissionsController {
 				return player;
 			}
 			throw e;
-		}
-	}
-
-	/**
-	 * Replays the caller's dirty fields onto the locked Player instance so they
-	 * are persisted by the lock-owned save and not silently discarded.
-	 *
-	 * Callers of `update` typically mutate the player in memory just before calling
-	 * (e.g. `player.money += amount`). Since `update` re-fetches a fresh locked
-	 * Player from the DB, those mutations must be replayed on the locked instance.
-	 * Without this, the locked instance saves the OLD values and the caller's
-	 * `Object.assign(this, returnedPlayer)` clobbers its own mutation.
-	 *
-	 * See https://github.com/Crownicles/Crownicles/issues/4207
-	 */
-	private static propagateDirtyFieldsUnderLock(caller: Player, locked: Player): void {
-		const dirtyFields = caller.changed();
-		if (!dirtyFields) {
-			return;
-		}
-		for (const field of dirtyFields) {
-			locked.setDataValue(field as keyof Player, caller.getDataValue(field as keyof Player));
 		}
 	}
 

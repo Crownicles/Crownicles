@@ -247,13 +247,19 @@ export class Player extends Model {
 		if (parameters.amount > 0 && !parameters.ignoreBlessing) {
 			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getScoreMultiplier());
 		}
-		this.score += parameters.amount;
-		if (parameters.amount > 0) {
+		const delta = parameters.amount;
+		if (delta > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnPoints",
-				count: parameters.amount
+				count: delta,
+				applyOnLockedPlayer: locked => {
+					locked.score += delta;
+				}
 			});
 			Object.assign(this, newPlayer);
+		}
+		else {
+			this.score += delta;
 		}
 		await this.setScore(this.score, parameters.response);
 		crowniclesInstance?.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
@@ -270,11 +276,14 @@ export class Player extends Model {
 		if (!parameters.ignoreBlessing) {
 			parameters.amount = BlessingManager.getInstance().applyMoneyBlessing(parameters.amount);
 		}
-		this.money += parameters.amount;
-		if (parameters.amount > 0) {
+		const delta = parameters.amount;
+		if (delta > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnMoney",
-				count: parameters.amount
+				count: delta,
+				applyOnLockedPlayer: locked => {
+					locked.money += delta;
+				}
 			});
 
 			/*
@@ -282,6 +291,9 @@ export class Player extends Model {
 			 * As the money and experience may have changed, we update the models of the caller
 			 */
 			Object.assign(this, newPlayer);
+		}
+		else {
+			this.money += delta;
 		}
 		this.setMoney(this.money);
 		crowniclesInstance?.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
@@ -342,7 +354,10 @@ export class Player extends Model {
 		if (actualChange > 0) {
 			let newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnTokens",
-				count: actualChange
+				count: actualChange,
+				applyOnLockedPlayer: locked => {
+					locked.tokens = newTokens;
+				}
 			});
 
 			/*
@@ -509,17 +524,20 @@ export class Player extends Model {
 		}
 
 		const xpNeeded = this.getExperienceNeededToLevelUp();
-		this.experience -= xpNeeded;
-		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
-			.then();
-		const newLevel = ++this.level;
-		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
-			.then();
+		const newLevel = this.level + 1;
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachLevel",
 			count: newLevel,
-			set: true
+			set: true,
+			applyOnLockedPlayer: locked => {
+				locked.experience -= xpNeeded;
+				locked.level = newLevel;
+			}
 		}));
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
+			.then();
+		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
+			.then();
 
 		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
 
@@ -539,17 +557,20 @@ export class Player extends Model {
 		}
 
 		const xpNeeded = this.getExperienceNeededToLevelUp();
-		this.experience -= xpNeeded;
-		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
-			.then();
-		const newLevel = ++this.level;
-		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
-			.then();
+		const newLevel = this.level + 1;
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachLevel",
 			count: newLevel,
-			set: true
+			set: true,
+			applyOnLockedPlayer: locked => {
+				locked.experience -= xpNeeded;
+				locked.level = newLevel;
+			}
 		}));
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
+			.then();
+		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
+			.then();
 
 		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
 
@@ -821,13 +842,14 @@ export class Player extends Model {
 	 * @param playerActiveObjects
 	 */
 	public async addExperience(parameters: EditValueParameters, playerActiveObjects: PlayerActiveObjects): Promise<Player> {
-		this.experience += parameters.amount;
-		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
-			.then();
-		if (parameters.amount > 0) {
+		const delta = parameters.amount;
+		if (delta > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnXP",
-				count: parameters.amount
+				count: delta,
+				applyOnLockedPlayer: locked => {
+					locked.experience += delta;
+				}
 			});
 
 			/*
@@ -836,6 +858,11 @@ export class Player extends Model {
 			 */
 			Object.assign(this, newPlayer);
 		}
+		else {
+			this.experience += delta;
+		}
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
+			.then();
 
 		await this.levelUpIfNeeded(parameters.response, playerActiveObjects);
 		return this;
@@ -847,16 +874,22 @@ export class Player extends Model {
 	 * @param parameters - Object containing amount, response, and reason
 	 */
 	public async addExperienceSimple(parameters: EditValueParameters): Promise<Player> {
-		this.experience += parameters.amount;
-		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
-			.then();
-		if (parameters.amount > 0) {
+		const delta = parameters.amount;
+		if (delta > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
 				missionId: "earnXP",
-				count: parameters.amount
+				count: delta,
+				applyOnLockedPlayer: locked => {
+					locked.experience += delta;
+				}
 			});
 			Object.assign(this, newPlayer);
 		}
+		else {
+			this.experience += delta;
+		}
+		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
+			.then();
 
 		await this.levelUpIfNeededSimple(parameters.response);
 		return this;
@@ -1158,17 +1191,23 @@ export class Player extends Model {
 	 */
 	public async setGloryPoints(gloryPoints: number, isDefense: boolean, reason: NumberChangeReason, response: CrowniclesPacket[], fightId: number | null = null): Promise<void> {
 		if (isDefense) {
-			this.defenseGloryPoints = gloryPoints;
 			await crowniclesInstance?.logsDatabase.logPlayersDefenseGloryPoints(this.keycloakId, gloryPoints, reason, fightId ?? undefined);
 		}
 		else {
-			this.attackGloryPoints = gloryPoints;
 			await crowniclesInstance?.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId ?? undefined);
 		}
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachGlory",
-			count: this.getGloryPoints(),
-			set: true
+			count: isDefense ? this.attackGloryPoints + gloryPoints : gloryPoints + this.defenseGloryPoints,
+			set: true,
+			applyOnLockedPlayer: locked => {
+				if (isDefense) {
+					locked.defenseGloryPoints = gloryPoints;
+				}
+				else {
+					locked.attackGloryPoints = gloryPoints;
+				}
+			}
 		}));
 	}
 
