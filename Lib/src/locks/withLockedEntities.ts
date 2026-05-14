@@ -147,8 +147,30 @@ export async function withLockedEntities<
 	 * lockset inside that single transaction.
 	 */
 	const existing = getCurrentTransaction();
-	if (existing && getTransactionSequelize(existing) === sequelize) {
-		return await acquireAndRun(sorted, keys, existing, fn);
+	if (existing) {
+		if (getTransactionSequelize(existing) === sequelize) {
+			return await acquireAndRun(sorted, keys, existing, fn);
+		}
+
+		/*
+		 * Reentrancy on a *different* Sequelize instance is not supported.
+		 *
+		 * Sequelize v6's `useCLS` stores the active transaction in a single
+		 * shared CLS slot (`CLS_TRANSACTION_KEY`). If we opened a new
+		 * transaction on `sequelize` here while another sequelize's
+		 * transaction is already in CLS, the inner `sequelize.transaction(...)`
+		 * would overwrite that slot for the duration of `fn`. Any parallel
+		 * await branch inside `fn` that hits the *outer* sequelize via CLS
+		 * would then route its query through the inner transaction's
+		 * connection — the exact class of bug `LogsDatabase.installForeign
+		 * TransactionGuard` was added to defend against on the logs side.
+		 *
+		 * Locks across DB instances are not a use case Crownicles needs, so
+		 * we refuse the call loudly instead of silently corrupting CLS.
+		 */
+		throw new Error(
+			`withLockedEntities: nested call on a different Sequelize instance is not supported (outer=${getTransactionSequelize(existing)?.config?.database ?? "?"}, inner=${sequelize.config?.database ?? "?"}).`
+		);
 	}
 
 	return await sequelize.transaction(transaction => acquireAndRun(sorted, keys, transaction, fn));
