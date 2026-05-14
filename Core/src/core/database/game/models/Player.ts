@@ -532,15 +532,21 @@ export class Player extends Model {
 			return;
 		}
 
-		const xpNeeded = this.getExperienceNeededToLevelUp();
-		const newLevel = this.level + 1;
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachLevel",
-			count: newLevel,
+			count: locked => locked.level,
 			set: true,
 			applyOnLockedPlayer: locked => {
-				locked.experience -= xpNeeded;
-				locked.level = newLevel;
+				/*
+				 * Re-evaluate against the freshly-locked row in case a concurrent
+				 * transaction already advanced the level: only apply the level-up
+				 * if `locked` still has enough XP for its current level.
+				 */
+				if (!locked.needLevelUp()) {
+					return;
+				}
+				locked.experience -= locked.getExperienceNeededToLevelUp();
+				locked.level += 1;
 			}
 		}));
 		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
@@ -550,7 +556,7 @@ export class Player extends Model {
 
 		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
 
-		await this.addLevelUpPacket(response, newLevel, playerActiveObjects);
+		await this.addLevelUpPacket(response, this.level, playerActiveObjects);
 
 		await this.levelUpIfNeeded(response, playerActiveObjects);
 	}
@@ -565,15 +571,16 @@ export class Player extends Model {
 			return;
 		}
 
-		const xpNeeded = this.getExperienceNeededToLevelUp();
-		const newLevel = this.level + 1;
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachLevel",
-			count: newLevel,
+			count: locked => locked.level,
 			set: true,
 			applyOnLockedPlayer: locked => {
-				locked.experience -= xpNeeded;
-				locked.level = newLevel;
+				if (!locked.needLevelUp()) {
+					return;
+				}
+				locked.experience -= locked.getExperienceNeededToLevelUp();
+				locked.level += 1;
 			}
 		}));
 		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
@@ -583,7 +590,7 @@ export class Player extends Model {
 
 		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
 
-		await this.addLevelUpPacketSimple(response, newLevel);
+		await this.addLevelUpPacketSimple(response, this.level);
 
 		await this.levelUpIfNeededSimple(response);
 	}
@@ -1207,7 +1214,13 @@ export class Player extends Model {
 		}
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachGlory",
-			count: isDefense ? this.attackGloryPoints + gloryPoints : gloryPoints + this.defenseGloryPoints,
+
+			/*
+			 * Compute the total from the locked row AFTER applyOnLockedPlayer has
+			 * written the new glory value, so a concurrent attack/defense glory
+			 * update is included rather than overwritten.
+			 */
+			count: locked => locked.attackGloryPoints + locked.defenseGloryPoints,
 			set: true,
 			applyOnLockedPlayer: locked => {
 				if (isDefense) {

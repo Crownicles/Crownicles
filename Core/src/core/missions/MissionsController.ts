@@ -43,7 +43,15 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 type MissionInformations = {
 	missionId: string;
-	count?: number;
+
+	/**
+	 * Mission progress delta (or absolute value when `set` is true). Pass a
+	 * function to defer the computation until the player row is locked — useful
+	 * when the count depends on fields that may have been written by a
+	 * concurrent transaction (e.g. the sum of attack + defense glory points).
+	 * The function runs inside the lock, AFTER `applyOnLockedPlayer`.
+	 */
+	count?: number | ((lockedPlayer: Player) => number);
 	params?: { [key: string]: unknown };
 	set?: boolean;
 
@@ -66,6 +74,12 @@ type MissionInformations = {
 	 */
 	applyOnLockedPlayer?: (lockedPlayer: Player) => void;
 };
+
+/**
+ * Internal shape passed to all *UnderLock helpers once the optional `count`
+ * function has been resolved against the locked player.
+ */
+type ResolvedMissionInformations = Omit<MissionInformations, "count"> & { count: number };
 
 export type GeneratedMission = {
 	mission: Mission;
@@ -208,9 +222,6 @@ export abstract class MissionsController {
 			applyOnLockedPlayer
 		}: MissionInformations
 	): Promise<Player> {
-		const info: MissionInformations = {
-			missionId, count, params, set, applyOnLockedPlayer
-		};
 		try {
 			return await withLockedEntities(
 				[
@@ -224,6 +235,10 @@ export abstract class MissionsController {
 					 * progression — see `applyOnLockedPlayer` JSDoc and #4207.
 					 */
 					applyOnLockedPlayer?.(lockedPlayer);
+					const resolvedCount = typeof count === "function" ? count(lockedPlayer) : count;
+					const info: ResolvedMissionInformations = {
+						missionId, count: resolvedCount, params, set, applyOnLockedPlayer
+					};
 					return MissionsController.runUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, info);
 				}
 			);
@@ -243,7 +258,7 @@ export abstract class MissionsController {
 		player: Player,
 		missionInfo: PlayerMissionsInfo,
 		response: CrowniclesPacket[],
-		info: MissionInformations
+		info: ResolvedMissionInformations
 	): Promise<Player> {
 		const missionSlots = await MissionSlots.getOfPlayer(player.id);
 
@@ -492,7 +507,7 @@ export abstract class MissionsController {
 	 */
 	private static async updateDailyMissionCountUnderLock(
 		ctx: {
-			missionInformation: MissionInformations;
+			missionInformation: ResolvedMissionInformations;
 			missionInterface: IMission;
 			missionInfo: PlayerMissionsInfo;
 			missionSlots: MissionSlot[];
@@ -535,7 +550,7 @@ export abstract class MissionsController {
 	}
 
 	private static async updateMissionsCountsUnderLock(
-		missionInformation: MissionInformations,
+		missionInformation: ResolvedMissionInformations,
 		missionSlots: MissionSlot[],
 		missionInfo: PlayerMissionsInfo,
 		player: Player,
@@ -559,7 +574,7 @@ export abstract class MissionsController {
 	 * @param missionInformations
 	 * @param missionSlots
 	 */
-	private static async checkMissionSlotsUnderLock(missionInterface: IMission, missionInformations: MissionInformations, missionSlots: MissionSlot[]): Promise<boolean> {
+	private static async checkMissionSlotsUnderLock(missionInterface: IMission, missionInformations: ResolvedMissionInformations, missionSlots: MissionSlot[]): Promise<boolean> {
 		assertUnderLock("MissionsController.checkMissionSlotsUnderLock");
 		let completedCampaign = false;
 		for (const mission of missionSlots.filter(missionSlot => missionSlot.missionId === missionInformations.missionId)) {
@@ -594,7 +609,7 @@ export abstract class MissionsController {
 	 * @param mission
 	 * @param missionInformations
 	 */
-	private static async updateBlobUnderLock(missionInterface: IMission, mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
+	private static async updateBlobUnderLock(missionInterface: IMission, mission: MissionSlot, missionInformations: ResolvedMissionInformations): Promise<void> {
 		assertUnderLock("MissionsController.updateBlobUnderLock");
 		const saveBlob = missionInterface.updateSaveBlob(mission.missionVariant, mission.saveBlob, missionInformations.params!);
 		if (saveBlob !== mission.saveBlob) {
@@ -608,7 +623,7 @@ export abstract class MissionsController {
 	 * @param mission
 	 * @param missionInformations
 	 */
-	private static async updateMissionUnderLock(mission: MissionSlot, missionInformations: MissionInformations): Promise<void> {
+	private static async updateMissionUnderLock(mission: MissionSlot, missionInformations: ResolvedMissionInformations): Promise<void> {
 		assertUnderLock("MissionsController.updateMissionUnderLock");
 		const count = missionInformations.count ?? 1;
 		mission.numberDone = Math.min(mission.missionObjective, missionInformations.set ? count : mission.numberDone + count);
