@@ -52,7 +52,9 @@
     "test": "test",
     "unlock": "liberare qualcuno",
     "witchChoose": "scegliere un'azione per la strega",
-    "altarSmallEvent": "contributo all'altare dell'Oracolo"
+    "altarSmallEvent": "contributo all'altare dell'Oracolo",
+    "badPetSmallEvent": "réaction face au nain hostile Moltiar",
+    "limogesSmallEvent": "réponse aux questions du voyageur encapuchonné"
   },
   "commandDoesntExist": "ERRORE: comando sconosciuto",
   "interactionNotForYou": "Questa interazione non è per voi !",
