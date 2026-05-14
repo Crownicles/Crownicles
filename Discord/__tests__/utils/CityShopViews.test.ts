@@ -4,7 +4,7 @@ import {
 
 /*
  * Keep i18n + DisplayUtils stubbed so the tests focus on the dispatch logic
- * (registry lookup, isSingleUnit, baseUnitPrice) without pulling the full
+ * (registry lookup, isSingleUnitaryPurchase, baseUnitPrice) without pulling the full
  * Discord rendering stack.
  */
 vi.mock("../../src/translations/i18n", () => ({
@@ -167,7 +167,7 @@ describe("buildItemDisplay", () => {
 			}]),
 			"en"
 		);
-		expect(display.isSingleUnit).toBe(true);
+		expect(display.isSingleUnitaryPurchase).toBe(true);
 		expect(display.amounts).toEqual([1]);
 		expect(display.baseUnitPrice).toBe(200);
 	});
@@ -186,7 +186,7 @@ describe("buildItemDisplay", () => {
 			]),
 			"en"
 		);
-		expect(display.isSingleUnit).toBe(false);
+		expect(display.isSingleUnitaryPurchase).toBe(false);
 		expect(display.amounts).toEqual([10, 1]);
 		expect(display.baseUnitPrice).toBe(100);
 	});

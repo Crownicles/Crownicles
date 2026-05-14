@@ -405,17 +405,11 @@ interface ShopDispatchDeps {
 	packet: ReactionCollectorCreationPacket;
 	context: PacketContext;
 	reactionsByItem: ReturnType<typeof groupReactionsByItem>;
-	showMainView: (buttonInteraction: ButtonInteraction) => Promise<void>;
-	showConfirmationView: (
-		buttonInteraction: ButtonInteraction,
-		itemReactions: ReactionCollectorShopItemReaction[]
-	) => Promise<void>;
-	consumeAndDisable: (buttonInteraction: ButtonInteraction) => Promise<void>;
-	getState: () => ShopUiState;
+	controller: ShopUiController;
 }
 
 async function handleShopCloseButton(buttonInteraction: ButtonInteraction, deps: ShopDispatchDeps): Promise<void> {
-	await deps.consumeAndDisable(buttonInteraction);
+	await deps.controller.consumeAndDisable(buttonInteraction);
 	DiscordCollectorUtils.sendReaction(
 		deps.packet,
 		deps.context,
@@ -426,7 +420,7 @@ async function handleShopCloseButton(buttonInteraction: ButtonInteraction, deps:
 }
 
 async function handleShopBuyButton(buttonInteraction: ButtonInteraction, deps: ShopDispatchDeps): Promise<void> {
-	if (deps.getState().kind !== "main") {
+	if (deps.controller.getState().kind !== "main") {
 		return;
 	}
 	const itemIdStr = deps.customId.slice(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX.length);
@@ -435,11 +429,11 @@ async function handleShopBuyButton(buttonInteraction: ButtonInteraction, deps: S
 	if (!itemReactions) {
 		return;
 	}
-	await deps.showConfirmationView(buttonInteraction, itemReactions);
+	await deps.controller.showConfirmationView(buttonInteraction, itemReactions);
 }
 
 async function handleShopAmountButton(buttonInteraction: ButtonInteraction, deps: ShopDispatchDeps): Promise<void> {
-	if (deps.getState().kind !== "confirmation") {
+	if (deps.controller.getState().kind !== "confirmation") {
 		return;
 	}
 	const parsed = parseShopAmountCustomId(deps.customId);
@@ -453,7 +447,7 @@ async function handleShopAmountButton(buttonInteraction: ButtonInteraction, deps
 	if (reactionIndex < 0) {
 		return;
 	}
-	await deps.consumeAndDisable(buttonInteraction);
+	await deps.controller.consumeAndDisable(buttonInteraction);
 	DiscordCollectorUtils.sendReaction(
 		deps.packet,
 		deps.context,
@@ -469,7 +463,7 @@ async function dispatchShopButton(buttonInteraction: ButtonInteraction, deps: Sh
 		return;
 	}
 	if (deps.customId === CITY_SHOP_CUSTOM_IDS.CANCEL_PURCHASE) {
-		await deps.showMainView(buttonInteraction);
+		await deps.controller.showMainView(buttonInteraction);
 		return;
 	}
 	if (deps.customId.startsWith(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX)) {
@@ -540,10 +534,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 			packet,
 			context,
 			reactionsByItem,
-			showMainView: i => controller.showMainView(i),
-			showConfirmationView: (i, r) => controller.showConfirmationView(i, r),
-			consumeAndDisable: i => controller.consumeAndDisable(i),
-			getState: () => controller.getState()
+			controller
 		});
 	});
 

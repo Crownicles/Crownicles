@@ -82,7 +82,7 @@ interface ShopItemDisplay {
 	 * needed). Computed once in `buildItemDisplay` so both the main view and
 	 * the confirmation view share the exact same rule.
 	 */
-	isSingleUnit: boolean;
+	isSingleUnitaryPurchase: boolean;
 }
 
 type ItemLabels = Pick<ShopItemDisplay, "fullName" | "shortLabel">;
@@ -188,7 +188,7 @@ export function groupReactionsByItem(packet: ReactionCollectorCreationPacket): C
 /**
  * Build the display info (labels, unit price, amounts) for a single shop item.
  * The labels themselves are resolved via the `ITEM_LABEL_RESOLVERS` registry —
- * this function only owns the price/amount derivation and the `isSingleUnit`
+ * this function only owns the price/amount derivation and the `isSingleUnitaryPurchase`
  * flag that drives the confirmation view branching.
  *
  * Exported for unit testing — not part of the public view-builder surface.
@@ -215,13 +215,13 @@ export function buildItemDisplay(
 	 * shop ever uses non-divisible amounts.
 	 */
 	const baseUnitPrice = Math.round(unitReaction.price / unitReaction.amount);
-	const isSingleUnit = amounts.length === 1 && amounts[0] === 1;
+	const isSingleUnitaryPurchase = amounts.length === 1 && amounts[0] === 1;
 
 	return {
 		...resolveItemLabels(data, itemId, lng),
 		baseUnitPrice,
 		amounts,
-		isSingleUnit
+		isSingleUnitaryPurchase
 	};
 }
 
@@ -237,7 +237,7 @@ function buildItemSection(args: ItemSectionArgs): SectionBuilder {
 	const {
 		display, itemReactions, data, lng, disabled
 	} = args;
-	const priceLine = display.isSingleUnit
+	const priceLine = display.isSingleUnitaryPurchase
 		? i18n.t("commands:shop.itemPrice", {
 			lng,
 			price: itemReactions[0].price,
@@ -442,7 +442,7 @@ function buildConfirmationItemRecap(args: ConfirmationRecapArgs): TextDisplayBui
 	const {
 		display, data, itemReactions, lng
 	} = args;
-	if (display.isSingleUnit) {
+	if (display.isSingleUnitaryPurchase) {
 		return new TextDisplayBuilder().setContent(
 			i18n.t("commands:shop.shopItemsDisplaySingle", {
 				lng,
@@ -501,7 +501,7 @@ function buildConfirmationActionRow(args: ConfirmationActionRowArgs): ActionRowB
 	} = args;
 	const actionRow = new ActionRowBuilder<ButtonBuilder>();
 	const itemIdStr = shopItemTypeToId(itemReactions[0].shopItemId);
-	if (display.isSingleUnit) {
+	if (display.isSingleUnitaryPurchase) {
 		actionRow.addComponents(
 			new ButtonBuilder()
 				.setCustomId(buildShopAmountCustomId(itemIdStr, itemReactions[0].amount))
@@ -553,7 +553,7 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			`### ${i18n.t(
-				display.isSingleUnit ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple",
+				display.isSingleUnitaryPurchase ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple",
 				{
 					lng,
 					pseudo: escapeUsername(pseudo)
