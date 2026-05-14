@@ -8,89 +8,66 @@ import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { MessagesUtils } from "../../../../utils/MessagesUtils";
 
-export async function handleItemEnchanted(packet: CommandReportItemEnchantedRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
+type BlacksmithReplyConfig = {
+	context: PacketContext;
+	titleKey: string;
+	descriptionKey: string;
+	descriptionParams?: Record<string, unknown>;
+};
+
+async function sendBlacksmithReply(config: BlacksmithReplyConfig): Promise<void> {
+	const interaction = MessagesUtils.getCurrentInteraction(config.context);
 	if (!interaction) {
 		return;
 	}
-	const lng = context.discord!.language;
-
+	const lng = config.context.discord!.language;
 	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.enchanter.acceptTitle", {
+		.formatAuthor(i18n.t(config.titleKey, {
 			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+			pseudo: await DisplayUtils.getEscapedUsername(config.context.keycloakId!, lng)
 		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.enchanter.acceptStory", {
-			lng,
-			enchantmentId: packet.enchantmentId,
-			enchantmentType: packet.enchantmentType
+		.setDescription(i18n.t(config.descriptionKey, {
+			lng, ...config.descriptionParams
 		}));
-
 	await interaction.editReply({
 		embeds: [embed]
+	});
+}
+
+export async function handleItemEnchanted(packet: CommandReportItemEnchantedRes, context: PacketContext): Promise<void> {
+	await sendBlacksmithReply({
+		context,
+		titleKey: "commands:report.city.enchanter.acceptTitle",
+		descriptionKey: "commands:report.city.enchanter.acceptStory",
+		descriptionParams: {
+			enchantmentId: packet.enchantmentId,
+			enchantmentType: packet.enchantmentType
+		}
 	});
 }
 
 export async function handleUpgradeItem(packet: CommandReportUpgradeItemRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.upgradeItemDescription", {
-			lng,
-			newLevel: packet.newItemLevel
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
+	await sendBlacksmithReply({
+		context,
+		titleKey: "commands:report.city.homes.upgradeItemTitle",
+		descriptionKey: "commands:report.city.homes.upgradeItemDescription",
+		descriptionParams: { newLevel: packet.newItemLevel }
 	});
 }
 
 export async function handleUpgradeItemMissingMaterials(context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemMissingMaterialsTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.upgradeItemMissingMaterialsDescription", { lng }));
-
-	await interaction.editReply({
-		embeds: [embed]
+	await sendBlacksmithReply({
+		context,
+		titleKey: "commands:report.city.homes.upgradeItemMissingMaterialsTitle",
+		descriptionKey: "commands:report.city.homes.upgradeItemMissingMaterialsDescription"
 	});
 }
 
 export async function handleUpgradeItemMaxLevel(context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.upgradeItemMaxLevelTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.upgradeItemMaxLevelDescription", { lng }));
-
-	await interaction.editReply({
-		embeds: [embed]
+	await sendBlacksmithReply({
+		context,
+		titleKey: "commands:report.city.homes.upgradeItemMaxLevelTitle",
+		descriptionKey: "commands:report.city.homes.upgradeItemMaxLevelDescription"
 	});
 }
 
@@ -100,28 +77,13 @@ export async function handleBlacksmithUpgrade(
 	},
 	context: PacketContext
 ): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-	const descriptionKey = packet.boughtMaterials
-		? "commands:report.city.blacksmith.upgradeSuccessWithBuy"
-		: "commands:report.city.blacksmith.upgradeSuccess";
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.blacksmith.upgradeTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t(descriptionKey, {
-			lng,
-			newLevel: packet.newItemLevel
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
+	await sendBlacksmithReply({
+		context,
+		titleKey: "commands:report.city.blacksmith.upgradeTitle",
+		descriptionKey: packet.boughtMaterials
+			? "commands:report.city.blacksmith.upgradeSuccessWithBuy"
+			: "commands:report.city.blacksmith.upgradeSuccess",
+		descriptionParams: { newLevel: packet.newItemLevel }
 	});
 }
 
@@ -129,22 +91,10 @@ export async function handleBlacksmithDisenchant(
 	_packet: { cost: number },
 	context: PacketContext
 ): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.blacksmith.disenchantTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.blacksmith.disenchantSuccess", { lng }));
-
-	await interaction.editReply({
-		embeds: [embed]
+	await sendBlacksmithReply({
+		context,
+		titleKey: "commands:report.city.blacksmith.disenchantTitle",
+		descriptionKey: "commands:report.city.blacksmith.disenchantSuccess"
 	});
 }
 
@@ -152,44 +102,18 @@ export async function handleBlacksmithNotEnoughMoney(
 	packet: { missingMoney: number },
 	context: PacketContext
 ): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.blacksmith.title", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.blacksmith.notEnoughMoney", {
-			lng,
-			missingMoney: packet.missingMoney
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
+	await sendBlacksmithReply({
+		context,
+		titleKey: "commands:report.city.blacksmith.title",
+		descriptionKey: "commands:report.city.blacksmith.notEnoughMoney",
+		descriptionParams: { missingMoney: packet.missingMoney }
 	});
 }
 
 export async function handleBlacksmithMissingMaterials(context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.blacksmith.missingMaterialsTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.blacksmith.missingMaterialsDescription", { lng }));
-
-	await interaction.editReply({
-		embeds: [embed]
+	await sendBlacksmithReply({
+		context,
+		titleKey: "commands:report.city.blacksmith.missingMaterialsTitle",
+		descriptionKey: "commands:report.city.blacksmith.missingMaterialsDescription"
 	});
 }
