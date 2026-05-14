@@ -352,6 +352,24 @@ function appendCategoryBlock(args: CategoryBlockArgs): void {
 }
 
 /**
+ * Append the shared "current money" footer block (separator + currentMoney line)
+ * used at the bottom of both the main view and the confirmation view. Centralised
+ * here so the two containers stay in sync if the formatting ever changes.
+ */
+function appendCurrencyFooter(container: ContainerBuilder, data: ReactionCollectorShopData, lng: Language): void {
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:shop.currentMoney", {
+				lng,
+				money: data.availableCurrency,
+				currency: data.currency
+			})
+		)
+	);
+}
+
+/**
  * Main shop view rendered as a container with header, item list and footer.
  * One section per item with a "buy" button accessory; a single close button at the bottom.
  */
@@ -387,16 +405,7 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 		});
 	}
 
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:shop.currentMoney", {
-				lng,
-				money: data.availableCurrency,
-				currency: data.currency
-			})
-		)
-	);
+	appendCurrencyFooter(container, data, lng);
 
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -558,16 +567,7 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 	}));
 	container.addTextDisplayComponents(buildConfirmationInfo(data, itemReactions, lng));
 
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			i18n.t("commands:shop.currentMoney", {
-				lng,
-				money: data.availableCurrency,
-				currency: data.currency
-			})
-		)
-	);
+	appendCurrencyFooter(container, data, lng);
 
 	container.addActionRowComponents(buildConfirmationActionRow({
 		display, itemReactions, data, lng, disabled

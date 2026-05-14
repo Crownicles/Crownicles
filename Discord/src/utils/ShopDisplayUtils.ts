@@ -89,36 +89,41 @@ async function sendShopSuccess(
 	await (interaction.replied ? interaction.followUp(payload) : interaction.reply(payload));
 }
 
-export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
+/**
+ * Common scaffolding for "shop error" notifications without extra interpolation
+ * parameters. Resolves the interaction and forwards the localised message to
+ * `sendErrorMessage`. `handleCommandShopNotEnoughMoney` is intentionally NOT
+ * built on top of this helper because it needs to pass `missingCurrency` and
+ * `currency` to the i18n call.
+ */
+async function sendShopError(context: PacketContext, i18nKey: string): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.noAlterationToHeal", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
+	if (!interaction) {
+		return;
 	}
+	await sendErrorMessage(
+		interaction.user,
+		context,
+		interaction,
+		i18n.t(i18nKey, { lng: interaction.userLanguage }),
+		{ sendManner: SendManner.FOLLOWUP }
+	);
+}
+
+export async function handleCommandShopNoAlterationToHeal(context: PacketContext): Promise<void> {
+	await sendShopError(context, "commands:shop.noAlterationToHeal");
 }
 
 export async function handleCommandShopAlreadyHaveBadge(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.alreadyHaveBadge", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
-	}
+	await sendShopError(context, "commands:shop.alreadyHaveBadge");
 }
 
 export async function handleCommandShopBoughtTooMuchDailyPotions(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.boughtTooMuchDailyPotions", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
-	}
+	await sendShopError(context, "commands:shop.boughtTooMuchDailyPotions");
 }
 
 export async function handleCommandShopNoPlantSlotAvailable(context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
-
-	if (interaction) {
-		await sendErrorMessage(interaction.user, context, interaction, i18n.t("commands:shop.noPlantSlotAvailable", { lng: interaction.userLanguage }), { sendManner: SendManner.FOLLOWUP });
-	}
+	await sendShopError(context, "commands:shop.noPlantSlotAvailable");
 }
 
 export async function handleCommandShopNotEnoughMoney(packet: CommandShopNotEnoughCurrency, context: PacketContext): Promise<void> {
@@ -353,11 +358,19 @@ class ShopUiController {
 	}
 
 	async disableOnEnd(): Promise<void> {
-		await this.args.msg.edit({
-			embeds: [],
-			components: [this.buildDisabledContainer()],
-			flags: COMPONENTS_V2_FLAGS
-		});
+		try {
+			await this.args.msg.edit({
+				embeds: [],
+				components: [this.buildDisabledContainer()],
+				flags: COMPONENTS_V2_FLAGS
+			});
+		}
+		catch {
+			/*
+			 * The message may have been deleted before the collector ended.
+			 * Silently ignore: the UI is already gone and there is nothing to disable.
+			 */
+		}
 	}
 
 	private buildMain(disabled: boolean): ContainerBuilder {
@@ -413,6 +426,9 @@ async function handleShopCloseButton(buttonInteraction: ButtonInteraction, deps:
 }
 
 async function handleShopBuyButton(buttonInteraction: ButtonInteraction, deps: ShopDispatchDeps): Promise<void> {
+	if (deps.getState().kind !== "main") {
+		return;
+	}
 	const itemIdStr = deps.customId.slice(CITY_SHOP_CUSTOM_IDS.BUY_PREFIX.length);
 	const itemId = shopItemTypeFromId(itemIdStr);
 	const itemReactions = deps.reactionsByItem.get(itemId);
@@ -431,15 +447,19 @@ async function handleShopAmountButton(buttonInteraction: ButtonInteraction, deps
 		return;
 	}
 	const itemId = shopItemTypeFromId(parsed.itemIdStr);
+	const reactionIndex = deps.packet.reactions.findIndex(r => r.type === ReactionCollectorShopItemReaction.name
+		&& (r.data as ReactionCollectorShopItemReaction).shopItemId === itemId
+		&& (r.data as ReactionCollectorShopItemReaction).amount === parsed.amount);
+	if (reactionIndex < 0) {
+		return;
+	}
 	await deps.consumeAndDisable(buttonInteraction);
 	DiscordCollectorUtils.sendReaction(
 		deps.packet,
 		deps.context,
 		deps.context.keycloakId!,
 		null,
-		deps.packet.reactions.findIndex(r => r.type === ReactionCollectorShopItemReaction.name
-			&& (r.data as ReactionCollectorShopItemReaction).shopItemId === itemId
-			&& (r.data as ReactionCollectorShopItemReaction).amount === parsed.amount)
+		reactionIndex
 	);
 }
 
