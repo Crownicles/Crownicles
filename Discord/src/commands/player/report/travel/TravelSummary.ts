@@ -14,6 +14,8 @@ import { Constants } from "../../../../../../Lib/src/constants/Constants";
 import { Language } from "../../../../../../Lib/src/Language";
 import {
 	asMilliseconds,
+	hoursToMilliseconds,
+	asHours,
 	millisecondsToHours,
 	millisecondsToMinutes,
 	printTimeBeforeDate
@@ -57,7 +59,8 @@ function computePlayerTravelledTime(packet: CommandReportTravelSummaryRes, now: 
 
 function formatRemainingTime(playerRemainingTravelTime: number): string {
 	const remainingHours = Math.max(Math.floor(millisecondsToHours(asMilliseconds(playerRemainingTravelTime))), 0);
-	let remainingMinutes = Math.floor(millisecondsToMinutes(asMilliseconds(playerRemainingTravelTime - remainingHours * 3600000)));
+	const remainingTravelMs = asMilliseconds(playerRemainingTravelTime - hoursToMilliseconds(asHours(remainingHours)));
+	let remainingMinutes = Math.floor(millisecondsToMinutes(remainingTravelMs));
 	if (remainingMinutes === 60) {
 		remainingMinutes = 59;
 	}

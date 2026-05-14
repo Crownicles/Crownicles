@@ -169,7 +169,7 @@ export async function withLockedEntities<
 		 * we refuse the call loudly instead of silently corrupting CLS.
 		 */
 		throw new Error(
-			`withLockedEntities: nested call on a different Sequelize instance is not supported (outer=${getTransactionSequelize(existing)?.config?.database ?? "?"}, inner=${sequelize.config?.database ?? "?"}).`
+			`withLockedEntities: nested call on a different Sequelize instance is not supported (outer=${getTransactionSequelize(existing).config?.database ?? "?"}, inner=${sequelize.config?.database ?? "?"}).`
 		);
 	}
 
@@ -203,5 +203,17 @@ async function acquireAndRun<
 	}
 
 	const entities = keys.map(key => lockedByKey.get(lockCacheKey(key))!);
+
+	/*
+	 * The `as unknown as ResolveEntities<K>` cast is unavoidable here:
+	 * `keys.map(...)` produces a flat `Model[]`, but the public signature of
+	 * `withLockedEntities` promises a heterogeneous tuple typed by the mapped
+	 * type `ResolveEntities<K>` (one position per element of the readonly
+	 * tuple `K`). TypeScript cannot express that `Array#map` over a tuple
+	 * preserves the per-index mapping without variadic tuple machinery that
+	 * doesn't apply to `Model.findByPk` return types. The invariant is
+	 * guaranteed at runtime by the loop above: each `key` resolves to its
+	 * own locked instance in declaration order.
+	 */
 	return fn(entities as unknown as ResolveEntities<K>);
 }

@@ -19,6 +19,7 @@ import {
 import i18n from "../../../../translations/i18n";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
+import { StringUtils } from "../../../../utils/StringUtils";
 import {
 	addCitySection,
 	createCityCollector,
@@ -94,15 +95,14 @@ function createEnchanterMenuCollector(
 function addEnchanterTitle(container: ContainerBuilder, lng: Language, pseudo: string): void {
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.enchanter.title", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.enchanter.title", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 }
 
 function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
-	let desc = `${i18n.t("commands:report.city.enchanter.story", { lng })}\n\n`;
 	const price = data.enchantmentCost.gems === 0
 		? i18n.t("commands:report.city.enchanter.priceMoneyOnly", {
 			lng, money: data.enchantmentCost.money
@@ -113,16 +113,17 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 	const enchantmentKey = data.mageReduction
 		? "commands:report.city.enchanter.enchantmentWithReduction"
 		: "commands:report.city.enchanter.enchantmentNoReduction";
-	desc += i18n.t(enchantmentKey, {
-		lng,
-		price,
-		enchantmentId: data.enchantmentId,
-		enchantmentType: data.enchantmentType
-	});
-	if (data.hasAtLeastOneEnchantedItem) {
-		desc += `\n\n${i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng })}`;
-	}
-	return desc;
+	return StringUtils.joinParagraphs([
+		i18n.t("commands:report.city.enchanter.story", { lng }),
+		i18n.t(enchantmentKey, {
+			lng,
+			price,
+			enchantmentId: data.enchantmentId,
+			enchantmentType: data.enchantmentType
+		}),
+		data.hasAtLeastOneEnchantedItem
+			&& i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng })
+	]);
 }
 
 function addEnchantableItemsSection(container: ContainerBuilder, data: EnchanterCityData, lng: Language): void {

@@ -41,4 +41,21 @@ export abstract class StringUtils {
 		return str.charAt(0)
 			.toUpperCase() + str.slice(1);
 	}
+
+	/**
+	 * Format a string as a Discord level-3 markdown header (`### `).
+	 * Centralises the `###` token so it lives in one place rather than being
+	 * hardcoded next to every `i18n.t()` call that needs a header.
+	 */
+	static formatHeader(title: string): string {
+		return `### ${title}`;
+	}
+
+	/**
+	 * Join several text blocks with a blank line between each (Discord paragraph break).
+	 * Falsy/empty entries are skipped so callers can pass conditional blocks directly.
+	 */
+	static joinParagraphs(parts: ReadonlyArray<string | false | null | undefined>): string {
+		return parts.filter((p): p is string => Boolean(p)).join("\n\n");
+	}
 }
