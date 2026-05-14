@@ -129,31 +129,44 @@ export abstract class MissionsController {
 	): Promise<Player> {
 		assertUnderLock("MissionsController.checkCompletedMissionsUnderLock");
 		const completedMissions = await MissionsController.completeAndUpdateMissionsUnderLock(player, missionSlots, specialMissionCompletion, dailyMission);
-		if (completedMissions.length !== 0) {
-			player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
-			for (const mission of completedMissions) {
-				mission.moneyToWin = BlessingManager.getInstance().applyMoneyBlessing(mission.moneyToWin);
-				mission.pointsToWin = Math.round(mission.pointsToWin * BlessingManager.getInstance().getScoreMultiplier());
-			}
-			response.push(makePacket(MissionsCompletedPacket, {
-				missions: MissionsController.prepareBaseMissions(completedMissions),
-				keycloakId: player.keycloakId
-			}));
-
-			// Give pet rewards from campaign missions
-			for (const mission of completedMissions) {
-				if (mission.petRewardTypeId) {
-					const pet = PetEntities.createPet(
-						mission.petRewardTypeId,
-						RandomUtils.crowniclesRandom.pick([PetConstants.SEX.MALE, PetConstants.SEX.FEMALE]),
-						""
-					);
-					await pet.giveToPlayer(player, response);
-				}
-			}
+		if (completedMissions.length === 0) {
+			return player;
 		}
-
+		player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
+		MissionsController.applyBlessingsToCompletedMissions(completedMissions);
+		response.push(makePacket(MissionsCompletedPacket, {
+			missions: MissionsController.prepareBaseMissions(completedMissions),
+			keycloakId: player.keycloakId
+		}));
+		await MissionsController.giveCampaignPetRewards(completedMissions, player, response);
 		return player;
+	}
+
+	private static applyBlessingsToCompletedMissions(completedMissions: CompletedMission[]): void {
+		const blessings = BlessingManager.getInstance();
+		const scoreMultiplier = blessings.getScoreMultiplier();
+		for (const mission of completedMissions) {
+			mission.moneyToWin = blessings.applyMoneyBlessing(mission.moneyToWin);
+			mission.pointsToWin = Math.round(mission.pointsToWin * scoreMultiplier);
+		}
+	}
+
+	private static async giveCampaignPetRewards(
+		completedMissions: CompletedMission[],
+		player: Player,
+		response: CrowniclesPacket[]
+	): Promise<void> {
+		for (const mission of completedMissions) {
+			if (!mission.petRewardTypeId) {
+				continue;
+			}
+			const pet = PetEntities.createPet(
+				mission.petRewardTypeId,
+				RandomUtils.crowniclesRandom.pick([PetConstants.SEX.MALE, PetConstants.SEX.FEMALE]),
+				""
+			);
+			await pet.giveToPlayer(player, response);
+		}
 	}
 
 	/**

@@ -1,10 +1,9 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, Message,
-	MessageComponentInteraction, SeparatorBuilder,
+	SeparatorBuilder,
 	SeparatorSpacingSize,
 	TextDisplayBuilder
 } from "discord.js";
-import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ReactionCollectorCityBuyHomeReaction,
 	ReactionCollectorCityData,
@@ -12,7 +11,6 @@ import {
 	ReactionCollectorCityUpgradeHomeReaction,
 	ReactionCollectorGuildDomainNotaryReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
-import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
 import {
@@ -24,7 +22,6 @@ import {
 	CrowniclesNestedMenuCollector,
 	CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
-import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import i18n from "../../../../translations/i18n";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import {
@@ -34,7 +31,11 @@ import {
 	handleStayInCityInteraction
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
-import { ManageHomeData } from "../ReportCityMenuTypes";
+import {
+	CityCollectorHandlerParams, CityMenuParams, ManageHomeData
+} from "../ReportCityMenuTypes";
+
+type ManageHomeCollectorParams = Omit<CityMenuParams, "pseudo">;
 
 function hasSlotsChanged(oldSlots: ChestSlotsPerCategory, newSlots: ChestSlotsPerCategory): boolean {
 	return oldSlots.weapon !== newSlots.weapon
@@ -112,99 +113,131 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 	return changes.map(change => `- ${change}`).join("\n");
 };
 
+function buildNotaryNewHomeDescription(data: ManageHomeData, lng: Language): string {
+	const cost = data.newPrice!;
+	if (cost > data.currentMoney) {
+		return i18n.t("commands:report.city.homes.notaryNewHomeNoMoney", {
+			lng,
+			cost,
+			missingMoney: cost - data.currentMoney
+		});
+	}
+	return i18n.t("commands:report.city.homes.notaryNewHomeEnoughMoney", {
+		lng, cost
+	});
+}
+
+function buildNotaryUpgradeDescription(data: ManageHomeData, lng: Language): string {
+	const upgrade = data.upgrade!;
+	if (upgrade.price > data.currentMoney) {
+		return i18n.t("commands:report.city.homes.notaryUpgradeHomeNoMoney", {
+			lng,
+			cost: upgrade.price,
+			missingMoney: upgrade.price - data.currentMoney
+		});
+	}
+	const upgradeChanges = formatHomeUpgradeChanges(upgrade.oldFeatures, upgrade.newFeatures, lng);
+	return i18n.t("commands:report.city.homes.notaryUpgradeHomeEnoughMoney", {
+		lng,
+		cost: upgrade.price,
+		upgradeChanges
+	});
+}
+
+function buildNotaryMoveDescription(data: ManageHomeData, lng: Language): string {
+	const cost = data.movePrice!;
+	if (cost > data.currentMoney) {
+		return i18n.t("commands:report.city.homes.notaryMoveHomeNoMoney", {
+			lng,
+			cost,
+			missingMoney: cost - data.currentMoney
+		});
+	}
+	return i18n.t("commands:report.city.homes.notaryMoveHomeEnoughMoney", {
+		lng, cost
+	});
+}
+
+type NotaryDescriptionBuilder = {
+	matches: (data: ManageHomeData) => boolean;
+	build: (data: ManageHomeData, lng: Language) => string;
+};
+
+const NOTARY_DESCRIPTION_BUILDERS: NotaryDescriptionBuilder[] = [
+	{
+		matches: (d): boolean => Boolean(d.newPrice), build: buildNotaryNewHomeDescription
+	},
+	{
+		matches: (d): boolean => Boolean(d.upgrade), build: buildNotaryUpgradeDescription
+	},
+	{
+		matches: (d): boolean => Boolean(d.movePrice), build: buildNotaryMoveDescription
+	},
+	{
+		matches: (d): boolean => Boolean(d.requiredPlayerLevelForUpgrade),
+		build: (d, lng): string => i18n.t("commands:report.city.homes.notaryLevelRequired", {
+			lng, level: d.requiredPlayerLevelForUpgrade
+		})
+	},
+	{
+		matches: (d): boolean => Boolean(d.isMaxLevel),
+		build: (_d, lng): string => i18n.t("commands:report.city.homes.notaryMaxLevel", { lng })
+	}
+];
+
 /**
  * Build the notary description text based on available home actions
  */
 function buildNotaryDescription(data: ManageHomeData, lng: Language): string {
-	if (data.newPrice) {
-		return data.newPrice > data.currentMoney
-			? i18n.t("commands:report.city.homes.notaryNewHomeNoMoney", {
-				lng,
-				cost: data.newPrice,
-				missingMoney: data.newPrice - data.currentMoney
-			})
-			: i18n.t("commands:report.city.homes.notaryNewHomeEnoughMoney", {
-				lng,
-				cost: data.newPrice
-			});
+	const builder = NOTARY_DESCRIPTION_BUILDERS.find(b => b.matches(data));
+	if (!builder) {
+		console.warn("Manage home menu opened without any available action");
+		return "";
 	}
-	if (data.upgrade) {
-		if (data.upgrade.price > data.currentMoney) {
-			return i18n.t("commands:report.city.homes.notaryUpgradeHomeNoMoney", {
-				lng,
-				cost: data.upgrade.price,
-				missingMoney: data.upgrade.price - data.currentMoney
-			});
-		}
-		const upgradeChanges = formatHomeUpgradeChanges(data.upgrade.oldFeatures, data.upgrade.newFeatures, lng);
-		return i18n.t("commands:report.city.homes.notaryUpgradeHomeEnoughMoney", {
-			lng,
-			cost: data.upgrade.price,
-			upgradeChanges
-		});
-	}
-	if (data.movePrice) {
-		return data.movePrice > data.currentMoney
-			? i18n.t("commands:report.city.homes.notaryMoveHomeNoMoney", {
-				lng,
-				cost: data.movePrice,
-				missingMoney: data.movePrice - data.currentMoney
-			})
-			: i18n.t("commands:report.city.homes.notaryMoveHomeEnoughMoney", {
-				lng,
-				cost: data.movePrice
-			});
-	}
-	if (data.requiredPlayerLevelForUpgrade) {
-		return i18n.t("commands:report.city.homes.notaryLevelRequired", {
-			lng,
-			level: data.requiredPlayerLevelForUpgrade
-		});
-	}
-	if (data.isMaxLevel) {
-		return i18n.t("commands:report.city.homes.notaryMaxLevel", { lng });
-	}
-	console.warn("Manage home menu opened without any available action");
-	return "";
+	return builder.build(data, lng);
 }
+
+type NotaryActionConfig = {
+	matches: (data: ManageHomeData) => boolean;
+	titleKey: string;
+	customId: string;
+};
+
+const NOTARY_ACTION_CONFIGS: NotaryActionConfig[] = [
+	{
+		matches: (d): boolean => Boolean(d.newPrice) && d.newPrice! <= d.currentMoney,
+		titleKey: "commands:report.city.homes.buyHome",
+		customId: ReportCityMenuIds.BUY_HOME
+	},
+	{
+		matches: (d): boolean => Boolean(d.upgrade) && d.upgrade!.price <= d.currentMoney,
+		titleKey: "commands:report.city.homes.upgradeHome",
+		customId: ReportCityMenuIds.UPGRADE_HOME
+	},
+	{
+		matches: (d): boolean => Boolean(d.movePrice) && d.movePrice! <= d.currentMoney,
+		titleKey: "commands:report.city.homes.moveHome",
+		customId: ReportCityMenuIds.MOVE_HOME
+	}
+];
 
 /**
  * Add the appropriate action button to the notary container
  */
 function addNotaryActionButton(container: ContainerBuilder, data: ManageHomeData, lng: Language): void {
-	if (data.newPrice && data.newPrice <= data.currentMoney) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
-			container,
-			emote: CrowniclesIcons.collectors.accept,
-			title: i18n.t("commands:report.city.homes.buyHome", { lng }),
-			customId: ReportCityMenuIds.BUY_HOME,
-			buttonLabel: i18n.t("commands:report.city.buttons.confirm", { lng }),
-			buttonStyle: ButtonStyle.Success
-		});
+	const action = NOTARY_ACTION_CONFIGS.find(c => c.matches(data));
+	if (!action) {
+		return;
 	}
-	else if (data.upgrade && data.upgrade.price <= data.currentMoney) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
-			container,
-			emote: CrowniclesIcons.collectors.accept,
-			title: i18n.t("commands:report.city.homes.upgradeHome", { lng }),
-			customId: ReportCityMenuIds.UPGRADE_HOME,
-			buttonLabel: i18n.t("commands:report.city.buttons.confirm", { lng }),
-			buttonStyle: ButtonStyle.Success
-		});
-	}
-	else if (data.movePrice && data.movePrice <= data.currentMoney) {
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		addCitySection({
-			container,
-			emote: CrowniclesIcons.collectors.accept,
-			title: i18n.t("commands:report.city.homes.moveHome", { lng }),
-			customId: ReportCityMenuIds.MOVE_HOME,
-			buttonLabel: i18n.t("commands:report.city.buttons.confirm", { lng }),
-			buttonStyle: ButtonStyle.Success
-		});
-	}
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	addCitySection({
+		container,
+		emote: CrowniclesIcons.collectors.accept,
+		title: i18n.t(action.titleKey, { lng }),
+		customId: action.customId,
+		buttonLabel: i18n.t("commands:report.city.buttons.confirm", { lng }),
+		buttonStyle: ButtonStyle.Success
+	});
 }
 
 function addPersonalNotarySection(container: ContainerBuilder, homeData: ManageHomeData | undefined, lng: Language): void {
@@ -283,38 +316,28 @@ function addNotaryNavigation(container: ContainerBuilder, lng: Language): void {
 	);
 }
 
-/**
- * Handle a manage home menu selection.
- */
-async function sendReactionByType(
-	buttonInteraction: MessageComponentInteraction,
-	packet: ReactionCollectorCreationPacket,
-	context: PacketContext,
-	reactionType: string
-): Promise<void> {
-	await buttonInteraction.deferReply();
-	const reactionIndex = packet.reactions.findIndex(reaction => reaction.type === reactionType);
+const NOTARY_REACTION_ROUTES: Record<string, string> = {
+	[ReportCityMenuIds.BUY_HOME]: ReactionCollectorCityBuyHomeReaction.name,
+	[ReportCityMenuIds.UPGRADE_HOME]: ReactionCollectorCityUpgradeHomeReaction.name,
+	[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name,
+	[ReportCityMenuIds.GUILD_DOMAIN_CONFIRM]: ReactionCollectorGuildDomainNotaryReaction.name
+};
+
+async function sendReactionByType(params: CityCollectorHandlerParams, reactionType: string): Promise<void> {
+	await params.buttonInteraction.deferReply();
+	const reactionIndex = params.packet.reactions.findIndex(reaction => reaction.type === reactionType);
 	if (reactionIndex !== -1) {
-		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+		DiscordCollectorUtils.sendReaction(params.packet, params.context, params.context.keycloakId!, params.buttonInteraction, reactionIndex);
 	}
 }
 
-async function handleManageHomeCollectorInteraction(
-	selectedValue: string,
-	buttonInteraction: MessageComponentInteraction,
-	nestedMenus: CrowniclesNestedMenus,
-	context: PacketContext,
-	packet: ReactionCollectorCreationPacket
-): Promise<void> {
-	const homeActionRoutes: Record<string, string> = {
-		[ReportCityMenuIds.BUY_HOME]: ReactionCollectorCityBuyHomeReaction.name,
-		[ReportCityMenuIds.UPGRADE_HOME]: ReactionCollectorCityUpgradeHomeReaction.name,
-		[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name,
-		[ReportCityMenuIds.GUILD_DOMAIN_CONFIRM]: ReactionCollectorGuildDomainNotaryReaction.name
-	};
+async function handleManageHomeCollectorInteraction(params: CityCollectorHandlerParams): Promise<void> {
+	const {
+		selectedValue, buttonInteraction, nestedMenus, context, packet
+	} = params;
 
-	if (homeActionRoutes[selectedValue]) {
-		await sendReactionByType(buttonInteraction, packet, context, homeActionRoutes[selectedValue]);
+	if (NOTARY_REACTION_ROUTES[selectedValue]) {
+		await sendReactionByType(params, NOTARY_REACTION_ROUTES[selectedValue]);
 		return;
 	}
 
@@ -334,25 +357,27 @@ async function handleManageHomeCollectorInteraction(
  * Create the collector for the manage home sub-menu.
  */
 function createManageHomeMenuCollector(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number
+	params: ManageHomeCollectorParams
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	const {
+		context, interaction, packet, collectorTime
+	} = params;
 	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
-		await handleManageHomeCollectorInteraction(customId, buttonInteraction, nestedMenus, context, packet);
+		await handleManageHomeCollectorInteraction({
+			selectedValue: customId, buttonInteraction, nestedMenus, context, packet
+		});
 	});
 }
 
-export function getManageHomeMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
-	const cityData = packet.data.data as ReactionCollectorCityData;
-	const lng = interaction.userLanguage;
+export function getManageHomeMenu(params: CityMenuParams): CrowniclesNestedMenu {
+	const cityData = params.packet.data.data as ReactionCollectorCityData;
+	const lng = params.interaction.userLanguage;
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			`### ${i18n.t("commands:report.city.homes.notaryTitle", {
-				lng, pseudo
+				lng, pseudo: params.pseudo
 			})}`
 		)
 	);
@@ -363,6 +388,11 @@ export function getManageHomeMenu(context: PacketContext, interaction: Crownicle
 
 	return {
 		containers: [container],
-		createCollector: createManageHomeMenuCollector(context, interaction, packet, collectorTime)
+		createCollector: createManageHomeMenuCollector({
+			context: params.context,
+			interaction: params.interaction,
+			packet: params.packet,
+			collectorTime: params.collectorTime
+		})
 	};
 }

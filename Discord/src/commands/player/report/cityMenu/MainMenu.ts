@@ -24,7 +24,6 @@ import {
 	CrowniclesNestedMenuCollector,
 	CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
-import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import i18n from "../../../../translations/i18n";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { HomeMenuIds } from "../home";
@@ -34,7 +33,11 @@ import {
 	shouldShowManageHomeMenu
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
-import { ManageHomeData } from "../ReportCityMenuTypes";
+import {
+	CityCollectorHandlerParams, CityMenuParams, ManageHomeData
+} from "../ReportCityMenuTypes";
+
+type MainMenuCollectorParams = Omit<CityMenuParams, "pseudo">;
 
 function getManageHomeMenuOptionDescription(manage: ManageHomeData, lng: Language): string {
 	if (manage.newPrice) {
@@ -163,43 +166,54 @@ function addInnsSection(container: ContainerBuilder, data: ReactionCollectorCity
 	}
 }
 
-function addGuildDomainSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (!data.guildDomain?.isInCity) {
-		return;
-	}
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+type GuildShortcutEntry = {
+	emote: string;
+	titleKey: string;
+	descriptionKey: string;
+	guildName: string;
+	customId: string;
+	buttonLabelKey: string;
+	buttonStyle: ButtonStyle;
+};
 
+function addGuildShortcutSection(container: ContainerBuilder, entry: GuildShortcutEntry, lng: Language): void {
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	addCitySection({
 		container,
-		emote: CrowniclesIcons.city.guildDomain.menu,
-		title: i18n.t("commands:report.city.guildDomain.label", { lng }),
-		description: i18n.t("commands:report.city.guildDomain.description", {
-			lng,
-			guildName: data.guildDomain.guildName
+		emote: entry.emote,
+		title: i18n.t(entry.titleKey, { lng }),
+		description: i18n.t(entry.descriptionKey, {
+			lng, guildName: entry.guildName
 		}),
-		customId: ReportCityMenuIds.GUILD_DOMAIN_MENU,
-		buttonLabel: i18n.t("commands:report.city.buttons.visitDomain", { lng }),
-		buttonStyle: ButtonStyle.Primary
+		customId: entry.customId,
+		buttonLabel: i18n.t(entry.buttonLabelKey, { lng }),
+		buttonStyle: entry.buttonStyle
 	});
 }
 
-function addGuildFoodShopSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (!data.guildFoodShop) {
-		return;
+function addGuildSections(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
+	if (data.guildDomain?.isInCity) {
+		addGuildShortcutSection(container, {
+			emote: CrowniclesIcons.city.guildDomain.menu,
+			titleKey: "commands:report.city.guildDomain.label",
+			descriptionKey: "commands:report.city.guildDomain.description",
+			guildName: data.guildDomain.guildName,
+			customId: ReportCityMenuIds.GUILD_DOMAIN_MENU,
+			buttonLabelKey: "commands:report.city.buttons.visitDomain",
+			buttonStyle: ButtonStyle.Primary
+		}, lng);
 	}
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addCitySection({
-		container,
-		emote: CrowniclesIcons.expedition.food,
-		title: i18n.t("commands:report.city.guildFoodShop.label", { lng }),
-		description: i18n.t("commands:report.city.guildFoodShop.description", {
-			lng,
-			guildName: data.guildFoodShop.guildName
-		}),
-		customId: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU,
-		buttonLabel: i18n.t("commands:report.city.buttons.visitFoodShop", { lng }),
-		buttonStyle: ButtonStyle.Secondary
-	});
+	if (data.guildFoodShop) {
+		addGuildShortcutSection(container, {
+			emote: CrowniclesIcons.expedition.food,
+			titleKey: "commands:report.city.guildFoodShop.label",
+			descriptionKey: "commands:report.city.guildFoodShop.description",
+			guildName: data.guildFoodShop.guildName,
+			customId: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU,
+			buttonLabelKey: "commands:report.city.buttons.visitFoodShop",
+			buttonStyle: ButtonStyle.Secondary
+		}, lng);
+	}
 }
 
 function addExitStayButtons(container: ContainerBuilder, packet: ReactionCollectorCreationPacket, lng: Language): void {
@@ -229,37 +243,59 @@ function addExitStayButtons(container: ContainerBuilder, packet: ReactionCollect
 	container.addActionRowComponents(actionRow);
 }
 
-async function handleMainMenuSelection(
+const MAIN_MENU_NAVIGATION_ROUTES: Record<string, string> = {
+	[ReportCityMenuIds.ENCHANTER_MENU]: ReportCityMenuIds.ENCHANTER_MENU,
+	[HomeMenuIds.HOME_MENU]: HomeMenuIds.HOME_MENU,
+	[HomeMenuIds.MANAGE_HOME_MENU]: HomeMenuIds.MANAGE_HOME_MENU,
+	[ReportCityMenuIds.BLACKSMITH_MENU]: ReportCityMenuIds.BLACKSMITH_MENU,
+	[ReportCityMenuIds.GUILD_DOMAIN_MENU]: ReportCityMenuIds.GUILD_DOMAIN_MENU,
+	[ReportCityMenuIds.GUILD_FOOD_SHOP_MENU]: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU
+};
+
+const MAIN_MENU_REACTION_ROUTES: Record<string, string> = {
+	[ReportCityMenuIds.MAIN_MENU_EXIT_CITY]: ReactionCollectorExitCityReaction.name,
+	[ReportCityMenuIds.MAIN_MENU_STAY_CITY]: ReactionCollectorRefuseReaction.name
+};
+
+function sendReactionForType(
+	reactionType: string,
+	componentInteraction: MessageComponentInteraction,
+	context: PacketContext,
+	packet: ReactionCollectorCreationPacket,
+	predicate?: (reaction: {
+		type: string; data: unknown;
+	}) => boolean
+): void {
+	const reactionIndex = packet.reactions.findIndex(reaction =>
+		reaction.type === reactionType && (predicate ? predicate(reaction) : true));
+	if (reactionIndex !== -1) {
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, componentInteraction, reactionIndex);
+	}
+}
+
+function handleShopSelection(
 	selectedValue: string,
-	nestedMenus: CrowniclesNestedMenus,
 	componentInteraction: MessageComponentInteraction,
 	context: PacketContext,
 	packet: ReactionCollectorCreationPacket
-): Promise<void> {
-	// Simple navigation routes
-	const navigationRoutes: Record<string, string> = {
-		[ReportCityMenuIds.ENCHANTER_MENU]: ReportCityMenuIds.ENCHANTER_MENU,
-		[HomeMenuIds.HOME_MENU]: HomeMenuIds.HOME_MENU,
-		[HomeMenuIds.MANAGE_HOME_MENU]: HomeMenuIds.MANAGE_HOME_MENU,
-		[ReportCityMenuIds.BLACKSMITH_MENU]: ReportCityMenuIds.BLACKSMITH_MENU,
-		[ReportCityMenuIds.GUILD_DOMAIN_MENU]: ReportCityMenuIds.GUILD_DOMAIN_MENU,
-		[ReportCityMenuIds.GUILD_FOOD_SHOP_MENU]: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU
-	};
+): void {
+	const shopId = selectedValue.replace(ReportCityMenuIds.CITY_SHOP_PREFIX, "");
+	sendReactionForType(ReactionCollectorCityShopReaction.name, componentInteraction, context, packet,
+		reaction => (reaction.data as ReactionCollectorCityShopReaction).shopId === shopId);
+}
 
-	if (navigationRoutes[selectedValue]) {
-		await nestedMenus.changeMenu(navigationRoutes[selectedValue]);
+async function handleMainMenuSelection(params: CityCollectorHandlerParams): Promise<void> {
+	const {
+		selectedValue, buttonInteraction: componentInteraction, nestedMenus, context, packet
+	} = params;
+
+	if (MAIN_MENU_NAVIGATION_ROUTES[selectedValue]) {
+		await nestedMenus.changeMenu(MAIN_MENU_NAVIGATION_ROUTES[selectedValue]);
 		return;
 	}
 
 	if (selectedValue.startsWith(ReportCityMenuIds.CITY_SHOP_PREFIX)) {
-		const shopId = selectedValue.replace(ReportCityMenuIds.CITY_SHOP_PREFIX, "");
-		const reactionIndex = packet.reactions.findIndex(
-			reaction => reaction.type === ReactionCollectorCityShopReaction.name
-				&& (reaction.data as ReactionCollectorCityShopReaction).shopId === shopId
-		);
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, componentInteraction, reactionIndex);
-		}
+		handleShopSelection(selectedValue, componentInteraction, context, packet);
 		return;
 	}
 
@@ -269,42 +305,35 @@ async function handleMainMenuSelection(
 		return;
 	}
 
-	// Reaction-based actions
-	const reactionRoutes: Record<string, string> = {
-		[ReportCityMenuIds.MAIN_MENU_EXIT_CITY]: ReactionCollectorExitCityReaction.name,
-		[ReportCityMenuIds.MAIN_MENU_STAY_CITY]: ReactionCollectorRefuseReaction.name
-	};
-
-	if (reactionRoutes[selectedValue]) {
-		const reactionIndex = packet.reactions.findIndex(reaction => reaction.type === reactionRoutes[selectedValue]);
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, componentInteraction, reactionIndex);
-		}
+	if (MAIN_MENU_REACTION_ROUTES[selectedValue]) {
+		sendReactionForType(MAIN_MENU_REACTION_ROUTES[selectedValue], componentInteraction, context, packet);
 	}
 }
 
 function createMainMenuCollector(
-	context: PacketContext,
-	interaction: CrowniclesInteraction,
-	packet: ReactionCollectorCreationPacket,
-	collectorTime: number
+	params: MainMenuCollectorParams
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	const {
+		context, interaction, packet, collectorTime
+	} = params;
 	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
 		await buttonInteraction.deferUpdate();
-		await handleMainMenuSelection(customId, nestedMenus, buttonInteraction, context, packet);
+		await handleMainMenuSelection({
+			selectedValue: customId, buttonInteraction, nestedMenus, context, packet
+		});
 	});
 }
 
-export function getMainMenu(context: PacketContext, interaction: CrowniclesInteraction, packet: ReactionCollectorCreationPacket, collectorTime: number, pseudo: string): CrowniclesNestedMenu {
-	const data = packet.data.data as ReactionCollectorCityData;
-	const lng = interaction.userLanguage;
+export function getMainMenu(params: CityMenuParams): CrowniclesNestedMenu {
+	const data = params.packet.data.data as ReactionCollectorCityData;
+	const lng = params.interaction.userLanguage;
 
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			`### ${i18n.t("commands:report.city.title", {
-				lng, pseudo
+				lng, pseudo: params.pseudo
 			})}`
 		)
 	);
@@ -324,12 +353,16 @@ export function getMainMenu(context: PacketContext, interaction: CrowniclesInter
 	addServicesSection(container, data, lng);
 	addShopsSection(container, data, lng);
 	addInnsSection(container, data, lng);
-	addGuildDomainSection(container, data, lng);
-	addGuildFoodShopSection(container, data, lng);
-	addExitStayButtons(container, packet, lng);
+	addGuildSections(container, data, lng);
+	addExitStayButtons(container, params.packet, lng);
 
 	return {
 		containers: [container],
-		createCollector: createMainMenuCollector(context, interaction, packet, collectorTime)
+		createCollector: createMainMenuCollector({
+			context: params.context,
+			interaction: params.interaction,
+			packet: params.packet,
+			collectorTime: params.collectorTime
+		})
 	};
 }
