@@ -10,7 +10,10 @@ import { PetUtils } from "../../../utils/PetUtils";
 import { SmallEventPetPacket } from "../../../../../Lib/src/packets/smallEvents/SmallEventPetPacket";
 import { Badge } from "../../../../../Lib/src/types/Badge";
 
-import { PET_TIME_INTERACTIONS } from "./_shared/petTimeInteractions";
+const PET_TIME_INTERACTIONS = new Set([
+	"gainTime",
+	"loseTime"
+]);
 
 export default class PetSmallEventHandler {
 	@packetHandler(SmallEventPetPacket)
