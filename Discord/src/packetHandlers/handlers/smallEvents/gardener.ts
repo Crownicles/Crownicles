@@ -8,11 +8,52 @@ import { SmallEventGardenerPacket } from "../../../../../Lib/src/packets/smallEv
 import {
 	GARDENER_INTERACTIONS, PlantConstants, SEED_CONDITION_FAILURE
 } from "../../../../../Lib/src/constants/PlantConstants";
+import { Language } from "../../../../../Lib/src/Language";
+
+function buildAdviceReplacements(packet: SmallEventGardenerPacket): Record<string, unknown> {
+	if (packet.plantId <= 0) {
+		return {};
+	}
+	if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_LEVEL) {
+		return { level: PlantConstants.SEED_LEVEL_REQUIREMENTS[packet.plantId as keyof typeof PlantConstants.SEED_LEVEL_REQUIREMENTS] };
+	}
+	if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_MONEY) {
+		return { cost: PlantConstants.SEED_COSTS[packet.plantId as keyof typeof PlantConstants.SEED_COSTS] };
+	}
+	return {};
+}
+
+function buildGardenerRewardText(packet: SmallEventGardenerPacket, lng: Language): string {
+	switch (packet.interactionName) {
+		case GARDENER_INTERACTIONS.SEED:
+			return StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.seed.${packet.conditionKey}`, lng, {
+				cost: packet.cost
+			});
+		case GARDENER_INTERACTIONS.ADVICE:
+			return StringUtils.getRandomTranslation(
+				`smallEvents:gardener.rewards.advice.${packet.conditionKey}`,
+				lng,
+				buildAdviceReplacements(packet)
+			);
+		case GARDENER_INTERACTIONS.PLANT:
+			return StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
+				plantId: packet.plantId
+			});
+		case GARDENER_INTERACTIONS.MATERIAL:
+			return StringUtils.getRandomTranslation("smallEvents:gardener.rewards.material", lng, {
+				materialId: packet.materialId
+			});
+		default:
+			return "";
+	}
+}
 
 export default class GardenerSmallEventHandler {
 	@packetHandler(SmallEventGardenerPacket)
 	async smallEventGardener(context: PacketContext, packet: SmallEventGardenerPacket): Promise<void> {
-		const interaction = context.discord!.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!) : DiscordCache.getInteraction(context.discord!.interaction!);
+		const interaction = context.discord!.buttonInteraction
+			? DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!)
+			: DiscordCache.getInteraction(context.discord!.interaction!);
 		const lng = context.discord!.language;
 
 		const isFromCollector = Boolean(context.discord!.buttonInteraction);
@@ -20,38 +61,7 @@ export default class GardenerSmallEventHandler {
 			? ""
 			: getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
 
-		let rewardText: string;
-
-		switch (packet.interactionName) {
-			case GARDENER_INTERACTIONS.SEED:
-				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.seed.${packet.conditionKey}`, lng, {
-					cost: packet.cost
-				});
-				break;
-			case GARDENER_INTERACTIONS.ADVICE: {
-				const adviceReplacements: Record<string, unknown> = {};
-				if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_LEVEL && packet.plantId > 0) {
-					adviceReplacements.level = PlantConstants.SEED_LEVEL_REQUIREMENTS[packet.plantId as keyof typeof PlantConstants.SEED_LEVEL_REQUIREMENTS];
-				}
-				if (packet.conditionKey === SEED_CONDITION_FAILURE.NEED_MONEY && packet.plantId > 0) {
-					adviceReplacements.cost = PlantConstants.SEED_COSTS[packet.plantId as keyof typeof PlantConstants.SEED_COSTS];
-				}
-				rewardText = StringUtils.getRandomTranslation(`smallEvents:gardener.rewards.advice.${packet.conditionKey}`, lng, adviceReplacements);
-				break;
-			}
-			case GARDENER_INTERACTIONS.PLANT:
-				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.plant", lng, {
-					plantId: packet.plantId
-				});
-				break;
-			case GARDENER_INTERACTIONS.MATERIAL:
-				rewardText = StringUtils.getRandomTranslation("smallEvents:gardener.rewards.material", lng, {
-					materialId: packet.materialId
-				});
-				break;
-			default:
-				rewardText = "";
-		}
+		const rewardText = buildGardenerRewardText(packet, lng);
 
 		await interaction?.editReply({
 			embeds: [

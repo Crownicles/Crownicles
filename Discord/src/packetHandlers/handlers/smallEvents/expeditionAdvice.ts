@@ -6,9 +6,73 @@ import { StringUtils } from "../../../utils/StringUtils";
 import i18n from "../../../translations/i18n";
 import { SexTypeShort } from "../../../../../Lib/src/constants/StringConstants";
 import { PetUtils } from "../../../utils/PetUtils";
+import { Language } from "../../../../../Lib/src/Language";
 import {
 	SmallEventExpeditionAdvicePacket, ExpeditionAdviceInteractionType
 } from "../../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
+
+function getPetDisplay(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
+	return packet.petTypeId !== undefined
+		? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
+		: i18n.t("commands:pet.defaultPetName", { lng });
+}
+
+const PET_CONDITION_KEYS = new Map<string, string>([
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY, "smallEvents:expeditionAdvice.conditions.petHungry"],
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_FEISTY, "smallEvents:expeditionAdvice.conditions.petFeisty"],
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_NOT_SEEN_BY_TALVAR, "smallEvents:expeditionAdvice.conditions.petNotSeenByTalvar"]
+]);
+
+function getExpeditionBonusKey(packet: SmallEventExpeditionAdvicePacket): string {
+	if (packet.bonusCombatPotion) {
+		return "smallEvents:expeditionAdvice.expeditionBonus.combatPotion";
+	}
+	if (packet.bonusItem) {
+		return "smallEvents:expeditionAdvice.expeditionBonus.pointsAndItem";
+	}
+	if (packet.bonusMoney) {
+		return "smallEvents:expeditionAdvice.expeditionBonus.pointsAndMoney";
+	}
+	return "smallEvents:expeditionAdvice.expeditionBonus.points";
+}
+
+function buildExpeditionStory(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
+	const petConditionKey = PET_CONDITION_KEYS.get(packet.interactionType);
+	if (petConditionKey) {
+		return StringUtils.getRandomTranslation(petConditionKey, lng, { pet: getPetDisplay(packet, lng) });
+	}
+
+	switch (packet.interactionType) {
+		case ExpeditionAdviceInteractionType.TALISMAN_INTRO: {
+			const introTexts = i18n.tArray("smallEvents:expeditionAdvice.talismanIntro", { lng });
+			return introTexts[packet.encounterCount! - 1] ?? introTexts[0];
+		}
+		case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_PET:
+			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noPet", lng);
+		case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD:
+			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noGuild", lng);
+		case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW:
+			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.levelTooLow", lng, {
+				requiredLevel: packet.requiredLevel,
+				playerLevel: packet.playerLevel,
+				count: packet.consolationTokensAmount
+			});
+		case ExpeditionAdviceInteractionType.TALISMAN_RECEIVED:
+			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.talismanReceived", lng, {
+				pet: getPetDisplay(packet, lng)
+			});
+		case ExpeditionAdviceInteractionType.EXPEDITION_BONUS:
+			return i18n.t(getExpeditionBonusKey(packet), {
+				lng,
+				pet: getPetDisplay(packet, lng),
+				bonusPoints: packet.bonusPoints,
+				bonusMoney: packet.bonusMoney
+			});
+		case ExpeditionAdviceInteractionType.ADVICE:
+		default:
+			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.advice", lng);
+	}
+}
 
 export default class ExpeditionAdviceSmallEventHandler {
 	@packetHandler(SmallEventExpeditionAdvicePacket)
@@ -18,110 +82,7 @@ export default class ExpeditionAdviceSmallEventHandler {
 			return;
 		}
 		const lng = interaction.userLanguage;
-
-		let story: string;
-
-		switch (packet.interactionType) {
-			case ExpeditionAdviceInteractionType.TALISMAN_INTRO: {
-				// Talisman introduction (first 2 encounters, displayed in order)
-				const introTexts = i18n.tArray("smallEvents:expeditionAdvice.talismanIntro", {
-					lng
-				});
-				story = introTexts[packet.encounterCount! - 1] ?? introTexts[0];
-				break;
-			}
-
-			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_PET:
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noPet", lng);
-				break;
-
-			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY: {
-				const petDisplayHungry = packet.petTypeId !== undefined
-					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
-					: i18n.t("commands:pet.defaultPetName", { lng });
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.petHungry", lng, {
-					pet: petDisplayHungry
-				});
-				break;
-			}
-
-			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_FEISTY: {
-				const petDisplayFeisty = packet.petTypeId !== undefined
-					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
-					: i18n.t("commands:pet.defaultPetName", { lng });
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.petFeisty", lng, {
-					pet: petDisplayFeisty
-				});
-				break;
-			}
-
-			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_NOT_SEEN_BY_TALVAR: {
-				const petDisplayTalvar = packet.petTypeId !== undefined
-					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
-					: i18n.t("commands:pet.defaultPetName", { lng });
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.petNotSeenByTalvar", lng, {
-					pet: petDisplayTalvar
-				});
-				break;
-			}
-
-			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD:
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noGuild", lng);
-				break;
-
-			case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW:
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.levelTooLow", lng, {
-					requiredLevel: packet.requiredLevel,
-					playerLevel: packet.playerLevel,
-					count: packet.consolationTokensAmount
-				});
-				break;
-
-			case ExpeditionAdviceInteractionType.TALISMAN_RECEIVED: {
-				const petDisplayReceived = packet.petTypeId !== undefined
-					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
-					: i18n.t("commands:pet.defaultPetName", { lng });
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.talismanReceived", lng, {
-					pet: petDisplayReceived
-				});
-				break;
-			}
-
-			case ExpeditionAdviceInteractionType.EXPEDITION_BONUS: {
-				const petDisplayBonus = packet.petTypeId !== undefined
-					? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
-					: i18n.t("commands:pet.defaultPetName", { lng });
-
-				// Determine which translation to use based on rewards
-				let translationKey: string;
-				if (packet.bonusCombatPotion) {
-					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.combatPotion";
-				}
-				else if (packet.bonusItem) {
-					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.pointsAndItem";
-				}
-				else if (packet.bonusMoney) {
-					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.pointsAndMoney";
-				}
-				else {
-					translationKey = "smallEvents:expeditionAdvice.expeditionBonus.points";
-				}
-
-				story = i18n.t(translationKey, {
-					lng,
-					pet: petDisplayBonus,
-					bonusPoints: packet.bonusPoints,
-					bonusMoney: packet.bonusMoney
-				});
-				break;
-			}
-
-			case ExpeditionAdviceInteractionType.ADVICE:
-			default:
-				story = StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.advice", lng);
-				break;
-		}
-
+		const story = buildExpeditionStory(packet, lng);
 		await interaction.editReply({
 			embeds: [new CrowniclesSmallEventEmbed("expeditionAdvice", story, interaction.user, lng)]
 		});
