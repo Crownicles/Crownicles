@@ -52,7 +52,9 @@
     "test": "test",
     "unlock": "libération de quelqu'un",
     "witchChoose": "choix d'une action pour la sorcière",
-    "altarSmallEvent": "contribution à l'autel de l'Oracle"
+    "altarSmallEvent": "contribution à l'autel de l'Oracle",
+    "badPetSmallEvent": "réaction face au nain hostile Moltiar",
+    "limogesSmallEvent": "réponse aux questions du voyageur encapuchonné"
   },
   "commandDoesntExist": "ERREUR: Commande inconnue",
   "interactionNotForYou": "Cette interaction n'est pas pour vous !",
