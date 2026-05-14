@@ -91,7 +91,8 @@ import {
 	handleInnRoomReaction,
 	handleMoveHomeReaction,
 	handleUpgradeHomeReaction,
-	handleUpgradeItemReaction
+	handleUpgradeItemReaction,
+	isCityShopEmpty
 } from "../../core/report/ReportCityService";
 import { handleGuildDomainNotaryReaction } from "../../core/report/ReportCityGuildDomainService";
 
@@ -467,9 +468,10 @@ async function sendCityCollector(
 				health: room.health
 			}))
 		})),
-		shops: (city.shops || []).map(shopId => ({
-			shopId
-		})),
+		shops: await Promise.all((city.shops || []).map(async shopId => ({
+			shopId,
+			isEmpty: await isCityShopEmpty(player, shopId)
+		}))),
 		energy: {
 			current: player.getCumulativeEnergy(playerActiveObjects),
 			max: player.getMaxCumulativeEnergy(playerActiveObjects)

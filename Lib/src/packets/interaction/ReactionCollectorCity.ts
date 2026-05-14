@@ -50,6 +50,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 	shops?: {
 		shopId: string;
+		isEmpty?: boolean;
 	}[];
 
 	energy!: {
@@ -462,10 +463,12 @@ export class ReactionCollectorCity extends ReactionCollector {
 		if (!this.data.shops) {
 			return [];
 		}
-		return this.data.shops.map(shop =>
-			this.buildReaction(ReactionCollectorCityShopReaction, {
-				shopId: shop.shopId
-			}));
+		return this.data.shops
+			.filter(shop => !shop.isEmpty)
+			.map(shop =>
+				this.buildReaction(ReactionCollectorCityShopReaction, {
+					shopId: shop.shopId
+				}));
 	}
 
 	private buildHomeManageReaction(): {

@@ -125,6 +125,7 @@ type AddCitySectionBaseParams = {
 	customId: string;
 	buttonLabel: string;
 	buttonStyle?: ButtonStyle;
+	disabled?: boolean;
 };
 
 type AddCitySectionWithTitle = AddCitySectionBaseParams & {
@@ -158,7 +159,8 @@ export function addCitySection(params: AddCitySectionParams): void {
 	const button = new ButtonBuilder()
 		.setCustomId(params.customId)
 		.setLabel(params.buttonLabel)
-		.setStyle(params.buttonStyle ?? ButtonStyle.Secondary);
+		.setStyle(params.buttonStyle ?? ButtonStyle.Secondary)
+		.setDisabled(params.disabled ?? false);
 
 	if (emoji) {
 		button.setEmoji(emoji);
@@ -274,9 +276,12 @@ function addShopsSection(container: ContainerBuilder, data: ReactionCollectorCit
 			container,
 			emote: shopEmoji,
 			title: i18n.t(`commands:report.city.shops.${shop.shopId}.label`, { lng }),
-			description: i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng }),
+			description: shop.isEmpty
+				? i18n.t("commands:report.city.shopEmptyDescription", { lng })
+				: i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng }),
 			customId: `${ReportCityMenuIds.CITY_SHOP_PREFIX}${shop.shopId}`,
-			buttonLabel: i18n.t("commands:report.city.buttons.browseShop", { lng })
+			buttonLabel: i18n.t("commands:report.city.buttons.browseShop", { lng }),
+			disabled: shop.isEmpty
 		});
 	}
 }
