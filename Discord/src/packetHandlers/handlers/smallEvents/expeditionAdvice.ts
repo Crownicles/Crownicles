@@ -11,17 +11,40 @@ import {
 	SmallEventExpeditionAdvicePacket, ExpeditionAdviceInteractionType
 } from "../../../../../Lib/src/packets/smallEvents/SmallEventExpeditionAdvicePacket";
 
+type StoryBuilder = (packet: SmallEventExpeditionAdvicePacket, lng: Language) => string;
+
 function getPetDisplay(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
 	return packet.petTypeId !== undefined
 		? PetUtils.petToShortString(lng, packet.petNickname, packet.petTypeId, packet.petSex as SexTypeShort)
 		: i18n.t("commands:pet.defaultPetName", { lng });
 }
 
-const PET_CONDITION_KEYS = new Map<string, string>([
-	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY, "smallEvents:expeditionAdvice.conditions.petHungry"],
-	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_FEISTY, "smallEvents:expeditionAdvice.conditions.petFeisty"],
-	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_NOT_SEEN_BY_TALVAR, "smallEvents:expeditionAdvice.conditions.petNotSeenByTalvar"]
-]);
+function buildPetConditionStory(translationKey: string): StoryBuilder {
+	return (packet, lng) => StringUtils.getRandomTranslation(translationKey, lng, { pet: getPetDisplay(packet, lng) });
+}
+
+function buildSimpleStory(translationKey: string): StoryBuilder {
+	return (_packet, lng) => StringUtils.getRandomTranslation(translationKey, lng);
+}
+
+function buildTalismanIntroStory(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
+	const introTexts = i18n.tArray("smallEvents:expeditionAdvice.talismanIntro", { lng });
+	return introTexts[packet.encounterCount! - 1] ?? introTexts[0];
+}
+
+function buildLevelTooLowStory(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
+	return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.levelTooLow", lng, {
+		requiredLevel: packet.requiredLevel,
+		playerLevel: packet.playerLevel,
+		count: packet.consolationTokensAmount
+	});
+}
+
+function buildTalismanReceivedStory(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
+	return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.talismanReceived", lng, {
+		pet: getPetDisplay(packet, lng)
+	});
+}
 
 function getExpeditionBonusKey(packet: SmallEventExpeditionAdvicePacket): string {
 	if (packet.bonusCombatPotion) {
@@ -36,42 +59,32 @@ function getExpeditionBonusKey(packet: SmallEventExpeditionAdvicePacket): string
 	return "smallEvents:expeditionAdvice.expeditionBonus.points";
 }
 
-function buildExpeditionStory(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
-	const petConditionKey = PET_CONDITION_KEYS.get(packet.interactionType);
-	if (petConditionKey) {
-		return StringUtils.getRandomTranslation(petConditionKey, lng, { pet: getPetDisplay(packet, lng) });
-	}
+function buildExpeditionBonusStory(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
+	return i18n.t(getExpeditionBonusKey(packet), {
+		lng,
+		pet: getPetDisplay(packet, lng),
+		bonusPoints: packet.bonusPoints,
+		bonusMoney: packet.bonusMoney
+	});
+}
 
-	switch (packet.interactionType) {
-		case ExpeditionAdviceInteractionType.TALISMAN_INTRO: {
-			const introTexts = i18n.tArray("smallEvents:expeditionAdvice.talismanIntro", { lng });
-			return introTexts[packet.encounterCount! - 1] ?? introTexts[0];
-		}
-		case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_PET:
-			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noPet", lng);
-		case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD:
-			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.noGuild", lng);
-		case ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW:
-			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.conditions.levelTooLow", lng, {
-				requiredLevel: packet.requiredLevel,
-				playerLevel: packet.playerLevel,
-				count: packet.consolationTokensAmount
-			});
-		case ExpeditionAdviceInteractionType.TALISMAN_RECEIVED:
-			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.talismanReceived", lng, {
-				pet: getPetDisplay(packet, lng)
-			});
-		case ExpeditionAdviceInteractionType.EXPEDITION_BONUS:
-			return i18n.t(getExpeditionBonusKey(packet), {
-				lng,
-				pet: getPetDisplay(packet, lng),
-				bonusPoints: packet.bonusPoints,
-				bonusMoney: packet.bonusMoney
-			});
-		case ExpeditionAdviceInteractionType.ADVICE:
-		default:
-			return StringUtils.getRandomTranslation("smallEvents:expeditionAdvice.advice", lng);
-	}
+const STORY_BUILDERS = new Map<string, StoryBuilder>([
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_HUNGRY, buildPetConditionStory("smallEvents:expeditionAdvice.conditions.petHungry")],
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_FEISTY, buildPetConditionStory("smallEvents:expeditionAdvice.conditions.petFeisty")],
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_PET_NOT_SEEN_BY_TALVAR, buildPetConditionStory("smallEvents:expeditionAdvice.conditions.petNotSeenByTalvar")],
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_PET, buildSimpleStory("smallEvents:expeditionAdvice.conditions.noPet")],
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_NO_GUILD, buildSimpleStory("smallEvents:expeditionAdvice.conditions.noGuild")],
+	[ExpeditionAdviceInteractionType.CONDITION_NOT_MET_LEVEL_TOO_LOW, buildLevelTooLowStory],
+	[ExpeditionAdviceInteractionType.TALISMAN_INTRO, buildTalismanIntroStory],
+	[ExpeditionAdviceInteractionType.TALISMAN_RECEIVED, buildTalismanReceivedStory],
+	[ExpeditionAdviceInteractionType.EXPEDITION_BONUS, buildExpeditionBonusStory]
+]);
+
+const DEFAULT_STORY_BUILDER: StoryBuilder = buildSimpleStory("smallEvents:expeditionAdvice.advice");
+
+function buildExpeditionStory(packet: SmallEventExpeditionAdvicePacket, lng: Language): string {
+	const builder = STORY_BUILDERS.get(packet.interactionType) ?? DEFAULT_STORY_BUILDER;
+	return builder(packet, lng);
 }
 
 export default class ExpeditionAdviceSmallEventHandler {
