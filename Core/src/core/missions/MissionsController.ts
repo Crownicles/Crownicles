@@ -197,8 +197,18 @@ export abstract class MissionsController {
 					Player.lockKey(player.id),
 					PlayerMissionsInfo.lockKey(player.id)
 				] as const,
-				([lockedPlayer, lockedMissionInfo]) =>
-					MissionsController.runUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, info)
+				([lockedPlayer, lockedMissionInfo]) => {
+					/*
+					 * Propagate the caller's in-memory mutations (e.g. `player.money += amount`
+					 * applied right before this call) onto the freshly fetched locked instance
+					 * before running mission logic. Without this, the locked instance would
+					 * persist the OLD field values and silently clobber the caller's mutation
+					 * once the caller does `Object.assign(this, returnedPlayer)`.
+					 * See https://github.com/Crownicles/Crownicles/issues/4207.
+					 */
+					MissionsController.propagateDirtyFieldsUnderLock(player, lockedPlayer);
+					return MissionsController.runUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, info);
+				}
 			);
 		}
 		catch (e) {
@@ -209,6 +219,28 @@ export abstract class MissionsController {
 				return player;
 			}
 			throw e;
+		}
+	}
+
+	/**
+	 * Replays the caller's dirty fields onto the locked Player instance so they
+	 * are persisted by the lock-owned save and not silently discarded.
+	 *
+	 * Callers of `update` typically mutate the player in memory just before calling
+	 * (e.g. `player.money += amount`). Since `update` re-fetches a fresh locked
+	 * Player from the DB, those mutations must be replayed on the locked instance.
+	 * Without this, the locked instance saves the OLD values and the caller's
+	 * `Object.assign(this, returnedPlayer)` clobbers its own mutation.
+	 *
+	 * See https://github.com/Crownicles/Crownicles/issues/4207
+	 */
+	private static propagateDirtyFieldsUnderLock(caller: Player, locked: Player): void {
+		const dirtyFields = caller.changed();
+		if (!dirtyFields) {
+			return;
+		}
+		for (const field of dirtyFields) {
+			locked.setDataValue(field as keyof Player, caller.getDataValue(field as keyof Player));
 		}
 	}
 
