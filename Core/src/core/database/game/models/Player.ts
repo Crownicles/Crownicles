@@ -93,6 +93,30 @@ type ressourcesLostOnPveFaint = {
 	guildPointsLost: number;
 };
 
+/**
+ * Compute the new token count after applying `amount` to `currentTokens`, honoring
+ * the MAX cap, the expedition over-cap rule, and the lower bound at 0. Used both
+ * by `addTokens` to decide whether to trigger the update and by the locked
+ * mutation callback to recompute against the freshly locked DB value (so a
+ * concurrent token write between the caller's read and the lock acquisition is
+ * never silently clobbered).
+ */
+function computeNewTokens(currentTokens: number, amount: number, reason: NumberChangeReason): number {
+	if (amount <= 0) {
+		// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
+		return Math.max(0, currentTokens + amount);
+	}
+	if (currentTokens >= TokensConstants.MAX) {
+		// Block all gains when already at or above max (including expeditions)
+		return currentTokens;
+	}
+	if (reason === NumberChangeReason.EXPEDITION) {
+		// Expedition rewards can exceed the max cap, but only when current tokens are below MAX
+		return currentTokens + amount;
+	}
+	return MathUtils.clamp(currentTokens + amount, 0, TokensConstants.MAX);
+}
+
 export class Player extends Model {
 	/**
 	 * Build a {@link LockKey} for this player so it can participate in a
@@ -320,27 +344,7 @@ export class Player extends Model {
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
 		const previousTokens = this.tokens;
-
-		let newTokens;
-		if (parameters.amount <= 0) {
-			// When spending or doing a no-op, don't clamp to MAX (preserve over-cap tokens from expeditions)
-			newTokens = Math.max(0, this.tokens + parameters.amount);
-		}
-		else if (this.tokens >= TokensConstants.MAX) {
-			// Block all gains when already at or above max (including expeditions)
-			return this;
-		}
-		else if (parameters.reason === NumberChangeReason.EXPEDITION) {
-			// Expedition rewards can exceed the max cap, but only when current tokens are below MAX
-			newTokens = this.tokens + parameters.amount;
-		}
-		else {
-			newTokens = MathUtils.clamp(
-				this.tokens + parameters.amount,
-				0,
-				TokensConstants.MAX
-			);
-		}
+		const newTokens = computeNewTokens(this.tokens, parameters.amount, parameters.reason);
 
 		if (newTokens === previousTokens) {
 			return this;
@@ -356,7 +360,12 @@ export class Player extends Model {
 				missionId: "earnTokens",
 				count: actualChange,
 				applyOnLockedPlayer: locked => {
-					locked.tokens = newTokens;
+					/*
+					 * Recompute against the fresh locked value to avoid clobbering
+					 * a concurrent token update that happened between the caller's
+					 * read of `this.tokens` and the lock acquisition.
+					 */
+					locked.tokens = computeNewTokens(locked.tokens, parameters.amount, parameters.reason);
 				}
 			});
 
