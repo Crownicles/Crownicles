@@ -281,10 +281,8 @@ export class LogsDatabase extends Database {
 		const originalQuery = ownSequelize.query.bind(ownSequelize);
 		const clsHolder = Sequelize as unknown as { _cls?: { get: (key: string) => unknown } };
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		ownSequelize.query = function patchedQuery(this: Sequelize, ...args: any[]): Promise<unknown> {
-			const rawOptions = (args[1] ?? {}) as { transaction?: Transaction | null | undefined };
-			const opts: { transaction?: Transaction | null | undefined } & Record<string, unknown> = { ...rawOptions };
+		const patchedQuery: typeof ownSequelize.query = ((sql: Parameters<typeof originalQuery>[0], rawOptions?: Parameters<typeof originalQuery>[1]): Promise<unknown> => {
+			const opts: { transaction?: Transaction | null | undefined } & Record<string, unknown> = { ...rawOptions ?? {} };
 
 			let tx = opts.transaction;
 			if (tx === undefined && clsHolder._cls) {
@@ -301,8 +299,9 @@ export class LogsDatabase extends Database {
 				opts.transaction = null;
 			}
 
-			return originalQuery(args[0], opts);
-		} as unknown as typeof ownSequelize.query;
+			return originalQuery(sql, opts as Parameters<typeof originalQuery>[1]);
+		}) as typeof ownSequelize.query;
+		ownSequelize.query = patchedQuery;
 	}
 
 	/**

@@ -1,17 +1,15 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, Message,
-	MessageComponentInteraction, SeparatorBuilder,
+	SeparatorBuilder,
 	SeparatorSpacingSize,
 	TextDisplayBuilder
 } from "discord.js";
-import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ReactionCollectorCityData,
 	ReactionCollectorInnMealReaction,
 	ReactionCollectorInnRoomReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
-	ReactionCollectorCreationPacket,
 	ReactionCollectorReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
@@ -67,13 +65,10 @@ function getInnReactionRoutes(innId: string): InnReactionRoute[] {
 	];
 }
 
-async function handleInnReactionRoute(
-	route: InnReactionRoute,
-	selectedValue: string,
-	buttonInteraction: MessageComponentInteraction,
-	context: PacketContext,
-	packet: ReactionCollectorCreationPacket
-): Promise<void> {
+async function handleInnReactionRoute(params: InnHandlerParams & { route: InnReactionRoute }): Promise<void> {
+	const {
+		route, selectedValue, buttonInteraction, context, packet
+	} = params;
 	await buttonInteraction.deferReply();
 	const id = selectedValue.replace(route.prefix, "");
 	const reactionIndex = packet.reactions.findIndex(
@@ -103,7 +98,9 @@ async function handleInnCollectorInteraction(params: InnHandlerParams): Promise<
 
 	const route = getInnReactionRoutes(innId).find(r => selectedValue.startsWith(r.prefix));
 	if (route) {
-		await handleInnReactionRoute(route, selectedValue, buttonInteraction, context, packet);
+		await handleInnReactionRoute({
+			...params, route
+		});
 	}
 }
 

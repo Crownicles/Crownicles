@@ -113,18 +113,27 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 	return changes.map(change => `- ${change}`).join("\n");
 };
 
-function buildNotaryNewHomeDescription(data: ManageHomeData, lng: Language): string {
-	const cost = data.newPrice!;
-	if (cost > data.currentMoney) {
-		return i18n.t("commands:report.city.homes.notaryNewHomeNoMoney", {
-			lng,
-			cost,
-			missingMoney: cost - data.currentMoney
+function buildSimpleCostNotaryDescription(
+	cost: number, currentMoney: number, lng: Language, noMoneyKey: string, enoughMoneyKey: string
+): string {
+	if (cost > currentMoney) {
+		return i18n.t(noMoneyKey, {
+			lng, cost, missingMoney: cost - currentMoney
 		});
 	}
-	return i18n.t("commands:report.city.homes.notaryNewHomeEnoughMoney", {
+	return i18n.t(enoughMoneyKey, {
 		lng, cost
 	});
+}
+
+function buildNotaryNewHomeDescription(data: ManageHomeData, lng: Language): string {
+	return buildSimpleCostNotaryDescription(
+		data.newPrice!,
+		data.currentMoney,
+		lng,
+		"commands:report.city.homes.notaryNewHomeNoMoney",
+		"commands:report.city.homes.notaryNewHomeEnoughMoney"
+	);
 }
 
 function buildNotaryUpgradeDescription(data: ManageHomeData, lng: Language): string {
@@ -145,17 +154,13 @@ function buildNotaryUpgradeDescription(data: ManageHomeData, lng: Language): str
 }
 
 function buildNotaryMoveDescription(data: ManageHomeData, lng: Language): string {
-	const cost = data.movePrice!;
-	if (cost > data.currentMoney) {
-		return i18n.t("commands:report.city.homes.notaryMoveHomeNoMoney", {
-			lng,
-			cost,
-			missingMoney: cost - data.currentMoney
-		});
-	}
-	return i18n.t("commands:report.city.homes.notaryMoveHomeEnoughMoney", {
-		lng, cost
-	});
+	return buildSimpleCostNotaryDescription(
+		data.movePrice!,
+		data.currentMoney,
+		lng,
+		"commands:report.city.homes.notaryMoveHomeNoMoney",
+		"commands:report.city.homes.notaryMoveHomeEnoughMoney"
+	);
 }
 
 type NotaryDescriptionBuilder = {

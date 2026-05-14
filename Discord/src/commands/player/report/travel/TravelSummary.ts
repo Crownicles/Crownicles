@@ -39,11 +39,8 @@ function isCurrentlyInEffect(packet: CommandReportTravelSummaryRes, now: number)
 	return !(now < effectStartTime || now > (packet.effectEndTime ?? 0));
 }
 
-function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: number): string {
-	const tripDuration = packet.arriveTime - packet.startTime - (packet.effectDuration ?? 0);
-
+function computePlayerTravelledTime(packet: CommandReportTravelSummaryRes, now: number, isInEffectTime: boolean): number {
 	let playerTravelledTime = now - packet.startTime;
-	const isInEffectTime = isCurrentlyInEffect(packet, now);
 	const effectStartTime = packet.effectEndTime && packet.effectDuration ? packet.effectEndTime - packet.effectDuration : 0;
 	if (now > (packet.effectEndTime ?? 0)) {
 		playerTravelledTime -= packet.effectDuration ?? 0;
@@ -51,11 +48,10 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
 	else if (isInEffectTime) {
 		playerTravelledTime -= now - effectStartTime;
 	}
+	return playerTravelledTime;
+}
 
-	const playerRemainingTravelTime = tripDuration - playerTravelledTime;
-
-	let percentage = playerTravelledTime / tripDuration;
-
+function formatRemainingTime(playerRemainingTravelTime: number): string {
 	const remainingHours = Math.max(Math.floor(millisecondsToHours(asMilliseconds(playerRemainingTravelTime))), 0);
 	let remainingMinutes = Math.floor(millisecondsToMinutes(asMilliseconds(playerRemainingTravelTime - remainingHours * 3600000)));
 	if (remainingMinutes === 60) {
@@ -64,34 +60,43 @@ function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: nu
 	if (remainingMinutes <= 0 && remainingHours === 0) {
 		remainingMinutes = 1;
 	}
-	const timeRemainingString = `**[${remainingHours}h${remainingMinutes < 10 ? "0" : ""}${remainingMinutes}]**`;
-	if (percentage > 1) {
-		percentage = 1;
+	return `**[${remainingHours}h${remainingMinutes < 10 ? "0" : ""}${remainingMinutes}]**`;
+}
+
+function getPlayerPositionEmoji(packet: CommandReportTravelSummaryRes, isInEffectTime: boolean): string {
+	if (isInEffectTime) {
+		return CrowniclesIcons.effects[packet.effect!];
 	}
-	let index = Constants.REPORT.PATH_SQUARE_COUNT * percentage;
+	return packet.isOnBoat ? "🚢" : "🧍";
+}
 
-	index = Math.floor(index);
-
-	let str = `${CrowniclesIcons.mapTypes[packet.startMap.type]} `;
-
+function buildTravelPathSquares(
+	packet: CommandReportTravelSummaryRes, playerIndex: number, isInEffectTime: boolean, timeRemainingString: string
+): string {
+	const playerEmoji = getPlayerPositionEmoji(packet, isInEffectTime);
+	const middleIndex = Math.floor(Constants.REPORT.PATH_SQUARE_COUNT / 2) - 1;
+	let str = "";
 	for (let j = 0; j < Constants.REPORT.PATH_SQUARE_COUNT; ++j) {
-		if (j === index) {
-			if (!isInEffectTime) {
-				str += packet.isOnBoat ? "🚢" : "🧍";
-			}
-			else {
-				str += CrowniclesIcons.effects[packet.effect!];
-			}
-		}
-		else {
-			str += "■";
-		}
-		if (j === Math.floor(Constants.REPORT.PATH_SQUARE_COUNT / 2) - 1) {
+		str += j === playerIndex ? playerEmoji : "■";
+		if (j === middleIndex) {
 			str += timeRemainingString;
 		}
 	}
+	return str;
+}
 
-	return `${str} ${CrowniclesIcons.mapTypes[packet.endMap.type]}`;
+function generateTravelPathString(packet: CommandReportTravelSummaryRes, now: number): string {
+	const tripDuration = packet.arriveTime - packet.startTime - (packet.effectDuration ?? 0);
+	const isInEffectTime = isCurrentlyInEffect(packet, now);
+	const playerTravelledTime = computePlayerTravelledTime(packet, now, isInEffectTime);
+	const playerRemainingTravelTime = tripDuration - playerTravelledTime;
+
+	const percentage = Math.min(playerTravelledTime / tripDuration, 1);
+	const playerIndex = Math.floor(Constants.REPORT.PATH_SQUARE_COUNT * percentage);
+	const timeRemainingString = formatRemainingTime(playerRemainingTravelTime);
+
+	const squares = buildTravelPathSquares(packet, playerIndex, isInEffectTime, timeRemainingString);
+	return `${CrowniclesIcons.mapTypes[packet.startMap.type]} ${squares} ${CrowniclesIcons.mapTypes[packet.endMap.type]}`;
 }
 
 function manageMainSummaryText({
@@ -199,36 +204,55 @@ function createCurrencyButton(config: ButtonConfig): ButtonBuilder {
 		.setDisabled(!config.hasEnough);
 }
 
-function createHealButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
-	if (!packet.heal) {
+type CurrencyButtonConfig = {
+	resource: {
+		playerAmount: number; cost: number;
+	} | undefined;
+	customId: string;
+	sufficientLabelKey: string;
+	insufficientLabelKey: string;
+	emoji: string;
+	sufficientStyle: ButtonStyle;
+};
+
+function createCurrencyButtonFromPacket(config: CurrencyButtonConfig, lng: Language): ButtonBuilder | null {
+	if (!config.resource) {
 		return null;
 	}
-
-	const hasEnoughMoney = packet.heal.playerMoney >= packet.heal.price;
 	return createCurrencyButton({
-		customId: "buyHeal",
-		hasEnough: hasEnoughMoney,
-		sufficientLabel: i18n.t("commands:report.buyHealButton", { lng }),
-		insufficientLabel: i18n.t("commands:report.notEnoughMoneyHealButton", { lng }),
-		emoji: CrowniclesIcons.shopItems.healAlteration,
-		sufficientStyle: ButtonStyle.Success
+		customId: config.customId,
+		hasEnough: config.resource.playerAmount >= config.resource.cost,
+		sufficientLabel: i18n.t(config.sufficientLabelKey, { lng }),
+		insufficientLabel: i18n.t(config.insufficientLabelKey, { lng }),
+		emoji: config.emoji,
+		sufficientStyle: config.sufficientStyle
 	});
 }
 
-function createTokenButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
-	if (!packet.tokens) {
-		return null;
-	}
+function createHealButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
+	return createCurrencyButtonFromPacket({
+		resource: packet.heal && {
+			playerAmount: packet.heal.playerMoney, cost: packet.heal.price
+		},
+		customId: "buyHeal",
+		sufficientLabelKey: "commands:report.buyHealButton",
+		insufficientLabelKey: "commands:report.notEnoughMoneyHealButton",
+		emoji: CrowniclesIcons.shopItems.healAlteration,
+		sufficientStyle: ButtonStyle.Success
+	}, lng);
+}
 
-	const hasEnoughTokens = packet.tokens.playerTokens >= packet.tokens.cost;
-	return createCurrencyButton({
+function createTokenButton(packet: CommandReportTravelSummaryRes, lng: Language): ButtonBuilder | null {
+	return createCurrencyButtonFromPacket({
+		resource: packet.tokens && {
+			playerAmount: packet.tokens.playerTokens, cost: packet.tokens.cost
+		},
 		customId: "useTokens",
-		hasEnough: hasEnoughTokens,
-		sufficientLabel: i18n.t("commands:report.useTokensButton", { lng }),
-		insufficientLabel: i18n.t("commands:report.notEnoughTokensButton", { lng }),
+		sufficientLabelKey: "commands:report.useTokensButton",
+		insufficientLabelKey: "commands:report.notEnoughTokensButton",
 		emoji: CrowniclesIcons.unitValues.token,
 		sufficientStyle: ButtonStyle.Primary
-	});
+	}, lng);
 }
 
 function buildTravelActionRow(packet: CommandReportTravelSummaryRes, lng: Language): ActionRowBuilder<ButtonBuilder> | null {

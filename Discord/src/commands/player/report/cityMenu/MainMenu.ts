@@ -257,15 +257,20 @@ const MAIN_MENU_REACTION_ROUTES: Record<string, string> = {
 	[ReportCityMenuIds.MAIN_MENU_STAY_CITY]: ReactionCollectorRefuseReaction.name
 };
 
-function sendReactionForType(
-	reactionType: string,
-	componentInteraction: MessageComponentInteraction,
-	context: PacketContext,
-	packet: ReactionCollectorCreationPacket,
+type SendReactionParams = {
+	reactionType: string;
+	componentInteraction: MessageComponentInteraction;
+	context: PacketContext;
+	packet: ReactionCollectorCreationPacket;
 	predicate?: (reaction: {
 		type: string; data: unknown;
-	}) => boolean
-): void {
+	}) => boolean;
+};
+
+function sendReactionForType(params: SendReactionParams): void {
+	const {
+		reactionType, componentInteraction, context, packet, predicate
+	} = params;
 	const reactionIndex = packet.reactions.findIndex(reaction =>
 		reaction.type === reactionType && (predicate ? predicate(reaction) : true));
 	if (reactionIndex !== -1) {
@@ -280,8 +285,13 @@ function handleShopSelection(
 	packet: ReactionCollectorCreationPacket
 ): void {
 	const shopId = selectedValue.replace(ReportCityMenuIds.CITY_SHOP_PREFIX, "");
-	sendReactionForType(ReactionCollectorCityShopReaction.name, componentInteraction, context, packet,
-		reaction => (reaction.data as ReactionCollectorCityShopReaction).shopId === shopId);
+	sendReactionForType({
+		reactionType: ReactionCollectorCityShopReaction.name,
+		componentInteraction,
+		context,
+		packet,
+		predicate: reaction => (reaction.data as ReactionCollectorCityShopReaction).shopId === shopId
+	});
 }
 
 async function handleMainMenuSelection(params: CityCollectorHandlerParams): Promise<void> {
@@ -306,7 +316,9 @@ async function handleMainMenuSelection(params: CityCollectorHandlerParams): Prom
 	}
 
 	if (MAIN_MENU_REACTION_ROUTES[selectedValue]) {
-		sendReactionForType(MAIN_MENU_REACTION_ROUTES[selectedValue], componentInteraction, context, packet);
+		sendReactionForType({
+			reactionType: MAIN_MENU_REACTION_ROUTES[selectedValue], componentInteraction, context, packet
+		});
 	}
 }
 

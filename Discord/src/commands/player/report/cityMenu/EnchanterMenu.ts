@@ -1,16 +1,14 @@
 import {
 	ActionRowBuilder, ButtonBuilder, ButtonStyle, ContainerBuilder, Message,
-	MessageComponentInteraction, SeparatorBuilder,
+	SeparatorBuilder,
 	SeparatorSpacingSize,
 	TextDisplayBuilder
 } from "discord.js";
-import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	EnchanterCityData,
 	ReactionCollectorCityData,
 	ReactionCollectorEnchantReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
-import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
 import {
@@ -36,13 +34,10 @@ type EnchanterHandlerParams = CityCollectorHandlerParams & { data: EnchanterCity
 
 type EnchanterCollectorParams = Omit<CityMenuParams, "pseudo"> & { data: EnchanterCityData };
 
-async function handleEnchantItemSelection(
-	selectedValue: string,
-	buttonInteraction: MessageComponentInteraction,
-	context: PacketContext,
-	packet: ReactionCollectorCreationPacket,
-	data: EnchanterCityData
-): Promise<void> {
+async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promise<void> {
+	const {
+		selectedValue, buttonInteraction, context, packet, data
+	} = params;
 	await buttonInteraction.deferReply();
 	const index = parseInt(selectedValue.replace(ReportCityMenuIds.ENCHANT_ITEM_PREFIX, ""), 10);
 	if (index < 0 || index >= data.enchantableItems.length) {
@@ -63,7 +58,7 @@ async function handleEnchantItemSelection(
 
 async function handleEnchanterCollectorInteraction(params: EnchanterHandlerParams): Promise<void> {
 	const {
-		selectedValue, buttonInteraction, nestedMenus, context, packet, data
+		selectedValue, buttonInteraction, nestedMenus, context, packet
 	} = params;
 
 	if (selectedValue === ReportCityMenuIds.BACK_TO_CITY) {
@@ -79,7 +74,7 @@ async function handleEnchanterCollectorInteraction(params: EnchanterHandlerParam
 	}
 
 	if (selectedValue.startsWith(ReportCityMenuIds.ENCHANT_ITEM_PREFIX)) {
-		await handleEnchantItemSelection(selectedValue, buttonInteraction, context, packet, data);
+		await handleEnchantItemSelection(params);
 	}
 }
 
