@@ -1,5 +1,5 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Message, parseEmoji
 } from "discord.js";
 import {
 	makePacket, PacketContext
@@ -20,13 +20,17 @@ import {
 } from "../../../../../../Lib/src/utils/TimeUtils";
 import { DiscordCache } from "../../../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
-import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import {
 	effectsErrorTextValue, sendInteractionNotForYou
 } from "../../../../utils/ErrorUtils";
 import { PacketUtils } from "../../../../utils/PacketUtils";
+
+const TRAVEL_BUTTON_IDS = {
+	BUY_HEAL: "buyHeal",
+	USE_TOKENS: "useTokens"
+} as const;
 
 type FieldsArguments = {
 	packet: CommandReportTravelSummaryRes;
@@ -234,7 +238,7 @@ const TRAVEL_CURRENCY_BUTTONS: ((packet: CommandReportTravelSummaryRes) => Curre
 		resource: packet.heal && {
 			playerAmount: packet.heal.playerMoney, cost: packet.heal.price
 		},
-		customId: "buyHeal",
+		customId: TRAVEL_BUTTON_IDS.BUY_HEAL,
 		sufficientLabelKey: "commands:report.buyHealButton",
 		insufficientLabelKey: "commands:report.notEnoughMoneyHealButton",
 		emoji: CrowniclesIcons.shopItems.healAlteration,
@@ -244,7 +248,7 @@ const TRAVEL_CURRENCY_BUTTONS: ((packet: CommandReportTravelSummaryRes) => Curre
 		resource: packet.tokens && {
 			playerAmount: packet.tokens.playerTokens, cost: packet.tokens.cost
 		},
-		customId: "useTokens",
+		customId: TRAVEL_BUTTON_IDS.USE_TOKENS,
 		sufficientLabelKey: "commands:report.useTokensButton",
 		insufficientLabelKey: "commands:report.notEnoughTokensButton",
 		emoji: CrowniclesIcons.unitValues.token,
@@ -274,7 +278,7 @@ async function handleTravelButtonInteraction(
 	context: PacketContext,
 	lng: Language
 ): Promise<void> {
-	if (buttonInteraction.customId === "useTokens") {
+	if (buttonInteraction.customId === TRAVEL_BUTTON_IDS.USE_TOKENS) {
 		await buttonInteraction.followUp({
 			content: i18n.t("commands:report.useTokensLoading", { lng }),
 			ephemeral: false
@@ -282,7 +286,7 @@ async function handleTravelButtonInteraction(
 
 		PacketUtils.sendPacketToBackend(context, makePacket(CommandReportUseTokensPacketReq, {}));
 	}
-	else if (buttonInteraction.customId === "buyHeal") {
+	else if (buttonInteraction.customId === TRAVEL_BUTTON_IDS.BUY_HEAL) {
 		await buttonInteraction.followUp({
 			content: i18n.t("commands:report.buyHealLoading", { lng }),
 			ephemeral: false
@@ -293,7 +297,7 @@ async function handleTravelButtonInteraction(
 }
 
 function setupTravelButtonCollector(
-	msg: NonNullable<Awaited<ReturnType<CrowniclesInteraction["editReply"]>>>,
+	msg: Message,
 	row: ActionRowBuilder<ButtonBuilder>,
 	context: PacketContext,
 	lng: Language
