@@ -2,6 +2,7 @@ import { DataControllerString } from "./DataController";
 import { Data } from "./Data";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
+import { HomeLevel } from "../../../Lib/src/types/HomeLevel";
 
 export class InnMeal {
 	public readonly id!: string;
@@ -41,6 +42,13 @@ export class City extends Data<string> {
 	 * Defaults to true if not specified
 	 */
 	public readonly hasBlacksmith?: boolean;
+
+	/**
+	 * Multiplier applied to the base home cost (purchase + upgrades) for this city.
+	 * Allows minor variation between cities (~+/- 5%) without modifying the base ladder.
+	 * Defaults to 1 if not specified.
+	 */
+	public readonly homePriceMultiplier?: number;
 
 	/**
 	 * Check if the city has a blacksmith
@@ -85,6 +93,14 @@ export class City extends Data<string> {
 		return targetCount === minCount
 			? HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED
 			: HomeConstants.MOVE_HOME_PRICE_DEFAULT;
+	}
+
+	/**
+	 * Compute the price for buying or upgrading to a given home level in this city.
+	 * Applies the city's `homePriceMultiplier` (defaults to 1) on the base ladder cost.
+	 */
+	public getHomeLevelPrice(homeLevel: HomeLevel): number {
+		return Math.round(homeLevel.cost * (this.homePriceMultiplier ?? 1));
 	}
 }
 
