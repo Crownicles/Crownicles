@@ -8,10 +8,15 @@ import {
 import {
 	Home, Homes
 } from "../database/game/models/Home";
+import {
+	Apartments
+} from "../database/game/models/Apartment";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import {
-	ChestSlotsPerCategory
+	ChestSlotsPerCategory, HomeFeatures
 } from "../../../../Lib/src/types/HomeFeatures";
+import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
+import { ItemRarity, ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import {
@@ -19,7 +24,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
-import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
+
 import {
 	HomeChestSlots
 } from "../database/game/models/HomeChestSlot";
@@ -124,12 +129,25 @@ export async function buildHomeData(
 		home, homeLevel
 	} = homeData;
 	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
+	const apartment = !isHomeInCity && home && homeLevel
+		? await Apartments.getOfPlayerInCity(player.id, city.id)
+		: null;
+	const isApartmentInCity = Boolean(apartment && home && homeLevel);
 
-	const owned = isHomeInCity
-		? await buildOwnedHomeData({
+	let owned: HomeData["owned"];
+	if (isHomeInCity) {
+		owned = await buildOwnedHomeData({
 			player, playerInventory, playerMaterialMap, home: home!, homeLevel: homeLevel!
-		})
-		: undefined;
+		});
+	}
+	else if (isApartmentInCity) {
+		owned = await buildRemoteApartmentHomeData({
+			player, playerInventory, home: home!, homeLevel: homeLevel!
+		});
+	}
+	else {
+		owned = undefined;
+	}
 
 	const manage = await buildManageHomeData({
 		player, home, homeLevel, city
@@ -163,6 +181,42 @@ async function buildOwnedHomeData(params: {
 		upgradeStation,
 		chest,
 		garden
+	};
+}
+
+/**
+ * Build owned-home data exposed when the player is in a city where they own an
+ * apartment (but not their main home). Provides remote access to the main
+ * home's chest and cooking slots, plus a bed regen capped at the apartment
+ * lodging level (min of `APARTMENT_BED_LEVEL_CAP` and the home level).
+ * Garden and upgrade station are intentionally not exposed remotely.
+ */
+async function buildRemoteApartmentHomeData(params: {
+	player: Player;
+	playerInventory: InventorySlot[];
+	home: Home;
+	homeLevel: HomeLevel;
+}): Promise<HomeData["owned"]> {
+	const {
+		player, playerInventory, home, homeLevel
+	} = params;
+	const cappedBedLevel = Math.min(HomeConstants.APARTMENT_BED_LEVEL_CAP, home.level);
+	const cappedHomeLevel = HomeLevel.getByLevel(cappedBedLevel) ?? homeLevel;
+	const remoteFeatures: HomeFeatures = {
+		...homeLevel.features,
+		bedHealthRegeneration: cappedHomeLevel.features.bedHealthRegeneration,
+		gardenPlots: 0,
+		upgradeItemMaximumRarity: ItemRarity.BASIC,
+		maxItemUpgradeLevel: 0
+	};
+	const chest = await buildChestData(home, homeLevel, playerInventory, player);
+
+	return {
+		level: home.level,
+		features: remoteFeatures,
+		upgradeStation: undefined,
+		chest,
+		garden: undefined
 	};
 }
 
