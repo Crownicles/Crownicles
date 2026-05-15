@@ -1,3 +1,5 @@
+import { TimeConstants } from "./TimeConstants";
+
 export type ChestAction = typeof HomeConstants.CHEST_ACTIONS[keyof typeof HomeConstants.CHEST_ACTIONS];
 
 export abstract class HomeConstants {
@@ -67,5 +69,5 @@ export abstract class HomeConstants {
 	 * The bed no longer applies a sleeping effect — it just heals — so we limit it
 	 * to one use per real day.
 	 */
-	public static readonly BED_COOLDOWN_MS = 24 * 3_600_000;
+	public static readonly BED_COOLDOWN_MS = TimeConstants.MS_TIME.DAY;
 }

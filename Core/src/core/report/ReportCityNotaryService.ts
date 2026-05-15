@@ -5,9 +5,7 @@ import {
 import {
 	Apartment, Apartments
 } from "../database/game/models/Apartment";
-import {
-	Home, Homes
-} from "../database/game/models/Home";
+import { Homes } from "../database/game/models/Home";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -22,13 +20,16 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { UniqueConstraintError } from "sequelize";
 
-/**
- * Whether `apartment` is currently rented out — i.e. the player's main home
- * is in the same city as the apartment, so a tenant occupies it.
- */
-export function isApartmentRented(apartment: Apartment, home: Home | null): boolean {
-	return home !== null && home.cityId === apartment.cityId;
+function buildClaimTooLowPacket(apartment: Apartment, currentRent: number): CrowniclesPacket {
+	const apartmentCity = CityDataController.instance.getById(apartment.cityId)!;
+	return makePacket(CommandReportApartmentClaimRentTooLowRes, {
+		cityId: apartment.cityId,
+		mapLocationId: apartmentCity.maps[0],
+		currentRent,
+		minRequired: HomeConstants.MIN_RENT_TO_CLAIM
+	});
 }
 
 /**
@@ -72,12 +73,31 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 			amount: price,
 			reason: NumberChangeReason.APARTMENT_BUY
 		});
-		await Apartment.create({
-			ownerId: lockedPlayer.id,
-			cityId: city.id,
-			purchasePrice: price,
-			lastRentClaimedAt: new Date()
-		});
+		try {
+			await Apartment.create({
+				ownerId: lockedPlayer.id,
+				cityId: city.id,
+				purchasePrice: price,
+				lastRentClaimedAt: new Date()
+			});
+		}
+		catch (err) {
+			if (err instanceof UniqueConstraintError) {
+				// Concurrent buy in the same city won the race; refund and reply already-owned.
+				await lockedPlayer.addMoney({
+					response,
+					amount: price,
+					reason: NumberChangeReason.APARTMENT_BUY
+				});
+				await lockedPlayer.save();
+				response.push(makePacket(CommandReportApartmentAlreadyOwnedRes, {
+					cityId: city.id,
+					mapLocationId: city.maps[0]
+				}));
+				return;
+			}
+			throw err;
+		}
 		await lockedPlayer.save();
 
 		response.push(makePacket(CommandReportApartmentBuyRes, {
@@ -106,27 +126,15 @@ export async function handleApartmentClaimRentReaction(player: Player, apartment
 			}
 
 			const home = await Homes.getOfPlayer(lockedPlayer.id);
-			if (!isApartmentRented(lockedApartment, home)) {
+			if (!lockedApartment.isRentedFor(home)) {
 				// Not rented out → no rent accrual. Surface as too-low.
-				const apartmentCity = CityDataController.instance.getById(lockedApartment.cityId)!;
-				response.push(makePacket(CommandReportApartmentClaimRentTooLowRes, {
-					cityId: lockedApartment.cityId,
-					mapLocationId: apartmentCity.maps[0],
-					currentRent: 0,
-					minRequired: HomeConstants.MIN_RENT_TO_CLAIM
-				}));
+				response.push(buildClaimTooLowPacket(lockedApartment, 0));
 				return;
 			}
 
 			const accumulated = lockedApartment.getAccumulatedRent();
 			if (accumulated < HomeConstants.MIN_RENT_TO_CLAIM) {
-				const apartmentCity = CityDataController.instance.getById(lockedApartment.cityId)!;
-				response.push(makePacket(CommandReportApartmentClaimRentTooLowRes, {
-					cityId: lockedApartment.cityId,
-					mapLocationId: apartmentCity.maps[0],
-					currentRent: accumulated,
-					minRequired: HomeConstants.MIN_RENT_TO_CLAIM
-				}));
+				response.push(buildClaimTooLowPacket(lockedApartment, accumulated));
 				return;
 			}
 
