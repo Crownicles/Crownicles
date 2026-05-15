@@ -320,6 +320,42 @@ export class CommandReportBedCooldownRes extends CrowniclesPacket {
 	nextAvailableAt!: number;
 }
 
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportApartmentBuyRes extends CrowniclesPacket {
+	cityId!: string;
+
+	mapLocationId!: number;
+
+	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportApartmentClaimRentRes extends CrowniclesPacket {
+	cityId!: string;
+
+	mapLocationId!: number;
+
+	rentClaimed!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportApartmentClaimRentTooLowRes extends CrowniclesPacket {
+	cityId!: string;
+
+	mapLocationId!: number;
+
+	currentRent!: number;
+
+	minRequired!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportApartmentAlreadyOwnedRes extends CrowniclesPacket {
+	cityId!: string;
+
+	mapLocationId!: number;
+}
+
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportHomeChestActionReq extends CrowniclesPacket {
 	action!: ChestAction;

@@ -267,6 +267,13 @@ export const CrowniclesIcons: {
 			trainingGround: string;
 		};
 		guildDomainNotary: string;
+		apartmentNotary: {
+			menu: string;
+			buy: string;
+			claimRent: string;
+			statusRented: string;
+			statusEmpty: string;
+		};
 		back: string;
 		blacksmith: {
 			menu: string;
@@ -2691,6 +2698,13 @@ export const CrowniclesIcons: {
 			trainingGround: "⚔️"
 		},
 		guildDomainNotary: "📋",
+		apartmentNotary: {
+			menu: "🏢",
+			buy: "🔑",
+			claimRent: "💰",
+			statusRented: "🟢",
+			statusEmpty: "⚪"
+		},
 		back: "↩️",
 		blacksmith: {
 			menu: "⚒️",

@@ -49,6 +49,13 @@ export const ReportCityMenuIds = {
 	/** Move home to current city */
 	MOVE_HOME: "MOVE_HOME",
 
+	// --- Apartment notary (inside notary sub-menu) ---
+	/** Buy an apartment in current city */
+	APARTMENT_BUY: "APARTMENT_BUY",
+
+	/** Prefix for claim-rent buttons (followed by apartmentId) */
+	APARTMENT_CLAIM_RENT_PREFIX: "APARTMENT_CLAIM_RENT_",
+
 	// --- Guild domain ---
 	/** Guild domain sub-menu */
 	GUILD_DOMAIN_MENU: "GUILD_DOMAIN_MENU",

@@ -50,7 +50,9 @@ import {
 	ReactionCollectorBlacksmithDisenchantReaction,
 	ReactionCollectorGardenHarvestReaction,
 	ReactionCollectorGuildDomainMenuReaction,
-	ReactionCollectorGuildDomainNotaryReaction
+	ReactionCollectorGuildDomainNotaryReaction,
+	ReactionCollectorApartmentBuyReaction,
+	ReactionCollectorApartmentClaimRentReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { Guilds } from "../../core/database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
@@ -95,6 +97,12 @@ import {
 	isCityShopEmpty
 } from "../../core/report/ReportCityService";
 import { handleGuildDomainNotaryReaction } from "../../core/report/ReportCityGuildDomainService";
+import {
+	handleApartmentBuyReaction,
+	handleApartmentClaimRentReaction,
+	isApartmentRented
+} from "../../core/report/ReportCityNotaryService";
+import { Apartments } from "../../core/database/game/models/Apartment";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -354,6 +362,20 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 		ReactionCollectorGuildDomainNotaryReaction.name, async (params): Promise<void> => {
 			await handleGuildDomainNotaryReaction(params.player, params.city, params.response);
 		}
+	],
+	[
+		ReactionCollectorApartmentBuyReaction.name, async (params): Promise<void> => {
+			await handleApartmentBuyReaction(params.player, params.city, params.response);
+		}
+	],
+	[
+		ReactionCollectorApartmentClaimRentReaction.name, async (params): Promise<void> => {
+			await handleApartmentClaimRentReaction(
+				params.player,
+				(params.reactionData as ReactionCollectorApartmentClaimRentReaction).apartmentId,
+				params.response
+			);
+		}
 	]
 ]);
 
@@ -435,6 +457,31 @@ async function sendCityCollector(
 		}
 		: undefined;
 
+	/*
+	 * Apartment notary: present in every city. Lets the player buy an apartment
+	 * here (if none yet) and/or claim rent from apartments owned in other cities.
+	 */
+	const ownedApartments = await Apartments.getOfPlayer(player.id);
+	const ownsApartmentHere = ownedApartments.some(a => a.cityId === city.id);
+	const now = new Date();
+	const apartmentNotary = {
+		playerMoney: player.money,
+		forSale: city.apartmentPrice && !ownsApartmentHere
+			? { price: city.apartmentPrice }
+			: undefined,
+		ownedApartments: ownedApartments.map(a => {
+			const apartmentCity = CityDataController.instance.getById(a.cityId)!;
+			return {
+				apartmentId: a.id,
+				cityId: a.cityId,
+				mapLocationId: apartmentCity.maps[0],
+				purchasePrice: a.purchasePrice,
+				accumulatedRent: a.getAccumulatedRent(now),
+				isRented: isApartmentRented(a, home)
+			};
+		})
+	};
+
 	// Guild food shop: available when the guild has a shop but is NOT in the domain city (where the full shop is available via the domain entrance).
 	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id
 		? {
@@ -503,6 +550,7 @@ async function sendCityCollector(
 		guildDomain,
 		guildFoodShop,
 		guildDomainNotary,
+		apartmentNotary,
 		initialMenu: options.initialMenu
 	};
 

@@ -1,5 +1,9 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
+	CommandReportApartmentAlreadyOwnedRes,
+	CommandReportApartmentBuyRes,
+	CommandReportApartmentClaimRentRes,
+	CommandReportApartmentClaimRentTooLowRes,
 	CommandReportBigEventResultRes,
 	CommandReportBlacksmithDisenchantRes,
 	CommandReportBlacksmithMissingMaterialsRes,
@@ -56,6 +60,8 @@ import {
 	handleGuildDomainRelocate
 } from "../../../../commands/player/report/guildDomain/GuildDomainHandlers";
 import {
+	handleApartmentBuy,
+	handleApartmentClaimRent,
 	handleBuyHome,
 	handleHomeBed,
 	handleMoveHome,
@@ -175,6 +181,32 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportMoveHomeRes)
 	async reportMoveHomeRes(context: PacketContext, packet: CommandReportMoveHomeRes): Promise<void> {
 		await handleMoveHome(packet, context);
+	}
+
+	@packetHandler(CommandReportApartmentBuyRes)
+	async reportApartmentBuyRes(context: PacketContext, packet: CommandReportApartmentBuyRes): Promise<void> {
+		await handleApartmentBuy(packet, context);
+	}
+
+	@packetHandler(CommandReportApartmentClaimRentRes)
+	async reportApartmentClaimRentRes(context: PacketContext, packet: CommandReportApartmentClaimRentRes): Promise<void> {
+		await handleApartmentClaimRent(packet, context);
+	}
+
+	@packetHandler(CommandReportApartmentClaimRentTooLowRes)
+	async reportApartmentClaimRentTooLowRes(context: PacketContext, packet: CommandReportApartmentClaimRentTooLowRes): Promise<void> {
+		await handleClassicError(context, "commands:report.city.homes.apartmentNotary.claimTooLow", {
+			mapLocationId: packet.mapLocationId,
+			current: packet.currentRent,
+			min: packet.minRequired
+		});
+	}
+
+	@packetHandler(CommandReportApartmentAlreadyOwnedRes)
+	async reportApartmentAlreadyOwnedRes(context: PacketContext, packet: CommandReportApartmentAlreadyOwnedRes): Promise<void> {
+		await handleClassicError(context, "commands:report.city.homes.apartmentNotary.buyAlreadyOwned", {
+			mapLocationId: packet.mapLocationId
+		});
 	}
 
 	@packetHandler(CommandReportUseTokensAcceptPacketRes)
