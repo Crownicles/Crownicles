@@ -8,14 +8,14 @@ import {
 	ReactionCollectorInnRoomReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
+	CommandReportBedCooldownRes,
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
 	CommandReportNotEnoughMoneyRes,
 	CommandReportSleepRoomRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { TravelTime } from "../maps/TravelTime";
-import { Effect } from "../../../../Lib/src/types/Effect";
+import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 
 /**
  * Handle inn meal reaction — player eats a meal at an inn
@@ -98,6 +98,14 @@ export async function handleInnRoomReaction(
 			return;
 		}
 
+		const now = new Date();
+		if (lockedPlayer.lastBedUsedAt && now.getTime() - lockedPlayer.lastBedUsedAt.getTime() < HomeConstants.BED_COOLDOWN_MS) {
+			response.push(makePacket(CommandReportBedCooldownRes, {
+				nextAvailableAt: lockedPlayer.lastBedUsedAt.getTime() + HomeConstants.BED_COOLDOWN_MS
+			}));
+			return;
+		}
+
 		await lockedPlayer.addHealth({
 			amount: reaction.room.health,
 			response,
@@ -109,7 +117,7 @@ export async function handleInnRoomReaction(
 			amount: reaction.room.price,
 			reason: NumberChangeReason.INN_ROOM
 		});
-		await TravelTime.applyEffect(lockedPlayer, Effect.SLEEPING, 0, new Date(), NumberChangeReason.INN_ROOM);
+		lockedPlayer.lastBedUsedAt = now;
 		await lockedPlayer.save();
 		response.push(makePacket(CommandReportSleepRoomRes, {
 			roomId: reaction.room.roomId,

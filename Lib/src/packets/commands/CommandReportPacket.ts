@@ -314,6 +314,12 @@ export class CommandReportHomeBedRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportHomeBedAlreadyFullRes extends CrowniclesPacket {}
 
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportBedCooldownRes extends CrowniclesPacket {
+	/** UNIX timestamp (ms) at which the player can use a bed again */
+	nextAvailableAt!: number;
+}
+
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportHomeChestActionReq extends CrowniclesPacket {
 	action!: ChestAction;
