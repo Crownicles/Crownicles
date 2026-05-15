@@ -592,6 +592,8 @@
     },
     "forMoreHelp": "{emote:messages.item} Pour plus d'aide : ",
     "forMoreHelpValue": "Vous pouvez vous rendre sur le [wiki](https://guide.crownicles.com/) du bot !",
+    "dmNoticeTitle": "{emote:other.incoming} Jouer à Crownicles",
+    "dmNoticeValue": "Crownicles se joue exclusivement sur des serveurs Discord. Pour utiliser les commandes ci-dessus, rejoignez un serveur où le bot est présent ou le serveur officiel du jeu : {{inviteLink}}",
     "guildCommands": "{emote:guild.icon} Guilde :",
     "helpEmbedDescription": "{emote:messages.item} Si vous voulez plus d'informations sur une commande en particulier, cliquez ici : {command:help}, et donnez la commande qui vous pose problème en paramètre. {emote:other.wink}",
     "helpEmbedTitle": "{{pseudo}}, voici la liste des commandes disponibles :",
