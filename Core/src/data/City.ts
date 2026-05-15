@@ -51,6 +51,13 @@ export class City extends Data<string> {
 	public readonly homePriceMultiplier?: number;
 
 	/**
+	 * Flat purchase price (in coins) for an apartment in this city.
+	 * Apartments give remote access to home services (bed/chest/kitchen) without travelling.
+	 * Defaults to 0 (no apartment available) if not specified.
+	 */
+	public readonly apartmentPrice?: number;
+
+	/**
 	 * Check if the city has a blacksmith
 	 * Returns true by default if not explicitly set to false
 	 */

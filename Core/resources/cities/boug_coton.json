@@ -1,5 +1,6 @@
 {
   "homePriceMultiplier": 0.95,
+  "apartmentPrice": 10000,
   "mapLinks": [
     87,
     88

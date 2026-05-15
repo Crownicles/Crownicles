@@ -42,4 +42,23 @@ export abstract class HomeConstants {
 	 * Homes with maxItemUpgradeLevel >= this value get "advanced" description.
 	 */
 	public static readonly ADVANCED_UPGRADE_LEVEL_THRESHOLD = 2;
+
+	/**
+	 * Number of days for the cumulative rent of an apartment to reach its purchase price.
+	 * The daily rent is therefore `purchasePrice / RENT_DAYS_TO_FULL_PRICE`.
+	 */
+	public static readonly RENT_DAYS_TO_FULL_PRICE = 365;
+
+	/**
+	 * Minimum amount of accumulated rent (coins) the player must reach before
+	 * the notary lets them claim it. Below this, the notary asks them to come back later.
+	 */
+	public static readonly MIN_RENT_TO_CLAIM = 100;
+
+	/**
+	 * Maximum effective home level used by the apartment's remote bed.
+	 * An apartment never offers more than a level-4 bed regeneration even if the
+	 * player's main home is higher.
+	 */
+	public static readonly APARTMENT_BED_LEVEL_CAP = 4;
 }
