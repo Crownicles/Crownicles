@@ -259,6 +259,8 @@ export class CommandReportUpgradeHomeRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportMoveHomeRes extends CrowniclesPacket {
 	cost!: number;
+
+	rentDeducted!: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

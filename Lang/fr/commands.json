@@ -1066,6 +1066,7 @@
         "moveHome": "Déménager dans une nouvelle maison",
         "moveHomeTitle": "{{pseudo}}, déménagement réussi !",
         "moveHomeDescription": "Félicitations ! Vous avez déménagé avec succès dans une nouvelle maison dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** pour ce transfert. Profitez bien de votre nouveau chez-vous !",
+        "moveHomeDescriptionWithRent": "Félicitations ! Vous avez déménagé avec succès dans une nouvelle maison dans cette ville. Vous avez dépensé **{{cost}} {emote:unitValues.money}** pour ce transfert, dont **{{rentDeducted}} {emote:unitValues.money}** déduits grâce au loyer de votre ancien appartement locatif. Profitez bien de votre nouveau chez-vous !",
         "apartmentNotary": {
           "sectionTitle": "{emote:city.apartmentNotary.menu} Le notaire glisse un dossier d'appartements de rapport vers vous.",
           "forSaleDescription": "{emote:city.apartmentNotary.buy} Un appartement de rapport est disponible dans cette ville pour **{{price}} {emote:unitValues.money}**. Une fois acheté, il rapportera un loyer si vous installez votre maison principale ici par la suite.",

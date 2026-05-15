@@ -71,9 +71,10 @@ export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: 
 			lng,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.moveHomeDescription", {
+		.setDescription(i18n.t(packet.rentDeducted > 0 ? "commands:report.city.homes.moveHomeDescriptionWithRent" : "commands:report.city.homes.moveHomeDescription", {
 			lng,
-			cost: packet.cost
+			cost: packet.cost,
+			rentDeducted: packet.rentDeducted
 		}));
 
 	await interaction.editReply({

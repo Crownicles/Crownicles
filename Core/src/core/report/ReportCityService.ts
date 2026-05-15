@@ -16,7 +16,9 @@ import {
 	ChestSlotsPerCategory, HomeFeatures
 } from "../../../../Lib/src/types/HomeFeatures";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
-import { ItemRarity, ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemRarity, ItemCategory
+} from "../../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import {
