@@ -5,6 +5,7 @@ import * as moment from "moment";
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
+import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
 
 export class Apartment extends Model {
 	/**
@@ -37,6 +38,30 @@ export class Apartment extends Model {
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
+
+	/**
+	 * Daily rent earned (in coins) when this apartment is rented out
+	 * (i.e. the owner's main home is in the same city).
+	 * Computed from `purchasePrice / RENT_DAYS_TO_FULL_PRICE`.
+	 */
+	public getDailyRent(): number {
+		return Math.floor(this.purchasePrice / HomeConstants.RENT_DAYS_TO_FULL_PRICE);
+	}
+
+	/**
+	 * Compute the rent currently accumulated since `lastRentClaimedAt`,
+	 * capped at the apartment's purchase price (a single full cycle).
+	 *
+	 * Note: this does not check whether the apartment is currently rented out
+	 * (that depends on the owner's home city). Callers should only credit this
+	 * value when the rented condition is met.
+	 */
+	public getAccumulatedRent(now: Date = new Date()): number {
+		const elapsedMs = now.getTime() - this.lastRentClaimedAt.getTime();
+		const elapsedDays = Math.max(0, elapsedMs / 86_400_000);
+		const raw = Math.floor(elapsedDays * this.getDailyRent());
+		return Math.min(raw, this.purchasePrice);
+	}
 }
 
 export class Apartments {
