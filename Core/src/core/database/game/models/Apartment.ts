@@ -6,6 +6,8 @@ import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
 import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
+import { TimeConstants } from "../../../../../../Lib/src/constants/TimeConstants";
+import { Home } from "./Home";
 
 export class Apartment extends Model {
 	/**
@@ -58,9 +60,17 @@ export class Apartment extends Model {
 	 */
 	public getAccumulatedRent(now: Date = new Date()): number {
 		const elapsedMs = now.getTime() - this.lastRentClaimedAt.getTime();
-		const elapsedDays = Math.max(0, elapsedMs / 86_400_000);
+		const elapsedDays = Math.max(0, elapsedMs / TimeConstants.MS_TIME.DAY);
 		const raw = Math.floor(elapsedDays * this.getDailyRent());
 		return Math.min(raw, this.purchasePrice);
+	}
+
+	/**
+	 * Whether this apartment is currently rented out — i.e. the player's main
+	 * home is in the same city, so a tenant occupies it.
+	 */
+	public isRentedFor(home: Home | null): boolean {
+		return home !== null && home.cityId === this.cityId;
 	}
 }
 

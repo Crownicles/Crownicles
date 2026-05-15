@@ -47,25 +47,40 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 	}
 
 	const newPrice = data.home.manage.newPrice;
-	await Player.withLocked(player.id, async lockedPlayer => {
-		// Re-validate against the freshly-locked row.
-		if (newPrice > lockedPlayer.money) {
-			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: newPrice - lockedPlayer.money }));
-			return;
+
+	// If the player already owns an apartment in this city, it transitions to rented; reset its accrual.
+	const apartmentInCity = await Apartments.getOfPlayerInCity(player.id, city.id);
+
+	const apartmentLockKeys = apartmentInCity ? [Apartment.lockKey(apartmentInCity.id)] : [];
+	await withLockedEntities(
+		[Player.lockKey(player.id), ...apartmentLockKeys] as const,
+		async lockedEntities => {
+			const lockedPlayer = lockedEntities[0] as Player;
+			const lockedApartment = apartmentInCity ? lockedEntities[1] as Apartment : null;
+
+			// Re-validate against the freshly-locked row.
+			if (newPrice > lockedPlayer.money) {
+				response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: newPrice - lockedPlayer.money }));
+				return;
+			}
+
+			await lockedPlayer.spendMoney({
+				response,
+				amount: newPrice,
+				reason: NumberChangeReason.BUY_HOME
+			});
+			await Homes.createOrUpdateHome(lockedPlayer.id, city.id, HomeLevel.getInitialLevel().level);
+			if (lockedApartment) {
+				lockedApartment.lastRentClaimedAt = new Date();
+				await lockedApartment.save();
+			}
+			await lockedPlayer.save();
+
+			response.push(makePacket(CommandReportBuyHomeRes, {
+				cost: newPrice
+			}));
 		}
-
-		await lockedPlayer.spendMoney({
-			response,
-			amount: newPrice,
-			reason: NumberChangeReason.BUY_HOME
-		});
-		await Homes.createOrUpdateHome(lockedPlayer.id, city.id, HomeLevel.getInitialLevel().level);
-		await lockedPlayer.save();
-
-		response.push(makePacket(CommandReportBuyHomeRes, {
-			cost: newPrice
-		}));
-	});
+	);
 }
 
 /**
@@ -139,22 +154,20 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 }
 
 /**
- * Handle move home reaction — player moves their home to a different city
- *
- * Concurrency: locks both the Player wallet and the Home row to
- * serialise concurrent move/upgrade requests on the same home.
- */
-/**
  * Apply move-home rent logic under lock: if the player owns an apartment in
  * their current home city (the one being left), its accumulated rent is
  * credited against the move price. Below {@link HomeConstants.MIN_RENT_TO_CLAIM}
  * the rent is forfeited. Above the move price the surplus is forfeited too.
- * Returns the effective price actually charged.
+ *
+ * Apartments transitioning between rented/unrented state have their
+ * `lastRentClaimedAt` reset so unrented periods never accrue rent.
  */
 async function applyMoveHomeUnderLock(params: {
 	lockedHome: Home;
 	lockedPlayer: Player;
-	lockedApartment: Apartment | null;
+	sourceCityId: string;
+	sourceApartment: Apartment | null;
+	destinationApartment: Apartment | null;
 	destinationCityId: string;
 	movePrice: number;
 	response: CrowniclesPacket[];
@@ -162,12 +175,18 @@ async function applyMoveHomeUnderLock(params: {
 	effectivePrice: number; rentApplied: number;
 } | null> {
 	const {
-		lockedHome, lockedPlayer, lockedApartment, destinationCityId, movePrice, response
+		lockedHome, lockedPlayer, sourceCityId, sourceApartment, destinationApartment, destinationCityId, movePrice, response
 	} = params;
 
+	if (lockedHome.cityId !== sourceCityId) {
+		// Another concurrent move slipped through; abort silently — the caller's snapshot is stale.
+		CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} home was moved to a different city before the move-home lock was acquired.`);
+		return null;
+	}
+
 	let rentApplied = 0;
-	if (lockedApartment) {
-		const accumulated = lockedApartment.getAccumulatedRent();
+	if (sourceApartment) {
+		const accumulated = sourceApartment.getAccumulatedRent();
 		if (accumulated >= HomeConstants.MIN_RENT_TO_CLAIM) {
 			rentApplied = Math.min(accumulated, movePrice);
 		}
@@ -181,13 +200,26 @@ async function applyMoveHomeUnderLock(params: {
 
 	lockedHome.cityId = destinationCityId;
 
-	if (rentApplied > 0 && lockedApartment) {
-		await lockedPlayer.addMoney({
-			response,
-			amount: rentApplied,
-			reason: NumberChangeReason.APARTMENT_RENT_DEDUCTED
-		});
-		lockedApartment.lastRentClaimedAt = new Date();
+	const now = new Date();
+	const saves: Promise<unknown>[] = [lockedHome.save()];
+
+	if (sourceApartment) {
+		// Source apartment is no longer rented (home left this city) — stop rent accrual.
+		if (rentApplied > 0) {
+			await lockedPlayer.addMoney({
+				response,
+				amount: rentApplied,
+				reason: NumberChangeReason.APARTMENT_RENT_DEDUCTED
+			});
+		}
+		sourceApartment.lastRentClaimedAt = now;
+		saves.push(sourceApartment.save());
+	}
+
+	if (destinationApartment) {
+		// Destination apartment becomes rented now — clear any accrual from unrented period.
+		destinationApartment.lastRentClaimedAt = now;
+		saves.push(destinationApartment.save());
 	}
 
 	await lockedPlayer.spendMoney({
@@ -195,11 +227,8 @@ async function applyMoveHomeUnderLock(params: {
 		amount: movePrice,
 		reason: NumberChangeReason.MOVE_HOME
 	});
+	saves.push(lockedPlayer.save());
 
-	const saves: Promise<unknown>[] = [lockedHome.save(), lockedPlayer.save()];
-	if (lockedApartment && rentApplied > 0) {
-		saves.push(lockedApartment.save());
-	}
 	await Promise.all(saves);
 
 	return {
@@ -207,6 +236,13 @@ async function applyMoveHomeUnderLock(params: {
 	};
 }
 
+/**
+ * Handle move home reaction — player moves their home to a different city.
+ *
+ * Concurrency: locks the Home, the Player wallet and any apartment in
+ * the source or destination city so rent claim and city transitions are
+ * serialised against concurrent moves, buys and claims.
+ */
 export async function handleMoveHomeReaction(player: Player, city: City, data: ReactionCollectorCityData, response: CrowniclesPacket[]): Promise<void> {
 	if (!data.home.manage?.movePrice) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to move a home to city ${city.id} but no home is available to move. It shouldn't happen because the player must not be able to switch while in the collector.`);
@@ -221,55 +257,52 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 	}
 
 	const movePrice = data.home.manage.movePrice;
+	const sourceCityId = home.cityId;
+	const destinationCityId = city.id;
 
 	/*
-	 * The apartment in the city the player is leaving is the one that has been
-	 * rented out (since the home was there); credit its accumulated rent.
+	 * The apartment in the city the player is leaving is the one that was rented;
+	 * the apartment in the destination city (if any) will become rented after the move.
+	 * Both need to be locked so their `lastRentClaimedAt` can be reset atomically.
 	 */
-	const apartment = await Apartments.getOfPlayerInCity(player.id, home.cityId);
+	const [sourceApartment, destinationApartment] = await Promise.all([
+		Apartments.getOfPlayerInCity(player.id, sourceCityId),
+		Apartments.getOfPlayerInCity(player.id, destinationCityId)
+	]);
 
-	const runMove = async (lockedHome: Home, lockedPlayer: Player, lockedApartment: Apartment | null): Promise<void> => {
-		const result = await applyMoveHomeUnderLock({
-			lockedHome,
-			lockedPlayer,
-			lockedApartment,
-			destinationCityId: city.id,
-			movePrice,
-			response
-		});
-		if (result === null) {
-			return;
-		}
-		response.push(makePacket(CommandReportMoveHomeRes, {
-			cost: result.effectivePrice,
-			rentDeducted: result.rentApplied
-		}));
-	};
+	const apartmentLockKeys = [
+		...(sourceApartment ? [Apartment.lockKey(sourceApartment.id)] : []),
+		...(destinationApartment ? [Apartment.lockKey(destinationApartment.id)] : [])
+	];
 
-	if (apartment) {
-		await withLockedEntities(
-			[
-				Home.lockKey(home.id),
-				Player.lockKey(player.id),
-				Apartment.lockKey(apartment.id)
-			] as const,
-			async ([
+	await withLockedEntities(
+		[Home.lockKey(home.id), Player.lockKey(player.id), ...apartmentLockKeys] as const,
+		async lockedEntities => {
+			const lockedHome = lockedEntities[0] as Home;
+			const lockedPlayer = lockedEntities[1] as Player;
+			let cursor = 2;
+			const lockedSourceApartment = sourceApartment ? lockedEntities[cursor++] as Apartment : null;
+			const lockedDestinationApartment = destinationApartment ? lockedEntities[cursor] as Apartment : null;
+
+			const result = await applyMoveHomeUnderLock({
 				lockedHome,
 				lockedPlayer,
-				lockedApartment
-			]) => {
-				await runMove(lockedHome, lockedPlayer, lockedApartment);
+				sourceCityId,
+				sourceApartment: lockedSourceApartment,
+				destinationApartment: lockedDestinationApartment,
+				destinationCityId,
+				movePrice,
+				response
+			});
+			if (result === null) {
+				return;
 			}
-		);
-	}
-	else {
-		await withLockedEntities(
-			[Home.lockKey(home.id), Player.lockKey(player.id)] as const,
-			async ([lockedHome, lockedPlayer]) => {
-				await runMove(lockedHome, lockedPlayer, null);
-			}
-		);
-	}
+			response.push(makePacket(CommandReportMoveHomeRes, {
+				cost: result.effectivePrice,
+				rentDeducted: result.rentApplied
+			}));
+		}
+	);
 }
 
 /**

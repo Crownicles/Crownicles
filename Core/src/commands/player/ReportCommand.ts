@@ -99,8 +99,7 @@ import {
 import { handleGuildDomainNotaryReaction } from "../../core/report/ReportCityGuildDomainService";
 import {
 	handleApartmentBuyReaction,
-	handleApartmentClaimRentReaction,
-	isApartmentRented
+	handleApartmentClaimRentReaction
 } from "../../core/report/ReportCityNotaryService";
 import { Apartments } from "../../core/database/game/models/Apartment";
 
@@ -477,7 +476,7 @@ async function sendCityCollector(
 				mapLocationId: apartmentCity.maps[0],
 				purchasePrice: a.purchasePrice,
 				accumulatedRent: a.getAccumulatedRent(now),
-				isRented: isApartmentRented(a, home)
+				isRented: a.isRentedFor(home)
 			};
 		})
 	};
