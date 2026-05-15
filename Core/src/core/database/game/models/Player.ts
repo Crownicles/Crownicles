@@ -199,6 +199,8 @@ export class Player extends Model {
 
 	declare cookingExperience: number;
 
+	declare lastBedUsedAt: Date | null;
+
 	declare furnaceUsesToday: number;
 
 	declare furnaceLastUseDate: Date | null;
@@ -2019,6 +2021,11 @@ export function initModel(sequelize: Sequelize): void {
 		cookingExperience: {
 			type: DataTypes.INTEGER,
 			defaultValue: 0
+		},
+		lastBedUsedAt: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
 		},
 		furnaceUsesToday: {
 			type: DataTypes.INTEGER,

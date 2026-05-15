@@ -61,4 +61,11 @@ export abstract class HomeConstants {
 	 * player's main home is higher.
 	 */
 	public static readonly APARTMENT_BED_LEVEL_CAP = 4;
+
+	/**
+	 * Cooldown (in milliseconds) between two uses of any bed (home, apartment, inn).
+	 * The bed no longer applies a sleeping effect — it just heals — so we limit it
+	 * to one use per real day.
+	 */
+	public static readonly BED_COOLDOWN_MS = 24 * 3_600_000;
 }

@@ -1102,7 +1102,8 @@
           "available": "{emote:city.homeUpgrades.bed} Votre lit vous permet de récupérer **{{health}}** {emote:unitValues.health} gratuitement.",
           "restTitle": "{{pseudo}}, vous vous reposez !",
           "restDescription": "{emote:city.homeUpgrades.bed} Vous vous allongez dans votre lit et fermez les yeux quelques instants. Ce petit repos vous fait le plus grand bien ! Vous récupérez **{{health}}** {emote:unitValues.health}.",
-          "alreadyFull": "Vous êtes déjà en pleine forme ! Votre lit ne vous sera utile que lorsque vous aurez besoin de vous reposer."
+          "alreadyFull": "Vous êtes déjà en pleine forme ! Votre lit ne vous sera utile que lorsque vous aurez besoin de vous reposer.",
+          "cooldown": "Vous avez déjà profité d'un lit aujourd'hui. Repassez vous reposer <t:{{nextAvailableAt}}:R>."
         },
         "chest": {
           "menuLabel": "Coffre de rangement",

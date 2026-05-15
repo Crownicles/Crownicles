@@ -17,6 +17,7 @@ import {
 	CommandReportErrorNoMonsterRes,
 	CommandReportHomeBedAlreadyFullRes,
 	CommandReportHomeBedRes,
+	CommandReportBedCooldownRes,
 	CommandReportItemCannotBeEnchantedRes,
 	CommandReportItemEnchantedRes,
 	CommandReportMonsterRewardRes,
@@ -282,6 +283,13 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportHomeBedAlreadyFullRes)
 	async reportHomeBedAlreadyFullRes(context: PacketContext, _packet: CommandReportHomeBedAlreadyFullRes): Promise<void> {
 		await handleClassicError(context, "commands:report.city.homes.bed.alreadyFull");
+	}
+
+	@packetHandler(CommandReportBedCooldownRes)
+	async reportBedCooldownRes(context: PacketContext, packet: CommandReportBedCooldownRes): Promise<void> {
+		await handleClassicError(context, "commands:report.city.homes.bed.cooldown", {
+			nextAvailableAt: Math.floor(packet.nextAvailableAt / 1000)
+		});
 	}
 
 	@packetHandler(CommandReportGuildDomainPurchaseRes)

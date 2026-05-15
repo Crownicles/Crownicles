@@ -12,6 +12,7 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
+	CommandReportBedCooldownRes,
 	CommandReportBuyHomeRes,
 	CommandReportHomeBedAlreadyFullRes,
 	CommandReportHomeBedRes,
@@ -20,10 +21,9 @@ import {
 	CommandReportUpgradeHomeRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { TravelTime } from "../maps/TravelTime";
-import { Effect } from "../../../../Lib/src/types/Effect";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 
 /**
  * Handle buy home reaction — player purchases a new home in the city
@@ -189,37 +189,52 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 }
 
 /**
- * Handle home bed reaction — player rests in their home bed to recover health
+ * Handle home bed reaction — player rests in their home bed to recover health.
+ *
+ * The bed no longer applies a SLEEPING effect (so the player can keep playing),
+ * but is limited to one use per `BED_COOLDOWN_MS` window across all bed sources
+ * (home bed, apartment bed, inn room).
+ *
+ * Concurrency: read-validate-update of `lastBedUsedAt` and `health` runs under
+ * a Player row lock to prevent two parallel bed reactions from doubling the heal.
  */
 export async function handleHomeBedReaction(
 	player: Player,
 	data: ReactionCollectorCityData,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	await player.reload();
-
 	const homeData = data.home.owned;
 	if (!homeData) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use home bed without owning a home.`);
 		return;
 	}
 
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-	const maxHealth = player.getMaxHealth(playerActiveObjects);
-	if (player.getHealth(playerActiveObjects) >= maxHealth) {
-		response.push(makePacket(CommandReportHomeBedAlreadyFullRes, {}));
-		return;
-	}
+	await Player.withLocked(player.id, async lockedPlayer => {
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
+		const maxHealth = lockedPlayer.getMaxHealth(playerActiveObjects);
+		if (lockedPlayer.getHealth(playerActiveObjects) >= maxHealth) {
+			response.push(makePacket(CommandReportHomeBedAlreadyFullRes, {}));
+			return;
+		}
 
-	await player.addHealth({
-		amount: homeData.features.bedHealthRegeneration,
-		response,
-		reason: NumberChangeReason.HOME_BED,
-		playerActiveObjects
+		const now = new Date();
+		if (lockedPlayer.lastBedUsedAt && now.getTime() - lockedPlayer.lastBedUsedAt.getTime() < HomeConstants.BED_COOLDOWN_MS) {
+			response.push(makePacket(CommandReportBedCooldownRes, {
+				nextAvailableAt: lockedPlayer.lastBedUsedAt.getTime() + HomeConstants.BED_COOLDOWN_MS
+			}));
+			return;
+		}
+
+		await lockedPlayer.addHealth({
+			amount: homeData.features.bedHealthRegeneration,
+			response,
+			reason: NumberChangeReason.HOME_BED,
+			playerActiveObjects
+		});
+		lockedPlayer.lastBedUsedAt = now;
+		await lockedPlayer.save();
+		response.push(makePacket(CommandReportHomeBedRes, {
+			health: homeData.features.bedHealthRegeneration
+		}));
 	});
-	await TravelTime.applyEffect(player, Effect.SLEEPING, 0, new Date(), NumberChangeReason.HOME_BED);
-	await player.save();
-	response.push(makePacket(CommandReportHomeBedRes, {
-		health: homeData.features.bedHealthRegeneration
-	}));
 }
