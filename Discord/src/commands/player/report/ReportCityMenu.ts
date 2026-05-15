@@ -158,9 +158,14 @@ export function handleStayInCityInteraction(
 
 /**
  * Whether the manage home (notary) menu should be displayed.
+ * True when the player can buy/upgrade/move a home, is guild chief in this city,
+ * or has any apartment-related action available (buy here / claim rent / view owned).
  */
 export function shouldShowManageHomeMenu(cityData: ReactionCollectorCityData): boolean {
-	return Boolean(cityData.home.manage) || Boolean(cityData.guildDomainNotary?.isChief);
+	return Boolean(cityData.home.manage)
+		|| Boolean(cityData.guildDomainNotary?.isChief)
+		|| Boolean(cityData.apartmentNotary?.forSale)
+		|| (cityData.apartmentNotary?.ownedApartments.length ?? 0) > 0;
 }
 
 /**

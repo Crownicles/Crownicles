@@ -5,6 +5,8 @@ import {
 	TextDisplayBuilder
 } from "discord.js";
 import {
+	ReactionCollectorApartmentBuyReaction,
+	ReactionCollectorApartmentClaimRentReaction,
 	ReactionCollectorCityBuyHomeReaction,
 	ReactionCollectorCityData,
 	ReactionCollectorCityMoveHomeReaction,
@@ -316,6 +318,95 @@ function addGuildNotarySection(container: ContainerBuilder, guildNotaryData: Gui
 	});
 }
 
+type ApartmentNotaryData = NonNullable<ReactionCollectorCityData["apartmentNotary"]>;
+
+function addApartmentNotarySection(container: ContainerBuilder, apartmentData: ApartmentNotaryData | undefined, lng: Language): void {
+	if (!apartmentData) {
+		return;
+	}
+	const hasForSale = Boolean(apartmentData.forSale);
+	const hasOwned = apartmentData.ownedApartments.length > 0;
+	if (!hasForSale && !hasOwned) {
+		return;
+	}
+
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.homes.apartmentNotary.sectionTitle", { lng })
+		)
+	);
+
+	if (apartmentData.forSale) {
+		const price = apartmentData.forSale.price;
+		const canAfford = apartmentData.playerMoney >= price;
+		const descriptionKey = canAfford
+			? "commands:report.city.homes.apartmentNotary.forSaleDescription"
+			: "commands:report.city.homes.apartmentNotary.buyNotEnoughMoney";
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t(descriptionKey, {
+					lng,
+					price,
+					cost: price,
+					missingMoney: Math.max(0, price - apartmentData.playerMoney)
+				})
+			)
+		);
+		if (canAfford) {
+			addCitySection({
+				container,
+				text: i18n.t("commands:report.city.homes.apartmentNotary.forSaleDescription", {
+					lng, price
+				}),
+				emoji: CrowniclesIcons.city.apartmentNotary.buy,
+				customId: ReportCityMenuIds.APARTMENT_BUY,
+				buttonLabel: i18n.t("commands:report.city.homes.apartmentNotary.buyButtonLabel", { lng }),
+				buttonStyle: ButtonStyle.Success
+			});
+		}
+	}
+
+	if (hasOwned) {
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:report.city.homes.apartmentNotary.ownedHeader", {
+					lng, count: apartmentData.ownedApartments.length
+				})
+			)
+		);
+		for (const apt of apartmentData.ownedApartments) {
+			const lineKey = apt.isRented
+				? "commands:report.city.homes.apartmentNotary.ownedLineRented"
+				: "commands:report.city.homes.apartmentNotary.ownedLineEmpty";
+			const lineText = i18n.t(lineKey, {
+				lng,
+				mapLocationId: apt.mapLocationId,
+				rent: apt.accumulatedRent
+			});
+			const canClaim = apt.isRented && apt.accumulatedRent > 0;
+			const buttonLabel = canClaim
+				? i18n.t("commands:report.city.homes.apartmentNotary.claimButtonLabel", {
+					lng, rent: apt.accumulatedRent
+				})
+				: i18n.t("commands:report.city.homes.apartmentNotary.claimNothingToClaimLabel", {
+					lng, mapLocationId: apt.mapLocationId
+				});
+			addCitySection({
+				container,
+				text: lineText,
+				emoji: apt.isRented
+					? CrowniclesIcons.city.apartmentNotary.statusRented
+					: CrowniclesIcons.city.apartmentNotary.statusEmpty,
+				customId: `${ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX}${apt.apartmentId}`,
+				buttonLabel,
+				buttonStyle: canClaim ? ButtonStyle.Success : ButtonStyle.Secondary,
+				disabled: !canClaim
+			});
+		}
+	}
+}
+
 function addNotaryNavigation(container: ContainerBuilder, lng: Language): void {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
@@ -334,7 +425,8 @@ const NOTARY_REACTION_ROUTES: Record<string, string> = {
 	[ReportCityMenuIds.BUY_HOME]: ReactionCollectorCityBuyHomeReaction.name,
 	[ReportCityMenuIds.UPGRADE_HOME]: ReactionCollectorCityUpgradeHomeReaction.name,
 	[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name,
-	[ReportCityMenuIds.GUILD_DOMAIN_CONFIRM]: ReactionCollectorGuildDomainNotaryReaction.name
+	[ReportCityMenuIds.GUILD_DOMAIN_CONFIRM]: ReactionCollectorGuildDomainNotaryReaction.name,
+	[ReportCityMenuIds.APARTMENT_BUY]: ReactionCollectorApartmentBuyReaction.name
 };
 
 async function sendReactionByType(params: CityCollectorHandlerParams, reactionType: string): Promise<void> {
@@ -349,6 +441,19 @@ async function handleManageHomeCollectorInteraction(params: CityCollectorHandler
 	const {
 		selectedValue, buttonInteraction, nestedMenus, context, packet
 	} = params;
+
+	if (selectedValue.startsWith(ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX)) {
+		const apartmentId = parseInt(selectedValue.slice(ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX.length), 10);
+		await buttonInteraction.deferReply();
+		const reactionIndex = packet.reactions.findIndex(
+			reaction => reaction.type === ReactionCollectorApartmentClaimRentReaction.name
+				&& (reaction.data as ReactionCollectorApartmentClaimRentReaction).apartmentId === apartmentId
+		);
+		if (reactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+		}
+		return;
+	}
 
 	if (NOTARY_REACTION_ROUTES[selectedValue]) {
 		await sendReactionByType(params, NOTARY_REACTION_ROUTES[selectedValue]);
@@ -398,6 +503,7 @@ export function getManageHomeMenu(params: CityMenuParams): CrowniclesNestedMenu 
 
 	addPersonalNotarySection(container, cityData.home.manage, lng);
 	addGuildNotarySection(container, cityData.guildDomainNotary, lng);
+	addApartmentNotarySection(container, cityData.apartmentNotary, lng);
 	addNotaryNavigation(container, lng);
 
 	return {

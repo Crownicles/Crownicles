@@ -299,6 +299,36 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		/** Whether the player is the guild chief */
 		isChief: boolean;
 	};
+
+	/**
+	 * Apartment notary options - shown in every city.
+	 * Lets the player buy a new apartment here and/or claim rent
+	 * from apartments they own in other cities.
+	 */
+	apartmentNotary?: {
+
+		/** Player's current money (used by the buy-confirm screen) */
+		playerMoney: number;
+
+		/** Apartment for sale in this city. Absent if player already owns one here, or city has no apartmentPrice. */
+		forSale?: {
+			price: number;
+		};
+
+		/** Apartments owned by the player, with their current accumulated rent. */
+		ownedApartments: {
+			apartmentId: number;
+			cityId: string;
+
+			/** Representative map location ID for displaying the city's user-facing name */
+			mapLocationId: number;
+			purchasePrice: number;
+			accumulatedRent: number;
+
+			/** True if this apartment is currently rented out (player's main home is in this apartment's city) */
+			isRented: boolean;
+		}[];
+	};
 }
 
 export type EnchanterCityData = NonNullable<ReactionCollectorCityData["enchanter"]>;
@@ -380,6 +410,14 @@ export class ReactionCollectorGuildDomainMenuReaction extends ReactionCollectorR
 /** Reaction for purchasing or relocating the guild domain via the notary */
 export class ReactionCollectorGuildDomainNotaryReaction extends ReactionCollectorReaction {}
 
+/** Reaction for purchasing an apartment in the current city */
+export class ReactionCollectorApartmentBuyReaction extends ReactionCollectorReaction {}
+
+/** Reaction for claiming the accumulated rent of a specific apartment */
+export class ReactionCollectorApartmentClaimRentReaction extends ReactionCollectorReaction {
+	apartmentId!: number;
+}
+
 /**
  * Union type for all city reactions
  */
@@ -400,7 +438,9 @@ type CityReaction =
 	| ReactionCollectorBlacksmithDisenchantReaction
 	| ReactionCollectorGardenHarvestReaction
 	| ReactionCollectorGuildDomainMenuReaction
-	| ReactionCollectorGuildDomainNotaryReaction;
+	| ReactionCollectorGuildDomainNotaryReaction
+	| ReactionCollectorApartmentBuyReaction
+	| ReactionCollectorApartmentClaimRentReaction;
 
 /**
  * Packet type for the city reaction collector
