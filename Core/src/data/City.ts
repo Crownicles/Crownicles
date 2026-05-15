@@ -2,7 +2,6 @@ import { DataControllerString } from "./DataController";
 import { Data } from "./Data";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
-import { HomeLevel } from "../../../Lib/src/types/HomeLevel";
 
 export class InnMeal {
 	public readonly id!: string;
@@ -69,29 +68,23 @@ export class City extends Data<string> {
 		return meals;
 	}
 
-	public getHomeLevelPrice(homeLevel: HomeLevel, cityPopulationCounts: {
+	/**
+	 * Compute the price (in coins) for a player to move their home to this city.
+	 * Returns the reduced "least populated" price when this city is tied for the fewest homes,
+	 * otherwise the default flat price. The home level does not affect the move price.
+	 */
+	public getMovePrice(cityPopulationCounts: {
 		cityId: string;
 		count: number;
 	}[]): number {
-		// Get population values
-		const totalPopulation = cityPopulationCounts.reduce((sum, city) => sum + city.count, 0);
-		const cityPopulation = cityPopulationCounts.find(city => city.cityId === this.id)?.count || 0;
-		const isTheMostPopularCity = cityPopulationCounts.length === 0 || cityPopulation === Math.max(...cityPopulationCounts.map(city => city.count));
-
-		// Calculate ponderation
-		let ponderation = totalPopulation === 0 ? 0 : cityPopulation / totalPopulation;
-		if (ponderation < HomeConstants.PONDERATION_MINIMUM) {
-			ponderation = HomeConstants.PONDERATION_MINIMUM;
+		if (cityPopulationCounts.length === 0) {
+			return HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED;
 		}
-
-		// Calculate price
-		let price = homeLevel.cost;
-		price *= ponderation;
-		if (isTheMostPopularCity) {
-			price *= HomeConstants.MOST_POPULATED_CITY_PRICE_MALUS;
-		}
-
-		return Math.floor(price);
+		const minCount = Math.min(...cityPopulationCounts.map(c => c.count));
+		const targetCount = cityPopulationCounts.find(c => c.cityId === this.id)?.count ?? 0;
+		return targetCount === minCount
+			? HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED
+			: HomeConstants.MOVE_HOME_PRICE_DEFAULT;
 	}
 }
 
