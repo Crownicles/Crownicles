@@ -49,7 +49,9 @@ import {
 	getCookingGrade, CookingOutputType, CookingOutputTypeValue,
 	FAILED_CRAFT_CONSOLATION_CHANCE, FAILED_CRAFT_CONSOLATION_MIN_RARITY, FAILED_CRAFT_CONSOLATION_MAX_RARITY
 } from "../../../../Lib/src/constants/CookingConstants";
-import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemNature, ItemRarity
+} from "../../../../Lib/src/constants/ItemConstants";
 import { giveItemToPlayer } from "../utils/ItemUtils";
 import {
 	asMinutes, minutesToMilliseconds
@@ -294,23 +296,37 @@ interface CraftOutputResult {
 	petFood?: CraftPetFoodResult;
 	material?: CraftMaterialResult;
 	failedPotionId?: number;
+	bonusOutput?: boolean;
 	inventorySwapPackets?: CrowniclesPacket[];
 }
 
 async function handlePotionOutput(
 	player: Player,
 	recipe: CookingRecipeData,
-	context: PacketContext
+	context: PacketContext,
+	bonus: boolean
 ): Promise<CraftOutputResult> {
 	if (recipe.potionNature === undefined || recipe.potionRarity === undefined) {
 		return {};
 	}
-	if (!PotionDataController.instance.hasItemWithNatureAndRarity(recipe.potionNature, recipe.potionRarity)) {
+	let effectiveRarity = recipe.potionRarity;
+	let bonusApplied = false;
+	if (bonus && recipe.potionRarity < ItemRarity.MYTHICAL) {
+		const upgradedRarity = recipe.potionRarity + 1;
+		if (PotionDataController.instance.hasItemWithNatureAndRarity(recipe.potionNature, upgradedRarity)) {
+			effectiveRarity = upgradedRarity;
+			bonusApplied = true;
+		}
+	}
+	if (!PotionDataController.instance.hasItemWithNatureAndRarity(recipe.potionNature, effectiveRarity)) {
 		return {};
 	}
-	const potion = PotionDataController.instance.randomItem(recipe.potionNature, recipe.potionRarity);
+	const potion = PotionDataController.instance.randomItem(recipe.potionNature, effectiveRarity);
 	const itemReceived = await player.giveItem(potion);
 	const result: CraftOutputResult = { potionId: potion.id };
+	if (bonusApplied) {
+		result.bonusOutput = true;
+	}
 	if (!itemReceived) {
 		result.inventorySwapPackets = [];
 		await giveItemToPlayer(result.inventorySwapPackets, context, player, potion);
@@ -326,7 +342,8 @@ async function handlePotionOutput(
  */
 async function runPetFoodOutputUnderLock(
 	guildId: number,
-	recipe: CookingRecipeData
+	recipe: CookingRecipeData,
+	effectiveQuantity: number
 ): Promise<number> {
 	if (!recipe.petFood) {
 		return 0;
@@ -336,7 +353,7 @@ async function runPetFoodOutputUnderLock(
 			[Guild.lockKey(guildId)] as const,
 			async ([lockedGuild]) => {
 				const availableSpace = CookingService.getAvailableFoodSpace(lockedGuild, recipe.petFood!.type);
-				const storedQuantity = Math.min(recipe.petFood!.quantity, availableSpace);
+				const storedQuantity = Math.min(effectiveQuantity, availableSpace);
 				if (storedQuantity > 0) {
 					lockedGuild.addFood(recipe.petFood!.type, storedQuantity, NumberChangeReason.COOKING);
 					await lockedGuild.save();
@@ -361,11 +378,14 @@ async function runPetFoodOutputUnderLock(
 async function handlePetFoodOutput(
 	player: Player,
 	recipe: CookingRecipeData,
-	guild: Guild
+	guild: Guild,
+	bonus: boolean
 ): Promise<CraftOutputResult> {
 	if (!recipe.petFood) {
 		return {};
 	}
+
+	const effectiveQuantity = recipe.petFood.quantity + (bonus ? 1 : 0);
 
 	/*
 	 * Lock the guild row so two concurrent cookings from
@@ -374,21 +394,25 @@ async function handlePetFoodOutput(
 	 * we read inside the critical section so the available-space
 	 * check is consistent with the eventual save.
 	 */
-	const storedQuantity = await runPetFoodOutputUnderLock(guild.id, recipe);
+	const storedQuantity = await runPetFoodOutputUnderLock(guild.id, recipe, effectiveQuantity);
 
-	const surplus = recipe.petFood.quantity - storedQuantity;
+	const surplus = effectiveQuantity - storedQuantity;
 	const surplusResult = surplus > 0
 		? await handlePetFoodSurplus(player, recipe, surplus)
 		: {};
 
-	return {
+	const result: CraftOutputResult = {
 		petFood: {
 			type: recipe.petFood.type,
-			quantity: recipe.petFood.quantity,
+			quantity: effectiveQuantity,
 			storedQuantity,
 			...surplusResult
 		}
 	};
+	if (bonus) {
+		result.bonusOutput = true;
+	}
+	return result;
 }
 
 async function handlePetFoodSurplus(
@@ -420,18 +444,24 @@ async function handlePetFoodSurplus(
 
 async function handleMaterialOutput(
 	player: Player,
-	recipe: CookingRecipeData
+	recipe: CookingRecipeData,
+	bonus: boolean
 ): Promise<CraftOutputResult> {
 	if (recipe.outputMaterialId === undefined || recipe.outputMaterialQuantity === undefined) {
 		return {};
 	}
-	await Materials.giveMaterial(player.id, recipe.outputMaterialId, recipe.outputMaterialQuantity);
-	return {
+	const effectiveQuantity = recipe.outputMaterialQuantity + (bonus ? 1 : 0);
+	await Materials.giveMaterial(player.id, recipe.outputMaterialId, effectiveQuantity);
+	const result: CraftOutputResult = {
 		material: {
 			materialId: recipe.outputMaterialId,
-			quantity: recipe.outputMaterialQuantity
+			quantity: effectiveQuantity
 		}
 	};
+	if (bonus) {
+		result.bonusOutput = true;
+	}
+	return result;
 }
 
 async function handleFailedPotionOutput(
@@ -475,13 +505,15 @@ async function processSuccessfulCraftOutput({
 	recipe,
 	guild
 }: Omit<CraftOutputParams, "result">): Promise<CraftOutputResult> {
+	const grade = getCookingGrade(player.cookingLevel);
+	const bonus = RandomUtils.crowniclesRandom.realZeroToOneInclusive() < grade.bonusOutputChance;
 	switch (recipe.outputType) {
 		case CookingOutputType.POTION:
-			return await handlePotionOutput(player, recipe, context);
+			return await handlePotionOutput(player, recipe, context, bonus);
 		case CookingOutputType.PET_FOOD:
-			return guild ? await handlePetFoodOutput(player, recipe, guild) : {};
+			return guild ? await handlePetFoodOutput(player, recipe, guild, bonus) : {};
 		case CookingOutputType.MATERIAL:
-			return await handleMaterialOutput(player, recipe);
+			return await handleMaterialOutput(player, recipe, bonus);
 		default:
 			return {};
 	}

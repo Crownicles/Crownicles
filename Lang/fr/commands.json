@@ -1219,6 +1219,7 @@
           "levelUpWithGrade": "Vous êtes passé au **niveau {{level}}** de cuisine ! Nouveau grade : **{{grade}}**",
           "levelUpTitle": "{emote:city.homeUpgrades.cooking} Niveau de cuisine augmenté !",
           "materialSaved": "{emote:messages.validate} Grâce à votre expertise, un **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** a été économisé !",
+          "bonusOutput": "{emote:city.homeUpgrades.cooking} Votre maîtrise vous a permis d'obtenir un résultat de meilleure qualité !",
           "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** ont été ajoutées au stockage de votre guilde.",
           "recipeDiscovered": "{emote:city.homeUpgrades.cooking} Vous avez appris une nouvelle recette : **{{recipe}}** !",
           "recipesDiscovered": "{emote:city.homeUpgrades.cooking} Vous avez appris de nouvelles recettes : {{recipes}} !",

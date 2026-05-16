@@ -83,6 +83,7 @@ export interface CookingGradeDefinition {
 	maxRecipeLevelWithoutPenalty: number;
 	materialSaveChance: number;
 	woodSaveChance: number;
+	bonusOutputChance: number;
 }
 
 export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
@@ -94,7 +95,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.20,
 		maxRecipeLevelWithoutPenalty: 2,
 		materialSaveChance: 0,
-		woodSaveChance: 0
+		woodSaveChance: 0,
+		bonusOutputChance: 0
 	},
 	{
 		id: "scullion",
@@ -104,7 +106,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.10,
 		maxRecipeLevelWithoutPenalty: 3,
 		materialSaveChance: 0.02,
-		woodSaveChance: 0.01
+		woodSaveChance: 0.01,
+		bonusOutputChance: 0.01
 	},
 	{
 		id: "cook",
@@ -114,7 +117,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.10,
 		maxRecipeLevelWithoutPenalty: 4,
 		materialSaveChance: 0.05,
-		woodSaveChance: 0.02
+		woodSaveChance: 0.02,
+		bonusOutputChance: 0.02
 	},
 	{
 		id: "roaster",
@@ -124,7 +128,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 5,
 		materialSaveChance: 0.08,
-		woodSaveChance: 0.04
+		woodSaveChance: 0.04,
+		bonusOutputChance: 0.03
 	},
 	{
 		id: "saucier",
@@ -134,7 +139,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 5,
 		materialSaveChance: 0.11,
-		woodSaveChance: 0.06
+		woodSaveChance: 0.06,
+		bonusOutputChance: 0.04
 	},
 	{
 		id: "steward",
@@ -144,7 +150,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 6,
 		materialSaveChance: 0.14,
-		woodSaveChance: 0.08
+		woodSaveChance: 0.08,
+		bonusOutputChance: 0.05
 	},
 	{
 		id: "tableChef",
@@ -154,7 +161,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 7,
 		materialSaveChance: 0.17,
-		woodSaveChance: 0.10
+		woodSaveChance: 0.10,
+		bonusOutputChance: 0.06
 	},
 	{
 		id: "stoveChef",
@@ -164,7 +172,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 7,
 		materialSaveChance: 0.20,
-		woodSaveChance: 0.12
+		woodSaveChance: 0.12,
+		bonusOutputChance: 0.07
 	},
 	{
 		id: "kitchenMaster",
@@ -174,7 +183,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 8,
 		materialSaveChance: 0.22,
-		woodSaveChance: 0.13
+		woodSaveChance: 0.13,
+		bonusOutputChance: 0.08
 	},
 	{
 		id: "royalGrandChef",
@@ -184,7 +194,8 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		secretRecipeRate: 0.005,
 		maxRecipeLevelWithoutPenalty: 8,
 		materialSaveChance: 0.25,
-		woodSaveChance: 0.15
+		woodSaveChance: 0.15,
+		bonusOutputChance: 0.10
 	}
 ] as const;
 

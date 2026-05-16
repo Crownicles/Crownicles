@@ -924,6 +924,12 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			})}`;
 		}
 
+		if (response.bonusOutput) {
+			message += `\n${i18n.t("commands:report.city.homes.cooking.bonusOutput", {
+				lng: ctx.lng
+			})}`;
+		}
+
 		return message;
 	}
 

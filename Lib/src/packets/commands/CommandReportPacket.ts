@@ -570,6 +570,8 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	materialSaved?: number;
 
+	bonusOutput?: boolean;
+
 	discoveredRecipeIds?: string[];
 
 	error?: CookingCraftError;
