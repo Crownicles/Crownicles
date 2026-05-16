@@ -309,7 +309,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	 * Lets the player buy a new apartment here and/or claim rent
 	 * from apartments they own in other cities.
 	 */
-	apartmentNotary?: {
+	apartmentNotary!: {
 
 		/** Player's current money (used by the buy-confirm screen) */
 		playerMoney: number;
@@ -616,9 +616,6 @@ export class ReactionCollectorCity extends ReactionCollector {
 		type: string; data: ReactionCollectorReaction;
 	}[] {
 		const notary = this.data.apartmentNotary;
-		if (!notary) {
-			return [];
-		}
 		const reactions: {
 			type: string; data: ReactionCollectorReaction;
 		}[] = [];
