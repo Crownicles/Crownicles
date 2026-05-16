@@ -21,6 +21,7 @@ import {
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import { StringUtils } from "../../../../utils/StringUtils";
+import { Language } from "../../../../../../Lib/src/Language";
 
 /**
  * Creates a sub-menu for a specific home feature
@@ -89,29 +90,22 @@ function createFeatureSubMenu(
  * descriptions, one section per available feature, and the footer buttons
  * (leave home/apartment + stay in city).
  */
-function buildMainHomeContainer(
-	handlerContext: HomeFeatureHandlerContext,
-	isApartment: boolean,
-	pseudo: string
-): ContainerBuilder {
+function buildMainHomeHeader(handlerContext: HomeFeatureHandlerContext, isApartment: boolean, pseudo: string): TextDisplayBuilder {
 	const { lng } = handlerContext;
-	const container = new ContainerBuilder();
-
-	// Title
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(
-			StringUtils.formatHeader(i18n.t(
-				isApartment
-					? "commands:report.city.homes.apartmentTitle"
-					: "commands:report.city.homes.homeTitle",
-				{
-					lng, pseudo
-				}
-			))
-		)
+	return new TextDisplayBuilder().setContent(
+		StringUtils.formatHeader(i18n.t(
+			isApartment
+				? "commands:report.city.homes.apartmentTitle"
+				: "commands:report.city.homes.homeTitle",
+			{
+				lng, pseudo
+			}
+		))
 	);
+}
 
-	// Description: intro line + feature description lines
+function buildMainHomeDescription(handlerContext: HomeFeatureHandlerContext, isApartment: boolean): TextDisplayBuilder {
+	const { lng } = handlerContext;
 	const descriptionParts: string[] = [
 		i18n.t(
 			isApartment
@@ -124,13 +118,37 @@ function buildMainHomeContainer(
 	if (featureDescriptions.length > 0) {
 		descriptionParts.push("", ...featureDescriptions);
 	}
-	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(descriptionParts.join("\n"))
-	);
+	return new TextDisplayBuilder().setContent(descriptionParts.join("\n"));
+}
 
+function buildMainHomeFooterRow(lng: Language, isApartment: boolean): ActionRowBuilder<ButtonBuilder> {
+	return new ActionRowBuilder<ButtonBuilder>().addComponents(
+		new ButtonBuilder()
+			.setCustomId(HomeMenuIds.LEAVE_HOME)
+			.setLabel(i18n.t(
+				isApartment
+					? "commands:report.city.homes.leaveApartment"
+					: "commands:report.city.homes.leaveHome",
+				{ lng }
+			))
+			.setEmoji(CrowniclesIcons.collectors.back)
+			.setStyle(ButtonStyle.Secondary),
+		createStayInCityButton(lng)
+	);
+}
+
+function buildMainHomeContainer(
+	handlerContext: HomeFeatureHandlerContext,
+	isApartment: boolean,
+	pseudo: string
+): ContainerBuilder {
+	const { lng } = handlerContext;
+	const container = new ContainerBuilder();
+
+	container.addTextDisplayComponents(buildMainHomeHeader(handlerContext, isApartment, pseudo));
+	container.addTextDisplayComponents(buildMainHomeDescription(handlerContext, isApartment));
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
-	// Feature sections
 	for (const option of homeFeatureRegistry.getMenuOptions(handlerContext)) {
 		container.addSectionComponents(
 			new SectionBuilder()
@@ -149,23 +167,8 @@ function buildMainHomeContainer(
 		);
 	}
 
-	// Leave home + Stay in city buttons
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	container.addActionRowComponents(
-		new ActionRowBuilder<ButtonBuilder>().addComponents(
-			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.LEAVE_HOME)
-				.setLabel(i18n.t(
-					isApartment
-						? "commands:report.city.homes.leaveApartment"
-						: "commands:report.city.homes.leaveHome",
-					{ lng }
-				))
-				.setEmoji(CrowniclesIcons.collectors.back)
-				.setStyle(ButtonStyle.Secondary),
-			createStayInCityButton(lng)
-		)
-	);
+	container.addActionRowComponents(buildMainHomeFooterRow(lng, isApartment));
 
 	return container;
 }
