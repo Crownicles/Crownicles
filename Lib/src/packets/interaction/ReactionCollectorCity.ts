@@ -20,6 +20,7 @@ import {
 	PlantStorageEntry, PlayerPlantSlotEntry
 } from "../../types/PlantStorageEntry";
 import { OwnedPet } from "../../types/OwnedPet";
+import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -316,18 +317,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		};
 
 		/** Apartments owned by the player, with their current accumulated rent. */
-		ownedApartments: {
-			apartmentId: number;
-			cityId: string;
-
-			/** Representative map location ID for displaying the city's user-facing name */
-			mapLocationId: number;
-			purchasePrice: number;
-			accumulatedRent: number;
-
-			/** True if this apartment is currently rented out (player's main home is in this apartment's city) */
-			isRented: boolean;
-		}[];
+		ownedApartments: OwnedApartmentSummary[];
 	};
 }
 

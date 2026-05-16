@@ -66,15 +66,16 @@ export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: 
 
 	const lng = context.discord!.language;
 
+	const rentDeducted = packet.rentDeducted ?? 0;
 	const embed = new CrowniclesEmbed()
 		.formatAuthor(i18n.t("commands:report.city.homes.moveHomeTitle", {
 			lng,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}), interaction.user)
-		.setDescription(i18n.t(packet.rentDeducted > 0 ? "commands:report.city.homes.moveHomeDescriptionWithRent" : "commands:report.city.homes.moveHomeDescription", {
+		.setDescription(i18n.t(rentDeducted > 0 ? "commands:report.city.homes.moveHomeDescriptionWithRent" : "commands:report.city.homes.moveHomeDescription", {
 			lng,
 			cost: packet.cost,
-			rentDeducted: packet.rentDeducted
+			rentDeducted
 		}));
 
 	await interaction.editReply({
@@ -105,29 +106,38 @@ export async function handleHomeBed(packet: CommandReportHomeBedRes, context: Pa
 }
 
 export async function handleApartmentBuy(packet: CommandReportApartmentBuyRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.apartmentNotary.buyTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.apartmentNotary.buyDescription", {
-			lng,
+	await sendApartmentNotaryEmbed({
+		context,
+		titleKey: "commands:report.city.homes.apartmentNotary.buyTitle",
+		descriptionKey: "commands:report.city.homes.apartmentNotary.buyDescription",
+		descriptionParams: {
 			cost: packet.cost,
 			mapLocationId: packet.mapLocationId
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
+		}
 	});
 }
 
 export async function handleApartmentClaimRent(packet: CommandReportApartmentClaimRentRes, context: PacketContext): Promise<void> {
+	await sendApartmentNotaryEmbed({
+		context,
+		titleKey: "commands:report.city.homes.apartmentNotary.claimTitle",
+		descriptionKey: "commands:report.city.homes.apartmentNotary.claimDescription",
+		descriptionParams: {
+			rent: packet.rentClaimed,
+			mapLocationId: packet.mapLocationId
+		}
+	});
+}
+
+async function sendApartmentNotaryEmbed(params: {
+	context: PacketContext;
+	titleKey: string;
+	descriptionKey: string;
+	descriptionParams: Record<string, number | string>;
+}): Promise<void> {
+	const {
+		context, titleKey, descriptionKey, descriptionParams
+	} = params;
 	const interaction = MessagesUtils.getCurrentInteraction(context);
 	if (!interaction) {
 		return;
@@ -135,14 +145,12 @@ export async function handleApartmentClaimRent(packet: CommandReportApartmentCla
 	const lng = context.discord!.language;
 
 	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.apartmentNotary.claimTitle", {
+		.formatAuthor(i18n.t(titleKey, {
 			lng,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.apartmentNotary.claimDescription", {
-			lng,
-			rent: packet.rentClaimed,
-			mapLocationId: packet.mapLocationId
+		.setDescription(i18n.t(descriptionKey, {
+			lng, ...descriptionParams
 		}));
 
 	await interaction.editReply({

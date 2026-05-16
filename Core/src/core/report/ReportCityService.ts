@@ -3,7 +3,7 @@ import {
 	Player
 } from "../database/game/models/Player";
 import {
-	City
+	City, CityDataController
 } from "../../data/City";
 import {
 	Home, Homes
@@ -34,6 +34,8 @@ import InventoryInfo from "../database/game/models/InventoryInfo";
 import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import { buildGardenData } from "./ReportGardenService";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { OwnedApartmentSummary } from "../../../../Lib/src/types/ApartmentLocation";
 
 // Re-exports for backward compatibility
 export {
@@ -58,10 +60,52 @@ type HomeData = ReactionCollectorCityData["home"];
 type OwnedHomeData = NonNullable<HomeData["owned"]>;
 type UpgradeStationData = NonNullable<OwnedHomeData["upgradeStation"]>;
 type ChestData = NonNullable<OwnedHomeData["chest"]>;
+type ApartmentNotaryData = NonNullable<ReactionCollectorCityData["apartmentNotary"]>;
 type HomesCount = {
 	cityId: string;
 	count: number;
 }[];
+
+/**
+ * Build apartment-notary data: the apartment for sale in this city (if any)
+ * and the list of apartments owned by the player across the world (with their
+ * current accumulated rent).
+ *
+ * Apartments referencing a missing/deleted city are skipped with a logged
+ * error rather than crashing the city menu.
+ */
+export async function buildApartmentNotaryData(
+	player: Player,
+	city: City,
+	home: Home | null,
+	now: Date
+): Promise<ApartmentNotaryData> {
+	const ownedApartments = await Apartments.getOfPlayer(player.id);
+	const ownsApartmentHere = ownedApartments.some(a => a.cityId === city.id);
+	const summaries: OwnedApartmentSummary[] = [];
+	for (const apartment of ownedApartments) {
+		const apartmentCity = CityDataController.instance.getById(apartment.cityId);
+		if (!apartmentCity || apartmentCity.maps.length === 0) {
+			CrowniclesLogger.error(`Apartment ${apartment.id} (player ${player.keycloakId}) references unknown or empty city ${apartment.cityId}. Skipping in notary display.`);
+			continue;
+		}
+		summaries.push({
+			apartmentId: apartment.id,
+			cityId: apartment.cityId,
+			mapLocationId: apartmentCity.maps[0],
+			purchasePrice: apartment.purchasePrice,
+			accumulatedRent: apartment.getAccumulatedRent(now),
+			isRented: apartment.isRentedFor(home)
+		});
+	}
+	return {
+		playerMoney: player.money,
+		...city.apartmentPrice && !ownsApartmentHere
+			? { forSale: { price: city.apartmentPrice } }
+			: {},
+		ownedApartments: summaries
+	};
+}
 
 /**
  * Build enchanter data for the city reaction collector
@@ -203,13 +247,25 @@ async function buildRemoteApartmentHomeData(params: {
 		player, playerInventory, home, homeLevel
 	} = params;
 	const cappedBedLevel = Math.min(HomeConstants.APARTMENT_BED_LEVEL_CAP, home.level);
-	const cappedHomeLevel = HomeLevel.getByLevel(cappedBedLevel) ?? homeLevel;
+	const cappedHomeLevel = HomeLevel.getByLevel(cappedBedLevel);
+	if (!cappedHomeLevel) {
+		CrowniclesLogger.error(`Apartment bed level cap ${cappedBedLevel} resolved to no HomeLevel for player ${player.keycloakId} (home level ${home.level}). Falling back to main home level.`);
+	}
+	const bedRegenLevel = cappedHomeLevel ?? homeLevel;
 	const remoteFeatures: HomeFeatures = {
-		...homeLevel.features,
-		bedHealthRegeneration: cappedHomeLevel.features.bedHealthRegeneration,
+		// Apartment-specific caps
 		gardenPlots: 0,
+		gardenEarthQuality: homeLevel.features.gardenEarthQuality,
 		upgradeItemMaximumRarity: ItemRarity.BASIC,
-		maxItemUpgradeLevel: 0
+		maxItemUpgradeLevel: 0,
+
+		// Bed regen is capped at the apartment lodging level
+		bedHealthRegeneration: bedRegenLevel.features.bedHealthRegeneration,
+
+		// Remote access to the main home's chest + cooking + inventory bonuses
+		chestSlots: homeLevel.features.chestSlots,
+		cookingSlots: homeLevel.features.cookingSlots,
+		inventoryBonus: homeLevel.features.inventoryBonus
 	};
 	const chest = await buildChestData(home, homeLevel, playerInventory, player);
 
