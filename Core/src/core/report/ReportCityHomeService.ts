@@ -154,6 +154,50 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 }
 
 /**
+ * Compute how much accumulated rent (if any) should be credited against the
+ * move price for the source apartment. Below {@link HomeConstants.MIN_RENT_TO_CLAIM}
+ * the rent is forfeited; above the move price the surplus is forfeited too.
+ */
+function computeMoveRentApplied(sourceApartment: Apartment | null, movePrice: number): number {
+	if (!sourceApartment) {
+		return 0;
+	}
+	const accumulated = sourceApartment.getAccumulatedRent();
+	if (accumulated < HomeConstants.MIN_RENT_TO_CLAIM) {
+		return 0;
+	}
+	return Math.min(accumulated, movePrice);
+}
+
+/**
+ * Settle the source apartment when the player leaves its city: credit any
+ * applicable rent and reset the accrual timestamp so unrented periods don't
+ * accumulate rent. The pending save is appended to `saves` so it can be
+ * awaited together with the other writes via `Promise.all`.
+ */
+async function settleSourceApartmentOnMoveUnderLock(params: {
+	sourceApartment: Apartment;
+	rentApplied: number;
+	lockedPlayer: Player;
+	response: CrowniclesPacket[];
+	now: Date;
+	saves: Promise<unknown>[];
+}): Promise<void> {
+	const {
+		sourceApartment, rentApplied, lockedPlayer, response, now, saves
+	} = params;
+	if (rentApplied > 0) {
+		await lockedPlayer.addMoney({
+			response,
+			amount: rentApplied,
+			reason: NumberChangeReason.APARTMENT_RENT_DEDUCTED
+		});
+	}
+	sourceApartment.lastRentClaimedAt = now;
+	saves.push(sourceApartment.save());
+}
+
+/**
  * Apply move-home rent logic under lock: if the player owns an apartment in
  * their current home city (the one being left), its accumulated rent is
  * credited against the move price. Below {@link HomeConstants.MIN_RENT_TO_CLAIM}
@@ -184,14 +228,7 @@ async function applyMoveHomeUnderLock(params: {
 		return null;
 	}
 
-	let rentApplied = 0;
-	if (sourceApartment) {
-		const accumulated = sourceApartment.getAccumulatedRent();
-		if (accumulated >= HomeConstants.MIN_RENT_TO_CLAIM) {
-			rentApplied = Math.min(accumulated, movePrice);
-		}
-	}
-
+	const rentApplied = computeMoveRentApplied(sourceApartment, movePrice);
 	const effectivePrice = movePrice - rentApplied;
 	if (effectivePrice > lockedPlayer.money) {
 		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: effectivePrice - lockedPlayer.money }));
@@ -204,16 +241,9 @@ async function applyMoveHomeUnderLock(params: {
 	const saves: Promise<unknown>[] = [lockedHome.save()];
 
 	if (sourceApartment) {
-		// Source apartment is no longer rented (home left this city) — stop rent accrual.
-		if (rentApplied > 0) {
-			await lockedPlayer.addMoney({
-				response,
-				amount: rentApplied,
-				reason: NumberChangeReason.APARTMENT_RENT_DEDUCTED
-			});
-		}
-		sourceApartment.lastRentClaimedAt = now;
-		saves.push(sourceApartment.save());
+		await settleSourceApartmentOnMoveUnderLock({
+			sourceApartment, rentApplied, lockedPlayer, response, now, saves
+		});
 	}
 
 	if (destinationApartment) {
@@ -233,6 +263,68 @@ async function applyMoveHomeUnderLock(params: {
 
 	return {
 		effectivePrice, rentApplied
+	};
+}
+
+/**
+ * Load both apartments potentially involved in a move-home and pre-compute the
+ * lock-key list (Home + Player + 0/1/2 apartments) needed by
+ * `withLockedEntities`. The returned `unpack` helper extracts the typed
+ * entities in the same order the keys were declared.
+ */
+async function prepareMoveHomeLockContext(
+	playerId: number,
+	homeId: number,
+	sourceCityId: string,
+	destinationCityId: string
+): Promise<{
+	sourceApartment: Apartment | null;
+	destinationApartment: Apartment | null;
+	lockKeys: ReturnType<typeof Home.lockKey | typeof Player.lockKey | typeof Apartment.lockKey>[];
+	unpack: (entities: readonly (Home | Player | Apartment)[]) => {
+		lockedHome: Home;
+		lockedPlayer: Player;
+		lockedSourceApartment: Apartment | null;
+		lockedDestinationApartment: Apartment | null;
+	};
+}> {
+	/*
+	 * The apartment in the city the player is leaving is the one that was rented;
+	 * the apartment in the destination city (if any) will become rented after the move.
+	 * Both need to be locked so their `lastRentClaimedAt` can be reset atomically.
+	 */
+	const [sourceApartment, destinationApartment] = await Promise.all([
+		Apartments.getOfPlayerInCity(playerId, sourceCityId),
+		Apartments.getOfPlayerInCity(playerId, destinationCityId)
+	]);
+
+	const apartmentLockKeys = [
+		...sourceApartment ? [Apartment.lockKey(sourceApartment.id)] : [],
+		...destinationApartment ? [Apartment.lockKey(destinationApartment.id)] : []
+	];
+	const lockKeys = [
+		Home.lockKey(homeId),
+		Player.lockKey(playerId),
+		...apartmentLockKeys
+	];
+
+	const unpack = (entities: readonly (Home | Player | Apartment)[]): {
+		lockedHome: Home;
+		lockedPlayer: Player;
+		lockedSourceApartment: Apartment | null;
+		lockedDestinationApartment: Apartment | null;
+	} => {
+		let cursor = 2;
+		return {
+			lockedHome: entities[0] as Home,
+			lockedPlayer: entities[1] as Player,
+			lockedSourceApartment: sourceApartment ? entities[cursor++] as Apartment : null,
+			lockedDestinationApartment: destinationApartment ? entities[cursor] as Apartment : null
+		};
+	};
+
+	return {
+		sourceApartment, destinationApartment, lockKeys, unpack
 	};
 }
 
@@ -260,33 +352,14 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 	const sourceCityId = home.cityId;
 	const destinationCityId = city.id;
 
-	/*
-	 * The apartment in the city the player is leaving is the one that was rented;
-	 * the apartment in the destination city (if any) will become rented after the move.
-	 * Both need to be locked so their `lastRentClaimedAt` can be reset atomically.
-	 */
-	const [sourceApartment, destinationApartment] = await Promise.all([
-		Apartments.getOfPlayerInCity(player.id, sourceCityId),
-		Apartments.getOfPlayerInCity(player.id, destinationCityId)
-	]);
-
-	const apartmentLockKeys = [
-		...sourceApartment ? [Apartment.lockKey(sourceApartment.id)] : [],
-		...destinationApartment ? [Apartment.lockKey(destinationApartment.id)] : []
-	];
+	const lockContext = await prepareMoveHomeLockContext(player.id, home.id, sourceCityId, destinationCityId);
 
 	await withLockedEntities(
-		[
-			Home.lockKey(home.id),
-			Player.lockKey(player.id),
-			...apartmentLockKeys
-		] as const,
+		lockContext.lockKeys as readonly ReturnType<typeof Home.lockKey>[],
 		async lockedEntities => {
-			const lockedHome = lockedEntities[0] as Home;
-			const lockedPlayer = lockedEntities[1] as Player;
-			let cursor = 2;
-			const lockedSourceApartment = sourceApartment ? lockedEntities[cursor++] as Apartment : null;
-			const lockedDestinationApartment = destinationApartment ? lockedEntities[cursor] as Apartment : null;
+			const {
+				lockedHome, lockedPlayer, lockedSourceApartment, lockedDestinationApartment
+			} = lockContext.unpack(lockedEntities as readonly (Home | Player | Apartment)[]);
 
 			const result = await applyMoveHomeUnderLock({
 				lockedHome,

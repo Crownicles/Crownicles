@@ -83,42 +83,17 @@ function createFeatureSubMenu(
  *
  * @param params - Parameters for creating the home menu
  */
-export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
-	const {
-		context, interaction, packet, collectorTime, pseudo
-	} = params;
-	const homeData = (packet.data.data as ReactionCollectorCityData).home.owned!;
-	const isApartment = Boolean(homeData.isApartment);
-	const lng = interaction.userLanguage;
-
-	// Build handler context
-	const handlerContext: HomeFeatureHandlerContext = {
-		context,
-		packet,
-		homeData,
-		lng,
-		user: interaction.user,
-		pseudo,
-		collectorTime
-	};
-
-	// Build home description
-	const descriptionParts: string[] = [
-		i18n.t(
-			isApartment
-				? "commands:report.city.homes.apartmentIntroduction"
-				: "commands:report.city.homes.homeIntroduction",
-			{ lng }
-		)
-	];
-
-	// Add feature descriptions
-	const featureDescriptions = homeFeatureRegistry.getDescriptionLines(handlerContext);
-	if (featureDescriptions.length > 0) {
-		descriptionParts.push("", ...featureDescriptions);
-	}
-
-	// Build V2 container
+/**
+ * Build the V2 container for the main home menu: title, intro + feature
+ * descriptions, one section per available feature, and the footer buttons
+ * (leave home/apartment + stay in city).
+ */
+function buildMainHomeContainer(
+	handlerContext: HomeFeatureHandlerContext,
+	isApartment: boolean,
+	pseudo: string
+): ContainerBuilder {
+	const { lng } = handlerContext;
 	const container = new ContainerBuilder();
 
 	// Title
@@ -135,7 +110,19 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 		)
 	);
 
-	// Description
+	// Description: intro line + feature description lines
+	const descriptionParts: string[] = [
+		i18n.t(
+			isApartment
+				? "commands:report.city.homes.apartmentIntroduction"
+				: "commands:report.city.homes.homeIntroduction",
+			{ lng }
+		)
+	];
+	const featureDescriptions = homeFeatureRegistry.getDescriptionLines(handlerContext);
+	if (featureDescriptions.length > 0) {
+		descriptionParts.push("", ...featureDescriptions);
+	}
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(descriptionParts.join("\n"))
 	);
@@ -143,8 +130,7 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
 	// Feature sections
-	const featureOptions = homeFeatureRegistry.getMenuOptions(handlerContext);
-	for (const option of featureOptions) {
+	for (const option of homeFeatureRegistry.getMenuOptions(handlerContext)) {
 		container.addSectionComponents(
 			new SectionBuilder()
 				.addTextDisplayComponents(
@@ -180,8 +166,29 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 		)
 	);
 
+	return container;
+}
+
+export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
+	const {
+		context, interaction, packet, collectorTime, pseudo
+	} = params;
+	const homeData = (packet.data.data as ReactionCollectorCityData).home.owned!;
+	const isApartment = Boolean(homeData.isApartment);
+	const lng = interaction.userLanguage;
+
+	const handlerContext: HomeFeatureHandlerContext = {
+		context,
+		packet,
+		homeData,
+		lng,
+		user: interaction.user,
+		pseudo,
+		collectorTime
+	};
+
 	return {
-		containers: [container],
+		containers: [buildMainHomeContainer(handlerContext, isApartment, pseudo)],
 		createCollector: (nestedMenus, message: Message): CrowniclesNestedMenuCollector => {
 			const collector = message.createMessageComponentCollector({ time: collectorTime });
 

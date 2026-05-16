@@ -157,6 +157,43 @@ export function buildEnchanterData(
 }
 
 /**
+ * Resolve the "owned home" view of the city — either the home itself if it
+ * lives in this city, the rented apartment in this city if any, or undefined
+ * if the player has neither.
+ */
+async function resolveOwnedHomeData(params: {
+	player: Player;
+	playerInventory: InventorySlot[];
+	playerMaterialMap: Map<number, number>;
+	home: Home | null;
+	homeLevel: HomeLevel | null;
+	city: City;
+}): Promise<HomeData["owned"]> {
+	const {
+		player, playerInventory, playerMaterialMap, home, homeLevel, city
+	} = params;
+
+	if (!home || !homeLevel) {
+		return undefined;
+	}
+
+	if (home.cityId === city.id) {
+		return await buildOwnedHomeData({
+			player, playerInventory, playerMaterialMap, home, homeLevel
+		});
+	}
+
+	const apartment = await Apartments.getOfPlayerInCity(player.id, city.id);
+	if (apartment) {
+		return await buildRemoteApartmentHomeData({
+			player, playerInventory, home, homeLevel
+		});
+	}
+
+	return undefined;
+}
+
+/**
  * Build home data (owned home + manage options) for the city reaction collector
  */
 export async function buildHomeData(
@@ -174,26 +211,10 @@ export async function buildHomeData(
 	const {
 		home, homeLevel
 	} = homeData;
-	const isHomeInCity = Boolean(home && home.cityId === city.id && homeLevel);
-	const apartment = !isHomeInCity && home && homeLevel
-		? await Apartments.getOfPlayerInCity(player.id, city.id)
-		: null;
-	const isApartmentInCity = Boolean(apartment && home && homeLevel);
 
-	let owned: HomeData["owned"];
-	if (isHomeInCity) {
-		owned = await buildOwnedHomeData({
-			player, playerInventory, playerMaterialMap, home: home!, homeLevel: homeLevel!
-		});
-	}
-	else if (isApartmentInCity) {
-		owned = await buildRemoteApartmentHomeData({
-			player, playerInventory, home: home!, homeLevel: homeLevel!
-		});
-	}
-	else {
-		owned = undefined;
-	}
+	const owned = await resolveOwnedHomeData({
+		player, playerInventory, playerMaterialMap, home, homeLevel, city
+	});
 
 	const manage = await buildManageHomeData({
 		player, home, homeLevel, city
