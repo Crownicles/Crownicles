@@ -240,7 +240,9 @@ function generateFields(packet: CommandProfilePacketRes, lng: Language): EmbedFi
 		level: packet.playerData.cooking?.level ?? 0,
 		grade: packet.playerData.cooking?.grade
 			? i18n.t(`models:cooking.grades.${packet.playerData.cooking.grade}`, { lng })
-			: ""
+			: "",
+		experience: packet.playerData.cooking?.experience.value ?? 0,
+		experienceNeededToLevelUp: packet.playerData.cooking?.experience.max ?? 0
 	});
 
 	return fields;

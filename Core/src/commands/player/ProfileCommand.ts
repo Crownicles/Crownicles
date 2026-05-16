@@ -35,6 +35,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 import { getCookingGrade } from "../../../../Lib/src/constants/CookingConstants";
+import { CookingService } from "../../core/cooking/CookingService";
 import Home, { Homes } from "../../core/database/game/models/Home";
 
 /**
@@ -191,6 +192,10 @@ function buildRankData(rank: number, numberOfPlayers: number, score: number): {
 interface ProfileCookingData {
 	level: number;
 	grade: string;
+	experience: {
+		value: number;
+		max: number;
+	};
 }
 
 /**
@@ -203,7 +208,11 @@ function buildCookingData(player: Player, home: Home | null): ProfileCookingData
 	}
 	return {
 		level: player.cookingLevel,
-		grade: getCookingGrade(player.cookingLevel).id
+		grade: getCookingGrade(player.cookingLevel).id,
+		experience: {
+			value: player.cookingExperience,
+			max: CookingService.getXpNeededForLevel(player.cookingLevel)
+		}
 	};
 }
 

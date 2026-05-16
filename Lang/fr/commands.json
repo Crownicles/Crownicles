@@ -743,7 +743,7 @@
     },
     "cooking": {
       "fieldName": "Cuisine :",
-      "fieldValue": "{emote:city.homeUpgrades.cooking} Niveau {{level}} — {{grade}}"
+      "fieldValue": "{emote:city.homeUpgrades.cooking} Niveau {{level}} — {{grade}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}}"
     },
     "playerClass": {
       "fieldName": "Classe :",
