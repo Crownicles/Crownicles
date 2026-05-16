@@ -1441,6 +1441,16 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Timestamp (ms) at which the player will be able to eat again. Returns `Date.now()` if already available.
+	 */
+	public nextMealAvailableAt(): number {
+		if (!this.lastMealAt) {
+			return Date.now();
+		}
+		return this.lastMealAt.valueOf() + PlayersConstants.MEAL_COOLDOWN;
+	}
+
+	/**
 	 * Set the health of the player without any check or other operation
 	 * @param health
 	 */

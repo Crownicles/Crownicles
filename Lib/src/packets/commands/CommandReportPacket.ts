@@ -214,7 +214,9 @@ export class CommandReportEatInnMealRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportEatInnMealCooldownRes extends CrowniclesPacket {}
+export class CommandReportEatInnMealCooldownRes extends CrowniclesPacket {
+	nextAvailableAt!: number;
+}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportSleepRoomRes extends CrowniclesPacket {
