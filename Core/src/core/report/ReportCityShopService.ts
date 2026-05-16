@@ -313,14 +313,14 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 				id: tierTypes[index],
 				price: PlantConstants.getHerbalistPrice(plant),
 				amounts: [1],
-				buyCallback: async (buyResponse: CrowniclesPacket[], playerId: number): Promise<boolean> => {
+				buyCallback: async (buyResponse: CrowniclesPacket[], playerId: number): Promise<BuyCallbackResult> => {
 					const emptySlot = await PlayerPlantSlots.findEmptyPlantSlot(playerId);
 					if (!emptySlot) {
 						buyResponse.push(makePacket(CommandShopNoPlantSlotAvailable, {}));
-						return false;
+						return { success: false };
 					}
 					await PlayerPlantSlots.setPlant(playerId, emptySlot.slot, plant.id);
-					return true;
+					return { success: true };
 				}
 			}))
 		}
