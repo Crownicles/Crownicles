@@ -63,6 +63,7 @@ interface CraftResult {
 	newLevel?: number;
 	newGrade?: string;
 	discoveredRecipeIds: string[];
+	bonusOutput: boolean;
 }
 
 interface RecipeSlotContext {
@@ -360,9 +361,12 @@ export class CookingService {
 
 		// Calculate result and XP
 		const success = !RandomUtils.crowniclesRandom.bool(Math.min(CookingService.getFailureRate(grade, recipe.level), 1));
-		const xp = CookingService.computeCraftXp({
+		const bonusOutput = success && grade.bonusOutputChance > 0
+			&& RandomUtils.crowniclesRandom.realZeroToOneInclusive() < grade.bonusOutputChance;
+		const baseXp = CookingService.computeCraftXp({
 			success, recipe, grade
 		});
+		const xp = bonusOutput ? baseXp * 2 : baseXp;
 		const levelResult = await CookingService.addCookingXp({
 			player, xp
 		});
@@ -377,7 +381,8 @@ export class CookingService {
 			xpGained: xp,
 			materialSaved,
 			...levelResult,
-			discoveredRecipeIds
+			discoveredRecipeIds,
+			bonusOutput
 		};
 	}
 

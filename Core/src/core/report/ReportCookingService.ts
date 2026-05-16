@@ -296,7 +296,6 @@ interface CraftOutputResult {
 	petFood?: CraftPetFoodResult;
 	material?: CraftMaterialResult;
 	failedPotionId?: number;
-	bonusOutput?: boolean;
 	inventorySwapPackets?: CrowniclesPacket[];
 }
 
@@ -310,12 +309,10 @@ async function handlePotionOutput(
 		return {};
 	}
 	let effectiveRarity = recipe.potionRarity;
-	let bonusApplied = false;
 	if (bonus && recipe.potionRarity < ItemRarity.MYTHICAL) {
 		const upgradedRarity = recipe.potionRarity + 1;
 		if (PotionDataController.instance.hasItemWithNatureAndRarity(recipe.potionNature, upgradedRarity)) {
 			effectiveRarity = upgradedRarity;
-			bonusApplied = true;
 		}
 	}
 	if (!PotionDataController.instance.hasItemWithNatureAndRarity(recipe.potionNature, effectiveRarity)) {
@@ -324,9 +321,6 @@ async function handlePotionOutput(
 	const potion = PotionDataController.instance.randomItem(recipe.potionNature, effectiveRarity);
 	const itemReceived = await player.giveItem(potion);
 	const result: CraftOutputResult = { potionId: potion.id };
-	if (bonusApplied) {
-		result.bonusOutput = true;
-	}
 	if (!itemReceived) {
 		result.inventorySwapPackets = [];
 		await giveItemToPlayer(result.inventorySwapPackets, context, player, potion);
@@ -409,9 +403,6 @@ async function handlePetFoodOutput(
 			...surplusResult
 		}
 	};
-	if (bonus) {
-		result.bonusOutput = true;
-	}
 	return result;
 }
 
@@ -458,9 +449,6 @@ async function handleMaterialOutput(
 			quantity: effectiveQuantity
 		}
 	};
-	if (bonus) {
-		result.bonusOutput = true;
-	}
 	return result;
 }
 
@@ -495,7 +483,10 @@ interface CraftOutputParams {
 	context: PacketContext;
 	player: Player;
 	recipe: CookingRecipeData;
-	result: { success: boolean };
+	result: {
+		success: boolean;
+		bonusOutput: boolean;
+	};
 	guild: Guild | null;
 }
 
@@ -503,10 +494,10 @@ async function processSuccessfulCraftOutput({
 	context,
 	player,
 	recipe,
-	guild
-}: Omit<CraftOutputParams, "result">): Promise<CraftOutputResult> {
-	const grade = getCookingGrade(player.cookingLevel);
-	const bonus = RandomUtils.crowniclesRandom.realZeroToOneInclusive() < grade.bonusOutputChance;
+	guild,
+	result
+}: CraftOutputParams): Promise<CraftOutputResult> {
+	const bonus = result.bonusOutput;
 	switch (recipe.outputType) {
 		case CookingOutputType.POTION:
 			return await handlePotionOutput(player, recipe, context, bonus);
@@ -638,6 +629,7 @@ export async function handleCookingCraft(
 		newCookingLevel: result.newLevel,
 		newCookingGrade: result.newGrade,
 		materialSaved: result.materialSaved,
+		bonusOutput: result.bonusOutput,
 		discoveredRecipeIds: result.discoveredRecipeIds,
 		updatedSlots
 	}));
