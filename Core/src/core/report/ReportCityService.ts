@@ -221,8 +221,8 @@ export async function buildHomeData(
 	});
 
 	return {
-		owned,
-		manage
+		...owned ? { owned } : {},
+		...manage ? { manage } : {}
 	};
 }
 
