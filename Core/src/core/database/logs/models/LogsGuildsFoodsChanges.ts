@@ -25,7 +25,7 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: false
 		},
 		total: {
-			type: DataTypes.MEDIUMINT.UNSIGNED,
+			type: DataTypes.SMALLINT.UNSIGNED,
 			allowNull: false
 		},
 		reason: {
