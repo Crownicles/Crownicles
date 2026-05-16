@@ -14,6 +14,7 @@ import {
 	CommandReportApartmentBuyRes,
 	CommandReportApartmentClaimRentRes,
 	CommandReportApartmentClaimRentTooLowRes,
+	CommandReportApartmentRequiresHomeRes,
 	CommandReportNotEnoughMoneyRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -44,6 +45,15 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 	const price = city.apartmentPrice;
 	if (!price) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to buy an apartment in city ${city.id} which has no apartmentPrice configured.`);
+		return;
+	}
+
+	const playerHome = await Homes.getOfPlayer(player.id);
+	if (!playerHome) {
+		response.push(makePacket(CommandReportApartmentRequiresHomeRes, {
+			cityId: city.id,
+			mapLocationId: city.maps[0]
+		}));
 		return;
 	}
 

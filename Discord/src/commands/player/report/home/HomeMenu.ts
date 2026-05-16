@@ -88,6 +88,7 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 		context, interaction, packet, collectorTime, pseudo
 	} = params;
 	const homeData = (packet.data.data as ReactionCollectorCityData).home.owned!;
+	const isApartment = Boolean(homeData.isApartment);
 	const lng = interaction.userLanguage;
 
 	// Build handler context
@@ -102,7 +103,14 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 	};
 
 	// Build home description
-	const descriptionParts: string[] = [i18n.t("commands:report.city.homes.homeIntroduction", { lng })];
+	const descriptionParts: string[] = [
+		i18n.t(
+			isApartment
+				? "commands:report.city.homes.apartmentIntroduction"
+				: "commands:report.city.homes.homeIntroduction",
+			{ lng }
+		)
+	];
 
 	// Add feature descriptions
 	const featureDescriptions = homeFeatureRegistry.getDescriptionLines(handlerContext);
@@ -116,9 +124,14 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.homes.homeTitle", {
-				lng, pseudo
-			})}`
+			`### ${i18n.t(
+				isApartment
+					? "commands:report.city.homes.apartmentTitle"
+					: "commands:report.city.homes.homeTitle",
+				{
+					lng, pseudo
+				}
+			)}`
 		)
 	);
 
@@ -155,7 +168,12 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
 				.setCustomId(HomeMenuIds.LEAVE_HOME)
-				.setLabel(i18n.t("commands:report.city.homes.leaveHome", { lng }))
+				.setLabel(i18n.t(
+					isApartment
+						? "commands:report.city.homes.leaveApartment"
+						: "commands:report.city.homes.leaveHome",
+					{ lng }
+				))
 				.setEmoji(CrowniclesIcons.collectors.back)
 				.setStyle(ButtonStyle.Secondary),
 			createStayInCityButton(lng)
