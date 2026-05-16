@@ -609,6 +609,30 @@ export class ReactionCollectorCity extends ReactionCollector {
 		return reactions;
 	}
 
+	private buildApartmentNotaryReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		const notary = this.data.apartmentNotary;
+		if (!notary) {
+			return [];
+		}
+		const reactions: {
+			type: string; data: ReactionCollectorReaction;
+		}[] = [];
+
+		if (notary.forSale) {
+			reactions.push(this.buildReaction(ReactionCollectorApartmentBuyReaction, {}));
+		}
+
+		for (const owned of notary.ownedApartments) {
+			reactions.push(this.buildReaction(ReactionCollectorApartmentClaimRentReaction, {
+				apartmentId: owned.apartmentId
+			}));
+		}
+
+		return reactions;
+	}
+
 	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
 		return {
 			id,
@@ -622,7 +646,8 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildHomeManageReaction(),
 				...this.buildHomeFeatureReactions(),
 				...this.buildBlacksmithReactions(),
-				...this.buildGuildDomainReactions()
+				...this.buildGuildDomainReactions(),
+				...this.buildApartmentNotaryReactions()
 			],
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data
