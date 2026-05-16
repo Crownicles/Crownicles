@@ -976,7 +976,7 @@
         "embedTitle": "{{pseudo}}, vous êtes à l'auberge !",
         "eatMealTitle": "{{pseudo}}, vous mangez à l'auberge !",
         "eatMealDescription": "{emote:city.inn} Vous mangez le plat qui a vous a été servi avec appétit ! Cela vous rend **{{energy}}** {emote:unitValues.energy}. Vous n'oubliez pas de payer la note de **{{price}}** {emote:unitValues.lostMoney}.",
-        "eatMealCooldown": "Vous digérez encore le dernier repas que vous avez pris à l'auberge et vous n'avez pas vraiment faim pour le moment. Attendez une demi-journée entre chaque repas."
+        "eatMealCooldown": "Vous digérez encore le dernier repas que vous avez pris à l'auberge et vous n'avez pas vraiment faim pour le moment. Vous pourrez à nouveau manger <t:{{nextAvailableAt}}:R>."
       },
       "enchanter": {
         "title": "{{pseudo}}, vous rencontrez l'enchanteur",
@@ -1127,7 +1127,7 @@
           "restTitle": "{{pseudo}}, vous vous reposez !",
           "restDescription": "{emote:city.homeUpgrades.bed} Vous vous allongez dans votre lit et fermez les yeux quelques instants. Ce petit repos vous fait le plus grand bien ! Vous récupérez **{{health}}** {emote:unitValues.health}.",
           "alreadyFull": "Vous êtes déjà en pleine forme ! Votre lit ne vous sera utile que lorsque vous aurez besoin de vous reposer.",
-          "cooldown": "Vous avez déjà profité d'un lit aujourd'hui. Repassez vous reposer <t:{{nextAvailableAt}}:R>."
+          "cooldown": "Vous avez déjà profité d'un lit aujourd'hui et n'avez pas vraiment sommeil pour le moment. Repassez vous reposer <t:{{nextAvailableAt}}:R>."
         },
         "chest": {
           "menuLabel": "Coffre de rangement",

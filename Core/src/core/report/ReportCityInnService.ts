@@ -31,7 +31,9 @@ export async function handleInnMealReaction(
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	if (!player.canEat()) {
-		response.push(makePacket(CommandReportEatInnMealCooldownRes, {}));
+		response.push(makePacket(CommandReportEatInnMealCooldownRes, {
+			nextAvailableAt: player.nextMealAvailableAt()
+		}));
 		return;
 	}
 	if (reaction.meal.price > player.money) {
@@ -49,7 +51,9 @@ export async function handleInnMealReaction(
 		 * acquisition.
 		 */
 		if (!lockedPlayer.canEat()) {
-			response.push(makePacket(CommandReportEatInnMealCooldownRes, {}));
+			response.push(makePacket(CommandReportEatInnMealCooldownRes, {
+				nextAvailableAt: lockedPlayer.nextMealAvailableAt()
+			}));
 			return;
 		}
 		if (reaction.meal.price > lockedPlayer.money) {

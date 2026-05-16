@@ -125,8 +125,10 @@ export default class ReportCommandPacketHandlers {
 	}
 
 	@packetHandler(CommandReportEatInnMealCooldownRes)
-	async reportEatInnMealCooldownRes(context: PacketContext, _packet: CommandReportEatInnMealCooldownRes): Promise<void> {
-		await handleClassicError(context, "commands:report.city.inns.eatMealCooldown");
+	async reportEatInnMealCooldownRes(context: PacketContext, packet: CommandReportEatInnMealCooldownRes): Promise<void> {
+		await handleClassicError(context, "commands:report.city.inns.eatMealCooldown", {
+			nextAvailableAt: Math.floor(packet.nextAvailableAt / 1000)
+		});
 	}
 
 	@packetHandler(CommandReportSleepRoomRes)
