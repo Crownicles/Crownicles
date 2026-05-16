@@ -45,7 +45,7 @@ export class City extends Data<string> {
 
 	/**
 	 * Multiplier applied to the base home cost (purchase + upgrades) for this city.
-	 * Allows minor variation between cities (~+/- 5%) without modifying the base ladder.
+	 * Allows minor variation between cities (currently within ~+/- 8%) without modifying the base ladder.
 	 * Defaults to 1 if not specified.
 	 */
 	public readonly homePriceMultiplier?: number;
@@ -88,9 +88,17 @@ export class City extends Data<string> {
 		if (cityPopulationCounts.length === 0) {
 			return HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED;
 		}
+		const targetEntry = cityPopulationCounts.find(c => c.cityId === this.id);
+
+		/*
+		 * `cityPopulationCounts` only includes cities that already have homes, so an absent
+		 * city has zero homes and is necessarily tied for the fewest -> least-populated price.
+		 */
+		if (!targetEntry) {
+			return HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED;
+		}
 		const minCount = Math.min(...cityPopulationCounts.map(c => c.count));
-		const targetCount = cityPopulationCounts.find(c => c.cityId === this.id)?.count ?? 0;
-		return targetCount === minCount
+		return targetEntry.count === minCount
 			? HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED
 			: HomeConstants.MOVE_HOME_PRICE_DEFAULT;
 	}
