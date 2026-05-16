@@ -44,6 +44,13 @@ export class City extends Data<string> {
 	public readonly hasBlacksmith?: boolean;
 
 	/**
+	 * Multiplier applied to the base home cost (purchase + upgrades) for this city.
+	 * Allows minor variation between cities (currently within ~+/- 8%) without modifying the base ladder.
+	 * Defaults to 1 if not specified.
+	 */
+	public readonly homePriceMultiplier?: number;
+
+	/**
 	 * Check if the city has a blacksmith
 	 * Returns true by default if not explicitly set to false
 	 */
@@ -69,29 +76,39 @@ export class City extends Data<string> {
 		return meals;
 	}
 
-	public getHomeLevelPrice(homeLevel: HomeLevel, cityPopulationCounts: {
+	/**
+	 * Compute the price (in coins) for a player to move their home to this city.
+	 * Returns the reduced "least populated" price when this city is tied for the fewest homes,
+	 * otherwise the default flat price. The home level does not affect the move price.
+	 */
+	public getMovePrice(cityPopulationCounts: {
 		cityId: string;
 		count: number;
 	}[]): number {
-		// Get population values
-		const totalPopulation = cityPopulationCounts.reduce((sum, city) => sum + city.count, 0);
-		const cityPopulation = cityPopulationCounts.find(city => city.cityId === this.id)?.count || 0;
-		const isTheMostPopularCity = cityPopulationCounts.length === 0 || cityPopulation === Math.max(...cityPopulationCounts.map(city => city.count));
-
-		// Calculate ponderation
-		let ponderation = totalPopulation === 0 ? 0 : cityPopulation / totalPopulation;
-		if (ponderation < HomeConstants.PONDERATION_MINIMUM) {
-			ponderation = HomeConstants.PONDERATION_MINIMUM;
+		if (cityPopulationCounts.length === 0) {
+			return HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED;
 		}
+		const targetEntry = cityPopulationCounts.find(c => c.cityId === this.id);
 
-		// Calculate price
-		let price = homeLevel.cost;
-		price *= ponderation;
-		if (isTheMostPopularCity) {
-			price *= HomeConstants.MOST_POPULATED_CITY_PRICE_MALUS;
+		/*
+		 * `cityPopulationCounts` only includes cities that already have homes, so an absent
+		 * city has zero homes and is necessarily tied for the fewest -> least-populated price.
+		 */
+		if (!targetEntry) {
+			return HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED;
 		}
+		const minCount = Math.min(...cityPopulationCounts.map(c => c.count));
+		return targetEntry.count === minCount
+			? HomeConstants.MOVE_HOME_PRICE_LEAST_POPULATED
+			: HomeConstants.MOVE_HOME_PRICE_DEFAULT;
+	}
 
-		return Math.floor(price);
+	/**
+	 * Compute the price for buying or upgrading to a given home level in this city.
+	 * Applies the city's `homePriceMultiplier` (defaults to 1) on the base ladder cost.
+	 */
+	public getHomeLevelPrice(homeLevel: HomeLevel): number {
+		return Math.round(homeLevel.cost * (this.homePriceMultiplier ?? 1));
 	}
 }
 

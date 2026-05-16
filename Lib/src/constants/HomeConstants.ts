@@ -1,9 +1,17 @@
 export type ChestAction = typeof HomeConstants.CHEST_ACTIONS[keyof typeof HomeConstants.CHEST_ACTIONS];
 
 export abstract class HomeConstants {
-	public static readonly PONDERATION_MINIMUM = 0.5;
+	/**
+	 * Flat price (in coins) to move an existing home to a different city.
+	 * Independent of the home's level and the target city.
+	 */
+	public static readonly MOVE_HOME_PRICE_DEFAULT = 15_000;
 
-	public static readonly MOST_POPULATED_CITY_PRICE_MALUS = 1.2;
+	/**
+	 * Reduced price applied when the target city is one of the least-populated cities.
+	 * Acts as a soft incentive against player concentration in popular cities.
+	 */
+	public static readonly MOVE_HOME_PRICE_LEAST_POPULATED = 1_000;
 
 	public static readonly CHEST_ACTIONS = {
 		DEPOSIT: "deposit",

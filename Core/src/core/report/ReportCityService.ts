@@ -212,14 +212,14 @@ interface ExistingHomeManageParams {
 
 function getUpgradeOption(params: ExistingHomeManageParams): ManageOptions["upgrade"] {
 	const {
-		homeLevel, player, isHomeInCity, city, homesCount
+		homeLevel, player, isHomeInCity, city
 	} = params;
 	const nextHomeUpgrade = HomeLevel.getNextUpgrade(homeLevel, player.level);
 	if (!nextHomeUpgrade || !isHomeInCity) {
 		return undefined;
 	}
 	return {
-		price: city.getHomeLevelPrice(nextHomeUpgrade, homesCount),
+		price: city.getHomeLevelPrice(nextHomeUpgrade),
 		oldFeatures: homeLevel.features,
 		newFeatures: nextHomeUpgrade.features
 	};
@@ -227,12 +227,12 @@ function getUpgradeOption(params: ExistingHomeManageParams): ManageOptions["upgr
 
 function getMovePrice(params: ExistingHomeManageParams): number | undefined {
 	const {
-		home, homeLevel, city, homesCount
+		home, city, homesCount
 	} = params;
 	if (home.cityId === city.id) {
 		return undefined;
 	}
-	return city.getHomeLevelPrice(homeLevel, homesCount);
+	return city.getMovePrice(homesCount);
 }
 
 function buildExistingHomeOptions(params: ExistingHomeManageParams): ManageOptions | undefined {
@@ -261,7 +261,7 @@ function buildManageOptions(params: {
 	} = params;
 
 	if (!home) {
-		return { newPrice: city.getHomeLevelPrice(HomeLevel.getInitialLevel(), homesCount) };
+		return { newPrice: city.getHomeLevelPrice(HomeLevel.getInitialLevel()) };
 	}
 
 	if (!homeLevel) {
