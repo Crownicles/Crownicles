@@ -499,8 +499,6 @@ export class CommandReportCookingIgniteRes extends CrowniclesPacket {
 
 	woodMaterialId!: number;
 
-	furnaceUsesRemaining!: number;
-
 	cookingGrade!: string;
 
 	cookingLevel!: number;
@@ -508,11 +506,6 @@ export class CommandReportCookingIgniteRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingNoWoodRes extends CrowniclesPacket {}
-
-@sendablePacket(PacketDirection.NONE)
-export class CommandReportCookingOverheatRes extends CrowniclesPacket {
-	overheatUntil!: number;
-}
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingReviveReq extends CrowniclesPacket {}
@@ -524,8 +517,6 @@ export class CommandReportCookingReviveRes extends CrowniclesPacket {
 	woodConsumed!: boolean;
 
 	woodMaterialId!: number;
-
-	furnaceUsesRemaining!: number;
 
 	cookingGrade!: string;
 
@@ -579,13 +570,13 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	materialSaved?: number;
 
+	bonusOutput?: boolean;
+
 	discoveredRecipeIds?: string[];
 
 	error?: CookingCraftError;
 
 	updatedSlots?: CookingSlotData[];
-
-	furnaceUsesRemaining?: number;
 }
 
 // ---- Cooking menu & pin packets ----

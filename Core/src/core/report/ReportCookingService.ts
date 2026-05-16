@@ -6,7 +6,6 @@ import {
 	CommandReportCookingIgniteReq,
 	CommandReportCookingIgniteRes,
 	CommandReportCookingNoWoodRes,
-	CommandReportCookingOverheatRes,
 	CommandReportCookingWoodConfirmRes,
 	CommandReportCookingWoodConfirmReq,
 	CommandReportCookingReviveReq,
@@ -47,10 +46,12 @@ import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	getCookingGrade, FURNACE_MAX_USES_PER_DAY, CookingOutputType, CookingOutputTypeValue,
+	getCookingGrade, CookingOutputType, CookingOutputTypeValue,
 	FAILED_CRAFT_CONSOLATION_CHANCE, FAILED_CRAFT_CONSOLATION_MIN_RARITY, FAILED_CRAFT_CONSOLATION_MAX_RARITY
 } from "../../../../Lib/src/constants/CookingConstants";
-import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemNature, ItemRarity
+} from "../../../../Lib/src/constants/ItemConstants";
 import { giveItemToPlayer } from "../utils/ItemUtils";
 import {
 	asMinutes, minutesToMilliseconds
@@ -132,7 +133,6 @@ interface IgniteOrReviveParams {
 	slots: CookingSlotData[];
 	woodConsumed: boolean;
 	woodMaterialId: number;
-	furnaceUsesToday: number;
 	cookingLevel: number;
 }
 
@@ -144,7 +144,6 @@ function buildIgniteOrReviveResponse(
 ): CommandReportCookingIgniteRes | CommandReportCookingReviveRes {
 	return makePacket(PacketClass, {
 		...params,
-		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - params.furnaceUsesToday,
 		cookingGrade: getCookingGrade(params.cookingLevel).id
 	});
 }
@@ -189,14 +188,6 @@ async function igniteOrReviveFurnace(
 		player, home, cookingSlots
 	} = data;
 
-	// Check overheat
-	if (CookingService.isFurnaceOverheated(player)) {
-		response.push(makePacket(CommandReportCookingOverheatRes, {
-			overheatUntil: new Date(player.furnaceOverheatUntil!).getTime()
-		}));
-		return;
-	}
-
 	// Get wood
 	const wood = await CookingService.getWoodToConsume(player.id);
 	if (!wood) {
@@ -227,15 +218,18 @@ async function igniteOrReviveFurnace(
 		await Materials.consumeMaterial(player.id, wood.materialId, 1);
 	}
 
-	// Advance furnace position and increment usage
-	player.furnacePosition++;
-	await CookingService.incrementFurnaceUsage(player);
+	// Advance furnace position under lock; sync in-memory player from the locked instance
+	await Player.withLocked(player.id, async lockedPlayer => {
+		lockedPlayer.furnacePosition++;
+		await lockedPlayer.save();
+		player.furnacePosition = lockedPlayer.furnacePosition;
+	});
 
 	const slots = await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	});
 	response.push(buildIgniteOrReviveResponse(PacketClass, {
-		slots, woodConsumed: !woodSaved, woodMaterialId: wood.materialId, furnaceUsesToday: player.furnaceUsesToday, cookingLevel: player.cookingLevel
+		slots, woodConsumed: !woodSaved, woodMaterialId: wood.materialId, cookingLevel: player.cookingLevel
 	}));
 }
 
@@ -271,16 +265,19 @@ export async function handleCookingWoodConfirm(
 	// Consume the confirmed wood (no save buff — player already confirmed rare wood)
 	await Materials.consumeMaterial(player.id, pending.materialId, 1);
 
-	// Advance furnace position and increment usage
-	player.furnacePosition++;
-	await CookingService.incrementFurnaceUsage(player);
+	// Advance furnace position under lock; sync in-memory player from the locked instance
+	await Player.withLocked(player.id, async lockedPlayer => {
+		lockedPlayer.furnacePosition++;
+		await lockedPlayer.save();
+		player.furnacePosition = lockedPlayer.furnacePosition;
+	});
 
 	const slots = await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	});
 	const ResponseClass = pending.isRevive ? CommandReportCookingReviveRes : CommandReportCookingIgniteRes;
 	response.push(buildIgniteOrReviveResponse(ResponseClass, {
-		slots, woodConsumed: true, woodMaterialId: pending.materialId, furnaceUsesToday: player.furnaceUsesToday, cookingLevel: player.cookingLevel
+		slots, woodConsumed: true, woodMaterialId: pending.materialId, cookingLevel: player.cookingLevel
 	}));
 	return response;
 }
@@ -302,18 +299,44 @@ interface CraftOutputResult {
 	inventorySwapPackets?: CrowniclesPacket[];
 }
 
-async function handlePotionOutput(
-	player: Player,
-	recipe: CookingRecipeData,
-	context: PacketContext
-): Promise<CraftOutputResult> {
+/**
+ * Returns the effective potion rarity to award, honoring the
+ * MYTHICAL cap and falling back to the base rarity if the
+ * upgraded one has no available item. Returns null if no item
+ * exists for the base rarity either.
+ */
+function computeEffectivePotionRarity(nature: number, baseRarity: number, bonus: boolean): number | null {
+	let effective = baseRarity;
+	if (bonus && baseRarity < ItemRarity.MYTHICAL) {
+		const upgraded = baseRarity + 1;
+		if (PotionDataController.instance.hasItemWithNatureAndRarity(nature, upgraded)) {
+			effective = upgraded;
+		}
+	}
+	if (!PotionDataController.instance.hasItemWithNatureAndRarity(nature, effective)) {
+		return null;
+	}
+	return effective;
+}
+
+interface PotionOutputParams {
+	player: Player;
+	recipe: CookingRecipeData;
+	context: PacketContext;
+	bonus: boolean;
+}
+
+async function handlePotionOutput({
+	player, recipe, context, bonus
+}: PotionOutputParams): Promise<CraftOutputResult> {
 	if (recipe.potionNature === undefined || recipe.potionRarity === undefined) {
 		return {};
 	}
-	if (!PotionDataController.instance.hasItemWithNatureAndRarity(recipe.potionNature, recipe.potionRarity)) {
+	const effectiveRarity = computeEffectivePotionRarity(recipe.potionNature, recipe.potionRarity, bonus);
+	if (effectiveRarity === null) {
 		return {};
 	}
-	const potion = PotionDataController.instance.randomItem(recipe.potionNature, recipe.potionRarity);
+	const potion = PotionDataController.instance.randomItem(recipe.potionNature, effectiveRarity);
 	const itemReceived = await player.giveItem(potion);
 	const result: CraftOutputResult = { potionId: potion.id };
 	if (!itemReceived) {
@@ -323,16 +346,21 @@ async function handlePotionOutput(
 	return result;
 }
 
+interface PetFoodLockParams {
+	guildId: number;
+	recipe: CookingRecipeData;
+	effectiveQuantity: number;
+}
+
 /**
  * Run the locked critical section that re-reads the guild
  * pantry, computes available space, and stores as much pet food
  * as fits before saving the guild row. Returns the actually
  * stored quantity so the caller can compute the surplus.
  */
-async function runPetFoodOutputUnderLock(
-	guildId: number,
-	recipe: CookingRecipeData
-): Promise<number> {
+async function runPetFoodOutputUnderLock({
+	guildId, recipe, effectiveQuantity
+}: PetFoodLockParams): Promise<number> {
 	if (!recipe.petFood) {
 		return 0;
 	}
@@ -341,7 +369,7 @@ async function runPetFoodOutputUnderLock(
 			[Guild.lockKey(guildId)] as const,
 			async ([lockedGuild]) => {
 				const availableSpace = CookingService.getAvailableFoodSpace(lockedGuild, recipe.petFood!.type);
-				const storedQuantity = Math.min(recipe.petFood!.quantity, availableSpace);
+				const storedQuantity = Math.min(effectiveQuantity, availableSpace);
 				if (storedQuantity > 0) {
 					lockedGuild.addFood(recipe.petFood!.type, storedQuantity, NumberChangeReason.COOKING);
 					await lockedGuild.save();
@@ -363,14 +391,21 @@ async function runPetFoodOutputUnderLock(
 	}
 }
 
-async function handlePetFoodOutput(
-	player: Player,
-	recipe: CookingRecipeData,
-	guild: Guild
-): Promise<CraftOutputResult> {
+interface PetFoodOutputParams {
+	player: Player;
+	recipe: CookingRecipeData;
+	guild: Guild;
+	bonus: boolean;
+}
+
+async function handlePetFoodOutput({
+	player, recipe, guild, bonus
+}: PetFoodOutputParams): Promise<CraftOutputResult> {
 	if (!recipe.petFood) {
 		return {};
 	}
+
+	const effectiveQuantity = recipe.petFood.quantity + (bonus ? 1 : 0);
 
 	/*
 	 * Lock the guild row so two concurrent cookings from
@@ -379,9 +414,11 @@ async function handlePetFoodOutput(
 	 * we read inside the critical section so the available-space
 	 * check is consistent with the eventual save.
 	 */
-	const storedQuantity = await runPetFoodOutputUnderLock(guild.id, recipe);
+	const storedQuantity = await runPetFoodOutputUnderLock({
+		guildId: guild.id, recipe, effectiveQuantity
+	});
 
-	const surplus = recipe.petFood.quantity - storedQuantity;
+	const surplus = effectiveQuantity - storedQuantity;
 	const surplusResult = surplus > 0
 		? await handlePetFoodSurplus(player, recipe, surplus)
 		: {};
@@ -389,7 +426,7 @@ async function handlePetFoodOutput(
 	return {
 		petFood: {
 			type: recipe.petFood.type,
-			quantity: recipe.petFood.quantity,
+			quantity: effectiveQuantity,
 			storedQuantity,
 			...surplusResult
 		}
@@ -423,18 +460,24 @@ async function handlePetFoodSurplus(
 	return result;
 }
 
-async function handleMaterialOutput(
-	player: Player,
-	recipe: CookingRecipeData
-): Promise<CraftOutputResult> {
+interface MaterialOutputParams {
+	player: Player;
+	recipe: CookingRecipeData;
+	bonus: boolean;
+}
+
+async function handleMaterialOutput({
+	player, recipe, bonus
+}: MaterialOutputParams): Promise<CraftOutputResult> {
 	if (recipe.outputMaterialId === undefined || recipe.outputMaterialQuantity === undefined) {
 		return {};
 	}
-	await Materials.giveMaterial(player.id, recipe.outputMaterialId, recipe.outputMaterialQuantity);
+	const effectiveQuantity = recipe.outputMaterialQuantity + (bonus ? 1 : 0);
+	await Materials.giveMaterial(player.id, recipe.outputMaterialId, effectiveQuantity);
 	return {
 		material: {
 			materialId: recipe.outputMaterialId,
-			quantity: recipe.outputMaterialQuantity
+			quantity: effectiveQuantity
 		}
 	};
 }
@@ -470,7 +513,10 @@ interface CraftOutputParams {
 	context: PacketContext;
 	player: Player;
 	recipe: CookingRecipeData;
-	result: { success: boolean };
+	result: {
+		success: boolean;
+		bonusOutput: boolean;
+	};
 	guild: Guild | null;
 }
 
@@ -478,15 +524,25 @@ async function processSuccessfulCraftOutput({
 	context,
 	player,
 	recipe,
-	guild
-}: Omit<CraftOutputParams, "result">): Promise<CraftOutputResult> {
+	guild,
+	result
+}: CraftOutputParams): Promise<CraftOutputResult> {
+	const bonus = result.bonusOutput;
 	switch (recipe.outputType) {
 		case CookingOutputType.POTION:
-			return await handlePotionOutput(player, recipe, context);
+			return await handlePotionOutput({
+				player, recipe, context, bonus
+			});
 		case CookingOutputType.PET_FOOD:
-			return guild ? await handlePetFoodOutput(player, recipe, guild) : {};
+			return guild
+				? await handlePetFoodOutput({
+					player, recipe, guild, bonus
+				})
+				: {};
 		case CookingOutputType.MATERIAL:
-			return await handleMaterialOutput(player, recipe);
+			return await handleMaterialOutput({
+				player, recipe, bonus
+			});
 		default:
 			return {};
 	}
@@ -611,9 +667,9 @@ export async function handleCookingCraft(
 		newCookingLevel: result.newLevel,
 		newCookingGrade: result.newGrade,
 		materialSaved: result.materialSaved,
+		bonusOutput: result.bonusOutput,
 		discoveredRecipeIds: result.discoveredRecipeIds,
-		updatedSlots,
-		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - player.furnaceUsesToday
+		updatedSlots
 	}));
 	if (outputResult.inventorySwapPackets) {
 		response.push(...outputResult.inventorySwapPackets);

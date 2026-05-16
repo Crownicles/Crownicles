@@ -25,7 +25,6 @@ import {
 	CommandReportCookingIgniteReq,
 	CommandReportCookingIgniteRes,
 	CommandReportCookingNoWoodRes,
-	CommandReportCookingOverheatRes,
 	CommandReportCookingWoodConfirmReq,
 	CommandReportCookingWoodConfirmRes,
 	CommandReportCookingReviveReq,
@@ -44,14 +43,12 @@ import {
 	RecipeIngredients
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
-import { finishInTimeDisplay } from "../../../../../../../Lib/src/utils/TimeUtils";
 import { PacketUtils } from "../../../../../utils/PacketUtils";
 import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 
 interface CookingSessionState {
 	currentSlots: CookingSlotData[];
-	furnaceUsesRemaining: number;
 	cookingGrade: string;
 	cookingLevel: number;
 	craftPending: boolean;
@@ -68,7 +65,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (!state) {
 			state = {
 				currentSlots: [],
-				furnaceUsesRemaining: 0,
 				cookingGrade: getCookingGrade(0).id,
 				cookingLevel: 0,
 				craftPending: false
@@ -285,7 +281,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private updateStateFromIgniteResponse(ctx: HomeFeatureHandlerContext, response: CommandReportCookingIgniteRes | CommandReportCookingReviveRes): void {
 		const state = this.getState(ctx);
 		state.currentSlots = response.slots;
-		state.furnaceUsesRemaining = response.furnaceUsesRemaining;
 		state.cookingGrade = response.cookingGrade;
 		state.cookingLevel = response.cookingLevel;
 	}
@@ -301,22 +296,17 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Build the ignited furnace header description (uses remaining + level + advice)
+	 * Build the ignited furnace header description (level + advice)
 	 */
 	private buildIgnitedDescription(ctx: HomeFeatureHandlerContext): string {
 		const state = this.getState(ctx);
 		const grade: CookingGradeDefinition = getCookingGrade(state.cookingLevel);
-		let description = i18n.t("commands:report.city.homes.cooking.usesRemaining", {
-			lng: ctx.lng,
-			count: state.furnaceUsesRemaining
-		});
-		description += `\n${i18n.t("commands:report.city.homes.cooking.levelInfo", {
+		return i18n.t("commands:report.city.homes.cooking.levelInfo", {
 			lng: ctx.lng,
 			level: state.cookingLevel,
 			grade: i18n.t(`models:cooking.grades.${state.cookingGrade}`, { lng: ctx.lng }),
 			maxLevel: grade.maxRecipeLevelWithoutPenalty
-		})}`;
-		return description;
+		});
 	}
 
 	/**
@@ -623,18 +613,15 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildIgnitedActionRow(ctx: HomeFeatureHandlerContext, allDisabled = false): ActionRowBuilder<ButtonBuilder> {
 		const row = new ActionRowBuilder<ButtonBuilder>();
-		const state = this.getState(ctx);
 
-		if (state.furnaceUsesRemaining > 0) {
-			row.addComponents(
-				new ButtonBuilder()
-					.setCustomId(HomeMenuIds.COOKING_REVIVE)
-					.setLabel(i18n.t("commands:report.city.homes.cooking.reviveButton", { lng: ctx.lng }))
-					.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
-					.setStyle(ButtonStyle.Success)
-					.setDisabled(allDisabled)
-			);
-		}
+		row.addComponents(
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.COOKING_REVIVE)
+				.setLabel(i18n.t("commands:report.city.homes.cooking.reviveButton", { lng: ctx.lng }))
+				.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.cooking)!)
+				.setStyle(ButtonStyle.Success)
+				.setDisabled(allDisabled)
+		);
 
 		row.addComponents(
 			new ButtonBuilder()
@@ -688,21 +675,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 							createCollector: this.createCookingCollector(ctx)
 						});
 					}
-					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
-					return;
-				}
-
-				if (packetName === CommandReportCookingOverheatRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingOverheatRes;
-					this.getState(ctx).furnaceUsesRemaining = 0;
-					const overheatMessage = `\n\n${i18n.t("commands:report.city.homes.cooking.overheat", {
-						lng: ctx.lng,
-						time: finishInTimeDisplay(new Date(response.overheatUntil))
-					})}`;
-					nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
-						containers: [this.buildCookingContainer(ctx, overheatMessage)],
-						createCollector: this.createCookingCollector(ctx)
-					});
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 					return;
 				}
@@ -816,10 +788,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private updateStateFromCraftResponse(state: CookingSessionState, response: CommandReportCookingCraftRes): void {
 		if (response.updatedSlots) {
 			state.currentSlots = response.updatedSlots;
-		}
-
-		if (response.furnaceUsesRemaining !== undefined) {
-			state.furnaceUsesRemaining = response.furnaceUsesRemaining;
 		}
 
 		if (response.cookingLevelUp && response.newCookingLevel !== undefined) {
@@ -953,6 +921,12 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			message += `\n${i18n.t("commands:report.city.homes.cooking.materialSaved", {
 				lng: ctx.lng,
 				materialId: response.materialSaved
+			})}`;
+		}
+
+		if (response.bonusOutput) {
+			message += `\n${i18n.t("commands:report.city.homes.cooking.bonusOutput", {
+				lng: ctx.lng
 			})}`;
 		}
 
