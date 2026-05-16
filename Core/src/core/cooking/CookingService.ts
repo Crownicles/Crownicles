@@ -26,8 +26,6 @@ import {
 	CookingXpConstants,
 	FAILURE_RATE_PER_EXTRA_LEVEL,
 	NO_XP_LEVEL_THRESHOLD,
-	FURNACE_MAX_USES_PER_DAY,
-	FURNACE_MIN_OVERHEAT_MS,
 	CookingOutputType,
 	SECRET_RECIPE_PLACEHOLDER,
 	SLOT_CONFIGS
@@ -43,7 +41,7 @@ import {
 } from "../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 import {
-	getTomorrowMidnight, getDayNumber
+	getDayNumber
 } from "../../../../Lib/src/utils/TimeUtils";
 
 interface MaterialStock {
@@ -146,54 +144,6 @@ export class CookingService {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Check if furnace is overheated
-	 */
-	static isFurnaceOverheated(player: Player): boolean {
-		if (!player.furnaceOverheatUntil) {
-			return false;
-		}
-		return new Date() < new Date(player.furnaceOverheatUntil);
-	}
-
-	/**
-	 * Reset daily furnace counter if day changed
-	 */
-	static async resetDailyCounterIfNeeded(player: Player): Promise<void> {
-		const today = new Date();
-		today.setHours(0, 0, 0, 0);
-
-		if (!player.furnaceLastUseDate || new Date(player.furnaceLastUseDate) < today) {
-			player.furnaceUsesToday = 0;
-			player.furnaceLastUseDate = new Date();
-			await player.save();
-		}
-	}
-
-	/**
-	 * Increment furnace usage and trigger overheat if limit reached
-	 */
-	static async incrementFurnaceUsage(player: Player): Promise<boolean> {
-		await CookingService.resetDailyCounterIfNeeded(player);
-
-		player.furnaceUsesToday++;
-		player.furnaceLastUseDate = new Date();
-
-		if (player.furnaceUsesToday >= FURNACE_MAX_USES_PER_DAY) {
-			const now = new Date();
-			const tomorrow = getTomorrowMidnight();
-
-			const msUntilTomorrow = tomorrow.getTime() - now.getTime();
-
-			player.furnaceOverheatUntil = new Date(
-				now.getTime() + Math.max(msUntilTomorrow, FURNACE_MIN_OVERHEAT_MS)
-			);
-		}
-
-		await player.save();
-		return player.furnaceUsesToday >= FURNACE_MAX_USES_PER_DAY;
 	}
 
 	/**

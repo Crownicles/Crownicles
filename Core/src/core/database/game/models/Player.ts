@@ -201,12 +201,6 @@ export class Player extends Model {
 
 	declare lastBedUsedAt: Date | null;
 
-	declare furnaceUsesToday: number;
-
-	declare furnaceLastUseDate: Date | null;
-
-	declare furnaceOverheatUntil: Date | null;
-
 	declare furnacePosition: number;
 
 	declare pinnedCookingRecipeId: string | null;
@@ -2033,20 +2027,6 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: 0
 		},
 		lastBedUsedAt: {
-			type: DataTypes.DATE,
-			allowNull: true,
-			defaultValue: null
-		},
-		furnaceUsesToday: {
-			type: DataTypes.INTEGER,
-			defaultValue: 0
-		},
-		furnaceLastUseDate: {
-			type: DataTypes.DATE,
-			allowNull: true,
-			defaultValue: null
-		},
-		furnaceOverheatUntil: {
 			type: DataTypes.DATE,
 			allowNull: true,
 			defaultValue: null

@@ -96,7 +96,6 @@ import { PacketUtils } from "../../src/utils/PacketUtils";
 import {
 	CommandReportCookingIgniteRes,
 	CommandReportCookingNoWoodRes,
-	CommandReportCookingOverheatRes,
 	CommandReportCookingWoodConfirmReq,
 	CommandReportCookingReviveRes,
 	CommandReportCookingCraftRes,
@@ -411,7 +410,6 @@ describe("CookingFeatureHandler", () => {
 
 				await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
 					slots: [createSlotWithRecipe({ slotIndex: 0 }), createEmptySlot(1)],
-					furnaceUsesRemaining: 3,
 					cookingGrade: "apprentice",
 					cookingLevel: 5,
 					woodConsumed: true,
@@ -441,28 +439,6 @@ describe("CookingFeatureHandler", () => {
 				await simulateMqttResponse(CommandReportCookingNoWoodRes.name, {});
 
 				// Should re-register cooking menu (not ignited menu) since no slots yet
-				expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
-					HomeMenuIds.COOKING_MENU,
-					expect.objectContaining({
-						containers: expect.any(Array)
-					})
-				);
-				expect(nestedMenus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.COOKING_MENU);
-			});
-
-			it("should handle overheat response during ignite", async () => {
-				const ctx = createHandlerContext({
-					homeData: createCookingHomeData(2)
-				});
-				const interaction = createMockComponentInteraction(HomeMenuIds.COOKING_IGNITE);
-				const nestedMenus = createMockNestedMenus();
-
-				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, interaction as any, nestedMenus as any);
-
-				await simulateMqttResponse(CommandReportCookingOverheatRes.name, {
-					overheatUntil: Date.now() + 300000
-				} as CommandReportCookingOverheatRes);
-
 				expect(nestedMenus.registerMenu).toHaveBeenCalledWith(
 					HomeMenuIds.COOKING_MENU,
 					expect.objectContaining({
@@ -510,7 +486,6 @@ describe("CookingFeatureHandler", () => {
 
 				await simulateMqttResponse(CommandReportCookingReviveRes.name, {
 					slots: [createSlotWithRecipe({ slotIndex: 0 })],
-					furnaceUsesRemaining: 2,
 					cookingGrade: "apprentice",
 					cookingLevel: 5,
 					woodConsumed: false,
@@ -535,7 +510,6 @@ describe("CookingFeatureHandler", () => {
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, igniteInteraction as any, createMockNestedMenus() as any);
 				await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
 					slots: [createSlotWithRecipe()],
-					furnaceUsesRemaining: 3,
 					cookingGrade: "apprentice",
 					cookingLevel: 5,
 					woodConsumed: true,
@@ -572,7 +546,6 @@ describe("CookingFeatureHandler", () => {
 
 				await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
 					slots: [createSlotWithRecipe()],
-					furnaceUsesRemaining: 3,
 					cookingGrade: "apprentice",
 					cookingLevel: 5,
 					woodConsumed: true,
@@ -616,7 +589,6 @@ describe("CookingFeatureHandler", () => {
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, igniteInteraction as any, createMockNestedMenus() as any);
 				await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
 					slots: [createSlotWithRecipe()],
-					furnaceUsesRemaining: 3,
 					cookingGrade: "apprentice",
 					cookingLevel: 5,
 					woodConsumed: true,
@@ -684,7 +656,6 @@ describe("CookingFeatureHandler", () => {
 					outputType: CookingOutputType.POTION,
 					cookingLevelUp: false,
 					updatedSlots: [createEmptySlot(0)],
-					furnaceUsesRemaining: 2
 				} as CommandReportCookingCraftRes);
 
 				// Should register ignited menu with allDisabled=true
@@ -749,7 +720,6 @@ describe("CookingFeatureHandler", () => {
 					newCookingLevel: 10,
 					newCookingGrade: "expert",
 					updatedSlots: [createSlotWithRecipe()],
-					furnaceUsesRemaining: 2
 				} as CommandReportCookingCraftRes);
 
 				// Should send two replies: craft result + level up embed
@@ -782,7 +752,6 @@ describe("CookingFeatureHandler", () => {
 					},
 					cookingLevelUp: false,
 					updatedSlots: [createEmptySlot(0)],
-					furnaceUsesRemaining: 1
 				} as CommandReportCookingCraftRes);
 
 				expect(nestedMenus.message.reply).toHaveBeenCalled();
@@ -890,7 +859,6 @@ describe("CookingFeatureHandler", () => {
 
 			await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
 				slots: [createSlotWithRecipe({ slotIndex: 0 })],
-				furnaceUsesRemaining: 5,
 				cookingGrade: "master",
 				cookingLevel: 20,
 				woodConsumed: true,

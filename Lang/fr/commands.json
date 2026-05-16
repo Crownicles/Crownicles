@@ -1198,11 +1198,9 @@
             "4": "Griller"
           },
           "noWood": "{emote:messages.refuse} Vous n'avez pas de bois pour allumer le fourneau. Récoltez du bois lors de vos expéditions !",
-          "overheat": "{emote:messages.refuse} Le fourneau est en surchauffe ! Il sera de nouveau disponible {{time}}.",
           "woodConfirm": "{emote:messages.info} Vous n'avez plus de bois commun. Du **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** sera utilisé pour allumer le fourneau. Confirmer ?",
           "confirmButton": "Confirmer",
           "cancelButton": "Annuler",
-          "usesRemaining": "{emote:city.homeUpgrades.cooking} **Fourneau allumé** — Utilisations restantes : **{{count}}**",
           "levelInfo": "{emote:unitValues.xp} Niveau **{{level}}** ({{grade}}) — Préparez des recettes de niveau **{{maxLevel}}** ou moins pour de meilleurs résultats.",
           "slotEmpty": "*Aucune recette*",
           "slotEmptyContent": "{emote:cookingStations.{{stationId}}} **$t(models:cooking.stations.{{stationId}})**\n$t(commands:report.city.homes.cooking.slotEmpty)",
