@@ -374,10 +374,7 @@ function renderOwnedApartment(container: ContainerBuilder, apt: OwnedApartmentDa
 	});
 }
 
-function addApartmentNotarySection(container: ContainerBuilder, apartmentData: ApartmentNotaryData | undefined, lng: Language): void {
-	if (!apartmentData) {
-		return;
-	}
+function addApartmentNotarySection(container: ContainerBuilder, apartmentData: ApartmentNotaryData, lng: Language): void {
 	const hasForSale = Boolean(apartmentData.forSale);
 	const hasOwned = apartmentData.ownedApartments.length > 0;
 	if (!hasForSale && !hasOwned) {

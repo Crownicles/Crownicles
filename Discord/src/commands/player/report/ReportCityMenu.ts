@@ -164,8 +164,8 @@ export function handleStayInCityInteraction(
 export function shouldShowManageHomeMenu(cityData: ReactionCollectorCityData): boolean {
 	return Boolean(cityData.home.manage)
 		|| Boolean(cityData.guildDomainNotary?.isChief)
-		|| Boolean(cityData.apartmentNotary?.forSale)
-		|| (cityData.apartmentNotary?.ownedApartments.length ?? 0) > 0;
+		|| Boolean(cityData.apartmentNotary.forSale)
+		|| cityData.apartmentNotary.ownedApartments.length > 0;
 }
 
 /**
