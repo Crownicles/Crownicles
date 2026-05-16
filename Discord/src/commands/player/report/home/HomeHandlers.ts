@@ -12,124 +12,13 @@ import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { MessagesUtils } from "../../../../utils/MessagesUtils";
 
-export async function handleBuyHome(packet: CommandReportBuyHomeRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.buyHomeTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.buyHomeDescription", {
-			lng,
-			cost: packet.cost
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
-	});
-}
-
-export async function handleUpgradeHome(packet: CommandReportUpgradeHomeRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.upgradeHomeTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.upgradeHomeDescription", {
-			lng,
-			cost: packet.cost
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
-	});
-}
-
-export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-
-	const lng = context.discord!.language;
-
-	const rentDeducted = packet.rentDeducted ?? 0;
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.moveHomeTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t(rentDeducted > 0 ? "commands:report.city.homes.moveHomeDescriptionWithRent" : "commands:report.city.homes.moveHomeDescription", {
-			lng,
-			cost: packet.cost,
-			rentDeducted
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
-	});
-}
-
-export async function handleHomeBed(packet: CommandReportHomeBedRes, context: PacketContext): Promise<void> {
-	const interaction = MessagesUtils.getCurrentInteraction(context);
-	if (!interaction) {
-		return;
-	}
-	const lng = context.discord!.language;
-
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.bed.restTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.bed.restDescription", {
-			lng,
-			health: packet.health
-		}));
-
-	await interaction.editReply({
-		embeds: [embed]
-	});
-}
-
-export async function handleApartmentBuy(packet: CommandReportApartmentBuyRes, context: PacketContext): Promise<void> {
-	await sendApartmentNotaryEmbed({
-		context,
-		titleKey: "commands:report.city.homes.apartmentNotary.buyTitle",
-		descriptionKey: "commands:report.city.homes.apartmentNotary.buyDescription",
-		descriptionParams: {
-			cost: packet.cost,
-			mapLocationId: packet.mapLocationId
-		}
-	});
-}
-
-export async function handleApartmentClaimRent(packet: CommandReportApartmentClaimRentRes, context: PacketContext): Promise<void> {
-	await sendApartmentNotaryEmbed({
-		context,
-		titleKey: "commands:report.city.homes.apartmentNotary.claimTitle",
-		descriptionKey: "commands:report.city.homes.apartmentNotary.claimDescription",
-		descriptionParams: {
-			rent: packet.rentClaimed,
-			mapLocationId: packet.mapLocationId
-		}
-	});
-}
-
-async function sendApartmentNotaryEmbed(params: {
+/**
+ * Send a standard "report city home" embed reply with a translated title and
+ * description. All home/apartment report handlers share this layout (author
+ * line built from the player pseudo, then a description with packet data),
+ * so the per-handler code is reduced to picking translation keys.
+ */
+async function sendHomeReportEmbed(params: {
 	context: PacketContext;
 	titleKey: string;
 	descriptionKey: string;
@@ -155,5 +44,71 @@ async function sendApartmentNotaryEmbed(params: {
 
 	await interaction.editReply({
 		embeds: [embed]
+	});
+}
+
+export async function handleBuyHome(packet: CommandReportBuyHomeRes, context: PacketContext): Promise<void> {
+	await sendHomeReportEmbed({
+		context,
+		titleKey: "commands:report.city.homes.buyHomeTitle",
+		descriptionKey: "commands:report.city.homes.buyHomeDescription",
+		descriptionParams: { cost: packet.cost }
+	});
+}
+
+export async function handleUpgradeHome(packet: CommandReportUpgradeHomeRes, context: PacketContext): Promise<void> {
+	await sendHomeReportEmbed({
+		context,
+		titleKey: "commands:report.city.homes.upgradeHomeTitle",
+		descriptionKey: "commands:report.city.homes.upgradeHomeDescription",
+		descriptionParams: { cost: packet.cost }
+	});
+}
+
+export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: PacketContext): Promise<void> {
+	const rentDeducted = packet.rentDeducted ?? 0;
+	await sendHomeReportEmbed({
+		context,
+		titleKey: "commands:report.city.homes.moveHomeTitle",
+		descriptionKey: rentDeducted > 0
+			? "commands:report.city.homes.moveHomeDescriptionWithRent"
+			: "commands:report.city.homes.moveHomeDescription",
+		descriptionParams: {
+			cost: packet.cost,
+			rentDeducted
+		}
+	});
+}
+
+export async function handleHomeBed(packet: CommandReportHomeBedRes, context: PacketContext): Promise<void> {
+	await sendHomeReportEmbed({
+		context,
+		titleKey: "commands:report.city.homes.bed.restTitle",
+		descriptionKey: "commands:report.city.homes.bed.restDescription",
+		descriptionParams: { health: packet.health }
+	});
+}
+
+export async function handleApartmentBuy(packet: CommandReportApartmentBuyRes, context: PacketContext): Promise<void> {
+	await sendHomeReportEmbed({
+		context,
+		titleKey: "commands:report.city.homes.apartmentNotary.buyTitle",
+		descriptionKey: "commands:report.city.homes.apartmentNotary.buyDescription",
+		descriptionParams: {
+			cost: packet.cost,
+			mapLocationId: packet.mapLocationId
+		}
+	});
+}
+
+export async function handleApartmentClaimRent(packet: CommandReportApartmentClaimRentRes, context: PacketContext): Promise<void> {
+	await sendHomeReportEmbed({
+		context,
+		titleKey: "commands:report.city.homes.apartmentNotary.claimTitle",
+		descriptionKey: "commands:report.city.homes.apartmentNotary.claimDescription",
+		descriptionParams: {
+			rent: packet.rentClaimed,
+			mapLocationId: packet.mapLocationId
+		}
 	});
 }

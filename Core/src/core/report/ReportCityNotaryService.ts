@@ -34,6 +34,52 @@ function buildClaimTooLowPacket(apartment: Apartment, currentRent: number): Crow
 }
 
 /**
+ * Persist a new apartment for the locked player. Handles the unique-index
+ * race against a concurrent buy in the same city: in that case the player is
+ * refunded and `alreadyOwned: true` is returned so the caller can reply
+ * with the appropriate packet without dealing with the rollback details.
+ */
+async function persistApartmentBuyUnderLock(params: {
+	lockedPlayer: Player;
+	city: City;
+	price: number;
+	response: CrowniclesPacket[];
+}): Promise<{ alreadyOwned: boolean }> {
+	const {
+		lockedPlayer, city, price, response
+	} = params;
+
+	await lockedPlayer.spendMoney({
+		response,
+		amount: price,
+		reason: NumberChangeReason.APARTMENT_BUY
+	});
+	try {
+		await Apartment.create({
+			ownerId: lockedPlayer.id,
+			cityId: city.id,
+			purchasePrice: price,
+			lastRentClaimedAt: new Date()
+		});
+	}
+	catch (err) {
+		if (err instanceof UniqueConstraintError) {
+			// Concurrent buy in the same city won the race; refund the spend.
+			await lockedPlayer.addMoney({
+				response,
+				amount: price,
+				reason: NumberChangeReason.APARTMENT_BUY
+			});
+			await lockedPlayer.save();
+			return { alreadyOwned: true };
+		}
+		throw err;
+	}
+	await lockedPlayer.save();
+	return { alreadyOwned: false };
+}
+
+/**
  * Handle apartment purchase reaction — player buys a new apartment in the current city.
  *
  * Concurrency: read-validate-spend-create runs under a Player lock so two
@@ -78,37 +124,16 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 			return;
 		}
 
-		await lockedPlayer.spendMoney({
-			response,
-			amount: price,
-			reason: NumberChangeReason.APARTMENT_BUY
+		const result = await persistApartmentBuyUnderLock({
+			lockedPlayer, city, price, response
 		});
-		try {
-			await Apartment.create({
-				ownerId: lockedPlayer.id,
+		if (result.alreadyOwned) {
+			response.push(makePacket(CommandReportApartmentAlreadyOwnedRes, {
 				cityId: city.id,
-				purchasePrice: price,
-				lastRentClaimedAt: new Date()
-			});
+				mapLocationId: city.maps[0]
+			}));
+			return;
 		}
-		catch (err) {
-			if (err instanceof UniqueConstraintError) {
-				// Concurrent buy in the same city won the race; refund and reply already-owned.
-				await lockedPlayer.addMoney({
-					response,
-					amount: price,
-					reason: NumberChangeReason.APARTMENT_BUY
-				});
-				await lockedPlayer.save();
-				response.push(makePacket(CommandReportApartmentAlreadyOwnedRes, {
-					cityId: city.id,
-					mapLocationId: city.maps[0]
-				}));
-				return;
-			}
-			throw err;
-		}
-		await lockedPlayer.save();
 
 		response.push(makePacket(CommandReportApartmentBuyRes, {
 			cityId: city.id,
