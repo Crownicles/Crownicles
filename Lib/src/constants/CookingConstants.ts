@@ -100,31 +100,31 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		id: "scullion",
 		minLevel: 11,
 		maxLevel: 20,
-		failureRate: 0.05,
+		failureRate: 0.08,
 		secretRecipeRate: 0.10,
 		maxRecipeLevelWithoutPenalty: 3,
-		materialSaveChance: 0,
-		woodSaveChance: 0
+		materialSaveChance: 0.02,
+		woodSaveChance: 0.01
 	},
 	{
 		id: "cook",
 		minLevel: 21,
 		maxLevel: 30,
-		failureRate: 0.05,
+		failureRate: 0.07,
 		secretRecipeRate: 0.10,
 		maxRecipeLevelWithoutPenalty: 4,
 		materialSaveChance: 0.05,
-		woodSaveChance: 0
+		woodSaveChance: 0.02
 	},
 	{
 		id: "roaster",
 		minLevel: 31,
 		maxLevel: 40,
-		failureRate: 0.05,
+		failureRate: 0.06,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 5,
-		materialSaveChance: 0.05,
-		woodSaveChance: 0
+		materialSaveChance: 0.08,
+		woodSaveChance: 0.04
 	},
 	{
 		id: "saucier",
@@ -133,58 +133,58 @@ export const COOKING_GRADES: readonly CookingGradeDefinition[] = [
 		failureRate: 0.05,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 5,
-		materialSaveChance: 0.05,
-		woodSaveChance: 0
+		materialSaveChance: 0.11,
+		woodSaveChance: 0.06
 	},
 	{
 		id: "steward",
 		minLevel: 51,
 		maxLevel: 60,
-		failureRate: 0.05,
+		failureRate: 0.04,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 6,
-		materialSaveChance: 0.05,
-		woodSaveChance: 0
+		materialSaveChance: 0.14,
+		woodSaveChance: 0.08
 	},
 	{
 		id: "tableChef",
 		minLevel: 61,
 		maxLevel: 70,
-		failureRate: 0.05,
+		failureRate: 0.03,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 7,
-		materialSaveChance: 0.05,
-		woodSaveChance: 0.05
+		materialSaveChance: 0.17,
+		woodSaveChance: 0.10
 	},
 	{
 		id: "stoveChef",
 		minLevel: 71,
 		maxLevel: 80,
-		failureRate: 0.05,
+		failureRate: 0.02,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 7,
-		materialSaveChance: 0.05,
-		woodSaveChance: 0.05
+		materialSaveChance: 0.20,
+		woodSaveChance: 0.12
 	},
 	{
 		id: "kitchenMaster",
 		minLevel: 81,
 		maxLevel: 90,
-		failureRate: 0.05,
+		failureRate: 0.015,
 		secretRecipeRate: 0.05,
 		maxRecipeLevelWithoutPenalty: 8,
-		materialSaveChance: 0.05,
-		woodSaveChance: 0.05
+		materialSaveChance: 0.22,
+		woodSaveChance: 0.13
 	},
 	{
 		id: "royalGrandChef",
 		minLevel: 91,
 		maxLevel: Infinity,
-		failureRate: 0.04,
+		failureRate: 0.01,
 		secretRecipeRate: 0.005,
 		maxRecipeLevelWithoutPenalty: 8,
-		materialSaveChance: 0.05,
-		woodSaveChance: 0.05
+		materialSaveChance: 0.25,
+		woodSaveChance: 0.15
 	}
 ] as const;
 
