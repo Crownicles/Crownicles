@@ -133,3 +133,23 @@ export const ReportCityMenuIds = {
 	/** Custom ID used for the "stay in city" button across all city sub-menus */
 	STAY_IN_CITY: "STAY_IN_CITY"
 } as const;
+
+/**
+ * Build the Discord customId for the "claim rent" button of a specific apartment.
+ */
+export function buildApartmentClaimRentId(apartmentId: number): string {
+	return `${ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX}${apartmentId}`;
+}
+
+/**
+ * Parse the apartment ID from a "claim rent" customId. Returns null when the
+ * customId does not match the expected prefix or when the trailing fragment
+ * is not a valid positive integer.
+ */
+export function parseApartmentClaimRentId(customId: string): number | null {
+	if (!customId.startsWith(ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX)) {
+		return null;
+	}
+	const apartmentId = Number.parseInt(customId.slice(ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX.length), 10);
+	return Number.isInteger(apartmentId) && apartmentId > 0 ? apartmentId : null;
+}

@@ -271,12 +271,16 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 	]);
 
 	const apartmentLockKeys = [
-		...(sourceApartment ? [Apartment.lockKey(sourceApartment.id)] : []),
-		...(destinationApartment ? [Apartment.lockKey(destinationApartment.id)] : [])
+		...sourceApartment ? [Apartment.lockKey(sourceApartment.id)] : [],
+		...destinationApartment ? [Apartment.lockKey(destinationApartment.id)] : []
 	];
 
 	await withLockedEntities(
-		[Home.lockKey(home.id), Player.lockKey(player.id), ...apartmentLockKeys] as const,
+		[
+			Home.lockKey(home.id),
+			Player.lockKey(player.id),
+			...apartmentLockKeys
+		] as const,
 		async lockedEntities => {
 			const lockedHome = lockedEntities[0] as Home;
 			const lockedPlayer = lockedEntities[1] as Player;
@@ -299,7 +303,7 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 			}
 			response.push(makePacket(CommandReportMoveHomeRes, {
 				cost: result.effectivePrice,
-				rentDeducted: result.rentApplied
+				...result.rentApplied > 0 ? { rentDeducted: result.rentApplied } : {}
 			}));
 		}
 	);

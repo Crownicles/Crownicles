@@ -83,6 +83,7 @@ import {
 import {
 	buildEnchanterData,
 	buildHomeData,
+	buildApartmentNotaryData,
 	handleBlacksmithDisenchantReaction,
 	handleBlacksmithUpgradeReaction,
 	handleBuyHomeReaction,
@@ -101,7 +102,6 @@ import {
 	handleApartmentBuyReaction,
 	handleApartmentClaimRentReaction
 } from "../../core/report/ReportCityNotaryService";
-import { Apartments } from "../../core/database/game/models/Apartment";
 
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
@@ -460,26 +460,7 @@ async function sendCityCollector(
 	 * Apartment notary: present in every city. Lets the player buy an apartment
 	 * here (if none yet) and/or claim rent from apartments owned in other cities.
 	 */
-	const ownedApartments = await Apartments.getOfPlayer(player.id);
-	const ownsApartmentHere = ownedApartments.some(a => a.cityId === city.id);
-	const now = new Date();
-	const apartmentNotary = {
-		playerMoney: player.money,
-		forSale: city.apartmentPrice && !ownsApartmentHere
-			? { price: city.apartmentPrice }
-			: undefined,
-		ownedApartments: ownedApartments.map(a => {
-			const apartmentCity = CityDataController.instance.getById(a.cityId)!;
-			return {
-				apartmentId: a.id,
-				cityId: a.cityId,
-				mapLocationId: apartmentCity.maps[0],
-				purchasePrice: a.purchasePrice,
-				accumulatedRent: a.getAccumulatedRent(now),
-				isRented: a.isRentedFor(home)
-			};
-		})
-	};
+	const apartmentNotary = await buildApartmentNotaryData(player, city, home, new Date());
 
 	// Guild food shop: available when the guild has a shop but is NOT in the domain city (where the full shop is available via the domain entrance).
 	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id

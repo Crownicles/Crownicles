@@ -17,6 +17,7 @@ import {
 } from "../../types/PlantStorageEntry";
 import { PetFood } from "../../types/PetFood";
 import { MaterialQuantity } from "../../types/MaterialQuantity";
+import { ApartmentLocationRef } from "../../types/ApartmentLocation";
 export {
 	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients
 } from "../../types/CookingTypes";
@@ -260,7 +261,8 @@ export class CommandReportUpgradeHomeRes extends CrowniclesPacket {
 export class CommandReportMoveHomeRes extends CrowniclesPacket {
 	cost!: number;
 
-	rentDeducted!: number;
+	/** Amount of accumulated apartment rent applied as discount on the move price. Omitted when 0. */
+	rentDeducted?: number;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -323,7 +325,7 @@ export class CommandReportBedCooldownRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportApartmentBuyRes extends CrowniclesPacket {
+export class CommandReportApartmentBuyRes extends CrowniclesPacket implements ApartmentLocationRef {
 	cityId!: string;
 
 	mapLocationId!: number;
@@ -332,7 +334,7 @@ export class CommandReportApartmentBuyRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportApartmentClaimRentRes extends CrowniclesPacket {
+export class CommandReportApartmentClaimRentRes extends CrowniclesPacket implements ApartmentLocationRef {
 	cityId!: string;
 
 	mapLocationId!: number;
@@ -341,7 +343,7 @@ export class CommandReportApartmentClaimRentRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportApartmentClaimRentTooLowRes extends CrowniclesPacket {
+export class CommandReportApartmentClaimRentTooLowRes extends CrowniclesPacket implements ApartmentLocationRef {
 	cityId!: string;
 
 	mapLocationId!: number;
@@ -352,7 +354,7 @@ export class CommandReportApartmentClaimRentTooLowRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportApartmentAlreadyOwnedRes extends CrowniclesPacket {
+export class CommandReportApartmentAlreadyOwnedRes extends CrowniclesPacket implements ApartmentLocationRef {
 	cityId!: string;
 
 	mapLocationId!: number;

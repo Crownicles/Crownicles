@@ -32,7 +32,10 @@ import {
 	createStayInCityButton,
 	handleStayInCityInteraction
 } from "../ReportCityMenu";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import {
+	ReportCityMenuIds, buildApartmentClaimRentId, parseApartmentClaimRentId
+} from "../ReportCityMenuConstants";
+import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
 import {
 	CityCollectorHandlerParams, CityMenuParams, ManageHomeData
 } from "../ReportCityMenuTypes";
@@ -319,6 +322,63 @@ function addGuildNotarySection(container: ContainerBuilder, guildNotaryData: Gui
 }
 
 type ApartmentNotaryData = NonNullable<ReactionCollectorCityData["apartmentNotary"]>;
+type ForSaleData = NonNullable<ApartmentNotaryData["forSale"]>;
+type OwnedApartmentData = ApartmentNotaryData["ownedApartments"][number];
+
+function renderForSale(container: ContainerBuilder, forSale: ForSaleData, playerMoney: number, lng: Language): void {
+	const price = forSale.price;
+	const canAfford = playerMoney >= price;
+	if (!canAfford) {
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:report.city.homes.apartmentNotary.buyNotEnoughMoney", {
+					lng, cost: price, missingMoney: price - playerMoney
+				})
+			)
+		);
+		return;
+	}
+	addCitySection({
+		container,
+		text: i18n.t("commands:report.city.homes.apartmentNotary.forSaleDescription", {
+			lng, price
+		}),
+		emoji: CrowniclesIcons.city.apartmentNotary.buy,
+		customId: ReportCityMenuIds.APARTMENT_BUY,
+		buttonLabel: i18n.t("commands:report.city.homes.apartmentNotary.buyButtonLabel", { lng }),
+		buttonStyle: ButtonStyle.Success
+	});
+}
+
+function renderOwnedApartment(container: ContainerBuilder, apt: OwnedApartmentData, lng: Language): void {
+	const lineKey = apt.isRented
+		? "commands:report.city.homes.apartmentNotary.ownedLineRented"
+		: "commands:report.city.homes.apartmentNotary.ownedLineEmpty";
+	const lineText = i18n.t(lineKey, {
+		lng,
+		mapLocationId: apt.mapLocationId,
+		rent: apt.accumulatedRent
+	});
+	const canClaim = apt.isRented && apt.accumulatedRent >= HomeConstants.MIN_RENT_TO_CLAIM;
+	const buttonLabel = canClaim
+		? i18n.t("commands:report.city.homes.apartmentNotary.claimButtonLabel", {
+			lng, rent: apt.accumulatedRent
+		})
+		: i18n.t("commands:report.city.homes.apartmentNotary.claimNothingToClaimLabel", {
+			lng, mapLocationId: apt.mapLocationId
+		});
+	addCitySection({
+		container,
+		text: lineText,
+		emoji: apt.isRented
+			? CrowniclesIcons.city.apartmentNotary.statusRented
+			: CrowniclesIcons.city.apartmentNotary.statusEmpty,
+		customId: buildApartmentClaimRentId(apt.apartmentId),
+		buttonLabel,
+		buttonStyle: canClaim ? ButtonStyle.Success : ButtonStyle.Secondary,
+		disabled: !canClaim
+	});
+}
 
 function addApartmentNotarySection(container: ContainerBuilder, apartmentData: ApartmentNotaryData | undefined, lng: Language): void {
 	if (!apartmentData) {
@@ -338,33 +398,7 @@ function addApartmentNotarySection(container: ContainerBuilder, apartmentData: A
 	);
 
 	if (apartmentData.forSale) {
-		const price = apartmentData.forSale.price;
-		const canAfford = apartmentData.playerMoney >= price;
-		const descriptionKey = canAfford
-			? "commands:report.city.homes.apartmentNotary.forSaleDescription"
-			: "commands:report.city.homes.apartmentNotary.buyNotEnoughMoney";
-		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t(descriptionKey, {
-					lng,
-					price,
-					cost: price,
-					missingMoney: Math.max(0, price - apartmentData.playerMoney)
-				})
-			)
-		);
-		if (canAfford) {
-			addCitySection({
-				container,
-				text: i18n.t("commands:report.city.homes.apartmentNotary.forSaleDescription", {
-					lng, price
-				}),
-				emoji: CrowniclesIcons.city.apartmentNotary.buy,
-				customId: ReportCityMenuIds.APARTMENT_BUY,
-				buttonLabel: i18n.t("commands:report.city.homes.apartmentNotary.buyButtonLabel", { lng }),
-				buttonStyle: ButtonStyle.Success
-			});
-		}
+		renderForSale(container, apartmentData.forSale, apartmentData.playerMoney, lng);
 	}
 
 	if (hasOwned) {
@@ -376,33 +410,7 @@ function addApartmentNotarySection(container: ContainerBuilder, apartmentData: A
 			)
 		);
 		for (const apt of apartmentData.ownedApartments) {
-			const lineKey = apt.isRented
-				? "commands:report.city.homes.apartmentNotary.ownedLineRented"
-				: "commands:report.city.homes.apartmentNotary.ownedLineEmpty";
-			const lineText = i18n.t(lineKey, {
-				lng,
-				mapLocationId: apt.mapLocationId,
-				rent: apt.accumulatedRent
-			});
-			const canClaim = apt.isRented && apt.accumulatedRent > 0;
-			const buttonLabel = canClaim
-				? i18n.t("commands:report.city.homes.apartmentNotary.claimButtonLabel", {
-					lng, rent: apt.accumulatedRent
-				})
-				: i18n.t("commands:report.city.homes.apartmentNotary.claimNothingToClaimLabel", {
-					lng, mapLocationId: apt.mapLocationId
-				});
-			addCitySection({
-				container,
-				text: lineText,
-				emoji: apt.isRented
-					? CrowniclesIcons.city.apartmentNotary.statusRented
-					: CrowniclesIcons.city.apartmentNotary.statusEmpty,
-				customId: `${ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX}${apt.apartmentId}`,
-				buttonLabel,
-				buttonStyle: canClaim ? ButtonStyle.Success : ButtonStyle.Secondary,
-				disabled: !canClaim
-			});
+			renderOwnedApartment(container, apt, lng);
 		}
 	}
 }
@@ -443,7 +451,10 @@ async function handleManageHomeCollectorInteraction(params: CityCollectorHandler
 	} = params;
 
 	if (selectedValue.startsWith(ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX)) {
-		const apartmentId = parseInt(selectedValue.slice(ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX.length), 10);
+		const apartmentId = parseApartmentClaimRentId(selectedValue);
+		if (apartmentId === null) {
+			return;
+		}
 		await buttonInteraction.deferReply();
 		const reactionIndex = packet.reactions.findIndex(
 			reaction => reaction.type === ReactionCollectorApartmentClaimRentReaction.name
