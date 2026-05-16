@@ -20,6 +20,7 @@ import {
 	createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import { StringUtils } from "../../../../utils/StringUtils";
 
 /**
  * Creates a sub-menu for a specific home feature
@@ -99,14 +100,14 @@ function buildMainHomeContainer(
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t(
+			StringUtils.formatHeader(i18n.t(
 				isApartment
 					? "commands:report.city.homes.apartmentTitle"
 					: "commands:report.city.homes.homeTitle",
 				{
 					lng, pseudo
 				}
-			)}`
+			))
 		)
 	);
 

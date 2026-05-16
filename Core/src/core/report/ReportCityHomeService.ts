@@ -170,29 +170,16 @@ function computeMoveRentApplied(sourceApartment: Apartment | null, movePrice: nu
 }
 
 /**
- * Settle the source apartment when the player leaves its city: credit any
- * applicable rent and reset the accrual timestamp so unrented periods don't
- * accumulate rent. The pending save is appended to `saves` so it can be
- * awaited together with the other writes via `Promise.all`.
+ * Reset the source apartment's rent accrual timestamp on move-home so the
+ * unrented period (after the player leaves) doesn't accumulate rent. The
+ * pending save is appended to `saves` so it can be awaited together with the
+ * other writes via `Promise.all`.
  */
-async function settleSourceApartmentOnMoveUnderLock(params: {
-	sourceApartment: Apartment;
-	rentApplied: number;
-	lockedPlayer: Player;
-	response: CrowniclesPacket[];
-	now: Date;
-	saves: Promise<unknown>[];
-}): Promise<void> {
-	const {
-		sourceApartment, rentApplied, lockedPlayer, response, now, saves
-	} = params;
-	if (rentApplied > 0) {
-		await lockedPlayer.addMoney({
-			response,
-			amount: rentApplied,
-			reason: NumberChangeReason.APARTMENT_RENT_DEDUCTED
-		});
-	}
+function resetSourceApartmentRentClock(
+	sourceApartment: Apartment,
+	now: Date,
+	saves: Promise<unknown>[]
+): void {
 	sourceApartment.lastRentClaimedAt = now;
 	saves.push(sourceApartment.save());
 }
@@ -241,9 +228,7 @@ async function applyMoveHomeUnderLock(params: {
 	const saves: Promise<unknown>[] = [lockedHome.save()];
 
 	if (sourceApartment) {
-		await settleSourceApartmentOnMoveUnderLock({
-			sourceApartment, rentApplied, lockedPlayer, response, now, saves
-		});
+		resetSourceApartmentRentClock(sourceApartment, now, saves);
 	}
 
 	if (destinationApartment) {
@@ -252,9 +237,15 @@ async function applyMoveHomeUnderLock(params: {
 		saves.push(destinationApartment.save());
 	}
 
+	/*
+	 * Charge `effectivePrice` directly: the rent is a discount on the move price,
+	 * not separate income. This keeps `spendMoney` missions/logs consistent with
+	 * the cost the player sees in the response packet and avoids double-tracking
+	 * (which would also conflict with the money blessing multiplier on addMoney).
+	 */
 	await lockedPlayer.spendMoney({
 		response,
-		amount: movePrice,
+		amount: effectivePrice,
 		reason: NumberChangeReason.MOVE_HOME
 	});
 	saves.push(lockedPlayer.save());
