@@ -4,6 +4,7 @@ import {
 	CommandReportApartmentBuyRes,
 	CommandReportApartmentClaimRentRes,
 	CommandReportApartmentClaimRentTooLowRes,
+	CommandReportApartmentRequiresHomeRes,
 	CommandReportBigEventResultRes,
 	CommandReportBlacksmithDisenchantRes,
 	CommandReportBlacksmithMissingMaterialsRes,
@@ -205,6 +206,13 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportApartmentAlreadyOwnedRes)
 	async reportApartmentAlreadyOwnedRes(context: PacketContext, packet: CommandReportApartmentAlreadyOwnedRes): Promise<void> {
 		await handleClassicError(context, "commands:report.city.homes.apartmentNotary.buyAlreadyOwned", {
+			mapLocationId: packet.mapLocationId
+		});
+	}
+
+	@packetHandler(CommandReportApartmentRequiresHomeRes)
+	async reportApartmentRequiresHomeRes(context: PacketContext, packet: CommandReportApartmentRequiresHomeRes): Promise<void> {
+		await handleClassicError(context, "commands:report.city.homes.apartmentNotary.buyRequiresHome", {
 			mapLocationId: packet.mapLocationId
 		});
 	}

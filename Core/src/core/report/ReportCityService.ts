@@ -100,7 +100,7 @@ export async function buildApartmentNotaryData(
 	}
 	return {
 		playerMoney: player.money,
-		...city.apartmentPrice && !ownsApartmentHere
+		...city.apartmentPrice && !ownsApartmentHere && home
 			? { forSale: { price: city.apartmentPrice } }
 			: {},
 		ownedApartments: summaries
@@ -271,6 +271,7 @@ async function buildRemoteApartmentHomeData(params: {
 
 	return {
 		level: home.level,
+		isApartment: true,
 		features: remoteFeatures,
 		upgradeStation: undefined,
 		chest,

@@ -360,6 +360,13 @@ export class CommandReportApartmentAlreadyOwnedRes extends CrowniclesPacket impl
 	mapLocationId!: number;
 }
 
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportApartmentRequiresHomeRes extends CrowniclesPacket implements ApartmentLocationRef {
+	cityId!: string;
+
+	mapLocationId!: number;
+}
+
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportHomeChestActionReq extends CrowniclesPacket {
 	action!: ChestAction;

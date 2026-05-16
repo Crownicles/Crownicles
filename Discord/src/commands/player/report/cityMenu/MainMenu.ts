@@ -72,13 +72,29 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
 	if (data.home.owned) {
+		const isApartment = Boolean(data.home.owned.isApartment);
 		addCitySection({
 			container,
 			emote: CrowniclesIcons.city.home[data.home.owned.level],
-			title: i18n.t("commands:report.city.homes.goToOwnedHome", { lng }),
-			description: i18n.t("commands:report.city.homes.goToOwnedHomeDescription", { lng }),
+			title: i18n.t(
+				isApartment
+					? "commands:report.city.homes.goToOwnedApartment"
+					: "commands:report.city.homes.goToOwnedHome",
+				{ lng }
+			),
+			description: i18n.t(
+				isApartment
+					? "commands:report.city.homes.goToOwnedApartmentDescription"
+					: "commands:report.city.homes.goToOwnedHomeDescription",
+				{ lng }
+			),
 			customId: HomeMenuIds.HOME_MENU,
-			buttonLabel: i18n.t("commands:report.city.buttons.goHome", { lng }),
+			buttonLabel: i18n.t(
+				isApartment
+					? "commands:report.city.buttons.goToApartment"
+					: "commands:report.city.buttons.goHome",
+				{ lng }
+			),
 			buttonStyle: ButtonStyle.Primary
 		});
 	}

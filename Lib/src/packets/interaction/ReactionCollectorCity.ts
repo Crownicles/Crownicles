@@ -84,6 +84,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	home!: {
 		owned?: {
 			level: number;
+
+			/** True when this `owned` entry describes a remote apartment (logis), not the player's main home. */
+			isApartment?: boolean;
 			features: HomeFeatures;
 			upgradeStation?: {
 				upgradeableItems: {
