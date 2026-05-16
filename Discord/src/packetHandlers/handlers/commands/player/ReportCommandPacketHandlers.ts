@@ -61,12 +61,9 @@ import {
 	handleGuildDomainRelocate
 } from "../../../../commands/player/report/guildDomain/GuildDomainHandlers";
 import {
-	handleApartmentBuy,
-	handleApartmentClaimRent,
-	handleBuyHome,
-	handleHomeBed,
+	HOME_REPORT_DESCRIPTORS,
 	handleMoveHome,
-	handleUpgradeHome
+	sendHomeReport
 } from "../../../../commands/player/report/home/HomeHandlers";
 import {
 	handleEatInnMeal,
@@ -173,12 +170,12 @@ export default class ReportCommandPacketHandlers {
 
 	@packetHandler(CommandReportBuyHomeRes)
 	async reportBuyHomeRes(context: PacketContext, packet: CommandReportBuyHomeRes): Promise<void> {
-		await handleBuyHome(packet, context);
+		await sendHomeReport(HOME_REPORT_DESCRIPTORS.buyHome, packet, context);
 	}
 
 	@packetHandler(CommandReportUpgradeHomeRes)
 	async reportUpgradeHomeRes(context: PacketContext, packet: CommandReportUpgradeHomeRes): Promise<void> {
-		await handleUpgradeHome(packet, context);
+		await sendHomeReport(HOME_REPORT_DESCRIPTORS.upgradeHome, packet, context);
 	}
 
 	@packetHandler(CommandReportMoveHomeRes)
@@ -188,12 +185,12 @@ export default class ReportCommandPacketHandlers {
 
 	@packetHandler(CommandReportApartmentBuyRes)
 	async reportApartmentBuyRes(context: PacketContext, packet: CommandReportApartmentBuyRes): Promise<void> {
-		await handleApartmentBuy(packet, context);
+		await sendHomeReport(HOME_REPORT_DESCRIPTORS.apartmentBuy, packet, context);
 	}
 
 	@packetHandler(CommandReportApartmentClaimRentRes)
 	async reportApartmentClaimRentRes(context: PacketContext, packet: CommandReportApartmentClaimRentRes): Promise<void> {
-		await handleApartmentClaimRent(packet, context);
+		await sendHomeReport(HOME_REPORT_DESCRIPTORS.apartmentClaimRent, packet, context);
 	}
 
 	@packetHandler(CommandReportApartmentClaimRentTooLowRes)
@@ -319,7 +316,7 @@ export default class ReportCommandPacketHandlers {
 
 	@packetHandler(CommandReportHomeBedRes)
 	async reportHomeBedRes(context: PacketContext, packet: CommandReportHomeBedRes): Promise<void> {
-		await handleHomeBed(packet, context);
+		await sendHomeReport(HOME_REPORT_DESCRIPTORS.homeBed, packet, context);
 	}
 
 	@packetHandler(CommandReportHomeBedAlreadyFullRes)

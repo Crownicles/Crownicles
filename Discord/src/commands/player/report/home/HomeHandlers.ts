@@ -18,7 +18,7 @@ import { MessagesUtils } from "../../../../utils/MessagesUtils";
  * line built from the player pseudo, then a description with packet data),
  * so the per-handler code is reduced to picking translation keys.
  */
-async function sendHomeReportEmbed(params: {
+export async function sendHomeReportEmbed(params: {
 	context: PacketContext;
 	titleKey: string;
 	descriptionKey: string;
@@ -47,21 +47,59 @@ async function sendHomeReportEmbed(params: {
 	});
 }
 
-export async function handleBuyHome(packet: CommandReportBuyHomeRes, context: PacketContext): Promise<void> {
-	await sendHomeReportEmbed({
-		context,
+/**
+ * Static report descriptor: a fixed title key + description key, with the
+ * description params derived from the packet payload. Used to centralize the
+ * trivial home/apartment report handlers that all share the same layout.
+ */
+type HomeReportDescriptor<P> = {
+	titleKey: string;
+	descriptionKey: string;
+	descriptionParams: (packet: P) => Record<string, number | string>;
+};
+
+export const HOME_REPORT_DESCRIPTORS = {
+	buyHome: {
 		titleKey: "commands:report.city.homes.buyHomeTitle",
 		descriptionKey: "commands:report.city.homes.buyHomeDescription",
-		descriptionParams: { cost: packet.cost }
-	});
-}
-
-export async function handleUpgradeHome(packet: CommandReportUpgradeHomeRes, context: PacketContext): Promise<void> {
-	await sendHomeReportEmbed({
-		context,
+		descriptionParams: (packet: CommandReportBuyHomeRes): Record<string, number | string> => ({ cost: packet.cost })
+	} satisfies HomeReportDescriptor<CommandReportBuyHomeRes>,
+	upgradeHome: {
 		titleKey: "commands:report.city.homes.upgradeHomeTitle",
 		descriptionKey: "commands:report.city.homes.upgradeHomeDescription",
-		descriptionParams: { cost: packet.cost }
+		descriptionParams: (packet: CommandReportUpgradeHomeRes): Record<string, number | string> => ({ cost: packet.cost })
+	} satisfies HomeReportDescriptor<CommandReportUpgradeHomeRes>,
+	apartmentBuy: {
+		titleKey: "commands:report.city.homes.apartmentNotary.buyTitle",
+		descriptionKey: "commands:report.city.homes.apartmentNotary.buyDescription",
+		descriptionParams: (packet: CommandReportApartmentBuyRes): Record<string, number | string> => ({
+			cost: packet.cost, mapLocationId: packet.mapLocationId
+		})
+	} satisfies HomeReportDescriptor<CommandReportApartmentBuyRes>,
+	apartmentClaimRent: {
+		titleKey: "commands:report.city.homes.apartmentNotary.claimTitle",
+		descriptionKey: "commands:report.city.homes.apartmentNotary.claimDescription",
+		descriptionParams: (packet: CommandReportApartmentClaimRentRes): Record<string, number | string> => ({
+			rent: packet.rentClaimed, mapLocationId: packet.mapLocationId
+		})
+	} satisfies HomeReportDescriptor<CommandReportApartmentClaimRentRes>,
+	homeBed: {
+		titleKey: "commands:report.city.homes.bed.restTitle",
+		descriptionKey: "commands:report.city.homes.bed.restDescription",
+		descriptionParams: (packet: CommandReportHomeBedRes): Record<string, number | string> => ({ health: packet.health })
+	} satisfies HomeReportDescriptor<CommandReportHomeBedRes>
+} as const;
+
+export async function sendHomeReport<P>(
+	descriptor: HomeReportDescriptor<P>,
+	packet: P,
+	context: PacketContext
+): Promise<void> {
+	await sendHomeReportEmbed({
+		context,
+		titleKey: descriptor.titleKey,
+		descriptionKey: descriptor.descriptionKey,
+		descriptionParams: descriptor.descriptionParams(packet)
 	});
 }
 
@@ -76,39 +114,6 @@ export async function handleMoveHome(packet: CommandReportMoveHomeRes, context: 
 		descriptionParams: {
 			cost: packet.cost,
 			rentDeducted
-		}
-	});
-}
-
-export async function handleHomeBed(packet: CommandReportHomeBedRes, context: PacketContext): Promise<void> {
-	await sendHomeReportEmbed({
-		context,
-		titleKey: "commands:report.city.homes.bed.restTitle",
-		descriptionKey: "commands:report.city.homes.bed.restDescription",
-		descriptionParams: { health: packet.health }
-	});
-}
-
-export async function handleApartmentBuy(packet: CommandReportApartmentBuyRes, context: PacketContext): Promise<void> {
-	await sendHomeReportEmbed({
-		context,
-		titleKey: "commands:report.city.homes.apartmentNotary.buyTitle",
-		descriptionKey: "commands:report.city.homes.apartmentNotary.buyDescription",
-		descriptionParams: {
-			cost: packet.cost,
-			mapLocationId: packet.mapLocationId
-		}
-	});
-}
-
-export async function handleApartmentClaimRent(packet: CommandReportApartmentClaimRentRes, context: PacketContext): Promise<void> {
-	await sendHomeReportEmbed({
-		context,
-		titleKey: "commands:report.city.homes.apartmentNotary.claimTitle",
-		descriptionKey: "commands:report.city.homes.apartmentNotary.claimDescription",
-		descriptionParams: {
-			rent: packet.rentClaimed,
-			mapLocationId: packet.mapLocationId
 		}
 	});
 }
