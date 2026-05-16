@@ -247,7 +247,7 @@ async function buildOwnedHomeData(params: {
 		features: homeLevel.features,
 		upgradeStation,
 		chest,
-		garden
+		...garden ? { garden } : {}
 	};
 }
 
@@ -294,9 +294,7 @@ async function buildRemoteApartmentHomeData(params: {
 		level: home.level,
 		isApartment: true,
 		features: remoteFeatures,
-		upgradeStation: undefined,
-		chest,
-		garden: undefined
+		chest
 	};
 }
 

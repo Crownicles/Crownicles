@@ -23,14 +23,24 @@ import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { UniqueConstraintError } from "sequelize";
 
-function buildClaimTooLowPacket(apartment: Apartment, currentRent: number): CrowniclesPacket {
-	const apartmentCity = CityDataController.instance.getById(apartment.cityId)!;
+function buildClaimTooLowPacket(apartment: Apartment, currentRent: number): CrowniclesPacket | null {
+	const apartmentCity = CityDataController.instance.getById(apartment.cityId);
+	if (!apartmentCity || apartmentCity.maps.length === 0) {
+		CrowniclesLogger.error(`Apartment ${apartment.id} has invalid cityId ${apartment.cityId} (no city or no map). Skipping claim-too-low packet.`);
+		return null;
+	}
 	return makePacket(CommandReportApartmentClaimRentTooLowRes, {
 		cityId: apartment.cityId,
 		mapLocationId: apartmentCity.maps[0],
 		currentRent,
 		minRequired: HomeConstants.MIN_RENT_TO_CLAIM
 	});
+}
+
+function pushIfNotNull(response: CrowniclesPacket[], packet: CrowniclesPacket | null): void {
+	if (packet) {
+		response.push(packet);
+	}
 }
 
 /**
@@ -64,11 +74,17 @@ async function persistApartmentBuyUnderLock(params: {
 	}
 	catch (err) {
 		if (err instanceof UniqueConstraintError) {
-			// Concurrent buy in the same city won the race; refund the spend.
+			/*
+			 * Concurrent buy in the same city won the race; refund the exact spend.
+			 * `ignoreBlessing` is required so the refund reverses the original debit
+			 * to the cent — otherwise the money blessing multiplier would credit
+			 * more than was spent.
+			 */
 			await lockedPlayer.addMoney({
 				response,
 				amount: price,
-				reason: NumberChangeReason.APARTMENT_BUY
+				reason: NumberChangeReason.APARTMENT_BUY,
+				ignoreBlessing: true
 			});
 			await lockedPlayer.save();
 			return { alreadyOwned: true };
@@ -163,25 +179,36 @@ export async function handleApartmentClaimRentReaction(player: Player, apartment
 			const home = await Homes.getOfPlayer(lockedPlayer.id);
 			if (!lockedApartment.isRentedFor(home)) {
 				// Not rented out → no rent accrual. Surface as too-low.
-				response.push(buildClaimTooLowPacket(lockedApartment, 0));
+				pushIfNotNull(response, buildClaimTooLowPacket(lockedApartment, 0));
 				return;
 			}
 
 			const accumulated = lockedApartment.getAccumulatedRent();
 			if (accumulated < HomeConstants.MIN_RENT_TO_CLAIM) {
-				response.push(buildClaimTooLowPacket(lockedApartment, accumulated));
+				pushIfNotNull(response, buildClaimTooLowPacket(lockedApartment, accumulated));
 				return;
 			}
 
+			/*
+			 * `ignoreBlessing` is required: the packet reports `rentClaimed: accumulated`,
+			 * so the credited and reported amounts must match exactly. Without this, a
+			 * player with an active money blessing would receive more than the packet
+			 * surfaces.
+			 */
 			await lockedPlayer.addMoney({
 				response,
 				amount: accumulated,
-				reason: NumberChangeReason.APARTMENT_RENT_CLAIM
+				reason: NumberChangeReason.APARTMENT_RENT_CLAIM,
+				ignoreBlessing: true
 			});
 			lockedApartment.lastRentClaimedAt = new Date();
 			await Promise.all([lockedApartment.save(), lockedPlayer.save()]);
 
-			const apartmentCity = CityDataController.instance.getById(lockedApartment.cityId)!;
+			const apartmentCity = CityDataController.instance.getById(lockedApartment.cityId);
+			if (!apartmentCity || apartmentCity.maps.length === 0) {
+				CrowniclesLogger.error(`Apartment ${lockedApartment.id} has invalid cityId ${lockedApartment.cityId} after claim; rent credited but no response packet sent.`);
+				return;
+			}
 			response.push(makePacket(CommandReportApartmentClaimRentRes, {
 				cityId: lockedApartment.cityId,
 				mapLocationId: apartmentCity.maps[0],
