@@ -360,13 +360,7 @@ function renderOwnedApartment(container: ContainerBuilder, apt: OwnedApartmentDa
 		rent: apt.accumulatedRent
 	});
 	const canClaim = apt.isRented && apt.accumulatedRent >= HomeConstants.MIN_RENT_TO_CLAIM;
-	const buttonLabel = canClaim
-		? i18n.t("commands:report.city.homes.apartmentNotary.claimButtonLabel", {
-			lng, rent: apt.accumulatedRent
-		})
-		: i18n.t("commands:report.city.homes.apartmentNotary.claimNothingToClaimLabel", {
-			lng, mapLocationId: apt.mapLocationId
-		});
+	const buttonLabel = i18n.t("commands:report.city.homes.apartmentNotary.claimButtonLabel", { lng });
 	addCitySection({
 		container,
 		text: lineText,
