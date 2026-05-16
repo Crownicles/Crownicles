@@ -1,8 +1,6 @@
 import { PlantId } from "./PlantConstants";
 import { CrowniclesIcons } from "../CrowniclesIcons";
 import { MaterialRarity } from "../types/MaterialRarity";
-import { asHours } from "../types/TimeTypes";
-import { hoursToMilliseconds } from "../utils/TimeUtils";
 
 /**
  * Cooking recipe types — each maps to a specific base plant
@@ -352,12 +350,6 @@ export const SLOT_SEED_OFFSETS = [
  * Minimum number of recipes at or below the player's grade level that should be guaranteed across all slots
  */
 export const MIN_GUARANTEED_PLAYER_LEVEL_RECIPES = 2;
-
-/**
- * Furnace overheat constants
- */
-export const FURNACE_MAX_USES_PER_DAY = 10;
-export const FURNACE_MIN_OVERHEAT_MS = hoursToMilliseconds(asHours(6));
 
 /**
  * Gaspard Jo recipe costs by grade index (0-9)

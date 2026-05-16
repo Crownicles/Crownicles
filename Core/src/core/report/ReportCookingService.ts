@@ -6,7 +6,6 @@ import {
 	CommandReportCookingIgniteReq,
 	CommandReportCookingIgniteRes,
 	CommandReportCookingNoWoodRes,
-	CommandReportCookingOverheatRes,
 	CommandReportCookingWoodConfirmRes,
 	CommandReportCookingWoodConfirmReq,
 	CommandReportCookingReviveReq,
@@ -47,7 +46,7 @@ import { Materials } from "../database/game/models/Material";
 import { PotionDataController } from "../../data/Potion";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	getCookingGrade, FURNACE_MAX_USES_PER_DAY, CookingOutputType, CookingOutputTypeValue,
+	getCookingGrade, CookingOutputType, CookingOutputTypeValue,
 	FAILED_CRAFT_CONSOLATION_CHANCE, FAILED_CRAFT_CONSOLATION_MIN_RARITY, FAILED_CRAFT_CONSOLATION_MAX_RARITY
 } from "../../../../Lib/src/constants/CookingConstants";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
@@ -132,7 +131,6 @@ interface IgniteOrReviveParams {
 	slots: CookingSlotData[];
 	woodConsumed: boolean;
 	woodMaterialId: number;
-	furnaceUsesToday: number;
 	cookingLevel: number;
 }
 
@@ -144,7 +142,6 @@ function buildIgniteOrReviveResponse(
 ): CommandReportCookingIgniteRes | CommandReportCookingReviveRes {
 	return makePacket(PacketClass, {
 		...params,
-		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - params.furnaceUsesToday,
 		cookingGrade: getCookingGrade(params.cookingLevel).id
 	});
 }
@@ -189,14 +186,6 @@ async function igniteOrReviveFurnace(
 		player, home, cookingSlots
 	} = data;
 
-	// Check overheat
-	if (CookingService.isFurnaceOverheated(player)) {
-		response.push(makePacket(CommandReportCookingOverheatRes, {
-			overheatUntil: new Date(player.furnaceOverheatUntil!).getTime()
-		}));
-		return;
-	}
-
 	// Get wood
 	const wood = await CookingService.getWoodToConsume(player.id);
 	if (!wood) {
@@ -227,15 +216,18 @@ async function igniteOrReviveFurnace(
 		await Materials.consumeMaterial(player.id, wood.materialId, 1);
 	}
 
-	// Advance furnace position and increment usage
+	// Advance furnace position
+	await Player.withLocked(player.id, async lockedPlayer => {
+		lockedPlayer.furnacePosition++;
+		await lockedPlayer.save();
+	});
 	player.furnacePosition++;
-	await CookingService.incrementFurnaceUsage(player);
 
 	const slots = await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	});
 	response.push(buildIgniteOrReviveResponse(PacketClass, {
-		slots, woodConsumed: !woodSaved, woodMaterialId: wood.materialId, furnaceUsesToday: player.furnaceUsesToday, cookingLevel: player.cookingLevel
+		slots, woodConsumed: !woodSaved, woodMaterialId: wood.materialId, cookingLevel: player.cookingLevel
 	}));
 }
 
@@ -271,16 +263,19 @@ export async function handleCookingWoodConfirm(
 	// Consume the confirmed wood (no save buff — player already confirmed rare wood)
 	await Materials.consumeMaterial(player.id, pending.materialId, 1);
 
-	// Advance furnace position and increment usage
+	// Advance furnace position
+	await Player.withLocked(player.id, async lockedPlayer => {
+		lockedPlayer.furnacePosition++;
+		await lockedPlayer.save();
+	});
 	player.furnacePosition++;
-	await CookingService.incrementFurnaceUsage(player);
 
 	const slots = await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	});
 	const ResponseClass = pending.isRevive ? CommandReportCookingReviveRes : CommandReportCookingIgniteRes;
 	response.push(buildIgniteOrReviveResponse(ResponseClass, {
-		slots, woodConsumed: true, woodMaterialId: pending.materialId, furnaceUsesToday: player.furnaceUsesToday, cookingLevel: player.cookingLevel
+		slots, woodConsumed: true, woodMaterialId: pending.materialId, cookingLevel: player.cookingLevel
 	}));
 	return response;
 }
@@ -612,8 +607,7 @@ export async function handleCookingCraft(
 		newCookingGrade: result.newGrade,
 		materialSaved: result.materialSaved,
 		discoveredRecipeIds: result.discoveredRecipeIds,
-		updatedSlots,
-		furnaceUsesRemaining: FURNACE_MAX_USES_PER_DAY - player.furnaceUsesToday
+		updatedSlots
 	}));
 	if (outputResult.inventorySwapPackets) {
 		response.push(...outputResult.inventorySwapPackets);

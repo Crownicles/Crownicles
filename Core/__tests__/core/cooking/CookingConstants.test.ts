@@ -3,7 +3,6 @@ import {
 } from "vitest";
 import {
 	getCookingGrade, COOKING_GRADES, CookingXpConstants,
-	FURNACE_MAX_USES_PER_DAY,
 	GASPARD_JO_RECIPE_COSTS, FARMER_RECIPE_COSTS,
 	SLOT_CONFIGS, SLOT_SEED_OFFSETS
 } from "../../../../Lib/src/constants/CookingConstants";
@@ -126,13 +125,6 @@ describe("CookingConstants", () => {
 
 		it("should have positive failure XP per level", () => {
 			expect(CookingXpConstants.FAILURE_XP_PER_LEVEL).toBeGreaterThan(0);
-		});
-	});
-
-	describe("furnace limits", () => {
-		it("should allow a reasonable number of daily uses", () => {
-			expect(FURNACE_MAX_USES_PER_DAY).toBeGreaterThanOrEqual(5);
-			expect(FURNACE_MAX_USES_PER_DAY).toBeLessThanOrEqual(50);
 		});
 	});
 });
