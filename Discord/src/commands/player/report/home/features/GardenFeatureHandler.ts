@@ -90,6 +90,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			return true;
 		}
 
+		if (selectedValue === HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN) {
+			await componentInteraction.deferUpdate();
+			await nestedMenus.stopCurrentCollector();
+			return true;
+		}
+
 		if (selectedValue === HomeMenuIds.GARDEN_BACK) {
 			await componentInteraction.deferUpdate();
 			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
@@ -253,12 +259,18 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			}))
 			.setStyle(ButtonStyle.Secondary));
 
-		// Back button
-		buttons.push(new ButtonBuilder()
-			.setCustomId(HomeMenuIds.BACK_TO_HOME)
-			.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
-			.setEmoji(CrowniclesIcons.collectors.back)
-			.setStyle(ButtonStyle.Danger));
+		// Back button (or put away talisman in /jardin mode)
+		buttons.push(isReadOnly
+			? new ButtonBuilder()
+				.setCustomId(HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN)
+				.setLabel(i18n.t("commands:report.city.homes.garden.putAwayTalisman", { lng: ctx.lng }))
+				.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.remoteHarvestTalisman)!)
+				.setStyle(ButtonStyle.Danger)
+			: new ButtonBuilder()
+				.setCustomId(HomeMenuIds.BACK_TO_HOME)
+				.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
+				.setEmoji(CrowniclesIcons.collectors.back)
+				.setStyle(ButtonStyle.Danger));
 
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 		container.addActionRowComponents(new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons));

@@ -100,6 +100,9 @@ export const HomeMenuIds = {
 	/** Back to garden from storage */
 	GARDEN_BACK: "GARDEN_BACK",
 
+	/** Put away the Cœur Sylvestre talisman (closes /jardin menu) */
+	GARDEN_PUT_AWAY_TALISMAN: "GARDEN_PUT_AWAY_TALISMAN",
+
 	// --- Cooking feature ---
 	/** Cooking feature menu */
 	COOKING_MENU: "HOME_COOKING_MENU",
