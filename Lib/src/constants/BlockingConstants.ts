@@ -42,6 +42,7 @@ export abstract class BlockingConstants {
 		REPORT_COMMAND: "reportCommand",
 		REPORT_USE_TOKENS: "reportUseTokens",
 		REPORT_BUY_HEAL: "reportBuyHeal",
+		JARDIN_COMMAND: "jardinCommand",
 		CART_SMALL_EVENT: "cartSmallEvent",
 		GARDENER_SMALL_EVENT: "gardenerSmallEvent",
 		LIMOGES_SMALL_EVENT: "limogesSmallEvent",

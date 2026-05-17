@@ -209,7 +209,13 @@ function addHomeSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeM
 	if (!cityData.home.owned) {
 		return;
 	}
-	menus.set(HomeMenuIds.HOME_MENU, getHomeMenu(params));
+
+	/*
+	 * In gardenOnly mode (/jardin command), the home menu is locked to a close-only
+	 * view so the player cannot reach other home features (chest, cooking, bed...)
+	 * via the GardenFeatureHandler's "back to home" button.
+	 */
+	menus.set(HomeMenuIds.HOME_MENU, cityData.gardenOnly ? getMainMenu(params) : getHomeMenu(params));
 	for (const [key, menu] of getHomeSubMenus(params)) {
 		menus.set(key, menu);
 	}

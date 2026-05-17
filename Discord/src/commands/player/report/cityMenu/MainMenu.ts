@@ -371,6 +371,38 @@ export function getMainMenu(params: CityMenuParams): CrowniclesNestedMenu {
 
 	const container = new ContainerBuilder();
 
+	if (data.gardenOnly) {
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				`### ${i18n.t("commands:jardin.title", {
+					lng, pseudo: params.pseudo
+				})}`
+			)
+		);
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:jardin.description", { lng })
+			)
+		);
+		const closeRow = new ActionRowBuilder<ButtonBuilder>();
+		closeRow.addComponents(new ButtonBuilder()
+			.setCustomId(ReportCityMenuIds.MAIN_MENU_STAY_CITY)
+			.setLabel(i18n.t("commands:jardin.close", { lng }))
+			.setEmoji(CrowniclesIcons.collectors.refuse)
+			.setStyle(ButtonStyle.Secondary));
+		container.addActionRowComponents(closeRow);
+
+		return {
+			containers: [container],
+			createCollector: createMainMenuCollector({
+				context: params.context,
+				interaction: params.interaction,
+				packet: params.packet,
+				collectorTime: params.collectorTime
+			})
+		};
+	}
+
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
 			`### ${i18n.t("commands:report.city.title", {
