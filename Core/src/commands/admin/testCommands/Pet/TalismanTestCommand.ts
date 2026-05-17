@@ -2,20 +2,22 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { PlayerTalismansManager } from "../../../../core/database/game/models/PlayerTalismans";
+import { Players } from "../../../../core/database/game/models/Player";
 
 export const commandInfo: ITestCommand = {
 	name: "talisman",
-	commandFormat: "<type = anchor/clone> <action = give/remove>",
+	commandFormat: "<type = anchor/clone/harvest> <action = give/remove>",
 	typeWaited: {
 		type: TypeKey.STRING,
 		action: TypeKey.STRING
 	},
-	description: "Donne ou retire un talisman. Types: anchor (ancrage), clone (clonage). Actions: give (donner), remove (retirer)"
+	description: "Donne ou retire un talisman. Types: anchor (ancrage), clone (clonage), harvest (cœur sylvestre). Actions: give (donner), remove (retirer)"
 };
 
 const TALISMAN_TYPES = {
 	ANCHOR: "anchor",
-	CLONE: "clone"
+	CLONE: "clone",
+	HARVEST: "harvest"
 } as const;
 
 const TALISMAN_ACTIONS = {
@@ -27,7 +29,8 @@ type TalismanType = typeof TALISMAN_TYPES[keyof typeof TALISMAN_TYPES];
 type TalismanAction = typeof TALISMAN_ACTIONS[keyof typeof TALISMAN_ACTIONS];
 
 interface TalismanConfig {
-	hasProperty: "hasTalisman" | "hasCloneTalisman";
+	storage: "petTalismans" | "player";
+	hasProperty: "hasTalisman" | "hasCloneTalisman" | "hasRemoteHarvestTalisman";
 	name: string;
 	giveMessage: string;
 	removeMessage: string;
@@ -37,6 +40,7 @@ interface TalismanConfig {
 
 const TALISMAN_CONFIGS: Record<TalismanType, TalismanConfig> = {
 	[TALISMAN_TYPES.ANCHOR]: {
+		storage: "petTalismans",
 		hasProperty: "hasTalisman",
 		name: "Talisman d'Ancrage",
 		giveMessage: "✨ Vous avez reçu le **Talisman d'Ancrage** ! Vous pouvez maintenant envoyer votre familier en expédition.",
@@ -45,12 +49,22 @@ const TALISMAN_CONFIGS: Record<TalismanType, TalismanConfig> = {
 		doesNotHaveMessage: "Vous ne possédez pas le Talisman d'Ancrage !"
 	},
 	[TALISMAN_TYPES.CLONE]: {
+		storage: "petTalismans",
 		hasProperty: "hasCloneTalisman",
 		name: "Talisman de Clonage",
 		giveMessage: "✨ Vous avez reçu le **Talisman de Clonage** ! Votre familier peut maintenant vous assister en défense et dans les petits événements même en expédition.",
 		removeMessage: "Le **Talisman de Clonage** a été retiré de votre inventaire.",
 		alreadyHasMessage: "Vous possédez déjà le Talisman de Clonage !",
 		doesNotHaveMessage: "Vous ne possédez pas le Talisman de Clonage !"
+	},
+	[TALISMAN_TYPES.HARVEST]: {
+		storage: "player",
+		hasProperty: "hasRemoteHarvestTalisman",
+		name: "Cœur Sylvestre",
+		giveMessage: "✨ Vous avez reçu le **Cœur Sylvestre** ! Vous pouvez maintenant récolter votre jardin à distance via /jardin.",
+		removeMessage: "Le **Cœur Sylvestre** a été retiré de votre inventaire.",
+		alreadyHasMessage: "Vous possédez déjà le Cœur Sylvestre !",
+		doesNotHaveMessage: "Vous ne possédez pas le Cœur Sylvestre !"
 	}
 };
 
@@ -59,8 +73,8 @@ interface ValidatedTalismanArgs {
 	action: TalismanAction;
 }
 
-const VALID_TALISMAN_TYPES = new Set<string>([TALISMAN_TYPES.ANCHOR, TALISMAN_TYPES.CLONE]);
-const VALID_TALISMAN_ACTIONS = new Set<string>([TALISMAN_ACTIONS.GIVE, TALISMAN_ACTIONS.REMOVE]);
+const VALID_TALISMAN_TYPES = new Set<string>(Object.values(TALISMAN_TYPES));
+const VALID_TALISMAN_ACTIONS = new Set<string>(Object.values(TALISMAN_ACTIONS));
 
 /**
  * Validate command arguments and return parsed values
@@ -70,7 +84,7 @@ function validateTalismanArgs(args: string[]): ValidatedTalismanArgs {
 	const action = args[1]?.toLowerCase();
 
 	if (!VALID_TALISMAN_TYPES.has(talismanType)) {
-		throw new Error(`Type de talisman invalide: "${talismanType}". Utilisez "anchor" ou "clone".`);
+		throw new Error(`Type de talisman invalide: "${talismanType}". Utilisez "anchor", "clone" ou "harvest".`);
 	}
 
 	if (!VALID_TALISMAN_ACTIONS.has(action)) {
@@ -93,18 +107,37 @@ const talismanTestCommand: ExecuteTestCommandLike = async (player, args) => {
 	} = validateTalismanArgs(args);
 	const isGiving = action === TALISMAN_ACTIONS.GIVE;
 	const config = TALISMAN_CONFIGS[talismanType];
-	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
-	const hasTalisman = talismans[config.hasProperty];
 
-	if (isGiving && hasTalisman) {
-		return config.alreadyHasMessage;
-	}
-	if (!isGiving && !hasTalisman) {
-		return config.doesNotHaveMessage;
-	}
+	if (config.storage === "player") {
+		const property = config.hasProperty as "hasRemoteHarvestTalisman";
+		const freshPlayer = await Players.getById(player.id);
+		const hasTalisman = freshPlayer[property];
 
-	talismans[config.hasProperty] = isGiving;
-	await talismans.save();
+		if (isGiving && hasTalisman) {
+			return config.alreadyHasMessage;
+		}
+		if (!isGiving && !hasTalisman) {
+			return config.doesNotHaveMessage;
+		}
+
+		freshPlayer[property] = isGiving;
+		await freshPlayer.save();
+	}
+	else {
+		const property = config.hasProperty as "hasTalisman" | "hasCloneTalisman";
+		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+		const hasTalisman = talismans[property];
+
+		if (isGiving && hasTalisman) {
+			return config.alreadyHasMessage;
+		}
+		if (!isGiving && !hasTalisman) {
+			return config.doesNotHaveMessage;
+		}
+
+		talismans[property] = isGiving;
+		await talismans.save();
+	}
 
 	return isGiving ? config.giveMessage : config.removeMessage;
 };
