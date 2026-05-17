@@ -30,6 +30,7 @@ import {
 import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../../../../Lib/src/types/GardenEarthQuality";
 import { TimeConstants } from "../../../../../../../Lib/src/constants/TimeConstants";
+import { printTimeBeforeDate } from "../../../../../../../Lib/src/utils/TimeUtils";
 import { GardenAccessMode } from "../../../../../../../Lib/src/types/GardenAccessMode";
 
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
@@ -161,15 +162,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			})}`;
 		}
 
-		if (garden.accessMode === GardenAccessMode.FULL && garden.wateringAvailableAt !== null) {
-			const remainingMs = garden.wateringAvailableAt - Date.now();
-			if (remainingMs > 0) {
-				const remainingSeconds = Math.ceil(remainingMs / 1000);
-				description += `\n\n${i18n.t("commands:report.city.homes.garden.waterCooldown", {
-					lng: ctx.lng,
-					timeLeft: this.formatRemainingTime(remainingSeconds, ctx.lng)
-				})}`;
-			}
+		if (garden.accessMode === GardenAccessMode.FULL && garden.wateringAvailableAt !== null && garden.wateringAvailableAt > Date.now()) {
+			description += `\n\n${i18n.t("commands:report.city.homes.garden.waterCooldown", {
+				lng: ctx.lng,
+				timeLeft: printTimeBeforeDate(garden.wateringAvailableAt)
+			})}`;
 		}
 
 		return description;
@@ -472,10 +469,9 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	): Promise<void> {
 		let extraMessage = "";
 		if (errorPacket.error === GardenConstants.GARDEN_ERRORS.WATERING_ON_COOLDOWN && errorPacket.availableAt) {
-			const remainingSeconds = Math.ceil((errorPacket.availableAt - Date.now()) / 1000);
 			extraMessage = `\n\n${i18n.t("commands:report.city.homes.garden.waterCooldownError", {
 				lng: ctx.lng,
-				timeLeft: this.formatRemainingTime(Math.max(remainingSeconds, 0), ctx.lng)
+				timeLeft: printTimeBeforeDate(errorPacket.availableAt)
 			})}`;
 
 			// Sync local state with server so the button stays disabled
