@@ -295,6 +295,8 @@ export const CrowniclesIcons: {
 			growing: string;
 			seed: string;
 			compost: string;
+			water: string;
+			remoteHarvestTalisman: string;
 		};
 		chestActions: {
 			inventory: string;
@@ -2725,7 +2727,9 @@ export const CrowniclesIcons: {
 			ready: "✅",
 			growing: "⏳",
 			seed: "🌰",
-			compost: "♻️"
+			compost: "♻️",
+			water: "💧",
+			remoteHarvestTalisman: "🍀"
 		},
 		chestActions: {
 			inventory: "🎒",

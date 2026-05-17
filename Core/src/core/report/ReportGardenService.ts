@@ -13,6 +13,8 @@ import {
 	CommandReportGardenHarvestRes,
 	CommandReportGardenPlantReq,
 	CommandReportGardenPlantRes,
+	CommandReportGardenWaterReq,
+	CommandReportGardenWaterRes,
 	CommandReportGardenErrorRes,
 	CommandReportPlantTransferReq,
 	CommandReportPlantTransferRes,
@@ -34,11 +36,25 @@ import { InventoryInfos } from "../database/game/models/InventoryInfo";
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
+type GardenAccessMode = GardenData["accessMode"];
+
+/**
+ * Compute the unix-ms timestamp at which the player can next water their garden,
+ * or null when watering is currently available (never watered, or cooldown elapsed).
+ */
+function computeNextWateringAvailableAt(lastGardenWatered: Date | null): number | null {
+	if (!lastGardenWatered) {
+		return null;
+	}
+	const next = lastGardenWatered.valueOf() + GardenConstants.WATERING_COOLDOWN_MS;
+	return next > Date.now() ? next : null;
+}
 
 export async function buildGardenData(
 	home: Home,
 	homeLevel: HomeLevel,
-	player: Player
+	player: Player,
+	accessMode: GardenAccessMode = "full"
 ): Promise<GardenData> {
 	const gardenPlots = homeLevel.features.gardenPlots;
 	const earthQuality = homeLevel.features.gardenEarthQuality;
@@ -67,7 +83,9 @@ export async function buildGardenData(
 		plantStorage,
 		hasSeed,
 		seedPlantId: seedSlot?.plantId ?? 0,
-		totalPlots: gardenPlots
+		totalPlots: gardenPlots,
+		accessMode,
+		wateringAvailableAt: computeNextWateringAvailableAt(player.lastGardenWatered)
 	};
 }
 
@@ -408,4 +426,101 @@ async function handlePlantWithdraw(params: {
 	await HomePlantStorages.removePlant(params.home.id, params.plantId);
 	await PlayerPlantSlots.setPlant(params.player.id, emptySlot.slot, params.plantId);
 	return null;
+}
+
+/**
+ * Handle garden watering — instantly advance the growth of all currently
+ * growing plants by `WATERING_TIME_ADVANCE_MS`. A 12h cooldown is enforced
+ * via `Player.lastGardenWatered`. Only allowed when the player is at home
+ * (this entry point is invoked from the home-menu collector, which itself is
+ * only opened when the player is in their home city).
+ */
+export async function handleGardenWater(
+	keycloakId: string,
+	_packet: CommandReportGardenWaterReq
+): Promise<CrowniclesPacket> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	const home = player ? await Homes.getOfPlayer(player.id) : null;
+	const homeLevel = home?.getLevel();
+	if (!player || !home || !homeLevel || homeLevel.features.gardenPlots <= 0) {
+		return makePacket(CommandReportGardenErrorRes, {
+			error: GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER
+		});
+	}
+
+	return await Player.withLocked(player.id, async locked => {
+		const now = Date.now();
+		if (locked.lastGardenWatered) {
+			const nextAvailableAt = locked.lastGardenWatered.valueOf() + GardenConstants.WATERING_COOLDOWN_MS;
+			if (nextAvailableAt > now) {
+				return makePacket(CommandReportGardenErrorRes, {
+					error: GardenConstants.GARDEN_ERRORS.WATERING_ON_COOLDOWN,
+					availableAt: nextAvailableAt
+				});
+			}
+		}
+
+		const earthQuality = homeLevel.features.gardenEarthQuality;
+		const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
+		const wateringResult = collectSlotsToWater(gardenSlots, earthQuality, now);
+		if (wateringResult.slotsToWater.length === 0) {
+			return makePacket(CommandReportGardenErrorRes, {
+				error: GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER
+			});
+		}
+
+		await HomeGardenSlots.shiftPlantedAtForSlots(
+			home.id,
+			wateringResult.slotsToWater,
+			GardenConstants.WATERING_TIME_ADVANCE_MS
+		);
+
+		locked.lastGardenWatered = new Date(now);
+		await locked.save();
+
+		return makePacket(CommandReportGardenWaterRes, {
+			slotsWatered: wateringResult.slotsToWater.length,
+			slotsBecameReady: wateringResult.slotsBecameReady,
+			nextWateringAvailableAt: now + GardenConstants.WATERING_COOLDOWN_MS
+		});
+	});
+}
+
+/**
+ * Determine which slots are currently growing (non-empty, planted, not yet
+ * ready) and count how many of them would become ready after applying the
+ * watering time advance.
+ */
+function collectSlotsToWater(
+	gardenSlots: HomeGardenSlot[],
+	earthQuality: number,
+	nowMs: number
+): {
+	slotsToWater: number[]; slotsBecameReady: number;
+} {
+	const slotsToWater: number[] = [];
+	let slotsBecameReady = 0;
+	const advanceSeconds = GardenConstants.WATERING_TIME_ADVANCE_MS / 1000;
+
+	for (const slot of gardenSlots) {
+		if (slot.isEmpty() || !slot.plantedAt) {
+			continue;
+		}
+		const plant = PlantConstants.getPlantById(slot.plantId);
+		if (!plant) {
+			continue;
+		}
+		const effective = GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality);
+		if (slot.isReady(effective)) {
+			continue;
+		}
+		slotsToWater.push(slot.slot);
+		const newElapsedSeconds = (nowMs - slot.plantedAt.valueOf()) / 1000 + advanceSeconds;
+		if (newElapsedSeconds >= effective) {
+			slotsBecameReady++;
+		}
+	}
+	return {
+		slotsToWater, slotsBecameReady
+	};
 }

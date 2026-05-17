@@ -444,9 +444,27 @@ export class CommandReportGardenPlantRes extends CrowniclesPacket {
 	gardenSlot!: number;
 }
 
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportGardenWaterReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenWaterRes extends CrowniclesPacket {
+	/** Number of growing slots whose growth was advanced */
+	slotsWatered!: number;
+
+	/** Unix-ms timestamp at which the next watering becomes available */
+	nextWateringAvailableAt!: number;
+
+	/** Number of slots that became ready thanks to this watering */
+	slotsBecameReady!: number;
+}
+
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportGardenErrorRes extends CrowniclesPacket {
 	error!: GardenError;
+
+	/** Unix-ms timestamp at which the action becomes available again (when applicable, e.g. on cooldown) */
+	availableAt?: number;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)

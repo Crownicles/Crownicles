@@ -20,6 +20,8 @@ import {
 	CommandReportGardenHarvestRes,
 	CommandReportGardenPlantReq,
 	CommandReportGardenPlantRes,
+	CommandReportGardenWaterReq,
+	CommandReportGardenWaterRes,
 	CommandReportGardenErrorRes
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
@@ -108,6 +110,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			return true;
 		}
 
+		// Water
+		if (selectedValue === HomeMenuIds.GARDEN_WATER) {
+			await componentInteraction.deferUpdate();
+			await this.sendWaterAction(ctx, nestedMenus);
+			return true;
+		}
+
 		// Plant in first available slot
 		if (selectedValue.startsWith(HomeMenuIds.GARDEN_PLANT_PREFIX)) {
 			await componentInteraction.deferUpdate();
@@ -143,6 +152,17 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				lng: ctx.lng,
 				plantId: garden.seedPlantId
 			})}`;
+		}
+
+		if (garden.accessMode === "full" && garden.wateringAvailableAt !== null) {
+			const remainingMs = garden.wateringAvailableAt - Date.now();
+			if (remainingMs > 0) {
+				const remainingSeconds = Math.ceil(remainingMs / 1000);
+				description += `\n\n${i18n.t("commands:report.city.homes.garden.waterCooldown", {
+					lng: ctx.lng,
+					timeLeft: this.formatRemainingTime(remainingSeconds, ctx.lng)
+				})}`;
+			}
 		}
 
 		return description;
@@ -181,10 +201,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	 */
 	private addGardenButtons(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		const garden = ctx.homeData.garden!;
+		const isReadOnly = garden.accessMode === "readOnly";
 		const hasReadyPlants = garden.plots.some(p => p.isReady);
 		const buttons: ButtonBuilder[] = [];
 
-		// Harvest button
+		// Harvest button (always available, including in readOnly remote access)
 		buttons.push(
 			new ButtonBuilder()
 				.setCustomId(HomeMenuIds.GARDEN_HARVEST)
@@ -194,8 +215,8 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				.setDisabled(!hasReadyPlants)
 		);
 
-		// Plant button (only if player has a seed and there is an empty plot)
-		if (garden.hasSeed) {
+		// Plant button (only at home, with a seed and at least one empty plot)
+		if (!isReadOnly && garden.hasSeed) {
 			const hasEmptyPlot = garden.plots.some(p => p.plantId === 0);
 			if (hasEmptyPlot) {
 				buttons.push(
@@ -205,6 +226,20 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 						.setStyle(ButtonStyle.Primary)
 				);
 			}
+		}
+
+		// Water button (only at home)
+		if (!isReadOnly) {
+			const hasGrowingPlants = garden.plots.some(p => p.plantId !== 0 && !p.isReady);
+			const onCooldown = garden.wateringAvailableAt !== null && garden.wateringAvailableAt > Date.now();
+			buttons.push(
+				new ButtonBuilder()
+					.setCustomId(HomeMenuIds.GARDEN_WATER)
+					.setLabel(i18n.t("commands:report.city.homes.garden.waterButton", { lng: ctx.lng }))
+					.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.water)!)
+					.setStyle(ButtonStyle.Primary)
+					.setDisabled(!hasGrowingPlants || onCooldown)
+			);
 		}
 
 		// Storage button
@@ -378,6 +413,95 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 			}
 		);
+	}
+
+	/**
+	 * Send a watering action to Core and refresh the garden menu. On cooldown
+	 * or when no plants are growing, the menu is re-rendered with a short
+	 * status message instead of throwing.
+	 */
+	private async sendWaterAction(
+		ctx: HomeFeatureHandlerContext,
+		nestedMenus: CrowniclesNestedMenus
+	): Promise<void> {
+		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			ctx.context,
+			makePacket(CommandReportGardenWaterReq, {}),
+			async (_responseContext, packetName, responsePacket) => {
+				if (packetName === CommandReportGardenErrorRes.name) {
+					const errorPacket = responsePacket as unknown as CommandReportGardenErrorRes;
+					await this.handleWaterError(ctx, nestedMenus, errorPacket);
+					return;
+				}
+
+				const response = responsePacket as unknown as CommandReportGardenWaterRes;
+				const garden = ctx.homeData.garden!;
+				this.updateGardenAfterWatering(garden, ctx, response);
+				const successMessage = `\n\n${i18n.t("commands:report.city.homes.garden.waterSuccess", {
+					lng: ctx.lng,
+					slotsWatered: response.slotsWatered,
+					slotsBecameReady: response.slotsBecameReady,
+					count: response.slotsBecameReady
+				})}`;
+				this.registerGardenMenu(ctx, nestedMenus, successMessage);
+				await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+			}
+		);
+	}
+
+	/**
+	 * Render a watering error inline in the garden menu without leaving the view.
+	 */
+	private async handleWaterError(
+		ctx: HomeFeatureHandlerContext,
+		nestedMenus: CrowniclesNestedMenus,
+		errorPacket: CommandReportGardenErrorRes
+	): Promise<void> {
+		let extraMessage = "";
+		if (errorPacket.error === GardenConstants.GARDEN_ERRORS.WATERING_ON_COOLDOWN && errorPacket.availableAt) {
+			const remainingSeconds = Math.ceil((errorPacket.availableAt - Date.now()) / 1000);
+			extraMessage = `\n\n${i18n.t("commands:report.city.homes.garden.waterCooldownError", {
+				lng: ctx.lng,
+				timeLeft: this.formatRemainingTime(Math.max(remainingSeconds, 0), ctx.lng)
+			})}`;
+
+			// Sync local state with server so the button stays disabled
+			ctx.homeData.garden!.wateringAvailableAt = errorPacket.availableAt;
+		}
+		else if (errorPacket.error === GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER) {
+			extraMessage = `\n\n${i18n.t("commands:report.city.homes.garden.waterNothingToWater", { lng: ctx.lng })}`;
+		}
+		this.registerGardenMenu(ctx, nestedMenus, extraMessage);
+		await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+	}
+
+	/**
+	 * Apply the watering effect on local garden state: shave the configured
+	 * advance off every growing plant, possibly marking some as ready.
+	 */
+	private updateGardenAfterWatering(
+		garden: GardenData,
+		ctx: HomeFeatureHandlerContext,
+		response: CommandReportGardenWaterRes
+	): void {
+		const advanceSeconds = GardenConstants.WATERING_TIME_ADVANCE_MS / 1000;
+		for (const plot of garden.plots) {
+			if (plot.plantId === 0 || plot.isReady) {
+				continue;
+			}
+			const newRemaining = plot.remainingSeconds - advanceSeconds;
+			if (newRemaining <= 0) {
+				plot.remainingSeconds = 0;
+				plot.growthProgress = 1;
+				plot.isReady = true;
+			}
+			else {
+				plot.remainingSeconds = newRemaining;
+				const fullGrowth = this.computeRemainingSeconds(plot.plantId, ctx.homeData.features.gardenEarthQuality);
+				plot.growthProgress = fullGrowth > 0 ? 1 - newRemaining / fullGrowth : 0;
+			}
+		}
+		garden.wateringAvailableAt = response.nextWateringAvailableAt;
 	}
 
 	/**

@@ -1,5 +1,5 @@
 import {
-	DataTypes, Model, Sequelize
+	DataTypes, literal, Model, Op, Sequelize
 } from "sequelize";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
@@ -140,6 +140,29 @@ export class HomeGardenSlots {
 		await HomeGardenSlot.update(
 			{ plantedAt: moment().toDate() },
 			{ where }
+		);
+	}
+
+	/**
+	 * Shift `plantedAt` back by `advanceMs` for the given slots — effectively
+	 * advancing their growth by that duration (older plantedAt = more elapsed time).
+	 * Used by the watering feature.
+	 */
+	public static async shiftPlantedAtForSlots(homeId: number, slots: number[], advanceMs: number): Promise<void> {
+		if (slots.length === 0) {
+			return;
+		}
+		await HomeGardenSlot.update(
+			{
+				plantedAt: literal(`DATE_SUB(\`plantedAt\`, INTERVAL ${Math.floor(advanceMs / 1000)} SECOND)`)
+			},
+			{
+				where: {
+					homeId,
+					slot: slots,
+					plantId: { [Op.ne]: 0 }
+				}
+			}
 		);
 	}
 

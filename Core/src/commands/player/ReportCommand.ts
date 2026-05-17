@@ -49,6 +49,7 @@ import {
 	ReactionCollectorBlacksmithUpgradeReaction,
 	ReactionCollectorBlacksmithDisenchantReaction,
 	ReactionCollectorGardenHarvestReaction,
+	ReactionCollectorGardenWaterReaction,
 	ReactionCollectorGuildDomainMenuReaction,
 	ReactionCollectorGuildDomainNotaryReaction,
 	ReactionCollectorApartmentBuyReaction,
@@ -356,6 +357,7 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 		}
 	],
 	[ReactionCollectorGardenHarvestReaction.name, NOOP_REACTION],
+	[ReactionCollectorGardenWaterReaction.name, NOOP_REACTION],
 	[ReactionCollectorGuildDomainMenuReaction.name, NOOP_REACTION],
 	[
 		ReactionCollectorGuildDomainNotaryReaction.name, async (params): Promise<void> => {

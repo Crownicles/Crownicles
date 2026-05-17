@@ -86,6 +86,9 @@ export const HomeMenuIds = {
 	/** Harvest all ready plants */
 	GARDEN_HARVEST: "GARDEN_HARVEST",
 
+	/** Water the garden (advance growth) */
+	GARDEN_WATER: "GARDEN_WATER",
+
 	/** Prefix for planting in a specific slot */
 	GARDEN_PLANT_PREFIX: "GARDEN_PLANT_",
 

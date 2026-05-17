@@ -143,6 +143,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 				/** Total garden plots available */
 				totalPlots: number;
+
+				/** Garden access level — full UI vs harvest-only when accessing remotely with talisman */
+				accessMode: "full" | "readOnly";
+
+				/** Watering state: unix-ms when watering becomes available again (null = available now) */
+				wateringAvailableAt: number | null;
 			};
 		};
 		manage?: {
@@ -397,6 +403,9 @@ export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionColle
 /** Reaction for harvesting all ready plants from the garden */
 export class ReactionCollectorGardenHarvestReaction extends ReactionCollectorReaction {}
 
+/** Reaction for watering the garden (advance growth of all growing plants) */
+export class ReactionCollectorGardenWaterReaction extends ReactionCollectorReaction {}
+
 /** Reaction for opening the guild domain menu (player is in the domain's city) */
 export class ReactionCollectorGuildDomainMenuReaction extends ReactionCollectorReaction {}
 
@@ -430,6 +439,7 @@ type CityReaction =
 	| ReactionCollectorBlacksmithUpgradeReaction
 	| ReactionCollectorBlacksmithDisenchantReaction
 	| ReactionCollectorGardenHarvestReaction
+	| ReactionCollectorGardenWaterReaction
 	| ReactionCollectorGuildDomainMenuReaction
 	| ReactionCollectorGuildDomainNotaryReaction
 	| ReactionCollectorApartmentBuyReaction
@@ -554,9 +564,18 @@ export class ReactionCollectorCity extends ReactionCollector {
 		if (!garden) {
 			return [];
 		}
+		const reactions: {
+			type: string; data: ReactionCollectorReaction;
+		}[] = [];
 
 		// Harvest reaction (always available if garden exists)
-		return [this.buildReaction(ReactionCollectorGardenHarvestReaction, {})];
+		reactions.push(this.buildReaction(ReactionCollectorGardenHarvestReaction, {}));
+
+		// Water reaction only when the player is physically in their home (full access)
+		if (garden.accessMode === "full") {
+			reactions.push(this.buildReaction(ReactionCollectorGardenWaterReaction, {}));
+		}
+		return reactions;
 	}
 
 	private buildBlacksmithReactions(): {
