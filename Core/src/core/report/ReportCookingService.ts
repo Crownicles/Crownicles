@@ -210,19 +210,24 @@ async function igniteOrReviveFurnace(
 		return;
 	}
 
-	// Check wood save buff (Chef de table grade)
-	const grade = getCookingGrade(player.cookingLevel);
-	const woodSaved = grade.woodSaveChance > 0 && RandomUtils.crowniclesRandom.realZeroToOneInclusive() < grade.woodSaveChance;
-
-	if (!woodSaved) {
-		await Materials.consumeMaterial(player.id, wood.materialId, 1);
-	}
-
-	// Advance furnace position under lock; sync in-memory player from the locked instance
-	await Player.withLocked(player.id, async lockedPlayer => {
+	/*
+	 * Run the whole ignite operation under the player row lock so two
+	 * concurrent ignite requests for the same player cannot both pass
+	 * the wood-save roll and consume wood twice (or both advance the
+	 * furnace position from the same starting value). The wood-save
+	 * buff roll, the material consumption and the furnacePosition
+	 * increment are all part of the same critical section.
+	 */
+	const woodSaved = await Player.withLocked(player.id, async lockedPlayer => {
+		const grade = getCookingGrade(lockedPlayer.cookingLevel);
+		const saved = grade.woodSaveChance > 0 && RandomUtils.crowniclesRandom.realZeroToOneInclusive() < grade.woodSaveChance;
+		if (!saved) {
+			await Materials.consumeMaterial(lockedPlayer.id, wood.materialId, 1);
+		}
 		lockedPlayer.furnacePosition++;
 		await lockedPlayer.save();
 		player.furnacePosition = lockedPlayer.furnacePosition;
+		return saved;
 	});
 
 	const slots = await CookingService.getSlotRecipes({
@@ -262,11 +267,13 @@ export async function handleCookingWoodConfirm(
 		player, home, cookingSlots
 	} = data;
 
-	// Consume the confirmed wood (no save buff — player already confirmed rare wood)
-	await Materials.consumeMaterial(player.id, pending.materialId, 1);
-
-	// Advance furnace position under lock; sync in-memory player from the locked instance
+	/*
+	 * Consume the confirmed wood (no save buff — player already confirmed rare wood)
+	 * Run consume + furnacePosition advance under the player lock so two
+	 * concurrent confirmations cannot race against each other.
+	 */
 	await Player.withLocked(player.id, async lockedPlayer => {
+		await Materials.consumeMaterial(lockedPlayer.id, pending.materialId, 1);
 		lockedPlayer.furnacePosition++;
 		await lockedPlayer.save();
 		player.furnacePosition = lockedPlayer.furnacePosition;
@@ -297,6 +304,14 @@ interface CraftOutputResult {
 	material?: CraftMaterialResult;
 	failedPotionId?: number;
 	inventorySwapPackets?: CrowniclesPacket[];
+
+	/**
+	 * Whether the bonus output flag should be honored in the response.
+	 * Falls back to `false` when no tangible bonus was applied (e.g.,
+	 * potion at MYTHICAL cap, upgraded rarity has no item, recipe
+	 * output type without bonus support).
+	 */
+	bonusHonored?: boolean;
 }
 
 /**
@@ -305,7 +320,7 @@ interface CraftOutputResult {
  * upgraded one has no available item. Returns null if no item
  * exists for the base rarity either.
  */
-function computeEffectivePotionRarity(nature: number, baseRarity: number, bonus: boolean): number | null {
+export function computeEffectivePotionRarity(nature: number, baseRarity: number, bonus: boolean): number | null {
 	let effective = baseRarity;
 	if (bonus && baseRarity < ItemRarity.MYTHICAL) {
 		const upgraded = baseRarity + 1;
@@ -338,7 +353,10 @@ async function handlePotionOutput({
 	}
 	const potion = PotionDataController.instance.randomItem(recipe.potionNature, effectiveRarity);
 	const itemReceived = await player.giveItem(potion);
-	const result: CraftOutputResult = { potionId: potion.id };
+	const result: CraftOutputResult = {
+		potionId: potion.id,
+		bonusHonored: bonus && effectiveRarity > recipe.potionRarity
+	};
 	if (!itemReceived) {
 		result.inventorySwapPackets = [];
 		await giveItemToPlayer(result.inventorySwapPackets, context, player, potion);
@@ -429,7 +447,8 @@ async function handlePetFoodOutput({
 			quantity: effectiveQuantity,
 			storedQuantity,
 			...surplusResult
-		}
+		},
+		bonusHonored: bonus
 	};
 }
 
@@ -478,7 +497,8 @@ async function handleMaterialOutput({
 		material: {
 			materialId: recipe.outputMaterialId,
 			quantity: effectiveQuantity
-		}
+		},
+		bonusHonored: bonus
 	};
 }
 
@@ -656,23 +676,27 @@ export async function handleCookingCraft(
 		player, homeId: home.id, cookingSlots
 	});
 
+	const {
+		bonusHonored, inventorySwapPackets, ...outputForPacket
+	} = outputResult;
+
 	response.push(makePacket(CommandReportCookingCraftRes, {
 		success: result.success,
 		recipeId: validatedRecipe.id,
 		wasSecret: validatedSlotRecipe.isSecret,
 		outputType: validatedRecipe.outputType,
-		...outputResult,
+		...outputForPacket,
 		cookingXpGained: result.xpGained,
 		cookingLevelUp: result.levelUp,
 		newCookingLevel: result.newLevel,
 		newCookingGrade: result.newGrade,
 		materialSaved: result.materialSaved,
-		bonusOutput: result.bonusOutput,
+		bonusOutput: result.bonusOutput && (bonusHonored ?? false),
 		discoveredRecipeIds: result.discoveredRecipeIds,
 		updatedSlots
 	}));
-	if (outputResult.inventorySwapPackets) {
-		response.push(...outputResult.inventorySwapPackets);
+	if (inventorySwapPackets) {
+		response.push(...inventorySwapPackets);
 	}
 	return response;
 }
