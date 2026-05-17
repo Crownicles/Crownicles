@@ -63,4 +63,9 @@ export class CommandInventoryPacketRes extends CrowniclesPacket {
 	 * Whether the player has the clone talisman (pet counts in defense fights and small events while on expedition)
 	 */
 	hasCloneTalisman?: boolean;
+
+	/**
+	 * Whether the player has the Heart of the Sylvan talisman (remote garden harvest)
+	 */
+	hasRemoteHarvestTalisman?: boolean;
 }
