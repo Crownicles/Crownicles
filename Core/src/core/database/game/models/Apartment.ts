@@ -44,15 +44,14 @@ export class Apartment extends Model {
 	/**
 	 * Daily rent earned (in coins) when this apartment is rented out
 	 * (i.e. the owner's main home is in the same city).
-	 * Computed from `purchasePrice / RENT_DAYS_TO_FULL_PRICE`.
+	 * Flat amount across all apartments (see `HomeConstants.DAILY_RENT`).
 	 */
 	public getDailyRent(): number {
-		return Math.floor(this.purchasePrice / HomeConstants.RENT_DAYS_TO_FULL_PRICE);
+		return HomeConstants.DAILY_RENT;
 	}
 
 	/**
-	 * Compute the rent currently accumulated since `lastRentClaimedAt`,
-	 * capped at the apartment's purchase price (a single full cycle).
+	 * Compute the rent currently accumulated since `lastRentClaimedAt`.
 	 *
 	 * Note: this does not check whether the apartment is currently rented out
 	 * (that depends on the owner's home city). Callers should only credit this
@@ -61,8 +60,7 @@ export class Apartment extends Model {
 	public getAccumulatedRent(now: Date = new Date()): number {
 		const elapsedMs = now.getTime() - this.lastRentClaimedAt.getTime();
 		const elapsedDays = Math.max(0, elapsedMs / TimeConstants.MS_TIME.DAY);
-		const raw = Math.floor(elapsedDays * this.getDailyRent());
-		return Math.min(raw, this.purchasePrice);
+		return Math.floor(elapsedDays * this.getDailyRent());
 	}
 
 	/**
