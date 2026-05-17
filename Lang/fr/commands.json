@@ -1499,7 +1499,8 @@
       "materialPacks": "Matériaux",
       "utilitaries": "Utilitaires",
       "prestige": "Prestige",
-      "services": "Services"
+      "services": "Services",
+      "remoteHarvestTalisman": "Talisman du Cœur Sylvestre"
     },
     "chooseSlotTitle": "{{pseudo}}, nouvel emplacement d'inventaire",
     "chooseSlotIndication": "Choisissez un nouvel emplacement d'inventaire ou annulez :",
