@@ -131,6 +131,7 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 		keycloakId: toCheckPlayer.keycloakId,
 		hasTalisman: talismans.hasTalisman,
 		hasCloneTalisman: talismans.hasCloneTalisman,
+		hasRemoteHarvestTalisman: toCheckPlayer.hasRemoteHarvestTalisman,
 		data: {
 			weapon: (weapon.getItem() as MainItem).getDisplayPacket(weapon.itemLevel, weapon.itemEnchantmentId ?? undefined, maxStatsValues),
 			armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId ?? undefined, maxStatsValues),
