@@ -30,6 +30,7 @@ import {
 import { GardenConstants } from "../../../../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../../../../Lib/src/types/GardenEarthQuality";
 import { TimeConstants } from "../../../../../../../Lib/src/constants/TimeConstants";
+import { GardenAccessMode } from "../../../../../../../Lib/src/types/GardenAccessMode";
 
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
@@ -154,7 +155,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			})}`;
 		}
 
-		if (garden.accessMode === "full" && garden.wateringAvailableAt !== null) {
+		if (garden.accessMode === GardenAccessMode.FULL && garden.wateringAvailableAt !== null) {
 			const remainingMs = garden.wateringAvailableAt - Date.now();
 			if (remainingMs > 0) {
 				const remainingSeconds = Math.ceil(remainingMs / 1000);
@@ -201,7 +202,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	 */
 	private addGardenButtons(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		const garden = ctx.homeData.garden!;
-		const isReadOnly = garden.accessMode === "readOnly";
+		const isReadOnly = garden.accessMode === GardenAccessMode.READ_ONLY;
 		const hasReadyPlants = garden.plots.some(p => p.isReady);
 		const buttons: ButtonBuilder[] = [];
 

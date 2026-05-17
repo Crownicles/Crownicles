@@ -7,13 +7,14 @@ import i18n from "../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { ReactionCollectorHomeBedReaction } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
+import { GardenAccessMode } from "../../../../../../Lib/src/types/GardenAccessMode";
 
 export class BedFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "bed";
 
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
 		// Bed regen is unavailable in remote-garden (read-only) access via /jardin: the player isn't physically home.
-		return ctx.homeData.garden?.accessMode !== "readOnly";
+		return ctx.homeData.garden?.accessMode !== GardenAccessMode.READ_ONLY;
 	}
 
 	public getMenuOption(ctx: HomeFeatureHandlerContext): HomeFeatureMenuOption | null {
