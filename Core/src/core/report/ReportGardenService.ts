@@ -33,10 +33,10 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Materials } from "../database/game/models/Material";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
+import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
-type GardenAccessMode = GardenData["accessMode"];
 
 /**
  * Compute the unix-ms timestamp at which the player can next water their garden,
@@ -54,7 +54,7 @@ export async function buildGardenData(
 	home: Home,
 	homeLevel: HomeLevel,
 	player: Player,
-	accessMode: GardenAccessMode = "full"
+	accessMode: GardenAccessMode = GardenAccessMode.FULL
 ): Promise<GardenData> {
 	const gardenPlots = homeLevel.features.gardenPlots;
 	const earthQuality = homeLevel.features.gardenEarthQuality;

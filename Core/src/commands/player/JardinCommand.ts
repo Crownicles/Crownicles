@@ -22,29 +22,24 @@ import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { buildGardenData } from "../../core/report/ReportGardenService";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { TravelTime } from "../../core/maps/TravelTime";
-
-/**
- * Garden menu identifier in the Discord-side nested menu registry.
- * Mirrors {@link HomeMenuIds.GARDEN_MENU} (Discord package) — duplicated here as a
- * string literal because Core cannot depend on Discord.
- */
-const HOME_GARDEN_MENU_ID = "HOME_GARDEN_MENU";
+import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
+import { HomeNestedMenuIds } from "../../../../Lib/src/constants/HomeNestedMenuIds";
 
 /**
  * Resolve the access mode for the /jardin command:
- * - "full" if the player is currently in the city where their home sits.
- * - "readOnly" if the player is away from home but owns the Cœur Sylvestre talisman.
+ * - FULL if the player is currently in the city where their home sits.
+ * - READ_ONLY if the player is away from home but owns the Cœur Sylvestre talisman.
  * - null if the player is away from home and does not own the talisman (refused).
  */
 function resolveGardenAccess(
 	player: Player,
 	homeCityId: string
-): "full" | "readOnly" | null {
+): GardenAccessMode | null {
 	const currentCity = CityDataController.instance.getCityByMapId(player.getDestinationId()!);
 	if (currentCity && currentCity.id === homeCityId) {
-		return "full";
+		return GardenAccessMode.FULL;
 	}
-	return player.hasRemoteHarvestTalisman ? "readOnly" : null;
+	return player.hasRemoteHarvestTalisman ? GardenAccessMode.READ_ONLY : null;
 }
 
 export class JardinCommand {
@@ -104,7 +99,7 @@ export class JardinCommand {
 				playerMoney: 0,
 				ownedApartments: []
 			},
-			initialMenu: HOME_GARDEN_MENU_ID
+			initialMenu: HomeNestedMenuIds.GARDEN
 		};
 
 		const collector = new ReactionCollectorCity(collectorData);

@@ -2,6 +2,8 @@
  * Constants for home menu IDs.
  * These are used as custom IDs for Discord select menus and buttons.
  */
+import { HomeNestedMenuIds } from "../../../../../../Lib/src/constants/HomeNestedMenuIds";
+
 export const HomeMenuIds = {
 	// --- Menus ---
 	/** Main home menu */
@@ -81,7 +83,7 @@ export const HomeMenuIds = {
 
 	// --- Garden feature ---
 	/** Garden feature menu */
-	GARDEN_MENU: "HOME_GARDEN_MENU",
+	GARDEN_MENU: HomeNestedMenuIds.GARDEN,
 
 	/** Harvest all ready plants */
 	GARDEN_HARVEST: "GARDEN_HARVEST",

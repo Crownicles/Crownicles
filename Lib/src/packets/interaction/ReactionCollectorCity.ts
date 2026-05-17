@@ -21,6 +21,7 @@ import {
 } from "../../types/PlantStorageEntry";
 import { OwnedPet } from "../../types/OwnedPet";
 import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
+import { GardenAccessMode } from "../../types/GardenAccessMode";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -154,7 +155,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 				totalPlots: number;
 
 				/** Garden access level — full UI vs harvest-only when accessing remotely with talisman */
-				accessMode: "full" | "readOnly";
+				accessMode: GardenAccessMode;
 
 				/** Watering state: unix-ms when watering becomes available again (null = available now) */
 				wateringAvailableAt: number | null;
@@ -551,7 +552,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 		const homeMenuReaction = this.buildReaction(ReactionCollectorHomeMenuReaction, {});
 
 		// Bed regen is suppressed in remote-garden (read-only) access: the player isn't physically home.
-		const isRemoteGardenView = this.data.home.owned.garden?.accessMode === "readOnly";
+		const isRemoteGardenView = this.data.home.owned.garden?.accessMode === GardenAccessMode.READ_ONLY;
 		const homeBedReactions = isRemoteGardenView
 			? []
 			: [this.buildReaction(ReactionCollectorHomeBedReaction, {})];
@@ -586,7 +587,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 		reactions.push(this.buildReaction(ReactionCollectorGardenHarvestReaction, {}));
 
 		// Water reaction only when the player is physically in their home (full access)
-		if (garden.accessMode === "full") {
+		if (garden.accessMode === GardenAccessMode.FULL) {
 			reactions.push(this.buildReaction(ReactionCollectorGardenWaterReaction, {}));
 		}
 		return reactions;
