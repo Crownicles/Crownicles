@@ -1184,6 +1184,7 @@
           "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",
           "storageEntry": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) — {{quantity}}/{{maxCapacity}}",
           "backToGarden": "← Retour au jardin",
+          "putAwayTalisman": "Ranger le Cœur Sylvestre",
           "compostTitle": "{emote:city.gardenStatus.compost} **Compostage :**",
           "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})"
         },
