@@ -2285,7 +2285,8 @@
   },
   "talisman": {
     "anchor": "{emote:expedition.talisman} **Talisman d'Ancrage**",
-    "clone": "{emote:expedition.cloneTalisman} **Talisman de Clonage**"
+    "clone": "{emote:expedition.cloneTalisman} **Talisman de Clonage**",
+    "remoteHarvest": "{emote:city.gardenStatus.remoteHarvestTalisman} **Cœur Sylvestre**"
   },
   "ordinals": {
     "get_feminine_ordinal_one": "1ère",
