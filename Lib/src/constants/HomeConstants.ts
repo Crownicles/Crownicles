@@ -46,10 +46,9 @@ export abstract class HomeConstants {
 	public static readonly ADVANCED_UPGRADE_LEVEL_THRESHOLD = 2;
 
 	/**
-	 * Number of days for the cumulative rent of an apartment to reach its purchase price.
-	 * The daily rent is therefore `purchasePrice / RENT_DAYS_TO_FULL_PRICE`.
+	 * Flat daily rent (in coins) earned by any apartment regardless of its purchase price.
 	 */
-	public static readonly RENT_DAYS_TO_FULL_PRICE = 365;
+	public static readonly DAILY_RENT = 212;
 
 	/**
 	 * Minimum amount of accumulated rent (coins) the player must reach before
