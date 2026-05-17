@@ -1171,6 +1171,13 @@
           "hasSeed": "{emote:city.gardenStatus.seed} Vous portez une graine : {emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
           "harvestButton": "Récolter",
           "plantButton": "Planter",
+          "waterButton": "Arroser",
+          "waterCooldown": "{emote:city.gardenStatus.water} Vous pourrez arroser à nouveau dans **{{timeLeft}}**.",
+          "waterCooldownError": "{emote:messages.refuse} Vous avez déjà arrosé récemment. Patientez encore **{{timeLeft}}**.",
+          "waterNothingToWater": "{emote:messages.info} Aucune plante en cours de pousse à arroser.",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). Leur croissance a été accélérée d'une heure.",
+          "waterSuccess_one": "{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). **{{slotsBecameReady}}** plante est maintenant prête à être récoltée !",
+          "waterSuccess_other": "{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). **{{slotsBecameReady}}** plantes sont maintenant prêtes à être récoltées !",
           "storageButton": "Réserve ({{count}})",
           "storageTitle": "{emote:city.homeUpgrades.garden} Réserve de plantes :",
           "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",
@@ -1638,6 +1645,10 @@
       "randomMaterialPack": {
         "name": "{emote:shopItems.randomMaterialPack} Lot de matériaux",
         "info": "Un assortiment de matériaux variés, récoltés aux quatre coins du royaume. Le contenu est aléatoire et peut inclure des matériaux rares."
+      },
+      "remoteHarvestTalisman": {
+        "name": "{emote:city.gardenStatus.remoteHarvestTalisman} Cœur Sylvestre",
+        "info": "Un talisman tressé dans une fibre vivante, encore frémissante de sève. Il maintient un lien discret avec votre jardin où que vous alliez : où que vous soyez sur la carte, la commande `/jardin` vous permettra alors de surveiller vos plantations et d'en récolter les fruits à distance — sans toutefois pouvoir planter ni arroser."
       },
       "token": {
         "name": "{emote:unitValues.token} Jeton",

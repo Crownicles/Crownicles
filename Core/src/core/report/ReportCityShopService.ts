@@ -48,6 +48,7 @@ import {
 } from "../utils/MissionManagerShopItems";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { pickMaterialDistribution } from "./MaterialLootGenerator";
+import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 
 /**
  * Cached materials by type and rarity (constant after data loading, computed once per key)
@@ -295,7 +296,8 @@ export async function openTanner(player: Player, context: PacketContext, respons
 }
 
 /**
- * Open the herbalist shop for the player (weekly rotating plants)
+ * Open the herbalist shop for the player (weekly rotating plants + the one-shot
+ * "Cœur Sylvestre" talisman that grants remote garden harvest access).
  */
 export async function openHerbalist(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants();
@@ -325,6 +327,27 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 			}))
 		}
 	];
+
+	// One-shot talisman: appears only if the player does not already own it.
+	if (!player.hasRemoteHarvestTalisman) {
+		shopCategories.push({
+			id: "remoteHarvestTalisman",
+			items: [
+				{
+					id: ShopItemType.REMOTE_HARVEST_TALISMAN,
+					price: GardenConstants.REMOTE_HARVEST_TALISMAN_PRICE,
+					amounts: [1],
+					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<BuyCallbackResult> => {
+						await Player.withLocked(playerId, async locked => {
+							locked.hasRemoteHarvestTalisman = true;
+							await locked.save();
+						});
+						return { success: true };
+					}
+				}
+			]
+		});
+	}
 
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,

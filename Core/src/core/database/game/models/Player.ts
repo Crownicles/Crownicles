@@ -201,6 +201,10 @@ export class Player extends Model {
 
 	declare lastBedUsedAt: Date | null;
 
+	declare lastGardenWatered: Date | null;
+
+	declare hasRemoteHarvestTalisman: boolean;
+
 	declare furnacePosition: number;
 
 	declare pinnedCookingRecipeId: string | null;
@@ -2030,6 +2034,16 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.DATE,
 			allowNull: true,
 			defaultValue: null
+		},
+		lastGardenWatered: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null
+		},
+		hasRemoteHarvestTalisman: {
+			type: DataTypes.BOOLEAN,
+			allowNull: false,
+			defaultValue: false
 		},
 		furnacePosition: {
 			type: DataTypes.INTEGER,

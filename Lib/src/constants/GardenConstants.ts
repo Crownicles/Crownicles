@@ -14,15 +14,33 @@ export abstract class GardenConstants {
 
 	public static readonly GARDEN_ACTIONS = {
 		HARVEST: "harvest",
-		PLANT: "plant"
+		PLANT: "plant",
+		WATER: "water"
 	} as const;
 
 	public static readonly GARDEN_ERRORS = {
 		NO_READY_PLANTS: "noReadyPlants",
 		NO_SEED: "noSeed",
 		NO_EMPTY_PLOT: "noEmptyPlot",
-		SEED_ALREADY_PLANTED: "seedAlreadyPlanted"
+		SEED_ALREADY_PLANTED: "seedAlreadyPlanted",
+		WATERING_ON_COOLDOWN: "wateringOnCooldown",
+		NO_PLANTS_TO_WATER: "noPlantsToWater"
 	} as const;
+
+	/**
+	 * Cooldown (in ms) between two waterings of the player's garden.
+	 */
+	public static readonly WATERING_COOLDOWN_MS = 12 * 60 * 60 * 1000;
+
+	/**
+	 * Amount of growth time (in ms) instantly shaved off every growing plant when the player waters the garden.
+	 */
+	public static readonly WATERING_TIME_ADVANCE_MS = 60 * 60 * 1000;
+
+	/**
+	 * Price in coins of the "Cœur Sylvestre" talisman that unlocks remote garden harvest.
+	 */
+	public static readonly REMOTE_HARVEST_TALISMAN_PRICE = 10_000;
 
 	/**
 	 * Get the effective growth time in seconds for a plant given an earth quality
