@@ -35,6 +35,15 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	 */
 	initialMenu?: string;
 
+	/**
+	 * Standalone mode used by the /jardin command.
+	 * When true:
+	 * - Lib emits only the garden home reactions plus a single "close" (refuse) reaction.
+	 * - Discord MainMenu renders a minimal close-only screen.
+	 * The collector reuses the city payload schema but is conceptually a garden-only window.
+	 */
+	gardenOnly?: boolean;
+
 	inns?: {
 		innId: string;
 		meals: {
@@ -540,7 +549,12 @@ export class ReactionCollectorCity extends ReactionCollector {
 			return [];
 		}
 		const homeMenuReaction = this.buildReaction(ReactionCollectorHomeMenuReaction, {});
-		const homeBedReaction = this.buildReaction(ReactionCollectorHomeBedReaction, {});
+
+		// Bed regen is suppressed in remote-garden (read-only) access: the player isn't physically home.
+		const isRemoteGardenView = this.data.home.owned.garden?.accessMode === "readOnly";
+		const homeBedReactions = isRemoteGardenView
+			? []
+			: [this.buildReaction(ReactionCollectorHomeBedReaction, {})];
 		const upgradeItemReactions = this.data.home.owned.upgradeStation?.upgradeableItems.map(item =>
 			this.buildReaction(ReactionCollectorUpgradeItemReaction, {
 				slot: item.slot,
@@ -551,7 +565,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 
 		return [
 			homeMenuReaction,
-			homeBedReaction,
+			...homeBedReactions,
 			...upgradeItemReactions,
 			...gardenReactions
 		];
@@ -653,10 +667,12 @@ export class ReactionCollectorCity extends ReactionCollector {
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorCityPacket {
-		return {
-			id,
-			endTime,
-			reactions: [
+		const reactions = this.data.gardenOnly
+			? [
+				this.buildReaction(ReactionCollectorRefuseReaction, {}),
+				...this.buildHomeFeatureReactions()
+			]
+			: [
 				this.buildReaction(ReactionCollectorExitCityReaction, {}),
 				this.buildReaction(ReactionCollectorRefuseReaction, {}),
 				...this.buildInnReactions(),
@@ -667,7 +683,11 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildBlacksmithReactions(),
 				...this.buildGuildDomainReactions(),
 				...this.buildApartmentNotaryReactions()
-			],
+			];
+		return {
+			id,
+			endTime,
+			reactions,
 			data: this.buildData(ReactionCollectorCityData, {
 				...this.data
 			})

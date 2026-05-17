@@ -1411,6 +1411,16 @@
       "arrived": "Vous êtes arrivé à votre destination.\n> **{{emote}} {{destination}}**.\n> {{description}}"
     }
   },
+  "jardin": {
+    "title": "{{pseudo}}, votre jardin",
+    "description": "Vous contemplez votre jardin. Choisissez l'action à effectuer à partir du menu ci-dessous.",
+    "close": "Fermer le jardin",
+    "noAccess": {
+      "noHome": "Vous n'avez pas encore de chez-vous, et donc aucun jardin à entretenir. Trouvez-vous d'abord une demeure dans l'une des villes du monde avant de songer à cultiver quoi que ce soit.",
+      "noGarden": "Votre demeure actuelle ne dispose pas encore d'un coin de terre cultivable. Améliorez-la pour pouvoir un jour y faire pousser vos propres plantes.",
+      "noTalisman": "Vous êtes bien loin de votre jardin, et sans le Cœur Sylvestre vous ne pouvez pas y accéder à distance. Ce talisman est en vente chez l'Herboriste à Coco Village."
+    }
+  },
   "petFree": {
     "title": "{{pseudo}}, libération d'un familier",
     "acceptedTitle": "{{pseudo}}, familier libéré !",

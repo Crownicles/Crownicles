@@ -11,8 +11,9 @@ import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 export class BedFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "bed";
 
-	public isAvailable(_ctx: HomeFeatureHandlerContext): boolean {
-		return true; // All homes have a bed
+	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
+		// Bed regen is unavailable in remote-garden (read-only) access via /jardin: the player isn't physically home.
+		return ctx.homeData.garden?.accessMode !== "readOnly";
 	}
 
 	public getMenuOption(ctx: HomeFeatureHandlerContext): HomeFeatureMenuOption | null {

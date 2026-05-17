@@ -163,6 +163,10 @@
     "description": "Afficher la carte pour indiquer où vous allez.",
     "name": "carte"
   },
+  "jardin": {
+    "description": "Accéder à votre jardin, à distance si vous possédez le Cœur Sylvestre.",
+    "name": "jardin"
+  },
   "classesInfo": {
     "description": "Afficher des informations sur les classes sélectionnables pour votre personnage.",
     "name": "infosclasses"
