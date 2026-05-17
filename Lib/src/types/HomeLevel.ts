@@ -10,7 +10,7 @@ export class HomeLevel {
 		chestSlots: {
 			weapon: 1, armor: 1, object: 0, potion: 0
 		},
-		upgradeItemMaximumRarity: ItemRarity.BASIC,
+		upgradeItemMaximumRarity: ItemRarity.COMMON,
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 0,
 		gardenEarthQuality: GardenEarthQuality.POOR,
@@ -18,36 +18,21 @@ export class HomeLevel {
 		cookingSlots: 0
 	});
 
-	public static readonly LEVEL_2 = new HomeLevel(2, 15, 5000, {
+	public static readonly LEVEL_2 = new HomeLevel(2, 15, 3500, {
 		bedHealthRegeneration: 2,
-		chestSlots: {
-			weapon: 1, armor: 1, object: 1, potion: 1
-		},
-		upgradeItemMaximumRarity: ItemRarity.UNCOMMON,
-		maxItemUpgradeLevel: 1,
-		gardenPlots: 0,
-		gardenEarthQuality: GardenEarthQuality.POOR,
-		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY,
-		cookingSlots: 0
-	});
-
-	public static readonly LEVEL_3 = new HomeLevel(3, 30, 20000, {
-		bedHealthRegeneration: 3,
 		chestSlots: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
 		upgradeItemMaximumRarity: ItemRarity.EXOTIC,
 		maxItemUpgradeLevel: 1,
-		gardenPlots: 3,
+		gardenPlots: 2,
 		gardenEarthQuality: GardenEarthQuality.POOR,
-		inventoryBonus: {
-			weapon: 1, armor: 1, object: 0, potion: 0
-		},
+		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY,
 		cookingSlots: 1
 	});
 
-	public static readonly LEVEL_4 = new HomeLevel(4, 45, 50000, {
-		bedHealthRegeneration: 4,
+	public static readonly LEVEL_3 = new HomeLevel(3, 30, 20000, {
+		bedHealthRegeneration: 3,
 		chestSlots: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
@@ -56,18 +41,18 @@ export class HomeLevel {
 		gardenPlots: 4,
 		gardenEarthQuality: GardenEarthQuality.POOR,
 		inventoryBonus: {
-			weapon: 1, armor: 1, object: 1, potion: 1
+			weapon: 1, armor: 1, object: 0, potion: 0
 		},
 		cookingSlots: 2
 	});
 
-	public static readonly LEVEL_5 = new HomeLevel(5, 60, 75000, {
-		bedHealthRegeneration: 5,
+	public static readonly LEVEL_4 = new HomeLevel(4, 45, 35000, {
+		bedHealthRegeneration: 4,
 		chestSlots: {
-			weapon: 2, armor: 2, object: 1, potion: 1
+			weapon: 1, armor: 1, object: 1, potion: 1
 		},
 		upgradeItemMaximumRarity: ItemRarity.SPECIAL,
-		maxItemUpgradeLevel: 2,
+		maxItemUpgradeLevel: 1,
 		gardenPlots: 6,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE,
 		inventoryBonus: {
@@ -76,10 +61,10 @@ export class HomeLevel {
 		cookingSlots: 3
 	});
 
-	public static readonly LEVEL_6 = new HomeLevel(6, 85, 150000, {
-		bedHealthRegeneration: 6,
+	public static readonly LEVEL_5 = new HomeLevel(5, 60, 75000, {
+		bedHealthRegeneration: 5,
 		chestSlots: {
-			weapon: 2, armor: 2, object: 1, potion: 2
+			weapon: 2, armor: 2, object: 1, potion: 1
 		},
 		upgradeItemMaximumRarity: ItemRarity.EPIC,
 		maxItemUpgradeLevel: 2,
@@ -91,10 +76,10 @@ export class HomeLevel {
 		cookingSlots: 4
 	});
 
-	public static readonly LEVEL_7 = new HomeLevel(7, 100, 250000, {
-		bedHealthRegeneration: 7,
+	public static readonly LEVEL_6 = new HomeLevel(6, 85, 100000, {
+		bedHealthRegeneration: 6,
 		chestSlots: {
-			weapon: 3, armor: 3, object: 1, potion: 3
+			weapon: 2, armor: 2, object: 1, potion: 2
 		},
 		upgradeItemMaximumRarity: ItemRarity.LEGENDARY,
 		maxItemUpgradeLevel: 2,
@@ -106,13 +91,28 @@ export class HomeLevel {
 		cookingSlots: 5
 	});
 
-	public static readonly LEVEL_8 = new HomeLevel(8, 120, 450000, {
+	public static readonly LEVEL_7 = new HomeLevel(7, 100, 150000, {
+		bedHealthRegeneration: 7,
+		chestSlots: {
+			weapon: 3, armor: 3, object: 1, potion: 3
+		},
+		upgradeItemMaximumRarity: ItemRarity.MYTHICAL,
+		maxItemUpgradeLevel: 2,
+		gardenPlots: 10,
+		gardenEarthQuality: GardenEarthQuality.RICH,
+		inventoryBonus: {
+			weapon: 1, armor: 1, object: 1, potion: 1
+		},
+		cookingSlots: 5
+	});
+
+	public static readonly LEVEL_8 = new HomeLevel(8, 120, 250000, {
 		bedHealthRegeneration: 8,
 		chestSlots: {
 			weapon: 3, armor: 3, object: 2, potion: 4
 		},
 		upgradeItemMaximumRarity: ItemRarity.MYTHICAL,
-		maxItemUpgradeLevel: 2,
+		maxItemUpgradeLevel: 3,
 		gardenPlots: 10,
 		gardenEarthQuality: GardenEarthQuality.RICH,
 		inventoryBonus: {
