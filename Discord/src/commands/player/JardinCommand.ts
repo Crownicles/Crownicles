@@ -4,8 +4,10 @@ import {
 import { CommandJardinPacketReq } from "../../../../Lib/src/packets/commands/CommandJardinPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 
-function getPacket(): CommandJardinPacketReq {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandJardinPacketReq> {
+	await interaction.deferReply();
 	return makePacket(CommandJardinPacketReq, {});
 }
 
