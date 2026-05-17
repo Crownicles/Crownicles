@@ -32,6 +32,7 @@ import { GardenEarthQuality } from "../../../../../../../Lib/src/types/GardenEar
 import { TimeConstants } from "../../../../../../../Lib/src/constants/TimeConstants";
 import { printTimeBeforeDate } from "../../../../../../../Lib/src/utils/TimeUtils";
 import { GardenAccessMode } from "../../../../../../../Lib/src/types/GardenAccessMode";
+import { ReactionCollectorCityData } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
@@ -256,8 +257,9 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			}))
 			.setStyle(ButtonStyle.Secondary));
 
-		// Back button (or put away talisman in /jardin mode)
-		buttons.push(isReadOnly
+		// Back button (or put away talisman in /jardin mode, whether read-only remote or at home)
+		const isGardenOnly = (ctx.packet.data.data as ReactionCollectorCityData).gardenOnly === true;
+		buttons.push(isReadOnly || isGardenOnly
 			? new ButtonBuilder()
 				.setCustomId(HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN)
 				.setLabel(i18n.t("commands:report.city.homes.garden.putAwayTalisman", { lng: ctx.lng }))

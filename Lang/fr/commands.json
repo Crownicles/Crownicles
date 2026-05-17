@@ -627,7 +627,7 @@
     "talismans": {
       "anchorTalisman": "$t(models:talisman.anchor) - Permet d'envoyer votre familier en expédition",
       "cloneTalisman": "$t(models:talisman.clone) - Votre familier vous assiste en défense et dans les petits événements même en expédition",
-      "remoteHarvestTalisman": "$t(models:talisman.remoteHarvest) - Permet de récolter votre jardin à distance via {command:jardin}"
+      "remoteHarvestTalisman": "$t(models:talisman.remoteHarvest) - Permet de récolter votre jardin à distance via {command:garden}"
     },
     "talismanNotOwned": "{emote:inventory.empty} **Aucun artefact**",
     "randomItemTitle": "{{pseudo}}, vous avez trouvé quelque chose !",
@@ -1101,7 +1101,7 @@
         "refuseAndLeaveNotary": "Refuser et quitter le bureau du notaire",
         "leaveNotary": "Quitter le bureau du notaire",
         "featurePlaceholder": "Choisissez une fonctionnalité de votre maison",
-        "backToHome": "Retour au menu principal",
+        "backToHome": "Retour à la maison",
         "upgradeStation": {
           "menuLabel": "Établi d'équipement",
           "menuDescription": "Améliorez vos armes et armures",
