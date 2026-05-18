@@ -8,7 +8,9 @@ import { Player } from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
-import { Homes } from "../../core/database/game/models/Home";
+import {
+	Home, Homes
+} from "../../core/database/game/models/Home";
 import { CityDataController } from "../../data/City";
 import {
 	ReactionCollectorCity, ReactionCollectorCityData
@@ -25,6 +27,22 @@ import { MapLocationDataController } from "../../data/MapLocation";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { HomeNestedMenuIds } from "../../../../Lib/src/constants/HomeNestedMenuIds";
+import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
+import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+
+type GardenHomeResolution = {
+	home: Home;
+	homeLevel: HomeLevel;
+} | {
+	reason: JardinNoAccessReason;
+};
+
+interface GardenCollectorDataParams {
+	player: Player;
+	home: Home;
+	homeLevel: HomeLevel;
+	accessMode: GardenAccessMode;
+}
 
 /**
  * Resolve the access mode for the /jardin command:
@@ -43,6 +61,100 @@ function resolveGardenAccess(
 	return player.hasRemoteHarvestTalisman ? GardenAccessMode.READ_ONLY : null;
 }
 
+async function resolveGardenHome(player: Player): Promise<GardenHomeResolution> {
+	const home = await Homes.getOfPlayer(player.id);
+	if (!home) {
+		return { reason: JardinNoAccessReason.NO_HOME };
+	}
+
+	const homeLevel = home.getLevel();
+	if (!isGardenAvailable(homeLevel)) {
+		return { reason: JardinNoAccessReason.NO_GARDEN };
+	}
+
+	return {
+		home,
+		homeLevel
+	};
+}
+
+function isGardenAvailable(homeLevel: HomeLevel | null): homeLevel is HomeLevel {
+	if (!homeLevel) {
+		return false;
+	}
+	return homeLevel.features.gardenPlots > 0;
+}
+
+async function buildGardenCollectorData(params: GardenCollectorDataParams): Promise<ReactionCollectorCityData> {
+	const playerInventory = await InventorySlots.getOfPlayer(params.player.id);
+	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
+	const garden = await buildGardenData(params.home, params.homeLevel, params.player, params.accessMode);
+	const destinationId = params.player.getDestinationId()!;
+
+	return {
+		gardenOnly: true,
+		enterCityTimestamp: TravelTime.getTravelDataSimplified(params.player, new Date()).travelStartTime,
+		mapTypeId: MapLocationDataController.instance.getById(destinationId)!.type,
+		mapLocationId: destinationId,
+		energy: buildEnergyData(params.player, playerActiveObjects),
+		health: buildHealthData(params.player, playerActiveObjects),
+		home: {
+			owned: {
+				level: params.home.level,
+				features: params.homeLevel.features,
+				garden
+			}
+		},
+		apartmentNotary: {
+			playerMoney: 0,
+			ownedApartments: []
+		},
+		initialMenu: HomeNestedMenuIds.GARDEN
+	};
+}
+
+function buildEnergyData(player: Player, playerActiveObjects: PlayerActiveObjects): ReactionCollectorCityData["energy"] {
+	return {
+		current: player.getCumulativeEnergy(playerActiveObjects),
+		max: player.getMaxCumulativeEnergy(playerActiveObjects)
+	};
+}
+
+function buildHealthData(player: Player, playerActiveObjects: PlayerActiveObjects): ReactionCollectorCityData["health"] {
+	return {
+		current: player.getHealth(playerActiveObjects),
+		max: player.getMaxHealth(playerActiveObjects)
+	};
+}
+
+function createJardinEndCallback(player: Player): EndCallback {
+	return (collector: ReactionCollectorInstance, endResponse: CrowniclesPacket[]): void => {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.JARDIN_COMMAND);
+		const firstReaction = collector.getFirstReaction();
+		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+			endResponse.push(makePacket(CommandJardinClosedRes, {}));
+		}
+	};
+}
+
+function buildJardinCollectorPacket(
+	collectorData: ReactionCollectorCityData,
+	player: Player,
+	context: PacketContext
+): CrowniclesPacket {
+	return new ReactionCollectorInstance(
+		new ReactionCollectorCity(collectorData),
+		context,
+		{
+			allowedPlayerKeycloakIds: [player.keycloakId],
+			reactionLimit: 1
+		},
+		createJardinEndCallback(player)
+	)
+		.block(player.keycloakId, BlockingConstants.REASONS.JARDIN_COMMAND)
+		.build();
+}
+
 export class JardinCommand {
 	@commandRequires(CommandJardinPacketReq, {
 		notBlocked: true,
@@ -55,76 +167,24 @@ export class JardinCommand {
 		_packet: CommandJardinPacketReq,
 		context: PacketContext
 	): Promise<void> {
-		const home = await Homes.getOfPlayer(player.id);
-		if (!home) {
-			response.push(makePacket(CommandJardinNoAccessRes, { reason: JardinNoAccessReason.NO_HOME }));
+		const gardenHome = await resolveGardenHome(player);
+		if ("reason" in gardenHome) {
+			response.push(makePacket(CommandJardinNoAccessRes, { reason: gardenHome.reason }));
 			return;
 		}
-		const homeLevel = home.getLevel();
-		if (!homeLevel || homeLevel.features.gardenPlots === 0) {
-			response.push(makePacket(CommandJardinNoAccessRes, { reason: JardinNoAccessReason.NO_GARDEN }));
-			return;
-		}
-		const accessMode = resolveGardenAccess(player, home.cityId);
+
+		const accessMode = resolveGardenAccess(player, gardenHome.home.cityId);
 		if (!accessMode) {
 			response.push(makePacket(CommandJardinNoAccessRes, { reason: JardinNoAccessReason.NO_TALISMAN }));
 			return;
 		}
 
-		const playerInventory = await InventorySlots.getOfPlayer(player.id);
-		const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
-		const garden = await buildGardenData(home, homeLevel, player, accessMode);
-
-		const destinationId = player.getDestinationId()!;
-		const collectorData: ReactionCollectorCityData = {
-			gardenOnly: true,
-			enterCityTimestamp: TravelTime.getTravelDataSimplified(player, new Date()).travelStartTime,
-			mapTypeId: MapLocationDataController.instance.getById(destinationId)!.type,
-			mapLocationId: destinationId,
-			energy: {
-				current: player.getCumulativeEnergy(playerActiveObjects),
-				max: player.getMaxCumulativeEnergy(playerActiveObjects)
-			},
-			health: {
-				current: player.getHealth(playerActiveObjects),
-				max: player.getMaxHealth(playerActiveObjects)
-			},
-			home: {
-				owned: {
-					level: home.level,
-					features: homeLevel.features,
-					garden
-				}
-			},
-			apartmentNotary: {
-				playerMoney: 0,
-				ownedApartments: []
-			},
-			initialMenu: HomeNestedMenuIds.GARDEN
-		};
-
-		const collector = new ReactionCollectorCity(collectorData);
-
-		const endCallback: EndCallback = (collector: ReactionCollectorInstance, endResponse: CrowniclesPacket[]): void => {
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.JARDIN_COMMAND);
-			const firstReaction = collector.getFirstReaction();
-			if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
-				endResponse.push(makePacket(CommandJardinClosedRes, {}));
-			}
-		};
-
-		const collectorPacket = new ReactionCollectorInstance(
-			collector,
-			context,
-			{
-				allowedPlayerKeycloakIds: [player.keycloakId],
-				reactionLimit: 1
-			},
-			endCallback
-		)
-			.block(player.keycloakId, BlockingConstants.REASONS.JARDIN_COMMAND)
-			.build();
-
-		response.push(collectorPacket);
+		const collectorData = await buildGardenCollectorData({
+			player,
+			home: gardenHome.home,
+			homeLevel: gardenHome.homeLevel,
+			accessMode
+		});
+		response.push(buildJardinCollectorPacket(collectorData, player, context));
 	}
 }

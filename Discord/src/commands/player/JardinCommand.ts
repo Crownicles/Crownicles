@@ -12,7 +12,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandJar
 }
 
 export const commandInfo: ICommand = {
-	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("jardin"),
+	slashCommandBuilder: SlashCommandBuilderGenerator.generateBaseCommand("garden"),
 	getPacket,
 	mainGuildCommand: false
 };

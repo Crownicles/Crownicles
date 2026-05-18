@@ -35,9 +35,12 @@ import { GardenAccessMode } from "../../../../../../../Lib/src/types/GardenAcces
 import { ReactionCollectorCityData } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
+import { StringUtils } from "../../../../../utils/StringUtils";
 
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
+
+const WATERING_TIME_ADVANCE_SECONDS = GardenConstants.WATERING_TIME_ADVANCE_MS / TimeConstants.MS_TIME.SECOND;
 
 export class GardenFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = HomeMenuIds.FEATURE_GARDEN;
@@ -152,28 +155,59 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildGardenDescription(ctx: HomeFeatureHandlerContext): string {
 		const garden = ctx.homeData.garden!;
-		let description = i18n.t("commands:report.city.homes.garden.description", { lng: ctx.lng });
-		description += "\n";
+		return StringUtils.joinParagraphs([
+			i18n.t("commands:report.city.homes.garden.description", { lng: ctx.lng }),
+			garden.plots.map(plot => this.buildPlotDescription(plot, ctx)).join("\n"),
+			this.buildSeedDescription(garden, ctx),
+			this.buildWaterCooldownDescription(garden, ctx)
+		]);
+	}
 
-		for (const plot of garden.plots) {
-			description += this.buildPlotDescription(plot, ctx);
+	private buildSeedDescription(garden: GardenData, ctx: HomeFeatureHandlerContext): string | null {
+		if (!this.hasSeedToPlant(garden)) {
+			return null;
 		}
 
-		if (garden.hasSeed && garden.seedPlantId !== 0) {
-			description += `\n\n${i18n.t("commands:report.city.homes.garden.hasSeed", {
-				lng: ctx.lng,
-				plantId: garden.seedPlantId
-			})}`;
+		return i18n.t("commands:report.city.homes.garden.hasSeed", {
+			lng: ctx.lng,
+			plantId: garden.seedPlantId
+		});
+	}
+
+	private hasSeedToPlant(garden: GardenData): boolean {
+		if (!garden.hasSeed) {
+			return false;
+		}
+		return garden.seedPlantId !== 0;
+	}
+
+	private buildWaterCooldownDescription(garden: GardenData, ctx: HomeFeatureHandlerContext): string | null {
+		const wateringAvailableAt = this.getActiveWaterCooldownAvailableAt(garden);
+		if (wateringAvailableAt === null) {
+			return null;
 		}
 
-		if (garden.accessMode === GardenAccessMode.FULL && garden.wateringAvailableAt !== null && garden.wateringAvailableAt > Date.now()) {
-			description += `\n\n${i18n.t("commands:report.city.homes.garden.waterCooldown", {
-				lng: ctx.lng,
-				timeLeft: printTimeBeforeDate(garden.wateringAvailableAt)
-			})}`;
+		return i18n.t("commands:report.city.homes.garden.waterCooldown", {
+			lng: ctx.lng,
+			timeLeft: printTimeBeforeDate(wateringAvailableAt)
+		});
+	}
+
+	private hasActiveWaterCooldown(garden: GardenData): boolean {
+		return this.getActiveWaterCooldownAvailableAt(garden) !== null;
+	}
+
+	private getActiveWaterCooldownAvailableAt(garden: GardenData): number | null {
+		if (garden.accessMode !== GardenAccessMode.FULL) {
+			return null;
 		}
 
-		return description;
+		const wateringAvailableAt = garden.wateringAvailableAt;
+		if (wateringAvailableAt === null) {
+			return null;
+		}
+
+		return wateringAvailableAt > Date.now() ? wateringAvailableAt : null;
 	}
 
 	/**
@@ -181,27 +215,27 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildPlotDescription(plot: GardenPlotData, ctx: HomeFeatureHandlerContext): string {
 		if (plot.plantId === 0) {
-			return `\n${i18n.t("commands:report.city.homes.garden.emptyPlot", {
+			return i18n.t("commands:report.city.homes.garden.emptyPlot", {
 				lng: ctx.lng,
 				slot: plot.slot + 1
-			})}`;
+			});
 		}
 		if (plot.isReady) {
-			return `\n${i18n.t("commands:report.city.homes.garden.readyPlot", {
+			return i18n.t("commands:report.city.homes.garden.readyPlot", {
 				lng: ctx.lng,
 				slot: plot.slot + 1,
 				plantId: plot.plantId
-			})}`;
+			});
 		}
 		const progress = Math.floor(plot.growthProgress * 100);
 		const timeLeft = this.formatRemainingTime(plot.remainingSeconds, ctx.lng);
-		return `\n${i18n.t("commands:report.city.homes.garden.growingPlot", {
+		return i18n.t("commands:report.city.homes.garden.growingPlot", {
 			lng: ctx.lng,
 			slot: plot.slot + 1,
 			plantId: plot.plantId,
 			progress,
 			timeLeft
-		})}`;
+		});
 	}
 
 	/**
@@ -209,73 +243,133 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	 */
 	private addGardenButtons(ctx: HomeFeatureHandlerContext, container: ContainerBuilder): void {
 		const garden = ctx.homeData.garden!;
-		const isReadOnly = garden.accessMode === GardenAccessMode.READ_ONLY;
-		const hasReadyPlants = garden.plots.some(p => p.isReady);
-		const buttons: ButtonBuilder[] = [];
+		const buttons: ButtonBuilder[] = [
+			this.buildHarvestButton(ctx, garden),
+			...this.buildPlantButtons(ctx, garden),
+			...this.buildWaterButtons(ctx, garden),
+			this.buildStorageButton(ctx, garden),
+			this.buildExitButton(ctx, garden)
+		];
 
-		// Harvest button (always available, including in readOnly remote access)
-		buttons.push(
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addActionRowComponents(new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons));
+	}
+
+	private buildHarvestButton(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder {
+		return new ButtonBuilder()
+			.setCustomId(HomeMenuIds.GARDEN_HARVEST)
+			.setLabel(i18n.t("commands:report.city.homes.garden.harvestButton", { lng: ctx.lng }))
+			.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.garden)!)
+			.setStyle(ButtonStyle.Success)
+			.setDisabled(!this.hasReadyPlants(garden));
+	}
+
+	private buildPlantButtons(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder[] {
+		if (!this.canPlantSeed(garden)) {
+			return [];
+		}
+
+		return [
 			new ButtonBuilder()
-				.setCustomId(HomeMenuIds.GARDEN_HARVEST)
-				.setLabel(i18n.t("commands:report.city.homes.garden.harvestButton", { lng: ctx.lng }))
-				.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.garden)!)
-				.setStyle(ButtonStyle.Success)
-				.setDisabled(!hasReadyPlants)
-		);
+				.setCustomId(`${HomeMenuIds.GARDEN_PLANT_PREFIX}auto`)
+				.setLabel(i18n.t("commands:report.city.homes.garden.plantButton", { lng: ctx.lng }))
+				.setStyle(ButtonStyle.Primary)
+		];
+	}
 
-		// Plant button (only at home, with a seed and at least one empty plot)
-		if (!isReadOnly && garden.hasSeed) {
-			const hasEmptyPlot = garden.plots.some(p => p.plantId === 0);
-			if (hasEmptyPlot) {
-				buttons.push(
-					new ButtonBuilder()
-						.setCustomId(`${HomeMenuIds.GARDEN_PLANT_PREFIX}auto`)
-						.setLabel(i18n.t("commands:report.city.homes.garden.plantButton", { lng: ctx.lng }))
-						.setStyle(ButtonStyle.Primary)
-				);
-			}
+	private buildWaterButtons(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder[] {
+		if (this.isReadOnlyGarden(garden)) {
+			return [];
 		}
 
-		// Water button (only at home)
-		if (!isReadOnly) {
-			const hasGrowingPlants = garden.plots.some(p => p.plantId !== 0 && !p.isReady);
-			const onCooldown = garden.wateringAvailableAt !== null && garden.wateringAvailableAt > Date.now();
-			buttons.push(
-				new ButtonBuilder()
-					.setCustomId(HomeMenuIds.GARDEN_WATER)
-					.setLabel(i18n.t("commands:report.city.homes.garden.waterButton", { lng: ctx.lng }))
-					.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.water)!)
-					.setStyle(ButtonStyle.Primary)
-					.setDisabled(!hasGrowingPlants || onCooldown)
-			);
-		}
+		return [
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.GARDEN_WATER)
+				.setLabel(i18n.t("commands:report.city.homes.garden.waterButton", { lng: ctx.lng }))
+				.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.water)!)
+				.setStyle(ButtonStyle.Primary)
+				.setDisabled(!this.canWaterGarden(garden))
+		];
+	}
 
-		// Storage button
-		const totalStored = garden.plantStorage.reduce((sum, s) => sum + s.quantity, 0);
-		buttons.push(new ButtonBuilder()
+	private buildStorageButton(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder {
+		const totalStored = garden.plantStorage.reduce((sum, storage) => sum + storage.quantity, 0);
+		return new ButtonBuilder()
 			.setCustomId(HomeMenuIds.GARDEN_STORAGE)
 			.setLabel(i18n.t("commands:report.city.homes.garden.storageButton", {
 				lng: ctx.lng,
 				count: totalStored
 			}))
-			.setStyle(ButtonStyle.Secondary));
+			.setStyle(ButtonStyle.Secondary);
+	}
 
-		// Back button (or put away talisman in /jardin mode, whether read-only remote or at home)
-		const isGardenOnly = (ctx.packet.data.data as ReactionCollectorCityData).gardenOnly === true;
-		buttons.push(isReadOnly || isGardenOnly
-			? new ButtonBuilder()
-				.setCustomId(HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN)
-				.setLabel(i18n.t("commands:report.city.homes.garden.putAwayTalisman", { lng: ctx.lng }))
-				.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.remoteHarvestTalisman)!)
-				.setStyle(ButtonStyle.Danger)
-			: new ButtonBuilder()
-				.setCustomId(HomeMenuIds.BACK_TO_HOME)
-				.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
-				.setEmoji(CrowniclesIcons.collectors.back)
-				.setStyle(ButtonStyle.Danger));
+	private buildExitButton(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder {
+		return this.shouldShowPutAwayTalismanButton(ctx, garden)
+			? this.buildPutAwayTalismanButton(ctx)
+			: this.buildBackToHomeButton(ctx);
+	}
 
-		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		container.addActionRowComponents(new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons));
+	private buildPutAwayTalismanButton(ctx: HomeFeatureHandlerContext): ButtonBuilder {
+		return new ButtonBuilder()
+			.setCustomId(HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN)
+			.setLabel(i18n.t("commands:report.city.homes.garden.putAwayTalisman", { lng: ctx.lng }))
+			.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.remoteHarvestTalisman)!)
+			.setStyle(ButtonStyle.Danger);
+	}
+
+	private buildBackToHomeButton(ctx: HomeFeatureHandlerContext): ButtonBuilder {
+		return new ButtonBuilder()
+			.setCustomId(HomeMenuIds.BACK_TO_HOME)
+			.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
+			.setEmoji(CrowniclesIcons.collectors.back)
+			.setStyle(ButtonStyle.Danger);
+	}
+
+	private shouldShowPutAwayTalismanButton(ctx: HomeFeatureHandlerContext, garden: GardenData): boolean {
+		if (this.isReadOnlyGarden(garden)) {
+			return true;
+		}
+		return this.isGardenOnlyContext(ctx);
+	}
+
+	private isGardenOnlyContext(ctx: HomeFeatureHandlerContext): boolean {
+		return (ctx.packet.data.data as ReactionCollectorCityData).gardenOnly === true;
+	}
+
+	private canPlantSeed(garden: GardenData): boolean {
+		if (this.isReadOnlyGarden(garden)) {
+			return false;
+		}
+		if (!garden.hasSeed) {
+			return false;
+		}
+		return garden.plots.some(plot => plot.plantId === 0);
+	}
+
+	private canWaterGarden(garden: GardenData): boolean {
+		if (!this.hasGrowingPlants(garden)) {
+			return false;
+		}
+		return !this.hasActiveWaterCooldown(garden);
+	}
+
+	private hasReadyPlants(garden: GardenData): boolean {
+		return garden.plots.some(plot => plot.isReady);
+	}
+
+	private hasGrowingPlants(garden: GardenData): boolean {
+		return garden.plots.some(plot => this.isGrowingPlot(plot));
+	}
+
+	private isGrowingPlot(plot: GardenPlotData): boolean {
+		if (plot.plantId === 0) {
+			return false;
+		}
+		return !plot.isReady;
+	}
+
+	private isReadOnlyGarden(garden: GardenData): boolean {
+		return garden.accessMode === GardenAccessMode.READ_ONLY;
 	}
 
 	/**
@@ -295,10 +389,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	private buildGardenContainer(ctx: HomeFeatureHandlerContext, extraMessage = ""): ContainerBuilder {
 		const container = new ContainerBuilder();
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(this.getSubMenuTitle(ctx, ctx.pseudo)))
 		);
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(this.buildGardenDescription(ctx) + extraMessage)
+			new TextDisplayBuilder().setContent(StringUtils.joinParagraphs([
+				this.buildGardenDescription(ctx),
+				extraMessage
+			]))
 		);
 		this.addGardenButtons(ctx, container);
 		return container;
@@ -320,31 +417,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	private registerStorageMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): void {
 		const garden = ctx.homeData.garden!;
 
-		let description = i18n.t("commands:report.city.homes.garden.storageTitle", { lng: ctx.lng });
-		description += "\n";
-
-		const storedPlants = garden.plantStorage.filter(s => s.quantity > 0);
-
-		if (storedPlants.length === 0) {
-			description += `\n${i18n.t("commands:report.city.homes.garden.storageEmpty", { lng: ctx.lng })}`;
-		}
-		else {
-			for (const storage of storedPlants) {
-				description += `\n${i18n.t("commands:report.city.homes.garden.storageEntry", {
-					lng: ctx.lng,
-					plantId: storage.plantId,
-					quantity: storage.quantity,
-					maxCapacity: storage.maxCapacity
-				})}`;
-			}
-		}
-
 		const container = new ContainerBuilder();
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(this.getSubMenuTitle(ctx, ctx.pseudo)))
 		);
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(description)
+			new TextDisplayBuilder().setContent(this.buildStorageDescription(garden, ctx))
 		);
 
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -362,6 +440,29 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			containers: [container],
 			createCollector: this.createGardenCollector(ctx)
 		});
+	}
+
+	private buildStorageDescription(garden: GardenData, ctx: HomeFeatureHandlerContext): string {
+		return StringUtils.joinParagraphs([
+			i18n.t("commands:report.city.homes.garden.storageTitle", { lng: ctx.lng }),
+			this.buildStoredPlantsDescription(garden, ctx)
+		]);
+	}
+
+	private buildStoredPlantsDescription(garden: GardenData, ctx: HomeFeatureHandlerContext): string {
+		const storedPlants = garden.plantStorage.filter(storage => storage.quantity > 0);
+		if (storedPlants.length === 0) {
+			return i18n.t("commands:report.city.homes.garden.storageEmpty", { lng: ctx.lng });
+		}
+
+		return storedPlants
+			.map(storage => i18n.t("commands:report.city.homes.garden.storageEntry", {
+				lng: ctx.lng,
+				plantId: storage.plantId,
+				quantity: storage.quantity,
+				maxCapacity: storage.maxCapacity
+			}))
+			.join("\n");
 	}
 
 	/**
@@ -400,11 +501,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	 * Build a compost result notification string from a harvest response
 	 */
 	private buildCompostMessage(response: CommandReportGardenHarvestRes, ctx: HomeFeatureHandlerContext): string {
-		if (!response.compostResults || response.compostResults.length === 0) {
+		const compostResults = response.compostResults ?? [];
+		if (compostResults.length === 0) {
 			return "";
 		}
 		let message = i18n.t("commands:report.city.homes.garden.compostTitle", { lng: ctx.lng });
-		for (const result of response.compostResults) {
+		for (const result of compostResults) {
 			message += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
 				lng: ctx.lng,
 				plantId: result.plantId,
@@ -427,7 +529,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 					return;
 				}
 
-				const response = responsePacket as unknown as CommandReportGardenHarvestRes;
+				const response = responsePacket as CommandReportGardenHarvestRes;
 				const garden = ctx.homeData.garden!;
 				this.updateGardenAfterHarvest(garden, response, ctx);
 				const compostMessage = this.buildCompostMessage(response, ctx);
@@ -451,12 +553,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			makePacket(CommandReportGardenWaterReq, {}),
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportGardenErrorRes.name) {
-					const errorPacket = responsePacket as unknown as CommandReportGardenErrorRes;
+					const errorPacket = responsePacket as CommandReportGardenErrorRes;
 					await this.handleWaterError(ctx, nestedMenus, errorPacket);
 					return;
 				}
 
-				const response = responsePacket as unknown as CommandReportGardenWaterRes;
+				const response = responsePacket as CommandReportGardenWaterRes;
 				const garden = ctx.homeData.garden!;
 				this.updateGardenAfterWatering(garden, ctx, response);
 				const successMessage = i18n.t("commands:report.city.homes.garden.waterSuccess", {
@@ -479,21 +581,34 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus,
 		errorPacket: CommandReportGardenErrorRes
 	): Promise<void> {
-		let extraMessage = "";
-		if (errorPacket.error === GardenConstants.GARDEN_ERRORS.WATERING_ON_COOLDOWN && errorPacket.availableAt) {
-			extraMessage = i18n.t("commands:report.city.homes.garden.waterCooldownError", {
+		const extraMessage = this.buildWaterErrorMessage(ctx, errorPacket);
+		this.registerGardenMenu(ctx, nestedMenus, extraMessage);
+		await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+	}
+
+	private buildWaterErrorMessage(ctx: HomeFeatureHandlerContext, errorPacket: CommandReportGardenErrorRes): string {
+		if (this.isWateringCooldownError(errorPacket)) {
+			ctx.homeData.garden!.wateringAvailableAt = errorPacket.availableAt;
+			return i18n.t("commands:report.city.homes.garden.waterCooldownError", {
 				lng: ctx.lng,
 				timeLeft: printTimeBeforeDate(errorPacket.availableAt)
 			});
+		}
 
-			// Sync local state with server so the button stays disabled
-			ctx.homeData.garden!.wateringAvailableAt = errorPacket.availableAt;
+		if (errorPacket.error === GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER) {
+			return i18n.t("commands:report.city.homes.garden.waterNothingToWater", { lng: ctx.lng });
 		}
-		else if (errorPacket.error === GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER) {
-			extraMessage = i18n.t("commands:report.city.homes.garden.waterNothingToWater", { lng: ctx.lng });
+
+		return "";
+	}
+
+	private isWateringCooldownError(
+		errorPacket: CommandReportGardenErrorRes
+	): errorPacket is CommandReportGardenErrorRes & { availableAt: number } {
+		if (errorPacket.error !== GardenConstants.GARDEN_ERRORS.WATERING_ON_COOLDOWN) {
+			return false;
 		}
-		this.registerGardenMenu(ctx, nestedMenus, extraMessage);
-		await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+		return errorPacket.availableAt !== undefined;
 	}
 
 	/**
@@ -505,12 +620,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		ctx: HomeFeatureHandlerContext,
 		response: CommandReportGardenWaterRes
 	): void {
-		const advanceSeconds = GardenConstants.WATERING_TIME_ADVANCE_MS / 1000;
 		for (const plot of garden.plots) {
-			if (plot.plantId === 0 || plot.isReady) {
+			if (!this.isGrowingPlot(plot)) {
 				continue;
 			}
-			const newRemaining = plot.remainingSeconds - advanceSeconds;
+			const newRemaining = plot.remainingSeconds - WATERING_TIME_ADVANCE_SECONDS;
 			if (newRemaining <= 0) {
 				plot.remainingSeconds = 0;
 				plot.growthProgress = 1;
@@ -542,7 +656,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 					return;
 				}
 
-				const response = responsePacket as unknown as CommandReportGardenPlantRes;
+				const response = responsePacket as CommandReportGardenPlantRes;
 
 				// Update the garden data locally
 				const garden = ctx.homeData.garden!;
