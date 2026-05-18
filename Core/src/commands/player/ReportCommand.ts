@@ -50,6 +50,7 @@ import {
 	ReactionCollectorBlacksmithDisenchantReaction,
 	ReactionCollectorGardenHarvestReaction,
 	ReactionCollectorGardenWaterReaction,
+	ReactionCollectorGardenCompostReaction,
 	ReactionCollectorGuildDomainMenuReaction,
 	ReactionCollectorGuildDomainNotaryReaction,
 	ReactionCollectorApartmentBuyReaction,
@@ -99,6 +100,7 @@ import {
 	isCityShopEmpty
 } from "../../core/report/ReportCityService";
 import { handleGuildDomainNotaryReaction } from "../../core/report/ReportCityGuildDomainService";
+import { handleGardenCompostReaction } from "../../core/report/ReportGardenService";
 import {
 	handleApartmentBuyReaction,
 	handleApartmentClaimRentReaction
@@ -358,6 +360,12 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 	],
 	[ReactionCollectorGardenHarvestReaction.name, NOOP_REACTION],
 	[ReactionCollectorGardenWaterReaction.name, NOOP_REACTION],
+	[
+		ReactionCollectorGardenCompostReaction.name, async (params): Promise<void> => {
+			const reaction = params.reactionData as ReactionCollectorGardenCompostReaction;
+			await handleGardenCompostReaction(params.player, reaction.plantId, reaction.quantity, params.response);
+		}
+	],
 	[ReactionCollectorGuildDomainMenuReaction.name, NOOP_REACTION],
 	[
 		ReactionCollectorGuildDomainNotaryReaction.name, async (params): Promise<void> => {

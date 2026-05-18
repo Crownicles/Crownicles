@@ -22,6 +22,7 @@ import {
 import { OwnedPet } from "../../types/OwnedPet";
 import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 import { GardenAccessMode } from "../../types/GardenAccessMode";
+import { GardenConstants } from "../../constants/GardenConstants";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -416,6 +417,17 @@ export class ReactionCollectorGardenHarvestReaction extends ReactionCollectorRea
 /** Reaction for watering the garden (advance growth of all growing plants) */
 export class ReactionCollectorGardenWaterReaction extends ReactionCollectorReaction {}
 
+/**
+ * Reaction for manually composting plants from the home plant storage.
+ * Consumes `quantity` plants of `plantId` and gives one random material per plant.
+ * Only emitted when the player is physically at home (`accessMode === FULL`).
+ */
+export class ReactionCollectorGardenCompostReaction extends ReactionCollectorReaction {
+	plantId!: PlantId;
+
+	quantity!: number;
+}
+
 /** Reaction for opening the guild domain menu (player is in the domain's city) */
 export class ReactionCollectorGuildDomainMenuReaction extends ReactionCollectorReaction {}
 
@@ -450,6 +462,7 @@ type CityReaction =
 	| ReactionCollectorBlacksmithDisenchantReaction
 	| ReactionCollectorGardenHarvestReaction
 	| ReactionCollectorGardenWaterReaction
+	| ReactionCollectorGardenCompostReaction
 	| ReactionCollectorGuildDomainMenuReaction
 	| ReactionCollectorGuildDomainNotaryReaction
 	| ReactionCollectorApartmentBuyReaction
@@ -589,6 +602,27 @@ export class ReactionCollectorCity extends ReactionCollector {
 		// Water reaction only when the player is physically in their home (full access)
 		if (garden.accessMode === GardenAccessMode.FULL) {
 			reactions.push(this.buildReaction(ReactionCollectorGardenWaterReaction, {}));
+		}
+
+		/*
+		 * Manual compost reactions: only when the player is physically home and has plants in storage.
+		 * Emit one reaction per (plantId, quantity ∈ COMPOST_QUANTITIES with quantity ≤ stored quantity)
+		 * so the Discord side can pick the right index without re-validating storage state.
+		 */
+		if (garden.accessMode === GardenAccessMode.FULL) {
+			for (const entry of garden.plantStorage) {
+				if (entry.quantity <= 0) {
+					continue;
+				}
+				for (const quantity of GardenConstants.COMPOST_QUANTITIES) {
+					if (entry.quantity >= quantity) {
+						reactions.push(this.buildReaction(ReactionCollectorGardenCompostReaction, {
+							plantId: entry.plantId,
+							quantity
+						}));
+					}
+				}
+			}
 		}
 		return reactions;
 	}

@@ -106,6 +106,25 @@ export class HomePlantStorages {
 	}
 
 	/**
+	 * Remove `amount` plants from storage in one transaction. Returns true on success.
+	 * Used by the manual compost flow.
+	 */
+	public static async removePlants(homeId: number, plantId: PlantId | 0, amount: number): Promise<boolean> {
+		if (amount <= 0) {
+			return false;
+		}
+		const storage = await HomePlantStorages.getForPlant(homeId, plantId);
+
+		if (!storage || storage.quantity < amount) {
+			return false;
+		}
+
+		storage.quantity -= amount;
+		await storage.save();
+		return true;
+	}
+
+	/**
 	 * Delete all plant storage for a home
 	 */
 	public static async deleteOfHome(homeId: number): Promise<void> {

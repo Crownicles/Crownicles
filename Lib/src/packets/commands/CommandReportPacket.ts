@@ -467,6 +467,39 @@ export class CommandReportGardenErrorRes extends CrowniclesPacket {
 	availableAt?: number;
 }
 
+/**
+ * Result packet for a successful manual compost action.
+ * Sent when the player confirms composting N plants from the home storage,
+ * which terminates the `/rapport` command (mirror of the shop purchase flow).
+ */
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenCompostRes extends CrowniclesPacket {
+	/** The plant type that was composted */
+	plantId!: PlantId;
+
+	/** Number of plants composted (equals materials.length) */
+	quantity!: number;
+
+	/** Materials produced — one per composted plant, picked at random in `plant.compostMaterials` */
+	materials!: number[];
+}
+
+/**
+ * Error packet for the manual compost flow, raised when the storage no longer
+ * holds enough plants of the requested type (typically due to a concurrent
+ * shard composting / harvesting between the menu render and confirmation).
+ * Kept distinct from {@link CommandReportGardenErrorRes} because the manual
+ * compost flow terminates `/rapport` via a reaction collector, so its response
+ * packets must not be picked up by the async-request/response handlers used
+ * by harvest / water / plant.
+ */
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportGardenCompostNotEnoughPlantsRes extends CrowniclesPacket {
+	plantId!: PlantId;
+
+	quantity!: number;
+}
+
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportPlantTransferReq extends CrowniclesPacket {
 	/** The transfer action: deposit or withdraw */

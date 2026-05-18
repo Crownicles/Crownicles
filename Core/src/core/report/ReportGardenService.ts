@@ -16,6 +16,8 @@ import {
 	CommandReportGardenWaterReq,
 	CommandReportGardenWaterRes,
 	CommandReportGardenErrorRes,
+	CommandReportGardenCompostRes,
+	CommandReportGardenCompostNotEnoughPlantsRes,
 	CommandReportPlantTransferReq,
 	CommandReportPlantTransferRes,
 	PlantTransferError,
@@ -237,8 +239,7 @@ async function processHarvestSlot(params: {
 	let harvestedCount = 0;
 
 	if (overflow > 0) {
-		const materialId = RandomUtils.crowniclesRandom.pick(plant.compostMaterials);
-		await Materials.giveMaterial(playerId, materialId, 1);
+		const materialId = await pickAndGiveCompostMaterial(playerId, plant);
 		compostResults.push({
 			plantId: plant.id,
 			materialId
@@ -250,6 +251,16 @@ async function processHarvestSlot(params: {
 
 	await HomeGardenSlots.resetGrowthTimer(homeId, slot.slot);
 	return harvestedCount;
+}
+
+/**
+ * Pick a random material from the plant's compost pool and grant it to the player.
+ * Shared between the harvest-overflow auto-compost and the manual compost flow.
+ */
+async function pickAndGiveCompostMaterial(playerId: number, plant: { compostMaterials: number[] }): Promise<number> {
+	const materialId = RandomUtils.crowniclesRandom.pick(plant.compostMaterials);
+	await Materials.giveMaterial(playerId, materialId, 1);
+	return materialId;
 }
 
 /**
@@ -602,4 +613,58 @@ function getWaterableSlotGrowth(
 function willBecomeReadyAfterWatering(plantedAt: Date, effectiveGrowthTime: number, nowMs: number): boolean {
 	const elapsedSeconds = (nowMs - plantedAt.valueOf()) / TimeConstants.MS_TIME.SECOND;
 	return elapsedSeconds + WATERING_TIME_ADVANCE_SECONDS >= effectiveGrowthTime;
+}
+
+/**
+ * Handle a manual compost reaction triggered from the home garden sub-menu of `/rapport`.
+ * The whole flow (validation + storage decrement + material grant) runs under a
+ * composite lock on Home + Player so concurrent shards cannot double-compost
+ * the same plants (race-safe, see review checklist §10).
+ *
+ * This terminates the `/rapport` command — the city collector end callback is
+ * the one calling us, mirroring the shop purchase / inn meal flow.
+ */
+export async function handleGardenCompostReaction(
+	player: Player,
+	plantId: PlantId,
+	quantity: number,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const home = await Homes.getOfPlayer(player.id);
+	if (!home) {
+		response.push(makePacket(CommandReportGardenCompostNotEnoughPlantsRes, {
+			plantId, quantity
+		}));
+		return;
+	}
+
+	const plant = PlantConstants.getPlantById(plantId);
+	if (!plant) {
+		response.push(makePacket(CommandReportGardenCompostNotEnoughPlantsRes, {
+			plantId, quantity
+		}));
+		return;
+	}
+
+	await Home.withLocked(home.id, async (): Promise<void> => {
+		const removed = await HomePlantStorages.removePlants(home.id, plantId, quantity);
+		if (!removed) {
+			response.push(makePacket(CommandReportGardenCompostNotEnoughPlantsRes, {
+				plantId, quantity
+			}));
+			return;
+		}
+
+		const materials: number[] = [];
+		for (let i = 0; i < quantity; i++) {
+			const materialId = await pickAndGiveCompostMaterial(player.id, plant);
+			materials.push(materialId);
+		}
+
+		response.push(makePacket(CommandReportGardenCompostRes, {
+			plantId,
+			quantity,
+			materials
+		}));
+	});
 }

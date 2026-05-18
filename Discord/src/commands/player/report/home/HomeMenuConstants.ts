@@ -103,6 +103,24 @@ export const HomeMenuIds = {
 	/** Put away the Cœur Sylvestre talisman (closes /jardin menu) */
 	GARDEN_PUT_AWAY_TALISMAN: "GARDEN_PUT_AWAY_TALISMAN",
 
+	/** Open the compost sub-menu */
+	GARDEN_COMPOST: "GARDEN_COMPOST",
+
+	/** Compost selection sub-menu */
+	GARDEN_COMPOST_MENU: "GARDEN_COMPOST_MENU",
+
+	/** Confirm sub-menu for a specific plant + quantity */
+	GARDEN_COMPOST_CONFIRM_MENU: "GARDEN_COMPOST_CONFIRM_MENU",
+
+	/** Prefix for selecting which plant to compost (plantId appended) */
+	GARDEN_COMPOST_SELECT_PREFIX: "GARDEN_COMPOST_SEL_",
+
+	/** Cancel compost confirmation */
+	GARDEN_COMPOST_CANCEL: "GARDEN_COMPOST_CANCEL",
+
+	/** Prefix for confirming compost (quantity + "_" + plantId appended) */
+	GARDEN_COMPOST_CONFIRM_PREFIX: "GARDEN_COMPOST_CONFIRM_",
+
 	// --- Cooking feature ---
 	/** Cooking feature menu */
 	COOKING_MENU: "HOME_COOKING_MENU",
