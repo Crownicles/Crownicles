@@ -106,10 +106,11 @@ export class HomePlantStorages {
 	}
 
 	/**
-	 * Remove `amount` plants from storage in one transaction. Returns true on success.
-	 * Used by the manual compost flow.
+	 * Remove `amount` plants from storage. Returns true on success.
+	 * Caller MUST hold the parent Home row lock (e.g. via `Home.withLocked`) before invoking,
+	 * otherwise the read-validate-save sequence races with concurrent shards.
 	 */
-	public static async removePlants(homeId: number, plantId: PlantId | 0, amount: number): Promise<boolean> {
+	public static async removePlantsUnderLock(homeId: number, plantId: PlantId | 0, amount: number): Promise<boolean> {
 		if (amount <= 0) {
 			return false;
 		}

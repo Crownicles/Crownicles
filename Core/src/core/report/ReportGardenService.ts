@@ -647,7 +647,7 @@ export async function handleGardenCompostReaction(
 	}
 
 	await Home.withLocked(home.id, async (): Promise<void> => {
-		const removed = await HomePlantStorages.removePlants(home.id, plantId, quantity);
+		const removed = await HomePlantStorages.removePlantsUnderLock(home.id, plantId, quantity);
 		if (!removed) {
 			response.push(makePacket(CommandReportGardenCompostNotEnoughPlantsRes, {
 				plantId, quantity
