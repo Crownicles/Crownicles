@@ -130,7 +130,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			[HomeMenuIds.BACK_TO_HOME]: menus => menus.changeMenu(HomeMenuIds.HOME_MENU),
 			[HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN]: async menus => {
 				this.sendRefuseReaction(ctx, componentInteraction);
-				await menus.stopCurrentCollector({ editMessage: false });
+				await menus.stopCurrentCollector();
 			},
 			[HomeMenuIds.GARDEN_BACK]: menus => menus.changeMenu(HomeMenuIds.GARDEN_MENU),
 			[HomeMenuIds.GARDEN_STORAGE]: async menus => {

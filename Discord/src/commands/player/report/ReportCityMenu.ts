@@ -250,6 +250,35 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 	return menus;
 }
 
+/**
+ * Resolve the initial menu to render and whether a follow-up navigation is needed.
+ *
+ * In gardenOnly mode (/jardin command), the city main menu placeholder is bypassed
+ * entirely so the player lands directly on the garden view — preventing a transient
+ * "Fermer le jardin"-only flash before the real menu appears.
+ *
+ * Other flows (e.g. chest deposit/withdraw) still see the city main menu first and
+ * navigate to `initialMenu` right after, preserving the existing UX.
+ */
+function resolveInitialMenu(
+	menuParams: HomeMenuParams,
+	menus: Map<string, CrowniclesNestedMenu>,
+	cityData: ReactionCollectorCityData
+): {
+	mainMenu: CrowniclesNestedMenu; navigateAfterSend: string | null;
+} {
+	const hasInitialMenu = Boolean(cityData.initialMenu) && menus.has(cityData.initialMenu!);
+	if (cityData.gardenOnly && hasInitialMenu) {
+		return {
+			mainMenu: menus.get(cityData.initialMenu!)!, navigateAfterSend: null
+		};
+	}
+	return {
+		mainMenu: getMainMenu(menuParams),
+		navigateAfterSend: hasInitialMenu ? cityData.initialMenu! : null
+	};
+}
+
 export class ReportCityMenu {
 	public static async handleCityCollector(context: PacketContext, packet: ReactionCollectorCreationPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -264,8 +293,13 @@ export class ReportCityMenu {
 
 		const menus = buildCitySubMenus(menuParams);
 
+		const cityData = packet.data.data as ReactionCollectorCityData;
+		const {
+			mainMenu, navigateAfterSend
+		} = resolveInitialMenu(menuParams, menus, cityData);
+
 		const nestedMenus = new CrowniclesNestedMenus(
-			getMainMenu(menuParams),
+			mainMenu,
 			menus,
 			() => {
 				PacketUtils.sendPacketToBackend(context, makePacket(ReactionCollectorResetTimerPacketReq, { reactionCollectorId: packet.id }));
@@ -273,10 +307,8 @@ export class ReportCityMenu {
 		);
 		const msg = await nestedMenus.send(interaction);
 
-		// Auto-navigate to initial menu if specified (e.g., after chest deposit/withdraw)
-		const cityData = packet.data.data as ReactionCollectorCityData;
-		if (cityData.initialMenu && menus.has(cityData.initialMenu)) {
-			await nestedMenus.changeMenu(cityData.initialMenu);
+		if (navigateAfterSend) {
+			await nestedMenus.changeMenu(navigateAfterSend);
 		}
 
 		const dummyCollector = msg.createReactionCollector();
