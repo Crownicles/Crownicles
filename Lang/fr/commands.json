@@ -1183,7 +1183,7 @@
           "storageTitle": "{emote:city.homeUpgrades.garden} Réserve de plantes :",
           "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",
           "storageEntry": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) — {{quantity}}/{{maxCapacity}}",
-          "backToGarden": "← Retour au jardin",
+          "backToGarden": "Retour au jardin",
           "putAwayTalisman": "Ranger le Cœur Sylvestre",
           "closeGarden": "Quitter le jardin",
           "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Compostage :**",

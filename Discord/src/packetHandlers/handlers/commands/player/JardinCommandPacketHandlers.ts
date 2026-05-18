@@ -6,12 +6,7 @@ import {
 import { DiscordCache } from "../../../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
-import {
-	escapeUsername, StringUtils
-} from "../../../../utils/StringUtils";
-import {
-	ContainerBuilder, TextDisplayBuilder
-} from "discord.js";
+import { escapeUsername } from "../../../../utils/StringUtils";
 
 const REASON_TO_I18N_KEY: Record<JardinNoAccessReason, string> = {
 	[JardinNoAccessReason.NO_HOME]: "commands:jardin.noAccess.noHome",
@@ -19,7 +14,7 @@ const REASON_TO_I18N_KEY: Record<JardinNoAccessReason, string> = {
 	[JardinNoAccessReason.NO_TALISMAN]: "commands:jardin.noAccess.noTalisman"
 };
 
-export default class JardinNoAccessCommandPacketHandlers {
+export default class JardinCommandPacketHandlers {
 	@packetHandler(CommandJardinClosedRes)
 	async closed(context: PacketContext, _packet: CommandJardinClosedRes): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
@@ -27,19 +22,13 @@ export default class JardinNoAccessCommandPacketHandlers {
 			return;
 		}
 		const lng = interaction.userLanguage;
-		const title = i18n.t("commands:jardin.title", {
-			lng,
-			pseudo: escapeUsername(interaction.user.displayName)
-		});
-		const container = new ContainerBuilder()
-			.addTextDisplayComponents(new TextDisplayBuilder().setContent(StringUtils.formatHeader(title)))
-			.addTextDisplayComponents(new TextDisplayBuilder().setContent(i18n.t("commands:jardin.closed", { lng })));
-
-		await interaction.editReply({
-			embeds: [],
-			components: [container],
-			flags: ["IsComponentsV2"]
-		});
+		const embed = new CrowniclesEmbed()
+			.formatAuthor(i18n.t("commands:jardin.title", {
+				lng,
+				pseudo: escapeUsername(interaction.user.displayName)
+			}), interaction.user)
+			.setDescription(i18n.t("commands:jardin.closed", { lng }));
+		await interaction.followUp({ embeds: [embed] });
 	}
 
 	@packetHandler(CommandJardinNoAccessRes)
