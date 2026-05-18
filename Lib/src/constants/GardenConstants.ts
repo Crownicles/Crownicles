@@ -28,6 +28,12 @@ export abstract class GardenConstants {
 	} as const;
 
 	/**
+	 * Plant quantities the player can compost at once in the manual-compost flow.
+	 * The "5" button is hidden when storage holds fewer than 5 plants of the selected type.
+	 */
+	public static readonly COMPOST_QUANTITIES = [1, 5] as const;
+
+	/**
 	 * Cooldown (in ms) between two waterings of the player's garden.
 	 */
 	public static readonly WATERING_COOLDOWN_MS = 12 * 60 * 60 * 1000;

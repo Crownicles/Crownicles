@@ -20,6 +20,8 @@ import {
 	CommandReportEatInnMealRes,
 	CommandReportEnchantNotEnoughCurrenciesRes,
 	CommandReportErrorNoMonsterRes,
+	CommandReportGardenCompostNotEnoughPlantsRes,
+	CommandReportGardenCompostRes,
 	CommandReportHomeBedAlreadyFullRes,
 	CommandReportHomeBedRes,
 	CommandReportBedCooldownRes,
@@ -70,6 +72,10 @@ import {
 	handleInnRoom
 } from "../../../../commands/player/report/inn/InnHandlers";
 import {
+	handleGardenCompost,
+	handleGardenCompostNotEnoughPlants
+} from "../../../../commands/player/report/home/features/GardenCompostHandlers";
+import {
 	displayMonsterReward,
 	refusePveFight
 } from "../../../../commands/player/report/pveFight/PveFightHandlers";
@@ -119,6 +125,16 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportEatInnMealRes)
 	async reportEatInnMealRes(context: PacketContext, packet: CommandReportEatInnMealRes): Promise<void> {
 		await handleEatInnMeal(packet, context);
+	}
+
+	@packetHandler(CommandReportGardenCompostRes)
+	async reportGardenCompostRes(context: PacketContext, packet: CommandReportGardenCompostRes): Promise<void> {
+		await handleGardenCompost(packet, context);
+	}
+
+	@packetHandler(CommandReportGardenCompostNotEnoughPlantsRes)
+	async reportGardenCompostNotEnoughPlantsRes(context: PacketContext, packet: CommandReportGardenCompostNotEnoughPlantsRes): Promise<void> {
+		await handleGardenCompostNotEnoughPlants(packet, context);
 	}
 
 	@packetHandler(CommandReportEatInnMealCooldownRes)

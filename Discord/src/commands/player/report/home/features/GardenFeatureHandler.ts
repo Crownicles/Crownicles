@@ -32,7 +32,10 @@ import { GardenEarthQuality } from "../../../../../../../Lib/src/types/GardenEar
 import { TimeConstants } from "../../../../../../../Lib/src/constants/TimeConstants";
 import { printTimeBeforeDate } from "../../../../../../../Lib/src/utils/TimeUtils";
 import { GardenAccessMode } from "../../../../../../../Lib/src/types/GardenAccessMode";
-import { ReactionCollectorCityData } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import {
+	ReactionCollectorCityData,
+	ReactionCollectorGardenCompostReaction
+} from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 import { StringUtils } from "../../../../../utils/StringUtils";
@@ -41,6 +44,17 @@ type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
 
 const WATERING_TIME_ADVANCE_SECONDS = GardenConstants.WATERING_TIME_ADVANCE_MS / TimeConstants.MS_TIME.SECOND;
+
+/** Max number of compost plant-select buttons per Discord action row */
+const COMPOST_BUTTONS_PER_ROW = 5;
+
+/**
+ * Max number of action rows reserved for plant-select buttons in the compost
+ * menu (the last action row in the container is reserved for the "Annuler"
+ * button). Discord allows up to 5 action rows per message, so we leave at most
+ * 4 for plant buttons + 1 for the cancel row.
+ */
+const COMPOST_MAX_PLANT_ROWS = 4;
 
 export class GardenFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = HomeMenuIds.FEATURE_GARDEN;
@@ -139,7 +153,54 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			return true;
 		}
 
+		// Open the manual-compost flow
+		if (selectedValue === HomeMenuIds.GARDEN_COMPOST) {
+			await componentInteraction.deferUpdate();
+			this.registerCompostMenu(ctx, nestedMenus);
+			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_COMPOST_MENU);
+			return true;
+		}
+
+		// Cancel compost — back to the garden main view
+		if (selectedValue === HomeMenuIds.GARDEN_COMPOST_CANCEL) {
+			await componentInteraction.deferUpdate();
+			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+			return true;
+		}
+
+		// Selected a specific plant to compost — show the confirm screen
+		if (selectedValue.startsWith(HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX)) {
+			await componentInteraction.deferUpdate();
+			const plantId = Number(selectedValue.slice(HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX.length)) as PlantId;
+			this.registerCompostConfirmMenu(ctx, plantId, nestedMenus);
+			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_COMPOST_CONFIRM_MENU);
+			return true;
+		}
+
+		// Confirm the compost action — terminates `/rapport` like a shop purchase
+		const compostConfirm = this.parseCompostConfirmCustomId(selectedValue);
+		if (compostConfirm) {
+			this.sendCompostReaction(ctx, compostConfirm.plantId, compostConfirm.quantity, componentInteraction);
+			await nestedMenus.stopCurrentCollector();
+			return true;
+		}
+
 		return false;
+	}
+
+	private parseCompostConfirmCustomId(selectedValue: string): {
+		plantId: PlantId; quantity: number;
+	} | null {
+		for (const quantity of GardenConstants.COMPOST_QUANTITIES) {
+			const prefix = `${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}${quantity}_`;
+			if (selectedValue.startsWith(prefix)) {
+				return {
+					plantId: Number(selectedValue.slice(prefix.length)) as PlantId,
+					quantity
+				};
+			}
+		}
+		return null;
 	}
 
 	/**
@@ -247,6 +308,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			this.buildHarvestButton(ctx, garden),
 			...this.buildPlantButtons(ctx, garden),
 			...this.buildWaterButtons(ctx, garden),
+			...this.buildCompostButtons(ctx, garden),
 			this.buildStorageButton(ctx, garden),
 			this.buildExitButton(ctx, garden)
 		];
@@ -290,6 +352,27 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				.setStyle(ButtonStyle.Primary)
 				.setDisabled(!this.canWaterGarden(garden))
 		];
+	}
+
+	private buildCompostButtons(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder[] {
+		if (!this.canCompost(garden)) {
+			return [];
+		}
+
+		return [
+			new ButtonBuilder()
+				.setCustomId(HomeMenuIds.GARDEN_COMPOST)
+				.setLabel(i18n.t("commands:report.city.homes.garden.compost.button", { lng: ctx.lng }))
+				.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.compost)!)
+				.setStyle(ButtonStyle.Secondary)
+		];
+	}
+
+	private canCompost(garden: GardenData): boolean {
+		if (this.isReadOnlyGarden(garden)) {
+			return false;
+		}
+		return garden.plantStorage.some(entry => entry.quantity > 0);
 	}
 
 	private buildStorageButton(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder {
@@ -440,6 +523,175 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			containers: [container],
 			createCollector: this.createGardenCollector(ctx)
 		});
+	}
+
+	/**
+	 * Register the compost plant-selection sub-menu. Lists every plant type the
+	 * player has in their home storage; clicking one opens the confirmation
+	 * sub-menu for that plant.
+	 */
+	private registerCompostMenu(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): void {
+		const garden = ctx.homeData.garden!;
+		const storedPlants = garden.plantStorage.filter(entry => entry.quantity > 0);
+
+		const container = new ContainerBuilder();
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(this.getSubMenuTitle(ctx, ctx.pseudo)))
+		);
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(StringUtils.joinParagraphs([
+				i18n.t("commands:report.city.homes.garden.compost.selectTitle", { lng: ctx.lng }),
+				this.buildStoredPlantsDescription(garden, ctx)
+			]))
+		);
+
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		const rows = this.buildCompostPlantRows(ctx, storedPlants);
+		for (const row of rows) {
+			container.addActionRowComponents(row);
+		}
+		container.addActionRowComponents(
+			new ActionRowBuilder<ButtonBuilder>().addComponents(
+				this.buildCompostCancelButton(ctx)
+			)
+		);
+
+		nestedMenus.registerMenu(HomeMenuIds.GARDEN_COMPOST_MENU, {
+			containers: [container],
+			createCollector: this.createGardenCollector(ctx)
+		});
+	}
+
+	private buildCompostPlantRows(
+		ctx: HomeFeatureHandlerContext,
+		storedPlants: GardenData["plantStorage"]
+	): ActionRowBuilder<ButtonBuilder>[] {
+		const rows: ActionRowBuilder<ButtonBuilder>[] = [];
+		for (const entry of storedPlants) {
+			if (rows.length === 0 || rows[rows.length - 1].components.length >= COMPOST_BUTTONS_PER_ROW) {
+				rows.push(new ActionRowBuilder<ButtonBuilder>());
+			}
+			rows[rows.length - 1].addComponents(this.buildCompostPlantButton(ctx, entry));
+			if (rows.length >= COMPOST_MAX_PLANT_ROWS) {
+				break;
+			}
+		}
+		return rows;
+	}
+
+	private buildCompostPlantButton(
+		ctx: HomeFeatureHandlerContext,
+		entry: GardenData["plantStorage"][number]
+	): ButtonBuilder {
+		return new ButtonBuilder()
+			.setCustomId(`${HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX}${entry.plantId}`)
+			.setLabel(i18n.t("commands:report.city.homes.garden.compost.selectEntry", {
+				lng: ctx.lng,
+				plantId: entry.plantId,
+				quantity: entry.quantity
+			}))
+			.setStyle(ButtonStyle.Secondary);
+	}
+
+	/**
+	 * Register the compost confirmation sub-menu for a specific plant.
+	 * Always shows "Annuler" and "Composter 1"; "Composter 5" is hidden when
+	 * the storage holds fewer than 5 plants of the selected type.
+	 */
+	private registerCompostConfirmMenu(
+		ctx: HomeFeatureHandlerContext,
+		plantId: PlantId,
+		nestedMenus: CrowniclesNestedMenus
+	): void {
+		const garden = ctx.homeData.garden!;
+		const entry = garden.plantStorage.find(e => e.plantId === plantId);
+		const storedQty = entry?.quantity ?? 0;
+		const plant = PlantConstants.getPlantById(plantId);
+		const materialsList = (plant?.compostMaterials ?? [])
+			.map(materialId => i18n.t("commands:report.city.homes.garden.compost.confirmMaterialLine", {
+				lng: ctx.lng,
+				materialId
+			}))
+			.join("\n");
+
+		const container = new ContainerBuilder();
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(this.getSubMenuTitle(ctx, ctx.pseudo)))
+		);
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(i18n.t("commands:report.city.homes.garden.compost.confirmDescription", {
+				lng: ctx.lng,
+				plantId,
+				quantity: storedQty,
+				materialsList
+			}))
+		);
+
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addActionRowComponents(
+			new ActionRowBuilder<ButtonBuilder>().addComponents(
+				...this.buildCompostConfirmButtons(ctx, plantId, storedQty)
+			)
+		);
+
+		nestedMenus.registerMenu(HomeMenuIds.GARDEN_COMPOST_CONFIRM_MENU, {
+			containers: [container],
+			createCollector: this.createGardenCollector(ctx)
+		});
+	}
+
+	private buildCompostConfirmButtons(
+		ctx: HomeFeatureHandlerContext,
+		plantId: PlantId,
+		storedQty: number
+	): ButtonBuilder[] {
+		const buttons: ButtonBuilder[] = [this.buildCompostCancelButton(ctx)];
+		for (const quantity of GardenConstants.COMPOST_QUANTITIES) {
+			if (storedQty >= quantity) {
+				buttons.push(new ButtonBuilder()
+					.setCustomId(`${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}${quantity}_${plantId}`)
+					.setLabel(i18n.t("commands:report.city.homes.garden.compost.confirmButton", {
+						lng: ctx.lng,
+						quantity
+					}))
+					.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.compost)!)
+					.setStyle(ButtonStyle.Success));
+			}
+		}
+		return buttons;
+	}
+
+	private buildCompostCancelButton(ctx: HomeFeatureHandlerContext): ButtonBuilder {
+		return new ButtonBuilder()
+			.setCustomId(HomeMenuIds.GARDEN_COMPOST_CANCEL)
+			.setLabel(i18n.t("commands:report.city.homes.garden.compost.cancelButton", { lng: ctx.lng }))
+			.setEmoji(CrowniclesIcons.collectors.back)
+			.setStyle(ButtonStyle.Secondary);
+	}
+
+	/**
+	 * Forward the player's compost confirmation to Core via the city collector.
+	 * Picks the pre-emitted reaction matching (plantId, quantity); the Core
+	 * handler re-validates the storage under a row lock before granting
+	 * materials. The collector terminates the `/rapport` flow on success.
+	 */
+	private sendCompostReaction(
+		ctx: HomeFeatureHandlerContext,
+		plantId: PlantId,
+		quantity: number,
+		componentInteraction: ComponentInteraction
+	): void {
+		const reactionIndex = ctx.packet.reactions.findIndex(reaction => {
+			if (reaction.type !== ReactionCollectorGardenCompostReaction.name) {
+				return false;
+			}
+			const data = reaction.data as ReactionCollectorGardenCompostReaction;
+			return data.plantId === plantId && data.quantity === quantity;
+		});
+		if (reactionIndex === -1) {
+			return;
+		}
+		DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
 	}
 
 	private buildStorageDescription(garden: GardenData, ctx: HomeFeatureHandlerContext): string {
