@@ -1463,6 +1463,7 @@
     "notEnoughMoney": "Vous n'avez pas assez d'argent pour acheter cet objet ! Il vous manque `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Il n'y a plus aucune potion du jour disponible à la vente... Revenez demain !",
     "noPlantSlotAvailable": "Vous n'avez aucun emplacement de plante libre ! Libérez-en un ou améliorez votre équipement au tanneur.",
+    "noGardenForRemoteHarvestTalisman": "L'Herboriste refuse de vous vendre le Cœur Sylvestre : cet objet ne vous sera utile qu'une fois votre jardin débloqué.",
     "boughtTooMuchTokens": "Vous avez atteint la limite d'achat de jetons pour le moment. Revenez plus tard !",
     "tokensBought_one": "Vous avez acheté **{{count}} jeton** {emote:unitValues.token}.",
     "tokensBought_other": "Vous avez acheté **{{count}} jetons** {emote:unitValues.token}.",

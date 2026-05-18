@@ -69,6 +69,10 @@ export class CommandShopNoPlantSlotAvailable extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandShopNoGardenForRemoteHarvestTalisman extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandShopNotEnoughCurrency extends CrowniclesPacket {
 	missingCurrency!: number;
 
