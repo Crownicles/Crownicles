@@ -118,6 +118,9 @@ export const HomeMenuIds = {
 	/** Cancel compost confirmation */
 	GARDEN_COMPOST_CANCEL: "GARDEN_COMPOST_CANCEL",
 
+	/** Back to compost plant selection from confirmation */
+	GARDEN_COMPOST_CONFIRM_CANCEL: "GARDEN_COMPOST_CANCEL_CONFIRM",
+
 	/** Prefix for confirming compost (quantity + "_" + plantId appended) */
 	GARDEN_COMPOST_CONFIRM_PREFIX: "GARDEN_COMPOST_CONFIRM_",
 

@@ -7,22 +7,17 @@ import { Language } from "../../../../../../../Lib/src/Language";
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../../translations/i18n";
 import { DisplayUtils } from "../../../../../utils/DisplayUtils";
-import { DiscordCache } from "../../../../../bot/DiscordCache";
 import { handleClassicError } from "../../../../../utils/ErrorUtils";
+import { MessagesUtils } from "../../../../../utils/MessagesUtils";
 
 /**
  * Render the result embed for a successful manual compost action. Sends a new
- * follow-up message under the (now disabled) /rapport menu, mirroring the
- * pattern used by `stayInCity` so the menu termination handled by
- * `stopCurrentCollector` and the result rendering do not race on the same
- * underlying message.
+ * follow-up message from the current interaction so the disabled garden menu
+ * and the result rendering do not race on the same underlying message.
  */
 export async function handleGardenCompost(packet: CommandReportGardenCompostRes, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-	if (!interaction) {
-		return;
-	}
-	const lng = context.discord!.language;
+	const interaction = MessagesUtils.getCurrentInteraction(context);
+	const lng = interaction.userLanguage ?? context.discord!.language;
 
 	const materialsList = buildMaterialsList(packet.materials, lng);
 

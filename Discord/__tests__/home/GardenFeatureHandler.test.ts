@@ -766,6 +766,21 @@ describe("GardenFeatureHandler", () => {
 			expect(ids).toContain(`${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}5_1`);
 		});
 
+		it("should go back to compost plant selection when confirmation is cancelled", async () => {
+			const garden = createGardenData({
+				plantStorage: [{ plantId: 1, quantity: 7, maxCapacity: 10 }]
+			});
+			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const interaction = createMockComponentInteraction(HomeMenuIds.GARDEN_COMPOST_CONFIRM_CANCEL);
+			const menus = createMockNestedMenus();
+
+			await handler.handleSubMenuSelection(
+				ctx, HomeMenuIds.GARDEN_COMPOST_CONFIRM_CANCEL, interaction as never, menus as never
+			);
+
+			expect(menus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.GARDEN_COMPOST_MENU);
+		});
+
 		it("should send the matching compost reaction when a confirm button is clicked", async () => {
 			const garden = createGardenData({
 				plantStorage: [{ plantId: 1, quantity: 7, maxCapacity: 10 }]
