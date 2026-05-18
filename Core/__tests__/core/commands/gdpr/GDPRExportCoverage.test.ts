@@ -215,6 +215,90 @@ const EXPORTED_TABLES = {
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"
 };
 
+const INDIRECT_GAME_PLAYER_REF_FIELDS = [
+	"ownerId",
+	"homeId"
+] as const;
+
+const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
+	"Player": [
+		"lastMealAt",
+		"cookingLevel",
+		"cookingExperience",
+		"lastBedUsedAt",
+		"furnacePosition",
+		"pinnedCookingRecipeId"
+	],
+	"InventorySlot": [
+		"slot",
+		"itemCategory",
+		"itemId",
+		"itemLevel",
+		"itemEnchantmentId"
+	],
+	"InventoryInfo": [
+		"lastDailyAt",
+		"weaponSlots",
+		"armorSlots",
+		"objectSlots",
+		"potionSlots",
+		"plantSlots"
+	],
+	"PlayerMissionsInfo": ["missionSkipsUsedThisWeek"],
+	"Material": [
+		"materialId",
+		"quantity",
+		"createdAt",
+		"updatedAt"
+	],
+	"Home": [
+		"cityId",
+		"level",
+		"createdAt",
+		"updatedAt"
+	],
+	"PlayerPlantSlot": [
+		"slotType",
+		"slot",
+		"plantId",
+		"createdAt",
+		"updatedAt"
+	],
+	"HomeChestSlot": [
+		"slot",
+		"itemCategory",
+		"itemId",
+		"itemLevel",
+		"itemEnchantmentId",
+		"createdAt",
+		"updatedAt"
+	],
+	"HomeGardenSlot": [
+		"slot",
+		"plantId",
+		"plantedAt",
+		"createdAt",
+		"updatedAt"
+	],
+	"HomePlantStorage": [
+		"plantId",
+		"quantity",
+		"createdAt",
+		"updatedAt"
+	],
+	"Apartment": [
+		"cityId",
+		"purchasePrice",
+		"lastRentClaimedAt",
+		"createdAt",
+		"updatedAt"
+	],
+	"PlayerCookingRecipe": [
+		"recipeId",
+		"sourceMapId"
+	]
+} as const;
+
 /**
  * Helper to extract model class names from a models directory
  */
@@ -238,7 +322,7 @@ function getModelNames(modelsDir: string): string[] {
 /**
  * Check if a model file contains playerId or keycloakId field
  */
-function hasPersonalDataField(modelsDir: string, fileName: string): boolean {
+function hasPersonalDataField(modelsDir: string, fileName: string, includeIndirectRefs = false): boolean {
 	const filePath = path.join(modelsDir, fileName);
 	if (!fs.existsSync(filePath)) {
 		return false;
@@ -256,8 +340,34 @@ function hasPersonalDataField(modelsDir: string, fileName: string): boolean {
 	// Also check for other player-related foreign keys
 	const hasPlayerRef = /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId|triggeredByPlayerId)\s*[?:]/.test(content)
 		|| /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId|triggeredByPlayerId)\s*:\s*{/.test(content);
+	const hasIndirectPlayerRef = includeIndirectRefs && INDIRECT_GAME_PLAYER_REF_FIELDS.some(field => new RegExp(`declare\\s+(?:readonly\\s+)?${field}\\s*[?:]`).test(content)
+		|| new RegExp(`${field}\\s*:\\s*{`).test(content));
 
-	return hasPlayerId || hasKeycloakId || hasPlayerRef;
+	return hasPlayerId || hasKeycloakId || hasPlayerRef || hasIndirectPlayerRef;
+}
+
+function getModelFieldNames(modelsDir: string, modelName: string): string[] {
+	const filePath = path.join(modelsDir, `${modelName}.ts`);
+	const content = fs.readFileSync(filePath, "utf-8");
+	const matches = content.matchAll(/declare\s+(?:readonly\s+|private\s+)?(\w+)\s*:/g);
+
+	return [...matches].map(match => match[1]);
+}
+
+function exporterReferencesField(exporterContent: string, fieldName: string): boolean {
+	return new RegExp(`\\b${fieldName}\\s*:`).test(exporterContent)
+		|| new RegExp(`\\.${fieldName}\\b`).test(exporterContent);
+}
+
+function getCsvExportBlock(exporterContent: string, csvFileName: string): string {
+	const csvAssignment = `csvFiles["${csvFileName}"]`;
+	const startIndex = exporterContent.indexOf(csvAssignment);
+	if (startIndex === -1) {
+		return "";
+	}
+
+	const nextCsvAssignmentIndex = exporterContent.indexOf("csvFiles[", startIndex + csvAssignment.length);
+	return exporterContent.slice(startIndex, nextCsvAssignmentIndex === -1 ? undefined : nextCsvAssignmentIndex);
 }
 
 describe("GDPR Export Coverage", () => {
@@ -275,7 +385,7 @@ describe("GDPR Export Coverage", () => {
 			if (!isExported && !isExcluded) {
 				// Check if it has personal data fields
 				const fileName = `${modelName}.ts`;
-				if (hasPersonalDataField(gameModelsDir, fileName)) {
+				if (hasPersonalDataField(gameModelsDir, fileName, true)) {
 					unaccountedTables.push(modelName);
 				}
 			}
@@ -340,6 +450,37 @@ To fix this:
 		expect(
 			emptyReasons,
 			`The following tables in EXCLUDED_TABLES have empty reasons: ${emptyReasons.join(", ")}`
+		).toEqual([]);
+	});
+
+	it("should export tracked fields from player data models", () => {
+		const exporterPath = path.resolve(__dirname, "../../../../src/commands/admin/gdpr/exporters/PlayerDataExporter.ts");
+		const exporterContent = fs.readFileSync(exporterPath, "utf-8");
+		const missingFields: string[] = [];
+
+		for (const [modelName, fieldNames] of Object.entries(PLAYER_DATA_EXPORT_FIELD_COVERAGE)) {
+			const modelFields = getModelFieldNames(gameModelsDir, modelName);
+			const csvFileName = EXPORTED_TABLES[modelName as keyof typeof EXPORTED_TABLES];
+			const csvExportBlock = getCsvExportBlock(exporterContent, csvFileName);
+
+			for (const fieldName of fieldNames) {
+				if (!modelFields.includes(fieldName)) {
+					missingFields.push(`${modelName}.${fieldName} is listed for GDPR coverage but no longer exists`);
+					continue;
+				}
+
+				if (!exporterReferencesField(csvExportBlock, fieldName)) {
+					missingFields.push(`${modelName}.${fieldName}`);
+				}
+			}
+		}
+
+		expect(
+			missingFields,
+			`The following player data fields are tracked for GDPR export coverage but are missing from PlayerDataExporter:
+${missingFields.map(field => `  - ${field}`).join("\n")}
+
+Add each field to PlayerDataExporter or remove it from PLAYER_DATA_EXPORT_FIELD_COVERAGE with a justification.`
 		).toEqual([]);
 	});
 });
