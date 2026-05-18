@@ -50,7 +50,7 @@ export async function buildGardenData(
 	const plots = buildGardenPlotsData(gardenSlots, earthQuality);
 
 	const storageEntries = await HomePlantStorages.getOfHome(home.id);
-	const maxCapacity = home.level;
+	const maxCapacity = homeLevel.features.gardenPlantStorageCapacity;
 	const plantStorage: GardenData["plantStorage"] = storageEntries.map(entry => ({
 		plantId: entry.plantId,
 		quantity: entry.quantity,
@@ -116,7 +116,7 @@ export async function handleGardenHarvest(
 
 	const earthQuality = homeLevel.features.gardenEarthQuality;
 	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
-	const maxCapacity = home.level;
+	const maxCapacity = homeLevel.features.gardenPlantStorageCapacity;
 
 	let plantsHarvested = 0;
 	const compostResults: {
@@ -359,7 +359,7 @@ export async function handlePlantTransfer(
 	}
 
 	const refreshedData = await buildPlantTransferResponseData({
-		home, player, maxCapacity: home.level
+		home, player, maxCapacity: home.getLevel()!.features.gardenPlantStorageCapacity
 	});
 
 	return makePacket(CommandReportPlantTransferRes, {
@@ -380,7 +380,7 @@ async function handlePlantDeposit(params: {
 		return HomeConstants.PLANT_TRANSFER_ERRORS.NOT_FOUND;
 	}
 
-	const maxCapacity = params.home.level;
+	const maxCapacity = params.home.getLevel()!.features.gardenPlantStorageCapacity;
 	const overflow = await HomePlantStorages.addPlant(params.home.id, sourceSlot.plantId, 1, maxCapacity);
 	if (overflow > 0) {
 		return HomeConstants.PLANT_TRANSFER_ERRORS.STORAGE_FULL;

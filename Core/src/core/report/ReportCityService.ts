@@ -277,6 +277,7 @@ async function buildRemoteApartmentHomeData(params: {
 		// Apartment-specific caps
 		gardenPlots: 0,
 		gardenEarthQuality: homeLevel.features.gardenEarthQuality,
+		gardenPlantStorageCapacity: 0,
 		upgradeItemMaximumRarity: ItemRarity.BASIC,
 		maxItemUpgradeLevel: 0,
 
@@ -566,7 +567,7 @@ export async function buildChestData(
 		await PlayerPlantSlots.ensureSlotsForCount(player.id, desiredPlantSlots);
 
 		const plantSlots = await PlayerPlantSlots.getPlantSlots(player.id);
-		plantMaxCapacity = home.level;
+		plantMaxCapacity = homeLevel.features.gardenPlantStorageCapacity;
 
 		plantStorage = homeStorage
 			.filter(s => s.quantity > 0)

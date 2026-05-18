@@ -45,6 +45,11 @@ export interface HomeFeatures {
 	gardenEarthQuality: GardenEarthQuality;
 
 	/**
+	 * Maximum quantity that can be stored per plant in the garden storage (chest).
+	 */
+	gardenPlantStorageCapacity: number;
+
+	/**
 	 * Permanent bonus to personal inventory slot counts.
 	 * These slots are in addition to the base purchased slots and apply everywhere.
 	 */

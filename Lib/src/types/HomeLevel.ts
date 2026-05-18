@@ -14,6 +14,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 0,
 		gardenEarthQuality: GardenEarthQuality.POOR,
+		gardenPlantStorageCapacity: 3,
 		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY,
 		cookingSlots: 0
 	});
@@ -27,6 +28,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 2,
 		gardenEarthQuality: GardenEarthQuality.POOR,
+		gardenPlantStorageCapacity: 4,
 		inventoryBonus: EMPTY_SLOTS_PER_CATEGORY,
 		cookingSlots: 1
 	});
@@ -40,6 +42,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 4,
 		gardenEarthQuality: GardenEarthQuality.POOR,
+		gardenPlantStorageCapacity: 5,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 0, potion: 0
 		},
@@ -55,6 +58,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 1,
 		gardenPlots: 6,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE,
+		gardenPlantStorageCapacity: 8,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
@@ -70,6 +74,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 2,
 		gardenPlots: 8,
 		gardenEarthQuality: GardenEarthQuality.AVERAGE,
+		gardenPlantStorageCapacity: 12,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
@@ -85,6 +90,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 2,
 		gardenPlots: 10,
 		gardenEarthQuality: GardenEarthQuality.RICH,
+		gardenPlantStorageCapacity: 18,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
@@ -100,6 +106,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 2,
 		gardenPlots: 10,
 		gardenEarthQuality: GardenEarthQuality.RICH,
+		gardenPlantStorageCapacity: 25,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
@@ -115,6 +122,7 @@ export class HomeLevel {
 		maxItemUpgradeLevel: 3,
 		gardenPlots: 10,
 		gardenEarthQuality: GardenEarthQuality.RICH,
+		gardenPlantStorageCapacity: 50,
 		inventoryBonus: {
 			weapon: 1, armor: 1, object: 1, potion: 1
 		},
