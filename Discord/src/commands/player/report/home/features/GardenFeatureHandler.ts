@@ -114,7 +114,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		if (selectedValue === HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN) {
 			await componentInteraction.deferUpdate();
 			this.sendRefuseReaction(ctx, componentInteraction);
-			await nestedMenus.stopCurrentCollector();
+			await nestedMenus.stopCurrentCollector({ editMessage: false });
 			return true;
 		}
 
@@ -181,7 +181,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		const compostConfirm = this.parseCompostConfirmCustomId(selectedValue);
 		if (compostConfirm) {
 			this.sendCompostReaction(ctx, compostConfirm.plantId, compostConfirm.quantity, componentInteraction);
-			await nestedMenus.stopCurrentCollector();
+			await nestedMenus.stopCurrentCollector({ editMessage: false });
 			return true;
 		}
 
