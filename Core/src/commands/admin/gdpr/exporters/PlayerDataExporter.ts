@@ -63,7 +63,10 @@ async function exportInventoryData(
 			itemCategory: slot.itemCategory,
 			itemId: slot.itemId,
 			itemLevel: slot.itemLevel,
-			itemEnchantmentId: slot.itemEnchantmentId
+			itemEnchantmentId: slot.itemEnchantmentId,
+			remainingPotionUsages: slot.remainingPotionUsages,
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
 		})));
 	}
 
@@ -76,7 +79,9 @@ async function exportInventoryData(
 				armorSlots: inventoryInfo.armorSlots,
 				objectSlots: inventoryInfo.objectSlots,
 				potionSlots: inventoryInfo.potionSlots,
-				plantSlots: inventoryInfo.plantSlots
+				plantSlots: inventoryInfo.plantSlots,
+				createdAt: inventoryInfo.createdAt,
+				updatedAt: inventoryInfo.updatedAt
 			}
 		]);
 	}
@@ -112,7 +117,13 @@ async function exportMissionData(
 				gems: missionsInfo.gems,
 				hasBoughtPointsThisWeek: missionsInfo.hasBoughtPointsThisWeek,
 				missionSkipsUsedThisWeek: missionsInfo.missionSkipsUsedThisWeek,
-				campaignBlob: missionsInfo.campaignBlob
+				dailyMissionNumberDone: missionsInfo.dailyMissionNumberDone,
+				lastDailyMissionCompleted: missionsInfo.lastDailyMissionCompleted,
+				dailyMissionBlob: missionsInfo.dailyMissionBlob?.toString("base64"),
+				campaignProgression: missionsInfo.campaignProgression,
+				campaignBlob: missionsInfo.campaignBlob,
+				createdAt: missionsInfo.createdAt,
+				updatedAt: missionsInfo.updatedAt
 			}
 		]);
 	}

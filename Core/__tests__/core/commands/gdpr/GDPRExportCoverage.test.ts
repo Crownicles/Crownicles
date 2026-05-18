@@ -222,19 +222,45 @@ const INDIRECT_GAME_PLAYER_REF_FIELDS = [
 
 const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 	"Player": [
+		"fightPointsLost",
+		"score",
+		"weeklyScore",
+		"level",
+		"experience",
+		"money",
+		"tokens",
+		"class",
+		"guildId",
+		"nextEvent",
+		"lastPetFree",
+		"effectId",
+		"effectEndDate",
+		"effectDuration",
+		"mapLinkId",
+		"startTravelDate",
+		"defenseGloryPoints",
+		"attackGloryPoints",
+		"gloryPointsLastSeason",
+		"fightCountdown",
+		"rage",
 		"lastMealAt",
 		"cookingLevel",
 		"cookingExperience",
 		"lastBedUsedAt",
 		"furnacePosition",
-		"pinnedCookingRecipeId"
+		"pinnedCookingRecipeId",
+		"updatedAt",
+		"createdAt"
 	],
 	"InventorySlot": [
 		"slot",
 		"itemCategory",
 		"itemId",
 		"itemLevel",
-		"itemEnchantmentId"
+		"itemEnchantmentId",
+		"remainingPotionUsages",
+		"updatedAt",
+		"createdAt"
 	],
 	"InventoryInfo": [
 		"lastDailyAt",
@@ -242,9 +268,22 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"armorSlots",
 		"objectSlots",
 		"potionSlots",
-		"plantSlots"
+		"plantSlots",
+		"updatedAt",
+		"createdAt"
 	],
-	"PlayerMissionsInfo": ["missionSkipsUsedThisWeek"],
+	"PlayerMissionsInfo": [
+		"gems",
+		"hasBoughtPointsThisWeek",
+		"missionSkipsUsedThisWeek",
+		"dailyMissionNumberDone",
+		"lastDailyMissionCompleted",
+		"dailyMissionBlob",
+		"campaignProgression",
+		"campaignBlob",
+		"updatedAt",
+		"createdAt"
+	],
 	"Material": [
 		"materialId",
 		"quantity",
@@ -297,6 +336,33 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"recipeId",
 		"sourceMapId"
 	]
+} as const;
+
+const PLAYER_DATA_MODEL_IGNORED_FIELDS = {
+	"Player": [
+		"id",
+		"keycloakId",
+		"health",
+		"petId",
+		"banned"
+	],
+	"InventorySlot": ["playerId"],
+	"InventoryInfo": ["playerId"],
+	"PlayerMissionsInfo": ["playerId"],
+	"Material": ["playerId"],
+	"Home": [
+		"id",
+		"ownerId"
+	],
+	"PlayerPlantSlot": ["playerId"],
+	"HomeChestSlot": ["homeId"],
+	"HomeGardenSlot": ["homeId"],
+	"HomePlantStorage": ["homeId"],
+	"Apartment": [
+		"id",
+		"ownerId"
+	],
+	"PlayerCookingRecipe": ["playerId"]
 } as const;
 
 /**
@@ -368,6 +434,10 @@ function getCsvExportBlock(exporterContent: string, csvFileName: string): string
 
 	const nextCsvAssignmentIndex = exporterContent.indexOf("csvFiles[", startIndex + csvAssignment.length);
 	return exporterContent.slice(startIndex, nextCsvAssignmentIndex === -1 ? undefined : nextCsvAssignmentIndex);
+}
+
+function getIgnoredModelFields(modelName: string): readonly string[] {
+	return PLAYER_DATA_MODEL_IGNORED_FIELDS[modelName as keyof typeof PLAYER_DATA_MODEL_IGNORED_FIELDS] ?? [];
 }
 
 describe("GDPR Export Coverage", () => {
@@ -462,6 +532,13 @@ To fix this:
 			const modelFields = getModelFieldNames(gameModelsDir, modelName);
 			const csvFileName = EXPORTED_TABLES[modelName as keyof typeof EXPORTED_TABLES];
 			const csvExportBlock = getCsvExportBlock(exporterContent, csvFileName);
+			const trackedFields = new Set<string>(fieldNames);
+			const ignoredFields = new Set<string>(getIgnoredModelFields(modelName));
+			const untrackedFields = modelFields.filter(field => !trackedFields.has(field) && !ignoredFields.has(field));
+
+			for (const fieldName of untrackedFields) {
+				missingFields.push(`${modelName}.${fieldName} is neither exported nor explicitly ignored`);
+			}
 
 			for (const fieldName of fieldNames) {
 				if (!modelFields.includes(fieldName)) {
