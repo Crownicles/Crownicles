@@ -13,7 +13,7 @@ import {
 } from "../../core/database/game/models/Home";
 import { CityDataController } from "../../data/City";
 import {
-	ReactionCollectorCity, ReactionCollectorCityData
+	ReactionCollectorCity, ReactionCollectorCityData, ReactionCollectorGardenCompostReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -22,7 +22,9 @@ import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/int
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
-import { buildGardenData } from "../../core/report/ReportGardenService";
+import {
+	buildGardenData, handleGardenCompostReaction
+} from "../../core/report/ReportGardenService";
 import { MapLocationDataController } from "../../data/MapLocation";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
@@ -128,11 +130,17 @@ function buildHealthData(player: Player, playerActiveObjects: PlayerActiveObject
 }
 
 function createJardinEndCallback(player: Player): EndCallback {
-	return (collector: ReactionCollectorInstance, endResponse: CrowniclesPacket[]): void => {
+	return async (collector: ReactionCollectorInstance, endResponse: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.JARDIN_COMMAND);
 		const firstReaction = collector.getFirstReaction();
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
 			endResponse.push(makePacket(CommandJardinClosedRes, {}));
+			return;
+		}
+
+		if (firstReaction.reaction.type === ReactionCollectorGardenCompostReaction.name) {
+			const reaction = firstReaction.reaction.data as ReactionCollectorGardenCompostReaction;
+			await handleGardenCompostReaction(player, reaction.plantId, reaction.quantity, endResponse);
 		}
 	};
 }

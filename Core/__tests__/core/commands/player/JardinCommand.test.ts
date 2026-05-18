@@ -8,11 +8,25 @@ import { InventorySlots } from "../../../../src/core/database/game/models/Invent
 import { MapLocationDataController } from "../../../../src/data/MapLocation";
 import { TravelTime } from "../../../../src/core/maps/TravelTime";
 import { BlockingUtils } from "../../../../src/core/utils/BlockingUtils";
-import { buildGardenData } from "../../../../src/core/report/ReportGardenService";
 import {
-	CommandJardinNoAccessRes, JardinNoAccessReason
+	buildGardenData, handleGardenCompostReaction
+} from "../../../../src/core/report/ReportGardenService";
+import {
+	CommandJardinClosedRes, CommandJardinNoAccessRes, JardinNoAccessReason
 } from "../../../../../Lib/src/packets/commands/CommandJardinPacket";
 import { GardenAccessMode } from "../../../../../Lib/src/types/GardenAccessMode";
+import { ReactionCollectorGardenCompostReaction } from "../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+
+const reactionCollectorMockState = vi.hoisted(() => ({
+	endCallback: undefined as ((collector: {
+		getFirstReaction: () => {
+			reaction: {
+				type: string;
+				data: unknown;
+			};
+		} | null;
+	}, response: unknown[]) => unknown) | undefined
+}));
 
 vi.mock("../../../../src/core/utils/CommandUtils", () => ({
 	commandRequires: () => (_target: unknown, _propertyKey: string, descriptor: PropertyDescriptor) => descriptor,
@@ -32,9 +46,16 @@ vi.mock("../../../../src/data/City");
 vi.mock("../../../../src/data/MapLocation");
 vi.mock("../../../../src/core/maps/TravelTime");
 vi.mock("../../../../src/core/utils/BlockingUtils");
-vi.mock("../../../../src/core/report/ReportGardenService");
+vi.mock("../../../../src/core/report/ReportGardenService", () => ({
+	buildGardenData: vi.fn(),
+	handleGardenCompostReaction: vi.fn()
+}));
 vi.mock("../../../../src/core/utils/ReactionsCollector", () => ({
 	ReactionCollectorInstance: class {
+		constructor(_collector: unknown, _context: unknown, _options: unknown, endCallback: typeof reactionCollectorMockState.endCallback) {
+			reactionCollectorMockState.endCallback = endCallback;
+		}
+
 		block(): this {
 			return this;
 		}
@@ -75,6 +96,7 @@ describe("JardinCommand", () => {
 
 	beforeEach(() => {
 		vi.clearAllMocks();
+		reactionCollectorMockState.endCallback = undefined;
 		player.hasRemoteHarvestTalisman = false;
 
 		vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue([]);
@@ -192,5 +214,44 @@ describe("JardinCommand", () => {
 			player,
 			GardenAccessMode.READ_ONLY
 		);
+	});
+
+	it("handles compost reactions from the garden-only collector", async () => {
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue({
+			id: 1,
+			level: 2,
+			cityId: "coco",
+			getLevel: () => ({
+				features: { gardenPlots: 1 }
+			})
+		} as never);
+		vi.mocked(CityDataController.instance.getCityByMapLinkId).mockReturnValue({
+			id: "coco"
+		} as never);
+
+		await new JardinCommand().execute([] as never, player as never, {} as never, context as never);
+
+		const response: unknown[] = [];
+		await reactionCollectorMockState.endCallback!(
+			{
+				getFirstReaction: () => ({
+					reaction: {
+						type: ReactionCollectorGardenCompostReaction.name,
+						data: {
+							plantId: 1,
+							quantity: 1
+						}
+					}
+				})
+			},
+			response
+		);
+
+		expect(BlockingUtils.unblockPlayer).toHaveBeenCalledWith(
+			player.keycloakId,
+			expect.any(String)
+		);
+		expect(handleGardenCompostReaction).toHaveBeenCalledWith(player, 1, 1, response);
+		expect(response).not.toContainEqual(expect.objectContaining({ type: CommandJardinClosedRes.name }));
 	});
 });
