@@ -1193,13 +1193,11 @@
             "selectEntry": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) ({{quantity}})",
             "confirmDescription": "{emote:city.gardenStatus.compost} Vous vous apprêtez à composter **{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})**.\nVous en avez **{{quantity}}** en réserve.\n\nMatériaux possibles obtenus pour chaque plante compostée :\n{{materialsList}}",
             "confirmMaterialLine": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
-            "confirmButton_one": "Composter {{quantity}}",
-            "confirmButton_other": "Composter {{quantity}}",
+            "confirmButton": "Composter {{quantity}}",
             "cancelButton": "← Annuler",
             "resultTitle": "{{pseudo}}, composteur",
             "resultDescription": "{emote:city.gardenStatus.compost} Vous avez composté **{{quantity}}** {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}). Voici ce que vous en avez retiré :\n{{materialsList}}",
-            "resultMaterialLine_one": "• **{{count}}** × {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
-            "resultMaterialLine_other": "• **{{count}}** × {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+            "resultMaterialLine": "• **{{count}}** × {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
             "notEnoughPlants": "{emote:messages.refuse} Vous n'avez plus assez de {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) en réserve pour en composter **{{quantity}}**."
           }
         },
