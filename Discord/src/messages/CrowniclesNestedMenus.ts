@@ -170,9 +170,20 @@ export class CrowniclesNestedMenus {
 		await this.changeToMenu(this._mainMenu);
 	}
 
-	public async stopCurrentCollector(): Promise<void> {
+	/**
+	 * Stops the current collector and (by default) edits the underlying message to disable its components.
+	 *
+	 * Pass `{ editMessage: false }` when the next packet handler is going to replace the message anyway
+	 * (e.g. shop-style flows that send a final confirmation embed). Editing the message here would
+	 * race with that handler and overwrite its result.
+	 */
+	public async stopCurrentCollector(options: { editMessage?: boolean } = {}): Promise<void> {
+		const editMessage = options.editMessage !== false;
 		this._currentCollector?.stop();
 		this._currentCollector = undefined;
+		if (!editMessage) {
+			return;
+		}
 		if (this._message) {
 			const menu = this._currentMenu;
 			if (isV2Menu(menu)) {
