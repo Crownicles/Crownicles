@@ -85,46 +85,53 @@ function getBackupField<T = ItemWithDetails>(
 	};
 }
 
-function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
-	if (packet.data) {
-		// Build talisman display value
-		let talismanValue: string;
-		if (packet.hasTalisman || packet.hasCloneTalisman || packet.hasRemoteHarvestTalisman) {
-			const talismans: string[] = [];
-			if (packet.hasTalisman) {
-				talismans.push(i18n.t("commands:inventory.talismans.anchorTalisman", { lng }));
-			}
-			if (packet.hasCloneTalisman) {
-				talismans.push(i18n.t("commands:inventory.talismans.cloneTalisman", { lng }));
-			}
-			if (packet.hasRemoteHarvestTalisman) {
-				talismans.push(i18n.t("commands:inventory.talismans.remoteHarvestTalisman", { lng }));
-			}
-			talismanValue = talismans.join("\n");
-		}
-		else {
-			talismanValue = i18n.t("commands:inventory.talismanNotOwned", { lng });
-		}
+function getTalismanValue(packet: CommandInventoryPacketRes, lng: Language): string {
+	const ownedTalismans = getOwnedTalismanLabels(packet, lng);
+	return ownedTalismans.length > 0
+		? ownedTalismans.join("\n")
+		: i18n.t("commands:inventory.talismanNotOwned", { lng });
+}
 
-		return new CrowniclesEmbed()
-			.setTitle(i18n.t("commands:inventory.title", {
-				lng,
-				pseudo
-			}))
-			.addFields([
-				DiscordItemUtils.getWeaponField(packet.data.weapon, lng),
-				DiscordItemUtils.getArmorField(packet.data.armor, lng),
-				DiscordItemUtils.getPotionField(packet.data.potion, lng),
-				DiscordItemUtils.getObjectField(packet.data.object, lng),
-				{
-					name: i18n.t("commands:inventory.talisman", { lng }),
-					value: talismanValue,
-					inline: false
-				}
-			]);
+function getOwnedTalismanLabels(packet: CommandInventoryPacketRes, lng: Language): string[] {
+	return [
+		{
+			isOwned: packet.hasTalisman,
+			translationKey: "commands:inventory.talismans.anchorTalisman"
+		},
+		{
+			isOwned: packet.hasCloneTalisman,
+			translationKey: "commands:inventory.talismans.cloneTalisman"
+		},
+		{
+			isOwned: packet.hasRemoteHarvestTalisman,
+			translationKey: "commands:inventory.talismans.remoteHarvestTalisman"
+		}
+	]
+		.filter(talisman => talisman.isOwned)
+		.map(talisman => i18n.t(talisman.translationKey, { lng }));
+}
+
+function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+	if (!packet.data) {
+		throw new Error("Inventory packet data must not be undefined");
 	}
 
-	throw new Error("Inventory packet data must not be undefined");
+	return new CrowniclesEmbed()
+		.setTitle(i18n.t("commands:inventory.title", {
+			lng,
+			pseudo
+		}))
+		.addFields([
+			DiscordItemUtils.getWeaponField(packet.data.weapon, lng),
+			DiscordItemUtils.getArmorField(packet.data.armor, lng),
+			DiscordItemUtils.getPotionField(packet.data.potion, lng),
+			DiscordItemUtils.getObjectField(packet.data.object, lng),
+			{
+				name: i18n.t("commands:inventory.talisman", { lng }),
+				value: getTalismanValue(packet, lng),
+				inline: false
+			}
+		]);
 }
 
 function getBackupEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {

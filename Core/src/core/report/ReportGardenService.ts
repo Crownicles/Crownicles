@@ -29,6 +29,7 @@ import {
 	PlantConstants, PlantId
 } from "../../../../Lib/src/constants/PlantConstants";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
+import { TimeConstants } from "../../../../Lib/src/constants/TimeConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Materials } from "../database/game/models/Material";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
@@ -37,17 +38,40 @@ import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
+type GardenWaterContext = {
+	player: Player;
+	home: Home;
+	homeLevel: HomeLevel;
+};
+type GardenWateringResult = {
+	slotsToWater: number[];
+	slotsBecameReady: number;
+};
+type WaterableSlotGrowth = {
+	slot: number;
+	becomesReady: boolean;
+};
+
+const WATERING_TIME_ADVANCE_SECONDS = GardenConstants.WATERING_TIME_ADVANCE_MS / TimeConstants.MS_TIME.SECOND;
 
 /**
  * Compute the unix-ms timestamp at which the player can next water their garden,
  * or null when watering is currently available (never watered, or cooldown elapsed).
  */
-function computeNextWateringAvailableAt(lastGardenWatered: Date | null): number | null {
+function computeNextWateringAvailableAt(lastGardenWatered: Date | null, now = Date.now()): number | null {
 	if (!lastGardenWatered) {
 		return null;
 	}
 	const next = lastGardenWatered.valueOf() + GardenConstants.WATERING_COOLDOWN_MS;
-	return next > Date.now() ? next : null;
+	return next > now ? next : null;
+}
+
+function makeGardenErrorPacket(error: GardenError, availableAt?: number): CrowniclesPacket {
+	const availableAtData = availableAt === undefined ? {} : { availableAt };
+	return makePacket(CommandReportGardenErrorRes, {
+		error,
+		...availableAtData
+	});
 }
 
 export async function buildGardenData(
@@ -97,12 +121,9 @@ function buildGardenPlotsData(gardenSlots: HomeGardenSlot[], earthQuality: numbe
 			: 0;
 		const isReady = slot.isReady(effectiveGrowthTime);
 		const progress = slot.getGrowthProgress(effectiveGrowthTime);
-
-		let remainingSeconds = 0;
-		if (plant && slot.plantedAt && !isReady) {
-			const elapsed = (Date.now() - slot.plantedAt.valueOf()) / 1000;
-			remainingSeconds = Math.max(0, Math.ceil(effectiveGrowthTime - elapsed));
-		}
+		const remainingSeconds = plant
+			? computeRemainingGrowthSeconds(slot, effectiveGrowthTime, isReady)
+			: 0;
 
 		return {
 			slot: slot.slot,
@@ -112,6 +133,18 @@ function buildGardenPlotsData(gardenSlots: HomeGardenSlot[], earthQuality: numbe
 			remainingSeconds
 		};
 	});
+}
+
+function computeRemainingGrowthSeconds(slot: HomeGardenSlot, effectiveGrowthTime: number, isReady: boolean): number {
+	if (!slot.plantedAt) {
+		return 0;
+	}
+	if (isReady) {
+		return 0;
+	}
+
+	const elapsedSeconds = (Date.now() - slot.plantedAt.valueOf()) / TimeConstants.MS_TIME.SECOND;
+	return Math.max(0, Math.ceil(effectiveGrowthTime - elapsedSeconds));
 }
 
 /**
@@ -127,9 +160,7 @@ export async function handleGardenHarvest(
 	const hasValidHome = player && home && homeLevel;
 
 	if (!hasValidHome) {
-		return makePacket(CommandReportGardenErrorRes, {
-			error: GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS
-		});
+		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS);
 	}
 
 	const earthQuality = homeLevel.features.gardenEarthQuality;
@@ -232,16 +263,12 @@ export async function handleGardenPlant(
 	const home = player ? await Homes.getOfPlayer(player.id) : null;
 
 	if (!player || !home) {
-		return makePacket(CommandReportGardenErrorRes, {
-			error: GardenConstants.GARDEN_ERRORS.NO_SEED
-		});
+		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_SEED);
 	}
 
 	const validation = await validateGardenPlant(player, home, packet);
 	if (validation.error) {
-		return makePacket(CommandReportGardenErrorRes, {
-			error: validation.error
-		});
+		return makeGardenErrorPacket(validation.error);
 	}
 
 	const {
@@ -439,51 +466,89 @@ export async function handleGardenWater(
 	keycloakId: string,
 	_packet: CommandReportGardenWaterReq
 ): Promise<CrowniclesPacket> {
-	const player = await Players.getByKeycloakId(keycloakId);
-	const home = player ? await Homes.getOfPlayer(player.id) : null;
-	const homeLevel = home?.getLevel();
-	if (!player || !home || !homeLevel || homeLevel.features.gardenPlots <= 0) {
-		return makePacket(CommandReportGardenErrorRes, {
-			error: GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER
-		});
+	const waterContext = await getGardenWaterContext(keycloakId);
+	if (!waterContext) {
+		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER);
 	}
 
-	return await Player.withLocked(player.id, async locked => {
-		const now = Date.now();
-		if (locked.lastGardenWatered) {
-			const nextAvailableAt = locked.lastGardenWatered.valueOf() + GardenConstants.WATERING_COOLDOWN_MS;
-			if (nextAvailableAt > now) {
-				return makePacket(CommandReportGardenErrorRes, {
-					error: GardenConstants.GARDEN_ERRORS.WATERING_ON_COOLDOWN,
-					availableAt: nextAvailableAt
-				});
-			}
-		}
-
-		const earthQuality = homeLevel.features.gardenEarthQuality;
-		const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
-		const wateringResult = collectSlotsToWater(gardenSlots, earthQuality, now);
-		if (wateringResult.slotsToWater.length === 0) {
-			return makePacket(CommandReportGardenErrorRes, {
-				error: GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER
-			});
-		}
-
-		await HomeGardenSlots.shiftPlantedAtForSlots(
-			home.id,
-			wateringResult.slotsToWater,
-			GardenConstants.WATERING_TIME_ADVANCE_MS
-		);
-
-		locked.lastGardenWatered = new Date(now);
-		await locked.save();
-
-		return makePacket(CommandReportGardenWaterRes, {
-			slotsWatered: wateringResult.slotsToWater.length,
-			slotsBecameReady: wateringResult.slotsBecameReady,
-			nextWateringAvailableAt: now + GardenConstants.WATERING_COOLDOWN_MS
+	return Player.withLocked(waterContext.player.id, lockedPlayer => {
+		return waterGardenForLockedPlayerUnderLock({
+			lockedPlayer,
+			home: waterContext.home,
+			homeLevel: waterContext.homeLevel,
+			now: Date.now()
 		});
 	});
+}
+
+async function getGardenWaterContext(keycloakId: string): Promise<GardenWaterContext | null> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	if (!player) {
+		return null;
+	}
+
+	const home = await Homes.getOfPlayer(player.id);
+	if (!home) {
+		return null;
+	}
+
+	const homeLevel = home.getLevel();
+	if (!homeLevel) {
+		return null;
+	}
+
+	return homeLevel.features.gardenPlots > 0
+		? {
+			player,
+			home,
+			homeLevel
+		}
+		: null;
+}
+
+async function waterGardenForLockedPlayerUnderLock(params: {
+	lockedPlayer: Player;
+	home: Home;
+	homeLevel: HomeLevel;
+	now: number;
+}): Promise<CrowniclesPacket> {
+	const nextAvailableAt = computeNextWateringAvailableAt(params.lockedPlayer.lastGardenWatered, params.now);
+	if (nextAvailableAt !== null) {
+		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.WATERING_ON_COOLDOWN, nextAvailableAt);
+	}
+
+	const wateringResult = await getGardenWateringResult(params.home, params.homeLevel, params.now);
+	if (wateringResult.slotsToWater.length === 0) {
+		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER);
+	}
+
+	await applyGardenWateringUnderLock(params.lockedPlayer, params.home, wateringResult, params.now);
+
+	return makePacket(CommandReportGardenWaterRes, {
+		slotsWatered: wateringResult.slotsToWater.length,
+		slotsBecameReady: wateringResult.slotsBecameReady,
+		nextWateringAvailableAt: params.now + GardenConstants.WATERING_COOLDOWN_MS
+	});
+}
+
+async function getGardenWateringResult(home: Home, homeLevel: HomeLevel, now: number): Promise<GardenWateringResult> {
+	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
+	return collectSlotsToWater(gardenSlots, homeLevel.features.gardenEarthQuality, now);
+}
+
+async function applyGardenWateringUnderLock(
+	lockedPlayer: Player,
+	home: Home,
+	wateringResult: GardenWateringResult,
+	now: number
+): Promise<void> {
+	await HomeGardenSlots.shiftPlantedAtForSlots(
+		home.id,
+		wateringResult.slotsToWater,
+		GardenConstants.WATERING_TIME_ADVANCE_MS
+	);
+	lockedPlayer.lastGardenWatered = new Date(now);
+	await lockedPlayer.save();
 }
 
 /**
@@ -495,32 +560,46 @@ function collectSlotsToWater(
 	gardenSlots: HomeGardenSlot[],
 	earthQuality: number,
 	nowMs: number
-): {
-	slotsToWater: number[]; slotsBecameReady: number;
-} {
-	const slotsToWater: number[] = [];
-	let slotsBecameReady = 0;
-	const advanceSeconds = GardenConstants.WATERING_TIME_ADVANCE_MS / 1000;
+): GardenWateringResult {
+	const waterableSlots = gardenSlots
+		.map(slot => getWaterableSlotGrowth(slot, earthQuality, nowMs))
+		.filter((slot): slot is WaterableSlotGrowth => slot !== null);
 
-	for (const slot of gardenSlots) {
-		if (slot.isEmpty() || !slot.plantedAt) {
-			continue;
-		}
-		const plant = PlantConstants.getPlantById(slot.plantId);
-		if (!plant) {
-			continue;
-		}
-		const effective = GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality);
-		if (slot.isReady(effective)) {
-			continue;
-		}
-		slotsToWater.push(slot.slot);
-		const newElapsedSeconds = (nowMs - slot.plantedAt.valueOf()) / 1000 + advanceSeconds;
-		if (newElapsedSeconds >= effective) {
-			slotsBecameReady++;
-		}
-	}
 	return {
-		slotsToWater, slotsBecameReady
+		slotsToWater: waterableSlots.map(slot => slot.slot),
+		slotsBecameReady: waterableSlots.filter(slot => slot.becomesReady).length
 	};
+}
+
+function getWaterableSlotGrowth(
+	slot: HomeGardenSlot,
+	earthQuality: number,
+	nowMs: number
+): WaterableSlotGrowth | null {
+	if (slot.isEmpty()) {
+		return null;
+	}
+	if (!slot.plantedAt) {
+		return null;
+	}
+
+	const plant = PlantConstants.getPlantById(slot.plantId);
+	if (!plant) {
+		return null;
+	}
+
+	const effectiveGrowthTime = GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality);
+	if (slot.isReady(effectiveGrowthTime)) {
+		return null;
+	}
+
+	return {
+		slot: slot.slot,
+		becomesReady: willBecomeReadyAfterWatering(slot.plantedAt, effectiveGrowthTime, nowMs)
+	};
+}
+
+function willBecomeReadyAfterWatering(plantedAt: Date, effectiveGrowthTime: number, nowMs: number): boolean {
+	const elapsedSeconds = (nowMs - plantedAt.valueOf()) / TimeConstants.MS_TIME.SECOND;
+	return elapsedSeconds + WATERING_TIME_ADVANCE_SECONDS >= effectiveGrowthTime;
 }
