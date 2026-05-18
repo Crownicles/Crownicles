@@ -64,7 +64,8 @@ import {
 	createHandlerContext,
 	createHomeData,
 	createMockComponentInteraction,
-	createMockNestedMenus
+	createMockNestedMenus,
+	createMockPacket
 } from "./homeTestUtils";
 import { DiscordMQTT } from "../../src/bot/DiscordMQTT";
 import {
@@ -75,6 +76,8 @@ import {
 	CommandReportGardenHarvestRes,
 	CommandReportGardenPlantRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
+import { ReactionCollectorRefuseReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
 
 describe("GardenFeatureHandler", () => {
 	let handler: GardenFeatureHandler;
@@ -232,6 +235,27 @@ describe("GardenFeatureHandler", () => {
 				})
 			);
 			expect(menus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.GARDEN_STORAGE);
+		});
+
+		it("should send refuse reaction and stop collector when putting away the talisman", async () => {
+			const ctx = createHandlerContext({
+				packet: createMockPacket([
+					{ type: "SomeOtherReaction" },
+					{ type: ReactionCollectorRefuseReaction.name }
+				])
+			});
+			const interaction = createMockComponentInteraction(HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN);
+			const menus = createMockNestedMenus();
+			const sendReaction = vi.spyOn(DiscordCollectorUtils, "sendReaction").mockImplementation(() => {});
+
+			const handled = await handler.handleSubMenuSelection(
+				ctx, HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN, interaction as never, menus as never
+			);
+
+			expect(handled).toBe(true);
+			expect(interaction.deferUpdate).toHaveBeenCalledOnce();
+			expect(sendReaction).toHaveBeenCalledWith(ctx.packet, ctx.context, ctx.context.keycloakId, interaction, 1);
+			expect(menus.stopCurrentCollector).toHaveBeenCalledOnce();
 		});
 
 		it("should handle GARDEN_HARVEST by sending MQTT packet", async () => {
