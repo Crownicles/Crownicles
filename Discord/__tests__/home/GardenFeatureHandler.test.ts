@@ -631,4 +631,173 @@ describe("GardenFeatureHandler", () => {
 			expect(backButton).toBeDefined();
 		});
 	});
+
+	describe("compost sub-menu", () => {
+		it("should include compost button when storage has at least one plant", () => {
+			const garden = createGardenData({
+				plantStorage: [{ plantId: 1, quantity: 1, maxCapacity: 10 }]
+			});
+			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
+
+			const allButtons = getButtonsFromContainer(container);
+			const compostButton = allButtons.find(
+				(b: any) => b.data?.custom_id === HomeMenuIds.GARDEN_COMPOST
+			);
+			expect(compostButton).toBeDefined();
+		});
+
+		it("should NOT include compost button when storage is empty", () => {
+			const garden = createGardenData({
+				plantStorage: [{ plantId: 1, quantity: 0, maxCapacity: 10 }]
+			});
+			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
+
+			const allButtons = getButtonsFromContainer(container);
+			const compostButton = allButtons.find(
+				(b: any) => b.data?.custom_id === HomeMenuIds.GARDEN_COMPOST
+			);
+			expect(compostButton).toBeUndefined();
+		});
+
+		it("should NOT include compost button when garden is READ_ONLY", () => {
+			const garden = {
+				...createGardenData({
+					plantStorage: [{ plantId: 1, quantity: 5, maxCapacity: 10 }]
+				}),
+				accessMode: "readOnly"
+			} as unknown as ReturnType<typeof createGardenData>;
+			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const container = new ContainerBuilder();
+			handler.addSubMenuContainerContent!(ctx, container);
+
+			const allButtons = getButtonsFromContainer(container);
+			const compostButton = allButtons.find(
+				(b: any) => b.data?.custom_id === HomeMenuIds.GARDEN_COMPOST
+			);
+			expect(compostButton).toBeUndefined();
+		});
+
+		it("should register the compost plant-selection menu when compost button is clicked", async () => {
+			const garden = createGardenData({
+				plantStorage: [
+					{ plantId: 1, quantity: 3, maxCapacity: 10 },
+					{ plantId: 2, quantity: 7, maxCapacity: 10 }
+				]
+			});
+			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const interaction = createMockComponentInteraction(HomeMenuIds.GARDEN_COMPOST);
+			const menus = createMockNestedMenus();
+
+			await handler.handleSubMenuSelection(
+				ctx, HomeMenuIds.GARDEN_COMPOST, interaction as never, menus as never
+			);
+
+			expect(menus.registerMenu).toHaveBeenCalledWith(
+				HomeMenuIds.GARDEN_COMPOST_MENU,
+				expect.objectContaining({ containers: expect.any(Array) })
+			);
+			expect(menus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.GARDEN_COMPOST_MENU);
+
+			// Each stored plant with quantity > 0 should be selectable
+			const registered = menus.registerMenu.mock.calls[0][1];
+			const buttons = getButtonsFromContainer(registered.containers[0]);
+			const plantButtons = buttons.filter(
+				(b: any) => b.data?.custom_id?.startsWith(HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX)
+			);
+			expect(plantButtons.length).toBe(2);
+		});
+
+		it("should hide the 'Composter 5' button when stock < 5", async () => {
+			const garden = createGardenData({
+				plantStorage: [{ plantId: 1, quantity: 2, maxCapacity: 10 }]
+			});
+			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const interaction = createMockComponentInteraction(
+				`${HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX}1`
+			);
+			const menus = createMockNestedMenus();
+
+			await handler.handleSubMenuSelection(
+				ctx, `${HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX}1`, interaction as never, menus as never
+			);
+
+			expect(menus.registerMenu).toHaveBeenCalledWith(
+				HomeMenuIds.GARDEN_COMPOST_CONFIRM_MENU,
+				expect.any(Object)
+			);
+			const registered = menus.registerMenu.mock.calls[0][1];
+			const buttons = getButtonsFromContainer(registered.containers[0]);
+			const confirmButtons = buttons.filter(
+				(b: any) => b.data?.custom_id?.startsWith(HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX)
+			);
+			// Only the "1" button should be there, not the "5"
+			expect(confirmButtons.length).toBe(1);
+			expect(confirmButtons[0].data.custom_id).toBe(
+				`${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}1_1`
+			);
+		});
+
+		it("should show both '1' and '5' confirm buttons when stock >= 5", async () => {
+			const garden = createGardenData({
+				plantStorage: [{ plantId: 1, quantity: 7, maxCapacity: 10 }]
+			});
+			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const interaction = createMockComponentInteraction(
+				`${HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX}1`
+			);
+			const menus = createMockNestedMenus();
+
+			await handler.handleSubMenuSelection(
+				ctx, `${HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX}1`, interaction as never, menus as never
+			);
+
+			const registered = menus.registerMenu.mock.calls[0][1];
+			const buttons = getButtonsFromContainer(registered.containers[0]);
+			const confirmButtons = buttons.filter(
+				(b: any) => b.data?.custom_id?.startsWith(HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX)
+			);
+			expect(confirmButtons.length).toBe(2);
+			const ids = confirmButtons.map((b: any) => b.data.custom_id);
+			expect(ids).toContain(`${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}1_1`);
+			expect(ids).toContain(`${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}5_1`);
+		});
+
+		it("should send the matching compost reaction when a confirm button is clicked", async () => {
+			const garden = createGardenData({
+				plantStorage: [{ plantId: 1, quantity: 7, maxCapacity: 10 }]
+			});
+			const reactions = [
+				{
+					type: "ReactionCollectorGardenCompostReaction",
+					data: { plantId: 1, quantity: 5 }
+				},
+				{
+					type: "ReactionCollectorGardenCompostReaction",
+					data: { plantId: 1, quantity: 1 }
+				}
+			];
+			const ctx = createHandlerContext({
+				homeData: createHomeData({ garden }),
+				packet: createMockPacket(reactions)
+			});
+			const customId = `${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}5_1`;
+			const interaction = createMockComponentInteraction(customId);
+			const menus = createMockNestedMenus();
+			const sendReactionSpy = vi.spyOn(DiscordCollectorUtils, "sendReaction").mockImplementation(() => {});
+
+			await handler.handleSubMenuSelection(
+				ctx, customId, interaction as never, menus as never
+			);
+
+			expect(sendReactionSpy).toHaveBeenCalledWith(
+				ctx.packet, ctx.context, "test-keycloak-id", interaction, 0
+			);
+			expect(menus.stopCurrentCollector).toHaveBeenCalled();
+		});
+	});
 });
+
