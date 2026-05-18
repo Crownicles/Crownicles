@@ -77,6 +77,32 @@ function makeGardenErrorPacket(error: GardenError, availableAt?: number): Crowni
 	});
 }
 
+/**
+ * Resolve `(player, home)` for a Discord interaction and run `body` under a
+ * composite Player + Home row-level lock. When the player or home cannot be
+ * found, `onMissing()` is returned without acquiring any lock.
+ *
+ * Use this helper for every garden mutation: it ensures concurrent shards
+ * cannot double-mutate the same garden / inventory pair (review checklist §10).
+ */
+async function withGardenLock(
+	keycloakId: string,
+	onMissing: () => CrowniclesPacket,
+	body: (player: Player, home: Home) => Promise<CrowniclesPacket>
+): Promise<CrowniclesPacket> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	const home = player ? await Homes.getOfPlayer(player.id) : null;
+
+	if (!player || !home) {
+		return onMissing();
+	}
+
+	return await withLockedEntities(
+		[Player.lockKey(player.id), Home.lockKey(home.id)] as const,
+		([lockedPlayer, lockedHome]) => body(lockedPlayer, lockedHome)
+	);
+}
+
 export async function buildGardenData(
 	home: Home,
 	homeLevel: HomeLevel,
@@ -155,26 +181,22 @@ function computeRemainingGrowthSeconds(slot: HomeGardenSlot, effectiveGrowthTime
  * Runs under a composite Player + Home lock so concurrent shards cannot
  * double-harvest the same ready slot (race-safe, see review checklist §10).
  */
-export async function handleGardenHarvest(
+export function handleGardenHarvest(
 	keycloakId: string,
 	_packet: CommandReportGardenHarvestReq
 ): Promise<CrowniclesPacket> {
-	const player = await Players.getByKeycloakId(keycloakId);
-	const home = player ? await Homes.getOfPlayer(player.id) : null;
-	const homeLevel = home?.getLevel();
-	const hasValidHome = player && home && homeLevel;
-
-	if (!hasValidHome) {
-		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS);
-	}
-
-	return await withLockedEntities(
-		[Player.lockKey(player.id), Home.lockKey(home.id)] as const,
-		([lockedPlayer, lockedHome]) => runHarvestUnderLock({
-			player: lockedPlayer,
-			home: lockedHome,
-			homeLevel
-		})
+	return withGardenLock(
+		keycloakId,
+		() => makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS),
+		(player, home) => {
+			const homeLevel = home.getLevel();
+			if (!homeLevel) {
+				return Promise.resolve(makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS));
+			}
+			return runHarvestUnderLock({
+				player, home, homeLevel
+			});
+		}
 	);
 }
 
@@ -289,20 +311,14 @@ async function pickAndGiveCompostMaterial(playerId: number, plant: { compostMate
  * Runs under a composite Player + Home lock to prevent concurrent planting
  * from consuming the same seed twice or claiming the same empty plot.
  */
-export async function handleGardenPlant(
+export function handleGardenPlant(
 	keycloakId: string,
 	packet: CommandReportGardenPlantReq
 ): Promise<CrowniclesPacket> {
-	const player = await Players.getByKeycloakId(keycloakId);
-	const home = player ? await Homes.getOfPlayer(player.id) : null;
-
-	if (!player || !home) {
-		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_SEED);
-	}
-
-	return await withLockedEntities(
-		[Player.lockKey(player.id), Home.lockKey(home.id)] as const,
-		([lockedPlayer, lockedHome]) => runGardenPlantUnderLock(lockedPlayer, lockedHome, packet)
+	return withGardenLock(
+		keycloakId,
+		() => makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_SEED),
+		(player, home) => runGardenPlantUnderLock(player, home, packet)
 	);
 }
 
@@ -431,20 +447,14 @@ function executeTransferAction(packet: CommandReportPlantTransferReq, player: Pl
 	return Promise.resolve(HomeConstants.PLANT_TRANSFER_ERRORS.INVALID);
 }
 
-export async function handlePlantTransfer(
+export function handlePlantTransfer(
 	keycloakId: string,
 	packet: CommandReportPlantTransferReq
 ): Promise<CrowniclesPacket> {
-	const player = await Players.getByKeycloakId(keycloakId);
-	const home = player ? await Homes.getOfPlayer(player.id) : null;
-
-	if (!player || !home) {
-		return makeTransferErrorPacket(HomeConstants.PLANT_TRANSFER_ERRORS.INVALID);
-	}
-
-	return await withLockedEntities(
-		[Player.lockKey(player.id), Home.lockKey(home.id)] as const,
-		([lockedPlayer, lockedHome]) => runPlantTransferUnderLock(lockedPlayer, lockedHome, packet)
+	return withGardenLock(
+		keycloakId,
+		() => makeTransferErrorPacket(HomeConstants.PLANT_TRANSFER_ERRORS.INVALID),
+		(player, home) => runPlantTransferUnderLock(player, home, packet)
 	);
 }
 
