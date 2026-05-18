@@ -1,14 +1,17 @@
+import {
+	ContainerBuilder, TextDisplayBuilder
+} from "discord.js";
 import { PacketContext } from "../../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportGardenCompostNotEnoughPlantsRes,
 	CommandReportGardenCompostRes
 } from "../../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { Language } from "../../../../../../../Lib/src/Language";
-import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../../translations/i18n";
 import { DisplayUtils } from "../../../../../utils/DisplayUtils";
 import { MessagesUtils } from "../../../../../utils/MessagesUtils";
 import { handleClassicError } from "../../../../../utils/ErrorUtils";
+import { StringUtils } from "../../../../../utils/StringUtils";
 
 /**
  * Render the result embed for a successful manual compost action, mirroring
@@ -24,20 +27,25 @@ export async function handleGardenCompost(packet: CommandReportGardenCompostRes,
 
 	const materialsList = buildMaterialsList(packet.materials, lng);
 
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.homes.garden.compost.resultTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.homes.garden.compost.resultDescription", {
-			lng,
-			plantId: packet.plantId,
-			quantity: packet.quantity,
-			materialsList
-		}));
+	const title = i18n.t("commands:report.city.homes.garden.compost.resultTitle", {
+		lng,
+		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
+	});
+	const description = i18n.t("commands:report.city.homes.garden.compost.resultDescription", {
+		lng,
+		plantId: packet.plantId,
+		quantity: packet.quantity,
+		materialsList
+	});
+
+	const container = new ContainerBuilder()
+		.addTextDisplayComponents(new TextDisplayBuilder().setContent(StringUtils.formatHeader(title)))
+		.addTextDisplayComponents(new TextDisplayBuilder().setContent(description));
 
 	await interaction.editReply({
-		embeds: [embed]
+		embeds: [],
+		components: [container],
+		flags: ["IsComponentsV2"]
 	});
 }
 
