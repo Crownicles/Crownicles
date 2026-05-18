@@ -37,6 +37,7 @@ import { Materials } from "../database/game/models/Material";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
+import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
@@ -150,7 +151,9 @@ function computeRemainingGrowthSeconds(slot: HomeGardenSlot, effectiveGrowthTime
 }
 
 /**
- * Handle garden harvest — collect all ready plants from the garden
+ * Handle garden harvest — collect all ready plants from the garden.
+ * Runs under a composite Player + Home lock so concurrent shards cannot
+ * double-harvest the same ready slot (race-safe, see review checklist §10).
  */
 export async function handleGardenHarvest(
 	keycloakId: string,
@@ -165,6 +168,24 @@ export async function handleGardenHarvest(
 		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS);
 	}
 
+	return await withLockedEntities(
+		[Player.lockKey(player.id), Home.lockKey(home.id)] as const,
+		([lockedPlayer, lockedHome]) => runHarvestUnderLock({
+			player: lockedPlayer,
+			home: lockedHome,
+			homeLevel
+		})
+	);
+}
+
+async function runHarvestUnderLock(params: {
+	player: Player;
+	home: Home;
+	homeLevel: HomeLevel;
+}): Promise<CrowniclesPacket> {
+	const {
+		player, home, homeLevel
+	} = params;
 	const earthQuality = homeLevel.features.gardenEarthQuality;
 	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
 	const maxCapacity = homeLevel.features.gardenPlantStorageCapacity;
@@ -176,7 +197,7 @@ export async function handleGardenHarvest(
 	const harvestedSlots: number[] = [];
 
 	for (const slot of gardenSlots) {
-		plantsHarvested += await processHarvestSlot({
+		plantsHarvested += await processHarvestSlotUnderLock({
 			slot,
 			earthQuality,
 			homeId: home.id,
@@ -205,7 +226,7 @@ export async function handleGardenHarvest(
 	});
 }
 
-async function processHarvestSlot(params: {
+async function processHarvestSlotUnderLock(params: {
 	slot: HomeGardenSlot;
 	earthQuality: number;
 	homeId: number;
@@ -264,7 +285,9 @@ async function pickAndGiveCompostMaterial(playerId: number, plant: { compostMate
 }
 
 /**
- * Handle garden plant — plant a seed in a specific garden plot
+ * Handle garden plant — plant a seed in a specific garden plot.
+ * Runs under a composite Player + Home lock to prevent concurrent planting
+ * from consuming the same seed twice or claiming the same empty plot.
  */
 export async function handleGardenPlant(
 	keycloakId: string,
@@ -277,6 +300,17 @@ export async function handleGardenPlant(
 		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_SEED);
 	}
 
+	return await withLockedEntities(
+		[Player.lockKey(player.id), Home.lockKey(home.id)] as const,
+		([lockedPlayer, lockedHome]) => runGardenPlantUnderLock(lockedPlayer, lockedHome, packet)
+	);
+}
+
+async function runGardenPlantUnderLock(
+	player: Player,
+	home: Home,
+	packet: CommandReportGardenPlantReq
+): Promise<CrowniclesPacket> {
 	const validation = await validateGardenPlant(player, home, packet);
 	if (validation.error) {
 		return makeGardenErrorPacket(validation.error);
@@ -408,6 +442,17 @@ export async function handlePlantTransfer(
 		return makeTransferErrorPacket(HomeConstants.PLANT_TRANSFER_ERRORS.INVALID);
 	}
 
+	return await withLockedEntities(
+		[Player.lockKey(player.id), Home.lockKey(home.id)] as const,
+		([lockedPlayer, lockedHome]) => runPlantTransferUnderLock(lockedPlayer, lockedHome, packet)
+	);
+}
+
+async function runPlantTransferUnderLock(
+	player: Player,
+	home: Home,
+	packet: CommandReportPlantTransferReq
+): Promise<CrowniclesPacket> {
 	const error = await executeTransferAction(packet, player, home);
 
 	if (error) {
@@ -482,14 +527,15 @@ export async function handleGardenWater(
 		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER);
 	}
 
-	return Player.withLocked(waterContext.player.id, lockedPlayer => {
-		return waterGardenForLockedPlayerUnderLock({
+	return await withLockedEntities(
+		[Player.lockKey(waterContext.player.id), Home.lockKey(waterContext.home.id)] as const,
+		([lockedPlayer, lockedHome]) => waterGardenForLockedPlayerUnderLock({
 			lockedPlayer,
-			home: waterContext.home,
+			home: lockedHome,
 			homeLevel: waterContext.homeLevel,
 			now: Date.now()
-		});
-	});
+		})
+	);
 }
 
 async function getGardenWaterContext(keycloakId: string): Promise<GardenWaterContext | null> {

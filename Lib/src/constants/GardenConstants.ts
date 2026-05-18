@@ -1,4 +1,5 @@
 import { GardenEarthQuality } from "../types/GardenEarthQuality";
+import { TimeConstants } from "./TimeConstants";
 
 export abstract class GardenConstants {
 	/**
@@ -36,12 +37,12 @@ export abstract class GardenConstants {
 	/**
 	 * Cooldown (in ms) between two waterings of the player's garden.
 	 */
-	public static readonly WATERING_COOLDOWN_MS = 12 * 60 * 60 * 1000;
+	public static readonly WATERING_COOLDOWN_MS = 12 * TimeConstants.MS_TIME.HOUR;
 
 	/**
 	 * Amount of growth time (in ms) instantly shaved off every growing plant when the player waters the garden.
 	 */
-	public static readonly WATERING_TIME_ADVANCE_MS = 60 * 60 * 1000;
+	public static readonly WATERING_TIME_ADVANCE_MS = TimeConstants.MS_TIME.HOUR;
 
 	/**
 	 * Price in coins of the "Cœur Sylvestre" talisman that unlocks remote garden harvest.

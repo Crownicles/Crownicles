@@ -63,6 +63,8 @@ type CompostConfirmCustomId = {
 };
 
 export class GardenFeatureHandler implements HomeFeatureHandler {
+	private static readonly MAX_BUTTONS_PER_ROW = 5;
+
 	public readonly featureId = HomeMenuIds.FEATURE_GARDEN;
 
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
@@ -294,7 +296,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		];
 
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-		container.addActionRowComponents(new ActionRowBuilder<ButtonBuilder>().addComponents(...buttons));
+		for (let i = 0; i < buttons.length; i += GardenFeatureHandler.MAX_BUTTONS_PER_ROW) {
+			container.addActionRowComponents(
+				new ActionRowBuilder<ButtonBuilder>().addComponents(
+					...buttons.slice(i, i + GardenFeatureHandler.MAX_BUTTONS_PER_ROW)
+				)
+			);
+		}
 	}
 
 	private buildHarvestButton(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder {
@@ -367,9 +375,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	private buildExitButton(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder {
-		return this.shouldShowPutAwayTalismanButton(ctx, garden)
-			? this.buildPutAwayTalismanButton(ctx)
-			: this.buildBackToHomeButton(ctx);
+		if (this.isReadOnlyGarden(garden)) {
+			return this.buildPutAwayTalismanButton(ctx);
+		}
+		if (this.isGardenOnlyContext(ctx)) {
+			return this.buildCloseGardenButton(ctx);
+		}
+		return this.buildBackToHomeButton(ctx);
 	}
 
 	private buildPutAwayTalismanButton(ctx: HomeFeatureHandlerContext): ButtonBuilder {
@@ -380,19 +392,20 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			.setStyle(ButtonStyle.Danger);
 	}
 
+	private buildCloseGardenButton(ctx: HomeFeatureHandlerContext): ButtonBuilder {
+		return new ButtonBuilder()
+			.setCustomId(HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN)
+			.setLabel(i18n.t("commands:report.city.homes.garden.closeGarden", { lng: ctx.lng }))
+			.setEmoji(CrowniclesIcons.collectors.refuse)
+			.setStyle(ButtonStyle.Danger);
+	}
+
 	private buildBackToHomeButton(ctx: HomeFeatureHandlerContext): ButtonBuilder {
 		return new ButtonBuilder()
 			.setCustomId(HomeMenuIds.BACK_TO_HOME)
 			.setLabel(i18n.t("commands:report.city.homes.backToHome", { lng: ctx.lng }))
 			.setEmoji(CrowniclesIcons.collectors.back)
 			.setStyle(ButtonStyle.Danger);
-	}
-
-	private shouldShowPutAwayTalismanButton(ctx: HomeFeatureHandlerContext, garden: GardenData): boolean {
-		if (this.isReadOnlyGarden(garden)) {
-			return true;
-		}
-		return this.isGardenOnlyContext(ctx);
 	}
 
 	private isGardenOnlyContext(ctx: HomeFeatureHandlerContext): boolean {
