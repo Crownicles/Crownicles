@@ -83,7 +83,7 @@ export function createMockContext(): HomeFeatureHandlerContext["context"] {
 /**
  * Default garden data for tests
  */
-export function createGardenData(overrides?: Partial<{
+type GardenDataOverrides = Partial<{
 	plots: {
 		slot: number;
 		plantId: number;
@@ -97,24 +97,31 @@ export function createGardenData(overrides?: Partial<{
 	totalPlots: number;
 	accessMode: GardenAccessMode;
 	wateringAvailableAt: number | null;
-}>): NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]> {
+}>;
+
+const DEFAULT_GARDEN_DATA = {
+	plots: [
+		{
+			slot: 0, plantId: 1, growthProgress: 1, isReady: true, remainingSeconds: 0
+		},
+		{
+			slot: 1, plantId: 0, growthProgress: 0, isReady: false, remainingSeconds: 0
+		}
+	],
+	plantStorage: [
+		{ plantId: 1, quantity: 3, maxCapacity: 10 }
+	],
+	hasSeed: true,
+	seedPlantId: 2,
+	totalPlots: 2,
+	accessMode: GardenAccessMode.FULL,
+	wateringAvailableAt: null as number | null
+};
+
+export function createGardenData(overrides?: GardenDataOverrides): NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]> {
 	return {
-		plots: overrides?.plots ?? [
-			{
-				slot: 0, plantId: 1, growthProgress: 1, isReady: true, remainingSeconds: 0
-			},
-			{
-				slot: 1, plantId: 0, growthProgress: 0, isReady: false, remainingSeconds: 0
-			}
-		],
-		plantStorage: overrides?.plantStorage ?? [
-			{ plantId: 1, quantity: 3, maxCapacity: 10 }
-		],
-		hasSeed: overrides?.hasSeed ?? true,
-		seedPlantId: overrides?.seedPlantId ?? 2,
-		totalPlots: overrides?.totalPlots ?? 2,
-		accessMode: overrides?.accessMode ?? GardenAccessMode.FULL,
-		wateringAvailableAt: overrides && "wateringAvailableAt" in overrides ? overrides.wateringAvailableAt ?? null : null
+		...DEFAULT_GARDEN_DATA,
+		...overrides
 	};
 }
 
