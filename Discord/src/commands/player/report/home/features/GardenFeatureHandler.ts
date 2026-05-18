@@ -182,7 +182,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		if (compostConfirm) {
 			await componentInteraction.deferUpdate();
 			this.sendCompostReaction(ctx, compostConfirm.plantId, compostConfirm.quantity, componentInteraction);
-			await nestedMenus.stopCurrentCollector({ editMessage: false });
+			await nestedMenus.stopCurrentCollector();
 			return true;
 		}
 
