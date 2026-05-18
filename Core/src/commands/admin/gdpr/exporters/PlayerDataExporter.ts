@@ -21,6 +21,11 @@ import { PlayerTalismansManager } from "../../../../core/database/game/models/Pl
 import { Material } from "../../../../core/database/game/models/Material";
 import { Homes } from "../../../../core/database/game/models/Home";
 import { PlayerPlantSlot } from "../../../../core/database/game/models/PlayerPlantSlot";
+import { Apartments } from "../../../../core/database/game/models/Apartment";
+import { HomeChestSlots } from "../../../../core/database/game/models/HomeChestSlot";
+import { HomeGardenSlots } from "../../../../core/database/game/models/HomeGardenSlot";
+import { HomePlantStorages } from "../../../../core/database/game/models/HomePlantStorage";
+import { PlayerCookingRecipe } from "../../../../core/database/game/models/PlayerCookingRecipe";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
 
@@ -201,19 +206,28 @@ async function exportMiscData(
 		})));
 	}
 
-	// Player home
+	// Player home (and home-scoped data: chest, garden, plant storage)
 	const home = await Homes.getOfPlayer(player.id);
 	if (home) {
 		csvFiles["16_home.csv"] = toCSV([
 			{
 				cityId: home.cityId,
-				level: home.level
+				level: home.level,
+				createdAt: home.createdAt,
+				updatedAt: home.updatedAt
 			}
 		]);
+		await exportHomeScopedData(home.id, csvFiles);
 	}
 
 	// Player plant slots
 	await exportPlayerPlantSlots(player.id, csvFiles);
+
+	// Player apartments (extra remote-access homes purchased in other cities)
+	await exportPlayerApartments(player.id, csvFiles);
+
+	// Player cooking recipes discovered
+	await exportPlayerCookingRecipes(player.id, csvFiles);
 }
 
 async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
@@ -223,6 +237,63 @@ async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles):
 			slotType: slot.slotType,
 			slot: slot.slot,
 			plantId: slot.plantId
+		})));
+	}
+}
+
+async function exportHomeScopedData(homeId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	// 18. Home chest slots (items stored in the player's home)
+	const chestSlots = await HomeChestSlots.getOfHome(homeId);
+	const filledChestSlots = chestSlots.filter(s => s.itemId !== 0);
+	if (filledChestSlots.length > 0) {
+		csvFiles["18_home_chest_slots.csv"] = toCSV(filledChestSlots.map(slot => ({
+			slot: slot.slot,
+			itemCategory: slot.itemCategory,
+			itemId: slot.itemId,
+			itemLevel: slot.itemLevel,
+			itemEnchantmentId: slot.itemEnchantmentId
+		})));
+	}
+
+	// 19. Home garden slots (plants currently growing)
+	const gardenSlots = await HomeGardenSlots.getOfHome(homeId);
+	const plantedGardenSlots = gardenSlots.filter(s => s.plantId !== 0);
+	if (plantedGardenSlots.length > 0) {
+		csvFiles["19_home_garden_slots.csv"] = toCSV(plantedGardenSlots.map(slot => ({
+			slot: slot.slot,
+			plantId: slot.plantId,
+			plantedAt: slot.plantedAt
+		})));
+	}
+
+	// 20. Home plant storage (harvested plants stockpiled at home)
+	const plantStorage = await HomePlantStorages.getOfHome(homeId);
+	if (plantStorage.length > 0) {
+		csvFiles["20_home_plant_storage.csv"] = toCSV(plantStorage.map(entry => ({
+			plantId: entry.plantId,
+			quantity: entry.quantity
+		})));
+	}
+}
+
+async function exportPlayerApartments(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const apartments = await Apartments.getOfPlayer(playerId);
+	if (apartments.length > 0) {
+		csvFiles["21_apartments.csv"] = toCSV(apartments.map(a => ({
+			cityId: a.cityId,
+			purchasePrice: a.purchasePrice,
+			lastRentClaimedAt: a.lastRentClaimedAt,
+			createdAt: a.createdAt
+		})));
+	}
+}
+
+async function exportPlayerCookingRecipes(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const recipes = await PlayerCookingRecipe.findAll({ where: { playerId } });
+	if (recipes.length > 0) {
+		csvFiles["22_cooking_recipes.csv"] = toCSV(recipes.map(r => ({
+			recipeId: r.recipeId,
+			sourceMapId: r.sourceMapId
 		})));
 	}
 }
@@ -261,7 +332,7 @@ async function exportGuildData(
 }
 
 /**
- * Exports player core data from the game database (files 01-14)
+ * Exports player core data from the game database (files 01-22)
  */
 export async function exportPlayerData(
 	player: NonNullable<Player>,
@@ -294,6 +365,12 @@ export async function exportPlayerData(
 			startTravelDate: player.startTravelDate,
 			lastPetFree: player.lastPetFree,
 			nextEvent: player.nextEvent,
+			lastMealAt: player.lastMealAt,
+			cookingLevel: player.cookingLevel,
+			cookingExperience: player.cookingExperience,
+			lastBedUsedAt: player.lastBedUsedAt,
+			furnacePosition: player.furnacePosition,
+			pinnedCookingRecipeId: player.pinnedCookingRecipeId,
 			createdAt: player.createdAt,
 			updatedAt: player.updatedAt
 		}
