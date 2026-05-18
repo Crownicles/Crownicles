@@ -56,6 +56,12 @@ const COMPOST_BUTTONS_PER_ROW = 5;
  */
 const COMPOST_MAX_PLANT_ROWS = 4;
 
+/** Parsed custom-id of a compost confirmation button (`GARDEN_COMPOST_CONFIRM_<quantity>_<plantId>`) */
+type CompostConfirmCustomId = {
+	plantId: PlantId;
+	quantity: number;
+};
+
 export class GardenFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = HomeMenuIds.FEATURE_GARDEN;
 
@@ -164,9 +170,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		return null;
 	}
 
-	private parseCompostConfirmCustomId(selectedValue: string): {
-		plantId: PlantId; quantity: number;
-	} | null {
+	private parseCompostConfirmCustomId(selectedValue: string): CompostConfirmCustomId | null {
 		for (const quantity of GardenConstants.COMPOST_QUANTITIES) {
 			const prefix = `${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}${quantity}_`;
 			if (selectedValue.startsWith(prefix)) {
