@@ -61,7 +61,9 @@ async function exportInventoryData(
 		csvFiles["03_inventory_slots.csv"] = toCSV(inventorySlots.map(slot => ({
 			slotId: slot.slot,
 			itemCategory: slot.itemCategory,
-			itemId: slot.itemId
+			itemId: slot.itemId,
+			itemLevel: slot.itemLevel,
+			itemEnchantmentId: slot.itemEnchantmentId
 		})));
 	}
 
@@ -73,7 +75,8 @@ async function exportInventoryData(
 				weaponSlots: inventoryInfo.weaponSlots,
 				armorSlots: inventoryInfo.armorSlots,
 				objectSlots: inventoryInfo.objectSlots,
-				potionSlots: inventoryInfo.potionSlots
+				potionSlots: inventoryInfo.potionSlots,
+				plantSlots: inventoryInfo.plantSlots
 			}
 		]);
 	}
@@ -203,7 +206,9 @@ async function exportMiscData(
 	if (materials.length > 0) {
 		csvFiles["15_materials.csv"] = toCSV(materials.map(m => ({
 			materialId: m.materialId,
-			quantity: m.quantity
+			quantity: m.quantity,
+			createdAt: m.createdAt,
+			updatedAt: m.updatedAt
 		})));
 	}
 
@@ -237,7 +242,9 @@ async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles):
 		csvFiles["17_plant_slots.csv"] = toCSV(plantSlots.map(slot => ({
 			slotType: slot.slotType,
 			slot: slot.slot,
-			plantId: slot.plantId
+			plantId: slot.plantId,
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
 		})));
 	}
 }
@@ -252,7 +259,9 @@ async function exportHomeScopedData(homeId: number, csvFiles: GDPRCsvFiles): Pro
 			itemCategory: slot.itemCategory,
 			itemId: slot.itemId,
 			itemLevel: slot.itemLevel,
-			itemEnchantmentId: slot.itemEnchantmentId
+			itemEnchantmentId: slot.itemEnchantmentId,
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
 		})));
 	}
 
@@ -263,7 +272,9 @@ async function exportHomeScopedData(homeId: number, csvFiles: GDPRCsvFiles): Pro
 		csvFiles["19_home_garden_slots.csv"] = toCSV(plantedGardenSlots.map(slot => ({
 			slot: slot.slot,
 			plantId: slot.plantId,
-			plantedAt: slot.plantedAt
+			plantedAt: slot.plantedAt,
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
 		})));
 	}
 
@@ -272,7 +283,9 @@ async function exportHomeScopedData(homeId: number, csvFiles: GDPRCsvFiles): Pro
 	if (plantStorage.length > 0) {
 		csvFiles["20_home_plant_storage.csv"] = toCSV(plantStorage.map(entry => ({
 			plantId: entry.plantId,
-			quantity: entry.quantity
+			quantity: entry.quantity,
+			createdAt: entry.createdAt,
+			updatedAt: entry.updatedAt
 		})));
 	}
 }
@@ -284,7 +297,8 @@ async function exportPlayerApartments(playerId: number, csvFiles: GDPRCsvFiles):
 			cityId: a.cityId,
 			purchasePrice: a.purchasePrice,
 			lastRentClaimedAt: a.lastRentClaimedAt,
-			createdAt: a.createdAt
+			createdAt: a.createdAt,
+			updatedAt: a.updatedAt
 		})));
 	}
 }
