@@ -472,7 +472,7 @@ export class CommandReportGardenErrorRes extends CrowniclesPacket {
  * Sent when the player confirms composting N plants from the home storage,
  * which terminates the `/rapport` command (mirror of the shop purchase flow).
  */
-@sendablePacket(PacketDirection.NONE)
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportGardenCompostRes extends CrowniclesPacket {
 	/** The plant type that was composted */
 	plantId!: PlantId;
@@ -493,7 +493,7 @@ export class CommandReportGardenCompostRes extends CrowniclesPacket {
  * packets must not be picked up by the async-request/response handlers used
  * by harvest / water / plant.
  */
-@sendablePacket(PacketDirection.NONE)
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportGardenCompostNotEnoughPlantsRes extends CrowniclesPacket {
 	plantId!: PlantId;
 
