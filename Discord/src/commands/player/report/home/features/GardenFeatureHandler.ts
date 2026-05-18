@@ -143,7 +143,8 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				this.registerCompostMenu(ctx, menus);
 				await menus.changeMenu(HomeMenuIds.GARDEN_COMPOST_MENU);
 			},
-			[HomeMenuIds.GARDEN_COMPOST_CANCEL]: menus => menus.changeMenu(HomeMenuIds.GARDEN_MENU)
+			[HomeMenuIds.GARDEN_COMPOST_CANCEL]: menus => menus.changeMenu(HomeMenuIds.GARDEN_MENU),
+			[HomeMenuIds.GARDEN_COMPOST_CONFIRM_CANCEL]: menus => menus.changeMenu(HomeMenuIds.GARDEN_COMPOST_MENU)
 		};
 		if (exact[selectedValue]) {
 			return exact[selectedValue];
@@ -638,7 +639,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		plantId: PlantId,
 		storedQty: number
 	): ButtonBuilder[] {
-		const buttons: ButtonBuilder[] = [this.buildCompostCancelButton(ctx)];
+		const buttons: ButtonBuilder[] = [this.buildCompostCancelButton(ctx, HomeMenuIds.GARDEN_COMPOST_CONFIRM_CANCEL)];
 		for (const quantity of GardenConstants.COMPOST_QUANTITIES) {
 			if (storedQty >= quantity) {
 				buttons.push(new ButtonBuilder()
@@ -654,9 +655,9 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		return buttons;
 	}
 
-	private buildCompostCancelButton(ctx: HomeFeatureHandlerContext): ButtonBuilder {
+	private buildCompostCancelButton(ctx: HomeFeatureHandlerContext, customId = HomeMenuIds.GARDEN_COMPOST_CANCEL): ButtonBuilder {
 		return new ButtonBuilder()
-			.setCustomId(HomeMenuIds.GARDEN_COMPOST_CANCEL)
+			.setCustomId(customId)
 			.setLabel(i18n.t("commands:report.city.homes.garden.compost.cancelButton", { lng: ctx.lng }))
 			.setEmoji(CrowniclesIcons.collectors.back)
 			.setStyle(ButtonStyle.Secondary);
