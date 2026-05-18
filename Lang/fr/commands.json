@@ -1185,6 +1185,7 @@
           "storageEntry": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) — {{quantity}}/{{maxCapacity}}",
           "backToGarden": "← Retour au jardin",
           "putAwayTalisman": "Ranger le Cœur Sylvestre",
+          "closeGarden": "Quitter le jardin",
           "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Compostage :**",
           "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
           "compost": {

@@ -6,6 +6,7 @@
 import { vi } from "vitest";
 import { HomeFeatureHandlerContext } from "../../src/commands/player/report/home/HomeMenuTypes";
 import { GardenEarthQuality } from "../../../Lib/src/types/GardenEarthQuality";
+import { GardenAccessMode } from "../../../Lib/src/types/GardenAccessMode";
 import { LANGUAGE } from "../../../Lib/src/Language";
 
 /**
@@ -94,6 +95,8 @@ export function createGardenData(overrides?: Partial<{
 	hasSeed: boolean;
 	seedPlantId: number;
 	totalPlots: number;
+	accessMode: GardenAccessMode;
+	wateringAvailableAt: number | null;
 }>): NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]> {
 	return {
 		plots: overrides?.plots ?? [
@@ -109,7 +112,9 @@ export function createGardenData(overrides?: Partial<{
 		],
 		hasSeed: overrides?.hasSeed ?? true,
 		seedPlantId: overrides?.seedPlantId ?? 2,
-		totalPlots: overrides?.totalPlots ?? 2
+		totalPlots: overrides?.totalPlots ?? 2,
+		accessMode: overrides?.accessMode ?? GardenAccessMode.FULL,
+		wateringAvailableAt: overrides && "wateringAvailableAt" in overrides ? overrides.wateringAvailableAt ?? null : null
 	};
 }
 
