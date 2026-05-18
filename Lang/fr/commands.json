@@ -1431,7 +1431,7 @@
   "jardin": {
     "title": "{{pseudo}}, votre jardin",
     "description": "Vous contemplez votre jardin. Choisissez l'action à effectuer à partir du menu ci-dessous.",
-    "closed": "{emote:messages.confirm} La consultation du jardin est terminée.",
+    "closed": "{emote:messages.validate} La consultation du jardin est terminée.",
     "close": "Fermer le jardin",
     "noAccess": {
       "noHome": "Vous n'avez pas encore de chez-vous, et donc aucun jardin à entretenir. Trouvez-vous d'abord une demeure dans l'une des villes du monde avant de songer à cultiver quoi que ce soit.",
