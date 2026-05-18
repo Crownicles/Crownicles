@@ -40,7 +40,7 @@ export abstract class GardenConstants {
 	/**
 	 * Price in coins of the "Cœur Sylvestre" talisman that unlocks remote garden harvest.
 	 */
-	public static readonly REMOTE_HARVEST_TALISMAN_PRICE = 10_000;
+	public static readonly REMOTE_HARVEST_TALISMAN_PRICE = 2_450;
 
 	/**
 	 * Get the effective growth time in seconds for a plant given an earth quality

@@ -126,6 +126,10 @@ export async function handleCommandShopNoPlantSlotAvailable(context: PacketConte
 	await sendShopError(context, "commands:shop.noPlantSlotAvailable");
 }
 
+export async function handleCommandShopNoGardenForRemoteHarvestTalisman(context: PacketContext): Promise<void> {
+	await sendShopError(context, "commands:shop.noGardenForRemoteHarvestTalisman");
+}
+
 export async function handleCommandShopNotEnoughMoney(packet: CommandShopNotEnoughCurrency, context: PacketContext): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!);
 

@@ -7,6 +7,7 @@ import {
 	CommandShopGenericPurchase,
 	CommandShopHealAlterationDone,
 	CommandShopNoAlterationToHeal,
+	CommandShopNoGardenForRemoteHarvestTalisman,
 	CommandShopNoPlantSlotAvailable,
 	CommandShopNotEnoughCurrency
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorShop";
@@ -19,6 +20,7 @@ import {
 	handleCommandShopGenericPurchase,
 	handleCommandShopHealAlterationDone,
 	handleCommandShopNoAlterationToHeal,
+	handleCommandShopNoGardenForRemoteHarvestTalisman,
 	handleCommandShopNoPlantSlotAvailable,
 	handleCommandShopNotEnoughMoney,
 	handleReactionCollectorBuyCategorySlotBuySuccess
@@ -59,6 +61,11 @@ export default class ShopCommandPacketHandlers {
 	@packetHandler(CommandShopNoPlantSlotAvailable)
 	async shopNoPlantSlotAvailable(context: PacketContext, _packet: CommandShopNoPlantSlotAvailable): Promise<void> {
 		await handleCommandShopNoPlantSlotAvailable(context);
+	}
+
+	@packetHandler(CommandShopNoGardenForRemoteHarvestTalisman)
+	async shopNoGardenForRemoteHarvestTalisman(context: PacketContext, _packet: CommandShopNoGardenForRemoteHarvestTalisman): Promise<void> {
+		await handleCommandShopNoGardenForRemoteHarvestTalisman(context);
 	}
 
 	@packetHandler(CommandShopNotEnoughCurrency)

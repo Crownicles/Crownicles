@@ -9,7 +9,11 @@ import {
 	ShopConstants, ShopCurrency
 } from "../../../../Lib/src/constants/ShopConstants";
 import {
-	BuyCallbackResult, MaterialDistribution, ShopCategory, CommandShopNoPlantSlotAvailable
+	BuyCallbackResult,
+	CommandShopNoGardenForRemoteHarvestTalisman,
+	CommandShopNoPlantSlotAvailable,
+	MaterialDistribution,
+	ShopCategory
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
 	calculateGemsToMoneyRatio,
@@ -49,6 +53,7 @@ import {
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { pickMaterialDistribution } from "./MaterialLootGenerator";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
+import { Homes } from "../database/game/models/Home";
 
 /**
  * Cached materials by type and rarity (constant after data loading, computed once per key)
@@ -139,6 +144,15 @@ const SHOP_EMPTY_CHECKS: Partial<Record<CityShopType, (player: Player) => Promis
 		return slotExtension === null && plantSlotExtension === null;
 	}
 };
+
+async function playerHasUnlockedGarden(playerId: number): Promise<boolean> {
+	const home = await Homes.getOfPlayer(playerId);
+	const homeLevel = home?.getLevel();
+	if (!homeLevel) {
+		return false;
+	}
+	return homeLevel.features.gardenPlots > 0;
+}
 
 /**
  * Returns true if the given shop has nothing to offer to the player.
@@ -337,7 +351,13 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 					id: ShopItemType.REMOTE_HARVEST_TALISMAN,
 					price: GardenConstants.REMOTE_HARVEST_TALISMAN_PRICE,
 					amounts: [1],
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number): Promise<BuyCallbackResult> => {
+					buyCallback: async (buyResponse: CrowniclesPacket[], playerId: number): Promise<BuyCallbackResult> => {
+						const hasGarden = await playerHasUnlockedGarden(playerId);
+						if (!hasGarden) {
+							buyResponse.push(makePacket(CommandShopNoGardenForRemoteHarvestTalisman, {}));
+							return { success: false };
+						}
+
 						await Player.withLocked(playerId, async locked => {
 							locked.hasRemoteHarvestTalisman = true;
 							await locked.save();
