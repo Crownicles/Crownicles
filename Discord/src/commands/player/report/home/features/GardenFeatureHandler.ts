@@ -180,6 +180,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		// Confirm the compost action — terminates `/rapport` like a shop purchase
 		const compostConfirm = this.parseCompostConfirmCustomId(selectedValue);
 		if (compostConfirm) {
+			await componentInteraction.deferUpdate();
 			this.sendCompostReaction(ctx, compostConfirm.plantId, compostConfirm.quantity, componentInteraction);
 			await nestedMenus.stopCurrentCollector({ editMessage: false });
 			return true;
@@ -652,6 +653,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 					.setCustomId(`${HomeMenuIds.GARDEN_COMPOST_CONFIRM_PREFIX}${quantity}_${plantId}`)
 					.setLabel(i18n.t("commands:report.city.homes.garden.compost.confirmButton", {
 						lng: ctx.lng,
+						count: quantity,
 						quantity
 					}))
 					.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.compost)!)
