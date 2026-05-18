@@ -108,6 +108,7 @@ async function exportMissionData(
 			{
 				gems: missionsInfo.gems,
 				hasBoughtPointsThisWeek: missionsInfo.hasBoughtPointsThisWeek,
+				missionSkipsUsedThisWeek: missionsInfo.missionSkipsUsedThisWeek,
 				campaignBlob: missionsInfo.campaignBlob
 			}
 		]);
