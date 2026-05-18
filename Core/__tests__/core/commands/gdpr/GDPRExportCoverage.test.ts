@@ -249,6 +249,8 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"lastBedUsedAt",
 		"furnacePosition",
 		"pinnedCookingRecipeId",
+		"lastGardenWatered",
+		"hasRemoteHarvestTalisman",
 		"updatedAt",
 		"createdAt"
 	],

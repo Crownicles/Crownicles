@@ -33,6 +33,8 @@ import { TimeConstants } from "../../../../../../../Lib/src/constants/TimeConsta
 import { printTimeBeforeDate } from "../../../../../../../Lib/src/utils/TimeUtils";
 import { GardenAccessMode } from "../../../../../../../Lib/src/types/GardenAccessMode";
 import { ReactionCollectorCityData } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
@@ -94,6 +96,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 
 		if (selectedValue === HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN) {
 			await componentInteraction.deferUpdate();
+			this.sendRefuseReaction(ctx, componentInteraction);
 			await nestedMenus.stopCurrentCollector();
 			return true;
 		}
@@ -282,6 +285,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		return createHomeFeatureCollector(this, ctx);
 	}
 
+	private sendRefuseReaction(ctx: HomeFeatureHandlerContext, componentInteraction: ComponentInteraction): void {
+		const reactionIndex = ctx.packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name);
+		if (reactionIndex !== -1) {
+			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
+		}
+	}
+
 	private buildGardenContainer(ctx: HomeFeatureHandlerContext, extraMessage = ""): ContainerBuilder {
 		const container = new ContainerBuilder();
 		container.addTextDisplayComponents(
@@ -393,7 +403,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		if (!response.compostResults || response.compostResults.length === 0) {
 			return "";
 		}
-		let message = `\n\n${i18n.t("commands:report.city.homes.garden.compostTitle", { lng: ctx.lng })}`;
+		let message = i18n.t("commands:report.city.homes.garden.compostTitle", { lng: ctx.lng });
 		for (const result of response.compostResults) {
 			message += `\n${i18n.t("commands:report.city.homes.garden.compostLine", {
 				lng: ctx.lng,
@@ -449,12 +459,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				const response = responsePacket as unknown as CommandReportGardenWaterRes;
 				const garden = ctx.homeData.garden!;
 				this.updateGardenAfterWatering(garden, ctx, response);
-				const successMessage = `\n\n${i18n.t("commands:report.city.homes.garden.waterSuccess", {
+				const successMessage = i18n.t("commands:report.city.homes.garden.waterSuccess", {
 					lng: ctx.lng,
 					slotsWatered: response.slotsWatered,
 					slotsBecameReady: response.slotsBecameReady,
 					count: response.slotsBecameReady
-				})}`;
+				});
 				this.registerGardenMenu(ctx, nestedMenus, successMessage);
 				await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 			}
@@ -471,16 +481,16 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	): Promise<void> {
 		let extraMessage = "";
 		if (errorPacket.error === GardenConstants.GARDEN_ERRORS.WATERING_ON_COOLDOWN && errorPacket.availableAt) {
-			extraMessage = `\n\n${i18n.t("commands:report.city.homes.garden.waterCooldownError", {
+			extraMessage = i18n.t("commands:report.city.homes.garden.waterCooldownError", {
 				lng: ctx.lng,
 				timeLeft: printTimeBeforeDate(errorPacket.availableAt)
-			})}`;
+			});
 
 			// Sync local state with server so the button stays disabled
 			ctx.homeData.garden!.wateringAvailableAt = errorPacket.availableAt;
 		}
 		else if (errorPacket.error === GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER) {
-			extraMessage = `\n\n${i18n.t("commands:report.city.homes.garden.waterNothingToWater", { lng: ctx.lng })}`;
+			extraMessage = i18n.t("commands:report.city.homes.garden.waterNothingToWater", { lng: ctx.lng });
 		}
 		this.registerGardenMenu(ctx, nestedMenus, extraMessage);
 		await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);

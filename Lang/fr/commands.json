@@ -1174,18 +1174,18 @@
           "plantButton": "Planter",
           "waterButton": "Arroser",
           "waterCooldown": "{emote:city.gardenStatus.water} Vous pourrez arroser à nouveau dans **{{timeLeft}}**.",
-          "waterCooldownError": "{emote:messages.refuse} Vous avez déjà arrosé récemment. Patientez encore **{{timeLeft}}**.",
-          "waterNothingToWater": "{emote:messages.info} Aucune plante en cours de pousse à arroser.",
-          "waterSuccess_zero": "{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). Leur croissance a été accélérée d'une heure.",
-          "waterSuccess_one": "{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). **{{slotsBecameReady}}** plante est maintenant prête à être récoltée !",
-          "waterSuccess_other": "{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). **{{slotsBecameReady}}** plantes sont maintenant prêtes à être récoltées !",
+          "waterCooldownError": "\n\n{emote:messages.refuse} Vous avez déjà arrosé récemment. Patientez encore **{{timeLeft}}**.",
+          "waterNothingToWater": "\n\n{emote:messages.info} Aucune plante en cours de pousse à arroser.",
+          "waterSuccess_zero": "\n\n{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). Leur croissance a été accélérée d'une heure.",
+          "waterSuccess_one": "\n\n{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). **{{slotsBecameReady}}** plante est maintenant prête à être récoltée !",
+          "waterSuccess_other": "\n\n{emote:city.gardenStatus.water} Vous avez arrosé **{{slotsWatered}}** parcelle(s). **{{slotsBecameReady}}** plantes sont maintenant prêtes à être récoltées !",
           "storageButton": "Réserve ({{count}})",
           "storageTitle": "{emote:city.homeUpgrades.garden} Réserve de plantes :",
           "storageEmpty": "Votre réserve de plantes est vide. Récoltez vos plantes pour les stocker ici.",
           "storageEntry": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) — {{quantity}}/{{maxCapacity}}",
           "backToGarden": "← Retour au jardin",
           "putAwayTalisman": "Ranger le Cœur Sylvestre",
-          "compostTitle": "{emote:city.gardenStatus.compost} **Compostage :**",
+          "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Compostage :**",
           "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})"
         },
         "cooking": {
@@ -1416,6 +1416,7 @@
   "jardin": {
     "title": "{{pseudo}}, votre jardin",
     "description": "Vous contemplez votre jardin. Choisissez l'action à effectuer à partir du menu ci-dessous.",
+    "closed": "{emote:messages.confirm} La consultation du jardin est terminée.",
     "close": "Fermer le jardin",
     "noAccess": {
       "noHome": "Vous n'avez pas encore de chez-vous, et donc aucun jardin à entretenir. Trouvez-vous d'abord une demeure dans l'une des villes du monde avant de songer à cultiver quoi que ce soit.",
@@ -1661,7 +1662,7 @@
       },
       "remoteHarvestTalisman": {
         "name": "{emote:city.gardenStatus.remoteHarvestTalisman} Cœur Sylvestre",
-        "info": "Un talisman tressé dans une fibre vivante, encore frémissante de sève. Il maintient un lien discret avec votre jardin où que vous alliez. Où que vous soyez sur la carte, {command:jardin} vous permettra alors de surveiller vos plantations et d'en récolter les fruits à distance, sans toutefois pouvoir planter ni arroser."
+        "info": "Un talisman tressé dans une fibre vivante, encore frémissante de sève. Il maintient un lien discret avec votre jardin où que vous alliez. Où que vous soyez sur la carte, {command:garden} vous permettra alors de surveiller vos plantations et d'en récolter les fruits à distance, sans toutefois pouvoir planter ni arroser."
       },
       "token": {
         "name": "{emote:unitValues.token} Jeton",

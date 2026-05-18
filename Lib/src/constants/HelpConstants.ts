@@ -130,6 +130,13 @@ export abstract class HelpConstants {
 			"game",
 			"jouer"
 		],
+		GARDEN: [
+			"garden",
+			"jardin",
+			"jardiner",
+			"coeursylvestre",
+			"coeur sylvestre"
+		],
 		SELL: ["sell", "vendre"],
 		DAILY_BONUS: [
 			"daily",
@@ -644,6 +651,12 @@ export abstract class HelpConstants {
 			{
 				EMOTE: ":newspaper:",
 				NAME: "report",
+				CATEGORY: "player"
+			},
+		GARDEN:
+			{
+				EMOTE: ":seedling:",
+				NAME: "garden",
 				CATEGORY: "player"
 			},
 		SELL:

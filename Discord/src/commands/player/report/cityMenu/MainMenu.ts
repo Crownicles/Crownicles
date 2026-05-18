@@ -26,6 +26,7 @@ import {
 } from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
+import { StringUtils } from "../../../../utils/StringUtils";
 import { HomeMenuIds } from "../home";
 import {
 	addCitySection,
@@ -374,9 +375,9 @@ export function getMainMenu(params: CityMenuParams): CrowniclesNestedMenu {
 	if (data.gardenOnly) {
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
-				`### ${i18n.t("commands:jardin.title", {
+				StringUtils.formatHeader(i18n.t("commands:jardin.title", {
 					lng, pseudo: params.pseudo
-				})}`
+				}))
 			)
 		);
 		container.addTextDisplayComponents(

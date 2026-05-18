@@ -2,7 +2,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandJardinNoAccessRes, CommandJardinPacketReq, JardinNoAccessReason
+	CommandJardinClosedRes, CommandJardinNoAccessRes, CommandJardinPacketReq, JardinNoAccessReason
 } from "../../../../Lib/src/packets/commands/CommandJardinPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
@@ -16,6 +16,7 @@ import {
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
+import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
@@ -35,7 +36,7 @@ function resolveGardenAccess(
 	player: Player,
 	homeCityId: string
 ): GardenAccessMode | null {
-	const currentCity = CityDataController.instance.getCityByMapId(player.getDestinationId()!);
+	const currentCity = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
 	if (currentCity && currentCity.id === homeCityId) {
 		return GardenAccessMode.FULL;
 	}
@@ -104,8 +105,12 @@ export class JardinCommand {
 
 		const collector = new ReactionCollectorCity(collectorData);
 
-		const endCallback: EndCallback = (_collector: ReactionCollectorInstance, _response: CrowniclesPacket[]): void => {
+		const endCallback: EndCallback = (collector: ReactionCollectorInstance, endResponse: CrowniclesPacket[]): void => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.JARDIN_COMMAND);
+			const firstReaction = collector.getFirstReaction();
+			if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+				endResponse.push(makePacket(CommandJardinClosedRes, {}));
+			}
 		};
 
 		const collectorPacket = new ReactionCollectorInstance(
