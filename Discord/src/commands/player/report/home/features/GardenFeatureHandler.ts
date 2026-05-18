@@ -104,89 +104,64 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		componentInteraction: ComponentInteraction,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		// Navigation
-		if (selectedValue === HomeMenuIds.BACK_TO_HOME) {
-			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu(HomeMenuIds.HOME_MENU);
-			return true;
+		const action = this.resolveSubMenuAction(ctx, selectedValue, componentInteraction);
+		if (!action) {
+			return false;
+		}
+		await componentInteraction.deferUpdate();
+		await action(nestedMenus);
+		return true;
+	}
+
+	private resolveSubMenuAction(
+		ctx: HomeFeatureHandlerContext,
+		selectedValue: string,
+		componentInteraction: ComponentInteraction
+	): ((nestedMenus: CrowniclesNestedMenus) => Promise<void>) | null {
+		const exact: Record<string, (menus: CrowniclesNestedMenus) => Promise<void>> = {
+			[HomeMenuIds.BACK_TO_HOME]: menus => menus.changeMenu(HomeMenuIds.HOME_MENU),
+			[HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN]: async menus => {
+				this.sendRefuseReaction(ctx, componentInteraction);
+				await menus.stopCurrentCollector({ editMessage: false });
+			},
+			[HomeMenuIds.GARDEN_BACK]: menus => menus.changeMenu(HomeMenuIds.GARDEN_MENU),
+			[HomeMenuIds.GARDEN_STORAGE]: async menus => {
+				this.registerStorageMenu(ctx, menus);
+				await menus.changeMenu(HomeMenuIds.GARDEN_STORAGE);
+			},
+			[HomeMenuIds.GARDEN_HARVEST]: menus => this.sendHarvestAction(ctx, menus),
+			[HomeMenuIds.GARDEN_WATER]: menus => this.sendWaterAction(ctx, menus),
+			[HomeMenuIds.GARDEN_COMPOST]: async menus => {
+				this.registerCompostMenu(ctx, menus);
+				await menus.changeMenu(HomeMenuIds.GARDEN_COMPOST_MENU);
+			},
+			[HomeMenuIds.GARDEN_COMPOST_CANCEL]: menus => menus.changeMenu(HomeMenuIds.GARDEN_MENU)
+		};
+		if (exact[selectedValue]) {
+			return exact[selectedValue];
 		}
 
-		if (selectedValue === HomeMenuIds.GARDEN_PUT_AWAY_TALISMAN) {
-			await componentInteraction.deferUpdate();
-			this.sendRefuseReaction(ctx, componentInteraction);
-			await nestedMenus.stopCurrentCollector({ editMessage: false });
-			return true;
-		}
-
-		if (selectedValue === HomeMenuIds.GARDEN_BACK) {
-			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
-			return true;
-		}
-
-		// View plant storage
-		if (selectedValue === HomeMenuIds.GARDEN_STORAGE) {
-			await componentInteraction.deferUpdate();
-			this.registerStorageMenu(ctx, nestedMenus);
-			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_STORAGE);
-			return true;
-		}
-
-		// Harvest
-		if (selectedValue === HomeMenuIds.GARDEN_HARVEST) {
-			await componentInteraction.deferUpdate();
-			await this.sendHarvestAction(ctx, nestedMenus);
-			return true;
-		}
-
-		// Water
-		if (selectedValue === HomeMenuIds.GARDEN_WATER) {
-			await componentInteraction.deferUpdate();
-			await this.sendWaterAction(ctx, nestedMenus);
-			return true;
-		}
-
-		// Plant in first available slot
 		if (selectedValue.startsWith(HomeMenuIds.GARDEN_PLANT_PREFIX)) {
-			await componentInteraction.deferUpdate();
-			await this.sendPlantAction(ctx, -1, nestedMenus);
-			return true;
+			return menus => this.sendPlantAction(ctx, -1, menus);
 		}
 
-		// Open the manual-compost flow
-		if (selectedValue === HomeMenuIds.GARDEN_COMPOST) {
-			await componentInteraction.deferUpdate();
-			this.registerCompostMenu(ctx, nestedMenus);
-			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_COMPOST_MENU);
-			return true;
-		}
-
-		// Cancel compost — back to the garden main view
-		if (selectedValue === HomeMenuIds.GARDEN_COMPOST_CANCEL) {
-			await componentInteraction.deferUpdate();
-			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
-			return true;
-		}
-
-		// Selected a specific plant to compost — show the confirm screen
 		if (selectedValue.startsWith(HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX)) {
-			await componentInteraction.deferUpdate();
 			const plantId = Number(selectedValue.slice(HomeMenuIds.GARDEN_COMPOST_SELECT_PREFIX.length)) as PlantId;
-			this.registerCompostConfirmMenu(ctx, plantId, nestedMenus);
-			await nestedMenus.changeMenu(HomeMenuIds.GARDEN_COMPOST_CONFIRM_MENU);
-			return true;
+			return async menus => {
+				this.registerCompostConfirmMenu(ctx, plantId, menus);
+				await menus.changeMenu(HomeMenuIds.GARDEN_COMPOST_CONFIRM_MENU);
+			};
 		}
 
-		// Confirm the compost action — terminates `/rapport` like a shop purchase
 		const compostConfirm = this.parseCompostConfirmCustomId(selectedValue);
 		if (compostConfirm) {
-			await componentInteraction.deferUpdate();
-			this.sendCompostReaction(ctx, compostConfirm.plantId, compostConfirm.quantity, componentInteraction);
-			await nestedMenus.stopCurrentCollector();
-			return true;
+			return async menus => {
+				this.sendCompostReaction(ctx, compostConfirm.plantId, compostConfirm.quantity, componentInteraction);
+				await menus.stopCurrentCollector();
+			};
 		}
 
-		return false;
+		return null;
 	}
 
 	private parseCompostConfirmCustomId(selectedValue: string): {
