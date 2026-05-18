@@ -63,6 +63,7 @@ describe("JardinCommand", () => {
 	const player = {
 		id: 42,
 		keycloakId: "player-keycloak-id",
+		mapLinkId: 3,
 		hasRemoteHarvestTalisman: false,
 		getDestinationId: vi.fn(() => 7),
 		getCumulativeEnergy: vi.fn(() => 100),
@@ -132,7 +133,7 @@ describe("JardinCommand", () => {
 				features: { gardenPlots: 1 }
 			})
 		} as never);
-		vi.mocked(CityDataController.instance.getCityByMapId).mockReturnValue({
+		vi.mocked(CityDataController.instance.getCityByMapLinkId).mockReturnValue({
 			id: "other-city"
 		} as never);
 
@@ -151,7 +152,7 @@ describe("JardinCommand", () => {
 				features: { gardenPlots: 1 }
 			})
 		} as never);
-		vi.mocked(CityDataController.instance.getCityByMapId).mockReturnValue({
+		vi.mocked(CityDataController.instance.getCityByMapLinkId).mockReturnValue({
 			id: "coco"
 		} as never);
 
@@ -177,7 +178,7 @@ describe("JardinCommand", () => {
 				features: { gardenPlots: 1 }
 			})
 		} as never);
-		vi.mocked(CityDataController.instance.getCityByMapId).mockReturnValue({
+		vi.mocked(CityDataController.instance.getCityByMapLinkId).mockReturnValue({
 			id: "other-city"
 		} as never);
 

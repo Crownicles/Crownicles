@@ -31,3 +31,9 @@ export class CommandJardinPacketReq extends CrowniclesPacket {}
 export class CommandJardinNoAccessRes extends CrowniclesPacket {
 	reason!: JardinNoAccessReason;
 }
+
+/**
+ * Response packet: /jardin was closed normally.
+ */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandJardinClosedRes extends CrowniclesPacket {}

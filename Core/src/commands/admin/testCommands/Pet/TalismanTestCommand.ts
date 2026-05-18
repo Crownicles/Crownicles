@@ -2,7 +2,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { PlayerTalismansManager } from "../../../../core/database/game/models/PlayerTalismans";
-import { Players } from "../../../../core/database/game/models/Player";
+import Player from "../../../../core/database/game/models/Player";
 
 export const commandInfo: ITestCommand = {
 	name: "talisman",
@@ -110,18 +110,24 @@ const talismanTestCommand: ExecuteTestCommandLike = async (player, args) => {
 
 	if (config.storage === "player") {
 		const property = config.hasProperty as "hasRemoteHarvestTalisman";
-		const freshPlayer = await Players.getById(player.id);
-		const hasTalisman = freshPlayer[property];
+		const message = await Player.withLocked(player.id, async lockedPlayer => {
+			const hasTalisman = lockedPlayer[property];
 
-		if (isGiving && hasTalisman) {
-			return config.alreadyHasMessage;
-		}
-		if (!isGiving && !hasTalisman) {
-			return config.doesNotHaveMessage;
-		}
+			if (isGiving && hasTalisman) {
+				return config.alreadyHasMessage;
+			}
+			if (!isGiving && !hasTalisman) {
+				return config.doesNotHaveMessage;
+			}
 
-		freshPlayer[property] = isGiving;
-		await freshPlayer.save();
+			lockedPlayer[property] = isGiving;
+			await lockedPlayer.save();
+			return null;
+		});
+
+		if (message) {
+			return message;
+		}
 	}
 	else {
 		const property = config.hasProperty as "hasTalisman" | "hasCloneTalisman";

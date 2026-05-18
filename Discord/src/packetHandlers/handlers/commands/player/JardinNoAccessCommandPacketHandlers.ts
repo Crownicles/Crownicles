@@ -1,12 +1,17 @@
 import { packetHandler } from "../../../PacketHandler";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandJardinNoAccessRes, JardinNoAccessReason
+	CommandJardinClosedRes, CommandJardinNoAccessRes, JardinNoAccessReason
 } from "../../../../../../Lib/src/packets/commands/CommandJardinPacket";
 import { DiscordCache } from "../../../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
-import { escapeUsername } from "../../../../utils/StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "../../../../utils/StringUtils";
+import {
+	ContainerBuilder, TextDisplayBuilder
+} from "discord.js";
 
 const REASON_TO_I18N_KEY: Record<JardinNoAccessReason, string> = {
 	[JardinNoAccessReason.NO_HOME]: "commands:jardin.noAccess.noHome",
@@ -15,6 +20,28 @@ const REASON_TO_I18N_KEY: Record<JardinNoAccessReason, string> = {
 };
 
 export default class JardinNoAccessCommandPacketHandlers {
+	@packetHandler(CommandJardinClosedRes)
+	async closed(context: PacketContext, _packet: CommandJardinClosedRes): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
+		if (!interaction) {
+			return;
+		}
+		const lng = interaction.userLanguage;
+		const title = i18n.t("commands:jardin.title", {
+			lng,
+			pseudo: escapeUsername(interaction.user.displayName)
+		});
+		const container = new ContainerBuilder()
+			.addTextDisplayComponents(new TextDisplayBuilder().setContent(StringUtils.formatHeader(title)))
+			.addTextDisplayComponents(new TextDisplayBuilder().setContent(i18n.t("commands:jardin.closed", { lng })));
+
+		await interaction.editReply({
+			embeds: [],
+			components: [container],
+			flags: ["IsComponentsV2"]
+		});
+	}
+
 	@packetHandler(CommandJardinNoAccessRes)
 	async noAccess(context: PacketContext, packet: CommandJardinNoAccessRes): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction);

@@ -163,10 +163,6 @@
     "description": "Show map to indicate where you're going.",
     "name": "map"
   },
-  "jardin": {
-    "description": "Access your garden, remotely if you own the Sylvan Heart.",
-    "name": "garden"
-  },
   "shop": {
     "description": "Show store.",
     "name": "shop"
