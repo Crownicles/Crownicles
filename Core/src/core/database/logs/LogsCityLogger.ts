@@ -13,6 +13,8 @@ import { LogsGuildDomainPurchases } from "./models/LogsGuildDomainPurchases";
 import { LogsGuildDomainUpgrades } from "./models/LogsGuildDomainUpgrades";
 import { LogsGuildTreasuryDeposits } from "./models/LogsGuildTreasuryDeposits";
 import { LogsGuildFoodShopBuys } from "./models/LogsGuildFoodShopBuys";
+import { LogsCookingUses } from "./models/LogsCookingUses";
+import { LogsGardenActions } from "./models/LogsGardenActions";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 
@@ -194,6 +196,52 @@ export interface GuildFoodShopBuyLogParams {
 	amount: number;
 	unitPrice: number;
 	totalCost: number;
+}
+
+/**
+ * Garden action discriminator stored in `garden_actions.action`.
+ * Keep numerically stable: existing rows reference these values.
+ */
+export const GardenActionType = {
+	PLANT: 0,
+	WATER: 1,
+	COMPOST: 2,
+	HARVEST: 3
+} as const;
+export type GardenActionTypeValue = typeof GardenActionType[keyof typeof GardenActionType];
+
+/**
+ * Parameters for logging a cooking craft attempt (success or failure).
+ */
+export interface CookingUseLogParams {
+	keycloakId: string;
+	cityId: string | null;
+	recipeId: string;
+	recipeLevel: number;
+	outputType: string;
+	success: boolean;
+	bonus: boolean;
+	wasSecret: boolean;
+	xpGained: number;
+	levelUp: boolean;
+	potionId?: number | null;
+	foodType?: string | null;
+	foodStored?: number | null;
+	foodSurplus?: number | null;
+	materialOutputId?: number | null;
+}
+
+/**
+ * Parameters for logging a garden action (plant/water/compost/harvest).
+ */
+export interface GardenActionLogParams {
+	keycloakId: string;
+	cityId: string | null;
+	action: GardenActionTypeValue;
+	plantId: string;
+	slot: number;
+	cost: number;
+	quantity?: number | null;
 }
 
 /**
@@ -502,6 +550,50 @@ export class LogsCityLogger {
 			amount: params.amount,
 			unitPrice: params.unitPrice,
 			totalCost: params.totalCost,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log a cooking craft attempt (success or failure). */
+	async logCookingUse(params: CookingUseLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsCookingUses.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			recipeId: params.recipeId,
+			recipeLevel: params.recipeLevel,
+			outputType: params.outputType,
+			success: params.success,
+			bonus: params.bonus,
+			wasSecret: params.wasSecret,
+			xpGained: params.xpGained,
+			levelUp: params.levelUp,
+			potionId: params.potionId ?? null,
+			foodType: params.foodType ?? null,
+			foodStored: params.foodStored ?? null,
+			foodSurplus: params.foodSurplus ?? null,
+			materialOutputId: params.materialOutputId ?? null,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log a garden action (plant/water/compost/harvest). */
+	async logGardenAction(params: GardenActionLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsGardenActions.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			action: params.action,
+			plantId: params.plantId,
+			slot: params.slot,
+			cost: params.cost,
+			quantity: params.quantity ?? null,
 			date: getDateLogs()
 		});
 	}

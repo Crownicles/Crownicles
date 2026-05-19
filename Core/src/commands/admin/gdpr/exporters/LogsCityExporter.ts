@@ -17,6 +17,8 @@ import { LogsGuildDomainPurchases } from "../../../../core/database/logs/models/
 import { LogsGuildDomainUpgrades } from "../../../../core/database/logs/models/LogsGuildDomainUpgrades";
 import { LogsGuildTreasuryDeposits } from "../../../../core/database/logs/models/LogsGuildTreasuryDeposits";
 import { LogsGuildFoodShopBuys } from "../../../../core/database/logs/models/LogsGuildFoodShopBuys";
+import { LogsCookingUses } from "../../../../core/database/logs/models/LogsCookingUses";
+import { LogsGardenActions } from "../../../../core/database/logs/models/LogsGardenActions";
 
 /**
  * Exports inn meal purchases by the player (file 78)
@@ -376,6 +378,64 @@ async function exportGuildFoodShopBuys(
 }
 
 /**
+ * Exports cooking craft uses by the player (file 93)
+ */
+async function exportCookingUses(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsCookingUses,
+		{ playerId: logsPlayerId },
+		c => ({
+			cityId: c.cityId ?? "",
+			recipeId: c.recipeId,
+			recipeLevel: c.recipeLevel,
+			outputType: c.outputType,
+			success: c.success,
+			bonus: c.bonus,
+			wasSecret: c.wasSecret,
+			xpGained: c.xpGained,
+			levelUp: c.levelUp,
+			potionId: c.potionId ?? "",
+			foodType: c.foodType ?? "",
+			foodStored: c.foodStored ?? "",
+			foodSurplus: c.foodSurplus ?? "",
+			materialOutputId: c.materialOutputId ?? "",
+			date: c.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/93_cooking_uses.csv"] = csv;
+	}
+}
+
+/**
+ * Exports garden actions by the player (file 94)
+ */
+async function exportGardenActions(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsGardenActions,
+		{ playerId: logsPlayerId },
+		g => ({
+			cityId: g.cityId ?? "",
+			action: g.action,
+			plantId: g.plantId,
+			slot: g.slot,
+			cost: g.cost,
+			quantity: g.quantity ?? "",
+			date: g.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/94_garden_actions.csv"] = csv;
+	}
+}
+
+/**
  * Exports city interaction data from the logs database.
  *
  * This exporter is intentionally grouped per city feature; new feature
@@ -432,4 +492,10 @@ export async function exportLogsCity(
 
 	// 92. Guild food shop purchases
 	await exportGuildFoodShopBuys(logsPlayerId, csvFiles);
+
+	// 93. Cooking craft uses
+	await exportCookingUses(logsPlayerId, csvFiles);
+
+	// 94. Garden actions (plant / water / compost / harvest)
+	await exportGardenActions(logsPlayerId, csvFiles);
 }

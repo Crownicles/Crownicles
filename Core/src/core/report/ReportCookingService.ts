@@ -57,6 +57,8 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
+import { CityDataController } from "../../data/City";
+import { crowniclesInstance } from "../../index";
 
 interface PlayerAndHome {
 	player: Player;
@@ -698,6 +700,27 @@ export async function handleCookingCraft(
 	if (inventorySwapPackets) {
 		response.push(...inventorySwapPackets);
 	}
+
+	crowniclesInstance?.logsDatabase.logCookingUse({
+		keycloakId: player.keycloakId,
+		cityId: player.getDestinationId() !== null
+			? CityDataController.instance.getCityByMapLinkId(player.getDestinationId()!)?.id ?? null
+			: null,
+		recipeId: validatedRecipe.id,
+		recipeLevel: validatedRecipe.level,
+		outputType: validatedRecipe.outputType,
+		success: result.success,
+		bonus: result.bonusOutput && (outputResult.bonusHonored ?? false),
+		wasSecret: validatedSlotRecipe.isSecret,
+		xpGained: result.xpGained,
+		levelUp: result.levelUp,
+		potionId: outputResult.potionId ?? outputResult.failedPotionId ?? null,
+		foodType: outputResult.petFood?.type ?? null,
+		foodStored: outputResult.petFood?.storedQuantity ?? null,
+		foodSurplus: outputResult.petFood?.surplusMaterialQuantity ?? null,
+		materialOutputId: outputResult.material?.materialId ?? null
+	}).then();
+
 	return response;
 }
 

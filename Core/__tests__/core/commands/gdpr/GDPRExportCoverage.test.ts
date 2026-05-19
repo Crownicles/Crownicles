@@ -227,6 +227,8 @@ const EXPORTED_TABLES = {
 	"LogsGuildDomainUpgrades": "logs/90_guild_domain_upgrades.csv",
 	"LogsGuildTreasuryDeposits": "logs/91_guild_treasury_deposits.csv",
 	"LogsGuildFoodShopBuys": "logs/92_guild_food_shop_buys.csv",
+	"LogsCookingUses": "logs/93_cooking_uses.csv",
+	"LogsGardenActions": "logs/94_garden_actions.csv",
 
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"
@@ -612,7 +614,7 @@ describe("GDPR Export Data Leak Prevention", () => {
 			// Check for direct field access patterns in export mappings
 			// Patterns like: `fieldName: something.forbiddenField` or `forbiddenField: value`
 			const directExportPattern = new RegExp(
-				`(?:${field}\\s*:|:\\s*\\w+\\.${field})(?![\\w])`,
+				`(?:\\b${field}\\s*:|:\\s*\\w+\\.${field}\\b)(?![\\w])`,
 				"gi"
 			);
 
@@ -657,7 +659,7 @@ describe("GDPR Export Data Leak Prevention", () => {
 				if (!content.includes("GDPRAnonymizer") && !hasAnonymization) {
 					// Check if the field is being directly exported
 					const directExportCheck = new RegExp(
-						`${field}\\s*:\\s*(?:\\w+\\.)?${field}[,\\s})]`,
+						`\\b${field}\\s*:\\s*(?:\\w+\\.)?${field}\\b`,
 						"g"
 					);
 					if (directExportCheck.test(content)) {

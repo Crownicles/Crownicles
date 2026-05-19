@@ -132,7 +132,9 @@ import {
 	GuildDomainPurchaseLogParams,
 	GuildDomainUpgradeLogParams,
 	GuildTreasuryDepositLogParams,
-	GuildFoodShopBuyLogParams
+	GuildFoodShopBuyLogParams,
+	CookingUseLogParams,
+	GardenActionLogParams
 } from "./LogsCityLogger";
 
 /**
@@ -1804,5 +1806,15 @@ export class LogsDatabase extends Database {
 	/** Log when a guild member buys pet food from the guild food shop */
 	public logGuildFoodShopBuy(params: GuildFoodShopBuyLogParams): Promise<void> {
 		return this.cityLogger.logGuildFoodShopBuy(params);
+	}
+
+	/** Log a cooking craft attempt (success or failure) */
+	public logCookingUse(params: CookingUseLogParams): Promise<void> {
+		return this.cityLogger.logCookingUse(params);
+	}
+
+	/** Log a garden action (plant/water/compost/harvest) */
+	public logGardenAction(params: GardenActionLogParams): Promise<void> {
+		return this.cityLogger.logGardenAction(params);
 	}
 }
