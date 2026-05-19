@@ -2,8 +2,8 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandJardinClosedRes, CommandJardinNoAccessRes, CommandJardinPacketReq, JardinNoAccessReason
-} from "../../../../Lib/src/packets/commands/CommandJardinPacket";
+	CommandGardenClosedRes, CommandGardenNoAccessRes, CommandGardenPacketReq, GardenNoAccessReason
+} from "../../../../Lib/src/packets/commands/CommandGardenPacket";
 import { Player } from "../../core/database/game/models/Player";
 import {
 	commandRequires, CommandUtils
@@ -38,7 +38,7 @@ type GardenHomeResolution = {
 	home: Home;
 	homeLevel: HomeLevel;
 } | {
-	reason: JardinNoAccessReason;
+	reason: GardenNoAccessReason;
 };
 
 interface GardenCollectorDataParams {
@@ -69,12 +69,12 @@ function resolveGardenAccess(
 async function resolveGardenHome(player: Player): Promise<GardenHomeResolution> {
 	const home = await Homes.getOfPlayer(player.id);
 	if (!home) {
-		return { reason: JardinNoAccessReason.NO_HOME };
+		return { reason: GardenNoAccessReason.NO_HOME };
 	}
 
 	const homeLevel = home.getLevel();
 	if (!isGardenAvailable(homeLevel)) {
-		return { reason: JardinNoAccessReason.NO_GARDEN };
+		return { reason: GardenNoAccessReason.NO_GARDEN };
 	}
 
 	return {
@@ -132,12 +132,12 @@ function buildHealthData(player: Player, playerActiveObjects: PlayerActiveObject
 	};
 }
 
-function createJardinEndCallback(player: Player): EndCallback {
+function createGardenEndCallback(player: Player): EndCallback {
 	return async (collector: ReactionCollectorInstance, endResponse: CrowniclesPacket[]): Promise<void> => {
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.JARDIN_COMMAND);
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GARDEN_COMMAND);
 		const firstReaction = collector.getFirstReaction();
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
-			endResponse.push(makePacket(CommandJardinClosedRes, {}));
+			endResponse.push(makePacket(CommandGardenClosedRes, {}));
 			return;
 		}
 
@@ -148,7 +148,7 @@ function createJardinEndCallback(player: Player): EndCallback {
 	};
 }
 
-function buildJardinCollectorPacket(
+function buildGardenCollectorPacket(
 	collectorData: ReactionCollectorCityData,
 	player: Player,
 	context: PacketContext
@@ -160,14 +160,14 @@ function buildJardinCollectorPacket(
 			allowedPlayerKeycloakIds: [player.keycloakId],
 			reactionLimit: 1
 		},
-		createJardinEndCallback(player)
+		createGardenEndCallback(player)
 	)
-		.block(player.keycloakId, BlockingConstants.REASONS.JARDIN_COMMAND)
+		.block(player.keycloakId, BlockingConstants.REASONS.GARDEN_COMMAND)
 		.build();
 }
 
-export class JardinCommand {
-	@commandRequires(CommandJardinPacketReq, {
+export class GardenCommand {
+	@commandRequires(CommandGardenPacketReq, {
 		notBlocked: true,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: [WhereAllowed.CONTINENT]
@@ -175,19 +175,19 @@ export class JardinCommand {
 	async execute(
 		response: CrowniclesPacket[],
 		player: Player,
-		_packet: CommandJardinPacketReq,
+		_packet: CommandGardenPacketReq,
 		context: PacketContext
 	): Promise<void> {
 		const gardenHome = await resolveGardenHome(player);
 		if ("reason" in gardenHome) {
-			response.push(makePacket(CommandJardinNoAccessRes, { reason: gardenHome.reason }));
+			response.push(makePacket(CommandGardenNoAccessRes, { reason: gardenHome.reason }));
 			return;
 		}
 
 		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 		const accessMode = resolveGardenAccess(player, gardenHome.home.cityId, talismans.hasRemoteHarvestTalisman);
 		if (!accessMode) {
-			response.push(makePacket(CommandJardinNoAccessRes, { reason: JardinNoAccessReason.NO_TALISMAN }));
+			response.push(makePacket(CommandGardenNoAccessRes, { reason: GardenNoAccessReason.NO_TALISMAN }));
 			return;
 		}
 
@@ -197,6 +197,6 @@ export class JardinCommand {
 			homeLevel: gardenHome.homeLevel,
 			accessMode
 		});
-		response.push(buildJardinCollectorPacket(collectorData, player, context));
+		response.push(buildGardenCollectorPacket(collectorData, player, context));
 	}
 }

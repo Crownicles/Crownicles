@@ -1,7 +1,7 @@
 import {
 	beforeEach, describe, expect, it, vi
 } from "vitest";
-import { JardinCommand } from "../../../../src/commands/player/JardinCommand";
+import { GardenCommand } from "../../../../src/commands/player/GardenCommand";
 import { Homes } from "../../../../src/core/database/game/models/Home";
 import { CityDataController } from "../../../../src/data/City";
 import { InventorySlots } from "../../../../src/core/database/game/models/InventorySlot";
@@ -13,8 +13,8 @@ import {
 	buildGardenData, handleGardenCompostReaction
 } from "../../../../src/core/report/ReportGardenService";
 import {
-	CommandJardinClosedRes, CommandJardinNoAccessRes, JardinNoAccessReason
-} from "../../../../../Lib/src/packets/commands/CommandJardinPacket";
+	CommandGardenClosedRes, CommandGardenNoAccessRes, GardenNoAccessReason
+} from "../../../../../Lib/src/packets/commands/CommandGardenPacket";
 import { GardenAccessMode } from "../../../../../Lib/src/types/GardenAccessMode";
 import { ReactionCollectorGardenCompostReaction } from "../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
@@ -82,7 +82,7 @@ vi.mock("../../../../../Lib/src/packets/CrowniclesPacket", () => ({
 	}))
 }));
 
-describe("JardinCommand", () => {
+describe("GardenCommand", () => {
 	const player = {
 		id: 42,
 		keycloakId: "player-keycloak-id",
@@ -126,11 +126,11 @@ describe("JardinCommand", () => {
 		vi.mocked(Homes.getOfPlayer).mockResolvedValue(null as never);
 
 		const response: { type: string; data: { reason: string } }[] = [];
-		await new JardinCommand().execute(response as never, player as never, {} as never, context as never);
+		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
 
 		expect(response).toHaveLength(1);
-		expect(response[0].type).toBe(CommandJardinNoAccessRes.name);
-		expect(response[0].data.reason).toBe(JardinNoAccessReason.NO_HOME);
+		expect(response[0].type).toBe(CommandGardenNoAccessRes.name);
+		expect(response[0].data.reason).toBe(GardenNoAccessReason.NO_HOME);
 	});
 
 	it("responds with NO_GARDEN when the home has no garden plots", async () => {
@@ -144,9 +144,9 @@ describe("JardinCommand", () => {
 		} as never);
 
 		const response: { type: string; data: { reason: string } }[] = [];
-		await new JardinCommand().execute(response as never, player as never, {} as never, context as never);
+		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
 
-		expect(response[0].data.reason).toBe(JardinNoAccessReason.NO_GARDEN);
+		expect(response[0].data.reason).toBe(GardenNoAccessReason.NO_GARDEN);
 	});
 
 	it("responds with NO_TALISMAN when the player is away and lacks the talisman", async () => {
@@ -163,9 +163,9 @@ describe("JardinCommand", () => {
 		} as never);
 
 		const response: { type: string; data: { reason: string } }[] = [];
-		await new JardinCommand().execute(response as never, player as never, {} as never, context as never);
+		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
 
-		expect(response[0].data.reason).toBe(JardinNoAccessReason.NO_TALISMAN);
+		expect(response[0].data.reason).toBe(GardenNoAccessReason.NO_TALISMAN);
 	});
 
 	it("builds a garden-only collector with FULL access when the player is in their home city", async () => {
@@ -182,7 +182,7 @@ describe("JardinCommand", () => {
 		} as never);
 
 		const response: unknown[] = [];
-		await new JardinCommand().execute(response as never, player as never, {} as never, context as never);
+		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
 
 		expect(response).toHaveLength(1);
 		expect(buildGardenData).toHaveBeenCalledWith(
@@ -208,7 +208,7 @@ describe("JardinCommand", () => {
 		} as never);
 
 		const response: unknown[] = [];
-		await new JardinCommand().execute(response as never, player as never, {} as never, context as never);
+		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
 
 		expect(response).toHaveLength(1);
 		expect(buildGardenData).toHaveBeenCalledWith(
@@ -232,7 +232,7 @@ describe("JardinCommand", () => {
 			id: "coco"
 		} as never);
 
-		await new JardinCommand().execute([] as never, player as never, {} as never, context as never);
+		await new GardenCommand().execute([] as never, player as never, {} as never, context as never);
 
 		const response: unknown[] = [];
 		await reactionCollectorMockState.endCallback!(
@@ -255,6 +255,6 @@ describe("JardinCommand", () => {
 			expect.any(String)
 		);
 		expect(handleGardenCompostReaction).toHaveBeenCalledWith(player, 1, 1, response);
-		expect(response).not.toContainEqual(expect.objectContaining({ type: CommandJardinClosedRes.name }));
+		expect(response).not.toContainEqual(expect.objectContaining({ type: CommandGardenClosedRes.name }));
 	});
 });

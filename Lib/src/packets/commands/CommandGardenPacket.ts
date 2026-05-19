@@ -5,7 +5,7 @@ import {
 /**
  * Reasons why the /jardin command cannot grant access to a garden.
  */
-export const JardinNoAccessReason = {
+export const GardenNoAccessReason = {
 
 	/** The player does not own a home, so they have no garden at all. */
 	NO_HOME: "noHome",
@@ -16,24 +16,24 @@ export const JardinNoAccessReason = {
 	/** The player owns a home but its level does not unlock the garden yet. */
 	NO_GARDEN: "noGarden"
 } as const;
-export type JardinNoAccessReason = typeof JardinNoAccessReason[keyof typeof JardinNoAccessReason];
+export type GardenNoAccessReason = typeof GardenNoAccessReason[keyof typeof GardenNoAccessReason];
 
 /**
  * Request packet: player invoked /jardin.
  */
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandJardinPacketReq extends CrowniclesPacket {}
+export class CommandGardenPacketReq extends CrowniclesPacket {}
 
 /**
  * Response packet: /jardin refused, send a narrative reply.
  */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandJardinNoAccessRes extends CrowniclesPacket {
-	reason!: JardinNoAccessReason;
+export class CommandGardenNoAccessRes extends CrowniclesPacket {
+	reason!: GardenNoAccessReason;
 }
 
 /**
  * Response packet: /jardin was closed normally.
  */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandJardinClosedRes extends CrowniclesPacket {}
+export class CommandGardenClosedRes extends CrowniclesPacket {}
