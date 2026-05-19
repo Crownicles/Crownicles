@@ -342,7 +342,7 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 	 * When the player is in a city and currently altered,
 	 * hide the travel path / start-end / energy / points blocks: only show the alteration message and the heal button.
 	 */
-	const isStuckInCityWithEffect = (packet.isInCity ?? false) && isCurrentlyInEffect(packet, now);
+	const isStuckInCityWithEffect = packet.isInCity && isCurrentlyInEffect(packet, now);
 	const fieldsArguments = {
 		packet,
 		lng,
