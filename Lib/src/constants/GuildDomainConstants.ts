@@ -38,7 +38,7 @@ export abstract class GuildDomainConstants {
 			levels: [
 				{
 					guildLevel: 5,
-					cost: 5_000
+					cost: 2_000
 				}
 			]
 		},
@@ -47,27 +47,27 @@ export abstract class GuildDomainConstants {
 			levels: [
 				{
 					guildLevel: 15,
-					cost: 25_000
+					cost: 10_000
 				},
 				{
 					guildLevel: 40,
-					cost: 50_000
+					cost: 20_000
 				},
 				{
 					guildLevel: 75,
-					cost: 100_000
+					cost: 40_000
 				},
 				{
 					guildLevel: 100,
-					cost: 200_000
+					cost: 80_000
 				},
 				{
 					guildLevel: 120,
-					cost: 300_000
+					cost: 120_000
 				},
 				{
 					guildLevel: 150,
-					cost: 400_000
+					cost: 160_000
 				}
 			]
 		},
@@ -76,19 +76,19 @@ export abstract class GuildDomainConstants {
 			levels: [
 				{
 					guildLevel: 15,
-					cost: 100_000
+					cost: 40_000
 				},
 				{
 					guildLevel: 40,
-					cost: 150_000
+					cost: 60_000
 				},
 				{
 					guildLevel: 75,
-					cost: 250_000
+					cost: 100_000
 				},
 				{
 					guildLevel: 100,
-					cost: 300_000
+					cost: 120_000
 				}
 			]
 		},
@@ -97,15 +97,15 @@ export abstract class GuildDomainConstants {
 			levels: [
 				{
 					guildLevel: 50,
-					cost: 400_000
+					cost: 150_000
 				},
 				{
 					guildLevel: 100,
-					cost: 800_000
+					cost: 300_000
 				},
 				{
 					guildLevel: 150,
-					cost: 1_600_000
+					cost: 600_000
 				}
 			]
 		}
