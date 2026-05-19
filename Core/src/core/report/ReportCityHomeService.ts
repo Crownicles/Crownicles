@@ -1,6 +1,8 @@
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Player } from "../database/game/models/Player";
-import { City } from "../../data/City";
+import {
+	City, CityDataController
+} from "../../data/City";
 import {
 	Home, Homes
 } from "../database/game/models/Home";
@@ -27,6 +29,7 @@ import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import {
 	Apartment, Apartments
 } from "../database/game/models/Apartment";
+import { crowniclesInstance } from "../../index";
 
 /**
  * Handle buy home reaction — player purchases a new home in the city
@@ -79,6 +82,12 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 			response.push(makePacket(CommandReportBuyHomeRes, {
 				cost: newPrice
 			}));
+
+			crowniclesInstance?.logsDatabase.logHomePurchase({
+				keycloakId: lockedPlayer.keycloakId,
+				cityId: city.id,
+				price: newPrice
+			}).then();
 		}
 	);
 }
@@ -149,6 +158,14 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 			response.push(makePacket(CommandReportUpgradeHomeRes, {
 				cost: upgradePrice
 			}));
+
+			crowniclesInstance?.logsDatabase.logHomeUpgrade({
+				keycloakId: lockedPlayer.keycloakId,
+				cityId: city.id,
+				fromLevel: oldLevel.level,
+				toLevel: newLevel.level,
+				price: upgradePrice
+			}).then();
 		}
 	);
 }
@@ -369,6 +386,15 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 				cost: result.effectivePrice,
 				...result.rentApplied > 0 ? { rentDeducted: result.rentApplied } : {}
 			}));
+
+			crowniclesInstance?.logsDatabase.logHomeMove({
+				keycloakId: lockedPlayer.keycloakId,
+				fromCityId: sourceCityId,
+				toCityId: destinationCityId,
+				basePrice: movePrice,
+				rentApplied: result.rentApplied,
+				effectivePrice: result.effectivePrice
+			}).then();
 		}
 	);
 }
@@ -410,6 +436,9 @@ export async function handleHomeBedReaction(
 			return;
 		}
 
+		const healthBefore = lockedPlayer.getHealth(playerActiveObjects);
+		const destinationId = lockedPlayer.getDestinationId();
+		const bedCityId = destinationId !== null ? CityDataController.instance.getCityByMapLinkId(destinationId)?.id : undefined;
 		await lockedPlayer.addHealth({
 			amount: homeData.features.bedHealthRegeneration,
 			response,
@@ -421,5 +450,14 @@ export async function handleHomeBedReaction(
 		response.push(makePacket(CommandReportHomeBedRes, {
 			health: homeData.features.bedHealthRegeneration
 		}));
+
+		if (bedCityId) {
+			crowniclesInstance?.logsDatabase.logHomeBedUse({
+				keycloakId: lockedPlayer.keycloakId,
+				cityId: bedCityId,
+				healthGained: homeData.features.bedHealthRegeneration,
+				healthBefore
+			}).then();
+		}
 	});
 }

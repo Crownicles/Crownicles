@@ -7,6 +7,12 @@ import { LogsInnRooms } from "../../../../core/database/logs/models/LogsInnRooms
 import { LogsBlacksmithUpgrades } from "../../../../core/database/logs/models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "../../../../core/database/logs/models/LogsBlacksmithDisenchants";
 import { LogsEnchanterUses } from "../../../../core/database/logs/models/LogsEnchanterUses";
+import { LogsHomePurchases } from "../../../../core/database/logs/models/LogsHomePurchases";
+import { LogsHomeUpgrades } from "../../../../core/database/logs/models/LogsHomeUpgrades";
+import { LogsHomeMoves } from "../../../../core/database/logs/models/LogsHomeMoves";
+import { LogsHomeBedUses } from "../../../../core/database/logs/models/LogsHomeBedUses";
+import { LogsApartmentPurchases } from "../../../../core/database/logs/models/LogsApartmentPurchases";
+import { LogsApartmentRentClaims } from "../../../../core/database/logs/models/LogsApartmentRentClaims";
 
 /**
  * Exports inn meal purchases by the player (file 78)
@@ -135,6 +141,139 @@ async function exportEnchanterUses(
 }
 
 /**
+ * Exports home purchases by the player (file 83)
+ */
+async function exportHomePurchases(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsHomePurchases,
+		{ playerId: logsPlayerId },
+		h => ({
+			cityId: h.cityId,
+			price: h.price,
+			date: h.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/83_home_purchases.csv"] = csv;
+	}
+}
+
+/**
+ * Exports home upgrades by the player (file 84)
+ */
+async function exportHomeUpgrades(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsHomeUpgrades,
+		{ playerId: logsPlayerId },
+		h => ({
+			cityId: h.cityId,
+			fromLevel: h.fromLevel,
+			toLevel: h.toLevel,
+			price: h.price,
+			date: h.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/84_home_upgrades.csv"] = csv;
+	}
+}
+
+/**
+ * Exports home moves by the player (file 85)
+ */
+async function exportHomeMoves(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsHomeMoves,
+		{ playerId: logsPlayerId },
+		h => ({
+			fromCityId: h.fromCityId,
+			toCityId: h.toCityId,
+			basePrice: h.basePrice,
+			rentApplied: h.rentApplied,
+			effectivePrice: h.effectivePrice,
+			date: h.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/85_home_moves.csv"] = csv;
+	}
+}
+
+/**
+ * Exports home bed uses by the player (file 86)
+ */
+async function exportHomeBedUses(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsHomeBedUses,
+		{ playerId: logsPlayerId },
+		h => ({
+			cityId: h.cityId,
+			healthGained: h.healthGained,
+			healthBefore: h.healthBefore,
+			date: h.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/86_home_bed_uses.csv"] = csv;
+	}
+}
+
+/**
+ * Exports apartment purchases by the player (file 87)
+ */
+async function exportApartmentPurchases(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsApartmentPurchases,
+		{ playerId: logsPlayerId },
+		a => ({
+			cityId: a.cityId,
+			price: a.price,
+			date: a.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/87_apartment_purchases.csv"] = csv;
+	}
+}
+
+/**
+ * Exports apartment rent claims by the player (file 88)
+ */
+async function exportApartmentRentClaims(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsApartmentRentClaims,
+		{ playerId: logsPlayerId },
+		a => ({
+			apartmentId: a.apartmentId,
+			cityId: a.cityId,
+			rentClaimed: a.rentClaimed,
+			date: a.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/88_apartment_rent_claims.csv"] = csv;
+	}
+}
+
+/**
  * Exports city interaction data from the logs database.
  *
  * This exporter is intentionally grouped per city feature; new feature
@@ -161,4 +300,22 @@ export async function exportLogsCity(
 
 	// 82. Enchanter uses
 	await exportEnchanterUses(logsPlayerId, csvFiles);
+
+	// 83. Home purchases
+	await exportHomePurchases(logsPlayerId, csvFiles);
+
+	// 84. Home upgrades
+	await exportHomeUpgrades(logsPlayerId, csvFiles);
+
+	// 85. Home moves
+	await exportHomeMoves(logsPlayerId, csvFiles);
+
+	// 86. Home bed uses
+	await exportHomeBedUses(logsPlayerId, csvFiles);
+
+	// 87. Apartment purchases
+	await exportApartmentPurchases(logsPlayerId, csvFiles);
+
+	// 88. Apartment rent claims
+	await exportApartmentRentClaims(logsPlayerId, csvFiles);
 }

@@ -3,6 +3,12 @@ import { LogsInnRooms } from "./models/LogsInnRooms";
 import { LogsBlacksmithUpgrades } from "./models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "./models/LogsBlacksmithDisenchants";
 import { LogsEnchanterUses } from "./models/LogsEnchanterUses";
+import { LogsHomePurchases } from "./models/LogsHomePurchases";
+import { LogsHomeUpgrades } from "./models/LogsHomeUpgrades";
+import { LogsHomeMoves } from "./models/LogsHomeMoves";
+import { LogsHomeBedUses } from "./models/LogsHomeBedUses";
+import { LogsApartmentPurchases } from "./models/LogsApartmentPurchases";
+import { LogsApartmentRentClaims } from "./models/LogsApartmentRentClaims";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 
@@ -70,6 +76,70 @@ export interface EnchanterUseLogParams {
 	enchantmentType: string;
 	moneyPrice: number;
 	gemsPrice: number;
+}
+
+/**
+ * Parameters for logging a home purchase
+ */
+export interface HomePurchaseLogParams {
+	keycloakId: string;
+	cityId: string;
+	price: number;
+}
+
+/**
+ * Parameters for logging a home upgrade
+ */
+export interface HomeUpgradeLogParams {
+	keycloakId: string;
+	cityId: string;
+	fromLevel: number;
+	toLevel: number;
+	price: number;
+}
+
+/**
+ * Parameters for logging a home move
+ *
+ * `rentApplied` is the rent surplus from the source apartment that was
+ * deducted from the move price; `effectivePrice = basePrice - rentApplied`.
+ */
+export interface HomeMoveLogParams {
+	keycloakId: string;
+	fromCityId: string;
+	toCityId: string;
+	basePrice: number;
+	rentApplied: number;
+	effectivePrice: number;
+}
+
+/**
+ * Parameters for logging a home bed use
+ */
+export interface HomeBedUseLogParams {
+	keycloakId: string;
+	cityId: string;
+	healthGained: number;
+	healthBefore: number | null;
+}
+
+/**
+ * Parameters for logging an apartment purchase
+ */
+export interface ApartmentPurchaseLogParams {
+	keycloakId: string;
+	cityId: string;
+	price: number;
+}
+
+/**
+ * Parameters for logging an apartment rent claim
+ */
+export interface ApartmentRentClaimLogParams {
+	keycloakId: string;
+	apartmentId: number;
+	cityId: string;
+	rentClaimed: number;
 }
 
 /**
@@ -206,6 +276,97 @@ export class LogsCityLogger {
 			enchantmentType: params.enchantmentType,
 			moneyPrice: params.moneyPrice,
 			gemsPrice: params.gemsPrice,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log when a player buys a home in a city. */
+	async logHomePurchase(params: HomePurchaseLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsHomePurchases.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			price: params.price,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log when a player upgrades their home level. */
+	async logHomeUpgrade(params: HomeUpgradeLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsHomeUpgrades.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			fromLevel: params.fromLevel,
+			toLevel: params.toLevel,
+			price: params.price,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log when a player moves their home to another city. */
+	async logHomeMove(params: HomeMoveLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsHomeMoves.create({
+			playerId: player.id,
+			fromCityId: params.fromCityId,
+			toCityId: params.toCityId,
+			basePrice: params.basePrice,
+			rentApplied: params.rentApplied,
+			effectivePrice: params.effectivePrice,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log when a player uses their home bed to heal. */
+	async logHomeBedUse(params: HomeBedUseLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsHomeBedUses.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			healthGained: params.healthGained,
+			healthBefore: params.healthBefore,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log when a player buys an apartment in a city. */
+	async logApartmentPurchase(params: ApartmentPurchaseLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsApartmentPurchases.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			price: params.price,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log when a player claims accumulated rent from an apartment they own. */
+	async logApartmentRentClaim(params: ApartmentRentClaimLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsApartmentRentClaims.create({
+			playerId: player.id,
+			apartmentId: params.apartmentId,
+			cityId: params.cityId,
+			rentClaimed: params.rentClaimed,
 			date: getDateLogs()
 		});
 	}

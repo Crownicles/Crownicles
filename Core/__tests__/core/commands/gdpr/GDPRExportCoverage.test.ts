@@ -217,6 +217,12 @@ const EXPORTED_TABLES = {
 	"LogsBlacksmithUpgrades": "logs/80_blacksmith_upgrades.csv",
 	"LogsBlacksmithDisenchants": "logs/81_blacksmith_disenchants.csv",
 	"LogsEnchanterUses": "logs/82_enchanter_uses.csv",
+	"LogsHomePurchases": "logs/83_home_purchases.csv",
+	"LogsHomeUpgrades": "logs/84_home_upgrades.csv",
+	"LogsHomeMoves": "logs/85_home_moves.csv",
+	"LogsHomeBedUses": "logs/86_home_bed_uses.csv",
+	"LogsApartmentPurchases": "logs/87_apartment_purchases.csv",
+	"LogsApartmentRentClaims": "logs/88_apartment_rent_claims.csv",
 
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"

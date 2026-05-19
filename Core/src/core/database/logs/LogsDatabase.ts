@@ -117,7 +117,18 @@ import {
 	LogsBlessingLogger, BlessingActivationParams, BlessingContributionParams
 } from "./LogsBlessingLogger";
 import {
-	LogsCityLogger, InnMealLogParams, InnRoomLogParams, BlacksmithUpgradeLogParams, BlacksmithDisenchantLogParams, EnchanterUseLogParams
+	LogsCityLogger,
+	InnMealLogParams,
+	InnRoomLogParams,
+	BlacksmithUpgradeLogParams,
+	BlacksmithDisenchantLogParams,
+	EnchanterUseLogParams,
+	HomePurchaseLogParams,
+	HomeUpgradeLogParams,
+	HomeMoveLogParams,
+	HomeBedUseLogParams,
+	ApartmentPurchaseLogParams,
+	ApartmentRentClaimLogParams
 } from "./LogsCityLogger";
 
 /**
@@ -1737,5 +1748,35 @@ export class LogsDatabase extends Database {
 	 */
 	public logEnchanterUse(params: EnchanterUseLogParams): Promise<void> {
 		return this.cityLogger.logEnchanterUse(params);
+	}
+
+	/** Log when a player buys a home in a city */
+	public logHomePurchase(params: HomePurchaseLogParams): Promise<void> {
+		return this.cityLogger.logHomePurchase(params);
+	}
+
+	/** Log when a player upgrades their home level */
+	public logHomeUpgrade(params: HomeUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logHomeUpgrade(params);
+	}
+
+	/** Log when a player moves their home to another city */
+	public logHomeMove(params: HomeMoveLogParams): Promise<void> {
+		return this.cityLogger.logHomeMove(params);
+	}
+
+	/** Log when a player uses their home bed to heal */
+	public logHomeBedUse(params: HomeBedUseLogParams): Promise<void> {
+		return this.cityLogger.logHomeBedUse(params);
+	}
+
+	/** Log when a player buys an apartment in a city */
+	public logApartmentPurchase(params: ApartmentPurchaseLogParams): Promise<void> {
+		return this.cityLogger.logApartmentPurchase(params);
+	}
+
+	/** Log when a player claims accumulated rent from an apartment they own */
+	public logApartmentRentClaim(params: ApartmentRentClaimLogParams): Promise<void> {
+		return this.cityLogger.logApartmentRentClaim(params);
 	}
 }
