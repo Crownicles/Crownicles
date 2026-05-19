@@ -54,26 +54,22 @@ export abstract class EnchantmentConstants {
 	static PROBABILITY_WEIGHT_TO_COST = {
 		MONEY: [
 			10000,
-			9000,
-			8000,
+			8500,
 			7000,
 			6000,
 			5000,
 			4000,
-			3000,
-			2000,
+			2500,
 			1000
 		],
 		GEMS: [
 			20,
 			18,
-			16,
-			14,
+			15,
 			12,
-			10,
+			9,
 			6,
 			3,
-			0,
 			0
 		]
 	};

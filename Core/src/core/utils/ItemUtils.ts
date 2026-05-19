@@ -717,14 +717,15 @@ export function generateRandomLootLevel(): number {
  * @returns The enchantment ID or null if no enchantment
  */
 export function generateRandomLootEnchantment(item: GenericItem): string | null {
-	if (item.getCategory() !== ItemCategory.WEAPON && item.getCategory() !== ItemCategory.ARMOR) {
+	const category = item.getCategory();
+	if (category !== ItemCategory.WEAPON && category !== ItemCategory.ARMOR) {
 		return null;
 	}
 	const roll = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
 	if (roll >= EnchantmentConstants.LOOT_ENCHANTMENT_CHANCE) {
 		return null;
 	}
-	return ItemEnchantment.getRandomEnchantment().id;
+	return ItemEnchantment.getRandomEnchantmentForSlot(category).id;
 }
 
 /**

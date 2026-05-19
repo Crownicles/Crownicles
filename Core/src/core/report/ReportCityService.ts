@@ -135,7 +135,7 @@ export function buildEnchanterData(
 			if (item.itemEnchantmentId) {
 				hasEnchantedItem = true;
 			}
-			else {
+			else if (item.itemCategory === enchantment.kind.slot) {
 				enchantableItems.push({
 					category: item.itemCategory,
 					slot: item.slot,

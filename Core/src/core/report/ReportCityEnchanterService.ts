@@ -86,10 +86,13 @@ function pushMissingCurrenciesResponse(params: {
 async function getEnchantableItem(
 	player: Player,
 	reaction: ReactionCollectorEnchantReaction,
+	enchantment: ItemEnchantment,
 	response: CrowniclesPacket[]
 ): Promise<InventorySlot | null> {
 	const itemToEnchant = await InventorySlots.getItem(player.id, reaction.slot, reaction.itemCategory);
-	const canBeEnchanted = itemToEnchant?.isWeaponOrArmor() && !itemToEnchant.itemEnchantmentId;
+	const canBeEnchanted = itemToEnchant?.isWeaponOrArmor()
+		&& !itemToEnchant.itemEnchantmentId
+		&& itemToEnchant.itemCategory === enchantment.kind.slot;
 
 	if (!canBeEnchanted) {
 		CrowniclesLogger.error("Player tried to enchant an item that doesn't exist or cannot be enchanted. It shouldn't happen because the player must not be able to switch items while in the collector.");
@@ -134,7 +137,7 @@ async function checkEnchantmentConditions(
 		return null;
 	}
 
-	const itemToEnchant = await getEnchantableItem(player, reaction, response);
+	const itemToEnchant = await getEnchantableItem(player, reaction, pricingData.enchantment, response);
 	if (!itemToEnchant) {
 		return null;
 	}
