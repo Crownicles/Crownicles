@@ -117,7 +117,7 @@ import {
 	LogsBlessingLogger, BlessingActivationParams, BlessingContributionParams
 } from "./LogsBlessingLogger";
 import {
-	LogsCityLogger, InnMealLogParams, InnRoomLogParams
+	LogsCityLogger, InnMealLogParams, InnRoomLogParams, BlacksmithUpgradeLogParams, BlacksmithDisenchantLogParams
 } from "./LogsCityLogger";
 
 /**
@@ -1716,5 +1716,19 @@ export class LogsDatabase extends Database {
 	 */
 	public logInnRoom(params: InnRoomLogParams): Promise<void> {
 		return this.cityLogger.logInnRoom(params);
+	}
+
+	/**
+	 * Log when a player upgrades an item at the city blacksmith
+	 */
+	public logBlacksmithUpgrade(params: BlacksmithUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logBlacksmithUpgrade(params);
+	}
+
+	/**
+	 * Log when a player removes an enchantment at the city blacksmith
+	 */
+	public logBlacksmithDisenchant(params: BlacksmithDisenchantLogParams): Promise<void> {
+		return this.cityLogger.logBlacksmithDisenchant(params);
 	}
 }

@@ -1,5 +1,7 @@
 import { LogsInnMeals } from "./models/LogsInnMeals";
 import { LogsInnRooms } from "./models/LogsInnRooms";
+import { LogsBlacksmithUpgrades } from "./models/LogsBlacksmithUpgrades";
+import { LogsBlacksmithDisenchants } from "./models/LogsBlacksmithDisenchants";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 
@@ -27,6 +29,32 @@ export interface InnRoomLogParams {
 	price: number;
 	healthGained: number;
 	healthBefore: number | null;
+}
+
+/**
+ * Parameters for logging a blacksmith upgrade purchase
+ */
+export interface BlacksmithUpgradeLogParams {
+	keycloakId: string;
+	cityId: string;
+	itemCategory: number;
+	slot: number;
+	fromLevel: number;
+	toLevel: number;
+	totalCost: number;
+	boughtMaterials: boolean;
+	materialsCost: number | null;
+}
+
+/**
+ * Parameters for logging a blacksmith disenchant
+ */
+export interface BlacksmithDisenchantLogParams {
+	keycloakId: string;
+	cityId: string;
+	itemCategory: number;
+	slot: number;
+	cost: number;
 }
 
 /**
@@ -98,6 +126,50 @@ export class LogsCityLogger {
 			price: params.price,
 			healthGained: params.healthGained,
 			healthBefore: params.healthBefore,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log when a player upgrades an item at the city blacksmith.
+	 *
+	 * `materialsCost` is set only when `boughtMaterials === true` (the
+	 * player paid in coins for missing materials). When materials are
+	 * supplied from the player's inventory, the field is null.
+	 */
+	async logBlacksmithUpgrade(params: BlacksmithUpgradeLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsBlacksmithUpgrades.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			itemCategory: params.itemCategory,
+			slot: params.slot,
+			fromLevel: params.fromLevel,
+			toLevel: params.toLevel,
+			totalCost: params.totalCost,
+			boughtMaterials: params.boughtMaterials,
+			materialsCost: params.materialsCost,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log when a player removes an enchantment from an item at the city blacksmith.
+	 */
+	async logBlacksmithDisenchant(params: BlacksmithDisenchantLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsBlacksmithDisenchants.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			itemCategory: params.itemCategory,
+			slot: params.slot,
+			cost: params.cost,
 			date: getDateLogs()
 		});
 	}

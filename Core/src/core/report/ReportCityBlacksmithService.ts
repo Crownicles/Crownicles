@@ -23,6 +23,8 @@ import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithU
 import { Materials } from "../database/game/models/Material";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { CityDataController } from "../../data/City";
+import { crowniclesInstance } from "../../index";
 
 export interface UpgradeItemValidationResult {
 	itemToUpgrade?: {
@@ -351,6 +353,26 @@ async function executeBlacksmithUpgrade(params: {
 		totalCost: executionData.totalCost,
 		boughtMaterials: executionData.boughtMaterials
 	}));
+
+	const destinationId = lockedPlayer.getDestinationId();
+	const cityId = destinationId !== null
+		? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
+		: undefined;
+	if (cityId) {
+		crowniclesInstance?.logsDatabase.logBlacksmithUpgrade({
+			keycloakId: lockedPlayer.keycloakId,
+			cityId,
+			itemCategory: reaction.itemCategory,
+			slot: reaction.slot,
+			fromLevel: itemToUpgrade.nextLevel - 1,
+			toLevel: itemToUpgrade.nextLevel,
+			totalCost: executionData.totalCost,
+			boughtMaterials: executionData.boughtMaterials,
+			materialsCost: executionData.boughtMaterials
+				? executionData.totalCost - itemToUpgrade.upgradeCost
+				: null
+		}).then();
+	}
 }
 
 /**
@@ -403,5 +425,19 @@ export async function handleBlacksmithDisenchantReaction(
 			itemCategory: reaction.itemCategory,
 			cost: itemToDisenchant.disenchantCost
 		}));
+
+		const destinationId = lockedPlayer.getDestinationId();
+		const cityId = destinationId !== null
+			? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
+			: undefined;
+		if (cityId) {
+			crowniclesInstance?.logsDatabase.logBlacksmithDisenchant({
+				keycloakId: lockedPlayer.keycloakId,
+				cityId,
+				itemCategory: reaction.itemCategory,
+				slot: reaction.slot,
+				cost: itemToDisenchant.disenchantCost
+			}).then();
+		}
 	});
 }

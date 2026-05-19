@@ -4,6 +4,8 @@ import {
 } from "../CSVUtils";
 import { LogsInnMeals } from "../../../../core/database/logs/models/LogsInnMeals";
 import { LogsInnRooms } from "../../../../core/database/logs/models/LogsInnRooms";
+import { LogsBlacksmithUpgrades } from "../../../../core/database/logs/models/LogsBlacksmithUpgrades";
+import { LogsBlacksmithDisenchants } from "../../../../core/database/logs/models/LogsBlacksmithDisenchants";
 
 /**
  * Exports inn meal purchases by the player (file 78)
@@ -56,6 +58,56 @@ async function exportInnRooms(
 }
 
 /**
+ * Exports blacksmith upgrades by the player (file 80)
+ */
+async function exportBlacksmithUpgrades(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const upgradesCsv = await streamToCSV(
+		LogsBlacksmithUpgrades,
+		{ playerId: logsPlayerId },
+		u => ({
+			cityId: u.cityId,
+			itemCategory: u.itemCategory,
+			slot: u.slot,
+			fromLevel: u.fromLevel,
+			toLevel: u.toLevel,
+			totalCost: u.totalCost,
+			boughtMaterials: u.boughtMaterials,
+			materialsCost: u.materialsCost,
+			date: u.date
+		})
+	);
+	if (upgradesCsv) {
+		csvFiles["logs/80_blacksmith_upgrades.csv"] = upgradesCsv;
+	}
+}
+
+/**
+ * Exports blacksmith disenchants by the player (file 81)
+ */
+async function exportBlacksmithDisenchants(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const disenchantsCsv = await streamToCSV(
+		LogsBlacksmithDisenchants,
+		{ playerId: logsPlayerId },
+		d => ({
+			cityId: d.cityId,
+			itemCategory: d.itemCategory,
+			slot: d.slot,
+			cost: d.cost,
+			date: d.date
+		})
+	);
+	if (disenchantsCsv) {
+		csvFiles["logs/81_blacksmith_disenchants.csv"] = disenchantsCsv;
+	}
+}
+
+/**
  * Exports city interaction data from the logs database.
  *
  * This exporter is intentionally grouped per city feature; new feature
@@ -73,4 +125,10 @@ export async function exportLogsCity(
 
 	// 79. Inn rooms rented
 	await exportInnRooms(logsPlayerId, csvFiles);
+
+	// 80. Blacksmith upgrades
+	await exportBlacksmithUpgrades(logsPlayerId, csvFiles);
+
+	// 81. Blacksmith disenchants
+	await exportBlacksmithDisenchants(logsPlayerId, csvFiles);
 }
