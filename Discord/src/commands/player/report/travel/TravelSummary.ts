@@ -343,16 +343,14 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 	 * hide the travel path / start-end / energy / points blocks: only show the alteration message and the heal button.
 	 */
 	const isStuckInCityWithEffect = (packet.isInCity ?? false) && isCurrentlyInEffect(packet, now);
-
-	if (!isStuckInCityWithEffect) {
-		travelEmbed.setDescription(generateTravelPathString(packet, now));
-	}
 	const fieldsArguments = {
 		packet,
 		lng,
 		travelEmbed
 	};
+
 	if (!isStuckInCityWithEffect) {
+		travelEmbed.setDescription(generateTravelPathString(packet, now));
 		manageEndPathDescriptions(fieldsArguments);
 	}
 	manageMainSummaryText(fieldsArguments, await DisplayUtils.getEscapedUsername(context.keycloakId!, lng), now);
