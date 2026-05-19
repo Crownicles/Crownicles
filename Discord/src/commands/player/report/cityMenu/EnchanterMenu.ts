@@ -11,6 +11,7 @@ import {
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
+import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
 import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector,
@@ -126,12 +127,27 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 	]);
 }
 
+function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language): string {
+	if (data.isInventoryEmpty) {
+		return i18n.t("commands:report.city.enchanter.emptyInventoryStory", { lng });
+	}
+	if (data.hasUnenchantedItemInOtherSlot) {
+		const key = data.enchantmentSlot === ItemCategory.WEAPON
+			? "commands:report.city.enchanter.onlyArmorAvailableStory"
+			: "commands:report.city.enchanter.onlyWeaponAvailableStory";
+		return i18n.t(key, {
+			lng,
+			enchantmentId: data.enchantmentId,
+			enchantmentType: data.enchantmentType
+		});
+	}
+	return i18n.t("commands:report.city.enchanter.allEnchantedStory", { lng });
+}
+
 function addEnchantableItemsSection(container: ContainerBuilder, data: EnchanterCityData, lng: Language): void {
 	if (data.enchantableItems.length === 0) {
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(
-				i18n.t("commands:report.city.enchanter.emptyInventoryStory", { lng })
-			)
+			new TextDisplayBuilder().setContent(buildNoEnchantableItemStory(data, lng))
 		);
 		return;
 	}
