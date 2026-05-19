@@ -141,8 +141,8 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 					growthProgress: number;
 					isReady: boolean;
 
-					/** Remaining seconds until ready, 0 if ready */
-					remainingSeconds: number;
+					/** Unix timestamp (seconds) at which the plant will be ready, 0 if no plant or already ready */
+					readyAtTimestamp: number;
 				}[];
 
 				/** Plant storage (chest) quantities per plant type */

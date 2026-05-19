@@ -150,8 +150,8 @@ function buildGardenPlotsData(gardenSlots: HomeGardenSlot[], earthQuality: numbe
 			: 0;
 		const isReady = slot.isReady(effectiveGrowthTime);
 		const progress = slot.getGrowthProgress(effectiveGrowthTime);
-		const remainingSeconds = plant
-			? computeRemainingGrowthSeconds(slot, effectiveGrowthTime, isReady)
+		const readyAtTimestamp = plant
+			? computeReadyAtTimestamp(slot, effectiveGrowthTime, isReady)
 			: 0;
 
 		return {
@@ -159,12 +159,12 @@ function buildGardenPlotsData(gardenSlots: HomeGardenSlot[], earthQuality: numbe
 			plantId: slot.plantId,
 			growthProgress: progress,
 			isReady,
-			remainingSeconds
+			readyAtTimestamp
 		};
 	});
 }
 
-function computeRemainingGrowthSeconds(slot: HomeGardenSlot, effectiveGrowthTime: number, isReady: boolean): number {
+function computeReadyAtTimestamp(slot: HomeGardenSlot, effectiveGrowthTime: number, isReady: boolean): number {
 	if (!slot.plantedAt) {
 		return 0;
 	}
@@ -172,8 +172,7 @@ function computeRemainingGrowthSeconds(slot: HomeGardenSlot, effectiveGrowthTime
 		return 0;
 	}
 
-	const elapsedSeconds = (Date.now() - slot.plantedAt.valueOf()) / TimeConstants.MS_TIME.SECOND;
-	return Math.max(0, Math.ceil(effectiveGrowthTime - elapsedSeconds));
+	return Math.floor((slot.plantedAt.valueOf() + effectiveGrowthTime * TimeConstants.MS_TIME.SECOND) / TimeConstants.MS_TIME.SECOND);
 }
 
 /**

@@ -131,10 +131,10 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 1, growthProgress: 1, isReady: true, remainingSeconds: 0
+						slot: 0, plantId: 1, growthProgress: 1, isReady: true, readyAtTimestamp: 0
 					},
 					{
-						slot: 1, plantId: 2, growthProgress: 1, isReady: true, remainingSeconds: 0
+						slot: 1, plantId: 2, growthProgress: 1, isReady: true, readyAtTimestamp: 0
 					}
 				],
 				totalPlots: 2
@@ -317,10 +317,10 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 1, growthProgress: 1, isReady: true, remainingSeconds: 0
+						slot: 0, plantId: 1, growthProgress: 1, isReady: true, readyAtTimestamp: 0
 					},
 					{
-						slot: 1, plantId: 2, growthProgress: 0.5, isReady: false, remainingSeconds: 300
+						slot: 1, plantId: 2, growthProgress: 0.5, isReady: false, readyAtTimestamp: 300
 					}
 				]
 			});
@@ -395,7 +395,7 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 0, growthProgress: 0, isReady: false, remainingSeconds: 0
+						slot: 0, plantId: 0, growthProgress: 0, isReady: false, readyAtTimestamp: 0
 					}
 				],
 				hasSeed: true,
@@ -441,7 +441,7 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 1, growthProgress: 0.5, isReady: false, remainingSeconds: 300
+						slot: 0, plantId: 1, growthProgress: 0.5, isReady: false, readyAtTimestamp: 300
 					}
 				]
 			});
@@ -461,7 +461,7 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 1, growthProgress: 1, isReady: true, remainingSeconds: 0
+						slot: 0, plantId: 1, growthProgress: 1, isReady: true, readyAtTimestamp: 0
 					}
 				]
 			});
@@ -481,7 +481,7 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 0, growthProgress: 0, isReady: false, remainingSeconds: 0
+						slot: 0, plantId: 0, growthProgress: 0, isReady: false, readyAtTimestamp: 0
 					}
 				],
 				hasSeed: true,
@@ -502,7 +502,7 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 0, growthProgress: 0, isReady: false, remainingSeconds: 0
+						slot: 0, plantId: 0, growthProgress: 0, isReady: false, readyAtTimestamp: 0
 					}
 				],
 				hasSeed: false
@@ -548,10 +548,10 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 1, growthProgress: 1, isReady: true, remainingSeconds: 0
+						slot: 0, plantId: 1, growthProgress: 1, isReady: true, readyAtTimestamp: 0
 					},
 					{
-						slot: 1, plantId: 0, growthProgress: 0, isReady: false, remainingSeconds: 0
+						slot: 1, plantId: 0, growthProgress: 0, isReady: false, readyAtTimestamp: 0
 					}
 				]
 			});
@@ -578,7 +578,7 @@ describe("GardenFeatureHandler", () => {
 			const garden = createGardenData({
 				plots: [
 					{
-						slot: 0, plantId: 1, growthProgress: 0.5, isReady: false, remainingSeconds: 300
+						slot: 0, plantId: 1, growthProgress: 0.5, isReady: false, readyAtTimestamp: 300
 					}
 				]
 			});
