@@ -12,6 +12,8 @@ export class PlayerTalismans extends Model {
 
 	declare hasCloneTalisman: boolean;
 
+	declare hasRemoteHarvestTalisman: boolean;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -43,6 +45,10 @@ export function initModel(sequelize: Sequelize): void {
 			defaultValue: false
 		},
 		hasCloneTalisman: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false
+		},
+		hasRemoteHarvestTalisman: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
 		},

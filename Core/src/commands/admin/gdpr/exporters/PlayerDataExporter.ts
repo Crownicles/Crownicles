@@ -180,7 +180,8 @@ async function exportMiscData(
 		csvFiles["10_talismans.csv"] = toCSV([
 			{
 				hasTalisman: talismans.hasTalisman,
-				hasCloneTalisman: talismans.hasCloneTalisman
+				hasCloneTalisman: talismans.hasCloneTalisman,
+				hasRemoteHarvestTalisman: talismans.hasRemoteHarvestTalisman
 			}
 		]);
 	}
@@ -398,7 +399,6 @@ export async function exportPlayerData(
 			furnacePosition: player.furnacePosition,
 			pinnedCookingRecipeId: player.pinnedCookingRecipeId,
 			lastGardenWatered: player.lastGardenWatered,
-			hasRemoteHarvestTalisman: player.hasRemoteHarvestTalisman,
 			createdAt: player.createdAt,
 			updatedAt: player.updatedAt
 		}
