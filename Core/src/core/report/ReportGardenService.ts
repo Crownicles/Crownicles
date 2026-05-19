@@ -172,7 +172,7 @@ function computeReadyAtTimestamp(slot: HomeGardenSlot, effectiveGrowthTime: numb
 		return 0;
 	}
 
-	return Math.floor((slot.plantedAt.valueOf() + effectiveGrowthTime * TimeConstants.MS_TIME.SECOND) / TimeConstants.MS_TIME.SECOND);
+	return Math.ceil((slot.plantedAt.valueOf() + effectiveGrowthTime * TimeConstants.MS_TIME.SECOND) / TimeConstants.MS_TIME.SECOND);
 }
 
 /**
