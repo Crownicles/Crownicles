@@ -5,6 +5,7 @@ import { JardinCommand } from "../../../../src/commands/player/JardinCommand";
 import { Homes } from "../../../../src/core/database/game/models/Home";
 import { CityDataController } from "../../../../src/data/City";
 import { InventorySlots } from "../../../../src/core/database/game/models/InventorySlot";
+import { PlayerTalismansManager } from "../../../../src/core/database/game/models/PlayerTalismans";
 import { MapLocationDataController } from "../../../../src/data/MapLocation";
 import { TravelTime } from "../../../../src/core/maps/TravelTime";
 import { BlockingUtils } from "../../../../src/core/utils/BlockingUtils";
@@ -42,6 +43,7 @@ vi.mock("../../../../src/core/utils/CommandUtils", () => ({
 
 vi.mock("../../../../src/core/database/game/models/Home");
 vi.mock("../../../../src/core/database/game/models/InventorySlot");
+vi.mock("../../../../src/core/database/game/models/PlayerTalismans");
 vi.mock("../../../../src/data/City");
 vi.mock("../../../../src/data/MapLocation");
 vi.mock("../../../../src/core/maps/TravelTime");
@@ -85,19 +87,20 @@ describe("JardinCommand", () => {
 		id: 42,
 		keycloakId: "player-keycloak-id",
 		mapLinkId: 3,
-		hasRemoteHarvestTalisman: false,
 		getDestinationId: vi.fn(() => 7),
 		getCumulativeEnergy: vi.fn(() => 100),
 		getMaxCumulativeEnergy: vi.fn(() => 200),
 		getHealth: vi.fn(() => 50),
 		getMaxHealth: vi.fn(() => 100)
 	};
+	const talismans = { hasRemoteHarvestTalisman: false };
 	const context = {};
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		reactionCollectorMockState.endCallback = undefined;
-		player.hasRemoteHarvestTalisman = false;
+		talismans.hasRemoteHarvestTalisman = false;
+		vi.mocked(PlayerTalismansManager.getOfPlayer).mockResolvedValue(talismans as never);
 
 		vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue([]);
 		vi.mocked(InventorySlots.slotsToActiveObjects).mockReturnValue({} as never);
@@ -191,7 +194,7 @@ describe("JardinCommand", () => {
 	});
 
 	it("builds a garden-only collector with READ_ONLY access when the player is away with the talisman", async () => {
-		player.hasRemoteHarvestTalisman = true;
+		talismans.hasRemoteHarvestTalisman = true;
 		vi.mocked(Homes.getOfPlayer).mockResolvedValue({
 			id: 1,
 			level: 2,

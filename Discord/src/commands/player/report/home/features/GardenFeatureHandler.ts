@@ -655,7 +655,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		return buttons;
 	}
 
-	private buildCompostCancelButton(ctx: HomeFeatureHandlerContext, customId = HomeMenuIds.GARDEN_COMPOST_CANCEL): ButtonBuilder {
+	private buildCompostCancelButton(ctx: HomeFeatureHandlerContext, customId: string = HomeMenuIds.GARDEN_COMPOST_CANCEL): ButtonBuilder {
 		return new ButtonBuilder()
 			.setCustomId(customId)
 			.setLabel(i18n.t("commands:report.city.homes.garden.compost.cancelButton", { lng: ctx.lng }))

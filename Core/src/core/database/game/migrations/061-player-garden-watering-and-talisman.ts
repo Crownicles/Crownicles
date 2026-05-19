@@ -8,7 +8,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		allowNull: true,
 		defaultValue: null
 	});
-	await context.addColumn("players", "hasRemoteHarvestTalisman", {
+	await context.addColumn("player_talismans", "hasRemoteHarvestTalisman", {
 		type: DataTypes.BOOLEAN,
 		allowNull: false,
 		defaultValue: false
@@ -17,5 +17,5 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {
 	await context.removeColumn("players", "lastGardenWatered");
-	await context.removeColumn("players", "hasRemoteHarvestTalisman");
+	await context.removeColumn("player_talismans", "hasRemoteHarvestTalisman");
 }

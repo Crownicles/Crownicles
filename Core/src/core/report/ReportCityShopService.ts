@@ -35,6 +35,7 @@ import {
 import { crowniclesInstance } from "../../index";
 import { toItemWithDetails } from "../utils/ItemUtils";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
+import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import {
 	PlantConstants, PlantType
 } from "../../../../Lib/src/constants/PlantConstants";
@@ -315,6 +316,7 @@ export async function openTanner(player: Player, context: PacketContext, respons
  */
 export async function openHerbalist(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
 	const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants();
+	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 
 	const tierTypes: ShopItemType[] = [
 		ShopItemType.WEEKLY_PLANT_TIER_1,
@@ -343,7 +345,7 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 	];
 
 	// One-shot talisman: appears only if the player does not already own it.
-	if (!player.hasRemoteHarvestTalisman) {
+	if (!talismans.hasRemoteHarvestTalisman) {
 		shopCategories.push({
 			id: "remoteHarvestTalisman",
 			items: [
@@ -358,10 +360,9 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 							return { success: false };
 						}
 
-						await Player.withLocked(playerId, async locked => {
-							locked.hasRemoteHarvestTalisman = true;
-							await locked.save();
-						});
+						const playerTalismans = await PlayerTalismansManager.getOfPlayer(playerId);
+						playerTalismans.hasRemoteHarvestTalisman = true;
+						await playerTalismans.save();
 						return { success: true };
 					}
 				}

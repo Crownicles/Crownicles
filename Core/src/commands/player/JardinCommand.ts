@@ -22,6 +22,7 @@ import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/int
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import { PlayerTalismansManager } from "../../core/database/game/models/PlayerTalismans";
 import {
 	buildGardenData, handleGardenCompostReaction
 } from "../../core/report/ReportGardenService";
@@ -54,13 +55,14 @@ interface GardenCollectorDataParams {
  */
 function resolveGardenAccess(
 	player: Player,
-	homeCityId: string
+	homeCityId: string,
+	hasRemoteHarvestTalisman: boolean
 ): GardenAccessMode | null {
 	const currentCity = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
 	if (currentCity && currentCity.id === homeCityId) {
 		return GardenAccessMode.FULL;
 	}
-	return player.hasRemoteHarvestTalisman ? GardenAccessMode.READ_ONLY : null;
+	return hasRemoteHarvestTalisman ? GardenAccessMode.READ_ONLY : null;
 }
 
 async function resolveGardenHome(player: Player): Promise<GardenHomeResolution> {
@@ -181,7 +183,8 @@ export class JardinCommand {
 			return;
 		}
 
-		const accessMode = resolveGardenAccess(player, gardenHome.home.cityId);
+		const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+		const accessMode = resolveGardenAccess(player, gardenHome.home.cityId, talismans.hasRemoteHarvestTalisman);
 		if (!accessMode) {
 			response.push(makePacket(CommandJardinNoAccessRes, { reason: JardinNoAccessReason.NO_TALISMAN }));
 			return;

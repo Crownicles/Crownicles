@@ -25,38 +25,20 @@ const TALISMAN_ACTIONS = {
 	REMOVE: "remove"
 } as const;
 
-const TALISMAN_STORAGE = {
-	PET_TALISMANS: "petTalismans",
-	PLAYER: "player"
-} as const;
-
 type TalismanType = typeof TALISMAN_TYPES[keyof typeof TALISMAN_TYPES];
 type TalismanAction = typeof TALISMAN_ACTIONS[keyof typeof TALISMAN_ACTIONS];
-type PetTalismanProperty = "hasTalisman" | "hasCloneTalisman";
-type PlayerTalismanProperty = "hasRemoteHarvestTalisman";
+type TalismanProperty = "hasTalisman" | "hasCloneTalisman" | "hasRemoteHarvestTalisman";
 
-interface BaseTalismanConfig {
+interface TalismanConfig {
+	hasProperty: TalismanProperty;
 	giveMessage: string;
 	removeMessage: string;
 	alreadyHasMessage: string;
 	doesNotHaveMessage: string;
 }
 
-interface PetTalismanConfig extends BaseTalismanConfig {
-	storage: typeof TALISMAN_STORAGE.PET_TALISMANS;
-	hasProperty: PetTalismanProperty;
-}
-
-interface PlayerTalismanConfig extends BaseTalismanConfig {
-	storage: typeof TALISMAN_STORAGE.PLAYER;
-	hasProperty: PlayerTalismanProperty;
-}
-
-type TalismanConfig = PetTalismanConfig | PlayerTalismanConfig;
-
 const TALISMAN_CONFIGS: Record<TalismanType, TalismanConfig> = {
 	[TALISMAN_TYPES.ANCHOR]: {
-		storage: TALISMAN_STORAGE.PET_TALISMANS,
 		hasProperty: "hasTalisman",
 		giveMessage: "Vous avez reçu le **Talisman d'Ancrage** ! Vous pouvez maintenant envoyer votre familier en expédition.",
 		removeMessage: "Le **Talisman d'Ancrage** a été retiré de votre inventaire.",
@@ -64,7 +46,6 @@ const TALISMAN_CONFIGS: Record<TalismanType, TalismanConfig> = {
 		doesNotHaveMessage: "Vous ne possédez pas le Talisman d'Ancrage !"
 	},
 	[TALISMAN_TYPES.CLONE]: {
-		storage: TALISMAN_STORAGE.PET_TALISMANS,
 		hasProperty: "hasCloneTalisman",
 		giveMessage: "Vous avez reçu le **Talisman de Clonage** ! Votre familier peut maintenant vous assister en défense et dans les petits événements même en expédition.",
 		removeMessage: "Le **Talisman de Clonage** a été retiré de votre inventaire.",
@@ -72,7 +53,6 @@ const TALISMAN_CONFIGS: Record<TalismanType, TalismanConfig> = {
 		doesNotHaveMessage: "Vous ne possédez pas le Talisman de Clonage !"
 	},
 	[TALISMAN_TYPES.HARVEST]: {
-		storage: TALISMAN_STORAGE.PLAYER,
 		hasProperty: "hasRemoteHarvestTalisman",
 		giveMessage: "Vous avez reçu le **Cœur Sylvestre** ! Vous pouvez maintenant récolter votre jardin à distance via /jardin.",
 		removeMessage: "Le **Cœur Sylvestre** a été retiré de votre inventaire.",
@@ -118,65 +98,17 @@ function validateTalismanArgs(args: string[]): ValidatedTalismanArgs {
 	};
 }
 
-function isPlayerTalismanConfig(config: TalismanConfig): config is PlayerTalismanConfig {
-	return config.storage === TALISMAN_STORAGE.PLAYER;
-}
-
-function getTalismanConflictMessage(config: TalismanConfig, isGiving: boolean, hasTalisman: boolean): string | null {
-	if (hasTalisman !== isGiving) {
-		return null;
-	}
-	return isGiving ? config.alreadyHasMessage : config.doesNotHaveMessage;
-}
-
-function getTalismanSuccessMessage(config: TalismanConfig, isGiving: boolean): string {
-	return isGiving ? config.giveMessage : config.removeMessage;
-}
-
-async function updatePlayerTalismanUnderLock(
-	lockedPlayer: Player,
-	config: PlayerTalismanConfig,
-	isGiving: boolean
-): Promise<string | null> {
-	const hasTalisman = lockedPlayer[config.hasProperty];
-	const conflictMessage = getTalismanConflictMessage(config, isGiving, hasTalisman);
-	if (conflictMessage) {
-		return conflictMessage;
-	}
-
-	lockedPlayer[config.hasProperty] = isGiving;
-	await lockedPlayer.save();
-	return null;
-}
-
-async function updatePlayerTalisman(player: Player, config: PlayerTalismanConfig, isGiving: boolean): Promise<string> {
-	const conflictMessage = await Player.withLocked(
-		player.id,
-		lockedPlayer => updatePlayerTalismanUnderLock(lockedPlayer, config, isGiving)
-	);
-
-	return conflictMessage ?? getTalismanSuccessMessage(config, isGiving);
-}
-
-async function updatePetTalisman(player: Player, config: PetTalismanConfig, isGiving: boolean): Promise<string> {
+async function updateTalisman(player: Player, config: TalismanConfig, action: TalismanAction): Promise<string> {
+	const isGiving = action === TALISMAN_ACTIONS.GIVE;
 	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 	const hasTalisman = talismans[config.hasProperty];
-	const conflictMessage = getTalismanConflictMessage(config, isGiving, hasTalisman);
-	if (conflictMessage) {
-		return conflictMessage;
+	if (hasTalisman === isGiving) {
+		return isGiving ? config.alreadyHasMessage : config.doesNotHaveMessage;
 	}
 
 	talismans[config.hasProperty] = isGiving;
 	await talismans.save();
-	return getTalismanSuccessMessage(config, isGiving);
-}
-
-function updateTalisman(player: Player, config: TalismanConfig, action: TalismanAction): Promise<string> {
-	const isGiving = action === TALISMAN_ACTIONS.GIVE;
-	if (isPlayerTalismanConfig(config)) {
-		return updatePlayerTalisman(player, config, isGiving);
-	}
-	return updatePetTalisman(player, config, isGiving);
+	return isGiving ? config.giveMessage : config.removeMessage;
 }
 
 /**
