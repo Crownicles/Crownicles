@@ -60,7 +60,6 @@ import { Guilds } from "../../core/database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { GuildPets } from "../../core/database/game/models/GuildPet";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
-import { RequirementEffectPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementEffectPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { Settings } from "../../core/database/game/models/Setting";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
@@ -136,17 +135,8 @@ export default class ReportCommand {
 		}
 
 		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
-		if (city) {
-			if (currentEffectFinished) {
-				await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
-			}
-			else {
-				response.push(makePacket(RequirementEffectPacket, {
-					currentEffectId: player.effectId,
-					remainingTime: player.effectRemainingTime()
-				}));
-				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
-			}
+		if (city && currentEffectFinished) {
+			await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
 			return;
 		}
 
