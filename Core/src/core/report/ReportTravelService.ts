@@ -16,6 +16,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
+import { CityDataController } from "../../data/City";
 
 /**
  * Token cost calculation result
@@ -251,6 +252,7 @@ export async function sendTravelPath(
 		},
 		isOnBoat: travelSummaryData.isOnBoat,
 		tokens: buildTokenData(tokenCostResult, player),
-		heal: buildHealData(player, effectId)
+		heal: buildHealData(player, effectId),
+		isInCity: CityDataController.instance.getCityByMapLinkId(player.mapLinkId) !== null
 	}));
 }
