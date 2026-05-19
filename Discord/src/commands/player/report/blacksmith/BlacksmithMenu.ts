@@ -507,6 +507,7 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 			text: `${itemDisplay}\n${i18n.t("commands:report.city.blacksmith.itemDisenchantPreview", {
 				lng,
 				enchantmentType: item.enchantmentType,
+				enchantmentId: item.enchantmentId,
 				cost: item.disenchantCost
 			})}`,
 			customId: `${BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX}${i}`,
