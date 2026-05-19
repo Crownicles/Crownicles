@@ -38,7 +38,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	initialMenu?: string;
 
 	/**
-	 * Standalone mode used by the /jardin command.
+	 * Standalone mode used by the /garden command.
 	 * When true:
 	 * - Lib emits only the garden home reactions plus a single "close" (refuse) reaction.
 	 * - Discord MainMenu renders a minimal close-only screen.

@@ -3,7 +3,7 @@ import {
 } from "../CrowniclesPacket";
 
 /**
- * Reasons why the /jardin command cannot grant access to a garden.
+ * Reasons why the /garden command cannot grant access to a garden.
  */
 export const GardenNoAccessReason = {
 
@@ -19,13 +19,13 @@ export const GardenNoAccessReason = {
 export type GardenNoAccessReason = typeof GardenNoAccessReason[keyof typeof GardenNoAccessReason];
 
 /**
- * Request packet: player invoked /jardin.
+ * Request packet: player invoked /garden.
  */
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandGardenPacketReq extends CrowniclesPacket {}
 
 /**
- * Response packet: /jardin refused, send a narrative reply.
+ * Response packet: /garden refused, send a narrative reply.
  */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandGardenNoAccessRes extends CrowniclesPacket {
@@ -33,7 +33,7 @@ export class CommandGardenNoAccessRes extends CrowniclesPacket {
 }
 
 /**
- * Response packet: /jardin was closed normally.
+ * Response packet: /garden was closed normally.
  */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandGardenClosedRes extends CrowniclesPacket {}

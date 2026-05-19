@@ -13,7 +13,7 @@ export class BedFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = "bed";
 
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
-		// Bed regen is unavailable in remote-garden (read-only) access via /jardin: the player isn't physically home.
+		// Bed regen is unavailable in remote-garden (read-only) access via /garden: the player isn't physically home.
 		return ctx.homeData.garden?.accessMode !== GardenAccessMode.READ_ONLY;
 	}
 

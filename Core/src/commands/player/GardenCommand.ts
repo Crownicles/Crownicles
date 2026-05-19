@@ -49,7 +49,7 @@ interface GardenCollectorDataParams {
 }
 
 /**
- * Resolve the access mode for the /jardin command:
+ * Resolve the access mode for the /garden command:
  * - FULL if the player is currently in the city where their home sits.
  * - READ_ONLY if the player is away from home but owns the Cœur Sylvestre talisman.
  * - null if the player is away from home and does not own the talisman (refused).

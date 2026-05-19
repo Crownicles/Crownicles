@@ -211,7 +211,7 @@ function addHomeSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeM
 	}
 
 	/*
-	 * In gardenOnly mode (/jardin command), the home menu is locked to a close-only
+	 * In gardenOnly mode (/garden command), the home menu is locked to a close-only
 	 * view so the player cannot reach other home features (chest, cooking, bed...)
 	 * via the GardenFeatureHandler's "back to home" button.
 	 */
@@ -253,7 +253,7 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 /**
  * Resolve the initial menu to render and whether a follow-up navigation is needed.
  *
- * In gardenOnly mode (/jardin command), the city main menu placeholder is bypassed
+ * In gardenOnly mode (/garden command), the city main menu placeholder is bypassed
  * entirely so the player lands directly on the garden view — preventing a transient
  * "Fermer le jardin"-only flash before the real menu appears.
  *
