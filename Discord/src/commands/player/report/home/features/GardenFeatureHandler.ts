@@ -719,7 +719,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		if (effectiveGrowthTime === 0) {
 			return 0;
 		}
-		return Math.floor(Date.now() / TimeConstants.MS_TIME.SECOND) + effectiveGrowthTime;
+		return Math.ceil(Date.now() / TimeConstants.MS_TIME.SECOND) + effectiveGrowthTime;
 	}
 
 	/**
@@ -867,7 +867,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		ctx: HomeFeatureHandlerContext,
 		response: CommandReportGardenWaterRes
 	): void {
-		const nowSeconds = Math.floor(Date.now() / TimeConstants.MS_TIME.SECOND);
+		const nowSeconds = Math.ceil(Date.now() / TimeConstants.MS_TIME.SECOND);
 		for (const plot of garden.plots) {
 			if (!this.isGrowingPlot(plot)) {
 				continue;
