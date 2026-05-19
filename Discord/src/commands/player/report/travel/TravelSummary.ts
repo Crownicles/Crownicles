@@ -337,15 +337,28 @@ export async function reportTravelSummary(packet: CommandReportTravelSummaryRes,
 	const now = Date.now();
 	const travelEmbed = new CrowniclesEmbed();
 	travelEmbed.formatAuthor(i18n.t("commands:report.travelPathTitle", { lng }), interaction.user);
-	travelEmbed.setDescription(generateTravelPathString(packet, now));
+
+	/*
+	 * When the player is in a city (start and end are the same) and currently altered,
+	 * hide the travel path / start-end / energy / points blocks: only show the alteration message and the heal button.
+	 */
+	const isStuckInCityWithEffect = packet.startMap.id === packet.endMap.id && isCurrentlyInEffect(packet, now);
+
+	if (!isStuckInCityWithEffect) {
+		travelEmbed.setDescription(generateTravelPathString(packet, now));
+	}
 	const fieldsArguments = {
 		packet,
 		lng,
 		travelEmbed
 	};
-	manageEndPathDescriptions(fieldsArguments);
+	if (!isStuckInCityWithEffect) {
+		manageEndPathDescriptions(fieldsArguments);
+	}
 	manageMainSummaryText(fieldsArguments, await DisplayUtils.getEscapedUsername(context.keycloakId!, lng), now);
-	addEnergyAndPointsFields(travelEmbed, packet, lng);
+	if (!isStuckInCityWithEffect) {
+		addEnergyAndPointsFields(travelEmbed, packet, lng);
+	}
 	addAdviceField(travelEmbed, lng);
 
 	const row = buildTravelActionRow(packet, lng);
