@@ -35,7 +35,6 @@ export function getCommandGuildDailyRewardPacketString(packet: CommandGuildDaily
 		advanceTime: packet.advanceTime,
 		personalXP: packet.personalXp,
 		guildXP: packet.guildXp,
-		guildPoints: packet.guildPoints,
 		superBadge: packet.superBadge as number | undefined,
 		badge: packet.badge as number | undefined,
 		money: packet.money,
@@ -54,6 +53,13 @@ export function getCommandGuildDailyRewardPacketString(packet: CommandGuildDaily
 			context: packet.pet.isFemale ? StringConstants.SEX.FEMALE.long : StringConstants.SEX.MALE.long,
 			pet: DisplayUtils.getPetDisplay(packet.pet.typeId, packet.pet.isFemale ? StringConstants.SEX.FEMALE.short : StringConstants.SEX.MALE.short, lng),
 			petId: packet.pet.typeId
+		})}\n`;
+	}
+
+	if (packet.guildPoints) {
+		desc += `${i18n.t("commands:guildDaily.rewards.guildPoints", {
+			lng,
+			quantity: packet.guildPoints
 		})}\n`;
 	}
 
