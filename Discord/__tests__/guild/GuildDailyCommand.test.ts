@@ -11,7 +11,7 @@ describe("getCommandGuildDailyRewardPacketString", () => {
 
 		const description = getCommandGuildDailyRewardPacketString(packet, "fr");
 
-		expect(description).toContain("points de guilde");
+		expect(description).toContain("Points de guilde");
 		expect(description).toContain("trésorerie");
 		expect(description).toContain("42");
 	});
