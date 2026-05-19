@@ -128,7 +128,11 @@ import {
 	HomeMoveLogParams,
 	HomeBedUseLogParams,
 	ApartmentPurchaseLogParams,
-	ApartmentRentClaimLogParams
+	ApartmentRentClaimLogParams,
+	GuildDomainPurchaseLogParams,
+	GuildDomainUpgradeLogParams,
+	GuildTreasuryDepositLogParams,
+	GuildFoodShopBuyLogParams
 } from "./LogsCityLogger";
 
 /**
@@ -1780,5 +1784,25 @@ export class LogsDatabase extends Database {
 	/** Log when a player claims accumulated rent from an apartment they own */
 	public logApartmentRentClaim(params: ApartmentRentClaimLogParams): Promise<void> {
 		return this.cityLogger.logApartmentRentClaim(params);
+	}
+
+	/** Log when a guild chief buys or relocates the guild domain at the city notary */
+	public logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): Promise<void> {
+		return this.cityLogger.logGuildDomainPurchase(params);
+	}
+
+	/** Log when a guild chief upgrades a guild building */
+	public logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logGuildDomainUpgrade(params);
+	}
+
+	/** Log a deposit (or chief reimbursement) into the guild treasury */
+	public logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams): Promise<void> {
+		return this.cityLogger.logGuildTreasuryDeposit(params);
+	}
+
+	/** Log when a guild member buys pet food from the guild food shop */
+	public logGuildFoodShopBuy(params: GuildFoodShopBuyLogParams): Promise<void> {
+		return this.cityLogger.logGuildFoodShopBuy(params);
 	}
 }

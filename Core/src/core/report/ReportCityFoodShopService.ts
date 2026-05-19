@@ -16,6 +16,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import {
 	GUILD_DOMAIN_ERROR, GuildDomainConstants, GuildDomainError
 } from "../../../../Lib/src/constants/GuildDomainConstants";
+import { crowniclesInstance } from "../../index";
 
 interface ResolvedFoodShop {
 	player: Player;
@@ -146,6 +147,16 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 		guild.treasury -= totalCost;
 		guild.addFood(resolved.foodType, actualAmount, NumberChangeReason.SHOP);
 		await guild.save();
+
+		crowniclesInstance?.logsDatabase.logGuildFoodShopBuy({
+			keycloakId,
+			guildId: guild.id,
+			cityId: guild.domainCityId,
+			foodType: resolved.foodType,
+			amount: actualAmount,
+			unitPrice: resolved.pricePerUnit,
+			totalCost
+		}).then();
 
 		return makePacket(CommandReportFoodShopBuyRes, {
 			foodType: resolved.foodType,

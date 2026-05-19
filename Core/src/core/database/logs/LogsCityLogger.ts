@@ -9,6 +9,10 @@ import { LogsHomeMoves } from "./models/LogsHomeMoves";
 import { LogsHomeBedUses } from "./models/LogsHomeBedUses";
 import { LogsApartmentPurchases } from "./models/LogsApartmentPurchases";
 import { LogsApartmentRentClaims } from "./models/LogsApartmentRentClaims";
+import { LogsGuildDomainPurchases } from "./models/LogsGuildDomainPurchases";
+import { LogsGuildDomainUpgrades } from "./models/LogsGuildDomainUpgrades";
+import { LogsGuildTreasuryDeposits } from "./models/LogsGuildTreasuryDeposits";
+import { LogsGuildFoodShopBuys } from "./models/LogsGuildFoodShopBuys";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 
@@ -140,6 +144,56 @@ export interface ApartmentRentClaimLogParams {
 	apartmentId: number;
 	cityId: string;
 	rentClaimed: number;
+}
+
+/**
+ * Parameters for logging a guild domain purchase or relocation at the city notary
+ */
+export interface GuildDomainPurchaseLogParams {
+	keycloakId: string;
+	guildId: number;
+	cityId: string;
+	fromCityId: string | null;
+	isRelocation: boolean;
+	cost: number;
+}
+
+/**
+ * Parameters for logging a guild building upgrade
+ */
+export interface GuildDomainUpgradeLogParams {
+	keycloakId: string;
+	guildId: number;
+	cityId: string;
+	building: string;
+	newLevel: number;
+	cost: number;
+	xpGained: number;
+}
+
+/**
+ * Parameters for logging a treasury deposit (or chief reimbursement) at the guild domain
+ */
+export interface GuildTreasuryDepositLogParams {
+	keycloakId: string;
+	guildId: number;
+	grossAmount: number;
+	treasuryDeposited: number;
+	penalty: number;
+	isReimburse: boolean;
+}
+
+/**
+ * Parameters for logging a guild food shop purchase
+ */
+export interface GuildFoodShopBuyLogParams {
+	keycloakId: string;
+	guildId: number;
+	cityId: string | null;
+	foodType: string;
+	amount: number;
+	unitPrice: number;
+	totalCost: number;
 }
 
 /**
@@ -367,6 +421,87 @@ export class LogsCityLogger {
 			apartmentId: params.apartmentId,
 			cityId: params.cityId,
 			rentClaimed: params.rentClaimed,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log when a guild chief buys or relocates the guild domain via the city notary.
+	 *
+	 * For an initial purchase, `fromCityId` is null and `isRelocation` is false.
+	 * For a relocation, `fromCityId` is the previous domain city and `cost` is the
+	 * relocation fee (which differs from the purchase fee).
+	 */
+	async logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsGuildDomainPurchases.create({
+			playerId: player.id,
+			guildId: params.guildId,
+			cityId: params.cityId,
+			fromCityId: params.fromCityId,
+			isRelocation: params.isRelocation,
+			cost: params.cost,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log when a guild chief upgrades a guild building. */
+	async logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsGuildDomainUpgrades.create({
+			playerId: player.id,
+			guildId: params.guildId,
+			cityId: params.cityId,
+			building: params.building,
+			newLevel: params.newLevel,
+			cost: params.cost,
+			xpGained: params.xpGained,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log a deposit (or chief reimbursement) into the guild treasury.
+	 *
+	 * `penalty` is the fraction skimmed off non-reimbursement deposits; when
+	 * `isReimburse === true`, penalty is 0 and `treasuryDeposited === grossAmount`.
+	 */
+	async logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsGuildTreasuryDeposits.create({
+			playerId: player.id,
+			guildId: params.guildId,
+			grossAmount: params.grossAmount,
+			treasuryDeposited: params.treasuryDeposited,
+			penalty: params.penalty,
+			isReimburse: params.isReimburse,
+			date: getDateLogs()
+		});
+	}
+
+	/** Log when a guild member buys pet food from the guild food shop. */
+	async logGuildFoodShopBuy(params: GuildFoodShopBuyLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsGuildFoodShopBuys.create({
+			playerId: player.id,
+			guildId: params.guildId,
+			cityId: params.cityId,
+			foodType: params.foodType,
+			amount: params.amount,
+			unitPrice: params.unitPrice,
+			totalCost: params.totalCost,
 			date: getDateLogs()
 		});
 	}

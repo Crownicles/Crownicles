@@ -20,6 +20,7 @@ import {
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { GuildUtils } from "../utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { crowniclesInstance } from "../../index";
 
 const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
 	[GuildBuilding.SHOP]: "shopLevel",
@@ -53,6 +54,7 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 		}
 
 		const isRelocation = guild.domainCityId !== null;
+		const fromCityId = guild.domainCityId;
 		const cost = isRelocation
 			? GuildDomainConstants.DOMAIN_RELOCATION_COST
 			: GuildDomainConstants.DOMAIN_PURCHASE_COST;
@@ -68,7 +70,7 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 		await guild.save();
 
 		return {
-			kind: "ok" as const, isRelocation, cost
+			kind: "ok" as const, isRelocation, fromCityId, cost
 		};
 	});
 
@@ -89,6 +91,15 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 	else {
 		response.push(makePacket(CommandReportGuildDomainPurchaseRes, { cost: outcome.cost }));
 	}
+
+	crowniclesInstance?.logsDatabase.logGuildDomainPurchase({
+		keycloakId: player.keycloakId,
+		guildId,
+		cityId: city.id,
+		fromCityId: outcome.fromCityId,
+		isRelocation: outcome.isRelocation,
+		cost: outcome.cost
+	}).then();
 }
 
 interface ResolvedUpgrade {
@@ -197,5 +208,18 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 		});
 
 		await guild.save();
+
+		const domainCityId = guild.domainCityId;
+		if (domainCityId !== null) {
+			crowniclesInstance?.logsDatabase.logGuildDomainUpgrade({
+				keycloakId,
+				guildId: guild.id,
+				cityId: domainCityId,
+				building,
+				newLevel: currentLevel + 1,
+				cost: upgradeCost,
+				xpGained
+			}).then();
+		}
 	});
 }

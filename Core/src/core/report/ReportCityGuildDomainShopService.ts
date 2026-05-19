@@ -19,6 +19,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import {
 	withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
+import { crowniclesInstance } from "../../index";
 
 export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
@@ -75,6 +76,15 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 				amount: grossAmount, response: [], reason: NumberChangeReason.SHOP
 			});
 			await lockedPlayer.save();
+
+			crowniclesInstance?.logsDatabase.logGuildTreasuryDeposit({
+				keycloakId,
+				guildId: lockedGuild.id,
+				grossAmount,
+				treasuryDeposited,
+				penalty,
+				isReimburse: packet.isReimburse ?? false
+			}).then();
 
 			return makePacket(CommandReportGuildDomainDepositTreasuryRes, {
 				treasuryDeposited,

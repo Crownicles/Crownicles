@@ -223,6 +223,10 @@ const EXPORTED_TABLES = {
 	"LogsHomeBedUses": "logs/86_home_bed_uses.csv",
 	"LogsApartmentPurchases": "logs/87_apartment_purchases.csv",
 	"LogsApartmentRentClaims": "logs/88_apartment_rent_claims.csv",
+	"LogsGuildDomainPurchases": "logs/89_guild_domain_purchases.csv",
+	"LogsGuildDomainUpgrades": "logs/90_guild_domain_upgrades.csv",
+	"LogsGuildTreasuryDeposits": "logs/91_guild_treasury_deposits.csv",
+	"LogsGuildFoodShopBuys": "logs/92_guild_food_shop_buys.csv",
 
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"

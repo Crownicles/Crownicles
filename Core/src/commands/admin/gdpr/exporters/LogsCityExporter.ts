@@ -13,6 +13,10 @@ import { LogsHomeMoves } from "../../../../core/database/logs/models/LogsHomeMov
 import { LogsHomeBedUses } from "../../../../core/database/logs/models/LogsHomeBedUses";
 import { LogsApartmentPurchases } from "../../../../core/database/logs/models/LogsApartmentPurchases";
 import { LogsApartmentRentClaims } from "../../../../core/database/logs/models/LogsApartmentRentClaims";
+import { LogsGuildDomainPurchases } from "../../../../core/database/logs/models/LogsGuildDomainPurchases";
+import { LogsGuildDomainUpgrades } from "../../../../core/database/logs/models/LogsGuildDomainUpgrades";
+import { LogsGuildTreasuryDeposits } from "../../../../core/database/logs/models/LogsGuildTreasuryDeposits";
+import { LogsGuildFoodShopBuys } from "../../../../core/database/logs/models/LogsGuildFoodShopBuys";
 
 /**
  * Exports inn meal purchases by the player (file 78)
@@ -274,6 +278,104 @@ async function exportApartmentRentClaims(
 }
 
 /**
+ * Exports guild domain purchases / relocations by the player (file 89)
+ */
+async function exportGuildDomainPurchases(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsGuildDomainPurchases,
+		{ playerId: logsPlayerId },
+		g => ({
+			guildId: g.guildId,
+			cityId: g.cityId,
+			fromCityId: g.fromCityId ?? "",
+			isRelocation: g.isRelocation,
+			cost: g.cost,
+			date: g.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/89_guild_domain_purchases.csv"] = csv;
+	}
+}
+
+/**
+ * Exports guild building upgrades by the player (file 90)
+ */
+async function exportGuildDomainUpgrades(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsGuildDomainUpgrades,
+		{ playerId: logsPlayerId },
+		g => ({
+			guildId: g.guildId,
+			cityId: g.cityId,
+			building: g.building,
+			newLevel: g.newLevel,
+			cost: g.cost,
+			xpGained: g.xpGained,
+			date: g.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/90_guild_domain_upgrades.csv"] = csv;
+	}
+}
+
+/**
+ * Exports guild treasury deposits and reimbursements by the player (file 91)
+ */
+async function exportGuildTreasuryDeposits(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsGuildTreasuryDeposits,
+		{ playerId: logsPlayerId },
+		g => ({
+			guildId: g.guildId,
+			grossAmount: g.grossAmount,
+			treasuryDeposited: g.treasuryDeposited,
+			penalty: g.penalty,
+			isReimburse: g.isReimburse,
+			date: g.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/91_guild_treasury_deposits.csv"] = csv;
+	}
+}
+
+/**
+ * Exports guild food shop purchases by the player (file 92)
+ */
+async function exportGuildFoodShopBuys(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsGuildFoodShopBuys,
+		{ playerId: logsPlayerId },
+		g => ({
+			guildId: g.guildId,
+			cityId: g.cityId ?? "",
+			foodType: g.foodType,
+			amount: g.amount,
+			unitPrice: g.unitPrice,
+			totalCost: g.totalCost,
+			date: g.date
+		})
+	);
+	if (csv) {
+		csvFiles["logs/92_guild_food_shop_buys.csv"] = csv;
+	}
+}
+
+/**
  * Exports city interaction data from the logs database.
  *
  * This exporter is intentionally grouped per city feature; new feature
@@ -318,4 +420,16 @@ export async function exportLogsCity(
 
 	// 88. Apartment rent claims
 	await exportApartmentRentClaims(logsPlayerId, csvFiles);
+
+	// 89. Guild domain purchases / relocations
+	await exportGuildDomainPurchases(logsPlayerId, csvFiles);
+
+	// 90. Guild building upgrades
+	await exportGuildDomainUpgrades(logsPlayerId, csvFiles);
+
+	// 91. Guild treasury deposits / reimbursements
+	await exportGuildTreasuryDeposits(logsPlayerId, csvFiles);
+
+	// 92. Guild food shop purchases
+	await exportGuildFoodShopBuys(logsPlayerId, csvFiles);
 }
