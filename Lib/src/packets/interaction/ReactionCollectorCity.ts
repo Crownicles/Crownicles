@@ -83,8 +83,10 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		}[];
 		isInventoryEmpty: boolean; // If true, the inventory is empty, and we can't enchant anything. It is used to display the right message.
 		hasAtLeastOneEnchantedItem: boolean; // If true, the player has at least one enchanted item, so the enchanter must say that it cannot remove enchantments.
+		hasUnenchantedItemInOtherSlot: boolean; // If true, the player has at least one unenchanted item but in the wrong slot for today's enchantment.
 		enchantmentId: string;
 		enchantmentType: string;
+		enchantmentSlot: ItemCategory; // The slot (WEAPON or ARMOR) that today's enchantment can be applied to.
 		enchantmentCost: {
 			money: number;
 			gems: number;

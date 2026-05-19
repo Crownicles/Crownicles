@@ -128,6 +128,7 @@ export function buildEnchanterData(
 	const enchantableItems: EnchanterData["enchantableItems"] = [];
 	let equipmentCount = 0;
 	let hasEnchantedItem = false;
+	let hasUnenchantedItemInOtherSlot = false;
 
 	for (const item of playerInventory) {
 		if (item.isPrimaryEquipment()) {
@@ -142,6 +143,9 @@ export function buildEnchanterData(
 					details: item.itemWithDetails(player) as MainItemDetails
 				});
 			}
+			else {
+				hasUnenchantedItemInOtherSlot = true;
+			}
 		}
 	}
 
@@ -149,9 +153,11 @@ export function buildEnchanterData(
 		enchantableItems,
 		isInventoryEmpty: equipmentCount === 0,
 		hasAtLeastOneEnchantedItem: hasEnchantedItem,
+		hasUnenchantedItemInOtherSlot,
 		enchantmentId,
 		enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
 		enchantmentType: enchantment.kind.type.id,
+		enchantmentSlot: enchantment.kind.slot,
 		mageReduction: isPlayerMage
 	};
 }
