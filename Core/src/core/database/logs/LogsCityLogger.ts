@@ -2,6 +2,7 @@ import { LogsInnMeals } from "./models/LogsInnMeals";
 import { LogsInnRooms } from "./models/LogsInnRooms";
 import { LogsBlacksmithUpgrades } from "./models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "./models/LogsBlacksmithDisenchants";
+import { LogsEnchanterUses } from "./models/LogsEnchanterUses";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 
@@ -55,6 +56,20 @@ export interface BlacksmithDisenchantLogParams {
 	itemCategory: number;
 	slot: number;
 	cost: number;
+}
+
+/**
+ * Parameters for logging an enchanter use
+ */
+export interface EnchanterUseLogParams {
+	keycloakId: string;
+	cityId: string;
+	itemCategory: number;
+	slot: number;
+	enchantmentId: string;
+	enchantmentType: string;
+	moneyPrice: number;
+	gemsPrice: number;
 }
 
 /**
@@ -170,6 +185,27 @@ export class LogsCityLogger {
 			itemCategory: params.itemCategory,
 			slot: params.slot,
 			cost: params.cost,
+			date: getDateLogs()
+		});
+	}
+
+	/**
+	 * Log when a player enchants an item at the city enchanter.
+	 */
+	async logEnchanterUse(params: EnchanterUseLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsEnchanterUses.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			itemCategory: params.itemCategory,
+			slot: params.slot,
+			enchantmentId: params.enchantmentId,
+			enchantmentType: params.enchantmentType,
+			moneyPrice: params.moneyPrice,
+			gemsPrice: params.gemsPrice,
 			date: getDateLogs()
 		});
 	}

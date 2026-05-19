@@ -216,6 +216,7 @@ const EXPORTED_TABLES = {
 	"LogsInnRooms": "logs/79_inn_rooms.csv",
 	"LogsBlacksmithUpgrades": "logs/80_blacksmith_upgrades.csv",
 	"LogsBlacksmithDisenchants": "logs/81_blacksmith_disenchants.csv",
+	"LogsEnchanterUses": "logs/82_enchanter_uses.csv",
 
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"

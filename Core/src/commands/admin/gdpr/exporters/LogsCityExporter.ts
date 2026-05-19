@@ -6,6 +6,7 @@ import { LogsInnMeals } from "../../../../core/database/logs/models/LogsInnMeals
 import { LogsInnRooms } from "../../../../core/database/logs/models/LogsInnRooms";
 import { LogsBlacksmithUpgrades } from "../../../../core/database/logs/models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "../../../../core/database/logs/models/LogsBlacksmithDisenchants";
+import { LogsEnchanterUses } from "../../../../core/database/logs/models/LogsEnchanterUses";
 
 /**
  * Exports inn meal purchases by the player (file 78)
@@ -108,6 +109,32 @@ async function exportBlacksmithDisenchants(
 }
 
 /**
+ * Exports enchanter uses by the player (file 82)
+ */
+async function exportEnchanterUses(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const enchanterCsv = await streamToCSV(
+		LogsEnchanterUses,
+		{ playerId: logsPlayerId },
+		e => ({
+			cityId: e.cityId,
+			itemCategory: e.itemCategory,
+			slot: e.slot,
+			enchantmentId: e.enchantmentId,
+			enchantmentType: e.enchantmentType,
+			moneyPrice: e.moneyPrice,
+			gemsPrice: e.gemsPrice,
+			date: e.date
+		})
+	);
+	if (enchanterCsv) {
+		csvFiles["logs/82_enchanter_uses.csv"] = enchanterCsv;
+	}
+}
+
+/**
  * Exports city interaction data from the logs database.
  *
  * This exporter is intentionally grouped per city feature; new feature
@@ -131,4 +158,7 @@ export async function exportLogsCity(
 
 	// 81. Blacksmith disenchants
 	await exportBlacksmithDisenchants(logsPlayerId, csvFiles);
+
+	// 82. Enchanter uses
+	await exportEnchanterUses(logsPlayerId, csvFiles);
 }
