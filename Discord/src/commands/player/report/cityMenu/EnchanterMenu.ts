@@ -131,12 +131,13 @@ function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language): st
 	if (data.isInventoryEmpty) {
 		return i18n.t("commands:report.city.enchanter.emptyInventoryStory", { lng });
 	}
-	if (data.hasUnenchantedItemInOtherSlot) {
+	if (data.unenchantedItemsInOtherSlotCount > 0) {
 		const key = data.enchantmentSlot === ItemCategory.WEAPON
 			? "commands:report.city.enchanter.runeForWeaponOnlyArmorAvailableStory"
 			: "commands:report.city.enchanter.runeForArmorOnlyWeaponAvailableStory";
 		return i18n.t(key, {
 			lng,
+			count: data.unenchantedItemsInOtherSlotCount,
 			enchantmentId: data.enchantmentId,
 			enchantmentType: data.enchantmentType
 		});
