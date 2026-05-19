@@ -133,8 +133,8 @@ function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language): st
 	}
 	if (data.hasUnenchantedItemInOtherSlot) {
 		const key = data.enchantmentSlot === ItemCategory.WEAPON
-			? "commands:report.city.enchanter.onlyArmorAvailableStory"
-			: "commands:report.city.enchanter.onlyWeaponAvailableStory";
+			? "commands:report.city.enchanter.runeForWeaponOnlyArmorAvailableStory"
+			: "commands:report.city.enchanter.runeForArmorOnlyWeaponAvailableStory";
 		return i18n.t(key, {
 			lng,
 			enchantmentId: data.enchantmentId,
