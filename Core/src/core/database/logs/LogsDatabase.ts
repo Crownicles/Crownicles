@@ -1050,8 +1050,9 @@ export class LogsDatabase extends Database {
 	 * @param keycloakId
 	 * @param shopItem
 	 * @param amount - Number of items bought (defaults to 1)
+	 * @param cityId - Slug of the city the shop is in (omit for city-less shops, e.g. mission/guild gem shops)
 	 */
-	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount = 1): Promise<void> {
+	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount = 1, cityId?: string): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!logPlayer) {
 			return;
@@ -1060,6 +1061,7 @@ export class LogsDatabase extends Database {
 			playerId: logPlayer.id,
 			shopItem,
 			amount,
+			cityId: cityId ?? null,
 			date: getDateLogs()
 		});
 	}

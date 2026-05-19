@@ -44,7 +44,7 @@ async function exportShopBuyouts(logsPlayerId: number, csvFiles: GDPRCsvFiles): 
 		LogsClassicalShopBuyouts,
 		{ playerId: logsPlayerId },
 		b => ({
-			shopItem: b.shopItem, amount: b.amount, date: b.date
+			shopItem: b.shopItem, amount: b.amount, cityId: b.cityId ?? "", date: b.date
 		})
 	);
 	if (classicalBuyoutsCsv) {

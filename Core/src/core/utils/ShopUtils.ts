@@ -28,7 +28,8 @@ export type ShopInformations = {
 	shopCategories: ShopCategory[];
 	player: Player;
 	additionalShopData?: additionalShopData & { currency?: ShopCurrency };
-	logger?: (keycloakId: string, shopItemName: ShopItemType, amount?: number) => Promise<void>;
+	logger?: (keycloakId: string, shopItemName: ShopItemType, amount?: number, cityId?: string) => Promise<void>;
+	cityId?: string;
 };
 
 export abstract class ShopUtils {
@@ -39,7 +40,8 @@ export abstract class ShopUtils {
 			shopCategories,
 			player,
 			additionalShopData = {},
-			logger
+			logger,
+			cityId
 		}: ShopInformations
 	): Promise<void> {
 		additionalShopData.currency ??= ShopCurrency.MONEY;
@@ -77,7 +79,7 @@ export abstract class ShopUtils {
 						translationParams
 					}));
 				}
-				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount).then();
+				logger?.(player.keycloakId, reactionInstance.shopItemId, reactionInstance.amount, cityId).then();
 			}
 		};
 
