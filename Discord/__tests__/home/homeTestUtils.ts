@@ -89,7 +89,7 @@ type GardenDataOverrides = Partial<{
 		plantId: number;
 		growthProgress: number;
 		isReady: boolean;
-		remainingSeconds: number;
+		readyAtTimestamp: number;
 	}[];
 	plantStorage: { plantId: number; quantity: number; maxCapacity: number }[];
 	hasSeed: boolean;
@@ -102,10 +102,10 @@ type GardenDataOverrides = Partial<{
 const DEFAULT_GARDEN_DATA = {
 	plots: [
 		{
-			slot: 0, plantId: 1, growthProgress: 1, isReady: true, remainingSeconds: 0
+			slot: 0, plantId: 1, growthProgress: 1, isReady: true, readyAtTimestamp: 0
 		},
 		{
-			slot: 1, plantId: 0, growthProgress: 0, isReady: false, remainingSeconds: 0
+			slot: 1, plantId: 0, growthProgress: 0, isReady: false, readyAtTimestamp: 0
 		}
 	],
 	plantStorage: [

@@ -1173,7 +1173,7 @@
           "description": "{emote:city.homeUpgrades.garden} Voici l'état de votre jardin :",
           "emptyPlot": "{emote:city.gardenStatus.empty} Parcelle {{slot}} — *Vide*",
           "readyPlot": "{emote:city.gardenStatus.ready} Parcelle {{slot}} — {emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** — Prête à être récoltée !",
-          "growingPlot": "{emote:city.gardenStatus.growing} Parcelle {{slot}} — {emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** — {{progress}}% ({{timeLeft}})",
+          "growingPlot": "{emote:city.gardenStatus.growing} Parcelle {{slot}} — {emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** — {{progress}}% (prête <t:{{readyAtTimestamp}}:R>)",
           "hasSeed": "{emote:city.gardenStatus.seed} Vous portez une graine : {emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
           "harvestButton": "Récolter",
           "plantButton": "Planter",

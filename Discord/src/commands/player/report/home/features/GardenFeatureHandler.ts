@@ -10,7 +10,6 @@ import {
 import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
-import { Language } from "../../../../../../../Lib/src/Language";
 import { HomeMenuIds } from "../HomeMenuConstants";
 import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import { DiscordMQTT } from "../../../../../bot/DiscordMQTT";
@@ -187,14 +186,6 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Format remaining time for display
-	 */
-	private formatRemainingTime(remainingSeconds: number, lng: Language): string {
-		const minutes = Math.ceil(remainingSeconds / TimeConstants.S_TIME.MINUTE);
-		return i18n.formatDuration(minutes, lng);
-	}
-
-	/**
 	 * Build the garden main view description
 	 */
 	private buildGardenDescription(ctx: HomeFeatureHandlerContext): string {
@@ -272,13 +263,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			});
 		}
 		const progress = Math.floor(plot.growthProgress * 100);
-		const timeLeft = this.formatRemainingTime(plot.remainingSeconds, ctx.lng);
 		return i18n.t("commands:report.city.homes.garden.growingPlot", {
 			lng: ctx.lng,
 			slot: plot.slot + 1,
 			plantId: plot.plantId,
 			progress,
-			timeLeft
+			readyAtTimestamp: plot.readyAtTimestamp
 		});
 	}
 
@@ -712,13 +702,24 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Compute remaining seconds for a plant in a garden slot
+	 * Compute the effective growth time (in seconds) for a plant in a slot
 	 */
-	private computeRemainingSeconds(plantId: PlantId | 0, earthQuality: GardenEarthQuality): number {
+	private computeEffectiveGrowthTime(plantId: PlantId | 0, earthQuality: GardenEarthQuality): number {
 		const plant = PlantConstants.getPlantById(plantId);
 		return plant
 			? GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality)
 			: 0;
+	}
+
+	/**
+	 * Compute the ready-at unix timestamp (seconds) for a freshly planted slot
+	 */
+	private computeReadyAtTimestamp(plantId: PlantId | 0, earthQuality: GardenEarthQuality): number {
+		const effectiveGrowthTime = this.computeEffectiveGrowthTime(plantId, earthQuality);
+		if (effectiveGrowthTime === 0) {
+			return 0;
+		}
+		return Math.floor(Date.now() / TimeConstants.MS_TIME.SECOND) + effectiveGrowthTime;
 	}
 
 	/**
@@ -737,7 +738,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			if (response.harvestedSlots.includes(plot.slot)) {
 				plot.growthProgress = 0;
 				plot.isReady = false;
-				plot.remainingSeconds = this.computeRemainingSeconds(plot.plantId, ctx.homeData.features.gardenEarthQuality);
+				plot.readyAtTimestamp = this.computeReadyAtTimestamp(plot.plantId, ctx.homeData.features.gardenEarthQuality);
 			}
 		}
 		garden.plantStorage = response.plantStorage;
@@ -866,19 +867,21 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		ctx: HomeFeatureHandlerContext,
 		response: CommandReportGardenWaterRes
 	): void {
+		const nowSeconds = Math.floor(Date.now() / TimeConstants.MS_TIME.SECOND);
 		for (const plot of garden.plots) {
 			if (!this.isGrowingPlot(plot)) {
 				continue;
 			}
-			const newRemaining = plot.remainingSeconds - WATERING_TIME_ADVANCE_SECONDS;
+			const newReadyAt = plot.readyAtTimestamp - WATERING_TIME_ADVANCE_SECONDS;
+			const newRemaining = newReadyAt - nowSeconds;
 			if (newRemaining <= 0) {
-				plot.remainingSeconds = 0;
+				plot.readyAtTimestamp = 0;
 				plot.growthProgress = 1;
 				plot.isReady = true;
 			}
 			else {
-				plot.remainingSeconds = newRemaining;
-				const fullGrowth = this.computeRemainingSeconds(plot.plantId, ctx.homeData.features.gardenEarthQuality);
+				plot.readyAtTimestamp = newReadyAt;
+				const fullGrowth = this.computeEffectiveGrowthTime(plot.plantId, ctx.homeData.features.gardenEarthQuality);
 				plot.growthProgress = fullGrowth > 0 ? 1 - newRemaining / fullGrowth : 0;
 			}
 		}
@@ -911,7 +914,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 					plot.plantId = response.plantId;
 					plot.growthProgress = 0;
 					plot.isReady = false;
-					plot.remainingSeconds = this.computeRemainingSeconds(response.plantId, ctx.homeData.features.gardenEarthQuality);
+					plot.readyAtTimestamp = this.computeReadyAtTimestamp(response.plantId, ctx.homeData.features.gardenEarthQuality);
 				}
 
 				// Seed consumed
