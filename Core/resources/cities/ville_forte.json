@@ -19,17 +19,17 @@
       "meals": [
         {
           "id": "bread",
-          "price": 50,
+          "price": 25,
           "energy": 200
         },
         {
           "id": "pretzels",
-          "price": 60,
+          "price": 30,
           "energy": 300
         },
         {
           "id": "simpleSalad",
-          "price": 60,
+          "price": 30,
           "energy": 250
         }
       ],

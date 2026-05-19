@@ -20,27 +20,27 @@
       "meals": [
         {
           "id": "friedShrimp",
-          "price": 100,
+          "price": 50,
           "energy": 400
         },
         {
           "id": "clamChowder",
-          "price": 80,
+          "price": 40,
           "energy": 300
         },
         {
           "id": "grilledFish",
-          "price": 200,
+          "price": 100,
           "energy": 600
         },
         {
           "id": "lobsterRoll",
-          "price": 300,
+          "price": 150,
           "energy": 900
         },
         {
           "id": "jellyfishCarpaccio",
-          "price": 500,
+          "price": 250,
           "energy": 2000
         }
       ],
