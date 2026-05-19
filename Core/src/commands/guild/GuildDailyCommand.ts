@@ -40,6 +40,10 @@ import { Badge } from "../../../../Lib/src/types/Badge";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 
+const GUILD_POINTS_MINIMUM_RATIO = 0.85;
+const GUILD_POINTS_MINIMUM = 5;
+const GUILD_POINTS_MAXIMUM_MINIMUM = 10;
+
 type GuildLike = {
 	guild: Guild; members: Player[];
 };
@@ -206,7 +210,9 @@ async function awardGuildXp(guildLike: GuildLike, response: CrowniclesPacket[], 
  * @param rewardPacket
  */
 async function awardGuildPointsToGuild(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
-	const guildPointsWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
+	const minimumGuildPoints = Math.max(GUILD_POINTS_MINIMUM, Math.floor(guildLike.guild.level * GUILD_POINTS_MINIMUM_RATIO));
+	const maximumGuildPoints = Math.max(GUILD_POINTS_MAXIMUM_MINIMUM, guildLike.guild.level);
+	const guildPointsWon = RandomUtils.randInt(minimumGuildPoints, maximumGuildPoints + 1);
 	await guildLike.guild.addScore({
 		amount: guildPointsWon,
 		response,
