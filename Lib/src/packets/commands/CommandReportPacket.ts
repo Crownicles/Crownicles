@@ -89,7 +89,7 @@ export class CommandReportTravelSummaryRes extends CrowniclesPacket {
 		playerMoney: number;
 	};
 
-	isInCity?: boolean;
+	isInCity!: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

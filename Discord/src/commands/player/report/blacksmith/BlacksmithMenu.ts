@@ -581,7 +581,6 @@ export function getBlacksmithDisenchantDetailMenu(
 	const description = i18n.t("commands:report.city.blacksmith.disenchantItemDetails", {
 		lng,
 		itemDisplay,
-		enchantmentType: item.enchantmentType,
 		cost: item.disenchantCost
 	});
 
