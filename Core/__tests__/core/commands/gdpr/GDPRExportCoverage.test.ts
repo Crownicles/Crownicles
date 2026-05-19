@@ -211,6 +211,10 @@ const EXPORTED_TABLES = {
 	"LogsBlessings": "logs/76_blessings_triggered.csv",
 	"LogsBlessingsContributions": "logs/77_blessings_contributions.csv",
 
+	// ============ LOGS DATABASE - City (LogsCityExporter) ============
+	"LogsInnMeals": "logs/78_inn_meals.csv",
+	"LogsInnRooms": "logs/79_inn_rooms.csv",
+
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"
 };

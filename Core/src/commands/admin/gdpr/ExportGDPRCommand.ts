@@ -21,6 +21,7 @@ import { exportLogsShop } from "./exporters/LogsShopExporter";
 import { exportLogsGuild } from "./exporters/LogsGuildExporter";
 import { exportLogsPets } from "./exporters/LogsPetsExporter";
 import { exportLogsBlessings } from "./exporters/LogsBlessingsExporter";
+import { exportLogsCity } from "./exporters/LogsCityExporter";
 import { PacketUtils } from "../../../core/utils/PacketUtils";
 import { GDPRExportCompleteNotificationPacket } from "../../../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
@@ -77,6 +78,10 @@ async function exportLogsData(
 
 	// Export blessings data (files 75-76)
 	await exportLogsBlessings(logsPlayerId, anonymizer, csvFiles);
+	await yieldToEventLoop();
+
+	// Export city interaction data (files 78-79, more in next phases)
+	await exportLogsCity(logsPlayerId, anonymizer, csvFiles);
 	await yieldToEventLoop();
 }
 

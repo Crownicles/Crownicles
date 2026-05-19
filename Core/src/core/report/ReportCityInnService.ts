@@ -16,6 +16,8 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
+import { CityDataController } from "../../data/City";
+import { crowniclesInstance } from "../../index";
 
 /**
  * Handle inn meal reaction — player eats a meal at an inn
@@ -61,6 +63,7 @@ export async function handleInnMealReaction(
 			return;
 		}
 
+		const energyBefore = lockedPlayer.getCumulativeEnergy(playerActiveObjects);
 		lockedPlayer.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL, playerActiveObjects);
 		lockedPlayer.eatMeal();
 		await lockedPlayer.spendMoney({
@@ -73,6 +76,22 @@ export async function handleInnMealReaction(
 			energy: reaction.meal.energy,
 			moneySpent: reaction.meal.price
 		}));
+
+		const destinationId = lockedPlayer.getDestinationId();
+		const cityId = destinationId !== null
+			? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
+			: undefined;
+		if (cityId) {
+			crowniclesInstance?.logsDatabase.logInnMeal({
+				keycloakId: lockedPlayer.keycloakId,
+				cityId,
+				innId: reaction.innId,
+				mealId: reaction.meal.mealId,
+				price: reaction.meal.price,
+				energyGained: reaction.meal.energy,
+				energyBefore
+			}).then();
+		}
 	});
 }
 
@@ -110,6 +129,7 @@ export async function handleInnRoomReaction(
 			return;
 		}
 
+		const healthBefore = lockedPlayer.getHealth(playerActiveObjects);
 		await lockedPlayer.addHealth({
 			amount: reaction.room.health,
 			response,
@@ -128,5 +148,21 @@ export async function handleInnRoomReaction(
 			health: reaction.room.health,
 			moneySpent: reaction.room.price
 		}));
+
+		const destinationId = lockedPlayer.getDestinationId();
+		const cityId = destinationId !== null
+			? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
+			: undefined;
+		if (cityId) {
+			crowniclesInstance?.logsDatabase.logInnRoom({
+				keycloakId: lockedPlayer.keycloakId,
+				cityId,
+				innId: reaction.innId,
+				roomId: reaction.room.roomId,
+				price: reaction.room.price,
+				healthGained: reaction.room.health,
+				healthBefore
+			}).then();
+		}
 	});
 }

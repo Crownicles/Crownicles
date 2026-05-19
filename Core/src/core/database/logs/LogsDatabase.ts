@@ -116,6 +116,9 @@ import {
 import {
 	LogsBlessingLogger, BlessingActivationParams, BlessingContributionParams
 } from "./LogsBlessingLogger";
+import {
+	LogsCityLogger, InnMealLogParams, InnRoomLogParams
+} from "./LogsCityLogger";
 
 /**
  * Data structure for expedition log entries
@@ -186,6 +189,8 @@ export class LogsDatabase extends Database {
 	private readonly expeditionLogger = new LogsExpeditionLogger();
 
 	private readonly blessingLogger = new LogsBlessingLogger();
+
+	private readonly cityLogger = new LogsCityLogger();
 
 	constructor() {
 		super(getDatabaseConfiguration(botConfig, "logs"), `${__dirname}/models`, `${__dirname}/migrations`);
@@ -1697,5 +1702,19 @@ export class LogsDatabase extends Database {
 	 */
 	public getContributionsSince(since: Date): Promise<Map<string, number>> {
 		return this.blessingLogger.getContributionsSince(since);
+	}
+
+	/**
+	 * Log when a player eats a meal at a city inn
+	 */
+	public logInnMeal(params: InnMealLogParams): Promise<void> {
+		return this.cityLogger.logInnMeal(params);
+	}
+
+	/**
+	 * Log when a player rents a room at a city inn
+	 */
+	public logInnRoom(params: InnRoomLogParams): Promise<void> {
+		return this.cityLogger.logInnRoom(params);
 	}
 }
