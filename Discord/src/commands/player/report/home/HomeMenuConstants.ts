@@ -100,7 +100,7 @@ export const HomeMenuIds = {
 	/** Back to garden from storage */
 	GARDEN_BACK: "GARDEN_BACK",
 
-	/** Put away the Cœur Sylvestre talisman (closes /jardin menu) */
+	/** Put away the Cœur Sylvestre talisman (closes /garden menu) */
 	GARDEN_PUT_AWAY_TALISMAN: "GARDEN_PUT_AWAY_TALISMAN",
 
 	/** Open the compost sub-menu */
