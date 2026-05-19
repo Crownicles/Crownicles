@@ -18,27 +18,27 @@
       "meals": [
         {
           "id": "breadAndCheese",
-          "price": 100,
+          "price": 50,
           "energy": 350
         },
         {
           "id": "roastedFowl",
-          "price": 200,
+          "price": 100,
           "energy": 700
         },
         {
           "id": "roastedBeef",
-          "price": 300,
+          "price": 150,
           "energy": 900
         },
         {
           "id": "stew",
-          "price": 140,
+          "price": 70,
           "energy": 520
         },
         {
           "id": "lordPie",
-          "price": 600,
+          "price": 300,
           "energy": 1300
         }
       ],

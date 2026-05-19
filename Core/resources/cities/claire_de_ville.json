@@ -20,27 +20,27 @@
       "meals": [
         {
           "id": "potatoSoup",
-          "price": 75,
+          "price": 37,
           "energy": 210
         },
         {
           "id": "friedEggs",
-          "price": 50,
+          "price": 25,
           "energy": 150
         },
         {
           "id": "curryRice",
-          "price": 120,
+          "price": 60,
           "energy": 330
         },
         {
           "id": "sushi",
-          "price": 200,
+          "price": 100,
           "energy": 500
         },
         {
           "id": "bravesPanOfFood",
-          "price": 700,
+          "price": 350,
           "energy": 1750
         }
       ],
