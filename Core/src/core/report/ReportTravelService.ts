@@ -17,6 +17,7 @@ import {
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { CityDataController } from "../../data/City";
+import { MapLinkDataController } from "../../data/MapLink";
 
 /**
  * Token cost calculation result
@@ -212,6 +213,15 @@ function buildHealData(
 	};
 }
 
+function isStationaryInCity(player: Player): boolean {
+	const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
+	if (!city) {
+		return false;
+	}
+	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId);
+	return mapLink?.tripDuration === 0;
+}
+
 /**
  * Send the location where the player is currently staying on the road
  */
@@ -253,6 +263,6 @@ export async function sendTravelPath(
 		isOnBoat: travelSummaryData.isOnBoat,
 		tokens: buildTokenData(tokenCostResult, player),
 		heal: buildHealData(player, effectId),
-		isInCity: CityDataController.instance.getCityByMapLinkId(player.mapLinkId) !== null
+		isInCity: isStationaryInCity(player)
 	}));
 }
