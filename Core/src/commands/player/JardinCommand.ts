@@ -32,6 +32,7 @@ import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { HomeNestedMenuIds } from "../../../../Lib/src/constants/HomeNestedMenuIds";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
+import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 
 type GardenHomeResolution = {
 	home: Home;
@@ -169,7 +170,7 @@ export class JardinCommand {
 	@commandRequires(CommandJardinPacketReq, {
 		notBlocked: true,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
-		whereAllowed: CommandUtils.WHERE.EVERYWHERE
+		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(
 		response: CrowniclesPacket[],
