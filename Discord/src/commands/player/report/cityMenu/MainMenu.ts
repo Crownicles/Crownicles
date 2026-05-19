@@ -375,20 +375,20 @@ export function getMainMenu(params: CityMenuParams): CrowniclesNestedMenu {
 	if (data.gardenOnly) {
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
-				StringUtils.formatHeader(i18n.t("commands:jardin.title", {
+				StringUtils.formatHeader(i18n.t("commands:garden.title", {
 					lng, pseudo: params.pseudo
 				}))
 			)
 		);
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
-				i18n.t("commands:jardin.description", { lng })
+				i18n.t("commands:garden.description", { lng })
 			)
 		);
 		const closeRow = new ActionRowBuilder<ButtonBuilder>();
 		closeRow.addComponents(new ButtonBuilder()
 			.setCustomId(ReportCityMenuIds.MAIN_MENU_STAY_CITY)
-			.setLabel(i18n.t("commands:jardin.close", { lng }))
+			.setLabel(i18n.t("commands:garden.close", { lng }))
 			.setEmoji(CrowniclesIcons.collectors.refuse)
 			.setStyle(ButtonStyle.Secondary));
 		container.addActionRowComponents(closeRow);

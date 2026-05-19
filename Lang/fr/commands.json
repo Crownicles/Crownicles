@@ -1427,7 +1427,7 @@
       "arrived": "Vous êtes arrivé à votre destination.\n> **{{emote}} {{destination}}**.\n> {{description}}"
     }
   },
-  "jardin": {
+  "garden": {
     "title": "{{pseudo}}, votre jardin",
     "description": "Vous contemplez votre jardin. Choisissez l'action à effectuer à partir du menu ci-dessous.",
     "closed": "{emote:messages.validate} La consultation du jardin est terminée.",

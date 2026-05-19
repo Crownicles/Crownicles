@@ -1,14 +1,14 @@
 import {
 	makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { CommandJardinPacketReq } from "../../../../Lib/src/packets/commands/CommandJardinPacket";
+import { CommandGardenPacketReq } from "../../../../Lib/src/packets/commands/CommandGardenPacket";
 import { ICommand } from "../ICommand";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 
-async function getPacket(interaction: CrowniclesInteraction): Promise<CommandJardinPacketReq> {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandGardenPacketReq> {
 	await interaction.deferReply();
-	return makePacket(CommandJardinPacketReq, {});
+	return makePacket(CommandGardenPacketReq, {});
 }
 
 export const commandInfo: ICommand = {
