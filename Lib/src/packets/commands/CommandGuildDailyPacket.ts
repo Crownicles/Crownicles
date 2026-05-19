@@ -26,6 +26,8 @@ export class CommandGuildDailyRewardPacket extends CrowniclesPacket {
 
 	guildXp?: number;
 
+	guildPoints?: number;
+
 	commonFood?: number;
 
 	badge?: boolean;

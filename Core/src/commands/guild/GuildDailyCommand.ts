@@ -200,6 +200,24 @@ async function awardGuildXp(guildLike: GuildLike, response: CrowniclesPacket[], 
 }
 
 /**
+ * Generic function to award guild points and treasury to a guild
+ * @param guildLike
+ * @param response
+ * @param rewardPacket
+ */
+async function awardGuildPointsToGuild(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
+	const guildPointsWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
+	await guildLike.guild.addScore({
+		amount: guildPointsWon,
+		response,
+		reason: NumberChangeReason.GUILD_DAILY
+	});
+	await guildLike.guild.save();
+	rewardPacket.guildPoints = guildPointsWon;
+	crowniclesInstance?.logsDatabase.logGuildDaily(guildLike.guild, GuildDailyConstants.REWARD_TYPES.GUILD_POINTS).then();
+}
+
+/**
  * Generic function to award a pet food to a guild
  * @param guildLike
  * @param response
@@ -423,6 +441,7 @@ async function generateAndGiveReward(guild: Guild, members: Player[], response: 
 	const rewardPacket = makePacket(CommandGuildDailyRewardPacket, { guildName: guild.name });
 	const reward = forcedReward ?? generateRandomProperty(guild);
 	await linkToFunction.get(reward)!(guildLike, response, rewardPacket); // Give the award
+	await awardGuildPointsToGuild(guildLike, response, rewardPacket);
 
 	if (!guildLike.guild.isPetShelterFull(await GuildPets.getOfGuild(guildLike.guild.id)) && RandomUtils.crowniclesRandom.realZeroToOneInclusive() <= GuildDailyConstants.PET_DROP_CHANCE) {
 		await awardGuildWithNewPet(guildLike.guild, rewardPacket);

@@ -35,6 +35,7 @@ export function getCommandGuildDailyRewardPacketString(packet: CommandGuildDaily
 		advanceTime: packet.advanceTime,
 		personalXP: packet.personalXp,
 		guildXP: packet.guildXp,
+		guildPoints: packet.guildPoints,
 		superBadge: packet.superBadge as number | undefined,
 		badge: packet.badge as number | undefined,
 		money: packet.money,
