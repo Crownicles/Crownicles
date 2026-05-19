@@ -20,7 +20,6 @@ enum Outcome {
 	EXPERIENCE = "experience",
 	MONEY = "money",
 	LIFE = "life",
-	ENERGY = "energy",
 	EXP_OR_POINTS_GUILD = "expOrPointsGuild"
 }
 
@@ -84,12 +83,6 @@ async function manageClassicReward(response: CrowniclesPacket[], player: Player,
 				response,
 				reason
 			});
-			break;
-		case Outcome.ENERGY:
-			player.addEnergy(-result.amount, reason);
-			if (player.getCumulativeEnergy() <= 0) {
-				await player.leavePVEIslandIfNoEnergy(response);
-			}
 			break;
 		case Outcome.EXPERIENCE:
 			await player.addExperience({

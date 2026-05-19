@@ -16,10 +16,6 @@
       "life": {
         "min": 3,
         "max": 10
-      },
-      "energy": {
-        "min": 10,
-        "max": 25
       }
     },
     "events": [
@@ -39,7 +35,7 @@
           "solo": "experience"
         },
         "lose": {
-          "withGuild": "energy",
+          "withGuild": "money",
           "solo": "life"
         }
       },
@@ -69,7 +65,7 @@
           "solo": "experience"
         },
         "lose": {
-          "withGuild": "money",
+          "withGuild": "life",
           "solo": "life"
         }
       },
@@ -79,11 +75,11 @@
           "solo": "experience"
         },
         "lose": {
-          "withGuild": "energy",
-          "solo": "energy"
+          "withGuild": "life",
+          "solo": "money"
         }
       }
     ]
   },
-  "rarity": 8
+  "rarity": 6
 }
