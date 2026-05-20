@@ -16,7 +16,7 @@ import { LogsGuildFoodShopBuys } from "./models/LogsGuildFoodShopBuys";
 import { LogsCookingUses } from "./models/LogsCookingUses";
 import { LogsGardenActions } from "./models/LogsGardenActions";
 import { LogsCityVisits } from "./models/LogsCityVisits";
-import { LogsPlayers } from "./models/LogsPlayers";
+import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 
 /**
@@ -293,18 +293,6 @@ export interface CityVisitLogParams {
  */
 export class LogsCityLogger {
 	/**
-	 * Find or create a player in the logs database by keycloak ID
-	 */
-	private async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
-		if (!keycloakId) {
-			return null;
-		}
-		return (await LogsPlayers.findOrCreate({
-			where: { keycloakId }
-		}))[0];
-	}
-
-	/**
 	 * Log when a player buys a meal at a city inn.
 	 *
 	 * The `energyBefore` field is optional and provides the player's energy
@@ -313,7 +301,7 @@ export class LogsCityLogger {
 	 * waste (the overflow when a near-full player buys an expensive meal).
 	 */
 	async logInnMeal(params: InnMealLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -337,7 +325,7 @@ export class LogsCityLogger {
 	 * full health.
 	 */
 	async logInnRoom(params: InnRoomLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -361,7 +349,7 @@ export class LogsCityLogger {
 	 * supplied from the player's inventory, the field is null.
 	 */
 	async logBlacksmithUpgrade(params: BlacksmithUpgradeLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -383,7 +371,7 @@ export class LogsCityLogger {
 	 * Log when a player removes an enchantment from an item at the city blacksmith.
 	 */
 	async logBlacksmithDisenchant(params: BlacksmithDisenchantLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -401,7 +389,7 @@ export class LogsCityLogger {
 	 * Log when a player enchants an item at the city enchanter.
 	 */
 	async logEnchanterUse(params: EnchanterUseLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -420,7 +408,7 @@ export class LogsCityLogger {
 
 	/** Log when a player buys a home in a city. */
 	async logHomePurchase(params: HomePurchaseLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -434,7 +422,7 @@ export class LogsCityLogger {
 
 	/** Log when a player upgrades their home level. */
 	async logHomeUpgrade(params: HomeUpgradeLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -450,7 +438,7 @@ export class LogsCityLogger {
 
 	/** Log when a player moves their home to another city. */
 	async logHomeMove(params: HomeMoveLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -467,7 +455,7 @@ export class LogsCityLogger {
 
 	/** Log when a player uses their home bed to heal. */
 	async logHomeBedUse(params: HomeBedUseLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -482,7 +470,7 @@ export class LogsCityLogger {
 
 	/** Log when a player buys an apartment in a city. */
 	async logApartmentPurchase(params: ApartmentPurchaseLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -496,7 +484,7 @@ export class LogsCityLogger {
 
 	/** Log when a player claims accumulated rent from an apartment they own. */
 	async logApartmentRentClaim(params: ApartmentRentClaimLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -517,7 +505,7 @@ export class LogsCityLogger {
 	 * relocation fee (which differs from the purchase fee).
 	 */
 	async logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -534,7 +522,7 @@ export class LogsCityLogger {
 
 	/** Log when a guild chief upgrades a guild building. */
 	async logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -557,7 +545,7 @@ export class LogsCityLogger {
 	 * `isReimburse === true`, penalty is 0 and `treasuryDeposited === grossAmount`.
 	 */
 	async logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -574,7 +562,7 @@ export class LogsCityLogger {
 
 	/** Log when a guild member buys pet food from the guild food shop. */
 	async logGuildFoodShopBuy(params: GuildFoodShopBuyLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -592,7 +580,7 @@ export class LogsCityLogger {
 
 	/** Log a cooking craft attempt (success or failure). */
 	async logCookingUse(params: CookingUseLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -618,7 +606,7 @@ export class LogsCityLogger {
 
 	/** Log a garden action (plant/water/compost/harvest). */
 	async logGardenAction(params: GardenActionLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -636,7 +624,7 @@ export class LogsCityLogger {
 
 	/** Log a passive city visit (entry + exit + opened-menus bitmask). */
 	async logCityVisit(params: CityVisitLogParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
