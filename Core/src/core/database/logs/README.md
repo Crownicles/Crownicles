@@ -68,3 +68,13 @@ The existing per-resource tables (`players_money`, `players_energy`,
 `players_health`, `players_gems`, …) continue to be populated in parallel.
 Rows logged before this issue have no `cityId`; treat the column as nullable
 when joining historical data.
+
+The legacy shop tables `classical_shop_buyouts` and `mission_shop_buyouts`
+are reused by the city shops (general/tanner/herbalist/lumberjack/veterinarian/
+material merchant write to classical; royal market + stock exchange write
+to mission). Both gained a nullable `cityId` column — `cityId IS NULL` means
+either a pre-cities-update purchase, or a Tanner call site outside of any
+city. The `guild_shop_buyouts` table is **frozen** (the old `/guildshop`
+command was removed in the cities update; the new guild domain food shop
+writes to the dedicated `LogsGuildFoodShopPurchases` table). Keep
+`guild_shop_buyouts` for historical reads; do not log new rows there.

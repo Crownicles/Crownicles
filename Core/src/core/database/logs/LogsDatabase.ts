@@ -55,7 +55,6 @@ import {
 import { LogsGuildsKicks } from "./models/LogsGuildsKicks";
 import { LogsDailyPotions } from "./models/LogsDailyPotions";
 import { LogsClassicalShopBuyouts } from "./models/LogsClassicalShopBuyouts";
-import { LogsGuildShopBuyouts } from "./models/LogsGuildShopBuyouts";
 import { LogsMissionShopBuyouts } from "./models/LogsMissionShopBuyouts";
 import { LogsDailyTimeouts } from "./models/LogsDailyTimeouts";
 import { LogsTopWeekEnd } from "./models/LogsTopWeekEnd";
@@ -1070,26 +1069,6 @@ export class LogsDatabase extends Database {
 	}
 
 	/**
-	 * Log when anything is bought from the guild shop
-	 * @param keycloakId
-	 * @param shopItem
-	 * @param amount
-	 */
-	public async logGuildShopBuyout(keycloakId: string, shopItem: ShopItemType, amount: number): Promise<void> {
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		if (!logPlayer) {
-			return;
-		}
-		await LogsGuildShopBuyouts.create({
-			playerId: logPlayer.id,
-			shopItem,
-			amount,
-			date: getDateLogs()
-		});
-	}
-
-
-	/**
 	 * Log when a daily ti
 	 * @param petLoveChange
 	 */
@@ -1122,8 +1101,10 @@ export class LogsDatabase extends Database {
 	 * Log when anything is bought from the mission shop
 	 * @param keycloakId
 	 * @param shopItem
+	 * @param _amount - Ignored (kept for ShopUtils logger contract compatibility; mission shop items are one-shot)
+	 * @param cityId - Slug of the city the gem shop is in (omit for non-city call sites)
 	 */
-	public async logMissionShopBuyout(keycloakId: string, shopItem: ShopItemType): Promise<void> {
+	public async logMissionShopBuyout(keycloakId: string, shopItem: ShopItemType, _amount?: number, cityId?: string): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!logPlayer) {
 			return;
@@ -1131,6 +1112,7 @@ export class LogsDatabase extends Database {
 		await LogsMissionShopBuyouts.create({
 			playerId: logPlayer.id,
 			shopItem,
+			cityId: cityId ?? null,
 			date: getDateLogs()
 		});
 	}

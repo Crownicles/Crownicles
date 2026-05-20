@@ -66,7 +66,7 @@ async function exportShopBuyouts(logsPlayerId: number, csvFiles: GDPRCsvFiles): 
 		LogsMissionShopBuyouts,
 		{ playerId: logsPlayerId },
 		b => ({
-			shopItem: b.shopItem, date: b.date
+			shopItem: b.shopItem, cityId: b.cityId ?? "", date: b.date
 		})
 	);
 	if (missionBuyoutsCsv) {

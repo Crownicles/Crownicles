@@ -171,6 +171,7 @@ interface GemShopOptions {
 	context: PacketContext;
 	response: CrowniclesPacket[];
 	shopCategories: ShopCategory[];
+	cityId?: string;
 	additionalShopData?: Record<string, unknown>;
 }
 
@@ -182,12 +183,14 @@ async function openGemShop({
 	context,
 	response,
 	shopCategories,
+	cityId,
 	additionalShopData
 }: GemShopOptions): Promise<void> {
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
 		logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		cityId,
 		additionalShopData: {
 			gemToMoneyRatio: calculateGemsToMoneyRatio(),
 			...additionalShopData
@@ -199,12 +202,13 @@ async function openGemShop({
  * Open the royal market shop for the player (gem exchanges, king's favor and
  * the Maître des quêtes services: mission skip and quest master badge).
  */
-export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
+export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
 	const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 	await openGemShop({
 		player,
 		context,
 		response,
+		cityId: city.id,
 		shopCategories: [
 			{
 				id: "resources",
@@ -263,11 +267,12 @@ export async function openGeneralShop(player: Player, context: PacketContext, re
 /**
  * Open the stock exchange shop for the player (money mouth badge + gem exchange rate info)
  */
-export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[], _city: City): Promise<void> {
+export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
 	await openGemShop({
 		player,
 		context,
 		response,
+		cityId: city.id,
 		shopCategories: [
 			{
 				id: "permanentItem",
