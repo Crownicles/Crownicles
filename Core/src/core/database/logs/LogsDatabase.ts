@@ -1,6 +1,7 @@
 import { Database } from "../../../../../Lib/src/database/Database";
 import { LogsPlayersMoney } from "./models/LogsPlayersMoney";
 import { LogsPlayers } from "./models/LogsPlayers";
+import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
@@ -394,13 +395,8 @@ export class LogsDatabase extends Database {
 	 * @param keycloakId
 	 * @returns The player or null if keycloakId is invalid
 	 */
-	static async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
-		if (!keycloakId) {
-			return null;
-		}
-		return (await LogsPlayers.findOrCreate({
-			where: { keycloakId }
-		}))[0];
+	static findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
+		return findOrCreateLogsPlayer(keycloakId);
 	}
 
 	/**
