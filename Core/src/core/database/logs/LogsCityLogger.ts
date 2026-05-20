@@ -15,6 +15,7 @@ import { LogsGuildTreasuryDeposits } from "./models/LogsGuildTreasuryDeposits";
 import { LogsGuildFoodShopBuys } from "./models/LogsGuildFoodShopBuys";
 import { LogsCookingUses } from "./models/LogsCookingUses";
 import { LogsGardenActions } from "./models/LogsGardenActions";
+import { LogsCityVisits } from "./models/LogsCityVisits";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 
@@ -242,6 +243,41 @@ export interface GardenActionLogParams {
 	slot: number;
 	cost: number;
 	quantity?: number | null;
+}
+
+/**
+ * Reason a city visit ended.
+ */
+export const CityVisitExitReason = {
+	REFUSE: 0,
+	EXIT_BUTTON: 1,
+	TIMEOUT: 2,
+	ENGAGED: 3
+} as const;
+
+export type CityVisitExitReasonValue = typeof CityVisitExitReason[keyof typeof CityVisitExitReason];
+
+/**
+ * Bitmask of sub-menus opened during a city visit. Combined via bitwise OR.
+ */
+export const CityMenuMask = {
+	INN: 1,
+	BLACKSMITH: 2,
+	ENCHANTER: 4,
+	SHOP: 8,
+	NOTARY: 16,
+	HOME: 32,
+	GUILD_DOMAIN: 64,
+	GARDEN_OR_COOKING: 128
+} as const;
+
+export interface CityVisitLogParams {
+	keycloakId: string;
+	cityId: string;
+	enterDate: number;
+	exitDate: number | null;
+	exitReason: CityVisitExitReasonValue;
+	menusOpenedMask: number;
 }
 
 /**
@@ -595,6 +631,22 @@ export class LogsCityLogger {
 			cost: params.cost,
 			quantity: params.quantity ?? null,
 			date: getDateLogs()
+		});
+	}
+
+	/** Log a passive city visit (entry + exit + opened-menus bitmask). */
+	async logCityVisit(params: CityVisitLogParams): Promise<void> {
+		const player = await this.findOrCreatePlayer(params.keycloakId);
+		if (!player) {
+			return;
+		}
+		await LogsCityVisits.create({
+			playerId: player.id,
+			cityId: params.cityId,
+			enterDate: params.enterDate,
+			exitDate: params.exitDate,
+			exitReason: params.exitReason,
+			menusOpenedMask: params.menusOpenedMask
 		});
 	}
 }

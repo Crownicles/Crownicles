@@ -134,7 +134,8 @@ import {
 	GuildTreasuryDepositLogParams,
 	GuildFoodShopBuyLogParams,
 	CookingUseLogParams,
-	GardenActionLogParams
+	GardenActionLogParams,
+	CityVisitLogParams
 } from "./LogsCityLogger";
 
 /**
@@ -1816,5 +1817,10 @@ export class LogsDatabase extends Database {
 	/** Log a garden action (plant/water/compost/harvest) */
 	public logGardenAction(params: GardenActionLogParams): Promise<void> {
 		return this.cityLogger.logGardenAction(params);
+	}
+
+	/** Log a passive city visit (entry, exit, opened-menus bitmask) */
+	public logCityVisit(params: CityVisitLogParams): Promise<void> {
+		return this.cityLogger.logCityVisit(params);
 	}
 }

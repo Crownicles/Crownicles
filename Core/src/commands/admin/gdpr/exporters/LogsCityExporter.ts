@@ -19,6 +19,7 @@ import { LogsGuildTreasuryDeposits } from "../../../../core/database/logs/models
 import { LogsGuildFoodShopBuys } from "../../../../core/database/logs/models/LogsGuildFoodShopBuys";
 import { LogsCookingUses } from "../../../../core/database/logs/models/LogsCookingUses";
 import { LogsGardenActions } from "../../../../core/database/logs/models/LogsGardenActions";
+import { LogsCityVisits } from "../../../../core/database/logs/models/LogsCityVisits";
 
 /**
  * Exports inn meal purchases by the player (file 78)
@@ -436,6 +437,29 @@ async function exportGardenActions(
 }
 
 /**
+ * Exports passive city visits (entry, exit, opened menus mask) (file 95)
+ */
+async function exportCityVisits(
+	logsPlayerId: number,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const csv = await streamToCSV(
+		LogsCityVisits,
+		{ playerId: logsPlayerId },
+		v => ({
+			cityId: v.cityId,
+			enterDate: v.enterDate,
+			exitDate: v.exitDate ?? "",
+			exitReason: v.exitReason,
+			menusOpenedMask: v.menusOpenedMask
+		})
+	);
+	if (csv) {
+		csvFiles["logs/95_city_visits.csv"] = csv;
+	}
+}
+
+/**
  * Exports city interaction data from the logs database.
  *
  * This exporter is intentionally grouped per city feature; new feature
@@ -498,4 +522,7 @@ export async function exportLogsCity(
 
 	// 94. Garden actions (plant / water / compost / harvest)
 	await exportGardenActions(logsPlayerId, csvFiles);
+
+	// 95. Passive city visits (entry / exit / opened menus mask)
+	await exportCityVisits(logsPlayerId, csvFiles);
 }

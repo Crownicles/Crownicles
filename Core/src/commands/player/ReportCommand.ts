@@ -78,6 +78,33 @@ import { chooseDestination } from "../../core/report/ReportDestinationService";
 import { doRandomBigEvent } from "../../core/report/ReportBigEventService";
 import { doPVEBoss } from "../../core/report/ReportPveService";
 import { sendTravelPath } from "../../core/report/ReportTravelService";
+import { crowniclesInstance } from "../../index";
+import {
+	CityMenuMask, CityVisitExitReason, CityVisitExitReasonValue
+} from "../../core/database/logs/LogsCityLogger";
+
+const CITY_REACTION_MENU_MASK = new Map<string, number>([
+	[ReactionCollectorInnMealReaction.name, CityMenuMask.INN],
+	[ReactionCollectorInnRoomReaction.name, CityMenuMask.INN],
+	[ReactionCollectorBlacksmithMenuReaction.name, CityMenuMask.BLACKSMITH],
+	[ReactionCollectorBlacksmithUpgradeReaction.name, CityMenuMask.BLACKSMITH],
+	[ReactionCollectorBlacksmithDisenchantReaction.name, CityMenuMask.BLACKSMITH],
+	[ReactionCollectorUpgradeItemReaction.name, CityMenuMask.BLACKSMITH],
+	[ReactionCollectorEnchantReaction.name, CityMenuMask.ENCHANTER],
+	[ReactionCollectorCityShopReaction.name, CityMenuMask.SHOP],
+	[ReactionCollectorApartmentBuyReaction.name, CityMenuMask.NOTARY],
+	[ReactionCollectorApartmentClaimRentReaction.name, CityMenuMask.NOTARY],
+	[ReactionCollectorCityBuyHomeReaction.name, CityMenuMask.HOME],
+	[ReactionCollectorCityUpgradeHomeReaction.name, CityMenuMask.HOME],
+	[ReactionCollectorCityMoveHomeReaction.name, CityMenuMask.HOME],
+	[ReactionCollectorHomeMenuReaction.name, CityMenuMask.HOME],
+	[ReactionCollectorHomeBedReaction.name, CityMenuMask.HOME],
+	[ReactionCollectorGuildDomainMenuReaction.name, CityMenuMask.GUILD_DOMAIN],
+	[ReactionCollectorGuildDomainNotaryReaction.name, CityMenuMask.GUILD_DOMAIN],
+	[ReactionCollectorGardenHarvestReaction.name, CityMenuMask.GARDEN_OR_COOKING],
+	[ReactionCollectorGardenWaterReaction.name, CityMenuMask.GARDEN_OR_COOKING],
+	[ReactionCollectorGardenCompostReaction.name, CityMenuMask.GARDEN_OR_COOKING]
+]);
 import {
 	buildBlacksmithData
 } from "../../core/report/ReportBlacksmithService";
@@ -231,9 +258,33 @@ export default class ReportCommand {
 }
 
 function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number, city: City): EndCallback {
+	const enterDate = Math.floor(Date.now() / 1000);
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 		const firstReaction = collector.getFirstReaction();
+		let exitReason: CityVisitExitReasonValue;
+		let menusOpenedMask = 0;
+		if (!firstReaction) {
+			exitReason = CityVisitExitReason.TIMEOUT;
+		}
+		else if (firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+			exitReason = CityVisitExitReason.REFUSE;
+		}
+		else if (firstReaction.reaction.type === ReactionCollectorExitCityReaction.name) {
+			exitReason = CityVisitExitReason.EXIT_BUTTON;
+		}
+		else {
+			exitReason = CityVisitExitReason.ENGAGED;
+			menusOpenedMask = CITY_REACTION_MENU_MASK.get(firstReaction.reaction.type) ?? 0;
+		}
+		crowniclesInstance?.logsDatabase.logCityVisit({
+			keycloakId: player.keycloakId,
+			cityId: city.id,
+			enterDate,
+			exitDate: Math.floor(Date.now() / 1000),
+			exitReason,
+			menusOpenedMask
+		}).then();
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
 			response.push(makePacket(CommandReportStayInCity, {}));
 		}
