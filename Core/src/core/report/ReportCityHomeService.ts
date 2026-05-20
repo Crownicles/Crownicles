@@ -1,8 +1,6 @@
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Player } from "../database/game/models/Player";
-import {
-	City, CityDataController
-} from "../../data/City";
+import { City } from "../../data/City";
 import {
 	Home, Homes
 } from "../database/game/models/Home";
@@ -437,8 +435,7 @@ export async function handleHomeBedReaction(
 		}
 
 		const healthBefore = lockedPlayer.getHealth(playerActiveObjects);
-		const destinationId = lockedPlayer.getDestinationId();
-		const bedCityId = destinationId !== null ? CityDataController.instance.getCityByMapLinkId(destinationId)?.id : undefined;
+		const bedCityId = lockedPlayer.getCurrentCityId() ?? undefined;
 		await lockedPlayer.addHealth({
 			amount: homeData.features.bedHealthRegeneration,
 			response,

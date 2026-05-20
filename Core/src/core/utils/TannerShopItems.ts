@@ -26,14 +26,6 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 import { PlantConstants } from "../../../../Lib/src/constants/PlantConstants";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
-import { CityDataController } from "../../data/City";
-
-function resolveCityIdForPlayer(player: { getDestinationId(): number | null }): string | undefined {
-	const destinationId = player.getDestinationId();
-	return destinationId !== null
-		? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
-		: undefined;
-}
 
 function getBuySlotExtensionShopItemCallback(playerId: number, price: number): EndCallback {
 	return async (collector, response): Promise<void> => {
@@ -53,7 +45,7 @@ function getBuySlotExtensionShopItemCallback(playerId: number, price: number): E
 			response,
 			reason: NumberChangeReason.SHOP
 		});
-		crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION, 1, resolveCityIdForPlayer(player))
+		crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION, 1, player.getCurrentCityId() ?? undefined)
 			.then();
 		invInfo.addSlotForCategory(category);
 		await Promise.all([player.save(), invInfo.save()]);
@@ -141,7 +133,7 @@ export async function getPlantSlotExtensionShopItem(playerId: number): Promise<S
 			// Ensure the new physical slot exists
 			await PlayerPlantSlots.ensureSlotsForCount(player.id, freshInvInfo.plantSlots);
 
-			crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.PLANT_SLOT_EXTENSION, 1, resolveCityIdForPlayer(player))
+			crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.PLANT_SLOT_EXTENSION, 1, player.getCurrentCityId() ?? undefined)
 				.then();
 
 			/*

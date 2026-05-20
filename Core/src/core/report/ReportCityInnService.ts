@@ -16,7 +16,6 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
-import { CityDataController } from "../../data/City";
 import { crowniclesInstance } from "../../index";
 
 /**
@@ -77,10 +76,7 @@ export async function handleInnMealReaction(
 			moneySpent: reaction.meal.price
 		}));
 
-		const destinationId = lockedPlayer.getDestinationId();
-		const cityId = destinationId !== null
-			? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
-			: undefined;
+		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {
 			crowniclesInstance?.logsDatabase.logInnMeal({
 				keycloakId: lockedPlayer.keycloakId,
@@ -149,10 +145,7 @@ export async function handleInnRoomReaction(
 			moneySpent: reaction.room.price
 		}));
 
-		const destinationId = lockedPlayer.getDestinationId();
-		const cityId = destinationId !== null
-			? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
-			: undefined;
+		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {
 			crowniclesInstance?.logsDatabase.logInnRoom({
 				keycloakId: lockedPlayer.keycloakId,

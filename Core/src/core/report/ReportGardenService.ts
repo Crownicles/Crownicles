@@ -38,16 +38,8 @@ import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interacti
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
-import { CityDataController } from "../../data/City";
 import { crowniclesInstance } from "../../index";
 import { GardenActionType } from "../database/logs/LogsCityLogger";
-
-function resolveCityIdForPlayer(player: { getDestinationId(): number | null }): string | null {
-	const destinationId = player.getDestinationId();
-	return destinationId !== null
-		? CityDataController.instance.getCityByMapLinkId(destinationId)?.id ?? null
-		: null;
-}
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
@@ -251,7 +243,7 @@ async function runHarvestUnderLock(params: {
 	if (harvestedSlots.length > 0 || compostResults.length > 0) {
 		crowniclesInstance?.logsDatabase.logGardenAction({
 			keycloakId: player.keycloakId,
-			cityId: resolveCityIdForPlayer(player),
+			cityId: player.getCurrentCityId(),
 			action: GardenActionType.HARVEST,
 			plantId: "",
 			slot: 0,
@@ -363,7 +355,7 @@ async function runGardenPlantUnderLock(
 
 	crowniclesInstance?.logsDatabase.logGardenAction({
 		keycloakId: player.keycloakId,
-		cityId: resolveCityIdForPlayer(player),
+		cityId: player.getCurrentCityId(),
 		action: GardenActionType.PLANT,
 		plantId: String(plantId),
 		slot: gardenSlot!.slot,
@@ -623,7 +615,7 @@ async function waterGardenForLockedPlayerUnderLock(params: {
 
 	crowniclesInstance?.logsDatabase.logGardenAction({
 		keycloakId: params.lockedPlayer.keycloakId,
-		cityId: resolveCityIdForPlayer(params.lockedPlayer),
+		cityId: params.lockedPlayer.getCurrentCityId(),
 		action: GardenActionType.WATER,
 		plantId: "",
 		slot: 0,
@@ -765,7 +757,7 @@ export async function handleGardenCompostReaction(
 
 		crowniclesInstance?.logsDatabase.logGardenAction({
 			keycloakId: player.keycloakId,
-			cityId: resolveCityIdForPlayer(player),
+			cityId: player.getCurrentCityId(),
 			action: GardenActionType.COMPOST,
 			plantId: String(plantId),
 			slot: 0,

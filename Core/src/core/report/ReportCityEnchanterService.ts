@@ -18,7 +18,6 @@ import { Settings } from "../database/game/models/Setting";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
-import { CityDataController } from "../../data/City";
 import { crowniclesInstance } from "../../index";
 
 /**
@@ -220,10 +219,7 @@ async function executeEnchant(params: {
 		enchantmentType: enchantment.kind.type.id
 	}));
 
-	const destinationId = lockedPlayer.getDestinationId();
-	const cityId = destinationId !== null
-		? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
-		: undefined;
+	const cityId = lockedPlayer.getCurrentCityId();
 	if (cityId) {
 		crowniclesInstance?.logsDatabase.logEnchanterUse({
 			keycloakId: lockedPlayer.keycloakId,

@@ -23,7 +23,6 @@ import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithU
 import { Materials } from "../database/game/models/Material";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { CityDataController } from "../../data/City";
 import { crowniclesInstance } from "../../index";
 
 export interface UpgradeItemValidationResult {
@@ -354,10 +353,7 @@ async function executeBlacksmithUpgrade(params: {
 		boughtMaterials: executionData.boughtMaterials
 	}));
 
-	const destinationId = lockedPlayer.getDestinationId();
-	const cityId = destinationId !== null
-		? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
-		: undefined;
+	const cityId = lockedPlayer.getCurrentCityId();
 	if (cityId) {
 		crowniclesInstance?.logsDatabase.logBlacksmithUpgrade({
 			keycloakId: lockedPlayer.keycloakId,
@@ -426,10 +422,7 @@ export async function handleBlacksmithDisenchantReaction(
 			cost: itemToDisenchant.disenchantCost
 		}));
 
-		const destinationId = lockedPlayer.getDestinationId();
-		const cityId = destinationId !== null
-			? CityDataController.instance.getCityByMapLinkId(destinationId)?.id
-			: undefined;
+		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {
 			crowniclesInstance?.logsDatabase.logBlacksmithDisenchant({
 				keycloakId: lockedPlayer.keycloakId,

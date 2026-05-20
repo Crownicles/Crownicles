@@ -57,7 +57,6 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
-import { CityDataController } from "../../data/City";
 import { crowniclesInstance } from "../../index";
 
 interface PlayerAndHome {
@@ -703,9 +702,7 @@ export async function handleCookingCraft(
 
 	crowniclesInstance?.logsDatabase.logCookingUse({
 		keycloakId: player.keycloakId,
-		cityId: player.getDestinationId() !== null
-			? CityDataController.instance.getCityByMapLinkId(player.getDestinationId()!)?.id ?? null
-			: null,
+		cityId: player.getCurrentCityId(),
 		recipeId: validatedRecipe.id,
 		recipeLevel: validatedRecipe.level,
 		outputType: validatedRecipe.outputType,
