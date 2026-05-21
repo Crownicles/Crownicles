@@ -45,10 +45,10 @@ function getBuySlotExtensionShopItemCallback(playerId: number, price: number): E
 			response,
 			reason: NumberChangeReason.SHOP
 		});
-		crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION)
-			.then();
 		invInfo.addSlotForCategory(category);
 		await Promise.all([player.save(), invInfo.save()]);
+		crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION, 1, player.getCurrentCityId() ?? undefined)
+			.then();
 		response.push(makePacket(ReactionCollectorBuyCategorySlotBuySuccess, {}));
 	};
 }
@@ -127,20 +127,26 @@ export async function getPlantSlotExtensionShopItem(playerId: number): Promise<S
 			const player = await Players.getById(playerId);
 			const freshInvInfo = await InventoryInfos.getOfPlayer(player.id);
 
-			freshInvInfo.plantSlots++;
-			await freshInvInfo.save();
+			if (freshInvInfo.plantSlots >= PlantConstants.MAX_PLANT_SLOTS) {
+				return { success: false };
+			}
 
-			// Ensure the new physical slot exists
-			await PlayerPlantSlots.ensureSlotsForCount(player.id, freshInvInfo.plantSlots);
+			const buyResult: BuyCallbackResult & { postPurchase: () => Promise<void> } = {
+				success: true,
+				postPurchase: async (): Promise<void> => {
+					freshInvInfo.plantSlots++;
+					await freshInvInfo.save();
 
-			crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.PLANT_SLOT_EXTENSION)
-				.then();
+					// Ensure the new physical slot exists
+					await PlayerPlantSlots.ensureSlotsForCount(player.id, freshInvInfo.plantSlots);
+				}
+			};
 
 			/*
 			 * Return a detailed result so ShopUtils pushes CommandShopGenericPurchase
 			 * and the player sees a confirmation message (issue #4208).
 			 */
-			return { success: true };
+			return buyResult;
 		}
 	};
 }

@@ -38,6 +38,8 @@ import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interacti
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import { crowniclesInstance } from "../../index";
+import { GardenActionType } from "../database/logs/LogsCityLogger";
 
 type HomeData = ReactionCollectorCityData["home"];
 type GardenData = NonNullable<NonNullable<HomeData["owned"]>["garden"]>;
@@ -238,6 +240,18 @@ async function runHarvestUnderLock(params: {
 			maxCapacity
 		}));
 
+	if (harvestedSlots.length > 0 || compostResults.length > 0) {
+		crowniclesInstance?.logsDatabase.logGardenAction({
+			keycloakId: player.keycloakId,
+			cityId: player.getCurrentCityId(),
+			action: GardenActionType.HARVEST,
+			plantId: "",
+			slot: 0,
+			cost: 0,
+			quantity: plantsHarvested + compostResults.length
+		}).then();
+	}
+
 	return makePacket(CommandReportGardenHarvestRes, {
 		plantsHarvested,
 		plantsComposted: compostResults.length,
@@ -338,6 +352,15 @@ async function runGardenPlantUnderLock(
 
 	await HomeGardenSlots.plantSeed(home.id, gardenSlot!.slot, plantId);
 	await PlayerPlantSlots.clearSeed(player.id);
+
+	crowniclesInstance?.logsDatabase.logGardenAction({
+		keycloakId: player.keycloakId,
+		cityId: player.getCurrentCityId(),
+		action: GardenActionType.PLANT,
+		plantId: String(plantId),
+		slot: gardenSlot!.slot,
+		cost: 0
+	}).then();
 
 	return makePacket(CommandReportGardenPlantRes, {
 		plantId,
@@ -590,6 +613,16 @@ async function waterGardenForLockedPlayerUnderLock(params: {
 
 	await applyGardenWateringUnderLock(params.lockedPlayer, params.home, wateringResult, params.now);
 
+	crowniclesInstance?.logsDatabase.logGardenAction({
+		keycloakId: params.lockedPlayer.keycloakId,
+		cityId: params.lockedPlayer.getCurrentCityId(),
+		action: GardenActionType.WATER,
+		plantId: "",
+		slot: 0,
+		cost: 0,
+		quantity: wateringResult.slotsToWater.length
+	}).then();
+
 	return makePacket(CommandReportGardenWaterRes, {
 		slotsWatered: wateringResult.slotsToWater.length,
 		slotsBecameReady: wateringResult.slotsBecameReady,
@@ -721,5 +754,15 @@ export async function handleGardenCompostReaction(
 			quantity,
 			materials
 		}));
+
+		crowniclesInstance?.logsDatabase.logGardenAction({
+			keycloakId: player.keycloakId,
+			cityId: player.getCurrentCityId(),
+			action: GardenActionType.COMPOST,
+			plantId: String(plantId),
+			slot: 0,
+			cost: 0,
+			quantity
+		}).then();
 	});
 }

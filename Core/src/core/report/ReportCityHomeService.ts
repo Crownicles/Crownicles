@@ -27,6 +27,41 @@ import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import {
 	Apartment, Apartments
 } from "../database/game/models/Apartment";
+import { crowniclesInstance } from "../../index";
+import type {
+	HomeBedUseLogParams,
+	HomeMoveLogParams,
+	HomePurchaseLogParams,
+	HomeUpgradeLogParams
+} from "../database/logs/LogsCityLogger";
+
+function logHomePurchase(params: HomePurchaseLogParams | null): void {
+	if (params === null) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logHomePurchase(params).then();
+}
+
+function logHomeUpgrade(params: HomeUpgradeLogParams | null): void {
+	if (params === null) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logHomeUpgrade(params).then();
+}
+
+function logHomeMove(params: HomeMoveLogParams | null): void {
+	if (params === null) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logHomeMove(params).then();
+}
+
+function logHomeBedUse(params: HomeBedUseLogParams | null): void {
+	if (params === null) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logHomeBedUse(params).then();
+}
 
 /**
  * Handle buy home reaction — player purchases a new home in the city
@@ -52,7 +87,7 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 	const apartmentInCity = await Apartments.getOfPlayerInCity(player.id, city.id);
 
 	const apartmentLockKeys = apartmentInCity ? [Apartment.lockKey(apartmentInCity.id)] : [];
-	await withLockedEntities(
+	const logParams = await withLockedEntities(
 		[Player.lockKey(player.id), ...apartmentLockKeys] as const,
 		async lockedEntities => {
 			const lockedPlayer = lockedEntities[0] as Player;
@@ -61,7 +96,7 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 			// Re-validate against the freshly-locked row.
 			if (newPrice > lockedPlayer.money) {
 				response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: newPrice - lockedPlayer.money }));
-				return;
+				return null;
 			}
 
 			await lockedPlayer.spendMoney({
@@ -79,8 +114,15 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 			response.push(makePacket(CommandReportBuyHomeRes, {
 				cost: newPrice
 			}));
+
+			return {
+				keycloakId: lockedPlayer.keycloakId,
+				cityId: city.id,
+				price: newPrice
+			};
 		}
 	);
+	logHomePurchase(logParams);
 }
 
 /**
@@ -109,7 +151,7 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 	}
 
 	const upgradePrice = data.home.manage.upgrade.price;
-	await withLockedEntities(
+	const logParams = await withLockedEntities(
 		[Home.lockKey(home.id), Player.lockKey(player.id)] as const,
 		async ([lockedHome, lockedPlayer]) => {
 			/*
@@ -119,11 +161,11 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 			 */
 			if (upgradePrice > lockedPlayer.money) {
 				response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: upgradePrice - lockedPlayer.money }));
-				return;
+				return null;
 			}
 			if (lockedHome.cityId !== city.id) {
 				CrowniclesLogger.error(`Player ${player.keycloakId} home was moved to a different city before the upgrade lock was acquired.`);
-				return;
+				return null;
 			}
 
 			const oldLevel = lockedHome.getLevel()!;
@@ -149,8 +191,17 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 			response.push(makePacket(CommandReportUpgradeHomeRes, {
 				cost: upgradePrice
 			}));
+
+			return {
+				keycloakId: lockedPlayer.keycloakId,
+				cityId: city.id,
+				fromLevel: oldLevel.level,
+				toLevel: newLevel.level,
+				price: upgradePrice
+			};
 		}
 	);
+	logHomeUpgrade(logParams);
 }
 
 /**
@@ -345,7 +396,7 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 
 	const lockContext = await prepareMoveHomeLockContext(player.id, home.id, sourceCityId, destinationCityId);
 
-	await withLockedEntities(
+	const logParams = await withLockedEntities(
 		lockContext.lockKeys as readonly ReturnType<typeof Home.lockKey>[],
 		async lockedEntities => {
 			const {
@@ -363,14 +414,24 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 				response
 			});
 			if (result === null) {
-				return;
+				return null;
 			}
 			response.push(makePacket(CommandReportMoveHomeRes, {
 				cost: result.effectivePrice,
 				...result.rentApplied > 0 ? { rentDeducted: result.rentApplied } : {}
 			}));
+
+			return {
+				keycloakId: lockedPlayer.keycloakId,
+				fromCityId: sourceCityId,
+				toCityId: destinationCityId,
+				basePrice: movePrice,
+				rentApplied: result.rentApplied,
+				effectivePrice: result.effectivePrice
+			};
 		}
 	);
+	logHomeMove(logParams);
 }
 
 /**
@@ -394,12 +455,12 @@ export async function handleHomeBedReaction(
 		return;
 	}
 
-	await Player.withLocked(player.id, async lockedPlayer => {
+	const logParams = await Player.withLocked(player.id, async lockedPlayer => {
 		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
 		const maxHealth = lockedPlayer.getMaxHealth(playerActiveObjects);
 		if (lockedPlayer.getHealth(playerActiveObjects) >= maxHealth) {
 			response.push(makePacket(CommandReportHomeBedAlreadyFullRes, {}));
-			return;
+			return null;
 		}
 
 		const now = new Date();
@@ -407,9 +468,11 @@ export async function handleHomeBedReaction(
 			response.push(makePacket(CommandReportBedCooldownRes, {
 				nextAvailableAt: lockedPlayer.lastBedUsedAt.getTime() + HomeConstants.BED_COOLDOWN_MS
 			}));
-			return;
+			return null;
 		}
 
+		const healthBefore = lockedPlayer.getHealth(playerActiveObjects);
+		const bedCityId = lockedPlayer.getCurrentCityId() ?? undefined;
 		await lockedPlayer.addHealth({
 			amount: homeData.features.bedHealthRegeneration,
 			response,
@@ -421,5 +484,16 @@ export async function handleHomeBedReaction(
 		response.push(makePacket(CommandReportHomeBedRes, {
 			health: homeData.features.bedHealthRegeneration
 		}));
+
+		if (!bedCityId) {
+			return null;
+		}
+		return {
+			keycloakId: lockedPlayer.keycloakId,
+			cityId: bedCityId,
+			healthGained: homeData.features.bedHealthRegeneration,
+			healthBefore
+		};
 	});
+	logHomeBedUse(logParams);
 }

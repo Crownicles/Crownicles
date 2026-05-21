@@ -22,6 +22,7 @@ import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { UniqueConstraintError } from "sequelize";
+import { crowniclesInstance } from "../../index";
 
 function buildClaimTooLowPacket(apartment: Apartment, currentRent: number): CrowniclesPacket | null {
 	const apartmentCity = CityDataController.instance.getById(apartment.cityId);
@@ -156,6 +157,12 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 			mapLocationId: city.maps[0],
 			cost: price
 		}));
+
+		crowniclesInstance?.logsDatabase.logApartmentPurchase({
+			keycloakId: lockedPlayer.keycloakId,
+			cityId: city.id,
+			price
+		}).then();
 	});
 }
 
@@ -214,6 +221,13 @@ export async function handleApartmentClaimRentReaction(player: Player, apartment
 				mapLocationId: apartmentCity.maps[0],
 				rentClaimed: accumulated
 			}));
+
+			crowniclesInstance?.logsDatabase.logApartmentRentClaim({
+				keycloakId: lockedPlayer.keycloakId,
+				apartmentId: lockedApartment.id,
+				cityId: lockedApartment.cityId,
+				rentClaimed: accumulated
+			}).then();
 		}
 	);
 }

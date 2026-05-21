@@ -211,6 +211,26 @@ const EXPORTED_TABLES = {
 	"LogsBlessings": "logs/76_blessings_triggered.csv",
 	"LogsBlessingsContributions": "logs/77_blessings_contributions.csv",
 
+	// ============ LOGS DATABASE - City (LogsCityExporter) ============
+	"LogsInnMeals": "logs/78_inn_meals.csv",
+	"LogsInnRooms": "logs/79_inn_rooms.csv",
+	"LogsBlacksmithUpgrades": "logs/80_blacksmith_upgrades.csv",
+	"LogsBlacksmithDisenchants": "logs/81_blacksmith_disenchants.csv",
+	"LogsEnchanterUses": "logs/82_enchanter_uses.csv",
+	"LogsHomePurchases": "logs/83_home_purchases.csv",
+	"LogsHomeUpgrades": "logs/84_home_upgrades.csv",
+	"LogsHomeMoves": "logs/85_home_moves.csv",
+	"LogsHomeBedUses": "logs/86_home_bed_uses.csv",
+	"LogsApartmentPurchases": "logs/87_apartment_purchases.csv",
+	"LogsApartmentRentClaims": "logs/88_apartment_rent_claims.csv",
+	"LogsGuildDomainPurchases": "logs/89_guild_domain_purchases.csv",
+	"LogsGuildDomainUpgrades": "logs/90_guild_domain_upgrades.csv",
+	"LogsGuildTreasuryDeposits": "logs/91_guild_treasury_deposits.csv",
+	"LogsGuildFoodShopBuys": "logs/92_guild_food_shop_buys.csv",
+	"LogsCookingUses": "logs/93_cooking_uses.csv",
+	"LogsGardenActions": "logs/94_garden_actions.csv",
+	"LogsCityVisits": "logs/95_city_visits.csv",
+
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"
 };
@@ -595,7 +615,7 @@ describe("GDPR Export Data Leak Prevention", () => {
 			// Check for direct field access patterns in export mappings
 			// Patterns like: `fieldName: something.forbiddenField` or `forbiddenField: value`
 			const directExportPattern = new RegExp(
-				`(?:${field}\\s*:|:\\s*\\w+\\.${field})(?![\\w])`,
+				`(?:\\b${field}\\s*:|:\\s*\\w+\\.${field}\\b)(?![\\w])`,
 				"gi"
 			);
 
@@ -621,6 +641,18 @@ describe("GDPR Export Data Leak Prevention", () => {
 			const matches = content.match(fieldUsagePattern);
 
 			if (matches) {
+				const directExportCheck = new RegExp(
+					`\\b${field}\\s*:\\s*(?:\\w+\\.)?${field}\\b`,
+					"g"
+				);
+				const directExports = [...content.matchAll(directExportCheck)]
+					.filter(match => !content.slice(Math.max(0, (match.index ?? 0) - 20), match.index)
+						.match(/where:\s*{\s*$/));
+				if (directExports.length > 0) {
+					violations.push(field);
+					continue;
+				}
+
 				// Check if this field usage is also accompanied by anonymization
 				// We look for anonymize calls on the same field nearby
 				const anonymizePatterns = [
@@ -639,11 +671,11 @@ describe("GDPR Export Data Leak Prevention", () => {
 
 				if (!content.includes("GDPRAnonymizer") && !hasAnonymization) {
 					// Check if the field is being directly exported
-					const directExportCheck = new RegExp(
-						`${field}\\s*:\\s*(?:\\w+\\.)?${field}[,\\s})]`,
+					const fallbackDirectExportCheck = new RegExp(
+						`\\b${field}\\s*:\\s*(?:\\w+\\.)?${field}\\b`,
 						"g"
 					);
-					if (directExportCheck.test(content)) {
+					if (fallbackDirectExportCheck.test(content)) {
 						violations.push(field);
 					}
 				}

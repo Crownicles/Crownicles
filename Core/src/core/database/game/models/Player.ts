@@ -220,6 +220,14 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Get the id of the city attached to the player's current map link,
+	 * or `null` if the map link is not a city entrance.
+	 */
+	getCurrentCityId(): string | null {
+		return CityDataController.instance.getCityByMapLinkId(this.mapLinkId)?.id ?? null;
+	}
+
+	/**
 	 * Get the mapLocation object of the destination of the player
 	 */
 	public getDestination(): MapLocation | null {

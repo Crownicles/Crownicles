@@ -26,7 +26,9 @@ import {
 	PinnedRecipeInfo
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { CookingService } from "../cooking/CookingService";
+import {
+	CookingService, type CraftResult
+} from "../cooking/CookingService";
 import {
 	CookingRecipeData, CookingRecipeDataController
 } from "../../data/CookingRecipeData";
@@ -57,6 +59,8 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
+import { crowniclesInstance } from "../../index";
+import type { CookingUseLogParams } from "../database/logs/LogsCityLogger";
 
 interface PlayerAndHome {
 	player: Player;
@@ -592,6 +596,30 @@ interface CraftErrorInfo {
 	outputType: CookingOutputTypeValue;
 }
 
+interface CookingCraftContext {
+	player: Player;
+	home: Home;
+	cookingSlots: number;
+	slot: CookingSlotData | undefined;
+	recipe: CookingRecipeData | undefined;
+	guild: Guild | null;
+}
+
+interface ReadyCookingCraftContext {
+	player: Player;
+	home: Home;
+	cookingSlots: number;
+	slotRecipe: NonNullable<CookingSlotData["recipe"]>;
+	recipe: CookingRecipeData;
+	guild: Guild | null;
+}
+
+interface CompletedCraftParams {
+	craftContext: ReadyCookingCraftContext;
+	result: CraftResult;
+	outputResult: CraftOutputResult;
+}
+
 function getCraftErrorInfo(
 	slot: CookingSlotData | undefined,
 	recipe: CookingRecipeData | undefined
@@ -620,71 +648,69 @@ function validateCraftRequest(
 	return null;
 }
 
-export async function handleCookingCraft(
+async function loadCookingCraftContext(
 	keycloakId: string,
-	packet: CommandReportCookingCraftReq,
-	context: PacketContext
-): Promise<CrowniclesPacket[]> {
-	const response: CrowniclesPacket[] = [];
+	packet: CommandReportCookingCraftReq
+): Promise<CookingCraftContext | null> {
 	const data = await getPlayerAndHome(keycloakId);
 	if (!data) {
-		return response;
+		return null;
 	}
 	const {
 		player, home, cookingSlots
 	} = data;
-
-	// Get the current slots to find the recipe at the requested slot
 	const slots = await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	});
-	const slot = slots.find(s => s.slotIndex === packet.slotIndex);
+	const slot = slots.find(slotData => slotData.slotIndex === packet.slotIndex);
 	const recipe = slot?.recipe ? CookingRecipeDataController.instance.getById(slot.recipe.id) : undefined;
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+	return {
+		player, home, cookingSlots, slot, recipe, guild
+	};
+}
 
-	const validationError = validateCraftRequest(slot, recipe, guild);
-	if (validationError) {
-		response.push(await buildBlockedCraftResponse({
-			player,
-			homeId: home.id,
-			cookingSlots,
-			error: validationError,
-			...getCraftErrorInfo(slot, recipe)
-		}));
-		return response;
+async function buildBlockedCookingCraftPacket(
+	craftContext: CookingCraftContext,
+	validationError: CookingCraftError
+): Promise<CommandReportCookingCraftRes> {
+	return await buildBlockedCraftResponse({
+		player: craftContext.player,
+		homeId: craftContext.home.id,
+		cookingSlots: craftContext.cookingSlots,
+		error: validationError,
+		...getCraftErrorInfo(craftContext.slot, craftContext.recipe)
+	});
+}
+
+function buildReadyCookingCraftContext(craftContext: CookingCraftContext): ReadyCookingCraftContext | null {
+	if (!craftContext.slot?.recipe || !craftContext.recipe) {
+		return null;
 	}
+	return {
+		player: craftContext.player,
+		home: craftContext.home,
+		cookingSlots: craftContext.cookingSlots,
+		slotRecipe: craftContext.slot.recipe,
+		recipe: craftContext.recipe,
+		guild: craftContext.guild
+	};
+}
 
-	// After validation, recipe and slot.recipe are guaranteed to exist
-	const validatedRecipe = recipe!;
-	const validatedSlotRecipe = slot!.recipe!;
-
-	// Execute the craft
-	const result = await CookingService.executeCraft({
-		player, recipe: validatedRecipe, homeId: home.id
-	});
-
-	// Determine and apply output
-	const outputResult = await processCraftOutput({
-		context,
-		player,
-		recipe: validatedRecipe,
-		result,
-		guild
-	});
-
-	const updatedSlots = await CookingService.getSlotRecipes({
-		player, homeId: home.id, cookingSlots
-	});
-
+function buildCookingCraftResponsePacket({
+	craftContext,
+	result,
+	outputResult,
+	updatedSlots
+}: CompletedCraftParams & { updatedSlots: CookingSlotData[] }): CommandReportCookingCraftRes {
 	const {
-		bonusHonored, inventorySwapPackets, ...outputForPacket
+		bonusHonored, inventorySwapPackets: _, ...outputForPacket
 	} = outputResult;
-
-	response.push(makePacket(CommandReportCookingCraftRes, {
+	return makePacket(CommandReportCookingCraftRes, {
 		success: result.success,
-		recipeId: validatedRecipe.id,
-		wasSecret: validatedSlotRecipe.isSecret,
-		outputType: validatedRecipe.outputType,
+		recipeId: craftContext.recipe.id,
+		wasSecret: craftContext.slotRecipe.isSecret,
+		outputType: craftContext.recipe.outputType,
 		...outputForPacket,
 		cookingXpGained: result.xpGained,
 		cookingLevelUp: result.levelUp,
@@ -694,11 +720,97 @@ export async function handleCookingCraft(
 		bonusOutput: result.bonusOutput && (bonusHonored ?? false),
 		discoveredRecipeIds: result.discoveredRecipeIds,
 		updatedSlots
-	}));
-	if (inventorySwapPackets) {
-		response.push(...inventorySwapPackets);
+	});
+}
+
+function appendInventorySwapPackets(response: CrowniclesPacket[], inventorySwapPackets: CrowniclesPacket[] | undefined): void {
+	if (!inventorySwapPackets) {
+		return;
 	}
+	response.push(...inventorySwapPackets);
+}
+
+function buildCookingUseLogParams({
+	craftContext,
+	result,
+	outputResult
+}: CompletedCraftParams): CookingUseLogParams {
+	return {
+		keycloakId: craftContext.player.keycloakId,
+		cityId: craftContext.player.getCurrentCityId(),
+		recipeId: craftContext.recipe.id,
+		recipeLevel: craftContext.recipe.level,
+		outputType: craftContext.recipe.outputType,
+		success: result.success,
+		bonus: result.bonusOutput && (outputResult.bonusHonored ?? false),
+		wasSecret: craftContext.slotRecipe.isSecret,
+		xpGained: result.xpGained,
+		levelUp: result.levelUp,
+		potionId: outputResult.potionId ?? outputResult.failedPotionId ?? null,
+		foodType: outputResult.petFood?.type ?? null,
+		foodStored: outputResult.petFood?.storedQuantity ?? null,
+		foodSurplus: outputResult.petFood?.surplusMaterialQuantity ?? null,
+		materialOutputId: outputResult.material?.materialId ?? null
+	};
+}
+
+function logCookingUse(params: CookingUseLogParams): void {
+	crowniclesInstance?.logsDatabase.logCookingUse(params).then();
+}
+
+async function executeReadyCookingCraft(
+	craftContext: ReadyCookingCraftContext,
+	packetContext: PacketContext
+): Promise<CrowniclesPacket[]> {
+	const response: CrowniclesPacket[] = [];
+	const result = await CookingService.executeCraft({
+		player: craftContext.player,
+		recipe: craftContext.recipe,
+		homeId: craftContext.home.id
+	});
+	const outputResult = await processCraftOutput({
+		context: packetContext,
+		player: craftContext.player,
+		recipe: craftContext.recipe,
+		result,
+		guild: craftContext.guild
+	});
+	const updatedSlots = await CookingService.getSlotRecipes({
+		player: craftContext.player,
+		homeId: craftContext.home.id,
+		cookingSlots: craftContext.cookingSlots
+	});
+	response.push(buildCookingCraftResponsePacket({
+		craftContext, result, outputResult, updatedSlots
+	}));
+	appendInventorySwapPackets(response, outputResult.inventorySwapPackets);
+	logCookingUse(buildCookingUseLogParams({
+		craftContext, result, outputResult
+	}));
 	return response;
+}
+
+export async function handleCookingCraft(
+	keycloakId: string,
+	packet: CommandReportCookingCraftReq,
+	context: PacketContext
+): Promise<CrowniclesPacket[]> {
+	const craftContext = await loadCookingCraftContext(keycloakId, packet);
+	if (craftContext === null) {
+		return [];
+	}
+
+	const validationError = validateCraftRequest(craftContext.slot, craftContext.recipe, craftContext.guild);
+	if (validationError) {
+		return [await buildBlockedCookingCraftPacket(craftContext, validationError)];
+	}
+
+	const readyCraftContext = buildReadyCookingCraftContext(craftContext);
+	if (readyCraftContext === null) {
+		return [await buildBlockedCookingCraftPacket(craftContext, CookingCraftErrors.CRAFT_UNAVAILABLE)];
+	}
+
+	return await executeReadyCookingCraft(readyCraftContext, context);
 }
 
 export async function handleCookingMenu(

@@ -19,6 +19,20 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import {
 	withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
+import { crowniclesInstance } from "../../index";
+import type { GuildTreasuryDepositLogParams } from "../database/logs/LogsCityLogger";
+
+interface DepositTreasuryResult {
+	packet: CrowniclesPacket;
+	logParams: GuildTreasuryDepositLogParams | null;
+}
+
+function logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams | null): void {
+	if (params === null) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logGuildTreasuryDeposit(params).then();
+}
 
 export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
@@ -48,7 +62,7 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 	 * CLS so nested `.save()` calls on the returned instances enlist
 	 * automatically.
 	 */
-	return await withLockedEntities(
+	const result: DepositTreasuryResult = await withLockedEntities(
 		[Guild.lockKey(player.guildId), Player.lockKey(player.id)] as const,
 		async ([lockedGuild, lockedPlayer]) => {
 			/*
@@ -58,7 +72,10 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 			 * the lock acquisition.
 			 */
 			if (lockedPlayer.money < grossAmount) {
-				return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY });
+				return {
+					packet: makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY }),
+					logParams: null
+				};
 			}
 
 			const penalty = packet.isReimburse
@@ -76,11 +93,23 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 			});
 			await lockedPlayer.save();
 
-			return makePacket(CommandReportGuildDomainDepositTreasuryRes, {
-				treasuryDeposited,
-				newPlayerMoney: lockedPlayer.money,
-				newTreasury: lockedGuild.treasury
-			});
+			return {
+				packet: makePacket(CommandReportGuildDomainDepositTreasuryRes, {
+					treasuryDeposited,
+					newPlayerMoney: lockedPlayer.money,
+					newTreasury: lockedGuild.treasury
+				}),
+				logParams: {
+					keycloakId,
+					guild: lockedGuild,
+					grossAmount,
+					treasuryDeposited,
+					penalty,
+					isReimburse: packet.isReimburse ?? false
+				}
+			};
 		}
 	);
+	logGuildTreasuryDeposit(result.logParams);
+	return result.packet;
 }

@@ -1,13 +1,15 @@
 import { Database } from "../../../../../Lib/src/database/Database";
 import { LogsPlayersMoney } from "./models/LogsPlayersMoney";
 import { LogsPlayers } from "./models/LogsPlayers";
+import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
+import { findOrCreateLogsGuild } from "./LogsGuildResolver";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
 	Model, ModelStatic, Sequelize, Transaction
 } from "sequelize";
 import {
-	CLS_TRANSACTION_KEY, getTransactionSequelize
+	CLS_TRANSACTION_KEY
 } from "../../../../../Lib/src/locks/CLSNamespace";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
@@ -54,7 +56,6 @@ import {
 import { LogsGuildsKicks } from "./models/LogsGuildsKicks";
 import { LogsDailyPotions } from "./models/LogsDailyPotions";
 import { LogsClassicalShopBuyouts } from "./models/LogsClassicalShopBuyouts";
-import { LogsGuildShopBuyouts } from "./models/LogsGuildShopBuyouts";
 import { LogsMissionShopBuyouts } from "./models/LogsMissionShopBuyouts";
 import { LogsDailyTimeouts } from "./models/LogsDailyTimeouts";
 import { LogsTopWeekEnd } from "./models/LogsTopWeekEnd";
@@ -116,6 +117,28 @@ import {
 import {
 	LogsBlessingLogger, BlessingActivationParams, BlessingContributionParams
 } from "./LogsBlessingLogger";
+import {
+	LogsCityLogger,
+	InnMealLogParams,
+	InnRoomLogParams,
+	BlacksmithUpgradeLogParams,
+	BlacksmithDisenchantLogParams,
+	EnchanterUseLogParams,
+	HomePurchaseLogParams,
+	HomeUpgradeLogParams,
+	HomeMoveLogParams,
+	HomeBedUseLogParams,
+	ApartmentPurchaseLogParams,
+	ApartmentRentClaimLogParams,
+	GuildDomainPurchaseLogParams,
+	GuildDomainUpgradeLogParams,
+	GuildTreasuryDepositLogParams,
+	GuildFoodShopBuyLogParams,
+	CookingUseLogParams,
+	GardenActionLogParams,
+	CityVisitLogParams
+} from "./LogsCityLogger";
+import { transactionBelongsToSequelize } from "./LogsForeignTransactionGuard";
 
 /**
  * Data structure for expedition log entries
@@ -186,6 +209,8 @@ export class LogsDatabase extends Database {
 	private readonly expeditionLogger = new LogsExpeditionLogger();
 
 	private readonly blessingLogger = new LogsBlessingLogger();
+
+	private readonly cityLogger = new LogsCityLogger();
 
 	constructor() {
 		super(getDatabaseConfiguration(botConfig, "logs"), `${__dirname}/models`, `${__dirname}/migrations`);
@@ -271,6 +296,11 @@ export class LogsDatabase extends Database {
 	 * manager to pick a fresh connection from this instance's pool —
 	 * hitting `draftbot_X_logs` instead of `draftbot_X_game`.
 	 *
+	 * `findOrCreate` needs one extra guard: Sequelize may create an
+	 * internal savepoint transaction whose `sequelize` is the logs instance,
+	 * while its parent/connection still belongs to the game transaction. We
+	 * therefore walk the whole parent chain before trusting a transaction.
+	 *
 	 * The wrapper is installed once per instance, after `super.init()`
 	 * has created `this.sequelize`. It shadows the prototype method via
 	 * an own property, so the game-side Sequelize (a different instance)
@@ -293,11 +323,11 @@ export class LogsDatabase extends Database {
 		const patchedQuery = ((sql: Parameters<typeof originalQuery>[0], rawOptions?: Parameters<typeof originalQuery>[1]): Promise<unknown> => {
 			const opts: { transaction?: Transaction | null | undefined } & Record<string, unknown> = { ...rawOptions ?? {} };
 
-			let tx = opts.transaction;
-			if (tx === undefined && clsHolder._cls) {
-				tx = clsHolder._cls.get(CLS_TRANSACTION_KEY) as Transaction | undefined;
+			let transaction = opts.transaction;
+			if (transaction === undefined && clsHolder._cls) {
+				transaction = clsHolder._cls.get(CLS_TRANSACTION_KEY) as Transaction | undefined;
 			}
-			if (tx && getTransactionSequelize(tx) !== ownSequelize) {
+			if (transaction && !transactionBelongsToSequelize(transaction, ownSequelize)) {
 				/*
 				 * Foreign transaction (from a different Sequelize instance, e.g. the
 				 * game DB) leaked into this logs-DB query via the shared CLS
@@ -371,13 +401,8 @@ export class LogsDatabase extends Database {
 	 * @param keycloakId
 	 * @returns The player or null if keycloakId is invalid
 	 */
-	static async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
-		if (!keycloakId) {
-			return null;
-		}
-		return (await LogsPlayers.findOrCreate({
-			where: { keycloakId }
-		}))[0];
+	static findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
+		return findOrCreateLogsPlayer(keycloakId);
 	}
 
 	/**
@@ -437,13 +462,7 @@ export class LogsDatabase extends Database {
 	 * @param guild
 	 */
 	private static async findOrCreateGuild(guild: Guild | GuildLikeType): Promise<LogsGuilds> {
-		return (await LogsGuilds.findOrCreate({
-			where: {
-				gameId: guild.id,
-				creationTimestamp: dateToLogs(guild.creationDate)
-			},
-			defaults: { name: guild.name }
-		}))[0];
+		return await findOrCreateLogsGuild(guild);
 	}
 
 	/**
@@ -1034,8 +1053,9 @@ export class LogsDatabase extends Database {
 	 * @param keycloakId
 	 * @param shopItem
 	 * @param amount - Number of items bought (defaults to 1)
+	 * @param cityId - Slug of the city the shop is in (omit for city-less shops, e.g. mission/guild gem shops)
 	 */
-	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount = 1): Promise<void> {
+	public async logClassicalShopBuyout(keycloakId: string, shopItem: ShopItemType, amount = 1, cityId?: string): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!logPlayer) {
 			return;
@@ -1044,29 +1064,10 @@ export class LogsDatabase extends Database {
 			playerId: logPlayer.id,
 			shopItem,
 			amount,
+			cityId: cityId ?? null,
 			date: getDateLogs()
 		});
 	}
-
-	/**
-	 * Log when anything is bought from the guild shop
-	 * @param keycloakId
-	 * @param shopItem
-	 * @param amount
-	 */
-	public async logGuildShopBuyout(keycloakId: string, shopItem: ShopItemType, amount: number): Promise<void> {
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
-		if (!logPlayer) {
-			return;
-		}
-		await LogsGuildShopBuyouts.create({
-			playerId: logPlayer.id,
-			shopItem,
-			amount,
-			date: getDateLogs()
-		});
-	}
-
 
 	/**
 	 * Log when a daily ti
@@ -1101,8 +1102,10 @@ export class LogsDatabase extends Database {
 	 * Log when anything is bought from the mission shop
 	 * @param keycloakId
 	 * @param shopItem
+	 * @param _amount - Ignored (kept for ShopUtils logger contract compatibility; mission shop items are one-shot)
+	 * @param cityId - Slug of the city the gem shop is in (omit for non-city call sites)
 	 */
-	public async logMissionShopBuyout(keycloakId: string, shopItem: ShopItemType): Promise<void> {
+	public async logMissionShopBuyout(keycloakId: string, shopItem: ShopItemType, _amount?: number, cityId?: string): Promise<void> {
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(keycloakId);
 		if (!logPlayer) {
 			return;
@@ -1110,6 +1113,7 @@ export class LogsDatabase extends Database {
 		await LogsMissionShopBuyouts.create({
 			playerId: logPlayer.id,
 			shopItem,
+			cityId: cityId ?? null,
 			date: getDateLogs()
 		});
 	}
@@ -1697,5 +1701,105 @@ export class LogsDatabase extends Database {
 	 */
 	public getContributionsSince(since: Date): Promise<Map<string, number>> {
 		return this.blessingLogger.getContributionsSince(since);
+	}
+
+	/**
+	 * Log when a player eats a meal at a city inn
+	 */
+	public logInnMeal(params: InnMealLogParams): Promise<void> {
+		return this.cityLogger.logInnMeal(params);
+	}
+
+	/**
+	 * Log when a player rents a room at a city inn
+	 */
+	public logInnRoom(params: InnRoomLogParams): Promise<void> {
+		return this.cityLogger.logInnRoom(params);
+	}
+
+	/**
+	 * Log when a player upgrades an item at the city blacksmith
+	 */
+	public logBlacksmithUpgrade(params: BlacksmithUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logBlacksmithUpgrade(params);
+	}
+
+	/**
+	 * Log when a player removes an enchantment at the city blacksmith
+	 */
+	public logBlacksmithDisenchant(params: BlacksmithDisenchantLogParams): Promise<void> {
+		return this.cityLogger.logBlacksmithDisenchant(params);
+	}
+
+	/**
+	 * Log when a player enchants an item at the city enchanter
+	 */
+	public logEnchanterUse(params: EnchanterUseLogParams): Promise<void> {
+		return this.cityLogger.logEnchanterUse(params);
+	}
+
+	/** Log when a player buys a home in a city */
+	public logHomePurchase(params: HomePurchaseLogParams): Promise<void> {
+		return this.cityLogger.logHomePurchase(params);
+	}
+
+	/** Log when a player upgrades their home level */
+	public logHomeUpgrade(params: HomeUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logHomeUpgrade(params);
+	}
+
+	/** Log when a player moves their home to another city */
+	public logHomeMove(params: HomeMoveLogParams): Promise<void> {
+		return this.cityLogger.logHomeMove(params);
+	}
+
+	/** Log when a player uses their home bed to heal */
+	public logHomeBedUse(params: HomeBedUseLogParams): Promise<void> {
+		return this.cityLogger.logHomeBedUse(params);
+	}
+
+	/** Log when a player buys an apartment in a city */
+	public logApartmentPurchase(params: ApartmentPurchaseLogParams): Promise<void> {
+		return this.cityLogger.logApartmentPurchase(params);
+	}
+
+	/** Log when a player claims accumulated rent from an apartment they own */
+	public logApartmentRentClaim(params: ApartmentRentClaimLogParams): Promise<void> {
+		return this.cityLogger.logApartmentRentClaim(params);
+	}
+
+	/** Log when a guild chief buys or relocates the guild domain at the city notary */
+	public logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): Promise<void> {
+		return this.cityLogger.logGuildDomainPurchase(params);
+	}
+
+	/** Log when a guild chief upgrades a guild building */
+	public logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams): Promise<void> {
+		return this.cityLogger.logGuildDomainUpgrade(params);
+	}
+
+	/** Log a deposit (or chief reimbursement) into the guild treasury */
+	public logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams): Promise<void> {
+		return this.cityLogger.logGuildTreasuryDeposit(params);
+	}
+
+	/** Log when a guild member buys pet food from the guild food shop */
+	public logGuildFoodShopBuy(params: GuildFoodShopBuyLogParams): Promise<void> {
+		return this.cityLogger.logGuildFoodShopBuy(params);
+	}
+
+	/** Log a cooking craft attempt (success or failure) */
+	public logCookingUse(params: CookingUseLogParams): Promise<void> {
+		return this.cityLogger.logCookingUse(params);
+	}
+
+	/** Log a garden action (plant/water/compost/harvest) */
+	public logGardenAction(params: GardenActionLogParams): Promise<void> {
+		return this.cityLogger.logGardenAction(params);
+	}
+
+	/** Log a passive city visit (entry, exit, opened-menus bitmask) */
+	public logCityVisit(params: CityVisitLogParams): Promise<void> {
+		return this.cityLogger.logCityVisit(params);
 	}
 }

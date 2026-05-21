@@ -1,6 +1,6 @@
 import { LogsExpeditions } from "./models/LogsExpeditions";
 import { LogsPetEntities } from "./models/LogsPetEntities";
-import { LogsPlayers } from "./models/LogsPlayers";
+import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import { Op } from "sequelize";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import {
@@ -40,18 +40,6 @@ export interface ExpeditionLogIdentifier {
  */
 export class LogsExpeditionLogger {
 	/**
-	 * Find or create a player in the logs database by keycloak ID
-	 */
-	private async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
-		if (keycloakId === "") {
-			return null;
-		}
-		return (await LogsPlayers.findOrCreate({
-			where: { keycloakId }
-		}))[0];
-	}
-
-	/**
 	 * Find or create a pet entity in the log database by game id
 	 */
 	private async findOrCreatePetEntityByGameId(gameId: number): Promise<LogsPetEntities> {
@@ -80,7 +68,7 @@ export class LogsExpeditionLogger {
 		petGameId: number,
 		data: Partial<ExpeditionLogData>
 	): Promise<void> {
-		const player = await this.findOrCreatePlayer(keycloakId);
+		const player = await findOrCreateLogsPlayer(keycloakId);
 		if (!player) {
 			return;
 		}
@@ -163,7 +151,7 @@ export class LogsExpeditionLogger {
 	 * Both cancelling during preparation and recalling during expedition count towards the progressive penalty
 	 */
 	async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
-		const logPlayer = await this.findOrCreatePlayer(keycloakId);
+		const logPlayer = await findOrCreateLogsPlayer(keycloakId);
 		if (!logPlayer) {
 			return 0;
 		}

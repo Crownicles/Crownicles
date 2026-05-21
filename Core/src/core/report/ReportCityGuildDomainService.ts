@@ -20,6 +20,11 @@ import {
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { GuildUtils } from "../utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { crowniclesInstance } from "../../index";
+import type {
+	GuildDomainPurchaseLogParams,
+	GuildDomainUpgradeLogParams
+} from "../database/logs/LogsCityLogger";
 
 const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
 	[GuildBuilding.SHOP]: "shopLevel",
@@ -27,6 +32,17 @@ const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
 	[GuildBuilding.PANTRY]: "pantryLevel",
 	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
 };
+
+function logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): void {
+	crowniclesInstance?.logsDatabase.logGuildDomainPurchase(params).then();
+}
+
+function logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams | null): void {
+	if (params === null) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logGuildDomainUpgrade(params).then();
+}
 
 export async function handleGuildDomainNotaryReaction(player: Player, city: City, response: CrowniclesPacket[]): Promise<void> {
 	await player.reload();
@@ -53,6 +69,7 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 		}
 
 		const isRelocation = guild.domainCityId !== null;
+		const fromCityId = guild.domainCityId;
 		const cost = isRelocation
 			? GuildDomainConstants.DOMAIN_RELOCATION_COST
 			: GuildDomainConstants.DOMAIN_PURCHASE_COST;
@@ -68,7 +85,7 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 		await guild.save();
 
 		return {
-			kind: "ok" as const, isRelocation, cost
+			kind: "ok" as const, guild, isRelocation, fromCityId, cost
 		};
 	});
 
@@ -89,6 +106,15 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 	else {
 		response.push(makePacket(CommandReportGuildDomainPurchaseRes, { cost: outcome.cost }));
 	}
+
+	logGuildDomainPurchase({
+		keycloakId: player.keycloakId,
+		guild: outcome.guild,
+		cityId: city.id,
+		fromCityId: outcome.fromCityId,
+		isRelocation: outcome.isRelocation,
+		cost: outcome.cost
+	});
 }
 
 interface ResolvedUpgrade {
@@ -162,11 +188,11 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 	 * inside the lock so the front-end correlation callback still
 	 * resolves on the upgrade packet.
 	 */
-	await Guild.withLocked(fastResolved.guild.id, async guild => {
+	const logParams = await Guild.withLocked(fastResolved.guild.id, async guild => {
 		const revalidated = validateBuildingUpgrade(guild, packet.building);
 		if (typeof revalidated === "string") {
 			response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: revalidated }));
-			return;
+			return null;
 		}
 
 		const {
@@ -197,5 +223,20 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 		});
 
 		await guild.save();
+
+		const domainCityId = guild.domainCityId;
+		if (domainCityId === null) {
+			return null;
+		}
+		return {
+			keycloakId,
+			guild,
+			cityId: domainCityId,
+			building,
+			newLevel: currentLevel + 1,
+			cost: upgradeCost,
+			xpGained
+		};
 	});
+	logGuildDomainUpgrade(logParams);
 }
