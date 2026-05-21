@@ -55,7 +55,7 @@ interface WoodSelection {
 	needsConfirmation: boolean;
 }
 
-interface CraftResult {
+export interface CraftResult {
 	success: boolean;
 	xpGained: number;
 	materialSaved: number | undefined;

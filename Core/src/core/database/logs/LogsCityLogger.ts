@@ -19,6 +19,35 @@ import { LogsCityVisits } from "./models/LogsCityVisits";
 import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
 
+type LogDate = ReturnType<typeof getDateLogs>;
+
+async function resolveLogsPlayerId(keycloakId: string): Promise<number | null> {
+	const player = await findOrCreateLogsPlayer(keycloakId);
+	return player?.id ?? null;
+}
+
+async function createDatedLogEntry(
+	keycloakId: string,
+	create: (playerId: number, date: LogDate) => Promise<unknown>
+): Promise<void> {
+	const playerId = await resolveLogsPlayerId(keycloakId);
+	if (playerId === null) {
+		return;
+	}
+	await create(playerId, getDateLogs());
+}
+
+async function createPlayerLogEntry(
+	keycloakId: string,
+	create: (playerId: number) => Promise<unknown>
+): Promise<void> {
+	const playerId = await resolveLogsPlayerId(keycloakId);
+	if (playerId === null) {
+		return;
+	}
+	await create(playerId);
+}
+
 /**
  * Parameters for logging an inn meal purchase
  */
@@ -300,21 +329,14 @@ export class LogsCityLogger {
 	 * and the player's max energy at log time, it lets us measure energy
 	 * waste (the overflow when a near-full player buys an expensive meal).
 	 */
-	async logInnMeal(params: InnMealLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsInnMeals.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			innId: params.innId,
-			mealId: params.mealId,
-			price: params.price,
-			energyGained: params.energyGained,
-			energyBefore: params.energyBefore,
-			date: getDateLogs()
-		});
+	async logInnMeal({
+		keycloakId, ...fields
+	}: InnMealLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsInnMeals.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/**
@@ -324,21 +346,14 @@ export class LogsCityLogger {
 	 * measures how often players rent expensive rooms while already near
 	 * full health.
 	 */
-	async logInnRoom(params: InnRoomLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsInnRooms.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			innId: params.innId,
-			roomId: params.roomId,
-			price: params.price,
-			healthGained: params.healthGained,
-			healthBefore: params.healthBefore,
-			date: getDateLogs()
-		});
+	async logInnRoom({
+		keycloakId, ...fields
+	}: InnRoomLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsInnRooms.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/**
@@ -348,153 +363,106 @@ export class LogsCityLogger {
 	 * player paid in coins for missing materials). When materials are
 	 * supplied from the player's inventory, the field is null.
 	 */
-	async logBlacksmithUpgrade(params: BlacksmithUpgradeLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsBlacksmithUpgrades.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			itemCategory: params.itemCategory,
-			slot: params.slot,
-			fromLevel: params.fromLevel,
-			toLevel: params.toLevel,
-			totalCost: params.totalCost,
-			boughtMaterials: params.boughtMaterials,
-			materialsCost: params.materialsCost,
-			date: getDateLogs()
-		});
+	async logBlacksmithUpgrade({
+		keycloakId, ...fields
+	}: BlacksmithUpgradeLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsBlacksmithUpgrades.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/**
 	 * Log when a player removes an enchantment from an item at the city blacksmith.
 	 */
-	async logBlacksmithDisenchant(params: BlacksmithDisenchantLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsBlacksmithDisenchants.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			itemCategory: params.itemCategory,
-			slot: params.slot,
-			cost: params.cost,
-			date: getDateLogs()
-		});
+	async logBlacksmithDisenchant({
+		keycloakId, ...fields
+	}: BlacksmithDisenchantLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsBlacksmithDisenchants.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/**
 	 * Log when a player enchants an item at the city enchanter.
 	 */
-	async logEnchanterUse(params: EnchanterUseLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsEnchanterUses.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			itemCategory: params.itemCategory,
-			slot: params.slot,
-			enchantmentId: params.enchantmentId,
-			enchantmentType: params.enchantmentType,
-			moneyPrice: params.moneyPrice,
-			gemsPrice: params.gemsPrice,
-			date: getDateLogs()
-		});
+	async logEnchanterUse({
+		keycloakId, ...fields
+	}: EnchanterUseLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsEnchanterUses.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log when a player buys a home in a city. */
-	async logHomePurchase(params: HomePurchaseLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsHomePurchases.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			price: params.price,
-			date: getDateLogs()
-		});
+	async logHomePurchase({
+		keycloakId, ...fields
+	}: HomePurchaseLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsHomePurchases.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log when a player upgrades their home level. */
-	async logHomeUpgrade(params: HomeUpgradeLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsHomeUpgrades.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			fromLevel: params.fromLevel,
-			toLevel: params.toLevel,
-			price: params.price,
-			date: getDateLogs()
-		});
+	async logHomeUpgrade({
+		keycloakId, ...fields
+	}: HomeUpgradeLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsHomeUpgrades.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log when a player moves their home to another city. */
-	async logHomeMove(params: HomeMoveLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsHomeMoves.create({
-			playerId: player.id,
-			fromCityId: params.fromCityId,
-			toCityId: params.toCityId,
-			basePrice: params.basePrice,
-			rentApplied: params.rentApplied,
-			effectivePrice: params.effectivePrice,
-			date: getDateLogs()
-		});
+	async logHomeMove({
+		keycloakId, ...fields
+	}: HomeMoveLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsHomeMoves.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log when a player uses their home bed to heal. */
-	async logHomeBedUse(params: HomeBedUseLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsHomeBedUses.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			healthGained: params.healthGained,
-			healthBefore: params.healthBefore,
-			date: getDateLogs()
-		});
+	async logHomeBedUse({
+		keycloakId, ...fields
+	}: HomeBedUseLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsHomeBedUses.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log when a player buys an apartment in a city. */
-	async logApartmentPurchase(params: ApartmentPurchaseLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsApartmentPurchases.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			price: params.price,
-			date: getDateLogs()
-		});
+	async logApartmentPurchase({
+		keycloakId, ...fields
+	}: ApartmentPurchaseLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsApartmentPurchases.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log when a player claims accumulated rent from an apartment they own. */
-	async logApartmentRentClaim(params: ApartmentRentClaimLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsApartmentRentClaims.create({
-			playerId: player.id,
-			apartmentId: params.apartmentId,
-			cityId: params.cityId,
-			rentClaimed: params.rentClaimed,
-			date: getDateLogs()
-		});
+	async logApartmentRentClaim({
+		keycloakId, ...fields
+	}: ApartmentRentClaimLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsApartmentRentClaims.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/**
@@ -504,38 +472,25 @@ export class LogsCityLogger {
 	 * For a relocation, `fromCityId` is the previous domain city and `cost` is the
 	 * relocation fee (which differs from the purchase fee).
 	 */
-	async logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsGuildDomainPurchases.create({
-			playerId: player.id,
-			guildId: params.guildId,
-			cityId: params.cityId,
-			fromCityId: params.fromCityId,
-			isRelocation: params.isRelocation,
-			cost: params.cost,
-			date: getDateLogs()
-		});
+	async logGuildDomainPurchase({
+		keycloakId, ...fields
+	}: GuildDomainPurchaseLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGuildDomainPurchases.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log when a guild chief upgrades a guild building. */
-	async logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsGuildDomainUpgrades.create({
-			playerId: player.id,
-			guildId: params.guildId,
-			cityId: params.cityId,
-			building: params.building,
-			newLevel: params.newLevel,
-			cost: params.cost,
-			xpGained: params.xpGained,
-			date: getDateLogs()
-		});
+	async logGuildDomainUpgrade({
+		keycloakId, ...fields
+	}: GuildDomainUpgradeLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGuildDomainUpgrades.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/**
@@ -544,97 +499,64 @@ export class LogsCityLogger {
 	 * `penalty` is the fraction skimmed off non-reimbursement deposits; when
 	 * `isReimburse === true`, penalty is 0 and `treasuryDeposited === grossAmount`.
 	 */
-	async logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsGuildTreasuryDeposits.create({
-			playerId: player.id,
-			guildId: params.guildId,
-			grossAmount: params.grossAmount,
-			treasuryDeposited: params.treasuryDeposited,
-			penalty: params.penalty,
-			isReimburse: params.isReimburse,
-			date: getDateLogs()
-		});
+	async logGuildTreasuryDeposit({
+		keycloakId, ...fields
+	}: GuildTreasuryDepositLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGuildTreasuryDeposits.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log when a guild member buys pet food from the guild food shop. */
-	async logGuildFoodShopBuy(params: GuildFoodShopBuyLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsGuildFoodShopBuys.create({
-			playerId: player.id,
-			guildId: params.guildId,
-			cityId: params.cityId,
-			foodType: params.foodType,
-			amount: params.amount,
-			unitPrice: params.unitPrice,
-			totalCost: params.totalCost,
-			date: getDateLogs()
-		});
+	async logGuildFoodShopBuy({
+		keycloakId, ...fields
+	}: GuildFoodShopBuyLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGuildFoodShopBuys.create({
+			playerId,
+			...fields,
+			date
+		}));
 	}
 
 	/** Log a cooking craft attempt (success or failure). */
 	async logCookingUse(params: CookingUseLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsCookingUses.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			recipeId: params.recipeId,
-			recipeLevel: params.recipeLevel,
-			outputType: params.outputType,
-			success: params.success,
-			bonus: params.bonus,
-			wasSecret: params.wasSecret,
-			xpGained: params.xpGained,
-			levelUp: params.levelUp,
-			potionId: params.potionId ?? null,
-			foodType: params.foodType ?? null,
-			foodStored: params.foodStored ?? null,
-			foodSurplus: params.foodSurplus ?? null,
-			materialOutputId: params.materialOutputId ?? null,
-			date: getDateLogs()
-		});
+		const {
+			keycloakId, potionId, foodType, foodStored, foodSurplus, materialOutputId, ...fields
+		} = params;
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsCookingUses.create({
+			playerId,
+			...fields,
+			potionId: potionId ?? null,
+			foodType: foodType ?? null,
+			foodStored: foodStored ?? null,
+			foodSurplus: foodSurplus ?? null,
+			materialOutputId: materialOutputId ?? null,
+			date
+		}));
 	}
 
 	/** Log a garden action (plant/water/compost/harvest). */
 	async logGardenAction(params: GardenActionLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsGardenActions.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			action: params.action,
-			plantId: params.plantId,
-			slot: params.slot,
-			cost: params.cost,
-			quantity: params.quantity ?? null,
-			date: getDateLogs()
-		});
+		const {
+			keycloakId, quantity, ...fields
+		} = params;
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGardenActions.create({
+			playerId,
+			...fields,
+			quantity: quantity ?? null,
+			date
+		}));
 	}
 
 	/** Log a passive city visit (entry + exit + opened-menus bitmask). */
-	async logCityVisit(params: CityVisitLogParams): Promise<void> {
-		const player = await findOrCreateLogsPlayer(params.keycloakId);
-		if (!player) {
-			return;
-		}
-		await LogsCityVisits.create({
-			playerId: player.id,
-			cityId: params.cityId,
-			enterDate: params.enterDate,
-			exitDate: params.exitDate,
-			exitReason: params.exitReason,
-			menusOpenedMask: params.menusOpenedMask
-		});
+	async logCityVisit({
+		keycloakId, ...fields
+	}: CityVisitLogParams): Promise<void> {
+		await createPlayerLogEntry(keycloakId, playerId => LogsCityVisits.create({
+			playerId,
+			...fields
+		}));
 	}
 }
