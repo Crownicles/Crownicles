@@ -8,7 +8,7 @@ import {
 	Model, ModelStatic, Sequelize, Transaction
 } from "sequelize";
 import {
-	CLS_TRANSACTION_KEY, getTransactionSequelize
+	CLS_TRANSACTION_KEY
 } from "../../../../../Lib/src/locks/CLSNamespace";
 import { LogsPlayersLevel } from "./models/LogsPlayersLevel";
 import { LogsPlayersScore } from "./models/LogsPlayersScore";
@@ -137,6 +137,7 @@ import {
 	GardenActionLogParams,
 	CityVisitLogParams
 } from "./LogsCityLogger";
+import { transactionBelongsToSequelize } from "./LogsForeignTransactionGuard";
 
 /**
  * Data structure for expedition log entries
@@ -294,6 +295,11 @@ export class LogsDatabase extends Database {
 	 * manager to pick a fresh connection from this instance's pool —
 	 * hitting `draftbot_X_logs` instead of `draftbot_X_game`.
 	 *
+	 * `findOrCreate` needs one extra guard: Sequelize may create an
+	 * internal savepoint transaction whose `sequelize` is the logs instance,
+	 * while its parent/connection still belongs to the game transaction. We
+	 * therefore walk the whole parent chain before trusting a transaction.
+	 *
 	 * The wrapper is installed once per instance, after `super.init()`
 	 * has created `this.sequelize`. It shadows the prototype method via
 	 * an own property, so the game-side Sequelize (a different instance)
@@ -316,11 +322,11 @@ export class LogsDatabase extends Database {
 		const patchedQuery = ((sql: Parameters<typeof originalQuery>[0], rawOptions?: Parameters<typeof originalQuery>[1]): Promise<unknown> => {
 			const opts: { transaction?: Transaction | null | undefined } & Record<string, unknown> = { ...rawOptions ?? {} };
 
-			let tx = opts.transaction;
-			if (tx === undefined && clsHolder._cls) {
-				tx = clsHolder._cls.get(CLS_TRANSACTION_KEY) as Transaction | undefined;
+			let transaction = opts.transaction;
+			if (transaction === undefined && clsHolder._cls) {
+				transaction = clsHolder._cls.get(CLS_TRANSACTION_KEY) as Transaction | undefined;
 			}
-			if (tx && getTransactionSequelize(tx) !== ownSequelize) {
+			if (transaction && !transactionBelongsToSequelize(transaction, ownSequelize)) {
 				/*
 				 * Foreign transaction (from a different Sequelize instance, e.g. the
 				 * game DB) leaked into this logs-DB query via the shared CLS
