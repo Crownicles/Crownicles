@@ -51,10 +51,8 @@ async function exportLogTable<T extends LogsPlayerRow>(params: ExportLogTablePar
 /**
  * Exports city interaction data from the logs database.
  *
- * This exporter is intentionally grouped per city feature; new feature
- * batches (blacksmith, enchanter, housing, apartments, shops, guild domain,
- * home features, city visits) will plug into this same file in subsequent
- * phases.
+ * This exporter is intentionally grouped per city feature so the GDPR export
+ * order mirrors the city logs migrations.
  */
 export async function exportLogsCity(
 	logsPlayerId: number,

@@ -27,21 +27,20 @@ and `commands/*`; this folder is purely a sink.
 
 4. **Append-only models** call `Model.removeAttribute("id")` so Sequelize
    issues plain `INSERT` statements without an auto-increment primary key.
-   The `city_visits` table is the one exception that keeps a primary key
-   because it is updated at the end of the visit (exit reason + menu mask
-   are not known at INSERT time).
+   `city_visits` is append-only too: the row is inserted when the city
+   collector ends, once the exit reason and menu mask are known.
 
 5. **Migrations are sequentially numbered** under `migrations/` (last:
-   `030-city-visits-logging.ts`). Every new migration **and** every new model
+   `031-mission-shop-city.ts`). Every new migration **and** every new model
    file starts with `/* eslint-disable new-cap */` to silence the Sequelize
    data-type imports.
 
 ## Adding a new city-scoped log table
 
 1. Add a new migration `migrations/0NN-<feature>-logging.ts` mirroring the
-   shape of `030-city-visits-logging.ts` (FK to `players.id` on
-   `ON DELETE CASCADE`, `cityId STRING(32)`, indexes on `(playerId)`,
-   `(cityId)`, `(<timeColumn>)`).
+   shape of `030-city-visits-logging.ts` (`playerId INTEGER`,
+   `cityId STRING(32)`, indexes on `(playerId)`, `(cityId)`,
+   `(<timeColumn>)`).
 2. Add the matching `models/LogsXxx.ts` (mirror of migration, with
    `removeAttribute("id")` if append-only).
 3. Expose params interface + method on the corresponding logger class

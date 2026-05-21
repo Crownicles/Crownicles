@@ -91,7 +91,7 @@ const CITY_REACTION_MENU_MASK = new Map<string, number>([
 	[ReactionCollectorBlacksmithMenuReaction.name, CityMenuMask.BLACKSMITH],
 	[ReactionCollectorBlacksmithUpgradeReaction.name, CityMenuMask.BLACKSMITH],
 	[ReactionCollectorBlacksmithDisenchantReaction.name, CityMenuMask.BLACKSMITH],
-	[ReactionCollectorUpgradeItemReaction.name, CityMenuMask.BLACKSMITH],
+	[ReactionCollectorUpgradeItemReaction.name, CityMenuMask.HOME],
 	[ReactionCollectorEnchantReaction.name, CityMenuMask.ENCHANTER],
 	[ReactionCollectorCityShopReaction.name, CityMenuMask.SHOP],
 	[ReactionCollectorApartmentBuyReaction.name, CityMenuMask.NOTARY],
