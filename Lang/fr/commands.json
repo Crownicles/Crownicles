@@ -2612,7 +2612,7 @@
     "embed": {
       "title": "Entrepôt de la guilde {{guildName}}",
       "descriptionTitle": "**Nourriture** : ",
-      "description": "La nourriture est utile pour nourrir tous vos familiers. Si vous n'en avez plus, vous pouvez en acheter via la commande {command:guildshop}."
+      "description": "La nourriture est utile pour nourrir tous vos familiers. Si vous n'en avez plus, vous pouvez en acheter en ville."
     },
     "food": {
       "title": "{emote:foods.{{foodId}}} $t(models:foods.{{foodId}}, {\"context\": \"capitalized\"})",
