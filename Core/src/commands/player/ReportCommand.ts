@@ -13,7 +13,9 @@ import { Player } from "../../core/database/game/models/Player";
 import { Maps } from "../../core/maps/Maps";
 import { MapLinkDataController } from "../../data/MapLink";
 import { Constants } from "../../../../Lib/src/constants/Constants";
-import { getTimeFromXHoursAgo } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	getDateLogs, getTimeFromXHoursAgo
+} from "../../../../Lib/src/utils/TimeUtils";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
@@ -258,7 +260,7 @@ export default class ReportCommand {
 }
 
 function cityCollectorEndCallback(context: PacketContext, player: Player, forceSpecificEvent: number, city: City): EndCallback {
-	const enterDate = Math.floor(Date.now() / 1000);
+	const enterDate = getDateLogs();
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 		const firstReaction = collector.getFirstReaction();
@@ -281,7 +283,7 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 			keycloakId: player.keycloakId,
 			cityId: city.id,
 			enterDate,
-			exitDate: Math.floor(Date.now() / 1000),
+			exitDate: getDateLogs(),
 			exitReason,
 			menusOpenedMask
 		}).then();
