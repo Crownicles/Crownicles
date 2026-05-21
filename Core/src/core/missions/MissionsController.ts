@@ -13,7 +13,7 @@ import { Campaign } from "./Campaign";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
 	CrowniclesPacket,
 	makePacket
@@ -241,6 +241,7 @@ export abstract class MissionsController {
 		 * until the transaction commits — causing cascading ER_LOCK_WAIT_TIMEOUT (1205).
 		 */
 		const dailyMission = await DailyMissions.getOrGenerate();
+		await PlayerMissionsInfos.getOfPlayer(player.id);
 		try {
 			return await withLockedEntities(
 				[
