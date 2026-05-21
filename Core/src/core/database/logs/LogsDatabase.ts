@@ -2,6 +2,7 @@ import { Database } from "../../../../../Lib/src/database/Database";
 import { LogsPlayersMoney } from "./models/LogsPlayersMoney";
 import { LogsPlayers } from "./models/LogsPlayers";
 import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
+import { findOrCreateLogsGuild } from "./LogsGuildResolver";
 import { LogsPlayersHealth } from "./models/LogsPlayersHealth";
 import { LogsPlayersExperience } from "./models/LogsPlayersExperience";
 import {
@@ -461,13 +462,7 @@ export class LogsDatabase extends Database {
 	 * @param guild
 	 */
 	private static async findOrCreateGuild(guild: Guild | GuildLikeType): Promise<LogsGuilds> {
-		return (await LogsGuilds.findOrCreate({
-			where: {
-				gameId: guild.id,
-				creationTimestamp: dateToLogs(guild.creationDate)
-			},
-			defaults: { name: guild.name }
-		}))[0];
+		return await findOrCreateLogsGuild(guild);
 	}
 
 	/**

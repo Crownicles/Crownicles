@@ -85,7 +85,7 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 		await guild.save();
 
 		return {
-			kind: "ok" as const, isRelocation, fromCityId, cost
+			kind: "ok" as const, guild, isRelocation, fromCityId, cost
 		};
 	});
 
@@ -109,7 +109,7 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 
 	logGuildDomainPurchase({
 		keycloakId: player.keycloakId,
-		guildId,
+		guild: outcome.guild,
 		cityId: city.id,
 		fromCityId: outcome.fromCityId,
 		isRelocation: outcome.isRelocation,
@@ -230,7 +230,7 @@ export async function handleGuildDomainUpgrade(keycloakId: string, packet: Comma
 		}
 		return {
 			keycloakId,
-			guildId: guild.id,
+			guild,
 			cityId: domainCityId,
 			building,
 			newLevel: currentLevel + 1,

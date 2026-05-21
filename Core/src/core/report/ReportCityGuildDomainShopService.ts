@@ -101,7 +101,7 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 				}),
 				logParams: {
 					keycloakId,
-					guildId: lockedGuild.id,
+					guild: lockedGuild,
 					grossAmount,
 					treasuryDeposited,
 					penalty,

@@ -220,16 +220,11 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Get the id of the city the player is currently travelling to,
-	 * or `null` if the player's destination is not a city.
-	 * Centralises the `getDestinationId() → CityDataController.getCityByMapLinkId(...).id`
-	 * resolution used by every city-scoped logger.
+	 * Get the id of the city attached to the player's current map link,
+	 * or `null` if the map link is not a city entrance.
 	 */
 	getCurrentCityId(): string | null {
-		const destinationId = this.getDestinationId();
-		return destinationId !== null
-			? CityDataController.instance.getCityByMapLinkId(destinationId)?.id ?? null
-			: null;
+		return CityDataController.instance.getCityByMapLinkId(this.mapLinkId)?.id ?? null;
 	}
 
 	/**

@@ -56,7 +56,7 @@ async function exportLogTable<T extends LogsPlayerRow>(params: ExportLogTablePar
  */
 export async function exportLogsCity(
 	logsPlayerId: number,
-	_anonymizer: GDPRAnonymizer,
+	anonymizer: GDPRAnonymizer,
 	csvFiles: GDPRCsvFiles
 ): Promise<void> {
 	await exportLogTable({
@@ -214,7 +214,7 @@ export async function exportLogsCity(
 		filePath: "logs/89_guild_domain_purchases.csv",
 		model: LogsGuildDomainPurchases,
 		transform: purchase => ({
-			guildId: purchase.guildId,
+			guildId: anonymizer.anonymizeGuildId(purchase.guildId),
 			cityId: purchase.cityId,
 			fromCityId: purchase.fromCityId ?? "",
 			isRelocation: purchase.isRelocation,
@@ -228,7 +228,7 @@ export async function exportLogsCity(
 		filePath: "logs/90_guild_domain_upgrades.csv",
 		model: LogsGuildDomainUpgrades,
 		transform: upgrade => ({
-			guildId: upgrade.guildId,
+			guildId: anonymizer.anonymizeGuildId(upgrade.guildId),
 			cityId: upgrade.cityId,
 			building: upgrade.building,
 			newLevel: upgrade.newLevel,
@@ -243,7 +243,7 @@ export async function exportLogsCity(
 		filePath: "logs/91_guild_treasury_deposits.csv",
 		model: LogsGuildTreasuryDeposits,
 		transform: deposit => ({
-			guildId: deposit.guildId,
+			guildId: anonymizer.anonymizeGuildId(deposit.guildId),
 			grossAmount: deposit.grossAmount,
 			treasuryDeposited: deposit.treasuryDeposited,
 			penalty: deposit.penalty,
@@ -257,7 +257,7 @@ export async function exportLogsCity(
 		filePath: "logs/92_guild_food_shop_buys.csv",
 		model: LogsGuildFoodShopBuys,
 		transform: purchase => ({
-			guildId: purchase.guildId,
+			guildId: anonymizer.anonymizeGuildId(purchase.guildId),
 			cityId: purchase.cityId ?? "",
 			foodType: purchase.foodType,
 			amount: purchase.amount,

@@ -641,6 +641,18 @@ describe("GDPR Export Data Leak Prevention", () => {
 			const matches = content.match(fieldUsagePattern);
 
 			if (matches) {
+				const directExportCheck = new RegExp(
+					`\\b${field}\\s*:\\s*(?:\\w+\\.)?${field}\\b`,
+					"g"
+				);
+				const directExports = [...content.matchAll(directExportCheck)]
+					.filter(match => !content.slice(Math.max(0, (match.index ?? 0) - 20), match.index)
+						.match(/where:\s*{\s*$/));
+				if (directExports.length > 0) {
+					violations.push(field);
+					continue;
+				}
+
 				// Check if this field usage is also accompanied by anonymization
 				// We look for anonymize calls on the same field nearby
 				const anonymizePatterns = [
@@ -659,11 +671,11 @@ describe("GDPR Export Data Leak Prevention", () => {
 
 				if (!content.includes("GDPRAnonymizer") && !hasAnonymization) {
 					// Check if the field is being directly exported
-					const directExportCheck = new RegExp(
+					const fallbackDirectExportCheck = new RegExp(
 						`\\b${field}\\s*:\\s*(?:\\w+\\.)?${field}\\b`,
 						"g"
 					);
-					if (directExportCheck.test(content)) {
+					if (fallbackDirectExportCheck.test(content)) {
 						violations.push(field);
 					}
 				}

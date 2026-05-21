@@ -150,7 +150,7 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 
 		crowniclesInstance?.logsDatabase.logGuildFoodShopBuy({
 			keycloakId,
-			guildId: guild.id,
+			guild,
 			cityId: guild.domainCityId,
 			foodType: resolved.foodType,
 			amount: actualAmount,

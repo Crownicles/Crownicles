@@ -17,9 +17,16 @@ import { LogsCookingUses } from "./models/LogsCookingUses";
 import { LogsGardenActions } from "./models/LogsGardenActions";
 import { LogsCityVisits } from "./models/LogsCityVisits";
 import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
+import { findOrCreateLogsGuild } from "./LogsGuildResolver";
 import { getDateLogs } from "../../../../../Lib/src/utils/TimeUtils";
+import {
+	Guild
+} from "../game/models/Guild";
+import { GuildLikeType } from "../../types/GuildLikeType";
 
 type LogDate = ReturnType<typeof getDateLogs>;
+
+type GuildLogSource = Guild | GuildLikeType;
 
 async function resolveLogsPlayerId(keycloakId: string): Promise<number | null> {
 	const player = await findOrCreateLogsPlayer(keycloakId);
@@ -46,6 +53,19 @@ async function createPlayerLogEntry(
 		return;
 	}
 	await create(playerId);
+}
+
+async function createDatedPlayerGuildLogEntry(
+	keycloakId: string,
+	guild: GuildLogSource,
+	create: (playerId: number, guildId: number, date: LogDate) => Promise<unknown>
+): Promise<void> {
+	const playerId = await resolveLogsPlayerId(keycloakId);
+	if (playerId === null) {
+		return;
+	}
+	const logGuild = await findOrCreateLogsGuild(guild);
+	await create(playerId, logGuild.id, getDateLogs());
 }
 
 /**
@@ -183,7 +203,7 @@ export interface ApartmentRentClaimLogParams {
  */
 export interface GuildDomainPurchaseLogParams {
 	keycloakId: string;
-	guildId: number;
+	guild: GuildLogSource;
 	cityId: string;
 	fromCityId: string | null;
 	isRelocation: boolean;
@@ -195,7 +215,7 @@ export interface GuildDomainPurchaseLogParams {
  */
 export interface GuildDomainUpgradeLogParams {
 	keycloakId: string;
-	guildId: number;
+	guild: GuildLogSource;
 	cityId: string;
 	building: string;
 	newLevel: number;
@@ -208,7 +228,7 @@ export interface GuildDomainUpgradeLogParams {
  */
 export interface GuildTreasuryDepositLogParams {
 	keycloakId: string;
-	guildId: number;
+	guild: GuildLogSource;
 	grossAmount: number;
 	treasuryDeposited: number;
 	penalty: number;
@@ -220,7 +240,7 @@ export interface GuildTreasuryDepositLogParams {
  */
 export interface GuildFoodShopBuyLogParams {
 	keycloakId: string;
-	guildId: number;
+	guild: GuildLogSource;
 	cityId: string | null;
 	foodType: string;
 	amount: number;
@@ -473,10 +493,11 @@ export class LogsCityLogger {
 	 * relocation fee (which differs from the purchase fee).
 	 */
 	async logGuildDomainPurchase({
-		keycloakId, ...fields
+		keycloakId, guild, ...fields
 	}: GuildDomainPurchaseLogParams): Promise<void> {
-		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGuildDomainPurchases.create({
+		await createDatedPlayerGuildLogEntry(keycloakId, guild, (playerId, guildId, date) => LogsGuildDomainPurchases.create({
 			playerId,
+			guildId,
 			...fields,
 			date
 		}));
@@ -484,10 +505,11 @@ export class LogsCityLogger {
 
 	/** Log when a guild chief upgrades a guild building. */
 	async logGuildDomainUpgrade({
-		keycloakId, ...fields
+		keycloakId, guild, ...fields
 	}: GuildDomainUpgradeLogParams): Promise<void> {
-		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGuildDomainUpgrades.create({
+		await createDatedPlayerGuildLogEntry(keycloakId, guild, (playerId, guildId, date) => LogsGuildDomainUpgrades.create({
 			playerId,
+			guildId,
 			...fields,
 			date
 		}));
@@ -500,10 +522,11 @@ export class LogsCityLogger {
 	 * `isReimburse === true`, penalty is 0 and `treasuryDeposited === grossAmount`.
 	 */
 	async logGuildTreasuryDeposit({
-		keycloakId, ...fields
+		keycloakId, guild, ...fields
 	}: GuildTreasuryDepositLogParams): Promise<void> {
-		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGuildTreasuryDeposits.create({
+		await createDatedPlayerGuildLogEntry(keycloakId, guild, (playerId, guildId, date) => LogsGuildTreasuryDeposits.create({
 			playerId,
+			guildId,
 			...fields,
 			date
 		}));
@@ -511,10 +534,11 @@ export class LogsCityLogger {
 
 	/** Log when a guild member buys pet food from the guild food shop. */
 	async logGuildFoodShopBuy({
-		keycloakId, ...fields
+		keycloakId, guild, ...fields
 	}: GuildFoodShopBuyLogParams): Promise<void> {
-		await createDatedLogEntry(keycloakId, (playerId, date) => LogsGuildFoodShopBuys.create({
+		await createDatedPlayerGuildLogEntry(keycloakId, guild, (playerId, guildId, date) => LogsGuildFoodShopBuys.create({
 			playerId,
+			guildId,
 			...fields,
 			date
 		}));

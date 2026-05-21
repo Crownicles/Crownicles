@@ -17,8 +17,8 @@ and `commands/*`; this folder is purely a sink.
 
 2. **`cityId` is always resolved via `Player.getCurrentCityId()`** (see
    `Core/src/core/database/game/models/Player.ts`). Do not re-implement the
-   `getDestinationId() → CityDataController.getCityByMapLinkId(...).id`
-   ternary in service files — call the helper and coerce to `undefined` only
+   `mapLinkId → CityDataController.getCityByMapLinkId(...).id`
+   resolution in service files — call the helper and coerce to `undefined` only
    if the consumer's signature demands it.
 
 3. **Keycloak id → log player row** goes through `findOrCreateLogsPlayer`
