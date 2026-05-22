@@ -14,6 +14,7 @@ import { BlockedPacket } from "../../../../Lib/src/packets/commands/BlockedPacke
 import { LANGUAGE } from "../../../../Lib/src/Language";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { formatBlockedReasons } from "../../utils/BlockingReasonUtils";
 
 export default class ErrorHandler {
 	@packetHandler(ErrorPacket)
@@ -37,13 +38,7 @@ export default class ErrorHandler {
 		const buttonInteraction = context.discord?.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord.buttonInteraction) : undefined;
 		const otherPlayer = context.keycloakId !== packet.keycloakId;
 
-		let errorReasons = "";
-		packet.reasons.forEach(reason => {
-			errorReasons = errorReasons.concat(`${i18n.t(`error:blockedContext.${reason}`, {
-				lng
-			})}, `);
-		});
-		errorReasons = errorReasons.slice(0, -2);
+		const errorReasons = formatBlockedReasons(packet.reasons, lng);
 
 		const embed = new CrowniclesEmbed()
 			.setErrorColor()
