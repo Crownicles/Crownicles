@@ -26,13 +26,22 @@ function toSourceRelativePath(filePath: string): string {
 		.join("/");
 }
 
+function hasEnsureCallBeforeLockCall(code: string): boolean {
+	const lockIndex = code.indexOf(LOCK_CALL);
+	if (lockIndex === -1) {
+		return true;
+	}
+	const ensureIndex = code.indexOf(ENSURE_CALL);
+	return ensureIndex !== -1 && ensureIndex < lockIndex;
+}
+
 describe("PlayerMissionsInfo lock guard", () => {
 	it("ensures player mission info rows before locking them", () => {
 		const offenders = listTypeScriptFiles(SOURCE_ROOT)
 			.filter(filePath => toSourceRelativePath(filePath) !== PLAYER_MISSIONS_INFO_MODEL_PATH)
 			.filter(filePath => {
 				const code = fs.readFileSync(filePath, "utf-8");
-				return code.includes(LOCK_CALL) && !code.includes(ENSURE_CALL);
+				return code.includes(LOCK_CALL) && !hasEnsureCallBeforeLockCall(code);
 			})
 			.map(toSourceRelativePath);
 
