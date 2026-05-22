@@ -810,7 +810,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				this.updateGardenAfterWatering(garden, ctx, response);
 				const successMessage = i18n.t("commands:report.city.homes.garden.waterSuccess", {
 					lng: ctx.lng,
-					slotsWatered: response.slotsWatered,
+					wateredPlots: this.buildWateredPlotsLabel(response.slotsWatered, ctx),
 					slotsBecameReady: response.slotsBecameReady,
 					count: response.slotsBecameReady
 				});
@@ -818,6 +818,13 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
 			}
 		);
+	}
+
+	private buildWateredPlotsLabel(slotsWatered: number, ctx: HomeFeatureHandlerContext): string {
+		return i18n.t("commands:report.city.homes.garden.wateredPlots", {
+			lng: ctx.lng,
+			count: slotsWatered
+		});
 	}
 
 	/**
