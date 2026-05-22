@@ -1033,8 +1033,8 @@
         "disenchantSelectDescription": "{emote:city.blacksmith.disenchant} Le forgeron prépare ses outils de désenchantement, une série de pinces et de cristaux absorbants. Le désenchantement demande de la précision.\n\n{emote:unitValues.money} Vous avez **{{money, number}}** {emote:unitValues.money}",
         "disenchantItemDetails": "{{itemDisplay}}\n\n**Coût du désenchantement :** {{cost, number}} {emote:unitValues.money}\n\nL'enchantement sera définitivement retiré. L'équipement redeviendra ordinaire, mais restera intact.",
         "confirmDisenchant": "Désenchanter ({{cost, number}})",
-        "upgradeSuccess": "{emote:city.blacksmith.upgrade} Le forgeron frappe l'enclume avec précision, les étincelles volent dans l'air. Après quelques coups experts, il vous tend l'équipement amélioré au niv. {{newLevel}} avec satisfaction.",
-        "upgradeSuccessWithBuy": "{emote:city.blacksmith.upgrade} Le forgeron vous fournit les matériaux manquants et se met immédiatement au travail. Les étincelles volent tandis qu'il renforce votre équipement, désormais au niv. {{newLevel}}.",
+        "upgradeSuccess": "{emote:city.blacksmith.upgrade} Le forgeron frappe l'enclume avec précision, les étincelles volent dans l'air. Après quelques coups experts, il vous tend l'équipement amélioré au niveau {{newLevel}} avec satisfaction.",
+        "upgradeSuccessWithBuy": "{emote:city.blacksmith.upgrade} Le forgeron vous fournit les matériaux manquants et se met immédiatement au travail. Les étincelles volent tandis qu'il renforce votre équipement, désormais au niveau {{newLevel}}.",
         "disenchantSuccess": "{emote:city.blacksmith.disenchant} Le forgeron passe délicatement les cristaux absorbants sur votre équipement. La lueur magique s'estompe progressivement. L'enchantement a été retiré proprement et votre équipement est redevenu ordinaire.",
         "notEnoughMoney": "{emote:messages.refuse} Le forgeron secoue la tête en comptant vos pièces. Il vous manque **{{missingMoney, number}}** {emote:unitValues.money} pour payer ses services.",
         "missingMaterialsTitle": "{{pseudo}}, matériaux insuffisants !",
@@ -1097,7 +1097,7 @@
           "claimTooLow": "Le loyer accumulé de votre logis $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)** ne s'élève qu'à **{{current}} {emote:unitValues.money}** — il en faut au moins **{{min}} {emote:unitValues.money}** avant de pouvoir le retirer."
         },
         "upgradeItemTitle": "{{pseudo}}, amélioration d'équipement réussie !",
-        "upgradeItemDescription": "Votre équipement a été amélioré avec succès au **niv. {{newLevel}}** ! Les matériaux nécessaires ont été consommés.",
+        "upgradeItemDescription": "Votre équipement a été amélioré avec succès au **niveau {{newLevel}}** ! Les matériaux nécessaires ont été consommés.",
         "upgradeItemMissingMaterialsTitle": "{{pseudo}}, matériaux insuffisants !",
         "upgradeItemMissingMaterialsDescription": "Vous n'avez pas les matériaux nécessaires pour améliorer cet équipement. Récupérez-en lors de vos aventures et revenez plus tard !",
         "upgradeItemMaxLevelTitle": "{{pseudo}}, niveau maximum atteint !",
@@ -1121,8 +1121,8 @@
           "stationQualityBasic": "rudimentaire",
           "stationQualityAdvanced": "de qualité",
           "stationQualityMaster": "de maître artisan",
-          "levelLimitationBasic": "Vos talents de forgeron amateur vous limitent aux améliorations de niv. {{maxLevel}}, au-delà il vous faudra consulter un véritable forgeron.",
-          "levelLimitationAdvanced": "Votre maîtrise des outils vous permet d'atteindre le niv. {{maxLevel}}, mais les améliorations supérieures nécessitent l'expertise d'un forgeron professionnel.",
+          "levelLimitationBasic": "Vos talents de forgeron amateur vous limitent aux améliorations de niveau {{maxLevel}}, au-delà il vous faudra consulter un véritable forgeron.",
+          "levelLimitationAdvanced": "Votre maîtrise des outils vous permet d'atteindre le niveau {{maxLevel}}, mais les améliorations supérieures nécessitent l'expertise d'un forgeron professionnel.",
           "placeholder": "Sélectionnez un équipement"
         },
         "bed": {
