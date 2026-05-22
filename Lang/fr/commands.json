@@ -2582,7 +2582,7 @@
     "petOnExpedition": "Votre familier est actuellement en expédition et ne peut pas être nourri.",
     "noMoney": "Vous n'avez pas assez d'argent pour effectuer cet achat...",
     "notHungry": "Il semblerait que **{{pet}}** n'ait pas faim...",
-    "guildStorageEmpty": "L'entrepôt de nourriture de votre guilde est vide. Achetez de la nourriture avec {command:guildshop}.",
+    "guildStorageEmpty": "L'entrepôt de nourriture de votre guilde est vide. Ravitaillez votre guilde en ville avec {command:report}.",
     "cancelled": "Nourrissage annulé !",
     "resultTitle": "{{pseudo}}, nourrissage effectué !",
     "result": {
