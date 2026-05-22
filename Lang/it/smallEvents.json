@@ -1405,7 +1405,7 @@
           "solo": "Presi dal panico, cercate di schivare i potenziali danni del terremoto. Dopo qualche istante, non sentite più la scossa. Quando tornate nel luogo in cui volevate riposare, notate i danni causati dal terremoto. È un bene che non siate rimasti lì..."
         },
         "lose": {
-          "withGuild": "Vi dite che questo terremoto sarà di breve durata e chiedete al resto della gilda di affrontarlo. Ma che errore! Una roccia si abbatte su di voi e vi fa perdere i sensi. Perdi **{{amount, number}} {emote:unitValues.energy}**.",
+          "withGuild": "Vous vous dites que ce séisme sera court, et demandez au reste de la guilde de braver celui-ci. Quelle erreur ! Un rocher s'écrase sur vous et vous assomme. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**.",
           "solo": "Dicendo a se stessi che i danni saranno minimi, si continua a riposare. Tuttavia, sotto il vostro corpo si forma un crepaccio. Temendo di caderci dentro, si cerca di correre il più lontano possibile, ma si inciampa e ci si taglia il braccio. Si perde **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
@@ -1469,8 +1469,8 @@
           "solo": "Fortunatamente per voi, si è trattato solo di un fastidio momentaneo e siete riusciti a rimettervi in marcia dopo qualche minuto di riposo."
         },
         "lose": {
-          "withGuild": "Di fronte a questo improvviso malessere, i vostri compagni di gilda, non sapendo come aiutarvi, decidono di portarvi in braccio fino allo stadio successivo, ma la stanchezza si fa sentire e voi svenite. Perdi **{{amount, number}} {emote:unitValues.energy}**.",
-          "solo": "Completamente esausti, il cielo comincia a girare intorno a voi. Cercate di alzarvi, ma non siete abbastanza forti e vi sembra di essere in un mare in tempesta, così svenite in mezzo alla strada. Si perde **{{amount, number}} {emote:unitValues.energy}**."
+          "withGuild": "Face à ce soudain malaise, vos compagnons de guilde, ne sachant comment vous aider, décident de vous porter jusqu'à la prochaine étape, mais l'épuisement vous harcèle et vous vous évanouissez. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**.",
+          "solo": "Complètement épuisé, le ciel se met à tourner autour de vous. Vous tentez de vous relever, mais les forces vous manquant et ayant l'impression d'être sur une mer déchaînée, vous vous évanouissez au beau milieu du chemin. Vous perdez **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       }
     ]
