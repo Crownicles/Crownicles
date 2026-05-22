@@ -18,6 +18,14 @@ export interface ICommand {
 	slashCommandPermissions?: ApplicationCommandPermissions[];
 
 	/**
+	 * Whether the command is allowed in DMs (default: false).
+	 * When true, the slash command is registered with both Guild and BotDM
+	 * contexts, and the CommandsManager will execute it in DM channels
+	 * without performing the per-channel guild permission checks.
+	 */
+	allowedInDM?: boolean;
+
+	/**
 	 * Optional handler for autocomplete interactions
 	 */
 	handleAutocomplete?: (interaction: AutocompleteInteraction) => Promise<void>;

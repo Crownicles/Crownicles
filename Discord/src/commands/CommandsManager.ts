@@ -474,7 +474,13 @@ export class CommandsManager {
 					.finally(() => null);
 				return;
 			}
-			if (!interaction.member) { // If in DM, shouldn't happen
+			if (!interaction.member) { // If in DM
+				const commandInfo = CommandsManager.commands.get(discordInteraction.commandName);
+				if (commandInfo?.allowedInDM) {
+					CommandsManager.handleDMCommand(interaction, getUser.payload.user, commandInfo)
+						.then();
+					return;
+				}
 				CommandsManager.handlePrivateMessage(discordInteraction)
 					.finally(() => null);
 				return;
@@ -598,6 +604,24 @@ export class CommandsManager {
 		}
 		else {
 			await CommandsManager.sendSupportMessage(message, Constants.DM.TITLE_SUPPORT, "bot:commandDisabledInDM");
+		}
+	}
+
+	/**
+	 * Handle a slash command issued in a DM channel for commands that opt
+	 * into being available outside of guilds (`allowedInDM`). The per-channel
+	 * guild permission validation is skipped because DM channels are not
+	 * role-restricted: the bot can always reply through interactions.
+	 * @param interaction
+	 * @param user
+	 * @param commandInfo
+	 */
+	private static async handleDMCommand(interaction: CrowniclesInteraction, user: KeycloakUser, commandInfo: ICommand): Promise<void> {
+		DiscordCache.cacheInteraction(interaction);
+		const packet = await commandInfo.getPacket(interaction, user);
+		if (packet) {
+			const context = await PacketUtils.createPacketContext(interaction, user);
+			PacketUtils.sendPacketToBackend(context, packet);
 		}
 	}
 
