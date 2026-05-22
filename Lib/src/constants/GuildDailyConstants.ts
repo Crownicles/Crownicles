@@ -6,6 +6,7 @@ export abstract class GuildDailyConstants {
 	static readonly REWARD_TYPES = {
 		PERSONAL_XP: "personalXP",
 		GUILD_XP: "guildXP",
+		GUILD_POINTS: "guildPoints",
 		HOSPITAL: "hospital",
 		MONEY: "money",
 		BADGE: "badge",
@@ -37,6 +38,12 @@ export abstract class GuildDailyConstants {
 	static readonly TIME_ADVANCED_MULTIPLIER = 0.05;
 
 	static readonly TIME_BETWEEN_DAILIES: Hour = asHours(22);
+
+	static readonly GUILD_POINTS_MINIMUM_RATIO = 0.85;
+
+	static readonly GUILD_POINTS_MINIMUM = 5;
+
+	static readonly GUILD_POINTS_MAXIMUM_MINIMUM = 10;
 
 	static readonly SIZE_PALIER = 10;
 

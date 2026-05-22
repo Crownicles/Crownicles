@@ -56,6 +56,13 @@ export function getCommandGuildDailyRewardPacketString(packet: CommandGuildDaily
 		})}\n`;
 	}
 
+	if (packet.guildPoints) {
+		desc += `${i18n.t("commands:guildDaily.rewards.guildPoints", {
+			lng,
+			quantity: packet.guildPoints
+		})}\n`;
+	}
+
 	return desc;
 }
 
