@@ -74,10 +74,12 @@ import {
 import {
 	CommandReportGardenErrorRes,
 	CommandReportGardenHarvestRes,
-	CommandReportGardenPlantRes
+	CommandReportGardenPlantRes,
+	CommandReportGardenWaterRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorRefuseReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
+import i18n from "../../src/translations/i18n";
 
 describe("GardenFeatureHandler", () => {
 	let handler: GardenFeatureHandler;
@@ -433,6 +435,51 @@ describe("GardenFeatureHandler", () => {
 			// Menu refreshed
 			expect(menus.registerMenu).toHaveBeenCalled();
 			expect(menus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.GARDEN_MENU);
+		});
+
+		it("should format watering success with a localized watered-plot label", async () => {
+			const garden = createGardenData({
+				plots: [
+					{
+						slot: 0, plantId: 1, growthProgress: 0.5, isReady: false, readyAtTimestamp: Math.ceil(Date.now() / 1000) + 60
+					}
+				]
+			});
+			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const interaction = createMockComponentInteraction(HomeMenuIds.GARDEN_WATER);
+			const menus = createMockNestedMenus();
+
+			const mockSendPacket = vi.mocked(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse);
+			mockSendPacket.mockImplementation(async (_ctx, _packet, handler) => {
+				const response: Partial<CommandReportGardenWaterRes> = {
+					slotsWatered: 1,
+					slotsBecameReady: 1,
+					nextWateringAvailableAt: Date.now() + 60_000
+				};
+				await handler!(
+					_ctx,
+					CommandReportGardenWaterRes.name,
+					response as never
+				);
+			});
+
+			await handler.handleSubMenuSelection(
+				ctx, HomeMenuIds.GARDEN_WATER, interaction as never, menus as never
+			);
+
+			expect(i18n.t).toHaveBeenCalledWith("commands:report.city.homes.garden.wateredPlots", {
+				lng: ctx.lng,
+				count: 1
+			});
+			expect(i18n.t).toHaveBeenCalledWith(
+				"commands:report.city.homes.garden.waterSuccess",
+				expect.objectContaining({
+					lng: ctx.lng,
+					wateredPlots: expect.stringContaining("commands:report.city.homes.garden.wateredPlots"),
+					slotsBecameReady: 1,
+					count: 1
+				})
+			);
 		});
 	});
 
