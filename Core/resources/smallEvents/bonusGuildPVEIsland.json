@@ -16,33 +16,9 @@
       "life": {
         "min": 3,
         "max": 10
-      },
-      "energy": {
-        "min": 10,
-        "max": 25
       }
     },
     "events": [
-      {
-        "success": {
-          "withGuild": "expOrPointsGuild",
-          "solo": "experience"
-        },
-        "lose": {
-          "withGuild": "money",
-          "solo": "life"
-        }
-      },
-      {
-        "success": {
-          "withGuild": "expOrPointsGuild",
-          "solo": "experience"
-        },
-        "lose": {
-          "withGuild": "energy",
-          "solo": "life"
-        }
-      },
       {
         "success": {
           "withGuild": "expOrPointsGuild",
@@ -79,11 +55,31 @@
           "solo": "experience"
         },
         "lose": {
-          "withGuild": "energy",
-          "solo": "energy"
+          "withGuild": "money",
+          "solo": "life"
+        }
+      },
+      {
+        "success": {
+          "withGuild": "expOrPointsGuild",
+          "solo": "experience"
+        },
+        "lose": {
+          "withGuild": "life",
+          "solo": "life"
+        }
+      },
+      {
+        "success": {
+          "withGuild": "expOrPointsGuild",
+          "solo": "experience"
+        },
+        "lose": {
+          "withGuild": "life",
+          "solo": "life"
         }
       }
     ]
   },
-  "rarity": 8
+  "rarity": 6
 }
