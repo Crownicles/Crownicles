@@ -446,7 +446,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		return createHomeFeatureCollector(this, ctx);
 	}
 
-	private sendRefuseReaction(ctx: HomeFeatureHandlerContext, componentInteraction: ComponentInteraction): void {
+	private sendRefuseReaction(ctx: HomeFeatureHandlerContext, componentInteraction: ComponentInteraction | null): void {
 		const reactionIndex = ctx.packet.reactions.findIndex(reaction => reaction.type === ReactionCollectorRefuseReaction.name);
 		if (reactionIndex !== -1) {
 			DiscordCollectorUtils.sendReaction(ctx.packet, ctx.context, ctx.context.keycloakId!, componentInteraction, reactionIndex);
@@ -787,9 +787,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Send a watering action to Core and refresh the garden menu. On cooldown
-	 * or when no plants are growing, the menu is re-rendered with a short
-	 * status message instead of throwing.
+	 * Send a watering action to Core. On success, end the city interaction
+	 * (like a shop purchase): the player must redo /report to interact with
+	 * the garden again. On cooldown or when no plants are growing, the menu
+	 * is re-rendered with a short status message instead of throwing.
 	 */
 	private async sendWaterAction(
 		ctx: HomeFeatureHandlerContext,
@@ -808,23 +809,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				const response = responsePacket as CommandReportGardenWaterRes;
 				const garden = ctx.homeData.garden!;
 				this.updateGardenAfterWatering(garden, ctx, response);
-				const successMessage = i18n.t("commands:report.city.homes.garden.waterSuccess", {
-					lng: ctx.lng,
-					wateredPlots: this.buildWateredPlotsLabel(response.slotsWatered, ctx),
-					slotsBecameReady: response.slotsBecameReady,
-					count: response.slotsBecameReady
-				});
-				this.registerGardenMenu(ctx, nestedMenus, successMessage);
-				await nestedMenus.changeMenu(HomeMenuIds.GARDEN_MENU);
+				this.sendRefuseReaction(ctx, null);
+				await nestedMenus.stopCurrentCollector();
 			}
 		);
-	}
-
-	private buildWateredPlotsLabel(slotsWatered: number, ctx: HomeFeatureHandlerContext): string {
-		return i18n.t("commands:report.city.homes.garden.wateredPlots", {
-			lng: ctx.lng,
-			count: slotsWatered
-		});
 	}
 
 	/**
