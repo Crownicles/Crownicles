@@ -437,7 +437,7 @@ describe("GardenFeatureHandler", () => {
 			expect(menus.changeMenu).toHaveBeenCalledWith(HomeMenuIds.GARDEN_MENU);
 		});
 
-		it("should format watering success with a localized watered-plot label", async () => {
+		it("should end the city interaction after a successful watering, like a shop purchase", async () => {
 			const garden = createGardenData({
 				plots: [
 					{
@@ -445,9 +445,16 @@ describe("GardenFeatureHandler", () => {
 					}
 				]
 			});
-			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
+			const ctx = createHandlerContext({
+				homeData: createHomeData({ garden }),
+				packet: createMockPacket([
+					{ type: "SomeOtherReaction" },
+					{ type: ReactionCollectorRefuseReaction.name }
+				])
+			});
 			const interaction = createMockComponentInteraction(HomeMenuIds.GARDEN_WATER);
 			const menus = createMockNestedMenus();
+			const sendReaction = vi.spyOn(DiscordCollectorUtils, "sendReaction").mockImplementation(() => {});
 
 			const mockSendPacket = vi.mocked(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse);
 			mockSendPacket.mockImplementation(async (_ctx, _packet, handler) => {
@@ -467,19 +474,9 @@ describe("GardenFeatureHandler", () => {
 				ctx, HomeMenuIds.GARDEN_WATER, interaction as never, menus as never
 			);
 
-			expect(i18n.t).toHaveBeenCalledWith("commands:report.city.homes.garden.wateredPlots", {
-				lng: ctx.lng,
-				count: 1
-			});
-			expect(i18n.t).toHaveBeenCalledWith(
-				"commands:report.city.homes.garden.waterSuccess",
-				expect.objectContaining({
-					lng: ctx.lng,
-					wateredPlots: expect.stringContaining("commands:report.city.homes.garden.wateredPlots"),
-					slotsBecameReady: 1,
-					count: 1
-				})
-			);
+			expect(sendReaction).toHaveBeenCalledWith(ctx.packet, ctx.context, ctx.context.keycloakId, null, 1);
+			expect(menus.stopCurrentCollector).toHaveBeenCalledOnce();
+			expect(menus.changeMenu).not.toHaveBeenCalledWith(HomeMenuIds.GARDEN_MENU);
 		});
 	});
 
