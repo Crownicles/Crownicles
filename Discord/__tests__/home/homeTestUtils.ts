@@ -76,7 +76,10 @@ export function createMockPacket(reactions: { type: string }[] = []): HomeFeatur
  */
 export function createMockContext(): HomeFeatureHandlerContext["context"] {
 	return {
-		keycloakId: "test-keycloak-id"
+		keycloakId: "test-keycloak-id",
+		discord: {
+			interaction: "test-interaction-id"
+		}
 	} as unknown as HomeFeatureHandlerContext["context"];
 }
 

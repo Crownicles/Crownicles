@@ -55,6 +55,12 @@ vi.mock("../../../Discord/src/utils/ErrorUtils", async (importOriginal) => {
 	};
 });
 
+vi.mock("../../../Discord/src/bot/DiscordCache", () => ({
+	DiscordCache: {
+		getInteraction: vi.fn()
+	}
+}));
+
 // ===== Imports (after mocks) =====
 
 import { GardenFeatureHandler } from "../../src/commands/player/report/home/features/GardenFeatureHandler";
@@ -79,6 +85,7 @@ import {
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorRefuseReaction } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
+import { DiscordCache } from "../../src/bot/DiscordCache";
 import i18n from "../../src/translations/i18n";
 
 describe("GardenFeatureHandler", () => {
@@ -455,6 +462,17 @@ describe("GardenFeatureHandler", () => {
 			const interaction = createMockComponentInteraction(HomeMenuIds.GARDEN_WATER);
 			const menus = createMockNestedMenus();
 			const sendReaction = vi.spyOn(DiscordCollectorUtils, "sendReaction").mockImplementation(() => {});
+			const followUp = vi.fn().mockResolvedValue(undefined);
+			const reply = vi.fn().mockResolvedValue(undefined);
+			vi.mocked(DiscordCache.getInteraction).mockReturnValue({
+				replied: true,
+				followUp,
+				reply,
+				user: {
+					displayName: "TestUser",
+					displayAvatarURL: vi.fn(() => "https://example.com/avatar.png")
+				}
+			} as never);
 
 			const mockSendPacket = vi.mocked(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse);
 			mockSendPacket.mockImplementation(async (_ctx, _packet, handler) => {
@@ -474,6 +492,17 @@ describe("GardenFeatureHandler", () => {
 				ctx, HomeMenuIds.GARDEN_WATER, interaction as never, menus as never
 			);
 
+			// Success embed sent via followUp on the original interaction
+			expect(followUp).toHaveBeenCalledTimes(1);
+			expect(i18n.t).toHaveBeenCalledWith(
+				"commands:report.city.homes.garden.waterSuccess",
+				expect.objectContaining({
+					lng: ctx.lng,
+					slotsBecameReady: 1,
+					count: 1
+				})
+			);
+			// Then the city interaction is closed like a shop purchase
 			expect(sendReaction).toHaveBeenCalledWith(ctx.packet, ctx.context, ctx.context.keycloakId, null, 1);
 			expect(menus.stopCurrentCollector).toHaveBeenCalledOnce();
 			expect(menus.changeMenu).not.toHaveBeenCalledWith(HomeMenuIds.GARDEN_MENU);

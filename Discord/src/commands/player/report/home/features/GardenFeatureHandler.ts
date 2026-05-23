@@ -37,7 +37,11 @@ import {
 } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
-import { StringUtils } from "../../../../../utils/StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "../../../../../utils/StringUtils";
+import { DiscordCache } from "../../../../../bot/DiscordCache";
+import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
@@ -787,10 +791,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Send a watering action to Core. On success, end the city interaction
-	 * (like a shop purchase): the player must redo /report to interact with
-	 * the garden again. On cooldown or when no plants are growing, the menu
-	 * is re-rendered with a short status message instead of throwing.
+	 * Send a watering action to Core. On success, post a confirmation embed
+	 * (like a shop purchase) then end the city interaction so the player has
+	 * to redo /report to interact with the garden again. On cooldown or when
+	 * no plants are growing, the menu is re-rendered with a short status
+	 * message instead of throwing.
 	 */
 	private async sendWaterAction(
 		ctx: HomeFeatureHandlerContext,
@@ -809,10 +814,50 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				const response = responsePacket as CommandReportGardenWaterRes;
 				const garden = ctx.homeData.garden!;
 				this.updateGardenAfterWatering(garden, ctx, response);
+				await this.sendWaterSuccessFollowup(ctx, response);
 				this.sendRefuseReaction(ctx, null);
 				await nestedMenus.stopCurrentCollector();
 			}
 		);
+	}
+
+	/**
+	 * Post a watering success embed via followUp on the original report
+	 * interaction, mirroring the shop purchase confirmation pattern.
+	 */
+	private async sendWaterSuccessFollowup(
+		ctx: HomeFeatureHandlerContext,
+		response: CommandReportGardenWaterRes
+	): Promise<void> {
+		const interactionRef = ctx.context.discord?.interaction;
+		if (!interactionRef) {
+			return;
+		}
+		const interaction = DiscordCache.getInteraction(interactionRef);
+		if (!interaction) {
+			return;
+		}
+		const wateredPlots = i18n.t("commands:report.city.homes.garden.wateredPlots", {
+			lng: ctx.lng,
+			count: response.slotsWatered
+		});
+		const description = i18n.t("commands:report.city.homes.garden.waterSuccess", {
+			lng: ctx.lng,
+			wateredPlots,
+			slotsBecameReady: response.slotsBecameReady,
+			count: response.slotsBecameReady
+		});
+		const payload = {
+			embeds: [
+				new CrowniclesEmbed()
+					.formatAuthor(i18n.t("commands:report.city.homes.garden.waterSuccessTitle", {
+						lng: ctx.lng,
+						pseudo: escapeUsername(interaction.user.displayName)
+					}), interaction.user)
+					.setDescription(description)
+			]
+		};
+		await (interaction.replied ? interaction.followUp(payload) : interaction.reply(payload));
 	}
 
 	/**
