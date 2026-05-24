@@ -211,6 +211,12 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 			/** Whether the player has all required materials */
 			hasAllMaterials: boolean;
+
+			/** Core-authoritative eligibility: player can directly upgrade (has materials and gold) */
+			canUpgrade: boolean;
+
+			/** Core-authoritative eligibility: player can buy missing materials and upgrade (gold covers both) */
+			canBuyAndUpgrade: boolean;
 		}[];
 
 		/** Items that can be disenchanted at the blacksmith */
@@ -223,6 +229,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 			/** Gold cost to disenchant this item */
 			disenchantCost: number;
+
+			/** Core-authoritative eligibility: player has enough gold to disenchant */
+			canDisenchant: boolean;
 		}[];
 
 		/** Current player money for UI display */

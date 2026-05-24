@@ -367,7 +367,9 @@ export function getBlacksmithUpgradeDetailMenu(
 	const buttons: ButtonBuilder[] = [];
 
 	// Confirm upgrade button (if has all materials and enough money)
-	const canUpgradeWithMaterials = item.hasAllMaterials && blacksmith.playerMoney >= item.upgradeCost;
+	const {
+		canUpgrade, canBuyAndUpgrade
+	} = item;
 	buttons.push(
 		new ButtonBuilder()
 			.setCustomId(BlacksmithMenuIds.CONFIRM_UPGRADE)
@@ -375,15 +377,14 @@ export function getBlacksmithUpgradeDetailMenu(
 				lng,
 				cost: item.upgradeCost
 			}))
-			.setStyle(canUpgradeWithMaterials ? ButtonStyle.Success : ButtonStyle.Secondary)
-			.setDisabled(!canUpgradeWithMaterials)
+			.setStyle(canUpgrade ? ButtonStyle.Success : ButtonStyle.Secondary)
+			.setDisabled(!canUpgrade)
 			.setEmoji(CrowniclesIcons.city.blacksmith.upgrade)
 	);
 
 	// Buy materials and upgrade button (if missing materials and has enough money)
 	if (!item.hasAllMaterials) {
 		const totalCost = item.upgradeCost + item.missingMaterialsCost;
-		const canBuyAndUpgrade = blacksmith.playerMoney >= totalCost;
 		buttons.push(
 			new ButtonBuilder()
 				.setCustomId(BlacksmithMenuIds.BUY_AND_UPGRADE)
@@ -601,7 +602,7 @@ export function getBlacksmithDisenchantDetailMenu(
 	);
 
 	// Build buttons
-	const canDisenchant = blacksmith.playerMoney >= item.disenchantCost;
+	const { canDisenchant } = item;
 	const buttons: ButtonBuilder[] = [
 		new ButtonBuilder()
 			.setCustomId(BlacksmithMenuIds.CONFIRM_DISENCHANT)
