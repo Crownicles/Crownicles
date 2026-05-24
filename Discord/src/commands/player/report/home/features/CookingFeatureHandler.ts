@@ -44,6 +44,7 @@ import {
 import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { PacketUtils } from "../../../../../utils/PacketUtils";
 import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
+import { buildCustomId } from "../../../../../utils/CustomIdUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 
 interface CookingSessionState {
@@ -545,7 +546,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		);
 		section.setButtonAccessory(
 			new ButtonBuilder()
-				.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
+				.setCustomId(buildCustomId(HomeMenuIds.COOKING_CRAFT_PREFIX, slot.slotIndex))
 				.setLabel(craftLabel)
 				.setEmoji(parseEmoji(stationEmoji)!)
 				.setStyle(ButtonStyle.Secondary)
@@ -588,7 +589,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
 		const craftLabel = i18n.t(`commands:report.city.homes.cooking.craftButton.${slot.slotIndex}`, { lng: ctx.lng });
 		return new ButtonBuilder()
-			.setCustomId(`${HomeMenuIds.COOKING_CRAFT_PREFIX}${slot.slotIndex}`)
+			.setCustomId(buildCustomId(HomeMenuIds.COOKING_CRAFT_PREFIX, slot.slotIndex))
 			.setLabel(craftLabel)
 			.setEmoji(parseEmoji(stationEmoji)!)
 			.setStyle(recipe.canCraft && !allDisabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
@@ -611,7 +612,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 
 		return new ButtonBuilder()
-			.setCustomId(`${HomeMenuIds.COOKING_PIN_PREFIX}${recipe.id}`)
+			.setCustomId(buildCustomId(HomeMenuIds.COOKING_PIN_PREFIX, recipe.id))
 			.setLabel(i18n.t("commands:report.city.homes.cooking.pinButton", { lng: ctx.lng }))
 			.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
 			.setStyle(ButtonStyle.Secondary);
