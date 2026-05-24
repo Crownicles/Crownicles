@@ -81,12 +81,12 @@ export class CommandReportTravelSummaryRes extends CrowniclesPacket {
 
 	tokens?: {
 		cost: number;
-		playerTokens: number;
+		canAfford: boolean;
 	};
 
 	heal?: {
 		price: number;
-		playerMoney: number;
+		canAfford: boolean;
 	};
 
 	isInCity!: boolean;
