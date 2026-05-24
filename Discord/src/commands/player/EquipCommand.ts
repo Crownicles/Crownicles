@@ -219,17 +219,16 @@ function buildEquippedSection(
 		const itemDisplay = DisplayUtils.getItemDisplayWithStats(details, ctx.lng);
 		description += `\n${CrowniclesIcons.choiceEmotes[choiceIndex]} - ${itemDisplay}`;
 
-		const canDeposit = categoryData.reserveItems.length < categoryData.maxReserveSlots;
 		const button = new ButtonBuilder()
 			.setEmoji(parseEmoji(CrowniclesIcons.choiceEmotes[choiceIndex])!)
 			.setCustomId(`${EQUIP_MENU_IDS.DEPOSIT_PREFIX}${catInfo.category}`)
 			.setStyle(ButtonStyle.Secondary)
-			.setDisabled(!canDeposit);
+			.setDisabled(!categoryData.canDeposit);
 
 		rows[rows.length - 1].addComponents(button);
 		choiceIndex++;
 
-		if (!canDeposit) {
+		if (!categoryData.canDeposit) {
 			description += ` *(${i18n.t("commands:equip.reserveFull", { lng: ctx.lng })})*`;
 		}
 	}
