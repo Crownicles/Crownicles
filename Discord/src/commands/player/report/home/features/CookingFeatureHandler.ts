@@ -215,9 +215,18 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			ctx.context,
 			makePacket(CommandReportCookingMenuReq, {}),
 			async (_responseContext, packetName, responsePacket) => {
+				const state = this.getState(ctx);
+
+				/*
+				 * We are showing the pre-ignite cooking menu: the furnace is not lit in
+				 * this view, so any slot data persisted from a previous ignited session is
+				 * stale and must be cleared. Otherwise, downstream handlers like
+				 * sendUnpinAction would incorrectly render the old ignited menu.
+				 */
+				state.currentSlots = [];
+				state.craftPending = false;
 				if (packetName === CommandReportCookingMenuRes.name) {
 					const response = responsePacket as unknown as CommandReportCookingMenuRes;
-					const state = this.getState(ctx);
 					state.cookingLevel = response.cookingLevel;
 					state.cookingGrade = response.cookingGrade;
 					state.pinnedRecipe = response.pinnedRecipe;
