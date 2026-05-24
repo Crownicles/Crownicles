@@ -47,6 +47,7 @@ export interface FoodShopUIData {
 		ultimate: number;
 	};
 	foodCaps: readonly number[];
+	maxBuyableFood: readonly number[];
 	treasury: number;
 	playerMoney: number;
 	canDeposit?: {

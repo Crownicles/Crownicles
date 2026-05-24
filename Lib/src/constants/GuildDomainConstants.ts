@@ -288,6 +288,17 @@ export abstract class GuildDomainConstants {
 		return GuildDomainConstants.PANTRY_FOOD_CAPS[pantryLevel] ?? GuildDomainConstants.PANTRY_FOOD_CAPS[0];
 	}
 
+	/**
+	 * Per-food shop purchase capacity given current treasury and storage.
+	 * Ordered to match PetConstants.PET_FOOD_BY_ID: [common, herbivorous, carnivorous, ultimate].
+	 */
+	static getMaxBuyableFood(treasury: number, currentFood: readonly number[], foodCaps: readonly number[]): readonly number[] {
+		return GuildDomainConstants.SHOP_PRICES.FOOD.map((unitPrice, i) => Math.max(0, Math.min(
+			foodCaps[i] - currentFood[i],
+			Math.floor(treasury / unitPrice)
+		)));
+	}
+
 	static getTrainingLovePerDay(trainingGroundLevel: number): number {
 		return GuildDomainConstants.TRAINING_LOVE_PER_DAY[trainingGroundLevel] ?? 0;
 	}

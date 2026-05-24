@@ -101,13 +101,6 @@ const FOOD_BUY_QUICK_PRESETS = [
 	100
 ] as const;
 
-function getMaxBuyableFood(data: FoodShopUIContext["data"], foodIndex: number): number {
-	const foodKey = FOOD_KEYS[foodIndex];
-	const remainingSlots = data.foodCaps[foodIndex] - data.food[foodKey];
-	const maxAffordable = Math.floor(data.treasury / GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex]);
-	return Math.max(0, Math.min(remainingSlots, maxAffordable));
-}
-
 /**
  * Build the shared shop body (description, stock info, food choose buttons, optional treasury button).
  * Used both inside the guild domain shop submenu and inside the standalone mobile food shop.
@@ -170,7 +163,7 @@ export function buildShopBody(
 				.setLabel(foodName)
 				.setEmoji(CrowniclesIcons.foods[foodType])
 				.setStyle(ButtonStyle.Primary)
-				.setDisabled(getMaxBuyableFood(data, i) <= 0)
+				.setDisabled(data.maxBuyableFood[i] <= 0)
 		);
 	}
 	container.addActionRowComponents(foodRow);
@@ -195,7 +188,7 @@ export function buildShopQuantityContainer(ctx: FoodShopUIContext, foodType: Pet
 	const foodIndex = PetConstants.PET_FOOD_BY_ID.indexOf(foodType);
 	const foodKey = FOOD_KEYS[foodIndex];
 	const price = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
-	const maxBuyable = getMaxBuyableFood(data, foodIndex);
+	const maxBuyable = data.maxBuyableFood[foodIndex];
 	const foodName = i18n.t(`models:foods.${foodType}`, {
 		lng, count: 1
 	});

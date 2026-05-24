@@ -291,6 +291,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		/** Food caps based on pantry level */
 		foodCaps: readonly number[];
 
+		/** Max quantity of each food the guild can currently buy from its treasury (clamped by remaining cap and unit price). */
+		maxBuyableFood: readonly number[];
+
 		/** Pets currently in the guild shelter */
 		shelterPets: OwnedPet[];
 
@@ -331,6 +334,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Food caps based on pantry level */
 		foodCaps: readonly number[];
+
+		/** Max quantity of each food the guild can currently buy from its treasury (clamped by remaining cap and unit price). */
+		maxBuyableFood: readonly number[];
 
 		/** Player money */
 		playerMoney: number;
