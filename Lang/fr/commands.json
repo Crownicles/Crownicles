@@ -1261,7 +1261,8 @@
           "woodSaved": "{emote:messages.validate} Votre expertise vous a permis d'économiser du bois ! ({emote:materials.{{woodId}}} $t(models:materials.{{woodId}}))",
           "pinnedRecipeTitle": "{emote:messages.pin} **Recette épinglée** — {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
           "pinnedReady": "\n{emote:messages.validate} Vous avez tous les ingrédients pour cette recette !",
-          "unpinButton": "Désépingler"
+          "unpinButton": "Désépingler",
+          "pinButton": "Épingler"
         },
         "upgradeChanges": {
           "betterBed": "Un meilleur lit pour un sommeil plus réparateur {emote:city.homeUpgrades.bed}",
