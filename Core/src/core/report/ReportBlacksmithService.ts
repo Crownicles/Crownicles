@@ -98,6 +98,8 @@ function buildBlacksmithUpgradeableItems(
 
 		const upgradeCost = getUpgradePrice(nextLevel, itemData.rarity);
 		const missingMaterialsCost = getMaterialsPurchasePrice(missingMaterials);
+		const canUpgrade = hasAllMaterials && player.money >= upgradeCost;
+		const canBuyAndUpgrade = !hasAllMaterials && player.money >= upgradeCost + missingMaterialsCost;
 
 		upgradeableItems.push({
 			slot: inventorySlot.slot,
@@ -107,7 +109,9 @@ function buildBlacksmithUpgradeableItems(
 			upgradeCost,
 			requiredMaterials,
 			missingMaterialsCost,
-			hasAllMaterials
+			hasAllMaterials,
+			canUpgrade,
+			canBuyAndUpgrade
 		});
 	}
 
@@ -131,13 +135,15 @@ function buildBlacksmithDisenchantableItems(
 
 		const enchantment = ItemEnchantment.getById(inventorySlot.itemEnchantmentId);
 		if (enchantment) {
+			const disenchantCost = getDisenchantPrice(itemData.rarity);
 			disenchantableItems.push({
 				slot: inventorySlot.slot,
 				category: inventorySlot.itemCategory,
 				details: inventorySlot.itemWithDetails(player) as MainItemDetails,
 				enchantmentId: inventorySlot.itemEnchantmentId,
 				enchantmentType: enchantment.kind.type.id,
-				disenchantCost: getDisenchantPrice(itemData.rarity)
+				disenchantCost,
+				canDisenchant: player.money >= disenchantCost
 			});
 		}
 	}
