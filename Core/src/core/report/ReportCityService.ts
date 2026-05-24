@@ -66,6 +66,46 @@ type HomesCount = {
 	count: number;
 }[];
 
+type ApartmentForSaleData = NonNullable<ApartmentNotaryData["forSale"]>;
+
+function buildOwnedApartmentSummary(
+	apartment: Awaited<ReturnType<typeof Apartments.getOfPlayer>>[number],
+	player: Player,
+	home: Home | null,
+	now: Date
+): OwnedApartmentSummary | null {
+	const apartmentCity = CityDataController.instance.getById(apartment.cityId);
+	if (!apartmentCity || apartmentCity.maps.length === 0) {
+		CrowniclesLogger.error(`Apartment ${apartment.id} (player ${player.keycloakId}) references unknown or empty city ${apartment.cityId}. Skipping in notary display.`);
+		return null;
+	}
+	const accumulatedRent = apartment.getAccumulatedRent(now);
+	const isRented = apartment.isRentedFor(home);
+	return {
+		apartmentId: apartment.id,
+		cityId: apartment.cityId,
+		mapLocationId: apartmentCity.maps[0],
+		purchasePrice: apartment.purchasePrice,
+		accumulatedRent,
+		isRented,
+		canClaim: isRented && accumulatedRent >= HomeConstants.MIN_RENT_TO_CLAIM
+	};
+}
+
+function buildForSaleData(price: number, playerMoney: number): ApartmentForSaleData {
+	if (playerMoney >= price) {
+		return {
+			price,
+			canAfford: true
+		};
+	}
+	return {
+		price,
+		canAfford: false,
+		missingMoney: price - playerMoney
+	};
+}
+
 /**
  * Build apartment-notary data: the apartment for sale in this city (if any)
  * and the list of apartments owned by the player across the world (with their
@@ -84,37 +124,15 @@ export async function buildApartmentNotaryData(
 	const ownsApartmentHere = ownedApartments.some(a => a.cityId === city.id);
 	const summaries: OwnedApartmentSummary[] = [];
 	for (const apartment of ownedApartments) {
-		const apartmentCity = CityDataController.instance.getById(apartment.cityId);
-		if (!apartmentCity || apartmentCity.maps.length === 0) {
-			CrowniclesLogger.error(`Apartment ${apartment.id} (player ${player.keycloakId}) references unknown or empty city ${apartment.cityId}. Skipping in notary display.`);
-			continue;
+		const summary = buildOwnedApartmentSummary(apartment, player, home, now);
+		if (summary !== null) {
+			summaries.push(summary);
 		}
-		const accumulatedRent = apartment.getAccumulatedRent(now);
-		const isRented = apartment.isRentedFor(home);
-		summaries.push({
-			apartmentId: apartment.id,
-			cityId: apartment.cityId,
-			mapLocationId: apartmentCity.maps[0],
-			purchasePrice: apartment.purchasePrice,
-			accumulatedRent,
-			isRented,
-			canClaim: isRented && accumulatedRent >= HomeConstants.MIN_RENT_TO_CLAIM
-		});
 	}
+	const canShowForSale = city.apartmentPrice && !ownsApartmentHere && home;
 	return {
-		...city.apartmentPrice && !ownsApartmentHere && home
-			? {
-				forSale: player.money >= city.apartmentPrice
-					? {
-						price: city.apartmentPrice,
-						canAfford: true as const
-					}
-					: {
-						price: city.apartmentPrice,
-						canAfford: false as const,
-						missingMoney: city.apartmentPrice - player.money
-					}
-			}
+		...canShowForSale
+			? { forSale: buildForSaleData(city.apartmentPrice, player.money) }
 			: {},
 		ownedApartments: summaries
 	};
@@ -318,6 +336,26 @@ async function buildRemoteApartmentHomeData(params: {
 	};
 }
 
+type ManageEligibility = {
+	canBuy?: true;
+	canUpgrade?: true;
+	canMove?: true;
+};
+
+function computeManageEligibility(manageOptions: ManageOptions, playerMoney: number): ManageEligibility {
+	const eligibility: ManageEligibility = {};
+	if (manageOptions.newPrice !== undefined && playerMoney >= manageOptions.newPrice) {
+		eligibility.canBuy = true;
+	}
+	if (manageOptions.upgrade !== undefined && playerMoney >= manageOptions.upgrade.price) {
+		eligibility.canUpgrade = true;
+	}
+	if (manageOptions.movePrice !== undefined && playerMoney >= manageOptions.movePrice) {
+		eligibility.canMove = true;
+	}
+	return eligibility;
+}
+
 async function buildManageHomeData(params: {
 	player: Player;
 	home: Home | null;
@@ -334,15 +372,10 @@ async function buildManageHomeData(params: {
 		home, homeLevel, city, player, isHomeInCity, homesCount
 	});
 	if (manageOptions) {
-		const canBuy = manageOptions.newPrice !== undefined && player.money >= manageOptions.newPrice;
-		const canUpgrade = manageOptions.upgrade !== undefined && player.money >= manageOptions.upgrade.price;
-		const canMove = manageOptions.movePrice !== undefined && player.money >= manageOptions.movePrice;
 		return {
 			...manageOptions,
 			currentMoney: player.money,
-			...canBuy ? { canBuy: true } : {},
-			...canUpgrade ? { canUpgrade: true } : {},
-			...canMove ? { canMove: true } : {}
+			...computeManageEligibility(manageOptions, player.money)
 		};
 	}
 
