@@ -14,4 +14,5 @@ export interface EquipCategoryData {
 		details: ItemWithDetails;
 	}[];
 	maxReserveSlots: number;
+	canDeposit: boolean;
 }

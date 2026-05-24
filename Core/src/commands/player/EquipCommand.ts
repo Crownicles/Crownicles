@@ -49,6 +49,7 @@ export function buildEquipCategoryData(
 			continue;
 		}
 
+		const maxReserveSlots = slotLimits.get(category) ?? 0;
 		categories.push({
 			category,
 			equippedItem: hasEquipped
@@ -58,7 +59,8 @@ export function buildEquipCategoryData(
 				slot: slot.slot,
 				details: slot.itemWithDetails(player)
 			})),
-			maxReserveSlots: slotLimits.get(category) ?? 0
+			maxReserveSlots,
+			canDeposit: reserveSlots.length < maxReserveSlots
 		});
 	}
 
