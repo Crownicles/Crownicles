@@ -167,25 +167,30 @@ async function buildCookingMenuSnapshot(params: CookingMenuSnapshotParams): Prom
 
 	let pinnedRecipe: PinnedRecipeInfo | undefined;
 	if (player.pinnedCookingRecipeId) {
+		const observedPinnedId = player.pinnedCookingRecipeId;
 		const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
 		pinnedRecipe = await CookingService.getPinnedRecipeInfo({
 			player,
 			homeId: home.id,
-			recipeId: player.pinnedCookingRecipeId,
+			recipeId: observedPinnedId,
 			guild
 		}) ?? undefined;
 
 		if (!pinnedRecipe) {
 			/*
-			 * Recipe no longer exists or is no longer accessible, clear the
-			 * pin under the row lock so a concurrent pin/unpin from another
-			 * device cannot re-emerge after we believe we cleared it.
+			 * Recipe no longer exists or is no longer accessible. Clear the
+			 * pin under the row lock with a compare-and-swap: only erase if
+			 * the pinned id still matches what we observed, so a concurrent
+			 * pin from another shard between our read and our write is not
+			 * silently overwritten.
 			 */
 			await Player.withLocked(player.id, async lockedPlayer => {
-				lockedPlayer.pinnedCookingRecipeId = null;
-				await lockedPlayer.save();
+				if (lockedPlayer.pinnedCookingRecipeId === observedPinnedId) {
+					lockedPlayer.pinnedCookingRecipeId = null;
+					await lockedPlayer.save();
+					player.pinnedCookingRecipeId = null;
+				}
 			});
-			player.pinnedCookingRecipeId = null;
 		}
 	}
 
