@@ -35,7 +35,6 @@ import {
 import {
 	ReportCityMenuIds, buildApartmentClaimRentId, parseApartmentClaimRentId
 } from "../ReportCityMenuConstants";
-import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
 import {
 	CityCollectorHandlerParams, CityMenuParams, ManageHomeData
 } from "../ReportCityMenuTypes";
@@ -121,6 +120,7 @@ const formatHomeUpgradeChanges = (oldFeatures: HomeFeatures, newFeatures: HomeFe
 type SimpleCostNotaryParams = {
 	cost: number;
 	currentMoney: number;
+	canAfford: boolean;
 	lng: Language;
 	noMoneyKey: string;
 	enoughMoneyKey: string;
@@ -128,9 +128,9 @@ type SimpleCostNotaryParams = {
 
 function buildSimpleCostNotaryDescription(params: SimpleCostNotaryParams): string {
 	const {
-		cost, currentMoney, lng, noMoneyKey, enoughMoneyKey
+		cost, currentMoney, canAfford, lng, noMoneyKey, enoughMoneyKey
 	} = params;
-	if (cost > currentMoney) {
+	if (!canAfford) {
 		return i18n.t(noMoneyKey, {
 			lng, cost, missingMoney: cost - currentMoney
 		});
@@ -144,6 +144,7 @@ function buildNotaryNewHomeDescription(data: ManageHomeData, lng: Language): str
 	return buildSimpleCostNotaryDescription({
 		cost: data.newPrice!,
 		currentMoney: data.currentMoney,
+		canAfford: Boolean(data.canBuy),
 		lng,
 		noMoneyKey: "commands:report.city.homes.notaryNewHomeNoMoney",
 		enoughMoneyKey: "commands:report.city.homes.notaryNewHomeEnoughMoney"
@@ -152,7 +153,7 @@ function buildNotaryNewHomeDescription(data: ManageHomeData, lng: Language): str
 
 function buildNotaryUpgradeDescription(data: ManageHomeData, lng: Language): string {
 	const upgrade = data.upgrade!;
-	if (upgrade.price > data.currentMoney) {
+	if (!data.canUpgrade) {
 		return i18n.t("commands:report.city.homes.notaryUpgradeHomeNoMoney", {
 			lng,
 			cost: upgrade.price,
@@ -171,6 +172,7 @@ function buildNotaryMoveDescription(data: ManageHomeData, lng: Language): string
 	return buildSimpleCostNotaryDescription({
 		cost: data.movePrice!,
 		currentMoney: data.currentMoney,
+		canAfford: Boolean(data.canMove),
 		lng,
 		noMoneyKey: "commands:report.city.homes.notaryMoveHomeNoMoney",
 		enoughMoneyKey: "commands:report.city.homes.notaryMoveHomeEnoughMoney"
@@ -224,17 +226,17 @@ type NotaryActionConfig = {
 
 const NOTARY_ACTION_CONFIGS: NotaryActionConfig[] = [
 	{
-		matches: (d): boolean => Boolean(d.newPrice) && d.newPrice! <= d.currentMoney,
+		matches: (d): boolean => Boolean(d.canBuy),
 		titleKey: "commands:report.city.homes.buyHome",
 		customId: ReportCityMenuIds.BUY_HOME
 	},
 	{
-		matches: (d): boolean => Boolean(d.upgrade) && d.upgrade!.price <= d.currentMoney,
+		matches: (d): boolean => Boolean(d.canUpgrade),
 		titleKey: "commands:report.city.homes.upgradeHome",
 		customId: ReportCityMenuIds.UPGRADE_HOME
 	},
 	{
-		matches: (d): boolean => Boolean(d.movePrice) && d.movePrice! <= d.currentMoney,
+		matches: (d): boolean => Boolean(d.canMove),
 		titleKey: "commands:report.city.homes.moveHome",
 		customId: ReportCityMenuIds.MOVE_HOME
 	}
@@ -305,7 +307,7 @@ function addGuildNotarySection(container: ContainerBuilder, guildNotaryData: Gui
 		)
 	);
 
-	if (guildNotaryData.treasury < guildNotaryData.cost) {
+	if (!guildNotaryData.canAfford) {
 		return;
 	}
 	const actionLabel = guildNotaryData.hasDomain
@@ -327,8 +329,7 @@ type OwnedApartmentData = ApartmentNotaryData["ownedApartments"][number];
 
 function renderForSale(container: ContainerBuilder, forSale: ForSaleData, playerMoney: number, lng: Language): void {
 	const price = forSale.price;
-	const canAfford = playerMoney >= price;
-	if (!canAfford) {
+	if (!forSale.canAfford) {
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
 				i18n.t("commands:report.city.homes.apartmentNotary.buyNotEnoughMoney", {
@@ -359,7 +360,6 @@ function renderOwnedApartment(container: ContainerBuilder, apt: OwnedApartmentDa
 		mapLocationId: apt.mapLocationId,
 		rent: apt.accumulatedRent
 	});
-	const canClaim = apt.isRented && apt.accumulatedRent >= HomeConstants.MIN_RENT_TO_CLAIM;
 	const buttonLabel = i18n.t("commands:report.city.homes.apartmentNotary.claimButtonLabel", { lng });
 	addCitySection({
 		container,
@@ -369,8 +369,8 @@ function renderOwnedApartment(container: ContainerBuilder, apt: OwnedApartmentDa
 			: CrowniclesIcons.city.apartmentNotary.statusEmpty,
 		customId: buildApartmentClaimRentId(apt.apartmentId),
 		buttonLabel,
-		buttonStyle: canClaim ? ButtonStyle.Success : ButtonStyle.Secondary,
-		disabled: !canClaim
+		buttonStyle: apt.canClaim ? ButtonStyle.Success : ButtonStyle.Secondary,
+		disabled: !apt.canClaim
 	});
 }
 
