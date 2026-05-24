@@ -83,25 +83,56 @@ export class Materials {
 		}[]
 	): Promise<boolean> {
 		/*
-		 * Two-phase consume: try to decrement every material atomically; if any
-		 * decrement fails, refund the ones already taken. The refund is
-		 * best-effort and safe because `giveMaterial` is an upsert. When called
-		 * inside an enclosing `withLockedEntities` block (the standard cooking
-		 * /blacksmith pattern via `lockedPlayer.id`), the whole sequence is
-		 * one transaction and the refund branch turns into a no-op rollback.
+		 * Snapshot pre-check then decrement. Two callers ask for the same
+		 * materialId twice in the same call (rare but possible via crafting
+		 * recipes), so duplicates are summed before the check. The pre-check
+		 * runs under the ambient CLS transaction created by the enclosing
+		 * `withLockedEntities` / `Player.withLocked` block, so no concurrent
+		 * writer can shrink the rows between the snapshot and the decrements.
+		 * Returning `false` before any decrement guarantees zero side effects
+		 * on insufficient stock — no in-band refund, no risk of double rollback
+		 * if the caller is itself transactional.
 		 */
-		const consumed: {
-			materialId: number; quantity: number;
-		}[] = [];
-		for (const material of materials) {
-			const ok = await Materials.consumeMaterial(playerId, material.materialId, material.quantity);
-			if (!ok) {
-				for (const taken of consumed) {
-					await Materials.giveMaterial(playerId, taken.materialId, taken.quantity);
-				}
+		const required = new Map<number, number>();
+		for (const m of materials) {
+			if (m.quantity <= 0) {
+				continue;
+			}
+			required.set(m.materialId, (required.get(m.materialId) ?? 0) + m.quantity);
+		}
+		if (required.size === 0) {
+			return true;
+		}
+
+		const owned = new Map<number, number>();
+		const rows = await Material.findAll({
+			where: {
+				playerId,
+				materialId: { [Op.in]: [...required.keys()] }
+			}
+		});
+		for (const row of rows) {
+			owned.set(row.materialId, row.quantity);
+		}
+		for (const [materialId, qty] of required) {
+			if ((owned.get(materialId) ?? 0) < qty) {
 				return false;
 			}
-			consumed.push(material);
+		}
+
+		for (const [materialId, qty] of required) {
+			const ok = await Materials.consumeMaterial(playerId, materialId, qty);
+			if (!ok) {
+				/*
+				 * Pre-check passed but decrement failed: only possible if the caller does not
+				 * hold the player row lock and a concurrent writer drained the row in between.
+				 * Throwing aborts the enclosing transaction, which is the single authoritative
+				 * rollback path.
+				 */
+				throw new Error(
+					`consumeMaterials: post-pre-check decrement failed for playerId=${playerId} materialId=${materialId} qty=${qty}. Caller must hold the player row lock.`
+				);
+			}
 		}
 		return true;
 	}
