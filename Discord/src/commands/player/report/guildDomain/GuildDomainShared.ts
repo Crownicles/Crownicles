@@ -49,6 +49,9 @@ export interface FoodShopUIData {
 	foodCaps: readonly number[];
 	treasury: number;
 	playerMoney: number;
+	canDeposit?: {
+		small: boolean; big: boolean; huge: boolean;
+	};
 	pendingReimburseAmount?: number;
 	pendingPurchaseRecap?: string;
 }
@@ -217,9 +220,9 @@ export function addBuildingLevelAndCostInfo(container: ContainerBuilder, buildin
 	} = ctx;
 	const currentLevel = getBuildingLevel(data, building);
 	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
-	const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
+	const eligibility = data.canUpgradeBuildings[building];
 
-	if (upgradeCost === null) {
+	if (upgradeCost === null || eligibility === null) {
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
 				i18n.t("commands:report.city.guildDomain.buildingMaxLevel", { lng })
@@ -231,12 +234,13 @@ export function addBuildingLevelAndCostInfo(container: ContainerBuilder, buildin
 	let info = i18n.t("commands:report.city.guildDomain.buildingUpgrade", {
 		lng, nextLevel: currentLevel + 1, cost: upgradeCost
 	});
-	if (requiredGuildLevel !== null && data.guildLevel < requiredGuildLevel) {
+	if (!eligibility.meetsLevel) {
+		const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
 		info += i18n.t("commands:report.city.guildDomain.buildingUpgradeBlocked", {
 			lng, required: requiredGuildLevel
 		});
 	}
-	else if (data.treasury < upgradeCost) {
+	else if (!eligibility.canAfford) {
 		info += i18n.t("commands:report.city.guildDomain.buildingUpgradeTreasuryLow", { lng });
 	}
 
@@ -255,14 +259,11 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 
 	const currentLevel = getBuildingLevel(data, building);
 	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
+	const eligibility = data.canUpgradeBuildings[building];
 
-	if (upgradeCost === null) {
+	if (upgradeCost === null || eligibility === null) {
 		return;
 	}
-
-	const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
-	const canAfford = data.treasury >= upgradeCost;
-	const meetsLevel = requiredGuildLevel === null || data.guildLevel >= requiredGuildLevel;
 
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
@@ -274,7 +275,7 @@ export function addUpgradeSection(container: ContainerBuilder, building: GuildBu
 					level: currentLevel + 1
 				}))
 				.setStyle(ButtonStyle.Primary)
-				.setDisabled(!canAfford || !meetsLevel)
+				.setDisabled(!eligibility.canAfford || !eligibility.meetsLevel)
 		)
 	);
 }

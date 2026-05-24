@@ -108,10 +108,6 @@ function getMaxBuyableFood(data: FoodShopUIContext["data"], foodIndex: number): 
 	return Math.max(0, Math.min(remainingSlots, maxAffordable));
 }
 
-function getMaxAffordableDeposits(data: FoodShopUIContext["data"], cost: number): number {
-	return Math.floor(data.playerMoney / cost);
-}
-
 /**
  * Build the shared shop body (description, stock info, food choose buttons, optional treasury button).
  * Used both inside the guild domain shop submenu and inside the standalone mobile food shop.
@@ -185,7 +181,7 @@ export function buildShopBody(
 			.setLabel(i18n.t("commands:report.city.guildDomain.subMenus.shop.treasuryButton", { lng }))
 			.setEmoji(CrowniclesIcons.city.guildDomain.shop)
 			.setStyle(ButtonStyle.Success)
-			.setDisabled(data.playerMoney < GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT)
+			.setDisabled(!(data.canDeposit?.small ?? false))
 	);
 	if (withTreasuryButton) {
 		container.addActionRowComponents(treasuryRow);
@@ -279,20 +275,20 @@ export function buildShopTreasuryContainer(ctx: FoodShopUIContext): ContainerBui
 
 	const row = new ActionRowBuilder<ButtonBuilder>();
 	const depositTiers: Array<{
-		cost: number; labelKey: string;
+		cost: number; labelKey: string; canDeposit: boolean;
 	}> = [
 		{
-			cost: GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT, labelKey: "depositSmallName"
+			cost: GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT, labelKey: "depositSmallName", canDeposit: data.canDeposit?.small ?? false
 		},
 		{
-			cost: GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT, labelKey: "depositBigName"
+			cost: GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT, labelKey: "depositBigName", canDeposit: data.canDeposit?.big ?? false
 		},
 		{
-			cost: GuildDomainConstants.SHOP_PRICES.HUGE_DEPOSIT, labelKey: "depositHugeName"
+			cost: GuildDomainConstants.SHOP_PRICES.HUGE_DEPOSIT, labelKey: "depositHugeName", canDeposit: data.canDeposit?.huge ?? false
 		}
 	];
 	for (const {
-		cost, labelKey
+		cost, labelKey, canDeposit
 	} of depositTiers) {
 		const penalty = Math.min(
 			Math.round(cost * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
@@ -306,7 +302,7 @@ export function buildShopTreasuryContainer(ctx: FoodShopUIContext): ContainerBui
 					lng, cost, treasury: treasuryGain
 				}))
 				.setStyle(ButtonStyle.Success)
-				.setDisabled(getMaxAffordableDeposits(data, cost) <= 0)
+				.setDisabled(!canDeposit)
 		);
 	}
 	container.addActionRowComponents(row);
