@@ -165,6 +165,19 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 				/** Watering state: unix-ms when watering becomes available again (null = available now) */
 				wateringAvailableAt: number | null;
+
+				/**
+				 * Pre-computed action eligibility. Discord uses these booleans
+				 * directly to enable/disable buttons — domain rules
+				 * (read-only mode, seed presence, free plots, water cooldown,
+				 * compost stock) live in Core only.
+				 */
+				eligibility: {
+					canHarvest: boolean;
+					canPlantSeed: boolean;
+					canWaterGarden: boolean;
+					canCompost: boolean;
+				};
 			};
 		};
 		manage?: {

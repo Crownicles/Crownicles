@@ -133,6 +133,11 @@ export async function buildGardenData(
 	const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
 	const hasSeed = seedSlot !== null && seedSlot.plantId !== 0;
 
+	const wateringAvailableAt = computeNextWateringAvailableAt(player.lastGardenWatered);
+	const eligibility = computeGardenEligibility({
+		accessMode, plots, plantStorage, hasSeed, wateringAvailableAt
+	});
+
 	return {
 		plots,
 		plantStorage,
@@ -140,7 +145,30 @@ export async function buildGardenData(
 		seedPlantId: seedSlot?.plantId ?? 0,
 		totalPlots: gardenPlots,
 		accessMode,
-		wateringAvailableAt: computeNextWateringAvailableAt(player.lastGardenWatered)
+		wateringAvailableAt,
+		eligibility
+	};
+}
+
+function computeGardenEligibility(params: {
+	accessMode: GardenAccessMode;
+	plots: GardenData["plots"];
+	plantStorage: GardenData["plantStorage"];
+	hasSeed: boolean;
+	wateringAvailableAt: number | null;
+}): GardenData["eligibility"] {
+	const {
+		accessMode, plots, plantStorage, hasSeed, wateringAvailableAt
+	} = params;
+	const isReadOnly = accessMode === GardenAccessMode.READ_ONLY;
+	const canHarvest = plots.some(plot => plot.isReady);
+	const canPlantSeed = !isReadOnly && hasSeed && plots.some(plot => plot.plantId === 0);
+	const hasGrowingPlants = plots.some(plot => plot.plantId !== 0 && !plot.isReady);
+	const wateringAvailable = wateringAvailableAt === null || wateringAvailableAt <= Date.now();
+	const canWaterGarden = !isReadOnly && hasGrowingPlants && wateringAvailable;
+	const canCompost = !isReadOnly && plantStorage.some(entry => entry.quantity > 0);
+	return {
+		canHarvest, canPlantSeed, canWaterGarden, canCompost
 	};
 }
 

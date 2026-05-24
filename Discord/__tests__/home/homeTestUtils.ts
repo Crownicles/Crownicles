@@ -100,6 +100,12 @@ type GardenDataOverrides = Partial<{
 	totalPlots: number;
 	accessMode: GardenAccessMode;
 	wateringAvailableAt: number | null;
+	eligibility: {
+		canHarvest: boolean;
+		canPlantSeed: boolean;
+		canWaterGarden: boolean;
+		canCompost: boolean;
+	};
 }>;
 
 const DEFAULT_GARDEN_DATA = {
@@ -118,7 +124,13 @@ const DEFAULT_GARDEN_DATA = {
 	seedPlantId: 2,
 	totalPlots: 2,
 	accessMode: GardenAccessMode.FULL,
-	wateringAvailableAt: null as number | null
+	wateringAvailableAt: null as number | null,
+	eligibility: {
+		canHarvest: true,
+		canPlantSeed: true,
+		canWaterGarden: false,
+		canCompost: true
+	}
 };
 
 export function createGardenData(overrides?: GardenDataOverrides): NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]> {
