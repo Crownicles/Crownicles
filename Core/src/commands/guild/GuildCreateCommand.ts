@@ -38,10 +38,8 @@ import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities
  */
 async function canCreateGuild(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<boolean> {
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-	const playerMoney = player.money;
 	if (guild) {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: true
 		}));
 		return false;
@@ -57,7 +55,6 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
 	if (existingGuild) {
 		// A guild with this name already exists
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: false,
 			guildNameIsAvailable: false
 		}));
@@ -66,7 +63,6 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
 
 	if (!checkNameString(guildName, GuildConstants.GUILD_NAME_LENGTH_RANGE)) {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: false,
 			guildNameIsAvailable: true,
 			guildNameIsAcceptable: false
@@ -75,12 +71,12 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
 	}
 
 
-	if (playerMoney < GuildCreateConstants.PRICE) {
+	if (player.money < GuildCreateConstants.PRICE) {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: false,
 			guildNameIsAvailable: true,
-			guildNameIsAcceptable: true
+			guildNameIsAcceptable: true,
+			missingMoney: GuildCreateConstants.PRICE - player.money
 		}));
 		return false;
 	}
@@ -174,26 +170,23 @@ async function acceptGuildCreate(player: Player, guildName: string, response: Cr
 		return;
 	}
 
-	const playerMoney = player.money;
 	if (outcome === "alreadyInGuild") {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: true
 		}));
 	}
 	else if (outcome === "nameTaken") {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: false,
 			guildNameIsAvailable: false
 		}));
 	}
 	else {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: false,
 			guildNameIsAvailable: true,
-			guildNameIsAcceptable: true
+			guildNameIsAcceptable: true,
+			missingMoney: GuildCreateConstants.PRICE - player.money
 		}));
 	}
 }
