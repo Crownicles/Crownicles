@@ -232,10 +232,6 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		});
 	}
 
-	private hasActiveWaterCooldown(garden: GardenData): boolean {
-		return this.getActiveWaterCooldownAvailableAt(garden) !== null;
-	}
-
 	private getActiveWaterCooldownAvailableAt(garden: GardenData): number | null {
 		if (garden.accessMode !== GardenAccessMode.FULL) {
 			return null;
@@ -306,11 +302,11 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			.setLabel(i18n.t("commands:report.city.homes.garden.harvestButton", { lng: ctx.lng }))
 			.setEmoji(parseEmoji(CrowniclesIcons.city.homeUpgrades.garden)!)
 			.setStyle(ButtonStyle.Success)
-			.setDisabled(!this.hasReadyPlants(garden));
+			.setDisabled(!garden.eligibility.canHarvest);
 	}
 
 	private buildPlantButtons(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder[] {
-		if (!this.canPlantSeed(garden)) {
+		if (!garden.eligibility.canPlantSeed) {
 			return [];
 		}
 
@@ -333,12 +329,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				.setLabel(i18n.t("commands:report.city.homes.garden.waterButton", { lng: ctx.lng }))
 				.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.water)!)
 				.setStyle(ButtonStyle.Primary)
-				.setDisabled(!this.canWaterGarden(garden))
+				.setDisabled(!garden.eligibility.canWaterGarden)
 		];
 	}
 
 	private buildCompostButtons(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder[] {
-		if (!this.canCompost(garden)) {
+		if (!garden.eligibility.canCompost) {
 			return [];
 		}
 
@@ -349,13 +345,6 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				.setEmoji(parseEmoji(CrowniclesIcons.city.gardenStatus.compost)!)
 				.setStyle(ButtonStyle.Secondary)
 		];
-	}
-
-	private canCompost(garden: GardenData): boolean {
-		if (this.isReadOnlyGarden(garden)) {
-			return false;
-		}
-		return garden.plantStorage.some(entry => entry.quantity > 0);
 	}
 
 	private buildStorageButton(ctx: HomeFeatureHandlerContext, garden: GardenData): ButtonBuilder {
@@ -405,38 +394,6 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 
 	private isGardenOnlyContext(ctx: HomeFeatureHandlerContext): boolean {
 		return (ctx.packet.data.data as ReactionCollectorCityData).gardenOnly === true;
-	}
-
-	private canPlantSeed(garden: GardenData): boolean {
-		if (this.isReadOnlyGarden(garden)) {
-			return false;
-		}
-		if (!garden.hasSeed) {
-			return false;
-		}
-		return garden.plots.some(plot => plot.plantId === 0);
-	}
-
-	private canWaterGarden(garden: GardenData): boolean {
-		if (!this.hasGrowingPlants(garden)) {
-			return false;
-		}
-		return !this.hasActiveWaterCooldown(garden);
-	}
-
-	private hasReadyPlants(garden: GardenData): boolean {
-		return garden.plots.some(plot => plot.isReady);
-	}
-
-	private hasGrowingPlants(garden: GardenData): boolean {
-		return garden.plots.some(plot => this.isGrowingPlot(plot));
-	}
-
-	private isGrowingPlot(plot: GardenPlotData): boolean {
-		if (plot.plantId === 0) {
-			return false;
-		}
-		return !plot.isReady;
 	}
 
 	private isReadOnlyGarden(garden: GardenData): boolean {
@@ -909,7 +866,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 	): void {
 		const nowSeconds = Math.ceil(Date.now() / TimeConstants.MS_TIME.SECOND);
 		for (const plot of garden.plots) {
-			if (!this.isGrowingPlot(plot)) {
+			if (plot.plantId === 0 || plot.isReady) {
 				continue;
 			}
 			const newReadyAt = plot.readyAtTimestamp - WATERING_TIME_ADVANCE_SECONDS;

@@ -516,7 +516,10 @@ describe("GardenFeatureHandler", () => {
 					{
 						slot: 0, plantId: 1, growthProgress: 0.5, isReady: false, readyAtTimestamp: 300
 					}
-				]
+				],
+				eligibility: {
+					canHarvest: false, canPlantSeed: false, canWaterGarden: true, canCompost: true
+				}
 			});
 			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
 			const container = new ContainerBuilder();
@@ -578,7 +581,10 @@ describe("GardenFeatureHandler", () => {
 						slot: 0, plantId: 0, growthProgress: 0, isReady: false, readyAtTimestamp: 0
 					}
 				],
-				hasSeed: false
+				hasSeed: false,
+				eligibility: {
+					canHarvest: false, canPlantSeed: false, canWaterGarden: false, canCompost: true
+				}
 			});
 			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
 			const container = new ContainerBuilder();
@@ -723,7 +729,10 @@ describe("GardenFeatureHandler", () => {
 
 		it("should NOT include compost button when storage is empty", () => {
 			const garden = createGardenData({
-				plantStorage: [{ plantId: 1, quantity: 0, maxCapacity: 10 }]
+				plantStorage: [{ plantId: 1, quantity: 0, maxCapacity: 10 }],
+				eligibility: {
+					canHarvest: true, canPlantSeed: true, canWaterGarden: false, canCompost: false
+				}
 			});
 			const ctx = createHandlerContext({ homeData: createHomeData({ garden }) });
 			const container = new ContainerBuilder();
@@ -739,7 +748,10 @@ describe("GardenFeatureHandler", () => {
 		it("should NOT include compost button when garden is READ_ONLY", () => {
 			const garden = {
 				...createGardenData({
-					plantStorage: [{ plantId: 1, quantity: 5, maxCapacity: 10 }]
+					plantStorage: [{ plantId: 1, quantity: 5, maxCapacity: 10 }],
+					eligibility: {
+						canHarvest: true, canPlantSeed: false, canWaterGarden: false, canCompost: false
+					}
 				}),
 				accessMode: "readOnly"
 			} as unknown as ReturnType<typeof createGardenData>;
