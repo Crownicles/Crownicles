@@ -140,7 +140,7 @@ async function buildPointsData(player: Player, showEnergy: boolean): Promise<Poi
  */
 interface TokenButtonData {
 	cost: number;
-	playerTokens: number;
+	canAfford: boolean;
 }
 
 /**
@@ -181,7 +181,7 @@ function buildTokenData(
 
 	return {
 		cost: tokenCostResult.cost,
-		playerTokens: player.tokens
+		canAfford: player.tokens >= tokenCostResult.cost
 	};
 }
 
@@ -190,7 +190,7 @@ function buildTokenData(
  */
 interface HealButtonData {
 	price: number;
-	playerMoney: number;
+	canAfford: boolean;
 }
 
 /**
@@ -207,9 +207,10 @@ function buildHealData(
 	if (!effectId || effectId === Effect.OCCUPIED.id || effectId === Effect.JAILED.id) {
 		return undefined;
 	}
+	const price = calculateHealAlterationPrice(player);
 	return {
-		price: calculateHealAlterationPrice(player),
-		playerMoney: player.money
+		price,
+		canAfford: player.money >= price
 	};
 }
 

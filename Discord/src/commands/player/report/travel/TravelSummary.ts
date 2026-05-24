@@ -213,7 +213,7 @@ function createCurrencyButton(config: ButtonConfig): ButtonBuilder {
 
 type CurrencyButtonConfig = {
 	resource: {
-		playerAmount: number; cost: number;
+		canAfford: boolean;
 	} | undefined;
 	customId: string;
 	sufficientLabelKey: string;
@@ -228,7 +228,7 @@ function createCurrencyButtonFromPacket(config: CurrencyButtonConfig, lng: Langu
 	}
 	return createCurrencyButton({
 		customId: config.customId,
-		hasEnough: config.resource.playerAmount >= config.resource.cost,
+		hasEnough: config.resource.canAfford,
 		sufficientLabel: i18n.t(config.sufficientLabelKey, { lng }),
 		insufficientLabel: i18n.t(config.insufficientLabelKey, { lng }),
 		emoji: config.emoji,
@@ -239,7 +239,7 @@ function createCurrencyButtonFromPacket(config: CurrencyButtonConfig, lng: Langu
 const TRAVEL_CURRENCY_BUTTONS: ((packet: CommandReportTravelSummaryRes) => CurrencyButtonConfig)[] = [
 	(packet): CurrencyButtonConfig => ({
 		resource: packet.heal && {
-			playerAmount: packet.heal.playerMoney, cost: packet.heal.price
+			canAfford: packet.heal.canAfford
 		},
 		customId: TRAVEL_BUTTON_IDS.BUY_HEAL,
 		sufficientLabelKey: "commands:report.buyHealButton",
@@ -249,7 +249,7 @@ const TRAVEL_CURRENCY_BUTTONS: ((packet: CommandReportTravelSummaryRes) => Curre
 	}),
 	(packet): CurrencyButtonConfig => ({
 		resource: packet.tokens && {
-			playerAmount: packet.tokens.playerTokens, cost: packet.tokens.cost
+			canAfford: packet.tokens.canAfford
 		},
 		customId: TRAVEL_BUTTON_IDS.USE_TOKENS,
 		sufficientLabelKey: "commands:report.useTokensButton",
@@ -271,8 +271,8 @@ function buildTravelActionRow(packet: CommandReportTravelSummaryRes, lng: Langua
 }
 
 function hasInteractiveButton(packet: CommandReportTravelSummaryRes): boolean {
-	const tokensInteractive = packet.tokens && packet.tokens.playerTokens >= packet.tokens.cost;
-	const healInteractive = packet.heal && packet.heal.playerMoney >= packet.heal.price;
+	const tokensInteractive = packet.tokens && packet.tokens.canAfford;
+	const healInteractive = packet.heal && packet.heal.canAfford;
 	return Boolean(tokensInteractive || healInteractive);
 }
 
