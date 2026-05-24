@@ -49,14 +49,14 @@ export default class ErrorHandler {
 
 	@packetHandler(BlockedPacket)
 	async blockedHandler(context: PacketContext, packet: BlockedPacket): Promise<void> {
-		const target = this.getBlockedReplyTarget(context);
+		const target = ErrorHandler.getBlockedReplyTarget(context);
 		const lng = target.interaction?.userLanguage ?? LANGUAGE.ENGLISH;
-		const embed = await this.buildBlockedEmbed(context, packet, lng);
+		const embed = await ErrorHandler.buildBlockedEmbed(context, packet, lng);
 
-		await this.sendBlockedEmbed(target, embed);
+		await ErrorHandler.sendBlockedEmbed(target, embed);
 	}
 
-	private getBlockedReplyTarget(context: PacketContext): BlockedReplyTarget {
+	private static getBlockedReplyTarget(context: PacketContext): BlockedReplyTarget {
 		return {
 			interaction: DiscordCache.getInteraction(context.discord!.interaction),
 			buttonInteraction: context.discord?.buttonInteraction
@@ -65,17 +65,17 @@ export default class ErrorHandler {
 		};
 	}
 
-	private async buildBlockedEmbed(context: PacketContext, packet: BlockedPacket, lng: Language): Promise<CrowniclesEmbed> {
+	private static async buildBlockedEmbed(context: PacketContext, packet: BlockedPacket, lng: Language): Promise<CrowniclesEmbed> {
 		return new CrowniclesEmbed()
 			.setErrorColor()
 			.setTitle(i18n.t("error:titleDidntWork", {
 				lng,
 				pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 			}))
-			.setDescription(await this.buildBlockedDescription(context, packet, lng));
+			.setDescription(await ErrorHandler.buildBlockedDescription(context, packet, lng));
 	}
 
-	private async buildBlockedDescription(context: PacketContext, packet: BlockedPacket, lng: Language): Promise<string> {
+	private static async buildBlockedDescription(context: PacketContext, packet: BlockedPacket, lng: Language): Promise<string> {
 		const errorReasons = formatBlockedReasons(packet.reasons, lng);
 		if (context.keycloakId !== packet.keycloakId) {
 			return i18n.t("error:anotherPlayerBlocked", {
@@ -91,17 +91,17 @@ export default class ErrorHandler {
 		});
 	}
 
-	private async sendBlockedEmbed(target: BlockedReplyTarget, embed: CrowniclesEmbed): Promise<void> {
+	private static async sendBlockedEmbed(target: BlockedReplyTarget, embed: CrowniclesEmbed): Promise<void> {
 		const replyOptions: EmbedReplyOptions = { embeds: [embed] };
 		if (target.buttonInteraction) {
-			await this.sendBlockedEmbedToButtonInteraction(target, replyOptions);
+			await ErrorHandler.sendBlockedEmbedToButtonInteraction(target, replyOptions);
 			return;
 		}
 
-		await this.sendBlockedEmbedToCommandInteraction(target.interaction, replyOptions);
+		await ErrorHandler.sendBlockedEmbedToCommandInteraction(target.interaction, replyOptions);
 	}
 
-	private async sendBlockedEmbedToButtonInteraction(target: BlockedReplyTarget, replyOptions: EmbedReplyOptions): Promise<void> {
+	private static async sendBlockedEmbedToButtonInteraction(target: BlockedReplyTarget, replyOptions: EmbedReplyOptions): Promise<void> {
 		const buttonInteraction = target.buttonInteraction!;
 		if (buttonInteraction.deferred) {
 			await buttonInteraction.editReply(replyOptions);
@@ -116,7 +116,7 @@ export default class ErrorHandler {
 		await target.interaction?.channel.send(replyOptions);
 	}
 
-	private async sendBlockedEmbedToCommandInteraction(interaction: CrowniclesInteraction | null, replyOptions: EmbedReplyOptions): Promise<void> {
+	private static async sendBlockedEmbedToCommandInteraction(interaction: CrowniclesInteraction | null, replyOptions: EmbedReplyOptions): Promise<void> {
 		if (!interaction) {
 			return;
 		}
