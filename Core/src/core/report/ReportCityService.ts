@@ -102,12 +102,14 @@ export async function buildApartmentNotaryData(
 		});
 	}
 	return {
-		playerMoney: player.money,
 		...city.apartmentPrice && !ownsApartmentHere && home
 			? {
 				forSale: {
 					price: city.apartmentPrice,
-					canAfford: player.money >= city.apartmentPrice
+					canAfford: player.money >= city.apartmentPrice,
+					...player.money < city.apartmentPrice
+						? { missingMoney: city.apartmentPrice - player.money }
+						: {}
 				}
 			}
 			: {},

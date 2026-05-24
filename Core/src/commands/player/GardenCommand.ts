@@ -111,7 +111,6 @@ async function buildGardenCollectorData(params: GardenCollectorDataParams): Prom
 			}
 		},
 		apartmentNotary: {
-			playerMoney: 0,
 			ownedApartments: []
 		},
 		initialMenu: HomeNestedMenuIds.GARDEN

@@ -327,13 +327,13 @@ type ApartmentNotaryData = NonNullable<ReactionCollectorCityData["apartmentNotar
 type ForSaleData = NonNullable<ApartmentNotaryData["forSale"]>;
 type OwnedApartmentData = ApartmentNotaryData["ownedApartments"][number];
 
-function renderForSale(container: ContainerBuilder, forSale: ForSaleData, playerMoney: number, lng: Language): void {
+function renderForSale(container: ContainerBuilder, forSale: ForSaleData, lng: Language): void {
 	const price = forSale.price;
 	if (!forSale.canAfford) {
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
 				i18n.t("commands:report.city.homes.apartmentNotary.buyNotEnoughMoney", {
-					lng, cost: price, missingMoney: price - playerMoney
+					lng, cost: price, missingMoney: forSale.missingMoney ?? 0
 				})
 			)
 		);
@@ -389,7 +389,7 @@ function addApartmentNotarySection(container: ContainerBuilder, apartmentData: A
 	);
 
 	if (apartmentData.forSale) {
-		renderForSale(container, apartmentData.forSale, apartmentData.playerMoney, lng);
+		renderForSale(container, apartmentData.forSale, lng);
 	}
 
 	if (hasOwned) {
