@@ -1,5 +1,5 @@
 import {
-	DataTypes, Model, Sequelize
+	DataTypes, Model, Op, Sequelize
 } from "sequelize";
 import * as moment from "moment";
 
@@ -50,20 +50,29 @@ export class Materials {
 		materialId: number,
 		quantity: number
 	): Promise<boolean> {
-		const material = await Material.findOne({
-			where: {
-				playerId,
-				materialId
-			}
-		});
-
-		if (!material || material.quantity < quantity) {
-			return false;
+		if (quantity <= 0) {
+			return true;
 		}
 
-		material.quantity -= quantity;
-		await material.save();
-		return true;
+		/*
+		 * Race-free atomic decrement: a single UPDATE with `quantity >= n` in
+		 * the WHERE clause performs the check-and-set in one MariaDB
+		 * statement. Two concurrent transactions racing to consume the same
+		 * material can never both succeed — one will match 1 row, the other 0.
+		 * Picks up an ambient CLS transaction automatically when called inside
+		 * a `withLockedEntities` / `Player.withLocked` block.
+		 */
+		const [affectedCount] = await Material.update(
+			{ quantity: Sequelize.literal(`quantity - ${Number(quantity)}`) as unknown as number },
+			{
+				where: {
+					playerId,
+					materialId,
+					quantity: { [Op.gte]: quantity }
+				}
+			}
+		);
+		return affectedCount === 1;
 	}
 
 	public static async consumeMaterials(
@@ -73,20 +82,26 @@ export class Materials {
 			quantity: number;
 		}[]
 	): Promise<boolean> {
-		// First check if all materials are available
-		const playerMaterials = await Materials.getPlayerMaterials(playerId);
-		const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
-
+		/*
+		 * Two-phase consume: try to decrement every material atomically; if any
+		 * decrement fails, refund the ones already taken. The refund is
+		 * best-effort and safe because `giveMaterial` is an upsert. When called
+		 * inside an enclosing `withLockedEntities` block (the standard cooking
+		 * /blacksmith pattern via `lockedPlayer.id`), the whole sequence is
+		 * one transaction and the refund branch turns into a no-op rollback.
+		 */
+		const consumed: {
+			materialId: number; quantity: number;
+		}[] = [];
 		for (const material of materials) {
-			const playerQuantity = playerMaterialMap.get(material.materialId) ?? 0;
-			if (playerQuantity < material.quantity) {
+			const ok = await Materials.consumeMaterial(playerId, material.materialId, material.quantity);
+			if (!ok) {
+				for (const taken of consumed) {
+					await Materials.giveMaterial(playerId, taken.materialId, taken.quantity);
+				}
 				return false;
 			}
-		}
-
-		// Then consume all materials
-		for (const material of materials) {
-			await Materials.consumeMaterial(playerId, material.materialId, material.quantity);
+			consumed.push(material);
 		}
 		return true;
 	}
