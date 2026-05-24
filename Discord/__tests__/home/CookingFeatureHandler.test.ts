@@ -262,8 +262,12 @@ describe("CookingFeatureHandler", () => {
 			await handler.handleFeatureSelection(ctx, interaction as any, nestedMenus as any);
 
 			await simulateMqttResponse(CommandReportCookingMenuRes.name, {
-				cookingLevel: 5,
-				cookingGrade: "apprentice"
+				menu: {
+					cookingLevel: 5,
+					cookingGrade: "apprentice",
+					currentSlots: [],
+					isIgnited: false
+				}
 			} as CommandReportCookingMenuRes);
 
 			expect(interaction.deferUpdate).toHaveBeenCalled();
@@ -409,9 +413,12 @@ describe("CookingFeatureHandler", () => {
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, interaction as any, nestedMenus as any);
 
 				await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
-					slots: [createSlotWithRecipe({ slotIndex: 0 }), createEmptySlot(1)],
-					cookingGrade: "apprentice",
-					cookingLevel: 5,
+					menu: {
+						cookingLevel: 5,
+						cookingGrade: "apprentice",
+						currentSlots: [createSlotWithRecipe({ slotIndex: 0 }), createEmptySlot(1)],
+						isIgnited: true
+					},
 					woodConsumed: true,
 					woodMaterialId: 42
 				} as CommandReportCookingIgniteRes);
@@ -485,9 +492,12 @@ describe("CookingFeatureHandler", () => {
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_REVIVE, interaction as any, nestedMenus as any);
 
 				await simulateMqttResponse(CommandReportCookingReviveRes.name, {
-					slots: [createSlotWithRecipe({ slotIndex: 0 })],
-					cookingGrade: "apprentice",
-					cookingLevel: 5,
+					menu: {
+						cookingLevel: 5,
+						cookingGrade: "apprentice",
+						currentSlots: [createSlotWithRecipe({ slotIndex: 0 })],
+						isIgnited: true
+					},
 					woodConsumed: false,
 					woodMaterialId: 42
 				} as CommandReportCookingReviveRes);
@@ -509,9 +519,12 @@ describe("CookingFeatureHandler", () => {
 				const igniteInteraction = createMockComponentInteraction(HomeMenuIds.COOKING_IGNITE);
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, igniteInteraction as any, createMockNestedMenus() as any);
 				await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
-					slots: [createSlotWithRecipe()],
-					cookingGrade: "apprentice",
-					cookingLevel: 5,
+					menu: {
+						cookingLevel: 5,
+						cookingGrade: "apprentice",
+						currentSlots: [createSlotWithRecipe()],
+						isIgnited: true
+					},
 					woodConsumed: true,
 					woodMaterialId: 42
 				} as CommandReportCookingIgniteRes);
@@ -545,9 +558,12 @@ describe("CookingFeatureHandler", () => {
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_WOOD_CONFIRM, interaction as any, nestedMenus as any);
 
 				await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
-					slots: [createSlotWithRecipe()],
-					cookingGrade: "apprentice",
-					cookingLevel: 5,
+					menu: {
+						cookingLevel: 5,
+						cookingGrade: "apprentice",
+						currentSlots: [createSlotWithRecipe()],
+						isIgnited: true
+					},
 					woodConsumed: true,
 					woodMaterialId: 42
 				} as CommandReportCookingIgniteRes);
@@ -588,9 +604,12 @@ describe("CookingFeatureHandler", () => {
 				const igniteInteraction = createMockComponentInteraction(HomeMenuIds.COOKING_IGNITE);
 				await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, igniteInteraction as any, createMockNestedMenus() as any);
 				await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
-					slots: [createSlotWithRecipe()],
-					cookingGrade: "apprentice",
-					cookingLevel: 5,
+					menu: {
+						cookingLevel: 5,
+						cookingGrade: "apprentice",
+						currentSlots: [createSlotWithRecipe()],
+						isIgnited: true
+					},
 					woodConsumed: true,
 					woodMaterialId: 42
 				} as CommandReportCookingIgniteRes);
@@ -655,7 +674,12 @@ describe("CookingFeatureHandler", () => {
 					cookingXpGained: 10,
 					outputType: CookingOutputType.POTION,
 					cookingLevelUp: false,
-					updatedSlots: [createEmptySlot(0)],
+					menu: {
+						cookingLevel: 5,
+						cookingGrade: "apprentice",
+						currentSlots: [createEmptySlot(0)],
+						isIgnited: true
+					}
 				} as CommandReportCookingCraftRes);
 
 				// Should register ignited menu with allDisabled=true
@@ -688,7 +712,13 @@ describe("CookingFeatureHandler", () => {
 					recipeId: "testRecipe",
 					cookingXpGained: 0,
 					success: false,
-					cookingLevelUp: false
+					cookingLevelUp: false,
+					menu: {
+						cookingLevel: 5,
+						cookingGrade: "apprentice",
+						currentSlots: [createSlotWithRecipe()],
+						isIgnited: true
+					}
 				} as CommandReportCookingCraftRes);
 
 				expect(nestedMenus.message.reply).toHaveBeenCalled();
@@ -719,7 +749,12 @@ describe("CookingFeatureHandler", () => {
 					cookingLevelUp: true,
 					newCookingLevel: 10,
 					newCookingGrade: "expert",
-					updatedSlots: [createSlotWithRecipe()],
+					menu: {
+						cookingLevel: 10,
+						cookingGrade: "expert",
+						currentSlots: [createSlotWithRecipe()],
+						isIgnited: true
+					}
 				} as CommandReportCookingCraftRes);
 
 				// Should send two replies: craft result + level up embed
@@ -751,7 +786,12 @@ describe("CookingFeatureHandler", () => {
 						fedFromSurplus: false
 					},
 					cookingLevelUp: false,
-					updatedSlots: [createEmptySlot(0)],
+					menu: {
+						cookingLevel: 5,
+						cookingGrade: "apprentice",
+						currentSlots: [createEmptySlot(0)],
+						isIgnited: true
+					}
 				} as CommandReportCookingCraftRes);
 
 				expect(nestedMenus.message.reply).toHaveBeenCalled();
@@ -858,9 +898,12 @@ describe("CookingFeatureHandler", () => {
 			await handler.handleSubMenuSelection(ctx, HomeMenuIds.COOKING_IGNITE, interaction as any, nestedMenus as any);
 
 			await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
-				slots: [createSlotWithRecipe({ slotIndex: 0 })],
-				cookingGrade: "master",
-				cookingLevel: 20,
+				menu: {
+					cookingLevel: 20,
+					cookingGrade: "master",
+					currentSlots: [createSlotWithRecipe({ slotIndex: 0 })],
+					isIgnited: true
+				},
 				woodConsumed: true,
 				woodMaterialId: 1
 			} as CommandReportCookingIgniteRes);
