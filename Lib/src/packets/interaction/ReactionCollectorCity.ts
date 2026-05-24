@@ -13,6 +13,9 @@ import {
 import {
 	HomeFeatures, ChestSlotsPerCategory
 } from "../../types/HomeFeatures";
+import {
+	BuildingUpgradeEligibilityMap, DepositTierAffordability
+} from "../../types/GuildDomainEligibility";
 import { MaterialRarity } from "../../types/MaterialRarity";
 import { ItemSlot } from "../../types/ItemSlot";
 import { PlantId } from "../../constants/PlantConstants";
@@ -23,7 +26,6 @@ import { OwnedPet } from "../../types/OwnedPet";
 import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 import { GardenAccessMode } from "../../types/GardenAccessMode";
 import { GardenConstants } from "../../constants/GardenConstants";
-import { GuildBuilding } from "../../constants/GuildDomainConstants";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -306,14 +308,10 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		 * `canAfford` = treasury covers the upgrade cost.
 		 * `meetsLevel` = guild level satisfies the required level.
 		 */
-		canUpgradeBuildings: Record<GuildBuilding, {
-			canAfford: boolean; meetsLevel: boolean;
-		} | null>;
+		canUpgradeBuildings: BuildingUpgradeEligibilityMap;
 
 		/** Whether the player can afford each treasury deposit tier (computed by Core). */
-		canDeposit: {
-			small: boolean; big: boolean; huge: boolean;
-		};
+		canDeposit: DepositTierAffordability;
 	};
 
 	/**
