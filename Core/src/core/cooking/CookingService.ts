@@ -73,6 +73,7 @@ interface RecipeSlotContext {
 	plantStorageMap: Map<number, number>;
 	materialMap: Map<number, number>;
 	guild: Guild | null;
+	pinnedRecipeId: string | null;
 }
 
 interface CookingLevelUpResult {
@@ -185,7 +186,8 @@ export class CookingService {
 			grade,
 			plantStorageMap,
 			materialMap,
-			guild
+			guild,
+			pinnedRecipeId: player.pinnedCookingRecipeId
 		};
 
 		return slotRecipes.map((recipe, i) => ({
@@ -199,12 +201,14 @@ export class CookingService {
 		recipe: CookingRecipe,
 		context: RecipeSlotContext
 	): RecipeSlotData {
-		const secret = isRecipeSecret({
-			slotIndex,
-			furnacePosition: context.furnacePosition,
-			daySeed: context.daySeed,
-			secretRate: context.grade.secretRecipeRate
-		});
+		const secret = recipe.id === context.pinnedRecipeId
+			? false
+			: isRecipeSecret({
+				slotIndex,
+				furnacePosition: context.furnacePosition,
+				daySeed: context.daySeed,
+				secretRate: context.grade.secretRecipeRate
+			});
 
 		const plantAvailability = recipe.plants.map(p => ({
 			plantId: p.plantId,
