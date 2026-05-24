@@ -768,6 +768,13 @@ async function executeReadyCookingCraft(
 		recipe: craftContext.recipe,
 		homeId: craftContext.home.id
 	});
+	if (craftContext.player.pinnedCookingRecipeId === craftContext.recipe.id) {
+		await Player.withLocked(craftContext.player.id, async lockedPlayer => {
+			lockedPlayer.pinnedCookingRecipeId = null;
+			await lockedPlayer.save();
+		});
+		craftContext.player.pinnedCookingRecipeId = null;
+	}
 	const outputResult = await processCraftOutput({
 		context: packetContext,
 		player: craftContext.player,
