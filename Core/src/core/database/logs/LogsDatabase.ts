@@ -139,6 +139,7 @@ import {
 	CityVisitLogParams
 } from "./LogsCityLogger";
 import { transactionBelongsToSequelize } from "./LogsForeignTransactionGuard";
+import { MapCache } from "../../maps/MapCache";
 
 /**
  * Data structure for expedition log entries
@@ -893,12 +894,15 @@ export class LogsDatabase extends Database {
 		if (!player) {
 			return;
 		}
-		const [maplinkLog] = await LogsMapLinks.findOrCreate({
+		const [maplinkLog, created] = await LogsMapLinks.findOrCreate({
 			where: {
 				start: mapLink.startMap,
 				end: mapLink.endMap
 			}
 		});
+		if (created && MapCache.pveIslandMapLinks.includes(mapLink.id)) {
+			MapCache.logsPveIslandMapLinks.push(maplinkLog.id);
+		}
 		await LogsPlayersTravels.create({
 			playerId: player.id,
 			mapLinkId: maplinkLog.id,

@@ -26,6 +26,7 @@ import { PotionDataController } from "../../data/Potion";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import PetEntity from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
@@ -76,6 +77,13 @@ export class Crownicles {
 		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
 		 */
 		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(asDays(1)));
+
+		await Player.update(
+			{
+				tokens: Sequelize.literal(`GREATEST(tokens, LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY}))`)
+			},
+			{ where: {} }
+		);
 
 		Crownicles.randomPotion()
 			.finally(() => null);
