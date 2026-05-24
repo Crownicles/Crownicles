@@ -12,7 +12,6 @@ import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedM
 import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import i18n from "../../../../../translations/i18n";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
-import { DiscordConstants } from "../../../../../DiscordConstants";
 import { Language } from "../../../../../../../Lib/src/Language";
 import {
 	getCookingGrade, CookingOutputType, CookingGradeDefinition
@@ -611,10 +610,9 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				.setStyle(ButtonStyle.Success);
 		}
 
-		const recipeName = i18n.t(`models:cooking.recipes.${recipe.id}`, { lng: ctx.lng });
 		return new ButtonBuilder()
 			.setCustomId(`${HomeMenuIds.COOKING_PIN_PREFIX}${recipe.id}`)
-			.setLabel(recipeName.slice(0, DiscordConstants.MAX_BUTTON_LABEL_LENGTH))
+			.setLabel(i18n.t("commands:report.city.homes.cooking.pinButton", { lng: ctx.lng }))
 			.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
 			.setStyle(ButtonStyle.Secondary);
 	}
