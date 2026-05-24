@@ -17,17 +17,16 @@ import {
 const DISCORD_CUSTOM_ID_MAX_LENGTH = 100;
 const PART_SEPARATOR = "_";
 
-export function buildCustomId(prefix: string, ...parts: Array<string | number>): string {
-	const partStrings = parts.map(p => String(p));
-	for (const part of partStrings) {
-		if (part.length === 0) {
-			throw new Error(`buildCustomId: empty part in customId for prefix '${prefix}'`);
-		}
-		if (part.includes(PART_SEPARATOR) && parts.length > 1) {
-			throw new Error(`buildCustomId: part '${part}' contains the reserved separator '${PART_SEPARATOR}' (prefix '${prefix}')`);
-		}
+function validatePart(part: string, prefix: string, totalParts: number): void {
+	if (part.length === 0) {
+		throw new Error(`buildCustomId: empty part in customId for prefix '${prefix}'`);
 	}
-	const id = partStrings.length > 0 ? `${prefix}${partStrings.join(PART_SEPARATOR)}` : prefix;
+	if (totalParts > 1 && part.includes(PART_SEPARATOR)) {
+		throw new Error(`buildCustomId: part '${part}' contains the reserved separator '${PART_SEPARATOR}' (prefix '${prefix}')`);
+	}
+}
+
+function assertWithinDiscordLimit(id: string): void {
 	if (id.length === 0) {
 		throw new Error("buildCustomId: empty customId");
 	}
@@ -36,6 +35,15 @@ export function buildCustomId(prefix: string, ...parts: Array<string | number>):
 			`buildCustomId: id '${id}' is ${id.length} chars, exceeds Discord limit of ${DISCORD_CUSTOM_ID_MAX_LENGTH}`
 		);
 	}
+}
+
+export function buildCustomId(prefix: string, ...parts: Array<string | number>): string {
+	const partStrings = parts.map(p => String(p));
+	for (const part of partStrings) {
+		validatePart(part, prefix, partStrings.length);
+	}
+	const id = partStrings.length > 0 ? `${prefix}${partStrings.join(PART_SEPARATOR)}` : prefix;
+	assertWithinDiscordLimit(id);
 	return id;
 }
 

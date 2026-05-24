@@ -37,15 +37,20 @@
 
 const DECORATOR_NAME = "packetHandler";
 
+function isPacketHandlerCall(expr) {
+	if (!expr || expr.type !== "CallExpression") {
+		return false;
+	}
+	const callee = expr.callee;
+	if (!callee || callee.type !== "Identifier") {
+		return false;
+	}
+	return callee.name === DECORATOR_NAME;
+}
+
 function hasPacketHandlerDecorator(node) {
 	const decorators = node.decorators ?? [];
-	for (const decorator of decorators) {
-		const expr = decorator.expression;
-		if (expr && expr.type === "CallExpression" && expr.callee && expr.callee.type === "Identifier" && expr.callee.name === DECORATOR_NAME) {
-			return true;
-		}
-	}
-	return false;
+	return decorators.some(decorator => isPacketHandlerCall(decorator.expression));
 }
 
 export default {
