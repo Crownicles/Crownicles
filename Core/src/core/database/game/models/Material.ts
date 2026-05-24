@@ -63,7 +63,7 @@ export class Materials {
 		 * a `withLockedEntities` / `Player.withLocked` block.
 		 */
 		const [affectedCount] = await Material.update(
-			{ quantity: Sequelize.literal(`quantity - ${Number(quantity)}`) as unknown as number },
+			{ quantity: Sequelize.literal(`quantity - ${Number(quantity)}`) },
 			{
 				where: {
 					playerId,

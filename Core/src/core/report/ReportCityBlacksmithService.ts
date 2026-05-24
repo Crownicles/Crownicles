@@ -203,7 +203,12 @@ export function validateUpgradeItemRequest(
 }
 
 /**
- * Handle upgrade item reaction — player upgrades an item at the home upgrade station
+ * Handle upgrade item reaction — player upgrades an item at the home upgrade station.
+ *
+ * Concurrency: the material consume + inventory slot mutation runs
+ * inside `Player.withLocked` so two concurrent home-upgrade requests
+ * on the same player cannot both pass the validation snapshot and
+ * race on the material decrement or the inventory slot save.
  */
 export async function handleUpgradeItemReaction(
 	player: Player,
@@ -226,28 +231,60 @@ export async function handleUpgradeItemReaction(
 
 	const { itemToUpgrade } = validation;
 
-	const materialsToConsume = itemToUpgrade!.requiredMaterials.map(m => ({
+	await Player.withLocked(player.id, async lockedPlayer => {
+		await executeUpgradeItemUnderLock({
+			lockedPlayer, reaction, data, itemToUpgrade: itemToUpgrade!, response
+		});
+	});
+}
+
+/**
+ * Inside-lock body of `handleUpgradeItemReaction`: re-validate against
+ * the locked row, consume materials, mutate the inventory slot.
+ */
+async function executeUpgradeItemUnderLock(params: {
+	lockedPlayer: Player;
+	reaction: ReactionCollectorUpgradeItemReaction;
+	data: ReactionCollectorCityData;
+	itemToUpgrade: NonNullable<ReturnType<typeof validateUpgradeItemRequest>["itemToUpgrade"]>;
+	response: CrowniclesPacket[];
+}): Promise<void> {
+	const {
+		lockedPlayer, reaction, data, itemToUpgrade, response
+	} = params;
+
+	const revalidation = validateUpgradeItemRequest(lockedPlayer, reaction, data);
+	if (revalidation.logError) {
+		CrowniclesLogger.error(revalidation.logError);
+		return;
+	}
+	if (revalidation.error) {
+		response.push(revalidation.error);
+		return;
+	}
+
+	const materialsToConsume = itemToUpgrade.requiredMaterials.map(m => ({
 		materialId: m.materialId,
 		quantity: m.quantity
 	}));
 
-	const consumed = await Materials.consumeMaterials(player.id, materialsToConsume);
+	const consumed = await Materials.consumeMaterials(lockedPlayer.id, materialsToConsume);
 	if (!consumed) {
 		response.push(makePacket(CommandReportUpgradeItemMissingMaterialsRes, {}));
 		return;
 	}
 
-	const inventorySlot = await getInventorySlotForReaction(player, reaction, "upgrade");
+	const inventorySlot = await getInventorySlotForReaction(lockedPlayer, reaction, "upgrade");
 	if (!inventorySlot) {
 		return;
 	}
 
-	inventorySlot.itemLevel = itemToUpgrade!.nextLevel;
+	inventorySlot.itemLevel = itemToUpgrade.nextLevel;
 	await inventorySlot.save();
 
 	response.push(makePacket(CommandReportUpgradeItemRes, {
 		itemCategory: reaction.itemCategory,
-		newItemLevel: itemToUpgrade!.nextLevel
+		newItemLevel: itemToUpgrade.nextLevel
 	}));
 }
 
