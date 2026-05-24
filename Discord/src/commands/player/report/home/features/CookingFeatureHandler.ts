@@ -199,16 +199,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		selectedValue: string,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
-		const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_PIN_PREFIX, ""), 10);
-		if (isNaN(slotIndex)) {
+		const recipeId = selectedValue.slice(HomeMenuIds.COOKING_PIN_PREFIX.length);
+		if (!recipeId) {
 			return true;
 		}
-		const state = this.getState(ctx);
-		const slot = state.currentSlots.find(s => s.slotIndex === slotIndex);
-		if (!slot?.recipe || slot.recipe.isSecret) {
-			return true;
-		}
-		await this.sendPinAction(ctx, slot.recipe.id, nestedMenus);
+		await this.sendPinAction(ctx, recipeId, nestedMenus);
 		return true;
 	}
 
@@ -429,8 +424,15 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private createCookingCollector(ctx: HomeFeatureHandlerContext): ReturnType<typeof createHomeFeatureCollector> {
 		return createHomeFeatureCollector(this, ctx, {
-			onEnd: () => {
-				this.sessions.delete(ctx.user.id);
+			onEnd: reason => {
+				/*
+				 * Only clear session on real terminal end (timeout/idle), not on programmatic
+				 * .stop() triggered by menu transitions (reason === "user"), which would wipe
+				 * state mid-flow and break handlers that depend on currentSlots / pinnedRecipe.
+				 */
+				if (reason !== "user") {
+					this.sessions.delete(ctx.user.id);
+				}
 			}
 		});
 	}
@@ -602,7 +604,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 		const recipeName = i18n.t(`models:cooking.recipes.${recipe.id}`, { lng: ctx.lng });
 		return new ButtonBuilder()
-			.setCustomId(`${HomeMenuIds.COOKING_PIN_PREFIX}${slot.slotIndex}`)
+			.setCustomId(`${HomeMenuIds.COOKING_PIN_PREFIX}${recipe.id}`)
 			.setLabel(recipeName.slice(0, DiscordConstants.MAX_BUTTON_LABEL_LENGTH))
 			.setEmoji(parseEmoji(CrowniclesIcons.messages.pin)!)
 			.setStyle(ButtonStyle.Secondary);
