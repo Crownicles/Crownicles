@@ -28,6 +28,7 @@ import { AsyncCorePacketSender } from "./AsyncCorePacketSender";
 import { DiscordConstants } from "../DiscordConstants";
 import { CommandTestListPacketReq } from "../../../Lib/src/packets/commands/CommandTestListPacket";
 import { PacketUtils } from "../utils/PacketUtils";
+import { installCustomIdGuard } from "../utils/CustomIdGuard";
 
 const DEFAULT_MQTT_CLIENT_OPTIONS = {
 	connectTimeout: MqttConstants.CONNECTION_TIMEOUT
@@ -51,6 +52,7 @@ export class DiscordMQTT {
 	static asyncPacketSender: AsyncCorePacketSender = new AsyncCorePacketSender();
 
 	static async init(isMainShard: boolean): Promise<void> {
+		installCustomIdGuard();
 		await registerAllPacketHandlers();
 
 		this.connectSubscribeAndHandleGlobal();
