@@ -24,6 +24,6 @@ export interface OwnedApartmentSummary extends ApartmentLocationRef {
 	/** True if this apartment is currently rented out (player's main home is in this apartment's city) */
 	isRented: boolean;
 
-	/** Core-authoritative eligibility: rent has reached the claimable threshold */
+	/** Core-authoritative eligibility: apartment is rented AND accumulated rent has reached the claimable threshold */
 	canClaim: boolean;
 }

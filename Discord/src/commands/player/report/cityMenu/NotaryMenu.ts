@@ -333,7 +333,7 @@ function renderForSale(container: ContainerBuilder, forSale: ForSaleData, lng: L
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
 				i18n.t("commands:report.city.homes.apartmentNotary.buyNotEnoughMoney", {
-					lng, cost: price, missingMoney: forSale.missingMoney ?? 0
+					lng, cost: price, missingMoney: forSale.missingMoney
 				})
 			)
 		);

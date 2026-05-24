@@ -104,13 +104,16 @@ export async function buildApartmentNotaryData(
 	return {
 		...city.apartmentPrice && !ownsApartmentHere && home
 			? {
-				forSale: {
-					price: city.apartmentPrice,
-					canAfford: player.money >= city.apartmentPrice,
-					...player.money < city.apartmentPrice
-						? { missingMoney: city.apartmentPrice - player.money }
-						: {}
-				}
+				forSale: player.money >= city.apartmentPrice
+					? {
+						price: city.apartmentPrice,
+						canAfford: true as const
+					}
+					: {
+						price: city.apartmentPrice,
+						canAfford: false as const,
+						missingMoney: city.apartmentPrice - player.money
+					}
 			}
 			: {},
 		ownedApartments: summaries
