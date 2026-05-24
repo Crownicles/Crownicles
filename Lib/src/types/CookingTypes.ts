@@ -57,3 +57,23 @@ export interface PinnedRecipeInfo {
 	ingredients: RecipeIngredients;
 	canCraft: boolean;
 }
+
+/**
+ * Authoritative snapshot of the cooking feature's state, produced by Core
+ * and consumed by Discord as the single source of truth for every cooking
+ * render. The Discord client must NOT keep any cached cooking state of its
+ * own: every Core response carries a fresh snapshot, and the renderer
+ * picks the appropriate view based purely on `isIgnited`.
+ *
+ * - `isIgnited === false`: the furnace is unlit, render the pre-ignite menu.
+ * `currentSlots` MUST be empty in this case.
+ * - `isIgnited === true`: the furnace is lit, render the ignited menu with
+ * `currentSlots` displayed as craftable rows.
+ */
+export interface CookingMenuSnapshot {
+	cookingLevel: number;
+	cookingGrade: string;
+	pinnedRecipe?: PinnedRecipeInfo;
+	currentSlots: CookingSlotData[];
+	isIgnited: boolean;
+}

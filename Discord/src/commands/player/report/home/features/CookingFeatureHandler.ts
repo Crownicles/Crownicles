@@ -37,6 +37,7 @@ import {
 	CommandReportCookingUnpinReq,
 	CommandReportCookingUnpinRes,
 	CookingCraftErrors,
+	CookingMenuSnapshot,
 	CookingSlotData,
 	PinnedRecipeInfo,
 	RecipeIngredients
@@ -47,11 +48,25 @@ import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtil
 import { buildCustomId } from "../../../../../utils/CustomIdUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 
+/**
+ * Cosmetic cache of the last menu state known to the client.
+ *
+ * Architecture (#4257): Core is the sole source of truth and every response
+ * carries a full `CookingMenuSnapshot`. This cache is rebuilt from those
+ * snapshots and is read in only two places where no Res is available:
+ * - `getMenuOption` (label on the home select menu before the cooking
+ * sub-menu is opened)
+ * - Pin/Unpin requests, to inform Core which menu the user was viewing
+ * so it can echo back a snapshot with the right `isIgnited` value.
+ * It is NOT used to choose between pre-ignite / ignited render paths after
+ * a Res — `snapshot.isIgnited` from the Res is always authoritative.
+ */
 interface CookingSessionState {
 	currentSlots: CookingSlotData[];
 	cookingGrade: string;
 	cookingLevel: number;
 	craftPending: boolean;
+	isIgnited: boolean;
 	pinnedRecipe?: PinnedRecipeInfo;
 }
 
@@ -67,11 +82,46 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				currentSlots: [],
 				cookingGrade: getCookingGrade(0).id,
 				cookingLevel: 0,
-				craftPending: false
+				craftPending: false,
+				isIgnited: false
 			};
 			this.sessions.set(ctx.user.id, state);
 		}
 		return state;
+	}
+
+	/**
+	 * Mirror the authoritative Core snapshot into the local cosmetic cache.
+	 * Leaves `craftPending` untouched (transient double-click guard).
+	 */
+	private applySnapshot(ctx: HomeFeatureHandlerContext, snapshot: CookingMenuSnapshot): void {
+		const state = this.getState(ctx);
+		state.cookingLevel = snapshot.cookingLevel;
+		state.cookingGrade = snapshot.cookingGrade;
+		state.pinnedRecipe = snapshot.pinnedRecipe;
+		state.currentSlots = snapshot.currentSlots;
+		state.isIgnited = snapshot.isIgnited;
+	}
+
+	/**
+	 * Pick the pre-ignite vs ignited renderer based on the snapshot's
+	 * `isIgnited` flag (authoritative from Core).
+	 */
+	private registerFromSnapshot(
+		ctx: HomeFeatureHandlerContext,
+		nestedMenus: CrowniclesNestedMenus,
+		snapshot: CookingMenuSnapshot,
+		extraMessage = ""
+	): void {
+		if (snapshot.isIgnited) {
+			this.registerIgnitedMenu(ctx, nestedMenus, extraMessage);
+		}
+		else {
+			nestedMenus.registerMenu(HomeMenuIds.COOKING_MENU, {
+				containers: [this.buildCookingContainer(ctx, extraMessage)],
+				createCollector: this.createCookingCollector(ctx)
+			});
+		}
 	}
 
 	public isAvailable(ctx: HomeFeatureHandlerContext): boolean {
@@ -215,61 +265,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			ctx.context,
 			makePacket(CommandReportCookingMenuReq, {}),
 			async (_responseContext, packetName, responsePacket) => {
-				const state = this.getState(ctx);
-
-				/*
-				 * We are showing the pre-ignite cooking menu: the furnace is not lit in
-				 * this view, so any slot data persisted from a previous ignited session is
-				 * stale and must be cleared. Otherwise, downstream handlers like
-				 * sendUnpinAction would incorrectly render the old ignited menu.
-				 */
-				state.currentSlots = [];
-				state.craftPending = false;
+				this.getState(ctx).craftPending = false;
 				if (packetName === CommandReportCookingMenuRes.name) {
 					const response = responsePacket as unknown as CommandReportCookingMenuRes;
-					state.cookingLevel = response.cookingLevel;
-					state.cookingGrade = response.cookingGrade;
-					state.pinnedRecipe = response.pinnedRecipe;
-				}
-				this.registerCookingMenu(ctx, nestedMenus);
-				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
-			}
-		);
-	}
-
-	/**
-	 * Send pin request to Core
-	 */
-	private async sendPinAction(ctx: HomeFeatureHandlerContext, recipeId: string, nestedMenus: CrowniclesNestedMenus): Promise<void> {
-		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-			ctx.context,
-			makePacket(CommandReportCookingPinReq, { recipeId }),
-			async (_responseContext, packetName, responsePacket) => {
-				if (packetName === CommandReportCookingPinRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingPinRes;
-					const state = this.getState(ctx);
-					state.pinnedRecipe = response.pinnedRecipe;
-				}
-				this.registerIgnitedMenu(ctx, nestedMenus);
-				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
-			}
-		);
-	}
-
-	/**
-	 * Send unpin request to Core
-	 */
-	private async sendUnpinAction(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): Promise<void> {
-		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
-			ctx.context,
-			makePacket(CommandReportCookingUnpinReq, {}),
-			async (_responseContext, packetName) => {
-				const state = this.getState(ctx);
-				if (packetName === CommandReportCookingUnpinRes.name) {
-					state.pinnedRecipe = undefined;
-				}
-				if (state.currentSlots.length > 0) {
-					this.registerIgnitedMenu(ctx, nestedMenus);
+					this.applySnapshot(ctx, response.menu);
+					this.registerFromSnapshot(ctx, nestedMenus, response.menu);
 				}
 				else {
 					this.registerCookingMenu(ctx, nestedMenus);
@@ -280,13 +280,63 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Update local cooking state from an ignite/revive response
+	 * Send pin request to Core
 	 */
-	private updateStateFromIgniteResponse(ctx: HomeFeatureHandlerContext, response: CommandReportCookingIgniteRes | CommandReportCookingReviveRes): void {
-		const state = this.getState(ctx);
-		state.currentSlots = response.slots;
-		state.cookingGrade = response.cookingGrade;
-		state.cookingLevel = response.cookingLevel;
+	private async sendPinAction(ctx: HomeFeatureHandlerContext, recipeId: string, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+		const fromIgnitedView = this.getState(ctx).isIgnited;
+		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			ctx.context,
+			makePacket(CommandReportCookingPinReq, {
+				recipeId, fromIgnitedView
+			}),
+			async (_responseContext, packetName, responsePacket) => {
+				if (packetName === CommandReportCookingPinRes.name) {
+					const response = responsePacket as unknown as CommandReportCookingPinRes;
+					this.applySnapshot(ctx, response.menu);
+					this.registerFromSnapshot(ctx, nestedMenus, response.menu);
+				}
+				else {
+					// Fallback: re-render whatever menu the user was on.
+					this.registerFromCurrentState(ctx, nestedMenus);
+				}
+				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+			}
+		);
+	}
+
+	/**
+	 * Send unpin request to Core
+	 */
+	private async sendUnpinAction(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): Promise<void> {
+		const fromIgnitedView = this.getState(ctx).isIgnited;
+		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+			ctx.context,
+			makePacket(CommandReportCookingUnpinReq, { fromIgnitedView }),
+			async (_responseContext, packetName, responsePacket) => {
+				if (packetName === CommandReportCookingUnpinRes.name) {
+					const response = responsePacket as unknown as CommandReportCookingUnpinRes;
+					this.applySnapshot(ctx, response.menu);
+					this.registerFromSnapshot(ctx, nestedMenus, response.menu);
+				}
+				else {
+					this.registerFromCurrentState(ctx, nestedMenus);
+				}
+				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
+			}
+		);
+	}
+
+	/**
+	 * Re-register the menu corresponding to the cached `isIgnited` flag.
+	 * Used only as a fallback when no Res arrives (kept for safety).
+	 */
+	private registerFromCurrentState(ctx: HomeFeatureHandlerContext, nestedMenus: CrowniclesNestedMenus): void {
+		if (this.getState(ctx).isIgnited) {
+			this.registerIgnitedMenu(ctx, nestedMenus);
+		}
+		else {
+			this.registerCookingMenu(ctx, nestedMenus);
+		}
 	}
 
 	/**
@@ -698,7 +748,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 
 				if (packetName === resPacket.name) {
 					const response = responsePacket as unknown as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
-					this.updateStateFromIgniteResponse(ctx, response);
+					this.applySnapshot(ctx, response.menu);
 					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 				}
@@ -764,12 +814,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (!accepted) {
 			// Fire-and-forget: Core returns no response on cancel, no callback needed
 			PacketUtils.sendPacketToBackend(ctx.context, makePacket(CommandReportCookingWoodConfirmRes, { accepted: false }));
-			if (this.getState(ctx).currentSlots.length > 0) {
-				this.registerIgnitedMenu(ctx, nestedMenus);
-			}
-			else {
-				this.registerCookingMenu(ctx, nestedMenus);
-			}
+			this.registerFromCurrentState(ctx, nestedMenus);
 			await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 			return;
 		}
@@ -780,32 +825,16 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportCookingIgniteRes.name || packetName === CommandReportCookingReviveRes.name) {
 					const response = responsePacket as unknown as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
-					this.updateStateFromIgniteResponse(ctx, response);
+					this.applySnapshot(ctx, response.menu);
 					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 					return;
 				}
 
-				this.registerCookingMenu(ctx, nestedMenus);
+				this.registerFromCurrentState(ctx, nestedMenus);
 				await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 			}
 		);
-	}
-
-	/**
-	 * Update local cooking state from a craft response
-	 */
-	private updateStateFromCraftResponse(state: CookingSessionState, response: CommandReportCookingCraftRes): void {
-		if (response.updatedSlots) {
-			state.currentSlots = response.updatedSlots;
-		}
-
-		if (response.cookingLevelUp && response.newCookingLevel !== undefined) {
-			state.cookingLevel = response.newCookingLevel;
-			if (response.newCookingGrade !== undefined) {
-				state.cookingGrade = response.newCookingGrade;
-			}
-		}
 	}
 
 	/**
@@ -858,7 +887,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 					}
 
 					const response = responsePacket as unknown as CommandReportCookingCraftRes;
-					this.updateStateFromCraftResponse(state, response);
+					this.applySnapshot(ctx, response.menu);
 
 					const {
 						craftResult,

@@ -19,10 +19,10 @@ import { PetFood } from "../../types/PetFood";
 import { MaterialQuantity } from "../../types/MaterialQuantity";
 import { ApartmentLocationRef } from "../../types/ApartmentLocation";
 export {
-	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients
+	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients, CookingMenuSnapshot
 } from "../../types/CookingTypes";
 import {
-	CookingSlotData, CookingCraftError, PinnedRecipeInfo
+	CookingCraftError, CookingMenuSnapshot
 } from "../../types/CookingTypes";
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
@@ -546,15 +546,11 @@ export class CommandReportCookingWoodConfirmRes extends CrowniclesPacket {
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingIgniteRes extends CrowniclesPacket {
-	slots!: CookingSlotData[];
-
 	woodConsumed!: boolean;
 
 	woodMaterialId!: number;
 
-	cookingGrade!: string;
-
-	cookingLevel!: number;
+	menu!: CookingMenuSnapshot;
 }
 
 @sendablePacket(PacketDirection.NONE)
@@ -565,15 +561,11 @@ export class CommandReportCookingReviveReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingReviveRes extends CrowniclesPacket {
-	slots!: CookingSlotData[];
-
 	woodConsumed!: boolean;
 
 	woodMaterialId!: number;
 
-	cookingGrade!: string;
-
-	cookingLevel!: number;
+	menu!: CookingMenuSnapshot;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
@@ -629,7 +621,7 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	error?: CookingCraftError;
 
-	updatedSlots?: CookingSlotData[];
+	menu!: CookingMenuSnapshot;
 }
 
 // ---- Cooking menu & pin packets ----
@@ -639,28 +631,32 @@ export class CommandReportCookingMenuReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingMenuRes extends CrowniclesPacket {
-	cookingLevel!: number;
-
-	cookingGrade!: string;
-
-	pinnedRecipe?: PinnedRecipeInfo;
+	menu!: CookingMenuSnapshot;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingPinReq extends CrowniclesPacket {
 	recipeId!: string;
+
+	/** Whether the player issued the pin from the ignited menu (drives post-pin re-render). */
+	fromIgnitedView!: boolean;
 }
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingPinRes extends CrowniclesPacket {
-	pinnedRecipe!: PinnedRecipeInfo;
+	menu!: CookingMenuSnapshot;
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandReportCookingUnpinReq extends CrowniclesPacket {}
+export class CommandReportCookingUnpinReq extends CrowniclesPacket {
+	/** Whether the player issued the unpin from the ignited menu (drives post-unpin re-render). */
+	fromIgnitedView!: boolean;
+}
 
 @sendablePacket(PacketDirection.NONE)
-export class CommandReportCookingUnpinRes extends CrowniclesPacket {}
+export class CommandReportCookingUnpinRes extends CrowniclesPacket {
+	menu!: CookingMenuSnapshot;
+}
 
 // Guild domain notary packets
 

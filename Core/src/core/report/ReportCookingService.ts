@@ -21,6 +21,7 @@ import {
 	CookingCraftErrors,
 	CookingCraftError,
 	CookingSlotData,
+	CookingMenuSnapshot,
 	CraftPetFoodResult,
 	CraftMaterialResult,
 	PinnedRecipeInfo
@@ -133,11 +134,86 @@ async function getPlayerAndHome(keycloakId: string): Promise<PlayerAndHome | nul
 	};
 }
 
+interface CookingMenuSnapshotParams {
+	player: Player;
+	home: Home;
+	cookingSlots: number;
+	isIgnited: boolean;
+
+	/**
+	 * Pre-computed ignited slots. When `isIgnited` is `true`, callers that
+	 * already loaded the slots (ignite/craft handlers) should pass them to
+	 * avoid a redundant query. When omitted but `isIgnited` is `true`, the
+	 * helper fetches them itself. Ignored when `isIgnited` is `false`.
+	 */
+	currentSlots?: CookingSlotData[];
+}
+
+/**
+ * Build the authoritative cooking-menu snapshot for the given player.
+ *
+ * This is the single source of truth for every cooking response packet:
+ * the Discord client renders exclusively from the returned snapshot and
+ * does not maintain any local cooking state. The helper also self-heals a
+ * stale pin (recipe pinned but no longer discoverable/valid) by clearing
+ * `pinnedCookingRecipeId` under the player row lock.
+ */
+async function buildCookingMenuSnapshot(params: CookingMenuSnapshotParams): Promise<CookingMenuSnapshot> {
+	const {
+		player, home, cookingSlots, isIgnited, currentSlots
+	} = params;
+
+	const grade = getCookingGrade(player.cookingLevel);
+
+	let pinnedRecipe: PinnedRecipeInfo | undefined;
+	if (player.pinnedCookingRecipeId) {
+		const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+		pinnedRecipe = await CookingService.getPinnedRecipeInfo({
+			player,
+			homeId: home.id,
+			recipeId: player.pinnedCookingRecipeId,
+			guild
+		}) ?? undefined;
+
+		if (!pinnedRecipe) {
+			/*
+			 * Recipe no longer exists or is no longer accessible, clear the
+			 * pin under the row lock so a concurrent pin/unpin from another
+			 * device cannot re-emerge after we believe we cleared it.
+			 */
+			await Player.withLocked(player.id, async lockedPlayer => {
+				lockedPlayer.pinnedCookingRecipeId = null;
+				await lockedPlayer.save();
+			});
+			player.pinnedCookingRecipeId = null;
+		}
+	}
+
+	let slots: CookingSlotData[];
+	if (isIgnited) {
+		slots = currentSlots ?? await CookingService.getSlotRecipes({
+			player,
+			homeId: home.id,
+			cookingSlots
+		});
+	}
+	else {
+		slots = [];
+	}
+
+	return {
+		cookingLevel: player.cookingLevel,
+		cookingGrade: grade.id,
+		pinnedRecipe,
+		currentSlots: slots,
+		isIgnited
+	};
+}
+
 interface IgniteOrReviveParams {
-	slots: CookingSlotData[];
 	woodConsumed: boolean;
 	woodMaterialId: number;
-	cookingLevel: number;
+	menu: CookingMenuSnapshot;
 }
 
 function buildIgniteOrReviveResponse(PacketClass: typeof CommandReportCookingIgniteRes, params: IgniteOrReviveParams): CommandReportCookingIgniteRes;
@@ -146,15 +222,12 @@ function buildIgniteOrReviveResponse(
 	PacketClass: typeof CommandReportCookingIgniteRes | typeof CommandReportCookingReviveRes,
 	params: IgniteOrReviveParams
 ): CommandReportCookingIgniteRes | CommandReportCookingReviveRes {
-	return makePacket(PacketClass, {
-		...params,
-		cookingGrade: getCookingGrade(params.cookingLevel).id
-	});
+	return makePacket(PacketClass, params);
 }
 
 interface BlockedCraftParams {
 	player: Player;
-	homeId: number;
+	home: Home;
 	cookingSlots: number;
 	error: CookingCraftError;
 	recipeId: string;
@@ -164,10 +237,10 @@ interface BlockedCraftParams {
 
 async function buildBlockedCraftResponse(params: BlockedCraftParams): Promise<CommandReportCookingCraftRes> {
 	const {
-		player, homeId, cookingSlots, ...craftInfo
+		player, home, cookingSlots, ...craftInfo
 	} = params;
-	const updatedSlots = await CookingService.getSlotRecipes({
-		player, homeId, cookingSlots
+	const menu = await buildCookingMenuSnapshot({
+		player, home, cookingSlots, isIgnited: true
 	});
 
 	return makePacket(CommandReportCookingCraftRes, {
@@ -175,7 +248,7 @@ async function buildBlockedCraftResponse(params: BlockedCraftParams): Promise<Co
 		...craftInfo,
 		cookingXpGained: 0,
 		cookingLevelUp: false,
-		updatedSlots
+		menu
 	});
 }
 
@@ -237,8 +310,11 @@ async function igniteOrReviveFurnace(
 	const slots = await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	});
+	const menu = await buildCookingMenuSnapshot({
+		player, home, cookingSlots, isIgnited: true, currentSlots: slots
+	});
 	response.push(buildIgniteOrReviveResponse(PacketClass, {
-		slots, woodConsumed: !woodSaved, woodMaterialId: wood.materialId, cookingLevel: player.cookingLevel
+		woodConsumed: !woodSaved, woodMaterialId: wood.materialId, menu
 	}));
 }
 
@@ -286,9 +362,12 @@ export async function handleCookingWoodConfirm(
 	const slots = await CookingService.getSlotRecipes({
 		player, homeId: home.id, cookingSlots
 	});
+	const menu = await buildCookingMenuSnapshot({
+		player, home, cookingSlots, isIgnited: true, currentSlots: slots
+	});
 	const ResponseClass = pending.isRevive ? CommandReportCookingReviveRes : CommandReportCookingIgniteRes;
 	response.push(buildIgniteOrReviveResponse(ResponseClass, {
-		slots, woodConsumed: true, woodMaterialId: pending.materialId, cookingLevel: player.cookingLevel
+		woodConsumed: true, woodMaterialId: pending.materialId, menu
 	}));
 	return response;
 }
@@ -676,7 +755,7 @@ async function buildBlockedCookingCraftPacket(
 ): Promise<CommandReportCookingCraftRes> {
 	return await buildBlockedCraftResponse({
 		player: craftContext.player,
-		homeId: craftContext.home.id,
+		home: craftContext.home,
 		cookingSlots: craftContext.cookingSlots,
 		error: validationError,
 		...getCraftErrorInfo(craftContext.slot, craftContext.recipe)
@@ -701,8 +780,8 @@ function buildCookingCraftResponsePacket({
 	craftContext,
 	result,
 	outputResult,
-	updatedSlots
-}: CompletedCraftParams & { updatedSlots: CookingSlotData[] }): CommandReportCookingCraftRes {
+	menu
+}: CompletedCraftParams & { menu: CookingMenuSnapshot }): CommandReportCookingCraftRes {
 	const {
 		bonusHonored, inventorySwapPackets: _, ...outputForPacket
 	} = outputResult;
@@ -719,7 +798,7 @@ function buildCookingCraftResponsePacket({
 		materialSaved: result.materialSaved,
 		bonusOutput: result.bonusOutput && (bonusHonored ?? false),
 		discoveredRecipeIds: result.discoveredRecipeIds,
-		updatedSlots
+		menu
 	});
 }
 
@@ -787,8 +866,15 @@ async function executeReadyCookingCraft(
 		homeId: craftContext.home.id,
 		cookingSlots: craftContext.cookingSlots
 	});
+	const menu = await buildCookingMenuSnapshot({
+		player: craftContext.player,
+		home: craftContext.home,
+		cookingSlots: craftContext.cookingSlots,
+		isIgnited: true,
+		currentSlots: updatedSlots
+	});
 	response.push(buildCookingCraftResponsePacket({
-		craftContext, result, outputResult, updatedSlots
+		craftContext, result, outputResult, menu
 	}));
 	appendInventorySwapPackets(response, outputResult.inventorySwapPackets);
 	logCookingUse(buildCookingUseLogParams({
@@ -829,39 +915,13 @@ export async function handleCookingMenu(
 	if (!data) {
 		return response;
 	}
-	const {
-		player, home
-	} = data;
-	const grade = getCookingGrade(player.cookingLevel);
-
-	let pinnedRecipe: PinnedRecipeInfo | undefined;
-	if (player.pinnedCookingRecipeId) {
-		const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-		pinnedRecipe = await CookingService.getPinnedRecipeInfo({
-			player,
-			homeId: home.id,
-			recipeId: player.pinnedCookingRecipeId,
-			guild
-		}) ?? undefined;
-		if (!pinnedRecipe) {
-			/*
-			 * Recipe no longer exists, clear the pin under the row lock
-			 * so a concurrent pin/unpin from another device cannot re-emerge
-			 * after we believe we cleared it.
-			 */
-			await Player.withLocked(player.id, async lockedPlayer => {
-				lockedPlayer.pinnedCookingRecipeId = null;
-				await lockedPlayer.save();
-			});
-			player.pinnedCookingRecipeId = null;
-		}
-	}
-
-	response.push(makePacket(CommandReportCookingMenuRes, {
-		cookingLevel: player.cookingLevel,
-		cookingGrade: grade.id,
-		pinnedRecipe
-	}));
+	const menu = await buildCookingMenuSnapshot({
+		player: data.player,
+		home: data.home,
+		cookingSlots: data.cookingSlots,
+		isIgnited: false
+	});
+	response.push(makePacket(CommandReportCookingMenuRes, { menu }));
 	return response;
 }
 
@@ -895,7 +955,7 @@ export async function handleCookingPin(
 		return response;
 	}
 	const {
-		player, home
+		player, home, cookingSlots
 	} = data;
 
 	const validated = await validatePinRecipe(player, packet.recipeId);
@@ -917,29 +977,37 @@ export async function handleCookingPin(
 		lockedPlayer.pinnedCookingRecipeId = packet.recipeId;
 		await lockedPlayer.save();
 	});
+	player.pinnedCookingRecipeId = packet.recipeId;
 
-	response.push(makePacket(CommandReportCookingPinRes, {
-		pinnedRecipe
-	}));
+	const menu = await buildCookingMenuSnapshot({
+		player, home, cookingSlots, isIgnited: packet.fromIgnitedView
+	});
+	response.push(makePacket(CommandReportCookingPinRes, { menu }));
 	return response;
 }
 
 export async function handleCookingUnpin(
 	keycloakId: string,
-	_packet: CommandReportCookingUnpinReq
+	packet: CommandReportCookingUnpinReq
 ): Promise<CrowniclesPacket[]> {
 	const response: CrowniclesPacket[] = [];
 	const data = await getPlayerAndHome(keycloakId);
 	if (!data) {
 		return response;
 	}
-	const { player } = data;
+	const {
+		player, home, cookingSlots
+	} = data;
 
 	await Player.withLocked(player.id, async lockedPlayer => {
 		lockedPlayer.pinnedCookingRecipeId = null;
 		await lockedPlayer.save();
 	});
+	player.pinnedCookingRecipeId = null;
 
-	response.push(makePacket(CommandReportCookingUnpinRes, {}));
+	const menu = await buildCookingMenuSnapshot({
+		player, home, cookingSlots, isIgnited: packet.fromIgnitedView
+	});
+	response.push(makePacket(CommandReportCookingUnpinRes, { menu }));
 	return response;
 }
