@@ -187,7 +187,16 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<boolean> {
 		const actions: Record<string, () => Promise<void>> = {
-			[HomeMenuIds.BACK_TO_HOME]: () => nestedMenus.changeMenu(HomeMenuIds.HOME_MENU),
+			[HomeMenuIds.BACK_TO_HOME]: () => {
+				/*
+				 * Explicit cleanup: the collector .stop() triggered by changeMenu
+				 * fires onEnd with reason="user" which we intentionally ignore
+				 * to preserve state across internal cooking sub-menus, so we
+				 * must drop the session here to avoid leaking it indefinitely.
+				 */
+				this.sessions.delete(ctx.user.id);
+				return nestedMenus.changeMenu(HomeMenuIds.HOME_MENU);
+			},
 			[HomeMenuIds.COOKING_IGNITE]: () => this.sendIgniteAction(ctx, nestedMenus),
 			[HomeMenuIds.COOKING_REVIVE]: () => this.sendReviveAction(ctx, nestedMenus),
 			[HomeMenuIds.COOKING_WOOD_CONFIRM]: () => this.sendWoodConfirmResponse(ctx, true, nestedMenus),

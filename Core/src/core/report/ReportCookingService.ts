@@ -853,11 +853,19 @@ async function executeReadyCookingCraft(
 		homeId: craftContext.home.id
 	});
 	if (craftContext.player.pinnedCookingRecipeId === craftContext.recipe.id) {
+		const observedPinnedId = craftContext.recipe.id;
 		await Player.withLocked(craftContext.player.id, async lockedPlayer => {
-			lockedPlayer.pinnedCookingRecipeId = null;
-			await lockedPlayer.save();
+			if (lockedPlayer.pinnedCookingRecipeId === observedPinnedId) {
+				lockedPlayer.pinnedCookingRecipeId = null;
+				await lockedPlayer.save();
+				craftContext.player.pinnedCookingRecipeId = null;
+			}
+
+			/*
+			 * otherwise: another shard pinned a different recipe between our check
+			 * and the lock, do not clobber their decision.
+			 */
 		});
-		craftContext.player.pinnedCookingRecipeId = null;
 	}
 	const outputResult = await processCraftOutput({
 		context: packetContext,
