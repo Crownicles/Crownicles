@@ -271,8 +271,8 @@ function buildTravelActionRow(packet: CommandReportTravelSummaryRes, lng: Langua
 }
 
 function hasInteractiveButton(packet: CommandReportTravelSummaryRes): boolean {
-	const tokensInteractive = packet.tokens && packet.tokens.canAfford;
-	const healInteractive = packet.heal && packet.heal.canAfford;
+	const tokensInteractive = packet.tokens?.canAfford;
+	const healInteractive = packet.heal?.canAfford;
 	return Boolean(tokensInteractive || healInteractive);
 }
 
