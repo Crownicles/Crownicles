@@ -174,6 +174,15 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 			movePrice?: number;
 			currentMoney: number;
 
+			/** Core-authoritative eligibility: player can buy a new home (newPrice set and affordable) */
+			canBuy?: boolean;
+
+			/** Core-authoritative eligibility: player can upgrade their home (upgrade set and affordable) */
+			canUpgrade?: boolean;
+
+			/** Core-authoritative eligibility: player can move their home (movePrice set and affordable) */
+			canMove?: boolean;
+
 			/** When no actions are available, the required player level for the next home upgrade */
 			requiredPlayerLevelForUpgrade?: number;
 
@@ -330,6 +339,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Whether the player is the guild chief */
 		isChief: boolean;
+
+		/** Core-authoritative eligibility: guild treasury covers the cost */
+		canAfford: boolean;
 	};
 
 	/**
@@ -345,6 +357,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		/** Apartment for sale in this city. Absent if player already owns one here, or city has no apartmentPrice. */
 		forSale?: {
 			price: number;
+
+			/** Core-authoritative eligibility: player has enough money to buy */
+			canAfford: boolean;
 		};
 
 		/** Apartments owned by the player, with their current accumulated rent. */

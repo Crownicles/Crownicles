@@ -498,16 +498,19 @@ async function sendCityCollector(
 		: undefined;
 
 	const isGuildChief = guild !== null && guild.chiefId === player.id;
-	const guildDomainNotary = isGuildChief && guild.domainCityId !== city.id
-		? {
+	let guildDomainNotary: ReactionCollectorCityData["guildDomainNotary"];
+	if (isGuildChief && guild.domainCityId !== city.id) {
+		const cost = guild.domainCityId
+			? GuildDomainConstants.DOMAIN_RELOCATION_COST
+			: GuildDomainConstants.DOMAIN_PURCHASE_COST;
+		guildDomainNotary = {
 			hasDomain: guild.domainCityId !== null,
-			cost: guild.domainCityId
-				? GuildDomainConstants.DOMAIN_RELOCATION_COST
-				: GuildDomainConstants.DOMAIN_PURCHASE_COST,
+			cost,
 			treasury: guild.treasury,
-			isChief: true
-		}
-		: undefined;
+			isChief: true,
+			canAfford: guild.treasury >= cost
+		};
+	}
 
 	/*
 	 * Apartment notary: present in every city. Lets the player buy an apartment

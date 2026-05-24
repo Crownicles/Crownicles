@@ -89,19 +89,27 @@ export async function buildApartmentNotaryData(
 			CrowniclesLogger.error(`Apartment ${apartment.id} (player ${player.keycloakId}) references unknown or empty city ${apartment.cityId}. Skipping in notary display.`);
 			continue;
 		}
+		const accumulatedRent = apartment.getAccumulatedRent(now);
+		const isRented = apartment.isRentedFor(home);
 		summaries.push({
 			apartmentId: apartment.id,
 			cityId: apartment.cityId,
 			mapLocationId: apartmentCity.maps[0],
 			purchasePrice: apartment.purchasePrice,
-			accumulatedRent: apartment.getAccumulatedRent(now),
-			isRented: apartment.isRentedFor(home)
+			accumulatedRent,
+			isRented,
+			canClaim: isRented && accumulatedRent >= HomeConstants.MIN_RENT_TO_CLAIM
 		});
 	}
 	return {
 		playerMoney: player.money,
 		...city.apartmentPrice && !ownsApartmentHere && home
-			? { forSale: { price: city.apartmentPrice } }
+			? {
+				forSale: {
+					price: city.apartmentPrice,
+					canAfford: player.money >= city.apartmentPrice
+				}
+			}
 			: {},
 		ownedApartments: summaries
 	};
@@ -321,9 +329,15 @@ async function buildManageHomeData(params: {
 		home, homeLevel, city, player, isHomeInCity, homesCount
 	});
 	if (manageOptions) {
+		const canBuy = manageOptions.newPrice !== undefined && player.money >= manageOptions.newPrice;
+		const canUpgrade = manageOptions.upgrade !== undefined && player.money >= manageOptions.upgrade.price;
+		const canMove = manageOptions.movePrice !== undefined && player.money >= manageOptions.movePrice;
 		return {
 			...manageOptions,
-			currentMoney: player.money
+			currentMoney: player.money,
+			...canBuy ? { canBuy: true } : {},
+			...canUpgrade ? { canUpgrade: true } : {},
+			...canMove ? { canMove: true } : {}
 		};
 	}
 
