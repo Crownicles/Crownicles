@@ -84,18 +84,29 @@ export default {
 			}
 		}
 
-		function enterNonArrowFunction() {
+		function enterNonArrowFunction(node) {
 			const top = handlerStack[handlerStack.length - 1];
-			if (top) {
-				top.nonArrowFunctionDepth += 1;
+			if (!top) {
+				return;
 			}
+			// The decorated method's own FunctionExpression IS `top.node.value` — that
+			// body still binds `this` to the (missing) class instance, so we must not
+			// count it as a nested function. Only count truly inner non-arrow functions.
+			if (node === top.node.value) {
+				return;
+			}
+			top.nonArrowFunctionDepth += 1;
 		}
 
-		function exitNonArrowFunction() {
+		function exitNonArrowFunction(node) {
 			const top = handlerStack[handlerStack.length - 1];
-			if (top) {
-				top.nonArrowFunctionDepth -= 1;
+			if (!top) {
+				return;
 			}
+			if (node === top.node.value) {
+				return;
+			}
+			top.nonArrowFunctionDepth -= 1;
 		}
 
 		return {
