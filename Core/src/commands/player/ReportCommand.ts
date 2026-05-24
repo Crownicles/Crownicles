@@ -58,8 +58,12 @@ import {
 	ReactionCollectorApartmentBuyReaction,
 	ReactionCollectorApartmentClaimRentReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
-import { Guilds } from "../../core/database/game/models/Guild";
-import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
+import {
+	Guild, Guilds
+} from "../../core/database/game/models/Guild";
+import {
+	GuildBuilding, GuildDomainConstants
+} from "../../../../Lib/src/constants/GuildDomainConstants";
 import { GuildPets } from "../../core/database/game/models/GuildPet";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
@@ -440,6 +444,35 @@ async function handleCityReaction(reactionType: string, params: CityReactionPara
 	await handler(params);
 }
 
+const GUILD_BUILDING_LEVEL_FIELDS: Record<GuildBuilding, "shopLevel" | "shelterLevel" | "pantryLevel" | "trainingGroundLevel"> = {
+	[GuildBuilding.SHOP]: "shopLevel",
+	[GuildBuilding.SHELTER]: "shelterLevel",
+	[GuildBuilding.PANTRY]: "pantryLevel",
+	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+};
+
+function buildCanUpgradeBuildings(guild: Guild): Record<GuildBuilding, {
+	canAfford: boolean; meetsLevel: boolean;
+} | null> {
+	const result = {} as Record<GuildBuilding, {
+		canAfford: boolean; meetsLevel: boolean;
+	} | null>;
+	for (const building of Object.values(GuildBuilding)) {
+		const currentLevel = guild[GUILD_BUILDING_LEVEL_FIELDS[building]];
+		const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
+		if (upgradeCost === null) {
+			result[building] = null;
+			continue;
+		}
+		const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
+		result[building] = {
+			canAfford: guild.treasury >= upgradeCost,
+			meetsLevel: requiredGuildLevel === null || guild.level >= requiredGuildLevel
+		};
+	}
+	return result;
+}
+
 async function sendCityCollector(
 	context: PacketContext,
 	response: CrowniclesPacket[],
@@ -493,7 +526,13 @@ async function sendCityCollector(
 			},
 			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
 			shelterPets: shelterPets.filter(pe => pe !== null).map(pe => pe!.asOwnedPet()),
-			shelterMaxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel)
+			shelterMaxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel),
+			canUpgradeBuildings: buildCanUpgradeBuildings(guild),
+			canDeposit: {
+				small: player.money >= GuildDomainConstants.SHOP_PRICES.SMALL_DEPOSIT,
+				big: player.money >= GuildDomainConstants.SHOP_PRICES.BIG_DEPOSIT,
+				huge: player.money >= GuildDomainConstants.SHOP_PRICES.HUGE_DEPOSIT
+			}
 		}
 		: undefined;
 

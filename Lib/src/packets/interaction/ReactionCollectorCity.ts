@@ -23,6 +23,7 @@ import { OwnedPet } from "../../types/OwnedPet";
 import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 import { GardenAccessMode } from "../../types/GardenAccessMode";
 import { GardenConstants } from "../../constants/GardenConstants";
+import { GuildBuilding } from "../../constants/GuildDomainConstants";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -295,6 +296,21 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Maximum number of pets the shelter can hold */
 		shelterMaxCount: number;
+
+		/**
+		 * Per-building upgrade eligibility computed by Core.
+		 * `null` means the building is already at max level.
+		 * `canAfford` = treasury covers the upgrade cost.
+		 * `meetsLevel` = guild level satisfies the required level.
+		 */
+		canUpgradeBuildings: Record<GuildBuilding, {
+			canAfford: boolean; meetsLevel: boolean;
+		} | null>;
+
+		/** Whether the player can afford each treasury deposit tier (computed by Core). */
+		canDeposit: {
+			small: boolean; big: boolean; huge: boolean;
+		};
 	};
 
 	/**
