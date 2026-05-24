@@ -64,6 +64,7 @@ import {
 import {
 	GuildBuilding, GuildDomainConstants
 } from "../../../../Lib/src/constants/GuildDomainConstants";
+import { BuildingUpgradeEligibilityMap } from "../../../../Lib/src/types/GuildDomainEligibility";
 import { GuildPets } from "../../core/database/game/models/GuildPet";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
@@ -451,12 +452,8 @@ const GUILD_BUILDING_LEVEL_FIELDS: Record<GuildBuilding, "shopLevel" | "shelterL
 	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
 };
 
-function buildCanUpgradeBuildings(guild: Guild): Record<GuildBuilding, {
-	canAfford: boolean; meetsLevel: boolean;
-} | null> {
-	const result = {} as Record<GuildBuilding, {
-		canAfford: boolean; meetsLevel: boolean;
-	} | null>;
+function buildCanUpgradeBuildings(guild: Guild): BuildingUpgradeEligibilityMap {
+	const result = {} as BuildingUpgradeEligibilityMap;
 	for (const building of Object.values(GuildBuilding)) {
 		const currentLevel = guild[GUILD_BUILDING_LEVEL_FIELDS[building]];
 		const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
@@ -505,6 +502,27 @@ async function sendCityCollector(
 		const guildPetEntries = await GuildPets.getOfGuild(guild.id);
 		shelterPets = await Promise.all(guildPetEntries.map(gp => PetEntities.getById(gp.petEntityId)));
 	}
+	const guildFoodSnapshot = guild
+		? {
+			food: {
+				common: guild.commonFood,
+				carnivorous: guild.carnivorousFood,
+				herbivorous: guild.herbivorousFood,
+				ultimate: guild.ultimateFood
+			},
+			foodArray: [
+				guild.commonFood,
+				guild.herbivorousFood,
+				guild.carnivorousFood,
+				guild.ultimateFood
+			] as const,
+			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel)
+		}
+		: null;
+	const guildMaxBuyableFood = guild && guildFoodSnapshot
+		? GuildDomainConstants.getMaxBuyableFood(guild.treasury, guildFoodSnapshot.foodArray, guildFoodSnapshot.foodCaps)
+		: null;
+
 	const guildDomain = guild?.domainCityId === city.id
 		? {
 			isInCity: true,
@@ -518,23 +536,9 @@ async function sendCityCollector(
 			playerMoney: player.money,
 			isChief: guild.chiefId === player.id,
 			isElder: guild.elderId === player.id,
-			food: {
-				common: guild.commonFood,
-				carnivorous: guild.carnivorousFood,
-				herbivorous: guild.herbivorousFood,
-				ultimate: guild.ultimateFood
-			},
-			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
-			maxBuyableFood: GuildDomainConstants.getMaxBuyableFood(
-				guild.treasury,
-				[
-					guild.commonFood,
-					guild.herbivorousFood,
-					guild.carnivorousFood,
-					guild.ultimateFood
-				],
-				GuildDomainConstants.getFoodCaps(guild.pantryLevel)
-			),
+			food: guildFoodSnapshot!.food,
+			foodCaps: guildFoodSnapshot!.foodCaps,
+			maxBuyableFood: guildMaxBuyableFood!,
 			shelterPets: shelterPets.filter(pe => pe !== null).map(pe => pe!.asOwnedPet()),
 			shelterMaxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel),
 			canUpgradeBuildings: buildCanUpgradeBuildings(guild),
@@ -571,23 +575,9 @@ async function sendCityCollector(
 	const guildFoodShop = guild && guild.shopLevel >= 1 && guild.domainCityId !== city.id
 		? {
 			guildName: guild.name,
-			food: {
-				common: guild.commonFood,
-				carnivorous: guild.carnivorousFood,
-				herbivorous: guild.herbivorousFood,
-				ultimate: guild.ultimateFood
-			},
-			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
-			maxBuyableFood: GuildDomainConstants.getMaxBuyableFood(
-				guild.treasury,
-				[
-					guild.commonFood,
-					guild.herbivorousFood,
-					guild.carnivorousFood,
-					guild.ultimateFood
-				],
-				GuildDomainConstants.getFoodCaps(guild.pantryLevel)
-			),
+			food: guildFoodSnapshot!.food,
+			foodCaps: guildFoodSnapshot!.foodCaps,
+			maxBuyableFood: guildMaxBuyableFood!,
 			playerMoney: player.money,
 			treasury: guild.treasury
 		}

@@ -22,6 +22,7 @@ import { Language } from "../../../../../../Lib/src/Language";
 import {
 	GuildBuilding, GuildDomainConstants
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
+import { DepositTierAffordability } from "../../../../../../Lib/src/types/GuildDomainEligibility";
 import {
 	PetConstants, PetFood
 } from "../../../../../../Lib/src/constants/PetConstants";
@@ -50,9 +51,7 @@ export interface FoodShopUIData {
 	maxBuyableFood: readonly number[];
 	treasury: number;
 	playerMoney: number;
-	canDeposit?: {
-		small: boolean; big: boolean; huge: boolean;
-	};
+	canDeposit?: DepositTierAffordability;
 	pendingReimburseAmount?: number;
 	pendingPurchaseRecap?: string;
 }
