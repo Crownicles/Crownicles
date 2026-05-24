@@ -527,7 +527,12 @@ async function sendCityCollector(
 			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
 			maxBuyableFood: GuildDomainConstants.getMaxBuyableFood(
 				guild.treasury,
-				[guild.commonFood, guild.herbivorousFood, guild.carnivorousFood, guild.ultimateFood],
+				[
+					guild.commonFood,
+					guild.herbivorousFood,
+					guild.carnivorousFood,
+					guild.ultimateFood
+				],
 				GuildDomainConstants.getFoodCaps(guild.pantryLevel)
 			),
 			shelterPets: shelterPets.filter(pe => pe !== null).map(pe => pe!.asOwnedPet()),
@@ -575,7 +580,12 @@ async function sendCityCollector(
 			foodCaps: GuildDomainConstants.getFoodCaps(guild.pantryLevel),
 			maxBuyableFood: GuildDomainConstants.getMaxBuyableFood(
 				guild.treasury,
-				[guild.commonFood, guild.herbivorousFood, guild.carnivorousFood, guild.ultimateFood],
+				[
+					guild.commonFood,
+					guild.herbivorousFood,
+					guild.carnivorousFood,
+					guild.ultimateFood
+				],
 				GuildDomainConstants.getFoodCaps(guild.pantryLevel)
 			),
 			playerMoney: player.money,
