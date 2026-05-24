@@ -161,4 +161,80 @@ describe("CookingService - pure functions", () => {
 			expect(CookingService.getXpNeededForLevel(level)).toBe(expected);
 		});
 	});
+
+	describe("injectPinnedRecipeIfEligible", () => {
+		// Access the private static helper for direct unit testing
+		const inject = (CookingService as unknown as {
+			injectPinnedRecipeIfEligible: (
+				slotRecipes: Array<CookingRecipe | null>,
+				player: { pinnedCookingRecipeId: string | null },
+				discoveredIds: string[],
+				guild: unknown,
+				cookingSlots: number
+			) => void;
+		}).injectPinnedRecipeIfEligible.bind(CookingService);
+
+		it("should inject a pinned potion into an eligible slot when not already present", () => {
+			const slots: Array<CookingRecipe | null> = [null, null, null];
+			inject(slots, { pinnedCookingRecipeId: "potion_health_1" }, [], null, 3);
+			const ids = slots.filter((r): r is CookingRecipe => r !== null).map(r => r.id);
+			expect(ids).toContain("potion_health_1");
+		});
+
+		it("should be a no-op when pinned recipe is already present", () => {
+			const existing = { id: "potion_health_1" } as CookingRecipe;
+			const slots: Array<CookingRecipe | null> = [existing, null, null];
+			inject(slots, { pinnedCookingRecipeId: "potion_health_1" }, [], null, 3);
+			expect(slots[0]).toBe(existing);
+			expect(slots[1]).toBe(null);
+			expect(slots[2]).toBe(null);
+		});
+
+		it("should be a no-op when player has no pinned recipe", () => {
+			const slots: Array<CookingRecipe | null> = [null, null, null];
+			inject(slots, { pinnedCookingRecipeId: null }, [], null, 3);
+			expect(slots.every(s => s === null)).toBe(true);
+		});
+	});
+
+	describe("buildRecipeSlotData", () => {
+		const build = (CookingService as unknown as {
+			buildRecipeSlotData: (
+				slotIndex: number,
+				recipe: CookingRecipe,
+				context: {
+					furnacePosition: number;
+					daySeed: number;
+					grade: { secretRecipeRate: number };
+					plantStorageMap: Map<number, number>;
+					materialMap: Map<number, number>;
+					guild: unknown;
+					pinnedRecipeId: string | null;
+				}
+			) => { id: string; isSecret: boolean; outputDescription: string };
+		}).buildRecipeSlotData.bind(CookingService);
+
+		const baseContext = {
+			furnacePosition: 0,
+			daySeed: 0,
+			grade: { secretRecipeRate: 1 }, // Force every slot to be secret
+			plantStorageMap: new Map<number, number>(),
+			materialMap: new Map<number, number>(),
+			guild: null,
+			pinnedRecipeId: null as string | null
+		};
+
+		it("should never mark the pinned recipe as secret, even when secretRate is 1", () => {
+			const recipe = createTestRecipe({ id: "potion_health_1" });
+			const result = build(0, recipe, { ...baseContext, pinnedRecipeId: "potion_health_1" });
+			expect(result.isSecret).toBe(false);
+			expect(result.outputDescription).toBe("potion_health_1");
+		});
+
+		it("should still mark non-pinned recipes as secret when secretRate is 1", () => {
+			const recipe = createTestRecipe({ id: "other_recipe" });
+			const result = build(0, recipe, { ...baseContext, pinnedRecipeId: "potion_health_1" });
+			expect(result.isSecret).toBe(true);
+		});
+	});
 });
