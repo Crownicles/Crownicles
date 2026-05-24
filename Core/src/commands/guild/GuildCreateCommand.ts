@@ -89,7 +89,13 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
  * surface the right error packet without re-deriving state
  * outside of the critical section.
  */
-type GuildCreateOutcome = "OK" | "alreadyInGuild" | "nameTaken" | "noMoney";
+type GuildCreateOutcome =
+	| { kind: "OK" }
+	| { kind: "alreadyInGuild" }
+	| { kind: "nameTaken" }
+	| {
+		kind: "noMoney"; missingMoney: number;
+	};
 
 type GuildCreateLocked = {
 	player: Player;
@@ -110,7 +116,7 @@ async function applyLockedAcceptGuildCreate(
 	const { player } = locked;
 
 	if (player.guildId !== null) {
-		return "alreadyInGuild";
+		return { kind: "alreadyInGuild" };
 	}
 
 	let existingGuild;
@@ -121,11 +127,13 @@ async function applyLockedAcceptGuildCreate(
 		existingGuild = null;
 	}
 	if (existingGuild) {
-		return "nameTaken";
+		return { kind: "nameTaken" };
 	}
 
 	if (player.money < GuildCreateConstants.PRICE) {
-		return "noMoney";
+		return {
+			kind: "noMoney", missingMoney: GuildCreateConstants.PRICE - player.money
+		};
 	}
 
 	const newGuild = await Guild.create({
@@ -153,7 +161,7 @@ async function applyLockedAcceptGuildCreate(
 	});
 
 	response.push(makePacket(CommandGuildCreateAcceptPacketRes, { guildName }));
-	return "OK";
+	return { kind: "OK" };
 }
 
 async function acceptGuildCreate(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<void> {
@@ -166,16 +174,16 @@ async function acceptGuildCreate(player: Player, guildName: string, response: Cr
 		)
 	);
 
-	if (outcome === "OK") {
+	if (outcome.kind === "OK") {
 		return;
 	}
 
-	if (outcome === "alreadyInGuild") {
+	if (outcome.kind === "alreadyInGuild") {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
 			foundGuild: true
 		}));
 	}
-	else if (outcome === "nameTaken") {
+	else if (outcome.kind === "nameTaken") {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
 			foundGuild: false,
 			guildNameIsAvailable: false
@@ -186,7 +194,7 @@ async function acceptGuildCreate(player: Player, guildName: string, response: Cr
 			foundGuild: false,
 			guildNameIsAvailable: true,
 			guildNameIsAcceptable: true,
-			missingMoney: GuildCreateConstants.PRICE - player.money
+			missingMoney: outcome.missingMoney
 		}));
 	}
 }

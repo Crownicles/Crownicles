@@ -371,16 +371,17 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	 */
 	apartmentNotary!: {
 
-		/** Apartment for sale in this city. Absent if player already owns one here, or city has no apartmentPrice. */
-		forSale?: {
-			price: number;
-
-			/** Core-authoritative eligibility: player has enough money to buy */
-			canAfford: boolean;
-
-			/** Amount of money the player lacks to afford this apartment (only set when !canAfford). */
-			missingMoney?: number;
-		};
+		/**
+		 * Apartment for sale in this city. Absent if player already owns one here, or city has no apartmentPrice.
+		 * Discriminated by `canAfford`: when `false`, `missingMoney` is required.
+		 */
+		forSale?:
+			| {
+				price: number; canAfford: true;
+			}
+			| {
+				price: number; canAfford: false; missingMoney: number;
+			};
 
 		/** Apartments owned by the player, with their current accumulated rent. */
 		ownedApartments: OwnedApartmentSummary[];
