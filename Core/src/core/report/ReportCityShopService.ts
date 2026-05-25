@@ -429,15 +429,6 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 						success: true,
 						materials: await distributeMaterialsRandomly(playerId, getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.UNCOMMON), amount)
 					})
-				},
-				{
-					id: ShopItemType.WOOD_RARE_BUNDLE,
-					price: ShopConstants.LUMBERJACK_PRICES.RARE,
-					amounts: ShopConstants.LUMBERJACK_AMOUNTS,
-					buyCallback: async (_buyResponse: CrowniclesPacket[], playerId: number, _context: PacketContext, amount: number): Promise<BuyCallbackResult> => ({
-						success: true,
-						materials: await distributeMaterialsRandomly(playerId, getMaterialsByTypeAndRarity(MaterialType.WOOD, MaterialRarity.RARE), amount)
-					})
 				}
 			]
 		}

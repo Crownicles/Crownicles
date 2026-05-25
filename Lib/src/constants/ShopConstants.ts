@@ -33,8 +33,7 @@ export abstract class ShopConstants {
 
 	static readonly LUMBERJACK_PRICES = {
 		COMMON: 10,
-		UNCOMMON: 35,
-		RARE: 100
+		UNCOMMON: 35
 	};
 
 	static readonly LUMBERJACK_AMOUNTS = [

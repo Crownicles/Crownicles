@@ -2329,7 +2329,6 @@ export const CrowniclesIcons: {
 		marketAnalysis: "📊",
 		woodCommonBundle: "🪵",
 		woodUncommonBundle: "🪓",
-		woodRareBundle: "🌲",
 		randomMaterialPack: "🎁"
 	},
 	badges: {
