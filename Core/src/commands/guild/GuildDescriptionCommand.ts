@@ -16,7 +16,7 @@ import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstan
 import {
 	Guild, Guilds
 } from "../../core/database/game/models/Guild";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { ReactionCollectorGuildDescription } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildDescription";
 import {
 	CommandGuildDescriptionAcceptPacketRes,

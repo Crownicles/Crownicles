@@ -105,7 +105,7 @@ import { PlayerBaseFighter } from "../../fights/fighter/PlayerBaseFighter";
 import { MonsterFighter } from "../../fights/fighter/MonsterFighter";
 import { Effect } from "../../../../../Lib/src/types/Effect";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
-import { botConfig } from "../../../index";
+import { botConfig } from "../../../bootstrap";
 import { GuildLikeType } from "../../types/GuildLikeType";
 import { LogsCommandOrigins } from "./models/LogsCommandOrigins";
 import { LogsCommandSubOrigins } from "./models/LogsCommandSubOrigins";

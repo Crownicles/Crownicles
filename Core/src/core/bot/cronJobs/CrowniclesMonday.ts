@@ -4,9 +4,8 @@ import {
 import { Settings } from "../../database/game/models/Setting";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
-import {
-	botConfig, crowniclesInstance
-} from "../../../index";
+import { botConfig } from "../../../bootstrap";
+import { crowniclesInstance } from "../../../app";
 import Player from "../../database/game/models/Player";
 import { Op } from "sequelize";
 import { makePacket } from "../../../../../Lib/src/packets/CrowniclesPacket";

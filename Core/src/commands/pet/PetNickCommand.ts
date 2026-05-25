@@ -12,7 +12,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import Player from "../../core/database/game/models/Player";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 
 
 export default class PetNickCommand {

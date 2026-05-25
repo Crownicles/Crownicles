@@ -14,7 +14,7 @@ import {
 	CommandGuildElderRefusePacketRes,
 	CommandGuildElderSameGuildPacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildElderPacket";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";

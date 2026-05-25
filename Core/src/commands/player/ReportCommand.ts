@@ -85,7 +85,7 @@ import { chooseDestination } from "../../core/report/ReportDestinationService";
 import { doRandomBigEvent } from "../../core/report/ReportBigEventService";
 import { doPVEBoss } from "../../core/report/ReportPveService";
 import { sendTravelPath } from "../../core/report/ReportTravelService";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import {
 	CityMenuMask, CityVisitExitReason, CityVisitExitReasonValue
 } from "../../core/database/logs/LogsCityLogger";

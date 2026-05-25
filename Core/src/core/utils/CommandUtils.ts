@@ -12,7 +12,7 @@ import { RequirementGuildNeededPacket } from "../../../../Lib/src/packets/comman
 import { RequirementGuildRolePacket } from "../../../../Lib/src/packets/commands/requirements/RequirementGuildRolePacket";
 import { RequirementRightPacket } from "../../../../Lib/src/packets/commands/requirements/RequirementRightPacket";
 import { BlockingUtils } from "./BlockingUtils";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { ErrorBannedPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { MapCache } from "../maps/MapCache";

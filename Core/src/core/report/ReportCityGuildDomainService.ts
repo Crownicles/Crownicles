@@ -20,7 +20,7 @@ import {
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { GuildUtils } from "../utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import type {
 	GuildDomainPurchaseLogParams,
 	GuildDomainUpgradeLogParams

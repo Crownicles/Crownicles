@@ -3,7 +3,7 @@ import {
 } from "sequelize";
 import PetEntity from "./PetEntity";
 import Guild from "./Guild";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";

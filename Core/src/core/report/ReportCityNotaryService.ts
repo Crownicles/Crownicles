@@ -22,7 +22,7 @@ import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { UniqueConstraintError } from "sequelize";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 
 function buildClaimTooLowPacket(apartment: Apartment, currentRent: number): CrowniclesPacket | null {
 	const apartmentCity = CityDataController.instance.getById(apartment.cityId);

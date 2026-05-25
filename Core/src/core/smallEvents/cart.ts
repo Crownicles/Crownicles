@@ -19,7 +19,7 @@ import {
 import { SmallEventCartPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventCartPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 

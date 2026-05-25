@@ -40,7 +40,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import {
 	dateToMs, millisecondsToSeconds
 } from "../../../../Lib/src/utils/TimeUtils";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { chooseDestination } from "./ReportDestinationService";

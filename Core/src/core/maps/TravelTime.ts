@@ -6,7 +6,7 @@ import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { Maps } from "./Maps";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import { MapLinkDataController } from "../../data/MapLink";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";

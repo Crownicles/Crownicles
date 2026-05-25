@@ -16,7 +16,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import {
 	GUILD_DOMAIN_ERROR, GuildDomainConstants, GuildDomainError
 } from "../../../../Lib/src/constants/GuildDomainConstants";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 
 interface ResolvedFoodShop {
 	player: Player;

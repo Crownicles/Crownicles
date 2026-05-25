@@ -26,7 +26,7 @@ import {
 } from "./ExpeditionFoodService";
 import { calculateRewardIndex } from "./ExpeditionRewardCalculator";
 import { PendingExpeditionsCache } from "./PendingExpeditionsCache";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 

@@ -15,7 +15,7 @@ import {
 import { PetDataController } from "../../../../data/Pet";
 import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 const SETUP_DEFAULTS = {
 	level: 30,

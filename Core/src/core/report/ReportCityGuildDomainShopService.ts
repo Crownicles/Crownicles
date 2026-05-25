@@ -19,7 +19,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import {
 	withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import type { GuildTreasuryDepositLogParams } from "../database/logs/LogsCityLogger";
 
 interface DepositTreasuryResult {

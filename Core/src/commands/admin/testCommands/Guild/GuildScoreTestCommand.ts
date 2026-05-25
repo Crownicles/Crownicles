@@ -3,7 +3,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 export const commandInfo: ITestCommand = {
 	name: "guildpoints",

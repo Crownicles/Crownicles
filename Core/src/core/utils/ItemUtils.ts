@@ -20,7 +20,7 @@ import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
 import { ObjectItemDataController } from "../../data/ObjectItem";
 import { ItemDataController } from "../../data/DataController";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { ItemRefusePacket } from "../../../../Lib/src/packets/events/ItemRefusePacket";
 import { ItemAcceptPacket } from "../../../../Lib/src/packets/events/ItemAcceptPacket";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";

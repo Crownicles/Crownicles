@@ -13,7 +13,7 @@ import {
 	CommandDailyBonusPacketRes
 } from "../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { ObjectItem } from "../../data/ObjectItem";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import {

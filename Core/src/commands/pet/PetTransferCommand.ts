@@ -38,7 +38,7 @@ import {
 	GuildPet, GuildPets
 } from "../../core/database/game/models/GuildPet";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../../core/missions/MissionsController";

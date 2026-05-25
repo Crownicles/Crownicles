@@ -3,7 +3,7 @@ import {
 } from "../../../../core/CommandsTest";
 import { LogsDatabase } from "../../../../core/database/logs/LogsDatabase";
 import { GameDatabase } from "../../../../core/database/game/GameDatabase";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 export const commandInfo: ITestCommand = {
 	name: "migration",

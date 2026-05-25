@@ -27,7 +27,7 @@ import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import {
 	Apartment, Apartments
 } from "../database/game/models/Apartment";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import type {
 	HomeBedUseLogParams,
 	HomeMoveLogParams,

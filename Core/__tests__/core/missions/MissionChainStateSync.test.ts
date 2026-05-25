@@ -5,7 +5,7 @@ import {NumberChangeReason} from "../../../../Lib/src/constants/LogsConstants";
 import type {CrowniclesPacket} from "@crownicles/lib";
 
 // Mock crowniclesInstance with all required logsDatabase methods
-vi.mock("../../../src/index", () => ({
+vi.mock("../../../src/app", () => ({
 	crowniclesInstance: {
 		logsDatabase: {
 			logMoneyChange: vi.fn().mockResolvedValue(undefined),

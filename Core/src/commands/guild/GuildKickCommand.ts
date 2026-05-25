@@ -26,7 +26,7 @@ import {
 } from "../../core/utils/CommandUtils";
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import { ReactionCollectorGuildKick } from "../../../../Lib/src/packets/interaction/ReactionCollectorGuildKick";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { GuildKickNotificationPacket } from "../../../../Lib/src/packets/notifications/GuildKickNotificationPacket";
 import { PacketUtils } from "../../core/utils/PacketUtils";
 import {

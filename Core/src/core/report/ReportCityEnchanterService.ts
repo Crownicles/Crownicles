@@ -18,7 +18,7 @@ import { Settings } from "../database/game/models/Setting";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 
 /**
  * Parameters for the enchantItem function

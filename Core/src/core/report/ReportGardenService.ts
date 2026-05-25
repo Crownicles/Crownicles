@@ -38,7 +38,7 @@ import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interacti
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { GardenActionType } from "../database/logs/LogsCityLogger";
 
 type HomeData = ReactionCollectorCityData["home"];

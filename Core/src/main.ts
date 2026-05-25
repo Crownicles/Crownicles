@@ -1,5 +1,6 @@
-import { Crownicles } from "./core/bot/Crownicles";
-import { loadConfig } from "./core/bot/CrowniclesConfig";
+import { botConfig } from "./bootstrap";
+import { crowniclesInstance } from "./app";
+import { mqttClient } from "./mqttClient";
 import {
 	CrowniclesPacket, makePacket, PacketContext, PacketLike
 } from "../../Lib/src/packets/CrowniclesPacket";
@@ -8,9 +9,7 @@ import {
 	ErrorPacket,
 	ErrorResetIsNow
 } from "../../Lib/src/packets/commands/ErrorPacket";
-import { connect } from "mqtt";
 import { PacketUtils } from "./core/utils/PacketUtils";
-import { MqttConstants } from "../../Lib/src/constants/MqttConstants";
 import { RightGroup } from "../../Lib/src/types/RightGroup";
 import { MqttTopicUtils } from "../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesCoreMetrics } from "./core/bot/CrowniclesCoreMetrics";
@@ -18,37 +17,7 @@ import {
 	millisecondsToSeconds, msDiff, nowMs, resetIsNow
 } from "../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
-import "source-map-support/register";
 import { CoreConstants } from "./core/CoreConstants";
-
-process.on("uncaughtException", error => {
-	console.error(`Uncaught exception: ${error}`);
-	if (CrowniclesLogger.isInitialized()) {
-		CrowniclesLogger.errorWithObj("Uncaught exception", error);
-	}
-});
-
-process.on("unhandledRejection", error => {
-	console.error(`Unhandled rejection: ${error}`);
-	if (CrowniclesLogger.isInitialized()) {
-		CrowniclesLogger.errorWithObj("Unhandled rejection", error);
-	}
-});
-
-export const botConfig = loadConfig();
-CrowniclesLogger.init(botConfig.LOG_LEVEL, botConfig.LOG_LOCATIONS, { app: "Core" }, botConfig.LOKI_HOST
-	? {
-		host: botConfig.LOKI_HOST,
-		username: botConfig.LOKI_USERNAME,
-		password: botConfig.LOKI_PASSWORD
-	}
-	: undefined);
-
-CrowniclesLogger.info(`${CoreConstants.OPENING_LINE} - ${process.env.npm_package_version}`);
-
-export const mqttClient = connect(botConfig.MQTT_HOST, {
-	connectTimeout: MqttConstants.CONNECTION_TIMEOUT
-});
 
 mqttClient.on("connect", () => {
 	mqttClient.subscribe(MqttTopicUtils.getCoreTopic(botConfig.PREFIX), err => {
@@ -144,6 +113,5 @@ mqttClient.on("error", error => {
 	CrowniclesLogger.errorWithObj("MQTT error", error);
 });
 
-export const crowniclesInstance = new Crownicles();
 crowniclesInstance.init()
 	.then();

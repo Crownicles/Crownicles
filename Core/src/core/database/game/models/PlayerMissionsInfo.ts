@@ -3,7 +3,7 @@ import {
 } from "sequelize";
 import { datesAreOnSameDay } from "../../../../../../Lib/src/utils/TimeUtils";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { Campaign } from "../../../missions/Campaign";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.

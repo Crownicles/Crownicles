@@ -25,7 +25,7 @@ import {
 import {
 	InventoryInfo, InventoryInfos
 } from "../database/game/models/InventoryInfo";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import {
 	ReactionCollectorBuyCategorySlot,
 	ReactionCollectorBuyCategorySlotBuySuccess,

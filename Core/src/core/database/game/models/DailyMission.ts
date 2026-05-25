@@ -4,7 +4,7 @@ import {
 import { datesAreOnSameDay } from "../../../../../../Lib/src/utils/TimeUtils";
 import { MissionsController } from "../../../missions/MissionsController";
 import PlayerMissionsInfo from "./PlayerMissionsInfo";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { MissionDataController } from "../../../../data/Mission";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.

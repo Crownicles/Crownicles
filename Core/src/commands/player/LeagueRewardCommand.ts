@@ -16,7 +16,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import {
 	generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../../core/utils/ItemUtils";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import {
 	getNextSaturdayMidnight, todayIsSunday
 } from "../../../../Lib/src/utils/TimeUtils";
