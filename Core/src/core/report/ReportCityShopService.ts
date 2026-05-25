@@ -32,7 +32,7 @@ import {
 import {
 	getPlantSlotExtensionShopItem, getSlotExtensionShopItem
 } from "../utils/TannerShopItems";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { toItemWithDetails } from "../utils/ItemUtils";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";

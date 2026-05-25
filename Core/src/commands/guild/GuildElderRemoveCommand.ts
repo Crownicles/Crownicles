@@ -11,7 +11,7 @@ import {
 	CommandGuildElderRemovePacketReq,
 	CommandGuildElderRemoveRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandGuildElderRemovePacket";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";

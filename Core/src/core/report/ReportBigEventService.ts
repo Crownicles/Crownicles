@@ -33,7 +33,7 @@ import { TravelTime } from "../maps/TravelTime";
 import { Maps } from "../maps/Maps";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { ReportConstants } from "../../../../Lib/src/constants/ReportConstants";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import {
 	millisecondsToMinutes
 } from "../../../../Lib/src/utils/TimeUtils";

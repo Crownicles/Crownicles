@@ -1,7 +1,7 @@
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 export const commandInfo: ITestCommand = {
 	name: "playerlevel",

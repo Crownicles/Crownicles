@@ -16,7 +16,7 @@ import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { GuildDailyConstants } from "../../../../Lib/src/constants/GuildDailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import {

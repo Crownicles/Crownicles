@@ -9,7 +9,7 @@ import { PlayerMissionsInfo } from "../../../src/core/database/game/models/Playe
 import { CampaignData, CampaignMission } from "../../../src/data/Campaign";
 
 // Mock crowniclesInstance (required by Campaign for logging)
-vi.mock("../../../src/index", () => ({
+vi.mock("../../../src/app", () => ({
 	crowniclesInstance: {
 		logsDatabase: {
 			logMissionCampaignProgress: vi.fn().mockResolvedValue(undefined)

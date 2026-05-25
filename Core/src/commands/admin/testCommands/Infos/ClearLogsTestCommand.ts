@@ -1,7 +1,7 @@
 import {
 	ExecuteTestCommandLike, ITestCommand
 } from "../../../../core/CommandsTest";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { QueryTypes } from "sequelize";
 
 export const commandInfo: ITestCommand = {

@@ -33,7 +33,7 @@ import { MapLinkDataController } from "../../../../data/MapLink";
 import {
 	MapLocation, MapLocationDataController
 } from "../../../../data/MapLocation";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { GenericItem } from "../../../../data/GenericItem";
 import {
 	Class, ClassDataController

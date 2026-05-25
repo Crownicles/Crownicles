@@ -6,7 +6,7 @@ import { InventorySlots } from '../../../src/core/database/game/models/Inventory
 import { InventoryInfos } from '../../../src/core/database/game/models/InventoryInfo';
 import { MissionsController } from '../../../src/core/missions/MissionsController';
 import { BlockingUtils } from '../../../src/core/utils/BlockingUtils';
-import { crowniclesInstance } from '../../../src';
+import { crowniclesInstance } from '../../../src/app';
 import { ItemCategory, ItemRarity } from '../../../../Lib/src/constants/ItemConstants';
 import { BlockingConstants } from '../../../../Lib/src/constants/BlockingConstants';
 import { CrowniclesPacket, PacketContext } from '../../../../Lib/src/packets/CrowniclesPacket';
@@ -49,7 +49,7 @@ vi.mock('../../../../Lib/src/packets/CrowniclesPacket', () => ({
 	sendablePacket: vi.fn(() => () => {}),
 	makePacket: vi.fn((PacketType, data) => ({ type: PacketType.name, data }))
 }));
-vi.mock('../../../src', () => ({
+vi.mock('../../../src/app', () => ({
 	crowniclesInstance: {
 		logsDatabase: {
 			logItemGain: vi.fn(),

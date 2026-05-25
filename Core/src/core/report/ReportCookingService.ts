@@ -60,7 +60,7 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import type { CookingUseLogParams } from "../database/logs/LogsCityLogger";
 
 interface PlayerAndHome {

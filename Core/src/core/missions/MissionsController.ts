@@ -19,7 +19,7 @@ import {
 	makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import {
 	Mission, MissionDataController
 } from "../../data/Mission";

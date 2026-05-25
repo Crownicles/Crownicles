@@ -10,7 +10,7 @@ import {
 import {
 	MapLocation, MapLocationDataController
 } from "../../data/MapLocation";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";

@@ -10,7 +10,7 @@ import {
 	GuildPet, GuildPets
 } from "./GuildPet";
 import PetEntity, { PetEntities } from "./PetEntity";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../../../Lib/src/packets/CrowniclesPacket";

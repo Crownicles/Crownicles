@@ -23,7 +23,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { ReactionCollectorUnlock } from "../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { UnlockConstants } from "../../../../Lib/src/constants/UnlockConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";

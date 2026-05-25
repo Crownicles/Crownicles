@@ -3,7 +3,7 @@ import { PacketListenerCallbackServer } from "../../../../Lib/src/packets/Packet
 import {
 	CrowniclesPacket, PacketLike
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export const packetHandler = <T extends CrowniclesPacket>(val: PacketLike<T>) =>

@@ -3,7 +3,7 @@ import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { MissionsController } from "./MissionsController";
 import Player from "../database/game/models/Player";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { CampaignData } from "../../data/Campaign";
 import {
 	CompletedMission, MissionType

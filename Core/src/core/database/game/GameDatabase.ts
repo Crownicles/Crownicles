@@ -1,7 +1,7 @@
 import { Database } from "../../../../../Lib/src/database/Database";
 import { DataTypes } from "sequelize";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
-import { botConfig } from "../../../index";
+import { botConfig } from "../../../bootstrap";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 
 export class GameDatabase extends Database {

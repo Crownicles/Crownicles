@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, vi} from 'vitest';
-import {crowniclesInstance} from '../../../src';
+import {crowniclesInstance} from '../../../src/app';
 import {MapLinkDataController} from '../../../src/data/MapLink';
 import {PVEConstants} from '../../../../Lib/src/constants/PVEConstants';
 import {Constants} from '../../../../Lib/src/constants/Constants';

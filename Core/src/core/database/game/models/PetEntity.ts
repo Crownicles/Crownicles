@@ -17,7 +17,7 @@ import {
 	Pet, PetDataController
 } from "../../../../data/Pet";
 import { PetUtils } from "../../../utils/PetUtils";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { BlessingManager } from "../../../blessings/BlessingManager";
 import {
 	CrowniclesPacket, makePacket

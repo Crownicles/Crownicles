@@ -1,6 +1,6 @@
 import { setDailyCronJob } from "../../utils/CronInterface";
 import { Settings } from "../../database/game/models/Setting";
-import { crowniclesInstance } from "../../../index";
+import { crowniclesInstance } from "../../../app";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 import { PotionDataController } from "../../../data/Potion";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";

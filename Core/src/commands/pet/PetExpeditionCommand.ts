@@ -33,7 +33,7 @@ import { applyExpeditionRewards } from "../../core/expeditions/ExpeditionRewardA
 import { PendingExpeditionsCache } from "../../core/expeditions/PendingExpeditionsCache";
 import { Maps } from "../../core/maps/Maps";
 import { Badge } from "../../../../Lib/src/types/Badge";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { LogsReadRequests } from "../../core/database/logs/LogsReadRequests";
 import { ScheduledExpeditionNotifications } from "../../core/database/game/models/ScheduledExpeditionNotification";
 import {

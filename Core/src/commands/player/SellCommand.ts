@@ -25,7 +25,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorSell";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlessingManager } from "../../core/blessings/BlessingManager";

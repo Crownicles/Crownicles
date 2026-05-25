@@ -10,7 +10,7 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import {

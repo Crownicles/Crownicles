@@ -1,5 +1,5 @@
 import {beforeEach, describe, expect, it, vi} from "vitest";
-import {crowniclesInstance} from "../../../../src";
+import {crowniclesInstance} from "../../../../src/app";
 import {TravelTime} from "../../../../src/core/maps/TravelTime";
 import {Effect} from "../../../../../Lib/src/types/Effect";
 import {TokensConstants} from "../../../../../Lib/src/constants/TokensConstants";

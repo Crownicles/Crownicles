@@ -23,7 +23,7 @@ import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithU
 import { Materials } from "../database/game/models/Material";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 
 export interface UpgradeItemValidationResult {
 	itemToUpgrade?: {

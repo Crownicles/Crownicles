@@ -1,7 +1,7 @@
 import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { QueryTypes } from "sequelize";
 import { daysToSeconds } from "../../../../../../Lib/src/utils/TimeUtils";
 import { asDays } from "../../../../../../Lib/src/types/TimeTypes";

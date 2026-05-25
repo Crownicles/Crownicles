@@ -11,9 +11,8 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { BlessingAnnouncementPacket } from "../../../../Lib/src/packets/announcements/BlessingAnnouncementPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
-import {
-	botConfig, crowniclesInstance
-} from "../../index";
+import { botConfig } from "../../bootstrap";
+import { crowniclesInstance } from "../../app";
 import {
 	datesAreOnSameDay, dateToMs, daysToMilliseconds, getTodayMidnight, getTomorrowMidnight, hoursToMilliseconds, millisecondsToDays, millisecondsToHours, minutesToMilliseconds, msDiff, nowMs
 } from "../../../../Lib/src/utils/TimeUtils";

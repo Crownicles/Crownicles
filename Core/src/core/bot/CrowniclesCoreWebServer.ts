@@ -1,9 +1,9 @@
 import {
 	Express, Request, Response
 } from "express";
-import {
-	botConfig, crowniclesInstance, mqttClient
-} from "../../index";
+import { botConfig } from "../../bootstrap";
+import { crowniclesInstance } from "../../app";
+import { mqttClient } from "../../mqttClient";
 import {
 	CrowniclesCoreMetrics, crowniclesMetricsRegistry
 } from "./CrowniclesCoreMetrics";

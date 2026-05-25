@@ -16,7 +16,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 
 /**
  * Handle inn meal reaction — player eats a meal at an inn
