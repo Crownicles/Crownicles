@@ -22,7 +22,10 @@ import {
 	CommandReportGuildDomainDepositTreasuryReq,
 	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
-import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetFood
+} from "../../../../../../Lib/src/constants/PetConstants";
+import { GuildDomainConstants } from "../../../../../../Lib/src/constants/GuildDomainConstants";
 import {
 	createCityCollector, createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
@@ -30,12 +33,13 @@ import {
 	buildShopBody, buildShopQuantityContainer, buildShopReimburseContainer
 } from "../guildDomain/GuildDomainViews";
 import {
-	FoodShopUIContext, FoodKey, PET_FOOD_TO_KEY
+	FOOD_KEYS, FoodShopUIContext, FoodKey, parseFoodShopBuyCustomId, PET_FOOD_TO_KEY
 } from "../guildDomain/GuildDomainShared";
 
 import {
 	finishReportWithErrorEmbed, finishReportWithMessage
 } from "../ReportFlowHelpers";
+import { registerCityConfirmationMenu } from "../confirmation/CityConfirmationMenu";
 
 type CityCollectorFactory = ReturnType<typeof createCityCollector>;
 
@@ -56,10 +60,71 @@ interface FoodShopMenuContext {
 	collectorTime: number;
 }
 
+type FoodShopConfirmationConfig = {
+	description: string;
+	confirmLabel: string;
+	onConfirm: (nestedMenus: CrowniclesNestedMenus) => Promise<void>;
+};
+
 function toUIContext(ctx: FoodShopMenuContext): FoodShopUIContext {
 	return {
 		data: ctx.data,
 		lng: ctx.lng
+	};
+}
+
+async function showFoodShopConfirmation(
+	ctx: FoodShopMenuContext,
+	nestedMenus: CrowniclesNestedMenus,
+	config: FoodShopConfirmationConfig
+): Promise<void> {
+	registerCityConfirmationMenu(nestedMenus, {
+		interaction: ctx.interaction,
+		collectorTime: ctx.collectorTime,
+		lng: ctx.lng,
+		title: i18n.t("commands:report.city.confirmation.title", {
+			lng: ctx.lng,
+			pseudo: ctx.pseudo
+		}),
+		description: config.description,
+		confirmLabel: config.confirmLabel,
+		backMenuId: ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU,
+		onConfirm: async action => {
+			await action.buttonInteraction.deferUpdate();
+			await config.onConfirm(action.nestedMenus);
+		}
+	});
+	await nestedMenus.changeMenu(ReportCityMenuIds.CITY_CONFIRMATION_MENU);
+}
+
+function buildFoodBuyConfirmation(
+	ctx: FoodShopMenuContext,
+	foodType: PetFood,
+	amount: number
+): FoodShopConfirmationConfig | null {
+	const foodIndex = PetConstants.PET_FOOD_BY_ID.indexOf(foodType);
+	const foodKey = FOOD_KEYS[foodIndex];
+	const unitPrice = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
+	if (foodKey === undefined || unitPrice === undefined) {
+		return null;
+	}
+	const foodName = i18n.t(`models:foods.${foodType}`, {
+		lng: ctx.lng,
+		count: amount
+	});
+	return {
+		description: i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodConfirmDescription", {
+			lng: ctx.lng,
+			amount,
+			food: foodName,
+			foodType,
+			cost: unitPrice * amount,
+			stock: ctx.data.food[foodKey],
+			cap: ctx.data.foodCaps[foodIndex],
+			treasury: ctx.data.treasury
+		}),
+		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
+		onConfirm: nestedMenus => handleFoodBuy(ctx, foodType, amount, nestedMenus)
 	};
 }
 
@@ -220,10 +285,14 @@ function createQuantityCollector(ctx: FoodShopMenuContext): CityCollectorFactory
 			return;
 		}
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX)) {
-			const parts = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX, "").split("_");
-			const foodType = parts[0] as PetFood;
-			const amount = parseInt(parts[1], 10);
-			await handleFoodBuy(ctx, foodType, amount, nestedMenus);
+			const selection = parseFoodShopBuyCustomId(customId);
+			if (!selection) {
+				return;
+			}
+			const confirmation = buildFoodBuyConfirmation(ctx, selection.foodType, selection.amount);
+			if (confirmation) {
+				await showFoodShopConfirmation(ctx, nestedMenus, confirmation);
+			}
 		}
 	});
 }

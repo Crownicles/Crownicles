@@ -24,12 +24,15 @@ import {
 	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import {
-	GuildBuilding
+	GuildBuilding,
+	GuildDomainConstants
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
-import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
+import {
+	PetConstants, PetFood
+} from "../../../../../../Lib/src/constants/PetConstants";
 import {
 	BUILDING_MENU_IDS, createDomainCollectorWithStayHandling,
-	GuildDomainMenuContext, PET_FOOD_TO_KEY, setBuildingLevel
+	FOOD_KEYS, getBuildingLevel, GuildDomainMenuContext, parseFoodShopBuyCustomId, PET_FOOD_TO_KEY, setBuildingLevel
 } from "./GuildDomainShared";
 import {
 	buildBuildingContainer, buildMainDomainContainer, buildShopQuantityContainer,
@@ -38,6 +41,117 @@ import {
 import {
 	finishReportWithErrorEmbed, finishReportWithMessage
 } from "../ReportFlowHelpers";
+import { registerCityConfirmationMenu } from "../confirmation/CityConfirmationMenu";
+
+type DomainConfirmationConfig = {
+	description: string;
+	confirmLabel: string;
+	confirmEmoji?: string;
+	backMenuId: string;
+	onConfirm: (nestedMenus: CrowniclesNestedMenus) => Promise<void>;
+};
+
+async function showDomainConfirmation(
+	ctx: GuildDomainMenuContext,
+	nestedMenus: CrowniclesNestedMenus,
+	config: DomainConfirmationConfig
+): Promise<void> {
+	registerCityConfirmationMenu(nestedMenus, {
+		interaction: ctx.interaction,
+		collectorTime: ctx.collectorTime,
+		lng: ctx.lng,
+		title: i18n.t("commands:report.city.confirmation.title", {
+			lng: ctx.lng,
+			pseudo: ctx.pseudo
+		}),
+		description: config.description,
+		confirmLabel: config.confirmLabel,
+		confirmEmoji: config.confirmEmoji,
+		backMenuId: config.backMenuId,
+		onConfirm: async action => {
+			await action.buttonInteraction.deferUpdate();
+			await config.onConfirm(action.nestedMenus);
+		}
+	});
+	await nestedMenus.changeMenu(ReportCityMenuIds.CITY_CONFIRMATION_MENU);
+}
+
+function buildBuildingUpgradeConfirmation(
+	ctx: GuildDomainMenuContext,
+	building: GuildBuilding
+): DomainConfirmationConfig | null {
+	const currentLevel = getBuildingLevel(ctx.data, building);
+	const cost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
+	if (cost === null) {
+		return null;
+	}
+	const buildingName = i18n.t(`commands:report.city.guildDomain.buildings.${building}`, { lng: ctx.lng });
+	return {
+		description: i18n.t("commands:report.city.guildDomain.upgradeConfirmDescription", {
+			lng: ctx.lng,
+			building: buildingName,
+			level: currentLevel + 1,
+			cost,
+			treasury: ctx.data.treasury
+		}),
+		confirmLabel: i18n.t("commands:report.city.buttons.upgrade", { lng: ctx.lng }),
+		backMenuId: BUILDING_MENU_IDS[building],
+		onConfirm: nestedMenus => handleUpgrade(ctx, building, nestedMenus)
+	};
+}
+
+function buildFoodBuyConfirmation(
+	ctx: GuildDomainMenuContext,
+	foodType: PetFood,
+	amount: number
+): DomainConfirmationConfig | null {
+	const foodIndex = PetConstants.PET_FOOD_BY_ID.indexOf(foodType);
+	const foodKey = FOOD_KEYS[foodIndex];
+	const unitPrice = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
+	if (foodKey === undefined || unitPrice === undefined) {
+		return null;
+	}
+	const foodName = i18n.t(`models:foods.${foodType}`, {
+		lng: ctx.lng,
+		count: amount
+	});
+	return {
+		description: i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodConfirmDescription", {
+			lng: ctx.lng,
+			amount,
+			food: foodName,
+			foodType,
+			cost: unitPrice * amount,
+			stock: ctx.data.food[foodKey],
+			cap: ctx.data.foodCaps[foodIndex],
+			treasury: ctx.data.treasury
+		}),
+		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
+		backMenuId: ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU,
+		onConfirm: nestedMenus => handleFoodBuy(ctx, foodType, amount, nestedMenus)
+	};
+}
+
+function computeTreasuryGain(amount: number): number {
+	const penalty = Math.min(
+		Math.round(amount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
+		GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
+	);
+	return amount - penalty;
+}
+
+function buildTreasuryDepositConfirmation(ctx: GuildDomainMenuContext, amount: number): DomainConfirmationConfig {
+	return {
+		description: i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryConfirmDescription", {
+			lng: ctx.lng,
+			cost: amount,
+			treasury: computeTreasuryGain(amount)
+		}),
+		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
+		backMenuId: ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU,
+		onConfirm: nestedMenus => handleTreasuryDeposit(ctx, amount, nestedMenus, false)
+	};
+}
 
 /**
  * Send a packet, then either run the success handler with a typed response
@@ -185,16 +299,23 @@ function createShopQuantityCollector(
 		}
 
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX)) {
-			const parts = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX, "").split("_");
-			const foodType = parts[0] as PetFood;
-			const amount = parseInt(parts[1], 10);
-			await handleFoodBuy(ctx, foodType, amount, nestedMenus);
+			const selection = parseFoodShopBuyCustomId(customId);
+			if (!selection) {
+				return;
+			}
+			const confirmation = buildFoodBuyConfirmation(ctx, selection.foodType, selection.amount);
+			if (confirmation) {
+				await showDomainConfirmation(ctx, nestedMenus, confirmation);
+			}
 			return;
 		}
 
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX)) {
-			const amount = parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX, ""), 10);
-			await handleTreasuryDeposit(ctx, amount, nestedMenus, false);
+			const amount = Number.parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX, ""), 10);
+			if (!Number.isInteger(amount) || amount <= 0) {
+				return;
+			}
+			await showDomainConfirmation(ctx, nestedMenus, buildTreasuryDepositConfirmation(ctx, amount));
 		}
 	});
 }
@@ -262,7 +383,10 @@ function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMe
 
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX)) {
 			const upgradedBuilding = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "") as GuildBuilding;
-			await handleUpgrade(ctx, upgradedBuilding, nestedMenus);
+			const confirmation = buildBuildingUpgradeConfirmation(ctx, upgradedBuilding);
+			if (confirmation) {
+				await showDomainConfirmation(ctx, nestedMenus, confirmation);
+			}
 			return;
 		}
 

@@ -107,6 +107,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 
 - [ ] **All existing tests pass** — run `pnpm test` in Core, Discord, and Lib
 - [ ] **New logic has test coverage** where applicable — especially for utility functions and data transformations
+- [ ] **No tautological new tests** — new tests must verify observable behavior, state changes, packets, rendered UI, or regression cases. Avoid tests that only mirror the implementation, assert mocked return values, or check that a function returns the same fixture it was given
 - [ ] **No test regressions** — verify test count hasn't dropped
 
 ## 10. Concurrency (DB writes)
