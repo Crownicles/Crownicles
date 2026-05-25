@@ -1,5 +1,7 @@
 import "source-map-support/register";
-import { loadConfig } from "./core/bot/CrowniclesConfig";
+import {
+	CrowniclesConfig, loadConfig
+} from "./core/bot/CrowniclesConfig";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 import { CoreConstants } from "./core/CoreConstants";
 
@@ -17,7 +19,9 @@ process.on("unhandledRejection", error => {
 	}
 });
 
-export const botConfig = loadConfig();
+const productionBotConfig = loadConfig();
+
+export let botConfig: CrowniclesConfig = productionBotConfig;
 
 if (!CrowniclesLogger.isInitialized()) {
 	CrowniclesLogger.init(botConfig.LOG_LEVEL, botConfig.LOG_LOCATIONS, { app: "Core" }, botConfig.LOKI_HOST
@@ -29,4 +33,14 @@ if (!CrowniclesLogger.isInitialized()) {
 		: undefined);
 
 	CrowniclesLogger.info(`${CoreConstants.OPENING_LINE} - ${process.env.npm_package_version}`);
+}
+
+/**
+ * Test-only helper. Overrides {@link botConfig} for the duration of an
+ * integration suite. Pass `null` to restore the production config.
+ *
+ * Must only be called from `__tests__-integration/_coreSetup.ts`.
+ */
+export function setBotConfigForTests(config: CrowniclesConfig | null): void {
+	botConfig = config ?? productionBotConfig;
 }
