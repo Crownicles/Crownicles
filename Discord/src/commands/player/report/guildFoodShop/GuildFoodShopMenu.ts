@@ -22,10 +22,7 @@ import {
 	CommandReportGuildDomainDepositTreasuryReq,
 	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
-import {
-	PetConstants, PetFood
-} from "../../../../../../Lib/src/constants/PetConstants";
-import { GuildDomainConstants } from "../../../../../../Lib/src/constants/GuildDomainConstants";
+import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
 import {
 	createCityCollector, createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
@@ -33,7 +30,7 @@ import {
 	buildShopBody, buildShopQuantityContainer, buildShopReimburseContainer
 } from "../guildDomain/GuildDomainViews";
 import {
-	FOOD_KEYS, FoodShopUIContext, FoodKey, parseFoodShopBuyCustomId, PET_FOOD_TO_KEY
+	buildFoodBuyConfirmationDescription, FoodShopUIContext, FoodKey, parseFoodShopBuyCustomId, PET_FOOD_TO_KEY
 } from "../guildDomain/GuildDomainShared";
 
 import {
@@ -102,27 +99,12 @@ function buildFoodBuyConfirmation(
 	foodType: PetFood,
 	amount: number
 ): FoodShopConfirmationConfig | null {
-	const foodIndex = PetConstants.PET_FOOD_BY_ID.indexOf(foodType);
-	const foodKey = FOOD_KEYS[foodIndex];
-	const unitPrice = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
-	if (foodKey === undefined || unitPrice === undefined) {
+	const description = buildFoodBuyConfirmationDescription(ctx, foodType, amount);
+	if (description === null) {
 		return null;
 	}
-	const foodName = i18n.t(`models:foods.${foodType}`, {
-		lng: ctx.lng,
-		count: amount
-	});
 	return {
-		description: i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodConfirmDescription", {
-			lng: ctx.lng,
-			amount,
-			food: foodName,
-			foodType,
-			cost: unitPrice * amount,
-			stock: ctx.data.food[foodKey],
-			cap: ctx.data.foodCaps[foodIndex],
-			treasury: ctx.data.treasury
-		}),
+		description,
 		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
 		onConfirm: nestedMenus => handleFoodBuy(ctx, foodType, amount, nestedMenus)
 	};
