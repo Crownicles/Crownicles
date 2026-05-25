@@ -38,8 +38,18 @@ import {
 import {
 	CityCollectorHandlerParams, CityMenuParams, ManageHomeData
 } from "../ReportCityMenuTypes";
+import { HomeMenuIds } from "../home/HomeMenuConstants";
+import { registerCityConfirmationMenu } from "../confirmation/CityConfirmationMenu";
 
-type ManageHomeCollectorParams = Omit<CityMenuParams, "pseudo">;
+type ManageHomeCollectorParams = CityMenuParams;
+
+type NotaryCollectorHandlerParams = CityCollectorHandlerParams & Pick<CityMenuParams, "collectorTime" | "interaction" | "pseudo">;
+
+type NotaryConfirmationDetails = {
+	description: string;
+	confirmLabel: string;
+	reactionType: string;
+};
 
 function hasSlotsChanged(oldSlots: ChestSlotsPerCategory, newSlots: ChestSlotsPerCategory): boolean {
 	return oldSlots.weapon !== newSlots.weapon
@@ -420,13 +430,153 @@ function addNotaryNavigation(container: ContainerBuilder, lng: Language): void {
 	);
 }
 
-const NOTARY_REACTION_ROUTES: Record<string, string> = {
-	[ReportCityMenuIds.BUY_HOME]: ReactionCollectorCityBuyHomeReaction.name,
-	[ReportCityMenuIds.UPGRADE_HOME]: ReactionCollectorCityUpgradeHomeReaction.name,
-	[ReportCityMenuIds.MOVE_HOME]: ReactionCollectorCityMoveHomeReaction.name,
-	[ReportCityMenuIds.GUILD_DOMAIN_CONFIRM]: ReactionCollectorGuildDomainNotaryReaction.name,
-	[ReportCityMenuIds.APARTMENT_BUY]: ReactionCollectorApartmentBuyReaction.name
-};
+const NOTARY_CONFIRMATION_ACTIONS = new Set<string>([
+	ReportCityMenuIds.BUY_HOME,
+	ReportCityMenuIds.UPGRADE_HOME,
+	ReportCityMenuIds.MOVE_HOME,
+	ReportCityMenuIds.GUILD_DOMAIN_CONFIRM,
+	ReportCityMenuIds.APARTMENT_BUY
+]);
+
+function buildHomeBuyConfirmation(homeData: ManageHomeData, lng: Language): NotaryConfirmationDetails | null {
+	if (homeData.newPrice === undefined) {
+		return null;
+	}
+	return {
+		description: i18n.t("commands:report.city.homes.notaryConfirmBuyHome", {
+			lng,
+			cost: homeData.newPrice
+		}),
+		confirmLabel: i18n.t("commands:report.city.homes.buyHome", { lng }),
+		reactionType: ReactionCollectorCityBuyHomeReaction.name
+	};
+}
+
+function buildHomeUpgradeConfirmation(homeData: ManageHomeData, lng: Language): NotaryConfirmationDetails | null {
+	if (!homeData.upgrade) {
+		return null;
+	}
+	return {
+		description: i18n.t("commands:report.city.homes.notaryConfirmUpgradeHome", {
+			lng,
+			cost: homeData.upgrade.price,
+			upgradeChanges: formatHomeUpgradeChanges(homeData.upgrade.oldFeatures, homeData.upgrade.newFeatures, lng)
+		}),
+		confirmLabel: i18n.t("commands:report.city.homes.upgradeHome", { lng }),
+		reactionType: ReactionCollectorCityUpgradeHomeReaction.name
+	};
+}
+
+function buildHomeMoveConfirmation(homeData: ManageHomeData, lng: Language): NotaryConfirmationDetails | null {
+	if (homeData.movePrice === undefined) {
+		return null;
+	}
+	return {
+		description: i18n.t("commands:report.city.homes.notaryConfirmMoveHome", {
+			lng,
+			cost: homeData.movePrice
+		}),
+		confirmLabel: i18n.t("commands:report.city.homes.moveHome", { lng }),
+		reactionType: ReactionCollectorCityMoveHomeReaction.name
+	};
+}
+
+function buildHomeConfirmation(
+	selectedValue: string,
+	homeData: ManageHomeData | undefined,
+	lng: Language
+): NotaryConfirmationDetails | null {
+	if (!homeData) {
+		return null;
+	}
+	if (selectedValue === ReportCityMenuIds.BUY_HOME) {
+		return buildHomeBuyConfirmation(homeData, lng);
+	}
+	if (selectedValue === ReportCityMenuIds.UPGRADE_HOME) {
+		return buildHomeUpgradeConfirmation(homeData, lng);
+	}
+	if (selectedValue === ReportCityMenuIds.MOVE_HOME) {
+		return buildHomeMoveConfirmation(homeData, lng);
+	}
+	return null;
+}
+
+function buildGuildDomainConfirmation(
+	guildNotaryData: GuildNotaryData | undefined,
+	lng: Language
+): NotaryConfirmationDetails | null {
+	if (!guildNotaryData?.canAfford) {
+		return null;
+	}
+	const descriptionKey = guildNotaryData.hasDomain
+		? "commands:report.city.guildDomain.notaryConfirmRelocateDescription"
+		: "commands:report.city.guildDomain.notaryConfirmPurchaseDescription";
+	const labelKey = guildNotaryData.hasDomain
+		? "commands:report.city.guildDomain.confirmRelocate"
+		: "commands:report.city.guildDomain.confirmPurchase";
+	return {
+		description: i18n.t(descriptionKey, {
+			lng,
+			cost: guildNotaryData.cost,
+			treasury: guildNotaryData.treasury
+		}),
+		confirmLabel: i18n.t(labelKey, { lng }),
+		reactionType: ReactionCollectorGuildDomainNotaryReaction.name
+	};
+}
+
+function buildApartmentBuyConfirmation(
+	forSale: ForSaleData | undefined,
+	lng: Language
+): NotaryConfirmationDetails | null {
+	if (!forSale?.canAfford) {
+		return null;
+	}
+	return {
+		description: i18n.t("commands:report.city.homes.apartmentNotary.buyConfirmDescription", {
+			lng,
+			price: forSale.price
+		}),
+		confirmLabel: i18n.t("commands:report.city.homes.apartmentNotary.buyButtonLabel", { lng }),
+		reactionType: ReactionCollectorApartmentBuyReaction.name
+	};
+}
+
+function buildNotaryConfirmationDetails(params: NotaryCollectorHandlerParams): NotaryConfirmationDetails | null {
+	const cityData = params.packet.data.data as ReactionCollectorCityData;
+	const lng = params.interaction.userLanguage;
+	if (params.selectedValue === ReportCityMenuIds.GUILD_DOMAIN_CONFIRM) {
+		return buildGuildDomainConfirmation(cityData.guildDomainNotary, lng);
+	}
+	if (params.selectedValue === ReportCityMenuIds.APARTMENT_BUY) {
+		return buildApartmentBuyConfirmation(cityData.apartmentNotary.forSale, lng);
+	}
+	return buildHomeConfirmation(params.selectedValue, cityData.home.manage, lng);
+}
+
+async function showNotaryConfirmation(params: NotaryCollectorHandlerParams, details: NotaryConfirmationDetails): Promise<void> {
+	await params.buttonInteraction.deferUpdate();
+	registerCityConfirmationMenu(params.nestedMenus, {
+		interaction: params.interaction,
+		collectorTime: params.collectorTime,
+		lng: params.interaction.userLanguage,
+		title: i18n.t("commands:report.city.confirmation.title", {
+			lng: params.interaction.userLanguage,
+			pseudo: params.pseudo
+		}),
+		description: details.description,
+		confirmLabel: details.confirmLabel,
+		backMenuId: HomeMenuIds.MANAGE_HOME_MENU,
+		onConfirm: async action => {
+			await sendReactionByType({
+				...params,
+				buttonInteraction: action.buttonInteraction,
+				nestedMenus: action.nestedMenus
+			}, details.reactionType);
+		}
+	});
+	await params.nestedMenus.changeMenu(ReportCityMenuIds.CITY_CONFIRMATION_MENU);
+}
 
 async function sendReactionByType(params: CityCollectorHandlerParams, reactionType: string): Promise<void> {
 	await params.buttonInteraction.deferReply();
@@ -436,7 +586,7 @@ async function sendReactionByType(params: CityCollectorHandlerParams, reactionTy
 	}
 }
 
-async function handleManageHomeCollectorInteraction(params: CityCollectorHandlerParams): Promise<void> {
+async function handleManageHomeCollectorInteraction(params: NotaryCollectorHandlerParams): Promise<void> {
 	const {
 		selectedValue, buttonInteraction, nestedMenus, context, packet
 	} = params;
@@ -457,8 +607,11 @@ async function handleManageHomeCollectorInteraction(params: CityCollectorHandler
 		return;
 	}
 
-	if (NOTARY_REACTION_ROUTES[selectedValue]) {
-		await sendReactionByType(params, NOTARY_REACTION_ROUTES[selectedValue]);
+	if (NOTARY_CONFIRMATION_ACTIONS.has(selectedValue)) {
+		const confirmationDetails = buildNotaryConfirmationDetails(params);
+		if (confirmationDetails) {
+			await showNotaryConfirmation(params, confirmationDetails);
+		}
 		return;
 	}
 
@@ -481,11 +634,11 @@ function createManageHomeMenuCollector(
 	params: ManageHomeCollectorParams
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 	const {
-		context, interaction, packet, collectorTime
+		context, interaction, packet, collectorTime, pseudo
 	} = params;
 	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
 		await handleManageHomeCollectorInteraction({
-			selectedValue: customId, buttonInteraction, nestedMenus, context, packet
+			selectedValue: customId, buttonInteraction, nestedMenus, context, packet, interaction, collectorTime, pseudo
 		});
 	});
 }
@@ -514,7 +667,8 @@ export function getManageHomeMenu(params: CityMenuParams): CrowniclesNestedMenu 
 			context: params.context,
 			interaction: params.interaction,
 			packet: params.packet,
-			collectorTime: params.collectorTime
+			collectorTime: params.collectorTime,
+			pseudo: params.pseudo
 		})
 	};
 }
