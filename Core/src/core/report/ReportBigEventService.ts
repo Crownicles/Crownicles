@@ -74,6 +74,130 @@ export async function completeMissionsBigEvent(player: Player, response: Crownic
 }
 
 /**
+ * Special-case the "end" choice on the very first report (event id 0):
+ * we want to log + acknowledge it but skip the full outcome pipeline.
+ */
+function handleFirstReportEnd(event: BigEvent, possibility: [string, Possibility], freshPlayer: Player, response: CrowniclesPacket[]): void {
+	crowniclesInstance?.logsDatabase.logBigEvent(freshPlayer.keycloakId, event.id, possibility[0], "0")
+		.then();
+	response.push(makePacket(CommandReportBigEventResultRes, {
+		eventId: event.id,
+		possibilityId: possibility[0],
+		outcomeId: "0",
+		oneshot: false,
+		money: 0,
+		energy: 0,
+		gems: 0,
+		experience: 0,
+		health: 0,
+		score: 0
+	}));
+}
+
+/**
+ * Pick a random outcome among the ones whose condition passes for the
+ * given player. Pure read of game data — safe outside the lock.
+ */
+async function pickRandomOutcome(possibility: [string, Possibility], freshPlayer: Player): Promise<[string, PossibilityOutcome]> {
+	const validOutcomes: [string, PossibilityOutcome][] = [];
+	for (const [key, outcome] of Object.entries(possibility[1].outcomes)) {
+		if (!outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, freshPlayer)) {
+			validOutcomes.push([key, outcome]);
+		}
+	}
+	return RandomUtils.crowniclesRandom.pick(validOutcomes);
+}
+
+/**
+ * Update all the mission ids the outcome / possibility / event are tagged with.
+ */
+async function updateTagMissions(
+	lockedPlayer: Player,
+	response: CrowniclesPacket[],
+	event: BigEvent,
+	possibility: [string, Possibility],
+	randomOutcome: [string, PossibilityOutcome]
+): Promise<void> {
+	const tagsToVerify = (randomOutcome[1].tags ?? [])
+		.concat(possibility[1].tags ?? [])
+		.concat(event.tags ?? []);
+	for (const tag of tagsToVerify) {
+		await MissionsController.update(lockedPlayer, response, {
+			missionId: tag,
+			params: { tags: tagsToVerify }
+		});
+	}
+}
+
+/**
+ * Body of the critical section: apply the outcome, persist the player,
+ * log only after the row is durably saved. Runs under
+ * `withLockedEntities([Player, PlayerMissionsInfo])`.
+ */
+async function applyLockedOutcomeUnderLock(
+	lockedPlayer: Player,
+	outcomeContext: {
+		event: BigEvent;
+		possibility: [string, Possibility];
+		randomOutcome: [string, PossibilityOutcome];
+		time: number;
+	},
+	context: PacketContext,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const {
+		event, possibility, randomOutcome, time
+	} = outcomeContext;
+	lockedPlayer.nextEvent = null;
+
+	const newMapLink = await applyPossibilityOutcome({
+		eventId: event.id,
+		possibilityName: possibility[0],
+		outcome: randomOutcome,
+		time
+	}, lockedPlayer, context, response);
+
+	const isDead = await lockedPlayer.killIfNeeded(response, NumberChangeReason.BIG_EVENT);
+
+	/*
+	 * If the player is dead but a forced map link is provided, teleport them there.
+	 * Otherwise, only choose destination if player is alive.
+	 */
+	if (newMapLink || !isDead) {
+		await chooseDestination(context, lockedPlayer, newMapLink, response, false);
+	}
+
+	await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
+	await updateTagMissions(lockedPlayer, response, event, possibility, randomOutcome);
+
+	await lockedPlayer.save();
+
+	// Log only after the outcome is durably persisted (#3760).
+	crowniclesInstance?.logsDatabase.logBigEvent(lockedPlayer.keycloakId, event.id, possibility[0], randomOutcome[0])
+		.then();
+}
+
+/**
+ * Fallback when the locked row vanished between read and lock: drop the
+ * outcome but keep the Discord UI responsive by pushing the next
+ * destination packet (#3760).
+ */
+async function handleLockLost(freshPlayer: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
+	CrowniclesLogger.warn(
+		`doPossibility: locked row vanished for player ${freshPlayer.id} — skipping possibility outcome and advancing player to next destination`
+	);
+	try {
+		const fallbackPlayer = await Players.getById(freshPlayer.id);
+		await chooseDestination(context, fallbackPlayer, null, response, false);
+	}
+	catch (fallbackError) {
+		CrowniclesLogger.warn(
+			`doPossibility: fallback chooseDestination failed for player ${freshPlayer.id}: ${(fallbackError as Error).message}`
+		);
+	}
+}
+
+/**
  * @param event
  * @param possibility
  * @param player
@@ -91,36 +215,13 @@ async function doPossibility(
 ): Promise<void> {
 	const freshPlayer = await Players.getOrRegister(player.keycloakId);
 
-	if (event.id === 0 && possibility[0] === "end") { // Don't do anything if the player ends the first report
-		crowniclesInstance?.logsDatabase.logBigEvent(freshPlayer.keycloakId, event.id, possibility[0], "0")
-			.then();
-		response.push(makePacket(CommandReportBigEventResultRes, {
-			eventId: event.id,
-			possibilityId: possibility[0],
-			outcomeId: "0",
-			oneshot: false,
-			money: 0,
-			energy: 0,
-			gems: 0,
-			experience: 0,
-			health: 0,
-			score: 0
-		}));
+	if (event.id === 0 && possibility[0] === "end") {
+		handleFirstReportEnd(event, possibility, freshPlayer, response);
 		BlockingUtils.unblockPlayer(freshPlayer.keycloakId, BlockingConstants.REASONS.REPORT);
 		return;
 	}
 
-	// Filter the outcomes that are valid (read-only, no DB writes — safe outside the lock)
-	const entries = Object.entries(possibility[1].outcomes);
-
-	const validOutcomes: [string, PossibilityOutcome][] = [];
-	for (const [key, outcome] of entries) {
-		if (!outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, freshPlayer)) {
-			validOutcomes.push([key, outcome]);
-		}
-	}
-
-	const randomOutcome = RandomUtils.crowniclesRandom.pick(validOutcomes);
+	const randomOutcome = await pickRandomOutcome(possibility, freshPlayer);
 
 	/*
 	 * Ensure the PlayerMissionsInfo row exists before we acquire the lock —
@@ -137,72 +238,22 @@ async function doPossibility(
 				PlayerMissionsInfo.lockKey(freshPlayer.id)
 			] as const,
 			async ([lockedPlayer]) => {
-				lockedPlayer.nextEvent = null;
-
-				const newMapLink = await applyPossibilityOutcome({
-					eventId: event.id,
-					possibilityName: possibility[0],
-					outcome: randomOutcome,
-					time
-				}, lockedPlayer, context, response);
-
-				const isDead = await lockedPlayer.killIfNeeded(response, NumberChangeReason.BIG_EVENT);
-
-				/*
-				 * If the player is dead but a forced map link is provided, teleport them there
-				 * Otherwise, only choose destination if player is alive
-				 */
-				if (newMapLink || !isDead) {
-					await chooseDestination(context, lockedPlayer, newMapLink, response, false);
-				}
-
-				await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
-
-				const tagsToVerify = (randomOutcome[1].tags ?? [])
-					.concat(possibility[1].tags ?? [])
-					.concat(event.tags ?? []);
-				if (tagsToVerify.length > 0) {
-					for (const tag of tagsToVerify) {
-						await MissionsController.update(lockedPlayer, response, {
-							missionId: tag,
-							params: { tags: tagsToVerify }
-						});
-					}
-				}
-
-				await lockedPlayer.save();
-
-				// Log only after the outcome is durably persisted (#3760).
-				crowniclesInstance?.logsDatabase.logBigEvent(lockedPlayer.keycloakId, event.id, possibility[0], randomOutcome[0])
-					.then();
+				await applyLockedOutcomeUnderLock(
+					lockedPlayer,
+					{
+						event, possibility, randomOutcome, time
+					},
+					context,
+					response
+				);
 			}
 		);
 	}
 	catch (e) {
-		if (e instanceof LockedRowNotFoundError) {
-			CrowniclesLogger.warn(
-				`doPossibility: locked row vanished for player ${freshPlayer.id} — skipping possibility outcome and advancing player to next destination`
-			);
-
-			/*
-			 * Push a fallback response so the Discord UI does not hang to
-			 * the collector timeout (#3760). We re-load the player and let
-			 * `chooseDestination` emit the next destination packet — the
-			 * outcome is dropped but the travel loop continues.
-			 */
-			try {
-				const fallbackPlayer = await Players.getById(freshPlayer.id);
-				await chooseDestination(context, fallbackPlayer, null, response, false);
-			}
-			catch (fallbackError) {
-				CrowniclesLogger.warn(
-					`doPossibility: fallback chooseDestination failed for player ${freshPlayer.id}: ${(fallbackError as Error).message}`
-				);
-			}
-		}
-		else {
+		if (!(e instanceof LockedRowNotFoundError)) {
 			throw e;
 		}
+		await handleLockLost(freshPlayer, context, response);
 	}
 	BlockingUtils.unblockPlayer(freshPlayer.keycloakId, BlockingConstants.REASONS.REPORT);
 }
