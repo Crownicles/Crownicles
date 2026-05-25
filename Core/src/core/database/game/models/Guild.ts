@@ -1,6 +1,7 @@
 import {
-	DataTypes, Model, Op, QueryTypes, Sequelize
+	DataTypes, Model, Op, QueryTypes, Sequelize, Transaction
 } from "sequelize";
+import { getCurrentTransaction } from "../../../../../../Lib/src/locks/CLSNamespace";
 import { MissionsController } from "../../../missions/MissionsController";
 import { getFoodIndexOf } from "../../../utils/FoodUtils";
 import Player, { Players } from "./Player";
@@ -113,11 +114,13 @@ export class Guild extends Model {
 	 * Completely destroy a guild from the database.
 	 *
 	 * Concurrency notes (#3760): callers (currently `applyLockedAcceptGuildLeave`)
-	 * already hold the chief Player + Guild row locks. Other guild members'
-	 * Player rows are not locked here, but the `Player.update({guildId: null})`
-	 * runs inside the same transaction as the destroys, so on failure we never
-	 * leave a destroyed Guild row with dangling GuildPet / PetEntity rows, or
-	 * orphaned Players still pointing to a deleted guildId.
+	 * already hold the chief Player + Guild row locks. We must therefore reuse
+	 * the parent transaction from CLS — opening a fresh
+	 * `sequelize.transaction(...)` here would pull a second physical connection
+	 * from the pool and deadlock on the rows already locked by the outer
+	 * transaction (50 s `innodb_lock_wait_timeout`). When no parent
+	 * transaction is present (e.g. direct admin call), we open our own so the
+	 * destroys still rollback together on failure.
 	 */
 	public async completelyDestroyAndDeleteFromTheDatabase(): Promise<void> {
 		const pets = await GuildPets.getOfGuild(this.id);
@@ -132,8 +135,7 @@ export class Guild extends Model {
 		crowniclesInstance?.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
 			.then();
 
-		const sequelize = (this.constructor as typeof Guild).sequelize!;
-		await sequelize.transaction(async transaction => {
+		const runDestroyOps = async (transaction: Transaction): Promise<void> => {
 			await Promise.all([
 				...pets.map(pet => pet.destroy({ transaction })),
 				...pets.map(pet => PetEntity.destroy({
@@ -152,7 +154,14 @@ export class Guild extends Model {
 					transaction
 				})
 			]);
-		});
+		};
+
+		const existing = getCurrentTransaction();
+		if (existing) {
+			await runDestroyOps(existing);
+			return;
+		}
+		await Guild.sequelize!.transaction(runDestroyOps);
 	}
 
 	/**
