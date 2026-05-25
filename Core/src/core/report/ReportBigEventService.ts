@@ -12,10 +12,10 @@ import { MapLinkDataController } from "../../data/MapLink";
 import {
 	BigEvent, BigEventDataController
 } from "../../data/BigEvent";
-import { Possibility } from "../../data/events/Possibility";
+import { PossibilityEntry } from "../../data/events/Possibility";
 import {
 	applyPossibilityOutcome,
-	PossibilityOutcome
+	PossibilityOutcomeEntry
 } from "../../data/events/PossibilityOutcome";
 import { verifyPossibilityOutcomeCondition } from "../../data/events/PossibilityOutcomeCondition";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -74,23 +74,24 @@ export async function completeMissionsBigEvent(player: Player, response: Crownic
 }
 
 /**
+ * Whether the given (event, possibility) pair corresponds to the
+ * "end" choice on the very first big event (the tutorial entry point).
+ */
+function isFirstReportEndChoice(event: BigEvent, possibility: PossibilityEntry): boolean {
+	return event.id === ReportConstants.FIRST_BIG_EVENT_ID && possibility[0] === ReportConstants.END_POSSIBILITY_ID;
+}
+
+/**
  * Special-case the "end" choice on the very first report (event id 0):
  * we want to log + acknowledge it but skip the full outcome pipeline.
  */
-function handleFirstReportEnd(event: BigEvent, possibility: [string, Possibility], freshPlayer: Player, response: CrowniclesPacket[]): void {
+function handleFirstReportEnd(event: BigEvent, possibility: PossibilityEntry, freshPlayer: Player, response: CrowniclesPacket[]): void {
 	crowniclesInstance?.logsDatabase.logBigEvent(freshPlayer.keycloakId, event.id, possibility[0], "0")
 		.then();
 	response.push(makePacket(CommandReportBigEventResultRes, {
+		...ReportConstants.EMPTY_BIG_EVENT_RESULT,
 		eventId: event.id,
-		possibilityId: possibility[0],
-		outcomeId: "0",
-		oneshot: false,
-		money: 0,
-		energy: 0,
-		gems: 0,
-		experience: 0,
-		health: 0,
-		score: 0
+		possibilityId: possibility[0]
 	}));
 }
 
@@ -98,8 +99,8 @@ function handleFirstReportEnd(event: BigEvent, possibility: [string, Possibility
  * Pick a random outcome among the ones whose condition passes for the
  * given player. Pure read of game data — safe outside the lock.
  */
-async function pickRandomOutcome(possibility: [string, Possibility], freshPlayer: Player): Promise<[string, PossibilityOutcome]> {
-	const validOutcomes: [string, PossibilityOutcome][] = [];
+async function pickRandomOutcome(possibility: PossibilityEntry, freshPlayer: Player): Promise<PossibilityOutcomeEntry> {
+	const validOutcomes: PossibilityOutcomeEntry[] = [];
 	for (const [key, outcome] of Object.entries(possibility[1].outcomes)) {
 		if (!outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, freshPlayer)) {
 			validOutcomes.push([key, outcome]);
@@ -115,8 +116,8 @@ async function updateTagMissions(
 	lockedPlayer: Player,
 	response: CrowniclesPacket[],
 	event: BigEvent,
-	possibility: [string, Possibility],
-	randomOutcome: [string, PossibilityOutcome]
+	possibility: PossibilityEntry,
+	randomOutcome: PossibilityOutcomeEntry
 ): Promise<void> {
 	const tagsToVerify = (randomOutcome[1].tags ?? [])
 		.concat(possibility[1].tags ?? [])
@@ -138,8 +139,8 @@ async function applyLockedOutcomeUnderLock(
 	lockedPlayer: Player,
 	outcomeContext: {
 		event: BigEvent;
-		possibility: [string, Possibility];
-		randomOutcome: [string, PossibilityOutcome];
+		possibility: PossibilityEntry;
+		randomOutcome: PossibilityOutcomeEntry;
 		time: number;
 	},
 	context: PacketContext,
@@ -207,7 +208,7 @@ async function handleLockLost(freshPlayer: Player, context: PacketContext, respo
  */
 async function doPossibility(
 	event: BigEvent,
-	possibility: [string, Possibility],
+	possibility: PossibilityEntry,
 	player: Player,
 	time: number,
 	context: PacketContext,
@@ -215,7 +216,7 @@ async function doPossibility(
 ): Promise<void> {
 	const freshPlayer = await Players.getOrRegister(player.keycloakId);
 
-	if (event.id === 0 && possibility[0] === "end") {
+	if (isFirstReportEndChoice(event, possibility)) {
 		handleFirstReportEnd(event, possibility, freshPlayer, response);
 		BlockingUtils.unblockPlayer(freshPlayer.keycloakId, BlockingConstants.REASONS.REPORT);
 		return;

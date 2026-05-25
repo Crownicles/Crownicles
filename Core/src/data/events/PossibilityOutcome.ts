@@ -227,10 +227,16 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | 
 	return null;
 }
 
+/**
+ * Tuple representing a possibility outcome keyed by its id alongside its data.
+ * Used everywhere outcomes are passed around `Object.entries`-style.
+ */
+export type PossibilityOutcomeEntry = [string, PossibilityOutcome];
+
 type ApplyOutcome = {
 	eventId: number;
 	possibilityName: string;
-	outcome: [string, PossibilityOutcome];
+	outcome: PossibilityOutcomeEntry;
 	time: number;
 };
 
