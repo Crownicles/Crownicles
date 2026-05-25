@@ -38,6 +38,10 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * Check if the active object is wrong for the daily bonus
@@ -85,35 +89,86 @@ async function activateDailyItem(player: Player, activeObject: ObjectItem, inven
 		itemNature: activeObject.nature
 	});
 	response.push(packet);
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-	switch (packet.itemNature) {
-		case ItemNature.ENERGY:
-			player.addEnergy(activeObject.power, NumberChangeReason.DAILY, playerActiveObjects);
-			break;
-		case ItemNature.HEALTH:
-			await player.addHealth({
-				amount: activeObject.power,
-				response,
-				reason: NumberChangeReason.DAILY
-			});
-			break;
-		case ItemNature.TIME_SPEEDUP:
-			await TravelTime.timeTravel(player, activeObject.power, NumberChangeReason.DAILY);
-			break;
-		default:
-			await player.addMoney({
-				amount: activeObject.power,
-				response,
-				reason: NumberChangeReason.DAILY
-			});
-			packet.value = BlessingManager.getInstance().applyMoneyBlessing(activeObject.power);
-			break;
+
+	/*
+	 * Lock the player and the inventory info together so the cooldown
+	 * read/write and the player-side mutation (energy / health / money /
+	 * time-travel) are atomic. Without this lock, two concurrent daily
+	 * bonus claims on the same account could both pass the `dailyNotReady`
+	 * check, double-apply the bonus, and only refresh `lastDailyAt` once —
+	 * a duplication exploit (#3760).
+	 */
+	try {
+		await withLockedEntities(
+			[
+				Player.lockKey(player.id),
+				InventoryInfo.lockKey(player.id)
+			] as const,
+			async ([lockedPlayer, lockedInventoryInfo]) => {
+				// Re-validate the cooldown under the lock — a concurrent claim may have just consumed it
+				const lastDailyTimestamp = lockedInventoryInfo.getLastDailyAtTimestamp();
+				if (millisecondsToHours(msDiff(nowMs(), asMilliseconds(lastDailyTimestamp))) < DailyConstants.TIME_BETWEEN_DAILIES) {
+					response.push(makePacket(CommandDailyBonusInCooldown, {
+						timeBetweenDailies: DailyConstants.TIME_BETWEEN_DAILIES,
+						lastDailyTimestamp
+					}));
+
+					// Strip the success packet we pre-pushed since the claim was rejected
+					const idx = response.indexOf(packet);
+					if (idx !== -1) {
+						response.splice(idx, 1);
+					}
+					return;
+				}
+
+				const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
+				switch (packet.itemNature) {
+					case ItemNature.ENERGY:
+						lockedPlayer.addEnergy(activeObject.power, NumberChangeReason.DAILY, playerActiveObjects);
+						break;
+					case ItemNature.HEALTH:
+						await lockedPlayer.addHealth({
+							amount: activeObject.power,
+							response,
+							reason: NumberChangeReason.DAILY
+						});
+						break;
+					case ItemNature.TIME_SPEEDUP:
+						await TravelTime.timeTravel(lockedPlayer, activeObject.power, NumberChangeReason.DAILY);
+						break;
+					default:
+						await lockedPlayer.addMoney({
+							amount: activeObject.power,
+							response,
+							reason: NumberChangeReason.DAILY
+						});
+						packet.value = BlessingManager.getInstance().applyMoneyBlessing(activeObject.power);
+						break;
+				}
+				lockedInventoryInfo.updateLastDailyAt();
+				await Promise.all([
+					lockedInventoryInfo.save(),
+					lockedPlayer.save()
+				]);
+
+				// Sync the caller-supplied instances for response building
+				inventoryInfo.lastDailyAt = lockedInventoryInfo.lastDailyAt;
+			}
+		);
 	}
-	inventoryInfo.updateLastDailyAt();
-	await Promise.all([
-		inventoryInfo.save(),
-		player.save()
-	]);
+	catch (e) {
+		if (e instanceof LockedRowNotFoundError) {
+			CrowniclesLogger.warn(
+				`activateDailyItem: locked row vanished for player ${player.id} — skipping daily bonus`
+			);
+			const idx = response.indexOf(packet);
+			if (idx !== -1) {
+				response.splice(idx, 1);
+			}
+			return;
+		}
+		throw e;
+	}
 }
 
 export default class DailyBonusCommand {
