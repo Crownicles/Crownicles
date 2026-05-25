@@ -36,7 +36,8 @@ import { PlantConstants } from "../../../../Lib/src/constants/PlantConstants";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import { withLockedEntitiesSafe } from "./withLockedEntitiesSafe";
 
-function getBuySlotExtensionShopItemCallback(playerId: number, price: number): EndCallback {
+// Exported for race tests; the inner `withLockedEntitiesSafe` block is the unit under test.
+export function getBuySlotExtensionShopItemCallback(playerId: number, price: number): EndCallback {
 	return async (collector, response): Promise<void> => {
 		const player = await Players.getById(playerId);
 		const reaction = collector.getFirstReaction();
