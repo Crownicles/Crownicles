@@ -280,16 +280,16 @@ export abstract class PlantConstants {
 	 * Buy prices at the herbalist for each plant (indexed by PlantId - 1)
 	 */
 	public static readonly HERBALIST_PRICES: readonly number[] = [
-		100, // Herbe commune
-		144, // Trèfle doré
-		250, // Mousse lunaire
-		476, // Racine de fer
-		728, // Champignon nocturne
-		956, // Feuille venimeuse
-		1212, // Bulbe de feu
-		1568, // Plante carnivore
-		1728, // Fleur de cristal
-		2419 // Arbre ancien
+		40, // Common herb
+		124, // Golden clover
+		200, // Lunar moss
+		226, // Iron root
+		258, // Night mushroom
+		356, // Venomous leaf
+		412, // Fire bulb
+		468, // Meat plant
+		528, // Crystal flower
+		579 // Ancient tree
 	];
 
 	/**
