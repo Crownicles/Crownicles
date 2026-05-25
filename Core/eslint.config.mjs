@@ -57,7 +57,10 @@ export default defineConfig([
 			"src/core/missions/Campaign.ts",
 			"src/commands/player/UnlockCommand.ts",
 			"src/core/utils/TannerShopItems.ts",
+			"src/core/utils/MissionShopItems.ts",
+			"src/core/database/game/models/Guild.ts",
 			"src/core/utils/withLockedPlayerSafe.ts",
+			"src/core/utils/withLockedEntitiesSafe.ts",
 			"src/core/smallEvents/**/*.ts"
 		],
 		rules: {

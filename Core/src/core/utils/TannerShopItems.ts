@@ -1,6 +1,7 @@
 import {
 	BuyCallbackResult,
 	CommandShopClosed,
+	CommandShopGenericPurchase,
 	ShopItem
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
 import {
@@ -30,10 +31,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 import { PlantConstants } from "../../../../Lib/src/constants/PlantConstants";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
-import {
-	LockedRowNotFoundError, withLockedEntities
-} from "../../../../Lib/src/locks/withLockedEntities";
-import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { withLockedEntitiesSafe } from "./withLockedEntitiesSafe";
 
 function getBuySlotExtensionShopItemCallback(playerId: number, price: number): EndCallback {
 	return async (collector, response): Promise<void> => {
@@ -56,35 +54,25 @@ function getBuySlotExtensionShopItemCallback(playerId: number, price: number): E
 		 * money or lose an inventory slot increment (#3760).
 		 */
 		let success = false;
-		try {
-			await withLockedEntities(
-				[
-					Player.lockKey(player.id),
-					InventoryInfo.lockKey(player.id)
-				] as const,
-				async ([lockedPlayer, lockedInvInfo]) => {
-					await lockedPlayer.spendMoney({
-						amount: price,
-						response,
-						reason: NumberChangeReason.SHOP
-					});
-					lockedInvInfo.addSlotForCategory(category);
-					await Promise.all([lockedPlayer.save(), lockedInvInfo.save()]);
-					success = true;
-				}
-			);
-		}
-		catch (e) {
-			if (e instanceof LockedRowNotFoundError) {
-				CrowniclesLogger.warn(
-					`getBuySlotExtensionShopItemCallback: locked row vanished for player ${player.id} — aborting purchase`
-				);
-				return;
+		const ranToCompletion = await withLockedEntitiesSafe(
+			[
+				Player.lockKey(player.id),
+				InventoryInfo.lockKey(player.id)
+			] as const,
+			"getBuySlotExtensionShopItemCallback",
+			async ([lockedPlayer, lockedInvInfo]) => {
+				await lockedPlayer.spendMoney({
+					amount: price,
+					response,
+					reason: NumberChangeReason.SHOP
+				});
+				lockedInvInfo.addSlotForCategory(category);
+				await Promise.all([lockedPlayer.save(), lockedInvInfo.save()]);
+				success = true;
 			}
-			throw e;
-		}
+		);
 
-		if (!success) {
+		if (!ranToCompletion || !success) {
 			return;
 		}
 
@@ -164,51 +152,70 @@ export async function getPlantSlotExtensionShopItem(playerId: number): Promise<S
 		id: ShopItemType.PLANT_SLOT_EXTENSION,
 		price,
 		amounts: [1],
-		buyCallback: async (_response, _playerId, _context): Promise<BuyCallbackResult> => {
+		buyCallback: async (response, _playerId, _context): Promise<BuyCallbackResult> => {
 			const player = await Players.getById(playerId);
-			const freshInvInfo = await InventoryInfos.getOfPlayer(player.id);
 
-			if (freshInvInfo.plantSlots >= PlantConstants.MAX_PLANT_SLOTS) {
-				return { success: false };
-			}
-
-			const buyResult: BuyCallbackResult & { postPurchase: () => Promise<void> } = {
-				success: true,
-				postPurchase: async (): Promise<void> => {
-					/*
-					 * Lock the InventoryInfo row so the MAX_PLANT_SLOTS check
-					 * and the slot increment are atomic against concurrent
-					 * plant slot purchases (#3760).
-					 */
-					try {
-						await InventoryInfo.withLocked(player.id, async lockedInvInfo => {
-							if (lockedInvInfo.plantSlots >= PlantConstants.MAX_PLANT_SLOTS) {
-								return;
-							}
-							lockedInvInfo.plantSlots++;
-							await lockedInvInfo.save();
-
-							// Ensure the new physical slot exists
-							await PlayerPlantSlots.ensureSlotsForCount(player.id, lockedInvInfo.plantSlots);
-						});
-					}
-					catch (e) {
-						if (e instanceof LockedRowNotFoundError) {
-							CrowniclesLogger.warn(
-								`getPlantSlotExtensionShopItem.postPurchase: locked row vanished for player ${player.id} — skipping`
-							);
-							return;
-						}
-						throw e;
-					}
-				}
-			};
+			// Pre-warm the InventoryInfo row so the lock can pin it
+			await InventoryInfos.getOfPlayer(player.id);
 
 			/*
-			 * Return a detailed result so ShopUtils pushes CommandShopGenericPurchase
-			 * and the player sees a confirmation message (issue #4208).
+			 * Atomicity (#3760): do the MAX_PLANT_SLOTS check, the money
+			 * spend, the slot increment AND the success packet push all
+			 * inside the same combined Player + InventoryInfo lock. The
+			 * previous design did the cap check outside the lock and let
+			 * ShopUtils.manageCurrencySpending debit before the
+			 * postPurchase lock acquired — so two concurrent buys at
+			 * MAX-1 both paid but only one slot was granted.
+			 *
+			 * We return `{ success: false }` so ShopUtils does NOT manage
+			 * currency or push CommandShopGenericPurchase a second time —
+			 * everything is already handled atomically below.
 			 */
-			return buyResult;
+			let purchased = false;
+			await withLockedEntitiesSafe(
+				[
+					Player.lockKey(player.id),
+					InventoryInfo.lockKey(player.id)
+				] as const,
+				"getPlantSlotExtensionShopItem.buyCallback",
+				async ([lockedPlayer, lockedInvInfo]) => {
+					if (lockedInvInfo.plantSlots >= PlantConstants.MAX_PLANT_SLOTS) {
+						return;
+					}
+					if (lockedPlayer.money < price) {
+						return;
+					}
+					await lockedPlayer.spendMoney({
+						amount: price,
+						response,
+						reason: NumberChangeReason.SHOP
+					});
+					lockedInvInfo.plantSlots++;
+					await Promise.all([lockedPlayer.save(), lockedInvInfo.save()]);
+
+					/*
+					 * ensureSlotsForCount is idempotent and goes through the
+					 * same CLS transaction as the increment above.
+					 */
+					await PlayerPlantSlots.ensureSlotsForCount(player.id, lockedInvInfo.plantSlots);
+					purchased = true;
+				}
+			);
+
+			if (purchased) {
+				response.push(makePacket(CommandShopGenericPurchase, {
+					shopItemId: ShopItemType.PLANT_SLOT_EXTENSION,
+					amount: 1
+				}));
+				crowniclesInstance?.logsDatabase.logClassicalShopBuyout(
+					player.keycloakId,
+					ShopItemType.PLANT_SLOT_EXTENSION,
+					1,
+					player.getCurrentCityId() ?? undefined
+				)
+					.then();
+			}
+			return { success: false };
 		}
 	};
 }

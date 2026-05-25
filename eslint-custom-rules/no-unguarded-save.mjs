@@ -10,6 +10,7 @@
  *
  * A `.save()` is considered guarded when any enclosing function is:
  *   - the callback argument of a `withLockedEntities(...)` call,
+ *   - the callback argument of a `withLockedEntitiesSafe(...)` call,
  *   - the callback argument of a `withLockedPlayerSafe(...)` call,
  *   - the callback argument of a `<Model>.withLocked(...)` call (the
  *     static helper exposed on `Player`, `Guild`, `Home`, …),
@@ -53,6 +54,7 @@
 
 const DEFAULT_LOCK_HELPERS = [
 	"withLockedEntities",
+	"withLockedEntitiesSafe",
 	"withLockedPlayerSafe"
 ];
 

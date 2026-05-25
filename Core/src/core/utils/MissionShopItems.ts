@@ -24,10 +24,7 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
 import { frac } from "../../../../Lib/src/utils/MathUtils";
-import {
-	LockedRowNotFoundError, withLockedEntities
-} from "../../../../Lib/src/locks/withLockedEntities";
-import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { withLockedEntitiesSafe } from "./withLockedEntitiesSafe";
 
 export function calculateGemsToMoneyRatio(dayOffset = 0): number {
 	return Constants.MISSION_SHOP.BASE_RATIO
@@ -42,21 +39,36 @@ export function getMoneyShopItem(): ShopItem {
 		price: Constants.MISSION_SHOP.PRICES.MONEY,
 		amounts: [1],
 		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => {
-			const player = await Players.getById(playerId);
 			const amount = calculateGemsToMoneyRatio();
-			await player.addMoney({
-				amount,
-				response,
-				reason: NumberChangeReason.MISSION_SHOP
-			});
-			await player.save();
-			if (amount < Constants.MISSION_SHOP.KINGS_MONEY_VALUE_THRESHOLD_MISSION) {
-				await MissionsController.update(player, response, { missionId: "kingsMoneyValue" });
+
+			/*
+			 * Lock the player so `addMoney` + `save` are atomic against
+			 * concurrent gem-shop money buys on the same account (#3760).
+			 */
+			let credited = false;
+			await withLockedEntitiesSafe(
+				[Player.lockKey(playerId)] as const,
+				`getMoneyShopItem(player=${playerId})`,
+				async ([lockedPlayer]) => {
+					await lockedPlayer.addMoney({
+						amount,
+						response,
+						reason: NumberChangeReason.MISSION_SHOP
+					});
+					await lockedPlayer.save();
+					if (amount < Constants.MISSION_SHOP.KINGS_MONEY_VALUE_THRESHOLD_MISSION) {
+						await MissionsController.update(lockedPlayer, response, { missionId: "kingsMoneyValue" });
+					}
+					credited = true;
+				}
+			);
+
+			if (credited) {
+				response.push(makePacket(CommandMissionShopMoney, {
+					amount
+				}));
 			}
-			response.push(makePacket(CommandMissionShopMoney, {
-				amount
-			}));
-			return true;
+			return credited;
 		}
 	};
 }
@@ -96,39 +108,29 @@ export function getAThousandPointsShopItem(): ShopItem {
 			 * fact in ShopUtils.manageCurrencySpending (#3760).
 			 */
 			let success = false;
-			try {
-				await withLockedEntities(
-					[
-						Player.lockKey(player.id),
-						PlayerMissionsInfo.lockKey(player.id)
-					] as const,
-					async ([lockedPlayer, lockedMissionsInfo]) => {
-						if (lockedMissionsInfo.hasBoughtPointsThisWeek) {
-							response.push(makePacket(CommandMissionShopAlreadyBoughtPointsThisWeek, {}));
-							return;
-						}
-						await lockedPlayer.addScore({
-							amount: Constants.MISSION_SHOP.THOUSAND_POINTS,
-							response,
-							reason: NumberChangeReason.MISSION_SHOP
-						});
-						lockedMissionsInfo.hasBoughtPointsThisWeek = true;
-						response.push(makePacket(CommandMissionShopKingsFavor, { amount: Constants.MISSION_SHOP.THOUSAND_POINTS }));
-						await Promise.all([lockedPlayer.save(), lockedMissionsInfo.save()]);
-						success = true;
+			const ranToCompletion = await withLockedEntitiesSafe(
+				[
+					Player.lockKey(player.id),
+					PlayerMissionsInfo.lockKey(player.id)
+				] as const,
+				`getAThousandPointsShopItem(player=${player.id})`,
+				async ([lockedPlayer, lockedMissionsInfo]) => {
+					if (lockedMissionsInfo.hasBoughtPointsThisWeek) {
+						response.push(makePacket(CommandMissionShopAlreadyBoughtPointsThisWeek, {}));
+						return;
 					}
-				);
-			}
-			catch (e) {
-				if (e instanceof LockedRowNotFoundError) {
-					CrowniclesLogger.warn(
-						`getAThousandPointsShopItem: locked row vanished for player ${player.id} — aborting purchase`
-					);
-					return false;
+					await lockedPlayer.addScore({
+						amount: Constants.MISSION_SHOP.THOUSAND_POINTS,
+						response,
+						reason: NumberChangeReason.MISSION_SHOP
+					});
+					lockedMissionsInfo.hasBoughtPointsThisWeek = true;
+					response.push(makePacket(CommandMissionShopKingsFavor, { amount: Constants.MISSION_SHOP.THOUSAND_POINTS }));
+					await Promise.all([lockedPlayer.save(), lockedMissionsInfo.save()]);
+					success = true;
 				}
-				throw e;
-			}
-			return success;
+			);
+			return ranToCompletion && success;
 		}
 	};
 }

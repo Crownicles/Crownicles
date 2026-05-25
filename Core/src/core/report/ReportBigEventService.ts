@@ -122,9 +122,6 @@ async function doPossibility(
 
 	const randomOutcome = RandomUtils.crowniclesRandom.pick(validOutcomes);
 
-	crowniclesInstance?.logsDatabase.logBigEvent(freshPlayer.keycloakId, event.id, possibility[0], randomOutcome[0])
-		.then();
-
 	/*
 	 * Ensure the PlayerMissionsInfo row exists before we acquire the lock —
 	 * `applyPossibilityOutcome` (via `applyOutcomeGems`) and the nested
@@ -174,14 +171,34 @@ async function doPossibility(
 				}
 
 				await lockedPlayer.save();
+
+				// Log only after the outcome is durably persisted (#3760).
+				crowniclesInstance?.logsDatabase.logBigEvent(lockedPlayer.keycloakId, event.id, possibility[0], randomOutcome[0])
+					.then();
 			}
 		);
 	}
 	catch (e) {
 		if (e instanceof LockedRowNotFoundError) {
 			CrowniclesLogger.warn(
-				`doPossibility: locked row vanished for player ${freshPlayer.id} — skipping possibility outcome`
+				`doPossibility: locked row vanished for player ${freshPlayer.id} — skipping possibility outcome and advancing player to next destination`
 			);
+
+			/*
+			 * Push a fallback response so the Discord UI does not hang to
+			 * the collector timeout (#3760). We re-load the player and let
+			 * `chooseDestination` emit the next destination packet — the
+			 * outcome is dropped but the travel loop continues.
+			 */
+			try {
+				const fallbackPlayer = await Players.getById(freshPlayer.id);
+				await chooseDestination(context, fallbackPlayer, null, response, false);
+			}
+			catch (fallbackError) {
+				CrowniclesLogger.warn(
+					`doPossibility: fallback chooseDestination failed for player ${freshPlayer.id}: ${(fallbackError as Error).message}`
+				);
+			}
 		}
 		else {
 			throw e;
