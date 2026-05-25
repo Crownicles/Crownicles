@@ -40,11 +40,6 @@ export abstract class GardenConstants {
 	public static readonly WATERING_COOLDOWN_MS = 12 * TimeConstants.MS_TIME.HOUR;
 
 	/**
-	 * Amount of growth time (in ms) instantly shaved off every growing plant when the player waters the garden.
-	 */
-	public static readonly WATERING_TIME_ADVANCE_MS = TimeConstants.MS_TIME.HOUR;
-
-	/**
 	 * Price in coins of the "Cœur Sylvestre" talisman that unlocks remote garden harvest.
 	 */
 	public static readonly REMOTE_HARVEST_TALISMAN_PRICE = 2_450;
