@@ -116,7 +116,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.COMMON_HERB,
 		growthTimeSeconds: 4 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: 0,
+		wateringAdvanceSeconds: 20 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			52, // Herbe de prairie
 			54, // Mousses
