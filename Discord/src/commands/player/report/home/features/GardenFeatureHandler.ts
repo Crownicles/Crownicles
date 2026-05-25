@@ -46,8 +46,6 @@ import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 type GardenPlotData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>["plots"][number];
 type GardenData = NonNullable<HomeFeatureHandlerContext["homeData"]["garden"]>;
 
-const WATERING_TIME_ADVANCE_SECONDS = GardenConstants.WATERING_TIME_ADVANCE_MS / TimeConstants.MS_TIME.SECOND;
-
 /** Max number of compost plant-select buttons per Discord action row */
 const COMPOST_BUTTONS_PER_ROW = 5;
 
@@ -869,7 +867,12 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			if (plot.plantId === 0 || plot.isReady) {
 				continue;
 			}
-			const newReadyAt = plot.readyAtTimestamp - WATERING_TIME_ADVANCE_SECONDS;
+			const plant = PlantConstants.getPlantById(plot.plantId);
+			const wateringAdvanceSeconds = plant?.wateringAdvanceSeconds ?? 0;
+			if (wateringAdvanceSeconds <= 0) {
+				continue;
+			}
+			const newReadyAt = plot.readyAtTimestamp - wateringAdvanceSeconds;
 			const newRemaining = newReadyAt - nowSeconds;
 			if (newRemaining <= 0) {
 				plot.readyAtTimestamp = 0;

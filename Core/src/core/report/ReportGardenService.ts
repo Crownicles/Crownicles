@@ -49,15 +49,14 @@ type GardenWaterContext = {
 	homeLevel: HomeLevel;
 };
 type GardenWateringResult = {
-	slotsToWater: number[];
+	entries: WaterableSlotGrowth[];
 	slotsBecameReady: number;
 };
 type WaterableSlotGrowth = {
 	slot: number;
+	plantId: number;
 	becomesReady: boolean;
 };
-
-const WATERING_TIME_ADVANCE_SECONDS = GardenConstants.WATERING_TIME_ADVANCE_MS / TimeConstants.MS_TIME.SECOND;
 
 /**
  * Compute the unix-ms timestamp at which the player can next water their garden,
@@ -572,8 +571,10 @@ async function handlePlantWithdraw(params: {
 }
 
 /**
- * Handle garden watering — instantly advance the growth of all currently
- * growing plants by `WATERING_TIME_ADVANCE_MS`. A 12h cooldown is enforced
+ * Handle garden watering — instantly advance the growth of every currently
+ * growing plant by its own `wateringAdvanceSeconds` (see `PlantConstants`).
+ * Plants whose `wateringAdvanceSeconds` is `0` (typically the fastest ones)
+ * are ignored. A 12h cooldown is enforced
  * via `Player.lastGardenWatered`. Only allowed when the player is at home
  * (this entry point is invoked from the home-menu collector, which itself is
  * only opened when the player is in their home city).
@@ -635,7 +636,7 @@ async function waterGardenForLockedPlayerUnderLock(params: {
 	}
 
 	const wateringResult = await getGardenWateringResult(params.home, params.homeLevel, params.now);
-	if (wateringResult.slotsToWater.length === 0) {
+	if (wateringResult.entries.length === 0) {
 		return makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_PLANTS_TO_WATER);
 	}
 
@@ -648,11 +649,11 @@ async function waterGardenForLockedPlayerUnderLock(params: {
 		plantId: "",
 		slot: 0,
 		cost: 0,
-		quantity: wateringResult.slotsToWater.length
+		quantity: wateringResult.entries.length
 	}).then();
 
 	return makePacket(CommandReportGardenWaterRes, {
-		slotsWatered: wateringResult.slotsToWater.length,
+		slotsWatered: wateringResult.entries.length,
 		slotsBecameReady: wateringResult.slotsBecameReady,
 		nextWateringAvailableAt: params.now + GardenConstants.WATERING_COOLDOWN_MS
 	});
@@ -669,11 +670,29 @@ async function applyGardenWateringUnderLock(
 	wateringResult: GardenWateringResult,
 	now: number
 ): Promise<void> {
-	await HomeGardenSlots.shiftPlantedAtForSlots(
-		home.id,
-		wateringResult.slotsToWater,
-		GardenConstants.WATERING_TIME_ADVANCE_MS
-	);
+	const slotsByPlantId = new Map<number, number[]>();
+	for (const entry of wateringResult.entries) {
+		const slots = slotsByPlantId.get(entry.plantId);
+		if (slots) {
+			slots.push(entry.slot);
+		}
+		else {
+			slotsByPlantId.set(entry.plantId, [entry.slot]);
+		}
+	}
+
+	for (const [plantId, slots] of slotsByPlantId) {
+		const plant = PlantConstants.getPlantById(plantId);
+		if (!plant || plant.wateringAdvanceSeconds <= 0) {
+			continue;
+		}
+		await HomeGardenSlots.shiftPlantedAtForSlots(
+			home.id,
+			slots,
+			plant.wateringAdvanceSeconds * TimeConstants.MS_TIME.SECOND
+		);
+	}
+
 	lockedPlayer.lastGardenWatered = new Date(now);
 	await lockedPlayer.save();
 }
@@ -693,7 +712,7 @@ function collectSlotsToWater(
 		.filter((slot): slot is WaterableSlotGrowth => slot !== null);
 
 	return {
-		slotsToWater: waterableSlots.map(slot => slot.slot),
+		entries: waterableSlots,
 		slotsBecameReady: waterableSlots.filter(slot => slot.becomesReady).length
 	};
 }
@@ -715,6 +734,10 @@ function getWaterableSlotGrowth(
 		return null;
 	}
 
+	if (plant.wateringAdvanceSeconds <= 0) {
+		return null;
+	}
+
 	const effectiveGrowthTime = GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality);
 	if (slot.isReady(effectiveGrowthTime)) {
 		return null;
@@ -722,13 +745,14 @@ function getWaterableSlotGrowth(
 
 	return {
 		slot: slot.slot,
-		becomesReady: willBecomeReadyAfterWatering(slot.plantedAt, effectiveGrowthTime, nowMs)
+		plantId: slot.plantId,
+		becomesReady: willBecomeReadyAfterWatering(slot.plantedAt, effectiveGrowthTime, plant.wateringAdvanceSeconds, nowMs)
 	};
 }
 
-function willBecomeReadyAfterWatering(plantedAt: Date, effectiveGrowthTime: number, nowMs: number): boolean {
+function willBecomeReadyAfterWatering(plantedAt: Date, effectiveGrowthTime: number, wateringAdvanceSeconds: number, nowMs: number): boolean {
 	const elapsedSeconds = (nowMs - plantedAt.valueOf()) / TimeConstants.MS_TIME.SECOND;
-	return elapsedSeconds + WATERING_TIME_ADVANCE_SECONDS >= effectiveGrowthTime;
+	return elapsedSeconds + wateringAdvanceSeconds >= effectiveGrowthTime;
 }
 
 /**

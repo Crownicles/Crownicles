@@ -94,18 +94,29 @@ export interface PlantType {
 	/** Growth time in seconds */
 	growthTimeSeconds: number;
 
+	/**
+	 * Per-plant watering advance in seconds. The watering action subtracts
+	 * this duration from the plant's `plantedAt`. A value of `0` means
+	 * watering this plant is pointless (typically the fastest plants whose
+	 * cycle is shorter than the watering cooldown).
+	 */
+	wateringAdvanceSeconds: number;
+
 	/** Material IDs that this plant can produce when composted */
 	compostMaterials: number[];
 }
 
 /**
  * Definitions of all 10 plant types.
- * Growth times range from 10 seconds (Common Herb) to 2 weeks (Ancient Tree).
+ * Growth times range from 10 minutes (Common Herb, aligned on
+ * `Constants.REPORT.TIME_BETWEEN_MINI_EVENTS`) to 5 days (Ancient Tree).
+ * Watering advances are scaled to ~1/12 of each plant's growth cycle.
  */
 export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.COMMON_HERB,
-		growthTimeSeconds: 10,
+		growthTimeSeconds: 10 * TimeConstants.S_TIME.MINUTE,
+		wateringAdvanceSeconds: 0,
 		compostMaterials: [
 			52, // Herbe de prairie
 			54, // Mousses
@@ -115,6 +126,7 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.GOLDEN_CLOVER,
 		growthTimeSeconds: 30 * TimeConstants.S_TIME.MINUTE,
+		wateringAdvanceSeconds: 5 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			43, // Laiton doré
 			59, // Feuilles de chêne
@@ -123,7 +135,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.LUNAR_MOSS,
-		growthTimeSeconds: 2 * TimeConstants.S_TIME.HOUR,
+		growthTimeSeconds: 90 * TimeConstants.S_TIME.MINUTE,
+		wateringAdvanceSeconds: 15 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			53, // Pierre de lune
 			30, // Lavande séchée
@@ -132,7 +145,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.IRON_ROOT,
-		growthTimeSeconds: 8 * TimeConstants.S_TIME.HOUR,
+		growthTimeSeconds: 4 * TimeConstants.S_TIME.HOUR,
+		wateringAdvanceSeconds: 30 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			70, // Fer brut
 			41, // Racines de gingembre
@@ -141,7 +155,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.NIGHT_MUSHROOM,
-		growthTimeSeconds: TimeConstants.S_TIME.DAY,
+		growthTimeSeconds: 12 * TimeConstants.S_TIME.HOUR,
+		wateringAdvanceSeconds: TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			55, // Champignon
 			66, // Champignon vénéneux
@@ -150,7 +165,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.VENOMOUS_LEAF,
-		growthTimeSeconds: 2 * TimeConstants.S_TIME.DAY,
+		growthTimeSeconds: TimeConstants.S_TIME.DAY,
+		wateringAdvanceSeconds: 2 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			10, // Belladone
 			17, // Graine de ricin
@@ -159,7 +175,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.FIRE_BULB,
-		growthTimeSeconds: 4 * TimeConstants.S_TIME.DAY,
+		growthTimeSeconds: 36 * TimeConstants.S_TIME.HOUR,
+		wateringAdvanceSeconds: 3 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			35, // Flamme éternelle
 			82, // Soufre
@@ -168,7 +185,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.MEAT_PLANT,
-		growthTimeSeconds: 6 * TimeConstants.S_TIME.DAY,
+		growthTimeSeconds: 2 * TimeConstants.S_TIME.DAY,
+		wateringAdvanceSeconds: 4 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			42, // Cuir de chèvre
 			48, // Cuir d'agneau
@@ -177,7 +195,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.CRYSTAL_FLOWER,
-		growthTimeSeconds: 10 * TimeConstants.S_TIME.DAY,
+		growthTimeSeconds: 3 * TimeConstants.S_TIME.DAY,
+		wateringAdvanceSeconds: 6 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			34, // Rune enchantée
 			67, // Pierre précieuse
@@ -186,7 +205,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.ANCIENT_TREE,
-		growthTimeSeconds: 14 * TimeConstants.S_TIME.DAY,
+		growthTimeSeconds: 5 * TimeConstants.S_TIME.DAY,
+		wateringAdvanceSeconds: 10 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			84, // Planche de teck
 			31, // Écorce d'ébène
