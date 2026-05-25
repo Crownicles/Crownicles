@@ -2,7 +2,9 @@ import { ShopItem } from "../../../../Lib/src/packets/interaction/ReactionCollec
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { Players } from "../database/game/models/Player";
+import {
+	Player, Players
+} from "../database/game/models/Player";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
@@ -12,7 +14,9 @@ import {
 	generateRandomItem, giveItemToPlayer
 } from "./ItemUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
-import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import {
+	PlayerMissionsInfo, PlayerMissionsInfos
+} from "../database/game/models/PlayerMissionsInfo";
 import {
 	CommandMissionShopAlreadyBoughtPointsThisWeek,
 	CommandMissionShopKingsFavor,
@@ -20,6 +24,10 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import { getDayNumber } from "../../../../Lib/src/utils/TimeUtils";
 import { frac } from "../../../../Lib/src/utils/MathUtils";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export function calculateGemsToMoneyRatio(dayOffset = 0): number {
 	return Constants.MISSION_SHOP.BASE_RATIO
@@ -76,20 +84,51 @@ export function getAThousandPointsShopItem(): ShopItem {
 		amounts: [1],
 		buyCallback: async (response: CrowniclesPacket[], playerId: number): Promise<boolean> => {
 			const player = await Players.getById(playerId);
-			const missionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
-			if (missionsInfo.hasBoughtPointsThisWeek) {
-				response.push(makePacket(CommandMissionShopAlreadyBoughtPointsThisWeek, {}));
-				return false;
+
+			// Pre-warm the PlayerMissionsInfo row so the lock can pin it
+			await PlayerMissionsInfos.getOfPlayer(player.id);
+
+			/*
+			 * Lock both rows together so the `hasBoughtPointsThisWeek` check
+			 * and the score award + flag flip happen atomically. Without this
+			 * lock two concurrent purchases could both pass the check, double
+			 * the score award, while only paying the gem cost once after the
+			 * fact in ShopUtils.manageCurrencySpending (#3760).
+			 */
+			let success = false;
+			try {
+				await withLockedEntities(
+					[
+						Player.lockKey(player.id),
+						PlayerMissionsInfo.lockKey(player.id)
+					] as const,
+					async ([lockedPlayer, lockedMissionsInfo]) => {
+						if (lockedMissionsInfo.hasBoughtPointsThisWeek) {
+							response.push(makePacket(CommandMissionShopAlreadyBoughtPointsThisWeek, {}));
+							return;
+						}
+						await lockedPlayer.addScore({
+							amount: Constants.MISSION_SHOP.THOUSAND_POINTS,
+							response,
+							reason: NumberChangeReason.MISSION_SHOP
+						});
+						lockedMissionsInfo.hasBoughtPointsThisWeek = true;
+						response.push(makePacket(CommandMissionShopKingsFavor, { amount: Constants.MISSION_SHOP.THOUSAND_POINTS }));
+						await Promise.all([lockedPlayer.save(), lockedMissionsInfo.save()]);
+						success = true;
+					}
+				);
 			}
-			await player.addScore({
-				amount: Constants.MISSION_SHOP.THOUSAND_POINTS,
-				response,
-				reason: NumberChangeReason.MISSION_SHOP
-			});
-			missionsInfo.hasBoughtPointsThisWeek = true;
-			response.push(makePacket(CommandMissionShopKingsFavor, { amount: Constants.MISSION_SHOP.THOUSAND_POINTS }));
-			await Promise.all([player.save(), missionsInfo.save()]);
-			return true;
+			catch (e) {
+				if (e instanceof LockedRowNotFoundError) {
+					CrowniclesLogger.warn(
+						`getAThousandPointsShopItem: locked row vanished for player ${player.id} — aborting purchase`
+					);
+					return false;
+				}
+				throw e;
+			}
+			return success;
 		}
 	};
 }
