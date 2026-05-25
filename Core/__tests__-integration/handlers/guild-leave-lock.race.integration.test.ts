@@ -64,8 +64,8 @@ describe("GuildLeaveCommand.runLeaveUnderLock race", () => {
 		const chief = await Player.create({ keycloakId: "race-leave-chief" });
 		const memberIds: number[] = [];
 		for (let i = 0; i < N_MEMBERS - 1; i++) {
-			const m = await Player.create({ keycloakId: `race-leave-member-${i}` });
-			memberIds.push(m.id);
+			const member = await Player.create({ keycloakId: `race-leave-member-${i}` });
+			memberIds.push(member.id);
 		}
 
 		const guild = await Guild.create({

@@ -111,17 +111,32 @@ export function loadProductionModule<T>(relativeFromCoreSrc: string): T {
  * pool, drops the schema with the root credentials from `_setup.ts`,
  * restores the production singletons and clears the config override.
  */
+let activeTestEnvironment = false;
+
 export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvironment> {
 	// Guard against a leaked state from a previous suite that forgot
 	// its teardown. Failing fast here surfaces the missing teardown
 	// rather than letting the next suite see a polluted singleton.
-	if (botConfig.TEST_MODE) {
+	// We can't rely on `botConfig.TEST_MODE` because a developer's
+	// `config.toml` may legitimately set `test_mode = true` in
+	// production-shaped config; we track suite ownership explicitly.
+	if (activeTestEnvironment) {
 		throw new Error(
 			"setupCoreForTests called while a previous test config is still active. "
 			+ "A prior suite likely forgot to call its teardown()."
 		);
 	}
+	activeTestEnvironment = true;
+	try {
+		return await setupCoreForTestsImpl(suiteName);
+	}
+	catch (err) {
+		activeTestEnvironment = false;
+		throw err;
+	}
+}
 
+async function setupCoreForTestsImpl(suiteName: string): Promise<CoreTestEnvironment> {
 	const dbConfig = getIntegrationDbConfig();
 	const safeSuite = suiteName.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 24);
 	const prefix = `crownicles_test_${safeSuite}_${process.pid}_${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)}`;
@@ -233,11 +248,12 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 			}
 			setBotConfigForTests(null);
 			if (previousDbBaseDir === undefined) {
-				delete process.env[CoreConstants.DB_BASE_DIR_ENV_VAR];
+				Reflect.deleteProperty(process.env, CoreConstants.DB_BASE_DIR_ENV_VAR);
 			}
 			else {
 				process.env[CoreConstants.DB_BASE_DIR_ENV_VAR] = previousDbBaseDir;
 			}
+			activeTestEnvironment = false;
 		}
 	};
 }
