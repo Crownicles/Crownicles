@@ -53,6 +53,7 @@ export default defineConfig([
 			"src/core/report/ReportCookingService.ts",
 			"src/core/report/ReportBigEventService.ts",
 			"src/commands/player/FightCommand.ts",
+			"src/commands/player/DailyBonusCommand.ts",
 			"src/core/utils/withLockedPlayerSafe.ts",
 			"src/core/smallEvents/**/*.ts"
 		],

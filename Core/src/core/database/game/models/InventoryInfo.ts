@@ -13,8 +13,30 @@ import {
 import { DailyConstants } from "../../../../../../Lib/src/constants/DailyConstants";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Players } from "./Player";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 export class InventoryInfo extends Model {
+	/**
+	 * Build a {@link LockKey} for this InventoryInfo row so it
+	 * can participate in a `withLockedEntities([...])` composite
+	 * critical section. The primary key is `playerId`.
+	 */
+	static lockKey(playerId: number): LockKey<InventoryInfo> {
+		return {
+			model: InventoryInfo, id: playerId
+		};
+	}
+
+	/**
+	 * Convenience helper for locking a single InventoryInfo row.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(playerId: number, fn: (info: InventoryInfo) => Promise<R>): Promise<R> {
+		return withLockedEntities([InventoryInfo.lockKey(playerId)], ([info]) => fn(info));
+	}
+
 	declare readonly playerId: number;
 
 	declare lastDailyAt: Date;
