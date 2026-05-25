@@ -167,6 +167,17 @@ export abstract class CrowniclesLogger {
 		return Boolean(this.logger);
 	}
 
+	/**
+	 * Test-only helper. Silences the underlying winston logger so
+	 * integration tests don't drown stdout in benign log messages.
+	 */
+	public static silenceForTests(): void {
+		if (!this.logger) {
+			throw new Error("Logger not initialized");
+		}
+		this.logger.silent = true;
+	}
+
 	public static error(message: string, metadata?: LogMetadata): void {
 		this.get().log("error", message, metadata);
 	}

@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, runAllOrThrow, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { PlayerMissionsInfo as PlayerMissionsInfoType } from "../../src/core/database/game/models/PlayerMissionsInfo";
@@ -65,16 +65,11 @@ describe("MissionShopItems.getMoneyShopItem race", () => {
 		const amount = missionShopItems.calculateGemsToMoneyRatio();
 		const item = missionShopItems.getMoneyShopItem();
 
-		const results = await Promise.allSettled(
+		const values = await runAllOrThrow(
 			Array.from({ length: N_CONCURRENT }, () => item.buyCallback([], player.id))
 		);
 
-		const rejected = results.filter(r => r.status === "rejected") as PromiseRejectedResult[];
-		if (rejected.length > 0) {
-			throw rejected[0].reason;
-		}
-
-		const successes = results.filter(r => r.status === "fulfilled" && r.value === true).length;
+		const successes = values.filter(v => v === true).length;
 		expect(successes).toBe(N_CONCURRENT);
 
 		const fresh = await Player.findByPk(player.id);

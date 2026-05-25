@@ -13,6 +13,8 @@ import {
 	CrowniclesConfig
 } from "../src/core/bot/CrowniclesConfig";
 import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
+import { CoreConstants } from "../src/core/CoreConstants";
+import type { LogsDatabase } from "../src/core/database/logs/LogsDatabase";
 import { getIntegrationDbConfig } from "./_setup";
 
 /**
@@ -28,13 +30,12 @@ export interface CoreTestEnvironment {
 }
 
 /**
- * Build a noop LogsDatabase replacement. All `log*` methods become
- * fire-and-forget no-ops so race tests don't have to provision a
- * second schema for log models. Any unexpected call throws so missing
- * coverage is loud rather than silent.
+ * Build a noop LogsDatabase replacement. Every accessed property
+ * resolves to a fire-and-forget async no-op so race tests don't have
+ * to provision a second schema for log models.
  */
-function createNoopLogsDatabase(): unknown {
-	return new Proxy({}, {
+function createNoopLogsDatabase(): LogsDatabase {
+	return new Proxy({} as LogsDatabase, {
 		get(_target, prop: string | symbol) {
 			if (typeof prop !== "string") {
 				return undefined;
@@ -111,6 +112,16 @@ export function loadProductionModule<T>(relativeFromCoreSrc: string): T {
  * restores the production singletons and clears the config override.
  */
 export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvironment> {
+	// Guard against a leaked state from a previous suite that forgot
+	// its teardown. Failing fast here surfaces the missing teardown
+	// rather than letting the next suite see a polluted singleton.
+	if (botConfig.TEST_MODE) {
+		throw new Error(
+			"setupCoreForTests called while a previous test config is still active. "
+			+ "A prior suite likely forgot to call its teardown()."
+		);
+	}
+
 	const dbConfig = getIntegrationDbConfig();
 	const safeSuite = suiteName.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 24);
 	const prefix = `crownicles_test_${safeSuite}_${process.pid}_${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)}`;
@@ -120,8 +131,8 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 	// `Lib/src/database/Database.ts#initModelFromFile`), so Vitest must
 	// rely on the `dist/` build produced by `pretest:integration`.
 	const distGameDir = resolvePath(__dirname, "../dist/Core/src/core/database/game");
-	const previousDbBaseDir = process.env.CROWNICLES_DB_BASE_DIR;
-	process.env.CROWNICLES_DB_BASE_DIR = distGameDir;
+	const previousDbBaseDir = process.env[CoreConstants.DB_BASE_DIR_ENV_VAR];
+	process.env[CoreConstants.DB_BASE_DIR_ENV_VAR] = distGameDir;
 
 	const testConfig: CrowniclesConfig = {
 		MODE_MAINTENANCE: false,
@@ -149,7 +160,7 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 	// real console transport so it doesn't emit a "no transports"
 	// warning, then silence the underlying logger.
 	CrowniclesLogger.init(testConfig.LOG_LEVEL, ["console"], { app: "Core" });
-	(CrowniclesLogger.get() as unknown as { silent: boolean }).silent = true;
+	CrowniclesLogger.silenceForTests();
 	// Same singleton lives twice once compiled — the dist tree imports
 	// `Lib/src/logs/CrowniclesLogger` from its own copy under
 	// `Core/dist/Lib/src/...`, so we must reset it through that path
@@ -158,15 +169,14 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 		CrowniclesLogger: typeof CrowniclesLogger;
 	}>("../../Lib/src/logs/CrowniclesLogger");
 	distLogger.CrowniclesLogger.init(testConfig.LOG_LEVEL, ["console"], { app: "Core" });
-	(distLogger.CrowniclesLogger.get() as unknown as { silent: boolean }).silent = true;
+	distLogger.CrowniclesLogger.silenceForTests();
 
 	const testInstance = new Crownicles();
 	await testInstance.gameDatabase.init(true);
 
-	// Replace the logs database with a noop proxy. `logsDatabase` is
-	// declared `readonly` for production safety, so the cast is the
-	// narrowest possible escape hatch.
-	(testInstance as unknown as { logsDatabase: unknown }).logsDatabase = createNoopLogsDatabase();
+	// Swap the logs database with a noop stub so race tests don't have
+	// to provision a second schema for log models.
+	testInstance.setLogsDatabaseForTests(createNoopLogsDatabase());
 
 	setCrowniclesInstanceForTests(testInstance);
 
@@ -223,10 +233,10 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 			}
 			setBotConfigForTests(null);
 			if (previousDbBaseDir === undefined) {
-				delete process.env.CROWNICLES_DB_BASE_DIR;
+				delete process.env[CoreConstants.DB_BASE_DIR_ENV_VAR];
 			}
 			else {
-				process.env.CROWNICLES_DB_BASE_DIR = previousDbBaseDir;
+				process.env[CoreConstants.DB_BASE_DIR_ENV_VAR] = previousDbBaseDir;
 			}
 		}
 	};
@@ -235,3 +245,18 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 // Re-export for convenience so test files can grab the active instance
 // without juggling two imports.
 export { botConfig, crowniclesInstance };
+
+/**
+ * Awaits every promise concurrently. If any rejected, throws the
+ * first rejection reason; otherwise returns the fulfilled values in
+ * the original order. Used by race tests so the race itself completes
+ * before any assertion runs.
+ */
+export async function runAllOrThrow<T>(promises: Iterable<Promise<T>>): Promise<T[]> {
+	const results = await Promise.allSettled(promises);
+	const rejected = results.find(r => r.status === "rejected");
+	if (rejected) {
+		throw (rejected as PromiseRejectedResult).reason;
+	}
+	return results.map(r => (r as PromiseFulfilledResult<T>).value);
+}
