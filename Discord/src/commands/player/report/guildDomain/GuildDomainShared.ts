@@ -114,6 +114,29 @@ export const FOOD_KEYS = [
 
 export type FoodKey = typeof FOOD_KEYS[number];
 
+export type FoodShopBuySelection = {
+	foodType: PetFood;
+	amount: number;
+};
+
+export function parseFoodShopBuyCustomId(customId: string): FoodShopBuySelection | null {
+	if (!customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX)) {
+		return null;
+	}
+	const parts = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX, "").split("_");
+	if (parts.length !== 2) {
+		return null;
+	}
+	const amount = Number.parseInt(parts[1], 10);
+	if (!Number.isInteger(amount) || amount <= 0) {
+		return null;
+	}
+	return {
+		foodType: parts[0] as PetFood,
+		amount
+	};
+}
+
 /**
  * Maps a PetFood enum value (e.g. "commonFood") to its FoodKey (e.g. "common").
  * Single source of truth — avoids fragile `.replace("Food", "")` string surgery at call sites.

@@ -31,31 +31,83 @@ import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import {
 	CityCollectorHandlerParams, CityMenuParams
 } from "../ReportCityMenuTypes";
+import { registerCityConfirmationMenu } from "../confirmation/CityConfirmationMenu";
 
-type EnchanterHandlerParams = CityCollectorHandlerParams & { data: EnchanterCityData };
+type EnchanterHandlerParams = CityCollectorHandlerParams & Pick<CityMenuParams, "collectorTime" | "interaction" | "pseudo"> & { data: EnchanterCityData };
 
-type EnchanterCollectorParams = Omit<CityMenuParams, "pseudo"> & { data: EnchanterCityData };
+type EnchanterCollectorParams = CityMenuParams & { data: EnchanterCityData };
 
-async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promise<void> {
+function parseEnchantItemIndex(selectedValue: string, data: EnchanterCityData): number | null {
+	const index = parseInt(selectedValue.replace(ReportCityMenuIds.ENCHANT_ITEM_PREFIX, ""), 10);
+	return index >= 0 && index < data.enchantableItems.length ? index : null;
+}
+
+function buildEnchantmentPrice(data: EnchanterCityData, lng: Language): string {
+	return data.enchantmentCost.gems === 0
+		? i18n.t("commands:report.city.enchanter.priceMoneyOnly", {
+			lng, money: data.enchantmentCost.money
+		})
+		: i18n.t("commands:report.city.enchanter.priceMoneyAndGems", {
+			lng, money: data.enchantmentCost.money, gems: data.enchantmentCost.gems
+		});
+}
+
+async function sendEnchantReaction(params: EnchanterHandlerParams, index: number): Promise<void> {
 	const {
 		selectedValue, buttonInteraction, context, packet, data
 	} = params;
 	await buttonInteraction.deferReply();
-	const index = parseInt(selectedValue.replace(ReportCityMenuIds.ENCHANT_ITEM_PREFIX, ""), 10);
-	if (index < 0 || index >= data.enchantableItems.length) {
+	const item = data.enchantableItems[index];
+	if (!item || !selectedValue.startsWith(ReportCityMenuIds.ENCHANT_ITEM_PREFIX)) {
 		return;
 	}
 
-	const slot = data.enchantableItems[index].slot;
-	const itemCategory = data.enchantableItems[index].category;
 	const reactionIndex = packet.reactions.findIndex(
 		reaction => reaction.type === ReactionCollectorEnchantReaction.name
-			&& (reaction.data as ReactionCollectorEnchantReaction).slot === slot
-			&& (reaction.data as ReactionCollectorEnchantReaction).itemCategory === itemCategory
+			&& (reaction.data as ReactionCollectorEnchantReaction).slot === item.slot
+			&& (reaction.data as ReactionCollectorEnchantReaction).itemCategory === item.category
 	);
 	if (reactionIndex !== -1) {
 		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
 	}
+}
+
+async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promise<void> {
+	const index = parseEnchantItemIndex(params.selectedValue, params.data);
+	if (index === null) {
+		await params.buttonInteraction.deferUpdate();
+		return;
+	}
+	const item = params.data.enchantableItems[index];
+	const lng = params.interaction.userLanguage;
+	await params.buttonInteraction.deferUpdate();
+	registerCityConfirmationMenu(params.nestedMenus, {
+		interaction: params.interaction,
+		collectorTime: params.collectorTime,
+		lng,
+		title: i18n.t("commands:report.city.confirmation.title", {
+			lng,
+			pseudo: params.pseudo
+		}),
+		description: i18n.t("commands:report.city.enchanter.confirmDescription", {
+			lng,
+			item: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
+			price: buildEnchantmentPrice(params.data, lng),
+			enchantmentId: params.data.enchantmentId,
+			enchantmentType: params.data.enchantmentType
+		}),
+		confirmLabel: i18n.t("commands:report.city.buttons.enchant", { lng }),
+		confirmEmoji: CrowniclesIcons.city.enchanter,
+		backMenuId: ReportCityMenuIds.ENCHANTER_MENU,
+		onConfirm: async action => {
+			await sendEnchantReaction({
+				...params,
+				buttonInteraction: action.buttonInteraction,
+				nestedMenus: action.nestedMenus
+			}, index);
+		}
+	});
+	await params.nestedMenus.changeMenu(ReportCityMenuIds.CITY_CONFIRMATION_MENU);
 }
 
 async function handleEnchanterCollectorInteraction(params: EnchanterHandlerParams): Promise<void> {
@@ -84,11 +136,11 @@ function createEnchanterMenuCollector(
 	params: EnchanterCollectorParams
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 	const {
-		context, interaction, packet, data, collectorTime
+		context, interaction, packet, data, collectorTime, pseudo
 	} = params;
 	return createCityCollector(interaction, collectorTime, async (customId, buttonInteraction, nestedMenus) => {
 		await handleEnchanterCollectorInteraction({
-			selectedValue: customId, buttonInteraction, nestedMenus, context, packet, data
+			selectedValue: customId, buttonInteraction, nestedMenus, context, packet, data, interaction, collectorTime, pseudo
 		});
 	});
 }
@@ -104,13 +156,6 @@ function addEnchanterTitle(container: ContainerBuilder, lng: Language, pseudo: s
 }
 
 function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
-	const price = data.enchantmentCost.gems === 0
-		? i18n.t("commands:report.city.enchanter.priceMoneyOnly", {
-			lng, money: data.enchantmentCost.money
-		})
-		: i18n.t("commands:report.city.enchanter.priceMoneyAndGems", {
-			lng, money: data.enchantmentCost.money, gems: data.enchantmentCost.gems
-		});
 	const enchantmentKey = data.mageReduction
 		? "commands:report.city.enchanter.enchantmentWithReduction"
 		: "commands:report.city.enchanter.enchantmentNoReduction";
@@ -118,7 +163,7 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 		i18n.t("commands:report.city.enchanter.story", { lng }),
 		i18n.t(enchantmentKey, {
 			lng,
-			price,
+			price: buildEnchantmentPrice(data, lng),
 			enchantmentId: data.enchantmentId,
 			enchantmentType: data.enchantmentType
 		}),
@@ -201,7 +246,8 @@ export function getEnchanterMenu(params: CityMenuParams): CrowniclesNestedMenu {
 			interaction: params.interaction,
 			packet: params.packet,
 			data,
-			collectorTime: params.collectorTime
+			collectorTime: params.collectorTime,
+			pseudo: params.pseudo
 		})
 	};
 }
