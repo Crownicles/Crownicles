@@ -1,3 +1,4 @@
+/* @lockInherited — saves in this file run under MissionsController.update's withLockedEntities([Player.lockKey, PlayerMissionsInfo.lockKey]) via completeAndUpdateMissionsUnderLock -> Campaign.updatePlayerCampaign. The MissionSlot row for the active campaign is mutated only through this flow, so the parent Player lock serialises it. */
 import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { MissionsController } from "./MissionsController";
 import Player from "../database/game/models/Player";
