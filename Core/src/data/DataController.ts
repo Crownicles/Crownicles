@@ -36,6 +36,10 @@ export abstract class DataController<T extends string | number, U extends Data<n
 		return this.data.get(id);
 	}
 
+	public getAllValues(): U[] {
+		return this.getValuesArray();
+	}
+
 	protected getValuesArray(): U[] {
 		if (!this.valuesArrayCache) {
 			this.valuesArrayCache = Array.from(this.data.values());
