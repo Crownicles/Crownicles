@@ -110,7 +110,14 @@ export class Guild extends Model {
 	}
 
 	/**
-	 * Completely destroy a guild from the database
+	 * Completely destroy a guild from the database.
+	 *
+	 * Concurrency notes (#3760): callers (currently `applyLockedAcceptGuildLeave`)
+	 * already hold the chief Player + Guild row locks. Other guild members'
+	 * Player rows are not locked here, but the `Player.update({guildId: null})`
+	 * runs inside the same transaction as the destroys, so on failure we never
+	 * leave a destroyed Guild row with dangling GuildPet / PetEntity rows, or
+	 * orphaned Players still pointing to a deleted guildId.
 	 */
 	public async completelyDestroyAndDeleteFromTheDatabase(): Promise<void> {
 		const pets = await GuildPets.getOfGuild(this.id);
@@ -124,23 +131,28 @@ export class Guild extends Model {
 
 		crowniclesInstance?.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
 			.then();
-		const guildPetsToDestroy: Promise<void>[] = [];
-		const petsEntitiesToDestroy: Promise<number>[] = [];
-		for (const pet of pets) {
-			guildPetsToDestroy.push(pet.destroy());
-			petsEntitiesToDestroy.push(PetEntity.destroy({ where: { id: pet.petEntityId } }));
-		}
-		await Promise.all([
-			Player.update(
-				{ guildId: null },
-				{ where: { guildId: this.id } }
-			),
-			Guild.destroy({
-				where: { id: this.id }
-			}),
-			guildPetsToDestroy,
-			petsEntitiesToDestroy
-		]);
+
+		const sequelize = (this.constructor as typeof Guild).sequelize!;
+		await sequelize.transaction(async transaction => {
+			await Promise.all([
+				...pets.map(pet => pet.destroy({ transaction })),
+				...pets.map(pet => PetEntity.destroy({
+					where: { id: pet.petEntityId },
+					transaction
+				})),
+				Player.update(
+					{ guildId: null },
+					{
+						where: { guildId: this.id },
+						transaction
+					}
+				),
+				Guild.destroy({
+					where: { id: this.id },
+					transaction
+				})
+			]);
+		});
 	}
 
 	/**
