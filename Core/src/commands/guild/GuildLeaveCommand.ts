@@ -35,7 +35,7 @@ import {
  * dispatch the right response packet without re-deriving state
  * outside of the critical section.
  */
-type LeaveOutcomeKind = "notInGuild" | "chiefPromotedElder" | "guildDestroyed" | "left";
+export type LeaveOutcomeKind = "notInGuild" | "chiefPromotedElder" | "guildDestroyed" | "left";
 
 type ChiefPromotesElderLocked = {
 	chief: Player; elder: Player; guild: Guild;
@@ -197,7 +197,8 @@ async function applyLockedAcceptGuildLeave(
  * \`applyLockedAcceptGuildLeave\` body so the in-lock semantics
  * are shared.
  */
-async function runLeaveUnderLock(
+// Exported for integration race tests; the lock body is unit-under-test.
+export async function runLeaveUnderLock(
 	response: CrowniclesPacket[],
 	keys: {
 		playerId: number; elderId: number | null; guildId: number;
