@@ -38,6 +38,13 @@ import {
 	millisecondsToMinutes
 } from "../../../../Lib/src/utils/TimeUtils";
 import { chooseDestination } from "./ReportDestinationService";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	PlayerMissionsInfo, PlayerMissionsInfos
+} from "../database/game/models/PlayerMissionsInfo";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * Check all missions to check when you execute a big event
@@ -82,11 +89,10 @@ async function doPossibility(
 	context: PacketContext,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	player = await Players.getOrRegister(player.keycloakId);
-	player.nextEvent = null;
+	const freshPlayer = await Players.getOrRegister(player.keycloakId);
 
 	if (event.id === 0 && possibility[0] === "end") { // Don't do anything if the player ends the first report
-		crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], "0")
+		crowniclesInstance?.logsDatabase.logBigEvent(freshPlayer.keycloakId, event.id, possibility[0], "0")
 			.then();
 		response.push(makePacket(CommandReportBigEventResultRes, {
 			eventId: event.id,
@@ -100,58 +106,88 @@ async function doPossibility(
 			health: 0,
 			score: 0
 		}));
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT);
+		BlockingUtils.unblockPlayer(freshPlayer.keycloakId, BlockingConstants.REASONS.REPORT);
 		return;
 	}
 
-	// Filter the outcomes that are valid
+	// Filter the outcomes that are valid (read-only, no DB writes — safe outside the lock)
 	const entries = Object.entries(possibility[1].outcomes);
 
 	const validOutcomes: [string, PossibilityOutcome][] = [];
 	for (const [key, outcome] of entries) {
-		if (!outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, player)) {
+		if (!outcome.condition || await verifyPossibilityOutcomeCondition(outcome.condition, freshPlayer)) {
 			validOutcomes.push([key, outcome]);
 		}
 	}
 
 	const randomOutcome = RandomUtils.crowniclesRandom.pick(validOutcomes);
 
-	crowniclesInstance?.logsDatabase.logBigEvent(player.keycloakId, event.id, possibility[0], randomOutcome[0])
+	crowniclesInstance?.logsDatabase.logBigEvent(freshPlayer.keycloakId, event.id, possibility[0], randomOutcome[0])
 		.then();
 
-	const newMapLink = await applyPossibilityOutcome({
-		eventId: event.id,
-		possibilityName: possibility[0],
-		outcome: randomOutcome,
-		time
-	}, player, context, response);
-
-	const isDead = await player.killIfNeeded(response, NumberChangeReason.BIG_EVENT);
-
 	/*
-	 * If the player is dead but a forced map link is provided, teleport them there
-	 * Otherwise, only choose destination if player is alive
+	 * Ensure the PlayerMissionsInfo row exists before we acquire the lock —
+	 * `applyPossibilityOutcome` (via `applyOutcomeGems`) and the nested
+	 * `MissionsController.update` calls both rely on this row, and a missing
+	 * row would otherwise force an INSERT inside the locked transaction.
 	 */
-	if (newMapLink || !isDead) {
-		await chooseDestination(context, player, newMapLink, response, false);
+	await PlayerMissionsInfos.getOfPlayer(freshPlayer.id);
+
+	try {
+		await withLockedEntities(
+			[
+				Player.lockKey(freshPlayer.id),
+				PlayerMissionsInfo.lockKey(freshPlayer.id)
+			] as const,
+			async ([lockedPlayer]) => {
+				lockedPlayer.nextEvent = null;
+
+				const newMapLink = await applyPossibilityOutcome({
+					eventId: event.id,
+					possibilityName: possibility[0],
+					outcome: randomOutcome,
+					time
+				}, lockedPlayer, context, response);
+
+				const isDead = await lockedPlayer.killIfNeeded(response, NumberChangeReason.BIG_EVENT);
+
+				/*
+				 * If the player is dead but a forced map link is provided, teleport them there
+				 * Otherwise, only choose destination if player is alive
+				 */
+				if (newMapLink || !isDead) {
+					await chooseDestination(context, lockedPlayer, newMapLink, response, false);
+				}
+
+				await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
+
+				const tagsToVerify = (randomOutcome[1].tags ?? [])
+					.concat(possibility[1].tags ?? [])
+					.concat(event.tags ?? []);
+				if (tagsToVerify.length > 0) {
+					for (const tag of tagsToVerify) {
+						await MissionsController.update(lockedPlayer, response, {
+							missionId: tag,
+							params: { tags: tagsToVerify }
+						});
+					}
+				}
+
+				await lockedPlayer.save();
+			}
+		);
 	}
-
-	await MissionsController.update(player, response, { missionId: "doReports" });
-
-	const tagsToVerify = (randomOutcome[1].tags ?? [])
-		.concat(possibility[1].tags ?? [])
-		.concat(event.tags ?? []);
-	if (tagsToVerify.length > 0) {
-		for (const tag of tagsToVerify) {
-			await MissionsController.update(player, response, {
-				missionId: tag,
-				params: { tags: tagsToVerify }
-			});
+	catch (e) {
+		if (e instanceof LockedRowNotFoundError) {
+			CrowniclesLogger.warn(
+				`doPossibility: locked row vanished for player ${freshPlayer.id} — skipping possibility outcome`
+			);
+		}
+		else {
+			throw e;
 		}
 	}
-
-	await player.save();
-	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT);
+	BlockingUtils.unblockPlayer(freshPlayer.keycloakId, BlockingConstants.REASONS.REPORT);
 }
 
 /**
