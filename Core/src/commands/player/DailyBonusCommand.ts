@@ -89,7 +89,8 @@ function dailyNotReady(inventoryInfo: InventoryInfo, response: CrowniclesPacket[
  * @param inventoryInfo
  * @param response
  */
-async function activateDailyItem(player: Player, activeObject: ObjectItem, inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): Promise<void> {
+// Exported for race tests; the inner `withLockedEntitiesSafe` block is the unit under test.
+export async function activateDailyItem(player: Player, activeObject: ObjectItem, inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): Promise<void> {
 	const packet = makePacket(CommandDailyBonusPacketRes, {
 		value: activeObject.power,
 		itemNature: activeObject.nature
