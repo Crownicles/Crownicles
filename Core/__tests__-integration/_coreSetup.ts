@@ -12,6 +12,7 @@ import { createMqttPrefix } from "../../Lib/src/utils/MqttTopicUtils";
 import {
 	CrowniclesConfig
 } from "../src/core/bot/CrowniclesConfig";
+import { CrowniclesLogger } from "../../Lib/src/logs/CrowniclesLogger";
 import { getIntegrationDbConfig } from "./_setup";
 
 /**
@@ -134,10 +135,30 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 		MQTT_HOST: "mqtt://127.0.0.1",
 		WEB_SERVER_PORT: 0,
 		LOG_LEVEL: "error",
-		LOG_LOCATIONS: ["console"]
+		LOG_LOCATIONS: []
 	};
 
 	setBotConfigForTests(testConfig);
+
+	// Re-init the shared logger to honour the test config. Bootstrap
+	// initialises it once from `loadConfig()` at module load — before
+	// our override — so without this call race tests inherit the
+	// production DEBUG level with console+file transports, drowning
+	// stdout in benign fire-and-forget noise (notification hooks
+	// firing outside their original transaction). We give winston a
+	// real console transport so it doesn't emit a "no transports"
+	// warning, then silence the underlying logger.
+	CrowniclesLogger.init(testConfig.LOG_LEVEL, ["console"], { app: "Core" });
+	(CrowniclesLogger.get() as unknown as { silent: boolean }).silent = true;
+	// Same singleton lives twice once compiled — the dist tree imports
+	// `Lib/src/logs/CrowniclesLogger` from its own copy under
+	// `Core/dist/Lib/src/...`, so we must reset it through that path
+	// too.
+	const distLogger = loadProductionModule<{
+		CrowniclesLogger: typeof CrowniclesLogger;
+	}>("../../Lib/src/logs/CrowniclesLogger");
+	distLogger.CrowniclesLogger.init(testConfig.LOG_LEVEL, ["console"], { app: "Core" });
+	(distLogger.CrowniclesLogger.get() as unknown as { silent: boolean }).silent = true;
 
 	const testInstance = new Crownicles();
 	await testInstance.gameDatabase.init(true);
@@ -148,6 +169,18 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 	(testInstance as unknown as { logsDatabase: unknown }).logsDatabase = createNoopLogsDatabase();
 
 	setCrowniclesInstanceForTests(testInstance);
+
+	// Also wire the dist-side `crowniclesInstance` so production code
+	// loaded via `loadProductionModule` (which reads from dist's own
+	// module cache) sees the test instance with the noop logsDatabase.
+	// Otherwise the dist module keeps the real `new Crownicles()`
+	// created at dist module load time and its uninitialised
+	// LogsDatabase fires unhandled rejections from
+	// `LogsPlayers.findOrCreate`.
+	const distApp = loadProductionModule<{
+		setCrowniclesInstanceForTests: (instance: Crownicles | null) => void;
+	}>("app");
+	distApp.setCrowniclesInstanceForTests(testInstance);
 
 	let toreDown = false;
 	return {
@@ -179,6 +212,15 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 				await adminConn.end();
 			}
 			setCrowniclesInstanceForTests(null);
+			try {
+				const distApp = loadProductionModule<{
+					setCrowniclesInstanceForTests: (instance: Crownicles | null) => void;
+				}>("app");
+				distApp.setCrowniclesInstanceForTests(null);
+			}
+			catch {
+				// Best-effort: dist may have been unloaded.
+			}
 			setBotConfigForTests(null);
 			if (previousDbBaseDir === undefined) {
 				delete process.env.CROWNICLES_DB_BASE_DIR;
