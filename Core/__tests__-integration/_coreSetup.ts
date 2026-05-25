@@ -1,4 +1,5 @@
 import { createConnection } from "mariadb";
+import { resolve as resolvePath } from "path";
 import {
 	botConfig, setBotConfigForTests
 } from "../src/bootstrap";
@@ -51,35 +52,32 @@ function createNoopLogsDatabase(): unknown {
  * Provisioning steps:
  * 1. Override {@link botConfig} so {@link GameDatabase} targets a fresh
  *    per-suite schema (`crownicles_test_<suite>_<pid>_<rand>_game`).
- * 2. Build a new {@link Crownicles} instance under the test config and
+ * 2. Point `CROWNICLES_DB_BASE_DIR` at the compiled `dist/` tree so the
+ *    production model/migration loader picks up the `.js` artifacts
+ *    produced by `pnpm tsc` (Vitest can't load them from source — the
+ *    loader filters on `.js` extension by design).
+ * 3. Build a new {@link Crownicles} instance under the test config and
  *    install it as the global singleton via
  *    {@link setCrowniclesInstanceForTests}.
- * 3. Connect & migrate the game database. The logs database is replaced
+ * 4. Connect & migrate the game database. The logs database is replaced
  *    with a noop proxy because no test currently exercises log writes.
  *
  * The returned `teardown()` is idempotent: it closes the Sequelize
  * pool, drops the schema with the root credentials from `_setup.ts`,
  * restores the production singletons and clears the config override.
- *
- * ### Known limitation (issue #4265 follow-up)
- *
- * `GameDatabase.init` resolves its models/migrations folder via
- * `__dirname` and only loads `*.js` files (see
- * `Lib/src/database/Database.ts#initModelFromFile`). When Vitest loads
- * `GameDatabase.ts` from source, `__dirname` points at the source tree
- * which only contains `.ts` files. Race tests must therefore either:
- *   - run after `pnpm tsc` has produced `dist/`, plus a small env-var
- *     override in `GameDatabase` to point at `dist/Core/.../game`, or
- *   - bypass {@link GameDatabase.init} and define their own models /
- *     run migrations manually.
- *
- * The dist-based approach is tracked separately and is the next step
- * before race tests can use this helper.
  */
 export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvironment> {
 	const dbConfig = getIntegrationDbConfig();
 	const safeSuite = suiteName.toLowerCase().replace(/[^a-z0-9]+/g, "_").slice(0, 24);
 	const prefix = `crownicles_test_${safeSuite}_${process.pid}_${Math.floor(Math.random() * 0xFFFFFFFF).toString(16)}`;
+
+	// Point the GameDatabase loader at the compiled artifacts. The
+	// production loader only accepts `.js` files (see
+	// `Lib/src/database/Database.ts#initModelFromFile`), so Vitest must
+	// rely on the `dist/` build produced by `pretest:integration`.
+	const distGameDir = resolvePath(__dirname, "../dist/Core/src/core/database/game");
+	const previousDbBaseDir = process.env.CROWNICLES_DB_BASE_DIR;
+	process.env.CROWNICLES_DB_BASE_DIR = distGameDir;
 
 	const testConfig: CrowniclesConfig = {
 		MODE_MAINTENANCE: false,
@@ -139,6 +137,12 @@ export async function setupCoreForTests(suiteName: string): Promise<CoreTestEnvi
 			}
 			setCrowniclesInstanceForTests(null);
 			setBotConfigForTests(null);
+			if (previousDbBaseDir === undefined) {
+				delete process.env.CROWNICLES_DB_BASE_DIR;
+			}
+			else {
+				process.env.CROWNICLES_DB_BASE_DIR = previousDbBaseDir;
+			}
 		}
 	};
 }

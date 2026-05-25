@@ -6,7 +6,15 @@ import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 
 export class GameDatabase extends Database {
 	constructor() {
-		super(getDatabaseConfiguration(botConfig, "game"), `${__dirname}/models`, `${__dirname}/migrations`);
+		// Tests load this file from source via Vitest, but the model and
+		// migration loaders in `Database` only accept `.js` files (see
+		// `Database#initModelFromFile`). `CROWNICLES_DB_BASE_DIR` lets the
+		// integration setup point at the compiled `dist/` tree so the
+		// production loader picks up the same `.js` artifacts as a real
+		// deployment. Production leaves the env var unset and falls back
+		// to `__dirname`.
+		const baseDir = process.env.CROWNICLES_DB_BASE_DIR ?? __dirname;
+		super(getDatabaseConfiguration(botConfig, "game"), `${baseDir}/models`, `${baseDir}/migrations`);
 	}
 
 	/**
