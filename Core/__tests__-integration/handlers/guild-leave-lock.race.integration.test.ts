@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, runAllOrThrow, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { Guild as GuildType } from "../../src/core/database/game/models/Guild";
@@ -83,7 +83,7 @@ describe("GuildLeaveCommand.runLeaveUnderLock race", () => {
 			...memberIds.map(id => ({ playerId: id, elderId: null as null, guildId: guild.id }))
 		];
 
-		const results = await Promise.allSettled(
+		const values = await runAllOrThrow(
 			callerKeys.map(async keys => {
 				try {
 					return await mod.runLeaveUnderLock([], keys);
@@ -99,13 +99,7 @@ describe("GuildLeaveCommand.runLeaveUnderLock race", () => {
 			})
 		);
 
-		const rejected = results.filter(r => r.status === "rejected") as PromiseRejectedResult[];
-		if (rejected.length > 0) {
-			throw rejected[0].reason;
-		}
-
-		const outcomes = (results as PromiseFulfilledResult<{ kind: string }>[])
-			.map(r => r.value.kind);
+		const outcomes = values.map(v => v.kind);
 
 		// Exactly one destruction (the chief's winning branch).
 		expect(outcomes.filter(k => k === "guildDestroyed")).toHaveLength(1);

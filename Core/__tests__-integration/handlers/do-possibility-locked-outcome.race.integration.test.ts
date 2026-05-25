@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, runAllOrThrow, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { PlayerMissionsInfo as PlayerMissionsInfoType } from "../../src/core/database/game/models/PlayerMissionsInfo";
@@ -72,7 +72,7 @@ describe("doPossibility locked outcome race", () => {
 		// `PlayerMissionsInfos.getOfPlayer` before entering the lock.
 		await PlayerMissionsInfo.create({ playerId: player.id });
 
-		const results = await Promise.allSettled(
+		await runAllOrThrow(
 			Array.from({ length: N_CONCURRENT }, () => locks.withLockedEntities(
 				[
 					playerMod.Player.lockKey(player.id),
@@ -85,11 +85,6 @@ describe("doPossibility locked outcome race", () => {
 				}
 			))
 		);
-
-		const rejected = results.filter(r => r.status === "rejected") as PromiseRejectedResult[];
-		if (rejected.length > 0) {
-			throw rejected[0].reason;
-		}
 
 		const fresh = await Player.findByPk(player.id);
 		expect(fresh).toBeTruthy();

@@ -3,16 +3,16 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, runAllOrThrow, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
+import { ItemNature } from "../../../Lib/src/constants/ItemConstants";
 
 type DailyBonusModule = typeof import("../../src/commands/player/DailyBonusCommand");
 type ObjectItemModule = typeof import("../../src/data/ObjectItem");
 
 const N_CONCURRENT = 25;
-const MONEY_OBJECT_ID = 2; // nature=MONEY, power=60 — see Core/resources/objects/2.json
 
 /**
  * Race test for {@link DailyBonusModule.activateDailyItem}. The
@@ -54,7 +54,9 @@ describe("DailyBonusCommand.activateDailyItem race", () => {
 	});
 
 	it(`applies the bonus exactly once when ${N_CONCURRENT} callers race`, async () => {
-		const moneyObject = objectItemModule.ObjectItemDataController.instance.getById(MONEY_OBJECT_ID);
+		const moneyObject = objectItemModule.ObjectItemDataController.instance
+			.getAllValues()
+			.find(item => item.nature === ItemNature.MONEY);
 		expect(moneyObject).toBeTruthy();
 
 		const player = await Player.create({
@@ -70,7 +72,7 @@ describe("DailyBonusCommand.activateDailyItem race", () => {
 
 		// Each invocation reads its own InventoryInfo handle (matches production:
 		// `freshInventoryInfo = await InventoryInfos.getOfPlayer(player.id)` per call).
-		const results = await Promise.allSettled(
+		await runAllOrThrow(
 			Array.from({ length: N_CONCURRENT }, async () => {
 				const freshPlayer = await Player.findByPk(player.id);
 				const freshInv = await InventoryInfo.findByPk(player.id);
@@ -78,20 +80,15 @@ describe("DailyBonusCommand.activateDailyItem race", () => {
 			})
 		);
 
-		const rejected = results.filter(r => r.status === "rejected") as PromiseRejectedResult[];
-		if (rejected.length > 0) {
-			throw rejected[0].reason;
-		}
-
 		const fresh = await Player.findByPk(player.id);
 		const freshInv = await InventoryInfo.findByPk(player.id);
 		expect(fresh).toBeTruthy();
 		expect(freshInv).toBeTruthy();
 
-		// Exactly one bonus applied: money strictly less than two bonuses.
-		// (BlessingManager may multiply, so we don't assert exact value.)
-		expect(fresh!.money).toBeGreaterThan(0);
-		expect(fresh!.money).toBeLessThan(2 * moneyObject!.power * 10); // generous upper bound
+		// Exactly one bonus applied: persisted money is exactly `power`.
+		// (Blessings only affect the packet `value` displayed to the user,
+		// not the amount stored on the Player — see DailyBonusCommand.)
+		expect(fresh!.money).toBe(moneyObject!.power);
 
 		// lastDailyAt was refreshed to a recent time.
 		expect(freshInv!.lastDailyAt.getTime()).toBeGreaterThan(longAgo.getTime());

@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, runAllOrThrow, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { InventoryInfo as InventoryInfoType } from "../../src/core/database/game/models/InventoryInfo";
@@ -81,14 +81,9 @@ describe("TannerShopItems.getBuySlotExtensionShopItemCallback race", () => {
 
 		const callback = tannerShopItems.getBuySlotExtensionShopItemCallback(player.id, price);
 
-		const results = await Promise.allSettled(
+		await runAllOrThrow(
 			Array.from({ length: N_CONCURRENT }, () => callback(fakeCollector, []))
 		);
-
-		const rejected = results.filter(r => r.status === "rejected") as PromiseRejectedResult[];
-		if (rejected.length > 0) {
-			throw rejected[0].reason;
-		}
 
 		const fresh = await Player.findByPk(player.id);
 		const freshInv = await InventoryInfo.findByPk(player.id);

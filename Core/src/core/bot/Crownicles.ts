@@ -54,7 +54,17 @@ export class Crownicles {
 
 	public readonly gameDatabase: GameDatabase;
 
-	public readonly logsDatabase: LogsDatabase;
+	public logsDatabase: LogsDatabase;
+
+	/**
+	 * Test-only helper. Replaces {@link logsDatabase} with a stub so
+	 * integration tests don't have to provision the logs schema.
+	 *
+	 * Must only be called from `__tests__-integration/_coreSetup.ts`.
+	 */
+	public setLogsDatabaseForTests(stub: LogsDatabase): void {
+		this.logsDatabase = stub;
+	}
 
 	constructor() {
 		// Register commands
