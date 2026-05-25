@@ -56,6 +56,7 @@ export default defineConfig([
 			"src/commands/player/DailyBonusCommand.ts",
 			"src/core/missions/Campaign.ts",
 			"src/commands/player/UnlockCommand.ts",
+			"src/core/utils/TannerShopItems.ts",
 			"src/core/utils/withLockedPlayerSafe.ts",
 			"src/core/smallEvents/**/*.ts"
 		],
