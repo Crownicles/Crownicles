@@ -37,6 +37,32 @@ export default defineConfig({
 		testTimeout: 30_000,
 		hookTimeout: 60_000,
 		fileParallelism: false,
+		/*
+		 * Force every production module — and every shared singleton it
+		 * leans on — through Node's native CJS loader instead of
+		 * vite-node's transformer. Without this, vite-node maintains its
+		 * own module cache for `dist/**` files and database/sequelize
+		 * deps, so the `Player` class that `GameDatabase.initModels()`
+		 * registers on the Sequelize instance ends up being a different
+		 * class instance from the one referenced inside the production
+		 * `MissionShopItems.js` (and friends) — and `Player.lockKey(...)`
+		 * inside the locked critical sections sees a Player whose
+		 * `.sequelize` is undefined. Externalising `dist/**`, sequelize,
+		 * cls-hooked and mariadb collapses everything into a single
+		 * Node CJS cache that matches production semantics.
+		 */
+		server: {
+			deps: {
+				external: [
+					/[\\/]Core[\\/]dist[\\/]/,
+					/[\\/]Lib[\\/]dist[\\/]/,
+					"sequelize",
+					"cls-hooked",
+					"mariadb",
+					"moment"
+				]
+			}
+		},
 		reporters: [
 			"default",
 			["junit", { outputFile: "test-integration-results.xml" }]

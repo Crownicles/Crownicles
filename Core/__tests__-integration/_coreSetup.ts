@@ -1,4 +1,5 @@
 import { createConnection } from "mariadb";
+import { createRequire } from "module";
 import { resolve as resolvePath } from "path";
 import {
 	botConfig, setBotConfigForTests
@@ -44,6 +45,48 @@ function createNoopLogsDatabase(): unknown {
 			return (): Promise<void> => Promise.resolve();
 		}
 	});
+}
+
+/**
+ * CJS `require` rooted at this test file, used to load production
+ * modules straight from the compiled `dist/` tree.
+ *
+ * Why Node CJS instead of `await import(...)`?
+ * - vite-node maintains its own module cache, separate from Node's.
+ *   `GameDatabase.initModels()` dynamic-imports model files via
+ *   `await import(...)` inside Lib's compiled code, which vite-node
+ *   transforms and serves from its own cache. If the tests then load
+ *   `MissionShopItems` through vite-node as well, the `Player` class
+ *   referenced inside the production module ends up being a different
+ *   class instance from the one Sequelize knows about — and
+ *   `Player.lockKey(...).model.sequelize` is undefined at runtime.
+ * - The integration vitest config externalises `dist/**`, `sequelize`,
+ *   `cls-hooked`, `mariadb` and `moment` (see
+ *   `server.deps.external`). That forces vite-node's own dynamic
+ *   imports of those modules to go through `createRequire` too. The
+ *   combination means: a single Node CJS module cache holds the dist
+ *   tree + every shared singleton, exactly mirroring production.
+ */
+const distRequire = createRequire(__filename);
+
+/**
+ * Load a compiled production module from the `dist/` tree.
+ *
+ * Example usage in a race test:
+ *
+ * ```ts
+ * type MissionShopItemsModule = typeof import("../../src/core/utils/MissionShopItems");
+ * const mod = loadProductionModule<MissionShopItemsModule>(
+ *     "core/utils/MissionShopItems"
+ * );
+ * ```
+ *
+ * `relativeFromCoreSrc` is the path relative to `Core/src` (without
+ * the `.js` suffix), e.g. `"core/utils/MissionShopItems"`.
+ */
+export function loadProductionModule<T>(relativeFromCoreSrc: string): T {
+	const distRoot = resolvePath(__dirname, "../dist/Core/src");
+	return distRequire(resolvePath(distRoot, `${relativeFromCoreSrc}.js`)) as T;
 }
 
 /**

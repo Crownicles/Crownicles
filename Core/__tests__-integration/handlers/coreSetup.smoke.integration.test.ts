@@ -1,26 +1,23 @@
 import {
 	afterAll, beforeAll, describe, expect, it
 } from "vitest";
+import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
-import type { ModelStatic } from "sequelize";
+
+type MissionShopItemsModule = typeof import("../../src/core/utils/MissionShopItems");
 
 /**
  * Smoke test for `_coreSetup.ts`. Verifies that:
- * 1. The Core singleton is rebuilt against a fresh schema.
- * 2. Production migrations run against that schema.
- * 3. The Player model registered on `gameDatabase.sequelize` is
+ * 1. The Core singleton is rebuilt against a fresh schema and
+ *    migrations run.
+ * 2. The Player model registered on `gameDatabase.sequelize` is
  *    reachable via `sequelize.models` and can read/write.
+ * 3. `loadProductionModule` returns a usable compiled production
+ *    module from `dist/`.
  * 4. `teardown()` drops the schema and restores the singletons.
- *
- * Note: tests must reach models through `gameDatabase.sequelize.models`
- * rather than `import { Player } from "../src/.../Player"`. Vite-node
- * loads source files (`.ts`), while `Database.initModels()` loads
- * compiled files (`.js`) — they live in two different module trees,
- * so the `Player` class imported from source is *not* the one
- * registered with Sequelize.
  */
 describe("setupCoreForTests smoke", () => {
 	let env: CoreTestEnvironment;
@@ -44,6 +41,15 @@ describe("setupCoreForTests smoke", () => {
 		const created = await Player.create({ keycloakId: "smoke-test-player" });
 		const fetched = await Player.findOne({ where: { keycloakId: "smoke-test-player" } });
 		expect(fetched?.id).toBe(created.id);
+	});
+
+	it("loads production modules from the dist tree", () => {
+		const mod = loadProductionModule<MissionShopItemsModule>(
+			"core/utils/MissionShopItems"
+		);
+		expect(typeof mod.getMoneyShopItem).toBe("function");
+		const item = mod.getMoneyShopItem();
+		expect(typeof item.buyCallback).toBe("function");
 	});
 });
 
