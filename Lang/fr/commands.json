@@ -1676,10 +1676,6 @@
         "name": "{emote:shopItems.woodUncommonBundle} Bois travaillé",
         "info": "Du bois de qualité intermédiaire, utile comme ingrédient dans certaines recettes."
       },
-      "woodRareBundle": {
-        "name": "{emote:shopItems.woodRareBundle} Bois précieux",
-        "info": "Du bois rare et précieux, nécessaire pour les recettes les plus exigeantes."
-      },
       "randomMaterialPack": {
         "name": "{emote:shopItems.randomMaterialPack} Lot de matériaux",
         "info": "Un assortiment de matériaux variés, récoltés aux quatre coins du royaume. Le contenu est aléatoire et peut inclure des matériaux rares."
