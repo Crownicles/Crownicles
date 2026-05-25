@@ -108,14 +108,14 @@ export interface PlantType {
 
 /**
  * Definitions of all 10 plant types.
- * Growth times range from 10 minutes (Common Herb, aligned on
- * `Constants.REPORT.TIME_BETWEEN_MINI_EVENTS`) to 5 days (Ancient Tree).
+ * Growth times follow a geometric ~×1.5 progression from 4 hours
+ * (Common Herb) to 4 days (Ancient Tree) on rich soil.
  * Watering advances are scaled to ~1/12 of each plant's growth cycle.
  */
 export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.COMMON_HERB,
-		growthTimeSeconds: 10 * TimeConstants.S_TIME.MINUTE,
+		growthTimeSeconds: 4 * TimeConstants.S_TIME.HOUR,
 		wateringAdvanceSeconds: 0,
 		compostMaterials: [
 			52, // Herbe de prairie
@@ -125,8 +125,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.GOLDEN_CLOVER,
-		growthTimeSeconds: 30 * TimeConstants.S_TIME.MINUTE,
-		wateringAdvanceSeconds: 5 * TimeConstants.S_TIME.MINUTE,
+		growthTimeSeconds: 6 * TimeConstants.S_TIME.HOUR,
+		wateringAdvanceSeconds: 30 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			43, // Laiton doré
 			59, // Feuilles de chêne
@@ -135,8 +135,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.LUNAR_MOSS,
-		growthTimeSeconds: 90 * TimeConstants.S_TIME.MINUTE,
-		wateringAdvanceSeconds: 15 * TimeConstants.S_TIME.MINUTE,
+		growthTimeSeconds: 8 * TimeConstants.S_TIME.HOUR,
+		wateringAdvanceSeconds: 40 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			53, // Pierre de lune
 			30, // Lavande séchée
@@ -145,8 +145,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.IRON_ROOT,
-		growthTimeSeconds: 4 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: 30 * TimeConstants.S_TIME.MINUTE,
+		growthTimeSeconds: 12 * TimeConstants.S_TIME.HOUR,
+		wateringAdvanceSeconds: TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			70, // Fer brut
 			41, // Racines de gingembre
@@ -155,8 +155,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.NIGHT_MUSHROOM,
-		growthTimeSeconds: 12 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: TimeConstants.S_TIME.HOUR,
+		growthTimeSeconds: 18 * TimeConstants.S_TIME.HOUR,
+		wateringAdvanceSeconds: 90 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			55, // Champignon
 			66, // Champignon vénéneux
@@ -205,8 +205,8 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	},
 	{
 		id: PlantId.ANCIENT_TREE,
-		growthTimeSeconds: 5 * TimeConstants.S_TIME.DAY,
-		wateringAdvanceSeconds: 10 * TimeConstants.S_TIME.HOUR,
+		growthTimeSeconds: 4 * TimeConstants.S_TIME.DAY,
+		wateringAdvanceSeconds: 8 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			84, // Planche de teck
 			31, // Écorce d'ébène
