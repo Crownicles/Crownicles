@@ -2,8 +2,11 @@ import {
 	BuyCallbackResult,
 	CommandShopClosed,
 	CommandShopGenericPurchase,
+	CommandShopNoPlantSlotAvailable,
+	CommandShopNotEnoughCurrency,
 	ShopItem
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorShop";
+import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
@@ -61,6 +64,20 @@ function getBuySlotExtensionShopItemCallback(playerId: number, price: number): E
 			] as const,
 			"getBuySlotExtensionShopItemCallback",
 			async ([lockedPlayer, lockedInvInfo]) => {
+				/*
+				 * Re-validate affordability against the freshly locked
+				 * row: `Player.spendMoney` does not enforce a
+				 * non-negative balance, so a concurrent spend between
+				 * the initial shop display and this deferred callback
+				 * could drive the player negative without this check.
+				 */
+				if (lockedPlayer.money < price) {
+					response.push(makePacket(CommandShopNotEnoughCurrency, {
+						missingCurrency: price - lockedPlayer.money,
+						currency: ShopCurrency.MONEY
+					}));
+					return;
+				}
 				await lockedPlayer.spendMoney({
 					amount: price,
 					response,
@@ -180,9 +197,24 @@ export async function getPlantSlotExtensionShopItem(playerId: number): Promise<S
 				"getPlantSlotExtensionShopItem.buyCallback",
 				async ([lockedPlayer, lockedInvInfo]) => {
 					if (lockedInvInfo.plantSlots >= PlantConstants.MAX_PLANT_SLOTS) {
+						/*
+						 * A concurrent buyer reached the cap first —
+						 * surface a "no slot available" error so the
+						 * user actually sees feedback.
+						 */
+						response.push(makePacket(CommandShopNoPlantSlotAvailable, {}));
 						return;
 					}
 					if (lockedPlayer.money < price) {
+						/*
+						 * Concurrent spend made this purchase
+						 * unaffordable under the lock — surface a
+						 * "not enough currency" error packet.
+						 */
+						response.push(makePacket(CommandShopNotEnoughCurrency, {
+							missingCurrency: price - lockedPlayer.money,
+							currency: ShopCurrency.MONEY
+						}));
 						return;
 					}
 					await lockedPlayer.spendMoney({
