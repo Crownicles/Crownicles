@@ -15,8 +15,12 @@ import {
 } from "./ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "./BlockingUtils";
-import { Players } from "../database/game/models/Player";
-import { InventoryInfos } from "../database/game/models/InventoryInfo";
+import {
+	Player, Players
+} from "../database/game/models/Player";
+import {
+	InventoryInfo, InventoryInfos
+} from "../database/game/models/InventoryInfo";
 import { crowniclesInstance } from "../../index";
 import {
 	ReactionCollectorBuyCategorySlot,
@@ -26,6 +30,10 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBuyCategorySlot";
 import { PlantConstants } from "../../../../Lib/src/constants/PlantConstants";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 function getBuySlotExtensionShopItemCallback(playerId: number, price: number): EndCallback {
 	return async (collector, response): Promise<void> => {
@@ -36,17 +44,50 @@ function getBuySlotExtensionShopItemCallback(playerId: number, price: number): E
 			response.push(makePacket(CommandShopClosed, {}));
 			return;
 		}
-
-		const invInfo = await InventoryInfos.getOfPlayer(player.id);
 		const category = (reaction.reaction.data as ReactionCollectorBuyCategorySlotReaction).categoryId;
 
-		await player.spendMoney({
-			amount: price,
-			response,
-			reason: NumberChangeReason.SHOP
-		});
-		invInfo.addSlotForCategory(category);
-		await Promise.all([player.save(), invInfo.save()]);
+		// Pre-warm the InventoryInfo row so the lock can pin it
+		await InventoryInfos.getOfPlayer(player.id);
+
+		/*
+		 * Lock Player + InventoryInfo together so the money spend and the
+		 * slot count increment are atomic with respect to other purchases
+		 * — otherwise two concurrent slot extensions could double-spend
+		 * money or lose an inventory slot increment (#3760).
+		 */
+		let success = false;
+		try {
+			await withLockedEntities(
+				[
+					Player.lockKey(player.id),
+					InventoryInfo.lockKey(player.id)
+				] as const,
+				async ([lockedPlayer, lockedInvInfo]) => {
+					await lockedPlayer.spendMoney({
+						amount: price,
+						response,
+						reason: NumberChangeReason.SHOP
+					});
+					lockedInvInfo.addSlotForCategory(category);
+					await Promise.all([lockedPlayer.save(), lockedInvInfo.save()]);
+					success = true;
+				}
+			);
+		}
+		catch (e) {
+			if (e instanceof LockedRowNotFoundError) {
+				CrowniclesLogger.warn(
+					`getBuySlotExtensionShopItemCallback: locked row vanished for player ${player.id} — aborting purchase`
+				);
+				return;
+			}
+			throw e;
+		}
+
+		if (!success) {
+			return;
+		}
+
 		crowniclesInstance?.logsDatabase.logClassicalShopBuyout(player.keycloakId, ShopItemType.SLOT_EXTENSION, 1, player.getCurrentCityId() ?? undefined)
 			.then();
 		response.push(makePacket(ReactionCollectorBuyCategorySlotBuySuccess, {}));
@@ -134,11 +175,32 @@ export async function getPlantSlotExtensionShopItem(playerId: number): Promise<S
 			const buyResult: BuyCallbackResult & { postPurchase: () => Promise<void> } = {
 				success: true,
 				postPurchase: async (): Promise<void> => {
-					freshInvInfo.plantSlots++;
-					await freshInvInfo.save();
+					/*
+					 * Lock the InventoryInfo row so the MAX_PLANT_SLOTS check
+					 * and the slot increment are atomic against concurrent
+					 * plant slot purchases (#3760).
+					 */
+					try {
+						await InventoryInfo.withLocked(player.id, async lockedInvInfo => {
+							if (lockedInvInfo.plantSlots >= PlantConstants.MAX_PLANT_SLOTS) {
+								return;
+							}
+							lockedInvInfo.plantSlots++;
+							await lockedInvInfo.save();
 
-					// Ensure the new physical slot exists
-					await PlayerPlantSlots.ensureSlotsForCount(player.id, freshInvInfo.plantSlots);
+							// Ensure the new physical slot exists
+							await PlayerPlantSlots.ensureSlotsForCount(player.id, lockedInvInfo.plantSlots);
+						});
+					}
+					catch (e) {
+						if (e instanceof LockedRowNotFoundError) {
+							CrowniclesLogger.warn(
+								`getPlantSlotExtensionShopItem.postPurchase: locked row vanished for player ${player.id} — skipping`
+							);
+							return;
+						}
+						throw e;
+					}
 				}
 			};
 
