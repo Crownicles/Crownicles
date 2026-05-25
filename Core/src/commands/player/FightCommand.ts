@@ -48,6 +48,10 @@ import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
 import { BlessingManager } from "../../core/blessings/BlessingManager";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 type PlayerStats = {
 	pet?: {
@@ -222,19 +226,43 @@ async function updatePlayersEloAndCooldowns(
 
 	// Change glory and fightCountdown and save
 	await attacker.setGloryPoints(player1NewRating, false, NumberChangeReason.FIGHT, response, fightLogId ?? undefined);
-	attacker.fightCountdown--;
-	if (attacker.fightCountdown < 0) {
-		attacker.fightCountdown = 0;
-	}
 	await defender.setGloryPoints(player2NewRating, true, NumberChangeReason.FIGHT, response, fightLogId ?? undefined);
-	defender.fightCountdown--;
-	if (defender.fightCountdown < 0) {
-		defender.fightCountdown = 0;
+
+	/*
+	 * Lock both players to apply the fightCountdown decrement atomically.
+	 * `setGloryPoints` already takes its own per-player lock through
+	 * `MissionsController.update`, but the countdown mutation below would
+	 * otherwise be a classic read-modify-write race when two fights resolve
+	 * for the same player concurrently — last writer wins and one of the
+	 * cooldown decrements would be lost.
+	 */
+	try {
+		await withLockedEntities(
+			[Player.lockKey(attacker.id), Player.lockKey(defender.id)] as const,
+			async ([lockedAttacker, lockedDefender]) => {
+				lockedAttacker.fightCountdown = Math.max(0, lockedAttacker.fightCountdown - 1);
+				lockedDefender.fightCountdown = Math.max(0, lockedDefender.fightCountdown - 1);
+				await Promise.all([
+					lockedAttacker.save(),
+					lockedDefender.save()
+				]);
+
+				// Reflect the post-lock state on the in-memory instances used by the caller for response building
+				attacker.fightCountdown = lockedAttacker.fightCountdown;
+				defender.fightCountdown = lockedDefender.fightCountdown;
+			}
+		);
 	}
-	await Promise.all([
-		attacker.save(),
-		defender.save()
-	]);
+	catch (e) {
+		if (e instanceof LockedRowNotFoundError) {
+			CrowniclesLogger.warn(
+				`updatePlayersEloAndCooldowns: locked row vanished for players ${attacker.id}/${defender.id} — skipping cooldown update`
+			);
+		}
+		else {
+			throw e;
+		}
+	}
 }
 
 /**
