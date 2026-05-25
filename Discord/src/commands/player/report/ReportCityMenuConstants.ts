@@ -131,7 +131,16 @@ export const ReportCityMenuIds = {
 	GUILD_FOOD_SHOP_REIMBURSE_DECLINE: "GUILD_FOOD_SHOP_REIMBURSE_DECLINE",
 
 	/** Custom ID used for the "stay in city" button across all city sub-menus */
-	STAY_IN_CITY: "STAY_IN_CITY"
+	STAY_IN_CITY: "STAY_IN_CITY",
+
+	/** Dynamically registered confirmation menu used by city sub-menus */
+	CITY_CONFIRMATION_MENU: "CITY_CONFIRMATION_MENU",
+
+	/** Confirm the pending city action */
+	CITY_CONFIRMATION_CONFIRM: "CITY_CONFIRMATION_CONFIRM",
+
+	/** Cancel the pending city action */
+	CITY_CONFIRMATION_CANCEL: "CITY_CONFIRMATION_CANCEL"
 } as const;
 
 /**
