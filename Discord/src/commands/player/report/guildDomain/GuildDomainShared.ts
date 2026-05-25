@@ -127,14 +127,44 @@ export function parseFoodShopBuyCustomId(customId: string): FoodShopBuySelection
 	if (parts.length !== 2) {
 		return null;
 	}
-	const amount = Number.parseInt(parts[1], 10);
-	if (!Number.isInteger(amount) || amount <= 0) {
+	const foodType = parts[0] as PetFood;
+	if (!PetConstants.PET_FOOD_BY_ID.includes(foodType)) {
+		return null;
+	}
+	if (!(/^\d+$/).test(parts[1])) {
+		return null;
+	}
+	const amount = Number(parts[1]);
+	if (!Number.isSafeInteger(amount) || amount <= 0) {
 		return null;
 	}
 	return {
-		foodType: parts[0] as PetFood,
+		foodType,
 		amount
 	};
+}
+
+export function buildFoodBuyConfirmationDescription(ctx: FoodShopUIContext, foodType: PetFood, amount: number): string | null {
+	const foodIndex = PetConstants.PET_FOOD_BY_ID.indexOf(foodType);
+	const foodKey = FOOD_KEYS[foodIndex];
+	const unitPrice = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
+	if (foodKey === undefined || unitPrice === undefined) {
+		return null;
+	}
+	const foodName = i18n.t(`models:foods.${foodType}`, {
+		lng: ctx.lng,
+		count: amount
+	});
+	return i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodConfirmDescription", {
+		lng: ctx.lng,
+		amount,
+		food: foodName,
+		foodType,
+		cost: unitPrice * amount,
+		stock: ctx.data.food[foodKey],
+		cap: ctx.data.foodCaps[foodIndex],
+		treasury: ctx.data.treasury
+	});
 }
 
 /**

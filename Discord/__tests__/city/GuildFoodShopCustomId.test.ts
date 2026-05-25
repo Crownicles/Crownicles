@@ -18,7 +18,12 @@ describe("parseFoodShopBuyCustomId", () => {
 	it("rejects malformed quantities instead of dispatching a buy", () => {
 		expect(parseFoodShopBuyCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${PetConstants.PET_FOOD.COMMON_FOOD}_0`)).toBeNull();
 		expect(parseFoodShopBuyCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${PetConstants.PET_FOOD.COMMON_FOOD}_NaN`)).toBeNull();
+		expect(parseFoodShopBuyCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${PetConstants.PET_FOOD.COMMON_FOOD}_5abc`)).toBeNull();
 		expect(parseFoodShopBuyCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}${PetConstants.PET_FOOD.COMMON_FOOD}`)).toBeNull();
+	});
+
+	it("rejects unknown food types", () => {
+		expect(parseFoodShopBuyCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX}unknownFood_5`)).toBeNull();
 	});
 
 	it("ignores custom ids from other menus", () => {
