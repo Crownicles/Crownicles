@@ -53,6 +53,7 @@ import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 
 function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<SmallEventGardenerPacket, "interactionName" | "conditionKey">): SmallEventGardenerPacket {
 	return {
@@ -60,7 +61,14 @@ function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<Sma
 		plantId: packet.plantId ?? 0,
 		materialId: packet.materialId ?? 0,
 		cost: packet.cost ?? 0,
-		conditionKey: packet.conditionKey
+		conditionKey: packet.conditionKey,
+
+		/*
+		 * Only the initial-render path (executeSmallEvent direct push) sets this
+		 * to a meaningful value — every other call site (post-collector callbacks)
+		 * leaves it unset because Discord skips the story for those (#4273).
+		 */
+		...packet.isFirstEncounter !== undefined ? { isFirstEncounter: packet.isFirstEncounter } : {}
 	};
 }
 
@@ -554,11 +562,22 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const home = await Homes.getOfPlayer(player.id);
 		const nextSeedId = await getNextSeedId(player, home);
 
+		/*
+		 * `logSmallEvent` is called by the ReportSmallEvent flow BEFORE this
+		 * function runs, so the count already includes the current encounter:
+		 * `<= 1` means "no prior encounter on record" (#4273).
+		 */
+		const isFirstEncounter = await LogsReadRequests.getSmallEventEncounterCount(
+			player.keycloakId, SmallEventConstants.UNIQUE_EVENT_IDS.GARDENER
+		) <= 1;
+
 		if (nextSeedId === null) {
 			const seedSlot = await PlayerPlantSlots.getSeedSlot(player.id);
 			const conditionKey = seedSlot && seedSlot.plantId !== 0 ? SEED_CONDITION_FAILURE.SEED_SLOT_FULL : SEED_CONDITION_FAILURE.ALL_SEEDS_OBTAINED;
 			const packet = await handleFallback(response, player, conditionKey);
-			response.push(makePacket(SmallEventGardenerPacket, packet));
+			response.push(makePacket(SmallEventGardenerPacket, {
+				...packet, isFirstEncounter
+			}));
 			return;
 		}
 
@@ -566,14 +585,16 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 		if (!conditions.canObtain) {
 			const packet = await handleFallback(response, player, conditions.conditionKey, nextSeedId);
-			response.push(makePacket(SmallEventGardenerPacket, packet));
+			response.push(makePacket(SmallEventGardenerPacket, {
+				...packet, isFirstEncounter
+			}));
 			return;
 		}
 
 		const cost = PlantConstants.SEED_COSTS[nextSeedId];
 
 		if (cost > 0) {
-			const collector = new ReactionCollectorGardener(nextSeedId, cost, conditions.conditionKey);
+			const collector = new ReactionCollectorGardener(nextSeedId, cost, conditions.conditionKey, isFirstEncounter);
 			const collectorPacket = new ReactionCollectorInstance(
 				collector,
 				context,
@@ -588,7 +609,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 		}
 		else {
 			const packet = await giveSeedToPlayer(response, player, nextSeedId, conditions.conditionKey);
-			response.push(makePacket(SmallEventGardenerPacket, packet));
+			response.push(makePacket(SmallEventGardenerPacket, {
+				...packet, isFirstEncounter
+			}));
 		}
 	}
 };

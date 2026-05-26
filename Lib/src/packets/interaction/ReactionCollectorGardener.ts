@@ -15,6 +15,9 @@ export class ReactionCollectorGardenerData extends ReactionCollectorData {
 	cost!: number;
 
 	conditionKey!: SeedConditionKey;
+
+	/** See {@link SmallEventGardenerPacket.isFirstEncounter} (#4273). */
+	isFirstEncounter?: boolean;
 }
 
 export type ReactionCollectorGardenerPacket = AcceptRefusePacket<ReactionCollectorGardenerData>;
@@ -26,11 +29,14 @@ export class ReactionCollectorGardener extends ReactionCollector {
 
 	private readonly conditionKey: SeedConditionKey;
 
-	constructor(seedId: PlantId, cost: number, conditionKey: SeedConditionKey) {
+	private readonly isFirstEncounter: boolean;
+
+	constructor(seedId: PlantId, cost: number, conditionKey: SeedConditionKey, isFirstEncounter: boolean) {
 		super();
 		this.seedId = seedId;
 		this.cost = cost;
 		this.conditionKey = conditionKey;
+		this.isFirstEncounter = isFirstEncounter;
 	}
 
 	creationPacket(id: string, endTime: number): ReactionCollectorGardenerPacket {
@@ -44,7 +50,8 @@ export class ReactionCollectorGardener extends ReactionCollector {
 			data: this.buildData(ReactionCollectorGardenerData, {
 				seedId: this.seedId,
 				cost: this.cost,
-				conditionKey: this.conditionKey
+				conditionKey: this.conditionKey,
+				isFirstEncounter: this.isFirstEncounter
 			})
 		};
 	}

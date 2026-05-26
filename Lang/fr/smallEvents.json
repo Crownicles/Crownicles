@@ -2695,13 +2695,22 @@
     }
   },
   "gardener": {
-    "stories": [
-      "un vieil homme au tablier terreux et aux mains calleuses vous interpelle depuis un petit lopin de terre au bord du chemin. Vous reconnaissez Théobald, le jardinier itinérant, qui vous invite à admirer ses plants avec une fierté non dissimulée. ",
-      "vous apercevez un homme agenouillé au pied d'un arbre, les doigts plongés dans la terre. Théobald se relève en vous voyant, époussette ses genoux et vous salue chaleureusement. ",
-      "une odeur de terre humide et de feuilles fraîches vous attire vers un petit campement improvisé au bord du sentier. Théobald, arrosoir à la main et chapeau fleuri sur la tête, vous accueille avec un grand sourire. ",
-      "vous manquez de marcher sur un semis soigneusement disposé en bordure du chemin. Théobald surgit d'un buisson voisin, l'air faussement outré, avant d'éclater de rire en vous reconnaissant. ",
-      "un homme au visage buriné par le soleil vous fait signe depuis un petit jardin aménagé en bord de route. Théobald, fidèle à son habitude, semble connaître chaque plante par son nom et insiste pour partager son savoir avec vous. "
-    ],
+    "stories": {
+      "first": [
+        "un vieil homme au tablier terreux et aux mains calleuses vous interpelle depuis un petit lopin de terre au bord du chemin. Il se présente comme Théobald, jardinier itinérant, et vous invite à admirer ses plants avec une fierté non dissimulée. ",
+        "vous apercevez un homme agenouillé au pied d'un arbre, les doigts plongés dans la terre. Il se relève en vous voyant, époussetant ses genoux, et vous salue chaleureusement. Il dit s'appeler Théobald et consacrer sa vie à l'art du jardinage. ",
+        "une odeur de terre humide et de feuilles fraîches vous attire vers un petit campement improvisé au bord du sentier. Un jardinier nommé Théobald, arrosoir à la main et chapeau fleuri sur la tête, vous accueille avec un grand sourire. ",
+        "vous manquez de marcher sur un semis soigneusement disposé en bordure du chemin. Un vieillard surgit d'un buisson voisin, l'air faussement outré, avant d'éclater de rire. Il se présente comme Théobald, maître jardinier ambulant. ",
+        "un homme au visage buriné par le soleil vous fait signe depuis un petit jardin aménagé en bord de route. Cet homme, un certain Théobald, semble connaître chaque plante par son nom et insiste pour partager son savoir avec les voyageurs. "
+      ],
+      "recurring": [
+        "un vieil homme au tablier terreux et aux mains calleuses vous interpelle depuis un petit lopin de terre au bord du chemin. Vous reconnaissez Théobald, le jardinier itinérant, qui vous invite à admirer ses plants avec une fierté non dissimulée. ",
+        "vous apercevez un homme agenouillé au pied d'un arbre, les doigts plongés dans la terre. Théobald se relève en vous voyant, époussette ses genoux et vous salue chaleureusement. ",
+        "une odeur de terre humide et de feuilles fraîches vous attire vers un petit campement improvisé au bord du sentier. Théobald, arrosoir à la main et chapeau fleuri sur la tête, vous accueille avec un grand sourire. ",
+        "vous manquez de marcher sur un semis soigneusement disposé en bordure du chemin. Théobald surgit d'un buisson voisin, l'air faussement outré, avant d'éclater de rire en vous reconnaissant. ",
+        "un homme au visage buriné par le soleil vous fait signe depuis un petit jardin aménagé en bord de route. Théobald, fidèle à son habitude, semble connaître chaque plante par son nom et insiste pour partager son savoir avec vous. "
+      ]
+    },
     "rewards": {
       "seed": {
         "free": [

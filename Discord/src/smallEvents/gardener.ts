@@ -13,11 +13,12 @@ export async function gardenerCollector(context: PacketContext, packet: Reaction
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction!.userLanguage;
 	const data = packet.data.data;
+	const storyVariant = data.isFirstEncounter ? "first" : "recurring";
 
 	const embed = new CrowniclesSmallEventEmbed(
 		"gardener",
 		getRandomSmallEventIntro(lng)
-		+ StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng)
+		+ StringUtils.getRandomTranslation(`smallEvents:gardener.stories.${storyVariant}`, lng)
 		+ StringUtils.getRandomTranslation("smallEvents:gardener.rewards.seed.paid", lng, {
 			cost: data.cost
 		})
