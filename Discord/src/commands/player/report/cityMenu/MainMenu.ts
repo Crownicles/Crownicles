@@ -157,7 +157,10 @@ function addShopsSection(container: ContainerBuilder, data: ReactionCollectorCit
 				? i18n.t("commands:report.city.shopEmptyDescription", { lng })
 				: i18n.t(`commands:report.city.shops.${shop.shopId}.description`, { lng }),
 			customId: `${ReportCityMenuIds.CITY_SHOP_PREFIX}${shop.shopId}`,
-			buttonLabel: i18n.t("commands:report.city.buttons.browseShop", { lng }),
+			buttonLabel: i18n.t(`commands:report.city.shops.${shop.shopId}.browseLabel`, {
+				lng,
+				defaultValue: i18n.t("commands:report.city.buttons.browseShop", { lng })
+			}),
 			disabled: shop.isEmpty
 		});
 	}
