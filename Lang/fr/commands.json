@@ -1516,6 +1516,7 @@
     "buyCategorySlotSuccess": "Vous avez acheté un nouvel emplacement d'inventaire !",
     "shopItemsSelectDescription": "{{price, number}}{emote:unitValues.{{currency}}}",
     "closeShopButton": "{emote:messages.refuse} Fermer le magasin",
+    "backToCityButton": "Retourner en ville",
     "shopConfirmationTitle": "{{pseudo}}, vous avez sélectionné le produit suivant :",
     "shopConfirmationTitleMultiple": "{{pseudo}}, sélectionnez une quantité pour ce produit :",
     "greeting": "{{pseudo}}, parcourez les rayons et appuyez sur **Acheter** à côté de l'article qui vous intéresse.",

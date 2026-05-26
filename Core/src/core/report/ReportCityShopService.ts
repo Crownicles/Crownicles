@@ -93,7 +93,20 @@ export interface CityShopReactionParams {
 	 * city menu so the close button returns to the city instead of
 	 * dismissing the UI (#4268).
 	 */
-	onShopClose?: OnShopCloseCallback;
+	onShopClose: OnShopCloseCallback;
+}
+
+/**
+ * Shared context passed to every city shop opener. Bundles the player
+ * state, city, MQTT context, response buffer and the "back to city"
+ * callback so each opener has a single argument (#4268).
+ */
+interface CityShopOpenerContext {
+	player: Player;
+	city: City;
+	context: PacketContext;
+	response: CrowniclesPacket[];
+	onShopClose: OnShopCloseCallback;
 }
 
 const CITY_SHOP_TYPES = [
@@ -108,13 +121,7 @@ const CITY_SHOP_TYPES = [
 ] as const;
 type CityShopType = typeof CITY_SHOP_TYPES[number];
 
-type CityShopOpener = (
-	player: Player,
-	context: PacketContext,
-	response: CrowniclesPacket[],
-	city: City,
-	onShopClose?: OnShopCloseCallback
-) => Promise<void>;
+type CityShopOpener = (ctx: CityShopOpenerContext) => Promise<void>;
 
 const SHOP_HANDLERS: Record<CityShopType, CityShopOpener> = {
 	royalMarket: openRoyalMarket,
@@ -145,7 +152,9 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
 		return;
 	}
-	await handler(player, context, response, city, onShopClose);
+	await handler({
+		player, city, context, response, onShopClose
+	});
 }
 
 /**
@@ -223,7 +232,9 @@ async function openGemShop({
  * Open the royal market shop for the player (gem exchanges, king's favor and
  * the Maître des quêtes services: mission skip and quest master badge).
  */
-export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
+export async function openRoyalMarket({
+	player, city, context, response, onShopClose
+}: CityShopOpenerContext): Promise<void> {
 	const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 	await openGemShop({
 		player,
@@ -258,7 +269,9 @@ export async function openRoyalMarket(player: Player, context: PacketContext, re
 /**
  * Open the general shop for the player (daily potion + random equipment)
  */
-export async function openGeneralShop(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
+export async function openGeneralShop({
+	player, city, context, response, onShopClose
+}: CityShopOpenerContext): Promise<void> {
 	const {
 		potion, remainingPotions
 	} = await getGeneralShopData(player.keycloakId);
@@ -290,7 +303,9 @@ export async function openGeneralShop(player: Player, context: PacketContext, re
 /**
  * Open the stock exchange shop for the player (money mouth badge + gem exchange rate info)
  */
-export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
+export async function openStockExchange({
+	player, city, context, response, onShopClose
+}: CityShopOpenerContext): Promise<void> {
 	await openGemShop({
 		player,
 		context,
@@ -313,7 +328,9 @@ export async function openStockExchange(player: Player, context: PacketContext, 
 /**
  * Open the tanner shop for the player (inventory slot extensions + plant slot extensions)
  */
-export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
+export async function openTanner({
+	player, city, context, response, onShopClose
+}: CityShopOpenerContext): Promise<void> {
 	const slotExtensionItem = await getSlotExtensionShopItem(player.id);
 	const plantSlotExtensionItem = await getPlantSlotExtensionShopItem(player.id);
 
@@ -346,7 +363,9 @@ export async function openTanner(player: Player, context: PacketContext, respons
  * Open the herbalist shop for the player (weekly rotating plants + the one-shot
  * "Cœur Sylvestre" talisman that grants remote garden harvest access).
  */
-export async function openHerbalist(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
+export async function openHerbalist({
+	player, city, context, response, onShopClose
+}: CityShopOpenerContext): Promise<void> {
 	const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants();
 	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 
@@ -433,7 +452,9 @@ async function distributeMaterialsRandomly(playerId: number, materials: Material
 /**
  * Open the lumberjack shop for the player (wood by rarity with quantity selection)
  */
-export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
+export async function openLumberjack({
+	player, city, context, response, onShopClose
+}: CityShopOpenerContext): Promise<void> {
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "woodBundles",
@@ -472,7 +493,9 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 /**
  * Open the veterinarian shop for the player (pet information + love points boost)
  */
-export async function openVeterinarian(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
+export async function openVeterinarian({
+	player, city, context, response, onShopClose
+}: CityShopOpenerContext): Promise<void> {
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "services",
@@ -507,7 +530,9 @@ async function generateRandomMaterialsForPlayer(playerId: number, totalQuantity:
 /**
  * Open the material merchant shop for the player (random material packs)
  */
-export async function openMaterialMerchant(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
+export async function openMaterialMerchant({
+	player, city, context, response, onShopClose
+}: CityShopOpenerContext): Promise<void> {
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "materialPacks",
