@@ -902,7 +902,8 @@
         },
         "veterinarian": {
           "label": "Le Vétérinaire",
-          "description": "Un praticien attentionné examine les familiers et peut leur redonner de l'affection s'ils en manquent."
+          "description": "Un praticien attentionné examine les familiers et peut leur redonner de l'affection s'ils en manquent.",
+          "browseLabel": "Consulter le vétérinaire"
         },
         "materialMerchant": {
           "label": "Le Marchand de matériaux",
