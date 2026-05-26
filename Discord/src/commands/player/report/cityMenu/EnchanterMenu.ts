@@ -52,6 +52,16 @@ function buildEnchantmentPrice(data: EnchanterCityData, lng: Language): string {
 		});
 }
 
+function buildEnchantmentBalance(data: EnchanterCityData, lng: Language): string {
+	return data.enchantmentCost.gems === 0
+		? i18n.t("commands:report.city.enchanter.balanceMoneyOnly", {
+			lng, money: data.playerMoney
+		})
+		: i18n.t("commands:report.city.enchanter.balanceMoneyAndGems", {
+			lng, money: data.playerMoney, gems: data.playerGems
+		});
+}
+
 async function sendEnchantReaction(params: EnchanterHandlerParams, index: number): Promise<void> {
 	const {
 		selectedValue, buttonInteraction, context, packet, data
@@ -91,6 +101,7 @@ async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promi
 			lng,
 			item: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
 			price: buildEnchantmentPrice(params.data, lng),
+			balance: buildEnchantmentBalance(params.data, lng),
 			enchantmentId: params.data.enchantmentId,
 			enchantmentType: params.data.enchantmentType
 		}),
@@ -164,6 +175,7 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 			enchantmentId: data.enchantmentId,
 			enchantmentType: data.enchantmentType
 		}),
+		buildEnchantmentBalance(data, lng),
 		data.hasAtLeastOneEnchantedItem
 			&& i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng })
 	]);
