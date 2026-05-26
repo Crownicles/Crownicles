@@ -78,12 +78,22 @@ function getMaterialsByTypeAndRarity(type: MaterialType, rarity: MaterialRarity)
 /**
  * Parameters for handleCityShopReaction
  */
+export type OnShopCloseCallback = (response: CrowniclesPacket[]) => Promise<void>;
+
 export interface CityShopReactionParams {
 	player: Player;
 	city: City;
 	shopId: string;
 	context: PacketContext;
 	response: CrowniclesPacket[];
+
+	/*
+	 * Called when the city shop is closed by the player or expires
+	 * without any purchase. Used by the city flow to re-open the main
+	 * city menu so the close button returns to the city instead of
+	 * dismissing the UI (#4268).
+	 */
+	onShopClose?: OnShopCloseCallback;
 }
 
 const CITY_SHOP_TYPES = [
@@ -98,7 +108,15 @@ const CITY_SHOP_TYPES = [
 ] as const;
 type CityShopType = typeof CITY_SHOP_TYPES[number];
 
-const SHOP_HANDLERS: Record<CityShopType, (player: Player, context: PacketContext, response: CrowniclesPacket[], city: City) => Promise<void>> = {
+type CityShopOpener = (
+	player: Player,
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	city: City,
+	onShopClose?: OnShopCloseCallback
+) => Promise<void>;
+
+const SHOP_HANDLERS: Record<CityShopType, CityShopOpener> = {
 	royalMarket: openRoyalMarket,
 	generalShop: openGeneralShop,
 	stockExchange: openStockExchange,
@@ -115,7 +133,7 @@ function isCityShopType(shopId: string): shopId is CityShopType {
 
 export async function handleCityShopReaction(params: CityShopReactionParams): Promise<void> {
 	const {
-		player, city, shopId, context, response
+		player, city, shopId, context, response, onShopClose
 	} = params;
 	if (!city.shops?.includes(shopId)) {
 		CrowniclesLogger.warn(`Player tried to access unknown shop ${shopId} in city ${city.id}`);
@@ -127,7 +145,7 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
 		return;
 	}
-	await handler(player, context, response, city);
+	await handler(player, context, response, city, onShopClose);
 }
 
 /**
@@ -173,6 +191,7 @@ interface GemShopOptions {
 	shopCategories: ShopCategory[];
 	cityId?: string;
 	additionalShopData?: Record<string, unknown>;
+	onClose?: (response: CrowniclesPacket[]) => Promise<void>;
 }
 
 /**
@@ -184,7 +203,8 @@ async function openGemShop({
 	response,
 	shopCategories,
 	cityId,
-	additionalShopData
+	additionalShopData,
+	onClose
 }: GemShopOptions): Promise<void> {
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
@@ -194,7 +214,8 @@ async function openGemShop({
 		additionalShopData: {
 			gemToMoneyRatio: calculateGemsToMoneyRatio(),
 			...additionalShopData
-		}
+		},
+		onClose
 	});
 }
 
@@ -202,13 +223,14 @@ async function openGemShop({
  * Open the royal market shop for the player (gem exchanges, king's favor and
  * the Maître des quêtes services: mission skip and quest master badge).
  */
-export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
+export async function openRoyalMarket(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
 	const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 	await openGemShop({
 		player,
 		context,
 		response,
 		cityId: city.id,
+		onClose: onShopClose,
 		shopCategories: [
 			{
 				id: "resources",
@@ -236,7 +258,7 @@ export async function openRoyalMarket(player: Player, context: PacketContext, re
 /**
  * Open the general shop for the player (daily potion + random equipment)
  */
-export async function openGeneralShop(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
+export async function openGeneralShop(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
 	const {
 		potion, remainingPotions
 	} = await getGeneralShopData(player.keycloakId);
@@ -260,19 +282,21 @@ export async function openGeneralShop(player: Player, context: PacketContext, re
 		additionalShopData: {
 			remainingPotions,
 			dailyPotion: toItemWithDetails(player, potion, 0, null)
-		}
+		},
+		onClose: onShopClose
 	});
 }
 
 /**
  * Open the stock exchange shop for the player (money mouth badge + gem exchange rate info)
  */
-export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
+export async function openStockExchange(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
 	await openGemShop({
 		player,
 		context,
 		response,
 		cityId: city.id,
+		onClose: onShopClose,
 		shopCategories: [
 			{
 				id: "permanentItem",
@@ -289,7 +313,7 @@ export async function openStockExchange(player: Player, context: PacketContext, 
 /**
  * Open the tanner shop for the player (inventory slot extensions + plant slot extensions)
  */
-export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
+export async function openTanner(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
 	const slotExtensionItem = await getSlotExtensionShopItem(player.id);
 	const plantSlotExtensionItem = await getPlantSlotExtensionShopItem(player.id);
 
@@ -313,7 +337,8 @@ export async function openTanner(player: Player, context: PacketContext, respons
 		shopCategories,
 		player,
 		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
-		cityId: city.id
+		cityId: city.id,
+		onClose: onShopClose
 	});
 }
 
@@ -321,7 +346,7 @@ export async function openTanner(player: Player, context: PacketContext, respons
  * Open the herbalist shop for the player (weekly rotating plants + the one-shot
  * "Cœur Sylvestre" talisman that grants remote garden harvest access).
  */
-export async function openHerbalist(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
+export async function openHerbalist(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
 	const weeklyPlants = PlantConstants.getWeeklyHerbalistPlants();
 	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
 
@@ -384,7 +409,8 @@ export async function openHerbalist(player: Player, context: PacketContext, resp
 		cityId: city.id,
 		additionalShopData: {
 			weeklyPlants: weeklyPlants.map((p: PlantType) => p.id)
-		}
+		},
+		onClose: onShopClose
 	});
 }
 
@@ -407,7 +433,7 @@ async function distributeMaterialsRandomly(playerId: number, materials: Material
 /**
  * Open the lumberjack shop for the player (wood by rarity with quantity selection)
  */
-export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
+export async function openLumberjack(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "woodBundles",
@@ -438,14 +464,15 @@ export async function openLumberjack(player: Player, context: PacketContext, res
 		shopCategories,
 		player,
 		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
-		cityId: city.id
+		cityId: city.id,
+		onClose: onShopClose
 	});
 }
 
 /**
  * Open the veterinarian shop for the player (pet information + love points boost)
  */
-export async function openVeterinarian(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
+export async function openVeterinarian(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "services",
@@ -460,7 +487,8 @@ export async function openVeterinarian(player: Player, context: PacketContext, r
 		cityId: city.id,
 		additionalShopData: {
 			currency: ShopCurrency.GEM
-		}
+		},
+		onClose: onShopClose
 	});
 }
 
@@ -479,7 +507,7 @@ async function generateRandomMaterialsForPlayer(playerId: number, totalQuantity:
 /**
  * Open the material merchant shop for the player (random material packs)
  */
-export async function openMaterialMerchant(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City): Promise<void> {
+export async function openMaterialMerchant(player: Player, context: PacketContext, response: CrowniclesPacket[], city: City, onShopClose?: OnShopCloseCallback): Promise<void> {
 	const shopCategories: ShopCategory[] = [
 		{
 			id: "materialPacks",
@@ -501,6 +529,7 @@ export async function openMaterialMerchant(player: Player, context: PacketContex
 		shopCategories,
 		player,
 		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
-		cityId: city.id
+		cityId: city.id,
+		onClose: onShopClose
 	});
 }

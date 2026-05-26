@@ -365,7 +365,25 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 				city: params.city,
 				shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
 				context: params.context,
-				response: params.response
+				response: params.response,
+
+				/*
+				 * Re-open the main city menu when the player closes the
+				 * shop (or it expires without a purchase) so the close
+				 * button brings them back to the city instead of just
+				 * dismissing the shop UI (#4268).
+				 */
+				onShopClose: async (closeResponse): Promise<void> => {
+					await params.player.reload();
+					await sendCityCollector(
+						params.context,
+						closeResponse,
+						params.player,
+						new Date(),
+						params.city,
+						{ forceSpecificEvent: params.forceSpecificEvent }
+					);
+				}
 			});
 		}
 	],

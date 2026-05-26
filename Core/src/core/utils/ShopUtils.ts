@@ -30,6 +30,16 @@ export type ShopInformations = {
 	additionalShopData?: additionalShopData & { currency?: ShopCurrency };
 	logger?: (keycloakId: string, shopItemName: ShopItemType, amount?: number, cityId?: string) => Promise<void>;
 	cityId?: string;
+
+	/*
+	 * Optional hook invoked when the shop is closed by the player (close
+	 * button) or expires without any purchase. When provided, the helper
+	 * replaces the default `CommandShopClosed` packet so callers (e.g. the
+	 * city shop flow) can re-open a parent collector — for instance to
+	 * bring the player back to the main city menu instead of dismissing
+	 * the UI entirely (#4268).
+	 */
+	onClose?: (response: CrowniclesPacket[]) => Promise<void>;
 };
 
 type ShopUtilsBuyCallbackResult = BuyCallbackResult & {
@@ -45,7 +55,8 @@ export abstract class ShopUtils {
 			player,
 			additionalShopData = {},
 			logger,
-			cityId
+			cityId,
+			onClose
 		}: ShopInformations
 	): Promise<void> {
 		additionalShopData.currency ??= ShopCurrency.MONEY;
@@ -58,7 +69,12 @@ export abstract class ShopUtils {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SHOP);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.SHOP_CONFIRMATION);
 			if (!reaction || reaction.reaction.type === ReactionCollectorShopCloseReaction.name) {
-				response.push(makePacket(CommandShopClosed, {}));
+				if (onClose) {
+					await onClose(response);
+				}
+				else {
+					response.push(makePacket(CommandShopClosed, {}));
+				}
 				return;
 			}
 			const reactionInstance = reaction.reaction.data as ReactionCollectorShopItemReaction;
