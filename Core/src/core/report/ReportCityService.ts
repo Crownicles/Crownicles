@@ -2,6 +2,7 @@ import InventorySlot from "../database/game/models/InventorySlot";
 import {
 	Player
 } from "../database/game/models/Player";
+import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
 	City, CityDataController
 } from "../../data/City";
@@ -141,14 +142,14 @@ export async function buildApartmentNotaryData(
 /**
  * Build enchanter data for the city reaction collector
  */
-export function buildEnchanterData(
+export async function buildEnchanterData(
 	playerData: {
 		inventory: InventorySlot[]; player: Player;
 	},
 	enchantData: {
 		enchantment: ItemEnchantment; enchantmentId: string; isPlayerMage: boolean;
 	}
-): EnchanterData {
+): Promise<EnchanterData> {
 	const {
 		inventory: playerInventory, player
 	} = playerData;
@@ -180,6 +181,8 @@ export function buildEnchanterData(
 		}
 	}
 
+	const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+
 	return {
 		enchantableItems,
 		isInventoryEmpty: equipmentCount === 0,
@@ -189,7 +192,9 @@ export function buildEnchanterData(
 		enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
 		enchantmentType: enchantment.kind.type.id,
 		enchantmentSlot: enchantment.kind.slot,
-		mageReduction: isPlayerMage
+		mageReduction: isPlayerMage,
+		playerMoney: player.money,
+		playerGems: playerMissionsInfo.gems
 	};
 }
 
