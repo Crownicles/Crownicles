@@ -373,7 +373,7 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 				 * button brings them back to the city instead of just
 				 * dismissing the shop UI (#4268).
 				 */
-				onShopClose: async (closeResponse): Promise<void> => {
+				onClose: async (closeResponse): Promise<void> => {
 					await params.player.reload();
 					await sendCityCollector(
 						params.context,

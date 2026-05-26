@@ -4,7 +4,9 @@ import { DiscordCache } from "../../../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../../../utils/StringUtils";
 import { getRandomSmallEventIntro } from "../../../utils/SmallEventUtils";
-import { SmallEventGardenerPacket } from "../../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
+import {
+	getGardenerStoryVariant, SmallEventGardenerPacket
+} from "../../../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
 import {
 	GARDENER_INTERACTIONS, PlantConstants, SEED_CONDITION_FAILURE
 } from "../../../../../Lib/src/constants/PlantConstants";
@@ -57,7 +59,7 @@ export default class GardenerSmallEventHandler {
 		const lng = context.discord!.language;
 
 		const isFromCollector = Boolean(context.discord!.buttonInteraction);
-		const storyVariant = packet.isFirstEncounter ? "first" : "recurring";
+		const storyVariant = getGardenerStoryVariant(packet.isFirstEncounter);
 		const story = isFromCollector
 			? ""
 			: getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation(`smallEvents:gardener.stories.${storyVariant}`, lng);

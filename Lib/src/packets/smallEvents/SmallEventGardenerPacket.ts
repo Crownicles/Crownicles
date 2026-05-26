@@ -6,6 +6,22 @@ import {
 	GardenerInteractionName, SeedConditionKey
 } from "../../constants/PlantConstants";
 
+/**
+ * Story variants for the gardener event. `first` is used the very first
+ * time a player meets Théobald (introduction-style narration), `recurring`
+ * is used for every encounter after (recognition-style narration) (#4273).
+ */
+export const GARDENER_STORY_VARIANT = {
+	FIRST: "first",
+	RECURRING: "recurring"
+} as const;
+
+export type GardenerStoryVariant = typeof GARDENER_STORY_VARIANT[keyof typeof GARDENER_STORY_VARIANT];
+
+export function getGardenerStoryVariant(isFirstEncounter: boolean | undefined): GardenerStoryVariant {
+	return isFirstEncounter ? GARDENER_STORY_VARIANT.FIRST : GARDENER_STORY_VARIANT.RECURRING;
+}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventGardenerPacket extends SmallEventPacket {
 	interactionName!: GardenerInteractionName;
