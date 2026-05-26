@@ -57,9 +57,10 @@ export default class GardenerSmallEventHandler {
 		const lng = context.discord!.language;
 
 		const isFromCollector = Boolean(context.discord!.buttonInteraction);
+		const storyVariant = packet.isFirstEncounter ? "first" : "recurring";
 		const story = isFromCollector
 			? ""
-			: getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation("smallEvents:gardener.stories", lng);
+			: getRandomSmallEventIntro(lng) + StringUtils.getRandomTranslation(`smallEvents:gardener.stories.${storyVariant}`, lng);
 
 		const rewardText = buildGardenerRewardText(packet, lng);
 
