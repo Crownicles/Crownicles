@@ -326,6 +326,18 @@ function buildMarketAnalysisText(packet: CommandMissionShopMarketAnalysis, lng: 
 		if (!plant) {
 			continue;
 		}
+
+		/*
+		 * Skip plants whose trends are entirely NON_APPLICABLE (typically
+		 * happens when the rotation lands on the very next day — every
+		 * forecast horizon is past the rotation). Without this filter the
+		 * header would render with no body, leaving a confusing empty
+		 * "Trèfle doré :" line (#4255).
+		 */
+		if (plantTrend.trends.every(trend => trend === MarketTrend.NON_APPLICABLE)) {
+			continue;
+		}
+
 		text += formatPlantTrends({
 			plantId: plantTrend.plantId, trends: plantTrend.trends, translationPrefix: "plants", lng, breakOnNonApplicable: true
 		});
