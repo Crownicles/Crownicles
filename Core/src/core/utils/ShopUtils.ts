@@ -24,6 +24,13 @@ import {
 import { ShopCurrency } from "../../../../Lib/src/constants/ShopConstants";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 
+/**
+ * Callback fired when a shop collector is closed by the player or expires
+ * without any purchase. Lets callers chain another collector instead of
+ * sending the default `CommandShopClosed` terminator (#4268).
+ */
+export type OnShopCloseCallback = (response: CrowniclesPacket[]) => Promise<void>;
+
 export type ShopInformations = {
 	shopCategories: ShopCategory[];
 	player: Player;
@@ -39,7 +46,7 @@ export type ShopInformations = {
 	 * bring the player back to the main city menu instead of dismissing
 	 * the UI entirely (#4268).
 	 */
-	onClose?: (response: CrowniclesPacket[]) => Promise<void>;
+	onClose?: OnShopCloseCallback;
 };
 
 type ShopUtilsBuyCallbackResult = BuyCallbackResult & {

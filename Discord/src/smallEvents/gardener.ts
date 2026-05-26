@@ -4,6 +4,7 @@ import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
 import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed";
 import { StringUtils } from "../utils/StringUtils";
 import { getRandomSmallEventIntro } from "../utils/SmallEventUtils";
+import { getGardenerStoryVariant } from "../../../Lib/src/packets/smallEvents/SmallEventGardenerPacket";
 import {
 	ReactionCollectorGardenerPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorGardener";
@@ -13,7 +14,7 @@ export async function gardenerCollector(context: PacketContext, packet: Reaction
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	const lng = interaction!.userLanguage;
 	const data = packet.data.data;
-	const storyVariant = data.isFirstEncounter ? "first" : "recurring";
+	const storyVariant = getGardenerStoryVariant(data.isFirstEncounter);
 
 	const embed = new CrowniclesSmallEventEmbed(
 		"gardener",
