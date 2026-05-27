@@ -3,5 +3,6 @@
   "rawDefense": 10,
   "attack": -40,
   "defense": 20,
-  "type": "spiritual"
+  "type": "spiritual",
+  "materialCategory": 15
 }

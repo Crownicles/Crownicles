@@ -4,5 +4,6 @@
   "tags": [
     "ranged"
   ],
-  "type": "nature"
+  "type": "nature",
+  "materialCategory": 3
 }

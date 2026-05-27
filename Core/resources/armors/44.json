@@ -4,5 +4,6 @@
   "attack": -20,
   "speed": -20,
   "defense": 5,
-  "type": "nature"
+  "type": "nature",
+  "materialCategory": 8
 }

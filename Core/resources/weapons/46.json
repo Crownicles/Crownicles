@@ -4,5 +4,6 @@
   "tags": [
     "holy"
   ],
-  "type": "leather"
+  "type": "leather",
+  "materialCategory": 7
 }

@@ -2,5 +2,6 @@
   "rarity": 4,
   "rawDefense": 10,
   "attack": -25,
-  "type": "spiritual"
+  "type": "spiritual",
+  "materialCategory": 15
 }

@@ -1,5 +1,6 @@
 {
   "rarity": 6,
   "rawAttack": 5,
-  "type": "metal"
+  "type": "metal",
+  "materialCategory": 13
 }

@@ -1,5 +1,6 @@
 {
   "rarity": 1,
   "rawDefense": 2,
-  "type": "wood"
+  "type": "wood",
+  "materialCategory": 5
 }

@@ -2,5 +2,6 @@
   "rarity": 5,
   "rawDefense": 3,
   "speed": 5,
-  "type": "poison"
+  "type": "poison",
+  "materialCategory": 11
 }

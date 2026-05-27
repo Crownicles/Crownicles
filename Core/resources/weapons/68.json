@@ -3,5 +3,6 @@
   "rawAttack": 6,
   "speed": 10,
   "defense": -20,
-  "type": "wood"
+  "type": "wood",
+  "materialCategory": 10
 }

@@ -2,5 +2,6 @@
   "rarity": 2,
   "rawAttack": 6,
   "defense": 10,
-  "type": "leather"
+  "type": "leather",
+  "materialCategory": 12
 }

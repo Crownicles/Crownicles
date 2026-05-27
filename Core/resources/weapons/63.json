@@ -7,5 +7,6 @@
     "ranged",
     "metallic"
   ],
-  "type": "explosive"
+  "type": "explosive",
+  "materialCategory": 12
 }

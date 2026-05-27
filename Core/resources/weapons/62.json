@@ -1,5 +1,6 @@
 {
   "rarity": 7,
   "rawAttack": 4,
-  "type": "poison"
+  "type": "poison",
+  "materialCategory": 11
 }

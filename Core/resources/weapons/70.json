@@ -5,5 +5,6 @@
     "ranged",
     "metallic"
   ],
-  "type": "alloy"
+  "type": "alloy",
+  "materialCategory": 12
 }
