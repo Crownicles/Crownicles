@@ -3,5 +3,6 @@
   "rawDefense": 1,
   "attack": 80,
   "speed": -15,
-  "type": "magic"
+  "type": "magic",
+  "materialCategory": 14
 }

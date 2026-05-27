@@ -3,5 +3,6 @@
   "rawDefense": 5,
   "attack": 4,
   "speed": 5,
-  "type": "metal"
+  "type": "metal",
+  "materialCategory": 4
 }

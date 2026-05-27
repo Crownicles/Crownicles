@@ -3,5 +3,6 @@
   "rawDefense": 8,
   "attack": 3,
   "speed": 10,
-  "type": "poison"
+  "type": "poison",
+  "materialCategory": 11
 }

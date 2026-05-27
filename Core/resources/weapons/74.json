@@ -1,5 +1,6 @@
 {
   "rarity": 7,
   "rawAttack": 8,
-  "type": "magic"
+  "type": "magic",
+  "materialCategory": 10
 }

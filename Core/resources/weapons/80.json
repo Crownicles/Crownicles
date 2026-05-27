@@ -6,5 +6,6 @@
     "holy",
     "metallic"
   ],
-  "type": "magic"
+  "type": "magic",
+  "materialCategory": 12
 }

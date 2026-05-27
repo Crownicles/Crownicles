@@ -6,5 +6,6 @@
   "tags": [
     "ranged"
   ],
-  "type": "rope"
+  "type": "rope",
+  "materialCategory": 4
 }

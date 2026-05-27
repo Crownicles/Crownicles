@@ -7,5 +7,6 @@
   "type": "metal",
   "tags": [
     "metallic"
-  ]
+  ],
+  "materialCategory": 1
 }

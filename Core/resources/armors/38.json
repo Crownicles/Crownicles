@@ -4,5 +4,6 @@
   "tags": [
     "holy"
   ],
-  "type": "magic"
+  "type": "magic",
+  "materialCategory": 9
 }

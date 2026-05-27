@@ -1,5 +1,6 @@
 {
   "rarity": 1,
   "rawDefense": 1,
-  "type": "rope"
+  "type": "rope",
+  "materialCategory": 7
 }

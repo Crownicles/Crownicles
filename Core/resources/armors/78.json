@@ -2,5 +2,6 @@
   "rarity": 1,
   "rawDefense": 10,
   "attack": -5,
-  "type": "rope"
+  "type": "rope",
+  "materialCategory": 7
 }

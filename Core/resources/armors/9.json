@@ -4,5 +4,6 @@
   "type": "wood",
   "tags": [
     "metallic"
-  ]
+  ],
+  "materialCategory": 6
 }

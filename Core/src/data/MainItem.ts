@@ -10,6 +10,12 @@ import {
 	Material, MaterialDataController
 } from "./Material";
 import { MaterialRarity } from "../../../Lib/src/types/MaterialRarity";
+import {
+	DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL,
+	ItemMaterialCategory,
+	MATERIAL_POOLS_PER_CATEGORY,
+	pickDistinctMaterials
+} from "../../../Lib/src/constants/ItemMaterialCategoryConstants";
 
 export abstract class MainItem extends GenericItem {
 	public readonly rawAttack?: number;
@@ -23,6 +29,13 @@ export abstract class MainItem extends GenericItem {
 	public readonly speed?: number;
 
 	public readonly type!: MaterialType;
+
+	/**
+	 * Category id (1..15) that drives which materials are required to upgrade
+	 * this item at the blacksmith. See `Lib/src/constants/ItemMaterialCategoryConstants.ts`
+	 * and `docs/design/item-material-categories.md`.
+	 */
+	public readonly materialCategory!: ItemMaterialCategory;
 
 
 	private upgradeMaterialsCache: Map<number, Material[]> = new Map<number, Material[]>();
@@ -104,8 +117,17 @@ export abstract class MainItem extends GenericItem {
 	}
 
 	/**
-	 * Get the upgrade materials for a given level
-	 * @param level
+	 * Get the upgrade materials for a given level.
+	 *
+	 * Returns a flat `Material[]` where each material id may appear several
+	 * times: downstream code (e.g. `ReportBlacksmithService`) aggregates by id
+	 * to obtain `{ materialId, quantity }` pairs.
+	 *
+	 * Selection strategy:
+	 * 1. Look up the item's `materialCategory` pool of materials, split by material rarity.
+	 * 2. For each material rarity bucket, read the total quantity required from `ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL` and the distinct material count from `DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL`.
+	 * 3. Pick that many distinct ids from the pool with a deterministic sliding window (`pickDistinctMaterials`), so two consecutive levels share at least `distinctCount - 1` materials and we rotate through the whole pool over the five upgrade levels.
+	 * 4. Distribute the total quantity across the picked ids (base quantity + 1 for the first `rem` positions) and emit each id that many times.
 	 */
 	public getUpgradeMaterials(level: number): Material[] {
 		if (level < 0) {
@@ -115,34 +137,52 @@ export abstract class MainItem extends GenericItem {
 			level = ItemConstants.MAX_UPGRADE_LEVEL;
 		}
 
-		let materials = this.upgradeMaterialsCache.get(level);
-		if (!materials) {
-			const seed = this.id << 4 | level;
+		const cached = this.upgradeMaterialsCache.get(level);
+		if (cached) {
+			return cached;
+		}
 
-			const upgradeMaterialsCounts = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[this.rarity as ItemRarity][level as 1 | 2 | 3 | 4 | 5];
-			const upgradeMaterials = MaterialDataController.instance.getMaterialsFromType(this.type);
+		const materials: Material[] = [];
 
-			materials = [];
+		if (level >= 1 && level <= 5) {
+			const itemRarity = this.rarity as ItemRarity;
+			const upgradeLevel = level as 1 | 2 | 3 | 4 | 5;
+			const totals = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel];
+			const distincts = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel - 1];
+			const categoryPool = MATERIAL_POOLS_PER_CATEGORY[this.materialCategory];
 
-			// For each material rarity, get random materials with the seed
-			for (const countEntry of Object.entries(upgradeMaterialsCounts)) {
-				const materialRarity = Number(countEntry[0]) as MaterialRarity;
-				const count = countEntry[1];
+			for (const matRarity of [
+				MaterialRarity.COMMON,
+				MaterialRarity.UNCOMMON,
+				MaterialRarity.RARE
+			]) {
+				const totalQty = totals[matRarity];
+				if (totalQty <= 0) {
+					continue;
+				}
+				const subPool = categoryPool[matRarity];
+				const distinctCount = Math.min(distincts[matRarity], subPool.length, totalQty);
+				if (distinctCount <= 0) {
+					continue;
+				}
 
-				if (count > 0) {
-					const filteredMaterials = upgradeMaterials.filter(material => material.rarity === materialRarity);
-
-					// Pseudo-random selection based on the seed
-					for (let i = 0; i < count; i++) {
-						const index = ((seed + i + materialRarity << 6) * 2654435761) % filteredMaterials.length;
-						materials.push(filteredMaterials[index]);
+				const picked = pickDistinctMaterials(subPool, this.id, matRarity, upgradeLevel, distinctCount);
+				const base = Math.floor(totalQty / picked.length);
+				const rem = totalQty % picked.length;
+				for (let i = 0; i < picked.length; i++) {
+					const qty = base + (i < rem ? 1 : 0);
+					const mat = MaterialDataController.instance.getById(String(picked[i]));
+					if (!mat) {
+						continue;
+					}
+					for (let k = 0; k < qty; k++) {
+						materials.push(mat);
 					}
 				}
 			}
-
-			this.upgradeMaterialsCache.set(level, materials);
 		}
 
+		this.upgradeMaterialsCache.set(level, materials);
 		return materials;
 	}
 }
