@@ -670,31 +670,39 @@ async function applyGardenWateringUnderLock(
 	wateringResult: GardenWateringResult,
 	now: number
 ): Promise<void> {
-	const slotsByPlantId = new Map<number, number[]>();
-	for (const entry of wateringResult.entries) {
-		const slots = slotsByPlantId.get(entry.plantId);
+	const slotsByPlantId = groupSlotsByPlantId(wateringResult.entries);
+	await shiftPlantedAtForGroupedSlots(home.id, slotsByPlantId);
+
+	lockedPlayer.lastGardenWatered = new Date(now);
+	await lockedPlayer.save();
+}
+
+function groupSlotsByPlantId(entries: WaterableSlotGrowth[]): Map<number, number[]> {
+	const grouped = new Map<number, number[]>();
+	for (const entry of entries) {
+		const slots = grouped.get(entry.plantId);
 		if (slots) {
 			slots.push(entry.slot);
 		}
 		else {
-			slotsByPlantId.set(entry.plantId, [entry.slot]);
+			grouped.set(entry.plantId, [entry.slot]);
 		}
 	}
+	return grouped;
+}
 
+async function shiftPlantedAtForGroupedSlots(homeId: number, slotsByPlantId: Map<number, number[]>): Promise<void> {
 	for (const [plantId, slots] of slotsByPlantId) {
 		const plant = PlantConstants.getPlantById(plantId);
 		if (!plant || plant.wateringAdvanceSeconds <= 0) {
 			continue;
 		}
 		await HomeGardenSlots.shiftPlantedAtForSlots(
-			home.id,
+			homeId,
 			slots,
 			plant.wateringAdvanceSeconds * TimeConstants.MS_TIME.SECOND
 		);
 	}
-
-	lockedPlayer.lastGardenWatered = new Date(now);
-	await lockedPlayer.save();
 }
 
 /**
