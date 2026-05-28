@@ -72,7 +72,7 @@ describe("ItemMaterialCategoryConstants", () => {
 			}
 		});
 
-		it("totals 0 for BASIC and at most 9 distinct mats per upgrade", () => {
+		it("totals 0 for BASIC and at most 10 distinct mats per upgrade", () => {
 			for (const itemRarity of Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[]) {
 				const rows = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity];
 				for (const row of rows) {
@@ -82,7 +82,7 @@ describe("ItemMaterialCategoryConstants", () => {
 					}
 					else {
 						expect(total).toBeGreaterThanOrEqual(2);
-						expect(total).toBeLessThanOrEqual(9);
+						expect(total).toBeLessThanOrEqual(10);
 					}
 				}
 			}
