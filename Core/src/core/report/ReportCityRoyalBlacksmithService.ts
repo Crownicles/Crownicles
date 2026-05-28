@@ -48,7 +48,7 @@ type ExecutionData = {
 	materialsExtraCost: number;
 };
 
-function findRoyalBlacksmithItem(
+export function findRoyalBlacksmithItem(
 	player: Player,
 	data: ReactionCollectorCityData,
 	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction
@@ -77,7 +77,7 @@ async function getPlayerMaterialStock(playerId: number): Promise<Map<number, num
 	return new Map(materials.map(m => [m.materialId, m.quantity]));
 }
 
-function buildExecutionData(params: {
+export function buildExecutionData(params: {
 	item: RoyalUpgradeableItem;
 	materialStock: Map<number, number>;
 	buyMaterials: boolean;
