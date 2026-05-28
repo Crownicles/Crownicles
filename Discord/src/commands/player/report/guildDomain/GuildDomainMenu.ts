@@ -278,22 +278,42 @@ async function handleShopDepositSelection(
 	await showDomainConfirmation(ctx, nestedMenus, buildTreasuryDepositConfirmation(ctx, amount));
 }
 
+type DomainCustomIdRoute = {
+	match: (customId: string) => boolean;
+	handle: (ctx: GuildDomainMenuContext, customId: string, nestedMenus: CrowniclesNestedMenus) => Promise<void> | void;
+};
+
+function createRoutingDomainCollector(
+	ctx: GuildDomainMenuContext,
+	routes: DomainCustomIdRoute[]
+): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return createDomainCollectorWithStayHandling(ctx, async (customId, _buttonInteraction, nestedMenus) => {
+		for (const route of routes) {
+			if (route.match(customId)) {
+				await route.handle(ctx, customId, nestedMenus);
+				return;
+			}
+		}
+	});
+}
+
 function createShopQuantityCollector(
 	ctx: GuildDomainMenuContext
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	return createDomainCollectorWithStayHandling(ctx, async (customId, _buttonInteraction, nestedMenus) => {
-		if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_CANCEL) {
-			await nestedMenus.changeMenu(BUILDING_MENU_IDS[GuildBuilding.SHOP]);
-			return;
+	return createRoutingDomainCollector(ctx, [
+		{
+			match: id => id === ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_CANCEL,
+			handle: (_ctx, _id, nestedMenus) => nestedMenus.changeMenu(BUILDING_MENU_IDS[GuildBuilding.SHOP])
+		},
+		{
+			match: id => id.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX),
+			handle: handleShopFoodSelection
+		},
+		{
+			match: id => id.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX),
+			handle: handleShopDepositSelection
 		}
-		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX)) {
-			await handleShopFoodSelection(ctx, customId, nestedMenus);
-			return;
-		}
-		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX)) {
-			await handleShopDepositSelection(ctx, customId, nestedMenus);
-		}
-	});
+	]);
 }
 
 async function showShopFoodQuantityMenu(
@@ -378,19 +398,23 @@ async function handleShopBuildingSelection(
 }
 
 function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
-	return createDomainCollectorWithStayHandling(ctx, async (customId, _buttonInteraction, nestedMenus) => {
-		if (customId === ReportCityMenuIds.GUILD_DOMAIN_BACK) {
-			await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
-			return;
+	const routes: DomainCustomIdRoute[] = [
+		{
+			match: id => id === ReportCityMenuIds.GUILD_DOMAIN_BACK,
+			handle: (_ctx, _id, nestedMenus) => nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU)
+		},
+		{
+			match: id => id.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX),
+			handle: handleBuildingUpgradeSelection
 		}
-		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX)) {
-			await handleBuildingUpgradeSelection(ctx, customId, nestedMenus);
-			return;
-		}
-		if (building === GuildBuilding.SHOP) {
-			await handleShopBuildingSelection(ctx, customId, nestedMenus);
-		}
-	});
+	];
+	if (building === GuildBuilding.SHOP) {
+		routes.push({
+			match: () => true,
+			handle: handleShopBuildingSelection
+		});
+	}
+	return createRoutingDomainCollector(ctx, routes);
 }
 
 export interface GuildDomainMenuOptions {
