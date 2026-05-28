@@ -251,6 +251,33 @@ function createMainMenuCollector(ctx: GuildDomainMenuContext): (nestedMenus: Cro
 	});
 }
 
+async function handleShopFoodSelection(
+	ctx: GuildDomainMenuContext,
+	customId: string,
+	nestedMenus: CrowniclesNestedMenus
+): Promise<void> {
+	const selection = parseFoodShopBuyCustomId(customId);
+	if (!selection) {
+		return;
+	}
+	const confirmation = buildFoodBuyConfirmation(ctx, selection.foodType, selection.amount);
+	if (confirmation) {
+		await showDomainConfirmation(ctx, nestedMenus, confirmation);
+	}
+}
+
+async function handleShopDepositSelection(
+	ctx: GuildDomainMenuContext,
+	customId: string,
+	nestedMenus: CrowniclesNestedMenus
+): Promise<void> {
+	const amount = parsePrefixedAmount(customId, ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX);
+	if (!Number.isInteger(amount) || amount <= 0) {
+		return;
+	}
+	await showDomainConfirmation(ctx, nestedMenus, buildTreasuryDepositConfirmation(ctx, amount));
+}
+
 function createShopQuantityCollector(
 	ctx: GuildDomainMenuContext
 ): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
@@ -259,25 +286,12 @@ function createShopQuantityCollector(
 			await nestedMenus.changeMenu(BUILDING_MENU_IDS[GuildBuilding.SHOP]);
 			return;
 		}
-
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX)) {
-			const selection = parseFoodShopBuyCustomId(customId);
-			if (!selection) {
-				return;
-			}
-			const confirmation = buildFoodBuyConfirmation(ctx, selection.foodType, selection.amount);
-			if (confirmation) {
-				await showDomainConfirmation(ctx, nestedMenus, confirmation);
-			}
+			await handleShopFoodSelection(ctx, customId, nestedMenus);
 			return;
 		}
-
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX)) {
-			const amount = parsePrefixedAmount(customId, ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX);
-			if (!Number.isInteger(amount) || amount <= 0) {
-				return;
-			}
-			await showDomainConfirmation(ctx, nestedMenus, buildTreasuryDepositConfirmation(ctx, amount));
+			await handleShopDepositSelection(ctx, customId, nestedMenus);
 		}
 	});
 }
@@ -336,32 +350,45 @@ async function showShopReimburseMenu(
 	await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_MENU);
 }
 
+async function handleBuildingUpgradeSelection(
+	ctx: GuildDomainMenuContext,
+	customId: string,
+	nestedMenus: CrowniclesNestedMenus
+): Promise<void> {
+	const upgradedBuilding = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "") as GuildBuilding;
+	const confirmation = buildBuildingUpgradeConfirmation(ctx, upgradedBuilding);
+	if (confirmation) {
+		await showDomainConfirmation(ctx, nestedMenus, confirmation);
+	}
+}
+
+async function handleShopBuildingSelection(
+	ctx: GuildDomainMenuContext,
+	customId: string,
+	nestedMenus: CrowniclesNestedMenus
+): Promise<void> {
+	if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_OPEN_PREFIX)) {
+		const foodType = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_OPEN_PREFIX, "") as PetFood;
+		await showShopFoodQuantityMenu(ctx, nestedMenus, foodType);
+		return;
+	}
+	if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_TREASURY_OPEN) {
+		await showShopTreasuryMenu(ctx, nestedMenus);
+	}
+}
+
 function createBuildingMenuCollector(building: GuildBuilding, ctx: GuildDomainMenuContext): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
 	return createDomainCollectorWithStayHandling(ctx, async (customId, _buttonInteraction, nestedMenus) => {
 		if (customId === ReportCityMenuIds.GUILD_DOMAIN_BACK) {
 			await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_MENU);
 			return;
 		}
-
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX)) {
-			const upgradedBuilding = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX, "") as GuildBuilding;
-			const confirmation = buildBuildingUpgradeConfirmation(ctx, upgradedBuilding);
-			if (confirmation) {
-				await showDomainConfirmation(ctx, nestedMenus, confirmation);
-			}
+			await handleBuildingUpgradeSelection(ctx, customId, nestedMenus);
 			return;
 		}
-
 		if (building === GuildBuilding.SHOP) {
-			if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_OPEN_PREFIX)) {
-				const foodType = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_OPEN_PREFIX, "") as PetFood;
-				await showShopFoodQuantityMenu(ctx, nestedMenus, foodType);
-				return;
-			}
-
-			if (customId === ReportCityMenuIds.GUILD_DOMAIN_SHOP_TREASURY_OPEN) {
-				await showShopTreasuryMenu(ctx, nestedMenus);
-			}
+			await handleShopBuildingSelection(ctx, customId, nestedMenus);
 		}
 	});
 }
