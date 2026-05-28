@@ -178,6 +178,37 @@ export const PET_FOOD_TO_KEY: Record<PetFood, FoodKey> = {
 	[PetConstants.PET_FOOD.ULTIMATE_FOOD]: "ultimate"
 };
 
+/**
+ * Parses an integer amount from the suffix of a customId of the form `${prefix}${amount}`.
+ * Returns NaN if the suffix is not a valid integer — callers should validate.
+ */
+export function parsePrefixedAmount(customId: string, prefix: string): number {
+	return Number.parseInt(customId.replace(prefix, ""), 10);
+}
+
+/**
+ * Shared body of a food-buy confirmation menu config. Callers add their own
+ * `backMenuId` and wrap into their own ConfirmationConfig shape.
+ */
+export function buildFoodBuyConfirmationBase(
+	ctx: FoodShopUIContext,
+	foodType: PetFood,
+	amount: number,
+	onConfirm: (nestedMenus: CrowniclesNestedMenus) => Promise<void>
+): {
+	description: string; confirmLabel: string; onConfirm: (nestedMenus: CrowniclesNestedMenus) => Promise<void>;
+} | null {
+	const description = buildFoodBuyConfirmationDescription(ctx, foodType, amount);
+	if (description === null) {
+		return null;
+	}
+	return {
+		description,
+		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
+		onConfirm
+	};
+}
+
 export function createDomainCollector(
 	ctx: GuildDomainMenuContext,
 	handler: (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => Promise<void>

@@ -39,7 +39,7 @@ import {
 	CityCollectorHandlerParams, CityMenuParams, ManageHomeData
 } from "../ReportCityMenuTypes";
 import { HomeMenuIds } from "../home/HomeMenuConstants";
-import { registerCityConfirmationMenu } from "../confirmation/CityConfirmationMenu";
+import { openCityConfirmation } from "../confirmation/CityConfirmationMenu";
 
 type ManageHomeCollectorParams = CityMenuParams;
 
@@ -555,18 +555,16 @@ function buildNotaryConfirmationDetails(params: NotaryCollectorHandlerParams): N
 }
 
 async function showNotaryConfirmation(params: NotaryCollectorHandlerParams, details: NotaryConfirmationDetails): Promise<void> {
-	await params.buttonInteraction.deferUpdate();
-	registerCityConfirmationMenu(params.nestedMenus, {
+	await openCityConfirmation(params.nestedMenus, {
 		interaction: params.interaction,
 		collectorTime: params.collectorTime,
 		lng: params.interaction.userLanguage,
-		title: i18n.t("commands:report.city.confirmation.title", {
-			lng: params.interaction.userLanguage,
-			pseudo: params.pseudo
-		}),
+		pseudo: params.pseudo
+	}, {
 		description: details.description,
 		confirmLabel: details.confirmLabel,
 		backMenuId: HomeMenuIds.MANAGE_HOME_MENU,
+		confirmAck: "reply",
 		onConfirm: async action => {
 			await sendReactionByType({
 				...params,
@@ -575,14 +573,42 @@ async function showNotaryConfirmation(params: NotaryCollectorHandlerParams, deta
 			}, details.reactionType);
 		}
 	});
-	await params.nestedMenus.changeMenu(ReportCityMenuIds.CITY_CONFIRMATION_MENU);
 }
 
-async function sendReactionByType(params: CityCollectorHandlerParams, reactionType: string): Promise<void> {
-	await params.buttonInteraction.deferReply();
+function sendReactionByType(params: CityCollectorHandlerParams, reactionType: string): void {
 	const reactionIndex = params.packet.reactions.findIndex(reaction => reaction.type === reactionType);
 	if (reactionIndex !== -1) {
 		DiscordCollectorUtils.sendReaction(params.packet, params.context, params.context.keycloakId!, params.buttonInteraction, reactionIndex);
+	}
+}
+
+async function handleApartmentClaimRent(
+	params: NotaryCollectorHandlerParams,
+	selectedValue: string
+): Promise<void> {
+	const {
+		buttonInteraction, context, packet
+	} = params;
+	const apartmentId = parseApartmentClaimRentId(selectedValue);
+	if (apartmentId === null) {
+		await buttonInteraction.deferUpdate();
+		return;
+	}
+	await buttonInteraction.deferReply();
+	const reactionIndex = packet.reactions.findIndex(
+		reaction => reaction.type === ReactionCollectorApartmentClaimRentReaction.name
+			&& (reaction.data as ReactionCollectorApartmentClaimRentReaction).apartmentId === apartmentId
+	);
+	if (reactionIndex !== -1) {
+		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+	}
+}
+
+async function handleNotaryConfirmationRequest(params: NotaryCollectorHandlerParams): Promise<void> {
+	await params.buttonInteraction.deferUpdate();
+	const confirmationDetails = buildNotaryConfirmationDetails(params);
+	if (confirmationDetails) {
+		await showNotaryConfirmation(params, confirmationDetails);
 	}
 }
 
@@ -592,26 +618,12 @@ async function handleManageHomeCollectorInteraction(params: NotaryCollectorHandl
 	} = params;
 
 	if (selectedValue.startsWith(ReportCityMenuIds.APARTMENT_CLAIM_RENT_PREFIX)) {
-		const apartmentId = parseApartmentClaimRentId(selectedValue);
-		if (apartmentId === null) {
-			return;
-		}
-		await buttonInteraction.deferReply();
-		const reactionIndex = packet.reactions.findIndex(
-			reaction => reaction.type === ReactionCollectorApartmentClaimRentReaction.name
-				&& (reaction.data as ReactionCollectorApartmentClaimRentReaction).apartmentId === apartmentId
-		);
-		if (reactionIndex !== -1) {
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-		}
+		await handleApartmentClaimRent(params, selectedValue);
 		return;
 	}
 
 	if (NOTARY_CONFIRMATION_ACTIONS.has(selectedValue)) {
-		const confirmationDetails = buildNotaryConfirmationDetails(params);
-		if (confirmationDetails) {
-			await showNotaryConfirmation(params, confirmationDetails);
-		}
+		await handleNotaryConfirmationRequest(params);
 		return;
 	}
 

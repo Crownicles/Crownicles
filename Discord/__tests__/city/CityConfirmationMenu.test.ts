@@ -72,7 +72,7 @@ function registerMenu(onConfirm = vi.fn().mockResolvedValue(undefined)): {
 		} as never,
 		collectorTime: 1000,
 		lng: LANGUAGE.FRENCH,
-		title: "Confirmation",
+		pseudo: "Tester",
 		description: "Résumé de l'action",
 		confirmLabel: "Confirmer",
 		backMenuId: "BACK_MENU",

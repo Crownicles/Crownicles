@@ -283,11 +283,7 @@ export function buildShopTreasuryContainer(ctx: FoodShopUIContext): ContainerBui
 	for (const {
 		cost, labelKey, canDeposit
 	} of depositTiers) {
-		const penalty = Math.min(
-			Math.round(cost * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
-			GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
-		);
-		const treasuryGain = cost - penalty;
+		const treasuryGain = GuildDomainConstants.computeTreasuryGain(cost);
 		row.addComponents(
 			new ButtonBuilder()
 				.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX}${cost}`)

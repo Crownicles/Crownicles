@@ -78,12 +78,7 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 				};
 			}
 
-			const penalty = packet.isReimburse
-				? 0
-				: Math.min(
-					Math.round(grossAmount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
-					GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
-				);
+			const penalty = packet.isReimburse ? 0 : GuildDomainConstants.computeTreasuryPenalty(grossAmount);
 			const treasuryDeposited = grossAmount - penalty;
 			lockedGuild.treasury += treasuryDeposited;
 			await lockedGuild.save();
