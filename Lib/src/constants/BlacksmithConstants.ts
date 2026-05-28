@@ -2,13 +2,15 @@ import { ItemRarity } from "./ItemConstants";
 import { MaterialRarity } from "../types/MaterialRarity";
 
 /**
- * Valid upgrade levels for items (1-4)
+ * Valid upgrade levels for items (1-5).
  * Level 1 = first upgrade from level 0, etc.
+ * Levels 1-4 are reachable at the standard blacksmith; level 5
+ * is reserved for the Royal Blacksmith at the royal castle.
  */
-export type ItemUpgradeLevel = 1 | 2 | 3 | 4;
+export type ItemUpgradeLevel = 1 | 2 | 3 | 4 | 5;
 
 /**
- * All valid item levels: 0 (base) + upgrade levels (1-4)
+ * All valid item levels: 0 (base) + upgrade levels (1-5)
  */
 export type ItemLevel = 0 | ItemUpgradeLevel;
 
@@ -35,7 +37,8 @@ export abstract class BlacksmithConstants {
 		1: 50,
 		2: 500,
 		3: 1500,
-		4: 3500
+		4: 3500,
+		5: 7500
 	};
 
 	/**
@@ -82,4 +85,44 @@ export abstract class BlacksmithConstants {
 		[ItemRarity.LEGENDARY]: 3000,
 		[ItemRarity.MYTHICAL]: 6000
 	};
+}
+
+/**
+ * Constants for the Royal Blacksmith, a special NPC found at the royal castle.
+ *
+ * Unlike the standard blacksmith:
+ * - Only accepts players of level >= MIN_PLAYER_LEVEL
+ * - Only upgrades items to TARGET_LEVEL (level 5); refuses anything else
+ * - Costs gold (BASE_UPGRADE_PRICES[5]) + materials + extra gems based on item rarity
+ * - Awards a special badge if a low-rarity item is upgraded to the max
+ */
+export abstract class RoyalBlacksmithConstants {
+	/** Only the level-5 upgrade is performed by the Royal Blacksmith */
+	static readonly TARGET_LEVEL: ItemUpgradeLevel = 5;
+
+	/** Minimum player level required to be served by the Royal Blacksmith */
+	static readonly MIN_PLAYER_LEVEL = 100;
+
+	/**
+	 * Extra gem cost (on top of gold + materials) per item rarity.
+	 * Indexed by ItemRarity. BASIC is included for completeness but
+	 * BASIC items are not upgradable in practice.
+	 */
+	static readonly GEM_COST_PER_RARITY: Record<ItemRarity, number> = {
+		[ItemRarity.BASIC]: 0,
+		[ItemRarity.COMMON]: 1,
+		[ItemRarity.UNCOMMON]: 2,
+		[ItemRarity.EXOTIC]: 3,
+		[ItemRarity.RARE]: 4,
+		[ItemRarity.SPECIAL]: 5,
+		[ItemRarity.EPIC]: 6,
+		[ItemRarity.LEGENDARY]: 7,
+		[ItemRarity.MYTHICAL]: 8
+	};
+
+	/**
+	 * Rarities strictly below this threshold trigger the "mocking badge"
+	 * easter egg when upgraded to level 5.
+	 */
+	static readonly MOCK_BADGE_RARITY_THRESHOLD: ItemRarity = ItemRarity.RARE;
 }

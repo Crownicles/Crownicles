@@ -32,6 +32,7 @@ import {
 } from "./home";
 import { HomeMenuParams } from "./home/HomeMenuTypes";
 import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
+import { getRoyalBlacksmithMenus } from "./royalBlacksmith/RoyalBlacksmithMenu";
 import { ReportCityMenuIds } from "./ReportCityMenuConstants";
 import {
 	getGuildDomainMenu, getGuildDomainSubMenus
@@ -205,6 +206,15 @@ function addBlacksmithSubMenus(menus: Map<string, CrowniclesNestedMenu>, params:
 	}
 }
 
+function addRoyalBlacksmithSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.royalBlacksmith) {
+		return;
+	}
+	for (const [key, menu] of getRoyalBlacksmithMenus(params)) {
+		menus.set(key, menu);
+	}
+}
+
 function addHomeSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
 	if (!cityData.home.owned) {
 		return;
@@ -242,6 +252,7 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 	addInnSubMenus(menus, params, cityData);
 	addEnchanterSubMenu(menus, params, cityData);
 	addBlacksmithSubMenus(menus, params, cityData);
+	addRoyalBlacksmithSubMenus(menus, params, cityData);
 	addHomeSubMenus(menus, params, cityData);
 	addManageHomeSubMenu(menus, params, cityData);
 	addGuildDomainSubMenus(menus, params, cityData);

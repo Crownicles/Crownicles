@@ -268,6 +268,70 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	};
 
 	/**
+	 * Royal Blacksmith data — only present at the royal castle.
+	 * Drives the special level-5-only upgrade NPC: see RoyalBlacksmithConstants.
+	 *
+	 * `status` is computed by Core based on player level and inventory state
+	 * so Discord can pick the right narrative menu without re-implementing
+	 * the eligibility rules.
+	 */
+	royalBlacksmith?: {
+
+		/**
+		 * - `not_worthy`: player level < MIN_PLAYER_LEVEL
+		 * - `items_too_low`: player has no item upgradable to level 5 (no L4 weapon/armor, and not all-L5 either)
+		 * - `all_maxed`: every weapon/armor the player holds is already at level 5
+		 * - `ready`: at least one item can be upgraded; `upgradeableItems` is non-empty
+		 */
+		status: "not_worthy" | "items_too_low" | "all_maxed" | "ready";
+
+		/** Player level snapshot — used for the "not worthy" RP message. */
+		playerLevel: number;
+
+		/** Items currently at level 4 that the Royal Blacksmith can push to level 5. */
+		upgradeableItems: {
+			slot: number;
+			category: ItemCategory;
+			details: MainItemDetails;
+
+			/** Gold cost (formula same as standard blacksmith for target level 5). */
+			upgradeCost: number;
+
+			/** Extra gem cost (RoyalBlacksmithConstants.GEM_COST_PER_RARITY[itemRarity]). */
+			gemCost: number;
+
+			/** Rarity of the item — used to apply the easter-egg "mocking badge" rule. */
+			itemRarity: number;
+
+			/** Materials required (same shape as the standard blacksmith). */
+			requiredMaterials: {
+				materialId: number;
+				rarity: MaterialRarity;
+				quantity: number;
+				playerQuantity: number;
+			}[];
+
+			/** Total cost to buy missing materials from the Royal Blacksmith. */
+			missingMaterialsCost: number;
+
+			/** Whether the player has all required materials. */
+			hasAllMaterials: boolean;
+
+			/** Player can upgrade directly (materials + gold + gems all covered). */
+			canUpgrade: boolean;
+
+			/** Player can buy missing materials and upgrade (gold covers both, plus gems). */
+			canBuyAndUpgrade: boolean;
+		}[];
+
+		/** Player money snapshot for UI display. */
+		playerMoney: number;
+
+		/** Player gems snapshot for UI display. */
+		playerGems: number;
+	};
+
+	/**
 	 * Guild domain data - shown when the guild has its domain in this city
 	 */
 	guildDomain?: {
@@ -475,6 +539,19 @@ export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionColle
 	itemCategory!: ItemCategory;
 }
 
+/** Reaction for opening the Royal Blacksmith menu at the royal castle */
+export class ReactionCollectorRoyalBlacksmithMenuReaction extends ReactionCollectorReaction {}
+
+/** Reaction for upgrading an item to level 5 at the Royal Blacksmith */
+export class ReactionCollectorRoyalBlacksmithUpgradeReaction extends ReactionCollectorReaction {
+	slot!: number;
+
+	itemCategory!: ItemCategory;
+
+	/** Whether to buy missing materials before upgrading */
+	buyMaterials!: boolean;
+}
+
 /** Reaction for harvesting all ready plants from the garden */
 export class ReactionCollectorGardenHarvestReaction extends ReactionCollectorReaction {}
 
@@ -524,6 +601,8 @@ type CityReaction =
 	| ReactionCollectorBlacksmithMenuReaction
 	| ReactionCollectorBlacksmithUpgradeReaction
 	| ReactionCollectorBlacksmithDisenchantReaction
+	| ReactionCollectorRoyalBlacksmithMenuReaction
+	| ReactionCollectorRoyalBlacksmithUpgradeReaction
 	| ReactionCollectorGardenHarvestReaction
 	| ReactionCollectorGardenWaterReaction
 	| ReactionCollectorGardenCompostReaction
@@ -744,6 +823,31 @@ export class ReactionCollectorCity extends ReactionCollector {
 		return reactions;
 	}
 
+	private buildRoyalBlacksmithReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		if (!this.data.royalBlacksmith) {
+			return [];
+		}
+
+		const menuReaction = this.buildReaction(ReactionCollectorRoyalBlacksmithMenuReaction, {});
+
+		const upgradeReactions = this.data.royalBlacksmith.upgradeableItems.flatMap(item => [
+			this.buildReaction(ReactionCollectorRoyalBlacksmithUpgradeReaction, {
+				slot: item.slot,
+				itemCategory: item.category,
+				buyMaterials: false
+			}),
+			this.buildReaction(ReactionCollectorRoyalBlacksmithUpgradeReaction, {
+				slot: item.slot,
+				itemCategory: item.category,
+				buyMaterials: true
+			})
+		]);
+
+		return [menuReaction, ...upgradeReactions];
+	}
+
 	private buildApartmentNotaryReactions(): {
 		type: string; data: ReactionCollectorReaction;
 	}[] {
@@ -780,6 +884,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildHomeManageReaction(),
 				...this.buildHomeFeatureReactions(),
 				...this.buildBlacksmithReactions(),
+				...this.buildRoyalBlacksmithReactions(),
 				...this.buildGuildDomainReactions(),
 				...this.buildApartmentNotaryReactions()
 			];

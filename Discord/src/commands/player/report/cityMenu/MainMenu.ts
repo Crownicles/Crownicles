@@ -113,7 +113,7 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 }
 
 function addServicesSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (!data.blacksmith && !data.enchanter) {
+	if (!data.blacksmith && !data.enchanter && !data.royalBlacksmith) {
 		return;
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
@@ -126,6 +126,17 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 			description: i18n.t("commands:report.city.blacksmith.menuDescription", { lng }),
 			customId: ReportCityMenuIds.BLACKSMITH_MENU,
 			buttonLabel: i18n.t("commands:report.city.buttons.enterForge", { lng })
+		});
+	}
+
+	if (data.royalBlacksmith) {
+		addCitySection({
+			container,
+			emote: CrowniclesIcons.city.blacksmith.menu,
+			title: i18n.t("commands:report.city.royalBlacksmith.menuLabel", { lng }),
+			description: i18n.t("commands:report.city.royalBlacksmith.menuDescription", { lng }),
+			customId: ReportCityMenuIds.ROYAL_BLACKSMITH_MENU,
+			buttonLabel: i18n.t("commands:report.city.royalBlacksmith.enterButton", { lng })
 		});
 	}
 
@@ -281,6 +292,7 @@ const MAIN_MENU_NAVIGATION_TARGETS = new Set<string>([
 	HomeMenuIds.HOME_MENU,
 	HomeMenuIds.MANAGE_HOME_MENU,
 	ReportCityMenuIds.BLACKSMITH_MENU,
+	ReportCityMenuIds.ROYAL_BLACKSMITH_MENU,
 	ReportCityMenuIds.GUILD_DOMAIN_MENU,
 	ReportCityMenuIds.GUILD_FOOD_SHOP_MENU
 ]);

@@ -307,6 +307,57 @@ export class CommandReportBlacksmithDisenchantRes extends CrowniclesPacket {
 	cost!: number;
 }
 
+// Royal Blacksmith packets — special NPC at the royal castle that only upgrades items to level 5.
+
+/** Successful Royal Blacksmith upgrade to level 5. */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportRoyalBlacksmithUpgradeRes extends CrowniclesPacket {
+	itemCategory!: number;
+
+	/** Gold cost component of the total. */
+	upgradeCost!: number;
+
+	/** Gold spent on materials bought from the Royal Blacksmith (0 if none). */
+	materialsCost!: number;
+
+	/** Gem cost (separate from gold). */
+	gemCost!: number;
+
+	/** Whether materials were purchased from the Royal Blacksmith. */
+	boughtMaterials!: boolean;
+}
+
+/** Royal Blacksmith refused the upgrade because the player has insufficient gold. */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportRoyalBlacksmithNotEnoughMoneyRes extends CrowniclesPacket {
+	missingMoney!: number;
+}
+
+/** Royal Blacksmith refused because the player has insufficient gems. */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportRoyalBlacksmithNotEnoughGemsRes extends CrowniclesPacket {
+	missingGems!: number;
+}
+
+/** Royal Blacksmith refused because the player is missing materials and did not buy them. */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportRoyalBlacksmithMissingMaterialsRes extends CrowniclesPacket {}
+
+/**
+ * Royal Blacksmith upgraded a low-rarity (< RARE) item to level 5 and granted the
+ * `SENTIMENTAL_CRAFTER` badge to the player (first time).
+ * Sent in addition to the upgrade success packet.
+ */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportRoyalBlacksmithMockBadgeGivenRes extends CrowniclesPacket {}
+
+/**
+ * Royal Blacksmith upgraded a low-rarity item to level 5 again — player already
+ * had the badge, so they get nothing but extra mockery.
+ */
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportRoyalBlacksmithMockBadgeAlreadyOwnedRes extends CrowniclesPacket {}
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportHomeBedRes extends CrowniclesPacket {
 	health!: number;

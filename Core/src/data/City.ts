@@ -42,6 +42,13 @@ export class City extends Data<string> {
 	public readonly hasBlacksmith?: boolean;
 
 	/**
+	 * Whether this city has the Royal Blacksmith — a special NPC that only
+	 * upgrades items to level 5 (see RoyalBlacksmithConstants). Defaults to false.
+	 * Currently only the royal castle should have this set to true.
+	 */
+	public readonly hasRoyalBlacksmith?: boolean;
+
+	/**
 	 * Multiplier applied to the base home cost (purchase + upgrades) for this city.
 	 * Allows minor variation between cities (currently within ~+/- 8%) without modifying the base ladder.
 	 * Defaults to 1 if not specified.
@@ -61,6 +68,13 @@ export class City extends Data<string> {
 	 */
 	public get blacksmithAvailable(): boolean {
 		return this.hasBlacksmith !== false;
+	}
+
+	/**
+	 * Check if the city has the Royal Blacksmith (defaults to false).
+	 */
+	public get royalBlacksmithAvailable(): boolean {
+		return this.hasRoyalBlacksmith === true;
 	}
 
 	public getTodayInnMeals(inn: CityInn, date: Date): InnMeal[] {
