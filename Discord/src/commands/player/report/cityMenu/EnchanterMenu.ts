@@ -231,7 +231,7 @@ function addEnchanterNavigation(container: ContainerBuilder, lng: Language): voi
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
 				.setCustomId(ReportCityMenuIds.BACK_TO_CITY)
-				.setLabel(i18n.t("commands:report.city.enchanter.leave", { lng }))
+				.setLabel(i18n.t("commands:report.city.buttons.backToCity", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
 				.setStyle(ButtonStyle.Secondary),
 			createStayInCityButton(lng)

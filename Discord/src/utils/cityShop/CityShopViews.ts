@@ -411,7 +411,7 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
 				.setCustomId(CITY_SHOP_CUSTOM_IDS.CLOSE)
-				.setLabel(i18n.t("commands:shop.backToCityButton", { lng }))
+				.setLabel(i18n.t("commands:report.city.buttons.backToCity", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
 				.setStyle(ButtonStyle.Secondary)
 				.setDisabled(disabled)

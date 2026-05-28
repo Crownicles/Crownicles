@@ -152,7 +152,7 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
 				.setCustomId(BlacksmithMenuIds.BACK_TO_CITY)
-				.setLabel(i18n.t("commands:report.city.blacksmith.backToCity", { lng }))
+				.setLabel(i18n.t("commands:report.city.buttons.backToCity", { lng }))
 				.setEmoji(CrowniclesIcons.city.exit)
 				.setStyle(ButtonStyle.Secondary),
 			createStayInCityButton(lng)

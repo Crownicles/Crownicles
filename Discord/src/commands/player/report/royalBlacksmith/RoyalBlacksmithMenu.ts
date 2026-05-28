@@ -197,6 +197,7 @@ export function getRoyalBlacksmithUpgradeMenu(params: RoyalBlacksmithMenuParams)
 			container,
 			text: `${itemDisplay}\n${i18n.t("commands:report.city.royalBlacksmith.itemUpgradePreview", {
 				lng,
+				currentLevel: item.details.itemLevel ?? 0,
 				upgradeCost: item.upgradeCost,
 				gemCost: item.gemCost
 			})}`,
