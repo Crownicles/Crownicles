@@ -30,13 +30,13 @@ import {
 	buildShopBody, buildShopQuantityContainer, buildShopReimburseContainer
 } from "../guildDomain/GuildDomainViews";
 import {
-	buildFoodBuyConfirmationDescription, FoodShopUIContext, FoodKey, parseFoodShopBuyCustomId, PET_FOOD_TO_KEY
+	buildFoodBuyConfirmationBase, FoodShopUIContext, FoodKey, parseFoodShopBuyCustomId, parsePrefixedAmount, PET_FOOD_TO_KEY
 } from "../guildDomain/GuildDomainShared";
 
 import {
 	finishReportWithErrorEmbed, finishReportWithMessage
 } from "../ReportFlowHelpers";
-import { registerCityConfirmationMenu } from "../confirmation/CityConfirmationMenu";
+import { openCityConfirmation } from "../confirmation/CityConfirmationMenu";
 
 type CityCollectorFactory = ReturnType<typeof createCityCollector>;
 
@@ -75,23 +75,12 @@ async function showFoodShopConfirmation(
 	nestedMenus: CrowniclesNestedMenus,
 	config: FoodShopConfirmationConfig
 ): Promise<void> {
-	registerCityConfirmationMenu(nestedMenus, {
-		interaction: ctx.interaction,
-		collectorTime: ctx.collectorTime,
-		lng: ctx.lng,
-		title: i18n.t("commands:report.city.confirmation.title", {
-			lng: ctx.lng,
-			pseudo: ctx.pseudo
-		}),
+	await openCityConfirmation(nestedMenus, ctx, {
 		description: config.description,
 		confirmLabel: config.confirmLabel,
 		backMenuId: ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU,
-		onConfirm: async action => {
-			await action.buttonInteraction.deferUpdate();
-			await config.onConfirm(action.nestedMenus);
-		}
+		onConfirm: action => config.onConfirm(action.nestedMenus)
 	});
-	await nestedMenus.changeMenu(ReportCityMenuIds.CITY_CONFIRMATION_MENU);
 }
 
 function buildFoodBuyConfirmation(
@@ -99,15 +88,7 @@ function buildFoodBuyConfirmation(
 	foodType: PetFood,
 	amount: number
 ): FoodShopConfirmationConfig | null {
-	const description = buildFoodBuyConfirmationDescription(ctx, foodType, amount);
-	if (description === null) {
-		return null;
-	}
-	return {
-		description,
-		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
-		onConfirm: nestedMenus => handleFoodBuy(ctx, foodType, amount, nestedMenus)
-	};
+	return buildFoodBuyConfirmationBase(ctx, foodType, amount, nestedMenus => handleFoodBuy(ctx, foodType, amount, nestedMenus));
 }
 
 /**
@@ -296,7 +277,7 @@ function createReimburseCollector(ctx: FoodShopMenuContext): CityCollectorFactor
 			return;
 		}
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX)) {
-			const amount = parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX, ""), 10);
+			const amount = parsePrefixedAmount(customId, ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX);
 			await handleReimburse(ctx, amount, nestedMenus);
 		}
 	});

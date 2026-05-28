@@ -31,7 +31,7 @@ import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import {
 	CityCollectorHandlerParams, CityMenuParams
 } from "../ReportCityMenuTypes";
-import { registerCityConfirmationMenu } from "../confirmation/CityConfirmationMenu";
+import { openCityConfirmation } from "../confirmation/CityConfirmationMenu";
 
 type EnchanterHandlerParams = CityCollectorHandlerParams & Pick<CityMenuParams, "collectorTime" | "interaction" | "pseudo"> & { data: EnchanterCityData };
 
@@ -81,14 +81,12 @@ async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promi
 	const item = params.data.enchantableItems[index];
 	const lng = params.interaction.userLanguage;
 	await params.buttonInteraction.deferUpdate();
-	registerCityConfirmationMenu(params.nestedMenus, {
+	await openCityConfirmation(params.nestedMenus, {
 		interaction: params.interaction,
 		collectorTime: params.collectorTime,
 		lng,
-		title: i18n.t("commands:report.city.confirmation.title", {
-			lng,
-			pseudo: params.pseudo
-		}),
+		pseudo: params.pseudo
+	}, {
 		description: i18n.t("commands:report.city.enchanter.confirmDescription", {
 			lng,
 			item: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
@@ -107,7 +105,6 @@ async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promi
 			}, index);
 		}
 	});
-	await params.nestedMenus.changeMenu(ReportCityMenuIds.CITY_CONFIRMATION_MENU);
 }
 
 async function handleEnchanterCollectorInteraction(params: EnchanterHandlerParams): Promise<void> {

@@ -236,6 +236,23 @@ export abstract class GuildDomainConstants {
 	} as const;
 
 	/**
+	 * Penalty withheld from a gross treasury deposit (percentage capped at MAX).
+	 */
+	static computeTreasuryPenalty(grossAmount: number): number {
+		return Math.min(
+			Math.round(grossAmount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
+			GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
+		);
+	}
+
+	/**
+	 * Net amount added to the treasury after applying the deposit penalty.
+	 */
+	static computeTreasuryGain(grossAmount: number): number {
+		return grossAmount - GuildDomainConstants.computeTreasuryPenalty(grossAmount);
+	}
+
+	/**
 	 * Ratio of the upgrade cost converted into guild XP when a building is upgraded.
 	 */
 	static readonly UPGRADE_XP_RATIO = 0.20;

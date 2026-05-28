@@ -157,11 +157,7 @@ async function applyLockedPetSell(
 		return { revalidated: false };
 	}
 
-	const penalty = Math.min(
-		Math.round(expected.petCost * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
-		GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
-	);
-	const treasuryEarned = expected.petCost - penalty;
+	const treasuryEarned = GuildDomainConstants.computeTreasuryGain(expected.petCost);
 	guild.treasury += treasuryEarned;
 
 	await buyer.spendMoney({

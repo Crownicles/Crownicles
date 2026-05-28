@@ -29,8 +29,8 @@ import {
 } from "../../../../../../Lib/src/constants/GuildDomainConstants";
 import { PetFood } from "../../../../../../Lib/src/constants/PetConstants";
 import {
-	BUILDING_MENU_IDS, buildFoodBuyConfirmationDescription, createDomainCollectorWithStayHandling,
-	getBuildingLevel, GuildDomainMenuContext, parseFoodShopBuyCustomId, PET_FOOD_TO_KEY, setBuildingLevel
+	BUILDING_MENU_IDS, buildFoodBuyConfirmationBase, createDomainCollectorWithStayHandling,
+	getBuildingLevel, GuildDomainMenuContext, parseFoodShopBuyCustomId, parsePrefixedAmount, PET_FOOD_TO_KEY, setBuildingLevel
 } from "./GuildDomainShared";
 import {
 	buildBuildingContainer, buildMainDomainContainer, buildShopQuantityContainer,
@@ -39,7 +39,7 @@ import {
 import {
 	finishReportWithErrorEmbed, finishReportWithMessage
 } from "../ReportFlowHelpers";
-import { registerCityConfirmationMenu } from "../confirmation/CityConfirmationMenu";
+import { openCityConfirmation } from "../confirmation/CityConfirmationMenu";
 
 type DomainConfirmationConfig = {
 	description: string;
@@ -54,24 +54,13 @@ async function showDomainConfirmation(
 	nestedMenus: CrowniclesNestedMenus,
 	config: DomainConfirmationConfig
 ): Promise<void> {
-	registerCityConfirmationMenu(nestedMenus, {
-		interaction: ctx.interaction,
-		collectorTime: ctx.collectorTime,
-		lng: ctx.lng,
-		title: i18n.t("commands:report.city.confirmation.title", {
-			lng: ctx.lng,
-			pseudo: ctx.pseudo
-		}),
+	await openCityConfirmation(nestedMenus, ctx, {
 		description: config.description,
 		confirmLabel: config.confirmLabel,
 		confirmEmoji: config.confirmEmoji,
 		backMenuId: config.backMenuId,
-		onConfirm: async action => {
-			await action.buttonInteraction.deferUpdate();
-			await config.onConfirm(action.nestedMenus);
-		}
+		onConfirm: action => config.onConfirm(action.nestedMenus)
 	});
-	await nestedMenus.changeMenu(ReportCityMenuIds.CITY_CONFIRMATION_MENU);
 }
 
 function buildBuildingUpgradeConfirmation(
@@ -103,24 +92,14 @@ function buildFoodBuyConfirmation(
 	foodType: PetFood,
 	amount: number
 ): DomainConfirmationConfig | null {
-	const description = buildFoodBuyConfirmationDescription(ctx, foodType, amount);
-	if (description === null) {
+	const base = buildFoodBuyConfirmationBase(ctx, foodType, amount, nestedMenus => handleFoodBuy(ctx, foodType, amount, nestedMenus));
+	if (base === null) {
 		return null;
 	}
 	return {
-		description,
-		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
-		backMenuId: ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU,
-		onConfirm: nestedMenus => handleFoodBuy(ctx, foodType, amount, nestedMenus)
+		...base,
+		backMenuId: ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU
 	};
-}
-
-function computeTreasuryGain(amount: number): number {
-	const penalty = Math.min(
-		Math.round(amount * GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.PERCENT),
-		GuildDomainConstants.TREASURY_DEPOSIT_PENALTY.MAX
-	);
-	return amount - penalty;
 }
 
 function buildTreasuryDepositConfirmation(ctx: GuildDomainMenuContext, amount: number): DomainConfirmationConfig {
@@ -128,7 +107,7 @@ function buildTreasuryDepositConfirmation(ctx: GuildDomainMenuContext, amount: n
 		description: i18n.t("commands:report.city.guildDomain.subMenus.shop.depositTreasuryConfirmDescription", {
 			lng: ctx.lng,
 			cost: amount,
-			treasury: computeTreasuryGain(amount)
+			treasury: GuildDomainConstants.computeTreasuryGain(amount)
 		}),
 		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
 		backMenuId: ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU,
@@ -294,7 +273,7 @@ function createShopQuantityCollector(
 		}
 
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX)) {
-			const amount = Number.parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX, ""), 10);
+			const amount = parsePrefixedAmount(customId, ReportCityMenuIds.GUILD_DOMAIN_SHOP_DEPOSIT_PREFIX);
 			if (!Number.isInteger(amount) || amount <= 0) {
 				return;
 			}
@@ -340,7 +319,7 @@ function createShopReimburseCollector(
 		}
 
 		if (customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX)) {
-			const amount = parseInt(customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX, ""), 10);
+			const amount = parsePrefixedAmount(customId, ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_PREFIX);
 			await handleTreasuryDeposit(ctx, amount, nestedMenus, true);
 		}
 	});
