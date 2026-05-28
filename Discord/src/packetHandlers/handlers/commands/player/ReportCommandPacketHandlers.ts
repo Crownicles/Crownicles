@@ -10,6 +10,12 @@ import {
 	CommandReportBlacksmithMissingMaterialsRes,
 	CommandReportBlacksmithNotEnoughMoneyRes,
 	CommandReportBlacksmithUpgradeRes,
+	CommandReportRoyalBlacksmithMissingMaterialsRes,
+	CommandReportRoyalBlacksmithMockBadgeAlreadyOwnedRes,
+	CommandReportRoyalBlacksmithMockBadgeGivenRes,
+	CommandReportRoyalBlacksmithNotEnoughGemsRes,
+	CommandReportRoyalBlacksmithNotEnoughMoneyRes,
+	CommandReportRoyalBlacksmithUpgradeRes,
 	CommandReportBuyHealAcceptPacketRes,
 	CommandReportBuyHealCannotHealOccupiedPacketRes,
 	CommandReportBuyHealNoAlterationPacketRes,
@@ -320,6 +326,69 @@ export default class ReportCommandPacketHandlers {
 			context,
 			titleKey: "commands:report.city.blacksmith.disenchantTitle",
 			descriptionKey: "commands:report.city.blacksmith.disenchantSuccess"
+		});
+	}
+
+	@packetHandler(CommandReportRoyalBlacksmithUpgradeRes)
+	async reportRoyalBlacksmithUpgradeRes(context: PacketContext, packet: CommandReportRoyalBlacksmithUpgradeRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.royalBlacksmith.title",
+			descriptionKey: packet.boughtMaterials
+				? "commands:report.city.royalBlacksmith.upgradeSuccessWithBuy"
+				: "commands:report.city.royalBlacksmith.upgradeSuccess",
+			descriptionParams: {
+				upgradeCost: packet.upgradeCost,
+				materialsCost: packet.materialsCost,
+				gemCost: packet.gemCost
+			}
+		});
+	}
+
+	@packetHandler(CommandReportRoyalBlacksmithNotEnoughMoneyRes)
+	async reportRoyalBlacksmithNotEnoughMoneyRes(context: PacketContext, packet: CommandReportRoyalBlacksmithNotEnoughMoneyRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.royalBlacksmith.title",
+			descriptionKey: "commands:report.city.royalBlacksmith.notEnoughMoney",
+			descriptionParams: { missingMoney: packet.missingMoney }
+		});
+	}
+
+	@packetHandler(CommandReportRoyalBlacksmithNotEnoughGemsRes)
+	async reportRoyalBlacksmithNotEnoughGemsRes(context: PacketContext, packet: CommandReportRoyalBlacksmithNotEnoughGemsRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.royalBlacksmith.title",
+			descriptionKey: "commands:report.city.royalBlacksmith.notEnoughGems",
+			descriptionParams: { missingGems: packet.missingGems }
+		});
+	}
+
+	@packetHandler(CommandReportRoyalBlacksmithMissingMaterialsRes)
+	async reportRoyalBlacksmithMissingMaterialsRes(context: PacketContext, _packet: CommandReportRoyalBlacksmithMissingMaterialsRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.royalBlacksmith.title",
+			descriptionKey: "commands:report.city.royalBlacksmith.missingMaterials"
+		});
+	}
+
+	@packetHandler(CommandReportRoyalBlacksmithMockBadgeGivenRes)
+	async reportRoyalBlacksmithMockBadgeGivenRes(context: PacketContext, _packet: CommandReportRoyalBlacksmithMockBadgeGivenRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.royalBlacksmith.title",
+			descriptionKey: "commands:report.city.royalBlacksmith.mockBadgeGiven"
+		});
+	}
+
+	@packetHandler(CommandReportRoyalBlacksmithMockBadgeAlreadyOwnedRes)
+	async reportRoyalBlacksmithMockBadgeAlreadyOwnedRes(context: PacketContext, _packet: CommandReportRoyalBlacksmithMockBadgeAlreadyOwnedRes): Promise<void> {
+		await sendBlacksmithReply({
+			context,
+			titleKey: "commands:report.city.royalBlacksmith.title",
+			descriptionKey: "commands:report.city.royalBlacksmith.mockBadgeAlreadyOwned"
 		});
 	}
 

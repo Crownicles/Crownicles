@@ -704,7 +704,8 @@
       "very_powerful_guild": "Membre d'une guilde très puissante",
       "animal_lover": "Personne ayant montré tous les familiers à Talvar le nain",
       "expert_expediteur": "Personne ayant réussi de nombreuses expéditions avec son familier",
-      "oracle_patron": "Protecteur de l'Oracle, ayant contribué généreusement à de nombreuses bénédictions"
+      "oracle_patron": "Protecteur de l'Oracle, ayant contribué généreusement à de nombreuses bénédictions",
+      "sentimental_crafter": "Personne ayant tenu à faire améliorer une humble relique jusqu'au sommet par le forgeron royal"
     },
     "fightRanked": {
       "fieldName": "Gloire et ligue :",
@@ -901,8 +902,7 @@
         },
         "veterinarian": {
           "label": "Le Vétérinaire",
-          "description": "Un praticien attentionné examine les familiers et peut leur redonner de l'affection s'ils en manquent.",
-          "browseLabel": "Consulter le vétérinaire"
+          "description": "Un praticien attentionné examine les familiers et peut leur redonner de l'affection s'ils en manquent."
         },
         "materialMerchant": {
           "label": "Le Marchand de matériaux",
@@ -995,13 +995,11 @@
         "enchantmentNoReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**.\nVous prenez le temps de réfléchir à sa proposition, mais il précise que si ça ne convient pas, vous pouvez toujours revenir le voir demain car il aura d'autres runes à sa disposition. Cependant, il ne garantit pas qu'il sera toujours dans cette ville...",
         "enchantmentWithReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**. Il ajoute qu'il vous a fait une réduction car il apprécie les personnes qui s'intéressent à la magie !\nVous prenez le temps de réfléchir à sa proposition, mais il précise que si ça ne convient pas, vous pouvez toujours revenir le voir demain car il aura d'autres runes à sa disposition. Cependant, il ne garantit pas qu'il sera toujours dans cette ville...",
         "hasAtLeastOneEnchantedItem": "De plus, en voyant vos équipements déjà enchantés, Mernil fronce les sourcils. Il dit que c'est le travail des forgerons de désenchanter les objets, pas le sien, et qu'il ne les touchera pas.",
-        "confirmDescription": "{emote:collectors.warning} Cette validation appliquera l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** sur l'équipement suivant :\n{{item}}\n\nCoût : **{{price}}**.\n{{balance}}",
+        "confirmDescription": "{emote:collectors.warning} Cette validation appliquera l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** sur l'équipement suivant :\n{{item}}\n\nCoût : **{{price}}**.",
         "acceptStory": "Il prend de suite votre équipement et murmure quelques incantations en agitant une rune au-dessus... Après quelques instants, il vous rend l'objet en vous disant que c'est fait ! Votre équipement est maintenant enchanté avec {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Faites-en bon usage !",
         "acceptTitle": "{{pseudo}}, enchantement réussi !",
         "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
         "priceMoneyAndGems": "{{money}} {emote:unitValues.money} et {{gems}} {emote:unitValues.gem}",
-        "balanceMoneyOnly": "Vous possédez actuellement **{{money}}** {emote:unitValues.money}.",
-        "balanceMoneyAndGems": "Vous possédez actuellement **{{money}}** {emote:unitValues.money} et **{{gems}}** {emote:unitValues.gem}.",
         "notEnoughMoney": "Vous n'avez pas assez d'argent pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money}.",
         "notEnoughGems": "Vous n'avez pas assez de gemmes pour payer l'enchantement ! Il vous manque **{{missingGems}}** {emote:unitValues.gem}.",
         "notEnoughMoneyAndGems": "Vous n'avez pas assez d'argent et de gemmes pour payer l'enchantement ! Il vous manque **{{missingMoney}}** {emote:unitValues.money} et **{{missingGems}}** {emote:unitValues.gem}.",
@@ -1046,6 +1044,28 @@
         "notEnoughMoney": "{emote:messages.refuse} Le forgeron secoue la tête en comptant vos pièces. Il vous manque **{{missingMoney, number}}** {emote:unitValues.money} pour payer ses services.",
         "missingMaterialsTitle": "{{pseudo}}, matériaux insuffisants !",
         "missingMaterialsDescription": "Vous n'avez pas les matériaux nécessaires pour cette amélioration au forgeron. Récupérez-en lors de vos aventures ou achetez-les directement au forgeron."
+      },
+      "royalBlacksmith": {
+        "menuLabel": "Rencontrer le forgeron royal",
+        "menuDescription": "Une silhouette imposante travaille un métal brûlant sous les bannières du château. On murmure qu'il est le seul à savoir forger des pièces de niveau 5.",
+        "enterButton": "Approcher le forgeron royal",
+        "title": "{{pseudo}}, face au forgeron royal",
+        "backToCity": "Retourner au château",
+        "descriptionNotWorthy": "{emote:city.blacksmith.menu} Le forgeron royal vous toise à peine, jauge votre allure de niveau {{playerLevel}} et retourne à son ouvrage. Son art n'est réservé qu'aux aventuriers ayant atteint le **niveau 100** : revenez quand vous serez digne de sa forge.",
+        "descriptionItemsTooLow": "{emote:city.blacksmith.menu} Le forgeron royal soupèse vos équipements, hausse un sourcil et les repose. Tant que vous ne lui apporterez pas une pièce déjà au **niveau 4**, il n'a rien à faire pour vous : revenez après avoir poussé un équipement à son maximum classique.",
+        "descriptionAllMaxed": "{emote:city.blacksmith.menu} Le forgeron royal observe votre arsenal et hoche la tête avec respect. Chacune de vos pièces est déjà au **niveau 5** : il n'a plus rien à vous offrir, si ce n'est ses félicitations.",
+        "descriptionReady": "{emote:city.blacksmith.menu} Le forgeron royal vous reconnaît comme l'un des siens et déroule ses outils sertis d'or. Il accepte de porter vos équipements de niveau 4 jusqu'au **niveau 5** légendaire, en échange d'or, de matériaux **et** de gemmes.\n\n{emote:unitValues.money} **{{money, number}}** {emote:unitValues.money} · {emote:unitValues.gem} **{{gems, number}}** {emote:unitValues.gem}",
+        "itemBlock": "{{itemDisplay}}\n**Coût :** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}",
+        "itemBlockWithMissingMaterials": "{{itemDisplay}}\n**Coût :** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem} (matériaux manquants : +{{missingMaterialsCost, number}} {emote:unitValues.money})",
+        "upgradeButton": "Améliorer ({{cost, number}})",
+        "buyAndUpgradeButton": "Acheter & améliorer ({{cost, number}})",
+        "upgradeSuccess": "{emote:city.blacksmith.upgrade} Le forgeron royal applique son marteau serti de runes. Votre équipement atteint enfin le **niveau 5** pour **{{upgradeCost, number}}** {emote:unitValues.money} et **{{gemCost, number}}** {emote:unitValues.gem}.",
+        "upgradeSuccessWithBuy": "{emote:city.blacksmith.upgrade} Le forgeron royal puise dans ses réserves pour combler vos matériaux manquants, puis pousse votre équipement au **niveau 5** pour **{{upgradeCost, number}}** + **{{materialsCost, number}}** {emote:unitValues.money} et **{{gemCost, number}}** {emote:unitValues.gem}.",
+        "notEnoughMoney": "{emote:messages.refuse} Le forgeron royal compte vos pièces et secoue la tête. Il vous manque **{{missingMoney, number}}** {emote:unitValues.money} pour mériter son ouvrage.",
+        "notEnoughGems": "{emote:messages.refuse} Le forgeron royal réclame aussi des gemmes pour son art. Il vous en manque **{{missingGems, number}}** {emote:unitValues.gem}.",
+        "missingMaterials": "{emote:messages.refuse} Le forgeron royal exige des matériaux précis et refuse de les remplacer. Apportez-en plus ou laissez-le vous les vendre.",
+        "mockBadgeGiven": "{emote:badges.sentimental_crafter} Le forgeron royal contemple l'humble babiole que vous lui avez fait améliorer, soupire et grave votre nom dans son grand registre des « curiosités sentimentales ». Vous gagnez le badge {emote:badges.sentimental_crafter}.",
+        "mockBadgeAlreadyOwned": "{emote:badges.sentimental_crafter} Le forgeron royal lève les yeux au ciel : il se souvient parfaitement de vous, fidèle collectionneur de reliques sans valeur. Son tampon « curiosité sentimentale » reste rangé."
       },
       "homes": {
         "goToOwnedHome": "Aller à votre maison",
@@ -1515,7 +1535,6 @@
     "buyCategorySlotSuccess": "Vous avez acheté un nouvel emplacement d'inventaire !",
     "shopItemsSelectDescription": "{{price, number}}{emote:unitValues.{{currency}}}",
     "closeShopButton": "{emote:messages.refuse} Fermer le magasin",
-    "backToCityButton": "Retourner en ville",
     "shopConfirmationTitle": "{{pseudo}}, vous avez sélectionné le produit suivant :",
     "shopConfirmationTitleMultiple": "{{pseudo}}, sélectionnez une quantité pour ce produit :",
     "greeting": "{{pseudo}}, parcourez les rayons et appuyez sur **Acheter** à côté de l'article qui vous intéresse.",

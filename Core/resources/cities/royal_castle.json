@@ -5,6 +5,7 @@
     41
   ],
   "hasBlacksmith": false,
+  "hasRoyalBlacksmith": true,
   "inns": [
     {
       "id": "royalPavilion",

@@ -51,6 +51,8 @@ import {
 	ReactionCollectorBlacksmithMenuReaction,
 	ReactionCollectorBlacksmithUpgradeReaction,
 	ReactionCollectorBlacksmithDisenchantReaction,
+	ReactionCollectorRoyalBlacksmithMenuReaction,
+	ReactionCollectorRoyalBlacksmithUpgradeReaction,
 	ReactionCollectorGardenHarvestReaction,
 	ReactionCollectorGardenWaterReaction,
 	ReactionCollectorGardenCompostReaction,
@@ -97,6 +99,8 @@ const CITY_REACTION_MENU_MASK = new Map<string, number>([
 	[ReactionCollectorBlacksmithMenuReaction.name, CityMenuMask.BLACKSMITH],
 	[ReactionCollectorBlacksmithUpgradeReaction.name, CityMenuMask.BLACKSMITH],
 	[ReactionCollectorBlacksmithDisenchantReaction.name, CityMenuMask.BLACKSMITH],
+	[ReactionCollectorRoyalBlacksmithMenuReaction.name, CityMenuMask.ROYAL_BLACKSMITH],
+	[ReactionCollectorRoyalBlacksmithUpgradeReaction.name, CityMenuMask.ROYAL_BLACKSMITH],
 	[ReactionCollectorUpgradeItemReaction.name, CityMenuMask.HOME],
 	[ReactionCollectorEnchantReaction.name, CityMenuMask.ENCHANTER],
 	[ReactionCollectorCityShopReaction.name, CityMenuMask.SHOP],
@@ -116,6 +120,8 @@ const CITY_REACTION_MENU_MASK = new Map<string, number>([
 import {
 	buildBlacksmithData
 } from "../../core/report/ReportBlacksmithService";
+import { buildRoyalBlacksmithData } from "../../core/report/ReportRoyalBlacksmithService";
+import { handleRoyalBlacksmithUpgradeReaction } from "../../core/report/ReportCityRoyalBlacksmithService";
 import {
 	buildEnchanterData,
 	buildHomeData,
@@ -462,6 +468,17 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 			);
 		}
 	],
+	[ReactionCollectorRoyalBlacksmithMenuReaction.name, NOOP_REACTION],
+	[
+		ReactionCollectorRoyalBlacksmithUpgradeReaction.name, async (params): Promise<void> => {
+			await handleRoyalBlacksmithUpgradeReaction(
+				params.player,
+				params.reactionData as ReactionCollectorRoyalBlacksmithUpgradeReaction,
+				params.collectorData as ReactionCollectorCityData,
+				params.response
+			);
+		}
+	],
 	[ReactionCollectorGardenHarvestReaction.name, NOOP_REACTION],
 	[ReactionCollectorGardenWaterReaction.name, NOOP_REACTION],
 	[
@@ -550,6 +567,11 @@ async function sendCityCollector(
 	// Build blacksmith data if city has a blacksmith
 	const blacksmith = city.blacksmithAvailable
 		? buildBlacksmithData(playerInventory, playerMaterialMap, player)
+		: undefined;
+
+	// Build royal blacksmith data if city has a royal blacksmith (e.g. royal castle)
+	const royalBlacksmith = city.royalBlacksmithAvailable
+		? await buildRoyalBlacksmithData(playerInventory, playerMaterialMap, player)
 		: undefined;
 
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
@@ -688,6 +710,7 @@ async function sendCityCollector(
 			city
 		),
 		blacksmith,
+		royalBlacksmith,
 		guildDomain,
 		guildFoodShop,
 		guildDomainNotary,

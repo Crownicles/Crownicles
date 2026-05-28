@@ -10,6 +10,9 @@ export const ReportCityMenuIds = {
 	/** Blacksmith sub-menu */
 	BLACKSMITH_MENU: "BLACKSMITH_MENU",
 
+	/** Royal Blacksmith sub-menu (special: only at the royal castle, lvl 100+ for level-5 upgrades). */
+	ROYAL_BLACKSMITH_MENU: "ROYAL_BLACKSMITH_MENU",
+
 	/** Enchanter sub-menu */
 	ENCHANTER_MENU: "ENCHANTER_MENU",
 
