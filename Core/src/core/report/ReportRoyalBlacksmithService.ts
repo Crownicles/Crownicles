@@ -19,15 +19,15 @@ type RoyalUpgradeableItem = RoyalBlacksmithData["upgradeableItems"][number];
  * Inventory inspection result used to pick the right narrative branch.
  */
 type InventoryStatus = {
-	hasAnyPrimaryItem: boolean;
-	hasAnyAtTargetLevel: boolean;
+	primaryItemCount: number;
+	itemsAtTargetLevel: number;
 	hasAnyAtPreviousLevel: boolean;
 };
 
 function inspectInventory(playerInventory: InventorySlot[]): InventoryStatus {
 	const result: InventoryStatus = {
-		hasAnyPrimaryItem: false,
-		hasAnyAtTargetLevel: false,
+		primaryItemCount: 0,
+		itemsAtTargetLevel: 0,
 		hasAnyAtPreviousLevel: false
 	};
 	const targetLevel = RoyalBlacksmithConstants.TARGET_LEVEL;
@@ -38,10 +38,10 @@ function inspectInventory(playerInventory: InventorySlot[]): InventoryStatus {
 		if (!itemData) {
 			continue;
 		}
-		result.hasAnyPrimaryItem = true;
+		result.primaryItemCount++;
 		const level = slot.itemLevel ?? 0;
 		if (level === targetLevel) {
-			result.hasAnyAtTargetLevel = true;
+			result.itemsAtTargetLevel++;
 		}
 		else if (level === previousLevel) {
 			result.hasAnyAtPreviousLevel = true;
@@ -173,7 +173,7 @@ export async function buildRoyalBlacksmithData(
 
 	// Worthy player but nothing the Royal Blacksmith would touch.
 	if (upgradeableItems.length === 0) {
-		if (inventoryStatus.hasAnyPrimaryItem && inventoryStatus.hasAnyAtTargetLevel && !inventoryStatus.hasAnyAtPreviousLevel) {
+		if (inventoryStatus.primaryItemCount > 0 && inventoryStatus.itemsAtTargetLevel === inventoryStatus.primaryItemCount) {
 			return {
 				status: "all_maxed",
 				playerLevel,

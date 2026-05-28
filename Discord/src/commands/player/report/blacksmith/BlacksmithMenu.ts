@@ -33,6 +33,7 @@ import {
 	addCitySection, createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import { buildUpgradeDetailDescription } from "./BlacksmithUpgradeDetailHelper";
 
 export interface BlacksmithMenuParams {
 	context: PacketContext;
@@ -294,40 +295,21 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 /**
  * Build description for upgrade item details
  */
-function buildUpgradeDetailDescription(
+function buildUpgradeDetailDescriptionForStandard(
 	item: NonNullable<ReactionCollectorCityData["blacksmith"]>["upgradeableItems"][0],
 	lng: Language
 ): string {
-	const itemDisplay = DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng);
-
-	// Build materials list with icons (same format as upgrade station)
-	const materialLines = item.requiredMaterials.map(m => {
-		const icon = CrowniclesIcons.materials[m.materialId] ?? CrowniclesIcons.collectors.question;
-		const materialName = i18n.t(`models:materials.${m.materialId}`, { lng });
-		const hasEnough = m.playerQuantity >= m.quantity;
-		const statusIcon = hasEnough ? CrowniclesIcons.collectors.accept : CrowniclesIcons.collectors.refuse;
-		return `${statusIcon} ${icon} **${materialName}** : ${m.playerQuantity}/${m.quantity}`;
-	});
-
-	// Build description with conditional missing materials message
-	let description = i18n.t("commands:report.city.blacksmith.upgradeItemDetailsBase", {
+	return buildUpgradeDetailDescription({
+		item,
 		lng,
-		itemDisplay,
-		currentLevel: item.details.itemLevel ?? 0,
-		nextLevel: item.nextLevel,
-		upgradeCost: item.upgradeCost,
-		materials: materialLines.join("\n")
+		titleKey: "commands:report.city.blacksmith.upgradeItemDetailsBase",
+		titleParams: {
+			currentLevel: item.details.itemLevel ?? 0,
+			nextLevel: item.nextLevel,
+			upgradeCost: item.upgradeCost
+		},
+		missingOfferKey: "commands:report.city.blacksmith.missingMaterialsOffer"
 	});
-
-	// Add missing materials message if needed
-	if (!item.hasAllMaterials) {
-		description += `\n\n${i18n.t("commands:report.city.blacksmith.missingMaterialsOffer", {
-			lng,
-			missingMaterialsCost: item.missingMaterialsCost
-		})}`;
-	}
-
-	return description;
 }
 
 /**
@@ -345,7 +327,7 @@ export function getBlacksmithUpgradeDetailMenu(
 	const blacksmith = data.blacksmith!;
 	const item = blacksmith.upgradeableItems[itemIndex];
 
-	const description = buildUpgradeDetailDescription(item, lng);
+	const description = buildUpgradeDetailDescriptionForStandard(item, lng);
 
 	const container = new ContainerBuilder();
 
