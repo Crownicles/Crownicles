@@ -328,83 +328,83 @@ export abstract class ItemConstants {
 		},
 		[ItemRarity.EPIC]: {
 			1: {
-				[MaterialRarity.COMMON]: 8,
+				[MaterialRarity.COMMON]: 6,
 				[MaterialRarity.UNCOMMON]: 2,
-				[MaterialRarity.RARE]: 3
+				[MaterialRarity.RARE]: 2
 			},
 			2: {
-				[MaterialRarity.COMMON]: 9,
-				[MaterialRarity.UNCOMMON]: 4,
-				[MaterialRarity.RARE]: 5
+				[MaterialRarity.COMMON]: 12,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 3
 			},
 			3: {
-				[MaterialRarity.COMMON]: 10,
-				[MaterialRarity.UNCOMMON]: 5,
-				[MaterialRarity.RARE]: 7
+				[MaterialRarity.COMMON]: 12,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 6
 			},
 			4: {
-				[MaterialRarity.COMMON]: 11,
-				[MaterialRarity.UNCOMMON]: 6,
-				[MaterialRarity.RARE]: 9
+				[MaterialRarity.COMMON]: 16,
+				[MaterialRarity.UNCOMMON]: 9,
+				[MaterialRarity.RARE]: 6
 			},
 			5: {
-				[MaterialRarity.COMMON]: 12,
-				[MaterialRarity.UNCOMMON]: 7,
-				[MaterialRarity.RARE]: 12
+				[MaterialRarity.COMMON]: 20,
+				[MaterialRarity.UNCOMMON]: 12,
+				[MaterialRarity.RARE]: 8
 			}
 		},
 		[ItemRarity.LEGENDARY]: {
 			1: {
-				[MaterialRarity.COMMON]: 10,
-				[MaterialRarity.UNCOMMON]: 5,
-				[MaterialRarity.RARE]: 5
+				[MaterialRarity.COMMON]: 18,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 3
 			},
 			2: {
-				[MaterialRarity.COMMON]: 15,
-				[MaterialRarity.UNCOMMON]: 10,
+				[MaterialRarity.COMMON]: 21,
+				[MaterialRarity.UNCOMMON]: 14,
 				[MaterialRarity.RARE]: 8
 			},
 			3: {
-				[MaterialRarity.COMMON]: 20,
-				[MaterialRarity.UNCOMMON]: 15,
-				[MaterialRarity.RARE]: 12
-			},
-			4: {
-				[MaterialRarity.COMMON]: 25,
-				[MaterialRarity.UNCOMMON]: 20,
-				[MaterialRarity.RARE]: 15
-			},
-			5: {
-				[MaterialRarity.COMMON]: 30,
-				[MaterialRarity.UNCOMMON]: 25,
-				[MaterialRarity.RARE]: 20
-			}
-		},
-		[ItemRarity.MYTHICAL]: {
-			1: {
-				[MaterialRarity.COMMON]: 15,
-				[MaterialRarity.UNCOMMON]: 10,
+				[MaterialRarity.COMMON]: 32,
+				[MaterialRarity.UNCOMMON]: 16,
 				[MaterialRarity.RARE]: 10
 			},
-			2: {
-				[MaterialRarity.COMMON]: 20,
-				[MaterialRarity.UNCOMMON]: 15,
-				[MaterialRarity.RARE]: 15
-			},
-			3: {
-				[MaterialRarity.COMMON]: 25,
-				[MaterialRarity.UNCOMMON]: 20,
-				[MaterialRarity.RARE]: 20
-			},
 			4: {
-				[MaterialRarity.COMMON]: 30,
-				[MaterialRarity.UNCOMMON]: 25,
-				[MaterialRarity.RARE]: 25
+				[MaterialRarity.COMMON]: 36,
+				[MaterialRarity.UNCOMMON]: 27,
+				[MaterialRarity.RARE]: 15
 			},
 			5: {
 				[MaterialRarity.COMMON]: 40,
 				[MaterialRarity.UNCOMMON]: 30,
-				[MaterialRarity.RARE]: 30
+				[MaterialRarity.RARE]: 18
+			}
+		},
+		[ItemRarity.MYTHICAL]: {
+			1: {
+				[MaterialRarity.COMMON]: 24,
+				[MaterialRarity.UNCOMMON]: 16,
+				[MaterialRarity.RARE]: 5
+			},
+			2: {
+				[MaterialRarity.COMMON]: 36,
+				[MaterialRarity.UNCOMMON]: 18,
+				[MaterialRarity.RARE]: 12
+			},
+			3: {
+				[MaterialRarity.COMMON]: 40,
+				[MaterialRarity.UNCOMMON]: 30,
+				[MaterialRarity.RARE]: 14
+			},
+			4: {
+				[MaterialRarity.COMMON]: 44,
+				[MaterialRarity.UNCOMMON]: 30,
+				[MaterialRarity.RARE]: 24
+			},
+			5: {
+				[MaterialRarity.COMMON]: 48,
+				[MaterialRarity.UNCOMMON]: 33,
+				[MaterialRarity.RARE]: 24
 			}
 		}
 	};

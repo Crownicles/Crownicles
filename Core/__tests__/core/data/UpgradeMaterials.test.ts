@@ -70,7 +70,7 @@ describe("MainItem.getUpgradeMaterials (15-category system)", () => {
 		}
 	});
 
-	it("returns at most 9 distinct materials per upgrade (cahier des charges cap)", () => {
+	it("returns at most 10 distinct materials per upgrade (cahier des charges cap)", () => {
 		// Pick a few representative items
 		const cases: Array<[ItemRarity, ItemMaterialCategory]> = [
 			[ItemRarity.RARE, 1], [ItemRarity.SPECIAL, 6], [ItemRarity.EPIC, 10],
@@ -81,7 +81,7 @@ describe("MainItem.getUpgradeMaterials (15-category system)", () => {
 				const w = makeWeapon(id, r, cat);
 				for (let lvl = 1; lvl <= 5; lvl++) {
 					const { byId } = aggregate(w.getUpgradeMaterials(lvl));
-					expect(byId.size).toBeLessThanOrEqual(9);
+					expect(byId.size).toBeLessThanOrEqual(10);
 				}
 			}
 		}

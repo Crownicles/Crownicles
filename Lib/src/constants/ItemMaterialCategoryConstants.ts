@@ -52,16 +52,16 @@ export const MATERIAL_POOLS_PER_CATEGORY: {
 			21,
 			24,
 			43,
-			52,
 			55,
-			79
+			79,
+			82
 		],
 		[MaterialRarity.UNCOMMON]: [
 			17,
 			44,
 			50,
 			71,
-			78,
+			81,
 			85,
 			90
 		],
@@ -123,11 +123,11 @@ export const MATERIAL_POOLS_PER_CATEGORY: {
 		],
 		[MaterialRarity.RARE]: [
 			3,
+			11,
 			19,
 			31,
 			40,
-			84,
-			87
+			84
 		]
 	},
 	4: {
@@ -257,7 +257,7 @@ export const MATERIAL_POOLS_PER_CATEGORY: {
 			9,
 			45,
 			47,
-			81,
+			78,
 			85,
 			90
 		],
@@ -318,12 +318,12 @@ export const MATERIAL_POOLS_PER_CATEGORY: {
 			78
 		],
 		[MaterialRarity.RARE]: [
-			11,
 			19,
-			27,
 			36,
 			40,
-			83
+			62,
+			76,
+			87
 		]
 	},
 	11: {
@@ -333,8 +333,8 @@ export const MATERIAL_POOLS_PER_CATEGORY: {
 			21,
 			25,
 			32,
-			55,
-			82
+			52,
+			55
 		],
 		[MaterialRarity.UNCOMMON]: [
 			17,
@@ -378,8 +378,8 @@ export const MATERIAL_POOLS_PER_CATEGORY: {
 			6,
 			28,
 			56,
-			62,
-			69
+			69,
+			83
 		]
 	},
 	13: {
@@ -431,11 +431,11 @@ export const MATERIAL_POOLS_PER_CATEGORY: {
 		],
 		[MaterialRarity.RARE]: [
 			5,
+			27,
 			62,
 			65,
 			67,
-			69,
-			76
+			69
 		]
 	},
 	15: {
@@ -589,53 +589,53 @@ export const DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL: {
 	],
 	[ItemRarity.EPIC]: [
 		{
-			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 1, [MaterialRarity.RARE]: 1
+			[MaterialRarity.COMMON]: 2, [MaterialRarity.UNCOMMON]: 1, [MaterialRarity.RARE]: 1
 		},
 		{
-			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 1
+			[MaterialRarity.COMMON]: 3, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 1
 		},
 		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
+			[MaterialRarity.COMMON]: 3, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
 		},
 		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
+			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 3, [MaterialRarity.RARE]: 2
 		},
 		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
+			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 3, [MaterialRarity.RARE]: 2
 		}
 	],
 	[ItemRarity.LEGENDARY]: [
 		{
-			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 1, [MaterialRarity.RARE]: 1
+			[MaterialRarity.COMMON]: 3, [MaterialRarity.UNCOMMON]: 1, [MaterialRarity.RARE]: 1
 		},
 		{
-			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 1
-		},
-		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 1
-		},
-		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
-		},
-		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
-		}
-	],
-	[ItemRarity.MYTHICAL]: [
-		{
-			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 1
+			[MaterialRarity.COMMON]: 3, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
 		},
 		{
 			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
 		},
 		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
+			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 3, [MaterialRarity.RARE]: 3
 		},
 		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
+			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 3, [MaterialRarity.RARE]: 3
+		}
+	],
+	[ItemRarity.MYTHICAL]: [
+		{
+			[MaterialRarity.COMMON]: 3, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 1
 		},
 		{
-			[MaterialRarity.COMMON]: 5, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
+			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 2, [MaterialRarity.RARE]: 2
+		},
+		{
+			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 3, [MaterialRarity.RARE]: 2
+		},
+		{
+			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 3, [MaterialRarity.RARE]: 3
+		},
+		{
+			[MaterialRarity.COMMON]: 4, [MaterialRarity.UNCOMMON]: 3, [MaterialRarity.RARE]: 3
 		}
 	]
 };
