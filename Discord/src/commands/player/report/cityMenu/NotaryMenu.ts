@@ -150,16 +150,30 @@ function buildSimpleCostNotaryDescription(params: SimpleCostNotaryParams): strin
 	});
 }
 
-function buildNotaryNewHomeDescription(data: ManageHomeData, lng: Language): string {
-	return buildSimpleCostNotaryDescription({
-		cost: data.newPrice!,
-		currentMoney: data.currentMoney,
-		canAfford: Boolean(data.canBuy),
-		lng,
+type SimpleCostDescriptionSpec = {
+	matches: (d: ManageHomeData) => boolean;
+	cost: (d: ManageHomeData) => number;
+	canAfford: (d: ManageHomeData) => boolean;
+	noMoneyKey: string;
+	enoughMoneyKey: string;
+};
+
+const SIMPLE_COST_DESCRIPTIONS: SimpleCostDescriptionSpec[] = [
+	{
+		matches: d => Boolean(d.newPrice),
+		cost: d => d.newPrice!,
+		canAfford: d => Boolean(d.canBuy),
 		noMoneyKey: "commands:report.city.homes.notaryNewHomeNoMoney",
 		enoughMoneyKey: "commands:report.city.homes.notaryNewHomeEnoughMoney"
-	});
-}
+	},
+	{
+		matches: d => Boolean(d.movePrice),
+		cost: d => d.movePrice!,
+		canAfford: d => Boolean(d.canMove),
+		noMoneyKey: "commands:report.city.homes.notaryMoveHomeNoMoney",
+		enoughMoneyKey: "commands:report.city.homes.notaryMoveHomeEnoughMoney"
+	}
+];
 
 function buildNotaryUpgradeDescription(data: ManageHomeData, lng: Language): string {
 	const upgrade = data.upgrade!;
@@ -178,14 +192,14 @@ function buildNotaryUpgradeDescription(data: ManageHomeData, lng: Language): str
 	});
 }
 
-function buildNotaryMoveDescription(data: ManageHomeData, lng: Language): string {
+function buildNotaryDescriptionFromSpec(spec: SimpleCostDescriptionSpec, data: ManageHomeData, lng: Language): string {
 	return buildSimpleCostNotaryDescription({
-		cost: data.movePrice!,
+		cost: spec.cost(data),
 		currentMoney: data.currentMoney,
-		canAfford: Boolean(data.canMove),
+		canAfford: spec.canAfford(data),
 		lng,
-		noMoneyKey: "commands:report.city.homes.notaryMoveHomeNoMoney",
-		enoughMoneyKey: "commands:report.city.homes.notaryMoveHomeEnoughMoney"
+		noMoneyKey: spec.noMoneyKey,
+		enoughMoneyKey: spec.enoughMoneyKey
 	});
 }
 
@@ -195,14 +209,12 @@ type NotaryDescriptionBuilder = {
 };
 
 const NOTARY_DESCRIPTION_BUILDERS: NotaryDescriptionBuilder[] = [
-	{
-		matches: (d): boolean => Boolean(d.newPrice), build: buildNotaryNewHomeDescription
-	},
+	...SIMPLE_COST_DESCRIPTIONS.map((spec): NotaryDescriptionBuilder => ({
+		matches: spec.matches,
+		build: (d, lng): string => buildNotaryDescriptionFromSpec(spec, d, lng)
+	})),
 	{
 		matches: (d): boolean => Boolean(d.upgrade), build: buildNotaryUpgradeDescription
-	},
-	{
-		matches: (d): boolean => Boolean(d.movePrice), build: buildNotaryMoveDescription
 	},
 	{
 		matches: (d): boolean => Boolean(d.requiredPlayerLevelForUpgrade),
@@ -438,17 +450,42 @@ const NOTARY_CONFIRMATION_ACTIONS = new Set<string>([
 	ReportCityMenuIds.APARTMENT_BUY
 ]);
 
-function buildHomeBuyConfirmation(homeData: ManageHomeData, lng: Language): NotaryConfirmationDetails | null {
-	if (homeData.newPrice === undefined) {
+type SimpleHomeConfirmationSpec = {
+	selectedValue: string;
+	cost: (d: ManageHomeData) => number | undefined;
+	descriptionKey: string;
+	confirmLabelKey: string;
+	reactionType: string;
+};
+
+const SIMPLE_HOME_CONFIRMATIONS: SimpleHomeConfirmationSpec[] = [
+	{
+		selectedValue: ReportCityMenuIds.BUY_HOME,
+		cost: d => d.newPrice,
+		descriptionKey: "commands:report.city.homes.notaryConfirmBuyHome",
+		confirmLabelKey: "commands:report.city.homes.buyHome",
+		reactionType: ReactionCollectorCityBuyHomeReaction.name
+	},
+	{
+		selectedValue: ReportCityMenuIds.MOVE_HOME,
+		cost: d => d.movePrice,
+		descriptionKey: "commands:report.city.homes.notaryConfirmMoveHome",
+		confirmLabelKey: "commands:report.city.homes.moveHome",
+		reactionType: ReactionCollectorCityMoveHomeReaction.name
+	}
+];
+
+function buildSimpleHomeConfirmation(spec: SimpleHomeConfirmationSpec, homeData: ManageHomeData, lng: Language): NotaryConfirmationDetails | null {
+	const cost = spec.cost(homeData);
+	if (cost === undefined) {
 		return null;
 	}
 	return {
-		description: i18n.t("commands:report.city.homes.notaryConfirmBuyHome", {
-			lng,
-			cost: homeData.newPrice
+		description: i18n.t(spec.descriptionKey, {
+			lng, cost
 		}),
-		confirmLabel: i18n.t("commands:report.city.homes.buyHome", { lng }),
-		reactionType: ReactionCollectorCityBuyHomeReaction.name
+		confirmLabel: i18n.t(spec.confirmLabelKey, { lng }),
+		reactionType: spec.reactionType
 	};
 }
 
@@ -467,20 +504,6 @@ function buildHomeUpgradeConfirmation(homeData: ManageHomeData, lng: Language): 
 	};
 }
 
-function buildHomeMoveConfirmation(homeData: ManageHomeData, lng: Language): NotaryConfirmationDetails | null {
-	if (homeData.movePrice === undefined) {
-		return null;
-	}
-	return {
-		description: i18n.t("commands:report.city.homes.notaryConfirmMoveHome", {
-			lng,
-			cost: homeData.movePrice
-		}),
-		confirmLabel: i18n.t("commands:report.city.homes.moveHome", { lng }),
-		reactionType: ReactionCollectorCityMoveHomeReaction.name
-	};
-}
-
 function buildHomeConfirmation(
 	selectedValue: string,
 	homeData: ManageHomeData | undefined,
@@ -489,14 +512,12 @@ function buildHomeConfirmation(
 	if (!homeData) {
 		return null;
 	}
-	if (selectedValue === ReportCityMenuIds.BUY_HOME) {
-		return buildHomeBuyConfirmation(homeData, lng);
+	const spec = SIMPLE_HOME_CONFIRMATIONS.find(s => s.selectedValue === selectedValue);
+	if (spec) {
+		return buildSimpleHomeConfirmation(spec, homeData, lng);
 	}
 	if (selectedValue === ReportCityMenuIds.UPGRADE_HOME) {
 		return buildHomeUpgradeConfirmation(homeData, lng);
-	}
-	if (selectedValue === ReportCityMenuIds.MOVE_HOME) {
-		return buildHomeMoveConfirmation(homeData, lng);
 	}
 	return null;
 }
