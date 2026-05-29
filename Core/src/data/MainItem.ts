@@ -130,59 +130,89 @@ export abstract class MainItem extends GenericItem {
 	 * 4. Distribute the total quantity across the picked ids (base quantity + 1 for the first `rem` positions) and emit each id that many times.
 	 */
 	public getUpgradeMaterials(level: number): Material[] {
-		if (level < 0) {
-			level = 0;
-		}
-		if (level > ItemConstants.MAX_UPGRADE_LEVEL) {
-			level = ItemConstants.MAX_UPGRADE_LEVEL;
-		}
+		const clampedLevel = MainItem.clampUpgradeLevel(level);
 
-		const cached = this.upgradeMaterialsCache.get(level);
+		const cached = this.upgradeMaterialsCache.get(clampedLevel);
 		if (cached) {
 			return cached;
 		}
 
-		const materials: Material[] = [];
+		const materials = this.computeUpgradeMaterials(clampedLevel);
+		this.upgradeMaterialsCache.set(clampedLevel, materials);
+		return materials;
+	}
 
-		if (level >= 1 && level <= 5) {
-			const itemRarity = this.rarity as ItemRarity;
-			const upgradeLevel = level as 1 | 2 | 3 | 4 | 5;
-			const totals = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel];
-			const distincts = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel - 1];
-			const categoryPool = MATERIAL_POOLS_PER_CATEGORY[this.materialCategory];
+	private static clampUpgradeLevel(level: number): number {
+		if (level < 0) {
+			return 0;
+		}
+		if (level > ItemConstants.MAX_UPGRADE_LEVEL) {
+			return ItemConstants.MAX_UPGRADE_LEVEL;
+		}
+		return level;
+	}
 
-			for (const matRarity of [
-				MaterialRarity.COMMON,
-				MaterialRarity.UNCOMMON,
-				MaterialRarity.RARE
-			]) {
-				const totalQty = totals[matRarity];
-				if (totalQty <= 0) {
-					continue;
-				}
-				const subPool = categoryPool[matRarity];
-				const distinctCount = Math.min(distincts[matRarity], subPool.length, totalQty);
-				if (distinctCount <= 0) {
-					continue;
-				}
-
-				const picked = pickDistinctMaterials(subPool, this.id, matRarity, upgradeLevel, distinctCount);
-				const base = Math.floor(totalQty / picked.length);
-				const rem = totalQty % picked.length;
-				for (let i = 0; i < picked.length; i++) {
-					const qty = base + (i < rem ? 1 : 0);
-					const mat = MaterialDataController.instance.getById(String(picked[i]));
-					if (!mat) {
-						continue;
-					}
-					for (let k = 0; k < qty; k++) {
-						materials.push(mat);
-					}
-				}
-			}
+	private computeUpgradeMaterials(level: number): Material[] {
+		if (level < 1 || level > 5) {
+			return [];
 		}
 
-		this.upgradeMaterialsCache.set(level, materials);
+		const itemRarity = this.rarity as ItemRarity;
+		const upgradeLevel = level as 1 | 2 | 3 | 4 | 5;
+		const totals = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel];
+		const distincts = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel - 1];
+		const categoryPool = MATERIAL_POOLS_PER_CATEGORY[this.materialCategory];
+
+		const materials: Material[] = [];
+		for (const matRarity of [
+			MaterialRarity.COMMON,
+			MaterialRarity.UNCOMMON,
+			MaterialRarity.RARE
+		]) {
+			this.appendRarityMaterials(materials, {
+				matRarity,
+				upgradeLevel,
+				totalQty: totals[matRarity],
+				distinct: distincts[matRarity],
+				subPool: categoryPool[matRarity]
+			});
+		}
 		return materials;
+	}
+
+	private appendRarityMaterials(materials: Material[], params: {
+		matRarity: MaterialRarity;
+		upgradeLevel: 1 | 2 | 3 | 4 | 5;
+		totalQty: number;
+		distinct: number;
+		subPool: readonly number[];
+	}): void {
+		const {
+			matRarity, upgradeLevel, totalQty, distinct, subPool
+		} = params;
+		if (totalQty <= 0) {
+			return;
+		}
+		const distinctCount = Math.min(distinct, subPool.length, totalQty);
+		if (distinctCount <= 0) {
+			return;
+		}
+
+		const picked = pickDistinctMaterials(subPool, this.id, matRarity, upgradeLevel, distinctCount);
+		const base = Math.floor(totalQty / picked.length);
+		const rem = totalQty % picked.length;
+		for (let i = 0; i < picked.length; i++) {
+			this.pushMaterialCopies(materials, picked[i], base + (i < rem ? 1 : 0));
+		}
+	}
+
+	private pushMaterialCopies(materials: Material[], materialId: number, quantity: number): void {
+		const mat = MaterialDataController.instance.getById(String(materialId));
+		if (!mat) {
+			return;
+		}
+		for (let k = 0; k < quantity; k++) {
+			materials.push(mat);
+		}
 	}
 }
