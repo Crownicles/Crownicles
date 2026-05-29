@@ -23,11 +23,13 @@ list — feel free to add other materials when they fit the category lore.
 
 ## Verification
 
-Run the verification script to ensure the categorization is complete and
-free of duplicates:
+A verification script lives in the [Tools](https://github.com/Crownicles/Tools)
+repository (`other/verify-item-material-categories.py`). Run it to ensure the
+categorization is complete and free of duplicates, passing the models file and
+this document as arguments:
 
 ```bash
-python3 docs/design/verify-item-material-categories.py
+python3 ../Tools/other/verify-item-material-categories.py Lang/fr/models.json docs/design/item-material-categories.md
 ```
 
 It re-resolves each item against `Lang/fr/models.json`, validates per-category
