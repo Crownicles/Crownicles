@@ -16,7 +16,7 @@ export class ReactionCollectorGardenerData extends ReactionCollectorData {
 
 	conditionKey!: SeedConditionKey;
 
-	/** See {@link SmallEventGardenerPacket.isFirstEncounter} (#4273). */
+	/** See {@link SmallEventGardenerPacket.isFirstEncounter}. */
 	isFirstEncounter?: boolean;
 }
 
