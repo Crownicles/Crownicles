@@ -35,8 +35,7 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 	}
 
 	updateMessage = async (packet: CommandFightHistoryItemPacket, context: PacketContext): Promise<null> => {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-		const lng = interaction.userLanguage;
+		const lng = DiscordCache.getInteraction(context.discord!.interaction)?.userLanguage ?? context.discord!.language;
 		if (packet.fighterKeycloakId && !this.usernamesCachePlayer.has(packet.fighterKeycloakId)) {
 			this.usernamesCachePlayer.set(packet.fighterKeycloakId, await DisplayUtils.getEscapedUsername(packet.fighterKeycloakId, lng));
 		}
