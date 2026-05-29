@@ -16,8 +16,7 @@ export class CrowniclesFightStatusCachedMessage extends CrowniclesCachedMessage<
 	}
 
 	updateMessage = async (packet: CommandFightStatusPacket, context: PacketContext): Promise<null> => {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-		const lng = interaction.userLanguage;
+		const lng = DiscordCache.getInteraction(context.discord!.interaction)?.userLanguage ?? context.discord!.language;
 		if (!this.usernamesCache) {
 			this.usernamesCache = new Map<string, string>();
 			if (packet.activeFighter.keycloakId) {

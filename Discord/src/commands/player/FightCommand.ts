@@ -228,11 +228,11 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 			await buttonInteraction.editReply({ embeds: [embed] });
 		}
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesHistoryCachedMessage)
-			.post({ content: DiscordConstants.EMPTY_MESSAGE });
+			.post({ content: DiscordConstants.EMPTY_MESSAGE }, context.discord?.channel);
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesFightStatusCachedMessage)
-			.post({ content: DiscordConstants.EMPTY_MESSAGE });
+			.post({ content: DiscordConstants.EMPTY_MESSAGE }, context.discord?.channel);
 		await CrowniclesCachedMessages.getOrCreate(interaction.id, CrowniclesActionChooseCachedMessage)
-			.post({ content: DiscordConstants.EMPTY_MESSAGE });
+			.post({ content: DiscordConstants.EMPTY_MESSAGE }, context.discord?.channel);
 	}
 	catch (e) {
 		CrowniclesLogger.errorWithObj("Fight introduction failed", e);
@@ -287,9 +287,9 @@ export async function handleCommandFightAIFightActionChoose(context: PacketConte
 	}
 
 	try {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+		const lng = DiscordCache.getInteraction(context.discord!.interaction)?.userLanguage ?? context.discord!.language;
 		await CrowniclesCachedMessages.getOrCreate(context.discord.interaction, CrowniclesActionChooseCachedMessage)
-			.post({ embeds: [new CrowniclesEmbed().setDescription(i18n.t("commands:fight.actions.aiChoose", { lng: interaction.userLanguage }))] });
+			.post({ embeds: [new CrowniclesEmbed().setDescription(i18n.t("commands:fight.actions.aiChoose", { lng }))] }, context.discord.channel);
 		await new Promise(f => setTimeout(f, packet.ms));
 	}
 	catch (e) {
