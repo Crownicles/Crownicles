@@ -72,6 +72,19 @@ const myFormat = format.printf(({
 }) =>
 	`${timestamp} [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${safeStringify(metadata)}` : ""}`);
 
+/**
+ * winston-loki >= 6.1.4 forwards the log's leftover fields as Loki structured
+ * metadata, whose values must be strings. Our `format.metadata()` nests every
+ * extra field under a `metadata` object, so Loki rejects the whole push with
+ * "Value is string, but can't find closing '\"' symbol". The metadata content is
+ * already embedded in the formatted line, so we strip it from the payload sent
+ * to Loki to keep the structured metadata valid.
+ */
+const stripLokiStructuredMetadata = format(info => {
+	delete (info as Record<string, unknown>).metadata;
+	return info;
+});
+
 type LogMetadata = { [key: string]: unknown } & {
 	error?: never;
 	level?: never;
@@ -117,6 +130,7 @@ export abstract class CrowniclesLogger {
 							? `${lokiSettings.username}:${lokiSettings.password}`
 							: undefined,
 						json: true,
+						format: stripLokiStructuredMetadata(),
 						onConnectionError: console.error,
 						interval: 5,
 						timeout: 5
