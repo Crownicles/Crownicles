@@ -33,7 +33,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetFree";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import Guild from "../../core/database/game/models/Guild";
+import Guild, { Guilds } from "../../core/database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { getFoodIndexOf } from "../../core/utils/FoodUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -59,6 +59,25 @@ import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities
  */
 function getCooldownRemainingTimeMs(player: Player): number {
 	return PetFreeConstants.FREE_COOLDOWN - (new Date().valueOf() - player.lastPetFree.valueOf());
+}
+
+/**
+ * Whether the player is exempt from the pet free cooldown.
+ * Guild chiefs and elders can free pets without waiting; base members keep the cooldown.
+ * @param player
+ * @param guild the player's guild (null if the player has no guild)
+ */
+function isExemptFromPetFreeCooldown(player: Player, guild: Guild | null): boolean {
+	return guild !== null && (player.id === guild.getChiefId() || player.id === guild.getElderId());
+}
+
+/**
+ * Remaining pet free cooldown for the player, accounting for the chief/elder exemption.
+ * @param player
+ * @param guild the player's guild (null if the player has no guild)
+ */
+function getEffectiveCooldownRemainingTimeMs(player: Player, guild: Guild | null): number {
+	return isExemptFromPetFreeCooldown(player, guild) ? 0 : getCooldownRemainingTimeMs(player);
 }
 
 /**
@@ -295,7 +314,7 @@ async function applyLockedShelterFree(
 		return { revalidated: false };
 	}
 
-	const cooldownRemainingTimeMs = getCooldownRemainingTimeMs(player);
+	const cooldownRemainingTimeMs = getEffectiveCooldownRemainingTimeMs(player, guild);
 	if (cooldownRemainingTimeMs > 0) {
 		return {
 			revalidated: false, cooldownRemainingTimeMs
@@ -694,7 +713,7 @@ async function isPetBlockedOnExpeditionWithNoAlternatives(
 export default class PetFreeCommand {
 	@commandRequires(CommandPetFreePacketReq, {
 		notBlocked: true,
-		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetFreePacketReq, context: PacketContext): Promise<void> {
@@ -717,7 +736,8 @@ export default class PetFreeCommand {
 			return;
 		}
 
-		const cooldownRemainingTimeMs = getCooldownRemainingTimeMs(player);
+		const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+		const cooldownRemainingTimeMs = getEffectiveCooldownRemainingTimeMs(player, guild);
 		if (cooldownRemainingTimeMs > 0) {
 			response.push(makePacket(CommandPetFreePacketRes, {
 				foundPet: true,
