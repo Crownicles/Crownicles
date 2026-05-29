@@ -96,10 +96,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		};
 		mageReduction: boolean;
 
-		/** Player money — displayed alongside the enchantment cost (#4271). */
+		/** Player balance, displayed alongside the enchantment cost (#4271). */
 		playerMoney: number;
 
-		/** Player gems — displayed alongside the enchantment cost (#4271). */
 		playerGems: number;
 	};
 
