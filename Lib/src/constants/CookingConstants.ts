@@ -347,7 +347,10 @@ export const SLOT_CONFIGS: readonly SlotConfig[] = [
 ] as const;
 
 /**
- * Prime seed offsets for per-slot independent permutations
+ * Per-slot seed offsets added to the day seed before the deterministic shuffle,
+ * so each cooking slot gets an independent recipe permutation on a given day.
+ * Values are distinct large primes (and 0 for the first slot) to keep the
+ * resulting per-slot seeds decorrelated and avoid accidental rotation overlap.
  */
 export const SLOT_SEED_OFFSETS = [
 	0,
