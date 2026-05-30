@@ -15,6 +15,7 @@ import {
 } from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
+import { StringUtils } from "../../../../utils/StringUtils";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
@@ -86,9 +87,9 @@ export function getRoyalBlacksmithMenu(params: RoyalBlacksmithMenuParams): Crown
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.royalBlacksmith.title", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.royalBlacksmith.title", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 
@@ -172,9 +173,9 @@ export function getRoyalBlacksmithUpgradeMenu(params: RoyalBlacksmithMenuParams)
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.royalBlacksmith.upgradeTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.royalBlacksmith.upgradeTitle", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 
@@ -287,9 +288,9 @@ export function getRoyalBlacksmithUpgradeDetailMenu(
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.royalBlacksmith.upgradeTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.royalBlacksmith.upgradeTitle", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 

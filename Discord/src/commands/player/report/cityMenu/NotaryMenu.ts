@@ -15,6 +15,7 @@ import {
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
+import { StringUtils } from "../../../../utils/StringUtils";
 import {
 	ChestSlotsPerCategory, HomeFeatures
 } from "../../../../../../Lib/src/types/HomeFeatures";
@@ -683,9 +684,9 @@ export function getManageHomeMenu(params: CityMenuParams): CrowniclesNestedMenu 
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.homes.notaryTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.homes.notaryTitle", {
 				lng, pseudo: params.pseudo
-			})}`
+			}))
 		)
 	);
 

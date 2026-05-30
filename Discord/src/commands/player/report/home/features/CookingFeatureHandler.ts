@@ -11,6 +11,7 @@ import {
 import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedMenus";
 import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import i18n from "../../../../../translations/i18n";
+import { StringUtils } from "../../../../../utils/StringUtils";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../../Lib/src/Language";
 import {
@@ -477,7 +478,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private buildCookingContainer(ctx: HomeFeatureHandlerContext, extraMessage = ""): ContainerBuilder {
 		const container = new ContainerBuilder();
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(this.getSubMenuTitle(ctx, ctx.pseudo)))
 		);
 		const pinnedDisplay = this.buildPinnedRecipeDisplay(ctx);
 		container.addTextDisplayComponents(
@@ -536,7 +537,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		// Title
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(
-				`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`
+				StringUtils.formatHeader(this.getSubMenuTitle(ctx, ctx.pseudo))
 			)
 		);
 
@@ -782,7 +783,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		const container = new ContainerBuilder();
 
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(this.getSubMenuTitle(ctx, ctx.pseudo)))
 		);
 
 		container.addTextDisplayComponents(

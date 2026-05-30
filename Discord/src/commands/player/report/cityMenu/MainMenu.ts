@@ -421,9 +421,9 @@ export function getMainMenu(params: CityMenuParams): CrowniclesNestedMenu {
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.title", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.title", {
 				lng, pseudo: params.pseudo
-			})}`
+			}))
 		)
 	);
 

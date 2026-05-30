@@ -14,6 +14,7 @@ import {
 	CrowniclesNestedMenuCollector
 } from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
+import { StringUtils } from "../../../../utils/StringUtils";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -108,9 +109,9 @@ export function getBlacksmithMenu(params: BlacksmithMenuParams): CrowniclesNeste
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.title", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.title", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 
@@ -210,9 +211,9 @@ export function getBlacksmithUpgradeMenu(params: BlacksmithMenuParams): Crownicl
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.upgradeTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.upgradeTitle", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 
@@ -334,9 +335,9 @@ export function getBlacksmithUpgradeDetailMenu(
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.upgradeTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.upgradeTitle", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 
@@ -463,9 +464,9 @@ export function getBlacksmithDisenchantMenu(params: BlacksmithMenuParams): Crown
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.disenchantTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.disenchantTitle", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 
@@ -572,9 +573,9 @@ export function getBlacksmithDisenchantDetailMenu(
 	// Title
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.blacksmith.disenchantTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.blacksmith.disenchantTitle", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 

@@ -2,6 +2,7 @@ import {
 	CrowniclesNestedMenu, CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
+import { StringUtils } from "../../../../utils/StringUtils";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import {
 	makePacket, PacketContext
@@ -104,9 +105,9 @@ function buildFoodShopMainContainer(ctx: FoodShopMenuContext): ContainerBuilder 
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildFoodShop.menuTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.guildFoodShop.menuTitle", {
 				lng, pseudo, guildName: data.guildName
-			})}`
+			}))
 		)
 	);
 
