@@ -8,7 +8,7 @@ import i18n from "../../../../translations/i18n";
 import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import {
-	CrowniclesNestedMenu, CrowniclesNestedMenuCollector
+	CrowniclesNestedMenu, CrowniclesNestedMenuCollector, CrowniclesNestedMenuCollectorFactory
 } from "../../../../messages/CrowniclesNestedMenus";
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { homeFeatureRegistry } from "./HomeFeatureRegistry";
@@ -24,6 +24,43 @@ import { StringUtils } from "../../../../utils/StringUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 
 /**
+ * Build the collector factory for a home feature sub-menu: routes the
+ * "stay in city" shortcut and otherwise delegates to the feature handler.
+ */
+function createFeatureSubMenuCollector(
+	handler: HomeFeatureHandler,
+	handlerContext: HomeFeatureHandlerContext,
+	params: HomeMenuParams
+): CrowniclesNestedMenuCollectorFactory {
+	const lng = params.interaction.userLanguage;
+	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
+		const componentCollector = message.createMessageComponentCollector({ time: params.collectorTime });
+
+		componentCollector.on("collect", async (componentInteraction: ButtonInteraction) => {
+			if (componentInteraction.user.id !== params.interaction.user.id) {
+				await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
+				return;
+			}
+
+			if (componentInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
+				await componentInteraction.deferUpdate();
+				handleStayInCityInteraction(params.packet, params.context, componentInteraction);
+				return;
+			}
+
+			await handler.handleSubMenuSelection(
+				handlerContext,
+				componentInteraction.customId,
+				componentInteraction,
+				nestedMenus
+			);
+		});
+
+		return componentCollector;
+	};
+}
+
+/**
  * Creates a sub-menu for a specific home feature
  */
 function createFeatureSubMenu(
@@ -31,8 +68,6 @@ function createFeatureSubMenu(
 	handlerContext: HomeFeatureHandlerContext,
 	params: HomeMenuParams
 ): CrowniclesNestedMenu {
-	const lng = params.interaction.userLanguage;
-
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
@@ -49,31 +84,7 @@ function createFeatureSubMenu(
 
 	return {
 		containers: [container],
-		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const componentCollector = message.createMessageComponentCollector({ time: params.collectorTime });
-
-			componentCollector.on("collect", async (componentInteraction: ButtonInteraction) => {
-				if (componentInteraction.user.id !== params.interaction.user.id) {
-					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
-					return;
-				}
-
-				if (componentInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-					await componentInteraction.deferUpdate();
-					handleStayInCityInteraction(params.packet, params.context, componentInteraction);
-					return;
-				}
-
-				await handler.handleSubMenuSelection(
-					handlerContext,
-					componentInteraction.customId,
-					componentInteraction,
-					nestedMenus
-				);
-			});
-
-			return componentCollector;
-		}
+		createCollector: createFeatureSubMenuCollector(handler, handlerContext, params)
 	};
 }
 
@@ -173,6 +184,57 @@ function buildMainHomeContainer(
 	return container;
 }
 
+/**
+ * Build the collector factory for the main home menu: routes "leave home" and
+ * "stay in city" shortcuts and otherwise delegates feature selection to the
+ * home feature registry.
+ */
+function createMainHomeMenuCollector(
+	params: HomeMenuParams,
+	handlerContext: HomeFeatureHandlerContext
+): CrowniclesNestedMenuCollectorFactory {
+	const {
+		context, interaction, packet, collectorTime
+	} = params;
+	const lng = interaction.userLanguage;
+	return (nestedMenus, message: Message): CrowniclesNestedMenuCollector => {
+		const collector = message.createMessageComponentCollector({ time: collectorTime });
+
+		collector.on("collect", async (componentInteraction: ButtonInteraction) => {
+			if (componentInteraction.user.id !== interaction.user.id) {
+				await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
+				return;
+			}
+
+			const selectedValue = componentInteraction.customId;
+
+			// Handle leave home
+			if (selectedValue === HomeMenuIds.LEAVE_HOME) {
+				await componentInteraction.deferUpdate();
+				await nestedMenus.changeToMainMenu();
+				return;
+			}
+
+			// Handle stay in city
+			if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
+				await componentInteraction.deferUpdate();
+				handleStayInCityInteraction(packet, context, componentInteraction);
+				return;
+			}
+
+			// Handle feature selection (each handler decides its own defer strategy)
+			await homeFeatureRegistry.handleMainMenuSelection(
+				handlerContext,
+				selectedValue,
+				componentInteraction,
+				nestedMenus
+			);
+		});
+
+		return collector;
+	};
+}
+
 export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 	const {
 		context, interaction, packet, collectorTime, pseudo
@@ -193,42 +255,7 @@ export function getHomeMenu(params: HomeMenuParams): CrowniclesNestedMenu {
 
 	return {
 		containers: [buildMainHomeContainer(handlerContext, isApartment, pseudo)],
-		createCollector: (nestedMenus, message: Message): CrowniclesNestedMenuCollector => {
-			const collector = message.createMessageComponentCollector({ time: collectorTime });
-
-			collector.on("collect", async (componentInteraction: ButtonInteraction) => {
-				if (componentInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
-					return;
-				}
-
-				const selectedValue = componentInteraction.customId;
-
-				// Handle leave home
-				if (selectedValue === HomeMenuIds.LEAVE_HOME) {
-					await componentInteraction.deferUpdate();
-					await nestedMenus.changeToMainMenu();
-					return;
-				}
-
-				// Handle stay in city
-				if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
-					await componentInteraction.deferUpdate();
-					handleStayInCityInteraction(packet, context, componentInteraction);
-					return;
-				}
-
-				// Handle feature selection (each handler decides its own defer strategy)
-				await homeFeatureRegistry.handleMainMenuSelection(
-					handlerContext,
-					selectedValue,
-					componentInteraction,
-					nestedMenus
-				);
-			});
-
-			return collector;
-		}
+		createCollector: createMainHomeMenuCollector(params, handlerContext)
 	};
 }
 

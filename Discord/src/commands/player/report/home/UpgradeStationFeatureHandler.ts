@@ -6,7 +6,9 @@ import {
 	ComponentInteraction,
 	HomeFeatureHandler, HomeFeatureHandlerContext, HomeFeatureMenuOption
 } from "./HomeMenuTypes";
-import { CrowniclesNestedMenus } from "../../../../messages/CrowniclesNestedMenus";
+import {
+	CrowniclesNestedMenus, CrowniclesNestedMenuCollectorFactory
+} from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
@@ -234,38 +236,49 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 				)
 				.setDescription(description),
 			components: [this.buildItemDetailButtons(ctx, itemIndex, item.canUpgrade)],
-			createCollector: (menus, message) => {
-				const buttonCollector = message.createMessageComponentCollector({ time: ctx.collectorTime });
-
-				buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-					if (buttonInteraction.user.id !== ctx.user.id) {
-						await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, ctx.lng);
-						return;
-					}
-
-					if (buttonInteraction.customId === HomeMenuIds.UPGRADE_BACK_TO_ITEMS) {
-						await buttonInteraction.deferUpdate();
-						await menus.changeMenu(HomeMenuIds.UPGRADE_STATION_MENU);
-						return;
-					}
-
-					if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-						await buttonInteraction.deferUpdate();
-						handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
-						return;
-					}
-
-					if (buttonInteraction.customId.startsWith(HomeMenuIds.UPGRADE_CONFIRM_PREFIX)) {
-						await this.confirmUpgrade(ctx, itemIndex, buttonInteraction);
-					}
-				});
-
-				return buttonCollector;
-			}
+			createCollector: this.createItemDetailCollector(ctx, itemIndex)
 		});
 
 		await componentInteraction.deferUpdate();
 		await nestedMenus.changeMenu(menuId);
+	}
+
+	/**
+	 * Build the collector factory for an item detail view: routes the back/stay
+	 * shortcuts and triggers the upgrade confirmation.
+	 */
+	private createItemDetailCollector(
+		ctx: HomeFeatureHandlerContext,
+		itemIndex: number
+	): CrowniclesNestedMenuCollectorFactory {
+		return (menus, message) => {
+			const buttonCollector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+
+			buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+				if (buttonInteraction.user.id !== ctx.user.id) {
+					await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, ctx.lng);
+					return;
+				}
+
+				if (buttonInteraction.customId === HomeMenuIds.UPGRADE_BACK_TO_ITEMS) {
+					await buttonInteraction.deferUpdate();
+					await menus.changeMenu(HomeMenuIds.UPGRADE_STATION_MENU);
+					return;
+				}
+
+				if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
+					await buttonInteraction.deferUpdate();
+					handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
+					return;
+				}
+
+				if (buttonInteraction.customId.startsWith(HomeMenuIds.UPGRADE_CONFIRM_PREFIX)) {
+					await this.confirmUpgrade(ctx, itemIndex, buttonInteraction);
+				}
+			});
+
+			return buttonCollector;
+		};
 	}
 
 	/**
