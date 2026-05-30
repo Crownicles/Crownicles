@@ -1,0 +1,9 @@
+{
+	"levels": [
+		{ "common": 3, "uncommon": 1, "rare": 1 },
+		{ "common": 3, "uncommon": 2, "rare": 2 },
+		{ "common": 4, "uncommon": 2, "rare": 2 },
+		{ "common": 4, "uncommon": 3, "rare": 3 },
+		{ "common": 4, "uncommon": 3, "rare": 3 }
+	]
+}

@@ -2,13 +2,13 @@ import { describe, expect, it } from "vitest";
 import { Weapon } from "../../../src/data/Weapon";
 import { ItemConstants, ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import {
-	DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL,
 	ITEM_MATERIAL_CATEGORY_IDS,
 	ItemMaterialCategory
 } from "../../../../Lib/src/constants/ItemMaterialCategoryConstants";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { Material, MaterialDataController } from "../../../src/data/Material";
 import { ItemMaterialCategoryDataController } from "../../../src/data/ItemMaterialCategory";
+import { ItemUpgradeMaterialCountDataController } from "../../../src/data/ItemUpgradeMaterialCount";
 
 type WritableWeaponProps = {
 	id: number;
@@ -144,7 +144,7 @@ describe("MainItem.getUpgradeMaterials (15-category system)", () => {
 		const w = makeWeapon(33, ItemRarity.EPIC, 7);
 		for (let lvl = 1; lvl <= 5; lvl++) {
 			const mats = w.getUpgradeMaterials(lvl);
-			const distincts = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[ItemRarity.EPIC][lvl - 1];
+			const distinctCounts = ItemUpgradeMaterialCountDataController.instance.getForItemRarity(ItemRarity.EPIC)!;
 			const totals = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[ItemRarity.EPIC][lvl as 1 | 2 | 3 | 4 | 5];
 			const byRarityIds: Record<MaterialRarity, Set<string>> = {
 				[MaterialRarity.COMMON]: new Set(),
@@ -156,7 +156,7 @@ describe("MainItem.getUpgradeMaterials (15-category system)", () => {
 			}
 			for (const rar of [MaterialRarity.COMMON, MaterialRarity.UNCOMMON, MaterialRarity.RARE]) {
 				const pool = ItemMaterialCategoryDataController.instance.getPool(7)!.getMaterialsForRarity(rar);
-				const expectedDistinct = Math.min(distincts[rar], pool.length, totals[rar]);
+				const expectedDistinct = Math.min(distinctCounts.getDistinctCount(lvl, rar), pool.length, totals[rar]);
 				expect(byRarityIds[rar].size).toBe(expectedDistinct);
 			}
 		}
