@@ -76,9 +76,15 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			allowNull: false
 		}
 	});
-	await context.addIndex("cooking_uses", ["playerId"]);
-	await context.addIndex("cooking_uses", ["recipeId"]);
-	await context.addIndex("cooking_uses", ["date"]);
+	await context.addIndex("cooking_uses", ["playerId"], {
+		name: "idx_cooking_uses_playerId"
+	});
+	await context.addIndex("cooking_uses", ["recipeId"], {
+		name: "idx_cooking_uses_recipeId"
+	});
+	await context.addIndex("cooking_uses", ["date"], {
+		name: "idx_cooking_uses_date"
+	});
 
 	await context.createTable("garden_actions", {
 		playerId: {
@@ -120,9 +126,15 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			allowNull: false
 		}
 	});
-	await context.addIndex("garden_actions", ["playerId", "action"]);
-	await context.addIndex("garden_actions", ["plantId"]);
-	await context.addIndex("garden_actions", ["date"]);
+	await context.addIndex("garden_actions", ["playerId", "action"], {
+		name: "idx_garden_actions_playerId_action"
+	});
+	await context.addIndex("garden_actions", ["plantId"], {
+		name: "idx_garden_actions_plantId"
+	});
+	await context.addIndex("garden_actions", ["date"], {
+		name: "idx_garden_actions_date"
+	});
 }
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {
