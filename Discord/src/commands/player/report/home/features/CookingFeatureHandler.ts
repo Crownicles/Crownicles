@@ -37,7 +37,6 @@ import {
 	CommandReportCookingPinRes,
 	CommandReportCookingUnpinReq,
 	CommandReportCookingUnpinRes,
-	CookingCraftErrors,
 	CookingMenuSnapshot,
 	CookingSlotData,
 	PinnedRecipeInfo,
@@ -913,13 +912,6 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 	}
 
-	private static readonly CRAFT_ERROR_KEYS: Record<string, string> = {
-		[CookingCraftErrors.CRAFT_UNAVAILABLE]: "craftUnavailable",
-		[CookingCraftErrors.INVENTORY_FULL]: "inventoryFull",
-		[CookingCraftErrors.GUILD_REQUIRED]: "guildRequired",
-		[CookingCraftErrors.GUILD_STORAGE_FULL]: "guildStorageFull"
-	};
-
 	/**
 	 * Build the craft result notification message and optional level-up embed
 	 */
@@ -928,11 +920,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		levelUpEmbed?: CrowniclesEmbed;
 	} {
 		if (response.error) {
-			const errorKey = CookingFeatureHandler.CRAFT_ERROR_KEYS[response.error];
-			if (errorKey) {
-				return { craftResult: i18n.t(`commands:report.city.homes.cooking.${errorKey}`, { lng: ctx.lng }) };
-			}
-			return { craftResult: i18n.t("commands:report.city.homes.cooking.craftUnavailable", { lng: ctx.lng }) };
+			// CookingCraftError values are themselves the i18n key suffixes
+			return { craftResult: i18n.t(`commands:report.city.homes.cooking.${response.error}`, { lng: ctx.lng }) };
 		}
 
 		let message = this.buildCraftBaseMessage(response, ctx);
