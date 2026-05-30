@@ -14,18 +14,24 @@ import { StringUtils } from "../utils/StringUtils";
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type CrowniclesNestedMenuCollector = Collector<any, any, any>;
 
+/**
+ * Factory that builds the message-component collector for a nested menu, given
+ * the owning {@link CrowniclesNestedMenus} instance and the rendered message.
+ */
+export type CrowniclesNestedMenuCollectorFactory = (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
+
 export type CrowniclesNestedMenu = {
 	embed: CrowniclesEmbed;
 	components: ActionRowBuilder<MessageActionRowComponentBuilder>[];
-	createCollector?: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
+	createCollector?: CrowniclesNestedMenuCollectorFactory;
 } | {
 	containers: ContainerBuilder[];
-	createCollector?: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
+	createCollector?: CrowniclesNestedMenuCollectorFactory;
 };
 
 function isV2Menu(menu: CrowniclesNestedMenu): menu is {
 	containers: ContainerBuilder[];
-	createCollector?: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector;
+	createCollector?: CrowniclesNestedMenuCollectorFactory;
 } {
 	return "containers" in menu;
 }
