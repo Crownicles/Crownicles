@@ -14,6 +14,7 @@ import {
 	ReactionCollectorGuildDomainNotaryReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
+import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Language } from "../../../../../../Lib/src/Language";
 import { StringUtils } from "../../../../utils/StringUtils";
 import {
@@ -235,7 +236,7 @@ const NOTARY_DESCRIPTION_BUILDERS: NotaryDescriptionBuilder[] = [
 function buildNotaryDescription(data: ManageHomeData, lng: Language): string {
 	const builder = NOTARY_DESCRIPTION_BUILDERS.find(b => b.matches(data));
 	if (!builder) {
-		console.warn("Manage home menu opened without any available action");
+		CrowniclesLogger.warn("Manage home menu opened without any available action");
 		return "";
 	}
 	return builder.build(data, lng);
