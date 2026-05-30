@@ -1,5 +1,6 @@
 import { MaterialRarity } from "../types/MaterialRarity";
 import { ItemRarity } from "./ItemConstants";
+import { RandomUtils } from "../utils/RandomUtils";
 
 /**
  * Item material category id (1..15).
@@ -641,49 +642,23 @@ export const DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL: {
 };
 
 /**
- * Deterministic 32-bit hash used to seed the per-(item, material-rarity)
- * permutation of a category pool. Two close inputs produce very different
- * outputs, which is what we want for the sliding-window selection.
+ * Multiplier applied to the item id when combining it with the material rarity
+ * to build the per-(item, material-rarity) shuffle seed. A small prime keeps
+ * close item ids well separated in the seed space.
  */
-function hash32(seed: number): number {
-	let x = seed | 0;
-	x = Math.imul(x ^ x >>> 16, 0x85ebca6b);
-	x = Math.imul(x ^ x >>> 13, 0xc2b2ae35);
-	x ^= x >>> 16;
-	return x >>> 0;
-}
-
-/**
- * Deterministic Fisher–Yates shuffle of `pool`, seeded by `seed`. Pure: the
- * input array is not mutated.
- */
-export function permutePool(pool: readonly number[], seed: number): number[] {
-	const out = pool.slice();
-	let state = hash32(seed) || 1;
-	for (let i = out.length - 1; i > 0; i--) {
-		state = hash32(state + i);
-		const j = state % (i + 1);
-		const tmp = out[i];
-		out[i] = out[j];
-		out[j] = tmp;
-	}
-	return out;
-}
+const POOL_SEED_ITEM_ID_MULTIPLIER = 31;
 
 /**
  * Pick `distinctCount` distinct material ids from a per-category sub-pool,
- * deterministically by `itemId`. The sliding window shifts by
- * `LEVEL_SHIFT_STEP` between consecutive levels so that two consecutive
- * upgrades share `max(0, distinctCount - LEVEL_SHIFT_STEP)` materials and
- * change `min(distinctCount, LEVEL_SHIFT_STEP)` materials.
+ * deterministically by `itemId`. The sliding window shifts by one slot between
+ * consecutive levels so that two consecutive upgrades share
+ * `max(0, distinctCount - 1)` materials and change at most one material.
  *
- * With `LEVEL_SHIFT_STEP` of 1 and the chosen pool sizes (7 for COMMON and
- * UNCOMMON, 6 for RARE), 5 upgrades cover the whole sub-pool.
+ * With this 1-slot shift and the chosen pool sizes (7 for COMMON and UNCOMMON,
+ * 6 for RARE), 5 upgrades cover the whole sub-pool.
  *
  * Wraps around the permutation when `start + k` overflows.
  */
-export const LEVEL_SHIFT_STEP = 1;
-
 export function pickDistinctMaterials(
 	subPool: readonly number[],
 	itemId: number,
@@ -695,8 +670,8 @@ export function pickDistinctMaterials(
 		return [];
 	}
 	const k = Math.min(distinctCount, subPool.length);
-	const perm = permutePool(subPool, itemId * 31 + matRarity);
-	const start = ((level - 1) * LEVEL_SHIFT_STEP) % perm.length;
+	const perm = RandomUtils.deterministicShuffle([...subPool], itemId * POOL_SEED_ITEM_ID_MULTIPLIER + matRarity);
+	const start = (level - 1) % perm.length;
 	const out: number[] = [];
 	for (let i = 0; i < k; i++) {
 		out.push(perm[(start + i) % perm.length]);
