@@ -2,9 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
 	DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL,
 	ITEM_MATERIAL_CATEGORY_IDS,
-	LEVEL_SHIFT_STEP,
 	MATERIAL_POOLS_PER_CATEGORY,
-	permutePool,
 	pickDistinctMaterials
 } from "../../src/constants/ItemMaterialCategoryConstants";
 import { ItemRarity } from "../../src/constants/ItemConstants";
@@ -89,25 +87,28 @@ describe("ItemMaterialCategoryConstants", () => {
 		});
 	});
 
-	describe("permutePool", () => {
+	describe("deterministic shuffle (via pickDistinctMaterials)", () => {
 		it("returns a permutation (same elements, possibly reordered) without mutating input", () => {
 			const pool = [10, 20, 30, 40, 50, 60, 70];
 			const original = [...pool];
-			const perm = permutePool(pool, 12345);
+			const perm = pickDistinctMaterials(pool, 12345, MaterialRarity.COMMON, 1, pool.length);
 			expect(pool).toEqual(original);
 			expect([...perm].sort((a, b) => a - b)).toEqual([...pool].sort((a, b) => a - b));
 		});
 
 		it("is deterministic for a given seed", () => {
 			const pool = [1, 2, 3, 4, 5, 6, 7];
-			expect(permutePool(pool, 42)).toEqual(permutePool(pool, 42));
+			expect(pickDistinctMaterials(pool, 42, MaterialRarity.COMMON, 1, pool.length))
+				.toEqual(pickDistinctMaterials(pool, 42, MaterialRarity.COMMON, 1, pool.length));
 		});
 
 		it("produces different orders for different seeds (most of the time)", () => {
 			const pool = [1, 2, 3, 4, 5, 6, 7];
 			let differs = 0;
 			for (let i = 0; i < 20; i++) {
-				if (JSON.stringify(permutePool(pool, i)) !== JSON.stringify(permutePool(pool, i + 100))) {
+				const a = pickDistinctMaterials(pool, i, MaterialRarity.COMMON, 1, pool.length);
+				const b = pickDistinctMaterials(pool, i + 100, MaterialRarity.COMMON, 1, pool.length);
+				if (JSON.stringify(a) !== JSON.stringify(b)) {
 					differs++;
 				}
 			}
@@ -143,14 +144,14 @@ describe("ItemMaterialCategoryConstants", () => {
 				.toEqual(pickDistinctMaterials(pool, 42, MaterialRarity.UNCOMMON, 3, 4));
 		});
 
-		it("shifts the window by LEVEL_SHIFT_STEP between consecutive levels", () => {
+		it("shifts the window by one slot between consecutive levels", () => {
 			const pool = [1, 2, 3, 4, 5, 6, 7];
 			const k = 4;
 			const l1 = pickDistinctMaterials(pool, 100, MaterialRarity.COMMON, 1, k);
 			const l2 = pickDistinctMaterials(pool, 100, MaterialRarity.COMMON, 2, k);
-			// With shift=1, the window moves by 1: overlap = k-1 = 3
+			// With a 1-slot shift, the window moves by 1: overlap = k-1 = 3
 			const overlap = l1.filter(x => l2.includes(x)).length;
-			expect(overlap).toBe(Math.max(0, k - LEVEL_SHIFT_STEP));
+			expect(overlap).toBe(Math.max(0, k - 1));
 		});
 
 		it("covers the whole pool over the 5 upgrade levels (for k+(5-1)*shift >= poolSize)", () => {
@@ -164,9 +165,5 @@ describe("ItemMaterialCategoryConstants", () => {
 			}
 			expect(union.size).toBe(pool.length);
 		});
-	});
-
-	it("exposes LEVEL_SHIFT_STEP = 1", () => {
-		expect(LEVEL_SHIFT_STEP).toBe(1);
 	});
 });
