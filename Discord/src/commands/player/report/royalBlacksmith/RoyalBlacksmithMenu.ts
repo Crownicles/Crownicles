@@ -11,7 +11,8 @@ import {
 } from "discord.js";
 import {
 	CrowniclesNestedMenu,
-	CrowniclesNestedMenuCollector
+	CrowniclesNestedMenuCollector,
+	CrowniclesNestedMenuCollectorFactory
 } from "../../../../messages/CrowniclesNestedMenus";
 import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
@@ -73,11 +74,47 @@ function getDescriptionKey(status: RoyalBlacksmithData["status"]): string {
 }
 
 /**
+ * Build the collector factory for the royal blacksmith status screen: opens the
+ * upgrade list, returns to the city or stays.
+ */
+function createRoyalBlacksmithStatusCollector(params: RoyalBlacksmithMenuParams): CrowniclesNestedMenuCollectorFactory {
+	const {
+		context, interaction, packet, collectorTime
+	} = params;
+	const lng = interaction.userLanguage;
+	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
+		const collector = message.createMessageComponentCollector({ time: collectorTime });
+
+		collector.on("collect", async (componentInteraction: MessageComponentInteraction) => {
+			if (componentInteraction.user.id !== interaction.user.id) {
+				await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
+				return;
+			}
+
+			await componentInteraction.deferUpdate();
+			const id = componentInteraction.customId;
+
+			if (id === RoyalBlacksmithMenuIds.UPGRADE_MENU) {
+				await nestedMenus.changeMenu(RoyalBlacksmithMenuIds.UPGRADE_MENU);
+			}
+			else if (id === RoyalBlacksmithMenuIds.BACK_TO_CITY) {
+				await nestedMenus.changeToMainMenu();
+			}
+			else if (id === ReportCityMenuIds.STAY_IN_CITY) {
+				handleStayInCityInteraction(packet, context, componentInteraction);
+			}
+		});
+
+		return collector;
+	};
+}
+
+/**
  * Status screen — narrative + (when ready) a button to enter the item selection.
  */
 export function getRoyalBlacksmithMenu(params: RoyalBlacksmithMenuParams): CrowniclesNestedMenu {
 	const {
-		context, interaction, packet, collectorTime, pseudo
+		interaction, packet, pseudo
 	} = params;
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
@@ -130,31 +167,46 @@ export function getRoyalBlacksmithMenu(params: RoyalBlacksmithMenuParams): Crown
 
 	return {
 		containers: [container],
-		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const collector = message.createMessageComponentCollector({ time: collectorTime });
+		createCollector: createRoyalBlacksmithStatusCollector(params)
+	};
+}
 
-			collector.on("collect", async (componentInteraction: MessageComponentInteraction) => {
-				if (componentInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
-					return;
-				}
+/**
+ * Build the collector factory for the royal blacksmith upgrade item list: opens
+ * a detail menu, returns to the status screen or stays.
+ */
+function createRoyalBlacksmithUpgradeListCollector(params: RoyalBlacksmithMenuParams): CrowniclesNestedMenuCollectorFactory {
+	const {
+		context, interaction, packet, collectorTime
+	} = params;
+	const lng = interaction.userLanguage;
+	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
+		const collector = message.createMessageComponentCollector({ time: collectorTime });
 
-				await componentInteraction.deferUpdate();
-				const id = componentInteraction.customId;
+		collector.on("collect", async (componentInteraction: MessageComponentInteraction) => {
+			if (componentInteraction.user.id !== interaction.user.id) {
+				await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
+				return;
+			}
 
-				if (id === RoyalBlacksmithMenuIds.UPGRADE_MENU) {
-					await nestedMenus.changeMenu(RoyalBlacksmithMenuIds.UPGRADE_MENU);
-				}
-				else if (id === RoyalBlacksmithMenuIds.BACK_TO_CITY) {
-					await nestedMenus.changeToMainMenu();
-				}
-				else if (id === ReportCityMenuIds.STAY_IN_CITY) {
-					handleStayInCityInteraction(packet, context, componentInteraction);
-				}
-			});
+			await componentInteraction.deferUpdate();
+			const id = componentInteraction.customId;
 
-			return collector;
-		}
+			if (id === RoyalBlacksmithMenuIds.BACK_TO_ROYAL_BLACKSMITH) {
+				await nestedMenus.changeMenu(RoyalBlacksmithMenuIds.ROYAL_BLACKSMITH_MENU);
+			}
+			else if (id === ReportCityMenuIds.STAY_IN_CITY) {
+				handleStayInCityInteraction(packet, context, componentInteraction);
+			}
+			else if (id.startsWith(RoyalBlacksmithMenuIds.UPGRADE_ITEM_PREFIX)) {
+				const itemIndex = Number.parseInt(id.slice(RoyalBlacksmithMenuIds.UPGRADE_ITEM_PREFIX.length), 10);
+				if (!Number.isNaN(itemIndex)) {
+					await nestedMenus.changeMenu(`${RoyalBlacksmithMenuIds.UPGRADE_MENU}_DETAIL_${itemIndex}`);
+				}
+			}
+		});
+
+		return collector;
 	};
 }
 
@@ -163,7 +215,7 @@ export function getRoyalBlacksmithMenu(params: RoyalBlacksmithMenuParams): Crown
  */
 export function getRoyalBlacksmithUpgradeMenu(params: RoyalBlacksmithMenuParams): CrowniclesNestedMenu {
 	const {
-		context, interaction, packet, collectorTime, pseudo
+		interaction, packet, pseudo
 	} = params;
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
@@ -222,34 +274,7 @@ export function getRoyalBlacksmithUpgradeMenu(params: RoyalBlacksmithMenuParams)
 
 	return {
 		containers: [container],
-		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const collector = message.createMessageComponentCollector({ time: collectorTime });
-
-			collector.on("collect", async (componentInteraction: MessageComponentInteraction) => {
-				if (componentInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(componentInteraction.user, componentInteraction, lng);
-					return;
-				}
-
-				await componentInteraction.deferUpdate();
-				const id = componentInteraction.customId;
-
-				if (id === RoyalBlacksmithMenuIds.BACK_TO_ROYAL_BLACKSMITH) {
-					await nestedMenus.changeMenu(RoyalBlacksmithMenuIds.ROYAL_BLACKSMITH_MENU);
-				}
-				else if (id === ReportCityMenuIds.STAY_IN_CITY) {
-					handleStayInCityInteraction(packet, context, componentInteraction);
-				}
-				else if (id.startsWith(RoyalBlacksmithMenuIds.UPGRADE_ITEM_PREFIX)) {
-					const itemIndex = Number.parseInt(id.slice(RoyalBlacksmithMenuIds.UPGRADE_ITEM_PREFIX.length), 10);
-					if (!Number.isNaN(itemIndex)) {
-						await nestedMenus.changeMenu(`${RoyalBlacksmithMenuIds.UPGRADE_MENU}_DETAIL_${itemIndex}`);
-					}
-				}
-			});
-
-			return collector;
-		}
+		createCollector: createRoyalBlacksmithUpgradeListCollector(params)
 	};
 }
 
@@ -268,6 +293,66 @@ function buildRoyalUpgradeDetailDescription(item: RoyalUpgradeableItem, lng: Lan
 }
 
 /**
+ * Build the collector factory for the royal blacksmith upgrade detail view:
+ * back/stay shortcuts and the (buy &) upgrade reaction.
+ */
+function createRoyalBlacksmithUpgradeDetailCollector(
+	params: RoyalBlacksmithMenuParams,
+	item: RoyalUpgradeableItem
+): CrowniclesNestedMenuCollectorFactory {
+	const {
+		context, interaction, packet, collectorTime
+	} = params;
+	const lng = interaction.userLanguage;
+	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
+		const collector = message.createMessageComponentCollector({ time: collectorTime });
+
+		collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
+			if (buttonInteraction.user.id !== interaction.user.id) {
+				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+				return;
+			}
+
+			if (buttonInteraction.customId === RoyalBlacksmithMenuIds.BACK_TO_UPGRADE_LIST) {
+				await buttonInteraction.deferUpdate();
+				await nestedMenus.changeMenu(RoyalBlacksmithMenuIds.UPGRADE_MENU);
+				return;
+			}
+			if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
+				await buttonInteraction.deferUpdate();
+				handleStayInCityInteraction(packet, context, buttonInteraction);
+				return;
+			}
+
+			if (
+				buttonInteraction.customId === RoyalBlacksmithMenuIds.CONFIRM_UPGRADE
+				|| buttonInteraction.customId === RoyalBlacksmithMenuIds.BUY_AND_UPGRADE
+			) {
+				await buttonInteraction.deferReply();
+				const buyMaterials = buttonInteraction.customId === RoyalBlacksmithMenuIds.BUY_AND_UPGRADE;
+
+				const reactionIndex = packet.reactions.findIndex(
+					r => isRoyalBlacksmithUpgradeReaction(r)
+						&& r.data.slot === item.slot
+						&& r.data.itemCategory === item.category
+						&& r.data.buyMaterials === buyMaterials
+				);
+
+				if (reactionIndex !== -1) {
+					DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+				}
+				else {
+					CrowniclesLogger.error(`Royal blacksmith upgrade reaction not found for slot ${item.slot}, category ${item.category}, buyMaterials ${buyMaterials}`);
+					await buttonInteraction.deleteReply();
+				}
+			}
+		});
+
+		return collector;
+	};
+}
+
+/**
  * Detail screen for a single upgradeable item — mirrors the standard blacksmith pattern.
  */
 export function getRoyalBlacksmithUpgradeDetailMenu(
@@ -275,7 +360,7 @@ export function getRoyalBlacksmithUpgradeDetailMenu(
 	itemIndex: number
 ): CrowniclesNestedMenu {
 	const {
-		context, interaction, packet, collectorTime, pseudo
+		interaction, packet, pseudo
 	} = params;
 	const data = packet.data.data as ReactionCollectorCityData;
 	const lng = interaction.userLanguage;
@@ -346,52 +431,7 @@ export function getRoyalBlacksmithUpgradeDetailMenu(
 
 	return {
 		containers: [container],
-		createCollector: (nestedMenus, message): CrowniclesNestedMenuCollector => {
-			const collector = message.createMessageComponentCollector({ time: collectorTime });
-
-			collector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-				if (buttonInteraction.user.id !== interaction.user.id) {
-					await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-					return;
-				}
-
-				if (buttonInteraction.customId === RoyalBlacksmithMenuIds.BACK_TO_UPGRADE_LIST) {
-					await buttonInteraction.deferUpdate();
-					await nestedMenus.changeMenu(RoyalBlacksmithMenuIds.UPGRADE_MENU);
-					return;
-				}
-				if (buttonInteraction.customId === ReportCityMenuIds.STAY_IN_CITY) {
-					await buttonInteraction.deferUpdate();
-					handleStayInCityInteraction(packet, context, buttonInteraction);
-					return;
-				}
-
-				if (
-					buttonInteraction.customId === RoyalBlacksmithMenuIds.CONFIRM_UPGRADE
-					|| buttonInteraction.customId === RoyalBlacksmithMenuIds.BUY_AND_UPGRADE
-				) {
-					await buttonInteraction.deferReply();
-					const buyMaterials = buttonInteraction.customId === RoyalBlacksmithMenuIds.BUY_AND_UPGRADE;
-
-					const reactionIndex = packet.reactions.findIndex(
-						r => isRoyalBlacksmithUpgradeReaction(r)
-							&& r.data.slot === item.slot
-							&& r.data.itemCategory === item.category
-							&& r.data.buyMaterials === buyMaterials
-					);
-
-					if (reactionIndex !== -1) {
-						DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-					}
-					else {
-						CrowniclesLogger.error(`Royal blacksmith upgrade reaction not found for slot ${item.slot}, category ${item.category}, buyMaterials ${buyMaterials}`);
-						await buttonInteraction.deleteReply();
-					}
-				}
-			});
-
-			return collector;
-		}
+		createCollector: createRoyalBlacksmithUpgradeDetailCollector(params, item)
 	};
 }
 
