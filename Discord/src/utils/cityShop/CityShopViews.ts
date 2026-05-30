@@ -14,7 +14,7 @@ import {
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DisplayUtils } from "../DisplayUtils";
 import { shopItemTypeToId } from "../../../../Lib/src/utils/ShopUtils";
-import { escapeUsername } from "../StringUtils";
+import { escapeUsername, StringUtils } from "../StringUtils";
 
 export const CITY_SHOP_CUSTOM_IDS = {
 	BUY_PREFIX: "cityShopBuy_",
@@ -380,7 +380,7 @@ export function buildShopMainContainer(args: MainShopViewArgs): ContainerBuilder
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(`### ${i18n.t("commands:shop.title", { lng })}`)
+		new TextDisplayBuilder().setContent(StringUtils.formatHeader(i18n.t("commands:shop.title", { lng })))
 	);
 
 	container.addTextDisplayComponents(
@@ -553,13 +553,13 @@ export function buildShopConfirmationContainer(args: ConfirmationViewArgs): Cont
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t(
+			StringUtils.formatHeader(i18n.t(
 				display.isSingleUnitaryPurchase ? "commands:shop.shopConfirmationTitle" : "commands:shop.shopConfirmationTitleMultiple",
 				{
 					lng,
 					pseudo: escapeUsername(pseudo)
 				}
-			)}`
+			))
 		)
 	);
 
