@@ -2,7 +2,7 @@ import { GenericItem } from "./GenericItem";
 import { StatValues } from "../../../Lib/src/types/StatValues";
 import { InventoryConstants } from "../../../Lib/src/constants/InventoryConstants";
 import {
-	ItemConstants, ItemRarity
+	ItemConstants, ItemRarity, UpgradeLevel
 } from "../../../Lib/src/constants/ItemConstants";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
 import { MaterialType } from "../../../Lib/src/types/MaterialType";
@@ -153,12 +153,12 @@ export abstract class MainItem extends GenericItem {
 	}
 
 	private computeUpgradeMaterials(level: number): Material[] {
-		if (level < 1 || level > 5) {
+		if (level < ItemConstants.MIN_UPGRADE_LEVEL || level > ItemConstants.MAX_UPGRADE_LEVEL) {
 			return [];
 		}
 
 		const itemRarity = this.rarity as ItemRarity;
-		const upgradeLevel = level as 1 | 2 | 3 | 4 | 5;
+		const upgradeLevel = level as UpgradeLevel;
 		const totals = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel];
 		const distincts = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel - 1];
 		const categoryPool = MATERIAL_POOLS_PER_CATEGORY[this.materialCategory];
@@ -182,7 +182,7 @@ export abstract class MainItem extends GenericItem {
 
 	private appendRarityMaterials(materials: Material[], params: {
 		matRarity: MaterialRarity;
-		upgradeLevel: 1 | 2 | 3 | 4 | 5;
+		upgradeLevel: UpgradeLevel;
 		totalQty: number;
 		distinct: number;
 		subPool: readonly number[];
