@@ -10,11 +10,18 @@ import {
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { Material, MaterialDataController } from "../../../src/data/Material";
 
+type WritableWeaponProps = {
+	id: number;
+	rarity: ItemRarity;
+	materialCategory: ItemMaterialCategory;
+};
+
 class TestWeapon extends Weapon {
 	public setProps(p: { id: number; rarity: ItemRarity; category: ItemMaterialCategory }): void {
-		(this as any).id = p.id;
-		(this as any).rarity = p.rarity;
-		(this as any).materialCategory = p.category;
+		const writable = this as unknown as WritableWeaponProps;
+		writable.id = p.id;
+		writable.rarity = p.rarity;
+		writable.materialCategory = p.category;
 	}
 }
 
