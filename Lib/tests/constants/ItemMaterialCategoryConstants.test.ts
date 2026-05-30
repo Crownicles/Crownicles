@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import {
 	DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL,
 	ITEM_MATERIAL_CATEGORY_IDS,
-	MATERIAL_POOLS_PER_CATEGORY,
 	pickDistinctMaterials
 } from "../../src/constants/ItemMaterialCategoryConstants";
 import { ItemRarity } from "../../src/constants/ItemConstants";
@@ -12,49 +11,6 @@ describe("ItemMaterialCategoryConstants", () => {
 	it("exposes 15 category ids", () => {
 		expect(ITEM_MATERIAL_CATEGORY_IDS).toHaveLength(15);
 		expect([...ITEM_MATERIAL_CATEGORY_IDS]).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
-	});
-
-	describe("MATERIAL_POOLS_PER_CATEGORY", () => {
-		it("has 15 pools, each with 7 COMMON + 7 UNCOMMON + 6 RARE distinct ids", () => {
-			for (const cat of ITEM_MATERIAL_CATEGORY_IDS) {
-				const pool = MATERIAL_POOLS_PER_CATEGORY[cat];
-				expect(pool[MaterialRarity.COMMON]).toHaveLength(7);
-				expect(pool[MaterialRarity.UNCOMMON]).toHaveLength(7);
-				expect(pool[MaterialRarity.RARE]).toHaveLength(6);
-				for (const rar of [MaterialRarity.COMMON, MaterialRarity.UNCOMMON, MaterialRarity.RARE]) {
-					expect(new Set(pool[rar]).size).toBe(pool[rar].length);
-				}
-			}
-		});
-
-		it("references material ids in [1, 90]", () => {
-			for (const cat of ITEM_MATERIAL_CATEGORY_IDS) {
-				const pool = MATERIAL_POOLS_PER_CATEGORY[cat];
-				for (const rar of [MaterialRarity.COMMON, MaterialRarity.UNCOMMON, MaterialRarity.RARE]) {
-					for (const id of pool[rar]) {
-						expect(id).toBeGreaterThanOrEqual(1);
-						expect(id).toBeLessThanOrEqual(90);
-					}
-				}
-			}
-		});
-
-		it("places every material in 3 or 4 categories total", () => {
-			const counts = new Map<number, number>();
-			for (const cat of ITEM_MATERIAL_CATEGORY_IDS) {
-				const pool = MATERIAL_POOLS_PER_CATEGORY[cat];
-				for (const rar of [MaterialRarity.COMMON, MaterialRarity.UNCOMMON, MaterialRarity.RARE]) {
-					for (const id of pool[rar]) {
-						counts.set(id, (counts.get(id) ?? 0) + 1);
-					}
-				}
-			}
-			expect(counts.size).toBe(90);
-			for (const [, c] of counts) {
-				expect(c).toBeGreaterThanOrEqual(3);
-				expect(c).toBeLessThanOrEqual(4);
-			}
-		});
 	});
 
 	describe("DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL", () => {

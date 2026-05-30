@@ -4,11 +4,11 @@ import { ItemConstants, ItemRarity } from "../../../../Lib/src/constants/ItemCon
 import {
 	DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL,
 	ITEM_MATERIAL_CATEGORY_IDS,
-	ItemMaterialCategory,
-	MATERIAL_POOLS_PER_CATEGORY
+	ItemMaterialCategory
 } from "../../../../Lib/src/constants/ItemMaterialCategoryConstants";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { Material, MaterialDataController } from "../../../src/data/Material";
+import { ItemMaterialCategoryDataController } from "../../../src/data/ItemMaterialCategory";
 
 type WritableWeaponProps = {
 	id: number;
@@ -114,10 +114,10 @@ describe("MainItem.getUpgradeMaterials (15-category system)", () => {
 
 	it("draws materials only from the item's category pool", () => {
 		for (const cat of ITEM_MATERIAL_CATEGORY_IDS) {
-			const pool = MATERIAL_POOLS_PER_CATEGORY[cat];
+			const pool = ItemMaterialCategoryDataController.instance.getPool(cat)!;
 			const allowed = new Set<string>();
 			for (const r of [MaterialRarity.COMMON, MaterialRarity.UNCOMMON, MaterialRarity.RARE]) {
-				for (const id of pool[r]) {
+				for (const id of pool.getMaterialsForRarity(r)) {
 					allowed.add(String(id));
 				}
 			}
@@ -155,7 +155,7 @@ describe("MainItem.getUpgradeMaterials (15-category system)", () => {
 				byRarityIds[m.rarity].add(m.id);
 			}
 			for (const rar of [MaterialRarity.COMMON, MaterialRarity.UNCOMMON, MaterialRarity.RARE]) {
-				const pool = MATERIAL_POOLS_PER_CATEGORY[7][rar];
+				const pool = ItemMaterialCategoryDataController.instance.getPool(7)!.getMaterialsForRarity(rar);
 				const expectedDistinct = Math.min(distincts[rar], pool.length, totals[rar]);
 				expect(byRarityIds[rar].size).toBe(expectedDistinct);
 			}
