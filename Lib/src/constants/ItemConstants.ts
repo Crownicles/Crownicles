@@ -3,6 +3,13 @@ import { MaterialRarity } from "../types/MaterialRarity";
 export type EquipAction = typeof ItemConstants.EQUIP_ACTIONS[keyof typeof ItemConstants.EQUIP_ACTIONS];
 export type EquipError = typeof ItemConstants.EQUIP_ERRORS[keyof typeof ItemConstants.EQUIP_ERRORS];
 
+/**
+ * A concrete upgrade level (between `ItemConstants.MIN_UPGRADE_LEVEL` and
+ * `ItemConstants.MAX_UPGRADE_LEVEL`). Levels outside this range yield no
+ * upgrade materials.
+ */
+export type UpgradeLevel = 1 | 2 | 3 | 4 | 5;
+
 export enum ItemCategory {
 	WEAPON,
 	ARMOR,
@@ -138,6 +145,12 @@ export abstract class ItemConstants {
 	];
 
 	static MAX_UPGRADE_LEVEL = 5;
+
+	/**
+	 * Lowest level that actually consumes upgrade materials. Level 0 (and below)
+	 * is the un-upgraded item and requires nothing.
+	 */
+	static MIN_UPGRADE_LEVEL = 1;
 
 	/**
 	 * Maximum level that can be upgraded at home (levels 0-1 can be upgraded to 1-2)
