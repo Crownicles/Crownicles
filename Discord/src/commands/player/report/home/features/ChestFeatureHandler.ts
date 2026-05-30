@@ -660,7 +660,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 				action, slot, itemCategory: category, chestSlot: chestSlot ?? -1
 			}),
 			async (_responseContext, _packetName, responsePacket) => {
-				const response = responsePacket as unknown as CommandReportHomeChestActionRes;
+				const response = responsePacket as CommandReportHomeChestActionRes;
 
 				if (!response.success) {
 					return;

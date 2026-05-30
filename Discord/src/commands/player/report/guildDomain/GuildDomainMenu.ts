@@ -6,7 +6,7 @@ import {
 import { ReportCityMenuIds } from "../ReportCityMenuConstants";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import {
-	makePacket, PacketContext
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	ReactionCollectorCityData
@@ -120,7 +120,7 @@ function buildTreasuryDepositConfirmation(ctx: GuildDomainMenuContext, amount: n
  * or finish the report with an error embed when the response packet doesn't match.
  * Centralises the boilerplate shared by handleUpgrade / handleFoodBuy / handleTreasuryDeposit.
  */
-async function sendDomainAction<TRes>(options: {
+async function sendDomainAction<TRes extends CrowniclesPacket>(options: {
 	ctx: GuildDomainMenuContext;
 	nestedMenus: CrowniclesNestedMenus;
 	requestPacket: ReturnType<typeof makePacket>;
@@ -136,7 +136,7 @@ async function sendDomainAction<TRes>(options: {
 		requestPacket,
 		async (_responseContext, packetName, responsePacket) => {
 			if (packetName === expectedResponseName) {
-				await onSuccess(responsePacket as unknown as TRes);
+				await onSuccess(responsePacket as TRes);
 			}
 			else {
 				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t(errorTranslationKey, { lng: ctx.lng }));
