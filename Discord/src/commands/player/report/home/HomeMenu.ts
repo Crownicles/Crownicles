@@ -37,7 +37,7 @@ function createFeatureSubMenu(
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${handler.getSubMenuTitle(handlerContext, params.pseudo)}`
+			StringUtils.formatHeader(handler.getSubMenuTitle(handlerContext, params.pseudo))
 		)
 	);
 

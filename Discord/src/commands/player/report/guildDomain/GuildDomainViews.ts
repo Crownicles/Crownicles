@@ -15,6 +15,7 @@ import {
 	PetConstants, PetFood
 } from "../../../../../../Lib/src/constants/PetConstants";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
+import { StringUtils } from "../../../../utils/StringUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 import {
 	addBuildingLevelAndCostInfo, addDomainNavigation, addFoodInfoBlock, addStatusMessage, addUpgradeSection,
@@ -30,9 +31,9 @@ export function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMess
 
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.guildDomain.menuTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.guildDomain.menuTitle", {
 				lng, pseudo, guildName: data.guildName
-			})}`
+			}))
 		)
 	);
 
@@ -195,7 +196,7 @@ export function buildShopQuantityContainer(ctx: FoodShopUIContext, foodType: Pet
 
 	const container = new ContainerBuilder();
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(`### ${CrowniclesIcons.foods[foodType]} ${foodName}`)
+		new TextDisplayBuilder().setContent(StringUtils.formatHeader(`${CrowniclesIcons.foods[foodType]} ${foodName}`))
 	);
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
@@ -252,7 +253,7 @@ export function buildShopTreasuryContainer(ctx: FoodShopUIContext): ContainerBui
 
 	const container = new ContainerBuilder();
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(`### ${CrowniclesIcons.city.guildDomain.shop} ${i18n.t("commands:report.city.guildDomain.subMenus.shop.treasuryTitle", { lng })}`)
+		new TextDisplayBuilder().setContent(StringUtils.formatHeader(`${CrowniclesIcons.city.guildDomain.shop} ${i18n.t("commands:report.city.guildDomain.subMenus.shop.treasuryTitle", { lng })}`))
 	);
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
@@ -317,7 +318,7 @@ export function buildShopReimburseContainer(ctx: FoodShopUIContext): ContainerBu
 
 	const container = new ContainerBuilder();
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(`### ${i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseTitle", { lng })}`)
+		new TextDisplayBuilder().setContent(StringUtils.formatHeader(i18n.t("commands:report.city.guildDomain.subMenus.shop.reimburseTitle", { lng })))
 	);
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
@@ -387,7 +388,7 @@ function buildSimpleBuildingContainer(args: SimpleBuildingArgs): ContainerBuilde
 	const container = new ContainerBuilder();
 
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(`### ${i18n.t(titleKey, { lng })}`)
+		new TextDisplayBuilder().setContent(StringUtils.formatHeader(i18n.t(titleKey, { lng })))
 	);
 
 	body(container);

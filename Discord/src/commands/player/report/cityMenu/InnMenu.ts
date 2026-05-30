@@ -14,6 +14,7 @@ import {
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
+import { StringUtils } from "../../../../utils/StringUtils";
 import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector,
@@ -120,9 +121,9 @@ function createInnMenuCollector(
 function addInnTitle(container: ContainerBuilder, lng: Language, pseudo: string): void {
 	container.addTextDisplayComponents(
 		new TextDisplayBuilder().setContent(
-			`### ${i18n.t("commands:report.city.inns.embedTitle", {
+			StringUtils.formatHeader(i18n.t("commands:report.city.inns.embedTitle", {
 				lng, pseudo
-			})}`
+			}))
 		)
 	);
 }

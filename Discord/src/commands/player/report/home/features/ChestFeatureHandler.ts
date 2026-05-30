@@ -10,6 +10,7 @@ import {
 import { CrowniclesNestedMenus } from "../../../../../messages/CrowniclesNestedMenus";
 import { createHomeFeatureCollector } from "../HomeCollectorUtils";
 import i18n from "../../../../../translations/i18n";
+import { StringUtils } from "../../../../../utils/StringUtils";
 import { DisplayUtils } from "../../../../../utils/DisplayUtils";
 import { CrowniclesIcons } from "../../../../../../../Lib/src/CrowniclesIcons";
 import { ItemCategory } from "../../../../../../../Lib/src/constants/ItemConstants";
@@ -292,7 +293,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	 */
 	private buildV2Container(title: string, description: string, rows: ActionRowBuilder<ButtonBuilder>[]): ContainerBuilder {
 		const container = new ContainerBuilder();
-		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(`### ${title}`));
+		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(StringUtils.formatHeader(title)));
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(description));
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 		for (const row of rows) {
@@ -311,7 +312,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	): void {
 		const container = new ContainerBuilder();
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(`### ${this.getSubMenuTitle(ctx, ctx.pseudo)}`)
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(this.getSubMenuTitle(ctx, ctx.pseudo)))
 		);
 		container.addTextDisplayComponents(
 			new TextDisplayBuilder().setContent(this.getSubMenuDescription(ctx))
