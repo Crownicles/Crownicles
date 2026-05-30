@@ -37,7 +37,7 @@ import {
 	isRecipeSecret
 } from "./CookingSlotRotation";
 import {
-	CookingSlotData, RecipeSlotData, PinnedRecipeInfo
+	CookingSlotData, RecipeSlotData, PinnedRecipeInfo, RecipeIngredients
 } from "../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 import {
@@ -196,6 +196,42 @@ export class CookingService {
 		}));
 	}
 
+	/**
+	 * Build the per-ingredient availability lists (plants + materials) for a recipe
+	 * and whether the player owns every required ingredient. Shared by the slot menu
+	 * and the pinned-recipe info so both stay consistent.
+	 */
+	private static buildIngredientAvailability(
+		recipe: CookingRecipe,
+		plantStorageMap: Map<number, number>,
+		materialMap: Map<number, number>
+	): {
+		ingredients: RecipeIngredients; hasIngredients: boolean;
+	} {
+		const plants = recipe.plants.map(p => ({
+			plantId: p.plantId,
+			quantity: p.quantity,
+			playerHas: plantStorageMap.get(p.plantId) ?? 0
+		}));
+
+		const materials = recipe.materials.map(m => ({
+			materialId: m.materialId,
+			quantity: m.quantity,
+			playerHas: materialMap.get(m.materialId) ?? 0
+		}));
+
+		const hasIngredients = plants.every(p => p.playerHas >= p.quantity)
+			&& materials.every(m => m.playerHas >= m.quantity);
+
+		return {
+			ingredients: {
+				plants,
+				materials
+			},
+			hasIngredients
+		};
+	}
+
 	private static buildRecipeSlotData(
 		slotIndex: number,
 		recipe: CookingRecipe,
@@ -210,20 +246,9 @@ export class CookingService {
 				secretRate: context.grade.secretRecipeRate
 			});
 
-		const plantAvailability = recipe.plants.map(p => ({
-			plantId: p.plantId,
-			quantity: p.quantity,
-			playerHas: context.plantStorageMap.get(p.plantId) ?? 0
-		}));
-
-		const materialAvailability = recipe.materials.map(m => ({
-			materialId: m.materialId,
-			quantity: m.quantity,
-			playerHas: context.materialMap.get(m.materialId) ?? 0
-		}));
-
-		const hasIngredients = plantAvailability.every(p => p.playerHas >= p.quantity)
-			&& materialAvailability.every(m => m.playerHas >= m.quantity);
+		const {
+			ingredients, hasIngredients
+		} = CookingService.buildIngredientAvailability(recipe, context.plantStorageMap, context.materialMap);
 		const canCraftOutput = recipe.outputType === CookingOutputType.PET_FOOD
 			? Boolean(context.guild)
 			: true;
@@ -240,10 +265,7 @@ export class CookingService {
 			isSecret: secret,
 			outputDescription: secret ? SECRET_RECIPE_PLACEHOLDER : id,
 			petFoodType: recipe.petFood?.type,
-			ingredients: {
-				plants: plantAvailability,
-				materials: materialAvailability
-			},
+			ingredients,
 			canCraft: hasIngredients && canCraftOutput
 		};
 	}
@@ -543,20 +565,9 @@ export class CookingService {
 		const allPlantStorages = await HomePlantStorages.getOfHome(params.homeId);
 		const plantStorageMap = new Map(allPlantStorages.map(s => [s.plantId, s.quantity]));
 
-		const plants = recipe.plants.map(p => ({
-			plantId: p.plantId,
-			quantity: p.quantity,
-			playerHas: plantStorageMap.get(p.plantId) ?? 0
-		}));
-
-		const materials = recipe.materials.map(m => ({
-			materialId: m.materialId,
-			quantity: m.quantity,
-			playerHas: materialMap.get(m.materialId) ?? 0
-		}));
-
-		const hasIngredients = plants.every(p => p.playerHas >= p.quantity)
-			&& materials.every(m => m.playerHas >= m.quantity);
+		const {
+			ingredients, hasIngredients
+		} = CookingService.buildIngredientAvailability(recipe, plantStorageMap, materialMap);
 		const canCraftOutput = CookingService.canStorePetFoodReward(recipe, params.guild ?? null);
 
 		return {
@@ -564,10 +575,7 @@ export class CookingService {
 			level: recipe.level,
 			recipeType: recipe.recipeType,
 			outputType: recipe.outputType,
-			ingredients: {
-				plants,
-				materials
-			},
+			ingredients,
 			canCraft: hasIngredients && canCraftOutput
 		};
 	}
