@@ -14,7 +14,9 @@ import {
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { DisplayUtils } from "../DisplayUtils";
 import { shopItemTypeToId } from "../../../../Lib/src/utils/ShopUtils";
-import { escapeUsername, StringUtils } from "../StringUtils";
+import {
+	escapeUsername, StringUtils
+} from "../StringUtils";
 
 export const CITY_SHOP_CUSTOM_IDS = {
 	BUY_PREFIX: "cityShopBuy_",
