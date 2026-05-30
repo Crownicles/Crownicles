@@ -8,6 +8,7 @@ import {
 } from "discord.js";
 import { CrowniclesInteraction } from "./CrowniclesInteraction";
 import { disableRows } from "../utils/DiscordCollectorUtils";
+import { StringUtils } from "../utils/StringUtils";
 
 // Needed because we need to accept any parameter
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,7 +72,7 @@ function embedMenuToV2Container(
 	const author = menu.embed.data.author;
 	if (author?.name) {
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(`### ${author.name}`)
+			new TextDisplayBuilder().setContent(StringUtils.formatHeader(author.name))
 		);
 	}
 
