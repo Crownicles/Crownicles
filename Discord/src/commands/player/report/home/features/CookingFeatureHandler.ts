@@ -276,7 +276,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			async (_responseContext, packetName, responsePacket) => {
 				this.getState(ctx).craftPending = false;
 				if (packetName === CommandReportCookingMenuRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingMenuRes;
+					const response = responsePacket as CommandReportCookingMenuRes;
 					this.applySnapshot(ctx, response.menu);
 					this.registerFromSnapshot(ctx, nestedMenus, response.menu);
 				}
@@ -300,7 +300,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			}),
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportCookingPinRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingPinRes;
+					const response = responsePacket as CommandReportCookingPinRes;
 					this.applySnapshot(ctx, response.menu);
 					this.registerFromSnapshot(ctx, nestedMenus, response.menu);
 				}
@@ -323,7 +323,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			makePacket(CommandReportCookingUnpinReq, { fromIgnitedView }),
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportCookingUnpinRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingUnpinRes;
+					const response = responsePacket as CommandReportCookingUnpinRes;
 					this.applySnapshot(ctx, response.menu);
 					this.registerFromSnapshot(ctx, nestedMenus, response.menu);
 				}
@@ -749,14 +749,14 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 				}
 
 				if (packetName === CommandReportCookingWoodConfirmReq.name) {
-					const response = responsePacket as unknown as CommandReportCookingWoodConfirmReq;
+					const response = responsePacket as CommandReportCookingWoodConfirmReq;
 					this.registerWoodConfirmMenu(ctx, response, nestedMenus);
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
 					return;
 				}
 
 				if (packetName === resPacket.name) {
-					const response = responsePacket as unknown as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
+					const response = responsePacket as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
 					this.applySnapshot(ctx, response.menu);
 					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
@@ -833,7 +833,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			makePacket(CommandReportCookingWoodConfirmRes, { accepted }),
 			async (_responseContext, packetName, responsePacket) => {
 				if (packetName === CommandReportCookingIgniteRes.name || packetName === CommandReportCookingReviveRes.name) {
-					const response = responsePacket as unknown as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
+					const response = responsePacket as CommandReportCookingIgniteRes | CommandReportCookingReviveRes;
 					this.applySnapshot(ctx, response.menu);
 					this.registerIgnitedMenu(ctx, nestedMenus, this.buildWoodConsumedMessage(response, ctx));
 					await nestedMenus.changeMenu(HomeMenuIds.COOKING_MENU);
@@ -895,7 +895,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 						return;
 					}
 
-					const response = responsePacket as unknown as CommandReportCookingCraftRes;
+					const response = responsePacket as CommandReportCookingCraftRes;
 					this.applySnapshot(ctx, response.menu);
 
 					const {

@@ -333,7 +333,7 @@ export class ChestPlantHandler {
 				action: transferData.action, plantId: transferData.plantId, playerSlot: transferData.playerSlot
 			}),
 			async (_responseContext, _packetName, responsePacket) => {
-				const response = responsePacket as unknown as CommandReportPlantTransferRes;
+				const response = responsePacket as CommandReportPlantTransferRes;
 
 				if (!response.success) {
 					return;
