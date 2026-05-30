@@ -229,11 +229,6 @@ export abstract class PlantConstants {
 	public static readonly PLANT_COUNT = PLANT_TYPES.length;
 
 	/**
-	 * Number of destroyed plants required to receive a random material
-	 */
-	public static readonly DESTROYED_PLANTS_PER_MATERIAL = 5;
-
-	/**
 	 * Maximum plant slots in player inventory (before tanner upgrade)
 	 */
 	public static readonly DEFAULT_PLANT_SLOTS = 1;
