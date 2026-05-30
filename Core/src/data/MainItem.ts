@@ -13,9 +13,9 @@ import { MaterialRarity } from "../../../Lib/src/types/MaterialRarity";
 import {
 	DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL,
 	ItemMaterialCategory,
-	MATERIAL_POOLS_PER_CATEGORY,
 	pickDistinctMaterials
 } from "../../../Lib/src/constants/ItemMaterialCategoryConstants";
+import { ItemMaterialCategoryDataController } from "./ItemMaterialCategory";
 
 export abstract class MainItem extends GenericItem {
 	public readonly rawAttack?: number;
@@ -161,7 +161,10 @@ export abstract class MainItem extends GenericItem {
 		const upgradeLevel = level as UpgradeLevel;
 		const totals = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel];
 		const distincts = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel - 1];
-		const categoryPool = MATERIAL_POOLS_PER_CATEGORY[this.materialCategory];
+		const categoryPool = ItemMaterialCategoryDataController.instance.getPool(this.materialCategory);
+		if (!categoryPool) {
+			return [];
+		}
 
 		const materials: Material[] = [];
 		for (const matRarity of [
@@ -174,7 +177,7 @@ export abstract class MainItem extends GenericItem {
 				upgradeLevel,
 				totalQty: totals[matRarity],
 				distinct: distincts[matRarity],
-				subPool: categoryPool[matRarity]
+				subPool: categoryPool.getMaterialsForRarity(matRarity)
 			});
 		}
 		return materials;
