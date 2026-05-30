@@ -21,6 +21,7 @@ import {
 } from "../database/game/models/HomeChestSlot";
 import InventoryInfo from "../database/game/models/InventoryInfo";
 import { buildChestData } from "./ReportCityService";
+import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
@@ -70,7 +71,7 @@ async function placeItemInBackupSlot(backupSlots: InventorySlot[], item: ItemPla
 		return false;
 	}
 
-	await assignItemToSlot(emptyBackupSlot, item);
+	await assignItemToSlotUnderLock(emptyBackupSlot, item);
 	return true;
 }
 
@@ -89,6 +90,10 @@ async function createBackupSlot(player: Player, itemCategory: ItemCategory, item
 /**
  * Handle a chest action request (deposit/withdraw) sent directly from Discord via AsyncPacketSender.
  * Returns refreshed chest data for the Discord side to update the view in-place.
+ *
+ * The mutation is performed under a Player + Home row-level lock so that
+ * concurrent chest packets (e.g. fast button mashing) cannot double-move an
+ * item and duplicate or lose inventory / chest slots (review checklist §10).
  */
 export async function handleChestAction(
 	keycloakId: string,
@@ -105,19 +110,30 @@ export async function handleChestAction(
 		return INVALID_CHEST_ACTION;
 	}
 
-	const {
-		player: validPlayer,
-		home: validHome
-	} = chestActionContext;
+	return await withLockedEntities(
+		[Player.lockKey(chestActionContext.player.id), Home.lockKey(chestActionContext.home.id)] as const,
+		([lockedPlayer, lockedHome]) => runChestActionUnderLock(packet, lockedPlayer, lockedHome)
+	);
+}
 
-	const error = await executeChestAction(packet, validPlayer, validHome);
+async function runChestActionUnderLock(
+	packet: CommandReportHomeChestActionReq,
+	player: Player,
+	home: Home
+): Promise<ChestActionResult> {
+	const homeLevel = home.getLevel();
+	if (homeLevel === null) {
+		return INVALID_CHEST_ACTION;
+	}
+
+	const error = await executeChestAction(packet, player, home);
 	if (error) {
 		return buildChestActionError(error);
 	}
 
 	// Build refreshed chest data
-	const playerInventory = await InventorySlots.getOfPlayer(validPlayer.id);
-	const refreshedData = await buildChestData(validHome, validHome.getLevel()!, playerInventory, validPlayer);
+	const playerInventory = await InventorySlots.getOfPlayer(player.id);
+	const refreshedData = await buildChestData(home, homeLevel, playerInventory, player);
 
 	return {
 		success: true,
@@ -170,10 +186,10 @@ async function processChestDeposit(
 	}
 
 	// Move item to chest
-	await assignItemToSlot(emptyChestSlot, slot);
+	await assignItemToSlotUnderLock(emptyChestSlot, slot);
 
 	// Clear inventory slot
-	await clearInventorySlot(slot);
+	await clearInventorySlotUnderLock(slot);
 
 	return null;
 }
@@ -182,7 +198,7 @@ async function processChestDeposit(
  * Clear an inventory slot after depositing/moving its item.
  * Active slots are reset, backup slots are destroyed.
  */
-async function clearInventorySlot(slot: InventorySlot): Promise<void> {
+async function clearInventorySlotUnderLock(slot: InventorySlot): Promise<void> {
 	if (slot.slot === 0) {
 		resetItemFields(slot);
 		await slot.save();
@@ -192,7 +208,7 @@ async function clearInventorySlot(slot: InventorySlot): Promise<void> {
 	}
 }
 
-async function clearChestSlot(chestSlot: HomeChestSlot): Promise<void> {
+async function clearChestSlotUnderLock(chestSlot: HomeChestSlot): Promise<void> {
 	resetItemFields(chestSlot);
 	await chestSlot.save();
 }
@@ -221,7 +237,7 @@ type SaveableItemSlot = ItemPlacement & {
 	save(): Promise<unknown>;
 };
 
-async function assignItemToSlot(slot: SaveableItemSlot, item: ItemPlacement): Promise<void> {
+async function assignItemToSlotUnderLock(slot: SaveableItemSlot, item: ItemPlacement): Promise<void> {
 	slot.itemId = item.itemId;
 	slot.itemLevel = item.itemLevel;
 	slot.itemEnchantmentId = item.itemEnchantmentId;
@@ -242,7 +258,7 @@ async function placeItemInInventory(
 
 	const activeSlot = findEmptyActiveSlot(playerInventory, itemCategory);
 	if (activeSlot) {
-		await assignItemToSlot(activeSlot, item);
+		await assignItemToSlotUnderLock(activeSlot, item);
 		return null;
 	}
 
@@ -282,7 +298,7 @@ async function processChestWithdraw(
 	}
 
 	// Clear the chest slot
-	await clearChestSlot(chestSlot);
+	await clearChestSlotUnderLock(chestSlot);
 
 	return null;
 }
@@ -318,8 +334,8 @@ async function processChestSwap({
 		itemLevel: inventorySlot.itemLevel,
 		itemEnchantmentId: inventorySlot.itemEnchantmentId
 	};
-	await assignItemToSlot(inventorySlot, chestSlot);
-	await assignItemToSlot(chestSlot, temp);
+	await assignItemToSlotUnderLock(inventorySlot, chestSlot);
+	await assignItemToSlotUnderLock(chestSlot, temp);
 
 	return null;
 }
