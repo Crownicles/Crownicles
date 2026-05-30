@@ -11,11 +11,11 @@ import {
 } from "./Material";
 import { MaterialRarity } from "../../../Lib/src/types/MaterialRarity";
 import {
-	DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL,
 	ItemMaterialCategory,
 	pickDistinctMaterials
 } from "../../../Lib/src/constants/ItemMaterialCategoryConstants";
 import { ItemMaterialCategoryDataController } from "./ItemMaterialCategory";
+import { ItemUpgradeMaterialCountDataController } from "./ItemUpgradeMaterialCount";
 
 export abstract class MainItem extends GenericItem {
 	public readonly rawAttack?: number;
@@ -125,7 +125,7 @@ export abstract class MainItem extends GenericItem {
 	 *
 	 * Selection strategy:
 	 * 1. Look up the item's `materialCategory` pool of materials, split by material rarity.
-	 * 2. For each material rarity bucket, read the total quantity required from `ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL` and the distinct material count from `DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL`.
+	 * 2. For each material rarity bucket, read the total quantity required from `ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL` and the distinct material count from `ItemUpgradeMaterialCountDataController`.
 	 * 3. Pick that many distinct ids from the pool with a deterministic sliding window (`pickDistinctMaterials`), so two consecutive levels share at least `distinctCount - 1` materials and we rotate through the whole pool over the five upgrade levels.
 	 * 4. Distribute the total quantity across the picked ids (base quantity + 1 for the first `rem` positions) and emit each id that many times.
 	 */
@@ -160,9 +160,9 @@ export abstract class MainItem extends GenericItem {
 		const itemRarity = this.rarity as ItemRarity;
 		const upgradeLevel = level as UpgradeLevel;
 		const totals = ItemConstants.UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel];
-		const distincts = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity][upgradeLevel - 1];
+		const distinctCounts = ItemUpgradeMaterialCountDataController.instance.getForItemRarity(itemRarity);
 		const categoryPool = ItemMaterialCategoryDataController.instance.getPool(this.materialCategory);
-		if (!categoryPool) {
+		if (!categoryPool || !distinctCounts) {
 			return [];
 		}
 
@@ -176,7 +176,7 @@ export abstract class MainItem extends GenericItem {
 				matRarity,
 				upgradeLevel,
 				totalQty: totals[matRarity],
-				distinct: distincts[matRarity],
+				distinct: distinctCounts.getDistinctCount(upgradeLevel, matRarity),
 				subPool: categoryPool.getMaterialsForRarity(matRarity)
 			});
 		}

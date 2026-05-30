@@ -1,46 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
-	DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL,
 	ITEM_MATERIAL_CATEGORY_IDS,
 	pickDistinctMaterials
 } from "../../src/constants/ItemMaterialCategoryConstants";
-import { ItemRarity } from "../../src/constants/ItemConstants";
 import { MaterialRarity } from "../../src/types/MaterialRarity";
 
 describe("ItemMaterialCategoryConstants", () => {
 	it("exposes 15 category ids", () => {
 		expect(ITEM_MATERIAL_CATEGORY_IDS).toHaveLength(15);
 		expect([...ITEM_MATERIAL_CATEGORY_IDS]).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]);
-	});
-
-	describe("DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL", () => {
-		it("never exceeds the pool size of its rarity bucket", () => {
-			for (const itemRarity of Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[]) {
-				const rows = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity];
-				expect(rows).toHaveLength(5);
-				for (const row of rows) {
-					expect(row[MaterialRarity.COMMON]).toBeLessThanOrEqual(7);
-					expect(row[MaterialRarity.UNCOMMON]).toBeLessThanOrEqual(7);
-					expect(row[MaterialRarity.RARE]).toBeLessThanOrEqual(6);
-				}
-			}
-		});
-
-		it("totals 0 for BASIC and at most 10 distinct mats per upgrade", () => {
-			for (const itemRarity of Object.values(ItemRarity).filter(v => typeof v === "number") as ItemRarity[]) {
-				const rows = DISTINCT_MATERIALS_PER_ITEM_RARITY_AND_LEVEL[itemRarity];
-				for (const row of rows) {
-					const total = row[MaterialRarity.COMMON] + row[MaterialRarity.UNCOMMON] + row[MaterialRarity.RARE];
-					if (itemRarity === ItemRarity.BASIC) {
-						expect(total).toBe(0);
-					}
-					else {
-						expect(total).toBeGreaterThanOrEqual(2);
-						expect(total).toBeLessThanOrEqual(10);
-					}
-				}
-			}
-		});
 	});
 
 	describe("deterministic shuffle (via pickDistinctMaterials)", () => {
