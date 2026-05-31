@@ -193,6 +193,26 @@ function addFightProfileFor(introEmbed: CrowniclesEmbed, lng: Language, fighterN
  * @param context
  * @param packet
  */
+/**
+ * Resolve the display name of the fight opponent (player, monster or fallback).
+ * @param packet
+ * @param lng
+ */
+async function resolveOpponentDisplayName(packet: CommandFightIntroduceFightersPacket, lng: Language): Promise<string> {
+	if (packet.fightOpponentKeycloakId) {
+		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.fightOpponentKeycloakId);
+		if (getUser && !getUser.isError) {
+			return getUser.payload.user.attributes.gameUsername[0];
+		}
+	}
+	if (packet.fightOpponentMonsterId) {
+		return i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
+	}
+
+	// Fallback for test players or unknown opponents
+	return packet.fightOpponentKeycloakId ?? "???";
+}
+
 export async function handleCommandFightIntroduceFightersRes(context: PacketContext, packet: CommandFightIntroduceFightersPacket): Promise<void> {
 	if (buggedFights.has(packet.fightId)) {
 		return;
@@ -202,19 +222,7 @@ export async function handleCommandFightIntroduceFightersRes(context: PacketCont
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 		const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
 		const lng = interaction.userLanguage;
-		const getUser = packet.fightOpponentKeycloakId ? await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.fightOpponentKeycloakId) : undefined;
-
-		let opponentDisplayName: string;
-		if (getUser && !getUser.isError) {
-			opponentDisplayName = getUser.payload.user.attributes.gameUsername[0];
-		}
-		else if (packet.fightOpponentMonsterId) {
-			opponentDisplayName = i18n.t(`models:monsters.${packet.fightOpponentMonsterId}.name`, { lng });
-		}
-		else {
-			// Fallback for test players or unknown opponents
-			opponentDisplayName = packet.fightOpponentKeycloakId ?? "???";
-		}
+		const opponentDisplayName = await resolveOpponentDisplayName(packet, lng);
 		const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.fightIntroTitle", {
 			lng,
 			fightInitiator: escapeUsername(interaction.user.displayName),
