@@ -316,7 +316,10 @@ export class ReportCityMenu {
 				PacketUtils.sendPacketToBackend(context, makePacket(ReactionCollectorResetTimerPacketReq, { reactionCollectorId: packet.id }));
 			}
 		);
-		const msg = await nestedMenus.send(interaction);
+		const shopCloseButtonInteraction = cityData.reopenedFromShop && context.discord?.buttonInteraction
+			? DiscordCache.getButtonInteraction(context.discord.buttonInteraction)
+			: null;
+		const msg = await nestedMenus.send(interaction, shopCloseButtonInteraction ?? undefined);
 
 		if (navigateAfterSend) {
 			await nestedMenus.changeMenu(navigateAfterSend);
