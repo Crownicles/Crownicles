@@ -1,7 +1,7 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle,
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction,
 	ContainerBuilder, Message,
-	SectionBuilder, SeparatorBuilder, SeparatorSpacingSize,
+	SeparatorBuilder, SeparatorSpacingSize,
 	TextDisplayBuilder
 } from "discord.js";
 import i18n from "../../../../translations/i18n";
@@ -17,9 +17,11 @@ import {
 } from "./HomeMenuTypes";
 import { HomeMenuIds } from "./HomeMenuConstants";
 import {
-	createStayInCityButton, handleStayInCityInteraction
+	addCitySection, createStayInCityButton, handleStayInCityInteraction
 } from "../ReportCityMenu";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import {
+	ReportCityButtonStyles, ReportCityMenuIds
+} from "../ReportCityMenuConstants";
 import { StringUtils } from "../../../../utils/StringUtils";
 import { Language } from "../../../../../../Lib/src/Language";
 
@@ -143,7 +145,7 @@ function buildMainHomeFooterRow(lng: Language, isApartment: boolean): ActionRowB
 				{ lng }
 			))
 			.setEmoji(CrowniclesIcons.collectors.back)
-			.setStyle(ButtonStyle.Secondary),
+			.setStyle(ReportCityButtonStyles.BACK),
 		createStayInCityButton(lng)
 	);
 }
@@ -161,21 +163,15 @@ function buildMainHomeContainer(
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 
 	for (const option of homeFeatureRegistry.getMenuOptions(handlerContext)) {
-		container.addSectionComponents(
-			new SectionBuilder()
-				.addTextDisplayComponents(
-					new TextDisplayBuilder().setContent(
-						`${option.emoji} **${option.label}**${option.description ? `\n${option.description}` : ""}`
-					)
-				)
-				.setButtonAccessory(
-					new ButtonBuilder()
-						.setCustomId(option.value)
-						.setLabel(option.buttonLabel)
-						.setEmoji(option.emoji)
-						.setStyle(ButtonStyle.Primary)
-				)
-		);
+		addCitySection({
+			container,
+			emote: option.emoji,
+			title: option.label,
+			...option.description ? { description: option.description } : {},
+			customId: option.value,
+			buttonLabel: option.buttonLabel,
+			buttonStyle: ReportCityButtonStyles.NAVIGATE
+		});
 	}
 
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));

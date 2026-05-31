@@ -1287,7 +1287,7 @@
           "xpGained": "{emote:unitValues.xp} +**{{xp}}** XP de cuisine",
           "levelUp": "Vous êtes passé au **niveau {{level}}** de cuisine !",
           "levelUpWithGrade": "Vous êtes passé au **niveau {{level}}** de cuisine ! Nouveau grade : **{{grade}}**",
-          "levelUpTitle": "{emote:city.homeUpgrades.cooking} Niveau de cuisine augmenté !",
+          "levelUpTitle": "{emote:city.homeUpgrades.cooking} {{pseudo}}, niveau de cuisine augmenté !",
           "materialSaved": "{emote:messages.validate} Grâce à votre expertise, un **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** a été économisé !",
           "bonusOutput": "{emote:city.homeUpgrades.cooking} **Super réussite !** Votre maîtrise vous a permis de doubler l'XP gagnée et d'améliorer le résultat de cette préparation !",
           "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** ont été ajoutées au stockage de votre guilde.",
@@ -1357,7 +1357,6 @@
         "purchaseDescription": "{emote:city.guildDomain.menu} Le notaire vous félicite chaleureusement et vous remet les actes officiels scellés du sceau de la ville. Le domaine de votre guilde est désormais enraciné dans cette cité. Les premiers ouvriers se mettent déjà au travail pour préparer le terrain.",
         "relocateTitle": "{{pseudo}}, domaine déplacé !",
         "relocateDescription": "{emote:city.guildDomain.menu} Le notaire finalise les documents de transfert et vous les remet avec un sourire professionnel. Les chariots de déménagement sont déjà en route. Le domaine de votre guilde s'installera bientôt dans cette ville, pour **{{cost}} {emote:unitValues.money}** de la trésorerie.",
-        "notEnoughTreasuryTitle": "{{pseudo}}, fonds insuffisants !",
         "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} Après avoir consciencieusement examiné les finances de votre guilde, le notaire secoue la tête avec regret. La trésorerie ne contient pas assez de fonds pour cette opération — il vous manque **{{missingTreasury}} {emote:unitValues.money}**. Il vous encourage à revenir lorsque la guilde aura économisé suffisamment.",
         "levelDisplay": "Niv. {{level}}/{{maxLevel}}",
         "enterBuilding": {

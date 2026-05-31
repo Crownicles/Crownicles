@@ -33,7 +33,9 @@ import {
 	createCityCollector,
 	shouldShowManageHomeMenu
 } from "../ReportCityMenu";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import {
+	ReportCityButtonStyles, ReportCityMenuIds
+} from "../ReportCityMenuConstants";
 import {
 	CityCollectorHandlerParams, CityMenuParams, ManageHomeData
 } from "../ReportCityMenuTypes";
@@ -96,7 +98,7 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 					: "commands:report.city.buttons.goHome",
 				{ lng }
 			),
-			buttonStyle: ButtonStyle.Primary
+			buttonStyle: ReportCityButtonStyles.NAVIGATE
 		});
 	}
 
@@ -231,7 +233,7 @@ function addGuildSections(container: ContainerBuilder, data: ReactionCollectorCi
 			guildName: data.guildDomain.guildName,
 			customId: ReportCityMenuIds.GUILD_DOMAIN_MENU,
 			buttonLabelKey: "commands:report.city.buttons.visitDomain",
-			buttonStyle: ButtonStyle.Primary
+			buttonStyle: ReportCityButtonStyles.NAVIGATE
 		}, lng);
 	}
 	if (data.guildFoodShop) {
@@ -242,7 +244,7 @@ function addGuildSections(container: ContainerBuilder, data: ReactionCollectorCi
 			guildName: data.guildFoodShop.guildName,
 			customId: ReportCityMenuIds.GUILD_FOOD_SHOP_MENU,
 			buttonLabelKey: "commands:report.city.buttons.visitFoodShop",
-			buttonStyle: ButtonStyle.Secondary
+			buttonStyle: ReportCityButtonStyles.NAVIGATE
 		}, lng);
 	}
 }
@@ -259,13 +261,13 @@ const EXIT_STAY_BUTTON_CONFIGS: Record<string, ExitStayButtonConfig> = {
 		customId: ReportCityMenuIds.MAIN_MENU_EXIT_CITY,
 		labelKey: "commands:report.city.reactions.exit.label",
 		emoji: CrowniclesIcons.city.exit,
-		style: ButtonStyle.Danger
+		style: ReportCityButtonStyles.EXIT
 	},
 	[ReactionCollectorRefuseReaction.name]: {
 		customId: ReportCityMenuIds.MAIN_MENU_STAY_CITY,
 		labelKey: "commands:report.city.reactions.stay.label",
 		emoji: CrowniclesIcons.city.stay,
-		style: ButtonStyle.Secondary
+		style: ReportCityButtonStyles.STAY
 	}
 };
 
@@ -405,7 +407,7 @@ export function getMainMenu(params: CityMenuParams): CrowniclesNestedMenu {
 			.setCustomId(ReportCityMenuIds.MAIN_MENU_STAY_CITY)
 			.setLabel(i18n.t("commands:garden.close", { lng }))
 			.setEmoji(CrowniclesIcons.collectors.refuse)
-			.setStyle(ButtonStyle.Secondary));
+			.setStyle(ReportCityButtonStyles.STAY));
 		container.addActionRowComponents(closeRow);
 
 		return {

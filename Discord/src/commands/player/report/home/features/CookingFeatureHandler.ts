@@ -1070,7 +1070,10 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 			});
 
 		return new CrowniclesEmbed()
-			.setTitle(i18n.t("commands:report.city.homes.cooking.levelUpTitle", { lng: ctx.lng }))
+			.formatAuthor(i18n.t("commands:report.city.homes.cooking.levelUpTitle", {
+				lng: ctx.lng,
+				pseudo: ctx.pseudo
+			}), ctx.user)
 			.setDescription(description);
 	}
 

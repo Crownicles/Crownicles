@@ -12,7 +12,9 @@ import {
 import i18n from "../../../../translations/i18n";
 import { StringUtils } from "../../../../utils/StringUtils";
 import { createCityCollector } from "../ReportCityMenu";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import {
+	ReportCityButtonStyles, ReportCityMenuIds
+} from "../ReportCityMenuConstants";
 
 type CityConfirmationAction = {
 	buttonInteraction: MessageComponentInteraction;
@@ -59,13 +61,13 @@ function buildCityConfirmationContainer(config: CityConfirmationMenuConfig): Con
 		.setCustomId(ReportCityMenuIds.CITY_CONFIRMATION_CONFIRM)
 		.setLabel(config.confirmLabel)
 		.setEmoji(config.confirmEmoji ?? CrowniclesIcons.collectors.accept)
-		.setStyle(config.confirmStyle ?? ButtonStyle.Success);
+		.setStyle(config.confirmStyle ?? ReportCityButtonStyles.CONFIRM);
 
 	const cancelButton = new ButtonBuilder()
 		.setCustomId(ReportCityMenuIds.CITY_CONFIRMATION_CANCEL)
 		.setLabel(i18n.t("commands:report.city.confirmation.cancel", { lng: config.lng }))
 		.setEmoji(CrowniclesIcons.collectors.refuse)
-		.setStyle(ButtonStyle.Secondary);
+		.setStyle(ReportCityButtonStyles.CANCEL);
 
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(confirmButton, cancelButton)

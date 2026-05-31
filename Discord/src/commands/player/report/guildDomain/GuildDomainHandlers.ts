@@ -5,6 +5,7 @@ import {
 	CommandReportGuildDomainRelocateRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
+import { CrowniclesErrorEmbed } from "../../../../messages/CrowniclesErrorEmbed";
 import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { MessagesUtils } from "../../../../utils/MessagesUtils";
@@ -60,15 +61,17 @@ export async function handleGuildDomainNotEnoughTreasury(packet: CommandReportGu
 	}
 	const lng = context.discord!.language;
 
-	const embed = new CrowniclesEmbed()
-		.formatAuthor(i18n.t("commands:report.city.guildDomain.notEnoughTreasuryTitle", {
-			lng,
-			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-		}), interaction.user)
-		.setDescription(i18n.t("commands:report.city.guildDomain.notEnoughTreasuryDescription", {
+	const embed = new CrowniclesErrorEmbed(
+		interaction.user,
+		context,
+		interaction,
+		i18n.t("commands:report.city.guildDomain.notEnoughTreasuryDescription", {
 			lng,
 			missingTreasury: packet.missingTreasury
-		}));
+		}),
+		false,
+		false
+	);
 
 	await interaction.editReply({
 		embeds: [embed]

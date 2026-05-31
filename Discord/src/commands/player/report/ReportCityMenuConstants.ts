@@ -2,6 +2,8 @@
  * Constants for city menu IDs.
  * These are used as custom IDs for Discord buttons in the city report menus.
  */
+import { ButtonStyle } from "discord.js";
+
 export const ReportCityMenuIds = {
 	// --- Navigation ---
 	/** Back to city main menu from any sub-menu */
@@ -144,6 +146,31 @@ export const ReportCityMenuIds = {
 
 	/** Cancel the pending city action */
 	CITY_CONFIRMATION_CANCEL: "CITY_CONFIRMATION_CANCEL"
+} as const;
+
+/**
+ * Semantic button styles shared by every city menu so that buttons with the
+ * same role always look the same. Centralised here to avoid each menu picking
+ * its own `ButtonStyle` and drifting over time.
+ */
+export const ReportCityButtonStyles = {
+	/** Go back to a parent menu / neutral secondary action */
+	BACK: ButtonStyle.Secondary,
+
+	/** Navigate into a sub-menu or open a feature */
+	NAVIGATE: ButtonStyle.Primary,
+
+	/** Confirm / validate a positive action */
+	CONFIRM: ButtonStyle.Success,
+
+	/** Cancel a pending action (paired with CONFIRM) */
+	CANCEL: ButtonStyle.Secondary,
+
+	/** Leave the city entirely (destructive navigation) */
+	EXIT: ButtonStyle.Danger,
+
+	/** Stay in the city (neutral) */
+	STAY: ButtonStyle.Secondary
 } as const;
 
 /**

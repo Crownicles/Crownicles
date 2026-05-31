@@ -7,6 +7,7 @@ import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
 import i18n from "../../../../translations/i18n";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import { MessagesUtils } from "../../../../utils/MessagesUtils";
+import { StringUtils } from "../../../../utils/StringUtils";
 
 export async function handleEatInnMeal(packet: CommandReportEatInnMealRes, context: PacketContext): Promise<void> {
 	const interaction = MessagesUtils.getCurrentInteraction(context);
@@ -43,13 +44,16 @@ export async function handleInnRoom(packet: CommandReportSleepRoomRes, context: 
 			lng,
 			pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 		}), interaction.user)
-		.setDescription(`${i18n.t(`commands:report.city.inns.roomsStories.${packet.roomId}`, {
-			lng
-		})}\n\n${i18n.t("commands:report.city.inns.roomEndStory", {
-			lng,
-			health: packet.health,
-			price: packet.moneySpent
-		})}`);
+		.setDescription(StringUtils.joinParagraphs([
+			i18n.t(`commands:report.city.inns.roomsStories.${packet.roomId}`, {
+				lng
+			}),
+			i18n.t("commands:report.city.inns.roomEndStory", {
+				lng,
+				health: packet.health,
+				price: packet.moneySpent
+			})
+		]));
 
 	await interaction.editReply({
 		embeds: [embed]

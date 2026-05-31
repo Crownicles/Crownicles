@@ -2,11 +2,14 @@ import {
 	ActionRowBuilder,
 	ButtonBuilder, ButtonStyle,
 	ContainerBuilder,
-	SectionBuilder, SeparatorBuilder, SeparatorSpacingSize,
+	SeparatorBuilder, SeparatorSpacingSize,
 	TextDisplayBuilder
 } from "discord.js";
 import i18n from "../../../../translations/i18n";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import { addCitySection } from "../ReportCityMenu";
+import {
+	ReportCityButtonStyles, ReportCityMenuIds
+} from "../ReportCityMenuConstants";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import {
 	GuildBuilding, GuildDomainConstants
@@ -65,23 +68,16 @@ export function buildMainDomainContainer(ctx: GuildDomainMenuContext, statusMess
 		const description = getBuildingSummary(building, currentLevel, lng);
 		const buildingIcon = BUILDING_ICONS[building];
 
-		container.addSectionComponents(
-			new SectionBuilder()
-				.addTextDisplayComponents(
-					new TextDisplayBuilder().setContent(
-						`${buildingIcon} **${buildingName}** — ${i18n.t("commands:report.city.guildDomain.levelDisplay", {
-							lng, level: currentLevel, maxLevel
-						})}\n${description}`
-					)
-				)
-				.setButtonAccessory(
-					new ButtonBuilder()
-						.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_ENTER_PREFIX}${building}`)
-						.setLabel(i18n.t(`commands:report.city.guildDomain.enterBuilding.${building}`, { lng }))
-						.setEmoji(buildingIcon)
-						.setStyle(ButtonStyle.Primary)
-				)
-		);
+		addCitySection({
+			container,
+			text: `${buildingIcon} **${buildingName}** — ${i18n.t("commands:report.city.guildDomain.levelDisplay", {
+				lng, level: currentLevel, maxLevel
+			})}\n${description}`,
+			emoji: buildingIcon,
+			customId: `${ReportCityMenuIds.GUILD_DOMAIN_ENTER_PREFIX}${building}`,
+			buttonLabel: i18n.t(`commands:report.city.guildDomain.enterBuilding.${building}`, { lng }),
+			buttonStyle: ReportCityButtonStyles.NAVIGATE
+		});
 	}
 
 	addStatusMessage(container, statusMessage);

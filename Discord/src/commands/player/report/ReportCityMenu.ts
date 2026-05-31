@@ -35,6 +35,9 @@ import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
 import { getRoyalBlacksmithMenus } from "./royalBlacksmith/RoyalBlacksmithMenu";
 import { ReportCityMenuIds } from "./ReportCityMenuConstants";
 import {
+	ReportCityButtonStyles, ReportCityMenuIds
+} from "./ReportCityMenuConstants";
+import {
 	getGuildDomainMenu, getGuildDomainSubMenus
 } from "./guildDomain/GuildDomainMenu";
 import { getGuildFoodShopMenu } from "./guildFoodShop/GuildFoodShopMenu";
@@ -115,7 +118,7 @@ export function addCitySection(params: AddCitySectionParams): void {
 	const button = new ButtonBuilder()
 		.setCustomId(params.customId)
 		.setLabel(params.buttonLabel)
-		.setStyle(params.buttonStyle ?? ButtonStyle.Secondary)
+		.setStyle(params.buttonStyle ?? ReportCityButtonStyles.BACK)
 		.setDisabled(params.disabled ?? false);
 
 	if (emoji) {
@@ -137,7 +140,7 @@ export function createStayInCityButton(lng: Language): ButtonBuilder {
 		.setCustomId(ReportCityMenuIds.STAY_IN_CITY)
 		.setLabel(i18n.t("commands:report.city.reactions.stay.label", { lng }))
 		.setEmoji(CrowniclesIcons.city.stay)
-		.setStyle(ButtonStyle.Secondary);
+		.setStyle(ReportCityButtonStyles.STAY);
 }
 
 /**
