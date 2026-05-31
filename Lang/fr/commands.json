@@ -847,9 +847,9 @@
         "title": "{{pseudo}}, confirmation",
         "cancel": "Annuler"
       },
-      "stayTitle": "{{pseudo}}, vous avez décidé de rester en ville",
-      "stayDescription": "Vous avez décidé de rester en ville pour profiter des services disponibles. Vous pouvez toujours partir plus tard en utilisant la commande {command:report}.",
-      "stayInCityChoice": "{emote:mapTypes.ci} Rester en ville",
+      "stayTitle": "{{pseudo}}, vous êtes en ville",
+      "stayDescription": "Vous êtes en ville et pouvez profiter des services disponibles. Vous pouvez partir à tout moment en utilisant la commande {command:report}.",
+      "stayInCityChoice": "{emote:mapTypes.ci} Entrer en ville",
       "shopEmptyDescription": "Aucun service à proposer pour le moment.",
       "exitInn": "Sortir de l'auberge",
       "reactions": {

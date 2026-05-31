@@ -25,6 +25,7 @@ import {
 import { MapCache } from "../maps/MapCache";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
+import { PlayersConstants } from "../../../../Lib/src/constants/PlayersConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { CityDataController } from "../../data/City";
 import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
@@ -96,6 +97,9 @@ function buildMapReactions(player: Player, destinationMaps: number[]): ReactionC
 async function applyStayInCity(player: Player, response: CrowniclesPacket[]): Promise<void> {
 	await withLockedPlayerSafe(player, "chooseDestination.stayInCity", async lockedPlayer => {
 		lockedPlayer.insideCity = true;
+
+		// Become stationary on the city map location: no active travel left on the map link.
+		lockedPlayer.startTravelDate = new Date(PlayersConstants.PLAYER_DEFAULT_VALUES.START_TRAVEL_DATE);
 		await lockedPlayer.save();
 	});
 	response.push(makePacket(CommandReportStayInCity, {}));

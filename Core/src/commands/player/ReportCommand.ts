@@ -171,8 +171,15 @@ export default class ReportCommand {
 
 		const destinationId = player.getDestinationId();
 		const city = destinationId === null ? undefined : CityDataController.instance.getCityByMapId(destinationId);
-		if (city && player.insideCity && currentEffectFinished && Maps.isArrived(player, currentDate)) {
-			await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
+		if (city && player.insideCity) {
+			// The player is stationary inside the city: show the city menu, or the resting screen while an alteration is active.
+			if (currentEffectFinished) {
+				await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
+			}
+			else {
+				await sendTravelPath(player, response, currentDate, player.effectId);
+				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+			}
 			return;
 		}
 
