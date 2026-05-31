@@ -68,7 +68,7 @@ function getCooldownRemainingTimeMs(player: Player): number {
  * @param guild the player's guild (null if the player has no guild)
  */
 function isExemptFromPetFreeCooldown(player: Player, guild: Guild | null): boolean {
-	return guild !== null && (player.id === guild.getChiefId() || player.id === guild.getElderId());
+	return guild !== null && guild.isChiefOrElder(player);
 }
 
 /**
