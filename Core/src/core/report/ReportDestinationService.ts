@@ -165,6 +165,25 @@ function sendDestinationCollector(
 }
 
 /**
+ * Whether the player can defer the destination choice and stay in the city.
+ * Only possible when standing on a city map location and not forcibly teleported.
+ */
+function canStayInCity(player: Player, forcedLink: MapLink | null, allowStayInCity: boolean): boolean {
+	return allowStayInCity
+		&& !forcedLink
+		&& Boolean(CityDataController.instance.getCityByMapId(player.getDestinationId()!));
+}
+
+/**
+ * Whether the destination can be chosen automatically (no collector shown to the player).
+ */
+function canAutoChooseDestination(player: Player, forcedLink: MapLink | null, destinationMaps: number[], stayInCityAllowed: boolean): boolean {
+	return !stayInCityAllowed
+		&& (!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
+		&& Boolean(forcedLink || (destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK));
+}
+
+/**
  * Sends a message so that the player can choose where to go
  */
 export async function chooseDestination(
@@ -183,19 +202,12 @@ export async function chooseDestination(
 		return;
 	}
 
-	// When standing in a city (and not forcibly teleported), the player can defer the choice and stay in the city.
-	const canStayInCity = allowStayInCity
-		&& !forcedLink
-		&& Boolean(CityDataController.instance.getCityByMapId(player.getDestinationId()!));
+	const stayInCityAllowed = canStayInCity(player, forcedLink, allowStayInCity);
 
-	const canAutoChoose = !canStayInCity
-		&& (!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
-		&& (forcedLink || (destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK));
-
-	if (canAutoChoose) {
+	if (canAutoChooseDestination(player, forcedLink, destinationMaps, stayInCityAllowed)) {
 		await automaticChooseDestination(forcedLink, player, destinationMaps, response);
 		return;
 	}
 
-	sendDestinationCollector(context, player, destinationMaps, response, mainPacket, canStayInCity);
+	sendDestinationCollector(context, player, destinationMaps, response, mainPacket, stayInCityAllowed);
 }
