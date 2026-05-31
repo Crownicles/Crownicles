@@ -114,16 +114,16 @@ function sendDestinationCollector(
 	destinationMaps: number[],
 	response: CrowniclesPacket[],
 	mainPacket: boolean,
-	canStayInCity: boolean
+	stayInCityAllowed: boolean
 ): void {
 	const mapReactions = buildMapReactions(player, destinationMaps);
-	const collector = new ReactionCollectorChooseDestination(mapReactions, canStayInCity);
+	const collector = new ReactionCollectorChooseDestination(mapReactions, stayInCityAllowed);
 
 	const endCallback: EndCallback = async (collector, response) => {
 		const firstReaction = collector.getFirstReaction();
 
 		// Doing nothing (timeout) or explicitly choosing it defaults to staying in the city when that option is offered.
-		const staysInCity = canStayInCity
+		const staysInCity = stayInCityAllowed
 			&& (!firstReaction || firstReaction.reaction.type === ReactionCollectorStayInCityReaction.name);
 		if (staysInCity) {
 			await applyStayInCity(player, response);
@@ -168,7 +168,7 @@ function sendDestinationCollector(
  * Whether the player can defer the destination choice and stay in the city.
  * Only possible when standing on a city map location and not forcibly teleported.
  */
-function canStayInCity(player: Player, forcedLink: MapLink | null, allowStayInCity: boolean): boolean {
+export function canStayInCity(player: Player, forcedLink: MapLink | null, allowStayInCity: boolean): boolean {
 	return allowStayInCity
 		&& !forcedLink
 		&& Boolean(CityDataController.instance.getCityByMapId(player.getDestinationId()!));
@@ -177,7 +177,7 @@ function canStayInCity(player: Player, forcedLink: MapLink | null, allowStayInCi
 /**
  * Whether the destination can be chosen automatically (no collector shown to the player).
  */
-function canAutoChooseDestination(player: Player, forcedLink: MapLink | null, destinationMaps: number[], stayInCityAllowed: boolean): boolean {
+export function canAutoChooseDestination(player: Player, forcedLink: MapLink | null, destinationMaps: number[], stayInCityAllowed: boolean): boolean {
 	return !stayInCityAllowed
 		&& (!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
 		&& Boolean(forcedLink || (destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK));
