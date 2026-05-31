@@ -214,11 +214,11 @@ function buildHealData(
 }
 
 function isStationaryInCity(player: Player): boolean {
-	const destinationId = player.getDestinationId();
-	if (destinationId === null || !CityDataController.instance.getCityByMapId(destinationId)) {
+	if (!player.insideCity) {
 		return false;
 	}
-	return Maps.isArrived(player, new Date());
+	const destinationId = player.getDestinationId();
+	return destinationId !== null && Boolean(CityDataController.instance.getCityByMapId(destinationId));
 }
 
 /**
