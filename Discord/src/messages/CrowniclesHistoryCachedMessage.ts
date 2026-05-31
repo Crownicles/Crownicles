@@ -126,11 +126,7 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 			// The fightAction is an alteration or pet assistance
 			return i18n.t(`models:fight_actions.${packet.fightActionId}.${packet.status}`, {
 				lng,
-				petNickname: packet.pet
-					? packet.pet.nickname
-						? packet.pet.nickname
-						: DisplayUtils.getPetTypeName(lng, packet.pet.typeId, packet.pet.sex)
-					: undefined
+				petNickname: this.resolvePetNickname(packet, lng)
 			});
 		}
 		else if (packet.customMessage) {
@@ -155,6 +151,19 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 				})
 			}
 		);
+	}
+
+	/**
+	 * Resolve the pet nickname to display for an alteration or pet assistance message,
+	 * or undefined when no pet is involved.
+	 * @param packet
+	 * @param lng
+	 */
+	private resolvePetNickname(packet: CommandFightHistoryItemPacket, lng: Language): string | undefined {
+		if (!packet.pet) {
+			return undefined;
+		}
+		return packet.pet.nickname ? packet.pet.nickname : DisplayUtils.getPetTypeName(lng, packet.pet.typeId, packet.pet.sex);
 	}
 
 	private manageReceivedEffects(packet: CommandFightHistoryItemPacket, lng: Language): string {
