@@ -239,8 +239,10 @@ function createBlacksmithUpgradeListCollector(params: BlacksmithMenuParams): Cro
 				await nestedMenus.changeMenu(BlacksmithMenuIds.BLACKSMITH_MENU);
 			}
 			else if (selectedValue.startsWith(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX)) {
-				const itemIndex = parseInt(selectedValue.replace(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX, ""), 10);
-				await nestedMenus.changeMenu(`${BlacksmithMenuIds.UPGRADE_MENU}_DETAIL_${itemIndex}`);
+				const itemIndex = Number.parseInt(selectedValue.slice(BlacksmithMenuIds.UPGRADE_ITEM_PREFIX.length), 10);
+				if (!Number.isNaN(itemIndex)) {
+					await nestedMenus.changeMenu(`${BlacksmithMenuIds.UPGRADE_MENU}_DETAIL_${itemIndex}`);
+				}
 			}
 			else if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 				handleStayInCityInteraction(packet, context, buttonInteraction);
@@ -519,8 +521,10 @@ function createBlacksmithDisenchantListCollector(params: BlacksmithMenuParams): 
 				await nestedMenus.changeMenu(BlacksmithMenuIds.BLACKSMITH_MENU);
 			}
 			else if (selectedValue.startsWith(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX)) {
-				const itemIndex = parseInt(selectedValue.replace(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX, ""), 10);
-				await nestedMenus.changeMenu(`${BlacksmithMenuIds.DISENCHANT_MENU}_DETAIL_${itemIndex}`);
+				const itemIndex = Number.parseInt(selectedValue.slice(BlacksmithMenuIds.DISENCHANT_ITEM_PREFIX.length), 10);
+				if (!Number.isNaN(itemIndex)) {
+					await nestedMenus.changeMenu(`${BlacksmithMenuIds.DISENCHANT_MENU}_DETAIL_${itemIndex}`);
+				}
 			}
 			else if (selectedValue === ReportCityMenuIds.STAY_IN_CITY) {
 				handleStayInCityInteraction(packet, context, buttonInteraction);
