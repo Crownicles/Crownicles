@@ -193,6 +193,18 @@ async function executeRoyalUpgradeUnderLock(params: {
 		lockedPlayer, lockedMissionsInfo, item, execution, reaction, response
 	} = params;
 
+	/*
+	 * Reload and validate the target slot BEFORE any spending: a stale menu replayed
+	 * after a first successful upgrade would otherwise pay again and re-set an
+	 * already-upgraded item, so abort if it is no longer at the upgradeable level.
+	 */
+	const slots = await InventorySlots.getOfPlayer(lockedPlayer.id);
+	const inventorySlot = slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory);
+	if (!inventorySlot || inventorySlot.itemLevel !== RoyalBlacksmithConstants.TARGET_LEVEL - 1) {
+		CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} Royal Blacksmith upgrade: target slot is no longer upgradeable (stale menu replay).`);
+		return;
+	}
+
 	if (lockedPlayer.money < execution.totalMoneyCost) {
 		pushMissingMoney(response, execution.totalMoneyCost, lockedPlayer.money);
 		return;
@@ -217,14 +229,7 @@ async function executeRoyalUpgradeUnderLock(params: {
 	});
 
 	if (execution.gemCost > 0) {
-		await lockedMissionsInfo.addGems(-execution.gemCost, lockedPlayer.keycloakId, NumberChangeReason.ROYAL_BLACKSMITH_UPGRADE_GEMS);
-	}
-
-	const slots = await InventorySlots.getOfPlayer(lockedPlayer.id);
-	const inventorySlot = slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory);
-	if (!inventorySlot) {
-		CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} Royal Blacksmith upgrade: inventory slot vanished mid-transaction.`);
-		return;
+		await lockedMissionsInfo.spendGems(execution.gemCost, response, NumberChangeReason.ROYAL_BLACKSMITH_UPGRADE_GEMS);
 	}
 
 	inventorySlot.itemLevel = RoyalBlacksmithConstants.TARGET_LEVEL;
