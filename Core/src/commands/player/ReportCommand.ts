@@ -425,7 +425,10 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 						params.player,
 						new Date(),
 						params.city,
-						{ forceSpecificEvent: params.forceSpecificEvent }
+						{
+							forceSpecificEvent: params.forceSpecificEvent,
+							reopenedFromShop: true
+						}
 					);
 				}
 			});
@@ -550,7 +553,7 @@ async function sendCityCollector(
 	currentDate: Date,
 	city: City,
 	options: {
-		forceSpecificEvent: number; initialMenu?: string;
+		forceSpecificEvent: number; initialMenu?: string; reopenedFromShop?: boolean;
 	} = { forceSpecificEvent: 0 }
 ): Promise<void> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
@@ -715,7 +718,8 @@ async function sendCityCollector(
 		guildFoodShop,
 		guildDomainNotary,
 		apartmentNotary,
-		initialMenu: options.initialMenu
+		initialMenu: options.initialMenu,
+		reopenedFromShop: options.reopenedFromShop
 	};
 
 	const collector = new ReactionCollectorCity(collectorData);
