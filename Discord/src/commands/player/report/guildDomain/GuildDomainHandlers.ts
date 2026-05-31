@@ -59,7 +59,9 @@ export async function handleGuildDomainNotEnoughTreasury(packet: CommandReportGu
 	if (!interaction) {
 		return;
 	}
-	const lng = context.discord!.language;
+
+	// Use the same language source as CrowniclesErrorEmbed picks for its title to avoid mixed-language embeds
+	const lng = interaction.userLanguage;
 
 	const embed = new CrowniclesErrorEmbed(
 		interaction.user,
