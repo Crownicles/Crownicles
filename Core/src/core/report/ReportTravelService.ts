@@ -17,7 +17,6 @@ import {
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { CityDataController } from "../../data/City";
-import { MapLinkDataController } from "../../data/MapLink";
 
 /**
  * Token cost calculation result
@@ -215,12 +214,11 @@ function buildHealData(
 }
 
 function isStationaryInCity(player: Player): boolean {
-	const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
-	if (!city) {
+	const destinationId = player.getDestinationId();
+	if (destinationId === null || !CityDataController.instance.getCityByMapId(destinationId)) {
 		return false;
 	}
-	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId);
-	return mapLink?.tripDuration === 0;
+	return Maps.isArrived(player, new Date());
 }
 
 /**

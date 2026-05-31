@@ -181,6 +181,8 @@ export class Player extends Model {
 
 	declare startTravelDate: Date;
 
+	declare insideCity: boolean;
+
 	declare defenseGloryPoints: number;
 
 	declare attackGloryPoints: number;
@@ -220,11 +222,12 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Get the id of the city attached to the player's current map link,
-	 * or `null` if the map link is not a city entrance.
+	 * Get the id of the city the player is currently in (the destination of the
+	 * player's current map link is a city map), or `null` if not in a city.
 	 */
 	getCurrentCityId(): string | null {
-		return CityDataController.instance.getCityByMapLinkId(this.mapLinkId)?.id ?? null;
+		const destinationId = this.getDestinationId();
+		return destinationId === null ? null : CityDataController.instance.getCityByMapId(destinationId)?.id ?? null;
 	}
 
 	/**
@@ -1999,6 +2002,10 @@ export function initModel(sequelize: Sequelize): void {
 			type: DataTypes.DATE,
 			defaultValue: PlayersConstants.PLAYER_DEFAULT_VALUES.START_TRAVEL_DATE
 		},
+		insideCity: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false
+		},
 		attackGloryPoints: {
 			type: DataTypes.INTEGER,
 			defaultValue: FightConstants.ELO.DEFAULT_ELO
@@ -2094,7 +2101,7 @@ export function initModel(sequelize: Sequelize): void {
 			if (
 				travelEndDate > now
 				&& destinationId !== null
-				&& !CityDataController.instance.getCityByMapLinkId(instance.mapLinkId) // Don't schedule notifications for cities
+				&& !CityDataController.instance.getCityByMapId(destinationId) // Don't schedule notifications for cities
 			) {
 				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
 				return;

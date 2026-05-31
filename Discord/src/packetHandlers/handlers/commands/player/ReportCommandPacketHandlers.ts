@@ -15,7 +15,6 @@ import {
 	CommandReportBuyHealNoAlterationPacketRes,
 	CommandReportBuyHealRefusePacketRes,
 	CommandReportBuyHomeRes,
-	CommandReportChooseDestinationCityRes,
 	CommandReportEatInnMealCooldownRes,
 	CommandReportEatInnMealRes,
 	CommandReportEnchantNotEnoughCurrenciesRes,
@@ -46,7 +45,6 @@ import {
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	handleChooseDestinationCity,
 	reportResult,
 	stayInCity
 } from "../../../../commands/player/ReportCommand";
@@ -115,11 +113,6 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportStayInCity)
 	async reportStayInCity(context: PacketContext, _packet: CommandReportStayInCity): Promise<void> {
 		await stayInCity(context);
-	}
-
-	@packetHandler(CommandReportChooseDestinationCityRes)
-	async reportChooseDestinationCityRes(context: PacketContext, packet: CommandReportChooseDestinationCityRes): Promise<void> {
-		await handleChooseDestinationCity(packet, context);
 	}
 
 	@packetHandler(CommandReportEatInnMealRes)

@@ -79,6 +79,7 @@ export class Maps {
 	static async startTravel(player: Player, newLink: MapLink, time: number): Promise<void> {
 		player.mapLinkId = newLink.id;
 		player.startTravelDate = new Date(time);
+		player.insideCity = false;
 		await player.save();
 
 		crowniclesInstance?.logsDatabase.logNewTravel(player.keycloakId, newLink)

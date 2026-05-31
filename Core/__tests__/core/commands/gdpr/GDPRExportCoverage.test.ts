@@ -258,6 +258,7 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"effectDuration",
 		"mapLinkId",
 		"startTravelDate",
+		"insideCity",
 		"defenseGloryPoints",
 		"attackGloryPoints",
 		"gloryPointsLastSeason",

@@ -3,7 +3,6 @@ import {
 } from "vitest";
 import { GardenCommand } from "../../../../src/commands/player/GardenCommand";
 import { Homes } from "../../../../src/core/database/game/models/Home";
-import { CityDataController } from "../../../../src/data/City";
 import { InventorySlots } from "../../../../src/core/database/game/models/InventorySlot";
 import { PlayerTalismansManager } from "../../../../src/core/database/game/models/PlayerTalismans";
 import { MapLocationDataController } from "../../../../src/data/MapLocation";
@@ -88,6 +87,7 @@ describe("GardenCommand", () => {
 		keycloakId: "player-keycloak-id",
 		mapLinkId: 3,
 		getDestinationId: vi.fn(() => 7),
+		getCurrentCityId: vi.fn(() => null as string | null),
 		getCumulativeEnergy: vi.fn(() => 100),
 		getMaxCumulativeEnergy: vi.fn(() => 200),
 		getHealth: vi.fn(() => 50),
@@ -158,9 +158,7 @@ describe("GardenCommand", () => {
 				features: { gardenPlots: 1 }
 			})
 		} as never);
-		vi.mocked(CityDataController.instance.getCityByMapLinkId).mockReturnValue({
-			id: "other-city"
-		} as never);
+		player.getCurrentCityId.mockReturnValue("other-city");
 
 		const response: { type: string; data: { reason: string } }[] = [];
 		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
@@ -177,9 +175,7 @@ describe("GardenCommand", () => {
 				features: { gardenPlots: 1 }
 			})
 		} as never);
-		vi.mocked(CityDataController.instance.getCityByMapLinkId).mockReturnValue({
-			id: "coco"
-		} as never);
+		player.getCurrentCityId.mockReturnValue("coco");
 
 		const response: unknown[] = [];
 		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
@@ -203,9 +199,7 @@ describe("GardenCommand", () => {
 				features: { gardenPlots: 1 }
 			})
 		} as never);
-		vi.mocked(CityDataController.instance.getCityByMapLinkId).mockReturnValue({
-			id: "other-city"
-		} as never);
+		player.getCurrentCityId.mockReturnValue("other-city");
 
 		const response: unknown[] = [];
 		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
@@ -228,9 +222,7 @@ describe("GardenCommand", () => {
 				features: { gardenPlots: 1 }
 			})
 		} as never);
-		vi.mocked(CityDataController.instance.getCityByMapLinkId).mockReturnValue({
-			id: "coco"
-		} as never);
+		player.getCurrentCityId.mockReturnValue("coco");
 
 		await new GardenCommand().execute([] as never, player as never, {} as never, context as never);
 

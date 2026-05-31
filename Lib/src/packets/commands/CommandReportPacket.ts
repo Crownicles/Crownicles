@@ -202,13 +202,6 @@ export class CommandReportBuyHealCannotHealOccupiedPacketRes extends CrowniclesP
 export class CommandReportStayInCity extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class CommandReportChooseDestinationCityRes extends CrowniclesPacket {
-	mapId!: number;
-
-	mapTypeId!: string;
-}
-
-@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportEatInnMealRes extends CrowniclesPacket {
 	energy!: number;
 

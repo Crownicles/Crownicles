@@ -390,6 +390,7 @@ export async function exportPlayerData(
 			fightCountdown: player.fightCountdown,
 			mapLinkId: player.mapLinkId,
 			startTravelDate: player.startTravelDate,
+			insideCity: player.insideCity,
 			lastPetFree: player.lastPetFree,
 			nextEvent: player.nextEvent,
 			lastMealAt: player.lastMealAt,

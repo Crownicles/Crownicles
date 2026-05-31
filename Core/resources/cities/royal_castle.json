@@ -1,13 +1,8 @@
 {
   "homePriceMultiplier": 1.05,
   "apartmentPrice": 25000,
-  "mapLinks": [
-    106,
-    107
-  ],
   "maps": [
-    41,
-    42
+    41
   ],
   "hasBlacksmith": false,
   "inns": [
