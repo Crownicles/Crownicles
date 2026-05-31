@@ -11,7 +11,6 @@ import {
 import {
 	Home, Homes
 } from "../../core/database/game/models/Home";
-import { CityDataController } from "../../data/City";
 import {
 	ReactionCollectorCity, ReactionCollectorCityData, ReactionCollectorGardenCompostReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
@@ -59,8 +58,8 @@ function resolveGardenAccess(
 	homeCityId: string,
 	hasRemoteHarvestTalisman: boolean
 ): GardenAccessMode | null {
-	const currentCity = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
-	if (currentCity && currentCity.id === homeCityId) {
+	const currentCityId = player.getCurrentCityId();
+	if (currentCityId !== null && currentCityId === homeCityId) {
 		return GardenAccessMode.FULL;
 	}
 	return hasRemoteHarvestTalisman ? GardenAccessMode.READ_ONLY : null;

@@ -6,7 +6,6 @@ import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import {
 	CommandReportBigEventResultRes,
-	CommandReportChooseDestinationCityRes,
 	CommandReportPacketReq
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ReactionCollectorCreationPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -24,7 +23,10 @@ import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { minutesDisplayIntl } from "../../../../Lib/src/utils/TimeUtils";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
-import { ReactionCollectorChooseDestinationReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
+import {
+	ReactionCollectorChooseDestinationReaction,
+	ReactionCollectorStayInCityReaction
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import {
 	disableRows, DiscordCollectorUtils
 } from "../../utils/DiscordCollectorUtils";
@@ -241,6 +243,9 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 	}, {
 		embed,
 		items: packet.reactions.map(reaction => {
+			if (reaction.type === ReactionCollectorStayInCityReaction.name) {
+				return i18n.t("commands:report.city.stayInCityChoice", { lng });
+			}
 			const destinationReaction = reaction.data as ReactionCollectorChooseDestinationReaction;
 
 			// If the trip duration is hidden, the translation module is used with a 2 hours placeholder and the 2 is replaced by a ? afterward
@@ -250,12 +255,8 @@ export async function chooseDestinationCollector(context: PacketContext, packet:
 					.replace("2", "?");
 			return `${
 				CrowniclesIcons.mapTypes[destinationReaction.mapTypeId]
-			} ${destinationReaction.enterInCity
-				? i18n.t("commands:report.city.enterIn", {
-					lng, mapLocationId: destinationReaction.mapId
-				})
-				: ""}${
-				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} ${destinationReaction.enterInCity ? "" : `(${duration})`}`;
+			} ${
+				i18n.t(`models:map_locations.${destinationReaction.mapId}.name`, { lng })} (${duration})`;
 		})
 	}, {
 		refuse: { can: false },
@@ -274,29 +275,6 @@ export async function stayInCity(context: PacketContext): Promise<void> {
 		.setDescription(i18n.t("commands:report.city.stayDescription", {
 			lng
 		}));
-	await interaction.followUp({
-		embeds: [embed]
-	});
-}
-
-export async function handleChooseDestinationCity(packet: CommandReportChooseDestinationCityRes, context: PacketContext): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-	if (!interaction) {
-		return;
-	}
-	const lng = interaction.userLanguage;
-
-	const embed = new CrowniclesEmbed();
-	embed.formatAuthor(i18n.t("commands:report.destinationTitle", {
-		lng,
-		pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
-	}), interaction.user);
-	embed.setDescription(i18n.t("commands:report.city.destination", {
-		lng,
-		mapLocationId: packet.mapId,
-		mapTypeId: packet.mapTypeId
-	}));
-
 	await interaction.followUp({
 		embeds: [embed]
 	});

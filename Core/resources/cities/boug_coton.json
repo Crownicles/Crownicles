@@ -1,13 +1,8 @@
 {
   "homePriceMultiplier": 0.95,
   "apartmentPrice": 6000,
-  "mapLinks": [
-    87,
-    88
-  ],
   "maps": [
-    6,
-    35
+    6
   ],
   "shops": [
     "generalShop"

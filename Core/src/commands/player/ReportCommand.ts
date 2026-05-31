@@ -17,6 +17,7 @@ import {
 	getDateLogs, getTimeFromXHoursAgo
 } from "../../../../Lib/src/utils/TimeUtils";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { withLockedPlayerSafe } from "../../core/utils/withLockedPlayerSafe";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
 import {
@@ -168,8 +169,9 @@ export default class ReportCommand {
 			await MissionsController.update(player, response, { missionId: "recoverAlteration" });
 		}
 
-		const city = CityDataController.instance.getCityByMapLinkId(player.mapLinkId);
-		if (city && currentEffectFinished) {
+		const destinationId = player.getDestinationId();
+		const city = destinationId === null ? undefined : CityDataController.instance.getCityByMapId(destinationId);
+		if (city && player.insideCity && currentEffectFinished && Maps.isArrived(player, currentDate)) {
 			await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
 			return;
 		}
@@ -325,7 +327,12 @@ const NOOP_REACTION = (): Promise<void> => Promise.resolve();
 const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => Promise<void>>([
 	[
 		ReactionCollectorExitCityReaction.name, async (params): Promise<void> => {
-			await doRandomBigEvent(params.context, params.response, params.player, params.forceSpecificEvent);
+			await withLockedPlayerSafe(params.player, "report.exitCity", async lockedPlayer => {
+				lockedPlayer.insideCity = false;
+				await lockedPlayer.save();
+			});
+			params.player.insideCity = false;
+			await chooseDestination(params.context, params.player, null, params.response, true, false);
 		}
 	],
 	[
