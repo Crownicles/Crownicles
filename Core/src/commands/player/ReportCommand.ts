@@ -140,6 +140,36 @@ import {
 	handleApartmentClaimRentReaction
 } from "../../core/report/ReportCityNotaryService";
 
+/**
+ * Handle the case where the player is stationary inside a city.
+ * Shows the city menu when no alteration is active, otherwise the resting/travel screen.
+ * @returns true if the request was handled and the caller must return early
+ */
+async function tryHandleStationaryInCity(params: {
+	context: PacketContext;
+	response: CrowniclesPacket[];
+	player: Player;
+	currentDate: Date;
+	city: City | undefined;
+	currentEffectFinished: boolean;
+	forceSpecificEvent: number;
+}): Promise<boolean> {
+	const {
+		context, response, player, currentDate, city, currentEffectFinished, forceSpecificEvent
+	} = params;
+	if (!city || !player.insideCity) {
+		return false;
+	}
+	if (currentEffectFinished) {
+		await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
+	}
+	else {
+		await sendTravelPath(player, response, currentDate, player.effectId);
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+	}
+	return true;
+}
+
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
 		notBlocked: true,
@@ -171,15 +201,9 @@ export default class ReportCommand {
 
 		const destinationId = player.getDestinationId();
 		const city = destinationId === null ? undefined : CityDataController.instance.getCityByMapId(destinationId);
-		if (city && player.insideCity) {
-			// The player is stationary inside the city: show the city menu, or the resting screen while an alteration is active.
-			if (currentEffectFinished) {
-				await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
-			}
-			else {
-				await sendTravelPath(player, response, currentDate, player.effectId);
-				BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
-			}
+		if (await tryHandleStationaryInCity({
+			context, response, player, currentDate, city, currentEffectFinished, forceSpecificEvent
+		})) {
 			return;
 		}
 
