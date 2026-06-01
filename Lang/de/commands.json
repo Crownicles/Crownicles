@@ -490,9 +490,6 @@
       "GUILD_SHELTER": {
         "description": "Zeigt den Zufluchtsort von Gilde an."
       },
-      "GUILD_SHOP": {
-        "description": "Zeigt den Speicher für Ihre Gilde an."
-      },
       "GUILD_STORAGE": {
         "description": "Zeigt den Inhalt des Inhaltslagers der Gilde an."
       },
@@ -522,9 +519,6 @@
       },
       "MISSIONS": {
         "description": "Zeigt eine Liste der Missionen an, die Ihnen zugewiesen wurden."
-      },
-      "MISSIONS_SHOP": {
-        "description": "Zeigt den Lagerort für die Missionen an."
       },
       "NOTIFICATIONS": {
         "description": "Hiermit können Sie einstellen, wie Sie Benachrichtigungen vom Bot erhalten. Du kannst einstellen, ob du Benachrichtigungen erhalten möchtest (und bestimmen, wo sie angezeigt werden), wenn du an einem bestimmten Ort ankommst, Gildenbelohnungen, Gefängnisbefreiung, Angriffe anderer Spieler, Gildenausschlüsse, Statusänderungen innerhalb der Gilde, vollständige Energieregeneration, Verfügbarkeit deines täglichen Bonus und das Ende von Haustier-Expeditionen."
@@ -564,15 +558,6 @@
       },
       "SELL": {
         "description": "Wählen Sie aus, dass das Objekt in Ihrer Reserve verkauft wird. Der Wert des Objekts richtet sich nach der Leistung. Potionen haben keinen Wiederverkaufungswert, können aber mit diesem Befehl grace verworfen werden."
-      },
-      "SHOP": {
-        "description": "Mit diesem Befehl können Sie Ihr Geld ausgeben, um Ihr Abenteuer zu erleichtern. Zusätzlich zu den 4 Basisoptionen, die dauerhaft verfügbar sein werden, können Sie jeden Tag eine exklusive Portion genießen, die nur für 24 Stunden zum Verkauf verfügbar ist."
-      },
-      "SWITCH": {
-        "description": "Tauscht eine Ausrüstung aus deinem Vorrat gegen die Ausrüstung, die du derzeit besitzt, unter der Bedingung, dass sie der gleichen Kategorie angehört. Wenn du vor der Ausführung des Auftrags keine Ausrüstung in der Kategorie des auszurüstenden Gegenstands besitzt, verschiebt er ihn lediglich in dein Inventar."
-      },
-      "DEPOSIT": {
-        "description": "Lege eine Ausrüstung aus deiner Haupthand in deinem Vorrat ab. Wenn du nur eine Ausrüstung ablegst, wird diese automatisch einsortiert."
       },
       "TOP": {
         "description": "Zeigt die allgemeine Rangfolge des Spiels pro Schicht von 15 Spielern an. Spieler auf dem gleichen Server, die Sie mit einem blauen Pellet markiert haben."
@@ -619,14 +604,30 @@
     "potions_other": "Potionen ({{count}}/{{max}}):",
     "seeBackupItems": "{emote:collectors.switch} Siehe Reserve",
     "seeEquippedItems": "{emote:collectors.switch} Vgl. Bestand anzeigen",
+    "seeMaterials": "{emote:inventory.materials} Materialien",
     "stockTitle": ":package: ** Reserven für Objekte von {{pseudo}}**",
     "title": ":briefcase: ** Inventar von {{pseudo}}**",
+    "materialsTitle": "{emote:inventory.materials} **Materialien von {{pseudo}}**",
+    "materialsField_zero": "Materialien (0) :",
+    "materialsField_one": "Material ({{count}}) :",
+    "materialsField_other": "Materialien ({{count}}) :",
+    "noMaterials": "{emote:inventory.empty} **kein Material**",
+    "seePlants": "{emote:city.homeUpgrades.garden} Pflanzen",
+    "plantsTitle": "{emote:city.homeUpgrades.garden} **Pflanzen von {{pseudo}}**",
+    "plantsField_zero": "Pflanze (0) :",
+    "plantsField_one": "Pflanze ({{count}}) :",
+    "plantsField_other": "Pflanzen ({{count}}) :",
+    "noPlants": "{emote:inventory.empty} **Keine Pflanzen transportiert**",
+    "seedSlot": "{emote:city.homeUpgrades.garden} Samen :",
+    "plantSlots_one": "{emote:shopItems.plantSlotExtension} Transportierte Pflanze ({{count}}/{{max}}) :",
+    "plantSlots_other": "{emote:shopItems.plantSlotExtension} Transportierte Pflanzen ({{count}}/{{max}}) :",
     "weapons_one": "Waffe ({{count}}/{{max}}):",
     "weapons_other": "Waffen ({{count}}/{{max}}):",
     "talisman": "Artefakte:",
     "talismans": {
       "anchorTalisman": "$t(models:talisman.anchor) - Erlaubt Ihnen, Ihren Vertrauten auf eine Expedition zu schicken",
-      "cloneTalisman": "$t(models:talisman.clone) - Ihr Vertrauter unterstützt Sie bei der Verteidigung und bei kleinen Ereignissen sogar auf Expeditionen."
+      "cloneTalisman": "$t(models:talisman.clone) - Ihr Vertrauter unterstützt Sie bei der Verteidigung und bei kleinen Ereignissen sogar auf Expeditionen.",
+      "remoteHarvestTalisman": "$t(models:talisman.remoteHarvest) - Ermöglicht das Ernten Ihres Gartens aus der Ferne über {command:garden}."
     },
     "talismanNotOwned": "{emote:inventory.empty} **Kein Artefakt**",
     "randomItemTitle": "{{pseudo}}Sie haben etwas gefunden!",
@@ -656,6 +657,10 @@
     "newLanguageSetTitle": "Sprache geändert",
     "selectLanguage": "Wählen Sie eine Sprache",
     "title": "{emote:commands.language} Auswahl der Sprache"
+  },
+  "materialLoot": {
+    "title": "{emote:inventory.materials} Wiedergefundene Materialien :",
+    "line": "- {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**"
   },
   "ping": {
     "discord": {
@@ -699,7 +704,8 @@
       "very_powerful_guild": "Mitglied einer sehr mächtigen Gilde",
       "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat",
       "expert_expediteur": "Person, die mit ihrem Vertrauten viele Expeditionen erfolgreich abgeschlossen hat",
-      "oracle_patron": "Beschützer des Orakels, der großzügig zu vielen Segnungen beigetragen hat"
+      "oracle_patron": "Beschützer des Orakels, der großzügig zu vielen Segnungen beigetragen hat",
+      "sentimental_crafter": "Person, die Wert darauf gelegt hat, eine bescheidene Reliquie vom königlichen Schmied bis zum Gipfel verbessern zu lassen."
     },
     "fightRanked": {
       "fieldName": "Ruhm und Liga :",
@@ -736,6 +742,10 @@
     "pet": {
       "fieldName": "Home:",
       "fieldValue": "$t(commands:pet.shortPetField) | {{rarity}}"
+    },
+    "cooking": {
+      "fieldName": "Kochen :",
+      "fieldValue": "{emote:city.homeUpgrades.cooking} Niveau {{level}} - {{grade}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}}"
     },
     "playerClass": {
       "fieldName": "Klasse:",
@@ -809,8 +819,626 @@
     "travellingDescriptionEndTravel": "Es läuft alles gut in Ihrem Abenteuer, Sie werden bald am Ziel ankommen.",
     "travellingDescriptionWithoutSmallEvent": "Es läuft alles gut in Ihrem Abenteuer. Nächster Halt {{time}}.",
     "travellingTitle": "Sie sind gerade dabei, Fortschritte zu machen!",
-    "useTokensButton": "Weitergehen",
+    "city": {
+      "placeholder": "Wählen Sie etwas, das Sie tun wollen",
+      "title": "{{pseudo}}Sie sind in der Stadt!",
+      "description": "{emote:commands.report} Sie haben sich **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nDie gepflasterten Straßen um Sie herum sind belebt: Händler, Abenteurer und Handwerker gehen ihren Geschäften nach. Es gibt viele Dienstleistungen, die Sie in Anspruch nehmen können, aber die Straße wartet auf niemanden.",
+      "buttons": {
+        "enter": "Eingeben",
+        "visit": "Besuchen Sie",
+        "order": "Bestellen",
+        "rent": "Vermieten",
+        "back": "Zurück",
+        "enchant": "Verzaubern",
+        "confirm": "Bestätigen",
+        "upgrade": "Verbessern",
+        "disenchant": "Entzaubern",
+        "goHome": "Nach Hause gehen",
+        "goToApartment": "Betreten des Logis",
+        "seeNotary": "Besuchen Sie",
+        "enterForge": "Die Schmiede betreten",
+        "talkToEnchanter": "Mit ihm sprechen",
+        "browseShop": "Den Stall untersuchen",
+        "sitDown": "Sich an einen Tisch setzen",
+        "visitDomain": "Besuchen Sie die Domain",
+        "seeGuildNotary": "Den Notar konsultieren",
+        "visitFoodShop": "Betanken",
+        "backToCity": "Zurück in die Stadt"
+      },
+      "confirmation": {
+        "title": "{{pseudo}}Bestätigung",
+        "cancel": "Abbrechen"
+      },
+      "stayTitle": "{{pseudo}}Sie befinden sich in der Stadt",
+      "stayDescription": "Sie befinden sich in der Stadt und können die verfügbaren Dienstleistungen in Anspruch nehmen. Sie können jederzeit mit dem Befehl {command:report} abreisen.",
+      "stayInCityChoice": "{emote:mapTypes.ci} In die Stadt hineinfahren",
+      "shopEmptyDescription": "Derzeit werden keine Dienstleistungen angeboten.",
+      "exitInn": "Aus der Herberge herauskommen",
+      "reactions": {
+        "exit": {
+          "label": "Aus der Stadt hinausgehen",
+          "description": "Verlassen Sie die Stadt, um Ihr Abenteuer fortzusetzen."
+        },
+        "inn": {
+          "label": "Zum Hostel gehen $t(commands:report.city.inns.names.{{innId}})",
+          "description": "Ein verlockender Duft und lautes Gelächter dringen aus dem Lokal. Der perfekte Ort, um wieder zu Kräften zu kommen."
+        },
+        "stay": {
+          "label": "In der Stadt bleiben",
+          "description": "Bleiben Sie in der Stadt und nutzen Sie die verfügbaren Dienstleistungen."
+        },
+        "enchanter": {
+          "label": "Zum Zauberer gehen",
+          "description": "Ein Reisender, dessen Hände mit leuchtenden Runen bedeckt sind, erregt Ihre Aufmerksamkeit. Er behauptet, jede Waffe und jedes Rüstungsteil verzaubern zu können."
+        },
+        "blacksmith": {
+          "label": "Zum Schmied gehen",
+          "description": "Besuchen Sie den Schmied, um Ihre Ausrüstung zu verbessern oder zu entschärfen."
+        }
+      },
+      "shops": {
+        "royalMarket": {
+          "label": "Königlicher Markt",
+          "description": "Der Privatladen des Schlosses ist voll von exklusiven Schätzen. Hier können Sie Edelsteine gegen Gold und seltene Gegenstände eintauschen. Ein Gelehrter mit scharfen Augen führt dort Buch über die Quests des Königreichs und kann eine Quest, die Ihnen nicht einfällt, gegen eine andere eintauschen, die Ihnen besser gefällt."
+        },
+        "generalShop": {
+          "label": "Allgemeine Boutique",
+          "description": "Eine bunte Auslage quillt über von glitzernden Tränken und einzigartigen Ausrüstungsgegenständen. Die Auswahl wechselt jeden Tag."
+        },
+        "stockExchange": {
+          "label": "Die Börse",
+          "description": "Edelsteine in allen Größen glitzern hinter den Schaufenstern. Hier werden Edelsteine gegen Prestigeobjekte getauscht."
+        },
+        "tanner": {
+          "label": "Der Gerber",
+          "description": "Der Geruch von frisch gegerbtem Leder liegt in der Luft. Dieser Handwerker stellt Satteltaschen her, die Ihr Inventar erweitern."
+        },
+        "herbalist": {
+          "label": "Der Kräuterkundler",
+          "description": "Reihen von sorgfältig gezüchteten Pflanzen bestücken den duftenden Verkaufsstand. Die Auswahl wird jede Woche erneuert."
+        },
+        "lumberjack": {
+          "label": "Der Holzfäller",
+          "description": "Ein Koloss, der wie eine Eiche gebaut ist, stapelt Holzscheite vor seinem Stand. Sein Holz ist berühmt dafür, die Öfen zu befeuern."
+        },
+        "veterinarian": {
+          "label": "Der Tierarzt",
+          "description": "Ein fürsorglicher Heilpraktiker untersucht die Vertrauten und kann ihnen wieder Zuneigung geben, wenn sie diese vermissen."
+        },
+        "materialMerchant": {
+          "label": "Der Materialhändler",
+          "description": "Ein reisender Händler breitet Kisten mit Materialien aus, die er in allen Ecken des Königreichs gesammelt hat. Seine Lose sind vielfältig, aber der Inhalt bleibt eine Überraschung."
+        },
+        "missionManager": {
+          "label": "Der Questmeister",
+          "description": "Ein Gelehrter mit durchdringendem Blick wälzt schwere, in Leder gebundene Aufzeichnungen. Er kennt jede Quest, die im Königreich läuft, und kann dir vorschlagen, eine Quest, die dir nicht einfällt, gegen eine andere, die dir besser gefällt, einzutauschen."
+        }
+      },
+      "inns": {
+        "names": {
+          "lordInn": "Das Gasthaus des Herrn",
+          "bravesStop": "Die Alte des Braves",
+          "hotSwallow": "Der brennende Schluck",
+          "fireside": "Au Coin du Feu",
+          "bloodyTankard": "Der Blutkrug",
+          "royalPavilion": "Der Königliche Pavillon"
+        },
+        "stories": {
+          "lordInn": "{emote:city.inn} Sie betreten das Gasthaus des Herrn. Hier ist alles luxuriös, von den Möbeln bis zu den Getränken. Hier finden Sie berühmte Abenteurer und Adlige, die auf der Suche nach dem Nervenkitzel sind. Sie haben sogar schon gehört, dass der König auf seinen Reisen hier übernachtet hat.",
+          "bravesStop": "{emote:city.inn} Wer hat noch nie von der \"Alten des Braves\" gehört? Sie ist das älteste und berühmteste Gasthaus der Region. Sie betreten einen überfüllten Saal, der von Gelächter und Gesang erfüllt ist. Die Wände sind mit Jagdtrophäen und alten Waffen bedeckt. Dies ist der perfekte Ort, um andere Abenteurer zu treffen.",
+          "hotSwallow": "{emote:city.inn} Sie betreten die Gorgée Brûlante, eine kleine Dorfschänke, in der man sich, anders als der Name vermuten lässt, gut erfrischen kann. Seine Bezeichnung stammt von dem Hauptgetränk des Lokals, einem würzigen Bier, das Herz und Seele wärmt. Die Wände sind mit Erinnerungsstücken vergangener Reisender geschmückt, und die Atmosphäre ist warm.",
+          "fireside": "{emote:city.inn} Sie betreten das Gasthaus Au Coin du Feu, einen Ort, an dem sich Abenteurer versammeln, um Geschichten um ein knisterndes Feuer herum auszutauschen. Der Geruch von gegrilltem Fisch liegt in der Luft, neben dem Lachen und Singen der Gäste. Die Einrichtung ist einfach, erinnert aber an das Leben der Seeleute und Fischer.",
+          "bloodyTankard": "{emote:city.inn} Sie betreten den \"Blutigen Krug\", ein Gasthaus, das für seine starken Getränke und seine düstere Atmosphäre bekannt ist. Hier finden Sie viele Trophäen von Monstern, die von den Gästen gejagt wurden, und eine Luft, die mit dem Geruch von Bier und Tabak angereichert ist. Das Essen ist nicht von hoher Qualität, ebenso wenig wie die Betten.",
+          "royalPavilion": "{emote:city.inn} Sie treten durch die Türen des Pavillon Royal, eines privaten Salons im Schloss, der nur für hochrangige Gäste zugänglich ist. Die Speisen werden auf graviertem Silber serviert und die Bediensteten sorgen dafür, dass Ihnen jeder Wunsch von den Augen abgelesen wird. Selbst die Stille ist gedämpft, als ob die Wände selbst die Etikette respektieren würden."
+        },
+        "storiesEnergyAndHealth": "Sie haben derzeit **{{currentEnergy}}** / **{{maxEnergy}}** {emote:unitValues.energy} und **{{currentHealth}}** / **{{maxHealth}}** {emote:unitValues.health}.",
+        "meals": {
+          "breadAndCheese": "Brot und Käse",
+          "roastedFowl": "Gebratenes Geflügel",
+          "roastedBeef": "Gebratenes Rindfleisch",
+          "stew": "Ragout",
+          "lordPie": "Torte des Herrn",
+          "potatoSoup": "Kartoffelsuppe",
+          "friedEggs": "Spiegeleier",
+          "curryRice": "Curry und Reis",
+          "sushi": "Sushi",
+          "bravesPanOfFood": "Nahrungspfanne der Tapferen",
+          "fishAndChips": "Fisch und Pommes frites",
+          "coldVegetableStew": "Kalter Gemüseeintopf",
+          "roastedPork": "Gebratenes Schweinefleisch",
+          "oysterPlatter": "Austernplatte",
+          "tamale": "Tamale",
+          "friedShrimp": "Gebratene Garnelen",
+          "clamChowder": "Chaudrée aus Venusmuscheln",
+          "grilledFish": "Gegrillter Fisch",
+          "lobsterRoll": "Hummerrolle",
+          "jellyfishCarpaccio": "Carpaccio von Quallen",
+          "bread": "Brot",
+          "pretzels": "Brezeln",
+          "simpleSalad": "Einfacher Salat"
+        },
+        "rooms": {
+          "horribleRoom": "Zimmer Horrible",
+          "simpleRoom": "Einzelzimmer",
+          "comfortableRoom": "Komfortables Zimmer",
+          "luxuryRoom": "Luxuriöses Zimmer",
+          "royalSuite": "Königliche Suite",
+          "imperialSuite": "Kaiserliche Wohnung",
+          "commonRoom": "Zimmer Gemeinde"
+        },
+        "roomsStories": {
+          "horribleRoom": "{emote:city.inn} Sie betreten ein schäbiges Zimmer mit einem quietschenden Bett und schmutzigen Wänden. Der Geruch von Schimmel ist allgegenwärtig und Sie können sich nur schwer vorstellen, wie jemand darin schlafen könnte.",
+          "simpleRoom": "{emote:city.inn} Sie betreten ein einfaches, aber sauberes Zimmer. Das Bett ist bequem und die Einrichtung ist grundlegend, aber angenehm. Dies ist der perfekte Ort, um sich nach einem langen Tag voller Abenteuer auszuruhen.",
+          "comfortableRoom": "{emote:city.inn} Sie betreten ein gemütliches Zimmer mit einem großen, weichen Bett und Möbeln aus Massivholz. Die Einrichtung ist warm, mit Teppichen und Vorhängen aus groben Stoffen. Sie fühlen sich bereits erholter.",
+          "luxuryRoom": "{emote:city.inn} Sie betreten ein luxuriöses Zimmer, das eines Adligen würdig ist. Das Bett ist riesig, mit seidenen Laken und weichen Kissen. Die Einrichtung ist prunkvoll, mit Wandteppichen und geschnitzten Holzmöbeln. Fühlen Sie sich wie ein König.",
+          "royalSuite": "{emote:city.inn} Diese private Suite bietet einen Blick auf die Schlossgärten. Ein Diener bringt Ihnen einen heißen Aufguss, während ein anderer Ihr Bett mit den mit Goldfäden bestickten Laken vorbereitet.",
+          "imperialSuite": "{emote:city.inn} Die kaiserlichen Gemächer sind mit Edelsteinen verziert und verfügen sogar über ein kleines, duftendes Bad. Jedes Detail strahlt absolute Opulenz aus.",
+          "commonRoom": "{emote:city.inn} Sie beziehen einen Schlafsaal, den Sie sich mit anderen Reisenden teilen. Die Betten stehen dicht an dicht, aber wenigstens sind die Laken sauber. Das Geräusch des Schnarchens wiegt dich in den Schlaf."
+        },
+        "roomTitle": "{{pseudo}}Sie mieten ein Zimmer!",
+        "roomEndStory": "{emote:city.innSleep} Sie schlafen ein und erholen sich **{{health}}** {emote:unitValues.health}. Sie haben **{{price}}** {emote:unitValues.lostMoney} für die Nacht ausgegeben.",
+        "roomDescription": "Leben + {{health}} {emote:unitValues.health} | Preis: {{price}} {emote:unitValues.money}",
+        "mealDescription": "Energie + {{energy}} {emote:unitValues.energy} | Preis: {{price}} {emote:unitValues.money}",
+        "embedTitle": "{{pseudo}}Sie sind im Gasthaus!",
+        "eatMealTitle": "{{pseudo}}Sie essen im Gasthaus!",
+        "eatMealDescription": "{emote:city.inn} Sie essen das Gericht, das Ihnen serviert wurde, mit Appetit! Das macht Sie **{{energy}}** {emote:unitValues.energy}. Sie vergessen nicht, die Rechnung von **{{price}}** {emote:unitValues.lostMoney} zu bezahlen.",
+        "eatMealCooldown": "Sie verdauen noch die letzte Mahlzeit, die Sie im Gasthaus zu sich genommen haben, und sind im Moment nicht wirklich hungrig. Sie können wieder essen <t:{{nextAvailableAt}}:R>."
+      },
+      "enchanter": {
+        "title": "{{pseudo}}Sie treffen den Zauberer",
+        "emptyInventoryStory": "{emote:city.enchanter} Sie treffen auf einen reisenden Verzauberer, der sich als Mernil vorstellt. Mit hochmütigem Blick erklärt er Ihnen, dass er der einzige und beste Verzauberer in allen Ländern ist und Ihre Ausrüstung mit Runenmagie verbessern kann. Leider scheint es, als hätten Sie im Moment keine Ausrüstung, die Sie ihm zeigen könnten, also beschließen Sie, zu gehen und später wiederzukommen. Als er geht, sagt er Ihnen jedoch, dass er nicht weiß, ob er morgen noch in dieser Stadt sein wird.",
+        "runeForWeaponOnlyArmorAvailableStory_one": "{emote:city.enchanter} Sie treffen auf einen reisenden Zauberer, der sich als Mernil vorstellt. Mit hochmütigem Blick erklärt er Ihnen, dass er der einzige und beste Verzauberer in allen Ländern ist. Heute ist seine Rune {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Waffen funktioniert. Wenn Sie ihm nur eine bereits verzauberte Waffe oder Rüstungsteile zeigen wollen, schaut er Sie verächtlich an und seufzt, dass Sie seine Zeit verschwenden. Kommen Sie lieber ein anderes Mal wieder oder mit einer unberührten Klinge, die es wert ist, mit einer Rune verziert zu werden.",
+        "runeForWeaponOnlyArmorAvailableStory_other": "{emote:city.enchanter} Sie treffen auf einen reisenden Zauberer, der sich als Mernil vorstellt. Mit hochmütigem Blick erklärt er Ihnen, dass er der einzige und beste Verzauberer in allen Ländern ist. Heute ist seine Rune {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Waffen funktioniert. Wenn Sie ihm nur bereits verzauberte Waffen oder Rüstungsteile zeigen wollen, schaut er Sie verächtlich an und seufzt, dass Sie seine Zeit verschwenden. Kommen Sie lieber ein andermal wieder oder mit einer unberührten Klinge, die es wert ist, mit einer Rune verziert zu werden.",
+        "runeForArmorOnlyWeaponAvailableStory_one": "{emote:city.enchanter} Sie treffen auf einen reisenden Zauberer, der sich als Mernil vorstellt. Mit hochmütigem Blick erklärt er Ihnen, dass er der einzige und beste Verzauberer in allen Ländern ist. Heute ist seine Rune {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Rüstungsteile wirken. Sie haben nur eine bereits verzauberte Rüstung oder Waffen, die Sie ihm vorlegen können: Er schürzt die Lippen und grummelt, dass Sie beide Ihre Zeit verschwenden. Kommen Sie mit einem unberührten Schutz zurück, den Sie verzaubern können, oder an einem anderen Tag, wenn seine Rune eine andere ist.",
+        "runeForArmorOnlyWeaponAvailableStory_other": "{emote:city.enchanter} Sie treffen auf einen reisenden Zauberer, der sich als Mernil vorstellt. Mit hochmütigem Blick erklärt er Ihnen, dass er der einzige und beste Verzauberer in allen Ländern ist. Heute ist seine Rune {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Rüstungsteile wirken. Sie haben nur bereits verzauberte Rüstungen oder Waffen, die Sie ihm vorlegen können: Er spitzt die Lippen und grummelt, dass Sie beide Ihre Zeit verschwenden. Kommen Sie mit einem unberührten Schutz zurück, den Sie verzaubern können, oder an einem anderen Tag, wenn seine Rune eine andere ist.",
+        "allEnchantedStory": "{emote:city.enchanter} Sie treffen auf einen reisenden Verzauberer, der sich als Mernil vorstellt. Mit hochmütigem Blick begutachtet er Ihre Ausrüstung und schüttelt dann genervt den Kopf: Alles, was Sie tragen, ist bereits verzaubert. Er weist Sie barsch darauf hin, dass Schmiede bestehende Verzauberungen entfernen, nicht er, und dass er es kategorisch ablehnt, diese bereits mit Runen versehenen Gegenstände anzufassen. Kommen Sie mit einer unberührten Ausrüstung zurück oder versuchen Sie Ihr Glück morgen.",
+        "story": "{emote:city.enchanter} Sie treffen auf einen reisenden Verzauberer, der sich als Mernil vorstellt. Mit hochmütigem Blick erklärt er Ihnen, dass er der einzige und beste Verzauberer in allen Ländern ist und Ihre Ausrüstung mit Runenmagie verbessern kann.",
+        "enchantmentNoReduction": "Er kann Ihnen nämlich die Verzauberung {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** für **{{price}}**.\nSie nehmen sich einen Moment Zeit, um über seinen Vorschlag nachzudenken, aber er sagt, dass Sie, wenn es nicht passt, immer noch morgen wieder zu ihm kommen können, weil er dann andere Runen zur Verfügung hat. Allerdings garantiert er nicht, dass er dann immer noch in dieser Stadt sein wird...",
+        "enchantmentWithReduction": "Er kann Ihnen nämlich die Verzauberung {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** für **{{price}}**. Er fügt hinzu, dass er Ihnen einen Rabatt gegeben hat, weil er Leute schätzt, die sich für Magie interessieren!\nSie nehmen sich etwas Zeit, um über seinen Vorschlag nachzudenken, aber er sagt, dass Sie morgen immer noch zu ihm kommen können, wenn es nicht passt, weil er dann andere Runen zur Verfügung hat. Allerdings garantiert er nicht, dass er dann immer noch in dieser Stadt sein wird ...",
+        "hasAtLeastOneEnchantedItem": "Als Mernil außerdem Ihre bereits verzauberten Ausrüstungsgegenstände sieht, runzelt er die Stirn. Er sagt, dass es die Aufgabe der Schmiede sei, die Gegenstände zu entzaubern, nicht seine, und dass er sie nicht berühren werde.",
+        "confirmDescription": "{emote:collectors.warning} Diese Validierung wendet die Verzauberung {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** auf die folgende Ausrüstung:\n{{item}}\n\nKosten: **{{price}}**.\n{{balance}}",
+        "acceptStory": "Er nimmt sofort Ihre Ausrüstung und murmelt einige Beschwörungsformeln, während er eine Rune darüber schwenkt... Nach einer Weile gibt er Ihnen den Gegenstand zurück und sagt Ihnen, dass er fertig ist! Ihre Ausrüstung ist nun verzaubert mit {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Machen Sie guten Gebrauch davon!",
+        "acceptTitle": "{{pseudo}}Der Zauber ist gelungen!",
+        "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
+        "priceMoneyAndGems": "{{money}} {emote:unitValues.money} und {{gems}} {emote:unitValues.gem}",
+        "balanceMoneyOnly": "Sie besitzen derzeit **{{money}}** {emote:unitValues.money}.",
+        "balanceMoneyAndGems": "Sie besitzen derzeit **{{money}}** {emote:unitValues.money} und **{{gems}}** {emote:unitValues.gem}.",
+        "notEnoughMoney": "Sie haben nicht genug Geld, um die Verzauberung zu bezahlen! Es fehlt Ihnen **{{missingMoney}}** {emote:unitValues.money}.",
+        "notEnoughGems": "Sie haben nicht genug Edelsteine, um die Verzauberung zu bezahlen! Es fehlt Ihnen **{{missingGems}}** {emote:unitValues.gem}.",
+        "notEnoughMoneyAndGems": "Sie haben nicht genug Geld und Edelsteine, um die Verzauberung zu bezahlen! Ihnen fehlen **{{missingMoney}}** {emote:unitValues.money} und **{{missingGems}}** {emote:unitValues.gem}.",
+        "cantEnchant": "Mernil schaut sich Ihre Ausrüstung an und schüttelt den Kopf. Er sagt, dass er diesen Gegenstand leider nicht verzaubern kann. Vielleicht sollten Sie es mit einer anderen Ausrüstung versuchen?",
+        "placeholder": "Wählen Sie einen Gegenstand, den Sie verzaubern möchten"
+      },
+      "blacksmith": {
+        "menuLabel": "Zum Schmied gehen",
+        "menuDescription": "Das gleichmäßige Geräusch des Ambosses hallt aus der Schmiede wider. Der Schmied kann Ihre Ausrüstung verstärken oder Verzauberungen von ihr entfernen.",
+        "placeholder": "Wählen Sie einen Dienst",
+        "title": "{{pseudo}}Sie treffen den Schmied",
+        "upgradeLabel": "Ausrüstung verbessern",
+        "upgradeDescription": "Verbessern Sie Ihre Waffen und Rüstungen gegen Geld und Materialien.",
+        "disenchantLabel": "Eine Ausrüstung entzaubern",
+        "disenchantDescription": "Entferne die Verzauberung von einer deiner Ausrüstungsgegenstände.",
+        "backToCity": "Zurück in die Stadt",
+        "descriptionBoth": "{emote:city.blacksmith.menu} Die Hitze des Feuers umgibt Sie, als Sie die Schmiede betreten. Der Schmied, ein Koloss mit von jahrelanger Arbeit gezeichneten Armen, blickt von seinem Amboss auf und begrüßt Sie mit einem Kopfnicken. Er kann Ihre Ausrüstung verstärken oder Verzauberungen entfernen, die Sie belasten.",
+        "descriptionUpgradeOnly": "{emote:city.blacksmith.menu} Die Hitze des Feuers umgibt Sie, als Sie die Schmiede betreten. Der Schmied, ein Koloss mit von jahrelanger Arbeit gezeichneten Armen, begutachtet Ihre Ausrüstung mit fachmännischem Blick. Seine Dienste sind nicht billig, aber die Qualität seiner Arbeit spricht für sich.",
+        "descriptionDisenchantOnly": "{emote:city.blacksmith.menu} Die Hitze des Feuers umgibt dich, als du die Schmiede betrittst. Der Schmied bemerkt das magische Leuchten, das von deiner verzauberten Ausrüstung ausgeht. Er kann sie sauber entfernen, ohne die Ausrüstung zu beschädigen.",
+        "descriptionNoItems": "{emote:city.blacksmith.menu} Die Hitze des Feuers umgibt Sie, als Sie die Schmiede betreten. Der Schmied beobachtet Sie einen Moment lang, bevor er mit den Schultern zuckt. Sie haben im Moment nichts, was er bearbeiten kann.",
+        "selectItemPlaceholder": "Wählen Sie eine Ausrüstung",
+        "itemUpgradePreview": "niv. {{currentLevel}} → niv. {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
+        "backToBlacksmith": "Zurück zum Schmied",
+        "backToBlacksmithDescription": "Kehren Sie zum Hauptmenü der Schmiede zurück.",
+        "upgradeTitle": "{{pseudo}}Verbesserung der Ausrüstung",
+        "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} Der Schmied greift nach seinen Werkzeugen und wartet darauf, dass Sie auf die Ausrüstung zeigen, die er bearbeiten soll.\n\n{emote:unitValues.money} Sie haben **{{money, number}}** {emote:unitValues.money}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Verbesserung:** Lv. {{currentLevel}} → niv. {{nextLevel}}\n**Kosten der Verbesserung:** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Benötigte Materialien:**\n{{materials}}",
+        "missingMaterialsOffer": "Ihnen fehlen einige Materialien. Der Schmied kann sie Ihnen für **{{missingMaterialsCost, number}}** {emote:unitValues.money} zusätzlich beschaffen.",
+        "confirmUpgrade": "Verbessern ({{cost, number}})",
+        "buyMaterialsAndUpgrade": "Kaufen & Verbessern ({{cost, number}})",
+        "backToItems": "Zurück zur Liste",
+        "itemDisenchantPreview": "{emote:enchantmentTypes.{{enchantmentType}}} $t(items:enchantments.{{enchantmentId}}) | {{cost, number}}{emote:unitValues.money}",
+        "disenchantTitle": "{{pseudo}}Die Ernüchterung über die Ausrüstung",
+        "disenchantSelectDescription": "{emote:city.blacksmith.disenchant} Der Schmied bereitet seine Werkzeuge zur Entzauberung vor, eine Reihe von Zangen und absorbierenden Kristallen. Die Entzauberung erfordert Präzision.\n\n{emote:unitValues.money} Sie haben **{{money, number}}** {emote:unitValues.money}",
+        "disenchantItemDetails": "{{itemDisplay}}\n\n**Kosten der Entzauberung:** {{cost, number}} {emote:unitValues.money}\n\nDie Verzauberung wird endgültig entfernt. Die Ausrüstung wird wieder gewöhnlich, bleibt aber intakt.",
+        "confirmDisenchant": "Entzaubern ({{cost, number}})",
+        "upgradeSuccess": "{emote:city.blacksmith.upgrade} Der Schmied schlägt mit Präzision auf den Amboss, die Funken fliegen durch die Luft. Nach einigen fachmännischen Schlägen reicht er Ihnen zufrieden die auf Stufe {{newLevel}} verbesserte Ausrüstung.",
+        "upgradeSuccessWithBuy": "{emote:city.blacksmith.upgrade} Der Schmied versorgt Sie mit den fehlenden Materialien und macht sich sofort an die Arbeit. Die Funken fliegen, während er Ihre Ausrüstung verstärkt, die nun auf Stufe {{newLevel}} ist.",
+        "disenchantSuccess": "{emote:city.blacksmith.disenchant} Der Schmied streicht vorsichtig die absorbierenden Kristalle über Ihre Ausrüstung. Das magische Leuchten wird allmählich schwächer. Die Verzauberung wurde sauber entfernt und Ihre Ausrüstung ist wieder gewöhnlich.",
+        "notEnoughMoney": "{emote:messages.refuse} Der Schmied schüttelt den Kopf, während er Ihre Münzen zählt. Ihnen fehlt **{{missingMoney, number}}** {emote:unitValues.money}, um seine Dienste zu bezahlen.",
+        "missingMaterialsTitle": "{{pseudo}}Unzureichende Materialien!",
+        "missingMaterialsDescription": "Sie haben die für diese Verbesserung benötigten Materialien nicht beim Schmied. Sammle sie auf deinen Abenteuern oder kaufe sie direkt beim Schmied."
+      },
+      "royalBlacksmith": {
+        "menuLabel": "Den königlichen Schmied treffen",
+        "menuDescription": "Eine imposante Gestalt bearbeitet unter den Bannern der Burg glühendes Metall. Man munkelt, dass er der Einzige ist, der Stücke der Stufe 5 schmieden kann.",
+        "enterButton": "Sich dem königlichen Schmied nähern",
+        "title": "{{pseudo}}und dem königlichen Schmied gegenüber",
+        "backToCity": "Zurück zum Schloss",
+        "descriptionNotWorthy": "{emote:city.blacksmith.menu} Der königliche Schmied beäugt Sie kaum merklich, schätzt Ihr Tempo auf Stufe {{playerLevel}} und widmet sich dann wieder seiner Arbeit. Seine Kunst ist nur Abenteurern vorbehalten, die **Level 100** erreicht haben: Kommen Sie zurück, wenn Sie seiner Schmiede würdig sind.",
+        "descriptionItemsTooLow": "{emote:city.blacksmith.menu} Der königliche Schmied prüft Ihre Ausrüstung, zieht eine Augenbraue hoch und legt sie wieder hin. Solange du ihm nicht ein Teil bringst, das bereits auf **Level 4** ist, kann er nichts für dich tun: Komm zurück, nachdem du eine Ausrüstung auf ihr klassisches Maximum gebracht hast.",
+        "descriptionAllMaxed": "{emote:city.blacksmith.menu} Der königliche Schmied betrachtet Ihr Waffenarsenal und nickt ehrfürchtig. Jedes Ihrer Stücke ist bereits auf **Level 5**: Er hat Ihnen nichts mehr zu bieten, außer seinen Glückwünschen.",
+        "descriptionReady": "{emote:city.blacksmith.menu} Der königliche Schmied erkennt Sie als einen der seinen an und entrollt seine goldbesetzten Werkzeuge. Er ist bereit, deine Ausrüstung von Stufe 4 auf **Stufe 5** zu bringen, wenn du dafür Gold, Materialien **und** Edelsteine erhältst.\n\n{emote:unitValues.money} **{{money, number}}** {emote:unitValues.money} - {emote:unitValues.gem} **{{gems, number}}** {emote:unitValues.gem}",
+        "upgradeLabel": "Sehen Sie sich die förderfähigen Geräte an",
+        "upgradeDescription": "Der königliche Schmied wird für Sie die Kosten, Materialien und Edelsteine detailliert aufschlüsseln, die Sie für jedes Ihrer Stücke der Stufe 4 benötigen.",
+        "upgradeTitle": "{{pseudo}}Die Werkstatt des königlichen Schmieds",
+        "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} Der königliche Schmied fordert Sie auf, die Ausrüstung zu bestimmen, die Sie auf Stufe 5 tragen sollen.\n\n{emote:unitValues.money} Sie haben **{{money, number}}** {emote:unitValues.money} - {emote:unitValues.gem} **{{gems, number}}** {emote:unitValues.gem}",
+        "itemUpgradePreview": "niv. {{currentLevel}} → Lv. 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Verbesserung:** Lv. {{currentLevel}} → Lv. 5\n**Kosten der Verbesserung:** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Benötigte Materialien:**\n{{materials}}",
+        "missingMaterialsOffer": "Ihnen fehlen einige Materialien. Der königliche Schmied kann sie Ihnen für **{{missingMaterialsCost, number}}** {emote:unitValues.money} zusätzlich zur Verfügung stellen.",
+        "confirmUpgrade": "Verbessern ({{cost, number}})",
+        "buyMaterialsAndUpgrade": "Kaufen & Verbessern ({{cost, number}})",
+        "backToItems": "Zurück zur Ausstattung",
+        "backToRoyalBlacksmith": "Zurück zum königlichen Schmied",
+        "upgradeSuccess": "{emote:city.blacksmith.upgrade} Der königliche Schmied wendet seinen mit Runen besetzten Hammer an. Deine Ausrüstung erreicht schließlich **Level 5** für **{{upgradeCost, number}}** {emote:unitValues.money} und **{{gemCost, number}}** {emote:unitValues.gem}.",
+        "upgradeSuccessWithBuy": "{emote:city.blacksmith.upgrade} Der königliche Schmied greift auf seine Vorräte zurück, um deine fehlenden Materialien aufzufüllen, und verbessert dann deine Ausrüstung bis zur **Level 5** für **{{upgradeCost, number}}** + **{{materialsCost, number}}** {emote:unitValues.money} und **{{gemCost, number}}** {emote:unitValues.gem}.",
+        "notEnoughMoney": "{emote:messages.refuse} Der königliche Schmied zählt Ihre Münzen und schüttelt den Kopf. Ihnen fehlt **{{missingMoney, number}}** {emote:unitValues.money}, um sein Werk zu verdienen.",
+        "notEnoughGems": "{emote:messages.refuse} Der königliche Schmied verlangt auch nach Edelsteinen für seine Kunst. Ihnen fehlen welche **{{missingGems, number}}** {emote:unitValues.gem}.",
+        "missingMaterials": "{emote:messages.refuse} Der königliche Schmied verlangt bestimmte Materialien und weigert sich, diese zu ersetzen. Bringe mehr davon mit oder lass sie dir von ihm verkaufen.",
+        "mockBadgeGiven": "{emote:badges.sentimental_crafter} Der königliche Schmied betrachtet die bescheidene Kleinigkeit, die Sie ihm haben verbessern lassen, seufzt und trägt Ihren Namen in sein großes Register der \"sentimentalen Kuriositäten\" ein. Sie erhalten das Abzeichen {emote:badges.sentimental_crafter}.",
+        "mockBadgeAlreadyOwned": "{emote:badges.sentimental_crafter} Der königliche Schmied verdreht die Augen, während er deinen Kleinkram verbessert, und fragt sich, warum du dich so sehr um diesen Gegenstand bemühst."
+      },
+      "homes": {
+        "goToOwnedHome": "Zu Ihrem Haus gehen",
+        "goToOwnedHomeDescription": "Hinter dieser Tür erwartet Sie eine Oase der Ruhe mit allen Annehmlichkeiten, die Sie brauchen, um sich auf Ihre nächsten Abenteuer vorzubereiten.",
+        "goToOwnedApartment": "Besuchen Sie Ihre Unterkunft",
+        "goToOwnedApartmentDescription": "Die Wohnung, in der Sie Ihre Rente beziehen, dient Ihnen als Fußnote in der Stadt. Sie können dort schlafen, Ihre Sachen aufbewahren und eine Mahlzeit zubereiten, als ob Sie zu Hause wären.",
+        "homeTitle": "{{pseudo}}Willkommen zu Hause!",
+        "homeIntroduction": "{emote:city.home.1} Sie betreten Ihr Zuhause. Die Ruhe und Gelassenheit, die dieser Ort ausstrahlt, beruhigt Sie.",
+        "apartmentTitle": "{{pseudo}}Sie betreten Ihr Haus",
+        "apartmentIntroduction": "{emote:city.home.1} Sie öffnen die Tür zu Ihrem Zuhause. Es ist ein gemütliches Bett und ein Kurier bringt regelmäßig Ihre Sachen von zu Hause aus.",
+        "homePlaceholder": "Wählen Sie eine Aktion",
+        "leaveHome": "Ihr Haus verlassen",
+        "leaveApartment": "Die Unterkunft verlassen",
+        "manageHome": "Zum Notar gehen",
+        "manageHomeDescriptionNew": "Gehen Sie zum Notar, um ein Haus zu kaufen.",
+        "manageHomeDescriptionUpgrade": "Gehen Sie zum Notar, um Ihr Haus zu verbessern.",
+        "manageHomeDescriptionMove": "Gehen Sie zum Notar, um in ein neues Haus zu ziehen.",
+        "manageHomeDescriptionLevelRequired": "Niveau {{level}} für die nächste Verbesserung erforderlich.",
+        "manageHomeDescriptionMaxLevel": "Ihr Haus befindet sich bereits auf der höchsten Stufe.",
+        "manageHomeDescriptionUnavailable": "Der Notar hat Ihnen derzeit nichts anzubieten.",
+        "notaryTitle": "{{pseudo}}Sie treffen sich mit dem Notar",
+        "notaryIntroduction": "{emote:city.manageHome} Sie betreten das Büro eines Notars, einer Person, die für die Abwicklung von Immobiliengeschäften zuständig ist. Er begrüßt Sie herzlich und prüft Ihre Unterlagen, bevor er Ihnen seine Dienste anbietet.",
+        "notaryNewHomeNoMoney": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass Sie nicht genug Geld haben, um ein Haus zu kaufen. Ein neues Haus kostet nämlich **{{cost}} {emote:unitValues.money}** und daher fehlt Ihnen **{{missingMoney}} {emote:unitValues.money}**, um ein Haus kaufen zu können. Er erklärt Ihnen die verschiedenen Optionen, die Ihnen zur Verfügung stehen, und ermutigt Sie, wiederzukommen, wenn Sie genug gespart haben.",
+        "notaryNewHomeEnoughMoney": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass Sie genug Geld haben, um ein Haus zu kaufen, das heute **{{cost}} {emote:unitValues.money}** kostet. Er gibt Ihnen Zeit, über Ihre Entscheidung nachzudenken, und wartet auf Ihre Antwort.\n\nMöchten Sie ein Haus kaufen?",
+        "notaryConfirmBuyHome": "{emote:collectors.warning} Diese Validierung wird ein Haus in dieser Stadt für **{{cost}} {emote:unitValues.money}** kaufen.",
+        "notaryUpgradeHomeNoMoney": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass Sie nicht genug Geld haben, um Ihr Haus zu verbessern. Eine Aufrüstung kostet nämlich **{{cost}} {emote:unitValues.money}** und daher fehlt Ihnen **{{missingMoney}} {emote:unitValues.money}**, um die Aufrüstung durchführen zu können. Er erklärt Ihnen die verschiedenen Optionen, die Ihnen zur Verfügung stehen, und ermutigt Sie, wiederzukommen, wenn Sie genug gespart haben.",
+        "notaryUpgradeHomeEnoughMoney": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass Sie genügend Geld haben, um Ihr Haus zu verbessern. Diese Verbesserung wird Sie **{{cost}} {emote:unitValues.money}** kosten und folgende Änderungen mit sich bringen:\n{{upgradeChanges}}\nEr gibt Ihnen Zeit, über Ihre Entscheidung nachzudenken, und wartet auf Ihre Antwort.\n\nMöchten Sie Ihr Haus verbessern?",
+        "notaryConfirmUpgradeHome": "{emote:collectors.warning} Diese Bestätigung wird Ihr Haus für **{{cost}} {emote:unitValues.money}** verbessern.\n\nGeplante Änderungen:\n{{upgradeChanges}}",
+        "notaryMoveHomeNoMoney": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass Sie nicht genug Geld haben, um in ein neues Haus in dieser Stadt umzuziehen. Ein Umzug kostet nämlich **{{cost}} {emote:unitValues.money}** und Ihnen fehlt daher **{{missingMoney}} {emote:unitValues.money}**, um den Umzug durchführen zu können. Er erklärt Ihnen die verschiedenen Optionen, die Ihnen zur Verfügung stehen, und ermutigt Sie, wiederzukommen, wenn Sie genug gespart haben.",
+        "notaryMoveHomeEnoughMoney": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass Sie genug Geld haben, um für **{{cost}} {emote:unitValues.money}** in ein neues Haus in dieser Stadt zu ziehen. Dieses wird den gleichen Standard wie Ihr altes Haus haben. Er informiert Sie genau darüber, dass Sie **nur ein Haus zur gleichen Zeit haben können** und dass Ihr altes Haus automatisch verkauft wird. Er gibt Ihnen Zeit, über Ihre Entscheidung nachzudenken, und wartet auf Ihre Antwort.\n\nMöchten Sie in ein neues Haus umziehen?",
+        "notaryConfirmMoveHome": "{emote:collectors.warning} Diese Bestätigung wird Ihr Haus für **{{cost}} {emote:unitValues.money}** in diese Stadt umziehen. Ihr altes Haus wird automatisch verkauft, da immer nur ein Haus zur gleichen Zeit besessen werden kann.",
+        "notaryLevelRequired": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass er im Moment leider nichts für Sie tun kann. Um die nächste Verbesserung an Ihrem Haus vornehmen zu können, müssen Sie nämlich die **Ebene {{level}}** erreichen. Er ermutigt Sie, Ihre Abenteuer fortzusetzen und ihn wieder aufzusuchen, wenn Sie mehr Erfahrung gesammelt haben.",
+        "notaryMaxLevel": "Nachdem der Notar Ihre Situation gewissenhaft analysiert hat, gratuliert er Ihnen herzlich. Ihr Haus sei bereits auf **höchstem Niveau** und könne nicht mehr verbessert werden. Er versichert Ihnen, dass Sie das schönste Haus besitzen, das es gibt, und wünscht Ihnen, dass Sie es in vollen Zügen genießen.",
+        "buyHome": "Ein Haus kaufen",
+        "buyHomeTitle": "{{pseudo}}Ein erfolgreicher Hauskauf!",
+        "buyHomeDescription": "Herzlichen Glückwunsch! Sie sind nun Eigentümer Ihres eigenen Hauses in dieser Stadt. Sie haben **{{cost}} {emote:unitValues.money}** ausgegeben, um es zu erwerben. Genießen Sie Ihr neues Zuhause!",
+        "upgradeHome": "Ihr Haus verbessern",
+        "upgradeHomeTitle": "{{pseudo}}Die Verbesserung des Hauses ist gelungen!",
+        "upgradeHomeDescription": "Herzlichen Glückwunsch! Ihr Haus wurde erfolgreich aufgerüstet. Sie haben **{{cost}} {emote:unitValues.money}** für das Upgrade ausgegeben. Genießen Sie die neuen Funktionen und den zusätzlichen Komfort Ihres verbesserten Hauses!",
+        "moveHome": "Umzug in ein neues Haus",
+        "moveHomeTitle": "{{pseudo}}Erfolgreicher Umzug!",
+        "moveHomeDescription": "Herzlichen Glückwunsch! Sie sind erfolgreich in ein neues Haus in dieser Stadt umgezogen. Sie haben **{{cost}} {emote:unitValues.money}** für diesen Umzug ausgegeben. Genießen Sie Ihr neues Zuhause!",
+        "moveHomeDescriptionWithRent": "Herzlichen Glückwunsch! Sie sind erfolgreich in ein neues Haus in dieser Stadt umgezogen. Sie haben **{{cost}} {emote:unitValues.money}** für den Umzug ausgegeben, wovon **{{rentDeducted}} {emote:unitValues.money}** durch die Miete in Ihrer alten Wohnung abgezogen wurden. Viel Spaß in Ihrem neuen Zuhause!",
+        "apartmentNotary": {
+          "sectionTitle": "{emote:city.apartmentNotary.menu} Der Notar blättert in seinem großen Wohnungsregister.",
+          "forSaleDescription": "{emote:city.apartmentNotary.buy} Eine Wohnung in dieser Stadt für **{{price}} {emote:unitValues.money}** abzutreten. Sobald es in Ihrem Besitz ist, dient es Ihnen als Anlaufstelle, wenn Ihr Zuhause weit entfernt ist, oder Sie können eine Rente beziehen, wenn Sie bereits eine Wohnung in der Nähe haben.",
+          "buyNotEnoughMoney": "{emote:city.apartmentNotary.buy} Eine Wohnung ist in dieser Stadt für **{{cost}} {emote:unitValues.money}** abzutreten, aber Ihr Geldbeutel ist um **{{missingMoney}} {emote:unitValues.money}** zu schmal.",
+          "buyConfirmDescription": "{emote:collectors.warning} Diese Validierung wird diese Unterkunft für **{{price}} {emote:unitValues.money}** kaufen. Es wird als Anlaufstelle in dieser Stadt dienen oder eine Rente generieren, wenn Ihr Haus bereits in der Nähe ist.",
+          "buyButtonLabel": "Diese Unterkunft erwerben",
+          "ownedHeader": "{emote:city.apartmentNotary.menu} **Ihre Unterkünfte** ({{count}}) :",
+          "ownedLineRented": "**$t(models:map_locations.{{mapLocationId}}.name)** - belegt, **{{rent}} {emote:unitValues.money}** aufgelaufene Miete.",
+          "ownedLineEmpty": "**$t(models:map_locations.{{mapLocationId}}.name)** - unbewohnt, damit Sie einen Fuß auf dem Boden genießen können.",
+          "claimButtonLabel": "{emote:unitValues.money} Miete einziehen",
+          "buyTitle": "{{pseudo}}Die neue Unterkunft wurde erworben!",
+          "buyDescription": "Der Notar übergibt Ihnen die Schlüssel zu Ihrer neuen Unterkunft $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)** gegen **{{cost}} {emote:unitValues.money}**.",
+          "buyAlreadyOwned": "Sie führen bereits ein Logis $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)**.",
+          "buyRequiresHome": "Der Notar erklärt Ihnen höflich, dass ein Haus nur an Personen vergeben wird, die bereits über eine offizielle Wohnung verfügen. Sie sollten erst ein Haus kaufen, bevor Sie ihn wieder besuchen $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)**.",
+          "claimTitle": "{{pseudo}}, eingenommene Miete!",
+          "claimDescription": "Der Notar übergibt Ihnen **{{rent}} {emote:unitValues.money}** der aufgelaufenen Miete für Ihre Unterkunft $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)**.",
+          "claimTooLow": "Die aufgelaufene Miete für Ihre Unterkunft $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)** beträgt nur **{{current}} {emote:unitValues.money}** - es braucht mindestens **{{min}} {emote:unitValues.money}**, bevor Sie sie abheben können."
+        },
+        "upgradeItemTitle": "{{pseudo}}Die Ausrüstungsverbesserung ist gelungen!",
+        "upgradeItemDescription": "Deine Ausrüstung wurde erfolgreich auf **Level {{newLevel}}** verbessert! Die benötigten Materialien wurden verbraucht.",
+        "upgradeItemMissingMaterialsTitle": "{{pseudo}}Unzureichende Materialien!",
+        "upgradeItemMissingMaterialsDescription": "Sie haben nicht die nötigen Materialien, um diese Ausrüstung zu verbessern. Sammeln Sie diese auf Ihren Abenteuern und kommen Sie später wieder!",
+        "upgradeItemMaxLevelTitle": "{{pseudo}}Die Höchststufe ist erreicht!",
+        "upgradeItemMaxLevelDescription": "Diese Ausrüstung kann zu Hause nicht mehr verbessert werden. Besuchen Sie einen Schmied für fortschrittlichere Verbesserungen!",
+        "notEnoughMoney": "Sie haben nicht genug Geld für diese Transaktion!",
+        "refuseAndLeaveNotary": "Ablehnen und das Büro des Notars verlassen",
+        "leaveNotary": "Das Büro des Notars verlassen",
+        "featurePlaceholder": "Wählen Sie eine Funktionalität Ihres Hauses",
+        "backToHome": "Rückkehr nach Hause",
+        "upgradeStation": {
+          "menuLabel": "Werkbank für Ausrüstung",
+          "menuDescription": "Verbessern Sie Ihre Waffen und Rüstungen",
+          "buttonLabel": "Schmieden",
+          "available": "{emote:city.homeUpgrades.upgradeEquipment} An deiner Ausrüstungswerkbank kannst du deine Waffen und Rüstungen verbessern.",
+          "title": "{{pseudo}}, Ausrüstungsgegenstände",
+          "itemDetails": "{{itemDisplay}}\n\n**Verbesserung:** Lv. {{currentLevel}} → Lv. {{nextLevel}}\n\n**Benötigte Materialien:**\n{{materials}}",
+          "confirmUpgrade": "Verbessern",
+          "backToItems": "Zurück zur Liste",
+          "descriptionWithItems": "{emote:city.homeUpgrades.upgradeEquipment} Sie stehen an Ihrer Werkbank und sind bereit, Upgrades zu schmieden. Ihr Haus verfügt über eine Werkbank {{stationQuality}} , mit der Sie Ausrüstungsgegenstände bis zur Seltenheit bearbeiten können $t(items:rarities.{{maxRarity}}). {{levelLimitation}}\n\n**Wählen Sie eine Ausrüstung, die Sie verbessern möchten:**",
+          "descriptionNoItems": "{emote:city.homeUpgrades.upgradeEquipment} Du stehst an deiner Werkbank, aber keine deiner Ausrüstungsgegenstände kann hier im Moment verbessert werden. Ihr Haus verfügt über eine Werkbank {{stationQuality}} , mit der Sie Ihre Ausrüstung bis zur Seltenheit bearbeiten können $t(items:rarities.{{maxRarity}}). {{levelLimitation}}",
+          "stationQualityBasic": "rudimentär",
+          "stationQualityAdvanced": "von Qualität",
+          "stationQualityMaster": "von Handwerksmeister",
+          "levelLimitationBasic": "Ihre Talente als Hobbyschmied beschränken sich auf Verbesserungen der Stufe {{maxLevel}}, darüber hinaus sollten Sie einen echten Schmied konsultieren.",
+          "levelLimitationAdvanced": "Ihre Beherrschung der Werkzeuge ermöglicht es Ihnen, die Stufe {{maxLevel}}zu erreichen , aber höhere Verbesserungen erfordern die Expertise eines professionellen Schmieds.",
+          "placeholder": "Wählen Sie eine Ausrüstung"
+        },
+        "bed": {
+          "menuLabel": "Im eigenen Bett ausruhen",
+          "menuDescription": "Rufen Sie {{health}} {emote:unitValues.health} kostenlos ab.",
+          "buttonLabel": "Sich ausruhen",
+          "available": "{emote:city.homeUpgrades.bed} Ihr Bett ermöglicht es Ihnen, sich **{{health}}** {emote:unitValues.health} kostenlos zu erholen.",
+          "restTitle": "{{pseudo}}Sie ruhen sich aus!",
+          "restDescription": "{emote:city.homeUpgrades.bed} Sie legen sich in Ihr Bett und schließen für einen Moment die Augen. Diese kleine Ruhepause tut Ihnen sehr gut! Sie erholen sich **{{health}}** {emote:unitValues.health}.",
+          "alreadyFull": "Sie sind bereits in Topform! Ihr Bett wird Ihnen nur dann nützlich sein, wenn Sie sich ausruhen müssen.",
+          "cooldown": "Sie haben heute bereits ein Bett genossen und sind im Moment nicht wirklich müde. Kommen Sie wieder vorbei und ruhen Sie sich aus <t:{{nextAvailableAt}}:R>."
+        },
+        "chest": {
+          "menuLabel": "Aufbewahrungskiste",
+          "menuDescription": "{{filled}}/{{total}} verwendete Standorte",
+          "buttonLabel": "Öffnen",
+          "available": "{emote:city.homeUpgrades.chest} In Ihrem Kofferraum können Sie Ersatzgegenstände aufbewahren.",
+          "title": "{{pseudo}}Aufbewahrungsbox",
+          "placeholder": "Wählen Sie eine Kategorie",
+          "descriptionWithItems": "{emote:city.homeUpgrades.chest} Ihre Truhe enthält einige Gegenstände. Wählen Sie eine Kategorie, um ihren Inhalt anzusehen oder neue Gegenstände darin zu verstauen.",
+          "descriptionEmpty": "{emote:city.homeUpgrades.chest} Ihre Truhe ist im Moment leer. Wählen Sie eine Kategorie, um Gegenstände aus Ihrem Inventar darin zu verstauen.",
+          "categoryHeader": "**{{category}}** - {{filled}}/{{total}} belegte Plätze",
+          "inventoryInfo": "{emote:city.chestActions.inventory} Ausgestattet: {{equipped}} | Reserve: {{backupCount}}/{{maxBackup}}",
+          "noStoredItems": "Keine Objekte in dieser Kategorie geordnet.",
+          "depositSection": "{emote:city.chestActions.deposit} **Deponieren im Tresor:**",
+          "withdrawSection": "{emote:city.chestActions.withdraw} **aus dem Tresor entnehmen:**",
+          "chestFull": "Voller Kofferraum für diese Kategorie",
+          "inventoryFullLabel": "Voller Bestand",
+          "swapSection": "{emote:city.chestActions.swap} **Switchen mit der Truhe :**",
+          "swapHeader": "{emote:city.chestActions.swap} **Tauschen** {{item}} **mit:**",
+          "errors": {
+            "chestFull": "Ihre Truhe ist für diese Kategorie voll! Verbessere dein Haus, um mehr Slots zu erhalten.",
+            "inventoryFull": "Ihr Inventar ist für diese Kategorie voll! Machen Sie Platz frei, bevor Sie einen Gegenstand aus der Truhe nehmen."
+          },
+          "plantTabLabel": "Pflanzen",
+          "plantHeader": "{emote:city.homeUpgrades.garden} **Pflanzen** - Max {{max}} nach Typ",
+          "plantDepositSection": "{emote:city.chestActions.deposit} **Deposit aus deinem Inventar:**",
+          "plantWithdrawSection": "{emote:city.chestActions.withdraw} **Zurückziehen in Ihr Inventar:**",
+          "plantEmpty": "Keine gelagerten oder transportierten Pflanzen."
+        },
+        "garden": {
+          "menuLabel": "Garten",
+          "menuDescription": "{{ready}}/{{total}} Pflanzen, die bereit sind, geerntet zu werden",
+          "buttonLabel": "Gartenarbeit",
+          "available": "{emote:city.homeUpgrades.garden} In Ihrem Garten können Sie Pflanzen anbauen.",
+          "title": "{{pseudo}}Garten",
+          "placeholder": "Ihren Garten verwalten",
+          "description": "{emote:city.homeUpgrades.garden} Hier ist der Zustand Ihres Gartens :",
+          "emptyPlot": "{emote:city.gardenStatus.empty} Parzelle {{slot}} - *Leer*.",
+          "readyPlot": "{emote:city.gardenStatus.ready} Parzelle {{slot}} - {emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** - Bereit zum Ernten!",
+          "growingPlot": "{emote:city.gardenStatus.growing} Parzelle {{slot}} - {emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** - {{progress}}% (bereit <t:{{readyAtTimestamp}}:R>)",
+          "hasSeed": "{emote:city.gardenStatus.seed} Sie tragen einen Samen: {emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+          "harvestButton": "Ernten",
+          "plantButton": "Pflanzen",
+          "waterButton": "Gießen",
+          "waterCooldown": "{emote:city.gardenStatus.water} Sie können wieder gießen **{{timeLeft}}**.",
+          "waterCooldownError": "{emote:messages.refuse} Sie haben kürzlich bereits gegossen. Versuchen Sie es noch einmal **{{timeLeft}}**.",
+          "waterNothingToWater": "{emote:messages.info} Keine wachsenden Pflanzen, die gegossen werden müssen.",
+          "wateredPlots_one": "{{count}} Parzelle",
+          "wateredPlots_other": "{{count}} Parzellen",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. Ihr Wachstum wurde um eine Stunde beschleunigt.",
+          "waterSuccess_one": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. **{{slotsBecameReady}}** Pflanze ist nun bereit, geerntet zu werden!",
+          "waterSuccess_other": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. **{{slotsBecameReady}}** Pflanzen sind nun bereit, geerntet zu werden!",
+          "waterSuccessTitle": "{{pseudo}} seinen Garten bewässert hat",
+          "storageButton": "Reserve ({{count}})",
+          "storageTitle": "{emote:city.homeUpgrades.garden} Pflanzenvorrat :",
+          "storageEmpty": "Ihr Pflanzenvorrat ist leer. Sammeln Sie Ihre Pflanzen, um sie hier zu lagern.",
+          "storageEntry": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) - {{quantity}}/{{maxCapacity}}",
+          "backToGarden": "Zurück zum Garten",
+          "putAwayTalisman": "Ordnen Sie das Sylvesterherz",
+          "closeGarden": "Den Garten verlassen",
+          "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Kompostierung:**",
+          "compostLine": "- {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+          "compost": {
+            "button": "Kompostieren",
+            "selectTitle": "{emote:city.gardenStatus.compost} Wählen Sie eine Pflanze aus, die Sie kompostieren möchten. Jede kompostierte Pflanze bringt Ihnen ein Material aus ihrer Liste möglicher Komposte ein.",
+            "selectEntry": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) ({{quantity}})",
+            "confirmDescription": "{emote:city.gardenStatus.compost} Sie bereiten sich auf die Kompostierung vor **{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})**.\nSie haben **{{quantity}}** davon in Reserve.\n\nMögliche Materialien, die Sie für jede kompostierte Pflanze erhalten:\n{{materialsList}}",
+            "confirmMaterialLine": "- {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+            "confirmButton": "Kompostieren {{quantity}}",
+            "cancelButton": "← Abbrechen",
+            "resultTitle": "{{pseudo}}, Komposter",
+            "resultDescription": "{emote:city.gardenStatus.compost} Sie haben kompostiert **{{quantity}}** {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}). Hier ist, was Sie daraus gewonnen haben:\n{{materialsList}}",
+            "resultMaterialLine": "- **{{count}}** × {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+            "notEnoughPlants": "{emote:messages.refuse} Sie haben nicht mehr genug {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) auf Vorrat, um sie zu kompostieren **{{quantity}}**."
+          }
+        },
+        "cooking": {
+          "menuLabel": "Küche",
+          "menuDescription": "Herd - Ebene {{level}} ({{grade}})",
+          "buttonLabel": "Kochen",
+          "available": "{emote:city.homeUpgrades.cooking} Sie haben Zugang zu einem Herd, auf dem Sie Tränke und Nahrung für Begleiter zubereiten können.",
+          "title": "{{pseudo}}, Küche",
+          "placeholder": "Ihren Herd verwalten",
+          "description_one": "{emote:city.homeUpgrades.cooking} Ihr Herd verfügt über **{{count}} Platz** zum Kochen.\nSchalten Sie ihn ein, um die verfügbaren Rezepte zu sehen.",
+          "description_other": "{emote:city.homeUpgrades.cooking} Ihr Herd verfügt über **{{count}} Kochstellen**.\nSchalten Sie ihn ein, um die verfügbaren Rezepte zu sehen.",
+          "igniteButton": "Den Herd einschalten",
+          "reviveButton": "Den Herd wieder in Gang bringen",
+          "craftButton": {
+            "0": "Kochen",
+            "1": "Schmoren",
+            "2": "Schmelzen",
+            "3": "Destillieren",
+            "4": "Grillen"
+          },
+          "noWood": "{emote:messages.refuse} Sie haben kein Holz, um den Ofen anzuzünden. Sammeln Sie auf Ihren Expeditionen Holz!",
+          "woodConfirm": "{emote:messages.info} Sie haben kein gewöhnliches Holz mehr. Vom **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** wird zum Anzünden des Herdes verwendet. Bestätigen?",
+          "confirmButton": "Bestätigen",
+          "cancelButton": "Abbrechen",
+          "levelInfo": "{emote:unitValues.xp} Stufe **{{level}}** ({{grade}}) - Bereiten Sie Rezepte der Stufe **{{maxLevel}}** oder niedriger zu, um bessere Ergebnisse zu erzielen.",
+          "slotEmpty": "*Kein Rezept*",
+          "slotEmptyContent": "{emote:cookingStations.{{stationId}}} **$t(models:cooking.stations.{{stationId}})**\n$t(commands:report.city.homes.cooking.slotEmpty)",
+          "slotSecretName": "{emote:cookingStations.{{stationId}}} **$t(models:cooking.stations.{{stationId}})** - ??? (Niv. {{level}})",
+          "slotRecipeName": "{emote:cookingStations.{{stationId}}} **$t(models:cooking.stations.{{stationId}})** - {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+          "ingredientPlant": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) {{playerHas}}/{{quantity}}",
+          "ingredientMaterial": "{emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) {{playerHas}}/{{quantity}}",
+          "craftSuccess": "{emote:messages.validate} Erfolgreiches Kochen! Sie haben **{{recipe}}** vorbereitet!",
+          "craftFailure": "{emote:messages.refuse} Das Kochen ist fehlgeschlagen... Das Rezept **{{recipe}}** hat nicht zum gewünschten Ergebnis geführt.",
+          "craftUnavailable": "{emote:messages.info} Dieses Rezept ist im aktuellen Zustand des Herdes nicht mehr verfügbar. Die Vorschläge wurden aufgefrischt.",
+          "inventoryFull": "{emote:messages.refuse} Sie haben keinen Platz mehr in Ihrem Tränke-Inventar. Machen Sie einen Platz frei, bevor Sie dieses Rezept kochen.",
+          "guildRequired": "{emote:messages.refuse} Diese Nahrung für Begleiter benötigt eine Gilde, um gelagert zu werden. Schließe dich einer Gilde an, um es zuzubereiten.",
+          "guildStorageFull": "{emote:messages.refuse} Das Nahrungslager Ihrer Gilde ist voll. Machen Sie Platz frei, bevor Sie dieses Rezept kochen.",
+          "xpGained": "{emote:unitValues.xp} +**{{xp}}** XP aus der Küche",
+          "levelUp": "Sie sind auf die **Kochstufe {{level}}** aufgestiegen!",
+          "levelUpWithGrade": "Sie sind auf die **Kochstufe {{level}}** aufgestiegen! Neuer Rang : **{{grade}}**",
+          "levelUpTitle": "{emote:city.homeUpgrades.cooking} {{pseudo}}, erhöhtes Kochniveau!",
+          "materialSaved": "{emote:messages.validate} Dank Ihrer Expertise kann ein **{emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** wurde eingespart!",
+          "bonusOutput": "{emote:city.homeUpgrades.cooking} **Supererfolg!** Ihre Meisterschaft hat es Ihnen ermöglicht, die verdienten XP zu verdoppeln und das Ergebnis dieser Zubereitung zu verbessern!",
+          "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** wurden dem Speicher deiner Gilde hinzugefügt.",
+          "recipeDiscovered": "{emote:city.homeUpgrades.cooking} Du hast ein neues Rezept gelernt: **{{recipe}}**!",
+          "recipesDiscovered": "{emote:city.homeUpgrades.cooking} Du hast neue Rezepte gelernt: {{recipes}}!",
+          "petFedFromSurplus": "{emote:messages.validate} Ihr Vertrauter hat eine Ration **{{food}}** direkt vom Herd gegessen!",
+          "surplusRecycled": "{emote:messages.info} Überschüssiges Essen wurde zu **{{quantity}} {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})**.",
+          "materialCrafted": "{emote:messages.validate} Sie haben **{{quantity}} {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})** !",
+          "woodConsumed": "{emote:materials.{{woodId}}} $t(models:materials.{{woodId}}) verbraucht",
+          "woodSaved": "{emote:messages.validate} Ihre Expertise hat Ihnen geholfen, Holz zu sparen! ({emote:materials.{{woodId}}} $t(models:materials.{{woodId}}))",
+          "pinnedRecipeTitle": "{emote:messages.pin} **Angepinntes Rezept** - {emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+          "pinnedReady": "\n{emote:messages.validate} Sie haben alle Zutaten für dieses Rezept!",
+          "unpinButton": "Entheddern",
+          "pinButton": "Anpinnen"
+        },
+        "upgradeChanges": {
+          "betterBed": "Ein besseres Bett für einen erholsameren Schlaf {emote:city.homeUpgrades.bed}",
+          "chest": "Eine Truhe, in der Sie Ihre Sachen aufbewahren können {emote:city.homeUpgrades.chest}.",
+          "biggerChest": "Ein größerer Kofferraum, um noch mehr Sachen zu verstauen {emote:city.homeUpgrades.chest}",
+          "upgradeItemStation": "Eine Ausrüstungswerkbank, an der Sie Ihre Waffen und Rüstungen verbessern können {emote:city.homeUpgrades.upgradeEquipment}.",
+          "betterUpgradeItemStation": "Eine bessere Ausrüstungswerkbank, um mächtigere Waffen und Rüstungen zu verbessern {emote:city.homeUpgrades.upgradeEquipment}.",
+          "garden": "Ein Garten zum Anbauen von Pflanzen {emote:city.homeUpgrades.garden}.",
+          "biggerGarden": "Ein größerer Garten, um noch mehr Pflanzen anzubauen {emote:city.homeUpgrades.garden}.",
+          "betterGardenEarth": "Verbesserte Erde, um Pflanzen schneller wachsen zu lassen {emote:city.homeUpgrades.earthQuality}.",
+          "inventoryBonus": "Permanente zusätzliche Inventarplätze {emote:city.homeUpgrades.chest}",
+          "cookingStation": "Ein Herd zum Zubereiten von Tränken und Nahrung für Haustiere {emote:city.homeUpgrades.cooking}.",
+          "betterCookingStation": "Ein verbesserter Herd mit mehr Kochstellen {emote:city.homeUpgrades.cooking}"
+        }
+      },
+      "guildDomain": {
+        "label": "Gildenbereich",
+        "description": "Die Banner von **{{guildName}}** wehen über den Umfassungsmauern des Anwesens. Dort herrscht reges Treiben.",
+        "notaryLabel": "Gildennotar",
+        "notaryDescription": "Ein Kleriker in einer dunklen Robe winkt Ihnen aus seinem Arbeitszimmer zu. Er verwaltet die Besitztitel der Gildengüter.",
+        "menuTitle": "{{pseudo}}, Domäne von {{guildName}}",
+        "menuIntro": "{emote:city.guildDomain.menu} Sie treten durch die schweren Tore des Anwesens von **{{guildName}}**. Die befestigte Anlage beherbergt die Gebäude, die Ihre Bruderschaft im Laufe der Jahreszeiten geduldig errichtet hat. Gildenmitglieder gehen zwischen den Steinmauern ihren Geschäften nach, und das Emblem Ihres Ordens wacht vom zentralen Verlies aus.",
+        "guildLevelAndTreasury": "**Guilde niv. {{guildLevel}}** | {emote:unitValues.money} **Liquidität**: {{treasury, number}}",
+        "buildingUpgrade": "Niv. {{nextLevel}} : **{{cost, number}}** {emote:unitValues.money}",
+        "buildingUpgradeBlocked": " - {emote:collectors.warning} Gilde Lvl **{{required}}** erforderlich",
+        "buildingUpgradeTreasuryLow": " - {emote:unitValues.money} Unzureichende Barmittel",
+        "buildingMaxLevel": "{emote:collectors.accept} Höchststand erreicht",
+        "foodInfo": "{emote:expedition.food} **Nahrungsmittelvorräte**:\n{emote:foods.commonFood} Kommune: {{common}}/{{commonCap}}\n{emote:foods.carnivorousFood} Fleischfresser: {{carnivorous}}/{{carnivorousCap}}\n{emote:foods.herbivorousFood} Pflanzenfresser: {{herbivorous}}/{{herbivorousCap}}\n{emote:foods.ultimateFood} Ultimativ: {{ultimate}}/{{ultimateCap}}",
+        "upgradeBuilding": {
+          "shop": "{emote:city.guildDomain.shop} Boutique Lvl{{level}} ({{cost}} {emote:unitValues.money})",
+          "shelter": "{emote:city.guildDomain.shelter} Zuflucht Lv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "pantry": "{emote:city.guildDomain.pantry} Vorratskammer Lv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "trainingGround": "{emote:city.guildDomain.trainingGround} Menagerie Lv.{{level}} ({{cost}} {emote:unitValues.money})"
+        },
+        "upgradeConfirmDescription": "{emote:collectors.warning} Diese Validierung wird **{{building}}** auf ** Ebene {{level}}** für **{{cost}} {emote:unitValues.money}** aus dem Cashflow verbessern.\n\nAktueller Kassenbestand : **{{treasury}} {emote:unitValues.money}**",
+        "upgradeSuccess": "{emote:messages.info} Die Arbeiter haben die Arbeiten abgeschlossen! **{{building}}** wurde auf **Level {{level}}** verbessert.\n{emote:unitValues.xp} Die Gilde erhält **{{xpGained, number}}** Erfahrungspunkte.",
+        "upgradeError": "Die Verbesserung ist fehlgeschlagen: Möglicherweise hat ein anderes Mitglied gerade eine Operation an der Gilde durchgeführt. Starten Sie {command:report} erneut, um den aktuellen Status zu sehen.",
+        "buildings": {
+          "shop": "Shop",
+          "shelter": "Zuflucht",
+          "pantry": "Speisekammer",
+          "trainingGround": "Menagerie"
+        },
+        "leaveDomain": "Domain verlassen",
+        "notaryPurchaseDescription": "{emote:city.guildDomainNotary} Der Notar schaut sich die Aufzeichnungen Ihrer Gilde genau an und nickt zufrieden. Er informiert Sie darüber, dass die Stadt derzeit die kostenlose Einrichtung von Gildendomänen anbietet, um die Entwicklung der Region zu fördern. Er lässt Ihnen Zeit zum Nachdenken und wartet auf Ihre Entscheidung.",
+        "notaryRelocateDescription": "{emote:city.guildDomainNotary} Der Notar sieht sich die Aufzeichnungen Ihrer Gilde genau an und konsultiert die Finanzen der Schatzkammer. Nachdem er Ihre Situation gewissenhaft analysiert hat, teilt er Ihnen mit, dass der Umzug der Domäne in diese Stadt **{{cost}} {emote:unitValues.money}** aus der Gildenkasse kosten wird. Er gibt Ihnen Zeit, Ihre Entscheidung zu überdenken.\n\nAktuelle Gildenkasse : **{{treasury}} {emote:unitValues.money}**",
+        "notaryConfirmPurchaseDescription": "{emote:collectors.warning} Diese Bestätigung wird die Gildendomäne in dieser Stadt installieren. Die Installation ist für diesen Vorgang kostenlos.",
+        "notaryConfirmRelocateDescription": "{emote:collectors.warning} Durch diese Bestätigung wird die Gildendomäne in diese Stadt verlegt und **{{cost}} {emote:unitValues.money}** aus der Schatzkammer abgezogen.\n\nAktueller Kassenbestand : **{{treasury}} {emote:unitValues.money}**",
+        "notaryConfirmLabel": "Kosten: **{{cost}} {emote:unitValues.money}** aus der Kasse",
+        "confirmPurchase": "Die Domain installieren",
+        "confirmRelocate": "Verschieben der Domain",
+        "purchaseTitle": "{{pseudo}}Domain installiert!",
+        "purchaseDescription": "{emote:city.guildDomain.menu} Der Notar gratuliert Ihnen herzlich und überreicht Ihnen die offiziellen Urkunden, die mit dem Siegel der Stadt versiegelt sind. Die Domäne Ihrer Gilde ist nun in dieser Stadt verwurzelt. Die ersten Arbeiter machen sich bereits an die Arbeit, um den Boden vorzubereiten.",
+        "relocateTitle": "{{pseudo}}, Domain deplaziert!",
+        "relocateDescription": "{emote:city.guildDomain.menu} Der Notar schließt die Übergabedokumente ab und überreicht sie Ihnen mit einem professionellen Lächeln. Die Umzugswagen sind bereits unterwegs. Die Domäne Ihrer Gilde wird sich bald in dieser Stadt niederlassen, um **{{cost}} {emote:unitValues.money}** Bargeld zu erhalten.",
+        "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} Nachdem der Notar die Finanzen Ihrer Gilde gewissenhaft geprüft hat, schüttelt er bedauernd den Kopf. Die Kasse enthält nicht genug Geld für diese Transaktion - Ihnen fehlen **{{missingTreasury}} {emote:unitValues.money}**. Er ermutigt Sie, wiederzukommen, wenn die Gilde genug gespart hat.",
+        "levelDisplay": "Niv. {{level}}/{{maxLevel}}",
+        "enterBuilding": {
+          "shop": "Kaufen",
+          "shelter": "Besuchen Sie",
+          "pantry": "Inspizieren",
+          "trainingGround": "Beobachten"
+        },
+        "backToDomain": "Zurück zur Domain",
+        "buildingSummary": {
+          "shop": {
+            "locked": "Geschlossene Türen und Fensterläden. Das Gebäude wartet darauf, gebaut zu werden.",
+            "built": "Ein Kämmerer kümmert sich um die Versorgung der Gilde."
+          },
+          "shelter": "Die Gehege beherbergen bis zu **{{slots}}** Vertraute, die von den Mitgliedern anvertraut wurden.",
+          "pantry": "Hier werden die Nahrungsvorräte der Gilde gelagert.",
+          "trainingGround": {
+            "inactive": "Das Gehege ist verwahrlost. Vertraute können dort nicht üben.",
+            "active": "Die Vertrauten üben jeden Tag und verdienen **+{{love}}** {emote:expedition.love} pro Tag."
+          }
+        },
+        "subMenus": {
+          "shop": {
+            "title": "{emote:city.guildDomain.shop} Gildenladen",
+            "notBuilt": "{emote:city.guildDomain.shop} Der Standort des Ladens ist nichts weiter als ein mit Steinen übersätes Ödland. Architektenpläne warten auf einer Staffelei, aber der Bau hat noch nicht begonnen. Verbessere dieses Gebäude, um die Gildenversorgung freizuschalten.",
+            "description": "{emote:city.guildDomain.shop} Der Verwalter der Gilde steht hinter seinem Tresen, umgeben von Kisten und Taschen mit Lebensmitteln. Er stellt Nahrung für die Begleiter bereit (aus der Gildenkasse bezahlt) und nimmt Ihre Goldspenden entgegen, um die Gilde aufzufüllen.\n\n{emote:unitValues.money} **Ihr Geld**: {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Kassenbestand der Gilde**: {{treasury, number}} {emote:unitValues.money}",
+            "stockInfo": "{emote:expedition.food} **Aktuelle Vorräte**:\n- {emote:foods.commonFood} Süßigkeiten: {{common}}/{{commonCap}}\n- {emote:foods.herbivorousFood} Salat: {{herbivorous}}/{{herbivorousCap}}\n- {emote:foods.carnivorousFood} Fleisch: {{carnivorous}}/{{carnivorousCap}}\n- {emote:foods.ultimateFood} Suppe: {{ultimate}}/{{ultimateCap}}",
+            "choosePrompt": "**Was möchten Sie kaufen?**",
+            "treasuryButton": "Schatzkammer",
+            "treasuryTitle": "Den Cashflow aufbessern",
+            "treasuryPrompt": "{emote:city.guildDomain.shop} Der Kämmerer kann dein Gold gegen eine Gebühr von {{penaltyPercent, number}}% (bis zu einer Obergrenze von {{penaltyMax, number}} {emote:unitValues.money}) in Gildenkasse umwandeln.\n\n{emote:unitValues.money} **Ihr Geld**: {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Gildenkasse**: {{treasury, number}} {emote:unitValues.money}",
+            "depositSmallNameButton": "Börse ({{cost}} → +{{treasury}})",
+            "depositBigNameButton": "Goldener Sack ({{cost}} → +{{treasury}})",
+            "depositHugeNameButton": "Truhe ({{cost}} → +{{treasury}})",
+            "noFoodAvailable": "{emote:messages.info} Die Speisekammer der Gilde ist voll oder die Kassenbestände sind unzureichend.",
+            "quantityPrompt": "Wie viele **{{food}}** möchten Sie kaufen?\n\nAktuelle Reserven: **{{stock}}/{{cap}}**\nStückpreis: **{{price, number}}** {emote:unitValues.money}\nVerfügbare Barmittel : **{{treasury, number}}** {emote:unitValues.money}",
+            "quantityButton": "x{{amount}} ({{cost, number}})",
+            "quantityCancel": "Zurück",
+            "reimburseTitle": "{emote:unitValues.money} Der Gilde das Geld zurückzahlen?",
+            "buyFoodConfirmDescription": "{emote:collectors.warning} Diese Bestätigung wird **{{amount}}x {{food}}** {emote:foods.{{foodType}}} für die Gildenvorratskammer. **{{cost}} {emote:unitValues.money}** werden aus der Schatzkammer entnommen.\n\nAktueller Lagerbestand: **{{stock}}/{{cap}}**\nAktuelle Barmittel : **{{treasury}} {emote:unitValues.money}**",
+            "buyFoodSuccess": "{emote:messages.info} Der Verwalter verstaut sorgfältig **{{amount}}x {{food}}** {emote:foods.{{foodType}}} in der Speisekammer der Gilde. **{{totalCost, number}} {emote:unitValues.money}** wurden aus der Schatzkammer entnommen.",
+            "buyFoodError": "Der Kauf ist fehlgeschlagen: Das Bargeld reicht nicht aus oder die Speisekammer ist voll. Vielleicht hat ein anderes Mitglied gerade zur gleichen Zeit wie Sie Lebensmittel gekauft. Starten Sie {command:report} erneut, um den aktuellen Status zu sehen.",
+            "depositTreasuryConfirmDescription": "{emote:collectors.warning} Diese Bestätigung zahlt **{{cost}} {emote:unitValues.money}** Ihres persönlichen Geldes in die Gildenkasse ein. Nach der Kommissionierung erhält die Gilde **{{treasury}} {emote:unitValues.money}**.",
+            "depositTreasurySuccess": "{emote:messages.info} Der Kämmerer zahlt deine Opfergabe in die Truhe ein. **+{{treasury, number}} {emote:unitValues.money}** in die Gildenkasse!",
+            "depositTreasuryError": "Die Überweisung ist fehlgeschlagen: Ihr Kontostand hat sich möglicherweise zwischenzeitlich geändert. Starten Sie {command:report} erneut, um den aktuellen Stand zu sehen.",
+            "reimbursePrompt": "{emote:messages.info} Möchten Sie der Gilde die **{{cost, number}} {emote:unitValues.money}**, die Sie gerade verwendet haben, zurückzahlen? Der Kämmerer erlässt Ihnen seine übliche Provision: Der gesamte Betrag wird der Kasse zugeführt.",
+            "reimburseAccept": "Zurückzahlen ({{cost, number}} {emote:unitValues.money})",
+            "reimburseDecline": "Geld behalten",
+            "reimburseSuccess": "{emote:messages.info} Sie zahlen der Gilde das Geld zurück. **+{{treasury, number}} {emote:unitValues.money}** in die Kasse!",
+            "reimburseDeclined": "{emote:messages.refuse} Sie behalten das Geld für sich."
+          },
+          "shelter": {
+            "title": "{emote:city.guildDomain.shelter} Gildenunterkunft",
+            "description": "{emote:city.guildDomain.shelter} Verstärkte Holzgehege säumen einen mit frischem Stroh ausgelegten Innenhof. Die Vertrauten der Gilde dösen oder spielen friedlich unter den wachsamen Augen eines Wächters. Die Luft ist vom beruhigenden Geruch von Heu und Fell geschwängert.\n\n**Kapazität:** {{slots}} Standorte",
+            "petListHeader": "{emote:city.guildDomain.shelter} **Familien der Zuflucht** ({{count}}/{{max}}) :",
+            "empty": "{emote:messages.info} Die Hütte ist im Moment leer.",
+            "petTransferHint": "{emote:messages.info} Verwenden Sie den Befehl {command:pettransfer}, um einen Begleiter zwischen Ihrem Inventar und der Gildenhütte zu verschieben."
+          },
+          "pantry": {
+            "title": "{emote:city.guildDomain.pantry} Gildenspeisekammer",
+            "description": "{emote:city.guildDomain.pantry} Ein Gewölbekeller mit dicken Wänden hält die Lebensmittel vor Hitze und Schädlingen geschützt. Massive Eichenregale stehen unter Fässern mit getrocknetem Fleisch, Körben mit Beeren und Kisten mit sorgfältig beschrifteten Vorräten.",
+            "autoFillHeader": "{emote:messages.info} **Täglicher Nachschub**: Jeden Tag um Mitternacht fügt der Kämmerer automatisch zu Ihren Vorräten hinzu (im Rahmen der Kapazitäten) :",
+            "autoFillLine": "- **+{{amount}} {{food}}** {emote:foods.{{foodType}}}",
+            "autoFillNone": "{emote:messages.info} Verbessere die Speisekammer, um von einer automatischen täglichen Versorgung mit Haustierfutter zu profitieren."
+          },
+          "training": {
+            "title": "{emote:city.guildDomain.trainingGround} Menagerie",
+            "descriptionInactive": "{emote:city.guildDomain.trainingGround} Die Menagerie ist ein großer, geschlossener Bereich mit wackeligen Palisaden und ranzigem Stroh. Die Tränken sind ausgetrocknet und die Geschicklichkeitsparcours mit Moos bedeckt. Vertraute können unter diesen Bedingungen nicht trainieren.",
+            "descriptionActive": "{emote:city.guildDomain.trainingGround} In der Menagerie herrscht geschäftiges Treiben. Ein ehemaliger königlicher Trainer beaufsichtigt die täglichen Übungen der Haustiere zwischen hölzernen Hindernisparcours und gepolsterten Zielscheiben. Die Luft ist erfüllt von begeisterten Rufen und Flügelschlägen.\n\nDie Vertrauten im Tierheim erhalten **+{{love}}** {emote:expedition.love} Liebespunkte pro Tag."
+          }
+        }
+      },
+      "guildFoodShop": {
+        "label": "Versorgung der Gilde",
+        "description": "Kaufen Sie Nahrung für die Vertrauten von **{{guildName}}**.",
+        "menuTitle": "{{pseudo}}Betankung von {{guildName}}",
+        "menuDescription": "{emote:city.guildDomain.shop} Ein reisender Händler bietet Futter für Pets an, das aus der Kasse Ihrer Gilde bezahlt wird.\n\n{emote:unitValues.money} **Ihr Geld**: {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Gildenkasse**: {{treasury, number}} {emote:unitValues.money}",
+        "leaveShop": "Den Händler verlassen"
+      }
+    },
     "notEnoughTokensButton": "Unzureichende Jetons",
+    "useTokensButton": "Weitergehen",
     "useTokensLoading": "Laden...",
     "useTokensConfirmTitle": "{{pseudo}} Bestätigung",
     "useTokensConfirmDescription_one": "Möchten Sie **{{count}} Token** {emote:unitValues.token} ausgeben, um in die nächste Phase des Abenteuers vorzustoßen?\n\nSie haben derzeit **{{playerTokens, number}} Token** {emote:unitValues.token}.",
@@ -851,6 +1479,17 @@
       "arrived": "Sie sind an Ihrem Ziel angekommen.\n> **{{emote}} {{destination}}**.\n> {{description}}"
     }
   },
+  "garden": {
+    "title": "{{pseudo}}Ihr Garten",
+    "description": "Sie betrachten Ihren Garten. Wählen Sie die gewünschte Aktion aus dem untenstehenden Menü.",
+    "closed": "{emote:messages.validate} Die Konsultation des Gartens ist abgeschlossen.",
+    "close": "Garten schließen",
+    "noAccess": {
+      "noHome": "Sie haben noch kein eigenes Zuhause und somit auch keinen Garten, den Sie pflegen können. Suchen Sie sich erst einmal ein Zuhause in einer der Städte der Welt, bevor Sie daran denken, etwas anzubauen.",
+      "noGarden": "Ihr derzeitiges Zuhause verfügt noch nicht über ein Stück Land, das Sie bewirtschaften können. Verbessere es, damit du eines Tages deine eigenen Pflanzen anbauen kannst.",
+      "noTalisman": "Sie sind weit von Ihrem Garten entfernt und ohne das Sylvesterherz können Sie nicht aus der Ferne darauf zugreifen. Dieser Talisman ist beim Kräuterhändler in Coco Village erhältlich."
+    }
+  },
   "petFree": {
     "title": "{{pseudo}}Befreiung eines Vertrauten",
     "acceptedTitle": "{{pseudo}}, Vertrauter befreit!",
@@ -881,13 +1520,16 @@
     "cannotHealOccupied": "Sie sind derzeit beschäftigt. Diese Alteration kann nicht im Laden geheilt werden. {emote:effects.occupied}",
     "success": "{{pseudo}}Erfolgreiche Transaktion!",
     "healAlteration": "{emote:shopItems.healAlteration} Ihre Zustandsveränderungen wurden entfernt.",
-    "tooManyEnergyBought": "Sie haben die maximale Menge an Energierückgewinnung für diese Woche gekauft.",
-    "noEnergyToHeal": "Sie verfügen über Ihre gesamte Kampfenergie. {emote:unitValues.energy}",
     "fullRegen": "{emote:shopItems.regen} Sie wurden vollständig versorgt.",
     "alreadyHaveBadge": "Sie besitzen diesen Ausweis bereits.",
     "badgeBought": "Sie haben eine neue Marke erhalten: {emote:badges.{{badgeName}}} !",
+    "materialLine": "{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})** x{{quantity}}",
+    "genericPurchase_one": "Sie haben **{{count}}x** {{item}} erhalten.",
+    "genericPurchase_other": "Sie haben **{{count}}x** {{item}} erhalten.",
     "notEnoughMoney": "Sie haben nicht genug Geld, um diesen Gegenstand zu kaufen! Es fehlt Ihnen `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
     "boughtTooMuchDailyPotions": "Es gibt keinen Trank des Tages mehr, der zum Verkauf angeboten wird... Kommen Sie morgen wieder!",
+    "noPlantSlotAvailable": "Sie haben keine freien Pflanzenplätze! Machen Sie einen frei oder verbessern Sie Ihre Ausrüstung beim Gerber.",
+    "noGardenForRemoteHarvestTalisman": "Der Kräuterkundler weigert sich, Ihnen das Sylvesterherz zu verkaufen: Dieser Gegenstand wird Ihnen erst nützlich sein, wenn Sie Ihren Garten freigeschaltet haben.",
     "boughtTooMuchTokens": "Sie haben im Moment das Limit für den Kauf von Tokens erreicht. Kommen Sie später wieder!",
     "tokensBought_one": "Sie haben **{{count}} Token** {emote:unitValues.token}gekauft.",
     "tokensBought_other": "Sie haben **{{count}} Token** {emote:unitValues.token}gekauft.",
@@ -900,8 +1542,16 @@
     "buyCategorySlotSuccess": "Sie haben einen neuen Inventarplatz gekauft!",
     "shopItemsSelectDescription": "{{price, number}}{emote:unitValues.{{currency}}}",
     "closeShopButton": "{emote:messages.refuse} Laden schließen",
+    "backToCityButton": "Zurück in die Stadt",
     "shopConfirmationTitle": "{{pseudo}}Sie haben das folgende Produkt ausgewählt:",
     "shopConfirmationTitleMultiple": "{{pseudo}}Wählen Sie eine Menge für dieses Produkt:",
+    "greeting": "{{pseudo}}...blättern Sie durch die Regale und drücken Sie **Kaufen** neben dem Artikel, der Sie interessiert.",
+    "buyButton": "Kaufen",
+    "confirmButton": "Bestätigen",
+    "cancelButton": "Abbrechen",
+    "itemPrice": "Preis: `{{price, number}}{emote:unitValues.{{currency}}}`",
+    "itemPriceUnit": "Preis pro Einheit: `{{price, number}}{emote:unitValues.{{currency}}}`",
+    "amountButton": "x{{amount, number}} ({{price, number}}{emote:unitValues.{{currency}}})",
     "shopCategories": {
       "permanentItem": "Ständige Verkäufe",
       "dailyPotion_zero": "Trank des Tages (ausverkauft)",
@@ -911,11 +1561,17 @@
       "token_one": "Jeton ({{count}} verfügbar)",
       "token_other": "Jetons ({{count}} verfügbar)",
       "slotExtension": "Inventarerweiterungen",
+      "plantSlotExtension": "Ernteerweiterungen",
+      "weeklyPlants": "Pflanzen der Woche",
       "food": "Nahrung für Begleiter",
       "guildXp": "Erfahrung in der Gilde",
       "resources": "Ressourcen",
+      "woodBundles": "Holz",
+      "materialPacks": "Materialien",
       "utilitaries": "Dienstprogramme",
-      "prestige": "Prestige"
+      "prestige": "Prestige",
+      "services": "Dienste",
+      "remoteHarvestTalisman": "Talisman des Sylvesterherzens"
     },
     "chooseSlotTitle": "{{pseudo}}Neuer Inventarplatz",
     "chooseSlotIndication": "Wählen Sie einen neuen Inventarort oder brechen Sie ab :",
@@ -937,11 +1593,6 @@
         "info": "Ihre Zustandsveränderungen werden entfernt und Sie setzen Ihre Reise sofort fort.",
         "give": "{emote:shopItems.healAlteration} Ihre Zustandsveränderungen wurden entfernt."
       },
-      "energyHeal": {
-        "name": "{emote:shopItems.healEnergy} Rückgewinnung von Energie",
-        "info": "Ihre Kampfenergie wird vollständig wiederhergestellt.",
-        "give": "{emote:shopItems.healEnergy} Ihre Energie wurde wiederhergestellt."
-      },
       "fullRegen": {
         "name": "{emote:shopItems.regen} Vollständige Regeneration des Lebens",
         "info": "Sie werden sofort vollständig geheilt, behalten aber alle Ihre Zustandsveränderungen.",
@@ -955,8 +1606,127 @@
         "name": "{emote:shopItems.inventoryExtension} Neuer Inventarplatz",
         "info": "Sie können eine Inventarkategorie auswählen, zu der Sie einen Ort hinzufügen möchten."
       },
+      "plantSlotExtension": {
+        "name": "{emote:shopItems.plantSlotExtension} Neuer Pflanzenstandort",
+        "info": "Sie können eine zusätzliche Pflanze in Ihrem Inventar mit sich führen."
+      },
+      "weeklyPlantName": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
+      "weeklyPlantTier1": {
+        "name": "$t(commands:shop.shopItems.weeklyPlantName)",
+        "info": "Eine gewöhnliche Pflanze, die bereits angebaut wurde und bereit ist, kompostiert oder gelagert zu werden."
+      },
+      "weeklyPlantTier2": {
+        "name": "$t(commands:shop.shopItems.weeklyPlantName)",
+        "info": "Eine bereits angebaute Zwischenfrucht, die kompostiert oder gelagert werden kann."
+      },
+      "weeklyPlantTier3": {
+        "name": "$t(commands:shop.shopItems.weeklyPlantName)",
+        "info": "Eine seltene Pflanze, die bereits gezüchtet wurde und bereit ist, kompostiert oder gelagert zu werden."
+      },
+      "marketAnalysis": {
+        "name": "{emote:shopItems.marketAnalysis} Marktanalyse",
+        "info": "Ein Marktberater wird Ihnen einen ausführlichen Bericht über die Trends bei den Königssilberpreisen und den Pflanzenpreisen für die kommenden Tage vorlegen.",
+        "giveTitle": "{{pseudo}}Bericht des Marktberaters",
+        "intro": "Der Berater rückt seine Brille zurecht und entrollt ein langes Pergament, das mit Notizen und Beobachtungen bedeckt ist...",
+        "kingsMoneyTitle": "{emote:unitValues.money} **Königsgeldkurs:**",
+        "kingsMoney": {
+          "tomorrow": {
+            "bigDrop": "- **Morgen**: Die königlichen Schatzkammern werden sich erheblich leeren. Der Kurs wird stark fallen, der Handel wird sehr ungünstig sein.",
+            "drop": "- **Morgen** : Der königliche Schatzmeister sagt eine Verschärfung der Börsen voraus. Es wird erwartet, dass die Kurse sinken.",
+            "stable": "- **Morgen**: Am Devisenmarkt sind keine besonderen Bewegungen zu erwarten.",
+            "rise": "- **Morgen**: In den Tavernen kursieren Gerüchte über Wohlstand. Der Kurs soll steigen.",
+            "bigRise": "- **Morgen**: Der König bereitet ein großes Festmahl vor und die Schatzkammern werden überquellen. Der Kurs wird außergewöhnlich sein!"
+          },
+          "threeDays": {
+            "bigDrop": "- **In drei Tagen**: Dem Königreich steht eine Zeit großer Sparmaßnahmen bevor. Der Kurs wird stark fallen.",
+            "drop": "- **In drei Tagen**: Der Wind wird leicht zu Ungunsten der Austauscher drehen. Der Kurs dürfte sinken.",
+            "stable": "- **In drei Tagen**: Die Lage bleibt ähnlich wie heute. Keine nennenswerten Veränderungen.",
+            "rise": "- **In drei Tagen** : Ausländische Händler werden in Strömen kommen. Der Wechselkurs wird günstiger sein.",
+            "bigRise": "- **In drei Tagen**: Der Handel wird boomen und der Kurs wird Höchststände erreichen!"
+          },
+          "oneWeek": {
+            "bigDrop": "- **In einer Woche**: Das Königreich wird eine große Handelskrise durchmachen. Der Kurs wird abstürzen.",
+            "drop": "- **In einer Woche**: Der Handel wird sich etwas verlangsamen, was zu einem Kursrückgang führt.",
+            "stable": "- **In einer Woche**: Die Sterne zeigen eine stabile Phase für den Handel an.",
+            "rise": "- **In einer Woche**: Handelskarawanen werden Reichtum und Überfluss bringen. Der Kurs wird steigen.",
+            "bigRise": "- **In einer Woche**: Eine Ära des großen Wohlstands steht bevor, der Kurs wird außergewöhnlich sein!"
+          }
+        },
+        "plantsTitle": "{emote:shopItems.plantSlotExtension} **Pflanzenmarkt:**",
+        "plantHeader": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}})",
+        "plantHeader_bold": "{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** :",
+        "plants": {
+          "tomorrow": {
+            "bigDrop": "- **Morgen**: Massive Bestände von $t(models:plants.{{plantId}}) werden in die Regale kommen, die Preise werden zusammenbrechen.",
+            "drop": "- **Morgen**: Das Angebot von $t(models:plants.{{plantId}}) wird etwas größer sein als die Nachfrage, die Preise werden voraussichtlich sinken.",
+            "stable": "- **Morgen**: Für diese Pflanze gibt es nichts Besonderes zu berichten, die Kurse werden stabil bleiben.",
+            "rise": "- **Morgen**: Die Vorräte an $t(models:plants.{{plantId}}) gehen bei den Kräuterhändlern zur Neige, die Preise werden steigen.",
+            "bigRise": "- **Morgen**: Ein Mangel an $t(models:plants.{{plantId}}) zeichnet sich ab, die Preise werden in die Höhe schnellen!"
+          },
+          "threeDays": {
+            "bigDrop": "- **In drei Tagen** : Der Markt wird von $t(models:plants.{{plantId}})überschwemmt werden , die Preise werden stark fallen.",
+            "drop": "- **In 3 Tagen**: Eine leichte Überproduktion von $t(models:plants.{{plantId}}) wird die Preise senken.",
+            "stable": "- **In drei Tagen**: Der Markt für diese Pflanze wird ausgeglichen bleiben.",
+            "rise": "- **In drei Tagen**: Die Nachfrage nach $t(models:plants.{{plantId}}) wird deutlich ansteigen, die Preise werden steigen.",
+            "bigRise": "- **In drei Tagen** : Die Kräuterhändler werden Mühe haben, $t(models:plants.{{plantId}})zu finden, die Preise werden explodieren!"
+          },
+          "oneWeek": {
+            "bigDrop": "- **In einer Woche**: Eine massive Überproduktion wird die Preise für $t(models:plants.{{plantId}}) in den Keller treiben.",
+            "drop": "- **In einer Woche**: Der Markt für $t(models:plants.{{plantId}}) wird einen leichten Überschuss aufweisen.",
+            "stable": "- **In einer Woche**: Der Markt für diese Pflanze dürfte sein derzeitiges Gleichgewicht beibehalten.",
+            "rise": "- **In einer Woche**: Die Reserven von $t(models:plants.{{plantId}}) werden zur Neige gehen, die Preise werden steigen.",
+            "bigRise": "- **In einer Woche**: Eine Dürre wird den Anbau von $t(models:plants.{{plantId}})treffen , die Preise werden auf einem Höchststand sein!"
+          }
+        },
+        "outro": "*Der Berater rollt das Pergament zusammen und reicht es Ihnen mit einem wissenden Lächeln.*",
+        "horizonLabels": {
+          "tomorrow": "morgen",
+          "threeDays": "in 3 Tagen",
+          "oneWeek": "in einer Woche"
+        },
+        "rotation": "{emote:inventory.stock} **Bestandsänderung**: Der Kräuterkundler wird seine Auswahl erneuern **{{horizon}}**. Die neu verfügbaren Pflanzen werden sein: {{newPlants}}.",
+        "newPlants": {
+          "tomorrow": {
+            "bigDrop": "- **Morgen**: Der Preis für $t(models:plants.{{plantId}}) wird weit unter seinem üblichen Wert liegen, ein hervorragendes Geschäft!",
+            "drop": "- **Morgen**: Der Preis für $t(models:plants.{{plantId}}) wird etwas unter dem aktuellen Preis liegen.",
+            "stable": "- **Morgen**: Der Preis von $t(models:plants.{{plantId}}) wird seinem üblichen Wert entsprechen.",
+            "rise": "- **Morgen**: Der Preis für $t(models:plants.{{plantId}}) wird im Vergleich zum Normalfall etwas höher sein.",
+            "bigRise": "- **Morgen**: Der Preis für $t(models:plants.{{plantId}}) wird weit über seinem üblichen Wert liegen, besser warten."
+          },
+          "threeDays": {
+            "bigDrop": "- **In drei Tagen**: Die $t(models:plants.{{plantId}}) wird zu einem sehr günstigen Preis angeboten.",
+            "drop": "- **In drei Tagen**: Der Preis für $t(models:plants.{{plantId}}) wird etwas unter dem Durchschnitt liegen.",
+            "stable": "- **In drei Tagen** : Der Preis von $t(models:plants.{{plantId}}) wird nicht überraschend sein.",
+            "rise": "- **In drei Tagen**: Die $t(models:plants.{{plantId}}) wird etwas teurer sein als üblich.",
+            "bigRise": "- **In drei Tagen**: Die $t(models:plants.{{plantId}}) wird viel mehr kosten als sonst."
+          },
+          "oneWeek": {
+            "bigDrop": "- **In einer Woche**: Der Preis für $t(models:plants.{{plantId}}) wird außergewöhnlich niedrig sein.",
+            "drop": "- **In einer Woche**: Die $t(models:plants.{{plantId}}) wird zu einem leicht reduzierten Preis angeboten.",
+            "stable": "- **In einer Woche** : Der Preis für $t(models:plants.{{plantId}}) wird im mittleren Bereich liegen.",
+            "rise": "- **In einer Woche**: Der Preis für $t(models:plants.{{plantId}}) wird etwas über dem Normalwert liegen.",
+            "bigRise": "- **In einer Woche** : Die $t(models:plants.{{plantId}}) wird zu einem exorbitanten Preis verkauft!"
+          }
+        }
+      },
       "dailyPotion": {
         "info": "Sie erhalten einen Trank, bei dem Sie entscheiden, ob Sie ihn behalten wollen oder nicht. Wenn Sie ihn bereits haben, wird er ohne Rückerstattung weggeworfen!"
+      },
+      "woodCommonBundle": {
+        "name": "{emote:shopItems.woodCommonBundle} Brennholz",
+        "info": "Gewöhnliches Holz, das sich perfekt dazu eignet, Ihren Küchenherd zu befeuern."
+      },
+      "woodUncommonBundle": {
+        "name": "{emote:shopItems.woodUncommonBundle} Bearbeitetes Holz",
+        "info": "Holz von mittlerer Qualität, das als Zutat in einigen Rezepten nützlich ist."
+      },
+      "randomMaterialPack": {
+        "name": "{emote:shopItems.randomMaterialPack} Materialpaket",
+        "info": "Eine Auswahl an verschiedenen Materialien, die in allen Ecken des Königreichs gesammelt wurden. Der Inhalt ist zufällig und kann seltene Materialien enthalten."
+      },
+      "remoteHarvestTalisman": {
+        "name": "{emote:city.gardenStatus.remoteHarvestTalisman} Sylvesterherz",
+        "info": "Ein Talisman, der aus einer lebendigen Faser geflochten ist, die noch vor Saft zittert. Er hält eine diskrete Verbindung zu Ihrem Garten aufrecht, wohin Sie auch gehen. Wo auch immer Sie sich auf der Karte befinden, {command:garden} ermöglicht es Ihnen, Ihre Anpflanzungen zu überwachen und die Früchte aus der Ferne zu ernten, ohne jedoch pflanzen oder gießen zu können."
       },
       "token": {
         "name": "{emote:unitValues.token} Jeton",
@@ -1022,6 +1792,7 @@
         "dislikedLocations": "\n{emote:expedition.disliked} Misstrauisch gegenüber : {{locations}}",
         "noPreferences": "\n\n{emote:expedition.map} **Erkundungsvorteile: Ich beobachte bei Ihrem Vertrauten eine bemerkenswerte Anpassungsfähigkeit. Sein Instinkt ermöglicht es ihm, sich ohne besondere Schwierigkeiten an alle Arten von Gelände zu gewöhnen.",
         "petIsHungry": "{emote:effects.starving} hungrig",
+        "lovePointsGained": "\n\n{emote:petInformation.loveScore} Der Tierarzt hat sich liebevoll um dein Haustier gekümmert und ihm **{{amount, number}}** Liebespunkte zurückgegeben!",
         "commentOnFightEffect": {
           "bite": [
             "Dieses Haustier hat beeindruckende Reißzähne! Im Kampf wird er nicht zögern, deine Gegner mit furchterregender Präzision zu beißen.",
@@ -1392,12 +2163,6 @@
     "missionDisplay_campaign": "{{mission}}\n{{progressionBar}} {{current, number}}/{{objective, number}}",
     "missionDisplay_other": "{{mission}} (expire {{time}})\n{{progressionBar}} {{current, number}}/{{objective, number}}"
   },
-  "guildShop": {
-    "noFoodStorageSpace": "Sie haben nicht genug Platz in Ihrem Lagerraum, um diese Lebensmittel zu lagern.",
-    "empty": "Im Moment gibt es nichts mehr zu kaufen. Ihre Gilde ist auf der höchsten Stufe und ihr Nahrungsvorrat ist voll.",
-    "giveXpTitle": "Erfolg des Kaufs",
-    "giveXp": "{emote:unitValues.xp} Ihre Gilde hat **{{xp, number}}** Erfahrungspunkte erhalten."
-  },
   "guildDaily": {
     "rewardTitle": "Gildenbelohnung {{guildName}} :",
     "coolDown": "Die Gildenbelohnung ist nur einmal alle {{coolDownTime}} Stunden verfügbar. Wenn ein neues Mitglied zur Gilde hinzugefügt wird, wird der Zähler zurückgesetzt. Nächste Belohnung {{time}}.",
@@ -1405,6 +2170,7 @@
     "rewards": {
       "personalXP": "{emote:unitValues.xp} | Die Mitglieder der Gilde haben Erfahrung erhalten. `+ {{quantity, number}} {emote:unitValues.xp}`.",
       "guildXP": "{emote:unitValues.xp} | Die Gilde hat Erfahrung erhalten. `+ {{quantity, number}} {emote:unitValues.xp}`",
+      "guildPoints": "{emote:unitValues.guildPoint} Verdiente Gildenpunkte: `+ {{quantity, number}} {emote:unitValues.guildPoint}`. Der Cashflow steigt um denselben Betrag.",
       "money": "{emote:unitValues.money} | Die Mitglieder der Gilde haben `{{quantity, number}} {emote:unitValues.money}` erhalten.",
       "item": "{emote:rewards.item} | Die Mitglieder der Gilde haben einen zufälligen Gegenstand erhalten.",
       "badge": "{emote:badges.powerful_guild} | Die Mitglieder der Gilde haben ein Abzeichen erhalten.",
@@ -1472,7 +2238,6 @@
     "yourRank_one": "{{badge}} **{{pseudo}}**, du bist momentan auf Platz **{{rank, number}}** von insgesamt {{total, number}} Spielern!",
     "yourRank_other": "{{badge}} **{{pseudo}}**, du bist momentan auf Platz **{{rank, number}}** von insgesamt {{total, number}} Spielern!",
     "yourRankNoneScore": "{emote:top.error} | Sie erscheinen leider nicht in der Top-Liste, da Sie eine Punktzahl von 100 oder weniger haben!",
-    "yourRankAtPage": "(Sie finden sich auf der Seite {{page, number}} / {{maxPage, number}})",
     "titleGlory": "{emote:unitValues.glory} Anzeige des Top-Ruhmes der Plätze {{minRank, number}} bis {{maxRank, number}}",
     "yourRankNoneGlory_one": "{emote:top.error} | Sie erscheinen leider nicht in der Top-Liste, da Sie noch nicht genügend Ranglistenkämpfe absolviert haben! Sie müssen noch {{needFight, number}} Ranglistenkämpfe absolvieren.",
     "yourRankNoneGlory_other": "{emote:top.error} | Sie erscheinen leider nicht in der Top-Liste, da Sie noch nicht genügend Ranglistenkämpfe absolviert haben! Sie müssen noch {{needFight, number}} Ranglistenkämpfe absolvieren.",
@@ -1483,12 +2248,10 @@
     "yourRankGuild_one": "{{badge}} **{{pseudo}}**, deine Gilde ist momentan auf Platz **{{rank, number}}** von insgesamt {{total, number}} Gilden!",
     "yourRankGuild_other": "{{badge}} **{{pseudo}}**, deine Gilde ist derzeit auf Platz **{{rank, number}}** von insgesamt {{total, number}} Gilden!",
     "yourRankNoneGuild": "{emote:top.error} | Deine Gilde erscheint leider nicht in der Top-Liste, da sie keine Gildenpunkte hat!",
-    "yourRankAtPageGuild": "(Sie finden sie auf der Seite {{page, number}} / {{maxPage, number}})",
     "noGuild": "{emote:top.error} | Du erscheinst nicht in dieser Rangliste, da du keiner Gilde angehörst!",
     "nobodyInTopPlayers": "Derzeit sind keine Spieler klassifiziert!",
     "nobodyInTopGlory": "Derzeit ist kein Spieler in der Rangliste! Schließe noch {{needFight}} Ranglistenkampf ab, um in der Rangliste zu erscheinen!",
-    "nobodyInTopGuilds": "Es gibt derzeit keine Gilden in der Rangliste!",
-    "invalidPage": "Die angeforderte Seite existiert nicht. Bitte versuchen Sie es erneut mit einer Seite zwischen {{minPage}} und {{maxPage}}."
+    "nobodyInTopGuilds": "Es gibt derzeit keine Gilden in der Rangliste!"
   },
   "fight": {
     "title": "{{pseudo}}Sie sind im Begriff, einen Kampf zu beginnen.",
@@ -1717,23 +2480,19 @@
       ]
     }
   },
-  "switch": {
-    "titleSuccess": "{{pseudo}} Die Bestellung wurde ausgeführt!",
-    "switchingDouble": "{{item1}} und {{item2}} wurden ausgetauscht!",
-    "switchingSingle": "Sie haben ausgestattet: {{item1}} !",
-    "noItemToSwitch": "Sie haben keine Ausrüstung, die Sie ausrüsten müssen!",
-    "cancelled": "Aktion abgebrochen!",
-    "switchSelectionTitle": "{{pseudo}} Die Ausrüstung eines Objekts",
-    "switchSelectionDescription": "Wählen Sie aus der folgenden Liste einen Gegenstand zum Ausrüsten aus:"
-  },
-  "deposit": {
-    "titleSuccess": "{{pseudo}} Die Bestellung wurde ausgeführt!",
-    "deposeSuccess": "{{item}} in Ihrem Vorratsraum abgelegt wurde!",
-    "noItemToDeposit": "Sie müssen keine Ausrüstung einreichen!",
-    "cannotDeposit": "Ihr Vorrat ist voll.",
-    "cancelled": "Aktion abgebrochen!",
-    "depositSelectionTitle": "{{pseudo}}Ablegen eines Objekts",
-    "depositSelectionDescription": "Wählen Sie aus der folgenden Liste ein Objekt aus, das Sie ablegen möchten:"
+  "equip": {
+    "title": "{{pseudo}}Verwaltung der Ausrüstung",
+    "mainDescription": "Wählen Sie eine Kategorie aus, um Ihre Ausrüstung zu verwalten.",
+    "categoryHeader": "**{{category}}**",
+    "equippedSection": "{emote:equipCommand.equipped} **ausgestattetes Objekt:**",
+    "reserveSection": "{emote:equipCommand.reserve} **Reserve ({{count}}/{{max}}) :**",
+    "noEquippedItem": "Keine ausgestatteten Objekte",
+    "noReserveItems": "Keine Gegenstände in Reserve",
+    "reserveFull": "Volle Reserve",
+    "swapSection": "{emote:equipCommand.swap} **Tauschen :**",
+    "noItems": "Sie müssen sich um keine Ausrüstung kümmern!",
+    "closeTitle": "{{pseudo}}Schließen der Ausrüstung",
+    "closeDescription": "Sie haben das Ausstattungsmenü geschlossen."
   },
   "drink": {
     "errors": {
@@ -1772,7 +2531,6 @@
     "sellTitle": "Verkauf eines Vertrauten",
     "sellTitleWithBuyer": "{{buyer}} {{seller}} möchte Ihnen ein Haustier verkaufen:",
     "sellDescription": "{{pseudo}} möchte einen Vertrauten für `{{price, number}}{emote:unitValues.money}` verkaufen",
-    "maxLevelWarning": "{emote:collectors.warning} Ihre Gilde ist auf der höchsten Stufe, Sie erhalten keine Erfahrung!",
     "petFieldName": "Vertraute verkauft :",
     "sellFooter": "Weitere Informationen über den Verkauf von Haustieren erhalten Sie mit dem Befehl help petsell.",
     "successTitle": "{{pseudo}}Erfolgreiche Transaktion!",
@@ -1988,5 +2746,26 @@
     "collecting": "Abenteurer zahlen zusammen, um einen Segen zu beschwören.\n\n{{moneyEmote}} Fortschritt : **{{poolAmount, number}}** / **{{poolThreshold, number}}**\n{emote:blessingCommand.timeLeft} Verfall des Preispools: {{poolExpiresAt}}\n\nSpende, indem du das Orakel auf deinen Reisen triffst!",
     "contributors_one": "{emote:blessingCommand.topContributor} **Größter Beitragszahler:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** Abenteurer hat bislang beigetragen.",
     "contributors_other": "{emote:blessingCommand.topContributor} **Größter Beitragszahler:** {{topContributorName}} ({{topContributorAmount, number}} {{moneyEmote}})\n{emote:blessingCommand.contributors} **{{count}}** Abenteurer haben bislang Beiträge geleistet."
+  },
+  "guildDomain": {
+    "buildingRequired": "Das Gebäude **{{building}}** muss gebaut werden, um auf diese Funktion zugreifen zu können. Begeben Sie sich in den Bereich Ihrer Gilde, um es zu bauen.",
+    "buildings": {
+      "shop": {
+        "name": "Gildenladen",
+        "description": "Stufe {{level, number}}/{{maxLevel, number}}\nErmöglicht den Kauf von Nahrung und Gildenerfahrung."
+      },
+      "shelter": {
+        "name": "Zuflucht",
+        "description": "Stufe {{level, number}}/{{maxLevel, number}}\nBeherbergt die Vertrauten der Gilde."
+      },
+      "pantry": {
+        "name": "Speisekammer",
+        "description": "Stufe {{level, number}}/{{maxLevel, number}}\nSpeichert die Nahrung von Vertrauten."
+      },
+      "trainingGround": {
+        "name": "Menagerie",
+        "description": "Stufe {{level, number}}/{{maxLevel, number}}\nVertraute im Tierheim erhalten täglich Liebespunkte."
+      }
+    }
   }
 }
