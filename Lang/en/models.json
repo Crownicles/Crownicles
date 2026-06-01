@@ -706,7 +706,7 @@
       "failure": "calls **{{petNickname}}** who tries to bite his opponent, but his target seems impervious to this type of attack."
     },
     "petPetrified": {
-      "success": "is helped by **{{petNickname}}** who looks at his opponent the most and petrifies him.",
+      "success": "is helped by **{{petNickname}}** who looks at his opponent and petrifies him.",
       "failure": "is assisted by **{{petNickname}}** who looks at his opponent, but this has no effect against that opponent."
     },
     "petPoison": {
@@ -1029,87 +1029,105 @@
     "1": {
       "description": "A large sandy beach on the edge of the town.",
       "name": "Sentinel Beach",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "10": {
       "description": "An anciently fortified city, Ville Forte is not what it used to be. Ravaged by the old war, only a dozen houses and peasants remain. The rest of the old fortification isn't more than ruins.",
       "name": "Ville Forte",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "at",
+      "inParticle": "in the"
     },
     "1000": {
       "description": "A large beach of black volcanic sand. It takes its name from its very particular color. The first men to set foot on the black beach feared a great curse. This is obviously not the case. Be careful though, the black sand stains your feet and clothes.",
       "name": "Black beach",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "1001": {
       "description": "A huge forest that covers almost the entire island. Fine particles of ash fall from the Grumble Volcano, which makes the visibility in this forest rather difficult. It is therefore very little explored.",
       "name": "Forest of twilight",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "1002": {
       "description": "A small village of about twenty houses, partially destroyed, which is located near the forest of twilight. Nobody knows exactly why this village is in ruins. Many think that it is the village of the former inhabitants who succumbed to the lava flows of the Grumble Volcano. But others put forward the theory of a disease, the plague and many rats. There is not a single inhabitant left here...",
       "name": "Village in ruins",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "1003": {
       "description": "This old abandoned mine passes under the steep path and the mountains. It is so large and labyrinthine that it ends up in the heart of the volcano. It is however difficult to get there. Be careful though, some people would have found old banana remains in the misty mine.",
       "name": "Misty mine",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "1004": {
       "description": "This path is the only real path to the top of the Grumble Volcano. It is very difficult to use and very dangerous. Many men have died trying to use it. At your own risk.",
       "name": "Steep path",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "1005": {
       "description": "The centerpiece of the volcanic island, this volcano is still active. It pours several tons of ash per year on this small island, which only grows. The lava that flows in the center of the island is in such great quantity that an underground channel called Lava Channel runs for several kilometers. From the boats on the water, you can see this channel boiling the water in depth. This volcano is said to be the creator of several small islands in the area, such as the Ice Island.",
       "name": "Grumble volcano",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "11": {
       "description": "True last road which still allows to go around the Mount Celestrum from the north, the Great Road is still widely used, but mainly by brigands.",
       "name": "Great Road",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "1100": {
       "description": "This shoreline is the first thing we see when we arrive at the icy island. It bears its name from the noise coming from the sailors when they docked. Obviously, they came from the volcanic island where the temperature is much warmer.",
       "name": "Cool cool shore",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "1101": {
       "description": "A frozen land where the climate is merciless. Only the strongest adventurers dare to brave its glacial expanses.",
       "name": "Tundra",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "1102": {
       "description": "A cave burrowed into the mountain, teeming with magnificent gemstones. The crystals multiply on the walls, and their reflections light up every step of the way.",
       "name": "Crystal cave",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "1103": {
       "description": "A path carved into the mountainside, featuring a long flight of steps leading to a monumental gate guarded by a mysterious figure.",
       "name": "Sacred Doors",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "1104": {
       "description": "In the mountain chain, this peak is marked by the violence of its snowstorms and the speed of its winds. It is so high that oxygen is rare and the risk of dying of cold is high if you have not already succumbed to wild animals…",
       "name": "Snowy peak",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "1105": {
       "description": "A large lake in the heart of the mountain whose crossing is not without risk. As the temperature is cold, the fact that it is not frozen remains a mystery. No one knows its depth or its wildlife.",
       "name": "Underground Lake",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "1106": {
       "description": "A once-thriving village, now reduced to ruins and desolation. Only the cries of suffering of lost souls remind us that life once existed here.",
       "name": "Village devastated",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "1107": {
       "description": "A region where the cold becomes extreme. Behind a wall of ice, explorers can glimpse a gigantic silhouette reflecting on the frozen surface.",
       "name": "Ice Nest",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "1200": {
       "description": "A heavenly beach covered with shells of every color. It is said that each shell holds within it the echo of the ocean. The fine white sand contrasts with the turquoise waters of the nearby lagoon. Be careful where you step: some shells are as sharp as blades.",
@@ -1149,122 +1167,149 @@
     "12": {
       "description": "A great empty Nordic plain, without much interest.",
       "name": "The Expanse",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "in"
     },
     "13": {
       "description": "A difficult course. Muddy and wet, the Marshy Road connects the Expanse to the Crab River.",
       "name": "Marshy Road",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "14": {
       "description": "A large lake where families enjoy to round up. The Vacarme river flows to there.",
       "name": "Mirage Lake",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "15": {
       "description": "Mount Celestrum is the dominant mountain in the region. Celestrum, being several kilometers high, is visible to all. It is said to bear the name of the ancient goddess. Moreover, only one person managed to climb to the top. Only their initials are known: M-B.",
       "name": "Mount Celestrum",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "16": {
       "description": "Small and dangerous path bordering the Vacarme river. Be careful not to fall off.",
       "name": "Wolves Path",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "17": {
       "description": "Warm village bordering the Kings' Valley. It is a welcoming oasis for transit travelers.",
       "name": "Coco Village",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to",
+      "inParticle": "in the"
     },
     "18": {
       "description": "This river owes its name to the noise produced by its strong current which took the lives of many villagers.",
       "name": "Vacarme river",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "19": {
       "description": "Beach created by the strong winds from the Kings' Valley. The Dune protects the Backwoods Plains from heat and gathers water from the Vacarme river.",
       "name": "The Dune",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "in"
     },
     "1999": {
       "description": "An old wooden boat, it seems to hold up thanks to the repairs of the workers. It is ready to leave and is waiting for your arrival.",
       "name": "Boat to leave the island",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "2": {
       "description": "A small road that takes you to the countryside from Mergagnan and vice versa.",
       "name": "Rural Path",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "20": {
       "description": "A vast and peaceful plain, for agricultural purposes.",
       "name": "Backwoods Plains",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "21": {
       "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day ultimately creating a huge market.",
       "name": "Road of Wonders",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "22": {
       "description": "Ill-famed forest near Claire de Ville. Howling Woods has a bad reputation. Hideout of many bandits and outlaws, it owes its name mainly from its doubtful practices, hundreds of years ago.",
       "name": "Howling Woods",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "22222": {
       "description": "A test zone for monsters. Should never appear in the game.",
       "name": "Monsters test zone",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "23": {
       "description": "Large commercial city and economical crossroad, Claire de Ville hasn't always been that welcoming. Very poor at the beginning, she managed to quickly develop thanks to its many shops and hostels which offers a great choice to wanderers of the region. Claire de Ville is also known for its calm and its order.",
       "name": "Claire de Ville",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "in",
+      "inParticle": "in"
     },
     "24": {
       "description": "A very steep road that leads to Claire de Ville. Everything depends on which way you're following it.",
       "name": "Climbing road",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "25": {
       "description": "Everything is in the name. A river well appreciated by fishmongers from Claire de Ville.",
       "name": "Crabs' River",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "at"
     },
     "26": {
       "description": "A peaceful town on the edge of the Sentinel Beach.",
       "name": "Seawynne",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "in",
+      "inParticle": "in"
     },
     "27": {
       "description": "A forest at the foot of Mount Celestrum",
       "name": "Celestrum Forest",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "at"
     },
     "28": {
       "description": "Entrance to the king's castle. Surrounded by a thick wall, it seems to be able to resist every conceivable attack.",
       "name": "Castle's entrance",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "29": {
       "description": "A vast room adorned with numerous works of art.",
       "name": "Reception room",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "3": {
       "description": "Huge plain in the West of the region bordered by a large forest and crossed by a large road.",
       "name": "The Cradle",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "32": {
       "description": "The road which leads to the King's castle.",
       "name": "Road to the King's castle",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "in"
     },
     "33": {
       "description": "",
       "name": "Principal continent",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "39": {
       "description": "A path drowned in thick mist, motionless and without origin. There are no landmarks or shapes to locate this place.",
@@ -1276,35 +1321,91 @@
       "name": "Haunted house",
       "particle": "of the"
     },
+    "41": {
+      "description": "A pavement flank connecting Boug-Coton with the gates of the royal chateau, where messengers meet before entering the king’s apartments.",
+      "name": "Court of Chapel",
+      "particle": "of the",
+      "atParticle": "at",
+      "inParticle": "in the"
+    },
+    "42": {
+      "description": "A pavement flank connecting Boug-Coton with the gates of the royal chateau, where messengers meet before entering the king’s apartments.",
+      "name": "Court of Chapel",
+      "particle": "of the",
+      "atParticle": "at",
+      "inParticle": "in the"
+    },
     "4": {
       "description": "Huge forest at the South of the Cradle. It is said that many travelers got lost there.",
       "name": "Oldster's Forest",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
     },
     "5": {
       "description": "A way named after its furrow within the abundant nature at the South of the Oldster's forest.",
       "name": "Daedalus Path",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "to"
     },
     "6": {
       "description": "A peaceful village known for its welcoming inn.",
       "name": "Boug-Coton",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "in",
+      "inParticle": "in"
     },
     "7": {
       "description": "Hot sandy desert named in honor of the region's ancient kings.",
       "name": "Kings' Valley",
-      "particle": "of"
+      "particle": "of",
+      "atParticle": "at"
     },
     "8": {
       "description": "A major crossroad that links main paths to the West of Mount Celestrum.",
       "name": "Crossroads of Fates",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "to"
     },
     "9": {
       "description": "Formerly important trade route connecting the Cradle and Ville Forte, only old chipped pavement remains of the Main Road.",
       "name": "Main Road",
-      "particle": "of the"
+      "particle": "of the",
+      "atParticle": "at"
+    },
+    "34": {
+      "description": "A peaceful town on the edge of the Sentinel Beach.",
+      "name": "Seawynne",
+      "particle": "of",
+      "atParticle": "in",
+      "inParticle": "in"
+    },
+    "35": {
+      "description": "A peaceful village known for its welcoming inn.",
+      "name": "Boug-Coton",
+      "particle": "of",
+      "atParticle": "in",
+      "inParticle": "in"
+    },
+    "36": {
+      "description": "An anciently fortified city, Ville Forte is not what it used to be. Ravaged by the old war, only a dozen houses and peasants remain. The rest of the old fortification isn't more than ruins.",
+      "name": "Ville Forte",
+      "particle": "of the",
+      "atParticle": "at",
+      "inParticle": "in the"
+    },
+    "37": {
+      "description": "Large commercial city and economical crossroad, Claire de Ville hasn't always been that welcoming. Very poor at the beginning, she managed to quickly develop thanks to its many shops and hostels which offers a great choice to wanderers of the region. Claire de Ville is also known for its calm and its order.",
+      "name": "Claire de Ville",
+      "particle": "of",
+      "atParticle": "in",
+      "inParticle": "in"
+    },
+    "38": {
+      "description": "An oasis seized by the noblemen of the Valley of the Kings as a refreshing haven. Coconut grown there are recognized throughout the country and exchange gold prices on the kingdom's marches. The scarcity of land built around the source makes it one of the most wanted places.",
+      "name": "Coco Village",
+      "particle": "of",
+      "atParticle": "to",
+      "inParticle": "in the"
     }
   },
   "map_types": {
@@ -2055,7 +2156,9 @@
     "92": "Troll drool",
     "93": "Titan's tear",
     "94": "ChocoChoc bar",
-    "95": "Amazing Speed Mega Potion"
+    "95": "Amazing Speed Mega Potion",
+    "96": "Tisane Tisane",
+    "97": "Quick Infusion"
   },
   "weapons": {
     "0": "Fist",
@@ -2182,7 +2285,8 @@
   },
   "talisman": {
     "anchor": "{emote:expedition.talisman} **Anchoring Talisman**",
-    "clone": "{emote:expedition.cloneTalisman} **Cloning Talisman**"
+    "clone": "{emote:expedition.cloneTalisman} **Cloning Talisman**",
+    "remoteHarvest": "{emote:city.gardenStatus.remoteHarvestTalisman} **Silent Heart**"
   },
   "ordinals": {
     "get_feminine_ordinal_one": "1st",
@@ -2280,6 +2384,231 @@
     },
     "1206": {
       "leviathan": "You descend into an underwater ravine where there is no longer any light. Darkness envelops you, the silence oppressive. Then you feel it before you see it: a titanic presence emitting a low vibration that shakes every bone in your body. Two pupils open, as wide as shields, an electric blue that sizzles in the black water. Leviathan awakens, slowly unfurling, its size defying belief. Lightning begins to crackle between its fangs as the water swirls in a nascent maelstrom. You've just made the mistake of waking him up..."
+    }
+  },
+  "materials": {
+    "1": "Potassium Chlorate",
+    "2": "Acacia Plank",
+    "3": "Alien Cell",
+    "4": "Aluminium",
+    "5": "amethyst crystal",
+    "6": "Ammonia",
+    "7": "Ancient Bronze",
+    "8": "Bamboo Rod",
+    "9": "Beech bark",
+    "10": "Belladone",
+    "11": "Bison Hide",
+    "12": "Hemp string braided",
+    "13": "Brass",
+    "14": "Bronze",
+    "15": "Cactus",
+    "16": "Carbon Steel",
+    "17": "Rice Seed",
+    "18": "Belt Wood",
+    "19": "Celestial Vine",
+    "20": "Lump of Cloth",
+    "21": "Coal Powder",
+    "22": "Composite Meal",
+    "23": "Compressed Gas",
+    "24": "Copper",
+    "25": "Cotton",
+    "26": "Cow Hide",
+    "27": "Crocodile Leather",
+    "28": "Raw Oil",
+    "29": "Deer Leather",
+    "30": "Lavender wrought",
+    "31": "Bee Bark",
+    "32": "Sugar Mules",
+    "33": "Elemental tear",
+    "34": "Enchanted Rune",
+    "35": "Eternal Flame",
+    "36": "Extremely veenous fungus",
+    "37": "Linen Wire",
+    "38": "fugu otrodotoxin",
+    "39": "Galvanised Steel",
+    "40": "Fantoe Grass",
+    "41": "Ginger Roots",
+    "42": "Hair Leather",
+    "43": "Grated brass",
+    "44": "Cannon Dust",
+    "45": "hemp fibers",
+    "46": "Hydrogen Peroxide",
+    "47": "Jute Rope",
+    "48": "Lamb Hide",
+    "49": "Leather Braided Rope",
+    "50": "Aluminium legium",
+    "51": "Maple Leaf",
+    "52": "Meadow Grass",
+    "53": "Moonstone",
+    "54": "Mousses",
+    "55": "Mushroom",
+    "56": "Nitroglycerine",
+    "57": "Nylon Wire",
+    "58": "Bank Branch",
+    "59": "Sheets",
+    "60": "oud Resine",
+    "61": "Philosophical Book",
+    "62": "Phoenix Feather",
+    "63": "Pork Leather",
+    "64": "Pine Ring",
+    "65": "Plutonium 239",
+    "66": "Vein Mushroom",
+    "67": "Precious Stone",
+    "68": "Purified water",
+    "69": "Rainbow Quartz",
+    "70": "Raw Iron",
+    "71": "Red Copper",
+    "72": "Sacred Encens",
+    "73": "Incense of sage",
+    "74": "Sandalwood",
+    "75": "Silk Slash",
+    "76": "Silver Dragon Scale",
+    "77": "Silver Dust",
+    "78": "Snake Hide",
+    "79": "Stainless Steel",
+    "80": "Star Dust",
+    "81": "Steel",
+    "82": "Sulfur",
+    "83": "Synthetic Leather",
+    "84": "Teak Board",
+    "85": "Toughened Steel",
+    "86": "Titanium",
+    "87": "Novice Rose",
+    "88": "Walnut Branch",
+    "89": "White Candle",
+    "90": "Zinc"
+  },
+  "plants": {
+    "1": "Common grass",
+    "2": "Trefle Dored",
+    "3": "Moon Foam",
+    "4": "Iron Root",
+    "5": "Night Mushroom",
+    "6": "Venomous Leaf",
+    "7": "Fire Bulb",
+    "8": "Carnegie Plant",
+    "9": "Crystal Flower",
+    "10": "Ancestral Tree"
+  },
+  "cooking": {
+    "grades": {
+      "kitchenHelper": "Kitchen Help",
+      "scullion": "Pot",
+      "cook": "Cook",
+      "roaster": "Roaster",
+      "saucier": "Sauce",
+      "steward": "Office Mayor",
+      "tableChef": "Table leader",
+      "stoveChef": "Master Furnace",
+      "kitchenMaster": "Kitchen Mayor",
+      "royalGrandChef": "Royal Grand Cook"
+    },
+    "stations": {
+      "0": "AIRPORT",
+      "1": "Cauldron",
+      "2": "Smelter",
+      "3": "Alambic",
+      "4": "Blaze"
+    },
+    "recipes": {
+      "potion_health_1": "Basic Healing Potion",
+      "potion_health_2": "Elevated Healing Potion",
+      "potion_health_3": "Healing potion",
+      "potion_health_4": "Improved Healing Potion",
+      "potion_health_5": "Potent Healing Potion",
+      "potion_health_6": "Supreme Healing Potion",
+      "potion_health_7": "Elixir of Life",
+      "potion_health_8": "Elixir of Major Life",
+      "potion_energy_1": "Basic Potion of Vigor",
+      "potion_energy_2": "Elevated Potion of Vigor",
+      "potion_energy_3": "Potion of Vigour",
+      "potion_energy_4": "Improved Potion of Vigor",
+      "potion_energy_5": "Powerful Potion of Vigor",
+      "potion_energy_6": "Supreme Vigor Potion",
+      "potion_energy_7": "Power Elixir",
+      "potion_energy_8": "Major Energy Elixir",
+      "potion_time_speedup_1": "Basic Potion of Treerity",
+      "potion_time_speedup_2": "Elevated Potion",
+      "potion_time_speedup_3": "Potion of this rank",
+      "potion_time_speedup_4": "Improved Potion of this",
+      "potion_time_speedup_5": "Powerful Potion of Treasured",
+      "potion_time_speedup_6": "Potion of this higher",
+      "potion_time_speedup_7": "Elixir of time",
+      "potion_time_speedup_8": "Elixir of Major Time",
+      "potion_defense_1": "Basic Protection Potion",
+      "potion_defense_2": "Elevated Protection Potion",
+      "potion_defense_3": "Protection Potion",
+      "potion_defense_4": "Enhanced Protection Potion",
+      "potion_defense_5": "Powerful Protection Potion",
+      "potion_defense_6": "Supreme Protection Potion",
+      "potion_defense_7": "Elixir Guard",
+      "potion_defense_8": "Elixir Major Guard",
+      "potion_attack_1": "Basic Potion of Strength",
+      "potion_attack_2": "Elevated Strength Potion",
+      "potion_attack_3": "Strength potion",
+      "potion_attack_4": "Enhanced Strength Potion",
+      "potion_attack_5": "Potency Potion",
+      "potion_attack_6": "Potion of Strength",
+      "potion_attack_7": "Power Elixir",
+      "potion_attack_8": "Elixir of Major Power",
+      "potion_speed_1": "Basic Veteran Potion",
+      "potion_speed_2": "Elevated Veteran Potion",
+      "potion_speed_3": "Veteran Potion",
+      "potion_speed_4": "Improved Veteran Potion",
+      "potion_speed_5": "Potent Veteran Potion",
+      "potion_speed_6": "Veteran Potion",
+      "potion_speed_7": "Quickened Elixir",
+      "potion_speed_8": "Major Quickness Elixir",
+      "petfood_salad_1": "Simple Salad",
+      "petfood_salad_2": "Dipped Salad",
+      "petfood_salad_3": "Greedy Salad",
+      "petfood_salad_4": "Royal Salad",
+      "petfood_salad_5": "Legendary Salad",
+      "petfood_candy_1": "Candy",
+      "petfood_candy_2": "Sweet candy",
+      "petfood_candy_3": "Exquisite Candy",
+      "petfood_candy_4": "Refined candy",
+      "petfood_candy_5": "Holy Candy",
+      "petfood_meat_1": "Grilled Meat",
+      "petfood_meat_2": "Sea Meat",
+      "petfood_meat_3": "Seasoned Meat",
+      "petfood_meat_4": "Gastronomic Meat",
+      "petfood_meat_5": "Legendary Meat",
+      "petfood_ultimate_1": "Traveler's Soup",
+      "petfood_ultimate_2": "Feeding Soup",
+      "petfood_ultimate_3": "Champion Feast",
+      "petfood_ultimate_4": "Royal banquet",
+      "petfood_ultimate_5": "Feast of the Gods",
+      "material_metal_1": "Metallic Font",
+      "material_metal_2": "Reinforced Metal Alloy",
+      "material_metal_3": "Ancient metallic ingot",
+      "material_alloy_1": "Forged Alloy",
+      "material_alloy_2": "Composite Alloy",
+      "material_alloy_3": "Gender Alloy",
+      "material_nature_1": "Concentrated Natural Essence",
+      "material_nature_2": "Nature distillate",
+      "material_nature_3": "Pure Nature Crystal",
+      "material_spiritual_1": "Condensed Spirit Ether",
+      "material_spiritual_2": "Ace Fragment",
+      "material_spiritual_3": "Greater Spiritual Essence",
+      "material_magic_1": "Crystallized Magic Dust",
+      "material_magic_2": "Arcane Crystal",
+      "material_magic_3": "Ancient Magic Stone",
+      "material_leather_1": "Strengthened Tanned Hide",
+      "material_leather_2": "Elite Leather",
+      "material_leather_3": "Dragonhide",
+      "material_rope_1": "Straight braid",
+      "material_rope_2": "Enchanted Filin",
+      "material_rope_3": "Legendary Coordination",
+      "material_poison_1": "Concentrated Toxin",
+      "material_poison_2": "Distilled Venom",
+      "material_poison_3": "Shadow Poison",
+      "material_explosive_1": "Refined Explosive Powder",
+      "material_explosive_2": "Enhanced Explosive Charge",
+      "material_explosive_3": "Ancestral Intonator",
+      "material_wood_1": "Hardwood",
+      "material_wood_2": "Enchanted Wood",
+      "material_wood_3": "World Tree Wood"
     }
   }
 }
