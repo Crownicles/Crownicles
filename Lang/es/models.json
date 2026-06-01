@@ -706,7 +706,7 @@
       "failure": "llama a **{{petNickname}}** que intenta morder a su oponente, pero su objetivo parece impermeable a este tipo de ataque."
     },
     "petPetrified": {
-      "success": "es ayudado por **{{petNickname}}** que mira más a su oponente y lo petrifica.",
+      "success": "es ayudado por **{{petNickname}}** que mira a su oponente y lo petrifica.",
       "failure": "es asistido por **{{petNickname}}** que mira a su oponente, pero esto no tiene ningún efecto contra ese oponente."
     },
     "petPoison": {
@@ -1029,87 +1029,105 @@
     "1": {
       "description": "Una gran playa de arena a las afueras de la ciudad.",
       "name": "Playa Sentinel",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "10": {
       "description": "Antaño una gran ciudad fortificada, Ville Forte es ahora una sombra de lo que fue. Asolada por la antigua guerra, sólo quedan una docena de casas y campesinos. El resto de las antiguas fortificaciones está en ruinas.",
       "name": "Ciudad fuerte",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
     },
     "1000": {
       "description": "Una gran playa de arena volcánica negra. Debe su nombre a su color característico. Los primeros hombres que pisaron la playa negra temieron una gran maldición. Evidentemente, no es el caso. Pero hay que tener cuidado, porque la arena negra mancha los pies y la ropa.",
       "name": "Playa negra",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "1001": {
       "description": "Un inmenso bosque que cubre prácticamente toda la isla. Las finas partículas de ceniza que caen del volcán Grondant dificultan la visibilidad en este bosque. Por ello, apenas se explora.",
       "name": "Bosque del Crepúsculo",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "1002": {
       "description": "Un pequeño pueblo de unas veinte casas, parcialmente destruido, cerca del Bosque del Crepúsculo. Nadie sabe exactamente por qué el pueblo está en ruinas. Muchos creen que es la aldea de antiguos habitantes que murieron en las corrientes de lava del volcán Grondant. Pero otros proponen la teoría de una enfermedad, la peste y numerosas ratas. Aquí no queda ni un solo habitante...",
       "name": "Pueblo en ruinas",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "1003": {
       "description": "Esta antigua mina abandonada pasa por debajo del escarpado camino y las montañas. Es tan grande y laberíntica que acaba en el corazón del volcán. Sin embargo, es difícil llegar hasta ella. Tenga cuidado de no resbalar, ya que algunas personas han encontrado restos de viejos plátanos en la brumosa mina.",
       "name": "Cara brumosa",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "1004": {
       "description": "Este es el único camino real hacia la cumbre del Volcán Grondant. Es muy difícil de utilizar y, sobre todo, muy peligroso. Muchos hombres han muerto intentando escalarlo. Por su cuenta y riesgo.",
       "name": "Camino empinado",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "1005": {
       "description": "Este volcán, pieza central de la isla volcánica, sigue activo. Vierte varias toneladas de ceniza al año sobre esta pequeña isla, que no deja de crecer. De su centro fluye tanta lava que un canal subterráneo, conocido como Canal de Lavique, recorre varios kilómetros. Desde los barcos se puede ver cómo hierve el agua bajo la superficie. Se dice incluso que este volcán es el creador de varias pequeñas islas de la zona, entre ellas la Isla de Hielo.",
       "name": "Volcán retumbante",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "11": {
       "description": "Esta fue la última carretera real que rodeaba el monte Celestrum desde el norte, y todavía se utiliza mucho hoy en día, principalmente por los bandoleros.",
       "name": "Gran Hacha",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "1100": {
       "description": "Esta orilla es lo primero que se ve al llegar a la isla de hielo. Debe su nombre al ruido que hacían los marineros al desembarcar. Obviamente, regresaban de la isla volcánica, donde la temperatura es mucho más cálida.",
       "name": "Gla-gla litoral",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "1101": {
       "description": "Una extensión de tierra helada donde el clima es despiadado. Una tormenta de nieve permanente dificulta el avance y la cartografía de la zona. Aquí pueden verse todo tipo de animales árticos.",
       "name": "Tundra",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "1102": {
       "description": "Una gran caverna en la que el más mínimo rayo de sol que entra es multiplicado por los cristales, lo que la hace muy luminosa. Afiladas estalactitas y estalagmitas, sinónimo de heridas graves o incluso mortales si te cae una encima o si das un paso en falso, forman el telón de fondo de la caverna. Si se atreve a aventurarse un poco más, tendrá que elegir entre escalar hasta la cima del pico nevado o adentrarse aún más.",
       "name": "Cueva de cristal",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "1103": {
       "description": "Dos majestuosas puertas se alzan en lo alto de una larga serie de escalones. Subirlas no será fácil. Se dice que fueron construidas por una antigua civilización en honor a una deidad.",
       "name": "Puertas sagradas",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "aux"
     },
     "1104": {
       "description": "Este pico de la cordillera destaca por la violencia de sus tormentas de nieve y la velocidad de sus vientos. Está tan alto que el oxígeno escasea y el riesgo de morir congelado es alto si no se ha sucumbido ya a los animales salvajes…",
       "name": "Pico nevado",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "1105": {
       "description": "Un gran lago en el corazón de las montañas, cruzarlo no está exento de riesgos. Como la temperatura es gélida, el hecho de que no esté congelado sigue siendo un misterio. Nadie conoce su profundidad ni su fauna.",
       "name": "Lago subterráneo",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "1106": {
       "description": "Un pueblo rico y abandonado del que sólo quedan ruinas y desolación. Se puede ver el tejado de una casa señorial doblándose bajo el peso de la campana derrumbada de la iglesia. Aquí reina un pesado silencio, ocasionalmente interrumpido por los gritos de sufrimiento de las almas perdidas.",
       "name": "Pueblo devastado",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "1107": {
       "description": "Nadie se ha aventurado tan lejos todavía. A lo lejos, se ve una silueta gigantesca reflejada en una pared de hielo.",
       "name": "Nido congelado",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "1200": {
       "description": "Una playa paradisíaca cubierta de conchas de todos los colores. Se dice que cada concha contiene un eco del océano. La fina arena blanca contrasta con las aguas turquesas de la laguna cercana. Tenga cuidado donde pisa, algunas de las conchas son tan afiladas como cuchillas.",
@@ -1149,122 +1167,149 @@
     "12": {
       "description": "Una vasta y vacía llanura septentrional de escaso interés.",
       "name": "La Expansión",
-      "particle": "a"
+      "particle": "a",
+      "atParticle": "à"
     },
     "13": {
       "description": "Una carretera difícil, fangosa y húmeda. La carretera pantanosa une la Expansión con el río Cangrejo.",
       "name": "Carretera pantanosa",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "14": {
       "description": "Un gran lago donde a las familias les gusta reunirse. En él desemboca el río Vacarme.",
       "name": "Lago Mirage",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "15": {
       "description": "El monte Celestrum es la montaña dominante de la región. Con varios kilómetros de altura, Celestrum es visible para todos. Se dice que lleva el nombre de la antigua diosa. De hecho, sólo una persona ha conseguido escalar hasta la cima. De ella sólo quedan sus iniciales: M-B.",
       "name": "Monte Celestrum",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "16": {
       "description": "Peligroso sendero a orillas del río Vacarme. Tenga cuidado de no caerse.",
       "name": "Camino de los Lobos",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "17": {
       "description": "Cálido pueblo que bordea el Valle de los Reyes. Es un cálido oasis para los viajeros en tránsito.",
       "name": "Coco Village",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au",
+      "inParticle": "dans le"
     },
     "18": {
       "description": "Este río debe su nombre al ruido producido por su fuerte corriente, que se ha cobrado la vida de muchos aldeanos.",
       "name": "Río Vacarme",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "19": {
       "description": "Una playa creada por los fuertes vientos del Valle de los Reyes. La Duna protege las Plaines du Contre Bois del calor y trae agua del río Vacarme.",
       "name": "La Duna",
-      "particle": "a"
+      "particle": "a",
+      "atParticle": "à"
     },
     "1999": {
       "description": "Un viejo barco de madera, parece que aguanta bien gracias a las reparaciones realizadas por los trabajadores. Está listo para partir, a la espera de tu llegada.",
       "name": "Barco para salir de la isla",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "2": {
       "description": "Una pequeña carretera que conduce al campo desde Mergagnan y viceversa.",
       "name": "Camino rural",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "20": {
       "description": "Una vasta y pacífica llanura agrícola.",
       "name": "Plaines du Contre Bois",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "aux"
     },
     "21": {
       "description": "Una carretera muy utilizada por los aldeanos. Muchos pequeños vendedores ambulantes se instalan aquí durante un día, creando un enorme mercado.",
       "name": "Ruta de las maravillas",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "22": {
       "description": "Bois Hurlant, un bosque tristemente célebre situado en las afueras de Claire de Ville, tiene muy mala reputación. Refugio de bandidos y forajidos de todo tipo, su nombre se debe principalmente a las dudosas prácticas de hace cientos de años.",
       "name": "Bosque aullador",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "22222": {
       "description": "Una zona de prueba para monstruos. Se supone que nunca aparecerán en el juego.",
       "name": "Zona de pruebas de monstruos",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "23": {
       "description": "Claire de Ville, gran ciudad comercial y encrucijada económica, no siempre ha sido tan acogedora. Inicialmente muy pobre, se ha desarrollado rápidamente gracias a sus numerosos comercios y hoteles que ofrecen una amplia oferta a los viajeros de la región. Claire de Ville también es conocida por su tranquilidad y respeto al orden.",
       "name": "Claire de Ville",
-      "particle": "a"
+      "particle": "a",
+      "atParticle": "à",
+      "inParticle": "dans"
     },
     "24": {
       "description": "Una carretera muy empinada que lleva a Claire de Ville. Todo depende del camino que tomes.",
       "name": "Vía de escalada",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "25": {
       "description": "Todo está en el nombre. Un río muy apreciado por los pescaderos de Claire de Ville.",
       "name": "Rivière aux Crabes",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "26": {
       "description": "Una ciudad tranquila a orillas de Plage Sentinelle.",
       "name": "Mergagnan",
-      "particle": "a"
+      "particle": "a",
+      "atParticle": "à",
+      "inParticle": "dans"
     },
     "27": {
       "description": "Un bosque al borde del monte Celestrum.",
       "name": "Bosque de Celestrum",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "28": {
       "description": "Entrada al castillo del Rey. Rodeado por una gruesa muralla, parece capaz de resistir cualquier ataque imaginable.",
       "name": "Puertas del castillo",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "aux"
     },
     "29": {
       "description": "Una enorme sala adornada con numerosas obras de arte.",
       "name": "Sala de recepción",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "3": {
       "description": "Gran llanura al oeste del país bordeada por un gran bosque y atravesada por una carretera principal.",
       "name": "El Berceau",
-      "particle": "a"
+      "particle": "a",
+      "atParticle": "au"
     },
     "32": {
       "description": "El camino que lleva al castillo del Rey.",
       "name": "Ruta al castillo del Rey",
-      "particle": "a"
+      "particle": "a",
+      "atParticle": "à"
     },
     "33": {
       "description": "",
       "name": "Continente principal",
-      "particle": "a"
+      "particle": "a",
+      "atParticle": "au"
     },
     "39": {
       "description": "Un camino ahogado en niebla espesa, inmóvil y sin origen. No hay puntos de referencia ni formas que identifiquen este lugar.",
@@ -1276,35 +1321,91 @@
       "name": "Casa encantada",
       "particle": "a la"
     },
+    "41": {
+      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi.",
+      "name": "Cour du Château",
+      "particle": "a la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
+    },
+    "42": {
+      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi.",
+      "name": "Cour du Château",
+      "particle": "a la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
+    },
     "4": {
       "description": "Un vasto bosque al sur de la Cuna. Se dice que muchos viajeros se han perdido aquí.",
       "name": "Bosque de Vieillard",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "5": {
       "description": "El sendero debe su apodo a su naturaleza entrecruzada en la parte sur del Bosque del Viejo.",
       "name": "Camino de Dédale",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "6": {
       "description": "Un pueblo tranquilo conocido por su acogedora posada.",
       "name": "Algodón Boug",
-      "particle": "a"
+      "particle": "a",
+      "atParticle": "à",
+      "inParticle": "dans"
     },
     "7": {
       "description": "Un desierto arenoso y caluroso que debe su nombre a los antiguos reyes de la región.",
       "name": "Valle de los Reyes",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
     },
     "8": {
       "description": "Un cruce importante que une las principales carreteras al oeste del monte Celestrum.",
       "name": "Encrucijada del destino",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "au"
     },
     "9": {
       "description": "Antaño una importante ruta comercial que unía la Cuna y la Ville Forte, todo lo que queda de la Grande Rue son algunos viejos adoquines desconchados.",
       "name": "Grande Rue",
-      "particle": "a la"
+      "particle": "a la",
+      "atParticle": "à la"
+    },
+    "34": {
+      "description": "Una ciudad tranquila a orillas de Plage Sentinelle.",
+      "name": "Mergagnan",
+      "particle": "a",
+      "atParticle": "à",
+      "inParticle": "dans"
+    },
+    "35": {
+      "description": "Un pueblo tranquilo conocido por su acogedora posada.",
+      "name": "Algodón Boug",
+      "particle": "a",
+      "atParticle": "à",
+      "inParticle": "dans"
+    },
+    "36": {
+      "description": "Antaño una gran ciudad fortificada, Ville Forte es ahora una sombra de lo que fue. Asolada por la antigua guerra, sólo quedan una docena de casas y campesinos. El resto de las antiguas fortificaciones está en ruinas.",
+      "name": "Ciudad fuerte",
+      "particle": "a la",
+      "atParticle": "à la",
+      "inParticle": "dans la"
+    },
+    "37": {
+      "description": "Claire de Ville, gran ciudad comercial y encrucijada económica, no siempre ha sido tan acogedora. Inicialmente muy pobre, se ha desarrollado rápidamente gracias a sus numerosos comercios y hoteles que ofrecen una amplia oferta a los viajeros de la región. Claire de Ville también es conocida por su tranquilidad y respeto al orden.",
+      "name": "Claire de Ville",
+      "particle": "a",
+      "atParticle": "à",
+      "inParticle": "dans"
+    },
+    "38": {
+      "description": "Village oasis prisé par les nobles de la Vallée des Rois en quête de fraîcheur. Les noix de coco qu'on y récolte sont réputées dans tout le pays et s'échangent à prix d'or sur les marchés du royaume. La rareté des terrains constructibles autour de la source en fait l'un des lieux les plus convoités.",
+      "name": "Coco Village",
+      "particle": "a la",
+      "atParticle": "au",
+      "inParticle": "dans le"
     }
   },
   "map_types": {
@@ -2055,7 +2156,9 @@
     "92": "Baba de trol",
     "93": "Lágrima de Titán",
     "94": "Barra ChocoChoc",
-    "95": "Poción mega increíble de velocidad"
+    "95": "Poción mega increíble de velocidad",
+    "96": "Tisane tiède",
+    "97": "Infusion rapide"
   },
   "weapons": {
     "0": "Puño",
@@ -2182,7 +2285,8 @@
   },
   "talisman": {
     "anchor": "{emote:expedition.talisman} **Talismán de Anclaje**",
-    "clone": "{emote:expedition.cloneTalisman} **Talismán de Clonación**"
+    "clone": "{emote:expedition.cloneTalisman} **Talismán de Clonación**",
+    "remoteHarvest": "{emote:city.gardenStatus.remoteHarvestTalisman} **Cœur Sylvestre**"
   },
   "ordinals": {
     "get_feminine_ordinal_one": "1º",
@@ -2280,6 +2384,231 @@
     },
     "1206": {
       "leviathan": "Desciendes a un barranco submarino donde ya no hay luz. La oscuridad te envuelve, el silencio te oprime. Entonces lo sientes antes de verlo: una presencia titánica que emite una baja vibración que sacude cada hueso de tu cuerpo. Dos pupilas se abren, anchas como escudos, de un azul eléctrico que chisporrotea en el agua negra. El Leviatán se despierta, se despliega lentamente, su tamaño desafía cualquier creencia. Los relámpagos comienzan a crepitar entre sus colmillos mientras el agua se arremolina en un incipiente torbellino. Acabas de cometer el error de despertarlo..."
+    }
+  },
+  "materials": {
+    "1": "Chlorate de potassium",
+    "2": "Planche d'acacia",
+    "3": "Cellule extraterrestre",
+    "4": "Aluminium",
+    "5": "Cristal d'améthyste",
+    "6": "Ammoniac",
+    "7": "Bronze antique",
+    "8": "Tige de bambou",
+    "9": "Écorce d'hêtre",
+    "10": "Belladone",
+    "11": "Cuir de bison",
+    "12": "Corde de chanvre tressé",
+    "13": "Laiton",
+    "14": "Bronze",
+    "15": "Cactus",
+    "16": "Acier carbone",
+    "17": "Graine de ricin",
+    "18": "Bois de cèdre",
+    "19": "Liane céleste",
+    "20": "Morceau de tissu",
+    "21": "Poudre de charbon",
+    "22": "Métal composite",
+    "23": "Gaz comprimé",
+    "24": "Cuivre",
+    "25": "Coton",
+    "26": "Cuir de vache",
+    "27": "Cuir de crocodile",
+    "28": "Pétrole brut",
+    "29": "Cuir de daim",
+    "30": "Lavande séchée",
+    "31": "Écorce d'ébène",
+    "32": "Mûres de sureau",
+    "33": "Larme d'élémentaire",
+    "34": "Rune enchantée",
+    "35": "Flamme éternelle",
+    "36": "Champignon extrêmement vénéneux",
+    "37": "Fil de lin",
+    "38": "Tétrodotoxine de fugu",
+    "39": "Acier galvanisé",
+    "40": "Herbe fantôme",
+    "41": "Racines de gingembre",
+    "42": "Cuir de chèvre",
+    "43": "Laiton doré",
+    "44": "Poudre à canon",
+    "45": "Fibres de chanvre",
+    "46": "Peroxyde d'hydrogène",
+    "47": "Corde de jute",
+    "48": "Cuir d'agneau",
+    "49": "Corde tressée en cuir",
+    "50": "Aluminium léger",
+    "51": "Feuille d'érable",
+    "52": "Herbe de prairie",
+    "53": "Pierre de lune",
+    "54": "Mousses",
+    "55": "Champignon",
+    "56": "Nitroglycérine",
+    "57": "Fil de nylon",
+    "58": "Branche de chêne",
+    "59": "Feuilles de chêne",
+    "60": "Résine d'oud",
+    "61": "Livre philosophique",
+    "62": "Plume de phoenix",
+    "63": "Cuir de porc",
+    "64": "Pignon de pin",
+    "65": "Plutonium 239",
+    "66": "Champignon vénéneux",
+    "67": "Pierre précieuse",
+    "68": "Agua purificada",
+    "69": "Quartz arc-en-ciel",
+    "70": "Fer brut",
+    "71": "Cuivre rouge",
+    "72": "Encens sacré",
+    "73": "Encens de sauge",
+    "74": "Bois de santal",
+    "75": "Maille de soie",
+    "76": "Écaille de dragon argenté",
+    "77": "Poussière d'argent",
+    "78": "Cuir de serpent",
+    "79": "Acier inoxydable",
+    "80": "Poussière d'étoile",
+    "81": "Acier",
+    "82": "Soufre",
+    "83": "Cuir synthétique",
+    "84": "Planche de teck",
+    "85": "Acier trempé",
+    "86": "Titane",
+    "87": "Rose du néant",
+    "88": "Branche de noyer",
+    "89": "Bougie blanche",
+    "90": "Zinc"
+  },
+  "plants": {
+    "1": "Herbe commune",
+    "2": "Trèfle doré",
+    "3": "Mousse lunaire",
+    "4": "Racine de fer",
+    "5": "Champignon nocturne",
+    "6": "Feuille venimeuse",
+    "7": "Bulbe de feu",
+    "8": "Plante carnée",
+    "9": "Fleur de cristal",
+    "10": "Arbre ancestral"
+  },
+  "cooking": {
+    "grades": {
+      "kitchenHelper": "Aide-cuisine",
+      "scullion": "Marmiton",
+      "cook": "Cuisinier",
+      "roaster": "Rôtisseur",
+      "saucier": "Saucier",
+      "steward": "Maître d'office",
+      "tableChef": "Chef de table",
+      "stoveChef": "Chef des fourneaux",
+      "kitchenMaster": "Maître des cuisines",
+      "royalGrandChef": "Grand cuisinier royal"
+    },
+    "stations": {
+      "0": "Âtre",
+      "1": "Chaudron",
+      "2": "Fonderie",
+      "3": "Alambic",
+      "4": "Brasier"
+    },
+    "recipes": {
+      "potion_health_1": "Potion de soin basique",
+      "potion_health_2": "Potion de soin légère",
+      "potion_health_3": "Poción curativa",
+      "potion_health_4": "Potion de soin améliorée",
+      "potion_health_5": "Potion de soin puissante",
+      "potion_health_6": "Potion de soin supérieure",
+      "potion_health_7": "Élixir de vie",
+      "potion_health_8": "Élixir de vie majeur",
+      "potion_energy_1": "Potion de vigueur basique",
+      "potion_energy_2": "Potion de vigueur légère",
+      "potion_energy_3": "Potion de vigueur",
+      "potion_energy_4": "Potion de vigueur améliorée",
+      "potion_energy_5": "Potion de vigueur puissante",
+      "potion_energy_6": "Potion de vigueur supérieure",
+      "potion_energy_7": "Élixir d'énergie",
+      "potion_energy_8": "Élixir d'énergie majeur",
+      "potion_time_speedup_1": "Potion de célérité basique",
+      "potion_time_speedup_2": "Potion de célérité légère",
+      "potion_time_speedup_3": "Potion de célérité",
+      "potion_time_speedup_4": "Potion de célérité améliorée",
+      "potion_time_speedup_5": "Potion de célérité puissante",
+      "potion_time_speedup_6": "Potion de célérité supérieure",
+      "potion_time_speedup_7": "Élixir du temps",
+      "potion_time_speedup_8": "Élixir du temps majeur",
+      "potion_defense_1": "Potion de protection basique",
+      "potion_defense_2": "Potion de protection légère",
+      "potion_defense_3": "Potion de protection",
+      "potion_defense_4": "Potion de protection améliorée",
+      "potion_defense_5": "Potion de protection puissante",
+      "potion_defense_6": "Potion de protection supérieure",
+      "potion_defense_7": "Élixir de garde",
+      "potion_defense_8": "Élixir de garde majeur",
+      "potion_attack_1": "Potion de force basique",
+      "potion_attack_2": "Potion de force légère",
+      "potion_attack_3": "Poción de fuerza",
+      "potion_attack_4": "Potion de force améliorée",
+      "potion_attack_5": "Potion de force puissante",
+      "potion_attack_6": "Potion de force supérieure",
+      "potion_attack_7": "Élixir de puissance",
+      "potion_attack_8": "Élixir de puissance majeur",
+      "potion_speed_1": "Potion de vélocité basique",
+      "potion_speed_2": "Potion de vélocité légère",
+      "potion_speed_3": "Potion de vélocité",
+      "potion_speed_4": "Potion de vélocité améliorée",
+      "potion_speed_5": "Potion de vélocité puissante",
+      "potion_speed_6": "Potion de vélocité supérieure",
+      "potion_speed_7": "Élixir de rapidité",
+      "potion_speed_8": "Élixir de rapidité majeur",
+      "petfood_salad_1": "Salade simple",
+      "petfood_salad_2": "Salade composée",
+      "petfood_salad_3": "Salade gourmande",
+      "petfood_salad_4": "Salade royale",
+      "petfood_salad_5": "Salade légendaire",
+      "petfood_candy_1": "Bonbon artisanal",
+      "petfood_candy_2": "Bonbon sucré",
+      "petfood_candy_3": "Bonbon exquis",
+      "petfood_candy_4": "Bonbon raffiné",
+      "petfood_candy_5": "Bonbon divin",
+      "petfood_meat_1": "Viande grillée",
+      "petfood_meat_2": "Viande marinée",
+      "petfood_meat_3": "Viande assaisonnée",
+      "petfood_meat_4": "Viande gastronomique",
+      "petfood_meat_5": "Viande légendaire",
+      "petfood_ultimate_1": "Soupe du voyageur",
+      "petfood_ultimate_2": "Soupe nourrissante",
+      "petfood_ultimate_3": "Festin du champion",
+      "petfood_ultimate_4": "Banquet royal",
+      "petfood_ultimate_5": "Festin des dieux",
+      "material_metal_1": "Fonte de métal",
+      "material_metal_2": "Alliage métallique renforcé",
+      "material_metal_3": "Lingot métallique ancien",
+      "material_alloy_1": "Alliage forgé",
+      "material_alloy_2": "Alliage composite",
+      "material_alloy_3": "Alliage légendaire",
+      "material_nature_1": "Essence naturelle concentrée",
+      "material_nature_2": "Distillat de nature",
+      "material_nature_3": "Cristal de nature pure",
+      "material_spiritual_1": "Éther spirituel condensé",
+      "material_spiritual_2": "Fragment d'âme",
+      "material_spiritual_3": "Essence spirituelle suprême",
+      "material_magic_1": "Poudre magique cristallisée",
+      "material_magic_2": "Cristal d'arcane",
+      "material_magic_3": "Pierre de magie ancestrale",
+      "material_leather_1": "Cuir tanné renforcé",
+      "material_leather_2": "Cuir d'élite",
+      "material_leather_3": "Cuir draconique",
+      "material_rope_1": "Corde tressée renforcée",
+      "material_rope_2": "Filin enchanté",
+      "material_rope_3": "Cordage légendaire",
+      "material_poison_1": "Toxine concentrée",
+      "material_poison_2": "Venin distillé",
+      "material_poison_3": "Poison de l'ombre",
+      "material_explosive_1": "Poudre explosive raffinée",
+      "material_explosive_2": "Charge explosive améliorée",
+      "material_explosive_3": "Détonateur ancestral",
+      "material_wood_1": "Bois pétrifié",
+      "material_wood_2": "Bois enchanté",
+      "material_wood_3": "Bois de l'arbre-monde"
     }
   }
 }
