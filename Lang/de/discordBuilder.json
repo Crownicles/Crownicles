@@ -163,9 +163,9 @@
     "description": "Karte anzeigen, um anzuzeigen, wohin Sie gehen.",
     "name": "karte"
   },
-  "shop": {
-    "description": "Laden anzeigen.",
-    "name": "laden"
+  "garden": {
+    "description": "Zugriff auf Ihren Garten, aus der Ferne, wenn Sie das Sylvesterherz besitzen.",
+    "name": "Garten"
   },
   "classesInfo": {
     "description": "Informationen über die für Ihren Charakter auswählbaren Klassen anzeigen.",
@@ -212,10 +212,6 @@
         "name": "benutzer"
       }
     }
-  },
-  "guildShop": {
-    "description": "Gildenladen anzeigen.",
-    "name": "magasinguilde"
   },
   "guildKick": {
     "description": "Ein Mitglied aus der Gilde ausschließen.",
@@ -271,10 +267,6 @@
       }
     }
   },
-  "missionsshop": {
-    "description": "Missionsladen anzeigen.",
-    "name": "magasinmissions"
-  },
   "top": {
     "description": "Zeigt die Ranglisten des Spiels an.",
     "name": "rangliste",
@@ -311,13 +303,9 @@
     "description": "Einen Kampf beginnen.",
     "name": "kampf"
   },
-  "switch": {
-    "name": "vertauschen",
-    "description": "Tausche den aktiven Gegenstand mit einem der Gegenstände in deinem Vorrat."
-  },
-  "deposit": {
-    "name": "hinterlegen",
-    "description": "Einen Ihrer aktiven Gegenstände ablegen."
+  "equip": {
+    "name": "ausstatten",
+    "description": "Ihre Ausrüstung verwalten: Gegenstände ausrüsten, aufbewahren oder vertauschen."
   },
   "drink": {
     "name": "trinken",
