@@ -9,20 +9,27 @@ import {
 import { Player } from "../database/game/models/Player";
 import { FightController } from "../fights/FightController";
 import { FightOvertimeBehavior } from "../fights/FightOvertimeBehavior";
-import { PlayerFighter } from "../fights/fighter/PlayerFighter";
+import { RealPlayerFighter } from "../fights/fighter/RealPlayerFighter";
 import { MonsterFighter } from "../fights/fighter/MonsterFighter";
-import { MonsterDataController } from "../../data/Monster";
+import {
+	Monster, MonsterDataController
+} from "../../data/Monster";
 import { ClassDataController } from "../../data/Class";
 import { MissionsController } from "../missions/MissionsController";
-import { Guilds } from "../database/game/models/Guild";
+import {
+	Guild
+} from "../database/game/models/Guild";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
-import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { PostFightPetLoveOutcomes } from "../../../../Lib/src/constants/PetConstants";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
@@ -30,9 +37,18 @@ import { ReactionCollectorPveFight } from "../../../../Lib/src/packets/interacti
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { Maps } from "../maps/Maps";
 import { Effect } from "../../../../Lib/src/types/Effect";
-import { millisecondsToSeconds } from "../../../../Lib/src/utils/TimeUtils";
-import { crowniclesInstance } from "../../index";
-import { MapLink } from "../../data/MapLink";
+import {
+	dateToMs, millisecondsToSeconds
+} from "../../../../Lib/src/utils/TimeUtils";
+import { crowniclesInstance } from "../../app";
+import { InventorySlots } from "../database/game/models/InventorySlot";
+import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
+import { chooseDestination } from "./ReportDestinationService";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import {
+	applyMaterialLoot, generateBossLoot
+} from "../utils/MaterialLootUtils";
+import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 
 /**
  * PVE fight rewards structure
@@ -53,25 +69,19 @@ interface GuildRewardsResult {
 }
 
 /**
- * ChooseDestination callback type
+ * Handle pet love points change for the winner of a PVE fight
  */
-type ChooseDestinationCallback = (
-	context: PacketContext,
-	player: Player,
-	forcedLink: MapLink | null,
-	response: CrowniclesPacket[]
-) => Promise<void>;
-
-/**
- * Handle pet reactions and love changes after fight
- */
-async function handlePetReaction(
+async function handleWinnerPetLovePoints(
 	fight: FightController,
-	winner: PlayerFighter,
 	endFightResponse: CrowniclesPacket[]
 ): Promise<void> {
+	if (fight.isADraw()) {
+		return;
+	}
+
+	const winner = fight.getWinnerFighter();
 	const petLoveResult = fight.getPostFightPetLoveChange(winner, PostFightPetLoveOutcomes.WIN);
-	if (!petLoveResult) {
+	if (!petLoveResult || !(winner instanceof RealPlayerFighter)) {
 		return;
 	}
 
@@ -87,7 +97,6 @@ async function handlePetReaction(
 		reason: NumberChangeReason.FIGHT
 	});
 	await petEntity.save({ fields: ["lovePoints"] });
-
 	fight.petReactionData = {
 		keycloakId: winner.player.keycloakId,
 		reactionType: petLoveResult.reactionType,
@@ -99,7 +108,10 @@ async function handlePetReaction(
 }
 
 /**
- * Handle guild rewards after PVE fight
+ * Handle guild rewards (score + XP) after a PVE fight. The
+ * read+mutate+save sequence is wrapped in a Guild row lock so
+ * two concurrent PVE rewards from different guild members
+ * cannot lose each other's score / XP increments.
  */
 async function applyGuildRewards(
 	player: Player,
@@ -108,30 +120,43 @@ async function applyGuildRewards(
 ): Promise<GuildRewardsResult> {
 	if (!player.guildId) {
 		return {
-			guildXp: 0,
-			guildPoints: 0
+			guildXp: 0, guildPoints: 0
 		};
 	}
 
-	const guild = await Guilds.getById(player.guildId);
-	if (!guild) {
-		return {
-			guildXp: 0,
-			guildPoints: 0
-		};
-	}
-	await guild.addScore({
-		amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
-	});
-	await guild.addExperience({
-		amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
-	});
-	await guild.save();
+	const guildId = player.guildId;
+	try {
+		return await withLockedEntities(
+			[Guild.lockKey(guildId)] as const,
+			async ([guild]) => {
+				await guild.addScore({
+					amount: rewards.guildScore, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+				});
+				await guild.addExperience({
+					amount: rewards.guildXp, response: endFightResponse, reason: NumberChangeReason.PVE_FIGHT
+				});
+				await guild.save();
 
-	return {
-		guildXp: guild.level < GuildConstants.MAX_LEVEL ? rewards.guildXp : 0,
-		guildPoints: rewards.guildScore
-	};
+				return {
+					guildXp: guild.level < GuildConstants.MAX_LEVEL ? rewards.guildXp : 0,
+					guildPoints: rewards.guildScore
+				};
+			}
+		);
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			/*
+			 * The guild was destroyed between the fight and the
+			 * reward. Surface a no-guild result so the client
+			 * still gets a coherent recap packet.
+			 */
+			return {
+				guildXp: 0, guildPoints: 0
+			};
+		}
+		throw error;
+	}
 }
 
 /**
@@ -141,14 +166,10 @@ async function handlePveFightRewards(
 	fight: FightController,
 	player: Player,
 	rewards: PveFightRewards,
-	endFightResponse: CrowniclesPacket[]
+	endFightResponse: CrowniclesPacket[],
+	playerActiveObjects: PlayerActiveObjects
 ): Promise<GuildRewardsResult> {
-	if (!fight.isADraw()) {
-		const winner = fight.getWinnerFighter();
-		if (winner instanceof PlayerFighter) {
-			await handlePetReaction(fight, winner, endFightResponse);
-		}
-	}
+	await handleWinnerPetLovePoints(fight, endFightResponse);
 
 	await player.addMoney({
 		amount: rewards.money,
@@ -159,7 +180,7 @@ async function handlePveFightRewards(
 		amount: rewards.xp,
 		reason: NumberChangeReason.PVE_FIGHT,
 		response: endFightResponse
-	});
+	}, playerActiveObjects);
 
 	return await applyGuildRewards(player, rewards, endFightResponse);
 }
@@ -171,7 +192,8 @@ function sendMonsterRewardPacket(
 	endFightResponse: CrowniclesPacket[],
 	rewards: PveFightRewards,
 	guildResult: GuildRewardsResult,
-	fight: FightController
+	fight: FightController,
+	materialLoot?: MaterialQuantity[]
 ): void {
 	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
 		money: BlessingManager.getInstance().applyMoneyBlessing(rewards.money),
@@ -186,74 +208,184 @@ function sendMonsterRewardPacket(
 				petSex: fight.petReactionData.petSex,
 				petNickname: fight.petReactionData.petNickname
 			}
-			: undefined
+			: undefined,
+		...materialLoot && materialLoot.length > 0 ? { materialLoot } : {}
 	}));
 }
 
 /**
- * Create the fight callback handler
+ * Apply the win/draw branch of a PvE boss fight: rewards, material loot, and
+ * the related missions / recipe-discovery side effects. Extracted from
+ * `doPVEBoss.fightCallback` to keep the callback's cyclomatic complexity low.
  */
-function createFightCallback(
-	player: Player,
-	monsterObj: ReturnType<typeof MonsterDataController.instance.getRandomMonster> | null,
-	randomLevel: number,
-	context: PacketContext,
-	chooseDestinationFn: ChooseDestinationCallback
-): (fight: FightController | null, endFightResponse: CrowniclesPacket[]) => Promise<void> {
-	return async (fight: FightController | null, endFightResponse: CrowniclesPacket[]): Promise<void> => {
-		if (fight && monsterObj) {
-			const rewards = monsterObj.getRewards(randomLevel);
-			player.fightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
+const PVE_BOSS_MISSION_IDS = {
+	WIN_BOSS: "winBoss",
+	WIN_ANY_BOSS_WITH_DIFFERENT_CLASSES: "winAnyBossWithDifferentClasses",
+	WIN_BOSS_WITH_DIFFERENT_CLASSES: "winBossWithDifferentClasses"
+} as const;
+type PveBossMissionId = typeof PVE_BOSS_MISSION_IDS[keyof typeof PVE_BOSS_MISSION_IDS];
 
-			// Only give reward if draw or win
-			const isWinOrDraw = fight.isADraw() || fight.getWinnerFighter() instanceof PlayerFighter;
+type ApplyPveBossWinRewardsCtx = {
+	fight: FightController;
+	player: Player;
+	rewards: ReturnType<Monster["getRewards"]>;
+	endFightResponse: CrowniclesPacket[];
+	playerActiveObjects: PlayerActiveObjects;
+	mapId: number;
+};
 
-			if (isWinOrDraw) {
-				const guildResult = await handlePveFightRewards(fight, player, rewards, endFightResponse);
-				sendMonsterRewardPacket(endFightResponse, rewards, guildResult, fight);
-				await MissionsController.update(player, endFightResponse, { missionId: "winBoss" });
-				await MissionsController.update(player, endFightResponse, {
-					missionId: "winAnyBossWithDifferentClasses",
-					params: { classId: player.class }
-				});
+async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<void> {
+	const {
+		fight, player, rewards, endFightResponse, playerActiveObjects, mapId
+	} = ctx;
+	const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
 
-				// Only count final island bosses for the different classes mission
-				if (Maps.isAtFinalPveBoss(player)) {
-					await MissionsController.update(player, endFightResponse, {
-						missionId: "winBossWithDifferentClasses",
-						params: { classId: player.class }
-					});
-				}
-			}
-			else {
-				// Make sure the player has no energy left after a loss even if he leveled up
-				player.setEnergyLost(player.getMaxCumulativeEnergy(), NumberChangeReason.PVE_FIGHT);
-			}
+	// Generate and apply material loot from boss
+	const materialLoot = generateBossLoot(mapId);
+	if (materialLoot.length > 0) {
+		await applyMaterialLoot(player.id, materialLoot);
+	}
 
-			await player.save();
-			crowniclesInstance.logsDatabase.logPveFight(fight).then();
-		}
+	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);
+	await MissionsController.update(player, endFightResponse, {
+		missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS satisfies PveBossMissionId
+	});
+	await MissionsController.update(player, endFightResponse, {
+		missionId: PVE_BOSS_MISSION_IDS.WIN_ANY_BOSS_WITH_DIFFERENT_CLASSES satisfies PveBossMissionId,
+		params: { classId: player.class }
+	});
 
-		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse)) {
-			await Maps.stopTravel(player);
-			await player.setLastReportWithEffect(0, Effect.NO_EFFECT, NumberChangeReason.BIG_EVENT);
-			await chooseDestinationFn(context, player, null, endFightResponse);
-		}
-	};
+	// Only count final island bosses for the different classes mission
+	if (Maps.isAtFinalPveBoss(player)) {
+		await MissionsController.update(player, endFightResponse, {
+			missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS_WITH_DIFFERENT_CLASSES satisfies PveBossMissionId,
+			params: { classId: player.class }
+		});
+
+		// Discover an island boss cooking recipe
+		await RecipeDiscoveryService.discoverFromBoss(player, mapId);
+	}
 }
 
 /**
- * Create the collector end callback
+ * Persist the post-fight scalar state under a row-level lock. The inner
+ * addMoney / addExperience / MissionsController.update chains in
+ * `applyPveBossWinRewards` already committed money / XP / score / missions on
+ * freshly-locked rows (PR-H1). The only mutation that survived all those
+ * Object.assign(this, newPlayer) calls and still needs to be persisted here
+ * is the fight-points-lost / energy-lost scalar — which we re-derive against
+ * the freshly-locked instance to avoid lost-update on concurrent writers and
+ * to dodge the latent clobber-by-Object.assign on the local `player`.
  */
-function createCollectorEndCallback(
+async function persistPveBossPostFightUnderLock(
 	player: Player,
-	_monsterObj: ReturnType<typeof MonsterDataController.instance.getRandomMonster>,
-	monsterFighter: MonsterFighter,
-	_randomLevel: number,
-	context: PacketContext,
-	fightCallback: (fight: FightController | null, endFightResponse: CrowniclesPacket[]) => Promise<void>
-): EndCallback {
-	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
+	initialFightPointsLost: number,
+	isWinOrDraw: boolean,
+	playerActiveObjects: PlayerActiveObjects
+): Promise<void> {
+	await withLockedPlayerSafe(player, "doPVEBoss post-fight save", async lockedPlayer => {
+		if (isWinOrDraw) {
+			lockedPlayer.fightPointsLost = initialFightPointsLost;
+		}
+		else {
+			// Make sure the player has no energy left after a loss even if they levelled up
+			lockedPlayer.setEnergyLost(
+				lockedPlayer.getMaxCumulativeEnergy(playerActiveObjects),
+				NumberChangeReason.PVE_FIGHT,
+				playerActiveObjects
+			);
+		}
+		await lockedPlayer.save();
+
+		/*
+		 * Reflect the persisted state on the local instance for downstream readers
+		 * (`leavePVEIslandIfNoEnergy` below reads `player.fightPointsLost`).
+		 */
+		player.fightPointsLost = lockedPlayer.fightPointsLost;
+	});
+}
+
+/**
+ * Do a PVE boss fight
+ * @param player
+ * @param response
+ * @param context
+ */
+export async function doPVEBoss(
+	player: Player,
+	response: CrowniclesPacket[],
+	context: PacketContext
+): Promise<void> {
+	// Use a hash of keycloakId rather than the sequential player.id to prevent seed prediction
+	const keycloakIdHash = Math.abs(Array.from(player.keycloakId).reduce((hash, char) => (hash << 5) - hash + char.charCodeAt(0) | 0, 0));
+	const seed = keycloakIdHash + millisecondsToSeconds(dateToMs(player.startTravelDate));
+	const mapId = player.getDestination()!.id;
+	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
+	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
+
+	/**
+	 * Handle rewards after the PVE fight completes
+	 */
+	const fightCallback = async (fight: FightController | null, endFightResponse: CrowniclesPacket[]): Promise<void> => {
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
+		if (fight) {
+			const rewards = monsterObj.getRewards(randomLevel);
+
+			const initialFightPointsLost = fight.fightInitiator.getMaxEnergy() - fight.fightInitiator.getEnergy();
+			player.fightPointsLost = initialFightPointsLost;
+
+			const isWinOrDraw = fight.isADraw() || fight.getWinnerFighter() instanceof RealPlayerFighter;
+
+			if (isWinOrDraw) {
+				await applyPveBossWinRewards({
+					fight, player, rewards, endFightResponse, playerActiveObjects, mapId
+				});
+			}
+
+			await persistPveBossPostFightUnderLock(player, initialFightPointsLost, isWinOrDraw, playerActiveObjects);
+
+			crowniclesInstance?.logsDatabase.logPveFight(fight)
+				.then();
+		}
+
+		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse, playerActiveObjects)) {
+			await Maps.stopTravel(player);
+			await player.setLastReportWithEffect(
+				0,
+				Effect.NO_EFFECT,
+				NumberChangeReason.BIG_EVENT
+			);
+			await chooseDestination(context, player, null, endFightResponse);
+		}
+	};
+
+	if (!monsterObj) {
+		response.push(makePacket(CommandReportErrorNoMonsterRes, {}));
+		await fightCallback(null, response);
+		return;
+	}
+
+	const monsterFighter = new MonsterFighter(
+		randomLevel,
+		monsterObj
+	);
+
+	const reactionCollector = new ReactionCollectorPveFight({
+		monster: {
+			id: monsterObj.id,
+			level: randomLevel,
+			attack: monsterFighter.getAttack(),
+			defense: monsterFighter.getDefense(),
+			speed: monsterFighter.getSpeed(),
+			energy: monsterFighter.getEnergy()
+		},
+		mapId
+	});
+
+	/**
+	 * Handle the end of the PVE fight collector
+	 */
+	const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 		const firstReaction = collector.getFirstReaction();
 		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
 			response.push(makePacket(CommandReportRefusePveFightRes, {}));
@@ -261,12 +393,7 @@ function createCollectorEndCallback(
 			return;
 		}
 
-		const playerClass = ClassDataController.instance.getById(player.class);
-		if (!playerClass) {
-			throw new Error("Player class not found");
-		}
-		const playerFighter = new PlayerFighter(player, playerClass);
-		playerFighter.setFightRole(FightConstants.FIGHT_ROLES.ATTACKER);
+		const playerFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class)!);
 		await playerFighter.loadStats();
 		playerFighter.setBaseEnergy(playerFighter.getMaxEnergy() - player.fightPointsLost);
 
@@ -282,52 +409,6 @@ function createCollectorEndCallback(
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.START_BOSS_FIGHT);
 		await fight.startFight(response);
 	};
-}
-
-/**
- * Do a PVE boss fight
- */
-export async function doPVEBoss(
-	player: Player,
-	response: CrowniclesPacket[],
-	context: PacketContext,
-	chooseDestinationFn: ChooseDestinationCallback
-): Promise<void> {
-	const seed = player.id + millisecondsToSeconds(player.startTravelDate.valueOf());
-	const mapId = player.getDestination()!.id;
-	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
-	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
-
-	if (!monsterObj) {
-		response.push(makePacket(CommandReportErrorNoMonsterRes, {}));
-		const fightCallback = createFightCallback(player, null, randomLevel, context, chooseDestinationFn);
-		await fightCallback(null, response);
-		return;
-	}
-
-	const monsterFighter = new MonsterFighter(randomLevel, monsterObj);
-	const fightCallback = createFightCallback(player, monsterObj, randomLevel, context, chooseDestinationFn);
-
-	const reactionCollector = new ReactionCollectorPveFight({
-		monster: {
-			id: monsterObj.id,
-			level: randomLevel,
-			attack: monsterFighter.getAttack(),
-			defense: monsterFighter.getDefense(),
-			speed: monsterFighter.getSpeed(),
-			energy: monsterFighter.getEnergy()
-		},
-		mapId
-	});
-
-	const endCallback = createCollectorEndCallback(
-		player,
-		monsterObj,
-		monsterFighter,
-		randomLevel,
-		context,
-		fightCallback
-	);
 
 	const packet = new ReactionCollectorInstance(
 		reactionCollector,

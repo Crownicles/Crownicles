@@ -2,7 +2,8 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandReportChooseDestinationRes
+	CommandReportChooseDestinationRes,
+	CommandReportStayInCity
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { Player } from "../database/game/models/Player";
 import { Maps } from "../maps/Maps";
@@ -18,79 +19,37 @@ import {
 } from "../utils/ReactionsCollector";
 import {
 	ReactionCollectorChooseDestination,
-	ReactionCollectorChooseDestinationReaction
+	ReactionCollectorChooseDestinationReaction,
+	ReactionCollectorStayInCityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import { MapCache } from "../maps/MapCache";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Constants } from "../../../../Lib/src/constants/Constants";
+import { PlayersConstants } from "../../../../Lib/src/constants/PlayersConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { CityDataController } from "../../data/City";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 /**
- * Build map reaction data for destination choices
+ * Add the appropriate destination response packet (city or regular) to the response
  */
-function buildMapReaction(
-	player: Player,
-	mapId: number
-): ReactionCollectorChooseDestinationReaction {
-	const mapLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
-	if (!mapLink) {
-		throw new Error(`No map link found between ${player.getDestinationId()} and ${mapId}`);
-	}
-	const mapLocation = MapLocationDataController.instance.getById(mapId);
-	if (!mapLocation) {
-		throw new Error(`No map location found for mapId ${mapId}`);
-	}
-	const mapTypeId = mapLocation.type;
-	const isPveMap = MapCache.allPveMapLinks.includes(mapLink.id);
-
-	return {
-		mapId,
+function addDestinationResToResponse(
+	response: CrowniclesPacket[],
+	mapLink: MapLink,
+	mapTypeId: string,
+	tripDuration: number
+): void {
+	response.push(makePacket(CommandReportChooseDestinationRes, {
+		mapId: mapLink.endMap,
 		mapTypeId,
-		tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : undefined
-	};
-}
-
-/**
- * Handle the player's destination choice
- */
-function createDestinationEndCallback(player: Player): EndCallback {
-	return async (collector, response) => {
-		const firstReaction = collector.getFirstReaction();
-
-		const mapId = firstReaction
-			? (firstReaction.reaction.data as ReactionCollectorChooseDestinationReaction).mapId
-			: (RandomUtils.crowniclesRandom.pick(collector.creationPacket.reactions).data as ReactionCollectorChooseDestinationReaction).mapId;
-
-		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
-		if (!newLink) {
-			throw new Error(`No map link found between ${player.getDestinationId()} and ${mapId}`);
-		}
-		const endMap = MapLocationDataController.instance.getById(mapId);
-		if (!endMap) {
-			throw new Error(`No map location found for mapId ${mapId}`);
-		}
-
-		await Maps.startTravel(player, newLink, Date.now());
-
-		response.push(makePacket(CommandReportChooseDestinationRes, {
-			mapId: newLink.endMap,
-			mapTypeId: endMap.type,
-			tripDuration: newLink.tripDuration
-		}));
-
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
-	};
+		tripDuration
+	}));
 }
 
 /**
  * Automatically chooses a destination at random / based on the forced link
  */
-async function automaticChooseDestination(
-	forcedLink: MapLink | null,
-	player: Player,
-	destinationMaps: number[],
-	response: CrowniclesPacket[]
-): Promise<void> {
+async function automaticChooseDestination(forcedLink: MapLink | null, player: Player, destinationMaps: number[], response: CrowniclesPacket[]): Promise<void> {
 	let newLink: MapLink | undefined;
 	if (forcedLink && forcedLink.id !== -1) {
 		newLink = forcedLink;
@@ -99,62 +58,95 @@ async function automaticChooseDestination(
 		newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, destinationMaps[0]);
 	}
 	if (!newLink) {
-		throw new Error(`No map link found for automatic destination from ${player.getDestinationId()} to ${destinationMaps[0]}`);
+		CrowniclesLogger.error(`No map link found for automatic destination from ${player.getDestinationId()} to ${destinationMaps[0]}`);
+		return;
 	}
-
 	const endMap = MapLocationDataController.instance.getById(newLink.endMap);
 	if (!endMap) {
-		throw new Error(`No map location found for mapId ${newLink.endMap}`);
+		CrowniclesLogger.error(`No map location found for mapId ${newLink.endMap}`);
+		return;
 	}
 	await Maps.startTravel(player, newLink, Date.now());
-
-	response.push(makePacket(CommandReportChooseDestinationRes, {
-		mapId: newLink.endMap,
-		mapTypeId: endMap.type,
-		tripDuration: newLink.tripDuration
-	}));
+	addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration ?? 0);
 }
 
 /**
- * Check if automatic destination choice should be made
+ * Build the map reaction options for the destination collector
  */
-function shouldAutoChooseDestination(
-	player: Player,
-	destinationMaps: number[],
-	forcedLink: MapLink | null
-): boolean {
-	const notOnPveOrSingleChoice = !Maps.isOnPveIsland(player) || destinationMaps.length === 1;
-	const hasForcedOrSingleNonBeginning = Boolean(forcedLink) || (destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK);
+function buildMapReactions(player: Player, destinationMaps: number[]): ReactionCollectorChooseDestinationReaction[] {
+	return destinationMaps.map(mapId => {
+		const mapLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
+		const mapLocation = MapLocationDataController.instance.getById(mapId);
+		if (!mapLink || !mapLocation) {
+			throw new Error(`No map link or location found for destination ${player.getDestinationId()} -> ${mapId}`);
+		}
+		const isPveMap = MapCache.allPveMapLinks.includes(mapLink.id);
 
-	return notOnPveOrSingleChoice && hasForcedOrSingleNonBeginning;
+		return {
+			mapId,
+			mapTypeId: mapLocation.type,
+			tripDuration: isPveMap || RandomUtils.crowniclesRandom.bool() ? mapLink.tripDuration : undefined
+		};
+	});
 }
 
 /**
- * Sends a message so that the player can choose where to go
+ * Persist the "stay in city" choice: the player defers the destination choice and
+ * will be shown the city menu on the next reports until they explicitly leave.
  */
-export async function chooseDestination(
+async function applyStayInCity(player: Player, response: CrowniclesPacket[]): Promise<void> {
+	await withLockedPlayerSafe(player, "chooseDestination.stayInCity", async lockedPlayer => {
+		lockedPlayer.insideCity = true;
+
+		// Become stationary on the city map location: no active travel left on the map link.
+		lockedPlayer.startTravelDate = new Date(PlayersConstants.PLAYER_DEFAULT_VALUES.START_TRAVEL_DATE);
+		await lockedPlayer.save();
+	});
+	response.push(makePacket(CommandReportStayInCity, {}));
+}
+
+/**
+ * Create and send the destination choice collector to the player
+ */
+function sendDestinationCollector(
 	context: PacketContext,
 	player: Player,
-	forcedLink: MapLink | null,
+	destinationMaps: number[],
 	response: CrowniclesPacket[],
-	mainPacket = true
-): Promise<void> {
-	await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
-	const destinationMaps = Maps.getNextPlayerAvailableMaps(player);
+	mainPacket: boolean,
+	stayInCityAllowed: boolean
+): void {
+	const mapReactions = buildMapReactions(player, destinationMaps);
+	const collector = new ReactionCollectorChooseDestination(mapReactions, stayInCityAllowed);
 
-	if (destinationMaps.length === 0) {
-		CrowniclesLogger.error(`Player ${player.id} hasn't any destination map (current map: ${player.getDestinationId()})`);
-		return;
-	}
+	const endCallback: EndCallback = async (collector, response) => {
+		const firstReaction = collector.getFirstReaction();
 
-	if (shouldAutoChooseDestination(player, destinationMaps, forcedLink)) {
-		await automaticChooseDestination(forcedLink, player, destinationMaps, response);
-		return;
-	}
+		// Doing nothing (timeout) or explicitly choosing it defaults to staying in the city when that option is offered.
+		const staysInCity = stayInCityAllowed
+			&& (!firstReaction || firstReaction.reaction.type === ReactionCollectorStayInCityReaction.name);
+		if (staysInCity) {
+			await applyStayInCity(player, response);
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
+			return;
+		}
 
-	const mapReactions = destinationMaps.map(mapId => buildMapReaction(player, mapId));
-	const collector = new ReactionCollectorChooseDestination(mapReactions);
-	const endCallback = createDestinationEndCallback(player);
+		const mapId = firstReaction
+			? (firstReaction.reaction.data as ReactionCollectorChooseDestinationReaction).mapId
+			: RandomUtils.crowniclesRandom.pick(mapReactions).mapId;
+		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
+		const endMap = MapLocationDataController.instance.getById(mapId);
+		if (!newLink || !endMap) {
+			CrowniclesLogger.error(`No map link or location found for chosen destination ${player.getDestinationId()} -> ${mapId}`);
+			return;
+		}
+
+		await Maps.startTravel(player, newLink, Date.now());
+
+		addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration ?? 0);
+
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
+	};
 
 	const packet = new ReactionCollectorInstance(
 		collector,
@@ -170,4 +162,52 @@ export async function chooseDestination(
 		.build();
 
 	response.push(packet);
+}
+
+/**
+ * Whether the player can defer the destination choice and stay in the city.
+ * Only possible when standing on a city map location and not forcibly teleported.
+ */
+export function canStayInCity(player: Player, forcedLink: MapLink | null, allowStayInCity: boolean): boolean {
+	return allowStayInCity
+		&& !forcedLink
+		&& Boolean(CityDataController.instance.getCityByMapId(player.getDestinationId()!));
+}
+
+/**
+ * Whether the destination can be chosen automatically (no collector shown to the player).
+ */
+export function canAutoChooseDestination(player: Player, forcedLink: MapLink | null, destinationMaps: number[], stayInCityAllowed: boolean): boolean {
+	return !stayInCityAllowed
+		&& (!Maps.isOnPveIsland(player) || destinationMaps.length === 1)
+		&& Boolean(forcedLink || (destinationMaps.length === 1 && player.mapLinkId !== Constants.BEGINNING.LAST_MAP_LINK));
+}
+
+/**
+ * Sends a message so that the player can choose where to go
+ */
+export async function chooseDestination(
+	context: PacketContext,
+	player: Player,
+	forcedLink: MapLink | null,
+	response: CrowniclesPacket[],
+	mainPacket = true,
+	allowStayInCity = true
+): Promise<void> {
+	await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
+	const destinationMaps = Maps.getNextPlayerAvailableMaps(player);
+
+	if (destinationMaps.length === 0) {
+		CrowniclesLogger.error(`Player ${player.id} hasn't any destination map (current map: ${player.getDestinationId()})`);
+		return;
+	}
+
+	const stayInCityAllowed = canStayInCity(player, forcedLink, allowStayInCity);
+
+	if (canAutoChooseDestination(player, forcedLink, destinationMaps, stayInCityAllowed)) {
+		await automaticChooseDestination(forcedLink, player, destinationMaps, response);
+		return;
+	}
+
+	sendDestinationCollector(context, player, destinationMaps, response, mainPacket, stayInCityAllowed);
 }

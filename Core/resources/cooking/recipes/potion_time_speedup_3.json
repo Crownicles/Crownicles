@@ -1,0 +1,26 @@
+{
+  "level": 3,
+  "recipeType": "POTION_TIME_SPEEDUP",
+  "plants": [
+    {
+      "plantId": 3,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 73,
+      "quantity": 1
+    },
+    {
+      "materialId": 60,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 5,
+  "potionRarity": 2,
+  "discoveredByDefault": false,
+  "discoverySource": "WITCH",
+  "petFood": null
+}

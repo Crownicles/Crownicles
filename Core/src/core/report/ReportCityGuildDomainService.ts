@@ -1,0 +1,242 @@
+import {
+	Player, Players
+} from "../database/game/models/Player";
+import { City } from "../../data/City";
+import Guild, { Guilds } from "../database/game/models/Guild";
+import {
+	GUILD_DOMAIN_ERROR, GuildBuilding, GuildDomainConstants, GuildDomainError
+} from "../../../../Lib/src/constants/GuildDomainConstants";
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CommandReportGuildDomainNotEnoughTreasuryRes,
+	CommandReportGuildDomainPurchaseRes,
+	CommandReportGuildDomainRelocateRes,
+	CommandReportGuildDomainUpgradeErrorRes,
+	CommandReportGuildDomainUpgradeReq,
+	CommandReportGuildDomainUpgradeRes
+} from "../../../../Lib/src/packets/commands/CommandReportPacket";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { GuildUtils } from "../utils/GuildUtils";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { crowniclesInstance } from "../../app";
+import type {
+	GuildDomainPurchaseLogParams,
+	GuildDomainUpgradeLogParams
+} from "../database/logs/LogsCityLogger";
+
+const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, keyof Guild> = {
+	[GuildBuilding.SHOP]: "shopLevel",
+	[GuildBuilding.SHELTER]: "shelterLevel",
+	[GuildBuilding.PANTRY]: "pantryLevel",
+	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+};
+
+function logGuildDomainPurchase(params: GuildDomainPurchaseLogParams): void {
+	crowniclesInstance?.logsDatabase.logGuildDomainPurchase(params).then();
+}
+
+function logGuildDomainUpgrade(params: GuildDomainUpgradeLogParams | null): void {
+	if (params === null) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logGuildDomainUpgrade(params).then();
+}
+
+export async function handleGuildDomainNotaryReaction(player: Player, city: City, response: CrowniclesPacket[]): Promise<void> {
+	await player.reload();
+
+	if (!player.guildId) {
+		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use guild domain notary but has no guild.`);
+		return;
+	}
+
+	const guildId = player.guildId;
+
+	/*
+	 * Lock the guild row for the entire validate-mutate-save sequence so
+	 * two concurrent notary calls (e.g. the chief clicking from two
+	 * clients) cannot both pass the treasury check on the same stale
+	 * snapshot and end up double-debiting (or worse, taking the
+	 * treasury negative). The chief eligibility check is also moved
+	 * inside the lock since chiefId can change concurrently.
+	 */
+	const outcome = await Guild.withLocked(guildId, async guild => {
+		if (guild.chiefId !== player.id) {
+			CrowniclesLogger.error(`Player ${player.keycloakId} tried to use guild domain notary but is not guild chief.`);
+			return null;
+		}
+
+		const isRelocation = guild.domainCityId !== null;
+		const fromCityId = guild.domainCityId;
+		const cost = isRelocation
+			? GuildDomainConstants.DOMAIN_RELOCATION_COST
+			: GuildDomainConstants.DOMAIN_PURCHASE_COST;
+
+		if (guild.treasury < cost) {
+			return {
+				kind: "insufficient" as const, missing: cost - guild.treasury
+			};
+		}
+
+		guild.treasury -= cost;
+		guild.domainCityId = city.id;
+		await guild.save();
+
+		return {
+			kind: "ok" as const, guild, isRelocation, fromCityId, cost
+		};
+	});
+
+	if (outcome === null) {
+		return;
+	}
+
+	if (outcome.kind === "insufficient") {
+		response.push(makePacket(CommandReportGuildDomainNotEnoughTreasuryRes, {
+			missingTreasury: outcome.missing
+		}));
+		return;
+	}
+
+	if (outcome.isRelocation) {
+		response.push(makePacket(CommandReportGuildDomainRelocateRes, { cost: outcome.cost }));
+	}
+	else {
+		response.push(makePacket(CommandReportGuildDomainPurchaseRes, { cost: outcome.cost }));
+	}
+
+	logGuildDomainPurchase({
+		keycloakId: player.keycloakId,
+		guild: outcome.guild,
+		cityId: city.id,
+		fromCityId: outcome.fromCityId,
+		isRelocation: outcome.isRelocation,
+		cost: outcome.cost
+	});
+}
+
+interface ResolvedUpgrade {
+	guild: Guild;
+	building: GuildBuilding;
+	currentLevel: number;
+	upgradeCost: number;
+}
+
+async function loadAuthorizedGuild(
+	keycloakId: string
+): Promise<{ guild: Guild } | GuildDomainError> {
+	const player = await Players.getByKeycloakId(keycloakId);
+	if (!player || !player.guildId) {
+		return GUILD_DOMAIN_ERROR.NO_GUILD;
+	}
+	const guild = await Guilds.getById(player.guildId);
+	if (!guild || guild.domainCityId === null) {
+		return GUILD_DOMAIN_ERROR.NO_DOMAIN;
+	}
+	if (guild.chiefId !== player.id) {
+		return GUILD_DOMAIN_ERROR.NOT_AUTHORIZED;
+	}
+	return { guild };
+}
+
+function validateBuildingUpgrade(guild: Guild, building: GuildBuilding): ResolvedUpgrade | GuildDomainError {
+	if (!Object.values(GuildBuilding).includes(building)) {
+		return GUILD_DOMAIN_ERROR.INVALID_BUILDING;
+	}
+	const currentLevel = guild.getDataValue(BUILDING_LEVEL_FIELDS[building]) as number;
+	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
+	if (upgradeCost === null) {
+		return GUILD_DOMAIN_ERROR.MAX_LEVEL;
+	}
+	const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel)!;
+	if (guild.level < requiredGuildLevel) {
+		return GUILD_DOMAIN_ERROR.GUILD_LEVEL_TOO_LOW;
+	}
+	if (guild.treasury < upgradeCost) {
+		return GUILD_DOMAIN_ERROR.NOT_ENOUGH_TREASURY;
+	}
+	return {
+		guild, building, currentLevel, upgradeCost
+	};
+}
+
+async function resolveUpgrade(
+	keycloakId: string, packet: CommandReportGuildDomainUpgradeReq
+): Promise<ResolvedUpgrade | GuildDomainError> {
+	const authResult = await loadAuthorizedGuild(keycloakId);
+	if (typeof authResult === "string") {
+		return authResult;
+	}
+	return validateBuildingUpgrade(authResult.guild, packet.building);
+}
+
+export async function handleGuildDomainUpgrade(keycloakId: string, packet: CommandReportGuildDomainUpgradeReq, response: CrowniclesPacket[]): Promise<void> {
+	const fastResolved = await resolveUpgrade(keycloakId, packet);
+	if (typeof fastResolved === "string") {
+		response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: fastResolved }));
+		return;
+	}
+
+	/*
+	 * Re-validate against the locked guild row before mutating: another
+	 * concurrent upgrade or treasury-spending handler may have changed
+	 * `treasury` / building level / guild level between our fast-fail
+	 * and the lock acquisition. The packet ordering (Upgrade response
+	 * pushed BEFORE GuildLevelUpPacket from addExperience) is preserved
+	 * inside the lock so the front-end correlation callback still
+	 * resolves on the upgrade packet.
+	 */
+	const logParams = await Guild.withLocked(fastResolved.guild.id, async guild => {
+		const revalidated = validateBuildingUpgrade(guild, packet.building);
+		if (typeof revalidated === "string") {
+			response.push(makePacket(CommandReportGuildDomainUpgradeErrorRes, { error: revalidated }));
+			return null;
+		}
+
+		const {
+			building, currentLevel, upgradeCost
+		} = revalidated;
+		guild.treasury -= upgradeCost;
+		guild.setDataValue(BUILDING_LEVEL_FIELDS[building] as string, currentLevel + 1);
+
+		const xpGained = GuildUtils.calculateAmountOfXPToAdd(Math.round(upgradeCost * GuildDomainConstants.UPGRADE_XP_RATIO));
+
+		response.push(makePacket(CommandReportGuildDomainUpgradeRes, {
+			building,
+			newLevel: currentLevel + 1,
+			cost: upgradeCost,
+			newTreasury: guild.treasury,
+			xpGained
+		}));
+
+		/*
+		 * Spending treasury on a building upgrade also grants guild experience.
+		 * We use the regular XP formula but on only 10% of the cost (upgrades are expensive
+		 * and would otherwise grant disproportionately large amounts of XP).
+		 */
+		await guild.addExperience({
+			amount: xpGained,
+			response,
+			reason: NumberChangeReason.GUILD_DOMAIN_UPGRADE
+		});
+
+		await guild.save();
+
+		const domainCityId = guild.domainCityId;
+		if (domainCityId === null) {
+			return null;
+		}
+		return {
+			keycloakId,
+			guild,
+			cityId: domainCityId,
+			building,
+			newLevel: currentLevel + 1,
+			cost: upgradeCost,
+			xpGained
+		};
+	});
+	logGuildDomainUpgrade(logParams);
+}

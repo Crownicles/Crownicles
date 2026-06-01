@@ -1,14 +1,12 @@
 import { packetHandler } from "../../../PacketHandler";
 import {
 	CommandTopGuildsEmptyPacket,
-	CommandTopInvalidPagePacket,
 	CommandTopPacketResGlory, CommandTopPacketResGuild,
 	CommandTopPacketResScore, CommandTopPlayersEmptyPacket
 } from "../../../../../../Lib/src/packets/commands/CommandTopPacket";
 import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
 	handleCommandTopGuildsEmptyPacket,
-	handleCommandTopInvalidPagePacket,
 	handleCommandTopPacketResGlory,
 	handleCommandTopPacketResGuild,
 	handleCommandTopPacketResScore, handleCommandTopPlayersEmptyPacket
@@ -28,11 +26,6 @@ export default class TopCommandPacketHandlers {
 	@packetHandler(CommandTopPacketResGuild)
 	async topGuildRes(context: PacketContext, packet: CommandTopPacketResGuild): Promise<void> {
 		await handleCommandTopPacketResGuild(context, packet);
-	}
-
-	@packetHandler(CommandTopInvalidPagePacket)
-	async topInvalidPageRes(context: PacketContext, packet: CommandTopInvalidPagePacket): Promise<void> {
-		await handleCommandTopInvalidPagePacket(context, packet);
 	}
 
 	@packetHandler(CommandTopPlayersEmptyPacket)

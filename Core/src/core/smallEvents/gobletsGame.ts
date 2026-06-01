@@ -1,3 +1,4 @@
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Maps } from "../maps/Maps";
@@ -23,9 +24,10 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorGobletsGame";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import {
-	generateRandomItem, giveItemToPlayer
+	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 /**
  * Get strategy config based on the chosen strategy
@@ -137,7 +139,10 @@ async function applyMalus(
 			});
 			packet.itemId = item.id;
 			packet.itemCategory = item.getCategory();
-			await giveItemToPlayer(response, context, player, item);
+			await giveItemToPlayer(response, context, player, item, {
+				itemLevel: generateRandomLootLevel(),
+				itemEnchantmentId: generateRandomLootEnchantment(item)
+			});
 			break;
 		}
 		case SmallEventGobletsGameMalus.NOTHING:
@@ -168,11 +173,13 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const collector = new ReactionCollectorGobletsGame();
 
 		const endCallback: EndCallback = async (collector, response) => {
-			const firstReaction = collector.getFirstReaction()?.reaction as {
-				data: ReactionCollectorGobletsGameReaction;
-			} | undefined;
-			await applyMalus(response, player, firstReaction, context);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GOBLET_CHOOSE);
+			await withLockedPlayerSafe(player, "gobletsGame endCallback", async lockedPlayer => {
+				const firstReaction = collector.getFirstReaction()?.reaction as {
+					data: ReactionCollectorGobletsGameReaction;
+				} | undefined;
+				await applyMalus(response, lockedPlayer, firstReaction, context);
+			});
 		};
 
 		const packet = new ReactionCollectorInstance(

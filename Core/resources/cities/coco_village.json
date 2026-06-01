@@ -1,0 +1,62 @@
+{
+  "homePriceMultiplier": 1.08,
+  "apartmentPrice": 50000,
+  "maps": [
+    17
+  ],
+  "hasBlacksmith": false,
+  "shops": [
+    "generalShop",
+    "herbalist",
+    "lumberjack"
+  ],
+  "inns": [
+    {
+      "id": "hotSwallow",
+      "meals": [
+        {
+          "id": "fishAndChips",
+          "price": 40,
+          "energy": 200
+        },
+        {
+          "id": "coldVegetableStew",
+          "price": 20,
+          "energy": 100
+        },
+        {
+          "id": "roastedPork",
+          "price": 75,
+          "energy": 320
+        },
+        {
+          "id": "oysterPlatter",
+          "price": 125,
+          "energy": 600
+        },
+        {
+          "id": "tamale",
+          "price": 150,
+          "energy": 900
+        }
+      ],
+      "rooms": [
+        {
+          "id": "simpleRoom",
+          "price": 450,
+          "health": 12
+        },
+        {
+          "id": "comfortableRoom",
+          "price": 950,
+          "health": 30
+        },
+        {
+          "id": "luxuryRoom",
+          "price": 1450,
+          "health": 55
+        }
+      ]
+    }
+  ]
+}

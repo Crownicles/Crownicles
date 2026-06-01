@@ -34,7 +34,7 @@ import {
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import Guild, { Guilds } from "../../core/database/game/models/Guild";
-import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { getFoodIndexOf } from "../../core/utils/FoodUtils";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import {
@@ -49,6 +49,7 @@ import {
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../../core/missions/MissionsController";
+import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 
 
 /**
@@ -58,6 +59,25 @@ import { MissionsController } from "../../core/missions/MissionsController";
  */
 function getCooldownRemainingTimeMs(player: Player): number {
 	return PetFreeConstants.FREE_COOLDOWN - (new Date().valueOf() - player.lastPetFree.valueOf());
+}
+
+/**
+ * Whether the player is exempt from the pet free cooldown.
+ * Guild chiefs and elders can free pets without waiting; base members keep the cooldown.
+ * @param player
+ * @param guild the player's guild (null if the player has no guild)
+ */
+function isExemptFromPetFreeCooldown(player: Player, guild: Guild | null): boolean {
+	return guild !== null && guild.isChiefOrElder(player);
+}
+
+/**
+ * Remaining pet free cooldown for the player, accounting for the chief/elder exemption.
+ * @param player
+ * @param guild the player's guild (null if the player has no guild)
+ */
+function getEffectiveCooldownRemainingTimeMs(player: Player, guild: Guild | null): number {
+	return isExemptFromPetFreeCooldown(player, guild) ? 0 : getCooldownRemainingTimeMs(player);
 }
 
 /**
@@ -75,27 +95,43 @@ function getMissingMoneyToFreePet(player: Player, playerPet: PetEntity): number 
  * @param pPet
  */
 function generateLuckyMeat(guild: Guild | null, pPet: PetEntity): boolean {
-	return guild !== null && guild.carnivorousFood + 1 <= GuildConstants.MAX_PET_FOOD[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
+	return guild !== null && guild.carnivorousFood + 1 <= GuildDomainConstants.getFoodCaps(guild.pantryLevel)[getFoodIndexOf(PetConstants.PET_FOOD.CARNIVOROUS_FOOD)]
 		&& RandomUtils.crowniclesRandom.realZeroToOneInclusive() <= PetFreeConstants.GIVE_MEAT_PROBABILITY
 		&& !pPet.isFeisty();
 }
 
 /**
- * Accept the pet free request and free the pet
- * @param player
- * @param playerPet
- * @param response
+ * Snapshot of pet metadata captured before destruction, used to
+ * build the success packet outside the lock.
  */
-async function acceptPetFree(player: Player, playerPet: PetEntity, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload(); // Let's make sure the player has not lost money in the meantime
-	// Check money again just in case
-	const missingMoney = getMissingMoneyToFreePet(player, playerPet);
-	if (missingMoney > 0) {
-		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
-		return;
-	}
+type FreedPetSnapshot = {
+	luckyMeat: boolean;
+	freeCost: number;
+	petTypeId: number;
+	petSex: SexTypeShort;
+	petNickname: string | null;
+};
 
-	if (playerPet.isFeisty()) {
+/**
+ * Common post-revalidation body shared by every free flow. Charges
+ * the feisty fee, opportunistically credits the guild pantry, snaps
+ * the pet metadata, destroys the targeted rows, refreshes the
+ * player's cooldown, and commits everything in a single TX. Owning
+ * the shared logic in one place avoids the CodeScene "Code
+ * Duplication" smell that arose when each flow inlined the same
+ * sequence.
+ */
+async function commitFreedPet(
+	response: CrowniclesPacket[],
+	player: Player,
+	pet: PetEntity,
+	options: {
+		clearPlayerPetId: boolean;
+		guildPet?: GuildPet;
+		guild?: Guild;
+	}
+): Promise<FreedPetSnapshot> {
+	if (pet.isFeisty()) {
 		await player.spendMoney({
 			amount: PetFreeConstants.FREE_FEISTY_COST,
 			response,
@@ -103,36 +139,203 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 		});
 	}
 
-	LogsDatabase.logPetFree(playerPet).then();
+	const luckyMeat = options.guild ? generateLuckyMeat(options.guild, pet) : false;
+	if (luckyMeat && options.guild) {
+		options.guild.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
+	}
 
-	await playerPet.destroy();
-	player.petId = null;
+	const snapshot: FreedPetSnapshot = {
+		luckyMeat,
+		freeCost: pet.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0,
+		petTypeId: pet.typeId,
+		petSex: pet.sex as SexTypeShort,
+		petNickname: pet.nickname
+	};
+
+	if (options.guildPet) {
+		await options.guildPet.destroy();
+	}
+	await pet.destroy();
+	if (options.clearPlayerPetId) {
+		player.petId = null;
+	}
 	player.lastPetFree = new Date();
-	await player.save();
+
+	const saves: Promise<unknown>[] = [player.save()];
+	if (luckyMeat && options.guild) {
+		saves.push(options.guild.save());
+	}
+	await Promise.all(saves);
+	LogsDatabase.logPetFree(pet).then();
+
+	return snapshot;
+}
+
+/**
+ * Result of the in-lock revalidation for a free-own-pet flow.
+ */
+type AcceptPetFreeOutcome = ({ revalidated: true } & FreedPetSnapshot) | { revalidated: false };
+
+/**
+ * Inside-lock body for the "free your own pet" flow. Re-checks
+ * ownership and money against the locked rows, then delegates the
+ * shared destroy / save logic to {@link commitFreedPet}. The
+ * optional `guild` lock makes the meat reward serialise correctly
+ * with concurrent guild-pantry mutations.
+ */
+async function applyLockedAcceptPetFree(
+	response: CrowniclesPacket[],
+	locked: {
+		player: Player; pet: PetEntity; guild?: Guild;
+	},
+	expectedPetId: number
+): Promise<AcceptPetFreeOutcome> {
+	const {
+		player, pet, guild
+	} = locked;
+	if (player.petId !== expectedPetId || getMissingMoneyToFreePet(player, pet) > 0) {
+		return { revalidated: false };
+	}
+
+	const snapshot = await commitFreedPet(response, player, pet, {
+		clearPlayerPetId: true,
+		guild
+	});
+	return {
+		revalidated: true, ...snapshot
+	};
+}
+
+/**
+ * Accept the pet free request and free the pet.
+ *
+ * Critical section: lock player + pet (+ guild for meat reward) so a
+ * concurrent withdraw / sell / transfer of the same pet can't
+ * double-destroy or strand the player on a deleted pet row.
+ */
+async function acceptPetFree(player: Player, playerPet: PetEntity, response: CrowniclesPacket[]): Promise<void> {
+	const playerGuildId = player.guildId;
+	let outcome: AcceptPetFreeOutcome;
+	if (playerGuildId !== null) {
+		try {
+			outcome = await withLockedEntities(
+				[
+					Player.lockKey(player.id),
+					PetEntity.lockKey(playerPet.id),
+					Guild.lockKey(playerGuildId)
+				] as const,
+				async ([
+					lockedPlayer,
+					lockedPet,
+					lockedGuild
+				]) => await applyLockedAcceptPetFree(
+					response,
+					{
+						player: lockedPlayer, pet: lockedPet, guild: lockedGuild
+					},
+					playerPet.id
+				)
+			);
+		}
+		catch {
+			/*
+			 * Guild row may have been destroyed concurrently; fall
+			 * back to a 2-row lock so the user can still free their
+			 * own pet (without the meat reward).
+			 */
+			outcome = await withLockedEntities(
+				[Player.lockKey(player.id), PetEntity.lockKey(playerPet.id)] as const,
+				async ([lockedPlayer, lockedPet]) => await applyLockedAcceptPetFree(
+					response,
+					{
+						player: lockedPlayer, pet: lockedPet
+					},
+					playerPet.id
+				)
+			);
+		}
+	}
+	else {
+		outcome = await withLockedEntities(
+			[Player.lockKey(player.id), PetEntity.lockKey(playerPet.id)] as const,
+			async ([lockedPlayer, lockedPet]) => await applyLockedAcceptPetFree(
+				response,
+				{
+					player: lockedPlayer, pet: lockedPet
+				},
+				playerPet.id
+			)
+		);
+	}
+
+	if (!outcome.revalidated) {
+		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		return;
+	}
 
 	await MissionsController.update(player, response, { missionId: "depositPetInShelter" });
 
-	let guild: Guild | null = null;
-	let luckyMeat = false;
-	try {
-		guild = await Guilds.getById(player.guildId);
-		luckyMeat = generateLuckyMeat(guild, playerPet);
-		if (luckyMeat && guild) {
-			guild.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
-			await guild.save();
-		}
-	}
-	catch {
-		// Continue regardless of error
+	response.push(makePacket(CommandPetFreeAcceptPacketRes, {
+		petId: outcome.petTypeId,
+		petSex: outcome.petSex,
+		petNickname: outcome.petNickname ?? undefined,
+		freeCost: outcome.freeCost,
+		luckyMeat: outcome.luckyMeat
+	}));
+}
+
+/**
+ * Result of the in-lock revalidation for a free-from-shelter flow.
+ */
+type ShelterFreeOutcome = ({ revalidated: true } & FreedPetSnapshot) | {
+	revalidated: false;
+	cooldownRemainingTimeMs?: number;
+	missingMoney?: number;
+};
+
+/**
+ * Inside-lock body for the "free a pet from the guild shelter" flow.
+ * Re-checks every invariant against the locked rows (guildPet still
+ * points at the expected pet; player cooldown not yet over; player
+ * still has enough money for a feisty pet), then delegates the
+ * shared destroy / save logic to {@link commitFreedPet}.
+ */
+async function applyLockedShelterFree(
+	response: CrowniclesPacket[],
+	locked: {
+		player: Player; pet: PetEntity; guildPet: GuildPet; guild: Guild;
+	},
+	expectedPetEntityId: number
+): Promise<ShelterFreeOutcome> {
+	const {
+		player, pet, guildPet, guild
+	} = locked;
+	if (guildPet.petEntityId !== expectedPetEntityId) {
+		return { revalidated: false };
 	}
 
-	response.push(makePacket(CommandPetFreeAcceptPacketRes, {
-		petId: playerPet.typeId,
-		petSex: playerPet.sex as SexTypeShort,
-		petNickname: playerPet.nickname,
-		freeCost: playerPet.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0,
-		luckyMeat
-	}));
+	const cooldownRemainingTimeMs = getEffectiveCooldownRemainingTimeMs(player, guild);
+	if (cooldownRemainingTimeMs > 0) {
+		return {
+			revalidated: false, cooldownRemainingTimeMs
+		};
+	}
+
+	const missingMoney = getMissingMoneyToFreePet(player, pet);
+	if (missingMoney > 0) {
+		return {
+			revalidated: false, missingMoney
+		};
+	}
+
+	const snapshot = await commitFreedPet(response, player, pet, {
+		clearPlayerPetId: false,
+		guildPet,
+		guild
+	});
+	return {
+		revalidated: true, ...snapshot
+	};
 }
 
 /**
@@ -143,7 +346,7 @@ async function freePetFromShelter(
 	player: Player,
 	petEntityId: number
 ): Promise<void> {
-	// Get guild pets and find the one to free
+	// Outer fast-fail: locate the guildPet row and its associated pet.
 	const guildPets = await GuildPets.getOfGuild(player.guildId!);
 	const guildPet = guildPets.find(gp => gp.petEntityId === petEntityId);
 
@@ -160,60 +363,64 @@ async function freePetFromShelter(
 		return;
 	}
 
-	// Check cooldown
-	const cooldownRemainingTimeMs = getCooldownRemainingTimeMs(player);
-	if (cooldownRemainingTimeMs > 0) {
-		response.push(makePacket(CommandPetFreeShelterCooldownErrorPacketRes, { cooldownRemainingTimeMs }));
-		return;
-	}
-
-	// Check money for feisty pets
-	const missingMoney = getMissingMoneyToFreePet(player, petEntity);
-	if (missingMoney > 0) {
-		response.push(makePacket(CommandPetFreeShelterMissingMoneyErrorPacketRes, { missingMoney }));
-		return;
-	}
-
-	// Deduct money if feisty
-	if (petEntity.isFeisty()) {
-		await player.spendMoney({
-			amount: PetFreeConstants.FREE_FEISTY_COST,
-			response,
-			reason: NumberChangeReason.PET_FREE
-		});
-	}
-
-	LogsDatabase.logPetFree(petEntity).then();
-
-	// Remove pet from guild shelter
-	await guildPet.destroy();
-	await petEntity.destroy();
-
-	// Update player's lastPetFree
-	player.lastPetFree = new Date();
-	await player.save();
-
-	// Check for lucky meat
-	let guild: Guild | null = null;
-	let luckyMeat = false;
+	/*
+	 * 4-row critical section: lock player + pet + guild_pet + guild
+	 * together so a concurrent withdraw / sell / free of the same
+	 * shelter slot cannot duplicate the meat reward, lost-update the
+	 * cooldown, or strand orphan guild_pet rows.
+	 */
+	let outcome: ShelterFreeOutcome;
 	try {
-		guild = await Guilds.getById(player.guildId);
-		luckyMeat = generateLuckyMeat(guild, petEntity);
-		if (luckyMeat && guild) {
-			guild.carnivorousFood += PetFreeConstants.MEAT_GIVEN;
-			await guild.save();
-		}
+		outcome = await withLockedEntities(
+			[
+				Player.lockKey(player.id),
+				PetEntity.lockKey(petEntity.id),
+				GuildPet.lockKey(guildPet.id),
+				Guild.lockKey(player.guildId!)
+			] as const,
+			async ([
+				lockedPlayer,
+				lockedPet,
+				lockedGuildPet,
+				lockedGuild
+			]) => await applyLockedShelterFree(
+				response,
+				{
+					player: lockedPlayer, pet: lockedPet, guildPet: lockedGuildPet, guild: lockedGuild
+				},
+				petEntityId
+			)
+		);
 	}
 	catch {
-		// Continue regardless of error
+		/*
+		 * One of the rows (guild_pet most likely, or pet entity) was
+		 * destroyed by a peer transaction between our outer fast-fail
+		 * read and our lock acquisition: treat as "situation changed".
+		 */
+		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		return;
+	}
+
+	if (!outcome.revalidated) {
+		if (outcome.cooldownRemainingTimeMs !== undefined) {
+			response.push(makePacket(CommandPetFreeShelterCooldownErrorPacketRes, { cooldownRemainingTimeMs: outcome.cooldownRemainingTimeMs }));
+		}
+		else if (outcome.missingMoney !== undefined) {
+			response.push(makePacket(CommandPetFreeShelterMissingMoneyErrorPacketRes, { missingMoney: outcome.missingMoney }));
+		}
+		else {
+			response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
+		}
+		return;
 	}
 
 	response.push(makePacket(CommandPetFreeShelterSuccessPacketRes, {
-		petId: petEntity.typeId,
-		petSex: petEntity.sex as SexTypeShort,
-		petNickname: petEntity.nickname,
-		freeCost: petEntity.isFeisty() ? PetFreeConstants.FREE_FEISTY_COST : 0,
-		luckyMeat
+		petId: outcome.petTypeId,
+		petSex: outcome.petSex,
+		petNickname: outcome.petNickname ?? undefined,
+		freeCost: outcome.freeCost,
+		luckyMeat: outcome.luckyMeat
 	}));
 }
 
@@ -506,7 +713,7 @@ async function isPetBlockedOnExpeditionWithNoAlternatives(
 export default class PetFreeCommand {
 	@commandRequires(CommandPetFreePacketReq, {
 		notBlocked: true,
-		allowedEffects: CommandUtils.ALLOWED_EFFECTS.NO_EFFECT,
+		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandPetFreePacketReq, context: PacketContext): Promise<void> {
@@ -529,7 +736,8 @@ export default class PetFreeCommand {
 			return;
 		}
 
-		const cooldownRemainingTimeMs = getCooldownRemainingTimeMs(player);
+		const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
+		const cooldownRemainingTimeMs = getEffectiveCooldownRemainingTimeMs(player, guild);
 		if (cooldownRemainingTimeMs > 0) {
 			response.push(makePacket(CommandPetFreePacketRes, {
 				foundPet: true,

@@ -391,24 +391,21 @@ export abstract class KeycloakUtils {
 	 * @param keycloakIds
 	 */
 	// TODO Wait for https://github.com/keycloak/keycloak/pull/34582 to be merged and released to use the bulk endpoint
-	public static async getUsersFromIds(keycloakConfig: KeycloakConfig, keycloakIds: string[]): Promise<ApiCallReturnType<{ users: KeycloakUser[] }>> {
+	public static async getUsersFromIds(keycloakConfig: KeycloakConfig, keycloakIds: string[]): Promise<ApiCallReturnType<{ users: (KeycloakUser | null)[] }>> {
 		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
 		if (checkAndQueryToken.isError) {
 			return checkAndQueryToken;
 		}
 
-		const users = [];
+		const users: (KeycloakUser | null)[] = [];
 		for (const keycloakId of keycloakIds) {
 			const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
 			if (getUser.isError || !("user" in getUser.payload)) {
-				return {
-					status: getUser.status,
-					payload: getUser.payload as { error?: object },
-					isError: true
-				};
+				users.push(null);
 			}
-
-			users.push(getUser.payload.user!);
+			else {
+				users.push(getUser.payload.user!);
+			}
 		}
 		return {
 			status: 200,

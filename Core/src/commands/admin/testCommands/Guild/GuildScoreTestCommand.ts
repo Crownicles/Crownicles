@@ -3,7 +3,7 @@ import {
 	ExecuteTestCommandLike, ITestCommand, TypeKey
 } from "../../../../core/CommandsTest";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 export const commandInfo: ITestCommand = {
 	name: "guildpoints",
@@ -30,7 +30,7 @@ const guildScoreTestCommand: ExecuteTestCommandLike = async (player, args) => {
 		throw new Error("Erreur gpoints : score de guilde invalide ! Il doit être supérieur à 0 !");
 	}
 	guild.score = guildScore;
-	crowniclesInstance.logsDatabase.logGuildPointsChange(guild, NumberChangeReason.TEST).then();
+	crowniclesInstance?.logsDatabase.logGuildPointsChange(guild, NumberChangeReason.TEST).then();
 	await guild.save();
 	return `Votre guilde a maintenant ${args[0]} points !`;
 };

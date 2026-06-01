@@ -26,7 +26,7 @@ import {
 } from "./ExpeditionFoodService";
 import { calculateRewardIndex } from "./ExpeditionRewardCalculator";
 import { PendingExpeditionsCache } from "./PendingExpeditionsCache";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 
@@ -309,10 +309,10 @@ export async function handleExpeditionCancel(
 	}
 
 	// Calculate progressive penalty based on recent cancellations
-	const recentCancellations = await crowniclesInstance.logsDatabase.countRecentExpeditionCancellations(
+	const recentCancellations = await crowniclesInstance?.logsDatabase.countRecentExpeditionCancellations(
 		player.keycloakId,
 		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
-	);
+	) ?? 0;
 
 	const loveLost = calculateProgressiveLoveLoss(
 		ExpeditionConstants.LOVE_CHANGES.CANCEL_BEFORE_DEPARTURE_BASE,
@@ -375,10 +375,10 @@ export async function handleExpeditionRecall(
 	}
 
 	// Calculate progressive penalty based on recent cancellations (includes both cancel and recall)
-	const recentCancellations = await crowniclesInstance.logsDatabase.countRecentExpeditionCancellations(
+	const recentCancellations = await crowniclesInstance?.logsDatabase.countRecentExpeditionCancellations(
 		player.keycloakId,
 		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
-	);
+	) ?? 0;
 
 	const loveLost = calculateProgressiveLoveLoss(
 		ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION,

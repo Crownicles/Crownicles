@@ -1,6 +1,7 @@
 import { LogsBlessings } from "./models/LogsBlessings";
 import { LogsBlessingsContributions } from "./models/LogsBlessingsContributions";
 import { LogsPlayers } from "./models/LogsPlayers";
+import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import {
 	fn, col, Op
 } from "sequelize";
@@ -44,18 +45,6 @@ interface BlessingLogEntry {
  */
 export class LogsBlessingLogger {
 	/**
-	 * Find or create a player in the logs database by keycloak ID
-	 */
-	private async findOrCreatePlayer(keycloakId: string): Promise<LogsPlayers | null> {
-		if (keycloakId === "") {
-			return null;
-		}
-		return (await LogsPlayers.findOrCreate({
-			where: { keycloakId }
-		}))[0];
-	}
-
-	/**
 	 * Create a blessing log entry with common fields
 	 */
 	private async createBlessingLog(entry: BlessingLogEntry): Promise<void> {
@@ -69,7 +58,7 @@ export class LogsBlessingLogger {
 	 * Log a blessing activation
 	 */
 	async logBlessingActivation(params: BlessingActivationParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.triggeredByKeycloakId);
+		const player = await findOrCreateLogsPlayer(params.triggeredByKeycloakId);
 		await this.createBlessingLog({
 			blessingType: params.blessingType,
 			action: "activate",
@@ -109,7 +98,7 @@ export class LogsBlessingLogger {
 	 * Log a player contribution to the blessing pool
 	 */
 	async logBlessingContribution(params: BlessingContributionParams): Promise<void> {
-		const player = await this.findOrCreatePlayer(params.keycloakId);
+		const player = await findOrCreateLogsPlayer(params.keycloakId);
 		if (!player) {
 			return;
 		}
@@ -125,7 +114,7 @@ export class LogsBlessingLogger {
 	 * Get the total lifetime contribution amount for a player
 	 */
 	async getLifetimeContributions(keycloakId: string): Promise<number> {
-		const player = await this.findOrCreatePlayer(keycloakId);
+		const player = await findOrCreateLogsPlayer(keycloakId);
 		if (!player) {
 			return 0;
 		}

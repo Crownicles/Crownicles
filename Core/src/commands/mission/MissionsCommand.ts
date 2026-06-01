@@ -13,7 +13,9 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { MissionSlots } from "../../core/database/game/models/MissionSlot";
-import { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
+import {
+	PlayerMissionsInfos
+} from "../../core/database/game/models/PlayerMissionsInfo";
 import { MissionType } from "../../../../Lib/src/types/CompletedMission";
 import { DailyMissions } from "../../core/database/game/models/DailyMission";
 import { Campaign } from "../../core/missions/Campaign";
@@ -42,7 +44,6 @@ export default class MissionsCommand {
 		}
 
 		const missionInfo = await PlayerMissionsInfos.getOfPlayer(toCheckPlayer.id);
-
 		const baseMissions = MissionsController.prepareMissionSlots(await MissionSlots.getOfPlayer(toCheckPlayer.id));
 
 		baseMissions.push(MissionsController.prepareBaseMission({

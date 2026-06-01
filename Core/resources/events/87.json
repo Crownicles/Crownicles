@@ -1,0 +1,48 @@
+{
+  "possibilities": {
+    "skip": {
+      "outcomes": {
+        "0": {}
+      }
+    },
+    "buyHorse": {
+      "outcomes": {
+        "0": {
+          "money": -500,
+          "randomItem": {}
+        },
+        "1": {
+          "money": -250,
+          "health": 20
+        }
+      }
+    },
+    "trade": {
+      "outcomes": {
+        "0": {
+          "randomItem": {},
+          "money": 100
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 90
+        }
+      }
+    },
+    "stealHorse": {
+      "outcomes": {
+        "0": {
+          "effect": "jailed"
+        },
+        "1": {
+          "money": 800
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 42
+    }
+  ]
+}

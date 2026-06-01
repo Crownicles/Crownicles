@@ -163,9 +163,9 @@
     "description": "Afficher la carte pour indiquer où vous allez.",
     "name": "carte"
   },
-  "shop": {
-    "description": "Afficher le magasin.",
-    "name": "magasin"
+  "garden": {
+    "description": "Accéder à votre jardin, à distance si vous possédez le Cœur Sylvestre.",
+    "name": "jardin"
   },
   "classesInfo": {
     "description": "Afficher des informations sur les classes sélectionnables pour votre personnage.",
@@ -212,10 +212,6 @@
         "name": "utilisateur"
       }
     }
-  },
-  "guildShop": {
-    "description": "Afficher le magasin de guilde.",
-    "name": "magasinguilde"
   },
   "guildKick": {
     "description": "Exclure un membre de la guilde.",
@@ -271,10 +267,6 @@
       }
     }
   },
-  "missionsshop": {
-    "description": "Afficher le magasin de missions.",
-    "name": "magasinmissions"
-  },
   "top": {
     "description": "Afficher les classements du jeu.",
     "name": "classement",
@@ -311,13 +303,9 @@
     "description": "Lancer un combat.",
     "name": "combat"
   },
-  "switch": {
-    "name": "intervertir",
-    "description": "Intervertir l'objet actif avec l'un des objets présent dans votre réserve."
-  },
-  "deposit": {
-    "name": "deposer",
-    "description": "Déposer un de vos objets actifs."
+  "equip": {
+    "name": "equiper",
+    "description": "Gérer votre équipement : équiper, ranger ou intervertir vos objets."
   },
   "drink": {
     "name": "boire",

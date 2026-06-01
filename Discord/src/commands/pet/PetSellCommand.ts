@@ -15,8 +15,6 @@ import i18n from "../../translations/i18n";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { ReactionCollectorPetSellPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetSell";
-import { handleCommandGuildDailyRewardPacket } from "../guild/GuildDailyCommand";
-import { CommandGuildDailyRewardPacket } from "../../../../Lib/src/packets/commands/CommandGuildDailyPacket";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
@@ -43,14 +41,11 @@ export async function createPetSellCollector(context: PacketContext, packet: Rea
 	const lng = interaction.userLanguage;
 	const buyerUser = interaction.options.getUser("user");
 
-	let description = i18n.t("commands:petSell.sellDescription", {
+	const description = i18n.t("commands:petSell.sellDescription", {
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName),
 		price: data.price
 	});
-	if (data.isGuildAtMaxLevel) {
-		description += `\n\n${i18n.t("commands:petSell.maxLevelWarning", { lng })}`;
-	}
 
 	const embedKeyTitle = buyerUser ? "sellTitleWithBuyer" : "sellTitle";
 
@@ -93,14 +88,6 @@ export async function handlePetSellSuccess(context: PacketContext, packet: Comma
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!)!;
 	const lng = interaction.userLanguage;
 
-	// Send guild XP reward
-	if (!packet.isGuildMax) {
-		await handleCommandGuildDailyRewardPacket(makePacket(CommandGuildDailyRewardPacket, {
-			guildXp: packet.xpEarned,
-			guildName: packet.guildName
-		}), context, false);
-	}
-
 	// Send pet sell success message
 	await buttonInteraction.editReply({
 		embeds: [
@@ -115,7 +102,9 @@ export async function handlePetSellSuccess(context: PacketContext, packet: Comma
 				.setDescription(
 					i18n.t("commands:petSell.successDescription", {
 						lng,
-						pet: DisplayUtils.getOwnedPetInlineDisplay(packet.pet, lng)
+						pet: DisplayUtils.getOwnedPetInlineDisplay(packet.pet, lng),
+						treasury: packet.treasuryEarned,
+						guildName: packet.guildName
 					})
 				)
 		]

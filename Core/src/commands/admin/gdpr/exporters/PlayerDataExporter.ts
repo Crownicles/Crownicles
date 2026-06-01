@@ -18,6 +18,14 @@ import { ScheduledReportNotification } from "../../../../core/database/game/mode
 import { ScheduledExpeditionNotification } from "../../../../core/database/game/models/ScheduledExpeditionNotification";
 import { DwarfPetsSeen } from "../../../../core/database/game/models/DwarfPetsSeen";
 import { PlayerTalismansManager } from "../../../../core/database/game/models/PlayerTalismans";
+import { Material } from "../../../../core/database/game/models/Material";
+import { Homes } from "../../../../core/database/game/models/Home";
+import { PlayerPlantSlot } from "../../../../core/database/game/models/PlayerPlantSlot";
+import { Apartments } from "../../../../core/database/game/models/Apartment";
+import { HomeChestSlots } from "../../../../core/database/game/models/HomeChestSlot";
+import { HomeGardenSlots } from "../../../../core/database/game/models/HomeGardenSlot";
+import { HomePlantStorages } from "../../../../core/database/game/models/HomePlantStorage";
+import { PlayerCookingRecipe } from "../../../../core/database/game/models/PlayerCookingRecipe";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
 
@@ -53,7 +61,12 @@ async function exportInventoryData(
 		csvFiles["03_inventory_slots.csv"] = toCSV(inventorySlots.map(slot => ({
 			slotId: slot.slot,
 			itemCategory: slot.itemCategory,
-			itemId: slot.itemId
+			itemId: slot.itemId,
+			itemLevel: slot.itemLevel,
+			itemEnchantmentId: slot.itemEnchantmentId,
+			remainingPotionUsages: slot.remainingPotionUsages,
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
 		})));
 	}
 
@@ -65,7 +78,10 @@ async function exportInventoryData(
 				weaponSlots: inventoryInfo.weaponSlots,
 				armorSlots: inventoryInfo.armorSlots,
 				objectSlots: inventoryInfo.objectSlots,
-				potionSlots: inventoryInfo.potionSlots
+				potionSlots: inventoryInfo.potionSlots,
+				plantSlots: inventoryInfo.plantSlots,
+				createdAt: inventoryInfo.createdAt,
+				updatedAt: inventoryInfo.updatedAt
 			}
 		]);
 	}
@@ -100,7 +116,14 @@ async function exportMissionData(
 			{
 				gems: missionsInfo.gems,
 				hasBoughtPointsThisWeek: missionsInfo.hasBoughtPointsThisWeek,
-				campaignBlob: missionsInfo.campaignBlob
+				missionSkipsUsedThisWeek: missionsInfo.missionSkipsUsedThisWeek,
+				dailyMissionNumberDone: missionsInfo.dailyMissionNumberDone,
+				lastDailyMissionCompleted: missionsInfo.lastDailyMissionCompleted,
+				dailyMissionBlob: missionsInfo.dailyMissionBlob?.toString("base64"),
+				campaignProgression: missionsInfo.campaignProgression,
+				campaignBlob: missionsInfo.campaignBlob,
+				createdAt: missionsInfo.createdAt,
+				updatedAt: missionsInfo.updatedAt
 			}
 		]);
 	}
@@ -157,7 +180,8 @@ async function exportMiscData(
 		csvFiles["10_talismans.csv"] = toCSV([
 			{
 				hasTalisman: talismans.hasTalisman,
-				hasCloneTalisman: talismans.hasCloneTalisman
+				hasCloneTalisman: talismans.hasCloneTalisman,
+				hasRemoteHarvestTalisman: talismans.hasRemoteHarvestTalisman
 			}
 		]);
 	}
@@ -187,6 +211,117 @@ async function exportMiscData(
 	];
 	if (notifications.length > 0) {
 		csvFiles["12_scheduled_notifications.csv"] = toCSV(notifications);
+	}
+
+	// Player materials (crafting resources)
+	const materials = await Material.findAll({ where: { playerId: player.id } });
+	if (materials.length > 0) {
+		csvFiles["15_materials.csv"] = toCSV(materials.map(m => ({
+			materialId: m.materialId,
+			quantity: m.quantity,
+			createdAt: m.createdAt,
+			updatedAt: m.updatedAt
+		})));
+	}
+
+	// Player home (and home-scoped data: chest, garden, plant storage)
+	const home = await Homes.getOfPlayer(player.id);
+	if (home) {
+		csvFiles["16_home.csv"] = toCSV([
+			{
+				cityId: home.cityId,
+				level: home.level,
+				createdAt: home.createdAt,
+				updatedAt: home.updatedAt
+			}
+		]);
+		await exportHomeScopedData(home.id, csvFiles);
+	}
+
+	// Player plant slots
+	await exportPlayerPlantSlots(player.id, csvFiles);
+
+	// Player apartments (extra remote-access homes purchased in other cities)
+	await exportPlayerApartments(player.id, csvFiles);
+
+	// Player cooking recipes discovered
+	await exportPlayerCookingRecipes(player.id, csvFiles);
+}
+
+async function exportPlayerPlantSlots(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const plantSlots = await PlayerPlantSlot.findAll({ where: { playerId } });
+	if (plantSlots.length > 0) {
+		csvFiles["17_plant_slots.csv"] = toCSV(plantSlots.map(slot => ({
+			slotType: slot.slotType,
+			slot: slot.slot,
+			plantId: slot.plantId,
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
+		})));
+	}
+}
+
+async function exportHomeScopedData(homeId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	// 18. Home chest slots (items stored in the player's home)
+	const chestSlots = await HomeChestSlots.getOfHome(homeId);
+	const filledChestSlots = chestSlots.filter(s => s.itemId !== 0);
+	if (filledChestSlots.length > 0) {
+		csvFiles["18_home_chest_slots.csv"] = toCSV(filledChestSlots.map(slot => ({
+			slot: slot.slot,
+			itemCategory: slot.itemCategory,
+			itemId: slot.itemId,
+			itemLevel: slot.itemLevel,
+			itemEnchantmentId: slot.itemEnchantmentId,
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
+		})));
+	}
+
+	// 19. Home garden slots (plants currently growing)
+	const gardenSlots = await HomeGardenSlots.getOfHome(homeId);
+	const plantedGardenSlots = gardenSlots.filter(s => s.plantId !== 0);
+	if (plantedGardenSlots.length > 0) {
+		csvFiles["19_home_garden_slots.csv"] = toCSV(plantedGardenSlots.map(slot => ({
+			slot: slot.slot,
+			plantId: slot.plantId,
+			plantedAt: slot.plantedAt,
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
+		})));
+	}
+
+	// 20. Home plant storage (harvested plants stockpiled at home)
+	const plantStorage = await HomePlantStorages.getOfHome(homeId);
+	if (plantStorage.length > 0) {
+		csvFiles["20_home_plant_storage.csv"] = toCSV(plantStorage.map(entry => ({
+			plantId: entry.plantId,
+			quantity: entry.quantity,
+			createdAt: entry.createdAt,
+			updatedAt: entry.updatedAt
+		})));
+	}
+}
+
+async function exportPlayerApartments(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const apartments = await Apartments.getOfPlayer(playerId);
+	if (apartments.length > 0) {
+		csvFiles["21_apartments.csv"] = toCSV(apartments.map(a => ({
+			cityId: a.cityId,
+			purchasePrice: a.purchasePrice,
+			lastRentClaimedAt: a.lastRentClaimedAt,
+			createdAt: a.createdAt,
+			updatedAt: a.updatedAt
+		})));
+	}
+}
+
+async function exportPlayerCookingRecipes(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const recipes = await PlayerCookingRecipe.findAll({ where: { playerId } });
+	if (recipes.length > 0) {
+		csvFiles["22_cooking_recipes.csv"] = toCSV(recipes.map(r => ({
+			recipeId: r.recipeId,
+			sourceMapId: r.sourceMapId
+		})));
 	}
 }
 
@@ -224,7 +359,7 @@ async function exportGuildData(
 }
 
 /**
- * Exports player core data from the game database (files 01-14)
+ * Exports player core data from the game database (files 01-22)
  */
 export async function exportPlayerData(
 	player: NonNullable<Player>,
@@ -235,7 +370,7 @@ export async function exportPlayerData(
 	csvFiles["01_player.csv"] = toCSV([
 		{
 			anonymizedId: anonymizer.getAnonymizedPlayerId(),
-			health: player.health,
+			health: player.getHealthValue(),
 			score: player.score,
 			weeklyScore: player.weeklyScore,
 			level: player.level,
@@ -255,8 +390,16 @@ export async function exportPlayerData(
 			fightCountdown: player.fightCountdown,
 			mapLinkId: player.mapLinkId,
 			startTravelDate: player.startTravelDate,
+			insideCity: player.insideCity,
 			lastPetFree: player.lastPetFree,
 			nextEvent: player.nextEvent,
+			lastMealAt: player.lastMealAt,
+			cookingLevel: player.cookingLevel,
+			cookingExperience: player.cookingExperience,
+			lastBedUsedAt: player.lastBedUsedAt,
+			furnacePosition: player.furnacePosition,
+			pinnedCookingRecipeId: player.pinnedCookingRecipeId,
+			lastGardenWatered: player.lastGardenWatered,
 			createdAt: player.createdAt,
 			updatedAt: player.updatedAt
 		}

@@ -5,17 +5,32 @@ import { ItemDataController } from "./DataController";
 export class Weapon extends MainItem {
 	categoryName = "weapons";
 
-	public getAttack(): number {
-		const rawAtk = this.rawAttack ?? 0;
-		return Math.round(1.15053 * Math.pow(this.multiplier(), 2.3617) * Math.pow(1.0569 + 0.1448 / this.multiplier(), rawAtk)) + (this.attack ?? 0);
+	protected getBaseAttack(): number {
+		return Math.round(1.15053 * Math.pow(this.multiplier(), 2.3617) * Math.pow(1.0569 + 0.1448 / this.multiplier(), this.rawAttack ?? 0)) + (this.attack ?? 0);
+	}
+
+	public getAttack(itemLevel: number): number {
+		const baseAttack = this.getBaseAttack();
+		if (baseAttack > 0) {
+			return Math.round(this.getBaseAttack() * Weapon.getStatMultiplier(itemLevel));
+		}
+		return baseAttack;
 	}
 
 	public getCategory(): ItemCategory {
 		return ItemCategory.WEAPON;
 	}
 
-	public getDefense(): number {
+	protected getBaseDefense(): number {
 		return this.defense ?? 0;
+	}
+
+	public getDefense(itemLevel: number): number {
+		const baseDefense = this.getBaseDefense();
+		if (baseDefense > 0) {
+			return Math.round(this.getBaseDefense() * Weapon.getStatMultiplier(itemLevel));
+		}
+		return baseDefense;
 	}
 
 	public getItemAddedValue(): number {

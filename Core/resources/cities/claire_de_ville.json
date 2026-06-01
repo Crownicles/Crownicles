@@ -1,0 +1,61 @@
+{
+  "homePriceMultiplier": 0.99,
+  "apartmentPrice": 12000,
+  "maps": [
+    23
+  ],
+  "shops": [
+    "generalShop",
+    "stockExchange",
+    "veterinarian"
+  ],
+  "inns": [
+    {
+      "id": "bravesStop",
+      "meals": [
+        {
+          "id": "potatoSoup",
+          "price": 37,
+          "energy": 210
+        },
+        {
+          "id": "friedEggs",
+          "price": 25,
+          "energy": 150
+        },
+        {
+          "id": "curryRice",
+          "price": 60,
+          "energy": 330
+        },
+        {
+          "id": "sushi",
+          "price": 100,
+          "energy": 500
+        },
+        {
+          "id": "bravesPanOfFood",
+          "price": 350,
+          "energy": 1750
+        }
+      ],
+      "rooms": [
+        {
+          "id": "simpleRoom",
+          "price": 550,
+          "health": 15
+        },
+        {
+          "id": "comfortableRoom",
+          "price": 1050,
+          "health": 35
+        },
+        {
+          "id": "luxuryRoom",
+          "price": 1550,
+          "health": 60
+        }
+      ]
+    }
+  ]
+}

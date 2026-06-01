@@ -1,9 +1,9 @@
 import {
 	Express, Request, Response
 } from "express";
-import {
-	botConfig, crowniclesInstance, mqttClient
-} from "../../index";
+import { botConfig } from "../../bootstrap";
+import { crowniclesInstance } from "../../app";
+import { mqttClient } from "../../mqttClient";
 import {
 	CrowniclesCoreMetrics, crowniclesMetricsRegistry
 } from "./CrowniclesCoreMetrics";
@@ -43,7 +43,7 @@ export abstract class CrowniclesCoreWebServer {
 
 		app.post("/maintenance", (req: Request, res: Response) => {
 			const enabled = req.query.enabled === "1";
-			crowniclesInstance.setMaintenance(enabled, false);
+			crowniclesInstance!.setMaintenance(enabled, false);
 			CrowniclesLogger.info("Maintenance mode changed", { enabled });
 			res.status(200).send("OK");
 		});

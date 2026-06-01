@@ -15,7 +15,7 @@ import {
 import { PetDataController } from "../../../../data/Pet";
 import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
 import { RandomUtils } from "../../../../../../Lib/src/utils/RandomUtils";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 
 const SETUP_DEFAULTS = {
 	level: 30,
@@ -48,7 +48,7 @@ const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, res
 	player.attackGloryPoints = SETUP_DEFAULTS.gloryPoints;
 	player.effectEndDate = new Date();
 	player.effectDuration = 0;
-	player.health = player.getMaxHealth();
+	player.setHealthNoCheck(player.getMaxHealthBase());
 	crowniclesInstance.logsDatabase.logLevelChange(player.keycloakId, player.level).then();
 	results.push(`Niveau ${SETUP_DEFAULTS.level}, ${SETUP_DEFAULTS.score} points`);
 

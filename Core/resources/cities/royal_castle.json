@@ -1,0 +1,52 @@
+{
+  "homePriceMultiplier": 1.05,
+  "apartmentPrice": 25000,
+  "maps": [
+    41
+  ],
+  "hasBlacksmith": false,
+  "hasRoyalBlacksmith": true,
+  "inns": [
+    {
+      "id": "royalPavilion",
+      "meals": [
+        {
+          "id": "lobsterRoll",
+          "price": 900,
+          "energy": 1600
+        },
+        {
+          "id": "oysterPlatter",
+          "price": 1050,
+          "energy": 1900
+        },
+        {
+          "id": "jellyfishCarpaccio",
+          "price": 1300,
+          "energy": 2300
+        },
+        {
+          "id": "lordPie",
+          "price": 1600,
+          "energy": 2600
+        }
+      ],
+      "rooms": [
+        {
+          "id": "royalSuite",
+          "price": 3500,
+          "health": 200
+        },
+        {
+          "id": "imperialSuite",
+          "price": 5000,
+          "health": 300
+        }
+      ]
+    }
+  ],
+  "shops": [
+    "royalMarket",
+    "generalShop"
+  ]
+}

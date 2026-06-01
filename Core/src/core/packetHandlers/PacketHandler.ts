@@ -3,13 +3,13 @@ import { PacketListenerCallbackServer } from "../../../../Lib/src/packets/Packet
 import {
 	CrowniclesPacket, PacketLike
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export const packetHandler = <T extends CrowniclesPacket>(val: PacketLike<T>) =>
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any -- Decorator needs flexible signature to accept methods with varying parameter counts
 	(target: { constructor: { name: string } }, prop: string, descriptor: TypedPropertyDescriptor<any>): void => {
-		crowniclesInstance.packetListener.addPacketListener<T>(val, descriptor.value as PacketListenerCallbackServer<T>);
+		crowniclesInstance!.packetListener.addPacketListener<T>(val, descriptor.value as PacketListenerCallbackServer<T>);
 		CrowniclesLogger.info(`[${val.name}] Registered packet handler (function '${prop}' in class '${target.constructor.name}')`);
 	};
 

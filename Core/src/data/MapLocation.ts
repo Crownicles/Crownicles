@@ -16,6 +16,11 @@ export class MapLocation extends Data<number> {
 	declare readonly forcedImage?: string;
 
 	/**
+	 * Optional city ID if this map location is in a city
+	 */
+	declare readonly cityId: number | null;
+
+	/**
 	 * Optional override for expedition type. If not set, the expedition type is derived from the map type.
 	 */
 	declare readonly expeditionType?: ExpeditionLocationType;

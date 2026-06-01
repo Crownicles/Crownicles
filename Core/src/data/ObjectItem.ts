@@ -4,10 +4,8 @@ import {
 import { ItemDataController } from "./DataController";
 import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
-import { SupportItemDisplayPacket } from "../../../Lib/src/packets/commands/CommandInventoryPacket";
-import {
-	NO_STAT_COMPARISON, StatValues
-} from "../../../Lib/src/types/StatValues";
+import { StatValues } from "../../../Lib/src/types/StatValues";
+import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 
 export class ObjectItem extends SupportItem {
 	categoryName = "objects";
@@ -20,7 +18,11 @@ export class ObjectItem extends SupportItem {
 		return this.power;
 	}
 
-	public getDisplayPacket(maxStatsValue: StatValues = NO_STAT_COMPARISON): SupportItemDisplayPacket {
+	public getDisplayPacket(maxStatsValue: StatValues = {
+		attack: Infinity,
+		defense: Infinity,
+		speed: Infinity
+	}): SupportItemDetails {
 		let maxPower: number;
 		switch (this.nature) {
 			case ItemNature.ATTACK:
@@ -57,12 +59,5 @@ export class ObjectItemDataController extends ItemDataController<ObjectItem> {
 	public randomItem(nature: number, rarity: number): ObjectItem {
 		return RandomUtils.crowniclesRandom.pick(this.getValuesArray()
 			.filter(item => item.nature === nature && item.rarity === rarity));
-	}
-
-	/**
-	 * Check if any object with the given nature and rarity exists
-	 */
-	public override hasItemWithNatureAndRarity(nature: number, rarity: number): boolean {
-		return this.getValuesArray().some(item => item.nature === nature && item.rarity === rarity);
 	}
 }

@@ -1,6 +1,7 @@
 import { CrowniclesCachedMessage } from "./CrowniclesCachedMessage";
 import { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../bot/DiscordCache";
+import { crowniclesClient } from "../bot/CrowniclesShard";
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import {
@@ -30,16 +31,17 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 	}
 
 	updateMessage = async (packet: ReactionCollectorFightChooseActionPacket, context: PacketContext): Promise<ReactionCollectorReturnTypeOrNull> => {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 		const data = packet.data.data;
-		const lng = interaction.userLanguage;
+		const lng = interaction?.userLanguage ?? context.discord!.language;
+		const user = interaction?.user ?? await crowniclesClient.users.fetch(context.discord!.user);
 		if (!this.usernameCache) {
-			this.usernameCache = await DisplayUtils.getEscapedUsername(data.fighterKeycloakId, interaction.userLanguage);
+			this.usernameCache = await DisplayUtils.getEscapedUsername(data.fighterKeycloakId, lng);
 		}
 		const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:fight.fightActionChoose.turnIndicationTitle", {
 			lng,
 			pseudo: this.usernameCache
-		}), interaction.user)
+		}), user)
 			.setDescription(i18n.t("commands:fight.fightActionChoose.turnIndicationDescription", { lng }));
 		const rows = [new ActionRowBuilder<ButtonBuilder>()];
 		const reactions = packet.reactions as {
@@ -62,8 +64,11 @@ export class CrowniclesActionChooseCachedMessage extends CrowniclesCachedMessage
 		const msg = await this.post({
 			embeds: [embed],
 			components: rows
-		});
-		const buttonCollector = msg!.createMessageComponentCollector({
+		}, context.discord!.channel);
+		if (!msg) {
+			return null;
+		}
+		const buttonCollector = msg.createMessageComponentCollector({
 			time: packet.endTime - Date.now()
 		});
 		buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {

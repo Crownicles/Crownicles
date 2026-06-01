@@ -28,6 +28,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Check if the player can create a guild with the given name at this exact moment
@@ -37,10 +38,8 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
  */
 async function canCreateGuild(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<boolean> {
 	const guild = player.guildId ? await Guilds.getById(player.guildId) : null;
-	const playerMoney = player.money;
 	if (guild) {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: true
 		}));
 		return false;
@@ -56,7 +55,6 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
 	if (existingGuild) {
 		// A guild with this name already exists
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: false,
 			guildNameIsAvailable: false
 		}));
@@ -65,7 +63,6 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
 
 	if (!checkNameString(guildName, GuildConstants.GUILD_NAME_LENGTH_RANGE)) {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: false,
 			guildNameIsAvailable: true,
 			guildNameIsAcceptable: false
@@ -74,12 +71,12 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
 	}
 
 
-	if (playerMoney < GuildCreateConstants.PRICE) {
+	if (player.money < GuildCreateConstants.PRICE) {
 		response.push(makePacket(CommandGuildCreatePacketRes, {
-			playerMoney,
 			foundGuild: false,
 			guildNameIsAvailable: true,
-			guildNameIsAcceptable: true
+			guildNameIsAcceptable: true,
+			missingMoney: GuildCreateConstants.PRICE - player.money
 		}));
 		return false;
 	}
@@ -87,15 +84,58 @@ async function canCreateGuild(player: Player, guildName: string, response: Crown
 	return true;
 }
 
-async function acceptGuildCreate(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
+/**
+ * Outcome of the in-lock create body. Lets the outer caller
+ * surface the right error packet without re-deriving state
+ * outside of the critical section.
+ */
+type GuildCreateOutcome =
+	| { kind: "OK" }
+	| { kind: "alreadyInGuild" }
+	| { kind: "nameTaken" }
+	| {
+		kind: "noMoney"; missingMoney: number;
+	};
 
-	// Do all necessary checks again just in case something changed during the menu
-	if (!await canCreateGuild(player, guildName, response)) {
-		return;
+type GuildCreateLocked = {
+	player: Player;
+};
+
+/**
+ * In-lock body for the guild-create flow. Re-validates that the
+ * locked player has not joined another guild, that the chosen
+ * name is still free, and that the player can still afford the
+ * price before creating the guild atomically with the player's
+ * guildId update and money debit.
+ */
+async function applyLockedAcceptGuildCreate(
+	response: CrowniclesPacket[],
+	locked: GuildCreateLocked,
+	guildName: string
+): Promise<GuildCreateOutcome> {
+	const { player } = locked;
+
+	if (player.guildId !== null) {
+		return { kind: "alreadyInGuild" };
 	}
 
-	// Everything is valid, start a guild creation process:
+	let existingGuild;
+	try {
+		existingGuild = await Guilds.getByName(guildName);
+	}
+	catch {
+		existingGuild = null;
+	}
+	if (existingGuild) {
+		return { kind: "nameTaken" };
+	}
+
+	if (player.money < GuildCreateConstants.PRICE) {
+		return {
+			kind: "noMoney", missingMoney: GuildCreateConstants.PRICE - player.money
+		};
+	}
+
 	const newGuild = await Guild.create({
 		name: guildName,
 		chiefId: player.id
@@ -107,9 +147,12 @@ async function acceptGuildCreate(player: Player, guildName: string, response: Cr
 		reason: NumberChangeReason.GUILD_CREATE
 	});
 	newGuild.updateLastDailyAt();
-	await newGuild.save();
-	await player.save();
-	LogsDatabase.logGuildCreation(player.keycloakId, newGuild).then();
+	await Promise.all([
+		newGuild.save(),
+		player.save()
+	]);
+	LogsDatabase.logGuildCreation(player.keycloakId, newGuild)
+		.then();
 	await MissionsController.update(player, response, { missionId: "joinGuild" });
 	await MissionsController.update(player, response, {
 		missionId: "guildLevel",
@@ -118,6 +161,42 @@ async function acceptGuildCreate(player: Player, guildName: string, response: Cr
 	});
 
 	response.push(makePacket(CommandGuildCreateAcceptPacketRes, { guildName }));
+	return { kind: "OK" };
+}
+
+async function acceptGuildCreate(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<void> {
+	const outcome = await withLockedEntities(
+		[Player.lockKey(player.id)] as const,
+		async ([lockedPlayer]) => await applyLockedAcceptGuildCreate(
+			response,
+			{ player: lockedPlayer },
+			guildName
+		)
+	);
+
+	if (outcome.kind === "OK") {
+		return;
+	}
+
+	if (outcome.kind === "alreadyInGuild") {
+		response.push(makePacket(CommandGuildCreatePacketRes, {
+			foundGuild: true
+		}));
+	}
+	else if (outcome.kind === "nameTaken") {
+		response.push(makePacket(CommandGuildCreatePacketRes, {
+			foundGuild: false,
+			guildNameIsAvailable: false
+		}));
+	}
+	else {
+		response.push(makePacket(CommandGuildCreatePacketRes, {
+			foundGuild: false,
+			guildNameIsAvailable: true,
+			guildNameIsAcceptable: true,
+			missingMoney: outcome.missingMoney
+		}));
+	}
 }
 
 export default class GuildCreateCommand {

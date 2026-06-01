@@ -10,6 +10,7 @@ export abstract class PlayersConstants {
 		MONEY: 0,
 		TOKENS: 10,
 		CLASS: 0,
+		BADGES: "",
 		GUILD_ID: null as unknown as number,
 		LAST_PET_FREE: new Date(0),
 		EFFECT: Effect.NOT_STARTED.id,
@@ -17,4 +18,6 @@ export abstract class PlayersConstants {
 		START_TRAVEL_DATE: 0,
 		NOTIFICATIONS: NotificationsConstants.DM_VALUE
 	};
+
+	static readonly MEAL_COOLDOWN = 12 * 60 * 60 * 1000; // 12 hours in ms
 }

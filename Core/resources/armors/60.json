@@ -1,5 +1,7 @@
 {
   "rarity": 8,
   "rawDefense": 1,
-  "attack": 85
+  "attack": 85,
+  "type": "spiritual",
+  "materialCategory": 15
 }

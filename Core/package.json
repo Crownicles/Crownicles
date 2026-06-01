@@ -2,28 +2,31 @@
   "name": "crownicles_core",
   "version": "5.3.1.b",
   "description": "Core package of Crownicles which manages the game mechanics",
-  "main": "src/index.js",
+  "main": "src/main.js",
   "packageManager": "pnpm@10.9.0+sha512.0486e394640d3c1fb3c9d43d49cf92879ff74f8516959c235308f5a8f62e2e19528a65cdc2a3058f587cde71eba3d5b56327c8c33a97e4c4051ca48a10ca2d5f",
   "engines": {
     "node": ">=24.0.0"
   },
   "engineStrict": true,
   "scripts": {
-    "start": "pnpm run tsc && node dist/Core/src/index.js",
+    "start": "pnpm run tsc && node dist/Core/src/main.js",
     "setup": "pnpm i",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:integration": "pnpm run tsc && vitest run --config vitest.integration.config.mts",
     "cd": "cd",
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
-    "dockerStart": "node --max-old-space-size=512 dist/Core/src/index.js",
-    "start-profiler": "pnpm run tsc && node --prof dist/Core/src/index.js"
+    "dockerStart": "node --max-old-space-size=512 dist/Core/src/main.js",
+    "start-profiler": "pnpm run tsc && node --prof dist/Core/src/main.js"
   },
   "dependencies": {
+    "@types/cls-hooked": "4.3.9",
     "@types/express": "5.0.6",
     "@types/node": "25.6.0",
+    "cls-hooked": "4.2.2",
     "cron": "4.4.0",
     "express": "5.2.1",
     "mariadb": "3.0.2",

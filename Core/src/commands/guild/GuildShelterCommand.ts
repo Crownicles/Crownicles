@@ -12,7 +12,7 @@ import {
 import { GuildPets } from "../../core/database/game/models/GuildPet";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { Guilds } from "../../core/database/game/models/Guild";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 
 export default class GuildShelterCommand {
 	@commandRequires(CommandGuildShelterPacketReq, {
@@ -22,6 +22,7 @@ export default class GuildShelterCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player): Promise<void> {
+		const guild = (await Guilds.getById(player.guildId))!;
 		const pets = await GuildPets.getOfGuild(player.guildId!);
 
 		if (pets.length === 0) {
@@ -36,8 +37,8 @@ export default class GuildShelterCommand {
 
 		response.push(makePacket(CommandGuildShelterPacketRes, {
 			pets: ownedPets,
-			guildName: (await Guilds.getById(player.guildId))!.name,
-			maxCount: PetConstants.SLOTS
+			guildName: guild.name,
+			maxCount: GuildDomainConstants.getShelterSlots(guild.shelterLevel)
 		}));
 	}
 }

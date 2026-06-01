@@ -1,0 +1,34 @@
+{
+  "level": 8,
+  "recipeType": "POTION_ATTACK",
+  "plants": [
+    {
+      "plantId": 5,
+      "quantity": 3
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 32,
+      "quantity": 1
+    },
+    {
+      "materialId": 38,
+      "quantity": 1
+    },
+    {
+      "materialId": 36,
+      "quantity": 1
+    },
+    {
+      "materialId": 10,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 3,
+  "potionRarity": 7,
+  "discoveredByDefault": false,
+  "discoverySource": "CAMPAIGN_MILESTONE",
+  "petFood": null
+}

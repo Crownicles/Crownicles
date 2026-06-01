@@ -5,9 +5,12 @@ import { LogsFightsResults } from "../../../../core/database/logs/models/LogsFig
 import {
 	HasOne, Op
 } from "sequelize";
-import { getNextSaturdayMidnight } from "../../../../../../Lib/src/utils/TimeUtils";
+import {
+	getNextSaturdayMidnight, millisecondsToSeconds, msDiff
+} from "../../../../../../Lib/src/utils/TimeUtils";
 import { LogsPlayers } from "../../../../core/database/logs/models/LogsPlayers";
 import { Players } from "../../../../core/database/game/models/Player";
+import { TimeConstants } from "../../../../../../Lib/src/constants/TimeConstants";
 
 export const commandInfo: ITestCommand = {
 	name: "resetbo3",
@@ -34,7 +37,7 @@ const bo3TestCommand: ExecuteTestCommandLike = async (player, args) => {
 				}
 			],
 			date: {
-				[Op.gt]: Math.floor((getNextSaturdayMidnight() - 7 * 24 * 60 * 60 * 1000) / 1000)
+				[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(getNextSaturdayMidnight(), TimeConstants.MS_TIME.WEEK)))
 			},
 			friendly: false
 		},

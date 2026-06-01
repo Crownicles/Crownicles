@@ -1,3 +1,7 @@
+import {
+	asDays, asMinutes, Day, Minute
+} from "../types/TimeTypes";
+
 export abstract class FightConstants {
 	static readonly RARE_SUB_TEXT_INTRO = 0.001; // Chance of having a rare subtext in the fight intro message (1=100%)
 
@@ -5,7 +9,7 @@ export abstract class FightConstants {
 
 	static readonly REQUIRED_LEVEL = 8;
 
-	static readonly POINTS_REGEN_MINUTES = 7;
+	static readonly POINTS_REGEN_MINUTES: Minute = asMinutes(7);
 
 	static readonly POINTS_REGEN_AMOUNT = 130;
 
@@ -41,6 +45,16 @@ export abstract class FightConstants {
 
 	// Out-of-breath attack failure probability
 	static readonly OUT_OF_BREATH_FAILURE_PROBABILITY = 0.8;
+
+	// Default breath values (fallback when player class is not found)
+	static readonly DEFAULT_BASE_BREATH = 4;
+
+	static readonly DEFAULT_MAX_BREATH = 10;
+
+	static readonly DEFAULT_BREATH_REGEN = 4;
+
+	// Default player max cumulative energy (fallback when player class is not found)
+	static readonly PLAYER_MAX_ENERGY = 100;
 
 	// Divider of the damage a fight action will deal if it is a miss
 	static readonly FAILURE_DIVIDERS = [
@@ -322,7 +336,7 @@ export abstract class FightConstants {
 
 
 	// Time needed to wait before being able to fight again after a ranked fight as a defender
-	static DEFENDER_COOLDOWN_MINUTES = 30;
+	static DEFENDER_COOLDOWN_MINUTES: Minute = asMinutes(30);
 
 	// Maximum offset for opponent search
 	static MAX_OFFSET_FOR_OPPONENT_SEARCH = 5;
@@ -352,7 +366,7 @@ export abstract class FightConstants {
 	static HISTORY_DISPLAY_LIMIT = 5;
 
 	// Time limit for a player to be considered active for opponent search (in days)
-	static readonly ACTIVE_PLAYER_TIME_LIMIT_DAYS = 14;
+	static readonly ACTIVE_PLAYER_TIME_LIMIT_DAYS: Day = asDays(14);
 
 	/**
 	 * Fight roles for determining pet availability during expedition
@@ -368,7 +382,9 @@ export abstract class FightConstants {
 	static readonly FINAL_BOSS_MONSTER_IDS = {
 		MAGMA_TITAN: "magmaTitan",
 		MALE_ICE_DRAGON: "maleIceDragon",
-		FEMALE_ICE_DRAGON: "femaleIceDragon"
+		FEMALE_ICE_DRAGON: "femaleIceDragon",
+		KRAKEN: "kraken",
+		LEVIATHAN: "leviathan"
 	} as const;
 }
 

@@ -1,3 +1,4 @@
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -11,7 +12,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
-		return player.health < player.getMaxHealth();
+		return player.getHealthValue() < player.getMaxHealthBase();
 	},
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const healthWon = RandomUtils.rangedInt(SmallEventConstants.HEALTH);

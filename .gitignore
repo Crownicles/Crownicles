@@ -8,6 +8,7 @@
 **/coverage
 **/config/config.toml
 **/test-results.xml
+**/test-integration-results.xml
 .run
 mqtt5
 bdd

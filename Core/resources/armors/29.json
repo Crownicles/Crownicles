@@ -1,7 +1,9 @@
 {
   "rarity": 1,
   "rawDefense": 5,
+  "type": "wood",
   "tags": [
     "metallic"
-  ]
+  ],
+  "materialCategory": 5
 }

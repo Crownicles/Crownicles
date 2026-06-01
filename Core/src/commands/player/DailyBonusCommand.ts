@@ -13,13 +13,15 @@ import {
 	CommandDailyBonusPacketRes
 } from "../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { ObjectItem } from "../../data/ObjectItem";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import {
 	InventoryInfo, InventoryInfos
 } from "../../core/database/game/models/InventoryInfo";
-import { millisecondsToHours } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMilliseconds, millisecondsToHours, msDiff, nowMs
+} from "../../../../Lib/src/utils/TimeUtils";
 import { DailyConstants } from "../../../../Lib/src/constants/DailyConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
@@ -36,6 +38,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDailyBonus";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
+import { withLockedEntitiesSafe } from "../../core/utils/withLockedEntitiesSafe";
 
 /**
  * Check if the active object is wrong for the daily bonus
@@ -54,13 +57,22 @@ function isWrongObjectForDaily(activeObject: ObjectItem): boolean {
 }
 
 /**
+ * Check if the daily bonus is still on cooldown given the last claim timestamp.
+ * Centralised so the pre-lock fast path and the in-lock re-validation cannot
+ * drift apart (#3760).
+ */
+function isDailyOnCooldown(lastDailyTimestamp: number): boolean {
+	return millisecondsToHours(msDiff(nowMs(), asMilliseconds(lastDailyTimestamp))) < DailyConstants.TIME_BETWEEN_DAILIES;
+}
+
+/**
  * Check if the player is ready to get his daily bonus
  * @param inventoryInfo
  * @param response
  */
 function dailyNotReady(inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): boolean {
 	const lastDailyTimestamp = inventoryInfo.getLastDailyAtTimestamp();
-	if (millisecondsToHours(Date.now() - lastDailyTimestamp) < DailyConstants.TIME_BETWEEN_DAILIES) {
+	if (isDailyOnCooldown(lastDailyTimestamp)) {
 		response.push(makePacket(CommandDailyBonusInCooldown, {
 			timeBetweenDailies: DailyConstants.TIME_BETWEEN_DAILIES,
 			lastDailyTimestamp
@@ -77,40 +89,79 @@ function dailyNotReady(inventoryInfo: InventoryInfo, response: CrowniclesPacket[
  * @param inventoryInfo
  * @param response
  */
-async function activateDailyItem(player: Player, activeObject: ObjectItem, inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): Promise<void> {
+// Exported for race tests; the inner `withLockedEntitiesSafe` block is the unit under test.
+export async function activateDailyItem(player: Player, activeObject: ObjectItem, inventoryInfo: InventoryInfo, response: CrowniclesPacket[]): Promise<void> {
 	const packet = makePacket(CommandDailyBonusPacketRes, {
 		value: activeObject.power,
 		itemNature: activeObject.nature
 	});
-	response.push(packet);
-	switch (packet.itemNature) {
-		case ItemNature.ENERGY:
-			player.addEnergy(activeObject.power, NumberChangeReason.DAILY);
-			break;
-		case ItemNature.HEALTH:
-			await player.addHealth({
-				amount: activeObject.power,
-				response,
-				reason: NumberChangeReason.DAILY
-			});
-			break;
-		case ItemNature.TIME_SPEEDUP:
-			await TravelTime.timeTravel(player, activeObject.power, NumberChangeReason.DAILY);
-			break;
-		default:
-			await player.addMoney({
-				amount: activeObject.power,
-				response,
-				reason: NumberChangeReason.DAILY
-			});
-			packet.value = BlessingManager.getInstance().applyMoneyBlessing(activeObject.power);
-			break;
+
+	/*
+	 * Lock the player and the inventory info together so the cooldown
+	 * read/write and the player-side mutation (energy / health / money /
+	 * time-travel) are atomic. Without this lock, two concurrent daily
+	 * bonus claims on the same account could both pass the `dailyNotReady`
+	 * check, double-apply the bonus, and only refresh `lastDailyAt` once —
+	 * a duplication exploit (#3760).
+	 */
+	let claimSucceeded = false;
+	await withLockedEntitiesSafe(
+		[
+			Player.lockKey(player.id),
+			InventoryInfo.lockKey(player.id)
+		] as const,
+		`activateDailyItem(player=${player.id})`,
+		async ([lockedPlayer, lockedInventoryInfo]) => {
+			// Re-validate the cooldown under the lock — a concurrent claim may have just consumed it
+			const lastDailyTimestamp = lockedInventoryInfo.getLastDailyAtTimestamp();
+			if (isDailyOnCooldown(lastDailyTimestamp)) {
+				response.push(makePacket(CommandDailyBonusInCooldown, {
+					timeBetweenDailies: DailyConstants.TIME_BETWEEN_DAILIES,
+					lastDailyTimestamp
+				}));
+				return;
+			}
+
+			const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
+			switch (packet.itemNature) {
+				case ItemNature.ENERGY:
+					lockedPlayer.addEnergy(activeObject.power, NumberChangeReason.DAILY, playerActiveObjects);
+					break;
+				case ItemNature.HEALTH:
+					await lockedPlayer.addHealth({
+						amount: activeObject.power,
+						response,
+						reason: NumberChangeReason.DAILY
+					});
+					break;
+				case ItemNature.TIME_SPEEDUP:
+					await TravelTime.timeTravel(lockedPlayer, activeObject.power, NumberChangeReason.DAILY);
+					break;
+				default:
+					await lockedPlayer.addMoney({
+						amount: activeObject.power,
+						response,
+						reason: NumberChangeReason.DAILY
+					});
+					packet.value = BlessingManager.getInstance().applyMoneyBlessing(activeObject.power);
+					break;
+			}
+			lockedInventoryInfo.updateLastDailyAt();
+			await Promise.all([
+				lockedInventoryInfo.save(),
+				lockedPlayer.save()
+			]);
+
+			// Sync the caller-supplied instances for response building
+			inventoryInfo.lastDailyAt = lockedInventoryInfo.lastDailyAt;
+			claimSucceeded = true;
+		}
+	);
+
+	// Push the success packet only after the bonus was durably applied (#3760).
+	if (claimSucceeded) {
+		response.push(packet);
 	}
-	inventoryInfo.updateLastDailyAt();
-	await Promise.all([
-		inventoryInfo.save(),
-		player.save()
-	]);
 }
 
 export default class DailyBonusCommand {
@@ -150,13 +201,13 @@ export default class DailyBonusCommand {
 		if (equippedUsableObject) {
 			const item = equippedUsableObject.getItem() as ObjectItem;
 			await activateDailyItem(player, item, inventoryInfo, response);
-			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, item)
+			crowniclesInstance?.logsDatabase.logPlayerDaily(player.keycloakId, item)
 				.then();
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
 			return;
 		}
 
-		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(i.getItem()!)));
+		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)));
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
@@ -168,7 +219,7 @@ export default class DailyBonusCommand {
 			}
 
 			const objectDetails = (reaction.reaction.data as ReactionCollectorDailyBonusReaction).object;
-			const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.category);
+			const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.itemCategory);
 			if (!usableObject) {
 				return;
 			}
@@ -182,7 +233,7 @@ export default class DailyBonusCommand {
 				freshInventoryInfo,
 				response
 			);
-			crowniclesInstance.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
+			crowniclesInstance?.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
 				.then();
 		};
 

@@ -3,7 +3,7 @@ import {
 } from "sequelize";
 import { datesAreOnSameDay } from "../../../../../../Lib/src/utils/TimeUtils";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { Campaign } from "../../../missions/Campaign";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
@@ -11,13 +11,37 @@ import * as moment from "moment";
 import { MissionsController } from "../../../missions/MissionsController";
 import { Players } from "./Player";
 import { CrowniclesPacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 export class PlayerMissionsInfo extends Model {
+	/**
+	 * Build a {@link LockKey} for this PlayerMissionsInfo row so it
+	 * can participate in a `withLockedEntities([...])` composite
+	 * critical section. The primary key is `playerId`.
+	 */
+	static lockKey(playerId: number): LockKey<PlayerMissionsInfo> {
+		return {
+			model: PlayerMissionsInfo, id: playerId
+		};
+	}
+
+	/**
+	 * Convenience helper for locking a single PlayerMissionsInfo row.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(playerId: number, fn: (info: PlayerMissionsInfo) => Promise<R>): Promise<R> {
+		return withLockedEntities([PlayerMissionsInfo.lockKey(playerId)], ([info]) => fn(info));
+	}
+
 	declare readonly playerId: number;
 
 	declare gems: number;
 
 	declare hasBoughtPointsThisWeek: boolean;
+
+	declare missionSkipsUsedThisWeek: number;
 
 	declare dailyMissionNumberDone: number;
 
@@ -35,7 +59,8 @@ export class PlayerMissionsInfo extends Model {
 
 	static async resetShopBuyout(): Promise<void> {
 		await PlayerMissionsInfo.update({
-			hasBoughtPointsThisWeek: false
+			hasBoughtPointsThisWeek: false,
+			missionSkipsUsedThisWeek: 0
 		}, { where: {} });
 	}
 
@@ -46,7 +71,7 @@ export class PlayerMissionsInfo extends Model {
 	public async addGems(amount: number, keycloakId: string, reason: NumberChangeReason): Promise<void> {
 		this.gems += amount;
 		await this.save();
-		crowniclesInstance.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
+		crowniclesInstance?.logsDatabase.logGemsChange(keycloakId, this.gems, reason)
 			.then();
 	}
 
@@ -89,6 +114,11 @@ export function initModel(sequelize: Sequelize): void {
 		hasBoughtPointsThisWeek: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
+		},
+		missionSkipsUsedThisWeek: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0,
+			allowNull: false
 		},
 		dailyMissionNumberDone: {
 			type: DataTypes.INTEGER,

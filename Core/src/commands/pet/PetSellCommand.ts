@@ -32,6 +32,7 @@ import {
 	Pet, PetDataController
 } from "../../data/Pet";
 import { PetSellConstants } from "../../../../Lib/src/constants/PetSellConstants";
+import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import {
 	CollectCallback, EndCallback, ReactionCollectorInstance
 } from "../../core/utils/ReactionsCollector";
@@ -42,13 +43,13 @@ import {
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { ReactionCollectorPetSell } from "../../../../Lib/src/packets/interaction/ReactionCollectorPetSell";
-import { GuildUtils } from "../../core/utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { LogsDatabase } from "../../core/database/logs/LogsDatabase";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { PetUtils } from "../../core/utils/PetUtils";
+import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 
 type SellerInformation = {
 	player: Player; pet: PetEntity; petModel: Pet; guild: Guild; petCost: number;
@@ -110,37 +111,119 @@ async function verifyBuyerRequirements(response: CrowniclesPacket[], sellerInfor
 	return true;
 }
 
-async function executePetSell(collector: ReactionCollectorInstance, response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
-	// Add guild XP
-	const xpToAdd = GuildUtils.calculateAmountOfXPToAdd(sellerInformation.petCost);
-	await sellerInformation.guild.addExperience({
-		amount: xpToAdd, response, reason: NumberChangeReason.PET_SELL
-	});
+/**
+ * Outcome of the in-lock revalidation. The TX is aborted (returned
+ * `false`) when ANY actor's state changed between the click and the
+ * lock acquisition, so we never mutate stale rows. The caller emits
+ * the appropriate "situation changed" error packet.
+ */
+type LockedSellState = {
+	revalidated: true;
+	treasuryEarned: number;
+} | {
+	revalidated: false;
+};
 
-	// Make buyer spend money
+/**
+ * Re-check every invariant against the freshly-locked rows and, if
+ * everything still holds, atomically:
+ * - decrement buyer money (with logs)
+ * - swap pet ownership (seller.petId → null, buyer.petId → pet.id)
+ * - reset pet love points to base
+ * - credit the seller's guild treasury (minus penalty)
+ * - save all four rows in a single Promise.all under the same TX.
+ *
+ * Returns `treasuryEarned` so the caller can build the success packet
+ * outside the critical section.
+ */
+async function applyLockedPetSell(
+	response: CrowniclesPacket[],
+	locked: {
+		seller: Player; buyer: Player; pet: PetEntity; guild: Guild;
+	},
+	expected: {
+		petId: number; guildId: number; petCost: number;
+	}
+): Promise<LockedSellState> {
+	const {
+		seller, buyer, pet, guild
+	} = locked;
+	const stillValid = seller.petId === expected.petId
+		&& seller.guildId === expected.guildId
+		&& buyer.petId === null
+		&& buyer.guildId !== expected.guildId
+		&& buyer.money >= expected.petCost;
+	if (!stillValid) {
+		return { revalidated: false };
+	}
+
+	const treasuryEarned = GuildDomainConstants.computeTreasuryGain(expected.petCost);
+	guild.treasury += treasuryEarned;
+
 	await buyer.spendMoney({
-		amount: sellerInformation.petCost,
+		amount: expected.petCost,
 		response,
 		reason: NumberChangeReason.PET_SELL
 	});
 
-	// Switch the pet owner and love points
-	buyer.petId = sellerInformation.pet.id;
-	sellerInformation.player.petId = null;
-	sellerInformation.pet.lovePoints = PetConstants.BASE_LOVE;
+	buyer.petId = pet.id;
+	seller.petId = null;
+	pet.lovePoints = PetConstants.BASE_LOVE;
 
-	// Save the changes
 	await Promise.all([
-		sellerInformation.guild.save(),
+		guild.save(),
 		buyer.save(),
-		sellerInformation.player.save(),
-		sellerInformation.pet.save()
+		seller.save(),
+		pet.save()
 	]);
 
-	// Log the pet sell
+	return {
+		revalidated: true, treasuryEarned
+	};
+}
+
+async function executePetSell(collector: ReactionCollectorInstance, response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
+	/*
+	 * 4-row trade critical section: lock seller + buyer + pet + guild
+	 * together so two concurrent buyers (or a concurrent withdraw of
+	 * the seller's pet) cannot duplicate the pet, double-debit the
+	 * buyer, or under-credit the guild treasury.
+	 */
+	const result = await withLockedEntities(
+		[
+			Player.lockKey(sellerInformation.player.id),
+			Player.lockKey(buyer.id),
+			PetEntity.lockKey(sellerInformation.pet.id),
+			Guild.lockKey(sellerInformation.guild.id)
+		] as const,
+		async ([
+			lockedSeller,
+			lockedBuyer,
+			lockedPet,
+			lockedGuild
+		]) => await applyLockedPetSell(
+			response,
+			{
+				seller: lockedSeller, buyer: lockedBuyer, pet: lockedPet, guild: lockedGuild
+			},
+			{
+				petId: sellerInformation.pet.id,
+				guildId: sellerInformation.guild.id,
+				petCost: sellerInformation.petCost
+			}
+		)
+	);
+
+	if (!result.revalidated) {
+		response.push(makePacket(CommandPetSellInitiatorSituationChangedErrorPacket, {}));
+		await collector.end(response);
+		return;
+	}
+
+	// Log the pet sell (fire-and-forget)
 	LogsDatabase.logPetSell(sellerInformation.pet, sellerInformation.player.keycloakId, buyer.keycloakId, sellerInformation.petCost).then();
 
-	// Update missions
+	// Update missions on the now-committed instances
 	await MissionsController.update(buyer, response, { missionId: "havePet" });
 	await MissionsController.update(sellerInformation.player, response, { missionId: "sellOrTradePet" });
 	await MissionsController.update(sellerInformation.player, response, { missionId: "depositPetInShelter" });
@@ -148,9 +231,8 @@ async function executePetSell(collector: ReactionCollectorInstance, response: Cr
 	// Success packet
 	response.push(makePacket(CommandPetSellSuccessPacket, {
 		guildName: sellerInformation.guild.name,
-		xpEarned: xpToAdd,
-		pet: sellerInformation.pet.asOwnedPet(),
-		isGuildMax: sellerInformation.guild.isAtMaxLevel()
+		treasuryEarned: result.treasuryEarned,
+		pet: sellerInformation.pet.asOwnedPet()
 	}));
 
 	await collector.end(response);
@@ -217,12 +299,11 @@ function refusePetSellCallback(initiatorPlayerKeycloakId: string, reactingPlayer
 	return true;
 }
 
-function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq, guild: Guild, pet: PetEntity, context: PacketContext, response: CrowniclesPacket[]): void {
+function createAndPushCollector(player: Player, packet: CommandPetSellPacketReq, pet: PetEntity, context: PacketContext, response: CrowniclesPacket[]): void {
 	// Send collector
 	const collector = new ReactionCollectorPetSell(
 		player.keycloakId,
 		packet.price,
-		guild.isAtMaxLevel(),
 		pet.asOwnedPet(),
 		packet.askedPlayer.keycloakId
 	);
@@ -310,6 +391,6 @@ export default class PetSellCommand {
 			return;
 		}
 
-		createAndPushCollector(player, packet, guild, pet, context, response);
+		createAndPushCollector(player, packet, pet, context, response);
 	}
 }

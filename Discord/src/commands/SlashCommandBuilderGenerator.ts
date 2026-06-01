@@ -14,14 +14,30 @@ export class SlashCommandBuilderGenerator {
 	 * @param commandSectionName Command section name in the translation files
 	 */
 	static generateBaseCommand(commandSectionName: string): SlashCommandBuilder {
+		const nameKey = `discordBuilder:${commandSectionName}.name`;
+		const descriptionKey = `discordBuilder:${commandSectionName}.description`;
+		const frenchDescription = i18n.t(descriptionKey, {
+			lng: LANGUAGE.FRENCH,
+			defaultValue: commandSectionName
+		});
+
 		return new SlashCommandBuilder()
-			.setName(i18n.t(`discordBuilder:${commandSectionName}.name`, { lng: LANGUAGE.ENGLISH }))
+			.setName(i18n.t(nameKey, {
+				lng: LANGUAGE.ENGLISH,
+				defaultValue: commandSectionName
+			}))
 			.setNameLocalizations({
-				fr: i18n.t(`discordBuilder:${commandSectionName}.name`, { lng: LANGUAGE.FRENCH })
+				fr: i18n.t(nameKey, {
+					lng: LANGUAGE.FRENCH,
+					defaultValue: commandSectionName
+				})
 			})
-			.setDescription(i18n.t(`discordBuilder:${commandSectionName}.description`, { lng: LANGUAGE.ENGLISH }))
+			.setDescription(i18n.t(descriptionKey, {
+				lng: LANGUAGE.ENGLISH,
+				defaultValue: frenchDescription
+			}))
 			.setDescriptionLocalizations({
-				fr: i18n.t(`discordBuilder:${commandSectionName}.description`, { lng: LANGUAGE.FRENCH })
+				fr: frenchDescription
 			});
 	}
 

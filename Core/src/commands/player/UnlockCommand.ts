@@ -23,7 +23,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import { ReactionCollectorUnlock } from "../../../../Lib/src/packets/interaction/ReactionCollectorUnlock";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { UnlockConstants } from "../../../../Lib/src/constants/UnlockConstants";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -32,6 +32,10 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { PlayerFreedFromJailNotificationPacket } from "../../../../Lib/src/packets/notifications/PlayerFreedFromJailNotificationPacket";
 import { PacketUtils } from "../../core/utils/PacketUtils";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 /**
  * Accept the unlocking of a player
@@ -40,26 +44,56 @@ import { PacketUtils } from "../../core/utils/PacketUtils";
  * @param response
  */
 async function acceptUnlock(player: Player, freedPlayer: Player, response: CrowniclesPacket[]): Promise<void> {
-	await player.reload();
+	/*
+	 * Lock both players atomically. Without this lock two concurrent
+	 * unlock attempts on the same jailed player could both pass the
+	 * `unlockCannotBeDone` check, double-charge the freeing players,
+	 * and the second `removeEffect` would silently no-op on stale
+	 * in-memory state (#3760).
+	 */
+	let unlocked = false;
+	try {
+		await withLockedEntities(
+			[
+				Player.lockKey(player.id),
+				Player.lockKey(freedPlayer.id)
+			] as const,
+			async ([lockedPlayer, lockedFreedPlayer]) => {
+				// Re-validate using the freshly-locked rows
+				if (unlockCannotBeDone(lockedPlayer, lockedFreedPlayer, response)) {
+					return;
+				}
 
-	// Do all necessary checks again just in case something changed during the menu
-	if (unlockCannotBeDone(player, freedPlayer, response)) {
+				await TravelTime.removeEffect(lockedFreedPlayer, NumberChangeReason.UNLOCK);
+				await lockedPlayer.spendMoney({
+					amount: UnlockConstants.PRICE_FOR_UNLOCK,
+					response,
+					reason: NumberChangeReason.UNLOCK
+				});
+
+				await Promise.all([
+					lockedPlayer.save(),
+					lockedFreedPlayer.save()
+				]);
+				unlocked = true;
+			}
+		);
+	}
+	catch (e) {
+		if (e instanceof LockedRowNotFoundError) {
+			CrowniclesLogger.warn(
+				`acceptUnlock: locked row vanished for player ${player.id} or freed ${freedPlayer.id} — aborting unlock`
+			);
+			return;
+		}
+		throw e;
+	}
+
+	if (!unlocked) {
 		return;
 	}
 
-	await TravelTime.removeEffect(freedPlayer, NumberChangeReason.UNLOCK);
-	await player.spendMoney({
-		amount: UnlockConstants.PRICE_FOR_UNLOCK,
-		response,
-		reason: NumberChangeReason.UNLOCK
-	});
-
-	await Promise.all([
-		player.save(),
-		freedPlayer.save()
-	]);
-
-	crowniclesInstance.logsDatabase.logUnlock(player.keycloakId, freedPlayer.keycloakId).then();
+	crowniclesInstance?.logsDatabase.logUnlock(player.keycloakId, freedPlayer.keycloakId).then();
 
 	response.push(makePacket(CommandUnlockAcceptPacketRes, {
 		unlockedKeycloakId: freedPlayer.keycloakId

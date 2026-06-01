@@ -38,13 +38,14 @@ describe("EditValueParameters consistency", () => {
 		});
 
 		it("addExperience should use EditValueParameters", () => {
-			expect(playerCode).toMatch(/addExperience\(parameters:\s*EditValueParameters\)/);
+			expect(playerCode).toMatch(/addExperience\(parameters:\s*EditValueParameters,/);
 		});
 
 		it("addHealth should use HealthEditValueParameters", () => {
 			expect(playerCode).toMatch(/addHealth\(parameters:\s*HealthEditValueParameters\)/);
 		});
 
+		// addRage now uses EditValueParameters pattern (same as addMoney, addScore, etc.)
 		it("addRage should use EditValueParameters", () => {
 			expect(playerCode).toMatch(/addRage\(parameters:\s*EditValueParameters\)/);
 		});

@@ -23,6 +23,7 @@ import {
 	ReactionCollectorAcceptReaction
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorAnyShopSmallEventData } from "../../../../../Lib/src/packets/interaction/ReactionCollectorAnyShopSmallEvent";
+import { withLockedPlayerSafe } from "../../utils/withLockedPlayerSafe";
 
 export type ShopSmallEventItem = {
 	item: GenericItem;
@@ -52,9 +53,9 @@ export abstract class Shop<
 
 	/**
 	 * Called after a successful purchase. Override this method to add custom logic after buying an item.
-	 * @param player
-	 * @param shopItem
-	 * @param response
+	 * @param _player
+	 * @param _shopItem
+	 * @param _response
 	 */
 	async afterPurchase(_player: Player, _shopItem: ShopSmallEventItem, _response: CrowniclesPacket[]): Promise<void> {
 		// Default implementation does nothing
@@ -71,7 +72,7 @@ export abstract class Shop<
 		};
 
 		const collector = this.getPopulatedReactionCollector({
-			item: toItemWithDetails(randomItem),
+			item: toItemWithDetails(player, randomItem, 0, null),
 			price: itemPrice
 		}, shopItem);
 
@@ -92,21 +93,23 @@ export abstract class Shop<
 	private callbackShopSmallEvent(player: Player, shopItem: ShopSmallEventItem): EndCallback {
 		return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.MERCHANT);
-			const reaction = collector.getFirstReaction();
-			const isValidated = reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name;
-			const canBuy = player.money >= shopItem.price;
-			response.push(!isValidated ? this.getRefusePacket() : !canBuy ? this.getCannotBuyPacket() : this.getAcceptPacket());
-			if (!isValidated || !canBuy) {
-				return;
-			}
-			await giveItemToPlayer(response, collector.context, player, shopItem.item, SmallEventConstants.SHOP.RESALE_MULTIPLIER);
-			await player.spendMoney({
-				amount: shopItem.price,
-				response,
-				reason: NumberChangeReason.SMALL_EVENT
+			await withLockedPlayerSafe(player, "shop endCallback", async lockedPlayer => {
+				const reaction = collector.getFirstReaction();
+				const isValidated = reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name;
+				const canBuy = lockedPlayer.money >= shopItem.price;
+				response.push(!isValidated ? this.getRefusePacket() : !canBuy ? this.getCannotBuyPacket() : this.getAcceptPacket());
+				if (!isValidated || !canBuy) {
+					return;
+				}
+				await giveItemToPlayer(response, collector.context, lockedPlayer, shopItem.item, { resaleMultiplier: SmallEventConstants.SHOP.RESALE_MULTIPLIER });
+				await lockedPlayer.spendMoney({
+					amount: shopItem.price,
+					response,
+					reason: NumberChangeReason.SMALL_EVENT
+				});
+				await lockedPlayer.save();
+				await this.afterPurchase(lockedPlayer, shopItem, response);
 			});
-			await player.save();
-			await this.afterPurchase(player, shopItem, response);
 		};
 	}
 }

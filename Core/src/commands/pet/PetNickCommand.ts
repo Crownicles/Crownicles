@@ -12,7 +12,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import Player from "../../core/database/game/models/Player";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 
 
 export default class PetNickCommand {
@@ -60,6 +60,6 @@ export default class PetNickCommand {
 		playerPet.nickname = newPetNickName ?? "";
 		await playerPet.save();
 
-		crowniclesInstance.logsDatabase.logPetNickname(playerPet).then();
+		crowniclesInstance?.logsDatabase.logPetNickname(playerPet).then();
 	}
 }

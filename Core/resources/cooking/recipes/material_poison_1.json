@@ -1,0 +1,26 @@
+{
+  "level": 5,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 6,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 10,
+      "quantity": 1
+    },
+    {
+      "materialId": 55,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 3,
+  "outputMaterialQuantity": 1,
+  "discoveredByDefault": false,
+  "discoverySource": "WITCH",
+  "petFood": null
+}

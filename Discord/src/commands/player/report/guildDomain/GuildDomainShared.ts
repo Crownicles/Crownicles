@@ -1,0 +1,391 @@
+import {
+	ActionRowBuilder, ButtonBuilder, ButtonStyle,
+	ContainerBuilder, Message, MessageComponentInteraction,
+	SeparatorBuilder, SeparatorSpacingSize,
+	TextDisplayBuilder
+} from "discord.js";
+import i18n from "../../../../translations/i18n";
+import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
+import {
+	CrowniclesNestedMenuCollector, CrowniclesNestedMenus
+} from "../../../../messages/CrowniclesNestedMenus";
+import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
+import {
+	createStayInCityButton, handleStayInCityInteraction
+} from "../ReportCityMenu";
+import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
+import { PacketContext } from "../../../../../../Lib/src/packets/CrowniclesPacket";
+import { ReactionCollectorCityData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorCity";
+import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { Language } from "../../../../../../Lib/src/Language";
+import {
+	GuildBuilding, GuildDomainConstants
+} from "../../../../../../Lib/src/constants/GuildDomainConstants";
+import { DepositTierAffordability } from "../../../../../../Lib/src/types/GuildDomainEligibility";
+import {
+	PetConstants, PetFood
+} from "../../../../../../Lib/src/constants/PetConstants";
+
+export type GuildDomainData = ReactionCollectorCityData["guildDomain"] & object & {
+
+	/** Pending reimbursement amount displayed after a treasury-funded food purchase (frontend-only state) */
+	pendingReimburseAmount?: number;
+
+	/** Recap of the food purchase that triggered the pending reimbursement (frontend-only state, used to build a final summary message) */
+	pendingPurchaseRecap?: string;
+};
+
+/**
+ * Minimal data shape required by the shared shop UI builders (food list, quantity menu, reimburse menu).
+ * Both `GuildDomainData` and the standalone food shop data satisfy this shape.
+ */
+export interface FoodShopUIData {
+	food: {
+		common: number;
+		carnivorous: number;
+		herbivorous: number;
+		ultimate: number;
+	};
+	foodCaps: readonly number[];
+	maxBuyableFood: readonly number[];
+	treasury: number;
+	playerMoney: number;
+	canDeposit?: DepositTierAffordability;
+	pendingReimburseAmount?: number;
+	pendingPurchaseRecap?: string;
+}
+
+export interface FoodShopUIContext {
+	data: FoodShopUIData;
+	lng: Language;
+}
+
+export interface GuildDomainMenuContext {
+	data: GuildDomainData;
+	lng: Language;
+	pseudo: string;
+	context: PacketContext;
+	interaction: CrowniclesInteraction;
+	packet: ReactionCollectorCreationPacket;
+	collectorTime: number;
+}
+
+export const BUILDING_MENU_IDS: Record<GuildBuilding, string> = {
+	[GuildBuilding.SHOP]: ReportCityMenuIds.GUILD_DOMAIN_SHOP_MENU,
+	[GuildBuilding.SHELTER]: ReportCityMenuIds.GUILD_DOMAIN_SHELTER_MENU,
+	[GuildBuilding.PANTRY]: ReportCityMenuIds.GUILD_DOMAIN_PANTRY_MENU,
+	[GuildBuilding.TRAINING_GROUND]: ReportCityMenuIds.GUILD_DOMAIN_TRAINING_MENU
+};
+
+export const BUILDING_ICONS: Record<GuildBuilding, string> = {
+	[GuildBuilding.SHOP]: CrowniclesIcons.city.guildDomain.shop,
+	[GuildBuilding.SHELTER]: CrowniclesIcons.city.guildDomain.shelter,
+	[GuildBuilding.PANTRY]: CrowniclesIcons.city.guildDomain.pantry,
+	[GuildBuilding.TRAINING_GROUND]: CrowniclesIcons.city.guildDomain.trainingGround
+};
+
+type BuildingLevelField = "shopLevel" | "shelterLevel" | "pantryLevel" | "trainingGroundLevel";
+
+const BUILDING_LEVEL_FIELDS: Record<GuildBuilding, BuildingLevelField> = {
+	[GuildBuilding.SHOP]: "shopLevel",
+	[GuildBuilding.SHELTER]: "shelterLevel",
+	[GuildBuilding.PANTRY]: "pantryLevel",
+	[GuildBuilding.TRAINING_GROUND]: "trainingGroundLevel"
+};
+
+export function getBuildingLevel(data: GuildDomainData, building: GuildBuilding): number {
+	return data[BUILDING_LEVEL_FIELDS[building]];
+}
+
+export function setBuildingLevel(data: GuildDomainData, building: GuildBuilding, level: number): void {
+	data[BUILDING_LEVEL_FIELDS[building]] = level;
+}
+
+/**
+ * Food keys aligned with PetConstants.PET_FOOD_BY_ID order: [common, herbivorous, carnivorous, ultimate]
+ */
+export const FOOD_KEYS = [
+	"common",
+	"herbivorous",
+	"carnivorous",
+	"ultimate"
+] as const;
+
+export type FoodKey = typeof FOOD_KEYS[number];
+
+export type FoodShopBuySelection = {
+	foodType: PetFood;
+	amount: number;
+};
+
+export function parseFoodShopBuyCustomId(customId: string): FoodShopBuySelection | null {
+	if (!customId.startsWith(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX)) {
+		return null;
+	}
+	const parts = customId.replace(ReportCityMenuIds.GUILD_DOMAIN_SHOP_FOOD_PREFIX, "").split("_");
+	if (parts.length !== 2) {
+		return null;
+	}
+	const foodType = parts[0] as PetFood;
+	if (!PetConstants.PET_FOOD_BY_ID.includes(foodType)) {
+		return null;
+	}
+	if (!(/^\d+$/).test(parts[1])) {
+		return null;
+	}
+	const amount = Number(parts[1]);
+	if (!Number.isSafeInteger(amount) || amount <= 0) {
+		return null;
+	}
+	return {
+		foodType,
+		amount
+	};
+}
+
+export function buildFoodBuyConfirmationDescription(ctx: FoodShopUIContext, foodType: PetFood, amount: number): string | null {
+	const foodIndex = PetConstants.PET_FOOD_BY_ID.indexOf(foodType);
+	const foodKey = FOOD_KEYS[foodIndex];
+	const unitPrice = GuildDomainConstants.SHOP_PRICES.FOOD[foodIndex];
+	if (foodKey === undefined || unitPrice === undefined) {
+		return null;
+	}
+	const foodName = i18n.t(`models:foods.${foodType}`, {
+		lng: ctx.lng,
+		count: amount
+	});
+	return i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodConfirmDescription", {
+		lng: ctx.lng,
+		amount,
+		food: foodName,
+		foodType,
+		cost: unitPrice * amount,
+		stock: ctx.data.food[foodKey],
+		cap: ctx.data.foodCaps[foodIndex],
+		treasury: ctx.data.treasury
+	});
+}
+
+/**
+ * Maps a PetFood enum value (e.g. "commonFood") to its FoodKey (e.g. "common").
+ * Single source of truth — avoids fragile `.replace("Food", "")` string surgery at call sites.
+ */
+export const PET_FOOD_TO_KEY: Record<PetFood, FoodKey> = {
+	[PetConstants.PET_FOOD.COMMON_FOOD]: "common",
+	[PetConstants.PET_FOOD.HERBIVOROUS_FOOD]: "herbivorous",
+	[PetConstants.PET_FOOD.CARNIVOROUS_FOOD]: "carnivorous",
+	[PetConstants.PET_FOOD.ULTIMATE_FOOD]: "ultimate"
+};
+
+/**
+ * Parses an integer amount from the suffix of a customId of the form `${prefix}${amount}`.
+ * Returns NaN if the suffix is not a valid integer — callers should validate.
+ */
+export function parsePrefixedAmount(customId: string, prefix: string): number {
+	return Number.parseInt(customId.replace(prefix, ""), 10);
+}
+
+/**
+ * Shared body of a food-buy confirmation menu config. Callers add their own
+ * `backMenuId` and wrap into their own ConfirmationConfig shape.
+ */
+export function buildFoodBuyConfirmationBase(
+	ctx: FoodShopUIContext,
+	foodType: PetFood,
+	amount: number,
+	onConfirm: (nestedMenus: CrowniclesNestedMenus) => Promise<void>
+): {
+	description: string; confirmLabel: string; onConfirm: (nestedMenus: CrowniclesNestedMenus) => Promise<void>;
+} | null {
+	const description = buildFoodBuyConfirmationDescription(ctx, foodType, amount);
+	if (description === null) {
+		return null;
+	}
+	return {
+		description,
+		confirmLabel: i18n.t("commands:report.city.buttons.confirm", { lng: ctx.lng }),
+		onConfirm
+	};
+}
+
+export function createDomainCollector(
+	ctx: GuildDomainMenuContext,
+	handler: (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => Promise<void>
+): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return (nestedMenus, message): CrowniclesNestedMenuCollector => {
+		const collector = message.createMessageComponentCollector({ time: ctx.collectorTime });
+
+		collector.on("collect", async (buttonInteraction: MessageComponentInteraction) => {
+			if (buttonInteraction.user.id !== ctx.interaction.user.id) {
+				await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, ctx.lng);
+				return;
+			}
+
+			await handler(buttonInteraction.customId, buttonInteraction, nestedMenus);
+		});
+
+		return collector;
+	};
+}
+
+/**
+ * Wrap createDomainCollector to factor the boilerplate every guild domain collector shares:
+ * - defer the button update,
+ * - intercept the STAY_IN_CITY button to end the report.
+ * The provided handler is only invoked for unhandled customIds.
+ */
+export function createDomainCollectorWithStayHandling(
+	ctx: GuildDomainMenuContext,
+	handler: (customId: string, buttonInteraction: MessageComponentInteraction, nestedMenus: CrowniclesNestedMenus) => Promise<void>
+): (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector {
+	return createDomainCollector(ctx, async (customId, buttonInteraction, nestedMenus) => {
+		await buttonInteraction.deferUpdate();
+		if (customId === ReportCityMenuIds.STAY_IN_CITY) {
+			handleStayInCityInteraction(ctx.packet, ctx.context, buttonInteraction);
+			return;
+		}
+		await handler(customId, buttonInteraction, nestedMenus);
+	});
+}
+
+/**
+ * Render the shared "Réserves alimentaires" panel (current stocks vs caps for
+ * each food type). Used by the Pantry and Training Ground sub-menus.
+ */
+export function addFoodInfoBlock(container: ContainerBuilder, data: FoodShopUIData, lng: Language): void {
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(
+			i18n.t("commands:report.city.guildDomain.foodInfo", {
+				lng,
+				common: data.food.common,
+				commonCap: data.foodCaps[0],
+				herbivorous: data.food.herbivorous,
+				herbivorousCap: data.foodCaps[1],
+				carnivorous: data.food.carnivorous,
+				carnivorousCap: data.foodCaps[2],
+				ultimate: data.food.ultimate,
+				ultimateCap: data.foodCaps[3]
+			})
+		)
+	);
+}
+
+export function addDomainNavigation(container: ContainerBuilder, ctx: GuildDomainMenuContext, backLabel: string, backId: string): void {
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(backId)
+				.setLabel(backLabel)
+				.setEmoji(CrowniclesIcons.collectors.back)
+				.setStyle(ButtonStyle.Secondary),
+			createStayInCityButton(ctx.lng)
+		)
+	);
+}
+
+export function addStatusMessage(container: ContainerBuilder, statusMessage?: string): void {
+	if (statusMessage) {
+		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(statusMessage)
+		);
+	}
+}
+
+/**
+ * Adds the level + next-level cost line for a building. Visible to every guild member,
+ * so non-chief players also know how much treasury is needed for the next upgrade.
+ */
+export function addBuildingLevelAndCostInfo(container: ContainerBuilder, building: GuildBuilding, ctx: GuildDomainMenuContext): void {
+	const {
+		data, lng
+	} = ctx;
+	const currentLevel = getBuildingLevel(data, building);
+	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
+	const eligibility = data.canUpgradeBuildings[building];
+
+	if (upgradeCost === null || eligibility === null) {
+		container.addTextDisplayComponents(
+			new TextDisplayBuilder().setContent(
+				i18n.t("commands:report.city.guildDomain.buildingMaxLevel", { lng })
+			)
+		);
+		return;
+	}
+
+	let info = i18n.t("commands:report.city.guildDomain.buildingUpgrade", {
+		lng, nextLevel: currentLevel + 1, cost: upgradeCost
+	});
+	if (!eligibility.meetsLevel) {
+		const requiredGuildLevel = GuildDomainConstants.getBuildingRequiredGuildLevel(building, currentLevel);
+		info += i18n.t("commands:report.city.guildDomain.buildingUpgradeBlocked", {
+			lng, required: requiredGuildLevel
+		});
+	}
+	else if (!eligibility.canAfford) {
+		info += i18n.t("commands:report.city.guildDomain.buildingUpgradeTreasuryLow", { lng });
+	}
+
+	container.addTextDisplayComponents(
+		new TextDisplayBuilder().setContent(info)
+	);
+}
+
+export function addUpgradeSection(container: ContainerBuilder, building: GuildBuilding, ctx: GuildDomainMenuContext): void {
+	const {
+		data, lng
+	} = ctx;
+	if (!data.isChief) {
+		return;
+	}
+
+	const currentLevel = getBuildingLevel(data, building);
+	const upgradeCost = GuildDomainConstants.getBuildingUpgradeCost(building, currentLevel);
+	const eligibility = data.canUpgradeBuildings[building];
+
+	if (upgradeCost === null || eligibility === null) {
+		return;
+	}
+
+	container.addActionRowComponents(
+		new ActionRowBuilder<ButtonBuilder>().addComponents(
+			new ButtonBuilder()
+				.setCustomId(`${ReportCityMenuIds.GUILD_DOMAIN_UPGRADE_PREFIX}${building}`)
+				.setLabel(i18n.t(`commands:report.city.guildDomain.upgradeBuilding.${building}`, {
+					lng,
+					cost: upgradeCost,
+					level: currentLevel + 1
+				}))
+				.setStyle(ButtonStyle.Primary)
+				.setDisabled(!eligibility.canAfford || !eligibility.meetsLevel)
+		)
+	);
+}
+
+export function getBuildingSummary(building: GuildBuilding, level: number, lng: Language): string {
+	switch (building) {
+		case GuildBuilding.SHOP:
+			return level === 0
+				? i18n.t("commands:report.city.guildDomain.buildingSummary.shop.locked", { lng })
+				: i18n.t("commands:report.city.guildDomain.buildingSummary.shop.built", { lng });
+		case GuildBuilding.SHELTER:
+			return i18n.t("commands:report.city.guildDomain.buildingSummary.shelter", {
+				lng,
+				slots: GuildDomainConstants.getShelterSlots(level)
+			});
+		case GuildBuilding.PANTRY:
+			return i18n.t("commands:report.city.guildDomain.buildingSummary.pantry", { lng });
+		case GuildBuilding.TRAINING_GROUND: {
+			const love = GuildDomainConstants.getTrainingLovePerDay(level);
+			return love === 0
+				? i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.inactive", { lng })
+				: i18n.t("commands:report.city.guildDomain.buildingSummary.trainingGround.active", {
+					lng, love
+				});
+		}
+		default:
+			return "";
+	}
+}

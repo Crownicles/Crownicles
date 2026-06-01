@@ -1,0 +1,23 @@
+{
+  "level": 2,
+  "recipeType": "PETFOOD_MEAT",
+  "plants": [
+    {
+      "plantId": 8,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 48,
+      "quantity": 1
+    }
+  ],
+  "outputType": "petFood",
+  "discoveredByDefault": true,
+  "petFood": {
+    "type": "carnivorousFood",
+    "quantity": 1,
+    "lovePoints": 3
+  }
+}

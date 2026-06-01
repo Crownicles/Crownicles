@@ -28,6 +28,22 @@ export class Pet extends Data<number> {
 	public canEatVegetables(): boolean {
 		return this.diet === PetConstants.RESTRICTIVES_DIETS.HERBIVOROUS || !this.diet;
 	}
+
+	/**
+	 * Returns true if this pet can eat the given food type
+	 */
+	public canEatFood(foodType: string): boolean {
+		if (foodType === PetConstants.PET_FOOD.COMMON_FOOD || foodType === PetConstants.PET_FOOD.ULTIMATE_FOOD) {
+			return true;
+		}
+		if (foodType === PetConstants.PET_FOOD.HERBIVOROUS_FOOD) {
+			return this.canEatVegetables();
+		}
+		if (foodType === PetConstants.PET_FOOD.CARNIVOROUS_FOOD) {
+			return this.canEatMeat();
+		}
+		return false;
+	}
 }
 
 export class PetDataController extends DataControllerNumber<Pet> {

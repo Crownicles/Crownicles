@@ -490,7 +490,7 @@ async function createPlayer(params: {
 	newPlayer.level = params.level;
 	newPlayer.class = params.classData.id;
 	(newPlayer.petId as number | null) = params.petId;
-	newPlayer.health = params.classData.getMaxHealthValue(params.level);
+	newPlayer.setHealthNoCheck(params.classData.getMaxHealthValue(params.level));
 	newPlayer.experience = 0;
 	newPlayer.money = 1000;
 	newPlayer.score = 0;

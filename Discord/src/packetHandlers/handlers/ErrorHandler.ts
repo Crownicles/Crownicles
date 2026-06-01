@@ -11,9 +11,26 @@ import {
 } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { BlockedPacket } from "../../../../Lib/src/packets/commands/BlockedPacket";
-import { LANGUAGE } from "../../../../Lib/src/Language";
+import {
+	Language,
+	LANGUAGE
+} from "../../../../Lib/src/Language";
 import { handleClassicError } from "../../utils/ErrorUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { formatBlockedReasons } from "../../utils/BlockingReasonUtils";
+import {
+	ButtonInteraction
+} from "discord.js";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
+
+type BlockedReplyTarget = {
+	interaction: CrowniclesInteraction | null;
+	buttonInteraction: ButtonInteraction | null;
+};
+
+type EmbedReplyOptions = {
+	embeds: CrowniclesEmbed[];
+};
 
 export default class ErrorHandler {
 	@packetHandler(ErrorPacket)
@@ -32,58 +49,89 @@ export default class ErrorHandler {
 
 	@packetHandler(BlockedPacket)
 	async blockedHandler(context: PacketContext, packet: BlockedPacket): Promise<void> {
-		const lng = DiscordCache.getInteraction(context.discord!.interaction)?.userLanguage ?? LANGUAGE.ENGLISH;
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		const buttonInteraction = context.discord?.buttonInteraction ? DiscordCache.getButtonInteraction(context.discord.buttonInteraction) : undefined;
-		const otherPlayer = context.keycloakId !== packet.keycloakId;
+		const target = ErrorHandler.getBlockedReplyTarget(context);
+		const lng = target.interaction?.userLanguage ?? LANGUAGE.ENGLISH;
+		const embed = await ErrorHandler.buildBlockedEmbed(context, packet, lng);
 
-		let errorReasons = "";
-		packet.reasons.forEach(reason => {
-			errorReasons = errorReasons.concat(`${i18n.t(`error:blockedContext.${reason}`, {
-				lng
-			})}, `);
-		});
-		errorReasons = errorReasons.slice(0, -2);
+		await ErrorHandler.sendBlockedEmbed(target, embed);
+	}
 
-		const embed = new CrowniclesEmbed()
+	private static getBlockedReplyTarget(context: PacketContext): BlockedReplyTarget {
+		return {
+			interaction: DiscordCache.getInteraction(context.discord!.interaction),
+			buttonInteraction: context.discord?.buttonInteraction
+				? DiscordCache.getButtonInteraction(context.discord.buttonInteraction)
+				: null
+		};
+	}
+
+	private static async buildBlockedEmbed(context: PacketContext, packet: BlockedPacket, lng: Language): Promise<CrowniclesEmbed> {
+		return new CrowniclesEmbed()
 			.setErrorColor()
 			.setTitle(i18n.t("error:titleDidntWork", {
 				lng,
 				pseudo: await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)
 			}))
-			.setDescription(
-				otherPlayer
-					? i18n.t("error:anotherPlayerBlocked", {
-						lng,
-						username: await DisplayUtils.getEscapedUsername(packet.keycloakId!, lng),
-						reasons: errorReasons
-					})
-					: i18n.t("error:playerBlocked", {
-						lng,
-						reasons: errorReasons
-					})
-			);
+			.setDescription(await ErrorHandler.buildBlockedDescription(context, packet, lng));
+	}
 
-		if (buttonInteraction) {
-			if (buttonInteraction?.deferred) {
-				await buttonInteraction?.editReply({ embeds: [embed] });
-			}
-			else if (!buttonInteraction?.deferred && !buttonInteraction?.replied) {
-				await buttonInteraction?.reply({ embeds: [embed] });
-			}
-			else {
-				await interaction?.channel.send({ embeds: [embed] });
-			}
+	private static async buildBlockedDescription(context: PacketContext, packet: BlockedPacket, lng: Language): Promise<string> {
+		const errorReasons = formatBlockedReasons(packet.reasons, lng);
+		if (context.keycloakId !== packet.keycloakId) {
+			return i18n.t("error:anotherPlayerBlocked", {
+				lng,
+				username: await DisplayUtils.getEscapedUsername(packet.keycloakId!, lng),
+				reasons: errorReasons
+			});
 		}
-		else if (interaction?.deferred && !interaction.replyEdited) {
-			await interaction?.editReply({ embeds: [embed] });
+
+		return i18n.t("error:playerBlocked", {
+			lng,
+			reasons: errorReasons
+		});
+	}
+
+	private static async sendBlockedEmbed(target: BlockedReplyTarget, embed: CrowniclesEmbed): Promise<void> {
+		const replyOptions: EmbedReplyOptions = { embeds: [embed] };
+		if (target.buttonInteraction) {
+			await ErrorHandler.sendBlockedEmbedToButtonInteraction(target, replyOptions);
+			return;
 		}
-		else if (!interaction?.deferred && !interaction?.replied) {
-			await interaction?.reply({ embeds: [embed] });
+
+		await ErrorHandler.sendBlockedEmbedToCommandInteraction(target.interaction, replyOptions);
+	}
+
+	private static async sendBlockedEmbedToButtonInteraction(target: BlockedReplyTarget, replyOptions: EmbedReplyOptions): Promise<void> {
+		const buttonInteraction = target.buttonInteraction!;
+		if (buttonInteraction.deferred) {
+			await buttonInteraction.editReply(replyOptions);
+			return;
 		}
-		else {
-			await interaction?.channel.send({ embeds: [embed] });
+
+		if (!buttonInteraction.replied) {
+			await buttonInteraction.reply(replyOptions);
+			return;
 		}
+
+		await target.interaction?.channel.send(replyOptions);
+	}
+
+	private static async sendBlockedEmbedToCommandInteraction(interaction: CrowniclesInteraction | null, replyOptions: EmbedReplyOptions): Promise<void> {
+		if (!interaction) {
+			return;
+		}
+
+		if (interaction.deferred && !interaction.replyEdited) {
+			await interaction.editReply(replyOptions);
+			return;
+		}
+
+		if (!interaction.deferred && !interaction.replied) {
+			await interaction.reply(replyOptions);
+			return;
+		}
+
+		await interaction.channel.send(replyOptions);
 	}
 
 	@packetHandler(ErrorMaintenancePacket)

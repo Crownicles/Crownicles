@@ -4,6 +4,7 @@ import {
 	getPetExpeditionPreference, DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS, DISLIKED_EXPEDITION_DURATION_THRESHOLD_MINUTES,
 	generateTerrainBasedRisk, LIKED_EXPEDITION_FAILURE_REDUCTION, PetExpeditionPreferences
 } from "../../../../Lib/src/constants/ExpeditionConstants";
+import { getDurationRangesArray } from "../../../../Lib/src/utils/ExpeditionUtils";
 import {
 	ExpeditionData
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
@@ -274,7 +275,7 @@ function calculateBonusExpeditionIndex(bonusType: ExpeditionBonusType): number {
  */
 export function generateThreeExpeditions(mapLinkId: number, hasCloneTalisman: boolean): ExpeditionData[] {
 	const localMapLocationIds = getMapLocationsFromLink(mapLinkId);
-	const durationRanges = ExpeditionConstants.getDurationRangesArray();
+	const durationRanges = getDurationRangesArray();
 
 	// Determine which bonus to apply and to which expedition
 	const bonusType = determineBonusType(hasCloneTalisman);

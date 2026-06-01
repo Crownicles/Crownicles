@@ -78,9 +78,9 @@ export async function handleCommandGuildCreatePacketRes(packet: CommandGuildCrea
 			});
 			return;
 		}
-		if (packet.playerMoney < GuildCreateConstants.PRICE) {
+		if (packet.missingMoney !== undefined) {
 			await replyErrorEmbed(context, "error:notEnoughMoney", {
-				money: GuildCreateConstants.PRICE - packet.playerMoney
+				money: packet.missingMoney
 			});
 		}
 	}

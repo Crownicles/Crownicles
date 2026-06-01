@@ -1,4 +1,4 @@
-import { botConfig } from "../../index";
+import { botConfig } from "../../bootstrap";
 import {
 	CommandTestPacketReq, CommandTestPacketRes
 } from "../../../../Lib/src/packets/commands/CommandTestPacket";

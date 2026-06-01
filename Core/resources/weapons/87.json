@@ -2,7 +2,9 @@
   "rarity": 7,
   "rawAttack": 1,
   "defense": 100,
+  "type": "wood",
   "tags": [
     "metallic"
-  ]
+  ],
+  "materialCategory": 15
 }

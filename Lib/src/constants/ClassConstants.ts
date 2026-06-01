@@ -1,4 +1,7 @@
 import { TimeConstants } from "./TimeConstants";
+import {
+	asSeconds, Second
+} from "../types/TimeTypes";
 
 export abstract class ClassConstants {
 	static readonly CLASSES_ID = {
@@ -37,12 +40,12 @@ export abstract class ClassConstants {
 
 	static readonly GROUP4LEVEL = 80;
 
-	static readonly TIME_BEFORE_CHANGE_CLASS = [
+	static readonly TIME_BEFORE_CHANGE_CLASS: readonly Second[] = [
 		TimeConstants.S_TIME.WEEK,
 		TimeConstants.S_TIME.WEEK,
-		2 * TimeConstants.S_TIME.WEEK,
-		3 * TimeConstants.S_TIME.WEEK,
-		3 * TimeConstants.S_TIME.WEEK
+		asSeconds(2 * TimeConstants.S_TIME.WEEK),
+		asSeconds(3 * TimeConstants.S_TIME.WEEK),
+		asSeconds(3 * TimeConstants.S_TIME.WEEK)
 	];
 
 	static readonly CLASS_KIND = {

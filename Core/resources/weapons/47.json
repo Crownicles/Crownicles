@@ -3,5 +3,7 @@
   "rawAttack": 9,
   "tags": [
     "ranged"
-  ]
+  ],
+  "type": "nature",
+  "materialCategory": 3
 }

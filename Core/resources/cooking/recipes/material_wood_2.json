@@ -1,0 +1,30 @@
+{
+  "level": 5,
+  "recipeType": "MATERIAL_CRAFT",
+  "plants": [
+    {
+      "plantId": 10,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 58,
+      "quantity": 1
+    },
+    {
+      "materialId": 64,
+      "quantity": 1
+    },
+    {
+      "materialId": 9,
+      "quantity": 1
+    }
+  ],
+  "outputType": "material",
+  "outputMaterialId": 31,
+  "outputMaterialQuantity": 2,
+  "discoveredByDefault": false,
+  "discoverySource": "GASPARD_JO",
+  "petFood": null
+}

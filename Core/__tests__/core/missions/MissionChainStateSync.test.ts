@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MissionsController } from "../../../src/core/missions/MissionsController";
+import {afterEach, beforeEach, describe, expect, it, vi} from "vitest";
+import {MissionsController} from "../../../src/core/missions/MissionsController";
 import Player from "../../../src/core/database/game/models/Player";
-import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import type { CrowniclesPacket } from "@crownicles/lib";
+import {NumberChangeReason} from "../../../../Lib/src/constants/LogsConstants";
+import type {CrowniclesPacket} from "@crownicles/lib";
 
 // Mock crowniclesInstance with all required logsDatabase methods
-vi.mock("../../../src/index", () => ({
+vi.mock("../../../src/app", () => ({
 	crowniclesInstance: {
 		logsDatabase: {
 			logMoneyChange: vi.fn().mockResolvedValue(undefined),
@@ -90,15 +90,16 @@ describe("Mission chain state synchronization", () => {
 			const originalExperience = player.experience;
 
 			// Mock MissionsController.update to simulate a mission completing and giving XP
-			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer) => {
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+				opts.applyOnLockedPlayer?.(inputPlayer);
+
 				// Simulate what happens when a mission completes:
 				// The returned player has modified experience (mission reward)
-				const modifiedPlayer = createTestPlayer({
+				return createTestPlayer({
 					...inputPlayer,
 					money: inputPlayer.money,
 					experience: inputPlayer.experience + 25 // Mission reward: +25 XP
 				});
-				return modifiedPlayer;
 			});
 
 			// Call the actual addMoney method
@@ -138,7 +139,8 @@ describe("Mission chain state synchronization", () => {
 			});
 
 			// Mock: returns player with +25 XP and +10 score (from chain reaction)
-			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer) => {
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+				opts.applyOnLockedPlayer?.(inputPlayer);
 				return createTestPlayer({
 					...inputPlayer,
 					money: inputPlayer.money,
@@ -165,7 +167,8 @@ describe("Mission chain state synchronization", () => {
 			const player = createTestPlayer({ score: 100, experience: 500 });
 			const originalExperience = player.experience;
 
-			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer) => {
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+				opts.applyOnLockedPlayer?.(inputPlayer);
 				return createTestPlayer({
 					...inputPlayer,
 					score: inputPlayer.score,

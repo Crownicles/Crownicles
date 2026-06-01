@@ -9,7 +9,9 @@ import {
 	crowniclesClient, keycloakConfig
 } from "../../bot/CrowniclesShard";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
-import { minutesToHours } from "../../../../Lib/src/utils/TimeUtils";
+import {
+	asMinutes, minutesToHours
+} from "../../../../Lib/src/utils/TimeUtils";
 import { GuildLevelUpPacket } from "../../../../Lib/src/packets/events/GuildLevelUpPacket";
 import { MissionsCompletedPacket } from "../../../../Lib/src/packets/events/MissionsCompletedPacket";
 import { MissionsExpiredPacket } from "../../../../Lib/src/packets/events/MissionsExpiredPacket";
@@ -49,7 +51,7 @@ export default class EventsHandlers {
 			i18nTr = "commands:report.choseMapMinutes";
 		}
 		else {
-			time = Math.round(minutesToHours(packet.tripDuration));
+			time = Math.round(minutesToHours(asMinutes(packet.tripDuration)));
 			i18nTr = "commands:report.choseMap";
 		}
 		embed.setDescription(i18n.t(i18nTr, {
@@ -65,7 +67,7 @@ export default class EventsHandlers {
 		try {
 			if (context.discord!.buttonInteraction) {
 				await DiscordCache.getButtonInteraction(context.discord!.buttonInteraction)
-					?.editReply({ embeds: [embed] });
+					?.followUp({ embeds: [embed] });
 				return;
 			}
 		}

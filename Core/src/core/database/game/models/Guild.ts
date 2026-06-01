@@ -1,6 +1,7 @@
 import {
-	DataTypes, Model, Op, QueryTypes, Sequelize
+	DataTypes, Model, Op, QueryTypes, Sequelize, Transaction
 } from "sequelize";
+import { getCurrentTransaction } from "../../../../../../Lib/src/locks/CLSNamespace";
 import { MissionsController } from "../../../missions/MissionsController";
 import { getFoodIndexOf } from "../../../utils/FoodUtils";
 import Player, { Players } from "./Player";
@@ -9,7 +10,7 @@ import {
 	GuildPet, GuildPets
 } from "./GuildPet";
 import PetEntity, { PetEntities } from "./PetEntity";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -18,12 +19,33 @@ import { TopConstants } from "../../../../../../Lib/src/constants/TopConstants";
 import { Constants } from "../../../../../../Lib/src/constants/Constants";
 import { NumberChangeReason } from "../../../../../../Lib/src/constants/LogsConstants";
 import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
-import { PetConstants } from "../../../../../../Lib/src/constants/PetConstants";
+import { GuildDomainConstants } from "../../../../../../Lib/src/constants/GuildDomainConstants";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 
 export class Guild extends Model {
+	/**
+	 * Build a {@link LockKey} for this guild so it can participate in a
+	 * `withLockedEntities([...])` composite critical section.
+	 */
+	static lockKey(id: number): LockKey<Guild> {
+		return {
+			model: Guild, id
+		};
+	}
+
+	/**
+	 * Convenience helper for the common case of locking a single guild.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(id: number, fn: (guild: Guild) => Promise<R>): Promise<R> {
+		return withLockedEntities([Guild.lockKey(id)], ([guild]) => fn(guild));
+	}
+
 	declare readonly id: number;
 
 	declare name: string;
@@ -49,6 +71,18 @@ export class Guild extends Model {
 	declare chiefId: number;
 
 	declare elderId: number | null;
+
+	declare treasury: number;
+
+	declare domainCityId: string | null;
+
+	declare shopLevel: number;
+
+	declare shelterLevel: number;
+
+	declare pantryLevel: number;
+
+	declare trainingGroundLevel: number;
 
 	declare creationDate: Date;
 
@@ -77,7 +111,16 @@ export class Guild extends Model {
 	}
 
 	/**
-	 * Completely destroy a guild from the database
+	 * Completely destroy a guild from the database.
+	 *
+	 * Concurrency notes (#3760): callers (currently `applyLockedAcceptGuildLeave`)
+	 * already hold the chief Player + Guild row locks. We must therefore reuse
+	 * the parent transaction from CLS — opening a fresh
+	 * `sequelize.transaction(...)` here would pull a second physical connection
+	 * from the pool and deadlock on the rows already locked by the outer
+	 * transaction (50 s `innodb_lock_wait_timeout`). When no parent
+	 * transaction is present (e.g. direct admin call), we open our own so the
+	 * destroys still rollback together on failure.
 	 */
 	public async completelyDestroyAndDeleteFromTheDatabase(): Promise<void> {
 		const pets = await GuildPets.getOfGuild(this.id);
@@ -89,25 +132,36 @@ export class Guild extends Model {
 			}
 		}
 
-		crowniclesInstance.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
+		crowniclesInstance?.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
 			.then();
-		const guildPetsToDestroy: Promise<void>[] = [];
-		const petsEntitiesToDestroy: Promise<number>[] = [];
-		for (const pet of pets) {
-			guildPetsToDestroy.push(pet.destroy());
-			petsEntitiesToDestroy.push(PetEntity.destroy({ where: { id: pet.petEntityId } }));
+
+		const runDestroyOps = async (transaction: Transaction): Promise<void> => {
+			await Promise.all([
+				...pets.map(pet => pet.destroy({ transaction })),
+				...pets.map(pet => PetEntity.destroy({
+					where: { id: pet.petEntityId },
+					transaction
+				})),
+				Player.update(
+					{ guildId: null },
+					{
+						where: { guildId: this.id },
+						transaction
+					}
+				),
+				Guild.destroy({
+					where: { id: this.id },
+					transaction
+				})
+			]);
+		};
+
+		const existing = getCurrentTransaction();
+		if (existing) {
+			await runDestroyOps(existing);
+			return;
 		}
-		await Promise.all([
-			Player.update(
-				{ guildId: null },
-				{ where: { guildId: this.id } }
-			),
-			Guild.destroy({
-				where: { id: this.id }
-			}),
-			guildPetsToDestroy,
-			petsEntitiesToDestroy
-		]);
+		await Guild.sequelize!.transaction(runDestroyOps);
 	}
 
 	/**
@@ -130,7 +184,7 @@ export class Guild extends Model {
 		}
 		this.experience += experience;
 		this.setExperience(this.experience);
-		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logGuildExperienceChange(this, parameters.reason)
 			.then();
 		await this.levelUpIfNeeded(parameters.response);
 	}
@@ -152,9 +206,9 @@ export class Guild extends Model {
 		}
 		this.experience -= this.getExperienceNeededToLevelUp();
 		this.level++;
-		crowniclesInstance.logsDatabase.logGuildLevelUp(this)
+		crowniclesInstance?.logsDatabase.logGuildLevelUp(this)
 			.then();
-		crowniclesInstance.logsDatabase.logGuildExperienceChange(this, NumberChangeReason.LEVEL_UP)
+		crowniclesInstance?.logsDatabase.logGuildExperienceChange(this, NumberChangeReason.LEVEL_UP)
 			.then();
 		response.push(makePacket(GuildLevelUpPacket, {
 			guildName: this.name,
@@ -192,7 +246,35 @@ export class Guild extends Model {
 		if (!guildPets) {
 			return true;
 		}
-		return guildPets.length >= PetConstants.SLOTS;
+		return guildPets.length >= this.getShelterCapacity();
+	}
+
+	/**
+	 * Maximum number of pets the guild shelter can hold (computed from shelterLevel)
+	 */
+	public getShelterCapacity(): number {
+		return GuildDomainConstants.getShelterSlots(this.shelterLevel);
+	}
+
+	/**
+	 * Pre-resolved food cap array for the guild's current pantry level (indexed by food type order)
+	 */
+	public getFoodCaps(): readonly number[] {
+		return GuildDomainConstants.getFoodCaps(this.pantryLevel);
+	}
+
+	/**
+	 * Maximum amount of a given food type the guild pantry can hold
+	 */
+	public getFoodCapacityFor(foodType: string): number {
+		return this.getFoodCaps()[getFoodIndexOf(foodType)];
+	}
+
+	/**
+	 * Current amount of a given food type stored in the guild pantry
+	 */
+	public getFoodAmount(foodType: string): number {
+		return this.getDataValue(foodType) as number;
 	}
 
 	/**
@@ -208,7 +290,7 @@ export class Guild extends Model {
 	 * @param quantity the quantity that need to be available
 	 */
 	public isStorageFullFor(selectedItemType: string, quantity: number): boolean {
-		return this.getDataValue(selectedItemType) + quantity > GuildConstants.MAX_PET_FOOD[getFoodIndexOf(selectedItemType)];
+		return this.getFoodAmount(selectedItemType) + quantity > this.getFoodCapacityFor(selectedItemType);
 	}
 
 	/**
@@ -218,11 +300,11 @@ export class Guild extends Model {
 	 * @param reason change reason
 	 */
 	public addFood(selectedItemType: string, quantity: number, reason: NumberChangeReason): void {
-		this.setDataValue(selectedItemType, this.getDataValue(selectedItemType) + quantity);
+		this.setDataValue(selectedItemType, this.getFoodAmount(selectedItemType) + quantity);
 		if (this.isStorageFullFor(selectedItemType, 0)) {
-			this.setDataValue(selectedItemType, GuildConstants.MAX_PET_FOOD[getFoodIndexOf(selectedItemType)]);
+			this.setDataValue(selectedItemType, this.getFoodCapacityFor(selectedItemType));
 		}
-		crowniclesInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getDataValue(selectedItemType), reason)
+		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(selectedItemType), this.getFoodAmount(selectedItemType), reason)
 			.then();
 	}
 
@@ -234,7 +316,7 @@ export class Guild extends Model {
 	 */
 	public removeFood(item: string, quantity: number, reason: NumberChangeReason): void {
 		this.setDataValue(item, this.getDataValue(item) - quantity);
-		crowniclesInstance.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(item), this.getDataValue(item), reason)
+		crowniclesInstance?.logsDatabase.logGuildsFoodChanges(this, getFoodIndexOf(item), this.getDataValue(item), reason)
 			.then();
 	}
 
@@ -245,6 +327,7 @@ export class Guild extends Model {
 	public async addScore(parameters: EditValueParameters): Promise<void> {
 		this.score += parameters.amount;
 		if (parameters.amount > 0) {
+			this.treasury += parameters.amount;
 			for (const member of await Players.getByGuild(this.id)) {
 				await MissionsController.update(member, parameters.response, {
 					missionId: "guildHasPoints",
@@ -253,7 +336,7 @@ export class Guild extends Model {
 				});
 			}
 		}
-		crowniclesInstance.logsDatabase.logGuildPointsChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logGuildPointsChange(this, parameters.reason)
 			.then();
 	}
 
@@ -399,6 +482,31 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		chiefId: DataTypes.INTEGER,
 		elderId: DataTypes.INTEGER,
+		treasury: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		domainCityId: {
+			type: DataTypes.STRING(64), // eslint-disable-line new-cap
+			allowNull: true,
+			defaultValue: null
+		},
+		shopLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		shelterLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		pantryLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
+		trainingGroundLevel: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0
+		},
 		creationDate: {
 			type: DataTypes.DATE,
 			defaultValue: DataTypes.NOW

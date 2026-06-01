@@ -1,3 +1,64 @@
+import { MaterialRarity } from "../types/MaterialRarity";
+
+export type EquipAction = typeof ItemConstants.EQUIP_ACTIONS[keyof typeof ItemConstants.EQUIP_ACTIONS];
+export type EquipError = typeof ItemConstants.EQUIP_ERRORS[keyof typeof ItemConstants.EQUIP_ERRORS];
+
+/**
+ * A concrete upgrade level (between `ItemConstants.MIN_UPGRADE_LEVEL` and
+ * `ItemConstants.MAX_UPGRADE_LEVEL`). Levels outside this range yield no
+ * upgrade materials.
+ */
+export type UpgradeLevel = 1 | 2 | 3 | 4 | 5;
+
+export enum ItemCategory {
+	WEAPON,
+	ARMOR,
+	POTION,
+	OBJECT
+}
+
+export function itemCategoryToString(category: ItemCategory): string {
+	switch (category) {
+		case ItemCategory.WEAPON:
+			return "weapons";
+		case ItemCategory.ARMOR:
+			return "armors";
+		case ItemCategory.POTION:
+			return "potions";
+		default:
+			return "objects";
+	}
+}
+
+export enum ItemRarity {
+	BASIC,
+	COMMON,
+	UNCOMMON,
+	EXOTIC,
+	RARE,
+	SPECIAL,
+	EPIC,
+	LEGENDARY,
+	MYTHICAL
+}
+
+export enum ItemNature {
+	NONE,
+	HEALTH,
+	SPEED,
+	ATTACK,
+	DEFENSE,
+	TIME_SPEEDUP,
+	MONEY,
+	ENERGY
+}
+
+export const FightItemNatures = [
+	ItemNature.ATTACK,
+	ItemNature.DEFENSE,
+	ItemNature.SPEED
+];
+
 export abstract class ItemConstants {
 	static readonly SLOTS = {
 		LIMITS: [
@@ -59,6 +120,7 @@ export abstract class ItemConstants {
 	static readonly TAGS = {
 		HOLY: "holy",
 		RANGED: "ranged",
+		FIRE: "fire",
 		METALLIC: "metallic"
 	};
 
@@ -72,53 +134,302 @@ export abstract class ItemConstants {
 		"money",
 		"energy"
 	];
-}
 
-export enum ItemCategory {
-	WEAPON,
-	ARMOR,
-	POTION,
-	OBJECT
-}
+	static readonly UPGRADE_LEVEL_STATS_MULTIPLIER = [
+		1,
+		1.05,
+		1.1,
+		1.16,
+		1.23,
+		1.32
+	];
 
-export function itemCategoryToString(category: ItemCategory): string {
-	switch (category) {
-		case ItemCategory.WEAPON:
-			return "weapons";
-		case ItemCategory.ARMOR:
-			return "armors";
-		case ItemCategory.POTION:
-			return "potions";
-		default:
-			return "objects";
-	}
-}
+	static MAX_UPGRADE_LEVEL = 5;
 
-export enum ItemRarity {
-	BASIC,
-	COMMON,
-	UNCOMMON,
-	EXOTIC,
-	RARE,
-	SPECIAL,
-	EPIC,
-	LEGENDARY,
-	MYTHICAL
-}
+	/**
+	 * Lowest level that actually consumes upgrade materials. Level 0 (and below)
+	 * is the un-upgraded item and requires nothing.
+	 */
+	static MIN_UPGRADE_LEVEL = 1;
 
-export enum ItemNature {
-	NONE,
-	HEALTH,
-	SPEED,
-	ATTACK,
-	DEFENSE,
-	TIME_SPEEDUP,
-	MONEY,
-	ENERGY
-}
+	/**
+	 * Maximum level that can be upgraded at home (levels 0-1 can be upgraded to 1-2)
+	 * Higher levels require the blacksmith
+	 */
+	static MAX_UPGRADE_LEVEL_AT_HOME = 2;
 
-export const FightItemNatures = [
-	ItemNature.ATTACK,
-	ItemNature.DEFENSE,
-	ItemNature.SPEED
-];
+	static readonly UPGRADE_MATERIALS_PER_ITEM_RARITY_AND_LEVEL: {
+		[rarity in ItemRarity]: {
+			1: {
+				[materialRarity in MaterialRarity]: number
+			};
+			2: {
+				[materialRarity in MaterialRarity]: number
+			};
+			3: {
+				[materialRarity in MaterialRarity]: number
+			};
+			4: {
+				[materialRarity in MaterialRarity]: number
+			};
+			5: {
+				[materialRarity in MaterialRarity]: number
+			};
+		};
+	} = {
+		[ItemRarity.BASIC]: {
+			1: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			4: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			5: {
+				[MaterialRarity.COMMON]: 0,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			}
+		},
+		[ItemRarity.COMMON]: {
+			1: {
+				[MaterialRarity.COMMON]: 2,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 3,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 4,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			4: {
+				[MaterialRarity.COMMON]: 5,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			5: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			}
+		},
+		[ItemRarity.UNCOMMON]: {
+			1: {
+				[MaterialRarity.COMMON]: 2,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 4,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 5,
+				[MaterialRarity.UNCOMMON]: 1,
+				[MaterialRarity.RARE]: 0
+			},
+			4: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 2,
+				[MaterialRarity.RARE]: 0
+			},
+			5: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 4,
+				[MaterialRarity.RARE]: 0
+			}
+		},
+		[ItemRarity.EXOTIC]: {
+			1: {
+				[MaterialRarity.COMMON]: 3,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 4,
+				[MaterialRarity.UNCOMMON]: 1,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 5,
+				[MaterialRarity.UNCOMMON]: 3,
+				[MaterialRarity.RARE]: 0
+			},
+			4: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 0
+			},
+			5: {
+				[MaterialRarity.COMMON]: 8,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 1
+			}
+		},
+		[ItemRarity.RARE]: {
+			1: {
+				[MaterialRarity.COMMON]: 5,
+				[MaterialRarity.UNCOMMON]: 0,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 2,
+				[MaterialRarity.RARE]: 0
+			},
+			3: {
+				[MaterialRarity.COMMON]: 7,
+				[MaterialRarity.UNCOMMON]: 3,
+				[MaterialRarity.RARE]: 1
+			},
+			4: {
+				[MaterialRarity.COMMON]: 8,
+				[MaterialRarity.UNCOMMON]: 4,
+				[MaterialRarity.RARE]: 2
+			},
+			5: {
+				[MaterialRarity.COMMON]: 9,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 3
+			}
+		},
+		[ItemRarity.SPECIAL]: {
+			1: {
+				[MaterialRarity.COMMON]: 8,
+				[MaterialRarity.UNCOMMON]: 2,
+				[MaterialRarity.RARE]: 0
+			},
+			2: {
+				[MaterialRarity.COMMON]: 9,
+				[MaterialRarity.UNCOMMON]: 4,
+				[MaterialRarity.RARE]: 1
+			},
+			3: {
+				[MaterialRarity.COMMON]: 10,
+				[MaterialRarity.UNCOMMON]: 5,
+				[MaterialRarity.RARE]: 2
+			},
+			4: {
+				[MaterialRarity.COMMON]: 11,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 3
+			},
+			5: {
+				[MaterialRarity.COMMON]: 12,
+				[MaterialRarity.UNCOMMON]: 7,
+				[MaterialRarity.RARE]: 5
+			}
+		},
+		[ItemRarity.EPIC]: {
+			1: {
+				[MaterialRarity.COMMON]: 6,
+				[MaterialRarity.UNCOMMON]: 2,
+				[MaterialRarity.RARE]: 2
+			},
+			2: {
+				[MaterialRarity.COMMON]: 12,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 3
+			},
+			3: {
+				[MaterialRarity.COMMON]: 12,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 6
+			},
+			4: {
+				[MaterialRarity.COMMON]: 16,
+				[MaterialRarity.UNCOMMON]: 9,
+				[MaterialRarity.RARE]: 6
+			},
+			5: {
+				[MaterialRarity.COMMON]: 20,
+				[MaterialRarity.UNCOMMON]: 12,
+				[MaterialRarity.RARE]: 8
+			}
+		},
+		[ItemRarity.LEGENDARY]: {
+			1: {
+				[MaterialRarity.COMMON]: 18,
+				[MaterialRarity.UNCOMMON]: 6,
+				[MaterialRarity.RARE]: 3
+			},
+			2: {
+				[MaterialRarity.COMMON]: 21,
+				[MaterialRarity.UNCOMMON]: 14,
+				[MaterialRarity.RARE]: 8
+			},
+			3: {
+				[MaterialRarity.COMMON]: 32,
+				[MaterialRarity.UNCOMMON]: 16,
+				[MaterialRarity.RARE]: 10
+			},
+			4: {
+				[MaterialRarity.COMMON]: 36,
+				[MaterialRarity.UNCOMMON]: 27,
+				[MaterialRarity.RARE]: 15
+			},
+			5: {
+				[MaterialRarity.COMMON]: 40,
+				[MaterialRarity.UNCOMMON]: 30,
+				[MaterialRarity.RARE]: 18
+			}
+		},
+		[ItemRarity.MYTHICAL]: {
+			1: {
+				[MaterialRarity.COMMON]: 24,
+				[MaterialRarity.UNCOMMON]: 16,
+				[MaterialRarity.RARE]: 5
+			},
+			2: {
+				[MaterialRarity.COMMON]: 36,
+				[MaterialRarity.UNCOMMON]: 18,
+				[MaterialRarity.RARE]: 12
+			},
+			3: {
+				[MaterialRarity.COMMON]: 40,
+				[MaterialRarity.UNCOMMON]: 30,
+				[MaterialRarity.RARE]: 14
+			},
+			4: {
+				[MaterialRarity.COMMON]: 44,
+				[MaterialRarity.UNCOMMON]: 30,
+				[MaterialRarity.RARE]: 24
+			},
+			5: {
+				[MaterialRarity.COMMON]: 48,
+				[MaterialRarity.UNCOMMON]: 33,
+				[MaterialRarity.RARE]: 24
+			}
+		}
+	};
+
+	static readonly EQUIP_ACTIONS = {
+		EQUIP: "equip",
+		DEPOSIT: "deposit"
+	} as const;
+
+	static readonly EQUIP_ERRORS = {
+		INVALID: "invalid",
+		NO_ITEM: "noItem",
+		RESERVE_FULL: "reserveFull"
+	} as const;
+}

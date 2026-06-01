@@ -4,5 +4,7 @@
   "tags": [
     "ranged",
     "metallic"
-  ]
+  ],
+  "type": "explosive",
+  "materialCategory": 12
 }

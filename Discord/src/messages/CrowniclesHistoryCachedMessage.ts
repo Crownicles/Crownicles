@@ -35,22 +35,10 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 	}
 
 	updateMessage = async (packet: CommandFightHistoryItemPacket, context: PacketContext): Promise<null> => {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-		const lng = interaction.userLanguage;
-		if (packet.fighterKeycloakId && !this.usernamesCachePlayer.has(packet.fighterKeycloakId)) {
-			this.usernamesCachePlayer.set(packet.fighterKeycloakId, await DisplayUtils.getEscapedUsername(packet.fighterKeycloakId, lng));
-		}
-		else if (packet.monsterId && !this.usernamesCacheMonster.has(packet.monsterId)) {
-			this.usernamesCacheMonster.set(packet.monsterId, i18n.t(`models:monsters.${packet.monsterId}.name`, { lng }));
-		}
+		const lng = DiscordCache.getInteraction(context.discord!.interaction)?.userLanguage ?? context.discord!.language;
+		await this.ensureFighterNameCached(packet, lng);
 
-		let newLine = i18n.t("commands:fight.actions.intro", {
-			lng,
-			emote: packet.pet
-				? CrowniclesIcons.pets[packet.pet.typeId][packet.pet.sex === StringConstants.SEX.FEMALE.short ? "emoteFemale" : "emoteMale"]
-				: CrowniclesIcons.fightActions[packet.fightActionId],
-			fighter: packet.fighterKeycloakId ? this.usernamesCachePlayer?.get(packet.fighterKeycloakId) : this.usernamesCacheMonster?.get(packet.monsterId!)
-		}) + this.manageMainMessage(packet, lng);
+		let newLine = this.buildIntroLine(packet, lng);
 
 		if (packet.fightActionEffectReceived) {
 			newLine += this.manageReceivedEffects(packet, lng);
@@ -73,6 +61,37 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 		CrowniclesCachedMessages.markAsReupload(CrowniclesCachedMessages.getOrCreate(this.originalMessageId, CrowniclesActionChooseCachedMessage));
 		return null;
 	};
+
+	/**
+	 * Cache the display name of the fighter (player or monster) of the given history item.
+	 * @param packet
+	 * @param lng
+	 */
+	private async ensureFighterNameCached(packet: CommandFightHistoryItemPacket, lng: Language): Promise<void> {
+		if (packet.fighterKeycloakId && !this.usernamesCachePlayer.has(packet.fighterKeycloakId)) {
+			this.usernamesCachePlayer.set(packet.fighterKeycloakId, await DisplayUtils.getEscapedUsername(packet.fighterKeycloakId, lng));
+		}
+		else if (packet.monsterId && !this.usernamesCacheMonster.has(packet.monsterId)) {
+			this.usernamesCacheMonster.set(packet.monsterId, i18n.t(`models:monsters.${packet.monsterId}.name`, { lng }));
+		}
+	}
+
+	/**
+	 * Build the intro line of a history item (emote + fighter name + main message).
+	 * @param packet
+	 * @param lng
+	 */
+	private buildIntroLine(packet: CommandFightHistoryItemPacket, lng: Language): string {
+		const emote = packet.pet
+			? CrowniclesIcons.pets[packet.pet.typeId][packet.pet.sex === StringConstants.SEX.FEMALE.short ? "emoteFemale" : "emoteMale"]
+			: CrowniclesIcons.fightActions[packet.fightActionId];
+		const fighter = packet.fighterKeycloakId ? this.usernamesCachePlayer?.get(packet.fighterKeycloakId) : this.usernamesCacheMonster?.get(packet.monsterId!);
+		return i18n.t("commands:fight.actions.intro", {
+			lng,
+			emote,
+			fighter
+		}) + this.manageMainMessage(packet, lng);
+	}
 
 	private manageSideEffects(packet: CommandFightHistoryItemPacket, lng: Language): string {
 		let sideEffectString = "";
@@ -107,11 +126,7 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 			// The fightAction is an alteration or pet assistance
 			return i18n.t(`models:fight_actions.${packet.fightActionId}.${packet.status}`, {
 				lng,
-				petNickname: packet.pet
-					? packet.pet.nickname
-						? packet.pet.nickname
-						: DisplayUtils.getPetTypeName(lng, packet.pet.typeId, packet.pet.sex)
-					: undefined
+				petNickname: this.resolvePetNickname(packet, lng)
 			});
 		}
 		else if (packet.customMessage) {
@@ -136,6 +151,19 @@ export class CrowniclesHistoryCachedMessage extends CrowniclesCachedMessage<Comm
 				})
 			}
 		);
+	}
+
+	/**
+	 * Resolve the pet nickname to display for an alteration or pet assistance message,
+	 * or undefined when no pet is involved.
+	 * @param packet
+	 * @param lng
+	 */
+	private resolvePetNickname(packet: CommandFightHistoryItemPacket, lng: Language): string | undefined {
+		if (!packet.pet) {
+			return undefined;
+		}
+		return packet.pet.nickname ? packet.pet.nickname : DisplayUtils.getPetTypeName(lng, packet.pet.typeId, packet.pet.sex);
 	}
 
 	private manageReceivedEffects(packet: CommandFightHistoryItemPacket, lng: Language): string {

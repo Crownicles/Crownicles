@@ -1,0 +1,59 @@
+{
+  "homePriceMultiplier": 0.95,
+  "apartmentPrice": 6000,
+  "maps": [
+    6
+  ],
+  "shops": [
+    "generalShop"
+  ],
+  "inns": [
+    {
+      "id": "lordInn",
+      "meals": [
+        {
+          "id": "breadAndCheese",
+          "price": 50,
+          "energy": 350
+        },
+        {
+          "id": "roastedFowl",
+          "price": 100,
+          "energy": 700
+        },
+        {
+          "id": "roastedBeef",
+          "price": 150,
+          "energy": 900
+        },
+        {
+          "id": "stew",
+          "price": 70,
+          "energy": 520
+        },
+        {
+          "id": "lordPie",
+          "price": 300,
+          "energy": 1300
+        }
+      ],
+      "rooms": [
+        {
+          "id": "simpleRoom",
+          "price": 500,
+          "health": 14
+        },
+        {
+          "id": "comfortableRoom",
+          "price": 1000,
+          "health": 35
+        },
+        {
+          "id": "luxuryRoom",
+          "price": 1500,
+          "health": 60
+        }
+      ]
+    }
+  ]
+}

@@ -3,12 +3,34 @@ import {
 } from "sequelize";
 import PetEntity from "./PetEntity";
 import Guild from "./Guild";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 
 export class GuildPet extends Model {
+	/**
+	 * Build a {@link LockKey} for this guild-pet row so it can
+	 * participate in a `withLockedEntities([...])` composite critical
+	 * section (e.g. pet transfer / withdraw / switch).
+	 */
+	static lockKey(id: number): LockKey<GuildPet> {
+		return {
+			model: GuildPet, id
+		};
+	}
+
+	/**
+	 * Convenience helper for locking a single guild-pet row.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(id: number, fn: (guildPet: GuildPet) => Promise<R>): Promise<R> {
+		return withLockedEntities([GuildPet.lockKey(id)], ([guildPet]) => fn(guildPet));
+	}
+
 	declare readonly id: number;
 
 	declare guildId: number;
@@ -32,7 +54,7 @@ export abstract class GuildPets {
 	 */
 	static addPet(guild: Guild, petEntity: PetEntity, logInDatabase: boolean): GuildPet {
 		if (logInDatabase) {
-			crowniclesInstance.logsDatabase.logGuildNewPet(guild, petEntity)
+			crowniclesInstance?.logsDatabase.logGuildNewPet(guild, petEntity)
 				.then();
 		}
 		return GuildPet.build({

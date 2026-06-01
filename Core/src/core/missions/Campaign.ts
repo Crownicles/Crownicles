@@ -1,12 +1,15 @@
+/* @lockInherited — saves in this file run under MissionsController.update's withLockedEntities on the Player and PlayerMissionsInfo rows, via completeAndUpdateMissionsUnderLock -> Campaign.updatePlayerCampaign. The MissionSlot row for the active campaign is mutated only through this flow, so the parent Player lock serialises it. */
 import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { MissionsController } from "./MissionsController";
 import Player from "../database/game/models/Player";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
-import { crowniclesInstance } from "../../index";
+import { crowniclesInstance } from "../../app";
 import { CampaignData } from "../../data/Campaign";
 import {
 	CompletedMission, MissionType
 } from "../../../../Lib/src/types/CompletedMission";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
 
 export class Campaign {
 	private static maxCampaignCache = -1;
@@ -84,7 +87,11 @@ export class Campaign {
 		const campaign = await MissionSlots.getCampaignOfPlayer(player.id);
 		const missionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
 		if (Campaign.hasNextCampaign(missionsInfo.campaignBlob)) {
-			return await this.completeCampaignMissions(player, missionsInfo, completedCampaign, campaign);
+			const completedMissions = await this.completeCampaignMissions(player, missionsInfo, completedCampaign, campaign);
+			if (completedMissions.length > 0) {
+				await RecipeDiscoveryService.discoverFromSource(player, RecipeDiscoverySource.CAMPAIGN_MILESTONE);
+			}
+			return completedMissions;
 		}
 		return [];
 	}

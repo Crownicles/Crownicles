@@ -34,21 +34,6 @@ export abstract class GuildConstants {
 
 	static readonly MAX_LEVEL = 150;
 
-	static readonly MAX_COMMON_PET_FOOD = 25;
-
-	static readonly MAX_HERBIVOROUS_PET_FOOD = 15;
-
-	static readonly MAX_CARNIVOROUS_PET_FOOD = 15;
-
-	static readonly MAX_ULTIMATE_PET_FOOD = 5;
-
-	static readonly MAX_PET_FOOD = [
-		25, // Common food
-		15, // Carnivorous food
-		15, // Herbivorous food
-		5 // Ultimate food
-	];
-
 	static GOLDEN_GUILD_LEVEL = 100;
 
 	static SUPER_BADGE_MAX_RANK = 25;

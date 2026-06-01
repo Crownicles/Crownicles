@@ -33,7 +33,7 @@ export type CollectorOptions = {
 	mainPacket?: boolean;
 };
 
-type ReactionInfo = {
+export type ReactionInfo = {
 	keycloakId: string;
 	reaction: {
 		type: string;

@@ -125,6 +125,14 @@ const EXPORTED_TABLES = {
 	"ScheduledExpeditionNotification": "12_scheduled_notifications.csv",
 	"Guild": "13_guild_membership.csv",
 	"GuildPet": "14_guild_pets.csv",
+	"Material": "15_materials.csv",
+	"Home": "16_home.csv",
+	"PlayerPlantSlot": "17_plant_slots.csv",
+	"HomeChestSlot": "18_home_chest_slots.csv",
+	"HomeGardenSlot": "19_home_garden_slots.csv",
+	"HomePlantStorage": "20_home_plant_storage.csv",
+	"Apartment": "21_apartments.csv",
+	"PlayerCookingRecipe": "22_cooking_recipes.csv",
 
 	// ============ LOGS DATABASE - Player Stats (LogsPlayerStatsExporter) ============
 	"LogsPlayersScore": "logs/15_score_history.csv",
@@ -203,9 +211,181 @@ const EXPORTED_TABLES = {
 	"LogsBlessings": "logs/76_blessings_triggered.csv",
 	"LogsBlessingsContributions": "logs/77_blessings_contributions.csv",
 
+	// ============ LOGS DATABASE - City (LogsCityExporter) ============
+	"LogsInnMeals": "logs/78_inn_meals.csv",
+	"LogsInnRooms": "logs/79_inn_rooms.csv",
+	"LogsBlacksmithUpgrades": "logs/80_blacksmith_upgrades.csv",
+	"LogsBlacksmithDisenchants": "logs/81_blacksmith_disenchants.csv",
+	"LogsEnchanterUses": "logs/82_enchanter_uses.csv",
+	"LogsHomePurchases": "logs/83_home_purchases.csv",
+	"LogsHomeUpgrades": "logs/84_home_upgrades.csv",
+	"LogsHomeMoves": "logs/85_home_moves.csv",
+	"LogsHomeBedUses": "logs/86_home_bed_uses.csv",
+	"LogsApartmentPurchases": "logs/87_apartment_purchases.csv",
+	"LogsApartmentRentClaims": "logs/88_apartment_rent_claims.csv",
+	"LogsGuildDomainPurchases": "logs/89_guild_domain_purchases.csv",
+	"LogsGuildDomainUpgrades": "logs/90_guild_domain_upgrades.csv",
+	"LogsGuildTreasuryDeposits": "logs/91_guild_treasury_deposits.csv",
+	"LogsGuildFoodShopBuys": "logs/92_guild_food_shop_buys.csv",
+	"LogsCookingUses": "logs/93_cooking_uses.csv",
+	"LogsGardenActions": "logs/94_garden_actions.csv",
+	"LogsCityVisits": "logs/95_city_visits.csv",
+
 	// ============ LOGS DATABASE - Players Reference ============
 	"LogsPlayers": "Used for lookup only, keycloakId already in player export"
 };
+
+const INDIRECT_GAME_PLAYER_REF_FIELDS = [
+	"ownerId",
+	"homeId"
+] as const;
+
+const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
+	"Player": [
+		"fightPointsLost",
+		"score",
+		"weeklyScore",
+		"level",
+		"experience",
+		"money",
+		"tokens",
+		"class",
+		"guildId",
+		"nextEvent",
+		"lastPetFree",
+		"effectId",
+		"effectEndDate",
+		"effectDuration",
+		"mapLinkId",
+		"startTravelDate",
+		"insideCity",
+		"defenseGloryPoints",
+		"attackGloryPoints",
+		"gloryPointsLastSeason",
+		"fightCountdown",
+		"rage",
+		"lastMealAt",
+		"cookingLevel",
+		"cookingExperience",
+		"lastBedUsedAt",
+		"furnacePosition",
+		"pinnedCookingRecipeId",
+		"lastGardenWatered",
+		"updatedAt",
+		"createdAt"
+	],
+	"InventorySlot": [
+		"slot",
+		"itemCategory",
+		"itemId",
+		"itemLevel",
+		"itemEnchantmentId",
+		"remainingPotionUsages",
+		"updatedAt",
+		"createdAt"
+	],
+	"InventoryInfo": [
+		"lastDailyAt",
+		"weaponSlots",
+		"armorSlots",
+		"objectSlots",
+		"potionSlots",
+		"plantSlots",
+		"updatedAt",
+		"createdAt"
+	],
+	"PlayerMissionsInfo": [
+		"gems",
+		"hasBoughtPointsThisWeek",
+		"missionSkipsUsedThisWeek",
+		"dailyMissionNumberDone",
+		"lastDailyMissionCompleted",
+		"dailyMissionBlob",
+		"campaignProgression",
+		"campaignBlob",
+		"updatedAt",
+		"createdAt"
+	],
+	"Material": [
+		"materialId",
+		"quantity",
+		"createdAt",
+		"updatedAt"
+	],
+	"Home": [
+		"cityId",
+		"level",
+		"createdAt",
+		"updatedAt"
+	],
+	"PlayerPlantSlot": [
+		"slotType",
+		"slot",
+		"plantId",
+		"createdAt",
+		"updatedAt"
+	],
+	"HomeChestSlot": [
+		"slot",
+		"itemCategory",
+		"itemId",
+		"itemLevel",
+		"itemEnchantmentId",
+		"createdAt",
+		"updatedAt"
+	],
+	"HomeGardenSlot": [
+		"slot",
+		"plantId",
+		"plantedAt",
+		"createdAt",
+		"updatedAt"
+	],
+	"HomePlantStorage": [
+		"plantId",
+		"quantity",
+		"createdAt",
+		"updatedAt"
+	],
+	"Apartment": [
+		"cityId",
+		"purchasePrice",
+		"lastRentClaimedAt",
+		"createdAt",
+		"updatedAt"
+	],
+	"PlayerCookingRecipe": [
+		"recipeId",
+		"sourceMapId"
+	]
+} as const;
+
+const PLAYER_DATA_MODEL_IGNORED_FIELDS = {
+	"Player": [
+		"id",
+		"keycloakId",
+		"health",
+		"petId",
+		"banned"
+	],
+	"InventorySlot": ["playerId"],
+	"InventoryInfo": ["playerId"],
+	"PlayerMissionsInfo": ["playerId"],
+	"Material": ["playerId"],
+	"Home": [
+		"id",
+		"ownerId"
+	],
+	"PlayerPlantSlot": ["playerId"],
+	"HomeChestSlot": ["homeId"],
+	"HomeGardenSlot": ["homeId"],
+	"HomePlantStorage": ["homeId"],
+	"Apartment": [
+		"id",
+		"ownerId"
+	],
+	"PlayerCookingRecipe": ["playerId"]
+} as const;
 
 /**
  * Helper to extract model class names from a models directory
@@ -230,7 +410,7 @@ function getModelNames(modelsDir: string): string[] {
 /**
  * Check if a model file contains playerId or keycloakId field
  */
-function hasPersonalDataField(modelsDir: string, fileName: string): boolean {
+function hasPersonalDataField(modelsDir: string, fileName: string, includeIndirectRefs = false): boolean {
 	const filePath = path.join(modelsDir, fileName);
 	if (!fs.existsSync(filePath)) {
 		return false;
@@ -248,8 +428,38 @@ function hasPersonalDataField(modelsDir: string, fileName: string): boolean {
 	// Also check for other player-related foreign keys
 	const hasPlayerRef = /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId|triggeredByPlayerId)\s*[?:]/.test(content)
 		|| /(?:fightInitiatorId|player2Id|addedId|adderId|kickedPlayer|leftPlayer|newChief|addedElder|removedElder|sellerId|buyerId|releasedId|triggeredByPlayerId)\s*:\s*{/.test(content);
+	const hasIndirectPlayerRef = includeIndirectRefs && INDIRECT_GAME_PLAYER_REF_FIELDS.some(field => new RegExp(`declare\\s+(?:readonly\\s+)?${field}\\s*[?:]`).test(content)
+		|| new RegExp(`${field}\\s*:\\s*{`).test(content));
 
-	return hasPlayerId || hasKeycloakId || hasPlayerRef;
+	return hasPlayerId || hasKeycloakId || hasPlayerRef || hasIndirectPlayerRef;
+}
+
+function getModelFieldNames(modelsDir: string, modelName: string): string[] {
+	const filePath = path.join(modelsDir, `${modelName}.ts`);
+	const content = fs.readFileSync(filePath, "utf-8");
+	const matches = content.matchAll(/declare\s+(?:readonly\s+|private\s+)?(\w+)\s*:/g);
+
+	return [...matches].map(match => match[1]);
+}
+
+function exporterReferencesField(exporterContent: string, fieldName: string): boolean {
+	return new RegExp(`\\b${fieldName}\\s*:`).test(exporterContent)
+		|| new RegExp(`\\.${fieldName}\\b`).test(exporterContent);
+}
+
+function getCsvExportBlock(exporterContent: string, csvFileName: string): string {
+	const csvAssignment = `csvFiles["${csvFileName}"]`;
+	const startIndex = exporterContent.indexOf(csvAssignment);
+	if (startIndex === -1) {
+		return "";
+	}
+
+	const nextCsvAssignmentIndex = exporterContent.indexOf("csvFiles[", startIndex + csvAssignment.length);
+	return exporterContent.slice(startIndex, nextCsvAssignmentIndex === -1 ? undefined : nextCsvAssignmentIndex);
+}
+
+function getIgnoredModelFields(modelName: string): readonly string[] {
+	return PLAYER_DATA_MODEL_IGNORED_FIELDS[modelName as keyof typeof PLAYER_DATA_MODEL_IGNORED_FIELDS] ?? [];
 }
 
 describe("GDPR Export Coverage", () => {
@@ -267,7 +477,7 @@ describe("GDPR Export Coverage", () => {
 			if (!isExported && !isExcluded) {
 				// Check if it has personal data fields
 				const fileName = `${modelName}.ts`;
-				if (hasPersonalDataField(gameModelsDir, fileName)) {
+				if (hasPersonalDataField(gameModelsDir, fileName, true)) {
 					unaccountedTables.push(modelName);
 				}
 			}
@@ -334,6 +544,44 @@ To fix this:
 			`The following tables in EXCLUDED_TABLES have empty reasons: ${emptyReasons.join(", ")}`
 		).toEqual([]);
 	});
+
+	it("should export tracked fields from player data models", () => {
+		const exporterPath = path.resolve(__dirname, "../../../../src/commands/admin/gdpr/exporters/PlayerDataExporter.ts");
+		const exporterContent = fs.readFileSync(exporterPath, "utf-8");
+		const missingFields: string[] = [];
+
+		for (const [modelName, fieldNames] of Object.entries(PLAYER_DATA_EXPORT_FIELD_COVERAGE)) {
+			const modelFields = getModelFieldNames(gameModelsDir, modelName);
+			const csvFileName = EXPORTED_TABLES[modelName as keyof typeof EXPORTED_TABLES];
+			const csvExportBlock = getCsvExportBlock(exporterContent, csvFileName);
+			const trackedFields = new Set<string>(fieldNames);
+			const ignoredFields = new Set<string>(getIgnoredModelFields(modelName));
+			const untrackedFields = modelFields.filter(field => !trackedFields.has(field) && !ignoredFields.has(field));
+
+			for (const fieldName of untrackedFields) {
+				missingFields.push(`${modelName}.${fieldName} is neither exported nor explicitly ignored`);
+			}
+
+			for (const fieldName of fieldNames) {
+				if (!modelFields.includes(fieldName)) {
+					missingFields.push(`${modelName}.${fieldName} is listed for GDPR coverage but no longer exists`);
+					continue;
+				}
+
+				if (!exporterReferencesField(csvExportBlock, fieldName)) {
+					missingFields.push(`${modelName}.${fieldName}`);
+				}
+			}
+		}
+
+		expect(
+			missingFields,
+			`The following player data fields are tracked for GDPR export coverage but are missing from PlayerDataExporter:
+${missingFields.map(field => `  - ${field}`).join("\n")}
+
+Add each field to PlayerDataExporter or remove it from PLAYER_DATA_EXPORT_FIELD_COVERAGE with a justification.`
+		).toEqual([]);
+	});
 });
 
 /**
@@ -368,7 +616,7 @@ describe("GDPR Export Data Leak Prevention", () => {
 			// Check for direct field access patterns in export mappings
 			// Patterns like: `fieldName: something.forbiddenField` or `forbiddenField: value`
 			const directExportPattern = new RegExp(
-				`(?:${field}\\s*:|:\\s*\\w+\\.${field})(?![\\w])`,
+				`(?:\\b${field}\\s*:|:\\s*\\w+\\.${field}\\b)(?![\\w])`,
 				"gi"
 			);
 
@@ -394,6 +642,18 @@ describe("GDPR Export Data Leak Prevention", () => {
 			const matches = content.match(fieldUsagePattern);
 
 			if (matches) {
+				const directExportCheck = new RegExp(
+					`\\b${field}\\s*:\\s*(?:\\w+\\.)?${field}\\b`,
+					"g"
+				);
+				const directExports = [...content.matchAll(directExportCheck)]
+					.filter(match => !content.slice(Math.max(0, (match.index ?? 0) - 20), match.index)
+						.match(/where:\s*{\s*$/));
+				if (directExports.length > 0) {
+					violations.push(field);
+					continue;
+				}
+
 				// Check if this field usage is also accompanied by anonymization
 				// We look for anonymize calls on the same field nearby
 				const anonymizePatterns = [
@@ -412,11 +672,11 @@ describe("GDPR Export Data Leak Prevention", () => {
 
 				if (!content.includes("GDPRAnonymizer") && !hasAnonymization) {
 					// Check if the field is being directly exported
-					const directExportCheck = new RegExp(
-						`${field}\\s*:\\s*(?:\\w+\\.)?${field}[,\\s})]`,
+					const fallbackDirectExportCheck = new RegExp(
+						`\\b${field}\\s*:\\s*(?:\\w+\\.)?${field}\\b`,
 						"g"
 					);
-					if (directExportCheck.test(content)) {
+					if (fallbackDirectExportCheck.test(content)) {
 						violations.push(field);
 					}
 				}

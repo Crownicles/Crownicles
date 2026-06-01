@@ -17,7 +17,7 @@ import {
 	Pet, PetDataController
 } from "../../../../data/Pet";
 import { PetUtils } from "../../../utils/PetUtils";
-import { crowniclesInstance } from "../../../../index";
+import { crowniclesInstance } from "../../../../app";
 import { BlessingManager } from "../../../blessings/BlessingManager";
 import {
 	CrowniclesPacket, makePacket
@@ -29,11 +29,32 @@ import {
 import { OwnedPet } from "../../../../../../Lib/src/types/OwnedPet";
 import { PetBasicInfo } from "../../../../../../Lib/src/types/PetBasicInfo";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
+import {
+	LockKey, withLockedEntities
+} from "../../../../../../Lib/src/locks/withLockedEntities";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
 import * as moment from "moment";
 
 export class PetEntity extends Model {
+	/**
+	 * Build a {@link LockKey} for this pet so it can participate in a
+	 * `withLockedEntities([...])` composite critical section (e.g. pet trade).
+	 */
+	static lockKey(id: number): LockKey<PetEntity> {
+		return {
+			model: PetEntity, id
+		};
+	}
+
+	/**
+	 * Convenience helper for the common case of locking a single pet.
+	 * See {@link withLockedEntities} for full semantics.
+	 */
+	static withLocked<R>(id: number, fn: (pet: PetEntity) => Promise<R>): Promise<R> {
+		return withLockedEntities([PetEntity.lockKey(id)], ([pet]) => fn(pet));
+	}
+
 	declare readonly id: number;
 
 	declare typeId: number;
@@ -67,6 +88,13 @@ export class PetEntity extends Model {
 	}
 
 	/**
+	 * Check if this pet can be fed with the given food type (not on cooldown + compatible diet)
+	 */
+	public canBeFed(petModel: Pet, foodType: string): boolean {
+		return this.getFeedCooldown(petModel) <= 0 && petModel.canEatFood(foodType);
+	}
+
+	/**
 	 * Get the love level of the pet
 	 */
 	public getLoveLevelNumber(): number {
@@ -93,7 +121,7 @@ export class PetEntity extends Model {
 		else if (this.lovePoints < 0) {
 			this.lovePoints = 0;
 		}
-		crowniclesInstance.logsDatabase.logPetLoveChange(this, parameters.reason)
+		crowniclesInstance?.logsDatabase.logPetLoveChange(this, parameters.reason)
 			.then();
 		await MissionsController.update(parameters.player, parameters.response, {
 			missionId: "tamedPet",
@@ -107,6 +135,10 @@ export class PetEntity extends Model {
 
 	public isFeisty(): boolean {
 		return this.getLoveLevelNumber() === PetConstants.LOVE_LEVEL.FEISTY;
+	}
+
+	public needsVeterinarianCare(): boolean {
+		return this.getLoveLevelNumber() < PetConstants.LOVE_LEVEL.TAMED;
 	}
 
 	/**

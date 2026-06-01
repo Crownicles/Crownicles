@@ -1,3 +1,4 @@
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventPetDropTokenPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventPetDropTokenPacket";

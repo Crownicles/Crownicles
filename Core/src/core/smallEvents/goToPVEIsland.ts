@@ -24,18 +24,25 @@ import {
 } from "../utils/ReactionsCollector";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+import { InventorySlots } from "../database/game/models/InventorySlot";
 import { ReactionCollectorGoToPVEIsland } from "../../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { TravelTime } from "../maps/TravelTime";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+
+type GoToPveIslandMissionId = "joinPVEIsland";
+
+const GO_TO_PVE_ISLAND_MISSION_ID: GoToPveIslandMissionId = "joinPVEIsland";
 
 export const smallEventFuncs: SmallEventFuncs = {
 	async canBeExecuted(player: Player): Promise<boolean> {
 		if (!player.guildId) {
 			return false;
 		}
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 		return player.level >= PVEConstants.MIN_LEVEL
 			&& Maps.isNearWater(player)
-			&& player.hasEnoughEnergyToFight()
+			&& player.hasEnoughEnergyToFight(playerActiveObjects)
 			&& await PlayerSmallEvents.playerSmallEventCount(player.id, SmallEventConstants.UNIQUE_EVENT_IDS.GO_TO_PVE_ISLAND) === 0
 			&& await LogsReadRequests.getCountPVEIslandThisWeek(player.keycloakId, player.guildId) < PVEConstants.TRAVEL_COST.length;
 	},
@@ -43,11 +50,12 @@ export const smallEventFuncs: SmallEventFuncs = {
 	async executeSmallEvent(response, player, context): Promise<void> {
 		const price = await player.getTravelCostThisWeek();
 		const anotherMemberOnBoat = await Maps.getGuildMembersOnBoat(player);
+		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 
 		const collector = new ReactionCollectorGoToPVEIsland(
 			price,
-			player.getCumulativeEnergy(),
-			player.getMaxCumulativeEnergy()
+			player.getCumulativeEnergy(playerActiveObjects),
+			player.getMaxCumulativeEnergy(playerActiveObjects)
 		);
 
 		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
@@ -58,9 +66,17 @@ export const smallEventFuncs: SmallEventFuncs = {
 			if (reaction === null) {
 				// Timeout - no response from user
 				response.push(makePacket(SmallEventGoToPVEIslandNoAnswerPacket, {}));
+				return;
 			}
-			else if (reaction.reaction.type === ReactionCollectorAcceptReaction.name) {
-				const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+
+			if (reaction.reaction.type !== ReactionCollectorAcceptReaction.name) {
+				// User clicked refuse button
+				response.push(makePacket(SmallEventGoToPVEIslandRefusePacket, {}));
+				return;
+			}
+
+			await withLockedPlayerSafe(player, "goToPVEIsland endCallback", async lockedPlayer => {
+				const missionInfo = await PlayerMissionsInfos.getOfPlayer(lockedPlayer.id);
 				if (missionInfo.gems < price) {
 					response.push(makePacket(SmallEventGoToPVEIslandNotEnoughGemsPacket, {}));
 					return;
@@ -70,27 +86,23 @@ export const smallEventFuncs: SmallEventFuncs = {
 					anotherMemberOnBoat: anotherMemberOnBoat[0],
 					price
 				};
-				const gainScore = await TravelTime.joinBoatScore(player);
+				const gainScore = await TravelTime.joinBoatScore(lockedPlayer);
 				const scoreParameters = {
 					amount: gainScore,
 					response,
 					reason: NumberChangeReason.SMALL_EVENT
 				};
-				await player.addScore(scoreParameters);
+				await lockedPlayer.addScore(scoreParameters);
 
-				await Maps.startBoatTravel(player, options, NumberChangeReason.SMALL_EVENT, response);
-				await MissionsController.update(player, response, {
-					missionId: "joinPVEIsland",
+				await Maps.startBoatTravel(lockedPlayer, options, NumberChangeReason.SMALL_EVENT, response);
+				await MissionsController.update(lockedPlayer, response, {
+					missionId: GO_TO_PVE_ISLAND_MISSION_ID,
 					set: true
 				});
 				response.push(makePacket(SmallEventGoToPVEIslandAcceptPacket, {
 					alone: !anotherMemberOnBoat.length, pointsWon: scoreParameters.amount
 				}));
-			}
-			else {
-				// User clicked refuse button
-				response.push(makePacket(SmallEventGoToPVEIslandRefusePacket, {}));
-			}
+			});
 		};
 
 		const packet = new ReactionCollectorInstance(

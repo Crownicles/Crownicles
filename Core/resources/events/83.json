@@ -1,0 +1,54 @@
+{
+  "possibilities": {
+    "skip": {
+      "outcomes": {
+        "0": {}
+      }
+    },
+    "buy": {
+      "outcomes": {
+        "0": {
+          "money": -150,
+          "randomItem": {},
+          "tags": [
+            "moneyUsage"
+          ]
+        },
+        "1": {
+          "money": -50,
+          "randomItem": {
+            "rarity": {
+              "min": 2
+            }
+          }
+        }
+      }
+    },
+    "steal": {
+      "outcomes": {
+        "0": {
+          "effect": "jailed"
+        },
+        "1": {
+          "money": 300
+        }
+      }
+    },
+    "haggle": {
+      "outcomes": {
+        "0": {
+          "money": -30,
+          "randomItem": {}
+        },
+        "1": {
+          "money": -20
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 41
+    }
+  ]
+}

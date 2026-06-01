@@ -16,7 +16,7 @@
 		"moduleResolution": "node",
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
-		"target": "es6",
+		"target": "es2024",
 		"allowSyntheticDefaultImports": true,
 		"lib": [
 			"ES2022",

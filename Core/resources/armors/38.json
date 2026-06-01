@@ -3,5 +3,7 @@
   "rawDefense": 7,
   "tags": [
     "holy"
-  ]
+  ],
+  "type": "magic",
+  "materialCategory": 9
 }

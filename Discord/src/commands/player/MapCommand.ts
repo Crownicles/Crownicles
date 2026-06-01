@@ -23,38 +23,13 @@ function getPacket(interaction: CrowniclesInteraction): CommandMapPacketReq {
  * @param embed
  * @param mapLink
  */
-async function setEmbedMap(embed: CrowniclesEmbed, mapLink: {
+function setEmbedMap(embed: CrowniclesEmbed, mapLink: {
 	name: string;
-	fallback?: string;
 	forced: boolean;
-}): Promise<void> {
-	if (mapLink.forced && !mapLink.fallback) {
-		embed.setImage(MapConstants.FORCED_MAPS_URL.replace("{name}", mapLink.name));
-	}
-	else {
-		await fetch(mapLink.forced
-			? MapConstants.FORCED_MAPS_URL.replace("{name}", mapLink.name)
-			: MapConstants.MAP_URL_WITH_CURSOR.replace("{mapLink}", mapLink.name))
-			.then(res => {
-				if (res.status !== 200 && mapLink.fallback) {
-					embed.setImage(mapLink.forced
-						? MapConstants.FORCED_MAPS_URL.replace("{name}", mapLink.fallback)
-						: MapConstants.MAP_URL_WITH_CURSOR.replace("{mapLink}", mapLink.fallback));
-				}
-				else {
-					embed.setImage(mapLink.forced
-						? MapConstants.FORCED_MAPS_URL.replace("{name}", mapLink.name)
-						: MapConstants.MAP_URL_WITH_CURSOR.replace("{mapLink}", mapLink.name));
-				}
-			})
-			.catch(() => {
-				if (mapLink.fallback) {
-					embed.setImage(mapLink.forced
-						? MapConstants.FORCED_MAPS_URL.replace("{name}", mapLink.fallback)
-						: MapConstants.MAP_URL_WITH_CURSOR.replace("{mapLink}", mapLink.fallback));
-				}
-			});
-	}
+}): void {
+	embed.setImage(mapLink.forced
+		? MapConstants.FORCED_MAPS_URL.replace("{name}", mapLink.name)
+		: MapConstants.MAP_URL_WITH_CURSOR.replace("{mapLink}", mapLink.name));
 }
 
 /**
@@ -73,7 +48,7 @@ export async function handleCommandMapDisplayRes(packet: CommandMapDisplayRes, c
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user);
-	await setEmbedMap(embed, packet.mapLink);
+	setEmbedMap(embed, packet.mapLink);
 	const mapName = i18n.t(`models:map_locations.${packet.mapId}.name`, {
 		lng
 	});

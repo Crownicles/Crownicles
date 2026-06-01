@@ -72,6 +72,19 @@ const myFormat = format.printf(({
 }) =>
 	`${timestamp} [${level.toUpperCase()}]: ${message}${metadata && Object.keys(metadata).length > 0 ? ` ${safeStringify(metadata)}` : ""}`);
 
+/**
+ * winston-loki >= 6.1.4 forwards the log's leftover fields as Loki structured
+ * metadata, whose values must be strings. Our `format.metadata()` nests every
+ * extra field under a `metadata` object, so Loki rejects the whole push with
+ * "Value is string, but can't find closing '\"' symbol". The metadata content is
+ * already embedded in the formatted line, so we strip it from the payload sent
+ * to Loki to keep the structured metadata valid.
+ */
+const stripLokiStructuredMetadata = format(info => {
+	delete (info as Record<string, unknown>).metadata;
+	return info;
+});
+
 type LogMetadata = { [key: string]: unknown } & {
 	error?: never;
 	level?: never;
@@ -117,6 +130,7 @@ export abstract class CrowniclesLogger {
 							? `${lokiSettings.username}:${lokiSettings.password}`
 							: undefined,
 						json: true,
+						format: stripLokiStructuredMetadata(),
 						onConnectionError: console.error,
 						interval: 5,
 						timeout: 5
@@ -167,17 +181,73 @@ export abstract class CrowniclesLogger {
 		return Boolean(this.logger);
 	}
 
+	/**
+	 * Test-only helper. Silences the underlying winston logger so
+	 * integration tests don't drown stdout in benign log messages.
+	 */
+	public static silenceForTests(): void {
+		if (!this.logger) {
+			throw new Error("Logger not initialized");
+		}
+		this.logger.silent = true;
+	}
+
 	public static error(message: string, metadata?: LogMetadata): void {
-		this.get().error(message, metadata);
+		this.get().log("error", message, metadata);
 	}
 
 	public static errorWithObj(message: string, e: unknown): void {
 		if (e instanceof Error) {
-			this.get().error(message, e);
+			this.get().log("error", message, e);
+		}
+		else if (e instanceof Response) {
+			this.logResponseError(message, e).catch(() => {
+				// Ignore errors during error logging
+			});
 		}
 		else {
-			this.get().error(message, new Error(String(e)));
+			this.get().log("error", message, new Error(this.stringifyUnknownError(e)));
 		}
+	}
+
+	private static async logResponseError(message: string, response: Response): Promise<void> {
+		try {
+			const body = await response.clone().text();
+			this.get().log("error", message, new Error(this.formatResponseError(response, body)));
+		}
+		catch {
+			this.get().log("error", message, new Error(this.formatResponseError(response)));
+		}
+	}
+
+	private static formatResponseError(response: Response, body?: string): string {
+		const details = [
+			`HTTP ${response.status} ${response.statusText}`,
+			`URL: ${response.url}`
+		];
+
+		if (body) {
+			details.push(`Body: ${body.slice(0, 2000)}`);
+		}
+
+		return details.join("\n");
+	}
+
+	private static stringifyUnknownError(error: unknown): string {
+		if (typeof error === "string") {
+			return error;
+		}
+
+		if (error && typeof error === "object") {
+			try {
+				return JSON.stringify(error);
+			}
+			catch {
+				return String(error);
+			}
+		}
+
+		return String(error);
 	}
 
 	public static warn(message: string, metadata?: LogMetadata): void {

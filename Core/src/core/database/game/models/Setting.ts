@@ -45,8 +45,6 @@ class SettingClassNumber {
 	}
 }
 
-// Currently keeping it for a future update
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 class SettingClassString {
 	private readonly name: string;
 
@@ -129,6 +127,22 @@ export abstract class Settings {
 	public static readonly LAST_CHRISTMAS_BONUS_YEAR = new SettingClassNumber(
 		"lastChristmasBonusYear",
 		(): Promise<number> => Promise.resolve(0)
+	);
+
+	/**
+	 * The city where the enchanter is currently located
+	 */
+	public static readonly ENCHANTER_CITY = new SettingClassString(
+		"enchanterCity",
+		(): Promise<string> => Promise.resolve("capital")
+	);
+
+	/**
+	 * The current enchantment offered by the enchanter
+	 */
+	public static readonly ENCHANTER_ENCHANTMENT_ID = new SettingClassString(
+		"enchanterEnchantmentId",
+		(): Promise<string> => Promise.resolve("pvpAttack1")
 	);
 }
 

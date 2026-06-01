@@ -1,0 +1,61 @@
+{
+  "homePriceMultiplier": 1.03,
+  "apartmentPrice": 18000,
+  "maps": [
+    26
+  ],
+  "shops": [
+    "generalShop",
+    "tanner",
+    "veterinarian"
+  ],
+  "inns": [
+    {
+      "id": "fireside",
+      "meals": [
+        {
+          "id": "friedShrimp",
+          "price": 50,
+          "energy": 400
+        },
+        {
+          "id": "clamChowder",
+          "price": 40,
+          "energy": 300
+        },
+        {
+          "id": "grilledFish",
+          "price": 100,
+          "energy": 600
+        },
+        {
+          "id": "lobsterRoll",
+          "price": 150,
+          "energy": 900
+        },
+        {
+          "id": "jellyfishCarpaccio",
+          "price": 250,
+          "energy": 2000
+        }
+      ],
+      "rooms": [
+        {
+          "id": "simpleRoom",
+          "price": 500,
+          "health": 14
+        },
+        {
+          "id": "comfortableRoom",
+          "price": 1000,
+          "health": 35
+        },
+        {
+          "id": "luxuryRoom",
+          "price": 1500,
+          "health": 60
+        }
+      ]
+    }
+  ]
+}

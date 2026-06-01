@@ -23,6 +23,7 @@ import {
 	buildInProgressDescription
 } from "./ExpeditionDisplayUtils";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
+import { formatMaterialLoot } from "../../../utils/MaterialLootDisplayUtils";
 
 /**
  * Build error embed for missing talisman
@@ -194,21 +195,36 @@ function formatRewards(
 	}
 
 	// Tokens have a different i18n key structure (count instead of amount)
-	if (rewards.tokens && rewards.tokens > 0) {
+	if ((rewards.tokens ?? 0) > 0) {
 		lines.push(i18n.t("commands:petExpedition.rewards.tokens", {
 			lng, count: rewards.tokens
 		}));
 	}
 
-	// Boolean rewards
-	if (rewards.itemGiven) {
-		lines.push(i18n.t("commands:petExpedition.rewards.item", { lng }));
+	// Boolean / flag rewards driven by a declarative table
+	const flagRewards: {
+		active: boolean; key: string;
+	}[] = [
+		{
+			active: Boolean(rewards.itemGiven), key: "item"
+		},
+		{
+			active: Boolean(rewards.cloneTalismanFound), key: "cloneTalisman"
+		},
+		{
+			active: Boolean(badgeEarned), key: "badgeEarned"
+		}
+	];
+	for (const flag of flagRewards) {
+		if (flag.active) {
+			lines.push(i18n.t(`commands:petExpedition.rewards.${flag.key}`, { lng }));
+		}
 	}
-	if (rewards.cloneTalismanFound) {
-		lines.push(i18n.t("commands:petExpedition.rewards.cloneTalisman", { lng }));
-	}
-	if (badgeEarned) {
-		lines.push(i18n.t("commands:petExpedition.rewards.badgeEarned", { lng }));
+
+	// Material loot
+	const materialLootText = formatMaterialLoot(rewards.materialLoot, lng);
+	if (materialLootText) {
+		lines.push(materialLootText);
 	}
 
 	return lines.join("\n");

@@ -1,0 +1,46 @@
+{
+  "possibilities": {
+    "end": {
+      "outcomes": {
+        "0": {}
+      }
+    },
+    "listen": {
+      "outcomes": {
+        "0": {
+          "health": 5,
+          "randomItem": {}
+        },
+        "1": {
+          "effect": "sick",
+          "health": -10
+        }
+      }
+    },
+    "followMelody": {
+      "outcomes": {
+        "0": {
+          "randomItem": {},
+          "effect": "occupied",
+          "lostTime": 90
+        },
+        "1": {
+          "money": 200
+        }
+      }
+    },
+    "coverEars": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 45
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 42
+    }
+  ]
+}

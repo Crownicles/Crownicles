@@ -1,4 +1,6 @@
 {
   "rarity": 1,
-  "rawDefense": 6
+  "rawDefense": 6,
+  "type": "metal",
+  "materialCategory": 8
 }

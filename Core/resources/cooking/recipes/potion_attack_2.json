@@ -1,0 +1,25 @@
+{
+  "level": 2,
+  "recipeType": "POTION_ATTACK",
+  "plants": [
+    {
+      "plantId": 5,
+      "quantity": 1
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 55,
+      "quantity": 1
+    },
+    {
+      "materialId": 66,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 3,
+  "potionRarity": 1,
+  "discoveredByDefault": true,
+  "petFood": null
+}

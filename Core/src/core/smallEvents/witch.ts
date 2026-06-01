@@ -1,3 +1,4 @@
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
 import {
@@ -30,6 +31,8 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { WitchActionOutcomeType } from "../../../../Lib/src/types/WitchActionOutcomeType";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
 
 type WitchEventSelection = {
@@ -91,7 +94,7 @@ async function givePotion(context: PacketContext, player: Player, potionToGive: 
  * @param player
  * @param response
  */
-async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<void> {
+async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<string | undefined> {
 	if (selectedEvent.forceEffect || outcome === WitchActionOutcomeType.EFFECT) {
 		await selectedEvent.giveEffect(player);
 	}
@@ -111,59 +114,79 @@ async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: Witc
 			generateRandomItem(potionToGive),
 			response
 		);
+
+		// Discover a cooking recipe matching the potion nature
+		const potionNature = potionToGive.subType ?? ItemNature.NONE;
+		const discovered = await RecipeDiscoveryService.discoverWitchRecipe(player, potionNature);
+		if (discovered) {
+			await player.save();
+			return discovered.id;
+		}
 	}
 	await player.save();
+	return undefined;
 }
 
 function getEndCallback(player: Player): EndCallback {
 	return async (collector, response) => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.WITCH_CHOOSE);
 
-		await player.reload();
+		await withLockedPlayerSafe(player, "witch endCallback", lockedPlayer =>
+			runWitchEndCallbackUnderLock(lockedPlayer, collector, response));
+	};
+}
 
-		const reaction = collector.getFirstReaction();
-		const selectedEvent = reaction
-			? WitchActionDataController.instance.getById((reaction.reaction.data as ReactionCollectorWitchReaction).id) ?? WitchActionDataController.instance.getDoNothing()
-			: WitchActionDataController.instance.getDoNothing();
-		const outcome = selectedEvent.generateOutcome();
+async function runWitchEndCallbackUnderLock(
+	player: Player,
+	collector: ReactionCollectorInstance,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const reaction = collector.getFirstReaction();
+	const selectedEvent = reaction
+		? WitchActionDataController.instance.getById((reaction.reaction.data as ReactionCollectorWitchReaction).id) ?? WitchActionDataController.instance.getDoNothing()
+		: WitchActionDataController.instance.getDoNothing();
+	const outcome = selectedEvent.generateOutcome();
 
-		const resultPacket = makePacket(SmallEventWitchResultPacket, {
-			outcome,
-			ingredientId: selectedEvent.id,
-			isIngredient: selectedEvent.isIngredient,
-			forceEffect: selectedEvent.forceEffect,
-			effectId: selectedEvent.effectName ?? Effect.OCCUPIED.id,
-			timeLost: selectedEvent.timePenalty,
-			lifeLoss: SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT
-		});
+	const resultPacket = makePacket(SmallEventWitchResultPacket, {
+		outcome,
+		ingredientId: selectedEvent.id,
+		isIngredient: selectedEvent.isIngredient,
+		forceEffect: selectedEvent.forceEffect,
+		effectId: selectedEvent.effectName ?? Effect.OCCUPIED.id,
+		timeLost: selectedEvent.timePenalty,
+		lifeLoss: SmallEventConstants.WITCH.BASE_LIFE_POINTS_REMOVED_AMOUNT
+	});
 
-		// There is a chance that the player will get a no effect potion, no matter what he chose
-		if (RandomUtils.crowniclesRandom.bool(SmallEventConstants.WITCH.NO_EFFECT_CHANCE)) {
-			if (selectedEvent.forceEffect) {
-				await selectedEvent.giveEffect(player);
-			}
-			resultPacket.outcome = WitchActionOutcomeType.POTION;
-			response.push(resultPacket);
-			const potionToGive = generateRandomItem({
-				itemCategory: ItemCategory.POTION,
-				subType: ItemNature.NONE
-			});
-			await givePotion(collector.context, player, potionToGive, response);
-			return;
+	// There is a chance that the player will get a no effect potion, no matter what he chose
+	if (RandomUtils.crowniclesRandom.bool(SmallEventConstants.WITCH.NO_EFFECT_CHANCE)) {
+		if (selectedEvent.forceEffect) {
+			await selectedEvent.giveEffect(player);
 		}
+		resultPacket.outcome = WitchActionOutcomeType.POTION;
 
 		response.push(resultPacket);
+		const potionToGive = generateRandomItem({
+			itemCategory: ItemCategory.POTION,
+			subType: ItemNature.NONE
+		});
+		await givePotion(collector.context, player, potionToGive, response);
+		return;
+	}
 
-		await applyOutcome(outcome, selectedEvent, collector.context, player, response);
+	const discoveredRecipeId = await applyOutcome(outcome, selectedEvent, collector.context, player, response);
+	if (discoveredRecipeId) {
+		resultPacket.discoveredRecipeId = discoveredRecipeId;
+	}
 
-		await selectedEvent.checkMissionsWitchAction(player, outcome, response);
-	};
+	response.push(resultPacket);
+
+	await selectedEvent.checkMissionsWitchAction(player, outcome, response);
 }
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: Maps.isOnContinent,
 
-	executeSmallEvent: (response, player, context, testArgs?: string[]) => {
+	executeSmallEvent: (response, player, context, _playerActiveObjects, testArgs?: string[]) => {
 		const events: WitchEventSelection = testArgs
 			? {
 				randomAdvice: WitchActionDataController.instance.getById(testArgs[0])!,

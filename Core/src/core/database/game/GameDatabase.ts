@@ -1,12 +1,23 @@
 import { Database } from "../../../../../Lib/src/database/Database";
 import { DataTypes } from "sequelize";
 import { getDatabaseConfiguration } from "../../bot/CrowniclesConfig";
-import { botConfig } from "../../../index";
+import { botConfig } from "../../../bootstrap";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
+import { CoreConstants } from "../../CoreConstants";
 
 export class GameDatabase extends Database {
 	constructor() {
-		super(getDatabaseConfiguration(botConfig, "game"), `${__dirname}/models`, `${__dirname}/migrations`);
+		/*
+		 * Tests load this file from source via Vitest, but the model and
+		 * migration loaders in `Database` only accept `.js` files (see
+		 * `Database#initModelFromFile`). `CoreConstants.DB_BASE_DIR_ENV_VAR`
+		 * lets the integration setup point at the compiled `dist/` tree so
+		 * the production loader picks up the same `.js` artifacts as a
+		 * real deployment. Production leaves the env var unset and falls
+		 * back to `__dirname`.
+		 */
+		const baseDir = process.env[CoreConstants.DB_BASE_DIR_ENV_VAR] ?? __dirname;
+		super(getDatabaseConfiguration(botConfig, "game"), `${baseDir}/models`, `${baseDir}/migrations`);
 	}
 
 	/**

@@ -1,7 +1,9 @@
 {
   "rarity": 6,
   "rawDefense": 6,
+  "type": "magic",
   "tags": [
     "metallic"
-  ]
+  ],
+  "materialCategory": 9
 }

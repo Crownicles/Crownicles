@@ -1,3 +1,7 @@
+import {
+	asDays, asHours, Day, Hour
+} from "../types/TimeTypes";
+
 export enum BlessingType {
 	NONE = 0,
 	AMPLIFIED_RAGE = 1,
@@ -56,7 +60,7 @@ export abstract class BlessingConstants {
 	/**
 	 * If the pool is not filled after this many days, it resets with a lower threshold
 	 */
-	static readonly POOL_EXPIRY_DAYS = 4;
+	static readonly POOL_EXPIRY_DAYS: Day = asDays(4);
 
 	/**
 	 * Initial pool threshold for the very first cycle
@@ -208,15 +212,15 @@ export abstract class BlessingConstants {
 	/**
 	 * Time threshold for "urgent" (hours)
 	 */
-	static readonly SMART_CONTRIBUTION_URGENT_TIME_HOURS = 12;
+	static readonly SMART_CONTRIBUTION_URGENT_TIME_HOURS: Hour = asHours(12);
 
 	/**
 	 * Time threshold for "less time" (hours)
 	 */
-	static readonly SMART_CONTRIBUTION_MEDIUM_TIME_HOURS = 36;
+	static readonly SMART_CONTRIBUTION_MEDIUM_TIME_HOURS: Hour = asHours(36);
 
 	/**
 	 * Time threshold for "plenty of time" (days)
 	 */
-	static readonly SMART_CONTRIBUTION_RELAXED_TIME_DAYS = 3;
+	static readonly SMART_CONTRIBUTION_RELAXED_TIME_DAYS: Day = asDays(3);
 }

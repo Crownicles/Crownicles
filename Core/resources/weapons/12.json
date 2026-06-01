@@ -1,7 +1,9 @@
 {
   "rarity": 4,
   "rawAttack": 6,
+  "type": "poison",
   "tags": [
     "metallic"
-  ]
+  ],
+  "materialCategory": 11
 }

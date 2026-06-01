@@ -21,7 +21,7 @@ vi.mock("../../../../Lib/src/utils/MqttTopicUtils", () => ({
 	createMqttPrefix: vi.fn().mockImplementation((prefix: string) => prefix)
 }));
 
-vi.mock("../../../src/index", () => ({
+vi.mock("../../../src/app", () => ({
 	botConfig: { PREFIX: "test" as string & { readonly __brand: "MqttPrefix" } },
 	crowniclesInstance: {
 		logsDatabase: {

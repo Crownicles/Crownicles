@@ -1,7 +1,9 @@
 {
   "rarity": 5,
   "rawAttack": 6,
+  "type": "rope",
   "tags": [
     "ranged"
-  ]
+  ],
+  "materialCategory": 4
 }

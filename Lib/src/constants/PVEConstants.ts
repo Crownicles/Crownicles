@@ -1,3 +1,5 @@
+import { TimeConstants } from "./TimeConstants";
+
 export abstract class PVEConstants {
 	static readonly TIME_AFTER_INACTIVITY_ON_BOAT_IS_NOT_ACCEPTED = 24 * 3 * 3600 * 1000; // 3 days;
 
@@ -62,7 +64,7 @@ export abstract class PVEConstants {
 
 	static readonly RAGE_MIN_MULTIPLIER = 1;
 
-	static readonly MINUTES_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND = 60;
+	static readonly TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND = TimeConstants.MS_TIME.HOUR;
 
 	static readonly RAGE_MAX_DAMAGE = 250;
 
@@ -77,4 +79,198 @@ export abstract class PVEConstants {
 	static readonly GUILD_POINTS_LOST_ON_DEATH = 150;
 
 	static readonly RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH = 20;
+
+	static readonly BOSS_LOOT = {
+		MIN_DROPS: 5,
+		MAX_DROPS: 10
+	};
+
+	/**
+	 * Loot tables for each PVE boss map location.
+	 * Each entry maps a map ID to an array of material IDs that can drop.
+	 */
+	static readonly BOSS_LOOT_TABLES: Record<number, readonly number[]> = {
+		// Island 1 - Tropical
+		1001: [
+			52,
+			40,
+			45,
+			8,
+			58,
+			2,
+			51
+		], // Forest: nature + wood + rope
+		1002: [
+			14,
+			7,
+			24,
+			13,
+			29,
+			22,
+			81
+		], // Ruins: metal + alloy + leather
+		1003: [
+			70,
+			1,
+			50,
+			21,
+			39,
+			4,
+			16,
+			44
+		], // Mine: metal + explosive
+		1004: [
+			70,
+			24,
+			29,
+			63,
+			41,
+			11,
+			42
+		], // Mountain: metal + leather + nature
+		1005: [
+			35,
+			1,
+			21,
+			80,
+			82,
+			56,
+			86,
+			65
+		], // Volcano (final): explosive + magic + metal
+		// Island 2 - Ice
+		1101: [
+			54,
+			25,
+			55,
+			12,
+			15,
+			48,
+			26
+		], // Tundra: nature + leather + rope
+		1102: [
+			53,
+			89,
+			30,
+			71,
+			5,
+			67,
+			69,
+			34
+		], // Crystal Cavern: magic + spiritual
+		1103: [
+			72,
+			89,
+			60,
+			73,
+			33,
+			62,
+			61
+		], // Blessed Doors: spiritual + magic
+		1104: [
+			50,
+			70,
+			23,
+			90,
+			79,
+			85,
+			87
+		], // Ice Peak: metal + nature
+		1105: [
+			40,
+			55,
+			32,
+			28,
+			68,
+			36,
+			3
+		], // Underground Lake: nature + poison
+		1106: [
+			7,
+			20,
+			9,
+			75,
+			43,
+			27,
+			31
+		], // Ruins: alloy + leather + wood
+		1107: [
+			35,
+			1,
+			80,
+			39,
+			76,
+			77,
+			56,
+			6,
+			46
+		], // Dragon's Nest (final): magic + explosive
+
+		// Island 3 - Oceanic
+		1201: [
+			68,
+			54,
+			8,
+			78,
+			11,
+			27,
+			67
+		], // Lagoon Hollow (Turtle): water + leather/shell + coral
+		1202: [
+			68,
+			35,
+			77,
+			33,
+			53,
+			80,
+			5,
+			69
+		], // Maritime Cavern (Water Spirit): magic + spiritual + crystals
+		1203: [
+			21,
+			14,
+			25,
+			44,
+			81,
+			47,
+			35,
+			56,
+			75
+		], // Revenant's Cove (Captain Crow): explosive + metal + rope + spectral
+		1204: [
+			89,
+			68,
+			30,
+			60,
+			78,
+			33,
+			53,
+			76,
+			75
+		], // Whispering Cave (Mermaid): spiritual + magic + scales/silk
+		1205: [
+			47,
+			78,
+			50,
+			49,
+			38,
+			27,
+			28,
+			86,
+			67,
+			11
+		], // Depths Chasm (Kraken): leather/tentacles + alloy + ink + abyssal pressure
+		1206: [
+			34,
+			68,
+			35,
+			80,
+			74,
+			22,
+			76,
+			62,
+			69,
+			87
+		] // Abyssal Ravine (Leviathan): magic + primordial scales + electric
+	};
 }

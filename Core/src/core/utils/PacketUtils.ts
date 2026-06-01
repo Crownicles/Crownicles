@@ -1,9 +1,8 @@
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import {
-	botConfig, mqttClient
-} from "../../index";
+import { botConfig } from "../../bootstrap";
+import { mqttClient } from "../../mqttClient";
 import { AnnouncementPacket } from "../../../../Lib/src/packets/announcements/AnnouncementPacket";
 import { NotificationPacket } from "../../../../Lib/src/packets/notifications/NotificationPacket";
 import { NotificationsSerializedPacket } from "../../../../Lib/src/packets/notifications/NotificationsSerializedPacket";

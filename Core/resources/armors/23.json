@@ -1,4 +1,6 @@
 {
   "rarity": 3,
-  "rawDefense": 3
+  "rawDefense": 3,
+  "type": "leather",
+  "materialCategory": 12
 }

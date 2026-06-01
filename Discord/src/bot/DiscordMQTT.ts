@@ -20,12 +20,15 @@ import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import { MqttTopicUtils } from "../../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesDiscordMetrics } from "./CrowniclesDiscordMetrics";
-import { millisecondsToSeconds } from "../../../Lib/src/utils/TimeUtils";
+import {
+	millisecondsToSeconds, msDiff, nowMs
+} from "../../../Lib/src/utils/TimeUtils";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { AsyncCorePacketSender } from "./AsyncCorePacketSender";
 import { DiscordConstants } from "../DiscordConstants";
 import { CommandTestListPacketReq } from "../../../Lib/src/packets/commands/CommandTestListPacket";
 import { PacketUtils } from "../utils/PacketUtils";
+import { installCustomIdGuard } from "../utils/CustomIdGuard";
 
 const DEFAULT_MQTT_CLIENT_OPTIONS = {
 	connectTimeout: MqttConstants.CONNECTION_TIMEOUT
@@ -49,6 +52,7 @@ export class DiscordMQTT {
 	static asyncPacketSender: AsyncCorePacketSender = new AsyncCorePacketSender();
 
 	static async init(isMainShard: boolean): Promise<void> {
+		installCustomIdGuard();
 		await registerAllPacketHandlers();
 
 		this.connectSubscribeAndHandleGlobal();
@@ -183,9 +187,9 @@ export class DiscordMQTT {
 					packet.packet = makePacket(ErrorPacket, { message: `No packet listener found for received packet '${packet.name}'.\n\nData:\n${JSON.stringify(packet.packet)}` });
 					listener = DiscordMQTT.packetListener.getListener("ErrorPacket")!;
 				}
-				const startTime = Date.now();
+				const startTime = nowMs();
 				await listener(context as PacketContext, packet.packet as CrowniclesPacket);
-				CrowniclesDiscordMetrics.observePacketTime(packet.name, millisecondsToSeconds(Date.now() - startTime));
+				CrowniclesDiscordMetrics.observePacketTime(packet.name, millisecondsToSeconds(msDiff(nowMs(), startTime)));
 			}
 			catch (error) {
 				CrowniclesLogger.errorWithObj("Error while handling packet", error);

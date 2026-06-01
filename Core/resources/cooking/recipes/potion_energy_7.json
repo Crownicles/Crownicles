@@ -1,0 +1,30 @@
+{
+  "level": 7,
+  "recipeType": "POTION_ENERGY",
+  "plants": [
+    {
+      "plantId": 2,
+      "quantity": 3
+    }
+  ],
+  "materials": [
+    {
+      "materialId": 34,
+      "quantity": 1
+    },
+    {
+      "materialId": 80,
+      "quantity": 1
+    },
+    {
+      "materialId": 67,
+      "quantity": 1
+    }
+  ],
+  "outputType": "potion",
+  "potionNature": 7,
+  "potionRarity": 6,
+  "discoveredByDefault": false,
+  "discoverySource": "PLAYER_LEVEL_MILESTONE",
+  "petFood": null
+}

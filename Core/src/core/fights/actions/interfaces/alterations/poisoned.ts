@@ -6,13 +6,20 @@ import {
 import {
 	attackInfo, statsInfo
 } from "../../FightActionController";
+import { FightAlterations } from "../../FightAlterations";
 
 const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 	// 35 % chance to be healed from the poison (except for the first three turns)
 	if (Math.random() < 0.35 && affected.alterationTurn > 3) {
 		return defaultHealFightAlterationResult(affected);
 	}
-	return defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo());
+
+	const poison = defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo());
+	if (poison.damages) {
+		poison.damages *= opponent.getAlterationMultiplier(FightAlterations.POISONED); // Apply alteration multiplier
+	}
+
+	return poison;
 };
 
 export default use;

@@ -1,3 +1,4 @@
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";

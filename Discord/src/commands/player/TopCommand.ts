@@ -1,5 +1,4 @@
 import {
-	CommandTopInvalidPagePacket,
 	CommandTopPacketReq,
 	CommandTopPacketRes,
 	CommandTopPacketResGlory,
@@ -21,7 +20,6 @@ import {
 import { KeycloakUtils } from "../../../../Lib/src/keycloak/KeycloakUtils";
 import { keycloakConfig } from "../../bot/CrowniclesShard";
 import { DiscordCache } from "../../bot/DiscordCache";
-import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { TopTiming } from "../../../../Lib/src/types/TopTimings";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 import { ICommand } from "../ICommand";
@@ -33,6 +31,7 @@ import {
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { escapeUsername } from "../../utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { CrowniclesPaginatedEmbed } from "../../messages/CrowniclesPaginatedEmbed";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandTopPacketReq> {
 	await interaction.deferReply();
@@ -177,43 +176,40 @@ function formatGuildAttributes(element: TopElement<number, number, undefined>, l
 type TopTextKeys = {
 	title: string;
 	yourRankTitle: string;
+	yourRankFirst: string;
 	yourRank: string;
 	yourRankNone: {
 		key: string; replacements: { [key: string]: unknown };
 	};
-	youRankAtPage: string;
 	nobodyInTop: {
 		key: string; replacements: { [key: string]: unknown };
 	};
 	cantBeRanked?: string;
-	overriddenElementTexts?: string[];
 };
 
-function getTopDescription<TopElementKind extends TopElement<T, U, V>, T, U, V>(
-	packet: CommandTopPacketRes<TopElementKind, T, U, V>,
+const PLAYER_RANK_KEYS = {
+	yourRankTitle: "commands:top.yourRankTitle",
+	yourRankFirst: "commands:top.yourRankFirst",
+	yourRank: "commands:top.yourRank"
+} as const;
+
+const GUILD_RANK_KEYS = {
+	yourRankTitle: "commands:top.yourRankGuildTitle",
+	yourRankFirst: "commands:top.yourRankGuildFirst",
+	yourRank: "commands:top.yourRankGuild"
+} as const;
+
+function buildYourRankSection<TopElementKind extends TopElement<unknown, unknown, unknown>>(
+	packet: CommandTopPacketRes<TopElementKind>,
 	textKeys: TopTextKeys,
-	formatAttributes: (element: TopElementKind, lng: Language) => string,
 	lng: Language,
 	playerUsername: string
 ): string {
-	if (packet.elements.length <= 0) {
-		return i18n.t(textKeys.nobodyInTop.key, {
-			lng,
-			...textKeys.nobodyInTop.replacements
-		});
-	}
-	let desc = "";
-	for (let i = 0; i < packet.elements.length; i++) {
-		const element = packet.elements[i];
-		desc += `${getBadgeForPosition(element.rank, element.sameContext, packet.contextRank)} ${
-			textKeys.overriddenElementTexts ? textKeys.overriddenElementTexts[i] : element.text
-		} | ${formatAttributes(element, lng)}\n`;
-	}
-
-	desc += `\n${i18n.t(textKeys.yourRankTitle, { lng })}\n`;
+	let desc = `\n${i18n.t(textKeys.yourRankTitle, { lng })}\n`;
 
 	if (packet.contextRank) {
-		desc += i18n.t(textKeys.yourRank, {
+		const yourRankKey = packet.contextRank === 1 ? textKeys.yourRankFirst : textKeys.yourRank;
+		desc += i18n.t(yourRankKey, {
 			lng,
 			badge: getBadgeForPosition(packet.contextRank, true, packet.contextRank),
 			pseudo: playerUsername,
@@ -221,13 +217,6 @@ function getTopDescription<TopElementKind extends TopElement<T, U, V>, T, U, V>(
 			total: packet.totalElements,
 			count: packet.totalElements
 		});
-		if (packet.contextRank < packet.minRank || packet.contextRank > packet.maxRank) {
-			desc += ` ${i18n.t(textKeys.youRankAtPage, {
-				lng,
-				page: Math.ceil(packet.contextRank / packet.elementsPerPage),
-				maxPage: Math.ceil(packet.totalElements / packet.elementsPerPage)
-			})}`;
-		}
 	}
 	else if (packet.canBeRanked) {
 		desc += i18n.t(textKeys.yourRankNone.key, {
@@ -242,28 +231,21 @@ function getTopDescription<TopElementKind extends TopElement<T, U, V>, T, U, V>(
 	return desc;
 }
 
-async function handleGenericTopPacketRes<TopElementKind extends TopElement<T, U, V>, T, U, V>(
-	context: PacketContext,
-	packet: CommandTopPacketRes<TopElementKind, T, U, V>,
-	textKeys: TopTextKeys,
-	formatAttributes: (element: TopElementKind, lng: Language) => string
-): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
-
-	const lng = interaction.userLanguage;
-	const title = i18n.t(textKeys.title, {
-		lng,
-		minRank: packet.minRank,
-		maxRank: packet.maxRank
-	});
-
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setTitle(title)
-				.setDescription(getTopDescription(packet, textKeys, formatAttributes, lng, await DisplayUtils.getEscapedUsername(context.keycloakId!, lng)))
-		]
-	});
+function buildPageElementsDescription<TopElementKind extends TopElement<unknown, unknown, unknown>>(
+	elements: TopElementKind[],
+	formatAttributes: (element: TopElementKind, lng: Language) => string,
+	lng: Language,
+	contextRank: number | undefined,
+	overriddenElementTexts?: string[]
+): string {
+	let desc = "";
+	for (let i = 0; i < elements.length; i++) {
+		const element = elements[i];
+		desc += `${getBadgeForPosition(element.rank, element.sameContext, contextRank)} ${
+			overriddenElementTexts ? overriddenElementTexts[i] : element.text
+		} | ${formatAttributes(element, lng)}\n`;
+	}
+	return desc;
 }
 
 async function getOverriddenPlayersUsernames<U, V, W>(elements: TopElement<U, V, W>[], lng: Language): Promise<string[]> {
@@ -276,30 +258,84 @@ async function getOverriddenPlayersUsernames<U, V, W>(elements: TopElement<U, V,
 		.map(u => u ? escapeUsername(u.attributes.gameUsername[0]) : unknownUsername);
 }
 
+function isValidInitialPage(initialPage: number | undefined, pagesCount: number): boolean {
+	return initialPage !== undefined && initialPage >= 1 && initialPage <= pagesCount;
+}
+
+async function handleGenericTopPacketRes<TopElementKind extends TopElement<unknown, unknown, unknown>>(
+	context: PacketContext,
+	packet: CommandTopPacketRes<TopElementKind>,
+	textKeys: TopTextKeys,
+	formatAttributes: (element: TopElementKind, lng: Language) => string,
+	needsUsernameResolution: boolean
+): Promise<void> {
+	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
+	const lng = interaction.userLanguage;
+	const playerUsername = await DisplayUtils.getEscapedUsername(context.keycloakId!, lng);
+	const pagesCount = Math.ceil(packet.elements.length / packet.elementsPerPage);
+
+	// Determine initial page (0-based)
+	let selectedPageIndex = 0;
+	if (isValidInitialPage(packet.initialPage, pagesCount)) {
+		selectedPageIndex = packet.initialPage! - 1;
+	}
+	else if (packet.contextRank) {
+		selectedPageIndex = Math.ceil(packet.contextRank / packet.elementsPerPage) - 1;
+	}
+
+	const yourRankSection = buildYourRankSection(packet, textKeys, lng, playerUsername);
+
+	await new CrowniclesPaginatedEmbed({
+		lng,
+		pagesCount,
+		selectedPageIndex,
+		titleBuilder: (pageIndex: number): string => {
+			const start = pageIndex * packet.elementsPerPage;
+			const end = Math.min(start + packet.elementsPerPage, packet.elements.length);
+			const minRank = packet.elements[start].rank;
+			const maxRank = packet.elements[end - 1].rank;
+			return i18n.t(textKeys.title, {
+				lng,
+				minRank,
+				maxRank
+			});
+		},
+		pageBuilder: async (pageIndex: number): Promise<string> => {
+			const start = pageIndex * packet.elementsPerPage;
+			const end = Math.min(start + packet.elementsPerPage, packet.elements.length);
+			const pageElements = packet.elements.slice(start, end);
+
+			const overriddenTexts = needsUsernameResolution
+				? await getOverriddenPlayersUsernames(pageElements, lng)
+				: undefined;
+
+			return buildPageElementsDescription(
+				pageElements, formatAttributes, lng, packet.contextRank, overriddenTexts
+			) + yourRankSection;
+		}
+	}).send(interaction);
+}
+
 export async function handleCommandTopPacketResScore(context: PacketContext, packet: CommandTopPacketResScore): Promise<void> {
 	await handleGenericTopPacketRes(context, packet, {
 		title: packet.timing === TopTiming.ALL_TIME
 			? "commands:top.titleScoreAllTime"
 			: "commands:top.titleScoreWeekly",
-		yourRankTitle: "commands:top.yourRankTitle",
-		yourRank: packet.contextRank === 1 ? "commands:top.yourRankFirst" : "commands:top.yourRank",
+		...PLAYER_RANK_KEYS,
 		yourRankNone: {
 			key: "commands:top.yourRankNoneScore",
 			replacements: {}
 		},
-		youRankAtPage: "commands:top.yourRankAtPage",
 		nobodyInTop: {
 			key: "commands:top.nobodyInTopPlayers", replacements: {}
-		},
-		overriddenElementTexts: await getOverriddenPlayersUsernames(packet.elements, context.discord!.language!)
-	}, formatScoreAttributes);
+		}
+	}, formatScoreAttributes, true);
 }
 
 export async function handleCommandTopPacketResGlory(context: PacketContext, packet: CommandTopPacketResGlory): Promise<void> {
 	await handleGenericTopPacketRes(context, packet, {
 		title: "commands:top.titleGlory",
-		yourRankTitle: "commands:top.yourRankTitle",
-		yourRank: packet.contextRank === 1 ? "commands:top.yourRankFirst" : "commands:top.yourRank",
+		...PLAYER_RANK_KEYS,
 		yourRankNone: {
 			key: "commands:top.yourRankNoneGlory",
 			replacements: {
@@ -307,51 +343,29 @@ export async function handleCommandTopPacketResGlory(context: PacketContext, pac
 				count: packet.needFight
 			}
 		},
-		youRankAtPage: "commands:top.yourRankAtPage",
 		nobodyInTop: {
 			key: "commands:top.nobodyInTopGlory",
 			replacements: {
 				needFight: packet.needFight
 			}
-		},
-		overriddenElementTexts: await getOverriddenPlayersUsernames(packet.elements, context.discord!.language!)
-	}, formatGloryAttributes);
+		}
+	}, formatGloryAttributes, true);
 }
 
 export async function handleCommandTopPacketResGuild(context: PacketContext, packet: CommandTopPacketResGuild): Promise<void> {
 	await handleGenericTopPacketRes(context, packet, {
 		title: "commands:top.titleGuild",
-		yourRankTitle: "commands:top.yourRankGuildTitle",
-		yourRank: packet.contextRank === 1 ? "commands:top.yourRankGuildFirst" : "commands:top.yourRankGuild",
+		...GUILD_RANK_KEYS,
 		yourRankNone: {
 			key: "commands:top.yourRankNoneGuild",
 			replacements: {}
 		},
-		youRankAtPage: "commands:top.yourRankAtPageGuild",
 		nobodyInTop: {
 			key: "commands:top.nobodyInTopGuilds",
 			replacements: {}
 		},
 		cantBeRanked: "commands:top.noGuild"
-	}, formatGuildAttributes);
-}
-
-export async function handleCommandTopInvalidPagePacket(context: PacketContext, packet: CommandTopInvalidPagePacket): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
-
-	await interaction.editReply({
-		embeds: [
-			new CrowniclesErrorEmbed(
-				interaction.user,
-				context, interaction,
-				i18n.t("commands:top.invalidPage", {
-					lng: interaction.userLanguage,
-					minPage: packet.minPage,
-					maxPage: packet.maxPage
-				})
-			)
-		]
-	});
+	}, formatGuildAttributes, false);
 }
 
 export async function handleCommandTopPlayersEmptyPacket(context: PacketContext, packet: CommandTopPlayersEmptyPacket): Promise<void> {
