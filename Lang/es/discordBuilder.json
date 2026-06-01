@@ -163,9 +163,9 @@
     "description": "Visualiza el mapa para saber hacia dónde te diriges.",
     "name": "tarjeta"
   },
-  "shop": {
-    "description": "Muestra la tienda.",
-    "name": "tienda"
+  "garden": {
+    "description": "Accéder à votre jardin, à distance si vous possédez le Cœur Sylvestre.",
+    "name": "jardin"
   },
   "classesInfo": {
     "description": "Muestra información sobre las clases que puedes seleccionar para tu personaje.",
@@ -212,10 +212,6 @@
         "name": "usuario"
       }
     }
-  },
-  "guildShop": {
-    "description": "Muestra la tienda del gremio.",
-    "name": "tiendagremio"
   },
   "guildKick": {
     "description": "Excluir a un miembro del gremio.",
@@ -271,10 +267,6 @@
       }
     }
   },
-  "missionsshop": {
-    "description": "Mostrar la tienda de la misión.",
-    "name": "tienda"
-  },
   "top": {
     "description": "Mostrar la clasificación de los partidos.",
     "name": "clasificación",
@@ -311,13 +303,9 @@
     "description": "Empezar una pelea.",
     "name": "combate"
   },
-  "switch": {
-    "name": "cambiar",
-    "description": "Cambia el objeto activo por uno de los objetos de tu reserva."
-  },
-  "deposit": {
-    "name": "depositar",
-    "description": "Deposita uno de tus objetos activos."
+  "equip": {
+    "name": "equiper",
+    "description": "Gérer votre équipement : équiper, ranger ou intervertir vos objets."
   },
   "drink": {
     "name": "beber",
