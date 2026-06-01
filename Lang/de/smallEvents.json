@@ -429,6 +429,16 @@
       "Der Blick von {{playerDisplay}} verrät eine ungewöhnliche Erfahrung: Er hat die Eiskönigin auf der Stufe **{{bossLevel, number}}** besiegt! Nur wenige können sich einer solchen Leistung rühmen.",
       "Sie treffen auf {{playerDisplay}}, der das Unmögliche geschafft hat, indem er die Eiskönigin im Level **{{bossLevel, number}}** besiegt hat. Sie verneigen sich respektvoll."
     ],
+    "beaten_kraken": [
+      "Die abgetrennten Tentakel, die an {{playerDisplay}} }s Umhang hängen, zeugen von seinem Kampf gegen den Kraken auf der Stufe **{{bossLevel, number}}**. Ein Sieg, der den Abgründen abgerungen wurde!",
+      "{{playerDisplay}} } riecht immer noch nach Jod und schwarzer Tinte: Er hat den Kraken auf der Stufe **{{bossLevel, number}}** besiegt! Die Ozeane machen ihm keine Angst mehr.",
+      "Du triffst {{playerDisplay}}, einen Abenteurer, der die Tiefen überlebt und den schrecklichen Kraken auf der Stufe **{{bossLevel, number}}** besiegt hat. Sein Blick trägt das Gewicht des Abgrunds."
+    ],
+    "beaten_leviathan": [
+      "Die kolossalen Schuppen, die an {{playerDisplay}} }s Rüstung hängen, stammen von seinem Kampf gegen den Leviathan auf der Stufe **{{bossLevel, number}}**. Eine lebende Legende!",
+      "{{playerDisplay}} } erzählt Ihnen nüchtern, dass er den Leviathan auf der Ebene **{{bossLevel, number}}** besiegt hat. Die Wellen scheinen ihn nicht mehr verschlingen zu können.",
+      "Sie kreuzen {{playerDisplay}}, die das Brüllen des Leviathans auf der Ebene **{{bossLevel, number}}** für immer zum Schweigen gebracht hat. Die Stille der Tiefsee erfasst Sie."
+    ],
     "effect": {
       "sick": [
         "Sie hören ein Geräusch in der Ferne... Es ist {{playerDisplay}} , der in ein Gebüsch kotzt... Sie setzen Ihren Weg erschüttert fort.",
@@ -476,7 +486,7 @@
         "Sie sehen {{playerDisplay}} ziemlich beschwipst, um nicht einen stärkeren Begriff zu verwenden. Dieser scheint sich gut zu amüsieren - ganz allein. Sie tun, was Sie können, um ihn zu ignorieren, und setzen Ihren Weg fort."
       ],
       "scared": [
-        "Sie treffen auf {{playerDisplay}} , der in Ihre Richtung zu laufen scheint. Er wird von Räubern gejagt, die hinter seinem Geld her sind. Sie begleiten ihn ein Stück des Weges, damit er sich wieder beruhigen kann. Nachdem Sie sich beruhigt haben, lassen Sie ihn stehen und setzen Ihren Weg fort.",
+        "Sie treffen auf {{playerDisplay}} , der in Ihre Richtung zu laufen scheint. Er wird von Räubern gejagt, die hinter seinem Geld her sind. Sie begleiten ihn ein Stück des Weges, damit er sich wieder beruhigen kann. Nachdem Sie sich beruhigt haben, verlassen Sie ihn und setzen Ihren Weg fort.",
         "Du siehst in der Ferne {{playerDisplay}} , der auf der Flucht vor einem Wolfsrudel ist. Du eilst ihm zu Hilfe und lässt die wilden Tiere zurückschlagen.",
         "Sie treffen sich mit {{playerDisplay}}. Dieser scheint völlig in Panik zu sein. Du fragst ihn, warum er so aufgeregt ist. Er erzählt Ihnen, dass er gerade von einem Drachen verfolgt wurde, aber entkommen konnte und dabei ein paar Haare verloren hat."
       ],
@@ -1290,7 +1300,7 @@
         "Er reicht Ihnen **{{count}} ultimative Suppen**, die Sie sorgfältig aufbewahren."
       ],
       "fullUltimateFood": [
-        "Er möchte Ihnen seine kostbaren ultimativen Suppen anbieten, aber als er Ihr Lagerhaus inspiziert, stellt er fest, dass es keinen einzigen Platz mehr gibt. Er zuckt mit den Schultern und wünscht Ihnen eine gute Fahrt."
+        "Er bietet Ihnen die ultimativen Suppen an. Da Ihr Lagerhaus leider voll ist, sind Sie gezwungen, sie ihm zurückzugeben."
       ],
       "item": [
         "Er bietet Ihnen **einen Gegenstand** an, von dem er sagt, dass er Ihnen nützlich sein könnte."
@@ -2540,6 +2550,25 @@
       }
     }
   },
+  "findMaterial": {
+    "typesStories": {
+      "wood": "stoßen Sie auf einen Hain von Bäumen mit starken Stämmen und biegsamen Ästen, die sich hervorragend zum Holzsammeln eignen. Sie nehmen Ihre Axt und beginnen, Holz zu hacken.",
+      "metal": "entdecken Sie eine glitzernde Erzader, die in eine Felswand eingebettet ist und sich hervorragend für den Abbau von Metall eignet. Sie holen Ihre Spitzhacke heraus und beginnen, das Erz aus der Felswand herauszuziehen.",
+      "alloy": "Sie sehen eine Ansammlung von Metallschrott und Legierungsfragmenten, aus denen sich Verbundwerkstoffe gewinnen lassen. Sie sammeln den Metallschrott ein und beginnen, die verschiedenen Legierungsfragmente zu sortieren.",
+      "rope": "findest du faserige Pflanzen mit langen, kräftigen Stängeln, die sich gut zum Flechten von Seilen und Stoffen eignen. Du pflückst, nimmst dein Messer und beginnst, die faserigen Pflanzen abzuschneiden.",
+      "magic": "spüren Sie einen energiegeladenen Ort, an dem die Luft und die umliegenden Gegenstände von Magie durchdrungen zu sein scheinen - ideal zum Sammeln von magischen Komponenten. Sie durchsuchen die Umgebung nach magischen Komponenten.",
+      "poison": "Sie entdecken giftige Pflanzen mit glänzenden Blättern und bunten Blüten sowie ein Wasserloch, die sich hervorragend zum Sammeln von Giftstoffen eignen. Sammeln Sie die Giftstoffe vorsichtig ein.",
+      "explosive": "entdecken Sie instabile Kristalle und Pflanzen mit explosiven Eigenschaften, die sich zum Sammeln von gefährlichen Materialien eignen. Sie gehen mit den instabilen Elementen vorsichtig um, um eine versehentliche Explosion zu vermeiden.",
+      "leather": "stoßen Sie auf frisch geschlachtete Tierkadaver, die eine wertvolle Quelle für Leder und Häute bieten. Sie sammeln Häute und Leder aus Tierkadavern.",
+      "nature": "finden Sie ein Gebiet, das reich an natürlichen Elementen ist, mit verschiedenen Pflanzen, Mineralien und organischen Ressourcen, die sich ideal zum Sammeln von Naturmaterialien eignen. Sie sammeln verschiedene Naturmaterialien in der umliegenden Gegend.",
+      "spiritual": "Sie finden einen Ort, der von Gelassenheit geprägt ist, an dem eine friedliche Atmosphäre herrscht, die Ihr Wohlbefinden fördert. Sie durchsuchen die Umgebung nach Dingen oder Gegenständen."
+    },
+    "foundStories": {
+      "1": "Super! Sie haben das folgende gemeinsame Material {{rarityEmote}} gefunden: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Erstaunlich! Sie haben ein ungewöhnliches {{rarityEmote}} Material in die Hände bekommen: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Was für ein unglaubliches Glück! Sie haben ein seltenes Material {{rarityEmote}} entdeckt: {{materialEmote}} **$t(models:materials.{{materialId}})**."
+    }
+  },
   "expeditionAdvice": {
     "talismanIntro": [
       "Sie stoßen Nase an Nase mit einer Frau mit vernarbtem Gesicht, die auf einem großen Felsen sitzt. Ihre abgenutzte Lederrüstung weist die Spuren Dutzender Kämpfe auf. Sie reinigt methodisch einen Dolch mit einer geschwärzten Klinge, in die ihr Name Velanna eingraviert ist. Ohne aufzublicken, knurrt sie etwas über ein altes Artefakt, das eine Verbindung zwischen einem Meister und seinem Tier herstellen kann... die $t(models:talisman.anchor). Sie steht auf und geht weg, ohne etwas hinzuzufügen.",
@@ -2664,5 +2693,154 @@
         "Die Bäuerin stellt fest, dass Ihr Salatvorrat bereits bis zum Rand gefüllt ist. Erstaunt verschwindet sie in ihrem Schuppen und kommt mit **einem staubigen Gegenstand** zurück, den sie Ihnen mit einem Augenzwinkern überreicht."
       ]
     }
+  },
+  "gardener": {
+    "stories": {
+      "first": [
+        "Ein alter Mann mit einer erdigen Schürze und schwieligen Händen spricht Sie von einem kleinen Stück Land am Wegesrand an. Er stellt sich als Theobald vor, ein reisender Gärtner, und lädt Sie mit unverhohlenem Stolz dazu ein, seine Setzlinge zu bewundern. ",
+        "sehen Sie einen Mann, der am Fuß eines Baumes kniet und seine Finger in die Erde steckt. Als er Sie sieht, steht er auf, streift sich den Staub von den Knien und begrüßt Sie herzlich. Er sagt, er heiße Theobald und widme sein Leben der Kunst des Gärtnerns. ",
+        "ein Geruch von feuchter Erde und frischen Blättern lockt Sie zu einem kleinen improvisierten Lager am Rande des Weges. Ein Gärtner namens Theobald mit einer Gießkanne in der Hand und einem blumigen Hut auf dem Kopf begrüßt Sie mit einem breiten Lächeln. ",
+        "Sie treten fast auf eine sorgfältig am Wegrand platzierte Saat. Ein alter Mann springt aus einem nahen Busch, schaut ein wenig empört und bricht dann in Gelächter aus. Er stellt sich als Theobald vor, ein fahrender Gärtnermeister. ",
+        "Ein Mann mit einem von der Sonne gemeißelten Gesicht winkt Ihnen aus einem kleinen Garten am Straßenrand zu. Dieser Mann, ein gewisser Theobald, scheint jede Pflanze mit Namen zu kennen und besteht darauf, sein Wissen mit den Reisenden zu teilen. "
+      ],
+      "recurring": [
+        "Ein alter Mann mit einer erdigen Schürze und schwieligen Händen spricht Sie von einem kleinen Stück Land am Wegesrand aus an. Sie erkennen Theobald, den fahrenden Gärtner, der Sie mit unverhohlenem Stolz auffordert, seine Setzlinge zu bewundern. ",
+        "sehen Sie einen Mann, der am Fuß eines Baumes kniet und seine Finger in die Erde steckt. Theobald steht auf, als er Sie sieht, klopft sich den Staub von den Knien und begrüßt Sie herzlich. ",
+        "ein Geruch von feuchter Erde und frischen Blättern lockt Sie zu einem kleinen improvisierten Lager am Rande des Pfades. Theobald, mit einer Gießkanne in der Hand und einem blumigen Hut auf dem Kopf, begrüßt Sie mit einem breiten Lächeln. ",
+        "Sie treten fast auf eine sorgfältig am Wegrand platzierte Saat. Theobald springt aus einem nahegelegenen Busch und schaut scheinbar empört, bevor er lacht, als er Sie erkennt. ",
+        "Ein Mann mit sonnengebräuntem Gesicht winkt Ihnen aus einem kleinen Garten am Straßenrand zu. Théobald, der seiner Gewohnheit treu bleibt, scheint jede Pflanze mit Namen zu kennen und besteht darauf, sein Wissen mit Ihnen zu teilen. "
+      ]
+    },
+    "rewards": {
+      "seed": {
+        "free": [
+          "Der alte Theobald kramt in seiner Satteltasche und holt einen kleinen Samen heraus, den er Ihnen reicht. Er erklärt Ihnen, dass es sich perfekt für den Anfang eignet, um die Grundlagen der Gartenarbeit zu erlernen. Sie erhalten ein **Saatgut** {emote:smallEvents.gardener}."
+        ],
+        "paid": [
+          "Theobald zeigt Ihnen einen Samen, den er im Licht untersucht. Er erklärt sich bereit, ihn euch für **{{cost}} {emote:unitValues.money}** zu überlassen."
+        ],
+        "paidAccepted": [
+          "Theobald zeigt dir einen Samen, den er im Licht untersucht. Nachdem du **{{cost}} {emote:unitValues.money}** bezahlt hast, verstaust du den **Samen** {emote:smallEvents.gardener} sorgsam in deiner Tasche."
+        ],
+        "moon": [
+          "Theobald blickt zum Nachthimmel auf und lächelt, als er den Mond leuchten sieht. Vorsichtig zieht er einen Samen aus seiner Satteltasche und murmelt, dass diese Pflanze nur bei ausreichendem Mondlicht anvertraut werden kann. Sie erhalten einen **Samen** {emote:smallEvents.gardener}."
+        ],
+        "night": [
+          "Theobald sucht zufrieden den verdunkelten Himmel ab. Die Nacht ist ideal, um diesen Samen anzuvertrauen, denn die Pflanze braucht die Dunkelheit, um zu gedeihen. Sie erhalten einen **Samen** {emote:smallEvents.gardener}."
+        ],
+        "herbivorePet": [
+          "Der Gärtner betrachtet Ihren pflanzenfressenden Vertrauten mit Bewunderung und ist beeindruckt von der offensichtlichen Verbindung, die zwischen Ihnen besteht. Nur diejenigen, die sich um die Natur kümmern, verdienen eine solche Pflanze\", gesteht er und reicht Ihnen einen **Samen** {emote:smallEvents.gardener}."
+        ],
+        "mage": [
+          "Théobald bemerkt Ihre Magieraura und nickt respektvoll. Deine Beherrschung der Magie wird diese feurige Pflanze gedeihen lassen\", sagt er und vertraut dir eine **Saat** {emote:smallEvents.gardener} an."
+        ],
+        "phoenix": [
+          "Der Gärtner reißt seine Augen angesichts Ihres Phönix auf und ruft aus, dass er seit Jahrzehnten keinen mehr gesehen hat. Er vertraut Ihnen gerührt einen **Samen** {emote:smallEvents.gardener} an und ist überzeugt, dass die Flammen Ihres Begleiters ihm beim Wachsen helfen werden."
+        ],
+        "fireItem": [
+          "Theobald entdeckt Ihre im Feuer geschmiedete Ausrüstung und nickt. Die Affinität zu Flammen ist wichtig, um diese feurige Pflanze zu kultivieren\", erklärt er und bietet Ihnen einen **Samen** {emote:smallEvents.gardener} an."
+        ],
+        "carnivorePet": [
+          "Der Gärtner betrachtet Ihren beeindruckenden fleischfressenden Vertrauten mit einer Mischung aus Respekt und Vorsicht. Ihr Begleiter wird darauf achten, dass es dieser Pflanze an nichts fehlt\", schließt er und reicht Ihnen einen **Samen** {emote:smallEvents.gardener}."
+        ],
+        "legendaryHerbivorePet": [
+          "Der Gärtner reißt beim Anblick Ihres epischen pflanzenfressenden Haustiers die Augen auf und ist sichtlich gerührt von der außergewöhnlichen Verbindung, die zwischen euch besteht. Mit zitternder Hand zieht er seinen letzten Samen {emote:smallEvents.gardener} hervor. Nur jemand, der eine so starke Bindung zur Natur aufgebaut hat, kann einen solchen Schatz anbauen\", flüstert er."
+        ]
+      },
+      "advice": {
+        "needLevel": [
+          "Der Gärtner mustert Sie von Kopf bis Fuß und schüttelt den Kopf. Sie haben noch nicht genug Erfahrung für seinen nächsten Samen. Kommen Sie wieder, wenn Sie die **Level {{level}}** erreicht haben\", rät er.",
+          "Theobald runzelt die Stirn, als er Ihre Statur beurteilt. Die Natur verlangt ein Mindestmaß an Reife, um diesen Samen zu verdienen, und Sie müssen die **Level {{level}} ** erreichen."
+        ],
+        "needGarden": [
+          "Theobald legt den Kopf schief, als er erfährt, dass Sie keinen Garten haben. Er rät Ihnen, in ein **Haus mit Garten** zu investieren, bevor Sie wieder zu ihm kommen.",
+          "Der Gärtner seufzt. Ohne Garten ist es sinnlos, sich mit neuem Saatgut zu belasten. Besorgen Sie sich ein **Haus mit Gartenbereich** und kommen Sie dann wieder."
+        ],
+        "needMoney": [
+          "Theobald zeigt Ihnen den nächsten Samen, steckt ihn aber gleich wieder weg. Du brauchst **{{cost}} {emote:unitValues.money}**, um ihn zu bekommen, und du hast nicht genug dabei.",
+          "Der Gärtner lässt einen Samen vor Ihren Augen schimmern, bevor er ihn kostbar aufbewahrt. Sein Preis beträgt **{{cost}} {emote:unitValues.money}**, kommen Sie wieder, wenn Sie es sich leisten können."
+        ],
+        "needHerbivorePet": [
+          "Der Gärtner sucht die Umgebung ab und bemerkt, dass Sie keinen abgerichteten pflanzenfressenden Vertrauten an Ihrer Seite haben. Sie bräuchten einen **herbivoren Vertrauten mit maximaler Vertrauensbindung**.",
+          "Theobald schüttelt den Kopf. Der nächste Samen benötigt einen naturverbundenen Begleiter. Kehren Sie mit einem **Pflanzenfresser-Familientier** zurück, das Sie **vollständig gezähmt** haben."
+        ],
+        "needNight": [
+          "Theobald blickt auf die noch hoch am Himmel stehende Sonne und seufzt. Der nächste Samen kann erst bei **Nachtanbruch** angeboten werden. Kommen Sie wieder, wenn die Sonne untergegangen ist.",
+          "Der Gärtner beobachtet den leuchtenden Himmel und schüttelt den Kopf. Dieser besondere Samen vertraut sich nur in der **Dunkelheit der Nacht** an."
+        ],
+        "needMoonlight": [
+          "Der Gärtner beobachtet enttäuscht den Himmel. Der **Mond ist nicht sichtbar genug**, um diesen Samen anzuvertrauen. Kommen Sie wieder, wenn er am Nachthimmel heller leuchtet.",
+          "Théobald sucht mit zusammengekniffenen Augen das Firmament ab. Dieser Samen benötigt einen **kräftigen Mondschein**, um angeboten zu werden. Kommen Sie in einer helleren Nacht wieder."
+        ],
+        "needFireAffinity": [
+          "Theobald schüttelt den Kopf. Der nächste Samen erfordert eine Affinität zum Feuer. Du müsstest **Magier** sein, einen **Phenix** besitzen oder eine **in Flammen geschmiedete Ausrüstung** tragen.",
+          "Der Gärtner schaut Sie nachdenklich an. Dieser feurige Samen kann nur von jemandem gezüchtet werden, der mit dem Feuer verbunden ist: einem **Magier**, einem Meister des **Phönix** oder einem Träger der **Flammenden Waffe**."
+        ],
+        "needCarnivorePet": [
+          "Der Gärtner erklärt Ihnen, dass der nächste Samen einen besonders mächtigen fleischfressenden Begleiter benötigt. Sie bräuchten einen **fleischfressenden Gefährten mit epischer oder höherer Seltenheit**.",
+          "Théobald vertraut Ihnen an, dass dieser einzigartige Samen sich von Fleisch ernährt. Nur eine außergewöhnliche **fleischfressende Familie** könne für sein Wachstum sorgen."
+        ],
+        "needLegendaryHerbivorePet": [
+          "Théobald vertraut Ihnen mit großem Ernst an, dass sein letzter Same der wertvollste ist. Er wird ihn nur jemandem anvertrauen, der in Begleitung eines **epischen pflanzenfressenden Familienmitglieds** mit **höchstem Vertrauensverhältnis** ist.",
+          "Der alte Mann flüstert, dass das, was er hütet, der Schatz eines Lebens ist. Nur ein Abenteurer, der eine außergewöhnliche Beziehung zu einem **Pflanzenfresser-Familientier von epischer Seltenheit** aufgebaut hat, kann ihn sich verdienen."
+        ],
+        "seedSlotFull": [
+          "Der Gärtner bemerkt, dass Sie bereits einen Samen bei sich haben. **Pflanzen Sie ihn zuerst** in Ihrem Garten ein und kommen Sie dann zu ihm zurück.",
+          "Theobald schüttelt den Kopf, als er Ihre volle Satteltasche sieht. **Pflanzt euren aktuellen Samen**, bevor ihr ihn um einen neuen bittet."
+        ],
+        "allSeedsObtained": [
+          "Theobald gratuliert Ihnen herzlich, als er all die Pflanzen in Ihrem Garten sieht. Sie haben bereits **alle seine Samen** erhalten und er hat nichts mehr, was er Ihnen schenken kann, aber er ist sehr stolz auf Ihren Garten.",
+          "Der alte Gärtner schüttelt Ihnen herzlich die Hand. Sie haben alles erreicht, was er Ihnen beibringen konnte. Ihr Garten ist ein **Meisterwerk**\", sagt er mit Tränen in den Augen."
+        ],
+        "noPlantSpace": [
+          "Theobald wollte Ihnen eine Pflanze schenken, aber Ihr Inventar ist bereits voll. Er zuckt lächelnd mit den Schultern und wünscht Ihnen eine gute Reise.",
+          "Der Gärtner durchsucht seine Vorräte, stellt aber fest, dass Sie **keinen Platz** mehr haben, um eine Pflanze zu transportieren. Er rät Ihnen, einen Platz freizumachen."
+        ],
+        "refused": [
+          "Sie lehnen Theobalds Angebot höflich ab. Der Gärtner verstaut den Samen mit einem verständnisvollen Lächeln in seiner Satteltasche und wünscht Ihnen eine gute Reise.",
+          "Sie können sich das im Moment nicht leisten. Theobald nickt und lädt Sie ein, wiederzukommen, wenn Sie bereit sind."
+        ],
+        "tipBuyHome": [
+          "Theobald beobachtet Sie einen Moment lang und fragt Sie, ob Sie einen eigenen Ort haben. Als Sie schweigen, rät er Ihnen, ein **Haus** zu kaufen und dort einen Garten anzulegen.",
+          "Der Gärtner wundert sich, dass Sie noch kein eigenes Haus haben. Er empfiehlt Ihnen, so bald wie möglich **ein Haus zu kaufen**, damit Sie Ihren eigenen Garten bewirtschaften können."
+        ],
+        "tipUpgradeForGarden": [
+          "Theobald wirft einen entschuldigenden Blick auf die Nachricht, dass Ihr Haus noch keinen Garten hat. Er rät Ihnen, Ihr Haus **auszubauen**, um einige Parzellen hinzuzufügen.",
+          "Der Gärtner schlägt Ihnen vor, Ihr Haus **zu vergrößern**, um einen Anbauraum zu schaffen. Ein guter Garten erfordert ein gutes Grundstück\", sagt er."
+        ],
+        "tipPlantSeed": [
+          "Der Gärtner bemerkt, dass Sie noch einen Samen mit sich herumtragen. Er ermutigt Sie, ihn **so bald wie möglich** in Ihren Garten zu pflanzen, damit er zu wachsen beginnt.",
+          "Théobald runzelt die Stirn, als er den Samen in Ihrer Tasche sieht. Sie dürfen ihn nicht schlafen lassen, **pflanzen Sie ihn so schnell wie möglich in Ihrem Garten**, beharrt er."
+        ],
+        "tipHarvestReady": [
+          "Theobald schnuppert in die Luft und lächelt. Er spürt, dass einige Ihrer Pflanzen **zur Ernte bereit** sind. Kommen Sie vorbei und pflücken Sie sie, bevor sie verwelken\", rät er.",
+          "Der Gärtner versichert Ihnen mit wissendem Blick, dass Ihr Garten Ihre Aufmerksamkeit braucht. Einige Pflanzen sind **reif und bereit, geerntet zu werden**."
+        ],
+        "tipEmptyPlots": [
+          "Theobald erinnert Sie daran, dass es in Ihrem Garten noch **leere Parzellen** gibt. Er ermutigt Sie, neue Samen zu besorgen und sie zu pflanzen, um Ihren Gemüsegarten zu füllen.",
+          "Der Gärtner schüttelt den Kopf, wenn er an Ihre unbesetzten Parzellen denkt. Ein guter Gärtner lässt das Land nie brachliegen, er rät Ihnen, **Ihre leeren Plätze aufzufüllen**."
+        ],
+        "tipUpgradeSoil": [
+          "Theobald vertraut Ihnen an, dass die Qualität Ihrer Erde zu wünschen übrig lässt. **Verbessern Sie Ihr Haus**, um eine reichhaltigere Erde zu erhalten, die Ihre Pflanzen schneller wachsen lässt.",
+          "Der Gärtner probiert etwas von der imaginären Erde und grinst. Ihre Erde ist arm, Ihre Pflanzen wachsen langsam. **Verbessere dein Haus**, um deinen Boden anzureichern, rät er."
+        ],
+        "tipGeneric": [
+          "Théobald setzt sich für einen Moment und teilt eines seiner Geheimnisse mit Ihnen: Geduld ist der Schlüssel zum Gärtnern. Die wertvollsten Pflanzen sind diejenigen, die am längsten brauchen, um zu wachsen.",
+          "Der Gärtner betrachtet den Horizont und flüstert, dass jede Pflanze eine Geschichte erzählt. Er fordert Sie auf, sich regelmäßig um Ihren Garten zu kümmern."
+        ]
+      },
+      "plant": [
+        "Beeindruckt von Ihrem Besuch kramt der Gärtner in seinen Vorräten und schenkt Ihnen großzügig eine seiner Kulturpflanzen:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Theobald zieht eine Pflanze aus seinem Wagen und hält sie Ihnen mit einem schelmischen Augenzwinkern hin:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Der Gärtner, der Ihnen keinen Samen geben kann, schenkt Ihnen großzügig eine seiner Pflanzen als Andenken an Ihre Begegnung:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+      ],
+      "material": [
+        "Theobald greift in seinen Beutel und holt ein Material heraus, das er beim Umgraben der Erde in seinem Garten gefunden hat. Er bietet es Ihnen mit einem freundlichen Lächeln an:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+        "Der Gärtner zieht ein Material aus seiner Tasche, das er heute Morgen beim Umgraben ausgegraben hat. Er hält es Ihnen hin und erklärt Ihnen, dass er es nicht gebrauchen kann:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+      ]
+    },
+    "menu": [
+      "\n\nNehmen Sie sein Angebot an?"
+    ]
   }
 }
