@@ -33,7 +33,6 @@ import {
 import { HomeMenuParams } from "./home/HomeMenuTypes";
 import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
 import { getRoyalBlacksmithMenus } from "./royalBlacksmith/RoyalBlacksmithMenu";
-import { ReportCityMenuIds } from "./ReportCityMenuConstants";
 import {
 	ReportCityButtonStyles, ReportCityMenuIds
 } from "./ReportCityMenuConstants";
