@@ -1,9 +1,10 @@
 {
   "armorsFieldName": "Armor/Shield:",
+  "stat": "{{value}}",
+  "statNerf": "~~{{oldDisplay}}~~ {{max}}",
   "attack": "{emote:unitValues.attack} {{value, number}}",
   "defense": "{emote:unitValues.defense} {{value, number}}",
   "nameDisplay": "{emote:{{itemCategory}}.{{itemId}}} **$t(models:{{itemCategory}}.{{itemId}})**",
-  "nerfDisplay": "~~{{old}}~~ {{max}}",
   "objectsFieldName": "Object:",
   "objectsNatures": [
     "{emote:itemNatures.0} No effect",
@@ -39,5 +40,43 @@
   ],
   "speed": "{emote:unitValues.speed} {{value, number}}",
   "weaponsFieldName": "Weapon:",
-  "itemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}"
+  "mainItemsFieldNoUpgradeNoEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
+  "mainItemsFieldNoUpgradeEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "mainItemsFieldUpgrade": "**{{emote}} {{name}} (lvl {{level}})** | {{rarity}} | {{values}}",
+  "mainItemsFieldUpgradeEnchant": "**{{emote}} {{name}} (level {{level}})** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "supportItemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
+  "enchantments": {
+    "pvpAttack1": "PVP Attack I",
+    "pvpAttack2": "PVP Attack II",
+    "pvpAttack3": "PVP Attack III",
+    "pveAttack1": "PvE Attack I",
+    "pveAttack2": "PvE Attack II",
+    "pveAttack3": "HP Attack III",
+    "allAttack1": "Attack I",
+    "allAttack2": "Attack II",
+    "allAttack3": "Attack III",
+    "defense1": "Defend I",
+    "defense2": "Defend II",
+    "defense3": "Challenge III",
+    "speed1": "Speed I",
+    "speed2": "Speed II",
+    "speed3": "Speed III",
+    "maxEnergy1": "Max Energy I",
+    "maxEnergy2": "Max Energy II",
+    "maxEnergy3": "Max Energy III",
+    "maxHealth1": "Max Health I",
+    "maxHealth2": "Max Health II",
+    "maxHealth3": "Max Health III",
+    "baseBreath1": "Basic Breath",
+    "maxBreath1": "Max Breath",
+    "burnedDamage1": "Brute Degae",
+    "frozenDamage1": "Frost Degates",
+    "poisonedDamage1": "Poison Degae"
+  },
+  "categories": {
+    "weapons": "Weapons",
+    "armors": "Armour",
+    "potions": "Potions",
+    "objects": "Objects"
+  }
 }
