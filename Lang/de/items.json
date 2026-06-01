@@ -1,9 +1,10 @@
 {
   "armorsFieldName": "Rüstung/Schild :",
+  "stat": "{{value}}",
+  "statNerf": "~ ~{{oldDisplay}}~ ~ {{max}}",
   "attack": "{emote:unitValues.attack} {{value, number}}",
   "defense": "{emote:unitValues.defense} {{value, number}}",
   "nameDisplay": "{emote:{{itemCategory}}.{{itemId}}} **$t(models:{{itemCategory}}.{{itemId}})**",
-  "nerfDisplay": "~ ~{{old}}~ ~ {{max}}",
   "objectsFieldName": "Betreff :",
   "objectsNatures": [
     "{emote:itemNatures.0} Keine Auswirkungen",
@@ -39,5 +40,43 @@
   ],
   "speed": "{emote:unitValues.speed} {{value, number}}",
   "weaponsFieldName": "Waffe:",
-  "itemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}"
+  "mainItemsFieldNoUpgradeNoEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
+  "mainItemsFieldNoUpgradeEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "mainItemsFieldUpgrade": "**{{emote}} {{name}} (Niv. {{level}})** | {{rarity}} | {{values}}",
+  "mainItemsFieldUpgradeEnchant": "**{{emote}} {{name}} (Niv. {{level}})** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "supportItemsField": "**{{emote}} {{name}}** | {{rarity}} | {{values}}",
+  "enchantments": {
+    "pvpAttack1": "PvP-Angriff I",
+    "pvpAttack2": "PvP-Angriff II",
+    "pvpAttack3": "PvP-Angriff III",
+    "pveAttack1": "PvE-Angriff I",
+    "pveAttack2": "PvE-Angriff II",
+    "pveAttack3": "PvE-Angriff III",
+    "allAttack1": "Angriff I",
+    "allAttack2": "Angriff II",
+    "allAttack3": "Angriff III",
+    "defense1": "Verteidigung I",
+    "defense2": "Verteidigung II",
+    "defense3": "Verteidigung III",
+    "speed1": "Geschwindigkeit I",
+    "speed2": "Geschwindigkeit II",
+    "speed3": "Geschwindigkeit III",
+    "maxEnergy1": "Max. Energie I",
+    "maxEnergy2": "Max. Energie II",
+    "maxEnergy3": "Max. Energie III",
+    "maxHealth1": "Leben max I",
+    "maxHealth2": "Leben max II",
+    "maxHealth3": "Leben max III",
+    "baseBreath1": "Grundlegender Atemzug",
+    "maxBreath1": "Max. Atemzug",
+    "burnedDamage1": "Verbrennungsschaden",
+    "frozenDamage1": "Frostschäden",
+    "poisonedDamage1": "Giftschaden"
+  },
+  "categories": {
+    "weapons": "Waffen",
+    "armors": "Rüstungen",
+    "potions": "Tränke",
+    "objects": "Objekte"
+  }
 }
