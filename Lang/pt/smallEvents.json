@@ -429,6 +429,16 @@
       "O olhar no rosto de {{playerDisplay}} revela uma experiência extraordinária: ele derrotou a Rainha do Gelo até ao nível **{{bossLevel, number}}**! Poucos se podem gabar de tal façanha.",
       "Passas por {{playerDisplay}}, que conseguiu o impossível ao derrotar a Rainha do Gelo no nível **{{bossLevel, number}}**. Fazes uma vénia respeitosa."
     ],
+    "beaten_kraken": [
+      "Os tentáculos cortados pendurados na capa de {{playerDisplay}} testemunham a sua batalha contra o Kraken no nível **{{bossLevel, number}}**. Uma vitória arrancada do abismo!",
+      "{{playerDisplay}} sent encore l'iode et l'encre noire : il a terrassé le Kraken au niveau **{{bossLevel, number}}** ! Les océans ne lui font plus peur.",
+      "Conheces {{playerDisplay}}, um aventureiro que sobreviveu às profundezas e derrotou o terrível Kraken no nível **{{bossLevel, number}}**. Os seus olhos carregam o peso do abismo."
+    ],
+    "beaten_leviathan": [
+      "As escamas colossais presas à armadura de {{playerDisplay}} vêm da sua batalha contra o Leviatã no nível **{{bossLevel, number}}**. Uma lenda viva!",
+      "{{playerDisplay}} diz-te sobriamente que derrotou o Leviatã no nível **{{bossLevel, number}}**. As ondas já não parecem ser capazes de o engolir.",
+      "Passas por {{playerDisplay}}, que silenciou para sempre o rugido do Leviatã em **{{bossLevel, number}}**. O silêncio dos mares profundos apodera-se de ti."
+    ],
     "effect": {
       "sick": [
         "Ouve-se um barulho ao longe... {{playerDisplay}} Está a vomitar num arbusto... Continua o seu caminho, perturbado.",
@@ -476,7 +486,7 @@
         "{{playerDisplay}} Vê-se que está bastante embriagado, para dizer o mínimo. Ele parece estar a divertir-se... sozinho. Faz o que pode para o ignorar e continua o seu caminho."
       ],
       "scared": [
-        "Passa por {{playerDisplay}} , que parece estar a correr na sua direção. Ele está a ser perseguido por ladrões atrás do seu dinheiro. Acompanha-o ao longo da estrada para o ajudar a recuperar a calma. Depois de o tranquilizar, deixa-o e continua o seu caminho.",
+        "Passa por {{playerDisplay}} , que parece estar a correr na sua direção. Ele está a ser perseguido por ladrões atrás do seu dinheiro. Acompanha-o ao longo da estrada para o ajudar a recuperar a calma. Depois de o ter tranquilizado, deixa-o e parte de novo.",
         "{{playerDisplay}} Ao longe, vê-se um homem a correr a toda a velocidade para escapar a uma matilha de lobos. Corres em seu auxílio e obrigas os animais selvagens a bater em retirada.",
         "{{playerDisplay}}Encontra-se com . Ele parece completamente em pânico. Perguntas-lhe por que está tão perturbado. Ele diz-te que acabou de ser perseguido por um dragão, mas que conseguiu fugir, perdendo alguns cabelos no processo."
       ],
@@ -1290,7 +1300,7 @@
         "{{count}} Ele dá-lhe ** sopas definitivas**, que você guarda cuidadosamente."
       ],
       "fullUltimateFood": [
-        "Ele gostaria de lhe oferecer as suas preciosas sopas definitivas, mas, ao inspecionar o seu armazém, apercebe-se de que já não há um único lugar. Encolhe os ombros e deseja-vos uma boa viagem."
+        "Ele oferece-lhe as melhores sopas. Infelizmente, o seu armazém está cheio e tem de as devolver."
       ],
       "item": [
         "Ele oferece-lhe **um objeto** que pensa que lhe pode ser útil."
@@ -2540,6 +2550,25 @@
       }
     }
   },
+  "findMaterial": {
+    "typesStories": {
+      "wood": "encontra um bosque de árvores com troncos robustos e ramos flexíveis, perfeitos para a recolha de madeira. Pegas no teu machado e começas a cortar.",
+      "metal": "Descobre um veio de minério brilhante incrustado numa rocha, ideal para extrair metal. Pega na tua picareta e começa a extrair o minério da rocha.",
+      "alloy": "vê uma pilha de resíduos metálicos e fragmentos de várias ligas, ideal para recuperar materiais compósitos. Recolhe os restos de metal e começa a separar os fragmentos de várias ligas.",
+      "rope": "encontra plantas fibrosas com caules longos e fortes, perfeitas para tecer cordas e tecidos. Apanha-as, pega na sua faca e começa a cortar as plantas fibrosas.",
+      "magic": "Sente um local carregado de energia, onde a magia parece impregnar o ar e os objectos que o rodeiam, ideal para recolher componentes mágicos. Procura componentes mágicos na área circundante.",
+      "poison": "encontra plantas venenosas com folhas brilhantes e flores coloridas, bem como um bebedouro, perfeito para a colheita de substâncias tóxicas. Recolhe cuidadosamente os elementos venenosos.",
+      "explosive": "descobrirás cristais instáveis e plantas com propriedades explosivas, ideais para recolher materiais perigosos. Manipula os elementos instáveis com cuidado para evitar explosões acidentais.",
+      "leather": "Depara-se com carcaças de animais recentemente abatidos, o que constitui uma fonte valiosa de couro e peles. Recolhe peles e couros das carcaças de animais.",
+      "nature": "Encontra uma área rica em elementos naturais, com plantas, minerais e uma variedade de recursos orgânicos, ideal para recolher materiais da natureza. Recolhe vários elementos naturais dos arredores.",
+      "spiritual": "Encontra um lugar de serenidade, onde o ambiente é tranquilo e propício ao seu bem-estar. Procura objectos no ambiente que o rodeia."
+    },
+    "foundStories": {
+      "1": "Ótimo! Encontrou o seguinte material comum {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Incrível! Tem nas suas mãos um equipamento muito invulgar {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Que oportunidade incrível! Descobriu um raro material {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+    }
+  },
   "expeditionAdvice": {
     "talismanIntro": [
       "Encontra-se frente a frente com uma mulher de rosto marcado por uma cicatriz, sentada numa grande rocha. A sua armadura de couro gasta traz as marcas de dezenas de combates. Ela limpa metodicamente um punhal de lâmina enegrecida onde está gravado o seu nome: Velanna. Sem levantar os olhos, ela resmunga algo sobre um artefacto antigo capaz de criar laços entre um mestre e a sua besta... o $t(models:talisman.anchor). Ela levanta-se e afasta-se sem dizer mais nada.",
@@ -2664,5 +2693,154 @@
         "A agricultora vê que o seu stock de saladas já está cheio até rebentar. Espantada, desaparece no seu barracão e regressa com **um objeto empoeirado**, que lhe entrega com um piscar de olhos."
       ]
     }
+  },
+  "gardener": {
+    "stories": {
+      "first": [
+        "Um homem idoso, com um avental de terra e mãos calejadas, chama-o de um pequeno terreno à beira da estrada. Apresenta-se como Théobald, um jardineiro itinerante, e convida-o a admirar as suas plantas com um orgulho indisfarçável. ",
+        "vê um homem ajoelhado ao pé de uma árvore, com os dedos mergulhados na terra. Levanta-se quando o vê, limpa o pó dos joelhos e cumprimenta-o calorosamente. Diz que o seu nome é Theobald e que dedicou a sua vida à arte da jardinagem. ",
+        "O cheiro a terra húmida e a folhas frescas atrai-o para um pequeno acampamento improvisado à beira do caminho. Um jardineiro chamado Théobald, com um regador na mão e um chapéu florido na cabeça, recebe-o com um grande sorriso. ",
+        "quase pisa uma planta cuidadosamente colocada à beira do caminho. Um velho surge de um arbusto próximo, com um ar falsamente indignado, antes de desatar a rir. Apresenta-se como Theobald, um mestre jardineiro viajante. ",
+        "Um homem com o rosto queimado pelo sol acena de um pequeno jardim à beira da estrada. Este homem, um tal Théobald, parece conhecer todas as plantas pelo nome e insiste em partilhar os seus conhecimentos com os viajantes. "
+      ],
+      "recurring": [
+        "Um velho com um avental de terra e mãos calejadas chama-o de um pequeno terreno à beira da estrada. Reconhece Théobald, o jardineiro itinerante, que o convida a admirar as suas plantas com um orgulho indisfarçável. ",
+        "vê um homem ajoelhado ao pé de uma árvore, com os dedos mergulhados na terra. Theobald levanta-se quando o vê, limpa os joelhos e cumprimenta-o calorosamente. ",
+        "O cheiro a terra húmida e a folhas frescas atrai-o para um pequeno acampamento improvisado à beira do caminho. Théobald, de regador na mão e chapéu florido na cabeça, recebe-o com um grande sorriso. ",
+        "quase pisa uma planta cuidadosamente colocada à beira do caminho. Theobald surge de um arbusto próximo, com um ar falsamente indignado, antes de desatar a rir ao reconhecer-te. ",
+        "Um homem com o rosto queimado pelo sol acena-lhe de um pequeno jardim à beira da estrada. Théobald, fiel à sua forma, parece conhecer todas as plantas pelo nome e insiste em partilhar os seus conhecimentos consigo. "
+      ]
+    },
+    "rewards": {
+      "seed": {
+        "free": [
+          "O velho Théobald tira do seu alforge uma pequena semente, que lhe entrega. Ele explica que é perfeita para começar e aprender o básico da jardinagem. Recebes uma **semente** {emote:smallEvents.gardener}."
+        ],
+        "paid": [
+          "O Théobald mostra-lhe uma semente que está a examinar à luz. Ele aceita dar-lha por **{{cost}} {emote:unitValues.money}**."
+        ],
+        "paidAccepted": [
+          "Théobald mostra-lhe uma semente que examina à luz. Depois de pagar **{{cost}} {emote:unitValues.money}**, coloca cuidadosamente esta **semente** {emote:smallEvents.gardener} no seu saco."
+        ],
+        "moon": [
+          "Théobald olha para o céu noturno e sorri ao luar. Ele retira cuidadosamente uma semente do seu alforge, murmurando que esta planta só lhe pode ser confiada quando houver luar suficiente. Recebeste uma **semente** {emote:smallEvents.gardener}."
+        ],
+        "night": [
+          "Théobald olha para o céu a escurecer com satisfação. A noite é a altura ideal para confiar esta semente, pois a planta precisa de escuridão para florescer. Recebes uma **semente** {emote:smallEvents.gardener}."
+        ],
+        "herbivorePet": [
+          "O jardineiro olha para o teu animal de estimação herbívoro com admiração, impressionado com a ligação óbvia que existe entre vocês. Só aqueles que se preocupam com a natureza merecem uma planta como esta\", diz ele, entregando-te uma **semente** {emote:smallEvents.gardener}."
+        ],
+        "mage": [
+          "Théobald repara na tua aura de mago e acena com a cabeça respeitosamente. O teu domínio da magia vai fazer florescer esta planta ardente\", diz ele, entregando-te uma **semente** {emote:smallEvents.gardener}."
+        ],
+        "phoenix": [
+          "Os olhos do jardineiro arregalam-se perante a tua fénix e ele exclama que não via uma há décadas. Com emoção, confia-te uma **semente** {emote:smallEvents.gardener}, convencido de que as chamas do teu companheiro a ajudarão a crescer."
+        ],
+        "fireItem": [
+          "Théobald vê o teu equipamento forjado a fogo e acena com a cabeça. Uma afinidade com as chamas é essencial para cultivar esta planta ardente\", explica ele, oferecendo-te uma **semente** {emote:smallEvents.gardener}."
+        ],
+        "carnivorePet": [
+          "O jardineiro observa o seu impressionante animal de estimação carnívoro com um misto de respeito e cautela. O teu companheiro fará com que nada falte a esta planta\", conclui, entregando-te uma **semente** {emote:smallEvents.gardener}."
+        ],
+        "legendaryHerbivorePet": [
+          "Os olhos do jardineiro arregalam-se ao ver o teu épico animal de estimação herbívoro, claramente comovido com a extraordinária ligação que partilham. Com uma mão trémula, ele retira a sua última semente {emote:smallEvents.gardener}. Só alguém que tenha criado uma ligação tão forte com a natureza pode cultivar um tesouro destes\", murmura."
+        ]
+      },
+      "advice": {
+        "needLevel": [
+          "O jardineiro examina-o da cabeça aos pés e abana a cabeça. Ainda não tens experiência suficiente para a sua próxima semente. Volta quando tiveres atingido o **nível {{level}}**, aconselha ele.",
+          "Théobald franze o sobrolho ao avaliar a tua estatura. A natureza exige um mínimo de maturidade para merecer esta semente, e terás de atingir o **nível {{level}}**."
+        ],
+        "needGarden": [
+          "O Théobald fica de cabeça baixa quando ouve dizer que não tem jardim. Aconselha-o a investir numa **casa com jardim** antes de o voltar a ver.",
+          "O jardineiro suspira. Sem um jardim, não vale a pena preocupar-se com novas sementes. Arranja uma **casa com uma área de jardinagem** e depois volta."
+        ],
+        "needMoney": [
+          "Théobald mostra-te a próxima semente, mas guarda-a imediatamente. Vais precisar de **{{cost}} {emote:unitValues.money}** para a obteres e não tens o suficiente contigo.",
+          "O jardineiro coloca uma semente à frente dos seus olhos antes de a guardar cuidadosamente. O seu preço é **{{cost}} {emote:unitValues.money}**, volta quando puderes pagar."
+        ],
+        "needHerbivorePet": [
+          "O jardineiro examina o que o rodeia e repara que não tem um animal de estimação herbívoro treinado ao seu lado. Precisas de um **animal de estimação herbívoro com um vínculo máximo de confiança**.",
+          "Théobald abana a cabeça. A próxima semente precisa de um companheiro próximo da natureza. Volta com um **familiar** herbívoro que tenhas **completamente domesticado**."
+        ],
+        "needNight": [
+          "Théobald olha para o sol ainda alto no céu e suspira. A próxima semente só pode ser oferecida ao **anoitecer**. Volta quando o sol se tiver posto.",
+          "O jardineiro olha para o céu brilhante e abana a cabeça. Esta semente em particular só confia na **escuridão da noite**."
+        ],
+        "needMoonlight": [
+          "O jardineiro olha para cima com desilusão. A **lua não é suficientemente visível** para confiar esta semente. Volta quando ela brilhar mais no céu noturno.",
+          "Théobald olhou para o céu. Esta semente precisa de **luar poderoso** para ser oferecida. Volta numa noite mais clara."
+        ],
+        "needFireAffinity": [
+          "Théobald abana a cabeça. A próxima semente requer uma afinidade com o fogo. Teria de ser um **mago**, possuir uma **fénix** ou usar **equipamento forjado em chamas**.",
+          "O jardineiro olha para ti com ar pensativo. Esta semente ardente só pode ser cultivada por alguém ligado ao fogo: um **mago**, um **mestre fénix**, ou um **portador de armas flamejantes**."
+        ],
+        "needCarnivorePet": [
+          "O jardineiro explica que a próxima semente requer uma companheira carnívora particularmente poderosa. Precisas de uma **companheira carnívora de raridade épica ou superior**.",
+          "Théobald diz-te que esta semente invulgar se alimenta de carne. Só um **familiar** carnívoro de exceção poderia fazer com que ela crescesse."
+        ],
+        "needLegendaryHerbivorePet": [
+          "Théobald diz-vos com toda a seriedade que a sua última semente é a mais preciosa. Ele só a confiará a alguém acompanhado por um **caçador herbívoro épico** com um **nível máximo de confiança**.",
+          "O velho sussurra que o que ele guarda é o tesouro de uma vida. Apenas um aventureiro que tenha criado uma ligação excecional com um **familiar herbívoro de raridade épica** o poderá ganhar."
+        ],
+        "seedSlotFull": [
+          "O jardineiro repara que já tens uma semente contigo. **Planta-a primeiro** no teu jardim, depois volta para o ver.",
+          "Théobald abana a cabeça ao ver a tua mochila cheia. **Planta a tua semente atual** antes de lhe pedires uma nova."
+        ],
+        "allSeedsObtained": [
+          "O Théobald felicita-o calorosamente ao ver todas as plantas do seu jardim. Já tens **todas as suas sementes** e ele não tem mais nada para te oferecer, mas está muito orgulhoso do teu jardim.",
+          "O velho jardineiro aperta-lhe calorosamente a mão. Fizeste tudo o que ele te podia ensinar. O seu jardim é uma **obra-prima**\", diz ele, com lágrimas nos olhos."
+        ],
+        "noPlantSpace": [
+          "Théobald queria oferecer-te uma planta, mas o teu inventário já está cheio. Ele encolhe os ombros com um sorriso e deseja-lhe uma boa viagem.",
+          "O jardineiro procura nas suas provisões mas descobre que **não tem mais espaço** para transportar plantas. Ele aconselha-o a libertar um espaço."
+        ],
+        "refused": [
+          "Recusa educadamente a oferta de Théobald. O jardineiro coloca a semente no seu alforge com um sorriso compreensivo e deseja-lhe uma boa viagem.",
+          "De momento, não tem dinheiro para isso. Théobald acena com a cabeça e convida-o a voltar quando estiver pronto."
+        ],
+        "tipBuyHome": [
+          "Théobald observa-o por um momento e pergunta-lhe se tem uma casa própria. Perante o seu silêncio, aconselha-o a comprar uma **casa** e a construir um jardim à sua volta.",
+          "O jardineiro fica surpreendido por ainda não teres uma casa. Ele recomenda que **compre uma** o mais depressa possível, para que possa cultivar o seu próprio jardim."
+        ],
+        "tipUpgradeForGarden": [
+          "Théobald lança um olhar apologético quando ouve dizer que a sua casa ainda não tem jardim. Aconselha-o a **melhorar a sua casa** para acrescentar alguns talhões.",
+          "O jardineiro sugere-lhe que **expanda a sua casa** para criar uma área de cultivo. Um bom jardim precisa de um bom terreno\", diz ele."
+        ],
+        "tipPlantSeed": [
+          "O jardineiro repara que ainda tens uma semente. Ele encoraja-o a **plantá-la o mais rapidamente possível** no seu jardim para que possa começar a crescer.",
+          "Théobald franze o sobrolho quando vê a semente no seu saco. Não a deixes por aí, **planta-a no teu jardim** o mais depressa possível, insiste ele."
+        ],
+        "tipHarvestReady": [
+          "Théobald fareja o ar e sorri. Ele sente que algumas das vossas plantas estão **prontas para serem colhidas**. Venham colhê-las antes que murchem\", aconselha.",
+          "O jardineiro, com um olhar conhecedor, assegura-lhe que o seu jardim precisa da sua atenção. Algumas plantas estão **maduras e prontas para serem colhidas**."
+        ],
+        "tipEmptyPlots": [
+          "O Théobald recorda-te que a tua horta ainda tem **lotes vazios**. Ele encoraja-o a obter novas sementes e a plantá-las para encher a sua horta.",
+          "O jardineiro abana a cabeça quando pensa nas suas parcelas desocupadas. Um bom jardineiro nunca deixa a terra em pousio, aconselha-o a **preencher os seus talhões vazios**."
+        ],
+        "tipUpgradeSoil": [
+          "Théobald diz-lhe que a qualidade do seu solo deixa algo a desejar. **Melhore a sua casa** para obter um solo mais rico que ajudará as suas plantas a crescerem mais depressa.",
+          "O jardineiro prova um pouco de terra imaginária e faz uma careta. O seu solo é pobre, as suas plantas crescem lentamente. **Melhora a tua casa** para enriquecer o teu solo, aconselha ele."
+        ],
+        "tipGeneric": [
+          "Théobald senta-se por um momento e partilha consigo um dos seus segredos: a paciência é a chave da jardinagem. As plantas mais preciosas são aquelas que demoram mais tempo a crescer.",
+          "O jardineiro contempla o horizonte e sussurra que cada planta conta uma história. Ele convida-o a cuidar regularmente do seu jardim."
+        ]
+      },
+      "plant": [
+        "Impressionado com a vossa visita, o jardineiro vai buscar as suas reservas e oferece-vos generosamente uma das suas plantas cultivadas:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Théobald tira uma planta do seu carrinho e entrega-lha com um piscar de olhos malicioso:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "O jardineiro, incapaz de lhe dar sementes, oferece-lhe generosamente uma das suas plantas como recordação do vosso encontro:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
+      ],
+      "material": [
+        "Théobald tira da sua mala um material que encontrou ao remexer a terra do seu jardim. Oferece-to com um sorriso benevolente:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**",
+        "O jardineiro tira do bolso um material que desenterrou durante a escavação desta manhã. Ele entrega-to, explicando que não tem utilidade para ele:\n\n{emote:materials.{{materialId}}} **$t(models:materials.{{materialId}})**"
+      ]
+    },
+    "menu": [
+      "\n\nAceitarás a sua oferta?"
+    ]
   }
 }

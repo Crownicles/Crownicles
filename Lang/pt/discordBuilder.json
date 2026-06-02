@@ -163,9 +163,9 @@
     "description": "Mostrar o mapa para indicar o local para onde se dirige.",
     "name": "cartão"
   },
-  "shop": {
-    "description": "Exibir a loja.",
-    "name": "loja"
+  "garden": {
+    "description": "Aceder ao seu jardim, à distância, se tiver o Woodland Heart.",
+    "name": "jardim"
   },
   "classesInfo": {
     "description": "Mostra informações sobre as classes que podem ser selecionadas para a sua personagem.",
@@ -212,10 +212,6 @@
         "name": "utilizador"
       }
     }
-  },
-  "guildShop": {
-    "description": "Exibir a loja do grémio.",
-    "name": "magasinguilde"
   },
   "guildKick": {
     "description": "Excluir um membro da guilda.",
@@ -271,10 +267,6 @@
       }
     }
   },
-  "missionsshop": {
-    "description": "Mostrar a loja da missão.",
-    "name": "loja"
-  },
   "top": {
     "description": "Apresentar as classificações dos jogos.",
     "name": "classificação",
@@ -311,13 +303,9 @@
     "description": "Começar uma luta.",
     "name": "combate"
   },
-  "switch": {
-    "name": "interrutor",
-    "description": "Trocar o objeto ativo por um dos objectos na sua reserva."
-  },
-  "deposit": {
-    "name": "registo",
-    "description": "Depositar um dos seus objectos activos."
+  "equip": {
+    "name": "equipar",
+    "description": "Gerir o seu equipamento: equipar, guardar ou trocar os seus objectos."
   },
   "drink": {
     "name": "bebida",

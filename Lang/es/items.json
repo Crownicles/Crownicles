@@ -1,9 +1,10 @@
 {
   "armorsFieldName": "Armadura/Escudo:",
+  "stat": "{{value}}",
+  "statNerf": "~~{{oldDisplay}}~~ {{max}}",
   "attack": "{emote:unitValues.attack} {{value, number}}",
   "defense": "{emote:unitValues.defense} {{value, number}}",
   "nameDisplay": "{{itemCategory}}{emote: .{{itemId}}}$t(models:{{itemCategory}}.{{itemId}})** **",
-  "nerfDisplay": "~~{{old}}~~ {{max}}",
   "objectsFieldName": "Asunto :",
   "objectsNatures": [
     "{emote:itemNatures.0} Sin efecto",
@@ -39,5 +40,43 @@
   ],
   "speed": "{emote:unitValues.speed} {{value, number}}",
   "weaponsFieldName": "Arma :",
-  "itemsField": "{{emote}} {{name}} {{rarity}} {{values}}** ** | |"
+  "mainItemsFieldNoUpgradeNoEnchant": "{{emote}} {{name}} {{rarity}} {{values}}** ** | |",
+  "mainItemsFieldNoUpgradeEnchant": "**{{emote}} {{name}}** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "mainItemsFieldUpgrade": "**{{emote}} {{name}} (niv. {{level}})** | {{rarity}} | {{values}}",
+  "mainItemsFieldUpgradeEnchant": "**{{emote}} {{name}} (niv. {{level}})** | {{rarity}} | {{values}} | {{enchantEmote}} {{enchant}}",
+  "supportItemsField": "{{emote}} {{name}} {{rarity}} {{values}}** ** | |",
+  "enchantments": {
+    "pvpAttack1": "Ataque PvP I",
+    "pvpAttack2": "Ataque PvP II",
+    "pvpAttack3": "Ataque PvP III",
+    "pveAttack1": "Ataque PvE I",
+    "pveAttack2": "Ataque PvE II",
+    "pveAttack3": "Ataque PvE III",
+    "allAttack1": "Ataque I",
+    "allAttack2": "Ataque II",
+    "allAttack3": "Ataque III",
+    "defense1": "Defensa I",
+    "defense2": "Defensa II",
+    "defense3": "Defensa III",
+    "speed1": "Velocidad I",
+    "speed2": "Velocidad II",
+    "speed3": "Velocidad III",
+    "maxEnergy1": "Energía máxima I",
+    "maxEnergy2": "Energía máxima II",
+    "maxEnergy3": "Energía máxima III",
+    "maxHealth1": "Vida máxima I",
+    "maxHealth2": "Vie max II",
+    "maxHealth3": "Vie max III",
+    "baseBreath1": "Respiración básica",
+    "maxBreath1": "Respiración máxima",
+    "burnedDamage1": "Daños por quemaduras",
+    "frozenDamage1": "Daños por heladas",
+    "poisonedDamage1": "Daño por veneno"
+  },
+  "categories": {
+    "weapons": "Armas",
+    "armors": "Armadura",
+    "potions": "Pociones",
+    "objects": "Objetos"
+  }
 }

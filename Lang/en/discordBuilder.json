@@ -163,9 +163,9 @@
     "description": "Show map to indicate where you're going.",
     "name": "map"
   },
-  "shop": {
-    "description": "Show store.",
-    "name": "shop"
+  "garden": {
+    "description": "Access to your garden, at a distance if you own the Heart of Sylvestre.",
+    "name": "garden"
   },
   "classesInfo": {
     "description": "Display information on the classes selectable for your character.",
@@ -212,10 +212,6 @@
         "name": "user"
       }
     }
-  },
-  "guildShop": {
-    "description": "Display the guild store.",
-    "name": "guildshop"
   },
   "guildKick": {
     "description": "Kick a player from the guild.",
@@ -270,10 +266,6 @@
         "name": "user"
       }
     }
-  },
-  "missionsshop": {
-    "description": "Display mission store.",
-    "name": "missionsshop"
   },
   "top": {
     "description": "Display game rankings.",

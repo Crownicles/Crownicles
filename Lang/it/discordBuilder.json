@@ -163,9 +163,9 @@
     "description": "Visualizzare la mappa per mostrare dove si sta andando.",
     "name": "mappa"
   },
-  "shop": {
-    "description": "Esporre il negozio.",
-    "name": "negozio"
+  "garden": {
+    "description": "Accedere al proprio giardino, a distanza, se si possiede il Cuore di bosco.",
+    "name": "giardino"
   },
   "classesInfo": {
     "description": "Visualizza le informazioni sulle classi selezionabili per il personaggio.",
@@ -212,10 +212,6 @@
         "name": "utilizzatore"
       }
     }
-  },
-  "guildShop": {
-    "description": "Visualizzare il negozio della gilda.",
-    "name": "magasinguilde"
   },
   "guildKick": {
     "description": "Escludere un membro della gilda.",
@@ -271,10 +267,6 @@
       }
     }
   },
-  "missionsshop": {
-    "description": "Visualizzare il negozio della missione.",
-    "name": "negozio"
-  },
   "top": {
     "description": "Visualizzare le classifiche di gioco.",
     "name": "classifica",
@@ -311,13 +303,9 @@
     "description": "Iniziare una lotta.",
     "name": "combattimento"
   },
-  "switch": {
-    "name": "interruttore",
-    "description": "Scambiate l'oggetto attivo con uno degli oggetti della vostra riserva."
-  },
-  "deposit": {
-    "name": "depositare",
-    "description": "Deposita uno dei tuoi oggetti attivi."
+  "equip": {
+    "name": "equipaggiamento",
+    "description": "Gestisci il tuo equipaggiamento: equipaggia, conserva o scambia i tuoi oggetti."
   },
   "drink": {
     "name": "bevanda",

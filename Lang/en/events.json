@@ -2848,6 +2848,246 @@
     },
     "text": "You cross the threshold of a dilapidated-looking old mansion. The thick fog that surrounds it seems to swallow the contours of the outside world, as if the house existed outside all reality. The air is cold and stagnant, and every step makes the old floorboards groan. A strange presence seems to be watching you from the shadows of the corridors."
   },
+  "82": {
+    "possibilities": {
+      "takeLetter": {
+        "outcomes": {
+          "0": "You entrust the letter to your bag and go for the recipient.",
+          "1": "The letter contains a small presentation and promises you a reward if you deliver it in time."
+        },
+        "text": "Take the letter"
+      },
+      "openLetter": {
+        "outcomes": {
+          "0": "You open the letter in all curiosities, but a guard will repaint you and toast you for your indiscretion!",
+          "1": "The letter contains an insulting message that shocks a passer-by. You get trouble!"
+        },
+        "text": "Open letter"
+      },
+      "deliver": {
+        "outcomes": {
+          "0": "The recipient thanks you and gives you a small reward as a token of gratitude.",
+          "1": "You waste time searching for the recipient but end up receiving a well-stocked scholarship."
+        },
+        "text": "Return letter to recipient"
+      },
+      "end": {
+        "outcomes": {
+          "0": "The heiraut is leaving in a hurry. You get back on your way without knowing more."
+        }
+      }
+    },
+    "text": "A leaflet stands in front of you, holding a sealed letter. It looks pressed, but it looks at you insistently."
+  },
+  "83": {
+    "possibilities": {
+      "skip": {
+        "outcomes": {
+          "0": "You do not pay attention to goods and continue your journey."
+        }
+      },
+      "buy": {
+        "outcomes": {
+          "0": "You buy a curious little item that has been more useful than you wish.",
+          "1": "The purchase was too expensive, but you did a good deal, I think..."
+        },
+        "text": "Purchase Item"
+      },
+      "steal": {
+        "outcomes": {
+          "0": "Take your hand from the bag! The merchant warns the guards.",
+          "1": "You discreetly steal a valuable item and take the leak without being seen."
+        },
+        "text": "Attempt to erode an object"
+      },
+      "haggle": {
+        "outcomes": {
+          "0": "Your negociator skills pay: you leave with a nice discount and the desired item.",
+          "1": "The merchant offends and prefers you to leave rather than continue the discussion."
+        },
+        "text": "Trade"
+      }
+    },
+    "text": "A traveling merchant has tried to attract the attention of passers-by with his exotic trinks."
+  },
+  "84": {
+    "possibilities": {
+      "help": {
+        "outcomes": {
+          "0": "You find the child and his parents warmly thank you and then give you a small reward.",
+          "1": "The child quickly forgot a small treasure: an old object you can take away."
+        },
+        "text": "Help the child"
+      },
+      "ask": {
+        "outcomes": {
+          "0": "The family offers you a little thank you but seems to be more relieved by your help than by your expectations."
+        },
+        "text": "Request reward"
+      },
+      "end": {
+        "outcomes": {
+          "0": "The child is still crying and you are leaving without intervening."
+        }
+      }
+    },
+    "text": "A lost child is looking for eye, crying and calling someone for help."
+  },
+  "85": {
+    "possibilities": {
+      "report": {
+        "outcomes": {
+          "0": "You report the thief to the guards. They catch the bulker who loses his purse before you.",
+          "1": "The conversation with the guards delays you, but you receive a small reward from the merchant."
+        },
+        "text": "Report pickpocket"
+      },
+      "stealFromThief": {
+        "outcomes": {
+          "0": "You surprise the thief and take back his loot, which you keep for you.",
+          "1": "The thief violently defends and you find yourself injured."
+        },
+        "text": "Take advantage to steal pickpocket"
+      },
+      "fight": {
+        "outcomes": {
+          "0": "You maiden the thief and recover his possessions, but you were injured in the field.",
+          "1": "The battle depletes and you lose more than you would have expected."
+        },
+        "text": "Intervention and fight"
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "You prefer not to do anything."
+        },
+        "text": "Do nothing"
+      }
+    },
+    "text": "A thief is taking advantage of the crowd to steal a passer-by's purse. You see it around the corner."
+  },
+  "86": {
+    "possibilities": {
+      "dance": {
+        "outcomes": {
+          "0": "The dance reinvigorates you and starts full of energy.",
+          "1": "You are suffering from alcohol discomfort and have to rest."
+        },
+        "text": "Dance with the Crowd"
+      },
+      "drink": {
+        "outcomes": {
+          "0": "The drink makes you nostalgic and leaves you an unexpected memory.",
+          "1": "You take a bad drink and feel mistaken after a few snacks."
+        },
+        "text": "Take a drink"
+      },
+      "pickPocket": {
+        "outcomes": {
+          "0": "You do a discreet blow and start richer again, no one has seen you.",
+          "1": "A guard catches your hand in a bag and you pay dearly for your daring."
+        },
+        "text": "Attempt a small larch"
+      },
+      "end": {
+        "outcomes": {
+          "0": "The feast is in full swing, but you have no desire to stand up to the crowd and you have departed."
+        }
+      }
+    },
+    "text": "The place is occupied by a festive walk where menestrels play and grapples await their victuals."
+  },
+  "87": {
+    "possibilities": {
+      "skip": {
+        "outcomes": {
+          "0": "You decide not to dwell on the horses and get back on your way."
+        }
+      },
+      "buyHorse": {
+        "outcomes": {
+          "0": "You find a strong horse and set off on horse, proud of your purchase.",
+          "1": "The horse is less docile than expected and you will be able to make an effort."
+        },
+        "text": "Buy Horse"
+      },
+      "trade": {
+        "outcomes": {
+          "0": "Your exchange is judged honored and you leave with a new equipment.",
+          "1": "Negotiation failed: you waste your time and leave empty-handed."
+        },
+        "text": "Attempt exchange"
+      },
+      "stealHorse": {
+        "outcomes": {
+          "0": "You manage to steal a horse, but the escape will be moving.",
+          "1": "We catch you, and you suffer the fate of the thieves of beast, the prison."
+        },
+        "text": "Try stealing a horse"
+      }
+    },
+    "text": "Stations and pens form a market animated where mounts and equipment are available."
+  },
+  "88": {
+    "possibilities": {
+      "touchStatue": {
+        "outcomes": {
+          "0": "Your hand touches the stone and a small compensation is available to you.",
+          "1": "The statue will bite your integer: a penalty will fall upon you."
+        },
+        "text": "Touch statue"
+      },
+      "pray": {
+        "outcomes": {
+          "0": "A calm invades you and regain some strength.",
+          "1": "The prayer is moved by a noisy passer-by and you leave again."
+        },
+        "text": "Pray before the Statue"
+      },
+      "break": {
+        "outcomes": {
+          "0": "You break the object but untap the ire of the neighbors, who sue you.",
+          "1": "The statue relies on an inexplicable maneuver and puts you in a shaky posture."
+        },
+        "text": "Damage Statue"
+      },
+      "end": {
+        "outcomes": {
+          "0": "You look around, judging that it is better not to touch the unknown."
+        }
+      }
+    },
+    "text": "A curious statue on the side of the street, sculpted with an accuracy that borders on the obsession."
+  },
+  "89": {
+    "possibilities": {
+      "listen": {
+        "outcomes": {
+          "0": "The melodie soothes you and spreads more serenely.",
+          "1": "The music takes you at the weak point and gives you a strange dizzy."
+        },
+        "text": "Stop to listen"
+      },
+      "followMelody": {
+        "outcomes": {
+          "0": "The music has a hidden treasure, concealed from a bench.",
+          "1": "Music attracts you away from the road, you lose precious minutes."
+        },
+        "text": "Follow the melody"
+      },
+      "coverEars": {
+        "outcomes": {
+          "0": "With the bright melody, you protect yourself and continue your road calmly."
+        },
+        "text": "Butchering the ears"
+      },
+      "end": {
+        "outcomes": {
+          "0": "The melodie turned off in the distance. You turn your vigilance back on and continue your way."
+        }
+      }
+    },
+    "text": "A strange melody rises between the streets of the city, soft but insidious."
+  },
   "9": {
     "possibilities": {
       "end": {
