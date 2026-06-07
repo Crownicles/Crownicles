@@ -660,7 +660,7 @@
   },
   "materialLoot": {
     "title": "{emote:inventory.materials} Matériaux récupérés :",
-    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**"
+    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) x**{{quantity}}**"
   },
   "ping": {
     "discord": {
@@ -1245,7 +1245,7 @@
             "cancelButton": "← Annuler",
             "resultTitle": "{{pseudo}}, composteur",
             "resultDescription": "{emote:city.gardenStatus.compost} Vous avez composté **{{quantity}}** {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}). Voici ce que vous en avez retiré :\n{{materialsList}}",
-            "resultMaterialLine": "• **{{count}}** × {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+            "resultMaterialLine": "• **{{count}}** x {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
             "notEnoughPlants": "{emote:messages.refuse} Vous n'avez plus assez de {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) en réserve pour en composter **{{quantity}}**."
           }
         },
