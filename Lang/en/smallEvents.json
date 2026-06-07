@@ -1845,6 +1845,14 @@
       "You decline the offer and return to your path."
     ]
   },
+  "recipeShop": {
+    "offer": {
+      "farmer": "Avant que vous ne repreniez votre route, la fermière s'essuie les mains sur son tablier et vous confie, l'œil malicieux, qu'elle garde précieusement une vieille recette de famille. Elle accepte de vous transmettre la recette {{recipe}} contre {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Avant de remonter dans sa roulotte, Gaspard-Jo farfouille sous une pile de victuailles et en extirpe un vieux grimoire de cuisine tout corné. Avec un sourire complice, il vous propose de vous céder la recette {{recipe}} pour {{price}} {emote:unitValues.money}."
+    },
+    "refused": "Vous déclinez poliment l'offre et reprenez votre route, la recette restant un mystère pour une autre fois.",
+    "notEnoughMoney": "Vous fouillez vos poches à la recherche de quelques pièces, mais force est de constater que vous n'avez pas de quoi payer la recette. Dépité, vous reprenez votre chemin."
+  },
   "dwarfPetFan": {
     "intro": [
       "On the path winding through the majestic shadow of Mount Celestrum, a stunted figure emerges from the rocky terrain. Talvar the Wise, a venerable silver-haired dwarf, strides towards you. His golden-braided beard reaches down to his belt, and his green eyes sparkle with an ancestral passion for all the creatures of this world.",
@@ -2564,9 +2572,9 @@
       "spiritual": "you will find a place full of security, where the atmosphere is peaceful and conducive to your property. You search the surrounding area for items or objects."
     },
     "foundStories": {
-      "1": "Great! You found the following common {{rarityEmote}} reference: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Amazing! You got your hands on an uncommon {{rarityEmote}} matter: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "What an unexpected chance! You have discovered a rare {{rarityEmote}} matter: {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Vous avez trouvé le matériau {{rarityEmote}} commun suivant : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Incroyable ! Vous avez mis la main sur un matériau {{rarityEmote}} peu commun : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Quelle chance inouïe ! Vous avez découvert un matériau {{rarityEmote}} rare : {{materialEmote}} **$t(models:materials.{{materialId}})**."
     }
   },
   "expeditionAdvice": {
