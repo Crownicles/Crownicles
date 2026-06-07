@@ -20,6 +20,12 @@ import { Maps } from "../maps/Maps";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { BlessingManager } from "../blessings/BlessingManager";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import {
+	GASPARD_JO_RECIPE_COSTS, RecipeDiscoverySource
+} from "../../../../Lib/src/constants/CookingConstants";
+import { openRecipeShopOffer } from "./recipeShopOffer";
+import { RecipeShopSource } from "../../../../Lib/src/packets/interaction/ReactionCollectorRecipeShopSmallEvent";
 
 /**
  * Return the min rarity the player can get on an item
@@ -142,6 +148,24 @@ export const smallEventFuncs: SmallEventFuncs = {
 			response.push(makePacket(ErrorPacket, { message: "SmallEvent Ultimate Food Merchant : cannot determine an interaction for the user" }));
 			return;
 		}
+
+		// Gaspard Jo, the ultimate food merchant, may also sell a cooking recipe if one is available and the player can afford it
+		const offer = await RecipeDiscoveryService.peekNextDiscovery(player, RecipeDiscoverySource.GASPARD_JO, GASPARD_JO_RECIPE_COSTS);
+		if (offer && player.money >= offer.cost) {
+			openRecipeShopOffer({
+				response,
+				player,
+				context,
+				source: RecipeShopSource.GASPARD_JO,
+				offer,
+				ultimateFoodMerchant: {
+					interactionName: packet.interactionName,
+					amount: packet.amount
+				}
+			});
+			return;
+		}
+
 		response.push(makePacket(SmallEventUltimateFoodMerchantPacket, packet));
 	}
 };
