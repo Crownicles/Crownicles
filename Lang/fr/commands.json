@@ -1333,7 +1333,7 @@
         "upgradeBuilding": {
           "shop": "{emote:city.guildDomain.shop} Boutique Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "shelter": "{emote:city.guildDomain.shelter} Refuge Niv.{{level}} ({{cost}} {emote:unitValues.money})",
-          "pantry": "{emote:city.guildDomain.pantry} Garde-manger Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "pantry": "{emote:city.guildDomain.pantry} Entrepôt Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "trainingGround": "{emote:city.guildDomain.trainingGround} Ménagerie Niv.{{level}} ({{cost}} {emote:unitValues.money})"
         },
         "upgradeConfirmDescription": "{emote:collectors.warning} Cette validation améliorera **{{building}}** au **niveau {{level}}** pour **{{cost}} {emote:unitValues.money}** depuis la trésorerie.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
@@ -1342,7 +1342,7 @@
         "buildings": {
           "shop": "Boutique",
           "shelter": "Refuge",
-          "pantry": "Garde-manger",
+          "pantry": "Entrepôt",
           "trainingGround": "Ménagerie"
         },
         "leaveDomain": "Quitter le domaine",
@@ -1391,14 +1391,14 @@
             "depositSmallNameButton": "Bourse ({{cost}} -> +{{treasury}})",
             "depositBigNameButton": "Sac d'or ({{cost}} -> +{{treasury}})",
             "depositHugeNameButton": "Coffre ({{cost}} -> +{{treasury}})",
-            "noFoodAvailable": "{emote:messages.info} Le garde-manger de la guilde est plein ou la trésorerie est insuffisante.",
+            "noFoodAvailable": "{emote:messages.info} L'entrepôt de la guilde est plein ou la trésorerie est insuffisante.",
             "quantityPrompt": "Combien de **{{food}}** souhaitez-vous acheter ?\n\nRéserves actuelles : **{{stock}}/{{cap}}**\nPrix unitaire : **{{price, number}}** {emote:unitValues.money}\nTrésorerie disponible : **{{treasury, number}}** {emote:unitValues.money}",
             "quantityButton": "x{{amount}} ({{cost, number}})",
             "quantityCancel": "Retour",
             "reimburseTitle": "{emote:unitValues.money} Rembourser la guilde ?",
-            "buyFoodConfirmDescription": "{emote:collectors.warning} Cette validation achètera **{{amount}}x {{food}}** {emote:foods.{{foodType}}} pour le garde-manger de guilde. **{{cost}} {emote:unitValues.money}** seront prélevés sur la trésorerie.\n\nStock actuel : **{{stock}}/{{cap}}**\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
-            "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** {emote:foods.{{foodType}}} dans le garde-manger de la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
-            "buyFoodError": "L'achat a échoué : la trésorerie est insuffisante ou le garde-manger est plein. Un autre membre vient peut-être d'acheter de la nourriture en même temps que vous. Relancez {command:report} pour voir l'état actuel.",
+            "buyFoodConfirmDescription": "{emote:collectors.warning} Cette validation achètera **{{amount}}x {{food}}** {emote:foods.{{foodType}}} pour l'entrepôt de guilde. **{{cost}} {emote:unitValues.money}** seront prélevés sur la trésorerie.\n\nStock actuel : **{{stock}}/{{cap}}**\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
+            "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** {emote:foods.{{foodType}}} dans l'entrepôt de la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
+            "buyFoodError": "L'achat a échoué : la trésorerie est insuffisante ou l'entrepôt est plein. Un autre membre vient peut-être d'acheter de la nourriture en même temps que vous. Relancez {command:report} pour voir l'état actuel.",
             "depositTreasuryConfirmDescription": "{emote:collectors.warning} Cette validation versera **{{cost}} {emote:unitValues.money}** de votre argent personnel dans la trésorerie de guilde. Après commission, la guilde recevra **{{treasury}} {emote:unitValues.money}**.",
             "depositTreasurySuccess": "{emote:messages.info} L'intendant verse votre offrande dans le coffre. **+{{treasury, number}} {emote:unitValues.money}** dans la trésorerie de la guilde !",
             "depositTreasuryError": "Le versement a échoué : votre solde a peut-être changé entre temps. Relancez {command:report} pour voir l'état actuel.",
@@ -1416,11 +1416,11 @@
             "petTransferHint": "{emote:messages.info} Utilisez la commande {command:pettransfer} pour déplacer un familier entre votre inventaire et le refuge de la guilde."
           },
           "pantry": {
-            "title": "{emote:city.guildDomain.pantry} Garde-manger de guilde",
+            "title": "{emote:city.guildDomain.pantry} Entrepôt de guilde",
             "description": "{emote:city.guildDomain.pantry} Une cave voûtée aux murs épais garde la nourriture à l'abri de la chaleur et des nuisibles. Des étagères en chêne massif croulent sous les tonneaux de viande séchée, les paniers de baies et les caisses de provisions soigneusement étiquetées.",
             "autoFillHeader": "{emote:messages.info} **Approvisionnement quotidien** : chaque jour à minuit, l'intendant ajoute automatiquement à vos réserves (dans la limite des capacités) :",
             "autoFillLine": "• **+{{amount}} {{food}}** {emote:foods.{{foodType}}}",
-            "autoFillNone": "{emote:messages.info} Améliorez le garde-manger pour bénéficier d'un approvisionnement quotidien automatique en nourriture pour familiers."
+            "autoFillNone": "{emote:messages.info} Améliorez l'entrepôt pour bénéficier d'un approvisionnement quotidien automatique en nourriture pour familiers."
           },
           "training": {
             "title": "{emote:city.guildDomain.trainingGround} Ménagerie",
@@ -2759,7 +2759,7 @@
         "description": "Niveau {{level, number}}/{{maxLevel, number}}\nAbrite les familiers de la guilde."
       },
       "pantry": {
-        "name": "Garde-manger",
+        "name": "Entrepôt",
         "description": "Niveau {{level, number}}/{{maxLevel, number}}\nStocke la nourriture des familiers."
       },
       "trainingGround": {
