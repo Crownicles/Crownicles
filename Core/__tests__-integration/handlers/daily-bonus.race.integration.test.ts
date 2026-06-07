@@ -63,7 +63,7 @@ describe("DailyBonusCommand.activateDailyItem race", () => {
 			keycloakId: "race-daily-bonus",
 			money: 0
 		});
-		// Last daily a year ago → cooldown is comfortably expired.
+		// Last daily a year ago -> cooldown is comfortably expired.
 		const longAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
 		await InventoryInfo.create({
 			playerId: player.id,

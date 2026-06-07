@@ -136,8 +136,8 @@ describe("ExpeditionConstants", () => {
 			it("cave (skew 1.8) should produce higher risk than plains (skew 0.5) for same random value", () => {
 				// Higher skew factor means higher risk for same random value
 				// Formula: random^(1/skewFactor)
-				// Plains: 0.25^(1/0.5) = 0.25^2 = 0.0625 → low risk
-				// Cave: 0.25^(1/1.8) = 0.25^0.556 ≈ 0.46 → higher risk
+				// Plains: 0.25^(1/0.5) = 0.25^2 = 0.0625 -> low risk
+				// Cave: 0.25^(1/1.8) = 0.25^0.556 ≈ 0.46 -> higher risk
 				const plainsRisk = generateTerrainBasedRisk("plains", 0.25);
 				const caveRisk = generateTerrainBasedRisk("cave", 0.25);
 

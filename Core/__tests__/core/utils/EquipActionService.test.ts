@@ -292,8 +292,8 @@ describe("EquipActionService", () => {
 			];
 			mockInventoryInfo.slotLimitForCategory.mockReturnValue(2);
 
-			// Without home bonus: backup capacity = 2-1 = 1, already 1 backup → reserveFull
-			// With home bonus of 1: backup capacity = 3-1 = 2, only 1 backup → success
+			// Without home bonus: backup capacity = 2-1 = 1, already 1 backup -> reserveFull
+			// With home bonus of 1: backup capacity = 3-1 = 2, only 1 backup -> success
 			mockHome = {
 				getLevel: () => ({
 					features: {

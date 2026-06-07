@@ -39,7 +39,7 @@ export class BlessingManager {
 	private cachedBlessing: GlobalBlessing | null = null;
 
 	/**
-	 * In-memory tracker of contributions per player (keycloakId → total amount)
+	 * In-memory tracker of contributions per player (keycloakId -> total amount)
 	 * for the current pool cycle. Resets when a blessing is triggered or pool expires.
 	 */
 	private contributionsTracker: Map<string, number> = new Map();
@@ -296,8 +296,8 @@ export class BlessingManager {
 	private calculateNewThreshold(currentThreshold: number, fillDurationDays: number): number {
 		/*
 		 * ratio = targetDuration / actualDuration
-		 * Fast fill → ratio > 1 → threshold increases
-		 * Slow fill → ratio < 1 → threshold decreases
+		 * Fast fill -> ratio > 1 -> threshold increases
+		 * Slow fill -> ratio < 1 -> threshold decreases
 		 */
 		const ratio = BlessingConstants.TARGET_FILL_DAYS / Math.max(fillDurationDays, 0.1);
 		let newThreshold = Math.round(currentThreshold * ratio);

@@ -185,7 +185,7 @@ export async function handleApartmentClaimRentReaction(player: Player, apartment
 
 			const home = await Homes.getOfPlayer(lockedPlayer.id);
 			if (!lockedApartment.isRentedFor(home)) {
-				// Not rented out → no rent accrual. Surface as too-low.
+				// Not rented out -> no rent accrual. Surface as too-low.
 				pushIfNotNull(response, buildClaimTooLowPacket(lockedApartment, 0));
 				return;
 			}

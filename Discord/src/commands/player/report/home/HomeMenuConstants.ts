@@ -72,10 +72,10 @@ export const HomeMenuIds = {
 	/** Chest plant tab */
 	CHEST_PLANT_TAB: "CHEST_PLANT_TAB",
 
-	/** Prefix for chest plant deposit (player → home) */
+	/** Prefix for chest plant deposit (player -> home) */
 	CHEST_PLANT_DEPOSIT_PREFIX: "CHEST_PLANT_DEP_",
 
-	/** Prefix for chest plant withdraw (home → player) */
+	/** Prefix for chest plant withdraw (home -> player) */
 	CHEST_PLANT_WITHDRAW_PREFIX: "CHEST_PLANT_WDR_",
 
 	/** Prefix for chest plant tab pagination (target page number appended) */

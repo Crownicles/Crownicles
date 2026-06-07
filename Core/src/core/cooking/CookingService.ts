@@ -127,7 +127,7 @@ export class CookingService {
 	}
 
 	private static selectBestWood(woodByRarity: Map<number, MaterialStock[]>): WoodSelection | null {
-		// Priority: Common (1) → Uncommon (2) → Rare (3)
+		// Priority: Common (1) -> Uncommon (2) -> Rare (3)
 		for (const rarity of [
 			MaterialRarity.COMMON,
 			MaterialRarity.UNCOMMON,
