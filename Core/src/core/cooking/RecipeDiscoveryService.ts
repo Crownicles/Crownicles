@@ -9,9 +9,9 @@ import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 
-export interface RecipeDiscoveryPayResult {
-	discoveredRecipeId?: string;
-	recipeCost?: number;
+export interface RecipeDiscoveryOffer {
+	recipe: CookingRecipe;
+	cost: number;
 }
 
 /**
@@ -132,32 +132,47 @@ export class RecipeDiscoveryService {
 	}
 
 	/**
-	 * Try to discover a recipe from a source and pay for it.
-	 * Returns the discovered recipe id and cost if successful.
+	 * Peek the next recipe that would be discovered from a source and its cost,
+	 * without discovering it or charging the player.
+	 * Returns null if no undiscovered recipe is available for that source.
 	 */
-	static async tryDiscoverAndPay(params: {
-		player: Player;
-		source: RecipeDiscoverySource;
-		costs: readonly number[];
-		response: CrowniclesPacket[];
-	}): Promise<RecipeDiscoveryPayResult> {
-		const alreadyDiscovered = await RecipeDiscoveryService.countDiscoveredFromSource(params.player, params.source);
-		const cost = params.costs[Math.min(alreadyDiscovered, params.costs.length - 1)];
-		if (params.player.money >= cost) {
-			const discovered = await RecipeDiscoveryService.discoverFromSource(params.player, params.source);
-			if (discovered) {
-				await params.player.spendMoney({
-					amount: cost,
-					response: params.response,
-					reason: NumberChangeReason.SMALL_EVENT
-				});
-				await params.player.save();
+	static async peekNextDiscovery(player: Player, source: RecipeDiscoverySource, costs: readonly number[]): Promise<RecipeDiscoveryOffer | null> {
+		const candidates = RecipeDiscoveryService.getSortedCandidates(
+			r => !r.discoveredByDefault && r.discoverySource === source
+		);
+		for (const recipe of candidates) {
+			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipe.id)) {
+				const alreadyDiscovered = await RecipeDiscoveryService.countDiscoveredFromSource(player, source);
 				return {
-					discoveredRecipeId: discovered.id,
-					recipeCost: cost
+					recipe,
+					cost: costs[Math.min(alreadyDiscovered, costs.length - 1)]
 				};
 			}
 		}
-		return {};
+		return null;
+	}
+
+	/**
+	 * Discover a specific recipe and charge the player for it.
+	 * Re-validates that the recipe is still undiscovered and affordable.
+	 * Returns true if the purchase succeeded.
+	 */
+	static async discoverAndPay(params: {
+		player: Player;
+		recipeId: string;
+		cost: number;
+		response: CrowniclesPacket[];
+	}): Promise<boolean> {
+		if (params.player.money < params.cost || await PlayerCookingRecipe.isRecipeDiscovered(params.player, params.recipeId)) {
+			return false;
+		}
+		await PlayerCookingRecipe.discoverRecipe(params.player, params.recipeId);
+		await params.player.spendMoney({
+			amount: params.cost,
+			response: params.response,
+			reason: NumberChangeReason.SMALL_EVENT
+		});
+		await params.player.save();
+		return true;
 	}
 }

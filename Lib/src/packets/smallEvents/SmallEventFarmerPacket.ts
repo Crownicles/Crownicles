@@ -8,8 +8,4 @@ export class SmallEventFarmerPacket extends SmallEventPacket {
 	interactionName!: string;
 
 	amount?: number;
-
-	discoveredRecipeId?: string;
-
-	recipeCost?: number;
 }
