@@ -32,8 +32,6 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 	mapLocationId!: number;
 
-	enterCityTimestamp!: number;
-
 	/**
 	 * If set, the Discord side should auto-navigate to this menu after rendering.
 	 * Used to keep the player in the chest menu after a deposit/withdraw action.

@@ -167,7 +167,7 @@ async function tryHandleStationaryInCity(params: {
 		return false;
 	}
 	if (currentEffectFinished) {
-		await sendCityCollector(context, response, player, currentDate, city, { forceSpecificEvent });
+		await sendCityCollector(context, response, player, city, { forceSpecificEvent });
 	}
 	else {
 		await sendTravelPath(player, response, currentDate, player.effectId);
@@ -423,7 +423,6 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 						params.context,
 						closeResponse,
 						params.player,
-						new Date(),
 						params.city,
 						{ forceSpecificEvent: params.forceSpecificEvent }
 					);
@@ -547,7 +546,6 @@ async function sendCityCollector(
 	context: PacketContext,
 	response: CrowniclesPacket[],
 	player: Player,
-	currentDate: Date,
 	city: City,
 	options: {
 		forceSpecificEvent: number; initialMenu?: string;
@@ -662,7 +660,6 @@ async function sendCityCollector(
 		: undefined;
 
 	const collectorData: ReactionCollectorCityData = {
-		enterCityTimestamp: TravelTime.getTravelDataSimplified(player, currentDate).travelStartTime,
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
 		mapLocationId: player.getDestinationId()!,
 		inns: city.inns.map(inn => ({
