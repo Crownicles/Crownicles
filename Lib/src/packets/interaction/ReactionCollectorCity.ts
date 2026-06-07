@@ -41,12 +41,6 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	initialMenu?: string;
 
 	/**
-	 * Set when the city menu is reopened after closing a city shop.
-	 * Discord should then render on the shop message itself.
-	 */
-	reopenedFromShop?: boolean;
-
-	/**
 	 * Standalone mode used by the /garden command.
 	 * When true:
 	 * - Lib emits only the garden home reactions plus a single "close" (refuse) reaction.
