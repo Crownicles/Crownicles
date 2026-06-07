@@ -63,7 +63,7 @@ describe("GuildDomainConstants.getMaxBuyableFood", () => {
 			0, 0, 0, 0
 		];
 
-		// 25 money / 20 price = 1.25 → 1
+		// 25 money / 20 price = 1.25 -> 1
 		const result = GuildDomainConstants.getMaxBuyableFood(25, current, foodCaps);
 		expect(result[0]).toBe(1);
 	});

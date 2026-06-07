@@ -55,7 +55,7 @@ describe("TannerShopItems.getPlantSlotExtensionShopItem race", () => {
 	});
 
 	it(`grants exactly one slot when ${N_CONCURRENT} callers race at MAX-1`, async () => {
-		// Pick the price for the LAST upgrade (the MAX-1 → MAX transition).
+		// Pick the price for the LAST upgrade (the MAX-1 -> MAX transition).
 		const priceIndex = PlantConstants.MAX_PLANT_SLOTS - 1 - PlantConstants.DEFAULT_PLANT_SLOTS;
 		const price = PlantConstants.PLANT_SLOT_PRICES[priceIndex];
 		const initialMoney = price * (N_CONCURRENT + 1);

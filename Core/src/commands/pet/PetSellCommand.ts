@@ -128,7 +128,7 @@ type LockedSellState = {
  * Re-check every invariant against the freshly-locked rows and, if
  * everything still holds, atomically:
  * - decrement buyer money (with logs)
- * - swap pet ownership (seller.petId → null, buyer.petId → pet.id)
+ * - swap pet ownership (seller.petId -> null, buyer.petId -> pet.id)
  * - reset pet love points to base
  * - credit the seller's guild treasury (minus penalty)
  * - save all four rows in a single Promise.all under the same TX.

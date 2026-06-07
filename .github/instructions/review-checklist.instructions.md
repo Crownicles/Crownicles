@@ -24,7 +24,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **Constants in the right location** — shared constants go in `Lib/src/constants/`, not duplicated across services
 - [ ] **No duplicate constants** — search for similar values already defined elsewhere before creating new ones
 - [ ] **Magic numbers as named constants** — any numeric literal in algorithms (primes, multipliers, masks) must be a named constant. Trivial values (0, 1, -1) in obvious contexts are acceptable
-- [ ] **Pre-compute derived constants** — when a constant is always used in a derived form (e.g., hours → milliseconds), compute the derived value at the constant definition level (`FOO_MS = FOO_HOURS * 3_600_000`) and use that directly. Don't repeat the conversion formula at every call site
+- [ ] **Pre-compute derived constants** — when a constant is always used in a derived form (e.g., hours -> milliseconds), compute the derived value at the constant definition level (`FOO_MS = FOO_HOURS * 3_600_000`) and use that directly. Don't repeat the conversion formula at every call site
 - [ ] **No redundant unit conversion round-trips** — chains like `millisecondsToHours(asMilliseconds(x))` cancel out and reveal that `x` is already in the target unit (or that the conversion functions are misused). Use the unit-typed helpers from `Lib/src/utils/TimeUtils` / `TimeTypes` directly, and avoid hardcoding raw factors like `3600000` next to them — combine them with the existing helpers (`asMilliseconds(Hour(remainingHours))`, etc.)
 
 ## 2. TypeScript Types
@@ -68,7 +68,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 
 - [ ] **No repeated code blocks** — if 2+ places share similar logic (e.g., creating collectors, building menus), extract a shared helper
 - [ ] **No repeated field-level operations** — if the same 3+ field assignments appear in multiple places (e.g., copying `itemId`, `itemLevel`, `itemEnchantmentId`), extract a `copyX` / `clearX` helper function
-- [ ] **Shared utilities in appropriate scope** — helper used by one class → private method; used across files → utility function; used across services → Lib
+- [ ] **Shared utilities in appropriate scope** — helper used by one class -> private method; used across files -> utility function; used across services -> Lib
 - [ ] **Cross-file duplicate functions** — search for identical or near-identical private functions across command files (e.g., `withUnlimitedMaxValue` in both EquipCommand and ChestFeatureHandler) and move to a shared utility class
 - [ ] **TypeScript overloads over duplicated functions** — when two functions differ only by type parameters/return types (e.g., `getBlacksmithUpgradeItem`/`getBlacksmithDisenchantItem`), use TypeScript function overloads with a single implementation
 - [ ] **Reuse existing Lib utilities** — before implementing utility logic (e.g., `frac()`, `getWeekNumber()`), check if a shared function already exists in `Lib/src/utils/`

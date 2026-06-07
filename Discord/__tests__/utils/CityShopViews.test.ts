@@ -173,7 +173,7 @@ describe("buildItemDisplay", () => {
 	});
 
 	it("derives base unit price from the smallest-amount reaction for multi-bundle items", () => {
-		// 1@100 + 10@500 → smallest bundle drives baseUnitPrice = 100 (not the bulk-discount 50).
+		// 1@100 + 10@500 -> smallest bundle drives baseUnitPrice = 100 (not the bulk-discount 50).
 		const display = buildItemDisplay(
 			baseData,
 			reactionsFor(ShopItemType.RANDOM_ITEM, [
@@ -251,7 +251,7 @@ describe("buildItemDisplay", () => {
 
 	it("falls back to the generic label when DAILY_POTION resolver has no potion data", () => {
 		const display = buildItemDisplay(
-			baseData, // additionalShopData = {} → no dailyPotion field
+			baseData, // additionalShopData = {} -> no dailyPotion field
 			reactionsFor(ShopItemType.DAILY_POTION, [{
 				amount: 1, price: 100
 			}]),
@@ -263,7 +263,7 @@ describe("buildItemDisplay", () => {
 
 	it("falls back to the generic label when a weekly plant tier has no plantId data", () => {
 		const display = buildItemDisplay(
-			baseData, // additionalShopData = {} → no weeklyPlants array
+			baseData, // additionalShopData = {} -> no weeklyPlants array
 			reactionsFor(ShopItemType.WEEKLY_PLANT_TIER_2, [{
 				amount: 1, price: 1
 			}]),

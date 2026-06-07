@@ -114,7 +114,7 @@ describe("Translation files should not contain emoji characters", () => {
 
 		if (violations.length > 0) {
 			const report = violations
-				.map(v => `  ${v.lang}/${v.file} → ${v.key}: found ${v.emoji} in "${v.text}"`)
+				.map(v => `  ${v.lang}/${v.file} -> ${v.key}: found ${v.emoji} in "${v.text}"`)
 				.join("\n");
 			expect.fail(
 				`Found ${violations.length} emoji(s) in translation files. ` +
