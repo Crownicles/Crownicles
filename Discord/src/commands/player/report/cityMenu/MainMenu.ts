@@ -17,9 +17,6 @@ import {
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
 import {
-	asMilliseconds, millisecondsToSeconds
-} from "../../../../../../Lib/src/utils/TimeUtils";
-import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector,
 	CrowniclesNestedMenus
@@ -434,8 +431,7 @@ export function getMainMenu(params: CityMenuParams): CrowniclesNestedMenu {
 			i18n.t("commands:report.city.description", {
 				lng,
 				mapLocationId: data.mapLocationId,
-				mapTypeId: data.mapTypeId,
-				enterCityTimestamp: millisecondsToSeconds(asMilliseconds(data.enterCityTimestamp))
+				mapTypeId: data.mapTypeId
 			})
 		)
 	);

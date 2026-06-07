@@ -26,7 +26,6 @@ import {
 	buildGardenData, handleGardenCompostReaction
 } from "../../core/report/ReportGardenService";
 import { MapLocationDataController } from "../../data/MapLocation";
-import { TravelTime } from "../../core/maps/TravelTime";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { HomeNestedMenuIds } from "../../../../Lib/src/constants/HomeNestedMenuIds";
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
@@ -97,7 +96,6 @@ async function buildGardenCollectorData(params: GardenCollectorDataParams): Prom
 
 	return {
 		gardenOnly: true,
-		enterCityTimestamp: TravelTime.getTravelDataSimplified(params.player, new Date()).travelStartTime,
 		mapTypeId: MapLocationDataController.instance.getById(destinationId)!.type,
 		mapLocationId: destinationId,
 		energy: buildEnergyData(params.player, playerActiveObjects),
