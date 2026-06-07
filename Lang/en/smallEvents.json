@@ -2697,18 +2697,18 @@
   "gardener": {
     "stories": {
       "first": [
-        "An old man with a dirty apron and with calles hands calls you from a small plot of land on the edge of the path. He likes TheÃ©obald, an interesting gardener, and invites you to admire his plants with unconcealed pride. ",
-        "you see a kneeling man at the foot of a tree, fingers plunged into the earth. He stands up when he sees you, pushes his knees and greets you warmly. He says he is called TheÃ©obald and dedicates his life to the art of gardening. ",
-        "A smell of wet soil and fresh leaves attracts you to a small improvised camp on the edge of the trail. A gardener named TheÃ©obald, watering hand and flowered hat on the tee, welcomes you with a big smile. ",
-        "You don't have to walk on a seedlings carefully arranged on the edge of the path. An old man springs out of a nearby bush and bursts into laughter as TheÃ©obald, may be walking gardener. ",
-        "a man with a face burned by the sun signs you from a small garden on the roadside. This man, a certain TheÃ©obald, seems to know each plant by his name and insists on sharing his knowledge with travellers. "
+        "An old man with a dirty apron and with calles hands calls you from a small plot of land on the edge of the path. He likes Théobald, an interesting gardener, and invites you to admire his plants with unconcealed pride. ",
+        "you see a kneeling man at the foot of a tree, fingers plunged into the earth. He stands up when he sees you, pushes his knees and greets you warmly. He says he is called Théobald and dedicates his life to the art of gardening. ",
+        "A smell of wet soil and fresh leaves attracts you to a small improvised camp on the edge of the trail. A gardener named Théobald, watering hand and flowered hat on the tee, welcomes you with a big smile. ",
+        "You don't have to walk on a seedlings carefully arranged on the edge of the path. An old man springs out of a nearby bush and bursts into laughter as Théobald, may be walking gardener. ",
+        "a man with a face burned by the sun signs you from a small garden on the roadside. This man, a certain Théobald, seems to know each plant by his name and insists on sharing his knowledge with travellers. "
       ],
       "recurring": [
-        "An old man with a dirty apron and with calles hands calls you from a small plot of land on the edge of the path. You recognize TheÃ©obald, the beautiful gardener, who invites you to admire his plants with unconcealed pride. ",
-        "you see a kneeling man at the foot of a tree, fingers plunged into the earth. TheÃ©obald stands up when you see you, pushes his knees and greets you warmly. ",
-        "A smell of wet soil and fresh leaves attracts you to a small improvised camp on the edge of the trail. TheÃ©obald, hand watering and flowered hat on the skin, welcomes you with a big smile. ",
-        "You don't have to walk on a seedlings carefully arranged on the edge of the path. TheÃ©obald emerges from a neighboring bush – the air falsely overrides – and then bursts into laughter as you are grateful. ",
-        "a man with a face burned by the sun signs you from a small garden on the roadside. TheÃ©obald, faithful to his custom, seems to know each plant by its name and insists on sharing its knowledge with you. "
+        "An old man with a dirty apron and with calles hands calls you from a small plot of land on the edge of the path. You recognize Théobald, the beautiful gardener, who invites you to admire his plants with unconcealed pride. ",
+        "you see a kneeling man at the foot of a tree, fingers plunged into the earth. Théobald stands up when you see you, pushes his knees and greets you warmly. ",
+        "A smell of wet soil and fresh leaves attracts you to a small improvised camp on the edge of the trail. Théobald, hand watering and flowered hat on the skin, welcomes you with a big smile. ",
+        "You don't have to walk on a seedlings carefully arranged on the edge of the path. Théobald emerges from a neighboring bush – the air falsely overrides – and then bursts into laughter as you are grateful. ",
+        "a man with a face burned by the sun signs you from a small garden on the roadside. Théobald, faithful to his custom, seems to know each plant by its name and insists on sharing its knowledge with you. "
       ]
     },
     "rewards": {
@@ -2723,7 +2723,7 @@
           "Theobald shows you a seed he examines in the light. After having exchanged **{{cost}} {emote:unitValues.money}**, you store this **seed** {emote:smallEvents.gardener} in your bag."
         ],
         "moon": [
-          "TheÃ©obald lifts his eyes to the night sky and smiles when he sees the moon glow. He takes a seed out of his bag presumptuously whispering that this plant can only be entrusted under sufficient moonlight. You receive a **seed** {emote:smallEvents.gardener}."
+          "Théobald lifts his eyes to the night sky and smiles when he sees the moon glow. He takes a seed out of his bag presumptuously whispering that this plant can only be entrusted under sufficient moonlight. You receive a **seed** {emote:smallEvents.gardener}."
         ],
         "night": [
           "Theobald watches the dark sky with satisfaction. The night is ideal for entrusting this seed, because the plant needs darkness to flourish. You receive a **seed** {emote:smallEvents.gardener}."
@@ -2738,7 +2738,7 @@
           "The gardener sets his eyes in front of your pheenix and claims that he had not seen one for decades. He gives you a **seed** {emote:smallEvents.gardener}, convinced that your companion's flames will help him grow."
         ],
         "fireItem": [
-          "TheÃ©obald repeats your equipment forged in fire and nods. Affinity with flame is essential for cultivating this fiery plant, he explains by offering you a **seed** {emote:smallEvents.gardener}."
+          "Théobald repeats your equipment forged in fire and nods. Affinity with flame is essential for cultivating this fiery plant, he explains by offering you a **seed** {emote:smallEvents.gardener}."
         ],
         "carnivorePet": [
           "The gardener observes your impressive familiar carnivore with a mix of respect and prudence. Your companion will be able to make sure that this plant is not short of anything, he concludes by holding you a **seed** {emote:smallEvents.gardener}."
@@ -2753,7 +2753,7 @@
           "Theobald frowns by evaluating your stature. Nature requires a minimum of maturity to grab this seed, and you will need to reach **level {{level}}**."
         ],
         "needGarden": [
-          "TheÃ©obald leans the tone by learning that you do not have a garden. He advises you to invest in a **home with a garden** before coming back.",
+          "Théobald leans the tone by learning that you do not have a garden. He advises you to invest in a **home with a garden** before coming back.",
           "The gardener sighs. No garden, no need to clutter new seeds. Get a **home with a garden space** and come back."
         ],
         "needMoney": [
@@ -2765,7 +2765,7 @@
           "Theobald shakes the hue. The next seed requires a companion close to nature. Return with a **herbivore pet** that you have **fully tamed**."
         ],
         "needNight": [
-          "TheÃ©obald looks at the sun still high in the sky and sigh. The next seed can only be gifted at **fall of the night**. Come back when the sun has set.",
+          "Théobald looks at the sun still high in the sky and sigh. The next seed can only be gifted at **fall of the night**. Come back when the sun has set.",
           "The gardener observes the bright sky and shakes the hue. This particuly seed only trusts in the **darkened at night**."
         ],
         "needMoonlight": [
@@ -2773,7 +2773,7 @@
           "Theobald scrutinizes the firmament by narrowing his eyes. This seed requires a **powerful moonlight to be gifted. Return to a brighter night."
         ],
         "needFireAffinity": [
-          "TheÃ©obald shakes the tint. The next seed requires an affinity with the fire. You would need to **mage**, have a **pheenix** or wear a **equipment forged in the flames**.",
+          "Théobald shakes the tint. The next seed requires an affinity with the fire. You would need to **mage**, have a **pheenix** or wear a **equipment forged in the flames**.",
           "The gardener looks at you in thought. This fiery seed can only be cultivated by someone tied to fire: a **mage**, a maiden of **pheenix**, or a wielder of **flame weapon**."
         ],
         "needCarnivorePet": [
@@ -2789,23 +2789,23 @@
           "Theobald shakes the tone by seeing your bag full. **Plant your current seed** before asking for a new one."
         ],
         "allSeedsObtained": [
-          "TheÃ©obald warmly congratulates you by seeing all the plants in your garden. You have already obtained **all its seeds** and it has nothing left to offer you, but it is proud of your garden.",
+          "Théobald warmly congratulates you by seeing all the plants in your garden. You have already obtained **all its seeds** and it has nothing left to offer you, but it is proud of your garden.",
           "The old gardener shakes your hand warmly. You've accomplished everything he could teach you. Your garden is a **masterpiece**, he says tears to his eyes."
         ],
         "noPlantSpace": [
-          "TheÃ©obald wanted to offer you a plant, but your inventory is already full. It shrugs with a smile and wishes you well.",
+          "Théobald wanted to offer you a plant, but your inventory is already full. It shrugs with a smile and wishes you well.",
           "The gardener searches in his reserves, but finds that you have **no space to transport a plant. He advises you to cut a plant."
         ],
         "refused": [
-          "You politely delineate TheÃ©obald's offer. The gardener puts the seed in his bag with an comprehensive smile and wishes you well.",
-          "You don't have the means yet. TheÃ©obald nods the tone and invites you to come back when you're ready."
+          "You politely delineate Théobald's offer. The gardener puts the seed in his bag with an comprehensive smile and wishes you well.",
+          "You don't have the means yet. Théobald nods the tone and invites you to come back when you're ready."
         ],
         "tipBuyHome": [
-          "TheÃ©obald watches you for a moment and asks you if you have a good place. In front of your silence, he advises you to grab a **house** to enhance a garden.",
+          "Théobald watches you for a moment and asks you if you have a good place. In front of your silence, he advises you to grab a **house** to enhance a garden.",
           "The gardener is amazed that you don't have a house yet. It is recommended that you **buy one** of it as possible to grow your own garden."
         ],
         "tipUpgradeForGarden": [
-          "TheÃ©obald glances at sunshine and learns that your home does not yet have a garden. He advises you to **improve your accommodation** to add a few plots.",
+          "Théobald glances at sunshine and learns that your home does not yet have a garden. He advises you to **improve your accommodation** to add a few plots.",
           "The gardener suggests that you **enlarge your house** to enhance a culture space. A good garden requires a good field, he says."
         ],
         "tipPlantSeed": [
@@ -2813,7 +2813,7 @@
           "Theobald frowns by seeing the seed in your bag. You should not let it sleep, **plant it in your garden** as soon as possible, he says."
         ],
         "tipHarvestReady": [
-          "TheÃ©obald sniffs the air and smiles. It feels that some of your plants are **suitable for harvesting**. Go to your house to pick them before they fade out, he advises.",
+          "Théobald sniffs the air and smiles. It feels that some of your plants are **suitable for harvesting**. Go to your house to pick them before they fade out, he advises.",
           "The gardener, heavenly, ensures that your garden requires your attention. Some plants are **mutated and harvested**."
         ],
         "tipEmptyPlots": [
@@ -2821,17 +2821,17 @@
           "The gardener shakes the tone thinking of your unoccupied plots. A good gardener never leaves the land unspoilt, so he advises you to **fill your empty slots**."
         ],
         "tipUpgradeSoil": [
-          "TheÃ©obald tells you that the quality of your land leaves something to be desired. **Upgrade your house** to get a richer land that will grow your plants faster.",
+          "Théobald tells you that the quality of your land leaves something to be desired. **Upgrade your house** to get a richer land that will grow your plants faster.",
           "The gardener tastes some imaginary land and climbs. Your land is poor, your plants grow slowly. **Upgrade your house** to enrich your soil, advise them."
         ],
         "tipGeneric": [
-          "TheÃ©obald sits for a moment and shares with you one of his secrets: patience is the key to gardening. The most valuable plants are those that take the longest time to grow.",
+          "Théobald sits for a moment and shares with you one of his secrets: patience is the key to gardening. The most valuable plants are those that take the longest time to grow.",
           "The gardener contemplates the horizon and whispers that each plant tells a story, inviting you to take care of your garden regularly."
         ]
       },
       "plant": [
         "Impressed by your journey, the gardener searches its reserves and offers you one of its cultivated plants:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
-        "TheÃ©obald pulls a plant out of his cart and tends it to you with a malicious wink:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
+        "Théobald pulls a plant out of his cart and tends it to you with a malicious wink:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**",
         "The gardener, unable to give you seed, has managed one of his plants in memory of your encounter:\n\n{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**"
       ],
       "material": [
