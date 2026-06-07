@@ -108,7 +108,7 @@ export interface PlantType {
 
 /**
  * Definitions of all 10 plant types.
- * Growth times follow a geometric ~×1.5 progression from 4 hours
+ * Growth times follow a geometric ~x1.5 progression from 4 hours
  * (Common Herb) to 4 days (Ancient Tree) on rich soil.
  * Watering advances are scaled to ~1/12 of each plant's growth cycle.
  */

@@ -6,7 +6,7 @@ import { MaterialRarity } from "../types/MaterialRarity";
 export abstract class MaterialLootConstants {
 	/**
 	 * Relative weights used to bias weighted random material selection by rarity.
-	 * Common materials drop 6× more often than rare ones.
+	 * Common materials drop 6x more often than rare ones.
 	 */
 	static readonly RARITY_WEIGHTS: Record<MaterialRarity, number> = {
 		[MaterialRarity.COMMON]: 60,
