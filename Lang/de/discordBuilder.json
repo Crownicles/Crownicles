@@ -165,7 +165,7 @@
   },
   "garden": {
     "description": "Zugriff auf Ihren Garten, aus der Ferne, wenn Sie das Sylvesterherz besitzen.",
-    "name": "Garten"
+    "name": "garten"
   },
   "classesInfo": {
     "description": "Informationen über die für Ihren Charakter auswählbaren Klassen anzeigen.",
