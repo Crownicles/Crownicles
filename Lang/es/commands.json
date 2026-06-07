@@ -660,7 +660,7 @@
   },
   "materialLoot": {
     "title": "{emote:inventory.materials} Materiales recuperados :",
-    "line": "- {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**"
+    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) x**{{quantity}}**"
   },
   "ping": {
     "discord": {
@@ -822,7 +822,7 @@
     "city": {
       "placeholder": "Elija algo que hacer",
       "title": "{{pseudo}}¡Estás en la ciudad!",
-      "description": "{emote:commands.report} Te has unido a **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nLas calles empedradas cobran vida a tu alrededor: mercaderes, aventureros y artesanos se dedican a sus negocios. Muchos servicios están a tu disposición, pero el camino no espera a nadie.",
+      "description": "{emote:commands.report} Vous avez rejoint **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)**.\n\nLes rues pavées s'animent autour de vous : marchands, aventuriers et artisans vaquent à leurs occupations. De nombreux services s'offrent à vous, mais la route, elle, n'attend personne.",
       "buttons": {
         "enter": "Entre en",
         "visit": "Visite",
@@ -1024,12 +1024,12 @@
         "descriptionDisenchantOnly": "{emote:city.blacksmith.menu} El calor de las llamas te envuelve al entrar en la forja. El herrero nota el brillo mágico que emana de tu equipo encantado. Puede retirarlos limpiamente, sin dañar el equipo.",
         "descriptionNoItems": "{emote:city.blacksmith.menu} El calor de las llamas te envuelve al entrar en la forja. El herrero te observa un momento antes de encogerse de hombros. De momento no tiene nada en lo que trabajar.",
         "selectItemPlaceholder": "Seleccione un dispositivo",
-        "itemUpgradePreview": "nivel {{currentLevel}} → nivel {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
+        "itemUpgradePreview": "niv. {{currentLevel}} -> niv. {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
         "backToBlacksmith": "Volver al herrero",
         "backToBlacksmithDescription": "Vuelve al menú principal de la forja.",
         "upgradeTitle": "{{pseudo}}actualización de equipos",
         "upgradeSelectDescription": "{emote:ciudad.herrero.mejorar} El herrero coge sus herramientas y espera a que le indiques el equipo en el que trabajar.\n\n{user:unitValues.money} Tienes **{{money, number}}** {user:unitValues.money}",
-        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Mejora :** nivel {{currentLevel}} → nivel {{nextLevel}}\n**Coste de la mejora :** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Materiales necesarios :**\n{{materials}}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} -> niv. {{nextLevel}}\n**Coût de l'amélioration :** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Matériaux nécessaires :**\n{{materials}}",
         "missingMaterialsOffer": "Te faltan materiales. El herrero puede conseguírtelos por **{{missingMaterialsCost, number}}** {emote:unitValues.money} extra.",
         "confirmUpgrade": "Mejorar ({{cost, number}})",
         "buyMaterialsAndUpgrade": "Comprar y mejorar ({{cost, number}})",
@@ -1060,8 +1060,8 @@
         "upgradeDescription": "El herrero real detallará el coste, los materiales y las gemas necesarios para cada una de tus piezas de nivel 4.",
         "upgradeTitle": "{{pseudo}}el taller del herrero real",
         "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} El herrero real te invita a designar el equipo que llevarás en el nivel 5.\n\n{emote:unitValues.money} Tienes **{{money, number}}** {emote:unitValues.money} {{ ~ ~ }** {emote:unitValues.money} - {user:unitValues.gem} **{{gems, number}}** {user:unitValues.gem}",
-        "itemUpgradePreview": "nivel {{currentLevel}} → nivel 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
-        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Mejora :** nivel {{currentLevel}} → nivel 5\n**Coste de la mejora :** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Materiales necesarios :**\n{{materials}}",
+        "itemUpgradePreview": "niv. {{currentLevel}} -> niv. 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} -> niv. 5\n**Coût de l'amélioration :** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Matériaux nécessaires :**\n{{materials}}",
         "missingMaterialsOffer": "Te faltan materiales. El herrero real puede proporcionártelos por **{{missingMaterialsCost, number}}** {emote:unitValues.money} extra.",
         "confirmUpgrade": "Mejorar ({{cost, number}})",
         "buyMaterialsAndUpgrade": "Comprar y mejorar ({{cost, number}})",
@@ -1152,7 +1152,7 @@
           "buttonLabel": "Falsificador",
           "available": "{emote:city.homeUpgrades.upgradeEquipment} Tu banco de trabajo de equipamiento te permite mejorar tus armas y armaduras.",
           "title": "{{pseudo}}equipamiento banco de trabajo",
-          "itemDetails": "{{itemDisplay}}\n\n**Mejora:** nivel {{currentLevel}} → nivel {{nextLevel}}\n\n**Materiales necesarios:**\n{{materials}}",
+          "itemDetails": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} -> niv. {{nextLevel}}\n\n**Matériaux nécessaires :**\n{{materials}}",
           "confirmUpgrade": "Mejorar",
           "backToItems": "Volver a la lista",
           "descriptionWithItems": "{emote:city.homeUpgrades.upgradeEquipment} Estás delante de tu banco de trabajo, listo para forjar mejoras. Tu casa tiene un banco de trabajo {{stationQuality}} que se puede utilizar para trabajar el equipo a la rareza $t(items:rarities.{{maxRarity}}). {{levelLimitation}}\n\n**Selecciona un objeto para mejorar:**",
@@ -1234,7 +1234,7 @@
           "putAwayTalisman": "Guardando el Corazón Silvestre",
           "closeGarden": "Salir del jardín",
           "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Compostaje :**",
-          "compostLine": "- {emote:plantas.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materiales.{{materialId}}} $t(models:materials.{{materialId}})",
+          "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) -> {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
           "compost": {
             "button": "Compost",
             "selectTitle": "{emote:city.gardenStatus.compost} Selecciona una planta para compostar. Cada planta compostada te dará un material de su lista de posibles compost.",
@@ -1245,7 +1245,7 @@
             "cancelButton": "← Cancelar",
             "resultTitle": "{{pseudo}}cubo de compostaje",
             "resultDescription": "{emote:city.gardenStatus.compost} Has compostado **{{quantity}}** {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}). Esto es lo que has conseguido:\n{{materialsList}}",
-            "resultMaterialLine": "- **{{count}}** × {emote:materiales.{{materialId}}} $t(models:materials.{{materialId}})",
+            "resultMaterialLine": "• **{{count}}** x {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
             "notEnoughPlants": "{emote:mensajes.rechazar} No tienes suficientes {emote:plantas.{{plantId}}} $t(models:plants.{{plantId}}) para compostar **{{quantity}}**."
           }
         },
@@ -1333,7 +1333,7 @@
         "upgradeBuilding": {
           "shop": "{emote:city.guildDomain.shop} Tienda Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "shelter": "{emote:ciudad.gremioDominio.refugio} Refugio Niv.{{level}} ({{cost}} {emote:unidadValores.dinero})",
-          "pantry": "{emote:city.guildDomain.pantry} Nivel de despensa{{level}} ({{cost}} {emote:unitValues.money})",
+          "pantry": "{emote:city.guildDomain.pantry} Entrepôt Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "trainingGround": "{emote:ciudad.guildDomain.trainingGround} Menagerie Niv.{{level}} ({{cost}} {emote:unitValues.money})"
         },
         "upgradeConfirmDescription": "{emote:collectors.warning} Esta validación mejorará **{{building}}** en ** {{level}}** para **{{cost}} {emote:unitValues.money}** de Tesorería.\n\nPosición actual de tesorería: **{{treasury}} {emote:unitValues.money}**",
@@ -1342,7 +1342,7 @@
         "buildings": {
           "shop": "Tienda",
           "shelter": "Refugio",
-          "pantry": "Despensa",
+          "pantry": "Entrepôt",
           "trainingGround": "Menagerie"
         },
         "leaveDomain": "Abandonar el dominio",
@@ -1388,17 +1388,17 @@
             "treasuryButton": "Tesoro",
             "treasuryTitle": "Reposición de tesorería",
             "treasuryPrompt": "{emote:city.guildDomain.shop} El intendente puede transformar tu oro en dinero del gremio, por una comisión de {{penaltyPercent, number}}% (con un tope de {{penaltyMax, number}} {emote:unitValues.money}).\n\n{emote:unitValues.money} **Tu dinero** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Dinero del gremio** : {{treasury, number}} {emote:unitValues.money}",
-            "depositSmallNameButton": "Mercado de valores ({{cost}} → +{{treasury}})",
-            "depositBigNameButton": "Bolsa de oro ({{cost}} → +{{treasury}})",
-            "depositHugeNameButton": "Seguro ({{cost}} → +{{treasury}})",
-            "noFoodAvailable": "{La despensa del gremio está llena o la liquidez es insuficiente.",
+            "depositSmallNameButton": "Bourse ({{cost}} -> +{{treasury}})",
+            "depositBigNameButton": "Sac d'or ({{cost}} -> +{{treasury}})",
+            "depositHugeNameButton": "Coffre ({{cost}} -> +{{treasury}})",
+            "noFoodAvailable": "{emote:messages.info} L'entrepôt de la guilde est plein ou la trésorerie est insuffisante.",
             "quantityPrompt": "¿Cuántos **{{food}}** desea comprar?\n\nReservas actuales : **{{stock}}/{{cap}}**\nPrecio unitario : **{{price, number}}** {emote:unitValues.money}\nEfectivo disponible : **{{treasury, number}}** {emote:unitValues.money}",
             "quantityButton": "x{{amount}} ({{cost, number}})",
             "quantityCancel": "Volver",
             "reimburseTitle": "{emote:unitValues.money} ¿Reembolsar al gremio?",
-            "buyFoodConfirmDescription": "{emote:collectors.warning} Esta validación comprará **{{amount}}x {{food}}** {emote:foods.{{foodType}}} para la despensa del gremio. **{{cost}} {emote:unitValues.money}** se tomará de la tesorería.\n\nExistencias actuales : **{{stock}}/{{cap}}**\nPosición actual de tesorería: **{{treasury}} {emote:unitValues.money}**",
-            "buyFoodSuccess": "{emote:mensajes.info} El intendente guarda cuidadosamente **{{amount}}x {{food}}** {emote:alimentos.{{foodType}}} en la despensa del gremio. **{{totalCost, number}} {emote:unitValues.money}** han sido tomados de la tesorería.",
-            "buyFoodError": "La compra ha fracasado: no hay dinero suficiente o la despensa está llena. Puede que otro miembro haya comprado comida al mismo tiempo que tú. Reinicia {command:report} para ver el estado actual.",
+            "buyFoodConfirmDescription": "{emote:collectors.warning} Cette validation achètera **{{amount}}x {{food}}** {emote:foods.{{foodType}}} pour l'entrepôt de guilde. **{{cost}} {emote:unitValues.money}** seront prélevés sur la trésorerie.\n\nStock actuel : **{{stock}}/{{cap}}**\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
+            "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** {emote:foods.{{foodType}}} dans l'entrepôt de la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
+            "buyFoodError": "L'achat a échoué : la trésorerie est insuffisante ou l'entrepôt est plein. Un autre membre vient peut-être d'acheter de la nourriture en même temps que vous. Relancez {command:report} pour voir l'état actuel.",
             "depositTreasuryConfirmDescription": "{Esta validación pagará **{{cost}} {emote:unitValues.money}** de tu dinero personal a la tesorería del gremio. Después de la comisión, el gremio recibirá **{{treasury}} {emote:unitValues.money}**.",
             "depositTreasurySuccess": "{emote:messages.info} El mayordomo colocará tu ofrenda en la caja fuerte. **+{{treasury, number}} {emote:unitValues.money}** ¡en la tesorería del gremio!",
             "depositTreasuryError": "El pago falló: su saldo puede haber cambiado mientras tanto. Vuelva a ejecutar {command:report} para ver el estado actual.",
@@ -1416,11 +1416,11 @@
             "petTransferHint": "{Utiliza el comando {command:pettransfer} para mover una mascota entre tu inventario y la cabaña del gremio."
           },
           "pantry": {
-            "title": "{emote:ciudad.guildDominio.despensa} Despensa del gremio",
+            "title": "{emote:city.guildDomain.pantry} Entrepôt de guilde",
             "description": "{emote:city.guildDomain.pantry} Una bodega abovedada con gruesos muros mantiene los alimentos a salvo del calor y las plagas. Las sólidas estanterías de roble rebosan de barriles de carne seca, cestas de bayas y cajas de provisiones cuidadosamente etiquetadas.",
             "autoFillHeader": "{emote:messages.info} **Reposición diaria** : cada día a medianoche, el Intendente añadirá automáticamente a sus reservas (sujeto a capacidad) :",
             "autoFillLine": "- **+{{amount}} {{food}}** {emote:foods.{{foodType}}}",
-            "autoFillNone": "{Actualiza la despensa para un suministro diario automático de comida para mascotas."
+            "autoFillNone": "{emote:messages.info} Améliorez l'entrepôt pour bénéficier d'un approvisionnement quotidien automatique en nourriture pour familiers."
           },
           "training": {
             "title": "{emote:ciudad.guildDomain.trainingGround} Menagerie",
@@ -2759,7 +2759,7 @@
         "description": "Nivel {{level, number}}/{{maxLevel, number}}\nAlberga mascotas del gremio."
       },
       "pantry": {
-        "name": "Despensa",
+        "name": "Entrepôt",
         "description": "Nivel {{level, number}}/{{maxLevel, number}}\nAlmacena comida para mascotas."
       },
       "trainingGround": {
