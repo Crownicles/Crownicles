@@ -25,6 +25,8 @@ import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import {
 	FARMER_RECIPE_COSTS, RecipeDiscoverySource
 } from "../../../../Lib/src/constants/CookingConstants";
+import { openRecipeShopOffer } from "./recipeShopOffer";
+import { RecipeShopSource } from "../../../../Lib/src/packets/interaction/ReactionCollectorRecipeShopSmallEvent";
 
 const FARMER_INTERACTIONS = {
 	SALAD: "salad",
@@ -71,30 +73,38 @@ export const smallEventFuncs: SmallEventFuncs = {
 			guild = null;
 		}
 
-		const packet: SmallEventFarmerPacket = { interactionName: FARMER_INTERACTIONS.SALAD };
-
 		if (!guild || guild.herbivorousFood >= guild.getFoodCapacityFor(PetConstants.PET_FOOD.HERBIVOROUS_FOOD)) {
 			// Salad storage is full or no guild — farmer gives a random item instead
-			packet.interactionName = FARMER_INTERACTIONS.ITEM;
 			await giveItemToPlayer(response, context, player, generateRandomItem({ maxRarity: ItemRarity.RARE }));
+			response.push(makePacket(SmallEventFarmerPacket, { interactionName: FARMER_INTERACTIONS.ITEM }));
+			return;
 		}
-		else {
-			// Give salad to the guild
-			const maxGiveable = guild.getFoodCapacityFor(PetConstants.PET_FOOD.HERBIVOROUS_FOOD) - guild.herbivorousFood;
-			packet.amount = Math.min(RandomUtils.randInt(SALAD_AMOUNT.MIN, SALAD_AMOUNT.MAX + 1), maxGiveable);
-			await giveFoodToGuild(response, player, PetConstants.PET_FOOD.HERBIVOROUS_FOOD, packet.amount, NumberChangeReason.SMALL_EVENT);
 
-			// Discover a farmer recipe (costs money)
-			const discovery = await RecipeDiscoveryService.tryDiscoverAndPay({
+		// Give salad to the guild
+		const maxGiveable = guild.getFoodCapacityFor(PetConstants.PET_FOOD.HERBIVOROUS_FOOD) - guild.herbivorousFood;
+		const amount = Math.min(RandomUtils.randInt(SALAD_AMOUNT.MIN, SALAD_AMOUNT.MAX + 1), maxGiveable);
+		await giveFoodToGuild(response, player, PetConstants.PET_FOOD.HERBIVOROUS_FOOD, amount, NumberChangeReason.SMALL_EVENT);
+
+		// Offer to buy a farmer recipe if one is available and the player can afford it
+		const offer = await RecipeDiscoveryService.peekNextDiscovery(player, RecipeDiscoverySource.FARMER, FARMER_RECIPE_COSTS);
+		if (offer && player.money >= offer.cost) {
+			openRecipeShopOffer({
+				response,
 				player,
-				source: RecipeDiscoverySource.FARMER,
-				costs: FARMER_RECIPE_COSTS,
-				response
+				context,
+				source: RecipeShopSource.FARMER,
+				offer,
+				farmer: {
+					interactionName: FARMER_INTERACTIONS.SALAD,
+					amount
+				}
 			});
-			packet.discoveredRecipeId = discovery.discoveredRecipeId;
-			packet.recipeCost = discovery.recipeCost;
+			return;
 		}
 
-		response.push(makePacket(SmallEventFarmerPacket, packet));
+		response.push(makePacket(SmallEventFarmerPacket, {
+			interactionName: FARMER_INTERACTIONS.SALAD,
+			amount
+		}));
 	}
 };

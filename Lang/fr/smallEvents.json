@@ -1845,6 +1845,14 @@
       "Vous déclinez l'offre et reprenez votre chemin."
     ]
   },
+  "recipeShop": {
+    "offer": {
+      "farmer": "Avant que vous ne repreniez votre route, la fermière s'essuie les mains sur son tablier et vous confie, l'œil malicieux, qu'elle garde précieusement une vieille recette de famille. Elle accepte de vous transmettre la recette {{recipe}} contre {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Avant de remonter dans sa roulotte, Gaspard-Jo farfouille sous une pile de victuailles et en extirpe un vieux grimoire de cuisine tout corné. Avec un sourire complice, il vous propose de vous céder la recette {{recipe}} pour {{price}} {emote:unitValues.money}."
+    },
+    "refused": "Vous déclinez poliment l'offre et reprenez votre route, la recette restant un mystère pour une autre fois.",
+    "notEnoughMoney": "Vous fouillez vos poches à la recherche de quelques pièces, mais force est de constater que vous n'avez pas de quoi payer la recette. Dépité, vous reprenez votre chemin."
+  },
   "dwarfPetFan": {
     "intro": [
       "Sur le chemin serpentant dans l'ombre majestueuse du Mont Célestrum, une silhouette rabougrie émerge des terres rocailleuses. Talvar le Sage, vénérable nain aux cheveux d'argent, s'avance vers vous. Sa barbe tressée de fils d'or descend jusqu'à sa ceinture, et ses yeux verts pétillent d'une passion ancestrale pour toutes les créatures de ce monde.",

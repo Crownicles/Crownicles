@@ -22,7 +22,6 @@ import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { SmallEventConstants } from "../../../Lib/src/constants/SmallEventConstants";
 import { StringConstants } from "../../../Lib/src/constants/StringConstants";
 import { Language } from "../../../Lib/src/Language";
-import { buildRecipeDiscoveryMessage } from "../utils/SmallEventUtils";
 
 /**
  * Handle the pet food small event collector interaction
@@ -198,10 +197,6 @@ export function getPetFoodDescription(packet: SmallEventPetFoodPacket, lng: Lang
 			context: sexContext
 		});
 		result += `\n${loveMessage}`;
-	}
-
-	if (packet.discoveredRecipeId) {
-		result += `\n\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeId, lng, packet.recipeCost)}`;
 	}
 
 	return result;
