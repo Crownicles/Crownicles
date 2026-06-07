@@ -4,7 +4,7 @@ import {
 	SectionBuilder, TextDisplayBuilder
 } from "@discordjs/builders";
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, Collector, Message
+	ActionRowBuilder, ButtonBuilder, Collector, Message
 } from "discord.js";
 import { CrowniclesInteraction } from "./CrowniclesInteraction";
 import { disableRows } from "../utils/DiscordCollectorUtils";
@@ -136,32 +136,21 @@ export class CrowniclesNestedMenus {
 		return this._message;
 	}
 
-	public async send(interaction: CrowniclesInteraction, buttonInteraction?: ButtonInteraction): Promise<Message> {
+	public async send(interaction: CrowniclesInteraction): Promise<Message> {
 		const menu = this._mainMenu;
 		if (isV2Menu(menu)) {
 			this._isV2 = true;
 		}
 		const msg = isV2Menu(menu)
-			? await (buttonInteraction
-				? buttonInteraction.editReply({
-					embeds: [],
-					components: menu.containers,
-					flags: ["IsComponentsV2"]
-				})
-				: interaction.editReply({
-					embeds: [],
-					components: menu.containers,
-					flags: ["IsComponentsV2"]
-				}))
-			: await (buttonInteraction
-				? buttonInteraction.editReply({
-					embeds: [menu.embed],
-					components: menu.components
-				})
-				: interaction.editReply({
-					embeds: [menu.embed],
-					components: menu.components
-				}));
+			? await interaction.editReply({
+				embeds: [],
+				components: menu.containers,
+				flags: ["IsComponentsV2"]
+			})
+			: await interaction.editReply({
+				embeds: [menu.embed],
+				components: menu.components
+			});
 		if (!msg) {
 			throw new Error("Failed to send message");
 		}
