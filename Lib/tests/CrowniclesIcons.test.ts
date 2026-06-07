@@ -63,7 +63,7 @@ describe('CrowniclesIcons Unicode validation', () => {
 		if (failed.length > 0) {
 			console.error('\n❌ Not fully qualified icons:');
 			for (const f of failed) {
-				console.error(` - ${f.path} → "${f.value}" (${f.codePoints})`);
+				console.error(` - ${f.path} -> "${f.value}" (${f.codePoints})`);
 			}
 		}
 

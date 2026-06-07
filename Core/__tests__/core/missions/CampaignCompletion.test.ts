@@ -254,7 +254,7 @@ describe("Campaign.completeCampaignMissions", () => {
 			});
 
 			// The next mission (earnMoney, objective=500) has initialNumberDone=500
-			// meaning the player already qualifies → chain completion
+			// meaning the player already qualifies -> chain completion
 			// The mission after that (findItem, objective=3) has initialNumberDone=0
 			vi.spyOn(MissionsController, "getMissionInterface").mockReturnValue({
 				initialNumberDone: vi.fn()

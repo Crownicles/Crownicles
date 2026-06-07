@@ -76,7 +76,7 @@ interface ValidatedPinRecipe {
 
 /**
  * Temporary in-memory store for pending wood confirmations.
- * Maps keycloakId → { materialId, rarity, timeout } so that when a player
+ * Maps keycloakId -> { materialId, rarity, timeout } so that when a player
  * confirms, we know which wood was originally selected.
  * Entries auto-expire after 5 minutes to prevent memory leaks.
  */

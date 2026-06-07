@@ -38,7 +38,7 @@ export interface HomeFeatures {
 
 	/**
 	 * Maximum item level that can be achieved through upgrading at this home.
-	 * Level 1 means only +0 → +1 upgrades, Level 2 means +0 → +2 upgrades.
+	 * Level 1 means only +0 -> +1 upgrades, Level 2 means +0 -> +2 upgrades.
 	 */
 	maxItemUpgradeLevel: number;
 	gardenPlots: number;

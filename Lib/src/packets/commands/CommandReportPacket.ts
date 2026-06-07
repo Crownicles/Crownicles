@@ -462,7 +462,7 @@ export class CommandReportGardenHarvestRes extends CrowniclesPacket {
 	/** Number of plants that didn't fit and were composted */
 	plantsComposted!: number;
 
-	/** Materials generated from composting (plantId → materialId) */
+	/** Materials generated from composting (plantId -> materialId) */
 	compostResults!: {
 		plantId: PlantId;
 		materialId: number;

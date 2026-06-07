@@ -323,7 +323,7 @@ export class UpgradeStationFeatureHandler implements HomeFeatureHandler {
 			container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 			addCitySection({
 				container,
-				text: `${itemDisplay}\n+${item.details.itemLevel ?? 0} → +${item.nextLevel}`,
+				text: `${itemDisplay}\n+${item.details.itemLevel ?? 0} -> +${item.nextLevel}`,
 				customId: `${HomeMenuIds.UPGRADE_ITEM_PREFIX}${i}`,
 				buttonLabel: i18n.t("commands:report.city.buttons.upgrade", { lng: ctx.lng }),
 				emoji: CrowniclesIcons.city.blacksmith.upgrade

@@ -28,8 +28,8 @@ vi.mock("../../../src/app", () => ({
  * Without Object.assign(this, ...), the original player instance loses these changes.
  *
  * Example bug scenario without Object.assign:
- * 1. Player earns 100 money → triggers "earnMoney" mission
- * 2. "earnMoney" mission completes → gives +25 XP as reward
+ * 1. Player earns 100 money -> triggers "earnMoney" mission
+ * 2. "earnMoney" mission completes -> gives +25 XP as reward
  * 3. The +25 XP triggers "earnXP" mission and is reflected in returned newPlayer
  * 4. BUT the original 'this' player never receives the +25 XP
  * 5. Result: player.experience is out of sync with what was saved to DB

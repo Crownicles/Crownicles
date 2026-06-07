@@ -22,7 +22,7 @@ const N_CONCURRENT = 30;
  * money — never less, because that would prove a missing lock.
  *
  * Without the lock, two callers would each read e.g. money=0,
- * each compute money += amount, each save money=amount → final
+ * each compute money += amount, each save money=amount -> final
  * money=amount instead of 2*amount.
  */
 describe("MissionShopItems.getMoneyShopItem race", () => {

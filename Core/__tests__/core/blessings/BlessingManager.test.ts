@@ -451,7 +451,7 @@ describe("BlessingManager", () => {
 
 			const result = manager.simulateNewThreshold(1); // 1 day, target is 3
 
-			// ratio = 3/1 = 3, raw = 15000, delta = 10000 = MAX_THRESHOLD_STEP → clamped to 15000
+			// ratio = 3/1 = 3, raw = 15000, delta = 10000 = MAX_THRESHOLD_STEP -> clamped to 15000
 			expect(result).toBe(5000 + BlessingConstants.MAX_THRESHOLD_STEP);
 		});
 
@@ -469,7 +469,7 @@ describe("BlessingManager", () => {
 
 			const result = manager.simulateNewThreshold(0.1); // very fast
 
-			// ratio = 3/0.1 = 30, raw = 150000, delta = 145000 > MAX_THRESHOLD_STEP → 5000 + 10000
+			// ratio = 3/0.1 = 30, raw = 150000, delta = 145000 > MAX_THRESHOLD_STEP -> 5000 + 10000
 			expect(result).toBe(5000 + BlessingConstants.MAX_THRESHOLD_STEP);
 		});
 
@@ -487,7 +487,7 @@ describe("BlessingManager", () => {
 
 			const result = manager.simulateNewThreshold(1); // fast fill on high threshold
 
-			// ratio = 3, raw = 1485000, delta clamped → 495000 + 10000 = 505000, then clamped to MAX
+			// ratio = 3, raw = 1485000, delta clamped -> 495000 + 10000 = 505000, then clamped to MAX
 			expect(result).toBe(BlessingConstants.MAX_POOL_THRESHOLD);
 		});
 
@@ -496,7 +496,7 @@ describe("BlessingManager", () => {
 
 			const result = manager.simulateNewThreshold(0);
 
-			// Math.max(0, 0.1) = 0.1 → same as very fast fill
+			// Math.max(0, 0.1) = 0.1 -> same as very fast fill
 			expect(result).toBe(5000 + BlessingConstants.MAX_THRESHOLD_STEP);
 		});
 	});

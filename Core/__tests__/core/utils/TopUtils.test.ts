@@ -209,7 +209,7 @@ describe("TopStorage.askTop", () => {
 		it("should set rank to -1 when needFight > 0", async () => {
 			const result = await storage.askTop(TopKind.GLORY, 5, 3);
 			if ("data" in result && "elements" in result.data) {
-				// Player 5 exists but has needFight > 0 → not ranked
+				// Player 5 exists but has needFight > 0 -> not ranked
 				expect(result.data.contextRank).toBeUndefined();
 			}
 		});

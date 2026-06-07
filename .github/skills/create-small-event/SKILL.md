@@ -89,7 +89,7 @@ type SmallEventFuncs = {
 - Give health: `await player.addHealth({ amount, response, reason: NumberChangeReason.SMALL_EVENT }); await player.save();`
 - Random number: `RandomUtils.rangedInt(SmallEventConstants.RANGE)` or `RandomUtils.randInt(min, maxExclusive)`
 - Random pick from array: `array[RandomUtils.randInt(0, array.length)]`
-- Player map info: `MapLinkDataController.instance.getById(player.mapLinkId)` → `{ startMap, endMap, tripDuration }`
+- Player map info: `MapLinkDataController.instance.getById(player.mapLinkId)` -> `{ startMap, endMap, tripDuration }`
 - Check location: `Maps.isOnContinent(player)`, `Maps.isOnBoat(player)`, `Maps.isOnPveIsland(player)`
 
 ### 4. Icon (Lib)
@@ -169,23 +169,23 @@ Add a new entry at the end of the JSON (before the closing `}`):
 ## Useful Data Models
 
 ### Player
-- `player.mapLinkId` → current travel link
-- `player.level` → player level
-- `player.petId` → player's pet ID (null if no pet)
+- `player.mapLinkId` -> current travel link
+- `player.level` -> player level
+- `player.petId` -> player's pet ID (null if no pet)
 - `player.health` / `player.getMaxHealth()`
-- `player.guildId` → guild ID (null if no guild)
+- `player.guildId` -> guild ID (null if no guild)
 
 ### PetExpedition
 - `PetExpedition.findAll({ where: { mapLocationId, status: ExpeditionConstants.STATUS.IN_PROGRESS } })` — find active expeditions on a map
 - `PetExpeditions.getActiveExpeditionForPlayer(playerId)` — get player's active expedition
 
 ### PetEntity
-- `PetEntities.getById(id)` → `PetEntity`
-- `petEntity.getBasicInfo()` → `{ petTypeId, petSex, petNickname }`
+- `PetEntities.getById(id)` -> `PetEntity`
+- `petEntity.getBasicInfo()` -> `{ petTypeId, petSex, petNickname }`
 - `petEntity.isFeisty()` — check if pet is feisty
 
 ### MapLink
-- `MapLinkDataController.instance.getById(mapLinkId)` → `{ startMap, endMap, tripDuration }`
+- `MapLinkDataController.instance.getById(mapLinkId)` -> `{ startMap, endMap, tripDuration }`
 
 ## Checklist Before Committing
 
