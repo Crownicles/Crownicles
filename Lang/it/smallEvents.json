@@ -431,7 +431,7 @@
     ],
     "beaten_kraken": [
       "I tentacoli mozzati che pendono dal mantello di {{playerDisplay}} testimoniano la sua battaglia contro il Kraken al livello **{{bossLevel, number}}**. Una vittoria strappata all'abisso!",
-      "{{playerDisplay}} sent encore l'iode et l'encre noire : il a terrassé le Kraken au niveau **{{bossLevel, number}}** ! Les océans ne lui font plus peur.",
+      "{{playerDisplay}} profuma ancora di iodio e inchiostro nero: ha sconfitto il Kraken al livello **{{bossLevel, number}}**! Gli oceani non lo spaventano più.",
       "Incontrate {{playerDisplay}}, un avventuriero che è sopravvissuto agli abissi e ha sconfitto il terribile Kraken al livello **{{bossLevel, number}}**. I suoi occhi portano il peso dell'abisso."
     ],
     "beaten_leviathan": [
@@ -1845,6 +1845,14 @@
       "Declinate l'offerta e proseguite per la vostra strada."
     ]
   },
+  "recipeShop": {
+    "offer": {
+      "farmer": "Prima che riprendiate il vostro cammino, la contadina si asciuga le mani sul grembiule e vi confida, con uno sguardo malizioso, che custodisce gelosamente una vecchia ricetta di famiglia. Accetta di darvi la ricetta {{recipe}} in cambio di {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Prima di risalire sulla sua roulotte, Gaspard-Jo fruga sotto una pila di provviste e ne tira fuori un vecchio ricettario tutto sgualcito. Con un sorriso complice, vi propone di cedere la ricetta {{recipe}} per {{price}} {emote:unitValues.money}."
+    },
+    "refused": "Rifiutate gentilmente l'offerta e riprendete il vostro cammino, lasciando che la ricetta rimanga un mistero per un'altra occasione.",
+    "notEnoughMoney": "Ti frughi nelle tasche alla ricerca di qualche spicciolo, ma devi ammettere che non hai abbastanza soldi per pagare il conto. Deluso, riprendi la tua strada."
+  },
   "dwarfPetFan": {
     "intro": [
       "Sul sentiero che si snoda all'ombra maestosa del Monte Celestrum, una figura stentata emerge dal terreno roccioso. Talvar il Saggio, un venerabile nano dai capelli d'argento, avanza verso di voi. La sua barba, intrecciata con fili d'oro, arriva fino alla cintura e i suoi occhi verdi brillano di una passione ancestrale per tutte le creature di questo mondo.",
@@ -2564,9 +2572,9 @@
       "spiritual": "si trova un luogo di serenità, dove l'atmosfera è pacifica e favorevole al benessere. Si cerca nell'ambiente circostante qualche oggetto."
     },
     "foundStories": {
-      "1": "Ottimo! Avete trovato il seguente materiale comune {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incredibile! Avete messo le mani su un'attrezzatura molto insolita {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Che incredibile opportunità! Avete scoperto un raro materiale {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Hai trovato il seguente materiale in comune su {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Incredibile! Avete trovato un materiale {{rarityEmote}} davvero insolito: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Che fortuna incredibile! Avete scoperto un materiale {{rarityEmote}} raro: {{materialEmote}} **$t(models:materials.{{materialId}})**."
     }
   },
   "expeditionAdvice": {

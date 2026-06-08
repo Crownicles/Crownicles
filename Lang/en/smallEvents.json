@@ -1845,6 +1845,14 @@
       "You decline the offer and return to your path."
     ]
   },
+  "recipeShop": {
+    "offer": {
+      "farmer": "Before you continue on your way, the farmer’s wife wipes her hands on her apron and tells you, with a mischievous twinkle in her eye, that she treasures an old family recipe. She agrees to give you the recipe {{recipe}} in exchange for {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Before climbing back into his trailer, Gaspard-Jo rummages through a pile of provisions and pulls out an old, well-thumbed cookbook. With a knowing smile, he offers to sell you the recipe {{recipe}} for {{price}} {emote:unitValues.money}."
+    },
+    "refused": "You politely decline the offer and continue on your way, leaving the recipe a mystery for another time.",
+    "notEnoughMoney": "You rummage through your pockets looking for some change, but you realize you don't have enough to pay the bill. Disappointed, you go on your way."
+  },
   "dwarfPetFan": {
     "intro": [
       "On the path winding through the majestic shadow of Mount Celestrum, a stunted figure emerges from the rocky terrain. Talvar the Wise, a venerable silver-haired dwarf, strides towards you. His golden-braided beard reaches down to his belt, and his green eyes sparkle with an ancestral passion for all the creatures of this world.",
@@ -2564,9 +2572,9 @@
       "spiritual": "you will find a place full of security, where the atmosphere is peaceful and conducive to your property. You search the surrounding area for items or objects."
     },
     "foundStories": {
-      "1": "Great! You found the following common {{rarityEmote}} reference: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Amazing! You got your hands on an uncommon {{rarityEmote}} matter: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "What an unexpected chance! You have discovered a rare {{rarityEmote}} matter: {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "You found the following common material: {{rarityEmote}} {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Unbelievable! You've stumbled upon some unusual material: {{rarityEmote}} {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "What incredible luck! You've discovered a rare material: {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**."
     }
   },
   "expeditionAdvice": {

@@ -660,7 +660,7 @@
   },
   "materialLoot": {
     "title": "{emote:inventory.materials} Workstations started:",
-    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})×**{{quantity}}**"
+    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) x**{{quantity}}**"
   },
   "ping": {
     "discord": {
@@ -822,7 +822,7 @@
     "city": {
       "placeholder": "Choose something to do",
       "title": "{{pseudo}}, you are in town!",
-      "description": "{emote:commands.report} You have joined **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nThe streets around you liven up: merchants, adventurers and craftsmen go about their occupations. Many services are available to you, but the road does not wait for anyone.",
+      "description": "{emote:commands.report} You have joined **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)**.\n\nThe cobblestone streets come alive around you: merchants, adventurers, and artisans go about their business. Many services are available to you, but the road waits for no one.",
       "buttons": {
         "enter": "Enter",
         "visit": "Visit",
@@ -1024,12 +1024,12 @@
         "descriptionDisenchantOnly": "{emote:city.blacksmith.menu} The heat of the fire envelops you as you peel in the forge. The blacksmith notices the magical glow of your enchanted equipment. He can remove them cleanly, without the ability to equip.",
         "descriptionNoItems": "{emote:city.blacksmith.menu} The heat of the fire envelops you as you peel in the forge. The blacksmith is watching you for a moment before shrugs. You have nothing that he can work at the moment.",
         "selectItemPlaceholder": "Select a equipment",
-        "itemUpgradePreview": "lvl. {{currentLevel}} → lvl. {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
+        "itemUpgradePreview": "lev. {{currentLevel}} -> lev. {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
         "backToBlacksmith": "Return to the Blacksmith",
         "backToBlacksmithDescription": "Return to the blacksmith's main menu.",
         "upgradeTitle": "{{pseudo}}, Equipment Improvement",
         "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} The blacksmith grabs its tools and waits for you to get the equipment to work.\n\n{emote:unitValues.money} You have **{{money, number}}** {emote:unitValues.money}",
-        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Improvement :** lvl. {{currentLevel}} → lvl. {{nextLevel}}\n**Upgrade:** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Materies:**\n{{materials}}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Upgrade:** Lv. {{currentLevel}} -> Lv. {{nextLevel}}\n**Upgrade Cost:** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Required Materials:**\n{{materials}}",
         "missingMaterialsOffer": "You are missing some matches. The blacksmith can get them for **{{missingMaterialsCost, number}}** {emote:unitValues.money} additional.",
         "confirmUpgrade": "Upgrade ({{cost, number}})",
         "buyMaterialsAndUpgrade": "Buy & Upgrade ({{cost, number}})",
@@ -1060,8 +1060,8 @@
         "upgradeDescription": "The Royal Blacksmith will tailor for you the necessities and gems needed for each of your Tier 4 parts.",
         "upgradeTitle": "{{pseudo}}, the royal blacksmith's workshop",
         "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} The royal blacksmith invites you to sign the equipment to wear to level 5.\n\n{emote:unitValues. oney} You have **{{money, number}}** {emote:unitValues.money} · {emote:unitValues.gem} **{{gems, number}}** {emote:unitValues.gem}",
-        "itemUpgradePreview": "lvl. {{currentLevel}} → lvl. 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
-        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Improvement :** lvl. {{currentLevel}} → lvl. 5\n**Improvement cut:** {{upgradeCost, number}} {emote:unitValues. oney} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Required data:**\n{{materials}}",
+        "itemUpgradePreview": "level {{currentLevel}} -> level 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Upgrade:** Lv. {{currentLevel}} -> Lv. 5\n**Upgrade Cost:** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Required materials:**\n{{materials}}",
         "missingMaterialsOffer": "You are missing some sailors. The royal blacksmith can provide them to **{{missingMaterialsCost, number}}** {emote:unitValues.money} additional.",
         "confirmUpgrade": "Upgrade ({{cost, number}})",
         "buyMaterialsAndUpgrade": "Buy & Upgrade ({{cost, number}})",
@@ -1152,7 +1152,7 @@
           "buttonLabel": "Forging",
           "available": "{emote:city.homeUpgrades.upgradeEquipment} Your equipment bench allows you to upgrade your weapons and armour.",
           "title": "{{pseudo}}, equipment facility",
-          "itemDetails": "{{itemDisplay}}\n\n**Improvement:** Lvl {{currentLevel}} → Lvl {{nextLevel}}\n\n**Required:**\n{{materials}}",
+          "itemDetails": "{{itemDisplay}}\n\n**Upgrade:** Level {{currentLevel}} -> Level {{nextLevel}}\n\n**Required materials:**\n{{materials}}",
           "confirmUpgrade": "Improve",
           "backToItems": "Back to list",
           "descriptionWithItems": "{emote:city.homeUpgrades.upgradeEquipment} You stand in front of your workbench, ready to forge improvements. Your home has an {{stationQuality}} facility that allows you to work with equipment up to the rarity $t(items:rarities.{{maxRarity}}). {{levelLimitation}}\n\n**Select an equipment to improve:**",
@@ -1234,7 +1234,7 @@
           "putAwayTalisman": "Ranger Sylvester Heart",
           "closeGarden": "Leave Garden",
           "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Compost:**",
-          "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+          "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) -> {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
           "compost": {
             "button": "Composter",
             "selectTitle": "{emote:city.gardenStatus.compost} Select a composting plant. Each composite plant will bring you a master from its list of possible composts.",
@@ -1245,7 +1245,7 @@
             "cancelButton": "<unk> Cancel",
             "resultTitle": "{{pseudo}}, composter",
             "resultDescription": "{emote:city.gardenStatus.compost} You composted **{{quantity}}** {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}). Here's what you removed from it:\n{{materialsList}}",
-            "resultMaterialLine": "• **{{count}}** × {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+            "resultMaterialLine": "• **{{count}}** x {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
             "notEnoughPlants": "{emote:messages.refuse} You no longer have enough {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) in reserve to compost **{{quantity}}**."
           }
         },
@@ -1333,7 +1333,7 @@
         "upgradeBuilding": {
           "shop": "{emote:city.guildDomain.shop} Lv.{{level}} Store ({{cost}} {emote:unitValues.money})",
           "shelter": "{emote:city.guildDomain.shelter} Shelter Lv.{{level}} ({{cost}} {emote:unitValues.money})",
-          "pantry": "{emote:city.guildDomain.pantry} Food Guard Lv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "pantry": "{emote:city.guildDomain.pantry} Warehouse Lv.{{level}} ({{cost}} {emote:unitValues.money})",
           "trainingGround": "{emote:city.guildDomain.trainingGround} Lv.{{level}} ({{cost}} {emote:unitValues.money})"
         },
         "upgradeConfirmDescription": "{emote:collectors.warning} This validation will improve **{{building}}** to ** {{level}}** for **{{cost}} {emote:unitValues.money}** from the Treasure.\n\nCurrent Treasure: **{{treasury}} {emote:unitValues.money}**",
@@ -1342,7 +1342,7 @@
         "buildings": {
           "shop": "Shop",
           "shelter": "Shelter",
-          "pantry": "Dining Guard",
+          "pantry": "Warehouse",
           "trainingGround": "Measurement"
         },
         "leaveDomain": "Leave domain",
@@ -1388,17 +1388,17 @@
             "treasuryButton": "Treasurer",
             "treasuryTitle": "Bail Treasurer",
             "treasuryPrompt": "{emote:city.guildDomain.shop} The steward can turn your gold into a guild treasure, with a commission of {{penaltyPercent, number}}% (capped at {{penaltyMax, number}} {emote:unitValues. oney}).\n\n{emote:unitValues.money} **Your money** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Guild Treasure** : {{treasury, number}} {emote:unitValues.money}",
-            "depositSmallNameButton": "Stock Exchange ({{cost}} → +{{treasury}})",
-            "depositBigNameButton": "Golden Bag ({{cost}} → +{{treasury}})",
-            "depositHugeNameButton": "Chest ({{cost}} → +{{treasury}})",
-            "noFoodAvailable": "{emote:messages.info} The guild's food guard is full or the treasurer is insufficient.",
+            "depositSmallNameButton": "Stock Market ({{cost}} -> +{{treasury}})",
+            "depositBigNameButton": "Bag of Gold ({{cost}} -> +{{treasury}})",
+            "depositHugeNameButton": "Trunk ({{cost}} -> +{{treasury}})",
+            "noFoodAvailable": "{emote:messages.info} The guild warehouse is full, or there are insufficient funds.",
             "quantityPrompt": "How many **{{food}}** would you like to buy?\n\nCurrent reserves: **{{stock}}/{{cap}}**\nUnit price: **{{price, number}}** {emote:unitValues. oney}\nTreasurer available: **{{treasury, number}}** {emote:unitValues.money}",
             "quantityButton": "x{{amount}} ({{cost, number}})",
             "quantityCancel": "Back",
             "reimburseTitle": "{emote:unitValues.money} Refund Guild?",
-            "buyFoodConfirmDescription": "{emote:collectors.warning} This validation will buy **{{amount}}x {{food}}** {emote:foods.{{foodType}}} for the guild panel. **{{cost}} {emote:unitValues. oney}** will be prepended on the treasure.\n\nCurrent Stock: **{{stock}}/{{cap}}**\nCurrent Treasure: **{{treasury}} {emote:unitValues.money}**",
-            "buyFoodSuccess": "{emote:messages.info} The steward carefully sorted **{{amount}}x {{food}}** {emote:foods.{{foodType}}} in the guild panel. **{{totalCost, number}} {emote:unitValues.money}** have been raised on the treasure.",
-            "buyFoodError": "Purchase failed: the Treasurer is insufficient or the pantry is full. Perhaps another member has just bought food at the same time as you. Relaunch {command:report} to see the current state.",
+            "buyFoodConfirmDescription": "{emote:collectors.warning} This transaction will purchase **{{amount}}x {{food}}** {emote:foods.{{foodType}}} for the guild warehouse. **{{cost}} {emote:unitValues.money}** will be deducted from the treasury.\n\nCurrent stock: **{{stock}}/{{cap}}**\nCurrent treasury: **{{treasury}} {emote:unitValues.money}**",
+            "buyFoodSuccess": "{emote:messages.info} The steward carefully puts away **{{amount}}x {{food}}** {emote:foods.{{foodType}}} in the guild warehouse. **{{totalCost, number}} {emote:unitValues.money}** has been deducted from the treasury.",
+            "buyFoodError": "The purchase failed: you don't have enough funds, or the warehouse is full. Another member may have just bought food at the same time as you. Reload {command:report} to see the current status.",
             "depositTreasuryConfirmDescription": "{emote:collectors.warning} This validation will pour **{{cost}} {emote:unitValues.money}** of your personal money into the guild treasure. As a result, the guild will receive **{{treasury}} {emote:unitValues.money}**.",
             "depositTreasurySuccess": "{emote:messages.info} The Steward pours your offering into the chest. **+{{treasury, number}} {emote:unitValues.money}** into the guild treasure!",
             "depositTreasuryError": "The payment failed: your balance may have changed in the meantime. Please retry {command:report} to see the current status.",
@@ -1416,11 +1416,11 @@
             "petTransferHint": "{emote:messages.info} Use the {command:pettransfer} command to move a pet between your inventory and the guild shelter."
           },
           "pantry": {
-            "title": "{emote:city.guildDomain.pantry} Guildguard",
+            "title": "{emote:city.guildDomain.pantry} Guild Storehouse",
             "description": "{emote:city.guildDomain.pantry} A wine cellar at the thick walls keeps food safe from heat and damage. Solid cheese-like floors crank under cured meat barrels, berries and carefully labelled food tanks.",
             "autoFillHeader": "{emote:messages.info} **Daily Support**: Every day at midnight, the steward automatically adds your reins (up to the capacity limit):",
             "autoFillLine": "• **+{{amount}} {{food}}** {emote:foods.{{foodType}}}",
-            "autoFillNone": "{emote:messages.info} Upgrade the Food Guard to get an automatic daily supply of pet food."
+            "autoFillNone": "{emote:messages.info} Upgrade the warehouse to receive an automatic daily supply of pet food."
           },
           "training": {
             "title": "{emote:city.guildDomain.trainingGround} Meagerie",
@@ -2759,7 +2759,7 @@
         "description": "Level {{level, number}}/{{maxLevel, number}}\nShelters the guild pets."
       },
       "pantry": {
-        "name": "Dining Guard",
+        "name": "Warehouse",
         "description": "Level {{level, number}}/{{maxLevel, number}}\nStores pet food."
       },
       "trainingGround": {

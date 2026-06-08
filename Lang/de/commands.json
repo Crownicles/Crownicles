@@ -660,7 +660,7 @@
   },
   "materialLoot": {
     "title": "{emote:inventory.materials} Wiedergefundene Materialien :",
-    "line": "- {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**"
+    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) x**{{quantity}}**"
   },
   "ping": {
     "discord": {
@@ -822,7 +822,7 @@
     "city": {
       "placeholder": "Wählen Sie etwas, das Sie tun wollen",
       "title": "{{pseudo}}Sie sind in der Stadt!",
-      "description": "{emote:commands.report} Sie haben sich **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nDie gepflasterten Straßen um Sie herum sind belebt: Händler, Abenteurer und Handwerker gehen ihren Geschäften nach. Es gibt viele Dienstleistungen, die Sie in Anspruch nehmen können, aber die Straße wartet auf niemanden.",
+      "description": "{emote:commands.report} Ihr seid in **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** angekommen.\n\nDie gepflasterten Straßen rund um euch sind voller Leben: Händler, Abenteurer und Handwerker gehen ihren Geschäften nach. Es stehen euch zahlreiche Dienstleistungen zur Verfügung, doch die Straße wartet auf niemanden.",
       "buttons": {
         "enter": "Eingeben",
         "visit": "Besuchen Sie",
@@ -1024,12 +1024,12 @@
         "descriptionDisenchantOnly": "{emote:city.blacksmith.menu} Die Hitze des Feuers umgibt dich, als du die Schmiede betrittst. Der Schmied bemerkt das magische Leuchten, das von deiner verzauberten Ausrüstung ausgeht. Er kann sie sauber entfernen, ohne die Ausrüstung zu beschädigen.",
         "descriptionNoItems": "{emote:city.blacksmith.menu} Die Hitze des Feuers umgibt Sie, als Sie die Schmiede betreten. Der Schmied beobachtet Sie einen Moment lang, bevor er mit den Schultern zuckt. Sie haben im Moment nichts, was er bearbeiten kann.",
         "selectItemPlaceholder": "Wählen Sie eine Ausrüstung",
-        "itemUpgradePreview": "niv. {{currentLevel}} → niv. {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
+        "itemUpgradePreview": "Level {{currentLevel}} -> Level {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
         "backToBlacksmith": "Zurück zum Schmied",
         "backToBlacksmithDescription": "Kehren Sie zum Hauptmenü der Schmiede zurück.",
         "upgradeTitle": "{{pseudo}}Verbesserung der Ausrüstung",
         "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} Der Schmied greift nach seinen Werkzeugen und wartet darauf, dass Sie auf die Ausrüstung zeigen, die er bearbeiten soll.\n\n{emote:unitValues.money} Sie haben **{{money, number}}** {emote:unitValues.money}",
-        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Verbesserung:** Lv. {{currentLevel}} → niv. {{nextLevel}}\n**Kosten der Verbesserung:** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Benötigte Materialien:**\n{{materials}}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Verbesserung:** Stufe {{currentLevel}} -> Stufe {{nextLevel}}\n**Kosten der Verbesserung:** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Erforderliche Materialien:**\n{{materials}}",
         "missingMaterialsOffer": "Ihnen fehlen einige Materialien. Der Schmied kann sie Ihnen für **{{missingMaterialsCost, number}}** {emote:unitValues.money} zusätzlich beschaffen.",
         "confirmUpgrade": "Verbessern ({{cost, number}})",
         "buyMaterialsAndUpgrade": "Kaufen & Verbessern ({{cost, number}})",
@@ -1060,8 +1060,8 @@
         "upgradeDescription": "Der königliche Schmied wird für Sie die Kosten, Materialien und Edelsteine detailliert aufschlüsseln, die Sie für jedes Ihrer Stücke der Stufe 4 benötigen.",
         "upgradeTitle": "{{pseudo}}Die Werkstatt des königlichen Schmieds",
         "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} Der königliche Schmied fordert Sie auf, die Ausrüstung zu bestimmen, die Sie auf Stufe 5 tragen sollen.\n\n{emote:unitValues.money} Sie haben **{{money, number}}** {emote:unitValues.money} - {emote:unitValues.gem} **{{gems, number}}** {emote:unitValues.gem}",
-        "itemUpgradePreview": "niv. {{currentLevel}} → Lv. 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
-        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Verbesserung:** Lv. {{currentLevel}} → Lv. 5\n**Kosten der Verbesserung:** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Benötigte Materialien:**\n{{materials}}",
+        "itemUpgradePreview": "Stufe {{currentLevel}} -> Stufe 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Verbesserung:** Stufe {{currentLevel}} -> Stufe 5\n**Kosten für die Verbesserung:** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Erforderliche Materialien:**\n{{materials}}",
         "missingMaterialsOffer": "Ihnen fehlen einige Materialien. Der königliche Schmied kann sie Ihnen für **{{missingMaterialsCost, number}}** {emote:unitValues.money} zusätzlich zur Verfügung stellen.",
         "confirmUpgrade": "Verbessern ({{cost, number}})",
         "buyMaterialsAndUpgrade": "Kaufen & Verbessern ({{cost, number}})",
@@ -1152,7 +1152,7 @@
           "buttonLabel": "Schmieden",
           "available": "{emote:city.homeUpgrades.upgradeEquipment} An deiner Ausrüstungswerkbank kannst du deine Waffen und Rüstungen verbessern.",
           "title": "{{pseudo}}, Ausrüstungsgegenstände",
-          "itemDetails": "{{itemDisplay}}\n\n**Verbesserung:** Lv. {{currentLevel}} → Lv. {{nextLevel}}\n\n**Benötigte Materialien:**\n{{materials}}",
+          "itemDetails": "{{itemDisplay}}\n\n**Verbesserung:** Stufe {{currentLevel}} -> Stufe {{nextLevel}}\n\n**Benötigte Materialien:**\n{{materials}}",
           "confirmUpgrade": "Verbessern",
           "backToItems": "Zurück zur Liste",
           "descriptionWithItems": "{emote:city.homeUpgrades.upgradeEquipment} Sie stehen an Ihrer Werkbank und sind bereit, Upgrades zu schmieden. Ihr Haus verfügt über eine Werkbank {{stationQuality}} , mit der Sie Ausrüstungsgegenstände bis zur Seltenheit bearbeiten können $t(items:rarities.{{maxRarity}}). {{levelLimitation}}\n\n**Wählen Sie eine Ausrüstung, die Sie verbessern möchten:**",
@@ -1234,7 +1234,7 @@
           "putAwayTalisman": "Ordnen Sie das Sylvesterherz",
           "closeGarden": "Den Garten verlassen",
           "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Kompostierung:**",
-          "compostLine": "- {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+          "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) -> {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
           "compost": {
             "button": "Kompostieren",
             "selectTitle": "{emote:city.gardenStatus.compost} Wählen Sie eine Pflanze aus, die Sie kompostieren möchten. Jede kompostierte Pflanze bringt Ihnen ein Material aus ihrer Liste möglicher Komposte ein.",
@@ -1245,7 +1245,7 @@
             "cancelButton": "← Abbrechen",
             "resultTitle": "{{pseudo}}, Komposter",
             "resultDescription": "{emote:city.gardenStatus.compost} Sie haben kompostiert **{{quantity}}** {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}). Hier ist, was Sie daraus gewonnen haben:\n{{materialsList}}",
-            "resultMaterialLine": "- **{{count}}** × {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+            "resultMaterialLine": "• **{{count}}** x {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
             "notEnoughPlants": "{emote:messages.refuse} Sie haben nicht mehr genug {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) auf Vorrat, um sie zu kompostieren **{{quantity}}**."
           }
         },
@@ -1333,7 +1333,7 @@
         "upgradeBuilding": {
           "shop": "{emote:city.guildDomain.shop} Boutique Lvl{{level}} ({{cost}} {emote:unitValues.money})",
           "shelter": "{emote:city.guildDomain.shelter} Zuflucht Lv.{{level}} ({{cost}} {emote:unitValues.money})",
-          "pantry": "{emote:city.guildDomain.pantry} Vorratskammer Lv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "pantry": "{emote:city.guildDomain.pantry} Lagerhaus Stufe{{level}} ({{cost}} {emote:unitValues.money})",
           "trainingGround": "{emote:city.guildDomain.trainingGround} Menagerie Lv.{{level}} ({{cost}} {emote:unitValues.money})"
         },
         "upgradeConfirmDescription": "{emote:collectors.warning} Diese Validierung wird **{{building}}** auf ** Ebene {{level}}** für **{{cost}} {emote:unitValues.money}** aus dem Cashflow verbessern.\n\nAktueller Kassenbestand : **{{treasury}} {emote:unitValues.money}**",
@@ -1342,7 +1342,7 @@
         "buildings": {
           "shop": "Shop",
           "shelter": "Zuflucht",
-          "pantry": "Speisekammer",
+          "pantry": "Lager",
           "trainingGround": "Menagerie"
         },
         "leaveDomain": "Domain verlassen",
@@ -1388,17 +1388,17 @@
             "treasuryButton": "Schatzkammer",
             "treasuryTitle": "Den Cashflow aufbessern",
             "treasuryPrompt": "{emote:city.guildDomain.shop} Der Kämmerer kann dein Gold gegen eine Gebühr von {{penaltyPercent, number}}% (bis zu einer Obergrenze von {{penaltyMax, number}} {emote:unitValues.money}) in Gildenkasse umwandeln.\n\n{emote:unitValues.money} **Ihr Geld**: {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Gildenkasse**: {{treasury, number}} {emote:unitValues.money}",
-            "depositSmallNameButton": "Börse ({{cost}} → +{{treasury}})",
-            "depositBigNameButton": "Goldener Sack ({{cost}} → +{{treasury}})",
-            "depositHugeNameButton": "Truhe ({{cost}} → +{{treasury}})",
-            "noFoodAvailable": "{emote:messages.info} Die Speisekammer der Gilde ist voll oder die Kassenbestände sind unzureichend.",
+            "depositSmallNameButton": "Stipendium ({{cost}} -> +{{treasury}})",
+            "depositBigNameButton": "Goldbeutel ({{cost}} -> +{{treasury}})",
+            "depositHugeNameButton": "Kofferraum ({{cost}} -> +{{treasury}})",
+            "noFoodAvailable": "{emote:messages.info} Das Gildenlager ist voll oder die Gildenkasse ist leer.",
             "quantityPrompt": "Wie viele **{{food}}** möchten Sie kaufen?\n\nAktuelle Reserven: **{{stock}}/{{cap}}**\nStückpreis: **{{price, number}}** {emote:unitValues.money}\nVerfügbare Barmittel : **{{treasury, number}}** {emote:unitValues.money}",
             "quantityButton": "x{{amount}} ({{cost, number}})",
             "quantityCancel": "Zurück",
             "reimburseTitle": "{emote:unitValues.money} Der Gilde das Geld zurückzahlen?",
-            "buyFoodConfirmDescription": "{emote:collectors.warning} Diese Bestätigung wird **{{amount}}x {{food}}** {emote:foods.{{foodType}}} für die Gildenvorratskammer. **{{cost}} {emote:unitValues.money}** werden aus der Schatzkammer entnommen.\n\nAktueller Lagerbestand: **{{stock}}/{{cap}}**\nAktuelle Barmittel : **{{treasury}} {emote:unitValues.money}**",
-            "buyFoodSuccess": "{emote:messages.info} Der Verwalter verstaut sorgfältig **{{amount}}x {{food}}** {emote:foods.{{foodType}}} in der Speisekammer der Gilde. **{{totalCost, number}} {emote:unitValues.money}** wurden aus der Schatzkammer entnommen.",
-            "buyFoodError": "Der Kauf ist fehlgeschlagen: Das Bargeld reicht nicht aus oder die Speisekammer ist voll. Vielleicht hat ein anderes Mitglied gerade zur gleichen Zeit wie Sie Lebensmittel gekauft. Starten Sie {command:report} erneut, um den aktuellen Status zu sehen.",
+            "buyFoodConfirmDescription": "{emote:collectors.warning} Durch diese Bestätigung werden **{{amount}}x {{food}}** {emote:foods.{{foodType}}} für das Gildenlager gekauft. **{{cost}} {emote:unitValues.money}** werden aus der Gildenkasse abgebucht.\n\nAktueller Lagerbestand: **{{stock}}/{{cap}}**\nAktuelle Kasse: **{{treasury}} {emote:unitValues.money}**",
+            "buyFoodSuccess": "{emote:messages.info} Der Verwalter verstaut sorgfältig **{{amount}}x {{food}}** {emote:foods.{{foodType}}} im Gildenlager. **{{totalCost, number}} {emote:unitValues.money}** wurden aus der Kasse abgebucht.",
+            "buyFoodError": "Der Kauf ist fehlgeschlagen: Entweder reicht das Guthaben nicht aus oder das Lager ist voll. Möglicherweise hat ein anderes Mitglied gerade zur gleichen Zeit wie du Lebensmittel gekauft. Führe {command:report} erneut aus, um den aktuellen Status anzuzeigen.",
             "depositTreasuryConfirmDescription": "{emote:collectors.warning} Diese Bestätigung zahlt **{{cost}} {emote:unitValues.money}** Ihres persönlichen Geldes in die Gildenkasse ein. Nach der Kommissionierung erhält die Gilde **{{treasury}} {emote:unitValues.money}**.",
             "depositTreasurySuccess": "{emote:messages.info} Der Kämmerer zahlt deine Opfergabe in die Truhe ein. **+{{treasury, number}} {emote:unitValues.money}** in die Gildenkasse!",
             "depositTreasuryError": "Die Überweisung ist fehlgeschlagen: Ihr Kontostand hat sich möglicherweise zwischenzeitlich geändert. Starten Sie {command:report} erneut, um den aktuellen Stand zu sehen.",
@@ -1416,11 +1416,11 @@
             "petTransferHint": "{emote:messages.info} Verwenden Sie den Befehl {command:pettransfer}, um einen Begleiter zwischen Ihrem Inventar und der Gildenhütte zu verschieben."
           },
           "pantry": {
-            "title": "{emote:city.guildDomain.pantry} Gildenspeisekammer",
+            "title": "{emote:city.guildDomain.pantry} Gildenlager",
             "description": "{emote:city.guildDomain.pantry} Ein Gewölbekeller mit dicken Wänden hält die Lebensmittel vor Hitze und Schädlingen geschützt. Massive Eichenregale stehen unter Fässern mit getrocknetem Fleisch, Körben mit Beeren und Kisten mit sorgfältig beschrifteten Vorräten.",
             "autoFillHeader": "{emote:messages.info} **Täglicher Nachschub**: Jeden Tag um Mitternacht fügt der Kämmerer automatisch zu Ihren Vorräten hinzu (im Rahmen der Kapazitäten) :",
             "autoFillLine": "- **+{{amount}} {{food}}** {emote:foods.{{foodType}}}",
-            "autoFillNone": "{emote:messages.info} Verbessere die Speisekammer, um von einer automatischen täglichen Versorgung mit Haustierfutter zu profitieren."
+            "autoFillNone": "{emote:messages.info} Verbessere das Lager, um von einer automatischen täglichen Versorgung mit Futter für Begleiter zu profitieren."
           },
           "training": {
             "title": "{emote:city.guildDomain.trainingGround} Menagerie",
@@ -2759,7 +2759,7 @@
         "description": "Stufe {{level, number}}/{{maxLevel, number}}\nBeherbergt die Vertrauten der Gilde."
       },
       "pantry": {
-        "name": "Speisekammer",
+        "name": "Lager",
         "description": "Stufe {{level, number}}/{{maxLevel, number}}\nSpeichert die Nahrung von Vertrauten."
       },
       "trainingGround": {

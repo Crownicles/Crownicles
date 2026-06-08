@@ -431,7 +431,7 @@
     ],
     "beaten_kraken": [
       "Os tentáculos cortados pendurados na capa de {{playerDisplay}} testemunham a sua batalha contra o Kraken no nível **{{bossLevel, number}}**. Uma vitória arrancada do abismo!",
-      "{{playerDisplay}} sent encore l'iode et l'encre noire : il a terrassé le Kraken au niveau **{{bossLevel, number}}** ! Les océans ne lui font plus peur.",
+      "{{playerDisplay}} ainda cheira a iodo e tinta preta: derrotou o Kraken no nível **{{bossLevel, number}}**! Os oceanos já não lhe causam medo.",
       "Conheces {{playerDisplay}}, um aventureiro que sobreviveu às profundezas e derrotou o terrível Kraken no nível **{{bossLevel, number}}**. Os seus olhos carregam o peso do abismo."
     ],
     "beaten_leviathan": [
@@ -1845,6 +1845,14 @@
       "Recusa a oferta e segue o seu caminho."
     ]
   },
+  "recipeShop": {
+    "offer": {
+      "farmer": "Antes de prosseguirem o caminho, a agricultora seca as mãos no avental e confia-vos, com um olhar malicioso, que guarda com muito carinho uma velha receita de família. Ela aceita passar-vos a receita {{recipe}} em troca de {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Antes de voltar para a sua caravana, Gaspard-Jo remexe numa pilha de mantimentos e tira de lá um velho livro de receitas todo gasto. Com um sorriso cúmplice, ele propõe-lhe a receita {{recipe}} por {{price}} {emote:unitValues.money}."
+    },
+    "refused": "Recusa educadamente a oferta e segue o seu caminho, deixando a receita para outra ocasião.",
+    "notEnoughMoney": "Revista os bolsos à procura de algumas moedas, mas tem de admitir que não tem dinheiro suficiente para pagar a conta. Desanimado, segue o seu caminho."
+  },
   "dwarfPetFan": {
     "intro": [
       "No caminho que serpenteia pela sombra majestosa do Monte Celestrum, uma figura atrofiada emerge do terreno rochoso. Talvar, o Sábio, um anão venerável de cabelo prateado, caminha na tua direção. A sua barba, entrançada com fios dourados, chega até ao cinto, e os seus olhos verdes brilham com uma paixão ancestral por todas as criaturas deste mundo.",
@@ -2564,9 +2572,9 @@
       "spiritual": "Encontra um lugar de serenidade, onde o ambiente é tranquilo e propício ao seu bem-estar. Procura objectos no ambiente que o rodeia."
     },
     "foundStories": {
-      "1": "Ótimo! Encontrou o seguinte material comum {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incrível! Tem nas suas mãos um equipamento muito invulgar {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Que oportunidade incrível! Descobriu um raro material {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Encontrou o seguinte material comum em {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Incrível! Encontrou um material {{rarityEmote}} pouco comum: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Que sorte incrível! Descobriu um material {{rarityEmote}} raro: {{materialEmote}} **$t(models:materials.{{materialId}})**."
     }
   },
   "expeditionAdvice": {
