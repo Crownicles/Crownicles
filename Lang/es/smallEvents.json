@@ -1847,11 +1847,11 @@
   },
   "recipeShop": {
     "offer": {
-      "farmer": "Avant que vous ne repreniez votre route, la fermière s'essuie les mains sur son tablier et vous confie, l'œil malicieux, qu'elle garde précieusement une vieille recette de famille. Elle accepte de vous transmettre la recette {{recipe}} contre {{price}} {emote:unitValues.money}.",
-      "gaspardJo": "Avant de remonter dans sa roulotte, Gaspard-Jo farfouille sous une pile de victuailles et en extirpe un vieux grimoire de cuisine tout corné. Avec un sourire complice, il vous propose de vous céder la recette {{recipe}} pour {{price}} {emote:unitValues.money}."
+      "farmer": "Antes de que sigas tu camino, la granjera se seca las manos en el delantal y te confiesa, con una mirada pícara, que guarda como un tesoro una vieja receta familiar. Acepta darte la receta {{recipe}} a cambio de {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Antes de volver a subir a su caravana, Gaspard-Jo rebusca entre una pila de provisiones y saca un viejo libro de recetas de cocina, con las esquinas gastadas. Con una sonrisa cómplice, te ofrece la receta « {{recipe}} » a cambio de « {{price}} » {emote:unitValues.money}."
     },
-    "refused": "Vous déclinez poliment l'offre et reprenez votre route, la recette restant un mystère pour une autre fois.",
-    "notEnoughMoney": "Vous fouillez vos poches à la recherche de quelques pièces, mais force est de constater que vous n'avez pas de quoi payer la recette. Dépité, vous reprenez votre chemin."
+    "refused": "Rechazas amablemente la oferta y sigues tu camino; la receta seguirá siendo un misterio para otra ocasión.",
+    "notEnoughMoney": "Rebuscas en los bolsillos en busca de unas monedas, pero te das cuenta de que no tienes suficiente para pagar la cuenta. Desanimado, sigues tu camino."
   },
   "dwarfPetFan": {
     "intro": [
@@ -2572,9 +2572,9 @@
       "spiritual": "encuentras un lugar de serenidad, donde el ambiente es apacible y propicio para tu bienestar. Buscas artículos u objetos en los alrededores."
     },
     "foundStories": {
-      "1": "Vous avez trouvé le matériau {{rarityEmote}} commun suivant : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incroyable ! Vous avez mis la main sur un matériau {{rarityEmote}} peu commun : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Quelle chance inouïe ! Vous avez découvert un matériau {{rarityEmote}} rare : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Has encontrado el siguiente material común: {{rarityEmote}} {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "¡Increíble! Has dado con un material {{rarityEmote}} poco común: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "¡Qué suerte tan increíble! Has descubierto un material {{rarityEmote}} poco común: {{materialEmote}} **$t(models:materials.{{materialId}})**."
     }
   },
   "expeditionAdvice": {
