@@ -1847,11 +1847,11 @@
   },
   "recipeShop": {
     "offer": {
-      "farmer": "Avant que vous ne repreniez votre route, la fermière s'essuie les mains sur son tablier et vous confie, l'œil malicieux, qu'elle garde précieusement une vieille recette de famille. Elle accepte de vous transmettre la recette {{recipe}} contre {{price}} {emote:unitValues.money}.",
-      "gaspardJo": "Avant de remonter dans sa roulotte, Gaspard-Jo farfouille sous une pile de victuailles et en extirpe un vieux grimoire de cuisine tout corné. Avec un sourire complice, il vous propose de vous céder la recette {{recipe}} pour {{price}} {emote:unitValues.money}."
+      "farmer": "Bevor ihr euch wieder auf den Weg macht, wischt sich die Bäuerin die Hände an ihrer Schürze ab und verrät euch mit einem verschmitzten Augenzwinkern, dass sie ein altes Familienrezept wie einen Schatz hütet. Sie ist bereit, euch das Rezept {{recipe}} gegen {{price}} {emote:unitValues.money} zu geben.",
+      "gaspardJo": "Bevor er wieder in seinen Wohnwagen steigt, wühlt Gaspard-Jo unter einem Stapel Lebensmittel herum und zieht ein altes, abgegriffenes Kochbuch hervor. Mit einem verschmitzten Lächeln bietet er dir an, dir das Rezept „ {{recipe}} “ für „ {{price}} “ {emote:unitValues.money} zu überlassen."
     },
-    "refused": "Vous déclinez poliment l'offre et reprenez votre route, la recette restant un mystère pour une autre fois.",
-    "notEnoughMoney": "Vous fouillez vos poches à la recherche de quelques pièces, mais force est de constater que vous n'avez pas de quoi payer la recette. Dépité, vous reprenez votre chemin."
+    "refused": "Sie lehnen das Angebot höflich ab und setzen Ihren Weg fort; das Rezept bleibt ein Geheimnis, das Sie ein anderes Mal lüften werden.",
+    "notEnoughMoney": "Sie kramen in Ihren Taschen nach ein paar Münzen, müssen aber feststellen, dass Sie nicht genug haben, um die Rechnung zu bezahlen. Enttäuscht machen Sie sich wieder auf den Weg."
   },
   "dwarfPetFan": {
     "intro": [
@@ -2572,9 +2572,9 @@
       "spiritual": "Sie finden einen Ort, der von Gelassenheit geprägt ist, an dem eine friedliche Atmosphäre herrscht, die Ihr Wohlbefinden fördert. Sie durchsuchen die Umgebung nach Dingen oder Gegenständen."
     },
     "foundStories": {
-      "1": "Vous avez trouvé le matériau {{rarityEmote}} commun suivant : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incroyable ! Vous avez mis la main sur un matériau {{rarityEmote}} peu commun : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Quelle chance inouïe ! Vous avez découvert un matériau {{rarityEmote}} rare : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Sie haben das folgende gemeinsame Material gefunden: {{rarityEmote}} {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Unglaublich! Sie sind auf ein ungewöhnliches Material gestoßen: {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Was für ein unglaubliches Glück! Sie haben ein seltenes Material entdeckt: {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**."
     }
   },
   "expeditionAdvice": {
