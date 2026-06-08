@@ -660,7 +660,7 @@
   },
   "materialLoot": {
     "title": "{emote:inventory.materials} Matériaux récupérés :",
-    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) ×**{{quantity}}**"
+    "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) x**{{quantity}}**"
   },
   "ping": {
     "discord": {
@@ -822,7 +822,7 @@
     "city": {
       "placeholder": "Choisissez quelque chose à faire",
       "title": "{{pseudo}}, vous êtes en ville !",
-      "description": "{emote:commands.report} Vous avez rejoint **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)** <t:{{enterCityTimestamp}}:R>.\n\nLes rues pavées s'animent autour de vous : marchands, aventuriers et artisans vaquent à leurs occupations. De nombreux services s'offrent à vous, mais la route, elle, n'attend personne.",
+      "description": "{emote:commands.report} Vous avez rejoint **{emote:mapTypes.{{mapTypeId}}} $t(models:map_locations.{{mapLocationId}}.name)**.\n\nLes rues pavées s'animent autour de vous : marchands, aventuriers et artisans vaquent à leurs occupations. De nombreux services s'offrent à vous, mais la route, elle, n'attend personne.",
       "buttons": {
         "enter": "Entrer",
         "visit": "Visiter",
@@ -1024,12 +1024,12 @@
         "descriptionDisenchantOnly": "{emote:city.blacksmith.menu} La chaleur du brasier vous enveloppe alors que vous pénétrez dans la forge. Le forgeron remarque les lueurs magiques émanant de vos équipements enchantés. Il peut les retirer proprement, sans abîmer l'équipement.",
         "descriptionNoItems": "{emote:city.blacksmith.menu} La chaleur du brasier vous enveloppe alors que vous pénétrez dans la forge. Le forgeron vous observe un instant avant de hausser les épaules. Vous n'avez rien qu'il puisse travailler pour le moment.",
         "selectItemPlaceholder": "Sélectionnez un équipement",
-        "itemUpgradePreview": "niv. {{currentLevel}} → niv. {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
+        "itemUpgradePreview": "niv. {{currentLevel}} -> niv. {{nextLevel}} | {{cost, number}}{emote:unitValues.money}",
         "backToBlacksmith": "Retour au forgeron",
         "backToBlacksmithDescription": "Retournez au menu principal de la forge.",
         "upgradeTitle": "{{pseudo}}, amélioration d'équipement",
         "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} Le forgeron saisit ses outils et attend que vous lui désigniez l'équipement à travailler.\n\n{emote:unitValues.money} Vous avez **{{money, number}}** {emote:unitValues.money}",
-        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} → niv. {{nextLevel}}\n**Coût de l'amélioration :** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Matériaux nécessaires :**\n{{materials}}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} -> niv. {{nextLevel}}\n**Coût de l'amélioration :** {{upgradeCost, number}} {emote:unitValues.money}\n\n**Matériaux nécessaires :**\n{{materials}}",
         "missingMaterialsOffer": "Il vous manque des matériaux. Le forgeron peut vous les procurer pour **{{missingMaterialsCost, number}}** {emote:unitValues.money} supplémentaires.",
         "confirmUpgrade": "Améliorer ({{cost, number}})",
         "buyMaterialsAndUpgrade": "Acheter & améliorer ({{cost, number}})",
@@ -1060,8 +1060,8 @@
         "upgradeDescription": "Le forgeron royal détaillera pour vous le coût, les matériaux et les gemmes nécessaires pour chacune de vos pièces de niveau 4.",
         "upgradeTitle": "{{pseudo}}, atelier du forgeron royal",
         "upgradeSelectDescription": "{emote:city.blacksmith.upgrade} Le forgeron royal vous invite à désigner l'équipement à porter au niveau 5.\n\n{emote:unitValues.money} Vous avez **{{money, number}}** {emote:unitValues.money} · {emote:unitValues.gem} **{{gems, number}}** {emote:unitValues.gem}",
-        "itemUpgradePreview": "niv. {{currentLevel}} → niv. 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
-        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} → niv. 5\n**Coût de l'amélioration :** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Matériaux nécessaires :**\n{{materials}}",
+        "itemUpgradePreview": "niv. {{currentLevel}} -> niv. 5 | {{upgradeCost, number}}{emote:unitValues.money} + {{gemCost, number}}{emote:unitValues.gem}",
+        "upgradeItemDetailsBase": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} -> niv. 5\n**Coût de l'amélioration :** {{upgradeCost, number}} {emote:unitValues.money} + {{gemCost, number}} {emote:unitValues.gem}\n\n**Matériaux nécessaires :**\n{{materials}}",
         "missingMaterialsOffer": "Il vous manque des matériaux. Le forgeron royal peut vous les fournir pour **{{missingMaterialsCost, number}}** {emote:unitValues.money} supplémentaires.",
         "confirmUpgrade": "Améliorer ({{cost, number}})",
         "buyMaterialsAndUpgrade": "Acheter & améliorer ({{cost, number}})",
@@ -1152,7 +1152,7 @@
           "buttonLabel": "Forger",
           "available": "{emote:city.homeUpgrades.upgradeEquipment} Votre établi d'équipement vous permet d'améliorer vos armes et armures.",
           "title": "{{pseudo}}, établi d'équipement",
-          "itemDetails": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} → niv. {{nextLevel}}\n\n**Matériaux nécessaires :**\n{{materials}}",
+          "itemDetails": "{{itemDisplay}}\n\n**Amélioration :** niv. {{currentLevel}} -> niv. {{nextLevel}}\n\n**Matériaux nécessaires :**\n{{materials}}",
           "confirmUpgrade": "Améliorer",
           "backToItems": "Retour à la liste",
           "descriptionWithItems": "{emote:city.homeUpgrades.upgradeEquipment} Vous vous tenez devant votre établi, prêt à forger des améliorations. Votre maison dispose d'un établi {{stationQuality}} permettant de travailler les équipements jusqu'à la rareté $t(items:rarities.{{maxRarity}}). {{levelLimitation}}\n\n**Sélectionnez un équipement à améliorer :**",
@@ -1234,7 +1234,7 @@
           "putAwayTalisman": "Ranger le Cœur Sylvestre",
           "closeGarden": "Quitter le jardin",
           "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Compostage :**",
-          "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) → {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+          "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) -> {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
           "compost": {
             "button": "Composter",
             "selectTitle": "{emote:city.gardenStatus.compost} Sélectionnez une plante à composter. Chaque plante compostée vous rapportera un matériau parmi sa liste de composts possibles.",
@@ -1245,7 +1245,7 @@
             "cancelButton": "← Annuler",
             "resultTitle": "{{pseudo}}, composteur",
             "resultDescription": "{emote:city.gardenStatus.compost} Vous avez composté **{{quantity}}** {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}). Voici ce que vous en avez retiré :\n{{materialsList}}",
-            "resultMaterialLine": "• **{{count}}** × {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
+            "resultMaterialLine": "• **{{count}}** x {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
             "notEnoughPlants": "{emote:messages.refuse} Vous n'avez plus assez de {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) en réserve pour en composter **{{quantity}}**."
           }
         },
@@ -1333,7 +1333,7 @@
         "upgradeBuilding": {
           "shop": "{emote:city.guildDomain.shop} Boutique Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "shelter": "{emote:city.guildDomain.shelter} Refuge Niv.{{level}} ({{cost}} {emote:unitValues.money})",
-          "pantry": "{emote:city.guildDomain.pantry} Garde-manger Niv.{{level}} ({{cost}} {emote:unitValues.money})",
+          "pantry": "{emote:city.guildDomain.pantry} Entrepôt Niv.{{level}} ({{cost}} {emote:unitValues.money})",
           "trainingGround": "{emote:city.guildDomain.trainingGround} Ménagerie Niv.{{level}} ({{cost}} {emote:unitValues.money})"
         },
         "upgradeConfirmDescription": "{emote:collectors.warning} Cette validation améliorera **{{building}}** au **niveau {{level}}** pour **{{cost}} {emote:unitValues.money}** depuis la trésorerie.\n\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
@@ -1342,7 +1342,7 @@
         "buildings": {
           "shop": "Boutique",
           "shelter": "Refuge",
-          "pantry": "Garde-manger",
+          "pantry": "Entrepôt",
           "trainingGround": "Ménagerie"
         },
         "leaveDomain": "Quitter le domaine",
@@ -1388,17 +1388,17 @@
             "treasuryButton": "Trésorerie",
             "treasuryTitle": "Renflouer la trésorerie",
             "treasuryPrompt": "{emote:city.guildDomain.shop} L'intendant peut transformer votre or en trésorerie de guilde, moyennant une commission de {{penaltyPercent, number}}% (plafonnée à {{penaltyMax, number}} {emote:unitValues.money}).\n\n{emote:unitValues.money} **Votre argent** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Trésorerie de la guilde** : {{treasury, number}} {emote:unitValues.money}",
-            "depositSmallNameButton": "Bourse ({{cost}} → +{{treasury}})",
-            "depositBigNameButton": "Sac d'or ({{cost}} → +{{treasury}})",
-            "depositHugeNameButton": "Coffre ({{cost}} → +{{treasury}})",
-            "noFoodAvailable": "{emote:messages.info} Le garde-manger de la guilde est plein ou la trésorerie est insuffisante.",
+            "depositSmallNameButton": "Bourse ({{cost}} -> +{{treasury}})",
+            "depositBigNameButton": "Sac d'or ({{cost}} -> +{{treasury}})",
+            "depositHugeNameButton": "Coffre ({{cost}} -> +{{treasury}})",
+            "noFoodAvailable": "{emote:messages.info} L'entrepôt de la guilde est plein ou la trésorerie est insuffisante.",
             "quantityPrompt": "Combien de **{{food}}** souhaitez-vous acheter ?\n\nRéserves actuelles : **{{stock}}/{{cap}}**\nPrix unitaire : **{{price, number}}** {emote:unitValues.money}\nTrésorerie disponible : **{{treasury, number}}** {emote:unitValues.money}",
             "quantityButton": "x{{amount}} ({{cost, number}})",
             "quantityCancel": "Retour",
             "reimburseTitle": "{emote:unitValues.money} Rembourser la guilde ?",
-            "buyFoodConfirmDescription": "{emote:collectors.warning} Cette validation achètera **{{amount}}x {{food}}** {emote:foods.{{foodType}}} pour le garde-manger de guilde. **{{cost}} {emote:unitValues.money}** seront prélevés sur la trésorerie.\n\nStock actuel : **{{stock}}/{{cap}}**\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
-            "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** {emote:foods.{{foodType}}} dans le garde-manger de la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
-            "buyFoodError": "L'achat a échoué : la trésorerie est insuffisante ou le garde-manger est plein. Un autre membre vient peut-être d'acheter de la nourriture en même temps que vous. Relancez {command:report} pour voir l'état actuel.",
+            "buyFoodConfirmDescription": "{emote:collectors.warning} Cette validation achètera **{{amount}}x {{food}}** {emote:foods.{{foodType}}} pour l'entrepôt de guilde. **{{cost}} {emote:unitValues.money}** seront prélevés sur la trésorerie.\n\nStock actuel : **{{stock}}/{{cap}}**\nTrésorerie actuelle : **{{treasury}} {emote:unitValues.money}**",
+            "buyFoodSuccess": "{emote:messages.info} L'intendant range soigneusement **{{amount}}x {{food}}** {emote:foods.{{foodType}}} dans l'entrepôt de la guilde. **{{totalCost, number}} {emote:unitValues.money}** ont été prélevés sur la trésorerie.",
+            "buyFoodError": "L'achat a échoué : la trésorerie est insuffisante ou l'entrepôt est plein. Un autre membre vient peut-être d'acheter de la nourriture en même temps que vous. Relancez {command:report} pour voir l'état actuel.",
             "depositTreasuryConfirmDescription": "{emote:collectors.warning} Cette validation versera **{{cost}} {emote:unitValues.money}** de votre argent personnel dans la trésorerie de guilde. Après commission, la guilde recevra **{{treasury}} {emote:unitValues.money}**.",
             "depositTreasurySuccess": "{emote:messages.info} L'intendant verse votre offrande dans le coffre. **+{{treasury, number}} {emote:unitValues.money}** dans la trésorerie de la guilde !",
             "depositTreasuryError": "Le versement a échoué : votre solde a peut-être changé entre temps. Relancez {command:report} pour voir l'état actuel.",
@@ -1416,11 +1416,11 @@
             "petTransferHint": "{emote:messages.info} Utilisez la commande {command:pettransfer} pour déplacer un familier entre votre inventaire et le refuge de la guilde."
           },
           "pantry": {
-            "title": "{emote:city.guildDomain.pantry} Garde-manger de guilde",
+            "title": "{emote:city.guildDomain.pantry} Entrepôt de guilde",
             "description": "{emote:city.guildDomain.pantry} Une cave voûtée aux murs épais garde la nourriture à l'abri de la chaleur et des nuisibles. Des étagères en chêne massif croulent sous les tonneaux de viande séchée, les paniers de baies et les caisses de provisions soigneusement étiquetées.",
             "autoFillHeader": "{emote:messages.info} **Approvisionnement quotidien** : chaque jour à minuit, l'intendant ajoute automatiquement à vos réserves (dans la limite des capacités) :",
             "autoFillLine": "• **+{{amount}} {{food}}** {emote:foods.{{foodType}}}",
-            "autoFillNone": "{emote:messages.info} Améliorez le garde-manger pour bénéficier d'un approvisionnement quotidien automatique en nourriture pour familiers."
+            "autoFillNone": "{emote:messages.info} Améliorez l'entrepôt pour bénéficier d'un approvisionnement quotidien automatique en nourriture pour familiers."
           },
           "training": {
             "title": "{emote:city.guildDomain.trainingGround} Ménagerie",
@@ -2759,7 +2759,7 @@
         "description": "Niveau {{level, number}}/{{maxLevel, number}}\nAbrite les familiers de la guilde."
       },
       "pantry": {
-        "name": "Garde-manger",
+        "name": "Entrepôt",
         "description": "Niveau {{level, number}}/{{maxLevel, number}}\nStocke la nourriture des familiers."
       },
       "trainingGround": {
