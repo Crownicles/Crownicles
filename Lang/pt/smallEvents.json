@@ -431,7 +431,7 @@
     ],
     "beaten_kraken": [
       "Os tentáculos cortados pendurados na capa de {{playerDisplay}} testemunham a sua batalha contra o Kraken no nível **{{bossLevel, number}}**. Uma vitória arrancada do abismo!",
-      "{{playerDisplay}} sent encore l'iode et l'encre noire : il a terrassé le Kraken au niveau **{{bossLevel, number}}** ! Les océans ne lui font plus peur.",
+      "{{playerDisplay}} ainda cheira a iodo e tinta preta: derrotou o Kraken no nível **{{bossLevel, number}}**! Os oceanos já não lhe causam medo.",
       "Conheces {{playerDisplay}}, um aventureiro que sobreviveu às profundezas e derrotou o terrível Kraken no nível **{{bossLevel, number}}**. Os seus olhos carregam o peso do abismo."
     ],
     "beaten_leviathan": [
@@ -1847,11 +1847,11 @@
   },
   "recipeShop": {
     "offer": {
-      "farmer": "Avant que vous ne repreniez votre route, la fermière s'essuie les mains sur son tablier et vous confie, l'œil malicieux, qu'elle garde précieusement une vieille recette de famille. Elle accepte de vous transmettre la recette {{recipe}} contre {{price}} {emote:unitValues.money}.",
-      "gaspardJo": "Avant de remonter dans sa roulotte, Gaspard-Jo farfouille sous une pile de victuailles et en extirpe un vieux grimoire de cuisine tout corné. Avec un sourire complice, il vous propose de vous céder la recette {{recipe}} pour {{price}} {emote:unitValues.money}."
+      "farmer": "Antes de prosseguirem o caminho, a agricultora seca as mãos no avental e confia-vos, com um olhar malicioso, que guarda com muito carinho uma velha receita de família. Ela aceita passar-vos a receita {{recipe}} em troca de {{price}} {emote:unitValues.money}.",
+      "gaspardJo": "Antes de voltar para a sua caravana, Gaspard-Jo remexe numa pilha de mantimentos e tira de lá um velho livro de receitas todo gasto. Com um sorriso cúmplice, ele propõe-lhe a receita {{recipe}} por {{price}} {emote:unitValues.money}."
     },
-    "refused": "Vous déclinez poliment l'offre et reprenez votre route, la recette restant un mystère pour une autre fois.",
-    "notEnoughMoney": "Vous fouillez vos poches à la recherche de quelques pièces, mais force est de constater que vous n'avez pas de quoi payer la recette. Dépité, vous reprenez votre chemin."
+    "refused": "Recusa educadamente a oferta e segue o seu caminho, deixando a receita para outra ocasião.",
+    "notEnoughMoney": "Revista os bolsos à procura de algumas moedas, mas tem de admitir que não tem dinheiro suficiente para pagar a conta. Desanimado, segue o seu caminho."
   },
   "dwarfPetFan": {
     "intro": [
@@ -2572,9 +2572,9 @@
       "spiritual": "Encontra um lugar de serenidade, onde o ambiente é tranquilo e propício ao seu bem-estar. Procura objectos no ambiente que o rodeia."
     },
     "foundStories": {
-      "1": "Vous avez trouvé le matériau {{rarityEmote}} commun suivant : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incroyable ! Vous avez mis la main sur un matériau {{rarityEmote}} peu commun : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Quelle chance inouïe ! Vous avez découvert un matériau {{rarityEmote}} rare : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Encontrou o seguinte material comum em {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "2": "Incrível! Encontrou um material {{rarityEmote}} pouco comum: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
+      "3": "Que sorte incrível! Descobriu um material {{rarityEmote}} raro: {{materialEmote}} **$t(models:materials.{{materialId}})**."
     }
   },
   "expeditionAdvice": {
