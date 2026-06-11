@@ -3,12 +3,10 @@
     "forceChains": {
       "outcomes": {
         "0": {
-          "money": 100,
-          "bonusPoints": 250
+          "money": 100
         },
         "1": {
           "money": 250,
-          "bonusPoints": 550,
           "randomItem": {}
         },
         "2": {
@@ -22,12 +20,10 @@
       "outcomes": {
         "0": {
           "money": 850,
-          "bonusPoints": 550,
           "randomItem": {}
         },
         "1": {
-          "money": 100,
-          "bonusPoints": 250
+          "money": 100
         },
         "2": {
           "effect": "injured",
@@ -37,13 +33,10 @@
     },
     "end": {
       "outcomes": {
-        "0": {
-          "bonusPoints": 150
-        },
+        "0": {},
         "1": {
           "effect": "occupied",
-          "lostTime": 60,
-          "bonusPoints": 25
+          "lostTime": 60
         }
       }
     }
