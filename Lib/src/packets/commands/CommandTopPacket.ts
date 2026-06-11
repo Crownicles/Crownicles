@@ -24,13 +24,15 @@ export class CommandTopPacketRes<T extends TopElement<unknown, unknown, unknown>
 
 	canBeRanked!: boolean;
 
+	// Only the elements of the page returned (server-side pagination), not the whole leaderboard
 	elements!: T[];
 
 	totalElements!: number;
 
 	elementsPerPage!: number;
 
-	initialPage?: number;
+	// 1-based index of the page contained in `elements`
+	pageNumber!: number;
 }
 
 // Attributes: mapType and afk, score, level
