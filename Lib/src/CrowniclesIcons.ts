@@ -1086,6 +1086,14 @@ export const CrowniclesIcons: {
 				0: "🌅",
 				1: "🚶"
 			}
+		},
+		92: {
+			forceChains: "⛓️",
+			attackArcher: "🗡️",
+			end: {
+				0: "🪨",
+				1: "🚶"
+			}
 		}
 	},
 	mapTypes: {
