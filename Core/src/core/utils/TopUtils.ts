@@ -39,7 +39,7 @@ type TopObjectResponse<Element> = TopObject & {
 	canBeRanked: boolean;
 	elementsPerPage: number;
 	needFight?: number;
-	initialPage?: number;
+	pageNumber: number;
 };
 
 type AskTopResultBase = {
@@ -50,7 +50,6 @@ type AskTopResultBase = {
 type AskTopResultOKBase<Element, Kind extends TopKind> = AskTopResultBase & {
 	result: TopAskingResult.OK;
 	data: TopObjectResponse<Element>;
-	now: number;
 	kind: Kind;
 };
 
@@ -89,6 +88,25 @@ const ELEMENTS_PER_PAGE: Record<TopKind, number> = {
 	[TopKind.GLORY]: TopConstants.PLAYERS_PER_PAGE,
 	[TopKind.GUILDS]: TopConstants.GUILDS_PER_PAGE
 };
+
+/**
+ * Resolve which 1-based page should be returned for a top request.
+ * Mirrors the previous front-side logic: an explicit valid page wins, otherwise the page
+ * containing the requester's rank, otherwise the first page.
+ * @param requestedPage - The page explicitly asked by the requester (1-based), if any
+ * @param contextRank - The requester's rank in the top (<= 0 when not ranked)
+ * @param elementsPerPage - Number of elements displayed per page
+ * @param totalPages - Total number of pages available
+ */
+function computeEffectivePage(requestedPage: number | undefined, contextRank: number, elementsPerPage: number, totalPages: number): number {
+	if (requestedPage !== undefined && requestedPage >= 1 && requestedPage <= totalPages) {
+		return requestedPage;
+	}
+	if (contextRank > 0) {
+		return Math.ceil(contextRank / elementsPerPage);
+	}
+	return 1;
+}
 
 export function getTopKind(dataType: TopDataType, timing: TopTiming): TopKind {
 	if (dataType === TopDataType.SCORE) {
@@ -200,7 +218,11 @@ export class TopStorage {
 
 	private static readonly STALE_THRESHOLD_MS = 45000;
 
-	private _now: number = Date.now();
+	/**
+	 * In-flight refresh promises per kind. Used to collapse concurrent refreshes of the same kind into a
+	 * single database round-trip (avoids a thundering herd when the cache expires while several requests arrive).
+	 */
+	private _inFlightRefresh: Map<TopKind, Promise<void>> = new Map();
 
 	static topUpdateFunctionScore(weekly: boolean): (now: number) => Promise<void> {
 		return async (now: number) => {
@@ -241,7 +263,7 @@ export class TopStorage {
 	public async updateTops(): Promise<void> {
 		const now = Date.now();
 		for (const kind of Object.values(TopKind)) {
-			await this.refreshKind(kind, now);
+			await this.refreshKindDeduped(kind, now);
 		}
 		CrowniclesLogger.info("Tops updated");
 	}
@@ -250,17 +272,55 @@ export class TopStorage {
 		await TopStorage._topUpdateFunctions[kind](now);
 		this._cachedPositions.get(kind)!.clear();
 		this._lastUpdated.set(kind, now);
-		this._now = now;
+	}
+
+	/**
+	 * Refresh a kind while guaranteeing that only one refresh per kind runs at a time.
+	 * Concurrent callers share (and await) the same in-flight promise instead of triggering parallel refreshes.
+	 * @param kind
+	 * @param now
+	 */
+	private refreshKindDeduped(kind: TopKind, now: number): Promise<void> {
+		const existing = this._inFlightRefresh.get(kind);
+		if (existing) {
+			return existing;
+		}
+		const refresh = this.refreshKind(kind, now)
+			.finally(() => this._inFlightRefresh.delete(kind));
+		this._inFlightRefresh.set(kind, refresh);
+		return refresh;
 	}
 
 	private async refreshIfStale(kind: TopKind): Promise<void> {
 		const lastUpdated = this._lastUpdated.get(kind)!;
 		if (Date.now() - lastUpdated > TopStorage.STALE_THRESHOLD_MS) {
-			await this.refreshKind(kind, Date.now());
+			await this.refreshKindDeduped(kind, Date.now());
 		}
 	}
 
-	public async askTop<T extends TopKind>(kind: T, id: number, needFight?: number, initialPage?: number): Promise<AskTopResult<T>> {
+	/**
+	 * Resolve (and cache) the requester's rank for a given top kind.
+	 * @param kind
+	 * @param id - The requester id (player id or guild id)
+	 * @param elements - The cached, ranked elements of the kind
+	 * @param needFight - Glory only: remaining fights needed to be ranked (forces "not ranked" when > 0)
+	 */
+	private getContextRank<T extends TopKind>(
+		kind: T,
+		id: number,
+		elements: TopElementBaseStorage<TopElementKind<T>>[],
+		needFight?: number
+	): number {
+		const cache = this._cachedPositions.get(kind)!;
+		let rank = cache.get(id);
+		if (rank === undefined) {
+			rank = kind === TopKind.GLORY && needFight! > 0 ? -1 : elements.find(element => element.id === id)?.rank ?? -1;
+			cache.set(id, rank);
+		}
+		return rank;
+	}
+
+	public async askTop<T extends TopKind>(kind: T, id: number, needFight?: number, requestedPage?: number): Promise<AskTopResult<T>> {
 		await this.refreshIfStale(kind);
 		const top = this._tops[kind] as TopObjectStorage<TopElementKind<T>>;
 		if (!top) {
@@ -279,29 +339,28 @@ export class TopStorage {
 				kind
 			};
 		}
-		let rank = this._cachedPositions.get(kind)!.get(id);
-		if (rank === undefined) {
-			rank = kind === TopKind.GLORY && needFight! > 0 ? -1 : elements.find(element => element.id === id)?.rank ?? -1;
-			this._cachedPositions.get(kind)!.set(id, rank);
-		}
+		const contextRank = this.getContextRank(kind, id, elements, needFight);
+		const totalPages = Math.ceil(totalElements / elementsPerPage);
+		const pageNumber = computeEffectivePage(requestedPage, contextRank, elementsPerPage, totalPages);
+		const start = (pageNumber - 1) * elementsPerPage;
+		const pageElements = elements.slice(start, start + elementsPerPage);
 		return {
 			result: TopAskingResult.OK,
-			now: this._now,
 			kind,
 			data: {
 				totalElements,
 				timing,
-				contextRank: rank > 0 ? rank : undefined,
+				contextRank: contextRank > 0 ? contextRank : undefined,
 				canBeRanked: kind !== TopKind.GUILDS || id !== NO_GUILD_ID,
 				needFight,
-				elements: elements.map(element => ({
+				elements: pageElements.map(element => ({
 					rank: element.rank,
 					sameContext: element.id === id,
 					text: element.text,
 					attributes: element.attributes
 				})),
 				elementsPerPage,
-				initialPage
+				pageNumber
 			}
 		} as AskTopResult<T>;
 	}

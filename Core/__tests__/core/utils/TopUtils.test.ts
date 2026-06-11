@@ -1,5 +1,5 @@
 import {
-	describe, it, expect, beforeEach
+	describe, it, expect, beforeEach, afterEach, vi
 } from "vitest";
 import {
 	getTopKind, NO_GUILD_ID, TopKind, TopStorage
@@ -7,6 +7,9 @@ import {
 import { TopDataType } from "../../../../Lib/src/types/TopDataType";
 import { TopTiming } from "../../../../Lib/src/types/TopTimings";
 import { TopConstants } from "../../../../Lib/src/constants/TopConstants";
+import { Players } from "../../../src/core/database/game/models/Player";
+import { Guilds } from "../../../src/core/database/game/models/Guild";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any -- needed to inject test data into private fields
 function getStorageInternals(storage: TopStorage): any {
@@ -15,6 +18,11 @@ function getStorageInternals(storage: TopStorage): any {
 
 function markFresh(storage: TopStorage, kind: TopKind): void {
 	getStorageInternals(storage)._lastUpdated.set(kind, Date.now());
+}
+
+function markStale(storage: TopStorage, kind: TopKind): void {
+	// Epoch is always older than the stale threshold, so the next askTop triggers a refresh
+	getStorageInternals(storage)._lastUpdated.set(kind, 0);
 }
 
 function injectScoreTop(storage: TopStorage, count: number, weekly: boolean): void {
@@ -143,13 +151,14 @@ describe("TopStorage.askTop", () => {
 			injectScoreTop(storage, 30, false);
 		});
 
-		it("should return OK with all elements", async () => {
+		it("should return OK with a single page of elements", async () => {
 			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 1);
 			expect(result.result).toBe(0); // OK
 			if ("data" in result && "elements" in result.data) {
-				expect(result.data.elements).toHaveLength(30);
+				expect(result.data.elements).toHaveLength(TopConstants.PLAYERS_PER_PAGE);
 				expect(result.data.totalElements).toBe(30);
 				expect(result.data.elementsPerPage).toBe(TopConstants.PLAYERS_PER_PAGE);
+				expect(result.data.pageNumber).toBe(1);
 			}
 		});
 
@@ -177,10 +186,31 @@ describe("TopStorage.askTop", () => {
 			}
 		});
 
-		it("should pass initialPage through", async () => {
+		it("should return the requested page window", async () => {
 			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 1, undefined, 2);
 			if ("data" in result && "elements" in result.data) {
-				expect(result.data.initialPage).toBe(2);
+				expect(result.data.pageNumber).toBe(2);
+				// Page 2 contains ranks 16..30
+				expect(result.data.elements).toHaveLength(30 - TopConstants.PLAYERS_PER_PAGE);
+				expect(result.data.elements[0].rank).toBe(TopConstants.PLAYERS_PER_PAGE + 1);
+			}
+		});
+
+		it("should fall back to the contextRank page when no page is requested", async () => {
+			// Player at rank 20 -> page 2 (ranks 16..30)
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 20);
+			if ("data" in result && "elements" in result.data) {
+				expect(result.data.pageNumber).toBe(2);
+				expect(result.data.contextRank).toBe(20);
+				expect(result.data.elements.some(e => e.rank === 20)).toBe(true);
+			}
+		});
+
+		it("should fall back to page 1 when the requested page is out of range", async () => {
+			const result = await storage.askTop(TopKind.SCORE_ALL_TIME, 999, undefined, 999);
+			if ("data" in result && "elements" in result.data) {
+				expect(result.data.pageNumber).toBe(1);
+				expect(result.data.elements[0].rank).toBe(1);
 			}
 		});
 
@@ -265,3 +295,95 @@ describe("TopStorage.askTop", () => {
 		});
 	});
 });
+
+/**
+ * Performance / non-regression guarantees of the cache.
+ *
+ * The /top pipeline relies on a server-side snapshot refreshed at most once per stale window.
+ * These tests pin the two properties that protect production performance:
+ *  - a warm cache never hits the database;
+ *  - concurrent requests on a stale kind collapse into a single refresh (no thundering herd).
+ *
+ * The heavy DB calls are stubbed so the refresh is observable through call counts only.
+ */
+describe("TopStorage cache performance guarantees", () => {
+	let storage: TopStorage;
+	let countSpy: ReturnType<typeof vi.spyOn>;
+	let topSpy: ReturnType<typeof vi.spyOn>;
+
+	beforeEach(() => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any -- reset singleton for test isolation
+		(TopStorage as any)._instance = undefined;
+		storage = TopStorage.getInstance();
+		// A refresh of a score kind always starts by counting players; stub it (and the row fetch) to avoid DB access
+		countSpy = vi.spyOn(Players, "getNumberOfPlayingPlayers").mockResolvedValue(0);
+		topSpy = vi.spyOn(Players, "getPlayersTop").mockResolvedValue([]);
+	});
+
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("should not hit the database when the cached snapshot is fresh", async () => {
+		injectScoreTop(storage, 30, false); // injects data and marks the kind fresh
+
+		await storage.askTop(TopKind.SCORE_ALL_TIME, 1);
+		await storage.askTop(TopKind.SCORE_ALL_TIME, 2);
+		await storage.askTop(TopKind.SCORE_ALL_TIME, 3);
+
+		expect(countSpy).not.toHaveBeenCalled();
+		expect(topSpy).not.toHaveBeenCalled();
+	});
+
+	it("should refresh from the database when the snapshot is stale", async () => {
+		markStale(storage, TopKind.SCORE_ALL_TIME);
+
+		await storage.askTop(TopKind.SCORE_ALL_TIME, 1);
+
+		expect(countSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it("should collapse concurrent stale requests into a single refresh", async () => {
+		markStale(storage, TopKind.SCORE_ALL_TIME);
+
+		await Promise.all([
+			storage.askTop(TopKind.SCORE_ALL_TIME, 1),
+			storage.askTop(TopKind.SCORE_ALL_TIME, 2),
+			storage.askTop(TopKind.SCORE_ALL_TIME, 3),
+			storage.askTop(TopKind.SCORE_ALL_TIME, 4),
+			storage.askTop(TopKind.SCORE_ALL_TIME, 5)
+		]);
+
+		// Five simultaneous callers must trigger exactly one database refresh, not five
+		expect(countSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it("should refresh again once the in-flight refresh has settled and the snapshot is stale anew", async () => {
+		markStale(storage, TopKind.SCORE_ALL_TIME);
+		await storage.askTop(TopKind.SCORE_ALL_TIME, 1);
+		expect(countSpy).toHaveBeenCalledTimes(1);
+
+		// A later stale window must allow a fresh refresh (the in-flight guard does not block forever)
+		markStale(storage, TopKind.SCORE_ALL_TIME);
+		await storage.askTop(TopKind.SCORE_ALL_TIME, 1);
+		expect(countSpy).toHaveBeenCalledTimes(2);
+	});
+
+	it("should refresh each kind independently through updateTops without redundant work", async () => {
+		// updateTops refreshes every kind, so stub the glory and guild data sources too
+		const fightingSpy = vi.spyOn(Players, "getNumberOfFightingPlayers").mockResolvedValue(0);
+		vi.spyOn(Players, "getPlayersGloryTop").mockResolvedValue([]);
+		const guildCountSpy = vi.spyOn(Guilds, "getTotalRanked").mockResolvedValue(0);
+		vi.spyOn(Guilds, "getRankedGuilds").mockResolvedValue([]);
+		// updateTops logs on completion; the logger is not initialized in unit tests, so stub it
+		vi.spyOn(CrowniclesLogger, "info").mockImplementation(() => {});
+
+		await storage.updateTops();
+
+		// Each kind is refreshed exactly once: two score kinds, one glory, one guild
+		expect(countSpy).toHaveBeenCalledTimes(2);
+		expect(fightingSpy).toHaveBeenCalledTimes(1);
+		expect(guildCountSpy).toHaveBeenCalledTimes(1);
+	});
+});
+
