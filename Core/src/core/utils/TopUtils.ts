@@ -90,6 +90,15 @@ const ELEMENTS_PER_PAGE: Record<TopKind, number> = {
 };
 
 /**
+ * Whether the page explicitly asked by the requester is a usable 1-based page index.
+ * @param requestedPage - The page explicitly asked by the requester (1-based), if any
+ * @param totalPages - Total number of pages available
+ */
+function isRequestedPageInRange(requestedPage: number | undefined, totalPages: number): boolean {
+	return requestedPage !== undefined && requestedPage >= 1 && requestedPage <= totalPages;
+}
+
+/**
  * Resolve which 1-based page should be returned for a top request.
  * Mirrors the previous front-side logic: an explicit valid page wins, otherwise the page
  * containing the requester's rank, otherwise the first page.
@@ -99,8 +108,8 @@ const ELEMENTS_PER_PAGE: Record<TopKind, number> = {
  * @param totalPages - Total number of pages available
  */
 function computeEffectivePage(requestedPage: number | undefined, contextRank: number, elementsPerPage: number, totalPages: number): number {
-	if (requestedPage !== undefined && requestedPage >= 1 && requestedPage <= totalPages) {
-		return requestedPage;
+	if (isRequestedPageInRange(requestedPage, totalPages)) {
+		return requestedPage!;
 	}
 	if (contextRank > 0) {
 		return Math.ceil(contextRank / elementsPerPage);
