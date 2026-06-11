@@ -3214,5 +3214,56 @@
       }
     },
     "text": "Vous vous engagez dans un corridor bordé de parois rocheuses couvertes de mousse. Jadis emprunté par les marchands, le passage est aujourd'hui abandonné, trop souvent visité par les bêtes sauvages. Alors que vous passez sous une arche naturelle, un claquement métallique vous glace le sang : des chaînes rouillées tombent d'un surplomb et obstruent la sortie. Une silhouette cuirassée surgit sur un promontoire, flanquée de deux archers encapuchonnés. Vous êtes pris au piège."
+  },
+  "93": {
+    "possibilities": {
+      "ponton": {
+        "outcomes": {
+          "0": "Vous avancez lentement sur le ponton, tandis que la brume vous engloutit peu à peu et que vos pas font grincer le bois détrempé. Alors que vous vous penchez pour toucher l'eau, une planche vermoulue cède sous vos pieds et vous tombez en avant dans l'eau glacée. Vous parvenez à sortir, trempé et grelottant, et perdez un temps précieux à faire sécher vos affaires au soleil.",
+          "1": "Arrivé au bout du ponton, vous profitez d'une magnifique vue sur le lac. Vous remarquez alors une forme flottant à la surface. En tendant un bâton, vous ramenez un petit coffret en bois verni, probablement tombé d'une barque. Il contient une bouteille d'eau-de-vie et une belle bourse remplie d'or.",
+          "2": "Une vieille barque abandonnée est encore attachée au ponton. Vous décidez de l'emprunter pour faire la traversée et gagner du temps. Mais la brume s'épaissit rapidement et vous vous retrouvez perdu au beau milieu du lac. Vous ramez longtemps pour finalement revenir à votre point de départ. Au moment de quitter l'embarcation, vous apercevez un objet coincé entre deux planches."
+        },
+        "text": "Vous rendre jusqu'au ponton dans la brume."
+      },
+      "herbs": {
+        "outcomes": {
+          "0": "Vous sélectionnez soigneusement les tiges les plus robustes et les feuilles intactes. Leur parfum rappelle celui de la menthe sauvage mêlée à la lavande. Ces plantes endémiques sont rares et recherchées pour leurs vertus médicinales : vous les vendrez un bon prix chez un herboriste.",
+          "1": "À peine avez-vous arraché la troisième plante qu'un liquide blanchâtre suinte sur vos doigts. L'instant d'après, des plaques rouges vous montent jusqu'aux poignets et vos bras vous démangent atrocement. Vous devez vous rincer longuement dans le lac pour apaiser la douleur.",
+          "2": "En froissant les feuilles entre vos doigts, un parfum vous envahit, étrangement familier. Cela vous rappelle un souvenir d'enfance flou : un vaste champ baigné de soleil, peut-être, ou une main délicate qui vous tendait un bouquet. Rien de concret, mais l'impression vous suit longtemps."
+        },
+        "text": "Ramasser les herbes étranges près de la rive."
+      },
+      "fish": {
+        "outcomes": {
+          "0": "Après une longue attente qui vous a donné le temps de bien vous restaurer, vous sentez enfin quelque chose tirer. Vous remontez lentement pour découvrir une vieille botte pleine de vase. Mais alors que vous riez de votre propre malchance, quelque chose remue à l'intérieur : un crapaud trapu vous fixe avant de bondir hors de la botte. Vous repartez boueux, mais amusé.",
+          "1": "Vous accrochez un hameçon de fortune à un brin de ficelle et trouvez un appât. Vous ramenez le fil derrière vous pour le lancer le plus loin possible mais, maladroit comme vous êtes, l'hameçon se plante dans votre épaule. Vous étouffez un cri, passez un long moment à le retirer puis à désinfecter la plaie avec un peu d'eau trouble du lac. Pas très glorieux comme pêche.",
+          "2": "Le fil se tend brusquement. Vous tirez, pensant à un poisson ordinaire, mais ce que vous extirpez de l'eau est une étrange créature luisante, aux écailles bleues nacrées. Elle vous fixe un instant puis crache... une pièce d'or avant de replonger. Vous restez là, hébété, la pièce en main."
+        },
+        "text": "Tenter de pêcher dans le lac."
+      },
+      "reflect": {
+        "outcomes": {
+          "0": "Vous fermez les yeux et laissez votre souffle s'accorder au clapotis presque imperceptible du lac. Quand vous les rouvrez, le paysage semble plus net, plus vivant. Une sensation de calme profond vous envahit, comme si le lac vous avait brièvement adopté. Vous vous sentez merveilleusement bien.",
+          "1": "Votre reflet vous fixe avec une intensité inhabituelle. Un clignement. Puis un sourire... qui n'est pas le vôtre. Soudain, une silhouette trouble émerge sous la surface et vous jurez avoir vu une main vous frôler la cheville. Vous bondissez en arrière, le cœur battant. Le corps gonflé d'eau se rapproche doucement, et vous partez en courant.",
+          "2": "L'eau semble vous happer. Votre image ondule, se déforme. Pendant de longues minutes, vous vous perdez dans vos pensées, comme ensorcelé. Quand vous reprenez vos esprits, le soleil a tourné et vos jambes sont engourdies. Un objet brille à la surface : une fiole contenant un liquide ambré. Sans même vous en rendre compte, vous buvez le breuvage inconnu et sentez toutes vos forces revenir. Le Lac Mirage vous a volé un peu de temps, mais vous a laissé un présent en échange."
+        },
+        "text": "Contempler votre reflet dans l'eau."
+      },
+      "cabin": {
+        "outcomes": {
+          "0": "En vous éloignant un peu de la rive, vous découvrez une cabane dont la porte pend de travers. À l'intérieur : des filets moisis, des bocaux vides et un carnet détrempé sur une table branlante. En le feuilletant délicatement, vous parvenez à déchiffrer quelques mots évoquant de ne pas pêcher à la pleine lune et un reflet qui parlerait. Vous frissonnez brusquement et quelque chose glisse du carnet : une pièce ancienne gravée d'un symbole inconnu.",
+          "1": "En déplaçant une étagère effondrée contre le mur, vous apercevez une grande boîte en fer rouillée. À l'intérieur se trouve un objet qui semble avoir été soigneusement entretenu malgré l'abandon du lieu, peut-être plus précieux qu'il n'y paraît.",
+          "2": "En forçant une caisse moisie, vous libérez une puissante odeur de pourriture. À l'intérieur, vous découvrez un amas de chiffons humides et le corps ratatiné d'une créature aquatique, partiellement dissous. Sa forme presque humanoïde vous laisse une impression dérangeante. Le cœur soulevé, vous sortez en titubant, la nausée au bord des lèvres."
+        },
+        "text": "Explorer la cabane abandonnée."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous quittez la berge en silence. Le calme étrange du lac vous a donné un léger frisson, mais la route vous attend.",
+          "1": "Vous quittez les rives du Lac Mirage sans un regard en arrière, préférant les sentiers plus sûrs."
+        }
+      }
+    },
+    "text": "Après une longue marche éreintante, vous débouchez sur une clairière silencieuse où s'étend un vaste plan d'eau aux reflets changeants. Le Lac Mirage porte bien son nom : sa surface miroitante semble vibrer, tantôt limpide, tantôt voilée comme un rêve incertain. De hautes herbes ondulent doucement sur les rives, et une fine brume s'élève par endroits, dissimulant ce qui pourrait être un ponton, une cabane abandonnée... ou des présences moins rassurantes. L'endroit est calme, presque trop calme, comme suspendu dans le temps."
   }
 }

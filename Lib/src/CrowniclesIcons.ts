@@ -1094,6 +1094,17 @@ export const CrowniclesIcons: {
 				0: "🪨",
 				1: "🚶"
 			}
+		},
+		93: {
+			ponton: "🌫️",
+			herbs: "🌾",
+			fish: "🎣",
+			reflect: "🪞",
+			cabin: "📖",
+			end: {
+				0: "🚶",
+				1: "🚶"
+			}
 		}
 	},
 	mapTypes: {
