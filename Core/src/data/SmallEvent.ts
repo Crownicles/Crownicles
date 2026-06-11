@@ -48,8 +48,14 @@ export class SmallEventDataController extends DataControllerString<SmallEvent> {
 		for (const file of files) {
 			if (file.endsWith(".js")) {
 				const smallEventFuncs = (<{
-					smallEventFuncs: SmallEventFuncs;
+					smallEventFuncs?: SmallEventFuncs;
 				}>require(`${relativePath}/${file.substring(0, file.length - 3)}`)).smallEventFuncs;
+
+				// Skip helper files in the folder that are not actual small events (they don't export smallEventFuncs)
+				if (!smallEventFuncs) {
+					continue;
+				}
+
 				SmallEventDataController.smallEventsFunctionsCache!.set(
 					file.substring(0, file.length - 3),
 					smallEventFuncs
