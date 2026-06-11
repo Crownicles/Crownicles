@@ -1072,8 +1072,8 @@ export const CrowniclesIcons: {
 			observe: "👀",
 			help: "🤝",
 			ignore: "🚶",
-			end: { 
-				0: "🫂", 
+			end: {
+				0: "🫂",
 				1: "👮"
 			}
 
