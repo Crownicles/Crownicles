@@ -3299,5 +3299,38 @@
       }
     },
     "text": "Le sentier serpente entre les rochers, rude et escarpé. Le souffle court, vous grimpez sous un ciel gris quand, au détour d'un virage, vous apercevez une tour solitaire, à moitié effondrée. Ses pierres noircies semblent abandonnées depuis des années, mais un reflet métallique vous a brièvement ébloui depuis l'étage supérieur. Est-ce une illusion ? Une arme ? Ou quelque chose de pire ?"
+  },
+  "95": {
+    "possibilities": {
+      "capture": {
+        "outcomes": {
+          "0": "Vous videz votre besace puis la posez doucement devant lui en soulevant un côté pour la garder ouverte. Le scorpion, surpris, recule d'abord puis finit par y entrer, attiré par l'ombre au fond du sac. Vous refermez le tout : une belle prise ! Ce type de scorpion est prisé pour son venin, très utile pour des potions rares. Content et soulagé, votre moral remonte d'un cran.",
+          "1": "Vous faites glisser la lame de votre épée sous le scorpion. Celui-ci ne réagissant pas, vous ramenez d'un geste adroit votre épée vers votre besace avant de l'y faire tomber. C'est un très beau spécimen : vous en tirerez un bon prix au marché.",
+          "2": "Vous glissez lentement votre épée sous le scorpion avant de la soulever. Pris de panique, il remonte rapidement jusqu'à la garde et vous pique. Grimaçant de douleur, vous pressez vivement votre poignet juste au-dessus de la piqûre puis aspirez le venin d'un geste rapide, recrachant le liquide amer au sol dans l'espoir de ralentir la progression du poison."
+        },
+        "text": "Tenter de capturer le scorpion."
+      },
+      "crush": {
+        "outcomes": {
+          "0": "Vous levez brusquement le pied et tentez de l'écraser. Trop tard : le scorpion vous a vu venir et plante son dard dans votre cheville. La douleur est fulgurante. Vous tombez à genoux, le venin commençant déjà à vous faire délirer.",
+          "1": "Vous ramassez la première pierre plate que vous trouvez à proximité afin de l'écraser. Grave erreur ! Chauffée à blanc par le soleil, elle vous brûle la main. Vous la lâchez d'un coup sec en poussant un juron, mais le mal est fait : vous passez du temps à faire un bandage solide pour protéger cette blessure.",
+          "2": "Sans même y réfléchir, vous jetez votre besace sur lui et sautez dessus à pieds joints comme un hystérique. En témoigne la bouillie verdâtre qui tache maintenant votre sac : pas de doute, il est bien mort ! Cette montée d'adrénaline semble vous avoir redonné des forces pour poursuivre votre chemin. À peine reparti, vous apercevez un objet brillant à moitié enfoui dans le sable, ainsi qu'une poignée de pièces."
+        },
+        "text": "Tenter d'écraser le scorpion."
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Vous reculez lentement pour vous en éloigner sans l'alerter. Vous prenez alors le temps de bien vous désaltérer. Vous sentant mieux, vous reprenez votre route prudemment, sans incident.",
+          "1": "Vous restez parfaitement immobile, en retenant votre souffle, jusqu'à ce que le scorpion se faufile rapidement sous une autre pierre."
+        },
+        "text": "Ignorer le scorpion et poursuivre votre route."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous détournez les yeux, estimant que le scorpion ne vaut pas le risque. Vous poursuivez votre chemin dans le désert."
+        }
+      }
+    },
+    "text": "Le sable brûlant s'enfonce sous vos pas tandis que vous progressez difficilement, le foulard serré sur le visage pour filtrer le vent chaud chargé de poussière. À l'horizon, rien d'autre que des vagues dorées et le chant lointain du désert. Vous vous agenouillez un instant pour reprendre votre souffle, mais un mouvement attire votre regard : un scorpion noir, gros comme un poing, sort lentement de sous une pierre, sa queue arquée luisant à la lumière, menaçante."
   }
 }
