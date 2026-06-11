@@ -3265,5 +3265,39 @@
       }
     },
     "text": "Après une longue marche éreintante, vous débouchez sur une clairière silencieuse où s'étend un vaste plan d'eau aux reflets changeants. Le Lac Mirage porte bien son nom : sa surface miroitante semble vibrer, tantôt limpide, tantôt voilée comme un rêve incertain. De hautes herbes ondulent doucement sur les rives, et une fine brume s'élève par endroits, dissimulant ce qui pourrait être un ponton, une cabane abandonnée... ou des présences moins rassurantes. L'endroit est calme, presque trop calme, comme suspendu dans le temps."
+  },
+  "94": {
+    "possibilities": {
+      "climb": {
+        "outcomes": {
+          "0": "Vous atteignez l'étage supérieur et découvrez une sacoche oubliée derrière un tas de gravats. À l'intérieur : quelques pièces et une ration sèche encore consommable. Vous reprenez des forces, satisfait de cette découverte modeste mais bienvenue.",
+          "1": "Vous grimpez sans bruit, scrutant chaque recoin. Sous une dalle disjointe, vous trouvez une cache contenant des pièces, dissimulées là il y a longtemps par un inconnu. Vous les glissez dans votre besace avec prudence.",
+          "2": "Une marche, fragilisée par les années, s'effondre sous votre poids. Votre jambe heurte violemment la pierre et une douleur aiguë vous saisit. Vous perdez du temps à désinfecter la plaie et à la bander avec un pan de tissu déchiré."
+        },
+        "text": "Monter prudemment inspecter l'étage de la tour."
+      },
+      "throwStone": {
+        "outcomes": {
+          "0": "Vous jetez la pierre, mais rien ne se passe. Cependant, le bruit attire un groupe de petits animaux curieux qui grimpent rapidement jusqu'à vous. L'un d'eux commence à fouiller votre sac et vous mord quand vous essayez de le repousser. Vous perdez du temps à vous débarrasser de ces petites créatures.",
+          "1": "Vous lancez une grosse pierre en direction de la tour. Elle percute une poutre branlante... qui déloge un vieux nid de corbeaux ! Ces derniers, furieux, foncent sur vous en croassant comme si vous aviez insulté leur mère. Vous fuyez en agitant les bras, trébuchant sur chaque caillou comme un ivrogne. Après un laps de temps qui vous paraît interminable, ils vous laissent enfin en paix et s'envolent avec votre dignité.",
+          "2": "En vous baissant pour ramasser une pierre, vous remarquez un objet non loin. Vous scrutez à gauche, à droite : personne ! Vous le ramassez hâtivement pour l'enfouir dans votre besace et partez rapidement."
+        },
+        "text": "Jeter une pierre pour voir si quelque chose réagit."
+      },
+      "walkAround": {
+        "outcomes": {
+          "0": "Vous faites le tour lentement. Vous notez plusieurs pierres effondrées au pied de la tour et des traces de griffes sur un pan de mur. Vous restez vigilant, mais rien ne bouge.",
+          "1": "Vous contournez la tour, mais aucune ouverture praticable n'apparaît. Le silence du lieu, troublé seulement par le vent, vous met mal à l'aise. Vous repartez sans incident, mais avec l'esprit plus méfiant."
+        },
+        "text": "Faire le tour de la tour sans y entrer."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous passez un bon quart d'heure à réfléchir, tiraillé entre votre curiosité et votre peur du danger. Vous décidez finalement de poursuivre votre route, laissant la tour derrière vous. Le chemin est rude, mais vous avancez sans encombre, concentré sur votre objectif.",
+          "1": "La tour vous évoque plusieurs images : une princesse qui aurait pu y être enfermée, un chevalier qui y aurait péri. Cette pensée vous arrache un sourire. Vous repartez et, un peu plus loin au bord du sentier, vous remarquez un objet coincé entre deux racines."
+        }
+      }
+    },
+    "text": "Le sentier serpente entre les rochers, rude et escarpé. Le souffle court, vous grimpez sous un ciel gris quand, au détour d'un virage, vous apercevez une tour solitaire, à moitié effondrée. Ses pierres noircies semblent abandonnées depuis des années, mais un reflet métallique vous a brièvement ébloui depuis l'étage supérieur. Est-ce une illusion ? Une arme ? Ou quelque chose de pire ?"
   }
 }

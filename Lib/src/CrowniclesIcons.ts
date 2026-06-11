@@ -1105,6 +1105,15 @@ export const CrowniclesIcons: {
 				0: "🚶",
 				1: "🚶"
 			}
+		},
+		94: {
+			climb: "🪜",
+			throwStone: "🪨",
+			walkAround: "👣",
+			end: {
+				0: "🚶",
+				1: "🔨"
+			}
 		}
 	},
 	mapTypes: {

@@ -1,0 +1,68 @@
+{
+  "possibilities": {
+    "climb": {
+      "outcomes": {
+        "0": {
+          "health": 1,
+          "money": 50,
+          "bonusPoints": 450
+        },
+        "1": {
+          "money": 150,
+          "bonusPoints": 250
+        },
+        "2": {
+          "effect": "hurt",
+          "health": -10
+        }
+      }
+    },
+    "throwStone": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "health": -5
+        },
+        "1": {
+          "effect": "hurt",
+          "health": -20
+        },
+        "2": {
+          "bonusPoints": 450,
+          "randomItem": {}
+        }
+      }
+    },
+    "walkAround": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "bonusPoints": 25
+        },
+        "1": {
+          "bonusPoints": 150
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15,
+          "bonusPoints": 25
+        },
+        "1": {
+          "bonusPoints": 450,
+          "randomItem": {}
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 24
+    }
+  ]
+}
