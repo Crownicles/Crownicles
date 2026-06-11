@@ -1,0 +1,74 @@
+{
+  "possibilities": {
+    "end": {
+      "outcomes": {
+        "0": {
+            "money": 500,
+            "effect": "occupied",
+            "lostTime": 15,
+            "randomItem": {
+                "rarity": {
+                    "min":3
+                }
+            }
+        },
+        "1": {
+            "effect": "jailed"
+        }
+      }
+    },
+    "observe": {
+      "outcomes": {
+        "0": {},
+        "1": {
+            "effect": "occupied",
+            "lostTime": 5
+        },
+        "2": {
+            "effect": "sick"
+        }
+      }
+    },
+    "help": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "randomItem": {
+            "category": 2,
+            "rarity": {
+              "min": 5
+            }
+          }
+        },
+        "2": {
+            "effect": "occupied",
+            "lostTime": 10
+        }
+      }
+    },
+    "ignore": {
+      "outcomes": {
+        "0": {
+            "effect": "occupied",
+            "lostTime": 25
+        },
+        "1": {
+            "effect": "occupied",
+            "lostTime": 20,
+            "health": 20
+        },
+        "2": {
+            "money": -512
+        },
+        "3" : {
+            "effect": "lost"
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 41
+    }
+  ]
+}
