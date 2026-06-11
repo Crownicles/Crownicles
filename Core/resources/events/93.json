@@ -4,17 +4,14 @@
       "outcomes": {
         "0": {
           "effect": "freezing",
-          "health": -10,
-          "bonusPoints": 25
+          "health": -10
         },
         "1": {
-          "money": 400,
-          "bonusPoints": 250
+          "money": 400
         },
         "2": {
           "effect": "occupied",
           "lostTime": 180,
-          "bonusPoints": 325,
           "randomItem": {}
         }
       }
@@ -22,18 +19,14 @@
     "herbs": {
       "outcomes": {
         "0": {
-          "money": 300,
-          "bonusPoints": 250
+          "money": 300
         },
         "1": {
           "effect": "occupied",
           "lostTime": 60,
-          "health": -10,
-          "bonusPoints": 25
+          "health": -10
         },
-        "2": {
-          "bonusPoints": 150
-        }
+        "2": {}
       }
     },
     "fish": {
@@ -41,52 +34,43 @@
         "0": {
           "effect": "occupied",
           "lostTime": 30,
-          "health": 15,
-          "bonusPoints": 225
+          "health": 15
         },
         "1": {
           "effect": "hurt",
-          "health": -20,
-          "bonusPoints": 25
+          "health": -20
         },
         "2": {
-          "money": 150,
-          "bonusPoints": 250
+          "money": 150
         }
       }
     },
     "reflect": {
       "outcomes": {
         "0": {
-          "health": 10,
-          "bonusPoints": 350
+          "health": 10
         },
         "1": {
           "effect": "scared",
-          "health": -5,
-          "bonusPoints": 25
+          "health": -5
         },
         "2": {
           "effect": "confounded",
-          "health": 20,
-          "bonusPoints": 225
+          "health": 20
         }
       }
     },
     "cabin": {
       "outcomes": {
         "0": {
-          "money": 250,
-          "bonusPoints": 250
+          "money": 250
         },
         "1": {
-          "bonusPoints": 450,
           "randomItem": {}
         },
         "2": {
           "effect": "sick",
-          "health": -5,
-          "bonusPoints": 25
+          "health": -5
         }
       }
     },
@@ -94,12 +78,9 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 10,
-          "bonusPoints": 25
+          "lostTime": 10
         },
-        "1": {
-          "bonusPoints": 150
-        }
+        "1": {}
       }
     }
   },

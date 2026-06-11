@@ -4,12 +4,10 @@
       "outcomes": {
         "0": {
           "health": 1,
-          "money": 50,
-          "bonusPoints": 450
+          "money": 50
         },
         "1": {
-          "money": 150,
-          "bonusPoints": 250
+          "money": 150
         },
         "2": {
           "effect": "hurt",
@@ -29,7 +27,6 @@
           "health": -20
         },
         "2": {
-          "bonusPoints": 450,
           "randomItem": {}
         }
       }
@@ -38,23 +35,18 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 10,
-          "bonusPoints": 25
+          "lostTime": 10
         },
-        "1": {
-          "bonusPoints": 150
-        }
+        "1": {}
       }
     },
     "end": {
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 15,
-          "bonusPoints": 25
+          "lostTime": 15
         },
         "1": {
-          "bonusPoints": 450,
           "randomItem": {}
         }
       }
