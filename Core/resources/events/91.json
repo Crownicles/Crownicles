@@ -1,0 +1,101 @@
+{
+  "possibilities": {
+    "compete": {
+      "outcomes": {
+        "0": {
+          "effect": "freezing",
+          "health": -10,
+          "money": -250
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "bonusPoints": 25
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 60,
+          "money": 150,
+          "bonusPoints": 125
+        },
+        "3": {
+          "effect": "occupied",
+          "lostTime": 300,
+          "health": 10,
+          "money": 550,
+          "bonusPoints": 600,
+          "randomItem": {}
+        }
+      }
+    },
+    "cheat": {
+      "outcomes": {
+        "0": {
+          "effect": "hurt",
+          "health": -15,
+          "money": -100,
+          "bonusPoints": 25
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 35,
+          "bonusPoints": 25
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 20,
+          "money": 100,
+          "bonusPoints": 250
+        },
+        "3": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "money": 650,
+          "bonusPoints": 550,
+          "randomItem": {}
+        }
+      }
+    },
+    "observe": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "money": -50,
+          "bonusPoints": 25
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 15,
+          "money": 100,
+          "bonusPoints": 125
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 45,
+          "health": 15,
+          "bonusPoints": 225
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "bonusPoints": 25
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "bonusPoints": 150
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 25
+    }
+  ]
+}
