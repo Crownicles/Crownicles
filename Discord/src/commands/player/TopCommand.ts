@@ -33,6 +33,7 @@ import { escapeUsername } from "../../utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { CrowniclesPaginatedEmbed } from "../../messages/CrowniclesPaginatedEmbed";
 import { DiscordMQTT } from "../../bot/DiscordMQTT";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 async function getPacket(interaction: CrowniclesInteraction): Promise<CommandTopPacketReq> {
 	await interaction.deferReply();
@@ -284,7 +285,7 @@ function requestTopPageElements<TopElementKind extends TopElement<unknown, unkno
 	expectedResponseName: string
 ): Promise<TopElementKind[] | null> {
 	return new Promise(resolve => {
-		void DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
+		DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			context,
 			makePacket(CommandTopPacketReq, {
 				dataType,
@@ -296,7 +297,11 @@ function requestTopPageElements<TopElementKind extends TopElement<unknown, unkno
 					? (responsePacket as CommandTopPacketRes<TopElementKind>).elements
 					: null);
 			}
-		);
+		).catch((error: unknown) => {
+			// A failed send must not leave the paginated embed awaiting forever: fall back to an empty page.
+			CrowniclesLogger.errorWithObj("Failed to request a top page from the Core", error);
+			resolve(null);
+		});
 	});
 }
 
@@ -315,10 +320,13 @@ async function handleGenericTopPacketRes<TopElementKind extends TopElement<unkno
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction!)!;
 	const lng = interaction.userLanguage;
 	const playerUsername = await DisplayUtils.getEscapedUsername(context.keycloakId!, lng);
-	const elementsPerPage = packet.elementsPerPage;
-	const pagesCount = Math.ceil(packet.totalElements / elementsPerPage);
+	const {
+		elementsPerPage,
+		totalElements,
+		timing
+	} = packet;
+	const pagesCount = Math.ceil(totalElements / elementsPerPage);
 	const selectedPageIndex = packet.pageNumber - 1;
-	const { timing } = packet;
 
 	// The "your rank" section is a snapshot of the requester's situation, stable across pages.
 	const yourRankSection = buildYourRankSection(packet, textKeys, lng, playerUsername);
@@ -333,7 +341,7 @@ async function handleGenericTopPacketRes<TopElementKind extends TopElement<unkno
 		selectedPageIndex,
 		titleBuilder: (pageIndex: number): string => {
 			const minRank = pageIndex * elementsPerPage + 1;
-			const maxRank = Math.min((pageIndex + 1) * elementsPerPage, packet.totalElements);
+			const maxRank = Math.min((pageIndex + 1) * elementsPerPage, totalElements);
 			return i18n.t(textKeys.title, {
 				lng,
 				minRank,

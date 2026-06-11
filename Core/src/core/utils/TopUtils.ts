@@ -300,7 +300,7 @@ export class TopStorage {
 
 	/**
 	 * Resolve (and cache) the requester's rank for a given top kind.
-	 * @param kind
+	 * @param kind - The top kind being queried (score / glory / guilds)
 	 * @param id - The requester id (player id or guild id)
 	 * @param elements - The cached, ranked elements of the kind
 	 * @param needFight - Glory only: remaining fights needed to be ranked (forces "not ranked" when > 0)
