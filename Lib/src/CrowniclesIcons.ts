@@ -1067,6 +1067,16 @@ export const CrowniclesIcons: {
 			end: { 0: "🚶" },
 			help: "🔎",
 			skip: "▶️"
+		},
+		90: {
+			observe: "👀",
+			help: "🤝",
+			ignore: "🚶",
+			end: {
+				0: "🫂",
+				1: "👮"
+			}
+
 		}
 	},
 	mapTypes: {
