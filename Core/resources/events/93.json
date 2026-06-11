@@ -1,0 +1,111 @@
+{
+  "possibilities": {
+    "ponton": {
+      "outcomes": {
+        "0": {
+          "effect": "freezing",
+          "health": -10,
+          "bonusPoints": 25
+        },
+        "1": {
+          "money": 400,
+          "bonusPoints": 250
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 180,
+          "bonusPoints": 325,
+          "randomItem": {}
+        }
+      }
+    },
+    "herbs": {
+      "outcomes": {
+        "0": {
+          "money": 300,
+          "bonusPoints": 250
+        },
+        "1": {
+          "effect": "occupied",
+          "lostTime": 60,
+          "health": -10,
+          "bonusPoints": 25
+        },
+        "2": {
+          "bonusPoints": 150
+        }
+      }
+    },
+    "fish": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 30,
+          "health": 15,
+          "bonusPoints": 225
+        },
+        "1": {
+          "effect": "hurt",
+          "health": -20,
+          "bonusPoints": 25
+        },
+        "2": {
+          "money": 150,
+          "bonusPoints": 250
+        }
+      }
+    },
+    "reflect": {
+      "outcomes": {
+        "0": {
+          "health": 10,
+          "bonusPoints": 350
+        },
+        "1": {
+          "effect": "scared",
+          "health": -5,
+          "bonusPoints": 25
+        },
+        "2": {
+          "effect": "confounded",
+          "health": 20,
+          "bonusPoints": 225
+        }
+      }
+    },
+    "cabin": {
+      "outcomes": {
+        "0": {
+          "money": 250,
+          "bonusPoints": 250
+        },
+        "1": {
+          "bonusPoints": 450,
+          "randomItem": {}
+        },
+        "2": {
+          "effect": "sick",
+          "health": -5,
+          "bonusPoints": 25
+        }
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "bonusPoints": 25
+        },
+        "1": {
+          "bonusPoints": 150
+        }
+      }
+    }
+  },
+  "triggers": [
+    {
+      "mapId": 14
+    }
+  ]
+}
