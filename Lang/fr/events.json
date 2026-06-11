@@ -3187,5 +3187,32 @@
       }
     },
     "text": "Alors que vous déambulez sur les quais bruyants, une petite foule s'agglutine autour d'un tonneau plein d'eau salée. Un homme trapu à la barbe rousse, en tablier poisseux, juché sur une caisse retournée, harangue les passants : il promet une chope de rhum pour chaque crabe pêché, et une surprise à qui sortira la plus grosse bête. Le concours est simple : les crabes ne se prennent ni au casier ni à l'épuisette, on les attire à la ligne, appâtés de restes de poisson. Cela demande de la patience, de l'adresse et un peu de chance."
+  },
+  "92": {
+    "possibilities": {
+      "forceChains": {
+        "outcomes": {
+          "0": "Dans un cri de défi, vous agrippez les lourdes chaînes rouillées et tirez de toutes vos forces. Les maillons grincent, résistent... puis cèdent dans un fracas métallique. Un archer tente de vous viser, mais sa flèche ricoche contre la roche. Vous vous extirpez du piège, essoufflé mais indemne, et mettez la main sur un sac de cuir contenant quelques pièces avant de vous éclipser.",
+          "1": "Une lueur de colère ancestrale vous traverse. Vous tirez sur les chaînes avec une force de grizzly, et elles se rompent net, projetant un nuage de poussière et d'éclats de métal. Vos ennemis décampent, pris de panique devant votre puissance. Dans sa fuite, l'un des bandits laisse tomber une bourse et un objet.",
+          "2": "Vous vous jetez sur les chaînes et tentez de les arracher, mais elles tiennent bon. Avant que vous ne puissiez réessayer, une flèche vous frôle la joue, puis une autre se fiche dans votre épaule. Les bandits descendent en ricanant, vous arrachent votre bourse et vous ordonnent sèchement de disparaître."
+        },
+        "text": "Forcer les chaînes rouillées pour vous dégager."
+      },
+      "attackArcher": {
+        "outcomes": {
+          "0": "Vous reculez pour bondir vers la paroi et grimpez facilement en agrippant les aspérités avec agilité. L'archer le plus proche vous manque de peu. Vous foncez sur lui et lui donnez un coup d'épaule qui le fait basculer dans le vide ; le choc est fatal. Vous avez juste le temps de parer la flèche du second archer à l'aide de votre bouclier. Les deux bandits échangent alors un regard inquiet avant de s'enfuir en zigzaguant entre les rochers. Vous redescendez fouiller l'homme à terre et récupérez toutes ses possessions.",
+          "1": "Sans perdre de temps, vous pivotez, contournez l'arche et grimpez par un pan rocheux adjacent. Vous vous élancez en poussant un cri sauvage qui fait vaciller l'assurance de l'archer. Pris de court, il décoche une flèche qui siffle à vos oreilles. Vous arrivez sur lui et, d'un mouvement sec, le plaquez au sol et le neutralisez. Sa besace glisse dans la poussière, révélant quelques pièces. Témoins de votre assaut fulgurant, les deux autres bandits hésitent, puis battent en retraite sans demander leur reste.",
+          "2": "Après avoir repéré une ouverture dans un renfoncement rocheux, vous grimpez rapidement et foncez sur l'archer. Mais l'homme en cuirasse s'interpose avec une dextérité inquiétante. Le choc est brutal : son bouclier percute vos côtes avec violence et vous projette contre la paroi. Vous tentez de riposter, mais son style est rude et méthodique, vous laissant à peine une ouverture. Finalement, vous parvenez à vous dégager en roulant sur le sol, meurtri et à bout de souffle, tandis que vos ennemis s'éloignent en ricanant. Vous êtes vivant, mais grièvement blessé."
+        },
+        "text": "Charger l'archer le plus proche."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Plutôt que d'agir dans la précipitation, vous reculez lentement, cherchant une position sûre. Vous trouvez une anfractuosité dans la roche, assez vaste pour vous dissimuler sans être vu. L'embuscade est solidement tenue et vos observations ne vous offrent aucun avantage particulier. Vous décidez de vous replier prudemment.",
+          "1": "Vous faites volte-face, préférant ne prendre aucun risque. Ce n'est peut-être pas glorieux, mais vous conservez vos forces et surtout votre vie. Vous repartez par une route plus longue, frustré, mais entier."
+        }
+      }
+    },
+    "text": "Vous vous engagez dans un corridor bordé de parois rocheuses couvertes de mousse. Jadis emprunté par les marchands, le passage est aujourd'hui abandonné, trop souvent visité par les bêtes sauvages. Alors que vous passez sous une arche naturelle, un claquement métallique vous glace le sang : des chaînes rouillées tombent d'un surplomb et obstruent la sortie. Une silhouette cuirassée surgit sur un promontoire, flanquée de deux archers encapuchonnés. Vous êtes pris au piège."
   }
 }
