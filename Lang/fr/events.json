@@ -2876,17 +2876,11 @@
         },
         "text": "Passer son chemin"
       },
-      "doNotRespond": {
+      "end": {
         "outcomes": {
           "0": "Vous vous apprêtez à partir lorsqu'un homme s'extirpe de l'ouverture. Son visage vous est familier : il s'agit de Price le mercenaire, et celui-ci se fige brièvement avant de vous reconnaître. Il passe son bras autour de votre cou et vous propose quelques pièces en échange de votre silence, ce que votre avidité accepte immédiatement.",
           "1": "Vous vous apprêtez à quitter les lieux lorsqu'un homme masqué s'extirpe de l'ouverture. Paniqué, le brigand sort sa lame, se rue sur vous et vous blesse grièvement, avant que vous puissiez esquisser le moindre geste. Vous le regardez fuir, noyé dans votre sang.",
           "2": "Alors que vous observez l'ouverture, un éclat doré attire votre attention. Les rayons du soleil révèlent quelques pièces à l'abandon dans le tunnel, ainsi qu'un objet que vous vous empressez de récupérer. Vous repartez, heureux de cette découverte."
-        },
-        "text": "Ne pas répondre"
-      },
-      "end": {
-        "outcomes": {
-          "0": "Jugeant l'endroit trop risqué, vous renoncez et poursuivez votre route vers la porte principale."
         }
       }
     },
