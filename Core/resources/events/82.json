@@ -1,10 +1,5 @@
 {
   "possibilities": {
-    "end": {
-      "outcomes": {
-        "0": {}
-      }
-    },
     "enterOpening": {
       "outcomes": {
         "0": {
@@ -52,7 +47,7 @@
         }
       }
     },
-    "doNotRespond": {
+    "end": {
       "outcomes": {
         "0": {
           "money": 300

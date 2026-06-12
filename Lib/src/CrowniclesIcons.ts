@@ -1017,8 +1017,11 @@ export const CrowniclesIcons: {
 			enterOpening: "🕳️",
 			alertGuards: "📢",
 			moveOn: "➡️",
-			doNotRespond: "🤐",
-			end: { 0: "🚶" }
+			end: {
+				0: "🪙",
+				1: "💀",
+				2: "💰"
+			}
 		},
 		83: {
 			skip: "🚶",
