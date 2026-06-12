@@ -1014,9 +1014,10 @@ export const CrowniclesIcons: {
 			end: { 0: "🚶" }
 		},
 		82: {
-			takeLetter: "📩",
-			openLetter: "📜",
-			deliver: "📮",
+			enterOpening: "🕳️",
+			alertGuards: "📢",
+			moveOn: "➡️",
+			doNotRespond: "🤐",
 			end: { 0: "🚶" }
 		},
 		83: {
