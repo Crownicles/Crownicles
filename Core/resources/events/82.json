@@ -5,37 +5,64 @@
         "0": {}
       }
     },
-    "takeLetter": {
+    "enterOpening": {
       "outcomes": {
         "0": {
-          "money": 50,
-          "lostTime": 30
+          "effect": "scared"
         },
         "1": {
-          "randomItem": {}
-        }
-      }
-    },
-    "openLetter": {
-      "outcomes": {
-        "0": {
-          "health": -10,
-          "effect": "occupied",
-          "lostTime": 60
-        },
-        "1": {
-          "effect": "jailed"
-        }
-      }
-    },
-    "deliver": {
-      "outcomes": {
-        "0": {
           "money": 200
         },
+        "2": {},
+        "3": {
+          "randomItem": {},
+          "health": -10
+        }
+      }
+    },
+    "alertGuards": {
+      "outcomes": {
+        "0": {
+          "health": -5,
+          "effect": "confounded"
+        },
         "1": {
           "effect": "occupied",
-          "lostTime": 120
+          "lostTime": 5
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 240,
+          "health": 30
+        }
+      }
+    },
+    "moveOn": {
+      "outcomes": {
+        "0": {},
+        "1": {
+          "effect": "occupied",
+          "lostTime": 180
+        },
+        "2": {
+          "health": 15,
+          "money": -130,
+          "effect": "occupied",
+          "lostTime": 45
+        }
+      }
+    },
+    "doNotRespond": {
+      "outcomes": {
+        "0": {
+          "money": 300
+        },
+        "1": {
+          "oneshot": true
+        },
+        "2": {
+          "randomItem": {},
+          "money": 200
         }
       }
     }
