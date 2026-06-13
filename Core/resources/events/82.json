@@ -53,7 +53,8 @@
           "money": 300
         },
         "1": {
-          "oneshot": true
+          "effect": "injured",
+          "health": -75
         },
         "2": {
           "randomItem": {},
