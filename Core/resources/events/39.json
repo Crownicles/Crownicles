@@ -3,16 +3,25 @@
     "convoy": {
       "outcomes": {
         "0": {
-          "money": 350
+          "money": 350,
+          "mapTypesDestination": [
+            "ro"
+          ]
         },
         "1": {
           "money": 150,
-          "randomItem": {}
+          "randomItem": {},
+          "mapTypesDestination": [
+            "ro"
+          ]
         },
         "2": {
           "money": -150,
           "tags": [
             "moneyUsage"
+          ],
+          "mapTypesDestination": [
+            "ro"
           ]
         },
         "3": {
@@ -21,6 +30,9 @@
           "money": -300,
           "tags": [
             "moneyUsage"
+          ],
+          "mapTypesDestination": [
+            "ro"
           ]
         }
       }

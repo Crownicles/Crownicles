@@ -16,7 +16,8 @@
     "goAway": {
       "outcomes": {
         "0": {
-          "health": 5
+          "health": 5,
+          "mapTypesDestination": ["ro"]
         }
       }
     },

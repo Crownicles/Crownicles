@@ -12,11 +12,17 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 25
+          "lostTime": 25,
+          "mapTypesDestination": [
+            "ro"
+          ]
         },
         "1": {
           "effect": "occupied",
-          "lostTime": 70
+          "lostTime": 70,
+          "mapTypesDestination": [
+            "ro"
+          ]
         }
       }
     },
