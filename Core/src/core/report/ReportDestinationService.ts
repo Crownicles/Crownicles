@@ -175,6 +175,16 @@ export function canStayInCity(player: Player, forcedLink: MapLink | null, allowS
 }
 
 /**
+ * Whether the player must stay in the city directly, skipping the destination menu.
+ * Only when the outcome requests it, the player is on a city and is not forcibly teleported.
+ */
+export function mustForceStayInCity(player: Player, forcedLink: MapLink | null, forceStayInCity: boolean): boolean {
+	return forceStayInCity
+		&& !forcedLink
+		&& Boolean(CityDataController.instance.getCityByMapId(player.getDestinationId()!));
+}
+
+/**
  * Whether the destination can be chosen automatically (no collector shown to the player).
  */
 export function canAutoChooseDestination(player: Player, forcedLink: MapLink | null, destinationMaps: number[], stayInCityAllowed: boolean): boolean {
@@ -191,10 +201,23 @@ export async function chooseDestination(
 	player: Player,
 	forcedLink: MapLink | null,
 	response: CrowniclesPacket[],
-	mainPacket = true,
-	allowStayInCity = true
+	options: {
+		mainPacket?: boolean;
+		allowStayInCity?: boolean;
+		forceStayInCity?: boolean;
+	} = {}
 ): Promise<void> {
+	const {
+		mainPacket = true, allowStayInCity = true, forceStayInCity = false
+	} = options;
 	await PlayerSmallEvents.removeSmallEventsOfPlayer(player.id);
+
+	// The outcome text already committed the player to staying in the city: enter it directly without the destination menu.
+	if (mustForceStayInCity(player, forcedLink, forceStayInCity)) {
+		await applyStayInCity(player, response);
+		return;
+	}
+
 	const destinationMaps = Maps.getNextPlayerAvailableMaps(player);
 
 	if (destinationMaps.length === 0) {

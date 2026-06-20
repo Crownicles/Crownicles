@@ -7,7 +7,9 @@
           "lostTime": 210,
           "mapTypesDestination": ["ro"]
         },
-        "1": {},
+        "1": {
+          "forceStayInCity": true
+        },
         "2": {
           "health": -20
         }
@@ -20,6 +22,7 @@
           "health": -25
         },
         "1": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 15
         }
@@ -48,12 +51,16 @@
           "lostTime": 90,
           "mapTypesDestination": ["ro"]
         },
-        "4": {}
+        "4": {
+          "forceStayInCity": true
+        }
       }
     },
     "skip": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "forceStayInCity": true
+        },
         "1": {
           "effect": "occupied",
           "lostTime": 15,

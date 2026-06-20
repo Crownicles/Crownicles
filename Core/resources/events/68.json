@@ -3,6 +3,7 @@
     "checkDate": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 190,
           "money": 700
@@ -13,10 +14,12 @@
           "lostTime": 10
         },
         "2": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 120
         },
         "3": {
+          "forceStayInCity": true,
           "effect": "drunk",
           "money": 200,
           "tags": [
@@ -28,10 +31,13 @@
     "end": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 60
         },
-        "1": {},
+        "1": {
+          "forceStayInCity": true
+        },
         "2": {
           "effect": "occupied",
           "lostTime": 10

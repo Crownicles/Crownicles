@@ -60,6 +60,7 @@
           "health": -25
         },
         "1": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 190,
           "randomItem": {}

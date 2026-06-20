@@ -3,6 +3,7 @@
     "end": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 200
         }
@@ -28,17 +29,24 @@
     },
     "goForge": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "forceStayInCity": true
+        },
         "1": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 40,
           "money": -300
         },
         "2": {
+          "forceStayInCity": true,
           "randomItem": {}
         },
-        "3": {},
+        "3": {
+          "forceStayInCity": true
+        },
         "4": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 20
         }
@@ -47,10 +55,12 @@
     "goInn": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 120
         },
         "1": {
+          "forceStayInCity": true,
           "effect": "sleeping",
           "health": 15,
           "money": -70,
@@ -58,21 +68,26 @@
             "moneyUsage"
           ]
         },
-        "2": {}
+        "2": {
+          "forceStayInCity": true
+        }
       }
     },
     "goMarket": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 30,
           "randomItem": {}
         },
         "1": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 60
         },
         "2": {
+          "forceStayInCity": true,
           "effect": "injured",
           "health": -60
         }

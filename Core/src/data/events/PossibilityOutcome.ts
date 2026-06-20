@@ -400,6 +400,14 @@ export interface PossibilityOutcome {
 	mapLink?: number;
 
 	/**
+	 * Force the player to stay in the city after the outcome: the destination
+	 * menu is skipped and the player enters the city directly, until they
+	 * explicitly leave via the report command. Ignored when a forced map link
+	 * is set or when the player is not on a city map location.
+	 */
+	forceStayInCity?: boolean;
+
+	/**
 	 * Tags
 	 */
 	tags?: string[];
