@@ -4,7 +4,8 @@
       "outcomes": {
         "0": {
           "effect": "occupied",
-          "lostTime": 210
+          "lostTime": 210,
+          "mapTypesDestination": ["ro"]
         },
         "1": {},
         "2": {
@@ -28,20 +29,24 @@
       "outcomes": {
         "0": {
           "effect": "hurt",
-          "health": -40
+          "health": -40,
+          "mapTypesDestination": ["ro"]
         },
         "1": {
           "effect": "sick",
-          "health": -10
+          "health": -10,
+          "mapTypesDestination": ["ro"]
         },
         "2": {
           "effect": "occupied",
           "lostTime": 75,
-          "randomItem": {}
+          "randomItem": {},
+          "mapTypesDestination": ["ro"]
         },
         "3": {
           "effect": "occupied",
-          "lostTime": 90
+          "lostTime": 90,
+          "mapTypesDestination": ["ro"]
         },
         "4": {}
       }

@@ -128,7 +128,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous visitez la ville pendant plusieurs heures avant de continuer votre route."
+          "0": "Vous visitez la ville pendant plusieurs heures, flânant d'une ruelle à l'autre sans vous presser."
         }
       },
       "goAway": {
@@ -140,32 +140,32 @@
       },
       "goForge": {
         "outcomes": {
-          "0": "Il n'y a rien d'intéressant dans cette forge... Vous quittez rapidement les lieux et reprenez votre route.",
+          "0": "Il n'y a rien d'intéressant dans cette forge... Vous quittez rapidement les lieux.",
           "1": "En essayant une épée, vous brisez la fenêtre de la forge, le forgeron demande remboursement !",
-          "2": "Personne n'est présent dans la forge qui semble abandonnée depuis des années. Avant de partir vous remarquez cependant un objet qui pourrait vous servir pour la suite de votre aventure...",
-          "3": "La forge semble abandonnée depuis des années. Vous reprenez donc votre route.",
-          "4": "Vous entrez et saluez le forgeron. Après une rapide inspection de son travail vous comprenez que vous ne trouverez rien d'intéressant ici. Vous reprenez votre route."
+          "2": "Personne n'est présent dans la forge qui semble abandonnée depuis des années. Avant de ressortir vous remarquez cependant un objet qui pourrait vous servir pour la suite de votre aventure...",
+          "3": "La forge semble abandonnée depuis des années. Vous ressortez donc bredouille.",
+          "4": "Vous entrez et saluez le forgeron. Après une rapide inspection de son travail vous comprenez que vous ne trouverez rien d'intéressant ici. Vous le saluez et ressortez."
         },
         "text": "Aller à la forge."
       },
       "goInn": {
         "outcomes": {
-          "0": "Après avoir discuté pendant 2 heures avec l'aubergiste, vous finissez par apprendre qu'il n'y a aucune chambre disponible pour la nuit ! Vous reprenez la route, frustré de ne pas avoir pu profiter d'une bonne nuit de repos.",
-          "1": "Vous payez une chambre pour la nuit et tombez effondré sur le lit. Il faudra dormir avant de reprendre l'aventure.",
-          "2": "L'auberge semble abandonnée depuis plusieurs années... Vous continuez votre route sans vous poser plus de questions."
+          "0": "Après avoir discuté pendant 2 heures avec l'aubergiste, vous finissez par apprendre qu'il n'y a aucune chambre disponible pour la nuit ! Vous ressortez de l'auberge, frustré de ne pas avoir pu profiter d'une bonne nuit de repos.",
+          "1": "Vous payez une chambre pour la nuit et tombez effondré sur le lit. Il faudra dormir avant de pouvoir reprendre vos esprits.",
+          "2": "L'auberge semble abandonnée depuis plusieurs années... Vous ressortez sans vous poser plus de questions."
         },
         "text": "Aller à l'auberge."
       },
       "goMarket": {
         "outcomes": {
           "0": "Vous explorez le marché en 30 minutes avant de découvrir un petit objet au sol qui pourrait vous être utile...",
-          "1": "Après avoir perdu 60 minutes à vous balader dans les étals, vous finissez par quitter la ville sans avoir pu trouver quoi que ce soit d'intéressant.",
-          "2": "Alors que votre vigilance était au plus bas sur le marché, vous recevez un coup violent derrière la tête et vous vous effondrez à terre... Après ce moment, plus aucun souvenir. Il faudra vous soigner avant de pouvoir continuer à avancer !"
+          "1": "Après avoir perdu 60 minutes à vous balader dans les étals, vous finissez par quitter le marché sans avoir pu trouver quoi que ce soit d'intéressant.",
+          "2": "Alors que votre vigilance était au plus bas sur le marché, vous recevez un coup violent derrière la tête et vous vous effondrez à terre... Après ce moment, plus aucun souvenir. Il faudra vous soigner avant de pouvoir reprendre vos esprits !"
         },
         "text": "Aller au marché."
       }
     },
-    "text": "Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous entrez finalement dans une petite bourgade qui semble plutôt animée."
+    "text": "Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous arpentez à présent les ruelles d'une petite bourgade plutôt animée."
   },
   "14": {
     "possibilities": {
@@ -325,12 +325,12 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous observez le chantier quelques minutes, puis réalisez qu'il est vraiment désert. Vous reprenez votre route."
+          "0": "Vous observez le chantier quelques minutes, puis réalisez qu'il est vraiment désert. Il n'y a manifestement rien à en tirer."
         }
       },
       "searchScaffolding": {
         "outcomes": {
-          "0": "Vous grimpez jusqu'en haut des échafaudages, mais à l'exception d'un magnifique paysage, vous ne trouvez rien. Après avoir passé quelques minutes à l'admirer, vous repartez.",
+          "0": "Vous grimpez jusqu'en haut des échafaudages, mais à l'exception d'un magnifique paysage, vous ne trouvez rien. Vous passez quelques minutes à l'admirer avant de redescendre.",
           "1": "En grimpant sur la structure instable, vous découvrez une vue imprenable sur la région ! Vous profitez du point de vue pour repérer un objet en contrebas.",
           "2": "Vous montez sur l'échelle, mais arrivé a mi-chemin, un barreau casse et vous tombez au sol ! Étourdi par la chute, vous reprenez lentement vos esprits."
         },
@@ -346,13 +346,13 @@
       },
       "skip": {
         "outcomes": {
-          "0": "Vous décidez d'ignorer ce chantier et vous poursuivez votre route.",
-          "1": "Vous observez le chantier de loin, sans voir la pioche posée au sol. Vous vous entaillez le pied en repartant."
+          "0": "Vous décidez d'ignorer ce chantier et de ne pas vous y attarder davantage.",
+          "1": "Vous observez le chantier de loin, sans voir la pioche posée au sol. Vous vous entaillez le pied en vous en écartant."
         },
-        "text": "Poursuivre votre voyage sans y prêter attention."
+        "text": "Ignorer ce chantier sans y prêter attention."
       }
     },
-    "text": "Vous arrivez dans une ville, sans y trouver âme qui vive. En la traversant, vous apercevez un chantier qui semble tout aussi désert."
+    "text": "La ville où vous mettez les pieds semble déserte, sans âme qui vive. En parcourant ses rues, votre regard s'arrête sur un chantier qui paraît tout aussi abandonné."
   },
   "19": {
     "possibilities": {
@@ -424,16 +424,16 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous continuez votre chemin sans prêter attention au garde.",
-          "1": "Abasourdi, vous regardez la scène, tétanisé, pendant cinq minutes. Le garde finit par vous remarquer, vous vous hâtez donc de passer votre chemin."
+          "0": "Vous vous éloignez sans prêter attention au garde.",
+          "1": "Abasourdi, vous regardez la scène, tétanisé, pendant cinq minutes. Le garde finit par vous remarquer, vous vous hâtez donc de vous éclipser."
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Vous ne prêtez donc pas attention à la situation et poursuivez votre route.",
-          "1": "En passant votre chemin, vous trébuchez et tombez par terre."
+          "0": "Vous ne prêtez donc pas attention à la situation et vous éloignez tranquillement.",
+          "1": "En vous éloignant, vous trébuchez et tombez par terre."
         },
-        "text": "Passer votre chemin."
+        "text": "Ne pas intervenir."
       },
       "surpriseAttack": {
         "outcomes": {
@@ -444,7 +444,7 @@
         "text": "Attaquer le garde par surprise dans l'optique d'aider la femme."
       }
     },
-    "text": "En vous baladant tranquillement dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme."
+    "text": "À votre arrivée dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme."
   },
   "21": {
     "possibilities": {
@@ -604,26 +604,26 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Après avoir passé 15 minutes à observer cette scène, vous repartez, choqué, mais continuez votre aventure."
+          "0": "Après avoir passé 15 minutes à observer cette scène, vous vous éloignez de la place, choqué, encore bouleversé par ce que vous venez de voir."
         }
       },
       "goAway": {
         "outcomes": {
-          "0": "Horrifié par cet acte de barbarie, vous continuez rapidement votre route.",
-          "1": "En vous éloignant, vous apercevez au loin un coffret. Après quelques minutes de marche, vous l'atteignez, l'ouvrez et découvrez un sac rempli d'argent."
+          "0": "Horrifié par cet acte de barbarie, vous vous éloignez rapidement de la place, le cœur encore serré.",
+          "1": "En vous écartant de la foule, vous apercevez un coffret abandonné dans une ruelle. Intrigué, vous l'atteignez, l'ouvrez et découvrez un sac rempli d'argent."
         },
-        "text": "S'éloigner du massacre."
+        "text": "S'éloigner de l'exécution."
       },
       "steal": {
         "outcomes": {
-          "0": "Après avoir dépouillé quelques personnes, vous repartez avec un objet qui semble fort intéressant ! Après avoir marché une trentaine de minutes, vous regardez ce que c'est.",
-          "1": "Vous tentez de dépouiller un habitant quand ce dernier se retourne soudainement et vous attrape fermement avant de vous rouer de coups. Après vous être débattu, vous fuyez."
+          "0": "Après avoir dépouillé quelques personnes, vous vous éclipsez discrètement avec un objet qui semble fort intéressant ! À l'écart de la foule, vous regardez enfin ce que c'est.",
+          "1": "Vous tentez de dépouiller un habitant quand ce dernier se retourne soudainement et vous attrape fermement avant de vous rouer de coups. Après vous être débattu, vous parvenez à vous esquiver dans la cohue."
         },
-        "text": "Voler des passants assistant au massacre."
+        "text": "Voler des passants assistant à l'exécution."
       },
       "trySave": {
         "outcomes": {
-          "0": "Après vous être débattu pour traverser la foule, vous intervenez au plus vite et réussissez à extirper cet homme de là. Après avoir couru à travers le village, cet homme, très reconnaissant, vous offre un objet qui vous servira pour la suite de votre aventure.",
+          "0": "Après vous être débattu pour traverser la foule, vous intervenez au plus vite et réussissez à extirper cet homme de là. Une fois à l'abri des regards, cet homme, très reconnaissant, vous offre un objet qui vous servira pour la suite de votre aventure.",
           "1": "Durant votre traversée de la foule pour tenter d'aller empêcher ce meurtre, vous vous faites fortement bousculer et tombez au sol.",
           "2": "Après avoir réussi à partir d'ici avec l'homme, vous vous faites rattraper et frapper par un groupe de personnes. Une fois relevé, vous remarquez que ces individus vous ont volé.",
           "3": "Après avoir violemment tenté de vous interposer, le bourreau vous attrape de force. Vous vous débattez, mais rien n'y fait. Vous êtes à votre tour condamné à la peine capitale."
@@ -631,42 +631,42 @@
         "text": "S'interposer et empêcher cet homme de mourir."
       }
     },
-    "text": "En vous promenant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'église\"."
+    "text": "En arrivant dans le village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'église\"."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous observez bêtement l'objet pendant 20 minutes puis repartez.",
+          "0": "Vous observez bêtement l'objet pendant 20 minutes, sans parvenir à vous en détacher.",
           "1": "Vous observez, penché au dessus du puits, l'objet. C'est alors que vous basculez. Heureusement, vous arrivez rapidement à remonter, non sans vous être sévèrement blessé."
         }
       },
       "goDown": {
         "outcomes": {
-          "0": "Vous vous blessez grièvement lors de la descente et restez bloqué au fond plusieurs heures avant que quelqu'un ne vous retrouve.",
-          "1": "Vous arrivez en bas sans soucis, récupérez l'objet et continuez votre route.",
-          "2": "Vous sautez dans le puits mais n'y trouvez rien. Vous remontez donc sans perdre davantage de temps.",
-          "3": "Une fois en bas, vous découvrez une grande quantité de pièces d'or que vous récupérez avant de continuer votre périple."
+          "0": "Vous vous blessez grièvement lors de la descente et restez un moment bloqué au fond avant que quelqu'un ne vous retrouve.",
+          "1": "Vous arrivez en bas sans soucis et récupérez l'objet.",
+          "2": "Vous sautez dans le puits mais n'y trouvez rien. Vous remontez donc bredouille.",
+          "3": "Une fois en bas, vous découvrez une grande quantité de pièces d'or que vous récupérez avec joie."
         },
         "text": "Tenter de descendre pour récupérer l'objet."
       },
       "skip": {
         "outcomes": {
-          "0": "Pas de temps à perdre ! Vous continuez votre route sans prêter la moindre attention à ceci.",
-          "1": "Vous continuez votre route, mais après une petite heure de marche, tombez nez à nez avec un groupe de personnes habillées de noir. Après vous être débattu avec acharnement, vous réussissez à partir, mais vous vous êtes fait dépouiller."
+          "0": "Pas de temps à perdre ! Vous détournez le regard sans prêter la moindre attention à ceci.",
+          "1": "Vous vous éloignez du puits, mais au détour d'une ruelle, vous tombez nez à nez avec un groupe de personnes habillées de noir. Après vous être débattu avec acharnement, vous réussissez à leur échapper, mais vous vous êtes fait dépouiller."
         },
-        "text": "Continuer votre route."
+        "text": "Ignorer le puits."
       },
       "useBucket": {
         "outcomes": {
           "0": "Après une heure de tentatives, vous obtenez enfin cet objet, qui se révèle être en réalité un simple bout de ferraille.",
           "1": "Concentré sur votre objectif, vous ne vous rendez pas compte qu'un jeune du village vous attrape, et vous fait tomber dans le puits. Sonné, vous ne vous réveillez que plusieurs minutes plus tard.",
-          "2": "Rapidement, vous récupérez l'argent qui se trouvait au fond et continuez votre route."
+          "2": "Rapidement, vous récupérez l'argent qui se trouvait au fond du puits."
         },
         "text": "Tenter d'attraper l'objet avec le seau du puits."
       }
     },
-    "text": "En vous promenant dans le petit village que vous avez trouvé, vous remarquez un puits avec un petit objet brillant au fond."
+    "text": "En arrivant dans le petit village, vous remarquez un puits avec un petit objet brillant au fond."
   },
   "28": {
     "possibilities": {
@@ -1005,8 +1005,8 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous attendez un long moment sur cette place et, tout à coup, des marchands commencent à s'installer. C'est votre jour de chance ! Il s'agit d'un marché, et les pommes sont très peu chères. Vous en achetez quelques-unes et pour reprenez votre chemin.",
-          "1": "Vous attendez un petit moment sur cette place, puis vous rendez compte qu'il n'y a rien de bien intéressant à faire et reprenez route."
+          "0": "Vous attendez un long moment sur cette place et, tout à coup, des marchands commencent à s'installer. C'est votre jour de chance ! Il s'agit d'un marché, et les pommes sont très peu chères. Vous en achetez quelques-unes et les savourez sur place.",
+          "1": "Vous attendez un petit moment sur cette place, puis vous rendez compte qu'il n'y a rien de bien intéressant à faire ici."
         }
       },
       "goAway": {
@@ -1017,28 +1017,28 @@
       },
       "goInn": {
         "outcomes": {
-          "0": "Vous arrivez à l'auberge et vous reprenez un peu d'énergie grâce à un bon repas et une sieste bien méritée.",
-          "1": "Vous arrivez à l'auberge qui est malheureusement pleine. Vous y prenez quand même un repas, et reprenez votre chemin.",
-          "2": "Par malheur, l'auberge est fermée et vous décidez de continuer votre chemin affamé et fatigué."
+          "0": "Un villageois au grand cœur vous propose le gîte et le couvert. Vous reprenez un peu d'énergie grâce à un bon repas et à une sieste bien méritée dans le calme de sa grange.",
+          "1": "Un villageois n'a guère de place à vous offrir, mais il partage tout de même volontiers son repas avec vous avant que vous ne le remerciiez chaleureusement.",
+          "2": "Par malheur, personne ne semble disposé à vous accueillir, et vous restez le ventre vide et fatigué."
         },
-        "text": "Aller à l'auberge se reposer."
+        "text": "Accepter l'hospitalité d'un villageois."
       },
       "stealJeweler": {
         "outcomes": {
-          "0": "Vous faites confiance à vos capacités d'infiltration. Vous y allez, et fort heureusement le vieillard était absent. Vous arrivez à voler le contenu de la caisse et déguerpissez.",
-          "1": "Vous arrivez devant la boutique et entrez dedans dans le but de voler le bijoutier. Alors que vous vous emparez de l'argent du bijoutier, un garde personnel vous assomme. Vous vous réveillez quelques heures plus tard, le long d'un sentier."
+          "0": "Vous faites confiance à vos capacités d'infiltration. Vous y allez, et fort heureusement le vieillard était absent. Vous arrivez à voler le contenu de la caisse et vous éclipsez discrètement.",
+          "1": "Vous arrivez devant la boutique et entrez dedans dans le but de voler le bijoutier. Alors que vous vous emparez de l'argent du bijoutier, un garde personnel vous assomme. Vous vous réveillez quelques heures plus tard, dans une ruelle à l'écart."
         },
         "text": "Essayer de voler le bijoutier."
       },
       "talkJeweler": {
         "outcomes": {
           "0": "Vous discutez avec le bijoutier et vous liez d'amitié avec lui. Il vous offre alors un objet en gage de cette nouvelle amitié.",
-          "1": "Vous décidez de tenter de marchander afin de vous acheter un des bijoux pour peu cher. Vous discutez un long moment, mais le vieillard est un très bon marchand et il ne cède pas. Vous repartez après avoir compris qu'il ne compte pas baisser ses prix."
+          "1": "Vous décidez de tenter de marchander afin de vous acheter un des bijoux pour peu cher. Vous discutez un long moment, mais le vieillard est un très bon marchand et il ne cède pas. Vous prenez congé après avoir compris qu'il ne compte pas baisser ses prix."
         },
         "text": "Aller voir le bijoutier et discuter."
       }
     },
-    "text": "Au cours de votre très long périple, vous arrivez dans un petit village fort charmant. Vous atteignez le centre du village, mais il s'avère qu'il est très petit et qu'il n'y a que deux commerces : une bijouterie et une auberge. Vous découvrez grâce à un passant que la bijouterie est gérée par un vieillard et qu'il fait de magnifiques bijoux et colliers. L'auberge est, quant à elle, dirigée par un couple, et il paraît qu'elle a un grand succès."
+    "text": "Au cours de votre très long périple, vous arrivez aux abords d'un petit village fort charmant. Le lieu est si modeste que, d'un simple coup d'œil, vous devinez qu'il ne compte que deux commerces : une bijouterie et une auberge. Un passant vous apprend que la bijouterie est tenue par un vieillard qui réalise de magnifiques bijoux et colliers. Quant à l'auberge, elle est dirigée par un couple, et il paraît qu'elle a un grand succès."
   },
   "37": {
     "possibilities": {
@@ -1120,14 +1120,14 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous restez à discuter quelques minutes avec Price, puis reprenez votre route.",
+          "0": "Vous restez à discuter quelques minutes avec Price, avant de le laisser vaquer à ses affaires.",
           "1": "Après avoir un peu discuté, vous vous séparez. Quelques rues plus loin, vous êtes agressé par un groupe de personnes à l'air peu amène qui allègent votre bourse sous la menace de leurs coups."
         }
       },
       "meal": {
         "outcomes": {
           "0": "Vous proposez à Price de manger quelque chose ensemble, et il accepte. Vous discutez un moment, buvez un peu, riez beaucoup, échangez des astuces et commencez à vous connaître. C'est avec un léger pincement au coeur que Price vous dit adieu au bout de quelques heures, devant aller honorer un contrat.",
-          "1": "Vous demandez à Price s'il veut venir manger avec vous à la taverne locale. Il décline, disant avoir du travail, et part."
+          "1": "Vous proposez à Price de faire plus ample connaissance autour d'un repas. Il décline, disant avoir du travail, et s'en va."
         },
         "text": "Faire connaissance autour d'un bon repas."
       },
@@ -1376,7 +1376,7 @@
       "askJoin": {
         "outcomes": {
           "0": "Le groupe se montre très accueillant, vous faites donc le voyage tous ensemble. Arrivé au sanctuaire, le guide passe près de 2 heures à vous en conter l'histoire.",
-          "1": "Le groupe vous refuse tout simplement. Vous continuez alors votre route.",
+          "1": "Le groupe vous refuse tout simplement et poursuit son chemin sans vous, vous laissant aux abords du village.",
           "2": "Le groupe vous prend pour un voleur et vous passe à tabac en conséquence."
         },
         "text": "Demander au groupe de les rejoindre."
@@ -1384,8 +1384,9 @@
       "end": {
         "outcomes": {
           "0": "Le groupe, pensant être espionné, vous frappe violemment.",
-          "1": "Après 15 minutes sans aucune réaction, vous repartez sur votre route."
-        }
+          "1": "Après 15 minutes sans aucune réaction de votre part, le groupe finit par s'éloigner sans vous, et vous restez au village."
+        },
+        "text": "Ne pas prêter attention au groupe."
       },
       "goAlone": {
         "outcomes": {
@@ -1393,16 +1394,16 @@
           "1": "Vous décidez d'aller au sanctuaire tout seul. Arrivé au site, vous entendez un bruit étrange. Pris de panique, vous courez et trébuchez. Vous vous faites une vilaine égratignure à la jambe, celle-ci ne tarde pas à s'infecter.",
           "2": "Vous décidez d'aller au sanctuaire tout seul. Sur votre route, vous trouvez un objet qui pourrait vous être utile. Arrivé sur les lieux, vous découvrez que le sanctuaire se révèle être une grotte. Vous décidez de ne pas aller plus loin.",
           "3": "Vous décidez d'aller au sanctuaire tout seul. Arrivé là-bas, vous découvrez un magnifique sanctuaire, dont vous contemplez pendant 30 minutes la beauté.",
-          "4": "En voyant le temps se gâter, vous changez de décision, et continuez votre route."
+          "4": "En voyant le temps se gâter, vous changez d'avis et renoncez à vous rendre au sanctuaire, préférant rester au village."
         },
         "text": "Aller au sanctuaire en solitaire."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous continuez votre route, préférant aller au prochain village.",
-          "1": "Vous continuez votre route. Quelques minutes plus tard, vous vous rendez compte que vous avez pris le mauvais chemin. Dans votre précipitation pour rattraper le temps perdu, vous trébuchez contre une pierre et vos affaires s'éparpillent."
+          "0": "Vous n'y prêtez pas attention, préférant vaquer à vos occupations dans le village.",
+          "1": "Vous tournez les talons sans plus vous soucier du groupe. En vous frayant un chemin dans les ruelles encombrées, vous trébuchez contre une pierre et vos affaires s'éparpillent."
         },
-        "text": "Continuer votre route."
+        "text": "Ne pas vous soucier du groupe."
       },
       "talk": {
         "outcomes": {
@@ -1412,7 +1413,7 @@
         "text": "Discuter avec le groupe."
       }
     },
-    "text": "Alors que vous traversiez un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous continuez à écouter. Le sanctuaire serait à 1 heure de route au Sud, et le départ a lieu dans 30 minutes."
+    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au Sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
     "possibilities": {
@@ -1686,23 +1687,23 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "Vous refusez de jouer avec les enfants et passez votre chemin.",
+          "0": "Vous refusez de jouer avec les enfants et les laissez à leurs occupations.",
           "1": "Vous refusez, et cela a pour conséquence d'énerver les enfants qui ramassent des pierres au sol et vous les jettent. Devant la pluie de gravats, vous êtes contraint de fuir, hors de portée des enfants. Vous vous rendez compte que vous avez été touché à la tête et que la blessure saigne abondamment, il faudra vous soigner.",
-          "2": "Vous refusez, et les enfants s'en énervent. Voyant que la situation risque de tourner au vinaigre, vous reprenez vite la route."
+          "2": "Vous refusez, et les enfants s'en énervent. Voyant que la situation risque de tourner au vinaigre, vous vous éloignez vite d'eux."
         },
         "text": "Refuser et passer votre chemin."
       },
       "end": {
         "outcomes": {
-          "0": "Devant votre manque de répondant, les enfants se désintéressent de vous et vont jouer ailleurs. Vous reprenez donc votre route.",
+          "0": "Devant votre manque de répondant, les enfants se désintéressent de vous et vont jouer ailleurs.",
           "1": "Vous voyant perdu dans vos pensées les gamins vous attachent les lacets ensemble. Lorsque vous sortez de cet état de transe, vous trébuchez et tombez face contre terre.",
-          "2": "Vous restez planté là pendant des heures, et lorsque vous recouvrez vos esprits, vous vous rendez compte que votre bourse a disparu. Vous poursuivez votre chemin, dépité."
+          "2": "Vous restez planté là pendant des heures, et lorsque vous recouvrez vos esprits, vous vous rendez compte que votre bourse a disparu. Cette mésaventure vous laisse dépité."
         }
       },
       "play": {
         "outcomes": {
-          "0": "Ne comprenant pas très bien les règles du jeu, vous êtes rapidement mis de côté et reprenez votre route sans que les enfants ne se préoccupent de vous.",
-          "1": "Vous jouez avec eux jusqu'à ce que leurs parents arrivent, vous trouvant suspect ils vous répudient de leur village en vous menaçant. Vous reprenez la route sans demander votre reste.",
+          "0": "Ne comprenant pas très bien les règles du jeu, vous êtes rapidement mis de côté, sans que les enfants ne se préoccupent davantage de vous.",
+          "1": "Vous jouez avec eux jusqu'à ce que leurs parents arrivent, vous trouvant suspect ils vous répudient en vous menaçant. Vous vous éloignez d'eux sans demander votre reste.",
           "2": "Jouant le rôle du fuyard vous êtes poursuivi par les gamins. En regardant par-dessus votre épaule pour évaluer la distance entre eux et vous, vous vous prenez les pieds dans une racine et vous blessez. Les enfants vous abandonnent à votre triste sort lorsqu'ils constatent votre inaptitude à continuer à jouer. Il faudra vous soigner."
         },
         "text": "Jouer au fuyard et au garde."
@@ -1719,8 +1720,8 @@
       "teach": {
         "outcomes": {
           "0": "Alors que vous expliquez aux enfants comment se positionner au mieux pour tirer, l'un d'eux, un peu en retrait parvient à bander son arc et, avant que vous ne puissiez faire quoi que ce soit, relâche la flèche qui vient se planter dans votre jambe. Blessé, vous les quittez pour chercher un endroit où vous soigner.",
-          "1": "Vous expliquez aux enfants comment se placer pour tirer et ceux-ci s'en sortent très bien. Vous passez le reste de la journée à les entraîner au tir à l'arc. Avant que vous ne les quittiez vous êtes chaudement remercié par un petit présent de vos apprentis du jour. Vous reprenez la route, heureux d'avoir pu vous rendre utile.",
-          "2": "Très vite, vous constatez que les enfants ne sont pas encore assez forts pour tendre la corde. Vous leur dites donc que vous reviendrez les entraîner quand ils seront plus grands et reprenez votre route."
+          "1": "Vous expliquez aux enfants comment se placer pour tirer et ceux-ci s'en sortent très bien. Vous passez le reste de la journée à les entraîner au tir à l'arc. Avant que vous ne les quittiez vous êtes chaudement remercié par un petit présent de vos apprentis du jour. Vous vous sentez heureux d'avoir pu vous rendre utile.",
+          "2": "Très vite, vous constatez que les enfants ne sont pas encore assez forts pour tendre la corde. Vous leur dites donc que vous reviendrez les entraîner quand ils seront plus grands."
         },
         "text": "Leur apprendre à tirer à l'arc."
       }
@@ -1772,51 +1773,51 @@
           "0": "Vous décidez d'organiser des paris mais personne n'y participe, car tout le monde sait qui sera le gagnant.",
           "1": "Vous décidez d'organiser des paris et pariez que le chevalier ne gagnera pas. Tout le monde vient parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Comme prévu, vous gagnez le combat et remportez les paris. Cela vous fait une belle somme d'argent.",
           "2": "Vous décidez d'organiser des paris et pariez que le chevalier ne gagnera pas. Tout le monde vient parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Comme prévu, vous gagnez le combat. Alors que vous demandez votre argent aux parieurs, ceux-ci, mécontents, décident de vous prendre l'argent que vous aviez parié.",
-          "3": "Vous décidez d'organiser des paris et pariez que le chevalier ne gagnera pas. Tout le monde vient parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous refusez de donner votre argent. Les villageois se mettent à vous suivre et à vous lancer divers objets. Une fois loin du village, vous avez mal partout. Vous êtes aussi blessé à la jambe, il vous faudra du repos avant de poursuivre votre chemin.",
+          "3": "Vous décidez d'organiser des paris et pariez que le chevalier ne gagnera pas. Tout le monde vient parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous refusez de donner votre argent. Les villageois se mettent à vous suivre et à vous lancer divers objets. Vous parvenez à leur échapper en vous faufilant dans les ruelles, mais vous avez mal partout. Vous êtes aussi blessé à la jambe, et chacun de vos pas vous arrache une grimace.",
           "4": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas. Des gardes vous surveillent afin d'être sûr que vous ne voliez pas l'argent. Vous leur proposez d'aller voir le duel avec eux, sauf quelques-uns qui garderont l'endroit. Ils commencent à se disputer pour savoir qui doit rester, vous en profitez pour prendre une partie de l'argent et filer à toute vitesse. Ils vous poursuivent mais finissent par abandonner, se rendant compte qu'ils ne peuvent pas vous rattraper. Vous regardez l'argent que vous avez ramassé, ravi de votre coup.",
-          "5": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Comme prévu, vous gagnez le combat, et allez récupérer l'argent des paris. Un villageois vous attaque à la sortie du village, souhaitant certainement vous voler votre argent. Après un rude combat, vous parvenez à lui échapper, non sans être gravement blessé. Il faudra vous reposer.",
-          "6": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous ne comptez pas perdre votre argent ainsi. Vous vous élancez donc vers le lieu des paris et volez autant d'argent que vous le pouvez, coursé par les villageois, avant de fuir le village."
+          "5": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Comme prévu, vous gagnez le combat, et allez récupérer l'argent des paris. Un villageois vous attaque à la sortie du village, souhaitant certainement vous voler votre argent. Après un rude combat, vous parvenez à lui échapper, non sans être gravement blessé. Le souffle court, vous portez la main à vos plaies encore fraîches.",
+          "6": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous ne comptez pas perdre votre argent ainsi. Vous vous élancez donc vers le lieu des paris et volez autant d'argent que vous le pouvez, coursé par les villageois, avant de les semer dans le dédale des ruelles."
         },
         "text": "Organiser des paris."
       },
       "end": {
         "outcomes": {
-          "0": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Celui-ci se conclut très rapidement, avec le chevalier étranger pour vainqueur. Déçu, vous reprenez votre chemin.",
+          "0": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Celui-ci se conclut très rapidement, avec le chevalier étranger pour vainqueur. Déçu, vous vous éloignez de l'arène.",
           "1": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Celui-ci se conclut très rapidement. Déçu, vous proposez de rejouer le duel, mais cette fois-ci, c'est vous qui combattrez. Votre proposition est acceptée, en seulement quelques secondes, vous êtes désarmé puis mis à terre. Votre adversaire se moque ensuite de vous, en déclarant que vous êtes un pathétique combattant. Fou de rage, vous vous élancez sur lui pour le tabasser, mais le chevalier vous assomme avec le pommeau de son épée.",
-          "2": "Peu intéressé par ce duel, vous décidez de ne pas y prêter attention et poursuivez donc votre chemin.",
-          "3": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Proche de celui-ci, vous remarquez que des paris se jouent. Vous décidez donc d'y participer. Naturellement, vous pariez sur le chevalier étranger avant d'aller assister au duel. C'est effectivement lui le gagnant, mais lorsque vous retournez chercher vos gains, tout a disparu. Mécontent de vous être fait avoir ainsi, vous reprenez votre chemin.",
-          "4": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel, qui se conclut rapidement. Vous proposez de le rejouer avec vous comme combattant, votre proposition est acceptée. Vous ne mettez guère longtemps à vaincre votre adversaire, le village entier vous acclame à présent et le seigneur vous propose un bon repas, vous acceptez volontiers son offre. Une fois que vous êtes repus, le seigneur vous propose de devenir chevalier, vous refusez poliment son offre et le remerciez pour le délicieux repas. Vous vous sentez bien mieux à présent."
+          "2": "Peu intéressé par ce duel, vous décidez de ne pas y prêter attention et de vaquer à vos occupations dans le village.",
+          "3": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Proche de celui-ci, vous remarquez que des paris se jouent. Vous décidez donc d'y participer. Naturellement, vous pariez sur le chevalier étranger avant d'aller assister au duel. C'est effectivement lui le gagnant, mais lorsque vous retournez chercher vos gains, tout a disparu. Mécontent de vous être fait avoir ainsi, vous tournez le dos à l'arène.",
+          "4": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel, qui se conclut rapidement. Vous proposez de le rejouer avec vous comme combattant, votre proposition est acceptée. Vous ne mettez guère longtemps à vaincre votre adversaire, le village entier vous acclame à présent et le seigneur vous convie à une réception donnée en votre honneur, vous acceptez volontiers son offre. Une fois les festivités achevées, le seigneur vous propose de devenir chevalier, vous refusez poliment son offre et le remerciez pour cet accueil chaleureux. Vous vous sentez bien mieux à présent."
         }
       },
       "help": {
         "outcomes": {
-          "0": "Comprenant la détresse du seigneur, vous lui proposez de participer au duel. Celui-ci accepte volontiers. Le combat commence, vous savez que n'avez pas la moindre chance de vaincre votre adversaire, mais tentez malgré tout de résister. Il ne lui faut qu'une minute pour vous vaincre. Vous reprenez votre route, honteux de votre défaite.",
+          "0": "Comprenant la détresse du seigneur, vous lui proposez de participer au duel. Celui-ci accepte volontiers. Le combat commence, vous savez que n'avez pas la moindre chance de vaincre votre adversaire, mais tentez malgré tout de résister. Il ne lui faut qu'une minute pour vous vaincre. Vous quittez l'arène, honteux de votre défaite.",
           "1": "Comprenant la détresse du seigneur, vous lui proposez votre aide. On vous équipe alors avant que le duel ne débute. Vous combattez vaillamment, mais êtes tout aussi aisément terrassé par votre adversaire. C'est lorsque celui-ci vous pourfend de sa lame que vous regrettez amèrement d'avoir offert votre aide. En effet, c'est un match à mort. Et vous venez de le perdre. Vous fermez les yeux, et la douleur disparaît. Vous vous réveillez de manière inattendue plusieurs heures plus tard, grièvement blessé.",
-          "2": "Comprenant la détresse du seigneur, vous lui proposez votre aide. On vous équipe alors une armure avant que le duel ne débute. Conscient que vous n'avez pas la moindre chance, vous vous défendez du mieux que vous le pouvez. Votre adversaire, impatient, baisse sa garde et vous en profitez pour l'attaquer. Vous parvenez à le mettre à terre avant de le désarmer. Vous ressortez de l'arène victorieux, le seigneur vient à votre rencontre pour vous donner une bourse remplie d'or. Vous le remerciez avant de reprendre votre route.",
-          "3": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Déterminé, vous allez à la rencontre du chevalier une fois celui-ci arrivé au village et lui dites que vous souhaitez négocier avec son seigneur. Il accepte et vous emmène à lui. Vous sympathisez rapidement et lui demandez d'annuler le duel. Vous lui dites aussi qu'après cela pourront avoir lieu des négociations afin de régler le conflit. Il accepte, et vous retournez à Boug-Coton afin d'annoncer la nouvelle. Le seigneur vous tend une bourse remplie d'or en gage de remerciement.",
+          "2": "Comprenant la détresse du seigneur, vous lui proposez votre aide. On vous équipe alors une armure avant que le duel ne débute. Conscient que vous n'avez pas la moindre chance, vous vous défendez du mieux que vous le pouvez. Votre adversaire, impatient, baisse sa garde et vous en profitez pour l'attaquer. Vous parvenez à le mettre à terre avant de le désarmer. Vous ressortez de l'arène victorieux, le seigneur vient à votre rencontre pour vous donner une bourse remplie d'or. Vous le remerciez chaleureusement pour sa générosité.",
+          "3": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Déterminé, vous allez à la rencontre du chevalier une fois celui-ci arrivé au village et lui dites que vous souhaitez négocier avec son seigneur. Il accepte et vous emmène à lui. Vous sympathisez rapidement et lui demandez d'annuler le duel. Vous lui dites aussi qu'après cela pourront avoir lieu des négociations afin de régler le conflit. Il accepte, et vous regagnez le centre du village afin d'annoncer la nouvelle. Le seigneur vous tend une bourse remplie d'or en gage de remerciement.",
           "4": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Vous rencontrez le chevalier afin qu'il vous emmène à son seigneur. Une fois là-bas, vous sympathisez rapidement avec celui-ci. Malheureusement, il ne semble pas décidé à annuler le duel, bien qu'il vous apprécie. Vous retournez au village accompagné du chevalier afin d'annoncer que le duel aura lieu.",
-          "5": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Vous rencontrez le chevalier afin qu'il vous emmène à son seigneur. Une fois là-bas, vous tentez de négocier avec celui-ci durant plusieurs heures, sans grand succès. Vos efforts étant vains, vous pensez repartir. Mais avant cela, le seigneur déclare qu'il vous apprécie, en effet, celui-ci ajoute qu'il a été impressionné du fait que vous n'ayez pas abandonné. Il vous propose de devenir chevalier, mais vous refusez poliment son offre et reprenez votre chemin."
+          "5": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Vous rencontrez le chevalier afin qu'il vous emmène à son seigneur. Une fois là-bas, vous tentez de négocier avec celui-ci durant plusieurs heures, sans grand succès. Vos efforts étant vains, vous pensez repartir. Mais avant cela, le seigneur déclare qu'il vous apprécie, en effet, celui-ci ajoute qu'il a été impressionné du fait que vous n'ayez pas abandonné. Il vous propose de devenir chevalier, mais vous refusez poliment son offre et regagnez Boug-Coton."
         },
         "text": "Proposer votre aide au seigneur de Boug-Coton."
       },
       "look": {
         "outcomes": {
-          "0": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Vous ne tardez pas à partir, déçu de la médiocre performance du perdant.",
-          "1": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée, vous pouvez combattre. Votre adversaire, trop sûr de lui, baisse sa garde pendant que vous combattez. Vous n'attendez pas une seconde pour en profiter et ainsi prendre l'avantage. Vous finissez par vaincre le chevalier et annoncez votre victoire, triomphant. Le seigneur des lieux vous propose de devenir chevalier, vous refusez poliment son offre et reprenez votre chemin.",
-          "2": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée. Le combat commence, et malgré tous vos efforts vous ne parvenez à résister qu'une dizaine de secondes.",
+          "0": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Vous ne tardez pas à quitter l'arène, déçu de la médiocre performance du perdant.",
+          "1": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée, vous pouvez combattre. Votre adversaire, trop sûr de lui, baisse sa garde pendant que vous combattez. Vous n'attendez pas une seconde pour en profiter et ainsi prendre l'avantage. Vous finissez par vaincre le chevalier et annoncez votre victoire, triomphant. Le seigneur des lieux vous propose de devenir chevalier, vous refusez poliment son offre.",
+          "2": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée. Le combat commence, et malgré tous vos efforts vous ne parvenez à résister qu'une dizaine de secondes avant d'être désarmé et jeté à terre sous les rires de l'assistance.",
           "3": "Vous décidez d'assister au duel. Celui-ci se conclut en quelques secondes. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée, vous pouvez combattre. Votre adversaire, trop sûr de lui, baisse sa garde pendant que vous combattez. Vous n'attendez pas une seconde pour prendre l'avantage. Vous finissez par vaincre le chevalier et annoncez votre victoire, triomphant. Le seigneur des lieux vous propose une bourse remplie d'or, que vous acceptez volontiers.",
-          "4": "Vous décidez d'assister au duel. Celui-ci se conclut en quelques secondes. Vous qualifiez le perdant d'incompétent et proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Le perdant vous propose de venir se battre contre lui avant de critiquer. Vous acceptez sa requête, sachant pertinemment que vous n'aurez aucun mal à le vaincre. Étant trop sûr de vous, votre adversaire parvient à vous désarmer avant de vous mettre à terre. Il vous tabasse ensuite jusqu'à l'évanouissement. Gravement blessé, vous aurez besoin de beaucoup de repos.",
+          "4": "Vous décidez d'assister au duel. Celui-ci se conclut en quelques secondes. Vous qualifiez le perdant d'incompétent et proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Le perdant vous propose de venir se battre contre lui avant de critiquer. Vous acceptez sa requête, sachant pertinemment que vous n'aurez aucun mal à le vaincre. Étant trop sûr de vous, votre adversaire parvient à vous désarmer avant de vous mettre à terre. Il vous tabasse ensuite jusqu'à l'évanouissement. Gravement blessé, vous mettez un long moment à reprendre connaissance, le corps couvert d'ecchymoses.",
           "5": "Vous décidez d'assister au duel. Celui-ci se conclut en quelques secondes. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée. Le combat commence, et malgré tous vos efforts vous ne parvenez à résister qu'une dizaine de secondes. Le chevalier décide de vous frapper encore et encore, pour vous faire comprendre que vous n'êtes qu'un insecte face à lui. Après vous avoir gravement blessé, il arrête et s'en va.",
-          "6": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Vous remportez le duel après quelques minutes de combat. Le seigneur des lieux vous propose de discuter autour d'un bon repas. Vous acceptez volontiers, la nourriture est délicieuse et il y en a en abondance. Une fois repus, le seigneur vous propose de vous nommer chevalier. Vous refusez poliment son offre."
+          "6": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Vous remportez le duel après quelques minutes de combat. Le seigneur des lieux vous convie à célébrer votre victoire en sa compagnie. Vous acceptez volontiers, et l'on vous honore comme il se doit au cœur du village en liesse. Une fois les festivités passées, le seigneur vous propose de vous nommer chevalier. Vous refusez poliment son offre."
         },
         "text": "Assister au duel."
       },
       "visit": {
         "outcomes": {
-          "0": "Vous visitez le village mais, n'y voyant rien d'intéressant, vous repartez sans plus tarder.",
+          "0": "Vous visitez le village mais n'y voyez rien de bien intéressant.",
           "1": "Vous visitez le village. N'y voyant rien d'intéressant, vous décidez d'aller assister au duel.",
           "2": "Alors que vous visitez le village, le seigneur passant par là remarque l'aventurier que vous êtes. Il vous explique la situation et vous supplie de participer au duel. Il vous offrira une bourse remplie d'or si vous parvenez à le gagner. Vous acceptez volontiers son offre et vous rendez donc au duel. Mais une fois le combat commencé, vous comprenez que vous n'avez pas la moindre chance de vaincre votre adversaire. Le chevalier vous blesse à la jambe avec son épée, et vous tombez misérablement au sol, blessé. Incapable de vous relever, vous avez perdu le duel.",
-          "3": "Vous visitez le village et apercevez un objet au fond du puits. Vous le ramassez avant de reprendre votre route."
+          "3": "Vous visitez le village et apercevez un objet au fond du puits. Vous le ramassez, ravi de votre trouvaille."
         },
         "text": "Visiter Boug-Coton."
       }
@@ -2284,39 +2285,39 @@
     "possibilities": {
       "checkDate": {
         "outcomes": {
-          "0": "Vous regardez le calendrier et y découvrez l'existence d'un tournoi qui commence sous peu ! Vous décidez donc de vous y rendre et parvenez à atteindre la finale après quelques heures de combat. Cependant, votre adversaire vous domine et vous ratez votre dernière bataille. Finaliste, vous gagnez tout de même une bourse remplie d'or avant de reprendre votre chemin.",
-          "1": "Vous regardez le calendrier et constatez que vous êtes en laponaire, le 6ème mois de l'année, vous décidez de sortir et d'aller manger une galette à un stand avoisinant. Cette nourriture vous aura bien rassasié ! Vous reprenez votre route, repu.",
-          "2": "En voyant le calendrier vous vous rappelez des affiches dans les rues parlant d'une chasse au trésor. Vous décidez alors d'y participer. Au bout de deux heures de recherche, vous n'arrivez pas à trouver quoi que ce soit. Vous décidez donc de rebrousser chemin.",
-          "3": "Vous regardez le calendrier, et à la date d'aujourd'hui vous voyez inscrit : Concours d'hydromel ! Vous sentant résistant à l'alcool vous décidez de tenter votre chance. Vous gagnez le concours ainsi qu'une récompense ! Cependant, vous finissez totalement ivre."
+          "0": "Vous regardez le calendrier et y découvrez l'existence d'un tournoi qui commence sous peu ! Vous décidez donc de vous y rendre et parvenez à atteindre la finale après quelques heures de combat. Cependant, votre adversaire vous domine et vous ratez votre dernière bataille. Finaliste, vous gagnez tout de même une bourse remplie d'or pour récompenser vos efforts.",
+          "1": "Vous regardez le calendrier et constatez que vous êtes en laponaire, le 6ème mois de l'année. Une note griffonnée dans la marge indique qu'il s'agit de la saison des herboristes. Curieux, vous feuilletez un almanach posé tout près et y apprenez la préparation d'une infusion revigorante. Vous la confectionnez aussitôt : la boisson chaude vous fait le plus grand bien.",
+          "2": "En voyant le calendrier vous vous rappelez des affiches dans les rues parlant d'une chasse au trésor. Vous décidez alors d'y participer. Au bout de deux heures de recherche, vous n'arrivez pas à trouver quoi que ce soit. Vous renoncez donc à vos recherches et regagnez le cœur de la ville, bredouille.",
+          "3": "Vous regardez le calendrier, et à la date d'aujourd'hui vous voyez inscrit : Foire des conteurs ! La place de la ville accueille justement ce concours où l'on récite de vieux récits devant la foule, une corne d'hydromel à la main. Fort de toutes les histoires que vous avez parcourues, vous tentez votre chance et remportez le concours, ainsi qu'une récompense ! À force de trinquer à votre victoire, vous finissez cependant totalement ivre."
         },
         "text": "Regarder le calendrier."
       },
       "end": {
         "outcomes": {
-          "0": "Vous traînez dans la bibliothèque, et ne voyez pas les minutes passer. Lors de la fermeture, vous sortez et vous rendez compte qu'il est déjà tard. Vous reprenez votre route sans plus tarder.",
-          "1": "Vous restez ébahi devant le nombre de livres et la quantité de connaissances qui émane de ces lieux. Peu après, la bibliothécaire vous fait signe : le bâtiment est sur le point de fermer. Déçu, vous faites demi-tour afin de poursuivre vos aventures.",
-          "2": "Vous restez dans la bibliothèque plusieurs minutes, ébahi par tout ce savoir. Vous vous asseyez, pensif. Soudain, un lecteur vient troubler vos pensées, le livre \"Hansel et Gretel\" des frères Grimm en main. Il vous demande de bien vouloir partir car vous êtes assis à sa place préférée de la bibliothèque. Confus, vous partez, sans aucun nouveau savoir."
+          "0": "Vous traînez dans la bibliothèque, et ne voyez pas les minutes passer. Lors de la fermeture, vous sortez et vous rendez compte qu'il est déjà tard. Vous flânez un moment dans les rues de la ville, l'esprit encore plongé dans vos lectures.",
+          "1": "Vous restez ébahi devant le nombre de livres et la quantité de connaissances qui émane de ces lieux. Peu après, la bibliothécaire vous fait signe : le bâtiment est sur le point de fermer. Déçu, vous quittez les rayonnages et regagnez les rues animées de la ville.",
+          "2": "Vous restez dans la bibliothèque plusieurs minutes, ébahi par tout ce savoir. Vous vous asseyez, pensif. Soudain, un lecteur vient troubler vos pensées, le livre \"Hansel et Gretel\" des frères Grimm en main. Il vous demande de bien vouloir lui céder la place, car vous êtes assis à son siège préféré de la bibliothèque. Confus, vous vous levez et quittez les lieux, sans aucun nouveau savoir."
         }
       },
       "read": {
         "outcomes": {
-          "0": "Vous décidez de lire un livre. Celui-ci parle de cuisine et de succulents repas à préparer. Vous notez la recette avant d'aller en chercher les ingrédients. Une fois ces derniers trouvés, vous suivez les instructions à la lettre. Vous goûtez votre plat avant d'en ressentir les bienfaits, puis reprenez votre route.",
-          "1": "Vous prenez un livre, puis commencez à le lire. Le livre parle d'arithmétique. Cela n'a cependant jamais été votre fort : près de 10 minutes plus tard, vous décidez de reposer le livre avant de continuer votre chemin.",
-          "2": "Vous lisez un livre de cuisine. Celui-ci parle d'un délicieux met. Alléché, vous décidez de préparer le plat. Cependant vous ne respectez pas totalement ce qui était marqué, et après avoir mangé, vous ne vous sentez pas bien...",
+          "0": "Vous décidez de lire un livre. Celui-ci traite des remèdes et des vertus curatives des plantes. Vous y découvrez la préparation d'un baume revigorant et notez soigneusement la méthode. Après avoir rassemblé les quelques herbes nécessaires, vous suivez les instructions à la lettre et appliquez le remède sur vos vieilles blessures. Vous en ressentez aussitôt les bienfaits.",
+          "1": "Vous prenez un livre, puis commencez à le lire. Le livre parle d'arithmétique. Cela n'a cependant jamais été votre fort : près de 10 minutes plus tard, vous décidez de reposer le livre sur son étagère, dépité.",
+          "2": "Vous tirez d'un rayon un vieux grimoire dont les pages, couvertes de moisissures, dégagent une odeur âcre. Absorbé par sa lecture, vous respirez longuement ces relents poussiéreux. Peu à peu, votre gorge se serre et votre tête se met à tourner : vous ne vous sentez pas bien du tout...",
           "3": "Vous prenez le premier livre que vous voyez. Il parle d'alchimie et des bienfaits des plantes. Après en avoir étudié attentivement le contenu, vous le reposez, certains que cela vous servira pour vos prochaines aventures."
         },
         "text": "Lire un livre."
       },
       "steal": {
         "outcomes": {
-          "0": "Vous parvenez à voler un vieux livre poussiéreux et sortez discrètement de l'édifice, afin de trouver un acheteur dans les grandes avenues de la ville. Cependant, vous remarquez que personne n'est intéressé par ce livre, notamment parce qu'il est très abîmé et présente même des pages déchirées. Vous l'abandonnez donc avant de reprendre votre chemin.",
-          "1": "Vous sortez furtivement de la bibliothèque sans que personne ne vous remarque. Vous avez réussi à voler un livre et essayez de le vendre aux passants. Un homme décide de vous l'acheter pour quelques pièces d'or. Une fois la transaction effectuée, vous reprenez votre route.",
+          "0": "Vous parvenez à voler un vieux livre poussiéreux et sortez discrètement de l'édifice, afin de trouver un acheteur dans les grandes avenues de la ville. Cependant, vous remarquez que personne n'est intéressé par ce livre, notamment parce qu'il est très abîmé et présente même des pages déchirées. Vous l'abandonnez donc dans le recoin d'une ruelle, dépité.",
+          "1": "Vous sortez furtivement de la bibliothèque sans que personne ne vous remarque. Vous avez réussi à voler un livre et essayez de le vendre aux passants. Un homme décide de vous l'acheter pour quelques pièces d'or. Une fois la transaction effectuée, vous empochez les pièces et vous fondez dans la foule de la ville.",
           "2": "Vous tentez de voler un livre doré discrètement, mais la bibliothécaire vous prend la main dans le sac. Elle exige que vous lui restituiez ce précieux livre, et par la même occasion, une compensation ! Déçu et penaud, vous lui rendez le livre et la dédommagez d'une large poignée de vos économies afin d'éviter la prison..."
         },
         "text": "Tenter de voler un livre pour le revendre."
       }
     },
-    "text": "Après avoir flâné dans les rues de Claire de Ville, vous apercevez un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En vous en approchant, vous comprenez que c'est la bibliothèque de la ville. Vous décidez d'entrer dans la bâtisse pour passer le temps. Sur un des murs de l'entrée, est accroché un calendrier fait de larges feuilles reliées entre elles par une lanière de cuir."
+    "text": "En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En vous en approchant, vous comprenez qu'il s'agit de la bibliothèque de la ville. Par la porte entrouverte, vous distinguez d'innombrables rayonnages chargés d'ouvrages et, accroché à un mur de l'entrée, un calendrier fait de larges feuilles reliées entre elles par une lanière de cuir."
   },
   "69": {
     "possibilities": {
@@ -2355,8 +2356,8 @@
       "check": {
         "outcomes": {
           "0": "En forçant la porte, vous vous blessez profondément. Il faut absolument vous soigner !",
-          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En partant, vous trouvez un objet qui pourra peut être vous être utile !",
-          "2": "Vous entrez dans la maison et posez vos affaires pour vous reposer. Pris d'un profond sommeil, il faudra vous reposer avant de continuer l'aventure.",
+          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut être vous être utile !",
+          "2": "Vous entrez dans la maison et posez vos affaires pour vous reposer. Pris d'un profond sommeil, il vous faudra récupérer vos forces avant de pouvoir faire quoi que ce soit.",
           "3": "Vous entrez dans la maison et fouillez autour de vous pendant une quinzaine de minutes. En sortant vous trouvez un objet qui pourra peut être vous être utile !",
           "4": "Vous entrez dans la maison et fouillez autour de vous pendant une quinzaine de minutes. Vous finissez par abandonner vos recherches sans avoir rien trouvé."
         },
@@ -2364,17 +2365,17 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous avez passé près de quinze minutes sans bouger, il est temps de repartir !"
+          "0": "Vous avez passé près de quinze minutes immobile, il est temps de vous extirper de votre torpeur !"
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Vous continuez votre route sans vous soucier de la maison."
+          "0": "Vous laissez la maison abandonnée derrière vous, sans vous en soucier davantage."
         },
-        "text": "Ne pas s'arrêter et continuer sa route."
+        "text": "Ne pas s'arrêter à cette maison."
       }
     },
-    "text": "Vous avez découvert une maison ! Elle semble abandonnée..."
+    "text": "Parmi les ruines de Ville Forte, vous découvrez une maison encore debout. Elle semble abandonnée..."
   },
   "70": {
     "possibilities": {
