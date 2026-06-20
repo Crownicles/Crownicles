@@ -24,7 +24,7 @@ vi.mock("../../../src/data/City", () => ({
 }));
 
 // Import after mocks so the module under test picks up the mocked deps
-const { canStayInCity, canAutoChooseDestination } = await import("../../../src/core/report/ReportDestinationService");
+const { canStayInCity, canAutoChooseDestination, mustForceStayInCity } = await import("../../../src/core/report/ReportDestinationService");
 
 const LAST_MAP_LINK = Constants.BEGINNING.LAST_MAP_LINK;
 
@@ -55,6 +55,28 @@ describe("canStayInCity", () => {
 	it("is false when the current map is not a city", () => {
 		getCityByMapIdMock.mockReturnValue(undefined);
 		expect(canStayInCity(makePlayer(10, 99), null, true)).toBe(false);
+	});
+});
+
+describe("mustForceStayInCity", () => {
+	it("is false when the outcome does not request it", () => {
+		getCityByMapIdMock.mockReturnValue({ id: "boug_coton" });
+		expect(mustForceStayInCity(makePlayer(10, 6), null, false)).toBe(false);
+	});
+
+	it("is false when teleported by a forced link", () => {
+		getCityByMapIdMock.mockReturnValue({ id: "boug_coton" });
+		expect(mustForceStayInCity(makePlayer(10, 6), fakeLink, true)).toBe(false);
+	});
+
+	it("is false when the current map is not a city", () => {
+		getCityByMapIdMock.mockReturnValue(undefined);
+		expect(mustForceStayInCity(makePlayer(10, 99), null, true)).toBe(false);
+	});
+
+	it("is true when requested while standing on a city map and not teleported", () => {
+		getCityByMapIdMock.mockReturnValue({ id: "boug_coton" });
+		expect(mustForceStayInCity(makePlayer(10, 6), null, true)).toBe(true);
 	});
 });
 

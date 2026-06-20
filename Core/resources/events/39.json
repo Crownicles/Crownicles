@@ -51,6 +51,7 @@
     "meal": {
       "outcomes": {
         "0": {
+          "forceStayInCity": true,
           "effect": "occupied",
           "lostTime": 120
         },

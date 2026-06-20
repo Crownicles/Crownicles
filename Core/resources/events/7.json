@@ -12,6 +12,7 @@
           "randomItem": {}
         },
         "2": {
+          "forceStayInCity": true,
           "effect": "sleeping"
         },
         "3": {

@@ -165,7 +165,10 @@ async function applyLockedOutcomeUnderLock(
 	 * Otherwise, only choose destination if player is alive.
 	 */
 	if (newMapLink || !isDead) {
-		await chooseDestination(context, lockedPlayer, newMapLink, response, false);
+		await chooseDestination(context, lockedPlayer, newMapLink, response, {
+			mainPacket: false,
+			forceStayInCity: randomOutcome[1].forceStayInCity ?? false
+		});
 	}
 
 	await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
@@ -189,7 +192,7 @@ async function handleLockLost(freshPlayer: Player, context: PacketContext, respo
 	);
 	try {
 		const fallbackPlayer = await Players.getById(freshPlayer.id);
-		await chooseDestination(context, fallbackPlayer, null, response, false);
+		await chooseDestination(context, fallbackPlayer, null, response, { mainPacket: false });
 	}
 	catch (fallbackError) {
 		CrowniclesLogger.warn(

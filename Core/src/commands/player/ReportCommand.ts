@@ -369,7 +369,10 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 				await lockedPlayer.save();
 			});
 			params.player.insideCity = false;
-			await chooseDestination(params.context, params.player, null, params.response, true, false);
+			await chooseDestination(params.context, params.player, null, params.response, {
+				mainPacket: true,
+				allowStayInCity: false
+			});
 		}
 	],
 	[
