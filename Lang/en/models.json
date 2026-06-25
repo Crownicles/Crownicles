@@ -1655,8 +1655,6 @@
     "travelHours_one": "Do {{count}} travel of at least {{variantText}} hour",
     "travelHours_other": "Do {{count}} travels of at least {{variantText}} hours",
     "unlock": "Unlock someone from jail",
-    "useTokens_one": "Use {{count}} token {emote:unitValues.token} to advance",
-    "useTokens_other": "Use {{count}} tokens {emote:unitValues.token} to advance",
     "wealthyPayForPVEIsland": "Buy a trip to a mysterious island at a very high price",
     "winBoss_one": "Win {{count}} boss fight",
     "winBoss_other": "Win {{count}} boss fights",
