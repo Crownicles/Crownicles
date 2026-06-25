@@ -1655,8 +1655,6 @@
     "travelHours_one": "{{count}} {{variantText}} Hacer un viaje de al menos una hora",
     "travelHours_other": "{{count}} {{variantText}} Hacer viajes de al menos horas",
     "unlock": "Liberar a alguien de la cárcel",
-    "useTokens_one": "Usar {{count}} ficha {emote:unitValues.token} para avanzar",
-    "useTokens_other": "Usar {{count}} fichas {emote:unitValues.token} para avanzar",
     "wealthyPayForPVEIsland": "Comprar un viaje a una isla misteriosa al precio máximo",
     "winBoss_one": "{{count}} Gana la batalla contra el jefe",
     "winBoss_other": "{{count}} Gana combates contra jefes",
