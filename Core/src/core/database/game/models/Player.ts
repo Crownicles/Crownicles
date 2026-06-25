@@ -920,21 +920,13 @@ export class Player extends Model {
 	 */
 	public static isMissionSlotUnlockedAtLevel(level: number): boolean {
 		return level === Constants.MISSIONS.SLOT_2_LEVEL
-			|| level === Constants.MISSIONS.SLOT_3_LEVEL
-			|| level === Constants.MISSIONS.SLOT_4_LEVEL
-			|| level === Constants.MISSIONS.SLOT_5_LEVEL;
+			|| level === Constants.MISSIONS.SLOT_3_LEVEL;
 	}
 
 	/**
 	 * Get the number of secondary missions a player can have at maximum
 	 */
 	public getMissionSlotsNumber(): number {
-		if (this.level >= Constants.MISSIONS.SLOT_5_LEVEL) {
-			return 5;
-		}
-		if (this.level >= Constants.MISSIONS.SLOT_4_LEVEL) {
-			return 4;
-		}
 		if (this.level >= Constants.MISSIONS.SLOT_3_LEVEL) {
 			return 3;
 		}
