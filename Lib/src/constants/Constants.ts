@@ -68,8 +68,6 @@ export class Constants {
 	static readonly MISSIONS = {
 		SLOT_3_LEVEL: 55,
 		SLOT_2_LEVEL: 25,
-		SLOT_4_LEVEL: 90,
-		SLOT_5_LEVEL: 120,
 		SLOTS_LEVEL_PROBABILITIES: [
 			{
 				LEVEL: 0,
