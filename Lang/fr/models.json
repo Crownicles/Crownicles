@@ -1655,8 +1655,6 @@
     "travelHours_one": "Faire {{count}} voyage d'au moins {{variantText}} heure",
     "travelHours_other": "Faire {{count}} voyages d'au moins {{variantText}} heures",
     "unlock": "Libérer quelqu'un de prison",
-    "useTokens_one": "Utiliser {{count}} jeton {emote:unitValues.token} pour avancer",
-    "useTokens_other": "Utiliser {{count}} jetons {emote:unitValues.token} pour avancer",
     "wealthyPayForPVEIsland": "Acheter un voyage vers une île mystérieuse au prix maximal",
     "winBoss_one": "Gagner {{count}} combat de boss",
     "winBoss_other": "Gagner {{count}} combats de boss",

@@ -403,14 +403,8 @@ export class Player extends Model {
 	public async useTokens(parameters: EditValueParameters): Promise<Player> {
 		const tokensToUse = Math.abs(parameters.amount);
 
-		// Track missions for using tokens
-		let newPlayer = await MissionsController.update(this, parameters.response, {
-			missionId: "useTokens",
-			count: tokensToUse
-		});
-		Object.assign(this, newPlayer);
-
-		newPlayer = await MissionsController.update(this, parameters.response, {
+		// Track missions for spending tokens
+		const newPlayer = await MissionsController.update(this, parameters.response, {
 			missionId: "spendTokens",
 			count: tokensToUse
 		});
@@ -468,7 +462,7 @@ export class Player extends Model {
 			classesTier3Unlocked: newLevel === ClassConstants.GROUP2LEVEL,
 			classesTier4Unlocked: newLevel === ClassConstants.GROUP3LEVEL,
 			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
-			missionSlotUnlocked: newLevel === Constants.MISSIONS.SLOT_2_LEVEL || newLevel === Constants.MISSIONS.SLOT_3_LEVEL,
+			missionSlotUnlocked: Player.isMissionSlotUnlockedAtLevel(newLevel),
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
 			tokensUnlocked: newLevel === TokensConstants.LEVEL_TO_UNLOCK,
 			statsIncreased: true
@@ -510,7 +504,7 @@ export class Player extends Model {
 			classesTier3Unlocked: newLevel === ClassConstants.GROUP2LEVEL,
 			classesTier4Unlocked: newLevel === ClassConstants.GROUP3LEVEL,
 			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
-			missionSlotUnlocked: newLevel === Constants.MISSIONS.SLOT_2_LEVEL || newLevel === Constants.MISSIONS.SLOT_3_LEVEL,
+			missionSlotUnlocked: Player.isMissionSlotUnlockedAtLevel(newLevel),
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
 			tokensUnlocked: newLevel === TokensConstants.LEVEL_TO_UNLOCK,
 			statsIncreased: true
@@ -921,10 +915,33 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Whether reaching the given level unlocks a new secondary mission slot
+	 * @param level
+	 */
+	public static isMissionSlotUnlockedAtLevel(level: number): boolean {
+		return level === Constants.MISSIONS.SLOT_2_LEVEL
+			|| level === Constants.MISSIONS.SLOT_3_LEVEL
+			|| level === Constants.MISSIONS.SLOT_4_LEVEL
+			|| level === Constants.MISSIONS.SLOT_5_LEVEL;
+	}
+
+	/**
 	 * Get the number of secondary missions a player can have at maximum
 	 */
 	public getMissionSlotsNumber(): number {
-		return this.level >= Constants.MISSIONS.SLOT_3_LEVEL ? 3 : this.level >= Constants.MISSIONS.SLOT_2_LEVEL ? 2 : 1;
+		if (this.level >= Constants.MISSIONS.SLOT_5_LEVEL) {
+			return 5;
+		}
+		if (this.level >= Constants.MISSIONS.SLOT_4_LEVEL) {
+			return 4;
+		}
+		if (this.level >= Constants.MISSIONS.SLOT_3_LEVEL) {
+			return 3;
+		}
+		if (this.level >= Constants.MISSIONS.SLOT_2_LEVEL) {
+			return 2;
+		}
+		return 1;
 	}
 
 	/**

@@ -10,18 +10,18 @@ export const missionInterface: IMission = {
 
 	/**
 	 * Generate a random duration variant based on difficulty
-	 * Easy: 120-180 minutes (2-3 hours)
-	 * Medium: 240-360 minutes (4-6 hours)
-	 * Hard: 480-720 minutes (8-12 hours)
+	 * Easy: 45 minutes
+	 * Medium: 180 minutes (3 hours)
+	 * Hard: 420 minutes (7 hours)
 	 */
 	generateRandomVariant: difficulty => {
 		switch (difficulty) {
 			case MissionDifficulty.MEDIUM:
-				return 300; // 5 hours
+				return 180; // 3 hours
 			case MissionDifficulty.HARD:
-				return 600; // 10 hours
+				return 420; // 7 hours
 			default:
-				return 120; // 2 hours
+				return 45; // 45 minutes
 		}
 	},
 

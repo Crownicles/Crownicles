@@ -1,31 +1,49 @@
 import { getRiskCategoryLevel } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import { IMission } from "../IMission";
+import { MissionDataController } from "../../../data/Mission";
 import { MissionDifficulty } from "../MissionDifficulty";
+import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 
 export const missionInterface: IMission = {
 	/**
 	 * Check if the expedition risk category is greater than or equal to the variant's category
-	 * The variant represents the maximum value of a risk category (e.g., 30 for "low")
-	 * Compares categories instead of raw values so any value in the category matches
+	 * The variant represents a risk rate; categories are compared so any value in the category matches
 	 */
 	areParamsMatchingVariantAndBlob: (variant, params) =>
 		getRiskCategoryLevel(params.riskRate as number) >= getRiskCategoryLevel(variant),
 
 	/**
-	 * Generate a random risk variant based on difficulty
-	 * Easy: 45 (moderate risk)
-	 * Medium: 58 (high risk)
-	 * Hard: 72 (veryHigh risk)
+	 * Generate a random risk variant based on difficulty.
+	 * The chosen reward index inside the difficulty bucket maps to a risk rate:
+	 * 45 (risky / moderate), 58 (dangerous / high), 72 (perilous / veryHigh), 90 (desperate)
 	 */
 	generateRandomVariant: difficulty => {
-		switch (difficulty) {
-			case MissionDifficulty.MEDIUM:
-				return 58;
-			case MissionDifficulty.HARD:
-				return 72;
-			default:
-				return 45;
+		const mission = MissionDataController.instance.getById("dangerousExpedition")!;
+		const difficulties = mission.difficulties!;
+
+		let indexes: number[];
+		if (difficulty === MissionDifficulty.MEDIUM) {
+			indexes = difficulties.medium ?? [];
 		}
+		else if (difficulty === MissionDifficulty.HARD) {
+			indexes = difficulties.hard ?? [];
+		}
+		else {
+			indexes = difficulties.easy ?? [];
+		}
+
+		if (indexes.length === 0) {
+			return 45;
+		}
+
+		const randomIndex = indexes[RandomUtils.crowniclesRandom.integer(0, indexes.length - 1)];
+		const thresholds = [
+			45,
+			58,
+			72,
+			90
+		];
+		return thresholds[randomIndex] ?? 45;
 	},
 
 	initialNumberDone: () => 0,
