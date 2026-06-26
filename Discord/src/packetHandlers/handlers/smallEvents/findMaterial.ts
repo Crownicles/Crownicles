@@ -18,7 +18,8 @@ export default class FindMaterialSmallEventHandler {
 			lng,
 			materialId: packet.materialId,
 			materialEmote: CrowniclesIcons.materials[packet.materialId],
-			rarityEmote: CrowniclesIcons.rarity[packet.materialRarity - 1]
+			rarityEmote: CrowniclesIcons.rarity[packet.materialRarity - 1],
+			quantity: packet.quantity
 		});
 
 		await interaction?.editReply({

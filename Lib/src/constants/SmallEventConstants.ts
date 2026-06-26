@@ -1,4 +1,6 @@
 import { MapLocationConstants } from "./MapLocationConstants";
+import { MaterialType } from "../types/MaterialType";
+import type { ExpeditionLocationType } from "./ExpeditionConstants";
 
 export abstract class SmallEventConstants {
 	static readonly HEALTH = {
@@ -542,7 +544,52 @@ export abstract class SmallEventConstants {
 	static readonly FIND_MATERIAL = {
 		SMALL_EVENT_NAME: "findMaterial",
 		RARE_PROBABILITY: 0.1,
-		UNCOMMON_PROBABILITY: 0.3
+		UNCOMMON_PROBABILITY: 0.3,
+		QUANTITY: {
+			MIN: 2,
+			MAX: 4
+		},
+		BIOME_MATERIAL_TYPES: {
+			forest: [
+				MaterialType.WOOD,
+				MaterialType.NATURE,
+				MaterialType.LEATHER
+			],
+			mountain: [
+				MaterialType.METAL,
+				MaterialType.ALLOY
+			],
+			desert: [
+				MaterialType.POISON,
+				MaterialType.EXPLOSIVE,
+				MaterialType.SPIRITUAL
+			],
+			swamp: [
+				MaterialType.POISON,
+				MaterialType.NATURE,
+				MaterialType.ROPE
+			],
+			ruins: [
+				MaterialType.SPIRITUAL,
+				MaterialType.MAGIC,
+				MaterialType.ALLOY
+			],
+			cave: [
+				MaterialType.METAL,
+				MaterialType.ALLOY,
+				MaterialType.EXPLOSIVE
+			],
+			plains: [
+				MaterialType.NATURE,
+				MaterialType.ROPE,
+				MaterialType.LEATHER
+			],
+			coast: [
+				MaterialType.ROPE,
+				MaterialType.NATURE,
+				MaterialType.LEATHER
+			]
+		} satisfies Record<ExpeditionLocationType, readonly MaterialType[]>
 	} as const;
 
 	static readonly INTERACT_OTHER_PLAYERS = {

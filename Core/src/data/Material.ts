@@ -37,4 +37,12 @@ export class MaterialDataController extends DataControllerString<Material> {
 		}
 		return RandomUtils.crowniclesRandom.pick(materials);
 	}
+
+	public getRandomMaterialFromTypeAndRarity(type: MaterialType, rarity: MaterialRarity): Material | null {
+		const materials = this.getMaterialsFromType(type).filter(material => material.rarity === rarity);
+		if (materials.length === 0) {
+			return null;
+		}
+		return RandomUtils.crowniclesRandom.pick(materials);
+	}
 }

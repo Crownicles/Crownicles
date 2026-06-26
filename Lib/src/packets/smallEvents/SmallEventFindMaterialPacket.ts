@@ -11,4 +11,6 @@ export class SmallEventFindMaterialPacket extends SmallEventPacket {
 	materialType!: string;
 
 	materialRarity!: MaterialRarity;
+
+	quantity!: number;
 }
