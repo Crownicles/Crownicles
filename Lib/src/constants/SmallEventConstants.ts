@@ -549,6 +549,11 @@ export abstract class SmallEventConstants {
 			MIN: 2,
 			MAX: 4
 		},
+		LUCKY_MULTIPLIER: {
+			PROBABILITY: 0.2,
+			MIN: 2,
+			MAX: 4
+		},
 		BIOME_MATERIAL_TYPES: {
 			forest: [
 				MaterialType.WOOD,
