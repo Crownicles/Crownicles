@@ -33,24 +33,49 @@ function getTravelProgress(player: Player): number {
 	return Math.min(1, Math.max(0, travelData.playerTravelledTime / tripDuration));
 }
 
+/**
+ * Pick the biome to loot from: it blends the origin and destination biomes, the destination being
+ * more likely the further along the trip the player is.
+ */
+function pickBiomeExpeditionType(player: Player): ExpeditionLocationType {
+	const progress = getTravelProgress(player);
+	return RandomUtils.crowniclesRandom.realZeroToOneInclusive() < progress
+		? getBiomeExpeditionType(player.getDestination()?.type)
+		: getBiomeExpeditionType(player.getPreviousMap()?.type);
+}
+
+/**
+ * Roll the rarity of the looted material following the find material probability ladder.
+ */
+function rollMaterialRarity(): MaterialRarity {
+	const randomNumber = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
+	if (randomNumber < SmallEventConstants.FIND_MATERIAL.RARE_PROBABILITY) {
+		return MaterialRarity.RARE;
+	}
+	if (randomNumber < SmallEventConstants.FIND_MATERIAL.RARE_PROBABILITY + SmallEventConstants.FIND_MATERIAL.UNCOMMON_PROBABILITY) {
+		return MaterialRarity.UNCOMMON;
+	}
+	return MaterialRarity.COMMON;
+}
+
+/**
+ * Roll the looted quantity, with a small chance to multiply the haul for a lucky jackpot.
+ */
+function rollQuantity(): number {
+	const quantity = RandomUtils.rangedInt(SmallEventConstants.FIND_MATERIAL.QUANTITY);
+	if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < SmallEventConstants.FIND_MATERIAL.LUCKY_MULTIPLIER.PROBABILITY) {
+		return quantity * RandomUtils.rangedInt(SmallEventConstants.FIND_MATERIAL.LUCKY_MULTIPLIER);
+	}
+	return quantity;
+}
+
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted(player): boolean {
 		return Maps.isOnContinent(player) || Maps.isOnPveIsland(player);
 	},
 	executeSmallEvent: async (response, player): Promise<void> => {
-		// Loot blends the origin and destination biomes: the further along the trip, the more likely the destination biome is used
-		const progress = getTravelProgress(player);
-		const expeditionType = RandomUtils.crowniclesRandom.realZeroToOneInclusive() < progress
-			? getBiomeExpeditionType(player.getDestination()?.type)
-			: getBiomeExpeditionType(player.getPreviousMap()?.type);
-		const materialType = RandomUtils.crowniclesRandom.pick(SmallEventConstants.FIND_MATERIAL.BIOME_MATERIAL_TYPES[expeditionType]);
-
-		const randomNumber = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
-		const materialRarity = randomNumber < SmallEventConstants.FIND_MATERIAL.RARE_PROBABILITY
-			? MaterialRarity.RARE
-			: randomNumber < SmallEventConstants.FIND_MATERIAL.RARE_PROBABILITY + SmallEventConstants.FIND_MATERIAL.UNCOMMON_PROBABILITY
-				? MaterialRarity.UNCOMMON
-				: MaterialRarity.COMMON;
+		const materialType = RandomUtils.crowniclesRandom.pick(SmallEventConstants.FIND_MATERIAL.BIOME_MATERIAL_TYPES[pickBiomeExpeditionType(player)]);
+		const materialRarity = rollMaterialRarity();
 
 		const material = MaterialDataController.instance.getRandomMaterialFromTypeAndRarity(materialType, materialRarity)
 			?? MaterialDataController.instance.getRandomMaterialFromRarity(materialRarity);
@@ -59,11 +84,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 			throw new Error(`No material found for rarity ${MaterialRarity[materialRarity]}`);
 		}
 
-		// Base quantity, with a small chance to multiply the haul for a lucky jackpot
-		let quantity = RandomUtils.rangedInt(SmallEventConstants.FIND_MATERIAL.QUANTITY);
-		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < SmallEventConstants.FIND_MATERIAL.LUCKY_MULTIPLIER.PROBABILITY) {
-			quantity *= RandomUtils.rangedInt(SmallEventConstants.FIND_MATERIAL.LUCKY_MULTIPLIER);
-		}
+		const quantity = rollQuantity();
 
 		await Materials.giveMaterial(player.id, parseInt(material.id, 10), quantity);
 
