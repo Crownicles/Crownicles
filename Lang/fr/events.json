@@ -2854,17 +2854,17 @@
       "enterOpening": {
         "outcomes": {
           "0": "Vous vous faufilez dans l'interstice et vos yeux, s'adaptant à l'obscurité, révèlent un gigantesque nid de chauves-souris ! Vous ressortez aussi rapidement que possible, et rejoignez la porte principale. Certainement, personne n'était passé par là depuis bien longtemps.",
-          "1": "Vous progressez petit à petit dans cet étroit tunnel, guidé par vos mains, et parvenez à une clanche : vous poussez le battant de porte et atterrissez en pleine rue marchande. Ce tunnel devait servir à quelque transaction fort peu légale, c'est pourquoi vous vous éloignez prestement, ayant en poche les quelques pièces découvertes dans le souterrain.",
-          "2": "Vous vous faufilez dans l'interstice et vos yeux, s'adaptant à l'obscurité, révèlent un éboulement quelques mètres plus loin. Vous parvenez laborieusement à rebrousser chemin et vous vous dirigez vers la porte principale.",
-          "3": "Vous vous faufilez dans l'ouverture et commencez péniblement à avancer dans l'étroit tunnel. Après quelques mètres, vous remarquez un objet traînant dans un recoin. Alors que vous le ramassez, vous apercevez avec effroi qu'il était posé à côté d'ossements ! Vous fuyez prestement, au prix de quelques éraflures."
+          "1": "Vous progressez petit à petit dans cet étroit tunnel, guidé par vos mains, et parvenez à une clanche : vous poussez le battant de porte et atterrissez en pleine rue marchande. Ce tunnel devait servir à quelques transactions fort peu légales, c'est pourquoi vous vous décidez de vous en éloigner rapidement, ayant en poche les quelques pièces découvertes dans le souterrain.",
+          "2": "Vous vous faufilez dans l'interstice et vos yeux, s'adaptant à l'obscurité, révèlent un éboulement quelques mètres plus loin. Vous vous extirpez laborieusement de ce cul-de-sac et vous vous dirigez vers l'entrée principale de la forteresse.",
+          "3": "Vous vous faufilez dans l'ouverture et commencez péniblement à avancer dans l'étroit tunnel. Après quelques mètres, vous remarquez un objet traînant dans un recoin. Alors que vous le ramassez, vous apercevez avec effroi qu'il était posé à côté d'ossements ! Vous prenez la fuite rapidement, remarquant à peine les éraflures causées par les parois étroites."
         },
         "text": "Franchir l'ouverture"
       },
       "alertGuards": {
         "outcomes": {
-          "0": "Vous courez à la porte pour prévenir les gardes de cette détérioration de la muraille, mais ceux-ci vous rient au nez et vous chassent d'un coup de pied au derrière.",
+          "0": "Vous courez à la porte pour prévenir les gardes de cette détérioration de la muraille, mais vos avertissements ne suscitent que des ricanements méprisants, suivis d'un coup de pied bien senti qui vous propulse loin des portes royales...",
           "1": "Vous marchez vers la porte et prévenez les gardes. Mais vous avez beau insister sur la gravité de cette détérioration, nul ne vous prête attention. Vous finissez par partir, injuriant silencieusement ces incapables.",
-          "2": "Vous alertez les gardes au sujet de cette dégradation des murs et leur montrez l'ouverture. Ils rassemblent vite de quoi reboucher ce trou, et vous les aidez naturellement. Après de longues heures de labeur, ces braves soldats vous invitent à dîner pour vous remercier de votre aide. Vous repartez repu, et heureux de cette expérience inattendue."
+          "2": "Vous alertez les gardes sur cette brèche inquiétante et leur montrez précisément l'endroit compromis. Sans hésiter, ils rassemblent du matériel de fortune et s'attellent à la réparation. Votre aide précieuse accélère considérablement les travaux. Après de longues heures de labeur, vous êtes convié à la table des soldats pour partager un festin bien mérité."
         },
         "text": "Alerter les gardes"
       },
@@ -2872,19 +2872,19 @@
         "outcomes": {
           "0": "Vous sentez qu'il y a une affaire louche derrière tout ça, et ne voulez pas vous en mêler. Vous quittez les lieux et regagnez la porte principale.",
           "1": "Vous quittez rapidement les lieux, mais un garde vous aperçoit et, remarquant l'ouverture, vous arrête pour vous interroger. Après de longues heures passées à vous justifier, vous êtes finalement relâché, faute de preuves vous inculpant.",
-          "2": "Vous rebroussez chemin, mais une main s'abat brusquement sur votre épaule. Vous vous retournez, paniqué, mais il ne s'agit que de Price le mercenaire qui vous a reconnu au loin. Vous entamez alors une discussion enflammée sur l'évolution du cours des gemmes et l'inflation des loyers, que vous terminez autour d'un bon repas dans une auberge réputée."
+          "2": "Vous rebroussez chemin, mais une main s'abat brusquement sur votre épaule. Vous vous retournez, paniqué, mais il ne s'agit que de Price le mercenaire qui vous a reconnu au loin. Vous entamez alors une discussion enflammée sur l'évolution du cours des gemmes et l'inflation des loyers, que vous terminez autour d'un bon repas au pavillon royal."
         },
         "text": "Passer son chemin"
       },
       "end": {
         "outcomes": {
-          "0": "Vous vous apprêtez à partir lorsqu'un homme s'extirpe de l'ouverture. Son visage vous est familier : il s'agit de Price le mercenaire, et celui-ci se fige brièvement avant de vous reconnaître. Il passe son bras autour de votre cou et vous propose quelques pièces en échange de votre silence, ce que votre avidité accepte immédiatement.",
+          "0": "Vous vous apprêtez à partir lorsqu'un homme s'extirpe de l'ouverture. Son visage vous est familier : il s'agit de Price le mercenaire, et celui-ci se fige brièvement avant de vous reconnaître. Il passe son bras autour de votre cou et vous propose quelques pièces en échange de votre silence, vous acceptez immédiatement.",
           "1": "Vous vous apprêtez à quitter les lieux lorsqu'un homme masqué s'extirpe de l'ouverture. Paniqué, le brigand sort sa lame, se rue sur vous et vous blesse grièvement, avant que vous puissiez esquisser le moindre geste. Vous le regardez fuir, noyé dans votre sang.",
           "2": "Alors que vous observez l'ouverture, un éclat doré attire votre attention. Les rayons du soleil révèlent quelques pièces à l'abandon dans le tunnel, ainsi qu'un objet que vous vous empressez de récupérer. Vous repartez, heureux de cette découverte."
         }
       }
     },
-    "text": "Alors que vous vous approchez de l'imposante muraille entourant la cité royale, vous remarquez qu'une fissure descend le long des murs et mène à une ouverture dans l'édifice, assez grande pour laisser passer un petit homme. Un bref regard dans l'interstice vous apprend qu'il mène à un tunnel."
+    "text": "Alors que vous vous approchez de l'imposante muraille entourant la cité royale, vous remarquez qu'une fissure descend le long des murs et mène à une ouverture dans l'édifice. Elle vous semble assez grande pour laisser passer un homme..."
   },
   "83": {
     "possibilities": {
@@ -3121,7 +3121,7 @@
     },
     "text": "Au milieu d'un champ, vous rencontrez un paysan. Ce dernier a perdu sa fourche..."
   },
-  "90" : {
+  "90": {
     "possibilities": {
       "observe": {
         "outcomes": {
@@ -3155,7 +3155,7 @@
         }
       }
     },
-    "text" : "Alors que vous traversez posément l'aile Est du château, vous entendez des éclats de voix. Vous vous tournez, curieux, vers une porte ouverte d'où s'échappent les bruits : il s'agit de la chambre des requêtes, où l'on tranche les litiges portés devant la justice du château. Vous reconnaissez même la personne qui hausse le ton : il s'agit de la prétendue sorcière qui vous demande parfois de l'assister sur ses potions."
+    "text": "Alors que vous traversez posément l'aile Est du château, vous entendez des éclats de voix. Vous vous tournez, curieux, vers une porte ouverte d'où s'échappent les bruits : il s'agit de la chambre des requêtes, où l'on tranche les litiges portés devant la justice du château. Vous reconnaissez même la personne qui hausse le ton : il s'agit de la prétendue sorcière qui vous demande parfois de l'assister sur ses potions."
   },
   "91": {
     "possibilities": {
