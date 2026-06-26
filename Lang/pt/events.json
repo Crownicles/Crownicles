@@ -128,7 +128,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Visita-se a cidade durante várias horas antes de continuar o caminho."
+          "0": "Vous visitez la ville pendant plusieurs heures, flânant d'une ruelle à l'autre sans vous presser."
         }
       },
       "goAway": {
@@ -140,32 +140,32 @@
       },
       "goForge": {
         "outcomes": {
-          "0": "Não há nada de interessante nesta forja... Sai rapidamente do local e continua o seu caminho.",
+          "0": "Il n'y a rien d'intéressant dans cette forge... Vous quittez rapidement les lieux.",
           "1": "Ao experimentar uma espada, parte a janela da forja e o ferreiro exige um reembolso!",
-          "2": "Não há ninguém na forja, que parece estar abandonada há anos. No entanto, antes de partir, repara num objeto que pode ser útil para o resto da sua aventura...",
-          "3": "A forja parece ter sido abandonada durante anos. Por isso, volta-se a partir.",
-          "4": "Entra e cumprimenta o ferreiro. Após uma rápida inspeção do seu trabalho, percebe que não vai encontrar nada de interessante aqui. Continua o seu caminho."
+          "2": "Personne n'est présent dans la forge qui semble abandonnée depuis des années. Avant de ressortir vous remarquez cependant un objet qui pourrait vous servir pour la suite de votre aventure...",
+          "3": "La forge semble abandonnée depuis des années. Vous ressortez donc bredouille.",
+          "4": "Vous entrez et saluez le forgeron. Après une rapide inspection de son travail vous comprenez que vous ne trouverez rien d'intéressant ici. Vous échangez quelques mots et ressortez."
         },
         "text": "Ir para a forja."
       },
       "goInn": {
         "outcomes": {
-          "0": "Depois de falar com o estalajadeiro durante duas horas, fica finalmente a saber que não há quartos disponíveis para esta noite! Parte de novo, frustrado por não ter conseguido ter uma boa noite de sono.",
-          "1": "Paga um quarto para passar a noite e cai deitado na cama. Precisas de dormir um pouco antes de recomeçar a tua aventura.",
-          "2": "A estalagem parece ter sido abandonada há vários anos... Continua o seu caminho sem fazer mais perguntas."
+          "0": "Après avoir discuté pendant 2 heures avec l'aubergiste, vous finissez par apprendre qu'il n'y a aucune chambre disponible pour la nuit ! Vous ressortez de l'auberge, frustré de ne pas avoir pu profiter d'une bonne nuit de repos.",
+          "1": "Vous payez une chambre pour la nuit et tombez effondré sur le lit. Il faudra dormir avant de pouvoir reprendre l'aventure.",
+          "2": "L'auberge semble abandonnée depuis plusieurs années... Vous ressortez sans vous poser plus de questions."
         },
         "text": "Ir para o albergue."
       },
       "goMarket": {
         "outcomes": {
           "0": "Demora 30 minutos a explorar o mercado antes de descobrir um pequeno objeto no chão que pode ser útil...",
-          "1": "Depois de perder 60 minutos a passear pelas bancas, acaba por sair da cidade sem ter encontrado nada de interessante.",
-          "2": "No momento em que o seu estado de alerta estava no ponto mais baixo do mercado, recebe um violento golpe na nuca e cai no chão... Depois desse momento, não te lembras de nada. Terá de ser tratado antes de poder seguir em frente!"
+          "1": "Après avoir perdu 60 minutes à vous balader dans les étals, vous finissez par quitter le marché sans avoir pu trouver quoi que ce soit d'intéressant.",
+          "2": "Alors que votre vigilance était au plus bas sur le marché, vous recevez un coup violent derrière la tête et vous vous effondrez à terre... Après ce moment, plus aucun souvenir. Il faudra vous soigner avant de pouvoir reprendre l'aventure !"
         },
         "text": "Ir ao mercado."
       }
     },
-    "text": "Depois de passar várias semanas a caminhar sem encontrar um único ser humano, chega finalmente a uma pequena cidade que parece bastante animada."
+    "text": "Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous arpentez à présent les ruelles d'une petite bourgade plutôt animée."
   },
   "14": {
     "possibilities": {
@@ -325,12 +325,12 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Observa o local durante alguns minutos, depois apercebe-se de que está realmente deserto. Parte-se de novo."
+          "0": "Vous observez le chantier quelques minutes, puis réalisez qu'il est vraiment désert. Il n'y a manifestement rien à en tirer."
         }
       },
       "searchScaffolding": {
         "outcomes": {
-          "0": "Sobe ao topo do andaime, mas, à exceção de uma paisagem magnífica, não encontra nada. Depois de ter passado alguns minutos a admirá-la, volta a partir.",
+          "0": "Vous grimpez jusqu'en haut des échafaudages, mais à l'exception d'un magnifique paysage, vous ne trouvez rien. Vous passez quelques minutes à l'admirer avant de redescendre.",
           "1": "Ao subir a estrutura instável, descobrirá uma vista deslumbrante da região! Aproveite a vista para detetar um objeto lá em baixo.",
           "2": "Sobe a escada, mas a meio do caminho, um degrau parte-se e cai no chão! Atordoado pela queda, recupera lentamente os sentidos."
         },
@@ -346,13 +346,13 @@
       },
       "skip": {
         "outcomes": {
-          "0": "Decide ignorar este sítio e continuar o seu caminho.",
-          "1": "Olha para o local à distância, sem ver a picareta no chão. Corta o pé ao sair."
+          "0": "Vous décidez d'ignorer ce chantier et de ne pas vous y attarder davantage.",
+          "1": "Vous contournez le chantier et l'observez de loin, sans voir la pioche posée au sol. Vous trébuchez dessus et vous entaillez le pied."
         },
-        "text": "Continuem a vossa viagem sem se preocuparem com nada."
+        "text": "Ignorer ce chantier."
       }
     },
-    "text": "Chega a uma cidade, mas não há ninguém à vista. Ao passar por ela, vê um estaleiro igualmente deserto."
+    "text": "La ville où vous mettez les pieds semble déserte, sans âme qui vive. En parcourant ses rues, votre regard s'arrête sur un chantier qui paraît tout aussi abandonné."
   },
   "19": {
     "possibilities": {
@@ -424,16 +424,16 @@
       },
       "end": {
         "outcomes": {
-          "0": "Continua o seu caminho sem prestar atenção ao guarda.",
-          "1": "Atónito, fica a olhar para a cena durante cinco minutos. O guarda repara finalmente em ti e tu segues o teu caminho."
+          "0": "Vous vous éloignez sans prêter attention au garde.",
+          "1": "Abasourdi, vous regardez la scène, tétanisé, pendant cinq minutes. Le garde finit par vous remarquer, vous vous hâtez donc de vous éclipser."
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Por isso, ignora a situação e continua o seu caminho.",
-          "1": "Ao passar, tropeça e cai no chão."
+          "0": "Vous ne prêtez donc pas attention à la situation et vous éloignez tranquillement.",
+          "1": "En vous éloignant, vous trébuchez et tombez par terre."
         },
-        "text": "Avançar."
+        "text": "Ne pas intervenir."
       },
       "surpriseAttack": {
         "outcomes": {
@@ -444,7 +444,7 @@
         "text": "Atacar o guarda de surpresa para ajudar a mulher."
       }
     },
-    "text": "Enquanto passeia por uma aldeia, repara com o canto do olho que um guarda rouba uma pobre mulher."
+    "text": "À votre arrivée dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme."
   },
   "21": {
     "possibilities": {
@@ -604,26 +604,26 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Depois de 15 minutos a observar esta cena, vai-se embora, chocado, mas continua a sua aventura."
+          "0": "Après avoir passé 15 minutes à observer cette scène, vous vous éloignez de la place, encore bouleversé par ce que vous venez de voir."
         }
       },
       "goAway": {
         "outcomes": {
-          "0": "Horrorizado com este ato bárbaro, continua rapidamente o seu caminho.",
-          "1": "Enquanto se afasta, vê uma caixa ao longe. Após alguns minutos de caminhada, alcança-a, abre-a e descobre um saco cheio de dinheiro."
+          "0": "Horrifié par cet acte de barbarie, vous vous éloignez rapidement de la place, le cœur encore serré.",
+          "1": "En vous écartant de la foule, vous apercevez un coffret abandonné dans une ruelle. Intrigué, vous l'atteignez, l'ouvrez et découvrez un sac rempli d'argent."
         },
-        "text": "Longe do massacre."
+        "text": "S'éloigner de l'exécution."
       },
       "steal": {
         "outcomes": {
-          "0": "Depois de roubares algumas pessoas, levas algo que te parece muito interessante! Depois de andares por aí durante cerca de trinta minutos, decides ver o que é.",
-          "1": "Está a tentar roubar um residente quando este se vira subitamente e o agarra com força antes de o espancar. Depois de se debater, foge."
+          "0": "Après avoir dépouillé quelques personnes, vous vous éclipsez discrètement avec un objet qui semble fort intéressant ! À l'écart de la foule, vous regardez enfin ce que c'est.",
+          "1": "Vous tentez de dépouiller un habitant quand ce dernier se retourne soudainement et vous attrape fermement avant de vous rouer de coups. Après vous être débattu, vous parvenez à vous esquiver dans la cohue."
         },
-        "text": "Assalto a transeuntes enquanto estes assistem ao massacre."
+        "text": "Voler des passants assistant à l'exécution."
       },
       "trySave": {
         "outcomes": {
-          "0": "Depois de te esforçares por atravessar a multidão, intervéns o mais rapidamente possível e consegues arrastar o homem para fora. Depois de correr pela aldeia, o homem fica muito grato e dá-te um objeto que podes usar durante o resto da tua aventura.",
+          "0": "Après vous être débattu pour traverser la foule, vous intervenez au plus vite et réussissez à extirper cet homme de là. Une fois à l'abri des regards, cet homme, très reconnaissant, vous offre un objet qui vous servira pour la suite de votre aventure.",
           "1": "Ao abrir caminho por entre a multidão para tentar impedir o assassínio, é empurrado com força e cai no chão.",
           "2": "Depois de conseguir fugir com o homem, é apanhado e espancado por um grupo de pessoas. Uma vez de pé, repara que essas pessoas te roubaram.",
           "3": "Depois de tentar intervir violentamente, o carrasco agarra-te à força. Debates-te, mas nada pode ser feito. Também tu és condenado à morte."
@@ -631,42 +631,42 @@
         "text": "Para intervir e evitar que este homem morra."
       }
     },
-    "text": "Ao passar por uma aldeia, repara num grupo de pessoas reunidas. Ao aproximar-se, apercebe-se rapidamente de que está a decorrer um enforcamento. Depois de fazer algumas perguntas, fica a saber que essa pessoa foi condenada à morte por \"comentários contrários aos valores da Igreja\"."
+    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'église\"."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Olhamos para o objeto durante 20 minutos e depois afastamo-nos.",
+          "0": "Vous observez bêtement l'objet pendant 20 minutes, avant de détourner le regard.",
           "1": "Inclinado sobre o poço, observa o objeto. É então que tomba. Felizmente, consegue voltar a subir, mas não sem sofrer ferimentos graves."
         }
       },
       "goDown": {
         "outcomes": {
-          "0": "Ficou gravemente ferido durante a descida e ficou preso no fundo durante várias horas até alguém o encontrar.",
-          "1": "Chegará ao fundo em segurança, recolherá o objeto e continuará o seu caminho.",
-          "2": "Salta para o poço, mas não encontra nada. Por isso, volta a subir sem perder mais tempo.",
-          "3": "Uma vez no fundo, descobrirá uma grande quantidade de moedas de ouro, que pode recolher antes de continuar a sua viagem."
+          "0": "Vous vous blessez grièvement lors de la descente et restez un moment bloqué au fond avant que quelqu'un ne vous retrouve.",
+          "1": "Vous arrivez en bas sans soucis et récupérez l'objet.",
+          "2": "Vous sautez dans le puits mais n'y trouvez rien. Vous remontez donc bredouille.",
+          "3": "Une fois en bas, vous découvrez une grande quantité de pièces d'or que vous récupérez avec joie."
         },
         "text": "Tenta descer para recuperar o objeto."
       },
       "skip": {
         "outcomes": {
-          "0": "Não há tempo a perder! Continua o seu caminho sem prestar a mínima atenção a isto.",
-          "1": "Continua o seu caminho, mas, após uma hora de caminhada, dá de caras com um grupo de pessoas vestidas de preto. Depois de uma luta amarga, consegue sair, mas foi assaltado."
+          "0": "Pas de temps à perdre ! Vous détournez le regard sans prêter la moindre attention à ceci.",
+          "1": "Vous vous éloignez du puits, mais au détour d'une ruelle, vous tombez nez à nez avec un groupe de personnes habillées de noir. Après vous être débattu avec acharnement, vous réussissez à leur échapper, mais vous vous êtes fait dépouiller."
         },
-        "text": "Continue o seu caminho."
+        "text": "Ignorer le puits."
       },
       "useBucket": {
         "outcomes": {
           "0": "Depois de uma hora de tentativas, consegue finalmente obter este objeto, que se revela ser apenas um pedaço de sucata.",
           "1": "Concentrado no seu objetivo, não se apercebe de que um jovem aldeão o agarrou e o empurrou para o poço. Atordoado, só acorda alguns minutos depois.",
-          "2": "Rapidamente recupera o dinheiro do fundo e continua o seu caminho."
+          "2": "Rapidement, vous récupérez l'argent qui se trouvait au fond du puits."
         },
         "text": "Tenta apanhar o objeto com o balde no poço."
       }
     },
-    "text": "Enquanto caminha pela pequena aldeia que encontrou, repara num poço com um pequeno objeto brilhante no fundo."
+    "text": "En arrivant dans un petit village, vous remarquez un puits avec un petit objet brillant au fond."
   },
   "28": {
     "possibilities": {
@@ -1005,8 +1005,8 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Esperas durante muito tempo na praça e, de repente, os comerciantes começam a abrir as suas lojas. É o teu dia de sorte! É um mercado e as maçãs são muito baratas. Compra algumas e põe-se a caminho.",
-          "1": "Espera-se na praça durante algum tempo, depois percebe-se que não há nada de interessante para fazer e parte-se de novo."
+          "0": "Vous attendez un long moment sur cette place et, tout à coup, des marchands commencent à s'installer. C'est votre jour de chance ! Il s'agit d'un marché, et les pommes sont très peu chères. Vous en achetez quelques-unes et les savourez sur place.",
+          "1": "Vous attendez un petit moment sur cette place, puis vous rendez compte qu'il n'y a rien de bien intéressant à faire ici."
         }
       },
       "goAway": {
@@ -1017,28 +1017,28 @@
       },
       "goInn": {
         "outcomes": {
-          "0": "Chega-se ao albergue e recupera-se as energias com uma boa refeição e uma merecida sesta.",
-          "1": "Chega ao albergue, que infelizmente está cheio. De qualquer modo, toma uma refeição e continua o seu caminho.",
-          "2": "Infelizmente, a estalagem está fechada e decide continuar o seu caminho, com fome e cansado."
+          "0": "Un villageois au grand cœur vous propose le gîte et le couvert. Vous reprenez un peu d'énergie grâce à un bon repas et à une sieste bien méritée dans le calme de sa grange.",
+          "1": "Un villageois n'a guère de place à vous offrir, mais il partage tout de même volontiers son repas avec vous avant que vous ne le remerciiez chaleureusement.",
+          "2": "Par malheur, personne ne semble disposé à vous accueillir ; vous restez là, fatigué et le ventre vide."
         },
-        "text": "Ir para o albergue para descansar."
+        "text": "Accepter l'hospitalité d'un villageois."
       },
       "stealJeweler": {
         "outcomes": {
-          "0": "Confia nas suas capacidades de infiltração. Entra e, felizmente, o velhote não está lá. Consegue roubar o conteúdo do caixote e sai.",
-          "1": "Chegas à loja e entras para roubar o joalheiro. Quando tira o dinheiro do joalheiro, um guarda pessoal deixa-o inconsciente. Acordas algumas horas mais tarde ao longo de um caminho."
+          "0": "Vous faites confiance à vos capacités d'infiltration. Vous y allez, et fort heureusement le vieillard était absent. Vous arrivez à voler le contenu de la caisse et vous éclipsez discrètement.",
+          "1": "Vous arrivez devant la boutique et entrez dedans dans le but de voler le bijoutier. Alors que vous vous emparez de l'argent du bijoutier, un garde personnel vous assomme. Vous vous réveillez quelques heures plus tard, dans une ruelle à l'écart."
         },
         "text": "A tentar roubar o joalheiro."
       },
       "talkJeweler": {
         "outcomes": {
           "0": "Conversa com o joalheiro e estabelece uma amizade. Ele dá-lhe um objeto como sinal desta nova amizade.",
-          "1": "Decide tentar regatear para comprar uma das jóias por um preço baixo. Discute durante muito tempo, mas o velhote é um ótimo regateador e não cede. Vai-se embora, apercebendo-se de que ele não tem intenção de baixar os preços."
+          "1": "Vous décidez de tenter de marchander afin de vous acheter un des bijoux pour peu cher. Vous discutez un long moment, mais le vieillard est un très bon marchand et il ne cède pas. Vous prenez congé après avoir compris qu'il ne compte pas baisser ses prix."
         },
         "text": "Vá ter com o joalheiro e converse com ele."
       }
     },
-    "text": "No decurso da sua longa viagem, chega a uma pequena aldeia encantadora. Chega ao centro da aldeia, mas esta é muito pequena e só tem duas lojas: uma joalharia e uma estalagem. Descobre, através de um transeunte, que a joalharia é gerida por um velho que faz jóias e colares magníficos. A estalagem, por sua vez, é gerida por um casal e diz-se que é um grande sucesso."
+    "text": "Au cours de votre très long périple, vous arrivez aux abords d'un petit village fort charmant. Le lieu est si modeste que, d'un simple coup d'œil, vous devinez qu'il ne compte que deux commerces : une bijouterie et une auberge. Un passant vous apprend que la bijouterie est tenue par un vieillard qui réalise de magnifiques bijoux et colliers. Quant à l'auberge, elle est dirigée par un couple, et il paraît qu'elle a un grand succès."
   },
   "37": {
     "possibilities": {
@@ -1120,14 +1120,14 @@
       },
       "end": {
         "outcomes": {
-          "0": "Passa alguns minutos a conversar com Price e depois parte de novo.",
+          "0": "Vous restez à discuter quelques minutes avec Price, avant de le laisser vaquer à ses affaires.",
           "1": "Depois de conversarem um pouco, seguem caminhos diferentes. Algumas ruas mais à frente, é atacada por um grupo de pessoas de aspeto pouco simpático, que lhe roubam a carteira à mão armada."
         }
       },
       "meal": {
         "outcomes": {
           "0": "Convida Price para comerem qualquer coisa juntos e ele aceita. Conversam durante algum tempo, bebem uns copos, riem-se muito, trocam dicas e ficam a conhecer-se melhor. É com um ligeiro pesar que Price se despede de si ao fim de algumas horas, pois tem um contrato a cumprir.",
-          "1": "Pergunta a Price se ele quer ir comer consigo à taberna local. Ele recusa, dizendo que tem trabalho a fazer, e vai-se embora."
+          "1": "Vous proposez à Price de faire plus ample connaissance autour d'un repas. Il décline, disant avoir du travail, et s'en va."
         },
         "text": "Conhecermo-nos uns aos outros durante uma boa refeição."
       },
@@ -1375,8 +1375,8 @@
     "possibilities": {
       "askJoin": {
         "outcomes": {
-          "0": "O grupo era muito acolhedor, pelo que fizeram a viagem todos juntos. Quando se chega ao santuário, o guia passa quase duas horas a contar-nos a história.",
-          "1": "A banda simplesmente recusa-o. Por isso, continua o seu caminho.",
+          "0": "Le groupe se montre très accueillant, vous faites donc le voyage tous ensemble. Arrivé au sanctuaire, le guide passe près de 2 heures à vous en conter l'histoire, avant de retourner au village.",
+          "1": "Le groupe vous refuse tout simplement et poursuit son chemin sans vous.",
           "2": "O grupo pensa que é um ladrão e bate-lhe em conformidade."
         },
         "text": "Pedir ao grupo que se junte a eles."
@@ -1384,25 +1384,26 @@
       "end": {
         "outcomes": {
           "0": "O grupo, pensando que está a ser espiado, bate-lhe violentamente.",
-          "1": "Passados 15 minutos sem qualquer reação, está de volta ao seu caminho."
-        }
+          "1": "Après 15 minutes sans aucune réaction de votre part, le groupe finit par s'éloigner sans vous."
+        },
+        "text": "Ne pas prêter attention au groupe."
       },
       "goAlone": {
         "outcomes": {
-          "0": "Decide ir sozinho para o santuário. Após 30 minutos de caminho, o chão desaba subitamente sob os seus pés e cai violentamente.",
-          "1": "Decide ir sozinho ao santuário. Quando chegas ao local, ouves um barulho estranho. Em pânico, corres e tropeças. Ficas com um arranhão feio na perna, que depressa fica infetado.",
-          "2": "Decides ir sozinho ao santuário. No caminho, encontras um objeto que pode ser útil. Quando chegas, descobres que o santuário é uma gruta. Decides não ir mais longe.",
-          "3": "Decide ir sozinho ao santuário. Uma vez lá, descobre um magnífico santuário, cuja beleza contempla durante 30 minutos.",
-          "4": "Ao ver o tempo piorar, muda de decisão e continua o seu caminho."
+          "0": "Vous décidez d'aller au sanctuaire tout seul. Après 30 minutes de route, le sol s'effondre tout à coup sous vos pieds et vous chutez violemment. Vous retournez au village pour vous soigner.",
+          "1": "Vous décidez d'aller au sanctuaire tout seul. Arrivé au site, vous entendez un bruit étrange. Pris de panique, vous courez et trébuchez. Vous vous faites une vilaine égratignure à la jambe, celle-ci ne tarde pas à s'infecter. Vous retournez au village pour vous soigner.",
+          "2": "Vous décidez d'aller au sanctuaire tout seul. Sur votre route, vous trouvez un objet qui pourrait vous être utile. Arrivé sur les lieux, vous découvrez que le sanctuaire se révèle être une grotte. Vous décidez de ne pas aller plus loin, et retournez au village.",
+          "3": "Vous décidez d'aller au sanctuaire tout seul. Arrivé là-bas, vous découvrez un magnifique sanctuaire, dont vous contemplez pendant 30 minutes la beauté, avant de vous rediriger vers le village.",
+          "4": "En voyant le temps se gâter, vous changez d'avis et renoncez à vous rendre au sanctuaire, préférant rester au village."
         },
         "text": "Ir ao santuário sozinho."
       },
       "skip": {
         "outcomes": {
-          "0": "Continua o seu caminho, preferindo ir para a aldeia seguinte.",
-          "1": "Continua o seu caminho. Alguns minutos mais tarde, apercebe-se de que tomou o caminho errado. Na pressa de recuperar o tempo perdido, tropeça numa pedra e os seus pertences espalham-se."
+          "0": "Vous n'y prêtez pas attention, préférant vaquer à vos occupations dans le village.",
+          "1": "Vous tournez les talons sans plus vous soucier du groupe. En vous frayant un chemin dans les ruelles encombrées, vous trébuchez contre une pierre et vos affaires s'éparpillent."
         },
-        "text": "Continue o seu caminho."
+        "text": "Ne pas vous soucier du groupe."
       },
       "talk": {
         "outcomes": {
@@ -1412,7 +1413,7 @@
         "text": "Discutir com o grupo."
       }
     },
-    "text": "Ao passar por uma aldeia movimentada, ouve um grupo de pessoas a falar de um santuário que se diz estar assombrado. Curioso, continua a ouvir. Dizem que o santuário fica a uma hora de carro a sul e que a partida é daqui a 30 minutos."
+    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au Sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
     "possibilities": {
@@ -1686,23 +1687,23 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "Se não quiser brincar com crianças, siga o seu caminho.",
+          "0": "Vous refusez de jouer avec les enfants et les laissez à leurs occupations.",
           "1": "Recusas, o que irrita as crianças, que apanham pedras do chão e as atiram contra ti. Enquanto os escombros chovem, vê-se obrigado a fugir, fora do alcance das crianças. Apercebe-se de que levou uma pancada na cabeça e que a ferida está a sangrar abundantemente; vai precisar de tratamento.",
-          "2": "Recusa e as crianças zangam-se. Ao ver que a situação pode azedar, rapidamente se põe de novo a caminho."
+          "2": "Vous refusez, et les enfants s'en énervent. Voyant que la situation risque de tourner au vinaigre, vous vous éloignez vite d'eux."
         },
         "text": "Recusar e seguir em frente."
       },
       "end": {
         "outcomes": {
-          "0": "A sua falta de resposta faz com que as crianças percam o interesse por si e vão brincar para outro lado. Por isso, parte de novo.",
+          "0": "Devant votre manque de répondant, les enfants se désintéressent de vous et vont jouer ailleurs.",
           "1": "Ao verem-no perdido em pensamentos, os miúdos atam-lhe os atacadores. Quando sai deste estado de transe, tropeça e cai de cara no chão.",
-          "2": "Fica ali durante horas e, quando recupera os sentidos, apercebe-se de que a sua bolsa desapareceu. Continua o seu caminho, desanimado."
+          "2": "Vous restez planté là pendant des heures, et lorsque vous recouvrez vos esprits, vous vous rendez compte que votre bourse a disparu. Cette mésaventure vous laisse dépité."
         }
       },
       "play": {
         "outcomes": {
-          "0": "Como não compreendes bem as regras do jogo, és rapidamente posto de parte e vais embora sem que as crianças te liguem nenhuma.",
-          "1": "Brinca com eles até à chegada dos pais, que o consideram suspeito e ameaçam expulsá-lo da aldeia. Parte de novo sem pedir ajuda.",
+          "0": "Ne comprenant pas très bien les règles du jeu, vous êtes rapidement mis de côté, sans que les enfants ne se préoccupent davantage de vous.",
+          "1": "Vous jouez avec eux jusqu'à ce que leurs parents arrivent, vous trouvant suspect ils vous répudient en vous menaçant. Vous vous éloignez d'eux sans demander votre reste.",
           "2": "Fazendo o papel do corredor, é perseguido pelos miúdos. Ao olhar por cima do ombro para medir a distância que o separa deles, tropeça numa raiz e fere-se. As crianças abandonam-te à tua sorte quando se apercebem que não podes continuar a brincar. Vais precisar de tratamento."
         },
         "text": "Jogar com o corredor e o guarda."
@@ -1719,8 +1720,8 @@
       "teach": {
         "outcomes": {
           "0": "Enquanto explica às crianças como se devem posicionar para dar o tiro, uma delas, um pouco afastada, consegue encordoar o arco e, antes que possa fazer alguma coisa, solta a flecha que lhe acerta em cheio na perna. Ferido, deixa-os à procura de um sítio para se curarem.",
-          "1": "Explica às crianças como se devem posicionar para disparar e elas saem-se muito bem. Passa o resto do dia a treiná-los em tiro com arco. Antes de os deixares, recebes um agradecimento caloroso com um pequeno presente dos teus aprendizes do dia. Parte de novo, feliz por ter conseguido ser útil.",
-          "2": "Rapidamente se apercebe de que as crianças ainda não têm força suficiente para esticar a corda. Por isso, diz-lhes que voltará para as treinar quando forem mais velhas e parte de novo."
+          "1": "Vous expliquez aux enfants comment se placer pour tirer et ceux-ci s'en sortent très bien. Vous passez le reste de la journée à les entraîner au tir à l'arc. Avant que vous ne les quittiez vous êtes chaudement remercié par un petit présent de vos apprentis du jour. Vous vous sentez heureux d'avoir pu vous rendre utile.",
+          "2": "Très vite, vous constatez que les enfants ne sont pas encore assez forts pour tendre la corde. Vous leur dites donc que vous reviendrez les entraîner quand ils seront plus grands."
         },
         "text": "Ensiná-los a disparar arcos."
       }
@@ -1772,51 +1773,51 @@
           "0": "Decide organizar apostas, mas ninguém participa porque toda a gente sabe quem será o vencedor.",
           "1": "Decides organizar um jogo de apostas e apostar que o cavaleiro não vai ganhar. Todos vêm fazer as suas apostas porque sabem que ele não vai perder, mas tu tens um plano em mente. Ofereces-te para lutar pelo senhor local. Ele aceita prontamente a tua oferta. Como esperado, ganhas o combate e ganhas as apostas. É muito dinheiro.",
           "2": "Decides organizar um jogo de apostas e apostar que o cavaleiro não vai ganhar. Todos vêm fazer as suas apostas porque sabem que ele não vai perder, mas tu tens um plano em mente. Ofereces-te para lutar pelo senhor local. Ele aceita prontamente a tua oferta. Como esperado, ganhas o combate. Quando pedes o teu dinheiro aos apostadores, eles ficam descontentes e decidem ficar com o dinheiro que tinhas apostado.",
-          "3": "Decides organizar um jogo de apostas e apostar que o cavaleiro não vai ganhar. Todos vêm fazer as suas apostas porque sabem que ele não vai perder, mas tu tens um plano em mente. Ofereces-te para lutar pelo senhor local. Ele aceita prontamente a tua oferta. Perdes o combate, mas recusas-te a dar-lhe o teu dinheiro. Os aldeões começam a seguir-te e a atirar-te vários objectos. Quando te afastas da aldeia, ficas com dores por todo o lado. Também magoaste a perna, por isso tens de descansar antes de continuar o teu caminho.",
+          "3": "Vous décidez d'organiser des paris et pariez que le chevalier ne gagnera pas. Tout le monde vient parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous refusez de donner votre argent. Les villageois se mettent à vous suivre et à vous lancer divers objets. Vous parvenez à leur échapper en vous faufilant dans les ruelles, mais vous avez mal partout. Vous êtes aussi blessé à la jambe, et chacun de vos pas vous arrache une grimace.",
           "4": "Fazem-se apostas em como o cavaleiro não vai ganhar. Muita gente vem apostar, porque todos sabem que ele não vai perder. Os guardas vigiam-te para se certificarem de que não roubas o dinheiro. Ofereces-te para ir ver o duelo com eles, exceto com alguns que vão guardar o local. Começam a discutir sobre quem deve ficar e tu aproveitas a oportunidade para pegar em algum do dinheiro e fugir a toda a velocidade. Eles perseguem-te, mas acabam por desistir, percebendo que não te conseguem apanhar. Olhas para o dinheiro que apanhaste, satisfeito contigo próprio.",
-          "5": "Fazes apostas em como o cavaleiro não vai ganhar. Muita gente vem apostar, porque todos sabem que ele não vai perder, mas tu tens um plano em mente. Ofereces-te para lutar pelo senhor local. Ele aceita prontamente a tua oferta. Como esperado, ganhas o combate e vais buscar o dinheiro da aposta. Um aldeão ataca-te à saída da aldeia, provavelmente para te roubar o dinheiro. Depois de uma luta dura, consegues escapar, mas não sem ficares gravemente ferido. Agora tens de descansar.",
-          "6": "Fazes apostas em como o cavaleiro não vai ganhar. Muitas pessoas vêm fazer as suas apostas, porque todos sabem que ele não vai perder, mas tu tens um plano em mente. Ofereces-te para lutar pelo senhor local. Ele aceita prontamente a tua oferta. Perdes o combate, mas não tencionas perder o teu dinheiro dessa forma. Por isso, corres para a zona de apostas e roubas o máximo de dinheiro que consegues, sendo perseguido pelos aldeões, antes de fugires da aldeia."
+          "5": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Comme prévu, vous gagnez le combat, et allez récupérer l'argent des paris. Un villageois vous attaque à la sortie du village, souhaitant certainement vous voler votre argent. Après un rude combat, vous parvenez à lui échapper, non sans être gravement blessé. Le souffle court, vous portez la main à vos plaies encore fraîches.",
+          "6": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous ne comptez pas perdre votre argent ainsi. Vous vous élancez donc vers le lieu des paris et volez autant d'argent que vous le pouvez, coursé par les villageois, avant de les semer dans le dédale des ruelles."
         },
         "text": "Organização de apostas."
       },
       "end": {
         "outcomes": {
-          "0": "Com a curiosidade despertada pelas discussões, decide assistir ao duelo. O duelo termina rapidamente, com a vitória do cavaleiro estrangeiro. Desiludido, partiste de novo.",
+          "0": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Celui-ci se conclut très rapidement, avec le chevalier étranger pour vainqueur. Déçu, vous vous éloignez de l'arène.",
           "1": "As discussões despertaram a tua curiosidade, pelo que decides assistir ao duelo. Este acaba muito depressa. Desiludido, ofereces-te para repetir o duelo, mas desta vez serás tu a lutar. A tua proposta é aceite e, em poucos segundos, és desarmado e derrubado no chão. O teu adversário troça de ti, declarando que és um lutador patético. Enfurecido, atacas o adversário para lhe bater, mas o cavaleiro derruba-te com o punho da sua espada.",
-          "2": "Desinteressado do duelo, decide ignorá-lo e continuar o seu caminho.",
-          "3": "As discussões despertaram a tua curiosidade e decidiste assistir ao duelo. Perto de ti, reparas que estão a ser feitas apostas. Decides participar. Naturalmente, fazes as tuas apostas no cavaleiro estrangeiro antes de ires ao duelo. Ele ganha, mas quando regressas para receber o teu prémio, tudo desapareceu. Descontente por ter sido enganado desta forma, segue o seu caminho.",
-          "4": "As discussões despertaram a tua curiosidade, pelo que decides assistir ao duelo, que é rapidamente concluído. Ofereces-te para travar o duelo novamente e a tua proposta é aceite. Não demoras muito a derrotar o teu adversário, toda a aldeia te aplaude e o senhor oferece-te uma boa refeição, que aceitas de bom grado. Depois de teres comido o suficiente, o senhor oferece-te um título de cavaleiro, que tu recusas educadamente e agradeces a refeição deliciosa. Agora sentes-te muito melhor."
+          "2": "Peu intéressé par ce duel, vous décidez de ne pas y prêter attention et de vaquer à vos occupations dans le village.",
+          "3": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Proche de celui-ci, vous remarquez que des paris se jouent. Vous décidez donc d'y participer. Naturellement, vous pariez sur le chevalier étranger avant d'aller assister au duel. C'est effectivement lui le gagnant, mais lorsque vous retournez chercher vos gains, tout a disparu. Mécontent de vous être fait avoir ainsi, vous tournez le dos à l'arène.",
+          "4": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel, qui se conclut rapidement. Vous proposez de le rejouer avec vous comme combattant, votre proposition est acceptée. Vous ne mettez guère longtemps à vaincre votre adversaire, le village entier vous acclame à présent et le seigneur vous convie à une réception donnée en votre honneur, que vous acceptez volontiers. Une fois les festivités achevées, le seigneur vous propose de devenir chevalier, vous refusez poliment son offre et le remerciez pour cet accueil chaleureux. Vous vous sentez bien mieux à présent."
         }
       },
       "help": {
         "outcomes": {
-          "0": "Compreendendo a angústia do senhor, ofereces-te para participar no duelo. Ele aceita prontamente. O combate começa e tu sabes que não tens a mínima hipótese de derrotar o teu adversário, mas tentas resistir na mesma. Basta um minuto para que ele te derrote. Partem de novo, envergonhados com a vossa derrota.",
+          "0": "Comprenant la détresse du seigneur, vous lui proposez de participer au duel. Celui-ci accepte volontiers. Le combat commence, vous savez que n'avez pas la moindre chance de vaincre votre adversaire, mais tentez malgré tout de résister. Il ne lui faut qu'une minute pour vous vaincre. Vous quittez l'arène, honteux de votre défaite.",
           "1": "Compreendendo a angústia do senhor, ofereces-lhe a tua ajuda. És então equipado antes do início do duelo. Lutas corajosamente, mas o teu adversário vence-te com a mesma facilidade. É quando o teu adversário te ataca com a sua lâmina que te arrependes amargamente de ter oferecido a tua ajuda. Afinal de contas, é uma luta até à morte. E tu acabaste de a perder. Fechas os olhos e a dor desaparece. Acordas inesperadamente várias horas depois, gravemente ferido.",
-          "2": "Compreendendo a angústia do senhor, ofereces-lhe a tua ajuda. Em seguida, é-te colocada uma armadura antes do início do duelo. Consciente de que não tens qualquer hipótese, defendes-te o melhor que podes. O teu adversário, impaciente, baixa a guarda e tu aproveitas a oportunidade para o atacar. Consegues derrubá-lo antes de o desarmar. Sais da arena vitorioso e o senhor vem ao teu encontro para te dar uma bolsa cheia de ouro. Agradeces-lhe e segues o teu caminho.",
-          "3": "Compreendendo a angústia do senhor, ofereces-te para resolver o conflito usando as tuas palavras. Ele promete-te uma recompensa se fores bem sucedido. Determinado, vais ao encontro do cavaleiro assim que ele chega à aldeia e dizes-lhe que queres negociar com o seu senhor. Ele aceita e leva-te até ele. Rapidamente simpatizas com ele e pedes-lhe que cancele o duelo. Dizes-lhe também que podem ser feitas negociações para resolver o conflito. Ele concorda e tu regressas a Boug-Coton para lhe dar a notícia. O senhor entrega-te uma bolsa cheia de ouro em sinal de agradecimento.",
+          "2": "Comprenant la détresse du seigneur, vous lui proposez votre aide. On vous équipe alors une armure avant que le duel ne débute. Conscient que vous n'avez pas la moindre chance, vous vous défendez du mieux que vous le pouvez. Votre adversaire, impatient, baisse sa garde et vous en profitez pour l'attaquer. Vous parvenez à le mettre à terre avant de le désarmer. Vous ressortez de l'arène victorieux, le seigneur vient à votre rencontre pour vous donner une bourse remplie d'or. Vous le remerciez chaleureusement pour sa générosité.",
+          "3": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Déterminé, vous allez à la rencontre du chevalier une fois celui-ci arrivé au village et lui dites que vous souhaitez négocier avec son seigneur. Il accepte et vous emmène à lui. Vous sympathisez rapidement et lui demandez d'annuler le duel. Vous lui dites aussi qu'après cela pourront avoir lieu des négociations afin de régler le conflit. Il accepte, et vous regagnez le centre du village afin d'annoncer la nouvelle. Le seigneur vous tend une bourse remplie d'or en gage de remerciement.",
           "4": "Compreendendo a angústia do senhor, ofereces-te para resolver o conflito usando as tuas palavras. Ele promete-te uma recompensa se fores bem sucedido. Encontras-te com o cavaleiro para que ele te leve até ao seu senhor. Uma vez lá, rapidamente fazes amizade com ele. Infelizmente, ele não parece ter decidido cancelar o duelo, apesar de gostar de ti. Regressas à aldeia com o Cavaleiro para anunciar que o duelo vai ter lugar.",
-          "5": "Compreendendo a angústia do senhor, ofereces-te para resolver o conflito usando as tuas palavras. Ele promete-te uma recompensa se fores bem sucedido. Encontras-te com o cavaleiro para que ele te leve ao seu senhor. Uma vez lá, tentas negociar com ele durante várias horas, sem grande sucesso. Como os teus esforços foram em vão, pensas em ir embora. Mas, antes de o fazeres, o senhor declara o seu apreço por ti, acrescentando que ficou impressionado por não teres desistido. Oferece-te um título de cavaleiro, mas tu recusas educadamente a oferta e segues o teu caminho."
+          "5": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Vous rencontrez le chevalier afin qu'il vous emmène à son seigneur. Une fois là-bas, vous tentez de négocier avec celui-ci durant plusieurs heures, sans grand succès. Vos efforts étant vains, vous pensez repartir. Mais avant cela, le seigneur déclare qu'il vous apprécie, en effet, celui-ci ajoute qu'il a été impressionné du fait que vous n'ayez pas abandonné. Il vous propose de devenir chevalier, mais vous refusez poliment son offre et regagnez Boug-Coton."
         },
         "text": "Oferece a tua ajuda ao Senhor de Boug-Coton."
       },
       "look": {
         "outcomes": {
-          "0": "Decide assistir ao duelo. O cavaleiro estrangeiro vence em apenas alguns segundos. Em breve te vais embora, desiludido com o desempenho medíocre do derrotado.",
-          "1": "Decide assistir ao duelo. O cavaleiro estrangeiro vence em apenas alguns segundos. Perante o desempenho medíocre do derrotado, ofereces-te para repetir o duelo, mas desta vez serás tu a lutar. A tua proposta é aceite e podes lutar. O teu adversário, demasiado confiante, baixa a guarda enquanto tu lutas. Não esperas um segundo para tirar partido disso. Derrotas finalmente o cavaleiro e anuncias a tua vitória, triunfante. O senhor da mansão oferece-te um título de cavaleiro, mas tu recusas educadamente e segues o teu caminho.",
-          "2": "Decide assistir ao duelo. O cavaleiro estrangeiro vence em apenas alguns segundos. Perante o desempenho medíocre do derrotado, ofereces-te para repetir o duelo, mas desta vez serás tu a lutar. A tua proposta é aceite. O combate começa e, apesar dos teus esforços, só consegues resistir durante cerca de dez segundos.",
+          "0": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Vous ne tardez pas à quitter l'arène, déçu de la médiocre performance du perdant.",
+          "1": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée, vous pouvez combattre. Votre adversaire, trop sûr de lui, baisse sa garde pendant que vous combattez. Vous n'attendez pas une seconde pour en profiter et ainsi prendre l'avantage. Vous finissez par vaincre le chevalier et annoncez votre victoire, triomphant. Le seigneur des lieux vous propose de devenir chevalier, vous refusez poliment son offre.",
+          "2": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée. Le combat commence, et malgré tous vos efforts vous ne parvenez à résister qu'une dizaine de secondes avant d'être désarmé et jeté à terre sous les rires de l'assistance.",
           "3": "Decide assistir ao duelo. Termina numa questão de segundos. Perante o desempenho medíocre do derrotado, ofereces-te para repetir o duelo, mas desta vez serás tu a lutar. A tua proposta é aceite e podes lutar. O teu adversário, demasiado confiante, baixa a guarda enquanto tu lutas. Não esperas um segundo para tirar partido disso. Derrotas finalmente o cavaleiro e anuncias a tua vitória, triunfante. O senhor da mansão oferece-te uma bolsa cheia de ouro, que aceitas de bom grado.",
-          "4": "Decide assistir ao duelo. Termina numa questão de segundos. Descreves o derrotado como incompetente e ofereces-te para repetir o duelo, mas desta vez és tu quem vai lutar. O derrotado oferece-se para lutar com ele antes de o criticar. Aceitas o seu pedido, sabendo que não terás qualquer problema em derrotá-lo. Confiante demais, o teu adversário consegue desarmar-te antes de te deitar ao chão. Depois, bate-te até desmaiares. Gravemente ferido, vais precisar de muito descanso.",
+          "4": "Vous décidez d'assister au duel. Celui-ci se conclut en quelques secondes. Vous qualifiez le perdant d'incompétent et proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Le perdant vous propose de venir se battre contre lui avant de critiquer. Vous acceptez sa requête, sachant pertinemment que vous n'aurez aucun mal à le vaincre. Étant trop sûr de vous, votre adversaire parvient à vous désarmer avant de vous mettre à terre. Il vous tabasse ensuite jusqu'à l'évanouissement. Gravement blessé, vous mettez un long moment à reprendre connaissance, le corps couvert d'ecchymoses.",
           "5": "Decide assistir ao duelo. Termina numa questão de segundos. Perante o desempenho medíocre do derrotado, ofereces-te para repetir o duelo, mas desta vez serás tu a lutar. A tua proposta é aceite. A luta começa e, apesar dos teus esforços, só consegues resistir durante cerca de dez segundos. O cavaleiro decide bater-te uma e outra vez, para te fazer compreender que não passas de um inseto contra ele. Depois de te ferir gravemente, ele pára e vai-se embora.",
-          "6": "Decide assistir ao duelo. O cavaleiro estrangeiro vence em apenas alguns segundos. Perante o desempenho medíocre do derrotado, sugeres uma repetição do duelo, mas desta vez és tu quem vai lutar. Ganhas o duelo após alguns minutos de luta. O senhor da mansão sugere-vos que conversem durante uma boa refeição. Aceitas de bom grado, pois a comida é deliciosa e abundante. Depois de comeres a tua dose, o senhor oferece-te um título de cavaleiro. Recusas educadamente a oferta."
+          "6": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Vous remportez le duel après quelques minutes de combat. Le seigneur des lieux vous convie à célébrer votre victoire en sa compagnie. Vous acceptez volontiers, et l'on vous honore comme il se doit au cœur du village en liesse. Une fois les festivités passées, le seigneur vous propose de vous nommer chevalier. Vous refusez poliment son offre."
         },
         "text": "Ver o duelo."
       },
       "visit": {
         "outcomes": {
-          "0": "Visita a aldeia mas, não vendo nada de interessante, vai-se embora sem mais demoras.",
+          "0": "Vous visitez le village mais n'y voyez rien de bien intéressant.",
           "1": "Visita a aldeia. Não encontrando nada de interessante, decide ir ver o duelo.",
           "2": "Ao visitares a aldeia, o senhor que passa repara que és um aventureiro. Ele explica-te a situação e pede-te para participares no duelo. Ele oferece-te uma bolsa cheia de ouro se ganhares. Aceitas de bom grado a oferta e vais para o duelo. Mas quando o combate começa, apercebes-te de que não tens qualquer hipótese de vencer o teu adversário. O cavaleiro fere-te na perna com a sua espada e tu cais miseravelmente no chão, ferido. Não te conseguindo levantar, perdeste o duelo.",
-          "3": "Visita a aldeia e encontra um objeto no fundo do poço. Apanha-o e continua o teu caminho."
+          "3": "Vous visitez le village et apercevez un objet au fond du puits. Vous le ramassez, ravi de votre trouvaille."
         },
         "text": "Visitar Boug-Coton."
       }
@@ -2284,39 +2285,39 @@
     "possibilities": {
       "checkDate": {
         "outcomes": {
-          "0": "Olhas para o calendário e descobres que há um torneio que vai começar em breve! Decides participar e chegar à final depois de algumas horas de luta. No entanto, o teu adversário domina-te e perdes a última batalha. Como finalista, ainda ganhas uma bolsa cheia de ouro antes de seguires o teu caminho.",
-          "1": "Olhas para o calendário e vês que estamos em Laponaire, o sexto mês do ano, por isso decides sair e comer uma galette numa banca próxima. Este alimento tê-lo-á saciado! E parte de novo, cheio e satisfeito.",
-          "2": "Quando vê o calendário, lembra-se dos cartazes nas ruas que falam de uma caça ao tesouro. Decide participar. Após duas horas de procura, não encontras nada. Por isso, decides voltar para trás.",
-          "3": "Olhas para o calendário e, na data de hoje, vês: concurso de hidromel! Sentindo-se resistente ao álcool, decide tentar a sua sorte. Ganha o concurso e um prémio! No entanto, acaba por ficar completamente bêbedo."
+          "0": "Vous regardez le calendrier et y découvrez l'existence d'un tournoi qui commence sous peu ! Vous décidez donc de vous y rendre et parvenez à atteindre la finale après quelques heures de combat. Cependant, votre adversaire vous domine et vous ratez votre dernière bataille. Finaliste, vous gagnez tout de même une bourse remplie d'or pour récompenser vos efforts.",
+          "1": "Vous regardez le calendrier et constatez que vous êtes en laponaire, le 6ème mois de l'année. Une note griffonnée dans la marge indique qu'il s'agit de la saison des herboristes. Curieux, vous feuilletez un almanach posé tout près et y apprenez la préparation d'une infusion revigorante. Vous la confectionnez aussitôt : la boisson chaude vous fait le plus grand bien.",
+          "2": "En voyant le calendrier vous vous rappelez des affiches dans les rues parlant d'une chasse au trésor. Vous décidez alors d'y participer. Au bout de deux heures de recherche, vous n'arrivez pas à trouver quoi que ce soit. Vous renoncez donc à cette chasse et regagnez le cœur de la ville, bredouille.",
+          "3": "Vous regardez le calendrier, et à la date d'aujourd'hui vous voyez inscrit : Foire des conteurs ! La place de la ville accueille justement ce concours où l'on récite de vieux récits devant la foule, une corne d'hydromel à la main. Fort de toutes les aventures que vous avez vécues, vous tentez votre chance et remportez le concours, ainsi qu'une récompense ! À force de trinquer à votre victoire, vous finissez cependant totalement ivre."
         },
         "text": "Veja o calendário."
       },
       "end": {
         "outcomes": {
-          "0": "Fica na biblioteca e não dá conta dos minutos que passam. Quando esta fecha, sai e apercebe-se que já é tarde. Volta a pôr-se a caminho sem mais demoras.",
-          "1": "Fica espantado com a quantidade de livros e com a riqueza de conhecimentos que emana destas instalações. Pouco depois, o bibliotecário avisa que o edifício está prestes a fechar. Desiludido, volta para trás para continuar as suas aventuras.",
-          "2": "Fica na biblioteca durante alguns minutos, maravilhado com todo este conhecimento. Senta-se, pensativo. De repente, um leitor perturba os seus pensamentos, com o livro \"Hansel e Gretel\" dos irmãos Grimm na mão. Pede-lhe que se vá embora, pois está sentado no seu lugar preferido na biblioteca. Confuso, vai-se embora, sem qualquer conhecimento novo."
+          "0": "Vous traînez dans la bibliothèque, et ne voyez pas les minutes passer. Lors de la fermeture, vous sortez et vous rendez compte qu'il est déjà tard. Vous flânez un moment dans les rues de la ville, l'esprit encore plongé dans vos lectures.",
+          "1": "Vous restez ébahi devant le nombre de livres et la quantité de connaissances qui émane de ces lieux. Peu après, la bibliothécaire vous fait signe : le bâtiment est sur le point de fermer. Déçu, vous quittez les rayonnages et regagnez les rues animées de la ville.",
+          "2": "Vous restez dans la bibliothèque plusieurs minutes, ébahi par tout ce savoir. Vous vous asseyez, pensif. Soudain, un lecteur vient troubler vos pensées, le livre \"Hansel et Gretel\" des frères Grimm en main. Il vous demande de bien vouloir lui céder la place, car vous êtes assis à son siège préféré de la bibliothèque. Confus, vous vous levez et quittez les lieux, sans aucun nouveau savoir."
         }
       },
       "read": {
         "outcomes": {
-          "0": "Decide ler um livro. É sobre cozinhar e preparar refeições deliciosas. Escreve a receita antes de ir à procura dos ingredientes. Depois de encontrar os ingredientes, segue as instruções à letra. Prova o seu prato antes de experimentar os seus benefícios e depois parte para a sua viagem.",
-          "1": "Pega num livro e começa a ler. O livro é sobre aritmética. Mas esse nunca foi o seu ponto forte e, quase 10 minutos depois, decide pousar o livro e continuar o seu caminho.",
-          "2": "Está a ler um livro de culinária. O livro fala de um prato delicioso. Entusiasmado, decide preparar o prato. No entanto, não segue exatamente as instruções e, depois de comer, não se sente muito bem...",
+          "0": "Vous décidez de lire un livre. Celui-ci traite des remèdes et des vertus curatives des plantes. Vous y découvrez la préparation d'un baume revigorant et notez soigneusement la méthode. Après avoir rassemblé les quelques herbes nécessaires, vous suivez les instructions à la lettre et appliquez le remède sur vos vieilles blessures. Vous en ressentez aussitôt les bienfaits.",
+          "1": "Vous prenez un livre, puis commencez à le lire. Le livre parle d'arithmétique. Cela n'a cependant jamais été votre fort : près de 10 minutes plus tard, vous décidez de reposer le livre sur son étagère, dépité.",
+          "2": "Vous tirez d'un rayon un vieux grimoire dont les pages, couvertes de moisissures, dégagent une odeur âcre. Absorbé par sa lecture, vous respirez longuement ces relents poussiéreux. Peu à peu, votre gorge se serre et votre tête se met à tourner : vous ne vous sentez pas bien du tout...",
           "3": "Pega no primeiro livro que vê. Fala de alquimia e dos benefícios das plantas. Depois de estudar cuidadosamente o seu conteúdo, volta a pousá-lo, certo de que será útil para as suas próximas aventuras."
         },
         "text": "Ler um livro."
       },
       "steal": {
         "outcomes": {
-          "0": "Consegue roubar um livro velho e empoeirado e sai sorrateiramente do edifício para encontrar um comprador nas ruas da cidade. No entanto, repara que ninguém está interessado no livro, principalmente porque está muito danificado e até tem as páginas rasgadas. Por isso, abandona-o antes de continuar o seu caminho.",
-          "1": "Sai sorrateiramente da biblioteca sem que ninguém dê por si. Conseguiste roubar um livro e estás a tentar vendê-lo aos transeuntes. Um homem decide comprá-lo por algumas moedas de ouro. Quando a transação está concluída, continuas o teu caminho.",
+          "0": "Vous parvenez à voler un vieux livre poussiéreux et sortez discrètement de l'édifice, afin de trouver un acheteur dans les grandes avenues de la ville. Cependant, vous remarquez que personne n'est intéressé par ce livre, notamment parce qu'il est très abîmé et présente même des pages déchirées. Vous l'abandonnez donc dans le recoin d'une ruelle, dépité.",
+          "1": "Vous sortez furtivement de la bibliothèque sans que personne ne vous remarque. Vous avez réussi à voler un livre et essayez de le vendre aux passants. Un homme décide de vous l'acheter pour quelques pièces d'or. Une fois la transaction effectuée, vous empochez les pièces et vous fondez dans la foule de la ville.",
           "2": "Tentas roubar discretamente um livro de ouro, mas a bibliotecária apanha-te em flagrante. Ela exige que lhe devolvas o precioso livro e, ao mesmo tempo, uma indemnização! Desiludido e envergonhado, devolve o livro e compensa-o com uma grande parte das suas poupanças para evitar ir para a prisão..."
         },
         "text": "Tentativa de roubo de um livro para revenda."
       }
     },
-    "text": "Depois de passear pelas ruas de Claire de Ville, depara-se com um edifício cuja entrada é emoldurada por duas estátuas de coruja em pedra. Ao aproximar-se, apercebe-se de que se trata da biblioteca da cidade. Decide entrar no edifício para passar o tempo. Numa das paredes da entrada, está pendurado um calendário feito de grandes folhas unidas por uma tira de couro."
+    "text": "En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En vous en approchant, vous comprenez qu'il s'agit de la bibliothèque de la ville. Par la porte entrouverte, vous distinguez d'innombrables rayonnages chargés d'ouvrages et, accroché à un mur de l'entrée, un calendrier fait de larges feuilles reliées entre elles par une lanière de cuir."
   },
   "69": {
     "possibilities": {
@@ -2355,8 +2356,8 @@
       "check": {
         "outcomes": {
           "0": "Ao forçar a porta a abrir-se, está a magoar-se profundamente. Tens absolutamente de cuidar de ti!",
-          "1": "Depois de passar quase uma hora a tentar entrar em casa, acaba por desistir. Quando está a sair, encontra algo que pode vir a ser útil!",
-          "2": "Entra em casa e pousa as suas coisas para descansar. Depois de ter caído num sono profundo, precisa de descansar antes de continuar a sua aventura.",
+          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut être vous être utile !",
+          "2": "Vous entrez dans la maison et posez vos affaires pour vous reposer. Pris d'un profond sommeil, vous vous écroulez sur un lit poussiéreux qui traînait dans un coin.",
           "3": "Entra em casa e procura durante cerca de quinze minutos. Quando sai, encontra um objeto que pode vir a ser útil!",
           "4": "Entra em casa e procura durante cerca de quinze minutos. Por fim, desiste da busca sem ter encontrado nada."
         },
@@ -2364,17 +2365,17 @@
       },
       "end": {
         "outcomes": {
-          "0": "Está parado há quase quinze minutos, por isso é altura de voltar a andar!"
+          "0": "Vous avez passé près de quinze minutes immobile, il est temps de vous extirper de votre torpeur !"
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Continua o seu caminho sem se preocupar com a casa."
+          "0": "Vous laissez la maison abandonnée derrière vous, sans vous en soucier davantage."
         },
-        "text": "Não parem e continuem."
+        "text": "Ne pas s'arrêter à cette maison."
       }
     },
-    "text": "Descobriste uma casa! Parece estar abandonada..."
+    "text": "Parmi les ruines de Ville Forte, vous découvrez une maison encore debout. Elle semble abandonnée..."
   },
   "70": {
     "possibilities": {
@@ -3113,5 +3114,41 @@
       }
     },
     "text": "Encontra um agricultor no meio de um campo. Ele perdeu a forquilha..."
+  },
+  "90": {
+    "possibilities": {
+      "observe": {
+        "outcomes": {
+          "0": "N'entendant pas clairement, vous vous rapprochez de la porte. Un membre du personnel du château vous remarque vite et vous demande de vous mêler de vos affaires. Sans insister, vous reprenez votre marche",
+          "1": "À peine commencez-vous à tendre l'oreille que la sorcière semble en avoir fini. Elle ne parle plus que d'une voix indistinguable à votre distance, et ressort à peine 5 minutes plus tard. Sans trop savoir pourquoi, vous faites en sorte qu'elle ne vous remarque pas en sortant.",
+          "2": "Vous choisissez de suivre de loin l'intéraction. Elle tourne vite au vinaigre, et la sorcière sort de son sac plusieurs fioles, qu'elle fracasse au sol. Aussitôt, un grand nuage de gaz sombre et nauséabond se répand. Il se dissipe vite, et vous constatez avec choc que la sorcière a disparu, et que tous les autres occupants du bureau ont perdu connaissance. Vous souffrez également du gaz, malgré votre distance, et vous sentez plutôt malade."
+        },
+        "text": "Agir en spectateur."
+      },
+      "help": {
+        "outcomes": {
+          "0": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. L'on vous fait cependant vite comprendre que vous n'êtes pas bienvenu à vous insérer dans la discussion, alors vous reprenez votre marche.",
+          "1": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. Il s'avère que la sorcière a été condamnée à une amende pour vente sans licence de produits alchimiques à Claire-de-Ville, ce qu'elle conteste fortement. Vous la rejoignez et tentez de convaincre l'employé du bureau du fait que les potions des sorcières, tant dans leurs méthodes de fabrication que dans le produit final lui-même, sont tout à fait différentes de celles des alchimistes, et ne devraient donc pas êtres soumises au besoin de cette licence. Votre interlocuteur ne veut rien entendre, disant que la décision de reconnaître les sorcières et d'introduire des licences spécifiques à leur profession relève de la volonté du roi. Vous comprenez ne rien pouvoir gagner ici, alors la sorcière et vous abandonnez. Celle-ci vous donne une de ses potions pour vous remercier d'avoir voulu l'aider.",
+          "2": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. Vous comprenez que la sorcière vient se plaindre de nombreuses accusations de charlatanisme, et que la personne en face d'elle semble tout à fait penser qu'elle n'est effectivement rien d'autre qu'une fraude. Vous ne savez pas vous-même si vous croyez à al sorcellerie, et en particulier si vous croyez que cette personne-ci est réellement une sorcière, alors vous choisissez d'abandonner l'idée d'intervenir. Vous restez écouter les échanges un moment, puis vous reprenez votre marche."
+        },
+        "text": "Tenter d'aider votre connaissance."
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Vous choisissez de ne pas vous mêler de ces affaires : après tout, vous n'avez pas une relation bien profonde avec la sorcière, et ne connaissez même pas son nom ! Vous continuez à traverser l'aile Est, jusqu'à entrer dans un salon où est exposée une machine à faire le vide. Des bougies sont à disposition, qui doivent être placées allumées dans une cloche de verre reliée à la machine. Les instructions indiquent ensuite de pomper au moyen de la machine, et vous constatez que la bougie s'éteint d'elle même subitement. Cette expérience sert de preuve au principe alchimique selon lequel l'air nourrit le feu.",
+          "1": "Vous ignorez totalement la situation, et continuez votre route. Vous arrivez vite vers une région qui vous intéresse. Celle-ci est une galerie de statues, toutes démontrant un savoir-faire particulièrement élevé. Les plafonds, murs, et le sol sont de plus ornés de motifs harmonieux. Vous vous arrêtez un moment, et lorsque vous vous sentez prêt à repartir, vous êtes comme revigoré.",
+          "2": "Vous ignorez totalement la situation, et continuez votre route. Vous arrivez vite vers une région qui vous intéresse. Celle-ci est une galerie de statues, toutes démontrant un savoir-faire particulièrement élevé. Les plafonds, murs, et le sol sont de plus ornés de motifs harmonieux. Alors que vou commencez à contempler les diverses créations, vous heurtez accidentellement le piédestal d'une petite statuette, qui tombe et se craque, non sans bruit. Un membre du chateau accourt bien vite et vous demande dédommagement pour la réparation de la statuette. Penaud, vous payez vite et mettez fin à votre petit tour.",
+          "3": "Vous choisissez de ne pas vous mêler de ces affaires : après tout, vous n'avez pas une relation bien profonde avec la sorcière, et ne connaissez même pas son nom ! Alors que vous vous retournez pour reprendre votre marche, la sorcière se retourne et vous fixe. Ses yeux semblent briller. Curieusement, alors même que cette partie du château est arrangée de façon tout à fait intuitive à traverser, vous vous perdez à plusieurs reprises pendant des heures."
+        },
+        "text": "Ignorer la situation."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous restez dans l'hésitation quelques longs instants. Vous êtes sorti de vos pensées par un passant qui vous reconnaît, et se présente comme un de vos admirateurs, espérant un jour devenir un aventurier aussi impressionant que vous l'êtes. Il vous donne quelques cadeaux pour célébrer votre rencontre, vous discutez un moment, puis vous vous séparez. Vous remarquez que la sorcière n'est plus dans le bureau, alors vous reprenez marche.",
+          "1": "Vous restez planté là plusieurs minutes, totalement incertain quant à comment agir. Soudain, de nombreux gardes arrivent. Ils saisissent la sorcière, qui s'exclame qu'ils vont trop loin et qu'elle est réellement une sorcière légitime et honnête. Vous voyant, elle indique que vous pouvez définitivement en attester. Les gardes choisissent de vous compter comme son complice dans le dérangement de l'ordre du château, aussi ils vous amènent tout comme elle en prison pour que vous vous calmiez, sans même vous laisser dire quoi que ce soit."
+        }
+      }
+    },
+    "text": "Alors que vous traversez posément l'aile Est du château, vous entendez des exclamations. Vous vous tournez, curieux, vers une porte ouverte d'où s'échappent les bruits : il 'agit du bureau des réclamations commerciales. Vous reconnaissez même la personne qui hausse le ton, il s'agit de la prétendue sorcière qui vous demande parfois de l'assister sur ses potions."
   }
 }

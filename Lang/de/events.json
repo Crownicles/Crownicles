@@ -128,7 +128,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Sie besuchen die Stadt für mehrere Stunden, bevor Sie Ihren Weg fortsetzen."
+          "0": "Vous visitez la ville pendant plusieurs heures, flânant d'une ruelle à l'autre sans vous presser."
         }
       },
       "goAway": {
@@ -140,32 +140,32 @@
       },
       "goForge": {
         "outcomes": {
-          "0": "Es gibt nichts Interessantes in dieser Schmiede. Sie verlassen schnell die Orte und nehmen Sie Ihren Weg zurück.",
+          "0": "Il n'y a rien d'intéressant dans cette forge... Vous quittez rapidement les lieux.",
           "1": "Wenn Sie versuchen, ein Schwert zu finden, brechen Sie das Fenster der Schmiede, um den Rückerstattungsantrag zu zwingen!",
-          "2": "Niemand ist in der Schmiede, die seit Jahren aufgegeben zu werden scheint. Bevor Sie gehen, bemerkten Sie ein Objekt, das Sie als Folge Ihrer Abenteuer bedienen könnten ...",
-          "3": "Die Schmiede scheint seit Jahren verlassen zu sein. Sie sind also wieder auf dem Weg.",
-          "4": "Sie begeben sich und grüßen den Schmim. Nach einer kurzen Inspektion ihrer Arbeit verstehen Sie, dass Sie hier nichts Interessantes finden werden. Sie sind wieder auf dem Weg."
+          "2": "Personne n'est présent dans la forge qui semble abandonnée depuis des années. Avant de ressortir vous remarquez cependant un objet qui pourrait vous servir pour la suite de votre aventure...",
+          "3": "La forge semble abandonnée depuis des années. Vous ressortez donc bredouille.",
+          "4": "Vous entrez et saluez le forgeron. Après une rapide inspection de son travail vous comprenez que vous ne trouverez rien d'intéressant ici. Vous échangez quelques mots et ressortez."
         },
         "text": "Gehen Sie zu Schmiede."
       },
       "goInn": {
         "outcomes": {
-          "0": "Nachdem Sie zwei Stunden lang mit dem Gastwirt diskutiert haben, erfahren Sie schließlich, dass für diese Nacht keine Zimmer mehr frei sind! Sie machen sich wieder auf den Weg und sind frustriert, weil Sie nicht in den Genuss einer erholsamen Nacht gekommen sind.",
-          "1": "Sie bezahlen ein Zimmer für die Nacht und fallen auf das Bett. Wir müssen schlafen, bevor wir das Abenteuer wieder aufnehmen.",
-          "2": "Die Herberge ist seit mehreren Jahren im Stich gelassen ... Sie fahren weiter, ohne weitere Fragen zu stellen."
+          "0": "Après avoir discuté pendant 2 heures avec l'aubergiste, vous finissez par apprendre qu'il n'y a aucune chambre disponible pour la nuit ! Vous ressortez de l'auberge, frustré de ne pas avoir pu profiter d'une bonne nuit de repos.",
+          "1": "Vous payez une chambre pour la nuit et tombez effondré sur le lit. Il faudra dormir avant de pouvoir reprendre l'aventure.",
+          "2": "L'auberge semble abandonnée depuis plusieurs années... Vous ressortez sans vous poser plus de questions."
         },
         "text": "Zur Herberge gehen."
       },
       "goMarket": {
         "outcomes": {
           "0": "Sie erforschen den Markt innerhalb von 30 Minuten, bevor Sie ein kleines Bodenobjekt entdecken, das Ihnen vielleicht helfen könnte ...",
-          "1": "Nachdem Sie 60 Minuten verloren haben, um Sie in die Ewetale zu überfahren, verlassen Sie die Stadt, ohne etwas Interessantes zu finden.",
-          "2": "Während Ihre Wachsamkeit auf dem Markt am niedrigsten war, erhalten Sie einen gewaltsamen Schlag auf den Kopf, und Sie stürzten an Land ... Nach diesem Moment, keine Erinnerung mehr. Wir müssen Sie heilen, bevor Sie weitermachen können."
+          "1": "Après avoir perdu 60 minutes à vous balader dans les étals, vous finissez par quitter le marché sans avoir pu trouver quoi que ce soit d'intéressant.",
+          "2": "Alors que votre vigilance était au plus bas sur le marché, vous recevez un coup violent derrière la tête et vous vous effondrez à terre... Après ce moment, plus aucun souvenir. Il faudra vous soigner avant de pouvoir reprendre l'aventure !"
         },
         "text": "Zum Markt."
       }
     },
-    "text": "Nachdem Sie mehrere Wochen zu Fuß verbracht haben, ohne ein menschliches Treffen durchzuführen, kommen Sie endlich in eine kleine Bourgade, die ziemlich animiert zu sein scheint."
+    "text": "Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous arpentez à présent les ruelles d'une petite bourgade plutôt animée."
   },
   "14": {
     "possibilities": {
@@ -325,12 +325,12 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Sie beobachten die Baustelle einige Minuten lang und stellen dann fest, dass sie wirklich menschenleer ist. Sie setzen Ihren Weg fort."
+          "0": "Vous observez le chantier quelques minutes, puis réalisez qu'il est vraiment désert. Il n'y a manifestement rien à en tirer."
         }
       },
       "searchScaffolding": {
         "outcomes": {
-          "0": "Sie kletschen nach oben auf die Gerüste, aber mit Ausnahme einer wunderschönen Landschaft finden Sie nichts. Nachdem Sie ein paar Minuten damit verbracht haben, ihn zu bewundern, sprechen Sie wieder.",
+          "0": "Vous grimpez jusqu'en haut des échafaudages, mais à l'exception d'un magnifique paysage, vous ne trouvez rien. Vous passez quelques minutes à l'admirer avant de redescendre.",
           "1": "Wenn Sie über die instabile Struktur kletern, entdecken Sie einen unvergesslichen Blick auf die Region! Sie nutzen den Blickpunkt, um ein geschmuggeltes Objekt zu finden.",
           "2": "Sie steigen auf die Skala, aber passierte auf halber Strecke, ein Anwaltsstab und Sie werden auf den Boden fallen! Wenn Sie vom Sturz abstürzt, nehmen Sie langsam Ihre Geister zurück."
         },
@@ -346,13 +346,13 @@
       },
       "skip": {
         "outcomes": {
-          "0": "Sie entscheiden sich, diese Baustelle zu ignorieren, und fahren Sie mit Ihrer Reise fort.",
-          "1": "Sie beobachten die ganze Baustelle, ohne die Fußgänger auf dem Boden zu sehen. Sie haben den Fuß in die Beine gelaufen."
+          "0": "Vous décidez d'ignorer ce chantier et de ne pas vous y attarder davantage.",
+          "1": "Vous contournez le chantier et l'observez de loin, sans voir la pioche posée au sol. Vous trébuchez dessus et vous entaillez le pied."
         },
-        "text": "Fahren Sie mit Ihrer Reise fort, ohne dabei Aufmerksamkeit zu schenken."
+        "text": "Ignorer ce chantier."
       }
     },
-    "text": "Sie kommen in eine Stadt, ohne eine Seele zu finden, die lebt. Wenn Sie es durchmachen, sehen Sie eine Baustelle, die genauso gut aussieht wie Sie."
+    "text": "La ville où vous mettez les pieds semble déserte, sans âme qui vive. En parcourant ses rues, votre regard s'arrête sur un chantier qui paraît tout aussi abandonné."
   },
   "19": {
     "possibilities": {
@@ -424,16 +424,16 @@
       },
       "end": {
         "outcomes": {
-          "0": "Sie setzen Ihren Weg fort, ohne Aufmerksamkeit auf die Wache zu legen.",
-          "1": "Abasourdi, sehen Sie sich die Szene an, Tetanus, fünf Minuten lang. Das Sorgerecht wird Sie am Ende bemerken, also lassen Sie sich von Ihrem Weg gehen."
+          "0": "Vous vous éloignez sans prêter attention au garde.",
+          "1": "Abasourdi, vous regardez la scène, tétanisé, pendant cinq minutes. Le garde finit par vous remarquer, vous vous hâtez donc de vous éclipser."
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Sie sind also nicht auf die Situation aufmerksam, und fahren Sie fort, um Ihren Weg zu gehen.",
-          "1": "Wenn Sie Ihren Weg gehen, werden Sie stolpert und bezied auf den Boden."
+          "0": "Vous ne prêtez donc pas attention à la situation et vous éloignez tranquillement.",
+          "1": "En vous éloignant, vous trébuchez et tombez par terre."
         },
-        "text": "Ihren Weg zu gehen."
+        "text": "Ne pas intervenir."
       },
       "surpriseAttack": {
         "outcomes": {
@@ -444,7 +444,7 @@
         "text": "Das Sorgerecht für die Frau, die die Frau unterstützt, zu verpassen."
       }
     },
-    "text": "Wenn Sie in einem Dorf in Ruhe spazieren gehen, sehen Sie sich einen Blick in die Augen einer armen Frau."
+    "text": "À votre arrivée dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme."
   },
   "21": {
     "possibilities": {
@@ -604,26 +604,26 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Nach 15 Minuten, um diese Szene zu beobachten, gehen Sie wieder zurück, geschockt, aber fahren Sie fort, um Ihr Abenteuer zu verfolgen."
+          "0": "Après avoir passé 15 minutes à observer cette scène, vous vous éloignez de la place, encore bouleversé par ce que vous venez de voir."
         }
       },
       "goAway": {
         "outcomes": {
-          "0": "Mit diesem Akt der Barbarei, machen Sie schnell Ihren Weg fort.",
-          "1": "Als Sie sich weiter entfernen, sehen Sie in der Ferne eine Schatulle. Nach ein paar Minuten Fußmarsch erreichst du sie, öffnest sie und entdeckst einen Beutel mit Geld."
+          "0": "Horrifié par cet acte de barbarie, vous vous éloignez rapidement de la place, le cœur encore serré.",
+          "1": "En vous écartant de la foule, vous apercevez un coffret abandonné dans une ruelle. Intrigué, vous l'atteignez, l'ouvrez et découvrez un sac rempli d'argent."
         },
-        "text": "Sich von dem Massaker entfernen."
+        "text": "S'éloigner de l'exécution."
       },
       "steal": {
         "outcomes": {
-          "0": "Nachdem Sie ein paar Leute beraubt haben, sprechen Sie mit einem Objekt, das sehr interessant zu sein scheint! Nach einem 30-Minuten-Markt sehen Sie, was es ist.",
-          "1": "Sie versuchen, einen Einwohner zu entführen, wenn der Pro-Kopf-Tag plötzlich zurückgeht, und Sie fängt an, sich zu schnappen, bevor Sie sich steuen. Nach der Diskussion rauchen Sie ab."
+          "0": "Après avoir dépouillé quelques personnes, vous vous éclipsez discrètement avec un objet qui semble fort intéressant ! À l'écart de la foule, vous regardez enfin ce que c'est.",
+          "1": "Vous tentez de dépouiller un habitant quand ce dernier se retourne soudainement et vous attrape fermement avant de vous rouer de coups. Après vous être débattu, vous parvenez à vous esquiver dans la cohue."
         },
-        "text": "Ich bin der, der mit dem Massaker zu tun hat."
+        "text": "Voler des passants assistant à l'exécution."
       },
       "trySave": {
         "outcomes": {
-          "0": "Nachdem Sie sich durch die Menge gekämpft haben, greifen Sie so schnell wie möglich ein und schaffen es, den Mann herauszuziehen. Nachdem Sie durch das Dorf gerannt sind, schenkt Ihnen der Mann, der sehr dankbar ist, einen Gegenstand, den Sie für Ihr weiteres Abenteuer brauchen werden.",
+          "0": "Après vous être débattu pour traverser la foule, vous intervenez au plus vite et réussissez à extirper cet homme de là. Une fois à l'abri des regards, cet homme, très reconnaissant, vous offre un objet qui vous servira pour la suite de votre aventure.",
           "1": "Während Sie durch die Menschenmenge laufen, um den Mord zu verhindern, werden Sie heftig angerempelt und fallen zu Boden.",
           "2": "Nach dem Erfolg von hier mit dem Mann, werden Sie einholen und von einer Gruppe von Menschen treffen. Wenn Sie aufpassen, sehen Sie, dass diese Leute Sie gestohlen haben.",
           "3": "Nachdem Sie sich vergewaltigt haben, Sie zu verlegen, erwischt der Henker Sie mit Gewalt. Sie reden hier, aber es gibt nichts. Sie sind zu Ihrer Verurteilung zu der Todesstrafe verurteilt worden."
@@ -631,42 +631,42 @@
         "text": "Wenn wir diesen Mann aufhalten und daran hindern, zu sterben."
       }
     },
-    "text": "Wenn Sie in ein Dorf gehen, sehen Sie ein Zusammenschluss von Menschen. Sie können sich sehr schnell feststellen, dass Sie in der Nähe einer Erhändungs-Zeit sind. Nach ein paar Informationen wissen Sie, dass diese Person zum Tode verurteilt wurde, weil sie \"was gegen die Werte der Kirche verstößt\"."
+    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'église\"."
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Sie beobachten das Objekt 20 Minuten lang und gehen dann wieder zurück.",
+          "0": "Vous observez bêtement l'objet pendant 20 minutes, avant de détourner le regard.",
           "1": "Sie beugen sich über den Brunnen und beobachten das Objekt. Dann kippen Sie um. Glücklicherweise gelingt es Ihnen schnell, wieder nach oben zu klettern, allerdings nicht ohne sich dabei schwer zu verletzen."
         }
       },
       "goDown": {
         "outcomes": {
-          "0": "Sie beschuldigen Sie während des Absturkens und bleiben mehrere Stunden im Hintergrund geblockt, bevor jemand Sie findet.",
-          "1": "Sie kommen ohne Probleme unten an, sammeln den Gegenstand ein und setzen Ihren Weg fort.",
-          "2": "Du springst in den Brunnen, findest aber nichts. Sie klettern wieder hoch, ohne weitere Zeit zu verlieren.",
-          "3": "Wenn Sie unten sind, entdecken Sie eine große Menge von Gold-Teilen, die Sie zurückbekommen, bevor Sie mit der Reise fortfahren."
+          "0": "Vous vous blessez grièvement lors de la descente et restez un moment bloqué au fond avant que quelqu'un ne vous retrouve.",
+          "1": "Vous arrivez en bas sans soucis et récupérez l'objet.",
+          "2": "Vous sautez dans le puits mais n'y trouvez rien. Vous remontez donc bredouille.",
+          "3": "Une fois en bas, vous découvrez une grande quantité de pièces d'or que vous récupérez avec joie."
         },
         "text": "Versuch, runter zu gehen, um das Objekt zu bekommen."
       },
       "skip": {
         "outcomes": {
-          "0": "Es gibt keine Zeit zu verlieren! Sie fahren weiter, ohne darauf aufmerksam zu machen.",
-          "1": "Sie fahren weiter, aber nach einer kurzen Fahrt wird mit einer Gruppe von Menschen, die schwarz gekleidet sind, eine Nase in der Nase. Nachdem Sie sich mit dem Zauns beraten haben, haben Sie Erfolg, aber Sie wurden entstaubt."
+          "0": "Pas de temps à perdre ! Vous détournez le regard sans prêter la moindre attention à ceci.",
+          "1": "Vous vous éloignez du puits, mais au détour d'une ruelle, vous tombez nez à nez avec un groupe de personnes habillées de noir. Après vous être débattu avec acharnement, vous réussissez à leur échapper, mais vous vous êtes fait dépouiller."
         },
-        "text": "Fahren Sie weiter fort."
+        "text": "Ignorer le puits."
       },
       "useBucket": {
         "outcomes": {
           "0": "Nach einer Stunde der Versuche bekommen Sie endlich dieses Objekt, das sich in Wirklichkeit ein einfaches Stück Schrott erweist.",
           "1": "Konzentriert sich auf Ihr Ziel, wird Ihnen nicht klar, dass ein junger Dorfbegeort Sie fängt und Sie in den Brunnen fallen. Sie weinen Sie nur einige Minuten später.",
-          "2": "Schnell holen Sie sich das Geld, das sich am Boden befand, und setzen Ihren Weg fort."
+          "2": "Rapidement, vous récupérez l'argent qui se trouvait au fond du puits."
         },
         "text": "Versuchen Sie, das Objekt mit dem Eimer des Bohrlochs zu fangen."
       }
     },
-    "text": "Wenn Sie in das kleine Dorf gehen, das Sie gefunden haben, sehen Sie einen Brunnen mit einem kleinen, glänzenden Objekt am Boden."
+    "text": "En arrivant dans un petit village, vous remarquez un puits avec un petit objet brillant au fond."
   },
   "28": {
     "possibilities": {
@@ -1005,8 +1005,8 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Sie warten eine ganze Weile auf diesem Platz und plötzlich fangen Händler an, sich aufzubauen. Heute ist Ihr Glückstag! Es handelt sich um einen Markt und die Äpfel sind sehr billig. Sie kaufen ein paar und setzen Ihren Weg fort.",
-          "1": "Sie warten eine Weile auf diesem Platz, stellen dann aber fest, dass es nichts Interessantes zu tun gibt, und setzen Ihren Weg fort."
+          "0": "Vous attendez un long moment sur cette place et, tout à coup, des marchands commencent à s'installer. C'est votre jour de chance ! Il s'agit d'un marché, et les pommes sont très peu chères. Vous en achetez quelques-unes et les savourez sur place.",
+          "1": "Vous attendez un petit moment sur cette place, puis vous rendez compte qu'il n'y a rien de bien intéressant à faire ici."
         }
       },
       "goAway": {
@@ -1017,28 +1017,28 @@
       },
       "goInn": {
         "outcomes": {
-          "0": "Sie kommen in die Herberge, und Sie erhalten ein wenig Energie durch ein gutes Essen und ein wohlverdientes Nickerchen.",
-          "1": "Sie kommen in die Gaststätte, die leider voll ist. Sie nehmen immer noch eine Mahlzeit auf und nehmen Sie Ihren Weg zurück.",
-          "2": "Unglücklicherweise ist das Gasthaus geschlossen und Sie beschließen, Ihren Weg hungrig und müde fortzusetzen."
+          "0": "Un villageois au grand cœur vous propose le gîte et le couvert. Vous reprenez un peu d'énergie grâce à un bon repas et à une sieste bien méritée dans le calme de sa grange.",
+          "1": "Un villageois n'a guère de place à vous offrir, mais il partage tout de même volontiers son repas avec vous avant que vous ne le remerciiez chaleureusement.",
+          "2": "Par malheur, personne ne semble disposé à vous accueillir ; vous restez là, fatigué et le ventre vide."
         },
-        "text": "Gehen Sie zur Herberge, um sich auszuruhen."
+        "text": "Accepter l'hospitalité d'un villageois."
       },
       "stealJeweler": {
         "outcomes": {
-          "0": "Sie vertrauen darauf, dass Sie die Infiltrate haben. Sie gehen, und glücklicherweise war der alte Mann nicht da. Sie können den Inhalt der Kasse stehlen und entgehen.",
-          "1": "Sie kommen vor dem Geschäft an und betreten es mit dem Ziel, den Juwelier zu bestehlen. Als Sie das Geld des Juweliers an sich nehmen, werden Sie von einem persönlichen Wachmann niedergeschlagen. Sie wachen einige Stunden später an einem Pfad auf."
+          "0": "Vous faites confiance à vos capacités d'infiltration. Vous y allez, et fort heureusement le vieillard était absent. Vous arrivez à voler le contenu de la caisse et vous éclipsez discrètement.",
+          "1": "Vous arrivez devant la boutique et entrez dedans dans le but de voler le bijoutier. Alors que vous vous emparez de l'argent du bijoutier, un garde personnel vous assomme. Vous vous réveillez quelques heures plus tard, dans une ruelle à l'écart."
         },
         "text": "Versuchen Sie, den Juwelier zu stehlen."
       },
       "talkJeweler": {
         "outcomes": {
           "0": "Sie unterhalten sich mit dem Juwelier und schließen Freundschaft mit ihm. Er schenkt Ihnen daraufhin einen Gegenstand als Zeichen der neuen Freundschaft.",
-          "1": "Sie beschließen, zu feilschen, um eines der Schmuckstücke für wenig Geld zu kaufen. Sie diskutieren eine ganze Weile, aber der alte Mann ist ein sehr guter Händler und gibt nicht nach. Sie gehen weiter, nachdem Sie gemerkt haben, dass er nicht vorhat, seine Preise zu senken."
+          "1": "Vous décidez de tenter de marchander afin de vous acheter un des bijoux pour peu cher. Vous discutez un long moment, mais le vieillard est un très bon marchand et il ne cède pas. Vous prenez congé après avoir compris qu'il ne compte pas baisser ses prix."
         },
         "text": "Gehen Sie zu dem Juwelier und reden Sie."
       }
     },
-    "text": "Auf Ihrer sehr langen Reise kommen Sie in ein kleines Dorf, das sehr charmant ist. Sie erreichen das Zentrum des Dorfes, aber es stellt sich heraus, dass es sehr klein ist und nur zwei Geschäfte gibt: ein Juweliergeschäft und ein Gasthaus. Sie finden durch einen Passanten heraus, dass der Juwelierladen von einem alten Mann geführt wird, der wunderschöne Schmuckstücke und Halsketten herstellt. Das Gasthaus hingegen wird von einem Ehepaar geführt und soll sehr erfolgreich sein."
+    "text": "Au cours de votre très long périple, vous arrivez aux abords d'un petit village fort charmant. Le lieu est si modeste que, d'un simple coup d'œil, vous devinez qu'il ne compte que deux commerces : une bijouterie et une auberge. Un passant vous apprend que la bijouterie est tenue par un vieillard qui réalise de magnifiques bijoux et colliers. Quant à l'auberge, elle est dirigée par un couple, et il paraît qu'elle a un grand succès."
   },
   "37": {
     "possibilities": {
@@ -1120,14 +1120,14 @@
       },
       "end": {
         "outcomes": {
-          "0": "Sie bleiben nur ein paar Minuten mit Price reden und dann fahren Sie wieder auf die Straße.",
+          "0": "Vous restez à discuter quelques minutes avec Price, avant de le laisser vaquer à ses affaires.",
           "1": "Nachdem Sie sich ein wenig unterhalten haben, trennen Sie sich. Ein paar Straßen weiter werden Sie von einer Gruppe unfreundlich aussehender Personen überfallen, die unter Androhung von Schlägen Ihren Geldbeutel erleichtern."
         }
       },
       "meal": {
         "outcomes": {
           "0": "Sie schlagen Price vor, gemeinsam etwas zu essen, und er stimmt zu. Ihr unterhaltet euch eine Weile, trinkt ein wenig, lacht viel, tauscht Tipps aus und lernt euch langsam kennen. Mit einem leichten Stich im Herzen verabschiedet sich Price nach ein paar Stunden von Ihnen, da er einen Vertrag erfüllen muss.",
-          "1": "Sie fragen Price, ob er mit Ihnen in der örtlichen Taverne zu essen kommen will. Er sagt, er hat Arbeit und geht."
+          "1": "Vous proposez à Price de faire plus ample connaissance autour d'un repas. Il décline, disant avoir du travail, et s'en va."
         },
         "text": "Wir müssen uns um ein gutes Essen sorgen."
       },
@@ -1375,8 +1375,8 @@
     "possibilities": {
       "askJoin": {
         "outcomes": {
-          "0": "Die Gruppe ist sehr gastfreundlich, also machen Sie die ganze Reise. Der Führer, der im Zufluchtsort war, verbringt fast zwei Stunden, um die Geschichte zu erobern.",
-          "1": "Die Gruppe lehnt sich einfach ab. Dann fahren Sie mit Ihrer Reise fort.",
+          "0": "Le groupe se montre très accueillant, vous faites donc le voyage tous ensemble. Arrivé au sanctuaire, le guide passe près de 2 heures à vous en conter l'histoire, avant de retourner au village.",
+          "1": "Le groupe vous refuse tout simplement et poursuit son chemin sans vous.",
           "2": "Die Gruppe hält Sie für einen Dieb und verprügelt Sie dementsprechend."
         },
         "text": "Fragen Sie die Gruppe, sie zu erreichen."
@@ -1384,25 +1384,26 @@
       "end": {
         "outcomes": {
           "0": "Die Gruppe, die glaubt, ausspioniert zu werden, schlägt Sie heftig.",
-          "1": "Nach 15 Minuten ohne jegliche Reaktion, gehen Sie wieder auf Ihren Weg."
-        }
+          "1": "Après 15 minutes sans aucune réaction de votre part, le groupe finit par s'éloigner sans vous."
+        },
+        "text": "Ne pas prêter attention au groupe."
       },
       "goAlone": {
         "outcomes": {
-          "0": "Sie entscheiden sich selbst für den Zufluchtsort. Nach 30 Minuten Fahrt fällt der Boden unter den Füßen, und Sie werden heftig gezichtigt.",
-          "1": "Sie beschließen, allein zum Schrein zu gehen. Als Sie an der Stätte ankommen, hören Sie ein seltsames Geräusch. In Panik rennen Sie los und stolpern. Sie haben sich einen hässlichen Kratzer am Bein zugezogen, der sich bald entzündet.",
-          "2": "Sie entscheiden sich selbst für den Zufluchtsort. Auf Ihrem Weg finden Sie ein Objekt, das Ihnen nützlich sein könnte. Wenn Sie am Tatort ankommen, finden Sie heraus, dass der Zufluchtsort sich als Höhle erweist. Sie beschließen, nicht weiter zu gehen.",
-          "3": "Sie entscheiden sich selbst für den Zufluchtsort. Wenn Sie dort ankommen, entdecken Sie einen wunderschönen Zufluchtsort, dessen Schönheit Sie 30 Minuten lang erobert haben.",
-          "4": "Wenn Sie sich die Zeit verschwenden, ändern Sie die Entscheidung, und fahren Sie fort."
+          "0": "Vous décidez d'aller au sanctuaire tout seul. Après 30 minutes de route, le sol s'effondre tout à coup sous vos pieds et vous chutez violemment. Vous retournez au village pour vous soigner.",
+          "1": "Vous décidez d'aller au sanctuaire tout seul. Arrivé au site, vous entendez un bruit étrange. Pris de panique, vous courez et trébuchez. Vous vous faites une vilaine égratignure à la jambe, celle-ci ne tarde pas à s'infecter. Vous retournez au village pour vous soigner.",
+          "2": "Vous décidez d'aller au sanctuaire tout seul. Sur votre route, vous trouvez un objet qui pourrait vous être utile. Arrivé sur les lieux, vous découvrez que le sanctuaire se révèle être une grotte. Vous décidez de ne pas aller plus loin, et retournez au village.",
+          "3": "Vous décidez d'aller au sanctuaire tout seul. Arrivé là-bas, vous découvrez un magnifique sanctuaire, dont vous contemplez pendant 30 minutes la beauté, avant de vous rediriger vers le village.",
+          "4": "En voyant le temps se gâter, vous changez d'avis et renoncez à vous rendre au sanctuaire, préférant rester au village."
         },
         "text": "Gehe zum Heiligtum im Einzelgänger."
       },
       "skip": {
         "outcomes": {
-          "0": "Sie fahren weiter und ziehen es vor, ins nächste Dorf zu gehen.",
-          "1": "Sie fahren weiter. Ein paar Minuten später wird Ihnen klar, dass Sie die falsche Route genommen haben. Wenn Sie überstürzt sind, um die verlorene Zeit aufzuholen, stolpern Sie gegen einen Stein und Ihr Geschäft wird verschont."
+          "0": "Vous n'y prêtez pas attention, préférant vaquer à vos occupations dans le village.",
+          "1": "Vous tournez les talons sans plus vous soucier du groupe. En vous frayant un chemin dans les ruelles encombrées, vous trébuchez contre une pierre et vos affaires s'éparpillent."
         },
-        "text": "Fahren Sie weiter fort."
+        "text": "Ne pas vous soucier du groupe."
       },
       "talk": {
         "outcomes": {
@@ -1412,7 +1413,7 @@
         "text": "Diskutieren mit der Gruppe."
       }
     },
-    "text": "Während Sie ein animiertes Dorf verfolgen, hören Sie eine Gruppe von Leuten, die von einem Heiligtümer sprechen, der heimgesucht wird. Ich bin so neugierig, wie Sie sich anhören. Der Zufluchtsort wäre 1 Stunde Fahrt nach Süden, und der Abflug findet in 30 Minuten statt."
+    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au Sud, et le départ a lieu dans 30 minutes."
   },
   "46": {
     "possibilities": {
@@ -1686,23 +1687,23 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "Sie wollen nicht mit den Kindern spielen, und dann machen Sie Ihren Weg.",
+          "0": "Vous refusez de jouer avec les enfants et les laissez à leurs occupations.",
           "1": "Sie lehnen sich ab, und das hat die Folge, dass die Kinder, die Steine sammeln, auf dem Boden aufsammeln und sie wegwerfen. Vor dem Regen von Kies, sind Sie gezwungen, zu fliehen, außerhalb der Reichweite der Kinder. Sie wissen, dass Sie an den Kopf geschossen wurden und dass die Wunde viel abviel blutet, Sie werden heilen müssen.",
-          "2": "Sie wegrieren sich, und die Kinder sind wütend. Wenn Sie sehen, dass die Situation mit dem Essig zu tun droht, dann fahren Sie schnell wieder auf die Straße."
+          "2": "Vous refusez, et les enfants s'en énervent. Voyant que la situation risque de tourner au vinaigre, vous vous éloignez vite d'eux."
         },
         "text": "Sie können Ihren Pfad nicht verweigern."
       },
       "end": {
         "outcomes": {
-          "0": "Angesichts Ihres Mangels an Beantworten, werden die Kinder sich nicht mehr um Sie interessieren und werden woanders spielen. Sie sind also wieder auf dem Weg.",
+          "0": "Devant votre manque de répondant, les enfants se désintéressent de vous et vont jouer ailleurs.",
           "1": "Sie sehen, wie Sie in Ihren Gamins sehen, die Schnürsenkel sind zusammen. Wenn Sie aus diesem Transe-Zustand heraus kommen, stolperten Sie und fallen gegen den Boden.",
-          "2": "Sie bleiben stundenlang gepflanzt, und wenn Sie Ihre Geister wieder einziehen, wird Ihnen klar, dass Ihr Stipendium verschwunden ist. Sie verfolgen Ihren Weg, beeilen Sie sich."
+          "2": "Vous restez planté là pendant des heures, et lorsque vous recouvrez vos esprits, vous vous rendez compte que votre bourse a disparu. Cette mésaventure vous laisse dépité."
         }
       },
       "play": {
         "outcomes": {
-          "0": "Wenn Sie die Spielregeln nicht sehr gut verstehen, sind Sie schnell beiseite und nehmen Sie Ihren Weg zurück, ohne dass sich die Kinder über Sie kümmern.",
-          "1": "Sie spielen mit ihnen, bis ihre Eltern ankommen, Sie haben einen Verdächtigen, der sie von ihrem Dorf bedroht, indem sie Sie anführen. Sie nehmen die Straße zurück, ohne Ihren Rest zu fragen.",
+          "0": "Ne comprenant pas très bien les règles du jeu, vous êtes rapidement mis de côté, sans que les enfants ne se préoccupent davantage de vous.",
+          "1": "Vous jouez avec eux jusqu'à ce que leurs parents arrivent, vous trouvant suspect ils vous répudient en vous menaçant. Vous vous éloignez d'eux sans demander votre reste.",
           "2": "Jouant die Rolle des Fuyard, Sie werden von den Kindern verfolgt. Wenn Sie sich über die Schulter schauen, um den Abstand zwischen ihnen zu bewerten, nehmen Sie sich die Füße in einem Wurzelbereich und blendieren Sie. Die Kinder verlassen Sie auf Ihr trauriges Schicksal, wenn Sie Ihre Unfähigkeit feststellen, weiter zu spielen. Wir müssen Sie heilen."
         },
         "text": "Ich werde vor dem Fuyard und der Wache spielen."
@@ -1719,8 +1720,8 @@
       "teach": {
         "outcomes": {
           "0": "Während Sie den Kindern erklären, wie sie sich am besten zum Schießen positionieren sollen, gelingt es einem von ihnen, seinen Bogen zu spannen, und bevor Sie etwas tun können, lässt er den Pfeil los, der sich in Ihr Bein bohrt. Verwundet lassen Sie die beiden zurück und suchen nach einem Ort, an dem Sie sich behandeln lassen können.",
-          "1": "Sie erklären den Kindern, wie sie zu schießen, und diese gehen sehr gut aus. Sie verbringen den Rest des Tages damit, sie in den Bogen zu bringen. Bevor Sie sie verlassen haben, danke ich Ihnen für einen kleinen Auszubildenden für Ihre Auszubildenden. Sie sind wieder auf der Straße, und ich bin froh, dass ich Ihnen helfen konnte.",
-          "2": "Schon bald stellen Sie fest, dass die Kinder noch nicht stark genug sind, um das Seil zu spannen. Sie sagen ihnen daher, dass Sie wiederkommen werden, um sie zu trainieren, wenn sie älter sind, und machen sich dann wieder auf den Weg."
+          "1": "Vous expliquez aux enfants comment se placer pour tirer et ceux-ci s'en sortent très bien. Vous passez le reste de la journée à les entraîner au tir à l'arc. Avant que vous ne les quittiez vous êtes chaudement remercié par un petit présent de vos apprentis du jour. Vous vous sentez heureux d'avoir pu vous rendre utile.",
+          "2": "Très vite, vous constatez que les enfants ne sont pas encore assez forts pour tendre la corde. Vous leur dites donc que vous reviendrez les entraîner quand ils seront plus grands."
         },
         "text": "Sie lernen, wie man einen Bogen zieht."
       }
@@ -1772,51 +1773,51 @@
           "0": "Sie entscheiden sich dafür, Wetten zu organisieren, aber niemand nimmt teil, denn jeder weiß, wer der Gewinner sein wird.",
           "1": "Sie beschließen, Wetten zu organisieren und wetten, dass der Ritter nicht gewinnen wird. Alle kommen zum Wetten, weil alle wissen, dass er nicht verlieren wird, aber du hast einen Plan im Kopf. Sie bieten dem Ortsherrn an, für ihn zu kämpfen. Dieser nimmt Ihr Angebot gerne an. Wie erwartet gewinnen Sie den Kampf und die Wetten. Das bringt Ihnen eine schöne Summe Geld ein.",
           "2": "Sie beschließen, Wetten zu organisieren und wetten, dass der Ritter nicht gewinnen wird. Alle kommen zum Wetten, weil alle wissen, dass er nicht verlieren wird, aber du hast einen Plan im Kopf. Sie bieten dem Ortsherrn an, für ihn zu kämpfen. Dieser nimmt Ihr Angebot gerne an. Wie erwartet, gewinnen Sie den Kampf. Als Sie die Wettenden um ihr Geld bitten, sind diese verärgert und beschließen, Ihnen das Geld wegzunehmen, das Sie gewettet haben.",
-          "3": "Sie beschließen, Wetten zu organisieren und wetten, dass der Ritter nicht gewinnen wird. Alle kommen zum Wetten, weil alle wissen, dass er nicht verlieren wird, aber du hast einen Plan im Kopf. Sie bieten dem Ortsherrn an, für ihn zu kämpfen. Dieser nimmt Ihr Angebot gerne an. Sie verlieren den Kampf, aber Sie weigern sich, Ihr Geld zu geben. Die Dorfbewohner beginnen, Ihnen zu folgen und werfen mit verschiedenen Gegenständen nach Ihnen. Als Sie sich vom Dorf entfernt haben, tut Ihnen alles weh. Sie sind auch am Bein verletzt und brauchen Ruhe, bevor Sie Ihren Weg fortsetzen können.",
+          "3": "Vous décidez d'organiser des paris et pariez que le chevalier ne gagnera pas. Tout le monde vient parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous refusez de donner votre argent. Les villageois se mettent à vous suivre et à vous lancer divers objets. Vous parvenez à leur échapper en vous faufilant dans les ruelles, mais vous avez mal partout. Vous êtes aussi blessé à la jambe, et chacun de vos pas vous arrache une grimace.",
           "4": "Sie veranstalten Wetten und wetten, dass der Ritter nicht gewinnen wird. Viele kommen zum Wetten, denn alle wissen, dass er nicht verlieren wird. Einige Wachen beobachten Sie, um sicherzugehen, dass Sie das Geld nicht stehlen. Sie bieten ihnen an, sich das Duell mit ihnen anzusehen, bis auf einige wenige, die den Ort bewachen. Sie fangen an, sich darüber zu streiten, wer bleiben soll, und Sie nutzen die Gelegenheit, um einen Teil des Geldes zu nehmen und schnell abzuhauen. Sie verfolgen Sie, geben aber schließlich auf, weil sie merken, dass sie Sie nicht einholen können. Sie sehen sich das Geld an, das Sie eingesammelt haben, und freuen sich über Ihren Coup.",
-          "5": "Sie veranstalten Wetten und wetten, dass der Ritter nicht gewinnen wird. Viele kommen zum Wetten, weil alle wissen, dass er nicht verlieren wird, aber Sie haben einen Plan im Kopf. Sie bieten dem Ortsherrn an, für ihn zu kämpfen. Dieser nimmt Ihr Angebot gerne an. Wie erwartet gewinnen Sie den Kampf und holen sich das Wettgeld ab. Am Dorfausgang werden Sie von einem Dorfbewohner angegriffen, der wahrscheinlich versucht, Ihnen das Geld zu stehlen. Nach einem harten Kampf gelingt es Ihnen, ihm zu entkommen, aber Sie werden dabei schwer verletzt. Sie müssen sich ausruhen.",
-          "6": "Sie veranstalten Wetten und wetten, dass der Ritter nicht gewinnen wird. Viele kommen zum Wetten, weil alle wissen, dass er nicht verlieren wird, aber Sie haben einen Plan im Kopf. Sie bieten dem Ortsherrn an, für ihn zu kämpfen. Dieser nimmt Ihr Angebot gerne an. Sie verlieren den Kampf, aber Sie haben nicht vor, Ihr Geld auf diese Weise zu verlieren. Sie rennen also zum Wettplatz und stehlen so viel Geld wie möglich, wobei Sie von den Dorfbewohnern verfolgt werden, bevor Sie aus dem Dorf fliehen."
+          "5": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Comme prévu, vous gagnez le combat, et allez récupérer l'argent des paris. Un villageois vous attaque à la sortie du village, souhaitant certainement vous voler votre argent. Après un rude combat, vous parvenez à lui échapper, non sans être gravement blessé. Le souffle court, vous portez la main à vos plaies encore fraîches.",
+          "6": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous ne comptez pas perdre votre argent ainsi. Vous vous élancez donc vers le lieu des paris et volez autant d'argent que vous le pouvez, coursé par les villageois, avant de les semer dans le dédale des ruelles."
         },
         "text": "Wetten organisieren."
       },
       "end": {
         "outcomes": {
-          "0": "Die Diskussionen, die Ihre Neugier geschürt haben, beschließen Sie, dem Duell beizuwohnen. Der hier kommt sehr schnell, mit dem ausländischen Ritter als Sieger. Dezipiert, Sie nehmen Ihren Weg zurück.",
+          "0": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Celui-ci se conclut très rapidement, avec le chevalier étranger pour vainqueur. Déçu, vous vous éloignez de l'arène.",
           "1": "Die Diskussionen, die Ihre Neugier geschürt haben, beschließen Sie, dem Duell beizuwohnen. Der Bericht kommt sehr schnell zum Abschluss. Sie schlagen vor, das Duell wieder zu spielen, aber dieses Mal kämpft es, Sie zu bekämpfen. Ihr Vorschlag wird angenommen, in nur wenigen Sekunden sind Sie unbewaffnet und dann auf den Boden gestellt. Ihr Gegner lachen sich dann aus, indem Sie sagen, Sie seien ein erbärmlicher Kämpfer. Tollwut, Sie werden auf ihn aufrennen, um ihn zu verprüchen, aber der Ritter wird Sie mit dem Augenlider seines Schwertes beneiden.",
-          "2": "Nur wenige interessiert an diesem Duell, dass Sie sich nicht darauf konzentrieren sollten, und setzen Sie sich daher auf Ihren Weg.",
-          "3": "Die Diskussionen, die Ihre Neugier geschürt haben, beschließen Sie, dem Duell beizuwohnen. Sie sehen, dass Wetten spielen, die Wetten spielen. Sie entscheiden sich also, daran teilzunehmen. Natürlich wetten Sie auf den ausländischen Ritter, bevor Sie an den Duell gehen. Das ist der Gewinner, aber wenn Sie wieder nach Ihren Gewinnen suchen, ist alles verschwunden. Ich bin froh, dass Sie so haben, dass Sie Ihren Weg zurück in die Wege gehen.",
-          "4": "Die Diskussionen, die Ihre Neugier geschürt haben, beschließen Sie, dem Duell beizuwohnen, der sich schnell schließt. Sie schlagen vor, ihn mit Ihnen als Kämpfer zu spielen, und Ihr Vorschlag wird angenommen. Sie haben nicht lange genug, um Ihren Gegner zu besiegen, das ganze Dorf wird Sie jetzt erobern, und der Herr bietet Ihnen eine gute Mahlzeit an, Sie stimmen dem Angebot gerne zu. Sobald Sie wieder auf dem Rennen sind, schlägt der Herr Ihnen vor, Ritter zu werden, Sie wollen höflich sein Angebot machen und ihm für das köstliche Essen danken. Sie fühlen sich jetzt besser."
+          "2": "Peu intéressé par ce duel, vous décidez de ne pas y prêter attention et de vaquer à vos occupations dans le village.",
+          "3": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Proche de celui-ci, vous remarquez que des paris se jouent. Vous décidez donc d'y participer. Naturellement, vous pariez sur le chevalier étranger avant d'aller assister au duel. C'est effectivement lui le gagnant, mais lorsque vous retournez chercher vos gains, tout a disparu. Mécontent de vous être fait avoir ainsi, vous tournez le dos à l'arène.",
+          "4": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel, qui se conclut rapidement. Vous proposez de le rejouer avec vous comme combattant, votre proposition est acceptée. Vous ne mettez guère longtemps à vaincre votre adversaire, le village entier vous acclame à présent et le seigneur vous convie à une réception donnée en votre honneur, que vous acceptez volontiers. Une fois les festivités achevées, le seigneur vous propose de devenir chevalier, vous refusez poliment son offre et le remerciez pour cet accueil chaleureux. Vous vous sentez bien mieux à présent."
         }
       },
       "help": {
         "outcomes": {
-          "0": "Wenn Sie das Elend des Herrn verstehen, schlagen Sie ihm vor, sich an dem Duell zu beteiligen. Das akzeptiere ich gerne. Der Kampf beginnt, Sie wissen, dass Sie nicht die geringste Chance haben, Ihren Gegner zu besiegen, aber trotzdem versuchen Sie, Widerstand zu leisten. Er braucht nur eine Minute, um euch zu besiegen. Sie nehmen Ihren Weg zurück, beschämend von Ihrer Niederlage.",
+          "0": "Comprenant la détresse du seigneur, vous lui proposez de participer au duel. Celui-ci accepte volontiers. Le combat commence, vous savez que n'avez pas la moindre chance de vaincre votre adversaire, mais tentez malgré tout de résister. Il ne lui faut qu'une minute pour vous vaincre. Vous quittez l'arène, honteux de votre défaite.",
           "1": "Wenn Sie das Elend des Herrn verstehen, schlagen Sie ihm Ihre Hilfe vor. Wir haben Sie im Team, bevor der Duell beginnt. Sie kämpften umsonst, aber Sie sind genauso leicht von Ihrem Gegner ausgerüttt. Das ist, wenn Sie von der Klinge, die Sie bereuen, es bitter bereuen, dass Sie Ihre Hilfe angeboten haben. In der Tat, das ist ein Spiel zum Tod. Und Sie haben ihn gerade verloren. Sie schließen die Augen, und der Schmerz verschwindet. Sie wachen unerwartet mehrere Stunden später auf, schwer verletzt zu sein.",
-          "2": "Wenn Sie das Elend des Herrn verstehen, schlagen Sie ihm Ihre Hilfe vor. Wir haben eine Rüstung, bevor der Duell beginnt. Sie sind sich bewusst, dass Sie nicht die geringste Chance haben, sich selbst zu verteidigen, wie Sie können. Ihr Gegner, ungeduldig, schrumpft seine Wache, und Sie werden davon profitieren, um ihn anzugreifen. Sie können es auf den Boden bringen, bevor Sie ihn entwaffnen lassen. Sie kommen aus der viktorianischen Arena, und der Herr kommt zu Ihrem Treffen, um Ihnen eine goldenen Zuschußförderung zu geben. Sie danken ihm, bevor Sie wieder auf die Straße gehen.",
-          "3": "Wenn Sie das Elend des Herrn verstehen, schlagen Sie ihm vor, den Konflikt zu lösen, indem Sie Ihren Worten Taten vorwerfen. Er verspricht Ihnen eine Belohnung, wenn Sie das können. Abgeschlossen, Sie gehen auf den Ritter, nachdem er dem Dorf zugestochen ist, und sagen Sie ihm, dass Sie mit seinem Herrn verhandeln wollen. Er akzeptiert und bringt Sie zu ihm. Sie sympathisieren schnell und fordern ihn auf, das Duell zu stornieren. Sie sagen ihr auch, dass sie nach diesem Konflikt Verhandlungen führen können, um den Konflikt zu lösen. Er akzeptiert, und Sie kehren nach Boug-Coton zurück, um die Nachricht zu verkünden. Der Herr gibt Ihnen ein Stipendium, das mit Gold gefüllt ist, und dem Dank gebührt Dank.",
+          "2": "Comprenant la détresse du seigneur, vous lui proposez votre aide. On vous équipe alors une armure avant que le duel ne débute. Conscient que vous n'avez pas la moindre chance, vous vous défendez du mieux que vous le pouvez. Votre adversaire, impatient, baisse sa garde et vous en profitez pour l'attaquer. Vous parvenez à le mettre à terre avant de le désarmer. Vous ressortez de l'arène victorieux, le seigneur vient à votre rencontre pour vous donner une bourse remplie d'or. Vous le remerciez chaleureusement pour sa générosité.",
+          "3": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Déterminé, vous allez à la rencontre du chevalier une fois celui-ci arrivé au village et lui dites que vous souhaitez négocier avec son seigneur. Il accepte et vous emmène à lui. Vous sympathisez rapidement et lui demandez d'annuler le duel. Vous lui dites aussi qu'après cela pourront avoir lieu des négociations afin de régler le conflit. Il accepte, et vous regagnez le centre du village afin d'annoncer la nouvelle. Le seigneur vous tend une bourse remplie d'or en gage de remerciement.",
           "4": "Wenn Sie das Elend des Herrn verstehen, schlagen Sie ihm vor, den Konflikt zu lösen, indem Sie Ihren Worten Taten vorwerfen. Er verspricht Ihnen eine Belohnung, wenn Sie das können. Sie treffen sich mit dem Ritter, damit er Sie zu seinem Herrn bringen kann. Wenn Sie dort sind, können Sie schnell mit dem hier sympathisieren. Unglücklicherweise scheint er nicht entschlossen, den Duell zu stornieren, auch wenn er Sie mag. Sie gehen zurück ins Dorf mit dem Ritter, um ankündigen zu können, dass das Duell stattfinden wird.",
-          "5": "Wenn Sie das Elend des Herrn verstehen, schlagen Sie ihm vor, den Konflikt zu lösen, indem Sie Ihren Worten Taten vorwerfen. Er verspricht Ihnen eine Belohnung, wenn Sie das können. Sie treffen sich mit dem Ritter, damit er Sie zu seinem Herrn bringen kann. Einmal da drüben versuchen Sie, mit diesem über mehrere Stunden zu verhandeln, ohne großen Erfolg. Da eure Bemühungen vergeblich sind, denken Sie, Sie sollten wieder gehen. Aber zuerst sagt der Herr, dass er Sie mag, denn er sagt Ihnen, dass er von der Tatsache beeindruckt war, dass Sie nicht aufgegeben haben. Er schlägt vor, Ritter zu werden, aber Sie wollen nicht höflich sein, sein Angebot zu poliert und wieder auf den Weg zu gehen."
+          "5": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Vous rencontrez le chevalier afin qu'il vous emmène à son seigneur. Une fois là-bas, vous tentez de négocier avec celui-ci durant plusieurs heures, sans grand succès. Vos efforts étant vains, vous pensez repartir. Mais avant cela, le seigneur déclare qu'il vous apprécie, en effet, celui-ci ajoute qu'il a été impressionné du fait que vous n'ayez pas abandonné. Il vous propose de devenir chevalier, mais vous refusez poliment son offre et regagnez Boug-Coton."
         },
         "text": "Sie können Ihre Hilfe dem Lord von Boug-Coton vorschlagen."
       },
       "look": {
         "outcomes": {
-          "0": "Sie entscheiden sich, an dem Duell teilzunehmen. Der fremde Ritter gewinnt in nur wenigen Sekunden. Sie sind nicht verrückt zu gehen, enttäuscht von der schlechten Leistung des Verlierer.",
-          "1": "Sie entscheiden sich, an dem Duell teilzunehmen. Der fremde Ritter gewinnt in nur wenigen Sekunden. Angesichts der schlechten Leistung des Verlierers schlagen Sie vor, das Duell wieder zu spielen, aber dieses Mal kämpfen Sie, um zu kämpfen. Ihr Vorschlag wird angenommen, Sie können dagegen kämpfen. Ihr Gegner, zu sicher von ihm, schrumpft seine Wache, während Sie kämpften. Sie warten nicht auf eine Sekunde, um davon zu profitieren und so den Vorteil zu nutzen. Sie besiegen den Ritter und verkünden Ihren Sieg, triumphant. Der Herr des Veranstaltungsortes schlägt Ihnen vor, Ritter zu werden, Sie wollen höflich sein, sein Angebot höflich zu machen und Ihren Weg zurück zu gehen.",
-          "2": "Sie entscheiden sich, an dem Duell teilzunehmen. Der fremde Ritter gewinnt in nur wenigen Sekunden. Angesichts der schlechten Leistung des Verlierers schlagen Sie vor, das Duell wieder zu spielen, aber dieses Mal kämpfen Sie, um zu kämpfen. Ihr Vorschlag wird angenommen. Der Kampf beginnt, und trotz all Ihrer Bemühungen werden Sie nur ein Dutzend Sekunden widerstehen können.",
+          "0": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Vous ne tardez pas à quitter l'arène, déçu de la médiocre performance du perdant.",
+          "1": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée, vous pouvez combattre. Votre adversaire, trop sûr de lui, baisse sa garde pendant que vous combattez. Vous n'attendez pas une seconde pour en profiter et ainsi prendre l'avantage. Vous finissez par vaincre le chevalier et annoncez votre victoire, triomphant. Le seigneur des lieux vous propose de devenir chevalier, vous refusez poliment son offre.",
+          "2": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée. Le combat commence, et malgré tous vos efforts vous ne parvenez à résister qu'une dizaine de secondes avant d'être désarmé et jeté à terre sous les rires de l'assistance.",
           "3": "Sie beschließen, dem Duell beizuwohnen. Das Duell endet nach wenigen Sekunden. Angesichts der schlechten Leistung des Verlierers schlagen Sie vor, das Duell zu wiederholen, aber dieses Mal werden Sie selbst kämpfen. Ihr Vorschlag wird angenommen und Sie können kämpfen. Ihr Gegner ist sich seiner Sache zu sicher und lässt seine Deckung fallen, während Sie kämpfen. Sie warten keine Sekunde, um sich einen Vorteil zu verschaffen. Schließlich besiegen Sie den Ritter und verkünden triumphierend Ihren Sieg. Der Hausherr bietet Ihnen einen Beutel voller Gold an, den Sie gerne annehmen.",
-          "4": "Sie beschließen, dem Duell beizuwohnen. Das Duell endet nach wenigen Sekunden. Sie bezeichnen den Verlierer als inkompetent und schlagen vor, das Duell zu wiederholen, aber dieses Mal werden Sie selbst kämpfen. Der Verlierer bietet Ihnen an, gegen ihn zu kämpfen, bevor er Sie kritisiert. Sie gehen auf seine Bitte ein, da Sie wissen, dass Sie keine Probleme haben werden, ihn zu besiegen. Ihr Gegner ist sich seiner Sache zu sicher und entwaffnet Sie, bevor er Sie zu Boden wirft. Dann schlägt er Sie bewusstlos. Sie sind schwer verletzt und brauchen viel Ruhe.",
+          "4": "Vous décidez d'assister au duel. Celui-ci se conclut en quelques secondes. Vous qualifiez le perdant d'incompétent et proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Le perdant vous propose de venir se battre contre lui avant de critiquer. Vous acceptez sa requête, sachant pertinemment que vous n'aurez aucun mal à le vaincre. Étant trop sûr de vous, votre adversaire parvient à vous désarmer avant de vous mettre à terre. Il vous tabasse ensuite jusqu'à l'évanouissement. Gravement blessé, vous mettez un long moment à reprendre connaissance, le corps couvert d'ecchymoses.",
           "5": "Sie beschließen, dem Duell beizuwohnen. Das Duell endet nach wenigen Sekunden. Angesichts der schlechten Leistung des Verlierers schlagen Sie vor, das Duell zu wiederholen, aber dieses Mal werden Sie selbst kämpfen. Ihr Vorschlag wird angenommen. Der Kampf beginnt und trotz all Ihrer Bemühungen können Sie nur etwa zehn Sekunden lang standhalten. Der Ritter beschließt, Sie immer wieder zu schlagen, um Ihnen klarzumachen, dass Sie ihm gegenüber nur ein Insekt sind. Nachdem er Sie schwer verletzt hat, hört er auf und geht weg.",
-          "6": "Sie beschließen, dem Duell beizuwohnen. Der fremde Ritter gewinnt in nur wenigen Sekunden. Angesichts der mäßigen Leistung des Verlierers schlagen Sie vor, das Duell zu wiederholen, aber dieses Mal werden Sie selbst kämpfen. Sie gewinnen das Duell nach einigen Minuten Kampf. Der Hausherr schlägt Ihnen vor, sich bei einem guten Essen zu unterhalten. Sie nehmen das Angebot gerne an, denn das Essen ist köstlich und im Überfluss vorhanden. Nachdem Sie sich satt gegessen haben, bietet Ihnen der Fürst an, Sie zum Ritter zu schlagen. Sie lehnen sein Angebot höflich ab."
+          "6": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Vous remportez le duel après quelques minutes de combat. Le seigneur des lieux vous convie à célébrer votre victoire en sa compagnie. Vous acceptez volontiers, et l'on vous honore comme il se doit au cœur du village en liesse. Une fois les festivités passées, le seigneur vous propose de vous nommer chevalier. Vous refusez poliment son offre."
         },
         "text": "Wir können dem Duell helfen."
       },
       "visit": {
         "outcomes": {
-          "0": "Sie schauen sich das Dorf an, aber da Sie nichts Interessantes sehen, reisen Sie ohne weitere Verzögerung wieder ab.",
+          "0": "Vous visitez le village mais n'y voyez rien de bien intéressant.",
           "1": "Sie besuchen das Dorf. Wenn Sie nichts Interessantes sehen, entscheiden Sie sich, zum Duell zu gehen.",
           "2": "Während Sie das Dorf besuchen, bemerkt der Herr über den Abenteurer, den Sie gerade haben. Er erklärt die Situation und flehe an, am Duell teilzunehmen. Er wird Ihnen ein Stipendium geben, das mit Gold gefüllt ist, wenn Sie es gewinnen. Sie akzeptieren das Angebot gerne und machen es zum Duell. Aber sobald der Kampf begonnen hat, verstehen Sie, dass Sie nicht die geringste Chance haben, Ihren Gegner zu besiegen. Der Ritter verletzt Ihr Bein mit seinem Schwert, und Sie fallen auf den Boden, verwundet. Sie sind nicht in der Lage, sich zu erhellen, Sie haben das Duell verloren.",
-          "3": "Sie besuchen das Dorf und entbringen ein Objekt am Boden des Bohrlochs. Sie bringen ihn zurück, bevor Sie wieder auf die Straße gehen."
+          "3": "Vous visitez le village et apercevez un objet au fond du puits. Vous le ramassez, ravi de votre trouvaille."
         },
         "text": "Bug Boug-Coton."
       }
@@ -2284,39 +2285,39 @@
     "possibilities": {
       "checkDate": {
         "outcomes": {
-          "0": "Du schaust auf den Kalender und entdeckst, dass es ein Turnier gibt, das in Kürze beginnt! Sie beschließen, daran teilzunehmen und schaffen es nach einigen Stunden Kampf bis ins Finale. Ihr Gegner ist Ihnen jedoch überlegen und Sie verpassen Ihren letzten Kampf. Als Finalist gewinnen Sie immerhin einen Beutel voller Gold, bevor Sie sich wieder auf den Weg machen.",
-          "1": "Sie sehen sich den Kalender an und sehen, dass Sie in der Legeperiode, im 6. Monat des Jahres, sich entscheiden zu gehen und zu gehen und ein Galette mit einem nahegelegenen Stand zu essen. Dieses Essen wird Sie beruhigt haben! Sie sind wieder auf dem Weg, wieder zurück.",
-          "2": "Wenn Sie den Kalender sehen, erinnern Sie sich an die Poster auf den Straßen, die von einer Schatzsuche sprechen. Dann entscheiden Sie, ob Sie daran teilnehmen möchten. Nach zwei Stunden Forschung, können Sie nichts finden, was immer es ist. Sie entscheiden sich also, den Weg zu gehen.",
-          "3": "Schauen Sie sich den Kalender an, und an dem Tag, an dem Sie heute stehen: Conkurs von Hydromel! Sie fühlen sich gegen Alkohol beständig, wenn Sie versuchen, Ihre Chance zu versuchen. Sie gewinnen den Wettbewerb und eine Belohnung! Aber Sie sind sehr betrunken."
+          "0": "Vous regardez le calendrier et y découvrez l'existence d'un tournoi qui commence sous peu ! Vous décidez donc de vous y rendre et parvenez à atteindre la finale après quelques heures de combat. Cependant, votre adversaire vous domine et vous ratez votre dernière bataille. Finaliste, vous gagnez tout de même une bourse remplie d'or pour récompenser vos efforts.",
+          "1": "Vous regardez le calendrier et constatez que vous êtes en laponaire, le 6ème mois de l'année. Une note griffonnée dans la marge indique qu'il s'agit de la saison des herboristes. Curieux, vous feuilletez un almanach posé tout près et y apprenez la préparation d'une infusion revigorante. Vous la confectionnez aussitôt : la boisson chaude vous fait le plus grand bien.",
+          "2": "En voyant le calendrier vous vous rappelez des affiches dans les rues parlant d'une chasse au trésor. Vous décidez alors d'y participer. Au bout de deux heures de recherche, vous n'arrivez pas à trouver quoi que ce soit. Vous renoncez donc à cette chasse et regagnez le cœur de la ville, bredouille.",
+          "3": "Vous regardez le calendrier, et à la date d'aujourd'hui vous voyez inscrit : Foire des conteurs ! La place de la ville accueille justement ce concours où l'on récite de vieux récits devant la foule, une corne d'hydromel à la main. Fort de toutes les aventures que vous avez vécues, vous tentez votre chance et remportez le concours, ainsi qu'une récompense ! À force de trinquer à votre victoire, vous finissez cependant totalement ivre."
         },
         "text": "Den Kalender behalten."
       },
       "end": {
         "outcomes": {
-          "0": "Sie hängen in der Bibliothek, und sehen Sie nicht die Minuten. Wenn Sie das tun, verlassen Sie sich, und Sie wissen, dass es schon spät ist. Sie nehmen Ihren Weg zurück, ohne weitere Verzögerung zu haben.",
-          "1": "Sie blitzen vor der Anzahl der Bücher und der Menge des Wissens, das von diesen Orten aus ist. Kurz darauf hat die Bibliothekarin Sie signiert: Das Gebäude steht kurz davor, zu schließen. Entmuten Sie, um Ihre Abenteuer zu verfolgen.",
-          "2": "Sie bleiben mehrere Minuten in der Bibliothek, entbahs alles über alles. Sie setzen sich hin, denken Sie. Plötzlich krattet ein Leser Ihre Gedanken, das Buch \"Hänsel und Gretel\" von den Grimm-Brüdern in der Hand. Er fordert Sie auf, sich zu verlassen, weil Sie an seinem Lieblingsplatz in der Bibliothek sitzen. Kommen Sie, Sie gehen, ohne es noch einmal zu wissen."
+          "0": "Vous traînez dans la bibliothèque, et ne voyez pas les minutes passer. Lors de la fermeture, vous sortez et vous rendez compte qu'il est déjà tard. Vous flânez un moment dans les rues de la ville, l'esprit encore plongé dans vos lectures.",
+          "1": "Vous restez ébahi devant le nombre de livres et la quantité de connaissances qui émane de ces lieux. Peu après, la bibliothécaire vous fait signe : le bâtiment est sur le point de fermer. Déçu, vous quittez les rayonnages et regagnez les rues animées de la ville.",
+          "2": "Vous restez dans la bibliothèque plusieurs minutes, ébahi par tout ce savoir. Vous vous asseyez, pensif. Soudain, un lecteur vient troubler vos pensées, le livre \"Hansel et Gretel\" des frères Grimm en main. Il vous demande de bien vouloir lui céder la place, car vous êtes assis à son siège préféré de la bibliothèque. Confus, vous vous levez et quittez les lieux, sans aucun nouveau savoir."
         }
       },
       "read": {
         "outcomes": {
-          "0": "Sie entscheiden sich, ein Buch zu lesen. Das hier spricht über Küche und Nachspeisen, die wir vorbereiten können. Sie notieren das Rezept, bevor Sie nach den Zutaten suchen. Wenn Sie diese gefunden haben, folgen Sie den Anweisungen in dem Brief. Sie probieren Ihr Gericht, bevor Sie die Vorzüge spüren, und fahren Sie dann wieder auf die Straße.",
-          "1": "Sie nehmen ein Buch, dann lesen Sie es. Das Buch spricht von Arithmetik. Dies war jedoch nie Ihre Stärke: 10 Minuten später, entscheiden Sie sich, das Buch zu stützen, bevor Sie Ihren Weg fortsetzen.",
-          "2": "Sie lesen ein Kochbuch. Der hier spricht von einem leckeren. Alléché, Sie entscheiden sich, die Abflachung vorzubereiten. Aber Sie respektieren nicht das, was markiert war, und nachdem Sie gegessen haben, fühlen Sie sich nicht gut ...",
+          "0": "Vous décidez de lire un livre. Celui-ci traite des remèdes et des vertus curatives des plantes. Vous y découvrez la préparation d'un baume revigorant et notez soigneusement la méthode. Après avoir rassemblé les quelques herbes nécessaires, vous suivez les instructions à la lettre et appliquez le remède sur vos vieilles blessures. Vous en ressentez aussitôt les bienfaits.",
+          "1": "Vous prenez un livre, puis commencez à le lire. Le livre parle d'arithmétique. Cela n'a cependant jamais été votre fort : près de 10 minutes plus tard, vous décidez de reposer le livre sur son étagère, dépité.",
+          "2": "Vous tirez d'un rayon un vieux grimoire dont les pages, couvertes de moisissures, dégagent une odeur âcre. Absorbé par sa lecture, vous respirez longuement ces relents poussiéreux. Peu à peu, votre gorge se serre et votre tête se met à tourner : vous ne vous sentez pas bien du tout...",
           "3": "Sie nehmen das erste Buch, das Sie sehen. Es geht um die Alchemie und die Vorteile von Pflanzen. Nachdem Sie den Inhalt sorgfältig studiert haben, übergeben Sie ihn, einige davon werden Sie für Ihre nächsten Abenteuer verwenden."
         },
         "text": "Lesen Sie ein Buch."
       },
       "steal": {
         "outcomes": {
-          "0": "Sie stehlen ein altes, staubiges Buch und verlassen das Gebäude aus dem Gebäude, um einen Käufer in den großen Geständnis der Stadt zu finden. Sie sehen jedoch, dass niemand an diesem Buch interessiert ist, vor allem weil es sehr beschädigt ist und sogar rissene Seiten hat. Sie geben sie also auf, bevor Sie Ihren Weg zurück.",
-          "1": "Sie gehen aus der Bibliothek heraus, ohne dass jemand bemerkt, dass Sie hier sind. Sie haben es geschafft, ein Buch zu stehlen, und versuchen, es den Passanten zu verkaufen. Ein Mann hat beschlossen, sie für ein paar Goldmünzen zu kaufen. Wenn Sie die Transaktion abgeschlossen haben, nehmen Sie Ihren Weg zurück.",
+          "0": "Vous parvenez à voler un vieux livre poussiéreux et sortez discrètement de l'édifice, afin de trouver un acheteur dans les grandes avenues de la ville. Cependant, vous remarquez que personne n'est intéressé par ce livre, notamment parce qu'il est très abîmé et présente même des pages déchirées. Vous l'abandonnez donc dans le recoin d'une ruelle, dépité.",
+          "1": "Vous sortez furtivement de la bibliothèque sans que personne ne vous remarque. Vous avez réussi à voler un livre et essayez de le vendre aux passants. Un homme décide de vous l'acheter pour quelques pièces d'or. Une fois la transaction effectuée, vous empochez les pièces et vous fondez dans la foule de la ville.",
           "2": "Sie haben versucht, ein leckes Buch zu stehlen, aber die Bibliothekarin hat Sie in die Tasche. Sie verlangt, dass Sie ihr dieses kostbare Buch zurückgeben, und bei der gleichen Gelegenheit einen Ausgleich! Déçu et penaud, Sie geben ihm das Buch und dedommagez von einem breiten Griff Ihrer Ersparnisse, um das Gefängnis zu vermeiden ..."
         },
         "text": "Versuch, ein Buch zu stehlen, um es wieder zu verkaufen."
       }
     },
-    "text": "Nachdem Sie in den Straßen von Claire de Ville verpfändet wurden, entwarfen Sie ein Gebäude, dessen Eingang von zwei Statuen von Hiboux aus Stein umgeben ist. Wenn Sie sich nähern, verstehen Sie, dass es die Bibliothek der Stadt ist. Sie entscheiden sich für die Durchreise, um die Zeit zu verbringen. Auf einer der Mauern des Einlasses ist ein Kalender, der durch ein Leder-Lanzer miteinander verbunden ist, durch breite Blätter verbunden ist."
+    "text": "En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En vous en approchant, vous comprenez qu'il s'agit de la bibliothèque de la ville. Par la porte entrouverte, vous distinguez d'innombrables rayonnages chargés d'ouvrages et, accroché à un mur de l'entrée, un calendrier fait de larges feuilles reliées entre elles par une lanière de cuir."
   },
   "69": {
     "possibilities": {
@@ -2355,8 +2356,8 @@
       "check": {
         "outcomes": {
           "0": "Wenn Sie die Tür aufbrechen, verletzen Sie sich zutiefst. Sie müssen unbedingt behandelt werden!",
-          "1": "Nachdem Sie fast eine Stunde lang versucht haben, in das Haus zu gelangen, geben Sie schließlich auf. Als Sie gehen, finden Sie einen Gegenstand, der Ihnen vielleicht noch nützlich sein kann!",
-          "2": "Sie gehen in das Haus und legen Ihr Geschäft auf, um sich auszuruhen. Wenn Sie einen tiefen Schlaf haben, müssen Sie sich ausruhen, bevor Sie das Abenteuer fortsetzen.",
+          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut être vous être utile !",
+          "2": "Vous entrez dans la maison et posez vos affaires pour vous reposer. Pris d'un profond sommeil, vous vous écroulez sur un lit poussiéreux qui traînait dans un coin.",
           "3": "Sie gehen in das Haus und durchsuchen Sie rund ein paar Minuten um Sie herum. Wenn Sie herauskommen, finden Sie ein Objekt, das Ihnen vielleicht nützlich sein kann!",
           "4": "Sie gehen in das Haus und durchsuchen Sie rund ein paar Minuten um Sie herum. Sie beenden Ihre Forschung, ohne dass Sie etwas gefunden haben."
         },
@@ -2364,17 +2365,17 @@
       },
       "end": {
         "outcomes": {
-          "0": "Sie verbrachte fast 15 Minuten ohne Bewegung, es ist an der Zeit, wieder zu gehen."
+          "0": "Vous avez passé près de quinze minutes immobile, il est temps de vous extirper de votre torpeur !"
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Sie fahren weiter, ohne sich um das Haus zu kümmern."
+          "0": "Vous laissez la maison abandonnée derrière vous, sans vous en soucier davantage."
         },
-        "text": "Keinen Weg, um weiter zu gehen."
+        "text": "Ne pas s'arrêter à cette maison."
       }
     },
-    "text": "Sie haben ein Haus entdeckt. Sie scheint verlassen zu sein ..."
+    "text": "Parmi les ruines de Ville Forte, vous découvrez une maison encore debout. Elle semble abandonnée..."
   },
   "70": {
     "possibilities": {
@@ -3113,5 +3114,41 @@
       }
     },
     "text": "In der Mitte eines Feldes trifft man sich auf einen Bauer. Der letzte hat seine Gabel verloren."
+  },
+  "90": {
+    "possibilities": {
+      "observe": {
+        "outcomes": {
+          "0": "N'entendant pas clairement, vous vous rapprochez de la porte. Un membre du personnel du château vous remarque vite et vous demande de vous mêler de vos affaires. Sans insister, vous reprenez votre marche",
+          "1": "À peine commencez-vous à tendre l'oreille que la sorcière semble en avoir fini. Elle ne parle plus que d'une voix indistinguable à votre distance, et ressort à peine 5 minutes plus tard. Sans trop savoir pourquoi, vous faites en sorte qu'elle ne vous remarque pas en sortant.",
+          "2": "Vous choisissez de suivre de loin l'intéraction. Elle tourne vite au vinaigre, et la sorcière sort de son sac plusieurs fioles, qu'elle fracasse au sol. Aussitôt, un grand nuage de gaz sombre et nauséabond se répand. Il se dissipe vite, et vous constatez avec choc que la sorcière a disparu, et que tous les autres occupants du bureau ont perdu connaissance. Vous souffrez également du gaz, malgré votre distance, et vous sentez plutôt malade."
+        },
+        "text": "Agir en spectateur."
+      },
+      "help": {
+        "outcomes": {
+          "0": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. L'on vous fait cependant vite comprendre que vous n'êtes pas bienvenu à vous insérer dans la discussion, alors vous reprenez votre marche.",
+          "1": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. Il s'avère que la sorcière a été condamnée à une amende pour vente sans licence de produits alchimiques à Claire-de-Ville, ce qu'elle conteste fortement. Vous la rejoignez et tentez de convaincre l'employé du bureau du fait que les potions des sorcières, tant dans leurs méthodes de fabrication que dans le produit final lui-même, sont tout à fait différentes de celles des alchimistes, et ne devraient donc pas êtres soumises au besoin de cette licence. Votre interlocuteur ne veut rien entendre, disant que la décision de reconnaître les sorcières et d'introduire des licences spécifiques à leur profession relève de la volonté du roi. Vous comprenez ne rien pouvoir gagner ici, alors la sorcière et vous abandonnez. Celle-ci vous donne une de ses potions pour vous remercier d'avoir voulu l'aider.",
+          "2": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. Vous comprenez que la sorcière vient se plaindre de nombreuses accusations de charlatanisme, et que la personne en face d'elle semble tout à fait penser qu'elle n'est effectivement rien d'autre qu'une fraude. Vous ne savez pas vous-même si vous croyez à al sorcellerie, et en particulier si vous croyez que cette personne-ci est réellement une sorcière, alors vous choisissez d'abandonner l'idée d'intervenir. Vous restez écouter les échanges un moment, puis vous reprenez votre marche."
+        },
+        "text": "Tenter d'aider votre connaissance."
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Vous choisissez de ne pas vous mêler de ces affaires : après tout, vous n'avez pas une relation bien profonde avec la sorcière, et ne connaissez même pas son nom ! Vous continuez à traverser l'aile Est, jusqu'à entrer dans un salon où est exposée une machine à faire le vide. Des bougies sont à disposition, qui doivent être placées allumées dans une cloche de verre reliée à la machine. Les instructions indiquent ensuite de pomper au moyen de la machine, et vous constatez que la bougie s'éteint d'elle même subitement. Cette expérience sert de preuve au principe alchimique selon lequel l'air nourrit le feu.",
+          "1": "Vous ignorez totalement la situation, et continuez votre route. Vous arrivez vite vers une région qui vous intéresse. Celle-ci est une galerie de statues, toutes démontrant un savoir-faire particulièrement élevé. Les plafonds, murs, et le sol sont de plus ornés de motifs harmonieux. Vous vous arrêtez un moment, et lorsque vous vous sentez prêt à repartir, vous êtes comme revigoré.",
+          "2": "Vous ignorez totalement la situation, et continuez votre route. Vous arrivez vite vers une région qui vous intéresse. Celle-ci est une galerie de statues, toutes démontrant un savoir-faire particulièrement élevé. Les plafonds, murs, et le sol sont de plus ornés de motifs harmonieux. Alors que vou commencez à contempler les diverses créations, vous heurtez accidentellement le piédestal d'une petite statuette, qui tombe et se craque, non sans bruit. Un membre du chateau accourt bien vite et vous demande dédommagement pour la réparation de la statuette. Penaud, vous payez vite et mettez fin à votre petit tour.",
+          "3": "Vous choisissez de ne pas vous mêler de ces affaires : après tout, vous n'avez pas une relation bien profonde avec la sorcière, et ne connaissez même pas son nom ! Alors que vous vous retournez pour reprendre votre marche, la sorcière se retourne et vous fixe. Ses yeux semblent briller. Curieusement, alors même que cette partie du château est arrangée de façon tout à fait intuitive à traverser, vous vous perdez à plusieurs reprises pendant des heures."
+        },
+        "text": "Ignorer la situation."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous restez dans l'hésitation quelques longs instants. Vous êtes sorti de vos pensées par un passant qui vous reconnaît, et se présente comme un de vos admirateurs, espérant un jour devenir un aventurier aussi impressionant que vous l'êtes. Il vous donne quelques cadeaux pour célébrer votre rencontre, vous discutez un moment, puis vous vous séparez. Vous remarquez que la sorcière n'est plus dans le bureau, alors vous reprenez marche.",
+          "1": "Vous restez planté là plusieurs minutes, totalement incertain quant à comment agir. Soudain, de nombreux gardes arrivent. Ils saisissent la sorcière, qui s'exclame qu'ils vont trop loin et qu'elle est réellement une sorcière légitime et honnête. Vous voyant, elle indique que vous pouvez définitivement en attester. Les gardes choisissent de vous compter comme son complice dans le dérangement de l'ordre du château, aussi ils vous amènent tout comme elle en prison pour que vous vous calmiez, sans même vous laisser dire quoi que ce soit."
+        }
+      }
+    },
+    "text": "Alors que vous traversez posément l'aile Est du château, vous entendez des exclamations. Vous vous tournez, curieux, vers une porte ouverte d'où s'échappent les bruits : il 'agit du bureau des réclamations commerciales. Vous reconnaissez même la personne qui hausse le ton, il s'agit de la prétendue sorcière qui vous demande parfois de l'assister sur ses potions."
   }
 }
