@@ -10,8 +10,7 @@
           "money": 400
         },
         "2": {
-          "effect": "occupied",
-          "lostTime": 180,
+          "effect": "lost",
           "randomItem": {}
         }
       }
@@ -22,8 +21,7 @@
           "money": 300
         },
         "1": {
-          "effect": "occupied",
-          "lostTime": 60,
+          "effect": "sick",
           "health": -10
         },
         "2": {}
@@ -63,7 +61,7 @@
     "cabin": {
       "outcomes": {
         "0": {
-          "money": 250
+          "randomItem": {}
         },
         "1": {
           "randomItem": {}
@@ -76,10 +74,7 @@
     },
     "end": {
       "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 10
-        },
+        "0": {},
         "1": {}
       }
     }
