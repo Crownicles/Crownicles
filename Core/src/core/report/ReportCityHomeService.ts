@@ -541,6 +541,8 @@ export async function handleHomeBedReaction(
 			health: homeData.features.bedHealthRegeneration
 		}));
 
+		await MissionsController.update(lockedPlayer, response, { missionId: "healInBed" });
+
 		if (!bedCityId) {
 			return null;
 		}

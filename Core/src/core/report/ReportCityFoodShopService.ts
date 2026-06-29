@@ -17,6 +17,7 @@ import {
 	GUILD_DOMAIN_ERROR, GuildDomainConstants, GuildDomainError
 } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 
 interface ResolvedFoodShop {
 	player: Player;
@@ -120,7 +121,7 @@ function computeAffordableAmount(guild: Guild, request: ResolvedFoodShop): numbe
 	return Math.min(request.amount, maxStorable, maxAffordable);
 }
 
-export async function handleFoodShopBuy(keycloakId: string, packet: CommandReportFoodShopBuyReq): Promise<CrowniclesPacket> {
+export async function handleFoodShopBuy(keycloakId: string, packet: CommandReportFoodShopBuyReq, response: CrowniclesPacket[]): Promise<CrowniclesPacket> {
 	const resolved = await resolveFoodShopRequest(keycloakId, packet);
 	if (typeof resolved === "string") {
 		return makePacket(CommandReportFoodShopBuyErrorRes, { error: resolved });
@@ -137,10 +138,13 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 	 * over-spending it (the PR-C bug — see
 	 * `Core/__tests__-integration/handlers/handleFoodShopBuy.race.test.ts`).
 	 */
-	return await Guild.withLocked(resolved.guildId, async guild => {
+	const result = await Guild.withLocked(resolved.guildId, async guild => {
 		const actualAmount = computeAffordableAmount(guild, resolved);
 		if (actualAmount <= 0) {
-			return makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY });
+			return {
+				packet: makePacket(CommandReportFoodShopBuyErrorRes, { error: GUILD_DOMAIN_ERROR.CANNOT_BUY }),
+				amountBought: 0
+			};
 		}
 
 		const totalCost = resolved.pricePerUnit * actualAmount;
@@ -158,12 +162,23 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 			totalCost
 		}).then();
 
-		return makePacket(CommandReportFoodShopBuyRes, {
-			foodType: resolved.foodType,
-			newFoodStock: guild.getFoodAmount(resolved.foodType),
-			newTreasury: guild.treasury,
-			amountBought: actualAmount,
-			totalCost
-		});
+		return {
+			packet: makePacket(CommandReportFoodShopBuyRes, {
+				foodType: resolved.foodType,
+				newFoodStock: guild.getFoodAmount(resolved.foodType),
+				newTreasury: guild.treasury,
+				amountBought: actualAmount,
+				totalCost
+			}),
+			amountBought: actualAmount
+		};
 	});
+
+	if (result.amountBought > 0) {
+		await MissionsController.update(resolved.player, response, {
+			missionId: "buyGuildPetFood",
+			count: result.amountBought
+		});
+	}
+	return result.packet;
 }

@@ -21,6 +21,7 @@ import {
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
 import type { GuildTreasuryDepositLogParams } from "../database/logs/LogsCityLogger";
+import { MissionsController } from "../missions/MissionsController";
 
 interface DepositTreasuryResult {
 	packet: CrowniclesPacket;
@@ -34,7 +35,7 @@ function logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams | null): 
 	crowniclesInstance?.logsDatabase.logGuildTreasuryDeposit(params).then();
 }
 
-export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<CrowniclesPacket> {
+export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq, response: CrowniclesPacket[]): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player || !player.guildId) {
 		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
@@ -106,5 +107,8 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 		}
 	);
 	logGuildTreasuryDeposit(result.logParams);
+	if (result.logParams !== null) {
+		await MissionsController.update(player, response, { missionId: "depositGuildTreasury" });
+	}
 	return result.packet;
 }

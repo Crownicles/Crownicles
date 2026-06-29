@@ -22,6 +22,8 @@ import {
 import InventoryInfo from "../database/game/models/InventoryInfo";
 import { buildChestData } from "./ReportCityService";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { MissionsController } from "../missions/MissionsController";
 
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
@@ -97,7 +99,8 @@ async function createBackupSlot(player: Player, itemCategory: ItemCategory, item
  */
 export async function handleChestAction(
 	keycloakId: string,
-	packet: CommandReportHomeChestActionReq
+	packet: CommandReportHomeChestActionReq,
+	response: CrowniclesPacket[]
 ): Promise<ChestActionResult> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	const home = player ? await Homes.getOfPlayer(player.id) : null;
@@ -112,14 +115,15 @@ export async function handleChestAction(
 
 	return await withLockedEntities(
 		[Player.lockKey(chestActionContext.player.id), Home.lockKey(chestActionContext.home.id)] as const,
-		([lockedPlayer, lockedHome]) => runChestActionUnderLock(packet, lockedPlayer, lockedHome)
+		([lockedPlayer, lockedHome]) => runChestActionUnderLock(packet, lockedPlayer, lockedHome, response)
 	);
 }
 
 async function runChestActionUnderLock(
 	packet: CommandReportHomeChestActionReq,
 	player: Player,
-	home: Home
+	home: Home,
+	response: CrowniclesPacket[]
 ): Promise<ChestActionResult> {
 	const homeLevel = home.getLevel();
 	if (homeLevel === null) {
@@ -129,6 +133,10 @@ async function runChestActionUnderLock(
 	const error = await executeChestAction(packet, player, home);
 	if (error) {
 		return buildChestActionError(error);
+	}
+
+	if (packet.action === HomeConstants.CHEST_ACTIONS.DEPOSIT) {
+		await MissionsController.update(player, response, { missionId: "depositChestItem" });
 	}
 
 	// Build refreshed chest data
