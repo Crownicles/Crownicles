@@ -157,10 +157,7 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		player, city, context, response, onClose
 	});
 
-	await MissionsController.update(player, response, {
-		missionId: "visitCityNpc",
-		params: { shopId }
-	});
+	await MissionsController.update(player, response, { missionId: "visitCityNpc" });
 }
 
 /**
