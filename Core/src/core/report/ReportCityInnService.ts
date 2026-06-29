@@ -77,6 +77,8 @@ export async function handleInnMealReaction(
 			moneySpent: reaction.meal.price
 		}));
 
+		await MissionsController.update(lockedPlayer, response, { missionId: "innMeal" });
+
 		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {
 			crowniclesInstance?.logsDatabase.logInnMeal({
@@ -147,6 +149,7 @@ export async function handleInnRoomReaction(
 		}));
 
 		await MissionsController.update(lockedPlayer, response, { missionId: "sleepInInn" });
+		await MissionsController.update(lockedPlayer, response, { missionId: "healInBed" });
 
 		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {

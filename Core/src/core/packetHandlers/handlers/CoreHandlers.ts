@@ -64,7 +64,7 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportHomeChestActionReq)
 	async homeChestAction(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportHomeChestActionReq): Promise<void> {
-		const result = await handleChestAction(context.keycloakId!, packet);
+		const result = await handleChestAction(context.keycloakId!, packet, response);
 		response.push(makePacket(CommandReportHomeChestActionRes, result));
 	}
 
@@ -136,11 +136,11 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportFoodShopBuyReq)
 	async foodShopBuy(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportFoodShopBuyReq): Promise<void> {
-		response.push(await handleFoodShopBuy(context.keycloakId!, packet));
+		response.push(await handleFoodShopBuy(context.keycloakId!, packet, response));
 	}
 
 	@packetHandler(CommandReportGuildDomainDepositTreasuryReq)
 	async guildDomainDepositTreasury(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<void> {
-		response.push(await handleGuildDomainDepositTreasury(context.keycloakId!, packet));
+		response.push(await handleGuildDomainDepositTreasury(context.keycloakId!, packet, response));
 	}
 }

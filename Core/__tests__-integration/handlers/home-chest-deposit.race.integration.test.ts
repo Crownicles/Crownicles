@@ -110,7 +110,7 @@ describe("ReportCityChestService.handleChestAction deposit race", () => {
 		};
 
 		const results = await runAllOrThrow(
-			Array.from({ length: N_CONCURRENT }, () => chestService.handleChestAction(KEYCLOAK_ID, depositPacket))
+			Array.from({ length: N_CONCURRENT }, () => chestService.handleChestAction(KEYCLOAK_ID, depositPacket, []))
 		);
 
 		// Exactly one deposit may succeed; the others find an empty slot.
