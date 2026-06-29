@@ -2572,9 +2572,9 @@
       "spiritual": "Sie finden einen Ort, der von Gelassenheit geprägt ist, an dem eine friedliche Atmosphäre herrscht, die Ihr Wohlbefinden fördert. Sie durchsuchen die Umgebung nach Dingen oder Gegenständen."
     },
     "foundStories": {
-      "1": "Sie haben das folgende gemeinsame Material gefunden: {{rarityEmote}} {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Unglaublich! Sie sind auf ein ungewöhnliches Material gestoßen: {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Was für ein unglaubliches Glück! Sie haben ein seltenes Material entdeckt: {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
+      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
+      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
     }
   },
   "expeditionAdvice": {
