@@ -2,9 +2,13 @@ import { IMission } from "../IMission";
 import {
 	ItemCategory, ItemConstants
 } from "../../../../../Lib/src/constants/ItemConstants";
-import { InventorySlots } from "../../database/game/models/InventorySlot";
+import {
+	InventorySlot, InventorySlots
+} from "../../database/game/models/InventorySlot";
 import { Homes } from "../../database/game/models/Home";
-import { HomeChestSlots } from "../../database/game/models/HomeChestSlot";
+import {
+	HomeChestSlot, HomeChestSlots
+} from "../../database/game/models/HomeChestSlot";
 import Player from "../../database/game/models/Player";
 
 const REQUIRED_LEVEL = 5;
@@ -18,15 +22,31 @@ function isEpicItemAtRequiredLevel(rarity: number, level: number): boolean {
 }
 
 /**
+ * Whether an equipped or reserve inventory slot holds a qualifying weapon or shield.
+ */
+function isQualifyingInventorySlot(slot: InventorySlot): boolean {
+	const item = slot.getItem();
+	return slot.isPrimaryEquipment() && item !== null && isEpicItemAtRequiredLevel(item.rarity, slot.itemLevel);
+}
+
+/**
+ * Whether a home chest slot holds a qualifying weapon or shield.
+ */
+function isQualifyingChestSlot(slot: HomeChestSlot): boolean {
+	if (slot.isEmpty() || slot.itemCategory !== ItemCategory.WEAPON && slot.itemCategory !== ItemCategory.ARMOR) {
+		return false;
+	}
+	const item = slot.getItem();
+	return item !== null && isEpicItemAtRequiredLevel(item.rarity, slot.itemLevel);
+}
+
+/**
  * Whether the player already owns a qualifying weapon or shield, either equipped,
  * in their inventory reserve, or stored in their home chest.
  */
 async function ownsQualifyingItem(player: Player): Promise<boolean> {
 	const inventorySlots = await InventorySlots.getOfPlayer(player.id);
-	if (inventorySlots.some(slot => {
-		const item = slot.getItem();
-		return slot.isPrimaryEquipment() && item !== null && isEpicItemAtRequiredLevel(item.rarity, slot.itemLevel);
-	})) {
+	if (inventorySlots.some(isQualifyingInventorySlot)) {
 		return true;
 	}
 
@@ -35,13 +55,7 @@ async function ownsQualifyingItem(player: Player): Promise<boolean> {
 		return false;
 	}
 	const chestSlots = await HomeChestSlots.getOfHome(home.id);
-	return chestSlots.some(slot => {
-		const item = slot.getItem();
-		return !slot.isEmpty()
-			&& (slot.itemCategory === ItemCategory.WEAPON || slot.itemCategory === ItemCategory.ARMOR)
-			&& item !== null
-			&& isEpicItemAtRequiredLevel(item.rarity, slot.itemLevel);
-	});
+	return chestSlots.some(isQualifyingChestSlot);
 }
 
 export const missionInterface: IMission = {

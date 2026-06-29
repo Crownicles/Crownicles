@@ -231,6 +231,63 @@ export function handleGardenHarvest(
 	);
 }
 
+type CompostResult = {
+	plantId: PlantId; materialId: number;
+};
+
+/**
+ * Log the garden harvest action when at least one plant was harvested or composted.
+ */
+function logGardenHarvest(player: Player, plantsHarvested: number, compostResults: CompostResult[], harvestedSlots: number[]): void {
+	if (harvestedSlots.length === 0 && compostResults.length === 0) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logGardenAction({
+		keycloakId: player.keycloakId,
+		cityId: player.getCurrentCityId(),
+		action: GardenActionType.HARVEST,
+		plantId: "",
+		slot: 0,
+		cost: 0,
+		quantity: plantsHarvested + compostResults.length
+	}).then();
+}
+
+/**
+ * Trigger the harvest-related missions (cultivated plants, ancestral trees, composted materials).
+ */
+async function triggerHarvestMissions(params: {
+	player: Player;
+	response: CrowniclesPacket[];
+	plantsHarvested: number;
+	ancestralHarvestCount: number;
+	compostResults: CompostResult[];
+}): Promise<void> {
+	const {
+		player, response, plantsHarvested, ancestralHarvestCount, compostResults
+	} = params;
+	if (plantsHarvested > 0) {
+		await MissionsController.update(player, response, {
+			missionId: "cultivatePlants",
+			count: plantsHarvested
+		});
+	}
+
+	if (ancestralHarvestCount > 0) {
+		await MissionsController.update(player, response, {
+			missionId: "cultivateAncestralTrees",
+			count: ancestralHarvestCount
+		});
+	}
+
+	if (compostResults.length > 0) {
+		await updateCollectMaterialsMission(player, response, compostResults.map(result => ({
+			materialId: result.materialId,
+			quantity: 1
+		})));
+	}
+}
+
 async function runHarvestUnderLock(params: {
 	player: Player;
 	home: Home;
@@ -245,9 +302,7 @@ async function runHarvestUnderLock(params: {
 	const maxCapacity = homeLevel.features.gardenPlantStorageCapacity;
 
 	let plantsHarvested = 0;
-	const compostResults: {
-		plantId: PlantId; materialId: number;
-	}[] = [];
+	const compostResults: CompostResult[] = [];
 	const harvestedSlots: number[] = [];
 	const ancestralHarvest = { count: 0 };
 
@@ -273,38 +328,14 @@ async function runHarvestUnderLock(params: {
 			maxCapacity
 		}));
 
-	if (harvestedSlots.length > 0 || compostResults.length > 0) {
-		crowniclesInstance?.logsDatabase.logGardenAction({
-			keycloakId: player.keycloakId,
-			cityId: player.getCurrentCityId(),
-			action: GardenActionType.HARVEST,
-			plantId: "",
-			slot: 0,
-			cost: 0,
-			quantity: plantsHarvested + compostResults.length
-		}).then();
-	}
-
-	if (plantsHarvested > 0) {
-		await MissionsController.update(player, response, {
-			missionId: "cultivatePlants",
-			count: plantsHarvested
-		});
-	}
-
-	if (ancestralHarvest.count > 0) {
-		await MissionsController.update(player, response, {
-			missionId: "cultivateAncestralTrees",
-			count: ancestralHarvest.count
-		});
-	}
-
-	if (compostResults.length > 0) {
-		await updateCollectMaterialsMission(player, response, compostResults.map(result => ({
-			materialId: result.materialId,
-			quantity: 1
-		})));
-	}
+	logGardenHarvest(player, plantsHarvested, compostResults, harvestedSlots);
+	await triggerHarvestMissions({
+		player,
+		response,
+		plantsHarvested,
+		ancestralHarvestCount: ancestralHarvest.count,
+		compostResults
+	});
 
 	return makePacket(CommandReportGardenHarvestRes, {
 		plantsHarvested,
@@ -322,9 +353,7 @@ async function processHarvestSlotUnderLock(params: {
 	playerId: number;
 	maxCapacity: number;
 	harvestedSlots: number[];
-	compostResults: {
-		plantId: PlantId; materialId: number;
-	}[];
+	compostResults: CompostResult[];
 	ancestralHarvest: { count: number };
 }): Promise<number> {
 	const {
