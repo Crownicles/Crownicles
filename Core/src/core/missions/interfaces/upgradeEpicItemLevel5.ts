@@ -30,10 +30,20 @@ function isQualifyingInventorySlot(slot: InventorySlot): boolean {
 }
 
 /**
+ * Whether the item category is a weapon or a shield (armor).
+ */
+function isWeaponOrArmorCategory(category: ItemCategory): boolean {
+	return category === ItemCategory.WEAPON || category === ItemCategory.ARMOR;
+}
+
+/**
  * Whether a home chest slot holds a qualifying weapon or shield.
  */
 function isQualifyingChestSlot(slot: HomeChestSlot): boolean {
-	if (slot.isEmpty() || slot.itemCategory !== ItemCategory.WEAPON && slot.itemCategory !== ItemCategory.ARMOR) {
+	if (slot.isEmpty()) {
+		return false;
+	}
+	if (!isWeaponOrArmorCategory(slot.itemCategory)) {
 		return false;
 	}
 	const item = slot.getItem();
