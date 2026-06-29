@@ -2572,9 +2572,9 @@
       "spiritual": "si trova un luogo di serenità, dove l'atmosfera è pacifica e favorevole al benessere. Si cerca nell'ambiente circostante qualche oggetto."
     },
     "foundStories": {
-      "1": "Hai trovato il seguente materiale in comune su {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incredibile! Avete trovato un materiale {{rarityEmote}} davvero insolito: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Che fortuna incredibile! Avete scoperto un materiale {{rarityEmote}} raro: {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
+      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
+      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
     }
   },
   "expeditionAdvice": {
