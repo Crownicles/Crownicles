@@ -76,7 +76,7 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportGardenHarvestReq)
 	async gardenHarvest(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenHarvestReq): Promise<void> {
-		response.push(await handleGardenHarvest(context.keycloakId!, packet));
+		response.push(await handleGardenHarvest(context.keycloakId!, packet, response));
 	}
 
 	@packetHandler(CommandReportGardenPlantReq)

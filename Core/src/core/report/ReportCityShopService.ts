@@ -42,6 +42,7 @@ import {
 	PlantConstants, PlantType
 } from "../../../../Lib/src/constants/PlantConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { MissionsController } from "../missions/MissionsController";
 import {
 	Material, MaterialDataController
 } from "../../data/Material";
@@ -154,6 +155,11 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 	}
 	await handler({
 		player, city, context, response, onClose
+	});
+
+	await MissionsController.update(player, response, {
+		missionId: "visitCityNpc",
+		params: { shopId }
 	});
 }
 

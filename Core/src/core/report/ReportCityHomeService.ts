@@ -28,6 +28,7 @@ import {
 	Apartment, Apartments
 } from "../database/game/models/Apartment";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 import type {
 	HomeBedUseLogParams,
 	HomeMoveLogParams,
@@ -123,6 +124,9 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 		}
 	);
 	logHomePurchase(logParams);
+	if (logParams) {
+		await MissionsController.update(player, response, { missionId: "buyHome" });
+	}
 }
 
 /**
@@ -202,6 +206,12 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 		}
 	);
 	logHomeUpgrade(logParams);
+	if (logParams) {
+		await MissionsController.update(player, response, {
+			missionId: "upgradeHomeLevel",
+			params: { homeLevel: logParams.toLevel }
+		});
+	}
 }
 
 /**

@@ -19,6 +19,7 @@ import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Parameters for the enchantItem function
@@ -218,6 +219,8 @@ async function executeEnchant(params: {
 		enchantmentId: enchantment.id,
 		enchantmentType: enchantment.kind.type.id
 	}));
+
+	await MissionsController.update(lockedPlayer, response, { missionId: "enchantItem" });
 
 	const cityId = lockedPlayer.getCurrentCityId();
 	if (cityId) {

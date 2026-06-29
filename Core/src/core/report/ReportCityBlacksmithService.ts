@@ -24,6 +24,7 @@ import { Materials } from "../database/game/models/Material";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 
 export interface UpgradeItemValidationResult {
 	itemToUpgrade?: {
@@ -286,6 +287,8 @@ async function executeUpgradeItemUnderLock(params: {
 		itemCategory: reaction.itemCategory,
 		newItemLevel: itemToUpgrade.nextLevel
 	}));
+
+	await MissionsController.update(lockedPlayer, response, { missionId: "upgradeItem" });
 }
 
 /**
@@ -389,6 +392,8 @@ async function executeBlacksmithUpgrade(params: {
 		totalCost: executionData.totalCost,
 		boughtMaterials: executionData.boughtMaterials
 	}));
+
+	await MissionsController.update(lockedPlayer, response, { missionId: "upgradeItem" });
 
 	const cityId = lockedPlayer.getCurrentCityId();
 	if (cityId) {

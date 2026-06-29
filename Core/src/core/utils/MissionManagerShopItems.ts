@@ -62,6 +62,7 @@ function getEndCallbackSkipMissionShopItem(player: Player, missionList: MissionS
 		}
 		playerMissionsInfo.missionSkipsUsedThisWeek += 1;
 		await playerMissionsInfo.save();
+		await MissionsController.update(player, response, { missionId: "replaceMission" });
 	};
 }
 

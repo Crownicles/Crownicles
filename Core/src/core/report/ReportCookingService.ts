@@ -61,6 +61,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 import type { CookingUseLogParams } from "../database/logs/LogsCityLogger";
 
 interface PlayerAndHome {
@@ -893,6 +894,7 @@ async function executeReadyCookingCraft(
 	logCookingUse(buildCookingUseLogParams({
 		craftContext, result, outputResult
 	}));
+	await MissionsController.update(craftContext.player, response, { missionId: "cookRecipes" });
 	return response;
 }
 

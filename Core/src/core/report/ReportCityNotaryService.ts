@@ -23,6 +23,7 @@ import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { UniqueConstraintError } from "sequelize";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 
 function buildClaimTooLowPacket(apartment: Apartment, currentRent: number): CrowniclesPacket | null {
 	const apartmentCity = CityDataController.instance.getById(apartment.cityId);
@@ -158,6 +159,8 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 			cost: price
 		}));
 
+		await MissionsController.update(lockedPlayer, response, { missionId: "buyApartment" });
+
 		crowniclesInstance?.logsDatabase.logApartmentPurchase({
 			keycloakId: lockedPlayer.keycloakId,
 			cityId: city.id,
@@ -221,6 +224,8 @@ export async function handleApartmentClaimRentReaction(player: Player, apartment
 				mapLocationId: apartmentCity.maps[0],
 				rentClaimed: accumulated
 			}));
+
+			await MissionsController.update(lockedPlayer, response, { missionId: "collectRent" });
 
 			crowniclesInstance?.logsDatabase.logApartmentRentClaim({
 				keycloakId: lockedPlayer.keycloakId,

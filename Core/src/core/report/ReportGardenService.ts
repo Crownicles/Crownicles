@@ -39,6 +39,7 @@ import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 import { GardenActionType } from "../database/logs/LogsCityLogger";
 
 type HomeData = ReactionCollectorCityData["home"];
@@ -211,7 +212,8 @@ function computeReadyAtTimestamp(slot: HomeGardenSlot, effectiveGrowthTime: numb
  */
 export function handleGardenHarvest(
 	keycloakId: string,
-	_packet: CommandReportGardenHarvestReq
+	_packet: CommandReportGardenHarvestReq,
+	response: CrowniclesPacket[]
 ): Promise<CrowniclesPacket> {
 	return withGardenLock(
 		keycloakId,
@@ -222,7 +224,7 @@ export function handleGardenHarvest(
 				return Promise.resolve(makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS));
 			}
 			return runHarvestUnderLock({
-				player, home, homeLevel
+				player, home, homeLevel, response
 			});
 		}
 	);
@@ -232,9 +234,10 @@ async function runHarvestUnderLock(params: {
 	player: Player;
 	home: Home;
 	homeLevel: HomeLevel;
+	response: CrowniclesPacket[];
 }): Promise<CrowniclesPacket> {
 	const {
-		player, home, homeLevel
+		player, home, homeLevel, response
 	} = params;
 	const earthQuality = homeLevel.features.gardenEarthQuality;
 	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
@@ -277,6 +280,13 @@ async function runHarvestUnderLock(params: {
 			cost: 0,
 			quantity: plantsHarvested + compostResults.length
 		}).then();
+	}
+
+	if (plantsHarvested > 0) {
+		await MissionsController.update(player, response, {
+			missionId: "cultivatePlants",
+			count: plantsHarvested
+		});
 	}
 
 	return makePacket(CommandReportGardenHarvestRes, {
