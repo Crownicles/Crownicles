@@ -289,6 +289,12 @@ async function executeUpgradeItemUnderLock(params: {
 	}));
 
 	await MissionsController.update(lockedPlayer, response, { missionId: "upgradeItem" });
+	await MissionsController.update(lockedPlayer, response, {
+		missionId: "upgradeEpicItemLevel5",
+		params: {
+			rarity: inventorySlot.getItem()?.rarity ?? 0, newLevel: itemToUpgrade.nextLevel
+		}
+	});
 }
 
 /**
@@ -394,6 +400,12 @@ async function executeBlacksmithUpgrade(params: {
 	}));
 
 	await MissionsController.update(lockedPlayer, response, { missionId: "upgradeItem" });
+	await MissionsController.update(lockedPlayer, response, {
+		missionId: "upgradeEpicItemLevel5",
+		params: {
+			rarity: inventorySlot.getItem()?.rarity ?? 0, newLevel: itemToUpgrade.nextLevel
+		}
+	});
 
 	const cityId = lockedPlayer.getCurrentCityId();
 	if (cityId) {

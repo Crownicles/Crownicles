@@ -21,6 +21,7 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { GuildUtils } from "../utils/GuildUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 import type {
 	GuildDomainPurchaseLogParams,
 	GuildDomainUpgradeLogParams
@@ -115,6 +116,8 @@ export async function handleGuildDomainNotaryReaction(player: Player, city: City
 		isRelocation: outcome.isRelocation,
 		cost: outcome.cost
 	});
+
+	await MissionsController.update(player, response, { missionId: "joinGuildHouse" });
 }
 
 interface ResolvedUpgrade {

@@ -16,6 +16,7 @@ import {
 } from "../../data/Monster";
 import { ClassDataController } from "../../data/Class";
 import { MissionsController } from "../missions/MissionsController";
+import { MATERIAL_COLLECT_METHOD } from "../missions/interfaces/collectMaterialsByMethod";
 import {
 	Guild
 } from "../database/game/models/Guild";
@@ -244,6 +245,12 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
 	const materialLoot = generateBossLoot(mapId);
 	if (materialLoot.length > 0) {
 		await applyMaterialLoot(player.id, materialLoot);
+		const lootedMaterialCount = materialLoot.reduce((sum, loot) => sum + loot.quantity, 0);
+		await MissionsController.update(player, endFightResponse, {
+			missionId: "collectMaterialsByMethod",
+			count: lootedMaterialCount,
+			params: { method: MATERIAL_COLLECT_METHOD.BOSS }
+		});
 	}
 
 	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);

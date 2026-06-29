@@ -1553,6 +1553,7 @@
     "bigFeast": "Assister à un grand festin",
     "buyApartment": "Acheter un appartement",
     "buyHome": "Acheter une maison",
+    "buyAllApartments": "Acheter tous les appartements",
     "buyItemFromAlderic": "Acheter un objet à Aldéric",
     "buyTokensFromShop_one": "Acheter {{count}} jeton {emote:unitValues.token} au magasin",
     "buyTokensFromShop_other": "Acheter {{count}} jetons {emote:unitValues.token} au magasin",
@@ -1562,6 +1563,8 @@
     "chooseClassTier": "Avoir une classe de niveau {{variantText}} ou plus",
     "collectMaterials_one": "Récolter {{count}} matériau de rareté {{variantText}} ou plus",
     "collectMaterials_other": "Récolter {{count}} matériaux de rareté {{variantText}} ou plus",
+    "collectMaterialsByMethod_one": "Récolter {{count}} matériau par {{variantText}}",
+    "collectMaterialsByMethod_other": "Récolter {{count}} matériaux par {{variantText}}",
     "collectRent": "Récolter le loyer d'un appartement",
     "commandFightHistory": "Consulter l'historique des personnes vous ayant attaqués",
     "commandMission": "Faire la commande {command:missions}",
@@ -1570,6 +1573,8 @@
     "cookRecipes_other": "Réaliser {{count}} recettes",
     "cultivatePlants_one": "Récolter {{count}} plante",
     "cultivatePlants_other": "Récolter {{count}} plantes",
+    "cultivateAncestralTrees_one": "Cultiver {{count}} arbre ancestral",
+    "cultivateAncestralTrees_other": "Cultiver {{count}} arbres ancestraux",
     "dailyPotionsStock": "Acheter tout le stock de potions du jour",
     "doReports_one": "Faire {{count}} rapport",
     "doReports_other": "Faire {{count}} rapports",
@@ -1612,11 +1617,13 @@
     "guildLevel": "Faire partie d'une guilde niveau {{count, number}} ou plus",
     "haveItemRarity": "Posséder un équipement de rareté {{variantText}} ou mieux",
     "havePet": "Avoir un familier avec soi",
+    "haveGardenTalisman": "Posséder le $t(models:talisman.remoteHarvest)",
     "depositPetInShelter": "Déposer ou libérer son familier",
     "petCaress": "Caresser votre familier",
     "petAssistedFight": "Se faire aider par votre familier en combat",
     "havePotions": "Posséder {{count}} potions en même temps",
     "joinGuild": "Rejoindre ou créer une guilde",
+    "joinGuildHouse": "Faire partie d'une maison de guilde",
     "joinMemberOnBoat": "Rejoindre un membre sur l'île",
     "joinPVEIsland": "Rejoindre l'île mystérieuse",
     "kingsMoneyValue": "Obtenir moins de 6500 {emote:unitValues.money} dans l'argent du roi",
@@ -1669,6 +1676,7 @@
     "unlock": "Libérer quelqu'un de prison",
     "upgradeHomeLevel": "Améliorer votre maison au niveau {{variantText}}",
     "upgradeItem": "Améliorer une arme ou un bouclier",
+    "upgradeEpicItemLevel5": "Améliorer une arme ou un bouclier de rareté épique ou supérieure au niveau 5",
     "visitCityNpc": "Rendre visite à un commerçant de la ville",
     "wealthyPayForPVEIsland": "Acheter un voyage vers une île mystérieuse au prix maximal",
     "winBoss_one": "Gagner {{count}} combat de boss",
@@ -1681,6 +1689,7 @@
   "missionVariants": {
     "default": "{{variant}}",
     "collectMaterials": "$t(models:materialRarityNames.{{variant}})",
+    "collectMaterialsByMethod": "$t(models:materialMethodNames.{{variant}})",
     "drinkPotionRarity": "$t(items:rarities.{{variant}})",
     "haveItemRarity": "$t(items:rarities.{{variant}})",
     "fightMinTurns": "{{variant}}",
@@ -1695,6 +1704,10 @@
     "1": "commune",
     "2": "peu commune",
     "3": "rare"
+  },
+  "materialMethodNames": {
+    "1": "compostage",
+    "2": "combat de boss"
   },
   "monsters": {
     "forestTroll": {

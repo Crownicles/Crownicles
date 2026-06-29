@@ -420,6 +420,7 @@ export async function openHerbalist({
 						const playerTalismans = await PlayerTalismansManager.getOfPlayer(playerId);
 						playerTalismans.hasRemoteHarvestTalisman = true;
 						await playerTalismans.save();
+						await MissionsController.update(player, buyResponse, { missionId: "haveGardenTalisman" });
 						return { success: true };
 					}
 				}

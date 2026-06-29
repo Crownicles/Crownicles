@@ -161,6 +161,14 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 
 		await MissionsController.update(lockedPlayer, response, { missionId: "buyApartment" });
 
+		const totalApartments = CityDataController.instance.getAllValues().filter(c => c.apartmentPrice).length;
+		const ownedApartments = (await Apartments.getOfPlayer(lockedPlayer.id)).length;
+		if (totalApartments > 0 && ownedApartments >= totalApartments) {
+			await MissionsController.update(lockedPlayer, response, {
+				missionId: "buyAllApartments", count: 1, set: true
+			});
+		}
+
 		crowniclesInstance?.logsDatabase.logApartmentPurchase({
 			keycloakId: lockedPlayer.keycloakId,
 			cityId: city.id,
