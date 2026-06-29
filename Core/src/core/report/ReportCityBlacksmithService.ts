@@ -24,6 +24,7 @@ import { Materials } from "../database/game/models/Material";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 
 export interface UpgradeItemValidationResult {
 	itemToUpgrade?: {
@@ -239,6 +240,31 @@ export async function handleUpgradeItemReaction(
 }
 
 /**
+ * Fallback rarity used when the upgraded item can no longer be resolved.
+ * It is below every real rarity so the epic-upgrade mission never matches by mistake.
+ */
+const UNKNOWN_ITEM_RARITY = 0;
+
+/**
+ * Update the upgradeItem and upgradeEpicItemLevel5 missions after an item has been upgraded.
+ * Shared by both the home upgrade station and the city blacksmith flows.
+ */
+async function updateUpgradeMissionsUnderLock(
+	lockedPlayer: Player,
+	response: CrowniclesPacket[],
+	inventorySlot: PlayerInventorySlot,
+	newLevel: number
+): Promise<void> {
+	await MissionsController.update(lockedPlayer, response, { missionId: "upgradeItem" });
+	await MissionsController.update(lockedPlayer, response, {
+		missionId: "upgradeEpicItemLevel5",
+		params: {
+			rarity: inventorySlot.getItem()?.rarity ?? UNKNOWN_ITEM_RARITY, newLevel
+		}
+	});
+}
+
+/**
  * Inside-lock body of `handleUpgradeItemReaction`: re-validate against
  * the locked row, consume materials, mutate the inventory slot.
  */
@@ -286,6 +312,8 @@ async function executeUpgradeItemUnderLock(params: {
 		itemCategory: reaction.itemCategory,
 		newItemLevel: itemToUpgrade.nextLevel
 	}));
+
+	await updateUpgradeMissionsUnderLock(lockedPlayer, response, inventorySlot, itemToUpgrade.nextLevel);
 }
 
 /**
@@ -389,6 +417,8 @@ async function executeBlacksmithUpgrade(params: {
 		totalCost: executionData.totalCost,
 		boughtMaterials: executionData.boughtMaterials
 	}));
+
+	await updateUpgradeMissionsUnderLock(lockedPlayer, response, inventorySlot, itemToUpgrade.nextLevel);
 
 	const cityId = lockedPlayer.getCurrentCityId();
 	if (cityId) {

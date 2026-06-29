@@ -23,6 +23,7 @@ import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { UniqueConstraintError } from "sequelize";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 
 function buildClaimTooLowPacket(apartment: Apartment, currentRent: number): CrowniclesPacket | null {
 	const apartmentCity = CityDataController.instance.getById(apartment.cityId);
@@ -97,6 +98,72 @@ async function persistApartmentBuyUnderLock(params: {
 }
 
 /**
+ * Push the "apartment already owned in this city" reply.
+ */
+function pushApartmentAlreadyOwned(response: CrowniclesPacket[], city: City): void {
+	response.push(makePacket(CommandReportApartmentAlreadyOwnedRes, {
+		cityId: city.id,
+		mapLocationId: city.maps[0]
+	}));
+}
+
+/**
+ * Run the locked apartment purchase critical section: re-validate ownership and
+ * wallet against the freshly-locked player, persist the buy, then trigger the
+ * related missions and the purchase log.
+ */
+async function runApartmentBuyUnderLock(params: {
+	lockedPlayer: Player;
+	city: City;
+	price: number;
+	response: CrowniclesPacket[];
+}): Promise<void> {
+	const {
+		lockedPlayer, city, price, response
+	} = params;
+
+	// Re-validate ownership against the locked player.
+	const existing = await Apartments.getOfPlayerInCity(lockedPlayer.id, city.id);
+	if (existing) {
+		pushApartmentAlreadyOwned(response, city);
+		return;
+	}
+
+	if (price > lockedPlayer.money) {
+		response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: price - lockedPlayer.money }));
+		return;
+	}
+
+	const result = await persistApartmentBuyUnderLock({
+		lockedPlayer, city, price, response
+	});
+	if (result.alreadyOwned) {
+		pushApartmentAlreadyOwned(response, city);
+		return;
+	}
+
+	response.push(makePacket(CommandReportApartmentBuyRes, {
+		cityId: city.id,
+		mapLocationId: city.maps[0],
+		cost: price
+	}));
+
+	await MissionsController.update(lockedPlayer, response, { missionId: "buyApartment" });
+
+	if (await Apartments.ownsAllApartments(lockedPlayer.id)) {
+		await MissionsController.update(lockedPlayer, response, {
+			missionId: "buyAllApartments", count: 1, set: true
+		});
+	}
+
+	crowniclesInstance?.logsDatabase.logApartmentPurchase({
+		keycloakId: lockedPlayer.keycloakId,
+		cityId: city.id,
+		price
+	}).then();
+}
+
+/**
  * Handle apartment purchase reaction — player buys a new apartment in the current city.
  *
  * Concurrency: read-validate-spend-create runs under a Player lock so two
@@ -125,45 +192,9 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 		return;
 	}
 
-	await Player.withLocked(player.id, async lockedPlayer => {
-		// Re-validate ownership against the locked player.
-		const existing = await Apartments.getOfPlayerInCity(lockedPlayer.id, city.id);
-		if (existing) {
-			response.push(makePacket(CommandReportApartmentAlreadyOwnedRes, {
-				cityId: city.id,
-				mapLocationId: city.maps[0]
-			}));
-			return;
-		}
-
-		if (price > lockedPlayer.money) {
-			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: price - lockedPlayer.money }));
-			return;
-		}
-
-		const result = await persistApartmentBuyUnderLock({
-			lockedPlayer, city, price, response
-		});
-		if (result.alreadyOwned) {
-			response.push(makePacket(CommandReportApartmentAlreadyOwnedRes, {
-				cityId: city.id,
-				mapLocationId: city.maps[0]
-			}));
-			return;
-		}
-
-		response.push(makePacket(CommandReportApartmentBuyRes, {
-			cityId: city.id,
-			mapLocationId: city.maps[0],
-			cost: price
-		}));
-
-		crowniclesInstance?.logsDatabase.logApartmentPurchase({
-			keycloakId: lockedPlayer.keycloakId,
-			cityId: city.id,
-			price
-		}).then();
-	});
+	await Player.withLocked(player.id, lockedPlayer => runApartmentBuyUnderLock({
+		lockedPlayer, city, price, response
+	}));
 }
 
 /**
@@ -221,6 +252,8 @@ export async function handleApartmentClaimRentReaction(player: Player, apartment
 				mapLocationId: apartmentCity.maps[0],
 				rentClaimed: accumulated
 			}));
+
+			await MissionsController.update(lockedPlayer, response, { missionId: "collectRent" });
 
 			crowniclesInstance?.logsDatabase.logApartmentRentClaim({
 				keycloakId: lockedPlayer.keycloakId,

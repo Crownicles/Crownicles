@@ -17,6 +17,7 @@ import {
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import { crowniclesInstance } from "../../app";
+import { MissionsController } from "../missions/MissionsController";
 
 /**
  * Handle inn meal reaction — player eats a meal at an inn
@@ -144,6 +145,8 @@ export async function handleInnRoomReaction(
 			health: reaction.room.health,
 			moneySpent: reaction.room.price
 		}));
+
+		await MissionsController.update(lockedPlayer, response, { missionId: "sleepInInn" });
 
 		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {

@@ -18,7 +18,7 @@ import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
 import { MissionsController } from "../missions/MissionsController";
-import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
 import {
 	MissionSlot, MissionSlots
 } from "../database/game/models/MissionSlot";
@@ -55,13 +55,21 @@ function getEndCallbackSkipMissionShopItem(player: Player, missionList: MissionS
 			oldMission: MissionsController.prepareMissionSlot(mission),
 			newMission: MissionsController.prepareMissionSlot(newMission)
 		}));
-		const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
-		const price = playerMissionsInfo.missionSkipsUsedThisWeek;
-		if (price > 0) {
-			await playerMissionsInfo.spendGems(price, response, NumberChangeReason.MISSION_SHOP);
-		}
-		playerMissionsInfo.missionSkipsUsedThisWeek += 1;
-		await playerMissionsInfo.save();
+
+		/*
+		 * Re-read, charge and increment the weekly skip counter under a row lock so two
+		 * concurrent skips cannot both read the same stale price and lose an increment
+		 * (which would also under-charge the player).
+		 */
+		await PlayerMissionsInfo.withLocked(player.id, async lockedMissionsInfo => {
+			const price = lockedMissionsInfo.missionSkipsUsedThisWeek;
+			if (price > 0) {
+				await lockedMissionsInfo.spendGems(price, response, NumberChangeReason.MISSION_SHOP);
+			}
+			lockedMissionsInfo.missionSkipsUsedThisWeek += 1;
+			await lockedMissionsInfo.save();
+		});
+		await MissionsController.update(player, response, { missionId: "replaceMission" });
 	};
 }
 

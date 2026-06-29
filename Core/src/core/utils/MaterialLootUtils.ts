@@ -5,6 +5,9 @@ import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { Materials } from "../database/game/models/Material";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import { MaterialLootConstants } from "../../../../Lib/src/constants/MaterialLootConstants";
+import { MissionsController } from "../missions/MissionsController";
+import { Player } from "../database/game/models/Player";
+import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 
 /**
  * Generate weighted material loot from a pool of material IDs, where each
@@ -64,6 +67,30 @@ export function generateWeightedMaterialLoot(
 		materialId,
 		quantity
 	}));
+}
+
+/**
+ * Update the collectMaterials mission for the given loot, regardless of how the
+ * materials were obtained (small event, boss loot, compost...). The loot is
+ * grouped by rarity so the rarity-based mission variant can be matched correctly.
+ */
+export async function updateCollectMaterialsMission(player: Player, response: CrowniclesPacket[], loot: MaterialQuantity[]): Promise<void> {
+	const quantityByRarity = new Map<MaterialRarity, number>();
+	for (const entry of loot) {
+		const material = MaterialDataController.instance.getById(String(entry.materialId));
+		if (!material) {
+			continue;
+		}
+		const rarity = material.rarity as MaterialRarity;
+		quantityByRarity.set(rarity, (quantityByRarity.get(rarity) ?? 0) + entry.quantity);
+	}
+	for (const [rarity, count] of quantityByRarity) {
+		await MissionsController.update(player, response, {
+			missionId: "collectMaterials",
+			count,
+			params: { rarity }
+		});
+	}
 }
 
 /**

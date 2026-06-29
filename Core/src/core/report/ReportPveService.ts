@@ -46,7 +46,7 @@ import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects
 import { chooseDestination } from "./ReportDestinationService";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import {
-	applyMaterialLoot, generateBossLoot
+	applyMaterialLoot, generateBossLoot, updateCollectMaterialsMission
 } from "../utils/MaterialLootUtils";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 
@@ -244,6 +244,7 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
 	const materialLoot = generateBossLoot(mapId);
 	if (materialLoot.length > 0) {
 		await applyMaterialLoot(player.id, materialLoot);
+		await updateCollectMaterialsMission(player, endFightResponse, materialLoot);
 	}
 
 	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);

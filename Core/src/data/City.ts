@@ -154,6 +154,14 @@ export class CityDataController extends DataControllerString<City> {
 		return RandomUtils.crowniclesRandom.pick(Array.from(CityDataController.mapCache!.values()));
 	}
 
+	/**
+	 * Count how many cities offer an apartment for sale (i.e. have an apartment price configured).
+	 * Used to know when a player owns every available apartment.
+	 */
+	countApartmentCities(): number {
+		return this.getAllValues().filter(city => city.apartmentPrice).length;
+	}
+
 	private initMapCache(): void {
 		if (!CityDataController.mapCache) {
 			CityDataController.mapCache = new Map<number, City>();

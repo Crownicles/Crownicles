@@ -8,6 +8,7 @@ import {
 import { HomeConstants } from "../../../../../../Lib/src/constants/HomeConstants";
 import { TimeConstants } from "../../../../../../Lib/src/constants/TimeConstants";
 import { Home } from "./Home";
+import { CityDataController } from "../../../../data/City";
 
 export class Apartment extends Model {
 	/**
@@ -86,6 +87,19 @@ export class Apartments {
 				cityId
 			}
 		});
+	}
+
+	/**
+	 * Whether the player owns an apartment in every city that offers one.
+	 * Returns false when no city offers an apartment (nothing to own).
+	 */
+	public static async ownsAllApartments(playerId: number): Promise<boolean> {
+		const total = CityDataController.instance.countApartmentCities();
+		if (total <= 0) {
+			return false;
+		}
+		const owned = (await Apartments.getOfPlayer(playerId)).length;
+		return owned >= total;
 	}
 
 	public static async deleteOfPlayer(playerId: number): Promise<void> {

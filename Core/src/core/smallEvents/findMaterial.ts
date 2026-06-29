@@ -12,6 +12,7 @@ import { Materials } from "../database/game/models/Material";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventFindMaterialPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMaterialPacket";
 import { Player } from "../database/game/models/Player";
+import { updateCollectMaterialsMission } from "../utils/MaterialLootUtils";
 
 /**
  * Resolve the expedition biome associated with a map location type, falling back to the default biome.
@@ -87,6 +88,13 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const quantity = rollQuantity();
 
 		await Materials.giveMaterial(player.id, parseInt(material.id, 10), quantity);
+
+		await updateCollectMaterialsMission(player, response, [
+			{
+				materialId: parseInt(material.id, 10),
+				quantity
+			}
+		]);
 
 		response.push(makePacket(SmallEventFindMaterialPacket, {
 			materialId: material.id,
