@@ -161,9 +161,7 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 
 		await MissionsController.update(lockedPlayer, response, { missionId: "buyApartment" });
 
-		const totalApartments = CityDataController.instance.countApartmentCities();
-		const ownedApartments = (await Apartments.getOfPlayer(lockedPlayer.id)).length;
-		if (totalApartments > 0 && ownedApartments >= totalApartments) {
+		if (await Apartments.ownsAllApartments(lockedPlayer.id)) {
 			await MissionsController.update(lockedPlayer, response, {
 				missionId: "buyAllApartments", count: 1, set: true
 			});
