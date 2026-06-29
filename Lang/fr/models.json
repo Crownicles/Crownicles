@@ -1563,8 +1563,6 @@
     "chooseClassTier": "Avoir une classe de niveau {{variantText}} ou plus",
     "collectMaterials_one": "Récolter {{count}} matériau de rareté {{variantText}} ou plus",
     "collectMaterials_other": "Récolter {{count}} matériaux de rareté {{variantText}} ou plus",
-    "collectMaterialsByMethod_one": "Récolter {{count}} matériau par {{variantText}}",
-    "collectMaterialsByMethod_other": "Récolter {{count}} matériaux par {{variantText}}",
     "collectRent": "Récolter le loyer d'un appartement",
     "commandFightHistory": "Consulter l'historique des personnes vous ayant attaqués",
     "commandMission": "Faire la commande {command:missions}",
@@ -1689,7 +1687,6 @@
   "missionVariants": {
     "default": "{{variant}}",
     "collectMaterials": "$t(models:materialRarityNames.{{variant}})",
-    "collectMaterialsByMethod": "$t(models:materialMethodNames.{{variant}})",
     "drinkPotionRarity": "$t(items:rarities.{{variant}})",
     "haveItemRarity": "$t(items:rarities.{{variant}})",
     "fightMinTurns": "{{variant}}",
@@ -1704,10 +1701,6 @@
     "1": "commune",
     "2": "peu commune",
     "3": "rare"
-  },
-  "materialMethodNames": {
-    "1": "compostage",
-    "2": "combat de boss"
   },
   "monsters": {
     "forestTroll": {

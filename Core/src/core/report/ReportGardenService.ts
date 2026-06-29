@@ -40,7 +40,7 @@ import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
-import { MATERIAL_COLLECT_METHOD } from "../missions/interfaces/collectMaterialsByMethod";
+import { updateCollectMaterialsMission } from "../utils/MaterialLootUtils";
 import { GardenActionType } from "../database/logs/LogsCityLogger";
 
 type HomeData = ReactionCollectorCityData["home"];
@@ -300,11 +300,10 @@ async function runHarvestUnderLock(params: {
 	}
 
 	if (compostResults.length > 0) {
-		await MissionsController.update(player, response, {
-			missionId: "collectMaterialsByMethod",
-			count: compostResults.length,
-			params: { method: MATERIAL_COLLECT_METHOD.COMPOST }
-		});
+		await updateCollectMaterialsMission(player, response, compostResults.map(result => ({
+			materialId: result.materialId,
+			quantity: 1
+		})));
 	}
 
 	return makePacket(CommandReportGardenHarvestRes, {
@@ -847,11 +846,10 @@ export async function handleGardenCompostReaction(
 			materials
 		}));
 
-		await MissionsController.update(player, response, {
-			missionId: "collectMaterialsByMethod",
-			count: quantity,
-			params: { method: MATERIAL_COLLECT_METHOD.COMPOST }
-		});
+		await updateCollectMaterialsMission(player, response, materials.map(materialId => ({
+			materialId,
+			quantity: 1
+		})));
 
 		crowniclesInstance?.logsDatabase.logGardenAction({
 			keycloakId: player.keycloakId,
