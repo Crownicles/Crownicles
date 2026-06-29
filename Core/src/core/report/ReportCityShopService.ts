@@ -43,6 +43,7 @@ import {
 } from "../../../../Lib/src/constants/PlantConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../missions/MissionsController";
+import { CITY_NPC_VARIANTS } from "../missions/interfaces/visitCityNpc";
 import {
 	Material, MaterialDataController
 } from "../../data/Material";
@@ -148,16 +149,18 @@ export async function handleCityShopReaction(params: CityShopReactionParams): Pr
 		return;
 	}
 
-	const handler = isCityShopType(shopId) ? SHOP_HANDLERS[shopId] : undefined;
-	if (!handler) {
+	if (!isCityShopType(shopId)) {
 		CrowniclesLogger.error(`Unhandled city shop ${shopId}`);
 		return;
 	}
-	await handler({
+	await SHOP_HANDLERS[shopId]({
 		player, city, context, response, onClose
 	});
 
-	await MissionsController.update(player, response, { missionId: "visitCityNpc" });
+	await MissionsController.update(player, response, {
+		missionId: "visitCityNpc",
+		params: { npc: CITY_NPC_VARIANTS[shopId] }
+	});
 }
 
 /**

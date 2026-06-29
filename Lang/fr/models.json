@@ -1675,7 +1675,7 @@
     "upgradeHomeLevel": "Améliorer votre maison au niveau {{variantText}}",
     "upgradeItem": "Améliorer une arme ou un bouclier",
     "upgradeEpicItemLevel5": "Améliorer une arme ou un bouclier de rareté épique ou supérieure au niveau 5",
-    "visitCityNpc": "Rendre visite à un commerçant de la ville",
+    "visitCityNpc": "Rendre visite au commerçant : {{variantText}}",
     "wealthyPayForPVEIsland": "Acheter un voyage vers une île mystérieuse au prix maximal",
     "winBoss_one": "Gagner {{count}} combat de boss",
     "winBoss_other": "Gagner {{count}} combats de boss",
@@ -1687,6 +1687,7 @@
   "missionVariants": {
     "default": "{{variant}}",
     "collectMaterials": "$t(models:materialRarityNames.{{variant}})",
+    "visitCityNpc": "$t(models:cityNpcNames.{{variant}})",
     "drinkPotionRarity": "$t(items:rarities.{{variant}})",
     "haveItemRarity": "$t(items:rarities.{{variant}})",
     "fightMinTurns": "{{variant}}",
@@ -1701,6 +1702,16 @@
     "1": "commune",
     "2": "peu commune",
     "3": "rare"
+  },
+  "cityNpcNames": {
+    "1": "$t(commands:report.city.shops.royalMarket.label)",
+    "2": "$t(commands:report.city.shops.generalShop.label)",
+    "3": "$t(commands:report.city.shops.stockExchange.label)",
+    "4": "$t(commands:report.city.shops.tanner.label)",
+    "5": "$t(commands:report.city.shops.herbalist.label)",
+    "6": "$t(commands:report.city.shops.lumberjack.label)",
+    "7": "$t(commands:report.city.shops.veterinarian.label)",
+    "8": "$t(commands:report.city.shops.materialMerchant.label)"
   },
   "monsters": {
     "forestTroll": {
