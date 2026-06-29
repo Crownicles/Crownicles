@@ -2572,9 +2572,9 @@
       "spiritual": "Encontra um lugar de serenidade, onde o ambiente é tranquilo e propício ao seu bem-estar. Procura objectos no ambiente que o rodeia."
     },
     "foundStories": {
-      "1": "Encontrou o seguinte material comum em {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incrível! Encontrou um material {{rarityEmote}} pouco comum: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Que sorte incrível! Descobriu um material {{rarityEmote}} raro: {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
+      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
+      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
     }
   },
   "expeditionAdvice": {
