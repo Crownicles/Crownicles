@@ -1437,7 +1437,6 @@
         "leaveShop": "Exit Merchant"
       }
     },
-    "notEnoughTokensButton": "Insufficient tokens",
     "tokenMerchantButton": "Buy tokens",
     "useTokensButton": "Forward",
     "useTokensLoading": "Loading...",
