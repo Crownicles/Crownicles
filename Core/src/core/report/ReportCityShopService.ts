@@ -39,7 +39,7 @@ import { toItemWithDetails } from "../utils/ItemUtils";
 import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import {
-	PlantConstants, PlantType
+	PlantConstants, PlantId, PlantType
 } from "../../../../Lib/src/constants/PlantConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../missions/MissionsController";
@@ -411,6 +411,9 @@ export async function openHerbalist({
 						return { success: false };
 					}
 					await PlayerPlantSlots.setPlant(playerId, emptySlot.slot, plant.id);
+					if (plant.id === PlantId.ANCIENT_TREE) {
+						await MissionsController.update(player, buyResponse, { missionId: "cultivateAncestralTrees" });
+					}
 					return { success: true };
 				}
 			}))

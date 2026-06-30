@@ -177,14 +177,6 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "replaceMission",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 25,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "spendGems",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -526,6 +518,14 @@
       "missionObjective": 40,
       "gemsToWin": 1,
       "xpToWin": 50,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "replaceMission",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 25,
       "moneyToWin": 0
     },
     {
@@ -953,14 +953,6 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "upgradeEpicItemLevel5",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 6,
-      "xpToWin": 350,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "haveItemRarity",
       "missionVariant": 6,
       "missionObjective": 1,
@@ -1113,14 +1105,6 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "buyAllApartments",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 12,
-      "xpToWin": 400,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "showCloneToTalvar",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -1137,11 +1121,27 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "upgradeEpicItemLevel5",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 6,
+      "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "winBossWithDifferentClasses",
       "missionVariant": 0,
       "missionObjective": 4,
       "gemsToWin": 28,
       "xpToWin": 350,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "buyAllApartments",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 20,
+      "xpToWin": 500,
       "moneyToWin": 0
     },
     {
