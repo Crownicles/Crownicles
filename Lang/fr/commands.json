@@ -1437,7 +1437,6 @@
         "leaveShop": "Quitter le marchand"
       }
     },
-    "notEnoughTokensButton": "Jetons insuffisants",
     "tokenMerchantButton": "Acheter des jetons",
     "useTokensButton": "Avancer",
     "useTokensLoading": "Chargement...",
