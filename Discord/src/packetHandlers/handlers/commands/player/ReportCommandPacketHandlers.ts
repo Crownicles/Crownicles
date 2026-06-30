@@ -45,6 +45,13 @@ import {
 	CommandReportUpgradeItemRes,
 	CommandReportUseTokensAcceptPacketRes,
 	CommandReportUseTokensRefusePacketRes,
+	CommandReportTokenMerchantBoughtRes,
+	CommandReportTokenMerchantTooMuchRes,
+	CommandReportTokenMerchantFullRes,
+	CommandReportTokenMerchantRefuseRes,
+	CommandReportTokenMerchantCannotAffordRes,
+	CommandReportTokenMerchantCharityRes,
+	CommandReportTokenMerchantCharityAlreadyUsedRes,
 	CommandReportGuildDomainPurchaseRes,
 	CommandReportGuildDomainRelocateRes,
 	CommandReportGuildDomainNotEnoughTreasuryRes
@@ -88,6 +95,15 @@ import {
 	handleUseTokensAccept,
 	handleUseTokensRefuse
 } from "../../../../commands/player/report/useTokens/UseTokensHandlers";
+import {
+	handleTokenMerchantBought,
+	handleTokenMerchantCannotAfford,
+	handleTokenMerchantCharity,
+	handleTokenMerchantCharityAlreadyUsed,
+	handleTokenMerchantFull,
+	handleTokenMerchantRefuse,
+	handleTokenMerchantTooMuch
+} from "../../../../commands/player/report/tokenMerchant/TokenMerchantHandlers";
 import { handleClassicError } from "../../../../utils/ErrorUtils";
 
 export default class ReportCommandPacketHandlers {
@@ -239,6 +255,41 @@ export default class ReportCommandPacketHandlers {
 	@packetHandler(CommandReportUseTokensRefusePacketRes)
 	async reportUseTokensRefuseRes(context: PacketContext, _packet: CommandReportUseTokensRefusePacketRes): Promise<void> {
 		await handleUseTokensRefuse(context);
+	}
+
+	@packetHandler(CommandReportTokenMerchantBoughtRes)
+	async reportTokenMerchantBoughtRes(context: PacketContext, packet: CommandReportTokenMerchantBoughtRes): Promise<void> {
+		await handleTokenMerchantBought(packet, context);
+	}
+
+	@packetHandler(CommandReportTokenMerchantTooMuchRes)
+	async reportTokenMerchantTooMuchRes(context: PacketContext, _packet: CommandReportTokenMerchantTooMuchRes): Promise<void> {
+		await handleTokenMerchantTooMuch(context);
+	}
+
+	@packetHandler(CommandReportTokenMerchantFullRes)
+	async reportTokenMerchantFullRes(context: PacketContext, _packet: CommandReportTokenMerchantFullRes): Promise<void> {
+		await handleTokenMerchantFull(context);
+	}
+
+	@packetHandler(CommandReportTokenMerchantRefuseRes)
+	async reportTokenMerchantRefuseRes(context: PacketContext, _packet: CommandReportTokenMerchantRefuseRes): Promise<void> {
+		await handleTokenMerchantRefuse(context);
+	}
+
+	@packetHandler(CommandReportTokenMerchantCannotAffordRes)
+	async reportTokenMerchantCannotAffordRes(context: PacketContext, _packet: CommandReportTokenMerchantCannotAffordRes): Promise<void> {
+		await handleTokenMerchantCannotAfford(context);
+	}
+
+	@packetHandler(CommandReportTokenMerchantCharityRes)
+	async reportTokenMerchantCharityRes(context: PacketContext, packet: CommandReportTokenMerchantCharityRes): Promise<void> {
+		await handleTokenMerchantCharity(packet, context);
+	}
+
+	@packetHandler(CommandReportTokenMerchantCharityAlreadyUsedRes)
+	async reportTokenMerchantCharityAlreadyUsedRes(context: PacketContext, _packet: CommandReportTokenMerchantCharityAlreadyUsedRes): Promise<void> {
+		await handleTokenMerchantCharityAlreadyUsed(context);
 	}
 
 	@packetHandler(CommandReportBuyHealAcceptPacketRes)

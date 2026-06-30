@@ -34,7 +34,7 @@ import {
 	canUseTokensAtLocation
 } from "./ReportTravelService";
 import {
-	HEAL_VALIDATION_REASONS, HealValidationReason
+	HEAL_VALIDATION_REASONS, HealValidationReason, USE_TOKENS_VALIDATION_REASONS, UseTokensValidationReason
 } from "./ReportValidationConstants";
 import { MissionsController } from "../missions/MissionsController";
 
@@ -240,9 +240,16 @@ interface ValidTokenCostResult {
 
 /**
  * Invalid token cost result
+ *
+ * `reason` distinguishes a player who simply cannot use tokens here
+ * (`NOT_ELIGIBLE`) from an eligible player who lacks the tokens to pay
+ * (`INSUFFICIENT_TOKENS`). The latter is offered the token merchant; in
+ * that case `tokenCost` carries the price (in tokens) to advance.
  */
 interface InvalidTokenCostResult {
 	valid: false;
+	reason: UseTokensValidationReason;
+	tokenCost?: number;
 }
 
 /**
@@ -255,17 +262,27 @@ export function validateUseTokensRequest(
 ): ValidTokenCostResult | InvalidTokenCostResult {
 	// Check if the player can use tokens at their current location
 	if (!canUseTokensAtLocation(player)) {
-		return { valid: false };
+		return {
+			valid: false,
+			reason: USE_TOKENS_VALIDATION_REASONS.NOT_ELIGIBLE
+		};
 	}
 
 	const tokenCostResult = calculateTokenCost(effectId, effectRemainingTime);
 
 	if (!tokenCostResult.canUseTokens) {
-		return { valid: false };
+		return {
+			valid: false,
+			reason: USE_TOKENS_VALIDATION_REASONS.NOT_ELIGIBLE
+		};
 	}
 
 	if (player.tokens < tokenCostResult.cost) {
-		return { valid: false };
+		return {
+			valid: false,
+			reason: USE_TOKENS_VALIDATION_REASONS.INSUFFICIENT_TOKENS,
+			tokenCost: tokenCostResult.cost
+		};
 	}
 
 	return {

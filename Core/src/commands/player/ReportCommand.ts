@@ -82,7 +82,10 @@ import {
 	validateBuyHealRequest,
 	validateUseTokensRequest
 } from "../../core/report/ReportTokenHealService";
-import { HEAL_VALIDATION_REASONS } from "../../core/report/ReportValidationConstants";
+import { openTokenMerchant } from "../../core/report/ReportTokenMerchantService";
+import {
+	HEAL_VALIDATION_REASONS, USE_TOKENS_VALIDATION_REASONS
+} from "../../core/report/ReportValidationConstants";
 import { executeSmallEvent } from "../../core/report/ReportSmallEventService";
 import { chooseDestination } from "../../core/report/ReportDestinationService";
 import { doRandomBigEvent } from "../../core/report/ReportBigEventService";
@@ -269,6 +272,9 @@ export default class ReportCommand {
 		const validation = validateUseTokensRequest(player, player.effectId, timeData.effectRemainingTime);
 
 		if (!validation.valid) {
+			if (validation.reason === USE_TOKENS_VALIDATION_REASONS.INSUFFICIENT_TOKENS) {
+				await openTokenMerchant(player, context, response);
+			}
 			return;
 		}
 
