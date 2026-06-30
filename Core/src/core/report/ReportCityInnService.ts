@@ -45,7 +45,7 @@ export async function handleInnMealReaction(
 
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 
-	await Player.withLocked(player.id, async lockedPlayer => {
+	const mealEaten = await Player.withLocked(player.id, async lockedPlayer => {
 		/*
 		 * Re-validate against the freshly-locked row: a concurrent
 		 * meal purchase, room rental, blacksmith spend, etc. may have
@@ -56,11 +56,11 @@ export async function handleInnMealReaction(
 			response.push(makePacket(CommandReportEatInnMealCooldownRes, {
 				nextAvailableAt: lockedPlayer.nextMealAvailableAt()
 			}));
-			return;
+			return false;
 		}
 		if (reaction.meal.price > lockedPlayer.money) {
 			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.meal.price - lockedPlayer.money }));
-			return;
+			return false;
 		}
 
 		const energyBefore = lockedPlayer.getCumulativeEnergy(playerActiveObjects);
@@ -77,8 +77,6 @@ export async function handleInnMealReaction(
 			moneySpent: reaction.meal.price
 		}));
 
-		await MissionsController.update(lockedPlayer, response, { missionId: "innMeal" });
-
 		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {
 			crowniclesInstance?.logsDatabase.logInnMeal({
@@ -91,7 +89,17 @@ export async function handleInnMealReaction(
 				energyBefore
 			}).then();
 		}
+		return true;
 	});
+
+	/*
+	 * Trigger the mission update only after the Player row lock is released:
+	 * `MissionsController.update` locks `player_missions_info` then `players`,
+	 * which would invert the already-held `players` lock and risk a deadlock.
+	 */
+	if (mealEaten) {
+		await MissionsController.update(player, response, { missionId: "innMeal" });
+	}
 }
 
 /**
@@ -114,10 +122,10 @@ export async function handleInnRoomReaction(
 
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 
-	await Player.withLocked(player.id, async lockedPlayer => {
+	const roomRented = await Player.withLocked(player.id, async lockedPlayer => {
 		if (reaction.room.price > lockedPlayer.money) {
 			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.room.price - lockedPlayer.money }));
-			return;
+			return false;
 		}
 
 		const now = new Date();
@@ -125,7 +133,7 @@ export async function handleInnRoomReaction(
 			response.push(makePacket(CommandReportBedCooldownRes, {
 				nextAvailableAt: lockedPlayer.lastBedUsedAt.getTime() + HomeConstants.BED_COOLDOWN_MS
 			}));
-			return;
+			return false;
 		}
 
 		const healthBefore = lockedPlayer.getHealth(playerActiveObjects);
@@ -148,9 +156,6 @@ export async function handleInnRoomReaction(
 			moneySpent: reaction.room.price
 		}));
 
-		await MissionsController.update(lockedPlayer, response, { missionId: "sleepInInn" });
-		await MissionsController.update(lockedPlayer, response, { missionId: "healInBed" });
-
 		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {
 			crowniclesInstance?.logsDatabase.logInnRoom({
@@ -163,5 +168,16 @@ export async function handleInnRoomReaction(
 				healthBefore
 			}).then();
 		}
+		return true;
 	});
+
+	/*
+	 * Trigger the mission updates only after the Player row lock is released:
+	 * `MissionsController.update` locks `player_missions_info` then `players`,
+	 * which would invert the already-held `players` lock and risk a deadlock.
+	 */
+	if (roomRented) {
+		await MissionsController.update(player, response, { missionId: "sleepInInn" });
+		await MissionsController.update(player, response, { missionId: "healInBed" });
+	}
 }
