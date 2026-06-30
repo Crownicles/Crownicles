@@ -115,15 +115,25 @@ export async function handleChestAction(
 
 	return await withLockedEntities(
 		[Player.lockKey(chestActionContext.player.id), Home.lockKey(chestActionContext.home.id)] as const,
-		([lockedPlayer, lockedHome]) => runChestActionUnderLock(packet, lockedPlayer, lockedHome, response)
-	);
+		([lockedPlayer, lockedHome]) => runChestActionUnderLock(packet, lockedPlayer, lockedHome)
+	).then(async result => {
+		/*
+		 * Trigger the mission update only after the Player + Home locks are
+		 * released: `MissionsController.update` additionally locks
+		 * `player_missions_info` then `players`, which would invert the
+		 * already-held `players` lock and risk a deadlock.
+		 */
+		if (result.success && packet.action === HomeConstants.CHEST_ACTIONS.DEPOSIT) {
+			await MissionsController.update(chestActionContext.player, response, { missionId: "depositChestItem" });
+		}
+		return result;
+	});
 }
 
 async function runChestActionUnderLock(
 	packet: CommandReportHomeChestActionReq,
 	player: Player,
-	home: Home,
-	response: CrowniclesPacket[]
+	home: Home
 ): Promise<ChestActionResult> {
 	const homeLevel = home.getLevel();
 	if (homeLevel === null) {
@@ -133,10 +143,6 @@ async function runChestActionUnderLock(
 	const error = await executeChestAction(packet, player, home);
 	if (error) {
 		return buildChestActionError(error);
-	}
-
-	if (packet.action === HomeConstants.CHEST_ACTIONS.DEPOSIT) {
-		await MissionsController.update(player, response, { missionId: "depositChestItem" });
 	}
 
 	// Build refreshed chest data

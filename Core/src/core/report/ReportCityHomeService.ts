@@ -511,12 +511,15 @@ export async function handleHomeBedReaction(
 		return;
 	}
 
-	const logParams = await Player.withLocked(player.id, async lockedPlayer => {
+	const result = await Player.withLocked(player.id, async lockedPlayer => {
 		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
 		const maxHealth = lockedPlayer.getMaxHealth(playerActiveObjects);
 		if (lockedPlayer.getHealth(playerActiveObjects) >= maxHealth) {
 			response.push(makePacket(CommandReportHomeBedAlreadyFullRes, {}));
-			return null;
+			return {
+				logParams: null,
+				bedUsed: false
+			};
 		}
 
 		const now = new Date();
@@ -524,7 +527,10 @@ export async function handleHomeBedReaction(
 			response.push(makePacket(CommandReportBedCooldownRes, {
 				nextAvailableAt: lockedPlayer.lastBedUsedAt.getTime() + HomeConstants.BED_COOLDOWN_MS
 			}));
-			return null;
+			return {
+				logParams: null,
+				bedUsed: false
+			};
 		}
 
 		const healthBefore = lockedPlayer.getHealth(playerActiveObjects);
@@ -541,17 +547,30 @@ export async function handleHomeBedReaction(
 			health: homeData.features.bedHealthRegeneration
 		}));
 
-		await MissionsController.update(lockedPlayer, response, { missionId: "healInBed" });
-
 		if (!bedCityId) {
-			return null;
+			return {
+				logParams: null,
+				bedUsed: true
+			};
 		}
 		return {
-			keycloakId: lockedPlayer.keycloakId,
-			cityId: bedCityId,
-			healthGained: homeData.features.bedHealthRegeneration,
-			healthBefore
+			logParams: {
+				keycloakId: lockedPlayer.keycloakId,
+				cityId: bedCityId,
+				healthGained: homeData.features.bedHealthRegeneration,
+				healthBefore
+			},
+			bedUsed: true
 		};
 	});
-	logHomeBedUse(logParams);
+	logHomeBedUse(result.logParams);
+
+	/*
+	 * Trigger the mission update only after the Player row lock is released:
+	 * `MissionsController.update` locks `player_missions_info` then `players`,
+	 * which would invert the already-held `players` lock and risk a deadlock.
+	 */
+	if (result.bedUsed) {
+		await MissionsController.update(player, response, { missionId: "healInBed" });
+	}
 }
