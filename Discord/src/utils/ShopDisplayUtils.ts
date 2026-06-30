@@ -499,11 +499,16 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 		flags: COMPONENTS_V2_FLAGS
 	};
 
+	/*
+	 * The shop is always opened from within the city menu, which has already
+	 * replied (or deferred) to the interaction. We edit that same message in
+	 * place so the shop takes over the city message instead of spawning a new
+	 * one below it. This keeps the whole city visit on a single message and
+	 * lets "Retourner en ville" re-render the menu where the player is already
+	 * looking, instead of reviving the now-stale message above (#4337).
+	 */
 	let msg: Message | null;
-	if (interaction.replied) {
-		msg = await interaction.followUp(messagePayload);
-	}
-	else if (interaction.deferred) {
+	if (interaction.replied || interaction.deferred) {
 		msg = await interaction.editReply(messagePayload);
 	}
 	else {

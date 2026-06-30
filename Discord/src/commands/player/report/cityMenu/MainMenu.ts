@@ -350,6 +350,14 @@ async function handleMainMenuSelection(params: CityCollectorHandlerParams): Prom
 
 	if (selectedValue.startsWith(ReportCityMenuIds.CITY_SHOP_PREFIX)) {
 		handleShopSelection(selectedValue, componentInteraction, context, packet);
+
+		/*
+		 * The shop packet about to arrive replaces the city message in place
+		 * (see shopCollector, #4337). Stop the city collector now without
+		 * disabling the message — editing it here would race with the shop
+		 * render that is going to take over the same message.
+		 */
+		await nestedMenus.stopCurrentCollector({ editMessage: false });
 		return;
 	}
 
