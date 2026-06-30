@@ -5,7 +5,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { ShopItemType } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	OnShopCloseCallback, ShopUtils
+	OnShopCloseCallback, ShopInformations, ShopUtils
 } from "../utils/ShopUtils";
 import {
 	ShopConstants, ShopCurrency
@@ -77,6 +77,22 @@ function getMaterialsByTypeAndRarity(type: MaterialType, rarity: MaterialRarity)
 		materialsByTypeAndRarityCache.set(key, materials);
 	}
 	return materials;
+}
+
+/**
+ * Logger binding for the classical (money-based) city shops. Returns undefined
+ * when the Core instance is not yet ready (e.g. during boot), mirroring the
+ * optional `logger` contract of {@link ShopInformations}.
+ */
+function classicalShopLogger(): ShopInformations["logger"] {
+	return crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase);
+}
+
+/**
+ * Logger binding for the mission/gem-based city shops (royal market services).
+ */
+function missionShopLogger(): ShopInformations["logger"] {
+	return crowniclesInstance?.logsDatabase.logMissionShopBuyout.bind(crowniclesInstance?.logsDatabase);
 }
 
 /**
@@ -224,7 +240,7 @@ async function openGemShop({
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logMissionShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		logger: missionShopLogger(),
 		cityId,
 		additionalShopData: {
 			gemToMoneyRatio: calculateGemsToMoneyRatio(),
@@ -296,7 +312,7 @@ export async function openGeneralShop({
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		logger: classicalShopLogger(),
 		cityId: city.id,
 		additionalShopData: {
 			remainingPotions,
@@ -359,7 +375,7 @@ export async function openTanner({
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		logger: classicalShopLogger(),
 		cityId: city.id,
 		onClose
 	});
@@ -431,7 +447,7 @@ export async function openHerbalist({
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		logger: classicalShopLogger(),
 		cityId: city.id,
 		additionalShopData: {
 			weeklyPlants: weeklyPlants.map((p: PlantType) => p.id)
@@ -491,7 +507,7 @@ export async function openLumberjack({
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		logger: classicalShopLogger(),
 		cityId: city.id,
 		onClose
 	});
@@ -513,7 +529,7 @@ export async function openVeterinarian({
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		logger: classicalShopLogger(),
 		cityId: city.id,
 		additionalShopData: {
 			currency: ShopCurrency.GEM
@@ -560,7 +576,7 @@ export async function openMaterialMerchant({
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
 		player,
-		logger: crowniclesInstance?.logsDatabase.logClassicalShopBuyout.bind(crowniclesInstance?.logsDatabase),
+		logger: classicalShopLogger(),
 		cityId: city.id,
 		onClose
 	});
