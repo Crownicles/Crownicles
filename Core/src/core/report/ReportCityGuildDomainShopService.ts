@@ -43,14 +43,13 @@ function logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams | null): 
  * `.save()` calls on the returned instances enlist automatically.
  */
 function runTreasuryDepositUnderLock(
-	keycloakId: string,
+	player: Player,
 	packet: CommandReportGuildDomainDepositTreasuryReq,
 	guildId: number,
-	playerId: number,
 	grossAmount: number
 ): Promise<DepositTreasuryResult> {
 	return withLockedEntities(
-		[Guild.lockKey(guildId), Player.lockKey(playerId)] as const,
+		[Guild.lockKey(guildId), Player.lockKey(player.id)] as const,
 		async ([lockedGuild, lockedPlayer]) => {
 			/*
 			 * Re-validate against the locked rows. Another concurrent
@@ -82,7 +81,7 @@ function runTreasuryDepositUnderLock(
 					newTreasury: lockedGuild.treasury
 				}),
 				logParams: {
-					keycloakId,
+					keycloakId: player.keycloakId,
 					guild: lockedGuild,
 					grossAmount,
 					treasuryDeposited,
@@ -114,7 +113,7 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY });
 	}
 
-	const result = await runTreasuryDepositUnderLock(keycloakId, packet, player.guildId, player.id, grossAmount);
+	const result = await runTreasuryDepositUnderLock(player, packet, player.guildId, grossAmount);
 
 	logGuildTreasuryDeposit(result.logParams);
 	if (result.logParams !== null) {
