@@ -297,6 +297,7 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 	"PlayerMissionsInfo": [
 		"gems",
 		"hasBoughtPointsThisWeek",
+		"hasReceivedTokenCharityThisWeek",
 		"missionSkipsUsedThisWeek",
 		"dailyMissionNumberDone",
 		"lastDailyMissionCompleted",

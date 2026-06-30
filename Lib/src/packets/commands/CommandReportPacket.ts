@@ -175,6 +175,36 @@ export class CommandReportUseTokensAcceptPacketRes extends CrowniclesPacket {
 export class CommandReportUseTokensRefusePacketRes extends CrowniclesPacket {
 }
 
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportTokenMerchantBoughtRes extends CrowniclesPacket {
+	amount!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportTokenMerchantTooMuchRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportTokenMerchantFullRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportTokenMerchantRefuseRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportTokenMerchantCannotAffordRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportTokenMerchantCharityRes extends CrowniclesPacket {
+	amount!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportTokenMerchantCharityAlreadyUsedRes extends CrowniclesPacket {
+}
+
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportBuyHealPacketReq extends CrowniclesPacket {
 }

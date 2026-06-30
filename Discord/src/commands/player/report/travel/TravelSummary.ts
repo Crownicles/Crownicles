@@ -200,15 +200,23 @@ interface ButtonConfig {
 	insufficientLabel: string;
 	emoji: string;
 	sufficientStyle: ButtonStyle;
+
+	/**
+	 * When `true`, the button stays clickable even if the player cannot
+	 * afford the action (used by the token button to open the token
+	 * merchant instead of just showing a disabled "not enough" label).
+	 */
+	enabledWhenInsufficient?: boolean;
 }
 
 function createCurrencyButton(config: ButtonConfig): ButtonBuilder {
+	const interactive = config.hasEnough || config.enabledWhenInsufficient === true;
 	return new ButtonBuilder()
 		.setCustomId(config.customId)
 		.setLabel(config.hasEnough ? config.sufficientLabel : config.insufficientLabel)
 		.setEmoji(parseEmoji(config.emoji)!)
-		.setStyle(config.hasEnough ? config.sufficientStyle : ButtonStyle.Secondary)
-		.setDisabled(!config.hasEnough);
+		.setStyle(config.hasEnough ? config.sufficientStyle : config.enabledWhenInsufficient ? ButtonStyle.Primary : ButtonStyle.Secondary)
+		.setDisabled(!interactive);
 }
 
 type CurrencyButtonConfig = {
@@ -220,6 +228,7 @@ type CurrencyButtonConfig = {
 	insufficientLabelKey: string;
 	emoji: string;
 	sufficientStyle: ButtonStyle;
+	enabledWhenInsufficient?: boolean;
 };
 
 function createCurrencyButtonFromPacket(config: CurrencyButtonConfig, lng: Language): ButtonBuilder | null {
@@ -232,7 +241,8 @@ function createCurrencyButtonFromPacket(config: CurrencyButtonConfig, lng: Langu
 		sufficientLabel: i18n.t(config.sufficientLabelKey, { lng }),
 		insufficientLabel: i18n.t(config.insufficientLabelKey, { lng }),
 		emoji: config.emoji,
-		sufficientStyle: config.sufficientStyle
+		sufficientStyle: config.sufficientStyle,
+		enabledWhenInsufficient: config.enabledWhenInsufficient
 	});
 }
 
@@ -253,9 +263,10 @@ const TRAVEL_CURRENCY_BUTTONS: ((packet: CommandReportTravelSummaryRes) => Curre
 		},
 		customId: TRAVEL_BUTTON_IDS.USE_TOKENS,
 		sufficientLabelKey: "commands:report.useTokensButton",
-		insufficientLabelKey: "commands:report.notEnoughTokensButton",
+		insufficientLabelKey: "commands:report.tokenMerchantButton",
 		emoji: CrowniclesIcons.unitValues.token,
-		sufficientStyle: ButtonStyle.Primary
+		sufficientStyle: ButtonStyle.Primary,
+		enabledWhenInsufficient: true
 	})
 ];
 
@@ -271,7 +282,8 @@ function buildTravelActionRow(packet: CommandReportTravelSummaryRes, lng: Langua
 }
 
 function hasInteractiveButton(packet: CommandReportTravelSummaryRes): boolean {
-	const tokensInteractive = packet.tokens?.canAfford;
+	// The token button is always interactive: advance when affordable, otherwise open the merchant
+	const tokensInteractive = Boolean(packet.tokens);
 	const healInteractive = packet.heal?.canAfford;
 	return Boolean(tokensInteractive || healInteractive);
 }
