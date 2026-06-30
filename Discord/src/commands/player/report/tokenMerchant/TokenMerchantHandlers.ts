@@ -6,7 +6,7 @@ import {
 import { ReactionCollectorCreationPacket } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorTokenMerchantData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorTokenMerchant";
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, parseEmoji
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, Message, parseEmoji
 } from "discord.js";
 import { DiscordCache } from "../../../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../../../messages/CrowniclesEmbed";
@@ -73,6 +73,57 @@ function buildMerchantButtons(data: ReactionCollectorTokenMerchantData, lng: Lan
 	return row;
 }
 
+type MerchantCollectorState = {
+	context: PacketContext;
+	packet: ReactionCollectorCreationPacket;
+	lng: Language;
+	row: ActionRowBuilder<ButtonBuilder>;
+	msg: Message;
+	embed: CrowniclesEmbed;
+	refuseIndex: number;
+};
+
+/**
+ * Handle a click on a merchant button: disable the offer, defer the reply and
+ * forward the resolved reaction index to the backend.
+ */
+async function onMerchantButtonCollect(buttonInteraction: ButtonInteraction, state: MerchantCollectorState): Promise<void> {
+	const {
+		context, packet, lng, row, msg, embed, refuseIndex
+	} = state;
+	if (buttonInteraction.user.id !== context.discord?.user) {
+		await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
+		return;
+	}
+
+	disableRows([row]);
+	await msg.edit({
+		embeds: [embed],
+		components: [row]
+	});
+
+	await buttonInteraction.deferReply();
+
+	const reactionIndex = buttonInteraction.customId.startsWith(BUY_BUTTON_PREFIX)
+		? Number.parseInt(buttonInteraction.customId.slice(BUY_BUTTON_PREFIX.length), 10)
+		: refuseIndex;
+	DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
+}
+
+/**
+ * Disable the merchant offer buttons when the collector ends.
+ */
+async function onMerchantCollectorEnd(state: MerchantCollectorState): Promise<void> {
+	const {
+		row, msg, embed
+	} = state;
+	disableRows([row]);
+	await msg.edit({
+		embeds: [embed],
+		components: [row]
+	}).catch(() => null);
+}
+
 /**
  * Render the token merchant collector (offer + buy/refuse buttons).
  */
@@ -100,33 +151,11 @@ export async function createTokenMerchantCollector(context: PacketContext, packe
 		time: packet.endTime - Date.now()
 	});
 
-	buttonCollector.on("collect", async (buttonInteraction: ButtonInteraction) => {
-		if (buttonInteraction.user.id !== context.discord?.user) {
-			await sendInteractionNotForYou(buttonInteraction.user, buttonInteraction, lng);
-			return;
-		}
-
-		disableRows([row]);
-		await msg.edit({
-			embeds: [embed],
-			components: [row]
-		});
-
-		await buttonInteraction.deferReply();
-
-		const reactionIndex = buttonInteraction.customId.startsWith(BUY_BUTTON_PREFIX)
-			? Number.parseInt(buttonInteraction.customId.slice(BUY_BUTTON_PREFIX.length), 10)
-			: refuseIndex;
-		DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
-	});
-
-	buttonCollector.on("end", async () => {
-		disableRows([row]);
-		await msg.edit({
-			embeds: [embed],
-			components: [row]
-		}).catch(() => null);
-	});
+	const state: MerchantCollectorState = {
+		context, packet, lng, row, msg, embed, refuseIndex
+	};
+	buttonCollector.on("collect", (buttonInteraction: ButtonInteraction) => onMerchantButtonCollect(buttonInteraction, state));
+	buttonCollector.on("end", () => onMerchantCollectorEnd(state));
 
 	return [buttonCollector];
 }
