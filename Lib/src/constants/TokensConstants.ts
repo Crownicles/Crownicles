@@ -25,4 +25,7 @@ export abstract class TokensConstants {
 		MINUTES_PER_ADDITIONAL_TOKEN: 28,
 		MAX_COST: 5
 	};
+
+	/** Number of tokens gifted by the report token merchant to a player with no tokens and not enough money (max once per week) */
+	static readonly MERCHANT_CHARITY_AMOUNT = 10;
 }
