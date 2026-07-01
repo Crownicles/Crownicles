@@ -15,6 +15,7 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { resolveKeycloakDiscordUser } from "../../utils/KeycloakPlayerUtils";
 import {
 	escapeUsername, StringUtils
 } from "../../utils/StringUtils";
@@ -171,8 +172,10 @@ async function createPetEmbed(
 ): Promise<CrowniclesEmbed> {
 	const lng = interaction.userLanguage;
 	let foundPlayerUsername;
+	let authorUser = interaction.user;
 	if (packet.askedKeycloakId) {
 		foundPlayerUsername = await DisplayUtils.getEscapedUsername(packet.askedKeycloakId, lng);
+		authorUser = await resolveKeycloakDiscordUser(packet.askedKeycloakId) ?? interaction.user;
 	}
 
 	let description = DisplayUtils.getOwnedPetFieldDisplay(packet.pet, lng);
@@ -188,7 +191,7 @@ async function createPetEmbed(
 				lng,
 				pseudo: escapeUsername(foundPlayerUsername ?? interaction.user.displayName)
 			}),
-			interaction.user
+			authorUser
 		)
 		.setDescription(description);
 }
