@@ -25,7 +25,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	 * - joinGuildHouse:           position 56
 	 * - haveGardenTalisman:       position 61
 	 * - replaceMission:           position 66
-	 * - cultivateAncestralTrees:  position 113
+	 * - getAncestralTrees:        position 113
 	 * - upgradeEpicItemLevel5:    position 141
 	 * - buyAllApartments:         position 143
 	 */
@@ -42,7 +42,7 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 		47, // joinGuildHouse
 		51, // haveGardenTalisman
 		55, // replaceMission
-		101, // cultivateAncestralTrees
+		101, // getAncestralTrees
 		128, // upgradeEpicItemLevel5
 		129 // buyAllApartments
 	]);

@@ -897,7 +897,7 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "cultivateAncestralTrees",
+      "missionId": "getAncestralTrees",
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 5,

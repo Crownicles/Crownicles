@@ -412,7 +412,7 @@ export async function openHerbalist({
 					}
 					await PlayerPlantSlots.setPlant(playerId, emptySlot.slot, plant.id);
 					if (plant.id === PlantId.ANCIENT_TREE) {
-						await MissionsController.update(player, buyResponse, { missionId: "cultivateAncestralTrees" });
+						await MissionsController.update(player, buyResponse, { missionId: "getAncestralTrees" });
 					}
 					return { success: true };
 				}
