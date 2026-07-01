@@ -606,15 +606,15 @@
     "seeBackupItems": "{emote:inventory.stock} Réserve",
     "seeEquippedItems": "{emote:commands.inventory} Équipement",
     "seeMaterials": "{emote:inventory.materials} Matériaux",
-    "stockTitle": "{emote:inventory.stock} **Réserve d'objets de {{pseudo}}**",
-    "title": "{emote:commands.inventory} **Inventaire de {{pseudo}}**",
-    "materialsTitle": "{emote:inventory.materials} **Matériaux de {{pseudo}}**",
+    "stockTitle": "Réserve d'objets de {{pseudo}}",
+    "title": "Inventaire de {{pseudo}}",
+    "materialsTitle": "Matériaux de {{pseudo}}",
     "materialsField_zero": "Matériaux (0) :",
     "materialsField_one": "Matériau ({{count}}) :",
     "materialsField_other": "Matériaux ({{count}}) :",
     "noMaterials": "{emote:inventory.empty} **Aucun matériau**",
     "seePlants": "{emote:city.homeUpgrades.garden} Plantes",
-    "plantsTitle": "{emote:city.homeUpgrades.garden} **Plantes de {{pseudo}}**",
+    "plantsTitle": "Plantes de {{pseudo}}",
     "plantsField_zero": "Plante (0) :",
     "plantsField_one": "Plante ({{count}}) :",
     "plantsField_other": "Plantes ({{count}}) :",
@@ -768,7 +768,7 @@
       "fieldName": "Temps restant :",
       "fieldValue": "{emote:effects.{{effectId}}} {{timeLeft}}"
     },
-    "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Niveau {{level, number}}"
+    "title": "{{pseudo}} | Niveau {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Possédé en début de jeu",
