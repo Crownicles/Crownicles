@@ -98,6 +98,7 @@
     "Would you like to help us? Ask your server administrators to add the bot.",
     "Crownicles does not store any of your personal data.",
     "The {command:profile} command displays your current health status.",
+    "Rarer pets will allow you to collect better rewards.",
     "When selling a pet, the seller does not receive money but experience for their guild.",
     "The `/ilovedraftbot` command no longer exists.",
     "Badges are rare and difficult awards to obtain.",
@@ -295,7 +296,6 @@
     "If the oracle's pool isn't filled in time, it expires and resets with a more appropriate threshold. Don't wait too long before contributing!",
     "The Amplified Rage Blessing doubles rage gains, making it easier to reach higher levels.",
     "When the Battle Loot Blessing is active, your battle rewards (money and points) are multiplied by 4, with the exception of glory. It's the perfect time to keep on fighting!",
-    "The Pet Love Blessing doubles affection gains. Take the opportunity to strengthen your bond with your companion!",
-    "Thanks to the blessing of daily missions, your mission rewards are doubled. Remember to complete your missions while it's active!"
+    "The Pet Love Blessing doubles affection gains. Take the opportunity to strengthen your bond with your companion!"
   ]
 }
