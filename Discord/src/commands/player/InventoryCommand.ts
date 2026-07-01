@@ -24,6 +24,7 @@ import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { MessageFlags } from "discord-api-types/v10";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { resolveKeycloakDiscordUser } from "../../utils/KeycloakPlayerUtils";
 import { disableRows } from "../../utils/DiscordCollectorUtils";
 import { ItemWithDetails } from "../../../../Lib/src/types/ItemWithDetails";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
@@ -367,6 +368,7 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		return;
 	}
 	const username = await DisplayUtils.getEscapedUsername(packet.keycloakId!, lng);
+	const avatarUrl = (await resolveKeycloakDiscordUser(packet.keycloakId!))?.displayAvatarURL() ?? null;
 	let currentView = InventoryView.EQUIPPED;
 
 	const embeds = [
@@ -375,6 +377,9 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		getMaterialsEmbed(packet, username, lng),
 		getPlantsEmbed(packet, username, lng)
 	];
+	if (avatarUrl) {
+		embeds.forEach(embed => embed.setThumbnail(avatarUrl));
+	}
 
 	/**
 	 * All views with their button labels and custom IDs, in fixed display order

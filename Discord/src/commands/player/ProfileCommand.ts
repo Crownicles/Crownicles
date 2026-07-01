@@ -25,6 +25,7 @@ import {
 	asMilliseconds, millisecondsToMinutes
 } from "../../../../Lib/src/utils/TimeUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { resolveKeycloakDiscordUser } from "../../utils/KeycloakPlayerUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { ColorConstants } from "../../../../Lib/src/constants/ColorConstants";
@@ -288,10 +289,12 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 	const lng = interaction.userLanguage;
 	const titleEffect = packet.playerData.effect.healed ? "healed" : packet.playerData.effect.effect;
 	const pseudo = await DisplayUtils.getEscapedUsername(packet.keycloakId, lng);
+	const avatarUrl = (await resolveKeycloakDiscordUser(packet.keycloakId))?.displayAvatarURL() ?? null;
 	const reply = await interaction.reply({
 		embeds: [
 			new CrowniclesEmbed()
 				.setColor(<ColorResolvable>(packet.playerData.color ?? ColorConstants.PROFILE_DEFAULT))
+				.setThumbnail(avatarUrl)
 				.setTitle(i18n.t("commands:profile.title", {
 					lng,
 					effectId: titleEffect,
