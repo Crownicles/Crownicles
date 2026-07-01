@@ -127,6 +127,25 @@ export class LogsReadRequests {
 	}
 
 	/**
+	 * Get the number of times a specific player has received the token merchant charity this week
+	 * @param playerKeycloakId - The keycloak id of the player we want to check on
+	 */
+	static async getTokenCharityCountReceivedByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
+		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)));
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return 0;
+		}
+		return LogsClassicalShopBuyouts.count({
+			where: {
+				playerId: logPlayer.id,
+				shopItem: ShopItemType.TOKEN_CHARITY,
+				date: { [Op.gt]: startOfWeek }
+			}
+		});
+	}
+
+	/**
 	 * Get all the members of the player's guild on the pve island
 	 */
 	static async getGuildMembersThatWereOnPveIsland(player: Player): Promise<Player[]> {
