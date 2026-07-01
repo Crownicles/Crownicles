@@ -85,7 +85,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 2,
-      "xpToWin": 40,
+      "xpToWin": 150,
       "moneyToWin": 0
     },
     {
@@ -221,7 +221,7 @@
       "missionVariant": 2,
       "missionObjective": 1,
       "gemsToWin": 2,
-      "xpToWin": 75,
+      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
@@ -341,7 +341,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 3,
-      "xpToWin": 100,
+      "xpToWin": 135,
       "moneyToWin": 0
     },
     {
@@ -349,7 +349,7 @@
       "missionVariant": 0,
       "missionObjective": 1,
       "gemsToWin": 2,
-      "xpToWin": 75,
+      "xpToWin": 100,
       "moneyToWin": 0
     },
     {
@@ -1124,7 +1124,7 @@
       "missionId": "upgradeEpicItemLevel5",
       "missionVariant": 0,
       "missionObjective": 1,
-      "gemsToWin": 6,
+      "gemsToWin": 15,
       "xpToWin": 350,
       "moneyToWin": 0
     },
@@ -1140,7 +1140,7 @@
       "missionId": "buyAllApartments",
       "missionVariant": 0,
       "missionObjective": 1,
-      "gemsToWin": 20,
+      "gemsToWin": 30,
       "xpToWin": 500,
       "moneyToWin": 0
     },
