@@ -2646,7 +2646,7 @@ export const CrowniclesIcons: {
 		"❌",
 		"❤️",
 		"🚀",
-		"⚔️",
+		"🗡️",
 		"🛡️",
 		"🕥",
 		"💰",
