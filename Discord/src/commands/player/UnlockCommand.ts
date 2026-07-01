@@ -25,6 +25,7 @@ import { UnlockConstants } from "../../../../Lib/src/constants/UnlockConstants";
 import { ReactionCollectorReturnTypeOrNull } from "../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { escapeUsername } from "../../utils/StringUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
+import { resolveKeycloakDiscordUser } from "../../utils/KeycloakPlayerUtils";
 
 /**
  * Free a player from the prison
@@ -70,10 +71,11 @@ export async function createUnlockCollector(context: PacketContext, packet: Reac
 	const lng = interaction.userLanguage;
 	const data = packet.data.data;
 	const pseudo = await DisplayUtils.getEscapedUsername(data.unlockedKeycloakId, lng);
+	const unlockedUser = await resolveKeycloakDiscordUser(data.unlockedKeycloakId);
 	const embed = new CrowniclesEmbed().formatAuthor(i18n.t("commands:unlock.title", {
 		lng,
 		pseudo
-	}), interaction.user)
+	}), unlockedUser ?? interaction.user)
 		.setDescription(
 			i18n.t("commands:unlock.confirmDesc", {
 				lng,
@@ -123,12 +125,13 @@ export async function handleCommandUnlockAcceptPacketRes(packet: CommandUnlockAc
 	}
 	const lng = originalInteraction.userLanguage;
 	const buttonInteraction = DiscordCache.getButtonInteraction(context.discord!.buttonInteraction!);
+	const unlockedUser = await resolveKeycloakDiscordUser(packet.unlockedKeycloakId);
 	await buttonInteraction?.editReply({
 		embeds: [
 			new CrowniclesEmbed().formatAuthor(i18n.t("commands:unlock.title", {
 				lng,
 				pseudo: await DisplayUtils.getEscapedUsername(packet.unlockedKeycloakId, lng)
-			}), originalInteraction.user)
+			}), unlockedUser ?? originalInteraction.user)
 				.setDescription(
 					i18n.t("commands:unlock.acceptedDesc", {
 						lng,
