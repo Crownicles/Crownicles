@@ -62,11 +62,10 @@ function buildEnchantmentBalance(data: EnchanterCityData, lng: Language): string
 		});
 }
 
-async function sendEnchantReaction(params: EnchanterHandlerParams, index: number): Promise<void> {
+function sendEnchantReaction(params: EnchanterHandlerParams, index: number): void {
 	const {
 		selectedValue, buttonInteraction, context, packet, data
 	} = params;
-	await buttonInteraction.deferReply();
 	const item = data.enchantableItems[index];
 	if (!item || !selectedValue.startsWith(ReportCityMenuIds.ENCHANT_ITEM_PREFIX)) {
 		return;
@@ -108,6 +107,7 @@ async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promi
 		confirmLabel: i18n.t("commands:report.city.buttons.enchant", { lng }),
 		confirmEmoji: CrowniclesIcons.city.enchanter,
 		backMenuId: ReportCityMenuIds.ENCHANTER_MENU,
+		confirmAck: "reply",
 		onConfirm: async action => {
 			await sendEnchantReaction({
 				...params,
