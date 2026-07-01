@@ -298,13 +298,8 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 	});
 	const embed = new CrowniclesEmbed()
 		.setColor(<ColorResolvable>(packet.playerData.color ?? ColorConstants.PROFILE_DEFAULT))
-		.addFields(generateFields(packet, lng));
-	if (targetUser) {
-		embed.formatAuthor(title, targetUser);
-	}
-	else {
-		embed.setTitle(title);
-	}
+		.addFields(generateFields(packet, lng))
+		.formatAuthorOrTitle(title, targetUser);
 	const reply = await interaction.reply({
 		embeds: [embed],
 		withResponse: true

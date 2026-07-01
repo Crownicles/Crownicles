@@ -112,10 +112,6 @@ function getOwnedTalismanLabels(packet: CommandInventoryPacketRes, lng: Language
 		.map(talisman => i18n.t(talisman.translationKey, { lng }));
 }
 
-function applyInventoryHeader(embed: CrowniclesEmbed, title: string, targetUser: User | null): CrowniclesEmbed {
-	return targetUser ? embed.formatAuthor(title, targetUser) : embed.setTitle(title);
-}
-
 function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language, targetUser: User | null): CrowniclesEmbed {
 	if (!packet.data) {
 		throw new Error("Inventory packet data must not be undefined");
@@ -133,7 +129,7 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 				inline: false
 			}
 		]);
-	return applyInventoryHeader(embed, i18n.t("commands:inventory.title", {
+	return embed.formatAuthorOrTitle(i18n.t("commands:inventory.title", {
 		lng,
 		pseudo
 	}), targetUser);
@@ -148,7 +144,7 @@ function getBackupEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: 
 				getBackupField(lng, packet.data.backupPotions, packet.data.slots.potions, DiscordItemUtils.getPotionField, "potions"),
 				getBackupField(lng, packet.data.backupObjects, packet.data.slots.objects, DiscordItemUtils.getObjectField, "objects")
 			]);
-		return applyInventoryHeader(embed, i18n.t("commands:inventory.stockTitle", {
+		return embed.formatAuthorOrTitle(i18n.t("commands:inventory.stockTitle", {
 			lng,
 			pseudo
 		}), targetUser);
@@ -230,7 +226,7 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 	}
 
 	const materials = packet.data.materials;
-	const embed = applyInventoryHeader(new CrowniclesEmbed(), i18n.t("commands:inventory.materialsTitle", {
+	const embed = new CrowniclesEmbed().formatAuthorOrTitle(i18n.t("commands:inventory.materialsTitle", {
 		lng,
 		pseudo
 	}), targetUser);
@@ -282,7 +278,7 @@ function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: 
 		throw new Error("Inventory packet data must not be undefined");
 	}
 
-	const embed = applyInventoryHeader(new CrowniclesEmbed(), i18n.t("commands:inventory.plantsTitle", {
+	const embed = new CrowniclesEmbed().formatAuthorOrTitle(i18n.t("commands:inventory.plantsTitle", {
 		lng,
 		pseudo
 	}), targetUser);
