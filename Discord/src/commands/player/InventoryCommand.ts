@@ -8,7 +8,7 @@ import { SlashCommandBuilderGenerator } from "../SlashCommandBuilderGenerator";
 import { SlashCommandBuilder } from "@discordjs/builders";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import {
-	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedField
+	ActionRowBuilder, ButtonBuilder, ButtonInteraction, ButtonStyle, EmbedField, User
 } from "discord.js";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { DiscordCache } from "../../bot/DiscordCache";
@@ -112,16 +112,16 @@ function getOwnedTalismanLabels(packet: CommandInventoryPacketRes, lng: Language
 		.map(talisman => i18n.t(talisman.translationKey, { lng }));
 }
 
-function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+function applyInventoryHeader(embed: CrowniclesEmbed, title: string, targetUser: User | null): CrowniclesEmbed {
+	return targetUser ? embed.formatAuthor(title, targetUser) : embed.setTitle(title);
+}
+
+function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language, targetUser: User | null): CrowniclesEmbed {
 	if (!packet.data) {
 		throw new Error("Inventory packet data must not be undefined");
 	}
 
-	return new CrowniclesEmbed()
-		.setTitle(i18n.t("commands:inventory.title", {
-			lng,
-			pseudo
-		}))
+	const embed = new CrowniclesEmbed()
 		.addFields([
 			DiscordItemUtils.getWeaponField(packet.data.weapon, lng),
 			DiscordItemUtils.getArmorField(packet.data.armor, lng),
@@ -133,21 +133,25 @@ function getEquippedEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng
 				inline: false
 			}
 		]);
+	return applyInventoryHeader(embed, i18n.t("commands:inventory.title", {
+		lng,
+		pseudo
+	}), targetUser);
 }
 
-function getBackupEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+function getBackupEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language, targetUser: User | null): CrowniclesEmbed {
 	if (packet.data) {
-		return new CrowniclesEmbed()
-			.setTitle(i18n.t("commands:inventory.stockTitle", {
-				lng,
-				pseudo
-			}))
+		const embed = new CrowniclesEmbed()
 			.addFields([
 				getBackupField(lng, packet.data.backupWeapons, packet.data.slots.weapons, DiscordItemUtils.getWeaponField, "weapons"),
 				getBackupField(lng, packet.data.backupArmors, packet.data.slots.armors, DiscordItemUtils.getArmorField, "armors"),
 				getBackupField(lng, packet.data.backupPotions, packet.data.slots.potions, DiscordItemUtils.getPotionField, "potions"),
 				getBackupField(lng, packet.data.backupObjects, packet.data.slots.objects, DiscordItemUtils.getObjectField, "objects")
 			]);
+		return applyInventoryHeader(embed, i18n.t("commands:inventory.stockTitle", {
+			lng,
+			pseudo
+		}), targetUser);
 	}
 
 	throw new Error("Inventory packet data must not be undefined");
@@ -220,17 +224,16 @@ function buildColumnField(params: BuildColumnFieldParams): EmbedField[] {
 	return fields;
 }
 
-function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language, targetUser: User | null): CrowniclesEmbed {
 	if (!packet.data) {
 		throw new Error("Inventory packet data must not be undefined");
 	}
 
 	const materials = packet.data.materials;
-	const embed = new CrowniclesEmbed()
-		.setTitle(i18n.t("commands:inventory.materialsTitle", {
-			lng,
-			pseudo
-		}));
+	const embed = applyInventoryHeader(new CrowniclesEmbed(), i18n.t("commands:inventory.materialsTitle", {
+		lng,
+		pseudo
+	}), targetUser);
 
 	if (materials.length === 0) {
 		embed.addFields([
@@ -274,16 +277,15 @@ function getMaterialsEmbed(packet: CommandInventoryPacketRes, pseudo: string, ln
 	return embed;
 }
 
-function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language): CrowniclesEmbed {
+function getPlantsEmbed(packet: CommandInventoryPacketRes, pseudo: string, lng: Language, targetUser: User | null): CrowniclesEmbed {
 	if (!packet.data) {
 		throw new Error("Inventory packet data must not be undefined");
 	}
 
-	const embed = new CrowniclesEmbed()
-		.setTitle(i18n.t("commands:inventory.plantsTitle", {
-			lng,
-			pseudo
-		}));
+	const embed = applyInventoryHeader(new CrowniclesEmbed(), i18n.t("commands:inventory.plantsTitle", {
+		lng,
+		pseudo
+	}), targetUser);
 
 	const plants = packet.data.plants;
 	if (!plants) {
@@ -368,18 +370,15 @@ export async function handleCommandInventoryPacketRes(packet: CommandInventoryPa
 		return;
 	}
 	const username = await DisplayUtils.getEscapedUsername(packet.keycloakId!, lng);
-	const avatarUrl = (await resolveKeycloakDiscordUser(packet.keycloakId!))?.displayAvatarURL() ?? null;
+	const targetUser = await resolveKeycloakDiscordUser(packet.keycloakId!);
 	let currentView = InventoryView.EQUIPPED;
 
 	const embeds = [
-		getEquippedEmbed(packet, username, lng),
-		getBackupEmbed(packet, username, lng),
-		getMaterialsEmbed(packet, username, lng),
-		getPlantsEmbed(packet, username, lng)
+		getEquippedEmbed(packet, username, lng, targetUser),
+		getBackupEmbed(packet, username, lng, targetUser),
+		getMaterialsEmbed(packet, username, lng, targetUser),
+		getPlantsEmbed(packet, username, lng, targetUser)
 	];
-	if (avatarUrl) {
-		embeds.forEach(embed => embed.setThumbnail(avatarUrl));
-	}
 
 	/**
 	 * All views with their button labels and custom IDs, in fixed display order

@@ -289,20 +289,24 @@ export async function handleCommandProfilePacketRes(packet: CommandProfilePacket
 	const lng = interaction.userLanguage;
 	const titleEffect = packet.playerData.effect.healed ? "healed" : packet.playerData.effect.effect;
 	const pseudo = await DisplayUtils.getEscapedUsername(packet.keycloakId, lng);
-	const avatarUrl = (await resolveKeycloakDiscordUser(packet.keycloakId))?.displayAvatarURL() ?? null;
+	const targetUser = await resolveKeycloakDiscordUser(packet.keycloakId);
+	const title = i18n.t("commands:profile.title", {
+		lng,
+		effectId: titleEffect,
+		pseudo,
+		level: packet.playerData?.level
+	});
+	const embed = new CrowniclesEmbed()
+		.setColor(<ColorResolvable>(packet.playerData.color ?? ColorConstants.PROFILE_DEFAULT))
+		.addFields(generateFields(packet, lng));
+	if (targetUser) {
+		embed.formatAuthor(title, targetUser);
+	}
+	else {
+		embed.setTitle(title);
+	}
 	const reply = await interaction.reply({
-		embeds: [
-			new CrowniclesEmbed()
-				.setColor(<ColorResolvable>(packet.playerData.color ?? ColorConstants.PROFILE_DEFAULT))
-				.setThumbnail(avatarUrl)
-				.setTitle(i18n.t("commands:profile.title", {
-					lng,
-					effectId: titleEffect,
-					pseudo,
-					level: packet.playerData?.level
-				}))
-				.addFields(generateFields(packet, lng))
-		],
+		embeds: [embed],
 		withResponse: true
 	});
 	if (!reply?.resource?.message) {
