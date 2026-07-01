@@ -22,7 +22,9 @@ import {
 import InventoryInfo from "../database/game/models/InventoryInfo";
 import { buildChestData } from "./ReportCityService";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
-import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CrowniclesPacket, makePacket
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 import { MissionsController } from "../missions/MissionsController";
 
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
@@ -117,6 +119,15 @@ export async function handleChestAction(
 		[Player.lockKey(chestActionContext.player.id), Home.lockKey(chestActionContext.home.id)] as const,
 		([lockedPlayer, lockedHome]) => runChestActionUnderLock(packet, lockedPlayer, lockedHome)
 	).then(async result => {
+		/*
+		 * Push the chest action response packet BEFORE any mission notification
+		 * packet. The Discord async packet sender matches the first response
+		 * packet carrying the request's packetId to the awaiting callback, so a
+		 * mission-completed packet pushed first would hijack that callback and
+		 * leave the chest response unhandled (broken message). See issue #4342.
+		 */
+		response.push(makePacket(CommandReportHomeChestActionRes, result));
+
 		/*
 		 * Trigger the mission update only after the Player + Home locks are
 		 * released: `MissionsController.update` additionally locks

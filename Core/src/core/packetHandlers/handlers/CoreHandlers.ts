@@ -10,7 +10,7 @@ import {
 	ReactionCollectorResetTimerPacketReq
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorResetTimer";
 import {
-	CommandReportHomeChestActionReq, CommandReportHomeChestActionRes,
+	CommandReportHomeChestActionReq,
 	CommandReportGardenHarvestReq,
 	CommandReportGardenPlantReq,
 	CommandReportGardenWaterReq,
@@ -64,8 +64,7 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportHomeChestActionReq)
 	async homeChestAction(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportHomeChestActionReq): Promise<void> {
-		const result = await handleChestAction(context.keycloakId!, packet, response);
-		response.push(makePacket(CommandReportHomeChestActionRes, result));
+		await handleChestAction(context.keycloakId!, packet, response);
 	}
 
 	@packetHandler(CommandEquipActionReq)
