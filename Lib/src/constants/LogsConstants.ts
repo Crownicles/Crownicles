@@ -105,7 +105,8 @@ export enum ShopItemType {
 	WOOD_COMMON_BUNDLE,
 	WOOD_UNCOMMON_BUNDLE,
 	RANDOM_MATERIAL_PACK,
-	REMOTE_HARVEST_TALISMAN
+	REMOTE_HARVEST_TALISMAN,
+	TOKEN_CHARITY
 }
 
 export const ShopItemTypeToString: Record<ShopItemType, string> = {
@@ -137,5 +138,6 @@ export const ShopItemTypeToString: Record<ShopItemType, string> = {
 	[ShopItemType.WOOD_COMMON_BUNDLE]: "woodCommonBundle",
 	[ShopItemType.WOOD_UNCOMMON_BUNDLE]: "woodUncommonBundle",
 	[ShopItemType.RANDOM_MATERIAL_PACK]: "randomMaterialPack",
-	[ShopItemType.REMOTE_HARVEST_TALISMAN]: "remoteHarvestTalisman"
+	[ShopItemType.REMOTE_HARVEST_TALISMAN]: "remoteHarvestTalisman",
+	[ShopItemType.TOKEN_CHARITY]: "tokenCharity"
 };
