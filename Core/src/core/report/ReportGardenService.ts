@@ -275,7 +275,7 @@ async function triggerHarvestMissions(params: {
 
 	if (ancestralHarvestCount > 0) {
 		await MissionsController.update(player, response, {
-			missionId: "cultivateAncestralTrees",
+			missionId: "getAncestralTrees",
 			count: ancestralHarvestCount
 		});
 	}
