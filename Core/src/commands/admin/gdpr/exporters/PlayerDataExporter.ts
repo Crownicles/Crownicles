@@ -116,7 +116,6 @@ async function exportMissionData(
 			{
 				gems: missionsInfo.gems,
 				hasBoughtPointsThisWeek: missionsInfo.hasBoughtPointsThisWeek,
-				hasReceivedTokenCharityThisWeek: missionsInfo.hasReceivedTokenCharityThisWeek,
 				missionSkipsUsedThisWeek: missionsInfo.missionSkipsUsedThisWeek,
 				dailyMissionNumberDone: missionsInfo.dailyMissionNumberDone,
 				lastDailyMissionCompleted: missionsInfo.lastDailyMissionCompleted,

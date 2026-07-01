@@ -18,9 +18,6 @@ import {
 	Player
 } from "../database/game/models/Player";
 import {
-	PlayerMissionsInfo, PlayerMissionsInfos
-} from "../database/game/models/PlayerMissionsInfo";
-import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
 import { ShopConstants } from "../../../../Lib/src/constants/ShopConstants";
@@ -32,7 +29,6 @@ import {
 } from "../utils/ReactionsCollector";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { MissionsController } from "../missions/MissionsController";
-import { withLockedEntitiesSafe } from "../utils/withLockedEntitiesSafe";
 import { crowniclesInstance } from "../../app";
 
 /**
@@ -135,46 +131,35 @@ async function buyTokens(
 /**
  * Gift free tokens to a broke player with no tokens, at most once per week.
  *
- * Concurrency: both the `player` and `playerMissionsInfo` rows are locked
- * together so the once-per-week flag check and the token gift + flag flip
- * happen atomically (mirrors the king's favor mechanic, #3760).
- *
- * Exported for the race integration test, which exercises the
- * once-per-week guarantee directly without the logs-DB allowance read.
+ * Concurrency: the check-then-grant sequence runs inside `Player.withLocked`
+ * so two concurrent calls for the same player are serialized. The weekly
+ * dedup is read from and written to the logs database (as a
+ * `ShopItemType.TOKEN_CHARITY` buyout), mirroring how the token buyout
+ * daily/weekly limits are enforced. The log write happens inside the lock
+ * so a following (serialized) call observes the already-granted charity.
  */
-export async function giveCharity(
+async function giveCharity(
 	player: Player,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	// Pre-warm the PlayerMissionsInfo row so the lock can pin it
-	await PlayerMissionsInfos.getOfPlayer(player.id);
-
-	await withLockedEntitiesSafe(
-		[
-			Player.lockKey(player.id),
-			PlayerMissionsInfo.lockKey(player.id)
-		] as const,
-		`giveTokenCharity(player=${player.id})`,
-		async ([lockedPlayer, lockedMissionsInfo]) => {
-			if (lockedMissionsInfo.hasReceivedTokenCharityThisWeek) {
-				response.push(makePacket(CommandReportTokenMerchantCharityAlreadyUsedRes, {}));
-				return;
-			}
-
-			await lockedPlayer.addTokens({
-				amount: TokensConstants.MERCHANT_CHARITY_AMOUNT,
-				response,
-				reason: NumberChangeReason.TOKEN_MERCHANT_CHARITY
-			});
-			lockedMissionsInfo.hasReceivedTokenCharityThisWeek = true;
-			await Promise.all([
-				lockedPlayer.save(),
-				lockedMissionsInfo.save()
-			]);
-
-			response.push(makePacket(CommandReportTokenMerchantCharityRes, { amount: TokensConstants.MERCHANT_CHARITY_AMOUNT }));
+	await Player.withLocked(player.id, async lockedPlayer => {
+		const charityReceivedThisWeek = await LogsReadRequests.getTokenCharityCountReceivedByPlayerThisWeek(lockedPlayer.keycloakId);
+		if (charityReceivedThisWeek > 0) {
+			response.push(makePacket(CommandReportTokenMerchantCharityAlreadyUsedRes, {}));
+			return;
 		}
-	);
+
+		await lockedPlayer.addTokens({
+			amount: TokensConstants.MERCHANT_CHARITY_AMOUNT,
+			response,
+			reason: NumberChangeReason.TOKEN_MERCHANT_CHARITY
+		});
+		await lockedPlayer.save();
+
+		await crowniclesInstance?.logsDatabase.logClassicalShopBuyout(lockedPlayer.keycloakId, ShopItemType.TOKEN_CHARITY, TokensConstants.MERCHANT_CHARITY_AMOUNT);
+
+		response.push(makePacket(CommandReportTokenMerchantCharityRes, { amount: TokensConstants.MERCHANT_CHARITY_AMOUNT }));
+	});
 }
 
 /**
