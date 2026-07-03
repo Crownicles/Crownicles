@@ -324,7 +324,8 @@
       "27": "the Mystic Glades of the Celestrum Forest",
       "28": "Undergrounds of Castle Doors",
       "29": "the Alcoves in the Reception Room",
-      "32": "Royal Cobblestones of Castle Road"
+      "32": "Royal Cobblestones of Castle Road",
+      "41": "les Passages Secrets de la Cour du Château"
     },
     "errors": {
       "noPet": "Nature spirits refuse to let you send a pet... because you don't have one!",
@@ -605,15 +606,15 @@
     "seeBackupItems": "{emote:collectors.switch} View backup items",
     "seeEquippedItems": "{emote:collectors.switch} View equipped items",
     "seeMaterials": "{emote:inventory.materials} Materials",
-    "stockTitle": "{emote:inventory.stock} **{{pseudo}}'s item reserve**",
-    "title": "{emote:commands.inventory} **{{pseudo}}'s inventory**",
-    "materialsTitle": "{emote:inventory.materials} ** {{pseudo}} Locations**",
+    "stockTitle": "Réserve d'objets de {{pseudo}}",
+    "title": "Inventaire de {{pseudo}}",
+    "materialsTitle": "Matériaux de {{pseudo}}",
     "materialsField_zero": "Materiaux (0):",
     "materialsField_one": "Workshop ({{count}}):",
     "materialsField_other": "Workshops ({{count}}):",
     "noMaterials": "{emote:inventory.empty} **No Masters**",
     "seePlants": "{emote:city.homeUpgrades.garden} Plants",
-    "plantsTitle": "{emote:city.homeUpgrades.garden} ** {{pseudo}} Plants**",
+    "plantsTitle": "Plantes de {{pseudo}}",
     "plantsField_zero": "Plant (0):",
     "plantsField_one": "Plant ({{count}}):",
     "plantsField_other": "Plants ({{count}}):",
@@ -767,7 +768,7 @@
       "fieldName": "Time left:",
       "fieldValue": "{emote:effects.{{effectId}}} {{timeLeft}}"
     },
-    "title": "{emote:effects.{{effectId}}} | {{pseudo}} | Level {{level, number}}"
+    "title": "{{pseudo}} | Niveau {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Owned at the start of the game",
@@ -1437,7 +1438,7 @@
         "leaveShop": "Exit Merchant"
       }
     },
-    "notEnoughTokensButton": "Insufficient tokens",
+    "tokenMerchantButton": "Buy tokens",
     "useTokensButton": "Forward",
     "useTokensLoading": "Loading...",
     "useTokensConfirmTitle": "{{pseudo}}, confirmation",
@@ -1450,6 +1451,29 @@
     "tokensNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
     "tokensUsedRefusedTitle": "{{pseudo}}, cancellation",
     "tokensUsedRefusedDescription": "{emote:messages.refuse} You decide to keep your tokens.",
+    "tokenMerchant": {
+      "title": "{{pseudo}}, a token merchant",
+      "description": "{emote:unitValues.token} As you rummage through your pockets looking for tokens, a wandering merchant appears at a bend in the road. He spreads out before you a pouch full of glittering tokens, ready to be traded for a few gold coins.\n\n{emote:unitValues.money} **Your gold**: {{playerMoney, number}}\n{emote:unitValues.token} **Your tokens**: {{playerTokens, number}}\n\nEach token will cost you **{{pricePerToken, number}}** {emote:unitValues.money}.",
+      "buyButton_one": "Buy {{count}} token — {{price, number}} gold",
+      "buyButton_other": "Buy {{count}} tokens — {{price, number}} gold",
+      "refuseButton": "Buy nothing",
+      "boughtTitle": "{{pseudo}}, deal done!",
+      "boughtDescription_one": "{emote:unitValues.token} The merchant hands you **{{count}} token** and pockets your gold with a satisfied smile.\n\nUse {command:report} to resume your journey.",
+      "boughtDescription_other": "{emote:unitValues.token} The merchant hands you **{{count}} tokens** and pockets your gold with a satisfied smile.\n\nUse {command:report} to resume your journey.",
+      "tooMuchTitle": "{{pseudo}}, sorry merchant",
+      "tooMuchDescription": "{emote:collectors.warning} The merchant shrugs: you have already acquired all the tokens he could sell you for now. Come back later.",
+      "fullTitle": "{{pseudo}}, full pouch",
+      "fullDescription": "{emote:unitValues.token} Your pockets are already overflowing with tokens: the merchant refuses to sell you any more.",
+      "refuseTitle": "{{pseudo}}, deal declined",
+      "refuseDescription": "{emote:messages.refuse} You decline the merchant's offer; he tucks away his pouch and quietly continues on his way.",
+      "cannotAffordTitle": "{{pseudo}}, empty purse",
+      "cannotAffordDescription": "{emote:unitValues.money} You search your pockets in vain: you do not have enough gold to buy a single token. Gather a few coins before coming back to try your luck.",
+      "charityTitle": "{{pseudo}}, a generous gesture",
+      "charityDescription_one": "{emote:unitValues.token} Moved by your destitution, the merchant discreetly slips **{{count}} token** into your hand, asking nothing in return.\n\nUse {command:report} to resume your journey.",
+      "charityDescription_other": "{emote:unitValues.token} Moved by your destitution, the merchant discreetly slips **{{count}} tokens** into your hand, asking nothing in return.\n\nUse {command:report} to resume your journey.",
+      "charityAlreadyUsedTitle": "{{pseudo}}, no more charity",
+      "charityAlreadyUsedDescription": "{emote:collectors.warning} The merchant recognizes you: he already gave you alms this week and cannot afford to be more generous. Come back next week."
+    },
     "buyHealButton": "Heal",
     "notEnoughMoneyHealButton": "Not enough money",
     "buyHealLoading": "Loading...",
