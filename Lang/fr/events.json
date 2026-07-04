@@ -3129,5 +3129,51 @@
       }
     },
     "text": "Le sable brûlant s'enfonce sous vos pas tandis que vous progressez difficilement, le foulard serré sur le visage pour filtrer le vent chaud chargé de poussière. À l'horizon, rien d'autre que des vagues dorées et le chant lointain du désert. Vous vous agenouillez un instant pour reprendre votre souffle, mais un mouvement attire votre regard : un scorpion noir, gros comme un poing, sort lentement de sous une pierre, sa queue arquée luisant à la lumière, menaçante."
+  },
+  "89": {
+    "possibilities": {
+      "stepAside": {
+        "outcomes": {
+          "0": "Vous vous écartez de la voie principale pour dégager le centre de la rue. Mais la foule, dense et ayant suivi votre exemple, vous presse contre le mur d'une maison. Tandis que les gardes défilent, vous peinez à respirer, la cage thoracique comprimée. C'est avec un profond soulagement que vous apercevez enfin le dernier soldat de la cohorte.",
+          "1": "Alors que la foule reflue du centre de l'avenue, vous vous retrouvez collé à de nombreux citoyens. Vous profitez de cette promiscuité pour dépouiller discrètement vos voisins de quelques pièces.",
+          "2": "Alors que la foule reflue du centre de l'avenue, vous vous retrouvez collé à de nombreux citoyens. Ce n'est qu'après le passage de la Garde royale que vous constatez qu'un voyou a mis à profit cette promiscuité pour vous dérober votre bourse."
+        },
+        "text": "S'écarter prestement."
+      },
+      "ignore": {
+        "outcomes": {
+          "0": "Vous continuez d'avancer sans tenir compte de l'ordre reçu, et finissez par faire face à une cohorte d'une trentaine de soldats qui vous dévisagent avec hostilité. Pris de panique, vous vous écartez aussi vite que possible en balbutiant des excuses.",
+          "1": "Vous ignorez totalement la sommation et poursuivez votre route, borné, jusqu'à percuter l'un des soldats de la parade. Confus, vous vous excusez, mais l'homme vous empoigne, vous roue de coups puis vous jette sur le bas-côté. Honteux et meurtri, vous subissez les rires moqueurs des autres soldats et vous traînez jusqu'à une ruelle voisine pour panser vos plaies.",
+          "2": "Vous continuez tranquillement votre marche, ignorant les murmures des citoyens choqués par votre insolence, jusqu'à vous retrouver devant une trentaine de gardes aux regards hostiles. Avant même de pouvoir réagir, vous êtes empoigné et jeté en prison pour outrage à la Garde royale.",
+          "3": "Borné comme vous l'êtes, vous avancez sans considération pour l'ordre reçu, jusqu'à heurter un soldat de l'avant-garde. Alors qu'il lève le poing pour riposter, vous saisissez son bras, le plaquez au sol et le maîtrisez en un éclair. Un rire amusé parcourt la cohorte et le roi s'avance, chevauchant un grand cheval blanc. Impressionné par votre prouesse face à l'élite de ses soldats, il vous récompense d'une belle somme, mais vous somme de quitter la ville."
+        },
+        "text": "Ignorer la sommation."
+      },
+      "bow": {
+        "outcomes": {
+          "0": "Comme tous les passants, vous vous écartez de la voie et laissez défiler la colonne de chevaliers. À la vue du riche carrosse qui les suit, vous vous inclinez de concert avec le reste de la population. Lorsqu'il arrive à votre hauteur, vous relevez discrètement la tête et apercevez, l'espace d'un instant, les fins doigts de la princesse du royaume saluant son peuple. Cette vision suffit à vous redonner courage.",
+          "1": "Vous vous rangez sur le côté de la rue et vous inclinez respectueusement devant le passage des soldats, bientôt imité par de nombreux citoyens. À cette vue, les gardes bombent le torse et défilent avec fierté. Vous vous relevez après quelques minutes, gagné par le sentiment d'appartenance et de fidélité que votre initiative a fait naître dans la population.",
+          "2": "Sitôt l'ordre reçu, vous pliez le genou, baissez la tête et vous inclinez face aux soldats. Vous remarquez toutefois bien vite votre solitude dans cet élan de soumission : il ne s'agissait que d'une simple patrouille. En arrivant à votre hauteur, les soldats vous bousculent en riant, et vous repartez, honteux."
+        },
+        "text": "S'incliner devant le passage de la Garde."
+      },
+      "otherAlley": {
+        "outcomes": {
+          "0": "Alors que vous empruntez une ruelle transverse, vous apercevez brièvement du mouvement sur les toits. Méfiant, vous escaladez un mur pour en avoir le cœur net et découvrez un homme dissimulé, pointant un carreau d'arbalète vers le carrosse qui défile au milieu des soldats : une tentative d'assassinat contre la famille royale ! Sans hésiter, vous vous ruez sur l'assaillant, arrachez son arme et parvenez à le maîtriser. Le vacarme attire les chevaliers, à qui vous livrez le criminel avant de redescendre du toit. Alerté, le roi s'approche alors et vous propose de rejoindre la Garde. Malgré votre refus, il vous offre un équipement du Trésor royal ainsi qu'un familier d'une grande rareté, en gage de bonne entente avec la couronne. Reconnaissant, vous vous inclinez respectueusement sous les acclamations de la foule.",
+          "1": "Alors que vous empruntez une ruelle transverse, vous apercevez brièvement du mouvement sur les toits. Méfiant, vous escaladez un mur pour en avoir le cœur net et découvrez un homme dissimulé, pointant un carreau d'arbalète vers le carrosse qui défile au milieu des soldats : une tentative d'assassinat contre la famille royale ! Sans hésiter, vous vous ruez sur l'assaillant, arrachez son arme et parvenez à le maîtriser. Le vacarme attire les chevaliers, à qui vous livrez le criminel avant de redescendre du toit. Alerté, le roi s'approche et vous propose de rejoindre la Garde. Malgré votre refus, il vous offre un équipement du Trésor royal ainsi qu'une belle bourse d'or, en gage de bonne entente avec la couronne. Reconnaissant, vous vous inclinez respectueusement sous les acclamations de la foule.",
+          "2": "Alors que vous gagnez une ruelle voisine déserte, une voix vous parvient. Les quelques bribes que vous saisissez vous apprennent qu'un attentat se prépare contre la famille royale ! Sans réfléchir un seul instant, vous vous précipitez dans l'avenue voisine, arme au poing, avant de mesurer votre imprudence : vos ennemis sont bien trop nombreux. Vous luttez vaillamment et parvenez à en blesser quelques-uns, mais finissez submergé et laissé pour mort.",
+          "3": "Vous prenez la première rue transverse et contournez la procession. Vous profitez d'un petit commerce local pour acheter de quoi vous restaurer ainsi qu'un peu d'équipement à bas prix.",
+          "4": "Alors que vous empruntez une ruelle parallèle déserte, des voix s'échappent d'une maison. Curieux, vous vous approchez et écoutez à la porte, ne saisissant que quelques bribes : des marchandises, quelqu'un à éliminer, un passage, un réseau. Au moment de quitter les lieux, ne voulant pas être mêlé à cette affaire louche, vous reconnaissez avec stupeur, dans l'une des voix, celle du mercenaire Price ! Vous poursuivez votre chemin, bouleversé."
+        },
+        "text": "Emprunter une autre ruelle."
+      },
+      "end": {
+        "outcomes": {
+          "0": "Vous vous écartez du centre de l'avenue et poursuivez votre chemin en longeant les murs des maisons.",
+          "1": "Vous restez planté au milieu de l'allée, mais la foule finit par vous emporter sur le côté. Vous attendez donc la fin de cette procession militaire avant de reprendre votre déambulation dans les rues de la capitale."
+        }
+      }
+    },
+    "text": "Vous avancez tranquillement dans les rues de la ville entourant le château royal. Les passants discutent et l'ambiance est joyeuse ; vous entendez même un chat miauler au loin. Soudain, une clameur s'élève depuis le bout de la rue : un soldat, la voix tonnante, ordonne à tout le monde de s'écarter sur-le-champ."
   }
 }
