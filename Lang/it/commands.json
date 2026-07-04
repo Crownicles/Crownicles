@@ -918,7 +918,7 @@
       "inns": {
         "names": {
           "lordInn": "La locanda del Signore",
-          "bravesStop": "L'Alte des Braves",
+          "bravesStop": "La Halte des Braves",
           "hotSwallow": "Il sorso che brucia",
           "fireside": "Au Coin du Feu",
           "bloodyTankard": "Il boccale insanguinato",
@@ -926,7 +926,7 @@
         },
         "stories": {
           "lordInn": "{emote:city.inn} Si entra nella Locanda del Signore. Qui tutto è lussuoso, dall'arredamento alle bevande. Qui si trovano avventurieri famosi e nobili in cerca di emozioni. Avete persino sentito dire che il Re ha soggiornato qui durante i suoi viaggi.",
-          "bravesStop": "{emote:city.inn} Chi non ha mai sentito parlare dell'Alte des Braves? È la locanda più antica e famosa della regione. Si entra in una sala affollata, piena di risate e canti. Le pareti sono ricoperte di trofei di caccia e armi antiche. È il luogo perfetto per incontrare altri avventurieri.",
+          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de la Halte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
           "hotSwallow": "{emote:city.inn} Si entra nella Gorgée Brûlante, una piccola locanda di paese dove è bene rinfrescarsi, contrariamente a quanto suggerisce il nome. Il nome deriva dalla bevanda di punta del locale, una birra speziata che riscalda il cuore e l'anima. Le pareti sono decorate con souvenir di viaggiatori passati e l'atmosfera è calda.",
           "fireside": "{emote:city.inn} Entrate nella locanda Au Coin du Feu, un luogo dove gli avventurieri si riuniscono per condividere storie intorno a un fuoco scoppiettante. L'odore di pesce alla griglia aleggia nell'aria, insieme alle risate e ai canti degli ospiti. L'arredamento è semplice ma ricorda la vita dei marinai e dei pescatori.",
           "bloodyTankard": "{emote:city.inn} Entrate nel Boccale Insanguinato, una locanda rinomata per le sue bevande forti e l'atmosfera cupa. Ci sono molti trofei di mostri cacciati dai clienti e nell'aria si sente l'odore di birra e tabacco. Il cibo non è il massimo e nemmeno i letti.",
