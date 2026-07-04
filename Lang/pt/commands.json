@@ -918,7 +918,7 @@
       "inns": {
         "names": {
           "lordInn": "A Pousada do Senhor",
-          "bravesStop": "A Alte des Braves",
+          "bravesStop": "La Halte des Braves",
           "hotSwallow": "O gole ardente",
           "fireside": "Au Coin du Feu",
           "bloodyTankard": "A Caneca Sangrenta",
@@ -926,7 +926,7 @@
         },
         "stories": {
           "lordInn": "{emote:city.inn} Entraste na Estalagem do Senhor. Tudo aqui é luxuoso, desde a mobília até às bebidas. Aqui podes encontrar aventureiros famosos e nobres à procura de emoção. Até já ouviste dizer que o Rei ficou aqui nas suas viagens.",
-          "bravesStop": "{emote:city.inn} Quem é que nunca ouviu falar da Alte des Braves? É a estalagem mais antiga e mais famosa da região. Entra numa sala cheia de gente, cheia de risos e canções. As paredes estão cobertas de troféus de caça e armas antigas. É o local ideal para conhecer outros aventureiros.",
+          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de la Halte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
           "hotSwallow": "{emote:city.inn} Entra no Gorgée Brûlante, uma pequena estalagem de aldeia onde é bom refrescar-se, ao contrário do que o seu nome sugere. O seu nome vem da bebida principal do estabelecimento, uma cerveja picante que aquece o coração e a alma. As paredes estão decoradas com recordações de viajantes passados e o ambiente é acolhedor.",
           "fireside": "{emote:city.inn} Entraste na Estalagem Au Coin du Feu, um lugar onde os aventureiros se reúnem para partilhar histórias à volta de uma fogueira crepitante. O cheiro a peixe grelhado paira no ar, juntamente com os risos e cânticos dos convidados. A decoração é simples, mas lembra a vida dos marinheiros e pescadores.",
           "bloodyTankard": "{emote:city.inn} Entraste na Caneca Sangrenta, uma estalagem conhecida pelas suas bebidas fortes e ambiente sombrio. Há muitos troféus de monstros caçados pelos clientes e o ar está carregado com o cheiro da cerveja e do tabaco. A comida não é grande coisa, e as camas também não.",

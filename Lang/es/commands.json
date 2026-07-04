@@ -918,7 +918,7 @@
       "inns": {
         "names": {
           "lordInn": "La posada del Señor",
-          "bravesStop": "El Alte des Braves",
+          "bravesStop": "La Halte des Braves",
           "hotSwallow": "El sorbo ardiente",
           "fireside": "Au Coin du Feu",
           "bloodyTankard": "La Taza Sangrienta",
@@ -926,7 +926,7 @@
         },
         "stories": {
           "lordInn": "{emote:ciudad.posada} Entras en la Posada del Señor. Aquí todo es lujoso, desde los muebles hasta las bebidas. Aquí puedes encontrar aventureros famosos y nobles en busca de emociones. Incluso has oído que el Rey se alojó aquí en sus viajes.",
-          "bravesStop": "{emote:city.inn} ¿Quién no ha oído hablar del Alte des Braves? Es la posada más antigua y famosa de la región. Entras en una sala abarrotada, llena de risas y canciones. Las paredes están cubiertas de trofeos de caza y armas antiguas. Es el lugar perfecto para conocer a otros aventureros.",
+          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de la Halte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
           "hotSwallow": "{emote:ciudad.posada} Entras en la Gorgée Brûlante, una pequeña posada de pueblo donde conviene refrescarse, al contrario de lo que sugiere su nombre. Su nombre procede de la bebida estrella del establecimiento, una cerveza especiada que calienta el corazón y el alma. Las paredes están decoradas con recuerdos de antiguos viajeros y el ambiente es cálido.",
           "fireside": "{emote:ciudad.posada} Entras en la posada Au Coin du Feu, un lugar donde los aventureros se reúnen para compartir historias alrededor de un fuego crepitante. El olor a pescado asado flota en el aire, junto con las risas y cantos de los huéspedes. La decoración es sencilla, pero evoca la vida de marineros y pescadores.",
           "bloodyTankard": "{emote:ciudad.posada} Entras en la Taza Sangrienta, una posada famosa por sus bebidas fuertes y su ambiente oscuro. Hay un montón de trofeos de monstruos cazados por los clientes, y el aire está cargado de olor a cerveza y tabaco. La comida no es buena, y las camas tampoco.",
