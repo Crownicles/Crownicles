@@ -918,7 +918,7 @@
       "inns": {
         "names": {
           "lordInn": "Lord Inn",
-          "bravesStop": "The Alte of the Braves",
+          "bravesStop": "La Halte des Braves",
           "hotSwallow": "Brutal Gorges",
           "fireside": "At the corner of fire",
           "bloodyTankard": "The Bloody Mug",
@@ -926,7 +926,7 @@
         },
         "stories": {
           "lordInn": "{emote:city.inn} You enter the Lord's Inn. Here, everything is luxurious, from furniture to drinks. Here you can find renowned adventurers and noblemen with strong sensations. You have already heard that the King had stayed there during his travels.",
-          "bravesStop": "{emote:city.inn} Who has never heard of the Alte des Braves? This is the oldest and most famous inn in the area. You enter a crowded room, filled with laughter and song. The walls are covered with hunting trophies and ancient weapons. This is the perfect place to meet other adventurers.",
+          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de la Halte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
           "hotSwallow": "{emote:city. n} You enter the Bruce Gorge, a small village inn where you can refresh yourself, contrary to what his name suggests. Its designation comes from the star drink of the establishment, a spicy beverage that heats the heart and the air. The walls are coated with memories of past travelers, and the atmosphere is warm.",
           "fireside": "{emote:city.inn} You enter the Inn At Fire Corner, a place where adventurers gather to share stories about a burning fire. The smell of grilled fish floats in the air, in conjunction with the laughter and songs of customers. The decoration is simple but reminiscent of the life of sailors and fishermen.",
           "bloodyTankard": "{emote:city.inn} You enter Sanglante Hope, a popular inn for its strong drinks and dark atmosphere. Here you will find many trophies of monsters hunted by customers, and an air loaded with the smell of bee and tobacco. The food is not very good and the beds are not very good either.",
