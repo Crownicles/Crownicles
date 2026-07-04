@@ -918,7 +918,7 @@
       "inns": {
         "names": {
           "lordInn": "Das Gasthaus des Herrn",
-          "bravesStop": "Die Alte des Braves",
+          "bravesStop": "La Halte des Braves",
           "hotSwallow": "Der brennende Schluck",
           "fireside": "Au Coin du Feu",
           "bloodyTankard": "Der Blutkrug",
@@ -926,7 +926,7 @@
         },
         "stories": {
           "lordInn": "{emote:city.inn} Sie betreten das Gasthaus des Herrn. Hier ist alles luxuriös, von den Möbeln bis zu den Getränken. Hier finden Sie berühmte Abenteurer und Adlige, die auf der Suche nach dem Nervenkitzel sind. Sie haben sogar schon gehört, dass der König auf seinen Reisen hier übernachtet hat.",
-          "bravesStop": "{emote:city.inn} Wer hat noch nie von der \"Alten des Braves\" gehört? Sie ist das älteste und berühmteste Gasthaus der Region. Sie betreten einen überfüllten Saal, der von Gelächter und Gesang erfüllt ist. Die Wände sind mit Jagdtrophäen und alten Waffen bedeckt. Dies ist der perfekte Ort, um andere Abenteurer zu treffen.",
+          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de la Halte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
           "hotSwallow": "{emote:city.inn} Sie betreten die Gorgée Brûlante, eine kleine Dorfschänke, in der man sich, anders als der Name vermuten lässt, gut erfrischen kann. Seine Bezeichnung stammt von dem Hauptgetränk des Lokals, einem würzigen Bier, das Herz und Seele wärmt. Die Wände sind mit Erinnerungsstücken vergangener Reisender geschmückt, und die Atmosphäre ist warm.",
           "fireside": "{emote:city.inn} Sie betreten das Gasthaus Au Coin du Feu, einen Ort, an dem sich Abenteurer versammeln, um Geschichten um ein knisterndes Feuer herum auszutauschen. Der Geruch von gegrilltem Fisch liegt in der Luft, neben dem Lachen und Singen der Gäste. Die Einrichtung ist einfach, erinnert aber an das Leben der Seeleute und Fischer.",
           "bloodyTankard": "{emote:city.inn} Sie betreten den \"Blutigen Krug\", ein Gasthaus, das für seine starken Getränke und seine düstere Atmosphäre bekannt ist. Hier finden Sie viele Trophäen von Monstern, die von den Gästen gejagt wurden, und eine Luft, die mit dem Geruch von Bier und Tabak angereichert ist. Das Essen ist nicht von hoher Qualität, ebenso wenig wie die Betten.",
