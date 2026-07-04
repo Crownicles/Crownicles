@@ -1,48 +1,60 @@
 {
   "possibilities": {
-    "skip": {
-      "outcomes": {
-        "0": {}
-      }
-    },
-    "buyHorse": {
+    "climb": {
       "outcomes": {
         "0": {
-          "money": -500,
-          "randomItem": {}
+          "health": 1,
+          "money": 50
         },
         "1": {
-          "money": -250,
-          "health": 20
+          "money": 150
+        },
+        "2": {
+          "effect": "hurt",
+          "health": -10
         }
       }
     },
-    "trade": {
+    "throwStone": {
       "outcomes": {
         "0": {
-          "randomItem": {},
-          "money": 100
-        },
-        "1": {
           "effect": "occupied",
-          "lostTime": 90
+          "lostTime": 30,
+          "health": -5
+        },
+        "1": {
+          "effect": "hurt",
+          "health": -20
+        },
+        "2": {
+          "randomItem": {}
         }
       }
     },
-    "stealHorse": {
+    "walkAround": {
       "outcomes": {
         "0": {
-          "effect": "jailed"
+          "effect": "occupied",
+          "lostTime": 10
+        },
+        "1": {}
+      }
+    },
+    "end": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15
         },
         "1": {
-          "money": 800
+          "randomItem": {}
         }
       }
     }
   },
   "triggers": [
     {
-      "mapId": 42
+      "mapId": 24
     }
   ]
 }

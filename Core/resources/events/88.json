@@ -1,51 +1,58 @@
 {
   "possibilities": {
+    "capture": {
+      "outcomes": {
+        "0": {
+          "health": 5,
+          "money": 500
+        },
+        "1": {
+          "money": 400
+        },
+        "2": {
+          "effect": "sick",
+          "health": -15
+        }
+      }
+    },
+    "crush": {
+      "outcomes": {
+        "0": {
+          "effect": "confounded",
+          "health": -20
+        },
+        "1": {
+          "effect": "hurt",
+          "health": -10
+        },
+        "2": {
+          "effect": "occupied",
+          "lostTime": 10,
+          "health": 10,
+          "money": 50,
+          "randomItem": {}
+        }
+      }
+    },
+    "ignore": {
+      "outcomes": {
+        "0": {
+          "effect": "occupied",
+          "lostTime": 15,
+          "health": 10
+        },
+        "1": {}
+      }
+    },
     "end": {
       "outcomes": {
         "0": {}
-      }
-    },
-    "touchStatue": {
-      "outcomes": {
-        "0": {
-          "randomItem": {},
-          "effect": "occupied",
-          "lostTime": 30
-        },
-        "1": {
-          "effect": "sick",
-          "health": -25
-        }
-      }
-    },
-    "pray": {
-      "outcomes": {
-        "0": {
-          "health": 20,
-          "randomItem": {}
-        },
-        "1": {
-          "effect": "confounded",
-          "lostTime": 30
-        }
-      }
-    },
-    "break": {
-      "outcomes": {
-        "0": {
-          "effect": "occupied",
-          "lostTime": 120,
-          "money": -100
-        },
-        "1": {
-          "effect": "jailed"
-        }
       }
     }
   },
   "triggers": [
     {
-      "mapId": 42
+      "mapId": 7
     }
   ]
 }
