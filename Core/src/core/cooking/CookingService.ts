@@ -524,9 +524,6 @@ export class CookingService {
 		if (!player.pinnedCookingRecipeId) {
 			return;
 		}
-		if (slotRecipes.some(r => r?.id === player.pinnedCookingRecipeId)) {
-			return;
-		}
 		const pinnedRecipe = CookingRecipeDataController.instance.getById(player.pinnedCookingRecipeId);
 		if (!pinnedRecipe) {
 			return;
@@ -541,9 +538,21 @@ export class CookingService {
 			&& pinnedRecipe.level >= config.minLevel
 			&& pinnedRecipe.level <= config.maxLevel
 			&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
-		if (compatibleSlotIndex !== -1) {
-			slotRecipes[compatibleSlotIndex] = pinnedRecipe;
+		if (compatibleSlotIndex === -1) {
+			return;
 		}
+
+		/*
+		 * Anchor the pinned recipe to a deterministic slot so its position stays
+		 * stable across furnace re-rolls, and drop any natural occurrence the
+		 * rotation placed in another slot so it never appears twice.
+		 */
+		for (let i = 0; i < slotRecipes.length; i++) {
+			if (i !== compatibleSlotIndex && slotRecipes[i]?.id === pinnedRecipe.id) {
+				slotRecipes[i] = null;
+			}
+		}
+		slotRecipes[compatibleSlotIndex] = pinnedRecipe;
 	}
 
 	/**

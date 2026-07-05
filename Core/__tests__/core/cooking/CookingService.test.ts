@@ -181,13 +181,22 @@ describe("CookingService - pure functions", () => {
 			expect(ids).toContain("potion_health_1");
 		});
 
-		it("should be a no-op when pinned recipe is already present", () => {
-			const existing = { id: "potion_health_1" } as CookingRecipe;
-			const slots: Array<CookingRecipe | null> = [existing, null, null];
-			inject(slots, { pinnedCookingRecipeId: "potion_health_1" }, [], null, 3);
-			expect(slots[0]).toBe(existing);
-			expect(slots[1]).toBe(null);
-			expect(slots[2]).toBe(null);
+it("should anchor the pinned recipe to a stable slot regardless of any pre-existing occurrence", () => {
+				// Reference placement on empty slots gives the deterministic anchor slot.
+				const emptySlots: Array<CookingRecipe | null> = [null, null, null];
+				inject(emptySlots, { pinnedCookingRecipeId: "potion_health_1" }, [], null, 3);
+				const anchorIndex = emptySlots.findIndex(r => r?.id === "potion_health_1");
+				expect(anchorIndex).not.toBe(-1);
+
+				// A natural occurrence in another slot must be moved to the anchor, appearing exactly once.
+				const existing = { id: "potion_health_1" } as CookingRecipe;
+				const otherIndex = anchorIndex === 2 ? 1 : 2;
+				const slots: Array<CookingRecipe | null> = [null, null, null];
+				slots[otherIndex] = existing;
+				inject(slots, { pinnedCookingRecipeId: "potion_health_1" }, [], null, 3);
+
+				expect(slots.filter(r => r?.id === "potion_health_1")).toHaveLength(1);
+				expect(slots.findIndex(r => r?.id === "potion_health_1")).toBe(anchorIndex);
 		});
 
 		it("should be a no-op when player has no pinned recipe", () => {
