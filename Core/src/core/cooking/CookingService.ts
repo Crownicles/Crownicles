@@ -512,6 +512,57 @@ export class CookingService {
 	}
 
 	/**
+	 * Resolve the player's pinned recipe, or null when there is no pin or it is
+	 * not currently eligible (unknown, undiscovered, or pet food without a guild).
+	 */
+	private static getEligiblePinnedRecipe(
+		player: Player,
+		discoveredIds: string[],
+		guild: Guild | null
+	): CookingRecipe | null {
+		if (!player.pinnedCookingRecipeId) {
+			return null;
+		}
+		const pinnedRecipe = CookingRecipeDataController.instance.getById(player.pinnedCookingRecipeId);
+		if (!pinnedRecipe) {
+			return null;
+		}
+		const isDiscovered = pinnedRecipe.discoveredByDefault || discoveredIds.includes(pinnedRecipe.id);
+		const isPetFoodAllowed = pinnedRecipe.outputType !== CookingOutputType.PET_FOOD || Boolean(guild);
+		return isDiscovered && isPetFoodAllowed ? pinnedRecipe : null;
+	}
+
+	/**
+	 * Deterministic index of the first slot compatible with the pinned recipe,
+	 * or -1 when none of the available slots can host it.
+	 */
+	private static findPinnedSlotIndex(pinnedRecipe: CookingRecipe, cookingSlots: number): number {
+		return SLOT_CONFIGS.findIndex((config, idx) =>
+			idx < cookingSlots
+			&& pinnedRecipe.level >= config.minLevel
+			&& pinnedRecipe.level <= config.maxLevel
+			&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
+	}
+
+	/**
+	 * Anchor the pinned recipe to a deterministic slot so its position stays
+	 * stable across furnace re-rolls, dropping any natural occurrence the
+	 * rotation placed in another slot so it never appears twice.
+	 */
+	private static anchorPinnedRecipe(
+		slotRecipes: (CookingRecipe | null)[],
+		pinnedRecipe: CookingRecipe,
+		compatibleSlotIndex: number
+	): void {
+		for (let i = 0; i < slotRecipes.length; i++) {
+			if (i !== compatibleSlotIndex && slotRecipes[i]?.id === pinnedRecipe.id) {
+				slotRecipes[i] = null;
+			}
+		}
+		slotRecipes[compatibleSlotIndex] = pinnedRecipe;
+	}
+
+	/**
 	 * Inject the player's pinned recipe into slot recipes if it is eligible for at least one slot
 	 */
 	private static injectPinnedRecipeIfEligible(
@@ -521,38 +572,15 @@ export class CookingService {
 		guild: Guild | null,
 		cookingSlots: number
 	): void {
-		if (!player.pinnedCookingRecipeId) {
-			return;
-		}
-		const pinnedRecipe = CookingRecipeDataController.instance.getById(player.pinnedCookingRecipeId);
+		const pinnedRecipe = CookingService.getEligiblePinnedRecipe(player, discoveredIds, guild);
 		if (!pinnedRecipe) {
 			return;
 		}
-		const isDiscovered = pinnedRecipe.discoveredByDefault || discoveredIds.includes(pinnedRecipe.id);
-		const isPetFoodAllowed = pinnedRecipe.outputType !== CookingOutputType.PET_FOOD || Boolean(guild);
-		if (!isDiscovered || !isPetFoodAllowed) {
-			return;
-		}
-		const compatibleSlotIndex = SLOT_CONFIGS.findIndex((config, idx) =>
-			idx < cookingSlots
-			&& pinnedRecipe.level >= config.minLevel
-			&& pinnedRecipe.level <= config.maxLevel
-			&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
+		const compatibleSlotIndex = CookingService.findPinnedSlotIndex(pinnedRecipe, cookingSlots);
 		if (compatibleSlotIndex === -1) {
 			return;
 		}
-
-		/*
-		 * Anchor the pinned recipe to a deterministic slot so its position stays
-		 * stable across furnace re-rolls, and drop any natural occurrence the
-		 * rotation placed in another slot so it never appears twice.
-		 */
-		for (let i = 0; i < slotRecipes.length; i++) {
-			if (i !== compatibleSlotIndex && slotRecipes[i]?.id === pinnedRecipe.id) {
-				slotRecipes[i] = null;
-			}
-		}
-		slotRecipes[compatibleSlotIndex] = pinnedRecipe;
+		CookingService.anchorPinnedRecipe(slotRecipes, pinnedRecipe, compatibleSlotIndex);
 	}
 
 	/**
