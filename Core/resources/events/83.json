@@ -3,7 +3,7 @@
     "end": {
       "outcomes": {
         "0": {
-            "money": 500,
+            "money": 200,
             "effect": "occupied",
             "lostTime": 15,
             "randomItem": {
