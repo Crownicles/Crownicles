@@ -888,7 +888,7 @@
         },
         "stockExchange": {
           "label": "The Stock Exchange",
-          "description": "Gems of all sizes glitter behind the storefront. Precious stones are exchanged for prestige items."
+          "description": "Des courtiers s'affairent devant de grands tableaux de cours en perpétuel mouvement. On peut y acquérir un prestigieux badge de fortune ou commander une étude de marché anticipant les tendances de l'argent du roi et des prix des plantes."
         },
         "tanner": {
           "label": "The Tanker",
@@ -1453,7 +1453,7 @@
     "tokensUsedRefusedDescription": "{emote:messages.refuse} You decide to keep your tokens.",
     "tokenMerchant": {
       "title": "{{pseudo}}, a token merchant",
-      "description": "{emote:unitValues.token} As you rummage through your pockets looking for tokens, a wandering merchant appears at a bend in the road. He spreads out before you a pouch full of glittering tokens, ready to be traded for a few gold coins.\n\n{emote:unitValues.money} **Your gold**: {{playerMoney, number}}\n{emote:unitValues.token} **Your tokens**: {{playerTokens, number}}\n\nEach token will cost you **{{pricePerToken, number}}** {emote:unitValues.money}.",
+      "description": "{emote:unitValues.token} Alors que vous fouillez vos poches à la recherche de jetons, un marchand ambulant surgit au détour du chemin. Il étale devant vous une bourse pleine de jetons scintillants, prêts à être échangés contre quelques pièces d'or.\n\n{emote:unitValues.money} **Votre or** : {{playerMoney, number}}\n{emote:unitValues.token} **Vos jetons** : {{playerTokens, number}}\n\nChaque jeton vous coûtera **{{pricePerToken, number}}** {emote:unitValues.money}.\n\n{emote:collectors.warning} Vous pouvez en acheter jusqu'à {{maxDaily, number}} par jour et {{maxWeekly, number}} par semaine.",
       "buyButton_one": "Buy {{count}} token — {{price, number}} gold",
       "buyButton_other": "Buy {{count}} tokens — {{price, number}} gold",
       "refuseButton": "Buy nothing",
