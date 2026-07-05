@@ -226,7 +226,6 @@ async function executePetSell(collector: ReactionCollectorInstance, response: Cr
 	// Update missions on the now-committed instances
 	await MissionsController.update(buyer, response, { missionId: "havePet" });
 	await MissionsController.update(sellerInformation.player, response, { missionId: "sellOrTradePet" });
-	await MissionsController.update(sellerInformation.player, response, { missionId: "depositPetInShelter" });
 
 	// Success packet
 	response.push(makePacket(CommandPetSellSuccessPacket, {
