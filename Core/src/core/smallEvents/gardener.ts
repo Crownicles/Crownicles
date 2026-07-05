@@ -309,6 +309,24 @@ async function checkHerbivorePetCondition(player: Player, requireLegendary: bool
 	};
 }
 
+async function hasFireAffinityPet(player: Player): Promise<boolean> {
+	const petEntity = await getOwnedPet(player);
+	if (!petEntity) {
+		return false;
+	}
+	const petData = PetDataController.instance.getById(petEntity.typeId);
+	return Boolean(petData?.tags?.includes(PetConstants.TAGS.FIRE));
+}
+
+async function hasFireAffinityItem(player: Player): Promise<boolean> {
+	const equippedSlots = [
+		await InventorySlots.getMainWeaponSlot(player.id),
+		await InventorySlots.getMainArmorSlot(player.id),
+		await InventorySlots.getMainObjectSlot(player.id)
+	];
+	return equippedSlots.some(slot => slot?.getItem()?.tags?.includes(ItemConstants.TAGS.FIRE));
+}
+
 async function checkFireAffinityCondition(player: Player): Promise<SeedConditionResult> {
 	if (player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE) {
 		return {
@@ -317,30 +335,18 @@ async function checkFireAffinityCondition(player: Player): Promise<SeedCondition
 		};
 	}
 
-	const petEntity = await getOwnedPet(player);
-	if (petEntity) {
-		const petData = PetDataController.instance.getById(petEntity.typeId);
-		if (petData?.tags?.includes(PetConstants.TAGS.FIRE)) {
-			return {
-				canObtain: true,
-				conditionKey: SEED_CONDITION_SUCCESS.FIRE_PET
-			};
-		}
+	if (await hasFireAffinityPet(player)) {
+		return {
+			canObtain: true,
+			conditionKey: SEED_CONDITION_SUCCESS.FIRE_PET
+		};
 	}
 
-	const equippedSlots = [
-		await InventorySlots.getMainWeaponSlot(player.id),
-		await InventorySlots.getMainArmorSlot(player.id),
-		await InventorySlots.getMainObjectSlot(player.id)
-	];
-
-	for (const slot of equippedSlots) {
-		if (slot?.getItem()?.tags?.includes(ItemConstants.TAGS.FIRE)) {
-			return {
-				canObtain: true,
-				conditionKey: SEED_CONDITION_SUCCESS.FIRE_ITEM
-			};
-		}
+	if (await hasFireAffinityItem(player)) {
+		return {
+			canObtain: true,
+			conditionKey: SEED_CONDITION_SUCCESS.FIRE_ITEM
+		};
 	}
 
 	return {
