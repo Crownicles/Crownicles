@@ -45,7 +45,7 @@ export const SEED_CONDITION_SUCCESS = {
 	HERBIVORE_PET: "herbivorePet",
 	LEGENDARY_HERBIVORE_PET: "legendaryHerbivorePet",
 	MAGE: "mage",
-	PHOENIX: "phoenix",
+	FIRE_PET: "firePet",
 	FIRE_ITEM: "fireItem",
 	CARNIVORE_PET: "carnivorePet"
 } as const;
