@@ -17,6 +17,7 @@ import {
 import { sendInteractionNotForYou } from "../../../../utils/ErrorUtils";
 import { ReactionCollectorReturnTypeOrNull } from "../../../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { Language } from "../../../../../../Lib/src/Language";
+import { ShopConstants } from "../../../../../../Lib/src/constants/ShopConstants";
 import i18n from "../../../../translations/i18n";
 import { escapeUsername } from "../../../../utils/StringUtils";
 
@@ -40,7 +41,9 @@ function buildMerchantEmbed(
 			lng,
 			pricePerToken: data.pricePerToken,
 			playerMoney: data.playerMoney,
-			playerTokens: data.playerTokens
+			playerTokens: data.playerTokens,
+			maxDaily: ShopConstants.MAX_DAILY_TOKEN_BUYOUTS,
+			maxWeekly: ShopConstants.MAX_WEEKLY_TOKEN_BUYOUTS
 		}));
 }
 
