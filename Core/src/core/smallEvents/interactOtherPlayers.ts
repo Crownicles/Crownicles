@@ -36,6 +36,7 @@ import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
+import { PetDataController } from "../../data/Pet";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
 import { LogsPveFightsResults } from "../database/logs/models/LogsPveFightsResults";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
@@ -348,10 +349,16 @@ function checkTalismans(hasTalisman: boolean, hasCloneTalisman: boolean, interac
  * @param otherPet
  * @param interactionsList
  */
-const PET_TYPE_TO_INTERACTION = new Map<number, InteractOtherPlayerInteraction>([
-	...PetConstants.FLYING_PETS.map(id => [id, InteractOtherPlayerInteraction.FLYING_PET] as [number, InteractOtherPlayerInteraction]),
-	...PetConstants.AQUATIC_PETS.map(id => [id, InteractOtherPlayerInteraction.AQUATIC_PET] as [number, InteractOtherPlayerInteraction])
-]);
+function getPetTypeInteraction(petTypeId: number): InteractOtherPlayerInteraction | null {
+	const petData = PetDataController.instance.getById(petTypeId);
+	if (petData?.hasTag(PetConstants.TAGS.FLYING)) {
+		return InteractOtherPlayerInteraction.FLYING_PET;
+	}
+	if (petData?.hasTag(PetConstants.TAGS.AQUATIC)) {
+		return InteractOtherPlayerInteraction.AQUATIC_PET;
+	}
+	return null;
+}
 
 function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, interactionsList: InteractOtherPlayerInteraction[]): void {
 	if (!otherPet) {
@@ -366,7 +373,7 @@ function checkPetType(playerPet: PetEntity | null, otherPet: PetEntity | null, i
 			interactionsList.splice(petIndex, 1);
 		}
 	}
-	const petInteraction = PET_TYPE_TO_INTERACTION.get(otherPet.typeId);
+	const petInteraction = getPetTypeInteraction(otherPet.typeId);
 	if (petInteraction) {
 		interactionsList.push(petInteraction);
 	}

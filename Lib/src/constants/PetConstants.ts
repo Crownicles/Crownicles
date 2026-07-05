@@ -622,41 +622,11 @@ export abstract class PetConstants {
 		5
 	];
 
-	static readonly TAGS = { FIRE: "fire" } as const;
-
-	static readonly FLYING_PETS = [
-		PetConstants.PETS.BIRD,
-		PetConstants.PETS.DUCK,
-		PetConstants.PETS.OWL,
-		PetConstants.PETS.BAT,
-		PetConstants.PETS.SWAN,
-		PetConstants.PETS.FLAMINGO,
-		PetConstants.PETS.PARROT,
-		PetConstants.PETS.EAGLE,
-		PetConstants.PETS.DOVE,
-		PetConstants.PETS.DRAGON,
-		PetConstants.PETS.SCARLET_DUCK,
-		PetConstants.PETS.BLACK_BIRD,
-		PetConstants.PETS.RAVEN,
-		PetConstants.PETS.PHOENIX,
-		PetConstants.PETS.FAIRY
-	];
-
-	static readonly AQUATIC_PETS = [
-		PetConstants.PETS.OCTOPUS,
-		PetConstants.PETS.FISH,
-		PetConstants.PETS.TROPICAL_FISH,
-		PetConstants.PETS.PUFFERFISH,
-		PetConstants.PETS.JELLYFISH,
-		PetConstants.PETS.SHARK,
-		PetConstants.PETS.WHALE,
-		PetConstants.PETS.WHALE_2,
-		PetConstants.PETS.SHRIMP,
-		PetConstants.PETS.LOBSTER,
-		PetConstants.PETS.DOLPHIN,
-		PetConstants.PETS.CRAB,
-		PetConstants.PETS.SNAIL
-	];
+	static readonly TAGS = {
+		FIRE: "fire",
+		FLYING: "flying",
+		AQUATIC: "aquatic"
+	} as const;
 
 	static SEX = {
 		MALE: "m",
