@@ -888,7 +888,7 @@
         },
         "stockExchange": {
           "label": "La Bourse",
-          "description": "Des gemmes de toutes tailles scintillent derrière les vitrines. On y échange pierres précieuses contre objets de prestige."
+          "description": "Des courtiers s'affairent devant de grands tableaux de cours en perpétuel mouvement. On peut y acquérir un prestigieux badge de fortune ou commander une étude de marché anticipant les tendances de l'argent du roi et des prix des plantes."
         },
         "tanner": {
           "label": "Le Tanneur",
@@ -1453,7 +1453,7 @@
     "tokensUsedRefusedDescription": "{emote:messages.refuse} Vous avez décidé de conserver vos jetons.",
     "tokenMerchant": {
       "title": "{{pseudo}}, un marchand de jetons",
-      "description": "{emote:unitValues.token} Alors que vous fouillez vos poches à la recherche de jetons, un marchand ambulant surgit au détour du chemin. Il étale devant vous une bourse pleine de jetons scintillants, prêts à être échangés contre quelques pièces d'or.\n\n{emote:unitValues.money} **Votre or** : {{playerMoney, number}}\n{emote:unitValues.token} **Vos jetons** : {{playerTokens, number}}\n\nChaque jeton vous coûtera **{{pricePerToken, number}}** {emote:unitValues.money}.",
+      "description": "{emote:unitValues.token} Alors que vous fouillez vos poches à la recherche de jetons, un marchand ambulant surgit au détour du chemin. Il étale devant vous une bourse pleine de jetons scintillants, prêts à être échangés contre quelques pièces d'or.\n\n{emote:unitValues.money} **Votre or** : {{playerMoney, number}}\n{emote:unitValues.token} **Vos jetons** : {{playerTokens, number}}\n\nChaque jeton vous coûtera **{{pricePerToken, number}}** {emote:unitValues.money}.\n\n{emote:collectors.warning} Vous pouvez en acheter jusqu'à {{maxDaily, number}} par jour et {{maxWeekly, number}} par semaine.",
       "buyButton_one": "Acheter {{count}} jeton — {{price, number}} or",
       "buyButton_other": "Acheter {{count}} jetons — {{price, number}} or",
       "refuseButton": "Ne rien acheter",
