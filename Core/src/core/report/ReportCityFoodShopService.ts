@@ -179,6 +179,12 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 			missionId: "buyGuildPetFood",
 			count: result.amountBought
 		});
+		if (resolved.foodType === PetConstants.PET_FOOD.ULTIMATE_FOOD) {
+			await MissionsController.update(resolved.player, response, {
+				missionId: "buyUltimateSoups",
+				count: result.amountBought
+			});
+		}
 	}
 	return result.packet;
 }
