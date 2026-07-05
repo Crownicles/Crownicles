@@ -3,5 +3,6 @@
   "diet": "carnivorous",
   "force": 30,
   "feedDelay": 10,
-  "speed": 25
+  "speed": 25,
+  "tags": ["fire"]
 }

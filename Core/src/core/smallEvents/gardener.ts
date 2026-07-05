@@ -318,11 +318,14 @@ async function checkFireAffinityCondition(player: Player): Promise<SeedCondition
 	}
 
 	const petEntity = await getOwnedPet(player);
-	if (petEntity?.typeId === PetConstants.PETS.PHOENIX) {
-		return {
-			canObtain: true,
-			conditionKey: SEED_CONDITION_SUCCESS.PHOENIX
-		};
+	if (petEntity) {
+		const petData = PetDataController.instance.getById(petEntity.typeId);
+		if (petData?.tags?.includes(PetConstants.TAGS.FIRE)) {
+			return {
+				canObtain: true,
+				conditionKey: SEED_CONDITION_SUCCESS.FIRE_PET
+			};
+		}
 	}
 
 	const equippedSlots = [

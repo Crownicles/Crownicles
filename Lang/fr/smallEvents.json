@@ -2742,8 +2742,8 @@
         "mage": [
           "Théobald remarque votre aura de mage et hoche la tête avec respect. Votre maîtrise de la magie saura faire prospérer cette plante ardente, dit-il en vous confiant une **graine** {emote:smallEvents.gardener}."
         ],
-        "phoenix": [
-          "Le jardinier écarquille les yeux devant votre phénix et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
+        "firePet": [
+          "Le jardinier écarquille les yeux devant votre familier au souffle ardent et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
         ],
         "fireItem": [
           "Théobald repère votre équipement forgé dans le feu et acquiesce. L'affinité avec les flammes est essentielle pour cultiver cette plante ardente, explique-t-il en vous offrant une **graine** {emote:smallEvents.gardener}."
@@ -2781,8 +2781,8 @@
           "Théobald scrute le firmament en plissant les yeux. Cette graine exige un **puissant clair de lune** pour être offerte. Revenez lors d'une nuit plus lumineuse."
         ],
         "needFireAffinity": [
-          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **phénix** ou porter un **équipement forgé dans les flammes**.",
-          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **phénix**, ou un porteur d'**arme enflammée**."
+          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",
+          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **familier igné**, ou un porteur d'**arme enflammée**."
         ],
         "needCarnivorePet": [
           "Le jardinier vous explique que la prochaine graine nécessite un compagnon carnivore particulièrement puissant. Il vous faudrait un **familier carnivore de rareté épique ou supérieure**.",

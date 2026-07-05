@@ -622,6 +622,8 @@ export abstract class PetConstants {
 		5
 	];
 
+	static readonly TAGS = { FIRE: "fire" } as const;
+
 	static readonly FLYING_PETS = [
 		PetConstants.PETS.BIRD,
 		PetConstants.PETS.DUCK,
