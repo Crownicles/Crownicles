@@ -44,6 +44,13 @@ export class Pet extends Data<number> {
 		}
 		return false;
 	}
+
+	/**
+	 * Returns true if this pet carries the given data tag
+	 */
+	public hasTag(tag: string): boolean {
+		return Boolean(this.tags?.includes(tag));
+	}
 }
 
 export class PetDataController extends DataControllerNumber<Pet> {

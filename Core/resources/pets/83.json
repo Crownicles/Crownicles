@@ -3,5 +3,5 @@
   "force": 30,
   "feedDelay": 10,
   "speed": 30,
-  "tags": ["fire"]
+  "tags": ["fire", "flying"]
 }

@@ -3,5 +3,6 @@
   "diet": "herbivorous",
   "force": 5,
   "feedDelay": 4,
-  "speed": 14
+  "speed": 14,
+  "tags": ["flying"]
 }
