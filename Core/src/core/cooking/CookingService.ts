@@ -82,6 +82,19 @@ interface CookingLevelUpResult {
 	newGrade?: string;
 }
 
+/**
+ * Everything needed to inject the player's pinned recipe into the current
+ * furnace slots. Grouped into a single domain object to keep the pinned-recipe
+ * helpers free of loose primitive arguments.
+ */
+interface PinnedRecipeInjection {
+	slotRecipes: (CookingRecipe | null)[];
+	player: Player;
+	discoveredIds: string[];
+	guild: Guild | null;
+	cookingSlots: number;
+}
+
 export class CookingService {
 	static canStorePetFoodReward(recipe: CookingRecipe, guild: Guild | null): boolean {
 		if (recipe.outputType !== CookingOutputType.PET_FOOD) {
@@ -174,7 +187,9 @@ export class CookingService {
 			maxRecipeLevelWithoutPenalty: grade.maxRecipeLevelWithoutPenalty
 		});
 
-		CookingService.injectPinnedRecipeIfEligible(slotRecipes, player, discoveredIds, guild, cookingSlots);
+		CookingService.injectPinnedRecipeIfEligible({
+			slotRecipes, player, discoveredIds, guild, cookingSlots
+		});
 
 		// Load all plant storages once to avoid N+1 queries
 		const allPlantStorages = await HomePlantStorages.getOfHome(homeId);
@@ -512,38 +527,58 @@ export class CookingService {
 	}
 
 	/**
-	 * Inject the player's pinned recipe into slot recipes if it is eligible for at least one slot
+	 * Resolve the player's pinned recipe, or null when there is no pin or it is
+	 * not currently eligible (unknown, undiscovered, or pet food without a guild).
 	 */
-	private static injectPinnedRecipeIfEligible(
-		slotRecipes: (CookingRecipe | null)[],
-		player: Player,
-		discoveredIds: string[],
-		guild: Guild | null,
-		cookingSlots: number
-	): void {
+	private static getEligiblePinnedRecipe({
+		player, discoveredIds, guild
+	}: PinnedRecipeInjection): CookingRecipe | null {
 		if (!player.pinnedCookingRecipeId) {
-			return;
-		}
-		if (slotRecipes.some(r => r?.id === player.pinnedCookingRecipeId)) {
-			return;
+			return null;
 		}
 		const pinnedRecipe = CookingRecipeDataController.instance.getById(player.pinnedCookingRecipeId);
 		if (!pinnedRecipe) {
-			return;
+			return null;
 		}
 		const isDiscovered = pinnedRecipe.discoveredByDefault || discoveredIds.includes(pinnedRecipe.id);
 		const isPetFoodAllowed = pinnedRecipe.outputType !== CookingOutputType.PET_FOOD || Boolean(guild);
-		if (!isDiscovered || !isPetFoodAllowed) {
-			return;
-		}
+		return isDiscovered && isPetFoodAllowed ? pinnedRecipe : null;
+	}
+
+	/**
+	 * Anchor the pinned recipe to a deterministic slot so its position stays
+	 * stable across furnace re-rolls, dropping any natural occurrence the
+	 * rotation placed in another slot so it never appears twice. No-op when no
+	 * available slot can host the recipe.
+	 */
+	private static anchorPinnedRecipe({
+		slotRecipes, cookingSlots
+	}: PinnedRecipeInjection, pinnedRecipe: CookingRecipe): void {
 		const compatibleSlotIndex = SLOT_CONFIGS.findIndex((config, idx) =>
 			idx < cookingSlots
 			&& pinnedRecipe.level >= config.minLevel
 			&& pinnedRecipe.level <= config.maxLevel
 			&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
-		if (compatibleSlotIndex !== -1) {
-			slotRecipes[compatibleSlotIndex] = pinnedRecipe;
+		if (compatibleSlotIndex === -1) {
+			return;
 		}
+		for (let i = 0; i < slotRecipes.length; i++) {
+			if (i !== compatibleSlotIndex && slotRecipes[i]?.id === pinnedRecipe.id) {
+				slotRecipes[i] = null;
+			}
+		}
+		slotRecipes[compatibleSlotIndex] = pinnedRecipe;
+	}
+
+	/**
+	 * Inject the player's pinned recipe into slot recipes if it is eligible for at least one slot
+	 */
+	private static injectPinnedRecipeIfEligible(injection: PinnedRecipeInjection): void {
+		const pinnedRecipe = CookingService.getEligiblePinnedRecipe(injection);
+		if (!pinnedRecipe) {
+			return;
+		}
+		CookingService.anchorPinnedRecipe(injection, pinnedRecipe);
 	}
 
 	/**

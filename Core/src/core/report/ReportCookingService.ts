@@ -1014,6 +1014,21 @@ export async function handleCookingUnpin(
 		player, home, cookingSlots
 	} = data;
 
+	/*
+	 * Snapshot the currently displayed slots while the pin is still active,
+	 * so the formerly pinned recipe keeps its slot until the next furnace
+	 * re-roll instead of being immediately swapped for the natural rotation
+	 * recipe (only its "pinned" status is removed).
+	 */
+	let currentSlots: CookingSlotData[] | undefined;
+	if (packet.fromIgnitedView) {
+		currentSlots = await CookingService.getSlotRecipes({
+			player,
+			homeId: home.id,
+			cookingSlots
+		});
+	}
+
 	await Player.withLocked(player.id, async lockedPlayer => {
 		lockedPlayer.pinnedCookingRecipeId = null;
 		await lockedPlayer.save();
@@ -1021,7 +1036,7 @@ export async function handleCookingUnpin(
 	player.pinnedCookingRecipeId = null;
 
 	const menu = await buildCookingMenuSnapshot({
-		player, home, cookingSlots, isIgnited: packet.fromIgnitedView
+		player, home, cookingSlots, isIgnited: packet.fromIgnitedView, currentSlots
 	});
 	response.push(makePacket(CommandReportCookingUnpinRes, { menu }));
 	return response;
