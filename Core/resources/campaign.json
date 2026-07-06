@@ -553,6 +553,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "dangerousExpedition",
+      "missionVariant": 30,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "winBoss",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -902,14 +910,6 @@
       "missionObjective": 1,
       "gemsToWin": 6,
       "xpToWin": 400,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "dangerousExpedition",
-      "missionVariant": 30,
-      "missionObjective": 1,
-      "gemsToWin": 5,
-      "xpToWin": 300,
       "moneyToWin": 0
     },
     {
