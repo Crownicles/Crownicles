@@ -1328,13 +1328,6 @@
       "atParticle": "at",
       "inParticle": "in the"
     },
-    "42": {
-      "description": "A pavement flank connecting Boug-Coton with the gates of the royal chateau, where messengers meet before entering the king’s apartments.",
-      "name": "Court of Chapel",
-      "particle": "of the",
-      "atParticle": "at",
-      "inParticle": "in the"
-    },
     "4": {
       "description": "Huge forest at the South of the Cradle. It is said that many travelers got lost there.",
       "name": "Oldster's Forest",
@@ -1371,41 +1364,6 @@
       "name": "Main Road",
       "particle": "of the",
       "atParticle": "at"
-    },
-    "34": {
-      "description": "A peaceful town on the edge of the Sentinel Beach.",
-      "name": "Seawynne",
-      "particle": "of",
-      "atParticle": "in",
-      "inParticle": "in"
-    },
-    "35": {
-      "description": "A peaceful village known for its welcoming inn.",
-      "name": "Boug-Coton",
-      "particle": "of",
-      "atParticle": "in",
-      "inParticle": "in"
-    },
-    "36": {
-      "description": "An anciently fortified city, Ville Forte is not what it used to be. Ravaged by the old war, only a dozen houses and peasants remain. The rest of the old fortification isn't more than ruins.",
-      "name": "Ville Forte",
-      "particle": "of the",
-      "atParticle": "at",
-      "inParticle": "in the"
-    },
-    "37": {
-      "description": "Large commercial city and economical crossroad, Claire de Ville hasn't always been that welcoming. Very poor at the beginning, she managed to quickly develop thanks to its many shops and hostels which offers a great choice to wanderers of the region. Claire de Ville is also known for its calm and its order.",
-      "name": "Claire de Ville",
-      "particle": "of",
-      "atParticle": "in",
-      "inParticle": "in"
-    },
-    "38": {
-      "description": "An oasis seized by the noblemen of the Valley of the Kings as a refreshing haven. Coconut grown there are recognized throughout the country and exchange gold prices on the kingdom's marches. The scarcity of land built around the source makes it one of the most wanted places.",
-      "name": "Coco Village",
-      "particle": "of",
-      "atParticle": "to",
-      "inParticle": "in the"
     }
   },
   "map_types": {
@@ -1573,8 +1531,8 @@
     "cookRecipes_other": "Make {{count}} recipes",
     "cultivatePlants_one": "Harvesting {{count}} plant",
     "cultivatePlants_other": "Harvesting {{count}} plants",
-    "getAncestralTrees_one": "Get {{count}} ancestral tree sapling",
-    "getAncestralTrees_other": "Get {{count}} ancestral tree sprouts",
+    "getAncestralTrees_one": "Récolter ou acheter {{count}} pousse d'arbre ancestral",
+    "getAncestralTrees_other": "Récolter ou acheter {{count}} pousses d'arbre ancestral",
     "dailyPotionsStock": "Buy the whole stock of daily potions",
     "depositChestItem_one": "Place the {{count}} item in the chest in your house",
     "depositChestItem_other": "Place {{count}} items in your home's safe",
