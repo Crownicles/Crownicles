@@ -1328,13 +1328,6 @@
       "atParticle": "al",
       "inParticle": "nel"
     },
-    "42": {
-      "description": "Spianata pavimentata che collega Boug-Coton alle porte del castello reale. I messaggeri si incrociano per raggiungere gli appartamenti del re.",
-      "name": "Corte dello Château",
-      "particle": "verso la",
-      "atParticle": "al",
-      "inParticle": "nel"
-    },
     "4": {
       "description": "Una vasta foresta a sud della Culla. Si dice che molti viaggiatori si siano persi qui.",
       "name": "Foresta di Vecchietto",
@@ -1371,41 +1364,6 @@
       "name": "Strada principale ",
       "particle": "verso la",
       "atParticle": "al"
-    },
-    "34": {
-      "description": "Una piccola cita tranquilla sulle rive di Spiaggia Sentinella.",
-      "name": "Mergagnan",
-      "particle": "verso",
-      "atParticle": "à",
-      "inParticle": "in"
-    },
-    "35": {
-      "description": "Un villaggio tranquillo, rinomato per la sua accogliente locanda.",
-      "name": "Boug-Coton",
-      "particle": "verso",
-      "atParticle": "à",
-      "inParticle": "in"
-    },
-    "36": {
-      "description": "Un tempo grande città fortificata, Ville Forte è oggi l'ombra di se stessa. Devastata dalla guerra, sono rimaste solo una decina di case e di contadini. Il resto delle vecchie fortificazioni è in rovina.",
-      "name": "Ville Forte",
-      "particle": "verso la",
-      "atParticle": "al",
-      "inParticle": "nel"
-    },
-    "37": {
-      "description": "Importante città mercantile e crocevia economico, Claire de Ville non è sempre stata così accogliente. Inizialmente molto povera, si è sviluppata rapidamente grazie ai suoi numerosi negozi e alberghi che offrono un'ampia scelta ai viaggiatori della regione. Claire de Ville è anche rinomata per la sua calma e il rispetto dell'ordine.",
-      "name": "Claire de Ville",
-      "particle": "verso",
-      "atParticle": "à",
-      "inParticle": "in"
-    },
-    "38": {
-      "description": "Un villaggio oasi preferito dai nobili della Valle dei Re in cerca di freschezza. Le noci di cocco raccolte qui sono rinomate in tutto il Paese e vengono commercializzate a prezzi elevati sui mercati del regno. La scarsità di terreni edificabili intorno alla sorgente ne fa uno dei luoghi più ricercati.",
-      "name": "Villaggio Coco",
-      "particle": "verso lo",
-      "atParticle": "a",
-      "inParticle": "nel"
     }
   },
   "map_types": {
@@ -1573,8 +1531,8 @@
     "cookRecipes_other": "Realizza le ricette di {{count}}",
     "cultivatePlants_one": "Raccogliere {{count}} pianta",
     "cultivatePlants_other": "Raccogliere {{count}} piante",
-    "getAncestralTrees_one": "Ottenere {{count}} un germoglio di albero secolare",
-    "getAncestralTrees_other": "Ottenere {{count}} germogli di un albero ancestrale",
+    "getAncestralTrees_one": "Récolter ou acheter {{count}} pousse d'arbre ancestral",
+    "getAncestralTrees_other": "Récolter ou acheter {{count}} pousses d'arbre ancestral",
     "dailyPotionsStock": "Acquistare tutta la scorta di pozioni del giorno",
     "depositChestItem_one": "Deposita l'oggetto \" {{count}} \" nella cassaforte di casa tua",
     "depositChestItem_other": "Deposita {{count}} oggetti nel baule di casa tua",
