@@ -313,6 +313,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "plantSeed",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "joinPVEIsland",
       "missionVariant": 0,
       "missionObjective": 1,

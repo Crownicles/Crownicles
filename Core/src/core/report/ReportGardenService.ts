@@ -413,19 +413,21 @@ async function pickAndGiveCompostMaterial(playerId: number, plant: { compostMate
  */
 export function handleGardenPlant(
 	keycloakId: string,
-	packet: CommandReportGardenPlantReq
+	packet: CommandReportGardenPlantReq,
+	response: CrowniclesPacket[]
 ): Promise<CrowniclesPacket> {
 	return withGardenLock(
 		keycloakId,
 		() => makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_SEED),
-		(player, home) => runGardenPlantUnderLock(player, home, packet)
+		(player, home) => runGardenPlantUnderLock(player, home, packet, response)
 	);
 }
 
 async function runGardenPlantUnderLock(
 	player: Player,
 	home: Home,
-	packet: CommandReportGardenPlantReq
+	packet: CommandReportGardenPlantReq,
+	response: CrowniclesPacket[]
 ): Promise<CrowniclesPacket> {
 	const validation = await validateGardenPlant(player, home, packet);
 	if (validation.error) {
@@ -439,6 +441,8 @@ async function runGardenPlantUnderLock(
 
 	await HomeGardenSlots.plantSeed(home.id, gardenSlot!.slot, plantId);
 	await PlayerPlantSlots.clearSeed(player.id);
+
+	await MissionsController.update(player, response, { missionId: "plantSeed" });
 
 	crowniclesInstance?.logsDatabase.logGardenAction({
 		keycloakId: player.keycloakId,

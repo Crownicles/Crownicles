@@ -1618,6 +1618,7 @@
     "dailyStreak_other": "Accomplir la mission quotidienne {{count}} jours d'affilée",
     "showCloneToTalvar": "Montrer un clone à Talvar",
     "petEarnHealth": "Obtenir de la vie grâce à un familier",
+    "plantSeed": "Planter une graine dans son jardin",
     "reachGlory": "Avoir {{count}} points de gloire {emote:unitValues.glory} ou plus",
     "reachLevel": "Atteindre le niveau {{count}}",
     "reachScore": "Avoir un score supérieur à {{count}} {emote:unitValues.score}",
