@@ -657,7 +657,7 @@
       "She is stooped, skeletal, but her gaze seems mischievous.",
       "She is dressed in tatters of dull and dirty fabrics.",
       "You remember rumors about a clumsy witch who would wander through the kingdom. ",
-      "On murmure que sa maladresse lui a déjà valu des ennuis avec quelques nobles peu indulgents. ",
+      "Rumor has it that his clumsiness has already gotten him into trouble with a few unforgiving nobles. ",
       "Completely silent, she seems worn down by the years; she is thin, bony, with almost grey skin.",
       "She seems not to understand what you tell her. "
     ],
@@ -2573,9 +2573,9 @@
       "spiritual": "you will find a place full of security, where the atmosphere is peaceful and conducive to your property. You search the surrounding area for items or objects."
     },
     "foundStories": {
-      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
-      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
-      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
+      "1": "You'll leave with {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} shared).",
+      "2": "What a great find! You're taking home {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} —a bit unusual).",
+      "3": "What incredible luck! You're taking home {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
     }
   },
   "expeditionAdvice": {
@@ -2744,7 +2744,7 @@
           "The�obald notes your mage aura and nods it with respect. Your master of magic will make this fiery plant come true, he says by trusting you with a **seed** {emote:smallEvents.gardener}."
         ],
         "firePet": [
-          "Le jardinier écarquille les yeux devant votre familier au souffle ardent et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
+          "The gardener stares in amazement at your fiery-breathing companion and exclaims that he hasn't seen one like it in decades. He emotionally hands you a **seed** {emote:smallEvents.gardener}, convinced that the flames of your companion will help it grow."
         ],
         "fireItem": [
           "Théobald repeats your equipment forged in fire and nods. Affinity with flame is essential for cultivating this fiery plant, he explains by offering you a **seed** {emote:smallEvents.gardener}."
@@ -2782,8 +2782,8 @@
           "Theobald scrutinizes the firmament by narrowing his eyes. This seed requires a **powerful moonlight to be gifted. Return to a brighter night."
         ],
         "needFireAffinity": [
-          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",
-          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **familier des flammes**, ou un porteur d'**arme enflammée**."
+          "Théobald shakes his head. The next seed requires an affinity for fire. You would need to be a **mage**, have a **fire-bound familiar**, or wear **equipment forged in flames**.",
+          "The gardener looks at you thoughtfully. This fiery seed can only be grown by someone connected to fire: a **mage**, a master of **flame familiars**, or a wielder of a **flaming weapon**."
         ],
         "needCarnivorePet": [
           "The gardener tells you that the next seed requires a particulie-strong carnivorous companion. You need a **rare carnivore pet**.",
