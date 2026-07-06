@@ -4,7 +4,7 @@ ARG NODE_VERSION=24
 FROM node:${NODE_VERSION}-alpine AS builder
 
 # Set PNPM version
-ARG PNPM_VERSION=latest-10
+ARG PNPM_VERSION=10.34.3
 
 # Set the working directory
 WORKDIR /crownicles/Discord
