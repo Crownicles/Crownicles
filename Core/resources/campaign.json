@@ -473,6 +473,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "cookRecipes",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 120,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "contributeToBlessing",
       "missionVariant": 0,
       "missionObjective": 100,
@@ -790,14 +798,6 @@
       "missionObjective": 5,
       "gemsToWin": 5,
       "xpToWin": 350,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "meetDifferentPlayers",
-      "missionVariant": 1,
-      "missionObjective": 5,
-      "gemsToWin": 3,
-      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
