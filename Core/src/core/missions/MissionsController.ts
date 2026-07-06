@@ -134,12 +134,32 @@ export abstract class MissionsController {
 		}
 		player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
 		MissionsController.applyBlessingsToCompletedMissions(completedMissions);
+		const nextCampaignMission = await MissionsController.getNextCampaignMission(player, completedMissions);
 		response.push(makePacket(MissionsCompletedPacket, {
 			missions: MissionsController.prepareBaseMissions(completedMissions),
-			keycloakId: player.keycloakId
+			keycloakId: player.keycloakId,
+			...nextCampaignMission ? { nextCampaignMission } : {}
 		}));
 		await MissionsController.giveCampaignPetRewards(completedMissions, player, response);
 		return player;
+	}
+
+	/**
+	 * Get the next campaign mission the player has to complete, so it can be shown right
+	 * after a campaign reward. Returns undefined when no campaign mission was just completed
+	 * or when the campaign is finished.
+	 * @param player
+	 * @param completedMissions
+	 */
+	private static async getNextCampaignMission(player: Player, completedMissions: CompletedMission[]): Promise<BaseMission | undefined> {
+		if (!completedMissions.some(mission => mission.missionType === MissionType.CAMPAIGN)) {
+			return undefined;
+		}
+		const campaignSlot = await MissionSlots.getCampaignOfPlayer(player.id);
+		if (!campaignSlot || campaignSlot.isCompleted()) {
+			return undefined;
+		}
+		return MissionsController.prepareMissionSlot(campaignSlot);
 	}
 
 	private static applyBlessingsToCompletedMissions(completedMissions: CompletedMission[]): void {
