@@ -657,7 +657,7 @@
       "Ela é curvada e esquelética, mas consegue-se ver a malícia nos seus olhos. ",
       "Está vestida com retalhos de tecido baço e sujo. ",
       "Lembrar-se-ão dos rumores sobre uma bruxa desajeitada que vagueava pelo reino. ",
-      "On murmure que sa maladresse lui a déjà valu des ennuis avec quelques nobles peu indulgents. ",
+      "Diz-se que a sua falta de tacto já lhe causou problemas com alguns nobres pouco indulgentes. ",
       "Completamente muda, parece danificada pelos anos, magra e ossuda, com a pele quase cinzenta. ",
       "Ela parece não entender o que está a dizer. "
     ],
@@ -2573,9 +2573,9 @@
       "spiritual": "Encontra um lugar de serenidade, onde o ambiente é tranquilo e propício ao seu bem-estar. Procura objectos no ambiente que o rodeia."
     },
     "foundStories": {
-      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
-      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
-      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
+      "1": "Fica com {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} comum).",
+      "2": "Que achado fantástico! Leva consigo {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} pouco comum).",
+      "3": "Que sorte incrível! Vais levar para casa {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} raro)."
     }
   },
   "expeditionAdvice": {
@@ -2744,7 +2744,7 @@
           "Théobald repara na tua aura de mago e acena com a cabeça respeitosamente. O teu domínio da magia vai fazer florescer esta planta ardente\", diz ele, entregando-te uma **semente** {emote:smallEvents.gardener}."
         ],
         "firePet": [
-          "Le jardinier écarquille les yeux devant votre familier au souffle ardent et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
+          "O jardineiro arregala os olhos ao ver o seu animal de estimação com o hálito ardente e exclama que não via um assim há décadas. Comovido, entrega-lhe uma **semente** {emote:smallEvents.gardener}, convencido de que as chamas do seu companheiro o ajudarão a crescer."
         ],
         "fireItem": [
           "Théobald vê o teu equipamento forjado a fogo e acena com a cabeça. Uma afinidade com as chamas é essencial para cultivar esta planta ardente\", explica ele, oferecendo-te uma **semente** {emote:smallEvents.gardener}."
@@ -2782,8 +2782,8 @@
           "Théobald olhou para o céu. Esta semente precisa de **luar poderoso** para ser oferecida. Volta numa noite mais clara."
         ],
         "needFireAffinity": [
-          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",
-          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **familier des flammes**, ou un porteur d'**arme enflammée**."
+          "Théobald abana a cabeça. A próxima semente requer uma afinidade com o fogo. Teria de ser um **mago**, possuir um **familiar ligado ao fogo** ou usar um **equipamento forjado nas chamas**.",
+          "O jardineiro olha para ti pensativo. Esta semente ardente só pode ser cultivada por alguém ligado ao fogo: um **mago**, um mestre de **familiar das chamas** ou um portador de **arma flamejante**."
         ],
         "needCarnivorePet": [
           "O jardineiro explica que a próxima semente requer uma companheira carnívora particularmente poderosa. Precisas de uma **companheira carnívora de raridade épica ou superior**.",
