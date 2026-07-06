@@ -657,7 +657,7 @@
       "Sie ist gebeugt und skelettiert, aber ihr Blick erscheint Ihnen schelmisch. ",
       "Sie ist mit stumpfen und schmutzigen Stofffetzen bekleidet. ",
       "Sie erinnern sich an Gerüchte über eine tollpatschige Hexe, die durch das Königreich wandern soll. ",
-      "On murmure que sa maladresse lui a déjà valu des ennuis avec quelques nobles peu indulgents. ",
+      "Es wird gemunkelt, dass ihm seine Ungeschicklichkeit bereits Ärger mit einigen wenig nachsichtigen Adligen eingebracht hat. ",
       "Sie ist dünn, knochig und hat eine fast graue Haut. ",
       "Sie scheint nicht zu verstehen, was Sie zu ihr sagen. "
     ],
@@ -2573,9 +2573,9 @@
       "spiritual": "Sie finden einen Ort, der von Gelassenheit geprägt ist, an dem eine friedliche Atmosphäre herrscht, die Ihr Wohlbefinden fördert. Sie durchsuchen die Umgebung nach Dingen oder Gegenständen."
     },
     "foundStories": {
-      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
-      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
-      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
+      "1": "Sie erhalten folgende Links: {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} gemeinsam).",
+      "2": "Ein toller Fund! Sie nehmen Folgendes mit: {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} etwas ungewöhnlich).",
+      "3": "Was für ein unglaubliches Glück! Sie gewinnen {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} selten)."
     }
   },
   "expeditionAdvice": {
@@ -2744,7 +2744,7 @@
           "Théobald bemerkt Ihre Magieraura und nickt respektvoll. Deine Beherrschung der Magie wird diese feurige Pflanze gedeihen lassen\", sagt er und vertraut dir eine **Saat** {emote:smallEvents.gardener} an."
         ],
         "firePet": [
-          "Le jardinier écarquille les yeux devant votre familier au souffle ardent et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
+          "Der Gärtner reißt angesichts Ihres feurigen Begleiters die Augen auf und ruft aus, dass er so etwas seit Jahrzehnten nicht mehr gesehen habe. Er überreicht euch voller Rührung einen **Samen** {emote:smallEvents.gardener}, überzeugt davon, dass die Flammen eures Begleiters ihm beim Wachsen helfen werden."
         ],
         "fireItem": [
           "Theobald entdeckt Ihre im Feuer geschmiedete Ausrüstung und nickt. Die Affinität zu Flammen ist wichtig, um diese feurige Pflanze zu kultivieren\", erklärt er und bietet Ihnen einen **Samen** {emote:smallEvents.gardener} an."
@@ -2782,8 +2782,8 @@
           "Théobald sucht mit zusammengekniffenen Augen das Firmament ab. Dieser Samen benötigt einen **kräftigen Mondschein**, um angeboten zu werden. Kommen Sie in einer helleren Nacht wieder."
         ],
         "needFireAffinity": [
-          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",
-          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **familier des flammes**, ou un porteur d'**arme enflammée**."
+          "Théobald schüttelt den Kopf. Der nächste Samen erfordert eine Affinität zum Feuer. Ihr müsst entweder ein **Magier** sein, einen **feuergebundenen Begleiter** besitzen oder eine **in Flammen geschmiedete Ausrüstung** tragen.",
+          "Der Gärtner blickt dich nachdenklich an. Dieser feurige Samen kann nur von jemandem angebaut werden, der mit dem Feuer verbunden ist: einem **Magier**, einem Meister der **Flammenbegleiter** oder einem Träger einer **flammenden Waffe**."
         ],
         "needCarnivorePet": [
           "Der Gärtner erklärt Ihnen, dass der nächste Samen einen besonders mächtigen fleischfressenden Begleiter benötigt. Sie bräuchten einen **fleischfressenden Gefährten mit epischer oder höherer Seltenheit**.",
