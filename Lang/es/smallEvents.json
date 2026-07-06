@@ -657,6 +657,7 @@
       "Está encorvada y esquelética, pero se puede ver la picardía en sus ojos. ",
       "Va vestida con jirones de tela opaca y sucia. ",
       "Recordarás los rumores sobre una bruja torpe que vagaba por el reino. ",
+      "On murmure que sa maladresse lui a déjà valu des ennuis avec quelques nobles peu indulgents. ",
       "Completamente muda, parece dañada por los años, delgada y huesuda, con la piel casi gris. ",
       "No parece entender lo que dices. "
     ],
@@ -2572,9 +2573,9 @@
       "spiritual": "encuentras un lugar de serenidad, donde el ambiente es apacible y propicio para tu bienestar. Buscas artículos u objetos en los alrededores."
     },
     "foundStories": {
-      "1": "Has encontrado el siguiente material común: {{rarityEmote}} {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "¡Increíble! Has dado con un material {{rarityEmote}} poco común: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "¡Qué suerte tan increíble! Has descubierto un material {{rarityEmote}} poco común: {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
+      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
+      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
     }
   },
   "expeditionAdvice": {
@@ -2742,8 +2743,8 @@
         "mage": [
           "Théobald nota tu aura de mago y asiente con respeto. Tu dominio de la magia hará florecer esta planta de fuego\", dice, entregándote una **semilla** {emote:smallEvents.gardener}."
         ],
-        "phoenix": [
-          "Los ojos del jardinero se abren de par en par ante tu fénix y exclama que hace décadas que no ve uno. Emocionado, te confía una **semilla** {emote:smallEvents.gardener}, convencido de que las llamas de tu compañero le ayudarán a crecer."
+        "firePet": [
+          "Le jardinier écarquille les yeux devant votre familier au souffle ardent et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
         ],
         "fireItem": [
           "Théobald ve tu equipo forjado con fuego y asiente. La afinidad con las llamas es esencial para cultivar esta planta ardiente\", explica, ofreciéndote una **semilla** {emote:smallEvents.gardener}."
@@ -2781,8 +2782,8 @@
           "Théobald entornó los ojos hacia el cielo. Esta semilla requiere **poderosa luz de luna** para ser ofrecida. Vuelve en una noche más clara."
         ],
         "needFireAffinity": [
-          "Théobald sacude la cabeza. La siguiente semilla requiere afinidad con el fuego. Tendrías que ser un **mago**, poseer un **fénix** o llevar **equipo forjado en llamas**.",
-          "El jardinero te mira pensativo. Esta semilla ardiente solo puede ser cultivada por alguien vinculado al fuego: un **mago**, un **maestro del fénix** o un **portador de armas llameantes**."
+          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",
+          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **familier des flammes**, ou un porteur d'**arme enflammée**."
         ],
         "needCarnivorePet": [
           "El jardinero explica que la siguiente semilla requiere una compañera carnívora especialmente poderosa. Necesitarías un **compañero carnívoro de rareza épica o superior**.",
