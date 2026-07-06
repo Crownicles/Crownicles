@@ -325,7 +325,7 @@
       "28": "die Unterirdischen Gänge der Schlosstore",
       "29": "die Alkoven im Empfangssaal",
       "32": "die Königlichen Pflastersteine auf der Straße zum Schloss",
-      "41": "les Passages Secrets de la Cour du Château"
+      "41": "Die geheimen Gänge im Schlosshof"
     },
     "errors": {
       "noPet": "Die Naturgeister weigern sich, Sie einen Vertrauten schicken zu lassen - weil Sie keinen besitzen!",
@@ -606,15 +606,15 @@
     "seeBackupItems": "{emote:collectors.switch} Siehe Reserve",
     "seeEquippedItems": "{emote:collectors.switch} Vgl. Bestand anzeigen",
     "seeMaterials": "{emote:inventory.materials} Materialien",
-    "stockTitle": "Réserve d'objets de {{pseudo}}",
-    "title": "Inventaire de {{pseudo}}",
-    "materialsTitle": "Matériaux de {{pseudo}}",
+    "stockTitle": "Objektbestand von {{pseudo}}",
+    "title": "Bestandsaufnahme von {{pseudo}}",
+    "materialsTitle": "Materialien für {{pseudo}}",
     "materialsField_zero": "Materialien (0) :",
     "materialsField_one": "Material ({{count}}) :",
     "materialsField_other": "Materialien ({{count}}) :",
     "noMaterials": "{emote:inventory.empty} **kein Material**",
     "seePlants": "{emote:city.homeUpgrades.garden} Pflanzen",
-    "plantsTitle": "Plantes de {{pseudo}}",
+    "plantsTitle": "Pflanzen aus {{pseudo}}",
     "plantsField_zero": "Pflanze (0) :",
     "plantsField_one": "Pflanze ({{count}}) :",
     "plantsField_other": "Pflanzen ({{count}}) :",
@@ -768,7 +768,7 @@
       "fieldName": "Restdauer:",
       "fieldValue": "{emote:effects.{{effectId}} {{timeLeft}}"
     },
-    "title": "{{pseudo}} | Niveau {{level, number}}"
+    "title": "{{pseudo}} | Stufe {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Zu Beginn des Spiels besessen",
@@ -888,7 +888,7 @@
         },
         "stockExchange": {
           "label": "Die Börse",
-          "description": "Des courtiers s'affairent devant de grands tableaux de cours en perpétuel mouvement. On peut y acquérir un prestigieux badge de fortune ou commander une étude de marché anticipant les tendances de l'argent du roi et des prix des plantes."
+          "description": "Vor großen Kursanzeigetafeln, deren Zahlen ständig wechseln, sind Börsenmakler emsig bei der Arbeit. Dort kann man sich ein prestigeträchtiges Glücksabzeichen erwerben oder eine Marktstudie in Auftrag geben, die die Entwicklung der Staatsfinanzen und der Pflanzenpreise vorhersagt."
         },
         "tanner": {
           "label": "Der Gerber",
@@ -918,7 +918,7 @@
       "inns": {
         "names": {
           "lordInn": "Das Gasthaus des Herrn",
-          "bravesStop": "La Halte des Braves",
+          "bravesStop": "„La Halte des Braves“",
           "hotSwallow": "Der brennende Schluck",
           "fireside": "Au Coin du Feu",
           "bloodyTankard": "Der Blutkrug",
@@ -926,7 +926,7 @@
         },
         "stories": {
           "lordInn": "{emote:city.inn} Sie betreten das Gasthaus des Herrn. Hier ist alles luxuriös, von den Möbeln bis zu den Getränken. Hier finden Sie berühmte Abenteurer und Adlige, die auf der Suche nach dem Nervenkitzel sind. Sie haben sogar schon gehört, dass der König auf seinen Reisen hier übernachtet hat.",
-          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de la Halte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
+          "bravesStop": "{emote:city.inn} Wer hat noch nie von der „Halte des Braves“ gehört? Es ist das älteste und berühmteste Gasthaus der Region. Man betritt einen überfüllten Raum, in dem Gelächter und Gesang herrschen. Die Wände sind mit Jagdtrophäen und alten Waffen geschmückt. Es ist der ideale Ort, um andere Abenteurer zu treffen.",
           "hotSwallow": "{emote:city.inn} Sie betreten die Gorgée Brûlante, eine kleine Dorfschänke, in der man sich, anders als der Name vermuten lässt, gut erfrischen kann. Seine Bezeichnung stammt von dem Hauptgetränk des Lokals, einem würzigen Bier, das Herz und Seele wärmt. Die Wände sind mit Erinnerungsstücken vergangener Reisender geschmückt, und die Atmosphäre ist warm.",
           "fireside": "{emote:city.inn} Sie betreten das Gasthaus Au Coin du Feu, einen Ort, an dem sich Abenteurer versammeln, um Geschichten um ein knisterndes Feuer herum auszutauschen. Der Geruch von gegrilltem Fisch liegt in der Luft, neben dem Lachen und Singen der Gäste. Die Einrichtung ist einfach, erinnert aber an das Leben der Seeleute und Fischer.",
           "bloodyTankard": "{emote:city.inn} Sie betreten den \"Blutigen Krug\", ein Gasthaus, das für seine starken Getränke und seine düstere Atmosphäre bekannt ist. Hier finden Sie viele Trophäen von Monstern, die von den Gästen gejagt wurden, und eine Luft, die mit dem Geruch von Bier und Tabak angereichert ist. Das Essen ist nicht von hoher Qualität, ebenso wenig wie die Betten.",
@@ -1438,7 +1438,7 @@
         "leaveShop": "Den Händler verlassen"
       }
     },
-    "tokenMerchantButton": "Acheter des jetons",
+    "tokenMerchantButton": "Chips kaufen",
     "useTokensButton": "Weitergehen",
     "useTokensLoading": "Laden...",
     "useTokensConfirmTitle": "{{pseudo}} Bestätigung",
@@ -1452,27 +1452,27 @@
     "tokensUsedRefusedTitle": "{{pseudo}}, Stornierung",
     "tokensUsedRefusedDescription": "{emote:messages.refuse} Sie haben sich entschieden, Ihre Token zu behalten.",
     "tokenMerchant": {
-      "title": "{{pseudo}}, un marchand de jetons",
-      "description": "{emote:unitValues.token} Alors que vous fouillez vos poches à la recherche de jetons, un marchand ambulant surgit au détour du chemin. Il étale devant vous une bourse pleine de jetons scintillants, prêts à être échangés contre quelques pièces d'or.\n\n{emote:unitValues.money} **Votre or** : {{playerMoney, number}}\n{emote:unitValues.token} **Vos jetons** : {{playerTokens, number}}\n\nChaque jeton vous coûtera **{{pricePerToken, number}}** {emote:unitValues.money}.\n\n{emote:collectors.warning} Vous pouvez en acheter jusqu'à {{maxDaily, number}} par jour et {{maxWeekly, number}} par semaine.",
-      "buyButton_one": "Acheter {{count}} jeton — {{price, number}} or",
-      "buyButton_other": "Acheter {{count}} jetons — {{price, number}} or",
-      "refuseButton": "Ne rien acheter",
-      "boughtTitle": "{{pseudo}}, achat conclu !",
-      "boughtDescription_one": "{emote:unitValues.token} Le marchand vous remet **{{count}} jeton** et empoche votre or avec un sourire satisfait.\n\nUtilisez {command:report} pour reprendre votre route.",
-      "boughtDescription_other": "{emote:unitValues.token} Le marchand vous remet **{{count}} jetons** et empoche votre or avec un sourire satisfait.\n\nUtilisez {command:report} pour reprendre votre route.",
-      "tooMuchTitle": "{{pseudo}}, marchand désolé",
-      "tooMuchDescription": "{emote:collectors.warning} Le marchand hausse les épaules : vous avez déjà acquis tous les jetons qu'il pouvait vous céder pour le moment. Revenez plus tard.",
-      "fullTitle": "{{pseudo}}, bourse pleine",
-      "fullDescription": "{emote:unitValues.token} Vos poches débordent déjà de jetons : le marchand refuse de vous en vendre davantage.",
-      "refuseTitle": "{{pseudo}}, marché refusé",
-      "refuseDescription": "{emote:messages.refuse} Vous déclinez l'offre du marchand, qui range sa bourse et reprend tranquillement son chemin.",
-      "cannotAffordTitle": "{{pseudo}}, bourse vide",
-      "cannotAffordDescription": "{emote:unitValues.money} Vous fouillez vos poches en vain : vous n'avez pas assez d'or pour acheter le moindre jeton. Amassez quelques pièces avant de revenir tenter votre chance.",
-      "charityTitle": "{{pseudo}}, geste de générosité",
-      "charityDescription_one": "{emote:unitValues.token} Touché par votre dénuement, le marchand vous glisse discrètement **{{count}} jeton** dans la main, sans rien demander en retour.\n\nUtilisez {command:report} pour reprendre votre route.",
-      "charityDescription_other": "{emote:unitValues.token} Touché par votre dénuement, le marchand vous glisse discrètement **{{count}} jetons** dans la main, sans rien demander en retour.\n\nUtilisez {command:report} pour reprendre votre route.",
-      "charityAlreadyUsedTitle": "{{pseudo}}, plus de charité",
-      "charityAlreadyUsedDescription": "{emote:collectors.warning} Le marchand vous reconnaît : il vous a déjà fait l'aumône cette semaine et ne peut se permettre d'être plus généreux. Revenez la semaine prochaine."
+      "title": "{{pseudo}}, ein Spielmarkenhändler",
+      "description": "{emote:unitValues.token} Während ihr eure Taschen nach Spielmarken durchstöbert, taucht plötzlich ein Straßenhändler um die Ecke auf. Er breitet vor euch einen Beutel voller glitzernder Spielmarken aus, die nur darauf warten, gegen ein paar Goldmünzen eingetauscht zu werden.\n\n{emote:unitValues.money} **Euer Gold**: {{playerMoney, number}}\n{emote:unitValues.token} **Eure Spielmarken**: {{playerTokens, number}}\n\nJede Spielmarke kostet euch **{{pricePerToken, number}}** {emote:unitValues.money}.\n\n{emote:collectors.warning} Sie können täglich bis zu {{maxDaily, number}} und wöchentlich bis zu {{maxWeekly, number}} davon kaufen.",
+      "buyButton_one": "{{count}}-Token kaufen — {{price, number}} Gold",
+      "buyButton_other": "{{count}}-Token kaufen — {{price, number}}-Gold",
+      "refuseButton": "Nichts kaufen",
+      "boughtTitle": "{{pseudo}}, Kauf abgeschlossen!",
+      "boughtDescription_one": "{emote:unitValues.token} Der Händler übergibt Ihnen **{{count}} Token** und steckt Ihr Gold mit einem zufriedenen Lächeln ein.\n\nVerwenden Sie {command:report}, um Ihre Reise fortzusetzen.",
+      "boughtDescription_other": "{emote:unitValues.token} Der Händler händigt Ihnen **{{count}} Token** aus und steckt Ihr Gold mit einem zufriedenen Lächeln ein.\n\nVerwenden Sie {command:report}, um Ihre Reise fortzusetzen.",
+      "tooMuchTitle": "{{pseudo}}, ein verzweifelter Händler",
+      "tooMuchDescription": "{emote:collectors.warning} Der Händler zuckt mit den Schultern: Ihr habt bereits alle Jetons erworben, die er euch derzeit anbieten kann. Kommt später wieder.",
+      "fullTitle": "{{pseudo}}, mit vollem Geldbeutel",
+      "fullDescription": "{emote:unitValues.token} Eure Taschen quellen bereits vor Spielmarken über: Der Händler weigert sich, euch weitere zu verkaufen.",
+      "refuseTitle": "{{pseudo}}, Auftrag abgelehnt",
+      "refuseDescription": "{emote:messages.refuse} Sie lehnen das Angebot des Händlers ab, der daraufhin seine Geldbörse wegsteckt und gemächlich seines Weges geht.",
+      "cannotAffordTitle": "{{pseudo}}, leere Geldbörse",
+      "cannotAffordDescription": "{emote:unitValues.money} Du kramst vergeblich in deinen Taschen herum: Du hast nicht genug Gold, um auch nur einen einzigen Spielstein zu kaufen. Sammle erst einmal ein paar Münzen, bevor du wiederkommst, um dein Glück zu versuchen.",
+      "charityTitle": "{{pseudo}}, eine Geste der Großzügigkeit",
+      "charityDescription_one": "{emote:unitValues.token} Der Händler ist von eurer Not gerührt und schiebt euch heimlich **{{count}} Münze** in die Hand, ohne dafür eine Gegenleistung zu verlangen.\n\nVerwendet {command:report}, um eure Reise fortzusetzen.",
+      "charityDescription_other": "{emote:unitValues.token} Der Händler ist von eurer Not gerührt und schiebt euch heimlich **{{count}} Münzen** in die Hand, ohne dafür eine Gegenleistung zu verlangen.\n\nVerwendet {command:report}, um eure Reise fortzusetzen.",
+      "charityAlreadyUsedTitle": "{{pseudo}}, mehr Nächstenliebe",
+      "charityAlreadyUsedDescription": "{emote:collectors.warning} Der Händler erkennt euch wieder: Er hat euch diese Woche bereits Almosen gegeben und kann es sich nicht leisten, noch großzügiger zu sein. Kommt nächste Woche wieder."
     },
     "buyHealButton": "Sich pflegen",
     "notEnoughMoneyHealButton": "Unzureichendes Geld",
