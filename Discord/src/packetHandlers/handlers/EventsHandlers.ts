@@ -188,6 +188,12 @@ export default class EventsHandlers {
 				value: totalRewardsLines.join("\n")
 			});
 		}
+		if (packet.nextCampaignMission) {
+			completedMissionsEmbed.addFields({
+				name: i18n.t("notifications:missions.completed.nextCampaignMission", { lng }),
+				value: MissionUtils.formatBaseMission(packet.nextCampaignMission, lng)
+			});
+		}
 		await interaction.channel.send({ embeds: [completedMissionsEmbed] });
 	}
 
