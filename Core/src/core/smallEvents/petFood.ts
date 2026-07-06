@@ -71,7 +71,6 @@ const REACTION_HANDLERS: Record<string, ReactionHandler> = {
 type PetFoodProperties = {
 	probabilities: {
 		badSmell: {
-			plus: number;
 			minus: number;
 			nothing: number;
 		};
@@ -80,7 +79,6 @@ type PetFoodProperties = {
 	};
 	love: {
 		badSmell: {
-			plus: number;
 			minus: number;
 		};
 		goodSmell: number;
@@ -137,13 +135,8 @@ function getFoodType(player: Player): string {
  */
 const LOVE_CHANGE_HANDLERS: Record<string, (properties: PetFoodProperties, petModel: Pet) => number> = {
 	[SmallEventConstants.PET_FOOD.FOOD_TYPES.BAD_SMELL]: (properties: PetFoodProperties): number => {
-		const rand = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
-		const plusThreshold = properties.probabilities.badSmell.plus;
-		const totalThreshold = plusThreshold + properties.probabilities.badSmell.minus;
-		if (rand < plusThreshold) {
-			return properties.love.badSmell.plus;
-		}
-		if (rand < totalThreshold) {
+		// Rotten/foul food never strengthens the bond: at best the pet ignores it, at worst it is put off (love loss)
+		if (RandomUtils.crowniclesRandom.realZeroToOneInclusive() < properties.probabilities.badSmell.minus) {
 			return properties.love.badSmell.minus;
 		}
 		return SmallEventConstants.PET_FOOD.NO_LOVE_CHANGE;
