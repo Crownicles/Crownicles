@@ -80,7 +80,7 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportGardenPlantReq)
 	async gardenPlant(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenPlantReq): Promise<void> {
-		response.push(await handleGardenPlant(context.keycloakId!, packet));
+		response.push(await handleGardenPlant(context.keycloakId!, packet, response));
 	}
 
 	@packetHandler(CommandReportGardenWaterReq)
