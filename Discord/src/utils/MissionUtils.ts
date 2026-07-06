@@ -5,7 +5,7 @@ import { Language } from "../../../Lib/src/Language";
 import i18n from "../translations/i18n";
 import { MissionUtils as MissionUtilsLib } from "../../../Lib/src/utils/MissionUtils";
 import {
-	asHours, dateDisplay, hoursToMilliseconds
+	asHours, dateDisplay, hoursToMilliseconds, hoursToMinutes
 } from "../../../Lib/src/utils/TimeUtils";
 import { getTranslatedRiskCategoryNameWithEmoji } from "../commands/pet/expedition/ExpeditionDisplayUtils";
 
@@ -82,7 +82,8 @@ export abstract class MissionUtils {
 		fromPlaceToPlace: (mission, lng) => MissionUtils.manageFromPlaceToPlaceVariant(mission, lng),
 		chooseClassTier: mission => String(mission.missionVariant + 1),
 		dangerousExpedition: (mission, lng) => getTranslatedRiskCategoryNameWithEmoji(mission.missionVariant, lng),
-		longExpedition: (mission, lng) => i18n.formatDuration(mission.missionVariant, lng)
+		longExpedition: (mission, lng) => i18n.formatDuration(mission.missionVariant, lng),
+		travelHours: (mission, lng) => i18n.formatDuration(hoursToMinutes(asHours(mission.missionVariant)), lng)
 	};
 
 	/**
