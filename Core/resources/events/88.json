@@ -3,15 +3,30 @@
     "capture": {
       "outcomes": {
         "0": {
-          "health": 5,
-          "money": 500
+          "randomItem": {
+            "category": 2,
+            "rarity": {
+              "min": 4,
+              "max": 5
+            }
+          }
         },
         "1": {
           "money": 400
         },
         "2": {
           "effect": "sick",
-          "health": -15
+          "health": -65
+        },
+        "3": {
+          "condition": {
+            "canAcceptPet": true
+          },
+          "givePet": {
+            "petIds": [
+              44
+            ]
+          }
         }
       }
     },
