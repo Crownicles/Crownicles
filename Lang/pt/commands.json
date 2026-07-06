@@ -325,7 +325,7 @@
       "28": "As montanhas dos Portos do Castelo",
       "29": "as Alcovas da Sala de Receção",
       "32": "os Pavés Royaux da Rota para o Castelo",
-      "41": "les Passages Secrets de la Cour du Château"
+      "41": "Os Passagens Secretas do Pátio do Castelo"
     },
     "errors": {
       "noPet": "Os espíritos da natureza recusam-se a deixar-te enviar um animal de estimação... porque não tens um!",
@@ -606,15 +606,15 @@
     "seeBackupItems": "Ver a reserva",
     "seeEquippedItems": "{emote:collectors.switch} Ver inventário principal",
     "seeMaterials": "{Materiais",
-    "stockTitle": "Réserve d'objets de {{pseudo}}",
-    "title": "Inventaire de {{pseudo}}",
-    "materialsTitle": "Matériaux de {{pseudo}}",
+    "stockTitle": "Reserva de objetos de {{pseudo}}",
+    "title": "Inventário de {{pseudo}}",
+    "materialsTitle": "Materiais de {{pseudo}}",
     "materialsField_zero": "Materiais (0) :",
     "materialsField_one": "Material ({{count}}) :",
     "materialsField_other": "Materiais ({{count}}):",
     "noMaterials": "{emote:inventory.empty} **Sem material**",
     "seePlants": "{emote:city.homeUpgrades.garden} Plantas",
-    "plantsTitle": "Plantes de {{pseudo}}",
+    "plantsTitle": "Plantas de {{pseudo}}",
     "plantsField_zero": "Planta (0) :",
     "plantsField_one": "Planta ({{count}}):",
     "plantsField_other": "Plantas ({{count}}):",
@@ -768,7 +768,7 @@
       "fieldName": "Tempo restante :",
       "fieldValue": "{{effect}} {{timeLeft}}"
     },
-    "title": "{{pseudo}} | Niveau {{level, number}}"
+    "title": "{{pseudo}} | Nível {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Possuído no início do jogo",
@@ -888,7 +888,7 @@
         },
         "stockExchange": {
           "label": "A Bolsa de Valores",
-          "description": "Des courtiers s'affairent devant de grands tableaux de cours en perpétuel mouvement. On peut y acquérir un prestigieux badge de fortune ou commander une étude de marché anticipant les tendances de l'argent du roi et des prix des plantes."
+          "description": "Os corretores movimentam-se afetuosamente perante grandes painéis de cotações em constante mudança. Aí é possível adquirir um prestigiado crachá da fortuna ou encomendar um estudo de mercado que antecipe as tendências do dinheiro do rei e dos preços das plantas."
         },
         "tanner": {
           "label": "O Tanque",
@@ -918,7 +918,7 @@
       "inns": {
         "names": {
           "lordInn": "A Pousada do Senhor",
-          "bravesStop": "La Halte des Braves",
+          "bravesStop": "A Paragem dos Corajosos",
           "hotSwallow": "O gole ardente",
           "fireside": "Au Coin du Feu",
           "bloodyTankard": "A Caneca Sangrenta",
@@ -926,7 +926,7 @@
         },
         "stories": {
           "lordInn": "{emote:city.inn} Entraste na Estalagem do Senhor. Tudo aqui é luxuoso, desde a mobília até às bebidas. Aqui podes encontrar aventureiros famosos e nobres à procura de emoção. Até já ouviste dizer que o Rei ficou aqui nas suas viagens.",
-          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de la Halte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
+          "bravesStop": "{emote:city.inn} Quem é que nunca ouviu falar da «Halte des Braves»? É a estalagem mais antiga e mais famosa da região. Entra-se numa sala lotada, cheia de risos e canções. As paredes estão cobertas de troféus de caça e armas antigas. É o local ideal para conhecer outros aventureiros.",
           "hotSwallow": "{emote:city.inn} Entra no Gorgée Brûlante, uma pequena estalagem de aldeia onde é bom refrescar-se, ao contrário do que o seu nome sugere. O seu nome vem da bebida principal do estabelecimento, uma cerveja picante que aquece o coração e a alma. As paredes estão decoradas com recordações de viajantes passados e o ambiente é acolhedor.",
           "fireside": "{emote:city.inn} Entraste na Estalagem Au Coin du Feu, um lugar onde os aventureiros se reúnem para partilhar histórias à volta de uma fogueira crepitante. O cheiro a peixe grelhado paira no ar, juntamente com os risos e cânticos dos convidados. A decoração é simples, mas lembra a vida dos marinheiros e pescadores.",
           "bloodyTankard": "{emote:city.inn} Entraste na Caneca Sangrenta, uma estalagem conhecida pelas suas bebidas fortes e ambiente sombrio. Há muitos troféus de monstros caçados pelos clientes e o ar está carregado com o cheiro da cerveja e do tabaco. A comida não é grande coisa, e as camas também não.",
@@ -1438,7 +1438,7 @@
         "leaveShop": "Deixar o comerciante"
       }
     },
-    "tokenMerchantButton": "Acheter des jetons",
+    "tokenMerchantButton": "Comprar fichas",
     "useTokensButton": "Avançar",
     "useTokensLoading": "Carregando...",
     "useTokensConfirmTitle": "{{pseudo}}confirmação",
@@ -1452,27 +1452,27 @@
     "tokensUsedRefusedTitle": "{{pseudo}}, cancelamento",
     "tokensUsedRefusedDescription": "{emote:messages.refuse} Você decidiu manter seus tokens.",
     "tokenMerchant": {
-      "title": "{{pseudo}}, un marchand de jetons",
-      "description": "{emote:unitValues.token} Alors que vous fouillez vos poches à la recherche de jetons, un marchand ambulant surgit au détour du chemin. Il étale devant vous une bourse pleine de jetons scintillants, prêts à être échangés contre quelques pièces d'or.\n\n{emote:unitValues.money} **Votre or** : {{playerMoney, number}}\n{emote:unitValues.token} **Vos jetons** : {{playerTokens, number}}\n\nChaque jeton vous coûtera **{{pricePerToken, number}}** {emote:unitValues.money}.\n\n{emote:collectors.warning} Vous pouvez en acheter jusqu'à {{maxDaily, number}} par jour et {{maxWeekly, number}} par semaine.",
-      "buyButton_one": "Acheter {{count}} jeton — {{price, number}} or",
-      "buyButton_other": "Acheter {{count}} jetons — {{price, number}} or",
-      "refuseButton": "Ne rien acheter",
-      "boughtTitle": "{{pseudo}}, achat conclu !",
-      "boughtDescription_one": "{emote:unitValues.token} Le marchand vous remet **{{count}} jeton** et empoche votre or avec un sourire satisfait.\n\nUtilisez {command:report} pour reprendre votre route.",
-      "boughtDescription_other": "{emote:unitValues.token} Le marchand vous remet **{{count}} jetons** et empoche votre or avec un sourire satisfait.\n\nUtilisez {command:report} pour reprendre votre route.",
-      "tooMuchTitle": "{{pseudo}}, marchand désolé",
-      "tooMuchDescription": "{emote:collectors.warning} Le marchand hausse les épaules : vous avez déjà acquis tous les jetons qu'il pouvait vous céder pour le moment. Revenez plus tard.",
-      "fullTitle": "{{pseudo}}, bourse pleine",
-      "fullDescription": "{emote:unitValues.token} Vos poches débordent déjà de jetons : le marchand refuse de vous en vendre davantage.",
-      "refuseTitle": "{{pseudo}}, marché refusé",
-      "refuseDescription": "{emote:messages.refuse} Vous déclinez l'offre du marchand, qui range sa bourse et reprend tranquillement son chemin.",
-      "cannotAffordTitle": "{{pseudo}}, bourse vide",
-      "cannotAffordDescription": "{emote:unitValues.money} Vous fouillez vos poches en vain : vous n'avez pas assez d'or pour acheter le moindre jeton. Amassez quelques pièces avant de revenir tenter votre chance.",
-      "charityTitle": "{{pseudo}}, geste de générosité",
-      "charityDescription_one": "{emote:unitValues.token} Touché par votre dénuement, le marchand vous glisse discrètement **{{count}} jeton** dans la main, sans rien demander en retour.\n\nUtilisez {command:report} pour reprendre votre route.",
-      "charityDescription_other": "{emote:unitValues.token} Touché par votre dénuement, le marchand vous glisse discrètement **{{count}} jetons** dans la main, sans rien demander en retour.\n\nUtilisez {command:report} pour reprendre votre route.",
-      "charityAlreadyUsedTitle": "{{pseudo}}, plus de charité",
-      "charityAlreadyUsedDescription": "{emote:collectors.warning} Le marchand vous reconnaît : il vous a déjà fait l'aumône cette semaine et ne peut se permettre d'être plus généreux. Revenez la semaine prochaine."
+      "title": "{{pseudo}}, um vendedor de fichas",
+      "description": "{emote:unitValues.token} Enquanto vasculha os bolsos à procura de fichas, um vendedor ambulante surge ao virar da esquina. Ele estende à sua frente um saco cheio de fichas cintilantes, prontas para serem trocadas por algumas moedas de ouro.\n\n{emote:unitValues.money} **O seu ouro**: {{playerMoney, number}}\n{emote:unitValues.token} **As suas fichas**: {{playerTokens, number}}\n\nCada ficha custar-lhe-á **{{pricePerToken, number}}** {emote:unitValues.money}.\n\n{emote:collectors.warning} Pode comprar até {{maxDaily, number}} por dia e {{maxWeekly, number}} por semana.",
+      "buyButton_one": "Comprar {{count}} tokens — {{price, number}} ouro",
+      "buyButton_other": "Comprar {{count}} fichas — {{price, number}} ouro",
+      "refuseButton": "Não comprar nada",
+      "boughtTitle": "{{pseudo}}, compra concluída!",
+      "boughtDescription_one": "{emote:unitValues.token} O comerciante entrega-lhe **{{count}} ficha** e guarda o seu ouro com um sorriso de satisfação.\n\nUtilize {command:report} para prosseguir o seu caminho.",
+      "boughtDescription_other": "{emote:unitValues.token} O comerciante entrega-lhe **{{count}} jetons** e guarda o seu ouro com um sorriso de satisfação.\n\nUtilize {command:report} para prosseguir o seu caminho.",
+      "tooMuchTitle": "{{pseudo}}, comerciante desolado",
+      "tooMuchDescription": "{emote:collectors.warning} O comerciante encolhe os ombros: já comprou todas as fichas que ele lhe podia vender neste momento. Volte mais tarde.",
+      "fullTitle": "{{pseudo}}, com a carteira cheia",
+      "fullDescription": "{emote:unitValues.token} Os teus bolsos já estão cheios de fichas: o comerciante recusa-se a vender-te mais.",
+      "refuseTitle": "{{pseudo}}, pedido recusado",
+      "refuseDescription": "{emote:messages.refuse} Recusas a oferta do comerciante, que guarda a bolsa e segue tranquilamente o seu caminho.",
+      "cannotAffordTitle": "{{pseudo}}, carteira vazia",
+      "cannotAffordDescription": "{emote:unitValues.money} Vasculhas os bolsos em vão: não tens ouro suficiente para comprar nem sequer uma ficha. Junta algumas moedas antes de voltares para tentares a tua sorte.",
+      "charityTitle": "{{pseudo}}, gesto de generosidade",
+      "charityDescription_one": "{emote:unitValues.token} Comovido com a vossa situação de carência, o comerciante coloca-vos discretamente **{{count}} ficha** na mão, sem pedir nada em troca.\n\nUtilizem {command:report} para prosseguirem o vosso caminho.",
+      "charityDescription_other": "{emote:unitValues.token} Comovido com a vossa situação de carência, o comerciante desliza-vos discretamente **{{count}} fichas** na mão, sem pedir nada em troca.\n\nUtilizem {command:report} para prosseguirem o vosso caminho.",
+      "charityAlreadyUsedTitle": "{{pseudo}}, mais caridade",
+      "charityAlreadyUsedDescription": "{emote:collectors.warning} O comerciante reconhece-te: já te deu esmola esta semana e não pode dar-se ao luxo de ser mais generoso. Volta na próxima semana."
     },
     "buyHealButton": "Tratamento",
     "notEnoughMoneyHealButton": "Não há dinheiro suficiente",
