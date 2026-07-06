@@ -1645,7 +1645,7 @@
     "upgradeHomeLevel": "Améliorer votre maison au niveau {{variantText}}",
     "upgradeItem": "Améliorer une arme ou un bouclier",
     "upgradeEpicItemLevel5": "Améliorer une arme ou un bouclier de rareté épique ou supérieure au niveau 5",
-    "visitCityNpc": "Rendre visite au commerçant : {{variantText}}",
+    "visitCityNpc": "Visiter la boutique générale d'une ville",
     "wealthyPayForPVEIsland": "Acheter un voyage vers une île mystérieuse au prix maximal",
     "winBoss_one": "Vaincre {{count}} monstre",
     "winBoss_other": "Vaincre {{count}} monstres",
