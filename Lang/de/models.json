@@ -1328,13 +1328,6 @@
       "atParticle": "an die",
       "inParticle": "in der"
     },
-    "42": {
-      "description": "Gepflasterte Esplanade, die Boug-Coton mit den Toren des Königsschlosses verbindet. Hier kreuzen sich die Wege der Boten, bevor sie zu den Gemächern des Königs gelangen.",
-      "name": "Hof des Schlosses",
-      "particle": "in Richtung",
-      "atParticle": "an die",
-      "inParticle": "in der"
-    },
     "4": {
       "description": "Ein riesiger Wald südlich der Wiege. Man sagt, dass viele Reisende verloren gegangen sind.",
       "name": "Der Wald des Alten Mannes",
@@ -1371,41 +1364,6 @@
       "name": "Große Straße",
       "particle": "in Richtung",
       "atParticle": "an die"
-    },
-    "34": {
-      "description": "Eine ruhige Stadt am Rande des Sentinellen-Bereichs.",
-      "name": "Mergagnan",
-      "particle": "in",
-      "atParticle": "à",
-      "inParticle": "in"
-    },
-    "35": {
-      "description": "Ein friedliches Dorf, das für seine Gastfreundschaft bekannt ist.",
-      "name": "Boug-Baumwolle",
-      "particle": "in",
-      "atParticle": "à",
-      "inParticle": "in"
-    },
-    "36": {
-      "description": "Die große Stadt der Stadt, die Stadt Forte, ist nicht mehr nur der Schatten von sich selbst. Es gibt nur ein Dutzend von Häusern und Bauern, die von dem alten Krieg zurückgeschwungen wurden. Der Rest der früheren Pauschalschmiede ist nur ein Ruin.",
-      "name": "Stadt Forte",
-      "particle": "in Richtung",
-      "atParticle": "an die",
-      "inParticle": "in der"
-    },
-    "37": {
-      "description": "In der großen Handelsstadt Claire de Ville war es nicht immer so gastfreundlich, wie es die Stadt war. Zu Beginn sehr arm, hat sie sich schnell dank ihrer vielen Geschäfte und Hotels entwickelt, die den Reisenden in der Region eine große Auswahl bieten. Claire de Ville ist auch bekannt für die Ruhe und die Befolgung des Ortes.",
-      "name": "Claire de Ville",
-      "particle": "in",
-      "atParticle": "à",
-      "inParticle": "in"
-    },
-    "38": {
-      "description": "Heißes Village, das das Könige-Tal umgeht. Es ist eine warme Oase für Reisende im Transit.",
-      "name": "Coco Village",
-      "particle": "in Richtung",
-      "atParticle": "unter",
-      "inParticle": "in der"
     }
   },
   "map_types": {
@@ -1573,8 +1531,8 @@
     "cookRecipes_other": "{{count}} -Rezepte zubereiten",
     "cultivatePlants_one": "Ernten {{count}} Pflanze",
     "cultivatePlants_other": "{{count}} -Pflanzen ernten",
-    "getAncestralTrees_one": "{{count}} – Trieb eines uralten Baumes – erhalten",
-    "getAncestralTrees_other": "{{count}} Triebe des Ahnenbaums erhalten",
+    "getAncestralTrees_one": "Récolter ou acheter {{count}} pousse d'arbre ancestral",
+    "getAncestralTrees_other": "Récolter ou acheter {{count}} pousses d'arbre ancestral",
     "dailyPotionsStock": "Den gesamten Pot-Bestand des Tages kaufen",
     "depositChestItem_one": "Legen Sie den Gegenstand „ {{count}} “ in den Tresor Ihres Hauses ab",
     "depositChestItem_other": "{{count}} Gegenstände in den Tresor Ihres Hauses legen",
