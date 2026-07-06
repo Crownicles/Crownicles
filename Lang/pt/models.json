@@ -1328,13 +1328,6 @@
       "atParticle": "para o",
       "inParticle": "no"
     },
-    "42": {
-      "description": "Esplanada pavimentada que liga Boug-Coton às portas do castelo real. Os mensageiros passam uns pelos outros a caminho dos apartamentos do rei.",
-      "name": "Pátio do Castelo",
-      "particle": "para o",
-      "atParticle": "para o",
-      "inParticle": "no"
-    },
     "4": {
       "description": "Uma vasta floresta a sul do Berço. Diz-se que muitos viajantes se perderam aqui.",
       "name": "Floresta do Vieillard",
@@ -1371,41 +1364,6 @@
       "name": "Grande Rue",
       "particle": "para o",
       "atParticle": "para o"
-    },
-    "34": {
-      "description": "Uma cidade tranquila nas margens da Plage Sentinelle.",
-      "name": "Mergagnan",
-      "particle": "para",
-      "atParticle": "à",
-      "inParticle": "em"
-    },
-    "35": {
-      "description": "Uma aldeia tranquila conhecida pela sua pousada acolhedora.",
-      "name": "Boug-Cotton",
-      "particle": "para",
-      "atParticle": "à",
-      "inParticle": "em"
-    },
-    "36": {
-      "description": "Outrora uma grande cidade fortificada, Ville Forte é atualmente uma sombra do que foi. Devastada pela antiga guerra, restam apenas uma dezena de casas e camponeses. O resto das antigas fortificações estão em ruínas.",
-      "name": "Cidade forte",
-      "particle": "para o",
-      "atParticle": "para o",
-      "inParticle": "no"
-    },
-    "37": {
-      "description": "Grande cidade mercantil e cruzamento económico, Claire de Ville nem sempre foi tão acolhedora. Inicialmente muito pobre, desenvolveu-se rapidamente graças às suas numerosas lojas e hotéis que oferecem uma vasta escolha aos viajantes da região. Claire de Ville é também conhecida pela sua calma e respeito pela ordem.",
-      "name": "Claire de Ville",
-      "particle": "para",
-      "atParticle": "à",
-      "inParticle": "em"
-    },
-    "38": {
-      "description": "Aldeia oásis preferida pelos nobres do Vale dos Reis em busca de frescura. Os cocos aqui colhidos são conhecidos em todo o país e comercializados a preços elevados nos mercados do reino. A escassez de terrenos para construção à volta da nascente torna-a um dos locais mais procurados.",
-      "name": "Aldeia do Coco",
-      "particle": "para o",
-      "atParticle": "em",
-      "inParticle": "no"
     }
   },
   "map_types": {
@@ -1573,8 +1531,8 @@
     "cookRecipes_other": "Preparar receitas do site {{count}}",
     "cultivatePlants_one": "Colher {{count}} planta",
     "cultivatePlants_other": "Colher {{count}} plantas",
-    "getAncestralTrees_one": "Obter {{count}} brotos de árvores ancestrais",
-    "getAncestralTrees_other": "Obter {{count}} rebentos de uma árvore ancestral",
+    "getAncestralTrees_one": "Récolter ou acheter {{count}} pousse d'arbre ancestral",
+    "getAncestralTrees_other": "Récolter ou acheter {{count}} pousses d'arbre ancestral",
     "dailyPotionsStock": "Comprar o stock de poções do dia",
     "depositChestItem_one": "Colocar o objeto « {{count}} » no cofre da sua casa",
     "depositChestItem_other": "Guardar {{count}} objetos no cofre da sua casa",
