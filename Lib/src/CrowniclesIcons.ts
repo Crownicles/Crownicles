@@ -1024,65 +1024,15 @@ export const CrowniclesIcons: {
 			}
 		},
 		83: {
-			skip: "🚶",
-			buy: "💶",
-			steal: "🕵️",
-			haggle: "🤝",
-			end: { 0: "🚶" }
-		},
-		84: {
-			help: "🤝",
-			ask: "🗣️",
-			end: { 0: "🚶" }
-		},
-		85: {
-			report: "📰",
-			stealFromThief: "🕵️",
-			fight: "⚔️",
-			ignore: "🚶",
-			end: { 0: "🚶" }
-		},
-		86: {
-			dance: "💃",
-			drink: "🍺",
-			pickPocket: "🕵️",
-			end: { 0: "🚶" }
-		},
-		87: {
-			skip: "🚶",
-			buyHorse: "🐴",
-			trade: "👥",
-			stealHorse: "🕵️",
-			end: { 0: "🚶" }
-		},
-		88: {
-			touchStatue: "🤚",
-			pray: "🙏",
-			break: "🔨",
-			end: { 0: "🚶" }
-		},
-		89: {
-			listen: "👂",
-			followMelody: "🎵",
-			coverEars: "🙉",
-			end: { 0: "🚶" }
-		},
-		9: {
-			end: { 0: "🚶" },
-			help: "🔎",
-			skip: "▶️"
-		},
-		90: {
 			observe: "👀",
 			help: "🤝",
-			ignore: "🚶",
+			accuse: "🫵",
 			end: {
 				0: "🫂",
 				1: "👮"
 			}
-
 		},
-		91: {
+		84: {
 			compete: "🎣",
 			cheat: "🪤",
 			observe: "🕵️",
@@ -1091,7 +1041,7 @@ export const CrowniclesIcons: {
 				1: "🚶"
 			}
 		},
-		92: {
+		85: {
 			forceChains: "⛓️",
 			attackArcher: "🗡️",
 			end: {
@@ -1099,7 +1049,7 @@ export const CrowniclesIcons: {
 				1: "🚶"
 			}
 		},
-		93: {
+		86: {
 			ponton: "🌫️",
 			herbs: "🌾",
 			fish: "🎣",
@@ -1110,7 +1060,7 @@ export const CrowniclesIcons: {
 				1: "🚶"
 			}
 		},
-		94: {
+		87: {
 			climb: "🪜",
 			throwStone: "🪨",
 			walkAround: "👣",
@@ -1119,11 +1069,26 @@ export const CrowniclesIcons: {
 				1: "🔨"
 			}
 		},
-		95: {
+		88: {
 			capture: "🫳",
 			crush: "🦶",
 			ignore: "🤷",
 			end: { 0: "🚶" }
+		},
+		89: {
+			stepAside: "↔️",
+			ignore: "🚶",
+			bow: "🙇",
+			otherAlley: "↪️",
+			end: {
+				0: "🚶",
+				1: "⏳"
+			}
+		},
+		9: {
+			end: { 0: "🚶" },
+			help: "🔎",
+			skip: "▶️"
 		}
 	},
 	mapTypes: {
