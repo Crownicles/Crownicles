@@ -913,14 +913,6 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "getAncestralTrees",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 5,
-      "xpToWin": 300,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "dangerousExpedition",
       "missionVariant": 30,
       "missionObjective": 1,
@@ -1038,6 +1030,14 @@
       "missionObjective": 1,
       "gemsToWin": 2,
       "xpToWin": 175,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "getAncestralTrees",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
       "moneyToWin": 0
     },
     {
