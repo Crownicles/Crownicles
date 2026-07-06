@@ -1328,13 +1328,6 @@
       "atParticle": "à la",
       "inParticle": "dans la"
     },
-    "42": {
-      "description": "Esplanade pavée reliant Boug-Coton aux portes du château royal. Les messagers s’y croisent avant d’accéder aux appartements du roi.",
-      "name": "Cour du Château",
-      "particle": "vers la",
-      "atParticle": "à la",
-      "inParticle": "dans la"
-    },
     "4": {
       "description": "Immense forêt au sud du Berceau. On raconte que beaucoup de voyageurs s'y sont perdus.",
       "name": "Forêt Du Vieillard",
@@ -1371,41 +1364,6 @@
       "name": "Grande Rue",
       "particle": "vers la",
       "atParticle": "à la"
-    },
-    "34": {
-      "description": "Une paisible ville au bord de la Plage Sentinelle.",
-      "name": "Mergagnan",
-      "particle": "vers",
-      "atParticle": "à",
-      "inParticle": "dans"
-    },
-    "35": {
-      "description": "Un village paisible réputé pour son auberge accueillante.",
-      "name": "Boug-Coton",
-      "particle": "vers",
-      "atParticle": "à",
-      "inParticle": "dans"
-    },
-    "36": {
-      "description": "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ravagée par l'ancienne guerre il ne reste qu'une dizaine de maisons et paysans. Le reste de l'ancienne fortification n'est que ruine.",
-      "name": "Ville Forte",
-      "particle": "vers la",
-      "atParticle": "à la",
-      "inParticle": "dans la"
-    },
-    "37": {
-      "description": "Grande ville marchande et carrefour économique, Claire de Ville n'a pas toujours été aussi accueillante. Au début très pauvre, elle a su se développer rapidement grâce à ses nombreux commerces et hôtels offrant un large choix aux voyageurs de la région. Claire de Ville est aussi réputée pour son calme et son respect de l'ordre.",
-      "name": "Claire de Ville",
-      "particle": "vers",
-      "atParticle": "à",
-      "inParticle": "dans"
-    },
-    "38": {
-      "description": "Village oasis prisé par les nobles de la Vallée des Rois en quête de fraîcheur. Les noix de coco qu'on y récolte sont réputées dans tout le pays et s'échangent à prix d'or sur les marchés du royaume. La rareté des terrains constructibles autour de la source en fait l'un des lieux les plus convoités.",
-      "name": "Village Coco",
-      "particle": "vers le",
-      "atParticle": "au",
-      "inParticle": "dans le"
     }
   },
   "map_types": {
