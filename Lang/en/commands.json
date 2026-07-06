@@ -325,7 +325,7 @@
       "28": "Undergrounds of Castle Doors",
       "29": "the Alcoves in the Reception Room",
       "32": "Royal Cobblestones of Castle Road",
-      "41": "les Passages Secrets de la Cour du Château"
+      "41": "The Secret Passages of the Castle Courtyard"
     },
     "errors": {
       "noPet": "Nature spirits refuse to let you send a pet... because you don't have one!",
@@ -606,15 +606,15 @@
     "seeBackupItems": "{emote:collectors.switch} View backup items",
     "seeEquippedItems": "{emote:collectors.switch} View equipped items",
     "seeMaterials": "{emote:inventory.materials} Materials",
-    "stockTitle": "Réserve d'objets de {{pseudo}}",
-    "title": "Inventaire de {{pseudo}}",
-    "materialsTitle": "Matériaux de {{pseudo}}",
+    "stockTitle": "Collection of objects from {{pseudo}}",
+    "title": "List of {{pseudo}}",
+    "materialsTitle": "Materials for {{pseudo}}",
     "materialsField_zero": "Materiaux (0):",
     "materialsField_one": "Workshop ({{count}}):",
     "materialsField_other": "Workshops ({{count}}):",
     "noMaterials": "{emote:inventory.empty} **No Masters**",
     "seePlants": "{emote:city.homeUpgrades.garden} Plants",
-    "plantsTitle": "Plantes de {{pseudo}}",
+    "plantsTitle": "Plants from {{pseudo}}",
     "plantsField_zero": "Plant (0):",
     "plantsField_one": "Plant ({{count}}):",
     "plantsField_other": "Plants ({{count}}):",
@@ -768,7 +768,7 @@
       "fieldName": "Time left:",
       "fieldValue": "{emote:effects.{{effectId}}} {{timeLeft}}"
     },
-    "title": "{{pseudo}} | Niveau {{level, number}}"
+    "title": "{{pseudo}} | Level {{level, number}}"
   },
   "rarity": {
     "earlyAvailable": "Owned at the start of the game",
@@ -888,7 +888,7 @@
         },
         "stockExchange": {
           "label": "The Stock Exchange",
-          "description": "Gems of all sizes glitter behind the storefront. Precious stones are exchanged for prestige items."
+          "description": "Brokers bustle about in front of large, constantly updating price boards. There, one can purchase a prestigious badge of wealth or commission a market study predicting trends in royal finances and plant prices."
         },
         "tanner": {
           "label": "The Tanker",
@@ -926,7 +926,7 @@
         },
         "stories": {
           "lordInn": "{emote:city.inn} You enter the Lord's Inn. Here, everything is luxurious, from furniture to drinks. Here you can find renowned adventurers and noblemen with strong sensations. You have already heard that the King had stayed there during his travels.",
-          "bravesStop": "{emote:city.inn} Qui n'a jamais entendu parler de la Halte des Braves ? C'est la plus vieille et la plus célèbre auberge de la région. Vous entrez dans une salle bondée, remplie de rires et de chants. Les murs sont couverts de trophées de chasse et d'armes anciennes. C'est l'endroit idéal pour rencontrer d'autres aventuriers.",
+          "bravesStop": "{emote:city.inn} Who hasn't heard of the Halte des Braves? It's the oldest and most famous inn in the region. You walk into a crowded room, filled with laughter and singing. The walls are covered with hunting trophies and antique weapons. It’s the perfect place to meet other adventurers.",
           "hotSwallow": "{emote:city. n} You enter the Bruce Gorge, a small village inn where you can refresh yourself, contrary to what his name suggests. Its designation comes from the star drink of the establishment, a spicy beverage that heats the heart and the air. The walls are coated with memories of past travelers, and the atmosphere is warm.",
           "fireside": "{emote:city.inn} You enter the Inn At Fire Corner, a place where adventurers gather to share stories about a burning fire. The smell of grilled fish floats in the air, in conjunction with the laughter and songs of customers. The decoration is simple but reminiscent of the life of sailors and fishermen.",
           "bloodyTankard": "{emote:city.inn} You enter Sanglante Hope, a popular inn for its strong drinks and dark atmosphere. Here you will find many trophies of monsters hunted by customers, and an air loaded with the smell of bee and tobacco. The food is not very good and the beds are not very good either.",
@@ -1453,7 +1453,7 @@
     "tokensUsedRefusedDescription": "{emote:messages.refuse} You decide to keep your tokens.",
     "tokenMerchant": {
       "title": "{{pseudo}}, a token merchant",
-      "description": "{emote:unitValues.token} As you rummage through your pockets looking for tokens, a wandering merchant appears at a bend in the road. He spreads out before you a pouch full of glittering tokens, ready to be traded for a few gold coins.\n\n{emote:unitValues.money} **Your gold**: {{playerMoney, number}}\n{emote:unitValues.token} **Your tokens**: {{playerTokens, number}}\n\nEach token will cost you **{{pricePerToken, number}}** {emote:unitValues.money}.",
+      "description": "{emote:unitValues.token} As you rummage through your pockets looking for tokens, a street vendor appears around the corner. He spreads out a pouch full of sparkling tokens in front of you, ready to be exchanged for a few gold coins.\n\n{emote:unitValues.money} **Your gold**: {{playerMoney, number}}\n{emote:unitValues.token} **Your tokens**: {{playerTokens, number}}\n\nEach token will cost you **{{pricePerToken, number}}** {emote:unitValues.money}.\n\n{emote:collectors.warning} You can buy up to {{maxDaily, number}} per day and {{maxWeekly, number}} per week.",
       "buyButton_one": "Buy {{count}} token — {{price, number}} gold",
       "buyButton_other": "Buy {{count}} tokens — {{price, number}} gold",
       "refuseButton": "Buy nothing",
