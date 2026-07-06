@@ -97,22 +97,6 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "buyHome",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 2,
-      "xpToWin": 150,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "depositChestItem",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 25,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "recoverAlteration",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -158,6 +142,22 @@
       "missionObjective": 10000,
       "gemsToWin": 3,
       "xpToWin": 200,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "buyHome",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 150,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "depositChestItem",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 25,
       "moneyToWin": 0
     },
     {
