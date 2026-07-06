@@ -2,16 +2,14 @@
 	"properties": {
 		"probabilities": {
 			"badSmell": {
-				"plus": 0.3,
 				"minus": 0.1,
-				"nothing": 0.6
+				"nothing": 0.9
 			},
 			"continueFind": 0.1,
 			"investigateFind": 0.7
 		},
 		"love": {
 			"badSmell": {
-				"plus": 1,
 				"minus": -1
 			},
 			"goodSmell": 1,
