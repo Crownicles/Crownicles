@@ -31,6 +31,7 @@ import {
 	LockKey, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { updateUpgradeMissionsUnderLock } from "./ReportCityBlacksmithService";
 import { crowniclesInstance } from "../../app";
 
 type RoyalBlacksmithData = NonNullable<ReactionCollectorCityData["royalBlacksmith"]>;
@@ -243,6 +244,8 @@ async function executeRoyalUpgradeUnderLock(params: {
 		gemCost: execution.gemCost,
 		boughtMaterials: execution.boughtMaterials
 	}));
+
+	await updateUpgradeMissionsUnderLock(lockedPlayer, response, inventorySlot, RoyalBlacksmithConstants.TARGET_LEVEL);
 
 	await maybeAwardSentimentalBadge({
 		lockedPlayer, item, response

@@ -247,9 +247,9 @@ const UNKNOWN_ITEM_RARITY = 0;
 
 /**
  * Update the upgradeItem and upgradeEpicItemLevel5 missions after an item has been upgraded.
- * Shared by both the home upgrade station and the city blacksmith flows.
+ * Shared by the home upgrade station, the city blacksmith and the royal blacksmith flows.
  */
-async function updateUpgradeMissionsUnderLock(
+export async function updateUpgradeMissionsUnderLock(
 	lockedPlayer: Player,
 	response: CrowniclesPacket[],
 	inventorySlot: PlayerInventorySlot,
