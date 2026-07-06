@@ -17,11 +17,11 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "findOrBuyItem",
+      "missionId": "earnMoney",
       "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 2,
-      "xpToWin": 20,
+      "missionObjective": 100,
+      "gemsToWin": 1,
+      "xpToWin": 25,
       "moneyToWin": 0
     },
     {
@@ -41,11 +41,11 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "earnMoney",
+      "missionId": "findOrBuyItem",
       "missionVariant": 0,
-      "missionObjective": 250,
-      "gemsToWin": 1,
-      "xpToWin": 25,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 20,
       "moneyToWin": 0
     },
     {
