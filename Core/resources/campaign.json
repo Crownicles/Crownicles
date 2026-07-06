@@ -177,14 +177,6 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "upgradeItem",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 2,
-      "xpToWin": 50,
-      "moneyToWin": 0
-    },
-    {
       "missionId": "spendGems",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -326,6 +318,14 @@
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "upgradeItem",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 2,
+      "xpToWin": 50,
       "moneyToWin": 0
     },
     {
