@@ -128,7 +128,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous visitez la ville pendant plusieurs heures, flânant d'une ruelle à l'autre sans vous presser."
+          "0": "You spend several hours exploring the city, strolling leisurely from one alley to another."
         }
       },
       "goAway": {
@@ -140,32 +140,32 @@
       },
       "goForge": {
         "outcomes": {
-          "0": "Il n'y a rien d'intéressant dans cette forge... Vous quittez rapidement les lieux.",
+          "0": "There's nothing interesting about this blacksmith's shop... You quickly leave the place.",
           "1": "While trying a sword, you broke the smithy's window! The blacksmith asks for compensation!",
-          "2": "Personne n'est présent dans la forge qui semble abandonnée depuis des années. Avant de ressortir vous remarquez cependant un objet qui pourrait vous servir pour la suite de votre aventure...",
-          "3": "La forge semble abandonnée depuis des années. Vous ressortez donc bredouille.",
-          "4": "Vous entrez et saluez le forgeron. Après une rapide inspection de son travail vous comprenez que vous ne trouverez rien d'intéressant ici. Vous échangez quelques mots et ressortez."
+          "2": "There's no one in the forge, which seems to have been abandoned for years. Before heading back out, however, you notice an object that might come in handy as you continue your adventure...",
+          "3": "The blacksmith's shop seems to have been abandoned for years. So you come away empty-handed.",
+          "4": "You walk in and greet the blacksmith. After a quick look at his work, you realize you won't find anything of interest here. You exchange a few words and head back out."
         },
         "text": "Go to the forge."
       },
       "goInn": {
         "outcomes": {
-          "0": "Après avoir discuté pendant 2 heures avec l'aubergiste, vous finissez par apprendre qu'il n'y a aucune chambre disponible pour la nuit ! Vous ressortez de l'auberge, frustré de ne pas avoir pu profiter d'une bonne nuit de repos.",
-          "1": "Vous payez une chambre pour la nuit et tombez effondré sur le lit. Il faudra dormir avant de pouvoir reprendre l'aventure.",
-          "2": "L'auberge semble abandonnée depuis plusieurs années... Vous ressortez sans vous poser plus de questions."
+          "0": "After talking with the innkeeper for two hours, you finally find out that there are no rooms available for the night! You walk out of the inn, frustrated that you won't be able to get a good night's sleep.",
+          "1": "You pay for a room for the night and collapse onto the bed. You'll need to get some sleep before you can continue your adventure.",
+          "2": "The inn seems to have been abandoned for several years... You walk out without asking any more questions."
         },
         "text": "Go to the inn."
       },
       "goMarket": {
         "outcomes": {
           "0": "You explore the market for 30 minutes before discovering a small object on the ground that could be useful to you...",
-          "1": "Après avoir perdu 60 minutes à vous balader dans les étals, vous finissez par quitter le marché sans avoir pu trouver quoi que ce soit d'intéressant.",
-          "2": "Alors que votre vigilance était au plus bas sur le marché, vous recevez un coup violent derrière la tête et vous vous effondrez à terre... Après ce moment, plus aucun souvenir. Il faudra vous soigner avant de pouvoir reprendre l'aventure !"
+          "1": "After wasting 60 minutes wandering around the stalls, you end up leaving the market without finding anything interesting.",
+          "2": "Just when you were least expecting it, you get hit hard in the back of the head and collapse to the ground... After that, you have no memory of what happened. You'll need to get treated before you can continue your adventure!"
         },
         "text": "Go to the market."
       }
     },
-    "text": "Après avoir passé plusieurs semaines à marcher sans effectuer la moindre rencontre humaine, vous arpentez à présent les ruelles d'une petite bourgade plutôt animée."
+    "text": "After spending several weeks walking without encountering a single person, you are now strolling through the narrow streets of a rather lively little town."
   },
   "14": {
     "possibilities": {
@@ -325,12 +325,12 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous observez le chantier quelques minutes, puis réalisez qu'il est vraiment désert. Il n'y a manifestement rien à en tirer."
+          "0": "You watch the construction site for a few minutes, then realize it's completely deserted. There's clearly nothing to be gained from it."
         }
       },
       "searchScaffolding": {
         "outcomes": {
-          "0": "Vous grimpez jusqu'en haut des échafaudages, mais à l'exception d'un magnifique paysage, vous ne trouvez rien. Vous passez quelques minutes à l'admirer avant de redescendre.",
+          "0": "You climb to the top of the scaffolding, but apart from a magnificent view, you find nothing. You spend a few minutes admiring it before climbing back down.",
           "1": "Climbing the unstable structure, you discover a breathtaking view of the region! You take advantage of the viewpoint to spot an object down below.",
           "2": "You climb the ladder, but when you reach the halfway point, a bar breaks, and you fall to the ground! Shaken from the fall, you slowly come to your senses."
         },
@@ -346,13 +346,13 @@
       },
       "skip": {
         "outcomes": {
-          "0": "Vous décidez d'ignorer ce chantier et de ne pas vous y attarder davantage.",
-          "1": "Vous contournez le chantier et l'observez de loin, sans voir la pioche posée au sol. Vous trébuchez dessus et vous entaillez le pied."
+          "0": "You decide to ignore this project and not dwell on it any further.",
+          "1": "You walk around the construction site and look at it from a distance, without noticing the pickaxe lying on the ground. You trip over it and cut your foot."
         },
-        "text": "Ignorer ce chantier."
+        "text": "Ignore this project."
       }
     },
-    "text": "La ville où vous mettez les pieds semble déserte, sans âme qui vive. En parcourant ses rues, votre regard s'arrête sur un chantier qui paraît tout aussi abandonné."
+    "text": "The town you've just entered seems deserted, with not a soul in sight. As you walk through its streets, your gaze falls on a construction site that looks just as abandoned."
   },
   "19": {
     "possibilities": {
@@ -424,16 +424,16 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous vous éloignez sans prêter attention au garde.",
-          "1": "Abasourdi, vous regardez la scène, tétanisé, pendant cinq minutes. Le garde finit par vous remarquer, vous vous hâtez donc de vous éclipser."
+          "0": "You walk away without paying any attention to the guard.",
+          "1": "Stunned, you watch the scene, frozen in place, for five minutes. The guard finally notices you, so you hurry to slip away."
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Vous ne prêtez donc pas attention à la situation et vous éloignez tranquillement.",
-          "1": "En vous éloignant, vous trébuchez et tombez par terre."
+          "0": "So you don't pay any attention to the situation and quietly walk away.",
+          "1": "As you walk away, you trip and fall to the ground."
         },
-        "text": "Ne pas intervenir."
+        "text": "Do not intervene."
       },
       "surpriseAttack": {
         "outcomes": {
@@ -444,7 +444,7 @@
         "text": "Attack the guard to help the lady."
       }
     },
-    "text": "À votre arrivée dans un village, vous remarquez du coin de l'œil un garde volant une pauvre femme."
+    "text": "When you arrive in a village, you notice out of the corner of your eye a guard beating up a poor woman."
   },
   "21": {
     "possibilities": {
@@ -604,26 +604,26 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Après avoir passé 15 minutes à observer cette scène, vous vous éloignez de la place, encore bouleversé par ce que vous venez de voir."
+          "0": "After spending 15 minutes watching the scene, you walk away from the square, still shaken by what you've just seen."
         }
       },
       "goAway": {
         "outcomes": {
-          "0": "Horrifié par cet acte de barbarie, vous vous éloignez rapidement de la place, le cœur encore serré.",
-          "1": "En vous écartant de la foule, vous apercevez un coffret abandonné dans une ruelle. Intrigué, vous l'atteignez, l'ouvrez et découvrez un sac rempli d'argent."
+          "0": "Horrified by this act of barbarism, you quickly walk away from the square, your heart still heavy.",
+          "1": "As you step away from the crowd, you spot a box lying abandoned in an alley. Intrigued, you walk over to it, open it, and discover a bag full of money."
         },
-        "text": "S'éloigner de l'exécution."
+        "text": "Step away from the execution."
       },
       "steal": {
         "outcomes": {
-          "0": "Après avoir dépouillé quelques personnes, vous vous éclipsez discrètement avec un objet qui semble fort intéressant ! À l'écart de la foule, vous regardez enfin ce que c'est.",
-          "1": "Vous tentez de dépouiller un habitant quand ce dernier se retourne soudainement et vous attrape fermement avant de vous rouer de coups. Après vous être débattu, vous parvenez à vous esquiver dans la cohue."
+          "0": "After robbing a few people, you slip away quietly with an object that looks very interesting! Away from the crowd, you finally take a closer look at it.",
+          "1": "You try to rob a local when he suddenly turns around, grabs you tightly, and starts beating you. After struggling, you manage to slip away into the crowd."
         },
-        "text": "Voler des passants assistant à l'exécution."
+        "text": "To rob passersby who are watching the execution."
       },
       "trySave": {
         "outcomes": {
-          "0": "Après vous être débattu pour traverser la foule, vous intervenez au plus vite et réussissez à extirper cet homme de là. Une fois à l'abri des regards, cet homme, très reconnaissant, vous offre un objet qui vous servira pour la suite de votre aventure.",
+          "0": "After struggling to make your way through the crowd, you spring into action as quickly as possible and manage to pull the man to safety. Once out of sight, the man, who is very grateful, gives you an item that will come in handy as your adventure continues.",
           "1": "As you make your way through the crowd to try and prevent the murder, you are pushed hard and fall to the ground.",
           "2": "After succeeding in leaving the site with the man, you get caught and beaten up by a group of people. Once back on your feet, you notice these people have robbed you.",
           "3": "After trying to violently intervene, the executioner grabs you by force. You're struggling, but nothing can change that. It's your turn to be sentenced to death."
@@ -631,42 +631,42 @@
         "text": "Intervene and prevent the man from dying."
       }
     },
-    "text": "En arrivant dans un village, vous remarquez un regroupement de personnes. Vous constatez très vite en vous approchant qu'une pendaison est en cours. Après quelques renseignements, vous savez que cette personne est condamnée à mort pour \"propos contraires aux valeurs de l'église\"."
+    "text": "Upon arriving in a village, you notice a crowd of people. As you get closer, you quickly realize that a hanging is taking place. After asking around, you learn that this person has been sentenced to death for “remarks contrary to the values of the church.”"
   },
   "27": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous observez bêtement l'objet pendant 20 minutes, avant de détourner le regard.",
+          "0": "You just stare at the object for 20 minutes before looking away.",
           "1": "Leaning over the well, you observe the object. That's when you tip over. Fortunately, you soon manage to climb back up, but not without serious injury."
         }
       },
       "goDown": {
         "outcomes": {
-          "0": "Vous vous blessez grièvement lors de la descente et restez un moment bloqué au fond avant que quelqu'un ne vous retrouve.",
-          "1": "Vous arrivez en bas sans soucis et récupérez l'objet.",
-          "2": "Vous sautez dans le puits mais n'y trouvez rien. Vous remontez donc bredouille.",
-          "3": "Une fois en bas, vous découvrez une grande quantité de pièces d'or que vous récupérez avec joie."
+          "0": "You are seriously injured during the descent and are stranded at the bottom for a while before someone finds you.",
+          "1": "You make it to the bottom without any trouble and retrieve the item.",
+          "2": "You jump into the well but find nothing there. So you climb back up empty-handed.",
+          "3": "Once you reach the bottom, you discover a large number of gold coins, which you happily collect."
         },
         "text": "Try to descend and retrieve the object."
       },
       "skip": {
         "outcomes": {
-          "0": "Pas de temps à perdre ! Vous détournez le regard sans prêter la moindre attention à ceci.",
-          "1": "Vous vous éloignez du puits, mais au détour d'une ruelle, vous tombez nez à nez avec un groupe de personnes habillées de noir. Après vous être débattu avec acharnement, vous réussissez à leur échapper, mais vous vous êtes fait dépouiller."
+          "0": "No time to waste! You look away without paying the slightest attention to this.",
+          "1": "You walk away from the well, but as you turn a corner, you come face to face with a group of people dressed in black. After a fierce struggle, you manage to escape, but you’ve been robbed."
         },
-        "text": "Ignorer le puits."
+        "text": "Ignore the well."
       },
       "useBucket": {
         "outcomes": {
           "0": "After an hour of trying, you finally get this object, which turns out to be a simple piece of scrap metal.",
           "1": "Focused on your goal, you don't realize that a young villager catches you, and pushes you into the well. Stunned, you wake up several minutes later.",
-          "2": "Rapidement, vous récupérez l'argent qui se trouvait au fond du puits."
+          "2": "You quickly retrieve the money that was at the bottom of the well."
         },
         "text": "Try to grab the object with the well's bucket."
       }
     },
-    "text": "En arrivant dans un petit village, vous remarquez un puits avec un petit objet brillant au fond."
+    "text": "When you arrive in a small village, you notice a well with a small, shiny object at the bottom."
   },
   "28": {
     "possibilities": {
@@ -1005,8 +1005,8 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Vous attendez un long moment sur cette place et, tout à coup, des marchands commencent à s'installer. C'est votre jour de chance ! Il s'agit d'un marché, et les pommes sont très peu chères. Vous en achetez quelques-unes et les savourez sur place.",
-          "1": "Vous attendez un petit moment sur cette place, puis vous rendez compte qu'il n'y a rien de bien intéressant à faire ici."
+          "0": "You wait for quite a while in this square, and suddenly, vendors start setting up shop. It's your lucky day! It's a market, and the apples are very cheap. You buy a few and enjoy them right there.",
+          "1": "You wait for a little while in this square, then you realize there's nothing very interesting to do here."
         }
       },
       "goAway": {
@@ -1017,28 +1017,28 @@
       },
       "goInn": {
         "outcomes": {
-          "0": "Un villageois au grand cœur vous propose le gîte et le couvert. Vous reprenez un peu d'énergie grâce à un bon repas et à une sieste bien méritée dans le calme de sa grange.",
-          "1": "Un villageois n'a guère de place à vous offrir, mais il partage tout de même volontiers son repas avec vous avant que vous ne le remerciiez chaleureusement.",
-          "2": "Par malheur, personne ne semble disposé à vous accueillir ; vous restez là, fatigué et le ventre vide."
+          "0": "A kind-hearted villager offers you a place to stay and a meal. You recharge your batteries with a good meal and a well-deserved nap in the quiet of his barn.",
+          "1": "A villager doesn't have much room to offer you, but he's still happy to share his meal with you before you thank him warmly.",
+          "2": "Unfortunately, no one seems willing to take you in; you stand there, tired and hungry."
         },
-        "text": "Accepter l'hospitalité d'un villageois."
+        "text": "Accept a villager's hospitality."
       },
       "stealJeweler": {
         "outcomes": {
-          "0": "Vous faites confiance à vos capacités d'infiltration. Vous y allez, et fort heureusement le vieillard était absent. Vous arrivez à voler le contenu de la caisse et vous éclipsez discrètement.",
-          "1": "Vous arrivez devant la boutique et entrez dedans dans le but de voler le bijoutier. Alors que vous vous emparez de l'argent du bijoutier, un garde personnel vous assomme. Vous vous réveillez quelques heures plus tard, dans une ruelle à l'écart."
+          "0": "You trust your infiltration skills. You go in, and luckily, the old man wasn't there. You manage to steal the contents of the box and slip away quietly.",
+          "1": "You arrive in front of the store and go inside with the intention of robbing the jeweler. Just as you’re grabbing the jeweler’s money, a security guard knocks you out. You wake up a few hours later in a secluded alley."
         },
         "text": "Try to rob the jeweler."
       },
       "talkJeweler": {
         "outcomes": {
           "0": "You chat with the jeweler and strike up a friendship. He offers you an object as a token of this new friendship.",
-          "1": "Vous décidez de tenter de marchander afin de vous acheter un des bijoux pour peu cher. Vous discutez un long moment, mais le vieillard est un très bon marchand et il ne cède pas. Vous prenez congé après avoir compris qu'il ne compte pas baisser ses prix."
+          "1": "You decide to try haggling to buy one of the pieces of jewelry for a bargain price. You negotiate for quite a while, but the old man is a very skilled salesman and won’t budge. You take your leave after realizing he has no intention of lowering his prices."
         },
         "text": "Go and chat with the jeweler."
       }
     },
-    "text": "Au cours de votre très long périple, vous arrivez aux abords d'un petit village fort charmant. Le lieu est si modeste que, d'un simple coup d'œil, vous devinez qu'il ne compte que deux commerces : une bijouterie et une auberge. Un passant vous apprend que la bijouterie est tenue par un vieillard qui réalise de magnifiques bijoux et colliers. Quant à l'auberge, elle est dirigée par un couple, et il paraît qu'elle a un grand succès."
+    "text": "During your very long journey, you arrive on the outskirts of a charming little village. The place is so modest that, at a glance, you can tell it has only two businesses: a jewelry store and an inn. A passerby tells you that the jewelry store is run by an elderly man who crafts magnificent jewelry and necklaces. As for the inn, it’s run by a couple, and it’s said to be very popular."
   },
   "37": {
     "possibilities": {
@@ -1120,14 +1120,14 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous restez à discuter quelques minutes avec Price, avant de le laisser vaquer à ses affaires.",
+          "0": "You stay and chat with Price for a few minutes before letting him go about his business.",
           "1": "After a short chat, you part company. A few streets further on, you are attacked by a group of unkind-looking people who lighten your purse at gunpoint."
         }
       },
       "meal": {
         "outcomes": {
           "0": "You ask Price to eat something together, and he accepts. You chat for a while, drink a little, laugh a lot, exchange tips and get to know each other. It's with a slight twinge of regret that Price bids you farewell after a few hours, having a contract to fulfill.",
-          "1": "Vous proposez à Price de faire plus ample connaissance autour d'un repas. Il décline, disant avoir du travail, et s'en va."
+          "1": "You suggest to Price that you get to know each other better over a meal. He declines, saying he has work to do, and leaves."
         },
         "text": "Get to know each other over a good meal."
       },
@@ -1375,8 +1375,8 @@
     "possibilities": {
       "askJoin": {
         "outcomes": {
-          "0": "Le groupe se montre très accueillant, vous faites donc le voyage tous ensemble. Arrivé au sanctuaire, le guide passe près de 2 heures à vous en conter l'histoire, avant de retourner au village.",
-          "1": "Le groupe vous refuse tout simplement et poursuit son chemin sans vous.",
+          "0": "The group is very welcoming, so you all travel together. Once you arrive at the shrine, the guide spends nearly two hours telling you about its history before heading back to the village.",
+          "1": "The group simply rejects you and goes on without you.",
           "2": "The group thinks you're a thief and beats you up accordingly."
         },
         "text": "Ask the group to join them."
@@ -1384,26 +1384,26 @@
       "end": {
         "outcomes": {
           "0": "The group, thinking they're being spied on, hit you hard.",
-          "1": "Après 15 minutes sans aucune réaction de votre part, le groupe finit par s'éloigner sans vous."
+          "1": "After 15 minutes with no response from you, the group finally walked away without you."
         },
-        "text": "Ne pas prêter attention au groupe."
+        "text": "Don't pay attention to the group."
       },
       "goAlone": {
         "outcomes": {
-          "0": "Vous décidez d'aller au sanctuaire tout seul. Après 30 minutes de route, le sol s'effondre tout à coup sous vos pieds et vous chutez violemment. Vous retournez au village pour vous soigner.",
-          "1": "Vous décidez d'aller au sanctuaire tout seul. Arrivé au site, vous entendez un bruit étrange. Pris de panique, vous courez et trébuchez. Vous vous faites une vilaine égratignure à la jambe, celle-ci ne tarde pas à s'infecter. Vous retournez au village pour vous soigner.",
-          "2": "Vous décidez d'aller au sanctuaire tout seul. Sur votre route, vous trouvez un objet qui pourrait vous être utile. Arrivé sur les lieux, vous découvrez que le sanctuaire se révèle être une grotte. Vous décidez de ne pas aller plus loin, et retournez au village.",
-          "3": "Vous décidez d'aller au sanctuaire tout seul. Arrivé là-bas, vous découvrez un magnifique sanctuaire, dont vous contemplez pendant 30 minutes la beauté, avant de vous rediriger vers le village.",
-          "4": "En voyant le temps se gâter, vous changez d'avis et renoncez à vous rendre au sanctuaire, préférant rester au village."
+          "0": "You decide to go to the shrine by yourself. After a 30-minute drive, the ground suddenly gives way beneath your feet, and you fall hard. You return to the village to get treatment.",
+          "1": "You decide to go to the shrine by yourself. When you arrive at the site, you hear a strange noise. Panicked, you run and trip. You get a nasty scratch on your leg, which soon becomes infected. You return to the village to get it treated.",
+          "2": "You decide to go to the shrine by yourself. Along the way, you find an item that might come in handy. When you arrive, you discover that the shrine is actually a cave. You decide not to go any further and return to the village.",
+          "3": "You decide to go to the shrine by yourself. Once there, you discover a magnificent shrine, and you spend 30 minutes admiring its beauty before heading back to the village.",
+          "4": "When you see the weather turning bad, you change your mind and decide not to go to the shrine, choosing instead to stay in the village."
         },
         "text": "Go to the shrine alone."
       },
       "skip": {
         "outcomes": {
-          "0": "Vous n'y prêtez pas attention, préférant vaquer à vos occupations dans le village.",
-          "1": "Vous tournez les talons sans plus vous soucier du groupe. En vous frayant un chemin dans les ruelles encombrées, vous trébuchez contre une pierre et vos affaires s'éparpillent."
+          "0": "You don't pay any attention to it, preferring to go about your business in the village.",
+          "1": "You turn and walk away, no longer paying any attention to the group. As you make your way through the crowded alleys, you trip over a rock and your belongings scatter."
         },
-        "text": "Ne pas vous soucier du groupe."
+        "text": "Don't worry about the group."
       },
       "talk": {
         "outcomes": {
@@ -1413,7 +1413,7 @@
         "text": "Discuss with the group."
       }
     },
-    "text": "En arrivant aux abords d'un village animé, vous entendez un groupe de personnes parler d'un sanctuaire qui serait hanté. Curieux que vous êtes, vous tendez l'oreille. Le sanctuaire serait à 1 heure de route au Sud, et le départ a lieu dans 30 minutes."
+    "text": "As you approach a bustling village, you hear a group of people talking about a shrine that is said to be haunted. Being curious, you listen in. The shrine is reportedly an hour’s drive to the south, and the tour departs in 30 minutes."
   },
   "46": {
     "possibilities": {
@@ -1687,23 +1687,23 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "Vous refusez de jouer avec les enfants et les laissez à leurs occupations.",
+          "0": "You refuse to play with the children and leave them to their own devices.",
           "1": "You refuse, and this has the consequence of annoying the children who pick up stones from the ground and throw them at you. In front of the rubble rain, you are forced to flee, out of reach of children. You realize that you have been hit in the head and the wound is bleeding profusely, you will need treatment.",
-          "2": "Vous refusez, et les enfants s'en énervent. Voyant que la situation risque de tourner au vinaigre, vous vous éloignez vite d'eux."
+          "2": "You say no, and the kids get upset. Seeing that the situation is about to turn sour, you quickly walk away from them."
         },
         "text": "Refuse and continue."
       },
       "end": {
         "outcomes": {
-          "0": "Devant votre manque de répondant, les enfants se désintéressent de vous et vont jouer ailleurs.",
+          "0": "When you don't respond, the children lose interest in you and go play somewhere else.",
           "1": "Seeing you lost in your thoughts, the kids tie the laces together. When you come out of this trance state, you stumble and fall face down on the ground.",
-          "2": "Vous restez planté là pendant des heures, et lorsque vous recouvrez vos esprits, vous vous rendez compte que votre bourse a disparu. Cette mésaventure vous laisse dépité."
+          "2": "You stand there for hours, and when you come to your senses, you realize your wallet is gone. This mishap leaves you feeling frustrated."
         }
       },
       "play": {
         "outcomes": {
-          "0": "Ne comprenant pas très bien les règles du jeu, vous êtes rapidement mis de côté, sans que les enfants ne se préoccupent davantage de vous.",
-          "1": "Vous jouez avec eux jusqu'à ce que leurs parents arrivent, vous trouvant suspect ils vous répudient en vous menaçant. Vous vous éloignez d'eux sans demander votre reste.",
+          "0": "Since you don't quite understand the rules of the game, you're quickly left out, and the children don't give you a second thought.",
+          "1": "You play with them until their parents arrive; suspecting you of something, they turn on you and threaten you. You walk away from them without a second thought.",
           "2": "Playing the role of the runaway you are chased by the kids. As you look over your shoulder to gauge the distance between them and you, you trip over a root and injure yourself. Children leave you to your sad fate when they see your inability to continue playing. You will need to be treated."
         },
         "text": "Play Cops & Robbers."
@@ -1720,8 +1720,8 @@
       "teach": {
         "outcomes": {
           "0": "As you explain to the children how best to position themselves for the shot, one of them, a little way off, manages to string his bow and, before you can do anything, releases the arrow which goes straight into your leg. Wounded, you leave them to look for a place to heal.",
-          "1": "Vous expliquez aux enfants comment se placer pour tirer et ceux-ci s'en sortent très bien. Vous passez le reste de la journée à les entraîner au tir à l'arc. Avant que vous ne les quittiez vous êtes chaudement remercié par un petit présent de vos apprentis du jour. Vous vous sentez heureux d'avoir pu vous rendre utile.",
-          "2": "Très vite, vous constatez que les enfants ne sont pas encore assez forts pour tendre la corde. Vous leur dites donc que vous reviendrez les entraîner quand ils seront plus grands."
+          "1": "You explain to the children how to position themselves to shoot, and they do very well. You spend the rest of the day coaching them in archery. Before you leave, your students for the day thank you warmly with a small gift. You feel happy to have been able to help out.",
+          "2": "You quickly realize that the children aren't strong enough yet to pull the rope. So you tell them you'll come back to train them when they're older."
         },
         "text": "Teach them how to use a Bow."
       }
@@ -1773,51 +1773,51 @@
           "0": "You decide to organize bets but no one wants to take part, because everyone knows who the winner will be.",
           "1": "You decide to place a bet that the knight won't win. Everyone comes to bet, because they all know he won't lose, but you have a plan in mind. You offer to fight for the lord of the manor. He readily accepts your offer. As expected, you win the fight and the bets. That's a lot of money.",
           "2": "You decide to place a bet that the knight won't win. Everyone comes to bet, because they all know he won't lose, but you have a plan in mind. You offer to fight for the lord of the manor. He readily accepts your offer. As expected, you win the fight. As you ask the bettors for your money, they are displeased and decide to take it away from you.",
-          "3": "Vous décidez d'organiser des paris et pariez que le chevalier ne gagnera pas. Tout le monde vient parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous refusez de donner votre argent. Les villageois se mettent à vous suivre et à vous lancer divers objets. Vous parvenez à leur échapper en vous faufilant dans les ruelles, mais vous avez mal partout. Vous êtes aussi blessé à la jambe, et chacun de vos pas vous arrache une grimace.",
+          "3": "You decide to organize a betting pool and bet that the knight won’t win. Everyone comes to place bets, since they all know he won’t lose, but you have a plan in mind. You offer to fight for the lord of the manor. He gladly accepts your offer. You lose the fight, but you refuse to hand over your money. The villagers start chasing you and throwing various objects at you. You manage to escape them by slipping through the alleys, but you’re in pain all over. You’re also injured in the leg, and every step you take makes you wince.",
           "4": "You place bets that the knight won't win. Many come to bet, because they all know he won't lose. The guards are watching you to make sure you don't steal the money. You offer to watch the duel with them, except for a few who will guard the place. They start arguing about who should stay, and you take advantage of the situation to take some of the money and speed off. They chase you but eventually give up, realizing they can't catch you. You look at the money you've collected, delighted with your move.",
-          "5": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Comme prévu, vous gagnez le combat, et allez récupérer l'argent des paris. Un villageois vous attaque à la sortie du village, souhaitant certainement vous voler votre argent. Après un rude combat, vous parvenez à lui échapper, non sans être gravement blessé. Le souffle court, vous portez la main à vos plaies encore fraîches.",
-          "6": "Vous organisez des paris et pariez que le chevalier ne gagnera pas. Beaucoup viennent parier, car tous savent qu'il ne perdra pas, mais vous avez un plan en tête. Vous proposez au seigneur des lieux de vous battre pour lui. Celui-ci accepte volontiers votre offre. Vous perdez le combat, mais vous ne comptez pas perdre votre argent ainsi. Vous vous élancez donc vers le lieu des paris et volez autant d'argent que vous le pouvez, coursé par les villageois, avant de les semer dans le dédale des ruelles."
+          "5": "You set up a betting pool and bet that the knight won’t win. Many people come to place bets, since everyone knows he won’t lose, but you have a plan in mind. You offer to fight for the local lord. He gladly accepts your offer. As expected, you win the fight and go to collect the betting money. A villager attacks you as you leave the village, no doubt hoping to steal your money. After a fierce fight, you manage to escape, though not without being seriously wounded. Out of breath, you touch your still-fresh wounds.",
+          "6": "You organize a betting pool and wager that the knight won’t win. Many people come to bet, since everyone knows he won’t lose, but you have a plan in mind. You offer to fight for the local lord. He gladly accepts your offer. You lose the fight, but you have no intention of losing your money that way. So you dash toward the betting area and steal as much money as you can, chased by the villagers, before losing them in the maze of alleyways."
         },
         "text": "Organize bets."
       },
       "end": {
         "outcomes": {
-          "0": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Celui-ci se conclut très rapidement, avec le chevalier étranger pour vainqueur. Déçu, vous vous éloignez de l'arène.",
+          "0": "Since the discussions have piqued your curiosity, you decide to watch the duel. It ends very quickly, with the foreign knight emerging victorious. Disappointed, you walk away from the arena.",
           "1": "The discussions attract your curiosity so you decide to attend the duel. It concludes very quickly. Disappointed, you propose to replay the duel, but this time it's you who will fight. Your proposal is accepted, in just a few seconds, you are disarmed and on the ground. Your opponent laughs at you, claiming that you are a pathetic fighter. Absolutely furious, you rush at him to beat him up, but the knight knocks you out with the pommel of his sword.",
-          "2": "Peu intéressé par ce duel, vous décidez de ne pas y prêter attention et de vaquer à vos occupations dans le village.",
-          "3": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel. Proche de celui-ci, vous remarquez que des paris se jouent. Vous décidez donc d'y participer. Naturellement, vous pariez sur le chevalier étranger avant d'aller assister au duel. C'est effectivement lui le gagnant, mais lorsque vous retournez chercher vos gains, tout a disparu. Mécontent de vous être fait avoir ainsi, vous tournez le dos à l'arène.",
-          "4": "Les discussions ayant attisé votre curiosité, vous décidez d'assister au duel, qui se conclut rapidement. Vous proposez de le rejouer avec vous comme combattant, votre proposition est acceptée. Vous ne mettez guère longtemps à vaincre votre adversaire, le village entier vous acclame à présent et le seigneur vous convie à une réception donnée en votre honneur, que vous acceptez volontiers. Une fois les festivités achevées, le seigneur vous propose de devenir chevalier, vous refusez poliment son offre et le remerciez pour cet accueil chaleureux. Vous vous sentez bien mieux à présent."
+          "2": "Not particularly interested in this duel, you decide to ignore it and go about your business in the village.",
+          "3": "Since the discussions have piqued your curiosity, you decide to watch the duel. Standing nearby, you notice that bets are being placed. So you decide to join in. Naturally, you bet on the foreign knight before going to watch the duel. He does indeed win, but when you return to collect your winnings, everything has disappeared. Upset at having been tricked like this, you turn your back on the arena.",
+          "4": "Since the discussions have piqued your curiosity, you decide to watch the duel, which ends quickly. You suggest reenacting the duel with you as the combatant, and your proposal is accepted. It doesn’t take you long to defeat your opponent; the entire village is now cheering for you, and the lord invites you to a reception held in your honor, which you gladly accept. Once the festivities are over, the lord offers to knight you, but you politely decline his offer and thank him for his warm welcome. You feel much better now."
         }
       },
       "help": {
         "outcomes": {
-          "0": "Comprenant la détresse du seigneur, vous lui proposez de participer au duel. Celui-ci accepte volontiers. Le combat commence, vous savez que n'avez pas la moindre chance de vaincre votre adversaire, mais tentez malgré tout de résister. Il ne lui faut qu'une minute pour vous vaincre. Vous quittez l'arène, honteux de votre défaite.",
+          "0": "Understanding the lord’s distress, you offer to take part in the duel. He gladly accepts. The fight begins; you know you don’t stand a chance against your opponent, but you try to put up a fight anyway. It takes him only a minute to defeat you. You leave the arena, ashamed of your defeat.",
           "1": "Understanding the Lord's distress, you offer him your help. You are then equipped before the duel begins. You fight valiantly but are just as easily overcome by your opponent. It is when he slashes you with his blade that you bitterly regret having offered your help. Indeed, it is a death match. And you just lost it. You close your eyes, and the pain goes away. You wake up a few hours later, seriously injured.",
-          "2": "Comprenant la détresse du seigneur, vous lui proposez votre aide. On vous équipe alors une armure avant que le duel ne débute. Conscient que vous n'avez pas la moindre chance, vous vous défendez du mieux que vous le pouvez. Votre adversaire, impatient, baisse sa garde et vous en profitez pour l'attaquer. Vous parvenez à le mettre à terre avant de le désarmer. Vous ressortez de l'arène victorieux, le seigneur vient à votre rencontre pour vous donner une bourse remplie d'or. Vous le remerciez chaleureusement pour sa générosité.",
-          "3": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Déterminé, vous allez à la rencontre du chevalier une fois celui-ci arrivé au village et lui dites que vous souhaitez négocier avec son seigneur. Il accepte et vous emmène à lui. Vous sympathisez rapidement et lui demandez d'annuler le duel. Vous lui dites aussi qu'après cela pourront avoir lieu des négociations afin de régler le conflit. Il accepte, et vous regagnez le centre du village afin d'annoncer la nouvelle. Le seigneur vous tend une bourse remplie d'or en gage de remerciement.",
+          "2": "Realizing the lord’s distress, you offer to help him. You are then outfitted with armor before the duel begins. Knowing you don’t stand a chance, you defend yourself as best you can. Your opponent, growing impatient, lowers his guard, and you take the opportunity to attack him. You manage to knock him to the ground before disarming him. You emerge from the arena victorious, and the lord comes to meet you and gives you a purse filled with gold. You thank him warmly for his generosity.",
+          "3": "Understanding the lord’s distress, you offer to resolve the conflict through your words. He promises you a reward if you succeed. Determined, you go to meet the knight once he arrives in the village and tell him that you wish to negotiate with his lord. He agrees and takes you to him. You quickly hit it off and ask him to call off the duel. You also tell him that negotiations to resolve the conflict can take place afterward. He agrees, and you return to the village center to announce the news. The lord hands you a purse filled with gold as a token of his gratitude.",
           "4": "Understanding the distress of the Lord, you propose to him to settle the conflict by using your words. He promises you a reward if you succeed. You meet the knight so that he takes you to his Lord. Once arrived, you get on quickly with him. Unfortunately, he still doesn't want to cancel the duel, even if he likes you. You come back to the the village with the knight to announce that the duel will takes place.",
-          "5": "Comprenant la détresse du seigneur, vous lui proposez de régler le conflit en usant de vos paroles. Il vous promet une récompense si vous y parvenez. Vous rencontrez le chevalier afin qu'il vous emmène à son seigneur. Une fois là-bas, vous tentez de négocier avec celui-ci durant plusieurs heures, sans grand succès. Vos efforts étant vains, vous pensez repartir. Mais avant cela, le seigneur déclare qu'il vous apprécie, en effet, celui-ci ajoute qu'il a été impressionné du fait que vous n'ayez pas abandonné. Il vous propose de devenir chevalier, mais vous refusez poliment son offre et regagnez Boug-Coton."
+          "5": "Understanding the lord’s distress, you offer to resolve the conflict through your words. He promises you a reward if you succeed. You meet with the knight so he can take you to his lord. Once there, you try to negotiate with him for several hours, without much success. Since your efforts are in vain, you consider leaving. But before you do, the lord tells you that he appreciates you; in fact, he adds that he was impressed by the fact that you didn’t give up. He offers to make you a knight, but you politely decline his offer and return to Boug-Coton."
         },
         "text": "Propose your help to the Lord of Boug-Coton."
       },
       "look": {
         "outcomes": {
-          "0": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Vous ne tardez pas à quitter l'arène, déçu de la médiocre performance du perdant.",
-          "1": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée, vous pouvez combattre. Votre adversaire, trop sûr de lui, baisse sa garde pendant que vous combattez. Vous n'attendez pas une seconde pour en profiter et ainsi prendre l'avantage. Vous finissez par vaincre le chevalier et annoncez votre victoire, triomphant. Le seigneur des lieux vous propose de devenir chevalier, vous refusez poliment son offre.",
-          "2": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Votre proposition est acceptée. Le combat commence, et malgré tous vos efforts vous ne parvenez à résister qu'une dizaine de secondes avant d'être désarmé et jeté à terre sous les rires de l'assistance.",
+          "0": "You decide to watch the duel. The foreign knight wins in just a few seconds. You quickly leave the arena, disappointed by the loser's lackluster performance.",
+          "1": "You decide to watch the duel. The foreign knight wins in just a few seconds. Given the loser’s lackluster performance, you suggest a rematch—but this time, you’ll be the one fighting. Your proposal is accepted, and you’re ready to fight. Your opponent, overconfident, lets his guard down while you’re fighting. You don’t hesitate for a second to take advantage of this and gain the upper hand. You eventually defeat the knight and triumphantly declare your victory. The lord of the manor offers to knight you, but you politely decline his offer.",
+          "2": "You decide to watch the duel. The foreign knight wins in just a few seconds. Given the loser’s poor performance, you suggest a rematch—but this time, you’ll be the one fighting. Your proposal is accepted. The fight begins, and despite your best efforts, you manage to hold out for only about ten seconds before being disarmed and thrown to the ground amid the laughter of the crowd.",
           "3": "You decide to watch the duel. It's over in a matter of seconds. In view of the loser's mediocre performance, you propose to replay the duel, but this time you'll be the one fighting. Your proposal is accepted, and you can fight. Your overconfident opponent drops his guard while you fight. You don't wait a second to gain the upper hand. You finally defeat the knight and announce your victory, triumphant. The lord of the manor offers you a purse full of gold, which you gladly accept.",
-          "4": "Vous décidez d'assister au duel. Celui-ci se conclut en quelques secondes. Vous qualifiez le perdant d'incompétent et proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Le perdant vous propose de venir se battre contre lui avant de critiquer. Vous acceptez sa requête, sachant pertinemment que vous n'aurez aucun mal à le vaincre. Étant trop sûr de vous, votre adversaire parvient à vous désarmer avant de vous mettre à terre. Il vous tabasse ensuite jusqu'à l'évanouissement. Gravement blessé, vous mettez un long moment à reprendre connaissance, le corps couvert d'ecchymoses.",
+          "4": "You decide to watch the duel. It’s over in a matter of seconds. You call the loser incompetent and suggest they have another go at the duel—but this time, you’ll be the one fighting. The loser challenges you to fight him before you criticize him. You accept his challenge, knowing full well that you’ll have no trouble defeating him. Because you’re too confident, your opponent manages to disarm you before knocking you to the ground. He then beats you until you lose consciousness. Seriously injured, it takes you a long time to regain consciousness, your body covered in bruises.",
           "5": "You decide to watch the duel. It's over in a matter of seconds. In view of the loser's mediocre performance, you propose to replay the duel, but this time it's you who will be fighting. Your proposal is accepted. The fight begins, and despite your best efforts, you only manage to resist for about ten seconds. The knight decides to hit you again and again, to make you understand that you're just an insect against him. After seriously wounding you, he stops and leaves.",
-          "6": "Vous décidez d'assister au duel. Le chevalier étranger gagne en quelques secondes seulement. Devant la médiocre performance du perdant, vous proposez de rejouer le duel, mais cette fois-ci c'est vous qui combattrez. Vous remportez le duel après quelques minutes de combat. Le seigneur des lieux vous convie à célébrer votre victoire en sa compagnie. Vous acceptez volontiers, et l'on vous honore comme il se doit au cœur du village en liesse. Une fois les festivités passées, le seigneur vous propose de vous nommer chevalier. Vous refusez poliment son offre."
+          "6": "You decide to watch the duel. The foreign knight wins in just a few seconds. Given the loser’s lackluster performance, you suggest a rematch—but this time, you’ll be the one fighting. You win the duel after a few minutes of combat. The local lord invites you to celebrate your victory with him. You gladly accept, and you are honored as you should be in the heart of the jubilant village. Once the festivities are over, the lord offers to knight you. You politely decline his offer."
         },
         "text": "Attend the duel."
       },
       "visit": {
         "outcomes": {
-          "0": "Vous visitez le village mais n'y voyez rien de bien intéressant.",
+          "0": "You're visiting the village but don't see anything very interesting there.",
           "1": "You visit the village. Seeing nothing interesting there, you decide to go and watch the duel.",
           "2": "As you visit the village, the Lord notices the adventurer you are. He explains the situation and begs you to take part in the duel. He will offer you a purse full of gold if you win. You accept his offer and go for the fight. But once the duel begins, you understand you don't stand a chance against your opponent. The knight hurts you in the leg with his sword and you miserably fall to the ground, wounded. Unable to stand up, you lose the duel.",
-          "3": "Vous visitez le village et apercevez un objet au fond du puits. Vous le ramassez, ravi de votre trouvaille."
+          "3": "You're visiting the village when you spot an object at the bottom of the well. You pick it up, delighted with your find."
         },
         "text": "Visit Boug-Coton."
       }
@@ -2285,39 +2285,39 @@
     "possibilities": {
       "checkDate": {
         "outcomes": {
-          "0": "Vous regardez le calendrier et y découvrez l'existence d'un tournoi qui commence sous peu ! Vous décidez donc de vous y rendre et parvenez à atteindre la finale après quelques heures de combat. Cependant, votre adversaire vous domine et vous ratez votre dernière bataille. Finaliste, vous gagnez tout de même une bourse remplie d'or pour récompenser vos efforts.",
-          "1": "Vous regardez le calendrier et constatez que vous êtes en laponaire, le 6ème mois de l'année. Une note griffonnée dans la marge indique qu'il s'agit de la saison des herboristes. Curieux, vous feuilletez un almanach posé tout près et y apprenez la préparation d'une infusion revigorante. Vous la confectionnez aussitôt : la boisson chaude vous fait le plus grand bien.",
-          "2": "En voyant le calendrier vous vous rappelez des affiches dans les rues parlant d'une chasse au trésor. Vous décidez alors d'y participer. Au bout de deux heures de recherche, vous n'arrivez pas à trouver quoi que ce soit. Vous renoncez donc à cette chasse et regagnez le cœur de la ville, bredouille.",
-          "3": "Vous regardez le calendrier, et à la date d'aujourd'hui vous voyez inscrit : Foire des conteurs ! La place de la ville accueille justement ce concours où l'on récite de vieux récits devant la foule, une corne d'hydromel à la main. Fort de toutes les aventures que vous avez vécues, vous tentez votre chance et remportez le concours, ainsi qu'une récompense ! À force de trinquer à votre victoire, vous finissez cependant totalement ivre."
+          "0": "You look at the calendar and discover there’s a tournament starting soon! So you decide to go, and after a few hours of battle, you make it to the finals. However, your opponent outplays you, and you lose your final match. As a finalist, you still win a purse full of gold as a reward for your efforts.",
+          "1": "You look at the calendar and realize that it’s Laponaire, the sixth month of the year. A note scribbled in the margin indicates that this is the season for herbalists. Curious, you flip through an almanac lying nearby and learn how to make an invigorating herbal tea. You brew it right away: the hot drink does you a world of good.",
+          "2": "When you see the calendar, you remember the posters in the streets announcing a treasure hunt. So you decide to take part. After two hours of searching, you haven’t found a thing. So you give up on the hunt and head back to the city center, empty-handed.",
+          "3": "You look at the calendar, and under today’s date you see: Storytellers’ Fair! The town square is hosting this very contest, where participants recite old tales to the crowd, a horn of mead in hand. Armed with all the adventures you’ve had, you try your luck and win the contest—along with a prize! But after toasting your victory over and over, you end up completely drunk."
         },
         "text": "Look at the calendar."
       },
       "end": {
         "outcomes": {
-          "0": "Vous traînez dans la bibliothèque, et ne voyez pas les minutes passer. Lors de la fermeture, vous sortez et vous rendez compte qu'il est déjà tard. Vous flânez un moment dans les rues de la ville, l'esprit encore plongé dans vos lectures.",
-          "1": "Vous restez ébahi devant le nombre de livres et la quantité de connaissances qui émane de ces lieux. Peu après, la bibliothécaire vous fait signe : le bâtiment est sur le point de fermer. Déçu, vous quittez les rayonnages et regagnez les rues animées de la ville.",
-          "2": "Vous restez dans la bibliothèque plusieurs minutes, ébahi par tout ce savoir. Vous vous asseyez, pensif. Soudain, un lecteur vient troubler vos pensées, le livre \"Hansel et Gretel\" des frères Grimm en main. Il vous demande de bien vouloir lui céder la place, car vous êtes assis à son siège préféré de la bibliothèque. Confus, vous vous levez et quittez les lieux, sans aucun nouveau savoir."
+          "0": "You're hanging out in the library, and you don't even notice the minutes passing. When it closes, you head out and realize it's already late. You wander through the city streets for a while, your mind still lost in your reading.",
+          "1": "You’re amazed by the number of books and the wealth of knowledge that radiates from these places. Shortly afterward, the librarian motions to you: the library is about to close. Disappointed, you leave the shelves and head back out onto the city’s bustling streets.",
+          "2": "You stay in the library for several minutes, awestruck by all this knowledge. You sit down, lost in thought. Suddenly, a reader interrupts your thoughts, holding a copy of “Hansel and Gretel” by the Brothers Grimm. He asks you to please give up your seat, since you’re sitting in his favorite spot in the library. Confused, you get up and leave, without having gained any new knowledge."
         }
       },
       "read": {
         "outcomes": {
-          "0": "Vous décidez de lire un livre. Celui-ci traite des remèdes et des vertus curatives des plantes. Vous y découvrez la préparation d'un baume revigorant et notez soigneusement la méthode. Après avoir rassemblé les quelques herbes nécessaires, vous suivez les instructions à la lettre et appliquez le remède sur vos vieilles blessures. Vous en ressentez aussitôt les bienfaits.",
-          "1": "Vous prenez un livre, puis commencez à le lire. Le livre parle d'arithmétique. Cela n'a cependant jamais été votre fort : près de 10 minutes plus tard, vous décidez de reposer le livre sur son étagère, dépité.",
-          "2": "Vous tirez d'un rayon un vieux grimoire dont les pages, couvertes de moisissures, dégagent une odeur âcre. Absorbé par sa lecture, vous respirez longuement ces relents poussiéreux. Peu à peu, votre gorge se serre et votre tête se met à tourner : vous ne vous sentez pas bien du tout...",
+          "0": "You decide to read a book. It’s about remedies and the healing properties of plants. You discover how to make an invigorating balm and carefully write down the method. After gathering the few herbs you need, you follow the instructions to the letter and apply the remedy to your old wounds. You immediately feel the benefits.",
+          "1": "You pick up a book and start reading it. The book is about arithmetic. However, that has never been your strong suit: about 10 minutes later, you decide to put the book back on the shelf, feeling frustrated.",
+          "2": "You pull an old grimoire from a shelf; its mold-covered pages give off a pungent odor. Absorbed in reading it, you take a deep breath of the dusty scent. Little by little, your throat tightens and your head starts to spin: you don’t feel well at all...",
           "3": "You pick up the first book you come across. It is about alchemy and the diverse benefits of some plants. After carefully studying its content, you put it down, convinced that it will be useful on your following adventures."
         },
         "text": "Read a book."
       },
       "steal": {
         "outcomes": {
-          "0": "Vous parvenez à voler un vieux livre poussiéreux et sortez discrètement de l'édifice, afin de trouver un acheteur dans les grandes avenues de la ville. Cependant, vous remarquez que personne n'est intéressé par ce livre, notamment parce qu'il est très abîmé et présente même des pages déchirées. Vous l'abandonnez donc dans le recoin d'une ruelle, dépité.",
-          "1": "Vous sortez furtivement de la bibliothèque sans que personne ne vous remarque. Vous avez réussi à voler un livre et essayez de le vendre aux passants. Un homme décide de vous l'acheter pour quelques pièces d'or. Une fois la transaction effectuée, vous empochez les pièces et vous fondez dans la foule de la ville.",
+          "0": "You manage to steal an old, dusty book and slip quietly out of the building, hoping to find a buyer on the city’s main avenues. However, you notice that no one is interested in the book, mainly because it’s in very poor condition and even has torn pages. So, feeling frustrated, you leave it in a corner of an alley.",
+          "1": "You sneak out of the library without anyone noticing you. You’ve managed to steal a book and are trying to sell it to passersby. A man decides to buy it from you for a few gold coins. Once the transaction is complete, you pocket the coins and blend into the city crowd.",
           "2": "You try to steal a golden book discreetly, but the librarian catches you red-handed. She demands that you return the precious book, and with it, compensation! Disappointed and ashamed, you return the book and compensate her with a large handful of your savings to avoid going to prison..."
         },
         "text": "Attempt to steal a book and resell it."
       }
     },
-    "text": "En arrivant à Claire de Ville, votre regard est attiré par un bâtiment dont l'entrée est encadrée par deux statues de hiboux en pierre. En vous en approchant, vous comprenez qu'il s'agit de la bibliothèque de la ville. Par la porte entrouverte, vous distinguez d'innombrables rayonnages chargés d'ouvrages et, accroché à un mur de l'entrée, un calendrier fait de larges feuilles reliées entre elles par une lanière de cuir."
+    "text": "When you arrive in Claire de Ville, your gaze is drawn to a building whose entrance is flanked by two stone owl statues. As you approach, you realize it is the town library. Through the slightly ajar door, you can make out countless bookshelves laden with books, and hanging on a wall in the entrance is a calendar made of large sheets bound together by a leather strap."
   },
   "69": {
     "possibilities": {
@@ -2356,8 +2356,8 @@
       "check": {
         "outcomes": {
           "0": "By forcing the door open, you're hurting yourself deeply. You absolutely must take care of yourself!",
-          "1": "Après avoir passé presque 1 heure à tenter de rentrer dans la maison, vous finissez par abandonner. En vous éloignant du seuil, vous trouvez un objet qui pourra peut être vous être utile !",
-          "2": "Vous entrez dans la maison et posez vos affaires pour vous reposer. Pris d'un profond sommeil, vous vous écroulez sur un lit poussiéreux qui traînait dans un coin.",
+          "1": "After spending nearly an hour trying to get into the house, you finally give up. As you walk away from the doorway, you find an object that might come in handy!",
+          "2": "You walk into the house and set your things down to rest. Overcome by a deep sleep, you collapse onto a dusty bed that was lying in a corner.",
           "3": "You enter the house and search around for about fifteen minutes. On your way out, you find an object that might come in handy!",
           "4": "You enter the house and search around for about fifteen minutes. You finally give up your search without having found anything."
         },
@@ -2365,17 +2365,17 @@
       },
       "end": {
         "outcomes": {
-          "0": "Vous avez passé près de quinze minutes immobile, il est temps de vous extirper de votre torpeur !"
+          "0": "You've been sitting there motionless for nearly fifteen minutes—it's time to snap out of your stupor!"
         }
       },
       "skip": {
         "outcomes": {
-          "0": "Vous laissez la maison abandonnée derrière vous, sans vous en soucier davantage."
+          "0": "You leave the abandoned house behind you, without giving it a second thought."
         },
-        "text": "Ne pas s'arrêter à cette maison."
+        "text": "Don't stop at this house."
       }
     },
-    "text": "Parmi les ruines de Ville Forte, vous découvrez une maison encore debout. Elle semble abandonnée..."
+    "text": "Among the ruins of Ville Forte, you come across a house that’s still standing. It looks abandoned..."
   },
   "70": {
     "possibilities": {
@@ -2853,38 +2853,38 @@
     "possibilities": {
       "enterOpening": {
         "outcomes": {
-          "0": "Vous vous faufilez dans l'interstice et vos yeux, s'adaptant à l'obscurité, révèlent un gigantesque nid de chauves-souris ! Vous ressortez aussi rapidement que possible, et rejoignez la porte principale. Certainement, personne n'était passé par là depuis bien longtemps.",
-          "1": "Vous progressez petit à petit dans cet étroit tunnel, guidé par vos mains, et parvenez à une clanche : vous poussez le battant de porte et atterrissez en pleine rue marchande. Ce tunnel devait servir à quelques transactions fort peu légales, c'est pourquoi vous vous décidez de vous en éloigner rapidement, ayant en poche les quelques pièces découvertes dans le souterrain.",
-          "2": "Vous vous faufilez dans l'interstice et vos yeux, s'adaptant à l'obscurité, révèlent un éboulement quelques mètres plus loin. Vous vous extirpez laborieusement de ce cul-de-sac et vous vous dirigez vers l'entrée principale de la forteresse.",
-          "3": "Vous vous faufilez dans l'ouverture et commencez péniblement à avancer dans l'étroit tunnel. Après quelques mètres, vous remarquez un objet traînant dans un recoin. Alors que vous le ramassez, vous apercevez avec effroi qu'il était posé à côté d'ossements ! Vous prenez la fuite rapidement, remarquant à peine les éraflures causées par les parois étroites."
+          "0": "You slip through the crack, and as your eyes adjust to the darkness, you see a gigantic bat colony! You rush back out as quickly as possible and head for the main door. Clearly, no one had been through there in a very long time.",
+          "1": "You make your way slowly through this narrow tunnel, guided by your hands, and come to a door: you push it open and find yourself right in the middle of a shopping street. This tunnel must have been used for some rather shady dealings, which is why you decide to get out of there quickly, with the few coins you found underground tucked away in your pocket.",
+          "2": "You slip through the narrow opening, and as your eyes adjust to the darkness, you see a rockfall a few meters ahead. You struggle to free yourself from this dead end and head toward the fortress’s main entrance.",
+          "3": "You squeeze through the opening and begin to make your way with difficulty through the narrow tunnel. After a few meters, you notice an object lying in a corner. As you pick it up, you realize with horror that it was lying next to some bones! You quickly flee, barely noticing the scrapes caused by the narrow walls."
         },
-        "text": "Franchir l'ouverture"
+        "text": "Cross the opening"
       },
       "alertGuards": {
         "outcomes": {
-          "0": "Vous courez à la porte pour prévenir les gardes de cette détérioration de la muraille, mais vos avertissements ne suscitent que des ricanements méprisants, suivis d'un coup de pied bien senti qui vous propulse loin des portes royales...",
-          "1": "Vous marchez vers la porte et prévenez les gardes. Mais vous avez beau insister sur la gravité de cette détérioration, nul ne vous prête attention. Vous finissez par partir, injuriant silencieusement ces incapables.",
-          "2": "Vous alertez les gardes sur cette brèche inquiétante et leur montrez précisément l'endroit compromis. Sans hésiter, ils rassemblent du matériel de fortune et s'attellent à la réparation. Votre aide précieuse accélère considérablement les travaux. Après de longues heures de labeur, vous êtes convié à la table des soldats pour partager un festin bien mérité."
+          "0": "You rush to the gate to warn the guards about the damage to the wall, but your warnings are met only with scornful snickers, followed by a hard kick that sends you flying away from the royal gates...",
+          "1": "You walk toward the door and alert the guards. But no matter how much you emphasize the seriousness of the damage, no one pays any attention to you. You finally leave, silently cursing those incompetents.",
+          "2": "You alert the guards to this alarming breach and show them exactly where the damage is. Without hesitation, they gather whatever materials they can find and set to work on the repair. Your invaluable help speeds up the work considerably. After long hours of labor, you’re invited to join the soldiers at their table to share a well-deserved feast."
         },
-        "text": "Alerter les gardes"
+        "text": "Alert the guards"
       },
       "moveOn": {
         "outcomes": {
-          "0": "Vous sentez qu'il y a une affaire louche derrière tout ça, et ne voulez pas vous en mêler. Vous quittez les lieux et regagnez la porte principale.",
-          "1": "Vous quittez rapidement les lieux, mais un garde vous aperçoit et, remarquant l'ouverture, vous arrête pour vous interroger. Après de longues heures passées à vous justifier, vous êtes finalement relâché, faute de preuves vous inculpant.",
-          "2": "Vous rebroussez chemin, mais une main s'abat brusquement sur votre épaule. Vous vous retournez, paniqué, mais il ne s'agit que de Price le mercenaire qui vous a reconnu au loin. Vous entamez alors une discussion enflammée sur l'évolution du cours des gemmes et l'inflation des loyers, que vous terminez autour d'un bon repas au pavillon royal."
+          "0": "You sense that there's something fishy going on here, and you don't want to get involved. You leave the area and head back to the main entrance.",
+          "1": "You quickly leave the scene, but a guard spots you and, noticing the open door, stops you to question you. After spending many hours trying to explain yourself, you are finally released due to a lack of evidence against you.",
+          "2": "You turn back, but a hand suddenly lands on your shoulder. You turn around, panicked, but it’s only Price, the mercenary, who recognized you from a distance. You then launch into a heated discussion about gem price fluctuations and rising rents, which you wrap up over a good meal at the royal pavilion."
         },
         "text": "Move along"
       },
       "end": {
         "outcomes": {
-          "0": "Vous vous apprêtez à partir lorsqu'un homme s'extirpe de l'ouverture. Son visage vous est familier : il s'agit de Price le mercenaire, et celui-ci se fige brièvement avant de vous reconnaître. Il passe son bras autour de votre cou et vous propose quelques pièces en échange de votre silence, vous acceptez immédiatement.",
-          "1": "Vous vous apprêtez à quitter les lieux lorsqu'un homme masqué s'extirpe de l'ouverture. Paniqué, le brigand sort sa lame, se rue sur vous et vous blesse grièvement, avant que vous puissiez esquisser le moindre geste. Vous le regardez fuir, noyé dans votre sang.",
-          "2": "Alors que vous observez l'ouverture, un éclat doré attire votre attention. Les rayons du soleil révèlent quelques pièces à l'abandon dans le tunnel, ainsi qu'un objet que vous vous empressez de récupérer. Vous repartez, heureux de cette découverte."
+          "0": "You’re about to leave when a man emerges from the opening. His face looks familiar: it’s Price, the mercenary, and he freezes for a moment before recognizing you. He puts his arm around your neck and offers you a few coins in exchange for your silence; you accept immediately.",
+          "1": "You’re about to leave when a masked man crawls out of the opening. Panicked, the bandit draws his blade, lunges at you, and seriously wounds you before you can even make a move. You watch him flee, drowning in your blood.",
+          "2": "As you look into the opening, a golden glint catches your eye. The sun’s rays reveal a few items lying abandoned in the tunnel, as well as an object that you hurry to pick up. You head back, delighted by your discovery."
         }
       }
     },
-    "text": "Alors que vous vous approchez de l'imposante muraille entourant la cité royale, vous remarquez qu'une fissure descend le long des murs et mène à une ouverture dans l'édifice. Elle vous semble assez grande pour laisser passer un homme..."
+    "text": "As you approach the imposing wall surrounding the royal city, you notice a crack running down the wall and leading to an opening in the structure. It looks large enough to let a man through..."
   },
   "9": {
     "possibilities": {
@@ -2916,265 +2916,265 @@
     "possibilities": {
       "observe": {
         "outcomes": {
-          "0": "N'entendant pas clairement, vous vous rapprochez de la porte. Un huissier du château vous remarque vite et vous prie de vous mêler de vos affaires. Sans insister, vous reprenez votre marche.",
-          "1": "À peine commencez-vous à tendre l'oreille que la sorcière semble en avoir fini. On ne perçoit plus d'elle que des marmonnements indistincts à votre distance, et elle ressort à peine 5 minutes plus tard. Sans trop savoir pourquoi, vous faites en sorte qu'elle ne vous remarque pas en sortant.",
-          "2": "Vous choisissez de suivre l'échange de loin. Il tourne vite au vinaigre, et la sorcière sort de son sac plusieurs fioles qu'elle fracasse au sol. Aussitôt, un grand nuage de gaz sombre et nauséabond se répand. Il se dissipe vite, et vous constatez avec effroi que la sorcière a disparu, et que tous les autres occupants de la salle ont perdu connaissance. Vous souffrez également du gaz, malgré votre distance, et vous sentez plutôt malade."
+          "0": "Unable to hear clearly, you move closer to the door. A castle attendant quickly notices you and asks you to mind your own business. Without pressing the matter, you continue on your way.",
+          "1": "No sooner do you start listening intently than the witch seems to be finished. All you can hear now are indistinct mumbles in the distance, and she comes out barely five minutes later. Without really knowing why, you make sure she doesn't notice you as she leaves.",
+          "2": "You decide to watch the exchange from a distance. It quickly turns sour, and the witch pulls several vials out of her bag and smashes them on the ground. Immediately, a large cloud of dark, foul-smelling gas spreads. It dissipates quickly, and you realize with horror that the witch has vanished, and that everyone else in the room has lost consciousness. You’re also affected by the gas, despite your distance, and you feel quite sick."
         },
-        "text": "Tendre l'oreille discrètement."
+        "text": "Listen quietly."
       },
       "help": {
         "outcomes": {
-          "0": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. L'on vous fait cependant vite comprendre que vous n'êtes pas le bienvenu dans cette affaire, alors vous reprenez votre marche.",
-          "1": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. Il s'avère qu'un seigneur l'accuse d'avoir aggravé l'état de son fils souffrant en lui administrant l'une de ses préparations, avec une voix très faible, elle jure n'avoir fait que tenter de le soulager après l'échec des médecins du château. Vous la rejoignez et tentez de convaincre le bailli que les remèdes des sorcières, tant dans leurs méthodes que dans leurs effets, n'ont rien à voir avec les onguents des charlatans, et qu'on ne saurait la tenir pour responsable d'un mal qu'elle a cherché à guérir. Votre interlocuteur ne veut rien entendre : juger de la légitimité de la sorcellerie, dit-il, relève de la seule volonté du roi. Comprenant ne rien pouvoir gagner ici, vous vous retirez. Avant que vous ne quittiez la salle, la sorcière glisse discrètement dans votre main l'une de ses potions, pour vous remercier d'avoir voulu l'aider.",
-          "2": "Vous vous approchez pour tenter de mieux comprendre la situation et voir si vous pouvez aider. Vous comprenez qu'on l'accuse d'avoir empoisonné le fils d'un seigneur sous couvert de le soigner, et que la personne en face d'elle semble convaincue qu'elle n'est rien d'autre qu'une charlatane dangereuse. Vous ne savez pas vous-même si vous croyez à la sorcellerie, ni si cette femme en est réellement une, alors vous choisissez d'abandonner l'idée d'intervenir. Vous restez écouter les échanges un moment, puis vous reprenez votre marche."
+          "0": "You approach to try to better understand the situation and see if you can help. However, it’s quickly made clear to you that you’re not welcome here, so you continue on your way.",
+          "1": "You approach her to try to better understand the situation and see if you can help. It turns out that a lord is accusing her of having worsened the condition of his ailing son by administering one of her concoctions; in a very faint voice, she swears she was only trying to relieve his suffering after the castle’s doctors had failed. You join her and try to convince the bailiff that witches’ remedies—both in their methods and their effects—have nothing to do with the ointments of charlatans, and that she cannot be held responsible for an ailment she sought to cure. Your interlocutor won’t hear of it: judging the legitimacy of witchcraft, he says, is the king’s prerogative alone. Realizing there’s nothing to be gained here, you take your leave. Before you leave the room, the witch discreetly slips one of her potions into your hand, to thank you for trying to help her.",
+          "2": "You approach her to try to better understand the situation and see if you can help. You realize she’s being accused of poisoning a lord’s son under the guise of treating him, and that the person standing across from her seems convinced she’s nothing more than a dangerous charlatan. You’re not sure yourself whether you believe in witchcraft, or whether this woman is actually a witch, so you decide against intervening. You stay to listen to the exchange for a moment, then continue on your way."
         },
-        "text": "Tenter d'aider votre connaissance."
+        "text": "Try to help your acquaintance."
       },
       "accuse": {
         "outcomes": {
-          "0": "Vous vous avancez et corroborez les dires du seigneur, déclarant que les préparations de cette femme vous ont toujours paru douteuses. Le bailli vous écoute avec attention, et le seigneur, reconnaissant d'avoir trouvé un appui, vous glisse discrètement une bourse pour votre témoignage avant de quitter les lieux.",
-          "1": "Vous prenez la parole contre la sorcière, et votre témoignage pèse lourd dans la balance. Le seigneur, soulagé de voir l'affaire tourner en sa faveur, vous remercie chaleureusement et vous offre l'un des objets qu'il portait sur lui en gage de gratitude.",
-          "2": "Vous décidez de témoigner contre elle et déclarez tout haut douter de ses prétendus pouvoirs. La sorcière se tourne lentement vers vous, le regard brûlant de trahison. Ses yeux semblent briller un instant. Vous reprenez votre marche, mais curieusement, alors même que cette partie du château est arrangée de façon tout à fait intuitive à traverser, vous vous perdez à plusieurs reprises pendant des heures.",
-          "3": "Vous vous joignez à l'accusation, mais le bailli exige que vous consigniez votre témoignage en bonne et due forme. S'ensuit une interminable série de questions et de formulaires, et lorsque vous êtes enfin libéré de cette corvée, une bonne partie de la journée s'est écoulée."
+          "0": "You step forward and corroborate the lord’s statements, declaring that this woman’s preparations have always seemed suspicious to you. The bailiff listens to you attentively, and the lord, grateful to have found an ally, discreetly slips you a purse as a reward for your testimony before leaving.",
+          "1": "You speak out against the witch, and your testimony carries great weight. The lord, relieved to see the case turning in his favor, thanks you warmly and offers you one of the items he was carrying as a token of his gratitude.",
+          "2": "You decide to testify against her and declare aloud that you doubt her so-called powers. The witch slowly turns toward you, her gaze burning with betrayal. Her eyes seem to glint for a moment. You resume your walk, but strangely, even though this part of the castle is laid out in a way that makes it perfectly intuitive to navigate, you find yourself getting lost several times for hours at a time.",
+          "3": "You join the prosecution, but the bailiff insists that you formally record your testimony. What follows is an endless series of questions and forms, and by the time you’re finally free of this chore, a good part of the day has passed."
         },
-        "text": "Témoigner contre elle."
+        "text": "Testify against her."
       },
       "end": {
         "outcomes": {
-          "0": "Vous restez dans l'hésitation quelques longs instants. Vous êtes sorti de vos pensées par un passant qui vous reconnaît, et se présente comme un de vos admirateurs, espérant un jour devenir un aventurier aussi impressionnant que vous l'êtes. Il vous donne quelques cadeaux pour célébrer votre rencontre, vous discutez un moment, puis vous vous séparez. Vous remarquez que la sorcière n'est plus dans la salle, alors vous reprenez votre marche.",
-          "1": "Vous restez planté là plusieurs minutes, totalement incertain quant à comment agir. Soudain, de nombreux gardes arrivent. Ils saisissent la sorcière, qui se débat en silence et agite les bras comme pour protester de son innocence. Vous voyant, elle vous implore du regard de témoigner de sa bonne foi. Les gardes choisissent de vous compter comme son complice dans cette affaire, aussi ils vous emmènent tout comme elle en prison, sans même vous laisser dire quoi que ce soit."
+          "0": "You remain in a state of hesitation for a few long moments. You’re snapped out of your thoughts by a passerby who recognizes you and introduces himself as one of your admirers, hoping one day to become an adventurer as impressive as you are. He gives you a few gifts to celebrate your meeting; you chat for a while, then go your separate ways. You notice that the witch is no longer in the room, so you continue on your way.",
+          "1": "You stand there for several minutes, completely unsure of what to do. Suddenly, a number of guards arrive. They seize the witch, who struggles silently and waves her arms as if to protest her innocence. Seeing you, she implores you with her eyes to vouch for her good faith. The guards decide to treat you as her accomplice in this matter, so they take you to prison along with her, without even letting you say a word."
         }
       }
     },
-    "text": "Alors que vous traversez l'aile ouest du château, des éclats de voix vous font tourner la tête. Une porte est restée ouverte sur la salle où le bailli rend la justice du seigneur, et l'on y entend le ton monter contre une accusée. Vous la reconnaissez sans peine : c'est la vieille sorcière que vous avez si souvent aidée à préparer ses potions. Ce n'est pas la première fois qu'on la traîne ainsi devant la justice, et ce ne sera sans doute pas la dernière ; jusqu'à présent, pourtant, elle s'en est toujours tirée sans trop de dommages."
+    "text": "As you walk through the west wing of the castle, raised voices make you turn your head. A door has been left open to the hall where the bailiff administers the lord’s justice, and you can hear voices rising against a defendant. You recognize her at once: it’s the old witch you’ve so often helped prepare her potions. This isn’t the first time she’s been dragged before the court like this, and it certainly won’t be the last; so far, however, she’s always managed to get off scot-free."
   },
   "84": {
     "possibilities": {
       "compete": {
         "outcomes": {
-          "0": "Quelques minutes passent et votre seau commence à se remplir de petits crabes. Soudain, une énorme pince surgit : un superbe crabe noir se saisit de votre appât. Vous parvenez à le remonter et, fier de vous, vous vous retournez pour le montrer au public. C'est alors qu'il vous pince violemment la main. La douleur vous fait lâcher la ligne et, dans une chute maladroite, vous tombez dans l'eau froide où vous perdez votre bourse. Le pêcheur roux vous aide à ressortir de l'eau et vous glisse une chope de rhum entre les mains pour vous réchauffer.",
-          "1": "Vous prenez la ficelle, l'appât au bout du fil, et le plongez doucement dans l'eau sombre du port. Un grand crabe noir s'y accroche, mais vous tirez si brusquement sur la ligne qu'il vous échappe, et dans la manœuvre, vous renversez votre seau qui s'écrase sur les pavés. Les petits crabes se dispersent dans tous les sens, provoquant les rires des spectateurs. Le maître, un peu moqueur, vous invite à retenter votre chance un autre jour.",
-          "2": "Soudain, une légère traction... puis plus forte. Vous remontez lentement la ligne quand un monstrueux crabe noir claque ses pinces. Vous réussissez à le sortir tant bien que mal, mais il s'échappe en glissant entre vos doigts juste avant la remise au maître. Ce dernier rit et vous offre tout de même une chope de rhum pour l'effort. Vous avez fait bonne impression, et les badauds vous jettent quelques pièces.",
-          "3": "Un grand crabe noir, presque aussi large qu'un bouclier, surgit brutalement d'un coin sombre du quai et attrape votre appât : c'est Maurice, la bête rare, et il est effrayant ! Vous gardez pourtant votre calme et, après une longue et incroyable lutte, vous parvenez à le sortir avec adresse. Le public applaudit, le maître vous félicite chaleureusement et vous remet une imposante chope de rhum ainsi qu'un petit sac de pièces d'or. Il vous offre en prime un objet mystérieux trouvé récemment dans les filets. Vous gagnez la confiance de quelques pêcheurs influents, dont l'un vous invite à partager un bon dîner."
+          "0": "A few minutes pass, and your bucket begins to fill with little crabs. Suddenly, a huge claw shoots out: a magnificent black crab snatches your bait. You manage to reel it in and, feeling proud of yourself, you turn around to show it to the crowd. That’s when it clamps down hard on your hand. The pain makes you drop the line, and in a clumsy fall, you plunge into the cold water, where you lose your wallet. The red-haired fisherman helps you out of the water and slips a mug of rum into your hands to warm you up.",
+          "1": "You take the line, with the bait on the end, and gently lower it into the dark water of the harbor. A large black crab takes the bait, but you yank the line so suddenly that it slips away, and in the process, you knock over your bucket, which shatters on the cobblestones. The little crabs scatter in all directions, prompting laughter from the onlookers. The master, with a hint of mockery, invites you to try your luck again another day.",
+          "2": "Suddenly, a slight tug… then a stronger one. You slowly reel in the line when a monstrous black crab snaps its claws. You manage to pull it out as best you can, but it slips through your fingers and escapes just before you hand it to the master. He laughs and offers you a mug of rum anyway for your efforts. You’ve made a good impression, and the onlookers toss you a few coins.",
+          "3": "A huge black crab, almost as wide as a shield, suddenly bursts out of a dark corner of the dock and snatches your bait: it’s Maurice, the rare creature, and he’s terrifying! You manage to stay calm, though, and after a long and incredible struggle, you skillfully reel him in. The crowd applauds, the master warmly congratulates you, and hands you a massive mug of rum along with a small bag of gold coins. As a bonus, he gives you a mysterious object recently found in the nets. You earn the trust of a few influential fishermen, one of whom invites you to share a nice dinner."
         },
-        "text": "Relever le défi et pêcher les crabes à la ligne."
+        "text": "Take on the challenge and go crab fishing with a line."
       },
       "cheat": {
         "outcomes": {
-          "0": "Trop sûr de vous, vous vous penchez vers le panier d'un concurrent distrait et saisissez le plus gros crabe, prêt à le faire passer pour le vôtre. Mais une main calleuse vous agrippe le poignet. Le pêcheur furieux vous expédie un coup de poing terrible en plein menton. Vous basculez en arrière, la mâchoire engourdie et un goût métallique sur la langue. La foule s'approche, les rires fusent, et le maître du concours exige une compensation avant de vous bannir du quai d'un geste sec.",
-          "1": "Alors que vous tentez d'introduire en cachette un crabe d'emprunt dans votre seau, un vieil homme au regard perçant observe toute la scène à bonne distance. Il n'en dit rien, mais s'approche du maître du concours et lui glisse quelques mots à l'oreille. Vous êtes retiré du classement sans explication, et l'ambiance se fait soudain lourde autour de vous. Des murmures vous poursuivent jusqu'au bout du quai.",
-          "2": "Un jeune garçon vous aborde discrètement, fier de son énorme prise. Quelques pièces échangées sous un filet renversé, et le marché est conclu. Vous glissez doucement le crabe dans votre seau, parmi vos autres prises. À l'évaluation, les juges s'émerveillent de sa carapace marbrée. Vous ne remportez pas le grand prix, mais une belle récompense vous est offerte, et des pêcheurs vous regardent désormais avec un certain respect.",
-          "3": "Juste avant le début du concours, vous échangez discrètement votre morceau de poisson contre un rare appât gélatineux dérobé à un pêcheur expérimenté. Le crabe que vous attrapez ainsi est d'une taille exceptionnelle, au point que plusieurs concurrents s'écartent en silence. Le crabe noir géant est pesé, acclamé, et le maître pêcheur vous proclame vainqueur sans discussion. En plus de la chope d'argent, un commerçant du port, ravi de votre audace, vous offre un objet."
+          "0": "Overconfident, you lean toward the basket of a distracted competitor and grab the biggest crab, ready to pass it off as your own. But a calloused hand grabs your wrist. The furious fisherman lands a terrible punch right on your chin. You stagger backward, your jaw numb and a metallic taste on your tongue. The crowd gathers, laughter erupts, and the contest judge demands compensation before banishing you from the pier with a sharp wave of his hand.",
+          "1": "As you try to sneak a borrowed crab into your bucket, an old man with a piercing gaze watches the whole scene from a distance. He says nothing, but approaches the contest judge and whispers a few words in his ear. You’re removed from the rankings without explanation, and the atmosphere suddenly grows tense around you. Whispers follow you all the way to the end of the pier.",
+          "2": "A young boy approaches you discreetly, proud of his enormous catch. A few coins exchanged under an overturned net, and the deal is done. You gently slip the crab into your bucket, among your other catches. At the judging, the judges marvel at its marbled shell. You don’t win the grand prize, but you’re offered a nice reward, and the fishermen now look at you with a certain amount of respect.",
+          "3": "Just before the contest begins, you discreetly swap your piece of fish for a rare gelatinous bait stolen from an experienced fisherman. The crab you catch this way is exceptionally large—so much so that several competitors quietly step aside. The giant black crab is weighed, cheered, and the master fisherman declares you the undisputed winner. In addition to the silver tankard, a merchant at the harbor, delighted by your daring, offers you a gift."
         },
-        "text": "Tenter de tricher discrètement."
+        "text": "Try to cheat discreetly."
       },
       "observe": {
         "outcomes": {
-          "0": "Vous vous pensiez en sécurité, en retrait près d'un escalier de pierre, mais votre manque de vigilance vous coûte cher. Pendant que vous observiez attentivement les pêcheurs, un gamin pieds nus se faufile dans votre dos pour fouiller votre besace. Vous repérez au loin une silhouette disparaître derrière un muret : trop tard pour réagir. Vous grognez, amer, en refermant votre sac.",
-          "1": "En restant dans l'ombre des tonneaux, vous assistez à plusieurs manipulations : échanges, paniers truqués, alliances... Lorsqu'une querelle entre deux pêcheurs attire l'attention de la foule, vous en profitez pour vous approcher d'un seau et dérober un gros crabe que vous vous empressez de revendre au marché.",
-          "2": "Vous avez préféré observer à l'écart, installé sur une vieille caisse de transport. À vos côtés, un pêcheur à la peau tannée par le sel et les années partage quelques remarques discrètes sur la façon dont les participants trichent ou se ridiculisent. Vous souriez, et très vite l'échange devient plus animé, les rires fusent sans retenue, et le vacarme du port semble un instant lointain. Voyant que vous n'avez rien à manger, il ouvre son sac de toile et en sort une miche de pain, une boîte de sardines grillées et une bouteille de vin, qu'il partage sans hésiter, comme s'il vous connaissait depuis toujours."
+          "0": "You thought you were safe, tucked away near a stone staircase, but your lack of vigilance costs you dearly. While you were watching the fishermen closely, a barefoot kid sneaks up behind you to rummage through your bag. You spot a figure in the distance disappearing behind a low wall—too late to react. You grumble bitterly as you zip up your bag.",
+          "1": "As you stay hidden in the shadows behind the barrels, you witness various schemes: exchanges, rigged baskets, alliances... When a quarrel between two fishermen draws the crowd’s attention, you take the opportunity to sneak up to a bucket and steal a large crab, which you quickly resell at the market.",
+          "2": "You chose to watch from the sidelines, perched on an old shipping crate. Beside you, a fisherman with skin weathered by salt and the years shares a few quiet remarks about how the participants are cheating or making fools of themselves. You smile, and very quickly the conversation becomes more lively; laughter bursts forth unrestrained, and for a moment the clamor of the harbor seems far away. Seeing that you have nothing to eat, he opens his canvas bag and pulls out a loaf of bread, a can of grilled sardines, and a bottle of wine, which he shares without hesitation, as if he’d known you all his life."
         },
-        "text": "Observer les participants en retrait."
+        "text": "Observe the participants from a distance."
       },
       "end": {
         "outcomes": {
-          "0": "Vous vous asseyez sur une pile de filets secs, face à l'horizon. Pendant quelques minutes, vous laissez le soleil réchauffer votre visage, les muscles détendus et l'odeur des embruns dans les narines. Une mouette pousse un cri rauque. Combien de temps avez-vous passé à rêver ainsi ?",
-          "1": "Tandis que les cris d'excitation et les applaudissements résonnent derrière vous, vous prenez une autre voie et quittez le tumulte du concours de crabes. Vous n'avez rien à prouver ici : vous cherchez autre chose. L'aventure continue."
+          "0": "You sit on a pile of dry nets, facing the horizon. For a few minutes, you let the sun warm your face, your muscles relaxed and the scent of sea spray filling your nostrils. A seagull lets out a hoarse cry. How long have you been daydreaming like this?",
+          "1": "As shouts of excitement and applause echo behind you, you take a different path and leave the hustle and bustle of the crab race behind. You have nothing to prove here—you’re looking for something else. The adventure continues."
         }
       }
     },
-    "text": "Alors que vous déambulez sur les quais bruyants, vous remarquez un homme trapu à la barbe rousse,  juché sur une caisse retournée, qui harangue les passants : il promet une chope de rhum pour chaque crabe pêché, et une surprise à qui sortira la plus grosse bête. Le concours est simple : les crabes ne se prennent ni au casier ni à l'épuisette, on les attire à la ligne, appâtés de restes de poisson. Cela demande de la patience, de l'adresse et un peu de chance."
+    "text": "As you stroll along the bustling docks, you notice a stocky man with a red beard,  perched on an upside-down crate, haranguing passersby: he’s promising a mug of rum for every crab caught, and a surprise for whoever lands the biggest one. The contest is simple: crabs can’t be caught with traps or nets; they’re reeled in on a line, baited with fish scraps. It takes patience, skill, and a little luck."
   },
   "85": {
     "possibilities": {
       "forceChains": {
         "outcomes": {
-          "0": "Dans un cri de défi, vous agrippez les lourdes chaînes rouillées et tirez de toutes vos forces. Les maillons grincent, résistent... puis cèdent dans un fracas métallique. Un archer tente de vous viser, mais sa flèche ricoche contre la roche. Vous vous extirpez du piège, essoufflé mais indemne, et mettez la main sur un sac de cuir contenant quelques pièces avant de vous éclipser.",
-          "1": "Une lueur de colère ancestrale vous traverse. Vous tirez sur les chaînes avec force, et elles se rompent net, projetant un nuage de poussière et d'éclats de métal. Vos ennemis décampent, pris de panique devant votre puissance. Dans sa fuite, l'un des bandits laisse tomber une bourse et un objet.",
-          "2": "Vous vous jetez sur les chaînes et tentez de les arracher, mais elles tiennent bon. Avant que vous ne puissiez réessayer, une flèche vous frôle la joue, puis une autre se fiche dans votre épaule. Les bandits descendent en ricanant, vous arrachent votre bourse avant de disparaître."
+          "0": "With a defiant cry, you grab the heavy, rusty chains and pull with all your might. The links creak and resist… then snap with a clang. An archer tries to aim at you, but his arrow ricochets off the rock. You free yourself from the trap, out of breath but unharmed, and grab a leather pouch containing a few coins before slipping away.",
+          "1": "A flash of ancient rage courses through you. You yank hard on the chains, and they snap cleanly, sending up a cloud of dust and metal shards. Your enemies flee, panicked by your power. As he runs, one of the bandits drops a purse and an object.",
+          "2": "You lunge at the chains and try to tear them off, but they hold fast. Before you can try again, an arrow grazes your cheek, then another pierces your shoulder. The bandits come down, snickering, snatch your purse, and then disappear."
         },
-        "text": "Forcer les chaînes rouillées pour vous dégager."
+        "text": "Break the rusty chains to free yourself."
       },
       "attackArcher": {
         "outcomes": {
-          "0": "Vous reculez pour bondir vers la paroi et grimpez facilement en agrippant les aspérités avec agilité. L'archer le plus proche vous manque de peu. Vous foncez sur lui et lui donnez un coup d'épaule qui le fait basculer dans le vide ; le choc est fatal. Vous avez juste le temps de parer la flèche du second archer à l'aide de votre bouclier. Les deux bandits échangent alors un regard inquiet avant de s'enfuir en zigzaguant entre les rochers. Vous redescendez fouiller l'homme à terre et récupérez toutes ses possessions.",
-          "1": "Sans perdre de temps, vous pivotez, contournez l'arche et grimpez par un pan rocheux adjacent. Vous vous élancez en poussant un cri sauvage qui fait vaciller l'assurance de l'archer. Pris de court, il décoche une flèche qui siffle à vos oreilles. Vous arrivez sur lui et, d'un mouvement sec, le plaquez au sol et le neutralisez. Sa besace glisse dans la poussière, révélant quelques pièces. Témoins de votre assaut fulgurant, les deux autres bandits hésitent, puis battent en retraite sans demander leur reste.",
-          "2": "Après avoir repéré une ouverture dans un renfoncement rocheux, vous grimpez rapidement et foncez sur l'archer. Mais l'homme en cuirasse s'interpose avec une dextérité inquiétante. Le choc est brutal : son bouclier percute vos côtes avec violence et vous projette contre la paroi. Vous tentez de riposter, mais c'est un combattant rude et méthodique, vous laissant à peine une ouverture. Finalement, vous parvenez à vous dégager en roulant sur le sol, meurtri et à bout de souffle, tandis que vos ennemis s'éloignent en ricanant. Vous êtes vivant, mais grièvement blessé."
+          "0": "You step back to lunge toward the cliff face and climb up easily, nimbly gripping the rough spots. You narrowly miss the nearest archer. You charge at him and shoulder-charge him, sending him tumbling into the void; the impact is fatal. You have just enough time to block the second archer’s arrow with your shield. The two bandits exchange a worried glance before fleeing, zigzagging between the rocks. You climb back down to search the man on the ground and recover all his belongings.",
+          "1": "Without wasting a moment, you pivot, circle around the arch, and climb up an adjacent rock face. You lunge forward, letting out a wild cry that shakes the archer’s confidence. Caught off guard, he fires an arrow that whistles past your ears. You close in on him and, with a swift movement, pin him to the ground and subdue him. His quiver slips into the dust, revealing a few coins. Witnessing your lightning-fast assault, the other two bandits hesitate, then retreat without a second thought.",
+          "2": "After spotting an opening in a rocky recess, you quickly climb up and charge at the archer. But the man in armor steps in with alarming agility. The impact is brutal: his shield slams violently into your ribs and hurls you against the rock face. You try to strike back, but he’s a tough and methodical fighter, leaving you barely any opening. Finally, you manage to break free by rolling across the ground, battered and out of breath, while your enemies walk away snickering. You’re alive, but seriously injured."
         },
-        "text": "Charger l'archer le plus proche."
+        "text": "Charge at the nearest archer."
       },
       "end": {
         "outcomes": {
-          "0": "Plutôt que d'agir dans la précipitation, vous décidez de vous replier prudemment. Vous parvenez à retrouver votre route sans perdre de temps.",
-          "1": "Vous faites volte-face, préférant ne prendre aucun risque. Ce n'est peut-être pas glorieux, mais vous conservez vos forces et surtout votre vie. Vous repartez par une route plus longue, frustré, mais entier."
+          "0": "Rather than acting rashly, you decide to retreat cautiously. You manage to get back on track without wasting any time.",
+          "1": "You turn back, preferring not to take any risks. It may not be the most glorious choice, but you preserve your strength—and, above all, your life. You set off again along a longer route, frustrated but unharmed."
         }
       }
     },
-    "text": "Vous vous engagez dans un corridor bordé de parois rocheuses couvertes de mousse. Jadis emprunté par les marchands, le passage est aujourd'hui abandonné, trop souvent visité par les bêtes sauvages. Alors que vous passez sous une arche naturelle, un claquement métallique vous glace le sang : des chaînes rouillées tombent d'un surplomb et obstruent la sortie. Une silhouette cuirassée surgit sur un promontoire, flanquée de deux archers encapuchonnés. Vous êtes pris au piège."
+    "text": "You enter a corridor flanked by moss-covered rock walls. Once used by merchants, the passage is now abandoned, too often frequented by wild beasts. As you pass under a natural arch, a metallic clang sends a chill down your spine: rusty chains fall from an overhang and block the exit. An armored figure emerges onto a promontory, flanked by two hooded archers. You’re trapped."
   },
   "86": {
     "possibilities": {
       "ponton": {
         "outcomes": {
-          "0": "Vous avancez lentement sur le ponton, tandis que la brume vous engloutit peu à peu et que vos pas font grincer le bois détrempé. Alors que vous vous penchez pour toucher l'eau, une planche vermoulue cède sous vos pieds et vous tombez en avant dans l'eau glacée. Vous parvenez à sortir, trempé et grelottant, et perdez un temps précieux à faire sécher vos affaires au soleil.",
-          "1": "Arrivé au bout du ponton, vous profitez d'une magnifique vue sur le lac. Vous remarquez alors une forme flottant à la surface. En tendant un bâton, vous ramenez un petit coffret en bois verni, probablement tombé d'une barque. Il contient une bouteille d'eau-de-vie et une belle bourse remplie d'or.",
-          "2": "Une vieille barque abandonnée est encore attachée au ponton. Vous décidez de l'emprunter pour faire la traversée et gagner du temps. Mais la brume s'épaissit rapidement et vous vous retrouvez perdu au beau milieu du lac. Vous ramez longtemps pour finalement revenir à votre point de départ. Au moment de quitter l'embarcation, vous apercevez un objet coincé entre deux planches."
+          "0": "You walk slowly along the dock as the fog gradually engulfs you and your footsteps make the waterlogged wood creak. As you lean over to touch the water, a rotten plank gives way beneath your feet and you fall forward into the icy water. You manage to climb out, soaked and shivering, and waste precious time drying your belongings in the sun.",
+          "1": "When you reach the end of the dock, you’ll enjoy a magnificent view of the lake. You then notice something floating on the surface. Reaching out with a stick, you retrieve a small varnished wooden box, which likely fell from a rowboat. It contains a bottle of brandy and a beautiful pouch filled with gold.",
+          "2": "An old, abandoned rowboat is still tied to the dock. You decide to take it to cross the lake and save time. But the fog quickly thickens, and you find yourself lost in the middle of the lake. You row for a long time before finally returning to where you started. Just as you’re about to get out of the boat, you spot an object wedged between two planks."
         },
-        "text": "Vous rendre jusqu'au ponton dans la brume."
+        "text": "Make your way to the dock through the fog."
       },
       "herbs": {
         "outcomes": {
-          "0": "Vous sélectionnez soigneusement les tiges les plus robustes et les feuilles intactes. Leur parfum rappelle celui de la menthe sauvage mêlée à la lavande. Ces plantes endémiques sont rares et recherchées pour leurs vertus médicinales : vous les vendrez un bon prix chez un herboriste.",
-          "1": "À peine avez-vous arraché la troisième plante qu'un liquide blanchâtre suinte sur vos doigts. L'instant d'après, des plaques rouges vous montent jusqu'aux poignets et vos bras vous démangent atrocement. Vous devez vous rincer longuement dans le lac pour apaiser la douleur.",
-          "2": "En froissant les feuilles entre vos doigts, un parfum vous envahit étrangement familier. Cela vous rappelle un souvenir d'enfance flou : un vaste champ baigné de soleil, une main délicate qui vous tendait un bouquet..."
+          "0": "Carefully select the sturdiest stems and undamaged leaves. Their scent is reminiscent of wild mint mixed with lavender. These endemic plants are rare and highly sought after for their medicinal properties: you’ll be able to sell them for a good price at a herbalist’s shop.",
+          "1": "No sooner had you pulled up the third plant than a whitish liquid began oozing onto your fingers. The next moment, red patches spread up to your wrists, and your arms began to itch excruciatingly. You had to rinse yourself thoroughly in the lake to soothe the pain.",
+          "2": "As you crumple the leaves between your fingers, a strangely familiar scent fills the air. It brings back a vague childhood memory: a vast, sun-drenched field, a delicate hand holding out a bouquet to you..."
         },
-        "text": "Ramasser les herbes étranges près de la rive."
+        "text": "Collect the strange herbs near the shore."
       },
       "fish": {
         "outcomes": {
-          "0": "Après une longue attente qui vous a donné le temps de bien vous restaurer, vous sentez enfin quelque chose tirer. Vous remontez lentement pour découvrir une vieille botte pleine de vase. Vous décidez de repartir, déçu par votre talent de pêche limité.",
-          "1": "Vous accrochez un hameçon de fortune à un brin de ficelle et trouvez un appât. Vous ramenez le fil derrière vous pour le lancer le plus loin possible, mais l'hameçon se plante dans votre épaule. Vous étouffez un cri, passez un long moment à le retirer puis à désinfecter la plaie avec un peu d'eau trouble du lac. Pas très glorieux comme pêche.",
-          "2": "Le fil se tend brusquement. Vous tirez, pensant à un poisson ordinaire, mais ce que vous extirpez de l'eau est une étrange créature luisante, aux écailles bleues nacrées. Elle vous fixe un instant puis crache une pièce d'or avant de replonger. Vous restez là, hébété, la pièce en main."
+          "0": "After a long wait—which gave you plenty of time to eat your fill—you finally feel a tug. You slowly reel it in to find an old boot full of mud. Disappointed by your limited fishing skills, you decide to call it a day.",
+          "1": "You tie a makeshift hook to a piece of string and find some bait. You pull the line back behind you to cast it as far as possible, but the hook lodges in your shoulder. You stifle a cry, spend a long time pulling it out, and then disinfect the wound with some murky lake water. Not exactly a glorious catch.",
+          "2": "The line suddenly tenses. You reel it in, thinking it’s just an ordinary fish, but what you pull out of the water is a strange, shimmering creature with pearly blue scales. It stares at you for a moment, then spits out a gold coin before diving back down. You stand there, dazed, holding the coin in your hand."
         },
-        "text": "Tenter de pêcher dans le lac."
+        "text": "Try fishing in the lake."
       },
       "reflect": {
         "outcomes": {
-          "0": "Vous fermez les yeux et laissez votre souffle s'accorder au clapotis presque imperceptible du lac. Quand vous les rouvrez, le paysage semble plus net, plus vivant. Une sensation de calme profond vous envahit, comme si le lac vous avait brièvement adopté. Vous vous sentez merveilleusement bien.",
-          "1": "Votre reflet vous fixe avec une intensité inhabituelle. Un clignement. Puis un sourire... qui n'est pas le vôtre. Soudain, une silhouette trouble émerge sous la surface et vous jurez avoir vu une main vous frôler la cheville. Vous bondissez en arrière, le cœur battant. Le corps gonflé d'eau se rapproche doucement tandis que vous partez en courant.",
-          "2": "L'eau semble vous happer. Votre image ondule, se déforme. Pendant de longues minutes, vous vous perdez dans vos pensées, comme ensorcelé. Quand vous reprenez vos esprits, le soleil a tourné et vos jambes sont engourdies. Un objet brille à la surface : une fiole contenant un liquide ambré. Sans même vous en rendre compte, vous buvez le breuvage inconnu et sentez toutes vos forces revenir."
+          "0": "You close your eyes and let your breathing fall in sync with the lake’s almost imperceptible lapping. When you open them again, the landscape seems sharper, more alive. A sense of deep calm washes over you, as if the lake had briefly taken you in. You feel wonderfully at ease.",
+          "1": "Your reflection stares at you with unusual intensity. A blink. Then a smile... that isn't yours. Suddenly, a shadowy figure emerges from beneath the surface, and you swear you saw a hand brush against your ankle. You leap backward, your heart pounding. The waterlogged body slowly approaches as you run away.",
+          "2": "The water seems to pull you in. Your image ripples and distorts. For several long minutes, you lose yourself in your thoughts, as if under a spell. When you come to your senses, the sun has moved, and your legs are numb. An object glistens on the surface: a vial containing an amber-colored liquid. Without even realizing it, you drink the unknown potion and feel all your strength returning."
         },
-        "text": "Contempler votre reflet dans l'eau."
+        "text": "Gaze at your reflection in the water."
       },
       "cabin": {
         "outcomes": {
-          "0": "En vous éloignant un peu de la rive, vous découvrez une cabane dont la porte pend de travers. À l'intérieur : des filets moisis, des bocaux vides et un carnet détrempé sur une table branlante. En le feuilletant délicatement, vous parvenez à déchiffrer quelques mots évoquant de ne pas pêcher à la pleine lune et un reflet qui parlerait. Vous frissonnez brusquement et quelque chose glisse du carnet...",
-          "1": "En déplaçant une étagère effondrée contre le mur, vous apercevez une grande boîte en fer rouillée. À l'intérieur se trouve un objet qui semble avoir été soigneusement entretenu malgré l'abandon du lieu, peut-être plus précieux qu'il n'y paraît.",
-          "2": "En forçant une caisse moisie, vous libérez une puissante odeur de pourriture. À l'intérieur, vous découvrez un amas de chiffons humides et le corps ratatiné d'une créature aquatique, partiellement dissous. Sa forme presque humanoïde vous laisse une impression dérangeante. Le cœur soulevé, vous sortez en titubant, la nausée au bord des lèvres."
+          "0": "As you move a little way from the shore, you come across a shack with a door hanging crookedly. Inside: moldy nets, empty jars, and a water-stained notebook on a wobbly table. As you gently flip through its pages, you manage to make out a few words warning against fishing during a full moon and mentioning a reflection that speaks. You shiver suddenly, and something slips out of the notebook...",
+          "1": "As you move a collapsed shelf against the wall, you spot a large, rusty metal box. Inside is an object that seems to have been carefully maintained despite the place being abandoned—perhaps more valuable than it appears.",
+          "2": "When you pry open a moldy crate, a powerful stench of decay wafts out. Inside, you discover a pile of damp rags and the shriveled, partially dissolved body of an aquatic creature. Its almost humanoid form leaves you with an unsettling impression. With your stomach churning, you stagger out, nausea rising to the back of your throat."
         },
-        "text": "Explorer la cabane abandonnée."
+        "text": "Explore the abandoned cabin."
       },
       "end": {
         "outcomes": {
-          "0": "Vous quittez la berge en silence. Le calme étrange du lac vous a donné un léger frisson, mais la route vous attend.",
-          "1": "Vous quittez les rives du Lac Mirage sans un regard en arrière, préférant les sentiers plus sûrs."
+          "0": "You leave the lakeshore in silence. The strange stillness of the lake sent a slight shiver down your spine, but the road awaits you.",
+          "1": "You leave the shores of Lake Mirage without looking back, preferring the safer trails."
         }
       }
     },
-    "text": "Après une longue marche éreintante, vous débouchez sur une clairière silencieuse où s'étend un vaste plan d'eau aux reflets changeants. Le Lac Mirage porte bien son nom : sa surface miroitante semble vibrer, tantôt limpide, tantôt voilée comme un rêve incertain. De hautes herbes ondulent doucement sur les rives, et une fine brume s'élève par endroits, dissimulant ce qui pourrait être un ponton, une cabane abandonnée... ou des présences moins rassurantes. L'endroit est calme, presque trop calme, comme suspendu dans le temps."
+    "text": "After a long, grueling walk, you emerge into a silent clearing where a vast body of water with shifting reflections stretches out before you. Lake Mirage lives up to its name: its shimmering surface seems to quiver, at times crystal-clear, at others veiled like an uncertain dream. Tall grasses sway gently along the shores, and a thin mist rises in places, concealing what might be a dock, an abandoned cabin... or less reassuring presences. The place is quiet, almost too quiet, as if suspended in time."
   },
   "87": {
     "possibilities": {
       "climb": {
         "outcomes": {
-          "0": "Vous atteignez l'étage supérieur et découvrez une sacoche oubliée derrière un tas de gravats. À l'intérieur : quelques pièces et une ration sèche encore consommable. Vous reprenez des forces, satisfait de cette découverte modeste mais bienvenue.",
-          "1": "Vous grimpez sans bruit, scrutant chaque recoin. Sous une dalle disjointe, vous trouvez une cache contenant des pièces, dissimulées là il y a longtemps par un inconnu. Vous les glissez dans votre besace avec prudence.",
-          "2": "Une marche, fragilisée par les années, s'effondre sous votre poids. Votre jambe heurte violemment la pierre et une douleur aiguë vous saisit. Vous perdez du temps à désinfecter la plaie et à la bander avec un pan de tissu déchiré."
+          "0": "You reach the upper floor and discover a bag left behind behind a pile of rubble. Inside: a few coins and a dry ration that’s still edible. You regain your strength, pleased with this modest but welcome find.",
+          "1": "You climb silently, scanning every nook and cranny. Under a loose slab, you find a hiding place containing coins, hidden there long ago by someone unknown. You slip them carefully into your pouch.",
+          "2": "A step, worn down by the years, collapses under your weight. Your leg hits the stone hard, and a sharp pain shoots through you. You spend some time disinfecting the wound and bandaging it with a piece of torn cloth."
         },
-        "text": "Monter prudemment inspecter l'étage de la tour."
+        "text": "Climb carefully to inspect the upper level of the tower."
       },
       "throwStone": {
         "outcomes": {
-          "0": "Vous jetez la pierre, mais rien ne se passe. Cependant, le bruit attire un groupe de petits animaux curieux qui grimpent rapidement jusqu'à vous. L'un d'eux commence à fouiller votre sac et vous mord quand vous essayez de le repousser. Vous perdez du temps à vous débarrasser de ces petites créatures.",
-          "1": "Vous lancez une grosse pierre en direction de la tour. Elle percute une poutre branlante... qui déloge un vieux nid de corbeaux ! Ces derniers, furieux, foncent sur vous en croassant comme si vous aviez insulté leur mère. Vous fuyez en agitant les bras, trébuchant sur chaque caillou comme un ivrogne. Après un laps de temps qui vous paraît interminable, ils vous laissent enfin en paix et s'envolent avec votre dignité.",
-          "2": "En vous baissant pour ramasser une pierre, vous remarquez un objet non loin. Vous scrutez à gauche, à droite : personne ! Vous le ramassez hâtivement pour l'enfouir dans votre besace et partez rapidement."
+          "0": "You throw the stone, but nothing happens. However, the noise attracts a group of curious little animals that quickly climb up toward you. One of them starts rummaging through your bag and bites you when you try to push it away. You waste time trying to get rid of these little creatures.",
+          "1": "You hurl a large rock toward the tower. It strikes a rickety beam... which dislodges an old crow’s nest! The crows, furious, swoop down on you, cawing as if you’d insulted their mother. You run away, waving your arms, stumbling over every pebble like a drunkard. After what seems like an eternity, they finally leave you alone and fly off, taking your dignity with them.",
+          "2": "As you bend down to pick up a rock, you notice an object nearby. You look left and right: no one’s around! You quickly pick it up, stuff it into your pouch, and hurry away."
         },
-        "text": "Jeter une pierre pour voir si quelque chose réagit."
+        "text": "Throw a stone to see if anything happens."
       },
       "walkAround": {
         "outcomes": {
-          "0": "Vous faites le tour lentement. Vous notez plusieurs pierres effondrées au pied de la tour et des traces de griffes sur un pan de mur. Vous restez vigilant, mais rien ne bouge.",
-          "1": "Vous contournez la tour, mais aucune ouverture praticable n'apparaît. Le silence du lieu, troublé seulement par le vent, vous met mal à l'aise. Vous repartez sans incident, mais avec l'esprit plus méfiant."
+          "0": "You walk slowly around the tower. You notice several fallen stones at the base of the tower and claw marks on a section of the wall. You remain alert, but nothing moves.",
+          "1": "You walk around the tower, but no passable opening comes into view. The silence of the place, broken only by the wind, makes you feel uneasy. You leave without incident, but with a greater sense of wariness."
         },
-        "text": "Faire le tour de la tour sans y entrer."
+        "text": "Walk around the tower without going inside."
       },
       "end": {
         "outcomes": {
-          "0": "Vous passez un bon quart d'heure à réfléchir, tiraillé entre votre curiosité et votre peur du danger. Vous décidez finalement de poursuivre votre route, laissant la tour derrière vous. Le chemin est rude, mais vous avancez sans encombre, concentré sur votre objectif.",
-          "1": "La tour vous évoque plusieurs images : une princesse qui aurait pu y être enfermée, un chevalier qui y aurait péri. Cette pensée vous arrache un sourire. Vous repartez et, un peu plus loin au bord du sentier, vous remarquez un objet coincé entre deux racines."
+          "0": "You spend a good quarter of an hour thinking it over, torn between your curiosity and your fear of danger. You finally decide to continue on your way, leaving the tower behind you. The path is rough, but you make your way without incident, focused on your goal.",
+          "1": "The tower brings several images to mind: a princess who might have been locked away there, a knight who might have perished there. The thought brings a smile to your face. You walk on, and a little further along the path, you notice an object wedged between two tree roots."
         }
       }
     },
-    "text": "Le sentier serpente entre les rochers, rude et escarpé. Le souffle court, vous grimpez sous un ciel gris quand, au détour d'un virage, vous apercevez une tour solitaire, à moitié effondrée. Ses pierres noircies semblent abandonnées depuis des années, mais un reflet métallique vous a brièvement ébloui depuis l'étage supérieur. Est-ce une illusion ? Une arme ? Ou quelque chose de pire ?"
+    "text": "The trail winds its way between the rocks, rough and steep. Out of breath, you climb beneath a gray sky when, rounding a bend, you catch sight of a solitary, half-collapsed tower. Its blackened stones seem to have been abandoned for years, but a metallic glint from the upper floor briefly dazzled you. Is it an illusion? A weapon? Or something worse?"
   },
   "88": {
     "possibilities": {
       "capture": {
         "outcomes": {
-          "0": "Vous videz votre besace et la posez doucement devant le scorpion, un côté relevé pour en garder l'ouverture béante. Méfiant, l'animal hésite un instant, puis se laisse tenter par l'ombre du sac et s'y engouffre : vous refermez aussitôt le tout, ravi de votre belle prise. Ce type de scorpion est réputé pour son venin, très recherché dans la préparation de potions rares ; de retour parmi les échoppes, vous n'avez aucune peine à l'échanger contre l'une d'elles.",
-          "1": "Vous faites glisser la lame de votre épée sous le scorpion. Celui-ci ne réagissant pas, vous ramenez d'un geste adroit votre épée vers votre besace avant de l'y faire tomber. C'est un très beau spécimen : vous en tirerez un bon prix au marché.",
-          "2": "Vous glissez lentement votre épée sous le scorpion avant de la soulever. Pris de panique, il remonte rapidement jusqu'à la garde et vous pique. Grimaçant de douleur, vous pressez vivement votre poignet juste au-dessus de la piqûre puis aspirez le venin d'un geste rapide, recrachant le liquide amer au sol dans l'espoir de ralentir la progression du poison.",
-          "3": "Vous parvenez à faire entrer le scorpion dans votre besace vidée pour l'occasion, refermant l'ouverture avant qu'il ne songe à en ressortir. La prise est belle, et vous songez un instant au prix qu'elle vous rapporterait au marché. Mais à le voir se lover tranquillement contre vos affaires, vous vous prenez d'affection pour la petite bête cuirassée : plutôt que de la vendre, vous décidez de la garder auprès de vous comme fidèle compagnon."
+          "0": "You empty your bag and gently set it down in front of the scorpion, with one side lifted to keep the opening wide open. Wary, the creature hesitates for a moment, then is lured by the bag’s shadow and dives inside: you immediately close it up, delighted with your fine catch. This type of scorpion is renowned for its venom, which is highly sought after in the preparation of rare potions; back among the stalls, you have no trouble trading it for one of them.",
+          "1": "You slide the blade of your sword under the scorpion. Since it doesn't react, you deftly bring your sword back toward your pouch before dropping it inside. It's a beautiful specimen—you'll get a good price for it at the market.",
+          "2": "You slowly slide your sword under the scorpion before lifting it up. Panicked, it quickly scuttles back up to the hilt and stings you. Wincing in pain, you quickly press your wrist just above the sting, then suck out the venom with a swift motion, spitting the bitter liquid onto the ground in the hope of slowing the poison’s spread.",
+          "3": "You manage to get the scorpion into your pouch—which you’ve emptied for the occasion—and close the opening before it can even think of getting out. It’s a fine catch, and for a moment you think about how much it would fetch at the market. But seeing it curled up peacefully among your belongings, you grow fond of the little armored creature: rather than sell it, you decide to keep it by your side as a faithful companion."
         },
-        "text": "Tenter de capturer le scorpion."
+        "text": "Try to catch the scorpion."
       },
       "crush": {
         "outcomes": {
-          "0": "Vous levez brusquement le pied et tentez de l'écraser. Trop tard : le scorpion vous a vu venir et plante son dard dans votre cheville. La douleur est fulgurante. Vous tombez à genoux, le venin commençant déjà à vous faire délirer.",
-          "1": "Vous ramassez la première pierre plate que vous trouvez à proximité afin de l'écraser. Grave erreur ! Chauffée à blanc par le soleil, elle vous brûle la main. Vous la lâchez d'un coup sec en poussant un juron, mais le mal est fait : vous passez du temps à faire un bandage solide pour protéger cette blessure pendant que le scorpion repart sans prêter attention à vous. ",
-          "2": "Sans même y réfléchir, vous jetez votre besace sur lui et sautez dessus à pieds joints comme un hystérique. En témoigne la bouillie verdâtre qui tache maintenant votre sac : pas de doute, il est bien mort ! Cette montée d'adrénaline semble vous avoir redonné des forces pour poursuivre votre chemin. À peine reparti, vous apercevez un objet brillant à moitié enfoui dans le sable, ainsi qu'une poignée de pièces."
+          "0": "You suddenly lift your foot and try to crush it. Too late: the scorpion saw you coming and stings you in the ankle. The pain is excruciating. You fall to your knees, the venom already starting to make you hallucinate.",
+          "1": "You pick up the first flat rock you find nearby to crush it. Big mistake! Heated to white-hot by the sun, it burns your hand. You drop it abruptly with a curse, but the damage is done: you spend some time wrapping a sturdy bandage around the wound to protect it, while the scorpion slinks away without paying you any mind. ",
+          "2": "Without even thinking, you throw your bag at him and jump on him with both feet like a madman. The greenish mush now staining your bag is proof enough: no doubt about it, he’s dead! This rush of adrenaline seems to have given you the strength to continue on your way. No sooner have you set off again than you spot a shiny object half-buried in the sand, along with a handful of coins."
         },
-        "text": "Tenter d'écraser le scorpion."
+        "text": "Try to crush the scorpion."
       },
       "ignore": {
         "outcomes": {
-          "0": "Vous reculez lentement pour vous en éloigner sans l'alerter. Vous prenez alors le temps de bien vous désaltérer. Vous sentant mieux, vous reprenez votre route prudemment, sans incident.",
-          "1": "Vous restez parfaitement immobile, en retenant votre souffle, jusqu'à ce que le scorpion se faufile rapidement sous une autre pierre."
+          "0": "You slowly back away to get away from it without alerting it. You then take the time to quench your thirst. Feeling better, you cautiously continue on your way, without incident.",
+          "1": "You remain perfectly still, holding your breath, until the scorpion quickly scurries under another rock."
         },
-        "text": "Ignorer le scorpion et poursuivre votre route."
+        "text": "Ignore the scorpion and keep going."
       },
       "end": {
         "outcomes": {
-          "0": "Vous détournez les yeux, estimant que le scorpion ne vaut pas le risque. Vous poursuivez votre chemin dans le désert."
+          "0": "You look away, deciding that the scorpion isn't worth the risk. You continue on your way through the desert."
         }
       }
     },
-    "text": "Le sable brûlant s'enfonce sous vos pas tandis que vous progressez difficilement, le foulard serré sur le visage pour filtrer le vent chaud chargé de poussière. À l'horizon, rien d'autre que des dunes. Vous vous agenouillez un instant pour reprendre votre souffle, mais un mouvement attire votre regard : un scorpion noir, gros comme un poing, sort lentement de sous une pierre, sa queue arquée luisant à la lumière..."
+    "text": "The scorching sand sinks beneath your feet as you trudge forward, a scarf pulled tight over your face to filter out the hot, dust-laden wind. On the horizon, nothing but dunes. You kneel for a moment to catch your breath, but a movement catches your eye: a black scorpion, as big as a fist, slowly emerges from under a rock, its arched tail glistening in the light..."
   },
   "89": {
     "possibilities": {
       "stepAside": {
         "outcomes": {
-          "0": "Vous vous écartez de la voie principale pour dégager le centre de la rue. Mais la foule, dense et ayant suivi votre exemple, vous presse contre le mur d'une maison. Tandis que les gardes défilent, vous peinez à respirer, la cage thoracique comprimée. C'est avec un profond soulagement que vous apercevez enfin le dernier soldat de la cohorte.",
-          "1": "Alors que la foule reflue du centre de l'avenue, vous vous retrouvez collé à de nombreux citoyens. Vous profitez de cette promiscuité pour dépouiller discrètement vos voisins de quelques pièces.",
-          "2": "Alors que la foule reflue du centre de l'avenue, vous vous retrouvez collé à de nombreux citoyens. Ce n'est qu'après le passage de la Garde royale que vous constatez qu'un voyou a mis à profit cette promiscuité pour vous dérober votre bourse."
+          "0": "You step off the main path to clear the center of the street. But the dense crowd, having followed your example, presses you up against the wall of a house. As the guards march past, you struggle to breathe, your chest compressed. It is with deep relief that you finally spot the last soldier of the cohort.",
+          "1": "As the crowd begins to disperse from the center of the avenue, you find yourself pressed up against many other people. You take advantage of this close quarters to discreetly pick your neighbors’ pockets.",
+          "2": "As the crowd recedes from the center of the avenue, you find yourself pressed up against many other people. It is only after the Royal Guard has passed that you realize a pickpocket has taken advantage of the crowd to steal your wallet."
         },
-        "text": "S'écarter prestement."
+        "text": "Step aside quickly."
       },
       "ignore": {
         "outcomes": {
-          "0": "Vous continuez d'avancer sans tenir compte de l'ordre reçu, et finissez par faire face à une cohorte d'une trentaine de soldats qui vous dévisagent avec hostilité. Pris de panique, vous vous écartez aussi vite que possible en balbutiant des excuses.",
-          "1": "Vous ignorez totalement la sommation et poursuivez votre route, borné, jusqu'à percuter l'un des soldats de la parade. Confus, vous vous excusez, mais l'homme vous empoigne, vous roue de coups puis vous jette sur le bas-côté. Honteux et meurtri, vous subissez les rires moqueurs des autres soldats et vous traînez jusqu'à une ruelle voisine pour panser vos plaies.",
-          "2": "Vous continuez tranquillement votre marche, ignorant les murmures des citoyens choqués par votre insolence, jusqu'à vous retrouver devant une trentaine de gardes aux regards hostiles. Avant même de pouvoir réagir, vous êtes empoigné et jeté en prison pour outrage à la Garde royale.",
-          "3": "Vous avancez sans considération pour l'ordre reçu, jusqu'à heurter un soldat de l'avant-garde. Alors qu'il lève le poing pour riposter, vous saisissez son bras, le plaquez au sol et le maîtrisez en un éclair. Un rire amusé parcourt la cohorte et le roi s'avance, chevauchant un grand cheval blanc. Impressionné par votre prouesse face à l'élite de ses soldats, il vous récompense d'une belle somme, mais vous somme de quitter la ville."
+          "0": "You keep moving forward, ignoring the order you were given, and eventually find yourself facing a group of about thirty soldiers who are staring at you hostilely. Panicked, you step aside as quickly as possible, stammering out apologies.",
+          "1": "You completely ignore the warning and stubbornly keep walking until you bump into one of the soldiers in the parade. Confused, you apologize, but the man grabs you, beats you up, and then throws you to the side of the road. Ashamed and battered, you endure the mocking laughter of the other soldiers and drag yourself to a nearby alley to tend to your wounds.",
+          "2": "You calmly continue on your way, ignoring the murmurs of citizens shocked by your insolence, until you find yourself facing about thirty guards with hostile stares. Before you even have a chance to react, you are seized and thrown into prison for contempt of the Royal Guard.",
+          "3": "You charge forward, disregarding the order you were given, until you collide with a soldier from the vanguard. Just as he raises his fist to strike back, you grab his arm, pin him to the ground, and subdue him in a flash. Amused laughter ripples through the cohort, and the king rides forward on a large white horse. Impressed by your feat against the elite of his soldiers, he rewards you with a handsome sum but orders you to leave the city."
         },
-        "text": "Ignorer la sommation."
+        "text": "Ignore the demand letter."
       },
       "bow": {
         "outcomes": {
-          "0": "Comme tous les passants, vous vous écartez de la voie et laissez défiler la colonne de chevaliers. À la vue du riche carrosse qui les suit, vous vous inclinez de concert avec le reste de la population. Lorsqu'il arrive à votre hauteur, vous relevez discrètement la tête et apercevez, l'espace d'un instant, les fins doigts de la princesse du royaume saluant son peuple. Cette vision suffit à vous redonner courage.",
-          "1": "Vous vous rangez sur le côté de la rue et vous inclinez respectueusement devant le passage des soldats, bientôt imité par de nombreux citoyens. À cette vue, les gardes bombent le torse et défilent avec fierté. Vous vous relevez après quelques minutes, gagné par le sentiment d'appartenance et de fidélité que votre initiative a fait naître dans la population.",
-          "2": "Sitôt l'ordre reçu, vous pliez le genou, baissez la tête et vous inclinez face aux soldats. Vous remarquez toutefois bien vite votre solitude dans cet élan de soumission : il ne s'agissait que d'une simple patrouille. En arrivant à votre hauteur, les soldats vous bousculent en riant, et vous repartez, honteux."
+          "0": "Like all the passersby, you step aside and let the column of knights pass. At the sight of the lavish carriage following them, you bow along with the rest of the crowd. When it reaches you, you discreetly lift your head and catch a glimpse, for just a moment, of the slender fingers of the kingdom’s princess waving to her people. That sight is enough to restore your courage.",
+          "1": "You step to the side of the street and bow respectfully as the soldiers pass by, a gesture soon imitated by many citizens. At this sight, the guards puff out their chests and march with pride. After a few minutes, you stand up again, overcome by the sense of belonging and loyalty that your initiative has inspired in the people.",
+          "2": "As soon as you receive the order, you kneel, bow your head, and bow to the soldiers. You quickly realize, however, how alone you are in this display of submission: it was just a simple patrol. As they pass by you, the soldiers jostle you, laughing, and you walk away, ashamed."
         },
-        "text": "S'incliner devant le passage de la Garde."
+        "text": "Bow as the Guard passes by."
       },
       "otherAlley": {
         "outcomes": {
-          "0": "Alors que vous empruntez une ruelle transverse, vous apercevez brièvement du mouvement sur les toits. Méfiant, vous escaladez un mur pour en avoir le cœur net et découvrez un homme dissimulé, pointant un carreau d'arbalète vers le carrosse qui défile au milieu des soldats : une tentative d'assassinat contre la famille royale ! Sans hésiter, vous vous ruez sur l'assaillant, arrachez son arme et parvenez à le maîtriser. Le vacarme attire les chevaliers, à qui vous livrez le criminel avant de redescendre du toit. Alerté, le roi s'approche alors et vous propose de rejoindre la Garde. Malgré votre refus, il vous offre un équipement du Trésor royal ainsi qu'un familier d'une grande rareté, en gage de bonne entente avec la couronne. Reconnaissant, vous vous inclinez respectueusement sous les acclamations de la foule.",
-          "1": "Alors que vous empruntez une ruelle transverse, vous apercevez brièvement du mouvement sur les toits. Méfiant, vous escaladez un mur pour en avoir le cœur net et découvrez un homme dissimulé, pointant un carreau d'arbalète vers le carrosse qui défile au milieu des soldats : une tentative d'assassinat contre la famille royale ! Sans hésiter, vous vous ruez sur l'assaillant, arrachez son arme et parvenez à le maîtriser. Le vacarme attire les chevaliers, à qui vous livrez le criminel avant de redescendre du toit. Alerté, le roi s'approche et vous propose de rejoindre la Garde. Malgré votre refus, il vous offre un équipement du Trésor royal ainsi qu'une belle bourse d'or, en gage de bonne entente avec la couronne. Reconnaissant, vous vous inclinez respectueusement sous les acclamations de la foule.",
-          "2": "Alors que vous gagnez une ruelle voisine déserte, une voix vous parvient. Les quelques bribes que vous saisissez vous apprennent qu'un attentat se prépare contre la famille royale ! Sans réfléchir un seul instant, vous vous précipitez dans l'avenue voisine, arme au poing, avant de mesurer votre imprudence : vos ennemis sont bien trop nombreux. Vous luttez vaillamment et parvenez à en blesser quelques-uns, mais finissez submergé et laissé pour mort.",
-          "3": "Vous prenez la première rue transverse et contournez la procession. Vous profitez d'un petit commerce local pour acheter de quoi vous restaurer ainsi qu'un peu d'équipement à bas prix.",
-          "4": "Alors que vous empruntez une ruelle parallèle déserte, des voix s'échappent d'une maison. Curieux, vous vous approchez et écoutez à la porte, ne saisissant que quelques bribes : des marchandises, quelqu'un à éliminer, un passage, un réseau. Au moment de quitter les lieux, ne voulant pas être mêlé à cette affaire louche, vous reconnaissez avec stupeur, dans l'une des voix, celle du mercenaire Price ! Vous poursuivez votre chemin, bouleversé."
+          "0": "As you turn into a side alley, you catch a brief glimpse of movement on the rooftops. Suspicious, you scale a wall to get to the bottom of it and discover a man in hiding, aiming a crossbow bolt at the carriage passing through the ranks of soldiers: an assassination attempt on the royal family! Without hesitation, you rush at the assailant, wrest his weapon from him, and manage to subdue him. The commotion attracts the knights, to whom you hand over the criminal before climbing down from the roof. Alerted to the incident, the king approaches and offers you a place in the Guard. Despite your refusal, he offers you equipment from the Royal Treasury as well as an extremely rare familiar, as a token of goodwill toward the crown. Grateful, you bow respectfully amid the cheers of the crowd.",
+          "1": "As you turn into a side alley, you catch a brief glimpse of movement on the rooftops. Suspicious, you scale a wall to get to the bottom of it and discover a man in hiding, aiming a crossbow bolt at the carriage passing through the ranks of soldiers: an assassination attempt on the royal family! Without hesitation, you rush at the assailant, wrest his weapon from him, and manage to subdue him. The commotion attracts the knights, to whom you hand over the criminal before climbing down from the roof. Alerted to the incident, the king approaches and offers you a place in the Guard. Despite your refusal, he offers you a suit of armor from the Royal Treasury as well as a generous purse of gold, as a token of goodwill toward the crown. Grateful, you bow respectfully amid the cheers of the crowd.",
+          "2": "As you turn into a nearby deserted alley, you hear a voice. From the few snippets you catch, you learn that an attack is being planned against the royal family! Without a moment’s hesitation, you rush into the nearby avenue, gun in hand, before realizing how reckless you’ve been: your enemies are far too numerous. You fight valiantly and manage to wound a few of them, but you’re eventually overwhelmed and left for dead.",
+          "3": "Take the first side street and go around the procession. Stop by a small local shop to buy some food and a few inexpensive items.",
+          "4": "As you walk down a deserted side street, voices drift out from a house. Curious, you approach and listen at the door, catching only a few snippets: goods, someone to be eliminated, a passageway, a network. Just as you’re about to leave, not wanting to get mixed up in this shady business, you’re stunned to recognize one of the voices as that of the mercenary Price! You continue on your way, shaken."
         },
-        "text": "Emprunter une autre ruelle."
+        "text": "Take another alley."
       },
       "end": {
         "outcomes": {
-          "0": "Vous vous écartez du centre de l'avenue et poursuivez votre chemin en longeant les murs des maisons.",
-          "1": "Vous restez planté au milieu de l'allée, mais la foule finit par vous emporter sur le côté. Vous attendez donc la fin de cette procession militaire avant de reprendre votre déambulation dans les rues de la capitale."
+          "0": "You move away from the center of the avenue and continue along the walls of the houses.",
+          "1": "You stand rooted to the spot in the middle of the alley, but the crowd eventually pushes you to the side. So you wait for the military procession to end before resuming your stroll through the streets of the capital."
         }
       }
     },
-    "text": "Vous avancez tranquillement dans les rues de la ville entourant le château royal. Les passants discutent et l'ambiance est joyeuse ; vous entendez même un chat miauler au loin. Soudain, une clameur s'élève depuis le bout de la rue : un soldat, la voix tonnante, ordonne à tout le monde de s'écarter sur-le-champ."
+    "text": "You stroll leisurely through the streets of the town surrounding the royal castle. Passersby are chatting, and the atmosphere is cheerful; you can even hear a cat meowing in the distance. Suddenly, a commotion rises from the end of the street: a soldier, his voice booming, orders everyone to step aside immediately."
   }
 }
