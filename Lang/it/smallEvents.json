@@ -657,6 +657,7 @@
       "È china e scheletrica, ma si vede la malizia nei suoi occhi. ",
       "È vestita con brandelli di tessuto opaco e sporco. ",
       "Ricorderete le voci su una strega maldestra che vagava per il regno. ",
+      "On murmure que sa maladresse lui a déjà valu des ennuis avec quelques nobles peu indulgents. ",
       "Completamente muta, sembra danneggiata dagli anni, magra e ossuta, con la pelle quasi grigia. ",
       "Sembra che non capisca quello che dici. "
     ],
@@ -2572,9 +2573,9 @@
       "spiritual": "si trova un luogo di serenità, dove l'atmosfera è pacifica e favorevole al benessere. Si cerca nell'ambiente circostante qualche oggetto."
     },
     "foundStories": {
-      "1": "Hai trovato il seguente materiale in comune su {{rarityEmote}} : {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "2": "Incredibile! Avete trovato un materiale {{rarityEmote}} davvero insolito: {{materialEmote}} **$t(models:materials.{{materialId}})**.",
-      "3": "Che fortuna incredibile! Avete scoperto un materiale {{rarityEmote}} raro: {{materialEmote}} **$t(models:materials.{{materialId}})**."
+      "1": "Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} commun).",
+      "2": "Belle trouvaille ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} peu commun).",
+      "3": "Quelle chance inouïe ! Vous repartez avec {{materialEmote}} **{{quantity}}× $t(models:materials.{{materialId}})** ({{rarityEmote}} rare)."
     }
   },
   "expeditionAdvice": {
@@ -2742,8 +2743,8 @@
         "mage": [
           "Théobald nota la tua aura da mago e annuisce con rispetto. La tua padronanza della magia farà fiorire questa pianta infuocata\", dice, porgendoti un **seme** {emote:smallEvents.gardener}."
         ],
-        "phoenix": [
-          "Gli occhi del giardiniere si allargano alla vostra fenice ed esclama che non ne vedeva una da decenni. Con emozione vi affida un **seme** {emote:smallEvents.gardener}, convinto che le fiamme del vostro compagno lo aiuteranno a crescere."
+        "firePet": [
+          "Le jardinier écarquille les yeux devant votre familier au souffle ardent et s'exclame qu'il n'en avait pas vu depuis des décennies. Il vous confie avec émotion une **graine** {emote:smallEvents.gardener}, convaincu que les flammes de votre compagnon l'aideront à grandir."
         ],
         "fireItem": [
           "Théobald nota il vostro equipaggiamento forgiato col fuoco e annuisce. L'affinità con le fiamme è essenziale per coltivare questa pianta infuocata\", spiega, offrendoti un **seme** {emote:smallEvents.gardener}."
@@ -2781,8 +2782,8 @@
           "Théobald strizzò gli occhi al cielo. Per offrire questo seme è necessaria una **luce lunare potente**. Torna in una notte più luminosa."
         ],
         "needFireAffinity": [
-          "Théobald scuote la testa. Il prossimo seme richiede un'affinità con il fuoco. Dovresti essere un **mago**, possedere una **fenice** o indossare un **equipaggiamento forgiato nelle fiamme**.",
-          "Il giardiniere vi guarda pensieroso. Questo seme di fuoco può essere coltivato solo da qualcuno legato al fuoco: un **mago**, un **maestro di fenice** o un **portatore di armi infuocate**."
+          "Théobald secoue la tête. La prochaine graine nécessite une affinité avec le feu. Il vous faudrait être **mage**, posséder un **familier lié au feu** ou porter un **équipement forgé dans les flammes**.",
+          "Le jardinier vous regarde pensivement. Cette graine ardente ne peut être cultivée que par quelqu'un lié au feu : un **mage**, un maître de **familier des flammes**, ou un porteur d'**arme enflammée**."
         ],
         "needCarnivorePet": [
           "Il giardiniere spiega che il prossimo seme richiede una compagna carnivora particolarmente potente. È necessario un **compagno carnivoro di rarità epica o superiore**.",
