@@ -1525,6 +1525,7 @@
     "collectMaterials_other": "Récolter {{count}} matériaux de rareté {{variantText}} ou plus",
     "collectRent": "Récolter le loyer d'un appartement",
     "commandFightHistory": "Consulter l'historique des combats",
+    "commandMap": "Faire la commande {command:map}",
     "commandMission": "Faire la commande {command:missions}",
     "commandReport": "Faire la commande {command:report}",
     "cookRecipes_one": "Réaliser {{count}} recette",

@@ -73,6 +73,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "commandMap",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 40,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "goToPlace",
       "missionVariant": 3,
       "missionObjective": 1,

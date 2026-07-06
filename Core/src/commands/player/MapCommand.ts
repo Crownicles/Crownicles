@@ -13,6 +13,7 @@ import {
 } from "../../core/utils/CommandUtils";
 import { Maps } from "../../core/maps/Maps";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
+import { MissionsController } from "../../core/missions/MissionsController";
 
 /**
  * Get the map information for the player
@@ -76,7 +77,7 @@ export class MapCommand {
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD,
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
-	execute(response: CrowniclesPacket[], player: Player, packet: CommandMapPacketReq): void {
+	async execute(response: CrowniclesPacket[], player: Player, packet: CommandMapPacketReq): Promise<void> {
 		const hasArrived = Maps.isArrived(player, new Date());
 		const destinationMap = player.getDestination()!;
 
@@ -88,5 +89,7 @@ export class MapCommand {
 			mapType: destinationMap.type,
 			hasArrived
 		}));
+
+		await MissionsController.update(player, response, { missionId: "commandMap" });
 	}
 }
