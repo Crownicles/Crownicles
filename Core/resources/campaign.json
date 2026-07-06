@@ -89,6 +89,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "visitCityNpc",
+      "missionVariant": 2,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 30,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "buyHome",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -126,14 +134,6 @@
       "missionObjective": 1,
       "gemsToWin": 1,
       "xpToWin": 25,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "visitCityNpc",
-      "missionVariant": 2,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 30,
       "moneyToWin": 0
     },
     {
