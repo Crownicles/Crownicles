@@ -1328,13 +1328,6 @@
       "atParticle": "a la",
       "inParticle": "en el"
     },
-    "42": {
-      "description": "Explanada pavimentada que une Boug-Coton con las puertas del castillo real. Los mensajeros se cruzan en su camino hacia los pisos del rey.",
-      "name": "Cour du Château",
-      "particle": "a la",
-      "atParticle": "a la",
-      "inParticle": "en el"
-    },
     "4": {
       "description": "Un vasto bosque al sur de la Cuna. Se dice que muchos viajeros se han perdido aquí.",
       "name": "Bosque de Vieillard",
@@ -1371,41 +1364,6 @@
       "name": "Grande Rue",
       "particle": "a la",
       "atParticle": "a la"
-    },
-    "34": {
-      "description": "Una ciudad tranquila a orillas de Plage Sentinelle.",
-      "name": "Mergagnan",
-      "particle": "a",
-      "atParticle": "à",
-      "inParticle": "en"
-    },
-    "35": {
-      "description": "Un pueblo tranquilo conocido por su acogedora posada.",
-      "name": "Algodón Boug",
-      "particle": "a",
-      "atParticle": "à",
-      "inParticle": "en"
-    },
-    "36": {
-      "description": "Antaño una gran ciudad fortificada, Ville Forte es ahora una sombra de lo que fue. Asolada por la antigua guerra, sólo quedan una docena de casas y campesinos. El resto de las antiguas fortificaciones está en ruinas.",
-      "name": "Ciudad fuerte",
-      "particle": "a la",
-      "atParticle": "a la",
-      "inParticle": "en el"
-    },
-    "37": {
-      "description": "Claire de Ville, gran ciudad comercial y encrucijada económica, no siempre ha sido tan acogedora. Inicialmente muy pobre, se ha desarrollado rápidamente gracias a sus numerosos comercios y hoteles que ofrecen una amplia oferta a los viajeros de la región. Claire de Ville también es conocida por su tranquilidad y respeto al orden.",
-      "name": "Claire de Ville",
-      "particle": "a",
-      "atParticle": "à",
-      "inParticle": "en"
-    },
-    "38": {
-      "description": "Un pueblo oasis muy buscado por los nobles del Valle de los Reyes en busca de frescura. Los cocos que se cosechan aquí tienen fama en todo el país y se cotizan con sobreprecio en los mercados del reino. La escasez de terrenos edificables en torno al manantial lo convierte en uno de los lugares más codiciados.",
-      "name": "Coco Village",
-      "particle": "a la",
-      "atParticle": "en",
-      "inParticle": "en el"
     }
   },
   "map_types": {
@@ -1573,8 +1531,8 @@
     "cookRecipes_other": "Preparar {{count}} recetas",
     "cultivatePlants_one": "Cosechar {{count}} planta",
     "cultivatePlants_other": "Cosechar {{count}} plantas",
-    "getAncestralTrees_one": "Conseguir {{count}} brotes de un árbol ancestral",
-    "getAncestralTrees_other": "Conseguir {{count}} brotes de un árbol ancestral",
+    "getAncestralTrees_one": "Récolter ou acheter {{count}} pousse d'arbre ancestral",
+    "getAncestralTrees_other": "Récolter ou acheter {{count}} pousses d'arbre ancestral",
     "dailyPotionsStock": "Compra las existencias de pociones de hoy",
     "depositChestItem_one": "Depositar {{count}} el objeto en la caja fuerte de tu casa",
     "depositChestItem_other": "Guardar {{count}} objetos en el truhén de tu casa",
