@@ -171,6 +171,19 @@ export class PlayerPlantSlots {
 		const seedSlot = await PlayerPlantSlots.getSeedSlot(playerId);
 		return seedSlot?.plantId === plantId;
 	}
+
+	/**
+	 * Check if the player holds a given plant type in one of their plant slots (inventory, excluding the seed slot)
+	 */
+	public static async hasPlantInPlantSlots(playerId: number, plantId: PlantId): Promise<boolean> {
+		return await PlayerPlantSlot.count({
+			where: {
+				playerId,
+				slotType: PLANT_SLOT_TYPE.PLANT,
+				plantId
+			}
+		}) > 0;
+	}
 }
 
 export function initModel(sequelize: Sequelize): void {
