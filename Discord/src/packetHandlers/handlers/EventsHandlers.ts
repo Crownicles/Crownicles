@@ -22,12 +22,78 @@ import { PlayerReceivePetPacket } from "../../../../Lib/src/packets/events/Playe
 import { GiveFoodToGuildPacket } from "../../../../Lib/src/packets/utils/GiveFoodToGuildPacket";
 import { NoFoodSpaceInGuildPacket } from "../../../../Lib/src/packets/utils/NoFoodSpaceInGuildPacket";
 import { MissionUtils } from "../../utils/MissionUtils";
-import { MissionType } from "../../../../Lib/src/types/CompletedMission";
+import {
+	CompletedMission, MissionType
+} from "../../../../Lib/src/types/CompletedMission";
+import { Language } from "../../../../Lib/src/Language";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { CrowniclesErrorEmbed } from "../../messages/CrowniclesErrorEmbed";
 import { escapeUsername } from "../../../../Lib/src/utils/StringUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+
+type MissionRewardTotals = {
+	gems: number;
+	points: number;
+	money: number;
+	xp: number;
+};
+
+/**
+ * Group completed missions by type (formatted) and sum their rewards.
+ */
+function buildCompletedMissionData(missions: CompletedMission[], lng: Language): {
+	missionLists: Record<MissionType, string[]>;
+	totals: MissionRewardTotals;
+} {
+	const missionLists: Record<MissionType, string[]> = {
+		[MissionType.CAMPAIGN]: [],
+		[MissionType.DAILY]: [],
+		[MissionType.NORMAL]: []
+	};
+	const totals: MissionRewardTotals = {
+		gems: 0, points: 0, money: 0, xp: 0
+	};
+	for (const mission of missions) {
+		totals.gems += mission.gemsToWin;
+		totals.points += mission.pointsToWin;
+		totals.money += mission.moneyToWin;
+		totals.xp += mission.xpToWin;
+		missionLists[mission.missionType].push(MissionUtils.formatCompletedMission(mission, lng));
+	}
+	return {
+		missionLists, totals
+	};
+}
+
+/**
+ * Build the lines summarizing the total rewards, or the "no rewards" line when everything is zero.
+ */
+function buildTotalRewardsLines(totals: MissionRewardTotals, lng: Language): string[] {
+	const rewards = [
+		{
+			value: totals.gems, key: "gems"
+		},
+		{
+			value: totals.points, key: "points"
+		},
+		{
+			value: totals.money, key: "money"
+		},
+		{
+			value: totals.xp, key: "xp"
+		}
+	];
+	const lines = rewards
+		.filter(reward => reward.value > 0)
+		.map(reward => i18n.t(`notifications:missions.completed.totalDisplay.${reward.key}`, {
+			count: reward.value,
+			lng
+		}));
+	return lines.length === 0
+		? [i18n.t("notifications:missions.completed.noRewards", { lng })]
+		: lines;
+}
 
 export default class EventsHandlers {
 	@packetHandler(CommandReportChooseDestinationRes)
@@ -128,22 +194,9 @@ export default class EventsHandlers {
 			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
 			: new CrowniclesEmbed().setTitle(titleText);
 
-		const missionLists: Record<MissionType, string[]> = {
-			[MissionType.CAMPAIGN]: [],
-			[MissionType.DAILY]: [],
-			[MissionType.NORMAL]: []
-		};
-		let totalGems = 0;
-		let totalPoints = 0;
-		let totalMoney = 0;
-		let totalXP = 0;
-		for (const mission of packet.missions) {
-			totalGems += mission.gemsToWin;
-			totalPoints += mission.pointsToWin;
-			totalMoney += mission.moneyToWin;
-			totalXP += mission.xpToWin;
-			missionLists[mission.missionType].push(MissionUtils.formatCompletedMission(mission, lng));
-		}
+		const {
+			missionLists, totals
+		} = buildCompletedMissionData(packet.missions, lng);
 		for (const [missionType, missions] of Object.entries(missionLists)
 			.filter(entry => entry[1].length !== 0)) {
 			completedMissionsEmbed.addFields({
@@ -155,37 +208,9 @@ export default class EventsHandlers {
 			});
 		}
 		if (packet.missions.length > 1) {
-			const totalRewardsLines: string[] = [];
-			if (totalGems > 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.gems", {
-					count: totalGems,
-					lng
-				}));
-			}
-			if (totalPoints > 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.points", {
-					count: totalPoints,
-					lng
-				}));
-			}
-			if (totalMoney > 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.money", {
-					count: totalMoney,
-					lng
-				}));
-			}
-			if (totalXP > 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.totalDisplay.xp", {
-					count: totalXP,
-					lng
-				}));
-			}
-			if (totalRewardsLines.length === 0) {
-				totalRewardsLines.push(i18n.t("notifications:missions.completed.noRewards", { lng }));
-			}
 			completedMissionsEmbed.addFields({
 				name: i18n.t("notifications:missions.completed.totalRewards", { lng }),
-				value: totalRewardsLines.join("\n")
+				value: buildTotalRewardsLines(totals, lng).join("\n")
 			});
 		}
 		if (packet.nextCampaignMission) {
