@@ -6,7 +6,7 @@ import {
 /*
  * Campaign rework from the V6 test feedback (#4347), applied as a single migration.
  *
- * The campaign grows from 144 to 148 missions. Each structural change is a blob edit:
+ * The campaign grows from 144 to 149 missions. Each structural change is a blob edit:
  * addCampaignMission(pos) inserts an uncompleted "0" at pos (and shifts progression),
  * removeCampaignMission(pos) deletes the char at pos. A mission MOVE is therefore a
  * remove-at-old-position followed by an add-at-new-position; the moved mission's
@@ -15,7 +15,7 @@ import {
  * The operations below are applied in order; the positions are expressed in the blob
  * coordinate system AS IT EXISTS at each step (i.e. after the previous operations).
  * A blob simulation confirmed the final uncompleted positions match campaign.json:
- * [10, 12, 19, 20, 39, 41, 52, 62, 70, 110, 120, 131, 132].
+ * [10, 12, 19, 20, 39, 41, 52, 53, 54, 63, 71, 111, 121, 132, 133].
  */
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
 	// Cooking mission (position 60) + removal of the duplicated meetDifferentPlayers.
@@ -62,6 +62,14 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	await addCampaignMission(context, 110);
 	await addCampaignMission(context, 132);
 
+	/*
+	 * Move "meet Talvar" before the first expedition and insert a "show a pet to Talvar" step right before it,
+	 * so the pet-expedition prerequisite is introduced in the right order (feedback #4347).
+	 */
+	await removeCampaignMission(context, 60);
+	await addCampaignMission(context, 53);
+	await addCampaignMission(context, 54);
+
 	// Completed-campaign players are pointed to the earliest new mission (position 10).
 	await context.sequelize.query(`
 		UPDATE player_missions_info
@@ -73,6 +81,10 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {
 	// Reverse every operation of up() in the opposite order.
+	await removeCampaignMission(context, 54);
+	await removeCampaignMission(context, 53);
+	await addCampaignMission(context, 60);
+
 	await removeCampaignMission(context, 132);
 	await removeCampaignMission(context, 110);
 

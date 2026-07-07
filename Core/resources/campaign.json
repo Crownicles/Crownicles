@@ -417,6 +417,22 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "meetTalvar",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "showPetsToTalvar",
+      "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 1,
+      "xpToWin": 100,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "doExpeditions",
       "missionVariant": 0,
       "missionObjective": 1,
@@ -470,14 +486,6 @@
       "missionObjective": 40,
       "gemsToWin": 1,
       "xpToWin": 50,
-      "moneyToWin": 0
-    },
-    {
-      "missionId": "meetTalvar",
-      "missionVariant": 0,
-      "missionObjective": 1,
-      "gemsToWin": 1,
-      "xpToWin": 100,
       "moneyToWin": 0
     },
     {
@@ -913,11 +921,11 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "winBossWithDifferentClasses",
+      "missionId": "winAnyBossWithDifferentClasses",
       "missionVariant": 0,
       "missionObjective": 1,
-      "gemsToWin": 6,
-      "xpToWin": 400,
+      "gemsToWin": 3,
+      "xpToWin": 200,
       "moneyToWin": 0
     },
     {
