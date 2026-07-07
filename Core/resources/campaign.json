@@ -873,6 +873,14 @@
       "moneyToWin": 0
     },
     {
+      "missionId": "reachCookingLevel",
+      "missionVariant": 0,
+      "missionObjective": 31,
+      "gemsToWin": 4,
+      "xpToWin": 250,
+      "moneyToWin": 0
+    },
+    {
       "missionId": "contributeToBlessing",
       "missionVariant": 5,
       "missionObjective": 16300,
@@ -1035,6 +1043,14 @@
     {
       "missionId": "getAncestralTrees",
       "missionVariant": 0,
+      "missionObjective": 1,
+      "gemsToWin": 5,
+      "xpToWin": 300,
+      "moneyToWin": 0
+    },
+    {
+      "missionId": "cookPotionRarity",
+      "missionVariant": 6,
       "missionObjective": 1,
       "gemsToWin": 5,
       "xpToWin": 300,
