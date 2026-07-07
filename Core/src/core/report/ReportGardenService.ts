@@ -416,22 +416,45 @@ export function handleGardenPlant(
 	packet: CommandReportGardenPlantReq,
 	response: CrowniclesPacket[]
 ): Promise<CrowniclesPacket> {
+	let plantedPlayer: Player | null = null;
 	return withGardenLock(
 		keycloakId,
 		() => makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_SEED),
-		(player, home) => runGardenPlantUnderLock(player, home, packet, response)
-	);
+		async (player, home) => {
+			const result = await runGardenPlantUnderLock(player, home, packet);
+			if (result.planted) {
+				plantedPlayer = player;
+			}
+			return result.packet;
+		}
+	).then(async resultPacket => {
+		/*
+		 * The plantSeed mission update runs OUTSIDE the garden lock on purpose:
+		 * MissionsController.update locks [player_missions_info, players] in canonical
+		 * order, so acquiring it while the garden lock already holds the players row
+		 * would invert the lock order and risk a deadlock. The cooking service applies
+		 * the same after-lock pattern (see ReportCookingService.executeReadyCookingCraft).
+		 */
+		if (plantedPlayer) {
+			await MissionsController.update(plantedPlayer, response, { missionId: "plantSeed" });
+		}
+		return resultPacket;
+	});
 }
 
 async function runGardenPlantUnderLock(
 	player: Player,
 	home: Home,
-	packet: CommandReportGardenPlantReq,
-	response: CrowniclesPacket[]
-): Promise<CrowniclesPacket> {
+	packet: CommandReportGardenPlantReq
+): Promise<{
+	planted: boolean; packet: CrowniclesPacket;
+}> {
 	const validation = await validateGardenPlant(player, home, packet);
 	if (validation.error) {
-		return makeGardenErrorPacket(validation.error);
+		return {
+			planted: false,
+			packet: makeGardenErrorPacket(validation.error)
+		};
 	}
 
 	const {
@@ -442,8 +465,6 @@ async function runGardenPlantUnderLock(
 	await HomeGardenSlots.plantSeed(home.id, gardenSlot!.slot, plantId);
 	await PlayerPlantSlots.clearSeed(player.id);
 
-	await MissionsController.update(player, response, { missionId: "plantSeed" });
-
 	crowniclesInstance?.logsDatabase.logGardenAction({
 		keycloakId: player.keycloakId,
 		cityId: player.getCurrentCityId(),
@@ -453,10 +474,13 @@ async function runGardenPlantUnderLock(
 		cost: 0
 	}).then();
 
-	return makePacket(CommandReportGardenPlantRes, {
-		plantId,
-		gardenSlot: gardenSlot!.slot
-	});
+	return {
+		planted: true,
+		packet: makePacket(CommandReportGardenPlantRes, {
+			plantId,
+			gardenSlot: gardenSlot!.slot
+		})
+	};
 }
 
 type GardenPlantValidation = {
