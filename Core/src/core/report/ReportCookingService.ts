@@ -389,6 +389,7 @@ export async function handleCookingRevive(
 
 interface CraftOutputResult {
 	potionId?: number;
+	potionRarity?: number;
 	petFood?: CraftPetFoodResult;
 	material?: CraftMaterialResult;
 	failedPotionId?: number;
@@ -444,6 +445,7 @@ async function handlePotionOutput({
 	const itemReceived = await player.giveItem(potion);
 	const result: CraftOutputResult = {
 		potionId: potion.id,
+		potionRarity: effectiveRarity,
 		bonusHonored: bonus && effectiveRarity > recipe.potionRarity
 	};
 	if (!itemReceived) {
@@ -895,6 +897,22 @@ async function executeReadyCookingCraft(
 		craftContext, result, outputResult
 	}));
 	await MissionsController.update(craftContext.player, response, { missionId: "cookRecipes" });
+
+	if (result.levelUp) {
+		await MissionsController.update(craftContext.player, response, {
+			missionId: "reachCookingLevel",
+			count: craftContext.player.cookingLevel,
+			set: true
+		});
+	}
+
+	if (outputResult.potionRarity !== undefined) {
+		await MissionsController.update(craftContext.player, response, {
+			missionId: "cookPotionRarity",
+			params: { rarity: outputResult.potionRarity }
+		});
+	}
+
 	return response;
 }
 
