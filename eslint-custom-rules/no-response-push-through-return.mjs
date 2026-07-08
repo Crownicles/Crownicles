@@ -51,6 +51,32 @@ function callArgumentsContainIdentifier(callNode, identifierName) {
 	});
 }
 
+/**
+ * If `callee` is a `<identifier>.push` member expression, return the identifier
+ * name being pushed into; otherwise return null.
+ */
+function getPushTargetArrayName(callee) {
+	const isArrayPush = callee.type === "MemberExpression"
+		&& !callee.computed
+		&& callee.property.type === "Identifier"
+		&& callee.property.name === "push"
+		&& callee.object.type === "Identifier";
+	return isArrayPush ? callee.object.name : null;
+}
+
+/**
+ * Unwrap `await fn(...)` and `...await fn(...)` down to the awaited
+ * `CallExpression`, or return null when the argument is not an awaited call.
+ */
+function getAwaitedCall(rawArg) {
+	const maybeAwait = rawArg.type === "SpreadElement" ? rawArg.argument : rawArg;
+	if (maybeAwait.type !== "AwaitExpression") {
+		return null;
+	}
+	const call = maybeAwait.argument;
+	return call.type === "CallExpression" ? call : null;
+}
+
 export default {
 	meta: {
 		type: "problem",
@@ -67,36 +93,22 @@ export default {
 	create(context) {
 		return {
 			CallExpression(node) {
-				const callee = node.callee;
-
-				// Match `<identifier>.push(...)`
-				if (
-					callee.type !== "MemberExpression"
-					|| callee.computed
-					|| callee.property.type !== "Identifier"
-					|| callee.property.name !== "push"
-					|| callee.object.type !== "Identifier"
-				) {
+				const arrayName = getPushTargetArrayName(node.callee);
+				if (arrayName === null) {
 					return;
 				}
 
-				const arrayName = callee.object.name;
+				const pushesThroughReturn = node.arguments.some(rawArg => {
+					const call = getAwaitedCall(rawArg);
+					return call !== null && callArgumentsContainIdentifier(call, arrayName);
+				});
 
-				for (const rawArg of node.arguments) {
-					// Unwrap `...await fn(...)` and `await fn(...)`.
-					const maybeAwait = rawArg.type === "SpreadElement" ? rawArg.argument : rawArg;
-					if (maybeAwait.type !== "AwaitExpression") {
-						continue;
-					}
-					const call = maybeAwait.argument;
-					if (call.type === "CallExpression" && callArgumentsContainIdentifier(call, arrayName)) {
-						context.report({
-							node,
-							messageId: "noPushThroughReturn",
-							data: { array: arrayName }
-						});
-						return;
-					}
+				if (pushesThroughReturn) {
+					context.report({
+						node,
+						messageId: "noPushThroughReturn",
+						data: { array: arrayName }
+					});
 				}
 			}
 		};
