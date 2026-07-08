@@ -93,15 +93,17 @@ function runTreasuryDepositUnderLock(
 	);
 }
 
-export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq, response: CrowniclesPacket[]): Promise<CrowniclesPacket> {
+export async function handleGuildDomainDepositTreasury(keycloakId: string, packet: CommandReportGuildDomainDepositTreasuryReq, response: CrowniclesPacket[]): Promise<void> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	if (!player || !player.guildId) {
-		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD });
+		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NO_GUILD }));
+		return;
 	}
 
 	const grossAmount = Math.floor(packet.amount);
 	if (!Number.isFinite(grossAmount) || grossAmount <= 0) {
-		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_AMOUNT });
+		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.INVALID_AMOUNT }));
+		return;
 	}
 
 	/*
@@ -110,14 +112,21 @@ export async function handleGuildDomainDepositTreasury(keycloakId: string, packe
 	 * is repeated *inside* the lock against a freshly-loaded row.
 	 */
 	if (player.money < grossAmount) {
-		return makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY });
+		response.push(makePacket(CommandReportGuildDomainDepositTreasuryErrorRes, { error: GUILD_DOMAIN_ERROR.NOT_ENOUGH_MONEY }));
+		return;
 	}
 
 	const result = await runTreasuryDepositUnderLock(player, packet, player.guildId, grossAmount);
 
 	logGuildTreasuryDeposit(result.logParams);
+
+	/*
+	 * Push the command response before the mission update so it lands first in
+	 * the batch (mirrors the cooking-craft ordering; see AsyncPacketSender
+	 * notification handling and issue #4380).
+	 */
+	response.push(result.packet);
 	if (result.logParams !== null) {
 		await MissionsController.update(player, response, { missionId: "depositGuildTreasury" });
 	}
-	return result.packet;
 }
