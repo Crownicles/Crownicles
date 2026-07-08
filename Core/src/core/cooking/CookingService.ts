@@ -547,27 +547,40 @@ export class CookingService {
 
 	/**
 	 * Anchor the pinned recipe to a deterministic slot so its position stays
-	 * stable across furnace re-rolls, dropping any natural occurrence the
-	 * rotation placed in another slot so it never appears twice. No-op when no
-	 * available slot can host the recipe.
+	 * stable across furnace re-rolls. When the rotation already placed the recipe
+	 * in another slot, the two slots are swapped instead of overwriting the anchor:
+	 * the pinned recipe reaches its stable anchor slot while the recipe it displaces
+	 * keeps a slot rather than vanishing and leaving an empty station. The recipe
+	 * never appears twice. No-op when no available slot can host the recipe.
 	 */
 	private static anchorPinnedRecipe({
 		slotRecipes, cookingSlots
 	}: PinnedRecipeInjection, pinnedRecipe: CookingRecipe): void {
-		const compatibleSlotIndex = SLOT_CONFIGS.findIndex((config, idx) =>
+		const anchorSlotIndex = SLOT_CONFIGS.findIndex((config, idx) =>
 			idx < cookingSlots
 			&& pinnedRecipe.level >= config.minLevel
 			&& pinnedRecipe.level <= config.maxLevel
 			&& config.eligibleTypes.includes(pinnedRecipe.recipeType));
-		if (compatibleSlotIndex === -1) {
+		if (anchorSlotIndex === -1) {
 			return;
 		}
-		for (let i = 0; i < slotRecipes.length; i++) {
-			if (i !== compatibleSlotIndex && slotRecipes[i]?.id === pinnedRecipe.id) {
-				slotRecipes[i] = null;
-			}
+
+		const naturalSlotIndex = slotRecipes.findIndex(recipe => recipe?.id === pinnedRecipe.id);
+
+		// Already sitting in its anchor slot: nothing to move.
+		if (naturalSlotIndex === anchorSlotIndex) {
+			return;
 		}
-		slotRecipes[compatibleSlotIndex] = pinnedRecipe;
+
+		if (naturalSlotIndex === -1) {
+			// Absent from the current rotation: inject it into its anchor slot.
+			slotRecipes[anchorSlotIndex] = pinnedRecipe;
+			return;
+		}
+
+		// Present elsewhere: swap so the displaced recipe keeps a slot instead of vanishing.
+		slotRecipes[naturalSlotIndex] = slotRecipes[anchorSlotIndex];
+		slotRecipes[anchorSlotIndex] = pinnedRecipe;
 	}
 
 	/**
