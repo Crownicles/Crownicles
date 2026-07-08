@@ -11,6 +11,7 @@ import type { MissionSlot as MissionSlotType } from "../../src/core/database/gam
 import type { PlayerMissionsInfo as PlayerMissionsInfoType } from "../../src/core/database/game/models/PlayerMissionsInfo";
 import { PetConstants } from "../../../Lib/src/constants/PetConstants";
 import type { CommandReportFoodShopBuyReq } from "../../../Lib/src/packets/commands/CommandReportPacket";
+import type { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket";
 
 type FoodShopModule = typeof import("../../src/core/report/ReportCityFoodShopService");
 
@@ -129,6 +130,48 @@ describe("handleFoodShopBuy mission side effects", () => {
 
 		expect(await numberDoneOf(playerId, "buyGuildPetFood")).toBe(2);
 		expect(await numberDoneOf(playerId, "buyUltimateSoups")).toBe(2);
+	});
+
+	it("emits the buy response before any MissionsCompletedPacket (issue #4380)", async () => {
+		const player = await Player.create({ keycloakId: "food-shop-order" });
+		const guild = await Guild.create({
+			name: "FoodShopGuild-order",
+			chiefId: player.id,
+			shopLevel: 1,
+			treasury: 10_000
+		});
+		await Player.update({ guildId: guild.id }, { where: { id: player.id } });
+		await PlayerMissionsInfo.create({ playerId: player.id });
+		// Objective equals the purchased amount so the mission completes and a
+		// MissionsCompletedPacket is emitted, exercising the ordering.
+		await MissionSlot.create({
+			playerId: player.id,
+			missionId: "buyUltimateSoups",
+			missionVariant: 0,
+			missionObjective: 2,
+			numberDone: 0,
+			expiresAt: null,
+			gemsToWin: 0,
+			pointsToWin: 0,
+			xpToWin: 0,
+			moneyToWin: 0
+		});
+
+		const packet = {
+			foodType: PetConstants.PET_FOOD.ULTIMATE_FOOD,
+			amount: 2
+		} as CommandReportFoodShopBuyReq;
+
+		const response: CrowniclesPacket[] = [];
+		await foodShop.handleFoodShopBuy("food-shop-order", packet, response);
+
+		const buyResIndex = response.findIndex(p => p.constructor.name === "CommandReportFoodShopBuyRes");
+		const missionsCompletedIndex = response.findIndex(p => p.constructor.name === "MissionsCompletedPacket");
+
+		// The command response must always land first so the Discord async
+		// callback consumes it instead of a MissionsCompletedPacket.
+		expect(buyResIndex).toBe(0);
+		expect(missionsCompletedIndex).toBeGreaterThan(buyResIndex);
 	});
 
 	it("does not advance buyUltimateSoups when buying non-ultimate food", async () => {
