@@ -1,5 +1,5 @@
 import {
-	CrowniclesPacket, PacketContext, PacketLike
+	CrowniclesPacket, PacketContext
 } from "./CrowniclesPacket";
 import { GuildLevelUpPacket } from "./events/GuildLevelUpPacket";
 import { ItemAcceptPacket } from "./events/ItemAcceptPacket";
@@ -27,13 +27,6 @@ interface WaitingPacket {
 
 	/** Timer that evicts this entry if no response ever arrives. */
 	evictionTimer: ReturnType<typeof setTimeout>;
-
-	/**
-	 * When set, only packets whose class name is in this set may fulfil the
-	 * request; any other packet is left for its own listener (see
-	 * {@link AsyncPacketSender.handleResponse}).
-	 */
-	expectedResponseNames?: ReadonlySet<string>;
 }
 
 /**
@@ -75,20 +68,16 @@ export abstract class AsyncPacketSender {
 
 	/**
 	 * Send a request packet and register a callback to handle its response.
+	 * Notification/broadcast packets ({@link NOTIFICATION_PACKET_NAMES}) are
+	 * never routed to `callback`; they reach their own listener instead.
 	 * @param context request context (a fresh packetId is assigned)
 	 * @param packet the request packet
 	 * @param callback invoked with the response packet
-	 * @param expectedResponses optional list of packet classes that are valid
-	 * responses to this request. When provided, any packet whose class is not
-	 * listed is left untouched for its own listener instead of being consumed
-	 * by `callback`. Notification packets are always skipped regardless of this
-	 * list.
 	 */
 	public sendPacketAndHandleResponse(
 		context: PacketContext,
 		packet: CrowniclesPacket,
-		callback: AsyncPacketSenderCallback,
-		expectedResponses?: PacketLike<CrowniclesPacket>[]
+		callback: AsyncPacketSenderCallback
 	): Promise<void> {
 		const packetId = crypto.randomUUID();
 		context.packetId = packetId;
@@ -96,8 +85,7 @@ export abstract class AsyncPacketSender {
 		evictionTimer.unref?.();
 		this.waitingPackets.set(packetId, {
 			callback,
-			evictionTimer,
-			...expectedResponses ? { expectedResponseNames: new Set(expectedResponses.map(packetClass => packetClass.name)) } : {}
+			evictionTimer
 		});
 		return this.sendPacket(context, packet);
 	}
@@ -117,15 +105,6 @@ export abstract class AsyncPacketSender {
 		 * listener and keep waiting for the real response.
 		 */
 		if (NOTIFICATION_PACKET_NAMES.has(packetName)) {
-			return false;
-		}
-
-		/*
-		 * If the caller declared which responses it expects, ignore anything
-		 * else so it is routed to its dedicated listener instead of being
-		 * mis-consumed.
-		 */
-		if (waiting.expectedResponseNames && !waiting.expectedResponseNames.has(packetName)) {
 			return false;
 		}
 

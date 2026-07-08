@@ -31,9 +31,8 @@ class TestPacketSender extends AsyncPacketSender {
 	}
 }
 
-// Minimal stand-in response packets (only their class name matters here).
+// Minimal stand-in response packet (only its class name matters here).
 class FooRes extends CrowniclesPacket {}
-class BarRes extends CrowniclesPacket {}
 
 function makeContext(): PacketContext {
 	return {
@@ -74,30 +73,6 @@ describe("AsyncPacketSender.handleResponse", () => {
 		// The actual response arrives afterwards and still reaches the callback.
 		const responseConsumed = await sender.handleResponse(ctx, FooRes.name, new FooRes());
 		expect(responseConsumed).toBe(true);
-		expect(received).toEqual([FooRes.name]);
-	});
-
-	it("with expectedResponses, ignores unlisted packets and consumes only a listed one", async () => {
-		const sender = new TestPacketSender();
-		const ctx = makeContext();
-		const received: string[] = [];
-
-		await sender.sendPacketAndHandleResponse(
-			ctx,
-			new FooRes(),
-			(_c, name) => {
-				received.push(name);
-			},
-			[FooRes]
-		);
-
-		// BarRes is neither a notification nor an expected response: leave it alone.
-		const barConsumed = await sender.handleResponse(ctx, BarRes.name, new BarRes());
-		expect(barConsumed).toBe(false);
-		expect(received).toEqual([]);
-
-		const fooConsumed = await sender.handleResponse(ctx, FooRes.name, new FooRes());
-		expect(fooConsumed).toBe(true);
 		expect(received).toEqual([FooRes.name]);
 	});
 

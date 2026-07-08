@@ -20,7 +20,6 @@ import { DiscordMQTT } from "../../../../bot/DiscordMQTT";
 import {
 	CommandReportFoodShopBuyReq,
 	CommandReportFoodShopBuyRes,
-	CommandReportFoodShopBuyErrorRes,
 	CommandReportGuildDomainDepositTreasuryReq,
 	CommandReportGuildDomainDepositTreasuryRes
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
@@ -188,10 +187,7 @@ async function handleFoodBuy(ctx: FoodShopMenuContext, foodType: PetFood, amount
 				// Buy failed (e.g., another member just drained the treasury): end the report with a clear error.
 				finishReportWithErrorEmbed(ctx, nestedMenus, i18n.t("commands:report.city.guildDomain.subMenus.shop.buyFoodError", { lng: ctx.lng }));
 			}
-		},
-
-		// Only these responses may fulfil the request; mission/reward broadcasts are routed to their own listeners.
-		[CommandReportFoodShopBuyRes, CommandReportFoodShopBuyErrorRes]
+		}
 	);
 }
 
