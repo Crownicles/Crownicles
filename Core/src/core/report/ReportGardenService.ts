@@ -211,12 +211,20 @@ function computeReadyAtTimestamp(slot: HomeGardenSlot, effectiveGrowthTime: numb
  * Runs under a composite Player + Home lock so concurrent shards cannot
  * double-harvest the same ready slot (race-safe, see review checklist §10).
  */
-export function handleGardenHarvest(
+export async function handleGardenHarvest(
 	keycloakId: string,
 	_packet: CommandReportGardenHarvestReq,
 	response: CrowniclesPacket[]
-): Promise<CrowniclesPacket> {
-	return withGardenLock(
+): Promise<void> {
+	/*
+	 * Mission completions (and other side effects) are collected in a separate
+	 * array so the harvest response can be pushed *first* into the batch. A
+	 * MissionsCompletedPacket sitting before the response would be routed to the
+	 * front-end's request callback instead of its own listener (see
+	 * AsyncPacketSender notification handling and issue #4380).
+	 */
+	const sideEffects: CrowniclesPacket[] = [];
+	const packet = await withGardenLock(
 		keycloakId,
 		() => makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS),
 		(player, home) => {
@@ -225,10 +233,11 @@ export function handleGardenHarvest(
 				return Promise.resolve(makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS));
 			}
 			return runHarvestUnderLock({
-				player, home, homeLevel, response
+				player, home, homeLevel, response: sideEffects
 			});
 		}
 	);
+	response.push(packet, ...sideEffects);
 }
 
 type CompostResult = {
@@ -415,7 +424,7 @@ export function handleGardenPlant(
 	keycloakId: string,
 	packet: CommandReportGardenPlantReq,
 	response: CrowniclesPacket[]
-): Promise<CrowniclesPacket> {
+): Promise<void> {
 	let plantedPlayer: Player | null = null;
 	return withGardenLock(
 		keycloakId,
@@ -429,16 +438,21 @@ export function handleGardenPlant(
 		}
 	).then(async resultPacket => {
 		/*
+		 * Side effects go into a separate array so the plant response is pushed
+		 * first into the batch (see AsyncPacketSender notification handling and
+		 * issue #4380).
+		 *
 		 * The plantSeed mission update runs OUTSIDE the garden lock on purpose:
 		 * MissionsController.update locks [player_missions_info, players] in canonical
 		 * order, so acquiring it while the garden lock already holds the players row
 		 * would invert the lock order and risk a deadlock. The cooking service applies
 		 * the same after-lock pattern (see ReportCookingService.executeReadyCookingCraft).
 		 */
+		const sideEffects: CrowniclesPacket[] = [];
 		if (plantedPlayer) {
-			await MissionsController.update(plantedPlayer, response, { missionId: "plantSeed" });
+			await MissionsController.update(plantedPlayer, sideEffects, { missionId: "plantSeed" });
 		}
-		return resultPacket;
+		response.push(resultPacket, ...sideEffects);
 	});
 }
 

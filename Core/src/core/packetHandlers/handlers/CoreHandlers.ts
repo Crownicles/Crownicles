@@ -75,12 +75,12 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportGardenHarvestReq)
 	async gardenHarvest(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenHarvestReq): Promise<void> {
-		response.push(await handleGardenHarvest(context.keycloakId!, packet, response));
+		await handleGardenHarvest(context.keycloakId!, packet, response);
 	}
 
 	@packetHandler(CommandReportGardenPlantReq)
 	async gardenPlant(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGardenPlantReq): Promise<void> {
-		response.push(await handleGardenPlant(context.keycloakId!, packet, response));
+		await handleGardenPlant(context.keycloakId!, packet, response);
 	}
 
 	@packetHandler(CommandReportGardenWaterReq)
@@ -140,6 +140,6 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportGuildDomainDepositTreasuryReq)
 	async guildDomainDepositTreasury(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportGuildDomainDepositTreasuryReq): Promise<void> {
-		response.push(await handleGuildDomainDepositTreasury(context.keycloakId!, packet, response));
+		await handleGuildDomainDepositTreasury(context.keycloakId!, packet, response);
 	}
 }
