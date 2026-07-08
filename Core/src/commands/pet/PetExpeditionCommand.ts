@@ -97,16 +97,18 @@ async function updateExpeditionMissions(
 		return;
 	}
 
-	await MissionsController.update(player, response, { missionId: "doExpeditions" });
-	await MissionsController.update(player, response, {
-		missionId: "longExpedition",
-		params: { durationMinutes: expeditionData.durationMinutes }
-	});
-	await MissionsController.update(player, response, {
-		missionId: "dangerousExpedition",
-		params: { riskRate: expeditionData.riskRate }
-	});
-	await MissionsController.update(player, response, { missionId: "expeditionStreak" });
+	await MissionsController.updateMultiple(player, response, [
+		{ missionId: "doExpeditions" },
+		{
+			missionId: "longExpedition",
+			params: { durationMinutes: expeditionData.durationMinutes }
+		},
+		{
+			missionId: "dangerousExpedition",
+			params: { riskRate: expeditionData.riskRate }
+		},
+		{ missionId: "expeditionStreak" }
+	]);
 }
 
 /**

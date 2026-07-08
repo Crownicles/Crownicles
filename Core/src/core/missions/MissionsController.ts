@@ -234,6 +234,49 @@ export abstract class MissionsController {
 	}
 
 	/**
+	 * Acquire the per-player mission lock (Player + PlayerMissionsInfo rows) and run
+	 * `body` under it, resolving the current daily mission first.
+	 *
+	 * The daily mission is resolved BEFORE acquiring the lock: DailyMissions.getOrGenerate()
+	 * can run a whole-table UPDATE on player_missions_info when the daily mission rolls
+	 * over, which would otherwise execute inside this player's transaction and hold row
+	 * locks on every player_missions_info row until commit — causing cascading
+	 * ER_LOCK_WAIT_TIMEOUT (1205).
+	 *
+	 * A vanished locked row (LockedRowNotFoundError) is warn-and-skipped so fire-and-forget
+	 * callers don't crash on a concurrently-deleted player.
+	 * @param player
+	 * @param caller identifier used in the skip warning
+	 * @param body the work to run once the rows are locked
+	 */
+	private static async runUnderMissionLock(
+		player: Player,
+		caller: string,
+		body: (lockedPlayer: Player, lockedMissionInfo: PlayerMissionsInfo, dailyMission: DailyMission) => Promise<Player>
+	): Promise<Player> {
+		const dailyMission = await DailyMissions.getOrGenerate();
+		await PlayerMissionsInfos.getOfPlayer(player.id);
+		try {
+			return await withLockedEntities(
+				[
+					Player.lockKey(player.id),
+					PlayerMissionsInfo.lockKey(player.id)
+				] as const,
+				([lockedPlayer, lockedMissionInfo]) => body(lockedPlayer, lockedMissionInfo, dailyMission)
+			);
+		}
+		catch (e) {
+			if (e instanceof LockedRowNotFoundError) {
+				CrowniclesLogger.warn(
+					`${caller}: locked row vanished for player ${player.id} — skipping mission update`
+				);
+				return player;
+			}
+			throw e;
+		}
+	}
+
+	/**
 	 * Update all the mission of the user
 	 * @param player
 	 * @param response the response packets
@@ -242,7 +285,7 @@ export abstract class MissionsController {
 	 * @param params
 	 * @param set
 	 */
-	static async update(
+	static update(
 		player: Player,
 		response: CrowniclesPacket[],
 		{
@@ -253,45 +296,19 @@ export abstract class MissionsController {
 			applyOnLockedPlayer
 		}: MissionInformations
 	): Promise<Player> {
-		/*
-		 * Resolve the current daily mission BEFORE acquiring the per-player lock.
-		 * DailyMissions.getOrGenerate() can run a whole-table UPDATE on player_missions_info
-		 * when the daily mission rolls over, which would otherwise be executed inside this
-		 * player's transaction and hold row locks on every player_missions_info row
-		 * until the transaction commits — causing cascading ER_LOCK_WAIT_TIMEOUT (1205).
-		 */
-		const dailyMission = await DailyMissions.getOrGenerate();
-		await PlayerMissionsInfos.getOfPlayer(player.id);
-		try {
-			return await withLockedEntities(
-				[
-					Player.lockKey(player.id),
-					PlayerMissionsInfo.lockKey(player.id)
-				] as const,
-				([lockedPlayer, lockedMissionInfo]) => {
-					/*
-					 * Apply the caller-supplied mutation on the locked instance so
-					 * the change is persisted under the same row lock as the mission
-					 * progression — see `applyOnLockedPlayer` JSDoc and #4207.
-					 */
-					applyOnLockedPlayer?.(lockedPlayer);
-					const resolvedCount = typeof count === "function" ? count(lockedPlayer) : count;
-					const info: ResolvedMissionInformations = {
-						missionId, count: resolvedCount, params, set, applyOnLockedPlayer
-					};
-					return MissionsController.runUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, info, dailyMission);
-				}
-			);
-		}
-		catch (e) {
-			if (e instanceof LockedRowNotFoundError) {
-				CrowniclesLogger.warn(
-					`MissionsController.update: locked row vanished for player ${player.id} — skipping mission update`
-				);
-				return player;
-			}
-			throw e;
-		}
+		return MissionsController.runUnderMissionLock(player, "MissionsController.update", (lockedPlayer, lockedMissionInfo, dailyMission) => {
+			/*
+			 * Apply the caller-supplied mutation on the locked instance so
+			 * the change is persisted under the same row lock as the mission
+			 * progression — see `applyOnLockedPlayer` JSDoc and #4207.
+			 */
+			applyOnLockedPlayer?.(lockedPlayer);
+			const resolvedCount = typeof count === "function" ? count(lockedPlayer) : count;
+			const info: ResolvedMissionInformations = {
+				missionId, count: resolvedCount, params, set, applyOnLockedPlayer
+			};
+			return MissionsController.runUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, info, dailyMission);
+		});
 	}
 
 	private static async runUpdateUnderLock(
@@ -309,6 +326,81 @@ export abstract class MissionsController {
 		);
 		const updated = await MissionsController.checkCompletedMissionsUnderLock(
 			player, missionSlots, missionInfo, response, specialMissionCompletion, dailyMission
+		);
+
+		await updated.save();
+		return updated;
+	}
+
+	/**
+	 * Update several missions triggered by a single game action in one atomic pass.
+	 *
+	 * All progress counts are applied to the player's CURRENT mission slots BEFORE
+	 * any campaign progression happens: campaign completion is evaluated only once,
+	 * after every count has been consumed. This guarantees that a campaign mission
+	 * freshly assigned by completing a previous one cannot be retroactively completed
+	 * by another mission update belonging to the same action.
+	 *
+	 * Example: finishing a dangerous expedition triggers `doExpeditions`,
+	 * `longExpedition`, `dangerousExpedition` and `expeditionStreak`. If
+	 * `doExpeditions` completes the current campaign mission and the next one is
+	 * "complete a dangerous expedition", that new mission must NOT be completed by
+	 * the very expedition that assigned it.
+	 *
+	 * @see https://github.com/Crownicles/Crownicles/issues/4379
+	 * @param player
+	 * @param response the response packets
+	 * @param missionInformationsList the mission updates to apply together
+	 */
+	static updateMultiple(
+		player: Player,
+		response: CrowniclesPacket[],
+		missionInformationsList: MissionInformations[]
+	): Promise<Player> {
+		return MissionsController.runUnderMissionLock(
+			player,
+			"MissionsController.updateMultiple",
+			(lockedPlayer, lockedMissionInfo, dailyMission) =>
+				MissionsController.runBatchUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, missionInformationsList, dailyMission)
+		);
+	}
+
+	private static async runBatchUpdateUnderLock(
+		player: Player,
+		missionInfo: PlayerMissionsInfo,
+		response: CrowniclesPacket[],
+		missionInformationsList: MissionInformations[],
+		dailyMission: DailyMission
+	): Promise<Player> {
+		const missionSlots = await MissionSlots.getOfPlayer(player.id);
+
+		await MissionsController.handleExpiredMissionsUnderLock(player, missionSlots, response);
+
+		const aggregatedCompletion: SpecialMissionCompletion = {
+			daily: false,
+			campaign: false
+		};
+		for (const missionInformations of missionInformationsList) {
+			missionInformations.applyOnLockedPlayer?.(player);
+			const resolvedCount = typeof missionInformations.count === "function"
+				? missionInformations.count(player)
+				: missionInformations.count ?? 1;
+			const info: ResolvedMissionInformations = {
+				missionId: missionInformations.missionId,
+				count: resolvedCount,
+				params: missionInformations.params ?? {},
+				set: missionInformations.set ?? false,
+				applyOnLockedPlayer: missionInformations.applyOnLockedPlayer
+			};
+			const completion = await MissionsController.updateMissionsCountsUnderLock(
+				info, missionSlots, missionInfo, player, response, dailyMission
+			);
+			aggregatedCompletion.daily = aggregatedCompletion.daily || completion.daily;
+			aggregatedCompletion.campaign = aggregatedCompletion.campaign || completion.campaign;
+		}
+
+		const updated = await MissionsController.checkCompletedMissionsUnderLock(
+			player, missionSlots, missionInfo, response, aggregatedCompletion, dailyMission
 		);
 
 		await updated.save();
