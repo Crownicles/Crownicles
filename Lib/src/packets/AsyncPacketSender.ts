@@ -1,14 +1,32 @@
 import {
 	CrowniclesPacket, PacketContext, PacketLike
 } from "./CrowniclesPacket";
+import { GuildLevelUpPacket } from "./events/GuildLevelUpPacket";
+import { ItemAcceptPacket } from "./events/ItemAcceptPacket";
+import { ItemFoundPacket } from "./events/ItemFoundPacket";
+import { ItemRefusePacket } from "./events/ItemRefusePacket";
 import { MissionsCompletedPacket } from "./events/MissionsCompletedPacket";
 import { MissionsExpiredPacket } from "./events/MissionsExpiredPacket";
+import { PlayerDeathPacket } from "./events/PlayerDeathPacket";
+import { PlayerLeavePveIslandPacket } from "./events/PlayerLeavePveIslandPacket";
+import { PlayerLevelUpPacket } from "./events/PlayerLevelUpPacket";
 import { PlayerReceivePetPacket } from "./events/PlayerReceivePetPacket";
 
 type AsyncPacketSenderCallback = (context: PacketContext, packetName: string, packet: CrowniclesPacket) => Promise<void> | void;
 
+/**
+ * How long a request callback stays registered before being evicted. This is a
+ * safety net: every request is normally fulfilled by its response, but if the
+ * backend never answers (crash, dropped message…) the entry would otherwise
+ * leak forever in {@link AsyncPacketSender.waitingPackets}.
+ */
+const WAITING_PACKET_TTL_MS = 5 * 60 * 1000;
+
 interface WaitingPacket {
 	callback: AsyncPacketSenderCallback;
+
+	/** Timer that evicts this entry if no response ever arrives. */
+	evictionTimer: ReturnType<typeof setTimeout>;
 
 	/**
 	 * When set, only packets whose class name is in this set may fulfil the
@@ -19,22 +37,34 @@ interface WaitingPacket {
 }
 
 /**
- * Packets that are pushed into a response batch as *side effects* (mission
- * completion, mission expiry, campaign pet rewards) rather than as the answer
- * to the request that triggered them. They are broadcasts routed to their own
- * dedicated listeners, so a pending {@link AsyncPacketSender} request callback
- * must never consume one — otherwise the first side-effect packet in the batch
- * would fulfil (and often mis-handle, as a "failure") the request, and the real
- * response would then fall through to the listener lookup and error out.
+ * Event/broadcast packets: they are pushed into a response batch as *side
+ * effects* (mission completion/expiry, level-ups, item grants, pet rewards,
+ * death…) rather than as the answer to the request that triggered them. Each
+ * has its own dedicated front-end listener and is never awaited as a request
+ * response, so a pending {@link AsyncPacketSender} request callback must never
+ * consume one — otherwise a side-effect packet landing before the real response
+ * in the batch would fulfil (and often mis-handle, as a "failure") the request,
+ * and the real response would then fall through to the listener lookup and
+ * error out.
+ *
+ * This set must list *every* packet under `Lib/src/packets/events` — a
+ * completeness test enforces it (`tests/packets/AsyncPacketSender.test.ts`) so a
+ * newly added broadcast can never silently reopen the ordering-bug class.
  *
  * Regression origin: issue #4380 (food-shop buy showed a false "cannot buy"
  * error + a mission error because a MissionsCompletedPacket was consumed by the
- * buy callback). Centralising the skip here makes the whole class of ordering
- * bugs impossible regardless of the order handlers push packets.
+ * buy callback).
  */
-const NOTIFICATION_PACKET_NAMES: ReadonlySet<string> = new Set([
+export const NOTIFICATION_PACKET_NAMES: ReadonlySet<string> = new Set([
+	GuildLevelUpPacket.name,
+	ItemAcceptPacket.name,
+	ItemFoundPacket.name,
+	ItemRefusePacket.name,
 	MissionsCompletedPacket.name,
 	MissionsExpiredPacket.name,
+	PlayerDeathPacket.name,
+	PlayerLeavePveIslandPacket.name,
+	PlayerLevelUpPacket.name,
 	PlayerReceivePetPacket.name
 ]);
 
@@ -60,10 +90,14 @@ export abstract class AsyncPacketSender {
 		callback: AsyncPacketSenderCallback,
 		expectedResponses?: PacketLike<CrowniclesPacket>[]
 	): Promise<void> {
-		context.packetId = crypto.randomUUID();
-		this.waitingPackets.set(context.packetId, {
+		const packetId = crypto.randomUUID();
+		context.packetId = packetId;
+		const evictionTimer = setTimeout(() => this.waitingPackets.delete(packetId), WAITING_PACKET_TTL_MS);
+		evictionTimer.unref?.();
+		this.waitingPackets.set(packetId, {
 			callback,
-			...expectedResponses ? { expectedResponseNames: new Set(expectedResponses.map(response => response.name)) } : {}
+			evictionTimer,
+			...expectedResponses ? { expectedResponseNames: new Set(expectedResponses.map(packetClass => packetClass.name)) } : {}
 		});
 		return this.sendPacket(context, packet);
 	}
@@ -78,9 +112,9 @@ export abstract class AsyncPacketSender {
 		}
 
 		/*
-		 * Side-effect broadcasts (mission completion/expiry, pet rewards) are
-		 * never a request's answer: let them reach their own listener and keep
-		 * waiting for the real response.
+		 * Side-effect broadcasts (missions, level-ups, item grants, pet rewards,
+		 * death…) are never a request's answer: let them reach their own
+		 * listener and keep waiting for the real response.
 		 */
 		if (NOTIFICATION_PACKET_NAMES.has(packetName)) {
 			return false;
@@ -95,6 +129,7 @@ export abstract class AsyncPacketSender {
 			return false;
 		}
 
+		clearTimeout(waiting.evictionTimer);
 		this.waitingPackets.delete(context.packetId);
 		await waiting.callback(context, packetName, packet);
 		return true;

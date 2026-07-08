@@ -233,7 +233,7 @@ export async function handleGardenHarvest(
 				return Promise.resolve(makeGardenErrorPacket(GardenConstants.GARDEN_ERRORS.NO_READY_PLANTS));
 			}
 			return runHarvestUnderLock({
-				player, home, homeLevel, response: sideEffects
+				player, home, homeLevel, sideEffects
 			});
 		}
 	);
@@ -301,10 +301,10 @@ async function runHarvestUnderLock(params: {
 	player: Player;
 	home: Home;
 	homeLevel: HomeLevel;
-	response: CrowniclesPacket[];
+	sideEffects: CrowniclesPacket[];
 }): Promise<CrowniclesPacket> {
 	const {
-		player, home, homeLevel, response
+		player, home, homeLevel, sideEffects
 	} = params;
 	const earthQuality = homeLevel.features.gardenEarthQuality;
 	const gardenSlots = await HomeGardenSlots.getOfHome(home.id);
@@ -340,7 +340,7 @@ async function runHarvestUnderLock(params: {
 	logGardenHarvest(player, plantsHarvested, compostResults, harvestedSlots);
 	await triggerHarvestMissions({
 		player,
-		response,
+		response: sideEffects,
 		plantsHarvested,
 		ancestralHarvestCount: ancestralHarvest.count,
 		compostResults

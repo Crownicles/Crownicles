@@ -1,7 +1,11 @@
 import {
 	describe, it, expect
 } from "vitest";
-import { AsyncPacketSender } from "../../src/packets/AsyncPacketSender";
+import { readdirSync } from "fs";
+import { join } from "path";
+import {
+	AsyncPacketSender, NOTIFICATION_PACKET_NAMES
+} from "../../src/packets/AsyncPacketSender";
 import {
 	CrowniclesPacket, PacketContext
 } from "../../src/packets/CrowniclesPacket";
@@ -106,3 +110,28 @@ describe("AsyncPacketSender.handleResponse", () => {
 		expect(consumed).toBe(false);
 	});
 });
+
+/**
+ * Completeness guard: every packet under `src/packets/events` is a broadcast
+ * with a dedicated front-end listener and must never fulfil a request callback.
+ * If a new event packet is added but forgotten in NOTIFICATION_PACKET_NAMES, the
+ * ordering-bug class (#4380) silently reopens — this test fails instead.
+ */
+describe("NOTIFICATION_PACKET_NAMES completeness", () => {
+	const eventsDir = join(__dirname, "..", "..", "src", "packets", "events");
+
+	it("contains every event/broadcast packet class", async () => {
+		const eventFiles = readdirSync(eventsDir).filter(file => file.endsWith(".ts"));
+		expect(eventFiles.length).toBeGreaterThan(0);
+
+		for (const file of eventFiles) {
+			const moduleExports = await import(join(eventsDir, file)) as Record<string, unknown>;
+			for (const exported of Object.values(moduleExports)) {
+				if (typeof exported === "function" && exported.prototype instanceof CrowniclesPacket) {
+					expect(NOTIFICATION_PACKET_NAMES.has(exported.name), `${exported.name} (from ${file}) is missing from NOTIFICATION_PACKET_NAMES`).toBe(true);
+				}
+			}
+		}
+	});
+});
+
