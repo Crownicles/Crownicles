@@ -135,7 +135,7 @@ export default class CoreHandlers {
 
 	@packetHandler(CommandReportFoodShopBuyReq)
 	async foodShopBuy(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportFoodShopBuyReq): Promise<void> {
-		response.push(await handleFoodShopBuy(context.keycloakId!, packet, response));
+		await handleFoodShopBuy(context.keycloakId!, packet, response);
 	}
 
 	@packetHandler(CommandReportGuildDomainDepositTreasuryReq)

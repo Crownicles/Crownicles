@@ -121,10 +121,11 @@ function computeAffordableAmount(guild: Guild, request: ResolvedFoodShop): numbe
 	return Math.min(request.amount, maxStorable, maxAffordable);
 }
 
-export async function handleFoodShopBuy(keycloakId: string, packet: CommandReportFoodShopBuyReq, response: CrowniclesPacket[]): Promise<CrowniclesPacket> {
+export async function handleFoodShopBuy(keycloakId: string, packet: CommandReportFoodShopBuyReq, response: CrowniclesPacket[]): Promise<void> {
 	const resolved = await resolveFoodShopRequest(keycloakId, packet);
 	if (typeof resolved === "string") {
-		return makePacket(CommandReportFoodShopBuyErrorRes, { error: resolved });
+		response.push(makePacket(CommandReportFoodShopBuyErrorRes, { error: resolved }));
+		return;
 	}
 
 	/*
@@ -174,6 +175,18 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 		};
 	});
 
+	/*
+	 * Push the command response *before* running mission updates so it lands
+	 * first in the response array. The Discord async packet callback consumes
+	 * the first packet carrying the request's packetId; if a
+	 * MissionsCompletedPacket (pushed by MissionsController.update) came first,
+	 * it would wrongly trigger the food-shop "buy failed" branch (false
+	 * "cannot buy" message + no reimburse) and the real response would then
+	 * fall through to the listener lookup and error out (issue #4380).
+	 * Mirrors the cooking-craft ordering.
+	 */
+	response.push(result.packet);
+
 	if (result.amountBought > 0) {
 		await MissionsController.update(resolved.player, response, {
 			missionId: "buyGuildPetFood",
@@ -186,5 +199,4 @@ export async function handleFoodShopBuy(keycloakId: string, packet: CommandRepor
 			});
 		}
 	}
-	return result.packet;
 }
