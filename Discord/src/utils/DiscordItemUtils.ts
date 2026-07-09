@@ -118,9 +118,9 @@ export class DiscordItemUtils {
 			power: nature === ItemNature.TIME_SPEEDUP
 				? minutesDisplayIntl(power, lng)
 				: FightItemNatures.includes(nature) && maxPower < power
-					? i18n.t("items:nerfDisplay", {
+					? i18n.t("items:statNerf", {
 						lng,
-						old: power,
+						oldDisplay: power,
 						max: maxPower
 					})
 					: power
