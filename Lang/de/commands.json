@@ -802,6 +802,7 @@
     "journal": "Protokoll von {{pseudo}}",
     "money": "** | {emote:unitValues.money} Verdientes Geld : **{{money, number}}",
     "moneyLoose": "** | :money_with_wings: Argent verloren: **{{money, number}}",
+    "tokens": "** | {emote:unitValues.token} Jetons gagnés : **{{tokens, number}}",
     "rewardEmbedTitle": "{{pseudo}}Kampfbelohnungen",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Verdiente Gildenerfahrung : **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Silber gewonnen : **{{money, number}}**\n:star: XP verdient: **{{experience, number}}**",
