@@ -313,5 +313,5 @@ export async function handleExpeditionError(
 	context: PacketContext,
 	packet: CommandPetExpeditionErrorPacket
 ): Promise<void> {
-	await sendExpeditionEmbed(context, interaction => buildExpeditionErrorEmbed(interaction, packet.errorCode, context) as unknown as CrowniclesEmbed);
+	await sendExpeditionEmbed(context, interaction => buildExpeditionErrorEmbed(interaction, packet.errorCode, context));
 }

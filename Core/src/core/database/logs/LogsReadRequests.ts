@@ -109,7 +109,8 @@ export class LogsReadRequests {
 
 	/**
 	 * Resolve the shared scope (log player id + start-of-week timestamp) used by the
-	 * weekly shop buyout aggregations. Returns null when the player has no log entry.
+	 * weekly shop buyout aggregations. Returns null when no log player could be found or
+	 * created for the given keycloak id.
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	private static async resolveWeeklyShopBuyoutScope(playerKeycloakId: string): Promise<{
