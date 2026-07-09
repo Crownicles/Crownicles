@@ -802,6 +802,7 @@
     "journal": "{{pseudo}}Diário de",
     "money": "** | {emote:unitValues.money} Dinheiro ganho : **{{money, number}}",
     "moneyLoose": ":money_with_wings:{{money, number}}** Dinheiro perdido: **",
+    "tokens": "** | {emote:unitValues.token} Fichas ganhas : **{{tokens, number}}",
     "rewardEmbedTitle": "{{pseudo}}recompensas de combate",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Experiência de guilda ganha: **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Prata ganha :{{money, number}}\n:star: ** ** XP ganho :{{experience, number}}** **",
