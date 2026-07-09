@@ -802,6 +802,7 @@
     "journal": "{{pseudo}}'s log",
     "money": "** | {emote:unitValues.money} Money earned: **{{money, number}}",
     "moneyLoose": "** | {emote:unitValues.lostMoney} Money lost: **{{money, number}}",
+    "tokens": "** | {emote:unitValues.token} Tokens won : **{{tokens, number}}",
     "rewardEmbedTitle": "{{pseudo}}, fight rewards",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Guild experience gained : **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Money earned: **{{money, number}}**\n{emote:unitValues.xp} XP earned: **{{experience, number}}**",
