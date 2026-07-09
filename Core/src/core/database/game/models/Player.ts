@@ -94,8 +94,18 @@ type ressourcesLostOnPveFaint = {
 };
 
 /**
+ * Reasons whose token gains are allowed to push the player above the normal
+ * token cap. These are rare, reward-like sources (pet expeditions and the
+ * one-time new player boost handed out during the tutorial big events).
+ */
+const OVER_CAP_TOKEN_REASONS: ReadonlySet<NumberChangeReason> = new Set([
+	NumberChangeReason.EXPEDITION,
+	NumberChangeReason.BIG_EVENT
+]);
+
+/**
  * Compute the new token count after applying `amount` to `currentTokens`, honoring
- * the MAX cap, the expedition over-cap rule, and the lower bound at 0. Used both
+ * the MAX cap, the over-cap reward rule, and the lower bound at 0. Used both
  * by `addTokens` to decide whether to trigger the update and by the locked
  * mutation callback to recompute against the freshly locked DB value (so a
  * concurrent token write between the caller's read and the lock acquisition is
@@ -107,11 +117,11 @@ function computeNewTokens(currentTokens: number, amount: number, reason: NumberC
 		return Math.max(0, currentTokens + amount);
 	}
 	if (currentTokens >= TokensConstants.MAX) {
-		// Block all gains when already at or above max (including expeditions)
+		// Block all gains when already at or above max (including over-cap reward sources)
 		return currentTokens;
 	}
-	if (reason === NumberChangeReason.EXPEDITION) {
-		// Expedition rewards can exceed the max cap, but only when current tokens are below MAX
+	if (OVER_CAP_TOKEN_REASONS.has(reason)) {
+		// Reward sources can exceed the max cap, but only when current tokens are below MAX
 		return currentTokens + amount;
 	}
 	return MathUtils.clamp(currentTokens + amount, 0, TokensConstants.MAX);

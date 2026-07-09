@@ -24,6 +24,7 @@ export abstract class ReportConstants {
 		money: 0,
 		energy: 0,
 		gems: 0,
+		tokens: 0,
 		experience: 0,
 		health: 0,
 		score: 0

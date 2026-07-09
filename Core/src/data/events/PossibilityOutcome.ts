@@ -152,6 +152,19 @@ async function applyOutcomeGems(outcome: PossibilityOutcome, player: Player): Pr
 	return 0;
 }
 
+async function applyOutcomeTokens(outcome: PossibilityOutcome, player: Player, response: CrowniclesPacket[]): Promise<number> {
+	if (outcome.tokens && outcome.tokens !== 0) {
+		const previousTokens = player.tokens;
+		await player.addTokens({
+			response,
+			amount: outcome.tokens,
+			reason: NumberChangeReason.BIG_EVENT
+		});
+		return player.tokens - previousTokens;
+	}
+	return 0;
+}
+
 async function applyOutcomeRandomItem(outcome: PossibilityOutcome, player: Player, context: PacketContext, response: CrowniclesPacket[]): Promise<void> {
 	if (!outcome.randomItem) {
 		return;
@@ -268,6 +281,9 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	// Gems
 	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);
 
+	// Tokens
+	const tokens = await applyOutcomeTokens(possibilityOutcome.outcome[1], player, response);
+
 	// Experience
 	const experience = await applyOutcomeExperience(possibilityOutcome.outcome[1], player, response);
 
@@ -283,6 +299,7 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 		health,
 		energy,
 		gems,
+		tokens,
 		experience,
 		effect,
 		oneshot: possibilityOutcome.outcome[1].oneshot ?? false
@@ -342,6 +359,11 @@ export interface PossibilityOutcome {
 	 * Gems lost or won
 	 */
 	gems?: number;
+
+	/**
+	 * Tokens won (reward-like, may push the player above the normal token cap)
+	 */
+	tokens?: number;
 
 	/**
 	 * Bonus experience (will be added to calculated experience)

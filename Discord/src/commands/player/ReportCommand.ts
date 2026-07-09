@@ -170,6 +170,11 @@ function getReportResultConditionTriplets(packet: CommandReportBigEventResultRes
 			{ gems: packet.gems }
 		],
 		[
+			packet.tokens,
+			"tokens",
+			{ tokens: packet.tokens }
+		],
+		[
 			packet.experience,
 			"experience",
 			{ experience: packet.experience }

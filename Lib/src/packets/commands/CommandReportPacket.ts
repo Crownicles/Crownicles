@@ -157,6 +157,8 @@ export class CommandReportBigEventResultRes extends CrowniclesPacket {
 
 	gems!: number;
 
+	tokens!: number;
+
 	oneshot!: boolean;
 }
 
