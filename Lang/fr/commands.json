@@ -802,7 +802,6 @@
     "journal": "Journal de {{pseudo}}",
     "money": "** | {emote:unitValues.money} Argent gagné : **{{money, number}}",
     "moneyLoose": "** | {emote:unitValues.lostMoney} Argent perdu : **{{money, number}}",
-    "tokens": "** | {emote:unitValues.token} Jetons gagnés : **{{tokens, number}}",
     "rewardEmbedTitle": "{{pseudo}}, récompenses de combat",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Expérience de guilde gagnée : **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Argent gagné : **{{money, number}}**\n{emote:unitValues.xp} XP gagnée : **{{experience, number}}**",
