@@ -113,21 +113,24 @@ function buildDailyBonusSelectMenu(
 		.setCustomId("dailySelectionMenu")
 		.setPlaceholder(i18n.t("commands:daily.menuPlaceholder", { lng }))
 		.addOptions([
-			...objects.map((reaction, i) => new StringSelectMenuOptionBuilder()
-				.setEmoji(DisplayUtils.getItemIcon({
-					id: reaction.object.id,
-					category: reaction.object.itemCategory
-				}))
-				.setLabel(DisplayUtils.getSimpleItemName({
-					id: reaction.object.id,
-					category: reaction.object.itemCategory
-				}, lng))
-				.setValue(i.toString(10))
-				.setDescription(DiscordItemUtils.getObjectNatureDisplay(
-					(reaction.object as SupportItemDetails).nature,
-					(reaction.object as SupportItemDetails).power,
-					(reaction.object as SupportItemDetails).power, lng
-				))),
+			...objects.map((reaction, i) => {
+				const object = reaction.object as SupportItemDetails;
+				return new StringSelectMenuOptionBuilder()
+					.setEmoji(DisplayUtils.getItemIcon({
+						id: object.id,
+						category: object.itemCategory
+					}))
+					.setLabel(DisplayUtils.getSimpleItemName({
+						id: object.id,
+						category: object.itemCategory
+					}, lng))
+					.setValue(i.toString(10))
+					.setDescription(DiscordItemUtils.getObjectNatureDisplay(
+						object.nature,
+						object.power,
+						object.power, lng
+					));
+			}),
 			new StringSelectMenuOptionBuilder()
 				.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
 				.setLabel(i18n.t("commands:daily.collectorRefuseOption", { lng }))

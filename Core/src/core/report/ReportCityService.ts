@@ -27,6 +27,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
+import { Material } from "../../data/Material";
 
 import {
 	HomeChestSlots
@@ -60,6 +61,12 @@ type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
 type HomeData = ReactionCollectorCityData["home"];
 type OwnedHomeData = NonNullable<HomeData["owned"]>;
 type UpgradeStationData = NonNullable<OwnedHomeData["upgradeStation"]>;
+type UpgradeStationRequiredMaterials = UpgradeStationData["upgradeableItems"][number]["requiredMaterials"];
+type UpgradeStationMaterialsResult = {
+	requiredMaterials: UpgradeStationRequiredMaterials;
+	canUpgrade: boolean;
+};
+type PlayerMaterialMap = Map<number, number>;
 type ChestData = NonNullable<OwnedHomeData["chest"]>;
 type ApartmentNotaryData = NonNullable<ReactionCollectorCityData["apartmentNotary"]>;
 type HomesCount = {
@@ -556,14 +563,9 @@ export function buildUpgradeStationData(
  * Returns the per-material breakdown and whether the player owns enough of everything.
  */
 function computeRequiredMaterials(
-	requiredMaterialsRaw: {
-		id: string;
-	}[],
-	playerMaterialMap: Map<number, number>
-): {
-	requiredMaterials: UpgradeStationData["upgradeableItems"][number]["requiredMaterials"];
-	canUpgrade: boolean;
-} {
+	requiredMaterialsRaw: Material[],
+	playerMaterialMap: PlayerMaterialMap
+): UpgradeStationMaterialsResult {
 	// Aggregate materials (same material can appear multiple times)
 	const materialAggregation = new Map<number, number>();
 	for (const material of requiredMaterialsRaw) {
@@ -571,7 +573,7 @@ function computeRequiredMaterials(
 		materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
 	}
 
-	const requiredMaterials: UpgradeStationData["upgradeableItems"][number]["requiredMaterials"] = [];
+	const requiredMaterials: UpgradeStationRequiredMaterials = [];
 	let canUpgrade = true;
 
 	for (const [materialId, quantity] of materialAggregation) {

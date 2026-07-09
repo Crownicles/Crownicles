@@ -13,6 +13,7 @@ import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
 import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
 	asMinutes,
+	asSeconds,
 	dateToLogs,
 	getNextSaturdayMidnight,
 	getNextSundayMidnight,
@@ -21,6 +22,7 @@ import {
 	minutesToMilliseconds,
 	msDiff, nowMs
 } from "../../../../../Lib/src/utils/TimeUtils";
+import { Second } from "../../../../../Lib/src/types/TimeTypes";
 import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsMapLinks } from "./models/LogsMapLinks";
 import { MapConstants } from "../../../../../Lib/src/constants/MapConstants";
@@ -47,6 +49,11 @@ export type PersonalFightDailySummary = {
 	won: number;
 	draw: number;
 	played: number;
+};
+
+export type WeeklyShopBuyoutScope = {
+	playerId: number;
+	startOfWeek: Second;
 };
 
 /**
@@ -113,10 +120,8 @@ export class LogsReadRequests {
 	 * created for the given keycloak id.
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
-	private static async resolveWeeklyShopBuyoutScope(playerKeycloakId: string): Promise<{
-		playerId: number; startOfWeek: number;
-	} | null> {
-		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)));
+	private static async resolveWeeklyShopBuyoutScope(playerKeycloakId: string): Promise<WeeklyShopBuyoutScope | null> {
+		const startOfWeek = asSeconds(Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK))));
 		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
 		if (!logPlayer) {
 			return null;

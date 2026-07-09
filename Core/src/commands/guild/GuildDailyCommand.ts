@@ -129,16 +129,18 @@ async function healEveryMember(guildLike: GuildLike, response: CrowniclesPacket[
  * @param response
  * @param rewardPacket
  */
-async function healOrCureMember(params: {
-	member: Player;
-	needsHeal: boolean;
-	healthWon: number;
-	response: CrowniclesPacket[];
-	now: Date;
-}): Promise<boolean> {
+async function healOrCureMember(
+	member: Player,
+	healingInfos: {
+		needsHeal: boolean;
+		healthWon: number;
+		now: Date;
+	},
+	response: CrowniclesPacket[]
+): Promise<boolean> {
 	const {
-		member, needsHeal, healthWon, response, now
-	} = params;
+		needsHeal, healthWon, now
+	} = healingInfos;
 	if (member.currentEffectFinished(now)) {
 		if (needsHeal) {
 			await member.addHealth({
@@ -166,9 +168,9 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: Crownic
 	const needsHeal = doesSomeoneNeedsHeal(guildLike);
 	const now = new Date();
 	await genericAwardingFunction(guildLike.members, async member => {
-		const removedAlteration = await healOrCureMember({
-			member, needsHeal, healthWon, response, now
-		});
+		const removedAlteration = await healOrCureMember(member, {
+			needsHeal, healthWon, now
+		}, response);
 		if (removedAlteration) {
 			noAlterationHeal = false;
 		}

@@ -7,13 +7,26 @@ import {
 	getMaterialsPurchasePrice, getUpgradePrice
 } from "../../../../Lib/src/utils/BlacksmithUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
+import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { getBlacksmithItemData } from "./ReportBlacksmithService";
+import { Material } from "../../data/Material";
 
 type RoyalBlacksmithData = NonNullable<ReactionCollectorCityData["royalBlacksmith"]>;
 type RoyalUpgradeableItem = RoyalBlacksmithData["upgradeableItems"][number];
+type RoyalRequiredMaterials = RoyalUpgradeableItem["requiredMaterials"];
+type PlayerMaterialMap = Map<number, number>;
+type MissingMaterial = {
+	rarity: MaterialRarity;
+	quantity: number;
+};
+type RoyalMaterialsResult = {
+	requiredMaterials: RoyalRequiredMaterials;
+	missingMaterials: MissingMaterial[];
+	hasAllMaterials: boolean;
+};
 
 /**
  * Inventory inspection result used to pick the right narrative branch.
@@ -108,19 +121,11 @@ function buildUpgradeableItems(
  * the player already owns everything required.
  */
 function computeRoyalMaterials(
-	requiredMaterialsRaw: {
-		id: string; rarity: number;
-	}[],
-	playerMaterialMap: Map<number, number>
-): {
-	requiredMaterials: RoyalUpgradeableItem["requiredMaterials"];
-	missingMaterials: {
-		rarity: number; quantity: number;
-	}[];
-	hasAllMaterials: boolean;
-} {
+	requiredMaterialsRaw: Material[],
+	playerMaterialMap: PlayerMaterialMap
+): RoyalMaterialsResult {
 	const materialAggregation = new Map<number, {
-		quantity: number; rarity: number;
+		quantity: number; rarity: MaterialRarity;
 	}>();
 	for (const material of requiredMaterialsRaw) {
 		const materialIdNum = parseInt(material.id, 10);
@@ -136,10 +141,8 @@ function computeRoyalMaterials(
 		}
 	}
 
-	const requiredMaterials: RoyalUpgradeableItem["requiredMaterials"] = [];
-	const missingMaterials: {
-		rarity: number; quantity: number;
-	}[] = [];
+	const requiredMaterials: RoyalRequiredMaterials = [];
+	const missingMaterials: MissingMaterial[] = [];
 	let hasAllMaterials = true;
 
 	for (const [

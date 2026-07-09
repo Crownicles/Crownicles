@@ -196,9 +196,7 @@ async function executeRoyalUpgradeUnderLock(params: {
 		lockedPlayer, lockedMissionsInfo, item, execution, reaction, response
 	} = params;
 
-	const inventorySlot = await validateRoyalUpgradeUnderLock({
-		lockedPlayer, lockedMissionsInfo, execution, reaction, response
-	});
+	const inventorySlot = await validateRoyalUpgradeUnderLock(lockedPlayer, lockedMissionsInfo, execution, reaction, response);
 	if (!inventorySlot) {
 		return;
 	}
@@ -239,9 +237,7 @@ async function executeRoyalUpgradeUnderLock(params: {
 		lockedPlayer, item, response
 	});
 
-	logRoyalUpgrade({
-		lockedPlayer, execution, reaction
-	});
+	logRoyalUpgrade(lockedPlayer, execution, reaction);
 }
 
 /**
@@ -249,17 +245,13 @@ async function executeRoyalUpgradeUnderLock(params: {
  * Runs inside the caller's player lock; returns the validated slot or null (after
  * pushing the relevant error packet) when the upgrade must be aborted.
  */
-async function validateRoyalUpgradeUnderLock(params: {
-	lockedPlayer: Player;
-	lockedMissionsInfo: PlayerMissionsInfo;
-	execution: ExecutionData;
-	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction;
-	response: CrowniclesPacket[];
-}): Promise<InventorySlot | null> {
-	const {
-		lockedPlayer, lockedMissionsInfo, execution, reaction, response
-	} = params;
-
+async function validateRoyalUpgradeUnderLock(
+	lockedPlayer: Player,
+	lockedMissionsInfo: PlayerMissionsInfo,
+	execution: ExecutionData,
+	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction,
+	response: CrowniclesPacket[]
+): Promise<InventorySlot | null> {
 	/*
 	 * Reload and validate the target slot BEFORE any spending: a stale menu replayed
 	 * after a first successful upgrade would otherwise pay again and re-set an
@@ -286,14 +278,11 @@ async function validateRoyalUpgradeUnderLock(params: {
 /**
  * Emit the blacksmith upgrade log entry for the current city, if the player is in one.
  */
-function logRoyalUpgrade(params: {
-	lockedPlayer: Player;
-	execution: ExecutionData;
-	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction;
-}): void {
-	const {
-		lockedPlayer, execution, reaction
-	} = params;
+function logRoyalUpgrade(
+	lockedPlayer: Player,
+	execution: ExecutionData,
+	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction
+): void {
 	const cityId = lockedPlayer.getCurrentCityId();
 	if (!cityId) {
 		return;

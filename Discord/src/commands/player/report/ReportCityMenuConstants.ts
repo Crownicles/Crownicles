@@ -149,6 +149,11 @@ export const ReportCityMenuIds = {
 } as const;
 
 /**
+ * Union of all city menu ids / custom-id constants declared above.
+ */
+export type ReportCityMenuId = typeof ReportCityMenuIds[keyof typeof ReportCityMenuIds];
+
+/**
  * Semantic button styles shared by every city menu so that buttons with the
  * same role always look the same. Centralised here to avoid each menu picking
  * its own `ButtonStyle` and drifting over time.

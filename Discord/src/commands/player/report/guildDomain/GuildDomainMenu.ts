@@ -5,7 +5,9 @@ import i18n from "../../../../translations/i18n";
 import {
 	CrowniclesNestedMenu, CrowniclesNestedMenuCollector, CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import {
+	ReportCityMenuIds, ReportCityMenuId
+} from "../ReportCityMenuConstants";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import {
 	CrowniclesPacket, makePacket, PacketContext
@@ -324,7 +326,7 @@ function createShopQuantityCollector(
  */
 async function showDomainSubMenu(
 	nestedMenus: CrowniclesNestedMenus,
-	menuId: string,
+	menuId: ReportCityMenuId,
 	container: ContainerBuilder,
 	createCollector: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector
 ): Promise<void> {

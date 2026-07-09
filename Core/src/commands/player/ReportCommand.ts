@@ -202,17 +202,14 @@ async function handleArrival(
  * Handle the travelling player: trigger a small event when due, otherwise advance the
  * travel state (send path, start a travel, or choose a destination). Unblocks afterwards.
  */
-async function continueTravelOrEvent(params: {
-	context: PacketContext;
-	response: CrowniclesPacket[];
-	player: Player;
-	currentDate: Date;
-	currentEffectFinished: boolean;
-	forceSmallEvent: string | null;
-}): Promise<void> {
-	const {
-		context, response, player, currentDate, currentEffectFinished, forceSmallEvent
-	} = params;
+async function continueTravelOrEvent(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player,
+	currentDate: Date,
+	forceSmallEvent: string | null
+): Promise<void> {
+	const currentEffectFinished = player.currentEffectFinished(currentDate);
 	if (forceSmallEvent || await needSmallEvent(player, currentDate)) {
 		await executeSmallEvent(response, player, context, forceSmallEvent);
 	}
@@ -273,9 +270,7 @@ export default class ReportCommand {
 			return;
 		}
 
-		await continueTravelOrEvent({
-			context, response, player, currentDate, currentEffectFinished, forceSmallEvent
-		});
+		await continueTravelOrEvent(context, response, player, currentDate, forceSmallEvent);
 	}
 
 	@commandRequires(CommandReportUseTokensPacketReq, {

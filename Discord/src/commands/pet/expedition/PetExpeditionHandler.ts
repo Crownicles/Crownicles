@@ -281,12 +281,17 @@ export async function handleExpeditionRecallRes(
 }
 
 /**
+ * Builds the embed to display for an expedition response from the resolved interaction.
+ */
+type ExpeditionEmbedBuilder = (interaction: CrowniclesInteraction) => CrowniclesEmbed;
+
+/**
  * Resolve the current interaction and forward the embed built from it to the player.
  * Shared by the resolve and error handlers which only differ by the embed they build.
  */
 async function sendExpeditionEmbed(
 	context: PacketContext,
-	buildEmbed: (interaction: CrowniclesInteraction) => CrowniclesEmbed
+	buildEmbed: ExpeditionEmbedBuilder
 ): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
