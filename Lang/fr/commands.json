@@ -2196,7 +2196,7 @@
     "rewards": {
       "personalXP": "{emote:unitValues.xp} | Les membres de la guilde ont reçu de l'expérience. `+ {{quantity, number}} {emote:unitValues.xp}`.",
       "guildXP": "{emote:unitValues.xp} | La guilde a reçu de l'expérience. `+ {{quantity, number}} {emote:unitValues.xp}`",
-      "guildPoints": "{emote:unitValues.guildPoint} | Points de guilde gagnés : `+ {{quantity, number}} {emote:unitValues.guildPoint}`. La trésorerie augmente du même montant.",
+      "guildPoints": "{emote:unitValues.guildPoint} | Points de guilde gagnés : `+ {{quantity, number}}` {emote:unitValues.guildPoint}. La trésorerie augmente du même montant.",
       "money": "{emote:unitValues.money} | Les membres de la guilde ont reçu `{{quantity, number}} {emote:unitValues.money}`.",
       "item": "{emote:rewards.item} | Les membres de la guilde ont reçu un objet au hasard.",
       "badge": "{emote:badges.powerful_guild} | Les membres de la guilde ont reçu un badge.",
