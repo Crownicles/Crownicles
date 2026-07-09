@@ -410,6 +410,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		let text = i18n.t("commands:report.city.homes.chest.categoryHeader", {
 			lng: ctx.lng,
 			category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng }),
+			count: categoryChestItems.length,
 			filled: categoryChestItems.length,
 			total: maxSlots
 		});
