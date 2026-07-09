@@ -458,6 +458,23 @@
     "Los tiempos de espera de los servicios (comidas, descanso, encantamientos) se muestran con horarios de Discord que se actualizan automáticamente según tu zona horaria.",
     "El herrero permite desencantar objetos o mejorar sus niveles, mientras que el encantador les añade nuevas propiedades: sus funciones son complementarias.",
     "Algunas misiones o eventos te obligan a quedarte en la ciudad para avanzar, mientras que otros exigen que sigas tu camino: lee los objetivos con atención.",
-    "Las posadas ofrecen comidas diferentes cada día según una selección rotativa, lo que significa que algunas bonificaciones de energía solo están disponibles en días concretos."
+    "Las posadas ofrecen comidas diferentes cada día según una selección rotativa, lo que significa que algunas bonificaciones de energía solo están disponibles en días concretos.",
+    "Encender o volver a encender la estufa de tu cocina consume un material similar a la leña, dando prioridad a los recursos más comunes.",
+    "Puedes marcar una receta para guardarla y prepararla más adelante. No se puede marcar una receta cuyo resultado se desconoce.",
+    "Volver a encender los fogones de tu cocina te permite renovar las recetas que preparas.",
+    "En la cocina puedes preparar diversas recetas, como comida para tus mascotas o pociones, a partir de materiales y plantas.",
+    "Al mejorar tu casa, desbloquearás espacios de cocción adicionales, lo que te permitirá acceder a una mayor variedad de recetas.",
+    "Algunas recetas de cocina deben descubrirse primero a lo largo de tu aventura antes de poder prepararlas.",
+    "Las recetas más difíciles aportan más experiencia culinaria.",
+    "Subir de nivel en cocina te permite ser más eficaz a la hora de preparar los platos y desbloquea diversas ventajas.",
+    "A partir del nivel 11 de cocina, tienes una pequeña probabilidad de no consumir ciertos ingredientes al preparar tus platos.",
+    "A un gran cocinero real casi nunca le sale mal ninguna receta.",
+    "Si necesitas leña, el leñador de Village Coco te la puede vender.",
+    "Los veterinarios del reino tienen sus consultas en Mergagnan y en Claire de Ville: no dudéis en llevarles a vuestra mascota.",
+    "El curtidor de Mergagnan te permite ampliar tu inventario.",
+    "La Bolsa de Claire de Ville ofrece un servicio de especulación.",
+    "Las gemas se pueden canjear por recompensas únicas en el castillo del rey.",
+    "Si buscas materiales, visita la Ciudad Fortificada: allí hay un comerciante que te los puede vender.",
+    "Un herbolario se ha instalado en el Village Coco."
   ]
 }

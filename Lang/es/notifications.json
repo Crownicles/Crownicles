@@ -24,6 +24,7 @@
         "xp": "Experiencia adquirida: {{count, number}} {emote:unitValues.xp}"
       },
       "noRewards": "Sin recompensa.",
+      "nextCampaignMission": "{emote:missions.campaign} Próxima misión de campaña",
       "missionDisplay": "{{missionDescription}}{{missionsReward}}-",
       "pointsDisplay": "+{{count, number}} {emote:unitValues.score}",
       "gemsDisplay": "+{{count, number}} {emote:unitValues.gem}",
