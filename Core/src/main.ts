@@ -2,7 +2,7 @@ import { botConfig } from "./bootstrap";
 import { crowniclesInstance } from "./app";
 import { mqttClient } from "./mqttClient";
 import {
-	CrowniclesPacket, makePacket, PacketContext, PacketLike
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../Lib/src/packets/CrowniclesPacket";
 import {
 	ErrorMaintenancePacket,
@@ -33,7 +33,10 @@ mqttClient.on("connect", () => {
 
 type IncomingPacketData = {
 	context: PacketContext;
-	packet: PacketLike<CrowniclesPacket>;
+	packet: {
+		name: string;
+		data: CrowniclesPacket;
+	};
 };
 
 function isBlockedByMaintenance(dataJson: IncomingPacketData): boolean {
