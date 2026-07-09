@@ -112,7 +112,8 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 }
 
 function addServicesSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (!data.blacksmith && !data.enchanter && !data.royalBlacksmith) {
+	const hasAnyService = data.blacksmith || data.enchanter || data.royalBlacksmith;
+	if (!hasAnyService) {
 		return;
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));

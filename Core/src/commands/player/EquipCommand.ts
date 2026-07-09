@@ -25,6 +25,38 @@ import { EMPTY_SLOTS_PER_CATEGORY } from "../../../../Lib/src/types/HomeFeatures
 /**
  * Build category data from player's inventory.
  */
+function buildEquipCategoryEntry(
+	category: ItemCategory,
+	player: Player,
+	inventorySlots: InventorySlot[],
+	slotLimits: Map<ItemCategory, number>
+): EquipCategoryData | null {
+	const equippedSlot = inventorySlots.find(s => s.itemCategory === category && s.isEquipped());
+	const reserveSlots = sortPlayerItemList(
+		inventorySlots.filter(s => s.itemCategory === category && !s.isEquipped() && s.itemId !== 0)
+	);
+
+	// Skip categories with nothing to show
+	const hasEquipped = equippedSlot && equippedSlot.itemId !== 0;
+	if (!hasEquipped && reserveSlots.length === 0) {
+		return null;
+	}
+
+	const maxReserveSlots = slotLimits.get(category) ?? 0;
+	return {
+		category,
+		equippedItem: hasEquipped
+			? { details: equippedSlot.itemWithDetails(player) }
+			: null,
+		reserveItems: reserveSlots.map(slot => ({
+			slot: slot.slot,
+			details: slot.itemWithDetails(player)
+		})),
+		maxReserveSlots,
+		canDeposit: reserveSlots.length < maxReserveSlots
+	};
+}
+
 export function buildEquipCategoryData(
 	player: Player,
 	inventorySlots: InventorySlot[],
@@ -38,30 +70,10 @@ export function buildEquipCategoryData(
 		ItemCategory.POTION,
 		ItemCategory.OBJECT
 	]) {
-		const equippedSlot = inventorySlots.find(s => s.itemCategory === category && s.isEquipped());
-		const reserveSlots = sortPlayerItemList(
-			inventorySlots.filter(s => s.itemCategory === category && !s.isEquipped() && s.itemId !== 0)
-		);
-
-		// Skip categories with nothing to show
-		const hasEquipped = equippedSlot && equippedSlot.itemId !== 0;
-		if (!hasEquipped && reserveSlots.length === 0) {
-			continue;
+		const entry = buildEquipCategoryEntry(category, player, inventorySlots, slotLimits);
+		if (entry) {
+			categories.push(entry);
 		}
-
-		const maxReserveSlots = slotLimits.get(category) ?? 0;
-		categories.push({
-			category,
-			equippedItem: hasEquipped
-				? { details: equippedSlot.itemWithDetails(player) }
-				: null,
-			reserveItems: reserveSlots.map(slot => ({
-				slot: slot.slot,
-				details: slot.itemWithDetails(player)
-			})),
-			maxReserveSlots,
-			canDeposit: reserveSlots.length < maxReserveSlots
-		});
 	}
 
 	return categories;

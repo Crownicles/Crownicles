@@ -142,6 +142,14 @@ async function processEquip(playerId: number, reserveSlot: number, category: Ite
 /**
  * Deposit the active item to reserve.
  */
+async function computeCategoryMaxSlots(playerId: number, category: ItemCategory): Promise<number> {
+	const inventoryInfo = await InventoryInfos.getOfPlayer(playerId);
+	const home = await Homes.getOfPlayer(playerId);
+	const homeBonus = home?.getLevel()?.features.inventoryBonus;
+	const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, category) : 0;
+	return inventoryInfo.slotLimitForCategory(category) + bonusForCategory;
+}
+
 async function processDeposit(playerId: number, category: ItemCategory): Promise<EquipError | null> {
 	const inventorySlots = await InventorySlots.getOfPlayer(playerId);
 	const activeSlot = inventorySlots.find(s => s.itemCategory === category && s.isEquipped());
@@ -149,11 +157,7 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 		return ItemConstants.EQUIP_ERRORS.NO_ITEM;
 	}
 
-	const inventoryInfo = await InventoryInfos.getOfPlayer(playerId);
-	const home = await Homes.getOfPlayer(playerId);
-	const homeBonus = home?.getLevel()?.features.inventoryBonus;
-	const bonusForCategory = homeBonus ? getSlotCountForCategory(homeBonus, category) : 0;
-	const maxSlots = inventoryInfo.slotLimitForCategory(category) + bonusForCategory;
+	const maxSlots = await computeCategoryMaxSlots(playerId, category);
 	const backupSlots = inventorySlots.filter(s => s.itemCategory === category && !s.isEquipped());
 
 	const placeError = await placeItemInBackupSlot({

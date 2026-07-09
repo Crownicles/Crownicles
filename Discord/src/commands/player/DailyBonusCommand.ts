@@ -39,6 +39,7 @@ import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { sendInteractionNotForYou } from "../../utils/ErrorUtils";
 import { MessagesUtils } from "../../utils/MessagesUtils";
 import { SupportItemDetails } from "../../../../Lib/src/types/SupportItemDetails";
+import { Language } from "../../../../Lib/src/Language";
 
 /**
  * Get the daily bonus packet to send to the server
@@ -103,6 +104,37 @@ export async function handleDailyBonusRes(context: PacketContext, packet: Comman
 	});
 }
 
+function buildDailyBonusSelectMenu(
+	objects: ReactionCollectorDailyBonusReaction[],
+	refuseReactionIndex: number,
+	lng: Language
+): StringSelectMenuBuilder {
+	return new StringSelectMenuBuilder()
+		.setCustomId("dailySelectionMenu")
+		.setPlaceholder(i18n.t("commands:daily.menuPlaceholder", { lng }))
+		.addOptions([
+			...objects.map((reaction, i) => new StringSelectMenuOptionBuilder()
+				.setEmoji(DisplayUtils.getItemIcon({
+					id: reaction.object.id,
+					category: reaction.object.itemCategory
+				}))
+				.setLabel(DisplayUtils.getSimpleItemName({
+					id: reaction.object.id,
+					category: reaction.object.itemCategory
+				}, lng))
+				.setValue(i.toString(10))
+				.setDescription(DiscordItemUtils.getObjectNatureDisplay(
+					(reaction.object as SupportItemDetails).nature,
+					(reaction.object as SupportItemDetails).power,
+					(reaction.object as SupportItemDetails).power, lng
+				))),
+			new StringSelectMenuOptionBuilder()
+				.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
+				.setLabel(i18n.t("commands:daily.collectorRefuseOption", { lng }))
+				.setValue(refuseReactionIndex.toString(10))
+		]);
+}
+
 export async function handleDailyBonusCollector(context: PacketContext, packet: ReactionCollectorDailyBonusPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 	if (!interaction) {
@@ -149,30 +181,7 @@ export async function handleDailyBonusCollector(context: PacketContext, packet: 
 		)
 		.setDescription(i18n.t("commands:daily.collectorDesc", { lng }));
 
-	const stringSelectMenu = new StringSelectMenuBuilder()
-		.setCustomId("dailySelectionMenu")
-		.setPlaceholder(i18n.t("commands:daily.menuPlaceholder", { lng }))
-		.addOptions([
-			...objects.map((reaction, i) => new StringSelectMenuOptionBuilder()
-				.setEmoji(DisplayUtils.getItemIcon({
-					id: reaction.object.id,
-					category: reaction.object.itemCategory
-				}))
-				.setLabel(DisplayUtils.getSimpleItemName({
-					id: reaction.object.id,
-					category: reaction.object.itemCategory
-				}, lng))
-				.setValue(i.toString(10))
-				.setDescription(DiscordItemUtils.getObjectNatureDisplay(
-					(reaction.object as SupportItemDetails).nature,
-					(reaction.object as SupportItemDetails).power,
-					(reaction.object as SupportItemDetails).power, lng
-				))),
-			new StringSelectMenuOptionBuilder()
-				.setEmoji(parseEmoji(CrowniclesIcons.collectors.refuse)!)
-				.setLabel(i18n.t("commands:daily.collectorRefuseOption", { lng }))
-				.setValue(refuseReactionIndex.toString(10))
-		]);
+	const stringSelectMenu = buildDailyBonusSelectMenu(objects, refuseReactionIndex, lng);
 
 	const row = new ActionRowBuilder<StringSelectMenuBuilder>()
 		.addComponents(stringSelectMenu);

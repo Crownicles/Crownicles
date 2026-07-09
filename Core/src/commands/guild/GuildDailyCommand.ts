@@ -129,28 +129,48 @@ async function healEveryMember(guildLike: GuildLike, response: CrowniclesPacket[
  * @param response
  * @param rewardPacket
  */
+async function healOrCureMember(params: {
+	member: Player;
+	needsHeal: boolean;
+	healthWon: number;
+	response: CrowniclesPacket[];
+	now: Date;
+}): Promise<boolean> {
+	const {
+		member, needsHeal, healthWon, response, now
+	} = params;
+	if (member.currentEffectFinished(now)) {
+		if (needsHeal) {
+			await member.addHealth({
+				amount: healthWon,
+				response,
+				reason: NumberChangeReason.GUILD_DAILY,
+				missionHealthParameter: {
+					shouldPokeMission: true,
+					overHealCountsForMission: true
+				}
+			});
+		}
+		return false;
+	}
+	if (member.effectId !== Effect.DEAD.id && member.effectId !== Effect.JAILED.id) {
+		await TravelTime.removeEffect(member, NumberChangeReason.GUILD_DAILY);
+		return true;
+	}
+	return false;
+}
+
 async function alterationHealEveryMember(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const healthWon = Math.round(guildLike.guild.level * GuildDailyConstants.LEVEL_MULTIPLIER);
 	let noAlterationHeal = true;
 	const needsHeal = doesSomeoneNeedsHeal(guildLike);
 	const now = new Date();
 	await genericAwardingFunction(guildLike.members, async member => {
-		if (member.currentEffectFinished(now)) {
-			if (needsHeal) {
-				await member.addHealth({
-					amount: healthWon,
-					response,
-					reason: NumberChangeReason.GUILD_DAILY,
-					missionHealthParameter: {
-						shouldPokeMission: true,
-						overHealCountsForMission: true
-					}
-				});
-			}
-		}
-		else if (member.effectId !== Effect.DEAD.id && member.effectId !== Effect.JAILED.id) {
+		const removedAlteration = await healOrCureMember({
+			member, needsHeal, healthWon, response, now
+		});
+		if (removedAlteration) {
 			noAlterationHeal = false;
-			await TravelTime.removeEffect(member, NumberChangeReason.GUILD_DAILY);
 		}
 	});
 	if (!needsHeal && noAlterationHeal) {

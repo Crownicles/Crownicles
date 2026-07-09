@@ -531,28 +531,9 @@ export function buildUpgradeStationData(
 
 		const nextLevel = currentLevel + 1;
 		const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
-
-		// Aggregate materials (same material can appear multiple times)
-		const materialAggregation = new Map<number, number>();
-		for (const material of requiredMaterialsRaw) {
-			const materialIdNum = parseInt(material.id, 10);
-			materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
-		}
-
-		const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
-		let canUpgrade = true;
-
-		for (const [materialId, quantity] of materialAggregation) {
-			const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
-			requiredMaterials.push({
-				materialId,
-				quantity,
-				playerQuantity
-			});
-			if (playerQuantity < quantity) {
-				canUpgrade = false;
-			}
-		}
+		const {
+			requiredMaterials, canUpgrade
+		} = computeRequiredMaterials(requiredMaterialsRaw, playerMaterialMap);
 
 		upgradeableItems.push({
 			slot: inventorySlot.slot,
@@ -567,6 +548,47 @@ export function buildUpgradeStationData(
 	return {
 		upgradeableItems,
 		maxUpgradeableRarity
+	};
+}
+
+/**
+ * Aggregate the raw upgrade materials of an item and compare them against the player's stock.
+ * Returns the per-material breakdown and whether the player owns enough of everything.
+ */
+function computeRequiredMaterials(
+	requiredMaterialsRaw: {
+		id: string;
+	}[],
+	playerMaterialMap: Map<number, number>
+): {
+	requiredMaterials: UpgradeStationData["upgradeableItems"][number]["requiredMaterials"];
+	canUpgrade: boolean;
+} {
+	// Aggregate materials (same material can appear multiple times)
+	const materialAggregation = new Map<number, number>();
+	for (const material of requiredMaterialsRaw) {
+		const materialIdNum = parseInt(material.id, 10);
+		materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
+	}
+
+	const requiredMaterials: UpgradeStationData["upgradeableItems"][number]["requiredMaterials"] = [];
+	let canUpgrade = true;
+
+	for (const [materialId, quantity] of materialAggregation) {
+		const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
+		requiredMaterials.push({
+			materialId,
+			quantity,
+			playerQuantity
+		});
+		if (playerQuantity < quantity) {
+			canUpgrade = false;
+		}
+	}
+
+	return {
+		requiredMaterials,
+		canUpgrade
 	};
 }
 

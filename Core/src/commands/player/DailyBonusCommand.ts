@@ -12,7 +12,9 @@ import {
 	CommandDailyBonusPacketReq,
 	CommandDailyBonusPacketRes
 } from "../../../../Lib/src/packets/commands/CommandDailyBonusPacket";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import {
+	InventorySlot, InventorySlots
+} from "../../core/database/game/models/InventorySlot";
 import { crowniclesInstance } from "../../app";
 import { ObjectItem } from "../../data/ObjectItem";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
@@ -164,6 +166,39 @@ export async function activateDailyItem(player: Player, activeObject: ObjectItem
 	}
 }
 
+/**
+ * Build the end callback that resolves the object picked by the player and applies the daily bonus.
+ */
+function buildDailyBonusEndCallback(player: Player, usableObjects: InventorySlot[]): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
+
+		const reaction = collector.getFirstReaction();
+		if (!reaction || reaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+			response.push(makePacket(CommandDailyBonusCancelPacket, {}));
+			return;
+		}
+
+		const objectDetails = (reaction.reaction.data as ReactionCollectorDailyBonusReaction).object;
+		const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.itemCategory);
+		if (!usableObject) {
+			return;
+		}
+		const objectItem = usableObject.getItem() as ObjectItem;
+
+		// Reload inventoryInfo as it may have changed during reaction collection
+		const freshInventoryInfo = await InventoryInfos.getOfPlayer(player.id);
+		await activateDailyItem(
+			await player.reload(),
+			objectItem,
+			freshInventoryInfo,
+			response
+		);
+		crowniclesInstance?.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
+			.then();
+	};
+}
+
 export default class DailyBonusCommand {
 	/**
 	 * Handle the daily bonus command
@@ -209,33 +244,7 @@ export default class DailyBonusCommand {
 
 		const collector = new ReactionCollectorDailyBonus(usableObjects.map(i => toItemWithDetails(player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)));
 
-		const endCallback: EndCallback = async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.DAILY_BONUS);
-
-			const reaction = collector.getFirstReaction();
-			if (!reaction || reaction.reaction.type === ReactionCollectorRefuseReaction.name) {
-				response.push(makePacket(CommandDailyBonusCancelPacket, {}));
-				return;
-			}
-
-			const objectDetails = (reaction.reaction.data as ReactionCollectorDailyBonusReaction).object;
-			const usableObject = usableObjects.find(uo => uo.itemId === objectDetails.id && uo.itemCategory === objectDetails.itemCategory);
-			if (!usableObject) {
-				return;
-			}
-			const objectItem = usableObject.getItem() as ObjectItem;
-
-			// Reload inventoryInfo as it may have changed during reaction collection
-			const freshInventoryInfo = await InventoryInfos.getOfPlayer(player.id);
-			await activateDailyItem(
-				await player.reload(),
-				objectItem,
-				freshInventoryInfo,
-				response
-			);
-			crowniclesInstance?.logsDatabase.logPlayerDaily(player.keycloakId, objectItem)
-				.then();
-		};
+		const endCallback = buildDailyBonusEndCallback(player, usableObjects);
 
 		const collectorPacket = new ReactionCollectorInstance(
 			collector,

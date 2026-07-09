@@ -108,20 +108,38 @@ export class LogsReadRequests {
 	}
 
 	/**
+	 * Resolve the shared scope (log player id + start-of-week timestamp) used by the
+	 * weekly shop buyout aggregations. Returns null when the player has no log entry.
+	 * @param playerKeycloakId - The keycloak id of the player we want to check on
+	 */
+	private static async resolveWeeklyShopBuyoutScope(playerKeycloakId: string): Promise<{
+		playerId: number; startOfWeek: number;
+	} | null> {
+		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)));
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return null;
+		}
+		return {
+			playerId: logPlayer.id,
+			startOfWeek
+		};
+	}
+
+	/**
 	 * Get the amount of tokens a specific player has bought this week
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
-		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)));
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
-		if (!logPlayer) {
+		const scope = await LogsReadRequests.resolveWeeklyShopBuyoutScope(playerKeycloakId);
+		if (!scope) {
 			return 0;
 		}
 		return await LogsClassicalShopBuyouts.sum("amount", {
 			where: {
-				playerId: logPlayer.id,
+				playerId: scope.playerId,
 				shopItem: ShopItemType.TOKEN,
-				date: { [Op.gt]: startOfWeek }
+				date: { [Op.gt]: scope.startOfWeek }
 			}
 		}) ?? 0;
 	}
@@ -131,16 +149,15 @@ export class LogsReadRequests {
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	static async getTokenCharityCountReceivedByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
-		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)));
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
-		if (!logPlayer) {
+		const scope = await LogsReadRequests.resolveWeeklyShopBuyoutScope(playerKeycloakId);
+		if (!scope) {
 			return 0;
 		}
 		return LogsClassicalShopBuyouts.count({
 			where: {
-				playerId: logPlayer.id,
+				playerId: scope.playerId,
 				shopItem: ShopItemType.TOKEN_CHARITY,
-				date: { [Op.gt]: startOfWeek }
+				date: { [Op.gt]: scope.startOfWeek }
 			}
 		});
 	}

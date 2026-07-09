@@ -474,57 +474,91 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		const {
 			ctx, catInfo, chestItems, depositableItems, hasEmptySlots, isInventoryFull, bothFull, rows
 		} = params;
+
+		const isSwapMode = bothFull && chestItems.length > 0 && depositableItems.length > 0;
+		const text = isSwapMode
+			? this.buildChestSwapSection({
+				ctx, catInfo, depositableItems, rows
+			})
+			: this.buildChestDepositWithdrawSections({
+				ctx, catInfo, chestItems, depositableItems, hasEmptySlots, isInventoryFull, rows
+			});
+
+		// When nothing was displayed at all, no section could add an emote, so a dedicated hint is shown
+		const hasNoItems = chestItems.length === 0 && depositableItems.length === 0;
+		if (hasNoItems) {
+			return `${text}\n\n${i18n.t("commands:report.city.homes.chest.noStoredItems", { lng: ctx.lng })}`;
+		}
+
+		return text;
+	}
+
+	private buildChestSwapSection(params: {
+		ctx: HomeFeatureHandlerContext;
+		catInfo: typeof CATEGORY_INFO[number];
+		depositableItems: ItemSlotDisplay[];
+		rows: ActionRowBuilder<ButtonBuilder>[];
+	}): string {
+		const {
+			ctx, catInfo, depositableItems, rows
+		} = params;
+
+		// Swap mode: only show inventory items to initiate swap
+		const result = this.addItemSectionWithButtons({
+			items: depositableItems,
+			category: catInfo.category,
+			rows,
+			emoteIndex: 0,
+			customIdPrefix: HomeMenuIds.CHEST_SWAP_SELECT_PREFIX,
+			disabled: false,
+			lng: ctx.lng
+		});
+		return `\n\n${i18n.t("commands:report.city.homes.chest.swapSection", { lng: ctx.lng })}${result.description}`;
+	}
+
+	private buildChestDepositWithdrawSections(params: {
+		ctx: HomeFeatureHandlerContext;
+		catInfo: typeof CATEGORY_INFO[number];
+		chestItems: ItemSlotDisplay[];
+		depositableItems: ItemSlotDisplay[];
+		hasEmptySlots: boolean;
+		isInventoryFull: boolean;
+		rows: ActionRowBuilder<ButtonBuilder>[];
+	}): string {
+		const {
+			ctx, catInfo, chestItems, depositableItems, hasEmptySlots, isInventoryFull, rows
+		} = params;
 		let text = "";
 		let emoteIndex = 0;
 
-		if (bothFull && chestItems.length > 0 && depositableItems.length > 0) {
-			// Swap mode: only show inventory items to initiate swap
-			text += `\n\n${i18n.t("commands:report.city.homes.chest.swapSection", { lng: ctx.lng })}`;
+		// Normal mode: deposit + withdraw sections
+		if (depositableItems.length > 0) {
+			text += `\n\n${i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng })}`;
 			const result = this.addItemSectionWithButtons({
 				items: depositableItems,
 				category: catInfo.category,
 				rows,
 				emoteIndex,
-				customIdPrefix: HomeMenuIds.CHEST_SWAP_SELECT_PREFIX,
-				disabled: false,
+				customIdPrefix: HomeMenuIds.CHEST_DEPOSIT_PREFIX,
+				disabled: !hasEmptySlots,
 				lng: ctx.lng
 			});
 			text += result.description;
-		}
-		else {
-			// Normal mode: deposit + withdraw sections
-			if (depositableItems.length > 0) {
-				text += `\n\n${i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng })}`;
-				const result = this.addItemSectionWithButtons({
-					items: depositableItems,
-					category: catInfo.category,
-					rows,
-					emoteIndex,
-					customIdPrefix: HomeMenuIds.CHEST_DEPOSIT_PREFIX,
-					disabled: !hasEmptySlots,
-					lng: ctx.lng
-				});
-				text += result.description;
-				emoteIndex = result.emoteIndex;
-			}
-
-			if (chestItems.length > 0) {
-				text += `\n\n${i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng })}`;
-				const result = this.addItemSectionWithButtons({
-					items: chestItems,
-					category: catInfo.category,
-					rows,
-					emoteIndex,
-					customIdPrefix: HomeMenuIds.CHEST_WITHDRAW_PREFIX,
-					disabled: isInventoryFull,
-					lng: ctx.lng
-				});
-				text += result.description;
-			}
+			emoteIndex = result.emoteIndex;
 		}
 
-		if (emoteIndex === 0 && chestItems.length === 0 && depositableItems.length === 0) {
-			text += `\n\n${i18n.t("commands:report.city.homes.chest.noStoredItems", { lng: ctx.lng })}`;
+		if (chestItems.length > 0) {
+			text += `\n\n${i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng })}`;
+			const result = this.addItemSectionWithButtons({
+				items: chestItems,
+				category: catInfo.category,
+				rows,
+				emoteIndex,
+				customIdPrefix: HomeMenuIds.CHEST_WITHDRAW_PREFIX,
+				disabled: isInventoryFull,
+				lng: ctx.lng
+			});
+			text += result.description;
 		}
 
 		return text;
