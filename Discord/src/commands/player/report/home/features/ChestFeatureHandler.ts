@@ -36,6 +36,16 @@ type ItemSlotDisplay = {
 	details: ItemWithDetails;
 };
 
+type ChestItemLists = {
+	chestItems: ItemSlotDisplay[];
+	depositableItems: ItemSlotDisplay[];
+};
+
+type ChestCapacityFlags = {
+	hasEmptySlots: boolean;
+	isInventoryFull: boolean;
+};
+
 export class ChestFeatureHandler implements HomeFeatureHandler {
 	public readonly featureId = HomeMenuIds.FEATURE_CHEST;
 
@@ -421,17 +431,19 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		text += this.buildWarningBanners(ctx.lng, hasEmptySlots, isInventoryFull);
 
 		// Build sections based on state
-		const bothFull = !hasEmptySlots && isInventoryFull;
-		text += this.buildCategorySections({
+		text += this.buildCategorySections(
 			ctx,
 			catInfo,
-			chestItems: categoryChestItems,
-			depositableItems: categoryDepositableItems,
-			hasEmptySlots,
-			isInventoryFull,
-			bothFull,
+			{
+				chestItems: categoryChestItems,
+				depositableItems: categoryDepositableItems
+			},
+			{
+				hasEmptySlots,
+				isInventoryFull
+			},
 			rows
-		});
+		);
 
 		// Back button
 		addButtonToRow(rows, new ButtonBuilder()
@@ -461,70 +473,92 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 	/**
 	 * Build deposit/withdraw/swap sections with buttons.
 	 */
-	private buildCategorySections(params: {
-		ctx: HomeFeatureHandlerContext;
-		catInfo: typeof CATEGORY_INFO[number];
-		chestItems: ItemSlotDisplay[];
-		depositableItems: ItemSlotDisplay[];
-		hasEmptySlots: boolean;
-		isInventoryFull: boolean;
-		bothFull: boolean;
-		rows: ActionRowBuilder<ButtonBuilder>[];
-	}): string {
+	private buildCategorySections(
+		ctx: HomeFeatureHandlerContext,
+		catInfo: typeof CATEGORY_INFO[number],
+		items: ChestItemLists,
+		capacity: ChestCapacityFlags,
+		rows: ActionRowBuilder<ButtonBuilder>[]
+	): string {
 		const {
-			ctx, catInfo, chestItems, depositableItems, hasEmptySlots, isInventoryFull, bothFull, rows
-		} = params;
+			chestItems, depositableItems
+		} = items;
+
+		const bothFull = !capacity.hasEmptySlots && capacity.isInventoryFull;
+		const isSwapMode = bothFull && chestItems.length > 0 && depositableItems.length > 0;
+		const text = isSwapMode
+			? this.buildChestSwapSection(ctx, catInfo, depositableItems, rows)
+			: this.buildChestDepositWithdrawSections(ctx, catInfo, items, capacity, rows);
+
+		// When nothing was displayed at all, no section could add an emote, so a dedicated hint is shown
+		const hasNoItems = chestItems.length === 0 && depositableItems.length === 0;
+		if (hasNoItems) {
+			return `${text}\n\n${i18n.t("commands:report.city.homes.chest.noStoredItems", { lng: ctx.lng })}`;
+		}
+
+		return text;
+	}
+
+	private buildChestSwapSection(
+		ctx: HomeFeatureHandlerContext,
+		catInfo: typeof CATEGORY_INFO[number],
+		depositableItems: ItemSlotDisplay[],
+		rows: ActionRowBuilder<ButtonBuilder>[]
+	): string {
+		// Swap mode: only show inventory items to initiate swap
+		const result = this.addItemSectionWithButtons({
+			items: depositableItems,
+			category: catInfo.category,
+			rows,
+			emoteIndex: 0,
+			customIdPrefix: HomeMenuIds.CHEST_SWAP_SELECT_PREFIX,
+			disabled: false,
+			lng: ctx.lng
+		});
+		return `\n\n${i18n.t("commands:report.city.homes.chest.swapSection", { lng: ctx.lng })}${result.description}`;
+	}
+
+	private buildChestDepositWithdrawSections(
+		ctx: HomeFeatureHandlerContext,
+		catInfo: typeof CATEGORY_INFO[number],
+		items: ChestItemLists,
+		capacity: ChestCapacityFlags,
+		rows: ActionRowBuilder<ButtonBuilder>[]
+	): string {
+		const {
+			chestItems, depositableItems
+		} = items;
 		let text = "";
 		let emoteIndex = 0;
 
-		if (bothFull && chestItems.length > 0 && depositableItems.length > 0) {
-			// Swap mode: only show inventory items to initiate swap
-			text += `\n\n${i18n.t("commands:report.city.homes.chest.swapSection", { lng: ctx.lng })}`;
+		// Normal mode: deposit + withdraw sections
+		if (depositableItems.length > 0) {
+			text += `\n\n${i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng })}`;
 			const result = this.addItemSectionWithButtons({
 				items: depositableItems,
 				category: catInfo.category,
 				rows,
 				emoteIndex,
-				customIdPrefix: HomeMenuIds.CHEST_SWAP_SELECT_PREFIX,
-				disabled: false,
+				customIdPrefix: HomeMenuIds.CHEST_DEPOSIT_PREFIX,
+				disabled: !capacity.hasEmptySlots,
 				lng: ctx.lng
 			});
 			text += result.description;
-		}
-		else {
-			// Normal mode: deposit + withdraw sections
-			if (depositableItems.length > 0) {
-				text += `\n\n${i18n.t("commands:report.city.homes.chest.depositSection", { lng: ctx.lng })}`;
-				const result = this.addItemSectionWithButtons({
-					items: depositableItems,
-					category: catInfo.category,
-					rows,
-					emoteIndex,
-					customIdPrefix: HomeMenuIds.CHEST_DEPOSIT_PREFIX,
-					disabled: !hasEmptySlots,
-					lng: ctx.lng
-				});
-				text += result.description;
-				emoteIndex = result.emoteIndex;
-			}
-
-			if (chestItems.length > 0) {
-				text += `\n\n${i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng })}`;
-				const result = this.addItemSectionWithButtons({
-					items: chestItems,
-					category: catInfo.category,
-					rows,
-					emoteIndex,
-					customIdPrefix: HomeMenuIds.CHEST_WITHDRAW_PREFIX,
-					disabled: isInventoryFull,
-					lng: ctx.lng
-				});
-				text += result.description;
-			}
+			emoteIndex = result.emoteIndex;
 		}
 
-		if (emoteIndex === 0 && chestItems.length === 0 && depositableItems.length === 0) {
-			text += `\n\n${i18n.t("commands:report.city.homes.chest.noStoredItems", { lng: ctx.lng })}`;
+		if (chestItems.length > 0) {
+			text += `\n\n${i18n.t("commands:report.city.homes.chest.withdrawSection", { lng: ctx.lng })}`;
+			const result = this.addItemSectionWithButtons({
+				items: chestItems,
+				category: catInfo.category,
+				rows,
+				emoteIndex,
+				customIdPrefix: HomeMenuIds.CHEST_WITHDRAW_PREFIX,
+				disabled: capacity.isInventoryFull,
+				lng: ctx.lng
+			});
+			text += result.description;
 		}
 
 		return text;

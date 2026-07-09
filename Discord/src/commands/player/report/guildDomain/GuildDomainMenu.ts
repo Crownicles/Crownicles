@@ -1,9 +1,13 @@
-import { Message } from "discord.js";
+import {
+	ContainerBuilder, Message
+} from "discord.js";
 import i18n from "../../../../translations/i18n";
 import {
 	CrowniclesNestedMenu, CrowniclesNestedMenuCollector, CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
-import { ReportCityMenuIds } from "../ReportCityMenuConstants";
+import {
+	ReportCityMenuIds, ReportCityMenuId
+} from "../ReportCityMenuConstants";
 import { CrowniclesInteraction } from "../../../../messages/CrowniclesInteraction";
 import {
 	CrowniclesPacket, makePacket, PacketContext
@@ -316,27 +320,46 @@ function createShopQuantityCollector(
 	]);
 }
 
+/**
+ * Register a guild-domain sub-menu (container + collector) and switch to it.
+ * Shared by the shop sub-menus which only differ by menu id, container and collector.
+ */
+async function showDomainSubMenu(
+	nestedMenus: CrowniclesNestedMenus,
+	menuId: ReportCityMenuId,
+	container: ContainerBuilder,
+	createCollector: (nestedMenus: CrowniclesNestedMenus, message: Message) => CrowniclesNestedMenuCollector
+): Promise<void> {
+	nestedMenus.registerMenu(menuId, {
+		containers: [container],
+		createCollector
+	});
+	await nestedMenus.changeMenu(menuId);
+}
+
 async function showShopFoodQuantityMenu(
 	ctx: GuildDomainMenuContext,
 	nestedMenus: CrowniclesNestedMenus,
 	foodType: PetFood
 ): Promise<void> {
-	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU, {
-		containers: [buildShopQuantityContainer(ctx, foodType)],
-		createCollector: createShopQuantityCollector(ctx)
-	});
-	await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU);
+	await showDomainSubMenu(
+		nestedMenus,
+		ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU,
+		buildShopQuantityContainer(ctx, foodType),
+		createShopQuantityCollector(ctx)
+	);
 }
 
 async function showShopTreasuryMenu(
 	ctx: GuildDomainMenuContext,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
-	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU, {
-		containers: [buildShopTreasuryContainer(ctx)],
-		createCollector: createShopQuantityCollector(ctx)
-	});
-	await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU);
+	await showDomainSubMenu(
+		nestedMenus,
+		ReportCityMenuIds.GUILD_DOMAIN_SHOP_QUANTITY_MENU,
+		buildShopTreasuryContainer(ctx),
+		createShopQuantityCollector(ctx)
+	);
 }
 
 function createShopReimburseCollector(
@@ -363,11 +386,12 @@ async function showShopReimburseMenu(
 	ctx: GuildDomainMenuContext,
 	nestedMenus: CrowniclesNestedMenus
 ): Promise<void> {
-	nestedMenus.registerMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_MENU, {
-		containers: [buildShopReimburseContainer(ctx)],
-		createCollector: createShopReimburseCollector(ctx)
-	});
-	await nestedMenus.changeMenu(ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_MENU);
+	await showDomainSubMenu(
+		nestedMenus,
+		ReportCityMenuIds.GUILD_DOMAIN_SHOP_REIMBURSE_MENU,
+		buildShopReimburseContainer(ctx),
+		createShopReimburseCollector(ctx)
+	);
 }
 
 async function handleBuildingUpgradeSelection(

@@ -27,6 +27,7 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { WeaponDataController } from "../../data/Weapon";
 import { ArmorDataController } from "../../data/Armor";
+import { Material } from "../../data/Material";
 
 import {
 	HomeChestSlots
@@ -60,6 +61,12 @@ type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
 type HomeData = ReactionCollectorCityData["home"];
 type OwnedHomeData = NonNullable<HomeData["owned"]>;
 type UpgradeStationData = NonNullable<OwnedHomeData["upgradeStation"]>;
+type UpgradeStationRequiredMaterials = UpgradeStationData["upgradeableItems"][number]["requiredMaterials"];
+type UpgradeStationMaterialsResult = {
+	requiredMaterials: UpgradeStationRequiredMaterials;
+	canUpgrade: boolean;
+};
+type PlayerMaterialMap = Map<number, number>;
 type ChestData = NonNullable<OwnedHomeData["chest"]>;
 type ApartmentNotaryData = NonNullable<ReactionCollectorCityData["apartmentNotary"]>;
 type HomesCount = {
@@ -531,28 +538,9 @@ export function buildUpgradeStationData(
 
 		const nextLevel = currentLevel + 1;
 		const requiredMaterialsRaw = itemData.getUpgradeMaterials(nextLevel);
-
-		// Aggregate materials (same material can appear multiple times)
-		const materialAggregation = new Map<number, number>();
-		for (const material of requiredMaterialsRaw) {
-			const materialIdNum = parseInt(material.id, 10);
-			materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
-		}
-
-		const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
-		let canUpgrade = true;
-
-		for (const [materialId, quantity] of materialAggregation) {
-			const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
-			requiredMaterials.push({
-				materialId,
-				quantity,
-				playerQuantity
-			});
-			if (playerQuantity < quantity) {
-				canUpgrade = false;
-			}
-		}
+		const {
+			requiredMaterials, canUpgrade
+		} = computeRequiredMaterials(requiredMaterialsRaw, playerMaterialMap);
 
 		upgradeableItems.push({
 			slot: inventorySlot.slot,
@@ -567,6 +555,42 @@ export function buildUpgradeStationData(
 	return {
 		upgradeableItems,
 		maxUpgradeableRarity
+	};
+}
+
+/**
+ * Aggregate the raw upgrade materials of an item and compare them against the player's stock.
+ * Returns the per-material breakdown and whether the player owns enough of everything.
+ */
+function computeRequiredMaterials(
+	requiredMaterialsRaw: Material[],
+	playerMaterialMap: PlayerMaterialMap
+): UpgradeStationMaterialsResult {
+	// Aggregate materials (same material can appear multiple times)
+	const materialAggregation = new Map<number, number>();
+	for (const material of requiredMaterialsRaw) {
+		const materialIdNum = parseInt(material.id, 10);
+		materialAggregation.set(materialIdNum, (materialAggregation.get(materialIdNum) ?? 0) + 1);
+	}
+
+	const requiredMaterials: UpgradeStationRequiredMaterials = [];
+	let canUpgrade = true;
+
+	for (const [materialId, quantity] of materialAggregation) {
+		const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
+		requiredMaterials.push({
+			materialId,
+			quantity,
+			playerQuantity
+		});
+		if (playerQuantity < quantity) {
+			canUpgrade = false;
+		}
+	}
+
+	return {
+		requiredMaterials,
+		canUpgrade
 	};
 }
 

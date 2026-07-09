@@ -7,13 +7,26 @@ import {
 	getMaterialsPurchasePrice, getUpgradePrice
 } from "../../../../Lib/src/utils/BlacksmithUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
+import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { getBlacksmithItemData } from "./ReportBlacksmithService";
+import { Material } from "../../data/Material";
 
 type RoyalBlacksmithData = NonNullable<ReactionCollectorCityData["royalBlacksmith"]>;
 type RoyalUpgradeableItem = RoyalBlacksmithData["upgradeableItems"][number];
+type RoyalRequiredMaterials = RoyalUpgradeableItem["requiredMaterials"];
+type PlayerMaterialMap = Map<number, number>;
+type MissingMaterial = {
+	rarity: MaterialRarity;
+	quantity: number;
+};
+type RoyalMaterialsResult = {
+	requiredMaterials: RoyalRequiredMaterials;
+	missingMaterials: MissingMaterial[];
+	hasAllMaterials: boolean;
+};
 
 /**
  * Inventory inspection result used to pick the right narrative branch.
@@ -73,50 +86,9 @@ function buildUpgradeableItems(
 		}
 
 		const requiredMaterialsRaw = itemData.getUpgradeMaterials(targetLevel);
-
-		const materialAggregation = new Map<number, {
-			quantity: number; rarity: number;
-		}>();
-		for (const material of requiredMaterialsRaw) {
-			const materialIdNum = parseInt(material.id, 10);
-			const existing = materialAggregation.get(materialIdNum);
-			if (existing) {
-				existing.quantity += 1;
-			}
-			else {
-				materialAggregation.set(materialIdNum, {
-					quantity: 1,
-					rarity: material.rarity
-				});
-			}
-		}
-
-		const requiredMaterials: RoyalUpgradeableItem["requiredMaterials"] = [];
-		const missingMaterials: {
-			rarity: number; quantity: number;
-		}[] = [];
-		let hasAllMaterials = true;
-
-		for (const [
-			materialId, {
-				quantity, rarity
-			}
-		] of materialAggregation) {
-			const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
-			requiredMaterials.push({
-				materialId,
-				rarity,
-				quantity,
-				playerQuantity
-			});
-			if (playerQuantity < quantity) {
-				hasAllMaterials = false;
-				missingMaterials.push({
-					rarity,
-					quantity: quantity - playerQuantity
-				});
-			}
-		}
+		const {
+			requiredMaterials, missingMaterials, hasAllMaterials
+		} = computeRoyalMaterials(requiredMaterialsRaw, playerMaterialMap);
 
 		const upgradeCost = getUpgradePrice(targetLevel as ItemUpgradeLevel, itemData.rarity);
 		const missingMaterialsCost = getMaterialsPurchasePrice(missingMaterials);
@@ -141,6 +113,64 @@ function buildUpgradeableItems(
 	}
 
 	return upgradeableItems;
+}
+
+/**
+ * Aggregate the raw royal upgrade materials of an item and compare them against the player's stock.
+ * Returns the per-material breakdown, the missing materials (for purchase pricing) and whether
+ * the player already owns everything required.
+ */
+function computeRoyalMaterials(
+	requiredMaterialsRaw: Material[],
+	playerMaterialMap: PlayerMaterialMap
+): RoyalMaterialsResult {
+	const materialAggregation = new Map<number, {
+		quantity: number; rarity: MaterialRarity;
+	}>();
+	for (const material of requiredMaterialsRaw) {
+		const materialIdNum = parseInt(material.id, 10);
+		const existing = materialAggregation.get(materialIdNum);
+		if (existing) {
+			existing.quantity += 1;
+		}
+		else {
+			materialAggregation.set(materialIdNum, {
+				quantity: 1,
+				rarity: material.rarity
+			});
+		}
+	}
+
+	const requiredMaterials: RoyalRequiredMaterials = [];
+	const missingMaterials: MissingMaterial[] = [];
+	let hasAllMaterials = true;
+
+	for (const [
+		materialId, {
+			quantity, rarity
+		}
+	] of materialAggregation) {
+		const playerQuantity = playerMaterialMap.get(materialId) ?? 0;
+		requiredMaterials.push({
+			materialId,
+			rarity,
+			quantity,
+			playerQuantity
+		});
+		if (playerQuantity < quantity) {
+			hasAllMaterials = false;
+			missingMaterials.push({
+				rarity,
+				quantity: quantity - playerQuantity
+			});
+		}
+	}
+
+	return {
+		requiredMaterials,
+		missingMaterials,
+		hasAllMaterials
+	};
 }
 
 /**

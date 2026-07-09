@@ -13,6 +13,7 @@ import { LogsPlayersSmallEvents } from "./models/LogsPlayersSmallEvents";
 import { LogsSmallEvents } from "./models/LogsSmallEvents";
 import {
 	asMinutes,
+	asSeconds,
 	dateToLogs,
 	getNextSaturdayMidnight,
 	getNextSundayMidnight,
@@ -21,6 +22,7 @@ import {
 	minutesToMilliseconds,
 	msDiff, nowMs
 } from "../../../../../Lib/src/utils/TimeUtils";
+import { Second } from "../../../../../Lib/src/types/TimeTypes";
 import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import { LogsMapLinks } from "./models/LogsMapLinks";
 import { MapConstants } from "../../../../../Lib/src/constants/MapConstants";
@@ -47,6 +49,11 @@ export type PersonalFightDailySummary = {
 	won: number;
 	draw: number;
 	played: number;
+};
+
+export type WeeklyShopBuyoutScope = {
+	playerId: number;
+	startOfWeek: Second;
 };
 
 /**
@@ -108,20 +115,37 @@ export class LogsReadRequests {
 	}
 
 	/**
+	 * Resolve the shared scope (log player id + start-of-week timestamp) used by the
+	 * weekly shop buyout aggregations. Returns null when no log player could be found or
+	 * created for the given keycloak id.
+	 * @param playerKeycloakId - The keycloak id of the player we want to check on
+	 */
+	private static async resolveWeeklyShopBuyoutScope(playerKeycloakId: string): Promise<WeeklyShopBuyoutScope | null> {
+		const startOfWeek = asSeconds(Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK))));
+		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
+		if (!logPlayer) {
+			return null;
+		}
+		return {
+			playerId: logPlayer.id,
+			startOfWeek
+		};
+	}
+
+	/**
 	 * Get the amount of tokens a specific player has bought this week
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	static async getAmountOfTokensBoughtByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
-		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)));
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
-		if (!logPlayer) {
+		const scope = await LogsReadRequests.resolveWeeklyShopBuyoutScope(playerKeycloakId);
+		if (!scope) {
 			return 0;
 		}
 		return await LogsClassicalShopBuyouts.sum("amount", {
 			where: {
-				playerId: logPlayer.id,
+				playerId: scope.playerId,
 				shopItem: ShopItemType.TOKEN,
-				date: { [Op.gt]: startOfWeek }
+				date: { [Op.gt]: scope.startOfWeek }
 			}
 		}) ?? 0;
 	}
@@ -131,16 +155,15 @@ export class LogsReadRequests {
 	 * @param playerKeycloakId - The keycloak id of the player we want to check on
 	 */
 	static async getTokenCharityCountReceivedByPlayerThisWeek(playerKeycloakId: string): Promise<number> {
-		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(getNextSundayMidnight(), TimeConstants.MS_TIME.WEEK)));
-		const logPlayer = await LogsDatabase.findOrCreatePlayer(playerKeycloakId);
-		if (!logPlayer) {
+		const scope = await LogsReadRequests.resolveWeeklyShopBuyoutScope(playerKeycloakId);
+		if (!scope) {
 			return 0;
 		}
 		return LogsClassicalShopBuyouts.count({
 			where: {
-				playerId: logPlayer.id,
+				playerId: scope.playerId,
 				shopItem: ShopItemType.TOKEN_CHARITY,
-				date: { [Op.gt]: startOfWeek }
+				date: { [Op.gt]: scope.startOfWeek }
 			}
 		});
 	}

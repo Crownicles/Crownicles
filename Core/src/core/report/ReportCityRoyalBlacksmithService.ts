@@ -4,7 +4,9 @@ import {
 } from "../database/game/models/PlayerMissionsInfo";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 import { Materials } from "../database/game/models/Material";
-import { InventorySlots } from "../database/game/models/InventorySlot";
+import {
+	InventorySlot, InventorySlots
+} from "../database/game/models/InventorySlot";
 import {
 	ReactionCollectorCityData,
 	ReactionCollectorRoyalBlacksmithUpgradeReaction
@@ -194,24 +196,8 @@ async function executeRoyalUpgradeUnderLock(params: {
 		lockedPlayer, lockedMissionsInfo, item, execution, reaction, response
 	} = params;
 
-	/*
-	 * Reload and validate the target slot BEFORE any spending: a stale menu replayed
-	 * after a first successful upgrade would otherwise pay again and re-set an
-	 * already-upgraded item, so abort if it is no longer at the upgradeable level.
-	 */
-	const slots = await InventorySlots.getOfPlayer(lockedPlayer.id);
-	const inventorySlot = slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory);
-	if (!inventorySlot || inventorySlot.itemLevel !== RoyalBlacksmithConstants.TARGET_LEVEL - 1) {
-		CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} Royal Blacksmith upgrade: target slot is no longer upgradeable (stale menu replay).`);
-		return;
-	}
-
-	if (lockedPlayer.money < execution.totalMoneyCost) {
-		pushMissingMoney(response, execution.totalMoneyCost, lockedPlayer.money);
-		return;
-	}
-	if (lockedMissionsInfo.gems < execution.gemCost) {
-		pushMissingGems(response, execution.gemCost, lockedMissionsInfo.gems);
+	const inventorySlot = await validateRoyalUpgradeUnderLock(lockedPlayer, lockedMissionsInfo, execution, reaction, response);
+	if (!inventorySlot) {
 		return;
 	}
 
@@ -251,20 +237,67 @@ async function executeRoyalUpgradeUnderLock(params: {
 		lockedPlayer, item, response
 	});
 
-	const cityId = lockedPlayer.getCurrentCityId();
-	if (cityId) {
-		crowniclesInstance?.logsDatabase.logBlacksmithUpgrade({
-			keycloakId: lockedPlayer.keycloakId,
-			cityId,
-			itemCategory: reaction.itemCategory,
-			slot: reaction.slot,
-			fromLevel: RoyalBlacksmithConstants.TARGET_LEVEL - 1,
-			toLevel: RoyalBlacksmithConstants.TARGET_LEVEL as ItemUpgradeLevel,
-			totalCost: execution.totalMoneyCost,
-			boughtMaterials: execution.boughtMaterials,
-			materialsCost: execution.boughtMaterials ? execution.materialsExtraCost : null
-		}).then();
+	logRoyalUpgrade(lockedPlayer, execution, reaction);
+}
+
+/**
+ * Reload and validate the target slot and the player's funds before any spending.
+ * Runs inside the caller's player lock; returns the validated slot or null (after
+ * pushing the relevant error packet) when the upgrade must be aborted.
+ */
+async function validateRoyalUpgradeUnderLock(
+	lockedPlayer: Player,
+	lockedMissionsInfo: PlayerMissionsInfo,
+	execution: ExecutionData,
+	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction,
+	response: CrowniclesPacket[]
+): Promise<InventorySlot | null> {
+	/*
+	 * Reload and validate the target slot BEFORE any spending: a stale menu replayed
+	 * after a first successful upgrade would otherwise pay again and re-set an
+	 * already-upgraded item, so abort if it is no longer at the upgradeable level.
+	 */
+	const slots = await InventorySlots.getOfPlayer(lockedPlayer.id);
+	const inventorySlot = slots.find(s => s.slot === reaction.slot && s.itemCategory === reaction.itemCategory);
+	if (!inventorySlot || inventorySlot.itemLevel !== RoyalBlacksmithConstants.TARGET_LEVEL - 1) {
+		CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} Royal Blacksmith upgrade: target slot is no longer upgradeable (stale menu replay).`);
+		return null;
 	}
+
+	if (lockedPlayer.money < execution.totalMoneyCost) {
+		pushMissingMoney(response, execution.totalMoneyCost, lockedPlayer.money);
+		return null;
+	}
+	if (lockedMissionsInfo.gems < execution.gemCost) {
+		pushMissingGems(response, execution.gemCost, lockedMissionsInfo.gems);
+		return null;
+	}
+	return inventorySlot;
+}
+
+/**
+ * Emit the blacksmith upgrade log entry for the current city, if the player is in one.
+ */
+function logRoyalUpgrade(
+	lockedPlayer: Player,
+	execution: ExecutionData,
+	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction
+): void {
+	const cityId = lockedPlayer.getCurrentCityId();
+	if (!cityId) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logBlacksmithUpgrade({
+		keycloakId: lockedPlayer.keycloakId,
+		cityId,
+		itemCategory: reaction.itemCategory,
+		slot: reaction.slot,
+		fromLevel: RoyalBlacksmithConstants.TARGET_LEVEL - 1,
+		toLevel: RoyalBlacksmithConstants.TARGET_LEVEL as ItemUpgradeLevel,
+		totalCost: execution.totalMoneyCost,
+		boughtMaterials: execution.boughtMaterials,
+		materialsCost: execution.boughtMaterials ? execution.materialsExtraCost : null
+	}).then();
 }
 
 /**

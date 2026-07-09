@@ -179,6 +179,55 @@ async function tryHandleStationaryInCity(params: {
 	return true;
 }
 
+/**
+ * Handle the "player just arrived at their destination" case: PVE boss on the island,
+ * otherwise a random big event. Unblocks the player afterwards.
+ */
+async function handleArrival(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player,
+	forceSpecificEvent: number
+): Promise<void> {
+	if (Maps.isOnPveIsland(player)) {
+		await doPVEBoss(player, response, context);
+	}
+	else {
+		await doRandomBigEvent(context, response, player, forceSpecificEvent);
+	}
+	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+}
+
+/**
+ * Handle the travelling player: trigger a small event when due, otherwise advance the
+ * travel state (send path, start a travel, or choose a destination). Unblocks afterwards.
+ */
+async function continueTravelOrEvent(
+	context: PacketContext,
+	response: CrowniclesPacket[],
+	player: Player,
+	currentDate: Date,
+	forceSmallEvent: string | null
+): Promise<void> {
+	const currentEffectFinished = player.currentEffectFinished(currentDate);
+	if (forceSmallEvent || await needSmallEvent(player, currentDate)) {
+		await executeSmallEvent(response, player, context, forceSmallEvent);
+	}
+	else if (!currentEffectFinished) {
+		await sendTravelPath(player, response, currentDate, player.effectId);
+	}
+	else if (!player.mapLinkId) {
+		await Maps.startTravel(player, MapLinkDataController.instance.getRandomLinkOnMainContinent(), Date.now());
+	}
+	else if (!Maps.isTravelling(player)) {
+		await chooseDestination(context, player, null, response);
+	}
+	else {
+		await sendTravelPath(player, response, currentDate, null);
+	}
+	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+}
+
 export default class ReportCommand {
 	@commandRequires(CommandReportPacketReq, {
 		notBlocked: true,
@@ -217,42 +266,11 @@ export default class ReportCommand {
 		}
 
 		if (Maps.isArrived(player, currentDate)) {
-			if (Maps.isOnPveIsland(player)) {
-				await doPVEBoss(player, response, context);
-			}
-			else {
-				await doRandomBigEvent(context, response, player, forceSpecificEvent);
-			}
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+			await handleArrival(context, response, player, forceSpecificEvent);
 			return;
 		}
 
-		if (forceSmallEvent || await needSmallEvent(player, currentDate)) {
-			await executeSmallEvent(response, player, context, forceSmallEvent);
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
-			return;
-		}
-
-		if (!currentEffectFinished) {
-			await sendTravelPath(player, response, currentDate, player.effectId);
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
-			return;
-		}
-
-		if (!player.mapLinkId) {
-			await Maps.startTravel(player, MapLinkDataController.instance.getRandomLinkOnMainContinent(), Date.now());
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
-			return;
-		}
-
-		if (!Maps.isTravelling(player)) {
-			await chooseDestination(context, player, null, response);
-			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
-			return;
-		}
-
-		await sendTravelPath(player, response, currentDate, null);
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
+		await continueTravelOrEvent(context, response, player, currentDate, forceSmallEvent);
 	}
 
 	@commandRequires(CommandReportUseTokensPacketReq, {

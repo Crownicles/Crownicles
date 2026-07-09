@@ -25,6 +25,7 @@ import {
 } from "discord.js";
 import { PetBasicInfo } from "../../../../../Lib/src/types/PetBasicInfo";
 import { Language } from "../../../../../Lib/src/Language";
+import { CrowniclesInteraction } from "../../../messages/CrowniclesInteraction";
 
 // Import from new modules
 import {
@@ -280,19 +281,34 @@ export async function handleExpeditionRecallRes(
 }
 
 /**
- * Handle expedition resolution (success/failure)
+ * Builds the embed to display for an expedition response from the resolved interaction.
  */
-export async function handleExpeditionResolveRes(
+type ExpeditionEmbedBuilder = (interaction: CrowniclesInteraction) => CrowniclesEmbed;
+
+/**
+ * Resolve the current interaction and forward the embed built from it to the player.
+ * Shared by the resolve and error handlers which only differ by the embed they build.
+ */
+async function sendExpeditionEmbed(
 	context: PacketContext,
-	packet: CommandPetExpeditionResolvePacketRes
+	buildEmbed: ExpeditionEmbedBuilder
 ): Promise<void> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
 	if (!interaction) {
 		return;
 	}
 
-	const embed = buildExpeditionResolveEmbed(interaction, packet);
-	await sendResponse(context, embed);
+	await sendResponse(context, buildEmbed(interaction));
+}
+
+/**
+ * Handle expedition resolution (success/failure)
+ */
+export async function handleExpeditionResolveRes(
+	context: PacketContext,
+	packet: CommandPetExpeditionResolvePacketRes
+): Promise<void> {
+	await sendExpeditionEmbed(context, interaction => buildExpeditionResolveEmbed(interaction, packet));
 }
 
 /**
@@ -302,11 +318,5 @@ export async function handleExpeditionError(
 	context: PacketContext,
 	packet: CommandPetExpeditionErrorPacket
 ): Promise<void> {
-	const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-	if (!interaction) {
-		return;
-	}
-
-	const embed = buildExpeditionErrorEmbed(interaction, packet.errorCode, context);
-	await sendResponse(context, embed as unknown as CrowniclesEmbed);
+	await sendExpeditionEmbed(context, interaction => buildExpeditionErrorEmbed(interaction, packet.errorCode, context));
 }

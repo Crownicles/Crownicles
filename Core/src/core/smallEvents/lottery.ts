@@ -69,6 +69,7 @@ type WhoToGive = {
 };
 
 type RewardParams = {
+	rewardType: LotteryRewardType;
 	coefficient: number;
 	lostTime: number;
 	levelKey: LotteryLevelKey;
@@ -90,8 +91,8 @@ async function giveRewardToPlayer(
 		player,
 		guild
 	}: WhoToGive,
-	rewardType: string,
 	{
+		rewardType,
 		coefficient,
 		lostTime,
 		levelKey
@@ -184,7 +185,8 @@ async function runLotteryEndCallbackUnderLock(
 		await giveRewardToPlayer(response, {
 			player,
 			guild: guild!
-		}, rewardType, {
+		}, {
+			rewardType,
 			coefficient,
 			lostTime,
 			levelKey
