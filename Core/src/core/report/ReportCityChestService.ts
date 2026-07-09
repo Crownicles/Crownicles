@@ -26,6 +26,7 @@ import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { MissionsController } from "../missions/MissionsController";
+import { updateHaveItemRarityMission } from "../utils/ItemUtils";
 
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
@@ -138,6 +139,15 @@ export async function handleChestAction(
 	 */
 	if (result.success && packet.action === HomeConstants.CHEST_ACTIONS.DEPOSIT) {
 		await MissionsController.update(chestActionContext.player, response, { missionId: "depositChestItem" });
+	}
+
+	/*
+	 * Withdrawing or swapping brings an item (potentially of higher rarity) back
+	 * into the inventory, so re-evaluate the "have an item of a given rarity"
+	 * mission against the player's best owned item. See issue #4393.
+	 */
+	if (result.success && (packet.action === HomeConstants.CHEST_ACTIONS.WITHDRAW || packet.action === HomeConstants.CHEST_ACTIONS.SWAP)) {
+		await updateHaveItemRarityMission(chestActionContext.player, response);
 	}
 	return result;
 }

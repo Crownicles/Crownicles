@@ -155,7 +155,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				isPotion: vi.fn().mockReturnValue(false),
 				getItem: vi.fn().mockReturnValue({
 					id: 50,
-					rarity: ItemRarity.BASIC,
+					rarity: ItemRarity.COMMON,
 					getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
 					getDisplayPacket: vi.fn().mockReturnValue({ id: 50, name: 'Slot Item' })
 				})
@@ -430,15 +430,18 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			const potionSlots = [
 				{
 					isPotion: vi.fn().mockReturnValue(true),
-					itemId: 1
+					itemId: 1,
+					getItem: vi.fn().mockReturnValue({ rarity: ItemRarity.BASIC })
 				},
 				{
 					isPotion: vi.fn().mockReturnValue(true),
-					itemId: 2
+					itemId: 2,
+					getItem: vi.fn().mockReturnValue({ rarity: ItemRarity.BASIC })
 				},
 				{
 					isPotion: vi.fn().mockReturnValue(false),
-					itemId: 3
+					itemId: 3,
+					getItem: vi.fn().mockReturnValue({ rarity: ItemRarity.BASIC })
 				}
 			];
 			vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue(potionSlots as any);

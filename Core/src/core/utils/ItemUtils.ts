@@ -146,10 +146,7 @@ async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player
 			playerId: player.id
 		}
 	});
-	await MissionsController.update(player, response, {
-		missionId: "haveItemRarity",
-		params: { rarity: item.rarity }
-	});
+	await updateHaveItemRarityMission(player, response);
 	crowniclesInstance?.logsDatabase.logItemGain(player.keycloakId, item)
 		.then();
 }
@@ -358,10 +355,7 @@ async function manageGiveItemRelateds(response: CrowniclesPacket[], player: Play
 		count: countNbOfPotions(await InventorySlots.getOfPlayer(player.id)),
 		set: true
 	});
-	await MissionsController.update(player, response, {
-		missionId: "haveItemRarity",
-		params: { rarity: item.rarity }
-	});
+	await updateHaveItemRarityMission(player, response);
 	crowniclesInstance?.logsDatabase.logItemGain(player.keycloakId, item)
 		.then();
 }
@@ -774,6 +768,29 @@ export function sortPlayerItemList(items: InventorySlot[]): InventorySlot[] {
  */
 export function haveRarityOrMore(slots: InventorySlot[], rarity: ItemRarity): boolean {
 	return !slots.every(slot => slot.getItem()!.rarity < rarity);
+}
+
+/**
+ * Update the "haveItemRarity" mission using the highest rarity item the player currently owns.
+ * Relying on the best owned rarity (instead of the rarity of a single item) makes the mission
+ * validate as soon as the player possesses a qualifying item, regardless of how it was obtained
+ * (found, withdrawn from the chest, swapped...) or the rarity of the item that triggered the update.
+ * @param player
+ * @param response
+ */
+export async function updateHaveItemRarityMission(player: Player, response: CrowniclesPacket[]): Promise<void> {
+	const slots = await InventorySlots.getOfPlayer(player.id);
+	let maxRarity: ItemRarity = ItemRarity.BASIC;
+	for (const slot of slots) {
+		const rarity = slot.getItem()!.rarity;
+		if (rarity > maxRarity) {
+			maxRarity = rarity;
+		}
+	}
+	await MissionsController.update(player, response, {
+		missionId: "haveItemRarity",
+		params: { rarity: maxRarity }
+	});
 }
 
 /**
