@@ -64,7 +64,7 @@
         },
         "3": {
             "effect": "occupied",
-            "lostTime": 15
+            "lostTime": 300
         }
       }
     }
