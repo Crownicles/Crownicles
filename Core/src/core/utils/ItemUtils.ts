@@ -780,13 +780,7 @@ export function haveRarityOrMore(slots: InventorySlot[], rarity: ItemRarity): bo
  */
 export async function updateHaveItemRarityMission(player: Player, response: CrowniclesPacket[]): Promise<void> {
 	const slots = await InventorySlots.getOfPlayer(player.id);
-	let maxRarity: ItemRarity = ItemRarity.BASIC;
-	for (const slot of slots) {
-		const rarity = slot.getItem()!.rarity;
-		if (rarity > maxRarity) {
-			maxRarity = rarity;
-		}
-	}
+	const maxRarity = Math.max(ItemRarity.BASIC, ...slots.map(slot => slot.getItem()!.rarity)) as ItemRarity;
 	await MissionsController.update(player, response, {
 		missionId: "haveItemRarity",
 		params: { rarity: maxRarity }

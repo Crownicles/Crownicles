@@ -411,7 +411,6 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			lng: ctx.lng,
 			category: i18n.t(`items:categories.${catInfo.translationKey}`, { lng: ctx.lng }),
 			count: categoryChestItems.length,
-			filled: categoryChestItems.length,
 			total: maxSlots
 		});
 
