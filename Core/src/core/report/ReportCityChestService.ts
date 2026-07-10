@@ -12,7 +12,8 @@ import {
 import {
 	CommandReportHomeChestActionReq,
 	CommandReportHomeChestActionRes,
-	ChestError
+	ChestError,
+	ChestAction
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
@@ -53,6 +54,15 @@ function hasChestActionContext(params: {
 	home: Home;
 } {
 	return params.player !== null && params.home !== null && params.home.getLevel() !== null;
+}
+
+/**
+ * Whether a chest action brings an item (potentially of higher rarity) back
+ * into the player's inventory, requiring the "have an item of a given rarity"
+ * mission to be re-evaluated.
+ */
+function actionBringsItemToInventory(action: ChestAction): boolean {
+	return action === HomeConstants.CHEST_ACTIONS.WITHDRAW || action === HomeConstants.CHEST_ACTIONS.SWAP;
 }
 
 function findEmptyActiveSlot(playerInventory: PlayerInventory, itemCategory: ItemCategory): InventorySlot | undefined {
@@ -146,7 +156,7 @@ export async function handleChestAction(
 	 * into the inventory, so re-evaluate the "have an item of a given rarity"
 	 * mission against the player's best owned item. See issue #4393.
 	 */
-	if (result.success && (packet.action === HomeConstants.CHEST_ACTIONS.WITHDRAW || packet.action === HomeConstants.CHEST_ACTIONS.SWAP)) {
+	if (result.success && actionBringsItemToInventory(packet.action)) {
 		await updateHaveItemRarityMission(chestActionContext.player, response);
 	}
 	return result;
