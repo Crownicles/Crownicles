@@ -1185,7 +1185,8 @@
           "placeholder": "Elija una categoría",
           "descriptionWithItems": "{emote:ciudad.homeActualizaciones.cofre} Tu cofre contiene varios objetos. Selecciona una categoría para ver su contenido o añadir nuevos objetos.",
           "descriptionEmpty": "{emote:ciudad.homeActualizaciones.cofre} Tu cofre está vacío en este momento. Selecciona una categoría para guardar objetos de tu inventario.",
-          "categoryHeader": "**{{category}}** - {{filled}}/{{total}} parcelas ocupadas",
+          "categoryHeader_one": "**{{category}}** — {{count}}/{{total}} emplacement occupé",
+          "categoryHeader_other": "**{{category}}** — {{count}}/{{total}} emplacements occupés",
           "inventoryInfo": "{emote:city.chestActions.inventory} Equipado: {{equipped}} | Reserva: {{backupCount}}/{{maxBackup}}",
           "noStoredItems": "No hay artículos en esta categoría.",
           "depositSection": "{emote:city.chestActions.deposit} **Depósito en cofre:**",
@@ -2195,7 +2196,7 @@
     "rewards": {
       "personalXP": "{emote:unitValues.xp} | Los miembros del gremio han recibido experiencia. `+ {{quantity, number}} {emote:unitValues.xp}`.",
       "guildXP": "{emote:unitValues.xp} | El gremio ha recibido experiencia. `+ {{quantity, number}} {emote:unitValues.xp}`",
-      "guildPoints": "{ item:unitValues.guildPoint} Puntos de gremio ganados: `+ {{quantity, number}} { item:unitValues.guildPoint}`. La posición de caja aumenta en la misma cantidad.",
+      "guildPoints": "{emote:unitValues.guildPoint} | Points de guilde gagnés : `+ {{quantity, number}}` {emote:unitValues.guildPoint}. La trésorerie augmente du même montant.",
       "money": "{emote:unitValues.money} | Los miembros del gremio han recibido `{{quantity, number}} {emote:unitValues.money}`.",
       "item": "{emote:rewards:item} | Los miembros del Gremio recibieron un objeto al azar.",
       "badge": "{emote:badges.powerful_guild} | Los miembros del Gremio han recibido una insignia.",
