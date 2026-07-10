@@ -1185,7 +1185,8 @@
           "placeholder": "Wählen Sie eine Kategorie",
           "descriptionWithItems": "{emote:city.homeUpgrades.chest} Ihre Truhe enthält einige Gegenstände. Wählen Sie eine Kategorie, um ihren Inhalt anzusehen oder neue Gegenstände darin zu verstauen.",
           "descriptionEmpty": "{emote:city.homeUpgrades.chest} Ihre Truhe ist im Moment leer. Wählen Sie eine Kategorie, um Gegenstände aus Ihrem Inventar darin zu verstauen.",
-          "categoryHeader": "**{{category}}** - {{filled}}/{{total}} belegte Plätze",
+          "categoryHeader_one": "**{{category}}** — {{count}}/{{total}} emplacement occupé",
+          "categoryHeader_other": "**{{category}}** — {{count}}/{{total}} emplacements occupés",
           "inventoryInfo": "{emote:city.chestActions.inventory} Ausgestattet: {{equipped}} | Reserve: {{backupCount}}/{{maxBackup}}",
           "noStoredItems": "Keine Objekte in dieser Kategorie geordnet.",
           "depositSection": "{emote:city.chestActions.deposit} **Deponieren im Tresor:**",
@@ -2195,7 +2196,7 @@
     "rewards": {
       "personalXP": "{emote:unitValues.xp} | Die Mitglieder der Gilde haben Erfahrung erhalten. `+ {{quantity, number}} {emote:unitValues.xp}`.",
       "guildXP": "{emote:unitValues.xp} | Die Gilde hat Erfahrung erhalten. `+ {{quantity, number}} {emote:unitValues.xp}`",
-      "guildPoints": "{emote:unitValues.guildPoint} Verdiente Gildenpunkte: `+ {{quantity, number}} {emote:unitValues.guildPoint}`. Der Cashflow steigt um denselben Betrag.",
+      "guildPoints": "{emote:unitValues.guildPoint} | Points de guilde gagnés : `+ {{quantity, number}}` {emote:unitValues.guildPoint}. La trésorerie augmente du même montant.",
       "money": "{emote:unitValues.money} | Die Mitglieder der Gilde haben `{{quantity, number}} {emote:unitValues.money}` erhalten.",
       "item": "{emote:rewards.item} | Die Mitglieder der Gilde haben einen zufälligen Gegenstand erhalten.",
       "badge": "{emote:badges.powerful_guild} | Die Mitglieder der Gilde haben ein Abzeichen erhalten.",
