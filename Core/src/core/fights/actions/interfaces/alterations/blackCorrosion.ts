@@ -41,7 +41,7 @@ const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
 		}, affected, fightAlteration);
 	}
 
-	result.damages = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), affected, getAttackInfo(), true);
+	result.damages = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), opponent, getAttackInfo(), true);
 	return result;
 };
 
