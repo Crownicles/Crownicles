@@ -37,7 +37,7 @@ const use: FightAlterationFunc = (affected, fightAlteration, opponent) => {
 			value: 0.4
 		}, affected, fightAlteration);
 	}
-	result.damages = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), affected, getAttackInfo(), true);
+	result.damages = FightActionController.getAttackDamage(getStatsInfo(affected, opponent), opponent, getAttackInfo(), true);
 
 	if (result.damages) {
 		result.damages *= opponent.getAlterationMultiplier(FightAlterations.FROZEN); // Apply alteration multiplier

@@ -22,7 +22,7 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 		return defaultHealFightAlterationResult(affected);
 	}
 
-	return defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo());
+	return defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getAttackInfo());
 };
 
 export default use;
