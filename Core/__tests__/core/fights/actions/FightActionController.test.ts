@@ -1,17 +1,25 @@
 import {
-	describe, expect, it, vi
+	afterAll, beforeAll, describe, expect, it, vi
 } from "vitest";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import { FightActionController } from "../../../../src/core/fights/actions/FightActionController";
 import type { Fighter } from "../../../../src/core/fights/fighter/Fighter";
-
-vi.spyOn(RandomUtils, "variationInt").mockReturnValue(0);
 
 function buildFighter(level: number): Fighter {
 	return { level } as Fighter;
 }
 
 describe("FightActionController.getAttackDamage", () => {
+	let variationIntSpy: ReturnType<typeof vi.spyOn>;
+
+	beforeAll(() => {
+		variationIntSpy = vi.spyOn(RandomUtils, "variationInt").mockReturnValue(0);
+	});
+
+	afterAll(() => {
+		variationIntSpy.mockRestore();
+	});
+
 	const statsInfo = {
 		attackerStats: [100], defenderStats: [100], statsEffect: [1]
 	};
