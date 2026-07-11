@@ -54,6 +54,23 @@ export abstract class PlayerBaseFighter extends Fighter {
 	}
 
 	/**
+	 * Load the combat stats shared by human-controlled and AI-controlled player fighters
+	 * (attack, defense, speed, breath, breath regen and weapon alteration enchantment).
+	 * Energy is loaded separately by each subclass, as it is computed differently for AI fighters.
+	 * @param playerActiveObjects
+	 * @param isPvE True if the fight is against a monster (PVE), false against another player (PVP)
+	 */
+	protected loadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean): void {
+		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects, isPvE);
+		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
+		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
+		this.stats.breath = this.player.getBaseBreath(playerActiveObjects);
+		this.stats.maxBreath = this.player.getMaxBreath(playerActiveObjects);
+		this.stats.breathRegen = this.player.getBreathRegen();
+		this.applyWeaponAlterationEnchantment(playerActiveObjects);
+	}
+
+	/**
 	 * Get the current remaining usages for a potion slot
 	 * @param potionSlot The inventory slot containing the potion
 	 * @param potion The potion data
