@@ -114,8 +114,8 @@ async function getPlayerStats(player: Player): Promise<PlayerStats> {
 		defense: player.getCumulativeDefense(playerActiveObjects),
 		speed: player.getCumulativeSpeed(playerActiveObjects),
 		breath: {
-			base: player.getBaseBreath(),
-			max: player.getMaxBreath(),
+			base: player.getBaseBreath(playerActiveObjects),
+			max: player.getMaxBreath(playerActiveObjects),
 			regen: player.getBreathRegen()
 		}
 	};

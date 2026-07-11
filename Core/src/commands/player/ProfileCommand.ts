@@ -164,8 +164,8 @@ function buildStatsData(player: Player, playerActiveObjects: PlayerActiveObjects
 			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
 		breath: {
-			base: player.getBaseBreath(),
-			max: player.getMaxBreath(),
+			base: player.getBaseBreath(playerActiveObjects),
+			max: player.getMaxBreath(playerActiveObjects),
 			regen: player.getBreathRegen()
 		}
 	};
