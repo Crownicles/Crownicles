@@ -61,12 +61,15 @@ export abstract class PlayerBaseFighter extends Fighter {
 	 * @param isPvE True if the fight is against a monster (PVE), false against another player (PVP)
 	 */
 	protected loadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean): void {
-		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects, isPvE);
-		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
-		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
-		this.stats.breath = this.player.getBaseBreath(playerActiveObjects);
-		this.stats.maxBreath = this.player.getMaxBreath(playerActiveObjects);
-		this.stats.breathRegen = this.player.getBreathRegen();
+		const {
+			player, stats
+		} = this;
+		stats.attack = player.getCumulativeAttack(playerActiveObjects, isPvE);
+		stats.defense = player.getCumulativeDefense(playerActiveObjects);
+		stats.speed = player.getCumulativeSpeed(playerActiveObjects);
+		stats.breath = player.getBaseBreath(playerActiveObjects);
+		stats.maxBreath = player.getMaxBreath(playerActiveObjects);
+		stats.breathRegen = player.getBreathRegen();
 		this.applyWeaponAlterationEnchantment(playerActiveObjects);
 	}
 
