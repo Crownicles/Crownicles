@@ -22,7 +22,7 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 		return defaultHealFightAlterationResult(affected);
 	}
 
-	const burn = defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo());
+	const burn = defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getAttackInfo());
 	if (burn.damages) {
 		burn.damages *= opponent.getAlterationMultiplier(FightAlterations.BURNED); // Apply alteration multiplier
 	}

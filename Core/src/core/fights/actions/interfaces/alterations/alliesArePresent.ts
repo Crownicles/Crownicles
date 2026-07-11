@@ -6,7 +6,7 @@ import { FightAlterationFunc } from "../../../../../data/FightAlteration";
 import { defaultDamageFightAlterationResult } from "../../../FightController";
 
 const use: FightAlterationFunc = (affected, _fightAlteration, opponent) =>
-	defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo());
+	defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getAttackInfo());
 
 export default use;
 

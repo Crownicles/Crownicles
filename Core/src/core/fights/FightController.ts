@@ -552,13 +552,13 @@ export function defaultRandomActionFightAlterationResult(affected: Fighter): Fig
 
 /**
  * Default damage fight alteration result
- * @param affected
+ * @param attacker The fighter who inflicted the alteration (used for the level bonus)
  * @param statsInfo
  * @param attackInfo
  */
-export function defaultDamageFightAlterationResult(affected: Fighter, statsInfo: statsInfo, attackInfo: attackInfo): FightAlterationResult {
+export function defaultDamageFightAlterationResult(attacker: Fighter, statsInfo: statsInfo, attackInfo: attackInfo): FightAlterationResult {
 	return {
 		state: FightAlterationState.ACTIVE,
-		damages: FightActionController.getAttackDamage(statsInfo, affected, attackInfo, true)
+		damages: FightActionController.getAttackDamage(statsInfo, attacker, attackInfo, true)
 	};
 }

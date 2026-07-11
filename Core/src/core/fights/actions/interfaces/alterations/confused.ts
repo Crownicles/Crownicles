@@ -21,7 +21,7 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 
 	if (RandomUtils.crowniclesRandom.bool(0.5)) {
 		affected.nextFightAction = FightActionDataController.instance.getNone();
-		return defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo());
+		return defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getAttackInfo());
 	}
 
 	return defaultFightAlterationResult();

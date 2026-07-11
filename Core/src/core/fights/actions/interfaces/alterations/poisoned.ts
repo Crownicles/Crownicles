@@ -14,7 +14,7 @@ const use: FightAlterationFunc = (affected, _fightAlteration, opponent) => {
 		return defaultHealFightAlterationResult(affected);
 	}
 
-	const poison = defaultDamageFightAlterationResult(affected, getStatsInfo(affected, opponent), getAttackInfo());
+	const poison = defaultDamageFightAlterationResult(opponent, getStatsInfo(affected, opponent), getAttackInfo());
 	if (poison.damages) {
 		poison.damages *= opponent.getAlterationMultiplier(FightAlterations.POISONED); // Apply alteration multiplier
 	}
