@@ -72,6 +72,7 @@ import {
 	ItemEnchantment, ItemEnchantmentKind
 } from "../../../../../../Lib/src/types/ItemEnchantment";
 import { EnchantmentConstants } from "../../../../../../Lib/src/constants/EnchantmentConstants";
+import { EnchantmentUtils } from "../../../utils/EnchantmentUtils";
 import {
 	EditValueParameters, HealthEditValueParameters, MissionHealthParameter
 } from "../EditValueParameters";
@@ -959,8 +960,9 @@ export class Player extends Model {
 	/**
 	 * Calculate the cumulative attack of the player
 	 * @param playerActiveObjects
+	 * @param isPvE True if the attack is used against a monster (PVE), false against another player (PVP)
 	 */
-	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects): number {
+	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, isPvE = false): number {
 		const playerAttack = this.getMaxStatsValue().attack;
 		const weaponAttack = playerActiveObjects.weapon.item.getAttack(playerActiveObjects.weapon.itemLevel);
 		const armorAttack = playerActiveObjects.armor.item.getAttack(playerActiveObjects.armor.itemLevel);
@@ -976,7 +978,14 @@ export class Player extends Model {
 				? objectAttack
 				: playerAttack * 2)
 			+ playerActiveObjects.potion.item.getAttack();
-		return attack > 0 ? attack : 0;
+		const targetedAttackMultiplier = EnchantmentUtils.getEnchantmentMultiplier(
+			playerActiveObjects,
+			isPvE ? ItemEnchantmentKind.PVE_ATTACK : ItemEnchantmentKind.PVP_ATTACK,
+			isPvE ? EnchantmentConstants.PVE_ATTACK_MULTIPLIER : EnchantmentConstants.PVP_ATTACK_MULTIPLIER
+		);
+		const allAttackMultiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.ALL_ATTACK, EnchantmentConstants.ALL_ATTACK_MULTIPLIER);
+		const enchantedAttack = Math.round(attack * targetedAttackMultiplier * allAttackMultiplier);
+		return enchantedAttack > 0 ? enchantedAttack : 0;
 	}
 
 	/**
@@ -996,7 +1005,9 @@ export class Player extends Model {
 				? playerActiveObjects.object.item.getDefense()
 				: playerDefense * 2)
 			+ playerActiveObjects.potion.item.getDefense();
-		return defense > 0 ? defense : 0;
+		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.DEFENSE, EnchantmentConstants.DEFENSE_MULTIPLIER);
+		const enchantedDefense = Math.round(defense * multiplier);
+		return enchantedDefense > 0 ? enchantedDefense : 0;
 	}
 
 	/**
@@ -1016,7 +1027,9 @@ export class Player extends Model {
 				? playerActiveObjects.object.item.getSpeed()
 				: playerSpeed * 2)
 			+ playerActiveObjects.potion.item.getSpeed();
-		return speed > 0 ? speed : 0;
+		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.SPEED, EnchantmentConstants.SPEED_MULTIPLIER);
+		const enchantedSpeed = Math.round(speed * multiplier);
+		return enchantedSpeed > 0 ? enchantedSpeed : 0;
 	}
 
 	/**
@@ -1045,11 +1058,7 @@ export class Player extends Model {
 	 */
 	public getMaxHealth(playerActiveObjects: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-
-		const weaponEnchant = playerActiveObjects.weapon.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId) : null;
-		const armorEnchant = playerActiveObjects.armor.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId) : null;
-		const multiplier = (weaponEnchant?.kind === ItemEnchantmentKind.MAX_HEALTH ? EnchantmentConstants.MAX_HEALTH_MULTIPLIER[weaponEnchant.level - 1] ?? 1 : 1)
-			* (armorEnchant?.kind === ItemEnchantmentKind.MAX_HEALTH ? EnchantmentConstants.MAX_HEALTH_MULTIPLIER[armorEnchant.level - 1] ?? 1 : 1);
+		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.MAX_HEALTH, EnchantmentConstants.MAX_HEALTH_MULTIPLIER);
 
 		return Math.round((playerClass?.getMaxHealthValue(this.level) ?? 100) * multiplier);
 	}
@@ -1059,13 +1068,7 @@ export class Player extends Model {
 	 */
 	public getMaxCumulativeEnergy(playerActiveObjects: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-
-		const weaponEnchant = playerActiveObjects.weapon.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId) : null;
-		const armorEnchant = playerActiveObjects.armor.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId) : null;
-		const multiplier = (weaponEnchant?.kind === ItemEnchantmentKind.MAX_ENERGY
-			? EnchantmentConstants.MAX_ENERGY_MULTIPLIER[weaponEnchant.level - 1] ?? 1
-			: 1)
-			* (armorEnchant?.kind === ItemEnchantmentKind.MAX_ENERGY ? EnchantmentConstants.MAX_ENERGY_MULTIPLIER[armorEnchant.level - 1] ?? 1 : 1);
+		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.MAX_ENERGY, EnchantmentConstants.MAX_ENERGY_MULTIPLIER);
 
 		return Math.round((playerClass?.getMaxCumulativeEnergyValue(this.level) ?? FightConstants.PLAYER_MAX_ENERGY) * multiplier);
 	}
@@ -1178,18 +1181,30 @@ export class Player extends Model {
 
 	/**
 	 * Get the amount of breath a player has at the beginning of a fight
+	 * @param playerActiveObjects When provided, the base breath enchantment bonus is taken into account
 	 */
-	public getBaseBreath(): number {
+	public getBaseBreath(playerActiveObjects?: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-		return playerClass?.baseBreath ?? FightConstants.DEFAULT_BASE_BREATH;
+		const baseBreath = playerClass?.baseBreath ?? FightConstants.DEFAULT_BASE_BREATH;
+		if (!playerActiveObjects) {
+			return baseBreath;
+		}
+		const weaponEnchant = playerActiveObjects.weapon.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId) : null;
+		return weaponEnchant?.kind === ItemEnchantmentKind.BASE_BREATH ? baseBreath + EnchantmentConstants.BASE_BREATH_BONUS : baseBreath;
 	}
 
 	/**
 	 * Get the max amount of breath a player can have
+	 * @param playerActiveObjects When provided, the max breath enchantment bonus is taken into account
 	 */
-	public getMaxBreath(): number {
+	public getMaxBreath(playerActiveObjects?: PlayerActiveObjects): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
-		return playerClass?.maxBreath ?? FightConstants.DEFAULT_MAX_BREATH;
+		const maxBreath = playerClass?.maxBreath ?? FightConstants.DEFAULT_MAX_BREATH;
+		if (!playerActiveObjects) {
+			return maxBreath;
+		}
+		const armorEnchant = playerActiveObjects.armor.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId) : null;
+		return armorEnchant?.kind === ItemEnchantmentKind.MAX_BREATH ? maxBreath + EnchantmentConstants.MAX_BREATH_BONUS : maxBreath;
 	}
 
 	/**

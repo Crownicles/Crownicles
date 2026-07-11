@@ -90,17 +90,19 @@ export class AiPlayerFighter extends PlayerBaseFighter {
 
 	/**
 	 * The fighter loads its various stats
+	 * @param isPvE True if the fight is against a monster (PVE), false against another player (PVP)
 	 */
-	public async loadStats(): Promise<void> {
+	public async loadStats(isPvE = false): Promise<void> {
 		const playerActiveObjects: PlayerActiveObjects = this.preloadedActiveObjects ?? await InventorySlots.getPlayerActiveObjects(this.player.id);
 		this.stats.energy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
 		this.stats.maxEnergy = this.player.getMaxCumulativeEnergy(playerActiveObjects);
-		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects);
+		this.stats.attack = this.player.getCumulativeAttack(playerActiveObjects, isPvE);
 		this.stats.defense = this.player.getCumulativeDefense(playerActiveObjects);
 		this.stats.speed = this.player.getCumulativeSpeed(playerActiveObjects);
-		this.stats.breath = this.player.getBaseBreath();
-		this.stats.maxBreath = this.player.getMaxBreath();
+		this.stats.breath = this.player.getBaseBreath(playerActiveObjects);
+		this.stats.maxBreath = this.player.getMaxBreath(playerActiveObjects);
 		this.stats.breathRegen = this.player.getBreathRegen();
+		this.applyWeaponAlterationEnchantment(playerActiveObjects);
 		this.glory = this.player.getGloryPoints();
 		this.metallicItemCount = await InventorySlots.countObjectsOfPlayer(this.player.id, ItemConstants.TAGS.METALLIC);
 		await this.loadPetEntity();

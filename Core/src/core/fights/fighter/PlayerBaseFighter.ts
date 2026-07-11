@@ -11,6 +11,8 @@ import { FightAction } from "../../../data/FightAction";
 import {
 	FightConstants, FightRole
 } from "../../../../../Lib/src/constants/FightConstants";
+import { PlayerActiveObjects } from "../../database/game/models/PlayerActiveObjects";
+import { EnchantmentUtils } from "../../utils/EnchantmentUtils";
 
 /**
  * Base class for player fighters (human-controlled or AI)
@@ -37,6 +39,18 @@ export abstract class PlayerBaseFighter extends Fighter {
 	 */
 	public setFightRole(role: FightRole): void {
 		this.fightRole = role;
+	}
+
+	/**
+	 * Apply the alteration damage multiplier granted by the equipped weapon's enchantment, if any
+	 * (burned/frozen/poisoned damage-over-time boosts)
+	 * @param playerActiveObjects
+	 */
+	protected applyWeaponAlterationEnchantment(playerActiveObjects: PlayerActiveObjects): void {
+		const match = EnchantmentUtils.getWeaponAlterationEnchantment(playerActiveObjects.weapon.itemEnchantmentId);
+		if (match) {
+			this.setAlterationMultiplier(match.alterationId, match.multiplier);
+		}
 	}
 
 	/**

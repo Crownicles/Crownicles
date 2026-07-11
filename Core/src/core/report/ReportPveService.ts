@@ -395,7 +395,7 @@ export async function doPVEBoss(
 		}
 
 		const playerFighter = new RealPlayerFighter(player, ClassDataController.instance.getById(player.class)!);
-		await playerFighter.loadStats();
+		await playerFighter.loadStats(true);
 		playerFighter.setBaseEnergy(playerFighter.getMaxEnergy() - player.fightPointsLost);
 
 		const fight = new FightController(
