@@ -68,9 +68,7 @@ import { MathUtils } from "../../../utils/MathUtils";
 import * as moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { CityDataController } from "../../../../data/City";
-import {
-	ItemEnchantment, ItemEnchantmentKind
-} from "../../../../../../Lib/src/types/ItemEnchantment";
+import { ItemEnchantmentKind } from "../../../../../../Lib/src/types/ItemEnchantment";
 import { EnchantmentConstants } from "../../../../../../Lib/src/constants/EnchantmentConstants";
 import { EnchantmentUtils } from "../../../utils/EnchantmentUtils";
 import {
@@ -1189,8 +1187,8 @@ export class Player extends Model {
 		if (!playerActiveObjects) {
 			return baseBreath;
 		}
-		const weaponEnchant = playerActiveObjects.weapon.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.weapon.itemEnchantmentId) : null;
-		return weaponEnchant?.kind === ItemEnchantmentKind.BASE_BREATH ? baseBreath + EnchantmentConstants.BASE_BREATH_BONUS : baseBreath;
+		const hasBaseBreathEnchant = EnchantmentUtils.hasEnchantmentOfKind(playerActiveObjects.weapon.itemEnchantmentId, ItemEnchantmentKind.BASE_BREATH);
+		return hasBaseBreathEnchant ? baseBreath + EnchantmentConstants.BASE_BREATH_BONUS : baseBreath;
 	}
 
 	/**
@@ -1203,8 +1201,8 @@ export class Player extends Model {
 		if (!playerActiveObjects) {
 			return maxBreath;
 		}
-		const armorEnchant = playerActiveObjects.armor.itemEnchantmentId ? ItemEnchantment.getById(playerActiveObjects.armor.itemEnchantmentId) : null;
-		return armorEnchant?.kind === ItemEnchantmentKind.MAX_BREATH ? maxBreath + EnchantmentConstants.MAX_BREATH_BONUS : maxBreath;
+		const hasMaxBreathEnchant = EnchantmentUtils.hasEnchantmentOfKind(playerActiveObjects.armor.itemEnchantmentId, ItemEnchantmentKind.MAX_BREATH);
+		return hasMaxBreathEnchant ? maxBreath + EnchantmentConstants.MAX_BREATH_BONUS : maxBreath;
 	}
 
 	/**

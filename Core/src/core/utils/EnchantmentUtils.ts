@@ -54,6 +54,17 @@ export abstract class EnchantmentUtils {
 	}
 
 	/**
+	 * Return true if the given item enchantment id matches the requested kind. Used for flat (non-multiplicative)
+	 * bonuses such as the base/max breath enchantments.
+	 * @param itemEnchantmentId
+	 * @param kind
+	 */
+	static hasEnchantmentOfKind(itemEnchantmentId: string | null, kind: ItemEnchantmentKind): boolean {
+		const enchant = itemEnchantmentId ? ItemEnchantment.getById(itemEnchantmentId) : null;
+		return enchant?.kind === kind;
+	}
+
+	/**
 	 * Return the fight alteration id and damage multiplier granted by a weapon's damage-over-time enchantment
 	 * (burned/frozen/poisoned), or null if the weapon has no such enchantment.
 	 * @param weaponEnchantmentId
