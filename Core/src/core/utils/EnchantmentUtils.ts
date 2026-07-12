@@ -82,7 +82,7 @@ export abstract class EnchantmentUtils {
 	/**
 	 * Return the multiplier applied to the effective damage received by a fighter, granted by its armor defense
 	 * enchantment. A defense enchantment reduces incoming damage, so the returned value is the reciprocal of the
-	 * defense multiplier (e.g. a 1.09 defense enchantment yields a 1/1.09 incoming-damage multiplier).
+	 * defense multiplier `m` (incoming damage is scaled by `1 / m`, i.e. below 1).
 	 * @param activeObjects
 	 */
 	static getIncomingDamageMultiplier(activeObjects: EnchantableActiveObjects): number {
