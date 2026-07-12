@@ -27,7 +27,7 @@ const skipTutorialTestCommand: ExecuteTestCommandLike = async player => {
 	await PlayerBadgesManager.setBadges(player.id, []);
 	player.effectEndDate = new Date();
 	player.effectDuration = 0;
-	player.setHealthNoCheck(player.getMaxHealthBase());
+	player.setHealthNoCheck(player.getMaxHealth());
 	await Maps.startTravel(player, MapLinkDataController.instance.getRandomLinkOnMainContinent(), 0);
 	await TravelTime.removeEffect(player, NumberChangeReason.TEST);
 	await player.save();

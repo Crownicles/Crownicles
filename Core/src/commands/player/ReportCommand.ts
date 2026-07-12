@@ -711,8 +711,8 @@ async function sendCityCollector(
 			max: player.getMaxCumulativeEnergy(playerActiveObjects)
 		},
 		health: {
-			current: player.getHealth(playerActiveObjects),
-			max: player.getMaxHealth(playerActiveObjects)
+			current: player.getHealth(),
+			max: player.getMaxHealth()
 		},
 		enchanter: isEnchanterHere && enchantment
 			? await buildEnchanterData(

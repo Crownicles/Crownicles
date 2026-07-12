@@ -66,12 +66,11 @@ async function exportPlayerInventory(playerId: number): Promise<unknown[]> {
  * Export single player with their data
  */
 async function exportSinglePlayer(player: Player): Promise<ExportPlayerData> {
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 	return {
 		keycloakId: player.keycloakId,
 		level: player.level,
 		class: player.class,
-		health: player.getHealth(playerActiveObjects),
+		health: player.getHealth(),
 		experience: player.experience,
 		money: player.money,
 		score: player.score,

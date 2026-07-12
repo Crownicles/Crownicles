@@ -38,7 +38,7 @@ describe("EditValueParameters consistency", () => {
 		});
 
 		it("addExperience should use EditValueParameters", () => {
-			expect(playerCode).toMatch(/addExperience\(parameters:\s*EditValueParameters,/);
+			expect(playerCode).toMatch(/addExperience\(parameters:\s*EditValueParameters\)/);
 		});
 
 		it("addHealth should use HealthEditValueParameters", () => {

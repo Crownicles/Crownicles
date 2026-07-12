@@ -290,7 +290,7 @@ async function buildProfilePacket(
 			},
 			health: {
 				value: toCheckPlayer.getHealthValue(),
-				max: toCheckPlayer.getMaxHealthBase()
+				max: toCheckPlayer.getMaxHealth()
 			},
 			money: toCheckPlayer.money,
 			tokens: tokenData,

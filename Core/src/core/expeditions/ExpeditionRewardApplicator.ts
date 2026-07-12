@@ -9,7 +9,6 @@ import {
 	giveItemToPlayer, getItemByIdAndCategory
 } from "../utils/ItemUtils";
 import { MissionsController } from "../missions/MissionsController";
-import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { applyMaterialLoot } from "../utils/MaterialLootUtils";
 
 /**
@@ -26,11 +25,11 @@ async function applyMoneyReward(player: Player, response: CrowniclesPacket[], am
 /**
  * Apply experience reward to the player if amount is positive
  */
-async function applyExperienceReward(player: Player, response: CrowniclesPacket[], amount: number, playerActiveObjects: PlayerActiveObjects): Promise<void> {
+async function applyExperienceReward(player: Player, response: CrowniclesPacket[], amount: number): Promise<void> {
 	if (amount > 0) {
 		await player.addExperience({
 			amount, response, reason: NumberChangeReason.EXPEDITION
-		}, playerActiveObjects);
+		});
 	}
 }
 
@@ -106,11 +105,10 @@ export async function applyExpeditionRewards(
 	rewards: ExpeditionRewardDataWithItem,
 	player: Player,
 	response: CrowniclesPacket[],
-	context: PacketContext,
-	playerActiveObjects: PlayerActiveObjects
+	context: PacketContext
 ): Promise<void> {
 	await applyMoneyReward(player, response, rewards.money);
-	await applyExperienceReward(player, response, rewards.experience, playerActiveObjects);
+	await applyExperienceReward(player, response, rewards.experience);
 	await applyScoreReward(player, response, rewards.points);
 	rewards.tokens = await applyTokensReward(player, response, rewards.tokens ?? 0);
 	await applyItemReward({

@@ -30,7 +30,6 @@ import {
 import { FightActionController } from "../fights/actions/FightActionController";
 import { MissionUtils } from "../../../../Lib/src/utils/MissionUtils";
 import { MapLocationDataController } from "../../data/MapLocation";
-import { InventorySlots } from "../database/game/models/InventorySlot";
 import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
@@ -461,7 +460,7 @@ export abstract class MissionsController {
 			amount: totalizer(m => m.xpToWin),
 			response,
 			reason: NumberChangeReason.MISSION_FINISHED
-		}, await InventorySlots.getPlayerActiveObjects(player.id));
+		});
 		player = await player.addMoney({
 			amount: totalizer(m => m.moneyToWin),
 			response,

@@ -168,8 +168,8 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 	[PetConstants.PET_INTERACTIONS_NAMES.WIN_HEALTH]: createStatInteraction({
 		range: SmallEventConstants.PET.HEALTH,
 		canExecute: ({
-			player, playerActiveObjects
-		}) => player.getHealthValue() < player.getMaxHealth(playerActiveObjects),
+			player
+		}) => player.getHealthValue() < player.getMaxHealth(),
 		apply: ({
 			response, player
 		}, amount) => player.addHealth({

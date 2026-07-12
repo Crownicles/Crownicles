@@ -120,8 +120,6 @@ export async function handleInnRoomReaction(
 		return;
 	}
 
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-
 	const roomRented = await Player.withLocked(player.id, async lockedPlayer => {
 		if (reaction.room.price > lockedPlayer.money) {
 			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.room.price - lockedPlayer.money }));
@@ -136,12 +134,11 @@ export async function handleInnRoomReaction(
 			return false;
 		}
 
-		const healthBefore = lockedPlayer.getHealth(playerActiveObjects);
+		const healthBefore = lockedPlayer.getHealth();
 		await lockedPlayer.addHealth({
 			amount: reaction.room.health,
 			response,
-			reason: NumberChangeReason.INN_ROOM,
-			playerActiveObjects
+			reason: NumberChangeReason.INN_ROOM
 		});
 		await lockedPlayer.spendMoney({
 			response,

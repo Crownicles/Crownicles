@@ -838,8 +838,7 @@ export async function consumePotion(response: CrowniclesPacket[], potion: Potion
 			await player.addHealth({
 				amount: Math.round(potion.power * BlessingManager.getInstance().getHealthPotionMultiplier()),
 				response,
-				reason: NumberChangeReason.DRINK,
-				playerActiveObjects
+				reason: NumberChangeReason.DRINK
 			});
 			break;
 		case ItemNature.ENERGY:

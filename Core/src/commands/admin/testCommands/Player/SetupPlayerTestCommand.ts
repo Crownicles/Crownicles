@@ -48,7 +48,7 @@ const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, res
 	player.attackGloryPoints = SETUP_DEFAULTS.gloryPoints;
 	player.effectEndDate = new Date();
 	player.effectDuration = 0;
-	player.setHealthNoCheck(player.getMaxHealthBase());
+	player.setHealthNoCheck(player.getMaxHealth());
 	crowniclesInstance.logsDatabase.logLevelChange(player.keycloakId, player.level).then();
 	results.push(`Niveau ${SETUP_DEFAULTS.level}, ${SETUP_DEFAULTS.score} points`);
 
