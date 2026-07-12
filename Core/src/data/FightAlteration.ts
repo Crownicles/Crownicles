@@ -13,8 +13,11 @@ export class FightAlteration extends FightAction {
 		}
 		const result = FightAlterationDataController.getFightAlterationFunction(this.id)(affected, this, opponent, turn, fight);
 		if (result.damages) {
-			// The armor defense enchantment reduces the effective damage received, including damage-over-time
-			result.damages = Math.round(result.damages * affected.getEnchantmentDamageTakenMultiplier());
+			/*
+			 * The armor defense enchantment reduces the effective damage received, including damage-over-time.
+			 * A weapon damage enchantment additionally resists the opposite element's alteration (e.g. fire resists frozen).
+			 */
+			result.damages = Math.round(result.damages * affected.getEnchantmentDamageTakenMultiplier() * affected.getAlterationResistanceMultiplier(this.id));
 		}
 		affected.damage(result.damages ?? 0);
 		return result;
