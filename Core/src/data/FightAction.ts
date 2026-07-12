@@ -45,6 +45,7 @@ export class FightAction extends Data<string> {
 		// Attack/defense enchantments act as multipliers on the effective damage dealt (sender) and received (receiver)
 		result.damages = Math.round(result.damages * sender.getEnchantmentDamageDealtMultiplier() * receiver.getEnchantmentDamageTakenMultiplier());
 
+		// originalDamages (used for reflected damage) is intentionally taken after the enchantment scaling above
 		const originalDamages = result.damages;
 		result.damages = Math.round(result.damages * receiver.getResistanceMultiplier(type));
 
