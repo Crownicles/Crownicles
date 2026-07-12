@@ -63,15 +63,15 @@ describe('EnchantmentUtils', () => {
 		it('only inspects the slot bound to the kind (armor-kind ignores the weapon slot)', () => {
 			const multiplier = EnchantmentUtils.getEnchantmentMultiplier(
 				{
-					weapon: { itemEnchantmentId: 'maxHealth1' },
-					armor: { itemEnchantmentId: 'maxHealth3' }
+					weapon: { itemEnchantmentId: 'maxEnergy1' },
+					armor: { itemEnchantmentId: 'maxEnergy3' }
 				},
-				ItemEnchantmentKind.MAX_HEALTH,
-				EnchantmentConstants.MAX_HEALTH_MULTIPLIER
+				ItemEnchantmentKind.MAX_ENERGY,
+				EnchantmentConstants.MAX_ENERGY_MULTIPLIER
 			);
 
-			// MAX_HEALTH is an armor-slot kind, so only the armor enchantment (maxHealth3) counts
-			expect(multiplier).toBe(EnchantmentConstants.MAX_HEALTH_MULTIPLIER[2]);
+			// MAX_ENERGY is an armor-slot kind, so only the armor enchantment (maxEnergy3) counts
+			expect(multiplier).toBe(EnchantmentConstants.MAX_ENERGY_MULTIPLIER[2]);
 		});
 
 		it('returns 1 for an unknown enchantment id', () => {

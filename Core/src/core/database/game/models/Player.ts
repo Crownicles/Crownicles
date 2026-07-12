@@ -455,9 +455,8 @@ export class Player extends Model {
 	 * Check if a player has to receive a reward for a level up
 	 * @param response
 	 * @param newLevel
-	 * @param playerActiveObjects
 	 */
-	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number, playerActiveObjects: PlayerActiveObjects): Promise<void> {
+	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number): Promise<void> {
 		const healthRestored = newLevel % 10 === 0;
 
 		const packet = makePacket(PlayerLevelUpPacket, {
@@ -479,49 +478,7 @@ export class Player extends Model {
 
 		if (healthRestored) {
 			await this.addHealth({
-				amount: this.getMaxHealth(playerActiveObjects) - this.getHealth(playerActiveObjects),
-				response,
-				reason: NumberChangeReason.LEVEL_UP,
-				playerActiveObjects,
-				missionHealthParameter: {
-					shouldPokeMission: true,
-					overHealCountsForMission: false
-				}
-			});
-		}
-
-		response.push(packet);
-	}
-
-	/**
-	 * Simplified level up packet without enchantment support.
-	 * Uses base max health for level up healing.
-	 * @param response
-	 * @param newLevel
-	 */
-	public async addLevelUpPacketSimple(response: CrowniclesPacket[], newLevel: number): Promise<void> {
-		const healthRestored = newLevel % 10 === 0;
-
-		const packet = makePacket(PlayerLevelUpPacket, {
-			keycloakId: this.keycloakId,
-			level: newLevel,
-			fightUnlocked: newLevel === FightConstants.REQUIRED_LEVEL,
-			guildUnlocked: newLevel === GuildConstants.REQUIRED_LEVEL,
-			healthRestored,
-			classesTier1Unlocked: newLevel === ClassConstants.REQUIRED_LEVEL,
-			classesTier2Unlocked: newLevel === ClassConstants.GROUP1LEVEL,
-			classesTier3Unlocked: newLevel === ClassConstants.GROUP2LEVEL,
-			classesTier4Unlocked: newLevel === ClassConstants.GROUP3LEVEL,
-			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
-			missionSlotUnlocked: Player.isMissionSlotUnlockedAtLevel(newLevel),
-			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
-			tokensUnlocked: newLevel === TokensConstants.LEVEL_TO_UNLOCK,
-			statsIncreased: true
-		});
-
-		if (healthRestored) {
-			await this.addHealth({
-				amount: this.getMaxHealthBase() - this.health,
+				amount: this.getMaxHealth() - this.getHealth(),
 				response,
 				reason: NumberChangeReason.LEVEL_UP,
 				missionHealthParameter: {
@@ -537,9 +494,8 @@ export class Player extends Model {
 	/**
 	 * Level up a player if he has enough experience
 	 * @param response
-	 * @param playerActiveObjects
 	 */
-	public async levelUpIfNeeded(response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<void> {
+	public async levelUpIfNeeded(response: CrowniclesPacket[]): Promise<void> {
 		if (!this.needLevelUp()) {
 			return;
 		}
@@ -568,43 +524,9 @@ export class Player extends Model {
 
 		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
 
-		await this.addLevelUpPacket(response, this.level, playerActiveObjects);
+		await this.addLevelUpPacket(response, this.level);
 
-		await this.levelUpIfNeeded(response, playerActiveObjects);
-	}
-
-	/**
-	 * Simplified level up check without enchantment support.
-	 * Uses base max health for level up healing.
-	 * @param response
-	 */
-	public async levelUpIfNeededSimple(response: CrowniclesPacket[]): Promise<void> {
-		if (!this.needLevelUp()) {
-			return;
-		}
-
-		Object.assign(this, await MissionsController.update(this, response, {
-			missionId: "reachLevel",
-			count: locked => locked.level,
-			set: true,
-			applyOnLockedPlayer: locked => {
-				if (!locked.needLevelUp()) {
-					return;
-				}
-				locked.experience -= locked.getExperienceNeededToLevelUp();
-				locked.level += 1;
-			}
-		}));
-		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
-			.then();
-		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
-			.then();
-
-		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
-
-		await this.addLevelUpPacketSimple(response, this.level);
-
-		await this.levelUpIfNeededSimple(response);
+		await this.levelUpIfNeeded(response);
 	}
 
 	/**
@@ -867,9 +789,8 @@ export class Player extends Model {
 	/**
 	 * Give experience to a player
 	 * @param parameters
-	 * @param playerActiveObjects
 	 */
-	public async addExperience(parameters: EditValueParameters, playerActiveObjects: PlayerActiveObjects): Promise<Player> {
+	public async addExperience(parameters: EditValueParameters): Promise<Player> {
 		const delta = parameters.amount;
 		if (delta > 0) {
 			const newPlayer = await MissionsController.update(this, parameters.response, {
@@ -892,34 +813,7 @@ export class Player extends Model {
 		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
 			.then();
 
-		await this.levelUpIfNeeded(parameters.response, playerActiveObjects);
-		return this;
-	}
-
-	/**
-	 * Simplified addExperience method without enchantment support.
-	 * Use addExperience() with playerActiveObjects when enchantments should be considered.
-	 * @param parameters - Object containing amount, response, and reason
-	 */
-	public async addExperienceSimple(parameters: EditValueParameters): Promise<Player> {
-		const delta = parameters.amount;
-		if (delta > 0) {
-			const newPlayer = await MissionsController.update(this, parameters.response, {
-				missionId: "earnXP",
-				count: delta,
-				applyOnLockedPlayer: locked => {
-					locked.experience += delta;
-				}
-			});
-			Object.assign(this, newPlayer);
-		}
-		else {
-			this.experience += delta;
-		}
-		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
-			.then();
-
-		await this.levelUpIfNeededSimple(parameters.response);
+		await this.levelUpIfNeeded(parameters.response);
 		return this;
 	}
 
@@ -1037,22 +931,11 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Return the player max health (base value without enchantments)
-	 * Use getMaxHealth(playerActiveObjects) when enchantments should be considered
+	 * Return the player max health
 	 */
-	public getMaxHealthBase(): number {
+	public getMaxHealth(): number {
 		const playerClass = ClassDataController.instance.getById(this.class);
 		return playerClass?.getMaxHealthValue(this.level) ?? 100;
-	}
-
-	/**
-	 * Return the player max health (with enchantment bonuses)
-	 */
-	public getMaxHealth(playerActiveObjects: PlayerActiveObjects): number {
-		const playerClass = ClassDataController.instance.getById(this.class);
-		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.MAX_HEALTH, EnchantmentConstants.MAX_HEALTH_MULTIPLIER);
-
-		return Math.round((playerClass?.getMaxHealthValue(this.level) ?? 100) * multiplier);
 	}
 
 	/**
@@ -1067,8 +950,7 @@ export class Player extends Model {
 
 	/**
 	 * Add health to the player
-	 * @param parameters - Object containing amount, response, reason, optional missionHealthParameter and optional playerActiveObjects
-	 * When playerActiveObjects is provided, enchantments will be considered for max health calculation.
+	 * @param parameters - Object containing amount, response, reason and optional missionHealthParameter
 	 */
 	public async addHealth(parameters: HealthEditValueParameters): Promise<boolean> {
 		const missionParam: MissionHealthParameter = parameters.missionHealthParameter ?? {
@@ -1076,22 +958,11 @@ export class Player extends Model {
 			shouldPokeMission: true
 		};
 
-		if (parameters.playerActiveObjects) {
-			// With enchantments support
-			const maxHealth = this.getMaxHealth(parameters.playerActiveObjects);
-			if (this.health > maxHealth) {
-				this.health = maxHealth;
-			}
-			await this.setHealth(this.health + parameters.amount, parameters.response, parameters.playerActiveObjects, missionParam);
+		const maxHealth = this.getMaxHealth();
+		if (this.health > maxHealth) {
+			this.health = maxHealth;
 		}
-		else {
-			// Without enchantments - use base max health
-			const maxHealth = this.getMaxHealthBase();
-			if (this.health > maxHealth) {
-				this.health = maxHealth;
-			}
-			await this.setHealthSimple(this.health + parameters.amount, parameters.response, missionParam);
-		}
+		await this.setHealth(this.health + parameters.amount, parameters.response, missionParam);
 
 		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
@@ -1099,20 +970,19 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Get the raw health value of the player (without max capping from enchantments)
-	 * Use getHealth(playerActiveObjects) when enchantments should be considered for capping
+	 * Get the raw health value of the player (without max capping)
+	 * Use getHealth() when the value should be capped to the max health
 	 */
 	public getHealthValue(): number {
 		return this.health;
 	}
 
 	/**
-	 * Get the health of the player (capped to max health with enchantments)
-	 * @param playerActiveObjects
+	 * Get the health of the player (capped to max health)
 	 */
-	public getHealth(playerActiveObjects: PlayerActiveObjects): number {
-		if (this.health > this.getMaxHealth(playerActiveObjects)) {
-			this.health = this.getMaxHealth(playerActiveObjects);
+	public getHealth(): number {
+		if (this.health > this.getMaxHealth()) {
+			this.health = this.getMaxHealth();
 		}
 		return this.health;
 	}
@@ -1425,14 +1295,14 @@ export class Player extends Model {
 	 * Set the player health
 	 * @param health
 	 * @param response
-	 * @param playerActiveObjects
 	 * @param missionHealthParameter
 	 */
-	private async setHealth(health: number, response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects, missionHealthParameter: MissionHealthParameter = {
+	private async setHealth(health: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	}): Promise<void> {
-		const difference = (health > this.getMaxHealth(playerActiveObjects) && !missionHealthParameter.overHealCountsForMission ? this.getMaxHealth(playerActiveObjects) : health < 0 ? 0 : health)
+		const maxHealth = this.getMaxHealth();
+		const difference = (health > maxHealth && !missionHealthParameter.overHealCountsForMission ? maxHealth : health < 0 ? 0 : health)
 			- this.health;
 		if (difference > 0 && missionHealthParameter.shouldPokeMission) {
 			await MissionsController.update(this, response, {
@@ -1443,8 +1313,8 @@ export class Player extends Model {
 		if (health < 0) {
 			this.health = 0;
 		}
-		else if (health > this.getMaxHealth(playerActiveObjects)) {
-			this.health = this.getMaxHealth(playerActiveObjects);
+		else if (health > maxHealth) {
+			this.health = maxHealth;
 		}
 		else {
 			this.health = health;
@@ -1489,36 +1359,6 @@ export class Player extends Model {
 	 */
 	public setHealthNoCheck(health: number): void {
 		this.health = health;
-	}
-
-	/**
-	 * Simplified setHealth without enchantment support
-	 * @param health
-	 * @param response
-	 * @param missionHealthParameter
-	 */
-	private async setHealthSimple(health: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
-		overHealCountsForMission: true,
-		shouldPokeMission: true
-	}): Promise<void> {
-		const maxHealth = this.getMaxHealthBase();
-		const difference = (health > maxHealth && !missionHealthParameter.overHealCountsForMission ? maxHealth : health < 0 ? 0 : health)
-			- this.health;
-		if (difference > 0 && missionHealthParameter.shouldPokeMission) {
-			await MissionsController.update(this, response, {
-				missionId: "earnLifePoints",
-				count: difference
-			});
-		}
-		if (health < 0) {
-			this.health = 0;
-		}
-		else if (health > maxHealth) {
-			this.health = maxHealth;
-		}
-		else {
-			this.health = health;
-		}
 	}
 }
 

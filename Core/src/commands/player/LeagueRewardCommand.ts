@@ -69,7 +69,7 @@ export default class LeagueRewardCommand {
 				reason: NumberChangeReason.LEAGUE_REWARD,
 				ignoreBlessing: true
 			});
-			await player.addExperienceSimple({
+			await player.addExperience({
 				response,
 				amount: xpToAward,
 				reason: NumberChangeReason.LEAGUE_REWARD

@@ -99,7 +99,7 @@ async function buildGardenCollectorData(params: GardenCollectorDataParams): Prom
 		mapTypeId: MapLocationDataController.instance.getById(destinationId)!.type,
 		mapLocationId: destinationId,
 		energy: buildEnergyData(params.player, playerActiveObjects),
-		health: buildHealthData(params.player, playerActiveObjects),
+		health: buildHealthData(params.player),
 		home: {
 			owned: {
 				level: params.home.level,
@@ -121,10 +121,10 @@ function buildEnergyData(player: Player, playerActiveObjects: PlayerActiveObject
 	};
 }
 
-function buildHealthData(player: Player, playerActiveObjects: PlayerActiveObjects): ReactionCollectorCityData["health"] {
+function buildHealthData(player: Player): ReactionCollectorCityData["health"] {
 	return {
-		current: player.getHealth(playerActiveObjects),
-		max: player.getMaxHealth(playerActiveObjects)
+		current: player.getHealth(),
+		max: player.getMaxHealth()
 	};
 }
 

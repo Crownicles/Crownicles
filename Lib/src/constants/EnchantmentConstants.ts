@@ -35,12 +35,6 @@ export abstract class EnchantmentConstants {
 		1.15
 	];
 
-	static MAX_HEALTH_MULTIPLIER = [
-		1.05,
-		1.1,
-		1.15
-	];
-
 	static BASE_BREATH_BONUS = 1;
 
 	static MAX_BREATH_BONUS = 3;

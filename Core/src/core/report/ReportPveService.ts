@@ -166,8 +166,7 @@ async function handlePveFightRewards(
 	fight: FightController,
 	player: Player,
 	rewards: PveFightRewards,
-	endFightResponse: CrowniclesPacket[],
-	playerActiveObjects: PlayerActiveObjects
+	endFightResponse: CrowniclesPacket[]
 ): Promise<GuildRewardsResult> {
 	await handleWinnerPetLovePoints(fight, endFightResponse);
 
@@ -180,7 +179,7 @@ async function handlePveFightRewards(
 		amount: rewards.xp,
 		reason: NumberChangeReason.PVE_FIGHT,
 		response: endFightResponse
-	}, playerActiveObjects);
+	});
 
 	return await applyGuildRewards(player, rewards, endFightResponse);
 }
@@ -230,15 +229,14 @@ type ApplyPveBossWinRewardsCtx = {
 	player: Player;
 	rewards: ReturnType<Monster["getRewards"]>;
 	endFightResponse: CrowniclesPacket[];
-	playerActiveObjects: PlayerActiveObjects;
 	mapId: number;
 };
 
 async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<void> {
 	const {
-		fight, player, rewards, endFightResponse, playerActiveObjects, mapId
+		fight, player, rewards, endFightResponse, mapId
 	} = ctx;
-	const result = await handlePveFightRewards(fight, player, rewards, endFightResponse, playerActiveObjects);
+	const result = await handlePveFightRewards(fight, player, rewards, endFightResponse);
 
 	// Generate and apply material loot from boss
 	const materialLoot = generateBossLoot(mapId);
@@ -339,7 +337,7 @@ export async function doPVEBoss(
 
 			if (isWinOrDraw) {
 				await applyPveBossWinRewards({
-					fight, player, rewards, endFightResponse, playerActiveObjects, mapId
+					fight, player, rewards, endFightResponse, mapId
 				});
 			}
 

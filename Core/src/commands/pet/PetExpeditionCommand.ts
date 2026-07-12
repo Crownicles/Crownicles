@@ -47,8 +47,6 @@ import { BlessingManager } from "../../core/blessings/BlessingManager";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { resetExpeditionStreakMission } from "../../core/missions/ExpeditionStreakUtils";
 import { PlayerBadgesManager } from "../../core/database/game/models/PlayerBadges";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
-import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 import {
 	LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
@@ -164,8 +162,7 @@ async function applyOutcomeEffects(
 	player: Player,
 	petEntity: PetEntity,
 	response: CrowniclesPacket[],
-	context: PacketContext,
-	playerActiveObjects: PlayerActiveObjects
+	context: PacketContext
 ): Promise<void> {
 	if (outcome.loveChange) {
 		await petEntity.changeLovePoints({
@@ -178,7 +175,7 @@ async function applyOutcomeEffects(
 	await petEntity.save();
 
 	if (outcome.rewards) {
-		await applyExpeditionRewards(outcome.rewards, player, response, context, playerActiveObjects);
+		await applyExpeditionRewards(outcome.rewards, player, response, context);
 	}
 	await player.save();
 }
@@ -305,9 +302,7 @@ async function applyLockedResolveExpedition(
 
 	const outcome = await calculateOutcome(pet, activeExpedition, expeditionData, player);
 
-	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
-
-	await applyOutcomeEffects(outcome, player, pet, response, context, playerActiveObjects);
+	await applyOutcomeEffects(outcome, player, pet, response, context);
 
 	if (outcome.rewards) {
 		outcome.rewards.money = BlessingManager.getInstance().applyMoneyBlessing(outcome.rewards.money);

@@ -12,7 +12,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		if (!Maps.isOnContinent(player)) {
 			return false;
 		}
-		return player.getHealthValue() < player.getMaxHealthBase();
+		return player.getHealthValue() < player.getMaxHealth();
 	},
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const healthWon = RandomUtils.rangedInt(SmallEventConstants.HEALTH);

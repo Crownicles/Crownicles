@@ -1,4 +1,3 @@
-import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Player } from "../database/game/models/Player";
 import { City } from "../../data/City";
 import {
@@ -512,9 +511,8 @@ export async function handleHomeBedReaction(
 	}
 
 	const result = await Player.withLocked(player.id, async lockedPlayer => {
-		const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
-		const maxHealth = lockedPlayer.getMaxHealth(playerActiveObjects);
-		if (lockedPlayer.getHealth(playerActiveObjects) >= maxHealth) {
+		const maxHealth = lockedPlayer.getMaxHealth();
+		if (lockedPlayer.getHealth() >= maxHealth) {
 			response.push(makePacket(CommandReportHomeBedAlreadyFullRes, {}));
 			return {
 				logParams: null,
@@ -533,13 +531,12 @@ export async function handleHomeBedReaction(
 			};
 		}
 
-		const healthBefore = lockedPlayer.getHealth(playerActiveObjects);
+		const healthBefore = lockedPlayer.getHealth();
 		const bedCityId = lockedPlayer.getCurrentCityId() ?? undefined;
 		await lockedPlayer.addHealth({
 			amount: homeData.features.bedHealthRegeneration,
 			response,
-			reason: NumberChangeReason.HOME_BED,
-			playerActiveObjects
+			reason: NumberChangeReason.HOME_BED
 		});
 		lockedPlayer.lastBedUsedAt = now;
 		await lockedPlayer.save();

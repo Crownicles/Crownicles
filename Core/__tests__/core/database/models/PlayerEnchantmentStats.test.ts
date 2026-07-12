@@ -97,16 +97,7 @@ describe('Player enchantment stat calculations', () => {
 		});
 	});
 
-	describe('getMaxHealth / getMaxCumulativeEnergy', () => {
-		it('applies the maxHealth armor enchantment', () => {
-			const player = buildPlayer(LEVEL, CLASS_ID);
-			const baseHealth = player.getMaxHealthBase();
-			const activeObjects = buildActiveObjects({ armorEnchantmentId: 'maxHealth3' });
-
-			expect(player.getMaxHealth(activeObjects)).toBeGreaterThan(baseHealth);
-			expect(player.getMaxHealth(buildActiveObjects({}))).toBe(baseHealth);
-		});
-
+	describe('getMaxCumulativeEnergy', () => {
 		it('applies the maxEnergy armor enchantment', () => {
 			const player = buildPlayer(LEVEL, CLASS_ID);
 			const baseEnergy = player.getMaxCumulativeEnergy(buildActiveObjects({}));

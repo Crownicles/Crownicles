@@ -18,8 +18,6 @@ export class ItemEnchantmentKind {
 
 	public static readonly MAX_ENERGY = new ItemEnchantmentKind("maxEnergy", ItemEnchantmentType.HEALTH, ItemCategory.ARMOR);
 
-	public static readonly MAX_HEALTH = new ItemEnchantmentKind("maxHealth", ItemEnchantmentType.HEALTH, ItemCategory.ARMOR);
-
 	public static readonly BASE_BREATH = new ItemEnchantmentKind("baseBreath", ItemEnchantmentType.OTHER, ItemCategory.WEAPON);
 
 	public static readonly MAX_BREATH = new ItemEnchantmentKind("maxBreath", ItemEnchantmentType.OTHER, ItemCategory.ARMOR);
@@ -80,12 +78,6 @@ export class ItemEnchantment {
 	public static readonly MAX_ENERGY_2 = new ItemEnchantment("maxEnergy2", ItemEnchantmentKind.MAX_ENERGY, 2, 2);
 
 	public static readonly MAX_ENERGY_3 = new ItemEnchantment("maxEnergy3", ItemEnchantmentKind.MAX_ENERGY, 3, 1);
-
-	public static readonly MAX_HEALTH_1 = new ItemEnchantment("maxHealth1", ItemEnchantmentKind.MAX_HEALTH, 1, 5);
-
-	public static readonly MAX_HEALTH_2 = new ItemEnchantment("maxHealth2", ItemEnchantmentKind.MAX_HEALTH, 2, 2);
-
-	public static readonly MAX_HEALTH_3 = new ItemEnchantment("maxHealth3", ItemEnchantmentKind.MAX_HEALTH, 3, 1);
 
 	public static readonly BASE_BREATH_1 = new ItemEnchantment("baseBreath1", ItemEnchantmentKind.BASE_BREATH, 1, 6);
 

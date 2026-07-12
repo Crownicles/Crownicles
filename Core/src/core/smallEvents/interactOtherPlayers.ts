@@ -150,9 +150,8 @@ function checkTopWeek(otherPlayerWeeklyRank: number, interactionsList: InteractO
  * @param otherPlayer
  * @param interactionsList
  */
-async function checkHealth(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): Promise<void> {
-	const activeObjects = await InventorySlots.getPlayerActiveObjects(otherPlayer.id);
-	const healthPercentage = otherPlayer.getHealth(activeObjects) / otherPlayer.getMaxHealth(activeObjects);
+function checkHealth(otherPlayer: Player, interactionsList: InteractOtherPlayerInteraction[]): void {
+	const healthPercentage = otherPlayer.getHealth() / otherPlayer.getMaxHealth();
 	if (healthPercentage < SmallEventConstants.INTERACT_OTHER_PLAYERS.HEALTH.LOW_HP_THRESHOLD) {
 		interactionsList.push(InteractOtherPlayerInteraction.LOW_HP);
 	}
@@ -483,7 +482,7 @@ async function getAvailableInteractions(otherPlayer: Player, player: Player, num
 	checkClass(otherPlayer, player, interactionsList);
 	checkGuild(otherPlayer, player, interactionsList);
 	checkTopWeek(otherPlayerWeeklyRank, interactionsList);
-	await checkHealth(otherPlayer, interactionsList);
+	checkHealth(otherPlayer, interactionsList);
 	checkRanking(otherPlayerRank, numberOfPlayers, interactionsList, playerRank);
 	checkMoney(otherPlayer, interactionsList, player);
 	await checkPet(player, otherPlayer, interactionsList);
