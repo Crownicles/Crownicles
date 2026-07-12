@@ -5,8 +5,7 @@ import { SmallEventConstants } from "../../../../../Lib/src/constants/SmallEvent
 import { PetUtils } from "../../utils/PetUtils";
 
 export const fightPetAction: FightPetActionFunc = async (player, pet) => {
-	// isPvE: true - fighting a pet is not a player-versus-player encounter
-	const attack = player.getCumulativeAttack(await InventorySlots.getPlayerActiveObjects(player.id), true);
+	const attack = player.getCumulativeAttack(await InventorySlots.getPlayerActiveObjects(player.id));
 
 	return RandomUtils.crowniclesRandom.bool(
 		Math.max(

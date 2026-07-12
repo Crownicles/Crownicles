@@ -20,6 +20,10 @@ class TestPlayerBaseFighter extends PlayerBaseFighter {
 		this.applyWeaponAlterationEnchantment(playerActiveObjects);
 	}
 
+	public callLoadCombatStats(playerActiveObjects: PlayerActiveObjects, isPvE: boolean): void {
+		this.loadCombatStats(playerActiveObjects, isPvE);
+	}
+
 	async chooseAction(_fightView: FightView, _response: CrowniclesPacket[]): Promise<void> {}
 
 	async startFight(_fightView: FightView, _startStatus: FighterStatus, _response: CrowniclesPacket[]): Promise<void> {}
@@ -43,6 +47,46 @@ function buildActiveObjects(weaponEnchantmentId: string | null): PlayerActiveObj
 		},
 		potion: { item: {} as PlayerActiveObjects['potion']['item'] },
 		object: { item: {} as PlayerActiveObjects['object']['item'] }
+	};
+}
+
+/**
+ * Build a bare Player instance (no DB) exposing the stat methods called by loadCombatStats.
+ */
+function buildPlayer(level: number, classId: number): Player {
+	const player = Object.create(Player.prototype) as Player;
+	player.level = level;
+	player.class = classId;
+	return player;
+}
+
+/**
+ * Build active objects with zero-stat items so getCumulative* returns the pure base stats,
+ * allowing the enchantment damage multipliers to be asserted in isolation.
+ */
+function buildZeroStatActiveObjects(params: {
+	weaponEnchantmentId?: string | null;
+	armorEnchantmentId?: string | null;
+}): PlayerActiveObjects {
+	const zeroStatsItem = {
+		getAttack: () => 0,
+		getDefense: () => 0,
+		getSpeed: () => 0
+	};
+
+	return {
+		weapon: {
+			item: zeroStatsItem as PlayerActiveObjects['weapon']['item'],
+			itemLevel: 0,
+			itemEnchantmentId: params.weaponEnchantmentId ?? null
+		},
+		armor: {
+			item: zeroStatsItem as PlayerActiveObjects['armor']['item'],
+			itemLevel: 0,
+			itemEnchantmentId: params.armorEnchantmentId ?? null
+		},
+		potion: { item: zeroStatsItem as PlayerActiveObjects['potion']['item'] },
+		object: { item: zeroStatsItem as PlayerActiveObjects['object']['item'] }
 	};
 }
 
@@ -90,6 +134,39 @@ describe('PlayerBaseFighter', () => {
 			fighter.callApplyWeaponAlterationEnchantment(buildActiveObjects('poisonedDamage1'));
 
 			expect(fighter.getAlterationMultiplier(FightAlterations.POISONED)).toBe(EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER);
+		});
+	});
+
+	describe('loadCombatStats enchantment damage multipliers', () => {
+		const LEVEL = 10;
+		const CLASS_ID = 0;
+
+		it('leaves both damage multipliers at 1 when no enchantment is equipped', () => {
+			const fighter = new TestPlayerBaseFighter(buildPlayer(LEVEL, CLASS_ID));
+
+			fighter.callLoadCombatStats(buildZeroStatActiveObjects({}), false);
+
+			expect(fighter.getEnchantmentDamageDealtMultiplier()).toBe(1);
+			expect(fighter.getEnchantmentDamageTakenMultiplier()).toBe(1);
+		});
+
+		it('applies the pvpAttack weapon enchantment to the damage dealt only in PVP', () => {
+			const pvpFighter = new TestPlayerBaseFighter(buildPlayer(LEVEL, CLASS_ID));
+			pvpFighter.callLoadCombatStats(buildZeroStatActiveObjects({ weaponEnchantmentId: 'pvpAttack2' }), false);
+			expect(pvpFighter.getEnchantmentDamageDealtMultiplier()).toBe(EnchantmentConstants.PVP_ATTACK_MULTIPLIER[1]);
+
+			const pveFighter = new TestPlayerBaseFighter(buildPlayer(LEVEL, CLASS_ID));
+			pveFighter.callLoadCombatStats(buildZeroStatActiveObjects({ weaponEnchantmentId: 'pvpAttack2' }), true);
+			expect(pveFighter.getEnchantmentDamageDealtMultiplier()).toBe(1);
+		});
+
+		it('reduces the damage taken by the reciprocal of the defense enchantment multiplier', () => {
+			const fighter = new TestPlayerBaseFighter(buildPlayer(LEVEL, CLASS_ID));
+
+			fighter.callLoadCombatStats(buildZeroStatActiveObjects({ armorEnchantmentId: 'defense3' }), false);
+
+			expect(fighter.getEnchantmentDamageTakenMultiplier()).toBeCloseTo(1 / EnchantmentConstants.DEFENSE_MULTIPLIER[2]);
+			expect(fighter.getEnchantmentDamageTakenMultiplier()).toBeLessThan(1);
 		});
 	});
 });

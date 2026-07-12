@@ -60,7 +60,7 @@ describe('EnchantmentUtils', () => {
 			expect(multiplier).toBe(EnchantmentConstants.DEFENSE_MULTIPLIER[2]);
 		});
 
-		it('stacks weapon and armor multipliers multiplicatively when both match the requested kind', () => {
+		it('only inspects the slot bound to the kind (armor-kind ignores the weapon slot)', () => {
 			const multiplier = EnchantmentUtils.getEnchantmentMultiplier(
 				{
 					weapon: { itemEnchantmentId: 'maxHealth1' },
@@ -70,9 +70,8 @@ describe('EnchantmentUtils', () => {
 				EnchantmentConstants.MAX_HEALTH_MULTIPLIER
 			);
 
-			expect(multiplier).toBeCloseTo(
-				EnchantmentConstants.MAX_HEALTH_MULTIPLIER[0] * EnchantmentConstants.MAX_HEALTH_MULTIPLIER[2]
-			);
+			// MAX_HEALTH is an armor-slot kind, so only the armor enchantment (maxHealth3) counts
+			expect(multiplier).toBe(EnchantmentConstants.MAX_HEALTH_MULTIPLIER[2]);
 		});
 
 		it('returns 1 for an unknown enchantment id', () => {
@@ -86,6 +85,69 @@ describe('EnchantmentUtils', () => {
 			);
 
 			expect(multiplier).toBe(1);
+		});
+	});
+
+	describe('getOutgoingDamageMultiplier', () => {
+		it('returns 1 when the weapon has no attack enchantment', () => {
+			expect(EnchantmentUtils.getOutgoingDamageMultiplier(
+				{
+					weapon: { itemEnchantmentId: null },
+					armor: { itemEnchantmentId: null }
+				},
+				false
+			)).toBe(1);
+		});
+
+		it('applies the pvpAttack enchantment only in PVP context', () => {
+			const activeObjects = {
+				weapon: { itemEnchantmentId: 'pvpAttack2' },
+				armor: { itemEnchantmentId: null }
+			};
+
+			expect(EnchantmentUtils.getOutgoingDamageMultiplier(activeObjects, false)).toBe(EnchantmentConstants.PVP_ATTACK_MULTIPLIER[1]);
+			expect(EnchantmentUtils.getOutgoingDamageMultiplier(activeObjects, true)).toBe(1);
+		});
+
+		it('applies the pveAttack enchantment only in PVE context', () => {
+			const activeObjects = {
+				weapon: { itemEnchantmentId: 'pveAttack2' },
+				armor: { itemEnchantmentId: null }
+			};
+
+			expect(EnchantmentUtils.getOutgoingDamageMultiplier(activeObjects, false)).toBe(1);
+			expect(EnchantmentUtils.getOutgoingDamageMultiplier(activeObjects, true)).toBe(EnchantmentConstants.PVE_ATTACK_MULTIPLIER[1]);
+		});
+
+		it('applies the allAttack enchantment in both PVP and PVE contexts', () => {
+			const activeObjects = {
+				weapon: { itemEnchantmentId: 'allAttack3' },
+				armor: { itemEnchantmentId: null }
+			};
+
+			expect(EnchantmentUtils.getOutgoingDamageMultiplier(activeObjects, false)).toBe(EnchantmentConstants.ALL_ATTACK_MULTIPLIER[2]);
+			expect(EnchantmentUtils.getOutgoingDamageMultiplier(activeObjects, true)).toBe(EnchantmentConstants.ALL_ATTACK_MULTIPLIER[2]);
+		});
+	});
+
+	describe('getIncomingDamageMultiplier', () => {
+		it('returns 1 when the armor has no defense enchantment', () => {
+			expect(EnchantmentUtils.getIncomingDamageMultiplier(
+				{
+					weapon: { itemEnchantmentId: null },
+					armor: { itemEnchantmentId: null }
+				}
+			)).toBe(1);
+		});
+
+		it('reduces incoming damage by the reciprocal of the defense multiplier', () => {
+			const multiplier = EnchantmentUtils.getIncomingDamageMultiplier({
+				weapon: { itemEnchantmentId: null },
+				armor: { itemEnchantmentId: 'defense3' }
+			});
+
+			expect(multiplier).toBeCloseTo(1 / EnchantmentConstants.DEFENSE_MULTIPLIER[2]);
+			expect(multiplier).toBeLessThan(1);
 		});
 	});
 

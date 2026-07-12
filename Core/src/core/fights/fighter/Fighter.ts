@@ -74,6 +74,18 @@ export abstract class Fighter {
 
 	private breathRegenModifiers: FightBreathRegenModifier[];
 
+	/**
+	 * Multiplier applied to the effective damage this fighter deals, granted by its weapon attack enchantments.
+	 * Defaults to 1 (no enchantment); set once at fight start for player fighters.
+	 */
+	private enchantmentDamageDealtMultiplier = 1;
+
+	/**
+	 * Multiplier applied to the effective damage this fighter receives, granted by its armor defense enchantment.
+	 * A value below 1 reduces incoming damage. Defaults to 1 (no enchantment); set once at fight start for player fighters.
+	 */
+	private enchantmentDamageTakenMultiplier = 1;
+
 	protected constructor(level: number, availableFightActions: FightAction[]) {
 		this.stats = {
 			energy: null,
@@ -338,6 +350,36 @@ export abstract class Fighter {
 		}
 
 		return multiplier;
+	}
+
+	/**
+	 * Set the multiplier applied to the effective damage this fighter deals (weapon attack enchantments)
+	 * @param multiplier
+	 */
+	public setEnchantmentDamageDealtMultiplier(multiplier: number): void {
+		this.enchantmentDamageDealtMultiplier = multiplier;
+	}
+
+	/**
+	 * Get the multiplier applied to the effective damage this fighter deals (weapon attack enchantments)
+	 */
+	public getEnchantmentDamageDealtMultiplier(): number {
+		return this.enchantmentDamageDealtMultiplier;
+	}
+
+	/**
+	 * Set the multiplier applied to the effective damage this fighter receives (armor defense enchantment)
+	 * @param multiplier
+	 */
+	public setEnchantmentDamageTakenMultiplier(multiplier: number): void {
+		this.enchantmentDamageTakenMultiplier = multiplier;
+	}
+
+	/**
+	 * Get the multiplier applied to the effective damage this fighter receives (armor defense enchantment)
+	 */
+	public getEnchantmentDamageTakenMultiplier(): number {
+		return this.enchantmentDamageTakenMultiplier;
 	}
 
 	public getResistanceMultiplier(type: FightActionType): number {
