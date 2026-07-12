@@ -1,38 +1,38 @@
 export abstract class EnchantmentConstants {
 	static PVP_ATTACK_MULTIPLIER: [number, number, number] = [
-		1.02,
 		1.04,
-		1.06
+		1.08,
+		1.12
 	];
 
 	static PVE_ATTACK_MULTIPLIER: [number, number, number] = [
-		1.02,
 		1.04,
-		1.06
+		1.08,
+		1.12
 	];
 
 	static ALL_ATTACK_MULTIPLIER: [number, number, number] = [
-		1.01,
-		1.02,
-		1.03
+		1.03,
+		1.07,
+		1.10
 	];
 
 	static DEFENSE_MULTIPLIER: [number, number, number] = [
 		1.03,
 		1.06,
-		1.09
+		1.10
 	];
 
 	static SPEED_MULTIPLIER: [number, number, number] = [
-		1.03,
-		1.06,
-		1.09
+		1.05,
+		1.10,
+		1.16
 	];
 
 	static MAX_ENERGY_MULTIPLIER = [
-		1.05,
-		1.1,
-		1.15
+		1.03,
+		1.06,
+		1.10
 	];
 
 	static BASE_BREATH_BONUS = 1;
