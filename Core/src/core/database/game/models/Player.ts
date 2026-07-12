@@ -956,11 +956,12 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Calculate the cumulative attack of the player
+	 * Calculate the cumulative attack of the player.
+	 * Attack enchantments are not applied here: they act as a multiplier on the effective damage dealt
+	 * in fights (see {@link EnchantmentUtils.getOutgoingDamageMultiplier}), not on the raw attack stat.
 	 * @param playerActiveObjects
-	 * @param isPvE True if the attack is used against a monster (PVE), false against another player (PVP)
 	 */
-	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects, isPvE = false): number {
+	public getCumulativeAttack(playerActiveObjects: PlayerActiveObjects): number {
 		const playerAttack = this.getMaxStatsValue().attack;
 		const weaponAttack = playerActiveObjects.weapon.item.getAttack(playerActiveObjects.weapon.itemLevel);
 		const armorAttack = playerActiveObjects.armor.item.getAttack(playerActiveObjects.armor.itemLevel);
@@ -976,18 +977,13 @@ export class Player extends Model {
 				? objectAttack
 				: playerAttack * 2)
 			+ playerActiveObjects.potion.item.getAttack();
-		const targetedAttackMultiplier = EnchantmentUtils.getEnchantmentMultiplier(
-			playerActiveObjects,
-			isPvE ? ItemEnchantmentKind.PVE_ATTACK : ItemEnchantmentKind.PVP_ATTACK,
-			isPvE ? EnchantmentConstants.PVE_ATTACK_MULTIPLIER : EnchantmentConstants.PVP_ATTACK_MULTIPLIER
-		);
-		const allAttackMultiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.ALL_ATTACK, EnchantmentConstants.ALL_ATTACK_MULTIPLIER);
-		const enchantedAttack = Math.round(attack * targetedAttackMultiplier * allAttackMultiplier);
-		return enchantedAttack > 0 ? enchantedAttack : 0;
+		return attack > 0 ? Math.round(attack) : 0;
 	}
 
 	/**
-	 * Calculate the cumulative defense of the player
+	 * Calculate the cumulative defense of the player.
+	 * The defense enchantment is not applied here: it acts as a multiplier on the effective damage received
+	 * in fights (see {@link EnchantmentUtils.getIncomingDamageMultiplier}), not on the raw defense stat.
 	 * @param playerActiveObjects
 	 */
 	public getCumulativeDefense(playerActiveObjects: PlayerActiveObjects): number {
@@ -1003,9 +999,7 @@ export class Player extends Model {
 				? playerActiveObjects.object.item.getDefense()
 				: playerDefense * 2)
 			+ playerActiveObjects.potion.item.getDefense();
-		const multiplier = EnchantmentUtils.getEnchantmentMultiplier(playerActiveObjects, ItemEnchantmentKind.DEFENSE, EnchantmentConstants.DEFENSE_MULTIPLIER);
-		const enchantedDefense = Math.round(defense * multiplier);
-		return enchantedDefense > 0 ? enchantedDefense : 0;
+		return defense > 0 ? Math.round(defense) : 0;
 	}
 
 	/**

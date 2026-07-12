@@ -54,37 +54,13 @@ describe('Player enchantment stat calculations', () => {
 			expect(player.getCumulativeAttack(buildActiveObjects({}))).toBe(baseAttack);
 		});
 
-		it('applies the pvpAttack weapon enchantment only in PVP context', () => {
+		it('ignores attack enchantments: they act as an effective-damage multiplier, not a stat bonus', () => {
 			const player = buildPlayer(LEVEL, CLASS_ID);
 			const baseAttack = player.getMaxStatsValue().attack;
-			const activeObjects = buildActiveObjects({ weaponEnchantmentId: 'pvpAttack2' });
 
-			const pvpAttack = player.getCumulativeAttack(activeObjects, false);
-			const pveAttack = player.getCumulativeAttack(activeObjects, true);
-
-			expect(pvpAttack).toBeGreaterThan(baseAttack);
-			expect(pveAttack).toBe(baseAttack);
-		});
-
-		it('applies the pveAttack weapon enchantment only in PVE context', () => {
-			const player = buildPlayer(LEVEL, CLASS_ID);
-			const baseAttack = player.getMaxStatsValue().attack;
-			const activeObjects = buildActiveObjects({ weaponEnchantmentId: 'pveAttack2' });
-
-			const pvpAttack = player.getCumulativeAttack(activeObjects, false);
-			const pveAttack = player.getCumulativeAttack(activeObjects, true);
-
-			expect(pvpAttack).toBe(baseAttack);
-			expect(pveAttack).toBeGreaterThan(baseAttack);
-		});
-
-		it('applies the allAttack weapon enchantment in both PVP and PVE contexts', () => {
-			const player = buildPlayer(LEVEL, CLASS_ID);
-			const baseAttack = player.getMaxStatsValue().attack;
-			const activeObjects = buildActiveObjects({ weaponEnchantmentId: 'allAttack2' });
-
-			expect(player.getCumulativeAttack(activeObjects, false)).toBeGreaterThan(baseAttack);
-			expect(player.getCumulativeAttack(activeObjects, true)).toBeGreaterThan(baseAttack);
+			expect(player.getCumulativeAttack(buildActiveObjects({ weaponEnchantmentId: 'pvpAttack2' }))).toBe(baseAttack);
+			expect(player.getCumulativeAttack(buildActiveObjects({ weaponEnchantmentId: 'pveAttack2' }))).toBe(baseAttack);
+			expect(player.getCumulativeAttack(buildActiveObjects({ weaponEnchantmentId: 'allAttack2' }))).toBe(baseAttack);
 		});
 	});
 
@@ -96,12 +72,11 @@ describe('Player enchantment stat calculations', () => {
 			expect(player.getCumulativeDefense(buildActiveObjects({}))).toBe(baseDefense);
 		});
 
-		it('applies the defense armor enchantment', () => {
+		it('ignores the defense enchantment: it acts as an incoming-damage multiplier, not a stat bonus', () => {
 			const player = buildPlayer(LEVEL, CLASS_ID);
 			const baseDefense = player.getMaxStatsValue().defense;
-			const activeObjects = buildActiveObjects({ armorEnchantmentId: 'defense3' });
 
-			expect(player.getCumulativeDefense(activeObjects)).toBeGreaterThan(baseDefense);
+			expect(player.getCumulativeDefense(buildActiveObjects({ armorEnchantmentId: 'defense3' }))).toBe(baseDefense);
 		});
 	});
 

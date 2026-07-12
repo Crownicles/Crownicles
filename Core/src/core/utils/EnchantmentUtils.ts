@@ -3,6 +3,7 @@ import {
 } from "../../../../Lib/src/types/ItemEnchantment";
 import { EnchantmentConstants } from "../../../../Lib/src/constants/EnchantmentConstants";
 import { FightAlterations } from "../fights/actions/FightAlterations";
+import { ItemCategory } from "../../../../Lib/src/constants/ItemConstants";
 
 /**
  * Minimal shape needed to resolve weapon/armor enchantments, structurally compatible with {@link PlayerActiveObjects}
@@ -40,17 +41,47 @@ const WEAPON_ALTERATION_ENCHANTMENTS: (WeaponAlterationEnchantment & { kind: Ite
 
 export abstract class EnchantmentUtils {
 	/**
-	 * Return the multiplier granted by a weapon/armor enchantment of the given kind, or 1 if none is equipped.
-	 * Multipliers from the weapon and armor slots stack multiplicatively.
+	 * Return the multiplier granted by the enchantment of the given kind, or 1 if none is equipped.
+	 *
+	 * Each {@link ItemEnchantmentKind} is bound to a single slot (weapon or armor), and an item can only
+	 * carry an enchantment valid for its own slot, so only the slot matching `kind.slot` is inspected.
 	 * @param activeObjects
 	 * @param kind
 	 * @param multipliers
 	 */
 	static getEnchantmentMultiplier(activeObjects: EnchantableActiveObjects, kind: ItemEnchantmentKind, multipliers: readonly number[]): number {
-		const weaponEnchant = activeObjects.weapon.itemEnchantmentId ? ItemEnchantment.getById(activeObjects.weapon.itemEnchantmentId) : null;
-		const armorEnchant = activeObjects.armor.itemEnchantmentId ? ItemEnchantment.getById(activeObjects.armor.itemEnchantmentId) : null;
-		return (weaponEnchant?.kind === kind ? multipliers[weaponEnchant.level - 1] ?? 1 : 1)
-			* (armorEnchant?.kind === kind ? multipliers[armorEnchant.level - 1] ?? 1 : 1);
+		const slotEnchantmentId = kind.slot === ItemCategory.WEAPON
+			? activeObjects.weapon.itemEnchantmentId
+			: activeObjects.armor.itemEnchantmentId;
+		const enchant = slotEnchantmentId ? ItemEnchantment.getById(slotEnchantmentId) : null;
+		return enchant?.kind === kind ? multipliers[enchant.level - 1] ?? 1 : 1;
+	}
+
+	/**
+	 * Return the multiplier applied to the effective damage dealt by a fighter, granted by its weapon attack
+	 * enchantments. Combines the context-specific attack enchantment (PVP or PVE) with the all-context one.
+	 * @param activeObjects
+	 * @param isPvE True when the fight is against a monster (PVE), false against another player (PVP)
+	 */
+	static getOutgoingDamageMultiplier(activeObjects: EnchantableActiveObjects, isPvE: boolean): number {
+		const targetedMultiplier = EnchantmentUtils.getEnchantmentMultiplier(
+			activeObjects,
+			isPvE ? ItemEnchantmentKind.PVE_ATTACK : ItemEnchantmentKind.PVP_ATTACK,
+			isPvE ? EnchantmentConstants.PVE_ATTACK_MULTIPLIER : EnchantmentConstants.PVP_ATTACK_MULTIPLIER
+		);
+		const allAttackMultiplier = EnchantmentUtils.getEnchantmentMultiplier(activeObjects, ItemEnchantmentKind.ALL_ATTACK, EnchantmentConstants.ALL_ATTACK_MULTIPLIER);
+		return targetedMultiplier * allAttackMultiplier;
+	}
+
+	/**
+	 * Return the multiplier applied to the effective damage received by a fighter, granted by its armor defense
+	 * enchantment. A defense enchantment reduces incoming damage, so the returned value is the reciprocal of the
+	 * defense multiplier (e.g. a 1.09 defense enchantment yields a 1/1.09 incoming-damage multiplier).
+	 * @param activeObjects
+	 */
+	static getIncomingDamageMultiplier(activeObjects: EnchantableActiveObjects): number {
+		const defenseMultiplier = EnchantmentUtils.getEnchantmentMultiplier(activeObjects, ItemEnchantmentKind.DEFENSE, EnchantmentConstants.DEFENSE_MULTIPLIER);
+		return 1 / defenseMultiplier;
 	}
 
 	/**

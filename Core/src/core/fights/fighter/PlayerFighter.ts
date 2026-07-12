@@ -164,7 +164,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 				for (const member of members) {
 					const memberActiveObjects = await InventorySlots.getMainSlotsItems(member.id);
 					this.pveMembers.push({
-						attack: member.getCumulativeAttack(memberActiveObjects, true),
+						attack: member.getCumulativeAttack(memberActiveObjects),
 						speed: member.getCumulativeSpeed(memberActiveObjects)
 					});
 				}

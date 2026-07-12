@@ -64,12 +64,14 @@ export abstract class PlayerBaseFighter extends Fighter {
 		const {
 			player, stats
 		} = this;
-		stats.attack = player.getCumulativeAttack(playerActiveObjects, isPvE);
+		stats.attack = player.getCumulativeAttack(playerActiveObjects);
 		stats.defense = player.getCumulativeDefense(playerActiveObjects);
 		stats.speed = player.getCumulativeSpeed(playerActiveObjects);
 		stats.breath = player.getBaseBreath(playerActiveObjects);
 		stats.maxBreath = player.getMaxBreath(playerActiveObjects);
 		stats.breathRegen = player.getBreathRegen();
+		this.setEnchantmentDamageDealtMultiplier(EnchantmentUtils.getOutgoingDamageMultiplier(playerActiveObjects, isPvE));
+		this.setEnchantmentDamageTakenMultiplier(EnchantmentUtils.getIncomingDamageMultiplier(playerActiveObjects));
 		this.applyWeaponAlterationEnchantment(playerActiveObjects);
 	}
 
