@@ -165,7 +165,8 @@ describe('EnchantmentUtils', () => {
 
 			expect(result).toEqual({
 				alterationId: FightAlterations.BURNED,
-				multiplier: EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER
+				multiplier: EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER,
+				protectedAlterationId: FightAlterations.FROZEN
 			});
 		});
 
@@ -174,7 +175,8 @@ describe('EnchantmentUtils', () => {
 
 			expect(result).toEqual({
 				alterationId: FightAlterations.FROZEN,
-				multiplier: EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER
+				multiplier: EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER,
+				protectedAlterationId: FightAlterations.BURNED
 			});
 		});
 
@@ -183,7 +185,8 @@ describe('EnchantmentUtils', () => {
 
 			expect(result).toEqual({
 				alterationId: FightAlterations.POISONED,
-				multiplier: EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER
+				multiplier: EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER,
+				protectedAlterationId: FightAlterations.POISONED
 			});
 		});
 	});

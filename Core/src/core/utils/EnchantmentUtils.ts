@@ -16,26 +16,32 @@ export type EnchantableActiveObjects = {
 type WeaponAlterationEnchantment = {
 	alterationId: string;
 	multiplier: number;
+	protectedAlterationId: string;
 };
 
 /**
- * Maps a weapon damage-over-time enchantment kind to the fight alteration it boosts
+ * Maps a weapon damage-over-time enchantment kind to the fight alteration it boosts (`alterationId`) and to the
+ * alteration it protects the wielder against (`protectedAlterationId`). Elemental opposites protect each other
+ * (fire resists frozen, frozen resists burned); the poison enchantment protects against poison itself.
  */
 const WEAPON_ALTERATION_ENCHANTMENTS: (WeaponAlterationEnchantment & { kind: ItemEnchantmentKind })[] = [
 	{
 		kind: ItemEnchantmentKind.BURNED_DAMAGE,
 		alterationId: FightAlterations.BURNED,
-		multiplier: EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER
+		multiplier: EnchantmentConstants.BURNED_DAMAGE_BONUS_MULTIPLIER,
+		protectedAlterationId: FightAlterations.FROZEN
 	},
 	{
 		kind: ItemEnchantmentKind.FROZEN_DAMAGE,
 		alterationId: FightAlterations.FROZEN,
-		multiplier: EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER
+		multiplier: EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER,
+		protectedAlterationId: FightAlterations.BURNED
 	},
 	{
 		kind: ItemEnchantmentKind.POISONED_DAMAGE,
 		alterationId: FightAlterations.POISONED,
-		multiplier: EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER
+		multiplier: EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER,
+		protectedAlterationId: FightAlterations.POISONED
 	}
 ];
 
@@ -96,8 +102,9 @@ export abstract class EnchantmentUtils {
 	}
 
 	/**
-	 * Return the fight alteration id and damage multiplier granted by a weapon's damage-over-time enchantment
-	 * (burned/frozen/poisoned), or null if the weapon has no such enchantment.
+	 * Return the fight alteration id and damage multiplier boosted by a weapon's damage-over-time enchantment
+	 * (burned/frozen/poisoned), along with the alteration it protects the wielder against, or null if the weapon
+	 * has no such enchantment.
 	 * @param weaponEnchantmentId
 	 */
 	static getWeaponAlterationEnchantment(weaponEnchantmentId: string | null): WeaponAlterationEnchantment | null {
@@ -111,7 +118,8 @@ export abstract class EnchantmentUtils {
 		}
 		return {
 			alterationId: match.alterationId,
-			multiplier: match.multiplier
+			multiplier: match.multiplier,
+			protectedAlterationId: match.protectedAlterationId
 		};
 	}
 }

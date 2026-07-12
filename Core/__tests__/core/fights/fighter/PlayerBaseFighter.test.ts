@@ -120,6 +120,15 @@ describe('PlayerBaseFighter', () => {
 			expect(fighter.getAlterationMultiplier(FightAlterations.POISONED)).toBe(1);
 		});
 
+		it('makes the fire enchantment resist frozen damage', () => {
+			const fighter = new TestPlayerBaseFighter({ level: 10 } as Player);
+
+			fighter.callApplyWeaponAlterationEnchantment(buildActiveObjects('burnedDamage1'));
+
+			expect(fighter.getAlterationResistanceMultiplier(FightAlterations.FROZEN)).toBe(EnchantmentConstants.DOT_ENCHANT_RESISTANCE_MULTIPLIER);
+			expect(fighter.getAlterationResistanceMultiplier(FightAlterations.BURNED)).toBe(1);
+		});
+
 		it('sets the frozen alteration multiplier when the weapon has the frozenDamage enchantment', () => {
 			const fighter = new TestPlayerBaseFighter({ level: 10 } as Player);
 
@@ -128,12 +137,29 @@ describe('PlayerBaseFighter', () => {
 			expect(fighter.getAlterationMultiplier(FightAlterations.FROZEN)).toBe(EnchantmentConstants.FROZEN_DAMAGE_BONUS_MULTIPLIER);
 		});
 
+		it('makes the frozen enchantment resist burned damage', () => {
+			const fighter = new TestPlayerBaseFighter({ level: 10 } as Player);
+
+			fighter.callApplyWeaponAlterationEnchantment(buildActiveObjects('frozenDamage1'));
+
+			expect(fighter.getAlterationResistanceMultiplier(FightAlterations.BURNED)).toBe(EnchantmentConstants.DOT_ENCHANT_RESISTANCE_MULTIPLIER);
+			expect(fighter.getAlterationResistanceMultiplier(FightAlterations.FROZEN)).toBe(1);
+		});
+
 		it('sets the poisoned alteration multiplier when the weapon has the poisonedDamage enchantment', () => {
 			const fighter = new TestPlayerBaseFighter({ level: 10 } as Player);
 
 			fighter.callApplyWeaponAlterationEnchantment(buildActiveObjects('poisonedDamage1'));
 
 			expect(fighter.getAlterationMultiplier(FightAlterations.POISONED)).toBe(EnchantmentConstants.POISONED_DAMAGE_BONUS_MULTIPLIER);
+		});
+
+		it('makes the poison enchantment resist poison damage', () => {
+			const fighter = new TestPlayerBaseFighter({ level: 10 } as Player);
+
+			fighter.callApplyWeaponAlterationEnchantment(buildActiveObjects('poisonedDamage1'));
+
+			expect(fighter.getAlterationResistanceMultiplier(FightAlterations.POISONED)).toBe(EnchantmentConstants.DOT_ENCHANT_RESISTANCE_MULTIPLIER);
 		});
 	});
 

@@ -45,11 +45,18 @@ export abstract class EnchantmentConstants {
 
 	static MAX_BREATH_BONUS = 3;
 
-	static BURNED_DAMAGE_BONUS_MULTIPLIER = 1.1;
+	static BURNED_DAMAGE_BONUS_MULTIPLIER = 1.2;
 
-	static POISONED_DAMAGE_BONUS_MULTIPLIER = 1.1;
+	static POISONED_DAMAGE_BONUS_MULTIPLIER = 1.2;
 
-	static FROZEN_DAMAGE_BONUS_MULTIPLIER = 1.1;
+	static FROZEN_DAMAGE_BONUS_MULTIPLIER = 1.2;
+
+	/**
+	 * Damage multiplier applied to the damage-over-time alteration a weapon damage enchantment protects against.
+	 * Elemental opposites protect each other: the fire (burned) enchantment resists frozen, the frozen enchantment
+	 * resists burned; the poison enchantment resists poison (acquired tolerance). Below 1, it grants a small resistance.
+	 */
+	static DOT_ENCHANT_RESISTANCE_MULTIPLIER = 0.75;
 
 	static PROBABILITY_WEIGHT_TO_COST = {
 		MONEY: [

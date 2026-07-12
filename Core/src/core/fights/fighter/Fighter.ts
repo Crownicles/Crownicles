@@ -72,6 +72,8 @@ export abstract class Fighter {
 
 	private alterationsMultipliers: Map<string, number>;
 
+	private alterationResistanceMultipliers: Map<string, number>;
+
 	private breathRegenModifiers: FightBreathRegenModifier[];
 
 	/**
@@ -108,6 +110,7 @@ export abstract class Fighter {
 		this.level = level;
 		this.damageMultipliers = [];
 		this.alterationsMultipliers = new Map();
+		this.alterationResistanceMultipliers = new Map();
 		this.breathRegenModifiers = [];
 		this.resistances = [];
 
@@ -639,5 +642,23 @@ export abstract class Fighter {
 	 */
 	public getAlterationMultiplier(alterationId: string): number {
 		return this.alterationsMultipliers.get(alterationId) ?? 1;
+	}
+
+	/**
+	 * Set the resistance multiplier applied to the damage of an alteration this fighter suffers.
+	 * Granted by a weapon damage enchantment protecting against the opposite element. Below 1 reduces the damage taken.
+	 * @param alterationId
+	 * @param multiplier
+	 */
+	protected setAlterationResistanceMultiplier(alterationId: string, multiplier: number): void {
+		this.alterationResistanceMultipliers.set(alterationId, multiplier);
+	}
+
+	/**
+	 * Get the resistance multiplier applied to the damage of an alteration this fighter suffers. Returns 1 if none is set.
+	 * @param alterationId
+	 */
+	public getAlterationResistanceMultiplier(alterationId: string): number {
+		return this.alterationResistanceMultipliers.get(alterationId) ?? 1;
 	}
 }

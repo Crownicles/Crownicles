@@ -69,9 +69,9 @@
     "maxHealth3": "Vie max III",
     "baseBreath1": "Souffle de base",
     "maxBreath1": "Souffle max",
-    "burnedDamage1": "Dégâts de brûlure",
-    "frozenDamage1": "Dégâts de gel",
-    "poisonedDamage1": "Dégâts de poison"
+    "burnedDamage1": "Aspect de feu",
+    "frozenDamage1": "Aspect de givre",
+    "poisonedDamage1": "Aspect de venin"
   },
   "categories": {
     "weapons": "Armes",
