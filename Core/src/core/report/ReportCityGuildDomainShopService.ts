@@ -12,6 +12,7 @@ import {
 import Player, {
 	Players
 } from "../database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
 	Guild
 } from "../database/game/models/Guild";
@@ -42,14 +43,19 @@ function logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams | null): 
  * avoid deadlocks and propagates the transaction via CLS so nested
  * `.save()` calls on the returned instances enlist automatically.
  */
-function runTreasuryDepositUnderLock(
+async function runTreasuryDepositUnderLock(
 	player: Player,
 	packet: CommandReportGuildDomainDepositTreasuryReq,
 	guildId: number,
 	grossAmount: number
 ): Promise<DepositTreasuryResult> {
-	return withLockedEntities(
-		[Guild.lockKey(guildId), Player.lockKey(player.id)] as const,
+	await PlayerMissionsInfos.getOfPlayer(player.id);
+	return await withLockedEntities(
+		[
+			Guild.lockKey(guildId),
+			Player.lockKey(player.id),
+			PlayerMissionsInfo.lockKey(player.id)
+		] as const,
 		async ([lockedGuild, lockedPlayer]) => {
 			/*
 			 * Re-validate against the locked rows. Another concurrent

@@ -17,6 +17,7 @@ import {
 import {
 	Player
 } from "../database/game/models/Player";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 import {
 	NumberChangeReason, ShopItemType
 } from "../../../../Lib/src/constants/LogsConstants";
@@ -75,7 +76,7 @@ function buildPurchasableAmounts(player: Player, maxTokensToAdd: number): number
  * Persist a token purchase atomically.
  *
  * Concurrency: the read-validate-spend-add sequence on `player.money` and
- * `player.tokens` runs inside `Player.withLocked` so two concurrent
+ * `player.tokens` runs inside `withLockedPlayerAndMissions` so two concurrent
  * purchases cannot both pass the affordability / cap / limit checks on the
  * same stale snapshot. The buyout is logged inside the lock so a following
  * (serialized) purchase observes the updated daily/weekly count.
@@ -85,7 +86,7 @@ async function buyTokens(
 	amount: number,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	await Player.withLocked(player.id, async lockedPlayer => {
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		const tokensBoughtToday = await LogsReadRequests.getAmountOfTokensBoughtByPlayerToday(lockedPlayer.keycloakId);
 		const tokensBoughtThisWeek = await LogsReadRequests.getAmountOfTokensBoughtByPlayerThisWeek(lockedPlayer.keycloakId);
 
@@ -131,7 +132,7 @@ async function buyTokens(
 /**
  * Gift free tokens to a broke player with no tokens, at most once per week.
  *
- * Concurrency: the check-then-grant sequence runs inside `Player.withLocked`
+ * Concurrency: the check-then-grant sequence runs inside `withLockedPlayerAndMissions`
  * so two concurrent calls for the same player are serialized. The weekly
  * dedup is read from and written to the logs database (as a
  * `ShopItemType.TOKEN_CHARITY` buyout), mirroring how the token buyout
@@ -142,7 +143,7 @@ async function giveCharity(
 	player: Player,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	await Player.withLocked(player.id, async lockedPlayer => {
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		const charityReceivedThisWeek = await LogsReadRequests.getTokenCharityCountReceivedByPlayerThisWeek(lockedPlayer.keycloakId);
 		if (charityReceivedThisWeek > 0) {
 			response.push(makePacket(CommandReportTokenMerchantCharityAlreadyUsedRes, {}));

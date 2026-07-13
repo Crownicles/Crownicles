@@ -3,6 +3,7 @@ import {
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../database/game/models/Player";
 import { MissionsController } from "../missions/MissionsController";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
@@ -13,9 +14,6 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../app";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
-import {
-	LockedRowNotFoundError, withLockedEntities
-} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Small event eligibility result
@@ -159,29 +157,18 @@ async function runSmallEventUnderPlayerLock(
 	context: PacketContext,
 	playerActiveObjects: PlayerActiveObjects
 ): Promise<void> {
-	try {
-		await withLockedEntities([Player.lockKey(player.id)], async ([lockedPlayer]) => {
-			/*
-			 * Insert the small-event record BEFORE the body so it is affected
-			 * by timeTravel() when the event mutates it. Same transaction as
-			 * the body, so a concurrent racer never observes a half-applied
-			 * effect (record present but body not yet committed, or vice-versa).
-			 */
-			const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(lockedPlayer.id, event, Date.now());
-			await smallEventRecord.save();
-			await smallEvent.executeSmallEvent(response, lockedPlayer, context, playerActiveObjects);
-			await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
-		});
-	}
-	catch (e) {
-		if (e instanceof LockedRowNotFoundError) {
-			CrowniclesLogger.warn(
-				`runSmallEventUnderPlayerLock: locked row vanished for player ${player.id} — small event aborted`
-			);
-			return;
-		}
-		throw e;
-	}
+	await withLockedPlayerAndMissionsSafe(player, "runSmallEventUnderPlayerLock", async lockedPlayer => {
+		/*
+		 * Insert the small-event record BEFORE the body so it is affected
+		 * by timeTravel() when the event mutates it. Same transaction as
+		 * the body, so a concurrent racer never observes a half-applied
+		 * effect (record present but body not yet committed, or vice-versa).
+		 */
+		const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(lockedPlayer.id, event, Date.now());
+		await smallEventRecord.save();
+		await smallEvent.executeSmallEvent(response, lockedPlayer, context, playerActiveObjects);
+		await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
+	});
 }
 
 /**

@@ -1,4 +1,4 @@
-/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
@@ -27,7 +27,7 @@ import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 type LotteryProperties = {
 	successRate: {
@@ -232,7 +232,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				return;
 			}
 
-			await withLockedPlayerSafe(player, "lottery endCallback", lockedPlayer =>
+			await withLockedPlayerAndMissionsSafe(player, "lottery endCallback", lockedPlayer =>
 				runLotteryEndCallbackUnderLock(lockedPlayer, reaction, response, dataLottery));
 		};
 

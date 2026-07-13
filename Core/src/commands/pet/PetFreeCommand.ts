@@ -2,6 +2,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
@@ -209,12 +210,13 @@ async function applyLockedAcceptPetFree(
 /**
  * Accept the pet free request and free the pet.
  *
- * Critical section: lock player + pet (+ guild for meat reward) so a
+ * Critical section: lock player + player missions info + pet (+ guild for meat reward) so a
  * concurrent withdraw / sell / transfer of the same pet can't
  * double-destroy or strand the player on a deleted pet row.
  */
 async function acceptPetFree(player: Player, playerPet: PetEntity, response: CrowniclesPacket[]): Promise<void> {
 	const playerGuildId = player.guildId;
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	let outcome: AcceptPetFreeOutcome;
 	if (playerGuildId !== null) {
 		try {
@@ -222,7 +224,8 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 				[
 					Player.lockKey(player.id),
 					PetEntity.lockKey(playerPet.id),
-					Guild.lockKey(playerGuildId)
+					Guild.lockKey(playerGuildId),
+					PlayerMissionsInfo.lockKey(player.id)
 				] as const,
 				async ([
 					lockedPlayer,
@@ -244,7 +247,11 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 			 * own pet (without the meat reward).
 			 */
 			outcome = await withLockedEntities(
-				[Player.lockKey(player.id), PetEntity.lockKey(playerPet.id)] as const,
+				[
+					Player.lockKey(player.id),
+					PetEntity.lockKey(playerPet.id),
+					PlayerMissionsInfo.lockKey(player.id)
+				] as const,
 				async ([lockedPlayer, lockedPet]) => await applyLockedAcceptPetFree(
 					response,
 					{
@@ -257,7 +264,11 @@ async function acceptPetFree(player: Player, playerPet: PetEntity, response: Cro
 	}
 	else {
 		outcome = await withLockedEntities(
-			[Player.lockKey(player.id), PetEntity.lockKey(playerPet.id)] as const,
+			[
+				Player.lockKey(player.id),
+				PetEntity.lockKey(playerPet.id),
+				PlayerMissionsInfo.lockKey(player.id)
+			] as const,
 			async ([lockedPlayer, lockedPet]) => await applyLockedAcceptPetFree(
 				response,
 				{
@@ -364,19 +375,21 @@ async function freePetFromShelter(
 	}
 
 	/*
-	 * 4-row critical section: lock player + pet + guild_pet + guild
+	 * 5-row critical section: lock player + player missions info + pet + guild_pet + guild
 	 * together so a concurrent withdraw / sell / free of the same
 	 * shelter slot cannot duplicate the meat reward, lost-update the
 	 * cooldown, or strand orphan guild_pet rows.
 	 */
 	let outcome: ShelterFreeOutcome;
 	try {
+		await PlayerMissionsInfos.getOfPlayer(player.id);
 		outcome = await withLockedEntities(
 			[
 				Player.lockKey(player.id),
 				PetEntity.lockKey(petEntity.id),
 				GuildPet.lockKey(guildPet.id),
-				Guild.lockKey(player.guildId!)
+				Guild.lockKey(player.guildId!),
+				PlayerMissionsInfo.lockKey(player.id)
 			] as const,
 			async ([
 				lockedPlayer,

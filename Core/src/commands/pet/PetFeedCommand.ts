@@ -5,6 +5,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	CommandPetFeedCancelErrorPacket,
 	CommandPetFeedGuildStorageEmptyErrorPacket,
@@ -161,8 +162,13 @@ async function runCandyFeedUnderLock(
 	authorPet: PetEntity
 ): Promise<FeedResolution> {
 	try {
+		await PlayerMissionsInfos.getOfPlayer(player.id);
 		const outcome = await withLockedEntities(
-			[Player.lockKey(player.id), PetEntity.lockKey(authorPet.id)] as const,
+			[
+				Player.lockKey(player.id),
+				PetEntity.lockKey(authorPet.id),
+				PlayerMissionsInfo.lockKey(player.id)
+			] as const,
 			async ([lockedPlayer, lockedPet]) => await applyLockedCandyFeed(
 				response,
 				{
@@ -338,11 +344,13 @@ async function runGuildFeedUnderLock(
 		response, player, authorPet, guild, foodReaction
 	} = args;
 	try {
+		await PlayerMissionsInfos.getOfPlayer(player.id);
 		const outcome = await withLockedEntities(
 			[
 				Player.lockKey(player.id),
 				PetEntity.lockKey(authorPet.id),
-				Guild.lockKey(guild.id)
+				Guild.lockKey(guild.id),
+				PlayerMissionsInfo.lockKey(player.id)
 			] as const,
 			async ([
 				lockedPlayer,

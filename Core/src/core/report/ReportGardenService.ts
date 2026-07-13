@@ -1,6 +1,7 @@
 import {
 	Player, Players
 } from "../database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
 	Home, Homes
 } from "../database/game/models/Home";
@@ -91,7 +92,8 @@ function makeGardenErrorPacket(error: GardenError, availableAt?: number): Crowni
 async function withGardenLock(
 	keycloakId: string,
 	onMissing: () => CrowniclesPacket,
-	body: (player: Player, home: Home) => Promise<CrowniclesPacket>
+	body: (player: Player, home: Home) => Promise<CrowniclesPacket>,
+	lockMissions = false
 ): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	const home = player ? await Homes.getOfPlayer(player.id) : null;
@@ -100,8 +102,16 @@ async function withGardenLock(
 		return onMissing();
 	}
 
+	if (lockMissions) {
+		await PlayerMissionsInfos.getOfPlayer(player.id);
+	}
+	const missionLockKeys = lockMissions ? [PlayerMissionsInfo.lockKey(player.id)] : [];
 	return await withLockedEntities(
-		[Player.lockKey(player.id), Home.lockKey(home.id)] as const,
+		[
+			Player.lockKey(player.id),
+			Home.lockKey(home.id),
+			...missionLockKeys
+		] as const,
 		([lockedPlayer, lockedHome]) => body(lockedPlayer, lockedHome)
 	);
 }
@@ -235,7 +245,8 @@ export async function handleGardenHarvest(
 			return runHarvestUnderLock({
 				player, home, homeLevel, sideEffects
 			});
-		}
+		},
+		true
 	);
 	response.push(packet, ...sideEffects);
 }

@@ -1,4 +1,6 @@
 import { Player } from "../database/game/models/Player";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
 	City, CityDataController
 } from "../../data/City";
@@ -192,7 +194,7 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
 		return;
 	}
 
-	await Player.withLocked(player.id, lockedPlayer => runApartmentBuyUnderLock({
+	await withLockedPlayerAndMissions(player.id, lockedPlayer => runApartmentBuyUnderLock({
 		lockedPlayer, city, price, response
 	}));
 }
@@ -206,8 +208,13 @@ export async function handleApartmentBuyReaction(player: Player, city: City, res
  * the rent or read a stale `lastRentClaimedAt`.
  */
 export async function handleApartmentClaimRentReaction(player: Player, apartmentId: number, response: CrowniclesPacket[]): Promise<void> {
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	await withLockedEntities(
-		[Apartment.lockKey(apartmentId), Player.lockKey(player.id)] as const,
+		[
+			Apartment.lockKey(apartmentId),
+			Player.lockKey(player.id),
+			PlayerMissionsInfo.lockKey(player.id)
+		] as const,
 		async ([lockedApartment, lockedPlayer]) => {
 			if (lockedApartment.ownerId !== lockedPlayer.id) {
 				CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} tried to claim rent of apartment ${apartmentId} they don't own.`);

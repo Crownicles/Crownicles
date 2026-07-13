@@ -22,6 +22,7 @@ import { BlockingUtils } from "./BlockingUtils";
 import {
 	Player, Players
 } from "../database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import {
 	InventoryInfo, InventoryInfos
 } from "../database/game/models/InventoryInfo";
@@ -58,10 +59,12 @@ export function getBuySlotExtensionShopItemCallback(playerId: number, price: num
 		 * money or lose an inventory slot increment (#3760).
 		 */
 		let success = false;
+		await PlayerMissionsInfos.getOfPlayer(player.id);
 		const ranToCompletion = await withLockedEntitiesSafe(
 			[
 				Player.lockKey(player.id),
-				InventoryInfo.lockKey(player.id)
+				InventoryInfo.lockKey(player.id),
+				PlayerMissionsInfo.lockKey(player.id)
 			] as const,
 			"getBuySlotExtensionShopItemCallback",
 			async ([lockedPlayer, lockedInvInfo]) => {
@@ -190,10 +193,12 @@ export async function getPlantSlotExtensionShopItem(playerId: number): Promise<S
 			 * everything is already handled atomically below.
 			 */
 			let purchased = false;
+			await PlayerMissionsInfos.getOfPlayer(player.id);
 			await withLockedEntitiesSafe(
 				[
 					Player.lockKey(player.id),
-					InventoryInfo.lockKey(player.id)
+					InventoryInfo.lockKey(player.id),
+					PlayerMissionsInfo.lockKey(player.id)
 				] as const,
 				"getPlantSlotExtensionShopItem.buyCallback",
 				async ([lockedPlayer, lockedInvInfo]) => {

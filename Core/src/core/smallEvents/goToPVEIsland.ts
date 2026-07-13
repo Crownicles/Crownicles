@@ -28,7 +28,7 @@ import { InventorySlots } from "../database/game/models/InventorySlot";
 import { ReactionCollectorGoToPVEIsland } from "../../../../Lib/src/packets/interaction/ReactionCollectorGoToPVEIsland";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { TravelTime } from "../maps/TravelTime";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 type GoToPveIslandMissionId = "joinPVEIsland";
 
@@ -75,7 +75,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 				return;
 			}
 
-			await withLockedPlayerSafe(player, "goToPVEIsland endCallback", async lockedPlayer => {
+			await withLockedPlayerAndMissionsSafe(player, "goToPVEIsland endCallback", async lockedPlayer => {
 				const missionInfo = await PlayerMissionsInfos.getOfPlayer(lockedPlayer.id);
 				if (missionInfo.gems < price) {
 					response.push(makePacket(SmallEventGoToPVEIslandNotEnoughGemsPacket, {}));

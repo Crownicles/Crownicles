@@ -5,6 +5,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
@@ -413,7 +414,7 @@ export default class PetExpeditionCommand {
 		} = validation;
 
 		/*
-		 * Critical section: lock player + pet so two concurrent
+		 * Critical section: lock player + player missions info + pet so two concurrent
 		 * `doResolveExpedition` calls (or a concurrent pet-free /
 		 * sell / transfer) can't double-credit rewards or mutate a
 		 * destroyed pet row. The active expedition is keyed by
@@ -422,8 +423,13 @@ export default class PetExpeditionCommand {
 		 */
 		let resolved: ResolvedExpeditionPayload | { resolved: false };
 		try {
+			await PlayerMissionsInfos.getOfPlayer(player.id);
 			resolved = await withLockedEntities(
-				[Player.lockKey(player.id), PetEntity.lockKey(petEntity.id)] as const,
+				[
+					Player.lockKey(player.id),
+					PetEntity.lockKey(petEntity.id),
+					PlayerMissionsInfo.lockKey(player.id)
+				] as const,
 				async ([lockedPlayer, lockedPet]) => await applyLockedResolveExpedition(
 					response,
 					context,

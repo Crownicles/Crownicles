@@ -2,6 +2,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	Guild, Guilds
 } from "../../core/database/game/models/Guild";
@@ -165,8 +166,9 @@ async function applyLockedAcceptGuildCreate(
 }
 
 async function acceptGuildCreate(player: Player, guildName: string, response: CrowniclesPacket[]): Promise<void> {
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	const outcome = await withLockedEntities(
-		[Player.lockKey(player.id)] as const,
+		[Player.lockKey(player.id), PlayerMissionsInfo.lockKey(player.id)] as const,
 		async ([lockedPlayer]) => await applyLockedAcceptGuildCreate(
 			response,
 			{ player: lockedPlayer },

@@ -33,7 +33,7 @@ import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { PetUtils } from "../utils/PetUtils";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
-import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import { PetDataController } from "../../data/Pet";
@@ -558,8 +558,17 @@ function buildPoorInteractionResponse(
  */
 async function sendACoin(otherPlayer: Player, player: Player, response: CrowniclesPacket[]): Promise<void> {
 	try {
+		await Promise.all([
+			PlayerMissionsInfos.getOfPlayer(otherPlayer.id),
+			PlayerMissionsInfos.getOfPlayer(player.id)
+		]);
 		await withLockedEntities(
-			[Player.lockKey(otherPlayer.id), Player.lockKey(player.id)] as const,
+			[
+				Player.lockKey(otherPlayer.id),
+				Player.lockKey(player.id),
+				PlayerMissionsInfo.lockKey(otherPlayer.id),
+				PlayerMissionsInfo.lockKey(player.id)
+			] as const,
 			async ([lockedOther, lockedSelf]) => {
 				if (lockedSelf.money < 1) {
 					/*

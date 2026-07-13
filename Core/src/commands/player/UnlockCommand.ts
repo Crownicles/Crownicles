@@ -4,6 +4,7 @@ import {
 import {
 	Player, Players
 } from "../../core/database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	CommandUnlockAcceptPacketRes,
 	CommandUnlockHimself,
@@ -53,10 +54,12 @@ async function acceptUnlock(player: Player, freedPlayer: Player, response: Crown
 	 */
 	let unlocked = false;
 	try {
+		await PlayerMissionsInfos.getOfPlayer(player.id);
 		await withLockedEntities(
 			[
 				Player.lockKey(player.id),
-				Player.lockKey(freedPlayer.id)
+				Player.lockKey(freedPlayer.id),
+				PlayerMissionsInfo.lockKey(player.id)
 			] as const,
 			async ([lockedPlayer, lockedFreedPlayer]) => {
 				// Re-validate using the freshly-locked rows

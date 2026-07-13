@@ -23,7 +23,7 @@ import {
 	ReactionCollectorAcceptReaction
 } from "../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorAnyShopSmallEventData } from "../../../../../Lib/src/packets/interaction/ReactionCollectorAnyShopSmallEvent";
-import { withLockedPlayerSafe } from "../../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../../utils/withLockedPlayerAndMissionsSafe";
 
 export type ShopSmallEventItem = {
 	item: GenericItem;
@@ -93,7 +93,7 @@ export abstract class Shop<
 	private callbackShopSmallEvent(player: Player, shopItem: ShopSmallEventItem): EndCallback {
 		return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.MERCHANT);
-			await withLockedPlayerSafe(player, "shop endCallback", async lockedPlayer => {
+			await withLockedPlayerAndMissionsSafe(player, "shop endCallback", async lockedPlayer => {
 				const reaction = collector.getFirstReaction();
 				const isValidated = reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name;
 				const canBuy = lockedPlayer.money >= shopItem.price;

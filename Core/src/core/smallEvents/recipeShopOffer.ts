@@ -22,7 +22,7 @@ import {
 import {
 	RecipeDiscoveryOffer, RecipeDiscoveryService
 } from "../cooking/RecipeDiscoveryService";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 /**
  * Build the end callback handling the player's decision on the recipe purchase offer.
@@ -30,7 +30,7 @@ import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 function getRecipeShopEndCallback(player: Player, source: RecipeShopSource, offer: RecipeDiscoveryOffer): EndCallback {
 	return async (collector, response) => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.MERCHANT);
-		await withLockedPlayerSafe(player, "recipeShop endCallback", async lockedPlayer => {
+		await withLockedPlayerAndMissionsSafe(player, "recipeShop endCallback", async lockedPlayer => {
 			const reaction = collector.getFirstReaction();
 			const accepted = reaction?.reaction.type === ReactionCollectorAcceptReaction.name;
 			if (!accepted) {

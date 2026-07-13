@@ -21,7 +21,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { crowniclesInstance } from "../../app";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 type CartResult = {
 	destination: MapLink;
@@ -34,7 +34,7 @@ type CartResult = {
 function getEndCallback(player: Player, destination: CartResult): EndCallback {
 	return async (collector, response) => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CART_SMALL_EVENT);
-		await withLockedPlayerSafe(player, "cart endCallback", lockedPlayer =>
+		await withLockedPlayerAndMissionsSafe(player, "cart endCallback", lockedPlayer =>
 			runCartEndCallbackUnderLock(lockedPlayer, destination, collector, response));
 	};
 }

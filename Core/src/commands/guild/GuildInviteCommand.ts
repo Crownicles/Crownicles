@@ -1,3 +1,4 @@
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	CommandGuildInviteAcceptPacketRes,
 	CommandGuildInviteAlreadyInAGuild,
@@ -193,7 +194,7 @@ async function applyLockedAcceptInvitation(
 }
 
 /**
- * Outer wrapper that takes the [Player(invited), Guild] row lock
+ * Outer wrapper that takes the [Player(invited), PlayerMissionsInfo(invited), Guild] row lock
  * and dispatches the right error packet on revalidation failure
  * or concurrent guild destruction.
  */
@@ -209,8 +210,13 @@ async function runAcceptInvitationUnderLock(
 	};
 
 	try {
+		await PlayerMissionsInfos.getOfPlayer(invitedPlayer.id);
 		const reason = await withLockedEntities(
-			[Player.lockKey(invitedPlayer.id), Guild.lockKey(guild.id)] as const,
+			[
+				Player.lockKey(invitedPlayer.id),
+				Guild.lockKey(guild.id),
+				PlayerMissionsInfo.lockKey(invitedPlayer.id)
+			] as const,
 			async ([lockedInvited, lockedGuild]) => await applyLockedAcceptInvitation(
 				response,
 				{
