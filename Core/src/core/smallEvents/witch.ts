@@ -1,4 +1,4 @@
-/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
 import {
@@ -32,7 +32,7 @@ import { WitchActionOutcomeType } from "../../../../Lib/src/types/WitchActionOut
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 
 type WitchEventSelection = {
@@ -131,7 +131,7 @@ function getEndCallback(player: Player): EndCallback {
 	return async (collector, response) => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.WITCH_CHOOSE);
 
-		await withLockedPlayerSafe(player, "witch endCallback", lockedPlayer =>
+		await withLockedPlayerAndMissionsSafe(player, "witch endCallback", lockedPlayer =>
 			runWitchEndCallbackUnderLock(lockedPlayer, collector, response));
 	};
 }

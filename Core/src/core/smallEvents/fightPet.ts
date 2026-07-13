@@ -23,7 +23,7 @@ import {
 	ReactionCollectorFightPetReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightPet";
 import { SmallEventFightPetPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFightPetPacket";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 /**
  * Returns an object composed of three random witch events
@@ -80,7 +80,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const endCallback: EndCallback = async (collector, response) => {
 			const selectedFightPetAction = retrieveSelectedEvent(collector);
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.FIGHT_PET_CHOOSE);
-			await withLockedPlayerSafe(player, "fightPet endCallback", async lockedPlayer => {
+			await withLockedPlayerAndMissionsSafe(player, "fightPet endCallback", async lockedPlayer => {
 				const outcomeIsSuccess = await selectedFightPetAction.applyOutcomeFightPetAction(lockedPlayer, pet, isFemale, playerActiveObjects);
 				await lockedPlayer.addRage({
 					amount: outcomeIsSuccess ? 1 : 0, reason: NumberChangeReason.FIGHT_PET_SMALL_EVENT, response

@@ -10,6 +10,7 @@ import {
 	CommandReportUseTokensRefusePacketRes
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { Player } from "../database/game/models/Player";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 import { TravelTime } from "../maps/TravelTime";
 import { Maps } from "../maps/Maps";
 import { Effect } from "../../../../Lib/src/types/Effect";
@@ -42,7 +43,7 @@ import { MissionsController } from "../missions/MissionsController";
  * Execute the token usage after confirmation
  *
  * Concurrency: the read-validate-spend-save sequence on
- * `player.tokens` runs inside `Player.withLocked` so two concurrent
+ * `player.tokens` runs inside `withLockedPlayerAndMissions` so two concurrent
  * use-tokens confirmations cannot both pass the affordability check on
  * the same stale snapshot and cause a lost-update on the player's
  * tokens.
@@ -52,7 +53,7 @@ async function acceptUseTokens(
 	tokenCost: number,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	await Player.withLocked(player.id, async lockedPlayer => {
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		// If player no longer has enough tokens, abort.
 		if (lockedPlayer.tokens < tokenCost) {
 			return;
@@ -101,7 +102,7 @@ async function acceptUseTokens(
  * Execute the heal purchase after confirmation
  *
  * Concurrency: the read-validate-spend-heal sequence on `player.money`
- * runs inside `Player.withLocked` so two concurrent buy-heal
+ * runs inside `withLockedPlayerAndMissions` so two concurrent buy-heal
  * confirmations cannot both pass the affordability check on the same
  * stale snapshot and cause a lost-update on the player's wallet.
  */
@@ -110,7 +111,7 @@ async function acceptBuyHeal(
 	healPrice: number,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	await Player.withLocked(player.id, async lockedPlayer => {
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		const currentDate = new Date();
 
 		/*

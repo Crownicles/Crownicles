@@ -2,6 +2,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../../core/database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
@@ -107,10 +108,12 @@ export async function activateDailyItem(player: Player, activeObject: ObjectItem
 	 * a duplication exploit (#3760).
 	 */
 	let claimSucceeded = false;
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	await withLockedEntitiesSafe(
 		[
 			Player.lockKey(player.id),
-			InventoryInfo.lockKey(player.id)
+			InventoryInfo.lockKey(player.id),
+			PlayerMissionsInfo.lockKey(player.id)
 		] as const,
 		`activateDailyItem(player=${player.id})`,
 		async ([lockedPlayer, lockedInventoryInfo]) => {

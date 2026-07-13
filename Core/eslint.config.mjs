@@ -62,11 +62,21 @@ export default defineConfig([
 			"src/core/utils/MissionShopItems.ts",
 			"src/core/database/game/models/Guild.ts",
 			"src/core/utils/withLockedPlayerSafe.ts",
+			"src/core/utils/withLockedPlayerAndMissions.ts",
+			"src/core/utils/withLockedPlayerAndMissionsSafe.ts",
 			"src/core/utils/withLockedEntitiesSafe.ts",
 			"src/core/smallEvents/**/*.ts"
 		],
 		rules: {
-			"crownicles/no-unguarded-save": "error"
+			"crownicles/no-unguarded-save": ["error", {
+				lockHelpers: [
+					"withLockedEntities",
+					"withLockedEntitiesSafe",
+					"withLockedPlayerSafe",
+					"withLockedPlayerAndMissions",
+					"withLockedPlayerAndMissionsSafe"
+				]
+			}]
 		}
 	},
 	{

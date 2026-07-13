@@ -1,4 +1,4 @@
-/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
 import { MapLinkDataController } from "../../data/MapLink";
@@ -41,7 +41,7 @@ import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import {
 	EndCallback, ReactionCollectorInstance
 } from "../utils/ReactionsCollector";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 import { ReactionCollectorGardener } from "../../../../Lib/src/packets/interaction/ReactionCollectorGardener";
 import { ReactionCollectorAcceptReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
@@ -407,7 +407,7 @@ async function giveSeedToPlayer(response: CrowniclesPacket[], player: Player, se
 function getPaidSeedEndCallback(player: Player, seedId: PlantId): EndCallback {
 	return async (collector, response): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GARDENER_SMALL_EVENT);
-		await withLockedPlayerSafe(player, "gardener paid seed endCallback", async lockedPlayer => {
+		await withLockedPlayerAndMissionsSafe(player, "gardener paid seed endCallback", async lockedPlayer => {
 			const reaction = collector.getFirstReaction();
 
 			if (reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name) {

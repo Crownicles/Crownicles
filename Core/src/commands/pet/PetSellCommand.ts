@@ -8,6 +8,7 @@ import {
 	commandRequires, CommandUtils
 } from "../../core/utils/CommandUtils";
 import Player, { Players } from "../../core/database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	CommandPetSellAlreadyHavePetError,
 	CommandPetSellBadPriceErrorPacket,
@@ -184,17 +185,19 @@ async function applyLockedPetSell(
 
 async function executePetSell(collector: ReactionCollectorInstance, response: CrowniclesPacket[], sellerInformation: SellerInformation, buyer: Player): Promise<void> {
 	/*
-	 * 4-row trade critical section: lock seller + buyer + pet + guild
+	 * 5-row trade critical section: lock seller + buyer + buyer missions info + pet + guild
 	 * together so two concurrent buyers (or a concurrent withdraw of
 	 * the seller's pet) cannot duplicate the pet, double-debit the
 	 * buyer, or under-credit the guild treasury.
 	 */
+	await PlayerMissionsInfos.getOfPlayer(buyer.id);
 	const result = await withLockedEntities(
 		[
 			Player.lockKey(sellerInformation.player.id),
 			Player.lockKey(buyer.id),
 			PetEntity.lockKey(sellerInformation.pet.id),
-			Guild.lockKey(sellerInformation.guild.id)
+			Guild.lockKey(sellerInformation.guild.id),
+			PlayerMissionsInfo.lockKey(buyer.id)
 		] as const,
 		async ([
 			lockedSeller,

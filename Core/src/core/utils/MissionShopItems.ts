@@ -46,8 +46,9 @@ export function getMoneyShopItem(): ShopItem {
 			 * concurrent gem-shop money buys on the same account (#3760).
 			 */
 			let credited = false;
+			await PlayerMissionsInfos.getOfPlayer(playerId);
 			await withLockedEntitiesSafe(
-				[Player.lockKey(playerId)] as const,
+				[Player.lockKey(playerId), PlayerMissionsInfo.lockKey(playerId)] as const,
 				`getMoneyShopItem(player=${playerId})`,
 				async ([lockedPlayer]) => {
 					await lockedPlayer.addMoney({

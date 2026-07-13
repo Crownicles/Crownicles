@@ -1,4 +1,6 @@
 import { Player } from "../database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 import { City } from "../../data/City";
 import {
 	Home, Homes
@@ -70,7 +72,7 @@ function logHomeBedUse(params: HomeBedUseLogParams | null): void {
  * null when the buy is aborted).
  */
 async function runBuyHomeUnderLock(params: {
-	lockedEntities: readonly (Player | Apartment)[];
+	lockedEntities: readonly (Player | Apartment | PlayerMissionsInfo)[];
 	hasApartment: boolean;
 	city: City;
 	newPrice: number;
@@ -115,7 +117,7 @@ async function runBuyHomeUnderLock(params: {
  * Handle buy home reaction — player purchases a new home in the city
  *
  * Concurrency: the read-validate-spend sequence on `player.money`
- * runs inside `Player.withLocked`. The home creation happens inside
+ * runs inside a Player + PlayerMissionsInfo lock. The home creation happens inside
  * the same transaction (via CLS propagation) so a partial failure
  * after spending money rolls everything back atomically.
  */
@@ -134,9 +136,14 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
 	// If the player already owns an apartment in this city, it transitions to rented; reset its accrual.
 	const apartmentInCity = await Apartments.getOfPlayerInCity(player.id, city.id);
 
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	const apartmentLockKeys = apartmentInCity ? [Apartment.lockKey(apartmentInCity.id)] : [];
 	const logParams = await withLockedEntities(
-		[Player.lockKey(player.id), ...apartmentLockKeys] as const,
+		[
+			Player.lockKey(player.id),
+			...apartmentLockKeys,
+			PlayerMissionsInfo.lockKey(player.id)
+		] as const,
 		lockedEntities => runBuyHomeUnderLock({
 			lockedEntities,
 			hasApartment: apartmentInCity !== null,
@@ -240,8 +247,13 @@ export async function handleUpgradeHomeReaction(player: Player, city: City, data
 	}
 
 	const upgradePrice = data.home.manage.upgrade.price;
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	const logParams = await withLockedEntities(
-		[Home.lockKey(home.id), Player.lockKey(player.id)] as const,
+		[
+			Home.lockKey(home.id),
+			Player.lockKey(player.id),
+			PlayerMissionsInfo.lockKey(player.id)
+		] as const,
 		([lockedHome, lockedPlayer]) => runUpgradeHomeUnderLock({
 			lockedHome,
 			lockedPlayer,
@@ -365,7 +377,7 @@ async function applyMoveHomeUnderLock(params: {
 
 /**
  * Load both apartments potentially involved in a move-home and pre-compute the
- * lock-key list (Home + Player + 0/1/2 apartments) needed by
+ * lock-key list (Home + Player + PlayerMissionsInfo + 0/1/2 apartments) needed by
  * `withLockedEntities`. The returned `unpack` helper extracts the typed
  * entities in the same order the keys were declared.
  */
@@ -377,8 +389,8 @@ async function prepareMoveHomeLockContext(
 ): Promise<{
 	sourceApartment: Apartment | null;
 	destinationApartment: Apartment | null;
-	lockKeys: ReturnType<typeof Home.lockKey | typeof Player.lockKey | typeof Apartment.lockKey>[];
-	unpack: (entities: readonly (Home | Player | Apartment)[]) => {
+	lockKeys: ReturnType<typeof Home.lockKey | typeof Player.lockKey | typeof Apartment.lockKey | typeof PlayerMissionsInfo.lockKey>[];
+	unpack: (entities: readonly (Home | Player | Apartment | PlayerMissionsInfo)[]) => {
 		lockedHome: Home;
 		lockedPlayer: Player;
 		lockedSourceApartment: Apartment | null;
@@ -402,10 +414,11 @@ async function prepareMoveHomeLockContext(
 	const lockKeys = [
 		Home.lockKey(homeId),
 		Player.lockKey(playerId),
-		...apartmentLockKeys
+		...apartmentLockKeys,
+		PlayerMissionsInfo.lockKey(playerId)
 	];
 
-	const unpack = (entities: readonly (Home | Player | Apartment)[]): {
+	const unpack = (entities: readonly (Home | Player | Apartment | PlayerMissionsInfo)[]): {
 		lockedHome: Home;
 		lockedPlayer: Player;
 		lockedSourceApartment: Apartment | null;
@@ -451,12 +464,13 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 
 	const lockContext = await prepareMoveHomeLockContext(player.id, home.id, sourceCityId, destinationCityId);
 
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	const logParams = await withLockedEntities(
 		lockContext.lockKeys as readonly ReturnType<typeof Home.lockKey>[],
 		async lockedEntities => {
 			const {
 				lockedHome, lockedPlayer, lockedSourceApartment, lockedDestinationApartment
-			} = lockContext.unpack(lockedEntities as readonly (Home | Player | Apartment)[]);
+			} = lockContext.unpack(lockedEntities as readonly (Home | Player | Apartment | PlayerMissionsInfo)[]);
 
 			const result = await applyMoveHomeUnderLock({
 				lockedHome,
@@ -510,7 +524,7 @@ export async function handleHomeBedReaction(
 		return;
 	}
 
-	const result = await Player.withLocked(player.id, async lockedPlayer => {
+	const result = await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		const maxHealth = lockedPlayer.getMaxHealth();
 		if (lockedPlayer.getHealth() >= maxHealth) {
 			response.push(makePacket(CommandReportHomeBedAlreadyFullRes, {}));

@@ -1,4 +1,4 @@
-/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { MapConstants } from "../../../../Lib/src/constants/MapConstants";
 import { Maps } from "../maps/Maps";
@@ -27,7 +27,7 @@ import {
 	generateRandomItem, generateRandomLootEnchantment, generateRandomLootLevel, giveItemToPlayer
 } from "../utils/ItemUtils";
 import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 /**
  * Get strategy config based on the chosen strategy
@@ -174,7 +174,7 @@ export const smallEventFuncs: SmallEventFuncs = {
 
 		const endCallback: EndCallback = async (collector, response) => {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.GOBLET_CHOOSE);
-			await withLockedPlayerSafe(player, "gobletsGame endCallback", async lockedPlayer => {
+			await withLockedPlayerAndMissionsSafe(player, "gobletsGame endCallback", async lockedPlayer => {
 				const firstReaction = collector.getFirstReaction()?.reaction as {
 					data: ReactionCollectorGobletsGameReaction;
 				} | undefined;

@@ -1,5 +1,6 @@
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Player } from "../database/game/models/Player";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 import {
 	ReactionCollectorCityData,
 	ReactionCollectorUpgradeItemReaction,
@@ -207,7 +208,7 @@ export function validateUpgradeItemRequest(
  * Handle upgrade item reaction — player upgrades an item at the home upgrade station.
  *
  * Concurrency: the material consume + inventory slot mutation runs
- * inside `Player.withLocked` so two concurrent home-upgrade requests
+ * inside `withLockedPlayerAndMissions` so two concurrent home-upgrade requests
  * on the same player cannot both pass the validation snapshot and
  * race on the material decrement or the inventory slot save.
  */
@@ -232,7 +233,7 @@ export async function handleUpgradeItemReaction(
 
 	const { itemToUpgrade } = validation;
 
-	await Player.withLocked(player.id, async lockedPlayer => {
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		await executeUpgradeItemUnderLock({
 			lockedPlayer, reaction, data, itemToUpgrade: itemToUpgrade!, response
 		});
@@ -320,7 +321,7 @@ async function executeUpgradeItemUnderLock(params: {
  * Handle blacksmith upgrade reaction — player upgrades an item at the blacksmith
  *
  * Concurrency: the read-validate-spend-save sequence on `player.money`
- * runs inside `Player.withLocked` so two concurrent blacksmith
+ * runs inside `withLockedPlayerAndMissions` so two concurrent blacksmith
  * operations cannot both pass the affordability check on the same
  * stale snapshot and cause a lost-update on the player's wallet. The
  * material consumption (`Materials.consumeMaterials`) and the
@@ -358,7 +359,7 @@ export async function handleBlacksmithUpgradeReaction(
 		return;
 	}
 
-	await Player.withLocked(player.id, async lockedPlayer => {
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		await executeBlacksmithUpgrade({
 			lockedPlayer, reaction, itemToUpgrade, executionData, response
 		});
@@ -441,7 +442,7 @@ async function executeBlacksmithUpgrade(params: {
 /**
  * Handle blacksmith disenchant reaction — player removes an enchantment at the blacksmith
  *
- * Concurrency: same `Player.withLocked` rationale as
+ * Concurrency: same `withLockedPlayerAndMissions` rationale as
  * `handleBlacksmithUpgradeReaction`.
  */
 export async function handleBlacksmithDisenchantReaction(
@@ -462,7 +463,7 @@ export async function handleBlacksmithDisenchantReaction(
 		return;
 	}
 
-	await Player.withLocked(player.id, async lockedPlayer => {
+	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		// Re-validate against the freshly-locked row.
 		if (lockedPlayer.money < itemToDisenchant.disenchantCost) {
 			pushBlacksmithMissingMoneyResponse(response, itemToDisenchant.disenchantCost, lockedPlayer.money);

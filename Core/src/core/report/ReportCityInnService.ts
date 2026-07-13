@@ -1,5 +1,6 @@
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { Player } from "../database/game/models/Player";
+import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -23,7 +24,7 @@ import { MissionsController } from "../missions/MissionsController";
  * Handle inn meal reaction — player eats a meal at an inn
  *
  * Concurrency: the read-validate-spend-save sequence on `player.money`
- * runs inside `Player.withLocked` so two concurrent meal purchases
+ * runs inside `withLockedPlayerAndMissions` so two concurrent meal purchases
  * cannot both pass the affordability check on the same stale snapshot
  * and cause a lost-update on the player's wallet.
  */
@@ -45,7 +46,7 @@ export async function handleInnMealReaction(
 
 	const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(player.id);
 
-	const mealEaten = await Player.withLocked(player.id, async lockedPlayer => {
+	const mealEaten = await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		/*
 		 * Re-validate against the freshly-locked row: a concurrent
 		 * meal purchase, room rental, blacksmith spend, etc. may have
@@ -106,7 +107,7 @@ export async function handleInnMealReaction(
  * Handle inn room reaction — player rents a room at an inn
  *
  * Concurrency: the read-validate-spend-save sequence on `player.money`
- * runs inside `Player.withLocked` to prevent lost-updates when two
+ * runs inside `withLockedPlayerAndMissions` to prevent lost-updates when two
  * room rentals (or a room + a meal) run concurrently for the same
  * player.
  */
@@ -120,7 +121,7 @@ export async function handleInnRoomReaction(
 		return;
 	}
 
-	const roomRented = await Player.withLocked(player.id, async lockedPlayer => {
+	const roomRented = await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		if (reaction.room.price > lockedPlayer.money) {
 			response.push(makePacket(CommandReportNotEnoughMoneyRes, { missingMoney: reaction.room.price - lockedPlayer.money }));
 			return false;

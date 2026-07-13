@@ -5,6 +5,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player, { Players } from "../../core/database/game/models/Player";
+import PlayerMissionsInfo, { PlayerMissionsInfos } from "../../core/database/game/models/PlayerMissionsInfo";
 import {
 	CommandPetTransferAnotherMemberTransferringErrorPacket,
 	CommandPetTransferCancelErrorPacket,
@@ -155,8 +156,13 @@ async function deposePetToGuild(
 	}
 
 	const guildId = player.guildId!;
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	await withLockedEntities(
-		[Player.lockKey(player.id), Guild.lockKey(guildId)] as const,
+		[
+			Player.lockKey(player.id),
+			Guild.lockKey(guildId),
+			PlayerMissionsInfo.lockKey(player.id)
+		] as const,
 		async ([lockedPlayer, lockedGuild]) => {
 			/*
 			 * Re-validate against the freshly-locked rows: the player
@@ -212,9 +218,14 @@ async function withdrawPetFromGuild(
 		return;
 	}
 
+	await PlayerMissionsInfos.getOfPlayer(player.id);
 	await withGuildPetLockOrSituationChanged(
 		response,
-		[Player.lockKey(player.id), GuildPet.lockKey(toWithdrawPet.id)] as const,
+		[
+			Player.lockKey(player.id),
+			GuildPet.lockKey(toWithdrawPet.id),
+			PlayerMissionsInfo.lockKey(player.id)
+		] as const,
 		async ([lockedPlayer, lockedGuildPet]) => {
 			/*
 			 * Re-validate against the freshly-locked rows: the player

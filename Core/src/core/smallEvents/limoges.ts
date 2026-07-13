@@ -1,4 +1,4 @@
-/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedEntities([Player.lockKey]) callback. */
+/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
@@ -22,7 +22,7 @@ import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants"
 import { TravelTime } from "../maps/TravelTime";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import Player from "../database/game/models/Player";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 
 const PENALTY_TYPES: SmallEventLimogesPenaltyType[] = [
 	SmallEventLimogesPenaltyType.HEALTH,
@@ -158,7 +158,7 @@ function getEndCallback(
 	return async (collector, response): Promise<void> => {
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.LIMOGES_SMALL_EVENT);
 
-		await withLockedPlayerSafe(player, "limoges endCallback", async lockedPlayer => {
+		await withLockedPlayerAndMissionsSafe(player, "limoges endCallback", async lockedPlayer => {
 			const reaction = collector.getFirstReaction();
 			const playerAccepted = reaction?.reaction.type === ReactionCollectorAcceptReaction.name;
 			const hasAnswered = Boolean(reaction);

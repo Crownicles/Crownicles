@@ -249,13 +249,12 @@ async function enchantItem(params: EnchantItemParams): Promise<void> {
 		player, enchantment, price, playerMissionsInfo, itemToEnchant, response
 	} = params;
 
-	const keys = playerMissionsInfo
-		? [Player.lockKey(player.id), PlayerMissionsInfo.lockKey(player.id)] as const
-		: [Player.lockKey(player.id)] as const;
+	await PlayerMissionsInfos.getOfPlayer(player.id);
+	const keys = [Player.lockKey(player.id), PlayerMissionsInfo.lockKey(player.id)] as const;
 
 	await withLockedEntities(keys, async locked => {
 		const lockedPlayer = locked[0] as Player;
-		const lockedMissionsInfo = (locked.length > 1 ? locked[1] : null) as PlayerMissionsInfo | null;
+		const lockedMissionsInfo = playerMissionsInfo ? locked[1] : null;
 
 		if (!hasLockedCurrencies({
 			lockedPlayer, lockedMissionsInfo, price, response

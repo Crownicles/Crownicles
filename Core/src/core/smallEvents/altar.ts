@@ -36,7 +36,7 @@ import { crowniclesInstance } from "../../app";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
 import { Maps } from "../maps/Maps";
-import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
+import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
 import { MissionsController } from "../missions/MissionsController";
 import {
 	daysToMilliseconds, hoursToMilliseconds
@@ -195,7 +195,7 @@ function sendNoContribution(
 
 function getEndCallback(player: Player, context: PacketContext): EndCallback {
 	return async (collector, response) => {
-		await withLockedPlayerSafe(player, "altar endCallback", lockedPlayer =>
+		await withLockedPlayerAndMissionsSafe(player, "altar endCallback", lockedPlayer =>
 			runAltarEndCallbackUnderLock(lockedPlayer, context, collector, response));
 	};
 }
