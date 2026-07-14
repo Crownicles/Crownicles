@@ -66,9 +66,9 @@
     "maxEnergy3": "Energia max III",
     "baseBreath1": "Respiração básica",
     "maxBreath1": "Respiração máxima",
-    "burnedDamage1": "Aspect de feu",
-    "frozenDamage1": "Aspect de givre",
-    "poisonedDamage1": "Aspect de venin"
+    "burnedDamage1": "Aspecto do fogo",
+    "frozenDamage1": "Aspecto de gelo",
+    "poisonedDamage1": "Aspecto do veneno"
   },
   "categories": {
     "weapons": "Armas",
