@@ -16,11 +16,45 @@ import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { escapeUsername } from "../utils/StringUtils";
 import { resolveKeycloakPlayerName } from "../utils/KeycloakPlayerUtils";
 
+/**
+ * A message ready to be sent in both the French and English announcement channels
+ */
+type BilingualMessage = {
+	fr: string;
+	en: string;
+};
+
+/**
+ * Describes how to announce the winner (or absence of winner) of a competition
+ */
+type WinnerAnnouncement = {
+	winnerKeycloakId?: string;
+	winnerTranslationKey: string;
+	noWinnerTranslationKey: string;
+	errorLogContext: string;
+};
+
 export abstract class DiscordAnnouncement {
-	private static async sendBilingualMessage(messageFr: string, messageEn: string, reactEmoji?: string): Promise<void> {
+	/**
+	 * Build the same translation key in both announcement languages
+	 */
+	private static buildBilingualMessage(translationKey: string, params: Record<string, unknown> = {}): BilingualMessage {
+		return {
+			fr: i18n.t(translationKey, {
+				lng: LANGUAGE.FRENCH,
+				...params
+			}),
+			en: i18n.t(translationKey, {
+				lng: LANGUAGE.ENGLISH,
+				...params
+			})
+		};
+	}
+
+	private static async sendBilingualMessage(message: BilingualMessage, reactEmoji?: string): Promise<void> {
 		try {
 			const frenchChannel = await crowniclesClient!.channels.fetch(discordConfig.FRENCH_ANNOUNCEMENT_CHANNEL_ID);
-			const frenchMsg = await (frenchChannel as TextChannel).send({ content: messageFr });
+			const frenchMsg = await (frenchChannel as TextChannel).send({ content: message.fr });
 			if (reactEmoji) {
 				await frenchMsg.react(reactEmoji);
 			}
@@ -30,7 +64,7 @@ export abstract class DiscordAnnouncement {
 		}
 		try {
 			const englishChannel = await crowniclesClient!.channels.fetch(discordConfig.ENGLISH_ANNOUNCEMENT_CHANNEL_ID);
-			const englishMsg = await (englishChannel as TextChannel).send({ content: messageEn });
+			const englishMsg = await (englishChannel as TextChannel).send({ content: message.en });
 			if (reactEmoji) {
 				await englishMsg.react(reactEmoji);
 			}
@@ -43,30 +77,17 @@ export abstract class DiscordAnnouncement {
 	/**
 	 * Resolve a winner keycloak ID into a mention/name and announce with a trophy reaction
 	 */
-	private static async resolveWinnerAndAnnounce(
-		winnerKeycloakId: string | undefined,
-		winnerTranslationKey: string,
-		noWinnerTranslationKey: string,
-		errorLogContext: string
-	): Promise<void> {
-		if (winnerKeycloakId) {
-			const winner = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, winnerKeycloakId);
+	private static async resolveWinnerAndAnnounce(announcement: WinnerAnnouncement): Promise<void> {
+		if (announcement.winnerKeycloakId) {
+			const winner = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, announcement.winnerKeycloakId);
 			if (!winner.isError) {
 				const mention = winner.payload.user.attributes.discordId ? `<@${winner.payload.user.attributes.discordId[0]}>` : escapeUsername(winner.payload.user.attributes.gameUsername[0]);
-				const messageFr = i18n.t(winnerTranslationKey, {
-					lng: LANGUAGE.FRENCH, mention
-				});
-				const messageEn = i18n.t(winnerTranslationKey, {
-					lng: LANGUAGE.ENGLISH, mention
-				});
-				await this.sendBilingualMessage(messageFr, messageEn, CrowniclesIcons.announcements.trophy);
+				await this.sendBilingualMessage(this.buildBilingualMessage(announcement.winnerTranslationKey, { mention }), CrowniclesIcons.announcements.trophy);
 				return;
 			}
-			CrowniclesLogger.error(`Failed to announce ${errorLogContext}: winner with keycloak id ${winnerKeycloakId} not found`);
+			CrowniclesLogger.error(`Failed to announce ${announcement.errorLogContext}: winner with keycloak id ${announcement.winnerKeycloakId} not found`);
 		}
-		const messageFr = i18n.t(noWinnerTranslationKey, { lng: LANGUAGE.FRENCH });
-		const messageEn = i18n.t(noWinnerTranslationKey, { lng: LANGUAGE.ENGLISH });
-		await this.sendBilingualMessage(messageFr, messageEn, CrowniclesIcons.announcements.trophy);
+		await this.sendBilingualMessage(this.buildBilingualMessage(announcement.noWinnerTranslationKey), CrowniclesIcons.announcements.trophy);
 	}
 
 	static async canAnnounce(): Promise<boolean> {
@@ -76,43 +97,33 @@ export abstract class DiscordAnnouncement {
 
 	static async announceTopWeek(topWeekAnnouncementPacket: TopWeekAnnouncementPacket): Promise<void> {
 		CrowniclesLogger.info("Announcing top week...");
-		await this.resolveWinnerAndAnnounce(
-			topWeekAnnouncementPacket.winnerKeycloakId,
-			"bot:topWeekAnnouncement",
-			"bot:topWeekAnnouncementNoWinner",
-			"top week"
-		);
+		await this.resolveWinnerAndAnnounce({
+			winnerKeycloakId: topWeekAnnouncementPacket.winnerKeycloakId,
+			winnerTranslationKey: "bot:topWeekAnnouncement",
+			noWinnerTranslationKey: "bot:topWeekAnnouncementNoWinner",
+			errorLogContext: "top week"
+		});
 	}
 
 	static async announceTopWeekFight(topWeekFightAnnouncementPacket: TopWeekFightAnnouncementPacket): Promise<void> {
 		CrowniclesLogger.info("Announcing fight top week...");
-		await this.resolveWinnerAndAnnounce(
-			topWeekFightAnnouncementPacket.winnerKeycloakId,
-			"bot:seasonEndAnnouncement",
-			"bot:seasonEndAnnouncementNoWinner",
-			"top week fight"
-		);
+		await this.resolveWinnerAndAnnounce({
+			winnerKeycloakId: topWeekFightAnnouncementPacket.winnerKeycloakId,
+			winnerTranslationKey: "bot:seasonEndAnnouncement",
+			noWinnerTranslationKey: "bot:seasonEndAnnouncementNoWinner",
+			errorLogContext: "top week fight"
+		});
 	}
 
 	static async announceChristmasBonus(packet: ChristmasBonusAnnouncementPacket): Promise<void> {
 		CrowniclesLogger.info(`Announcing Christmas bonus (preAnnouncement: ${packet.isPreAnnouncement})...`);
 		const translationKey = packet.isPreAnnouncement ? "bot:christmasBonusPreAnnouncement" : "bot:christmasBonusApplied";
-		const messageFr = i18n.t(translationKey, { lng: LANGUAGE.FRENCH });
-		const messageEn = i18n.t(translationKey, { lng: LANGUAGE.ENGLISH });
-		await this.sendBilingualMessage(messageFr, messageEn);
+		await this.sendBilingualMessage(this.buildBilingualMessage(translationKey));
 	}
 
 	static async announceReleaseGift(_packet: ReleaseGiftAnnouncementPacket): Promise<void> {
 		CrowniclesLogger.info("Announcing the 6.0.0 release gift...");
-		const messageFr = i18n.t("bot:releaseGiftApplied", {
-			lng: LANGUAGE.FRENCH,
-			money: ReleaseGiftConstants.MONEY
-		});
-		const messageEn = i18n.t("bot:releaseGiftApplied", {
-			lng: LANGUAGE.ENGLISH,
-			money: ReleaseGiftConstants.MONEY
-		});
-		await this.sendBilingualMessage(messageFr, messageEn);
+		await this.sendBilingualMessage(this.buildBilingualMessage("bot:releaseGiftApplied", { money: ReleaseGiftConstants.MONEY }));
 	}
 
 	static async announceBlessing(packet: BlessingAnnouncementPacket): Promise<void> {
@@ -151,6 +162,9 @@ export abstract class DiscordAnnouncement {
 			totalContributors: packet.totalContributors,
 			count: packet.totalContributors
 		});
-		await this.sendBilingualMessage(messageFr, messageEn, CrowniclesIcons.announcements.blessing);
+		await this.sendBilingualMessage({
+			fr: messageFr,
+			en: messageEn
+		}, CrowniclesIcons.announcements.blessing);
 	}
 }
