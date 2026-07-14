@@ -23,6 +23,8 @@ export abstract class MqttTopicUtils {
 
 	private static readonly DISCORD_CHRISTMAS_BONUS_ANNOUNCEMENT_TOPIC = "crownicles_discord_christmas_bonus_announcement";
 
+	private static readonly DISCORD_RELEASE_GIFT_ANNOUNCEMENT_TOPIC = "crownicles_discord_release_gift_announcement";
+
 	private static readonly DISCORD_BLESSING_ANNOUNCEMENT_TOPIC = "crownicles_discord_blessing_announcement";
 
 	private static readonly NOTIFICATIONS = "crownicles_notifications";
@@ -52,6 +54,10 @@ export abstract class MqttTopicUtils {
 
 	static getDiscordChristmasBonusAnnouncementTopic(prefix: MqttPrefix): string {
 		return `${prefix}/${MqttTopicUtils.DISCORD_CHRISTMAS_BONUS_ANNOUNCEMENT_TOPIC}`;
+	}
+
+	static getDiscordReleaseGiftAnnouncementTopic(prefix: MqttPrefix): string {
+		return `${prefix}/${MqttTopicUtils.DISCORD_RELEASE_GIFT_ANNOUNCEMENT_TOPIC}`;
 	}
 
 	static getDiscordBlessingAnnouncementTopic(prefix: MqttPrefix): string {

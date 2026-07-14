@@ -130,6 +130,14 @@ export abstract class Settings {
 	);
 
 	/**
+	 * Whether the one-time 6.0.0 release gift has already been applied (0 = not applied, 1 = applied)
+	 */
+	public static readonly RELEASE_GIFT_600_APPLIED = new SettingClassNumber(
+		"releaseGift600Applied",
+		(): Promise<number> => Promise.resolve(0)
+	);
+
+	/**
 	 * The city where the enchanter is currently located
 	 */
 	public static readonly ENCHANTER_CITY = new SettingClassString(
