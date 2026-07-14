@@ -50,6 +50,7 @@ import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
 import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
 import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
 import { CrowniclesEach10Minutes } from "./cronJobs/CrowniclesEach10Minutes";
+import { CrowniclesChristmas } from "./cronJobs/CrowniclesChristmas";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -468,6 +469,7 @@ export class Crownicles {
 		await CrowniclesSunday.programCronJob();
 		await CrowniclesMonday.programCronJob();
 		await CrowniclesEach10Minutes.programCronJob();
+		await CrowniclesChristmas.programCronJob();
 
 		Crownicles.reportNotifications()
 			.then();
