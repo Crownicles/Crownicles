@@ -58,11 +58,31 @@ export class DiscordMQTT {
 		await registerAllPacketHandlers();
 
 		this.connectSubscribeAndHandleGlobal();
-		this.connectSubscribeAndHandleTopWeekAnnouncement();
-		this.connectSubscribeAndHandleTopWeekFightAnnouncement();
-		this.connectSubscribeAndHandleChristmasBonusAnnouncement();
-		this.connectSubscribeAndHandleReleaseGiftAnnouncement();
-		this.connectSubscribeAndHandleBlessingAnnouncement();
+		DiscordMQTT.topWeekAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceTopWeek(JSON.parse(payload)),
+			"No top week announcement in the MQTT topic"
+		);
+		DiscordMQTT.topWeekFightAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceTopWeekFight(JSON.parse(payload)),
+			"No top week fight announcement in the MQTT topic"
+		);
+		DiscordMQTT.christmasBonusAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceChristmasBonus(JSON.parse(payload)),
+			"No Christmas bonus announcement in the MQTT topic"
+		);
+		DiscordMQTT.releaseGiftAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceReleaseGift(JSON.parse(payload)),
+			"No release gift announcement in the MQTT topic"
+		);
+		DiscordMQTT.blessingAnnouncementMqttClient = DiscordMQTT.connectAndHandleAnnouncement(
+			MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX),
+			payload => DiscordAnnouncement.announceBlessing(JSON.parse(payload)),
+			"No blessing announcement in the MQTT topic"
+		);
 
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
@@ -232,84 +252,36 @@ export class DiscordMQTT {
 		});
 	}
 
-	private static handleTopWeekAnnouncementMqttMessage(): void {
-		DiscordMQTT.topWeekAnnouncementMqttClient.on("message", async (_topic, message) => {
+	/**
+	 * Connect an MQTT client dedicated to an announcement topic, subscribe to it and post the announcement when received.
+	 * The message is cleared from the retained topic once handled so it is not processed twice.
+	 */
+	private static connectAndHandleAnnouncement(
+		topic: string,
+		announce: (payload: string) => Promise<void>,
+		emptyTopicLog: string
+	): MqttClient {
+		const client = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+
+		client.on("connect", () => {
+			DiscordMQTT.subscribeTo(client, topic, false);
+		});
+
+		client.on("message", async (_topic, message) => {
 			if (message.toString() === "") {
-				CrowniclesLogger.debug("No top week announcement in the MQTT topic");
+				CrowniclesLogger.debug(emptyTopicLog);
 				return;
 			}
 
 			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceTopWeek(JSON.parse(message.toString()));
+				await announce(message.toString());
 
 				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.topWeekAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
+				client.publish(topic, "", { retain: true });
 			}
 		});
-	}
 
-	private static handleTopWeekFightAnnouncementMqttMessage(): void {
-		DiscordMQTT.topWeekFightAnnouncementMqttClient.on("message", async (_topic, message) => {
-			if (message.toString() === "") {
-				CrowniclesLogger.debug("No top week fight announcement in the MQTT topic");
-				return;
-			}
-
-			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceTopWeekFight(JSON.parse(message.toString()));
-
-				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.topWeekFightAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
-			}
-		});
-	}
-
-	private static handleChristmasBonusAnnouncementMqttMessage(): void {
-		DiscordMQTT.christmasBonusAnnouncementMqttClient.on("message", async (_topic, message) => {
-			if (message.toString() === "") {
-				CrowniclesLogger.debug("No Christmas bonus announcement in the MQTT topic");
-				return;
-			}
-
-			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceChristmasBonus(JSON.parse(message.toString()));
-
-				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.christmasBonusAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
-			}
-		});
-	}
-
-	private static handleReleaseGiftAnnouncementMqttMessage(): void {
-		DiscordMQTT.releaseGiftAnnouncementMqttClient.on("message", async (_topic, message) => {
-			if (message.toString() === "") {
-				CrowniclesLogger.debug("No release gift announcement in the MQTT topic");
-				return;
-			}
-
-			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceReleaseGift(JSON.parse(message.toString()));
-
-				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.releaseGiftAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
-			}
-		});
-	}
-
-	private static handleBlessingAnnouncementMqttMessage(): void {
-		DiscordMQTT.blessingAnnouncementMqttClient.on("message", async (_topic, message) => {
-			if (message.toString() === "") {
-				CrowniclesLogger.debug("No blessing announcement in the MQTT topic");
-				return;
-			}
-
-			if (await DiscordAnnouncement.canAnnounce()) {
-				await DiscordAnnouncement.announceBlessing(JSON.parse(message.toString()));
-
-				// Clear the announcement so it doesn't get processed again
-				DiscordMQTT.blessingAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
-			}
-		});
+		return client;
 	}
 
 	private static handleNotificationMqttMessage(): void {
@@ -352,56 +324,6 @@ export class DiscordMQTT {
 		});
 
 		this.handleGlobalMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleTopWeekAnnouncement(): void {
-		DiscordMQTT.topWeekAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.topWeekAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.topWeekAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleTopWeekAnnouncementMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleTopWeekFightAnnouncement(): void {
-		DiscordMQTT.topWeekFightAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.topWeekFightAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.topWeekFightAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleTopWeekFightAnnouncementMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleChristmasBonusAnnouncement(): void {
-		DiscordMQTT.christmasBonusAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.christmasBonusAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.christmasBonusAnnouncementMqttClient, MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleChristmasBonusAnnouncementMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleReleaseGiftAnnouncement(): void {
-		DiscordMQTT.releaseGiftAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.releaseGiftAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.releaseGiftAnnouncementMqttClient, MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleReleaseGiftAnnouncementMqttMessage();
-	}
-
-	private static connectSubscribeAndHandleBlessingAnnouncement(): void {
-		DiscordMQTT.blessingAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
-
-		DiscordMQTT.blessingAnnouncementMqttClient.on("connect", () => {
-			DiscordMQTT.subscribeTo(DiscordMQTT.blessingAnnouncementMqttClient, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), false);
-		});
-
-		this.handleBlessingAnnouncementMqttMessage();
 	}
 
 	private static connectSubscribeAndHandleNotifications(): void {
