@@ -60,6 +60,10 @@ type WaterableSlotGrowth = {
 	plantId: number;
 	becomesReady: boolean;
 };
+type GardenLockBody = (player: Player, home: Home) => Promise<CrowniclesPacket>;
+type GardenLockOptions = {
+	lockMissions: boolean;
+};
 
 /**
  * Compute the unix-ms timestamp at which the player can next water their garden,
@@ -92,8 +96,8 @@ function makeGardenErrorPacket(error: GardenError, availableAt?: number): Crowni
 async function withGardenLock(
 	keycloakId: string,
 	onMissing: () => CrowniclesPacket,
-	body: (player: Player, home: Home) => Promise<CrowniclesPacket>,
-	options: { lockMissions: boolean } = { lockMissions: false }
+	body: GardenLockBody,
+	options: GardenLockOptions = { lockMissions: false }
 ): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	const home = player ? await Homes.getOfPlayer(player.id) : null;

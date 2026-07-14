@@ -23,7 +23,9 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
-import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	LockKey, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import {
 	Apartment, Apartments
@@ -36,6 +38,32 @@ import type {
 	HomePurchaseLogParams,
 	HomeUpgradeLogParams
 } from "../database/logs/LogsCityLogger";
+
+/**
+ * Any entity that can participate in a home-related row lock.
+ */
+type HomeLockable = Home | Player | Apartment | PlayerMissionsInfo;
+
+/**
+ * The entities extracted from the move-home lock, in the same order the keys
+ * were declared.
+ */
+type MoveHomeLockedEntities = {
+	lockedHome: Home;
+	lockedPlayer: Player;
+	lockedSourceApartment: Apartment | null;
+	lockedDestinationApartment: Apartment | null;
+};
+
+/**
+ * Pre-computed context needed to run the move-home critical section.
+ */
+type MoveHomeLockContext = {
+	sourceApartment: Apartment | null;
+	destinationApartment: Apartment | null;
+	lockKeys: LockKey[];
+	unpack: (entities: readonly HomeLockable[]) => MoveHomeLockedEntities;
+};
 
 function logHomePurchase(params: HomePurchaseLogParams | null): void {
 	if (params === null) {
@@ -72,7 +100,7 @@ function logHomeBedUse(params: HomeBedUseLogParams | null): void {
  * null when the buy is aborted).
  */
 async function runBuyHomeUnderLock(params: {
-	lockedEntities: readonly (Player | Apartment | PlayerMissionsInfo)[];
+	lockedEntities: readonly HomeLockable[];
 	hasApartment: boolean;
 	city: City;
 	newPrice: number;
@@ -386,17 +414,7 @@ async function prepareMoveHomeLockContext(
 	homeId: number,
 	sourceCityId: string,
 	destinationCityId: string
-): Promise<{
-	sourceApartment: Apartment | null;
-	destinationApartment: Apartment | null;
-	lockKeys: ReturnType<typeof Home.lockKey | typeof Player.lockKey | typeof Apartment.lockKey | typeof PlayerMissionsInfo.lockKey>[];
-	unpack: (entities: readonly (Home | Player | Apartment | PlayerMissionsInfo)[]) => {
-		lockedHome: Home;
-		lockedPlayer: Player;
-		lockedSourceApartment: Apartment | null;
-		lockedDestinationApartment: Apartment | null;
-	};
-}> {
+): Promise<MoveHomeLockContext> {
 	/*
 	 * The apartment in the city the player is leaving is the one that was rented;
 	 * the apartment in the destination city (if any) will become rented after the move.
@@ -418,12 +436,7 @@ async function prepareMoveHomeLockContext(
 		PlayerMissionsInfo.lockKey(playerId)
 	];
 
-	const unpack = (entities: readonly (Home | Player | Apartment | PlayerMissionsInfo)[]): {
-		lockedHome: Home;
-		lockedPlayer: Player;
-		lockedSourceApartment: Apartment | null;
-		lockedDestinationApartment: Apartment | null;
-	} => {
+	const unpack = (entities: readonly HomeLockable[]): MoveHomeLockedEntities => {
 		let cursor = 2;
 		return {
 			lockedHome: entities[0] as Home,
@@ -470,7 +483,7 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 		async lockedEntities => {
 			const {
 				lockedHome, lockedPlayer, lockedSourceApartment, lockedDestinationApartment
-			} = lockContext.unpack(lockedEntities as readonly (Home | Player | Apartment | PlayerMissionsInfo)[]);
+			} = lockContext.unpack(lockedEntities as readonly HomeLockable[]);
 
 			const result = await applyMoveHomeUnderLock({
 				lockedHome,
