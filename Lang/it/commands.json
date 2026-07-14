@@ -1185,7 +1185,8 @@
           "placeholder": "Scegliere una categoria",
           "descriptionWithItems": "{emote:city.homeUpgrades.chest} Il forziere contiene una serie di oggetti. Selezionate una categoria per visualizzarne il contenuto o aggiungere nuovi oggetti.",
           "descriptionEmpty": "{emote:city.homeUpgrades.chest} Il tuo forziere è vuoto al momento. Selezionare una categoria per conservare gli oggetti del proprio inventario.",
-          "categoryHeader": "**{{category}}** - {{filled}}/{{total}} piazzole occupate",
+          "categoryHeader_one": "**{{category}}** — {{count}}/{{total}} posto occupato",
+          "categoryHeader_other": "**{{category}}** — {{count}}/{{total}} posti occupati",
           "inventoryInfo": "{emote:city.chestActions.inventory} Equipaggiato: {{equipped}} | Riserva: {{backupCount}}/{{maxBackup}}",
           "noStoredItems": "Non ci sono articoli in questa categoria.",
           "depositSection": "{emote:city.chestActions.deposit} **Deposito nel forziere:**",
@@ -2195,7 +2196,7 @@
     "rewards": {
       "personalXP": "{emote:unitValues.xp} | I membri della Gilda hanno ricevuto l'esperienza `+ {{quantity, number}} {emote:unitValues.xp}`.",
       "guildXP": "{emote:unitValues.xp} | La gilda ha acquisito esperienza. `+ {{quantity, number}} {emote:unitValues.xp}`",
-      "guildPoints": "{Punti gilda guadagnati: `+ {{quantity, number}} { item:unitValues.guildPoint}`. La posizione di cassa aumenta dello stesso importo.",
+      "guildPoints": "{emote:unitValues.guildPoint} | Punti gilda guadagnati: `+ {{quantity, number}}` {emote:unitValues.guildPoint}. La cassa aumenta dello stesso importo.",
       "money": "{emote:unitValues.money} | I membri della Gilda hanno ricevuto `{{quantity, number}} {emote:unitValues.money}`.",
       "item": "{emote:rewards.item} | I membri della Gilda hanno ricevuto un oggetto a caso.",
       "badge": "{emote:badges.powerful_guild} | I membri della Gilda hanno ricevuto un distintivo.",
