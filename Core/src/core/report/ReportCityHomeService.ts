@@ -61,7 +61,7 @@ type MoveHomeLockedEntities = {
 type MoveHomeLockContext = {
 	sourceApartment: Apartment | null;
 	destinationApartment: Apartment | null;
-	lockKeys: LockKey[];
+	lockKeys: LockKey<HomeLockable>[];
 	unpack: (entities: readonly HomeLockable[]) => MoveHomeLockedEntities;
 };
 
@@ -479,11 +479,11 @@ export async function handleMoveHomeReaction(player: Player, city: City, data: R
 
 	await PlayerMissionsInfos.getOfPlayer(player.id);
 	const logParams = await withLockedEntities(
-		lockContext.lockKeys as readonly ReturnType<typeof Home.lockKey>[],
+		lockContext.lockKeys,
 		async lockedEntities => {
 			const {
 				lockedHome, lockedPlayer, lockedSourceApartment, lockedDestinationApartment
-			} = lockContext.unpack(lockedEntities as readonly HomeLockable[]);
+			} = lockContext.unpack(lockedEntities);
 
 			const result = await applyMoveHomeUnderLock({
 				lockedHome,
