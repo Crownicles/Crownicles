@@ -64,14 +64,11 @@
     "maxEnergy1": "Max Energy I",
     "maxEnergy2": "Max Energy II",
     "maxEnergy3": "Max Energy III",
-    "maxHealth1": "Max Health I",
-    "maxHealth2": "Max Health II",
-    "maxHealth3": "Max Health III",
     "baseBreath1": "Basic Breath",
     "maxBreath1": "Max Breath",
-    "burnedDamage1": "Brute Degae",
-    "frozenDamage1": "Frost Degates",
-    "poisonedDamage1": "Poison Degae"
+    "burnedDamage1": "Fire Aspect",
+    "frozenDamage1": "Frosty appearance",
+    "poisonedDamage1": "Appearance of Venom"
   },
   "categories": {
     "weapons": "Weapons",

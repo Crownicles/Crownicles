@@ -1185,7 +1185,8 @@
           "placeholder": "Choose a category",
           "descriptionWithItems": "{emote:city.homeUpgrades.chest} Your vault contains some items. Select a category to view its contents or store new items.",
           "descriptionEmpty": "{emote:city.homeUpgrades.chest} Your vault is empty at the moment. Select a set to store items from your inventory.",
-          "categoryHeader": "**{{category}}** — {{filled}}/{{total}} occupied locations",
+          "categoryHeader_one": "**{{category}}** — {{count}}/{{total}} space taken",
+          "categoryHeader_other": "**{{category}}** — {{count}}/{{total}} slots filled",
           "inventoryInfo": "{emote:city.chestActions.inventory} Equipment: {{equipped}} | Reservation: {{backupCount}}/{{maxBackup}}",
           "noStoredItems": "There are no items stored in this category.",
           "depositSection": "{emote:city.chestActions.deposit} **Leave in chest:**",
@@ -2195,7 +2196,7 @@
     "rewards": {
       "personalXP": "{emote:unitValues.xp} | Guild members gained experience `+ {{quantity, number}} {emote:unitValues.xp}`.",
       "guildXP": "{emote:unitValues.xp} | The guild has gained experience. `+ {{quantity, number}} {emote:unitValues.xp}`",
-      "guildPoints": "{emote:unitValues.guildPoint} Guild Points earned: `+ {{quantity, number}} {emote:unitValues.guildPoint}`. Treasurer increases by the same amount.",
+      "guildPoints": "{emote:unitValues.guildPoint} | Guild points earned: `+ {{quantity, number}}` {emote:unitValues.guildPoint}. The treasury increases by the same amount.",
       "money": "{emote:unitValues.money} | Guild members received `{{quantity, number}} {emote:unitValues.money}`.",
       "item": "{emote:rewards.item} | Guild members received a random item.",
       "badge": "{emote:badges.powerful_guild} | Guild members received a badge.",
