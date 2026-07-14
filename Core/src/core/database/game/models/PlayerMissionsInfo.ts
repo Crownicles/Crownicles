@@ -91,7 +91,7 @@ export abstract class PlayerMissionsInfos {
 	 * @param playerId
 	 */
 	public static async getOfPlayer(playerId: number): Promise<PlayerMissionsInfo> {
-		const missionsInfo = await PlayerMissionsInfos.findOrCreateResilient(playerId);
+		const missionsInfo = await PlayerMissionsInfos.ensurePlayerMissionsInfo(playerId);
 		if (!missionsInfo.campaignBlob) {
 			missionsInfo.campaignBlob = Campaign.getDefaultCampaignBlob();
 		}
@@ -99,20 +99,11 @@ export abstract class PlayerMissionsInfos {
 	}
 
 	/**
-	 * Concurrency-safe replacement for `PlayerMissionsInfo.findOrCreate`.
-	 *
-	 * Since the lock-hardening prewarm (#4408) calls `getOfPlayer` for a given
-	 * `playerId` from many racing callers *before* any row lock is taken, dozens
-	 * of concurrent callers can race to create the same missing row. Sequelize's
-	 * own `findOrCreate` only retries on a `UniqueConstraintError`, but the
-	 * MariaDB driver can instead surface a raw `SequelizeDatabaseError` ("Record
-	 * has changed since last read") under this level of contention, which
-	 * `findOrCreate` does not catch. Falling back to a plain re-read on *any*
-	 * failed create — not just unique-constraint violations — makes this
-	 * genuinely safe under concurrency: whichever caller's `create` wins, every
-	 * loser simply re-reads the row it just lost the race to create.
+	 * Ensure the row exists when concurrent callers race before acquiring locks.
+	 * MariaDB may report a database error instead of a unique constraint error;
+	 * after a failed create, re-read the row created by the winning caller.
 	 */
-	private static async findOrCreateResilient(playerId: number): Promise<PlayerMissionsInfo> {
+	private static async ensurePlayerMissionsInfo(playerId: number): Promise<PlayerMissionsInfo> {
 		const existing = await PlayerMissionsInfo.findOne({ where: { playerId } });
 		if (existing) {
 			return existing;
