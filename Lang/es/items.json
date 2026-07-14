@@ -64,14 +64,11 @@
     "maxEnergy1": "Energía máxima I",
     "maxEnergy2": "Energía máxima II",
     "maxEnergy3": "Energía máxima III",
-    "maxHealth1": "Vida máxima I",
-    "maxHealth2": "Vie max II",
-    "maxHealth3": "Vie max III",
     "baseBreath1": "Respiración básica",
     "maxBreath1": "Respiración máxima",
-    "burnedDamage1": "Daños por quemaduras",
-    "frozenDamage1": "Daños por heladas",
-    "poisonedDamage1": "Daño por veneno"
+    "burnedDamage1": "Aspect de feu",
+    "frozenDamage1": "Aspect de givre",
+    "poisonedDamage1": "Aspect de venin"
   },
   "categories": {
     "weapons": "Armas",
