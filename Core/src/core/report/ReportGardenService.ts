@@ -93,7 +93,7 @@ async function withGardenLock(
 	keycloakId: string,
 	onMissing: () => CrowniclesPacket,
 	body: (player: Player, home: Home) => Promise<CrowniclesPacket>,
-	lockMissions = false
+	options: { lockMissions: boolean } = { lockMissions: false }
 ): Promise<CrowniclesPacket> {
 	const player = await Players.getByKeycloakId(keycloakId);
 	const home = player ? await Homes.getOfPlayer(player.id) : null;
@@ -102,10 +102,10 @@ async function withGardenLock(
 		return onMissing();
 	}
 
-	if (lockMissions) {
+	if (options.lockMissions) {
 		await PlayerMissionsInfos.getOfPlayer(player.id);
 	}
-	const missionLockKeys = lockMissions ? [PlayerMissionsInfo.lockKey(player.id)] : [];
+	const missionLockKeys = options.lockMissions ? [PlayerMissionsInfo.lockKey(player.id)] : [];
 	return await withLockedEntities(
 		[
 			Player.lockKey(player.id),
@@ -246,7 +246,7 @@ export async function handleGardenHarvest(
 				player, home, homeLevel, sideEffects
 			});
 		},
-		true
+		{ lockMissions: true }
 	);
 	response.push(packet, ...sideEffects);
 }

@@ -51,8 +51,9 @@ describe("withLockedPlayerAndMissions race", () => {
 			money: 0
 		});
 
-		await playerLockMod.withLockedPlayerAndMissions(player.id, async lockedPlayer => {
+		await playerLockMod.withLockedPlayerAndMissions(player.id, lockedPlayer => {
 			expect(lockedPlayer.id).toBe(player.id);
+			return Promise.resolve();
 		});
 
 		const missionsInfo = await PlayerMissionsInfo.findByPk(player.id);
