@@ -45,6 +45,8 @@ export class DiscordMQTT {
 
 	static christmasBonusAnnouncementMqttClient: MqttClient;
 
+	static releaseGiftAnnouncementMqttClient: MqttClient;
+
 	static blessingAnnouncementMqttClient: MqttClient;
 
 	static packetListener: PacketListenerClient = new PacketListenerClient();
@@ -59,6 +61,7 @@ export class DiscordMQTT {
 		this.connectSubscribeAndHandleTopWeekAnnouncement();
 		this.connectSubscribeAndHandleTopWeekFightAnnouncement();
 		this.connectSubscribeAndHandleChristmasBonusAnnouncement();
+		this.connectSubscribeAndHandleReleaseGiftAnnouncement();
 		this.connectSubscribeAndHandleBlessingAnnouncement();
 
 		if (isMainShard) {
@@ -132,6 +135,7 @@ export class DiscordMQTT {
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.topWeekFightAnnouncementMqttClient, MqttTopicUtils.getDiscordTopWeekFightAnnouncementTopic(discordConfig.PREFIX), "top week fight announcement");
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.blessingAnnouncementMqttClient, MqttTopicUtils.getDiscordBlessingAnnouncementTopic(discordConfig.PREFIX), "blessing announcement");
 		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.christmasBonusAnnouncementMqttClient, MqttTopicUtils.getDiscordChristmasBonusAnnouncementTopic(discordConfig.PREFIX), "christmas bonus announcement");
+		DiscordMQTT.safeDisconnectMqttClient(DiscordMQTT.releaseGiftAnnouncementMqttClient, MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX), "release gift announcement");
 	}
 
 	/**
@@ -276,6 +280,22 @@ export class DiscordMQTT {
 		});
 	}
 
+	private static handleReleaseGiftAnnouncementMqttMessage(): void {
+		DiscordMQTT.releaseGiftAnnouncementMqttClient.on("message", async (_topic, message) => {
+			if (message.toString() === "") {
+				CrowniclesLogger.debug("No release gift announcement in the MQTT topic");
+				return;
+			}
+
+			if (await DiscordAnnouncement.canAnnounce()) {
+				await DiscordAnnouncement.announceReleaseGift(JSON.parse(message.toString()));
+
+				// Clear the announcement so it doesn't get processed again
+				DiscordMQTT.releaseGiftAnnouncementMqttClient.publish(MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX), "", { retain: true });
+			}
+		});
+	}
+
 	private static handleBlessingAnnouncementMqttMessage(): void {
 		DiscordMQTT.blessingAnnouncementMqttClient.on("message", async (_topic, message) => {
 			if (message.toString() === "") {
@@ -362,6 +382,16 @@ export class DiscordMQTT {
 		});
 
 		this.handleChristmasBonusAnnouncementMqttMessage();
+	}
+
+	private static connectSubscribeAndHandleReleaseGiftAnnouncement(): void {
+		DiscordMQTT.releaseGiftAnnouncementMqttClient = connect(discordConfig.MQTT_HOST, DEFAULT_MQTT_CLIENT_OPTIONS);
+
+		DiscordMQTT.releaseGiftAnnouncementMqttClient.on("connect", () => {
+			DiscordMQTT.subscribeTo(DiscordMQTT.releaseGiftAnnouncementMqttClient, MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(discordConfig.PREFIX), false);
+		});
+
+		this.handleReleaseGiftAnnouncementMqttMessage();
 	}
 
 	private static connectSubscribeAndHandleBlessingAnnouncement(): void {

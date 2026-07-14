@@ -8,6 +8,8 @@ import { LANGUAGE } from "../../../Lib/src/Language";
 import { KeycloakUtils } from "../../../Lib/src/keycloak/KeycloakUtils";
 import { TopWeekFightAnnouncementPacket } from "../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
 import { ChristmasBonusAnnouncementPacket } from "../../../Lib/src/packets/announcements/ChristmasBonusAnnouncementPacket";
+import { ReleaseGiftAnnouncementPacket } from "../../../Lib/src/packets/announcements/ReleaseGiftAnnouncementPacket";
+import { ReleaseGiftConstants } from "../../../Lib/src/constants/ReleaseGiftConstants";
 import { BlessingAnnouncementPacket } from "../../../Lib/src/packets/announcements/BlessingAnnouncementPacket";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
@@ -97,6 +99,19 @@ export abstract class DiscordAnnouncement {
 		const translationKey = packet.isPreAnnouncement ? "bot:christmasBonusPreAnnouncement" : "bot:christmasBonusApplied";
 		const messageFr = i18n.t(translationKey, { lng: LANGUAGE.FRENCH });
 		const messageEn = i18n.t(translationKey, { lng: LANGUAGE.ENGLISH });
+		await this.sendBilingualMessage(messageFr, messageEn);
+	}
+
+	static async announceReleaseGift(_packet: ReleaseGiftAnnouncementPacket): Promise<void> {
+		CrowniclesLogger.info("Announcing the 6.0.0 release gift...");
+		const messageFr = i18n.t("bot:releaseGiftApplied", {
+			lng: LANGUAGE.FRENCH,
+			money: ReleaseGiftConstants.MONEY
+		});
+		const messageEn = i18n.t("bot:releaseGiftApplied", {
+			lng: LANGUAGE.ENGLISH,
+			money: ReleaseGiftConstants.MONEY
+		});
 		await this.sendBilingualMessage(messageFr, messageEn);
 	}
 
