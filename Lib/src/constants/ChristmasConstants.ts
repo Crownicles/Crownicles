@@ -1,3 +1,7 @@
+import {
+	asHours, Hour
+} from "../types/TimeTypes";
+
 /**
  * Constants for the Christmas bonus feature
  */
@@ -5,7 +9,7 @@ export abstract class ChristmasConstants {
 	/**
 	 * Delay in hours between announcement and bonus when both run immediately (4 hours)
 	 */
-	static readonly IMMEDIATE_DELAY_HOURS = 4;
+	static readonly IMMEDIATE_DELAY_HOURS: Hour = asHours(4);
 
 	/**
 	 * Schedule for the pre-announcement at 12:00 on December 25th
