@@ -30,8 +30,6 @@ import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/anno
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import { TopWeekAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekAnnouncementPacket";
-import { ReleaseGiftAnnouncementPacket } from "../../../../Lib/src/packets/announcements/ReleaseGiftAnnouncementPacket";
-import { ReleaseGiftConstants } from "../../../../Lib/src/constants/ReleaseGiftConstants";
 import { PlayerMissionsInfo } from "../database/game/models/PlayerMissionsInfo";
 import { PlayerBadgesManager } from "../database/game/models/PlayerBadges";
 
@@ -51,6 +49,7 @@ import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
 import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
 import { CrowniclesEach10Minutes } from "./cronJobs/CrowniclesEach10Minutes";
 import { CrowniclesChristmas } from "./cronJobs/CrowniclesChristmas";
+import { ReleaseGift } from "./ReleaseGift";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -387,41 +386,6 @@ export class Crownicles {
 	}
 
 	/**
-	 * Apply the one-time 6.0.0 release gift to all existing players (money + full tokens) and announce it.
-	 * Guarded by a setting so it only ever runs once.
-	 */
-	static async applyReleaseGift(): Promise<void> {
-		if (!PacketUtils.isMqttConnected()) {
-			CrowniclesLogger.error("MQTT is not connected, can't apply the 6.0.0 release gift. Trying again in 1 minute");
-			setTimeout(Crownicles.applyReleaseGift, TimeoutFunctionsConstants.MQTT_RETRY_DELAY);
-			return;
-		}
-
-		if (await Settings.RELEASE_GIFT_600_APPLIED.getValue() !== 0) {
-			return;
-		}
-
-		CrowniclesLogger.info("Applying the 6.0.0 release gift to all players...");
-
-		await Player.update(
-			{
-				money: Sequelize.literal(`money + ${ReleaseGiftConstants.MONEY}`),
-				tokens: TokensConstants.MAX
-			},
-			{ where: {} }
-		);
-
-		await Settings.RELEASE_GIFT_600_APPLIED.setValue(1);
-
-		PacketUtils.announce(
-			makePacket(ReleaseGiftAnnouncementPacket, {}),
-			MqttTopicUtils.getDiscordReleaseGiftAnnouncementTopic(botConfig.PREFIX)
-		);
-
-		CrowniclesLogger.info("6.0.0 release gift applied to all players!");
-	}
-
-	/**
 	 * Sets the maintenance mode of the bot
 	 * @param enable
 	 * @param saveToConfig Save the maintenance state to the config file
@@ -477,7 +441,7 @@ export class Crownicles {
 		Crownicles.dailyBonusNotifications()
 			.then();
 
-		Crownicles.applyReleaseGift()
+		ReleaseGift.apply()
 			.then();
 
 		setTimeout(
