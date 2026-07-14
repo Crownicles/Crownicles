@@ -50,7 +50,9 @@ import {
 import { OwnedPet } from "../../../../Lib/src/types/OwnedPet";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MissionsController } from "../../core/missions/MissionsController";
-import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 
 /**
@@ -208,6 +210,84 @@ async function applyLockedAcceptPetFree(
 }
 
 /**
+ * Acquire the free-own-pet outcome under the appropriate locks: player + pet + missions
+ * (+ guild for the meat reward when the player belongs to a guild). A concurrently destroyed
+ * guild row falls back to the guild-less lock so the user can still free their own pet.
+ *
+ * Prewarms the player's `PlayerMissionsInfo` row before any lock is taken so the canonical
+ * `players -> player_missions_info` order is preserved.
+ */
+async function acquireAcceptPetFreeOutcome(
+	response: CrowniclesPacket[],
+	player: Player,
+	playerPet: PetEntity
+): Promise<AcceptPetFreeOutcome> {
+	await PlayerMissionsInfos.getOfPlayer(player.id);
+	const playerGuildId = player.guildId;
+	if (playerGuildId === null) {
+		return freeOwnPetWithoutGuildMeat(response, player, playerPet);
+	}
+	try {
+		return await withLockedEntities(
+			[
+				Player.lockKey(player.id),
+				PetEntity.lockKey(playerPet.id),
+				Guild.lockKey(playerGuildId),
+				PlayerMissionsInfo.lockKey(player.id)
+			] as const,
+			async ([
+				lockedPlayer,
+				lockedPet,
+				lockedGuild
+			]) => await applyLockedAcceptPetFree(
+				response,
+				{
+					player: lockedPlayer, pet: lockedPet, guild: lockedGuild
+				},
+				playerPet.id
+			)
+		);
+	}
+	catch (error) {
+		/*
+		 * Only a vanished guild row (concurrent guild deletion) falls back to the
+		 * guild-less lock; any other error (DB failure, vanished player/pet row) must
+		 * propagate so the caller doesn't silently treat a real failure as a no-op.
+		 */
+		if (!(error instanceof LockedRowNotFoundError)) {
+			throw error;
+		}
+		return freeOwnPetWithoutGuildMeat(response, player, playerPet);
+	}
+}
+
+/**
+ * Free the player's own pet under a player + pet + missions lock, without the guild meat
+ * reward. Used both when the player has no guild and as the fallback when the guild row was
+ * destroyed concurrently.
+ */
+function freeOwnPetWithoutGuildMeat(
+	response: CrowniclesPacket[],
+	player: Player,
+	playerPet: PetEntity
+): Promise<AcceptPetFreeOutcome> {
+	return withLockedEntities(
+		[
+			Player.lockKey(player.id),
+			PetEntity.lockKey(playerPet.id),
+			PlayerMissionsInfo.lockKey(player.id)
+		] as const,
+		async ([lockedPlayer, lockedPet]) => await applyLockedAcceptPetFree(
+			response,
+			{
+				player: lockedPlayer, pet: lockedPet
+			},
+			playerPet.id
+		)
+	);
+}
+
+/**
  * Accept the pet free request and free the pet.
  *
  * Critical section: lock player + player missions info + pet (+ guild for meat reward) so a
@@ -215,69 +295,7 @@ async function applyLockedAcceptPetFree(
  * double-destroy or strand the player on a deleted pet row.
  */
 async function acceptPetFree(player: Player, playerPet: PetEntity, response: CrowniclesPacket[]): Promise<void> {
-	const playerGuildId = player.guildId;
-	await PlayerMissionsInfos.getOfPlayer(player.id);
-	let outcome: AcceptPetFreeOutcome;
-	if (playerGuildId !== null) {
-		try {
-			outcome = await withLockedEntities(
-				[
-					Player.lockKey(player.id),
-					PetEntity.lockKey(playerPet.id),
-					Guild.lockKey(playerGuildId),
-					PlayerMissionsInfo.lockKey(player.id)
-				] as const,
-				async ([
-					lockedPlayer,
-					lockedPet,
-					lockedGuild
-				]) => await applyLockedAcceptPetFree(
-					response,
-					{
-						player: lockedPlayer, pet: lockedPet, guild: lockedGuild
-					},
-					playerPet.id
-				)
-			);
-		}
-		catch {
-			/*
-			 * Guild row may have been destroyed concurrently; fall
-			 * back to a 2-row lock so the user can still free their
-			 * own pet (without the meat reward).
-			 */
-			outcome = await withLockedEntities(
-				[
-					Player.lockKey(player.id),
-					PetEntity.lockKey(playerPet.id),
-					PlayerMissionsInfo.lockKey(player.id)
-				] as const,
-				async ([lockedPlayer, lockedPet]) => await applyLockedAcceptPetFree(
-					response,
-					{
-						player: lockedPlayer, pet: lockedPet
-					},
-					playerPet.id
-				)
-			);
-		}
-	}
-	else {
-		outcome = await withLockedEntities(
-			[
-				Player.lockKey(player.id),
-				PetEntity.lockKey(playerPet.id),
-				PlayerMissionsInfo.lockKey(player.id)
-			] as const,
-			async ([lockedPlayer, lockedPet]) => await applyLockedAcceptPetFree(
-				response,
-				{
-					player: lockedPlayer, pet: lockedPet
-				},
-				playerPet.id
-			)
-		);
-	}
+	const outcome = await acquireAcceptPetFreeOutcome(response, player, playerPet);
 
 	if (!outcome.revalidated) {
 		response.push(makePacket(CommandPetFreeRefusePacketRes, {}));
