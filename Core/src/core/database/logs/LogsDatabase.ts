@@ -1658,10 +1658,10 @@ export class LogsDatabase extends Database {
 	}
 
 	/**
-	 * Count the number of expedition cancellations (cancel + recall) for a player in the last N days
+	 * Count the number of expedition cancellations (cancel + recall) for a player during the current week
 	 */
-	public countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
-		return this.expeditionLogger.countRecentExpeditionCancellations(keycloakId, days);
+	public countExpeditionCancellationsThisWeek(keycloakId: string): Promise<number> {
+		return this.expeditionLogger.countExpeditionCancellationsThisWeek(keycloakId);
 	}
 
 	/**

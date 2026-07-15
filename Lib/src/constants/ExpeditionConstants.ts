@@ -257,17 +257,6 @@ export abstract class ExpeditionConstants {
 	};
 
 	/**
-	 * Progressive penalty for cancellation
-	 * Love lost = base * (1 + cancellations in last 7 days)
-	 */
-	static readonly CANCELLATION_PENALTY = {
-		/**
-		 * Number of days to look back for cancellation history
-		 */
-		LOOKBACK_DAYS: 7
-	};
-
-	/**
 	 * Safety caps used during expedition penalty calculations
 	 */
 	static readonly CAPS = {
