@@ -9,7 +9,7 @@ import { runWithDeferredCollectorStop } from "../../../src/core/report/ReportCit
 describe("city shop collector handoff", () => {
 	it("places the city stop packet after the shop creation packet", async () => {
 		const stopPacket = makePacket(ReactionCollectorStopPacket, { id: "city-collector" });
-		const shopPacket = makePacket(ReactionCollectorCreationPacket, {} as ReactionCollectorCreationPacket);
+		const shopPacket = new ReactionCollectorCreationPacket();
 		const response = [stopPacket];
 
 		await runWithDeferredCollectorStop(response, "city-collector", () => {
@@ -42,7 +42,7 @@ describe("city shop collector handoff", () => {
 
 	it("leaves unrelated stop packets in place", async () => {
 		const unrelatedStopPacket = makePacket(ReactionCollectorStopPacket, { id: "other-collector" });
-		const shopPacket = makePacket(ReactionCollectorCreationPacket, {} as ReactionCollectorCreationPacket);
+		const shopPacket = new ReactionCollectorCreationPacket();
 		const response = [unrelatedStopPacket];
 
 		await runWithDeferredCollectorStop(response, "city-collector", () => {
