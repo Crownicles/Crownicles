@@ -44,6 +44,7 @@ import { getMainMenu } from "./cityMenu/MainMenu";
 import { getInnMenu } from "./cityMenu/InnMenu";
 import { getEnchanterMenu } from "./cityMenu/EnchanterMenu";
 import { getManageHomeMenu } from "./cityMenu/NotaryMenu";
+import { registerCityMessageOwner } from "./CityMessageHandoff";
 
 type CityCollectorHandler = (
 	customId: string,
@@ -318,6 +319,7 @@ export class ReportCityMenu {
 				PacketUtils.sendPacketToBackend(context, makePacket(ReactionCollectorResetTimerPacketReq, { reactionCollectorId: packet.id }));
 			}
 		);
+		registerCityMessageOwner(interaction, nestedMenus);
 		const msg = await nestedMenus.send(interaction);
 
 		if (navigateAfterSend) {
