@@ -116,6 +116,15 @@ i18next.init(getI18nOptions())
 
 export class I18nCrownicles {
 	/**
+	 * Check whether a translation exists with the given options.
+	 * @param key
+	 * @param options
+	 */
+	static exists(key: string, options: I18nCrowniclesOptions): boolean {
+		return i18next.exists(key, options);
+	}
+
+	/**
 	 * Translate the given key with the given options.
 	 * Use tArray or tRecord for returnObjects translations.
 	 * Override of the i18next.t function to allow the following:

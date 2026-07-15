@@ -37,10 +37,15 @@ describe("enchanter enchantment descriptions", () => {
 		}
 	});
 
-	it("does not expose untranslated keys before Crowdin synchronization", () => {
+	it("shows an error code instead of untranslated keys before Crowdin synchronization", () => {
 		const description = buildEnchantmentDescription(createEnchanterData(ItemEnchantment.PVP_ATTACK_1.id), LANGUAGE.ENGLISH);
 
-		expect(description).not.toContain("commands:report.city.enchanter.descriptions");
+		expect(description).toBe("ERR_ENCHANTMENT_DESCRIPTION_NOT_FOUND");
+	});
+
+	it("throws an explicit error for an unknown enchantment", () => {
+		expect(() => buildEnchantmentDescription(createEnchanterData("doesNotExist"), LANGUAGE.FRENCH))
+			.toThrow("Unknown enchantment 'doesNotExist' in enchanter city data");
 	});
 
 	it("explains that attack enchantments affect damage rather than stats", () => {

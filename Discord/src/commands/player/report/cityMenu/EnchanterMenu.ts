@@ -34,6 +34,8 @@ import {
 } from "../ReportCityMenuTypes";
 import { openCityConfirmation } from "../confirmation/CityConfirmationMenu";
 
+const ENCHANTMENT_DESCRIPTION_NOT_FOUND = "ERR_ENCHANTMENT_DESCRIPTION_NOT_FOUND";
+
 type EnchanterHandlerParams = CityCollectorHandlerParams & Pick<CityMenuParams, "collectorTime" | "interaction" | "pseudo"> & { data: EnchanterCityData };
 
 type EnchanterCollectorParams = CityMenuParams & { data: EnchanterCityData };
@@ -167,11 +169,14 @@ function addEnchanterTitle(container: ContainerBuilder, lng: Language, pseudo: s
 export function buildEnchantmentDescription(data: EnchanterCityData, lng: Language): string {
 	const enchantment = ItemEnchantment.getById(data.enchantmentId);
 	if (!enchantment) {
-		return "";
+		throw new Error(`Unknown enchantment '${data.enchantmentId}' in enchanter city data`);
 	}
 	const key = `commands:report.city.enchanter.descriptions.${enchantment.kind.id}`;
-	const description = i18n.t(key, { lng });
-	return description === key ? "" : description;
+	return i18n.exists(key, {
+		lng, fallbackLng: false
+	})
+		? i18n.t(key, { lng })
+		: ENCHANTMENT_DESCRIPTION_NOT_FOUND;
 }
 
 function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
