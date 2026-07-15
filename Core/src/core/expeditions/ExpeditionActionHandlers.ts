@@ -20,8 +20,8 @@ import {
 	FoodConsumptionDetail
 } from "../../../../Lib/src/packets/commands/CommandPetExpeditionPacket";
 import {
-	calculateFoodConsumptionPlan,
-	applyFoodConsumptionPlan,
+	calculateGuildFoodConsumptionPlan,
+	applyFoodConsumptionPlanUnderLock,
 	type FoodConsumptionPlan
 } from "./ExpeditionFoodService";
 import { calculateRewardIndex } from "./ExpeditionRewardCalculator";
@@ -29,6 +29,10 @@ import { PendingExpeditionsCache } from "./PendingExpeditionsCache";
 import { crowniclesInstance } from "../../app";
 import { ScheduledExpeditionNotifications } from "../database/game/models/ScheduledExpeditionNotification";
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
+import { Guild } from "../database/game/models/Guild";
+import {
+	LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Context for handling expedition selection
@@ -138,7 +142,7 @@ interface ExpeditionCreationData {
 /**
  * Create and save expedition to database
  */
-async function createAndSaveExpedition(data: ExpeditionCreationData): Promise<PetExpedition> {
+async function createAndSaveExpeditionUnderLock(data: ExpeditionCreationData): Promise<PetExpedition> {
 	const {
 		player, petEntity, expeditionData, foodPlan, adjustedDurationMinutes, rewardIndex
 	} = data;
@@ -230,9 +234,46 @@ export async function handleExpeditionSelect(
 	ctx: ExpeditionSelectContext,
 	response: CrowniclesPacket[]
 ): Promise<void> {
+	const lockKeys = ctx.player.guildId
+		? [
+			Player.lockKey(ctx.player.id),
+			PetEntity.lockKey(ctx.petEntity.id),
+			Guild.lockKey(ctx.player.guildId)
+		] as const
+		: [Player.lockKey(ctx.player.id), PetEntity.lockKey(ctx.petEntity.id)] as const;
+
+	try {
+		await withLockedEntities(lockKeys, async lockedEntities => {
+			const [player, petEntity] = lockedEntities;
+			const guild = lockedEntities.length === 3 ? lockedEntities[2] : null;
+			await handleExpeditionSelectUnderLock({
+				...ctx,
+				player,
+				petEntity
+			}, response, guild);
+		});
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			response.push(createExpeditionSelectFailure(ExpeditionConstants.ERROR_CODES.INVALID_STATE));
+			return;
+		}
+		throw error;
+	}
+}
+
+async function handleExpeditionSelectUnderLock(
+	ctx: ExpeditionSelectContext,
+	response: CrowniclesPacket[],
+	guild: Guild | null
+): Promise<void> {
 	const {
 		player, petEntity, expeditionId, keycloakId
 	} = ctx;
+	if (player.petId !== petEntity.id || player.guildId !== (guild?.id ?? null)) {
+		response.push(createExpeditionSelectFailure(ExpeditionConstants.ERROR_CODES.INVALID_STATE));
+		return;
+	}
 
 	// Validate prerequisites
 	const validationError = await validateExpeditionSelection(ctx);
@@ -245,12 +286,17 @@ export async function handleExpeditionSelect(
 	const petModel = PetDataController.instance.getById(petEntity.typeId)!;
 	const rationsRequired = expeditionData.foodCost ?? ExpeditionConstants.DEFAULT_FOOD_COST;
 
-	// Calculate optimal food consumption plan
-	const foodPlan = await calculateFoodConsumptionPlan(player, petModel, rationsRequired);
+	// Calculate the plan from the freshly locked guild row.
+	const foodPlan = guild
+		? calculateGuildFoodConsumptionPlan(guild, petModel, rationsRequired)
+		: {
+			totalRations: 0,
+			consumption: []
+		};
 
 	// Apply food consumption to guild storage (even if insufficient, consume what's available)
-	if (player.guildId && foodPlan.consumption.length > 0) {
-		await applyFoodConsumptionPlan(player.guildId, foodPlan);
+	if (guild) {
+		await applyFoodConsumptionPlanUnderLock(guild, foodPlan);
 	}
 
 	// Calculate speed modifier and adjusted duration
@@ -259,7 +305,7 @@ export async function handleExpeditionSelect(
 	const rewardIndex = calculateRewardIndex(expeditionData);
 
 	// Create and save expedition
-	const expedition = await createAndSaveExpedition({
+	const expedition = await createAndSaveExpeditionUnderLock({
 		player,
 		petEntity,
 		expeditionData,
@@ -355,7 +401,6 @@ export async function handleExpeditionRecall(
 	player: Player,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	// Check for active expedition
 	const activeExpedition = await PetExpeditions.getActiveExpeditionForPlayer(player.id);
 	if (!activeExpedition) {
 		response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: ExpeditionConstants.ERROR_CODES.NO_EXPEDITION }));
@@ -367,52 +412,73 @@ export async function handleExpeditionRecall(
 		return;
 	}
 
-	const petEntity = await PetEntities.getById(player.petId);
-	if (!petEntity) {
-		response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: ExpeditionConstants.ERROR_CODES.NO_PET }));
-		return;
-	}
+	try {
+		const recallLog = await withLockedEntities(
+			[Player.lockKey(player.id), PetEntity.lockKey(player.petId)] as const,
+			async ([lockedPlayer, lockedPet]) => {
+				const lockedExpedition = await PetExpeditions.getActiveExpeditionForPlayer(lockedPlayer.id);
+				if (!lockedExpedition
+					|| lockedExpedition.id !== activeExpedition.id
+					|| lockedExpedition.hasEnded()
+					|| lockedPlayer.petId !== lockedPet.id) {
+					return null;
+				}
 
-	// Calculate progressive penalty based on recent cancellations (includes both cancel and recall)
-	const recentCancellations = await crowniclesInstance?.logsDatabase.countExpeditionCancellationsThisWeek(
-		player.keycloakId
-	) ?? 0;
+				const recentCancellations = await crowniclesInstance?.logsDatabase.countExpeditionCancellationsThisWeek(
+					lockedPlayer.keycloakId
+				) ?? 0;
+				const loveLost = calculateProgressiveLoveLoss(
+					ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION,
+					recentCancellations
+				);
+				const loveChange = -loveLost;
 
-	const loveLost = calculateProgressiveLoveLoss(
-		ExpeditionConstants.LOVE_CHANGES.RECALL_DURING_EXPEDITION,
-		recentCancellations
-	);
-	const loveChange = -loveLost;
+				await ScheduledExpeditionNotifications.deleteByExpeditionId(lockedExpedition.id);
+				await PetExpeditions.recallExpedition(lockedExpedition);
+				await lockedPet.changeLovePoints({
+					player: lockedPlayer,
+					amount: loveChange,
+					response,
+					reason: NumberChangeReason.SMALL_EVENT
+				});
+				await lockedPet.save();
 
-	// Log expedition recall to database
-	crowniclesInstance.logsDatabase.logExpeditionRecall(
-		{
-			keycloakId: player.keycloakId, petGameId: petEntity.id
-		},
-		{
-			mapLocationId: activeExpedition.mapLocationId,
-			locationType: activeExpedition.locationType,
-			loveChange
+				response.push(makePacket(CommandPetExpeditionRecallPacketRes, {
+					loveLost,
+					pet: lockedPet.getBasicInfo()
+				}));
+
+				return {
+					keycloakId: lockedPlayer.keycloakId,
+					petGameId: lockedPet.id,
+					mapLocationId: lockedExpedition.mapLocationId,
+					locationType: lockedExpedition.locationType,
+					loveChange
+				};
+			}
+		);
+
+		if (!recallLog) {
+			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: ExpeditionConstants.ERROR_CODES.NO_EXPEDITION }));
+			return;
 		}
-	).then();
 
-	// Cancel the scheduled notification for this expedition
-	await ScheduledExpeditionNotifications.deleteByExpeditionId(activeExpedition.id);
-
-	// Recall expedition
-	await PetExpeditions.recallExpedition(activeExpedition);
-
-	// Apply love loss for recall with progressive penalty
-	await petEntity.changeLovePoints({
-		player,
-		amount: loveChange,
-		response,
-		reason: NumberChangeReason.SMALL_EVENT
-	});
-	await petEntity.save();
-
-	response.push(makePacket(CommandPetExpeditionRecallPacketRes, {
-		loveLost,
-		pet: petEntity.getBasicInfo()
-	}));
+		crowniclesInstance.logsDatabase.logExpeditionRecall(
+			{
+				keycloakId: recallLog.keycloakId, petGameId: recallLog.petGameId
+			},
+			{
+				mapLocationId: recallLog.mapLocationId,
+				locationType: recallLog.locationType,
+				loveChange: recallLog.loveChange
+			}
+		).then();
+	}
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			response.push(makePacket(CommandPetExpeditionErrorPacket, { errorCode: ExpeditionConstants.ERROR_CODES.NO_PET }));
+			return;
+		}
+		throw error;
+	}
 }

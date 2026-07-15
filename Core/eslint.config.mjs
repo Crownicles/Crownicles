@@ -54,6 +54,7 @@ export default defineConfig([
 			"src/core/report/ReportCookingService.ts",
 			"src/core/report/ReportCityChestService.ts",
 			"src/core/report/ReportBigEventService.ts",
+			"src/core/expeditions/ExpeditionFoodService.ts",
 			"src/commands/player/FightCommand.ts",
 			"src/commands/player/DailyBonusCommand.ts",
 			"src/core/missions/Campaign.ts",
