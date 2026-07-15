@@ -95,6 +95,7 @@ import { crowniclesInstance } from "../../app";
 import {
 	CityMenuMask, CityVisitExitReason, CityVisitExitReasonValue
 } from "../../core/database/logs/LogsCityLogger";
+import { runWithDeferredCollectorStop } from "../../core/report/ReportCityShopHandoff";
 
 const CITY_REACTION_MENU_MASK = new Map<string, number>([
 	[ReactionCollectorInnMealReaction.name, CityMenuMask.INN],
@@ -367,7 +368,8 @@ function cityCollectorEndCallback(context: PacketContext, player: Player, forceS
 				city,
 				response,
 				reactionData: firstReaction.reaction.data,
-				collectorData: collector.creationPacket.data.data
+				collectorData: collector.creationPacket.data.data,
+				collectorId: collector.creationPacket.id
 			});
 		}
 	};
@@ -381,7 +383,30 @@ type CityReactionParams = {
 	response: CrowniclesPacket[];
 	reactionData: unknown;
 	collectorData: unknown;
+	collectorId: string;
 };
+
+async function handleCityShopReactionWithDeferredStop(params: CityReactionParams): Promise<void> {
+	await runWithDeferredCollectorStop(params.response, params.collectorId, async () => {
+		await handleCityShopReaction({
+			player: params.player,
+			city: params.city,
+			shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
+			context: params.context,
+			response: params.response,
+			onClose: async (closeResponse): Promise<void> => {
+				await params.player.reload();
+				await sendCityCollector(
+					params.context,
+					closeResponse,
+					params.player,
+					params.city,
+					{ forceSpecificEvent: params.forceSpecificEvent }
+				);
+			}
+		});
+	});
+}
 
 const NOOP_REACTION = (): Promise<void> => Promise.resolve();
 
@@ -431,30 +456,7 @@ const CITY_REACTION_HANDLERS = new Map<string, (params: CityReactionParams) => P
 	],
 	[
 		ReactionCollectorCityShopReaction.name, async (params): Promise<void> => {
-			await handleCityShopReaction({
-				player: params.player,
-				city: params.city,
-				shopId: (params.reactionData as ReactionCollectorCityShopReaction).shopId,
-				context: params.context,
-				response: params.response,
-
-				/*
-				 * Re-open the main city menu when the player closes the
-				 * shop (or it expires without a purchase) so the close
-				 * button brings them back to the city instead of just
-				 * dismissing the shop UI (#4268).
-				 */
-				onClose: async (closeResponse): Promise<void> => {
-					await params.player.reload();
-					await sendCityCollector(
-						params.context,
-						closeResponse,
-						params.player,
-						params.city,
-						{ forceSpecificEvent: params.forceSpecificEvent }
-					);
-				}
-			});
+			await handleCityShopReactionWithDeferredStop(params);
 		}
 	],
 	[ReactionCollectorHomeMenuReaction.name, NOOP_REACTION],
