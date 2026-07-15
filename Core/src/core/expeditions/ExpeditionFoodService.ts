@@ -417,6 +417,17 @@ export async function calculateFoodConsumptionPlan(
 		return emptyPlan;
 	}
 
+	return calculateGuildFoodConsumptionPlan(guild, petModel, rationsRequired);
+}
+
+/**
+ * Calculate a food plan from a guild row already locked by the caller.
+ */
+export function calculateGuildFoodConsumptionPlan(
+	guild: Guild,
+	petModel: Pet,
+	rationsRequired: number
+): FoodConsumptionPlan {
 	const slots = getAvailableFoodSlots(guild, petModel);
 	const optimal = findOptimalCombination(slots, rationsRequired);
 
@@ -424,15 +435,10 @@ export async function calculateFoodConsumptionPlan(
 }
 
 /**
- * Apply the food consumption plan to the guild storage
+ * Apply a food plan to the guild row locked by the caller.
  */
-export async function applyFoodConsumptionPlan(guildId: number, plan: FoodConsumptionPlan): Promise<void> {
+export async function applyFoodConsumptionPlanUnderLock(guild: Guild, plan: FoodConsumptionPlan): Promise<void> {
 	if (plan.consumption.length === 0) {
-		return;
-	}
-
-	const guild = await Guilds.getById(guildId);
-	if (!guild) {
 		return;
 	}
 
