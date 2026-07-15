@@ -1,7 +1,8 @@
+export interface FromClientPacket {}
 import * as $protobuf from "protobufjs";
 import Long = require("long");
 /** Properties of a PingReq. */
-export interface IPingReq {
+export interface IPingReq extends FromClientPacket {
 }
 
 /** Represents a PingReq. */
