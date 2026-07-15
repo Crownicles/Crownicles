@@ -48,6 +48,7 @@ import {
 	groupReactionsByItem,
 	parseShopAmountCustomId
 } from "./cityShop/CityShopViews";
+import { confirmCityMessageHandoff } from "../commands/player/report/CityMessageHandoff";
 
 /**
  * discord.js message flag enabling the Components V2 layout (containers,
@@ -522,6 +523,7 @@ export async function shopCollector(context: PacketContext, packet: ReactionColl
 	if (!msg) {
 		return null;
 	}
+	confirmCityMessageHandoff(interaction);
 
 	const controller = new ShopUiController({
 		data, reactionsByItem, pseudo, lng, initialContainer: mainContainer, msg

@@ -118,6 +118,10 @@ export class CrowniclesNestedMenus {
 
 	private _isV2 = false;
 
+	private _messageHandoffPending = false;
+
+	private _messageHandoffConfirmed = false;
+
 	constructor(mainMenu: CrowniclesNestedMenu, menus: Map<string, CrowniclesNestedMenu>, _onChangeMenu: (() => void) | undefined = undefined) {
 		this._menus = menus;
 		this._mainMenu = mainMenu;
@@ -177,6 +181,20 @@ export class CrowniclesNestedMenus {
 		await this.changeToMenu(this._mainMenu);
 	}
 
+	public beginMessageHandoff(): boolean {
+		if (this._messageHandoffPending) {
+			return false;
+		}
+		this._messageHandoffPending = true;
+		return true;
+	}
+
+	public confirmMessageHandoff(): void {
+		if (this._messageHandoffPending) {
+			this._messageHandoffConfirmed = true;
+		}
+	}
+
 	/**
 	 * Stops the current collector and (by default) edits the underlying message to disable its components.
 	 *
@@ -188,6 +206,13 @@ export class CrowniclesNestedMenus {
 		const editMessage = options.editMessage !== false;
 		this._currentCollector?.stop();
 		this._currentCollector = undefined;
+		if (this._messageHandoffConfirmed) {
+			this._messageHandoffPending = false;
+			this._messageHandoffConfirmed = false;
+			this._message = undefined;
+			return;
+		}
+		this._messageHandoffPending = false;
 		if (!editMessage) {
 			return;
 		}
