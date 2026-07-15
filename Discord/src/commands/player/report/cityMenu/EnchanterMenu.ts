@@ -12,6 +12,7 @@ import {
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
+import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
 import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector,
@@ -163,6 +164,16 @@ function addEnchanterTitle(container: ContainerBuilder, lng: Language, pseudo: s
 	);
 }
 
+export function buildEnchantmentDescription(data: EnchanterCityData, lng: Language): string {
+	const enchantment = ItemEnchantment.getById(data.enchantmentId);
+	if (!enchantment) {
+		return "";
+	}
+	const key = `commands:report.city.enchanter.descriptions.${enchantment.kind.id}`;
+	const description = i18n.t(key, { lng });
+	return description === key ? "" : description;
+}
+
 function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 	const enchantmentKey = data.mageReduction
 		? "commands:report.city.enchanter.enchantmentWithReduction"
@@ -175,6 +186,7 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 			enchantmentId: data.enchantmentId,
 			enchantmentType: data.enchantmentType
 		}),
+		buildEnchantmentDescription(data, lng),
 		buildEnchantmentBalance(data, lng),
 		data.hasAtLeastOneEnchantedItem
 			&& i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng })
@@ -182,21 +194,25 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 }
 
 function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language): string {
+	let story: string;
 	if (data.isInventoryEmpty) {
-		return i18n.t("commands:report.city.enchanter.emptyInventoryStory", { lng });
+		story = i18n.t("commands:report.city.enchanter.emptyInventoryStory", { lng });
 	}
-	if (data.unenchantedItemsInOtherSlotCount > 0) {
+	else if (data.unenchantedItemsInOtherSlotCount > 0) {
 		const key = data.enchantmentSlot === ItemCategory.WEAPON
 			? "commands:report.city.enchanter.runeForWeaponOnlyArmorAvailableStory"
 			: "commands:report.city.enchanter.runeForArmorOnlyWeaponAvailableStory";
-		return i18n.t(key, {
+		story = i18n.t(key, {
 			lng,
 			count: data.unenchantedItemsInOtherSlotCount,
 			enchantmentId: data.enchantmentId,
 			enchantmentType: data.enchantmentType
 		});
 	}
-	return i18n.t("commands:report.city.enchanter.allEnchantedStory", { lng });
+	else {
+		story = i18n.t("commands:report.city.enchanter.allEnchantedStory", { lng });
+	}
+	return StringUtils.joinParagraphs([story, buildEnchantmentDescription(data, lng)]);
 }
 
 function addEnchantableItemsSection(container: ContainerBuilder, data: EnchanterCityData, lng: Language): void {
