@@ -4,9 +4,9 @@ import { findOrCreateLogsPlayer } from "./LogsPlayerResolver";
 import { Op } from "sequelize";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
 import {
-	daysToSeconds, getDateLogs, sDiff
+	getDateLogs, getNextSundayMidnight, millisecondsToSeconds, msDiff
 } from "../../../../../Lib/src/utils/TimeUtils";
-import { asDays } from "../../../../../Lib/src/types/TimeTypes";
+import { TimeConstants } from "../../../../../Lib/src/constants/TimeConstants";
 import {
 	ExpeditionCompleteParams,
 	ExpeditionLogData,
@@ -147,21 +147,24 @@ export class LogsExpeditionLogger {
 	}
 
 	/**
-	 * Count the number of expedition cancellations (cancel + recall) for a player in the last N days
+	 * Count the number of expedition cancellations (cancel + recall) for a player during the current week
 	 * Both cancelling during preparation and recalling during expedition count towards the progressive penalty
 	 */
-	async countRecentExpeditionCancellations(keycloakId: string, days: number): Promise<number> {
+	async countExpeditionCancellationsThisWeek(keycloakId: string): Promise<number> {
 		const logPlayer = await findOrCreateLogsPlayer(keycloakId);
 		if (!logPlayer) {
 			return 0;
 		}
-		const cutoffDate = sDiff(getDateLogs(), daysToSeconds(asDays(days)));
+		const startOfWeek = Math.floor(millisecondsToSeconds(msDiff(
+			getNextSundayMidnight(),
+			TimeConstants.MS_TIME.WEEK
+		)));
 
 		return LogsExpeditions.count({
 			where: {
 				playerId: logPlayer.id,
 				action: { [Op.in]: [ExpeditionConstants.LOG_ACTION.CANCEL, ExpeditionConstants.LOG_ACTION.RECALL] },
-				date: { [Op.gte]: cutoffDate }
+				date: { [Op.gt]: startOfWeek }
 			}
 		});
 	}

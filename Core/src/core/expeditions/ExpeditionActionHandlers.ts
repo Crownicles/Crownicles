@@ -309,9 +309,8 @@ export async function handleExpeditionCancel(
 	}
 
 	// Calculate progressive penalty based on recent cancellations
-	const recentCancellations = await crowniclesInstance?.logsDatabase.countRecentExpeditionCancellations(
-		player.keycloakId,
-		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
+	const recentCancellations = await crowniclesInstance?.logsDatabase.countExpeditionCancellationsThisWeek(
+		player.keycloakId
 	) ?? 0;
 
 	const loveLost = calculateProgressiveLoveLoss(
@@ -375,9 +374,8 @@ export async function handleExpeditionRecall(
 	}
 
 	// Calculate progressive penalty based on recent cancellations (includes both cancel and recall)
-	const recentCancellations = await crowniclesInstance?.logsDatabase.countRecentExpeditionCancellations(
-		player.keycloakId,
-		ExpeditionConstants.CANCELLATION_PENALTY.LOOKBACK_DAYS
+	const recentCancellations = await crowniclesInstance?.logsDatabase.countExpeditionCancellationsThisWeek(
+		player.keycloakId
 	) ?? 0;
 
 	const loveLost = calculateProgressiveLoveLoss(
