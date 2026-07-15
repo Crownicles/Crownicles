@@ -20,19 +20,19 @@ export abstract class EnchantmentConstants {
 	static DEFENSE_MULTIPLIER: [number, number, number] = [
 		1.03,
 		1.06,
-		1.10
+		1.09
 	];
 
 	static SPEED_MULTIPLIER: [number, number, number] = [
-		1.05,
-		1.10,
-		1.16
+		1.06,
+		1.12,
+		1.20
 	];
 
 	static MAX_ENERGY_MULTIPLIER = [
 		1.03,
 		1.06,
-		1.10
+		1.09
 	];
 
 	static BASE_BREATH_BONUS = 1;

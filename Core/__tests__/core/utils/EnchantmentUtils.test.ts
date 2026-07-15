@@ -88,6 +88,18 @@ describe('EnchantmentUtils', () => {
 		});
 	});
 
+	describe('getEnchantmentLevel', () => {
+		it('returns the matching enchantment level', () => {
+			expect(EnchantmentUtils.getEnchantmentLevel('baseBreath2', ItemEnchantmentKind.BASE_BREATH)).toBe(2);
+		});
+
+		it('returns zero for another kind or an unknown enchantment', () => {
+			expect(EnchantmentUtils.getEnchantmentLevel('baseBreath2', ItemEnchantmentKind.MAX_BREATH)).toBe(0);
+			expect(EnchantmentUtils.getEnchantmentLevel('doesNotExist', ItemEnchantmentKind.BASE_BREATH)).toBe(0);
+			expect(EnchantmentUtils.getEnchantmentLevel(null, ItemEnchantmentKind.BASE_BREATH)).toBe(0);
+		});
+	});
+
 	describe('getOutgoingDamageMultiplier', () => {
 		it('returns 1 when the weapon has no attack enchantment', () => {
 			expect(EnchantmentUtils.getOutgoingDamageMultiplier(
@@ -146,7 +158,7 @@ describe('EnchantmentUtils', () => {
 				armor: { itemEnchantmentId: 'defense3' }
 			});
 
-			expect(multiplier).toBeCloseTo(1 / EnchantmentConstants.DEFENSE_MULTIPLIER[2]);
+			expect(multiplier).toBeCloseTo(1 / 1.09);
 			expect(multiplier).toBeLessThan(1);
 		});
 	});
