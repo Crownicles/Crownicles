@@ -88,22 +88,26 @@ describe('Player enchantment stat calculations', () => {
 			expect(player.getCumulativeSpeed(buildActiveObjects({}))).toBe(baseSpeed);
 		});
 
-		it('applies the speed armor enchantment', () => {
+		it.each([
+			['speed1', 1.06],
+			['speed2', 1.12],
+			['speed3', 1.20]
+		])('applies the %s armor enchantment multiplier', (enchantmentId, multiplier) => {
 			const player = buildPlayer(LEVEL, CLASS_ID);
 			const baseSpeed = player.getMaxStatsValue().speed;
-			const activeObjects = buildActiveObjects({ armorEnchantmentId: 'speed3' });
+			const activeObjects = buildActiveObjects({ armorEnchantmentId: enchantmentId });
 
-			expect(player.getCumulativeSpeed(activeObjects)).toBeGreaterThan(baseSpeed);
+			expect(player.getCumulativeSpeed(activeObjects)).toBe(Math.round(baseSpeed * multiplier));
 		});
 	});
 
 	describe('getMaxCumulativeEnergy', () => {
-		it('applies the maxEnergy armor enchantment', () => {
+		it('applies the balanced maxEnergy3 armor enchantment multiplier', () => {
 			const player = buildPlayer(LEVEL, CLASS_ID);
 			const baseEnergy = player.getMaxCumulativeEnergy(buildActiveObjects({}));
 			const activeObjects = buildActiveObjects({ armorEnchantmentId: 'maxEnergy3' });
 
-			expect(player.getMaxCumulativeEnergy(activeObjects)).toBeGreaterThan(baseEnergy);
+			expect(player.getMaxCumulativeEnergy(activeObjects)).toBe(Math.round(baseEnergy * 1.09));
 		});
 	});
 
@@ -116,12 +120,15 @@ describe('Player enchantment stat calculations', () => {
 			expect(player.getMaxBreath()).toBe(playerClass.maxBreath);
 		});
 
-		it('adds the flat bonus when the baseBreath weapon enchantment is equipped', () => {
+		it.each([
+			['baseBreath1', 1],
+			['baseBreath2', 2]
+		])('adds the level bonus when %s is equipped', (enchantmentId, bonus) => {
 			const player = buildPlayer(LEVEL, CLASS_ID);
 			const playerClass = ClassDataController.instance.getById(CLASS_ID)!;
-			const activeObjects = buildActiveObjects({ weaponEnchantmentId: 'baseBreath1' });
+			const activeObjects = buildActiveObjects({ weaponEnchantmentId: enchantmentId });
 
-			expect(player.getBaseBreath(activeObjects)).toBe(playerClass.baseBreath + 1);
+			expect(player.getBaseBreath(activeObjects)).toBe(playerClass.baseBreath + bonus);
 			expect(player.getBaseBreath(buildActiveObjects({}))).toBe(playerClass.baseBreath);
 		});
 

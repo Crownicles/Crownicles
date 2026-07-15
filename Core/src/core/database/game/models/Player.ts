@@ -1051,8 +1051,8 @@ export class Player extends Model {
 		if (!playerActiveObjects) {
 			return baseBreath;
 		}
-		const hasBaseBreathEnchant = EnchantmentUtils.hasEnchantmentOfKind(playerActiveObjects.weapon.itemEnchantmentId, ItemEnchantmentKind.BASE_BREATH);
-		return hasBaseBreathEnchant ? baseBreath + EnchantmentConstants.BASE_BREATH_BONUS : baseBreath;
+		const baseBreathEnchantLevel = EnchantmentUtils.getEnchantmentLevel(playerActiveObjects.weapon.itemEnchantmentId, ItemEnchantmentKind.BASE_BREATH);
+		return baseBreath + baseBreathEnchantLevel * EnchantmentConstants.BASE_BREATH_BONUS;
 	}
 
 	/**

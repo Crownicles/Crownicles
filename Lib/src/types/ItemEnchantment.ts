@@ -81,6 +81,8 @@ export class ItemEnchantment {
 
 	public static readonly BASE_BREATH_1 = new ItemEnchantment("baseBreath1", ItemEnchantmentKind.BASE_BREATH, 1, 6);
 
+	public static readonly BASE_BREATH_2 = new ItemEnchantment("baseBreath2", ItemEnchantmentKind.BASE_BREATH, 2, 3);
+
 	public static readonly MAX_BREATH_1 = new ItemEnchantment("maxBreath1", ItemEnchantmentKind.MAX_BREATH, 1, 5);
 
 	public static readonly BURNED_DAMAGE_1 = new ItemEnchantment("burnedDamage1", ItemEnchantmentKind.BURNED_DAMAGE, 1, 5);

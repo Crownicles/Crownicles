@@ -102,6 +102,16 @@ export abstract class EnchantmentUtils {
 	}
 
 	/**
+	 * Return the enchantment level when the item carries the requested kind, or zero otherwise.
+	 * @param itemEnchantmentId
+	 * @param kind
+	 */
+	static getEnchantmentLevel(itemEnchantmentId: string | null, kind: ItemEnchantmentKind): number {
+		const enchant = itemEnchantmentId ? ItemEnchantment.getById(itemEnchantmentId) : null;
+		return enchant?.kind === kind ? enchant.level : 0;
+	}
+
+	/**
 	 * Return the fight alteration id and damage multiplier boosted by a weapon's damage-over-time enchantment
 	 * (burned/frozen/poisoned), along with the alteration it protects the wielder against, or null if the weapon
 	 * has no such enchantment.
