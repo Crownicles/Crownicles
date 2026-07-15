@@ -172,11 +172,11 @@ export function buildEnchantmentDescription(data: EnchanterCityData, lng: Langua
 		throw new Error(`Unknown enchantment '${data.enchantmentId}' in enchanter city data`);
 	}
 	const key = `commands:report.city.enchanter.descriptions.${enchantment.kind.id}`;
-	return i18n.exists(key, {
-		lng, fallbackLng: false
-	})
-		? i18n.t(key, { lng })
-		: ENCHANTMENT_DESCRIPTION_NOT_FOUND;
+	return i18n.t(key, {
+		lng,
+		fallbackLng: false,
+		defaultValue: ENCHANTMENT_DESCRIPTION_NOT_FOUND
+	});
 }
 
 function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
