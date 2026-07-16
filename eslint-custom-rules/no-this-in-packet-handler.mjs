@@ -1,13 +1,14 @@
 /**
  * ESLint custom rule: no-this-in-packet-handler
  *
- * Forbids using `this` inside any method decorated with `@packetHandler(...)`.
+ * Forbids using `this` inside methods whose decorator registers an unbound
+ * prototype method.
  *
- * Rationale: the `@packetHandler` decorator (see `Discord/src/packetHandlers/PacketHandler.ts`)
- * registers the raw `descriptor.value` (the unbound prototype method) directly on the global
- * `packetListener`. The handler class is never instantiated, so at call time `this` is
- * `undefined`. Any use of `this.<x>` therefore crashes at runtime with
- * "Cannot read properties of undefined".
+ * Rationale: `@packetHandler`, `@commandRequires` and `@adminCommand` register
+ * the raw `descriptor.value` (the unbound prototype method). The handler class
+ * is never instantiated, so at call time `this` is `undefined`. Any use of
+ * `this.<x>` therefore crashes at runtime with "Cannot read properties of
+ * undefined".
  *
  * History: #4246 (blockedHandler crash on `this.helper(...)`), #4257 (latent pitfall).
  *
@@ -35,7 +36,11 @@
  * }
  */
 
-const DECORATOR_NAME = "packetHandler";
+const UNBOUND_HANDLER_DECORATORS = new Set([
+	"adminCommand",
+	"commandRequires",
+	"packetHandler"
+]);
 
 function isPacketHandlerCall(expr) {
 	if (!expr || expr.type !== "CallExpression") {
@@ -45,7 +50,7 @@ function isPacketHandlerCall(expr) {
 	if (!callee || callee.type !== "Identifier") {
 		return false;
 	}
-	return callee.name === DECORATOR_NAME;
+	return UNBOUND_HANDLER_DECORATORS.has(callee.name);
 }
 
 function hasPacketHandlerDecorator(node) {
@@ -57,12 +62,12 @@ export default {
 	meta: {
 		type: "problem",
 		docs: {
-			description: "Forbid `this` inside methods decorated with @packetHandler (decorator does not bind this)",
+			description: "Forbid `this` inside handlers whose decorators do not bind this",
 			category: "Possible Errors"
 		},
 		schema: [],
 		messages: {
-			noThis: "`this` is unbound inside @packetHandler methods (the decorator registers the raw prototype function). Use `ClassName.staticMethod(...)` or a module-level function instead."
+			noThis: "`this` is unbound inside this decorated handler (the decorator registers the raw prototype function). Use `ClassName.staticMethod(...)` or a module-level function instead."
 		}
 	},
 
