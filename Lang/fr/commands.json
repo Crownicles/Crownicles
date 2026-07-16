@@ -1033,7 +1033,7 @@
         "upgradeDescription": "Améliorez le niveau de vos armes et armures contre de l'argent et des matériaux.",
         "disenchantLabel": "Désenchanter un équipement",
         "disenchantDescription": "Retirez l'enchantement d'un de vos équipements.",
-        "backToCity": "Retourner en ville",
+        "backToCity": "Sortir de la forge",
         "descriptionBoth": "{emote:city.blacksmith.menu} La chaleur du brasier vous enveloppe alors que vous pénétrez dans la forge. Le forgeron, un colosse aux bras marqués par des années de labeur, lève les yeux de son enclume et vous salue d'un hochement de tête. Il peut renforcer vos équipements ou retirer les enchantements qui vous encombrent.",
         "descriptionUpgradeOnly": "{emote:city.blacksmith.menu} La chaleur du brasier vous enveloppe alors que vous pénétrez dans la forge. Le forgeron, un colosse aux bras marqués par des années de labeur, examine vos équipements d'un œil expert. Ses services ne sont pas donnés, mais la qualité de son travail parle d'elle-même.",
         "descriptionDisenchantOnly": "{emote:city.blacksmith.menu} La chaleur du brasier vous enveloppe alors que vous pénétrez dans la forge. Le forgeron remarque les lueurs magiques émanant de vos équipements enchantés. Il peut les retirer proprement, sans abîmer l'équipement.",
