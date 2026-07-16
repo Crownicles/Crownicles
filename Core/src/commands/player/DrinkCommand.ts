@@ -26,6 +26,7 @@ import {
 	ReactionCollectorDrinkReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 
 export default class DrinkCommand {
 	@commandRequires(CommandDrinkPacketReq, {
@@ -34,7 +35,14 @@ export default class DrinkCommand {
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
-		const potions = (await InventorySlots.getOfPlayer(player.id)).filter(item => item.itemId !== 0 && item.isPotion() && !(item.getItem() as Potion).isFightPotion());
+		const hasActiveEffect = player.effectRemainingTime() > 0;
+		const potions = (await InventorySlots.getOfPlayer(player.id)).filter(item => {
+			const potion = item.getItem() as Potion;
+			return item.itemId !== 0
+				&& item.isPotion()
+				&& !potion.isFightPotion()
+				&& (potion.nature !== ItemNature.TIME_SPEEDUP || hasActiveEffect);
+		});
 
 		if (potions.length === 0) {
 			response.push(makePacket(CommandDrinkNoAvailablePotion, {}));
