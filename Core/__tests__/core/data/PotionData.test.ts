@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "fs";
 import { resolve } from "path";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 
 /**
  * ItemNature enum values for reference:
@@ -19,6 +20,15 @@ interface PotionData {
 
 describe("Potion Data Validation", () => {
 	const potionsPath = resolve(__dirname, "../../../resources/potions");
+
+	it("should have an icon for every potion", () => {
+		const potionIds = readdirSync(potionsPath)
+			.filter(file => file.endsWith(".json"))
+			.map(file => file.replace(".json", ""));
+		const potionsWithoutIcon = potionIds.filter(potionId => !CrowniclesIcons.potions[potionId]);
+
+		expect(potionsWithoutIcon).toEqual([]);
+	});
 
 	it("should have usages defined for all combat potions", () => {
 		const potionFiles = readdirSync(potionsPath).filter(file => file.endsWith(".json"));
