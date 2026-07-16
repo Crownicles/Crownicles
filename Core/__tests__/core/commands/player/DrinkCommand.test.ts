@@ -3,7 +3,6 @@ import {
 } from "vitest";
 import DrinkCommand from "../../../../src/commands/player/DrinkCommand";
 import { InventorySlots } from "../../../../src/core/database/game/models/InventorySlot";
-import { Maps } from "../../../../src/core/maps/Maps";
 import { toItemWithDetails } from "../../../../src/core/utils/ItemUtils";
 import { ItemCategory, ItemNature } from "../../../../../Lib/src/constants/ItemConstants";
 
@@ -16,14 +15,13 @@ vi.mock("../../../../src/core/utils/CommandUtils", () => ({
 	}
 }));
 vi.mock("../../../../src/core/database/game/models/InventorySlot");
-vi.mock("../../../../src/core/maps/Maps");
 vi.mock("../../../../src/core/utils/ItemUtils");
 
 describe("DrinkCommand", () => {
 	const player = {
 		id: 42,
 		keycloakId: "player-keycloak-id",
-		effectRemainingTime: vi.fn()
+		insideCity: false
 	};
 	const timePotionSlot = {
 		itemId: 1,
@@ -37,12 +35,20 @@ describe("DrinkCommand", () => {
 			isFightPotion: () => false
 		})
 	};
+	const healthPotionSlot = {
+		...timePotionSlot,
+		getItem: () => ({
+			id: 2,
+			nature: ItemNature.HEALTH,
+			isFightPotion: () => false
+		})
+	};
 
 	beforeEach(() => {
 		vi.clearAllMocks();
 		vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue([timePotionSlot as never]);
 		vi.mocked(toItemWithDetails).mockReturnValue({ id: 1 } as never);
-		player.effectRemainingTime.mockReturnValue(0);
+		player.insideCity = false;
 	});
 
 	async function executeCommand(): Promise<unknown[]> {
@@ -51,28 +57,26 @@ describe("DrinkCommand", () => {
 		return response;
 	}
 
-	it("offers time potions during a normal journey without an active effect", async () => {
-		vi.mocked(Maps.isArrived).mockReturnValue(false);
-
+	it("offers time potions whenever the player is outside a city", async () => {
 		const response = await executeCommand();
 
 		expect(response[0]?.constructor.name).toBe("ReactionCollectorCreationPacket");
 	});
 
-	it("offers time potions while an effect is active", async () => {
-		vi.mocked(Maps.isArrived).mockReturnValue(true);
-		player.effectRemainingTime.mockReturnValue(1);
-
-		const response = await executeCommand();
-
-		expect(response[0]?.constructor.name).toBe("ReactionCollectorCreationPacket");
-	});
-
-	it("hides time potions after arrival without an active effect", async () => {
-		vi.mocked(Maps.isArrived).mockReturnValue(true);
+	it("hides time potions while the player is inside a city", async () => {
+		player.insideCity = true;
 
 		const response = await executeCommand();
 
 		expect(response[0]?.constructor.name).toBe("CommandDrinkNoAvailablePotion");
+	});
+
+	it("keeps regular potions available inside a city", async () => {
+		player.insideCity = true;
+		vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue([healthPotionSlot as never]);
+
+		const response = await executeCommand();
+
+		expect(response[0]?.constructor.name).toBe("ReactionCollectorCreationPacket");
 	});
 });
