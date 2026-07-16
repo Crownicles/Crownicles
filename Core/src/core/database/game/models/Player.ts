@@ -30,6 +30,7 @@ import { PlayerDeathPacket } from "../../../../../../Lib/src/packets/events/Play
 import { PlayerLeavePveIslandPacket } from "../../../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "../../../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { MapLinkDataController } from "../../../../data/MapLink";
+import { scheduleAfterCommit } from "../../../../../../Lib/src/locks/scheduleAfterCommit";
 import {
 	MapLocation, MapLocationDataController
 } from "../../../../data/MapLocation";
@@ -1965,7 +1966,7 @@ export function initModel(sequelize: Sequelize): void {
 			.toDate();
 	});
 
-	Player.afterSave(instance => {
+	Player.afterSave((instance, options) => {
 		if (!instance.mapLinkId) {
 			return;
 		}
@@ -2003,11 +2004,9 @@ export function initModel(sequelize: Sequelize): void {
 			}
 		};
 
-		handleNotifications()
-			.then()
-			.catch(error => {
-				CrowniclesLogger.errorWithObj("Error while handling notifications", error);
-			});
+		scheduleAfterCommit(handleNotifications, error => {
+			CrowniclesLogger.errorWithObj("Error while handling notifications", error);
+		}, options.transaction);
 	});
 }
 
