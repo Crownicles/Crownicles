@@ -31,13 +31,12 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 
 async function getDrinkablePotions(player: Player): Promise<InventorySlot[]> {
-	const hasActiveEffect = player.effectRemainingTime() > 0;
 	return (await InventorySlots.getOfPlayer(player.id)).filter(item => {
 		const potion = item.getItem() as Potion;
 		return item.itemId !== 0
 			&& item.isPotion()
 			&& !potion.isFightPotion()
-			&& (potion.nature !== ItemNature.TIME_SPEEDUP || hasActiveEffect);
+			&& (potion.nature !== ItemNature.TIME_SPEEDUP || !player.insideCity);
 	});
 }
 
