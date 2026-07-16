@@ -215,31 +215,31 @@ export function getCookingGrade(cookingLevel: number): CookingGradeDefinition {
  * XP per plant used in cooking (based on growth time)
  */
 export const PLANT_COOKING_XP: Record<PlantId, number> = {
-	[PlantId.COMMON_HERB]: 10,
-	[PlantId.GOLDEN_CLOVER]: 30,
-	[PlantId.LUNAR_MOSS]: 55,
-	[PlantId.IRON_ROOT]: 90,
-	[PlantId.NIGHT_MUSHROOM]: 140,
-	[PlantId.VENOMOUS_LEAF]: 200,
-	[PlantId.FIRE_BULB]: 280,
-	[PlantId.MEAT_PLANT]: 360,
-	[PlantId.CRYSTAL_FLOWER]: 460,
-	[PlantId.ANCIENT_TREE]: 580
+	[PlantId.COMMON_HERB]: 40,
+	[PlantId.GOLDEN_CLOVER]: 120,
+	[PlantId.LUNAR_MOSS]: 160,
+	[PlantId.IRON_ROOT]: 360,
+	[PlantId.NIGHT_MUSHROOM]: 560,
+	[PlantId.VENOMOUS_LEAF]: 800,
+	[PlantId.FIRE_BULB]: 1120,
+	[PlantId.MEAT_PLANT]: 1440,
+	[PlantId.CRYSTAL_FLOWER]: 1840,
+	[PlantId.ANCIENT_TREE]: 2320
 };
 
 /**
  * XP per material rarity (MaterialRarity enum: COMMON=1, UNCOMMON=2, RARE=3)
  */
 export const MATERIAL_RARITY_COOKING_XP: Record<MaterialRarity, number> = {
-	[MaterialRarity.COMMON]: 15,
-	[MaterialRarity.UNCOMMON]: 40,
-	[MaterialRarity.RARE]: 80
+	[MaterialRarity.COMMON]: 60,
+	[MaterialRarity.UNCOMMON]: 160,
+	[MaterialRarity.RARE]: 320
 };
 
 export const CookingXpConstants = {
 	PLANT_WEIGHT: 0.8,
 	MATERIAL_WEIGHT: 0.2,
-	FAILURE_XP_PER_LEVEL: 15
+	FAILURE_XP_PER_LEVEL: 60
 } as const;
 
 /**
