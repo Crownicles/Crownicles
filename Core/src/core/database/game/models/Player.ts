@@ -559,7 +559,7 @@ export class Player extends Model {
 	 * Check if the player has played recently
 	 */
 	public isInactive(): boolean {
-		return this.startTravelDate.valueOf() + TopConstants.FIFTEEN_DAYS < Date.now();
+		return !this.insideCity && this.startTravelDate.valueOf() + TopConstants.FIFTEEN_DAYS < Date.now();
 	}
 
 	/**
