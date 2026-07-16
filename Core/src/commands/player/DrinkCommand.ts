@@ -10,7 +10,9 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import Player from "../../core/database/game/models/Player";
-import { InventorySlots } from "../../core/database/game/models/InventorySlot";
+import {
+	InventorySlot, InventorySlots
+} from "../../core/database/game/models/InventorySlot";
 import { Potion } from "../../data/Potion";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -26,15 +28,27 @@ import {
 	ReactionCollectorDrinkReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 
 export default class DrinkCommand {
+	private async getDrinkablePotions(player: Player): Promise<InventorySlot[]> {
+		const hasActiveEffect = player.effectRemainingTime() > 0;
+		return (await InventorySlots.getOfPlayer(player.id)).filter(item => {
+			const potion = item.getItem() as Potion;
+			return item.itemId !== 0
+				&& item.isPotion()
+				&& !potion.isFightPotion()
+				&& (potion.nature !== ItemNature.TIME_SPEEDUP || hasActiveEffect);
+		});
+	}
+
 	@commandRequires(CommandDrinkPacketReq, {
 		notBlocked: true,
 		disallowedEffects: CommandUtils.DISALLOWED_EFFECTS.NOT_STARTED_OR_DEAD_OR_JAILED,
 		whereAllowed: [WhereAllowed.CONTINENT]
 	})
 	async execute(response: CrowniclesPacket[], player: Player, _packet: CommandDrinkPacketReq, context: PacketContext): Promise<void> {
-		const potions = (await InventorySlots.getOfPlayer(player.id)).filter(item => item.itemId !== 0 && item.isPotion() && !(item.getItem() as Potion).isFightPotion());
+		const potions = await this.getDrinkablePotions(player);
 
 		if (potions.length === 0) {
 			response.push(makePacket(CommandDrinkNoAvailablePotion, {}));
