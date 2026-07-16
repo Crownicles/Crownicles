@@ -13,6 +13,7 @@ import {
 import { DailyConstants } from "../../../../../../Lib/src/constants/DailyConstants";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { Players } from "./Player";
+import { scheduleAfterCommit } from "../../../../../../Lib/src/locks/scheduleAfterCommit";
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
@@ -167,7 +168,7 @@ export function initModel(sequelize: Sequelize): void {
 			.toDate();
 	});
 
-	InventoryInfo.afterSave(instance => {
+	InventoryInfo.afterSave((instance, options) => {
 		const handleNotifications = async (): Promise<void> => {
 			// DailyBonus Notification
 			const pendingDailyBonusNotification = await ScheduledDailyBonusNotifications.getPendingNotification(instance.playerId);
@@ -187,11 +188,9 @@ export function initModel(sequelize: Sequelize): void {
 			}
 		};
 
-		handleNotifications()
-			.then()
-			.catch(error => {
-				CrowniclesLogger.errorWithObj("Error while handling notifications", error);
-			});
+		scheduleAfterCommit(handleNotifications, error => {
+			CrowniclesLogger.errorWithObj("Error while handling notifications", error);
+		}, options.transaction);
 	});
 }
 
