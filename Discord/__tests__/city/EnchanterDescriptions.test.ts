@@ -37,10 +37,11 @@ describe("enchanter enchantment descriptions", () => {
 		}
 	});
 
-	it("shows an error code instead of untranslated keys before Crowdin synchronization", () => {
+	it("provides a player-facing English description", () => {
 		const description = buildEnchantmentDescription(createEnchanterData(ItemEnchantment.PVP_ATTACK_1.id), LANGUAGE.ENGLISH);
 
-		expect(description).toBe("ERR_ENCHANTMENT_DESCRIPTION_NOT_FOUND");
+		expect(description).toContain("damage dealt to other adventurers");
+		expect(description).not.toContain("commands:report.city.enchanter.descriptions");
 	});
 
 	it("throws an explicit error for an unknown enchantment", () => {
