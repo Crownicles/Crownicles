@@ -60,6 +60,7 @@ import {
 	setPendingDeletion,
 	verifyDeletionCode
 } from "../utils/AccountDeletionUtils";
+import { isCommandModuleFile } from "./CommandDiscoveryUtils";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -327,7 +328,7 @@ export class CommandsManager {
 		guildsCommandsToRegister: RESTPostAPIChatInputApplicationCommandsJSONBody[]
 	): Promise<void> {
 		let commandsFiles = readdirSync(`dist/Discord/src/commands/${category}`)
-			.filter(command => command.endsWith(".js"));
+			.filter(isCommandModuleFile);
 		if (!discordConfig.TEST_MODE) {
 			commandsFiles = commandsFiles.filter(command => !command.startsWith("Test"));
 		}
