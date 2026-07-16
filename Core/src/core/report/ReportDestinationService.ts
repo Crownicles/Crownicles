@@ -97,6 +97,7 @@ function buildMapReactions(player: Player, destinationMaps: number[]): ReactionC
 async function applyStayInCity(player: Player, response: CrowniclesPacket[]): Promise<void> {
 	await withLockedPlayerSafe(player, "chooseDestination.stayInCity", async lockedPlayer => {
 		lockedPlayer.insideCity = true;
+		lockedPlayer.lastActivityAt = new Date();
 
 		// Become stationary on the city map location: no active travel left on the map link.
 		lockedPlayer.startTravelDate = new Date(PlayersConstants.PLAYER_DEFAULT_VALUES.START_TRAVEL_DATE);

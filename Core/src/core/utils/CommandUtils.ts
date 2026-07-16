@@ -303,6 +303,9 @@ export const commandRequires = <T extends CrowniclesPacket>(packet: PacketLike<T
 				response.push(makePacket(ErrorBannedPacket, {}));
 				return;
 			}
+			if (player.insideCity) {
+				await player.markActive();
+			}
 
 			// Warning: order of the checks is important, as appendBlockedPacket can add a packet to the response
 			if (requirements.notBlocked && player.keycloakId && BlockingUtils.appendBlockedPacket(player.keycloakId, response)) {

@@ -1,5 +1,5 @@
 import {
-	DataTypes, Model, Op, QueryTypes, Sequelize
+	col, DataTypes, fn, Model, Op, QueryTypes, Sequelize
 } from "sequelize";
 import InventorySlot, { InventorySlots } from "./InventorySlot";
 import PetEntity from "./PetEntity";
@@ -191,6 +191,8 @@ export class Player extends Model {
 	declare startTravelDate: Date;
 
 	declare insideCity: boolean;
+
+	declare lastActivityAt: Date;
 
 	declare defenseGloryPoints: number;
 
@@ -559,7 +561,17 @@ export class Player extends Model {
 	 * Check if the player has played recently
 	 */
 	public isInactive(): boolean {
-		return !this.insideCity && this.startTravelDate.valueOf() + TopConstants.FIFTEEN_DAYS < Date.now();
+		const lastActivityAt = this.insideCity ? this.lastActivityAt : this.startTravelDate;
+		return lastActivityAt.valueOf() + TopConstants.FIFTEEN_DAYS < Date.now();
+	}
+
+	public async markActive(): Promise<void> {
+		const lastActivityAt = new Date(Date.now());
+		await Player.update({ lastActivityAt: fn("GREATEST", col("lastActivityAt"), lastActivityAt) }, {
+			silent: true,
+			where: { id: this.id }
+		});
+		this.lastActivityAt = lastActivityAt;
 	}
 
 	/**
@@ -1871,6 +1883,10 @@ export function initModel(sequelize: Sequelize): void {
 		insideCity: {
 			type: DataTypes.BOOLEAN,
 			defaultValue: false
+		},
+		lastActivityAt: {
+			type: DataTypes.DATE,
+			defaultValue: DataTypes.NOW
 		},
 		attackGloryPoints: {
 			type: DataTypes.INTEGER,

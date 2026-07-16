@@ -391,6 +391,7 @@ export async function exportPlayerData(
 			mapLinkId: player.mapLinkId,
 			startTravelDate: player.startTravelDate,
 			insideCity: player.insideCity,
+			lastActivityAt: player.lastActivityAt,
 			lastPetFree: player.lastPetFree,
 			nextEvent: player.nextEvent,
 			lastMealAt: player.lastMealAt,
