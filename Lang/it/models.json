@@ -2327,7 +2327,6 @@
         "classTier": "{emote:commands.classes} | Classi di livello {{tier}} sbloccate! Per ulteriori informazioni sulle classi, utilizzare i comandi {command:classesinfo} e {command:help}.",
         "newMissionSlot": "{emote:missions.sideMission} | Nuovo slot di missione sbloccato! Per ulteriori informazioni sulle missioni, utilizzare il comando {command:missions}.",
         "pveUnlocked": "{emote:other.island} | Accesso alle isole remote sbloccate! Incontratevi in un punto di ristoro per vivere nuove avventure!",
-        "tokensUnlocked": "{emote:unitValues.token} | Gettoni sbloccati! Ora potete usare i vostri gettoni per avanzare più velocemente con il comando {command:report}.",
         "statsIncreased": "{emote:other.increase} | Statistiche migliorate."
       }
     }
