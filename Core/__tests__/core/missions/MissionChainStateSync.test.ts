@@ -69,7 +69,6 @@ describe("Mission chain state synchronization", () => {
 			// Mock methods that interact with DB
 			setMoney: vi.fn(),
 			setScore: vi.fn().mockResolvedValue(undefined),
-			addWeeklyScore: vi.fn(),
 			needLevelUp: vi.fn().mockReturnValue(false),
 			save: vi.fn().mockResolvedValue(undefined),
 			toJSON: function() {
@@ -184,6 +183,31 @@ describe("Mission chain state synchronization", () => {
 
 			expect(player.experience).toBe(originalExperience + 15);
 			expect(player.score).toBe(150);
+		});
+
+		it("should persist weekly score gains on the locked player", async () => {
+			const player = createTestPlayer({ score: 100, weeklyScore: 200 });
+			let persistedWeeklyScore = 0;
+
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+				const lockedPlayer = createTestPlayer({
+					...inputPlayer,
+					score: inputPlayer.score,
+					weeklyScore: inputPlayer.weeklyScore
+				});
+				opts.applyOnLockedPlayer?.(lockedPlayer);
+				persistedWeeklyScore = lockedPlayer.weeklyScore;
+				return lockedPlayer;
+			});
+
+			await player.addScore({
+				amount: 50,
+				response,
+				reason: NumberChangeReason.BIG_EVENT
+			});
+
+			expect(persistedWeeklyScore).toBe(250);
+			expect(player.weeklyScore).toBe(250);
 		});
 	});
 });
