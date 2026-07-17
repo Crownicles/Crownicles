@@ -111,13 +111,7 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 	}
 }
 
-function addServicesSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	const hasAnyService = data.blacksmith || data.enchanter || data.royalBlacksmith || data.bossArchivist;
-	if (!hasAnyService) {
-		return;
-	}
-	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-
+function addBlacksmithService(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
 	if (data.blacksmith) {
 		addCitySection({
 			container,
@@ -128,7 +122,9 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 			buttonLabel: i18n.t("commands:report.city.buttons.enterForge", { lng })
 		});
 	}
+}
 
+function addRoyalBlacksmithService(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
 	if (data.royalBlacksmith) {
 		addCitySection({
 			container,
@@ -139,7 +135,9 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 			buttonLabel: i18n.t("commands:report.city.royalBlacksmith.enterButton", { lng })
 		});
 	}
+}
 
+function addEnchanterService(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
 	if (data.enchanter) {
 		addCitySection({
 			container,
@@ -150,7 +148,9 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 			buttonLabel: i18n.t("commands:report.city.buttons.talkToEnchanter", { lng })
 		});
 	}
+}
 
+function addBossArchivistService(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
 	if (data.bossArchivist) {
 		addCitySection({
 			container,
@@ -162,6 +162,17 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 			buttonStyle: ReportCityButtonStyles.OPTION
 		});
 	}
+}
+
+function addServicesSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
+	if (!data.blacksmith && !data.enchanter && !data.royalBlacksmith && !data.bossArchivist) {
+		return;
+	}
+	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
+	addBlacksmithService(container, data, lng);
+	addRoyalBlacksmithService(container, data, lng);
+	addEnchanterService(container, data, lng);
+	addBossArchivistService(container, data, lng);
 }
 
 function addShopsSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
