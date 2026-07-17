@@ -55,7 +55,7 @@
           "solo": "experience"
         },
         "lose": {
-          "withGuild": "money",
+          "withGuild": "life",
           "solo": "life"
         }
       },
