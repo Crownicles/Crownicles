@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 import { readdirSync, readFileSync } from "fs";
 import { resolve } from "path";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
+import { Potion } from "../../../src/data/Potion";
+import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 
 /**
  * ItemNature enum values for reference:
@@ -16,6 +18,16 @@ interface PotionData {
 	nature: number;
 	usages?: number;
 	fallbackEmote?: string;
+}
+
+function createPotion(nature: ItemNature, usages?: number): Potion {
+	return Object.assign(new Potion(), {
+		id: 1,
+		rarity: 1,
+		power: 10,
+		nature,
+		...(usages === undefined ? {} : { usages })
+	});
 }
 
 describe("Potion Data Validation", () => {
@@ -84,5 +96,25 @@ describe("Potion Data Validation", () => {
 
 			expect(invalidUsages, errorMessage).toHaveLength(0);
 		}
+	});
+
+	it("includes current and maximum usages in combat potion display packets", () => {
+		const potion = createPotion(ItemNature.ATTACK, 4);
+
+		expect(potion.getDisplayPacket(undefined, 2)).toMatchObject({
+			usages: 2,
+			maxUsages: 4
+		});
+		expect(potion.getDisplayPacket()).toMatchObject({
+			usages: 4,
+			maxUsages: 4
+		});
+	});
+
+	it("omits usages from non-combat potion display packets", () => {
+		const displayPacket = createPotion(ItemNature.HEALTH).getDisplayPacket();
+
+		expect(displayPacket).not.toHaveProperty("usages");
+		expect(displayPacket).not.toHaveProperty("maxUsages");
 	});
 });

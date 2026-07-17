@@ -7,4 +7,6 @@ export interface SupportItemDetails {
 	power: number;
 	maxPower: number;
 	itemCategory: number;
+	usages?: number;
+	maxUsages?: number;
 }

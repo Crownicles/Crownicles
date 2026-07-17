@@ -6,6 +6,7 @@ import {
 } from "../../../Lib/src/constants/ItemConstants";
 import { minutesDisplayIntl } from "../../../Lib/src/utils/TimeUtils";
 import { DisplayUtils } from "./DisplayUtils";
+import { formatPotionUsagesPrefix } from "./PotionDisplayUtils";
 import { ItemEnchantment } from "../../../Lib/src/types/ItemEnchantment";
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
@@ -86,15 +87,16 @@ export class DiscordItemUtils {
 	}
 
 	static getPotionField(displayPacket: SupportItemDetails, lng: Language): EmbedField {
+		const natureValue = i18n.t(`items:potionsNatures.${displayPacket.nature}`, {
+			lng,
+			power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? minutesDisplayIntl(displayPacket.power, lng) : displayPacket.power
+		});
 		return DiscordItemUtils.getClassicItemField(
 			"potions",
 			DisplayUtils.getItemIcon({
 				id: displayPacket.id, category: displayPacket.itemCategory
 			}),
-			i18n.t(`items:potionsNatures.${displayPacket.nature}`, {
-				lng,
-				power: displayPacket.nature === ItemNature.TIME_SPEEDUP ? minutesDisplayIntl(displayPacket.power, lng) : displayPacket.power
-			}),
+			`${formatPotionUsagesPrefix(displayPacket.usages, displayPacket.maxUsages)}${natureValue}`,
 			displayPacket,
 			lng
 		);
