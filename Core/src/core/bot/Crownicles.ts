@@ -44,6 +44,7 @@ import { BlessingManager } from "../blessings/BlessingManager";
 import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifications/EnergyFullNotificationPacket";
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
+import { processDueExpeditionNotifications } from "./ExpeditionNotifications";
 import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
 import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
 import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
@@ -323,6 +324,17 @@ export class Crownicles {
 		setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
 	}
 
+	static async expeditionNotifications(): Promise<void> {
+		if (PacketUtils.isMqttConnected()) {
+			await processDueExpeditionNotifications();
+		}
+		else {
+			CrowniclesLogger.error(`MQTT is not connected, can't do expedition notifications. Trying again in ${TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS} ms`);
+		}
+
+		setTimeout(Crownicles.expeditionNotifications, TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS);
+	}
+
 	/**
 	 * Database queries to execute at the end of the season
 	 */
@@ -439,6 +451,9 @@ export class Crownicles {
 			.then();
 
 		Crownicles.dailyBonusNotifications()
+			.then();
+
+		Crownicles.expeditionNotifications()
 			.then();
 
 		ReleaseGift.apply()
