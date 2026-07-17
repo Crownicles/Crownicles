@@ -253,7 +253,12 @@ export const CrowniclesIcons: {
 	city: {
 		exit: string;
 		stay: string;
-		bossArchivist: string;
+		services: {
+			blacksmith: string;
+			royalBlacksmith: string;
+			enchanter: string;
+			bossArchivist: string;
+		};
 		inn: string;
 		innSleep: string;
 		enchanter: string;
@@ -2697,7 +2702,12 @@ export const CrowniclesIcons: {
 	city: {
 		exit: "🏃‍➡️",
 		stay: "👀",
-		bossArchivist: "📜",
+		services: {
+			blacksmith: "⚒️",
+			royalBlacksmith: "⚒️",
+			enchanter: "🔮",
+			bossArchivist: "📜"
+		},
 		inn: "🍺",
 		innSleep: "😴",
 		enchanter: "🔮",

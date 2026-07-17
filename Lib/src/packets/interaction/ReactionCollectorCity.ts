@@ -76,7 +76,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		max: number;
 	};
 
-	bossArchivist?: true;
+	bossArchivist?: boolean;
 
 	enchanter?: {
 		enchantableItems: {

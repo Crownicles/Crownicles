@@ -10,13 +10,14 @@ import {
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	FinalPveBossId, PveBossLeaderboardEntry, PveBossPersonalRecord
+	FinalPveBossId, PveBossLeaderboardEntry, PveBossPersonalRecord, PveBossRecordAction
 } from "../../../../../../Lib/src/types/PveBossRecord";
+import { Language } from "../../../../../../Lib/src/Language";
 import { KeycloakUtils } from "../../../../../../Lib/src/keycloak/KeycloakUtils";
 import { DiscordMQTT } from "../../../../bot/DiscordMQTT";
 import { keycloakConfig } from "../../../../bot/CrowniclesShard";
 import {
-	CrowniclesNestedMenu, CrowniclesNestedMenus
+	CrowniclesNestedMenu, CrowniclesNestedMenuCollectorFactory, CrowniclesNestedMenus
 } from "../../../../messages/CrowniclesNestedMenus";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
 import {
@@ -122,14 +123,14 @@ function addBackButton(container: ContainerBuilder, button: ArchivistButton): vo
 	);
 }
 
-function getBossName(selection: BossSelection, lng: CityMenuParams["interaction"]["userLanguage"]): string {
+function getBossName(selection: BossSelection, lng: Language): string {
 	return i18n.t(`models:monsters.${selection.monsterId}.name`, { lng });
 }
 
 function createArchivistCollector(
 	params: CityMenuParams,
 	handler: (click: ArchivistMenuClick) => Promise<void>
-): CrowniclesNestedMenu["createCollector"] {
+): CrowniclesNestedMenuCollectorFactory {
 	return createCityCollector(params.interaction, params.collectorTime, async (customId, interaction, menus) => {
 		await interaction.deferUpdate();
 		await handler({
@@ -206,7 +207,7 @@ function buildRootMenu(params: CityMenuParams): CrowniclesNestedMenu {
 	));
 	addCitySection({
 		container,
-		emote: CrowniclesIcons.city.bossArchivist,
+		emote: CrowniclesIcons.city.services.bossArchivist,
 		title: i18n.t("commands:report.city.bossArchivist.personal.title", { lng }),
 		description: i18n.t("commands:report.city.bossArchivist.personal.description", { lng }),
 		customId: ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU,
@@ -215,7 +216,7 @@ function buildRootMenu(params: CityMenuParams): CrowniclesNestedMenu {
 	});
 	addCitySection({
 		container,
-		emote: CrowniclesIcons.city.bossArchivist,
+		emote: CrowniclesIcons.city.services.bossArchivist,
 		title: i18n.t("commands:report.city.bossArchivist.leaderboard.title", { lng }),
 		description: i18n.t("commands:report.city.bossArchivist.leaderboard.description", { lng }),
 		customId: ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU,
@@ -232,7 +233,7 @@ function buildRootMenu(params: CityMenuParams): CrowniclesNestedMenu {
 	};
 }
 
-function addBossButtons(container: ContainerBuilder, prefix: BossSelectionPrefix, lng: CityMenuParams["interaction"]["userLanguage"]): void {
+function addBossButtons(container: ContainerBuilder, prefix: BossSelectionPrefix, lng: Language): void {
 	for (const bossId of BOSS_IDS) {
 		addCitySection({
 			container,
@@ -245,7 +246,7 @@ function addBossButtons(container: ContainerBuilder, prefix: BossSelectionPrefix
 	}
 }
 
-function getDominantAction(record: PveBossPersonalRecord): PveBossPersonalRecord["actions"][number] | undefined {
+function getDominantAction(record: PveBossPersonalRecord): PveBossRecordAction | undefined {
 	let dominantAction = record.actions[0];
 	for (const action of record.actions.slice(1)) {
 		if (action.count > dominantAction.count) {
@@ -255,8 +256,14 @@ function getDominantAction(record: PveBossPersonalRecord): PveBossPersonalRecord
 	return dominantAction;
 }
 
-function buildPersonalRecordText(record: PveBossPersonalRecord, lng: CityMenuParams["interaction"]["userLanguage"]): string {
+function buildPersonalRecordText(record: PveBossPersonalRecord, lng: Language): string {
 	const dominantAction = getDominantAction(record);
+	const story = i18n.t("commands:report.city.bossArchivist.personal.story", {
+		lng,
+		context: record.turns <= SWIFT_VICTORY_MAX_TURNS
+			? "swift"
+			: record.turns >= LONG_VICTORY_MIN_TURNS ? "long" : "standard"
+	});
 	return i18n.t("commands:report.city.bossArchivist.personal.record", {
 		lng,
 		boss: getBossName({ monsterId: record.monsterId }, lng),
@@ -270,9 +277,7 @@ function buildPersonalRecordText(record: PveBossPersonalRecord, lng: CityMenuPar
 			})
 			: i18n.t("commands:report.city.bossArchivist.personal.unknownAction", { lng }),
 		actionCount: dominantAction?.count ?? 0,
-		context: record.turns <= SWIFT_VICTORY_MAX_TURNS
-			? "swift"
-			: record.turns >= LONG_VICTORY_MIN_TURNS ? "long" : "standard",
+		story,
 		monsterId: record.monsterId
 	});
 }
@@ -456,7 +461,7 @@ function buildLeaderboardSelectionMenu(params: CityMenuParams): CrowniclesNested
 	};
 }
 
-async function formatLeaderboardEntries(entries: PveBossLeaderboardEntry[], lng: CityMenuParams["interaction"]["userLanguage"]): Promise<string> {
+async function formatLeaderboardEntries(entries: PveBossLeaderboardEntry[], lng: Language): Promise<string> {
 	if (entries.length === 0) {
 		return i18n.t("commands:report.city.bossArchivist.leaderboard.empty", { lng });
 	}
@@ -469,29 +474,12 @@ async function formatLeaderboardEntries(entries: PveBossLeaderboardEntry[], lng:
 			: unknownPlayer);
 	return entries.map((entry, index) => i18n.t("commands:report.city.bossArchivist.leaderboard.entry", {
 		lng,
-		badge: getLeaderboardBadge(index + 1),
+		badge: DisplayUtils.getRankMedalBadge(index + 1) ?? CrowniclesIcons.top.badges.default,
 		position: index + 1,
 		pseudo: pseudos[index] ?? unknownPlayer,
 		level: entry.monsterLevel,
 		turns: entry.turns
 	})).join("\n");
-}
-
-function getLeaderboardBadge(position: number): string {
-	switch (position) {
-		case 1:
-			return CrowniclesIcons.top.badges.first;
-		case 2:
-			return CrowniclesIcons.top.badges.second;
-		case 3:
-			return CrowniclesIcons.top.badges.third;
-		case 4:
-			return CrowniclesIcons.top.badges.fourth;
-		case 5:
-			return CrowniclesIcons.top.badges.fifth;
-		default:
-			return CrowniclesIcons.top.badges.default;
-	}
 }
 
 async function buildLeaderboardMenu(

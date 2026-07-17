@@ -114,24 +114,12 @@ export const commandInfo: ICommand = {
 };
 
 function getBadgeForPosition(rank: number, sameContext: boolean, contextElementPosition?: number): string {
-	switch (rank) {
-		case 1:
-			return CrowniclesIcons.top.badges.first;
-		case 2:
-			return CrowniclesIcons.top.badges.second;
-		case 3:
-			return CrowniclesIcons.top.badges.third;
-		case 4:
-			return CrowniclesIcons.top.badges.fourth;
-		case 5:
-			return CrowniclesIcons.top.badges.fifth;
-		default:
-			return sameContext
-				? contextElementPosition === rank
-					? CrowniclesIcons.top.badges.self
-					: CrowniclesIcons.top.badges.sameContext
-				: CrowniclesIcons.top.badges.default;
-	}
+	return DisplayUtils.getRankMedalBadge(rank)
+		?? (sameContext
+			? contextElementPosition === rank
+				? CrowniclesIcons.top.badges.self
+				: CrowniclesIcons.top.badges.sameContext
+			: CrowniclesIcons.top.badges.default);
 }
 
 function formatScoreAttributes(element: TopElement<TopElementScoreFirstType, number, number>, lng: Language): string {

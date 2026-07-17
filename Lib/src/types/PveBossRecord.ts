@@ -10,16 +10,17 @@ type PveBossRecordBase = {
 	date: number;
 };
 
-export type PveBossFightRecord = PveBossRecordBase & {
-	playerKeycloakId: string;
-	actions: {
-		actionId: string;
-		count: number;
-	}[];
+export type PveBossRecordAction = {
+	actionId: string;
+	count: number;
 };
 
-export type PveBossPersonalRecord = Omit<PveBossFightRecord, "playerKeycloakId">;
+export type PveBossPersonalRecord = PveBossRecordBase & {
+	actions: PveBossRecordAction[];
+};
 
 export type PveBossLeaderboardEntry = PveBossRecordBase & {
 	playerKeycloakId: string;
 };
+
+export type PveBossFightRecord = PveBossPersonalRecord & PveBossLeaderboardEntry;
