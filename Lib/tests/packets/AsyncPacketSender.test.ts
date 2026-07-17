@@ -1,5 +1,5 @@
 import {
-	describe, it, expect
+	describe, it, expect, vi, afterEach
 } from "vitest";
 import { readdirSync } from "fs";
 import { join } from "path";
@@ -31,6 +31,18 @@ class TestPacketSender extends AsyncPacketSender {
 	}
 }
 
+class FailingPacketSender extends AsyncPacketSender {
+	protected sendPacket(): Promise<void> {
+		return Promise.reject(new Error("send failed"));
+	}
+}
+
+class ThrowingPacketSender extends AsyncPacketSender {
+	protected sendPacket(): Promise<void> {
+		throw new Error("synchronous send failed");
+	}
+}
+
 // Minimal stand-in response packet (only its class name matters here).
 class FooRes extends CrowniclesPacket {}
 
@@ -42,6 +54,10 @@ function makeContext(): PacketContext {
 }
 
 describe("AsyncPacketSender.handleResponse", () => {
+	afterEach(() => {
+		vi.useRealTimers();
+	});
+
 	it("fulfils the callback with a normal response", async () => {
 		const sender = new TestPacketSender();
 		const ctx = makeContext();
@@ -83,6 +99,38 @@ describe("AsyncPacketSender.handleResponse", () => {
 
 		const consumed = await sender.handleResponse(ctx, FooRes.name, new FooRes());
 		expect(consumed).toBe(false);
+	});
+
+	it("runs the timeout callback and evicts an unanswered request", async () => {
+		vi.useFakeTimers();
+		const sender = new TestPacketSender();
+		const ctx = makeContext();
+		const onTimeout = vi.fn();
+		await sender.sendPacketAndHandleResponse(ctx, new FooRes(), vi.fn(), {
+			timeoutMs: 100,
+			onTimeout
+		});
+
+		await vi.advanceTimersByTimeAsync(100);
+
+		expect(onTimeout).toHaveBeenCalledOnce();
+		await expect(sender.handleResponse(ctx, FooRes.name, new FooRes())).resolves.toBe(false);
+	});
+
+	it("evicts a request when sending fails", async () => {
+		const sender = new FailingPacketSender();
+		const ctx = makeContext();
+
+		await expect(sender.sendPacketAndHandleResponse(ctx, new FooRes(), vi.fn())).rejects.toThrow("send failed");
+		await expect(sender.handleResponse(ctx, FooRes.name, new FooRes())).resolves.toBe(false);
+	});
+
+	it("evicts a request when sending throws synchronously", async () => {
+		const sender = new ThrowingPacketSender();
+		const ctx = makeContext();
+
+		await expect(sender.sendPacketAndHandleResponse(ctx, new FooRes(), vi.fn())).rejects.toThrow("synchronous send failed");
+		await expect(sender.handleResponse(ctx, FooRes.name, new FooRes())).resolves.toBe(false);
 	});
 });
 

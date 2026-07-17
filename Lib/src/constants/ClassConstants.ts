@@ -40,6 +40,8 @@ export abstract class ClassConstants {
 
 	static readonly GROUP4LEVEL = 80;
 
+	static readonly MAX_CLASS_GROUP = 4;
+
 	static readonly TIME_BEFORE_CHANGE_CLASS: readonly Second[] = [
 		TimeConstants.S_TIME.WEEK,
 		TimeConstants.S_TIME.WEEK,

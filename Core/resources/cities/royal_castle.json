@@ -6,6 +6,7 @@
   ],
   "hasBlacksmith": false,
   "hasRoyalBlacksmith": true,
+  "hasBossArchivist": true,
   "inns": [
     {
       "id": "royalPavilion",

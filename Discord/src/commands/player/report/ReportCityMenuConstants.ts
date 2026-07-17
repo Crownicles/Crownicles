@@ -18,6 +18,19 @@ export const ReportCityMenuIds = {
 	/** Enchanter sub-menu */
 	ENCHANTER_MENU: "ENCHANTER_MENU",
 
+	/** Castle archivist who tracks final island boss records. */
+	BOSS_ARCHIVIST_MENU: "BOSS_ARCHIVIST_MENU",
+
+	BOSS_ARCHIVIST_PERSONAL_MENU: "BOSS_ARCHIVIST_PERSONAL_MENU",
+
+	BOSS_ARCHIVIST_LEADERBOARD_MENU: "BOSS_ARCHIVIST_LEADERBOARD_MENU",
+
+	BOSS_ARCHIVIST_PERSONAL_BOSS_PREFIX: "BOSS_ARCHIVIST_PERSONAL_BOSS_",
+
+	BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX: "BOSS_ARCHIVIST_LEADERBOARD_BOSS_",
+
+	BOSS_ARCHIVIST_CLASS_PREFIX: "BOSS_ARCHIVIST_CLASS_",
+
 	// --- Main menu actions ---
 	/** Exit city button */
 	MAIN_MENU_EXIT_CITY: "MAIN_MENU_EXIT_CITY",
@@ -164,6 +177,9 @@ export const ReportCityButtonStyles = {
 
 	/** Navigate into a sub-menu or open a feature */
 	NAVIGATE: ButtonStyle.Primary,
+
+	/** Choose a neutral option without implying a primary action */
+	OPTION: ButtonStyle.Secondary,
 
 	/** Confirm / validate a positive action */
 	CONFIRM: ButtonStyle.Success,

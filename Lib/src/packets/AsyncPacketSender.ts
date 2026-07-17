@@ -14,6 +14,11 @@ import { PlayerReceivePetPacket } from "./events/PlayerReceivePetPacket";
 
 type AsyncPacketSenderCallback = (context: PacketContext, packetName: string, packet: CrowniclesPacket) => Promise<void> | void;
 
+type AsyncPacketSenderOptions = {
+	timeoutMs?: number;
+	onTimeout?: () => void;
+};
+
 /**
  * How long a request callback stays registered before being evicted. This is a
  * safety net: every request is normally fulfilled by its response, but if the
@@ -77,17 +82,27 @@ export abstract class AsyncPacketSender {
 	public sendPacketAndHandleResponse(
 		context: PacketContext,
 		packet: CrowniclesPacket,
-		callback: AsyncPacketSenderCallback
+		callback: AsyncPacketSenderCallback,
+		options: AsyncPacketSenderOptions = {}
 	): Promise<void> {
 		const packetId = crypto.randomUUID();
 		context.packetId = packetId;
-		const evictionTimer = setTimeout(() => this.waitingPackets.delete(packetId), WAITING_PACKET_TTL_MS);
+		const evictionTimer = setTimeout(() => {
+			this.waitingPackets.delete(packetId);
+			options.onTimeout?.();
+		}, options.timeoutMs ?? WAITING_PACKET_TTL_MS);
 		evictionTimer.unref?.();
 		this.waitingPackets.set(packetId, {
 			callback,
 			evictionTimer
 		});
-		return this.sendPacket(context, packet);
+		return Promise.resolve()
+			.then(() => this.sendPacket(context, packet))
+			.catch(error => {
+				clearTimeout(evictionTimer);
+				this.waitingPackets.delete(packetId);
+				throw error;
+			});
 	}
 
 	public async handleResponse(context: PacketContext, packetName: string, packet: CrowniclesPacket): Promise<boolean> {
