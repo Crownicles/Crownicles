@@ -8,8 +8,8 @@ type AsyncTask = () => Promise<void>;
 function runOutsideTransaction(task: AsyncTask, onError: (error: unknown) => void): void {
 	const namespace = getCrowniclesNamespace();
 	namespace.run(() => {
-		namespace.set(CLS_TRANSACTION_KEY, undefined);
-		void task().catch(onError);
+		namespace.set(CLS_TRANSACTION_KEY, null);
+		task().catch(onError);
 	});
 }
 

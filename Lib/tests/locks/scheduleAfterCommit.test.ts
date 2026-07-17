@@ -37,7 +37,7 @@ describe("scheduleAfterCommit", () => {
 			await Promise.resolve();
 		});
 
-		expect(observedTransaction).toHaveBeenCalledWith(undefined);
+		expect(observedTransaction).toHaveBeenCalledWith(null);
 	});
 
 	it("does not run when the transaction never commits", async () => {
