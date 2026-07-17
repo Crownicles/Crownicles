@@ -1117,8 +1117,8 @@
           "chooseClass": "L'archiviste ouvre le registre consacré à **{{boss}}**. Seuls les exploits accomplis avec une classe du dernier palier y sont consignés, les autres étant conservés dans les archives personnelles. Choisissez le chapitre à consulter.",
           "show": "Voir le classement",
           "resultTitle": "Classement de {{boss}}",
-          "classHeader": "**Classe étudiée :** {{class}}",
-          "entry": "**{{position}}. {{pseudo}}** · niveau **{{level}}** · {{turns}} tours",
+          "classHeader": "**Classe :** {{class}}",
+          "entry": "{{badge}} **{{pseudo}}** | Niveau **{{level}}** | **{{turns}}** tours",
           "empty": "Aucune victoire n'a encore été enregistrée pour cette créature avec cette classe.",
           "changeSelection": "Changer de sélection"
         }
