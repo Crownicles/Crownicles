@@ -111,68 +111,71 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 	}
 }
 
-function addBlacksmithService(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (data.blacksmith) {
-		addCitySection({
-			container,
-			emote: CrowniclesIcons.city.blacksmith.menu,
-			title: i18n.t("commands:report.city.blacksmith.menuLabel", { lng }),
-			description: i18n.t("commands:report.city.blacksmith.menuDescription", { lng }),
-			customId: ReportCityMenuIds.BLACKSMITH_MENU,
-			buttonLabel: i18n.t("commands:report.city.buttons.enterForge", { lng })
-		});
-	}
-}
+type CityServiceDataKey = "blacksmith" | "royalBlacksmith" | "enchanter" | "bossArchivist";
 
-function addRoyalBlacksmithService(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (data.royalBlacksmith) {
-		addCitySection({
-			container,
-			emote: CrowniclesIcons.city.blacksmith.menu,
-			title: i18n.t("commands:report.city.royalBlacksmith.menuLabel", { lng }),
-			description: i18n.t("commands:report.city.royalBlacksmith.menuDescription", { lng }),
-			customId: ReportCityMenuIds.ROYAL_BLACKSMITH_MENU,
-			buttonLabel: i18n.t("commands:report.city.royalBlacksmith.enterButton", { lng })
-		});
-	}
-}
+type CityServiceDefinition = {
+	dataKey: CityServiceDataKey;
+	emote: string;
+	titleKey: string;
+	descriptionKey: string;
+	customId: string;
+	buttonLabelKey: string;
+	buttonStyle?: ButtonStyle;
+};
 
-function addEnchanterService(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (data.enchanter) {
-		addCitySection({
-			container,
-			emote: CrowniclesIcons.city.enchanter,
-			title: i18n.t("commands:report.city.reactions.enchanter.label", { lng }),
-			description: i18n.t("commands:report.city.reactions.enchanter.description", { lng }),
-			customId: ReportCityMenuIds.ENCHANTER_MENU,
-			buttonLabel: i18n.t("commands:report.city.buttons.talkToEnchanter", { lng })
-		});
+const CITY_SERVICE_DEFINITIONS: CityServiceDefinition[] = [
+	{
+		dataKey: "blacksmith",
+		emote: CrowniclesIcons.city.services.blacksmith,
+		titleKey: "commands:report.city.blacksmith.menuLabel",
+		descriptionKey: "commands:report.city.blacksmith.menuDescription",
+		customId: ReportCityMenuIds.BLACKSMITH_MENU,
+		buttonLabelKey: "commands:report.city.buttons.enterForge"
+	},
+	{
+		dataKey: "royalBlacksmith",
+		emote: CrowniclesIcons.city.services.royalBlacksmith,
+		titleKey: "commands:report.city.royalBlacksmith.menuLabel",
+		descriptionKey: "commands:report.city.royalBlacksmith.menuDescription",
+		customId: ReportCityMenuIds.ROYAL_BLACKSMITH_MENU,
+		buttonLabelKey: "commands:report.city.royalBlacksmith.enterButton"
+	},
+	{
+		dataKey: "enchanter",
+		emote: CrowniclesIcons.city.services.enchanter,
+		titleKey: "commands:report.city.reactions.enchanter.label",
+		descriptionKey: "commands:report.city.reactions.enchanter.description",
+		customId: ReportCityMenuIds.ENCHANTER_MENU,
+		buttonLabelKey: "commands:report.city.buttons.talkToEnchanter"
+	},
+	{
+		dataKey: "bossArchivist",
+		emote: CrowniclesIcons.city.services.bossArchivist,
+		titleKey: "commands:report.city.bossArchivist.serviceTitle",
+		descriptionKey: "commands:report.city.bossArchivist.serviceDescription",
+		customId: ReportCityMenuIds.BOSS_ARCHIVIST_MENU,
+		buttonLabelKey: "commands:report.city.bossArchivist.visit",
+		buttonStyle: ReportCityButtonStyles.OPTION
 	}
-}
-
-function addBossArchivistService(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (data.bossArchivist) {
-		addCitySection({
-			container,
-			emote: CrowniclesIcons.city.bossArchivist,
-			title: i18n.t("commands:report.city.bossArchivist.serviceTitle", { lng }),
-			description: i18n.t("commands:report.city.bossArchivist.serviceDescription", { lng }),
-			customId: ReportCityMenuIds.BOSS_ARCHIVIST_MENU,
-			buttonLabel: i18n.t("commands:report.city.bossArchivist.visit", { lng }),
-			buttonStyle: ReportCityButtonStyles.OPTION
-		});
-	}
-}
+];
 
 function addServicesSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	if (!data.blacksmith && !data.enchanter && !data.royalBlacksmith && !data.bossArchivist) {
+	const availableServices = CITY_SERVICE_DEFINITIONS.filter(service => data[service.dataKey]);
+	if (availableServices.length === 0) {
 		return;
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	addBlacksmithService(container, data, lng);
-	addRoyalBlacksmithService(container, data, lng);
-	addEnchanterService(container, data, lng);
-	addBossArchivistService(container, data, lng);
+	for (const service of availableServices) {
+		addCitySection({
+			container,
+			emote: service.emote,
+			title: i18n.t(service.titleKey, { lng }),
+			description: i18n.t(service.descriptionKey, { lng }),
+			customId: service.customId,
+			buttonLabel: i18n.t(service.buttonLabelKey, { lng }),
+			...service.buttonStyle !== undefined ? { buttonStyle: service.buttonStyle } : {}
+		});
+	}
 }
 
 function addShopsSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {

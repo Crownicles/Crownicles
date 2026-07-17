@@ -18,6 +18,9 @@ import {
 import { PetFood } from "../../types/PetFood";
 import { MaterialQuantity } from "../../types/MaterialQuantity";
 import { ApartmentLocationRef } from "../../types/ApartmentLocation";
+import {
+	FinalPveBossId, PveBossLeaderboardEntry, PveBossPersonalRecord
+} from "../../types/PveBossRecord";
 export {
 	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients, CookingMenuSnapshot
 } from "../../types/CookingTypes";
@@ -740,25 +743,25 @@ export class CommandReportBossPersonalRecordsReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportBossPersonalRecordsRes extends CrowniclesPacket {
-	personalRecords!: import("../../types/PveBossRecord").PveBossPersonalRecord[];
+	personalRecords!: PveBossPersonalRecord[];
 
 	maximumTierClassIds!: number[];
 }
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportBossLeaderboardReq extends CrowniclesPacket {
-	monsterId!: import("../../types/PveBossRecord").FinalPveBossId;
+	monsterId!: FinalPveBossId;
 
 	classId!: number;
 }
 
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportBossLeaderboardRes extends CrowniclesPacket {
-	monsterId!: import("../../types/PveBossRecord").FinalPveBossId;
+	monsterId!: FinalPveBossId;
 
 	classId!: number;
 
-	entries!: import("../../types/PveBossRecord").PveBossLeaderboardEntry[];
+	entries!: PveBossLeaderboardEntry[];
 }
 
 // Guild domain notary packets

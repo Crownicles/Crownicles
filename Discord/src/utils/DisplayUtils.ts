@@ -309,6 +309,27 @@ export class DisplayUtils {
 	}
 
 	/**
+	 * Return the medal badge icon for a leaderboard rank (1 to 5), or undefined for lower ranks.
+	 * @param rank
+	 */
+	static getRankMedalBadge(rank: number): string | undefined {
+		switch (rank) {
+			case 1:
+				return CrowniclesIcons.top.badges.first;
+			case 2:
+				return CrowniclesIcons.top.badges.second;
+			case 3:
+				return CrowniclesIcons.top.badges.third;
+			case 4:
+				return CrowniclesIcons.top.badges.fourth;
+			case 5:
+				return CrowniclesIcons.top.badges.fifth;
+			default:
+				return undefined;
+		}
+	}
+
+	/**
 	 * Return the string of food with its icon
 	 * @param food
 	 * @param count

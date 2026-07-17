@@ -1095,7 +1095,7 @@
         "serviceDescription": "Sous les voûtes du château, un archiviste rassemble les récits des aventuriers ayant triomphé des plus redoutables créatures des îles mystérieuses.",
         "visit": "Consulter les archives",
         "title": "{{pseudo}}, archives des îles",
-        "introduction": "{emote:city.bossArchivist} De hauts rayonnages renferment les comptes rendus des combats menés contre les souverains des îles. L'archiviste peut retrouver vos plus grands exploits ou comparer les champions de chaque classe du dernier palier.",
+        "introduction": "{emote:city.services.bossArchivist} De hauts rayonnages renferment les comptes rendus des combats menés contre les souverains des îles. L'archiviste peut retrouver vos plus grands exploits ou comparer les champions de chaque classe du dernier palier.",
         "examine": "Consulter",
         "backToBosses": "Retour aux créatures",
         "personal": {
@@ -1103,9 +1103,10 @@
           "description": "Retrouvez, pour chaque créature finale, le plus haut niveau que vous avez vaincu et le récit conservé de cette bataille.",
           "button": "Voir vos exploits",
           "chooseBoss": "Choisissez la créature dont vous souhaitez consulter les archives.",
-          "record_swift": "{emote:monsters.{{monsterId}}} **{{boss}} de niveau {{level}}**\n{{class}} · {{turns}} tours · <t:{{date}}:D>\n\nLe registre décrit une victoire fulgurante, remportée avant que la créature ne puisse déployer toute sa puissance. Votre technique la plus employée fut **{{action}}**, utilisée **{{actionCount}} fois**.",
-          "record_standard": "{emote:monsters.{{monsterId}}} **{{boss}} de niveau {{level}}**\n{{class}} · {{turns}} tours · <t:{{date}}:D>\n\nLe registre rapporte un affrontement maîtrisé, au cours duquel chaque échange vous rapprocha de la victoire. Votre technique la plus employée fut **{{action}}**, utilisée **{{actionCount}} fois**.",
-          "record_long": "{emote:monsters.{{monsterId}}} **{{boss}} de niveau {{level}}**\n{{class}} · {{turns}} tours · <t:{{date}}:D>\n\nLe registre garde la trace d'une lutte éprouvante qui se prolongea jusqu'aux limites de vos forces. Votre technique la plus employée fut **{{action}}**, utilisée **{{actionCount}} fois**.",
+          "record": "{emote:monsters.{{monsterId}}} **{{boss}} de niveau {{level}}**\n{{class}} · {{turns}} tours · <t:{{date}}:D>\n\n{{story}} Votre technique la plus employée fut **{{action}}**, utilisée **{{actionCount}} fois**.",
+          "story_swift": "Le registre décrit une victoire fulgurante, remportée avant que la créature ne puisse déployer toute sa puissance.",
+          "story_standard": "Le registre rapporte un affrontement maîtrisé, au cours duquel chaque échange vous rapprocha de la victoire.",
+          "story_long": "Le registre garde la trace d'une lutte éprouvante qui se prolongea jusqu'aux limites de vos forces.",
           "noRecord": "Aucune victoire contre **{{boss}}** ne figure encore à votre nom. Une page vierge attend le récit de votre premier triomphe.",
           "unknownAction": "une technique oubliée"
         },
