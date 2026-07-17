@@ -528,22 +528,13 @@ describe("Tokens Usage", () => {
 			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
 		});
 
-		it("should allow tokens on the main continent at level 5 or above", () => {
+		it("should allow tokens on the main continent from the starting level", () => {
 			const player = createMockPlayer({ mapLinkId: 1, level: TokensConstants.LEVEL_TO_UNLOCK });
 			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
 			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
 			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
 
 			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(true);
-		});
-
-		it("should deny tokens when player level is below unlock threshold", () => {
-			const player = createMockPlayer({ mapLinkId: 1, level: TokensConstants.LEVEL_TO_UNLOCK - 1 });
-			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
-			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
-			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);
-
-			expect(canUseTokensAtLocation(player as unknown as Parameters<typeof canUseTokensAtLocation>[0])).toBe(false);
 		});
 
 		it("should deny tokens when not on continent", () => {
