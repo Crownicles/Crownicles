@@ -1,5 +1,5 @@
 import {
-	ActionRowBuilder, ButtonBuilder, ContainerBuilder, MessageComponentInteraction,
+	ActionRowBuilder, ButtonBuilder, ContainerBuilder,
 	SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder
 } from "discord.js";
 import { FightConstants } from "../../../../../../Lib/src/constants/FightConstants";
@@ -10,7 +10,7 @@ import {
 } from "../../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { makePacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	PveBossLeaderboardEntry, PveBossPersonalRecord
+	FinalPveBossId, PveBossLeaderboardEntry, PveBossPersonalRecord
 } from "../../../../../../Lib/src/types/PveBossRecord";
 import { KeycloakUtils } from "../../../../../../Lib/src/keycloak/KeycloakUtils";
 import { DiscordMQTT } from "../../../../bot/DiscordMQTT";
@@ -32,17 +32,55 @@ import {
 import { CityMenuParams } from "../ReportCityMenuTypes";
 
 const BOSS_IDS = Object.values(FightConstants.FINAL_BOSS_MONSTER_IDS);
+const BOSS_ID_SET = new Set<string>(BOSS_IDS);
 const ARCHIVIST_REQUEST_TIMEOUT_MS = 10_000;
 const SWIFT_VICTORY_MAX_TURNS = 10;
 const LONG_VICTORY_MIN_TURNS = 20;
 
+type ArchivistMenuAction = typeof ReportCityMenuIds[keyof Pick<typeof ReportCityMenuIds,
+	"BACK_TO_CITY"
+	| "BOSS_ARCHIVIST_MENU"
+	| "BOSS_ARCHIVIST_PERSONAL_MENU"
+	| "BOSS_ARCHIVIST_LEADERBOARD_MENU">];
+
+type ArchivistButton = {
+	id: ArchivistMenuAction;
+	label: string;
+};
+
+type BossSelection = {
+	monsterId: FinalPveBossId;
+};
+
+type BossSelectionPrefix = typeof ReportCityMenuIds[
+	"BOSS_ARCHIVIST_PERSONAL_BOSS_PREFIX" | "BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX"
+];
+
+type LeaderboardSelection = BossSelection & {
+	classId: number;
+};
+
+type LeaderboardSnapshot = LeaderboardSelection & {
+	entries: PveBossLeaderboardEntry[];
+};
+
 type ArchivistState = {
-	selectedBossId?: string;
+	selectedBossId?: FinalPveBossId;
 	personalRecords?: PveBossPersonalRecord[];
 	maximumTierClassIds?: number[];
 	pending: boolean;
 	requestVersion: number;
 };
+
+type ArchivistMenuClick = {
+	actionId: string;
+	menus: CrowniclesNestedMenus;
+};
+
+function parseBossSelection(actionId: string, prefix: BossSelectionPrefix): BossSelection | null {
+	const monsterId = actionId.slice(prefix.length);
+	return BOSS_ID_SET.has(monsterId) ? { monsterId: monsterId as FinalPveBossId } : null;
+}
 
 const states = new WeakMap<object, ArchivistState>();
 
@@ -71,30 +109,32 @@ function invalidatePendingRequest(params: CityMenuParams): void {
 	state.pending = false;
 }
 
-function addBackButton(container: ContainerBuilder, customId: string, label: string): void {
+function addBackButton(container: ContainerBuilder, button: ArchivistButton): void {
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 	container.addActionRowComponents(
 		new ActionRowBuilder<ButtonBuilder>().addComponents(
 			new ButtonBuilder()
-				.setCustomId(customId)
-				.setLabel(label)
+				.setCustomId(button.id)
+				.setLabel(button.label)
 				.setEmoji(CrowniclesIcons.city.back)
 				.setStyle(ReportCityButtonStyles.BACK)
 		)
 	);
 }
 
-function getBossName(monsterId: string, lng: CityMenuParams["interaction"]["userLanguage"]): string {
-	return i18n.t(`models:monsters.${monsterId}.name`, { lng });
+function getBossName(selection: BossSelection, lng: CityMenuParams["interaction"]["userLanguage"]): string {
+	return i18n.t(`models:monsters.${selection.monsterId}.name`, { lng });
 }
 
 function createArchivistCollector(
 	params: CityMenuParams,
-	handler: (customId: string, interaction: MessageComponentInteraction, menus: CrowniclesNestedMenus) => Promise<void>
+	handler: (click: ArchivistMenuClick) => Promise<void>
 ): CrowniclesNestedMenu["createCollector"] {
 	return createCityCollector(params.interaction, params.collectorTime, async (customId, interaction, menus) => {
 		await interaction.deferUpdate();
-		await handler(customId, interaction, menus);
+		await handler({
+			actionId: customId, menus
+		});
 	});
 }
 
@@ -106,18 +146,16 @@ function finishPendingRequest(state: ArchivistState, requestVersion: number): vo
 
 async function handleRootSelection(
 	params: CityMenuParams,
-	customId: string,
-	_interaction: MessageComponentInteraction,
-	menus: CrowniclesNestedMenus
+	click: ArchivistMenuClick
 ): Promise<void> {
-	if (customId === ReportCityMenuIds.BACK_TO_CITY) {
+	if (click.actionId === ReportCityMenuIds.BACK_TO_CITY) {
 		invalidatePendingRequest(params);
-		await menus.changeToMainMenu();
+		await click.menus.changeToMainMenu();
 		return;
 	}
 	const state = getState(params);
 	if (state.personalRecords && state.maximumTierClassIds) {
-		await menus.changeMenu(customId);
+		await click.menus.changeMenu(click.actionId);
 		return;
 	}
 	if (state.pending) {
@@ -140,9 +178,9 @@ async function handleRootSelection(
 				const response = responsePacket as CommandReportBossPersonalRecordsRes;
 				state.personalRecords = response.personalRecords;
 				state.maximumTierClassIds = response.maximumTierClassIds;
-				menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU, buildPersonalMenu(params));
-				menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, buildLeaderboardSelectionMenu(params));
-				await menus.changeMenu(customId);
+				click.menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU, buildPersonalMenu(params));
+				click.menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, buildLeaderboardSelectionMenu(params));
+				await click.menus.changeMenu(click.actionId);
 			},
 			{
 				timeoutMs: ARCHIVIST_REQUEST_TIMEOUT_MS,
@@ -184,19 +222,22 @@ function buildRootMenu(params: CityMenuParams): CrowniclesNestedMenu {
 		buttonLabel: i18n.t("commands:report.city.bossArchivist.leaderboard.button", { lng }),
 		buttonStyle: ReportCityButtonStyles.OPTION
 	});
-	addBackButton(container, ReportCityMenuIds.BACK_TO_CITY, i18n.t("commands:report.city.buttons.backToCity", { lng }));
+	addBackButton(container, {
+		id: ReportCityMenuIds.BACK_TO_CITY,
+		label: i18n.t("commands:report.city.buttons.backToCity", { lng })
+	});
 	return {
 		containers: [container],
 		createCollector: createArchivistCollector(params, handleRootSelection.bind(null, params))
 	};
 }
 
-function addBossButtons(container: ContainerBuilder, prefix: string, lng: CityMenuParams["interaction"]["userLanguage"]): void {
+function addBossButtons(container: ContainerBuilder, prefix: BossSelectionPrefix, lng: CityMenuParams["interaction"]["userLanguage"]): void {
 	for (const bossId of BOSS_IDS) {
 		addCitySection({
 			container,
 			emote: CrowniclesIcons.monsters[bossId],
-			title: getBossName(bossId, lng),
+			title: getBossName({ monsterId: bossId }, lng),
 			customId: `${prefix}${bossId}`,
 			buttonLabel: i18n.t("commands:report.city.bossArchivist.examine", { lng }),
 			buttonStyle: ReportCityButtonStyles.OPTION
@@ -215,7 +256,7 @@ function buildPersonalRecordText(record: PveBossPersonalRecord, lng: CityMenuPar
 	const dominantAction = getDominantAction(record);
 	return i18n.t("commands:report.city.bossArchivist.personal.record", {
 		lng,
-		boss: getBossName(record.monsterId, lng),
+		boss: getBossName({ monsterId: record.monsterId }, lng),
 		level: record.monsterLevel,
 		turns: record.turns,
 		date: record.date,
@@ -235,45 +276,51 @@ function buildPersonalRecordText(record: PveBossPersonalRecord, lng: CityMenuPar
 
 async function handlePersonalSelection(
 	params: CityMenuParams,
-	customId: string,
-	_interaction: MessageComponentInteraction,
-	menus: CrowniclesNestedMenus
+	click: ArchivistMenuClick
 ): Promise<void> {
-	if (customId.startsWith(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_BOSS_PREFIX)) {
-		const bossId = customId.slice(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_BOSS_PREFIX.length);
-		const selectedRecord = getState(params).personalRecords?.find(item => item.monsterId === bossId);
-		menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU, buildPersonalMenu(params, selectedRecord, bossId));
+	const selectedBoss = click.actionId.startsWith(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_BOSS_PREFIX)
+		? parseBossSelection(click.actionId, ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_BOSS_PREFIX)
+		: null;
+	if (selectedBoss) {
+		const selectedRecord = getState(params).personalRecords?.find(item => item.monsterId === selectedBoss.monsterId);
+		click.menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU, buildPersonalMenu(params, selectedRecord, selectedBoss));
 	}
-	else if (customId === ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU) {
-		menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU, buildPersonalMenu(params));
+	else if (click.actionId === ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU) {
+		click.menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU, buildPersonalMenu(params));
 	}
-	await menus.changeMenu(customId.startsWith(ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_BOSS_PREFIX)
+	await click.menus.changeMenu(selectedBoss
 		? ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU
-		: customId);
+		: click.actionId);
 }
 
-function buildPersonalMenu(params: CityMenuParams, record?: PveBossPersonalRecord, selectedBossId?: string): CrowniclesNestedMenu {
+function buildPersonalMenu(params: CityMenuParams, record?: PveBossPersonalRecord, selectedBoss?: BossSelection): CrowniclesNestedMenu {
 	const lng = params.interaction.userLanguage;
 	const container = new ContainerBuilder();
 	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(
 		StringUtils.formatHeader(i18n.t("commands:report.city.bossArchivist.personal.title", { lng }))
 	));
-	if (selectedBossId) {
+	if (selectedBoss) {
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(
 			record
 				? buildPersonalRecordText(record, lng)
 				: i18n.t("commands:report.city.bossArchivist.personal.noRecord", {
-					lng, boss: getBossName(selectedBossId, lng)
+					lng, boss: getBossName(selectedBoss, lng)
 				})
 		));
-		addBackButton(container, ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU, i18n.t("commands:report.city.bossArchivist.backToBosses", { lng }));
+		addBackButton(container, {
+			id: ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_MENU,
+			label: i18n.t("commands:report.city.bossArchivist.backToBosses", { lng })
+		});
 	}
 	else {
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.bossArchivist.personal.chooseBoss", { lng })
 		));
 		addBossButtons(container, ReportCityMenuIds.BOSS_ARCHIVIST_PERSONAL_BOSS_PREFIX, lng);
-		addBackButton(container, ReportCityMenuIds.BOSS_ARCHIVIST_MENU, i18n.t("commands:report.city.buttons.back", { lng }));
+		addBackButton(container, {
+			id: ReportCityMenuIds.BOSS_ARCHIVIST_MENU,
+			label: i18n.t("commands:report.city.buttons.back", { lng })
+		});
 	}
 	return {
 		containers: [container],
@@ -283,9 +330,9 @@ function buildPersonalMenu(params: CityMenuParams, record?: PveBossPersonalRecor
 
 async function requestLeaderboard(
 	params: CityMenuParams,
-	menus: CrowniclesNestedMenus,
+	selection: LeaderboardSelection,
 	state: ArchivistState,
-	classId: number
+	menus: CrowniclesNestedMenus
 ): Promise<void> {
 	state.pending = true;
 	const requestVersion = ++state.requestVersion;
@@ -293,7 +340,8 @@ async function requestLeaderboard(
 		await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 			createRequestContext(params),
 			makePacket(CommandReportBossLeaderboardReq, {
-				monsterId: state.selectedBossId!, classId
+				monsterId: selection.monsterId,
+				classId: selection.classId
 			}),
 			async (_context, packetName, responsePacket) => {
 				if (requestVersion !== state.requestVersion) {
@@ -304,7 +352,11 @@ async function requestLeaderboard(
 					return;
 				}
 				const response = responsePacket as CommandReportBossLeaderboardRes;
-				const leaderboardMenu = await buildLeaderboardMenu(params, response.entries, response.monsterId, response.classId);
+				const leaderboardMenu = await buildLeaderboardMenu(params, {
+					entries: response.entries,
+					monsterId: response.monsterId,
+					classId: response.classId
+				});
 				if (requestVersion !== state.requestVersion) {
 					return;
 				}
@@ -324,27 +376,36 @@ async function requestLeaderboard(
 
 async function handleLeaderboardSelection(
 	params: CityMenuParams,
-	customId: string,
-	_interaction: MessageComponentInteraction,
-	menus: CrowniclesNestedMenus
+	click: ArchivistMenuClick
 ): Promise<void> {
 	const state = getState(params);
-	if (customId.startsWith(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX)) {
-		state.selectedBossId = customId.slice(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX.length);
-		menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, buildLeaderboardSelectionMenu(params));
-		await menus.changeMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU);
+	const selectedBoss = click.actionId.startsWith(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX)
+		? parseBossSelection(click.actionId, ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX)
+		: null;
+	if (selectedBoss) {
+		state.selectedBossId = selectedBoss.monsterId;
+		click.menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, buildLeaderboardSelectionMenu(params));
+		await click.menus.changeMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU);
 		return;
 	}
-	if (customId.startsWith(ReportCityMenuIds.BOSS_ARCHIVIST_CLASS_PREFIX)) {
+	if (click.actionId.startsWith(ReportCityMenuIds.BOSS_ARCHIVIST_CLASS_PREFIX)) {
 		if (!state.pending && state.selectedBossId) {
-			await requestLeaderboard(params, menus, state, Number(customId.slice(ReportCityMenuIds.BOSS_ARCHIVIST_CLASS_PREFIX.length)));
+			await requestLeaderboard(
+				params,
+				{
+					monsterId: state.selectedBossId,
+					classId: Number(click.actionId.slice(ReportCityMenuIds.BOSS_ARCHIVIST_CLASS_PREFIX.length))
+				},
+				state,
+				click.menus
+			);
 		}
 		return;
 	}
 	invalidatePendingRequest(params);
 	state.selectedBossId = undefined;
-	menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, buildLeaderboardSelectionMenu(params));
-	await menus.changeMenu(customId);
+	click.menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, buildLeaderboardSelectionMenu(params));
+	await click.menus.changeMenu(click.actionId);
 }
 
 function buildLeaderboardSelectionMenu(params: CityMenuParams): CrowniclesNestedMenu {
@@ -360,12 +421,15 @@ function buildLeaderboardSelectionMenu(params: CityMenuParams): CrowniclesNested
 			i18n.t("commands:report.city.bossArchivist.leaderboard.chooseBoss", { lng })
 		));
 		addBossButtons(container, ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX, lng);
-		addBackButton(container, ReportCityMenuIds.BOSS_ARCHIVIST_MENU, i18n.t("commands:report.city.buttons.back", { lng }));
+		addBackButton(container, {
+			id: ReportCityMenuIds.BOSS_ARCHIVIST_MENU,
+			label: i18n.t("commands:report.city.buttons.back", { lng })
+		});
 	}
 	else {
 		container.addTextDisplayComponents(new TextDisplayBuilder().setContent(
 			i18n.t("commands:report.city.bossArchivist.leaderboard.chooseClass", {
-				lng, boss: getBossName(selectedBossId, lng)
+				lng, boss: getBossName({ monsterId: selectedBossId }, lng)
 			})
 		));
 		for (const classId of state.maximumTierClassIds ?? []) {
@@ -378,7 +442,10 @@ function buildLeaderboardSelectionMenu(params: CityMenuParams): CrowniclesNested
 				buttonStyle: ReportCityButtonStyles.OPTION
 			});
 		}
-		addBackButton(container, ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, i18n.t("commands:report.city.bossArchivist.backToBosses", { lng }));
+		addBackButton(container, {
+			id: ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU,
+			label: i18n.t("commands:report.city.bossArchivist.backToBosses", { lng })
+		});
 	}
 	return {
 		containers: [container],
@@ -426,24 +493,25 @@ function getLeaderboardBadge(position: number): string {
 
 async function buildLeaderboardMenu(
 	params: CityMenuParams,
-	entries: PveBossLeaderboardEntry[],
-	monsterId: string,
-	classId: number
+	snapshot: LeaderboardSnapshot
 ): Promise<CrowniclesNestedMenu> {
 	const lng = params.interaction.userLanguage;
 	const container = new ContainerBuilder();
 	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(
 		StringUtils.formatHeader(i18n.t("commands:report.city.bossArchivist.leaderboard.resultTitle", {
-			lng, boss: getBossName(monsterId, lng)
+			lng, boss: getBossName(snapshot, lng)
 		}))
 	));
 	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(
 		i18n.t("commands:report.city.bossArchivist.leaderboard.classHeader", {
-			lng, class: DisplayUtils.getClassDisplay(classId, lng)
+			lng, class: DisplayUtils.getClassDisplay(snapshot.classId, lng)
 		})
 	));
-	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(await formatLeaderboardEntries(entries, lng)));
-	addBackButton(container, ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, i18n.t("commands:report.city.bossArchivist.leaderboard.changeSelection", { lng }));
+	container.addTextDisplayComponents(new TextDisplayBuilder().setContent(await formatLeaderboardEntries(snapshot.entries, lng)));
+	addBackButton(container, {
+		id: ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU,
+		label: i18n.t("commands:report.city.bossArchivist.leaderboard.changeSelection", { lng })
+	});
 	return {
 		containers: [container],
 		createCollector: createArchivistCollector(params, handleLeaderboardResultSelection.bind(null, params))
@@ -452,14 +520,12 @@ async function buildLeaderboardMenu(
 
 async function handleLeaderboardResultSelection(
 	params: CityMenuParams,
-	customId: string,
-	_interaction: MessageComponentInteraction,
-	menus: CrowniclesNestedMenus
+	click: ArchivistMenuClick
 ): Promise<void> {
 	invalidatePendingRequest(params);
 	getState(params).selectedBossId = undefined;
-	menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, buildLeaderboardSelectionMenu(params));
-	await menus.changeMenu(customId);
+	click.menus.registerMenu(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU, buildLeaderboardSelectionMenu(params));
+	await click.menus.changeMenu(click.actionId);
 }
 
 export function getBossArchivistMenus(params: CityMenuParams): Map<string, CrowniclesNestedMenu> {
