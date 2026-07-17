@@ -299,17 +299,18 @@ export class Player extends Model {
 				count: delta,
 				applyOnLockedPlayer: locked => {
 					locked.score += delta;
+					locked.addWeeklyScore(delta);
 				}
 			});
 			Object.assign(this, newPlayer);
 		}
 		else {
 			this.score += delta;
+			this.addWeeklyScore(delta);
 		}
 		await this.setScore(this.score, parameters.response);
 		crowniclesInstance?.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
 			.then();
-		this.addWeeklyScore(parameters.amount);
 		return this;
 	}
 
