@@ -399,11 +399,29 @@ async function formatLeaderboardEntries(entries: PveBossLeaderboardEntry[], lng:
 			: unknownPlayer);
 	return entries.map((entry, index) => i18n.t("commands:report.city.bossArchivist.leaderboard.entry", {
 		lng,
+		badge: getLeaderboardBadge(index + 1),
 		position: index + 1,
 		pseudo: pseudos[index] ?? unknownPlayer,
 		level: entry.monsterLevel,
 		turns: entry.turns
 	})).join("\n");
+}
+
+function getLeaderboardBadge(position: number): string {
+	switch (position) {
+		case 1:
+			return CrowniclesIcons.top.badges.first;
+		case 2:
+			return CrowniclesIcons.top.badges.second;
+		case 3:
+			return CrowniclesIcons.top.badges.third;
+		case 4:
+			return CrowniclesIcons.top.badges.fourth;
+		case 5:
+			return CrowniclesIcons.top.badges.fifth;
+		default:
+			return CrowniclesIcons.top.badges.default;
+	}
 }
 
 async function buildLeaderboardMenu(

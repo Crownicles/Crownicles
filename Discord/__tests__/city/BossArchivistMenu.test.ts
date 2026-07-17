@@ -91,6 +91,23 @@ function getClassSections(menu: ReturnType<typeof getBossArchivistMenus> extends
 	}));
 }
 
+function getTextContents(menu: ReturnType<typeof getBossArchivistMenus> extends Map<string, infer Menu> ? Menu : never): string[] {
+	if (!("containers" in menu)) {
+		return [];
+	}
+	return menu.containers.flatMap(container => container.components.flatMap(component => {
+		if ("data" in component && typeof component.data.content === "string") {
+			return [component.data.content];
+		}
+		if ("components" in component) {
+			return component.components.flatMap(child => "data" in child && typeof child.data.content === "string"
+				? [child.data.content]
+				: []);
+		}
+		return [];
+	}));
+}
+
 async function collectMenuAction(
 	menu: ReturnType<typeof getBossArchivistMenus> extends Map<string, infer Menu> ? Menu : never,
 	customId: string,
@@ -226,5 +243,63 @@ describe("BossArchivistMenu", () => {
 		expect(getCustomIds(currentMenu)).toContain(
 			`${ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX}${FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN}`
 		);
+	});
+
+	it("renders leaderboard entries with the general top badges and compact rows", async () => {
+		const params = createParams();
+		const menus = getBossArchivistMenus(params);
+		const playerIds = ["first", "second", "third", "fourth", "fifth"];
+		vi.mocked(KeycloakUtils.getUsersFromIds).mockResolvedValue({
+			isError: false,
+			status: 200,
+			payload: {
+				users: playerIds.map(id => ({ attributes: { gameUsername: [id] } }))
+			}
+		} as never);
+		vi.mocked(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse)
+			.mockImplementationOnce(async (_context, _packet, callback) => {
+				await callback({} as never, CommandReportBossPersonalRecordsRes.name, {
+					personalRecords: [], maximumTierClassIds: [18]
+				} as CommandReportBossPersonalRecordsRes);
+			})
+			.mockImplementationOnce(async (_context, _packet, callback) => {
+				await callback({} as never, "CommandReportBossLeaderboardRes", {
+					monsterId: FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN,
+					classId: 18,
+					entries: playerIds.map((playerKeycloakId, index) => ({
+						playerKeycloakId,
+						monsterId: FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN,
+						monsterLevel: 150 - index,
+						classId: 18,
+						turns: 20 + index,
+						date: 1_000 + index
+					}))
+				});
+			});
+
+		await collectMenuAction(
+			menus.get(ReportCityMenuIds.BOSS_ARCHIVIST_MENU)!,
+			ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU,
+			menus
+		);
+		await collectMenuAction(
+			menus.get(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU)!,
+			`${ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_BOSS_PREFIX}${FightConstants.FINAL_BOSS_MONSTER_IDS.MAGMA_TITAN}`,
+			menus
+		);
+		await collectMenuAction(
+			menus.get(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU)!,
+			`${ReportCityMenuIds.BOSS_ARCHIVIST_CLASS_PREFIX}18`,
+			menus
+		);
+
+		const text = getTextContents(menus.get(ReportCityMenuIds.BOSS_ARCHIVIST_LEADERBOARD_MENU)!).join("\n");
+		expect(text).toContain("**Classe :**");
+		expect(text).not.toContain("Classe étudiée");
+		expect(text).toContain("🥇 **first** | Niveau **150** | **20** tours");
+		expect(text).toContain("🥈 **second** | Niveau **149** | **21** tours");
+		expect(text).toContain("🥉 **third** | Niveau **148** | **22** tours");
+		expect(text).toContain("🏅 **fourth** | Niveau **147** | **23** tours");
+		expect(text).toContain("🏅 **fifth** | Niveau **146** | **24** tours");
 	});
 });
