@@ -22,6 +22,10 @@ import {
 	CommandReportCookingMenuReq,
 	CommandReportCookingPinReq,
 	CommandReportCookingUnpinReq,
+	CommandReportBossPersonalRecordsReq,
+	CommandReportBossPersonalRecordsRes,
+	CommandReportBossLeaderboardReq,
+	CommandReportBossLeaderboardRes,
 	CommandReportGuildDomainUpgradeReq,
 	CommandReportFoodShopBuyReq,
 	CommandReportGuildDomainDepositTreasuryReq
@@ -45,6 +49,16 @@ import {
 	CommandEquipActionReq, CommandEquipActionRes
 } from "../../../../../Lib/src/packets/commands/CommandEquipPacket";
 import { handleEquipAction } from "../../utils/EquipActionService";
+import { LogsPveBossRecordsRequests } from "../../database/logs/requests/LogsPveBossRecordsRequests";
+import Player, { Players } from "../../database/game/models/Player";
+import { CityDataController } from "../../../data/City";
+
+async function getPlayerAtBossArchivist(keycloakId: string): Promise<Player | null> {
+	const player = await Players.getOrRegister(keycloakId);
+	const destinationId = player.getDestinationId();
+	const city = destinationId === null ? undefined : CityDataController.instance.getCityByMapId(destinationId);
+	return player.insideCity && city?.bossArchivistAvailable ? player : null;
+}
 
 export default class CoreHandlers {
 	@packetHandler(ReactionCollectorReactPacket)
@@ -126,6 +140,25 @@ export default class CoreHandlers {
 	@packetHandler(CommandReportCookingUnpinReq)
 	async cookingUnpin(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportCookingUnpinReq): Promise<void> {
 		response.push(...await handleCookingUnpin(context.keycloakId!, packet));
+	}
+
+	@packetHandler(CommandReportBossPersonalRecordsReq)
+	async bossPersonalRecords(response: CrowniclesPacket[], context: PacketContext, _packet: CommandReportBossPersonalRecordsReq): Promise<void> {
+		const player = await getPlayerAtBossArchivist(context.keycloakId!);
+		response.push(makePacket(CommandReportBossPersonalRecordsRes, {
+			personalRecords: player ? await LogsPveBossRecordsRequests.getPersonalRecords(player.keycloakId) : [],
+			maximumTierClassIds: player ? LogsPveBossRecordsRequests.getMaximumTierClassIds() : []
+		}));
+	}
+
+	@packetHandler(CommandReportBossLeaderboardReq)
+	async bossLeaderboard(response: CrowniclesPacket[], context: PacketContext, packet: CommandReportBossLeaderboardReq): Promise<void> {
+		const player = await getPlayerAtBossArchivist(context.keycloakId!);
+		response.push(makePacket(CommandReportBossLeaderboardRes, {
+			monsterId: packet.monsterId,
+			classId: packet.classId,
+			entries: player ? await LogsPveBossRecordsRequests.getLeaderboard(packet.monsterId, packet.classId) : []
+		}));
 	}
 
 	@packetHandler(CommandReportGuildDomainUpgradeReq)

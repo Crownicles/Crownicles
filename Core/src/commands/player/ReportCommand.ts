@@ -716,6 +716,7 @@ async function sendCityCollector(
 			current: player.getHealth(),
 			max: player.getMaxHealth()
 		},
+		bossArchivist: city.bossArchivistAvailable ? true : undefined,
 		enchanter: isEnchanterHere && enchantment
 			? await buildEnchanterData(
 				{

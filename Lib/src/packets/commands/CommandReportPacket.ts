@@ -37,8 +37,7 @@ export type PlantTransferError = typeof HomeConstants.PLANT_TRANSFER_ERRORS[keyo
 export type { ItemSlot };
 
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
-export class CommandReportPacketReq extends CrowniclesPacket {
-}
+export class CommandReportPacketReq extends CrowniclesPacket {}
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandReportTravelSummaryRes extends CrowniclesPacket {
@@ -732,6 +731,34 @@ export class CommandReportCookingUnpinReq extends CrowniclesPacket {
 @sendablePacket(PacketDirection.NONE)
 export class CommandReportCookingUnpinRes extends CrowniclesPacket {
 	menu!: CookingMenuSnapshot;
+}
+
+// ---- Castle boss archivist packets ----
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportBossPersonalRecordsReq extends CrowniclesPacket {}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportBossPersonalRecordsRes extends CrowniclesPacket {
+	personalRecords!: import("../../types/PveBossRecord").PveBossPersonalRecord[];
+
+	maximumTierClassIds!: number[];
+}
+
+@sendablePacket(PacketDirection.FRONT_TO_BACK)
+export class CommandReportBossLeaderboardReq extends CrowniclesPacket {
+	monsterId!: import("../../types/PveBossRecord").FinalPveBossId;
+
+	classId!: number;
+}
+
+@sendablePacket(PacketDirection.NONE)
+export class CommandReportBossLeaderboardRes extends CrowniclesPacket {
+	monsterId!: import("../../types/PveBossRecord").FinalPveBossId;
+
+	classId!: number;
+
+	entries!: import("../../types/PveBossRecord").PveBossLeaderboardEntry[];
 }
 
 // Guild domain notary packets

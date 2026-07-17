@@ -1090,6 +1090,39 @@
         "mockBadgeGiven": "{emote:badges.sentimental_crafter} Le forgeron royal contemple l'humble babiole que vous lui avez fait améliorer, soupire et grave votre nom dans son grand registre des « curiosités sentimentales ». Vous gagnez le badge {emote:badges.sentimental_crafter}.",
         "mockBadgeAlreadyOwned": "{emote:badges.sentimental_crafter} Le forgeron royal lève les yeux au ciel en améliorant votre babiole, se demandant pourquoi donc vous tenez tant à cet objet."
       },
+      "bossArchivist": {
+        "serviceTitle": "Consulter l'archiviste des îles",
+        "serviceDescription": "Sous les voûtes du château, un archiviste rassemble les récits des aventuriers ayant triomphé des plus redoutables créatures des îles mystérieuses.",
+        "visit": "Consulter les archives",
+        "title": "{{pseudo}}, archives des îles",
+        "introduction": "{emote:city.bossArchivist} De hauts rayonnages renferment les comptes rendus des combats menés contre les souverains des îles. L'archiviste peut retrouver vos plus grands exploits ou comparer les champions de chaque classe du dernier palier.",
+        "examine": "Consulter",
+        "backToBosses": "Retour aux créatures",
+        "personal": {
+          "title": "Vos plus grands exploits",
+          "description": "Retrouvez, pour chaque créature finale, le plus haut niveau que vous avez vaincu et le récit conservé de cette bataille.",
+          "button": "Voir vos exploits",
+          "chooseBoss": "Choisissez la créature dont vous souhaitez consulter les archives.",
+          "record_swift": "{emote:monsters.{{monsterId}}} **{{boss}} de niveau {{level}}**\n{{class}} · {{turns}} tours · <t:{{date}}:D>\n\nLe registre décrit une victoire fulgurante, remportée avant que la créature ne puisse déployer toute sa puissance. Votre technique la plus employée fut **{{action}}**, utilisée **{{actionCount}} fois**.",
+          "record_standard": "{emote:monsters.{{monsterId}}} **{{boss}} de niveau {{level}}**\n{{class}} · {{turns}} tours · <t:{{date}}:D>\n\nLe registre rapporte un affrontement maîtrisé, au cours duquel chaque échange vous rapprocha de la victoire. Votre technique la plus employée fut **{{action}}**, utilisée **{{actionCount}} fois**.",
+          "record_long": "{emote:monsters.{{monsterId}}} **{{boss}} de niveau {{level}}**\n{{class}} · {{turns}} tours · <t:{{date}}:D>\n\nLe registre garde la trace d'une lutte éprouvante qui se prolongea jusqu'aux limites de vos forces. Votre technique la plus employée fut **{{action}}**, utilisée **{{actionCount}} fois**.",
+          "noRecord": "Aucune victoire contre **{{boss}}** ne figure encore à votre nom. Une page vierge attend le récit de votre premier triomphe.",
+          "unknownAction": "une technique oubliée"
+        },
+        "leaderboard": {
+          "title": "Classements des créatures finales",
+          "description": "L'archiviste réserve ses classements aux aventuriers ayant atteint une classe du dernier palier, seule preuve qu'il juge digne de ses registres royaux.",
+          "button": "Voir les classements",
+          "chooseBoss": "Choisissez d'abord la créature dont vous souhaitez consulter le classement.",
+          "chooseClass": "L'archiviste ouvre le registre consacré à **{{boss}}**. Seuls les exploits accomplis avec une classe du dernier palier y sont consignés, les autres étant conservés dans les archives personnelles. Choisissez le chapitre à consulter.",
+          "show": "Voir le classement",
+          "resultTitle": "Classement de {{boss}}",
+          "classHeader": "**Classe étudiée :** {{class}}",
+          "entry": "**{{position}}. {{pseudo}}** · niveau **{{level}}** · {{turns}} tours",
+          "empty": "Aucune victoire n'a encore été enregistrée pour cette créature avec cette classe.",
+          "changeSelection": "Changer de sélection"
+        }
+      },
       "homes": {
         "goToOwnedHome": "Aller à votre maison",
         "goToOwnedHomeDescription": "Un havre de paix vous attend derrière cette porte, avec tout le confort nécessaire pour préparer vos prochaines aventures.",

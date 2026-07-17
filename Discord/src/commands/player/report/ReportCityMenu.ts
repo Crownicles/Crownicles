@@ -44,6 +44,7 @@ import { getMainMenu } from "./cityMenu/MainMenu";
 import { getInnMenu } from "./cityMenu/InnMenu";
 import { getEnchanterMenu } from "./cityMenu/EnchanterMenu";
 import { getManageHomeMenu } from "./cityMenu/NotaryMenu";
+import { getBossArchivistMenus } from "./cityMenu/BossArchivistMenu";
 import { registerCityMessageOwner } from "./CityMessageHandoff";
 
 type CityCollectorHandler = (
@@ -248,6 +249,15 @@ function addGuildFoodShopSubMenu(menus: Map<string, CrowniclesNestedMenu>, param
 	menus.set(ReportCityMenuIds.GUILD_FOOD_SHOP_MENU, getGuildFoodShopMenu(params));
 }
 
+function addBossArchivistSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.bossArchivist) {
+		return;
+	}
+	for (const [key, menu] of getBossArchivistMenus(params)) {
+		menus.set(key, menu);
+	}
+}
+
 function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNestedMenu> {
 	const menus = new Map<string, CrowniclesNestedMenu>();
 	const cityData = params.packet.data.data as ReactionCollectorCityData;
@@ -260,6 +270,7 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 	addManageHomeSubMenu(menus, params, cityData);
 	addGuildDomainSubMenus(menus, params, cityData);
 	addGuildFoodShopSubMenu(menus, params, cityData);
+	addBossArchivistSubMenus(menus, params, cityData);
 
 	return menus;
 }

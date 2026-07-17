@@ -397,16 +397,13 @@ export abstract class KeycloakUtils {
 			return checkAndQueryToken;
 		}
 
-		const users: (KeycloakUser | null)[] = [];
-		for (const keycloakId of keycloakIds) {
+		const users = await Promise.all(keycloakIds.map(async keycloakId => {
 			const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
 			if (getUser.isError || !("user" in getUser.payload)) {
-				users.push(null);
+				return null;
 			}
-			else {
-				users.push(getUser.payload.user!);
-			}
-		}
+			return getUser.payload.user!;
+		}));
 		return {
 			status: 200,
 			payload: { users },

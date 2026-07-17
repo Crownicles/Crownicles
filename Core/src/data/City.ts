@@ -48,6 +48,9 @@ export class City extends Data<string> {
 	 */
 	public readonly hasRoyalBlacksmith?: boolean;
 
+	/** Whether this city hosts the archivist who tracks final island boss records. */
+	public readonly hasBossArchivist?: boolean;
+
 	/**
 	 * Multiplier applied to the base home cost (purchase + upgrades) for this city.
 	 * Allows minor variation between cities (currently within ~+/- 8%) without modifying the base ladder.
@@ -75,6 +78,10 @@ export class City extends Data<string> {
 	 */
 	public get royalBlacksmithAvailable(): boolean {
 		return this.hasRoyalBlacksmith === true;
+	}
+
+	public get bossArchivistAvailable(): boolean {
+		return this.hasBossArchivist === true;
 	}
 
 	public getTodayInnMeals(inn: CityInn, date: Date): InnMeal[] {

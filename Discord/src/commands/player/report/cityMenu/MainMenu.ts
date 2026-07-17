@@ -112,7 +112,7 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 }
 
 function addServicesSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	const hasAnyService = data.blacksmith || data.enchanter || data.royalBlacksmith;
+	const hasAnyService = data.blacksmith || data.enchanter || data.royalBlacksmith || data.bossArchivist;
 	if (!hasAnyService) {
 		return;
 	}
@@ -148,6 +148,18 @@ function addServicesSection(container: ContainerBuilder, data: ReactionCollector
 			description: i18n.t("commands:report.city.reactions.enchanter.description", { lng }),
 			customId: ReportCityMenuIds.ENCHANTER_MENU,
 			buttonLabel: i18n.t("commands:report.city.buttons.talkToEnchanter", { lng })
+		});
+	}
+
+	if (data.bossArchivist) {
+		addCitySection({
+			container,
+			emote: CrowniclesIcons.city.bossArchivist,
+			title: i18n.t("commands:report.city.bossArchivist.serviceTitle", { lng }),
+			description: i18n.t("commands:report.city.bossArchivist.serviceDescription", { lng }),
+			customId: ReportCityMenuIds.BOSS_ARCHIVIST_MENU,
+			buttonLabel: i18n.t("commands:report.city.bossArchivist.visit", { lng }),
+			buttonStyle: ReportCityButtonStyles.OPTION
 		});
 	}
 }
@@ -289,6 +301,7 @@ function addExitStayButtons(container: ContainerBuilder, packet: ReactionCollect
 
 const MAIN_MENU_NAVIGATION_TARGETS = new Set<string>([
 	ReportCityMenuIds.ENCHANTER_MENU,
+	ReportCityMenuIds.BOSS_ARCHIVIST_MENU,
 	HomeMenuIds.HOME_MENU,
 	HomeMenuIds.MANAGE_HOME_MENU,
 	ReportCityMenuIds.BLACKSMITH_MENU,
