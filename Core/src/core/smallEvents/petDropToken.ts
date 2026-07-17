@@ -30,7 +30,7 @@ async function findPetsOnSamePath(startMapId: number, endMapId: number, playerId
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted: async player => {
-		if (!Maps.isOnContinent(player) || player.level < TokensConstants.LEVEL_TO_UNLOCK || player.tokens >= TokensConstants.MAX) {
+		if (!Maps.isOnContinent(player) || player.tokens >= TokensConstants.MAX) {
 			return false;
 		}
 		const link = MapLinkDataController.instance.getById(player.mapLinkId);

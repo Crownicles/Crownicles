@@ -10,6 +10,7 @@ import {Constants} from "../../../../../Lib/src/constants/Constants";
 import {NumberChangeReason} from "../../../../../Lib/src/constants/LogsConstants";
 import {canUseTokensAtLocation} from "../../../../src/core/report/ReportTravelService";
 import {asMilliseconds} from "../../../../../Lib/src/utils/TimeUtils";
+import {PlayersConstants} from "../../../../../Lib/src/constants/PlayersConstants";
 
 // Use fake timers so that `Date.now()` and `new Date()` both return our controlled `now`
 vi.useFakeTimers();
@@ -529,7 +530,7 @@ describe("Tokens Usage", () => {
 		});
 
 		it("should allow tokens on the main continent from the starting level", () => {
-			const player = createMockPlayer({ mapLinkId: 1, level: TokensConstants.LEVEL_TO_UNLOCK });
+			const player = createMockPlayer({ mapLinkId: 1, level: PlayersConstants.PLAYER_DEFAULT_VALUES.LEVEL });
 			vi.spyOn(Maps, "isOnContinent").mockReturnValue(true);
 			vi.spyOn(Maps, "isOnBoat").mockReturnValue(false);
 			vi.spyOn(Maps, "isOnPveIsland").mockReturnValue(false);

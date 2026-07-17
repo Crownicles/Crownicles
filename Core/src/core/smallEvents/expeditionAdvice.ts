@@ -33,11 +33,10 @@ import { BlessingManager } from "../blessings/BlessingManager";
 
 /**
  * Check if the small event can be executed for this player
- * Requires: player level >= tokens unlock level and on continent
+ * Requires the player to be on the continent
  */
 function canBeExecuted(player: Player): boolean {
-	return Maps.isOnContinent(player)
-		&& player.level >= TokensConstants.LEVEL_TO_UNLOCK;
+	return Maps.isOnContinent(player);
 }
 
 /**
