@@ -45,6 +45,7 @@ import { DiscordConstants } from "../../DiscordConstants";
 import { PetUtils } from "../../utils/PetUtils";
 import { SexTypeShort } from "../../../../Lib/src/constants/StringConstants";
 import { ReactionCollectorFightChooseActionPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFightChooseAction";
+import { deferFightInteraction } from "./FightInteractionUtils";
 
 const buggedFights = new Set<string>();
 
@@ -69,7 +70,7 @@ function fightBugged(context: PacketContext, fightId: string): void {
  */
 export async function createFightCollector(context: PacketContext, packet: ReactionCollectorFightPacket): Promise<ReactionCollectorReturnTypeOrNull> {
 	const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
-	await interaction.deferReply();
+	await deferFightInteraction(interaction);
 	const lng = interaction.userLanguage;
 	const data = packet.data.data;
 	const subTextKey = RandomUtils.crowniclesRandom.bool(FightConstants.RARE_SUB_TEXT_INTRO) ? "rare" : "common";
@@ -641,6 +642,7 @@ async function getPacket(interaction: CrowniclesInteraction, user: KeycloakUser)
 	if (!player || !player.keycloakId) {
 		return null;
 	}
+	await deferFightInteraction(interaction);
 	return makePacket(CommandFightPacketReq, { playerKeycloakId: player.keycloakId });
 }
 
