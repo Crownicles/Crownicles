@@ -246,10 +246,13 @@ function addBossButtons(container: ContainerBuilder, prefix: BossSelectionPrefix
 }
 
 function getDominantAction(record: PveBossPersonalRecord): PveBossPersonalRecord["actions"][number] | undefined {
-	return record.actions.reduce<PveBossPersonalRecord["actions"][number] | undefined>(
-		(best, action) => !best || action.count > best.count ? action : best,
-		undefined
-	);
+	let dominantAction = record.actions[0];
+	for (const action of record.actions.slice(1)) {
+		if (action.count > dominantAction.count) {
+			dominantAction = action;
+		}
+	}
+	return dominantAction;
 }
 
 function buildPersonalRecordText(record: PveBossPersonalRecord, lng: CityMenuParams["interaction"]["userLanguage"]): string {
