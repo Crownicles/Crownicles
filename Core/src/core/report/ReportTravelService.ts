@@ -148,11 +148,6 @@ interface TokenButtonData {
  * @param player - The player to check
  */
 export function canUseTokensAtLocation(player: Player): boolean {
-	// Tokens are unlocked at a specific level
-	if (player.level < TokensConstants.LEVEL_TO_UNLOCK) {
-		return false;
-	}
-
 	// Tokens can only be used on the main continent
 	if (!Maps.isOnContinent(player)) {
 		return false;

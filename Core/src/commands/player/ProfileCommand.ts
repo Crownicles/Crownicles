@@ -222,12 +222,9 @@ interface ProfileTokenData {
 }
 
 /**
- * Build token data for profile (only if player level is high enough)
+ * Build token data for profile
  */
-function buildTokenData(player: Player): ProfileTokenData | undefined {
-	if (player.level < TokensConstants.LEVEL_TO_UNLOCK) {
-		return undefined;
-	}
+function buildTokenData(player: Player): ProfileTokenData {
 	return {
 		value: player.tokens,
 		max: TokensConstants.MAX
