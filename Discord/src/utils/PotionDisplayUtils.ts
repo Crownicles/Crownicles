@@ -4,4 +4,3 @@ export function formatPotionUsagesPrefix(usages: number | undefined, maxUsages: 
 	}
 	return `**${usages ?? maxUsages}/${maxUsages}** | `;
 }
-
