@@ -441,14 +441,17 @@ export abstract class PlantConstants {
 
 	/**
 	 * Map link IDs where the gardener NPC can appear.
-	 * Link 8: Plains(3) -> Forest(4)
-	 * Link 46: Village(17) -> Forest(27)
-	 * Link 32: Forest(22) -> Lake(14)
+	 * Links 8/69: Plains(3) <-> Forest(4)
+	 * Links 46/59: Village(17) <-> Forest(27)
+	 * Links 32/56: Forest(22) <-> Lake(14)
 	 */
 	public static readonly GARDENER_MAP_LINKS: readonly number[] = [
 		8,
+		69,
 		46,
-		32
+		59,
+		32,
+		56
 	];
 
 	/**
