@@ -108,7 +108,7 @@ async function handleEnchantItemSelection(params: EnchanterHandlerParams): Promi
 			enchantmentType: params.data.enchantmentType
 		}),
 		confirmLabel: i18n.t("commands:report.city.buttons.enchant", { lng }),
-		confirmEmoji: CrowniclesIcons.city.enchanter,
+		confirmEmoji: CrowniclesIcons.city.services.enchanter,
 		backMenuId: ReportCityMenuIds.ENCHANTER_MENU,
 		confirmAck: "reply",
 		onConfirm: async action => {
