@@ -5,6 +5,9 @@ import { ItemDataController } from "./DataController";
 import { SupportItem } from "./SupportItem";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
+import {
+	NO_STAT_COMPARISON, StatValues
+} from "../../../Lib/src/types/StatValues";
 
 export class Potion extends SupportItem {
 	categoryName = "potions";
@@ -24,14 +27,21 @@ export class Potion extends SupportItem {
 		return this.power;
 	}
 
-	public getDisplayPacket(): SupportItemDetails {
+	public getDisplayPacket(_maxStatsValue: StatValues = NO_STAT_COMPARISON, itemUsages?: number): SupportItemDetails {
+		const maxUsages = this.isFightPotion() ? this.usages || 1 : undefined;
 		return {
 			itemCategory: this.getCategory(),
 			maxPower: this.power,
 			nature: this.nature,
 			power: this.power,
 			rarity: this.rarity,
-			id: this.id
+			id: this.id,
+			...maxUsages === undefined
+				? {}
+				: {
+					usages: itemUsages ?? maxUsages,
+					maxUsages
+				}
 		};
 	}
 }

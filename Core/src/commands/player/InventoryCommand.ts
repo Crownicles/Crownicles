@@ -27,6 +27,7 @@ import {
 import {
 	PlantId, PLANT_SLOT_TYPE
 } from "../../../../Lib/src/constants/PlantConstants";
+import { buildPotionDisplayPacket } from "./InventoryPotionUtils";
 
 function buildMainItemBackups(
 	items: InventorySlot[],
@@ -48,7 +49,7 @@ function buildPotionBackups(
 	slot: number;
 }[] {
 	return items.map(item => ({
-		display: (item.getItem() as Potion).getDisplayPacket(),
+		display: buildPotionDisplayPacket(item),
 		slot: item.slot
 	}));
 }
@@ -135,7 +136,7 @@ async function buildInventoryData(toCheckPlayer: Player): Promise<CommandInvento
 		data: {
 			weapon: (weapon.getItem() as MainItem).getDisplayPacket(weapon.itemLevel, weapon.itemEnchantmentId ?? undefined, maxStatsValues),
 			armor: (armor.getItem() as MainItem).getDisplayPacket(armor.itemLevel, armor.itemEnchantmentId ?? undefined, maxStatsValues),
-			potion: (potion.getItem() as Potion).getDisplayPacket(),
+			potion: buildPotionDisplayPacket(potion),
 			object: (object.getItem() as ObjectItem).getDisplayPacket(maxStatsValues),
 			backupWeapons: buildMainItemBackups(getBackupItems(items, item => item.isWeapon()), maxStatsValues),
 			backupArmors: buildMainItemBackups(getBackupItems(items, item => item.isArmor()), maxStatsValues),
