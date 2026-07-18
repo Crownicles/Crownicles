@@ -401,6 +401,11 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: true,
 			defaultValue: null
 		},
+		remainingPotionUsages: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+			defaultValue: null
+		},
 		updatedAt: {
 			type: DataTypes.DATE,
 			defaultValue: moment()
