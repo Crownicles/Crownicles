@@ -114,6 +114,8 @@ type WhoIsConcerned = {
 
 type ConcernedItems = {
 	item: GenericItem;
+	itemLevel?: number;
+	itemEnchantmentId?: string | null;
 	itemToReplace?: InventorySlot;
 	itemToReplaceInstance?: GenericItem;
 };
@@ -131,14 +133,21 @@ type SellKeepItemOptions = {
  * @param item
  * @param itemToReplace
  */
-async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player, item: GenericItem, itemToReplace: InventorySlot): Promise<void> {
+async function dontKeepOriginalItem(
+	response: CrowniclesPacket[],
+	player: Player,
+	item: GenericItem,
+	itemToReplace: InventorySlot,
+	itemLevel = 0,
+	itemEnchantmentId: string | null = null
+): Promise<void> {
 	response.push(makePacket(ItemAcceptPacket, {
-		itemWithDetails: toItemWithDetails(player, item, 0, null)
+		itemWithDetails: toItemWithDetails(player, item, itemLevel, itemEnchantmentId)
 	}));
 	await InventorySlot.update({
 		itemId: item.id,
-		itemLevel: 0,
-		itemEnchantmentId: null
+		itemLevel,
+		itemEnchantmentId
 	}, {
 		where: {
 			slot: itemToReplace.slot,
@@ -222,6 +231,8 @@ async function sellOrKeepItem(
 	whoIsConcerned: WhoIsConcerned,
 	{
 		item,
+		itemLevel,
+		itemEnchantmentId,
 		itemToReplace,
 		itemToReplaceInstance
 	}: ConcernedItems,
@@ -234,7 +245,7 @@ async function sellOrKeepItem(
 	const player = whoIsConcerned.player;
 	await player.reload();
 	if (!keepOriginal) {
-		await dontKeepOriginalItem(response, player, item, itemToReplace!);
+		await dontKeepOriginalItem(response, player, item, itemToReplace!, itemLevel, itemEnchantmentId);
 		item = itemToReplaceInstance!;
 		resaleMultiplier = 1;
 	}
@@ -258,13 +269,22 @@ async function sellOrKeepItem(
  * @param tradableItems
  * @param sellKeepOptions
  */
-function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, toTradeItem: GenericItem, tradableItems: InventorySlot[], sellKeepOptions: SellKeepItemOptions) {
+function getMoreThan2ItemsSwitchingEndCallback(
+	whoIsConcerned: WhoIsConcerned,
+	toTradeItem: GenericItem,
+	itemLevel: number,
+	itemEnchantmentId: string | null,
+	tradableItems: InventorySlot[],
+	sellKeepOptions: SellKeepItemOptions
+) {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 		await whoIsConcerned.player.reload();
 
 		const concernedItems: ConcernedItems = {
-			item: toTradeItem
+			item: toTradeItem,
+			itemLevel,
+			itemEnchantmentId
 		};
 
 		if (reaction?.reaction.type === ReactionCollectorItemChoiceItemReaction.name) {
@@ -293,6 +313,8 @@ function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, t
 
 type ItemsToManage = {
 	toTradeItem: GenericItem;
+	itemLevel: number;
+	itemEnchantmentId: string | null;
 	tradableItems: InventorySlot[];
 };
 
@@ -313,6 +335,8 @@ function manageMoreThan2ItemsSwitching(
 	whoIsConcerned: WhoIsConcerned,
 	{
 		toTradeItem,
+		itemLevel,
+		itemEnchantmentId,
 		tradableItems
 	}: ItemsToManage,
 	sellKeepOptions: SellKeepItemOptions,
@@ -341,7 +365,14 @@ function manageMoreThan2ItemsSwitching(
 			reactionLimit: 1,
 			mainPacket: false
 		},
-		getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned, toTradeItem, tradableItems, sellKeepOptions)
+		getMoreThan2ItemsSwitchingEndCallback(
+			whoIsConcerned,
+			toTradeItem,
+			itemLevel,
+			itemEnchantmentId,
+			tradableItems,
+			sellKeepOptions
+		)
 	)
 		.block(keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM)
 		.build());
@@ -475,6 +506,8 @@ export async function giveItemToPlayer(
 	if (maxSlots >= 2) {
 		manageMoreThan2ItemsSwitching(response, context, whoIsConcerned, {
 			toTradeItem: item,
+			itemLevel,
+			itemEnchantmentId,
 			tradableItems: items
 		}, { resaleMultiplier }, canDrinkThisPotion);
 		return;
@@ -495,6 +528,8 @@ export async function giveItemToPlayer(
 		},
 		getGiveItemToPlayerEndCallback(whoIsConcerned, {
 			item,
+			itemLevel,
+			itemEnchantmentId,
 			itemToReplace,
 			itemToReplaceInstance
 		}, resaleMultiplier)
