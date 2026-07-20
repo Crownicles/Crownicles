@@ -1,5 +1,5 @@
 import {
-	describe, expect, it
+	describe, expect, it, vi
 } from "vitest";
 import { CookingService } from "../../../src/core/cooking/CookingService";
 import {
@@ -9,6 +9,8 @@ import {
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { PlantId } from "../../../../Lib/src/constants/PlantConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
+import { HomePlantStorages } from "../../../src/core/database/game/models/HomePlantStorage";
+import { PlayerPlantSlots } from "../../../src/core/database/game/models/PlayerPlantSlot";
 
 /**
  * Minimal recipe factory for testing
@@ -313,6 +315,51 @@ describe("CookingService - pure functions", () => {
 			const recipe = createTestRecipe({ id: "other_recipe" });
 			const result = build(0, recipe, { ...baseContext, pinnedRecipeId: "potion_health_1" });
 			expect(result.isSecret).toBe(true);
+		});
+	});
+
+	describe("buildPlantAvailabilityMap", () => {
+		const buildMap = (CookingService as unknown as {
+			buildPlantAvailabilityMap: (homeId: number, playerId: number) => Promise<Map<number, number>>;
+		}).buildPlantAvailabilityMap.bind(CookingService);
+
+		it("should combine home plant storage with carried plant slots", async () => {
+			const storageSpy = vi.spyOn(HomePlantStorages, "getOfHome").mockResolvedValue([
+				{ plantId: PlantId.COMMON_HERB, quantity: 2 },
+				{ plantId: PlantId.GOLDEN_CLOVER, quantity: 5 }
+			] as unknown as Awaited<ReturnType<typeof HomePlantStorages.getOfHome>>);
+			const carriedSpy = vi.spyOn(PlayerPlantSlots, "getCarriedPlantCounts").mockResolvedValue(new Map<PlantId, number>([
+				[PlantId.COMMON_HERB, 1],
+				[PlantId.ANCIENT_TREE, 3]
+			]));
+
+			const map = await buildMap(1, 1);
+
+			// Storage + carried are summed for the same plant
+			expect(map.get(PlantId.COMMON_HERB)).toBe(3);
+			// Storage-only plant keeps its quantity
+			expect(map.get(PlantId.GOLDEN_CLOVER)).toBe(5);
+			// Carried-only plant is now available even without any home storage entry
+			expect(map.get(PlantId.ANCIENT_TREE)).toBe(3);
+
+			storageSpy.mockRestore();
+			carriedSpy.mockRestore();
+		});
+
+		it("should count carried plants when the home storage is empty", async () => {
+			const storageSpy = vi.spyOn(HomePlantStorages, "getOfHome").mockResolvedValue(
+				[] as unknown as Awaited<ReturnType<typeof HomePlantStorages.getOfHome>>
+			);
+			const carriedSpy = vi.spyOn(PlayerPlantSlots, "getCarriedPlantCounts").mockResolvedValue(new Map<PlantId, number>([
+				[PlantId.COMMON_HERB, 2]
+			]));
+
+			const map = await buildMap(1, 1);
+
+			expect(map.get(PlantId.COMMON_HERB)).toBe(2);
+
+			storageSpy.mockRestore();
+			carriedSpy.mockRestore();
 		});
 	});
 });

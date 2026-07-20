@@ -1,6 +1,7 @@
 import Player from "../database/game/models/Player";
 import { Materials } from "../database/game/models/Material";
 import { HomePlantStorages } from "../database/game/models/HomePlantStorage";
+import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import {
 	Guilds, Guild
 } from "../database/game/models/Guild";
@@ -192,8 +193,7 @@ export class CookingService {
 		});
 
 		// Load all plant storages once to avoid N+1 queries
-		const allPlantStorages = await HomePlantStorages.getOfHome(homeId);
-		const plantStorageMap = new Map(allPlantStorages.map(s => [s.plantId, s.quantity]));
+		const plantStorageMap = await CookingService.buildPlantAvailabilityMap(homeId, player.id);
 
 		const context: RecipeSlotContext = {
 			furnacePosition: player.furnacePosition,
@@ -209,6 +209,23 @@ export class CookingService {
 			slotIndex: i,
 			recipe: recipe ? CookingService.buildRecipeSlotData(i, recipe, context) : null
 		}));
+	}
+
+	/**
+	 * Build the map of plants available for cooking, combining the home plant storage
+	 * (chest) with the plants the player carries in their inventory plant slots.
+	 * Cooking consumes from both, so availability must account for both.
+	 */
+	private static async buildPlantAvailabilityMap(homeId: number, playerId: number): Promise<Map<number, number>> {
+		const allPlantStorages = await HomePlantStorages.getOfHome(homeId);
+		const plantAvailability = new Map<number, number>(allPlantStorages.map(s => [s.plantId, s.quantity]));
+
+		const carriedPlants = await PlayerPlantSlots.getCarriedPlantCounts(playerId);
+		for (const [plantId, count] of carriedPlants) {
+			plantAvailability.set(plantId, (plantAvailability.get(plantId) ?? 0) + count);
+		}
+
+		return plantAvailability;
 	}
 
 	/**
@@ -372,6 +389,29 @@ export class CookingService {
 	}
 
 	/**
+	 * Consume the plants required by a recipe. Plants are drawn from the home plant
+	 * storage (chest) first, then from the plants the player carries in their inventory
+	 * plant slots for any remaining quantity.
+	 */
+	private static async consumeRecipePlants(homeId: number, playerId: number, plants: CookingRecipe["plants"]): Promise<void> {
+		for (const plant of plants) {
+			let remaining = plant.quantity;
+
+			const storage = await HomePlantStorages.getForPlant(homeId, plant.plantId);
+			if (storage && storage.quantity > 0) {
+				const fromStorage = Math.min(storage.quantity, remaining);
+				storage.quantity -= fromStorage;
+				await storage.save();
+				remaining -= fromStorage;
+			}
+
+			if (remaining > 0) {
+				await PlayerPlantSlots.consumeCarriedPlants(playerId, plant.plantId, remaining);
+			}
+		}
+	}
+
+	/**
 	 * Execute a craft: consume ingredients, calculate result, give XP
 	 */
 	static async executeCraft(params: {
@@ -384,14 +424,8 @@ export class CookingService {
 		} = params;
 		const grade = getCookingGrade(player.cookingLevel);
 
-		// Consume plants (batched per plant type)
-		for (const plant of recipe.plants) {
-			const storage = await HomePlantStorages.getForPlant(homeId, plant.plantId);
-			if (storage) {
-				storage.quantity = Math.max(0, storage.quantity - plant.quantity);
-				await storage.save();
-			}
-		}
+		// Consume plants: draw from the home plant storage first, then from the carried plant slots
+		await CookingService.consumeRecipePlants(homeId, player.id, recipe.plants);
 
 		// Consume materials (with possible material save buff)
 		const materialSaved = await CookingService.consumeMaterialsWithSaveBuff({
@@ -610,8 +644,7 @@ export class CookingService {
 
 		const playerMaterials = await Materials.getPlayerMaterials(params.player.id);
 		const materialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
-		const allPlantStorages = await HomePlantStorages.getOfHome(params.homeId);
-		const plantStorageMap = new Map(allPlantStorages.map(s => [s.plantId, s.quantity]));
+		const plantStorageMap = await CookingService.buildPlantAvailabilityMap(params.homeId, params.player.id);
 
 		const {
 			ingredients, hasIngredients
