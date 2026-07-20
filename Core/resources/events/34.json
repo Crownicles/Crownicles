@@ -6,8 +6,11 @@
           "money": 250,
           "randomItem": {}
         },
-        "1": {},
+        "1": {
+          "forceLeaveCity": true
+        },
         "2": {
+          "forceLeaveCity": true,
           "money": 450
         }
       }
@@ -22,7 +25,9 @@
           "health": 20,
           "randomItem": {}
         },
-        "2": {}
+        "2": {
+          "forceLeaveCity": true
+        }
       }
     },
     "health": {
@@ -33,12 +38,16 @@
         "1": {
           "health": -20
         },
-        "2": {}
+        "2": {
+          "forceLeaveCity": true
+        }
       }
     },
     "kind": {
       "outcomes": {
-        "0": {},
+        "0": {
+          "forceLeaveCity": true
+        },
         "1": {
           "effect": "confounded",
           "health": -10
