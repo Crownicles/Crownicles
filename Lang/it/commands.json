@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Scatola di immagazzinaggio",
-          "menuDescription": "{{filled}}/{{total}} luoghi utilizzati",
+          "menuDescription": "Stockez vos objets de rechange",
           "buttonLabel": "Aperto",
           "available": "{emote:city.homeUpgrades.chest} Il forziere consente di conservare gli oggetti di riserva.",
           "title": "{{pseudo}}scatola di immagazzinaggio",
