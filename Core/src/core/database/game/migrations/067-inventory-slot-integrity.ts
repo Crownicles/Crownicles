@@ -48,5 +48,6 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 }
 
 export async function down({ context }: { context: QueryInterface }): Promise<void> {
+	// The slot renumbering is a one-way data repair; only the additive column is reverted.
 	await context.removeColumn("home_chest_slots", "remainingPotionUsages");
 }
