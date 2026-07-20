@@ -38,6 +38,8 @@ import { PlayerPlantSlots } from "../database/game/models/PlayerPlantSlot";
 import { buildGardenData } from "./ReportGardenService";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { OwnedApartmentSummary } from "../../../../Lib/src/types/ApartmentLocation";
+import { Settings } from "../database/game/models/Setting";
+import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 
 // Re-exports for backward compatibility
 export {
@@ -203,6 +205,29 @@ export async function buildEnchanterData(
 		playerMoney: player.money,
 		playerGems: playerMissionsInfo.gems
 	};
+}
+
+export async function buildAvailableEnchanterData(
+	playerData: {
+		inventory: InventorySlot[]; player: Player;
+	},
+	cityId: string
+): Promise<EnchanterData | undefined> {
+	if (await Settings.ENCHANTER_CITY.getValue() !== cityId) {
+		return undefined;
+	}
+
+	const enchantmentId = await Settings.ENCHANTER_ENCHANTMENT_ID.getValue();
+	const enchantment = ItemEnchantment.getById(enchantmentId);
+	if (!enchantment) {
+		return undefined;
+	}
+
+	return buildEnchanterData(playerData, {
+		enchantment,
+		enchantmentId,
+		isPlayerMage: playerData.player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE
+	});
 }
 
 /**
