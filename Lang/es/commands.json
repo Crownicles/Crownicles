@@ -852,7 +852,7 @@
         "cancel": "Cancelar"
       },
       "stayTitle": "{{pseudo}}estás en la ciudad",
-      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
+      "stayDescription": "Utiliza el comando {command:report} para disfrutar de los servicios disponibles en la ciudad o retomar tu aventura.",
       "stayInCityChoice": "{emote:mapTypes.ci} Entrar en la ciudad",
       "shopEmptyDescription": "No hay servicios que ofrecer por el momento.",
       "exitInn": "Fuera de peligro",
@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Caja de almacenamiento",
-          "menuDescription": "Stockez vos objets de rechange",
+          "menuDescription": "Guarda tus repuestos",
           "buttonLabel": "Abrir",
           "available": "{emote:ciudad.homeActualizaciones.cofre} Tu cofre te permite guardar objetos de repuesto.",
           "title": "{{pseudo}}caja de almacenaje",
@@ -2741,7 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Has estado en el barco demasiadas veces o te has unido a un gremio esta semana.",
       "noMemberOnBoat": "No hay miembros activos de su gremio en el barco.",
-      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
+      "notTravelling": "No puedes subir al barco desde una ciudad; tienes que estar de viaje.",
       "noGuild": "No perteneces a ningún gremio.",
       "notEnoughEnergy": "No tienes suficiente energía para subir al barco.",
       "notEnoughGems": "Quieres afiliarte a tu gremio, pero cuando llega el momento de pagar, te das cuenta de que tus fondos son insuficientes."
