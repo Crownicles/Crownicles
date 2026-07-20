@@ -489,7 +489,7 @@ export abstract class PlantConstants {
 	 */
 	public static readonly LUNAR_FALLBACK = {
 		CYCLE_DAYS: 29.53058770576,
-		REFERENCE_NEW_MOON: new Date(2000, 0, 6, 18, 14, 0).getTime()
+		REFERENCE_NEW_MOON: Date.UTC(2000, 0, 6, 18, 14, 0)
 	} as const;
 
 	/**
