@@ -110,7 +110,7 @@ export abstract class BlessingConstants {
 	/**
 	 * Multiplier for fight loot blessing (effect #2)
 	 */
-	static readonly FIGHT_LOOT_MULTIPLIER = 4;
+	static readonly FIGHT_LOOT_MULTIPLIER = 2;
 
 	/**
 	 * Multiplier for energy regen blessing (effect #3)
