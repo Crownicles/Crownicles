@@ -58,8 +58,8 @@ function resolveGardenAccess(
 	homeCityId: string,
 	hasRemoteHarvestTalisman: boolean
 ): GardenAccessMode | null {
-	const currentCityId = player.getCurrentCityId();
-	if (!Maps.isTravelling(player) && currentCityId !== null && currentCityId === homeCityId) {
+	const isAtHome = !Maps.isTravelling(player) && player.getCurrentCityId() === homeCityId;
+	if (isAtHome) {
 		return GardenAccessMode.FULL;
 	}
 	return hasRemoteHarvestTalisman ? GardenAccessMode.READ_ONLY : null;
