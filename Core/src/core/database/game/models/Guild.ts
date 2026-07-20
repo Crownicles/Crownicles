@@ -122,7 +122,7 @@ export class Guild extends Model {
 	 * transaction is present (e.g. direct admin call), we open our own so the
 	 * destroys still rollback together on failure.
 	 */
-	public async completelyDestroyAndDeleteFromTheDatabase(): Promise<void> {
+	public async completelyDestroyAndDeleteFromTheDatabase(destroyedByKeycloakId: string): Promise<void> {
 		const pets = await GuildPets.getOfGuild(this.id);
 		const guildPetsEntities: PetEntity[] = [];
 		for (const guildPet of pets) {
@@ -132,7 +132,7 @@ export class Guild extends Model {
 			}
 		}
 
-		crowniclesInstance?.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities)
+		crowniclesInstance?.logsDatabase.logGuildDestroy(this, await Players.getByGuild(this.id), guildPetsEntities, destroyedByKeycloakId)
 			.then();
 
 		const runDestroyOps = async (transaction: Transaction): Promise<void> => {

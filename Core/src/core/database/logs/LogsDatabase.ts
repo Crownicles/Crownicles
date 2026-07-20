@@ -347,10 +347,13 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when a pet is freed
 	 * @param freedPet
+	 * @param keycloakId
 	 */
-	public static async logPetFree(freedPet: PetEntity): Promise<void> {
+	public static async logPetFree(freedPet: PetEntity, keycloakId?: string): Promise<void> {
 		const logPetEntity = await LogsDatabase.findOrCreatePetEntity(freedPet);
+		const player = keycloakId ? await LogsDatabase.findOrCreatePlayer(keycloakId) : null;
 		await LogsPetsFrees.create({
+			playerId: player?.id ?? null,
 			petId: logPetEntity.id,
 			date: getDateLogs()
 		});
@@ -1013,10 +1016,16 @@ export class LogsDatabase extends Database {
 	/**
 	 * Log when a player renames its pet
 	 * @param petRenamed
+	 * @param keycloakId
 	 */
-	public async logPetNickname(petRenamed: PetEntity): Promise<void> {
+	public async logPetNickname(petRenamed: PetEntity, keycloakId: string): Promise<void> {
 		const pet = await LogsDatabase.findOrCreatePetEntity(petRenamed);
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPetsNicknames.create({
+			playerId: player.id,
 			petId: pet.id,
 			name: petRenamed.nickname,
 			date: getDateLogs()
@@ -1142,11 +1151,17 @@ export class LogsDatabase extends Database {
 	 * Log a pet transfer
 	 * @param guildPet
 	 * @param playerPet
+	 * @param keycloakId
 	 */
-	public async logPetTransfer(guildPet: PetEntity, playerPet: PetEntity): Promise<void> {
+	public async logPetTransfer(guildPet: PetEntity | null, playerPet: PetEntity | null, keycloakId: string): Promise<void> {
 		const logGuildPet = guildPet ? await LogsDatabase.findOrCreatePetEntity(guildPet) : null;
 		const logPlayerPet = playerPet ? await LogsDatabase.findOrCreatePetEntity(playerPet) : null;
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPetsTransfers.create({
+			playerId: player.id,
 			playerPetId: logPlayerPet ? logPlayerPet.id : null,
 			guildPetId: logGuildPet ? logGuildPet.id : null,
 			date: getDateLogs()
@@ -1159,7 +1174,7 @@ export class LogsDatabase extends Database {
 	 * @param members
 	 * @param guildPetsEntities
 	 */
-	public async logGuildDestroy(guild: Guild, members: Player[], guildPetsEntities: PetEntity[]): Promise<void> {
+	public async logGuildDestroy(guild: Guild, members: Player[], guildPetsEntities: PetEntity[], destroyedByKeycloakId: string): Promise<void> {
 		const guildInfo: GuildLikeType = {
 			id: guild.id,
 			name: guild.name,
@@ -1173,7 +1188,7 @@ export class LogsDatabase extends Database {
 			}
 		}
 		for (const guildPetEntity of guildPetsEntities) {
-			await LogsDatabase.logPetFree(guildPetEntity);
+			await LogsDatabase.logPetFree(guildPetEntity, destroyedByKeycloakId);
 		}
 		await LogsGuildsDestroys.create({
 			guildId: logGuild.id,
@@ -1416,10 +1431,16 @@ export class LogsDatabase extends Database {
 	 * Log when a pet has its love changed
 	 * @param petEntity
 	 * @param reason
+	 * @param keycloakId
 	 */
-	public async logPetLoveChange(petEntity: PetEntity, reason: NumberChangeReason): Promise<void> {
+	public async logPetLoveChange(petEntity: PetEntity, reason: NumberChangeReason, keycloakId: string): Promise<void> {
 		const logPet = await LogsDatabase.findOrCreatePetEntity(petEntity);
+		const player = await LogsDatabase.findOrCreatePlayer(keycloakId);
+		if (!player) {
+			return;
+		}
 		await LogsPetsLovesChanges.create({
+			playerId: player.id,
 			petId: logPet.id,
 			lovePoints: petEntity.lovePoints,
 			reason,

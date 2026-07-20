@@ -57,7 +57,7 @@ async function exportLogsData(
 	await yieldToEventLoop();
 
 	// Export missions and achievements (files 35-44)
-	const { newPets } = await exportLogsMissions(logsPlayerId, csvFiles);
+	await exportLogsMissions(logsPlayerId, csvFiles);
 	await yieldToEventLoop();
 
 	// Export fights data (files 45-48)
@@ -73,7 +73,7 @@ async function exportLogsData(
 	await yieldToEventLoop();
 
 	// Export pets and expeditions data (files 68-73)
-	await exportLogsPets(logsPlayerId, anonymizer, newPets, csvFiles);
+	await exportLogsPets(logsPlayerId, anonymizer, csvFiles);
 	await yieldToEventLoop();
 
 	// Export blessings data (files 75-76)

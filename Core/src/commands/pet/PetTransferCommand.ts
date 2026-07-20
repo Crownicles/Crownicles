@@ -184,7 +184,7 @@ async function deposePetToGuild(
 			(lockedPlayer.petId as number | null) = null;
 			await lockedPlayer.save();
 			await GuildPets.addPet(lockedGuild, validation.playerPet!, false).save();
-			crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet!, null!).then();
+			crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet!, null, lockedPlayer.keycloakId).then();
 
 			await MissionsController.update(lockedPlayer, response, { missionId: "depositPetInShelter" });
 
@@ -249,7 +249,7 @@ async function withdrawPetFromGuild(
 			await lockedGuildPet.destroy();
 			PetEntities.getById(petEntityId).then(petEntity => {
 				if (petEntity) {
-					crowniclesInstance?.logsDatabase.logPetTransfer(null!, petEntity).then();
+					crowniclesInstance?.logsDatabase.logPetTransfer(null, petEntity, lockedPlayer.keycloakId).then();
 				}
 			});
 
@@ -317,7 +317,7 @@ async function switchPetWithGuild(
 				return;
 			}
 
-			crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet!, newPlayerPet).then();
+			crowniclesInstance?.logsDatabase.logPetTransfer(validation.playerPet!, newPlayerPet, lockedPlayer.keycloakId).then();
 
 			response.push(makePacket(CommandPetTransferSuccessPacket, {
 				oldPet: validation.playerPet!.asOwnedPet(),

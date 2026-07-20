@@ -3,12 +3,12 @@ import {
 	toCSV, GDPRCsvFiles
 } from "../CSVUtils";
 import { Players } from "../../../../core/database/game/models/Player";
-import { PlayerBadgesManager } from "../../../../core/database/game/models/PlayerBadges";
+import { PlayerBadges } from "../../../../core/database/game/models/PlayerBadges";
 import { InventorySlots } from "../../../../core/database/game/models/InventorySlot";
-import { InventoryInfos } from "../../../../core/database/game/models/InventoryInfo";
-import { MissionSlots } from "../../../../core/database/game/models/MissionSlot";
-import { PlayerMissionsInfos } from "../../../../core/database/game/models/PlayerMissionsInfo";
-import { PlayerSmallEvents } from "../../../../core/database/game/models/PlayerSmallEvent";
+import { InventoryInfo } from "../../../../core/database/game/models/InventoryInfo";
+import { MissionSlot } from "../../../../core/database/game/models/MissionSlot";
+import { PlayerMissionsInfo } from "../../../../core/database/game/models/PlayerMissionsInfo";
+import { PlayerSmallEvent } from "../../../../core/database/game/models/PlayerSmallEvent";
 import PetEntity from "../../../../core/database/game/models/PetEntity";
 import PetExpedition from "../../../../core/database/game/models/PetExpedition";
 import { GuildPets } from "../../../../core/database/game/models/GuildPet";
@@ -17,7 +17,7 @@ import { ScheduledDailyBonusNotification } from "../../../../core/database/game/
 import { ScheduledReportNotification } from "../../../../core/database/game/models/ScheduledReportNotification";
 import { ScheduledExpeditionNotification } from "../../../../core/database/game/models/ScheduledExpeditionNotification";
 import { DwarfPetsSeen } from "../../../../core/database/game/models/DwarfPetsSeen";
-import { PlayerTalismansManager } from "../../../../core/database/game/models/PlayerTalismans";
+import { PlayerTalismans } from "../../../../core/database/game/models/PlayerTalismans";
 import { Material } from "../../../../core/database/game/models/Material";
 import { Homes } from "../../../../core/database/game/models/Home";
 import { PlayerPlantSlot } from "../../../../core/database/game/models/PlayerPlantSlot";
@@ -26,6 +26,7 @@ import { HomeChestSlots } from "../../../../core/database/game/models/HomeChestS
 import { HomeGardenSlots } from "../../../../core/database/game/models/HomeGardenSlot";
 import { HomePlantStorages } from "../../../../core/database/game/models/HomePlantStorage";
 import { PlayerCookingRecipe } from "../../../../core/database/game/models/PlayerCookingRecipe";
+import { GlobalBlessing } from "../../../../core/database/game/models/GlobalBlessing";
 
 type Player = Awaited<ReturnType<typeof Players.getByKeycloakId>>;
 
@@ -51,9 +52,13 @@ async function exportInventoryData(
 	playerId: number,
 	csvFiles: GDPRCsvFiles
 ): Promise<void> {
-	const badges = await PlayerBadgesManager.getOfPlayer(playerId);
+	const badges = await PlayerBadges.findAll({ where: { playerId } });
 	if (badges.length > 0) {
-		csvFiles["02_badges.csv"] = toCSV(badges.map(badge => ({ badge })));
+		csvFiles["02_badges.csv"] = toCSV(badges.map(badge => ({
+			badge: badge.badge,
+			createdAt: badge.createdAt,
+			updatedAt: badge.updatedAt
+		})));
 	}
 
 	const inventorySlots = await InventorySlots.getOfPlayer(playerId);
@@ -70,7 +75,7 @@ async function exportInventoryData(
 		})));
 	}
 
-	const inventoryInfo = await InventoryInfos.getOfPlayer(playerId);
+	const inventoryInfo = await InventoryInfo.findOne({ where: { playerId } });
 	if (inventoryInfo) {
 		csvFiles["04_inventory_info.csv"] = toCSV([
 			{
@@ -94,7 +99,7 @@ async function exportMissionData(
 	playerId: number,
 	csvFiles: GDPRCsvFiles
 ): Promise<void> {
-	const missionSlots = await MissionSlots.getOfPlayer(playerId);
+	const missionSlots = await MissionSlot.findAll({ where: { playerId } });
 	if (missionSlots.length > 0) {
 		csvFiles["05_mission_slots.csv"] = toCSV(missionSlots.map(slot => ({
 			missionId: slot.missionId,
@@ -106,11 +111,14 @@ async function exportMissionData(
 			xpToWin: slot.xpToWin,
 			pointsToWin: slot.pointsToWin,
 			moneyToWin: slot.moneyToWin,
-			isCampaign: slot.isCampaign()
+			saveBlob: slot.saveBlob?.toString("base64"),
+			isCampaign: slot.isCampaign(),
+			createdAt: slot.createdAt,
+			updatedAt: slot.updatedAt
 		})));
 	}
 
-	const missionsInfo = await PlayerMissionsInfos.getOfPlayer(playerId);
+	const missionsInfo = await PlayerMissionsInfo.findOne({ where: { playerId } });
 	if (missionsInfo) {
 		csvFiles["06_missions_info.csv"] = toCSV([
 			{
@@ -146,7 +154,9 @@ async function exportPetData(
 					sex: pet.sex,
 					lovePoints: pet.lovePoints,
 					hungrySince: pet.hungrySince,
-					creationDate: pet.creationDate
+					creationDate: pet.creationDate,
+					createdAt: pet.createdAt,
+					updatedAt: pet.updatedAt
 				}
 			]);
 		}
@@ -155,7 +165,22 @@ async function exportPetData(
 	const petExpeditions = await PetExpedition.findAll({ where: { playerId: player.id } });
 	if (petExpeditions.length > 0) {
 		csvFiles["08_pet_expeditions.csv"] = toCSV(petExpeditions.map(exp => ({
-			expeditionDate: exp.createdAt
+			petId: exp.petId,
+			startDate: exp.startDate,
+			endDate: exp.endDate,
+			riskRate: exp.riskRate,
+			difficulty: exp.difficulty,
+			wealthRate: exp.wealthRate,
+			locationType: exp.locationType,
+			mapLocationId: exp.mapLocationId,
+			status: exp.status,
+			foodConsumed: exp.foodConsumed,
+			rewardIndex: exp.rewardIndex,
+			isDistantExpedition: exp.isDistantExpedition,
+			hasBonusTokens: exp.hasBonusTokens,
+			hasCloneTalismanBonus: exp.hasCloneTalismanBonus,
+			createdAt: exp.createdAt,
+			updatedAt: exp.updatedAt
 		})));
 	}
 }
@@ -167,21 +192,25 @@ async function exportMiscData(
 	player: NonNullable<Player>,
 	csvFiles: GDPRCsvFiles
 ): Promise<void> {
-	const smallEvents = await PlayerSmallEvents.getSmallEventsOfPlayer(player.id);
-	if (smallEvents && smallEvents.length > 0) {
+	const smallEvents = await PlayerSmallEvent.findAll({ where: { playerId: player.id } });
+	if (smallEvents.length > 0) {
 		csvFiles["09_small_events.csv"] = toCSV(smallEvents.map(se => ({
 			eventType: se.eventType,
-			time: se.time
+			time: se.time,
+			createdAt: se.createdAt,
+			updatedAt: se.updatedAt
 		})));
 	}
 
-	const talismans = await PlayerTalismansManager.getOfPlayer(player.id);
+	const talismans = await PlayerTalismans.findOne({ where: { playerId: player.id } });
 	if (talismans) {
 		csvFiles["10_talismans.csv"] = toCSV([
 			{
 				hasTalisman: talismans.hasTalisman,
 				hasCloneTalisman: talismans.hasCloneTalisman,
-				hasRemoteHarvestTalisman: talismans.hasRemoteHarvestTalisman
+				hasRemoteHarvestTalisman: talismans.hasRemoteHarvestTalisman,
+				createdAt: talismans.createdAt,
+				updatedAt: talismans.updatedAt
 			}
 		]);
 	}
@@ -200,17 +229,58 @@ async function exportMiscData(
 
 	const notifications = [
 		...dailyBonusNotifs.map(n => ({
-			type: "dailyBonus", scheduledAt: n.scheduledAt
+			type: "dailyBonus",
+			mapId: "",
+			expeditionId: "",
+			petId: "",
+			petSex: "",
+			petNickname: "",
+			scheduledAt: n.scheduledAt,
+			createdAt: n.createdAt,
+			updatedAt: n.updatedAt
 		})),
 		...reportNotifs.map(n => ({
-			type: "report", scheduledAt: n.scheduledAt
+			type: "report",
+			mapId: n.mapId,
+			expeditionId: "",
+			petId: "",
+			petSex: "",
+			petNickname: "",
+			scheduledAt: n.scheduledAt,
+			createdAt: n.createdAt,
+			updatedAt: n.updatedAt
 		})),
 		...expeditionNotifs.map(n => ({
-			type: "expedition", scheduledAt: n.scheduledAt
+			type: "expedition",
+			mapId: "",
+			expeditionId: n.expeditionId,
+			petId: n.petId,
+			petSex: n.petSex,
+			petNickname: n.petNickname ?? "",
+			scheduledAt: n.scheduledAt,
+			createdAt: n.createdAt,
+			updatedAt: n.updatedAt
 		}))
 	];
 	if (notifications.length > 0) {
 		csvFiles["12_scheduled_notifications.csv"] = toCSV(notifications);
+	}
+
+	const currentBlessing = await GlobalBlessing.findOne({ where: { lastTriggeredByKeycloakId: player.keycloakId } });
+	if (currentBlessing) {
+		csvFiles["23_current_blessing.csv"] = toCSV([
+			{
+				triggeredByExportedPlayer: true,
+				activeBlessingType: currentBlessing.activeBlessingType,
+				poolAmount: currentBlessing.poolAmount,
+				poolThreshold: currentBlessing.poolThreshold,
+				poolStartedAt: currentBlessing.poolStartedAt,
+				blessingEndAt: currentBlessing.blessingEndAt,
+				lastBlessingTriggeredAt: currentBlessing.lastBlessingTriggeredAt,
+				createdAt: currentBlessing.createdAt,
+				updatedAt: currentBlessing.updatedAt
+			}
+		]);
 	}
 
 	// Player materials (crafting resources)
@@ -360,7 +430,7 @@ async function exportGuildData(
 }
 
 /**
- * Exports player core data from the game database (files 01-22)
+ * Exports player core data from the game database (files 01-23)
  */
 export async function exportPlayerData(
 	player: NonNullable<Player>,
@@ -371,6 +441,7 @@ export async function exportPlayerData(
 	csvFiles["01_player.csv"] = toCSV([
 		{
 			anonymizedId: anonymizer.getAnonymizedPlayerId(),
+			banned: player.banned,
 			health: player.getHealthValue(),
 			score: player.score,
 			weeklyScore: player.weeklyScore,
