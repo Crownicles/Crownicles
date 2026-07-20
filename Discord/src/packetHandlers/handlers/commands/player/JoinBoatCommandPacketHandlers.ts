@@ -5,6 +5,7 @@ import {
 	CommandJoinBoatNoMemberOnBoatPacketRes,
 	CommandJoinBoatNotEnoughEnergyPacketRes,
 	CommandJoinBoatNotEnoughGemsPacketRes,
+	CommandJoinBoatNotTravellingPacketRes,
 	CommandJoinBoatRefusePacketRes,
 	CommandJoinBoatTooManyRunsPacketRes
 } from "../../../../../../Lib/src/packets/commands/CommandJoinBoatPacket";
@@ -35,6 +36,12 @@ export default class JoinBoatCommandPacketHandlers {
 	async joinBoatNoMemberOnBoat(context: PacketContext, _packet: CommandJoinBoatNoMemberOnBoatPacketRes): Promise<void> {
 		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
 		await replyEphemeralErrorMessage(context, interaction, i18n.t("commands:joinBoat.errorMessage.noMemberOnBoat", { lng: interaction.userLanguage }));
+	}
+
+	@packetHandler(CommandJoinBoatNotTravellingPacketRes)
+	async joinBoatNotTravelling(context: PacketContext, _packet: CommandJoinBoatNotTravellingPacketRes): Promise<void> {
+		const interaction = DiscordCache.getInteraction(context.discord!.interaction)!;
+		await replyEphemeralErrorMessage(context, interaction, i18n.t("commands:joinBoat.errorMessage.notTravelling", { lng: interaction.userLanguage }));
 	}
 
 	@packetHandler(CommandJoinBoatNotEnoughEnergyPacketRes)
