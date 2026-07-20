@@ -4,6 +4,16 @@ import * as path from "node:path";
 import * as fs from "node:fs";
 import {CrowniclesIcons} from "../../src/CrowniclesIcons";
 
+describe("FightConstants PvP rewards", () => {
+	it("rewards active play without making intentional losses profitable", () => {
+		const rewards = FightConstants.REWARDS;
+
+		expect(rewards.WIN_MONEY_BONUS * 5).toBe(rewards.MAX_MONEY_BONUS);
+		expect(rewards.LOSS_MONEY_BONUS * 5).toBeLessThan(rewards.WIN_MONEY_BONUS);
+		expect(rewards.DRAW_MONEY_BONUS).toBeLessThan(rewards.WIN_MONEY_BONUS);
+	});
+});
+
 describe("FightConstants fight_actions models.json validation", () => {
 	const modelsPath = path.join(__dirname, "../../../Lang/fr/models.json");
 	const models = JSON.parse(fs.readFileSync(modelsPath, "utf-8"));
