@@ -852,7 +852,7 @@
         "cancel": "Cancelar"
       },
       "stayTitle": "{{pseudo}}está na cidade",
-      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
+      "stayDescription": "Utilize o comando {command:report} para usufruir dos serviços disponíveis na cidade ou retomar a sua aventura.",
       "stayInCityChoice": "{Entrar na cidade",
       "shopEmptyDescription": "Atualmente, não há serviços a oferecer.",
       "exitInn": "Fora da floresta",
@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Caixa de arrumação",
-          "menuDescription": "Stockez vos objets de rechange",
+          "menuDescription": "Armazene as suas peças sobressalentes",
           "buttonLabel": "Aberto",
           "available": "{O teu baú permite-te guardar objectos de reserva.",
           "title": "{{pseudo}}caixa de arrumação",
@@ -2741,7 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Já andou de barco demasiadas vezes ou juntou-se a um grémio esta semana.",
       "noMemberOnBoat": "Nenhum membro ativo da tua guilda está no barco.",
-      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
+      "notTravelling": "Não é possível embarcar no barco a partir de uma cidade; é necessário estar a viajar.",
       "noGuild": "Não pertences a nenhum grémio.",
       "notEnoughEnergy": "Não tens energia suficiente para entrar no barco.",
       "notEnoughGems": "Queres inscrever-te no teu grémio, mas quando chega a altura de pagar, apercebes-te de que os teus fundos são insuficientes."
