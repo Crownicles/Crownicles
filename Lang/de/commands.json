@@ -852,7 +852,7 @@
         "cancel": "Abbrechen"
       },
       "stayTitle": "{{pseudo}}Sie befinden sich in der Stadt",
-      "stayDescription": "Sie befinden sich in der Stadt und können die verfügbaren Dienstleistungen in Anspruch nehmen. Sie können jederzeit mit dem Befehl {command:report} abreisen.",
+      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
       "stayInCityChoice": "{emote:mapTypes.ci} In die Stadt hineinfahren",
       "shopEmptyDescription": "Derzeit werden keine Dienstleistungen angeboten.",
       "exitInn": "Aus der Herberge herauskommen",
