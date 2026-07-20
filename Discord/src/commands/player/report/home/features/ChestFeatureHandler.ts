@@ -70,16 +70,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 			return null;
 		}
 
-		const chest = ctx.homeData.chest;
-		const filledCount = chest?.chestItems.length ?? 0;
-		const slots = ctx.homeData.features.chestSlots;
-		const totalSlots = slots.weapon + slots.armor + slots.potion + slots.object;
-
 		return {
 			label: i18n.t("commands:report.city.homes.chest.menuLabel", { lng: ctx.lng }),
-			description: i18n.t("commands:report.city.homes.chest.menuDescription", {
-				lng: ctx.lng, filled: filledCount, total: totalSlots
-			}),
+			description: i18n.t("commands:report.city.homes.chest.menuDescription", { lng: ctx.lng }),
 			emoji: CrowniclesIcons.city.homeUpgrades.chest,
 			value: HomeMenuIds.CHEST_MENU,
 			buttonLabel: i18n.t("commands:report.city.homes.chest.buttonLabel", { lng: ctx.lng })
