@@ -305,6 +305,24 @@ async function persistPveBossPostFightUnderLock(
 	});
 }
 
+async function continueAfterPveBoss(
+	player: Player,
+	response: CrowniclesPacket[],
+	context: PacketContext,
+	playerActiveObjects: PlayerActiveObjects
+): Promise<void> {
+	if (await player.leavePVEIslandIfNoEnergy(response, playerActiveObjects)) {
+		return;
+	}
+	await Maps.stopTravel(player);
+	await player.setLastReportWithEffect(
+		0,
+		Effect.NO_EFFECT,
+		NumberChangeReason.BIG_EVENT
+	);
+	await chooseDestination(context, player, null, response);
+}
+
 /**
  * Do a PVE boss fight
  * @param player
@@ -321,12 +339,22 @@ export async function doPVEBoss(
 	const seed = keycloakIdHash + millisecondsToSeconds(dateToMs(player.startTravelDate));
 	const mapId = player.getDestination()!.id;
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
+	if (!monsterObj) {
+		response.push(makePacket(CommandReportErrorNoMonsterRes, {}));
+		await continueAfterPveBoss(
+			player,
+			response,
+			context,
+			await InventorySlots.getPlayerActiveObjects(player.id)
+		);
+		return;
+	}
 	const monsterLevelBase = await LogsPveFightProgressionRequests.getMonsterLevelBase({
 		playerKeycloakId: player.keycloakId,
 		monsterId: monsterObj.id,
 		classId: player.class
 	}) ?? player.level;
-	const randomLevel = monsterLevelBase - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
+	const randomLevel = getPveMonsterLevel(monsterLevelBase, seed);
 
 	/**
 	 * Handle rewards after the PVE fight completes
@@ -353,22 +381,8 @@ export async function doPVEBoss(
 				.then();
 		}
 
-		if (!await player.leavePVEIslandIfNoEnergy(endFightResponse, playerActiveObjects)) {
-			await Maps.stopTravel(player);
-			await player.setLastReportWithEffect(
-				0,
-				Effect.NO_EFFECT,
-				NumberChangeReason.BIG_EVENT
-			);
-			await chooseDestination(context, player, null, endFightResponse);
-		}
+		await continueAfterPveBoss(player, endFightResponse, context, playerActiveObjects);
 	};
-
-	if (!monsterObj) {
-		response.push(makePacket(CommandReportErrorNoMonsterRes, {}));
-		await fightCallback(null, response);
-		return;
-	}
 
 	const monsterFighter = new MonsterFighter(
 		randomLevel,
@@ -428,4 +442,11 @@ export async function doPVEBoss(
 		.build();
 
 	response.push(packet);
+}
+
+export function getPveMonsterLevel(baseLevel: number, seed: number): number {
+	return Math.max(
+		PVEConstants.MIN_MONSTER_LEVEL,
+		baseLevel + PVEConstants.MONSTER_LEVEL_RANDOM_OFFSET.MIN + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE
+	);
 }

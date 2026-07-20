@@ -20,7 +20,15 @@ export abstract class PVEConstants {
 
 	static readonly MIN_LEVEL = 20;
 
-	static readonly MONSTER_LEVEL_RANDOM_RANGE = 10;
+	static readonly MIN_MONSTER_LEVEL = 1;
+
+	static readonly MONSTER_LEVEL_RANDOM_OFFSET = {
+		MIN: -10,
+		MAX: 5
+	} as const;
+
+	static readonly MONSTER_LEVEL_RANDOM_RANGE =
+		PVEConstants.MONSTER_LEVEL_RANDOM_OFFSET.MAX - PVEConstants.MONSTER_LEVEL_RANDOM_OFFSET.MIN + 1;
 
 	/**
 	 * The formula is

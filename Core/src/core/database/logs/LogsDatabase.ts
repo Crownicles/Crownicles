@@ -1327,6 +1327,7 @@ export class LogsDatabase extends Database {
 			const winner = fight.getWinnerFighter();
 			const fightResult = await LogsPveFightsResults.create({
 				playerId,
+				classId: player.player.class,
 				monsterId: monster.monster.id,
 				monsterLevel: monster.level,
 				monsterFightPoints: monsterStats.maxEnergy,

@@ -1243,12 +1243,6 @@
       "particle": "vers le",
       "atParticle": "au"
     },
-    "22222": {
-      "description": "Une zone de test pour les monstres. N'est jamais censée apparaître dans le jeu.",
-      "name": "Zone de test des monstres",
-      "particle": "vers la",
-      "atParticle": "à la"
-    },
     "23": {
       "description": "Grande ville marchande et carrefour économique, Claire de Ville n'a pas toujours été aussi accueillante. Au début très pauvre, elle a su se développer rapidement grâce à ses nombreux commerces et hôtels offrant un large choix aux voyageurs de la région. Claire de Ville est aussi réputée pour son calme et son respect de l'ordre.",
       "name": "Claire de Ville",
