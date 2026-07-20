@@ -6,7 +6,7 @@ const PVE_PROGRESSION_INDEX = "idx_pve_player_monster_class";
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
 	await context.addColumn("pve_fights_results", "classId", {
-		type: DataTypes.TINYINT.UNSIGNED,
+		type: DataTypes.SMALLINT.UNSIGNED,
 		allowNull: true
 	});
 	await context.sequelize.query(`

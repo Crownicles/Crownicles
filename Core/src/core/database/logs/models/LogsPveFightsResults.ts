@@ -40,7 +40,7 @@ export function initModel(sequelize: Sequelize): void {
 			allowNull: false
 		},
 		classId: {
-			type: DataTypes.TINYINT.UNSIGNED,
+			type: DataTypes.SMALLINT.UNSIGNED,
 			allowNull: true
 		},
 		monsterId: {
