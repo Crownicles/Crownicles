@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Angesichts des Fehlens einer Antwort von Ihnen, entscheidet die Gruppe von Freunden, dass Sie nach einem Geschenk suchen. Also, wenn Sie sie höflich abwarten, werden Sie die Idee, Zeit zu verschwenden, noch mehr angst. Das Risiko, die Prinzessin nicht zu retten, macht Sie krank, Sie werden sogar krank, und Sie werden letztendlich in Äpfel fallen. Sie finden unwiederbelebtes Erlebten, die ehrlichen Individuen helfen Ihnen, sich auszuruhen, und Sie lassen das Geschenk, bevor Sie wieder auf die Straße gehen.",
-          "1": "Face à votre absence de réaction, les quidams n'insistent pas et s'éloignent.",
-          "2": "Vous voyant hésiter trop longtemps, les jeunes hommes décident finalement de vous offrir un peu d'argent pour vous permettre l'achat de quelques babioles. Vous les remerciez pour leur geste."
+          "1": "Da Sie nicht reagieren, lassen die Leute es dabei bewenden und gehen weiter.",
+          "2": "Als sie sehen, dass Sie zu lange zögern, beschließen die jungen Männer schließlich, Ihnen etwas Geld zu schenken, damit Sie sich ein paar Kleinigkeiten kaufen können. Sie bedanken sich bei ihnen für diese Geste."
         }
       },
       "food": {
         "outcomes": {
           "0": "Das eine von ihnen ist eine ziemlich aufregende Suppe. Sie trinken sie, ohne zu misstrauen. Diese Ungärten haben eine Falle gestellt. Seit langer Zeit, um Sie zu plündern, enthielt die Sklaverei nur genug Affe, um krank zu werden. Sie fühlen sich, wie Sie Ihre Taschen abgestempeln, machtlos.",
           "1": "Diese Passanten haben gekocht, um Ihnen einen Geschmack zu machen, der einen Gedicht von Gusgesetzen verdient. Wenn Sie sich näher ansehen, sehen Sie ein Objekt, das am Boden der Schale hinterlassen wurde. Er könnte für die Suite hilfreich sein.",
-          "2": "Ravis de vous rendre service, le groupe part vous acheter la spécialité du coin. Voyant le plat arriver, vous faites bonne figure mais la dégustez avec un certain dégoût : vous n'aimez pas les champignons ! Non sans mal, vous terminez le plat."
+          "2": "Die Gruppe freut sich, Ihnen einen Gefallen zu tun, und macht sich auf den Weg, um die lokale Spezialität für Sie zu besorgen. Als das Gericht serviert wird, setzen Sie gute Miene zum bösen Spiel, essen es aber mit gewissem Ekel – Sie mögen nämlich keine Pilze! Mit einiger Mühe schaffen Sie es, das Gericht aufzuessen."
         },
         "text": "Nahrungsmittelvorhang."
       },
       "health": {
         "outcomes": {
-          "0": "Le groupe d'individus vous accompagne dans la vallée, où ils vous offrent un soin revigorant dans les eaux thermales. Requinqué, vous vous sentez de nouveau en pleine forme.",
+          "0": "Die Gruppe begleitet Sie ins Tal, wo sie Ihnen eine belebende Behandlung im Thermalwasser anbietet. Gestärkt fühlen Sie sich wieder in Topform.",
           "1": "Die wenigen Leute bieten Ihnen eine Massage in einem Massagecenter in der Nähe von hier. Während Sie sich massieren, eine der Kerzenscheine, die an der Wand hängen, in der Menge der ätherischen Öle, die das ganze Haus in Brand setzen. Sie kommen, nicht ohne Schwierigkeiten, aus dem Bäder, der aus dem Gebäude kommt.",
-          "2": "Ils ne s'attendaient pas à ce genre de demande et restent dubitatifs quant à la réponse à vous donner. Ne voulant pas laisser s'installer le malaise, vous les remerciez malgré tout et mettez fin à la conversation."
+          "2": "Sie hatten mit einer solchen Anfrage nicht gerechnet und sind sich noch unsicher, wie sie Ihnen antworten sollen. Da Sie keine unangenehme Stimmung aufkommen lassen wollen, bedanken Sie sich trotzdem bei ihnen und beenden das Gespräch."
         },
         "text": "Ein Geschenk im Gesundheitsbereich."
       },
       "kind": {
         "outcomes": {
-          "0": "Le groupe d'amis vous raconte être parti à la recherche du cadeau idéal. Malheureusement, ils n'ont rien trouvé qui pourrait vous plaire. Déçu, vous les remerciez malgré tout.",
-          "1": "Ces petits malins ont décidé de vous faire une farce et de vous offrir un cadeau mesquin. Ils ne pensaient pourtant pas qu'une planche aux clous saillants serait dangereuse à déballer. Les doigts en sang, vous vous éloignez, furieux, afin de vous soigner.",
+          "0": "Die Gruppe von Freunden erzählt euch, dass sie sich auf die Suche nach dem perfekten Geschenk gemacht hat. Leider haben sie nichts gefunden, was euch gefallen könnte. Enttäuscht bedankt ihr euch trotzdem bei ihnen.",
+          "1": "Diese Schlaumeier haben beschlossen, euch einen Streich zu spielen und euch ein armseliges Geschenk zu machen. Sie hätten jedoch nicht gedacht, dass das Auspacken eines Bretts mit hervorstehenden Nägeln gefährlich sein könnte. Mit blutigen Fingern geht ihr wütend davon, um euch zu versorgen.",
           "2": "Ihre großzügigen Spender sind stolz auf ihre Faust, die auf einem Markt gefunden wurden. Sie haben ein Objekt, das Sie von Anfang an sehr am ersten Blick interessiert."
         },
         "text": "Geschenk in der Natur."
@@ -966,7 +966,7 @@
         "text": "Geld in der Währung."
       }
     },
-    "text": "À votre arrivée au village, des passants vous reconnaissent et vous abordent. Ils se rappellent parfaitement de l'aide que vous leur aviez apportée et insistent pour vous remercier en vous offrant un cadeau. Ils vous demandent ce qui vous ferait le plus plaisir."
+    "text": "Bei Ihrer Ankunft im Dorf erkennen Passanten Sie wieder und sprechen Sie an. Sie erinnern sich noch genau an die Hilfe, die Sie ihnen geleistet haben, und bestehen darauf, sich bei Ihnen zu bedanken, indem sie Ihnen ein Geschenk überreichen. Sie fragen Sie, worüber Sie sich am meisten freuen würden."
   },
   "35": {
     "possibilities": {
@@ -1616,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Les villageois vous proposent d'y goûter et vous ne dites pas non à l'offre. En effet, le jus est rafraîchissant et la chair apaise votre appétit. Vous remerciez les villageois pour cette découverte en leur donnant quelques pièces.",
-          "1": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Alors que l'un d'eux vous explique, les autres commencent à se rapprocher de vous. Brusquement, quelqu'un vous fait une clé de bras tandis que les autres se jettent sur vous pour vous dérober vos affaires. Après avoir été passé à tabac, vous reprenez péniblement vos esprits.",
-          "2": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Vous les remerciez pour ces précieuses informations."
+          "0": "Ihr geht auf die Dorfbewohner zu und befragt sie zu diesen seltsamen Früchten. Diese erklären euch, dass es sich um Kokosnüsse handelt, deren Fruchtfleisch man essen kann, sobald die Schale geöffnet ist, und dass ihr Saft im ganzen Land bekannt ist. Die Dorfbewohner bieten euch an, davon zu probieren, und ihr lehnt das Angebot nicht ab. Tatsächlich ist der Saft erfrischend und das Fruchtfleisch stillt euren Hunger. Ihr bedankt euch bei den Dorfbewohnern für diese Entdeckung und gebt ihnen ein paar Münzen.",
+          "1": "Ihr geht auf die Dorfbewohner zu und befragt sie zu diesen seltsamen Früchten. Während einer von ihnen euch etwas erklärt, kommen die anderen immer näher. Plötzlich legt euch jemand einen Armhebel an, während die anderen sich auf euch stürzen, um euch eure Sachen zu rauben. Nachdem Sie zusammengeschlagen wurden, kommen Sie mühsam wieder zu sich.",
+          "2": "Ihr geht auf die Dorfbewohner zu und befragt sie zu diesen seltsamen Früchten. Diese erklären euch, dass es sich um Kokosnüsse handelt, deren Fruchtfleisch man essen kann, sobald die Schale aufgebrochen ist, und dass ihr Saft im ganzen Land bekannt ist. Ihr bedankt euch bei ihnen für diese wertvollen Informationen."
         },
         "text": "Die Dorfbewohner zu fragen, um sie zu befragen."
       },
       "end": {
         "outcomes": {
-          "0": "Vous regardez un moment le spectacle des villageois en train de récolter ces fruits singuliers sous le soleil ardent.",
-          "1": "Un de ces fruits tombe à côté de vous. Vous le prenez dans vos mains et l'examinez avec attention."
+          "0": "Sie beobachten eine Weile, wie die Dorfbewohner unter der sengenden Sonne diese ungewöhnlichen Früchte ernten.",
+          "1": "Eine dieser Früchte fällt direkt neben dich. Du nimmst sie in die Hand und betrachtest sie genau."
         }
       },
       "leave": {
@@ -1639,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Sie setzen Ihr Nickerchen fort, aber eine der Früchte löst sich und kracht auf Ihren Kopf. Sie sind verletzt und bluten stark. Einige Dorfbewohner, die Sie gesehen haben, kommen Ihnen zu Hilfe.",
-          "1": "Vous dormez un moment. Lorsque vous vous réveillez, vous constatez que le soleil commence à se coucher et que la température diminue. Vous vous relevez, revigoré.",
-          "2": "Vous décidez de continuer votre sieste. À votre réveil, vous vous levez et remarquez qu'il vous manque quelque chose dans vos poches : votre porte-monnaie. Vous accusez difficilement le coup."
+          "1": "Sie schlafen eine Weile. Als Sie aufwachen, stellen Sie fest, dass die Sonne gerade untergeht und die Temperatur sinkt. Sie stehen wieder auf, voller neuer Energie.",
+          "2": "Sie beschließen, Ihr Nickerchen fortzusetzen. Als Sie aufwachen, stehen Sie auf und stellen fest, dass etwas in Ihren Taschen fehlt: Ihr Portemonnaie. Sie können den Schlag kaum verkraften."
         },
         "text": "Setzen Sie Ihr Nickerchen am Fuß des Baums fort."
       }
