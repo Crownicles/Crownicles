@@ -9,8 +9,12 @@ import {
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
 import { PlantId } from "../../../../Lib/src/constants/PlantConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
-import { HomePlantStorages } from "../../../src/core/database/game/models/HomePlantStorage";
-import { PlayerPlantSlots } from "../../../src/core/database/game/models/PlayerPlantSlot";
+import {
+	HomePlantStorage, HomePlantStorages
+} from "../../../src/core/database/game/models/HomePlantStorage";
+import {
+	PlayerPlantSlot, PlayerPlantSlots
+} from "../../../src/core/database/game/models/PlayerPlantSlot";
 
 /**
  * Minimal recipe factory for testing
@@ -360,6 +364,44 @@ describe("CookingService - pure functions", () => {
 
 			storageSpy.mockRestore();
 			carriedSpy.mockRestore();
+		});
+	});
+
+	describe("consumeRecipePlants", () => {
+		it("should consume stored plants before carried plant slots", async () => {
+			const storage = {
+				quantity: 1,
+				save: vi.fn().mockResolvedValue(undefined)
+			} as HomePlantStorage;
+			const carriedSlots = [
+				{
+					slot: 1,
+					plantId: PlantId.COMMON_HERB,
+					save: vi.fn().mockResolvedValue(undefined)
+				} as PlayerPlantSlot,
+				{
+					slot: 2,
+					plantId: PlantId.COMMON_HERB,
+					save: vi.fn().mockResolvedValue(undefined)
+				} as PlayerPlantSlot
+			];
+			const storageSpy = vi.spyOn(HomePlantStorages, "getForPlant").mockResolvedValue(storage);
+			const slotsSpy = vi.spyOn(PlayerPlantSlot, "findAll").mockResolvedValue(carriedSlots);
+
+			await CookingService["consumeRecipePlants"](10, 20, [{
+				plantId: PlantId.COMMON_HERB,
+				quantity: 2
+			}]);
+
+			expect(storage.quantity).toBe(0);
+			expect(storage.save).toHaveBeenCalledOnce();
+			expect(carriedSlots[0].plantId).toBe(0);
+			expect(carriedSlots[0].save).toHaveBeenCalledOnce();
+			expect(carriedSlots[1].plantId).toBe(PlantId.COMMON_HERB);
+			expect(carriedSlots[1].save).not.toHaveBeenCalled();
+
+			storageSpy.mockRestore();
+			slotsSpy.mockRestore();
 		});
 	});
 });
