@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Caja de almacenamiento",
-          "menuDescription": "{{filled}}/{{total}} lugares utilizados",
+          "menuDescription": "Stockez vos objets de rechange",
           "buttonLabel": "Abrir",
           "available": "{emote:ciudad.homeActualizaciones.cofre} Tu cofre te permite guardar objetos de repuesto.",
           "title": "{{pseudo}}caja de almacenaje",
