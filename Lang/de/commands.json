@@ -2741,6 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Sie waren zu oft auf dem Schiff oder sind in dieser Woche einer Gilde beigetreten.",
       "noMemberOnBoat": "Es befinden sich keine aktiven Mitglieder Ihrer Gilde auf dem Schiff.",
+      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
       "noGuild": "Sie gehören keiner Gilde an.",
       "notEnoughEnergy": "Sie haben nicht genug Energie, um auf das Boot zu steigen.",
       "notEnoughGems": "Du möchtest deiner Gilde beitreten, aber als du bezahlen willst, stellst du fest, dass dein Geld nicht ausreicht."
