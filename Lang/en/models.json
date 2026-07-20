@@ -1243,12 +1243,6 @@
       "particle": "of the",
       "atParticle": "to"
     },
-    "22222": {
-      "description": "A test zone for monsters. Should never appear in the game.",
-      "name": "Monsters test zone",
-      "particle": "of the",
-      "atParticle": "at"
-    },
     "23": {
       "description": "Large commercial city and economical crossroad, Claire de Ville hasn't always been that welcoming. Very poor at the beginning, she managed to quickly develop thanks to its many shops and hostels which offers a great choice to wanderers of the region. Claire de Ville is also known for its calm and its order.",
       "name": "Claire de Ville",
@@ -1511,7 +1505,7 @@
     "bigFeast": "Participate in a big feast",
     "buyApartment": "Owning a home",
     "buyHome": "Buying a House",
-    "buyAllApartments": "Buy all the homes",
+    "buyApartments": "Own a home at {{count}}",
     "buyGuildPetFood_one": "Buy {{count}} pet food",
     "buyGuildPetFood_other": "Buy {{count}} pet food",
     "buyItemFromAlderic": "Buy an item from Aldéric",

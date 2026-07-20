@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Quando non rispondete, il gruppo di amici decide di andare a prendervi un regalo. Mentre li aspettate educatamente, diventate sempre più ansiosi al pensiero di perdere tempo. Il rischio di non riuscire a salvare la principessa vi ossessiona, vi fa persino star male... e finite per svenire. Trovandovi senza vita sulla via del ritorno, gli uomini onesti vi appoggiano a un albero per farvi riposare e vi lasciano questo dono prima di ripartire.",
-          "1": "Di fronte alla vostra mancanza di reazione, non insistono. Continuate per la vostra strada senza prestare loro attenzione.",
-          "2": "Vedendo che esitate troppo, i giovani decidono finalmente di offrirvi del denaro per comprare qualche gingillo. Li ringraziate prima di proseguire per la vostra strada."
+          "1": "Visto che non reagite, i passanti non insistono e se ne vanno.",
+          "2": "Vedendovi esitare troppo a lungo, i giovani decidono infine di offrirvi un po’ di soldi per permettervi di comprare qualche ninnolo. Li ringraziate per il loro gesto."
         }
       },
       "food": {
         "outcomes": {
           "0": "Uno di loro vi porge una zuppa piuttosto appetitosa. La bevete ignari. Questi furfanti vi hanno teso una trappola! Stavano aspettando da tempo di depredarti e la bevanda conteneva abbastanza agarico per farti ammalare. Vi sentite scivolare via mentre assistete impotenti al prelievo delle vostre tasche.",
           "1": "Questi passanti vi hanno cucinato un piatto delizioso, degno di una pozione gallica. A un esame più attento, notate un oggetto lasciato sul fondo della ciotola. Potrebbe tornarvi utile in seguito.",
-          "2": "Felici di avervi fatto un favore, il gruppo va a comprare la specialità locale. Vedendo arrivare il piatto, vi fate coraggio ma lo assaggiate con un certo disgusto: non vi piacciono i funghi! Non senza difficoltà, continuate per la vostra strada."
+          "2": "Felici di farvi un favore, il gruppo va a comprarvi la specialità del posto. Quando vedete arrivare il piatto, fate buon viso a cattivo gioco, ma lo gustate con un certo disgusto: non vi piacciono i funghi! Non senza fatica, finite il piatto."
         },
         "text": "Regalo alimentare."
       },
       "health": {
         "outcomes": {
-          "0": "Il gruppo vi accompagnerà nella valle, dove vi offrirà un trattamento rinvigorente nelle acque termali. Ringiovaniti, sarete pronti a rimettervi in viaggio.",
+          "0": "Il gruppo vi accompagna nella valle, dove vi offre un trattamento rigenerante nelle acque termali. Rinvigoriti, vi sentite di nuovo in piena forma.",
           "1": "Le poche persone vi offrono un trattamento in un centro massaggi vicino. Mentre vi massaggiano, una delle candele appese alla parete cade nel barattolo degli oli essenziali, incendiando l'intera struttura. Riuscite, non senza difficoltà, a uscire dall'inferno che si sprigiona dall'edificio.",
-          "2": "Non si aspettavano questo tipo di richiesta e non sanno come rispondere. Non volendo lasciare che il malessere si aggravi, continuate per la vostra strada."
+          "2": "Non si aspettavano una richiesta del genere e sono ancora indecisi su come rispondervi. Per non lasciare che il disagio si protragga, li ringraziate comunque e chiudete la conversazione."
         },
         "text": "Un regalo sano."
       },
       "kind": {
         "outcomes": {
-          "0": "Il gruppo di amici vi dice che sono andati alla ricerca del regalo perfetto. Purtroppo, non hanno trovato nulla di vostro gradimento. Delusi, continuate per la vostra strada.",
-          "1": "Questi bambini intelligenti hanno deciso di farvi uno scherzo e di farvi un regalo cattivo. Ma non pensavano che una tavola con chiodi sporgenti sarebbe stata pericolosa da scartare. Con le dita che sanguinano, vi mettete furiosamente a curarvi.",
+          "0": "Il gruppo di amici vi racconta di essere andato alla ricerca del regalo perfetto. Purtroppo, non hanno trovato nulla che potesse piacervi. Delusi, li ringraziate comunque.",
+          "1": "Quei furbetti hanno deciso di farvi uno scherzo e di regalarvi un regalo meschino. Non avevano però pensato che una tavola con chiodi sporgenti potesse essere pericolosa da scartare. Con le dita insanguinate, vi allontanate furiosi per medicarvi.",
           "2": "I vostri generosi donatori sono orgogliosi delle loro scoperte sul mercato. Vi consegnano un oggetto che, a prima vista, vi interessa molto."
         },
         "text": "Dono in natura."
@@ -966,7 +966,7 @@
         "text": "Il dono nel cambiamento."
       }
     },
-    "text": "All'angolo della strada, alcuni passanti vi riconoscono e vi avvicinano. Ricordano perfettamente l'aiuto che avete dato loro e insistono per ringraziarvi con un regalo. Vi chiedono cosa vi farebbe più piacere."
+    "text": "Appena arrivati al villaggio, alcuni passanti vi riconoscono e vi avvicinano. Ricordano perfettamente l’aiuto che avete dato loro e insistono per ringraziarvi offrendovi un regalo. Vi chiedono cosa vi farebbe più piacere."
   },
   "35": {
     "possibilities": {
@@ -1616,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Vi spiegano che sono noci di cocco, che la loro polpa viene mangiata quando si apre il guscio e che il loro succo è famoso in tutto il Paese. Gli abitanti del villaggio vi offrono un assaggio e voi non rifiutate. Il succo è rinfrescante e la polpa placa l'appetito. Dopo aver ringraziato gli abitanti del villaggio per la loro scoperta con qualche moneta, vi mettete in cammino.",
-          "1": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Mentre uno di loro spiega, gli altri iniziano ad avvicinarsi a voi. All'improvviso, qualcuno vi blocca il braccio e gli altri si avventano su di voi per rubare le vostre cose. Dopo essere stati picchiati in precedenza, continuate il vostro cammino.",
-          "2": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Ci spiegano che sono noci di cocco, che la loro polpa viene mangiata quando si apre il guscio e che il loro succo è rinomato in tutto il Paese. Con queste preziose informazioni in mano, si riparte."
+          "0": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Vi spiegano che si tratta di noci di cocco e che la loro polpa si mangia una volta aperto il guscio, mentre il loro succo è famoso in tutto il paese. Gli abitanti del villaggio vi propongono di assaggiarle e voi non rifiutate l’offerta. In effetti, il succo è rinfrescante e la polpa placa il vostro appetito. Ringraziate gli abitanti del villaggio per questa scoperta dando loro qualche moneta.",
+          "1": "Vi avvicinate agli abitanti del villaggio e li interrogate su questi strani frutti. Mentre uno di loro vi sta spiegando, gli altri cominciano ad avvicinarsi a voi. All’improvviso, qualcuno vi blocca il braccio con una presa, mentre gli altri vi si avventano addosso per rubarvi le vostre cose. Dopo essere stato picchiato, riprendete faticosamente conoscenza.",
+          "2": "Vi avvicinate agli abitanti del villaggio e chiedete loro informazioni su questi strani frutti. Vi spiegano che si tratta di noci di cocco e che la loro polpa si mangia una volta aperto il guscio, mentre il loro succo è famoso in tutto il paese. Li ringraziate per queste preziose informazioni."
         },
         "text": "Avvicinatevi agli abitanti del villaggio per porre loro delle domande."
       },
       "end": {
         "outcomes": {
-          "0": "Osservate per un po' gli abitanti del villaggio mentre raccolgono questi frutti insoliti e poi proseguite il vostro cammino sotto il sole cocente.",
-          "1": "Uno dei frutti cade accanto a voi. Lo prendete tra le mani e lo esaminate attentamente prima di proseguire il cammino."
+          "0": "Rimanete a guardare per un po’ lo spettacolo degli abitanti del villaggio intenti a raccogliere questi frutti particolari sotto il sole cocente.",
+          "1": "Uno di quei frutti cade proprio accanto a voi. Lo prendete tra le mani e lo esaminate con attenzione."
         }
       },
       "leave": {
@@ -1639,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Continuate a dormire, ma uno dei frutti si stacca e vi colpisce alla testa. Siete feriti e sanguinate molto. Alcuni abitanti del villaggio vi vedono e vi soccorrono, ma ci vorrà un po' di tempo prima che vi riprendiate.",
-          "1": "Si dorme per un po'. Quando ci si sveglia e il sole inizia a tramontare e la temperatura si abbassa, si riparte rinvigoriti.",
-          "2": "Decidete di continuare a dormire. Quando vi svegliate, vi alzate, pronti per uscire, e notate che manca qualcosa dalle vostre tasche: il portafoglio. Decidete di andarvene, delusi."
+          "1": "Dormi per un po’. Quando ti svegli, ti accorgi che il sole sta cominciando a tramontare e che la temperatura sta calando. Ti alzi, pieno di energia.",
+          "2": "Decidi di continuare il tuo pisolino. Quando ti svegli, ti alzi e ti accorgi che ti manca qualcosa dalle tasche: il portafoglio. Fai fatica a farti una ragione."
         },
         "text": "Continuate la vostra siesta ai piedi dell'albero."
       }

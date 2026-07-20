@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "In the absence of any response from you, the group of friends decide to go and get you a present anyway. As you wait politely for them, you become increasingly anxious at the thought of wasting time. The risk of not being able to save the princess obsesses you, even sickens you... and you end up fainting. Discovering you lifeless on your way back, the honest men lean you against a tree to let you rest, and leave you this gift, before setting off again.",
-          "1": "Faced with your lack of reaction, the people decide to not insist further. You continue on your way without paying attention to it.",
-          "2": "Seeing you hesitate too long, the young men finally decide to offer you some money to buy a few trinkets. You thank them before continuing on your way."
+          "1": "Seeing that you don't react, the bystanders don't press the issue and walk away.",
+          "2": "Seeing that you were hesitating for too long, the young men finally decided to give you a little money so you could buy a few trinkets. You thanked them for their kindness."
         }
       },
       "food": {
         "outcomes": {
           "0": "One of them hands you a rather appetizing soup. You drink it carelessly. Those scoundrels set up a trap for you! They had waited for a long time to plunder you, the drink contained just enough fly agaric to make you sick. You feel increasingly ill while helplessly seeing your pockets being stripped.",
           "1": "These passers-by cooked a tasty dish for you, worthy of a Gallic potion. As you look closer, you see an object laying at the bottom of the bowl. It could be useful in the future.",
-          "2": "Delighted to be doing you a favor, the group heads off to buy you the local specialty. Seeing the dish arrive, you put on a brave face, but taste it with a certain disgust: you don't like mushrooms! Not without trouble, you continue on your way."
+          "2": "Happy to help, the group goes out to buy you the local specialty. When the dish arrives, you put on a brave face but eat it with some distaste: you don't like mushrooms! With some effort, you finish the dish."
         },
         "text": "Gift in food."
       },
       "health": {
         "outcomes": {
-          "0": "The group brings you to the valley, where they offer you an invigorating treatment in the thermal waters. Back on your feet, you are ready to hit the road again.",
+          "0": "The group accompanies you down into the valley, where they treat you to a rejuvenating treatment in the thermal waters. Refreshed, you feel back in top form.",
           "1": "The few people offer you a treatment in a massage center near there. While you are getting a massage, one of the candles hanging on the wall falls into the jar of essential oils, setting the whole establishment on fire. With some difficulty, you manage to get out of the blaze that emanates from the building.",
-          "2": "They did not expect this kind of request and remain doubtful about what they should say. Not wanting to let awkwardness settle down, you go on your way."
+          "2": "They weren't expecting this kind of request and are unsure how to respond. Not wanting the awkwardness to linger, you thank them anyway and end the conversation."
         },
         "text": "Gift in health."
       },
       "kind": {
         "outcomes": {
-          "0": "The group of friends tells you that they went in search of the ideal gift. Unfortunately, they didn't find anything you fancy. Disappointed, you continue on your way.",
-          "1": "These smart little ones decided to prank you and give you a petty gift. Yet they did not think that a plank with salient nails would be dangerous to go around. With bloody fingers, you furiously set off to heal yourself.",
+          "0": "Your group of friends tells you they went out looking for the perfect gift. Unfortunately, they didn't find anything they thought you'd like. Disappointed, you thank them anyway.",
+          "1": "Those smart alecks decided to play a prank on you and give you a lousy gift. They didn't realize, though, that a board with protruding nails would be dangerous to unwrap. With your fingers bleeding, you walk away, furious, to tend to your wounds.",
           "2": "Your generous donors are proud of their gift, found in a market. They give you an object which, at first glance, is of great interest to you."
         },
         "text": "Gift in kindness."
@@ -966,7 +966,7 @@
         "text": "Gift in money."
       }
     },
-    "text": "At the bend of a street, some passers-by recognize you and approach you. They remember perfectly the help you gave them, and insist on thanking you with a gift. They ask you what would please you most."
+    "text": "When you arrive in the village, some passersby recognize you and come up to you. They remember exactly how you helped them and insist on thanking you by giving you a gift. They ask you what would make you happiest."
   },
   "35": {
     "possibilities": {
@@ -1616,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "You approach the villagers and ask them about these strange fruits. They explain to you that they are coconuts and that their flesh is eaten when the shell of the fruit is opened and that their juice is famous throughout the country. The villagers offer you a taste and you don't say no to the offer. Indeed, the juice is refreshing and the flesh soothes your appetite. You leave after having thanked the villagers for this discovery by giving them some coins and continue on your way.",
-          "1": "You approach the villagers and ask them about these strange fruits. As one of them explains to you, the others start to draw closer to you. Suddenly, someone gives you an arm lock while the others throw themselves at you to steal your things. After having been beaten beforehand, you resume your journey.",
-          "2": "You approach the villagers and ask them about these strange fruits. They explain to you that they are coconuts and that their flesh is eaten when the shell of the fruit is opened and that their juice is famous throughout the country. With this precious information, you hit the road again."
+          "0": "You approach the villagers and ask them about these strange fruits. They explain that they are coconuts, that the flesh is eaten once the shell is cracked open, and that their juice is famous throughout the country. The villagers offer you a taste, and you don’t turn down the offer. Indeed, the juice is refreshing, and the flesh satisfies your appetite. You thank the villagers for this discovery by giving them a few coins.",
+          "1": "You approach the villagers and ask them about these strange fruits. As one of them explains, the others begin to close in on you. Suddenly, someone locks your arm in a hold while the others pounce on you to steal your belongings. After being beaten up, you slowly come to your senses.",
+          "2": "You approach the villagers and ask them about these strange fruits. They explain that they are coconuts, that the flesh is eaten once the shell is cracked open, and that their juice is famous throughout the country. You thank them for this valuable information."
         },
         "text": "Talk to the villagers to question them."
       },
       "end": {
         "outcomes": {
-          "0": "You watch the villagers harvesting these unusual fruits for a while, then continue on your way under the blazing sun.",
-          "1": "One of the fruits falls beside you. You take it in your hands and examine it carefully before continuing on your way."
+          "0": "You watch for a moment as the villagers harvest these unusual fruits under the blazing sun.",
+          "1": "One of these fruits falls right next to you. You pick it up and examine it closely."
         }
       },
       "leave": {
@@ -1639,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "You continue your nap, but one of the fruits comes loose and crashes down on your head. You're injured and bleeding badly. Some villagers spot you and come to your aid, but it will take a while for you to recover.",
-          "1": "You are sleeping for a moment. When you wake up to find that the sun is starting to set and the temperature is dropping, you resume your route, invigorated.",
-          "2": "You decide to continue your nap. When you wake up, you get up, ready to go, and notice that you are missing something in your pockets, it is your wallet. So you decide to leave, disappointed."
+          "1": "You take a nap. When you wake up, you notice that the sun is beginning to set and the temperature is dropping. You get up, feeling refreshed.",
+          "2": "You decide to continue your nap. When you wake up, you get out of bed and notice that something is missing from your pockets: your wallet. You have a hard time coming to terms with it."
         },
         "text": "Continue your nap at the foot of the tree."
       }

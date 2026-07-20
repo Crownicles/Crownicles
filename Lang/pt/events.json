@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Quando não responde, o grupo de amigos decide ir comprar-lhe um presente. Enquanto espera educadamente por eles, fica cada vez mais ansioso com a ideia de estar a perder tempo. Fica obcecado com o risco de não conseguir salvar a princesa, chega a ficar doente com isso... e acaba por desmaiar. Ao encontrarem-te sem vida no caminho de regresso, os homens honestos encostam-te a uma árvore para que possas descansar e deixam-te este presente antes de partirem de novo.",
-          "1": "Perante a sua falta de reação, não insistem. Continua o seu caminho sem lhes prestar atenção.",
-          "2": "Vendo-o hesitar demasiado, os jovens decidem finalmente oferecer-lhe algum dinheiro para comprar algumas bugigangas. Agradece-lhes e prossegue o seu caminho."
+          "1": "Perante a sua falta de reação, os transeuntes não insistem e afastam-se.",
+          "2": "Ao verem-no a hesitar durante demasiado tempo, os jovens acabam por decidir oferecer-lhe algum dinheiro para que possa comprar algumas bugigangas. Agradece-lhes pelo gesto."
         }
       },
       "food": {
         "outcomes": {
           "0": "Um deles dá-lhe uma sopa bastante apetitosa. Bebe-a sem suspeitar. Estes malandros prepararam-te uma armadilha! Há muito tempo que esperavam para te pilhar e a bebida continha agaricus suficiente para te deixar doente. Sentes-te a perder o controlo enquanto observas, impotente, os teus bolsos serem roubados.",
           "1": "Estes transeuntes prepararam-te um prato delicioso, digno de uma poção gaulesa. Ao olhar mais de perto, repara num objeto deixado no fundo da tigela. Pode vir a ser útil mais tarde.",
-          "2": "Encantado por lhe estar a fazer um favor, o grupo sai para lhe comprar a especialidade local. Ao ver o prato chegar, faz uma cara de coragem, mas prova-o com um certo desgosto: não gosta de cogumelos! Não sem dificuldade, continua o seu caminho."
+          "2": "Encantados por vos poderem ajudar, o grupo vai comprar-vos a especialidade local. Ao ver o prato a chegar, fingis que está tudo bem, mas provam-no com certo nojo: não gostam de cogumelos! Com alguma dificuldade, acabam por comer o prato."
         },
         "text": "Prenda alimentar."
       },
       "health": {
         "outcomes": {
-          "0": "O grupo acompanhá-lo-á até ao vale, onde lhe oferecerá um tratamento revigorante nas águas termais. Rejuvenescido, está pronto para se fazer à estrada.",
+          "0": "O grupo de pessoas acompanha-o até ao vale, onde lhe oferecem um tratamento revigorante nas águas termais. Revigorado, sente-se novamente em plena forma.",
           "1": "As poucas pessoas oferecem-lhe um tratamento num centro de massagens próximo. Enquanto está a ser massajado, uma das velas penduradas na parede cai dentro do frasco de óleos essenciais, incendiando todo o estabelecimento. Consegues, não sem dificuldade, sair do inferno que emana do edifício.",
-          "2": "Eles não estavam à espera deste tipo de pedido e não sabem como reagir. Não querendo deixar o mal-estar apodrecer, continua o seu caminho."
+          "2": "Eles não estavam à espera deste tipo de pedido e continuam indecisos quanto à resposta que vos devem dar. Para não deixar que o clima fique constrangedor, agradece-lhes na mesma e encerra a conversa."
         },
         "text": "Um presente saudável."
       },
       "kind": {
         "outcomes": {
-          "0": "O grupo de amigos diz-lhe que foi à procura do presente perfeito. Infelizmente, não encontraram nada que te agradasse. Desiludido, continua o seu caminho.",
-          "1": "Estes miúdos espertos decidiram pregar-te uma partida e dar-te um presente malvado. Mas eles não pensaram que uma tábua com pregos salientes seria perigosa para desembrulhar. Com os dedos a sangrar, partiste furiosamente para te tratares.",
+          "0": "O grupo de amigos conta-lhe que saiu à procura do presente ideal. Infelizmente, não encontraram nada que lhe pudesse agradar. Desapontado, agradece-lhes na mesma.",
+          "1": "Esses espertalhões decidiram pregar-lhe uma partida e oferecer-lhe um presente mesquinho. No entanto, não pensaram que seria perigoso desembalar uma tábua com pregos salientes. Com os dedos a sangrar, afasta-se, furioso, para se tratar.",
           "2": "Os seus generosos doadores orgulham-se dos seus achados no mercado. Entregam-lhe um objeto que, à primeira vista, lhe interessa muito."
         },
         "text": "Oferta em espécie."
@@ -966,7 +966,7 @@
         "text": "Presente na mudança."
       }
     },
-    "text": "Numa esquina, alguns transeuntes reconhecem-no e aproximam-se de si. Lembram-se perfeitamente da ajuda que lhes deu e insistem em agradecer-lhe com um presente. Perguntam-lhe o que mais lhe agradaria."
+    "text": "Ao chegar à aldeia, alguns transeuntes reconhecem-no e abordam-no. Lembram-se perfeitamente da ajuda que lhes prestou e insistem em agradecer-lhe, oferecendo-lhe um presente. Perguntam-lhe o que mais lhe daria prazer."
   },
   "35": {
     "possibilities": {
@@ -1616,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Aproxima-se dos aldeões e pergunta-lhes sobre estes estranhos frutos. Eles explicam que são cocos e que a sua polpa é comida quando se abre a casca, e que o seu sumo é famoso em todo o país. Os aldeões oferecem-lhe uma prova e você não recusa a oferta. O sumo é refrescante e a polpa acalma o apetite. Depois de agradecer aos aldeões a sua descoberta com algumas moedas, põe-se a caminho.",
-          "1": "Aproximas-te dos aldeões e perguntas-lhes sobre estes estranhos frutos. Enquanto um deles explica, os outros começam a aproximar-se de ti. De repente, alguém te dá um golpe de braço e os outros atacam-te para te roubarem os teus pertences. Depois de teres sido espancado, continuas o teu caminho.",
-          "2": "Aproxima-se dos aldeões e pergunta-lhes sobre estes estranhos frutos. Eles explicam que são cocos, que a sua polpa é comida quando se abre a casca e que o seu sumo é conhecido em todo o país. Com esta informação valiosa na mão, parte de novo."
+          "0": "Aproximam-se dos aldeões e perguntam-lhes sobre esses frutos estranhos. Estes explicam-vos que são cocos e que a sua polpa se come depois de abrir a casca do fruto, e que o seu sumo é famoso em todo o país. Os aldeões convidam-no a prová-lo e você não recusa a oferta. De facto, o sumo é refrescante e a polpa sacia o seu apetite. Agradece aos aldeões por esta descoberta, dando-lhes algumas moedas.",
+          "1": "Aproximas-te dos aldeões e perguntas-lhes sobre esses frutos estranhos. Enquanto um deles te explica, os outros começam a aproximar-se de ti. De repente, alguém aplica-te uma chave de braço, enquanto os outros se lançam sobre ti para te roubarem os teus pertences. Depois de teres sido espancado, recuperas penosamente a consciência.",
+          "2": "Aproximas-te dos aldeões e perguntas-lhes sobre esses frutos estranhos. Eles explicam-te que são cocos e que a polpa se come depois de abrir a casca do fruto, e que o seu sumo é famoso em todo o país. Agradeces-lhes por estas informações valiosas."
         },
         "text": "Abordar os aldeões para lhes fazer perguntas."
       },
       "end": {
         "outcomes": {
-          "0": "Observamos durante algum tempo os aldeões a colherem estes frutos invulgares e depois continuamos o nosso caminho sob o sol escaldante.",
-          "1": "Um dos frutos cai ao teu lado. Toma-o nas mãos e examina-o cuidadosamente antes de continuar o seu caminho."
+          "0": "Fica por um momento a observar os aldeões a colherem esses frutos singulares sob o sol escaldante.",
+          "1": "Uma dessas frutas cai ao seu lado. Pega nela com as mãos e examina-a com atenção."
         }
       },
       "leave": {
@@ -1639,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Continua a dormir a sesta, mas um dos frutos solta-se e bate-lhe na cabeça. Ficaste ferido e a sangrar muito. Alguns aldeões vêem-te e vêm ajudar-te, mas vais demorar algum tempo a recuperar.",
-          "1": "Dorme-se durante algum tempo. Quando acorda, o sol começa a pôr-se e a temperatura a baixar, parte de novo, revigorado.",
-          "2": "Decide continuar a sesta. Quando acorda, levanta-se, pronto para sair, e repara que lhe falta qualquer coisa nos bolsos - a carteira. Decide ir-se embora, desiludido."
+          "1": "Dormes um pouco. Quando acordas, percebes que o sol começa a pôr-se e que a temperatura está a baixar. Levantas-te, revigorado.",
+          "2": "Decides continuar a tua sesta. Ao acordares, levantas-te e reparas que falta-te algo nos bolsos: a tua carteira. Tens dificuldade em aceitar o golpe."
         },
         "text": "Continue a sua sesta ao pé da árvore."
       }

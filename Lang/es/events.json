@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Como no respondes, el grupo de amigos decide ir a buscarte un regalo. Mientras les esperas educadamente, cada vez te angustia más la idea de perder el tiempo. Te obsesiona el riesgo de no poder salvar a la princesa, incluso te enferma... y acabas desmayándote. Al encontrarte sin vida en el camino de vuelta, los hombres honrados te apoyan contra un árbol para que puedas descansar, y te dejan este regalo antes de emprender de nuevo la marcha.",
-          "1": "Ante tu falta de reacción, no insisten. Sigues tu camino sin prestarles atención.",
-          "2": "Al verte dudar demasiado, los jóvenes deciden finalmente ofrecerte algo de dinero para comprar algunas baratijas. Les das las gracias y continúas tu camino."
+          "1": "Ante tu falta de reacción, los transeúntes no insisten y se alejan.",
+          "2": "Al ver que te lo pensabas demasiado, los jóvenes deciden finalmente ofrecerte un poco de dinero para que puedas comprarte algunas baratijas. Les das las gracias por su gesto."
         }
       },
       "food": {
         "outcomes": {
           "0": "Uno de ellos te da una sopa bastante apetitosa. Te la bebes sin sospechar nada. Estos bribones te han tendido una trampa. Llevan mucho tiempo esperando para saquearte, y la bebida contenía suficiente agárico de mosca para enfermarte. Sientes que se te escapa mientras observas impotente cómo te roban los bolsillos.",
           "1": "Estos transeúntes te han preparado un plato delicioso, digno de una poción gala. Mirando más de cerca, te das cuenta de que han dejado un objeto en el fondo del cuenco. Puede ser útil más adelante.",
-          "2": "Encantados de hacerle un favor, el grupo va a comprarle la especialidad local. Al ver llegar el plato, pones cara de valiente pero lo pruebas con cierto disgusto: ¡no te gustan las setas! No sin dificultad, continúas tu camino."
+          "2": "Encantados de haceros un favor, el grupo sale a compraros la especialidad de la zona. Al ver llegar el plato, ponéis buena cara, pero lo probáis con cierto asco: ¡no os gustan las setas! Con bastante esfuerzo, os acabáis el plato."
         },
         "text": "Regalo de comida."
       },
       "health": {
         "outcomes": {
-          "0": "El grupo le acompañará al valle, donde le ofrecerán un tratamiento tonificante en las aguas termales. Rejuvenecido, estarás listo para volver a la carretera.",
+          "0": "El grupo de personas te acompaña hasta el valle, donde te ofrecen un tratamiento revitalizante en las aguas termales. Con las energías renovadas, te sientes de nuevo en plena forma.",
           "1": "Unas personas te ofrecen un tratamiento en un centro de masajes cercano. Mientras te dan el masaje, una de las velas que cuelgan de la pared cae en el frasco de aceites esenciales, prendiendo fuego a todo el establecimiento. Consigues, no sin dificultad, salir del infierno que emana del edificio.",
-          "2": "No esperaban este tipo de petición y no están seguros de cómo responder. No queriendo dejar que el malestar se encone, continúas tu camino."
+          "2": "No se esperaban una petición de este tipo y no saben muy bien qué respuesta darte. Para no dejar que se instale el malestar, les das las gracias de todos modos y pones fin a la conversación."
         },
         "text": "Regalo saludable."
       },
       "kind": {
         "outcomes": {
-          "0": "El grupo de amigos te dice que han ido a buscar el regalo perfecto. Por desgracia, no han encontrado nada que te guste. Decepcionado, continúas tu camino.",
-          "1": "Estos niños tan listos han decidido gastarte una broma y hacerte un regalo malvado. Pero no pensaron que una tabla con clavos salientes sería peligrosa de desenvolver. Con los dedos sangrando, te lanzas furioso a darte un capricho.",
+          "0": "El grupo de amigos te cuenta que se fue a buscar el regalo perfecto. Por desgracia, no encontraron nada que pudiera gustarte. Decepcionado, les das las gracias de todos modos.",
+          "1": "Esos listillos han decidido gastarte una broma y hacerte un regalo mezquino. Sin embargo, no pensaron que sería peligroso desenvolver una tabla con clavos que sobresalían. Con los dedos ensangrentados, te alejas furioso para curarte.",
           "2": "Sus generosos donantes están orgullosos de sus hallazgos en el mercado. Te entregan un objeto que, a primera vista, te interesa mucho."
         },
         "text": "Regalo en especie."
@@ -966,7 +966,7 @@
         "text": "Regalo en el cambio."
       }
     },
-    "text": "En una esquina, unos transeúntes te reconocen y se acercan a ti. Recuerdan perfectamente la ayuda que les prestaste e insisten en agradecértelo con un regalo. Te preguntan qué es lo que más te gustaría."
+    "text": "Al llegar al pueblo, algunos transeúntes te reconocen y se acercan a ti. Recuerdan perfectamente la ayuda que les prestaste e insisten en darte las gracias ofreciéndote un regalo. Te preguntan qué es lo que más te gustaría recibir."
   },
   "35": {
     "possibilities": {
@@ -1616,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Te acercas a los aldeanos y les preguntas por esos extraños frutos. Te explican que son cocos y que su pulpa se come cuando se abre la cáscara, y que su zumo es famoso en todo el país. Los aldeanos te ofrecen probarlos y no dices que no. El zumo es refrescante y la pulpa calma el apetito. Tras agradecer a los aldeanos su descubrimiento con unas monedas, emprendes el camino.",
-          "1": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Mientras uno de ellos te explica, los demás empiezan a acercarse a ti. De repente, alguien te da un golpe en el brazo y los demás se abalanzan sobre ti para robarte tus pertenencias. Tras recibir una paliza previa, continúas tu camino.",
-          "2": "Te acercas a los aldeanos y les preguntas por esos extraños frutos. Te explican que son cocos, que su pulpa se come al abrir la cáscara y que su zumo es famoso en todo el país. Con esta valiosa información en la mano, te pones de nuevo en camino."
+          "0": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Te explican que son cocos y que su pulpa se come una vez abierta la cáscara, y que su zumo es famoso en todo el país. Los aldeanos te invitan a probarlas y no rechazas la oferta. De hecho, el zumo es refrescante y la pulpa sacia tu apetito. Agradeces a los aldeanos este descubrimiento dándoles unas monedas.",
+          "1": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Mientras uno de ellos te da explicaciones, los demás empiezan a acercarse a ti. De repente, alguien te hace una llave de brazo mientras los demás se abalanzan sobre ti para robarte tus pertenencias. Tras recibir una paliza, recuperas el sentido con dificultad.",
+          "2": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Te explican que son cocos y que su pulpa se come una vez abierta la cáscara, y que su zumo es famoso en todo el país. Les das las gracias por esta valiosa información."
         },
         "text": "Acércate a los aldeanos para hacerles preguntas."
       },
       "end": {
         "outcomes": {
-          "0": "Observas durante un rato cómo los aldeanos recogen estos frutos insólitos y luego continúas tu camino bajo el sol abrasador.",
-          "1": "Una de las frutas cae a tu lado. La coges en tus manos y la examinas detenidamente antes de continuar tu camino."
+          "0": "Te quedas un rato contemplando el espectáculo de los aldeanos mientras recogen esos frutos tan singulares bajo el sol abrasador.",
+          "1": "Una de esas frutas cae a tu lado. La coges con las manos y la examinas con atención."
         }
       },
       "leave": {
@@ -1639,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Sigues durmiendo la siesta, pero una de las frutas se suelta y te golpea la cabeza. Estás herido y sangrando mucho. Algunos aldeanos te ven y acuden en tu ayuda, pero tardarás en recuperarte.",
-          "1": "Duermes un rato. Cuando te despiertas y ves que el sol empieza a ponerse y la temperatura desciende, te pones en marcha de nuevo, lleno de energía.",
-          "2": "Decides continuar con la siesta. Cuando te despiertas, te levantas, dispuesto a irte, y notas que te falta algo en los bolsillos: la cartera. Decides marcharte, decepcionado."
+          "1": "Duermes un rato. Cuando te despiertas, te das cuenta de que el sol empieza a ponerse y que la temperatura está bajando. Te levantas, con las pilas recargadas.",
+          "2": "Decides seguir durmiendo la siesta. Al despertarte, te levantas y te das cuenta de que te falta algo en los bolsillos: tu monedero. Te cuesta mucho asimilarlo."
         },
         "text": "Continúa la siesta al pie del árbol."
       }
