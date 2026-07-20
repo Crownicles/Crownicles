@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Storage Chest",
-          "menuDescription": "{{filled}}/{{total}} locations used",
+          "menuDescription": "Stockez vos objets de rechange",
           "buttonLabel": "Open",
           "available": "{emote:city.homeUpgrades.chest} Your vault allows you to store spare items.",
           "title": "{{pseudo}}, Storage Chest",
