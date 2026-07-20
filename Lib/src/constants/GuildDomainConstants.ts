@@ -37,7 +37,7 @@ export abstract class GuildDomainConstants {
 			maxLevel: 1,
 			levels: [
 				{
-					guildLevel: 5,
+					guildLevel: 0,
 					cost: 2_000
 				}
 			]

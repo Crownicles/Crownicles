@@ -139,7 +139,8 @@ async function applyLockedAcceptGuildCreate(
 
 	const newGuild = await Guild.create({
 		name: guildName,
-		chiefId: player.id
+		chiefId: player.id,
+		treasury: GuildCreateConstants.INITIAL_TREASURY
 	});
 	player.guildId = newGuild.id;
 	await player.spendMoney({
