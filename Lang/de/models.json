@@ -1243,12 +1243,6 @@
       "particle": "in Richtung",
       "atParticle": "unter"
     },
-    "22222": {
-      "description": "Ein Testgebiet für Monster. Sollte nie im Spiel auftauchen.",
-      "name": "Teszone für Monster",
-      "particle": "in Richtung",
-      "atParticle": "an die"
-    },
     "23": {
       "description": "In der großen Handelsstadt Claire de Ville war es nicht immer so gastfreundlich, wie es die Stadt war. Zu Beginn sehr arm, hat sie sich schnell dank ihrer vielen Geschäfte und Hotels entwickelt, die den Reisenden in der Region eine große Auswahl bieten. Claire de Ville ist auch bekannt für die Ruhe und die Befolgung des Ortes.",
       "name": "Claire de Ville",
