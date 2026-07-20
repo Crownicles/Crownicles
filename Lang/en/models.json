@@ -1505,7 +1505,7 @@
     "bigFeast": "Participate in a big feast",
     "buyApartment": "Owning a home",
     "buyHome": "Buying a House",
-    "buyAllApartments": "Buy all the homes",
+    "buyApartments": "Posséder {{count}} logis",
     "buyGuildPetFood_one": "Buy {{count}} pet food",
     "buyGuildPetFood_other": "Buy {{count}} pet food",
     "buyItemFromAlderic": "Buy an item from Aldéric",
