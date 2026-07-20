@@ -852,7 +852,7 @@
         "cancel": "Cancel"
       },
       "stayTitle": "{{pseudo}}, you are in the city",
-      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
+      "stayDescription": "Use the {command:report} command to take advantage of the services available in town or continue your adventure.",
       "stayInCityChoice": "{emote:mapTypes.ci} Enter City",
       "shopEmptyDescription": "No services available at the moment.",
       "exitInn": "Exit Hostel",
@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Storage Chest",
-          "menuDescription": "Stockez vos objets de rechange",
+          "menuDescription": "Store your spare parts",
           "buttonLabel": "Open",
           "available": "{emote:city.homeUpgrades.chest} Your vault allows you to store spare items.",
           "title": "{{pseudo}}, Storage Chest",
@@ -2741,7 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "You've been on the boat too many times or you've joined a guild this week.",
       "noMemberOnBoat": "No active members of your guild are on the boat.",
-      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
+      "notTravelling": "You can't board the boat from a city; you have to be traveling.",
       "noGuild": "You don't belong to any guild.",
       "notEnoughEnergy": "You don't have enough energy to get on the boat.",
       "notEnoughGems": "You want to join your guild, but when it's time to pay, you find your funds are insufficient."
