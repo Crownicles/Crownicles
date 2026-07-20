@@ -1243,12 +1243,6 @@
       "particle": "a la",
       "atParticle": "en"
     },
-    "22222": {
-      "description": "Una zona de prueba para monstruos. Se supone que nunca aparecerán en el juego.",
-      "name": "Zona de pruebas de monstruos",
-      "particle": "a la",
-      "atParticle": "a la"
-    },
     "23": {
       "description": "Claire de Ville, gran ciudad comercial y encrucijada económica, no siempre ha sido tan acogedora. Inicialmente muy pobre, se ha desarrollado rápidamente gracias a sus numerosos comercios y hoteles que ofrecen una amplia oferta a los viajeros de la región. Claire de Ville también es conocida por su tranquilidad y respeto al orden.",
       "name": "Claire de Ville",
@@ -1511,7 +1505,7 @@
     "bigFeast": "Asistir a una gran fiesta",
     "buyApartment": "Tener una vivienda",
     "buyHome": "Comprar una casa",
-    "buyAllApartments": "Comprar todas las viviendas",
+    "buyApartments": "Ser propietario de una vivienda en {{count}}",
     "buyGuildPetFood_one": "Comprar {{count}} comida para mascotas",
     "buyGuildPetFood_other": "Comprar {{count}} comida para mascotas",
     "buyItemFromAlderic": "Comprar un artículo de Aldéric",
