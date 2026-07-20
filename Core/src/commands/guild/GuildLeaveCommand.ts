@@ -174,7 +174,7 @@ async function applyLockedAcceptGuildLeave(
 
 	if (isChief) {
 		const guildName = guild.name;
-		await guild.completelyDestroyAndDeleteFromTheDatabase();
+		await guild.completelyDestroyAndDeleteFromTheDatabase(player.keycloakId);
 		response.push(makePacket(CommandGuildLeaveAcceptPacketRes, {
 			guildName,
 			isGuildDestroyed: true

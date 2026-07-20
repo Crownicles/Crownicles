@@ -169,7 +169,7 @@ async function commitFreedPet(
 		saves.push(options.guild.save());
 	}
 	await Promise.all(saves);
-	LogsDatabase.logPetFree(pet).then();
+	LogsDatabase.logPetFree(pet, player.keycloakId).then();
 
 	return snapshot;
 }
