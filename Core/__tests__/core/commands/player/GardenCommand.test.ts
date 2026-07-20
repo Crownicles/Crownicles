@@ -86,6 +86,7 @@ describe("GardenCommand", () => {
 		id: 42,
 		keycloakId: "player-keycloak-id",
 		mapLinkId: 3,
+		startTravelDate: new Date(0),
 		getDestinationId: vi.fn(() => 7),
 		getCurrentCityId: vi.fn(() => null as string | null),
 		getCumulativeEnergy: vi.fn(() => 100),
@@ -100,6 +101,7 @@ describe("GardenCommand", () => {
 		vi.clearAllMocks();
 		reactionCollectorMockState.endCallback = undefined;
 		talismans.hasRemoteHarvestTalisman = false;
+		player.startTravelDate = new Date(0);
 		vi.mocked(PlayerTalismansManager.getOfPlayer).mockResolvedValue(talismans as never);
 
 		vi.mocked(InventorySlots.getOfPlayer).mockResolvedValue([]);
@@ -187,6 +189,25 @@ describe("GardenCommand", () => {
 			player,
 			GardenAccessMode.FULL
 		);
+	});
+
+	it("refuses full access while the player is travelling to their home city", async () => {
+		vi.mocked(Homes.getOfPlayer).mockResolvedValue({
+			id: 1,
+			level: 2,
+			cityId: "coco",
+			getLevel: () => ({
+				features: { gardenPlots: 1 }
+			})
+		} as never);
+		player.getCurrentCityId.mockReturnValue("coco");
+		player.startTravelDate = new Date();
+
+		const response: { type: string; data: { reason: string } }[] = [];
+		await new GardenCommand().execute(response as never, player as never, {} as never, context as never);
+
+		expect(response[0].data.reason).toBe(GardenNoAccessReason.NO_TALISMAN);
+		expect(buildGardenData).not.toHaveBeenCalled();
 	});
 
 	it("builds a garden-only collector with READ_ONLY access when the player is away with the talisman", async () => {
