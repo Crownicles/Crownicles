@@ -2741,6 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Já andou de barco demasiadas vezes ou juntou-se a um grémio esta semana.",
       "noMemberOnBoat": "Nenhum membro ativo da tua guilda está no barco.",
+      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
       "noGuild": "Não pertences a nenhum grémio.",
       "notEnoughEnergy": "Não tens energia suficiente para entrar no barco.",
       "notEnoughGems": "Queres inscrever-te no teu grémio, mas quando chega a altura de pagar, apercebes-te de que os teus fundos são insuficientes."
