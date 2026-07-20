@@ -852,7 +852,7 @@
         "cancel": "Annuler"
       },
       "stayTitle": "{{pseudo}}, vous êtes en ville",
-      "stayDescription": "Vous êtes en ville et pouvez profiter des services disponibles. Vous pouvez partir à tout moment en utilisant la commande {command:report}.",
+      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
       "stayInCityChoice": "{emote:mapTypes.ci} Entrer en ville",
       "shopEmptyDescription": "Aucun service à proposer pour le moment.",
       "exitInn": "Sortir de l'auberge",
