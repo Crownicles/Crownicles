@@ -1243,12 +1243,6 @@
       "particle": "para o",
       "atParticle": "em"
     },
-    "22222": {
-      "description": "Uma zona de teste para os monstros. Não é suposto aparecerem no jogo.",
-      "name": "Área de teste de monstros",
-      "particle": "para o",
-      "atParticle": "para o"
-    },
     "23": {
       "description": "Grande cidade mercantil e cruzamento económico, Claire de Ville nem sempre foi tão acolhedora. Inicialmente muito pobre, desenvolveu-se rapidamente graças às suas numerosas lojas e hotéis que oferecem uma vasta escolha aos viajantes da região. Claire de Ville é também conhecida pela sua calma e respeito pela ordem.",
       "name": "Claire de Ville",
