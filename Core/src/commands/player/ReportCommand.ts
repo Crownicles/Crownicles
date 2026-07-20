@@ -190,13 +190,17 @@ async function handleArrival(
 	player: Player,
 	forceSpecificEvent: number
 ): Promise<void> {
-	if (Maps.isOnPveIsland(player)) {
-		await doPVEBoss(player, response, context);
+	try {
+		if (Maps.isOnPveIsland(player)) {
+			await doPVEBoss(player, response, context);
+		}
+		else {
+			await doRandomBigEvent(context, response, player, forceSpecificEvent);
+		}
 	}
-	else {
-		await doRandomBigEvent(context, response, player, forceSpecificEvent);
+	finally {
+		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 	}
-	BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.REPORT_COMMAND);
 }
 
 /**

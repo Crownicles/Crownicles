@@ -7,6 +7,8 @@ export class LogsPveFightsResults extends Model {
 
 	declare readonly playerId: number;
 
+	declare readonly classId: number | null;
+
 	declare readonly monsterId: string;
 
 	declare readonly monsterLevel: number;
@@ -36,6 +38,10 @@ export function initModel(sequelize: Sequelize): void {
 		playerId: {
 			type: DataTypes.INTEGER,
 			allowNull: false
+		},
+		classId: {
+			type: DataTypes.TINYINT.UNSIGNED,
+			allowNull: true
 		},
 		monsterId: {
 			type: DataTypes.STRING,

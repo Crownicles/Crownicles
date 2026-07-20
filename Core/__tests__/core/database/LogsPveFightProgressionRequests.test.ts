@@ -2,6 +2,7 @@ import {
 	afterEach, describe, expect, it, vi
 } from "vitest";
 import { QueryTypes } from "sequelize";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { LogsPveFightsResults } from "../../../src/core/database/logs/models/LogsPveFightsResults";
 import { LogsPveFightProgressionRequests } from "../../../src/core/database/logs/requests/LogsPveFightProgressionRequests";
 
@@ -24,7 +25,7 @@ describe("LogsPveFightProgressionRequests", () => {
 		})).resolves.toBe(75);
 
 		const [sql, options] = query.mock.calls[0];
-		expect(sql).toContain("AND action.classId IN (:classIds)");
+		expect(sql).toContain("AND pve.classId IN (:classIds)");
 		expect(sql).toContain("CASE WHEN pve.winner = 1 THEN pve.monsterLevel END DESC");
 		expect(sql).toContain("CASE WHEN pve.winner = 1 THEN NULL ELSE pve.date END DESC");
 		expect(options).toEqual({
@@ -50,5 +51,25 @@ describe("LogsPveFightProgressionRequests", () => {
 			monsterId: "forestTroll",
 			classId: 11
 		})).resolves.toBeNull();
+	});
+
+	it("returns null when the logs database is unavailable", async () => {
+		const error = new Error("logs unavailable");
+		const query = vi.fn().mockRejectedValue(error);
+		const logError = vi.spyOn(CrowniclesLogger, "errorWithObj").mockImplementation(() => undefined);
+		Object.defineProperty(LogsPveFightsResults, "sequelize", {
+			configurable: true,
+			value: { query }
+		});
+
+		await expect(LogsPveFightProgressionRequests.getMonsterLevelBase({
+			playerKeycloakId: "player-a",
+			monsterId: "forestTroll",
+			classId: 11
+		})).resolves.toBeNull();
+		expect(logError).toHaveBeenCalledWith(
+			"Failed to retrieve PVE fight progression, using player level",
+			error
+		);
 	});
 });

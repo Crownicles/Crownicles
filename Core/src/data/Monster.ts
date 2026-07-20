@@ -57,7 +57,7 @@ export class MonsterDataController extends DataControllerString<Monster> {
 		return new Monster();
 	}
 
-	public getRandomMonster(mapId = -1, seed = RandomUtils.crowniclesRandom.integer(1, 9999)): Monster {
+	public getRandomMonster(mapId = -1, seed = RandomUtils.crowniclesRandom.integer(1, 9999)): Monster | undefined {
 		let availableMonsters = this.getValuesArray();
 
 		if (mapId !== -1) {
