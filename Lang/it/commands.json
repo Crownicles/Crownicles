@@ -852,7 +852,7 @@
         "cancel": "Annullamento"
       },
       "stayTitle": "{{pseudo}}siete in città",
-      "stayDescription": "Siete in città e potete usufruire dei servizi disponibili. Potete andarvene in qualsiasi momento usando il comando {comando:report}.",
+      "stayDescription": "Utilizza il comando {command:report} per usufruire dei servizi disponibili in città o per riprendere la tua avventura.",
       "stayInCityChoice": "{emote:mapTypes.ci} Entrare in città",
       "shopEmptyDescription": "Al momento non ci sono servizi da offrire.",
       "exitInn": "Fuori dal bosco",
@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Scatola di immagazzinaggio",
-          "menuDescription": "{{filled}}/{{total}} luoghi utilizzati",
+          "menuDescription": "Conservate i vostri ricambi",
           "buttonLabel": "Aperto",
           "available": "{emote:city.homeUpgrades.chest} Il forziere consente di conservare gli oggetti di riserva.",
           "title": "{{pseudo}}scatola di immagazzinaggio",
@@ -2741,6 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Siete stati in barca troppe volte o vi siete uniti a una gilda questa settimana.",
       "noMemberOnBoat": "Nessun membro attivo della tua gilda è sulla barca.",
+      "notTravelling": "Non è possibile salire a bordo della nave da una città; bisogna essere già in viaggio.",
       "noGuild": "Non fai parte di nessuna gilda.",
       "notEnoughEnergy": "Non hai abbastanza energia per salire sulla barca.",
       "notEnoughGems": "Volete unirvi alla vostra gilda, ma quando arriva il momento di pagare, vi rendete conto che i vostri fondi sono insufficienti."
