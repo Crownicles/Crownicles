@@ -27,6 +27,9 @@ export {
 import {
 	CookingCraftError, CookingMenuSnapshot
 } from "../../types/CookingTypes";
+import type { ReactionCollectorCityData } from "../interaction/ReactionCollectorCity";
+
+type HomeUpgradeStationData = NonNullable<NonNullable<ReactionCollectorCityData["home"]["owned"]>["upgradeStation"]>;
 
 export type ChestError = typeof HomeConstants.CHEST_ERRORS[keyof typeof HomeConstants.CHEST_ERRORS];
 export type { ChestAction } from "../../constants/HomeConstants";
@@ -481,6 +484,9 @@ export class CommandReportHomeChestActionRes extends CrowniclesPacket {
 
 	/** Max backup slots per category in the player's inventory */
 	inventoryCapacity!: ChestSlotsPerCategory;
+
+	/** Refreshed home upgrade station after inventory mutations */
+	upgradeStation?: HomeUpgradeStationData;
 }
 
 // Garden packets

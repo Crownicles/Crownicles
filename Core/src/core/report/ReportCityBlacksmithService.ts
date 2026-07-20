@@ -26,6 +26,8 @@ import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
+import { Homes } from "../database/game/models/Home";
+import { buildUpgradeStationData } from "./ReportCityService";
 
 export interface UpgradeItemValidationResult {
 	itemToUpgrade?: {
@@ -231,13 +233,38 @@ export async function handleUpgradeItemReaction(
 		return;
 	}
 
-	const { itemToUpgrade } = validation;
-
 	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
 		await executeUpgradeItemUnderLock({
-			lockedPlayer, reaction, data, itemToUpgrade: itemToUpgrade!, response
+			lockedPlayer, reaction, data, response
 		});
 	});
+}
+
+async function refreshUpgradeStationDataUnderLock(
+	player: Player,
+	data: ReactionCollectorCityData
+): Promise<ReactionCollectorCityData | null> {
+	const home = await Homes.getOfPlayer(player.id);
+	const homeLevel = home?.getLevel();
+	const ownedHome = data.home.owned;
+	if (!homeLevel || !ownedHome) {
+		return null;
+	}
+
+	const inventory = await InventorySlots.getOfPlayer(player.id);
+	const materials = await Materials.getPlayerMaterials(player.id);
+	const materialMap = new Map(materials.map(material => [material.materialId, material.quantity]));
+	return {
+		...data,
+		home: {
+			...data.home,
+			owned: {
+				...ownedHome,
+				features: homeLevel.features,
+				upgradeStation: buildUpgradeStationData(inventory, materialMap, homeLevel, player)
+			}
+		}
+	};
 }
 
 /**
@@ -273,14 +300,18 @@ async function executeUpgradeItemUnderLock(params: {
 	lockedPlayer: Player;
 	reaction: ReactionCollectorUpgradeItemReaction;
 	data: ReactionCollectorCityData;
-	itemToUpgrade: NonNullable<ReturnType<typeof validateUpgradeItemRequest>["itemToUpgrade"]>;
 	response: CrowniclesPacket[];
 }): Promise<void> {
 	const {
-		lockedPlayer, reaction, data, itemToUpgrade, response
+		lockedPlayer, reaction, data, response
 	} = params;
 
-	const revalidation = validateUpgradeItemRequest(lockedPlayer, reaction, data);
+	const freshData = await refreshUpgradeStationDataUnderLock(lockedPlayer, data);
+	if (!freshData) {
+		CrowniclesLogger.error(`Player ${lockedPlayer.keycloakId} tried to upgrade an item but current home data is unavailable.`);
+		return;
+	}
+	const revalidation = validateUpgradeItemRequest(lockedPlayer, reaction, freshData);
 	if (revalidation.logError) {
 		CrowniclesLogger.error(revalidation.logError);
 		return;
@@ -289,6 +320,7 @@ async function executeUpgradeItemUnderLock(params: {
 		response.push(revalidation.error);
 		return;
 	}
+	const itemToUpgrade = revalidation.itemToUpgrade!;
 
 	const materialsToConsume = itemToUpgrade.requiredMaterials.map(m => ({
 		materialId: m.materialId,

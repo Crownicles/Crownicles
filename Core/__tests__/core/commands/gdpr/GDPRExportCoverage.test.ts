@@ -332,6 +332,7 @@ const PLAYER_DATA_EXPORT_FIELD_COVERAGE = {
 		"itemId",
 		"itemLevel",
 		"itemEnchantmentId",
+		"remainingPotionUsages",
 		"createdAt",
 		"updatedAt"
 	],

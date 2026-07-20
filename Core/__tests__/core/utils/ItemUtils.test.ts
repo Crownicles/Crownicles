@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import {
 	generateRandomLootEnchantment, giveItemToPlayer, toItemWithDetails
 } from '../../../src/core/utils/ItemUtils';
-import { InventorySlots } from '../../../src/core/database/game/models/InventorySlot';
+import InventorySlot, { InventorySlots } from '../../../src/core/database/game/models/InventorySlot';
 import { InventoryInfos } from '../../../src/core/database/game/models/InventoryInfo';
 import { MissionsController } from '../../../src/core/missions/MissionsController';
 import { BlockingUtils } from '../../../src/core/utils/BlockingUtils';
@@ -13,6 +13,20 @@ import { CrowniclesPacket, PacketContext } from '../../../../Lib/src/packets/Cro
 import { ItemFoundPacket } from '../../../../Lib/src/packets/events/ItemFoundPacket';
 import { ReactionCollectorInstance } from '../../../src/core/utils/ReactionsCollector';
 import { RandomUtils } from '../../../../Lib/src/utils/RandomUtils';
+import { ReactionCollectorItemChoiceItemReaction } from '../../../../Lib/src/packets/interaction/ReactionCollectorItemChoice';
+import { ReactionCollectorAcceptReaction } from '../../../../Lib/src/packets/interaction/ReactionCollectorPacket';
+import { MainItem } from '../../../src/data/MainItem';
+
+type CapturedCollector = {
+	getFirstReaction: () => {
+		reaction: {
+			type: string;
+			data?: unknown;
+		};
+	} | undefined;
+};
+
+let capturedCollectorCallback: ((collector: CapturedCollector, response: CrowniclesPacket[]) => Promise<void>) | undefined;
 
 // Mock all external dependencies
 vi.mock('../../../src/core/database/game/models/InventorySlot');
@@ -28,7 +42,7 @@ vi.mock('../../../src/core/utils/BlockingUtils');
 vi.mock('../../../src/core/utils/ReactionsCollector', () => ({
 	ReactionCollectorInstance: class {
 		constructor(collector: any, context: any, options: any, callback: any) {
-			// Mock properties
+			capturedCollectorCallback = callback;
 		}
 		block() {
 			return this;
@@ -116,6 +130,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 	beforeEach(() => {
 		// Clear all mocks
 		vi.clearAllMocks();
+		capturedCollectorCallback = undefined;
 
 		// Mock player
 		mockPlayer = {
@@ -151,12 +166,16 @@ describe('ItemUtils - giveItemToPlayer', () => {
 				slot: 0,
 				itemCategory: ItemCategory.WEAPON,
 				itemId: 50,
+				itemLevel: 0,
+				itemEnchantmentId: null,
+				remainingPotionUsages: null,
 				isEquipped: vi.fn().mockReturnValue(true),
 				isPotion: vi.fn().mockReturnValue(false),
 				getItem: vi.fn().mockReturnValue({
 					id: 50,
 					rarity: ItemRarity.COMMON,
 					getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
+					getItemAddedValue: vi.fn().mockReturnValue(5),
 					getDisplayPacket: vi.fn().mockReturnValue({ id: 50, name: 'Slot Item' })
 				})
 			}
@@ -246,6 +265,18 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			expect(mockResponse.length).toBeGreaterThanOrEqual(1);
 		});
 
+		it('should not auto-sell a better variant of the same item', async () => {
+			mockInventorySlots[0].itemId = mockItem.id;
+
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem, {
+				itemLevel: 4,
+				itemEnchantmentId: 'attack_1'
+			});
+
+			expect(capturedCollectorCallback).toBeDefined();
+			expect(mockPlayer.addMoney).not.toHaveBeenCalled();
+		});
+
 		it('should create reaction collector for single slot category', async () => {
 			// Arrange
 			mockInventoryInfo.slotLimitForCategory.mockReturnValue(1);
@@ -256,6 +287,49 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			// Assert
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
 			expect(mockResponse[1]).toBeInstanceOf(ReactionCollectorInstance);
+		});
+
+		it('should preserve attributes when replacing a single-slot item', async () => {
+			Object.setPrototypeOf(mockItem, MainItem.prototype);
+			mockItem.getDisplayPacket.mockImplementation((level: number, enchantmentId?: string) => ({
+				id: mockItem.id,
+				itemLevel: level,
+				itemEnchantmentId: enchantmentId
+			}));
+
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem, {
+				itemLevel: 4,
+				itemEnchantmentId: 'attack_1'
+			});
+
+			const callbackResponse: CrowniclesPacket[] = [];
+			await capturedCollectorCallback!({
+				getFirstReaction: () => ({
+					reaction: { type: ReactionCollectorAcceptReaction.name }
+				})
+			}, callbackResponse);
+
+			expect(InventorySlot.update).toHaveBeenCalledWith({
+				itemId: mockItem.id,
+				itemLevel: 4,
+				itemEnchantmentId: 'attack_1',
+				remainingPotionUsages: null
+			}, {
+				where: {
+					slot: 0,
+					itemCategory: ItemCategory.WEAPON,
+					playerId: mockPlayer.id
+				}
+			});
+			expect(callbackResponse[0]).toEqual({
+				type: 'ItemAcceptPacket',
+				data: {
+					itemWithDetails: expect.objectContaining({
+						itemLevel: 4,
+						itemEnchantmentId: 'attack_1'
+					})
+				}
+			});
 		});
 
 		it('should handle multi-slot categories with choice collector', async () => {
@@ -284,6 +358,55 @@ describe('ItemUtils - giveItemToPlayer', () => {
 			// Assert
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
 			expect(mockResponse[1]).toBeInstanceOf(ReactionCollectorInstance);
+		});
+
+		it('should preserve attributes when replacing a multi-slot item', async () => {
+			mockInventoryInfo.slotLimitForCategory.mockReturnValue(2);
+			mockInventorySlots.push({
+				playerId: 1,
+				slot: 1,
+				itemCategory: ItemCategory.WEAPON,
+				itemId: 60,
+				itemLevel: 2,
+				itemEnchantmentId: null,
+				remainingPotionUsages: null,
+				isEquipped: vi.fn().mockReturnValue(false),
+				isPotion: vi.fn().mockReturnValue(false),
+				getItem: vi.fn().mockReturnValue({
+					id: 60,
+					rarity: ItemRarity.COMMON,
+					getCategory: vi.fn().mockReturnValue(ItemCategory.WEAPON),
+					getItemAddedValue: vi.fn().mockReturnValue(5),
+					getDisplayPacket: vi.fn().mockReturnValue({ id: 60, name: 'Second Weapon' })
+				})
+			});
+
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem, {
+				itemLevel: 4,
+				itemEnchantmentId: 'attack_1'
+			});
+
+			await capturedCollectorCallback!({
+				getFirstReaction: () => ({
+					reaction: {
+						type: ReactionCollectorItemChoiceItemReaction.name,
+						data: { slot: 1 }
+					}
+				})
+			}, []);
+
+			expect(InventorySlot.update).toHaveBeenCalledWith({
+				itemId: mockItem.id,
+				itemLevel: 4,
+				itemEnchantmentId: 'attack_1',
+				remainingPotionUsages: null
+			}, {
+				where: {
+					slot: 1,
+					itemCategory: ItemCategory.WEAPON,
+					playerId: mockPlayer.id
+				}
+			});
 		});
 	});
 

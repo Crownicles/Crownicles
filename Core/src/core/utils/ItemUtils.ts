@@ -46,6 +46,9 @@ import { TravelTime } from "../maps/TravelTime";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { Homes } from "../database/game/models/Home";
 import { getSlotCountForCategory } from "../../../../Lib/src/types/HomeFeatures";
+import {
+	buildNewItemSlotData, ItemSlotData, itemSlotDataEquals
+} from "./ItemSlotUtils";
 
 
 /**
@@ -101,10 +104,20 @@ export async function checkDrinkPotionMissions(response: CrowniclesPacket[], pla
 	});
 }
 
-export function toItemWithDetails(player: Player, item: GenericItem, itemLevel: number, itemEnchantmentId: string | null): ItemWithDetails {
-	return item instanceof MainItem
-		? (item as MainItem).getDisplayPacket(itemLevel, itemEnchantmentId ?? undefined, player.getMaxStatsValue())
-		: (item as SupportItem).getDisplayPacket(player.getMaxStatsValue());
+export function toItemWithDetails(
+	player: Player,
+	item: GenericItem,
+	itemLevel: number,
+	itemEnchantmentId: string | null,
+	remainingPotionUsages: number | null = null
+): ItemWithDetails {
+	if (item instanceof MainItem) {
+		return item.getDisplayPacket(itemLevel, itemEnchantmentId ?? undefined, player.getMaxStatsValue());
+	}
+	if (item instanceof Potion) {
+		return item.getDisplayPacket(player.getMaxStatsValue(), remainingPotionUsages ?? undefined);
+	}
+	return (item as SupportItem).getDisplayPacket(player.getMaxStatsValue());
 }
 
 type WhoIsConcerned = {
@@ -112,8 +125,13 @@ type WhoIsConcerned = {
 	inventorySlots: InventorySlot[];
 };
 
-type ConcernedItems = {
+type ItemToGive = {
 	item: GenericItem;
+	slotData: ItemSlotData;
+};
+
+type ConcernedItems = {
+	itemToGive: ItemToGive;
 	itemToReplace?: InventorySlot;
 	itemToReplaceInstance?: GenericItem;
 };
@@ -131,15 +149,25 @@ type SellKeepItemOptions = {
  * @param item
  * @param itemToReplace
  */
-async function dontKeepOriginalItem(response: CrowniclesPacket[], player: Player, item: GenericItem, itemToReplace: InventorySlot): Promise<void> {
+async function dontKeepOriginalItem(
+	response: CrowniclesPacket[],
+	player: Player,
+	itemToGive: ItemToGive,
+	itemToReplace: InventorySlot
+): Promise<void> {
+	const {
+		item, slotData
+	} = itemToGive;
 	response.push(makePacket(ItemAcceptPacket, {
-		itemWithDetails: toItemWithDetails(player, item, 0, null)
+		itemWithDetails: toItemWithDetails(
+			player,
+			item,
+			slotData.itemLevel,
+			slotData.itemEnchantmentId,
+			slotData.remainingPotionUsages
+		)
 	}));
-	await InventorySlot.update({
-		itemId: item.id,
-		itemLevel: 0,
-		itemEnchantmentId: null
-	}, {
+	await InventorySlot.update(slotData, {
 		where: {
 			slot: itemToReplace.slot,
 			itemCategory: itemToReplace.itemCategory,
@@ -221,7 +249,7 @@ async function sellOrKeepItem(
 	response: CrowniclesPacket[],
 	whoIsConcerned: WhoIsConcerned,
 	{
-		item,
+		itemToGive,
 		itemToReplace,
 		itemToReplaceInstance
 	}: ConcernedItems,
@@ -232,9 +260,10 @@ async function sellOrKeepItem(
 	}: SellKeepItemOptions
 ): Promise<void> {
 	const player = whoIsConcerned.player;
+	let item = itemToGive.item;
 	await player.reload();
 	if (!keepOriginal) {
-		await dontKeepOriginalItem(response, player, item, itemToReplace!);
+		await dontKeepOriginalItem(response, player, itemToGive, itemToReplace!);
 		item = itemToReplaceInstance!;
 		resaleMultiplier = 1;
 	}
@@ -258,13 +287,18 @@ async function sellOrKeepItem(
  * @param tradableItems
  * @param sellKeepOptions
  */
-function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, toTradeItem: GenericItem, tradableItems: InventorySlot[], sellKeepOptions: SellKeepItemOptions) {
+function getMoreThan2ItemsSwitchingEndCallback(
+	whoIsConcerned: WhoIsConcerned,
+	itemToGive: ItemToGive,
+	tradableItems: InventorySlot[],
+	sellKeepOptions: SellKeepItemOptions
+): (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => Promise<void> {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 		await whoIsConcerned.player.reload();
 
 		const concernedItems: ConcernedItems = {
-			item: toTradeItem
+			itemToGive
 		};
 
 		if (reaction?.reaction.type === ReactionCollectorItemChoiceItemReaction.name) {
@@ -280,10 +314,10 @@ function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, t
 		BlockingUtils.unblockPlayer(whoIsConcerned.player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM);
 
 		if (reaction?.reaction.type === ReactionCollectorItemChoiceDrinkPotionReaction.name) {
-			await consumePotion(response, toTradeItem as Potion, whoIsConcerned.player, InventorySlots.slotsToActiveObjects(whoIsConcerned.inventorySlots));
+			await consumePotion(response, itemToGive.item as Potion, whoIsConcerned.player, InventorySlots.slotsToActiveObjects(whoIsConcerned.inventorySlots));
 			await whoIsConcerned.player.save();
 			await MissionsController.update(whoIsConcerned.player, response, { missionId: "findOrBuyItem" });
-			await checkDrinkPotionMissions(response, whoIsConcerned.player, toTradeItem as Potion, await InventorySlots.getOfPlayer(whoIsConcerned.player.id));
+			await checkDrinkPotionMissions(response, whoIsConcerned.player, itemToGive.item as Potion, await InventorySlots.getOfPlayer(whoIsConcerned.player.id));
 		}
 		else {
 			await sellOrKeepItem(response, whoIsConcerned, concernedItems, sellKeepOptions);
@@ -292,7 +326,7 @@ function getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned: WhoIsConcerned, t
 }
 
 type ItemsToManage = {
-	toTradeItem: GenericItem;
+	itemToGive: ItemToGive;
 	tradableItems: InventorySlot[];
 };
 
@@ -312,7 +346,7 @@ function manageMoreThan2ItemsSwitching(
 	context: PacketContext,
 	whoIsConcerned: WhoIsConcerned,
 	{
-		toTradeItem,
+		itemToGive,
 		tradableItems
 	}: ItemsToManage,
 	sellKeepOptions: SellKeepItemOptions,
@@ -323,8 +357,8 @@ function manageMoreThan2ItemsSwitching(
 
 	const collector = new ReactionCollectorItemChoice({
 		item: {
-			id: toTradeItem.id,
-			category: toTradeItem.getCategory()
+			id: itemToGive.item.id,
+			category: itemToGive.item.getCategory()
 		}
 	},
 	tradableItems.map(i => ({
@@ -341,7 +375,7 @@ function manageMoreThan2ItemsSwitching(
 			reactionLimit: 1,
 			mainPacket: false
 		},
-		getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned, toTradeItem, tradableItems, sellKeepOptions)
+		getMoreThan2ItemsSwitchingEndCallback(whoIsConcerned, itemToGive, tradableItems, sellKeepOptions)
 	)
 		.block(keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM)
 		.build());
@@ -360,7 +394,11 @@ async function manageGiveItemRelateds(response: CrowniclesPacket[], player: Play
 		.then();
 }
 
-function getGiveItemToPlayerEndCallback(whoIsConcerned: WhoIsConcerned, concernedItems: ConcernedItems, resaleMultiplier: number) {
+function getGiveItemToPlayerEndCallback(
+	whoIsConcerned: WhoIsConcerned,
+	concernedItems: ConcernedItems,
+	resaleMultiplier: number
+): (collector: ReactionCollectorInstance, response: CrowniclesPacket[]) => Promise<void> {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
 		const reaction = collector.getFirstReaction();
 		const isValidated = reaction && reaction.reaction.type === ReactionCollectorAcceptReaction.name;
@@ -369,10 +407,10 @@ function getGiveItemToPlayerEndCallback(whoIsConcerned: WhoIsConcerned, concerne
 		BlockingUtils.unblockPlayer(whoIsConcerned.player.keycloakId, BlockingConstants.REASONS.ACCEPT_ITEM);
 
 		if (reaction?.reaction.type === ReactionCollectorItemAcceptDrinkPotionReaction.name) {
-			await consumePotion(response, concernedItems.item as Potion, whoIsConcerned.player, InventorySlots.slotsToActiveObjects(whoIsConcerned.inventorySlots));
+			await consumePotion(response, concernedItems.itemToGive.item as Potion, whoIsConcerned.player, InventorySlots.slotsToActiveObjects(whoIsConcerned.inventorySlots));
 			await whoIsConcerned.player.save();
 			await MissionsController.update(whoIsConcerned.player, response, { missionId: "findOrBuyItem" });
-			await checkDrinkPotionMissions(response, whoIsConcerned.player, concernedItems.item as Potion, await InventorySlots.getOfPlayer(whoIsConcerned.player.id));
+			await checkDrinkPotionMissions(response, whoIsConcerned.player, concernedItems.itemToGive.item as Potion, await InventorySlots.getOfPlayer(whoIsConcerned.player.id));
 		}
 		else {
 			await sellOrKeepItem(response, whoIsConcerned, concernedItems, {
@@ -434,6 +472,11 @@ export async function giveItemToPlayer(
 	const {
 		resaleMultiplier = 1, canDrinkImmediately = true, itemLevel = 0, itemEnchantmentId = null
 	} = options;
+	const slotData = buildNewItemSlotData(item, itemLevel, itemEnchantmentId);
+	const itemToGive: ItemToGive = {
+		item,
+		slotData
+	};
 	const inventorySlots = await InventorySlots.getOfPlayer(player.id);
 	const whoIsConcerned = {
 		player,
@@ -441,10 +484,16 @@ export async function giveItemToPlayer(
 	};
 
 	response.push(makePacket(ItemFoundPacket, {
-		itemWithDetails: toItemWithDetails(player, item, itemLevel, itemEnchantmentId)
+		itemWithDetails: toItemWithDetails(
+			player,
+			item,
+			slotData.itemLevel,
+			slotData.itemEnchantmentId,
+			slotData.remainingPotionUsages
+		)
 	}));
 
-	if (await player.giveItem(item, itemLevel, itemEnchantmentId)) {
+	if (await player.giveItem(item, slotData.itemLevel, slotData.itemEnchantmentId)) {
 		await manageGiveItemRelateds(response, player, item);
 		return;
 	}
@@ -458,12 +507,12 @@ export async function giveItemToPlayer(
 	const itemToReplace = inventorySlots.filter((slot: InventorySlot) => (maxSlots === 1 ? slot.isEquipped() : slot.slot === 1) && slot.itemCategory === category)[0];
 	const canDrinkThisPotion = canPotionBeDrunkImmediately(item, canDrinkImmediately);
 	const autoSell = item.getCategory() !== ItemCategory.POTION || (item as Potion).isFightPotion() // Because we can't drink immediately these potions
-		? items.length === items.filter((slot: InventorySlot) => slot.itemId === item.id).length
+		? items.length === items.filter((slot: InventorySlot) => itemSlotDataEquals(slot, slotData)).length
 		: false;
 
 	if (autoSell) {
 		await sellOrKeepItem(response, whoIsConcerned, {
-			item
+			itemToGive
 		}, {
 			keepOriginal: true,
 			resaleMultiplier,
@@ -474,7 +523,7 @@ export async function giveItemToPlayer(
 
 	if (maxSlots >= 2) {
 		manageMoreThan2ItemsSwitching(response, context, whoIsConcerned, {
-			toTradeItem: item,
+			itemToGive,
 			tradableItems: items
 		}, { resaleMultiplier }, canDrinkThisPotion);
 		return;
@@ -494,7 +543,7 @@ export async function giveItemToPlayer(
 			mainPacket: false
 		},
 		getGiveItemToPlayerEndCallback(whoIsConcerned, {
-			item,
+			itemToGive,
 			itemToReplace,
 			itemToReplaceInstance
 		}, resaleMultiplier)

@@ -42,7 +42,7 @@ export class InventorySlot extends Model {
 
 	declare itemEnchantmentId: string | null;
 
-	declare remainingPotionUsages: number;
+	declare remainingPotionUsages: number | null;
 
 	declare updatedAt: Date;
 
@@ -96,7 +96,7 @@ export class InventorySlot extends Model {
 	}
 
 	itemWithDetails(player: Player): ItemWithDetails {
-		return toItemWithDetails(player, this.getItem()!, this.itemLevel, this.itemEnchantmentId);
+		return toItemWithDetails(player, this.getItem()!, this.itemLevel, this.itemEnchantmentId, this.remainingPotionUsages);
 	}
 }
 
@@ -398,6 +398,11 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		itemEnchantmentId: {
 			type: DataTypes.STRING,
+			allowNull: true,
+			defaultValue: null
+		},
+		remainingPotionUsages: {
+			type: DataTypes.INTEGER,
 			allowNull: true,
 			defaultValue: null
 		},

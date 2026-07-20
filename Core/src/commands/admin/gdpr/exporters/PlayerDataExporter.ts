@@ -272,6 +272,7 @@ async function exportHomeScopedData(homeId: number, csvFiles: GDPRCsvFiles): Pro
 			itemId: slot.itemId,
 			itemLevel: slot.itemLevel,
 			itemEnchantmentId: slot.itemEnchantmentId,
+			remainingPotionUsages: slot.remainingPotionUsages,
 			createdAt: slot.createdAt,
 			updatedAt: slot.updatedAt
 		})));

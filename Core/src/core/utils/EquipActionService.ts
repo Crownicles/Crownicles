@@ -16,26 +16,11 @@ import { Homes } from "../database/game/models/Home";
 import {
 	EMPTY_SLOTS_PER_CATEGORY, getSlotCountForCategory
 } from "../../../../Lib/src/types/HomeFeatures";
+import {
+	clearItemSlotData, copyItemSlotData, findFirstFreeBackupSlot, ItemSlotData
+} from "./ItemSlotUtils";
 
 type EquipActionResult = Omit<CommandEquipActionRes, "name">;
-
-/**
- * Copy item data (id, level, enchantment) from one slot to another.
- */
-function copySlotData(target: InventorySlot, source: InventorySlot): void {
-	target.itemId = source.itemId;
-	target.itemLevel = source.itemLevel;
-	target.itemEnchantmentId = source.itemEnchantmentId;
-}
-
-/**
- * Clear all item data from a slot (set to empty).
- */
-function clearSlot(slot: InventorySlot): void {
-	slot.itemId = 0;
-	slot.itemLevel = 0;
-	slot.itemEnchantmentId = null;
-}
 
 /**
  * Handle an equip/deposit action from AsyncPacketSender.
@@ -116,21 +101,21 @@ async function processEquip(playerId: number, reserveSlot: number, category: Ite
 
 	// If active slot is empty (id=0), just move the reserve item and destroy the reserve slot
 	if (activeSlot.itemId === 0) {
-		copySlotData(activeSlot, toEquip);
+		copyItemSlotData(activeSlot, toEquip);
 		await activeSlot.save();
 		await toEquip.destroy();
 	}
 	else {
 		// Swap: exchange data between active and reserve slots
-		const tempId = activeSlot.itemId;
-		const tempLevel = activeSlot.itemLevel;
-		const tempEnchantment = activeSlot.itemEnchantmentId;
+		const activeItem: ItemSlotData = {
+			itemId: activeSlot.itemId,
+			itemLevel: activeSlot.itemLevel,
+			itemEnchantmentId: activeSlot.itemEnchantmentId,
+			remainingPotionUsages: activeSlot.remainingPotionUsages
+		};
 
-		copySlotData(activeSlot, toEquip);
-
-		toEquip.itemId = tempId;
-		toEquip.itemLevel = tempLevel;
-		toEquip.itemEnchantmentId = tempEnchantment;
+		copyItemSlotData(activeSlot, toEquip);
+		copyItemSlotData(toEquip, activeItem);
 
 		await activeSlot.save();
 		await toEquip.save();
@@ -168,7 +153,7 @@ async function processDeposit(playerId: number, category: ItemCategory): Promise
 	}
 
 	// Clear active slot
-	clearSlot(activeSlot);
+	clearItemSlotData(activeSlot);
 	await activeSlot.save();
 
 	return null;
@@ -185,23 +170,22 @@ async function placeItemInBackupSlot({
 }): Promise<EquipError | null> {
 	const emptySlot = backupSlots.find(s => s.itemId === 0);
 	if (emptySlot) {
-		copySlotData(emptySlot, source);
+		copyItemSlotData(emptySlot, source);
 		await emptySlot.save();
 		return null;
 	}
 
 	// maxSlots includes the equipped slot (slot 0), so backup capacity is maxSlots - 1
-	if (backupSlots.length < maxSlots - 1) {
-		const nextSlot = backupSlots.length > 0
-			? Math.max(...backupSlots.map(s => s.slot)) + 1
-			: 1;
+	const freeSlot = findFirstFreeBackupSlot(backupSlots, maxSlots);
+	if (freeSlot !== null) {
 		await InventorySlot.create({
 			playerId,
-			slot: nextSlot,
+			slot: freeSlot,
 			itemCategory: category,
 			itemId: source.itemId,
 			itemLevel: source.itemLevel,
-			itemEnchantmentId: source.itemEnchantmentId
+			itemEnchantmentId: source.itemEnchantmentId,
+			remainingPotionUsages: source.remainingPotionUsages
 		});
 		return null;
 	}
