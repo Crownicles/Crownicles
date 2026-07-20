@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Como no respondes, el grupo de amigos decide ir a buscarte un regalo. Mientras les esperas educadamente, cada vez te angustia más la idea de perder el tiempo. Te obsesiona el riesgo de no poder salvar a la princesa, incluso te enferma... y acabas desmayándote. Al encontrarte sin vida en el camino de vuelta, los hombres honrados te apoyan contra un árbol para que puedas descansar, y te dejan este regalo antes de emprender de nuevo la marcha.",
-          "1": "Ante tu falta de reacción, no insisten. Sigues tu camino sin prestarles atención.",
-          "2": "Al verte dudar demasiado, los jóvenes deciden finalmente ofrecerte algo de dinero para comprar algunas baratijas. Les das las gracias y continúas tu camino."
+          "1": "Face à votre absence de réaction, les quidams n'insistent pas et s'éloignent.",
+          "2": "Vous voyant hésiter trop longtemps, les jeunes hommes décident finalement de vous offrir un peu d'argent pour vous permettre l'achat de quelques babioles. Vous les remerciez pour leur geste."
         }
       },
       "food": {
         "outcomes": {
           "0": "Uno de ellos te da una sopa bastante apetitosa. Te la bebes sin sospechar nada. Estos bribones te han tendido una trampa. Llevan mucho tiempo esperando para saquearte, y la bebida contenía suficiente agárico de mosca para enfermarte. Sientes que se te escapa mientras observas impotente cómo te roban los bolsillos.",
           "1": "Estos transeúntes te han preparado un plato delicioso, digno de una poción gala. Mirando más de cerca, te das cuenta de que han dejado un objeto en el fondo del cuenco. Puede ser útil más adelante.",
-          "2": "Encantados de hacerle un favor, el grupo va a comprarle la especialidad local. Al ver llegar el plato, pones cara de valiente pero lo pruebas con cierto disgusto: ¡no te gustan las setas! No sin dificultad, continúas tu camino."
+          "2": "Ravis de vous rendre service, le groupe part vous acheter la spécialité du coin. Voyant le plat arriver, vous faites bonne figure mais la dégustez avec un certain dégoût : vous n'aimez pas les champignons ! Non sans mal, vous terminez le plat."
         },
         "text": "Regalo de comida."
       },
       "health": {
         "outcomes": {
-          "0": "El grupo le acompañará al valle, donde le ofrecerán un tratamiento tonificante en las aguas termales. Rejuvenecido, estarás listo para volver a la carretera.",
+          "0": "Le groupe d'individus vous accompagne dans la vallée, où ils vous offrent un soin revigorant dans les eaux thermales. Requinqué, vous vous sentez de nouveau en pleine forme.",
           "1": "Unas personas te ofrecen un tratamiento en un centro de masajes cercano. Mientras te dan el masaje, una de las velas que cuelgan de la pared cae en el frasco de aceites esenciales, prendiendo fuego a todo el establecimiento. Consigues, no sin dificultad, salir del infierno que emana del edificio.",
-          "2": "No esperaban este tipo de petición y no están seguros de cómo responder. No queriendo dejar que el malestar se encone, continúas tu camino."
+          "2": "Ils ne s'attendaient pas à ce genre de demande et restent dubitatifs quant à la réponse à vous donner. Ne voulant pas laisser s'installer le malaise, vous les remerciez malgré tout et mettez fin à la conversation."
         },
         "text": "Regalo saludable."
       },
       "kind": {
         "outcomes": {
-          "0": "El grupo de amigos te dice que han ido a buscar el regalo perfecto. Por desgracia, no han encontrado nada que te guste. Decepcionado, continúas tu camino.",
-          "1": "Estos niños tan listos han decidido gastarte una broma y hacerte un regalo malvado. Pero no pensaron que una tabla con clavos salientes sería peligrosa de desenvolver. Con los dedos sangrando, te lanzas furioso a darte un capricho.",
+          "0": "Le groupe d'amis vous raconte être parti à la recherche du cadeau idéal. Malheureusement, ils n'ont rien trouvé qui pourrait vous plaire. Déçu, vous les remerciez malgré tout.",
+          "1": "Ces petits malins ont décidé de vous faire une farce et de vous offrir un cadeau mesquin. Ils ne pensaient pourtant pas qu'une planche aux clous saillants serait dangereuse à déballer. Les doigts en sang, vous vous éloignez, furieux, afin de vous soigner.",
           "2": "Sus generosos donantes están orgullosos de sus hallazgos en el mercado. Te entregan un objeto que, a primera vista, te interesa mucho."
         },
         "text": "Regalo en especie."
@@ -966,7 +966,7 @@
         "text": "Regalo en el cambio."
       }
     },
-    "text": "En una esquina, unos transeúntes te reconocen y se acercan a ti. Recuerdan perfectamente la ayuda que les prestaste e insisten en agradecértelo con un regalo. Te preguntan qué es lo que más te gustaría."
+    "text": "À votre arrivée au village, des passants vous reconnaissent et vous abordent. Ils se rappellent parfaitement de l'aide que vous leur aviez apportée et insistent pour vous remercier en vous offrant un cadeau. Ils vous demandent ce qui vous ferait le plus plaisir."
   },
   "35": {
     "possibilities": {
@@ -1616,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Te acercas a los aldeanos y les preguntas por esos extraños frutos. Te explican que son cocos y que su pulpa se come cuando se abre la cáscara, y que su zumo es famoso en todo el país. Los aldeanos te ofrecen probarlos y no dices que no. El zumo es refrescante y la pulpa calma el apetito. Tras agradecer a los aldeanos su descubrimiento con unas monedas, emprendes el camino.",
-          "1": "Te acercas a los aldeanos y les preguntas por esas extrañas frutas. Mientras uno de ellos te explica, los demás empiezan a acercarse a ti. De repente, alguien te da un golpe en el brazo y los demás se abalanzan sobre ti para robarte tus pertenencias. Tras recibir una paliza previa, continúas tu camino.",
-          "2": "Te acercas a los aldeanos y les preguntas por esos extraños frutos. Te explican que son cocos, que su pulpa se come al abrir la cáscara y que su zumo es famoso en todo el país. Con esta valiosa información en la mano, te pones de nuevo en camino."
+          "0": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Les villageois vous proposent d'y goûter et vous ne dites pas non à l'offre. En effet, le jus est rafraîchissant et la chair apaise votre appétit. Vous remerciez les villageois pour cette découverte en leur donnant quelques pièces.",
+          "1": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Alors que l'un d'eux vous explique, les autres commencent à se rapprocher de vous. Brusquement, quelqu'un vous fait une clé de bras tandis que les autres se jettent sur vous pour vous dérober vos affaires. Après avoir été passé à tabac, vous reprenez péniblement vos esprits.",
+          "2": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Vous les remerciez pour ces précieuses informations."
         },
         "text": "Acércate a los aldeanos para hacerles preguntas."
       },
       "end": {
         "outcomes": {
-          "0": "Observas durante un rato cómo los aldeanos recogen estos frutos insólitos y luego continúas tu camino bajo el sol abrasador.",
-          "1": "Una de las frutas cae a tu lado. La coges en tus manos y la examinas detenidamente antes de continuar tu camino."
+          "0": "Vous regardez un moment le spectacle des villageois en train de récolter ces fruits singuliers sous le soleil ardent.",
+          "1": "Un de ces fruits tombe à côté de vous. Vous le prenez dans vos mains et l'examinez avec attention."
         }
       },
       "leave": {
@@ -1639,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Sigues durmiendo la siesta, pero una de las frutas se suelta y te golpea la cabeza. Estás herido y sangrando mucho. Algunos aldeanos te ven y acuden en tu ayuda, pero tardarás en recuperarte.",
-          "1": "Duermes un rato. Cuando te despiertas y ves que el sol empieza a ponerse y la temperatura desciende, te pones en marcha de nuevo, lleno de energía.",
-          "2": "Decides continuar con la siesta. Cuando te despiertas, te levantas, dispuesto a irte, y notas que te falta algo en los bolsillos: la cartera. Decides marcharte, decepcionado."
+          "1": "Vous dormez un moment. Lorsque vous vous réveillez, vous constatez que le soleil commence à se coucher et que la température diminue. Vous vous relevez, revigoré.",
+          "2": "Vous décidez de continuer votre sieste. À votre réveil, vous vous levez et remarquez qu'il vous manque quelque chose dans vos poches : votre porte-monnaie. Vous accusez difficilement le coup."
         },
         "text": "Continúa la siesta al pie del árbol."
       }
