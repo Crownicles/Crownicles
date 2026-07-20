@@ -1,7 +1,9 @@
 import {
 	describe, expect, it
 } from "vitest";
-import { GuildDomainConstants } from "../../src/constants/GuildDomainConstants";
+import {
+	GuildBuilding, GuildDomainConstants
+} from "../../src/constants/GuildDomainConstants";
 
 describe("GuildDomainConstants.getMaxBuyableFood", () => {
 	const foodCaps = GuildDomainConstants.getFoodCaps(0);
@@ -74,5 +76,11 @@ describe("GuildDomainConstants.getMaxBuyableFood", () => {
 		];
 		const result = GuildDomainConstants.getMaxBuyableFood(1_000, current, foodCaps);
 		expect(result).toHaveLength(prices.length);
+	});
+});
+
+describe("GuildDomainConstants.getBuildingRequiredGuildLevel", () => {
+	it("allows a level 0 guild to build its first shop", () => {
+		expect(GuildDomainConstants.getBuildingRequiredGuildLevel(GuildBuilding.SHOP, 0)).toBe(0);
 	});
 });
