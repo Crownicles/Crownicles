@@ -60,6 +60,10 @@ export { handleChestAction } from "./ReportCityChestService";
 
 // Type aliases for commonly used nested types from ReactionCollectorCityData
 type EnchanterData = NonNullable<ReactionCollectorCityData["enchanter"]>;
+type EnchanterPlayerData = {
+	inventory: InventorySlot[];
+	player: Player;
+};
 type HomeData = ReactionCollectorCityData["home"];
 type OwnedHomeData = NonNullable<HomeData["owned"]>;
 type UpgradeStationData = NonNullable<OwnedHomeData["upgradeStation"]>;
@@ -152,9 +156,7 @@ export async function buildApartmentNotaryData(
  * Build enchanter data for the city reaction collector
  */
 export async function buildEnchanterData(
-	playerData: {
-		inventory: InventorySlot[]; player: Player;
-	},
+	playerData: EnchanterPlayerData,
 	enchantData: {
 		enchantment: ItemEnchantment; enchantmentId: string; isPlayerMage: boolean;
 	}
@@ -208,9 +210,7 @@ export async function buildEnchanterData(
 }
 
 export async function buildAvailableEnchanterData(
-	playerData: {
-		inventory: InventorySlot[]; player: Player;
-	},
+	playerData: EnchanterPlayerData,
 	cityId: string
 ): Promise<EnchanterData | undefined> {
 	if (await Settings.ENCHANTER_CITY.getValue() !== cityId) {
