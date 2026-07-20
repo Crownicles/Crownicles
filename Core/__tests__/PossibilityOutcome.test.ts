@@ -31,9 +31,11 @@ vi.mock("../../Lib/src/utils/RandomUtils", () => ({
 }));
 
 describe("applyPossibilityOutcome", () => {
-	it("keeps health gained after experience reloads the player", async () => {
+	it("keeps experience and health gained when experience reloads the player", async () => {
 		const persistedHealth = 1;
+		const initialExperience = 100;
 		let currentHealth = persistedHealth;
+		let currentExperience = initialExperience;
 		const player = Object.create(Player.prototype) as Player;
 		Object.assign(player, {
 			id: 1,
@@ -41,8 +43,9 @@ describe("applyPossibilityOutcome", () => {
 			effectDuration: 0,
 			effectId: "",
 			addEnergy: vi.fn(),
-			addExperience: vi.fn(async () => {
+			addExperience: vi.fn(async ({ amount }: { amount: number }) => {
 				currentHealth = persistedHealth;
+				currentExperience += amount;
 				return player;
 			}),
 			addHealth: vi.fn(async ({ amount }: { amount: number }) => {
@@ -73,6 +76,9 @@ describe("applyPossibilityOutcome", () => {
 			reason: NumberChangeReason.BIG_EVENT,
 			response
 		});
+		expect(vi.mocked(player.addExperience).mock.invocationCallOrder[0])
+			.toBeLessThan(vi.mocked(player.addHealth).mock.invocationCallOrder[0]);
+		expect(currentExperience).toBeGreaterThan(initialExperience);
 		expect(currentHealth).toBe(16);
 	});
 });
