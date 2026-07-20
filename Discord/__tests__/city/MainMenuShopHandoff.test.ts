@@ -11,6 +11,7 @@ vi.mock("../../src/utils/DiscordCollectorUtils", () => ({
 }));
 
 import { LANGUAGE } from "../../../Lib/src/Language";
+import { CITY_SERVICES } from "../../../Lib/src/constants/CityServiceConstants";
 import {
 	ReactionCollectorCityData,
 	ReactionCollectorCityShopReaction
@@ -36,6 +37,7 @@ function createPacket(): ReactionCollectorCreationPacket {
 			data: {
 				mapLocationId: 1,
 				mapTypeId: 0,
+				availableServices: [],
 				home: {},
 				apartmentNotary: { ownedApartments: [] },
 				shops: [{
@@ -143,5 +145,27 @@ describe("city shop message handoff", () => {
 		await nestedMenus.stopCurrentCollector();
 
 		expect(message.edit).toHaveBeenCalledOnce();
+	});
+});
+
+describe("city services", () => {
+	it("renders services from availableServices instead of their payload", () => {
+		const packet = createPacket();
+		const data = packet.data.data as ReactionCollectorCityData;
+		data.availableServices = [CITY_SERVICES.BOSS_ARCHIVIST];
+		data.blacksmith = {
+			upgradeableItems: [],
+			disenchantableItems: [],
+			playerMoney: 0
+		};
+
+		const menu = getMainMenu(createMenuParams(packet));
+		const customIds = menu.containers!.flatMap(container => container.components.flatMap(component =>
+			"accessory" in component && component.accessory && "data" in component.accessory
+				? [component.accessory.data.custom_id]
+				: []));
+
+		expect(customIds).toContain(ReportCityMenuIds.BOSS_ARCHIVIST_MENU);
+		expect(customIds).not.toContain(ReportCityMenuIds.BLACKSMITH_MENU);
 	});
 });
