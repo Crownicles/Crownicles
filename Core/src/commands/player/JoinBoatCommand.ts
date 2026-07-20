@@ -11,6 +11,7 @@ import {
 	CommandJoinBoatNoMemberOnBoatPacketRes,
 	CommandJoinBoatNotEnoughEnergyPacketRes,
 	CommandJoinBoatNotEnoughGemsPacketRes,
+	CommandJoinBoatNotTravellingPacketRes,
 	CommandJoinBoatPacketReq,
 	CommandJoinBoatRefusePacketRes,
 	CommandJoinBoatTooManyRunsPacketRes
@@ -43,6 +44,12 @@ import { InventorySlots } from "../../core/database/game/models/InventorySlot";
  * @param playerActiveObjects
  */
 async function canJoinBoat(player: Player, response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<boolean> {
+	// The player must still be travelling: once arrived (e.g. stopped in a city), joining the boat would grant a full trip's score for free
+	if (Maps.isArrived(player, new Date())) {
+		response.push(makePacket(CommandJoinBoatNotTravellingPacketRes, {}));
+		return false;
+	}
+
 	// Check if the player is still part of a guild
 	if (!player.guildId) {
 		response.push(makePacket(CommandJoinBoatNoGuildPacketRes, {}));

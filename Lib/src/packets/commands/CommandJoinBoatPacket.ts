@@ -28,6 +28,10 @@ export class CommandJoinBoatNoMemberOnBoatPacketRes extends CrowniclesPacket {
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandJoinBoatNotTravellingPacketRes extends CrowniclesPacket {
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class CommandJoinBoatNotEnoughEnergyPacketRes extends CrowniclesPacket {
 }
 
