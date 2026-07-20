@@ -1243,12 +1243,6 @@
       "particle": "verso lo",
       "atParticle": "a"
     },
-    "22222": {
-      "description": "Un'area di prova per i mostri. Non dovrebbe mai apparire nel gioco.",
-      "name": "Area di prova dei mostri",
-      "particle": "verso la",
-      "atParticle": "al"
-    },
     "23": {
       "description": "Importante città mercantile e crocevia economico, Claire de Ville non è sempre stata così accogliente. Inizialmente molto povera, si è sviluppata rapidamente grazie ai suoi numerosi negozi e alberghi che offrono un'ampia scelta ai viaggiatori della regione. Claire de Ville è anche rinomata per la sua calma e il rispetto dell'ordine.",
       "name": "Claire de Ville",
