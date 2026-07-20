@@ -1,24 +1,37 @@
 import {
 	describe, expect, it
 } from "vitest";
-import { hasThreadSendAccess } from "../../src/commands/ChannelPermissionUtils";
+import { ChannelType } from "discord.js";
+import {
+	getThreadSendAccessError, THREAD_SEND_ACCESS_ERRORS
+} from "../../src/commands/ChannelPermissionUtils";
 
-describe("hasThreadSendAccess", () => {
+describe("getThreadSendAccessError", () => {
 	it("allows non-thread channels", () => {
-		expect(hasThreadSendAccess({ isThread: () => false })).toBe(true);
+		expect(getThreadSendAccessError({ isThread: () => false })).toBeNull();
 	});
 
 	it("allows sendable threads", () => {
-		expect(hasThreadSendAccess({
+		expect(getThreadSendAccessError({
 			isThread: () => true,
 			sendable: true
-		})).toBe(true);
+		})).toBeNull();
 	});
 
-	it("rejects threads where Discord cannot send messages", () => {
-		expect(hasThreadSendAccess({
+	it("reports when the bot has not joined a private thread", () => {
+		expect(getThreadSendAccessError({
+			isThread: () => true,
+			sendable: false,
+			type: ChannelType.PrivateThread,
+			joined: false,
+			manageable: false
+		})).toBe(THREAD_SEND_ACCESS_ERRORS.NOT_JOINED);
+	});
+
+	it("keeps the permission error for other inaccessible threads", () => {
+		expect(getThreadSendAccessError({
 			isThread: () => true,
 			sendable: false
-		})).toBe(false);
+		})).toBe(THREAD_SEND_ACCESS_ERRORS.CANNOT_SEND);
 	});
 });
