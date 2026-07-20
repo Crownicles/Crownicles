@@ -272,12 +272,6 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	// Money
 	const money = await applyOutcomeMoney(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
-	// Health
-	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
-
-	// Energy
-	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
-
 	// Gems
 	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);
 
@@ -286,6 +280,12 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 
 	// Experience
 	const experience = await applyOutcomeExperience(possibilityOutcome.outcome[1], player, response);
+
+	// Health
+	const health = await applyOutcomeHealth(possibilityOutcome.outcome[1], player, response);
+
+	// Energy
+	const energy = applyOutcomeEnergy(possibilityOutcome.outcome[1], player, playerActiveObjects);
 
 	// Effect + lost time
 	const effect = await applyOutcomeEffect(possibilityOutcome.outcome[1], player);
