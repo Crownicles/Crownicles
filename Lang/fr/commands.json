@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Coffre de rangement",
-          "menuDescription": "{{filled}}/{{total}} emplacements utilisés",
+          "menuDescription": "Stockez vos objets de rechange",
           "buttonLabel": "Ouvrir",
           "available": "{emote:city.homeUpgrades.chest} Votre coffre vous permet de stocker des objets de rechange.",
           "title": "{{pseudo}}, coffre de rangement",
