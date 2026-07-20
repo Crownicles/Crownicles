@@ -1,6 +1,7 @@
 import Player from "../database/game/models/Player";
 import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import { DailyMissions } from "../database/game/models/DailyMission";
 
 /**
  * Lock a player's `Player` **and** `PlayerMissionsInfo` rows (in canonical order) and run
@@ -13,11 +14,15 @@ import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities
  * letting the nested mission update acquire `player_missions_info` inverts the canonical lock
  * order (`players -> player_missions_info`) and can deadlock against a concurrent standalone
  * mission update on the same player. Acquiring both rows up-front keeps the order canonical.
+ * The daily mission is resolved before either row is locked because its rollover resets every
+ * `player_missions_info` row. Running that reset under a per-player lock can deadlock with another
+ * player's concurrent rollover.
  *
  * @param playerId The player whose rows to lock.
  * @param body Critical section. Receives the fresh, locked `Player`.
  */
 export async function withLockedPlayerAndMissions<T>(playerId: number, body: (lockedPlayer: Player) => Promise<T>): Promise<T> {
+	await DailyMissions.getOrGenerate();
 	await PlayerMissionsInfos.getOfPlayer(playerId);
 	return await withLockedEntities(
 		[Player.lockKey(playerId), PlayerMissionsInfo.lockKey(playerId)] as const,
