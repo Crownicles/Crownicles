@@ -354,7 +354,7 @@ export async function doPVEBoss(
 		monsterId: monsterObj.id,
 		classId: player.class
 	}) ?? player.level;
-	const randomLevel = getPveMonsterLevel(monsterLevelBase, seed);
+	const randomLevel = getPveMonsterLevel(monsterLevelBase, seed, Maps.isAtFinalPveBoss(player));
 
 	/**
 	 * Handle rewards after the PVE fight completes
@@ -444,9 +444,16 @@ export async function doPVEBoss(
 	response.push(packet);
 }
 
-export function getPveMonsterLevel(baseLevel: number, seed: number): number {
+export function getPveMonsterLevel(baseLevel: number, seed: number, isFinalBoss: boolean): number {
+	const randomOffset = isFinalBoss
+		? PVEConstants.FINAL_BOSS_MONSTER_LEVEL_RANDOM_OFFSET
+		: PVEConstants.NON_FINAL_BOSS_MONSTER_LEVEL_RANDOM_OFFSET;
+	const randomRange = isFinalBoss
+		? PVEConstants.FINAL_BOSS_MONSTER_LEVEL_RANDOM_RANGE
+		: PVEConstants.NON_FINAL_BOSS_MONSTER_LEVEL_RANDOM_RANGE;
+
 	return Math.max(
 		PVEConstants.MIN_MONSTER_LEVEL,
-		baseLevel + PVEConstants.MONSTER_LEVEL_RANDOM_OFFSET.MIN + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE
+		baseLevel + randomOffset.MIN + seed % randomRange
 	);
 }
