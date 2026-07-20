@@ -184,6 +184,49 @@ export class PlayerPlantSlots {
 			}
 		}) > 0;
 	}
+
+	/**
+	 * Count the plants carried by the player in their plant slots (excluding the seed slot),
+	 * grouped by plant type. Each occupied plant slot holds exactly one plant.
+	 */
+	public static async getCarriedPlantCounts(playerId: number): Promise<Map<PlantId, number>> {
+		const plantSlots = await PlayerPlantSlots.getPlantSlots(playerId);
+		const counts = new Map<PlantId, number>();
+		for (const slot of plantSlots) {
+			if (slot.plantId !== 0) {
+				counts.set(slot.plantId, (counts.get(slot.plantId) ?? 0) + 1);
+			}
+		}
+		return counts;
+	}
+
+	/**
+	 * Consume up to `amount` carried plants of a given type by clearing plant slots.
+	 * Returns the number of plants actually consumed.
+	 */
+	public static async consumeCarriedPlants(playerId: number, plantId: PlantId, amount: number): Promise<number> {
+		if (amount <= 0) {
+			return 0;
+		}
+		const slots = await PlayerPlantSlot.findAll({
+			where: {
+				playerId,
+				slotType: PLANT_SLOT_TYPE.PLANT,
+				plantId
+			},
+			order: [["slot", "ASC"]]
+		});
+		let consumed = 0;
+		for (const slot of slots) {
+			if (consumed >= amount) {
+				break;
+			}
+			slot.plantId = 0;
+			await slot.save();
+			consumed++;
+		}
+		return consumed;
+	}
 }
 
 export function initModel(sequelize: Sequelize): void {
