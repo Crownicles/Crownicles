@@ -3,10 +3,15 @@ import {
 } from "vitest";
 
 const mocks = vi.hoisted(() => ({
+	getDailyMission: vi.fn(),
 	getOfPlayer: vi.fn(),
 	playerLockKey: vi.fn((id: number) => ({ model: "Player", id })),
 	missionsLockKey: vi.fn((id: number) => ({ model: "PlayerMissionsInfo", id })),
 	withLockedEntities: vi.fn()
+}));
+
+vi.mock("../../../src/core/database/game/models/DailyMission", () => ({
+	DailyMissions: { getOrGenerate: mocks.getDailyMission }
 }));
 
 vi.mock("../../../src/core/database/game/models/Player", () => ({
@@ -29,15 +34,17 @@ describe("withLockedPlayerAndMissions", () => {
 		vi.clearAllMocks();
 	});
 
-	it("prewarms PlayerMissionsInfo before acquiring both lock keys", async () => {
+	it("prewarms daily mission and PlayerMissionsInfo before acquiring both lock keys", async () => {
 		const lockedPlayer = { id: 42 };
 		const lockedMissionsInfo = { playerId: 42 };
+		mocks.getDailyMission.mockResolvedValue({});
 		mocks.getOfPlayer.mockResolvedValue(lockedMissionsInfo);
 		mocks.withLockedEntities.mockImplementation(async (_keys, callback) => callback([lockedPlayer, lockedMissionsInfo]));
 		const body = vi.fn().mockResolvedValue("done");
 
 		const result = await withLockedPlayerAndMissions(42, body);
 
+		expect(mocks.getDailyMission).toHaveBeenCalledOnce();
 		expect(mocks.getOfPlayer).toHaveBeenCalledWith(42);
 		expect(mocks.withLockedEntities).toHaveBeenCalledWith(
 			[
@@ -46,6 +53,7 @@ describe("withLockedPlayerAndMissions", () => {
 			],
 			expect.any(Function)
 		);
+		expect(mocks.getDailyMission.mock.invocationCallOrder[0]).toBeLessThan(mocks.getOfPlayer.mock.invocationCallOrder[0]);
 		expect(mocks.getOfPlayer.mock.invocationCallOrder[0]).toBeLessThan(mocks.withLockedEntities.mock.invocationCallOrder[0]);
 		expect(body).toHaveBeenCalledWith(lockedPlayer);
 		expect(result).toBe("done");
