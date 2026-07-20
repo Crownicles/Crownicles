@@ -852,7 +852,7 @@
         "cancel": "Cancelar"
       },
       "stayTitle": "{{pseudo}}está na cidade",
-      "stayDescription": "Está na cidade e pode usufruir dos serviços disponíveis. Pode sair a qualquer altura utilizando o comando {command:report}.",
+      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
       "stayInCityChoice": "{Entrar na cidade",
       "shopEmptyDescription": "Atualmente, não há serviços a oferecer.",
       "exitInn": "Fora da floresta",
