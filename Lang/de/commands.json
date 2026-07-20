@@ -852,7 +852,7 @@
         "cancel": "Abbrechen"
       },
       "stayTitle": "{{pseudo}}Sie befinden sich in der Stadt",
-      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
+      "stayDescription": "Verwenden Sie den Befehl {command:report}, um die in der Stadt verfügbaren Dienste zu nutzen oder Ihr Abenteuer fortzusetzen.",
       "stayInCityChoice": "{emote:mapTypes.ci} In die Stadt hineinfahren",
       "shopEmptyDescription": "Derzeit werden keine Dienstleistungen angeboten.",
       "exitInn": "Aus der Herberge herauskommen",
@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Aufbewahrungskiste",
-          "menuDescription": "Stockez vos objets de rechange",
+          "menuDescription": "Bewahren Sie Ihre Ersatzteile auf",
           "buttonLabel": "Öffnen",
           "available": "{emote:city.homeUpgrades.chest} In Ihrem Kofferraum können Sie Ersatzgegenstände aufbewahren.",
           "title": "{{pseudo}}Aufbewahrungsbox",
@@ -2741,7 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Sie waren zu oft auf dem Schiff oder sind in dieser Woche einer Gilde beigetreten.",
       "noMemberOnBoat": "Es befinden sich keine aktiven Mitglieder Ihrer Gilde auf dem Schiff.",
-      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
+      "notTravelling": "Man kann nicht von einer Stadt aus an Bord gehen, man muss gerade auf Reisen sein.",
       "noGuild": "Sie gehören keiner Gilde an.",
       "notEnoughEnergy": "Sie haben nicht genug Energie, um auf das Boot zu steigen.",
       "notEnoughGems": "Du möchtest deiner Gilde beitreten, aber als du bezahlen willst, stellst du fest, dass dein Geld nicht ausreicht."
