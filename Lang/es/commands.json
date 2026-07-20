@@ -852,7 +852,7 @@
         "cancel": "Cancelar"
       },
       "stayTitle": "{{pseudo}}estás en la ciudad",
-      "stayDescription": "Estás en la ciudad y puedes aprovechar los servicios disponibles. Puedes marcharte en cualquier momento utilizando el comando {command:report}.",
+      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
       "stayInCityChoice": "{emote:mapTypes.ci} Entrar en la ciudad",
       "shopEmptyDescription": "No hay servicios que ofrecer por el momento.",
       "exitInn": "Fuera de peligro",
