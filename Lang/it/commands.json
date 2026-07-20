@@ -2741,6 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Siete stati in barca troppe volte o vi siete uniti a una gilda questa settimana.",
       "noMemberOnBoat": "Nessun membro attivo della tua gilda è sulla barca.",
+      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
       "noGuild": "Non fai parte di nessuna gilda.",
       "notEnoughEnergy": "Non hai abbastanza energia per salire sulla barca.",
       "notEnoughGems": "Volete unirvi alla vostra gilda, ma quando arriva il momento di pagare, vi rendete conto che i vostri fondi sono insufficienti."
