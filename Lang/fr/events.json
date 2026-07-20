@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Face à l'absence de réponse de votre part, le groupe d'amis décide malgré tout de partir vous chercher un cadeau. Alors que vous les attendez poliment, vous angoissez de plus en plus à l'idée de perdre du temps. Le risque de ne pas arriver à sauver la princesse vous obsède, vous rend malade même... et vous finissez par tomber dans les pommes. Vous découvrant inanimé en revenant, les honnêtes individus vous adossent à un arbre pour vous permettre de vous reposer, et vous laissent ce cadeau, avant de reprendre la route.",
-          "1": "Face à votre absence de réaction, les quidams n'insistent pas. Vous continuez votre route sans y prêter attention.",
-          "2": "Vous voyant hésiter trop longtemps, les jeunes hommes décident finalement de vous offrir un peu d'argent pour vous permettre l'achat de quelques babioles. Vous les remerciez avant de reprendre votre route."
+          "1": "Face à votre absence de réaction, les quidams n'insistent pas et s'éloignent.",
+          "2": "Vous voyant hésiter trop longtemps, les jeunes hommes décident finalement de vous offrir un peu d'argent pour vous permettre l'achat de quelques babioles. Vous les remerciez pour leur geste."
         }
       },
       "food": {
         "outcomes": {
           "0": "L'un d'entre eux vous tend une soupe plutôt appétissante. Vous la buvez sans vous méfier. Ces malandrins vous ont tendu un piège ! Attendant depuis longtemps de vous mettre à mal pour vous piller, le breuvage contenait juste assez d'amanite tue-mouches pour rendre malade. Vous vous sentez partir tout en voyant vos poches se faire dépouiller, impuissant.",
           "1": "Ces passants ont cuisiné pour vous un met des plus savoureux, digne d'une potion de gaulois. En regardant de plus près, vous apercevez un objet laissé au fond du bol. Il pourrait bien vous être utile pour la suite.",
-          "2": "Ravis de vous rendre service, le groupe part vous acheter la spécialité du coin. Voyant le plat arriver, vous faites bonne figure mais la dégustez avec un certain dégoût : vous n'aimez pas les champignons ! Non sans mal, vous continuez votre route."
+          "2": "Ravis de vous rendre service, le groupe part vous acheter la spécialité du coin. Voyant le plat arriver, vous faites bonne figure mais la dégustez avec un certain dégoût : vous n'aimez pas les champignons ! Non sans mal, vous terminez le plat."
         },
         "text": "Cadeau alimentaire."
       },
       "health": {
         "outcomes": {
-          "0": "Le groupe d'individus vous accompagne dans la vallée, où ils vous offrent un soin revigorant dans les eaux thermales. Requinqué, vous être prêt à reprendre la route.",
+          "0": "Le groupe d'individus vous accompagne dans la vallée, où ils vous offrent un soin revigorant dans les eaux thermales. Requinqué, vous vous sentez de nouveau en pleine forme.",
           "1": "Les quelques personnes vous proposent un soin dans un centre de massage près de là. Pendant que vous vous faites masser, une des chandelles accrochées au mur dégringole dans le pot d'huiles essentielles, mettant ainsi feu à tout l'établissement. Vous arrivez, non sans mal, à sortir du brasier qui émane du bâtiment.",
-          "2": "Ils ne s'attendaient pas à ce genre de demande et restent dubitatifs quant à la réponse à vous donner. Ne voulant pas laisser s'installer le malaise, vous reprenez votre route."
+          "2": "Ils ne s'attendaient pas à ce genre de demande et restent dubitatifs quant à la réponse à vous donner. Ne voulant pas laisser s'installer le malaise, vous les remerciez malgré tout et mettez fin à la conversation."
         },
         "text": "Cadeau en santé."
       },
       "kind": {
         "outcomes": {
-          "0": "Le groupe d'amis vous raconte être parti à la recherche du cadeau idéal. Malheureusement, ils n'ont rien trouvé qui pourrait vous plaire. Déçu, vous continuez votre route.",
-          "1": "Ces petits malins ont décidé de vous faire une farce et de vous offrir un cadeau mesquin. Ils ne pensaient pourtant pas qu'une planche aux clous saillants serait dangereuse à déballer. Les doigts en sang, vous partez, furieux, pour vous soigner.",
+          "0": "Le groupe d'amis vous raconte être parti à la recherche du cadeau idéal. Malheureusement, ils n'ont rien trouvé qui pourrait vous plaire. Déçu, vous les remerciez malgré tout.",
+          "1": "Ces petits malins ont décidé de vous faire une farce et de vous offrir un cadeau mesquin. Ils ne pensaient pourtant pas qu'une planche aux clous saillants serait dangereuse à déballer. Les doigts en sang, vous vous éloignez, furieux, afin de vous soigner.",
           "2": "Vos généreux donateurs sont fiers de leur trouvaille, dénichée dans un marché. Ils vous tendent un objet qui, dès le premier coup d'œil, vous intéresse fortement."
         },
         "text": "Cadeau en nature."
@@ -966,7 +966,7 @@
         "text": "Cadeau en monnaie."
       }
     },
-    "text": "Au détour d'une rue, des passants vous ont reconnu et vous abordent. Ils se rappellent parfaitement de l'aide que vous leur aviez apportée, et insistent pour vous remercier en vous offrant un cadeau. Ils vous demandent ce qui vous ferait le plus plaisir."
+    "text": "À votre arrivée au village, des passants vous reconnaissent et vous abordent. Ils se rappellent parfaitement de l'aide que vous leur aviez apportée et insistent pour vous remercier en vous offrant un cadeau. Ils vous demandent ce qui vous ferait le plus plaisir."
   },
   "35": {
     "possibilities": {
@@ -1616,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Les villageois vous proposent d'y goûter et vous ne dites pas non à l'offre. En effet, le jus est rafraîchissant et la chair apaise votre appétit. Vous repartez après avoir remercié les villageois pour cette découverte en leur donnant quelques pièces et reprenez votre chemin.",
-          "1": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Alors que l'un d'eux vous explique, les autres commencent à se rapprocher de vous. Brusquement, quelqu'un vous fait une clé de bras tandis que les autres se jettent sur vous pour vous dérober vos affaires. Après avoir préalablement été passé à tabac, vous reprenez votre route.",
-          "2": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Sur ces précieuses informations, vous reprenez la route."
+          "0": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Les villageois vous proposent d'y goûter et vous ne dites pas non à l'offre. En effet, le jus est rafraîchissant et la chair apaise votre appétit. Vous remerciez les villageois pour cette découverte en leur donnant quelques pièces.",
+          "1": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Alors que l'un d'eux vous explique, les autres commencent à se rapprocher de vous. Brusquement, quelqu'un vous fait une clé de bras tandis que les autres se jettent sur vous pour vous dérober vos affaires. Après avoir été passé à tabac, vous reprenez péniblement vos esprits.",
+          "2": "Vous vous approchez des villageois et les questionnez à propos de ces étranges fruits. Ceux-ci vous expliquent que ce sont des noix de coco et que leur chair se mange lorsque la coque du fruit est ouverte et que leur jus est réputé à travers tout le pays. Vous les remerciez pour ces précieuses informations."
         },
         "text": "Aborder les villageois pour les questionner."
       },
       "end": {
         "outcomes": {
-          "0": "Vous regardez un moment le spectacle des villageois en train de récolter ces fruits singuliers et reprenez votre route sous le soleil ardent.",
-          "1": "Un de ces fruits tombe à côté de vous. Vous le prenez dans vos mains et l'examinez avec attention avant de reprendre votre route."
+          "0": "Vous regardez un moment le spectacle des villageois en train de récolter ces fruits singuliers sous le soleil ardent.",
+          "1": "Un de ces fruits tombe à côté de vous. Vous le prenez dans vos mains et l'examinez avec attention."
         }
       },
       "leave": {
@@ -1639,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Vous poursuivez votre sieste, mais l'un des fruits se décroche et vient s'écraser sur votre tête. Vous êtes blessé et saignez beaucoup. Des villageois vous ayant aperçu viennent vous porter secours, il vous faudra un moment pour vous rétablir.",
-          "1": "Vous dormez un moment. Lorsque vous vous réveillez, vous constatez que le soleil commence à se coucher et la température diminuer, vous reprenez votre route, revigoré.",
-          "2": "Vous décidez de continuer votre sieste. À votre réveil, vous vous levez, prêt à partir, et remarquez qu'il vous manque quelque chose dans vos poches, il s'agit de votre porte-monnaie. Vous décidez donc de repartir, déçu."
+          "1": "Vous dormez un moment. Lorsque vous vous réveillez, vous constatez que le soleil commence à se coucher et que la température diminue. Vous vous relevez, revigoré.",
+          "2": "Vous décidez de continuer votre sieste. À votre réveil, vous vous levez et remarquez qu'il vous manque quelque chose dans vos poches : votre porte-monnaie. Vous accusez difficilement le coup."
         },
         "text": "Continuer votre sieste au pied de l'arbre."
       }
