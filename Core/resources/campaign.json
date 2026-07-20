@@ -1177,9 +1177,9 @@
       "moneyToWin": 0
     },
     {
-      "missionId": "buyAllApartments",
+      "missionId": "buyApartments",
       "missionVariant": 0,
-      "missionObjective": 1,
+      "missionObjective": 5,
       "gemsToWin": 30,
       "xpToWin": 500,
       "moneyToWin": 0
