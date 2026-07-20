@@ -431,7 +431,7 @@ interface PotionOutputParams {
 	bonus: boolean;
 }
 
-async function handlePotionOutput({
+export async function handlePotionOutput({
 	player, recipe, context, bonus
 }: PotionOutputParams): Promise<CraftOutputResult> {
 	if (recipe.potionNature === undefined || recipe.potionRarity === undefined) {
@@ -442,17 +442,14 @@ async function handlePotionOutput({
 		return {};
 	}
 	const potion = PotionDataController.instance.randomItem(recipe.potionNature, effectiveRarity);
-	const itemReceived = await player.giveItem(potion);
-	const result: CraftOutputResult = {
+	const inventorySwapPackets: CrowniclesPacket[] = [];
+	await giveItemToPlayer(inventorySwapPackets, context, player, potion);
+	return {
 		potionId: potion.id,
 		potionRarity: effectiveRarity,
+		inventorySwapPackets,
 		bonusHonored: bonus && effectiveRarity > recipe.potionRarity
 	};
-	if (!itemReceived) {
-		result.inventorySwapPackets = [];
-		await giveItemToPlayer(result.inventorySwapPackets, context, player, potion);
-	}
-	return result;
 }
 
 interface PetFoodLockParams {
