@@ -2,6 +2,7 @@
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
 import { MapLinkDataController } from "../../data/MapLink";
+import { MapLocationDataController } from "../../data/MapLocation";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -54,6 +55,7 @@ import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { LogsReadRequests } from "../database/logs/LogsReadRequests";
+import { MapLocationConstants } from "../../../../Lib/src/constants/MapLocationConstants";
 
 function makeGardenerPacket(packet: Partial<SmallEventGardenerPacket> & Pick<SmallEventGardenerPacket, "interactionName" | "conditionKey">): SmallEventGardenerPacket {
 	return {
@@ -152,7 +154,11 @@ function isOnGardenerMapLink(mapLinkId: number): boolean {
 	if (!link) {
 		return false;
 	}
-	return PlantConstants.GARDENER_MAP_LINKS.includes(Number(link.id));
+
+	const startLocation = MapLocationDataController.instance.getById(link.startMap);
+	const endLocation = MapLocationDataController.instance.getById(link.endMap);
+
+	return startLocation?.type === MapLocationConstants.TYPES.FOREST || endLocation?.type === MapLocationConstants.TYPES.FOREST;
 }
 
 /**

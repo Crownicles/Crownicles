@@ -440,21 +440,6 @@ export abstract class PlantConstants {
 	};
 
 	/**
-	 * Map link IDs where the gardener NPC can appear.
-	 * Links 8/69: Plains(3) <-> Forest(4)
-	 * Links 46/59: Village(17) <-> Forest(27)
-	 * Links 32/56: Forest(22) <-> Lake(14)
-	 */
-	public static readonly GARDENER_MAP_LINKS: readonly number[] = [
-		8,
-		69,
-		46,
-		59,
-		32,
-		56
-	];
-
-	/**
 	 * Gardener fallback probabilities when the player cannot receive a seed.
 	 * Thresholds are cumulative: 0–0.3 = advice, 0.3–0.4 = generic advice, 0.4–0.8 = plant gift.
 	 */
