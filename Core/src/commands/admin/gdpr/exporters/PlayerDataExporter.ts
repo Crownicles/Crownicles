@@ -185,44 +185,7 @@ async function exportPetData(
 	}
 }
 
-/**
- * Exports miscellaneous player data (files 09-12)
- */
-async function exportMiscData(
-	player: NonNullable<Player>,
-	csvFiles: GDPRCsvFiles
-): Promise<void> {
-	const smallEvents = await PlayerSmallEvent.findAll({ where: { playerId: player.id } });
-	if (smallEvents.length > 0) {
-		csvFiles["09_small_events.csv"] = toCSV(smallEvents.map(se => ({
-			eventType: se.eventType,
-			time: se.time,
-			createdAt: se.createdAt,
-			updatedAt: se.updatedAt
-		})));
-	}
-
-	const talismans = await PlayerTalismans.findOne({ where: { playerId: player.id } });
-	if (talismans) {
-		csvFiles["10_talismans.csv"] = toCSV([
-			{
-				hasTalisman: talismans.hasTalisman,
-				hasCloneTalisman: talismans.hasCloneTalisman,
-				hasRemoteHarvestTalisman: talismans.hasRemoteHarvestTalisman,
-				createdAt: talismans.createdAt,
-				updatedAt: talismans.updatedAt
-			}
-		]);
-	}
-
-	const dwarfPets = await DwarfPetsSeen.findAll({ where: { playerId: player.id } });
-	if (dwarfPets.length > 0) {
-		csvFiles["11_dwarf_pets_seen.csv"] = toCSV(dwarfPets.map(dp => ({
-			petTypeId: dp.petTypeId
-		})));
-	}
-
-	// Scheduled notifications
+async function exportScheduledNotifications(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
 	const dailyBonusNotifs = await ScheduledDailyBonusNotification.findAll({ where: { playerId: player.id } });
 	const reportNotifs = await ScheduledReportNotification.findAll({ where: { playerId: player.id } });
 	const expeditionNotifs = await ScheduledExpeditionNotification.findAll({ where: { keycloakId: player.keycloakId } });
@@ -265,7 +228,9 @@ async function exportMiscData(
 	if (notifications.length > 0) {
 		csvFiles["12_scheduled_notifications.csv"] = toCSV(notifications);
 	}
+}
 
+async function exportCurrentBlessing(player: NonNullable<Player>, csvFiles: GDPRCsvFiles): Promise<void> {
 	const currentBlessing = await GlobalBlessing.findOne({ where: { lastTriggeredByKeycloakId: player.keycloakId } });
 	if (currentBlessing) {
 		csvFiles["23_current_blessing.csv"] = toCSV([
@@ -282,17 +247,60 @@ async function exportMiscData(
 			}
 		]);
 	}
+}
 
-	// Player materials (crafting resources)
-	const materials = await Material.findAll({ where: { playerId: player.id } });
+async function exportPlayerMaterials(playerId: number, csvFiles: GDPRCsvFiles): Promise<void> {
+	const materials = await Material.findAll({ where: { playerId } });
 	if (materials.length > 0) {
-		csvFiles["15_materials.csv"] = toCSV(materials.map(m => ({
-			materialId: m.materialId,
-			quantity: m.quantity,
-			createdAt: m.createdAt,
-			updatedAt: m.updatedAt
+		csvFiles["15_materials.csv"] = toCSV(materials.map(material => ({
+			materialId: material.materialId,
+			quantity: material.quantity,
+			createdAt: material.createdAt,
+			updatedAt: material.updatedAt
 		})));
 	}
+}
+
+/**
+ * Exports miscellaneous player data (files 09-12)
+ */
+async function exportMiscData(
+	player: NonNullable<Player>,
+	csvFiles: GDPRCsvFiles
+): Promise<void> {
+	const smallEvents = await PlayerSmallEvent.findAll({ where: { playerId: player.id } });
+	if (smallEvents.length > 0) {
+		csvFiles["09_small_events.csv"] = toCSV(smallEvents.map(se => ({
+			eventType: se.eventType,
+			time: se.time,
+			createdAt: se.createdAt,
+			updatedAt: se.updatedAt
+		})));
+	}
+
+	const talismans = await PlayerTalismans.findOne({ where: { playerId: player.id } });
+	if (talismans) {
+		csvFiles["10_talismans.csv"] = toCSV([
+			{
+				hasTalisman: talismans.hasTalisman,
+				hasCloneTalisman: talismans.hasCloneTalisman,
+				hasRemoteHarvestTalisman: talismans.hasRemoteHarvestTalisman,
+				createdAt: talismans.createdAt,
+				updatedAt: talismans.updatedAt
+			}
+		]);
+	}
+
+	const dwarfPets = await DwarfPetsSeen.findAll({ where: { playerId: player.id } });
+	if (dwarfPets.length > 0) {
+		csvFiles["11_dwarf_pets_seen.csv"] = toCSV(dwarfPets.map(dp => ({
+			petTypeId: dp.petTypeId
+		})));
+	}
+
+	await exportScheduledNotifications(player, csvFiles);
+	await exportCurrentBlessing(player, csvFiles);
+	await exportPlayerMaterials(player.id, csvFiles);
 
 	// Player home (and home-scoped data: chest, garden, plant storage)
 	const home = await Homes.getOfPlayer(player.id);
