@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Caixa de arrumação",
-          "menuDescription": "{{filled}}/{{total}} locais utilizados",
+          "menuDescription": "Stockez vos objets de rechange",
           "buttonLabel": "Aberto",
           "available": "{O teu baú permite-te guardar objectos de reserva.",
           "title": "{{pseudo}}caixa de arrumação",
