@@ -80,6 +80,7 @@ import { Homes } from "./Home";
 import { getSlotCountForCategory } from "../../../../../../Lib/src/types/HomeFeatures";
 import { RecipeDiscoveryService } from "../../../cooking/RecipeDiscoveryService";
 import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/CookingConstants";
+import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
 
 export type PlayerEditValueParameters = {
 	player: Player;
@@ -695,17 +696,9 @@ export class Player extends Model {
 		const invInfo = await InventoryInfos.getOfPlayer(this.id);
 		const category = item.getCategory();
 		const equippedItem = invSlots.filter(slot => slot.itemCategory === category && slot.isEquipped())[0];
-
-		// Only apply level and enchantment for weapons and armors
-		const isWeaponOrArmor = category === ItemCategory.WEAPON || category === ItemCategory.ARMOR;
-		const effectiveLevel = isWeaponOrArmor ? itemLevel : 0;
-		const effectiveEnchantmentId = isWeaponOrArmor ? itemEnchantmentId : null;
+		const slotData = buildNewItemSlotData(item, itemLevel, itemEnchantmentId);
 		if (equippedItem && equippedItem.itemId === 0) {
-			await InventorySlot.update({
-				itemId: item.id,
-				itemLevel: effectiveLevel,
-				itemEnchantmentId: effectiveEnchantmentId
-			}, {
+			await InventorySlot.update(slotData, {
 				where: {
 					playerId: this.id,
 					itemCategory: category,
@@ -726,10 +719,8 @@ export class Player extends Model {
 				await InventorySlot.create({
 					playerId: this.id,
 					itemCategory: category,
-					itemId: item.id,
 					slot: i,
-					itemLevel: effectiveLevel,
-					itemEnchantmentId: effectiveEnchantmentId
+					...slotData
 				});
 				return true;
 			}

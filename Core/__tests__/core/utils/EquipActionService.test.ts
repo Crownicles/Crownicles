@@ -11,6 +11,7 @@ let mockSlots: {
 	itemId: number;
 	itemLevel: number;
 	itemEnchantmentId: string | null;
+	remainingPotionUsages: number | null;
 	isEquipped: () => boolean;
 	save: ReturnType<typeof vi.fn>;
 	destroy: ReturnType<typeof vi.fn>;
@@ -28,7 +29,8 @@ const createMockInventorySlot = (
 	itemCategory: number,
 	itemId: number,
 	itemLevel = 1,
-	itemEnchantmentId: string | null = null
+	itemEnchantmentId: string | null = null,
+	remainingPotionUsages: number | null = null
 ) => ({
 	playerId,
 	slot,
@@ -36,6 +38,7 @@ const createMockInventorySlot = (
 	itemId,
 	itemLevel,
 	itemEnchantmentId,
+	remainingPotionUsages,
 	isEquipped: () => slot === 0,
 	save: vi.fn().mockResolvedValue(undefined),
 	destroy: vi.fn().mockImplementation(async function(this: typeof mockSlots[0]) {
@@ -68,6 +71,7 @@ vi.mock("../../../src/core/database/game/models/InventorySlot", () => ({
 			itemId: number;
 			itemLevel: number;
 			itemEnchantmentId: string | null;
+			remainingPotionUsages: number | null;
 		}) => {
 			const newSlot = createMockInventorySlot(
 				data.playerId,
@@ -75,7 +79,8 @@ vi.mock("../../../src/core/database/game/models/InventorySlot", () => ({
 				data.itemCategory,
 				data.itemId,
 				data.itemLevel,
-				data.itemEnchantmentId
+				data.itemEnchantmentId,
+				data.remainingPotionUsages
 			);
 			mockSlots.push(newSlot);
 			return Promise.resolve(newSlot);
@@ -282,6 +287,26 @@ describe("EquipActionService", () => {
 			// Item moved to existing empty reserve slot
 			const reserveSlot = mockSlots.find(s => s.slot === 1 && s.itemCategory === ItemCategory.WEAPON);
 			expect(reserveSlot?.itemId).toBe(100);
+		});
+
+		it("should reuse the first missing reserve slot", async () => {
+			mockSlots = [
+				createMockInventorySlot(1, 0, ItemCategory.WEAPON, 100, 1, null),
+				createMockInventorySlot(1, 2, ItemCategory.WEAPON, 200, 1, null)
+			];
+			mockInventoryInfo.slotLimitForCategory.mockReturnValue(3);
+
+			const packet = {
+				action: ItemConstants.EQUIP_ACTIONS.DEPOSIT,
+				itemCategory: ItemCategory.WEAPON,
+				slot: 0
+			} as CommandEquipActionReq;
+
+			const result = await handleEquipAction("valid-player", packet);
+
+			expect(result.success).toBe(true);
+			expect(mockSlots.find(s => s.slot === 1)?.itemId).toBe(100);
+			expect(mockSlots.some(s => s.slot >= 3)).toBe(false);
 		});
 
 		it("should account for home inventory bonus when checking capacity", async () => {

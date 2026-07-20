@@ -76,8 +76,10 @@ import {
  */
 function createChestHomeData(options?: {
 	chestSlots?: { weapon: number; armor: number; object: number; potion: number };
+	inventoryCapacity?: { weapon: number; armor: number; object: number; potion: number };
 	chestItems?: { slot: number; category: ItemCategory; details: any }[];
 	depositableItems?: { slot: number; category: ItemCategory; details: any }[];
+	upgradeStation?: ReturnType<typeof createHomeData>["upgradeStation"];
 	plantStorage?: { plantId: number; quantity: number; maxCapacity: number }[];
 	playerPlantSlots?: { slot: number; plantId: number }[];
 	plantMaxCapacity?: number;
@@ -87,11 +89,12 @@ function createChestHomeData(options?: {
 	};
 	const homeData = createHomeData({
 		garden: undefined,
+		upgradeStation: options?.upgradeStation,
 		chest: {
 			chestItems: options?.chestItems ?? [],
 			depositableItems: options?.depositableItems ?? [],
 			slotsPerCategory: slots,
-			inventoryCapacity: {
+			inventoryCapacity: options?.inventoryCapacity ?? {
 				weapon: 5, armor: 5, object: 5, potion: 5
 			},
 			plantStorage: options?.plantStorage,
@@ -358,6 +361,48 @@ describe("ChestFeatureHandler", () => {
 			const menuId = menus.registerMenu.mock.calls[0][0];
 			expect(menuId).toContain(HomeMenuIds.CHEST_CATEGORY_DETAIL_PREFIX);
 		});
+
+		it("should offer a swap when the chest and inventory reserve are full", async () => {
+			const ctx = createHandlerContext({
+				homeData: createChestHomeData({
+					chestSlots: { weapon: 1, armor: 0, object: 0, potion: 0 },
+					inventoryCapacity: { weapon: 2, armor: 1, object: 1, potion: 1 },
+					chestItems: [{
+						slot: 1,
+						category: ItemCategory.WEAPON,
+						details: { itemId: 1, attack: 10, defense: 0, speed: 0, level: 1 }
+					}],
+					depositableItems: [
+						{
+							slot: 0,
+							category: ItemCategory.WEAPON,
+							details: { itemId: 2, attack: 15, defense: 0, speed: 0, level: 1 }
+						},
+						{
+							slot: 1,
+							category: ItemCategory.WEAPON,
+							details: { itemId: 3, attack: 12, defense: 0, speed: 0, level: 1 }
+						}
+					]
+				})
+			});
+			const interaction = createMockComponentInteraction();
+			const menus = createMockNestedMenus();
+
+			await handler.handleSubMenuSelection(
+				ctx,
+				`${HomeMenuIds.CHEST_CATEGORY_PREFIX}${ItemCategory.WEAPON}`,
+				interaction as never,
+				menus as never
+			);
+
+			const registeredMenu = menus.registerMenu.mock.calls[0][1];
+			const container = registeredMenu.containers[0] as ContainerBuilder;
+			const buttons = container.components
+				.filter((component): component is ActionRowBuilder<any> => component instanceof ActionRowBuilder)
+				.flatMap(row => row.components);
+			expect(buttons.some(button => button.data.custom_id?.startsWith(HomeMenuIds.CHEST_SWAP_SELECT_PREFIX))).toBe(true);
+		});
 	});
 
 	describe("handleSubMenuSelection - MQTT actions", () => {
@@ -415,6 +460,49 @@ describe("ChestFeatureHandler", () => {
 
 			expect(handled).toBe(true);
 			expect(mockSendPacket).toHaveBeenCalledOnce();
+		});
+
+		it("should refresh the upgrade station after an inventory mutation", async () => {
+			const previousUpgradeStation = {
+				upgradeableItems: [],
+				maxUpgradeableRarity: 1
+			};
+			const refreshedUpgradeStation = {
+				upgradeableItems: [],
+				maxUpgradeableRarity: 2
+			};
+			const ctx = createHandlerContext({
+				homeData: createChestHomeData({
+					upgradeStation: previousUpgradeStation,
+					chestItems: [{
+						slot: 1,
+						category: ItemCategory.WEAPON,
+						details: { itemId: 1, attack: 10, defense: 0, speed: 0, level: 1 }
+					}]
+				})
+			});
+			const interaction = createMockComponentInteraction();
+			const menus = createMockNestedMenus();
+			const mockSendPacket = vi.mocked(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse);
+			mockSendPacket.mockImplementation(async (context, _packet, callback) => {
+				await callback(context, "CommandReportHomeChestActionRes", {
+					success: true,
+					chestItems: [],
+					depositableItems: [],
+					slotsPerCategory: { weapon: 1, armor: 1, object: 1, potion: 1 },
+					inventoryCapacity: { weapon: 2, armor: 1, object: 1, potion: 1 },
+					upgradeStation: refreshedUpgradeStation
+				} as never);
+			});
+
+			await handler.handleSubMenuSelection(
+				ctx,
+				`${HomeMenuIds.CHEST_WITHDRAW_PREFIX}${ItemCategory.WEAPON}_1`,
+				interaction as never,
+				menus as never
+			);
+
+			expect(ctx.homeData.upgradeStation).toBe(refreshedUpgradeStation);
 		});
 
 		it("should send plant deposit MQTT packet", async () => {

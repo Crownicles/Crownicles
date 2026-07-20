@@ -28,6 +28,8 @@ export class HomeChestSlot extends Model {
 
 	declare itemEnchantmentId: string | null;
 
+	declare remainingPotionUsages: number | null;
+
 	declare updatedAt: Date;
 
 	declare createdAt: Date;
@@ -52,7 +54,7 @@ export class HomeChestSlot extends Model {
 	}
 
 	itemWithDetails(player: Player): ItemWithDetails {
-		return toItemWithDetails(player, this.getItem()!, this.itemLevel, this.itemEnchantmentId);
+		return toItemWithDetails(player, this.getItem()!, this.itemLevel, this.itemEnchantmentId, this.remainingPotionUsages);
 	}
 }
 
@@ -102,6 +104,7 @@ export class HomeChestSlots {
 			itemId: number;
 			itemLevel: number;
 			itemEnchantmentId: null;
+			remainingPotionUsages: null;
 		}[] = [];
 
 		const categoryMap: {
@@ -131,7 +134,8 @@ export class HomeChestSlots {
 					itemCategory: category,
 					itemId: 0,
 					itemLevel: 0,
-					itemEnchantmentId: null
+					itemEnchantmentId: null,
+					remainingPotionUsages: null
 				});
 			}
 		}
@@ -208,6 +212,11 @@ export function initModel(sequelize: Sequelize): void {
 		},
 		itemEnchantmentId: {
 			type: DataTypes.STRING,
+			allowNull: true,
+			defaultValue: null
+		},
+		remainingPotionUsages: {
+			type: DataTypes.INTEGER,
 			allowNull: true,
 			defaultValue: null
 		},

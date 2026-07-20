@@ -21,13 +21,19 @@ import {
 	HomeChestSlot, HomeChestSlots
 } from "../database/game/models/HomeChestSlot";
 import InventoryInfo from "../database/game/models/InventoryInfo";
-import { buildChestData } from "./ReportCityService";
+import {
+	buildChestData, buildUpgradeStationData
+} from "./ReportCityService";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { MissionsController } from "../missions/MissionsController";
 import { updateHaveItemRarityMission } from "../utils/ItemUtils";
+import {
+	clearItemSlotData, copyItemSlotData, findFirstFreeBackupSlot, ItemSlotData
+} from "../utils/ItemSlotUtils";
+import { Materials } from "../database/game/models/Material";
 
 type ChestActionResult = Omit<CommandReportHomeChestActionRes, "name">;
 
@@ -80,7 +86,7 @@ async function getBackupInventoryCapacity(player: Player, home: Home, itemCatego
 	return inventoryInfo ? inventoryInfo.slotLimitForCategory(itemCategory) + bonusForCategory : 1;
 }
 
-async function placeItemInBackupSlot(backupSlots: InventorySlot[], item: ItemPlacement): Promise<boolean> {
+async function placeItemInBackupSlot(backupSlots: InventorySlot[], item: ItemSlotData): Promise<boolean> {
 	const emptyBackupSlot = backupSlots.find(slot => slot.itemId === 0);
 	if (!emptyBackupSlot) {
 		return false;
@@ -90,15 +96,15 @@ async function placeItemInBackupSlot(backupSlots: InventorySlot[], item: ItemPla
 	return true;
 }
 
-async function createBackupSlot(player: Player, itemCategory: ItemCategory, item: ItemPlacement, backupSlots: InventorySlot[]): Promise<void> {
-	const nextSlot = backupSlots.length > 0 ? Math.max(...backupSlots.map(slot => slot.slot)) + 1 : 1;
+async function createBackupSlot(player: Player, itemCategory: ItemCategory, item: ItemSlotData, slot: number): Promise<void> {
 	await InventorySlot.create({
 		playerId: player.id,
-		slot: nextSlot,
+		slot,
 		itemCategory,
 		itemId: item.itemId,
 		itemLevel: item.itemLevel,
-		itemEnchantmentId: item.itemEnchantmentId
+		itemEnchantmentId: item.itemEnchantmentId,
+		remainingPotionUsages: item.remainingPotionUsages
 	});
 }
 
@@ -180,13 +186,16 @@ async function runChestActionUnderLock(
 	// Build refreshed chest data
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const refreshedData = await buildChestData(home, homeLevel, playerInventory, player);
+	const playerMaterials = await Materials.getPlayerMaterials(player.id);
+	const playerMaterialMap = new Map(playerMaterials.map(material => [material.materialId, material.quantity]));
 
 	return {
 		success: true,
 		chestItems: refreshedData.chestItems,
 		depositableItems: refreshedData.depositableItems,
 		slotsPerCategory: refreshedData.slotsPerCategory,
-		inventoryCapacity: refreshedData.inventoryCapacity
+		inventoryCapacity: refreshedData.inventoryCapacity,
+		upgradeStation: buildUpgradeStationData(playerInventory, playerMaterialMap, homeLevel, player)
 	};
 }
 
@@ -246,7 +255,7 @@ async function processChestDeposit(
  */
 async function clearInventorySlotUnderLock(slot: InventorySlot): Promise<void> {
 	if (slot.slot === 0) {
-		resetItemFields(slot);
+		clearItemSlotData(slot);
 		await slot.save();
 	}
 	else {
@@ -255,38 +264,16 @@ async function clearInventorySlotUnderLock(slot: InventorySlot): Promise<void> {
 }
 
 async function clearChestSlotUnderLock(chestSlot: HomeChestSlot): Promise<void> {
-	resetItemFields(chestSlot);
+	clearItemSlotData(chestSlot);
 	await chestSlot.save();
 }
 
-/**
- * Reset item-related fields on any slot-like entity.
- */
-function resetItemFields(target: {
-	itemId: number; itemLevel: number; itemEnchantmentId: string | null;
-}): void {
-	target.itemId = 0;
-	target.itemLevel = 0;
-	target.itemEnchantmentId = null;
-}
-
-/**
- * Item data to be placed in an inventory slot.
- */
-interface ItemPlacement {
-	itemId: number;
-	itemLevel: number;
-	itemEnchantmentId: string | null;
-}
-
-type SaveableItemSlot = ItemPlacement & {
+type SaveableItemSlot = ItemSlotData & {
 	save(): Promise<unknown>;
 };
 
-async function assignItemToSlotUnderLock(slot: SaveableItemSlot, item: ItemPlacement): Promise<void> {
-	slot.itemId = item.itemId;
-	slot.itemLevel = item.itemLevel;
-	slot.itemEnchantmentId = item.itemEnchantmentId;
+async function assignItemToSlotUnderLock(slot: SaveableItemSlot, item: ItemSlotData): Promise<void> {
+	copyItemSlotData(slot, item);
 	await slot.save();
 }
 
@@ -298,7 +285,7 @@ async function placeItemInInventory(
 	player: Player,
 	home: Home,
 	itemCategory: ItemCategory,
-	item: ItemPlacement
+	item: ItemSlotData
 ): Promise<ChestError | null> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 
@@ -314,8 +301,9 @@ async function placeItemInInventory(
 	}
 
 	const maxSlots = await getBackupInventoryCapacity(player, home, itemCategory);
-	if (backupSlots.length < maxSlots - 1) {
-		await createBackupSlot(player, itemCategory, item, backupSlots);
+	const freeSlot = findFirstFreeBackupSlot(backupSlots, maxSlots);
+	if (freeSlot !== null) {
+		await createBackupSlot(player, itemCategory, item, freeSlot);
 		return null;
 	}
 
@@ -336,7 +324,8 @@ async function processChestWithdraw(
 	const error = await placeItemInInventory(player, home, itemCategory, {
 		itemId: chestSlot.itemId,
 		itemLevel: chestSlot.itemLevel,
-		itemEnchantmentId: chestSlot.itemEnchantmentId
+		itemEnchantmentId: chestSlot.itemEnchantmentId,
+		remainingPotionUsages: chestSlot.remainingPotionUsages
 	});
 
 	if (error) {
@@ -375,10 +364,11 @@ async function processChestSwap({
 	}
 
 	// Swap: exchange items between inventory slot and chest slot
-	const temp: ItemPlacement = {
+	const temp: ItemSlotData = {
 		itemId: inventorySlot.itemId,
 		itemLevel: inventorySlot.itemLevel,
-		itemEnchantmentId: inventorySlot.itemEnchantmentId
+		itemEnchantmentId: inventorySlot.itemEnchantmentId,
+		remainingPotionUsages: inventorySlot.remainingPotionUsages
 	};
 	await assignItemToSlotUnderLock(inventorySlot, chestSlot);
 	await assignItemToSlotUnderLock(chestSlot, temp);

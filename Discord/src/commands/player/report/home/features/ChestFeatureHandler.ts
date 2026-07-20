@@ -417,7 +417,7 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 		// Inventory capacity info
 		const activeItem = categoryDepositableItems.find(item => item.slot === 0);
 		const backupCount = categoryDepositableItems.filter(item => item.slot > 0).length;
-		const maxBackup = getSlotCountForCategory(chest.inventoryCapacity, catInfo.category);
+		const maxBackup = Math.max(getSlotCountForCategory(chest.inventoryCapacity, catInfo.category) - 1, 0);
 		const isInventoryFull = activeItem !== undefined && backupCount >= maxBackup;
 
 		text += `\n${i18n.t("commands:report.city.homes.chest.inventoryInfo", {
@@ -706,6 +706,9 @@ export class ChestFeatureHandler implements HomeFeatureHandler {
 					ctx.homeData.chest.depositableItems = response.depositableItems;
 					ctx.homeData.chest.slotsPerCategory = response.slotsPerCategory;
 					ctx.homeData.chest.inventoryCapacity = response.inventoryCapacity;
+				}
+				if (ctx.homeData.upgradeStation && response.upgradeStation) {
+					ctx.homeData.upgradeStation = response.upgradeStation;
 				}
 
 				// Re-register the chest categories menu with updated counts
