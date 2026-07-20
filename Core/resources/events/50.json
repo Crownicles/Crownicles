@@ -28,12 +28,16 @@
     "leave": {
       "outcomes": {
         "0": {
+          "forceLeaveCity": true,
           "health": 10
         },
         "1": {
+          "forceLeaveCity": true,
           "money": -100
         },
-        "2": {}
+        "2": {
+          "forceLeaveCity": true
+        }
       }
     },
     "nap": {
