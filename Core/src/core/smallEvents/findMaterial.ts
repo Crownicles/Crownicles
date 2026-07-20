@@ -72,7 +72,7 @@ function rollQuantity(): number {
 
 export const smallEventFuncs: SmallEventFuncs = {
 	canBeExecuted(player): boolean {
-		return Maps.isOnContinent(player) || Maps.isOnPveIsland(player);
+		return Maps.isOnContinent(player);
 	},
 	executeSmallEvent: async (response, player): Promise<void> => {
 		const materialType = RandomUtils.crowniclesRandom.pick(SmallEventConstants.FIND_MATERIAL.BIOME_MATERIAL_TYPES[pickBiomeExpeditionType(player)]);

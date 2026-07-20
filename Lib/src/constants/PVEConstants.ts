@@ -99,8 +99,8 @@ export abstract class PVEConstants {
 	static readonly RANDOM_RANGE_FOR_GUILD_POINTS_LOST_ON_DEATH = 20;
 
 	static readonly BOSS_LOOT = {
-		MIN_DROPS: 5,
-		MAX_DROPS: 10
+		MIN_DROPS: 8,
+		MAX_DROPS: 18
 	};
 
 	/**
