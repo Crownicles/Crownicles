@@ -1225,7 +1225,7 @@
         },
         "chest": {
           "menuLabel": "Aufbewahrungskiste",
-          "menuDescription": "{{filled}}/{{total}} verwendete Standorte",
+          "menuDescription": "Stockez vos objets de rechange",
           "buttonLabel": "Öffnen",
           "available": "{emote:city.homeUpgrades.chest} In Ihrem Kofferraum können Sie Ersatzgegenstände aufbewahren.",
           "title": "{{pseudo}}Aufbewahrungsbox",
