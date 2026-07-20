@@ -60,7 +60,7 @@ import {
 	verifyDeletionCode
 } from "../utils/AccountDeletionUtils";
 import { isCommandModuleFile } from "./CommandDiscoveryUtils";
-import { hasThreadSendAccess } from "./ChannelPermissionUtils";
+import { getThreadSendAccessError } from "./ChannelPermissionUtils";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -649,9 +649,10 @@ export class CommandsManager {
 			return [false, "noSpeakPermission"];
 		}
 
-		if (!hasThreadSendAccess(channel)) {
+		const threadSendAccessError = getThreadSendAccessError(channel);
+		if (threadSendAccessError) {
 			CrowniclesLogger.error(`No way to send messages in the thread where the command has been executed : ${channel.guildId}/${channel.id}`);
-			return [false, "noSpeakInThreadPermission"];
+			return [false, threadSendAccessError];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
