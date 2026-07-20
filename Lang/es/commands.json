@@ -2741,6 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Has estado en el barco demasiadas veces o te has unido a un gremio esta semana.",
       "noMemberOnBoat": "No hay miembros activos de su gremio en el barco.",
+      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
       "noGuild": "No perteneces a ningún gremio.",
       "notEnoughEnergy": "No tienes suficiente energía para subir al barco.",
       "notEnoughGems": "Quieres afiliarte a tu gremio, pero cuando llega el momento de pagar, te das cuenta de que tus fondos son insuficientes."
