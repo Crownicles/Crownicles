@@ -1243,12 +1243,6 @@
       "particle": "para o",
       "atParticle": "em"
     },
-    "22222": {
-      "description": "Uma zona de teste para os monstros. Não é suposto aparecerem no jogo.",
-      "name": "Área de teste de monstros",
-      "particle": "para o",
-      "atParticle": "para o"
-    },
     "23": {
       "description": "Grande cidade mercantil e cruzamento económico, Claire de Ville nem sempre foi tão acolhedora. Inicialmente muito pobre, desenvolveu-se rapidamente graças às suas numerosas lojas e hotéis que oferecem uma vasta escolha aos viajantes da região. Claire de Ville é também conhecida pela sua calma e respeito pela ordem.",
       "name": "Claire de Ville",
@@ -1511,7 +1505,7 @@
     "bigFeast": "Assistir a um grande banquete",
     "buyApartment": "Ter uma casa própria",
     "buyHome": "Comprar uma casa",
-    "buyAllApartments": "Comprar todas as habitações",
+    "buyApartments": "Possuir {{count}} habitação",
     "buyGuildPetFood_one": "Comprar {{count}} ração para animais de estimação",
     "buyGuildPetFood_other": "Comprar {{count}} ração para animais de estimação",
     "buyItemFromAlderic": "Comprar um artigo de Aldéric",
