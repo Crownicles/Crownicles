@@ -152,7 +152,7 @@ describe("ChestFeatureHandler", () => {
 			expect(option!.value).toBe(HomeMenuIds.CHEST_MENU);
 		});
 
-		it("should show filled/total slot count", () => {
+		it("should show a generic storage description", () => {
 			const ctx = createHandlerContext({
 				homeData: createChestHomeData({
 					chestItems: [
@@ -171,8 +171,7 @@ describe("ChestFeatureHandler", () => {
 			});
 			const option = handler.getMenuOption(ctx);
 			expect(option).not.toBeNull();
-			expect(option!.description).toContain('"filled":1');
-			expect(option!.description).toContain('"total":5');
+			expect(option!.description).toBe("commands:report.city.homes.chest.menuDescription");
 		});
 
 		it("should return null when no chest slots", () => {
