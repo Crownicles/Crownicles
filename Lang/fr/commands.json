@@ -2741,7 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "Vous êtes allé trop de fois sur le bateau ou vous avez rejoint une guilde cette semaine.",
       "noMemberOnBoat": "Aucun membre actif de votre guilde n'est sur le bateau.",
-      "notTravelling": "Vous ne pouvez rejoindre le bateau que pendant un voyage, pas une fois arrivé à destination.",
+      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
       "noGuild": "Vous n'appartenez à aucune guilde.",
       "notEnoughEnergy": "Vous n'avez pas assez d'énergie pour monter sur le bateau.",
       "notEnoughGems": "Vous voulez rejoindre votre guilde mais au moment de payer, vous constatez que vos fonds sont insuffisants."

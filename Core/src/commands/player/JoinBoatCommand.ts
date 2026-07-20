@@ -44,8 +44,8 @@ import { InventorySlots } from "../../core/database/game/models/InventorySlot";
  * @param playerActiveObjects
  */
 async function canJoinBoat(player: Player, response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<boolean> {
-	// The player must still be travelling: once arrived (e.g. stopped in a city), joining the boat would grant a full trip's score for free
-	if (Maps.isArrived(player, new Date())) {
+	// The player must not be stopped in a city: joining the boat from there would grant a full trip's score for free
+	if (player.insideCity) {
 		response.push(makePacket(CommandJoinBoatNotTravellingPacketRes, {}));
 		return false;
 	}
