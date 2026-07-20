@@ -16,6 +16,7 @@ import {
 	TextDisplayBuilder
 } from "discord.js";
 import { CrowniclesIcons } from "../../../../../Lib/src/CrowniclesIcons";
+import { CITY_SERVICES } from "../../../../../Lib/src/constants/CityServiceConstants";
 import {
 	ReactionCollectorCreationPacket,
 	ReactionCollectorRefuseReaction
@@ -250,7 +251,7 @@ function addGuildFoodShopSubMenu(menus: Map<string, CrowniclesNestedMenu>, param
 }
 
 function addBossArchivistSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
-	if (!cityData.bossArchivist) {
+	if (!cityData.availableServices.includes(CITY_SERVICES.BOSS_ARCHIVIST)) {
 		return;
 	}
 	for (const [key, menu] of getBossArchivistMenus(params)) {

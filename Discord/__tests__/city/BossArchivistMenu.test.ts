@@ -2,6 +2,7 @@ import {
 	describe, expect, it, vi
 } from "vitest";
 import { FightConstants } from "../../../Lib/src/constants/FightConstants";
+import { CITY_SERVICES } from "../../../Lib/src/constants/CityServiceConstants";
 import { LANGUAGE } from "../../../Lib/src/Language";
 import { ReactionCollectorCityData } from "../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { ReactionCollectorCreationPacket } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
@@ -41,7 +42,7 @@ function createParams(): CityMenuParams {
 		} as never,
 		packet: {
 			data: {
-				data: { bossArchivist: true } as ReactionCollectorCityData
+				data: { availableServices: [CITY_SERVICES.BOSS_ARCHIVIST] } as ReactionCollectorCityData
 			}
 		} as ReactionCollectorCreationPacket,
 		collectorTime: 60_000,

@@ -19,6 +19,7 @@ import {
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { withLockedPlayerSafe } from "../../core/utils/withLockedPlayerSafe";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
+import { CITY_SERVICES } from "../../../../Lib/src/constants/CityServiceConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
 import {
 	EndCallback, ReactionCollectorInstance
@@ -695,6 +696,12 @@ async function sendCityCollector(
 	const collectorData: ReactionCollectorCityData = {
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
 		mapLocationId: player.getDestinationId()!,
+		availableServices: [
+			...blacksmith ? [CITY_SERVICES.BLACKSMITH] : [],
+			...royalBlacksmith ? [CITY_SERVICES.ROYAL_BLACKSMITH] : [],
+			...isEnchanterHere && enchantment ? [CITY_SERVICES.ENCHANTER] : [],
+			...city.bossArchivistAvailable ? [CITY_SERVICES.BOSS_ARCHIVIST] : []
+		],
 		inns: city.inns.map(inn => ({
 			innId: inn.id,
 			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
@@ -720,7 +727,6 @@ async function sendCityCollector(
 			current: player.getHealth(),
 			max: player.getMaxHealth()
 		},
-		bossArchivist: city.bossArchivistAvailable,
 		enchanter: isEnchanterHere && enchantment
 			? await buildEnchanterData(
 				{

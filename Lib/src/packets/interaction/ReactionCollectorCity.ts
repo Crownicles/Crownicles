@@ -26,11 +26,14 @@ import { OwnedPet } from "../../types/OwnedPet";
 import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 import { GardenAccessMode } from "../../types/GardenAccessMode";
 import { GardenConstants } from "../../constants/GardenConstants";
+import { CityService } from "../../constants/CityServiceConstants";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
 
 	mapLocationId!: number;
+
+	availableServices!: CityService[];
 
 	/**
 	 * If set, the Discord side should auto-navigate to this menu after rendering.
@@ -75,8 +78,6 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		current: number;
 		max: number;
 	};
-
-	bossArchivist?: boolean;
 
 	enchanter?: {
 		enchantableItems: {

@@ -99,6 +99,7 @@ async function buildGardenCollectorData(params: GardenCollectorDataParams): Prom
 		gardenOnly: true,
 		mapTypeId: MapLocationDataController.instance.getById(destinationId)!.type,
 		mapLocationId: destinationId,
+		availableServices: [],
 		energy: buildEnergyData(params.player, playerActiveObjects),
 		health: buildHealthData(params.player),
 		home: {

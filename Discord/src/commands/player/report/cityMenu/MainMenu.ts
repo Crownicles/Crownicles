@@ -15,6 +15,9 @@ import {
 	ReactionCollectorRefuseReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
+import {
+	CITY_SERVICES, CityService
+} from "../../../../../../Lib/src/constants/CityServiceConstants";
 import { Language } from "../../../../../../Lib/src/Language";
 import {
 	CrowniclesNestedMenu,
@@ -111,10 +114,7 @@ function addHomeSection(container: ContainerBuilder, data: ReactionCollectorCity
 	}
 }
 
-type CityServiceDataKey = "blacksmith" | "royalBlacksmith" | "enchanter" | "bossArchivist";
-
 type CityServiceDefinition = {
-	dataKey: CityServiceDataKey;
 	emote: string;
 	titleKey: string;
 	descriptionKey: string;
@@ -123,33 +123,29 @@ type CityServiceDefinition = {
 	buttonStyle?: ButtonStyle;
 };
 
-const CITY_SERVICE_DEFINITIONS: CityServiceDefinition[] = [
-	{
-		dataKey: "blacksmith",
+const CITY_SERVICE_DEFINITIONS: Record<CityService, CityServiceDefinition> = {
+	[CITY_SERVICES.BLACKSMITH]: {
 		emote: CrowniclesIcons.city.services.blacksmith,
 		titleKey: "commands:report.city.blacksmith.menuLabel",
 		descriptionKey: "commands:report.city.blacksmith.menuDescription",
 		customId: ReportCityMenuIds.BLACKSMITH_MENU,
 		buttonLabelKey: "commands:report.city.buttons.enterForge"
 	},
-	{
-		dataKey: "royalBlacksmith",
+	[CITY_SERVICES.ROYAL_BLACKSMITH]: {
 		emote: CrowniclesIcons.city.services.royalBlacksmith,
 		titleKey: "commands:report.city.royalBlacksmith.menuLabel",
 		descriptionKey: "commands:report.city.royalBlacksmith.menuDescription",
 		customId: ReportCityMenuIds.ROYAL_BLACKSMITH_MENU,
 		buttonLabelKey: "commands:report.city.royalBlacksmith.enterButton"
 	},
-	{
-		dataKey: "enchanter",
+	[CITY_SERVICES.ENCHANTER]: {
 		emote: CrowniclesIcons.city.services.enchanter,
 		titleKey: "commands:report.city.reactions.enchanter.label",
 		descriptionKey: "commands:report.city.reactions.enchanter.description",
 		customId: ReportCityMenuIds.ENCHANTER_MENU,
 		buttonLabelKey: "commands:report.city.buttons.talkToEnchanter"
 	},
-	{
-		dataKey: "bossArchivist",
+	[CITY_SERVICES.BOSS_ARCHIVIST]: {
 		emote: CrowniclesIcons.city.services.bossArchivist,
 		titleKey: "commands:report.city.bossArchivist.serviceTitle",
 		descriptionKey: "commands:report.city.bossArchivist.serviceDescription",
@@ -157,15 +153,15 @@ const CITY_SERVICE_DEFINITIONS: CityServiceDefinition[] = [
 		buttonLabelKey: "commands:report.city.bossArchivist.visit",
 		buttonStyle: ReportCityButtonStyles.OPTION
 	}
-];
+};
 
 function addServicesSection(container: ContainerBuilder, data: ReactionCollectorCityData, lng: Language): void {
-	const availableServices = CITY_SERVICE_DEFINITIONS.filter(service => data[service.dataKey]);
-	if (availableServices.length === 0) {
+	if (data.availableServices.length === 0) {
 		return;
 	}
 	container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
-	for (const service of availableServices) {
+	for (const serviceKey of data.availableServices) {
+		const service = CITY_SERVICE_DEFINITIONS[serviceKey];
 		addCitySection({
 			container,
 			emote: service.emote,
