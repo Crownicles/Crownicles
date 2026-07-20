@@ -432,6 +432,12 @@ export interface PossibilityOutcome {
 	forceStayInCity?: boolean;
 
 	/**
+	 * Prevent the player from staying in the city after the outcome while still
+	 * allowing them to choose their next destination.
+	 */
+	forceLeaveCity?: boolean;
+
+	/**
 	 * Tags
 	 */
 	tags?: string[];

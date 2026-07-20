@@ -167,6 +167,7 @@ async function applyLockedOutcomeUnderLock(
 	if (newMapLink || !isDead) {
 		await chooseDestination(context, lockedPlayer, newMapLink, response, {
 			mainPacket: false,
+			allowStayInCity: randomOutcome[1].forceLeaveCity !== true,
 			forceStayInCity: randomOutcome[1].forceStayInCity ?? false
 		});
 	}
