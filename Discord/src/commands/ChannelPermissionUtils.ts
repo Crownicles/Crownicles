@@ -15,12 +15,16 @@ type ThreadAwareChannel = {
 	readonly manageable?: boolean;
 };
 
+function isUnjoinedPrivateThread(channel: ThreadAwareChannel): boolean {
+	return channel.type === ChannelType.PrivateThread && channel.joined === false && channel.manageable === false;
+}
+
 export function getThreadSendAccessError(channel: ThreadAwareChannel): ThreadSendAccessError | null {
 	if (!channel.isThread() || channel.sendable === true) {
 		return null;
 	}
 
-	if (channel.type === ChannelType.PrivateThread && channel.joined === false && channel.manageable === false) {
+	if (isUnjoinedPrivateThread(channel)) {
 		return THREAD_SEND_ACCESS_ERRORS.NOT_JOINED;
 	}
 
