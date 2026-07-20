@@ -31,6 +31,7 @@ import { HomeNestedMenuIds } from "../../../../Lib/src/constants/HomeNestedMenuI
 import { HomeLevel } from "../../../../Lib/src/types/HomeLevel";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
+import { Maps } from "../../core/maps/Maps";
 
 type GardenHomeResolution = {
 	home: Home;
@@ -58,7 +59,7 @@ function resolveGardenAccess(
 	hasRemoteHarvestTalisman: boolean
 ): GardenAccessMode | null {
 	const currentCityId = player.getCurrentCityId();
-	if (currentCityId !== null && currentCityId === homeCityId) {
+	if (!Maps.isTravelling(player) && currentCityId !== null && currentCityId === homeCityId) {
 		return GardenAccessMode.FULL;
 	}
 	return hasRemoteHarvestTalisman ? GardenAccessMode.READ_ONLY : null;
