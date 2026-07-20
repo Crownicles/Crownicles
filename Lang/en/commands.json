@@ -852,7 +852,7 @@
         "cancel": "Cancel"
       },
       "stayTitle": "{{pseudo}}, you are in the city",
-      "stayDescription": "You are in the city and can enjoy the available services. You can leave at any time by using the {command:report} command.",
+      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
       "stayInCityChoice": "{emote:mapTypes.ci} Enter City",
       "shopEmptyDescription": "No services available at the moment.",
       "exitInn": "Exit Hostel",
