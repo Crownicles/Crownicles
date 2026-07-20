@@ -448,12 +448,19 @@ export function getPveMonsterLevel(baseLevel: number, seed: number, isFinalBoss:
 	const randomOffset = isFinalBoss
 		? PVEConstants.FINAL_BOSS_MONSTER_LEVEL_RANDOM_OFFSET
 		: PVEConstants.NON_FINAL_BOSS_MONSTER_LEVEL_RANDOM_OFFSET;
-	const randomRange = isFinalBoss
-		? PVEConstants.FINAL_BOSS_MONSTER_LEVEL_RANDOM_RANGE
-		: PVEConstants.NON_FINAL_BOSS_MONSTER_LEVEL_RANDOM_RANGE;
+	const aboveRecordProbability = isFinalBoss
+		? PVEConstants.FINAL_BOSS_MONSTER_LEVEL_ABOVE_RECORD_PROBABILITY
+		: PVEConstants.NON_FINAL_BOSS_MONSTER_LEVEL_ABOVE_RECORD_PROBABILITY;
+	const isAboveRecord = seed % 100 < aboveRecordProbability * 100;
+	const offsetRange = isAboveRecord
+		? randomOffset.MAX
+		: -randomOffset.MIN;
+	const offsetStart = isAboveRecord
+		? 1
+		: randomOffset.MIN;
 
 	return Math.max(
 		PVEConstants.MIN_MONSTER_LEVEL,
-		baseLevel + randomOffset.MIN + seed % randomRange
+		baseLevel + offsetStart + Math.floor(seed / 100) % offsetRange
 	);
 }
