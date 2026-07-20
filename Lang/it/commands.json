@@ -852,7 +852,7 @@
         "cancel": "Annullamento"
       },
       "stayTitle": "{{pseudo}}siete in città",
-      "stayDescription": "Siete in città e potete usufruire dei servizi disponibili. Potete andarvene in qualsiasi momento usando il comando {comando:report}.",
+      "stayDescription": "Utilisez la commande {command:report} pour profiter des services disponibles en ville ou reprendre votre aventure.",
       "stayInCityChoice": "{emote:mapTypes.ci} Entrare in città",
       "shopEmptyDescription": "Al momento non ci sono servizi da offrire.",
       "exitInn": "Fuori dal bosco",
