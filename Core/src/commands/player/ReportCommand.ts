@@ -72,9 +72,6 @@ import { BuildingUpgradeEligibilityMap } from "../../../../Lib/src/types/GuildDo
 import { GuildPets } from "../../core/database/game/models/GuildPet";
 import { PetEntities } from "../../core/database/game/models/PetEntity";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
-import { Settings } from "../../core/database/game/models/Setting";
-import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
-import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { Homes } from "../../core/database/game/models/Home";
 import { Materials } from "../../core/database/game/models/Material";
 import {
@@ -84,6 +81,7 @@ import {
 	validateUseTokensRequest
 } from "../../core/report/ReportTokenHealService";
 import { openTokenMerchant } from "../../core/report/ReportTokenMerchantService";
+import { getAvailableCityServices } from "../../core/report/ReportCityServiceAvailability";
 import {
 	HEAL_VALIDATION_REASONS, USE_TOKENS_VALIDATION_REASONS
 } from "../../core/report/ReportValidationConstants";
@@ -128,7 +126,7 @@ import {
 import { buildRoyalBlacksmithData } from "../../core/report/ReportRoyalBlacksmithService";
 import { handleRoyalBlacksmithUpgradeReaction } from "../../core/report/ReportCityRoyalBlacksmithService";
 import {
-	buildEnchanterData,
+	buildAvailableEnchanterData,
 	buildHomeData,
 	buildApartmentNotaryData,
 	handleBlacksmithDisenchantReaction,
@@ -587,10 +585,9 @@ async function sendCityCollector(
 ): Promise<void> {
 	const playerInventory = await InventorySlots.getOfPlayer(player.id);
 	const playerActiveObjects = InventorySlots.slotsToActiveObjects(playerInventory);
-	const isEnchanterHere = await Settings.ENCHANTER_CITY.getValue() === city.id;
-	const enchantmentId = isEnchanterHere ? await Settings.ENCHANTER_ENCHANTMENT_ID.getValue() : null;
-	const isPlayerMage = player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE;
-	const enchantment = enchantmentId ? ItemEnchantment.getById(enchantmentId) : null;
+	const enchanter = await buildAvailableEnchanterData({
+		inventory: playerInventory, player
+	}, city.id);
 	const home = await Homes.getOfPlayer(player.id);
 	const homeLevel = home?.getLevel() ?? null;
 	const playerMaterials = await Materials.getPlayerMaterials(player.id);
@@ -696,12 +693,12 @@ async function sendCityCollector(
 	const collectorData: ReactionCollectorCityData = {
 		mapTypeId: MapLocationDataController.instance.getById(player.getDestinationId()!)!.type,
 		mapLocationId: player.getDestinationId()!,
-		availableServices: [
-			...blacksmith ? [CITY_SERVICES.BLACKSMITH] : [],
-			...royalBlacksmith ? [CITY_SERVICES.ROYAL_BLACKSMITH] : [],
-			...isEnchanterHere && enchantment ? [CITY_SERVICES.ENCHANTER] : [],
-			...city.bossArchivistAvailable ? [CITY_SERVICES.BOSS_ARCHIVIST] : []
-		],
+		availableServices: getAvailableCityServices({
+			[CITY_SERVICES.BLACKSMITH]: blacksmith !== undefined,
+			[CITY_SERVICES.ROYAL_BLACKSMITH]: royalBlacksmith !== undefined,
+			[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
+			[CITY_SERVICES.BOSS_ARCHIVIST]: city.bossArchivistAvailable
+		}),
 		inns: city.inns.map(inn => ({
 			innId: inn.id,
 			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({
@@ -727,16 +724,7 @@ async function sendCityCollector(
 			current: player.getHealth(),
 			max: player.getMaxHealth()
 		},
-		enchanter: isEnchanterHere && enchantment
-			? await buildEnchanterData(
-				{
-					inventory: playerInventory, player
-				},
-				{
-					enchantment, enchantmentId: enchantmentId!, isPlayerMage
-				}
-			)
-			: undefined,
+		enchanter,
 		home: await buildHomeData(
 			{
 				player, inventory: playerInventory, materialMap: playerMaterialMap
