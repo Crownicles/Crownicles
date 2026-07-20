@@ -929,30 +929,30 @@
       "end": {
         "outcomes": {
           "0": "Angesichts des Fehlens einer Antwort von Ihnen, entscheidet die Gruppe von Freunden, dass Sie nach einem Geschenk suchen. Also, wenn Sie sie höflich abwarten, werden Sie die Idee, Zeit zu verschwenden, noch mehr angst. Das Risiko, die Prinzessin nicht zu retten, macht Sie krank, Sie werden sogar krank, und Sie werden letztendlich in Äpfel fallen. Sie finden unwiederbelebtes Erlebten, die ehrlichen Individuen helfen Ihnen, sich auszuruhen, und Sie lassen das Geschenk, bevor Sie wieder auf die Straße gehen.",
-          "1": "Angesichts des Fehlens einer Reaktion bestehen die Quidams nicht. Sie fahren weiter, ohne Aufmerksamkeit zu schenken.",
-          "2": "Sie haben zu lange gezögert, die jungen Männer entscheiden sich endlich, Ihnen ein wenig Geld zu geben, um Ihnen den Kauf von ein paar Babybabioles zu ermöglichen. Sie danken ihnen, bevor Sie wieder auf die Straße gehen."
+          "1": "Da Sie nicht reagieren, lassen die Leute es dabei bewenden und gehen weiter.",
+          "2": "Als sie sehen, dass Sie zu lange zögern, beschließen die jungen Männer schließlich, Ihnen etwas Geld zu schenken, damit Sie sich ein paar Kleinigkeiten kaufen können. Sie bedanken sich bei ihnen für diese Geste."
         }
       },
       "food": {
         "outcomes": {
           "0": "Das eine von ihnen ist eine ziemlich aufregende Suppe. Sie trinken sie, ohne zu misstrauen. Diese Ungärten haben eine Falle gestellt. Seit langer Zeit, um Sie zu plündern, enthielt die Sklaverei nur genug Affe, um krank zu werden. Sie fühlen sich, wie Sie Ihre Taschen abgestempeln, machtlos.",
           "1": "Diese Passanten haben gekocht, um Ihnen einen Geschmack zu machen, der einen Gedicht von Gusgesetzen verdient. Wenn Sie sich näher ansehen, sehen Sie ein Objekt, das am Boden der Schale hinterlassen wurde. Er könnte für die Suite hilfreich sein.",
-          "2": "Es ist schön, Sie zu besuchen, die Gruppe geht Sie um die Spezialität der Ecke zu kaufen. Wenn Sie das Gericht ankommen sehen, machen Sie es gut, aber Sie genießen es mit einem gewissen Geschmack: Sie mögen die Pilze nicht! Nein, nein, nein, nein, Sie fahren weiter."
+          "2": "Die Gruppe freut sich, Ihnen einen Gefallen zu tun, und macht sich auf den Weg, um die lokale Spezialität für Sie zu besorgen. Als das Gericht serviert wird, setzen Sie gute Miene zum bösen Spiel, essen es aber mit gewissem Ekel – Sie mögen nämlich keine Pilze! Mit einiger Mühe schaffen Sie es, das Gericht aufzuessen."
         },
         "text": "Nahrungsmittelvorhang."
       },
       "health": {
         "outcomes": {
-          "0": "Die Gruppe von Individuen begleitet Sie in das Tal, wo sie Ihnen eine belebende Pflege in den Thermalwasser bieten. Requiniert, Sie sind bereit, wieder auf die Straße zu gehen.",
+          "0": "Die Gruppe begleitet Sie ins Tal, wo sie Ihnen eine belebende Behandlung im Thermalwasser anbietet. Gestärkt fühlen Sie sich wieder in Topform.",
           "1": "Die wenigen Leute bieten Ihnen eine Massage in einem Massagecenter in der Nähe von hier. Während Sie sich massieren, eine der Kerzenscheine, die an der Wand hängen, in der Menge der ätherischen Öle, die das ganze Haus in Brand setzen. Sie kommen, nicht ohne Schwierigkeiten, aus dem Bäder, der aus dem Gebäude kommt.",
-          "2": "Sie haben nicht auf diese Art von Nachfrage gewartet und bleiben für die Antwort, die Ihnen gegeben werden soll, keine Zweifel. Wenn Sie sich das Unbehagen nicht erlauben wollen, nehmen Sie Ihren Weg zurück."
+          "2": "Sie hatten mit einer solchen Anfrage nicht gerechnet und sind sich noch unsicher, wie sie Ihnen antworten sollen. Da Sie keine unangenehme Stimmung aufkommen lassen wollen, bedanken Sie sich trotzdem bei ihnen und beenden das Gespräch."
         },
         "text": "Ein Geschenk im Gesundheitsbereich."
       },
       "kind": {
         "outcomes": {
-          "0": "Die Gruppe von Freunden erzählt Ihnen, dass sie auf der Suche nach dem perfekten Geschenk war. Leider haben sie nichts gefunden, was Ihnen gefallen könnte. Dezipiert, Sie fahren weiter.",
-          "1": "Diese kleinen Koffer haben beschlossen, Sie zu einem Farce zu machen und Ihnen ein kleinkarätes Geschenk zu geben. Sie glaubten jedoch nicht, dass ein Brett mit den herausragenden Nägeln gefährlich sein würde. Die Finger am Blut, Sie gehen, wütend, um Sie zu heilen.",
+          "0": "Die Gruppe von Freunden erzählt euch, dass sie sich auf die Suche nach dem perfekten Geschenk gemacht hat. Leider haben sie nichts gefunden, was euch gefallen könnte. Enttäuscht bedankt ihr euch trotzdem bei ihnen.",
+          "1": "Diese Schlaumeier haben beschlossen, euch einen Streich zu spielen und euch ein armseliges Geschenk zu machen. Sie hätten jedoch nicht gedacht, dass das Auspacken eines Bretts mit hervorstehenden Nägeln gefährlich sein könnte. Mit blutigen Fingern geht ihr wütend davon, um euch zu versorgen.",
           "2": "Ihre großzügigen Spender sind stolz auf ihre Faust, die auf einem Markt gefunden wurden. Sie haben ein Objekt, das Sie von Anfang an sehr am ersten Blick interessiert."
         },
         "text": "Geschenk in der Natur."
@@ -966,7 +966,7 @@
         "text": "Geld in der Währung."
       }
     },
-    "text": "Im Umweg von einer Straße haben Sie von den Passanten erkannt, die Sie angesprochen haben. Sie erinnern sich sehr gut an die Hilfe, die Sie ihnen gegeben haben, und beharren darauf, Ihnen zu danken, Ihnen ein Geschenk zu geben. Sie fragen sich, was Sie am meisten freuen würden."
+    "text": "Bei Ihrer Ankunft im Dorf erkennen Passanten Sie wieder und sprechen Sie an. Sie erinnern sich noch genau an die Hilfe, die Sie ihnen geleistet haben, und bestehen darauf, sich bei Ihnen zu bedanken, indem sie Ihnen ein Geschenk überreichen. Sie fragen Sie, worüber Sie sich am meisten freuen würden."
   },
   "35": {
     "possibilities": {
@@ -1616,16 +1616,16 @@
     "possibilities": {
       "ask": {
         "outcomes": {
-          "0": "Sie nähern sich der Dorfbewohner und fragen Sie nach diesen seltsamen Früchten. Sie erklären Ihnen, dass sie Kokosnüsse sind und dass ihr Fleisch isst, wenn der Rumpf der Frucht offen ist und ihr Saft im ganzen Land bekannt ist. Die Dorfbewohner schlagen Ihnen vor, Sie zu probieren, und Sie sagen nicht, dass Sie das Angebot nicht haben. In der Tat, der Saft ist erfrischend und das Fleisch beruhigt Ihren Appetit. Sie gehen zurück, nachdem Sie den Dorfbewohnern für diese Entdeckung gedankt haben, indem Sie ihnen ein paar Münzen geben und Ihren Weg zurück in die Stadt fahren.",
-          "1": "Sie nähern sich der Dorfbewohner und fragen Sie nach diesen seltsamen Früchten. Während eines von ihnen erklärt, beginnen die anderen, sich näher an Sie zu bringen. Es ist so, dass jemand einen Arm umarmt, während sich die anderen auf Sie stehlen, um Ihnen von Ihren Geschäften abzuweichen. Nachdem Sie vorher mit dem Rauchen verbracht haben, fahren Sie wieder zurück.",
-          "2": "Sie nähern sich der Dorfbewohner und fragen Sie nach diesen seltsamen Früchten. Sie erklären Ihnen, dass sie Kokosnüsse sind und dass ihr Fleisch isst, wenn der Rumpf der Frucht offen ist und ihr Saft im ganzen Land bekannt ist. Auf diesen wertvollen Informationen fahren Sie wieder auf die Straße."
+          "0": "Ihr geht auf die Dorfbewohner zu und befragt sie zu diesen seltsamen Früchten. Diese erklären euch, dass es sich um Kokosnüsse handelt, deren Fruchtfleisch man essen kann, sobald die Schale geöffnet ist, und dass ihr Saft im ganzen Land bekannt ist. Die Dorfbewohner bieten euch an, davon zu probieren, und ihr lehnt das Angebot nicht ab. Tatsächlich ist der Saft erfrischend und das Fruchtfleisch stillt euren Hunger. Ihr bedankt euch bei den Dorfbewohnern für diese Entdeckung und gebt ihnen ein paar Münzen.",
+          "1": "Ihr geht auf die Dorfbewohner zu und befragt sie zu diesen seltsamen Früchten. Während einer von ihnen euch etwas erklärt, kommen die anderen immer näher. Plötzlich legt euch jemand einen Armhebel an, während die anderen sich auf euch stürzen, um euch eure Sachen zu rauben. Nachdem Sie zusammengeschlagen wurden, kommen Sie mühsam wieder zu sich.",
+          "2": "Ihr geht auf die Dorfbewohner zu und befragt sie zu diesen seltsamen Früchten. Diese erklären euch, dass es sich um Kokosnüsse handelt, deren Fruchtfleisch man essen kann, sobald die Schale aufgebrochen ist, und dass ihr Saft im ganzen Land bekannt ist. Ihr bedankt euch bei ihnen für diese wertvollen Informationen."
         },
         "text": "Die Dorfbewohner zu fragen, um sie zu befragen."
       },
       "end": {
         "outcomes": {
-          "0": "Sie beobachten eine Weile das Schauspiel der Dorfbewohner bei der Ernte dieser einzigartigen Früchte und setzen dann Ihren Weg unter der glühenden Sonne fort.",
-          "1": "Eine dieser Früchte fällt neben Ihnen herunter. Sie nehmen sie in Ihre Hände und untersuchen sie genau, bevor Sie Ihren Weg fortsetzen."
+          "0": "Sie beobachten eine Weile, wie die Dorfbewohner unter der sengenden Sonne diese ungewöhnlichen Früchte ernten.",
+          "1": "Eine dieser Früchte fällt direkt neben dich. Du nimmst sie in die Hand und betrachtest sie genau."
         }
       },
       "leave": {
@@ -1639,8 +1639,8 @@
       "nap": {
         "outcomes": {
           "0": "Sie setzen Ihr Nickerchen fort, aber eine der Früchte löst sich und kracht auf Ihren Kopf. Sie sind verletzt und bluten stark. Einige Dorfbewohner, die Sie gesehen haben, kommen Ihnen zu Hilfe.",
-          "1": "Sie schlafen eine Weile. Wenn Sie aufwachen, stellen Sie fest, dass die Sonne beginnt, sich zu schlafen, und die Temperaturen sinken, Sie nehmen Ihren Weg zurück, belebend.",
-          "2": "Sie entscheiden sich, Ihr Nickerchen fortzusetzen. Wenn Sie aufwachen, heben Sie sich auf, und beachten Sie, dass Ihnen etwas fehlt in Ihren Taschen, es geht um Ihren Brieftaschen-Geldbeug. Sie entscheiden sich also, wieder zu gehen, enttäuschend."
+          "1": "Sie schlafen eine Weile. Als Sie aufwachen, stellen Sie fest, dass die Sonne gerade untergeht und die Temperatur sinkt. Sie stehen wieder auf, voller neuer Energie.",
+          "2": "Sie beschließen, Ihr Nickerchen fortzusetzen. Als Sie aufwachen, stehen Sie auf und stellen fest, dass etwas in Ihren Taschen fehlt: Ihr Portemonnaie. Sie können den Schlag kaum verkraften."
         },
         "text": "Setzen Sie Ihr Nickerchen am Fuß des Baums fort."
       }
