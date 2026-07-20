@@ -152,11 +152,11 @@ async function runApartmentBuyUnderLock(params: {
 
 	await MissionsController.update(lockedPlayer, response, { missionId: "buyApartment" });
 
-	if (await Apartments.ownsAllApartments(lockedPlayer.id)) {
-		await MissionsController.update(lockedPlayer, response, {
-			missionId: "buyAllApartments", count: 1, set: true
-		});
-	}
+	await MissionsController.update(lockedPlayer, response, {
+		missionId: "buyApartments",
+		count: (await Apartments.getOfPlayer(lockedPlayer.id)).length,
+		set: true
+	});
 
 	crowniclesInstance?.logsDatabase.logApartmentPurchase({
 		keycloakId: lockedPlayer.keycloakId,

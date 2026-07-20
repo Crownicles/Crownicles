@@ -6,7 +6,7 @@ export const missionInterface: IMission = {
 
 	areParamsMatchingVariantAndBlob: () => true,
 
-	initialNumberDone: async player => await Apartments.ownsAllApartments(player.id) ? 1 : 0,
+	initialNumberDone: async player => (await Apartments.getOfPlayer(player.id)).length,
 
 	updateSaveBlob: () => null
 };
