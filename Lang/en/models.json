@@ -1243,12 +1243,6 @@
       "particle": "of the",
       "atParticle": "to"
     },
-    "22222": {
-      "description": "A test zone for monsters. Should never appear in the game.",
-      "name": "Monsters test zone",
-      "particle": "of the",
-      "atParticle": "at"
-    },
     "23": {
       "description": "Large commercial city and economical crossroad, Claire de Ville hasn't always been that welcoming. Very poor at the beginning, she managed to quickly develop thanks to its many shops and hostels which offers a great choice to wanderers of the region. Claire de Ville is also known for its calm and its order.",
       "name": "Claire de Ville",
