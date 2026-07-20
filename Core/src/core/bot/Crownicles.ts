@@ -289,50 +289,68 @@ export class Crownicles {
 	}
 
 	static async reportNotifications(): Promise<void> {
-		if (PacketUtils.isMqttConnected()) {
-			const notifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
-			if (notifications.length !== 0) {
-				PacketUtils.sendNotifications(notifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
-					keycloakId: notification.keycloakId,
-					mapType: MapLocationDataController.instance.getById(notification.mapId)!.type,
-					mapId: notification.mapId
-				})));
-				await ScheduledReportNotifications.bulkDelete(notifications);
+		try {
+			if (PacketUtils.isMqttConnected()) {
+				const notifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
+				if (notifications.length !== 0) {
+					PacketUtils.sendNotifications(notifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
+						keycloakId: notification.keycloakId,
+						mapType: MapLocationDataController.instance.getById(notification.mapId)!.type,
+						mapId: notification.mapId
+					})));
+					await ScheduledReportNotifications.bulkDelete(notifications);
+				}
+			}
+			else {
+				CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
 			}
 		}
-		else {
-			CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
+		catch (error) {
+			CrowniclesLogger.errorWithObj("Error while dispatching report notifications", error);
 		}
-
-		setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
+		finally {
+			setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
+		}
 	}
 
 	static async dailyBonusNotifications(): Promise<void> {
-		if (PacketUtils.isMqttConnected()) {
-			const notifications = await ScheduledDailyBonusNotifications.getNotificationsBeforeDate(new Date());
-			if (notifications.length !== 0) {
-				PacketUtils.sendNotifications(notifications.map(notification => makePacket(DailyBonusNotificationPacket, {
-					keycloakId: notification.keycloakId
-				})));
-				await ScheduledDailyBonusNotifications.bulkDelete(notifications);
+		try {
+			if (PacketUtils.isMqttConnected()) {
+				const notifications = await ScheduledDailyBonusNotifications.getNotificationsBeforeDate(new Date());
+				if (notifications.length !== 0) {
+					PacketUtils.sendNotifications(notifications.map(notification => makePacket(DailyBonusNotificationPacket, {
+						keycloakId: notification.keycloakId
+					})));
+					await ScheduledDailyBonusNotifications.bulkDelete(notifications);
+				}
+			}
+			else {
+				CrowniclesLogger.error(`MQTT is not connected, can't do daily bonus notifications. Trying again in ${TimeoutFunctionsConstants.DAILY_TIMEOUT} ms`);
 			}
 		}
-		else {
-			CrowniclesLogger.error(`MQTT is not connected, can't do daily bonus notifications. Trying again in ${TimeoutFunctionsConstants.DAILY_TIMEOUT} ms`);
+		catch (error) {
+			CrowniclesLogger.errorWithObj("Error while dispatching daily bonus notifications", error);
 		}
-
-		setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
+		finally {
+			setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
+		}
 	}
 
 	static async expeditionNotifications(): Promise<void> {
-		if (PacketUtils.isMqttConnected()) {
-			await processDueExpeditionNotifications();
+		try {
+			if (PacketUtils.isMqttConnected()) {
+				await processDueExpeditionNotifications();
+			}
+			else {
+				CrowniclesLogger.error(`MQTT is not connected, can't do expedition notifications. Trying again in ${TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS} ms`);
+			}
 		}
-		else {
-			CrowniclesLogger.error(`MQTT is not connected, can't do expedition notifications. Trying again in ${TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS} ms`);
+		catch (error) {
+			CrowniclesLogger.errorWithObj("Error while dispatching expedition notifications", error);
 		}
-
-		setTimeout(Crownicles.expeditionNotifications, TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS);
+		finally {
+			setTimeout(Crownicles.expeditionNotifications, TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS);
+		}
 	}
 
 	/**

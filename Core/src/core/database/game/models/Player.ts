@@ -1975,7 +1975,6 @@ export function initModel(sequelize: Sequelize): void {
 			if (
 				travelEndDate > now
 				&& destinationId !== null
-				&& !CityDataController.instance.getCityByMapId(destinationId) // Don't schedule notifications for cities
 			) {
 				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
 				return;
