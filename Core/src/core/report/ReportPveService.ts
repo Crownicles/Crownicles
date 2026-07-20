@@ -49,6 +49,7 @@ import {
 	applyMaterialLoot, generateBossLoot, updateCollectMaterialsMission
 } from "../utils/MaterialLootUtils";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
+import { LogsPveFightProgressionRequests } from "../database/logs/requests/LogsPveFightProgressionRequests";
 
 /**
  * PVE fight rewards structure
@@ -320,7 +321,12 @@ export async function doPVEBoss(
 	const seed = keycloakIdHash + millisecondsToSeconds(dateToMs(player.startTravelDate));
 	const mapId = player.getDestination()!.id;
 	const monsterObj = MonsterDataController.instance.getRandomMonster(mapId, seed);
-	const randomLevel = player.level - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
+	const monsterLevelBase = await LogsPveFightProgressionRequests.getMonsterLevelBase({
+		playerKeycloakId: player.keycloakId,
+		monsterId: monsterObj.id,
+		classId: player.class
+	}) ?? player.level;
+	const randomLevel = monsterLevelBase - PVEConstants.MONSTER_LEVEL_RANDOM_RANGE / 2 + seed % PVEConstants.MONSTER_LEVEL_RANDOM_RANGE;
 
 	/**
 	 * Handle rewards after the PVE fight completes

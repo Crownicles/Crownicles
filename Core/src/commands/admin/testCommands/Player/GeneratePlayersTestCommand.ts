@@ -10,6 +10,7 @@ import {
 } from "../../../../core/database/game/models/PetEntity";
 import { ClassDataController } from "../../../../data/Class";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
+import { ClassInfoConstants } from "../../../../../../Lib/src/constants/ClassInfoConstants";
 import { generateRandomItem } from "../../../../core/utils/ItemUtils";
 import {
 	FightItemNatures, ItemCategory
@@ -155,57 +156,9 @@ const FIXED_ITEMS_BY_CLASS_GROUP: Record<string, [
 
 /**
  * Get the class behavior group for a given class ID
- * @param classId
- */
-/**
- * Mapping of class IDs to behavior groups
- */
-const CLASS_TO_GROUP_MAP: Record<number, string> = {
-	// Gunner group
-	[ClassConstants.CLASSES_ID.FORMIDABLE_GUNNER]: "gunner",
-	[ClassConstants.CLASSES_ID.GUNNER]: "gunner",
-	[ClassConstants.CLASSES_ID.ARCHER]: "gunner",
-	[ClassConstants.CLASSES_ID.SLINGER]: "gunner",
-	[ClassConstants.CLASSES_ID.ROCK_THROWER]: "gunner",
-
-	// Paladin group
-	[ClassConstants.CLASSES_ID.PALADIN]: "paladin",
-	[ClassConstants.CLASSES_ID.LUMINOUS_PALADIN]: "paladin",
-
-	// Knight group
-	[ClassConstants.CLASSES_ID.KNIGHT]: "knight",
-	[ClassConstants.CLASSES_ID.VALIANT_KNIGHT]: "knight",
-	[ClassConstants.CLASSES_ID.PIKEMAN]: "knight",
-	[ClassConstants.CLASSES_ID.HORSE_RIDER]: "knight",
-	[ClassConstants.CLASSES_ID.ESQUIRE]: "knight",
-
-	// Infantryman group
-	[ClassConstants.CLASSES_ID.POWERFUL_INFANTRYMAN]: "infantryman",
-	[ClassConstants.CLASSES_ID.INFANTRYMAN]: "infantryman",
-	[ClassConstants.CLASSES_ID.SOLDIER]: "infantryman",
-	[ClassConstants.CLASSES_ID.FIGHTER]: "infantryman",
-	[ClassConstants.CLASSES_ID.RECRUIT]: "infantryman",
-
-	// Veteran group
-	[ClassConstants.CLASSES_ID.VETERAN]: "veteran",
-	[ClassConstants.CLASSES_ID.EXPERIENCED_VETERAN]: "veteran",
-
-	// Tank group
-	[ClassConstants.CLASSES_ID.TANK]: "tank",
-	[ClassConstants.CLASSES_ID.IMPENETRABLE_TANK]: "tank",
-	[ClassConstants.CLASSES_ID.ENMESHED]: "tank",
-	[ClassConstants.CLASSES_ID.HELMETED]: "tank",
-	[ClassConstants.CLASSES_ID.GLOVED]: "tank",
-
-	// Mage group
-	[ClassConstants.CLASSES_ID.MYSTIC_MAGE]: "mage"
-};
-
-/**
- * Get the class behavior group for a given class ID
  */
 function getClassBehaviorGroup(classId: number): string | null {
-	return CLASS_TO_GROUP_MAP[classId] || null;
+	return ClassInfoConstants.getClassLineageName(classId);
 }
 
 /**
