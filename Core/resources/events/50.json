@@ -3,6 +3,7 @@
     "ask": {
       "outcomes": {
         "0": {
+          "forceLeaveCity": true,
           "health": 15,
           "money": -50,
           "tags": [
@@ -10,19 +11,25 @@
           ]
         },
         "1": {
+          "forceLeaveCity": true,
           "health": -15,
           "money": -100
         },
-        "2": {}
+        "2": {
+          "forceLeaveCity": true
+        }
       }
     },
     "end": {
       "outcomes": {
         "0": {
+          "forceLeaveCity": true,
           "effect": "occupied",
           "lostTime": 10
         },
-        "1": {}
+        "1": {
+          "forceLeaveCity": true
+        }
       }
     },
     "leave": {
@@ -47,11 +54,13 @@
           "health": -30
         },
         "1": {
+          "forceLeaveCity": true,
           "effect": "occupied",
           "health": 10,
           "lostTime": 60
         },
         "2": {
+          "forceLeaveCity": true,
           "effect": "sleeping",
           "money": -50
         }
