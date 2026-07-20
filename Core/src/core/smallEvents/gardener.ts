@@ -76,6 +76,8 @@ let moonCache: {
 	illumination: number; fetchedAt: number;
 } | null = null;
 
+const RADIANS_PER_DEGREE = Math.PI / 180;
+
 function getFallbackMoonIllumination(): number {
 	const daysSinceNewMoon = (Date.now() - PlantConstants.LUNAR_FALLBACK.REFERENCE_NEW_MOON) / TimeConstants.MS_TIME.DAY;
 	const phase = (daysSinceNewMoon % PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS) / PlantConstants.LUNAR_FALLBACK.CYCLE_DAYS;
@@ -123,7 +125,7 @@ async function getMoonIllumination(): Promise<number> {
 			return getFallbackMoonIllumination();
 		}
 
-		const illumination = moonphase / 100;
+		const illumination = (1 - Math.cos(moonphase * RADIANS_PER_DEGREE)) / 2;
 		moonCache = {
 			illumination,
 			fetchedAt: Date.now()
