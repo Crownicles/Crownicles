@@ -2741,6 +2741,7 @@
     "errorMessage": {
       "tooManyBoatThisWeek": "You've been on the boat too many times or you've joined a guild this week.",
       "noMemberOnBoat": "No active members of your guild are on the boat.",
+      "notTravelling": "Vous ne pouvez pas rejoindre le bateau depuis une ville, vous devez être en train de voyager.",
       "noGuild": "You don't belong to any guild.",
       "notEnoughEnergy": "You don't have enough energy to get on the boat.",
       "notEnoughGems": "You want to join your guild, but when it's time to pay, you find your funds are insufficient."
