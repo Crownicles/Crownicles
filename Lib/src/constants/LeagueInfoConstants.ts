@@ -1,4 +1,18 @@
 export abstract class LeagueInfoConstants {
+	static readonly FIGHT_WIN_MONEY_REWARDS = [
+		200, // Wood
+		255, // Rock
+		310, // Iron
+		365, // Bronze
+		420, // Silver
+		475, // Gold
+		530, // Diamond
+		585, // Elite
+		640, // Infinite
+		695, // Legendary
+		750 // Royal
+	];
+
 	static readonly MONEY_TO_AWARD = [
 		250, // Wood
 		300, // Rock
