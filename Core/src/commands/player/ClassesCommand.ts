@@ -69,12 +69,12 @@ function getEndCallback(player: Player) {
 		player.setEnergyLost(Math.ceil(
 			player.fightPointsLost / oldClass.getMaxCumulativeEnergyValue(level) * newClass.getMaxCumulativeEnergyValue(level)
 		), NumberChangeReason.CLASS, playerActiveObjects);
-		await MissionsController.update(player, response, { missionId: "chooseClass" });
-		await MissionsController.update(player, response, {
+		await player.save();
+		Object.assign(player, await MissionsController.update(player, response, { missionId: "chooseClass" }));
+		Object.assign(player, await MissionsController.update(player, response, {
 			missionId: "chooseClassTier",
 			params: { tier: newClass.classGroup }
-		});
-		await player.save();
+		}));
 		crowniclesInstance?.logsDatabase.logPlayerClassChange(player.keycloakId, newClass.id)
 			.then();
 
