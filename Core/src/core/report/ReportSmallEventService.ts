@@ -124,7 +124,7 @@ async function loadAndExecuteSmallEvent(
 			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
 			await crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event);
 
-			await runSmallEventUnderPlayerLock(player, event, smallEvent, response, context, playerActiveObjects);
+			await runSmallEventUnderLock(player, event, smallEvent, response, context, playerActiveObjects);
 		}
 		catch (e) {
 			CrowniclesLogger.errorWithObj(`Error while executing ${filename} small event`, e);
@@ -149,7 +149,7 @@ async function loadAndExecuteSmallEvent(
  * their setup phase only — the deferred callback re-locks itself
  * (handled per file in PR-H2).
  */
-async function runSmallEventUnderPlayerLock(
+async function runSmallEventUnderLock(
 	player: Player,
 	event: string,
 	smallEvent: SmallEventFuncs,
@@ -167,6 +167,7 @@ async function runSmallEventUnderPlayerLock(
 		const smallEventRecord = PlayerSmallEvents.createPlayerSmallEvent(lockedPlayer.id, event, Date.now());
 		await smallEventRecord.save();
 		await smallEvent.executeSmallEvent(response, lockedPlayer, context, playerActiveObjects);
+		await lockedPlayer.save();
 		await MissionsController.update(lockedPlayer, response, { missionId: "doReports" });
 	});
 }

@@ -161,6 +161,40 @@ describe("Mission chain state synchronization", () => {
 		});
 	});
 
+	describe("Player.spendMoney", () => {
+		it("keeps money awarded by the spendMoney mission before applying the debit", async () => {
+			const player = createTestPlayer({ money: 1000 });
+			vi.spyOn(MissionsController, "update").mockResolvedValue(createTestPlayer({ money: 1100 }));
+
+			await player.spendMoney({
+				amount: 50,
+				response,
+				reason: NumberChangeReason.SHOP
+			});
+
+			expect(player.money).toBe(1050);
+		});
+	});
+
+	describe("Player.levelUpIfNeeded", () => {
+		it("does not emit level-up effects when the locked player already leveled", async () => {
+			const player = createTestPlayer();
+			player.needLevelUp = vi.fn().mockReturnValue(true);
+			player.addLevelUpPacket = vi.fn();
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+				opts.applyOnLockedPlayer?.({
+					...inputPlayer,
+					needLevelUp: () => false
+				} as Player);
+				return inputPlayer;
+			});
+
+			await player.levelUpIfNeeded(response);
+
+			expect(player.addLevelUpPacket).not.toHaveBeenCalled();
+		});
+	});
+
 	describe("Player.addScore", () => {
 		it("should sync changes from mission rewards when earning score", async () => {
 			const player = createTestPlayer({ score: 100, experience: 500 });
@@ -210,5 +244,6 @@ describe("Mission chain state synchronization", () => {
 			expect(player.weeklyScore).toBe(250);
 		});
 	});
+
 });
 

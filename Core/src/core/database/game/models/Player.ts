@@ -353,12 +353,15 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async spendMoney(parameters: EditValueParameters): Promise<Player> {
-		await MissionsController.update(this, parameters.response, {
+		const newPlayer = await MissionsController.update(this, parameters.response, {
 			missionId: "spendMoney",
 			count: parameters.amount
 		});
-		parameters.amount = -parameters.amount;
-		return this.addMoney(parameters);
+		Object.assign(this, newPlayer);
+		return this.addMoney({
+			...parameters,
+			amount: -parameters.amount
+		});
 	}
 
 	/**
@@ -504,6 +507,7 @@ export class Player extends Model {
 			return;
 		}
 
+		let didLevelUp = false;
 		Object.assign(this, await MissionsController.update(this, response, {
 			missionId: "reachLevel",
 			count: locked => locked.level,
@@ -519,8 +523,12 @@ export class Player extends Model {
 				}
 				locked.experience -= locked.getExperienceNeededToLevelUp();
 				locked.level += 1;
+				didLevelUp = true;
 			}
 		}));
+		if (!didLevelUp) {
+			return;
+		}
 		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, NumberChangeReason.LEVEL_UP)
 			.then();
 		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
@@ -1306,13 +1314,24 @@ export class Player extends Model {
 		shouldPokeMission: true
 	}): Promise<void> {
 		const maxHealth = this.getMaxHealth();
-		const difference = (health > maxHealth && !missionHealthParameter.overHealCountsForMission ? maxHealth : health < 0 ? 0 : health)
-			- this.health;
-		if (difference > 0 && missionHealthParameter.shouldPokeMission) {
-			await MissionsController.update(this, response, {
+		const healthDelta = health - this.health;
+		if (healthDelta > 0 && missionHealthParameter.shouldPokeMission) {
+			let lockedDifference = 0;
+			const updatedPlayer = await MissionsController.update(this, response, {
 				missionId: "earnLifePoints",
-				count: difference
+				count: () => lockedDifference,
+				applyOnLockedPlayer: locked => {
+					const lockedMaxHealth = locked.getMaxHealth();
+					const lockedHealth = Math.min(locked.health, lockedMaxHealth);
+					const requestedHealth = lockedHealth + healthDelta;
+					lockedDifference = (requestedHealth > lockedMaxHealth && !missionHealthParameter.overHealCountsForMission
+						? lockedMaxHealth
+						: requestedHealth < 0 ? 0 : requestedHealth) - lockedHealth;
+					locked.health = MathUtils.clamp(requestedHealth, 0, lockedMaxHealth);
+				}
 			});
+			Object.assign(this, updatedPlayer);
+			return;
 		}
 		if (health < 0) {
 			this.health = 0;

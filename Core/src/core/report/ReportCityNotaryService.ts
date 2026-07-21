@@ -68,6 +68,7 @@ async function persistApartmentBuyUnderLock(params: {
 		amount: price,
 		reason: NumberChangeReason.APARTMENT_BUY
 	});
+	await lockedPlayer.save();
 	try {
 		await Apartment.create({
 			ownerId: lockedPlayer.id,
