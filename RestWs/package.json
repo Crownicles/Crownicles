@@ -38,7 +38,7 @@
     "winston": "3.19.0",
     "winston-daily-rotate-file": "5.0.0",
     "winston-loki": "6.1.4",
-    "ws": "8.20.0"
+    "ws": "8.21.0"
   },
   "devDependencies": {
     "@stylistic/eslint-plugin": "5.10.0",
