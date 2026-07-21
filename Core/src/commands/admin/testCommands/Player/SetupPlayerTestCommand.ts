@@ -39,6 +39,14 @@ export const commandInfo: ITestCommand = {
 const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, response, _context) => {
 	const results: string[] = [];
 
+	// Money
+	await player.addMoney({
+		amount: SETUP_DEFAULTS.money - player.money,
+		response,
+		reason: NumberChangeReason.TEST
+	});
+	results.push(`${SETUP_DEFAULTS.money} :moneybag:`);
+
 	// Level & stats
 	player.level = SETUP_DEFAULTS.level;
 	player.score = SETUP_DEFAULTS.score;
@@ -51,14 +59,6 @@ const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, res
 	player.setHealthNoCheck(player.getMaxHealth());
 	crowniclesInstance.logsDatabase.logLevelChange(player.keycloakId, player.level).then();
 	results.push(`Niveau ${SETUP_DEFAULTS.level}, ${SETUP_DEFAULTS.score} points`);
-
-	// Money
-	await player.addMoney({
-		amount: SETUP_DEFAULTS.money - player.money,
-		response,
-		reason: NumberChangeReason.TEST
-	});
-	results.push(`${SETUP_DEFAULTS.money} :moneybag:`);
 
 	// Gems
 	const missionInfo = await PlayerMissionsInfos.getOfPlayer(player.id);

@@ -108,7 +108,7 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
+async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.crowniclesRandom.integer(0, time / 10 + player.level / 5 - 1));
 	if (outcome.money && outcome.money < 0 && moneyChange > 0) {
 		moneyChange = Math.floor(outcome.money / 2);
@@ -131,6 +131,9 @@ async function applyOutcomeMoney(outcome: PossibilityOutcome, time: number, play
 			amount: moneyChange,
 			reason: NumberChangeReason.BIG_EVENT
 		});
+	}
+	if (!isMoneyChangePositive) {
+		await player.save();
 	}
 	return BlessingManager.getInstance().applyMoneyBlessing(moneyChange);
 }
@@ -270,7 +273,7 @@ export async function applyPossibilityOutcome(possibilityOutcome: ApplyOutcome, 
 	const score = await applyOutcomeScore(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
 	// Money
-	const money = await applyOutcomeMoney(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
+	const money = await applyOutcomeMoneyUnderLock(possibilityOutcome.outcome[1], possibilityOutcome.time, player, response);
 
 	// Gems
 	const gems = await applyOutcomeGems(possibilityOutcome.outcome[1], player);

@@ -112,6 +112,7 @@ async function buyTokens(
 			response,
 			reason: NumberChangeReason.SHOP
 		});
+		await lockedPlayer.save();
 		await lockedPlayer.addTokens({
 			amount,
 			response,

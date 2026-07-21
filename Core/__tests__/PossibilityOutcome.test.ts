@@ -30,7 +30,56 @@ vi.mock("../../Lib/src/utils/RandomUtils", () => ({
 	}
 }));
 
+vi.mock("../src/core/blessings/BlessingManager", () => ({
+	BlessingManager: {
+		getInstance: () => ({
+			applyMoneyBlessing: (amount: number): number => amount
+		})
+	}
+}));
+
 describe("applyPossibilityOutcome", () => {
+	it("persists money lost before experience reloads the player", async () => {
+		let persistedMoney = 1000;
+		const player = Object.create(Player.prototype) as Player;
+		Object.assign(player, {
+			id: 1,
+			level: 10,
+			money: persistedMoney,
+			effectDuration: 0,
+			effectId: "",
+			addEnergy: vi.fn(),
+			addExperience: vi.fn(async () => {
+				player.money = persistedMoney;
+				return player;
+			}),
+			addHealth: vi.fn().mockResolvedValue(undefined),
+			addMoney: vi.fn(async ({ amount }: { amount: number }) => {
+				player.money += amount;
+				return player;
+			}),
+			addScore: vi.fn().mockResolvedValue(undefined),
+			addTokens: vi.fn().mockResolvedValue(undefined),
+			save: vi.fn(async () => {
+				persistedMoney = player.money;
+				return player;
+			}),
+			setLastReportWithEffect: vi.fn().mockResolvedValue(undefined)
+		});
+
+		await applyPossibilityOutcome({
+			eventId: 1,
+			possibilityName: "loseMoney",
+			outcome: ["1", { money: -100 }],
+			time: 0
+		}, player, {} as PacketContext, []);
+
+		expect(player.money).toBe(900);
+		expect(player.save).toHaveBeenCalledOnce();
+		expect(vi.mocked(player.save).mock.invocationCallOrder[0])
+			.toBeLessThan(vi.mocked(player.addExperience).mock.invocationCallOrder[0]);
+	});
+
 	it("keeps experience and health gained when experience reloads the player", async () => {
 		const persistedHealth = 1;
 		const initialExperience = 100;
