@@ -131,9 +131,11 @@ async function calculateMoneyReward(
 	fightInitiatorInformation: FightInitiatorInformation,
 	response: CrowniclesPacket[]
 ): Promise<number> {
+	const winMoneyReward = fightInitiatorInformation.initiatorPlayer.getLeague().getFightWinMoneyReward();
+
 	// Determine the bonus to reward based on a game result
 	const bonusByResult = {
-		[EloGameResult.WIN]: FightConstants.REWARDS.WIN_MONEY_BONUS,
+		[EloGameResult.WIN]: winMoneyReward,
 		[EloGameResult.DRAW]: FightConstants.REWARDS.DRAW_MONEY_BONUS,
 		[EloGameResult.LOSS]: FightConstants.REWARDS.LOSS_MONEY_BONUS
 	};
@@ -145,14 +147,15 @@ async function calculateMoneyReward(
 	const lossCount = summary.played - (summary.draw + summary.won);
 
 	const alreadyAwardedMoney =
-		summary.won * FightConstants.REWARDS.WIN_MONEY_BONUS
+		summary.won * winMoneyReward
 		+ summary.draw * FightConstants.REWARDS.DRAW_MONEY_BONUS
 		+ lossCount * FightConstants.REWARDS.LOSS_MONEY_BONUS;
+	const maxMoneyBonus = winMoneyReward * FightConstants.REWARDS.MAX_REWARDED_WINS;
 
 	// Apply cap to money rewards if necessary
-	if (alreadyAwardedMoney > FightConstants.REWARDS.MAX_MONEY_BONUS) {
+	if (alreadyAwardedMoney > maxMoneyBonus) {
 		extraMoneyBonus = Math.max(
-			FightConstants.REWARDS.MAX_MONEY_BONUS - (alreadyAwardedMoney - extraMoneyBonus),
+			maxMoneyBonus - (alreadyAwardedMoney - extraMoneyBonus),
 			0
 		);
 	}
