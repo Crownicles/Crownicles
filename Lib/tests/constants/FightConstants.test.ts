@@ -12,9 +12,10 @@ describe("FightConstants PvP rewards", () => {
 		expect(winRewards).toHaveLength(LeagueInfoConstants.MONEY_TO_AWARD.length);
 		expect(winRewards[0]).toBe(200);
 		expect(winRewards[LeagueInfoConstants.ROYAL_LEAGUE_ID]).toBe(750);
-		for (let leagueId = 1; leagueId < winRewards.length; leagueId++) {
-			expect(winRewards[leagueId] - winRewards[leagueId - 1]).toBe(55);
+		for (let leagueId = 1; leagueId < LeagueInfoConstants.ROYAL_LEAGUE_ID; leagueId++) {
+			expect(winRewards[leagueId] - winRewards[leagueId - 1]).toBe(50);
 		}
+		expect(winRewards[LeagueInfoConstants.ROYAL_LEAGUE_ID] - winRewards[LeagueInfoConstants.ROYAL_LEAGUE_ID - 1]).toBe(100);
 	});
 
 	it("does not make intentional losses or draws more profitable than a Wood league win", () => {
