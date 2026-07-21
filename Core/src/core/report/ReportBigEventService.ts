@@ -150,6 +150,7 @@ async function applyLockedOutcomeUnderLock(
 		event, possibility, randomOutcome, time
 	} = outcomeContext;
 	lockedPlayer.nextEvent = null;
+	await lockedPlayer.save();
 
 	const newMapLink = await applyPossibilityOutcome({
 		eventId: event.id,
