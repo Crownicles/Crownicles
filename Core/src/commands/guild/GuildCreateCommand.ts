@@ -142,12 +142,12 @@ async function applyLockedAcceptGuildCreate(
 		chiefId: player.id,
 		treasury: GuildCreateConstants.INITIAL_TREASURY
 	});
-	player.guildId = newGuild.id;
 	await player.spendMoney({
 		amount: GuildCreateConstants.PRICE,
 		response,
 		reason: NumberChangeReason.GUILD_CREATE
 	});
+	player.guildId = newGuild.id;
 	newGuild.updateLastDailyAt();
 	await Promise.all([
 		newGuild.save(),

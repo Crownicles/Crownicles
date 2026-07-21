@@ -109,6 +109,9 @@ describe("GuildCreateCommand", () => {
 		vi.clearAllMocks();
 		player.guildId = null;
 		player.money = GuildCreateConstants.PRICE;
+		player.spendMoney.mockImplementation(async () => {
+			player.guildId = null;
+		});
 		vi.mocked(Guilds.getByName).mockResolvedValue(null);
 		vi.mocked(Guild.create).mockResolvedValue(newGuild as never);
 		vi.mocked(PlayerMissionsInfos.getOfPlayer).mockResolvedValue(null as never);
@@ -138,5 +141,8 @@ describe("GuildCreateCommand", () => {
 			chiefId: player.id,
 			treasury: GuildCreateConstants.INITIAL_TREASURY
 		});
+		expect(player.guildId).toBe(newGuild.id);
+		expect(player.spendMoney.mock.invocationCallOrder[0])
+			.toBeLessThan(player.save.mock.invocationCallOrder[0]);
 	});
 });
