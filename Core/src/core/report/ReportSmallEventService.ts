@@ -121,6 +121,7 @@ async function loadAndExecuteSmallEvent(
 	try {
 		const smallEventModule = require.resolve(`../smallEvents/${filename}`);
 		try {
+			// skipcq: JS-0359 - Small event handlers are discovered dynamically from resource names.
 			const smallEvent: SmallEventFuncs = require(smallEventModule).smallEventFuncs;
 			await crowniclesInstance.logsDatabase.logSmallEvent(player.keycloakId, event);
 

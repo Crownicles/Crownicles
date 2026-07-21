@@ -9,8 +9,9 @@ import type { Player as PlayerType } from "../../src/core/database/game/models/P
 import type { PlayerMissionsInfo as PlayerMissionsInfoType } from "../../src/core/database/game/models/PlayerMissionsInfo";
 import type { MissionSlot as MissionSlotType } from "../../src/core/database/game/models/MissionSlot";
 import type { DailyMission as DailyMissionType } from "../../src/core/database/game/models/DailyMission";
-import type { PacketContext } from "../../../Lib/src/packets/CrowniclesPacket";
-import type { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket";
+import type {
+	CrowniclesPacket, PacketContext
+} from "../../../Lib/src/packets/CrowniclesPacket";
 import type { SmallEventClassPacket } from "../../../Lib/src/packets/smallEvents/SmallEventClassPacket";
 
 type ReportSmallEventModule = typeof import("../../src/core/report/ReportSmallEventService");
