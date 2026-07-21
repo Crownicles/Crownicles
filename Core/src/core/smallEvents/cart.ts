@@ -69,10 +69,10 @@ async function runCartEndCallbackUnderLock(
 			packet.pointsWon = scoreParameters.amount;
 			const newMapLinkId = destination.isScam ? destination.scamDestination!.id : destination.destination.id;
 			crowniclesInstance?.logsDatabase.logTeleportation(player.keycloakId, player.mapLinkId, newMapLinkId).then();
-			player.mapLinkId = newMapLinkId;
 			await player.spendMoney({
 				amount: destination.price, response, reason: NumberChangeReason.SMALL_EVENT
 			});
+			player.mapLinkId = newMapLinkId;
 		}
 		response.push(makePacket(SmallEventCartPacket, packet));
 	}

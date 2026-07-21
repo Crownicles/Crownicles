@@ -65,13 +65,13 @@ export async function handleInnMealReaction(
 		}
 
 		const energyBefore = lockedPlayer.getCumulativeEnergy(playerActiveObjects);
-		lockedPlayer.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL, playerActiveObjects);
-		lockedPlayer.eatMeal();
 		await lockedPlayer.spendMoney({
 			response,
 			amount: reaction.meal.price,
 			reason: NumberChangeReason.INN_MEAL
 		});
+		lockedPlayer.addEnergy(reaction.meal.energy, NumberChangeReason.INN_MEAL, playerActiveObjects);
+		lockedPlayer.eatMeal();
 		await lockedPlayer.save();
 		response.push(makePacket(CommandReportEatInnMealRes, {
 			energy: reaction.meal.energy,

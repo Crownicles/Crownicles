@@ -67,7 +67,7 @@ async function awardGuildWithNewPet(guild: Guild, rewardPacket: CommandGuildDail
  * @param members
  * @param awardingFunctionForAMember
  */
-async function genericAwardingFunction(members: Player[], awardingFunctionForAMember: (member: Player) => Promise<void> | void): Promise<void> {
+async function genericAwardingFunction(members: Player[], awardingFunctionForAMember: (member: Player) => Promise<void>): Promise<void> {
 	for (const member of members) {
 		// We have to check if the member is not KO because if he is, he can't receive the reward
 		if (member.isDead()) {
@@ -194,8 +194,8 @@ async function alterationHealEveryMember(guildLike: GuildLike, response: Crownic
  */
 async function awardPersonalXpToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const xpWon = RandomUtils.rangedInt(GuildDailyConstants.XP, guildLike.guild.level, guildLike.guild.level * GuildDailyConstants.XP_MULTIPLIER);
-	await genericAwardingFunction(guildLike.members, member => {
-		member.addExperience({
+	await genericAwardingFunction(guildLike.members, async member => {
+		await member.addExperience({
 			amount: xpWon,
 			response,
 			reason: NumberChangeReason.GUILD_DAILY
@@ -414,8 +414,8 @@ function generateRandomProperty(guild: Guild): string {
 async function awardMoneyToMembers(guildLike: GuildLike, response: CrowniclesPacket[], rewardPacket: CommandGuildDailyRewardPacket): Promise<void> {
 	const levelUsed = Math.min(guildLike.guild.level, GuildConstants.GOLDEN_GUILD_LEVEL);
 	const moneyWon = RandomUtils.rangedInt(GuildDailyConstants.MONEY, levelUsed, levelUsed * GuildDailyConstants.MONEY_MULTIPLIER);
-	await genericAwardingFunction(guildLike.members, member => {
-		member.addMoney({
+	await genericAwardingFunction(guildLike.members, async member => {
+		await member.addMoney({
 			amount: moneyWon,
 			response,
 			reason: NumberChangeReason.GUILD_DAILY
