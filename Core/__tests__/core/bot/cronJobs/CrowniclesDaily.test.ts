@@ -42,6 +42,33 @@ vi.mock("../../../../src/core/bot/CrowniclesCoreMetrics", () => ({
 import { CrowniclesDaily } from "../../../../src/core/bot/cronJobs/CrowniclesDaily";
 import { CrowniclesCoreMetrics } from "../../../../src/core/bot/CrowniclesCoreMetrics";
 
+type Gate<T> = {
+	promise: Promise<T>;
+	resolve: (value: T) => void;
+};
+
+/**
+ * Create a manually controllable promise so a test can decide precisely when a
+ * mocked task resolves, and thus observe the scheduling between tasks.
+ */
+function createGate<T = void>(): Gate<T> {
+	let resolve!: (value: T) => void;
+	const promise = new Promise<T>(res => {
+		resolve = res;
+	});
+	return {
+		promise,
+		resolve
+	};
+}
+
+/**
+ * Let all currently pending microtasks (and a macrotask boundary) run.
+ */
+function flushAsync(): Promise<void> {
+	return new Promise(resolve => setTimeout(resolve, 0));
+}
+
 describe("CrowniclesDaily.job", () => {
 	beforeEach(() => {
 		vi.restoreAllMocks();
@@ -69,5 +96,59 @@ describe("CrowniclesDaily.job", () => {
 
 		// ...and the failure was surfaced through the metric
 		expect(CrowniclesCoreMetrics.incrementDailyTaskFailure).toHaveBeenCalledWith("reloadEnchanter");
+	});
+
+	it("runs the daily tasks strictly one after another, never concurrently", async () => {
+		const started: string[] = [];
+
+		const potionGate = createGate();
+		const loveGate = createGate<boolean>();
+		const enchanterGate = createGate();
+		const trainingGate = createGate();
+
+		vi.spyOn(CrowniclesDaily, "randomPotion").mockImplementation(() => {
+			started.push("randomPotion");
+			return potionGate.promise;
+		});
+		vi.spyOn(CrowniclesDaily, "randomLovePointsLoose").mockImplementation(() => {
+			started.push("randomLovePointsLoose");
+			return loveGate.promise;
+		});
+		vi.spyOn(CrowniclesDaily, "reloadEnchanter").mockImplementation(() => {
+			started.push("reloadEnchanter");
+			return enchanterGate.promise;
+		});
+		vi.spyOn(CrowniclesDaily, "trainingGroundLoveBonus").mockImplementation(() => {
+			started.push("trainingGroundLoveBonus");
+			return trainingGate.promise;
+		});
+		vi.spyOn(CrowniclesDaily, "pantryAutoFill").mockResolvedValue();
+
+		const jobPromise = CrowniclesDaily.job();
+
+		// Only the first task has started while its gate is still pending.
+		await flushAsync();
+		expect(started).toEqual(["randomPotion"]);
+
+		// Resolving a task lets exactly the next one start, and no earlier.
+		potionGate.resolve();
+		await flushAsync();
+		expect(started).toEqual(["randomPotion", "randomLovePointsLoose"]);
+
+		loveGate.resolve(false);
+		await flushAsync();
+		expect(started).toEqual(["randomPotion", "randomLovePointsLoose", "reloadEnchanter"]);
+
+		enchanterGate.resolve();
+		await flushAsync();
+		expect(started).toEqual([
+			"randomPotion",
+			"randomLovePointsLoose",
+			"reloadEnchanter",
+			"trainingGroundLoveBonus"
+		]);
+
+		trainingGate.resolve();
+		await jobPromise;
 	});
 });
