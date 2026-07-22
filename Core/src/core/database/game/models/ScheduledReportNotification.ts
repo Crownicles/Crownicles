@@ -37,14 +37,21 @@ export abstract class ScheduledReportNotifications {
 		});
 	}
 
-	static async bulkDelete(notifications: ScheduledReportNotification[]): Promise<void> {
-		await ScheduledReportNotification.destroy({
-			where: {
-				playerId: {
-					[Op.in]: notifications.map(notification => notification.playerId)
-				}
-			}
+	/**
+	 * Atomically claim (delete) the scheduled notification of a player.
+	 *
+	 * The row acts as a single-use token: the DELETE is serialised by the
+	 * database on the primary key, so exactly one of the concurrent callers
+	 * (the periodic poller in {@link processDueReportNotifications} and the
+	 * `Player.afterSave` hook) receives `true` and is allowed to dispatch the
+	 * notification. Every other caller receives `false` and must stay silent.
+	 * This is what prevents the duplicate arrival notification (issue #4562).
+	 */
+	static async claimNotification(playerId: number): Promise<boolean> {
+		const deletedRows = await ScheduledReportNotification.destroy({
+			where: { playerId }
 		});
+		return deletedRows > 0;
 	}
 
 	static async getPendingNotification(playerId: number): Promise<ScheduledReportNotification | null> {
