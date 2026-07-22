@@ -1012,7 +1012,7 @@
         },
         "hasAtLeastOneEnchantedItem": "Plus, when you see your enchanted equipment, Mernil frowns. He says it is the work of the smiths to enchant the objects, not his own, and that he will not touch them.",
         "confirmDescription": "{emote:collectors.warning} This validation will apply the enchantment {emote:enchantmentTypes.{{enchantmentType}}}**$t(items:enchantments.{{enchantmentId}})** on the following equipment:\n{{item}}\n\nCough: **{{price}}**.\n{{balance}}",
-        "acceptStory": "He immediately takes your equipment and whispers some incantations while waving a rune above... After a few moments, it returns the item telling you it's done! Your equipment is now enchanted with {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Make good use of it!",
+        "acceptStory": "He immediately takes your equipment and whispers some incantations while waving a rune above... After a few moments, he returns the item telling you it's done! Your equipment is now enchanted with {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Make good use of it!",
         "acceptTitle": "{{pseudo}}, enchantment succeeded!",
         "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
         "priceMoneyAndGems": "{{money}} {emote:unitValues.money} and {{gems}} {emote:unitValues.gem}",
@@ -1221,7 +1221,7 @@
           "restTitle": "{{pseudo}}, you are resting!",
           "restDescription": "{emote:city.homeUpgrades.bed} You lie down in your bed and close your eyes for a few moments. This little rest makes you look great! You start **{{health}}** {emote:unitValues.health}.",
           "alreadyFull": "You are in full shape! Your bed will only be useful when you need to rest.",
-          "cooldown": "You already benefited from a bed today and don't really sleep at the moment. Get back to rest <t:{{nextAvailableAt}}:R>."
+          "cooldown": "You have already used a bed today and aren't really sleepy at the moment. Come back to rest <t:{{nextAvailableAt}}:R>."
         },
         "chest": {
           "menuLabel": "Storage Chest",
