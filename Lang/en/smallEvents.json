@@ -2569,7 +2569,7 @@
       "poison": "replicate plants with glowing leaves and coloured flowers, as well as a water spot, perfect for harvesting toxic substances. You collect the poisoned elements with precision.",
       "explosive": "you will find unstable crystals and explosive plants for harvesting dangerous ships. You handle unstable elements carefully to avoid accidental explosion.",
       "leather": "you stumble on recently slaughtered animal carcasses, offering a precious source of leather and skin. You spread the hides and leather of animal carcasses.",
-      "nature": "you find an area rich in natural elements, with plants, various minerals and organic resources, ideal for the collection of nature caterers. You collect various natural elements in the surrounding area.",
+      "nature": "you find an area rich in natural elements, with plants, various minerals and organic resources, ideal for the collection of natural materials. You collect various natural elements in the surrounding area.",
       "spiritual": "you will find a place full of security, where the atmosphere is peaceful and conducive to your property. You search the surrounding area for items or objects."
     },
     "foundStories": {
@@ -2759,7 +2759,7 @@
       "advice": {
         "needLevel": [
           "The gardener examines you from tint to feet and shakes the tint. You don't have enough experience for his next seed. Come back when you reach **level {{level}}**, he advises.",
-          "Theobald frowns by evaluating your stature. Nature requires a minimum of maturity to grab this seed, and you will need to reach **level {{level}}**."
+          "Theobald frowns while assessing your stature. Nature requires a minimum of maturity to merit this seed, and you will need to reach **level {{level}}**."
         ],
         "needGarden": [
           "Théobald leans the tone by learning that you do not have a garden. He advises you to invest in a **home with a garden** before coming back.",
@@ -2790,7 +2790,7 @@
           "Theobald tells you that this peculiar seed feeds on meat. Only an **exceptional carnivore familiar** could see its growth."
         ],
         "needLegendaryHerbivorePet": [
-          "Theobald gravitated you that his last seed is the most precious one. He will only entrust it to someone accompanied by a **familiar epic herbivore** with a **maximum trust link**.",
+          "Theobald confides in you with gravity that his last seed is the most precious. He will only entrust it to someone accompanied by an **epic herbivore familiar** with a **maximum trust link**.",
           "The old man whispers that what he keeps is the treasurer of a life. Only an adventurer with an exceptional link to a **epic herbivore familiar** will be able to improve it."
         ],
         "seedSlotFull": [
