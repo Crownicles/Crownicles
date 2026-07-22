@@ -913,7 +913,7 @@
         },
         "missionManager": {
           "label": "Queen's Mayor",
-          "description": "A rudimentary glance that requires heavy logs connected to leather. He knows each queen in progress in the realm and can offer you to trade one that escapes you against another more to your taste."
+          "description": "A scholar with a piercing gaze leafing through heavy leather-bound ledgers. He knows every quest in progress in the realm and can offer to trade one that eludes you for another more to your taste."
         }
       },
       "inns": {
@@ -1119,7 +1119,7 @@
           "show": "View the rankings",
           "resultTitle": "Ranking of {{boss}}",
           "classHeader": "**Class:** {{class}}",
-          "entry": "{{badge}} **{{pseudo}}** | Level **{{level}}** | **{{turns}}** tours",
+          "entry": "{{badge}} **{{pseudo}}** | Level **{{level}}** | **{{turns}}** turns",
           "empty": "No victories have been recorded yet for this creature in this class.",
           "changeSelection": "Change selection"
         }
@@ -1187,7 +1187,7 @@
         "upgradeItemTitle": "{{pseudo}}, Equipment Improvement Successful!",
         "upgradeItemDescription": "Your equipment has been upgraded to **Level {{newLevel}}**! Required sailors have been consumed.",
         "upgradeItemMissingMaterialsTitle": "{{pseudo}}, not enough sailors!",
-        "upgradeItemMissingMaterialsDescription": "You do not have the necessary sailors to upgrade this equipment. Raise them on your adventures and come back later!",
+        "upgradeItemMissingMaterialsDescription": "You do not have the necessary materials to upgrade this equipment. Collect them during your adventures and come back later!",
         "upgradeItemMaxLevelTitle": "{{pseudo}}, maximum level reached!",
         "upgradeItemMaxLevelDescription": "This equipment can no longer be improved at home. Go to a blacksmith for further improvements!",
         "notEnoughMoney": "You don't have enough money for this transaction!",
@@ -1208,7 +1208,7 @@
           "descriptionNoItems": "{emote:city.homeUpgrades.upgradeEquipment} You stand in front of your workbench, but none of your equipment can be improved here at the moment. Your home has an {{stationQuality}} facility to work up to the rarity $t(items:rarities.{{maxRarity}}). {{levelLimitation}}",
           "stationQualityBasic": "rudimentary",
           "stationQualityAdvanced": "of quality",
-          "stationQualityMaster": "Mayor craftsman",
+          "stationQualityMaster": "master craftsman",
           "levelLimitationBasic": "Your amateur blacksmith skills limit you to level {{maxLevel}}improvements, beyond that, you will need to consult a true blacksmith.",
           "levelLimitationAdvanced": "Your master tools allows you to reach {{maxLevel}}level, but further enhancements require the expertise of a professional blacksmith.",
           "placeholder": "Select a equipment"
@@ -1240,7 +1240,7 @@
           "withdrawSection": "{emote:city.chestActions.withdraw} **Remove from chest:**",
           "chestFull": "Full chest for this category",
           "inventoryFullLabel": "Inventory full",
-          "swapSection": "{emote:city.chestActions.swap} **Switch to the chest:**",
+          "swapSection": "{emote:city.chestActions.swap} **Swap with the chest:**",
           "swapHeader": "{emote:city.chestActions.swap} **Redeem** {{item}} **with:**",
           "errors": {
             "chestFull": "Your chest is full for this matter! Upgrade your home to get more slots.",
@@ -1268,7 +1268,7 @@
           "plantButton": "Plant",
           "waterButton": "Water",
           "waterCooldown": "{emote:city.gardenStatus.water} You can water **{{timeLeft}}** again.",
-          "waterCooldownError": "{emote:messages.refuse} You already watered properly. Try **{{timeLeft}}**.",
+          "waterCooldownError": "{emote:messages.refuse} You already watered recently. Try again in **{{timeLeft}}**.",
           "waterNothingToWater": "{emote:messages.info} No plant is growing to water.",
           "wateredPlots_one": "{{count}} tile",
           "wateredPlots_other": "{{count}} tiles",
@@ -1474,7 +1474,7 @@
           },
           "training": {
             "title": "{emote:city.guildDomain.trainingGround} Meagerie",
-            "descriptionInactive": "{emote:city.guildDomain.trainingGround} The meadow is a vast enclosed area with winding palisades and straw rance. Drinks are dry and agilitated courses are covered with foam and pets are not allowed to exercise under these conditions.",
+            "descriptionInactive": "{emote:city.guildDomain.trainingGround} The menagerie is a vast enclosed space with shaky palisades and rancid straw. The water troughs are dry and the agility courses are covered in moss. Pets cannot practice under these conditions.",
             "descriptionActive": "{emote:city.guildDomain.trainingGround} A former royal trainer oversees the daily exercises of pets, between wooden obstacle routes and stuffed targets. The air is filled with enthusiastic cries and winged beats.\n\nShelter pets gain **+{{love}}** {emote:expedition.love} love points per day."
           }
         }
@@ -1711,7 +1711,7 @@
             "bigRise": "• **Tomorrow**: The king will celebrate a great feast and the chests will flourish."
           },
           "threeDays": {
-            "bigDrop": "• **In 3 days**: A period of great austerity is coming for the kingdom.",
+            "bigDrop": "- **In 3 days**: A period of great austerity is coming for the kingdom. Prices will plummet.",
             "drop": "• **In 3 days**: Wind will turn up against traders. The price should decrease.",
             "stable": "• **In 3 days**: The situation will remain the same as today. No noticeable changes.",
             "rise": "• **In 3 days**: Foreign merchants will flow. Exchange rates will be more advantageous.",
