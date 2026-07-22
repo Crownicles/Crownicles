@@ -1977,7 +1977,8 @@ export function initModel(sequelize: Sequelize): void {
 	});
 
 	Player.afterSave((instance, options) => {
-		if (!instance.mapLinkId) {
+		if (!instance.mapLinkId || !MapLinkDataController.instance.getById(instance.mapLinkId)) {
+			// No resolvable map link: nothing to notify, and getTravelDataSimplified would throw on the missing link.
 			return;
 		}
 
@@ -1986,30 +1987,37 @@ export function initModel(sequelize: Sequelize): void {
 			const now = new Date();
 			const travelEndDate = new Date(TravelTime.getTravelDataSimplified(instance, now).travelEndTime);
 			const destinationId = instance.getDestinationId();
-			const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
-			if (pendingReportNotification) {
-				await ScheduledReportNotifications.bulkDelete([pendingReportNotification]);
-			}
 
 			if (
 				travelEndDate > now
 				&& destinationId !== null
 			) {
+				// Still travelling: (re)schedule the arrival notification (upsert overwrites any stale row).
 				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
 				return;
 			}
 
-			if (pendingReportNotification && destinationId === pendingReportNotification.mapId) {
-				const mapLocation = MapLocationDataController.instance.getById(pendingReportNotification.mapId);
-				if (mapLocation) {
-					PacketUtils.sendNotifications([
-						makePacket(ReachDestinationNotificationPacket, {
-							keycloakId: pendingReportNotification.keycloakId,
-							mapType: mapLocation.type,
-							mapId: pendingReportNotification.mapId
-						})
-					]);
-				}
+			/*
+			 * Arrived: claim the pending row atomically. Only the winner of the claim dispatches
+			 * the notification, so the periodic poller can never send a duplicate (issue #4562).
+			 */
+			const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
+			if (!pendingReportNotification) {
+				return;
+			}
+			const claimed = await ScheduledReportNotifications.claimNotification(instance.id);
+			if (!claimed || destinationId !== pendingReportNotification.mapId) {
+				return;
+			}
+			const mapLocation = MapLocationDataController.instance.getById(pendingReportNotification.mapId);
+			if (mapLocation) {
+				PacketUtils.sendNotifications([
+					makePacket(ReachDestinationNotificationPacket, {
+						keycloakId: pendingReportNotification.keycloakId,
+						mapType: mapLocation.type,
+						mapId: pendingReportNotification.mapId
+					})
+				]);
 			}
 		};
 
