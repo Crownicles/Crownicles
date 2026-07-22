@@ -841,7 +841,7 @@
         "enterForge": "Enter the forge",
         "talkToEnchanter": "Talk to him",
         "browseShop": "Review the state",
-        "sitDown": "Attach",
+        "sitDown": "Take a seat",
         "visitDomain": "Visit domain",
         "seeGuildNotary": "View Notary",
         "visitFoodShop": "Supplies",
@@ -1185,7 +1185,7 @@
           "claimTooLow": "The rent accumulated from your $thome (models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}. ame)** only takes **{{current}} {emote:unitValues.money}** — it needs at least **{{min}} {emote:unitValues.money}** before you can remove it."
         },
         "upgradeItemTitle": "{{pseudo}}, Equipment Improvement Successful!",
-        "upgradeItemDescription": "Your equipment has been upgraded to **Level {{newLevel}}**! Required sailors have been consumed.",
+        "upgradeItemDescription": "Your equipment has been upgraded to **Level {{newLevel}}**! The required materials have been consumed.",
         "upgradeItemMissingMaterialsTitle": "{{pseudo}}, not enough sailors!",
         "upgradeItemMissingMaterialsDescription": "You do not have the necessary materials to upgrade this equipment. Collect them during your adventures and come back later!",
         "upgradeItemMaxLevelTitle": "{{pseudo}}, maximum level reached!",
@@ -1343,7 +1343,7 @@
           "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** has been added to your guild storage.",
           "recipeDiscovered": "{emote:city.homeUpgrades.cooking} You have learned a new recipe: **{{recipe}}**!",
           "recipesDiscovered": "{emote:city.homeUpgrades.cooking} You have learned new recipes: {{recipes}}!",
-          "petFedFromSurplus": "{emote:messages.validate} Your pet ate ate a ration of **{{food}}** directly out of the furnace!",
+          "petFedFromSurplus": "{emote:messages.validate} Your pet ate a ration of **{{food}}** directly out of the furnace!",
           "surplusRecycled": "{emote:messages.info} The surplus food has been recycled into **{{quantity}} {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})**.",
           "materialCrafted": "{emote:messages.validate} You got **{{quantity}} {emote:materials.{{materialId}}} $t(templates:materials.{{materialId}})**!",
           "woodConsumed": "{emote:materials.{{woodId}}} $t(models:materials.{{woodId}}) Consumes",
@@ -2730,7 +2730,7 @@
     "embed": {
       "title": "{{guildName}} guild's storage",
       "descriptionTitle": "**Food**: ",
-      "description": "Food is useful for feeding all your pets. If you run out, you can buy some by using the {command:guildshop} command."
+      "description": "Food is useful for feeding all your pets. If you run out, you can buy some in town."
     },
     "food": {
       "title": "{emote:foods.{{foodId}}} $t(models:foods.{{foodId}}, {\"context\": \"capitalized\"})",
