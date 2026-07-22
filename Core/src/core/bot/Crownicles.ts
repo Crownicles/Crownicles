@@ -17,9 +17,6 @@ import Player from "../database/game/models/Player";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { PacketUtils } from "../utils/PacketUtils";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
-import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
-import { MapLocationDataController } from "../../data/MapLocation";
 import { Settings } from "../database/game/models/Setting";
 import { PotionDataController } from "../../data/Potion";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
@@ -45,6 +42,7 @@ import { EnergyFullNotificationPacket } from "../../../../Lib/src/packets/notifi
 import { DailyBonusNotificationPacket } from "../../../../Lib/src/packets/notifications/DailyBonusNotificationPacket";
 import { ScheduledDailyBonusNotifications } from "../database/game/models/ScheduledDailyBonusNotification";
 import { processDueExpeditionNotifications } from "./ExpeditionNotifications";
+import { processDueReportNotifications } from "./ReportNotifications";
 import { CrowniclesDaily } from "./cronJobs/CrowniclesDaily";
 import { CrowniclesSunday } from "./cronJobs/CrowniclesSunday";
 import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
@@ -291,15 +289,7 @@ export class Crownicles {
 	static async reportNotifications(): Promise<void> {
 		try {
 			if (PacketUtils.isMqttConnected()) {
-				const notifications = await ScheduledReportNotifications.getNotificationsBeforeDate(new Date());
-				if (notifications.length !== 0) {
-					PacketUtils.sendNotifications(notifications.map(notification => makePacket(ReachDestinationNotificationPacket, {
-						keycloakId: notification.keycloakId,
-						mapType: MapLocationDataController.instance.getById(notification.mapId)!.type,
-						mapId: notification.mapId
-					})));
-					await ScheduledReportNotifications.bulkDelete(notifications);
-				}
+				await processDueReportNotifications();
 			}
 			else {
 				CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
