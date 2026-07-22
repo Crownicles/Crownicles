@@ -16,12 +16,15 @@ import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstant
 import Guild from "../../database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
-import { retryWithBackoff } from "../../../../../Lib/src/utils/RetryUtils";
-import { Millisecond } from "../../../../../Lib/src/types/TimeTypes";
+import { CrowniclesCoreMetrics } from "../CrowniclesCoreMetrics";
+import {
+	msDiff, nowMs
+} from "../../../../../Lib/src/types/TimeTypes";
 
-const ENCHANTER_RELOAD_MAX_ATTEMPTS = 5;
-const ENCHANTER_RELOAD_BASE_DELAY = 1000 as Millisecond;
-const ENCHANTER_RELOAD_MAX_DELAY = 30000 as Millisecond;
+type DailyTask = {
+	name: string;
+	run: () => Promise<void>;
+};
 
 export class CrowniclesDaily {
 	public static async programCronJob(): Promise<void> {
@@ -51,16 +54,65 @@ export class CrowniclesDaily {
 			{ where: {} }
 		);
 
-		CrowniclesDaily.randomPotion()
-			.finally(() => null);
-		CrowniclesDaily.randomLovePointsLoose()
-			.then(petLoveChange => crowniclesInstance?.logsDatabase.logDailyTimeout(petLoveChange)
-				.then());
-		CrowniclesDaily.reloadEnchanter().then();
-		CrowniclesDaily.trainingGroundLoveBonus().then();
-		CrowniclesDaily.pantryAutoFill().then();
-		crowniclesInstance?.logsDatabase.log15BestTopWeek()
-			.then();
+		/*
+		 * Run the daily tasks sequentially and isolated from each other: a burst of
+		 * concurrent DB accesses at reset time used to exhaust the connection pool and
+		 * silently fail some tasks (see enchanter not moving). Sequencing avoids the
+		 * contention, and isolation ensures a failing task never skips the others.
+		 */
+		await CrowniclesDaily.runDailyTasks([
+			{
+				name: "randomPotion",
+				run: (): Promise<void> => CrowniclesDaily.randomPotion()
+			},
+			{
+				name: "randomLovePointsLoose",
+				run: async (): Promise<void> => {
+					const petLoveChange = await CrowniclesDaily.randomLovePointsLoose();
+					await crowniclesInstance?.logsDatabase.logDailyTimeout(petLoveChange);
+				}
+			},
+			{
+				name: "reloadEnchanter",
+				run: (): Promise<void> => CrowniclesDaily.reloadEnchanter()
+			},
+			{
+				name: "trainingGroundLoveBonus",
+				run: (): Promise<void> => CrowniclesDaily.trainingGroundLoveBonus()
+			},
+			{
+				name: "pantryAutoFill",
+				run: (): Promise<void> => CrowniclesDaily.pantryAutoFill()
+			},
+			{
+				name: "log15BestTopWeek",
+				run: async (): Promise<void> => {
+					await crowniclesInstance?.logsDatabase.log15BestTopWeek();
+				}
+			}
+		]);
+	}
+
+	/**
+	 * Run the given daily tasks one after another, isolating failures so that one
+	 * failing task neither blocks the others nor stays invisible.
+	 * @param tasks - The ordered list of daily tasks to run
+	 */
+	private static async runDailyTasks(tasks: DailyTask[]): Promise<void> {
+		for (const task of tasks) {
+			const startTime = nowMs();
+			try {
+				await task.run();
+				CrowniclesLogger.info("Daily task completed", {
+					task: task.name,
+					durationMs: msDiff(nowMs(), startTime)
+				});
+			}
+			catch (error) {
+				CrowniclesCoreMetrics.incrementDailyTaskFailure(task.name);
+				CrowniclesLogger.errorWithObj(`Daily task failed: ${task.name}`, error);
+			}
+		}
 	}
 
 
@@ -106,93 +158,71 @@ export class CrowniclesDaily {
 	 * Reload the enchanter's enchantment and location
 	 */
 	static async reloadEnchanter(): Promise<void> {
-		try {
-			await retryWithBackoff(async () => {
-				const enchantmentId = ItemEnchantment.getRandomEnchantment().id;
-				await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(enchantmentId);
+		const enchantmentId = ItemEnchantment.getRandomEnchantment().id;
+		await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(enchantmentId);
 
-				const cityId = CityDataController.instance.getRandomCity().id;
-				await Settings.ENCHANTER_CITY.setValue(cityId);
+		const cityId = CityDataController.instance.getRandomCity().id;
+		await Settings.ENCHANTER_CITY.setValue(cityId);
 
-				CrowniclesLogger.info("Enchanter reloaded", {
-					enchantmentId,
-					cityId
-				});
-			}, {
-				maxAttempts: ENCHANTER_RELOAD_MAX_ATTEMPTS,
-				baseDelay: ENCHANTER_RELOAD_BASE_DELAY,
-				maxDelay: ENCHANTER_RELOAD_MAX_DELAY,
-				operationName: "Enchanter reload"
-			});
-		}
-		catch (error) {
-			CrowniclesLogger.errorWithObj("Something went wrong when reloading the enchanter after multiple retries", error);
-		}
+		CrowniclesLogger.info("Enchanter reloaded", {
+			enchantmentId,
+			cityId
+		});
 	}
 
 	/**
 	 * Add love points to all pets in guild shelters based on training ground level
 	 */
 	static async trainingGroundLoveBonus(): Promise<void> {
-		try {
-			await Guild.sequelize!.query(
-				`UPDATE pet_entities pe
-				JOIN guild_pets gp ON gp.petEntityId = pe.id
-				JOIN guilds g ON gp.guildId = g.id
-				SET pe.lovePoints = LEAST(pe.lovePoints + g.trainingGroundLevel, ${PetConstants.MAX_LOVE_POINTS})
-				WHERE g.trainingGroundLevel > 0`
-			);
-			CrowniclesLogger.info("Training ground love bonus applied");
-		}
-		catch (error) {
-			CrowniclesLogger.errorWithObj("Training ground love bonus failed", error);
-		}
+		await Guild.sequelize!.query(
+			`UPDATE pet_entities pe
+			JOIN guild_pets gp ON gp.petEntityId = pe.id
+			JOIN guilds g ON gp.guildId = g.id
+			SET pe.lovePoints = LEAST(pe.lovePoints + g.trainingGroundLevel, ${PetConstants.MAX_LOVE_POINTS})
+			WHERE g.trainingGroundLevel > 0`
+		);
+		CrowniclesLogger.info("Training ground love bonus applied");
 	}
 
 	/**
 	 * Auto-fill pantry food for guilds with a pantry building, based on pantry level
 	 */
 	static async pantryAutoFill(): Promise<void> {
-		try {
-			const guilds = await Guild.findAll({
-				where: {
-					pantryLevel: { [Op.gte]: 1 },
-					domainCityId: { [Op.not]: null }
+		const guilds = await Guild.findAll({
+			where: {
+				pantryLevel: { [Op.gte]: 1 },
+				domainCityId: { [Op.not]: null }
+			}
+		});
+
+		const foodFields = PetConstants.PET_FOOD_BY_ID;
+
+		for (const guild of guilds) {
+			const rates = GuildDomainConstants.getAutoFillRates(guild.pantryLevel);
+			let changed = false;
+
+			for (let i = 0; i < foodFields.length; i++) {
+				if (rates[i] <= 0) {
+					continue;
 				}
-			});
+				const foodType = foodFields[i];
 
-			const foodFields = PetConstants.PET_FOOD_BY_ID;
-
-			for (const guild of guilds) {
-				const rates = GuildDomainConstants.getAutoFillRates(guild.pantryLevel);
-				let changed = false;
-
-				for (let i = 0; i < foodFields.length; i++) {
-					if (rates[i] <= 0) {
-						continue;
-					}
-					const foodType = foodFields[i];
-
-					/*
-					 * Skip when the storage is already at cap — adding 0 effective
-					 * food would still trigger a log entry and force a guild save.
-					 */
-					if (guild.getFoodAmount(foodType) >= guild.getFoodCapacityFor(foodType)) {
-						continue;
-					}
-					guild.addFood(foodType, rates[i], NumberChangeReason.GUILD_DAILY);
-					changed = true;
+				/*
+				 * Skip when the storage is already at cap — adding 0 effective
+				 * food would still trigger a log entry and force a guild save.
+				 */
+				if (guild.getFoodAmount(foodType) >= guild.getFoodCapacityFor(foodType)) {
+					continue;
 				}
-
-				if (changed) {
-					await guild.save();
-				}
+				guild.addFood(foodType, rates[i], NumberChangeReason.GUILD_DAILY);
+				changed = true;
 			}
 
-			CrowniclesLogger.info("Pantry auto-fill completed");
+			if (changed) {
+				await guild.save();
+			}
 		}
-		catch (error) {
-			CrowniclesLogger.errorWithObj("Pantry auto-fill failed", error);
-		}
+
+		CrowniclesLogger.info("Pantry auto-fill completed");
 	}
 }
