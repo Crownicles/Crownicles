@@ -16,6 +16,12 @@ import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstant
 import Guild from "../../database/game/models/Guild";
 import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
+import { retryWithBackoff } from "../../../../../Lib/src/utils/RetryUtils";
+import { Millisecond } from "../../../../../Lib/src/types/TimeTypes";
+
+const ENCHANTER_RELOAD_MAX_ATTEMPTS = 5;
+const ENCHANTER_RELOAD_BASE_DELAY = 1000 as Millisecond;
+const ENCHANTER_RELOAD_MAX_DELAY = 30000 as Millisecond;
 
 export class CrowniclesDaily {
 	public static async programCronJob(): Promise<void> {
@@ -101,19 +107,26 @@ export class CrowniclesDaily {
 	 */
 	static async reloadEnchanter(): Promise<void> {
 		try {
-			const enchantmentId = ItemEnchantment.getRandomEnchantment().id;
-			await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(enchantmentId);
+			await retryWithBackoff(async () => {
+				const enchantmentId = ItemEnchantment.getRandomEnchantment().id;
+				await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(enchantmentId);
 
-			const cityId = CityDataController.instance.getRandomCity().id;
-			await Settings.ENCHANTER_CITY.setValue(cityId);
+				const cityId = CityDataController.instance.getRandomCity().id;
+				await Settings.ENCHANTER_CITY.setValue(cityId);
 
-			CrowniclesLogger.info("Enchanter reloaded", {
-				enchantmentId,
-				cityId
+				CrowniclesLogger.info("Enchanter reloaded", {
+					enchantmentId,
+					cityId
+				});
+			}, {
+				maxAttempts: ENCHANTER_RELOAD_MAX_ATTEMPTS,
+				baseDelay: ENCHANTER_RELOAD_BASE_DELAY,
+				maxDelay: ENCHANTER_RELOAD_MAX_DELAY,
+				operationName: "Enchanter reload"
 			});
 		}
 		catch (error) {
-			CrowniclesLogger.errorWithObj("Something went wrong when reloading the enchanter", error);
+			CrowniclesLogger.errorWithObj("Something went wrong when reloading the enchanter after multiple retries", error);
 		}
 	}
 
