@@ -820,7 +820,7 @@
     "travellingDescription": "Everything is going well since your last adventure {{smallEventEmoji}}. Next stop scheduled {{time}}.",
     "travellingDescriptionEndTravel": "Everything is going well for you. You will reach your destination shortly.",
     "travellingDescriptionWithoutSmallEvent": "Everything is going well for you. Next stop scheduled {{time}}.",
-    "travellingTitle": "You are currently making progress!",
+    "travellingTitle": "You are currently traveling!",
     "city": {
       "placeholder": "Choose something to do",
       "title": "{{pseudo}}, you are in town!",
@@ -1543,7 +1543,7 @@
   },
   "vote": {
     "description": "Here is the link to support the bot:\nhttps://top.gg/bot/448110812801007618",
-    "title": ":ballot_box: Vote"
+    "title": "{emote:commands.vote}Vote"
   },
   "map": {
     "title": "{{pseudo}}, here's the map!",
@@ -1592,7 +1592,7 @@
     "noAlterationToHeal": "You have not been affected by any state alteration. {emote:effects.none}",
     "cannotHealOccupied": "You are currently busy. This status condition cannot be cured in the store. {emote:effects.occupied}",
     "success": "{{pseudo}}, transaction successful!",
-    "healAlteration": "{emote:shopItems.healAlteration} Your state changes have been deleted.",
+    "healAlteration": "{emote:shopItems.healAlteration} Your status effects have been removed.",
     "fullRegen": "{emote:shopItems.regen} You are fully healed.",
     "alreadyHaveBadge": "You already have this badge.",
     "badgeBought": "You have received a new badge: {emote:badges.{{badgeName}}}!",
@@ -1600,7 +1600,7 @@
     "genericPurchase_one": "You got **{{count}}x** {{item}}.",
     "genericPurchase_other": "You got **{{count}}x** {{item}}.",
     "notEnoughMoney": "You don't have enough money to buy this item! You are missing `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
-    "boughtTooMuchDailyPotions": "There are no more potions available for sale... Come back tomorrow!",
+    "boughtTooMuchDailyPotions": "There are no more potions of the day available for sale... Come back tomorrow!",
     "noPlantSlotAvailable": "You don't have any free plant slots! Lift one or improve your equipment to the tanner.",
     "noGardenForRemoteHarvestTalisman": "The Herbalist refuses to sell you the Sylvester Heart: this item will only be useful once your garden is unblocked.",
     "boughtTooMuchTokens": "You've reached your token purchase limit for the moment. Please come back later!",
@@ -1626,7 +1626,7 @@
     "itemPriceUnit": "Unit price: `{{price, number}}{emote:unitValues.{{currency}}}`",
     "amountButton": "x{{amount, number}} ({{price, number}}{emote:unitValues.{{currency}}})",
     "shopCategories": {
-      "permanentItem": "Permanent sales",
+      "permanentItem": "Permanent Items",
       "dailyPotion_zero": "Today's potion (Out of stock)",
       "dailyPotion_one": "Today's potion ({{count}} available)",
       "dailyPotion_other": "Today's potion ({{count}} available)",
@@ -1659,15 +1659,15 @@
     "shopItems": {
       "randomItem": {
         "name": "{emote:shopItems.randomItem} Random equipment",
-        "info": "You will receive a random equipment (Weapon / Armour / Item or Potion) among all those available in-game."
+        "info": "You will receive a piece of random equipment (Weapon / Armour / Item or Potion) among all those available in-game."
       },
       "alterationHeal": {
         "name": "{emote:shopItems.healAlteration} Status removal",
-        "info": "Your state changes will be deleted and you will resume your route immediately.",
-        "give": "{emote:shopItems.healAlteration} Your state changes have been deleted."
+        "info": "Your status effects will be removed and you will resume your route immediately.",
+        "give": "{emote:shopItems.healAlteration} Your status effects have been cleared."
       },
       "fullRegen": {
-        "name": "{emote:shopItems.regen} Complete heal",
+        "name": "{emote:shopItems.regen} Full Life Regen",
         "info": "You will be fully healed but your status will stay unchanged.",
         "give": "{emote:shopItems.regen} You are fully healed."
       },
@@ -1783,7 +1783,7 @@
         }
       },
       "dailyPotion": {
-        "info": "You'll get a potion that you can decide whether to keep it or not. If you already have it, it will be thrown away without refund!"
+        "info": "You'll get a potion that you can decide whether to keep. If you already have it, it will be discarded without a refund!"
       },
       "woodCommonBundle": {
         "name": "{emote:shopItems.woodCommonBundle} Firewood",
@@ -1879,7 +1879,7 @@
           ],
           "boostSpeed": [
             "It's built for speed! In combat, it can carry you on its back, increasing your agility on the battlefield tenfold.",
-            "Its reflexes are exceptional. It'll share his incredible alertness with you in battle, making you that much faster.",
+            "His reflexes are exceptional. He'll share his incredible alertness with you in battle, making you faster.",
             "This pet has special glands that secrete an acceleration hormone. By your side, you'll be moving like lightning!"
           ],
           "breakArmor": [
@@ -1925,7 +1925,7 @@
           "helpBreathe": [
             "Its breathing capacity is extraordinary! It can share its oxygen with you during tough battles or underwater.",
             "This specimen has fascinating modified gills. It will help you catch your breath in critical moments.",
-            "Its highly evolved pulmonary system enables it to store oxygen. It'll transfer it to you when you'll run out of breath."
+            "Its highly evolved pulmonary system enables it to store oxygen. It'll transfer it to you when you run out of breath."
           ],
           "horn": [
             "This horn is a formidable natural weapon! Your pet will use it to impale your opponents with impressive force.",
@@ -1949,7 +1949,7 @@
           ],
           "peck": [
             "Your pet's beak is as sharp as a dagger! It will help it harass your opponents with precise, painful blows during a fight.",
-            "The bone structure of its beak is perfectly suited to striking. It will sting your enemies at sensitive points with precision.",
+            "The bone structure of its beak is perfectly suited to striking. It will peck your enemies at sensitive points with precision.",
             "This pet has mastered the art of being annoying with its beak. Your opponents will be weakened by its relentless attacks."
           ],
           "petCharge": [
@@ -2121,7 +2121,7 @@
           ],
           "2": [
             "still seems wild. Take care of your pet and earn its trust!",
-            "seems to be unsettling. If you don't care about your pet, you will never get his love!",
+            "seems not to like you. If you don't care about your pet, you will never get its love!",
             "doesn't seem to be happy. You should try feeding your pet."
           ],
           "3": [
