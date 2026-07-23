@@ -140,7 +140,7 @@
       "risk": "{{riskEmoji}} **Danger: ** {{risk}}",
       "returnTime": "{emote:clocks.1} **Scheduled return:** {{returnTime}}",
       "warning_male": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. He'll return with no loot and a bruised heart...*",
-      "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return lootless and heartbroken...*"
+      "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return with no loot and a bruised heart...*"
     },
     "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} ration",
     "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisions packed: ** {{count, number}} rations",
@@ -267,7 +267,7 @@
       "tokens_one": "{emote:unitValues.token} Token won : **{{count}}** !",
       "tokens_other": "{emote:unitValues.token} Tokens won : **{{count}}** !",
       "item": "{emote:rewards.item} You get random equipment!",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **EXCEPTIONAL DISCOVERY!\nYour pet has discovered an ancient buried artifact: the $t(models:talisman.clone) !\nThis mystical object will enable your companion to assist you in defense and in small events, even when on expedition!",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **EXCEPTIONAL DISCOVERY!**\nYour pet has discovered an ancient buried artifact: the $t(models:talisman.clone) !\nThis mystical object will enable your companion to assist you in defense and in small events, even when on expedition!",
       "badgeEarned": "{emote:badges.expert_expediteur} You have been awarded a badge: **Expert Explorer** !"
     },
     "riskCategories": {
@@ -2167,7 +2167,7 @@
         ]
       },
       "questMasterBadge": {
-        "name": "{emote:badges.mission_completer} \"Mission completer\" badge",
+        "name": "{emote:badges.mission_completer} \"Quest Master\" badge",
         "info": "You will receive the badge within hours following the payment. For more information about badges, use the {command:help} command."
       }
     }
