@@ -142,7 +142,7 @@
       "warning_male": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. He'll return with no loot and a bruised heart...*",
       "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return with no loot and a bruised heart...*"
     },
-    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} ration",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} ration",
     "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisions packed: ** {{count, number}} rations",
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
@@ -202,7 +202,7 @@
         "intro": "The $t(models:talisman.anchor) vibrates intensely in your bag: {{petDisplay}} is back from its expedition to **{{location}}**!"
       },
       "risk": "{{riskEmoji}} Danger: {{risk}}",
-      "impatience_male": "*Your companion can't wait to show you what he's got!*",
+      "impatience_male": "*Your companion can't wait to show you what he's brought back!*",
       "impatience_female": "*Your companion can't wait to show you what she's brought back!*"
     },
     "claimButton": "Discover the loot",
@@ -1528,7 +1528,7 @@
     "buyHealLoading": "Loading...",
     "buyHealConfirmTitle": "{{pseudo}}, confirmation",
     "buyHealConfirmDescription": "Do you want to spend **{{price, number}}** {emote:unitValues.money} to heal your altered state and get back on the road immediately?\n\nYou currently have **{{playerMoney, number}}** {emote:unitValues.money}.",
-    "healSuccessTitle": "{{pseudo}}, healing complete!",
+    "healSuccessTitle": "{{pseudo}}, Care completed!",
     "healSuccessDescription": "{emote:shopItems.healAlteration} You have spent **{{price, number}}** {emote:unitValues.money} to treat yourself.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what's waiting for you.",
     "healNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
@@ -2357,7 +2357,7 @@
         "noProlongation": "[{{currentTurn}}/{{maxTurn}}]"
       },
       "attacker": "{emote:unitValues.attack} | **Attacker: {{pseudo}}**\n",
-      "defender": "\n\n{emote:unitValues.defense} | **Defender: {{pseudo}}**\n",
+      "defender": "\n\n{emote:unitValues.defense} | Defender: {{pseudo}}**\n",
       "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "end": {
@@ -2582,7 +2582,7 @@
     },
     "collectorTitleOneObject": "{{pseudo}}, confirmation:",
     "collectorDescOneObject": "Would you like to drink your potion?\n\n{{object}}",
-    "collectorTitle": "{{pseudo}}, choose your potion!",
+    "collectorTitle": "{{pseudo}}, Choose your potion!",
     "collectorDesc": "Choose a potion to drink from the list below:",
     "collectorRefuseOption": "Cancel",
     "menuPlaceholder": "Select a potion"
