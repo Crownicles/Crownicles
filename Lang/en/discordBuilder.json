@@ -58,7 +58,7 @@
     }
   },
   "petFree": {
-    "description": "Release a pet.",
+    "description": "Free a pet.",
     "name": "petfree"
   },
   "petNick": {
@@ -77,7 +77,7 @@
     "options": {
       "guildName": {
         "description": "The name of the guild.",
-        "name": "name"
+        "name": "description"
       }
     }
   },
@@ -176,7 +176,7 @@
     "name": "respawn"
   },
   "notifications": {
-    "description": "Manage your notifications.",
+    "description": "Manage the bot's notifications.",
     "name": "notifications",
     "options": {
       "toggle": {

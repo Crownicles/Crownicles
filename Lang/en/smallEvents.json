@@ -28,7 +28,7 @@
       "you're having a snack, when suddenly a shadow rushes in and snatches it away. You give chase, but are unable to catch up and give up. This mishap has nevertheless saved you **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey.",
       "you see someone who looks strangely like Gruffo. You run towards him, but he also accelerates, probably out of fear. Once you've caught up with him, you realize that he's not at all the person you thought he was. You have, however, gained **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey.",
       "a bright spot catches your eye. Your curiosity prompts you to run to the source of the light. It's just a copper coin, but it's saved you **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey.",
-      "a massive fawn-colored dog emerges from a large grove. It snarls, flashes sharp canines, and seems intent on biting your legs. Appreciating the idea of staying in one piece, they send you running at full speed, gaining you **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey!",
+      "a massive fawn-colored dog emerges from a large grove. It snarls, flashes sharp canines, and seems intent on biting your legs. Appreciating the idea of staying in one piece, it sends you running at full speed, gaining you **{{timeDisplay}} {emote:unitValues.timeGain}** on your journey!",
       "a large wasp's nest detaches itself from the tree under which you were standing and falls at your feet. You run until your lungs beg you to start walking again. Not a wasp has managed to sting you. This mishap has saved you **{{timeDisplay}} {emote:unitValues.timeGain}** on your itinerary!",
       "you enjoy the pleasant spring weather. Your break is short-lived, however: bandits armed with clubs and chipped swords tear through the bushes to your left, cackling as they quietly advance towards you. Before you even have time to think, your body takes you on a forward flight, so that you gain **{{timeDisplay}} {emote:unitValues.timeGain}** on your route.",
       "a young boy jostles you as he passes you. With a bad feeling in your gut, you check your pockets: your purse is gone! Catching up with him after a frantic race, you recover what is rightfully yours and leave the miscreant in a ditch, having punished him as he deserved. You realize that this event has enabled you to gain **{{timeDisplay}} {emote:unitValues.timeGain}** on your itinerary.",
@@ -1037,7 +1037,7 @@
       "you notice a damaged bag on the road. You open it quickly...",
       "you decide to make a small detour to avoid crossing a river. That's when you discover...",
       "you meet a man with a loaded mule. A few minutes later, you notice that something has fallen from his package. It is now too late to catch him up.",
-      "your vision is focused on a reflection emitted by an item on the ground.",
+      "your gaze is drawn to the reflection of an object on the ground.",
       "you trip on a root. Furious, you strike the latter a big blow... It seems it isn't a root...",
       "you meet a child who does not seem to speak your language. However, it looks welcoming and hands you a package...",
       "you come across a man with a loaded mule. You decide to help him carry his load. As a thanks, he offers you an object..."
@@ -1255,7 +1255,7 @@
         "you find a peasant who needs help repairing his cart. You get the wheel back in place. To thank you, he gives you a defensive item forged by the best smiths of Claire de Ville."
       ],
       "winArmor": [
-        "you meet a merchant, who asks your class. After answering him, he offers you a armor he no longer uses:",
+        "you meet a merchant, who asks your class. After answering him, he offers you a piece of armor he no longer uses:",
         "you see on the roadside a piece of armor and you don't believe your eyes! You wonder how the heck someone can throw out such a beautiful thing and decide to acquire it. It will probably be useful to you!",
         "you find an ancient fort in ruins. Still looking for equipment, you decided to scramble it. After a quick visit, it seems that only the armory is still intact. Inside, within rugged and unusable objects, you find an armor that still seems to be in good condition."
       ]
@@ -1284,7 +1284,7 @@
         "you come across some villagers who remember your prowess as a frail person, and hand you a bag containing rations that you eat before continuing your journey. You win **{{amount, number}} {emote:unitValues.health}**.",
         "A merchant comes up to you and asks what class you are, to which you reply that you are a frail adventurer. Remembering that frail adventurers are people with low hp, he decides to give you some fruit that was no longer viable to sell. Happy, you eat them and earn **{{amount, number}} {emote:unitValues.health}** then set off again.",
         "you are approached by an old woman. She gives you a red apple, telling you it's important to eat well to become strong. You eat it with gratitude before resuming your way. You win **{{amount, number}} {emote:unitValues.health}**.",
-        "you are pushed by a cart. You are called out by its owner, who apologizes and tells he didn't see you because of your puny appearance and offers you some supplies. You restore yourself a bit and resume your journey. You win **{{amount, number}} {emote:unitValues.health}**."
+        "you are pushed by a cart. You are called out by its owner, who apologizes and says he didn't see you because of your puny appearance and offers you some supplies. You restore yourself a bit and resume your journey. You win **{{amount, number}} {emote:unitValues.health}**."
       ]
     }
   },
@@ -1343,7 +1343,7 @@
       "\n\n{emote:other.car} Get on the cart\n{emote:other.walking} Move along"
     ],
     "scamTravelDone": [
-      "After a swift journey, you find yourself in an unknown place. The man looks at you with a sneak smile and moves away with his cart.",
+      "After a surprisingly quick journey, you find yourself in an unknown place. The man looks at you with a smug smile and moves away with his cart.",
       "The hirsute hair man has taken you to a completely different place from your intended destination. Before you have time to react, he quickly disappeared into a cloud of dust.",
       "The trip was passed faster than expected and you find yourself in an unknown place. The man with his mischievous eyes moves away with his cart, leaving you alone and lost.",
       "Soon, you were transported to a familiar place... You quickly realize that this is not the destination that was indicated to you, but it's already too late to respond. The mystery man is already far away..."
@@ -1363,7 +1363,7 @@
     "travelRefused": [
       "After a short second thought, you decide not to take the risk and get away from the cart.",
       "You politely reject the proposal and continue your way.",
-      "Since you do not need such a service at this time, you decided to continue your journey.",
+      "Judging that you do not need such a service at this moment, you decide to continue your journey.",
       "You reject the proposal and continue your path."
     ],
     "notEnoughMoney": [
@@ -1448,7 +1448,7 @@
           "solo": "Despite the pain, you manage to continue on your way whilst hobbling."
         },
         "lose": {
-          "withGuild": "Completely helpless against this wound, your companions treat you as best they can, but the wound becomes infected and the pain, unbearable. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
+          "withGuild": "Completely helpless against this wound, your companions treat you as best they can, but the wound becomes infected and the pain becomes unbearable. You lose **{{amount, number}} {emote:unitValues.lostHealth}**.",
           "solo": "Alone, writhing in pain in the middle of the path, you curse this proud stone and endure the dreadful pain to continue your adventure. You lose **{{amount, number}} {emote:unitValues.lostHealth}**."
         }
       },
@@ -1862,7 +1862,7 @@
       "In this wilderness dominated by the eternal Mount Celestrum, a familiar figure calls out to you. Talvar the Wise, a venerable dwarf whose reputation as a protector of creatures extends throughout the region, raises his benevolent gaze to you under the shadow of the sacred mountain.",
       "The wind blows gently across the plateaus surrounding Mount Celestrum when suddenly, a rocky voice calls out to you. Talvar the Protector emerges from a grove, his worn leather pouch bulging with seeds and remedies for wounded creatures. His wrinkled face lights up as you approach.",
       "As you contemplate the imposing silhouette of Mount Celestrum rising into the heavens, you are roused from your reverie by the sound of footsteps. Talvar the Elder, whose reputation as an animal caretaker extends beyond the borders of these lands, emerges from a fold in the ground, a warm smile lighting up his weathered features.",
-      "In the rolling plain on the outskirts of Mount Celestrum, you make out a stooped figure striding towards you with a slight limp. Talvar le Bienveillant, famous throughout the region for his devotion to animals, greets you with a friendly gesture of his gnarled hand.",
+      "In the rolling plain on the outskirts of Mount Celestrum, you make out a stooped figure striding towards you with a slight limp. Talvar the Benevolent, famous throughout the region for his devotion to animals, greets you with a friendly gesture of his gnarled hand.",
       "The pure mountain air fills your lungs as you make your way through the tutelary shadow of Mount Celestrum. Suddenly, a melodious whistle attracts your attention: Talvar the Wise emerges from a small valley, accompanied by a swarm of multicolored butterflies dancing around his silver beard.",
       "In this blessed land at the foot of Mount Celestrum, your steps lead you to an unexpected encounter. Talvar l'Ami-des-Créatures, whose legends say he can speak to wild animals, stands before you like a benevolent guardian of these mystical lands.",
       "In this peaceful valley dominated by the majesty of Mount Celestrum, you cross paths with an extraordinary being. Talvar le Vénérable, the respected patriarch of the region's breeders and trainers, greets you with the quiet dignity of someone who has devoted his life to understanding the mysteries of the animal world."
@@ -1917,7 +1917,7 @@
       "When **{{pet}}** reveals himself to him, Talvar seems decades younger. His crystalline laughter echoes across the land, an expression of joy so pure it seems to purify the surrounding air. He almost dances on the spot, his old bones regaining a forgotten agility. With overflowing generosity, he offers you {{reward}}, then wanders off, whistling a forgotten melody.",
       "At the sight of **{{pet}}**, Talvar froze, as if struck by divine lightning. His lips murmur ancestral incantations, prayers to the deities who protect animals. His hands trace signs of blessing in the air. In a state of mystical trance, he hands you {{reward}}, then bows briefly to your companion before resuming his journey, transformed by this revelation.",
       "When **{{pet}}** appears, Talvar's eyes mist over with tears of ecstasy. He brings his hands to his heart, as if to contain the emotion that threatens to overwhelm him. His voice breaks into a whisper of admiration. With gestures of infinite tenderness, he introduces you to {{reward}}, then slowly steps back, his eyes riveted on your companion, etching this vision in his memory for all eternity.",
-      "The sudden appearance of **{{pet}}** stopped Talvar in his tracks. His breath caught in his throat, his hands trembled with suppressed emotion. He seems to be contemplating a divine apparition, a miracle of nature incarnate. In a gesture of reverent slowness, he hands you {{reward}}, then bows deeply to your companion. He then backs away, refusing to look away from this living marvel."
+      "The sudden appearance of **{{pet}}** stops Talvar in his tracks. His breath catches in his throat, his hands tremble with suppressed emotion. He seems to be contemplating a divine apparition, a miracle of nature incarnate. In a gesture of reverent slowness, he hands you {{reward}}, then bows deeply to your companion. He then backs away, refusing to look away from this living marvel."
     ],
     "newPetSeen_f": [
       "At the sight of your noble companion **{{pet}}**, the wise old man's eyes blaze with pure joy. A radiant smile lights up his weathered face, and in a burst of gratitude for this moment of grace, he hands you {{reward}}. You continue your journey, blessed by this encounter.",
@@ -2373,7 +2373,7 @@
           "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}** appreciates this peaceful resolution."
         ],
         "success_female": [
-          "You give the dwarf a few legumes, evoking their quality and freshness. Against all expectations, the dwarf, an amateur of soups, accepts your offering with an approving grunt and leaves. **{{pet}}** seems impressed by your instinct.",
+          "You give the dwarf a few legumes, evoking their quality and freshness. Against all expectations, the dwarf, a soup lover, accepts your offering with an approving grunt and leaves. **{{pet}}** seems impressed by your instinct.",
           "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}** appreciates this peaceful resolution."
         ],
         "fail_male": [
@@ -2569,7 +2569,7 @@
       "poison": "replicate plants with glowing leaves and coloured flowers, as well as a water spot, perfect for harvesting toxic substances. You collect the poisoned elements with precision.",
       "explosive": "you will find unstable crystals and explosive plants for harvesting dangerous ships. You handle unstable elements carefully to avoid accidental explosion.",
       "leather": "you stumble on recently slaughtered animal carcasses, offering a precious source of leather and skin. You spread the hides and leather of animal carcasses.",
-      "nature": "you find an area rich in natural elements, with plants, various minerals and organic resources, ideal for the collection of nature caterers. You collect various natural elements in the surrounding area.",
+      "nature": "you find an area rich in natural elements, with plants, various minerals and organic resources, ideal for the collection of natural materials. You collect various natural elements in the surrounding area.",
       "spiritual": "you will find a place full of security, where the atmosphere is peaceful and conducive to your property. You search the surrounding area for items or objects."
     },
     "foundStories": {
@@ -2631,7 +2631,7 @@
       "You discover Velanna kneeling by a stream, tracing ancestral symbols in the damp mud. She looks up at you, surprised by your intrusion, but decides to share a rare secret. She tells you that the most accomplished adventurers have discovered the art of cloning: their pets can exist in two places simultaneously, exploring the world while protecting their master in battle. She briskly erases her drawings and silently walks away.",
       "Velanna emerges from the thicket, her face grave. She approaches you and warns you that pets dream of adventure as soon as an expedition begins. She tells you that canceling preparations or calling the beast back mid-journey breaks this sacred promise. She sticks her finger in your chest and warns you that every betrayal leaves a scar on your companion's heart, and that the wound deepens with every disappointment.",
       "Velanna emerges from behind a mossy rock, a gnawed bone between her teeth, which she casually throws over her shoulder. She approaches you and places a hand on your shoulder. She tells you that one of her clan elders used to change his mind at the last minute, constantly calling his pet back along the way. The beast came to hate him. She warns you that the more frequent the cancellations, the more severe the loss of affection.",
-      "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a pet's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubl"
+      "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a pet's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubles at the second betrayal, triples at the third. The familiars never forget."
     ]
   },
   "petDropToken": {
@@ -2708,7 +2708,7 @@
       "first": [
         "An old man with a dirty apron and with calles hands calls you from a small plot of land on the edge of the path. He likes Théobald, an interesting gardener, and invites you to admire his plants with unconcealed pride. ",
         "you see a kneeling man at the foot of a tree, fingers plunged into the earth. He stands up when he sees you, pushes his knees and greets you warmly. He says he is called Théobald and dedicates his life to the art of gardening. ",
-        "A smell of wet soil and fresh leaves attracts you to a small improvised camp on the edge of the trail. A gardener named Théobald, watering hand and flowered hat on the tee, welcomes you with a big smile. ",
+        "a smell of wet soil and fresh leaves attracts you to a small improvised camp on the edge of the trail. A gardener named Théobald, with a watering can in hand and flowered hat on the head, welcomes you with a big smile. ",
         "You don't have to walk on a seedlings carefully arranged on the edge of the path. An old man springs out of a nearby bush and bursts into laughter as Théobald, may be walking gardener. ",
         "a man with a face burned by the sun signs you from a small garden on the roadside. This man, a certain Théobald, seems to know each plant by his name and insists on sharing his knowledge with travellers. "
       ],
@@ -2759,7 +2759,7 @@
       "advice": {
         "needLevel": [
           "The gardener examines you from tint to feet and shakes the tint. You don't have enough experience for his next seed. Come back when you reach **level {{level}}**, he advises.",
-          "Theobald frowns by evaluating your stature. Nature requires a minimum of maturity to grab this seed, and you will need to reach **level {{level}}**."
+          "Theobald frowns while assessing your stature. Nature requires a minimum of maturity to merit this seed, and you will need to reach **level {{level}}**."
         ],
         "needGarden": [
           "Théobald leans the tone by learning that you do not have a garden. He advises you to invest in a **home with a garden** before coming back.",
@@ -2790,7 +2790,7 @@
           "Theobald tells you that this peculiar seed feeds on meat. Only an **exceptional carnivore familiar** could see its growth."
         ],
         "needLegendaryHerbivorePet": [
-          "Theobald gravitated you that his last seed is the most precious one. He will only entrust it to someone accompanied by a **familiar epic herbivore** with a **maximum trust link**.",
+          "Theobald confides in you with gravity that his last seed is the most precious. He will only entrust it to someone accompanied by an **epic herbivore familiar** with a **maximum trust link**.",
           "The old man whispers that what he keeps is the treasurer of a life. Only an adventurer with an exceptional link to a **epic herbivore familiar** will be able to improve it."
         ],
         "seedSlotFull": [

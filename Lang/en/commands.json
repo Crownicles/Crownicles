@@ -1,7 +1,7 @@
 {
   "badges": {
     "description": "Badges are rare rewards created to recognize those who have most supported the development of Crownicles. The badge list is available in the bot guide.\n(via this link: https://guide.crownicles.com/v/en/notions-avancees/badges)",
-    "title": ":military_medal: Detailed information:"
+    "title": "{emote:commands.badges} Detailed information :"
   },
   "pet": {
     "embedTitle": "{{pseudo}}'s pet:",
@@ -140,9 +140,9 @@
       "risk": "{{riskEmoji}} **Danger: ** {{risk}}",
       "returnTime": "{emote:clocks.1} **Scheduled return:** {{returnTime}}",
       "warning_male": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. He'll return with no loot and a bruised heart...*",
-      "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return lootless and heartbroken...*"
+      "warning_female": "{emote:collectors.warning} *Calling your pet back prematurely will break the bond of trust. She'll return with no loot and a bruised heart...*"
     },
-    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions: ** {{count, number}} ration",
+    "inProgressFoodInfo_one": "\n{emote:expedition.food} **Packed provisions:** {{count, number}} ration",
     "inProgressFoodInfo_other": "\n{emote:expedition.food} **Provisions packed: ** {{count, number}} rations",
     "recallButton": "Call back",
     "closeButton": "Continue exploring",
@@ -202,7 +202,7 @@
         "intro": "The $t(models:talisman.anchor) vibrates intensely in your bag: {{petDisplay}} is back from its expedition to **{{location}}**!"
       },
       "risk": "{{riskEmoji}} Danger: {{risk}}",
-      "impatience_male": "*Your companion can't wait to show you what he's got!*",
+      "impatience_male": "*Your companion can't wait to show you what he's brought back!*",
       "impatience_female": "*Your companion can't wait to show you what she's brought back!*"
     },
     "claimButton": "Discover the loot",
@@ -267,7 +267,7 @@
       "tokens_one": "{emote:unitValues.token} Token won : **{{count}}** !",
       "tokens_other": "{emote:unitValues.token} Tokens won : **{{count}}** !",
       "item": "{emote:rewards.item} You get random equipment!",
-      "cloneTalisman": "{emote:expedition.cloneTalisman} **EXCEPTIONAL DISCOVERY!\nYour pet has discovered an ancient buried artifact: the $t(models:talisman.clone) !\nThis mystical object will enable your companion to assist you in defense and in small events, even when on expedition!",
+      "cloneTalisman": "{emote:expedition.cloneTalisman} **EXCEPTIONAL DISCOVERY!**\nYour pet has discovered an ancient buried artifact: the $t(models:talisman.clone) !\nThis mystical object will enable your companion to assist you in defense and in small events, even when on expedition!",
       "badgeEarned": "{emote:badges.expert_expediteur} You have been awarded a badge: **Expert Explorer** !"
     },
     "riskCategories": {
@@ -546,13 +546,13 @@
         "description": "Check if the bot is online.\n\n(Note: Time displayed is the response time from the bot, not your ping, a correct ping should be less than 500 ms. {emote:clocks.1})"
       },
       "PROFILE": {
-        "description": "Displays information about your character:\n\n{emote:effects.none} Health status | Nickname | Level\n\n឵឵឵Information :\n{emote:unitValues.health} Life | {emote:unitValues.xp} XP | {emote:unitValues.money} Money\n\nStatistics:\n{emote:unitValues.energy} Energy | {emote:unitValues.attack} Attack | {emote:unitValues.defense} Defense | {emote:unitValues.speed} Speed | {emote:unitValues.breath} Breath | {emote:unitValues.breathRegen} Recovery\n\nMissions:\n{emote:unitValues.gem} Gems | {emote:missions.campaign} Campaign progress in %\n\nRank and score :\n{emote:top.congrats} Rank | {emote:unitValues.score} Score\n\nClass:\nSee {command:classes}\n\nGlory and League:\n{emote:unitValues.glory} Glory | See {command:top glory}\n\nGuild:\n{emote:other.guild} Guild\n\nDestination:\nSee {command:map}\n\nFamiliar:\nSee {command:pet}\n\n{emote:other.advice}-Badges are displayed on your profile as reactions."
+        "description": "Displays information about your character:\n\n{emote:effects.none} Health status | Nickname | Level\n\n឵឵឵Information :\n{emote:unitValues.health} Life | {emote:unitValues.xp} XP | {emote:unitValues.money} Money\n\nStatistics:\n{emote:unitValues.energy} Energy | {emote:unitValues.attack} Attack | {emote:unitValues.defense} Defense | {emote:unitValues.speed} Speed | {emote:unitValues.breath} Breath | {emote:unitValues.breathRegen} Recovery\n\nMissions:\n{emote:unitValues.gem} Gems | {emote:missions.campaign} Campaign progress in %\n\nRank and score:\n{emote:top.congrats} Rank | {emote:unitValues.score} Score\n\nClass:\nSee {command:classes}\n\nGlory and League:\n{emote:unitValues.glory} Glory | See {command:top glory}\n\nGuild:\n{emote:other.guild} Guild\n\nDestination:\nSee {command:map}\n\nFamiliar:\nSee {command:pet}\n\n{emote:other.advice}-Badges are displayed on your profile as reactions."
       },
       "RARITY": {
         "description": "Allows you to see the probability of getting an item by its rarity."
       },
       "REPORT": {
-        "description": "Lets you obtain the resources and intel your character got during your absence.\nFrom time to time, events will be triggered and will necessitate special actions or choices."
+        "description": "Lets you collect the information and resources gathered by your character during your absence. From time to time, events will be triggered and will require special actions."
       },
       "RESPAWN": {
         "description": "Lets you restart playing after you've been knocked out."
@@ -660,7 +660,7 @@
     "title": "{emote:commands.language} Language selection"
   },
   "materialLoot": {
-    "title": "{emote:inventory.materials} Workstations started:",
+    "title": "{emote:inventory.materials} Materials collected:",
     "line": "• {emote:materials.{{materialId}}} $t(models:materials.{{materialId}}) x**{{quantity}}**"
   },
   "ping": {
@@ -677,7 +677,7 @@
     },
     "badges": {
       "tournament_winner": "Tournament winner",
-      "technical_team": "Member of the technical team",
+      "technical_team": "Technical team",
       "first_20_members": "One of the first 20 members of the bot's server",
       "top_glory": "Person who has won the most glory during a fighting season",
       "support": "Person who has the Support role on the bot's server",
@@ -694,7 +694,7 @@
       "mission_completer": "Badge purchased in the missions shop",
       "powerful_guild": "Member of a powerful guild",
       "legendary_pet": "Player who has successfully trained a powerful pet",
-      "donor": "Donator",
+      "donor": "Donor",
       "early_class_adopter": "Early class adopter",
       "good_bug_reporter": "Person who reported an exploitable bug without taking advantage of it",
       "redactor": "Bot's writer",
@@ -746,7 +746,7 @@
     },
     "cooking": {
       "fieldName": "Kitchen:",
-      "fieldValue": "{emote:city.homeUpgrades.cooking} Level {{level}} — {{grade}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number} } }"
+      "fieldValue": "{emote:city.homeUpgrades.cooking} Level {{level}} — {{grade}} | {emote:unitValues.xp} {{experience, number}} / {{experienceNeededToLevelUp, number}}"
     },
     "playerClass": {
       "fieldName": "Class:",
@@ -777,11 +777,11 @@
   },
   "report": {
     "adviceTitle": "Advice:",
-    "chooseDestinationIndications": "Choose the destination of your travel:",
+    "chooseDestinationIndications": "Choose a destination for your journey:",
     "choseMapMinutes_one": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
     "choseMapMinutes_other": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
-    "choseMap_one": "You chose to go in the direction {{mapPrefix}} {{mapEmote}} **{{mapName}}** {{mapType}}. You'll travel for about **{{time}} hour**.",
-    "choseMap_other": "You chose to go in the direction {{mapPrefix}} {{mapEmote}} **{{mapName}}** {{mapType}}. You'll travel for about **{{time}} hours**.",
+    "choseMap_one": "You chose to go in the direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. You'll travel for about **{{time}} hour**.",
+    "choseMap_other": "You chose to go in the direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. You'll travel for about **{{time}} hours**.",
     "collectedPointsTitle": "Collected points:",
     "commandDescription": "Get a report on your character's situation.",
     "commandName": "report",
@@ -808,7 +808,7 @@
     "monsterRewardsDescription": "{emote:unitValues.money} Money earned: **{{money, number}}**\n{emote:unitValues.xp} XP earned: **{{experience, number}}**",
     "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Guild points earned: **{{guildPoints, number}}**",
     "monsterRewardsTitle": "{{pseudo}}, fight rewards",
-    "newBigEvent": "{emote:languages.en} You arrived at **{{destination}}**!",
+    "newBigEvent": "{emote:languages.fr} You arrived at **{{destination}}**!",
     "noFight": "{emote:commands.report} **{{pseudo}}'s log:** {emote:pveFights.waitABit} | You make a quick getaway and find a little hiding place! The monster is waiting patiently outside...",
     "points": ":** {emote:unitValues.score} Points earned: **{{score, number}}",
     "pveEvent": "{emote:commands.report} **{{pseudo}}'s log:** {{event}}\n\n{{monsterDisplay}}\n\n{emote:pveFights.startFight} Start the battle\n{emote:pveFights.waitABit} Wait a while before starting the battle\n\n*- Use the buttons to select an action*",
@@ -820,7 +820,7 @@
     "travellingDescription": "Everything is going well since your last adventure {{smallEventEmoji}}. Next stop scheduled {{time}}.",
     "travellingDescriptionEndTravel": "Everything is going well for you. You will reach your destination shortly.",
     "travellingDescriptionWithoutSmallEvent": "Everything is going well for you. Next stop scheduled {{time}}.",
-    "travellingTitle": "You are currently making progress!",
+    "travellingTitle": "You are currently traveling!",
     "city": {
       "placeholder": "Choose something to do",
       "title": "{{pseudo}}, you are in town!",
@@ -841,7 +841,7 @@
         "enterForge": "Enter the forge",
         "talkToEnchanter": "Talk to him",
         "browseShop": "Review the state",
-        "sitDown": "Attach",
+        "sitDown": "Take a seat",
         "visitDomain": "Visit domain",
         "seeGuildNotary": "View Notary",
         "visitFoodShop": "Supplies",
@@ -913,7 +913,7 @@
         },
         "missionManager": {
           "label": "Queen's Mayor",
-          "description": "A rudimentary glance that requires heavy logs connected to leather. He knows each queen in progress in the realm and can offer you to trade one that escapes you against another more to your taste."
+          "description": "A scholar with a piercing gaze leafing through heavy leather-bound ledgers. He knows every quest in progress in the realm and can offer to trade one that eludes you for another more to your taste."
         }
       },
       "inns": {
@@ -926,7 +926,7 @@
           "royalPavilion": "Royal Pavilion"
         },
         "stories": {
-          "lordInn": "{emote:city.inn} You enter the Lord's Inn. Here, everything is luxurious, from furniture to drinks. Here you can find renowned adventurers and noblemen with strong sensations. You have already heard that the King had stayed there during his travels.",
+          "lordInn": "{emote:city.inn} You enter the Lord's Inn. Here, everything is luxurious, from the furniture to the drinks. You can find renowned adventurers and nobles seeking thrills here. You have even heard that the King stayed there during his travels.",
           "bravesStop": "{emote:city.inn} Who hasn't heard of the Halte des Braves? It's the oldest and most famous inn in the region. You walk into a crowded room, filled with laughter and singing. The walls are covered with hunting trophies and antique weapons. It’s the perfect place to meet other adventurers.",
           "hotSwallow": "{emote:city. n} You enter the Bruce Gorge, a small village inn where you can refresh yourself, contrary to what his name suggests. Its designation comes from the star drink of the establishment, a spicy beverage that heats the heart and the air. The walls are coated with memories of past travelers, and the atmosphere is warm.",
           "fireside": "{emote:city.inn} You enter the Inn At Fire Corner, a place where adventurers gather to share stories about a burning fire. The smell of grilled fish floats in the air, in conjunction with the laughter and songs of customers. The decoration is simple but reminiscent of the life of sailors and fishermen.",
@@ -983,7 +983,7 @@
         "mealDescription": "Energy + {{energy}} {emote:unitValues.energy} | Price: {{price}} {emote:unitValues.money}",
         "embedTitle": "{{pseudo}}, you are at the hostel!",
         "eatMealTitle": "{{pseudo}}, you are eating at the hostel!",
-        "eatMealDescription": "{emote:city.inn} You eat the dish that served you with a call! This makes you **{{energy}}** {emote:unitValues. nergy}. Don't forget to pay **{{price}}** {emote:unitValues.lostMoney}.",
+        "eatMealDescription": "{emote:city.inn} You eat the dish that served you with a call! This makes you **{{energy}}** {emote:unitValues.energy}. Don't forget to pay **{{price}}** {emote:unitValues.lostMoney}.",
         "eatMealCooldown": "You are still digging the last meal you have taken at the hostel and you are not really hungry at the moment. You can eat <t:{{nextAvailableAt}}:R> again."
       },
       "enchanter": {
@@ -1012,7 +1012,7 @@
         },
         "hasAtLeastOneEnchantedItem": "Plus, when you see your enchanted equipment, Mernil frowns. He says it is the work of the smiths to enchant the objects, not his own, and that he will not touch them.",
         "confirmDescription": "{emote:collectors.warning} This validation will apply the enchantment {emote:enchantmentTypes.{{enchantmentType}}}**$t(items:enchantments.{{enchantmentId}})** on the following equipment:\n{{item}}\n\nCough: **{{price}}**.\n{{balance}}",
-        "acceptStory": "He immediately takes your equipment and whispers some incantations while waving a rune above... After a few moments, it returns the item telling you it's done! Your equipment is now enchanted with {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Make good use of it!",
+        "acceptStory": "He immediately takes your equipment and whispers some incantations while waving a rune above... After a few moments, he returns the item telling you it's done! Your equipment is now enchanted with {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Make good use of it!",
         "acceptTitle": "{{pseudo}}, enchantment succeeded!",
         "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
         "priceMoneyAndGems": "{{money}} {emote:unitValues.money} and {{gems}} {emote:unitValues.gem}",
@@ -1052,7 +1052,7 @@
         "itemDisenchantPreview": "{emote:enchantmentTypes.{{enchantmentType}}} $t(items:enchantments.{{enchantmentId}}) | {{cost, number}}{emote:unitValues.money}",
         "disenchantTitle": "{{pseudo}}, Equipment enchantment",
         "disenchantSelectDescription": "{emote:city.blacksmith.disenchant} The blacksmith prepares its enchantment tools, a series of absorbent tweezers and crystals. The enchantment requires the precision.\n\n{emote:unitValues.money} You have **{{money, number}}** {emote:unitValues.money}",
-        "disenchantItemDetails": "{{itemDisplay}}\n\n**Enchantment cuts:** {{cost, number}} {emote:unitValues.money}\n\nThe enchantment will be permanently removed. The enchantment will become regular again, but will remain intact.",
+        "disenchantItemDetails": "{{itemDisplay}}\n\n**Disenchantment cost:** {{cost, number}} {emote:unitValues.money}\n\nThe enchantment will be permanently removed. The equipment will become regular again, but will remain intact.",
         "confirmDisenchant": "Disenchant ({{cost, number}})",
         "upgradeSuccess": "{emote:city.blacksmith.upgrade} The blacksmith hits the anvil accurately, sparks fly into the air. After a few expert hits, he hands you the improved equipment to level {{newLevel}} with satisfaction.",
         "upgradeSuccessWithBuy": "{emote:city.blacksmith.upgrade} The blacksmith provides you with the missing sailors and gets started to work. Sparkles fly while it reinforces your equipment, sorted to {{newLevel}} level.",
@@ -1119,7 +1119,7 @@
           "show": "View the rankings",
           "resultTitle": "Ranking of {{boss}}",
           "classHeader": "**Class:** {{class}}",
-          "entry": "{{badge}} **{{pseudo}}** | Level **{{level}}** | **{{turns}}** tours",
+          "entry": "{{badge}} **{{pseudo}}** | Level **{{level}}** | **{{turns}}** turns",
           "empty": "No victories have been recorded yet for this creature in this class.",
           "changeSelection": "Change selection"
         }
@@ -1145,15 +1145,15 @@
         "manageHomeDescriptionUnavailable": "The notary has nothing to offer to you at the moment.",
         "notaryTitle": "{{pseudo}}, you meet the notary",
         "notaryIntroduction": "{emote:city.manageHome} You enter a notary's office, a person who manages immobile transactions. He warmly welcomes you and examines your case before offering you his services.",
-        "notaryNewHomeNoMoney": "After careful analysis of your situation, the notary informs you that you don't have enough money to buy a house. Indeed, a new home costs **{{cost}} {emote:unitValues. oney}** and you are therefore missing **{{missingMoney}} {emote:unitValues.money}** to be able to grab one. It explains the different options available and encourages you to come back when you have saved sufficiently.",
-        "notaryNewHomeEnoughMoney": "Having conscientiously analysed your situation the notary informs you that you have enough money to buy a house that costs today **{{cost}} {emote:unitValues. oney}**. It gives you time to reflect on your decision and is waiting for your answer.\n\nWould you like to buy a house?",
+        "notaryNewHomeNoMoney": "After careful analysis of your situation, the notary informs you that you don't have enough money to buy a house. Indeed, a new home costs **{{cost}} {emote:unitValues.money}** and you are therefore missing **{{missingMoney}} {emote:unitValues.money}** to be able to purchase one. It explains the different options available and encourages you to come back when you have saved sufficiently.",
+        "notaryNewHomeEnoughMoney": "Having conscientiously analysed your situation the notary informs you that you have enough money to buy a house that costs today **{{cost}} {emote:unitValues. money}**. It gives you time to reflect on your decision and is waiting for your answer.\n\nWould you like to buy a house?",
         "notaryConfirmBuyHome": "{emote:collectors.warning} This validation will buy a home in this city for **{{cost}} {emote:unitValues.money}**.",
-        "notaryUpgradeHomeNoMoney": "After careful analysis of your situation, the notary informs you that you do not have enough money to improve your home. Indeed, an improvement cut **{{cost}} {emote:unitValues. oney}** and you are therefore missing **{{missingMoney}} {emote:unitValues.money}** to proceed with the upgrade. It explains the different options available and encourages you to come back when you have saved sufficiently.",
-        "notaryUpgradeHomeEnoughMoney": "After careful analysis of your situation, the notary informs you that you have enough money to improve your home. This enhancement will result in **{{cost}} {emote:unitValues. oney}** and will make the following changes:\n{{upgradeChanges}}\nIt lets you reflect your decision and waits for your answer.\n\nWould you like to improve your home?",
+        "notaryUpgradeHomeNoMoney": "After careful analysis of your situation, the notary informs you that you do not have enough money to improve your home. Indeed, an improvement cut **{{cost}} {emote:unitValues.money}** and you are therefore missing **{{missingMoney}} {emote:unitValues.money}** to proceed with the upgrade. It explains the different options available and encourages you to come back when you have saved sufficiently.",
+        "notaryUpgradeHomeEnoughMoney": "After careful analysis of your situation, the notary informs you that you have enough money to improve your home. This enhancement will result in **{{cost}} {emote:unitValues.money}** and will make the following changes:\n{{upgradeChanges}}\nIt lets you reflect your decision and waits for your answer.\n\nWould you like to improve your home?",
         "notaryConfirmUpgradeHome": "{emote:collectors.warning} This validation will improve your home for **{{cost}} {emote:unitValues.money}**.\n\nPlanned changes:\n{{upgradeChanges}}",
-        "notaryMoveHomeNoMoney": "After careful analysis of your situation, the notary informs you that you do not have enough money to move into a new home in this city. Indeed, a modeling cut **{{cost}} {emote:unitValues. oney}** and you are therefore missing **{{missingMoney}} {emote:unitValues.money}** to proceed with the transfer. It explains the different options available and encourages you to come back when you have saved sufficiently.",
-        "notaryMoveHomeEnoughMoney": "Having conscientiously analysed your situation the notary informs you that you have enough money to move to a new home in this city for **{{cost}} {emote:unitValues. oney}**. This will be the same as your old home. It informs you that you can only have **one house at a time** and that your old home will be automatically sold. It allows you time to reflect on your decision and is waiting for your answer.\n\nWould you like to work in a new home?",
-        "notaryConfirmMoveHome": "{emote:collectors.warning} This validation will take your home to this city for **{{cost}} {emote:unitValues. oney}**. Your old home will be automatically sold, as only one home can be owned at a time.",
+        "notaryMoveHomeNoMoney": "After careful analysis of your situation, the notary informs you that you do not have enough money to move into a new home in this city. Indeed, a modeling cut **{{cost}} {emote:unitValues.money}** and you are therefore missing **{{missingMoney}} {emote:unitValues.money}** to proceed with the transfer. It explains the different options available and encourages you to come back when you have saved sufficiently.",
+        "notaryMoveHomeEnoughMoney": "Having conscientiously analysed your situation the notary informs you that you have enough money to move to a new home in this city for **{{cost}} {emote:unitValues. money}**. This will be the same as your old home. It informs you that you can only have **one house at a time** and that your old home will be automatically sold. It allows you time to reflect on your decision and is waiting for your answer.\n\nWould you like to work in a new home?",
+        "notaryConfirmMoveHome": "{emote:collectors.warning} This validation will take your home to this city for **{{cost}} {emote:unitValues.money}**. Your old home will be automatically sold, as only one home can be owned at a time.",
         "notaryLevelRequired": "After careful analysis of your situation, the notary informs you that unfortunately nothing can be done for you at the moment. Indeed, to proceed to the next improvement of your home, you need to reach **level {{level}}**. He encourages you to continue your adventures and return to see him when you win in expedition .",
         "notaryMaxLevel": "After careful analysis of your situation, the notary gives you a warm welcome. Your house is already **maximum level** and cannot be improved. He ensures that you have the most beautiful residence and wishes you to enjoy it to the full.",
         "buyHome": "Buy a home",
@@ -1161,11 +1161,11 @@
         "buyHomeDescription": "Congratulations! You are the owner of your own home in this city. You spent **{{cost}} {emote:unitValues.money}** to get it. Enjoy your new home!",
         "upgradeHome": "Upgrade your home",
         "upgradeHomeTitle": "{{pseudo}}, house improvement succeeded!",
-        "upgradeHomeDescription": "Congratulations! Your home has been successfully improved. You spent **{{cost}} {emote:unitValues. oney}** for this upgrade. Enjoy the new features and extra comfort of your improved home!",
+        "upgradeHomeDescription": "Congratulations! Your home has been successfully improved. You spent **{{cost}} {emote:unitValues. money}** for this upgrade. Enjoy the new features and extra comfort of your improved home!",
         "moveHome": "Stay in a new home",
         "moveHomeTitle": "{{pseudo}}succeeded!",
         "moveHomeDescription": "Congratulations! You have successfully completed a new home in this city. You spent **{{cost}} {emote:unitValues.money}** for this transfer. Enjoy your new home!",
-        "moveHomeDescriptionWithRent": "Congratulations! You have successfully completed a new home in this city. You spent **{{cost}} {emote:unitValues. oney}** for this transfer, of which **{{rentDeducted}} {emote:unitValues.money}** is due to the rent from your old home. Enjoy your new home!",
+        "moveHomeDescriptionWithRent": "Congratulations! You have successfully completed a new home in this city. You spent **{{cost}} {emote:unitValues.money}** for this transfer, of which **{{rentDeducted}} {emote:unitValues.money}** is due to the rent from your old home. Enjoy your new home!",
         "apartmentNotary": {
           "sectionTitle": "{emote:city.apartmentNotary.menu} The notary leaflets his large log of accommodation.",
           "forSaleDescription": "{emote:city.apartmentNotary.buy} A stay in this city for **{{price}} {emote:unitValues.money}**. Once in your possession, it will serve as a point of attachment if your home is far away or you will be able to receive an annuity if you already have a nearby residence.",
@@ -1182,12 +1182,12 @@
           "buyRequiresHome": "The notary politely explains to you that a house is only designed for people who already have an official residence. Purchase a home first before coming back to $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)**.",
           "claimTitle": "{{pseudo}}, rent pierced u!",
           "claimDescription": "The notary gives you **{{rent}} {emote:unitValues.money}** of rent for your $thome (models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)**.",
-          "claimTooLow": "The rent accumulated from your $thome (models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}. ame)** only takes **{{current}} {emote:unitValues.money}** — it needs at least **{{min}} {emote:unitValues.money}** before you can remove it."
+          "claimTooLow": "The rent accumulated from your $t(models:map_locations.{{mapLocationId}}.inParticle) **$t(models:map_locations.{{mapLocationId}}.name)** only takes **{{current}} {emote:unitValues.money}** — it needs at least **{{min}} {emote:unitValues.money}** before you can remove it."
         },
         "upgradeItemTitle": "{{pseudo}}, Equipment Improvement Successful!",
-        "upgradeItemDescription": "Your equipment has been upgraded to **Level {{newLevel}}**! Required sailors have been consumed.",
+        "upgradeItemDescription": "Your equipment has been upgraded to **Level {{newLevel}}**! The required materials have been consumed.",
         "upgradeItemMissingMaterialsTitle": "{{pseudo}}, not enough sailors!",
-        "upgradeItemMissingMaterialsDescription": "You do not have the necessary sailors to upgrade this equipment. Raise them on your adventures and come back later!",
+        "upgradeItemMissingMaterialsDescription": "You do not have the necessary materials to upgrade this equipment. Collect them during your adventures and come back later!",
         "upgradeItemMaxLevelTitle": "{{pseudo}}, maximum level reached!",
         "upgradeItemMaxLevelDescription": "This equipment can no longer be improved at home. Go to a blacksmith for further improvements!",
         "notEnoughMoney": "You don't have enough money for this transaction!",
@@ -1208,7 +1208,7 @@
           "descriptionNoItems": "{emote:city.homeUpgrades.upgradeEquipment} You stand in front of your workbench, but none of your equipment can be improved here at the moment. Your home has an {{stationQuality}} facility to work up to the rarity $t(items:rarities.{{maxRarity}}). {{levelLimitation}}",
           "stationQualityBasic": "rudimentary",
           "stationQualityAdvanced": "of quality",
-          "stationQualityMaster": "Mayor craftsman",
+          "stationQualityMaster": "master craftsman",
           "levelLimitationBasic": "Your amateur blacksmith skills limit you to level {{maxLevel}}improvements, beyond that, you will need to consult a true blacksmith.",
           "levelLimitationAdvanced": "Your master tools allows you to reach {{maxLevel}}level, but further enhancements require the expertise of a professional blacksmith.",
           "placeholder": "Select a equipment"
@@ -1221,7 +1221,7 @@
           "restTitle": "{{pseudo}}, you are resting!",
           "restDescription": "{emote:city.homeUpgrades.bed} You lie down in your bed and close your eyes for a few moments. This little rest makes you look great! You start **{{health}}** {emote:unitValues.health}.",
           "alreadyFull": "You are in full shape! Your bed will only be useful when you need to rest.",
-          "cooldown": "You already benefited from a bed today and don't really sleep at the moment. Get back to rest <t:{{nextAvailableAt}}:R>."
+          "cooldown": "You have already used a bed today and aren't really sleepy at the moment. Come back to rest <t:{{nextAvailableAt}}:R>."
         },
         "chest": {
           "menuLabel": "Storage Chest",
@@ -1240,7 +1240,7 @@
           "withdrawSection": "{emote:city.chestActions.withdraw} **Remove from chest:**",
           "chestFull": "Full chest for this category",
           "inventoryFullLabel": "Inventory full",
-          "swapSection": "{emote:city.chestActions.swap} **Switch to the chest:**",
+          "swapSection": "{emote:city.chestActions.swap} **Swap with the chest:**",
           "swapHeader": "{emote:city.chestActions.swap} **Redeem** {{item}} **with:**",
           "errors": {
             "chestFull": "Your chest is full for this matter! Upgrade your home to get more slots.",
@@ -1268,7 +1268,7 @@
           "plantButton": "Plant",
           "waterButton": "Water",
           "waterCooldown": "{emote:city.gardenStatus.water} You can water **{{timeLeft}}** again.",
-          "waterCooldownError": "{emote:messages.refuse} You already watered properly. Try **{{timeLeft}}**.",
+          "waterCooldownError": "{emote:messages.refuse} You already watered recently. Try again in **{{timeLeft}}**.",
           "waterNothingToWater": "{emote:messages.info} No plant is growing to water.",
           "wateredPlots_one": "{{count}} tile",
           "wateredPlots_other": "{{count}} tiles",
@@ -1281,7 +1281,7 @@
           "storageEmpty": "Your plant pool is empty. Collect your plants to store them here.",
           "storageEntry": "{emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) — {{quantity}}/{{maxCapacity}}",
           "backToGarden": "Back to garden",
-          "putAwayTalisman": "Ranger Sylvester Heart",
+          "putAwayTalisman": "Put away the Sylvan Heart",
           "closeGarden": "Leave Garden",
           "compostTitle": "\n\n{emote:city.gardenStatus.compost} **Compost:**",
           "compostLine": "• {emote:plants.{{plantId}}} $t(models:plants.{{plantId}}) -> {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})",
@@ -1343,8 +1343,8 @@
           "petFoodStored": "{emote:messages.validate} **{{quantity}} {{food}}** has been added to your guild storage.",
           "recipeDiscovered": "{emote:city.homeUpgrades.cooking} You have learned a new recipe: **{{recipe}}**!",
           "recipesDiscovered": "{emote:city.homeUpgrades.cooking} You have learned new recipes: {{recipes}}!",
-          "petFedFromSurplus": "{emote:messages.validate} Your pet ate ate a ration of **{{food}}** directly out of the furnace!",
-          "surplusRecycled": "{emote:messages.info} The food exceeding has been recycled in **{{quantity}} {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})**.",
+          "petFedFromSurplus": "{emote:messages.validate} Your pet ate a ration of **{{food}}** directly out of the furnace!",
+          "surplusRecycled": "{emote:messages.info} The surplus food has been recycled into **{{quantity}} {emote:materials.{{materialId}}} $t(models:materials.{{materialId}})**.",
           "materialCrafted": "{emote:messages.validate} You got **{{quantity}} {emote:materials.{{materialId}}} $t(templates:materials.{{materialId}})**!",
           "woodConsumed": "{emote:materials.{{woodId}}} $t(models:materials.{{woodId}}) Consumes",
           "woodSaved": "{emote:messages.validate} Your expertise has saved you wood! ({emote:materials.{{woodId}}} $t(models:materials.{{woodId}}))",
@@ -1379,7 +1379,7 @@
         "buildingUpgradeBlocked": " — {emote:collectors.warning} Guild lvl. **{{required}}** required",
         "buildingUpgradeTreasuryLow": " — {emote:unitValues.money} Insufficient Treasurer",
         "buildingMaxLevel": "{emote:collectors.accept} Max level reached",
-        "foodInfo": "{emote:expedition.food} **Food Reserve**:\n{emote:foods.commonFood} Common : {{common}}/{{commonCap}}\n{emote:foods. arnivorousFood} Carnivore : {{carnivorous}}/{{carnivorousCap}}\n{emote:foods. erbivorousFood} Herbivore: {{herbivorous}}/{{herbivorousCap}}\n{emote:foods.ultimateFood} Last time: {{ultimate}}/{{ultimateCap}}",
+        "foodInfo": "{emote:expedition.food} **Food Reserve**:\n{emote:foods.commonFood} Common : {{common}}/{{commonCap}}\n{emote:foods.carnivorousFood} Carnivore : {{carnivorous}}/{{carnivorousCap}}\n{emote:foods.herbivorousFood} Herbivore: {{herbivorous}}/{{herbivorousCap}}\n{emote:foods.ultimateFood} Last time: {{ultimate}}/{{ultimateCap}}",
         "upgradeBuilding": {
           "shop": "{emote:city.guildDomain.shop} Lv.{{level}} Store ({{cost}} {emote:unitValues.money})",
           "shelter": "{emote:city.guildDomain.shelter} Shelter Lv.{{level}} ({{cost}} {emote:unitValues.money})",
@@ -1399,7 +1399,7 @@
         "notaryPurchaseDescription": "{emote:city.guildDomainNotary} The notary carefully reviews your guild records and nods it with satisfaction. It informs you that the city currently offers the free installation of guild domains to encourage development of the area. It leaves you the time to reflect and awaits your decision.",
         "notaryRelocateDescription": "{emote:city.guildDomainNotary} The notary carefully examines your guild's records and reviews the treasury's finances. After thoroughly analyzing your situation, he informs you that relocating the domain to this city will cost **{{cost}} {emote:unitValues.money}** from the guild treasury. He gives you time to consider your decision.\n\nCurrent Treasury: **{{treasury}} {emote:unitValues.money}**",
         "notaryConfirmPurchaseDescription": "{emote:collectors.warning} This validation will install the guild domain in this city. The installation is free of charge for this operation.",
-        "notaryConfirmRelocateDescription": "{emote:collectors.warning} This validation will move the guild domain to this city and prefer **{{cost}} {emote:unitValues. oney}** from Treasure.\n\nCurrent Treasure: **{{treasury}} {emote:unitValues.money}**",
+        "notaryConfirmRelocateDescription": "{emote:collectors.warning} This validation will move the guild domain to this city and prefer **{{cost}} {emote:unitValues.money}** from Treasure.\n\nCurrent Treasure: **{{treasury}} {emote:unitValues.money}**",
         "notaryConfirmLabel": "Coute: **{{cost}} {emote:unitValues.money}** from the spray",
         "confirmPurchase": "Install domain",
         "confirmRelocate": "Move domain",
@@ -1407,7 +1407,7 @@
         "purchaseDescription": "{emote:city.guildDomain.menu} The notary warmly welcomes you and gives you the official acts sealed with the seal of the city. Your guild domain is rooted in this city. The first workers are already working to prepare the land.",
         "relocateTitle": "{{pseudo}}, domain moved!",
         "relocateDescription": "{emote:city.guildDomain.menu} The notary finalizes the transfer documents and gives them to you with a professional smile. The forklifts are already on the way. Your guild domain will soon be installed in this city, for **{{cost}} {emote:unitValues.money}** of the treasure.",
-        "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} After having carefully examined your guild's finances, the notary shakes his head with regret. The Treasurer does not contain enough funds for this operation — you are missing **{{missingTreasury}} {emote:unitValues. oney}**. It encourages you to come back when the guild saves sufficiently.",
+        "notEnoughTreasuryDescription": "{emote:city.guildDomainNotary} After having carefully examined your guild's finances, the notary shakes his head with regret. The Treasurer does not contain enough funds for this operation — you are missing **{{missingTreasury}} {emote:unitValues. money}**. It encourages you to come back when the guild saves sufficiently.",
         "levelDisplay": "Lvl {{level}}/{{maxLevel}}",
         "enterBuilding": {
           "shop": "Buy",
@@ -1418,7 +1418,7 @@
         "backToDomain": "Back to domain",
         "buildingSummary": {
           "shop": {
-            "locked": "Closed doors and closed shutters. The building expects to be built.",
+            "locked": "Closed doors and closed shutters. The building is waiting to be built.",
             "built": "A steward is guarding the guild's supplies."
           },
           "shelter": "The pens can accommodate up to **{{slots}}** familiar members entrusted.",
@@ -1433,16 +1433,16 @@
             "title": "{emote:city.guildDomain.shop} Guild Shop",
             "notBuilt": "{emote:city.guildDomain.shop} The store location is only a vague land filled with stones. Architect plans are waiting on a knight, but the construction has not started yet. Upgrade this building to unlock the guild's supply.",
             "description": "{emote:city.guildDomain.shop} The guild steward stands behind his counter, surrounded by crates and bag of supplies. It provides pet food (equal to the guild treasure) and accepts your gold donations to bail out.\n\n{emote:unitValues.money} **Your money** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Guild Treasure** : {{treasury, number}} {emote:unitValues.money}",
-            "stockInfo": "{emote:expedition.food} **Current Reserve**:\n• {emote:foods.commonFood} Good: {{common}}/{{commonCap}}\n• {emote:foods. erbivorousFood} Salad: {{herbivorous}}/{{herbivorousCap}}\n• {emote:foods. arnivorousFood} Meat: {{carnivorous}}/{{carnivorousCap}}\n• {emote:foods.ultimateFood} Soup: {{ultimate}}/{{ultimateCap}}",
+            "stockInfo": "{emote:expedition.food} **Current Reserve**:\n• {emote:foods.commonFood} Good: {{common}}/{{commonCap}}\n• {emote:foods. herbivorousFood} Salad: {{herbivorous}}/{{herbivorousCap}}\n• {emote:foods.carnivorousFood} Meat: {{carnivorous}}/{{carnivorousCap}}\n• {emote:foods.ultimateFood} Soup: {{ultimate}}/{{ultimateCap}}",
             "choosePrompt": "**What would you like to purchase?**",
             "treasuryButton": "Treasurer",
             "treasuryTitle": "Bail Treasurer",
-            "treasuryPrompt": "{emote:city.guildDomain.shop} The steward can turn your gold into a guild treasure, with a commission of {{penaltyPercent, number}}% (capped at {{penaltyMax, number}} {emote:unitValues. oney}).\n\n{emote:unitValues.money} **Your money** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Guild Treasure** : {{treasury, number}} {emote:unitValues.money}",
+            "treasuryPrompt": "{emote:city.guildDomain.shop} The steward can turn your gold into a guild treasure, with a commission of {{penaltyPercent, number}}% (capped at {{penaltyMax, number}} {emote:unitValues.money}).\n\n{emote:unitValues.money} **Your money** : {{playerMoney, number}}\n{emote:city.guildDomain.shop} **Guild Treasure** : {{treasury, number}} {emote:unitValues.money}",
             "depositSmallNameButton": "Stock Market ({{cost}} -> +{{treasury}})",
             "depositBigNameButton": "Bag of Gold ({{cost}} -> +{{treasury}})",
             "depositHugeNameButton": "Trunk ({{cost}} -> +{{treasury}})",
             "noFoodAvailable": "{emote:messages.info} The guild warehouse is full, or there are insufficient funds.",
-            "quantityPrompt": "How many **{{food}}** would you like to buy?\n\nCurrent reserves: **{{stock}}/{{cap}}**\nUnit price: **{{price, number}}** {emote:unitValues. oney}\nTreasurer available: **{{treasury, number}}** {emote:unitValues.money}",
+            "quantityPrompt": "How many **{{food}}** would you like to buy?\n\nCurrent reserves: **{{stock}}/{{cap}}**\nUnit price: **{{price, number}}** {emote:unitValues.money}\nTreasurer available: **{{treasury, number}}** {emote:unitValues.money}",
             "quantityButton": "x{{amount}} ({{cost, number}})",
             "quantityCancel": "Back",
             "reimburseTitle": "{emote:unitValues.money} Refund Guild?",
@@ -1452,7 +1452,7 @@
             "depositTreasuryConfirmDescription": "{emote:collectors.warning} This validation will pour **{{cost}} {emote:unitValues.money}** of your personal money into the guild treasure. As a result, the guild will receive **{{treasury}} {emote:unitValues.money}**.",
             "depositTreasurySuccess": "{emote:messages.info} The Steward pours your offering into the chest. **+{{treasury, number}} {emote:unitValues.money}** into the guild treasure!",
             "depositTreasuryError": "The payment failed: your balance may have changed in the meantime. Please retry {command:report} to see the current status.",
-            "reimbursePrompt": "{emote:messages.info} Do you want to refund the **{{cost, number}} {emote:unitValues? oney}** that you just used? The steward makes you thanks to its usual commission: the integrity of the sum will join the treasure.",
+            "reimbursePrompt": "{emote:messages.info} Do you want to refund the **{{cost, number}} {emote:unitValues.money}** that you just used? The steward makes you thanks to its usual commission: the integrity of the sum will join the treasure.",
             "reimburseAccept": "Refund ({{cost, number}} {emote:unitValues.money})",
             "reimburseDecline": "Keep money",
             "reimburseSuccess": "{emote:messages.info} You refund the guild. **+{{treasury, number}} {emote:unitValues.money}** in the Treasure!",
@@ -1474,7 +1474,7 @@
           },
           "training": {
             "title": "{emote:city.guildDomain.trainingGround} Meagerie",
-            "descriptionInactive": "{emote:city.guildDomain.trainingGround} The meadow is a vast enclosed area with winding palisades and straw rance. Drinks are dry and agilitated courses are covered with foam and pets are not allowed to exercise under these conditions.",
+            "descriptionInactive": "{emote:city.guildDomain.trainingGround} The menagerie is a vast enclosed space with shaky palisades and rancid straw. The water troughs are dry and the agility courses are covered in moss. Pets cannot practice under these conditions.",
             "descriptionActive": "{emote:city.guildDomain.trainingGround} A former royal trainer oversees the daily exercises of pets, between wooden obstacle routes and stuffed targets. The air is filled with enthusiastic cries and winged beats.\n\nShelter pets gain **+{{love}}** {emote:expedition.love} love points per day."
           }
         }
@@ -1528,7 +1528,7 @@
     "buyHealLoading": "Loading...",
     "buyHealConfirmTitle": "{{pseudo}}, confirmation",
     "buyHealConfirmDescription": "Do you want to spend **{{price, number}}** {emote:unitValues.money} to heal your altered state and get back on the road immediately?\n\nYou currently have **{{playerMoney, number}}** {emote:unitValues.money}.",
-    "healSuccessTitle": "{{pseudo}}, healing complete!",
+    "healSuccessTitle": "{{pseudo}}, Care completed!",
     "healSuccessDescription": "{emote:shopItems.healAlteration} You have spent **{{price, number}}** {emote:unitValues.money} to treat yourself.\n\n{{nextStep}}",
     "healNextStepArrived": "{emote:messages.info} You've arrived at your destination! Use {command:report} to see what's waiting for you.",
     "healNextStepSmallEvent": "{emote:messages.info} An event is waiting for you on the road. Use {command:report} to find out.",
@@ -1543,7 +1543,7 @@
   },
   "vote": {
     "description": "Here is the link to support the bot:\nhttps://top.gg/bot/448110812801007618",
-    "title": ":ballot_box: Vote"
+    "title": "{emote:commands.vote}Vote"
   },
   "map": {
     "title": "{{pseudo}}, here's the map!",
@@ -1592,7 +1592,7 @@
     "noAlterationToHeal": "You have not been affected by any state alteration. {emote:effects.none}",
     "cannotHealOccupied": "You are currently busy. This status condition cannot be cured in the store. {emote:effects.occupied}",
     "success": "{{pseudo}}, transaction successful!",
-    "healAlteration": "{emote:shopItems.healAlteration} Your state changes have been deleted.",
+    "healAlteration": "{emote:shopItems.healAlteration} Your status effects have been removed.",
     "fullRegen": "{emote:shopItems.regen} You are fully healed.",
     "alreadyHaveBadge": "You already have this badge.",
     "badgeBought": "You have received a new badge: {emote:badges.{{badgeName}}}!",
@@ -1600,7 +1600,7 @@
     "genericPurchase_one": "You got **{{count}}x** {{item}}.",
     "genericPurchase_other": "You got **{{count}}x** {{item}}.",
     "notEnoughMoney": "You don't have enough money to buy this item! You are missing `{{missingCurrency, number}} {emote:unitValues.{{currency}}}`.",
-    "boughtTooMuchDailyPotions": "There are no more potions available for sale... Come back tomorrow!",
+    "boughtTooMuchDailyPotions": "There are no more potions of the day available for sale... Come back tomorrow!",
     "noPlantSlotAvailable": "You don't have any free plant slots! Lift one or improve your equipment to the tanner.",
     "noGardenForRemoteHarvestTalisman": "The Herbalist refuses to sell you the Sylvester Heart: this item will only be useful once your garden is unblocked.",
     "boughtTooMuchTokens": "You've reached your token purchase limit for the moment. Please come back later!",
@@ -1626,7 +1626,7 @@
     "itemPriceUnit": "Unit price: `{{price, number}}{emote:unitValues.{{currency}}}`",
     "amountButton": "x{{amount, number}} ({{price, number}}{emote:unitValues.{{currency}}})",
     "shopCategories": {
-      "permanentItem": "Permanent sales",
+      "permanentItem": "Permanent Items",
       "dailyPotion_zero": "Today's potion (Out of stock)",
       "dailyPotion_one": "Today's potion ({{count}} available)",
       "dailyPotion_other": "Today's potion ({{count}} available)",
@@ -1640,7 +1640,7 @@
       "guildXp": "Guild experience",
       "resources": "Resources",
       "woodBundles": "Wood",
-      "materialPacks": "Workshops",
+      "materialPacks": "Materials",
       "utilitaries": "Utilities",
       "prestige": "Prestige",
       "services": "Services",
@@ -1659,15 +1659,15 @@
     "shopItems": {
       "randomItem": {
         "name": "{emote:shopItems.randomItem} Random equipment",
-        "info": "You will receive a random equipment (Weapon / Armour / Item or Potion) among all those available in-game."
+        "info": "You will receive a piece of random equipment (Weapon / Armour / Item or Potion) among all those available in-game."
       },
       "alterationHeal": {
         "name": "{emote:shopItems.healAlteration} Status removal",
-        "info": "Your state changes will be deleted and you will resume your route immediately.",
-        "give": "{emote:shopItems.healAlteration} Your state changes have been deleted."
+        "info": "Your status effects will be removed and you will resume your route immediately.",
+        "give": "{emote:shopItems.healAlteration} Your status effects have been cleared."
       },
       "fullRegen": {
-        "name": "{emote:shopItems.regen} Complete heal",
+        "name": "{emote:shopItems.regen} Full Life Regen",
         "info": "You will be fully healed but your status will stay unchanged.",
         "give": "{emote:shopItems.regen} You are fully healed."
       },
@@ -1711,7 +1711,7 @@
             "bigRise": "• **Tomorrow**: The king will celebrate a great feast and the chests will flourish."
           },
           "threeDays": {
-            "bigDrop": "• **In 3 days**: A period of great austerity is coming for the kingdom.",
+            "bigDrop": "- **In 3 days**: A period of great austerity is coming for the kingdom. Prices will plummet.",
             "drop": "• **In 3 days**: Wind will turn up against traders. The price should decrease.",
             "stable": "• **In 3 days**: The situation will remain the same as today. No noticeable changes.",
             "rise": "• **In 3 days**: Foreign merchants will flow. Exchange rates will be more advantageous.",
@@ -1783,7 +1783,7 @@
         }
       },
       "dailyPotion": {
-        "info": "You'll get a potion that you can decide whether to keep it or not. If you already have it, it will be thrown away without refund!"
+        "info": "You'll get a potion that you can decide whether to keep. If you already have it, it will be discarded without a refund!"
       },
       "woodCommonBundle": {
         "name": "{emote:shopItems.woodCommonBundle} Firewood",
@@ -1879,7 +1879,7 @@
           ],
           "boostSpeed": [
             "It's built for speed! In combat, it can carry you on its back, increasing your agility on the battlefield tenfold.",
-            "Its reflexes are exceptional. It'll share his incredible alertness with you in battle, making you that much faster.",
+            "His reflexes are exceptional. He'll share his incredible alertness with you in battle, making you faster.",
             "This pet has special glands that secrete an acceleration hormone. By your side, you'll be moving like lightning!"
           ],
           "breakArmor": [
@@ -1925,7 +1925,7 @@
           "helpBreathe": [
             "Its breathing capacity is extraordinary! It can share its oxygen with you during tough battles or underwater.",
             "This specimen has fascinating modified gills. It will help you catch your breath in critical moments.",
-            "Its highly evolved pulmonary system enables it to store oxygen. It'll transfer it to you when you'll run out of breath."
+            "Its highly evolved pulmonary system enables it to store oxygen. It'll transfer it to you when you run out of breath."
           ],
           "horn": [
             "This horn is a formidable natural weapon! Your pet will use it to impale your opponents with impressive force.",
@@ -1949,7 +1949,7 @@
           ],
           "peck": [
             "Your pet's beak is as sharp as a dagger! It will help it harass your opponents with precise, painful blows during a fight.",
-            "The bone structure of its beak is perfectly suited to striking. It will sting your enemies at sensitive points with precision.",
+            "The bone structure of its beak is perfectly suited to striking. It will peck your enemies at sensitive points with precision.",
             "This pet has mastered the art of being annoying with its beak. Your opponents will be weakened by its relentless attacks."
           ],
           "petCharge": [
@@ -2121,7 +2121,7 @@
           ],
           "2": [
             "still seems wild. Take care of your pet and earn its trust!",
-            "seems to be unsettling. If you don't care about your pet, you will never get his love!",
+            "seems not to like you. If you don't care about your pet, you will never get its love!",
             "doesn't seem to be happy. You should try feeding your pet."
           ],
           "3": [
@@ -2167,7 +2167,7 @@
         ]
       },
       "questMasterBadge": {
-        "name": "{emote:badges.mission_completer} \"Mission completer\" badge",
+        "name": "{emote:badges.mission_completer} \"Quest Master\" badge",
         "info": "You will receive the badge within hours following the payment. For more information about badges, use the {command:help} command."
       }
     }
@@ -2357,7 +2357,7 @@
         "noProlongation": "[{{currentTurn}}/{{maxTurn}}]"
       },
       "attacker": "{emote:unitValues.attack} | **Attacker: {{pseudo}}**\n",
-      "defender": "\n\n{emote:unitValues.defense} | **Defender: {{pseudo}}**\n",
+      "defender": "\n\n{emote:unitValues.defense} | Defender: {{pseudo}}**\n",
       "stats": "{emote:unitValues.energy} {{power, number}} | {emote:unitValues.attack} {{attack, number}} | {emote:unitValues.defense} {{defense, number}} | {emote:unitValues.speed} {{speed, number}} | {emote:unitValues.breath} {{breath, number}} / {{maxBreath, number}} | {emote:unitValues.breathRegen} {{breathRegen}}"
     },
     "end": {
@@ -2582,7 +2582,7 @@
     },
     "collectorTitleOneObject": "{{pseudo}}, confirmation:",
     "collectorDescOneObject": "Would you like to drink your potion?\n\n{{object}}",
-    "collectorTitle": "{{pseudo}}, choose your potion!",
+    "collectorTitle": "{{pseudo}}, Choose your potion!",
     "collectorDesc": "Choose a potion to drink from the list below:",
     "collectorRefuseOption": "Cancel",
     "menuPlaceholder": "Select a potion"
@@ -2730,7 +2730,7 @@
     "embed": {
       "title": "{{guildName}} guild's storage",
       "descriptionTitle": "**Food**: ",
-      "description": "Food is useful for feeding all your pets. If you run out, you can buy some by using the {command:guildshop} command."
+      "description": "Food is useful for feeding all your pets. If you run out, you can buy some in town."
     },
     "food": {
       "title": "{emote:foods.{{foodId}}} $t(models:foods.{{foodId}}, {\"context\": \"capitalized\"})",

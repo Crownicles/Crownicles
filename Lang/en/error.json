@@ -36,7 +36,7 @@
     "reportCommand": "report command",
     "reportUseTokens": "token use confirmation",
     "reportBuyHeal": "healing purchase confirmation",
-    "gardenCommand": "garden consultation",
+    "gardenCommand": "garden view",
     "selectQuantity": "quantity selection",
     "sell": "selling an item",
     "sellConfirm": "confirmation of an item sale",
@@ -50,8 +50,8 @@
     "unlock": "releasing someone",
     "witchChoose": "witch event choice",
     "altarSmallEvent": "contribution to the Oracle altar",
-    "badPetSmallEvent": "Response to the hostile dwarf Moltiar",
-    "limogesSmallEvent": "answers to encapsulated traveller's questions"
+    "badPetSmallEvent": "response to the hostile dwarf Moltiar",
+    "limogesSmallEvent": "answers to the questions of the hooded traveler"
   },
   "commandDoesntExist": "ERROR: Unknown command",
   "interactionNotForYou": "This interaction is not intended for you!",
