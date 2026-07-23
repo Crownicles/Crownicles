@@ -3,9 +3,9 @@
   "blockedContext": {
     "acceptItem": "choice to keep an item or not",
     "cartSmallEvent": "Choice to get in the cart or not",
-    "chiefGuildLeave": "transfer of authority",
-    "chooseDestination": "choice of destination",
-    "class": "class change",
+    "chiefGuildLeave": "Transfer of authority",
+    "chooseDestination": "Choice of destination",
+    "class": "Class change",
     "confirmBuy": "purchase confirmation",
     "cooldown": "You are sending commands too fast!",
     "dailyBonus": "daily bonus",
