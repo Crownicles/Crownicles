@@ -1343,7 +1343,7 @@
       "\n\n{emote:other.car} Get on the cart\n{emote:other.walking} Move along"
     ],
     "scamTravelDone": [
-      "After a swift journey, you find yourself in an unknown place. The man looks at you with a sneak smile and moves away with his cart.",
+      "After a surprisingly quick journey, you find yourself in an unknown place. The man looks at you with a smug smile and moves away with his cart.",
       "The hirsute hair man has taken you to a completely different place from your intended destination. Before you have time to react, he quickly disappeared into a cloud of dust.",
       "The trip was passed faster than expected and you find yourself in an unknown place. The man with his mischievous eyes moves away with his cart, leaving you alone and lost.",
       "Soon, you were transported to a familiar place... You quickly realize that this is not the destination that was indicated to you, but it's already too late to respond. The mystery man is already far away..."
@@ -2373,7 +2373,7 @@
           "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}** appreciates this peaceful resolution."
         ],
         "success_female": [
-          "You give the dwarf a few legumes, evoking their quality and freshness. Against all expectations, the dwarf, an amateur of soups, accepts your offering with an approving grunt and leaves. **{{pet}}** seems impressed by your instinct.",
+          "You give the dwarf a few legumes, evoking their quality and freshness. Against all expectations, the dwarf, a soup lover, accepts your offering with an approving grunt and leaves. **{{pet}}** seems impressed by your instinct.",
           "The vegetables you present to the dwarf obviously bring back more pleasant memories. He accepts them with a semblance of civility and agrees to let you pass. **{{pet}}** appreciates this peaceful resolution."
         ],
         "fail_male": [
@@ -2631,7 +2631,7 @@
       "You discover Velanna kneeling by a stream, tracing ancestral symbols in the damp mud. She looks up at you, surprised by your intrusion, but decides to share a rare secret. She tells you that the most accomplished adventurers have discovered the art of cloning: their pets can exist in two places simultaneously, exploring the world while protecting their master in battle. She briskly erases her drawings and silently walks away.",
       "Velanna emerges from the thicket, her face grave. She approaches you and warns you that pets dream of adventure as soon as an expedition begins. She tells you that canceling preparations or calling the beast back mid-journey breaks this sacred promise. She sticks her finger in your chest and warns you that every betrayal leaves a scar on your companion's heart, and that the wound deepens with every disappointment.",
       "Velanna emerges from behind a mossy rock, a gnawed bone between her teeth, which she casually throws over her shoulder. She approaches you and places a hand on your shoulder. She tells you that one of her clan elders used to change his mind at the last minute, constantly calling his pet back along the way. The beast came to hate him. She warns you that the more frequent the cancellations, the more severe the loss of affection.",
-      "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a pet's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubl"
+      "Velanna stands in your way, legs spread and arms crossed, a stern expression on her scarred face. She orders you to listen carefully. She explains that a pet's eyes sparkle with excitement at the sight of an expedition map, its heart racing at the thought of the promised adventure. She tells you that canceling before departure or calling back in the middle of an exploration has the same devastating effect: a broken promise. She counts on her fingers and warns you that the loss of love doubles at the second betrayal, triples at the third. The familiars never forget."
     ]
   },
   "petDropToken": {
@@ -2708,7 +2708,7 @@
       "first": [
         "An old man with a dirty apron and with calles hands calls you from a small plot of land on the edge of the path. He likes Théobald, an interesting gardener, and invites you to admire his plants with unconcealed pride. ",
         "you see a kneeling man at the foot of a tree, fingers plunged into the earth. He stands up when he sees you, pushes his knees and greets you warmly. He says he is called Théobald and dedicates his life to the art of gardening. ",
-        "A smell of wet soil and fresh leaves attracts you to a small improvised camp on the edge of the trail. A gardener named Théobald, watering hand and flowered hat on the tee, welcomes you with a big smile. ",
+        "a smell of wet soil and fresh leaves attracts you to a small improvised camp on the edge of the trail. A gardener named Théobald, with a watering can in hand and flowered hat on the head, welcomes you with a big smile. ",
         "You don't have to walk on a seedlings carefully arranged on the edge of the path. An old man springs out of a nearby bush and bursts into laughter as Théobald, may be walking gardener. ",
         "a man with a face burned by the sun signs you from a small garden on the roadside. This man, a certain Théobald, seems to know each plant by his name and insists on sharing his knowledge with travellers. "
       ],
