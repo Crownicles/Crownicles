@@ -883,7 +883,7 @@
       "chat": {
         "outcomes": {
           "0": "Time goes by quickly as you chat during 2 hours with a farmer about the countryside.",
-          "1": "You bond with the guy sitting next to you who gifts you a present for the sake of it.",
+          "1": "You bond with your table neighbor who gives you an object as a gift.",
           "2": "As the alcohol kicks in, some people start getting aggressive and you watch a fight happen before going away.",
           "3": "A generous young man insists on giving you a bag of money and something to drink.",
           "4": "You accept politely and stay a few minutes before leaving, pretending to be in a hurry."
@@ -1407,7 +1407,7 @@
       },
       "talk": {
         "outcomes": {
-          "0": "You spend 30 minutes trying to get some information on the shrine, but unfortunately none of the information turns out to be of any use.",
+          "0": "You spend nearly 30 minutes gathering information on this sanctuary, information that will not prove useful.",
           "1": "The group shrugs off your attempts to discuss the shrine with them and makes it very clear with their body language that they have no interest in having you around."
         },
         "text": "Discuss with the group."
@@ -1502,7 +1502,7 @@
         "outcomes": {
           "0": "You go visit the lord, tell him about the villager's request and help him find the person. He thanks you and you leave.",
           "1": "You visit the lord and tell him of the treachery in the neighboring village, announcing that you are prepared to give him the names of the dissidents in exchange for a large sum of money. He accepts your offer and you lead him to the traitors, whom he executes before your very eyes. On the way, you check the purse he's given you and realize that it contains very few coins!",
-          "2": "You go visit the Lord and tell him about the villager's request and explain to him that you can help him find the rebel, but in exchange you want a nice sum of money. He accepts and asks you to help him find him. Together, you get there, but when you ask the Lord for the money, this one refuses. A duel begins but the lord is no match for your swordsmanship. However, he didn't have much wealth on him.",
+          "2": "You go visit the Lord and tell him about the villager's request and explain to him that you can help him find the rebel, but in exchange you want a nice sum of money. He accepts and asks you to help him find him. Together, you get there, but when you ask the Lord for the money, he backs out. A duel begins but the lord is no match for your swordsmanship. However, he didn't have much wealth on him.",
           "3": "You go visit the Lord, but the guards won't let you pass. You let them know that this is important, but they do not want to hear anything. Under their threats, you leave cursing under your breath, helpless.",
           "4": "You decide to tell the Lord what you've heard, but on your way you see a villager who seems to have guessed your intention to betray the village. You try to force the way but reinforcements arrive fast. Surrounded by the hating crowd, you get knocked down and severely struck."
         },
@@ -1666,7 +1666,7 @@
       },
       "search": {
         "outcomes": {
-          "0": "You search for a few moments around the base of the stairs, without success. Two more steps let you discover a few gold coins scattered here and there among the weeds. Delighted with your skinny discovery, you continue your adventure whistling.",
+          "0": "You search for a few moments around the base of the stairs, without success. Two more steps let you discover a few gold coins scattered here and there among the weeds. Delighted with your meager discovery, you continue your adventure whistling.",
           "1": "After a handful of minutes searching the surroundings, you find a used leather satchel, almost entirely hidden under a heavy stone. By opening it, you discover a papyrus where only a few words are still legible: \"staircase\", \"cave\", \"camp\" and \"Xetrix\". This name sounds familiar to you, but especially disappointed not to have found any treasure, you resume your journey.",
           "2": "Suddenly, when looking around, an enormous rock breaks off from Mount Celestrum and grazes you in its fall. You don't even have time to react and look at the rock still falling, hitting you at the arm violently."
         },
@@ -1755,7 +1755,7 @@
       },
       "steal": {
         "outcomes": {
-          "0": "You take the package and store it in your bag. You assure the man that it will be delivered before nightfall. A bit later, you open the package and discover a beautiful painting. You continue on your way and come across a painting expert's building, where you decide to get the painting you just stole assessed. You show your work to the painter, who calls you every name under the sun. It was to him that the package was intended! You decide to compensate him and you apologize to him. Taken with remorse, you immediately return to your way.",
+          "0": "You take the package and store it in your bag. You assure the man that it will be delivered before nightfall. A bit later, you open the package and discover a beautiful painting. You continue on your way and come across a painting expert's studio, where you decide to get the painting you just stole appraised. You show your work to the painter, who calls you every name under the sun. It was to him that the package was intended! You decide to compensate him and you apologize to him. Taken with remorse, you set off again immediately.",
           "1": "You take the package. On your road, you cross the path of an itinerant trader. You call out to him to buy the package. You get a very good price for it. You continue on your way, without any remorse.",
           "2": "You promise to the courier to deliver the package and return to the inn that hosted you the night before. You decide to open the package in order to see the content and find out that it is completely empty. What a waste!",
           "3": "You decide to steal the package and resell it. However, since you are not in a hurry, you decide to sit down near a river. You are quickly joined by what seems to be a wandering trader. Having no need for his trinkets, you offer him the package. The man, with his curiosity piqued by your mysterious parcel, accepts your offer. You will never know the contents of this package, but the few coins you got from it are enough for you.",
@@ -1822,13 +1822,13 @@
         "text": "Visit Boug-Coton."
       }
     },
-    "text": "️You see the village of Boug-Coton and decide to go there. Once you have arrived you hear rumours about a duel against a knight. You soon understand that there is conflict between the lord of these lands and that of the neighbouring village. To solve it, a fight is organized between their best combatants, but all here are mediocre and the duel begins soon."
+    "text": "You see the village of Boug-Coton and decide to go there. Once you have arrived you hear rumours about a duel against a knight. You soon understand that there is conflict between the lord of these lands and that of the neighbouring village. To solve it, a fight is organized between their best combatants, but all here are mediocre and the duel begins soon."
   },
   "55": {
     "possibilities": {
       "climb": {
         "outcomes": {
-          "0": "You decide to climb the tree because you think that it's the faster way to do it. In a few seconds, you are in the other side, free to continue your way.",
+          "0": "You decide to climb the tree because you think that it's the fastest way to do it. In a few seconds, you are on the other side, free to continue on your way.",
           "1": "You climb the trunk, however you are not enough careful: you wounded yourself with the rough tree's bark and fall. You have to retry your climbing. At the second time you did it, but your hand is very painful.",
           "2": "You find that climb is a good idea so you do it. When you arrive at the other side, you note the presence of four peoples, armed and they are waiting for you. Because of your numerical inferiority, you don't hesitate to give them your possessions to live."
         },
@@ -1864,7 +1864,7 @@
     "possibilities": {
       "beach": {
         "outcomes": {
-          "0": "You approach the turquoise sea with the firm intention of taking a midnight swim. Leaving your belongings at the water's edge, you will swim a few fathoms before returning to the sand. You angrily notice the disappearance of some of your money as well as the charlatan's tent.",
+          "0": "You approach the turquoise sea with the firm intention of taking a midnight swim. Leaving your belongings at the water's edge, you will swim a few strokes before returning to the sand. You angrily notice the disappearance of some of your money as well as the charlatan's tent.",
           "1": "As you wander among the rocks, you spot a horde of these little crustaceans famous for their great presence on this beach. You observe them for a few moments before heading back.",
           "2": "Not having eaten yet, you decide to take advantage of this beach's resources in order to fill your empty stomach a little. As you search under a stone for crustaceans, a large bird takes flight and catches the hermit crab you just spotted. Startled, you take a step back, your foot slips and you sprain your ankle on the rocks."
         },
@@ -2058,7 +2058,7 @@
       },
       "end": {
         "outcomes": {
-          "0": "Seeing you unresponsive, the peasant seems quite annoyed but lets you leave without insisting. You find a lost wallet on the edge of a path. When you open it, you discover two small pieces of dried bacon.",
+          "0": "Seeing you unresponsive, the peasant seems quite annoyed but lets you leave without insisting. You find a forgotten satchel on the edge of a path. When you open it, you discover two small pieces of dried bacon.",
           "1": "Seeing the peasant's desperate face, you decide to start looking for its fork. You end up at the edge of a fallow field where cattle quietly eat fresh grass. Suddenly, a tawny-colored dog springs up from the premises of the pasture and gets on you. Faster than it takes to say so, you knock the dog out and get on your way like nothing happened.",
           "2": "While you agreed to help the peasant, you feel something buzzing in your ear and stick your little finger in. A sharp pain grabs you: a bee just stung you! You leave this stinging place without further ado."
         }
@@ -2456,7 +2456,7 @@
       },
       "joinArchery": {
         "outcomes": {
-          "0": "The test seems a little difficult: you have to shoot three arrows at a straw target some 50 meters away. All three arrows land in the middle of the straw target. You're the winner! The beautiful Lady of the local Lord, Yseldia, comes to offer you a heavy purse, while you are dazzled by her ruby-set crown.",
+          "0": "The test seems a little difficult: you have to shoot three arrows at a straw target some fifty meters away. All three arrows land in the middle of the straw target. You are crowned winner of this trial! The beautiful Lady of the local Lord, Yseldia, comes to offer you a heavy purse, while you are dazzled by her ruby-set crown.",
           "1": "The test seems a little difficult: you have to shoot three arrows at a straw placed about fifty meters away from you. You're not very skillful, so you miss two out of the three arrows and come last in the ranking! Happy to have been part of the general euphoria, you happily set off again.",
           "2": "As you notch your first arrow, a sneeze startles you. You drop your bow, and your arrow comes to rest near the head of a muscular knight. He glares at you and starts to rush towards you. Adventure doesn't wait: you're back on the road in no time!"
         },
