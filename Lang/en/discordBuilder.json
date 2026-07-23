@@ -176,7 +176,7 @@
     "name": "respawn"
   },
   "notifications": {
-    "description": "Manage your notifications.",
+    "description": "Manage the bot's notifications.",
     "name": "notifications",
     "options": {
       "toggle": {
