@@ -1,7 +1,7 @@
 {
   "badges": {
     "description": "Badges are rare rewards created to recognize those who have most supported the development of Crownicles. The badge list is available in the bot guide.\n(via this link: https://guide.crownicles.com/v/en/notions-avancees/badges)",
-    "title": ":military_medal: Detailed information:"
+    "title": "{emote:commands.badges} Detailed information :"
   },
   "pet": {
     "embedTitle": "{{pseudo}}'s pet:",
@@ -546,13 +546,13 @@
         "description": "Check if the bot is online.\n\n(Note: Time displayed is the response time from the bot, not your ping, a correct ping should be less than 500 ms. {emote:clocks.1})"
       },
       "PROFILE": {
-        "description": "Displays information about your character:\n\n{emote:effects.none} Health status | Nickname | Level\n\n឵឵឵Information :\n{emote:unitValues.health} Life | {emote:unitValues.xp} XP | {emote:unitValues.money} Money\n\nStatistics:\n{emote:unitValues.energy} Energy | {emote:unitValues.attack} Attack | {emote:unitValues.defense} Defense | {emote:unitValues.speed} Speed | {emote:unitValues.breath} Breath | {emote:unitValues.breathRegen} Recovery\n\nMissions:\n{emote:unitValues.gem} Gems | {emote:missions.campaign} Campaign progress in %\n\nRank and score :\n{emote:top.congrats} Rank | {emote:unitValues.score} Score\n\nClass:\nSee {command:classes}\n\nGlory and League:\n{emote:unitValues.glory} Glory | See {command:top glory}\n\nGuild:\n{emote:other.guild} Guild\n\nDestination:\nSee {command:map}\n\nFamiliar:\nSee {command:pet}\n\n{emote:other.advice}-Badges are displayed on your profile as reactions."
+        "description": "Displays information about your character:\n\n{emote:effects.none} Health status | Nickname | Level\n\n឵឵឵Information :\n{emote:unitValues.health} Life | {emote:unitValues.xp} XP | {emote:unitValues.money} Money\n\nStatistics:\n{emote:unitValues.energy} Energy | {emote:unitValues.attack} Attack | {emote:unitValues.defense} Defense | {emote:unitValues.speed} Speed | {emote:unitValues.breath} Breath | {emote:unitValues.breathRegen} Recovery\n\nMissions:\n{emote:unitValues.gem} Gems | {emote:missions.campaign} Campaign progress in %\n\nRank and score:\n{emote:top.congrats} Rank | {emote:unitValues.score} Score\n\nClass:\nSee {command:classes}\n\nGlory and League:\n{emote:unitValues.glory} Glory | See {command:top glory}\n\nGuild:\n{emote:other.guild} Guild\n\nDestination:\nSee {command:map}\n\nFamiliar:\nSee {command:pet}\n\n{emote:other.advice}-Badges are displayed on your profile as reactions."
       },
       "RARITY": {
         "description": "Allows you to see the probability of getting an item by its rarity."
       },
       "REPORT": {
-        "description": "Lets you obtain the resources and intel your character got during your absence.\nFrom time to time, events will be triggered and will necessitate special actions or choices."
+        "description": "Lets you collect the information and resources gathered by your character during your absence. From time to time, events will be triggered and will require special actions."
       },
       "RESPAWN": {
         "description": "Lets you restart playing after you've been knocked out."
@@ -677,7 +677,7 @@
     },
     "badges": {
       "tournament_winner": "Tournament winner",
-      "technical_team": "Member of the technical team",
+      "technical_team": "Technical team",
       "first_20_members": "One of the first 20 members of the bot's server",
       "top_glory": "Person who has won the most glory during a fighting season",
       "support": "Person who has the Support role on the bot's server",
@@ -694,7 +694,7 @@
       "mission_completer": "Badge purchased in the missions shop",
       "powerful_guild": "Member of a powerful guild",
       "legendary_pet": "Player who has successfully trained a powerful pet",
-      "donor": "Donator",
+      "donor": "Donor",
       "early_class_adopter": "Early class adopter",
       "good_bug_reporter": "Person who reported an exploitable bug without taking advantage of it",
       "redactor": "Bot's writer",
@@ -777,11 +777,11 @@
   },
   "report": {
     "adviceTitle": "Advice:",
-    "chooseDestinationIndications": "Choose the destination of your travel:",
+    "chooseDestinationIndications": "Choose a destination for your journey:",
     "choseMapMinutes_one": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
     "choseMapMinutes_other": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
-    "choseMap_one": "You chose to go in the direction {{mapPrefix}} {{mapEmote}} **{{mapName}}** {{mapType}}. You'll travel for about **{{time}} hour**.",
-    "choseMap_other": "You chose to go in the direction {{mapPrefix}} {{mapEmote}} **{{mapName}}** {{mapType}}. You'll travel for about **{{time}} hours**.",
+    "choseMap_one": "You chose to go in the direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. You'll travel for about **{{time}} hour**.",
+    "choseMap_other": "You chose to go in the direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. You'll travel for about **{{time}} hours**.",
     "collectedPointsTitle": "Collected points:",
     "commandDescription": "Get a report on your character's situation.",
     "commandName": "report",
@@ -808,7 +808,7 @@
     "monsterRewardsDescription": "{emote:unitValues.money} Money earned: **{{money, number}}**\n{emote:unitValues.xp} XP earned: **{{experience, number}}**",
     "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Guild points earned: **{{guildPoints, number}}**",
     "monsterRewardsTitle": "{{pseudo}}, fight rewards",
-    "newBigEvent": "{emote:languages.en} You arrived at **{{destination}}**!",
+    "newBigEvent": "{emote:languages.fr} You arrived at **{{destination}}**!",
     "noFight": "{emote:commands.report} **{{pseudo}}'s log:** {emote:pveFights.waitABit} | You make a quick getaway and find a little hiding place! The monster is waiting patiently outside...",
     "points": ":** {emote:unitValues.score} Points earned: **{{score, number}}",
     "pveEvent": "{emote:commands.report} **{{pseudo}}'s log:** {{event}}\n\n{{monsterDisplay}}\n\n{emote:pveFights.startFight} Start the battle\n{emote:pveFights.waitABit} Wait a while before starting the battle\n\n*- Use the buttons to select an action*",
