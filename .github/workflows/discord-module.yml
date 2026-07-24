@@ -13,11 +13,11 @@ jobs:
     runs-on: ubuntu-latest
     continue-on-error: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       # Setup Node.js environment once for all jobs
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
 
@@ -29,7 +29,7 @@ jobs:
 
       # Cache PNPM dependencies for Discord module
       - name: Cache Discord dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ./Discord/node_modules
