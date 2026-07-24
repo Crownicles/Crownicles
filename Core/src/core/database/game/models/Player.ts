@@ -5,9 +5,7 @@ import InventorySlot, { InventorySlots } from "./InventorySlot";
 import PetEntity from "./PetEntity";
 import MissionSlot from "./MissionSlot";
 import { InventoryInfos } from "./InventoryInfo";
-import {
-	MissionInformations, MissionsController
-} from "../../../missions/MissionsController";
+import { MissionsController } from "../../../missions/MissionsController";
 import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
 	asMilliseconds,
@@ -96,6 +94,8 @@ type ressourcesLostOnPveFaint = {
 	moneyLost: number;
 	guildPointsLost: number;
 };
+
+type MissionInformations = Parameters<typeof MissionsController.update>[2];
 
 /**
  * Reasons whose token gains are allowed to push the player above the normal
