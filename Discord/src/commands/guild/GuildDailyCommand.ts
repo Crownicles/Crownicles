@@ -14,8 +14,10 @@ import { DisplayUtils } from "../../utils/DisplayUtils";
 import { DiscordCache } from "../../bot/DiscordCache";
 import { CrowniclesEmbed } from "../../messages/CrowniclesEmbed";
 import { StringConstants } from "../../../../Lib/src/constants/StringConstants";
+import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 
-function getPacket(): CommandGuildDailyPacketReq {
+async function getPacket(interaction: CrowniclesInteraction): Promise<CommandGuildDailyPacketReq> {
+	await interaction.deferReply();
 	return makePacket(CommandGuildDailyPacketReq, {});
 }
 
