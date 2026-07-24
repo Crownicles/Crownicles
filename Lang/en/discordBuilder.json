@@ -59,11 +59,11 @@
   },
   "petFree": {
     "description": "Free a pet.",
-    "name": "petfree"
+    "name": "free Pet"
   },
   "petNick": {
     "description": "Give a nickname to your pet.",
-    "name": "petnickname",
+    "name": "pet nickname",
     "options": {
       "nickname": {
         "description": "The nickname you want to give your pet. (Leave blank to delete the nickname)",
@@ -73,7 +73,7 @@
   },
   "guildCreate": {
     "description": "Create a new guild.",
-    "name": "guildcreate",
+    "name": "guild Creation",
     "options": {
       "guildName": {
         "description": "The name of the guild.",
@@ -258,7 +258,7 @@
     "name": "unlock",
     "options": {
       "rank": {
-        "description": "The rank of the player who must be unlocked.",
+        "description": "The player rank to be unlocked.",
         "name": "rank"
       },
       "user": {
@@ -287,10 +287,10 @@
     "options": {
       "timing": {
         "description": "The timing of the displayed ranking (All time by default).",
-        "name": "timing"
+        "name": "duration"
       },
       "page": {
-        "description": "The page of the ranking to display.",
+        "description": "The ranking page to display.",
         "name": "page"
       }
     },
@@ -331,7 +331,7 @@
   },
   "sell": {
     "name": "sell",
-    "description": "Sell an equipment."
+    "description": "Sell equipment."
   },
   "petTransfer": {
     "name": "pettransfer",
@@ -358,7 +358,7 @@
     "description": "Join the boat if a member of your guild is on it."
   },
   "giveBadge": {
-    "name": "givebadge",
+    "name": "give badge",
     "description": "Give a badge to a player.",
     "options": {
       "user": {
