@@ -93,7 +93,7 @@
   },
   "guildInvite": {
     "description": "Invite a new member in your guild.",
-    "name": "guildinvite",
+    "name": "guild invite",
     "options": {
       "user": {
         "description": "The user to be recruited.",
@@ -215,7 +215,7 @@
   },
   "guildKick": {
     "description": "Kick a player from the guild.",
-    "name": "guildkick",
+    "name": "guild kick",
     "options": {
       "rank": {
         "description": "The rank of the player who must be kicked from the guild.",
@@ -233,7 +233,7 @@
   },
   "guildElder": {
     "description": "Promote a guild member to elder.",
-    "name": "guildelder",
+    "name": "guild elder",
     "options": {
       "user": {
         "description": "The user who will be promoted as an elder.",
@@ -312,7 +312,7 @@
     "description": "Drink a potion."
   },
   "petSell": {
-    "name": "petsell",
+    "name": "pet sell",
     "description": "Sell a pet to another player.",
     "options": {
       "price": {
@@ -354,7 +354,7 @@
     "description": "Display the contents of the guild warehouse."
   },
   "joinBoat": {
-    "name": "joinboat",
+    "name": "join boat",
     "description": "Join the boat if a member of your guild is on it."
   },
   "giveBadge": {
