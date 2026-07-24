@@ -77,11 +77,12 @@ async function acceptUseTokens(
 		// Recalculate travel data AFTER removing the effect to get the correct next small event time
 		const updatedDate = new Date();
 		const updatedTimeData = await TravelTime.getTravelData(lockedPlayer, updatedDate);
+		const timeToNextSmallEvent = Math.max(updatedTimeData.nextSmallEventTime - updatedDate.valueOf(), 0);
 
 		// Make the player time travel to the next small event
 		await TravelTime.timeTravelMilliseconds(
 			lockedPlayer,
-			asMilliseconds(updatedTimeData.nextSmallEventTime - updatedDate.valueOf()),
+			asMilliseconds(timeToNextSmallEvent),
 			NumberChangeReason.REPORT_TOKENS
 		);
 
