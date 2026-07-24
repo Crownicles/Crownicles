@@ -24,7 +24,7 @@ export class SmallEventBonusGuildPVEIslandPacket extends SmallEventPacket {
 
 	isExperienceGain!: boolean;
 
-	emoteKey!: SmallEventBonusGuildPVEIslandEmote;
+	emoteKey?: SmallEventBonusGuildPVEIslandEmote;
 }
 
 export enum SmallEventBonusGuildPVEIslandOutcomeSurrounding {
