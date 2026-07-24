@@ -2197,7 +2197,7 @@
   "notifications": {
     "types": {
       "report": "Reports",
-      "guildDaily": "Guild daily reward",
+      "guildDaily": "Guild daily rewards",
       "playerFreedFromJail": "Release from prison",
       "fightChallenge": "Attacked by another player",
       "guildKick": "Guild exclusion",
@@ -2207,10 +2207,10 @@
       "petExpedition": "Pet expedition completed"
     },
     "enableDisable": "Enable/Disable",
-    "sendLocationField": "Sending place:",
+    "sendLocationField": "Send location:",
     "sendLocation": "Sending place",
     "embedTitle": "Notification management",
-    "enabledField": "Active:",
+    "enabledField": "Enabled:",
     "inDM": "In private message",
     "inChannel": "In channel {{channel}}",
     "footerEnableDisable": "Use the buttons below to enable or disable notifications.",
@@ -2252,7 +2252,7 @@
       "advanceTime": "{emote:unitValues.time} | Guild members moved forward by {{quantity}}h.",
       "partialHeal": "{emote:rewards.partialHeal} | Guild members partially healed `+ {{quantity, number}} {emote:unitValues.health}`",
       "alterationHeal": "{emote:shopItems.healAlteration} | Guild members' status conditions have been removed. Healthy members have been partially healed. `+ {{quantity, number}} {emote:unitValues.health}`",
-      "alterationNoHeal": "{emote:shopItems.healAlteration} | The status changes of the guild members have been deleted.",
+      "alterationNoHeal": "{emote:shopItems.healAlteration} | The status changes of the guild members have been removed.",
       "petFood": "{emote:foods.commonFood} {{quantity, number}} treats have been added to your guild's inventory.",
       "pet_male": "{emote:pets.{{petId}}.emoteMale} | A pet has joined the guild's shelter: **{{pet}}**",
       "pet_female": "{emote:pets.{{petId}}.emoteFemale} | A pet has joined the guild's shelter: **{{pet}}**"
