@@ -1,8 +1,8 @@
 import { ChannelType } from "discord.js";
 
 export const THREAD_SEND_ACCESS_ERRORS = {
-	NOT_JOINED: "noThreadMembership",
-	CANNOT_SEND: "noSpeakInThreadPermission"
+	NOT_JOINED: "bot:noThreadMembership",
+	CANNOT_SEND: "bot:noSpeakInThreadPermission"
 } as const;
 
 export type ThreadSendAccessError = typeof THREAD_SEND_ACCESS_ERRORS[keyof typeof THREAD_SEND_ACCESS_ERRORS];
