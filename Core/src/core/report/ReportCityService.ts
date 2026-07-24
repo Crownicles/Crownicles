@@ -318,6 +318,7 @@ async function buildOwnedHomeData(params: {
 
 	return {
 		level: home.level,
+		cooking: { level: player.cookingLevel },
 		features: homeLevel.features,
 		upgradeStation,
 		chest,
@@ -367,6 +368,7 @@ async function buildRemoteApartmentHomeData(params: {
 
 	return {
 		level: home.level,
+		cooking: { level: player.cookingLevel },
 		isApartment: true,
 		features: remoteFeatures,
 		chest

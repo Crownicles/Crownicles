@@ -105,6 +105,7 @@ async function buildGardenCollectorData(params: GardenCollectorDataParams): Prom
 		home: {
 			owned: {
 				level: params.home.level,
+				cooking: { level: params.player.cookingLevel },
 				features: params.homeLevel.features,
 				garden
 			}

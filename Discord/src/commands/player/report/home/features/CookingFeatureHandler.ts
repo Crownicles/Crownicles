@@ -78,10 +78,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private getState(ctx: HomeFeatureHandlerContext): CookingSessionState {
 		let state = this.sessions.get(ctx.user.id);
 		if (!state) {
+			const cookingLevel = ctx.homeData.cooking.level;
 			state = {
 				currentSlots: [],
-				cookingGrade: getCookingGrade(0).id,
-				cookingLevel: 0,
+				cookingGrade: getCookingGrade(cookingLevel).id,
+				cookingLevel,
 				craftPending: false,
 				isIgnited: false
 			};
