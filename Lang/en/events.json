@@ -985,8 +985,8 @@
       },
       "steal": {
         "outcomes": {
-          "0": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving of since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts \"Stop thief!\". You flee.",
-          "1": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving of since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts \"Stop thief!\". You end up the night in jail and compensate these people."
+          "0": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts thief! You flee.",
+          "1": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts \"Stop thief!\" You end up the night in jail and compensate these people."
         },
         "text": "Refuse, and try to rob people."
       },
@@ -1073,7 +1073,7 @@
           "0": "You buy an inexpensive item in exchange for a few gold coins. You're satisfied with the item he's sold you and put it back in your bag.",
           "1": "You decide to buy a cheap item. However, as you inspect its quality, you realize that it is in very poor condition. You were taken advantage of, and that guy already fled the scene while you were busy with the item. You swear not to be fooled by this guy again."
         },
-        "text": "Accept to buy a cheap item."
+        "text": "Agree to buy a cheap item."
       },
       "buyExpensive": {
         "outcomes": {
@@ -1100,7 +1100,7 @@
         "outcomes": {
           "0": "You discreetly steal one of his objects and rush off.",
           "1": "The merchant notices what you're trying to do, so he asks you to return his merchandise. Out of mercy, he decides to let you go, which you do without asking for anything else.",
-          "2": "The merchant notices you as you start robbing him. He knocks your teeth out with a punch then leaves."
+          "2": "You begin to rob the merchant, who notices you. He lands a heavy punch, then leaves."
         },
         "text": "Steal his merchandise."
       }
@@ -1113,15 +1113,15 @@
         "outcomes": {
           "0": "For a little money, he agrees to accompany you. So off you go, and a short time later, you come across a gleaming sword stuck in a rock. You try to pull it out, but your efforts prove inconclusive. Price in turn tries and manages to dislodge the weapon from its stony carapace. Knowing that he wouldn't have come across it without you, he gives you money as a thank-you, far more than you paid him. The rest of the journey is uneventful, and you part after a few dozen kilometers.",
           "1": "For a little money, he agrees to accompany you. During your journey, you come across an abandoned satchel along the way. Delighted by this discovery, you decide to share its content with Price. You thus obtain a small sum of money, and an item which you think will be useful for your adventure.",
-          "2": "For a little money, he agrees to accompany you. You walk together for a little while without anything special happening, except for a small incident with thieves which didn't last long with Price's help. You then split up.",
-          "3": "You give him a few coins to accompany you until the next town. You leave quickly, and when the sun goes down, you bivouac and then you set. You are suddenly woken up by the sound of metal clattering together, and it takes a few seconds to realize that Price is taking your money away. Without thinking twice about it, determined to stop him, you run to him. He violently punches you into the temple, and runs away with your possessions while you are dizzy."
+          "2": "For a little money, he agrees to accompany you. You walk together for a little while without anything special happening, except for a small incident with thieves who didn't hold out long against Price. You then split up.",
+          "3": "You give him a few coins to accompany you until the next town. You leave quickly, and when the sun goes down, you bivouac and then go to sleep. You are suddenly woken up by the sound of metal clattering together, and it takes a few seconds to realize that Price is taking your money. Without thinking twice about it, determined to stop him, you lunge at him. He delivers a violent punch to your temple, and dazed, you watch him flee with your possessions."
         },
         "text": "Pay him to accompany you to your next destination."
       },
       "end": {
         "outcomes": {
           "0": "You stay and chat with Price for a few minutes before letting him go about his business.",
-          "1": "After a short chat, you part company. A few streets further on, you are attacked by a group of unkind-looking people who lighten your purse at gunpoint."
+          "1": "After a short chat, you part company. A few streets further on, you are attacked by a group of unkind-looking people who lighten your purse under the threat of violence."
         }
       },
       "meal": {
@@ -1185,7 +1185,7 @@
           "1": "You decide to enter this Xetrix's house, and start stealing from him as he arrives. He sees you and lunges at you, but you manage to escape after a struggle, as you're more agile than he is. However, you are wounded and have lost all your loot in the altercation.",
           "2": "You enter the house to wait for the man. Once there, you chat and he decides to take you out to dinner. After a delicious meal, you leave with a full belly and feeling great."
         },
-        "text": "Break into his house."
+        "text": "Break into the house."
       },
       "end": {
         "outcomes": {
@@ -1201,7 +1201,7 @@
         "text": "Go back the way you came."
       }
     },
-    "text": "As you go deep into a dark forest, you see the silhouette of a man in the distance. While going closer, you realize he's a hermit, out for the picking. You approach his house, on which you read the inscription \"Xetrix\", which is probably his name. You're thinking about what to do..."
+    "text": "As you go deep into a dark forest, you see the silhouette of a man in the distance. While moving closer, you realize he's a hermit, out foraging. You approach his house, on which you read the inscription \"Xetrix\", which is probably his name. You're thinking about what to do..."
   },
   "41": {
     "possibilities": {
@@ -1243,7 +1243,7 @@
         "outcomes": {
           "0": "You pretend to be dead in the hope that the guard will discard your corpse and you can leave. As expected, the guard complies. Once relieved, you decide to go to the inn as you're quite tired.",
           "1": "The guard doesn't notice you right away, but as soon as he sees you, he decides to check if you're really dead. Poor actor that you are, he realizes this and decides to leave you in the cell for some extra time.",
-          "2": "The guard examines your body, and you manage to fool him. He disposes of your corpse. Once you're gone, you get up and set off again."
+          "2": "The guard examines your body, and you manage to fool him. He disposes of your corpse. Once he's gone, you get up and set off again."
         },
         "text": "Play possum."
       },
@@ -1276,9 +1276,9 @@
       "feign": {
         "outcomes": {
           "0": "After searching the cave for an hour, you abandon the search and return empty-handed.",
-          "1": "As you retrace your steps, you don't notice the rope stretched between two roots. You trip over it and find yourself suspended in mid-air. Some looters, alerted by the noise, run up and pick your pocket. By the time they've extricated you from the knot, they're long gone with their booty.",
+          "1": "As you retrace your steps, you don't notice the rope stretched between two roots. You trip over it and find yourself suspended in mid-air. Some looters, alerted by the noise, run up and pick your pockets. By the time you've extricated yourself from the knot, they're already far away with their loot.",
           "2": "Retracing your steps, you see what could be a cave in the distance. You step forward slowly and inhale the sweet smell. As you tiptoe closer, you manage to snatch a bit of food. You then set off again quickly, for fear of being caught by someone who may have witnessed your petty theft.",
-          "3": "You enter the cave in small steps and begin to explore. After about fifteen meters, you come face to face with an imposing bear, which lunges at you. You engage it in combat and, after a fierce fight, manage to knock it down with a blow to the skull. You then skin it and cook the meat. Once you're satisfied, you set off in search of a merchant to whom you can sell the bear's skin."
+          "3": "You enter the cave treading softly and begin to explore. After about fifteen meters, you come face to face with an imposing bear, which lunges at you. You engage it in combat and, after a fierce fight, manage to strike it down with a blow to the skull. You then skin it and cook the meat. Once you're satisfied, you set off in search of a merchant to whom you can sell the bear's skin."
         },
         "text": "Pretend to walk away and come back alone to search the cave."
       },
@@ -1299,7 +1299,7 @@
       "continue": {
         "outcomes": {
           "0": "You continue on your way and realize that he's really just a Nordic hunter. You greet each other, and watch as he sets his traps. You realize that this is where the liquid dripping from his hand comes from.",
-          "1": "Curious, you approach the person. He's a Nordic hunter who's setting his traps. You greet each other and offer to help, which he gladly accepts. After helping him set all his traps, he asks if you'd like to spend the evening at his place. The hunter cooks the game he's caught. You relax by eating a nice leg of lamb in front of the fire, then he lets you rest on his bed. You leave at dawn, having thanked him by giving him a few coins."
+          "1": "Curious, you approach the person. He's a Nordic hunter who's collecting his traps. You greet each other and offer to help, which he gladly accepts. After helping him collect all his traps, he asks if you'd like to spend the evening at his place. The hunter cooks the game he's caught. You relax by eating a nice leg of lamb in front of the fire, then he lets you rest on his bed. You leave at dawn, having thanked him by giving him a few coins."
         },
         "text": "Continue on your way."
       },
@@ -1307,7 +1307,7 @@
         "outcomes": {
           "0": "You ignore the person in front of you and, a little further down the road, find a shiny object which you stow in your bag.",
           "1": "Out of fear, you turn back and make a detour to avoid running into the creature.",
-          "2": "You run without looking to see what it was, but you stumble in the dark over a stone. You fall on your arms, all flayed."
+          "2": "You run without looking to see what it was, but you stumble in the dark over a stone. You fall on your arms, all scraped."
         }
       },
       "fight": {
@@ -1327,7 +1327,7 @@
       },
       "shelter": {
         "outcomes": {
-          "0": "You remember having passed by a church few minutes ago, without any hesitation you decide to go there, in order to be protected from the unholy being. You run all the way there and arrive in less than ten minutes in front of said church. You knock, a little feverish for fear of having been followed by the beast. A kyutist answers the door, and after you have explained everything to him, he lets you in. Very kindly, the people inside the church give you something to eat and tell you that they can keep you for the night without any problem. Grateful, you join them in the praises to Askeriel, during which everyone present whispers in chorus how Askeriel, the Great God, created existence, matter, the earth, and then humans and animals. When you have finished, you all go to bed.",
+          "0": "You remember having passed by a church a few minutes ago, without any hesitation you decide to go there, in order to be protected from the unholy being. You run all the way there and arrive in less than ten minutes in front of said church. You knock, a little feverish for fear of having been followed by the beast. A kyutist answers the door, and after you have explained everything to him, he lets you in. Very kindly, the people inside the church give you something to eat and tell you that they can keep you for the night without any problem. Grateful, you join them in the praises to Askeriel, during which everyone present whispers in chorus how Askeriel, the Great God, created existence, matter, the earth, and then humans and animals. When you have finished, you all go to bed.",
           "1": "You remember going past a church not long ago. So you head there, hoping to get some help. Once there, you knock on the large door. After a few seconds of no reaction, you decide to enter, fearing you have been followed by the beast. It is at this moment that you realize that the church is completely empty, abandoned. You close the door and settle down on the floor before falling asleep.",
           "2": "You immediately think of seeking refuge in a church: what could be better, after all, in the face of something seemingly demonic? However, you soon realize that you have absolutely no idea where the nearest church is. So you decide to run as far away from the creature as possible, which you do.",
           "3": "You think going to a church is a good option. You hurry and arrive in a few minutes at the church you passed earlier. You knock and are greeted by a jovial priest, who immediately takes you in. You soon tell him about what you saw, and he replies that it could very well be a terrible demonic creature under Y'ahnor's orders. Impressed, you join him in the Ode to the Three, the ceremony where Orthgard, Fenrir, and Iatneh, the protective gods who guide mankind and inspire the greatest inventions and discoveries, are celebrated."
@@ -1335,13 +1335,13 @@
         "text": "Take shelter in a Kyutist church."
       }
     },
-    "text": "You are heading eastwards in the middle of the night. It is dark but the moon is clear. You see before you a being bathed in moonlight. A tall man, dressed in black; you see a red liquid dripping from one of his hands, the dim white light puncturing the skies illuminates the pale skin of the individual, who has not yet noticed you. What to do?"
+    "text": "You are heading eastwards in the middle of the night. It is dark but the moon is clear. You see before you a being bathed in moonlight. He is tall, dressed in black; you see a liquid dripping from one of his hands, the night illuminates the pale skin of the individual who has not yet noticed you. What to do?"
   },
   "44": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "You leave the scene, wanting to have no part in the man's fate. Nearby, you stumble upon an abandoned object which probably belonged to the bloke."
+          "0": "You pass by, not wanting to be involved in this man's death. Just nearby, you stumble upon an abandoned object that surely belonged to him."
         }
       },
       "help": {
@@ -1349,7 +1349,7 @@
           "0": "As you try to help him, he gets scared and knocks you out with the rock. You stay unconscious for a while, but eventually wake up and get on your way.",
           "1": "You throw yourself on the stone and catch it. You quickly cut the rope and go to find the unfortunate man, who is soaking wet. You spend several hours with him, trying to dissuade him from doing it again. Grateful, he offers you shelter for the night.",
           "2": "You throw yourself at the stone, but you're too slow. The poor man quickly sinks into the river, carried away by the current. You look around to see if he's left any of his belongings behind. You come across a strange, glittering object.",
-          "3": "You run to help him. Nevertheless he succeeds in throwing his rock before you get to him. You jump after him to try to bring him to shore but he struggles and bring you underwater with him. As you start to suffocate, you release him and your are forced to resurface."
+          "3": "You run to help him. Nevertheless he succeeds in throwing his rock before you get to him. You jump after him to try to bring him to shore but he struggles and brings you underwater with him. As you start to suffocate, you release him and you are forced to resurface."
         },
         "text": "Come quickly to his rescue."
       },
