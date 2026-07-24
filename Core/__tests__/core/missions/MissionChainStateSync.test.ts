@@ -3,6 +3,7 @@ import {MissionsController} from "../../../src/core/missions/MissionsController"
 import Player from "../../../src/core/database/game/models/Player";
 import {NumberChangeReason} from "../../../../Lib/src/constants/LogsConstants";
 import type {CrowniclesPacket} from "@crownicles/lib";
+import {RecipeDiscoveryService} from "../../../src/core/cooking/RecipeDiscoveryService";
 
 // Mock crowniclesInstance with all required logsDatabase methods
 vi.mock("../../../src/app", () => ({
@@ -192,6 +193,40 @@ describe("Mission chain state synchronization", () => {
 			await player.levelUpIfNeeded(response);
 
 			expect(player.addLevelUpPacket).not.toHaveBeenCalled();
+		});
+
+		it("emits nested mission reward levels once and in ascending order", async () => {
+			const player = createTestPlayer({ level: 10, experience: 150 });
+			player.getExperienceNeededToLevelUp = vi.fn().mockReturnValue(100);
+			player.needLevelUp = vi.fn(function(this: Player) {
+				return this.experience >= this.getExperienceNeededToLevelUp();
+			});
+			const levelEffects: string[] = [];
+			player.addLevelUpPacket = vi.fn(async (_response, level) => {
+				levelEffects.push(`packet:${level}`);
+			});
+			vi.spyOn(RecipeDiscoveryService, "discoverFromSource").mockImplementation(async currentPlayer => {
+				levelEffects.push(`recipe:${currentPlayer.level}`);
+				return null;
+			});
+
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, missionResponse, opts) => {
+				opts.applyOnLockedPlayer?.(inputPlayer);
+				if (inputPlayer.level === 11) {
+					inputPlayer.experience += 50;
+					await inputPlayer.levelUpIfNeeded(missionResponse);
+				}
+				return inputPlayer;
+			});
+
+			await player.levelUpIfNeeded(response);
+
+			expect(levelEffects).toEqual([
+				"recipe:11",
+				"packet:11",
+				"recipe:12",
+				"packet:12"
+			]);
 		});
 	});
 
