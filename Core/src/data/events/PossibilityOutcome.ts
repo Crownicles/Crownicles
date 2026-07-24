@@ -224,6 +224,10 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | 
 		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
 
+	if (outcome.returnToPreviousMap) {
+		return MapLinkDataController.instance.getInverseLinkOf(player.mapLinkId) ?? null;
+	}
+
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
 		let allowedMapTypes = Maps.getConnectedMapTypes(player, !outcome.mapTypesDestination);
 		if (outcome.mapTypesDestination) {
@@ -425,6 +429,11 @@ export interface PossibilityOutcome {
 	 * Forced map link
 	 */
 	mapLink?: number;
+
+	/**
+	 * Return to the map where the current travel started
+	 */
+	returnToPreviousMap?: boolean;
 
 	/**
 	 * Force the player to stay in the city after the outcome: the destination

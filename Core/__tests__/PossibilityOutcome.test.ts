@@ -7,6 +7,9 @@ import {
 } from "../../Lib/src/packets/CrowniclesPacket";
 import Player from "../src/core/database/game/models/Player";
 import { applyPossibilityOutcome } from "../src/data/events/PossibilityOutcome";
+import hermitEvent from "../resources/events/40.json";
+import { MapConstants } from "../../Lib/src/constants/MapConstants";
+import { MapLinkDataController } from "../src/data/MapLink";
 
 vi.mock("../src/core/database/game/models/InventorySlot", () => ({
 	InventorySlots: { getPlayerActiveObjects: vi.fn().mockResolvedValue({}) }
@@ -39,6 +42,48 @@ vi.mock("../src/core/blessings/BlessingManager", () => ({
 }));
 
 describe("applyPossibilityOutcome", () => {
+	it.each([
+		{ originMapId: MapConstants.LOCATIONS_IDS.COCO_VILLAGE, outcomeId: "0" as const },
+		{ originMapId: MapConstants.LOCATIONS_IDS.COCO_VILLAGE, outcomeId: "1" as const },
+		{ originMapId: MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM, outcomeId: "0" as const },
+		{ originMapId: MapConstants.LOCATIONS_IDS.MOUNT_CELESTRUM, outcomeId: "1" as const }
+	])("returns to the travel origin for Xetrix's go back choice", async ({
+		originMapId, outcomeId
+	}) => {
+		const currentMapLink = MapLinkDataController.instance.getLinkByLocations(
+			originMapId,
+			MapConstants.LOCATIONS_IDS.CELESTRUM_FOREST
+		)!;
+		const player = Object.create(Player.prototype) as Player;
+		Object.assign(player, {
+			id: 1,
+			level: 10,
+			mapLinkId: currentMapLink.id,
+			effectDuration: 0,
+			effectId: "",
+			addEnergy: vi.fn(),
+			addExperience: vi.fn().mockResolvedValue(player),
+			addHealth: vi.fn().mockResolvedValue(undefined),
+			addMoney: vi.fn().mockResolvedValue(player),
+			addScore: vi.fn().mockResolvedValue(undefined),
+			addTokens: vi.fn().mockResolvedValue(undefined),
+			save: vi.fn().mockResolvedValue(player),
+			setLastReportWithEffect: vi.fn().mockResolvedValue(undefined)
+		});
+
+		const nextMapLink = await applyPossibilityOutcome({
+			eventId: 40,
+			possibilityName: "goBack",
+			outcome: [outcomeId, hermitEvent.possibilities.goBack.outcomes[outcomeId]],
+			time: 0
+		}, player, {} as PacketContext, []);
+
+		expect(nextMapLink).toMatchObject({
+			startMap: MapConstants.LOCATIONS_IDS.CELESTRUM_FOREST,
+			endMap: originMapId
+		});
+	});
+
 	it("persists money lost before experience reloads the player", async () => {
 		let persistedMoney = 1000;
 		const player = Object.create(Player.prototype) as Player;

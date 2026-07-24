@@ -49,10 +49,12 @@
     "goBack": {
       "outcomes": {
         "0": {
-          "money": 150
+          "money": 150,
+          "returnToPreviousMap": true
         },
         "1": {
-          "money": -250
+          "money": -250,
+          "returnToPreviousMap": true
         }
       }
     }
