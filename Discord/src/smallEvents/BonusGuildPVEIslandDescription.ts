@@ -16,6 +16,9 @@ export function buildBonusGuildPVEIslandDescription(packet: SmallEventBonusGuild
 		amount: packet.amount,
 		emoteKey: packet.emoteKey
 	});
+	if (!packet.emoteKey) {
+		return `${i18n.t(`smallEvents:bonusGuildPVEIsland.events.${packet.event}.intro`, { lng })}\n\n${resultDescription}`;
+	}
 	const expectedEmote = CrowniclesIcons.unitValues[packet.emoteKey];
 	const normalizedDescription = RESULT_EMOTES
 		.reduce((description, emote) => description.replace(emote, expectedEmote), resultDescription);

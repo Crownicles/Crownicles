@@ -33,4 +33,18 @@ describe("bonus guild PVE island small event", () => {
 		expect(description).toContain("You lose 5 💔");
 		expect(description).not.toContain("⚡");
 	});
+
+	it("renders escape results without requiring a resource emote", () => {
+		const packet = Object.assign(new SmallEventBonusGuildPVEIslandPacket(), {
+			event: 1,
+			result: SmallEventBonusGuildPVEIslandResultType.ESCAPE,
+			surrounding: SmallEventBonusGuildPVEIslandOutcomeSurrounding.WITH_GUILD,
+			amount: 0,
+			isExperienceGain: false
+		});
+
+		const description = buildBonusGuildPVEIslandDescription(packet, "en");
+
+		expect(description).not.toContain("undefined");
+	});
 });
