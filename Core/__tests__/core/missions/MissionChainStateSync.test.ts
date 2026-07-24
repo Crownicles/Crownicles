@@ -118,6 +118,7 @@ describe("Mission chain state synchronization", () => {
 			const player = createTestPlayer({ money: 1000 });
 
 			const updateSpy = vi.spyOn(MissionsController, "update").mockResolvedValue(player);
+			vi.spyOn(Player, "withLocked").mockImplementation(async (_id, body) => body(player));
 
 			await player.addMoney({
 				amount: -100,
@@ -164,7 +165,11 @@ describe("Mission chain state synchronization", () => {
 	describe("Player.spendMoney", () => {
 		it("keeps money awarded by the spendMoney mission before applying the debit", async () => {
 			const player = createTestPlayer({ money: 1000 });
-			vi.spyOn(MissionsController, "update").mockResolvedValue(createTestPlayer({ money: 1100 }));
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+				const rewardedPlayer = createTestPlayer({ money: inputPlayer.money + 100 });
+				opts.applyOnLockedPlayer?.(rewardedPlayer);
+				return rewardedPlayer;
+			});
 
 			await player.spendMoney({
 				amount: 50,
@@ -200,8 +205,9 @@ describe("Mission chain state synchronization", () => {
 			const player = createTestPlayer({ score: 100, experience: 500 });
 			const originalExperience = player.experience;
 
-			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
-				opts.applyOnLockedPlayer?.(inputPlayer);
+			vi.spyOn(MissionsController, "updateMultiple").mockImplementation(async (inputPlayer, _response, missions) => {
+				expect(missions.map(mission => mission.missionId)).toEqual(["earnPoints", "reachScore"]);
+				missions[0].applyOnLockedPlayer?.(inputPlayer);
 				return createTestPlayer({
 					...inputPlayer,
 					score: inputPlayer.score,
@@ -223,13 +229,13 @@ describe("Mission chain state synchronization", () => {
 			const player = createTestPlayer({ score: 100, weeklyScore: 200 });
 			let persistedWeeklyScore = 0;
 
-			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+			vi.spyOn(MissionsController, "updateMultiple").mockImplementation(async (inputPlayer, _response, missions) => {
 				const lockedPlayer = createTestPlayer({
 					...inputPlayer,
 					score: inputPlayer.score,
 					weeklyScore: inputPlayer.weeklyScore
 				});
-				opts.applyOnLockedPlayer?.(lockedPlayer);
+				missions[0].applyOnLockedPlayer?.(lockedPlayer);
 				persistedWeeklyScore = lockedPlayer.weeklyScore;
 				return lockedPlayer;
 			});

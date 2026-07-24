@@ -42,7 +42,7 @@ import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
 
 
-type MissionInformations = {
+export type MissionInformations = {
 	missionId: string;
 
 	/**
