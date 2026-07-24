@@ -42,6 +42,7 @@ import {
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
+import { getCrowniclesNamespace } from "../../../../../../Lib/src/locks/CLSNamespace";
 import {
 	League, LeagueDataController
 } from "../../../../data/League";
@@ -106,6 +107,8 @@ const OVER_CAP_TOKEN_REASONS: ReadonlySet<NumberChangeReason> = new Set([
 	NumberChangeReason.EXPEDITION,
 	NumberChangeReason.BIG_EVENT
 ]);
+
+const PLAYERS_LEVELING_UP_CONTEXT_KEY = "playersLevelingUp" as const;
 
 /**
  * Compute the new token count after applying `amount` to `currentTokens`, honoring
@@ -533,6 +536,21 @@ export class Player extends Model {
 	 * @param response
 	 */
 	public async levelUpIfNeeded(response: CrowniclesPacket[]): Promise<void> {
+		const namespace = getCrowniclesNamespace();
+		const playersLevelingUp = namespace.get(PLAYERS_LEVELING_UP_CONTEXT_KEY) as ReadonlySet<number> | undefined;
+		if (playersLevelingUp?.has(this.id)) {
+			return;
+		}
+		await namespace.runPromise(async () => {
+			namespace.set(PLAYERS_LEVELING_UP_CONTEXT_KEY, new Set([
+				...playersLevelingUp ?? [],
+				this.id
+			]));
+			await this.processLevelUps(response);
+		});
+	}
+
+	private async processLevelUps(response: CrowniclesPacket[]): Promise<void> {
 		if (!this.needLevelUp()) {
 			return;
 		}
@@ -567,7 +585,7 @@ export class Player extends Model {
 
 		await this.addLevelUpPacket(response, this.level, discoveredRecipes);
 
-		await this.levelUpIfNeeded(response);
+		await this.processLevelUps(response);
 	}
 
 	/**
