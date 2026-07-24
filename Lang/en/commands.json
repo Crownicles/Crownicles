@@ -342,7 +342,7 @@
   },
   "guild": {
     "embedTitle": "{{guildName}} guild | Level {{level, number}}",
-    "description": ":scroll: `{{description}}`",
+    "description": "{emote:messages.description} `{{description}}`",
     "separator": " | ",
     "memberInfo": "{{icon}} - **{{pseudo}}** ({{ranking}} {emote:announcements.trophy} | {{score, number}} {emote:unitValues.score}{{islandStatusIcon}})\n",
     "members": "{emote:guild.membersCount} {{memberCount, number}}/{{maxGuildMembers, number}} members",
@@ -1035,7 +1035,7 @@
         "disenchantDescription": "Remove enchantment from one of your equipment.",
         "backToCity": "Leaving the Forge",
         "descriptionBoth": "{emote:city.services.blacksmith} The heat from the forge envelops you as you step inside. The blacksmith, a colossus whose arms bear the marks of years of hard labor, looks up from his anvil and greets you with a nod. He can reinforce your equipment or remove enchantments that are weighing you down.",
-        "descriptionUpgradeOnly": "{emote:city.services.blacksmith} The heat from the forge envelops you as you step inside. The blacksmith, a colossus whose arms bear the marks of years of hard labor, examines your equipment with a expert eye. His services don’t come cheap, but the quality of his work speaks for itself.",
+        "descriptionUpgradeOnly": "{emote:city.services.blacksmith} The heat from the forge envelops you as you step inside. The blacksmith, a colossus whose arms bear the marks of years of hard labor, examines your equipment with an expert eye. His services don’t come cheap, but the quality of his work speaks for itself.",
         "descriptionDisenchantOnly": "{emote:city.services.blacksmith} The heat from the forge envelops you as you step inside. The blacksmith notices the magical glow emanating from your enchanted gear. He can remove the enchantments cleanly, without damaging the gear.",
         "descriptionNoItems": "{emote:city.services.blacksmith} The heat from the forge envelops you as you step inside. The blacksmith watches you for a moment before shrugging. You don't have anything for him to work on right now.",
         "selectItemPlaceholder": "Select a equipment",
@@ -1100,7 +1100,7 @@
         "backToBosses": "Back to the Creatures",
         "personal": {
           "title": "Your Greatest Achievements",
-          "description": "For each final boss, find the highest level you've defeated and the saved account of that battle.",
+          "description": "For each final boss, find the highest level you've defeated and the saved chronicle of that battle.",
           "button": "View your achievements",
           "chooseBoss": "Select the creature whose records you'd like to view.",
           "record": "{emote:monsters.{{monsterId}}} **{{boss}} level {{level}}**\n{{class}} · {{turns}} turns · <t:{{date}}:D>\n\n{{story}} Your most frequently used technique was **{{action}}**, used **{{actionCount}} times**.",
@@ -1232,7 +1232,7 @@
           "placeholder": "Choose a category",
           "descriptionWithItems": "{emote:city.homeUpgrades.chest} Your vault contains some items. Select a category to view its contents or store new items.",
           "descriptionEmpty": "{emote:city.homeUpgrades.chest} Your vault is empty at the moment. Select a set to store items from your inventory.",
-          "categoryHeader_one": "**{{category}}** — {{count}}/{{total}} space taken",
+          "categoryHeader_one": "**{{category}}** — {{count}}/{{total}} slot taken",
           "categoryHeader_other": "**{{category}}** — {{count}}/{{total}} slots filled",
           "inventoryInfo": "{emote:city.chestActions.inventory} Equipment: {{equipped}} | Reservation: {{backupCount}}/{{maxBackup}}",
           "noStoredItems": "There are no items stored in this category.",
@@ -2174,11 +2174,11 @@
   },
   "classesInfo": {
     "title": {
-      "list": ":bookmark: Classes list",
+      "list": "{emote:commands.classesInfo} Classes list",
       "attack": "{{emote}} {{name}} | {{cost, number}} {emote:unitValues.breath}"
     },
     "description": {
-      "list": "Here's a list of the classes available for your character and their statistics. For more information on a class, select it from the choices below."
+      "list": "Here's a list of the classes available for your character and their statistics. For more information on a class, select it from the choices below"
     },
     "mainOption": {
       "name": "Class list",
@@ -2282,7 +2282,7 @@
   "unlock": {
     "himself": "You cannot set yourself free, ask a friend to do so.",
     "notInJail": "This player is not jailed.",
-    "title": "{{pseudo}}'s release",
+    "title": "Unlocking {{pseudo}}",
     "confirmDesc": "Are you sure you want to release **{{pseudo}}** for **{{price, number}} {emote:unitValues.money}**?",
     "canceledTitle": "Release cancelled",
     "canceledDesc": "The release has been cancelled.",
@@ -2294,7 +2294,7 @@
     "error": {
       "cannotBuy": "You don't have enough gems to buy this item! You are missing `{missingMoney}{emote:unitValues.gem}`.",
       "canceledPurchase": "Transaction cancelled!",
-      "alreadyHadBadge": "You already have the \"Mission completer\" badge. You cannot get more honors than you already have!",
+      "alreadyHadBadge": "You already have the \"Quest Master\" badge. You cannot get more honors than you already have!",
       "leaveShop": "You left the shop.",
       "alreadyBoughtPointsThisWeek": "You already purchased points this week, come back next week to buy some!",
       "noMissionToSkip": "You do not have any missions to skip!",
@@ -2448,7 +2448,7 @@
           "performs a {{attack}}!"
         ],
         "maxUses": [
-          "tries to use a {{attack}}, but it failed!"
+          "tries to use a {{attack}}, but it fails!"
         ],
         "charging": [
           "prepares to launch a {{attack}}!"
@@ -2512,7 +2512,7 @@
       "higherEloWins": [
         "{{winner}} dominates the field with an outstanding performance.",
         "{{loser}} gave everything he had, but {{winner}} showed greater control of his game.",
-        "The difference in level between the two players made itself felt in this fight.",
+        "The difference in level between the two players was evident during this fight.",
         "{{winner}} demonstrated its expertise by winning this tough encounter.",
         "{{loser}} can be proud of his performance despite the defeat, but {{winner}} is undoubtedly the winner of this fight.",
         "{{winner}} crushed {{loser}} with a dominant performance.",
@@ -2596,16 +2596,16 @@
     "onlyInitiatorCanCancel": "Only the seller can cancel the request!",
     "canceled": "The selling request has been canceled!",
     "cantSellToYourself": "You can't sell a pet to yourself!",
-    "noOneAvailable": "Sadly, no one seems to be interested in your offer. Your request has been cancelled.",
+    "noOneAvailable": "Unfortunately, no one seems to be available to buy your pet. Your sale has been cancelled.",
     "sameGuild": "You can't buy this pet since the seller is part of your guild.",
     "alreadyHavePet": "You already have a pet with you.",
     "notEnoughMoney": "You don't have enough money to buy it. You're missing `{{missingMoney, number}}{emote:unitValues.money}**.",
     "initiatorSituationChanged": "The seller is no longer able to sell their pet. The request has been cancelled.",
-    "sellTitle": "Pet selling",
+    "sellTitle": "Pet Sale",
     "sellTitleWithBuyer": "{{buyer}}, {{seller}} wants to sell you a pet:",
     "sellDescription": "{{pseudo}} would like to sell a pet for `{{price, number}}{emote:unitValues.money}**",
     "petFieldName": "Sold pet:",
-    "sellFooter": "For more information about pet sells, use the /help petsell command.",
+    "sellFooter": "For more information about pet sales, use the /help petsell command.",
     "successTitle": "{{pseudo}}, transaction completed!",
     "successDescription": "{{pet}} is now following you. Take good care of it!"
   },
@@ -2676,7 +2676,7 @@
     "anotherPlayerTransferring": "Your guild member **{{playerName}}** is transferring a pet. Please try again later.",
     "transferCancelled": "The transfer has been cancelled.",
     "situationChanged": "Something went wrong during the transfer. Please try again.",
-    "noPet": "You don't have any pet to transfer and your guild's shelter is empty.",
+    "noPet": "You don't have any pets to transfer and your guild's shelter is empty.",
     "confirmTransferTitle": "{{pseudo}}, the transfer has been completed.",
     "confirmSwitch": "**{{oldPet}}** now stays in the shelter and **{{newPet}}** follows you!",
     "confirmDeposit": "**{{oldPet}}** has been moved to your guild's shelter!",
