@@ -109,8 +109,11 @@ import { HomeFeatureHandlerContext } from "../../src/commands/player/report/home
 /**
  * Create home data with cooking configuration.
  */
-function createCookingHomeData(cookingSlots = 2): ReturnType<typeof createHomeData> {
-	const homeData = createHomeData({ garden: undefined });
+function createCookingHomeData(cookingSlots = 2, cookingLevel = 5): ReturnType<typeof createHomeData> {
+	const homeData = createHomeData({
+		garden: undefined,
+		cookingLevel
+	});
 	homeData.features.cookingSlots = cookingSlots;
 	return homeData;
 }
@@ -877,15 +880,13 @@ describe("CookingFeatureHandler", () => {
 	});
 
 	describe("session state management", () => {
-		it("should create fresh state for new user", async () => {
+		it("should initialize the menu option with the player's cooking level", () => {
 			const ctx = createHandlerContext({
-				homeData: createCookingHomeData(2)
+				homeData: createCookingHomeData(2, 14)
 			});
-			// getMenuOption accesses state (cookingLevel, cookingGrade)
 			const option = handler.getMenuOption(ctx);
 			expect(option).not.toBeNull();
-			// Default level is 0
-			expect(option!.description).toContain('"level":0');
+			expect(option!.description).toContain('"level":14');
 		});
 
 		it("should update state after ignite response", async () => {
