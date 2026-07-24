@@ -219,13 +219,19 @@ function applyOutcomeNextEvent(outcome: PossibilityOutcome, player: Player): voi
 	}
 }
 
-function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | null {
+function getFixedMapLink(outcome: PossibilityOutcome, player: Player): MapLink | null {
 	if (outcome.mapLink) {
 		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
+	return outcome.returnToPreviousMap
+		? MapLinkDataController.instance.getInverseLinkOf(player.mapLinkId) ?? null
+		: null;
+}
 
-	if (outcome.returnToPreviousMap) {
-		return MapLinkDataController.instance.getInverseLinkOf(player.mapLinkId) ?? null;
+function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | null {
+	const fixedMapLink = getFixedMapLink(outcome, player);
+	if (fixedMapLink) {
+		return fixedMapLink;
 	}
 
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
