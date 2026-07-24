@@ -40,7 +40,7 @@ import { assertUnderLock } from "../../../../Lib/src/locks/CLSNamespace";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 
-export type MissionInformations = {
+type MissionInformations = {
 	missionId: string;
 
 	/**
