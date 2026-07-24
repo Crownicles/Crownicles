@@ -1355,15 +1355,15 @@
       },
       "push": {
         "outcomes": {
-          "0": "You approach quietly behind him and violently push him in the swirling waters. He sinks and disappears from sight. You watch around briefly, hoping to not have been seen.",
-          "1": "You approach quietly when you suddenly trip over an unseen fallen branch. You fall forward onto the suicidal man and bring him with you in your fall towards the cold deadly waters.",
-          "2": "You creep behind the man when a step loudly breaks a stick. Afraid, the poor man throws the rock and follow behind. You get up and find a filled moneybag he left behind."
+          "0": "You approach silently behind him and push him violently into the river. He sinks and disappears from your sight. You watch around for a few moments, hoping not to have been seen, and leave quietly.",
+          "1": "You approach silently when suddenly a branch catches your leg. You fall backward onto the suicidal man and drag him down with you in your fatal fall toward the icy whirlpools of death.",
+          "2": "You approach stealthily when your foot breaks a branch. Startled, the poor man throws the stone and follows it. You then stand up and discover a pouch he left behind."
         },
-        "text": "\"Help\" him throwing the rock."
+        "text": "\"Help\" him by pushing him."
       },
       "watch": {
         "outcomes": {
-          "0": "Apathetically, you watch as the man sinks following his rock. You search around to see if he left any things and find a filled moneybag. You leave, satisfied.",
+          "0": "Nonchalantly, you watch the man sink into the river as a result of his stone. You search the surroundings to see if he left anything behind and find a purse containing coins. You leave, satisfied.",
           "1": "As you lean back comfortably, you see him change his mind and throw his rock aside. While turning around, he notices you and invites you for dinner. Without asking questions about the previous turn of events, you accept and follow him to his cottage. As you start dining your head feels heavy, your vision gets blurred and you fall into a deep slumber. You wake up many hours later on the side of an empty and unknown road."
         },
         "text": "Watch him throw the rock."
@@ -1419,38 +1419,38 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "The minstrel, seeing you not answering, ignores you and restart singing basic songs. You then continue your way.",
-          "1": "Seeing you not reacting, the minstrel, determined to earn money at all costs, and seeing in you the perfect fool, decides to drug you and drag you into the dark nearby alley. There, he starts singing a song about laboratory torture, casting you as the executioner. Having the strength to carry out this experiment, which goes perfectly on this beautiful test subject, the minstrel, or in your hallucination your boss, decides to give you two objects as a reward. Waiting for you to come back to your senses, he starts singing soulless songs again.",
-          "2": "Seeing you not reacting, Perotin decides to drug you, so you reveal what you think about by talking, to see if something happens. He doesn't see anything there, even in the deepest of them. Panicked, he calls the guards who arrest you for madness."
+          "0": "The minstrel, seeing that you do not respond, ignores you and restarts singing basic, soulless songs. You then continue on your way.",
+          "1": "Seeing you not reacting, the minstrel, determined to earn money at all costs, and seeing in you the perfect guinea pig, decides to drug you and drag you into the dark nearby alley. There, he starts singing a song about laboratory torture, casting you as the executioner. Having the strength to carry out this atrocious experiment, which goes perfectly on this beautiful test subject, the minstrel—or in your hallucination, your boss—decides to give you two objects as a reward. Following this, Pérotin waits for you to return to normal, takes the object of greater value, and leaves you with the other object, which may be useful for the journey ahead.",
+          "2": "Seeing you fail to react, Perotin decides to drug you so that you will reveal your thoughts through speech to see if anything is there. He sees nothing, not even in the deepest of them. Panicked, the minstrel calls the guards who commit you for madness."
         }
       },
       "singCrazyLove": {
         "outcomes": {
-          "0": "Immediately asked, immediately done. You find yourself in a bed, undressed, and the person next to you looks like your lover. Watching at yourself, you see that you are attached on the bed and... you're missing your legs and arms. You can only move with your torso. Seeing your distress, Perotin ends his song with \"all this was just a dream\", and you are back as before. You will however need to take a rest.",
+          "0": "Immediately asked, immediately done. You find yourself in a bed, undressed, next to what appears to be your lover. Looking more closely at yourself, you realize that you are attached at the waist, and... you're missing your limbs entirely, both arms and legs. You can only move with your torso. Seeing your distress, Perotin ends his song with \"all this was just a dream\" and you become as before, whole and detached. You will, however, need to rest to recover from your trauma.",
           "1": "No sooner asked than done. You find yourself at sea, far from everything, accompanied by a single sailor, your love. Arriving on a desert island, you see a cross on the ground. It's a treasure trove, filled with beautiful booty and a useful object. Greed and avarice have got the better of you, and you decide to leave the island, alone. On your way back home, you come across Pérotin, who sings about giving the money he's earned there, as a gift to this unparalleled melody. Following these adventures, you set off again, accompanied by the object you found on the island.",
-          "2": "Knowing you heroic quest to save the princess, the minstrel decided to sing a song about one of the possible following of you adventure after saving her. But not knowing much about you relationship with the princess, if preferred to tell the story of \"The old and the fake monster\", in which you are the monster of course. Already knowing the synopsis, Perotin succeeded to not change you, probably because of the under dosage of his drugs. Having not entered in the story, you thank him for this beautiful story, and continue you trip, aware of this useless waste of time."
+          "2": "Knowing your heroic quest to save the princess, the minstrel decides to tell one of the possible outcomes of your adventures after this rescue. But not knowing much about your relationship with the princess, he preferred to tell the story of \"The Old Woman and the Fake Monster,\" in which you play the fake monster, of course. Already knowing the synopsis, Perotin fails to make you change, likely due to the low dosage of his drugs. Not having entered into his tale, you decide to thank him for this magnificent story and continue your journey, aware of this useless waste of time."
         },
         "text": "Sing a crazy love."
       },
       "singHero": {
         "outcomes": {
-          "0": "This famous bard, not knowing much about the adventurer's work, decides to tell a simple trip in a forest, like you know well. Disappointed about this song, and about Perotin, you choose to continue your adventure.",
-          "1": "Perotin decides to make you live the moment at which you asked him to sing the song. The problem, is that the drugs are so real that you answer the same thing you did, and the minstrel always does the same. It then created an hallucino-temporal loop, because of the talents of Perotin, and your stupidity. Perotin, the only consent of the scene that you live with him had mercy for you at the end of the day and released you from this bad drug.",
-          "2": "Perotin decides to make you see the future, whether it's real or only fiction of your mind, and by the occasion let you earn some money: you get yourself around an old abandoned castle. Looking around you, you find a passage full of traps. You finally avoid all of them, and find a big treasure room. But our favorite minstrel, before the end of your looting, run away with all your booty, leaving you with the main chest, which contains much money, and a surprising item useful to save the princess. Amused, you continue this funny adventure, still a bit under the influence of this drug, called the γ-hydroxybutyric acid according to rumors."
+          "0": "This famous bard, knowing little about the life of an adventurer, decides to recount a mundane trip into a forest just like those you know so well. Disappointed by this song and by Perotin, you continue your adventure.",
+          "1": "Perotin decides to make you go back two minutes just before speaking to him. Small problem: his story and his drugs are so faithful to the original that you give the same reaction to this report, without the minstrel's decision regarding this reaction changing. A hallucinatory-temporal loop thus occurs, thanks to Perotin's talents and your stupidity. Perotin, the only one aware of the scene you are living with him, had mercy on you at the end of the day and released you from this bad drug.",
+          "2": "Perotin decides to show you the future, whether it be real or merely a figment of your imagination, and at the same time help you earn some money: you head to the surroundings of an old abandoned castle. Searching around, you stumble upon a secret passage riddled with traps. You manage to avoid them all and find a room of immense treasure. But our favorite minstrel, just before the end of your looting and gathering of treasures outside the trap zone, slips away with your booty, leaving you only with the room's main chest, containing plenty of money and a surprisingly useful item for saving the princess. Amused, you continue this strange adventure, still somewhat under the influence of the drug known by rumors as γ-hydroxybutyric acid."
         },
         "text": "Sing about our life, and our heroic history."
       },
       "singLove": {
         "outcomes": {
-          "0": "Taking your words back, you find yourself in an old monastery, in the countryside. Your lover and yourself are staying in this dingy place, harvesting just enough food to survive. You fulfill yourself in this story, due to the overdose of the drugs, that you don't see time going forward. Waking you up, after a few minutes, Perotin tells you that the drugs makes the use feel a few minutes, but those are months. Fortunately, or you would be dead of old age. Meditative, you continue your trip.",
-          "1": "Not understanding your wish, for an uncolored love, Perotin thinks that you are depressive, he then chooses to sing a comforting song, to get you rid of this sudden depression. This song made you feel very well.",
+          "0": "Returning to your words, you find yourself in an old monastery in the countryside, working the land. You and your lover remain in this dingy place, managing to harvest just enough each month to survive. You thrive so much in this story due to the drug overdose that you don't notice time passing. Perotin comes to wake you and tells you that the drugs ingested make the user feel as if 1 to 2 minutes of their stories are an entire month of their life. Fortunately, it is the case; otherwise, you would have died of old age. Meditative, you continue your journey.",
+          "1": "Perotin, unable to understand your sudden longing for a colorless love, believes you are depressed; he decides to sing you a comforting song to cure you of this sudden melancholy. The song does you a world of good.",
           "2": "Seeing your knowledge of passionless love, the minstrel takes a liking to you, and makes you a song where your love is you. Caught up in a violent couple's quarrel between you and yourself, the minstrel stops the song, and asks you for a charge for the frantic fight you had with yourself in front of his admirers. Again in the story, you think you're leaving each other, which makes you sad, very sad. So you leave, leaving some money for Pérotin to make up for the inconvenience."
         },
         "text": "Sing a dull and redundant love."
       },
       "singRoyalty": {
         "outcomes": {
-          "0": "The minstrel loving his homeland of ever, fills your request and singed the dukes. The duke of the next region came this way, and heard this soft melody, rocking his heart. At the end of the song, he rewards you with a big gold bag.",
+          "0": "The minstrel, loving his eternal homeland, grants your request and sings the praises of the dukes and tales. The duke of the neighboring region passes by and hears this sweet melody, which soothes his heart. At the end of the song, he rewards you and your friend with a large pouch of gold.",
           "1": "The minstrel, hating the current power, by his song decides to make a revolution. He take you with him, drugs you, and makes you think that the rest of the people are on their way to the king's room. Unfortunately, one of the string of the mandoline breaks, and the music stops. You however are in the king's room, alone, with a fork. You immediately get arrested for madness.",
           "2": "Perotin, knowing a bit your story to save the princess, decides to make you live the view of her mother for a day, so that you learn a bit more about this distressed woman. But the queen's life is boring for you, and appart from some gossips and thoughts of woman on her child, you don't get any useful informations because of the fact that those are caused by magic drugs of Perotin. At the end of the day, you take your body back, and continue your trip."
         },
