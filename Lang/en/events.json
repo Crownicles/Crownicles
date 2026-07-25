@@ -1509,7 +1509,7 @@
         "text": "Repeat to the lord what you heard."
       }
     },
-    "text": "You have been so tired that you have trouble walking. This is when you see a village. Saved! Not without pain, you finally arrive to the village. From the sympathy of a group of villagers, you find a place to sleep and food to eat. You plan to leave soon, however, a villager asks you for a favor. Shining you with vast wealth, the villager requests you to help them dethrone the chatelain of the neighboring castle."
+    "text": "You are so exhausted that you have difficulty walking. That is when you spot a village—you are saved! With great effort, you reach the village and manage to find favor with a group of locals who agree to feed you and provide a place to sleep. You plan to leave soon, but one of the villagers approaches you with a favor. Luring you with the promise of great riches, the inhabitant begs you to rid them of the neighboring castle's chatelain."
   },
   "48": {
     "possibilities": {
@@ -1519,7 +1519,7 @@
           "1": "You watch the knight, unsure of what to do in the face of this armored colossus. Summoning your courage, you confront him in a duel... and are miserably defeated by him. The knight demands your purse in exchange for your life.",
           "2": "You watch the knight, unsure of what to do in the face of this armored colossus. Suddenly, you have an idea: you wait until it's dark and pitch-black before making your way discreetly towards the tower. The door is closed and the knight has disappeared. You climb the tower and enter through a window. You search it from top to bottom, but find nothing but food. You eat on the spot, taking as much as you can. Your meal has restored your strength and you're feeling better than ever.",
           "3": "Not knowing what to do, you engage the discussion and sympathize with the knight. You gradually get the discussion on the artifact and enjoy your speaker talent in advance. The knight, convinced that you are worthy of possessing it, will get you the artifact. He brings it to you, as promised. You thank him and go to search for someone to buy it. You see what seems to be a merchant, but it was a thief shooting you an arrow in the leg. He steals the artifact from you and runs away. Blessed and helpless, you watch him running away with your loot.",
-          "4": "Not knowing what to do, you engage the discussion and sympathize with the knight. You gradually get the discussion on the artifact and enjoy your speaker talent in advance. Against all expectations, when you ask him about the artifact he refuses. Not wishing to bother him, you do not insist more and talk to the knight a little before you get back to your path."
+          "4": "Not knowing what to do, you engage in conversation and sympathize with the knight. You gradually steer the discussion toward the artifact, relishing your oratory skills in advance. Against all expectations, when you ask him for the artifact, he refuses. Not wishing to upset him, you do not press further and chat with the knight for a while before continuing on your way."
         }
       },
       "fight": {
@@ -1528,19 +1528,19 @@
           "1": "Ready to fight, but knowing little about your opponent, you approach him on the pretext of wanting to discuss an arrangement. Close enough to your enemy, you draw your sword and lunge at him. The knight hardly has time to react as you're already knocking him out with the pommel of your sword. But that's not enough. You strike him a second time and, this time, he collapses to the ground. You then try to open the tower door, but to no avail. You check the guard for the key, but he doesn't have it on him. So you leave, dejected.",
           "2": "Ready to fight, but knowing little about your opponent, you approach him on the pretext of wanting to discuss an arrangement. Close enough to your enemy, you draw your sword and knock him out with the pommel. You then search the guard and soon find a key. Open the door. Once inside, you have no trouble finding the artifact. After an hour of searching, you find a merchant. He buys the artifact from you for the modest sum of five hundred gold coins.",
           "3": "Ready to fight but not knowing your opponent, you approach him on the pretext of wanting to discuss an arrangement. Close to your enemy, you draw your sword and knock him out with the pommel. You then try to open the tower door, but it is locked... You search the guard and quickly find a key. You open the door; inside, you have no trouble finding the artifact. You then go in search of a merchant and find one easily. He steals the artifact with a skillful move, but you also manage to steal an item from him. Hoping that it has value, you look at what it is.",
-          "4": "Barely knowing your opponent, you approach with the excuse of wanting to discuss an arrangement. Once close enough to your enemy you draw your sword to stun him with the pommel. Unfortunately for you, the knight was far stronger and faster than you. The knight runs at you, makes a right hook and pushes you back by hitting you in the stomach with his foot before hitting you with a powerful uppercut. On the ground, on the edge of fainting, you are not able to get up.",
-          "5": "The knight brandishes his sword to intimidate you. Faced with this colossus, you hesitate to flee, but decide to stay. You will fight this knight, although your chances of defeating him are slim. Your opponent effortlessly parries your blows one by one, before knocking you to the ground. On the ground, unarmed, you know the fight is over. Then the knight says to you: \"You're very brave, so here's your reward\". He gives you an item before moving to the tower entrance.",
-          "6": "Ready to fight, you quickly lunged at your opponent, drawing your sword. The knight barely had time to draw his weapon before you charged at him. At that moment, you realize your mistake. He's wearing armour, but you're not. So you try to stun him with the pommel of your sword, several times. This seems to have disorientated him, so you prepare to try again. But before you can, your opponent wounds you in the leg. You're on the ground, unable to get up. The knight stands over you and raises his sword. You close your eyes and hear your own scream."
+          "4": "Knowing little of your opponent, you approach under the pretext of wanting to discuss an arrangement. Once close enough to your enemy, you draw your sword to stun him with the pommel. Unfortunately for you, the knight was far stronger and faster than you. He charges at you, lands a right hook, and pushes you back with a kick to the stomach before delivering a powerful uppercut. On the ground, on the verge of fainting, you are unable to get up.",
+          "5": "The knight brandishes his sword to intimidate you. Faced with this colossus, you hesitate to flee, but decide to stay. You will fight this knight, although your chances of defeating him are slim. Your opponent effortlessly parries your blows one by one, before knocking you to the ground. On the ground, unarmed, you know the fight is over. The knight tells you that you are very brave and offers you a reward. He gives you an item before moving to the tower entrance.",
+          "6": "Ready to fight, you quickly lunge at your opponent, drawing your sword. The knight barely had time to draw his weapon before you charged at him. At that moment, you realize your mistake. He's wearing armour, but you're not. So you try to stun him with the pommel of your sword, several times. This seems to have disorientated him, so you prepare to try again. But before you can, your opponent wounds you in the leg. You're on the ground, unable to get up. The knight stands over you and raises his sword. You close your eyes and hear your own scream."
         },
         "text": "Fight the knight."
       },
       "meetHim": {
         "outcomes": {
-          "0": "You start talking to him, and find him very nice. You gradually steer the discussion towards his role here, he explains that he is the tower's guardian. You ask him if it is possible for you to enter, but he refuses. You get back on your way.",
-          "1": "You engage the discussion and talk for several minutes. The knight didn't say a word. Understanding that he will not talk, you abandon any discussion as you leave.",
+          "0": "You start talking to him and find him very nice. You gradually steer the discussion towards his role here. He explains that he is the tower's guardian. You ask him if it is possible for you to enter, but he refuses. You get back on your way.",
+          "1": "You engage the discussion and talk for several minutes. The knight doesn't say a word. Understanding that he will not talk, you abandon the discussion as you leave.",
           "2": "You engage the discussion, the knight immediately orders you to move on. You don't want to leave, but as soon as he shows you his sword, you don't hesitate any longer.",
           "3": "You start a discussion but the knight stays quiet. Understanding that any attempt to dialogue is useless, you leave.",
-          "4": "You start a discussion and spend over an hour with the knight. You gradually steer the discussion around the artefact and enjoy in advance your oratory skills. The knight goes away to get the artefact while you, obsessed by your triumph, do not notice the person behind you until he stabs you in the back. You fall to the ground.",
+          "4": "You engage in conversation and spend over an hour bonding with the knight. You gradually steer the discussion toward the artifact and congratulate yourself in advance on your oratory skills. The knight leaves to fetch the artifact while you, obsessed with your triumph, do not notice the person behind you until they stab you in the back. You fall to the ground, seriously injured.",
           "5": "You engage the knight in discussion and attempt to sympathise for over an hour. He does not want to let you pass by in any way. With no other choice, you draw your sword and attack him. The knight, insensitive to your blows thanks to his armor, hits you violently in the face before knocking you out with a stroke of his pommel.",
           "6": "You start a discussion and sympathize with the knight. You gradually steer the discussion around the artefact and enjoy in advance your oratory skills. The knight, convinced that you are worthy to possess it, goes to fetch the artefact for you. He brings it to you, as promised. You thank him and go looking for a merchant. You manage to sell it for the modest sum of five hundred gold coins."
         },
@@ -1582,7 +1582,7 @@
         "text": "Take it with you."
       }
     },
-    "text": "After strolling along the beach for a few minutes, you come across a strange little creature - a hermit crab! It seems to have turned on its shell..."
+    "text": "After strolling along the beach for a few minutes, you come across a strange little creature - a hermit crab! It seems to have flipped over on its shell..."
   },
   "5": {
     "possibilities": {
@@ -1634,7 +1634,7 @@
           "1": "As you are about to leave, you realize that the group of villagers is heading towards you, they then begin to extort money from you and you give them money so that they leave you alone.",
           "2": "You decide to leave, without a glance, you leave the Coco village to continue your quest."
         },
-        "text": "Leave the village without further waiting."
+        "text": "Leave the village without further delay."
       },
       "nap": {
         "outcomes": {
@@ -1651,7 +1651,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "The sun is about to set, so you settle down to rest.",
+          "0": "After hesitating for a long time before the possibilities that lay before you, the sun is about to set, so you settle down to rest.",
           "1": "After hesitating for a long time about the possibilities available to you, you decide to try to climb half a dozen steps before changing your mind, finding the climb too perilous. As you pivot your foot to go back down, it slips and you roll down the stairs. You stand up painfully to find that you are badly gashed. You get back on your way, annoyed by this unfortunate incident.",
           "2": "You sit down on the ground lined with clovers to think about what you want to do. Quickly, a fox faces you. He slowly approaches you and ends up reaching for one of your hands, puts his nose on it, yaps at you and runs away. You decide to follow the path this friendly animal has just blazed for you."
         }
@@ -1659,7 +1659,7 @@
       "goBack": {
         "outcomes": {
           "0": "Shortly after turning around, you meet a crying and scared little boy by the wayside. He explains to you that he fled during a bandit attack on his parents merchandise cart. You rush to offer your help, the child accepts immediately. After walking two long hours, you find the parents of the child alive, but hurted. As you bid them farewell, the mother gives you a purse filled with gold.",
-          "1": "Shortly after turning around, you meet a crying and scared little boy by the wayside. He explains to you that he fled during a bandit attack on his parents merchandise cart. You rush to offer your help, the child accepts immediately. After walking for a few minutes, a group of heavily armed bandit attacks you by surprise. This trap will not have been fatal to you, but you lose many gold coins during your escape.",
+          "1": "Shortly after turning around, you meet a crying and scared little boy by the wayside. He explains to you that he fled during a bandit attack on his parents' merchandise cart. You rush to offer your help; the child accepts immediately. After walking for a few minutes, a group of heavily armed bandits attacks you by surprise. This trap will not have been fatal to you, but you lose many gold coins during your escape.",
           "2": "Shortly after turning around, you hear the clatter of pots and pans approaching you. It's a traveler in search of new culinary flavors, about to set up camp and rest. In the course of conversation, you discover her first name: Lucya. She offers you a pie that delights your palate. Full, rested and delighted by your chance encounter, you decide to continue on your way."
         },
         "text": "Turn around."
@@ -1667,8 +1667,8 @@
       "search": {
         "outcomes": {
           "0": "You search for a few moments around the base of the stairs, without success. Two more steps let you discover a few gold coins scattered here and there among the weeds. Delighted with your meager discovery, you continue your adventure whistling.",
-          "1": "After a handful of minutes searching the surroundings, you find a used leather satchel, almost entirely hidden under a heavy stone. By opening it, you discover a papyrus where only a few words are still legible: \"staircase\", \"cave\", \"camp\" and \"Xetrix\". This name sounds familiar to you, but especially disappointed not to have found any treasure, you resume your journey.",
-          "2": "Suddenly, when looking around, an enormous rock breaks off from Mount Celestrum and grazes you in its fall. You don't even have time to react and look at the rock still falling, hitting you at the arm violently."
+          "1": "After a handful of minutes searching the surroundings, you find a worn leather satchel, almost entirely hidden under a heavy stone. By opening it, you discover a papyrus where only a few words are still legible: \"staircase\", \"cave\", \"camp\" and \"Xetrix\". This name sounds familiar to you, but feeling especially disappointed not to have found any treasure, you resume your journey.",
+          "2": "Suddenly, while searching the surroundings, an enormous rock breaks off from Mount Celestrum and grazes you as it falls. You don't even have time to react, watching the rock continue its fall after violently grazing your forearm."
         },
         "text": "Search the surroundings."
       },
@@ -1688,7 +1688,7 @@
       "deny": {
         "outcomes": {
           "0": "You refuse to play with the children and leave them to their own devices.",
-          "1": "You refuse, and this has the consequence of annoying the children who pick up stones from the ground and throw them at you. In front of the rubble rain, you are forced to flee, out of reach of children. You realize that you have been hit in the head and the wound is bleeding profusely, you will need treatment.",
+          "1": "You refuse, and this angers the children who pick up stones from the ground and throw them at you. Faced with a rain of stones, you are forced to flee, out of reach of the children. You realize that you have been hit in the head and the wound is bleeding profusely; you will need treatment.",
           "2": "You say no, and the kids get upset. Seeing that the situation is about to turn sour, you quickly walk away from them."
         },
         "text": "Refuse and continue."
@@ -1715,7 +1715,7 @@
           "2": "Without doing it intentionally, you cut the cheek of one of the children... Embarrassed, you give him some coins so that he can pay for his care.",
           "3": "Very energetic, the children keep you going in circles for a while. After twenty minutes, however, you finally put an end to the game."
         },
-        "text": "Play a fighting game."
+        "text": "Play-fight."
       },
       "teach": {
         "outcomes": {
@@ -1734,13 +1734,13 @@
         "outcomes": {
           "0": "With nothing special happening on the road, you succeed in reaching the building where you have to deliver your package. A man comes out and hands you your due. You set off again for the next part of your adventures.",
           "1": "You pick up the package and head off in the direction the courier points you. You quickly fall into an ambush and get robbed of the package and your purse. Still in shock, you decide to take a rest under a nearby tree.",
-          "2": "You take the package from the courier's hands and leave for the house he indicated to you. Arrived at your destination, you find yourself unable to locate the house despite long research. You finally decide to keep the object and continue your way."
+          "2": "You take the package from the courier's hands and leave for the house he indicated to you. Arrived at your destination, you find yourself unable to locate the house despite searching for a long time. You finally decide to keep the object and continue on your way."
         },
         "text": "Agree to deliver the package."
       },
       "deny": {
         "outcomes": {
-          "0": "You Politely decline, explaining that you are occupied. You go to rest under a nearby tree.",
+          "0": "You politely decline, explaining that you are occupied. You go to rest under a nearby tree.",
           "1": "You refuse and the man apologizes for the inconvenience. You quickly change the subject and chat with him. After a few minutes of conversation, he offers you a snack. This little break won't have been a total waste of time, you made a friend.",
           "2": "You politely reject the offer. The outraged man throws the package in your face and orders you to deliver it for him! You take the package for yourself and go away from this obnoxious character. You come out with a pretty bruise on your face and an item that will surely come in handy."
         },
@@ -1748,9 +1748,9 @@
       },
       "end": {
         "outcomes": {
-          "0": "You remain silent in front of man. He doesn't quite know how to react to your bliss. After 5 minutes, he decides to accost another man to have the package delivered to him.",
+          "0": "You remain silent in front of the man. He doesn't quite know how to react to your bliss. After 5 minutes, he decides to accost another man to have the package delivered to him.",
           "1": "You hesitate then end up refusing and continue your journey without worrying about the future of this package.",
-          "2": "You have no answer to this proposition. The man is not disturbing you more when he understands that you will not accept his request. You leave it for continuing your journey."
+          "2": "You remain silent in response to this proposal. The man does not bother you further once he understands that you will not accept his request. You leave him to continue your journey."
         }
       },
       "steal": {
