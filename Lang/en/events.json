@@ -1759,7 +1759,7 @@
           "1": "You take the package. On your road, you cross the path of an itinerant trader. You call out to him to buy the package. You get a very good price for it. You continue on your way, without any remorse.",
           "2": "You promise to the courier to deliver the package and return to the inn that hosted you the night before. You decide to open the package in order to see the content and find out that it is completely empty. What a waste!",
           "3": "You decide to steal the package and resell it. However, since you are not in a hurry, you decide to sit down near a river. You are quickly joined by what seems to be a wandering trader. Having no need for his trinkets, you offer him the package. The man, with his curiosity piqued by your mysterious parcel, accepts your offer. You will never know the contents of this package, but the few coins you got from it are enough for you.",
-          "4": "You leave with the package and tell the courier that it will arrive safely. A few minutes later you meet a woman who looks like a merchant. She explains to you that she has no money, but that she can exchange your package for an item from her cart. You trade the packet for an item you think it's useful and continuing your journey."
+          "4": "You leave with the package and tell the courier that it will arrive safely. A few minutes later you meet a woman who looks like a merchant. She explains to you that she has no money, but that she can exchange your package for an item from her cart. You trade the package for an item you think is useful and continue your journey."
         },
         "text": "Steal the package."
       }
@@ -1795,7 +1795,7 @@
           "1": "Understanding the Lord's distress, you offer him your help. You are then equipped before the duel begins. You fight valiantly but are just as easily overcome by your opponent. It is when he slashes you with his blade that you bitterly regret having offered your help. Indeed, it is a death match. And you just lost it. You close your eyes, and the pain goes away. You wake up a few hours later, seriously injured.",
           "2": "Realizing the lord’s distress, you offer to help him. You are then outfitted with armor before the duel begins. Knowing you don’t stand a chance, you defend yourself as best you can. Your opponent, growing impatient, lowers his guard, and you take the opportunity to attack him. You manage to knock him to the ground before disarming him. You emerge from the arena victorious, and the lord comes to meet you and gives you a purse filled with gold. You thank him warmly for his generosity.",
           "3": "Understanding the lord’s distress, you offer to resolve the conflict through your words. He promises you a reward if you succeed. Determined, you go to meet the knight once he arrives in the village and tell him that you wish to negotiate with his lord. He agrees and takes you to him. You quickly hit it off and ask him to call off the duel. You also tell him that negotiations to resolve the conflict can take place afterward. He agrees, and you return to the village center to announce the news. The lord hands you a purse filled with gold as a token of his gratitude.",
-          "4": "Understanding the distress of the Lord, you propose to him to settle the conflict by using your words. He promises you a reward if you succeed. You meet the knight so that he takes you to his Lord. Once arrived, you get on quickly with him. Unfortunately, he still doesn't want to cancel the duel, even if he likes you. You come back to the the village with the knight to announce that the duel will takes place.",
+          "4": "Understanding the distress of the Lord, you propose to him to settle the conflict by using your words. He promises you a reward if you succeed. You meet the knight so that he takes you to his Lord. Once arrived, you get on quickly with him. Unfortunately, he still doesn't want to cancel the duel, even if he likes you. You come back to the village with the knight to announce that the duel will take place.",
           "5": "Understanding the lord’s distress, you offer to resolve the conflict through your words. He promises you a reward if you succeed. You meet with the knight so he can take you to his lord. Once there, you try to negotiate with him for several hours, without much success. Since your efforts are in vain, you consider leaving. But before you do, the lord tells you that he appreciates you; in fact, he adds that he was impressed by the fact that you didn’t give up. He offers to make you a knight, but you politely decline his offer and return to Boug-Coton."
         },
         "text": "Propose your help to the Lord of Boug-Coton."
@@ -1822,23 +1822,23 @@
         "text": "Visit Boug-Coton."
       }
     },
-    "text": "You see the village of Boug-Coton and decide to go there. Once you have arrived you hear rumours about a duel against a knight. You soon understand that there is conflict between the lord of these lands and that of the neighbouring village. To solve it, a fight is organized between their best combatants, but all here are mediocre and the duel begins soon."
+    "text": "You see the village of Boug-Coton and decide to go there. As soon as you arrive, you hear about a conflict between the lord of these lands and that of the neighboring village. To settle it, a fight is organized between their best combatants, but all here are mediocre and the duel begins soon."
   },
   "55": {
     "possibilities": {
       "climb": {
         "outcomes": {
           "0": "You decide to climb the tree because you think that it's the fastest way to do it. In a few seconds, you are on the other side, free to continue on your way.",
-          "1": "You climb the trunk, however you are not enough careful: you wounded yourself with the rough tree's bark and fall. You have to retry your climbing. At the second time you did it, but your hand is very painful.",
-          "2": "You find that climb is a good idea so you do it. When you arrive at the other side, you note the presence of four peoples, armed and they are waiting for you. Because of your numerical inferiority, you don't hesitate to give them your possessions to live."
+          "1": "You climb the trunk, but you aren't careful enough: you cut your hand on the tree's rough bark and lose your grip. You are forced to start your climb again. You succeed on the second attempt, but your hand is quite sore!",
+          "2": "You tell yourself that climbing would be a good idea, so you do it. Arriving on the other side, you find four armed people waiting for you with their eyes fixed on you. Cautious, you do not hesitate to give them your possessions to keep your life."
         },
         "text": "Climb the tree."
       },
       "cut": {
         "outcomes": {
           "0": "You take an axe from your bag and cut down the tree. It took you 30 minutes to clear your way!",
-          "1": "You begin to cut down the tree and take a long time to cut the totality of it. You go to the nearest village, borrow a wain and his horse and carriage, come back to the forest, and load the cut wood in the wain, come back to the village, and sell it to the cabinetmaker. It's only after all that you discover that a wain and his horse and carriage are more expensive than the wood of only one tree!",
-          "2": "You want to cut down the tree, but you realize that you don't have any tool. So you decide to climb the tree and did it without problems. You continue your road."
+          "1": "You begin to cut down the tree and take a long time to fell it entirely. You go to the nearest village, borrow a wain and its team, return to the forest, load the cut wood into the wain, return to the village, and sell it all to the cabinetmaker. It's only after all that you discover that a wain and its team cost more than the wood from a single tree!",
+          "2": "You wanted to cut down the tree, but you realize that you have absolutely no means of doing so. You decide instead to climb the imposing oak, manage to do so without any trouble, and continue on your way."
         },
         "text": "Cut down the tree and continue."
       },
@@ -1846,14 +1846,14 @@
         "outcomes": {
           "0": "Not knowing what to do, you finally decide to climb the tree. Within seconds, you are on the other side, free to continue on your way.",
           "1": "Not knowing what to do, you remember that you entered the forest a while ago, so you decide to retrace your steps.",
-          "2": "While you are hesitating on what to do, you hear footsteps in your back! You barely have the time to turn around before four men jump on you. You faint almost instantly, and get up a few hours later, stunned and with a much lighter purse."
+          "2": "You prefer to slightly change your route. You climb the embankment of the path you were on and travel a few meters that way. After passing the tree, you descend back onto the path and quietly resume your journey."
         }
       },
       "otherWay": {
         "outcomes": {
           "0": "You prefer to slightly change your route. You climb the embankment of the path where you were on, and pass some meters that way. After having passed the tree, you come back down on the path and resume your way.",
           "1": "You decide to change your route. To do so, you climb the embankment of your way and progress in the forest. You find, on a dead body, a beautiful item and a lot of money. Knowing that it will be more useful for you than the body, you take it and continue your forest hike.",
-          "2": "You think that climbing the tree is too dangerous and you don't have anything to cut it. As a result, you have to change your route. But because of your poor sense of direction, you manage to lose your way. It's not until nightfall that you only managed to get out of the forest."
+          "2": "You think that climbing the tree is too dangerous and you don't have anything to cut it. As a result, you are forced to change your route. Because of your poor sense of direction, you manage to lose your way. It is not until nightfall that you manage to get out of the forest."
         },
         "text": "Go another way."
       }
@@ -1873,13 +1873,13 @@
       "drinkBlack": {
         "outcomes": {
           "0": "Considering that it's easy money, you agree to become Gruffo's guinea pig. He gives you a steaming, blackish liquid. After having drunk a few unsavory sips of it and having waited for what seems like an eternity, you suddenly start vomiting followed by violent convulsions. It will take you almost forty minutes to come back to your senses before resuming your adventure.",
-          "1": "Considering that this is easy money, you agree to become Gruffo's guinea pig. He gives you a vial containing a coal-coated liquid. Once drunk, the liquid immediately plunges you into a deep sleep. You wake up three hours later, comfortably installed on a coconut tree branch. At its foot, you discover an enamelled purse filled with gold!"
+          "1": "Considering that this is easy money, you agree to become Gruffo's guinea pig. He gives you a vial containing a coal-black liquid. Once drunk, the decoction immediately plunges you into a deep sleep. You wake up three hours later, comfortably perched on a coconut tree branch. At its foot, you discover an enamelled purse filled with gold!"
         },
         "text": "Drink the black potion."
       },
       "drinkRandom": {
         "outcomes": {
-          "0": "Not without a hint of concern, you accept Gruffo's proposal. He gives you a tan-colored vial. Thinking of the financial compensation, you decide to drink it all at once. Immediately, a burning sensation invades your throat. After ten minutes or so, you stammered, hardly seeing anything. You are completely drunk! Strongly nauseous, you try to strike a blow at Gruffo who easily dodges it. Not one to hold a grudge, he makes you comfortable on his bench. You pester the stunted charlatan alchemist for a moment before he deigns to keep his side of the bargain.",
+          "0": "Not without a hint of concern, you accept Gruffo's proposal. He gives you a tan-colored vial. Thinking of the financial compensation, you decide to drink it all at once. Immediately, a burning sensation invades your throat. After ten minutes or so, you stammer and your vision blurs. You are completely drunk! Strongly nauseous, you try to strike a blow at Gruffo who easily dodges it. Not one to hold a grudge, he makes you comfortable on his bench. You pester the stunted charlatan alchemist for a moment before he deigns to keep his side of the bargain.",
           "1": "You impulsively accept, while refusing any amount of money from Gruffo. Indeed, participating in a potential scientific discovery swells you with honor! The alchemist hands you a tiny vial filled with a crimson liquid. It takes only one sip to empty the contents, and you feel a pleasant warmth spreading throughout your body. Here you are in much better shape!",
           "2": "Lured by greed, you enthusiastically accept Gruffo's proposal. You quietly drink the scarlet liquid handed to you by the alchemist. Once done, Gruffo gives you a disappointed look while justifying that his experimental drink has an immediate effect. While promising you that you won't be sick, he throws you out of his tent. A little bitter not to see the shadow of a penny, you decide to continue your journey.",
           "3": "With suspicion and apprehension, you decide to drink in one go the sapphire-colored beverage that Gruffo hands you. Immediately, a freezing cold grips your entire body. As you painfully call Gruffo a shriveled charlatan, he settles you into a heap of warm blankets."
@@ -1888,16 +1888,16 @@
       },
       "end": {
         "outcomes": {
-          "0": "You end up accepting Gruffo's enticing offer. This one asks you to wait a little while, while he brings you your liquid. Just as you are carefully studying a still, a powerful blow lands on your pretty skull.",
-          "1": "In front of your inert attitude, Gruffo gets impatient and throws you out of his tent, making you pay for the time you wasted. You get back on your road in no time!",
-          "2": "Faced with your inability to make up your mind, Gruffo does not insist and offers you a cup of black tea. You discuss for many minutes about everything except alchemy! You resume your way as the moon timidly lights up the beach."
+          "0": "You end up accepting Gruffo's enticing offer. He asks you to wait a little while, the time it takes for him to bring you your decoction. Just as you are carefully studying a still, a powerful blow lands on your pretty skull.",
+          "1": "Seeing your blank expression, Gruffo grows impatient and throws you out of his tent, not without charging you for the time you just wasted. You resume your journey without delay!",
+          "2": "Faced with your inability to make up your mind, Gruffo does not insist and offers you a cup of black tea. You discuss for many minutes about everything except alchemy! You continue on your way as the moon timidly lights up the beach."
         }
       },
       "refuse": {
         "outcomes": {
           "0": "You prefer to politely decline Gruffo's offer while wondering how to find a safe place to sleep. Seeing your worried face, Gruffo suggests that you stay in his tent until the sun rises. You accept wholeheartedly and fall asleep, serene.",
-          "1": "You refuse to serve as a guinea pig for the alchemist. He then offers you to create your own potion and taken aback by this new proposal, you accept. After some research, you end up making a translucent liquid. You hesitate a few moments before drinking your mixture all at once. Long minutes later, you are overcome by dizziness and funny hallucinations where you see your dear princess. Almost an hour of rest will be necessary to allow you to resume your adventure.",
-          "2": "You categorically refuse the alchemist's proposal. He seems disappointed, so you decide to have a chat with him for a while. During the discussion, you ask him where all his alchemical knowledge comes from and it is with a touch of bitterness that he gives you the name of this famous minstrel known throughout the all country: Périssien. However, Gruffo will not answer you about the location of his master. Not wanting to insist, you thank him for this interesting conversation and decide to get back on your way."
+          "1": "You refuse to serve as a guinea pig for the alchemist. He then suggests that you create your own potion and, taken aback by this new proposal, you accept. After some research, you end up making a translucent decoction. You hesitate a few moments before drinking your mixture all at once. Long minutes later, you are overcome by dizziness and funny hallucinations where you see your dear princess. Almost an hour of rest will be necessary to allow you to resume your adventure.",
+          "2": "You categorically refuse the alchemist's proposal. He seems disappointed, so you decide to converse with him for a moment. During the discussion, you ask him where all his alchemical knowledge comes from and it is with a touch of bitterness that he gives you the name of this famous minstrel known throughout the whole country: Périssien. However, Gruffo will not answer you about the location of his master. Not wanting to insist, you thank him for this interesting conversation and decide to get back on your way."
         },
         "text": "Decline Gruffo's proposal."
       }
@@ -1909,8 +1909,8 @@
       "continue": {
         "outcomes": {
           "0": "You enter the river and turn right to follow the current. The water is cool and it makes you feel a lot better.",
-          "1": "You put one foot in the river and then the second. You begin your progress in the river. After walking for a few minutes, you arrive at a small one-meter-high waterfall and decide to jump down. As you gain your momentum, the stone where your right foot is resting on moves and you fall to the bottom of the waterfall, hitting your skull twice. You are still conscious, although strongly stunned.",
-          "2": "You have been walking for a good hour when you arrive again to a crossroads. You decide to continue on dry land."
+          "1": "You put one foot in the river and then the second. You begin your progress in the river. After walking for a few minutes, you arrive at a small one-meter-high waterfall and decide to jump down. As you gain your momentum, the stone your right foot is resting on moves and you fall to the bottom of the waterfall, hitting your skull twice. You are still conscious, although strongly stunned.",
+          "2": "You have been walking for a good hour when you reach a crossroads again. You decide to continue on dry land."
         },
         "text": "Continue your way by walking in the water."
       },
@@ -1924,7 +1924,7 @@
       "findMeal": {
         "outcomes": {
           "0": "You look into the river and spot a few fish and crabs. You build a makeshift trap and set it in the water. After 10 long minutes, your trap contains 2 nice crabs and a small fish. You build a fire and grill them. You feel invigorated after eating them.",
-          "1": "You see at the bottom of the water strange creatures that you had never seen before. They are fitted with two claws and move sideways. You assume that these are the famous things that gave this river their name and remember that they are edible. You decide to catch a few of them. You dip your hand in and manage to catch some, but they attack you with their chelae. You end up injured with a nice gash in your hand, but also with enough to make you a delicious meal.",
+          "1": "You see at the bottom of the water strange creatures that you had never seen before. They are fitted with two claws and move sideways. You assume that these are the famous things that gave this river their name and remember that they are edible. You decide to catch a few of them. You dip your hand in and manage to catch some, but they attack you with their claws. You end up injured with a nice gash in your hand, but also with enough to make you a delicious meal.",
           "2": "You hesitate for a moment between the fish in the river and the mulberry trees. Finally, you decide to prepare a feast. You prepare a fish trap and, after installing it, you go pick some blackberries. Salmon with blackberries, a treat!"
         },
         "text": "Find something to prepare a meal."
@@ -2000,7 +2000,7 @@
         "outcomes": {
           "0": "After 30 minutes, you finally discover a strange object...",
           "1": "After 60 minutes, you end up abandoning your search without having discovered anything...",
-          "2": "As you began your search, you drop a large bag of coins at the bottom of a large hole! It can't be retrieved anymore...",
+          "2": "As you begin your search, you drop a large bag of coins at the bottom of a large hole! It will be impossible to retrieve...",
           "3": "As you were looking for items to pick up, a huge branch breaks off from the tree next to you and falls on your leg! You manage to get up, stunned, but you'll have to recover!"
         },
         "text": "Search the surroundings."
@@ -2033,7 +2033,7 @@
       },
       "follow": {
         "outcomes": {
-          "0": "The young woman introduces herself and quickly follows up with some initial advice which you listen to carefully, you learn that the {command:report} report allows you to get all the information about your trip."
+          "0": "The young woman introduces herself and quickly follows up with some initial advice which you listen to carefully; you learn that the {command:report} command allows you to get all the information about your trip."
         },
         "text": "Follow your guide."
       },
@@ -2050,8 +2050,8 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "You refuse the peasant's request with such a lack of sympathy that he ends up stoning you!",
-          "1": "You refuse the peasant's request with such courtesy that he wishes you a good continuation for your adventure!",
+          "0": "You refuse the peasant's request with such meanness that he ends up chasing you away and throwing stones at you!",
+          "1": "You refuse the peasant's request with such courtesy that he even wishes you good luck for the rest of your adventure!",
           "2": "You decide to ignore the peasant's request. As you walk for several minutes, you see a road lined with impressive cherry trees. A few red cherries seem to reach out you. After tasting a few, you resume your journey."
         },
         "text": "Refuse to help the peasant."
