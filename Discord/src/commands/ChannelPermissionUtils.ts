@@ -1,5 +1,14 @@
 import { ChannelType } from "discord.js";
 
+export const CHANNEL_PERMISSION_ERRORS = {
+	NO_CHANNEL_ACCESS: "bot:noChannelAccess",
+	NO_SPEAK_PERMISSION: "bot:noSpeakPermission",
+	NO_REACTION_PERMISSION: "bot:noReacPermission",
+	NO_EMBED_PERMISSION: "bot:noEmbedPermission",
+	NO_FILE_PERMISSION: "bot:noFilePermission",
+	NO_HISTORY_PERMISSION: "bot:noHistoryPermission"
+} as const;
+
 export const THREAD_SEND_ACCESS_ERRORS = {
 	NOT_JOINED: "bot:noThreadMembership",
 	CANNOT_SEND: "bot:noSpeakInThreadPermission"

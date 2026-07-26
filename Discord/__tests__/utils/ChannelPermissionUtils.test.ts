@@ -5,17 +5,25 @@ import { ChannelType } from "discord.js";
 import i18n from "../../src/translations/i18n";
 import { LANGUAGE } from "../../../Lib/src/Language";
 import {
-	getThreadSendAccessError, THREAD_SEND_ACCESS_ERRORS, ThreadSendAccessError
+	CHANNEL_PERMISSION_ERRORS, getThreadSendAccessError, THREAD_SEND_ACCESS_ERRORS
 } from "../../src/commands/ChannelPermissionUtils";
 
-function expectTranslationExists(error: ThreadSendAccessError | null): void {
+function expectTranslationExists(error: string | null): void {
 	if (error === null) {
-		throw new Error("Expected a thread send access error");
+		throw new Error("Expected a channel permission error");
 	}
 	for (const language of [LANGUAGE.FRENCH, LANGUAGE.ENGLISH]) {
 		expect(i18n.t(error, { lng: language })).not.toBe(error);
 	}
 }
+
+describe("channel permission error translations", () => {
+	it("translates every permission error", () => {
+		for (const error of [...Object.values(CHANNEL_PERMISSION_ERRORS), ...Object.values(THREAD_SEND_ACCESS_ERRORS)]) {
+			expectTranslationExists(error);
+		}
+	});
+});
 
 describe("getThreadSendAccessError", () => {
 	it("allows non-thread channels", () => {
