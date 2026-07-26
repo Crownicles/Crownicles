@@ -300,11 +300,10 @@ export class Player extends Model {
 		mission: Omit<MissionInformations, "applyOnLockedPlayer">,
 		mutate: (lockedPlayer: Player) => void
 	): Promise<void> {
-		const updatedPlayer = await MissionsController.update(this, response, {
+		await MissionsController.update(this, response, {
 			...mission,
 			applyOnLockedPlayer: mutate
 		});
-		Object.assign(this, updatedPlayer);
 	}
 
 	private async mutateWithMissions(
@@ -313,14 +312,13 @@ export class Player extends Model {
 		mutate: (lockedPlayer: Player) => void
 	): Promise<void> {
 		const [firstMission, ...otherMissions] = missions;
-		const updatedPlayer = await MissionsController.updateMultiple(this, response, [
+		await MissionsController.updateMultiple(this, response, [
 			{
 				...firstMission,
 				applyOnLockedPlayer: mutate
 			},
 			...otherMissions
 		]);
-		Object.assign(this, updatedPlayer);
 	}
 
 	private async mutateLocked(mutate: (lockedPlayer: Player) => void): Promise<void> {

@@ -144,7 +144,7 @@ describe("small event player state", () => {
 		expect(freshPlayer?.getHealthValue()).toBe(INITIAL_HEALTH + HEALTH_GAIN);
 	});
 
-	it("full-heals from the locked state when the caller is stale", async () => {
+	it("full-heals from the locked state when the clean caller is stale", async () => {
 		const player = await Player.create({
 			keycloakId: "stale-full-heal",
 			class: OTHER_CLASS_ID,
@@ -162,10 +162,13 @@ describe("small event player state", () => {
 			moneyToWin: 0,
 			lastDate: new Date()
 		});
-		player.setHealthNoCheck(player.getMaxHealth());
+		const stalePlayer = await Player.findByPk(player.id);
+		expect(stalePlayer).toBeTruthy();
+		player.setHealthNoCheck(INITIAL_HEALTH + HEALTH_GAIN);
+		await player.save();
 
-		await player.addHealth({
-			amount: player.getMaxHealth(),
+		await stalePlayer!.addHealth({
+			amount: stalePlayer!.getMaxHealth(),
 			response: [],
 			reason: logsConstants.NumberChangeReason.GUILD_DAILY,
 			missionHealthParameter: {
@@ -175,6 +178,6 @@ describe("small event player state", () => {
 		});
 
 		const freshPlayer = await Player.findByPk(player.id);
-		expect(freshPlayer?.getHealthValue()).toBe(player.getMaxHealth());
+		expect(freshPlayer?.getHealthValue()).toBe(stalePlayer!.getMaxHealth());
 	});
 });
