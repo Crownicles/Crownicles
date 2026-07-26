@@ -6,13 +6,7 @@ import * as path from "path";
 import * as ts from "typescript";
 
 const PLAYER_MODEL_PATH = path.join(__dirname, "../../../src/core/database/game/models/Player.ts");
-
-const GUARDED_CALLS = new Set([
-	"MissionsController.update",
-	"MissionsController.updateMultiple",
-	"Player.withLocked",
-	"Object.assign"
-]);
+const MISSIONS_CONTROLLER_PATH = path.join(__dirname, "../../../src/core/missions/MissionsController.ts");
 
 function getContainingMethodName(node: ts.Node): string | undefined {
 	let current: ts.Node | undefined = node.parent;
@@ -25,14 +19,15 @@ function getContainingMethodName(node: ts.Node): string | undefined {
 	return undefined;
 }
 
-function getGuardedCallOwners(source: string): Record<string, string[]> {
-	const sourceFile = ts.createSourceFile(PLAYER_MODEL_PATH, source, ts.ScriptTarget.Latest, true);
+function getCallOwners(filePath: string, guardedCalls: Set<string>): Record<string, string[]> {
+	const source = fs.readFileSync(filePath, "utf8");
+	const sourceFile = ts.createSourceFile(filePath, source, ts.ScriptTarget.Latest, true);
 	const owners: Record<string, string[]> = {};
 
 	function visit(node: ts.Node): void {
 		if (ts.isCallExpression(node)) {
 			const callName = node.expression.getText(sourceFile);
-			if (GUARDED_CALLS.has(callName)) {
+			if (guardedCalls.has(callName)) {
 				const methodName = getContainingMethodName(node);
 				owners[callName] = [...owners[callName] ?? [], methodName ?? "<outside method>"];
 			}
@@ -46,13 +41,19 @@ function getGuardedCallOwners(source: string): Record<string, string[]> {
 
 describe("Player mutation contract", () => {
 	it("centralizes mission reloads and caller synchronization", () => {
-		const source = fs.readFileSync(PLAYER_MODEL_PATH, "utf8");
-
-		expect(getGuardedCallOwners(source)).toEqual({
+		expect(getCallOwners(PLAYER_MODEL_PATH, new Set([
+			"MissionsController.update",
+			"MissionsController.updateMultiple",
+			"Player.withLocked",
+			"Object.assign"
+		]))).toEqual({
 			"MissionsController.update": ["mutateWithMission"],
-			"Object.assign": ["mutateWithMission", "mutateWithMissions", "mutateLocked"],
 			"MissionsController.updateMultiple": ["mutateWithMissions"],
-			"Player.withLocked": ["mutateLocked"]
+			"Player.withLocked": ["mutateLocked"],
+			"Object.assign": ["mutateLocked"]
+		});
+		expect(getCallOwners(MISSIONS_CONTROLLER_PATH, new Set(["Object.assign"]))).toEqual({
+			"Object.assign": ["synchronizeCaller"]
 		});
 	});
 });
