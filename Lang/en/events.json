@@ -2052,22 +2052,22 @@
         "outcomes": {
           "0": "You refuse the peasant's request with such meanness that he ends up chasing you away and throwing stones at you!",
           "1": "You refuse the peasant's request with such courtesy that he even wishes you good luck for the rest of your adventure!",
-          "2": "You decide to ignore the peasant's request. As you walk for several minutes, you see a road lined with impressive cherry trees. A few red cherries seem to reach out you. After tasting a few, you resume your journey."
+          "2": "You decide to ignore the peasant's request. As you walk for several minutes, you see a road lined with impressive cherry trees. A few red cherries seem to reach out to you. After tasting a few, you resume your journey."
         },
         "text": "Refuse to help the peasant."
       },
       "end": {
         "outcomes": {
           "0": "Seeing you unresponsive, the peasant seems quite annoyed but lets you leave without insisting. You find a forgotten satchel on the edge of a path. When you open it, you discover two small pieces of dried bacon.",
-          "1": "Seeing the peasant's desperate face, you decide to start looking for its fork. You end up at the edge of a fallow field where cattle quietly eat fresh grass. Suddenly, a tawny-colored dog springs up from the premises of the pasture and gets on you. Faster than it takes to say so, you knock the dog out and get on your way like nothing happened.",
-          "2": "While you agreed to help the peasant, you feel something buzzing in your ear and stick your little finger in. A sharp pain grabs you: a bee just stung you! You leave this stinging place without further ado."
+          "1": "Seeing the peasant's desperate look, you decide to search for his famous pitchfork. You eventually reach the edge of a fallow field where cattle are quietly grazing on fresh grass. Suddenly, a tawny dog leaps from the bushes near the pasture and lunges at you. In a flash, you knock the dog unconscious and continue on your way as if nothing had happened.",
+          "2": "Just as you were about to agree to help the peasant, you feel something buzzing near your ear and stick your little finger in. A sharp pain seizes you: a bee has just stung you! You leave this stinging place without further ado."
         }
       },
       "searchPatures": {
         "outcomes": {
-          "0": "After watching cattle chewing fresh grass in the first wild grass stretch from a distance, you head for the second. Many sheep graze peacefully. An impressive oak dominates the pastures and attracts your attention, so you decide to approach it. A few meters from the tree, you notice a fork against the trunk. The peasant seems overjoyued when you give it back to him. He then grants you, as promised, a small purse filled with gold.",
+          "0": "After watching cattle chewing fresh grass in the first wild grass stretch from a distance, you head for the second. Many sheep graze peacefully. An impressive oak dominates the pasture and attracts your attention, so you decide to approach it. A few meters from the tree, you notice a pitchfork leaning nonchalantly against the trunk. The peasant seems overjoyed when you give him your find. He then grants you, as promised, a small purse filled with gold.",
           "1": "As you approach the pastures, you notice footprints. Following them, you enter a dark grove containing a gloomy hut, to say the least. Curious, you walk around the building and come face to face with the much sought-after pitchfork! Retracing your steps in the opposite direction, you hand the object over to the farmer, who is full of thanks and invites you to share his meal so you can tell him all about your investigation. It's a pleasant evening, and you leave the farmer late into the night, invigorated by the local produce.",
-          "2": "As you approach pastures, you notice footprints crossing the land leading to an enclosure where sheep benefit from the refreshing shade of young oaks. You decide to follow the footprints, thinking they'll lead you to the fork. When you arrive in the middle of the sheep, one of them comes to you. In a playful mood, you show him your hand with a bit of grass in it. He benefits of it to satiate himself, biting your finger while eating. Irritated, you decide to flee this place. Approaching the edge of the pasture, you do not see the fork on the ground, and walk over it. Furious about this misfortune, you are thinking about not helping anyone anymore on your adventure."
+          "2": "As you approach the pastures, you notice footprints crossing the land leading to a grove where sheep enjoy the refreshing shade of slender oaks. You decide to follow them, thinking they are a trail. When you arrive in the middle of the sheep, one of them comes toward you. In a playful mood, you hold out your hand with a bit of grass in it. The sheep takes advantage of this to satiate itself, biting your finger in the process. Irritated, you decide to flee the area. Approaching the edge of the pasture, you do not see the fork on the ground and step on it. Furious at this misfortune, you think of never helping anyone again during your adventure."
         },
         "text": "Search near pastures."
       },
