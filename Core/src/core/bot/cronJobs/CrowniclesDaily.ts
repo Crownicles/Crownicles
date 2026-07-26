@@ -63,7 +63,7 @@ export class CrowniclesDaily {
 		await CrowniclesDaily.runDailyTasks([
 			{
 				name: "randomPotion",
-				run: (): Promise<void> => CrowniclesDaily.randomPotion()
+				run: CrowniclesDaily.randomPotion
 			},
 			{
 				name: "randomLovePointsLoose",
@@ -74,15 +74,15 @@ export class CrowniclesDaily {
 			},
 			{
 				name: "reloadEnchanter",
-				run: (): Promise<void> => CrowniclesDaily.reloadEnchanter()
+				run: CrowniclesDaily.reloadEnchanter
 			},
 			{
 				name: "trainingGroundLoveBonus",
-				run: (): Promise<void> => CrowniclesDaily.trainingGroundLoveBonus()
+				run: CrowniclesDaily.trainingGroundLoveBonus
 			},
 			{
 				name: "pantryAutoFill",
-				run: (): Promise<void> => CrowniclesDaily.pantryAutoFill()
+				run: CrowniclesDaily.pantryAutoFill
 			},
 			{
 				name: "log15BestTopWeek",
