@@ -234,8 +234,12 @@ const INTERACTION_HANDLERS: Record<string, PetInteractionConfig> = {
 		}) => {
 			LogsDatabase.logPetFree(petEntity, player.keycloakId).then();
 			await petEntity.destroy();
-			player.petId = null;
-			await MissionsController.update(player, response, { missionId: "depositPetInShelter" });
+			await MissionsController.update(player, response, {
+				missionId: "depositPetInShelter",
+				applyOnLockedPlayer: lockedPlayer => {
+					lockedPlayer.petId = null;
+				}
+			});
 		}
 	}
 };
