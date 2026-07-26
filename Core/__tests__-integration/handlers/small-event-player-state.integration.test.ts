@@ -144,6 +144,39 @@ describe("small event player state", () => {
 		expect(freshPlayer?.getHealthValue()).toBe(INITIAL_HEALTH + HEALTH_GAIN);
 	});
 
+	it("heals without dirtying the caller when raw health exceeds its maximum", async () => {
+		const player = await Player.create({
+			keycloakId: "over-max-health",
+			class: OTHER_CLASS_ID,
+			health: 1_000_000
+		});
+		await PlayerMissionsInfo.create({ playerId: player.id });
+		await DailyMission.create({
+			id: 0,
+			missionId: "doReports",
+			missionObjective: 100,
+			missionVariant: 0,
+			gemsToWin: 0,
+			xpToWin: 0,
+			pointsToWin: 0,
+			moneyToWin: 0,
+			lastDate: new Date()
+		});
+		expect(player.getHealthValue()).toBeGreaterThan(player.getMaxHealth());
+		expect(player.changed()).toBe(false);
+
+		await player.addHealth({
+			amount: HEALTH_GAIN,
+			response: [],
+			reason: logsConstants.NumberChangeReason.SMALL_EVENT
+		});
+
+		expect(player.getHealthValue()).toBe(player.getMaxHealth());
+		expect(player.changed()).toBe(false);
+		const freshPlayer = await Player.findByPk(player.id);
+		expect(freshPlayer?.getHealthValue()).toBe(player.getMaxHealth());
+	});
+
 	it("full-heals from the locked state when the clean caller is stale", async () => {
 		const player = await Player.create({
 			keycloakId: "stale-full-heal",

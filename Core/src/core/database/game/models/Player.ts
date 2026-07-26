@@ -1020,7 +1020,7 @@ export class Player extends Model {
 			shouldPokeMission: true
 		};
 
-		await this.setHealth(this.getHealth() + parameters.amount, parameters.response, missionParam);
+		await this.applyHealthDelta(parameters.amount, parameters.response, missionParam);
 
 		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
@@ -1073,10 +1073,7 @@ export class Player extends Model {
 	 * Get the health of the player (capped to max health)
 	 */
 	public getHealth(): number {
-		if (this.health > this.getMaxHealth()) {
-			this.health = this.getMaxHealth();
-		}
-		return this.health;
+		return Math.min(this.health, this.getMaxHealth());
 	}
 
 	/**
@@ -1373,16 +1370,15 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Set the player health
-	 * @param health
+	 * Apply a health delta to the player
+	 * @param healthDelta
 	 * @param response
 	 * @param missionHealthParameter
 	 */
-	private async setHealth(health: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
+	private async applyHealthDelta(healthDelta: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	}): Promise<void> {
-		const healthDelta = health - this.health;
 		if (healthDelta > 0 && missionHealthParameter.shouldPokeMission) {
 			let lockedDifference = 0;
 			await this.mutateWithMission(response, {
@@ -1400,7 +1396,9 @@ export class Player extends Model {
 			return;
 		}
 		await this.mutateLocked(locked => {
-			locked.health = MathUtils.clamp(locked.health + healthDelta, 0, locked.getMaxHealth());
+			const lockedMaxHealth = locked.getMaxHealth();
+			const lockedHealth = Math.min(locked.health, lockedMaxHealth);
+			locked.health = MathUtils.clamp(lockedHealth + healthDelta, 0, lockedMaxHealth);
 		});
 	}
 
