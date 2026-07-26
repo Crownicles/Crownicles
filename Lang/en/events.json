@@ -2097,7 +2097,7 @@
           "0": "You chose to simply watch the fireworks and stay to see the village fall into despair, leaning against a tree just outside the village. But, even after midnight, nothing happened. It seems these so-called beasts are nothing but a sham, and you leave.",
           "1": "You decide to watch the attic from the local tavern, but get distracted by some delicious beer. You black out, drunk, and lose your consciousness. Upon waking up, you notice that they simply tossed your unconscious body onto the road and that you are a few coins short.",
           "2": "Deciding not to do anything, you enter the local tavern and rent a room for the night. But during your slumber, figures dressed in black attack you, beating you into submission and robbing you. They leave you bleeding on the floor and warn you to never snoop around in their affairs again...",
-          "3": "Since you are already there, you think to yourself: why not go shopping? You wander around the local market, visit the local black- and weapon smith. After some time, you find something."
+          "3": "Since you are already there, you think to yourself: why not go shopping? You wander around the local market and stop by the local blacksmith and armorer. After some time, you find something."
         }
       },
       "faceThem": {
@@ -2116,28 +2116,28 @@
           "2": "After dashing out of the village, you take a short rest to catch your breath. While doing so, you are approached by some armed figures dressed in black. Seems like they didn't like you snooping around the village. They draw their weapons and attack. Catching you off guard and exhausted, they beat you into unconsciousness.",
           "3": "You make it out of the cursed village alive. After some time, you stumble upon a beautiful piece of untouched land. You can see a waterfall and multiple tamed carnivores. You decide to meditate under the stream of falling water. After an hour, you feel energized and continue your journey."
         },
-        "text": "Get out of there as fast as possible."
+        "text": "Leave here quickly."
       },
       "helpThem": {
         "outcomes": {
           "0": "You find figures dressed in black in the aforementioned basement. They don't seem to be beasts, but ordinary people betting on cockfights. You join them and bet on the red rooster who, in the end, lost. Which makes you a few coins lighter.",
           "1": "You find figures dressed in black in the aforementioned basement. They don't seem to be beasts, but ordinary people betting on cockfights. You join them and place your bets on the blue rooster who, in the end, won. A few coins richer, you leave the men to their games and leave.",
-          "2": "You meet 4 black-hooded men in the basement. After convincing them to let you join them, they reveal their plan of sacrificing the local folks' vital force to a devil they worship. Hoping to take advantage of their knowledge, you say you're willing to participate. You and the cultists sacrifice a girl and some animals. Furthermore, you spread their innards throughout the room. Yet nothing happens. After wasting your time, you angrily stomp away...",
-          "3": "You meet 4 black-hooded men in the basement. After convincing them to let you join them, they reveal their plan of sacrificing the local folks' life force to a devil they worship. Hoping you'll profit from their knowledge, you say you're willing to participate. You and the cultists sacrifice a woman and some animals. Furthermore, you spread their innards throughout the room. Yet nothing happens. It's only when you walk away from the room that you stumble upon guards..."
+          "2": "You meet 4 black-hooded men in the basement. After convincing them to let you join them, they reveal their plan of sacrificing the local folks' vital force to a devil they worship. Hoping to take advantage of their knowledge, you say you're willing to participate. You and the wild beasts you just met sacrifice a woman and some animals. Furthermore, you spread their innards throughout the room. Yet nothing happens. After wasting your time, you angrily stomp away...",
+          "3": "You meet 4 black-hooded men in the basement. After convincing them to let you join them, they reveal their plan of sacrificing the local folks' life force to a devil they worship. Hoping you'll profit from their knowledge, you say you're willing to participate. You and the wild beasts you just met sacrifice a woman and some animals. Furthermore, you spread their innards throughout the room. Yet nothing happens. It's only when you walk away from the room that you stumble upon guards..."
         },
-        "text": "Try to find the cultists in order to help them."
+        "text": "Try to find the silhouettes in order to help them."
       },
       "warnEveryone": {
         "outcomes": {
           "0": "Without checking for yourself, you start running around the village like a madman, screaming at everyone that they'll die if they stay. General panic ensues and everyone starts to leave the perimeter. But after a while, nothing happens, and some people aren't too happy about your bad joke. They gang up on you, beat you up and rob you.",
-          "1": "You tell the guards where the malevolent entities are hiding. They follow up on your tip and, after some minutes pass, another guard approaches you. It seems that heretics were about to kill a fair maiden and, thanks to your hint, she was saved. He hands you a small pouch before shaking your hand.",
-          "2": "After telling everyone about the dark misfortune that is about to hit the village, everyone packs up their stuff and stays just outside in the forest. When suddenly an earthquake hits and panic ensues. You help the guards calming down the masses which, after some time, quiet down. You are warmly thanked for the warning.",
+          "1": "You tell the guards the location of the culprits. They follow your advice and, after a few minutes, another guard approaches you. It seems that heretics were about to kill a young girl and, thanks to your advice, she was saved. He hands you a small pouch before shaking your hand.",
+          "2": "After telling everyone about the dark misfortune that is about to hit the village, everyone packs up their stuff and stays just outside in the forest. Suddenly, an earthquake hits and panic ensues. You help the guards calm down the people, who, after some time, settle down. You are warmly thanked for the warning.",
           "3": "You try to convince everyone that they're in danger, but people don't want to know and simply ignore you. You try for several hours and finally decide to leave them. You continue on your journey, unconcerned by the stubborn people of this village."
         },
         "text": "Revealing to everyone what it's all about."
       }
     },
-    "text": "After some time, you finally arrive at Boug-Coton where some supposedly unholy creatures are into something... After investigating the place for a few moments, you find a clue. There are reports of weird sounds and sightings of figures dressed in black going in and out of a barn's basement. Seems that a dark ritual is underway..."
+    "text": "After some time, you finally arrive at the village of Boug-Coton, where a rumor circulates that evil creatures are at work... After investigating the area for a few moments, you find a clue. The residents' testimonies mention strange noises, and hooded black figures have been seen entering and leaving a barn's basement. It seems that a dark ritual is being prepared..."
   },
   "64": {
     "possibilities": {
@@ -2179,7 +2179,7 @@
         "outcomes": {
           "0": "You open your gift and take out a piece of equipment. It's a powerful suit of armor that you add to your collection. You leave the castle, happy to have received this gift."
         },
-        "text": "Wait and hope to get a new armor."
+        "text": "Wait and hope to get new armor."
       },
       "hopeGems": {
         "outcomes": {
@@ -2236,7 +2236,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Suddenly, you're lying on the floor, the crew leaning over you. The captain explains that you've fainted. They grab you and, like a bundle, throw you overboard before quickly walking away.",
+          "0": "Suddenly, you're lying on the floor, the crew leaning over you. The captain explains that you've fainted. They grab you and, like a bundle, throw you overboard before quickly moving away.",
           "1": "Suddenly, you're lying on the floor, the crew leaning over you. The captain explains that you've fainted. He gives you a few more words of advice before letting you leave for the island."
         }
       },
@@ -2325,7 +2325,7 @@
         "outcomes": {
           "0": "You feel like you're participating in a knighthood ceremony, since Donia puts the end of the staff on both your shoulders - first on the left one, then on the right - to give you her blessings. Either way, you don't feel that much different from before.",
           "1": "You feel overpowered after her blessing... until Donia leaves. You try to find her, embarrassed to have believed such folly, but you can't. You leave, ashamed and confused, and swear, a little too late, that she won't fool you again.",
-          "2": "As soon as Donia uses her \"blessing\" on you, she also throw some strange blue powder in your face. You get drowsy and she helps you to walk to one of the nearest trees, where you fall asleep. You dream of being in the royal palace, during a social event. You see the princess approaching you, with her face hidden by a dark veil, since you are actually oblivious to her physical appearance. You spend the rest of the dream dancing with her. You sleep a few hours feeling refreshed."
+          "2": "As Donia begins to \"bless\" you, she throws a strange blue powder in your face. The forest begins to sway before your eyes, and Donia guides you to a nearby tree against which you fall asleep. You dream of the royal castle and see yourself participating in an important banquet. The princess approaches you, a distorted black veil concealing her face, no doubt because you do not know her true appearance. You spend the rest of the dream dancing with her... You remain there in a restorative sleep."
         },
         "text": "Accept her offer."
       },
@@ -2393,7 +2393,7 @@
           "2": "Once through the trapdoor, you walk until you come to a dead end. You decide to get out, for fear of getting lost. As you reach the trapdoor, you are savagely attacked by an individual wearing a brown hat and carrying a whip on his belt. You somehow manage to dodge most of the blows, and fight back. You fight for a long time, but finally deliver the decisive blow. While searching him, you discover a small purse containing a substantial sum of money.",
           "3": "Once through the trapdoor, you walk until you discover a burial chamber, the underground is a tomb! Wanting to turn back, you fail to recognize the corridors you're passing through, and wander for many hours before finding an exit. You resume your adventure as the full moon illuminates the silent desert as if it were daylight.",
           "4": "After passing through the trapdoor, you step into the darkness and discover a strange place: an abandoned crypt, the underground tunnels resembling a funerary maze! You're tempted to turn back, but to your dismay, the corridors seem to play tricks on your senses and transform before you. You wander aimlessly for a time, before finally finding a way out.",
-          "5": "Once through the trapdoor, you walk to a room where a sphinx is enthroned, made entirely of gold! As if hypnotized, you approach it until your left foot lands on a slab, which sinks into the floor... Two golden arrows whistle eerily in your ears, while a third scratches your arm. It's not a serious wound, but this trap urges you to evacuate."
+          "5": "Once through the trapdoor, you walk to a room where a sphinx is enthroned, made entirely of gold! As if hypnotized, you approach it until your left foot lands on a slab, which sinks into the floor... Two golden arrows whistle eerily in your ears, while a third scratches your arm. It's not a serious wound, but this trap forces you to flee the area."
         },
         "text": "Explore the underground."
       },
@@ -2439,7 +2439,7 @@
           "0": "You let the man guide you to his tent and discreetly pick up a large stone while his back is turned to you. You then land a heavy blow on his hooded skull. The hermit collapses, blood spilling onto the cracked oasis floor. You decide to leave him like that, and head off to take a look inside the tent. Inside, you discover trunks set with jewels and objects in great quantity. You leave with a substantial sum of money, as well as an item you grabbed in a hurry. You quickly resume your crossing, unwilling to be caught red-handed.",
           "1": "You let the man guide you to his tent and discreetly pick up a large stone while his back is turned to you. Just as you're about to hit him, he turns and pulls a dagger from his sleeve, cutting deep into your chest. You scramble for cover, doing your best to stop the blood flowing. As you flee, you hear the crazy old man's demented laughter.",
           "2": "You let the man guide you to his tent and discreetly pick up a large stone while his back is turned to you. You land a heavy blow on his hooded head, the hermit collapses to the ground, and you are immediately overcome with remorse. You bandage the old man's head and lay him down on his mat to recover. When he wakes up, you apologize and give him some money in compensation for your misdeed.",
-          "3": "As you follow the old man, you pick up a stone from the ground behind his back. Discretion is not your strong suit, and the hermit immediately notices your suspicious silence. Realizing the situation, he repudiates you from his kyutchen with a punch the likes of which you've never received."
+          "3": "As you follow the old man, you pick up a stone from the ground behind his back. Discretion is not your strong suit, and the hermit immediately notices your suspicious silence. Realizing the situation, he casts you out of his kitchen with a punch the likes of which you've never received."
         },
         "text": "Accept and take advantage of the night to steal his belongings."
       }
@@ -2484,7 +2484,7 @@
         "outcomes": {
           "0": "The rhythm, rhymes and sounds of your poem captivate the crowd. You're acclaimed the winner! Yseldia, wife of the local Lord, presents you with your prize, not without a touch of emotion.",
           "1": "A few minutes before the results are announced, you notice that your purse is missing. You've probably had it stolen before you got there. Good thing you didn't have all your gold on you! You leave without waiting for the rest of the festivities, empty-handed.",
-          "2": "As you loudly proclaim your poem in a lilting voice, you notice a damsel eyeing you with much fervor. Just as you've finished your tirade, the young woman grabs your hand and starts running! A few alleys further on, the young lady kisses you! She's not your Princess, but you don't let her distract you, and explain that your heart's already in the right place. As you bid her farewell, she gives you an object that may prove useful in your further adventures."
+          "2": "As you loudly proclaim your poem in a lilting voice, you notice a damsel eyeing you with much fervor. Just as you've finished your tirade, the young woman grabs your hand and starts running! A few alleys further on, the young lady kisses you! She's not your Princess, but you don't let her distract you, and explain that your heart is already taken. As you bid her farewell, she gives you an object that may prove useful in your further adventures."
         },
         "text": "Take part in the poetry test."
       },
