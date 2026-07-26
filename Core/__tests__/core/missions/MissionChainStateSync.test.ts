@@ -164,12 +164,14 @@ describe("Mission chain state synchronization", () => {
 	});
 
 	describe("Player.spendMoney", () => {
-		it("keeps money awarded by the spendMoney mission before applying the debit", async () => {
-			const player = createTestPlayer({ money: 1000 });
+		it("applies the debit before awarding money from the spendMoney mission", async () => {
+			const player = createTestPlayer({ money: 25 });
+			let moneySeenByMission = -1;
 			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
-				const rewardedPlayer = createTestPlayer({ money: inputPlayer.money + 100 });
-				opts.applyOnLockedPlayer?.(rewardedPlayer);
-				return rewardedPlayer;
+				opts.applyOnLockedPlayer?.(inputPlayer);
+				moneySeenByMission = inputPlayer.money;
+				inputPlayer.money += 100;
+				return inputPlayer;
 			});
 
 			await player.spendMoney({
@@ -178,7 +180,8 @@ describe("Mission chain state synchronization", () => {
 				reason: NumberChangeReason.SHOP
 			});
 
-			expect(player.money).toBe(1050);
+			expect(moneySeenByMission).toBe(0);
+			expect(player.money).toBe(100);
 		});
 	});
 
