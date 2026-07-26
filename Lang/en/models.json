@@ -40,7 +40,7 @@
     "31": "Shield of solitude",
     "32": "Royal shield",
     "33": "Scutum",
-    "34": "Roundel",
+    "34": "Roudache",
     "35": "Vibranium shield",
     "36": "Spiked shield",
     "37": "Geneva Conventions",
@@ -119,7 +119,7 @@
     "10": "Archer",
     "11": "Gunner",
     "12": "Squire",
-    "13": "Horse rider",
+    "13": "Cavalier",
     "14": "Pikeman",
     "15": "Knight",
     "16": "Paladin",
@@ -138,7 +138,7 @@
     "6": "Mailed",
     "7": "Tank",
     "8": "Rock thrower",
-    "9": "Slinger"
+    "9": "Rebel"
   },
   "classes_plural": {
     "0": "Recruits",
@@ -239,7 +239,7 @@
       "name_other": "Blessings"
     },
     "bite": {
-      "success": "is helped by **{{petNickname}}** who decides to bite his opponent."
+      "success": "is helped by **{{petNickname}}** who decides to bite his opponent violently."
     },
     "bleeding": {
       "name": "is bleeding",
@@ -280,16 +280,16 @@
     },
     "breathTakingAttack": {
       "description": "Inflicts a small amount of damage but can steal your opponent's breath or slow them down.",
-      "name_one": "Breath-taking attack",
+      "name_one": "Breath-stealing attack",
       "name_other": "Breath-taking attacks"
     },
     "buildBarrage": {
-      "success": "is helped by **{{petNickname}}** who builds a dam to protect his master."
+      "success": "is helped by **{{petNickname}}** who builds a barrier to protect his master."
     },
     "burned": {
       "name": "burned",
       "new": "is burned.",
-      "active": "suffers from his burn.",
+      "active": "suffers from its burn.",
       "stop": "is no longer burnt."
     },
     "callOfTheSea": {
@@ -664,7 +664,7 @@
       "customMessage": "cannot attack."
     },
     "outOfBreath": {
-      "active": "is too out of breath to attack and has to catch his breath."
+      "active": "is too out of breath to attack and has to catch its breath."
     },
     "outrage": {
       "name": "outrage",
@@ -738,7 +738,7 @@
     "poisoned": {
       "name": "poisoned",
       "new": "is poisoned.",
-      "active": "suffers from his poisoning.",
+      "active": "suffers from poisoning.",
       "stop": "is no longer poisoned."
     },
     "poisonousAttack": {
@@ -794,7 +794,7 @@
       "name_other": "Ram Attacks"
     },
     "resting": {
-      "description": "Applied as healing to the caster.",
+      "description": "Applied as healing to the caster. The amount of energy recovered is divided by 4 after 4 uses.",
       "customMessage": "rests...",
       "name_one": "Rest",
       "name_other": "Rests"
@@ -911,7 +911,7 @@
       "name_other": "Stealth"
     },
     "stealWeapon": {
-      "failure": "appeals to **{{petNickname}}** for a little help, but the creature, finding no treasure worthy of his interest on the adversary, refuses to venture into hostile territory.",
+      "failure": "appeals to **{{petNickname}}** for a little help, but the creature, finding no treasure worthy of its interest on the adversary, refuses to venture into hostile territory.",
       "success": "asks for help from **{{petNickname}}** who bravely dashes forward and seizes the enemy's weapon in an act of boldness."
     },
     "stoneSkinAttack": {
@@ -1029,11 +1029,11 @@
     "1": {
       "description": "A large sandy beach on the edge of the town.",
       "name": "Sentinel Beach",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "10": {
-      "description": "An anciently fortified city, Ville Forte is not what it used to be. Ravaged by the old war, only a dozen houses and peasants remain. The rest of the old fortification isn't more than ruins.",
+      "description": "An ancient fortified city, Ville Forte is but a shadow of its former self. Ravaged by the old war, only a dozen houses and peasants remain. The rest of the old fortification is nothing but ruins.",
       "name": "Ville Forte",
       "particle": "of",
       "atParticle": "at",
@@ -1042,55 +1042,55 @@
     "1000": {
       "description": "A large beach of black volcanic sand. It takes its name from its very particular color. The first men to set foot on the black beach feared a great curse. This is obviously not the case. Be careful though, the black sand stains your feet and clothes.",
       "name": "Black beach",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "1001": {
       "description": "A huge forest that covers almost the entire island. Fine particles of ash fall from the Grumble Volcano, which makes the visibility in this forest rather difficult. It is therefore very little explored.",
       "name": "Forest of twilight",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "1002": {
       "description": "A small village of about twenty houses, partially destroyed, which is located near the forest of twilight. Nobody knows exactly why this village is in ruins. Many think that it is the village of the former inhabitants who succumbed to the lava flows of the Grumble Volcano. But others put forward the theory of a disease, the plague and many rats. There is not a single inhabitant left here...",
       "name": "Village in ruins",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1003": {
       "description": "This old abandoned mine passes under the steep path and the mountains. It is so large and labyrinthine that it ends up in the heart of the volcano. It is however difficult to get there. Be careful though, some people would have found old banana remains in the misty mine.",
       "name": "Misty mine",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "1004": {
       "description": "This path is the only real path to the top of the Grumble Volcano. It is very difficult to use and very dangerous. Many men have died trying to use it. At your own risk.",
       "name": "Steep path",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1005": {
       "description": "The centerpiece of the volcanic island, this volcano is still active. It pours several tons of ash per year on this small island, which only grows. The lava that flows in the center is in such great quantity that an underground channel called Lava Channel runs for several kilometers. From the boats on the water, you can see this channel boiling the water deep below. This volcano is said to be the creator of several small islands in the area, such as the Ice Island.",
       "name": "Rumbling volcano",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "11": {
-      "description": "True last road which still allows to go around the Mount Celestrum from the north, the Great Road is still widely used, but mainly by brigands.",
-      "name": "Great Road",
-      "particle": "of the",
+      "description": "The last true road that still allows you to bypass Mount Celestrum to the north; the Great Road is still widely used today, primarily by brigands.",
+      "name": "Great Axe",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1100": {
       "description": "This shoreline is the first thing we see when we arrive at the icy island. It bears its name from the noise coming from the sailors when they docked. Obviously, they came from the volcanic island where the temperature is much warmer.",
-      "name": "Cool cool shore",
-      "particle": "of the",
+      "name": "Icy-icy Shore",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1101": {
       "description": "A frozen land where the climate is merciless. Only the strongest adventurers dare to brave its glacial expanses.",
       "name": "Tundra",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "1102": {
@@ -1120,7 +1120,7 @@
     "1106": {
       "description": "A once-thriving village, now reduced to ruins and desolation. Only the cries of suffering of lost souls remind us that life once existed here.",
       "name": "Village devastated",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1107": {
@@ -1167,11 +1167,11 @@
     "12": {
       "description": "A great empty Nordic plain, without much interest.",
       "name": "The Expanse",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in"
     },
     "13": {
-      "description": "A difficult course. Muddy and wet, the Marshy Road connects the Expanse to the Crab River.",
+      "description": "A hard-to-access path, muddy and wet. The Marshy Road connects the Expanse to the Crab River.",
       "name": "Marshy Road",
       "particle": "towards the",
       "atParticle": "at"
@@ -1179,112 +1179,112 @@
     "14": {
       "description": "A large lake where families enjoy gathering. The Vacarme river flows into it.",
       "name": "Mirage Lake",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "15": {
       "description": "Mount Celestrum is the dominant mountain in the region. Celestrum, being several kilometers high, is visible to all. It is said to bear the name of the ancient goddess. Moreover, only one person managed to climb to the top. Only their initials are known: M-B.",
       "name": "Mount Celestrum",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "16": {
       "description": "Small and dangerous path bordering the Vacarme river. Be careful not to fall off.",
       "name": "Wolves Path",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "17": {
       "description": "Warm village bordering the Kings' Valley. It is a welcoming oasis for transit travelers.",
       "name": "Coco Village",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to",
       "inParticle": "in the"
     },
     "18": {
       "description": "This river owes its name to the noise produced by its strong current which took the lives of many villagers.",
-      "name": "Vacarme river",
-      "particle": "of the",
+      "name": "Vacarme River",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "19": {
       "description": "Beach created by the strong winds from the Kings' Valley. The Dune protects the Backwoods Plains from heat and gathers water from the Vacarme river.",
       "name": "The Dune",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in"
     },
     "1999": {
       "description": "An old wooden boat, it seems to hold up thanks to the repairs of the workers. It is ready to leave and is waiting for your arrival.",
       "name": "Boat to leave the island",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "2": {
       "description": "A small road that takes you to the countryside from Mergagnan and vice versa.",
       "name": "Rural Path",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "20": {
       "description": "A vast and peaceful plain, for agricultural purposes.",
       "name": "Backwoods Plains",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "21": {
       "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day ultimately creating a huge market.",
       "name": "Road of Wonders",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "22": {
       "description": "Ill-famed forest near Claire de Ville. Howling Woods has a bad reputation. Hideout of many bandits and outlaws, it owes its name mainly from its doubtful practices, hundreds of years ago.",
       "name": "Howling Woods",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "23": {
       "description": "Large commercial city and economical crossroad, Claire de Ville hasn't always been that welcoming. Very poor at the beginning, she managed to quickly develop thanks to its many shops and hostels which offers a great choice to wanderers of the region. Claire de Ville is also known for its calm and its order.",
       "name": "Claire de Ville",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in",
       "inParticle": "in"
     },
     "24": {
       "description": "A very steep road that leads to Claire de Ville. Everything depends on which way you're following it.",
-      "name": "Climbing road",
-      "particle": "of the",
+      "name": "Climbing Road",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "25": {
       "description": "Everything is in the name. A river well appreciated by fishmongers from Claire de Ville.",
       "name": "Crabs' River",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "26": {
       "description": "A peaceful town on the edge of the Sentinel Beach.",
       "name": "Seawynne",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in",
       "inParticle": "in"
     },
     "27": {
       "description": "A forest at the foot of Mount Celestrum",
       "name": "Celestrum Forest",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "28": {
       "description": "Entrance to the king's castle. Surrounded by a thick wall, it seems to be able to resist every conceivable attack.",
-      "name": "Castle's entrance",
-      "particle": "of",
+      "name": "Castle Gates",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "29": {
       "description": "A vast room adorned with numerous works of art.",
       "name": "Reception room",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "3": {
@@ -1296,7 +1296,7 @@
     "32": {
       "description": "The road which leads to the King's castle.",
       "name": "Road to the King's castle",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in"
     },
     "33": {
@@ -1325,11 +1325,11 @@
     "4": {
       "description": "Huge forest at the South of the Cradle. It is said that many travelers got lost there.",
       "name": "Oldster's Forest",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "5": {
-      "description": "A way named after its furrow within the abundant nature at the South of the Oldster's forest.",
+      "description": "A path named after its furrow within the lush nature in the south of the Oldster's forest.",
       "name": "Daedalus Path",
       "particle": "of",
       "atParticle": "to"
