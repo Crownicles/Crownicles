@@ -1362,7 +1362,7 @@
   },
   "map_types": {
     "abyss": {
-      "name": "",
+      "name": "Abysses",
       "prefix": "du"
     },
     "be": {
@@ -1440,6 +1440,10 @@
     "ruins": {
       "name": "Ruines",
       "prefix": "des"
+    },
+    "swamp": {
+      "name": "Marais",
+      "prefix": "du"
     },
     "testZone": {
       "name": "",

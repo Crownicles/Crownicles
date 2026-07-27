@@ -1,4 +1,15 @@
-import { ExpeditionConstants } from "../constants/ExpeditionConstants";
+import {
+	ExpeditionConstants, ExpeditionLocationType
+} from "../constants/ExpeditionConstants";
+
+/**
+ * Resolve an expedition biome from a map location type and an optional explicit override.
+ */
+export function getExpeditionLocationType(mapType: string | undefined, expeditionType?: ExpeditionLocationType): ExpeditionLocationType {
+	return expeditionType
+		?? ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapType ?? ExpeditionConstants.DEFAULT_MAP_TYPE]
+		?? ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS;
+}
 
 /**
  * Get the risk category name based on risk rate

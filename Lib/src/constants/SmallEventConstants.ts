@@ -373,7 +373,12 @@ export abstract class SmallEventConstants {
 		MAX_PROBABILITY: 1.0,
 
 		// Map location types that affect food type probabilities
-		BAD_SMELL_TYPES: [MapLocationConstants.TYPES.DESERT, MapLocationConstants.TYPES.MOUNTAIN],
+		BAD_SMELL_TYPES: [
+			MapLocationConstants.TYPES.DESERT,
+			MapLocationConstants.TYPES.MOUNTAIN,
+			MapLocationConstants.TYPES.RUINS,
+			MapLocationConstants.TYPES.SWAMP
+		],
 
 		// Map location types where vegetarian food is more likely
 		VEGETARIAN_TYPES: [
@@ -555,6 +560,11 @@ export abstract class SmallEventConstants {
 			MAX: 4
 		},
 		BIOME_MATERIAL_TYPES: {
+			abyss: [
+				MaterialType.POISON,
+				MaterialType.MAGIC,
+				MaterialType.METAL
+			],
 			forest: [
 				MaterialType.WOOD,
 				MaterialType.NATURE,
@@ -593,6 +603,16 @@ export abstract class SmallEventConstants {
 				MaterialType.ROPE,
 				MaterialType.NATURE,
 				MaterialType.LEATHER
+			],
+			tundra: [
+				MaterialType.NATURE,
+				MaterialType.LEATHER,
+				MaterialType.MAGIC
+			],
+			volcano: [
+				MaterialType.EXPLOSIVE,
+				MaterialType.METAL,
+				MaterialType.MAGIC
 			]
 		} satisfies Record<ExpeditionLocationType, readonly MaterialType[]>
 	} as const;

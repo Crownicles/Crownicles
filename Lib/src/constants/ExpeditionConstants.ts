@@ -136,20 +136,37 @@ export abstract class ExpeditionConstants {
 	 * Mapping from map location types to expedition location types
 	 */
 	static readonly MAP_TYPE_TO_EXPEDITION_TYPE: Record<string, ExpeditionLocationType> = {
+		[MapLocationConstants.TYPES.ABYSS]: "abyss",
 		[MapLocationConstants.TYPES.FOREST]: "forest",
 		[MapLocationConstants.TYPES.MOUNTAIN]: "mountain",
 		[MapLocationConstants.TYPES.DESERT]: "desert",
 		[MapLocationConstants.TYPES.RUINS]: "ruins",
 		[MapLocationConstants.TYPES.BEACH]: "coast",
+		[MapLocationConstants.TYPES.ICE_BEACH]: "coast",
 		[MapLocationConstants.TYPES.RIVER]: "coast",
+		[MapLocationConstants.TYPES.CREEK]: "coast",
 		[MapLocationConstants.TYPES.LAKE]: "swamp",
+		[MapLocationConstants.TYPES.SWAMP]: "swamp",
 		[MapLocationConstants.TYPES.PLAINS]: "plains",
 		[MapLocationConstants.TYPES.ROAD]: "plains",
 		[MapLocationConstants.TYPES.VILLAGE]: "plains",
-		[MapLocationConstants.TYPES.CITY]: "cave",
+		[MapLocationConstants.TYPES.CITY]: "plains",
+		[MapLocationConstants.TYPES.CAVERN]: "cave",
+		[MapLocationConstants.TYPES.CRYSTAL_CAVERN]: "cave",
+		[MapLocationConstants.TYPES.MINE]: "cave",
+		[MapLocationConstants.TYPES.UNDERGROUND_LAKE]: "cave",
 		[MapLocationConstants.TYPES.CASTLE_ENTRANCE]: "ruins",
 		[MapLocationConstants.TYPES.CASTLE_THRONE]: "ruins",
-		[MapLocationConstants.TYPES.CONTINENT]: "plains"
+		[MapLocationConstants.TYPES.BLESSED_DOORS]: "ruins",
+		[MapLocationConstants.TYPES.HAUNTED_HOUSE]: "ruins",
+		[MapLocationConstants.TYPES.ICE_PEAK]: "mountain",
+		[MapLocationConstants.TYPES.DRAGONS_NEST]: "mountain",
+		[MapLocationConstants.TYPES.MISTY_PATH]: "swamp",
+		[MapLocationConstants.TYPES.CONTINENT]: "plains",
+		[MapLocationConstants.TYPES.PVE_EXIT]: "coast",
+		[MapLocationConstants.TYPES.TEST_ZONE]: "plains",
+		[MapLocationConstants.TYPES.TUNDRA]: "tundra",
+		[MapLocationConstants.TYPES.VOLCANO]: "volcano"
 	};
 
 	/**
@@ -503,6 +520,7 @@ export abstract class ExpeditionConstants {
 	 * Each location can influence reward types
 	 */
 	static readonly EXPEDITION_LOCATION_TYPES = {
+		ABYSS: "abyss",
 		FOREST: "forest",
 		MOUNTAIN: "mountain",
 		DESERT: "desert",
@@ -510,7 +528,9 @@ export abstract class ExpeditionConstants {
 		RUINS: "ruins",
 		CAVE: "cave",
 		PLAINS: "plains",
-		COAST: "coast"
+		COAST: "coast",
+		TUNDRA: "tundra",
+		VOLCANO: "volcano"
 	} as const;
 
 	/**
@@ -541,6 +561,15 @@ export abstract class ExpeditionConstants {
 		},
 		coast: {
 			money: 1.2, experience: 0.7, points: 0.8
+		},
+		volcano: {
+			money: 1.6, experience: 0.7, points: 0.7
+		},
+		tundra: {
+			money: 0.9, experience: 1.2, points: 0.9
+		},
+		abyss: {
+			money: 1.3, experience: 0.6, points: 1.1
 		}
 	};
 
@@ -641,6 +670,30 @@ export abstract class ExpeditionConstants {
 			2,
 			88,
 			90
+		],
+		volcano: [
+			21,
+			82,
+			33,
+			81,
+			28,
+			62
+		],
+		tundra: [
+			64,
+			68,
+			29,
+			53,
+			11,
+			76
+		],
+		abyss: [
+			70,
+			77,
+			38,
+			53,
+			3,
+			87
 		]
 	};
 
@@ -662,7 +715,10 @@ export abstract class ExpeditionConstants {
 		mountain: { skewFactor: 1.2 },
 		swamp: { skewFactor: 1.4 },
 		ruins: { skewFactor: 1.6 },
-		cave: { skewFactor: 1.8 }
+		cave: { skewFactor: 1.8 },
+		tundra: { skewFactor: 1.3 },
+		volcano: { skewFactor: 1.9 },
+		abyss: { skewFactor: 2.2 }
 	};
 
 	/**

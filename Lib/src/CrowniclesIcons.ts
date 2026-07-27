@@ -1116,6 +1116,7 @@ export const CrowniclesIcons: {
 		ri: "🏞️",
 		ro: "🛣️",
 		ruins: "🏚️",
+		swamp: "🐊",
 		testZone: "👾",
 		tundra: "🌲",
 		vi: "🛖",
@@ -2500,6 +2501,7 @@ export const CrowniclesIcons: {
 	},
 	expedition: {
 		locations: {
+			abyss: "🌑",
 			forest: "🌲",
 			mountain: "⛰️",
 			desert: "🏜️",
@@ -2507,7 +2509,9 @@ export const CrowniclesIcons: {
 			ruins: "🏛️",
 			cave: "🕳️",
 			plains: "🌾",
-			coast: "🌊"
+			coast: "🌊",
+			tundra: "❄️",
+			volcano: "🌋"
 		},
 		map: "🗺️",
 		loot: "💰",

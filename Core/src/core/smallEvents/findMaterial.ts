@@ -4,10 +4,12 @@ import { TravelTime } from "../maps/TravelTime";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
-	ExpeditionConstants, ExpeditionLocationType
+	ExpeditionLocationType
 } from "../../../../Lib/src/constants/ExpeditionConstants";
+import { getExpeditionLocationType } from "../../../../Lib/src/utils/ExpeditionUtils";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
 import { MaterialDataController } from "../../data/Material";
+import { MapLocation } from "../../data/MapLocation";
 import { Materials } from "../database/game/models/Material";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { SmallEventFindMaterialPacket } from "../../../../Lib/src/packets/smallEvents/SmallEventFindMaterialPacket";
@@ -15,11 +17,10 @@ import { Player } from "../database/game/models/Player";
 import { updateCollectMaterialsMission } from "../utils/MaterialLootUtils";
 
 /**
- * Resolve the expedition biome associated with a map location type, falling back to the default biome.
+ * Resolve the expedition biome associated with a map location.
  */
-function getBiomeExpeditionType(mapType: string | undefined): ExpeditionLocationType {
-	return ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[mapType ?? ExpeditionConstants.DEFAULT_MAP_TYPE]
-		?? ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE[ExpeditionConstants.DEFAULT_MAP_TYPE];
+function getBiomeExpeditionType(mapLocation: MapLocation | null): ExpeditionLocationType {
+	return getExpeditionLocationType(mapLocation?.type, mapLocation?.expeditionType);
 }
 
 /**
@@ -41,8 +42,8 @@ function getTravelProgress(player: Player): number {
 function pickBiomeExpeditionType(player: Player): ExpeditionLocationType {
 	const progress = getTravelProgress(player);
 	return RandomUtils.crowniclesRandom.realZeroToOneInclusive() < progress
-		? getBiomeExpeditionType(player.getDestination()?.type)
-		: getBiomeExpeditionType(player.getPreviousMap()?.type);
+		? getBiomeExpeditionType(player.getDestination())
+		: getBiomeExpeditionType(player.getPreviousMap());
 }
 
 /**

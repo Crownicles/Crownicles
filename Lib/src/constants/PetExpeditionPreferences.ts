@@ -1063,6 +1063,12 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 	}
 };
 
+const EXPEDITION_PREFERENCE_ALIASES: Partial<Record<ExpeditionLocationType, ExpeditionLocationType>> = {
+	abyss: "cave",
+	tundra: "mountain",
+	volcano: "mountain"
+};
+
 /**
  * Get pet expedition preference for a given location type
  */
@@ -1081,6 +1087,15 @@ export function getPetExpeditionPreference(petTypeId: number, locationType: Expe
 		return PetExpeditionPreferences.DISLIKED;
 	}
 
+	const aliasedLocationType = EXPEDITION_PREFERENCE_ALIASES[locationType];
+	if (aliasedLocationType && preferences.liked.includes(aliasedLocationType)) {
+		return PetExpeditionPreferences.LIKED;
+	}
+
+	if (aliasedLocationType && preferences.disliked.includes(aliasedLocationType)) {
+		return PetExpeditionPreferences.DISLIKED;
+	}
+
 	return PetExpeditionPreferences.NEUTRAL;
 }
 
@@ -1091,5 +1106,23 @@ export function getPetExpeditionPreference(petTypeId: number, locationType: Expe
 export function getPetExpeditionPreferences(petTypeId: number): {
 	liked: readonly ExpeditionLocationType[]; disliked: readonly ExpeditionLocationType[];
 } | undefined {
-	return PET_EXPEDITION_PREFERENCES[petTypeId];
+	const preferences = PET_EXPEDITION_PREFERENCES[petTypeId];
+	if (!preferences) {
+		return undefined;
+	}
+
+	const liked = [...preferences.liked];
+	const disliked = [...preferences.disliked];
+	for (const [locationType, aliasedLocationType] of Object.entries(EXPEDITION_PREFERENCE_ALIASES) as [ExpeditionLocationType, ExpeditionLocationType][]) {
+		if (preferences.liked.includes(aliasedLocationType) && !liked.includes(locationType)) {
+			liked.push(locationType);
+		}
+		if (preferences.disliked.includes(aliasedLocationType) && !disliked.includes(locationType)) {
+			disliked.push(locationType);
+		}
+	}
+
+	return {
+		liked, disliked
+	};
 }

@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
 	ExpeditionConstants,
 	getPetExpeditionPreference,
+	getPetExpeditionPreferences,
 	generateTerrainBasedRisk,
 	PET_PREFERENCE_REWARD_MULTIPLIERS,
 	DISLIKED_SHORT_EXPEDITION_FAILURE_BONUS,
@@ -71,6 +72,24 @@ describe("ExpeditionConstants", () => {
 			});
 		});
 
+		describe("inherits preferences for specialized terrains", () => {
+			it("should inherit mountain preference for tundra and volcano", () => {
+				expect(getPetExpeditionPreference(1, "tundra")).toBe("liked");
+				expect(getPetExpeditionPreference(1, "volcano")).toBe("liked");
+			});
+
+			it("should inherit cave preference for abyss", () => {
+				expect(getPetExpeditionPreference(4, "abyss")).toBe("liked");
+				expect(getPetExpeditionPreference(10, "abyss")).toBe("disliked");
+			});
+
+			it("should expose inherited terrains in displayed preferences", () => {
+				const preferences = getPetExpeditionPreferences(1)!;
+				expect(preferences.liked).toContain("tundra");
+				expect(preferences.liked).toContain("volcano");
+			});
+		});
+
 		describe("returns 'neutral' for unknown pet types", () => {
 			it("should return 'neutral' for unknown pet type id", () => {
 				expect(getPetExpeditionPreference(99999, "forest")).toBe("neutral");
@@ -92,16 +111,7 @@ describe("ExpeditionConstants", () => {
 
 	describe("generateTerrainBasedRisk", () => {
 		describe("produces values in valid range [0, 100]", () => {
-			const terrainTypes = [
-				"plains",
-				"coast",
-				"forest",
-				"desert",
-				"mountain",
-				"swamp",
-				"ruins",
-				"cave"
-			] as const;
+			const terrainTypes = Object.values(ExpeditionConstants.EXPEDITION_LOCATION_TYPES);
 
 			for (const terrain of terrainTypes) {
 				it(`should produce values between 0 and 100 for ${terrain}`, () => {
