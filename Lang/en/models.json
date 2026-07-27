@@ -1331,32 +1331,32 @@
     "5": {
       "description": "A path named after its furrow within the lush nature in the south of the Oldster's forest.",
       "name": "Daedalus Path",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "6": {
       "description": "A peaceful village known for its welcoming inn.",
       "name": "Boug-Coton",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in",
       "inParticle": "in"
     },
     "7": {
       "description": "Hot sandy desert named in honor of the region's ancient kings.",
       "name": "Kings' Valley",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "8": {
       "description": "A major crossroad that links main paths to the West of Mount Celestrum.",
       "name": "Crossroads of Fates",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "9": {
       "description": "Formerly important trade route connecting the Cradle and Ville Forte, only old chipped pavement remains of the Main Road.",
       "name": "Main Road",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     }
   },
@@ -1439,7 +1439,7 @@
     },
     "ruins": {
       "name": "Ruins",
-      "prefix": "of the"
+      "prefix": "the"
     },
     "testZone": {
       "name": "",
@@ -1539,7 +1539,7 @@
     "drinkAlcohol": "Drink an alcoholic beverage",
     "drinkEnergyPotion_one": "Drink {{count}} energy potion",
     "drinkEnergyPotion_other": "Drink {{count}} energy potions",
-    "drinkPotionRarity": "Drink a potion of rarity {{variantText}} or more",
+    "drinkPotionRarity": "Drink a potion of rarity {{variantText}} or higher",
     "drinkPotionWithoutEffect_one": "Drink {{count}} potion without effect",
     "drinkPotionWithoutEffect_other": "Drink {{count}} potions without effect",
     "drinkPotion_one": "Drink {{count}} potion",
@@ -1563,12 +1563,12 @@
     "fightStreak": "Do a fight for {{count}} consecutive days",
     "findOrBuyItem_one": "Find or buy {{count}} item",
     "findOrBuyItem_other": "Find or buy {{count}} items",
-    "finishWithAttack": "Use {{count}} times the {{variantText}} to finish your opponent",
+    "finishWithAttack": "Use the {{variantText}} {{count}} times",
     "fromPlaceToPlace": "{{variantText}}",
     "gainRage_one": "Earn {{count}} rage point {emote:unitValues.rage} by beating wild animals",
     "gainRage_other": "Earn {{count}} rage points {emote:unitValues.rage} by defeating wild animals",
     "goToPlace": "Travel to {{variantText}}",
-    "guildDailyFromSomeoneElse": "Receive a guild daily reward without asking for it",
+    "guildDailyFromSomeoneElse": "Receive a guild reward without claiming it",
     "guildDaily_one": "Receive {{count}} guild reward",
     "guildDaily_other": "Receive {{count}} guild rewards",
     "guildHasPoints": "Help your guild get more than {{count, number}} guild points {emote:unitValues.guildPoint}",
@@ -1588,10 +1588,10 @@
     "joinGuildHouse": "Joining a guild realm",
     "joinMemberOnBoat": "Join a member on the island",
     "joinPVEIsland": "Join the mysterious island",
-    "kingsMoneyValue": "Get less than 6500 {emote:unitValues.money} in King Money",
+    "kingsMoneyValue": "Get less than 6500 {emote:unitValues.money} in the King's Money",
     "maxTokensReached_one": "Reach the maximum number of tokens {emote:unitValues.token} {{count}} times",
     "maxTokensReached_other": "Reach the maximum number of tokens {emote:unitValues.token} {{count}} times",
-    "meetDifferentPlayers_one": "Meet {{count}}  player",
+    "meetDifferentPlayers_one": "Meet {{count}} player",
     "meetDifferentPlayers_other": "Meet {{count}} different players",
     "meetGruffo": "Meet Gruffo",
     "meetHermit": "Meet a hermit",
@@ -1619,7 +1619,7 @@
     "reachLevel": "Reach level {{count}}",
     "reachScore": "Have a score higher than {{count}} {emote:unitValues.score}",
     "recoverAlteration_one": "Recover from {{count}} status alteration",
-    "recoverAlteration_other": "Recover from {{count}} alterations",
+    "recoverAlteration_other": "Recover from {{count}} status alterations",
     "replaceMission": "Replace a task",
     "sellItemWithGivenCost_one": "Sell {{count}} equipment for more than {{variantText}} {emote:unitValues.money}",
     "sellItemWithGivenCost_other": "Sell {{count}} equipment for more than {{variantText}} {emote:unitValues.money}",
