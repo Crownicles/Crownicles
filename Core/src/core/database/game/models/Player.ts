@@ -554,16 +554,23 @@ export class Player extends Model {
 
 	/**
 	 * Check if we need to kill the player (mouahaha)
+	 * Idempotent: the death effect is (re)applied as long as the player has no health left, but a single
+	 * {@link PlayerDeathPacket} is pushed per response, even when several health changes reach 0 in the same flow
+	 * (e.g. a big event outcome that damages the player and then overwrites their effect).
 	 * @param response
 	 * @param reason
+	 * @returns true if the player is dead
 	 */
 	public async killIfNeeded(response: CrowniclesPacket[], reason: NumberChangeReason): Promise<boolean> {
 		if (this.health > 0) {
 			return false;
 		}
-		await TravelTime.applyEffect(this, Effect.DEAD, 0, new Date(), reason);
-		const packet = makePacket(PlayerDeathPacket, {});
-		response.push(packet);
+		if (this.effectId !== Effect.DEAD.id) {
+			await TravelTime.applyEffect(this, Effect.DEAD, 0, new Date(), reason);
+		}
+		if (!response.some(packet => packet instanceof PlayerDeathPacket)) {
+			response.push(makePacket(PlayerDeathPacket, {}));
+		}
 		return true;
 	}
 
@@ -962,23 +969,55 @@ export class Player extends Model {
 
 	/**
 	 * Add health to the player
+	 * Note: this method automatically calls {@link killIfNeeded} after updating the health, so no code path can
+	 * leave the player alive with 0 health (#4597)
 	 * @param parameters - Object containing amount, response, reason and optional missionHealthParameter
 	 */
-	public async addHealth(parameters: HealthEditValueParameters): Promise<boolean> {
+	public async addHealth(parameters: HealthEditValueParameters): Promise<void> {
 		const missionParam: MissionHealthParameter = parameters.missionHealthParameter ?? {
 			overHealCountsForMission: true,
 			shouldPokeMission: true
 		};
 
-		const maxHealth = this.getMaxHealth();
-		if (this.health > maxHealth) {
-			this.health = maxHealth;
-		}
-		await this.setHealth(this.health + parameters.amount, parameters.response, missionParam);
+		await this.setHealth(this.getHealth() + parameters.amount, parameters.response, missionParam);
 
 		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
-		return this.health > 0;
+		await this.killIfNeeded(parameters.response, parameters.reason);
+	}
+
+	/**
+	 * Change the class of the player, rescaling their health and energy so they keep the same ratios.
+	 *
+	 * Both maximums depend on the class, so they have to be read before the class actually changes: computing the
+	 * health target on the old scale while {@link addHealth} applies the delta on the new one made the difference be
+	 * subtracted twice and dropped players to 0 health (#4597).
+	 * @param newClassId
+	 * @param playerActiveObjects
+	 * @param response
+	 */
+	public async changeClass(newClassId: number, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<void> {
+		const previousMaxHealth = this.getMaxHealth();
+		const previousHealth = Math.min(this.getHealthValue(), previousMaxHealth);
+		const previousEnergyLostRatio = this.fightPointsLost / this.getMaxCumulativeEnergy(playerActiveObjects);
+
+		this.class = newClassId;
+
+		const targetHealth = Math.ceil(previousHealth / previousMaxHealth * this.getMaxHealth());
+		await this.addHealth({
+			amount: targetHealth - this.getHealth(),
+			response,
+			reason: NumberChangeReason.CLASS,
+			missionHealthParameter: {
+				shouldPokeMission: false,
+				overHealCountsForMission: false
+			}
+		});
+		this.setEnergyLost(
+			Math.ceil(previousEnergyLostRatio * this.getMaxCumulativeEnergy(playerActiveObjects)),
+			NumberChangeReason.CLASS,
+			playerActiveObjects
+		);
 	}
 
 	/**

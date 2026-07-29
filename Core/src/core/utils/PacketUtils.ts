@@ -6,17 +6,36 @@ import { mqttClient } from "../../mqttClient";
 import { AnnouncementPacket } from "../../../../Lib/src/packets/announcements/AnnouncementPacket";
 import { NotificationPacket } from "../../../../Lib/src/packets/notifications/NotificationPacket";
 import { NotificationsSerializedPacket } from "../../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
+import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 
 export abstract class PacketUtils {
+	/**
+	 * The death of a player is detected as soon as their health reaches 0, which can happen in the middle of a flow
+	 * (e.g. before the outcome of a big event has been described). Sending the death packets last keeps the kill
+	 * check on the only chokepoint that cannot be forgotten while preserving a readable order for the player.
+	 * @param packets
+	 */
+	private static moveDeathPacketsLast(packets: CrowniclesPacket[]): CrowniclesPacket[] {
+		if (!packets.some(packet => packet instanceof PlayerDeathPacket)) {
+			return packets;
+		}
+
+		return [
+			...packets.filter(packet => !(packet instanceof PlayerDeathPacket)),
+			...packets.filter(packet => packet instanceof PlayerDeathPacket)
+		];
+	}
+
 	static sendPackets(context: PacketContext, packets: CrowniclesPacket[]): void {
 		const responsePacket = {
 			context,
-			packets: packets.map(responsePacket => ({
-				name: responsePacket.constructor.name,
-				packet: responsePacket
-			}))
+			packets: PacketUtils.moveDeathPacketsLast(packets)
+				.map(responsePacket => ({
+					name: responsePacket.constructor.name,
+					packet: responsePacket
+				}))
 		};
 
 		const response = JSON.stringify(responsePacket);
