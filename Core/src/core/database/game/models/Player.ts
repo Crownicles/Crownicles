@@ -970,7 +970,8 @@ export class Player extends Model {
 	/**
 	 * Add health to the player
 	 * Note: this method automatically calls {@link killIfNeeded} after updating the health, so no code path can
-	 * leave the player alive with 0 health (#4597)
+	 * leave the player alive with 0 health (#4597). A lethal change therefore persists the player through
+	 * {@link TravelTime.applyEffect}: callers must hold the player lock.
 	 * @param parameters - Object containing amount, response, reason and optional missionHealthParameter
 	 */
 	public async addHealth(parameters: HealthEditValueParameters): Promise<void> {

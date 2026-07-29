@@ -7,6 +7,8 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 	 * Those "zombies" would then die at their next big event, seemingly without any reason.
 	 * Give them back 10 health so they are not killed by the restored death check. Players who are actually dead
 	 * (waiting for a respawn) keep their 0 health.
+	 * The 'dead' effect id is inlined on purpose: a migration must keep describing the schema as it was when it ran,
+	 * even if `Effect.DEAD` is renamed later.
 	 */
 	await context.sequelize.query(`
 		UPDATE players

@@ -18,13 +18,14 @@ export abstract class PacketUtils {
 	 * @param packets
 	 */
 	private static moveDeathPacketsLast(packets: CrowniclesPacket[]): CrowniclesPacket[] {
-		if (!packets.some(packet => packet instanceof PlayerDeathPacket)) {
+		const deathPackets = packets.filter(packet => packet instanceof PlayerDeathPacket);
+		if (deathPackets.length === 0) {
 			return packets;
 		}
 
 		return [
 			...packets.filter(packet => !(packet instanceof PlayerDeathPacket)),
-			...packets.filter(packet => packet instanceof PlayerDeathPacket)
+			...deathPackets
 		];
 	}
 
