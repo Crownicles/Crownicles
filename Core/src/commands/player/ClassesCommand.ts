@@ -23,7 +23,6 @@ import {
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorChangeClass";
 import { BlockingUtils } from "../../core/utils/BlockingUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
-import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { MissionsController } from "../../core/missions/MissionsController";
 import { crowniclesInstance } from "../../app";
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
@@ -44,31 +43,15 @@ function getEndCallback(player: Player) {
 
 			await withLockedPlayerAndMissionsSafe(player, "class change", async lockedPlayer => {
 				const selectedClass = (firstReaction.reaction.data as ReactionCollectorChangeClassReaction).classId;
-				const oldClass = ClassDataController.instance.getById(lockedPlayer.class);
 				const newClass = ClassDataController.instance.getById(selectedClass);
-				const level = lockedPlayer.level;
 
-				if (!oldClass || !newClass) {
+				if (!newClass) {
 					response.push(makePacket(CommandClassesCancelErrorPacket, {}));
 					return;
 				}
 
-				lockedPlayer.class = selectedClass;
 				const playerActiveObjects = await InventorySlots.getPlayerActiveObjects(lockedPlayer.id);
-				await lockedPlayer.addHealth({
-					amount: Math.ceil(
-						lockedPlayer.getHealthValue() / oldClass.getMaxHealthValue(level) * newClass.getMaxHealthValue(level)
-					) - lockedPlayer.getHealthValue(),
-					response,
-					reason: NumberChangeReason.CLASS,
-					missionHealthParameter: {
-						shouldPokeMission: false,
-						overHealCountsForMission: false
-					}
-				});
-				lockedPlayer.setEnergyLost(Math.ceil(
-					lockedPlayer.fightPointsLost / oldClass.getMaxCumulativeEnergyValue(level) * newClass.getMaxCumulativeEnergyValue(level)
-				), NumberChangeReason.CLASS, playerActiveObjects);
+				await lockedPlayer.changeClass(selectedClass, playerActiveObjects, response);
 				await lockedPlayer.save();
 				await MissionsController.update(lockedPlayer, response, { missionId: "chooseClass" });
 				await MissionsController.update(lockedPlayer, response, {
