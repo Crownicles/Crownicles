@@ -4,11 +4,12 @@ import {
 import { PacketUtils } from "../../../src/core/utils/PacketUtils";
 import { mqttClient } from "../../../src/mqttClient";
 import {
-	CrowniclesPacket, PacketContext, makePacket
+	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { PlayerLevelUpPacket } from "../../../../Lib/src/packets/events/PlayerLevelUpPacket";
+import { PlayerLeavePveIslandPacket } from "../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 
 const context = { discord: { shardId: 0 } } as PacketContext;
 
@@ -33,14 +34,8 @@ describe("PacketUtils.sendPackets", () => {
 		const publishSpy = vi.spyOn(mqttClient, "publish")
 			.mockImplementation(() => mqttClient);
 		const packets: CrowniclesPacket[] = [
-			makePacket(PlayerDeathPacket, {}),
-			makePacket(PlayerLevelUpPacket, {
-				level: 2,
-				health: true,
-				energy: true,
-				fightPoints: true,
-				classesTier: undefined
-			})
+			new PlayerDeathPacket(),
+			new PlayerLevelUpPacket()
 		];
 
 		PacketUtils.sendPackets(context, packets);
@@ -52,24 +47,12 @@ describe("PacketUtils.sendPackets", () => {
 		const publishSpy = vi.spyOn(mqttClient, "publish")
 			.mockImplementation(() => mqttClient);
 		const packets: CrowniclesPacket[] = [
-			makePacket(PlayerLevelUpPacket, {
-				level: 2,
-				health: true,
-				energy: true,
-				fightPoints: true,
-				classesTier: undefined
-			}),
-			makePacket(PlayerLevelUpPacket, {
-				level: 3,
-				health: true,
-				energy: true,
-				fightPoints: true,
-				classesTier: undefined
-			})
+			new PlayerLevelUpPacket(),
+			new PlayerLeavePveIslandPacket()
 		];
 
 		PacketUtils.sendPackets(context, packets);
 
-		expect(getSentPacketNames(publishSpy)).toStrictEqual(["PlayerLevelUpPacket", "PlayerLevelUpPacket"]);
+		expect(getSentPacketNames(publishSpy)).toStrictEqual(["PlayerLevelUpPacket", "PlayerLeavePveIslandPacket"]);
 	});
 });

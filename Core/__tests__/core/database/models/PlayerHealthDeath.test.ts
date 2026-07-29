@@ -226,15 +226,15 @@ describe("Player health and death", () => {
 				health: 74
 			});
 			const response: CrowniclesPacket[] = [];
-			const previousMaxEnergy = player.getMaxCumulativeEnergy(noEnchantmentActiveObjects);
-			const previousEnergyLost = Math.floor(previousMaxEnergy / 2);
-			player.fightPointsLost = previousEnergyLost;
+
+			// Class 0 tops at 351 cumulative energy at level 9, class 8 only at 281
+			expect(player.getMaxCumulativeEnergy(noEnchantmentActiveObjects)).toBe(351);
+			player.fightPointsLost = 175;
 
 			await player.changeClass(8, noEnchantmentActiveObjects, response);
 
-			const newMaxEnergy = player.getMaxCumulativeEnergy(noEnchantmentActiveObjects);
-			expect(newMaxEnergy).not.toBe(previousMaxEnergy);
-			expect(player.fightPointsLost).toBe(Math.ceil(previousEnergyLost / previousMaxEnergy * newMaxEnergy));
+			expect(player.getMaxCumulativeEnergy(noEnchantmentActiveObjects)).toBe(281);
+			expect(player.fightPointsLost).toBe(141);
 		});
 	});
 });
