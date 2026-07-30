@@ -3,6 +3,10 @@ import {
 	asSeconds, Millisecond
 } from "../../../../Lib/src/types/TimeTypes";
 import { secondsToMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import {
+	CrowniclesCoreMetrics, EXTERNAL_API_FAILURE_REASONS, EXTERNAL_APIS, ExternalApiFailureReason
+} from "../bot/CrowniclesCoreMetrics";
 
 const HTTP_STATUS_OK = 200;
 
@@ -66,17 +70,34 @@ export abstract class SpaceUtils {
 			return Promise.resolve(this.cachedNeoFeed);
 		}
 		return new Promise((resolve, reject) => {
+			CrowniclesCoreMetrics.incrementExternalApiCall(EXTERNAL_APIS.NEO_WS);
+
+			// The caller silently falls back to an empty feed, so a failure is only visible through logs and metrics
+			let settled = false;
+			const fail = (reason: ExternalApiFailureReason, error: Error): void => {
+				if (settled) {
+					return;
+				}
+				settled = true;
+				CrowniclesCoreMetrics.incrementExternalApiFailure(EXTERNAL_APIS.NEO_WS, reason);
+				CrowniclesLogger.errorWithObj(`NeoWS feed call failed (${reason})`, error);
+				reject(error);
+			};
+
+			let timedOut = false;
 			const request = get(SpaceUtils.NEO_WS_FEED_URL, res => {
 				if (res.statusCode !== HTTP_STATUS_OK) {
 					res.resume();
-					reject(new Error(`NeoWS feed answered with HTTP status ${res.statusCode}`));
+					fail(EXTERNAL_API_FAILURE_REASONS.HTTP_STATUS, new Error(`NeoWS feed answered with HTTP status ${res.statusCode}`));
 					return;
 				}
 				let data = "";
 				res.on("data", chunk => {
 					data += chunk;
 				});
-				res.on("error", reject);
+				res.on("error", error => {
+					fail(EXTERNAL_API_FAILURE_REASONS.NETWORK, error);
+				});
 				res.on("end", () => {
 					/*
 					 * Everything that can throw must stay inside this try: an exception escaping here would
@@ -89,15 +110,19 @@ export abstract class SpaceUtils {
 						}
 						this.cachedNeoFeedDate = today;
 						this.cachedNeoFeed = parsedAnswer.near_earth_objects;
+						settled = true;
 						resolve(parsedAnswer.near_earth_objects);
 					}
 					catch (e) {
-						reject(e);
+						fail(EXTERNAL_API_FAILURE_REASONS.INVALID_RESPONSE, e instanceof Error ? e : new Error(String(e)));
 					}
 				});
 			});
-			request.on("error", reject);
+			request.on("error", error => {
+				fail(timedOut ? EXTERNAL_API_FAILURE_REASONS.TIMEOUT : EXTERNAL_API_FAILURE_REASONS.NETWORK, error);
+			});
 			request.setTimeout(SpaceUtils.NEO_WS_REQUEST_TIMEOUT, () => {
+				timedOut = true;
 				request.destroy(new Error("NeoWS feed request timed out"));
 			});
 		});

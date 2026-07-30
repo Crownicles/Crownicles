@@ -21,6 +21,19 @@ type SequelizePoolStats = {
 // Sequelize 6 does not type `connectionManager.pool`, which only exists at runtime.
 type ConnectionManagerWithPool = Sequelize["connectionManager"] & { pool?: SequelizePoolStats };
 
+export const EXTERNAL_APIS = { NEO_WS: "neows" } as const;
+
+export type ExternalApiName = typeof EXTERNAL_APIS[keyof typeof EXTERNAL_APIS];
+
+export const EXTERNAL_API_FAILURE_REASONS = {
+	HTTP_STATUS: "http_status",
+	NETWORK: "network",
+	TIMEOUT: "timeout",
+	INVALID_RESPONSE: "invalid_response"
+} as const;
+
+export type ExternalApiFailureReason = typeof EXTERNAL_API_FAILURE_REASONS[keyof typeof EXTERNAL_API_FAILURE_REASONS];
+
 export abstract class CrowniclesCoreMetrics {
 	private static packetsTimeHistogram = new client.Histogram({
 		name: "crownicles_packets_time",
@@ -97,6 +110,20 @@ export abstract class CrowniclesCoreMetrics {
 		registers: [crowniclesMetricsRegistry]
 	});
 
+	private static externalApiCallsCount = new client.Counter({
+		name: "crownicles_external_api_calls_count",
+		help: "Count of calls made to external APIs",
+		labelNames: ["api"],
+		registers: [crowniclesMetricsRegistry]
+	});
+
+	private static externalApiFailuresCount = new client.Counter({
+		name: "crownicles_external_api_failures_count",
+		help: "Count of failed calls to external APIs",
+		labelNames: ["api", "reason"],
+		registers: [crowniclesMetricsRegistry]
+	});
+
 	static observePacketTime(packetName: string, time: number): void {
 		this.packetsTimeHistogram.labels(packetName)
 			.observe(time);
@@ -115,6 +142,16 @@ export abstract class CrowniclesCoreMetrics {
 	static observeLoopRun(loop: PeriodicLoopName): void {
 		this.loopLastRunTimestamp.labels(loop)
 			.set(Math.floor(Date.now() / 1000));
+	}
+
+	static incrementExternalApiCall(api: ExternalApiName): void {
+		this.externalApiCallsCount.labels(api)
+			.inc();
+	}
+
+	static incrementExternalApiFailure(api: ExternalApiName, reason: ExternalApiFailureReason): void {
+		this.externalApiFailuresCount.labels(api, reason)
+			.inc();
 	}
 
 	static computeSporadicMetrics(databases: MonitoredDatabase[], isInMaintenance: boolean): void {
