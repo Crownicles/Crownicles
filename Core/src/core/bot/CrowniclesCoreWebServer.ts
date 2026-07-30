@@ -36,7 +36,19 @@ export abstract class CrowniclesCoreWebServer {
 		});
 
 		app.get("/metrics", async (_req: Request, res: Response) => {
-			CrowniclesCoreMetrics.computeSporadicMetrics();
+			CrowniclesCoreMetrics.computeSporadicMetrics(
+				[
+					{
+						name: "game",
+						sequelize: crowniclesInstance!.gameDatabase.sequelize
+					},
+					{
+						name: "logs",
+						sequelize: crowniclesInstance!.logsDatabase.sequelize
+					}
+				],
+				botConfig.MODE_MAINTENANCE
+			);
 			res.setHeader("Content-Type", crowniclesMetricsRegistry.contentType);
 			res.end(await crowniclesMetricsRegistry.metrics());
 		});
