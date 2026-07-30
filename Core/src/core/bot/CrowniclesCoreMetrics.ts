@@ -1,8 +1,25 @@
 // skipcq: JS-C1003 - prom-client does not expose itself as an ES Module.
 import * as client from "prom-client";
+import { Sequelize } from "sequelize";
 import { BlockingUtils } from "../utils/BlockingUtils";
+import { PeriodicLoopName } from "./ResilientLoop";
 
 export const crowniclesMetricsRegistry = new client.Registry();
+
+export type MonitoredDatabase = {
+	name: string;
+	sequelize: Sequelize;
+};
+
+type SequelizePoolStats = {
+	size: number;
+	available: number;
+	using: number;
+	waiting: number;
+};
+
+// Sequelize 6 does not type `connectionManager.pool`, which only exists at runtime.
+type ConnectionManagerWithPool = Sequelize["connectionManager"] & { pool?: SequelizePoolStats };
 
 export abstract class CrowniclesCoreMetrics {
 	private static packetsTimeHistogram = new client.Histogram({
@@ -39,6 +56,47 @@ export abstract class CrowniclesCoreMetrics {
 		registers: [crowniclesMetricsRegistry]
 	});
 
+	private static dbPoolSize = new client.Gauge({
+		name: "crownicles_db_pool_size",
+		help: "Number of connections in the Sequelize pool",
+		labelNames: ["database"],
+		registers: [crowniclesMetricsRegistry]
+	});
+
+	private static dbPoolAvailable = new client.Gauge({
+		name: "crownicles_db_pool_available",
+		help: "Number of idle connections in the Sequelize pool",
+		labelNames: ["database"],
+		registers: [crowniclesMetricsRegistry]
+	});
+
+	private static dbPoolUsing = new client.Gauge({
+		name: "crownicles_db_pool_using",
+		help: "Number of connections currently in use in the Sequelize pool",
+		labelNames: ["database"],
+		registers: [crowniclesMetricsRegistry]
+	});
+
+	private static dbPoolWaiting = new client.Gauge({
+		name: "crownicles_db_pool_waiting",
+		help: "Number of queries waiting for a connection from the Sequelize pool",
+		labelNames: ["database"],
+		registers: [crowniclesMetricsRegistry]
+	});
+
+	private static maintenanceMode = new client.Gauge({
+		name: "crownicles_maintenance_mode",
+		help: "1 when the bot is in maintenance mode, 0 otherwise",
+		registers: [crowniclesMetricsRegistry]
+	});
+
+	private static loopLastRunTimestamp = new client.Gauge({
+		name: "crownicles_loop_last_run_timestamp",
+		help: "Unix timestamp in seconds of the last successful run of a periodic loop",
+		labelNames: ["loop"],
+		registers: [crowniclesMetricsRegistry]
+	});
+
 	static observePacketTime(packetName: string, time: number): void {
 		this.packetsTimeHistogram.labels(packetName)
 			.observe(time);
@@ -54,7 +112,12 @@ export abstract class CrowniclesCoreMetrics {
 			.inc();
 	}
 
-	static computeSporadicMetrics(): void {
+	static observeLoopRun(loop: PeriodicLoopName): void {
+		this.loopLastRunTimestamp.labels(loop)
+			.set(Math.floor(Date.now() / 1000));
+	}
+
+	static computeSporadicMetrics(databases: MonitoredDatabase[], isInMaintenance: boolean): void {
 		// Blocked players count
 		this.blockedPlayersCount.set(BlockingUtils.getBlockedPlayersCount());
 
@@ -67,6 +130,23 @@ export abstract class CrowniclesCoreMetrics {
 					.set(now - block.startTimestamp);
 			});
 		});
+
+		this.maintenanceMode.set(isInMaintenance ? 1 : 0);
+
+		for (const database of databases) {
+			const pool = (database.sequelize.connectionManager as ConnectionManagerWithPool).pool;
+			if (!pool) {
+				continue;
+			}
+			this.dbPoolSize.labels(database.name)
+				.set(pool.size);
+			this.dbPoolAvailable.labels(database.name)
+				.set(pool.available);
+			this.dbPoolUsing.labels(database.name)
+				.set(pool.using);
+			this.dbPoolWaiting.labels(database.name)
+				.set(pool.waiting);
+		}
 	}
 }
 
