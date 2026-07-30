@@ -1,4 +1,5 @@
 import { get } from "https";
+import { IncomingMessage } from "http";
 import {
 	asSeconds, Millisecond
 } from "../../../../Lib/src/types/TimeTypes";
@@ -10,9 +11,12 @@ import {
 
 const HTTP_STATUS_OK = 200;
 
-// External library connections, naming conventions can't be easily applied
-/* eslint-disable camelcase */
+type NeoWSCallHandlers = {
+	succeed: (feed: NearEarthObject[]) => void;
+	fail: (reason: ExternalApiFailureReason, error: unknown) => void;
+};
 
+// External library connections, naming conventions can't be easily applied
 export interface NearEarthObjectApproachData {
 	close_approach_date: string;
 	close_approach_date_full: string;
@@ -69,57 +73,71 @@ export abstract class SpaceUtils {
 		if (today === this.cachedNeoFeedDate && this.cachedNeoFeed) {
 			return Promise.resolve(this.cachedNeoFeed);
 		}
-		return new Promise((resolve, reject) => {
-			CrowniclesCoreMetrics.incrementExternalApiCall(EXTERNAL_APIS.NEO_WS);
+		return this.fetchNeoWSFeed(today);
+	}
 
-			// The caller silently falls back to an empty feed, so a failure is only visible through logs and metrics
+	private static parseNeoWSFeed(rawAnswer: string, day: string): NearEarthObject[] {
+		const objectsByDay = JSON.parse(rawAnswer).near_earth_objects;
+		return objectsByDay[day] ? objectsByDay[day] : objectsByDay;
+	}
+
+	private static readNeoWSResponse(res: IncomingMessage, day: string, handlers: NeoWSCallHandlers): void {
+		if (res.statusCode !== HTTP_STATUS_OK) {
+			res.resume();
+			handlers.fail(EXTERNAL_API_FAILURE_REASONS.HTTP_STATUS, new Error(`NeoWS feed answered with HTTP status ${res.statusCode}`));
+			return;
+		}
+		let data = "";
+		res.on("data", chunk => {
+			data += chunk;
+		});
+		res.on("error", error => {
+			handlers.fail(EXTERNAL_API_FAILURE_REASONS.NETWORK, error);
+		});
+		res.on("end", () => {
+			/*
+			 * Everything that can throw must stay inside this try: an exception escaping here would
+			 * leave the promise forever pending, and its caller stuck holding a database transaction
+			 */
+			try {
+				handlers.succeed(SpaceUtils.parseNeoWSFeed(data, day));
+			}
+			catch (e) {
+				handlers.fail(EXTERNAL_API_FAILURE_REASONS.INVALID_RESPONSE, e);
+			}
+		});
+	}
+
+	private static fetchNeoWSFeed(day: string): Promise<NearEarthObject[]> {
+		CrowniclesCoreMetrics.incrementExternalApiCall(EXTERNAL_APIS.NEO_WS);
+		return new Promise((resolve, reject) => {
 			let settled = false;
-			const fail = (reason: ExternalApiFailureReason, error: Error): void => {
-				if (settled) {
-					return;
+			const handlers: NeoWSCallHandlers = {
+				succeed: feed => {
+					settled = true;
+					this.cachedNeoFeedDate = day;
+					this.cachedNeoFeed = feed;
+					resolve(feed);
+				},
+
+				// The caller silently falls back to an empty feed, so a failure is only visible through logs and metrics
+				fail: (reason, error) => {
+					if (settled) {
+						return;
+					}
+					settled = true;
+					CrowniclesCoreMetrics.incrementExternalApiFailure(EXTERNAL_APIS.NEO_WS, reason);
+					CrowniclesLogger.errorWithObj(`NeoWS feed call failed (${reason})`, error);
+					reject(error);
 				}
-				settled = true;
-				CrowniclesCoreMetrics.incrementExternalApiFailure(EXTERNAL_APIS.NEO_WS, reason);
-				CrowniclesLogger.errorWithObj(`NeoWS feed call failed (${reason})`, error);
-				reject(error);
 			};
 
 			let timedOut = false;
 			const request = get(SpaceUtils.NEO_WS_FEED_URL, res => {
-				if (res.statusCode !== HTTP_STATUS_OK) {
-					res.resume();
-					fail(EXTERNAL_API_FAILURE_REASONS.HTTP_STATUS, new Error(`NeoWS feed answered with HTTP status ${res.statusCode}`));
-					return;
-				}
-				let data = "";
-				res.on("data", chunk => {
-					data += chunk;
-				});
-				res.on("error", error => {
-					fail(EXTERNAL_API_FAILURE_REASONS.NETWORK, error);
-				});
-				res.on("end", () => {
-					/*
-					 * Everything that can throw must stay inside this try: an exception escaping here would
-					 * leave the promise forever pending, and its caller stuck holding a database transaction
-					 */
-					try {
-						const parsedAnswer = JSON.parse(data);
-						if (parsedAnswer.near_earth_objects[today]) {
-							parsedAnswer.near_earth_objects = parsedAnswer.near_earth_objects[today];
-						}
-						this.cachedNeoFeedDate = today;
-						this.cachedNeoFeed = parsedAnswer.near_earth_objects;
-						settled = true;
-						resolve(parsedAnswer.near_earth_objects);
-					}
-					catch (e) {
-						fail(EXTERNAL_API_FAILURE_REASONS.INVALID_RESPONSE, e instanceof Error ? e : new Error(String(e)));
-					}
-				});
+				SpaceUtils.readNeoWSResponse(res, day, handlers);
 			});
 			request.on("error", error => {
-				fail(timedOut ? EXTERNAL_API_FAILURE_REASONS.TIMEOUT : EXTERNAL_API_FAILURE_REASONS.NETWORK, error);
+				handlers.fail(timedOut ? EXTERNAL_API_FAILURE_REASONS.TIMEOUT : EXTERNAL_API_FAILURE_REASONS.NETWORK, error);
 			});
 			request.setTimeout(SpaceUtils.NEO_WS_REQUEST_TIMEOUT, () => {
 				timedOut = true;
