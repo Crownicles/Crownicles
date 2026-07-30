@@ -5,7 +5,28 @@ import {
 
 vi.mock("https", () => ({ get: vi.fn() }));
 
+vi.mock("../../../../Lib/src/logs/CrowniclesLogger", () => ({
+	CrowniclesLogger: {
+		error: vi.fn(),
+		errorWithObj: vi.fn()
+	}
+}));
+
+vi.mock("../../../src/core/bot/CrowniclesCoreMetrics", async () => {
+	const actual = await vi.importActual<typeof import("../../../src/core/bot/CrowniclesCoreMetrics")>("../../../src/core/bot/CrowniclesCoreMetrics");
+	return {
+		...actual,
+		CrowniclesCoreMetrics: {
+			incrementExternalApiCall: vi.fn(),
+			incrementExternalApiFailure: vi.fn()
+		}
+	};
+});
+
 const { get } = await import("https");
+const {
+	CrowniclesCoreMetrics, EXTERNAL_API_FAILURE_REASONS, EXTERNAL_APIS
+} = await import("../../../src/core/bot/CrowniclesCoreMetrics");
 const { SpaceUtils } = await import("../../../src/core/utils/SpaceUtils");
 
 type FakeResponse = EventEmitter & {
@@ -62,11 +83,28 @@ describe("SpaceUtils.getNeoWSFeed", () => {
 		response.emit("end");
 
 		await expect(feed).rejects.toThrow();
+		expect(CrowniclesCoreMetrics.incrementExternalApiFailure).toHaveBeenCalledWith(
+			EXTERNAL_APIS.NEO_WS,
+			EXTERNAL_API_FAILURE_REASONS.INVALID_RESPONSE
+		);
 	});
 
 	it("rejects when the feed answers with an error status", async () => {
 		mockNeoWsAnswer(503);
 
 		await expect(SpaceUtils.getNeoWSFeed()).rejects.toThrow("HTTP status 503");
+		expect(CrowniclesCoreMetrics.incrementExternalApiFailure).toHaveBeenCalledWith(
+			EXTERNAL_APIS.NEO_WS,
+			EXTERNAL_API_FAILURE_REASONS.HTTP_STATUS
+		);
+	});
+
+	it("counts each outgoing call exactly once", async () => {
+		mockNeoWsAnswer(503);
+
+		await expect(SpaceUtils.getNeoWSFeed()).rejects.toThrow();
+
+		expect(CrowniclesCoreMetrics.incrementExternalApiCall).toHaveBeenCalledTimes(1);
+		expect(CrowniclesCoreMetrics.incrementExternalApiFailure).toHaveBeenCalledTimes(1);
 	});
 });
