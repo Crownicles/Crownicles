@@ -3,11 +3,20 @@ import * as client from "prom-client";
 import { Sequelize } from "sequelize";
 import { BlockingUtils } from "../utils/BlockingUtils";
 import { PeriodicLoopName } from "./ResilientLoop";
+import { asMilliseconds } from "../../../../Lib/src/types/TimeTypes";
+import { millisecondsToSeconds } from "../../../../Lib/src/utils/TimeUtils";
 
 export const crowniclesMetricsRegistry = new client.Registry();
 
+export const MONITORED_DATABASES = {
+	GAME: "game",
+	LOGS: "logs"
+} as const;
+
+export type MonitoredDatabaseName = typeof MONITORED_DATABASES[keyof typeof MONITORED_DATABASES];
+
 export type MonitoredDatabase = {
-	name: string;
+	name: MonitoredDatabaseName;
 	sequelize: Sequelize;
 };
 
@@ -141,7 +150,7 @@ export abstract class CrowniclesCoreMetrics {
 
 	static observeLoopRun(loop: PeriodicLoopName): void {
 		this.loopLastRunTimestamp.labels(loop)
-			.set(Math.floor(Date.now() / 1000));
+			.set(Math.floor(millisecondsToSeconds(asMilliseconds(Date.now()))));
 	}
 
 	static incrementExternalApiCall(api: ExternalApiName): void {
