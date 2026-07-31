@@ -238,10 +238,7 @@ export default class EventsHandlers {
 			});
 		}
 		if (packet.discoveredRecipeIds) {
-			completedMissionsEmbed.addFields({
-				name: i18n.t("models:cooking.recipeDiscoveryTitle", { lng }),
-				value: buildRecipeDiscoveryMessage(packet.discoveredRecipeIds, lng)
-			});
+			completedMissionsEmbed.setDescription(buildRecipeDiscoveryMessage(packet.discoveredRecipeIds, lng));
 		}
 		await interaction.channel.send({ embeds: [completedMissionsEmbed] });
 	}
@@ -409,14 +406,11 @@ export default class EventsHandlers {
 			}
 		}
 
-		embed.setDescription(desc);
-
 		if (packet.discoveredRecipeIds) {
-			embed.addFields({
-				name: i18n.t("models:cooking.recipeDiscoveryTitle", { lng }),
-				value: buildRecipeDiscoveryMessage(packet.discoveredRecipeIds, lng)
-			});
+			desc += `\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeIds, lng)}`;
 		}
+
+		embed.setDescription(desc);
 
 		await interaction.channel.send({
 			embeds: [embed]
