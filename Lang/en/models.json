@@ -2493,6 +2493,7 @@
     "10": "Ancestral Tree"
   },
   "cooking": {
+    "recipeDiscoveryTitle": "Cuisine",
     "grades": {
       "kitchenHelper": "Kitchen Help",
       "scullion": "Pot",
