@@ -116,6 +116,11 @@ export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 	};
 
 	materialLoot?: MaterialQuantity[];
+
+	/**
+	 * Cooking recipe learned from the notes left by a defeated island boss.
+	 */
+	discoveredRecipeId?: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

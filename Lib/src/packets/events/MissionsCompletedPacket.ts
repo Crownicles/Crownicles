@@ -16,4 +16,9 @@ export class MissionsCompletedPacket extends CrowniclesPacket {
 	 * and the campaign is not finished. Lets the player see what comes next without /mission.
 	 */
 	nextCampaignMission?: BaseMission;
+
+	/**
+	 * Cooking recipes unlocked by reaching a campaign progression milestone.
+	 */
+	discoveredRecipeIds?: string[];
 }

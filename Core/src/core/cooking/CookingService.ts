@@ -448,7 +448,7 @@ export class CookingService {
 
 		// Discover cooking-level recipes on level up
 		const discoveredRecipeIds = levelResult.levelUp
-			? (await RecipeDiscoveryService.discoverCookingLevelRecipes(player)).map(r => r.id)
+			? await RecipeDiscoveryService.discoverCookingLevelRecipes(player)
 			: [];
 
 		return {

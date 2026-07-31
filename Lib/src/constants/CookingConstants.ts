@@ -366,6 +366,40 @@ export const SLOT_SEED_OFFSETS = [
 export const MIN_GUARANTEED_PLAYER_LEVEL_RECIPES = 2;
 
 /**
+ * Player levels granting the n-th `PLAYER_LEVEL_MILESTONE` recipe (recipes ordered by level).
+ * Must hold exactly as many entries as there are recipes of that source.
+ */
+export const PLAYER_LEVEL_RECIPE_MILESTONES: readonly number[] = [
+	10,
+	20,
+	30,
+	40,
+	50,
+	60,
+	70,
+	80,
+	90,
+	100
+];
+
+/**
+ * Number of completed campaign missions granting the n-th `CAMPAIGN_MILESTONE` recipe
+ * (recipes ordered by level). Must hold exactly as many entries as there are recipes of that source.
+ */
+export const CAMPAIGN_RECIPE_MILESTONES: readonly number[] = [
+	15,
+	30,
+	45,
+	60,
+	75,
+	90,
+	105,
+	120,
+	135,
+	149
+];
+
+/**
  * Gaspard Jo recipe costs by grade index (0-9)
  */
 export const GASPARD_JO_RECIPE_COSTS = [
