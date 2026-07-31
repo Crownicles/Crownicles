@@ -2493,6 +2493,7 @@
     "10": "Uralter Baum"
   },
   "cooking": {
+    "recipeDiscoveryTitle": "Cuisine",
     "grades": {
       "kitchenHelper": "Küchenhilfe",
       "scullion": "Marmiton",
