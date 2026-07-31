@@ -29,4 +29,9 @@ export class PlayerLevelUpPacket extends CrowniclesPacket {
 	pveUnlocked!: boolean;
 
 	statsIncreased!: boolean;
+
+	/**
+	 * Cooking recipes unlocked by reaching this level milestone.
+	 */
+	discoveredRecipeIds?: string[];
 }

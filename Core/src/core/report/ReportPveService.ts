@@ -193,7 +193,10 @@ function sendMonsterRewardPacket(
 	rewards: PveFightRewards,
 	guildResult: GuildRewardsResult,
 	fight: FightController,
-	materialLoot?: MaterialQuantity[]
+	loot: {
+		materialLoot?: MaterialQuantity[];
+		discoveredRecipeId?: string;
+	}
 ): void {
 	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
 		money: BlessingManager.getInstance().applyMoneyBlessing(rewards.money),
@@ -209,7 +212,8 @@ function sendMonsterRewardPacket(
 				petNickname: fight.petReactionData.petNickname
 			}
 			: undefined,
-		...materialLoot && materialLoot.length > 0 ? { materialLoot } : {}
+		...loot.materialLoot && loot.materialLoot.length > 0 ? { materialLoot: loot.materialLoot } : {},
+		...loot.discoveredRecipeId ? { discoveredRecipeId: loot.discoveredRecipeId } : {}
 	}));
 }
 
@@ -246,7 +250,13 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
 		await updateCollectMaterialsMission(player, endFightResponse, materialLoot);
 	}
 
-	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);
+	const isFinalBoss = Maps.isAtFinalPveBoss(player);
+	const bossRecipe = isFinalBoss ? await RecipeDiscoveryService.discoverFromBoss(player, mapId) : null;
+
+	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, {
+		materialLoot,
+		...bossRecipe ? { discoveredRecipeId: bossRecipe.id } : {}
+	});
 	await MissionsController.update(player, endFightResponse, {
 		missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS satisfies PveBossMissionId
 	});
@@ -256,14 +266,11 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
 	});
 
 	// Only count final island bosses for the different classes mission
-	if (Maps.isAtFinalPveBoss(player)) {
+	if (isFinalBoss) {
 		await MissionsController.update(player, endFightResponse, {
 			missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS_WITH_DIFFERENT_CLASSES satisfies PveBossMissionId,
 			params: { classId: player.class }
 		});
-
-		// Discover an island boss cooking recipe
-		await RecipeDiscoveryService.discoverFromBoss(player, mapId);
 	}
 }
 

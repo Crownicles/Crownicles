@@ -464,7 +464,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param newLevel
 	 */
-	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number): Promise<void> {
+	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number, discoveredRecipeIds: string[]): Promise<void> {
 		const healthRestored = newLevel % 10 === 0;
 
 		const packet = makePacket(PlayerLevelUpPacket, {
@@ -480,7 +480,8 @@ export class Player extends Model {
 			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
 			missionSlotUnlocked: Player.isMissionSlotUnlockedAtLevel(newLevel),
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
-			statsIncreased: true
+			statsIncreased: true,
+			...discoveredRecipeIds.length > 0 ? { discoveredRecipeIds } : {}
 		});
 
 		if (healthRestored) {
@@ -534,9 +535,9 @@ export class Player extends Model {
 		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
 			.then();
 
-		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
+		const discoveredRecipeIds = await RecipeDiscoveryService.syncProgressionRecipes(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE, this.level);
 
-		await this.addLevelUpPacket(response, this.level);
+		await this.addLevelUpPacket(response, this.level, discoveredRecipeIds);
 
 		await this.levelUpIfNeeded(response);
 	}

@@ -38,6 +38,8 @@ import {
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { assertUnderLock } from "../../../../Lib/src/locks/CLSNamespace";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
 
 
 type MissionInformations = {
@@ -131,13 +133,19 @@ export abstract class MissionsController {
 		if (completedMissions.length === 0) {
 			return player;
 		}
+		const discoveredRecipeIds = await RecipeDiscoveryService.syncProgressionRecipes(
+			player,
+			RecipeDiscoverySource.CAMPAIGN_MILESTONE,
+			Campaign.getAmountOfCampaignCompleted(missionInfo.campaignBlob)
+		);
 		player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
 		MissionsController.applyBlessingsToCompletedMissions(completedMissions);
 		const nextCampaignMission = await MissionsController.getNextCampaignMission(player, completedMissions);
 		response.push(makePacket(MissionsCompletedPacket, {
 			missions: MissionsController.prepareBaseMissions(completedMissions),
 			keycloakId: player.keycloakId,
-			...nextCampaignMission ? { nextCampaignMission } : {}
+			...nextCampaignMission ? { nextCampaignMission } : {},
+			...discoveredRecipeIds.length > 0 ? { discoveredRecipeIds } : {}
 		}));
 		await MissionsController.giveCampaignPetRewards(completedMissions, player, response);
 		return player;

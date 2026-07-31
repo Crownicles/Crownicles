@@ -19,6 +19,8 @@ import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeat
 import { PlayerLeavePveIslandPacket } from "../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
 import { PlayerLevelUpPacket } from "../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { PlayerReceivePetPacket } from "../../../../Lib/src/packets/events/PlayerReceivePetPacket";
+import { buildRecipeDiscoveryMessage } from "../../utils/CookingDisplayUtils";
+
 import { GiveFoodToGuildPacket } from "../../../../Lib/src/packets/utils/GiveFoodToGuildPacket";
 import { NoFoodSpaceInGuildPacket } from "../../../../Lib/src/packets/utils/NoFoodSpaceInGuildPacket";
 import { MissionUtils } from "../../utils/MissionUtils";
@@ -93,6 +95,31 @@ function buildTotalRewardsLines(totals: MissionRewardTotals, lng: Language): str
 	return lines.length === 0
 		? [i18n.t("notifications:missions.completed.noRewards", { lng })]
 		: lines;
+}
+
+/**
+ * Build a notification embed authored by the target player, falling back to a plain title
+ * when their Discord user is not cached. Returns null when the Keycloak user is gone.
+ */
+async function buildPlayerNotificationEmbed(
+	keycloakId: string,
+	notificationName: string,
+	buildTitle: (pseudo: string) => string
+): Promise<CrowniclesEmbed | null> {
+	const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, keycloakId);
+	if (getUser.isError) {
+		// User may have been deleted from Keycloak, skip this notification
+		CrowniclesLogger.warn(`Keycloak user with id ${keycloakId} not found, skipping ${notificationName} notification`);
+		return null;
+	}
+	const user = getUser.payload.user;
+	const discordId = user.attributes.discordId?.[0] ?? null;
+	const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
+	const titleText = buildTitle(escapeUsername(user.attributes.gameUsername[0]));
+
+	return discordUser
+		? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
+		: new CrowniclesEmbed().setTitle(titleText);
 }
 
 export default class EventsHandlers {
@@ -174,25 +201,16 @@ export default class EventsHandlers {
 		if (!interaction) {
 			return;
 		}
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
-		if (getUser.isError) {
-			// User may have been deleted from Keycloak, skip this notification
-			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping missions completed notification`);
-			return;
-		}
-		const user = getUser.payload.user;
-		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
 
 		const lng = interaction.userLanguage;
-		const titleText = i18n.t("notifications:missions.completed.title", {
+		const completedMissionsEmbed = await buildPlayerNotificationEmbed(packet.keycloakId!, "missions completed", pseudo => i18n.t("notifications:missions.completed.title", {
 			lng,
 			count: packet.missions.length,
-			pseudo: escapeUsername(user.attributes.gameUsername[0])
-		});
-		const completedMissionsEmbed = discordUser
-			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
-			: new CrowniclesEmbed().setTitle(titleText);
+			pseudo
+		}));
+		if (!completedMissionsEmbed) {
+			return;
+		}
 
 		const {
 			missionLists, totals
@@ -219,6 +237,12 @@ export default class EventsHandlers {
 				value: MissionUtils.formatBaseMission(packet.nextCampaignMission, lng)
 			});
 		}
+		if (packet.discoveredRecipeIds) {
+			completedMissionsEmbed.addFields({
+				name: i18n.t("models:cooking.recipeDiscoveryTitle", { lng }),
+				value: buildRecipeDiscoveryMessage(packet.discoveredRecipeIds, lng)
+			});
+		}
 		await interaction.channel.send({ embeds: [completedMissionsEmbed] });
 	}
 
@@ -228,30 +252,22 @@ export default class EventsHandlers {
 		if (!interaction) {
 			return;
 		}
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
-		if (getUser.isError) {
-			// User may have been deleted from Keycloak, skip this notification
-			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping missions expired notification`);
-			return;
-		}
-		const user = getUser.payload.user;
-		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
 
 		const lng = interaction.userLanguage;
+		const embed = await buildPlayerNotificationEmbed(packet.keycloakId!, "missions expired", pseudo => i18n.t("notifications:missions.expired.title", {
+			count: packet.missions.length,
+			lng,
+			pseudo
+		}));
+		if (!embed) {
+			return;
+		}
+
 		let missionsExpiredDescription = "";
 		for (const mission of packet.missions) {
 			missionsExpiredDescription += `- ${MissionUtils.formatBaseMission(mission, lng)} (${mission.numberDone}/${mission.missionObjective})\n`;
 		}
 
-		const titleText = i18n.t("notifications:missions.expired.title", {
-			count: packet.missions.length,
-			lng,
-			pseudo: escapeUsername(user.attributes.gameUsername[0])
-		});
-		const embed = discordUser
-			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
-			: new CrowniclesEmbed().setTitle(titleText);
 		embed.setDescription(i18n.t("notifications:missions.expired.description", {
 			lng,
 			count: packet.missions.length,
@@ -337,20 +353,17 @@ export default class EventsHandlers {
 			return;
 		}
 
-		const getUser = await KeycloakUtils.getUserByKeycloakId(keycloakConfig, packet.keycloakId!);
-		if (getUser.isError) {
-			// User may have been deleted from Keycloak, skip this notification
-			CrowniclesLogger.warn(`Keycloak user with id ${packet.keycloakId} not found, skipping level up notification`);
+		const lng = interaction.userLanguage;
+		const embed = await buildPlayerNotificationEmbed(packet.keycloakId!, "level up", pseudo => i18n.t("models:players.levelUp.title", {
+			lng,
+			pseudo
+		}));
+		if (!embed) {
 			return;
 		}
-		const user = getUser.payload.user;
-		const discordId = user.attributes.discordId?.[0] ? user.attributes.discordId[0] : null;
-		const discordUser = discordId ? crowniclesClient.users.cache.get(discordId) : null;
-
-		const lng = interaction.userLanguage;
 
 		const rewards: {
-			[key in keyof Omit<PlayerLevelUpPacket, "level" | "keycloakId">]: {
+			[key in keyof Omit<PlayerLevelUpPacket, "level" | "keycloakId" | "discoveredRecipeIds">]: {
 				tr: string; replacements?: object;
 			}
 		} = {
@@ -396,14 +409,14 @@ export default class EventsHandlers {
 			}
 		}
 
-		const titleText = i18n.t("models:players.levelUp.title", {
-			lng,
-			pseudo: escapeUsername(user.attributes.gameUsername[0])
-		});
-		const embed = discordUser
-			? new CrowniclesEmbed().formatAuthor(titleText, discordUser)
-			: new CrowniclesEmbed().setTitle(titleText);
 		embed.setDescription(desc);
+
+		if (packet.discoveredRecipeIds) {
+			embed.addFields({
+				name: i18n.t("models:cooking.recipeDiscoveryTitle", { lng }),
+				value: buildRecipeDiscoveryMessage(packet.discoveredRecipeIds, lng)
+			});
+		}
 
 		await interaction.channel.send({
 			embeds: [embed]

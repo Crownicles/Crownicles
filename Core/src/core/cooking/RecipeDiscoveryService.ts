@@ -1,5 +1,5 @@
 import {
-	RecipeDiscoverySource, RecipeType
+	CAMPAIGN_RECIPE_MILESTONES, PLAYER_LEVEL_RECIPE_MILESTONES, RecipeDiscoverySource, RecipeType
 } from "../../../../Lib/src/constants/CookingConstants";
 import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 import PlayerCookingRecipe from "../database/game/models/PlayerCookingRecipe";
@@ -13,6 +13,25 @@ export interface RecipeDiscoveryOffer {
 	recipe: CookingRecipe;
 	cost: number;
 }
+
+export interface ProgressionRecipeUnlock {
+	recipeId: string;
+	requiredProgress: number;
+}
+
+/**
+ * Sources whose recipes are granted by a progression counter (player level, campaign
+ * missions completed) instead of a one-off event: the n-th recipe of the source, recipes
+ * being ordered by level, is unlocked once the n-th milestone is reached. Ordering by
+ * progression instead of counting events makes the grant idempotent and self-healing —
+ * a player who advanced before the feature existed catches up on their next progression.
+ */
+const PROGRESSION_RECIPE_MILESTONES = {
+	[RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE]: PLAYER_LEVEL_RECIPE_MILESTONES,
+	[RecipeDiscoverySource.CAMPAIGN_MILESTONE]: CAMPAIGN_RECIPE_MILESTONES
+} as const;
+
+export type ProgressionRecipeSource = keyof typeof PROGRESSION_RECIPE_MILESTONES;
 
 /**
  * Maps ItemNature (potion nature) to the corresponding RecipeType
@@ -42,12 +61,54 @@ export class RecipeDiscoveryService {
 	}
 
 	/**
-	 * Get sorted candidates for a given filter predicate
+	 * Get sorted candidates for a given filter predicate. The id is used as a tie-breaker so
+	 * the discovery order never depends on the order the recipe files happen to be read in.
 	 */
 	private static getSortedCandidates(filter: (r: CookingRecipe) => boolean): CookingRecipe[] {
 		return CookingRecipeDataController.instance.getAll()
 			.filter(filter)
-			.sort((a, b) => a.level - b.level);
+			.sort((a, b) => a.level - b.level || a.id.localeCompare(b.id));
+	}
+
+	/**
+	 * Discover every given recipe the player does not know yet, and return the newly discovered ids.
+	 */
+	private static async discoverRecipeIds(player: Player, recipeIds: string[]): Promise<string[]> {
+		const discovered: string[] = [];
+		for (const recipeId of recipeIds) {
+			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipeId)) {
+				await PlayerCookingRecipe.discoverRecipe(player, recipeId);
+				discovered.push(recipeId);
+			}
+		}
+		return discovered;
+	}
+
+	/**
+	 * Get every recipe of a progression source paired with the progression value unlocking it.
+	 * Shared with the retroactive migration so both use the exact same ordering.
+	 */
+	static getProgressionUnlocks(source: ProgressionRecipeSource): ProgressionRecipeUnlock[] {
+		const milestones = PROGRESSION_RECIPE_MILESTONES[source];
+		return RecipeDiscoveryService.getSortedCandidates(
+			r => !r.discoveredByDefault && r.discoverySource === source
+		)
+			.slice(0, milestones.length)
+			.map((recipe, index) => ({
+				recipeId: recipe.id,
+				requiredProgress: milestones[index]
+			}));
+	}
+
+	/**
+	 * Grant every recipe the player's current progression entitles them to and return the newly
+	 * learned ones. Safe to call repeatedly: already known recipes are skipped.
+	 */
+	static async syncProgressionRecipes(player: Player, source: ProgressionRecipeSource, progress: number): Promise<string[]> {
+		const entitledRecipeIds = RecipeDiscoveryService.getProgressionUnlocks(source)
+			.filter(unlock => progress >= unlock.requiredProgress)
+			.map(unlock => unlock.recipeId);
+		return await RecipeDiscoveryService.discoverRecipeIds(player, entitledRecipeIds);
 	}
 
 	/**
@@ -112,23 +173,15 @@ export class RecipeDiscoveryService {
 
 	/**
 	 * Discover all COOKING_LEVEL recipes up to the player's current cooking level.
-	 * Returns all newly discovered recipes.
+	 * Returns the ids of all newly discovered recipes.
 	 */
-	static async discoverCookingLevelRecipes(player: Player): Promise<CookingRecipe[]> {
-		const discovered: CookingRecipe[] = [];
+	static discoverCookingLevelRecipes(player: Player): Promise<string[]> {
 		const candidates = RecipeDiscoveryService.getSortedCandidates(
 			r => !r.discoveredByDefault
 				&& r.discoverySource === RecipeDiscoverySource.COOKING_LEVEL
 				&& r.level <= player.cookingLevel
 		);
-
-		for (const recipe of candidates) {
-			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipe.id)) {
-				await PlayerCookingRecipe.discoverRecipe(player, recipe.id);
-				discovered.push(recipe);
-			}
-		}
-		return discovered;
+		return RecipeDiscoveryService.discoverRecipeIds(player, candidates.map(recipe => recipe.id));
 	}
 
 	/**

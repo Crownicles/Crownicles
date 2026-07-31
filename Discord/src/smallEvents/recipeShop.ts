@@ -11,7 +11,7 @@ import i18n from "../translations/i18n";
 import { Language } from "../../../Lib/src/Language";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
-import { buildRecipeDiscoveryMessage } from "../utils/SmallEventUtils";
+import { buildRecipeDiscoveryMessage } from "../utils/CookingDisplayUtils";
 import { buildFarmerDescription } from "../packetHandlers/handlers/smallEvents/farmer";
 import { buildUltimateFoodMerchantDescription } from "../packetHandlers/handlers/smallEvents/ultimateFoodMerchant";
 
@@ -94,5 +94,5 @@ export async function recipeShopOutcomeHandler(context: PacketContext, source: R
  * Build the "recipe purchased" outcome message
  */
 export function buildRecipePurchasedMessage(recipeId: string, recipeCost: number, lng: Language): string {
-	return buildRecipeDiscoveryMessage(recipeId, lng, recipeCost);
+	return buildRecipeDiscoveryMessage([recipeId], lng, recipeCost);
 }
