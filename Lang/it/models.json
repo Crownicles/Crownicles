@@ -2493,6 +2493,7 @@
     "10": "Albero ancestrale"
   },
   "cooking": {
+    "recipeDiscoveryTitle": "Cuisine",
     "grades": {
       "kitchenHelper": "Assistente di cucina",
       "scullion": "Marmiton",
