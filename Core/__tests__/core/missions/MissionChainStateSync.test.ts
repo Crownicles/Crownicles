@@ -68,7 +68,6 @@ describe("Mission chain state synchronization", () => {
 			weeklyScore: overrides.weeklyScore ?? 0,
 			level: overrides.level ?? 10,
 			// Mock methods that interact with DB
-			setMoney: vi.fn(),
 			setScore: vi.fn().mockResolvedValue(undefined),
 			needLevelUp: vi.fn().mockReturnValue(false),
 			save: vi.fn().mockResolvedValue(undefined),

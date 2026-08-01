@@ -385,7 +385,6 @@ export class Player extends Model {
 				locked.money = Math.max(0, locked.money + delta);
 			});
 		}
-		this.setMoney(this.money);
 		crowniclesInstance?.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
 			.then();
 		return this;
@@ -1332,28 +1331,6 @@ export class Player extends Model {
 			moneyLost,
 			guildPointsLost: this.hasAGuild() ? guildPointsLost : 0
 		};
-	}
-
-	/**
-	 * Allow to set the money of a player to a specific value this is only called from addMoney
-	 * @param money
-	 */
-	private setMoney(money: number): void {
-		if (money > 0) {
-			this.money = money;
-		}
-		else {
-			this.money = 0;
-		}
-	}
-
-	/**
-	 * Set the tokens of a player. Callers are responsible for the upper bound; expedition rewards
-	 * are allowed to push tokens above TokensConstants.MAX, so this only enforces the lower bound.
-	 * @param tokens
-	 */
-	private setTokens(tokens: number): void {
-		this.tokens = Math.max(0, tokens);
 	}
 
 	/**

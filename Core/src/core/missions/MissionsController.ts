@@ -370,7 +370,9 @@ export abstract class MissionsController {
 			: missionInformation.count ?? 1;
 		return MissionsController.runUpdateUnderLock(player, missionInfo, response, {
 			...missionInformation,
-			count: resolvedCount
+			count: resolvedCount,
+			params: missionInformation.params ?? {},
+			set: missionInformation.set ?? false
 		}, dailyMission);
 	}
 
