@@ -60,8 +60,9 @@ export abstract class GardenConstants {
 
 	/**
 	 * Growth time in seconds a single watering removes from a plant's remaining cycle.
+	 * Computed on the effective growth time so the advertised percentage holds for every earth quality.
 	 */
-	public static getWateringAdvanceSeconds(baseGrowthTimeSeconds: number): number {
-		return Math.round(baseGrowthTimeSeconds * GardenConstants.WATERING_ADVANCE_RATIO);
+	public static getWateringAdvanceSeconds(baseGrowthTimeSeconds: number, earthQuality: GardenEarthQuality): number {
+		return Math.round(GardenConstants.getEffectiveGrowthTime(baseGrowthTimeSeconds, earthQuality) * GardenConstants.WATERING_ADVANCE_RATIO);
 	}
 }
