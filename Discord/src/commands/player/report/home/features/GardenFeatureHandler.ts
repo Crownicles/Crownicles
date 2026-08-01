@@ -864,6 +864,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 		response: CommandReportGardenWaterRes
 	): void {
 		const nowSeconds = Math.ceil(Date.now() / TimeConstants.MS_TIME.SECOND);
+		const earthQuality = ctx.homeData.features.gardenEarthQuality;
 		for (const plot of garden.plots) {
 			if (plot.plantId === 0 || plot.isReady) {
 				continue;
@@ -872,7 +873,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			if (!plant) {
 				continue;
 			}
-			const newReadyAt = plot.readyAtTimestamp - GardenConstants.getWateringAdvanceSeconds(plant.growthTimeSeconds);
+			const newReadyAt = plot.readyAtTimestamp - GardenConstants.getWateringAdvanceSeconds(plant.growthTimeSeconds, earthQuality);
 			const newRemaining = newReadyAt - nowSeconds;
 			if (newRemaining <= 0) {
 				plot.readyAtTimestamp = 0;
@@ -881,7 +882,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			}
 			else {
 				plot.readyAtTimestamp = newReadyAt;
-				const fullGrowth = this.computeEffectiveGrowthTime(plot.plantId, ctx.homeData.features.gardenEarthQuality);
+				const fullGrowth = this.computeEffectiveGrowthTime(plot.plantId, earthQuality);
 				plot.growthProgress = fullGrowth > 0 ? 1 - newRemaining / fullGrowth : 0;
 			}
 		}

@@ -38,6 +38,7 @@ import { Materials } from "../database/game/models/Material";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
+import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
 import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
@@ -57,7 +58,7 @@ type GardenWateringResult = {
 };
 type WaterableSlotGrowth = {
 	slot: number;
-	plantId: number;
+	advanceSeconds: number;
 	becomesReady: boolean;
 };
 type GardenLockBody = (player: Player, home: Home) => Promise<CrowniclesPacket>;
@@ -786,38 +787,29 @@ async function applyGardenWateringUnderLock(
 	wateringResult: GardenWateringResult,
 	now: number
 ): Promise<void> {
-	const slotsByPlantId = groupSlotsByPlantId(wateringResult.entries);
-	await shiftPlantedAtForGroupedSlots(home.id, slotsByPlantId);
+	await shiftPlantedAtForGroupedSlots(home.id, groupSlotsByAdvance(wateringResult.entries));
 
 	lockedPlayer.lastGardenWatered = new Date(now);
 	await lockedPlayer.save();
 }
 
-function groupSlotsByPlantId(entries: WaterableSlotGrowth[]): Map<number, number[]> {
+function groupSlotsByAdvance(entries: WaterableSlotGrowth[]): Map<number, number[]> {
 	const grouped = new Map<number, number[]>();
 	for (const entry of entries) {
-		const slots = grouped.get(entry.plantId);
+		const slots = grouped.get(entry.advanceSeconds);
 		if (slots) {
 			slots.push(entry.slot);
 		}
 		else {
-			grouped.set(entry.plantId, [entry.slot]);
+			grouped.set(entry.advanceSeconds, [entry.slot]);
 		}
 	}
 	return grouped;
 }
 
-async function shiftPlantedAtForGroupedSlots(homeId: number, slotsByPlantId: Map<number, number[]>): Promise<void> {
-	for (const [plantId, slots] of slotsByPlantId) {
-		const plant = PlantConstants.getPlantById(plantId);
-		if (!plant) {
-			continue;
-		}
-		await HomeGardenSlots.shiftPlantedAtForSlots(
-			homeId,
-			slots,
-			GardenConstants.getWateringAdvanceSeconds(plant.growthTimeSeconds) * TimeConstants.MS_TIME.SECOND
-		);
+async function shiftPlantedAtForGroupedSlots(homeId: number, slotsByAdvance: Map<number, number[]>): Promise<void> {
+	for (const [advanceSeconds, slots] of slotsByAdvance) {
+		await HomeGardenSlots.shiftPlantedAtForSlots(homeId, slots, advanceSeconds * TimeConstants.MS_TIME.SECOND);
 	}
 }
 
@@ -828,7 +820,7 @@ async function shiftPlantedAtForGroupedSlots(homeId: number, slotsByPlantId: Map
  */
 function collectSlotsToWater(
 	gardenSlots: HomeGardenSlot[],
-	earthQuality: number,
+	earthQuality: GardenEarthQuality,
 	nowMs: number
 ): GardenWateringResult {
 	const waterableSlots = gardenSlots
@@ -843,7 +835,7 @@ function collectSlotsToWater(
 
 function getWaterableSlotGrowth(
 	slot: HomeGardenSlot,
-	earthQuality: number,
+	earthQuality: GardenEarthQuality,
 	nowMs: number
 ): WaterableSlotGrowth | null {
 	if (slot.isEmpty()) {
@@ -863,10 +855,11 @@ function getWaterableSlotGrowth(
 		return null;
 	}
 
+	const advanceSeconds = GardenConstants.getWateringAdvanceSeconds(plant.growthTimeSeconds, earthQuality);
 	return {
 		slot: slot.slot,
-		plantId: slot.plantId,
-		becomesReady: willBecomeReadyAfterWatering(slot.plantedAt, effectiveGrowthTime, GardenConstants.getWateringAdvanceSeconds(plant.growthTimeSeconds), nowMs)
+		advanceSeconds,
+		becomesReady: willBecomeReadyAfterWatering(slot.plantedAt, effectiveGrowthTime, advanceSeconds, nowMs)
 	};
 }
 
