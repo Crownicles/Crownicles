@@ -136,16 +136,14 @@ async function applyPossibility(
 	};
 	if (issue === SmallEventBonusGuildPVEIslandResultType.SUCCESS && player.hasAGuild()) {
 		await manageGuildReward(response, player, result);
-		return {
-			...result,
-			emoteKey: getEmoteKey(rewardKind, result.isExperienceGain)
-		};
 	}
-	await manageClassicReward(response, player, result, rewardKind);
-	await player.save();
+	else {
+		await manageClassicReward(response, player, result, rewardKind);
+		await player.save();
+	}
 	return {
 		...result,
-		emoteKey: getEmoteKey(rewardKind, result.isExperienceGain)
+		emoteKey: getEmoteKey(rewardKind, isExperienceGain)
 	};
 }
 
