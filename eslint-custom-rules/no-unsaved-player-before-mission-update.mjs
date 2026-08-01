@@ -13,6 +13,11 @@
  *
  * History: #4207 (mutation lost across the mission re-fetch), #4554.
  *
+ * The `playerMutators` option lists the synchronous `Player` methods that mutate the
+ * instance without persisting it. It cannot be derived here (the offending call sites
+ * live in other files), so the rule also lints the model itself and reports any such
+ * method missing from the list: the option can never silently go stale.
+ *
  * @example
  * // ✗ BAD
  * player.petId = null;
@@ -38,13 +43,18 @@ const FUNCTION_TYPES = new Set([
 	"FunctionExpression"
 ]);
 
+function getChildNodes(node) {
+	return Object.entries(node)
+		.filter(([key]) => key !== "parent")
+		.flatMap(([, value]) => (Array.isArray(value) ? value : [value]))
+		.filter(value => value && typeof value.type === "string");
+}
+
 function isMissionUpdateCall(node) {
 	const callee = node.callee;
 	return callee.type === "MemberExpression"
-		&& !callee.computed
 		&& callee.object.type === "Identifier"
 		&& callee.object.name === "MissionsController"
-		&& callee.property.type === "Identifier"
 		&& MISSION_UPDATE_METHODS.has(callee.property.name);
 }
 
@@ -56,47 +66,123 @@ function getEnclosingFunction(node) {
 	return current;
 }
 
-function forEachChildNode(node, visit) {
-	for (const key of Object.keys(node)) {
-		if (key === "parent") {
-			continue;
-		}
-		const value = node[key];
-		if (Array.isArray(value)) {
-			for (const item of value) {
-				if (item && typeof item.type === "string") {
-					visit(item);
-				}
-			}
-		}
-		else if (value && typeof value.type === "string") {
-			visit(value);
-		}
-	}
+function isPlayerFieldWrite(node, player, sourceCode) {
+	const written = node.type === "AssignmentExpression"
+		? node.left
+		: node.type === "UpdateExpression" ? node.argument : undefined;
+	return Boolean(written) && sourceCode.getText(written).startsWith(`${player.text}.`);
+}
+
+function isObjectAssignOnPlayer(node, player, sourceCode) {
+	return sourceCode.getText(node.callee) === "Object.assign"
+		&& node.arguments.length > 0
+		&& sourceCode.getText(node.arguments[0]) === player.text;
 }
 
 /**
- * Describe what the inspected node does to `playerText`, or `undefined` when it
- * does not touch it at all.
+ * Describe what a call does to the player, or `undefined` when it leaves it untouched.
  */
-function classifyEvent(node, playerText, playerMutators, sourceCode) {
-	if (node.type === "AssignmentExpression" && sourceCode.getText(node.left).startsWith(`${playerText}.`)
-		|| node.type === "UpdateExpression" && sourceCode.getText(node.argument).startsWith(`${playerText}.`)) {
+function classifyCall(node, player, sourceCode) {
+	if (isObjectAssignOnPlayer(node, player, sourceCode)) {
 		return "mutation";
-	}
-	if (node.type !== "CallExpression") {
-		return undefined;
 	}
 	const calleeText = sourceCode.getText(node.callee);
-	if (calleeText === "Object.assign" && node.arguments[0] && sourceCode.getText(node.arguments[0]) === playerText) {
-		return "mutation";
+	if (!calleeText.startsWith(`${player.text}.`)) {
+		return undefined;
 	}
-	if (calleeText === `${playerText}.save`) {
+	const method = calleeText.slice(player.text.length + 1);
+	if (method === "save") {
 		return "save";
 	}
-	return calleeText.startsWith(`${playerText}.`) && playerMutators.has(calleeText.slice(playerText.length + 1))
-		? "mutation"
+	return player.mutators.has(method) ? "mutation" : undefined;
+}
+
+function classifyEvent(node, player, sourceCode) {
+	if (isPlayerFieldWrite(node, player, sourceCode)) {
+		return "mutation";
+	}
+	return node.type === "CallExpression" ? classifyCall(node, player, sourceCode) : undefined;
+}
+
+/**
+ * Last thing that happened to the player in the enclosing function before `limit`,
+ * ignoring nested functions since those may run later.
+ */
+function getLastPlayerEvent(scopeBody, player, sourceCode, limit) {
+	const events = [];
+	const collect = node => {
+		if (node.range[0] >= limit || FUNCTION_TYPES.has(node.type)) {
+			return;
+		}
+		const kind = classifyEvent(node, player, sourceCode);
+		if (kind) {
+			events.push({
+				position: node.range[0],
+				kind,
+				node
+			});
+		}
+		getChildNodes(node).forEach(collect);
+	};
+	getChildNodes(scopeBody).forEach(collect);
+	return events.sort((left, right) => left.position - right.position).at(-1);
+}
+
+function isThisMember(node) {
+	return node.type === "MemberExpression" && node.object.type === "ThisExpression";
+}
+
+function isThisMutation(node) {
+	return node.type === "AssignmentExpression" && isThisMember(node.left)
+		|| node.type === "UpdateExpression" && isThisMember(node.argument);
+}
+
+function getCalledOwnMethodName(node) {
+	return node.type === "CallExpression" && isThisMember(node.callee) && node.callee.property.type === "Identifier"
+		? node.callee.property.name
 		: undefined;
+}
+
+function scanMethodBody(body) {
+	const callees = new Set();
+	let mutatesThis = false;
+	const inspect = node => {
+		mutatesThis = mutatesThis || isThisMutation(node);
+		const calleeName = getCalledOwnMethodName(node);
+		if (calleeName) {
+			callees.add(calleeName);
+		}
+		getChildNodes(node).forEach(inspect);
+	};
+	inspect(body);
+	return {
+		mutatesThis, callees
+	};
+}
+
+/**
+ * Names of the non-async methods that mutate `this`, either directly or by calling
+ * another such method.
+ */
+function getSynchronousMutators(classBody) {
+	const scans = new Map(classBody.body
+		.filter(member => member.type === "MethodDefinition" && !member.value.async && member.value.body)
+		.map(member => [member.key.name, scanMethodBody(member.value.body)]));
+	const mutators = new Set([...scans]
+		.filter(([, scan]) => scan.mutatesThis)
+		.map(([name]) => name));
+
+	let grew = true;
+	while (grew) {
+		grew = false;
+		for (const [name, scan] of scans) {
+			if (!mutators.has(name) && [...scan.callees].some(callee => mutators.has(callee))) {
+				mutators.add(name);
+				grew = true;
+			}
+		}
+	}
+	return mutators;
 }
 
 export default {
@@ -113,57 +199,57 @@ export default {
 					playerMutators: {
 						type: "array",
 						items: { type: "string" }
-					}
+					},
+					playerModelFile: { type: "string" }
 				},
 				additionalProperties: false
 			}
 		],
 		messages: {
-			unsavedPlayer: "`{{player}}` was mutated by `{{mutation}}` without being saved: the mission update re-reads the locked row and would discard it. Move the mutation into `applyOnLockedPlayer`."
+			unsavedPlayer: "`{{player}}` was mutated by `{{mutation}}` without being saved: the mission update re-reads the locked row and would discard it. Move the mutation into `applyOnLockedPlayer`.",
+			unlistedMutator: "`{{method}}` mutates the player synchronously but is missing from the `playerMutators` option of `crownicles/no-unsaved-player-before-mission-update`, so calling it before a mission update would silently lose the change. Add it to the rule options."
 		}
 	},
 
 	create(context) {
 		const sourceCode = context.sourceCode ?? context.getSourceCode();
 		const playerMutators = new Set(context.options[0]?.playerMutators ?? []);
+		const playerModelFile = context.options[0]?.playerModelFile;
+		const isPlayerModel = Boolean(playerModelFile) && context.filename.replaceAll("\\", "/")
+			.endsWith(playerModelFile);
 
 		return {
-			CallExpression(node) {
-				if (!isMissionUpdateCall(node) || !node.arguments[0]) {
+			ClassBody(node) {
+				if (!isPlayerModel) {
 					return;
 				}
-				const scope = getEnclosingFunction(node);
+				for (const name of getSynchronousMutators(node)) {
+					if (!playerMutators.has(name)) {
+						context.report({
+							node: node.body.find(member => member.key?.name === name).key,
+							messageId: "unlistedMutator",
+							data: { method: name }
+						});
+					}
+				}
+			},
+
+			CallExpression(node) {
+				const scope = isMissionUpdateCall(node) && node.arguments[0] ? getEnclosingFunction(node) : undefined;
 				if (!scope?.body) {
 					return;
 				}
-				const playerText = sourceCode.getText(node.arguments[0]);
-				const callStart = node.range[0];
-				const events = [];
-
-				function collect(candidate) {
-					if (candidate.range[0] >= callStart || FUNCTION_TYPES.has(candidate.type)) {
-						return;
-					}
-					const kind = classifyEvent(candidate, playerText, playerMutators, sourceCode);
-					if (kind) {
-						events.push({
-							position: candidate.range[0],
-							kind,
-							node: candidate
-						});
-					}
-					forEachChildNode(candidate, collect);
-				}
-
-				forEachChildNode(scope.body, collect);
-				events.sort((left, right) => left.position - right.position);
-				const lastEvent = events.at(-1);
+				const player = {
+					text: sourceCode.getText(node.arguments[0]),
+					mutators: playerMutators
+				};
+				const lastEvent = getLastPlayerEvent(scope.body, player, sourceCode, node.range[0]);
 				if (lastEvent?.kind === "mutation") {
 					context.report({
 						node,
 						messageId: "unsavedPlayer",
 						data: {
-							player: playerText,
+							player: player.text,
 							mutation: sourceCode.getText(lastEvent.node)
 						}
 					});
