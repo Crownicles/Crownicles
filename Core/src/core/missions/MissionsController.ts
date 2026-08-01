@@ -136,7 +136,7 @@ export abstract class MissionsController {
 		const discoveredRecipes = await RecipeDiscoveryService.syncProgressionRecipes(
 			player,
 			RecipeDiscoverySource.CAMPAIGN_MILESTONE,
-			Campaign.getAmountOfCampaignCompleted(missionInfo.campaignBlob)
+			Campaign.getAmountOfCampaignCompleted(missionInfo.getCampaignBlob())
 		);
 		player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
 		MissionsController.applyBlessingsToCompletedMissions(completedMissions);
