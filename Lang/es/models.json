@@ -2493,7 +2493,7 @@
     "10": "Árbol genealógico"
   },
   "cooking": {
-    "recipeDiscoveryTitle": "Cuisine",
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
     "grades": {
       "kitchenHelper": "Ayudante de cocina",
       "scullion": "Marmiton",
