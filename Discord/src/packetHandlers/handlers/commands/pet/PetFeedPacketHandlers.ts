@@ -8,6 +8,7 @@ import {
 	CommandPetFeedNoPetErrorPacket,
 	CommandPetFeedNotHungryErrorPacket,
 	CommandPetFeedPetOnExpeditionErrorPacket,
+	CommandPetFeedSituationChangedErrorPacket,
 	CommandPetFeedSuccessPacket
 } from "../../../../../../Lib/src/packets/commands/CommandPetFeedPacket";
 import { DisplayUtils } from "../../../../utils/DisplayUtils";
@@ -39,6 +40,11 @@ export default class PetFeedCommandPacketHandlers {
 	@packetHandler(CommandPetFeedGuildStorageEmptyErrorPacket)
 	async guildStorageEmpty(context: PacketContext, _packet: CommandPetFeedGuildStorageEmptyErrorPacket): Promise<void> {
 		await handleClassicError(context, "commands:petFeed.guildStorageEmpty");
+	}
+
+	@packetHandler(CommandPetFeedSituationChangedErrorPacket)
+	async situationChanged(context: PacketContext, _packet: CommandPetFeedSituationChangedErrorPacket): Promise<void> {
+		await handleClassicError(context, "commands:petFeed.situationChanged");
 	}
 
 	@packetHandler(CommandPetFeedCancelErrorPacket)
