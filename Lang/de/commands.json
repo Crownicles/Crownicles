@@ -1272,7 +1272,7 @@
           "waterNothingToWater": "{emote:messages.info} Keine wachsenden Pflanzen, die gegossen werden müssen.",
           "wateredPlots_one": "{{count}} Parzelle",
           "wateredPlots_other": "{{count}} Parzellen",
-          "waterSuccess_zero": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. Ihr Wachstum wurde um eine Stunde beschleunigt.",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Vous avez arrosé **{{wateredPlots}}**. Leur croissance a progressé de {{growthPercent}} %.",
           "waterSuccess_one": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. **{{slotsBecameReady}}** Pflanze ist nun bereit, geerntet zu werden!",
           "waterSuccess_other": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. **{{slotsBecameReady}}** Pflanzen sind nun bereit, geerntet zu werden!",
           "waterSuccessTitle": "{{pseudo}} seinen Garten bewässert hat",
