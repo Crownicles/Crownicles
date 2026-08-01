@@ -2700,6 +2700,7 @@
     "noMoney": "Vous n'avez pas assez d'argent pour effectuer cet achat...",
     "notHungry": "Il semblerait que **{{pet}}** n'ait pas faim...",
     "guildStorageEmpty": "L'entrepôt de nourriture de votre guilde est vide. Ravitaillez votre guilde en ville avec {command:report}.",
+    "situationChanged": "Votre familier a changé pendant le nourrissage. Veuillez réessayer.",
     "cancelled": "Nourrissage annulé !",
     "resultTitle": "{{pseudo}}, nourrissage effectué !",
     "result": {

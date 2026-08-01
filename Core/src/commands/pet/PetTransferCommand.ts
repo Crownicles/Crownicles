@@ -19,7 +19,9 @@ import {
 import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
-import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
+import {
+	EndCallback, ReactionCollectorInstance
+} from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
 	ReactionCollectorReaction,
@@ -327,35 +329,64 @@ async function switchPetWithGuild(
 	);
 }
 
-function getEndCallback(player: Player) {
+/**
+ * Apply the transfer chosen by the player. The reaction has already been
+ * validated, so only the persistence work is left.
+ */
+async function applyChosenTransfer(
+	response: CrowniclesPacket[],
+	player: Player,
+	choice: {
+		depositOwnPet: boolean; withdrawPetEntityId: number | null;
+	}
+): Promise<void> {
+	const {
+		depositOwnPet, withdrawPetEntityId
+	} = choice;
+
+	await player.reload();
+
+	if (depositOwnPet) {
+		if (withdrawPetEntityId !== null) {
+			await switchPetWithGuild(response, player, withdrawPetEntityId);
+		}
+		else {
+			await deposePetToGuild(response, player);
+		}
+	}
+	else if (withdrawPetEntityId !== null) {
+		await withdrawPetFromGuild(response, player, withdrawPetEntityId);
+	}
+}
+
+function getEndCallback(player: Player): EndCallback {
 	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
-
-		const firstReaction = collector.getFirstReaction();
-		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
-			response.push(makePacket(CommandPetTransferCancelErrorPacket, {}));
-			return;
-		}
-
-		const depositOwnPet = firstReaction.reaction.type === ReactionCollectorPetTransferDepositReaction.name || firstReaction.reaction.type === ReactionCollectorPetTransferSwitchReaction.name;
-		const withdrawPetEntityId = firstReaction.reaction.type === ReactionCollectorPetTransferWithdrawReaction.name
-			? (firstReaction.reaction.data as ReactionCollectorPetTransferWithdrawReaction).petEntityId
-			: firstReaction.reaction.type === ReactionCollectorPetTransferSwitchReaction.name
-				? (firstReaction.reaction.data as ReactionCollectorPetTransferSwitchReaction).petEntityId
-				: null;
-
-		await player.reload();
-
-		if (depositOwnPet) {
-			if (withdrawPetEntityId) {
-				await switchPetWithGuild(response, player, withdrawPetEntityId);
+		/*
+		 * The collector block expires on its own deadline, so it is renewed here: the player must stay
+		 * blocked until `petId` is persisted, otherwise a pet command fired right after the choice would
+		 * read the pet being transferred away.
+		 */
+		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
+		try {
+			const firstReaction = collector.getFirstReaction();
+			if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+				response.push(makePacket(CommandPetTransferCancelErrorPacket, {}));
+				return;
 			}
-			else {
-				await deposePetToGuild(response, player);
-			}
+
+			const depositOwnPet = firstReaction.reaction.type === ReactionCollectorPetTransferDepositReaction.name || firstReaction.reaction.type === ReactionCollectorPetTransferSwitchReaction.name;
+			const withdrawPetEntityId = firstReaction.reaction.type === ReactionCollectorPetTransferWithdrawReaction.name
+				? (firstReaction.reaction.data as ReactionCollectorPetTransferWithdrawReaction).petEntityId
+				: firstReaction.reaction.type === ReactionCollectorPetTransferSwitchReaction.name
+					? (firstReaction.reaction.data as ReactionCollectorPetTransferSwitchReaction).petEntityId
+					: null;
+
+			await applyChosenTransfer(response, player, {
+				depositOwnPet, withdrawPetEntityId
+			});
 		}
-		else if (withdrawPetEntityId !== null) {
-			await withdrawPetFromGuild(response, player, withdrawPetEntityId);
+		finally {
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
 		}
 	};
 }
