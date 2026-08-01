@@ -2493,6 +2493,7 @@
     "10": "Arbre ancestral"
   },
   "cooking": {
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
     "grades": {
       "kitchenHelper": "Aide-cuisine",
       "scullion": "Marmiton",

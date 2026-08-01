@@ -5,6 +5,7 @@ import { CookingRecipeDataController } from "../../data/CookingRecipeData";
 import PlayerCookingRecipe from "../database/game/models/PlayerCookingRecipe";
 import Player from "../database/game/models/Player";
 import { CookingRecipe } from "../../../../Lib/src/types/CookingRecipe";
+import { RecipeDisplayInfo } from "../../../../Lib/src/types/CookingTypes";
 import { ItemNature } from "../../../../Lib/src/constants/ItemConstants";
 import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -15,7 +16,7 @@ export interface RecipeDiscoveryOffer {
 }
 
 export interface ProgressionRecipeUnlock {
-	recipeId: string;
+	recipe: CookingRecipe;
 	requiredProgress: number;
 }
 
@@ -47,6 +48,17 @@ const POTION_NATURE_TO_RECIPE_TYPE: Partial<Record<ItemNature, RecipeType>> = {
 
 export class RecipeDiscoveryService {
 	/**
+	 * Keep only what the front needs to render a recipe: its name, icon and required level.
+	 */
+	static toDisplayInfo(recipe: CookingRecipe): RecipeDisplayInfo {
+		return {
+			recipeId: recipe.id,
+			level: recipe.level,
+			recipeType: recipe.recipeType
+		};
+	}
+
+	/**
 	 * Find and discover the first undiscovered recipe from a sorted list of candidates.
 	 * Returns the discovered recipe or null if all candidates are already known.
 	 */
@@ -71,14 +83,14 @@ export class RecipeDiscoveryService {
 	}
 
 	/**
-	 * Discover every given recipe the player does not know yet, and return the newly discovered ids.
+	 * Discover every given recipe the player does not know yet, and return the newly discovered ones.
 	 */
-	private static async discoverRecipeIds(player: Player, recipeIds: string[]): Promise<string[]> {
-		const discovered: string[] = [];
-		for (const recipeId of recipeIds) {
-			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipeId)) {
-				await PlayerCookingRecipe.discoverRecipe(player, recipeId);
-				discovered.push(recipeId);
+	private static async discoverAll(player: Player, recipes: CookingRecipe[]): Promise<RecipeDisplayInfo[]> {
+		const discovered: RecipeDisplayInfo[] = [];
+		for (const recipe of recipes) {
+			if (!await PlayerCookingRecipe.isRecipeDiscovered(player, recipe.id)) {
+				await PlayerCookingRecipe.discoverRecipe(player, recipe.id);
+				discovered.push(RecipeDiscoveryService.toDisplayInfo(recipe));
 			}
 		}
 		return discovered;
@@ -95,7 +107,7 @@ export class RecipeDiscoveryService {
 		)
 			.slice(0, milestones.length)
 			.map((recipe, index) => ({
-				recipeId: recipe.id,
+				recipe,
 				requiredProgress: milestones[index]
 			}));
 	}
@@ -104,11 +116,11 @@ export class RecipeDiscoveryService {
 	 * Grant every recipe the player's current progression entitles them to and return the newly
 	 * learned ones. Safe to call repeatedly: already known recipes are skipped.
 	 */
-	static async syncProgressionRecipes(player: Player, source: ProgressionRecipeSource, progress: number): Promise<string[]> {
-		const entitledRecipeIds = RecipeDiscoveryService.getProgressionUnlocks(source)
+	static async syncProgressionRecipes(player: Player, source: ProgressionRecipeSource, progress: number): Promise<RecipeDisplayInfo[]> {
+		const entitledRecipes = RecipeDiscoveryService.getProgressionUnlocks(source)
 			.filter(unlock => progress >= unlock.requiredProgress)
-			.map(unlock => unlock.recipeId);
-		return await RecipeDiscoveryService.discoverRecipeIds(player, entitledRecipeIds);
+			.map(unlock => unlock.recipe);
+		return await RecipeDiscoveryService.discoverAll(player, entitledRecipes);
 	}
 
 	/**
@@ -173,15 +185,15 @@ export class RecipeDiscoveryService {
 
 	/**
 	 * Discover all COOKING_LEVEL recipes up to the player's current cooking level.
-	 * Returns the ids of all newly discovered recipes.
+	 * Returns all newly discovered recipes.
 	 */
-	static discoverCookingLevelRecipes(player: Player): Promise<string[]> {
+	static discoverCookingLevelRecipes(player: Player): Promise<RecipeDisplayInfo[]> {
 		const candidates = RecipeDiscoveryService.getSortedCandidates(
 			r => !r.discoveredByDefault
 				&& r.discoverySource === RecipeDiscoverySource.COOKING_LEVEL
 				&& r.level <= player.cookingLevel
 		);
-		return RecipeDiscoveryService.discoverRecipeIds(player, candidates.map(recipe => recipe.id));
+		return RecipeDiscoveryService.discoverAll(player, candidates);
 	}
 
 	/**

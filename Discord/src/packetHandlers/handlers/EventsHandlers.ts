@@ -237,8 +237,8 @@ export default class EventsHandlers {
 				value: MissionUtils.formatBaseMission(packet.nextCampaignMission, lng)
 			});
 		}
-		if (packet.discoveredRecipeIds) {
-			completedMissionsEmbed.setDescription(buildRecipeDiscoveryMessage(packet.discoveredRecipeIds, lng));
+		if (packet.discoveredRecipes) {
+			completedMissionsEmbed.setDescription(buildRecipeDiscoveryMessage(packet.discoveredRecipes, lng));
 		}
 		await interaction.channel.send({ embeds: [completedMissionsEmbed] });
 	}
@@ -406,8 +406,8 @@ export default class EventsHandlers {
 			}
 		}
 
-		if (packet.discoveredRecipeIds) {
-			desc += `\n${buildRecipeDiscoveryMessage(packet.discoveredRecipeIds, lng)}`;
+		if (packet.discoveredRecipes) {
+			desc += `\n${buildRecipeDiscoveryMessage(packet.discoveredRecipes, lng)}`;
 		}
 
 		embed.setDescription(desc);

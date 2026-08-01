@@ -49,6 +49,15 @@ export const CookingCraftErrors = {
 
 export type CookingCraftError = typeof CookingCraftErrors[keyof typeof CookingCraftErrors];
 
+/**
+ * Minimal recipe info needed to render a recipe as "{icon} Name (level)".
+ */
+export interface RecipeDisplayInfo {
+	recipeId: string;
+	level: number;
+	recipeType: RecipeType;
+}
+
 export interface PinnedRecipeInfo {
 	recipeId: string;
 	level: number;

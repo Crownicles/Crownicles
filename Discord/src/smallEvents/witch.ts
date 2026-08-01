@@ -101,8 +101,8 @@ export async function witchResult(packet: SmallEventWitchResultPacket, context: 
 	const lng = context.discord!.language;
 	let description = buildWitchResultDescription(packet, lng);
 
-	if (packet.discoveredRecipeId) {
-		description += `\n\n${buildRecipeDiscoveryMessage([packet.discoveredRecipeId], lng)}`;
+	if (packet.discoveredRecipe) {
+		description += `\n\n${buildRecipeDiscoveryMessage([packet.discoveredRecipe], lng)}`;
 	}
 
 	await (interaction.isRepliable() ? interaction.followUp : interaction.editReply).bind(interaction)({

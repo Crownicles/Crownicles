@@ -119,8 +119,8 @@ export async function displayMonsterReward(
 		descriptionParts.push(`\n${materialLootText}`);
 	}
 
-	if (packet.discoveredRecipeId) {
-		descriptionParts.push(`\n${buildRecipeDiscoveryMessage([packet.discoveredRecipeId], lng)}`);
+	if (packet.discoveredRecipe) {
+		descriptionParts.push(`\n${buildRecipeDiscoveryMessage([packet.discoveredRecipe], lng)}`);
 	}
 
 	const embed = new CrowniclesEmbed()

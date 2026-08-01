@@ -9,9 +9,12 @@ import { CrowniclesSmallEventEmbed } from "../messages/CrowniclesSmallEventEmbed
 import { CrowniclesIcons } from "../../../Lib/src/CrowniclesIcons";
 import i18n from "../translations/i18n";
 import { Language } from "../../../Lib/src/Language";
+import { RecipeDisplayInfo } from "../../../Lib/src/types/CookingTypes";
 import { ReactionCollectorReturnTypeOrNull } from "../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordCollectorUtils } from "../utils/DiscordCollectorUtils";
-import { buildRecipeDiscoveryMessage } from "../utils/CookingDisplayUtils";
+import {
+	buildRecipeDiscoveryMessage, formatRecipe
+} from "../utils/CookingDisplayUtils";
 import { buildFarmerDescription } from "../packetHandlers/handlers/smallEvents/farmer";
 import { buildUltimateFoodMerchantDescription } from "../packetHandlers/handlers/smallEvents/ultimateFoodMerchant";
 
@@ -42,7 +45,7 @@ function buildBaseDescription(data: ReactionCollectorRecipeShopSmallEventData, l
 function buildOfferDescription(data: ReactionCollectorRecipeShopSmallEventData, lng: Language): string {
 	const offerLine = i18n.t(`smallEvents:recipeShop.offer.${data.source}`, {
 		lng,
-		recipe: i18n.t(`models:cooking.recipes.${data.recipeId}`, { lng }),
+		recipe: formatRecipe(data.recipe, lng),
 		price: data.recipeCost
 	});
 	return `${buildBaseDescription(data, lng)}\n\n${offerLine}`;
@@ -93,6 +96,6 @@ export async function recipeShopOutcomeHandler(context: PacketContext, source: R
 /**
  * Build the "recipe purchased" outcome message
  */
-export function buildRecipePurchasedMessage(recipeId: string, recipeCost: number, lng: Language): string {
-	return buildRecipeDiscoveryMessage([recipeId], lng, recipeCost);
+export function buildRecipePurchasedMessage(recipe: RecipeDisplayInfo, recipeCost: number, lng: Language): string {
+	return buildRecipeDiscoveryMessage([recipe], lng, recipeCost);
 }

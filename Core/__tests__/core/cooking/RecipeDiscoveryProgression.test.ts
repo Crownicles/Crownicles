@@ -33,7 +33,7 @@ describe("RecipeDiscoveryService progression unlocks", () => {
 		source, milestones
 	}) => {
 		const unlocks = RecipeDiscoveryService.getProgressionUnlocks(source);
-		const levels = unlocks.map(unlock => CookingRecipeDataController.instance.getById(unlock.recipeId)!.level);
+		const levels = unlocks.map(unlock => unlock.recipe.level);
 
 		expect(unlocks.map(unlock => unlock.requiredProgress)).toEqual([...milestones]);
 		expect(levels).toEqual([...levels].sort((a, b) => a - b));

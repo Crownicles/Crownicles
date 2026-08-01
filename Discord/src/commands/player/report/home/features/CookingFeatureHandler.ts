@@ -1032,7 +1032,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 * Build the discovered recipes message
 	 */
 	private buildDiscoveredRecipesMessage(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): string {
-		const message = buildRecipeDiscoveryMessage(response.discoveredRecipeIds ?? [], ctx.lng);
+		const message = buildRecipeDiscoveryMessage(response.discoveredRecipes ?? [], ctx.lng);
 		return message === "" ? "" : `\n${message}`;
 	}
 

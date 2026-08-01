@@ -45,6 +45,7 @@ import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { chooseDestination } from "./ReportDestinationService";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { RecipeDisplayInfo } from "../../../../Lib/src/types/CookingTypes";
 import {
 	applyMaterialLoot, generateBossLoot, updateCollectMaterialsMission
 } from "../utils/MaterialLootUtils";
@@ -195,7 +196,7 @@ function sendMonsterRewardPacket(
 	fight: FightController,
 	loot: {
 		materialLoot?: MaterialQuantity[];
-		discoveredRecipeId?: string;
+		discoveredRecipe?: RecipeDisplayInfo;
 	}
 ): void {
 	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
@@ -213,7 +214,7 @@ function sendMonsterRewardPacket(
 			}
 			: undefined,
 		...loot.materialLoot && loot.materialLoot.length > 0 ? { materialLoot: loot.materialLoot } : {},
-		...loot.discoveredRecipeId ? { discoveredRecipeId: loot.discoveredRecipeId } : {}
+		...loot.discoveredRecipe ? { discoveredRecipe: loot.discoveredRecipe } : {}
 	}));
 }
 
@@ -255,7 +256,7 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
 
 	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, {
 		materialLoot,
-		...bossRecipe ? { discoveredRecipeId: bossRecipe.id } : {}
+		...bossRecipe ? { discoveredRecipe: RecipeDiscoveryService.toDisplayInfo(bossRecipe) } : {}
 	});
 	await MissionsController.update(player, endFightResponse, {
 		missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS satisfies PveBossMissionId

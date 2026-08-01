@@ -133,7 +133,7 @@ export abstract class MissionsController {
 		if (completedMissions.length === 0) {
 			return player;
 		}
-		const discoveredRecipeIds = await RecipeDiscoveryService.syncProgressionRecipes(
+		const discoveredRecipes = await RecipeDiscoveryService.syncProgressionRecipes(
 			player,
 			RecipeDiscoverySource.CAMPAIGN_MILESTONE,
 			Campaign.getAmountOfCampaignCompleted(missionInfo.campaignBlob)
@@ -145,7 +145,7 @@ export abstract class MissionsController {
 			missions: MissionsController.prepareBaseMissions(completedMissions),
 			keycloakId: player.keycloakId,
 			...nextCampaignMission ? { nextCampaignMission } : {},
-			...discoveredRecipeIds.length > 0 ? { discoveredRecipeIds } : {}
+			...discoveredRecipes.length > 0 ? { discoveredRecipes } : {}
 		}));
 		await MissionsController.giveCampaignPetRewards(completedMissions, player, response);
 		return player;

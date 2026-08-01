@@ -1,6 +1,7 @@
 import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import { RecipeDisplayInfo } from "../../types/CookingTypes";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class PlayerLevelUpPacket extends CrowniclesPacket {
@@ -33,5 +34,5 @@ export class PlayerLevelUpPacket extends CrowniclesPacket {
 	/**
 	 * Cooking recipes unlocked by reaching this level milestone.
 	 */
-	discoveredRecipeIds?: string[];
+	discoveredRecipes?: RecipeDisplayInfo[];
 }
