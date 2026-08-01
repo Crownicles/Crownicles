@@ -5,7 +5,9 @@ import InventorySlot, { InventorySlots } from "./InventorySlot";
 import PetEntity from "./PetEntity";
 import MissionSlot from "./MissionSlot";
 import { InventoryInfos } from "./InventoryInfo";
-import { MissionsController } from "../../../missions/MissionsController";
+import {
+	LockedPlayerMutation, MissionInformationsWithoutMutation, MissionsController
+} from "../../../missions/MissionsController";
 import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
 	asMilliseconds,
@@ -95,8 +97,6 @@ type ressourcesLostOnPveFaint = {
 	moneyLost: number;
 	guildPointsLost: number;
 };
-
-type MissionInformations = Parameters<typeof MissionsController.update>[2];
 
 /**
  * Reasons whose token gains are allowed to push the player above the normal
@@ -297,8 +297,8 @@ export class Player extends Model {
 	 */
 	private async mutateWithMission(
 		response: CrowniclesPacket[],
-		mission: Omit<MissionInformations, "applyOnLockedPlayer">,
-		mutate: (lockedPlayer: Player) => void
+		mission: MissionInformationsWithoutMutation,
+		mutate: LockedPlayerMutation
 	): Promise<void> {
 		await MissionsController.update(this, response, {
 			...mission,
@@ -308,8 +308,8 @@ export class Player extends Model {
 
 	private async mutateWithMissions(
 		response: CrowniclesPacket[],
-		missions: Omit<MissionInformations, "applyOnLockedPlayer">[],
-		mutate: (lockedPlayer: Player) => void
+		missions: MissionInformationsWithoutMutation[],
+		mutate: LockedPlayerMutation
 	): Promise<void> {
 		const [firstMission, ...otherMissions] = missions;
 		await MissionsController.updateMultiple(this, response, [
@@ -321,7 +321,7 @@ export class Player extends Model {
 		]);
 	}
 
-	private async mutateLocked(mutate: (lockedPlayer: Player) => void): Promise<void> {
+	private async mutateLocked(mutate: LockedPlayerMutation): Promise<void> {
 		const updatedPlayer = await Player.withLocked(this.id, async lockedPlayer => {
 			mutate(lockedPlayer);
 			await lockedPlayer.save();
@@ -339,7 +339,7 @@ export class Player extends Model {
 			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getScoreMultiplier());
 		}
 		const delta = parameters.amount;
-		const scoreMissions: Omit<MissionInformations, "applyOnLockedPlayer">[] = [
+		const scoreMissions: MissionInformationsWithoutMutation[] = [
 			...delta > 0
 				? [
 					{
@@ -409,28 +409,37 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Apply a token gain under lock and report how many tokens were actually
+	 * granted, which can be less than requested because of the token cap.
+	 */
+	private async earnTokens(parameters: EditValueParameters): Promise<number> {
+		let actualChange = 0;
+		await this.mutateWithMissions(parameters.response, [
+			{
+				missionId: "earnTokens",
+				count: (): number => actualChange
+			},
+			{
+				missionId: "maxTokensReached",
+				count: (locked): number => locked.tokens >= TokensConstants.MAX ? 1 : 0,
+				set: true
+			}
+		], locked => {
+			const previousTokens = locked.tokens;
+			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason);
+			actualChange = locked.tokens - previousTokens;
+		});
+		return actualChange;
+	}
+
+	/**
 	 * Add or remove tokens to the player
 	 * @param parameters
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
 		if (parameters.amount > 0) {
-			let actualChange = 0;
-			await this.mutateWithMissions(parameters.response, [
-				{
-					missionId: "earnTokens",
-					count: (): number => actualChange
-				},
-				{
-					missionId: "maxTokensReached",
-					count: (locked): number => locked.tokens >= TokensConstants.MAX ? 1 : 0,
-					set: true
-				}
-			], locked => {
-				const previousTokens = locked.tokens;
-				locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason);
-				actualChange = locked.tokens - previousTokens;
-			});
-			if (actualChange === 0) {
+			const gainedTokens = await this.earnTokens(parameters);
+			if (gainedTokens === 0) {
 				return this;
 			}
 		}
