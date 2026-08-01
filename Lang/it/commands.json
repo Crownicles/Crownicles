@@ -1272,7 +1272,7 @@
           "waterNothingToWater": "{Non ci sono piante in crescita da irrigare.",
           "wateredPlots_one": "{{count}} trama",
           "wateredPlots_other": "{{count}} trame",
-          "waterSuccess_zero": "{emote:city.gardenStatus.water} Hai annaffiato **{{wateredPlots}}**. La loro crescita è stata accelerata di un'ora.",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Vous avez arrosé **{{wateredPlots}}**. Leur croissance a progressé de {{growthPercent}} %.",
           "waterSuccess_one": "{emote:city.gardenStatus.water} Hai annaffiato **{{wateredPlots}}**. **{{slotsBecameReady}}** la pianta è ora pronta per essere raccolta!",
           "waterSuccess_other": "{emote:city.gardenStatus.water} Hai innaffiato **{{wateredPlots}}**. **{{slotsBecameReady}}** le piante sono ora pronte per essere raccolte!",
           "waterSuccessTitle": "{{pseudo}} ha innaffiato il suo giardino",
