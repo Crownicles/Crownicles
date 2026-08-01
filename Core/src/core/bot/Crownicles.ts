@@ -7,7 +7,7 @@ import {
 	Op, Sequelize
 } from "sequelize";
 import {
-	asDays, asWeeks, daysToMilliseconds, minutesToMilliseconds, weeksToMilliseconds
+	asWeeks, minutesToMilliseconds, weeksToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { MapCache } from "../maps/MapCache";
@@ -18,11 +18,6 @@ import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
 import { PacketUtils } from "../utils/PacketUtils";
 import { makePacket } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Settings } from "../database/game/models/Setting";
-import { PotionDataController } from "../../data/Potion";
-import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import PetEntity from "../database/game/models/PetEntity";
-import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
-import { TokensConstants } from "../../../../Lib/src/constants/TokensConstants";
 import { TopWeekFightAnnouncementPacket } from "../../../../Lib/src/packets/announcements/TopWeekFightAnnouncementPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
@@ -74,71 +69,6 @@ export class Crownicles {
 		// Databases
 		this.gameDatabase = new GameDatabase();
 		this.logsDatabase = new LogsDatabase();
-	}
-
-	/**
-	 * Execute all the daily tasks
-	 */
-	static async dailyTimeout(): Promise<void> {
-		/*
-		 * First program the daily immediately at +1 day
-		 * Then wait a bit before setting the next date, so we are sure to be past the date
-		 *
-		 * The first one is set immediately so if the bot crashes before programming the next one, it will be set anyway to approximately a valid date (at 1s max of difference)
-		 */
-		await Settings.NEXT_DAILY_RESET.setValue(await Settings.NEXT_DAILY_RESET.getValue() + daysToMilliseconds(asDays(1)));
-
-		await Player.update(
-			{
-				tokens: Sequelize.literal(`GREATEST(tokens, LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY}))`)
-			},
-			{ where: {} }
-		);
-
-		Crownicles.randomPotion()
-			.finally(() => null);
-		Crownicles.randomLovePointsLoose()
-			.then(petLoveChange => crowniclesInstance?.logsDatabase.logDailyTimeout(petLoveChange)
-				.then());
-		crowniclesInstance?.logsDatabase.log15BestTopWeek()
-			.then();
-	}
-
-	/**
-	 * Update the random potion sold in the shop
-	 */
-	static async randomPotion(): Promise<void> {
-		CrowniclesLogger.info("Daily timeout");
-		const previousPotionId = await Settings.SHOP_POTION.getValue();
-		const newPotionId = PotionDataController.instance.randomShopPotion(previousPotionId).id;
-		await Settings.SHOP_POTION.setValue(newPotionId);
-		CrowniclesLogger.info("New potion in shop", { newPotionId });
-		crowniclesInstance?.logsDatabase.logDailyPotion(newPotionId)
-			.then();
-	}
-
-	/**
-	 * Make some pet lose some love points
-	 */
-	static async randomLovePointsLoose(): Promise<boolean> {
-		if (!RandomUtils.crowniclesRandom.bool()) {
-			return false;
-		}
-
-		const [affectedCount] = await PetEntity.update(
-			{
-				lovePoints: Sequelize.literal(`GREATEST(0, lovePoints - ${PetConstants.DAILY_LOVE_LOSS})`)
-			},
-			{
-				where: {
-					lovePoints: { [Op.gt]: 0 }
-				}
-			}
-		);
-
-		CrowniclesLogger.info("Applied daily love loss to pets", { affectedPets: affectedCount });
-
-		return true;
 	}
 
 	/**
