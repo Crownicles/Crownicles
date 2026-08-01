@@ -1272,7 +1272,7 @@
           "waterNothingToWater": "{emote:messages.info} No plant is growing to water.",
           "wateredPlots_one": "{{count}} tile",
           "wateredPlots_other": "{{count}} tiles",
-          "waterSuccess_zero": "{emote:city.gardenStatus.water} You watered **{{wateredPlots}}**. Their growth was 1 hour away.",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Vous avez arrosé **{{wateredPlots}}**. Leur croissance a progressé de {{growthPercent}} %.",
           "waterSuccess_one": "{emote:city.gardenStatus.water} You watered **{{wateredPlots}}**. **{{slotsBecameReady}}** plant is now ready for harvesting!",
           "waterSuccess_other": "{emote:city.gardenStatus.water} You watered **{{wateredPlots}}**. **{{slotsBecameReady}}** plants are now ready for harvesting!",
           "waterSuccessTitle": "{{pseudo}} watered its garden",
