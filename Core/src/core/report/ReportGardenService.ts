@@ -689,9 +689,8 @@ async function handlePlantWithdraw(params: {
 
 /**
  * Handle garden watering — instantly advance the growth of every currently
- * growing plant by its own `wateringAdvanceSeconds` (see `PlantConstants`).
- * Plants whose `wateringAdvanceSeconds` is `0` (typically the fastest ones)
- * are ignored. A 12h cooldown is enforced
+ * growing plant by {@link GardenConstants.getWateringAdvanceSeconds}.
+ * A 12h cooldown is enforced
  * via `Player.lastGardenWatered`. Only allowed when the player is at home
  * (this entry point is invoked from the home-menu collector, which itself is
  * only opened when the player is in their home city).
@@ -811,13 +810,13 @@ function groupSlotsByPlantId(entries: WaterableSlotGrowth[]): Map<number, number
 async function shiftPlantedAtForGroupedSlots(homeId: number, slotsByPlantId: Map<number, number[]>): Promise<void> {
 	for (const [plantId, slots] of slotsByPlantId) {
 		const plant = PlantConstants.getPlantById(plantId);
-		if (!plant || plant.wateringAdvanceSeconds <= 0) {
+		if (!plant) {
 			continue;
 		}
 		await HomeGardenSlots.shiftPlantedAtForSlots(
 			homeId,
 			slots,
-			plant.wateringAdvanceSeconds * TimeConstants.MS_TIME.SECOND
+			GardenConstants.getWateringAdvanceSeconds(plant.growthTimeSeconds) * TimeConstants.MS_TIME.SECOND
 		);
 	}
 }
@@ -859,10 +858,6 @@ function getWaterableSlotGrowth(
 		return null;
 	}
 
-	if (plant.wateringAdvanceSeconds <= 0) {
-		return null;
-	}
-
 	const effectiveGrowthTime = GardenConstants.getEffectiveGrowthTime(plant.growthTimeSeconds, earthQuality);
 	if (slot.isReady(effectiveGrowthTime)) {
 		return null;
@@ -871,7 +866,7 @@ function getWaterableSlotGrowth(
 	return {
 		slot: slot.slot,
 		plantId: slot.plantId,
-		becomesReady: willBecomeReadyAfterWatering(slot.plantedAt, effectiveGrowthTime, plant.wateringAdvanceSeconds, nowMs)
+		becomesReady: willBecomeReadyAfterWatering(slot.plantedAt, effectiveGrowthTime, GardenConstants.getWateringAdvanceSeconds(plant.growthTimeSeconds), nowMs)
 	};
 }
 

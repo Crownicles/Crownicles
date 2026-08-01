@@ -869,11 +869,10 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 				continue;
 			}
 			const plant = PlantConstants.getPlantById(plot.plantId);
-			const wateringAdvanceSeconds = plant?.wateringAdvanceSeconds ?? 0;
-			if (wateringAdvanceSeconds <= 0) {
+			if (!plant) {
 				continue;
 			}
-			const newReadyAt = plot.readyAtTimestamp - wateringAdvanceSeconds;
+			const newReadyAt = plot.readyAtTimestamp - GardenConstants.getWateringAdvanceSeconds(plant.growthTimeSeconds);
 			const newRemaining = newReadyAt - nowSeconds;
 			if (newRemaining <= 0) {
 				plot.readyAtTimestamp = 0;
