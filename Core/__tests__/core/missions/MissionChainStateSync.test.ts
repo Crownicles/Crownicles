@@ -217,9 +217,9 @@ describe("Mission chain state synchronization", () => {
 			player.addLevelUpPacket = vi.fn(async (_response, level) => {
 				levelEffects.push(`packet:${level}`);
 			});
-			vi.spyOn(RecipeDiscoveryService, "discoverFromSource").mockImplementation(async currentPlayer => {
+			vi.spyOn(RecipeDiscoveryService, "syncProgressionRecipes").mockImplementation(async currentPlayer => {
 				levelEffects.push(`recipe:${currentPlayer.level}`);
-				return null;
+				return [];
 			});
 
 			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, missionResponse, opts) => {
