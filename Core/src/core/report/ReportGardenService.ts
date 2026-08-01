@@ -363,12 +363,16 @@ async function runHarvestUnderLock(params: {
 	logGardenHarvest(player, accumulator);
 	await triggerHarvestMissions(player, sideEffects, accumulator);
 
+	const {
+		plantsStored, compostResults, harvestedSlots
+	} = accumulator;
+
 	return makePacket(CommandReportGardenHarvestRes, {
-		plantsHarvested: accumulator.plantsStored,
-		plantsComposted: accumulator.compostResults.length,
-		compostResults: accumulator.compostResults,
+		plantsHarvested: plantsStored,
+		plantsComposted: compostResults.length,
+		compostResults,
 		plantStorage,
-		harvestedSlots: accumulator.harvestedSlots
+		harvestedSlots
 	});
 }
 
