@@ -11,6 +11,9 @@ import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstan
 import { CrowniclesPacket } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { PlayerDeathPacket } from "../../../../../Lib/src/packets/events/PlayerDeathPacket";
 
+// Instance the mocked row lock hands back, so health mutations apply to the player under test.
+let lockedPlayer: Player;
+
 /**
  * Build a bare Player instance without going through Sequelize's constructor/DB,
  * only setting the fields read by the health methods under test.
@@ -28,6 +31,7 @@ function buildPlayer(params: {
 	player.fightPointsLost = params.fightPointsLost ?? 0;
 	player.effectId = Effect.NO_EFFECT.id;
 	player.keycloakId = "test-keycloak-id";
+	lockedPlayer = player;
 	return player;
 }
 
@@ -55,6 +59,10 @@ describe("Player health and death", () => {
 		} as unknown as Crownicles);
 		applyEffectSpy = vi.spyOn(TravelTime, "applyEffect")
 			.mockResolvedValue(undefined);
+		vi.spyOn(Player, "withLocked").mockImplementation((_id, body) => body(lockedPlayer));
+		vi.spyOn(Player.prototype, "save").mockImplementation(function(this: Player) {
+			return Promise.resolve(this);
+		});
 	});
 
 	afterEach(() => {
