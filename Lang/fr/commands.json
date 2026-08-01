@@ -1272,7 +1272,7 @@
           "waterNothingToWater": "{emote:messages.info} Aucune plante en cours de pousse à arroser.",
           "wateredPlots_one": "{{count}} parcelle",
           "wateredPlots_other": "{{count}} parcelles",
-          "waterSuccess_zero": "{emote:city.gardenStatus.water} Vous avez arrosé **{{wateredPlots}}**. Leur croissance a été accélérée d'une heure.",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Vous avez arrosé **{{wateredPlots}}**. Leur croissance a progressé de {{growthPercent}} %.",
           "waterSuccess_one": "{emote:city.gardenStatus.water} Vous avez arrosé **{{wateredPlots}}**. **{{slotsBecameReady}}** plante est maintenant prête à être récoltée !",
           "waterSuccess_other": "{emote:city.gardenStatus.water} Vous avez arrosé **{{wateredPlots}}**. **{{slotsBecameReady}}** plantes sont maintenant prêtes à être récoltées !",
           "waterSuccessTitle": "{{pseudo}} a arrosé son jardin",
