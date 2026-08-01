@@ -2493,7 +2493,7 @@
     "10": "Ancestral Tree"
   },
   "cooking": {
-    "recipeDiscoveryTitle": "Cooking",
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
     "grades": {
       "kitchenHelper": "Kitchen Help",
       "scullion": "Pot",
