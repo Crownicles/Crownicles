@@ -42,7 +42,14 @@ import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
 
 
-type MissionInformations = {
+export type LockedPlayerMutation = (lockedPlayer: Player) => void;
+
+const MISSION_UPDATE_CALLERS = {
+	UPDATE: "MissionsController.update",
+	UPDATE_MULTIPLE: "MissionsController.updateMultiple"
+} as const;
+
+export type MissionInformations = {
 	missionId: string;
 
 	/**
@@ -72,8 +79,14 @@ type MissionInformations = {
 	 *
 	 * @see https://github.com/Crownicles/Crownicles/issues/4207
 	 */
-	applyOnLockedPlayer?: (lockedPlayer: Player) => void;
+	applyOnLockedPlayer?: LockedPlayerMutation;
 };
+
+/**
+ * Mission update declared by a `Player` mutator: the mutation itself is owned by
+ * the mutator and injected separately, so it must not be part of the declaration.
+ */
+export type MissionInformationsWithoutMutation = Omit<MissionInformations, "applyOnLockedPlayer">;
 
 /**
  * Internal shape passed to all *UnderLock helpers once the optional `count`
@@ -327,11 +340,10 @@ export abstract class MissionsController {
 			applyOnLockedPlayer
 		}: MissionInformations
 	): Promise<Player> {
-		const caller = "MissionsController.update";
-		MissionsController.assertPlayerHasNoPendingChanges(player, caller);
+		MissionsController.assertPlayerHasNoPendingChanges(player, MISSION_UPDATE_CALLERS.UPDATE);
 		const updatedPlayer = await MissionsController.runUnderMissionLock(
 			player,
-			caller,
+			MISSION_UPDATE_CALLERS.UPDATE,
 			(lockedPlayer, lockedMissionInfo, dailyMission) => MissionsController.runSingleUpdateUnderLock({
 				player: lockedPlayer,
 				missionInfo: lockedMissionInfo,
@@ -408,11 +420,10 @@ export abstract class MissionsController {
 		response: CrowniclesPacket[],
 		missionInformationsList: MissionInformations[]
 	): Promise<Player> {
-		const caller = "MissionsController.updateMultiple";
-		MissionsController.assertPlayerHasNoPendingChanges(player, caller);
+		MissionsController.assertPlayerHasNoPendingChanges(player, MISSION_UPDATE_CALLERS.UPDATE_MULTIPLE);
 		const updatedPlayer = await MissionsController.runUnderMissionLock(
 			player,
-			caller,
+			MISSION_UPDATE_CALLERS.UPDATE_MULTIPLE,
 			(lockedPlayer, lockedMissionInfo, dailyMission) =>
 				MissionsController.runBatchUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, missionInformationsList, dailyMission)
 		);
