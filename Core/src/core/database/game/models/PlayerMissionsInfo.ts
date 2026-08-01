@@ -68,6 +68,14 @@ export class PlayerMissionsInfo extends Model {
 		return this.lastDailyMissionCompleted && datesAreOnSameDay(this.lastDailyMissionCompleted, new Date());
 	}
 
+	/**
+	 * The column is nullable in database and only defaulted in memory by
+	 * {@link PlayerMissionsInfos.getOfPlayer}, so a freshly locked row can still hold NULL.
+	 */
+	public getCampaignBlob(): string {
+		return this.campaignBlob || Campaign.getDefaultCampaignBlob();
+	}
+
 	public async addGems(amount: number, keycloakId: string, reason: NumberChangeReason): Promise<void> {
 		this.gems += amount;
 		await this.save();
