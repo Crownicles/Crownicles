@@ -32,7 +32,21 @@ export default defineConfig([
 			...customRules,
 			"crownicles/single-line-short-single-property-object": ["error", { maxLength: 40 }],
 			"crownicles/no-this-in-packet-handler": "error",
-			"crownicles/no-response-push-through-return": "error"
+			"crownicles/no-response-push-through-return": "error",
+
+			// Synchronous `Player` methods that mutate `this` without persisting, so a
+			// pending call to one of them before a mission update is a lost write.
+			"crownicles/no-unsaved-player-before-mission-update": ["error", {
+				playerMutators: [
+					"addEnergy",
+					"addWeeklyScore",
+					"eatMeal",
+					"setEnergyLost",
+					"setHealthNoCheck",
+					"setPet",
+					"setWeeklyScore"
+				]
+			}]
 		}
 	},
 	{
