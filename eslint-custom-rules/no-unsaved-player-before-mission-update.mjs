@@ -43,6 +43,12 @@ const FUNCTION_TYPES = new Set([
 	"FunctionExpression"
 ]);
 
+// Expression each kind of write node targets, so a write can be recognized without branching on its type.
+const WRITE_TARGETS = {
+	AssignmentExpression: node => node.left,
+	UpdateExpression: node => node.argument
+};
+
 function getChildNodes(node) {
 	return Object.entries(node)
 		.filter(([key]) => key !== "parent")
@@ -67,9 +73,7 @@ function getEnclosingFunction(node) {
 }
 
 function isPlayerFieldWrite(node, player, sourceCode) {
-	const written = node.type === "AssignmentExpression"
-		? node.left
-		: node.type === "UpdateExpression" ? node.argument : undefined;
+	const written = WRITE_TARGETS[node.type]?.(node);
 	return Boolean(written) && sourceCode.getText(written).startsWith(`${player.text}.`);
 }
 
@@ -133,8 +137,8 @@ function isThisMember(node) {
 }
 
 function isThisMutation(node) {
-	return node.type === "AssignmentExpression" && isThisMember(node.left)
-		|| node.type === "UpdateExpression" && isThisMember(node.argument);
+	const written = WRITE_TARGETS[node.type]?.(node);
+	return Boolean(written) && isThisMember(written);
 }
 
 function getCalledOwnMethodName(node) {
