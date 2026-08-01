@@ -14,6 +14,7 @@ import { CityDataController } from "../../../data/City";
 import Player from "../../database/game/models/Player";
 import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
 import Guild from "../../database/game/models/Guild";
+import { MissionSlot } from "../../database/game/models/MissionSlot";
 import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
 import { CrowniclesCoreMetrics } from "../CrowniclesCoreMetrics";
@@ -61,6 +62,10 @@ export class CrowniclesDaily {
 		 * contention, and isolation ensures a failing task never skips the others.
 		 */
 		await CrowniclesDaily.runDailyTasks([
+			{
+				name: "maxTokensReachedMissions",
+				run: CrowniclesDaily.maxTokensReachedMissions
+			},
 			{
 				name: "randomPotion",
 				run: CrowniclesDaily.randomPotion
@@ -115,6 +120,27 @@ export class CrowniclesDaily {
 		}
 	}
 
+
+	/**
+	 * Mark the `maxTokensReached` mission as done for every player sitting at the token cap.
+	 *
+	 * The daily grant above is a bulk SQL update, so it bypasses `Player.addTokens` and never
+	 * notifies the mission system: a player pushed to the cap by that grant would otherwise
+	 * stay stuck at 0/1. The reward itself is handed out by the regular completion check, on
+	 * the player's next mission update.
+	 */
+	static async maxTokensReachedMissions(): Promise<void> {
+		const [, affectedRows] = await MissionSlot.sequelize!.query(
+			`UPDATE mission_slots ms
+			JOIN players p ON p.id = ms.playerId
+			SET ms.numberDone = 1
+			WHERE ms.missionId = 'maxTokensReached'
+				AND ms.numberDone < 1
+				AND (ms.expiresAt IS NULL OR ms.expiresAt > NOW())
+				AND p.tokens >= ${TokensConstants.MAX}`
+		);
+		CrowniclesLogger.info("Max tokens missions advanced", { affectedRows });
+	}
 
 	/**
 	 * Update the random potion sold in the shop
