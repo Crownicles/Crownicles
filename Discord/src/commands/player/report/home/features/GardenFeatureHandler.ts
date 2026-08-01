@@ -800,6 +800,7 @@ export class GardenFeatureHandler implements HomeFeatureHandler {
 			lng: ctx.lng,
 			wateredPlots,
 			slotsBecameReady: response.slotsBecameReady,
+			growthPercent: GardenConstants.WATERING_ADVANCE_PERCENT,
 			count: response.slotsBecameReady
 		});
 		const payload = {

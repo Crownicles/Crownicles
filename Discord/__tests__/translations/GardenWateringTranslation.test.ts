@@ -5,6 +5,8 @@ import {
 	expect,
 	it
 } from "vitest";
+import { GardenConstants } from "../../../Lib/src/constants/GardenConstants";
+import { PLANT_TYPES } from "../../../Lib/src/constants/PlantConstants";
 
 type CommandsTranslations = {
 	report: {
@@ -19,14 +21,20 @@ type CommandsTranslations = {
 };
 
 describe("Garden watering translations", () => {
-	it("describes the configured five-percent growth effect in French", () => {
+	it("interpolates the configured growth percentage in French", () => {
 		const commands = JSON.parse(readFileSync(
 			resolve(__dirname, "../../../Lang/fr/commands.json"),
 			"utf8"
 		)) as CommandsTranslations;
 		const message = commands.report.city.homes.garden.waterSuccess_zero;
 
-		expect(message).toContain("5 %");
+		expect(message).toContain("{{growthPercent}} %");
 		expect(message).not.toMatch(/heure/i);
+	});
+
+	it("advertises a percentage matching every plant watering advance", () => {
+		for (const plant of PLANT_TYPES) {
+			expect(plant.wateringAdvanceSeconds).toBe(plant.growthTimeSeconds * GardenConstants.WATERING_ADVANCE_RATIO);
+		}
 	});
 });

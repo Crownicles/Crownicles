@@ -40,6 +40,14 @@ export abstract class GardenConstants {
 	public static readonly WATERING_COOLDOWN_MS = 12 * TimeConstants.MS_TIME.HOUR;
 
 	/**
+	 * Share of a plant's growth cycle recovered by one watering.
+	 * Kept in sync with the `wateringAdvanceSeconds` values of `PLANT_TYPES`.
+	 */
+	public static readonly WATERING_ADVANCE_RATIO = 1 / 12;
+
+	public static readonly WATERING_ADVANCE_PERCENT = Math.round(GardenConstants.WATERING_ADVANCE_RATIO * 100);
+
+	/**
 	 * Price in coins of the "Cœur Sylvestre" talisman that unlocks remote garden harvest.
 	 */
 	public static readonly REMOTE_HARVEST_TALISMAN_PRICE = 2_450;
