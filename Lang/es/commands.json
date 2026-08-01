@@ -1272,7 +1272,7 @@
           "waterNothingToWater": "{No hay plantas creciendo para regar.",
           "wateredPlots_one": "{{count}} parcela",
           "wateredPlots_other": "{{count}} parcelas",
-          "waterSuccess_zero": "{emote:city.gardenStatus.water} Has regado **{{wateredPlots}}**. Su crecimiento se ha acelerado una hora.",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Vous avez arrosé **{{wateredPlots}}**. Leur croissance a progressé de {{growthPercent}} %.",
           "waterSuccess_one": "{emote:city.gardenStatus.water} Has regado **{{wateredPlots}}**. **{{slotsBecameReady}}** ¡la planta está lista para ser cosechada!",
           "waterSuccess_other": "{emote:city.gardenStatus.water} Has regado **{{wateredPlots}}**. **{{slotsBecameReady}}** ¡las plantas ya están listas para ser cosechadas!",
           "waterSuccessTitle": "{{pseudo}} regó su jardín",
