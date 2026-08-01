@@ -130,16 +130,27 @@ export class CrowniclesDaily {
 	 * the player's next mission update.
 	 */
 	static async maxTokensReachedMissions(): Promise<void> {
-		const [, affectedRows] = await MissionSlot.sequelize!.query(
-			`UPDATE mission_slots ms
+		/*
+		 * Deliberately split in two: a single `UPDATE ... JOIN players` would lock rows in both
+		 * tables in an order the optimizer chooses, which can invert the game's own order
+		 * (player locked first, mission slots written after) and deadlock a live command.
+		 * The read below is non-locking, and the write only ever touches mission_slots.
+		 */
+		const [rows] = await MissionSlot.sequelize!.query(
+			`SELECT ms.id
+			FROM mission_slots ms
 			JOIN players p ON p.id = ms.playerId
-			SET ms.numberDone = 1
 			WHERE ms.missionId = 'maxTokensReached'
 				AND ms.numberDone < 1
 				AND (ms.expiresAt IS NULL OR ms.expiresAt > NOW())
 				AND p.tokens >= ${TokensConstants.MAX}`
 		);
-		CrowniclesLogger.info("Max tokens missions advanced", { affectedRows });
+		const slotIds = (rows as { id: number }[]).map(row => row.id);
+		if (slotIds.length === 0) {
+			return;
+		}
+		await MissionSlot.update({ numberDone: 1 }, { where: { id: { [Op.in]: slotIds } } });
+		CrowniclesLogger.info("Max tokens missions advanced", { advancedSlots: slotIds.length });
 	}
 
 	/**

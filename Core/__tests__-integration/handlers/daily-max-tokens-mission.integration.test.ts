@@ -92,7 +92,8 @@ describe("daily max tokens mission catch-up", () => {
 	});
 
 	it("does not revive an expired mission", async () => {
-		const slot = await seed("maxtokens-expired", TokensConstants.MAX, new Date(Date.now() - 60 * 1000));
+		// Wide margin: the SQL guard compares against the server's `NOW()`, which may drift from the Node clock
+		const slot = await seed("maxtokens-expired", TokensConstants.MAX, new Date(Date.now() - 24 * 60 * 60 * 1000));
 
 		await CrowniclesDaily.maxTokensReachedMissions();
 
