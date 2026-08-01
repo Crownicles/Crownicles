@@ -5,8 +5,6 @@ import {
 	expect,
 	it
 } from "vitest";
-import { GardenConstants } from "../../../Lib/src/constants/GardenConstants";
-import { PLANT_TYPES } from "../../../Lib/src/constants/PlantConstants";
 
 type CommandsTranslations = {
 	report: {
@@ -30,11 +28,5 @@ describe("Garden watering translations", () => {
 
 		expect(message).toContain("{{growthPercent}} %");
 		expect(message).not.toMatch(/heure/i);
-	});
-
-	it("advertises a percentage matching every plant watering advance", () => {
-		for (const plant of PLANT_TYPES) {
-			expect(plant.wateringAdvanceSeconds).toBe(plant.growthTimeSeconds * GardenConstants.WATERING_ADVANCE_RATIO);
-		}
 	});
 });

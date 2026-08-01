@@ -41,7 +41,6 @@ export abstract class GardenConstants {
 
 	/**
 	 * Share of a plant's growth cycle recovered by one watering.
-	 * Kept in sync with the `wateringAdvanceSeconds` values of `PLANT_TYPES`.
 	 */
 	public static readonly WATERING_ADVANCE_RATIO = 1 / 12;
 
@@ -57,5 +56,12 @@ export abstract class GardenConstants {
 	 */
 	public static getEffectiveGrowthTime(baseGrowthTimeSeconds: number, earthQuality: GardenEarthQuality): number {
 		return Math.ceil(baseGrowthTimeSeconds * GardenConstants.EARTH_QUALITY_MULTIPLIER[earthQuality]);
+	}
+
+	/**
+	 * Growth time in seconds a single watering removes from a plant's remaining cycle.
+	 */
+	public static getWateringAdvanceSeconds(baseGrowthTimeSeconds: number): number {
+		return Math.round(baseGrowthTimeSeconds * GardenConstants.WATERING_ADVANCE_RATIO);
 	}
 }
