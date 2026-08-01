@@ -2,8 +2,8 @@ import { packetHandler } from "../../PacketHandler";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import { DiscordCache } from "../../../bot/DiscordCache";
 import { CrowniclesSmallEventEmbed } from "../../../messages/CrowniclesSmallEventEmbed";
+import i18n from "../../../translations/i18n";
 import { SmallEventBonusGuildPVEIslandPacket } from "../../../../../Lib/src/packets/smallEvents/SmallEventBonusGuildPVEIslandPacket";
-import { buildBonusGuildPVEIslandDescription } from "../../../smallEvents/BonusGuildPVEIslandDescription";
 
 export default class BonusGuildPVEIslandSmallEventHandler {
 	@packetHandler(SmallEventBonusGuildPVEIslandPacket)
@@ -14,7 +14,12 @@ export default class BonusGuildPVEIslandSmallEventHandler {
 			embeds: [
 				new CrowniclesSmallEventEmbed(
 					"bonusGuildPVEIsland",
-					buildBonusGuildPVEIslandDescription(packet, lng),
+					`${i18n.t(`smallEvents:bonusGuildPVEIsland.events.${packet.event}.intro`, { lng })}\n\n${
+						i18n.t(`smallEvents:bonusGuildPVEIsland.events.${packet.event}.${packet.result}.${packet.surrounding}`, {
+							lng,
+							amount: packet.amount,
+							emoteKey: packet.emoteKey
+						})}`,
 					interaction.user,
 					lng
 				)
