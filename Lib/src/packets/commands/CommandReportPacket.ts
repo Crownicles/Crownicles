@@ -25,7 +25,7 @@ export {
 	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients, CookingMenuSnapshot
 } from "../../types/CookingTypes";
 import {
-	CookingCraftError, CookingMenuSnapshot
+	CookingCraftError, CookingMenuSnapshot, RecipeDisplayInfo
 } from "../../types/CookingTypes";
 import type { ReactionCollectorCityData } from "../interaction/ReactionCollectorCity";
 
@@ -120,7 +120,7 @@ export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 	/**
 	 * Cooking recipe learned from the notes left by a defeated island boss.
 	 */
-	discoveredRecipeId?: string;
+	discoveredRecipe?: RecipeDisplayInfo;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -706,7 +706,7 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	bonusOutput?: boolean;
 
-	discoveredRecipeIds?: string[];
+	discoveredRecipes?: RecipeDisplayInfo[];
 
 	error?: CookingCraftError;
 

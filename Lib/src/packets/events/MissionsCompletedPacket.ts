@@ -4,6 +4,7 @@ import {
 import {
 	BaseMission, CompletedMission
 } from "../../types/CompletedMission";
+import { RecipeDisplayInfo } from "../../types/CookingTypes";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class MissionsCompletedPacket extends CrowniclesPacket {
@@ -20,5 +21,5 @@ export class MissionsCompletedPacket extends CrowniclesPacket {
 	/**
 	 * Cooking recipes unlocked by reaching a campaign progression milestone.
 	 */
-	discoveredRecipeIds?: string[];
+	discoveredRecipes?: RecipeDisplayInfo[];
 }

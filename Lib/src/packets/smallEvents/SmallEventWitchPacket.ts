@@ -2,6 +2,7 @@ import { SmallEventPacket } from "./SmallEventPacket";
 import {
 	PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
+import { RecipeDisplayInfo } from "../../types/CookingTypes";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventWitchResultPacket extends SmallEventPacket {
@@ -19,5 +20,5 @@ export class SmallEventWitchResultPacket extends SmallEventPacket {
 
 	outcome!: number;
 
-	discoveredRecipeId?: string;
+	discoveredRecipe?: RecipeDisplayInfo;
 }

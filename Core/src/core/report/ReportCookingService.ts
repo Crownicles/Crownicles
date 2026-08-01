@@ -802,7 +802,7 @@ function buildCookingCraftResponsePacket({
 		newCookingGrade: result.newGrade,
 		materialSaved: result.materialSaved,
 		bonusOutput: result.bonusOutput && (bonusHonored ?? false),
-		discoveredRecipeIds: result.discoveredRecipeIds,
+		discoveredRecipes: result.discoveredRecipes,
 		menu
 	});
 }

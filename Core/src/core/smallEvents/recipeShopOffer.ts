@@ -49,7 +49,7 @@ function getRecipeShopEndCallback(player: Player, source: RecipeShopSource, offe
 			}
 			response.push(makePacket(SmallEventRecipeShopAcceptedPacket, {
 				source,
-				recipeId: offer.recipe.id,
+				recipe: RecipeDiscoveryService.toDisplayInfo(offer.recipe),
 				recipeCost: offer.cost
 			}));
 		});
@@ -71,7 +71,7 @@ export function openRecipeShopOffer(params: {
 }): void {
 	const collector = new ReactionCollectorRecipeShopSmallEvent({
 		source: params.source,
-		recipeId: params.offer.recipe.id,
+		recipe: RecipeDiscoveryService.toDisplayInfo(params.offer.recipe),
 		recipeCost: params.offer.cost,
 		...params.farmer ? { farmer: params.farmer } : {},
 		...params.ultimateFoodMerchant ? { ultimateFoodMerchant: params.ultimateFoodMerchant } : {}

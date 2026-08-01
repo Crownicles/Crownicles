@@ -16,7 +16,7 @@ export default class RecipeShopSmallEventHandler {
 		await recipeShopOutcomeHandler(
 			context,
 			packet.source,
-			buildRecipePurchasedMessage(packet.recipeId, packet.recipeCost, context.discord!.language)
+			buildRecipePurchasedMessage(packet.recipe, packet.recipeCost, context.discord!.language)
 		);
 	}
 

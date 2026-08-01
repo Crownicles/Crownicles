@@ -16,7 +16,12 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			SELECT p.id, :recipeId, NULL
 			FROM players p
 			WHERE p.level >= :requiredProgress
-		`, { replacements: { ...unlock } });
+		`, {
+			replacements: {
+				recipeId: unlock.recipe.id,
+				requiredProgress: unlock.requiredProgress
+			}
+		});
 	}
 
 	for (const unlock of RecipeDiscoveryService.getProgressionUnlocks(RecipeDiscoverySource.CAMPAIGN_MILESTONE)) {
@@ -25,7 +30,12 @@ export async function up({ context }: { context: QueryInterface }): Promise<void
 			SELECT pmi.playerId, :recipeId, NULL
 			FROM player_missions_info pmi
 			WHERE LENGTH(pmi.campaignBlob) - LENGTH(REPLACE(pmi.campaignBlob, '1', '')) >= :requiredProgress
-		`, { replacements: { ...unlock } });
+		`, {
+			replacements: {
+				recipeId: unlock.recipe.id,
+				requiredProgress: unlock.requiredProgress
+			}
+		});
 	}
 }
 

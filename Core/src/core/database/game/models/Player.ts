@@ -79,6 +79,7 @@ import { BlessingManager } from "../../../blessings/BlessingManager";
 import { Homes } from "./Home";
 import { getSlotCountForCategory } from "../../../../../../Lib/src/types/HomeFeatures";
 import { RecipeDiscoveryService } from "../../../cooking/RecipeDiscoveryService";
+import { RecipeDisplayInfo } from "../../../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/CookingConstants";
 import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
 
@@ -464,7 +465,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param newLevel
 	 */
-	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number, discoveredRecipeIds: string[]): Promise<void> {
+	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number, discoveredRecipes: RecipeDisplayInfo[]): Promise<void> {
 		const healthRestored = newLevel % 10 === 0;
 
 		const packet = makePacket(PlayerLevelUpPacket, {
@@ -481,7 +482,7 @@ export class Player extends Model {
 			missionSlotUnlocked: Player.isMissionSlotUnlockedAtLevel(newLevel),
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
 			statsIncreased: true,
-			...discoveredRecipeIds.length > 0 ? { discoveredRecipeIds } : {}
+			...discoveredRecipes.length > 0 ? { discoveredRecipes } : {}
 		});
 
 		if (healthRestored) {
@@ -535,9 +536,9 @@ export class Player extends Model {
 		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
 			.then();
 
-		const discoveredRecipeIds = await RecipeDiscoveryService.syncProgressionRecipes(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE, this.level);
+		const discoveredRecipes = await RecipeDiscoveryService.syncProgressionRecipes(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE, this.level);
 
-		await this.addLevelUpPacket(response, this.level, discoveredRecipeIds);
+		await this.addLevelUpPacket(response, this.level, discoveredRecipes);
 
 		await this.levelUpIfNeeded(response);
 	}

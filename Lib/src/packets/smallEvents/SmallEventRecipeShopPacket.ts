@@ -3,12 +3,13 @@ import {
 	PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 import { RecipeShopSource } from "../interaction/ReactionCollectorRecipeShopSmallEvent";
+import { RecipeDisplayInfo } from "../../types/CookingTypes";
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventRecipeShopAcceptedPacket extends SmallEventPacket {
 	source!: RecipeShopSource;
 
-	recipeId!: string;
+	recipe!: RecipeDisplayInfo;
 
 	recipeCost!: number;
 }
