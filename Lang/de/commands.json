@@ -2700,6 +2700,7 @@
     "noMoney": "Sie haben nicht genug Geld, um diesen Kauf zu tätigen...",
     "notHungry": "Es scheint, dass **{{pet}}** keinen Hunger hat...",
     "guildStorageEmpty": "Das Nahrungslager Ihrer Gilde ist leer. Kaufen Sie Nahrung mit {command:guildshop}.",
+    "situationChanged": "Votre familier a changé pendant que vous le nourrissiez. Veuillez réessayer.",
     "cancelled": "Fütterung abgesagt!",
     "resultTitle": "{{pseudo}}Fütterung durchgeführt!",
     "result": {
