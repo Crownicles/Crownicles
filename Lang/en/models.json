@@ -1208,7 +1208,7 @@
       "atParticle": "at"
     },
     "19": {
-      "description": "Beach created by the strong winds from the Kings' Valley. The Dune protects the Backwoods Plains from heat and gathers water from the Vacarme river.",
+      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
       "name": "The Dune",
       "particle": "towards",
       "atParticle": "in"
@@ -1224,12 +1224,6 @@
       "name": "Rural Path",
       "particle": "towards the",
       "atParticle": "at"
-    },
-    "20": {
-      "description": "A vast and peaceful plain, for agricultural purposes.",
-      "name": "Backwoods Plains",
-      "particle": "towards the",
-      "atParticle": "to"
     },
     "21": {
       "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day ultimately creating a huge market.",
