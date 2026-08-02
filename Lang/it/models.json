@@ -1208,7 +1208,7 @@
       "atParticle": "al"
     },
     "19": {
-      "description": "Una spiaggia creata dai forti venti della Valle dei Re. La duna protegge le Pianure del Boschive dal caldo e porta l'acqua del fiume Baccano.",
+      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
       "name": "La Duna",
       "particle": "verso",
       "atParticle": "à"
@@ -1224,12 +1224,6 @@
       "name": "Strada di campagna",
       "particle": "verso la",
       "atParticle": "al"
-    },
-    "20": {
-      "description": "Una vasta e tranquilla pianura agricola.",
-      "name": "Pianure Boschive",
-      "particle": "verso gli",
-      "atParticle": "a"
     },
     "21": {
       "description": "Una strada molto utilizzata dagli abitanti del villaggio. Molti piccoli venditori ambulanti si installano qui per un giorno, creando un grande mercato.",
