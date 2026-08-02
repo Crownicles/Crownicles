@@ -135,6 +135,12 @@ export class CrowniclesDaily {
 		 * tables in an order the optimizer chooses, which can invert the game's own order
 		 * (player locked first, mission slots written after) and deadlock a live command.
 		 * The read below is non-locking, and the write only ever touches mission_slots.
+		 *
+		 * `numberDone < 1` is not a correctness guard — the final state is the same without it —
+		 * but mission completion is lazy: the slot is only advanced or dropped on the player's
+		 * next `MissionsController.update`, so for a capped yet inactive player the row stays
+		 * here indefinitely. Without the guard this nightly job would rewrite an ever-growing
+		 * set of already-done rows, and `advancedSlots` below would count no-ops.
 		 */
 		const [rows] = await MissionSlot.sequelize!.query(
 			`SELECT ms.id
