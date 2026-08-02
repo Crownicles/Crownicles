@@ -2700,6 +2700,7 @@
     "noMoney": "You don't have enough money to make this purchase...",
     "notHungry": "It seems that **{{pet}}** is not hungry...",
     "guildStorageEmpty": "Your guild's food storage is empty. Buy food with {command:guildshop}.",
+    "situationChanged": "Votre familier a changé pendant que vous le nourrissiez. Veuillez réessayer.",
     "cancelled": "Feeding cancelled!",
     "resultTitle": "{{pseudo}}, feeding done!",
     "result": {
