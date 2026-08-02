@@ -329,6 +329,49 @@ async function switchPetWithGuild(
 	);
 }
 
+const PET_TRANSFER_CHOICES = {
+	DEPOSIT: "deposit",
+	WITHDRAW: "withdraw",
+	SWITCH: "switch"
+} as const;
+
+type PetTransferChoice =
+	| { kind: typeof PET_TRANSFER_CHOICES.DEPOSIT }
+	| {
+		kind: typeof PET_TRANSFER_CHOICES.WITHDRAW; petEntityId: number;
+	}
+	| {
+		kind: typeof PET_TRANSFER_CHOICES.SWITCH; petEntityId: number;
+	};
+
+/**
+ * Read the collected reaction as one of the three transfer choices. Returns null when the
+ * player refused or let the collector expire.
+ */
+function readTransferChoice(collector: ReactionCollectorInstance): PetTransferChoice | null {
+	const firstReaction = collector.getFirstReaction();
+	if (!firstReaction) {
+		return null;
+	}
+
+	switch (firstReaction.reaction.type) {
+		case ReactionCollectorPetTransferDepositReaction.name:
+			return { kind: PET_TRANSFER_CHOICES.DEPOSIT };
+		case ReactionCollectorPetTransferWithdrawReaction.name:
+			return {
+				kind: PET_TRANSFER_CHOICES.WITHDRAW,
+				petEntityId: (firstReaction.reaction.data as ReactionCollectorPetTransferWithdrawReaction).petEntityId
+			};
+		case ReactionCollectorPetTransferSwitchReaction.name:
+			return {
+				kind: PET_TRANSFER_CHOICES.SWITCH,
+				petEntityId: (firstReaction.reaction.data as ReactionCollectorPetTransferSwitchReaction).petEntityId
+			};
+		default:
+			return null;
+	}
+}
+
 /**
  * Apply the transfer chosen by the player. The reaction has already been
  * validated, so only the persistence work is left.
@@ -336,26 +379,24 @@ async function switchPetWithGuild(
 async function applyChosenTransfer(
 	response: CrowniclesPacket[],
 	player: Player,
-	choice: {
-		depositOwnPet: boolean; withdrawPetEntityId: number | null;
-	}
+	choice: PetTransferChoice
 ): Promise<void> {
-	const {
-		depositOwnPet, withdrawPetEntityId
-	} = choice;
-
 	await player.reload();
 
-	if (depositOwnPet) {
-		if (withdrawPetEntityId !== null) {
-			await switchPetWithGuild(response, player, withdrawPetEntityId);
-		}
-		else {
+	switch (choice.kind) {
+		case PET_TRANSFER_CHOICES.DEPOSIT:
 			await deposePetToGuild(response, player);
-		}
-	}
-	else if (withdrawPetEntityId !== null) {
-		await withdrawPetFromGuild(response, player, withdrawPetEntityId);
+			return;
+		case PET_TRANSFER_CHOICES.WITHDRAW:
+			await withdrawPetFromGuild(response, player, choice.petEntityId);
+			return;
+		case PET_TRANSFER_CHOICES.SWITCH:
+			await switchPetWithGuild(response, player, choice.petEntityId);
+			return;
+		default:
+
+			// `choice` narrows to never here: the compiler proves every choice is handled
+			throw new Error(`unhandled pet transfer choice: ${JSON.stringify(choice)}`);
 	}
 }
 
@@ -368,22 +409,13 @@ function getEndCallback(player: Player): EndCallback {
 		 */
 		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
 		try {
-			const firstReaction = collector.getFirstReaction();
-			if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
+			const choice = readTransferChoice(collector);
+			if (!choice) {
 				response.push(makePacket(CommandPetTransferCancelErrorPacket, {}));
 				return;
 			}
 
-			const depositOwnPet = firstReaction.reaction.type === ReactionCollectorPetTransferDepositReaction.name || firstReaction.reaction.type === ReactionCollectorPetTransferSwitchReaction.name;
-			const withdrawPetEntityId = firstReaction.reaction.type === ReactionCollectorPetTransferWithdrawReaction.name
-				? (firstReaction.reaction.data as ReactionCollectorPetTransferWithdrawReaction).petEntityId
-				: firstReaction.reaction.type === ReactionCollectorPetTransferSwitchReaction.name
-					? (firstReaction.reaction.data as ReactionCollectorPetTransferSwitchReaction).petEntityId
-					: null;
-
-			await applyChosenTransfer(response, player, {
-				depositOwnPet, withdrawPetEntityId
-			});
+			await applyChosenTransfer(response, player, choice);
 		}
 		finally {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
