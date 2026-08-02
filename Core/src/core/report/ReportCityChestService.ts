@@ -24,7 +24,9 @@ import InventoryInfo from "../database/game/models/InventoryInfo";
 import {
 	buildChestData, buildUpgradeStationData
 } from "./ReportCityService";
-import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	Locked, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -170,8 +172,8 @@ export async function handleChestAction(
 
 async function runChestActionUnderLock(
 	packet: CommandReportHomeChestActionReq,
-	player: Player,
-	home: Home
+	player: Locked<Player>,
+	home: Locked<Home>
 ): Promise<ChestActionResult> {
 	const homeLevel = home.getLevel();
 	if (homeLevel === null) {

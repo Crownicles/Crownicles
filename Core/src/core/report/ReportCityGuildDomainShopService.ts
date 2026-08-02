@@ -18,7 +18,7 @@ import {
 } from "../database/game/models/Guild";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import {
-	withLockedEntities
+	Locked, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
 import type { GuildTreasuryDepositLogParams } from "../database/logs/LogsCityLogger";
@@ -44,7 +44,7 @@ function logGuildTreasuryDeposit(params: GuildTreasuryDepositLogParams | null): 
  * `.save()` calls on the returned instances enlist automatically.
  */
 async function runTreasuryDepositUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	packet: CommandReportGuildDomainDepositTreasuryReq,
 	guildId: number,
 	grossAmount: number

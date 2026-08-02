@@ -34,7 +34,7 @@ import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { assertUnderLock } from "../../../../Lib/src/locks/CLSNamespace";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
@@ -159,9 +159,9 @@ export abstract class MissionsController {
 	 * @param specialMissionCompletion
 	 */
 	static async checkCompletedMissionsUnderLock(
-		player: Player,
+		player: Locked<Player>,
 		missionSlots: MissionSlot[],
-		missionInfo: PlayerMissionsInfo,
+		missionInfo: Locked<PlayerMissionsInfo>,
 		response: CrowniclesPacket[],
 		specialMissionCompletion: SpecialMissionCompletion,
 		dailyMission: DailyMission
@@ -377,8 +377,8 @@ export abstract class MissionsController {
 	}
 
 	private static async runUpdateUnderLock(
-		player: Player,
-		missionInfo: PlayerMissionsInfo,
+		player: Locked<Player>,
+		missionInfo: Locked<PlayerMissionsInfo>,
 		response: CrowniclesPacket[],
 		info: ResolvedMissionInformations,
 		dailyMission: DailyMission
@@ -433,8 +433,8 @@ export abstract class MissionsController {
 	}
 
 	private static async runBatchUpdateUnderLock(
-		player: Player,
-		missionInfo: PlayerMissionsInfo,
+		player: Locked<Player>,
+		missionInfo: Locked<PlayerMissionsInfo>,
 		response: CrowniclesPacket[],
 		missionInformationsList: MissionInformations[],
 		dailyMission: DailyMission
@@ -481,7 +481,7 @@ export abstract class MissionsController {
 	 * @param specialMissionCompletion
 	 */
 	static async completeAndUpdateMissionsUnderLock(
-		player: Player,
+		player: Locked<Player>,
 		missionSlots: MissionSlot[],
 		specialMissionCompletion: SpecialMissionCompletion,
 		dailyMission: DailyMission
@@ -543,7 +543,7 @@ export abstract class MissionsController {
 		return player;
 	}
 
-	static async handleExpiredMissionsUnderLock(player: Player, missionSlots: MissionSlot[], response: CrowniclesPacket[]): Promise<void> {
+	static async handleExpiredMissionsUnderLock(player: Locked<Player>, missionSlots: MissionSlot[], response: CrowniclesPacket[]): Promise<void> {
 		assertUnderLock("MissionsController.handleExpiredMissionsUnderLock");
 		const expiredMissions: MissionSlot[] = [];
 		for (const mission of missionSlots) {
@@ -713,9 +713,9 @@ export abstract class MissionsController {
 		ctx: {
 			missionInformation: ResolvedMissionInformations;
 			missionInterface: IMission;
-			missionInfo: PlayerMissionsInfo;
+			missionInfo: Locked<PlayerMissionsInfo>;
 			missionSlots: MissionSlot[];
-			player: Player;
+			player: Locked<Player>;
 			response: CrowniclesPacket[];
 			count: number;
 			dailyMission: DailyMission;
@@ -761,8 +761,8 @@ export abstract class MissionsController {
 	private static async updateMissionsCountsUnderLock(
 		missionInformation: ResolvedMissionInformations,
 		missionSlots: MissionSlot[],
-		missionInfo: PlayerMissionsInfo,
-		player: Player,
+		missionInfo: Locked<PlayerMissionsInfo>,
+		player: Locked<Player>,
 		response: CrowniclesPacket[],
 		dailyMission: DailyMission
 	): Promise<SpecialMissionCompletion> {

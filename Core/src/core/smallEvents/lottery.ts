@@ -28,6 +28,7 @@ import { Effect } from "../../../../Lib/src/types/Effect";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 type LotteryProperties = {
 	successRate: {
@@ -145,7 +146,7 @@ async function giveRewardToPlayer(
 }
 
 async function runLotteryEndCallbackUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	reaction: ReactionInfo,
 	response: CrowniclesPacket[],
 	dataLottery: LotteryProperties

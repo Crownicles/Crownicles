@@ -39,7 +39,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { chooseDestination } from "./ReportDestinationService";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import {
 	PlayerMissionsInfo, PlayerMissionsInfos
@@ -136,7 +136,7 @@ async function updateTagMissions(
  * `withLockedEntities([Player, PlayerMissionsInfo])`.
  */
 async function applyLockedOutcomeUnderLock(
-	lockedPlayer: Player,
+	lockedPlayer: Locked<Player>,
 	outcomeContext: {
 		event: BigEvent;
 		possibility: PossibilityEntry;

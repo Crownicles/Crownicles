@@ -34,6 +34,7 @@ import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import { RecipeDisplayInfo } from "../../../../Lib/src/types/CookingTypes";
 import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 
 type WitchEventSelection = {
@@ -138,7 +139,7 @@ function getEndCallback(player: Player): EndCallback {
 }
 
 async function runWitchEndCallbackUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	collector: ReactionCollectorInstance,
 	response: CrowniclesPacket[]
 ): Promise<void> {

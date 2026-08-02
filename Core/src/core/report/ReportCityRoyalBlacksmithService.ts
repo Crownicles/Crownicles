@@ -30,7 +30,7 @@ import { ItemRarity } from "../../../../Lib/src/constants/ItemConstants";
 import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithUtils";
 import { Badge } from "../../../../Lib/src/types/Badge";
 import {
-	LockKey, withLockedEntities
+	LockKey, Locked, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { updateUpgradeMissionsUnderLock } from "./ReportCityBlacksmithService";
@@ -185,8 +185,8 @@ export async function handleRoyalBlacksmithUpgradeReaction(
  * if the item rarity is below the threshold.
  */
 async function executeRoyalUpgradeUnderLock(params: {
-	lockedPlayer: Player;
-	lockedMissionsInfo: PlayerMissionsInfo;
+	lockedPlayer: Locked<Player>;
+	lockedMissionsInfo: Locked<PlayerMissionsInfo>;
 	item: RoyalUpgradeableItem;
 	execution: ExecutionData;
 	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction;
@@ -246,8 +246,8 @@ async function executeRoyalUpgradeUnderLock(params: {
  * pushing the relevant error packet) when the upgrade must be aborted.
  */
 async function validateRoyalUpgradeUnderLock(
-	lockedPlayer: Player,
-	lockedMissionsInfo: PlayerMissionsInfo,
+	lockedPlayer: Locked<Player>,
+	lockedMissionsInfo: Locked<PlayerMissionsInfo>,
 	execution: ExecutionData,
 	reaction: ReactionCollectorRoyalBlacksmithUpgradeReaction,
 	response: CrowniclesPacket[]

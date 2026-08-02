@@ -36,6 +36,7 @@ import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { PlayerActiveObjects } from "../../core/database/game/models/PlayerActiveObjects";
 import { InventorySlots } from "../../core/database/game/models/InventorySlot";
 import { withLockedPlayerAndMissionsSafe } from "../../core/utils/withLockedPlayerAndMissionsSafe";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 
 /**
@@ -84,7 +85,7 @@ async function canJoinBoat(player: Player, response: CrowniclesPacket[], playerA
  * @param response
  * @param playerActiveObjects
  */
-async function acceptJoinBoatUnderLock(player: Player, response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<void> {
+async function acceptJoinBoatUnderLock(player: Locked<Player>, response: CrowniclesPacket[], playerActiveObjects: PlayerActiveObjects): Promise<void> {
 	if (!await canJoinBoat(player, response, playerActiveObjects)) {
 		return;
 	}

@@ -26,6 +26,7 @@ import { BlessingManager } from "../../core/blessings/BlessingManager";
 import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(minutesToMilliseconds(asMinutes(time)))
@@ -108,7 +109,7 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
+async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Locked<Player>, response: CrowniclesPacket[]): Promise<number> {
 	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.crowniclesRandom.integer(0, time / 10 + player.level / 5 - 1));
 	if (outcome.money && outcome.money < 0 && moneyChange > 0) {
 		moneyChange = Math.floor(outcome.money / 2);

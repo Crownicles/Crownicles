@@ -39,7 +39,9 @@ import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interacti
 import { InventoryInfos } from "../database/game/models/InventoryInfo";
 import { GardenAccessMode } from "../../../../Lib/src/types/GardenAccessMode";
 import { GardenEarthQuality } from "../../../../Lib/src/types/GardenEarthQuality";
-import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	Locked, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
 import { updateCollectMaterialsMission } from "../utils/MaterialLootUtils";
@@ -321,8 +323,8 @@ async function triggerHarvestMissions(player: Player, response: CrowniclesPacket
 }
 
 async function runHarvestUnderLock(params: {
-	player: Player;
-	home: Home;
+	player: Locked<Player>;
+	home: Locked<Home>;
 	homeLevel: HomeLevel;
 	sideEffects: CrowniclesPacket[];
 }): Promise<CrowniclesPacket> {
@@ -474,8 +476,8 @@ export function handleGardenPlant(
 }
 
 async function runGardenPlantUnderLock(
-	player: Player,
-	home: Home,
+	player: Locked<Player>,
+	home: Locked<Home>,
 	packet: CommandReportGardenPlantReq
 ): Promise<{
 	planted: boolean; packet: CrowniclesPacket;
@@ -627,8 +629,8 @@ export function handlePlantTransfer(
 }
 
 async function runPlantTransferUnderLock(
-	player: Player,
-	home: Home,
+	player: Locked<Player>,
+	home: Locked<Home>,
 	packet: CommandReportPlantTransferReq
 ): Promise<CrowniclesPacket> {
 	const error = await executeTransferAction(packet, player, home);
@@ -743,8 +745,8 @@ async function getGardenWaterContext(keycloakId: string): Promise<GardenWaterCon
 }
 
 async function waterGardenForLockedPlayerUnderLock(params: {
-	lockedPlayer: Player;
-	home: Home;
+	lockedPlayer: Locked<Player>;
+	home: Locked<Home>;
 	homeLevel: HomeLevel;
 	now: number;
 }): Promise<CrowniclesPacket> {
@@ -783,8 +785,8 @@ async function getGardenWateringResult(home: Home, homeLevel: HomeLevel, now: nu
 }
 
 async function applyGardenWateringUnderLock(
-	lockedPlayer: Player,
-	home: Home,
+	lockedPlayer: Locked<Player>,
+	home: Locked<Home>,
 	wateringResult: GardenWateringResult,
 	now: number
 ): Promise<void> {

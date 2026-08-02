@@ -21,7 +21,9 @@ import {
 } from "../../../../Lib/src/packets/commands/CommandReportPacket";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
-import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	Locked, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { UniqueConstraintError } from "sequelize";
 import { crowniclesInstance } from "../../app";
@@ -54,7 +56,7 @@ function pushIfNotNull(response: CrowniclesPacket[], packet: CrowniclesPacket | 
  * with the appropriate packet without dealing with the rollback details.
  */
 async function persistApartmentBuyUnderLock(params: {
-	lockedPlayer: Player;
+	lockedPlayer: Locked<Player>;
 	city: City;
 	price: number;
 	response: CrowniclesPacket[];
@@ -116,7 +118,7 @@ function pushApartmentAlreadyOwned(response: CrowniclesPacket[], city: City): vo
  * related missions and the purchase log.
  */
 async function runApartmentBuyUnderLock(params: {
-	lockedPlayer: Player;
+	lockedPlayer: Locked<Player>;
 	city: City;
 	price: number;
 	response: CrowniclesPacket[];
