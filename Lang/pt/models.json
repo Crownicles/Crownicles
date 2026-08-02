@@ -1208,7 +1208,7 @@
       "atParticle": "para o"
     },
     "19": {
-      "description": "Uma praia criada pelos ventos fortes do Vale dos Reis. A duna protege as planícies do Contre Bois do calor e traz a água do rio Vacarme.",
+      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
       "name": "A Duna",
       "particle": "para",
       "atParticle": "à"
@@ -1224,12 +1224,6 @@
       "name": "Caminho rural",
       "particle": "para o",
       "atParticle": "para o"
-    },
-    "20": {
-      "description": "Uma vasta e pacífica planície agrícola.",
-      "name": "Planícies do Contre Bois",
-      "particle": "para o",
-      "atParticle": "em"
     },
     "21": {
       "description": "Uma estrada muito utilizada pelos habitantes da aldeia. Muitos pequenos vendedores ambulantes instalam-se aqui durante um dia, criando um enorme mercado.",
