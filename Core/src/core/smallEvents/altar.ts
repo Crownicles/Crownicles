@@ -42,6 +42,7 @@ import {
 	daysToMilliseconds, hoursToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 type AltarMissionId = "contributeToBlessing";
 
@@ -201,7 +202,7 @@ function getEndCallback(player: Player, context: PacketContext): EndCallback {
 }
 
 async function runAltarEndCallbackUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	context: PacketContext,
 	collector: ReactionCollectorInstance,
 	response: CrowniclesPacket[]

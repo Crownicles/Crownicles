@@ -21,7 +21,7 @@ import {
 } from "../database/game/models/Guild";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -286,7 +286,7 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
  * to dodge the latent clobber-by-Object.assign on the local `player`.
  */
 async function persistPveBossPostFightUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	initialFightPointsLost: number,
 	isWinOrDraw: boolean,
 	playerActiveObjects: PlayerActiveObjects

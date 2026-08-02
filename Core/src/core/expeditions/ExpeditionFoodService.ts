@@ -7,6 +7,7 @@ import {
 	PetConstants, PetFood
 } from "../../../../Lib/src/constants/PetConstants";
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Re-export PetFood as FoodType for backward compatibility
@@ -437,7 +438,7 @@ export function calculateGuildFoodConsumptionPlan(
 /**
  * Apply a food plan to the guild row locked by the caller.
  */
-export async function applyFoodConsumptionPlanUnderLock(guild: Guild, plan: FoodConsumptionPlan): Promise<void> {
+export async function applyFoodConsumptionPlanUnderLock(guild: Locked<Guild>, plan: FoodConsumptionPlan): Promise<void> {
 	if (plan.consumption.length === 0) {
 		return;
 	}

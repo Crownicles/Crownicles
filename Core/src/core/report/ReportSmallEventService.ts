@@ -14,6 +14,7 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../app";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
  * Small event eligibility result
@@ -151,7 +152,7 @@ async function loadAndExecuteSmallEvent(
  * (handled per file in PR-H2).
  */
 async function runSmallEventUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	event: string,
 	smallEvent: SmallEventFuncs,
 	response: CrowniclesPacket[],

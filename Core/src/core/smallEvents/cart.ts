@@ -22,6 +22,7 @@ import { BlockingUtils } from "../utils/BlockingUtils";
 import { crowniclesInstance } from "../../app";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 type CartResult = {
 	destination: MapLink;
@@ -40,7 +41,7 @@ function getEndCallback(player: Player, destination: CartResult): EndCallback {
 }
 
 async function runCartEndCallbackUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	destination: CartResult,
 	collector: ReactionCollectorInstance,
 	response: CrowniclesPacket[]

@@ -42,7 +42,7 @@ import {
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 
 type GuildFeedReason = "OK" | "petChanged" | "storageEmpty";
@@ -162,8 +162,8 @@ function runFeedEndCallback(
  */
 async function runCandyFeedUnderLock(
 	response: CrowniclesPacket[],
-	player: Player,
-	authorPet: PetEntity
+	player: Locked<Player>,
+	authorPet: Locked<PetEntity>
 ): Promise<FeedResolution> {
 	try {
 		await PlayerMissionsInfos.getOfPlayer(player.id);
@@ -339,9 +339,9 @@ async function applyLockedGuildFeed(
 async function runGuildFeedUnderLock(
 	args: {
 		response: CrowniclesPacket[];
-		player: Player;
-		authorPet: PetEntity;
-		guild: Guild;
+		player: Locked<Player>;
+		authorPet: Locked<PetEntity>;
+		guild: Locked<Guild>;
 		foodReaction: ReactionCollectorPetFeedWithGuildFoodReaction;
 	}
 ): Promise<FeedResolution> {
