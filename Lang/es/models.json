@@ -1208,7 +1208,7 @@
       "atParticle": "a la"
     },
     "19": {
-      "description": "Una playa creada por los fuertes vientos del Valle de los Reyes. La Duna protege las Plaines du Contre Bois del calor y trae agua del río Vacarme.",
+      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
       "name": "La Duna",
       "particle": "a",
       "atParticle": "à"
@@ -1224,12 +1224,6 @@
       "name": "Camino rural",
       "particle": "a la",
       "atParticle": "a la"
-    },
-    "20": {
-      "description": "Una vasta y pacífica llanura agrícola.",
-      "name": "Plaines du Contre Bois",
-      "particle": "a la",
-      "atParticle": "en"
     },
     "21": {
       "description": "Una carretera muy utilizada por los aldeanos. Muchos pequeños vendedores ambulantes se instalan aquí durante un día, creando un enorme mercado.",
