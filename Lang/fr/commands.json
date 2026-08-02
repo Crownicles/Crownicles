@@ -314,7 +314,6 @@
       "17": "les Oasis Cachées du Village Coco",
       "18": "les Rapides Tumultueux de la Rivière Vacarme",
       "19": "les Sables Mouvants de La Dune",
-      "20": "les Champs Paisibles des Plaines du Contre Bois",
       "21": "les Échoppes Abandonnées de la Route des Merveilles",
       "22": "les Galeries Obscures du Bois Hurlant",
       "23": "les Ruelles Secrètes de Claire de Ville",
@@ -2700,6 +2699,7 @@
     "noMoney": "Vous n'avez pas assez d'argent pour effectuer cet achat...",
     "notHungry": "Il semblerait que **{{pet}}** n'ait pas faim...",
     "guildStorageEmpty": "L'entrepôt de nourriture de votre guilde est vide. Ravitaillez votre guilde en ville avec {command:report}.",
+    "situationChanged": "Votre familier a changé pendant que vous le nourrissiez. Veuillez réessayer.",
     "cancelled": "Nourrissage annulé !",
     "resultTitle": "{{pseudo}}, nourrissage effectué !",
     "result": {
