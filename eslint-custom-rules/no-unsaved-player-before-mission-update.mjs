@@ -191,6 +191,29 @@ function scanMethodBody(body) {
 	};
 }
 
+function getDirectUnsavedMutators(scans) {
+	return new Set([...scans]
+		.filter(([, scan]) => scan.mutatesThis)
+		.filter(([, scan]) => !scan.clearsChanges)
+		.map(([name]) => name));
+}
+
+function getIndirectUnsavedMutators(scans, mutators) {
+	return [...scans]
+		.filter(([, scan]) => !scan.clearsChanges)
+		.filter(([, scan]) => [...scan.callees].some(callee => mutators.has(callee)))
+		.map(([name]) => name)
+		.filter(name => !mutators.has(name));
+}
+
+function addIndirectUnsavedMutators(scans, mutators) {
+	let indirectMutators = getIndirectUnsavedMutators(scans, mutators);
+	while (indirectMutators.length > 0) {
+		indirectMutators.forEach(name => mutators.add(name));
+		indirectMutators = getIndirectUnsavedMutators(scans, mutators);
+	}
+}
+
 /**
  * Names of the methods that leave `this` dirty, either directly or by calling
  * another such method.
@@ -199,20 +222,8 @@ function getUnsavedMutators(classBody) {
 	const scans = new Map(classBody.body
 		.filter(member => member.type === "MethodDefinition" && member.value.body)
 		.map(member => [member.key.name, scanMethodBody(member.value.body)]));
-	const mutators = new Set([...scans]
-		.filter(([, scan]) => scan.mutatesThis && !scan.clearsChanges)
-		.map(([name]) => name));
-
-	let grew = true;
-	while (grew) {
-		grew = false;
-		for (const [name, scan] of scans) {
-			if (!mutators.has(name) && !scan.clearsChanges && [...scan.callees].some(callee => mutators.has(callee))) {
-				mutators.add(name);
-				grew = true;
-			}
-		}
-	}
+	const mutators = getDirectUnsavedMutators(scans);
+	addIndirectUnsavedMutators(scans, mutators);
 	return mutators;
 }
 
