@@ -12,7 +12,10 @@ describe("Player.isInactive", () => {
 		Object.assign(player, {
 			insideCity,
 			lastActivityAt,
-			startTravelDate
+			startTravelDate,
+
+			// The bare prototype has no Sequelize attribute setters, so the change tracking a real instance owns is provided here.
+			_changed: new Set<string>()
 		});
 		return player;
 	}
@@ -50,6 +53,9 @@ describe("Player.isInactive", () => {
 		const player = createPlayer(new Date(0), true);
 		Object.assign(player, { id: 42 });
 
+		// A real instance would flag the mirrored field, which is what the assertion below must see cleared.
+		player.changed("lastActivityAt", true);
+
 		await player.markActive();
 
 		expect(update).toHaveBeenCalledWith({ lastActivityAt: expect.anything() }, {
@@ -57,5 +63,8 @@ describe("Player.isInactive", () => {
 			where: { id: 42 }
 		});
 		expect(player.lastActivityAt).toEqual(new Date(now));
+
+		// A dirty instance is rejected by MissionsController.update, breaking every in-city command (#4621).
+		expect(player.changed()).toBe(false);
 	});
 });

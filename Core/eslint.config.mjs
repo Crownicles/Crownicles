@@ -34,14 +34,15 @@ export default defineConfig([
 			"crownicles/no-this-in-packet-handler": "error",
 			"crownicles/no-response-push-through-return": "error",
 
-			// Synchronous `Player` methods that mutate `this` without persisting, so a
-			// pending call to one of them before a mission update is a lost write. The
-			// rule reports on the model itself when this list falls behind.
+			// `Player` methods that leave the instance dirty, so a pending call to one of
+			// them before a mission update is a lost write (or an `UnsavedPlayerChangesError`).
+			// The rule reports on the model itself when this list falls behind.
 			"crownicles/no-unsaved-player-before-mission-update": ["error", {
 				playerModelFile: "src/core/database/game/models/Player.ts",
 				playerMutators: [
 					"addEnergy",
 					"addWeeklyScore",
+					"changeClass",
 					"eatMeal",
 					"setEnergyLost",
 					"setHealthNoCheck",

@@ -11,12 +11,19 @@
  * first, or — preferably — be routed through `applyOnLockedPlayer` so it happens
  * inside the same row lock as the mission progression.
  *
- * History: #4207 (mutation lost across the mission re-fetch), #4554.
+ * History: #4207 (mutation lost across the mission re-fetch), #4554, #4621.
  *
- * The `playerMutators` option lists the synchronous `Player` methods that mutate the
- * instance without persisting it. It cannot be derived here (the offending call sites
- * live in other files), so the rule also lints the model itself and reports any such
- * method missing from the list: the option can never silently go stale.
+ * The `playerMutators` option lists the `Player` methods that leave the instance
+ * dirty. It cannot be derived here (the offending call sites live in other files),
+ * so the rule also lints the model itself and reports any such method missing from
+ * the list: the option can never silently go stale.
+ *
+ * A method counts as dirtying unless it also clears the change tracking — by
+ * persisting the instance (`this.save()`, `this.update()`), by reloading it, or by
+ * explicitly resetting the flag (`this.changed("field", false)`, used when the value
+ * was already written out of band through a bulk update). `async` methods are
+ * included: `markActive` was async, wrote its field through `Player.update(...)` and
+ * still left the instance dirty, which crashed every in-city command (#4621).
  *
  * @example
  * // ✗ BAD
@@ -41,6 +48,13 @@ const FUNCTION_TYPES = new Set([
 	"ArrowFunctionExpression",
 	"FunctionDeclaration",
 	"FunctionExpression"
+]);
+
+// `this.<name>()` calls that leave the instance with no pending change of its own.
+const CHANGE_CLEARING_METHODS = new Set([
+	"save",
+	"update",
+	"reload"
 ]);
 
 // Expression each kind of write node targets, so a write can be recognized without branching on its type.
@@ -147,40 +161,53 @@ function getCalledOwnMethodName(node) {
 		: undefined;
 }
 
+/**
+ * `this.changed("field", false)`: the value is already persisted, the instance is
+ * deliberately kept clean.
+ */
+function isChangeFlagReset(node, calleeName) {
+	return calleeName === "changed"
+		&& node.arguments.length === 2
+		&& node.arguments[1].type === "Literal"
+		&& node.arguments[1].value === false;
+}
+
 function scanMethodBody(body) {
 	const callees = new Set();
 	let mutatesThis = false;
+	let clearsChanges = false;
 	const inspect = node => {
 		mutatesThis = mutatesThis || isThisMutation(node);
 		const calleeName = getCalledOwnMethodName(node);
 		if (calleeName) {
 			callees.add(calleeName);
+			clearsChanges = clearsChanges || CHANGE_CLEARING_METHODS.has(calleeName) || isChangeFlagReset(node, calleeName);
 		}
 		getChildNodes(node).forEach(inspect);
 	};
 	inspect(body);
 	return {
-		mutatesThis, callees
+		mutatesThis, clearsChanges, callees
 	};
 }
 
 /**
- * Names of the non-async methods that mutate `this`, either directly or by calling
+ * Names of the methods that leave `this` dirty, either directly or by calling
  * another such method.
  */
-function getSynchronousMutators(classBody) {
+function getUnsavedMutators(classBody) {
 	const scans = new Map(classBody.body
-		.filter(member => member.type === "MethodDefinition" && !member.value.async && member.value.body)
+		.filter(member => member.type === "MethodDefinition" && member.value.body)
 		.map(member => [member.key.name, scanMethodBody(member.value.body)]));
 	const mutators = new Set([...scans]
-		.filter(([, scan]) => scan.mutatesThis)
+		.filter(([, scan]) => scan.mutatesThis && !scan.clearsChanges)
 		.map(([name]) => name));
 
 	let grew = true;
 	while (grew) {
 		grew = false;
 		for (const [name, scan] of scans) {
-			if (!mutators.has(name) && [...scan.callees].some(callee => mutators.has(callee))) {
+			if (!mutators.has(name) && !scan.clearsChanges && [...scan.callees].some(callee => mutators.has(callee))) {
 				mutators.add(name);
 				grew = true;
 			}
@@ -211,7 +238,7 @@ export default {
 		],
 		messages: {
 			unsavedPlayer: "`{{player}}` was mutated by `{{mutation}}` without being saved: the mission update re-reads the locked row and would discard it. Move the mutation into `applyOnLockedPlayer`.",
-			unlistedMutator: "`{{method}}` mutates the player synchronously but is missing from the `playerMutators` option of `crownicles/no-unsaved-player-before-mission-update`, so calling it before a mission update would silently lose the change. Add it to the rule options."
+			unlistedMutator: "`{{method}}` leaves the player instance dirty but is missing from the `playerMutators` option of `crownicles/no-unsaved-player-before-mission-update`, so calling it before a mission update would silently lose the change — or throw `UnsavedPlayerChangesError`. Add it to the rule options, or persist the change (`this.save()`) / clear the flag (`this.changed(\"field\", false)`) inside the method."
 		}
 	},
 
@@ -227,7 +254,7 @@ export default {
 				if (!isPlayerModel) {
 					return;
 				}
-				for (const name of getSynchronousMutators(node)) {
+				for (const name of getUnsavedMutators(node)) {
 					if (!playerMutators.has(name)) {
 						context.report({
 							node: node.body.find(member => member.key?.name === name).key,
