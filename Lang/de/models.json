@@ -1208,7 +1208,7 @@
       "atParticle": "an die"
     },
     "19": {
-      "description": "Ein Bereich, der durch die starken Winde des Tal der Könige geschaffen wurde. La Dune schützt die Plaines des Bois der Hitze und bring das Wasser aus dem Fluss Vacwaffe.",
+      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
       "name": "La Dune",
       "particle": "in",
       "atParticle": "à"
@@ -1224,12 +1224,6 @@
       "name": "Feldweg",
       "particle": "in Richtung",
       "atParticle": "an die"
-    },
-    "20": {
-      "description": "Ein großes, friedliches und landwirtschaftliches Pläzierchen.",
-      "name": "Plaines des Bois-Kontre",
-      "particle": "in die",
-      "atParticle": "an"
     },
     "21": {
       "description": "Eine Straße, die von den Dorfbewohnern sehr geliehen wird. Viele der ambulanten kleinen Verkäufer installieren die Tageszeit, um einen riesigen Markt zu schaffen.",
