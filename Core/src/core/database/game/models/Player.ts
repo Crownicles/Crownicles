@@ -642,6 +642,9 @@ export class Player extends Model {
 			where: { id: this.id }
 		});
 		this.lastActivityAt = lastActivityAt;
+
+		// The value above is already persisted by the bulk update: clearing the dirty flag keeps the instance eligible for mission updates
+		this.changed("lastActivityAt", false);
 	}
 
 	/**
