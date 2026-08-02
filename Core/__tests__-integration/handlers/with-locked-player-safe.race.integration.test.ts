@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, runAllOrThrow, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, pinInertDailyMission, runAllOrThrow, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 
@@ -47,6 +47,7 @@ describe("withLockedPlayerSafe race", () => {
 		finally {
 			await env.crownicles.gameDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
 		}
+		await pinInertDailyMission(env);
 	});
 
 	it(`serialises ${N_CONCURRENT} concurrent body executions — no lost writes`, async () => {
