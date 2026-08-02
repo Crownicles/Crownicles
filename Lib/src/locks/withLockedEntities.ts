@@ -41,12 +41,30 @@ export class LockedRowNotFoundError extends Error {
 }
 
 /**
+ * A model instance that was re-fetched inside a {@link withLockedEntities}
+ * critical section, and whose row is therefore held by a `SELECT … FOR UPDATE`
+ * for as long as that section runs.
+ *
+ * This is a **transparent alias**: it documents the provenance of an instance
+ * in a signature, it does not enforce anything. A brand would, but it would
+ * also require casts to build the value and would still not express the part
+ * that actually matters — a lock is valid for a *duration* (the transaction),
+ * not for the lifetime of the object. Enforcement stays with the
+ * `crownicles/no-unguarded-save` ESLint rule and the `*UnderLock` naming
+ * convention, which both see the call context.
+ *
+ * Never store a `Locked<M>` beyond the critical section it came from: once the
+ * transaction commits, the instance is an ordinary, unprotected model again.
+ */
+export type Locked<M extends Model> = M;
+
+/**
  * Maps a tuple of `LockKey` to the matching tuple of model instances.
  * `withLockedEntities` returns instances in the caller's *original*
  * order, regardless of the canonical lock-acquisition order.
  */
 export type ResolveEntities<K extends readonly LockKey<Model>[]> = {
-	[I in keyof K]: K[I] extends LockKey<infer M> ? M : never;
+	[I in keyof K]: K[I] extends LockKey<infer M> ? Locked<M> : never;
 };
 
 const lockCacheKey = (key: LockKey<Model>): string => `${key.model.tableName}#${key.id}`;

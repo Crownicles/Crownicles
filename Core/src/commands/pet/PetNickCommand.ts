@@ -14,7 +14,7 @@ import {
 import Player from "../../core/database/game/models/Player";
 import { crowniclesInstance } from "../../app";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
@@ -23,7 +23,7 @@ import {
  */
 async function applyLockedRename(
 	locked: {
-		player: Player; pet: PetEntity;
+		player: Locked<Player>; pet: Locked<PetEntity>;
 	},
 	expectedPetId: number,
 	nickname: string
