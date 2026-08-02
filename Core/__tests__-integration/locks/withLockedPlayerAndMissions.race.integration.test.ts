@@ -3,7 +3,7 @@ import {
 } from "vitest";
 import type { ModelStatic } from "sequelize";
 import {
-	CoreTestEnvironment, loadProductionModule, runAllOrThrow, setupCoreForTests
+	CoreTestEnvironment, loadProductionModule, pinInertDailyMission, runAllOrThrow, setupCoreForTests
 } from "../_coreSetup";
 import type { Player as PlayerType } from "../../src/core/database/game/models/Player";
 import type { PlayerMissionsInfo as PlayerMissionsInfoType } from "../../src/core/database/game/models/PlayerMissionsInfo";
@@ -43,6 +43,7 @@ describe("withLockedPlayerAndMissions race", () => {
 		finally {
 			await env.crownicles.gameDatabase.sequelize.query("SET FOREIGN_KEY_CHECKS = 1");
 		}
+		await pinInertDailyMission(env);
 	});
 
 	it("prewarms a missing PlayerMissionsInfo row before locking", async () => {
