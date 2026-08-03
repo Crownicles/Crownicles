@@ -205,9 +205,9 @@
       "You speak with a famous figure among the princess's competing adventurers. It's {{playerDisplay}}, who's in the top 10!"
     ],
     "top50": [
-      "You meet someone whose name sounds familiar... Indeed, {{playerDisplay}} made a place in the top 50!",
+      "You meet someone whose name sounds familiar... Indeed, {{playerDisplay}} made it into the top 50!",
       "As you kick a pebble, you realize that it hits the shoe of a passer-by, but it's not just anyone, it's {{playerDisplay}}, you've seen him on the underground tournament lists! You chat with him for a while, then continue on your way.",
-      "\"With great power comes great responsibility\", says {{playerDisplay}}, a top-50 adventurer you meet on your journey."
+      "{{playerDisplay}}, a top-50 adventurer you meet on your journey, tells you that with great power comes great responsibility."
     ],
     "top100": [
       "Perseverance leads to success - that's what {{playerDisplay}}, one of the top 100 players, tells you! You then continue on your way to your destination.",
@@ -215,12 +215,12 @@
       "As you work towards your goal, you meet {{playerDisplay}}, a rising star on Crownicles. Indeed, he's in the top 100!"
     ],
     "powerful_guild": [
-      "{{playerDisplay}}, who you meet by chance on your way, is a member of a powerful guild! This is what you conclude when you see his sparkling badge.",
-      "You see a crowd in the distance. You hurry to check it out, and you hear: \"Make way for {{playerDisplay}}\"! Indeed, he's in a rather powerful guild!",
+      "{{playerDisplay}}, whom you meet by chance on your way, is a member of a powerful guild! This is what you conclude when you see their sparkling badge.",
+      "You see a crowd in the distance. You hurry to check it out, and you hear someone shout: Make way for {{playerDisplay}}! Indeed, they are in a rather powerful guild!",
       "Rumor has it that a member of a powerful guild is making his way along the same path as yours. Indeed, you can see {{playerDisplay}} passing in the distance!"
     ],
     "beginner": [
-      "There's a beginning to everything! You meet {{playerDisplay}} as he begins his adventure dedicated to the princess.",
+      "There's a beginning to everything! You meet {{playerDisplay}} as they begin their adventure dedicated to the princess.",
       "A passer-by walks alongside you, and you quickly recognize them: it's {{playerDisplay}}. A newcomer, but a nice, friendly one!",
       "You take a 5-minute break to clear your head. To do so, you train {{playerDisplay}}, who has just started the game."
     ],
@@ -230,13 +230,13 @@
       "{{playerDisplay}} is one of the best players in the game! He is currently level **{{level, number}}**. You're on your way after this encounter."
     ],
     "same_class": [
-      "On your way, you can't fail to recognize {{playerDisplay}}. He's a **{{class}}** just like you!",
+      "On your way, you can't fail to recognize {{playerDisplay}}'s outfit. He's a **{{class}}** just like you!",
       "You notice {{playerDisplay}}, and quickly observe his familiar attire and mannerisms. He's a **{{class}}**, just like you! You then continue on your way.",
       "You say hello to one of your **{{class}}** colleagues, {{playerDisplay}}, who is passing by. No time to stop, you continue on your way."
     ],
     "same_guild": [
       "You come across a very familiar face on your way... Indeed, {{playerDisplay}} is a member of your guild!",
-      "You approach someone, his familiar face reminds you of things... Yes, it's {{playerDisplay}} one of your guild members!",
+      "You approach someone, their familiar face reminds you of things... But yes, it's {{playerDisplay}}, one of your guild members!",
       "You meet {{playerDisplay}} from your guild! You perform the guild's secret handshake and go your separate ways."
     ],
     "staff_member": [
@@ -295,7 +295,7 @@
       "You ignore it, or at least you force yourself to. You leave and hope your conscience won't bother you."
     ],
     "pet": [
-      "{{playerDisplay}} passes by you with his pet **{{petEmote}}** **{{petName}}**. You pet this brave beast and continue on your way in a good mood!",
+      "{{playerDisplay}} passes by you with their pet **{{petEmote}}** **{{petName}}**. You pet this brave beast and continue on your way in a good mood!",
       "{{playerDisplay}} passes you by and shows you his pet **{{petEmote}}** **{{petName}}**. You pet him and leave, have a nice trip!",
       "{{playerDisplay}} crosses your path with **{{petEmote}}** **{{petName}}** on his leash. You look at him in amazement and say to yourself that you'd love to have this animal too!"
     ],
@@ -326,13 +326,13 @@
     ],
     "weapon": [
       "You meet {{playerDisplay}}, who shows you his \"**{{weapon}}**\" weapon.",
-      "A passer-by comes to show off next to you, it's {{playerDisplay}} and he shows you his \"**{{weapon}}**\" weapon!",
+      "A passer-by comes to show off next to you, it's {{playerDisplay}} and he shows you his \"**{{weapon}}**\"!",
       "Impressive! {{playerDisplay}} brandishes his magnificent \"{{weapon}}\" weapon at you. You resume your astonished journey."
     ],
     "armor": [
       "You meet {{playerDisplay}}, who shows you his magnificent \"**{{armor}}**\" armor.",
       "A guard approaches you: it's {{playerDisplay}}, he's come to show you his \"**{{armor}}**\" armor!",
-      "{{playerDisplay}} challenges you to test his protective \"{{armor}}\" armor. Once you've tested its effectiveness, you're on your way."
+      "{{playerDisplay}} challenges you to test his **\"{{armor}}\"** armor, which serves as his protection. After testing its effectiveness, you continue on your way."
     ],
     "potion": [
       "You meet {{playerDisplay}} who shows you his magnificent \"**{{potion}}**\" potion.",
@@ -341,7 +341,7 @@
     ],
     "object": [
       "You meet {{playerDisplay}}, who shows you his magnificent \"**{{object}}**\" item.",
-      "Talking with {{playerDisplay}}, he shows you his \"**{{object}}**\" item!",
+      "Talking with {{playerDisplay}}, he shows you his \"**{{object}}**\"!",
       "{{playerDisplay}}, a player walking along the same road as you, pulls out an item from his collection. He proudly shows you his \"**{{object}}**\"."
     ],
     "oracle_patron": [
@@ -451,7 +451,7 @@
         "As you race to your destination, {{playerDisplay}} asks you to tighten the bandages on his head. You do so, and are surprised that anyone could be so badly hurt."
       ],
       "injured": [
-        "You stumble on {{playerDisplay}} who is unconscious on the floor. You give him small taps to wake him up, without success.",
+        "You stumble over {{playerDisplay}} who is unconscious on the floor. You give them small taps to wake them up, without success.",
         "It wasn't a dead rat on the floor, it was just {{playerDisplay}}. You ask him if he's all right. He doesn't answer, so you continue on your way.",
         "A person is unconscious in the middle of the road. It's {{playerDisplay}}. You do what you can to bring him back to consciousness, in vain. You put him down on the side of the road to avoid further injury."
       ],
@@ -522,10 +522,10 @@
     "stories": [
       "**{{guild}}**'s reputation seems to precede you. By learning that you are part of the guild, adventurers who have been following you for a few kilometers give you their greatest respect.",
       "After a few skirmishes from which you emerge victorious, you apply the **{{guild}}** guild's mark on your opponents' remains. All who pass by here will recognize it.",
-      "Your good actions in the area have helped a large part of the population. When they ask you how they could thank you, you ask them to remember **{{guild}}**'s name.",
+      "Your good deeds in the area have won over a large part of the population. When they ask you how they could thank you, you ask them to remember the name of **{{guild}}**.",
       "Congratulations! Over time, your guild, **{{guild}}**, becomes known throughout the whole kingdom.",
       "**{{guild}}** is becoming more and more popular as time goes by! We hope you continue to do so, and that's why we're offering you this xp bonus!",
-      "As you enter an inn, the tenant recognizes the emblem on your shield, the symbol of the **{{guild}}** guild. He decides to offer a general round of drinks in your honor, to great effect with the other customers."
+      "As you enter an inn, the innkeeper recognizes the emblem on your shield, the symbol of the **{{guild}}**. He decides to offer a round of drinks in your honor, to great effect with the other customers."
     ],
     "end": " Your guild wins **{{xp, number}}** {emote:unitValues.xp}."
   },
@@ -544,7 +544,7 @@
     "stories": [
       "No incidents or notable events to report.",
       "Nothing special has happened since the previous report.",
-      "You've had no trouble making progress recently, and you're continuing to make good progress.",
+      "You've had no trouble making progress recently, and you continue to move forward steadily.",
       "Nothing to report, you keep moving forward.",
       "No obstacles in sight, nothing seems to be against you at the moment. You keep moving forward.",
       "The way is clear, there's no reason to stop, you keep moving forward.",
@@ -620,7 +620,7 @@
       "romain22222": "a great thinker, seeking as much to resolve situations optimally as to create them. He talks too much, far too much, with the minstrels and his worshippers, and avoids the tents in the forests",
       "Asemerald": "a luck-driven adventurer known for his unimaginable firepower",
       "Izuku": "a rich inventor who created a love potion for the beautiful princess, only to have it stolen by a merchant",
-      "Draft": "an ancient god who created the world in which they all live. Amazed by the his people's abilities, he wanders among them as he works to improve their experience",
+      "Draft": "an ancient god who created the world in which they all live. Amazed by his people's abilities, he wanders among them as he works to improve their experience",
       "Royal": "a seasoned entrepreneur who favors money over morality. Fond of tournaments, he won't hesitate to fight for the princess",
       "Max": "a mad inventor who loves to travel. He is the only person ever to have traveled the land of dragons. Legend has it that almost all his projects have brought mankind to the brink of extinction",
       "Eagle": "a dragon breeder, who led the kingdom's first coups",
@@ -628,7 +628,7 @@
       "Kyusaki": "the first High Priest of Kyutism, he leads an incognito path of meditation among the adventurers of the world, often giving advice to those who ask for it",
       "Greninja_san": "a batrachian with an extraordinary intellect, he used his extensive knowledge to integrate into human life and learn the precepts of their magic",
       "nwcubeok": "a famous magician who travels the country promoting his magical talents. He hopes the princess will appreciate them",
-      "SuperBananeNinja": "a discreet mage who roams the lands, usually solitary, often salutary, with his motley ways and disconcerting tricks, but always right in his boots",
+      "SuperBananeNinja": "a discreet mage who roams the lands, usually solitary, often self-sufficient, with his motley ways and disconcerting tricks, but always steadfast",
       "Hitori": "a completely incoherent artist with an uncommon dynamism. She asks anyone who will listen if they know where the gods are hiding, and is infamous for her exceptional bad luck, which has led to the destruction of numerous buildings",
       "Pietagorh": "the director of an association that helps young adventurers improve their skills. Rumor has it that he can determine the limits of this world",
       "Doctor": "a great adventurer who roams the kingdom in search of a worthy adversary. If you come across him, you can try to fight him, but few have managed to survive his first blow",
@@ -636,7 +636,7 @@
       "symsym": "a young adventurer, curious and eager to meet new people. Some say he founded a tavern at the end of the swampy road",
       "Pagotortoise": "a kaijū who, despite his appearance, explores the land in search of people to help, and means no harm. He's ready to guide you if the need arises, so take the opportunity to ask him for some advice",
       "Voltou": "The greatest thief this world has ever known, his fortune is said to equal that of the king, and he hid it in every corner of the kingdom. If you come across him, be sure to check your pockets.",
-      "Aiko": "a wild potato making mincemeat of all her enemies, aiming for the highest stars in the universe",
+      "Aiko": "a wild potato making mashed potatoes of all her enemies, aiming for the highest stars in this universe",
       "Ntalcme": "A tireless traveler, driven by an ideal greater than himself, tirelessly traversing the lands of this kingdom, in search of what seems to be missing from his soul. No one knows what he hopes to find at the end of his journey, yet he marches towards an elusive dream.",
       "BananePlantain": "a simple banana who has matured through the various encounters and adventures she has had in this world. A lover of challenges and battles, and always ready to help, she quietly leads her little troop.",
       "aureochocob0n": "A wealthy merchant who, believing a renowned alchemist, immersed himself in a bath of molten gold in order to emerge golden. This questionable action did not leave him unscathed: only his newly-gilded bones were spared.",
