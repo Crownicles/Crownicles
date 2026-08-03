@@ -2288,18 +2288,18 @@
   "ordinals": {
     "get_feminine_ordinal_one": "1st",
     "get_feminine_ordinal_other": "{{count}}th",
-    "get_ordinal_one": "{{count}}st",
+    "get_ordinal_one": "1st",
     "get_ordinal_other": "{{count}}th"
   },
   "guilds": {
-    "levelUpTitle": "{emote:unitValues.xp} The {{guild}} guild goes up a level!",
+    "levelUpTitle": "{emote:unitValues.xp} The {{guild}} guild levels up!",
     "levelUpDesc": "The guild is now level **{{level, number}}**!"
   },
   "players": {
     "koTitle": "{{pseudo}}, you've been knocked out!",
     "koDesc": "{emote:effects.dead} Use the {command:respawn} command to start playing again.",
     "koDmTitle": "Hello Fighter!",
-    "koDmDesc": "It seems that you've been knocked out... {emote:effects.dead}\nThanks to our advanced technologies, we were able to alter the events as such as to let you avoid an agonizing death! {emote:other.tada}\nUnfortunately, the operation is costly and your score has been affected by this death in consequence...\n\nTo restart playing, use {command:respawn}.",
+    "koDmDesc": "It seems that you've been knocked out... {emote:effects.dead}\nThanks to our advanced technologies, we were able to alter events to help you avoid an agonizing death! {emote:other.tada}\nUnfortunately, the operation is costly and your score has been impacted by this death...\n\nTo start playing again, use {command:respawn}.",
     "leavePVEIslandTitle": "{{pseudo}}, fainting",
     "leavePVEIslandDescStart": "{emote:effects.confounded} You feel your strength leave you, you're at your wits' end. You pass out on the floor...\n\n{emote:unitValues.lostMoney} Money lost: **{{moneyLost, number}}**",
     "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Guild points lost: **{{guildPointsLost, number}}**",
@@ -2320,8 +2320,8 @@
     }
   },
   "petReceived": {
-    "genericGiveTitle": "{{pseudo}}obtaining a pet",
-    "genericGiveNoSlot": "You get a new pet: **{{pet}}**. However, you don't have room for him.",
+    "genericGiveTitle": "{{pseudo}} obtaining a pet",
+    "genericGiveNoSlot": "You get a new pet: **{{pet}}**. However, you don't have room for it.",
     "genericGiveGuild": "You get a new pet: **{{pet}}**. Place it in the guild hut.",
     "genericGivePlayer": "You get a new pet: **{{pet}}**. You decide to take him with you."
   },
