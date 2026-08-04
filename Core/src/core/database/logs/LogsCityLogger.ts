@@ -318,7 +318,8 @@ export const CityMenuMask = {
 	HOME: 32,
 	GUILD_DOMAIN: 64,
 	GARDEN_OR_COOKING: 128,
-	ROYAL_BLACKSMITH: 256
+	ROYAL_BLACKSMITH: 256,
+	SCRAP_DEALER: 512
 } as const;
 
 export interface CityVisitLogParams {

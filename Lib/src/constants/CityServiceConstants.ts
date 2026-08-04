@@ -1,5 +1,6 @@
 export const CITY_SERVICES = {
 	BLACKSMITH: "blacksmith",
+	SCRAP_DEALER: "scrapDealer",
 	ROYAL_BLACKSMITH: "royalBlacksmith",
 	ENCHANTER: "enchanter",
 	BOSS_ARCHIVIST: "bossArchivist"

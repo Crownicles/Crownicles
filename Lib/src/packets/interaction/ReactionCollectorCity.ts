@@ -271,6 +271,16 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		playerMoney: number;
 	};
 
+	scrapDealer?: {
+		recyclableItems: {
+			slot: number;
+			category: ItemCategory;
+			itemId: number;
+			details: MainItemDetails;
+			recoveredMaterials: MaterialQuantity[];
+		}[];
+	};
+
 	/**
 	 * Royal Blacksmith data — only present at the royal castle.
 	 * Drives the special level-5-only upgrade NPC: see RoyalBlacksmithConstants.
@@ -543,6 +553,16 @@ export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionColle
 	itemCategory!: ItemCategory;
 }
 
+export class ReactionCollectorScrapDealerMenuReaction extends ReactionCollectorReaction {}
+
+export class ReactionCollectorScrapDealerRecycleReaction extends ReactionCollectorReaction {
+	slot!: number;
+
+	itemCategory!: ItemCategory;
+
+	itemId!: number;
+}
+
 /** Reaction for opening the Royal Blacksmith menu at the royal castle */
 export class ReactionCollectorRoyalBlacksmithMenuReaction extends ReactionCollectorReaction {}
 
@@ -605,6 +625,8 @@ type CityReaction =
 	| ReactionCollectorBlacksmithMenuReaction
 	| ReactionCollectorBlacksmithUpgradeReaction
 	| ReactionCollectorBlacksmithDisenchantReaction
+	| ReactionCollectorScrapDealerMenuReaction
+	| ReactionCollectorScrapDealerRecycleReaction
 	| ReactionCollectorRoyalBlacksmithMenuReaction
 	| ReactionCollectorRoyalBlacksmithUpgradeReaction
 	| ReactionCollectorGardenHarvestReaction
@@ -809,6 +831,24 @@ export class ReactionCollectorCity extends ReactionCollector {
 		];
 	}
 
+	private buildScrapDealerReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		if (!this.data.scrapDealer) {
+			return [];
+		}
+
+		return [
+			this.buildReaction(ReactionCollectorScrapDealerMenuReaction, {}),
+			...this.data.scrapDealer.recyclableItems.map(item =>
+				this.buildReaction(ReactionCollectorScrapDealerRecycleReaction, {
+					slot: item.slot,
+					itemCategory: item.category,
+					itemId: item.itemId
+				}))
+		];
+	}
+
 	private buildGuildDomainReactions(): {
 		type: string; data: ReactionCollectorReaction;
 	}[] {
@@ -888,6 +928,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildHomeManageReaction(),
 				...this.buildHomeFeatureReactions(),
 				...this.buildBlacksmithReactions(),
+				...this.buildScrapDealerReactions(),
 				...this.buildRoyalBlacksmithReactions(),
 				...this.buildGuildDomainReactions(),
 				...this.buildApartmentNotaryReactions()

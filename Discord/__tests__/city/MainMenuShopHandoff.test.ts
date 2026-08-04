@@ -168,4 +168,18 @@ describe("city services", () => {
 		expect(customIds).toContain(ReportCityMenuIds.BOSS_ARCHIVIST_MENU);
 		expect(customIds).not.toContain(ReportCityMenuIds.BLACKSMITH_MENU);
 	});
+
+	it("renders the scrap dealer entry when Core advertises the service", () => {
+		const packet = createPacket();
+		const data = packet.data.data as ReactionCollectorCityData;
+		data.availableServices = [CITY_SERVICES.SCRAP_DEALER];
+
+		const menu = getMainMenu(createMenuParams(packet));
+		const customIds = menu.containers!.flatMap(container => container.components.flatMap(component =>
+			"accessory" in component && component.accessory && "data" in component.accessory
+				? [component.accessory.data.custom_id]
+				: []));
+
+		expect(customIds).toContain(ReportCityMenuIds.SCRAP_DEALER_MENU);
+	});
 });

@@ -33,6 +33,7 @@ import {
 } from "./home";
 import { HomeMenuParams } from "./home/HomeMenuTypes";
 import { getBlacksmithMenus } from "./blacksmith/BlacksmithMenu";
+import { getScrapDealerMenus } from "./scrapDealer/ScrapDealerMenu";
 import { getRoyalBlacksmithMenus } from "./royalBlacksmith/RoyalBlacksmithMenu";
 import {
 	ReportCityButtonStyles, ReportCityMenuIds
@@ -211,6 +212,15 @@ function addBlacksmithSubMenus(menus: Map<string, CrowniclesNestedMenu>, params:
 	}
 }
 
+function addScrapDealerSubMenu(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
+	if (!cityData.scrapDealer) {
+		return;
+	}
+	for (const [key, menu] of getScrapDealerMenus(params)) {
+		menus.set(key, menu);
+	}
+}
+
 function addRoyalBlacksmithSubMenus(menus: Map<string, CrowniclesNestedMenu>, params: HomeMenuParams, cityData: ReactionCollectorCityData): void {
 	if (!cityData.royalBlacksmith) {
 		return;
@@ -266,6 +276,7 @@ function buildCitySubMenus(params: HomeMenuParams): Map<string, CrowniclesNested
 	addInnSubMenus(menus, params, cityData);
 	addEnchanterSubMenu(menus, params, cityData);
 	addBlacksmithSubMenus(menus, params, cityData);
+	addScrapDealerSubMenu(menus, params, cityData);
 	addRoyalBlacksmithSubMenus(menus, params, cityData);
 	addHomeSubMenus(menus, params, cityData);
 	addManageHomeSubMenu(menus, params, cityData);

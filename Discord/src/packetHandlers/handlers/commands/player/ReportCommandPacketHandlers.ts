@@ -10,6 +10,7 @@ import {
 	CommandReportBlacksmithMissingMaterialsRes,
 	CommandReportBlacksmithNotEnoughMoneyRes,
 	CommandReportBlacksmithUpgradeRes,
+	CommandReportScrapDealerRecycleRes,
 	CommandReportRoyalBlacksmithMissingMaterialsRes,
 	CommandReportRoyalBlacksmithMockBadgeAlreadyOwnedRes,
 	CommandReportRoyalBlacksmithMockBadgeGivenRes,
@@ -62,6 +63,7 @@ import {
 	stayInCity
 } from "../../../../commands/player/ReportCommand";
 import { sendBlacksmithReply } from "../../../../commands/player/report/blacksmith/BlacksmithHandlers";
+import { handleScrapDealerRecycle } from "../../../../commands/player/report/scrapDealer/ScrapDealerHandlers";
 import {
 	handleBuyHealAccept,
 	handleBuyHealCannotHealOccupied,
@@ -378,6 +380,11 @@ export default class ReportCommandPacketHandlers {
 			titleKey: "commands:report.city.blacksmith.disenchantTitle",
 			descriptionKey: "commands:report.city.blacksmith.disenchantSuccess"
 		});
+	}
+
+	@packetHandler(CommandReportScrapDealerRecycleRes)
+	async reportScrapDealerRecycleRes(context: PacketContext, packet: CommandReportScrapDealerRecycleRes): Promise<void> {
+		await handleScrapDealerRecycle(context, packet);
 	}
 
 	@packetHandler(CommandReportRoyalBlacksmithUpgradeRes)
