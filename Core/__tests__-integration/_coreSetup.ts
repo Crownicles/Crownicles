@@ -278,15 +278,16 @@ export async function runAllOrThrow<T>(promises: Iterable<Promise<T>>): Promise<
 }
 
 /**
- * Pins the global daily mission to a reward-less mission no purchase can
+ * Pins the global daily mission to a reward-less mission no action can
  * progress. Without this, `DailyMissions.getOrGenerate()` draws a random
- * mission on the first `MissionsController.update`, and a drawn `spendMoney`
- * mission credits its reward mid-test, so any assertion on an exact balance
- * fails at random.
+ * mission on the first `MissionsController.update`, which racing callers
+ * try to insert concurrently under the same primary key.
  */
 export async function pinInertDailyMission(env: CoreTestEnvironment): Promise<void> {
 	const DailyMission = env.crownicles.gameDatabase.sequelize.models.DailyMission;
-	await DailyMission.destroy({ truncate: true, force: true });
+	await DailyMission.destroy({
+		truncate: true, force: true
+	});
 	await DailyMission.create({
 		id: 0,
 		missionId: "travelHours",
@@ -299,4 +300,3 @@ export async function pinInertDailyMission(env: CoreTestEnvironment): Promise<vo
 		lastDate: new Date()
 	});
 }
-

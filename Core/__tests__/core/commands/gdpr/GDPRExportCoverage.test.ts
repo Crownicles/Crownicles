@@ -220,6 +220,7 @@ const EXPORTED_TABLES = {
 	"LogsInnRooms": "logs/79_inn_rooms.csv",
 	"LogsBlacksmithUpgrades": "logs/80_blacksmith_upgrades.csv",
 	"LogsBlacksmithDisenchants": "logs/81_blacksmith_disenchants.csv",
+	"LogsScrapDealerRecycles": "logs/100_scrap_dealer_recycles.csv",
 	"LogsEnchanterUses": "logs/82_enchanter_uses.csv",
 	"LogsHomePurchases": "logs/83_home_purchases.csv",
 	"LogsHomeUpgrades": "logs/84_home_upgrades.csv",
