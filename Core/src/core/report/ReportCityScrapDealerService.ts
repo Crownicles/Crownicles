@@ -91,7 +91,8 @@ export function getScrapDealerMaterials(item: MainItem, itemLevel: number): Mate
 		return [];
 	}
 
-	const materialsValue = getItemValue(item) * (ScrapDealerConstants.BASE_VALUE_MULTIPLIER + itemLevel);
+	const materialsValue = getItemValue(item)
+		* (ScrapDealerConstants.BASE_VALUE_MULTIPLIER + itemLevel * ScrapDealerConstants.VALUE_MULTIPLIER_PER_LEVEL);
 	const givenMaterials: MaterialQuantity[] = [];
 	const purchasedMaterials: {
 		rarity: MaterialRarity; quantity: number;

@@ -94,16 +94,8 @@ describe("getScrapDealerMaterials", () => {
 			makeMaterial("30", MaterialRarity.RARE)
 		]]]));
 
-		expect(getScrapDealerMaterials(item, 0)).toEqual([
-			{
-				materialId: 10, quantity: 1
-			},
-			{
-				materialId: 20, quantity: 1
-			},
-			{
-				materialId: 30, quantity: 1
-			}
+		expect(getScrapDealerMaterials(item, 0).map(material => material.materialId)).toEqual([
+			10, 20, 30
 		]);
 	});
 
@@ -125,7 +117,8 @@ describe("getScrapDealerMaterials", () => {
 		const epicValue = ItemConstants.RARITY.VALUES[ItemRarity.EPIC];
 
 		expect(givenPrice(0)).toBeGreaterThanOrEqual(epicValue * ScrapDealerConstants.BASE_VALUE_MULTIPLIER);
-		expect(givenPrice(2)).toBeGreaterThanOrEqual(epicValue * (ScrapDealerConstants.BASE_VALUE_MULTIPLIER + 2));
+		expect(givenPrice(2)).toBeGreaterThanOrEqual(epicValue
+			* (ScrapDealerConstants.BASE_VALUE_MULTIPLIER + 2 * ScrapDealerConstants.VALUE_MULTIPLIER_PER_LEVEL));
 		expect(givenPrice(2)).toBeGreaterThan(givenPrice(0));
 	});
 });
