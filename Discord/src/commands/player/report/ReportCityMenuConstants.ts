@@ -187,6 +187,9 @@ export const ReportCityButtonStyles = {
 	/** Confirm / validate a positive action */
 	CONFIRM: ButtonStyle.Success,
 
+	/** Confirm an irreversible action such as destroying an item */
+	DESTRUCTIVE: ButtonStyle.Danger,
+
 	/** Cancel a pending action (paired with CONFIRM) */
 	CANCEL: ButtonStyle.Secondary,
 

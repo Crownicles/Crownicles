@@ -9,6 +9,7 @@ import type { ModelStatic } from "sequelize";
 import {
 	CoreTestEnvironment,
 	loadProductionModule,
+	pinInertDailyMission,
 	runAllOrThrow,
 	setupCoreForTests
 } from "../_coreSetup";
@@ -16,18 +17,18 @@ import type { Player as PlayerType } from "../../src/core/database/game/models/P
 import type { InventorySlot as InventorySlotType } from "../../src/core/database/game/models/InventorySlot";
 import type { Material as MaterialType } from "../../src/core/database/game/models/Material";
 import type { ReactionCollectorCityData } from "../../../Lib/src/packets/interaction/ReactionCollectorCity";
-import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
+import { ItemCategory, ItemConstants } from "../../../Lib/src/constants/ItemConstants";
 import { CrowniclesPacket } from "../../../Lib/src/packets/CrowniclesPacket";
 import { CommandReportScrapDealerRecycleRes } from "../../../Lib/src/packets/commands/CommandReportPacket";
 
-type ScrapDealerModule = typeof import("../../src/core/report/ReportScrapDealerService");
+type ScrapDealerModule = typeof import("../../src/core/report/ReportCityScrapDealerService");
 type PlayerModule = typeof import("../../src/core/database/game/models/Player");
 type InventoryModule = typeof import("../../src/core/database/game/models/InventorySlot");
 type ReactionModule = typeof import("../../../Lib/src/packets/interaction/ReactionCollectorCity");
 
 const N_CONCURRENT = 20;
 
-	describe("scrap dealer race", () => {
+describe("scrap dealer race", () => {
 	let env: CoreTestEnvironment;
 	let Player: ModelStatic<PlayerType>;
 	let InventorySlot: ModelStatic<InventorySlotType>;
@@ -42,10 +43,11 @@ const N_CONCURRENT = 20;
 		Player = env.crownicles.gameDatabase.sequelize.models.Player as ModelStatic<PlayerType>;
 		InventorySlot = env.crownicles.gameDatabase.sequelize.models.InventorySlot as ModelStatic<InventorySlotType>;
 		Material = env.crownicles.gameDatabase.sequelize.models.Material as ModelStatic<MaterialType>;
-		scrapDealerMod = loadProductionModule<ScrapDealerModule>("core/report/ReportScrapDealerService");
+		scrapDealerMod = loadProductionModule<ScrapDealerModule>("core/report/ReportCityScrapDealerService");
 		playerMod = loadProductionModule<PlayerModule>("core/database/game/models/Player");
 		inventoryMod = loadProductionModule<InventoryModule>("core/database/game/models/InventorySlot");
 		reactionMod = loadProductionModule<ReactionModule>("../../Lib/src/packets/interaction/ReactionCollectorCity");
+		await pinInertDailyMission(env);
 	});
 
 	afterAll(async () => {
@@ -63,7 +65,7 @@ const N_CONCURRENT = 20;
 			slot: 1,
 			itemCategory: ItemCategory.WEAPON,
 			itemId: 1,
-			itemLevel: 0,
+			itemLevel: ItemConstants.MAX_UPGRADE_LEVEL,
 			itemEnchantmentId: null
 		});
 

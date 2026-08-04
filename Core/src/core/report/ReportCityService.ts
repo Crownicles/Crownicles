@@ -55,7 +55,7 @@ export {
 export type { UpgradeItemValidationResult } from "./ReportCityBlacksmithService";
 export {
 	buildScrapDealerData, handleScrapDealerRecycleReaction
-} from "./ReportScrapDealerService";
+} from "./ReportCityScrapDealerService";
 export { handleCityShopReaction } from "./ReportCityShopService";
 export { isCityShopEmpty } from "./ReportCityShopService";
 export type { CityShopReactionParams } from "./ReportCityShopService";

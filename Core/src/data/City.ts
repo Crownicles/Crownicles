@@ -41,6 +41,10 @@ export class City extends Data<string> {
 	 */
 	public readonly hasBlacksmith?: boolean;
 
+	/**
+	 * Whether this city has the scrap dealer — an NPC that destroys a reserve equipment and gives back
+	 * materials worth its sell price scaled by its upgrade level. Defaults to false.
+	 */
 	public readonly hasScrapDealer?: boolean;
 
 	/**

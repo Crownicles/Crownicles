@@ -2,6 +2,7 @@ import { LogsInnMeals } from "./models/LogsInnMeals";
 import { LogsInnRooms } from "./models/LogsInnRooms";
 import { LogsBlacksmithUpgrades } from "./models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "./models/LogsBlacksmithDisenchants";
+import { LogsScrapDealerRecycles } from "./models/LogsScrapDealerRecycles";
 import { LogsEnchanterUses } from "./models/LogsEnchanterUses";
 import { LogsHomePurchases } from "./models/LogsHomePurchases";
 import { LogsHomeUpgrades } from "./models/LogsHomeUpgrades";
@@ -118,6 +119,18 @@ export interface BlacksmithDisenchantLogParams {
 	itemCategory: number;
 	slot: number;
 	cost: number;
+}
+
+/**
+ * Parameters for logging a scrap dealer recycle
+ */
+export interface ScrapDealerRecycleLogParams {
+	keycloakId: string;
+	cityId: string;
+	itemCategory: number;
+	itemId: number;
+	itemLevel: number;
+	slot: number;
 }
 
 /**
@@ -402,6 +415,19 @@ export class LogsCityLogger {
 		keycloakId, ...fields
 	}: BlacksmithDisenchantLogParams): Promise<void> {
 		await createDatedLogEntry(keycloakId, (playerId, date) => LogsBlacksmithDisenchants.create({
+			playerId,
+			...fields,
+			date
+		}));
+	}
+
+	/**
+	 * Log when a player scraps an equipment at the city scrap dealer.
+	 */
+	async logScrapDealerRecycle({
+		keycloakId, ...fields
+	}: ScrapDealerRecycleLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsScrapDealerRecycles.create({
 			playerId,
 			...fields,
 			date

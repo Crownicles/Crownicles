@@ -27,6 +27,7 @@ import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 import { GardenAccessMode } from "../../types/GardenAccessMode";
 import { GardenConstants } from "../../constants/GardenConstants";
 import { CityService } from "../../constants/CityServiceConstants";
+import { ScrapDealerData } from "../../types/ScrapDealerData";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -271,15 +272,7 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		playerMoney: number;
 	};
 
-	scrapDealer?: {
-		recyclableItems: {
-			slot: number;
-			category: ItemCategory;
-			itemId: number;
-			details: MainItemDetails;
-			recoveredMaterials: MaterialQuantity[];
-		}[];
-	};
+	scrapDealer?: ScrapDealerData;
 
 	/**
 	 * Royal Blacksmith data — only present at the royal castle.
