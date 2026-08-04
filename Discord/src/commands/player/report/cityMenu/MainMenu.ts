@@ -131,6 +131,13 @@ const CITY_SERVICE_DEFINITIONS: Record<CityService, CityServiceDefinition> = {
 		customId: ReportCityMenuIds.BLACKSMITH_MENU,
 		buttonLabelKey: "commands:report.city.buttons.enterForge"
 	},
+	[CITY_SERVICES.SCRAP_DEALER]: {
+		emote: CrowniclesIcons.city.services.scrapDealer,
+		titleKey: "commands:report.city.scrapDealer.menuLabel",
+		descriptionKey: "commands:report.city.scrapDealer.menuDescription",
+		customId: ReportCityMenuIds.SCRAP_DEALER_MENU,
+		buttonLabelKey: "commands:report.city.buttons.meetScrapDealer"
+	},
 	[CITY_SERVICES.ROYAL_BLACKSMITH]: {
 		emote: CrowniclesIcons.city.services.royalBlacksmith,
 		titleKey: "commands:report.city.royalBlacksmith.menuLabel",
@@ -315,6 +322,7 @@ const MAIN_MENU_NAVIGATION_TARGETS = new Set<string>([
 	HomeMenuIds.HOME_MENU,
 	HomeMenuIds.MANAGE_HOME_MENU,
 	ReportCityMenuIds.BLACKSMITH_MENU,
+	ReportCityMenuIds.SCRAP_DEALER_MENU,
 	ReportCityMenuIds.ROYAL_BLACKSMITH_MENU,
 	ReportCityMenuIds.GUILD_DOMAIN_MENU,
 	ReportCityMenuIds.GUILD_FOOD_SHOP_MENU

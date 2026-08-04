@@ -41,6 +41,8 @@ export class City extends Data<string> {
 	 */
 	public readonly hasBlacksmith?: boolean;
 
+	public readonly hasScrapDealer?: boolean;
+
 	/**
 	 * Whether this city has the Royal Blacksmith — a special NPC that only
 	 * upgrades items to level 5 (see RoyalBlacksmithConstants). Defaults to false.
@@ -71,6 +73,10 @@ export class City extends Data<string> {
 	 */
 	public get blacksmithAvailable(): boolean {
 		return this.hasBlacksmith !== false;
+	}
+
+	public get scrapDealerAvailable(): boolean {
+		return this.hasScrapDealer === true;
 	}
 
 	/**

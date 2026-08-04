@@ -255,6 +255,7 @@ export const CrowniclesIcons: {
 		stay: string;
 		services: {
 			blacksmith: string;
+			scrapDealer: string;
 			royalBlacksmith: string;
 			enchanter: string;
 			bossArchivist: string;
@@ -2702,6 +2703,7 @@ export const CrowniclesIcons: {
 		stay: "👀",
 		services: {
 			blacksmith: "⚒️",
+			scrapDealer: "♻️",
 			royalBlacksmith: "⚒️",
 			enchanter: "🔮",
 			bossArchivist: "📜"

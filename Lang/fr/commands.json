@@ -838,6 +838,8 @@
         "goToApartment": "Entrer dans le logis",
         "seeNotary": "Consulter",
         "enterForge": "Entrer dans la forge",
+        "meetScrapDealer": "Rencontrer Gorim",
+        "recycle": "Recycler",
         "talkToEnchanter": "Lui parler",
         "browseShop": "Examiner l'étal",
         "sitDown": "S'attabler",
@@ -1059,6 +1061,17 @@
         "notEnoughMoney": "{emote:messages.refuse} Le forgeron secoue la tête en comptant vos pièces. Il vous manque **{{missingMoney, number}}** {emote:unitValues.money} pour payer ses services.",
         "missingMaterialsTitle": "{{pseudo}}, matériaux insuffisants !",
         "missingMaterialsDescription": "Vous n'avez pas les matériaux nécessaires pour cette amélioration au forgeron. Récupérez-en lors de vos aventures ou achetez-les directement au forgeron."
+      },
+      "scrapDealer": {
+        "menuLabel": "Rencontrer le ferrailleur",
+        "menuDescription": "Gorim le Brise-Fer transforme les armes et armures inutilisées en matériaux utiles.",
+        "title": "{{pseudo}}, vous rencontrez le ferrailleur",
+        "description": "{emote:city.services.scrapDealer} L'atelier de Gorim le Brise-Fer résonne du choc des marteaux. Les équipements de réserve peuvent être démontés afin d'en récupérer une partie des matériaux d'amélioration.",
+        "descriptionNoItems": "{emote:city.services.scrapDealer} Gorim le Brise-Fer ne trouve aucun équipement de réserve à démonter. Revenez avec une arme ou une armure inutilisée.",
+        "itemPreview": "{{itemDisplay}}\n\n{{materials}}",
+        "backToCity": "Quitter l'atelier",
+        "recycleTitle": "{{pseudo}}, recyclage réussi !",
+        "recycleSuccess": "{emote:city.services.scrapDealer} Gorim le Brise-Fer démonte l'équipement avec méthode. Les matériaux récupérés rejoignent votre réserve.\n\n{{materialLoot}}"
       },
       "royalBlacksmith": {
         "menuLabel": "Rencontrer le forgeron royal",

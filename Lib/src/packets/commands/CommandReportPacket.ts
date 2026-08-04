@@ -349,6 +349,13 @@ export class CommandReportBlacksmithDisenchantRes extends CrowniclesPacket {
 	cost!: number;
 }
 
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportScrapDealerRecycleRes extends CrowniclesPacket {
+	itemCategory!: number;
+
+	materialLoot!: MaterialQuantity[];
+}
+
 // Royal Blacksmith packets — special NPC at the royal castle that only upgrades items to level 5.
 
 /** Successful Royal Blacksmith upgrade to level 5. */
