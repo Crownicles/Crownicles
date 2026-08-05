@@ -1,6 +1,4 @@
-import {
-	ItemConstants, ItemCategory
-} from "../../../../Lib/src/constants/ItemConstants";
+import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
 import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithUtils";
 import { ScrapDealerConstants } from "../../../../Lib/src/constants/ScrapDealerConstants";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
@@ -16,8 +14,6 @@ import {
 	ReactionCollectorScrapDealerRecycleReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 import { MainItem } from "../../data/MainItem";
-import { WeaponDataController } from "../../data/Weapon";
-import { ArmorDataController } from "../../data/Armor";
 import { InventorySlot } from "../database/game/models/InventorySlot";
 import { Player } from "../database/game/models/Player";
 import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
@@ -31,15 +27,7 @@ import { getItemValue } from "../utils/ItemUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { BlessingManager } from "../blessings/BlessingManager";
 import { crowniclesInstance } from "../../app";
-
-function getScrapDealerItemData(inventorySlot: InventorySlot): MainItem | null {
-	if (!inventorySlot.isPrimaryEquipment()) {
-		return null;
-	}
-	return inventorySlot.itemCategory === ItemCategory.WEAPON
-		? WeaponDataController.instance.getById(inventorySlot.itemId) ?? null
-		: ArmorDataController.instance.getById(inventorySlot.itemId) ?? null;
-}
+import { getBlacksmithItemData } from "./ReportBlacksmithService";
 
 type ScrapDealerMaterialUnit = {
 	materialId: number;
@@ -120,9 +108,9 @@ export function getScrapDealerMaterials(item: MainItem, itemLevel: number): Mate
 	return givenMaterials;
 }
 
-/** Coins given back on top of the materials, based on the item sell price. */
+/** Coins given back on top of the materials, based on the item sell price, blessing included. */
 export function getScrapDealerMoney(item: MainItem): number {
-	return Math.round(getItemValue(item) * ScrapDealerConstants.MONEY_VALUE_RATIO);
+	return BlessingManager.getInstance().applyMoneyBlessing(Math.round(getItemValue(item) * ScrapDealerConstants.MONEY_VALUE_RATIO));
 }
 
 /** An enchanted equipment must be disenchanted at the blacksmith first, so its enchantment is never silently destroyed. */
@@ -135,7 +123,7 @@ function buildRecyclableItem(inventorySlot: InventorySlot, player: Player): Scra
 		return null;
 	}
 
-	const itemData = getScrapDealerItemData(inventorySlot);
+	const itemData = getBlacksmithItemData(inventorySlot);
 	if (!itemData) {
 		return null;
 	}
@@ -200,7 +188,7 @@ export async function handleScrapDealerRecycleReaction(
 			return;
 		}
 
-		const itemData = getScrapDealerItemData(inventorySlot);
+		const itemData = getBlacksmithItemData(inventorySlot);
 		if (!itemData) {
 			CrowniclesLogger.warn(`Player ${player.keycloakId} tried to recycle an unknown equipment.`);
 			return;
@@ -224,13 +212,14 @@ export async function handleScrapDealerRecycleReaction(
 		await lockedPlayer.addMoney({
 			response,
 			amount: moneyGained,
-			reason: NumberChangeReason.SCRAP_DEALER_RECYCLE
+			reason: NumberChangeReason.SCRAP_DEALER_RECYCLE,
+			ignoreBlessing: true
 		});
 		await lockedPlayer.save();
 
 		response.push(makePacket(CommandReportScrapDealerRecycleRes, {
 			materialLoot,
-			moneyGained: BlessingManager.getInstance().applyMoneyBlessing(moneyGained)
+			moneyGained
 		}));
 
 		const cityId = lockedPlayer.getCurrentCityId();

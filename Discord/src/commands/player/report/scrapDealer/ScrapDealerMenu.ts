@@ -59,7 +59,8 @@ function getScrapDealerItemDescription(item: ScrapDealerItem, lng: Language): st
 	return i18n.t("commands:report.city.scrapDealer.itemPreview", {
 		lng,
 		itemDisplay: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
-		materials: formatMaterialLoot(item.recoveredMaterials, lng)
+		materials: formatMaterialLoot(item.recoveredMaterials, lng),
+		money: item.recoveredMoney
 	});
 }
 
@@ -174,9 +175,8 @@ function buildScrapDealerContainer(titleKey: string, description: string, params
 	return container;
 }
 
-function getScrapDealerListMenu(params: CityMenuParams): CrowniclesNestedMenu {
+function getScrapDealerListMenu(params: CityMenuParams, recyclableItems: ScrapDealerItem[]): CrowniclesNestedMenu {
 	const lng = params.interaction.userLanguage;
-	const recyclableItems = getRecyclableItems(params);
 	const container = buildScrapDealerContainer(
 		"commands:report.city.scrapDealer.title",
 		i18n.t(
@@ -188,11 +188,11 @@ function getScrapDealerListMenu(params: CityMenuParams): CrowniclesNestedMenu {
 		params
 	);
 
-	for (let itemIndex = 0; itemIndex < recyclableItems.length; itemIndex++) {
+	for (const [itemIndex, item] of recyclableItems.entries()) {
 		container.addSeparatorComponents(new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Small));
 		addCitySection({
 			container,
-			text: getScrapDealerItemDescription(recyclableItems[itemIndex], lng),
+			text: getScrapDealerItemDescription(item, lng),
 			emoji: CrowniclesIcons.city.services.scrapDealer,
 			customId: `${ScrapDealerMenuIds.SELECT_ITEM_PREFIX}${itemIndex}`,
 			buttonLabel: i18n.t("commands:report.city.buttons.recycle", { lng }),
@@ -218,15 +218,15 @@ function getScrapDealerListMenu(params: CityMenuParams): CrowniclesNestedMenu {
 	};
 }
 
-function getScrapDealerConfirmMenu(params: CityMenuParams, itemIndex: number): CrowniclesNestedMenu {
+function getScrapDealerConfirmMenu(params: CityMenuParams, item: ScrapDealerItem): CrowniclesNestedMenu {
 	const lng = params.interaction.userLanguage;
-	const item = getRecyclableItems(params)[itemIndex];
 	const container = buildScrapDealerContainer(
 		"commands:report.city.scrapDealer.confirmTitle",
 		i18n.t("commands:report.city.scrapDealer.confirmDescription", {
 			lng,
 			itemDisplay: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
-			materials: formatMaterialLoot(item.recoveredMaterials, lng)
+			materials: formatMaterialLoot(item.recoveredMaterials, lng),
+			money: item.recoveredMoney
 		}),
 		params
 	);
@@ -255,10 +255,10 @@ function getScrapDealerConfirmMenu(params: CityMenuParams, itemIndex: number): C
 }
 
 export function getScrapDealerMenus(params: CityMenuParams): Map<string, CrowniclesNestedMenu> {
-	const menus = new Map<string, CrowniclesNestedMenu>([[ScrapDealerMenuIds.SCRAP_DEALER_MENU, getScrapDealerListMenu(params)]]);
 	const recyclableItems = getRecyclableItems(params);
-	for (let itemIndex = 0; itemIndex < recyclableItems.length; itemIndex++) {
-		menus.set(getScrapDealerDetailMenuId(itemIndex), getScrapDealerConfirmMenu(params, itemIndex));
+	const menus = new Map<string, CrowniclesNestedMenu>([[ScrapDealerMenuIds.SCRAP_DEALER_MENU, getScrapDealerListMenu(params, recyclableItems)]]);
+	for (const [itemIndex, item] of recyclableItems.entries()) {
+		menus.set(getScrapDealerDetailMenuId(itemIndex), getScrapDealerConfirmMenu(params, item));
 	}
 	return menus;
 }
