@@ -8,7 +8,9 @@ import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import {
+	ErrorInternalPacket, ErrorPacket
+} from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../app";
@@ -130,7 +132,9 @@ async function loadAndExecuteSmallEvent(
 		}
 		catch (e) {
 			CrowniclesLogger.errorWithObj(`Error while executing ${filename} small event`, e);
-			response.push(makePacket(ErrorPacket, { message: `${e}` }));
+
+			// The cause stays server-side: exception messages can leak database and infrastructure details
+			response.push(makePacket(ErrorInternalPacket, {}));
 		}
 	}
 	catch {
