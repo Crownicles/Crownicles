@@ -5,6 +5,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../Lib/src/packets/CrowniclesPacket";
 import {
+	ErrorInternalPacket,
 	ErrorMaintenancePacket,
 	ErrorPacket,
 	ErrorResetIsNow
@@ -95,7 +96,9 @@ async function dispatchPacket(response: CrowniclesPacket[], context: PacketConte
 	}
 	catch (error: unknown) {
 		CrowniclesLogger.errorWithObj(`Error while processing packet '${dataJson.packet.name}'`, error);
-		response.push(makePacket(ErrorPacket, { message: error instanceof Error ? error.message : String(error) }));
+
+		// The cause stays server-side: exception messages can leak database and infrastructure details
+		response.push(makePacket(ErrorInternalPacket, {}));
 		CrowniclesCoreMetrics.incrementPacketErrorCount(dataJson.packet.name);
 	}
 	CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(msDiff(nowMs(), startTime)));

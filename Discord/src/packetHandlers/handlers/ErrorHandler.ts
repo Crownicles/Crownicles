@@ -4,6 +4,7 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import {
 	ErrorBannedPacket,
+	ErrorInternalPacket,
 	ErrorMaintenancePacket,
 	ErrorPacket,
 	ErrorResetIsNow,
@@ -132,6 +133,13 @@ export default class ErrorHandler {
 		}
 
 		await interaction.channel.send(replyOptions);
+	}
+
+	@packetHandler(ErrorInternalPacket)
+	async internalErrorHandler(context: PacketContext, _packet: ErrorInternalPacket): Promise<void> {
+		await handleClassicError(context, "error:internalError", {}, {
+			forcedTitle: "error:unexpectedError"
+		});
 	}
 
 	@packetHandler(ErrorMaintenancePacket)
