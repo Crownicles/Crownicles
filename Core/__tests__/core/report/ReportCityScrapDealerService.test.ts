@@ -1,5 +1,5 @@
 import {
-	describe, expect, it
+	describe, expect, it, vi
 } from "vitest";
 import {
 	ItemCategory, ItemConstants, ItemRarity
@@ -9,7 +9,19 @@ import { ScrapDealerConstants } from "../../../../Lib/src/constants/ScrapDealerC
 import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithUtils";
 import { Material } from "../../../src/data/Material";
 import { MainItem } from "../../../src/data/MainItem";
-import { getScrapDealerMaterials } from "../../../src/core/report/ReportCityScrapDealerService";
+import {
+	getScrapDealerMaterials, getScrapDealerMoney
+} from "../../../src/core/report/ReportCityScrapDealerService";
+
+const MONEY_BLESSING_MULTIPLIER = 2;
+
+vi.mock("../../../src/core/blessings/BlessingManager", () => ({
+	BlessingManager: {
+		getInstance: () => ({
+			applyMoneyBlessing: (amount: number): number => amount * MONEY_BLESSING_MULTIPLIER
+		})
+	}
+}));
 
 class TestMainItem extends MainItem {
 	public categoryName = "weapons";
@@ -120,5 +132,15 @@ describe("getScrapDealerMaterials", () => {
 		expect(givenPrice(2)).toBeGreaterThanOrEqual(epicValue
 			* (ScrapDealerConstants.BASE_VALUE_MULTIPLIER + 2 * ScrapDealerConstants.VALUE_MULTIPLIER_PER_LEVEL));
 		expect(givenPrice(2)).toBeGreaterThan(givenPrice(0));
+	});
+});
+
+describe("getScrapDealerMoney", () => {
+	it("gives back a share of the item sell price, blessing included", () => {
+		const item = new TestMainItem(ItemRarity.EPIC, new Map());
+
+		expect(getScrapDealerMoney(item)).toBe(Math.round(
+			ItemConstants.RARITY.VALUES[ItemRarity.EPIC] * ScrapDealerConstants.MONEY_VALUE_RATIO
+		) * MONEY_BLESSING_MULTIPLIER);
 	});
 });
