@@ -4,7 +4,7 @@
   "maps": [
     17
   ],
-  "hasBlacksmith": false,
+  "services": [],
   "shops": [
     "generalShop",
     "herbalist",

@@ -1,9 +1,12 @@
 {
-  "hasScrapDealer": true,
   "homePriceMultiplier": 1.01,
   "apartmentPrice": 9000,
   "maps": [
     10
+  ],
+  "services": [
+    "blacksmith",
+    "scrapDealer"
   ],
   "shops": [
     "generalShop",

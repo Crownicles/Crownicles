@@ -611,16 +611,16 @@ async function sendCityCollector(
 	const playerMaterialMap = new Map(playerMaterials.map(m => [m.materialId, m.quantity]));
 
 	// Build blacksmith data if city has a blacksmith
-	const blacksmith = city.blacksmithAvailable
+	const blacksmith = city.hasService(CITY_SERVICES.BLACKSMITH)
 		? buildBlacksmithData(playerInventory, playerMaterialMap, player)
 		: undefined;
 
-	const scrapDealer = city.scrapDealerAvailable
+	const scrapDealer = city.hasService(CITY_SERVICES.SCRAP_DEALER)
 		? buildScrapDealerData(playerInventory, player)
 		: undefined;
 
 	// Build royal blacksmith data if city has a royal blacksmith (e.g. royal castle)
-	const royalBlacksmith = city.royalBlacksmithAvailable
+	const royalBlacksmith = city.hasService(CITY_SERVICES.ROYAL_BLACKSMITH)
 		? await buildRoyalBlacksmithData(playerInventory, playerMaterialMap, player)
 		: undefined;
 
@@ -719,7 +719,7 @@ async function sendCityCollector(
 			[CITY_SERVICES.SCRAP_DEALER]: scrapDealer !== undefined,
 			[CITY_SERVICES.ROYAL_BLACKSMITH]: royalBlacksmith !== undefined,
 			[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
-			[CITY_SERVICES.BOSS_ARCHIVIST]: city.bossArchivistAvailable
+			[CITY_SERVICES.BOSS_ARCHIVIST]: city.hasService(CITY_SERVICES.BOSS_ARCHIVIST)
 		}),
 		inns: city.inns.map(inn => ({
 			innId: inn.id,
