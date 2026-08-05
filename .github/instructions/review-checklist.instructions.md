@@ -21,6 +21,9 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **No hardcoded emojis** in code or translations — use `CrowniclesIcons.*` with `{emote:path}` pattern in translations
 - [ ] **No hardcoded timezones or locale formats** — use system time aligned with game reset (e.g., `new Date().getHours()`), never `"Europe/Paris"` or `Intl.DateTimeFormat` with hardcoded locale
 - [ ] **Data tags over hardcoded ID lists** — when items share a property (e.g., fire affinity), add a tag to the data JSON files (e.g., `"tags": ["fire"]`) and check via `ItemConstants.TAGS.X` instead of maintaining a static list of IDs in constants
+- [ ] **No new boolean flag per variant** — when a set of variants already has a shared typed key list (`CITY_SERVICES`, `ItemConstants.TAGS`, ...), declare membership as a list in the data files (`"services": ["blacksmith", "scrapDealer"]`) instead of adding yet another `hasXxx?: boolean` field with its `xxxAvailable` getter and its manual mapping to the shared key. The data files, the transferred packet and the front-end display should all key off the same union
+- [ ] **No implicit defaults in game data** — avoid `this.hasFoo !== false` (defaults to true) sitting next to `this.hasBar === true` (defaults to false): the polarity is invisible in the JSON and silently drifts between fields. Make the data explicit, and back it with a data-integrity test asserting every resource file declares the field with valid values
+- [ ] **Bitmask and persisted enum values fit their column** — before adding a flag to a bitmask or a value to a persisted enum, check the column type in the migration: `TINYINT UNSIGNED` caps at 255 (8 flags), `SMALLINT UNSIGNED` at 65535 (16 flags). Overflow is silent. Document the ceiling next to the mask definition
 - [ ] **Constants in the right location** — shared constants go in `Lib/src/constants/`, not duplicated across services
 - [ ] **No duplicate constants** — search for similar values already defined elsewhere before creating new ones
 - [ ] **Magic numbers as named constants** — any numeric literal in algorithms (primes, multipliers, masks) must be a named constant. Trivial values (0, 1, -1) in obvious contexts are acceptable
@@ -31,7 +34,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 
 - [ ] **Explicit return types** on all functions (enforced by ESLint `@typescript-eslint/explicit-function-return-type`)
 - [ ] **Derived union types** from `as const` objects using `typeof Object[keyof typeof Object]` — avoid raw `string` when a finite set of values exists
-- [ ] **Type aliases for repeated inline types** — if an inline type `{ slot: number; category: ItemCategory }` appears 2+ times, extract it to a named type
+- [ ] **Type aliases for repeated inline types** — if an inline type `{ slot: number; category: ItemCategory }` appears 2+ times, extract it to a named type. When one of those occurrences is the parameter of a shared `Lib` helper, the alias belongs in `Lib/src/types/` and the helper signature must use it — otherwise every caller keeps re-declaring the same shape
 - [ ] **Extract nested type accessors** — avoid repeating `SomeType["nested"]["field"][number]` across functions; extract to a `type Alias = SomeType["nested"]["field"][number]` and reference the alias
 - [ ] **Shared types in `Lib/src/types/`** — types used across multiple packets or services must be extracted to a dedicated file in `Lib/src/types/`, not defined inline in packet files or duplicated across consumers
 - [ ] **No `any`** — use proper types or generics
@@ -73,6 +76,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **No repeated field-level operations** — if the same 3+ field assignments appear in multiple places (e.g., copying `itemId`, `itemLevel`, `itemEnchantmentId`), extract a `copyX` / `clearX` helper function
 - [ ] **Shared utilities in appropriate scope** — helper used by one class -> private method; used across files -> utility function; used across services -> Lib
 - [ ] **Cross-file duplicate functions** — search for identical or near-identical private functions across command files (e.g., `withUnlimitedMaxValue` in both EquipCommand and ChestFeatureHandler) and move to a shared utility class
+- [ ] **New feature mirroring an existing one reuses its helpers** — when adding a service/command that parallels an existing one (blacksmith -> scrap dealer, shop -> guild shop), read the sibling module *first*: helpers like `getBlacksmithItemData` are often already exported and reused by a third module. Re-deriving a copy with cosmetic differences (`itemCategory === WEAPON` instead of `isWeapon()`) is the usual symptom
 - [ ] **TypeScript overloads over duplicated functions** — when two functions differ only by type parameters/return types (e.g., `getBlacksmithUpgradeItem`/`getBlacksmithDisenchantItem`), use TypeScript function overloads with a single implementation
 - [ ] **Reuse existing Lib utilities** — before implementing utility logic (e.g., `frac()`, `getWeekNumber()`), check if a shared function already exists in `Lib/src/utils/`
 - [ ] **Map/Set cache key construction in a dedicated helper** — when a `Map<string, T>` or `Set<string>` uses a string key built from multiple values (e.g., `` `${type}_${rarity}` ``), extract a `buildXxxKey(...)` helper used for **both** `get` and `set` (and any `has`/`delete`). This keeps the key format in one place, prevents subtle drift between read and write sites, and documents the invariant
@@ -100,6 +104,7 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **No pass-through local variables** — don't assign a constant (or any value that doesn't depend on local context/computation) to a local variable just to reference it 1–N times. Inline the constant at every call site instead. Only keep a local binding when it is the result of a non-trivial computation, a renamed/narrowed value, or genuinely improves readability of a long expression.
 - [ ] **Update related comments** when code changes — don't leave outdated "TODO" or "Future features" comments
 - [ ] **Remove default cases that are unreachable** — if a switch exhausts all enum values, the default clause is dead code (or use it for the last case)
+- [ ] **Every field added to a transferred object is consumed** — a field added to a packet or a `ReactionCollector*Data` must actually be read by the front-end. A computed-and-serialized-but-never-displayed field is dead code that costs CPU per listed entry and payload size, and it usually reveals a half-finished feature: the narrative announces something ("a share of the value is also given back in coins") that no screen ever shows. Either display it or drop it
 
 ## 8. ESLint & Style
 
@@ -127,6 +132,13 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 - [ ] **No new per-line `eslint-disable crownicles/no-unguarded-save`** — the only accepted justification is a documented `*UnderLock` chain the rule cannot follow syntactically; "fresh INSERT" (still races on unique keys / concurrent contradictory inserts), "single-field UI preference" (still a lost update from the user's perspective) and "TODO: lock later" are *not* accepted — fix them by renaming the helper `*UnderLock`, by adding a file-level `@lockInherited` marker, or by wrapping the call site in `withLockedEntities` / `withLockedPlayerSafe` instead.
 - [ ] **No `Player` method leaves the instance dirty** — when a value is written out of band (bulk `Player.update(...)`, raw query) and then mirrored onto the instance, clear the tracking with `this.changed("field", false)`. A dirty instance makes the next `MissionsController.update` throw `UnsavedPlayerChangesError` (#4621). `crownicles/no-unsaved-player-before-mission-update` forces every dirtying method to be declared in `playerMutators`, but it cannot link a mutation done in the `commandRequires` decorator to the mission update done in the command body — cover that with an integration test.
 
+## 11. Rewards & Game Economy
+
+- [ ] **A reward amount is computed once** — compute the final value (blessings, multipliers, rounding included) in a single place, then persist *that* value and send *that* value to the front. Beware of modifiers applied on both sides: `addMoney` already calls `applyMoneyBlessing` unless `ignoreBlessing: true` is passed, so re-applying it on the raw amount for the packet only works by coincidence and drifts as soon as one side changes
+- [ ] **The previewed value equals the granted value** — when a confirmation screen announces a reward before the player commits, it must show the same figure that will actually be credited (same modifiers applied)
+- [ ] **A new resource conversion does not close a profitable loop** — when adding a way to turn one resource into another (scrapping, crafting, refunds, buyouts), compare the output value against *every* existing way to acquire the input, not just the local one. If the conversion outputs materials worth several times the item purchase price, buying the item becomes strictly better than buying the materials
+- [ ] **Exploit mitigations are not bypassable by travelling** — disabling a shop only in the city hosting the exploitable service closes nothing: the player buys elsewhere and walks over, while every non-exploiting player loses the shop. Cap the sink itself (daily/weekly limit à la `MAX_DAILY_POTION_BUYOUTS`, eligibility condition, lower multiplier) rather than one of its sources
+
 ---
 
 ## Quick Pre-PR Verification
@@ -140,4 +152,5 @@ pnpm test          # All tests pass
 grep -rn "await import(" src/             # Dynamic imports to review
 grep -rn "\"✅\|\"❌\|\"⚠️\|\"🔥" src/   # Hardcoded emojis
 grep -rn "Europe/Paris\|Intl.DateTimeFormat" src/  # Hardcoded timezones
+grep -rn "readonly has[A-Z][A-Za-z]*?: boolean" src/data/  # Per-variant boolean flags (prefer a typed list)
 ```
