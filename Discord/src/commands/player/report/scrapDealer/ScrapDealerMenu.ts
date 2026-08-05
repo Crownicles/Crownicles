@@ -118,9 +118,32 @@ function createScrapDealerListCollector(params: CityMenuParams): CrowniclesNeste
 	};
 }
 
+function findScrapDealerRecycleReactionIndex(packet: CityMenuParams["packet"], item: ScrapDealerItem): number {
+	return packet.reactions.findIndex(reaction =>
+		isScrapDealerRecycleReaction(reaction)
+		&& reaction.data.slot === item.slot
+		&& reaction.data.itemCategory === item.category
+		&& reaction.data.itemId === item.itemId);
+}
+
+async function confirmScrapDealerRecycle(
+	params: CityMenuParams,
+	item: ScrapDealerItem,
+	buttonInteraction: ButtonInteraction
+): Promise<void> {
+	await buttonInteraction.deferReply();
+	const reactionIndex = findScrapDealerRecycleReactionIndex(params.packet, item);
+	if (reactionIndex === -1) {
+		CrowniclesLogger.error(`Scrap dealer recycle reaction not found for slot ${item.slot}, category ${item.category}`);
+		await buttonInteraction.deleteReply();
+		return;
+	}
+	DiscordCollectorUtils.sendReaction(params.packet, params.context, params.context.keycloakId!, buttonInteraction, reactionIndex);
+}
+
 function createScrapDealerConfirmCollector(params: CityMenuParams, item: ScrapDealerItem): CrowniclesNestedMenuCollectorFactory {
 	const {
-		context, interaction, packet, collectorTime
+		interaction, collectorTime
 	} = params;
 	const lng = interaction.userLanguage;
 
@@ -140,22 +163,9 @@ function createScrapDealerConfirmCollector(params: CityMenuParams, item: ScrapDe
 				await nestedMenus.changeMenu(ScrapDealerMenuIds.SCRAP_DEALER_MENU);
 				return;
 			}
-			if (buttonInteraction.customId !== ScrapDealerMenuIds.CONFIRM_RECYCLE) {
-				return;
+			if (buttonInteraction.customId === ScrapDealerMenuIds.CONFIRM_RECYCLE) {
+				await confirmScrapDealerRecycle(params, item, buttonInteraction);
 			}
-
-			await buttonInteraction.deferReply();
-			const reactionIndex = packet.reactions.findIndex(reaction =>
-				isScrapDealerRecycleReaction(reaction)
-				&& reaction.data.slot === item.slot
-				&& reaction.data.itemCategory === item.category
-				&& reaction.data.itemId === item.itemId);
-			if (reactionIndex === -1) {
-				CrowniclesLogger.error(`Scrap dealer recycle reaction not found for slot ${item.slot}, category ${item.category}`);
-				await buttonInteraction.deleteReply();
-				return;
-			}
-			DiscordCollectorUtils.sendReaction(packet, context, context.keycloakId!, buttonInteraction, reactionIndex);
 		});
 		return collector;
 	};
