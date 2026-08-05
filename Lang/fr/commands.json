@@ -1066,16 +1066,16 @@
         "menuLabel": "Rencontrer le ferrailleur",
         "menuDescription": "Gorim le Brise-Fer démonte les équipements de réserve pour les convertir en matériaux.",
         "title": "{{pseudo}}, vous rencontrez le ferrailleur",
-        "description": "{emote:city.services.scrapDealer} L'atelier de Gorim le Brise-Fer résonne du choc des marteaux. Les équipements de réserve peuvent être démontés pour être convertis en matériaux, d'autant plus nombreux que l'équipement a été amélioré.",
+        "description": "{emote:city.services.scrapDealer} L'atelier de Gorim le Brise-Fer résonne du choc des marteaux. Les équipements de réserve peuvent être démontés pour être convertis en matériaux, d'autant plus nombreux que l'équipement a été amélioré. Une partie de la valeur de l'équipement est également rendue en pièces.",
         "descriptionNoItems": "{emote:city.services.scrapDealer} Gorim le Brise-Fer ne trouve aucun équipement à démonter. Seules les armes et armures de réserve non enchantées peuvent être recyclées.",
-        "itemPreview": "{{itemDisplay}}\n\n{{materials}}",
+        "itemPreview": "{{itemDisplay}}\n\n{{materials}}\n**{{money, number}}** {emote:unitValues.money}",
         "confirmTitle": "{{pseudo}}, démontage d'un équipement",
-        "confirmDescription": "{emote:city.services.scrapDealer} Gorim le Brise-Fer pose l'équipement sur son établi. Le démontage est définitif : l'équipement sera détruit et seuls les matériaux listés seront récupérés.\n\n{{itemDisplay}}\n\n{{materials}}",
+        "confirmDescription": "{emote:city.services.scrapDealer} Gorim le Brise-Fer pose l'équipement sur son établi. Le démontage est définitif : l'équipement sera détruit et seuls les matériaux et les pièces listés seront récupérés.\n\n{{itemDisplay}}\n\n{{materials}}\n**{{money, number}}** {emote:unitValues.money}",
         "confirmRecycle": "Confirmer le démontage",
         "backToItems": "Retourner aux équipements",
         "backToCity": "Quitter l'atelier",
         "recycleTitle": "{{pseudo}}, recyclage réussi !",
-        "recycleSuccess": "{emote:city.services.scrapDealer} Gorim le Brise-Fer démonte l'équipement avec méthode. Les matériaux récupérés rejoignent votre réserve.\n\n{{materialLoot}}"
+        "recycleSuccess": "{emote:city.services.scrapDealer} Gorim le Brise-Fer démonte l'équipement avec méthode. Les matériaux récupérés rejoignent votre réserve, et il vous rachète les chutes pour **{{money, number}}** {emote:unitValues.money}.\n\n{{materialLoot}}"
       },
       "royalBlacksmith": {
         "menuLabel": "Rencontrer le forgeron royal",

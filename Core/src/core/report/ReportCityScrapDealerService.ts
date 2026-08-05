@@ -28,6 +28,8 @@ import { CommandReportScrapDealerRecycleRes } from "../../../../Lib/src/packets/
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
 import { getItemValue } from "../utils/ItemUtils";
+import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
+import { BlessingManager } from "../blessings/BlessingManager";
 import { crowniclesInstance } from "../../app";
 
 function getScrapDealerItemData(inventorySlot: InventorySlot): MainItem | null {
@@ -118,6 +120,11 @@ export function getScrapDealerMaterials(item: MainItem, itemLevel: number): Mate
 	return givenMaterials;
 }
 
+/** Coins given back on top of the materials, based on the item sell price. */
+export function getScrapDealerMoney(item: MainItem): number {
+	return Math.round(getItemValue(item) * ScrapDealerConstants.MONEY_VALUE_RATIO);
+}
+
 /** An enchanted equipment must be disenchanted at the blacksmith first, so its enchantment is never silently destroyed. */
 function isRecyclable(inventorySlot: InventorySlot): boolean {
 	return !inventorySlot.isEquipped() && inventorySlot.itemEnchantmentId === null;
@@ -143,7 +150,8 @@ function buildRecyclableItem(inventorySlot: InventorySlot, player: Player): Scra
 		category: inventorySlot.itemCategory,
 		itemId: inventorySlot.itemId,
 		details: inventorySlot.itemWithDetails(player) as MainItemDetails,
-		recoveredMaterials
+		recoveredMaterials,
+		recoveredMoney: getScrapDealerMoney(itemData)
 	};
 }
 
@@ -211,7 +219,19 @@ export async function handleScrapDealerRecycleReaction(
 
 		await applyMaterialLoot(lockedPlayer.id, materialLoot);
 		await updateCollectMaterialsMission(lockedPlayer, response, materialLoot);
-		response.push(makePacket(CommandReportScrapDealerRecycleRes, { materialLoot }));
+
+		const moneyGained = getScrapDealerMoney(itemData);
+		await lockedPlayer.addMoney({
+			response,
+			amount: moneyGained,
+			reason: NumberChangeReason.SCRAP_DEALER_RECYCLE
+		});
+		await lockedPlayer.save();
+
+		response.push(makePacket(CommandReportScrapDealerRecycleRes, {
+			materialLoot,
+			moneyGained: BlessingManager.getInstance().applyMoneyBlessing(moneyGained)
+		}));
 
 		const cityId = lockedPlayer.getCurrentCityId();
 		if (cityId) {

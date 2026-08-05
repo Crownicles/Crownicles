@@ -13,7 +13,8 @@ export async function handleScrapDealerRecycle(
 		titleKey: "commands:report.city.scrapDealer.recycleTitle",
 		descriptionKey: "commands:report.city.scrapDealer.recycleSuccess",
 		descriptionParams: {
-			materialLoot: formatMaterialLoot(packet.materialLoot, lng)
+			materialLoot: formatMaterialLoot(packet.materialLoot, lng),
+			money: packet.moneyGained
 		}
 	});
 }
