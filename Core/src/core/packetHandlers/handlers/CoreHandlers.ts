@@ -52,12 +52,13 @@ import { handleEquipAction } from "../../utils/EquipActionService";
 import { LogsPveBossRecordsRequests } from "../../database/logs/requests/LogsPveBossRecordsRequests";
 import Player, { Players } from "../../database/game/models/Player";
 import { CityDataController } from "../../../data/City";
+import { CITY_SERVICES } from "../../../../../Lib/src/constants/CityServiceConstants";
 
 async function getPlayerAtBossArchivist(keycloakId: string): Promise<Player | null> {
 	const player = await Players.getOrRegister(keycloakId);
 	const destinationId = player.getDestinationId();
 	const city = destinationId === null ? undefined : CityDataController.instance.getCityByMapId(destinationId);
-	return player.insideCity && city?.bossArchivistAvailable ? player : null;
+	return player.insideCity && city?.hasService(CITY_SERVICES.BOSS_ARCHIVIST) ? player : null;
 }
 
 export default class CoreHandlers {

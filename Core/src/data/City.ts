@@ -3,6 +3,7 @@ import { Data } from "./Data";
 import { RandomUtils } from "../../../Lib/src/utils/RandomUtils";
 import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
 import { HomeLevel } from "../../../Lib/src/types/HomeLevel";
+import { CityService } from "../../../Lib/src/constants/CityServiceConstants";
 
 export class InnMeal {
 	public readonly id!: string;
@@ -36,26 +37,10 @@ export class City extends Data<string> {
 	public readonly shops?: string[];
 
 	/**
-	 * Whether this city has a blacksmith for item upgrades and disenchanting
-	 * Defaults to true if not specified
+	 * Services permanently hosted by this city. The enchanter is not listed here: its city rotates,
+	 * so its availability is resolved at runtime from the settings.
 	 */
-	public readonly hasBlacksmith?: boolean;
-
-	/**
-	 * Whether this city has the scrap dealer — an NPC that destroys a reserve equipment and gives back
-	 * materials worth its sell price scaled by its upgrade level. Defaults to false.
-	 */
-	public readonly hasScrapDealer?: boolean;
-
-	/**
-	 * Whether this city has the Royal Blacksmith — a special NPC that only
-	 * upgrades items to level 5 (see RoyalBlacksmithConstants). Defaults to false.
-	 * Currently only the royal castle should have this set to true.
-	 */
-	public readonly hasRoyalBlacksmith?: boolean;
-
-	/** Whether this city hosts the archivist who tracks final island boss records. */
-	public readonly hasBossArchivist?: boolean;
+	public readonly services!: CityService[];
 
 	/**
 	 * Multiplier applied to the base home cost (purchase + upgrades) for this city.
@@ -71,27 +56,8 @@ export class City extends Data<string> {
 	 */
 	public readonly apartmentPrice?: number;
 
-	/**
-	 * Check if the city has a blacksmith
-	 * Returns true by default if not explicitly set to false
-	 */
-	public get blacksmithAvailable(): boolean {
-		return this.hasBlacksmith !== false;
-	}
-
-	public get scrapDealerAvailable(): boolean {
-		return this.hasScrapDealer === true;
-	}
-
-	/**
-	 * Check if the city has the Royal Blacksmith (defaults to false).
-	 */
-	public get royalBlacksmithAvailable(): boolean {
-		return this.hasRoyalBlacksmith === true;
-	}
-
-	public get bossArchivistAvailable(): boolean {
-		return this.hasBossArchivist === true;
+	public hasService(service: CityService): boolean {
+		return this.services.includes(service);
 	}
 
 	public getTodayInnMeals(inn: CityInn, date: Date): InnMeal[] {

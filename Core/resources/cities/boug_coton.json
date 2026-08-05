@@ -4,6 +4,9 @@
   "maps": [
     6
   ],
+  "services": [
+    "blacksmith"
+  ],
   "shops": [
     "generalShop"
   ],

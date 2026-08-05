@@ -175,7 +175,7 @@ function computeRoyalMaterials(
 
 /**
  * Build Royal Blacksmith data for the city collector. Only invoked when the
- * city has `hasRoyalBlacksmith: true`. Computes a Core-authoritative status
+ * city declares the `royalBlacksmith` service. Computes a Core-authoritative status
  * so Discord can render the right narrative without re-deriving eligibility.
  */
 export async function buildRoyalBlacksmithData(

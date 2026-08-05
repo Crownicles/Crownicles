@@ -58,6 +58,7 @@ import {
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { pickMaterialDistribution } from "./MaterialLootGenerator";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
+import { CITY_SERVICES } from "../../../../Lib/src/constants/CityServiceConstants";
 import { Homes } from "../database/game/models/Home";
 
 /**
@@ -300,7 +301,7 @@ export async function openGeneralShop({
 
 	const shopCategories: ShopCategory[] = [
 		// A city with a scrap dealer would let players buy random equipments just to convert them into more valuable materials
-		...city.scrapDealerAvailable
+		...city.hasService(CITY_SERVICES.SCRAP_DEALER)
 			? []
 			: [
 				{
