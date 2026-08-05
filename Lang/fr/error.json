@@ -66,7 +66,6 @@
   "alreadyInAGuild": "Vous appartenez déjà à une guilde.",
   "petDoesntExist": "Aucun familier n'a été trouvé.",
   "unexpectedError": "Une erreur est survenue :(",
-  "internalError": "Un problème technique est survenu de notre côté. Réessayez dans un instant, et signalez-le au staff si cela se reproduit.",
   "pleaseWaitForHeal": "Veuillez attendre la fin des soins de votre altération d'état pour continuer à jouer : {{time}}",
   "pleaseWaitForHisHeal": "Veuillez attendre la fin des soins de son altération d'état : {{time}}",
   "notEnoughMoney": "Vous n'avez pas assez d'argent pour effectuer cette action. Il vous manque {{money, number}} {emote:unitValues.money}.",
