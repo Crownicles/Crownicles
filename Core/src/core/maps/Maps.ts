@@ -163,7 +163,7 @@ export class Maps {
 	}
 
 	/**
-	 * Get all the members of the player's guild on the pve island
+	 * Get the members of the player's guild considered as pve island allies: those currently on the island and those who left it recently
 	 */
 	static async getGuildMembersOnPveIsland(player: Player): Promise<Player[]> {
 		if (!player.guildId) {

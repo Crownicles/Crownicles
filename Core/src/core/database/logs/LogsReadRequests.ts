@@ -1,7 +1,7 @@
 import { LogsDailyPotions } from "./models/LogsDailyPotions";
 import { LogsClassicalShopBuyouts } from "./models/LogsClassicalShopBuyouts";
 import {
-	HasOne, Op
+	col, fn, HasOne, Op
 } from "sequelize";
 import { ShopItemType } from "../../../../../Lib/src/constants/LogsConstants";
 import { LogsDatabase } from "./LogsDatabase";
@@ -54,6 +54,16 @@ export type PersonalFightDailySummary = {
 export type WeeklyShopBuyoutScope = {
 	playerId: number;
 	startOfWeek: Second;
+};
+
+type LastIslandTravel = {
+	playerId: number;
+	lastDate: number;
+};
+
+type LeaveIslandTravel = {
+	playerId: number;
+	leaveDate: number;
 };
 
 /**
@@ -169,11 +179,52 @@ export class LogsReadRequests {
 	}
 
 	/**
-	 * Get all the members of the player's guild on the pve island
+	 * Get the date at which each of the given log players left the pve island, for those who left it since their last travel on it
+	 */
+	private static async getPveIslandLeaveDates(logsPlayerIds: number[]): Promise<LeaveIslandTravel[]> {
+		// Last time each player travelled on the island
+		const lastIslandTravels = await LogsPlayersTravels.findAll({
+			attributes: [
+				"playerId",
+				[fn("MAX", col("date")), "lastDate"]
+			],
+			where: {
+				playerId: { [Op.in]: logsPlayerIds },
+				mapLinkId: { [Op.in]: MapCache.logsPveIslandMapLinks }
+			},
+			group: ["playerId"],
+			raw: true
+		}) as unknown as LastIslandTravel[]; // Sequelize cannot type the shape of an aggregated raw query
+
+		if (lastIslandTravels.length === 0) {
+			return [];
+		}
+
+		// The first travel outside the island following the last travel on it is when the player left it
+		return await LogsPlayersTravels.findAll({
+			attributes: [
+				"playerId",
+				[fn("MIN", col("date")), "leaveDate"]
+			],
+			where: {
+				mapLinkId: { [Op.notIn]: MapCache.logsPveIslandMapLinks },
+				[Op.or]: lastIslandTravels.map(travel => ({
+					playerId: travel.playerId,
+					date: { [Op.gt]: travel.lastDate }
+				}))
+			},
+			group: ["playerId"],
+			raw: true
+		}) as unknown as LeaveIslandTravel[]; // Sequelize cannot type the shape of an aggregated raw query
+	}
+
+	/**
+	 * Get the members of the player's guild that left the pve island recently enough to still be considered as allies.
+	 * Members still on the island have no leave date and are handled by the caller.
 	 */
 	static async getGuildMembersThatWereOnPveIsland(player: Player): Promise<Player[]> {
-		if (!player.guildId) { // Player has no guild
-			return Promise.resolve([]);
+		if (!player.guildId || MapCache.logsPveIslandMapLinks.length === 0) {
+			return [];
 		}
 
 		// Get all the players in the guild excluding the player
@@ -184,53 +235,21 @@ export class LogsReadRequests {
 			}
 		});
 
-		// Extract ids from players
-		const ids = playersInGuild.map(player => player.keycloakId);
-
 		// Convert the players to log players
 		const logsPlayers = await LogsPlayers.findAll({
-			where: { keycloakId: { [Op.in]: ids } }
+			where: { keycloakId: { [Op.in]: playersInGuild.map(guildMember => guildMember.keycloakId) } }
 		});
 
-		// Extract ids from players
-		const logsPlayersIds = logsPlayers.map(logsPlayer => logsPlayer.id);
+		const leaveTravels = await LogsReadRequests.getPveIslandLeaveDates(logsPlayers.map(logsPlayer => logsPlayer.id));
+		const oldestAcceptedLeaveDate = dateToLogs(new Date(Date.now() - PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND));
+		const recentlyLeftLogsPlayerIds = leaveTravels
+			.filter(travel => travel.leaveDate > oldestAcceptedLeaveDate)
+			.map(travel => travel.playerId);
+		const recentlyLeftKeycloakIds = logsPlayers
+			.filter(logsPlayer => recentlyLeftLogsPlayerIds.includes(logsPlayer.id))
+			.map(logsPlayer => logsPlayer.keycloakId);
 
-		// Get travels from the last hours of guildsMembers
-		const travelsInPveIsland = await LogsPlayersTravels.findAll({
-			where: {
-				mapLinkId: {
-					[Op.in]: MapCache.logsPveIslandMapLinks
-				},
-				playerId: {
-					[Op.in]: logsPlayersIds
-				},
-				date: {
-					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND)))
-				}
-			},
-			group: ["playerId"],
-			include: [
-				{
-					model: LogsPlayers,
-					association: new HasOne(LogsPlayersTravels, LogsPlayers, {
-						sourceKey: "playerId",
-						foreignKey: "id",
-						as: "LogsPlayer1"
-					})
-				}
-			]
-		}) as unknown as {
-			LogsPlayer1: {
-				keycloakId: string;
-			};
-		}[];
-		return await Player.findAll({
-			where: {
-				keycloakId: {
-					[Op.in]: travelsInPveIsland.map(travelsInPveIsland => travelsInPveIsland.LogsPlayer1.keycloakId)
-				}
-			}
-		});
+		return playersInGuild.filter(guildMember => recentlyLeftKeycloakIds.includes(guildMember.keycloakId));
 	}
 
 	/**
