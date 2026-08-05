@@ -321,6 +321,7 @@ export type CityVisitExitReasonValue = typeof CityVisitExitReason[keyof typeof C
 
 /**
  * Bitmask of sub-menus opened during a city visit. Combined via bitwise OR.
+ * Stored in the `menusOpenedMask` SMALLINT UNSIGNED column, so at most 16 services can be tracked.
  */
 export const CityMenuMask = {
 	INN: 1,

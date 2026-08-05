@@ -9,6 +9,8 @@ import {
 	getDisenchantPrice, getMaterialsPurchasePrice, getUpgradePrice
 } from "../../../../Lib/src/utils/BlacksmithUtils";
 import { MainItemDetails } from "../../../../Lib/src/types/MainItemDetails";
+import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
+import { MaterialRarityQuantity } from "../../../../Lib/src/types/MaterialRarityQuantity";
 import { ItemEnchantment } from "../../../../Lib/src/types/ItemEnchantment";
 import { ReactionCollectorCityData } from "../../../../Lib/src/packets/interaction/ReactionCollectorCity";
 
@@ -53,7 +55,7 @@ function buildBlacksmithUpgradeableItems(
 
 		// Aggregate materials with rarity info
 		const materialAggregation = new Map<number, {
-			quantity: number; rarity: number;
+			quantity: number; rarity: MaterialRarity;
 		}>();
 		for (const material of requiredMaterialsRaw) {
 			const materialIdNum = parseInt(material.id, 10);
@@ -70,9 +72,7 @@ function buildBlacksmithUpgradeableItems(
 		}
 
 		const requiredMaterials: typeof upgradeableItems[number]["requiredMaterials"] = [];
-		const missingMaterials: {
-			rarity: number; quantity: number;
-		}[] = [];
+		const missingMaterials: MaterialRarityQuantity[] = [];
 		let hasAllMaterials = true;
 
 		for (const [

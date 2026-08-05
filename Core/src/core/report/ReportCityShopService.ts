@@ -298,19 +298,21 @@ export async function openGeneralShop({
 		potion, remainingPotions
 	} = await getGeneralShopData(player.keycloakId);
 
-	const shopCategories: ShopCategory[] = [];
-
-	// A city with a scrap dealer would let players buy random equipments just to convert them into more valuable materials
-	if (!city.scrapDealerAvailable) {
-		shopCategories.push({
-			id: "permanentItem",
-			items: [getRandomItemShopItem()]
-		});
-	}
-	shopCategories.push({
-		id: "dailyPotion",
-		items: [getDailyPotionShopItem(potion)]
-	});
+	const shopCategories: ShopCategory[] = [
+		// A city with a scrap dealer would let players buy random equipments just to convert them into more valuable materials
+		...city.scrapDealerAvailable
+			? []
+			: [
+				{
+					id: "permanentItem",
+					items: [getRandomItemShopItem()]
+				}
+			],
+		{
+			id: "dailyPotion",
+			items: [getDailyPotionShopItem(potion)]
+		}
+	];
 
 	await ShopUtils.createAndSendShopCollector(context, response, {
 		shopCategories,
