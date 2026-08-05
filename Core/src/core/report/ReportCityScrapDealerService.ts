@@ -3,6 +3,7 @@ import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithU
 import { ScrapDealerConstants } from "../../../../Lib/src/constants/ScrapDealerConstants";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
 import { MaterialRarity } from "../../../../Lib/src/types/MaterialRarity";
+import { MaterialRarityQuantity } from "../../../../Lib/src/types/MaterialRarityQuantity";
 import {
 	ScrapDealerData, ScrapDealerItem
 } from "../../../../Lib/src/types/ScrapDealerData";
@@ -34,6 +35,12 @@ type ScrapDealerMaterialUnit = {
 	rarity: MaterialRarity;
 };
 
+/** A recipe unit tagged with its relative position inside its own rarity bucket, used to interleave rarities. */
+type PositionedMaterialUnit = {
+	unit: ScrapDealerMaterialUnit;
+	position: number;
+};
+
 /**
  * Every single material the item consumed to reach its level, interleaved across rarities so that
  * taking the first N units keeps the proportions of the item's own recipe instead of draining all
@@ -52,9 +59,7 @@ function getRecipeMaterialUnits(item: MainItem, itemLevel: number): ScrapDealerM
 		}
 	}
 
-	const interleavedUnits: {
-		unit: ScrapDealerMaterialUnit; position: number;
-	}[] = [];
+	const interleavedUnits: PositionedMaterialUnit[] = [];
 	for (const units of unitsByRarity.values()) {
 		units.sort((firstUnit, secondUnit) => firstUnit.materialId - secondUnit.materialId);
 		for (const [index, unit] of units.entries()) {
@@ -84,9 +89,7 @@ export function getScrapDealerMaterials(item: MainItem, itemLevel: number): Mate
 	const materialsValue = getItemValue(item)
 		* (ScrapDealerConstants.BASE_VALUE_MULTIPLIER + itemLevel * ScrapDealerConstants.VALUE_MULTIPLIER_PER_LEVEL);
 	const givenMaterials: MaterialQuantity[] = [];
-	const purchasedMaterials: {
-		rarity: MaterialRarity; quantity: number;
-	}[] = [];
+	const purchasedMaterials: MaterialRarityQuantity[] = [];
 
 	for (let unitIndex = 0; getMaterialsPurchasePrice(purchasedMaterials) < materialsValue; unitIndex++) {
 		const unit = recipeUnits[unitIndex % recipeUnits.length];

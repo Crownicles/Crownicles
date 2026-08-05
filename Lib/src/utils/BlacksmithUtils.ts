@@ -2,7 +2,7 @@ import {
 	BlacksmithConstants, ItemUpgradeLevel
 } from "../constants/BlacksmithConstants";
 import { ItemRarity } from "../constants/ItemConstants";
-import { MaterialRarity } from "../types/MaterialRarity";
+import { MaterialRarityQuantity } from "../types/MaterialRarityQuantity";
 
 /**
  * Calculate the upgrade price for a specific item rarity and target level
@@ -23,9 +23,7 @@ export function getUpgradePrice(targetLevel: ItemUpgradeLevel, itemRarity: ItemR
  * @param materials Array of missing materials with their rarity
  * @returns Total gold cost to buy all missing materials
  */
-export function getMaterialsPurchasePrice(materials: {
-	rarity: MaterialRarity; quantity: number;
-}[]): number {
+export function getMaterialsPurchasePrice(materials: MaterialRarityQuantity[]): number {
 	let totalPrice = 0;
 	let materialIndex = 0;
 
