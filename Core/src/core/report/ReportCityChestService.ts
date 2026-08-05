@@ -73,6 +73,14 @@ function actionBringsItemToInventory(action: ChestAction): boolean {
 	return action === HomeConstants.CHEST_ACTIONS.WITHDRAW || action === HomeConstants.CHEST_ACTIONS.SWAP;
 }
 
+/**
+ * Whether a chest action places an item from the inventory into the chest, which
+ * is what the "deposit an item in the chest" mission tracks. See issue #4589.
+ */
+function actionPlacesItemInChest(action: ChestAction): boolean {
+	return action === HomeConstants.CHEST_ACTIONS.DEPOSIT || action === HomeConstants.CHEST_ACTIONS.SWAP;
+}
+
 function findEmptyActiveSlot(playerInventory: PlayerInventory, itemCategory: ItemCategory): InventorySlot | undefined {
 	return playerInventory.find(slot => slot.itemCategory === itemCategory && slot.slot === 0 && slot.itemId === 0);
 }
@@ -155,7 +163,7 @@ export async function handleChestAction(
 	 * `player_missions_info` then `players`, which would invert the
 	 * already-held `players` lock and risk a deadlock.
 	 */
-	if (result.success && packet.action === HomeConstants.CHEST_ACTIONS.DEPOSIT) {
+	if (result.success && actionPlacesItemInChest(packet.action)) {
 		await MissionsController.update(chestActionContext.player, response, { missionId: "depositChestItem" });
 	}
 
