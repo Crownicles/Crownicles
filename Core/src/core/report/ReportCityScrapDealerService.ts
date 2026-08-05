@@ -1,4 +1,6 @@
-import { ItemConstants } from "../../../../Lib/src/constants/ItemConstants";
+import {
+	ItemCategory, ItemConstants
+} from "../../../../Lib/src/constants/ItemConstants";
 import { getMaterialsPurchasePrice } from "../../../../Lib/src/utils/BlacksmithUtils";
 import { ScrapDealerConstants } from "../../../../Lib/src/constants/ScrapDealerConstants";
 import { MaterialQuantity } from "../../../../Lib/src/types/MaterialQuantity";
@@ -18,6 +20,7 @@ import { MainItem } from "../../data/MainItem";
 import { InventorySlot } from "../database/game/models/InventorySlot";
 import { Player } from "../database/game/models/Player";
 import { withLockedPlayerAndMissions } from "../utils/withLockedPlayerAndMissions";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 import {
 	applyMaterialLoot, updateCollectMaterialsMission
 } from "../utils/MaterialLootUtils";
@@ -41,14 +44,19 @@ type PositionedMaterialUnit = {
 	position: number;
 };
 
-/**
- * Every single material the item consumed to reach its level, interleaved across rarities so that
- * taking the first N units keeps the proportions of the item's own recipe instead of draining all
- * the common materials first.
- */
-function getRecipeMaterialUnits(item: MainItem, itemLevel: number): ScrapDealerMaterialUnit[] {
+/** Identifies the exact inventory row being recycled, so the lookup and the deletion cannot drift apart. */
+type RecycleSlotFilter = {
+	playerId: number;
+	slot: number;
+	itemCategory: ItemCategory;
+	itemId: number;
+};
+
+/** Every single material the item consumed to reach its level, bucketed by rarity. */
+function groupRecipeUnitsByRarity(item: MainItem, itemLevel: number): Map<MaterialRarity, ScrapDealerMaterialUnit[]> {
 	const unitsByRarity = new Map<MaterialRarity, ScrapDealerMaterialUnit[]>();
-	for (let level = ItemConstants.MIN_UPGRADE_LEVEL; level <= Math.max(itemLevel, ItemConstants.MIN_UPGRADE_LEVEL); level++) {
+	const maxLevel = Math.max(itemLevel, ItemConstants.MIN_UPGRADE_LEVEL);
+	for (let level = ItemConstants.MIN_UPGRADE_LEVEL; level <= maxLevel; level++) {
 		for (const material of item.getUpgradeMaterials(level)) {
 			const units = unitsByRarity.get(material.rarity) ?? [];
 			units.push({
@@ -58,17 +66,26 @@ function getRecipeMaterialUnits(item: MainItem, itemLevel: number): ScrapDealerM
 			unitsByRarity.set(material.rarity, units);
 		}
 	}
+	return unitsByRarity;
+}
 
-	const interleavedUnits: PositionedMaterialUnit[] = [];
-	for (const units of unitsByRarity.values()) {
-		units.sort((firstUnit, secondUnit) => firstUnit.materialId - secondUnit.materialId);
-		for (const [index, unit] of units.entries()) {
-			interleavedUnits.push({
-				unit,
-				position: index / units.length
-			});
-		}
-	}
+/** Tag each unit with its relative position inside its own rarity bucket, so rarities can be zipped together. */
+function positionUnitsInsideBucket(units: ScrapDealerMaterialUnit[]): PositionedMaterialUnit[] {
+	units.sort((firstUnit, secondUnit) => firstUnit.materialId - secondUnit.materialId);
+	return units.map((unit, index) => ({
+		unit,
+		position: index / units.length
+	}));
+}
+
+/**
+ * Every single material the item consumed to reach its level, interleaved across rarities so that
+ * taking the first N units keeps the proportions of the item's own recipe instead of draining all
+ * the common materials first.
+ */
+function getRecipeMaterialUnits(item: MainItem, itemLevel: number): ScrapDealerMaterialUnit[] {
+	const interleavedUnits = [...groupRecipeUnitsByRarity(item, itemLevel).values()]
+		.flatMap(positionUnitsInsideBucket);
 	interleavedUnits.sort((firstEntry, secondEntry) =>
 		firstEntry.position - secondEntry.position || firstEntry.unit.rarity - secondEntry.unit.rarity);
 	return interleavedUnits.map(entry => entry.unit);
@@ -157,84 +174,115 @@ export function buildScrapDealerData(
 	};
 }
 
+/** The equipment the player asked to recycle, or null when the reaction does not match anything the scrap dealer listed. */
+function findListedItem(
+	data: ReactionCollectorCityData,
+	reaction: ReactionCollectorScrapDealerRecycleReaction
+): ScrapDealerItem | null {
+	return data.scrapDealer?.recyclableItems.find(item =>
+		item.slot === reaction.slot
+		&& item.category === reaction.itemCategory
+		&& item.itemId === reaction.itemId) ?? null;
+}
+
+/** The equipment as it currently stands in database, or null when it is gone or no longer recyclable. */
+async function findRecyclableSlotUnderLock(slotFilter: RecycleSlotFilter): Promise<InventorySlot | null> {
+	const inventorySlot = await InventorySlot.findOne({ where: slotFilter });
+	return inventorySlot && isRecyclable(inventorySlot) ? inventorySlot : null;
+}
+
+function logRecycle(player: Locked<Player>, reaction: ReactionCollectorScrapDealerRecycleReaction, itemLevel: number): void {
+	const cityId = player.getCurrentCityId();
+	if (!cityId) {
+		return;
+	}
+	crowniclesInstance?.logsDatabase.logScrapDealerRecycle({
+		keycloakId: player.keycloakId,
+		cityId,
+		itemCategory: reaction.itemCategory,
+		itemId: reaction.itemId,
+		itemLevel,
+		slot: reaction.slot
+	}).then();
+}
+
+async function grantRecycleRewardsUnderLock(params: {
+	player: Locked<Player>;
+	item: MainItem;
+	materialLoot: MaterialQuantity[];
+	response: CrowniclesPacket[];
+}): Promise<void> {
+	const {
+		player, item, materialLoot, response
+	} = params;
+
+	await applyMaterialLoot(player.id, materialLoot);
+	await updateCollectMaterialsMission(player, response, materialLoot);
+
+	const moneyGained = getScrapDealerMoney(item);
+	await player.addMoney({
+		response,
+		amount: moneyGained,
+		reason: NumberChangeReason.SCRAP_DEALER_RECYCLE,
+		ignoreBlessing: true
+	});
+	await player.save();
+
+	response.push(makePacket(CommandReportScrapDealerRecycleRes, {
+		materialLoot,
+		moneyGained
+	}));
+}
+
+async function applyScrapDealerRecycleUnderLock(
+	player: Locked<Player>,
+	reaction: ReactionCollectorScrapDealerRecycleReaction,
+	response: CrowniclesPacket[]
+): Promise<void> {
+	const slotFilter: RecycleSlotFilter = {
+		playerId: player.id,
+		slot: reaction.slot,
+		itemCategory: reaction.itemCategory,
+		itemId: reaction.itemId
+	};
+	const inventorySlot = await findRecyclableSlotUnderLock(slotFilter);
+	const itemData = inventorySlot ? getBlacksmithItemData(inventorySlot) : null;
+	if (!inventorySlot || !itemData) {
+		CrowniclesLogger.warn(`Player ${player.keycloakId} tried to recycle an equipment that is not recyclable anymore.`);
+		return;
+	}
+
+	const itemLevel = inventorySlot.itemLevel ?? 0;
+	const materialLoot = getScrapDealerMaterials(itemData, itemLevel);
+	if (materialLoot.length === 0) {
+		CrowniclesLogger.warn(`Player ${player.keycloakId} tried to recycle an equipment yielding no material.`);
+		return;
+	}
+
+	// Guards against a concurrent recycle of the same slot: only the call that actually deleted the row pays out.
+	if (await InventorySlot.destroy({ where: slotFilter }) === 0) {
+		return;
+	}
+
+	await grantRecycleRewardsUnderLock({
+		player,
+		item: itemData,
+		materialLoot,
+		response
+	});
+	logRecycle(player, reaction, itemLevel);
+}
+
 export async function handleScrapDealerRecycleReaction(
 	player: Player,
 	reaction: ReactionCollectorScrapDealerRecycleReaction,
 	data: ReactionCollectorCityData,
 	response: CrowniclesPacket[]
 ): Promise<void> {
-	const scrapDealer = data.scrapDealer;
-	if (!scrapDealer) {
-		CrowniclesLogger.error(`Player ${player.keycloakId} tried to use the scrap dealer without scrap dealer data.`);
-		return;
-	}
-
-	const listedItem = scrapDealer.recyclableItems.find(item =>
-		item.slot === reaction.slot
-		&& item.category === reaction.itemCategory
-		&& item.itemId === reaction.itemId);
-	if (!listedItem) {
+	if (!findListedItem(data, reaction)) {
 		CrowniclesLogger.error(`Player ${player.keycloakId} tried to recycle an item that is not listed by the scrap dealer.`);
 		return;
 	}
 
-	await withLockedPlayerAndMissions(player.id, async lockedPlayer => {
-		const slotFilter = {
-			playerId: lockedPlayer.id,
-			slot: reaction.slot,
-			itemCategory: reaction.itemCategory,
-			itemId: reaction.itemId
-		};
-		const inventorySlot = await InventorySlot.findOne({ where: slotFilter });
-		if (!inventorySlot || !isRecyclable(inventorySlot)) {
-			CrowniclesLogger.warn(`Player ${player.keycloakId} tried to recycle an equipment that is not recyclable anymore.`);
-			return;
-		}
-
-		const itemData = getBlacksmithItemData(inventorySlot);
-		if (!itemData) {
-			CrowniclesLogger.warn(`Player ${player.keycloakId} tried to recycle an unknown equipment.`);
-			return;
-		}
-
-		const itemLevel = inventorySlot.itemLevel ?? 0;
-		const materialLoot = getScrapDealerMaterials(itemData, itemLevel);
-		if (materialLoot.length === 0) {
-			CrowniclesLogger.warn(`Player ${player.keycloakId} tried to recycle an equipment yielding no material.`);
-			return;
-		}
-
-		if (await InventorySlot.destroy({ where: slotFilter }) === 0) {
-			return;
-		}
-
-		await applyMaterialLoot(lockedPlayer.id, materialLoot);
-		await updateCollectMaterialsMission(lockedPlayer, response, materialLoot);
-
-		const moneyGained = getScrapDealerMoney(itemData);
-		await lockedPlayer.addMoney({
-			response,
-			amount: moneyGained,
-			reason: NumberChangeReason.SCRAP_DEALER_RECYCLE,
-			ignoreBlessing: true
-		});
-		await lockedPlayer.save();
-
-		response.push(makePacket(CommandReportScrapDealerRecycleRes, {
-			materialLoot,
-			moneyGained
-		}));
-
-		const cityId = lockedPlayer.getCurrentCityId();
-		if (cityId) {
-			crowniclesInstance?.logsDatabase.logScrapDealerRecycle({
-				keycloakId: lockedPlayer.keycloakId,
-				cityId,
-				itemCategory: reaction.itemCategory,
-				itemId: reaction.itemId,
-				itemLevel,
-				slot: reaction.slot
-			}).then();
-		}
-	});
+	await withLockedPlayerAndMissions(player.id, lockedPlayer => applyScrapDealerRecycleUnderLock(lockedPlayer, reaction, response));
 }
