@@ -43,7 +43,7 @@ describe("Chest deposit mission (issue #4589)", () => {
 	let PlayerMissionsInfo: ModelStatic<PlayerMissionsInfoType>;
 	let chestService: ReportCityChestServiceModule;
 
-	async function setupPlayerWithFullChest(): Promise<PlayerType> {
+	async function setupPlayerWithSwappableItems(): Promise<PlayerType> {
 		const player = await Player.create({ keycloakId: KEYCLOAK_ID });
 		const home = await Home.create({
 			ownerId: player.id,
@@ -123,7 +123,7 @@ describe("Chest deposit mission (issue #4589)", () => {
 	});
 
 	it("progresses the deposit mission when swapping an inventory item with a chest item", async () => {
-		const player = await setupPlayerWithFullChest();
+		const player = await setupPlayerWithSwappableItems();
 		const swapPacket: CommandReportHomeChestActionReq = {
 			action: HomeConstants.CHEST_ACTIONS.SWAP,
 			slot: 0,
@@ -138,7 +138,7 @@ describe("Chest deposit mission (issue #4589)", () => {
 	});
 
 	it("leaves the deposit mission untouched when withdrawing an item", async () => {
-		const player = await setupPlayerWithFullChest();
+		const player = await setupPlayerWithSwappableItems();
 		await InventorySlot.update({ itemId: 0 }, {
 			where: {
 				playerId: player.id,
