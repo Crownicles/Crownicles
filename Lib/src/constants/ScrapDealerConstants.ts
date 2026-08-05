@@ -7,4 +7,7 @@ export abstract class ScrapDealerConstants {
 	static readonly BASE_VALUE_MULTIPLIER = 8;
 
 	static readonly VALUE_MULTIPLIER_PER_LEVEL = 4;
+
+	/** Share of the item sell price given back as coins, on top of the materials. */
+	static readonly MONEY_VALUE_RATIO = 0.6;
 }

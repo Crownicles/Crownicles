@@ -8,6 +8,7 @@ export type ScrapDealerItem = {
 	itemId: number;
 	details: MainItemDetails;
 	recoveredMaterials: MaterialQuantity[];
+	recoveredMoney: number;
 };
 
 export type ScrapDealerData = {

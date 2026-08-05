@@ -59,7 +59,8 @@ function getScrapDealerItemDescription(item: ScrapDealerItem, lng: Language): st
 	return i18n.t("commands:report.city.scrapDealer.itemPreview", {
 		lng,
 		itemDisplay: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
-		materials: formatMaterialLoot(item.recoveredMaterials, lng)
+		materials: formatMaterialLoot(item.recoveredMaterials, lng),
+		money: item.recoveredMoney
 	});
 }
 
@@ -226,7 +227,8 @@ function getScrapDealerConfirmMenu(params: CityMenuParams, itemIndex: number): C
 		i18n.t("commands:report.city.scrapDealer.confirmDescription", {
 			lng,
 			itemDisplay: DisplayUtils.getItemDisplayWithStatsWithoutMaxValues(item.details, lng),
-			materials: formatMaterialLoot(item.recoveredMaterials, lng)
+			materials: formatMaterialLoot(item.recoveredMaterials, lng),
+			money: item.recoveredMoney
 		}),
 		params
 	);
