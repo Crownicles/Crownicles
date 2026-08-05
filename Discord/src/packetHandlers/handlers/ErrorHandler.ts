@@ -137,9 +137,7 @@ export default class ErrorHandler {
 
 	@packetHandler(ErrorInternalPacket)
 	async internalErrorHandler(context: PacketContext, _packet: ErrorInternalPacket): Promise<void> {
-		await handleClassicError(context, "error:internalError", {}, {
-			forcedTitle: "error:unexpectedError"
-		});
+		await handleClassicError(context, "error:aDevMessedUp");
 	}
 
 	@packetHandler(ErrorMaintenancePacket)
