@@ -1,7 +1,7 @@
 import { LogsDailyPotions } from "./models/LogsDailyPotions";
 import { LogsClassicalShopBuyouts } from "./models/LogsClassicalShopBuyouts";
 import {
-	col, fn, HasOne, Op
+	HasOne, Op
 } from "sequelize";
 import { ShopItemType } from "../../../../../Lib/src/constants/LogsConstants";
 import { LogsDatabase } from "./LogsDatabase";
@@ -31,13 +31,13 @@ import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
 import { LogsPlayerLeagueReward } from "./models/LogsPlayerLeagueReward";
 import { LogsPlayersClassChanges } from "./models/LogsPlayersClassChanges";
 import Player from "../game/models/Player";
-import { MapCache } from "../../maps/MapCache";
 import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
 import { LogsGuildsJoins } from "./models/LogsGuildJoins";
 import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
 import { LogsExpeditions } from "./models/LogsExpeditions";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
+import { getPveIslandLeaveDates } from "./requests/LogsPveIslandRequests";
 
 export type RankedFightResult = {
 	won: number;
@@ -54,16 +54,6 @@ export type PersonalFightDailySummary = {
 export type WeeklyShopBuyoutScope = {
 	playerId: number;
 	startOfWeek: Second;
-};
-
-type LastIslandTravel = {
-	playerId: number;
-	lastDate: number;
-};
-
-type LeaveIslandTravel = {
-	playerId: number;
-	leaveDate: number;
 };
 
 /**
@@ -179,51 +169,11 @@ export class LogsReadRequests {
 	}
 
 	/**
-	 * Get the date at which each of the given log players left the pve island, for those who left it since their last travel on it
-	 */
-	private static async getPveIslandLeaveDates(logsPlayerIds: number[]): Promise<LeaveIslandTravel[]> {
-		// Last time each player travelled on the island
-		const lastIslandTravels = await LogsPlayersTravels.findAll({
-			attributes: [
-				"playerId",
-				[fn("MAX", col("date")), "lastDate"]
-			],
-			where: {
-				playerId: { [Op.in]: logsPlayerIds },
-				mapLinkId: { [Op.in]: MapCache.logsPveIslandMapLinks }
-			},
-			group: ["playerId"],
-			raw: true
-		}) as unknown as LastIslandTravel[]; // Sequelize cannot type the shape of an aggregated raw query
-
-		if (lastIslandTravels.length === 0) {
-			return [];
-		}
-
-		// The first travel outside the island following the last travel on it is when the player left it
-		return await LogsPlayersTravels.findAll({
-			attributes: [
-				"playerId",
-				[fn("MIN", col("date")), "leaveDate"]
-			],
-			where: {
-				mapLinkId: { [Op.notIn]: MapCache.logsPveIslandMapLinks },
-				[Op.or]: lastIslandTravels.map(travel => ({
-					playerId: travel.playerId,
-					date: { [Op.gt]: travel.lastDate }
-				}))
-			},
-			group: ["playerId"],
-			raw: true
-		}) as unknown as LeaveIslandTravel[]; // Sequelize cannot type the shape of an aggregated raw query
-	}
-
-	/**
 	 * Get the members of the player's guild that left the pve island recently enough to still be considered as allies.
 	 * Members still on the island have no leave date and are handled by the caller.
 	 */
 	static async getGuildMembersThatWereOnPveIsland(player: Player): Promise<Player[]> {
-		if (!player.guildId || MapCache.logsPveIslandMapLinks.length === 0) {
+		if (!player.guildId) {
 			return [];
 		}
 
@@ -240,7 +190,7 @@ export class LogsReadRequests {
 			where: { keycloakId: { [Op.in]: playersInGuild.map(guildMember => guildMember.keycloakId) } }
 		});
 
-		const leaveTravels = await LogsReadRequests.getPveIslandLeaveDates(logsPlayers.map(logsPlayer => logsPlayer.id));
+		const leaveTravels = await getPveIslandLeaveDates(logsPlayers.map(logsPlayer => logsPlayer.id));
 		const oldestAcceptedLeaveDate = dateToLogs(new Date(Date.now() - PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND));
 		const recentlyLeftLogsPlayerIds = leaveTravels
 			.filter(travel => travel.leaveDate > oldestAcceptedLeaveDate)
