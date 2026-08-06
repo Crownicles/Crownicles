@@ -5,7 +5,6 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../Lib/src/packets/CrowniclesPacket";
 import {
-	ErrorInternalPacket,
 	ErrorMaintenancePacket,
 	ErrorResetIsNow
 } from "../../Lib/src/packets/commands/ErrorPacket";
@@ -75,8 +74,7 @@ function globalStopOfPlayers(response: CrowniclesPacket[], dataJson: IncomingPac
 async function dispatchPacket(response: CrowniclesPacket[], context: PacketContext, dataJson: IncomingPacketData): Promise<void> {
 	const listener = crowniclesInstance!.packetListener.getListener(dataJson.packet.name);
 	if (!listener) {
-		CrowniclesLogger.error(`No listener found for packet '${dataJson.packet.name}'`);
-		response.push(makePacket(ErrorInternalPacket, {}));
+		PacketUtils.pushInternalError(response, `No listener found for packet '${dataJson.packet.name}'`);
 		return;
 	}
 
@@ -93,10 +91,7 @@ async function dispatchPacket(response: CrowniclesPacket[], context: PacketConte
 		await listener(response, context, dataJson.packet.data);
 	}
 	catch (error: unknown) {
-		CrowniclesLogger.errorWithObj(`Error while processing packet '${dataJson.packet.name}'`, error);
-
-		// The cause stays server-side: exception messages can leak database and infrastructure details
-		response.push(makePacket(ErrorInternalPacket, {}));
+		PacketUtils.pushInternalError(response, `Error while processing packet '${dataJson.packet.name}'`, error);
 		CrowniclesCoreMetrics.incrementPacketErrorCount(dataJson.packet.name);
 	}
 	CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(msDiff(nowMs(), startTime)));

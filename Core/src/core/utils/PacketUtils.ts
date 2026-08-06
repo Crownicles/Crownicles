@@ -1,5 +1,5 @@
 import {
-	CrowniclesPacket, PacketContext
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { botConfig } from "../../bootstrap";
 import { mqttClient } from "../../mqttClient";
@@ -9,8 +9,26 @@ import { NotificationsSerializedPacket } from "../../../../Lib/src/packets/notif
 import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 
 export abstract class PacketUtils {
+	/**
+	 * Report a failure the player can do nothing about: the reason is logged server-side and the front only
+	 * gets a generic error. Exception messages and internal identifiers must never reach the player (CWE-209).
+	 * @param response
+	 * @param reason
+	 * @param cause The caught exception, when the failure comes from one
+	 */
+	static pushInternalError(response: CrowniclesPacket[], reason: string, cause?: unknown): void {
+		if (cause === undefined) {
+			CrowniclesLogger.error(reason);
+		}
+		else {
+			CrowniclesLogger.errorWithObj(reason, cause);
+		}
+		response.push(makePacket(ErrorInternalPacket, {}));
+	}
+
 	/**
 	 * The death of a player is detected as soon as their health reaches 0, which can happen in the middle of a flow
 	 * (e.g. before the outcome of a big event has been described). Sending the death packets last keeps the kill
