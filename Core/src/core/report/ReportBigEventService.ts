@@ -28,7 +28,7 @@ import {
 	ReactionCollectorBigEvent,
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { TravelTime } from "../maps/TravelTime";
 import { Maps } from "../maps/Maps";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -337,7 +337,8 @@ export async function doRandomBigEvent(
 		const mapId = player.getDestinationId()!;
 		const randomEvent = await BigEventDataController.instance.getRandomEvent(mapId, player);
 		if (!randomEvent) {
-			response.push(makePacket(ErrorPacket, { message: "It seems that there is no event here... It's a bug, please report it to the Crownicles staff." }));
+			CrowniclesLogger.error(`No big event available on map ${mapId} for player ${player.keycloakId}`);
+			response.push(makePacket(ErrorInternalPacket, {}));
 			return;
 		}
 		event = randomEvent;

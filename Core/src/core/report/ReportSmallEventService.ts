@@ -8,9 +8,7 @@ import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import {
-	ErrorInternalPacket, ErrorPacket
-} from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../app";
@@ -38,7 +36,8 @@ async function checkSmallEventEligibility(
 	const file = await import(`../smallEvents/${key}.js`);
 
 	if (!file.smallEventFuncs?.canBeExecuted) {
-		response.push(makePacket(ErrorPacket, { message: `${key} doesn't contain a canBeExecuted function` }));
+		CrowniclesLogger.error(`Small event ${key} doesn't contain a canBeExecuted function`);
+		response.push(makePacket(ErrorInternalPacket, {}));
 		return null;
 	}
 
@@ -138,7 +137,8 @@ async function loadAndExecuteSmallEvent(
 		}
 	}
 	catch {
-		response.push(makePacket(ErrorPacket, { message: `${filename} doesn't exist` }));
+		CrowniclesLogger.error(`Small event file ${filename} doesn't exist`);
+		response.push(makePacket(ErrorInternalPacket, {}));
 	}
 }
 
@@ -193,7 +193,8 @@ export async function executeSmallEvent(
 	const event = forced ?? await getRandomSmallEvent(response, player, playerActiveObjects);
 
 	if (!event) {
-		response.push(makePacket(ErrorPacket, { message: "No small event can be executed..." }));
+		CrowniclesLogger.error(`No small event can be executed for player ${player.keycloakId}`);
+		response.push(makePacket(ErrorInternalPacket, {}));
 		return;
 	}
 

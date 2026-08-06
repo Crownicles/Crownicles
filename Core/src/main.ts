@@ -7,7 +7,6 @@ import {
 import {
 	ErrorInternalPacket,
 	ErrorMaintenancePacket,
-	ErrorPacket,
 	ErrorResetIsNow
 } from "../../Lib/src/packets/commands/ErrorPacket";
 import { PacketUtils } from "./core/utils/PacketUtils";
@@ -76,9 +75,8 @@ function globalStopOfPlayers(response: CrowniclesPacket[], dataJson: IncomingPac
 async function dispatchPacket(response: CrowniclesPacket[], context: PacketContext, dataJson: IncomingPacketData): Promise<void> {
 	const listener = crowniclesInstance!.packetListener.getListener(dataJson.packet.name);
 	if (!listener) {
-		const errorMessage = `No listener found for packet '${dataJson.packet.name}'`;
-		CrowniclesLogger.error(errorMessage);
-		response.push(makePacket(ErrorPacket, { message: errorMessage }));
+		CrowniclesLogger.error(`No listener found for packet '${dataJson.packet.name}'`);
+		response.push(makePacket(ErrorInternalPacket, {}));
 		return;
 	}
 

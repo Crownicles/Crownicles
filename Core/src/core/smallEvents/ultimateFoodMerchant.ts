@@ -18,7 +18,8 @@ import { SmallEventUltimateFoodMerchantPacket } from "../../../../Lib/src/packet
 import { SmallEventFuncs } from "../../data/SmallEvent";
 import { Maps } from "../maps/Maps";
 import { Constants } from "../../../../Lib/src/constants/Constants";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { BlessingManager } from "../blessings/BlessingManager";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
 import {
@@ -145,7 +146,8 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const packet: SmallEventUltimateFoodMerchantPacket = { interactionName: generateReward(player, guild) };
 		await giveReward(packet, response, context, player, guild);
 		if (packet.interactionName === Constants.DEFAULT_ERROR) {
-			response.push(makePacket(ErrorPacket, { message: "SmallEvent Ultimate Food Merchant : cannot determine an interaction for the user" }));
+			CrowniclesLogger.error(`Small event ultimate food merchant: cannot determine an interaction for player ${player.keycloakId}`);
+			response.push(makePacket(ErrorInternalPacket, {}));
 			return;
 		}
 
