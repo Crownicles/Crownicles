@@ -137,6 +137,11 @@ export default class ErrorHandler {
 
 	@packetHandler(ErrorInternalPacket)
 	async internalErrorHandler(context: PacketContext, _packet: ErrorInternalPacket): Promise<void> {
+		// The interaction often expired already, since the packet that failed took long enough to break
+		if (!DiscordCache.getInteraction(context.discord!.interaction)) {
+			return;
+		}
+
 		await handleClassicError(context, "error:aDevMessedUp");
 	}
 
