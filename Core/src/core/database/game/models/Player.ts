@@ -60,10 +60,8 @@ import { ClassInfoConstants } from "../../../../../../Lib/src/constants/ClassInf
 import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
 import { MapConstants } from "../../../../../../Lib/src/constants/MapConstants";
 import { Effect } from "../../../../../../Lib/src/types/Effect";
-import { ScheduledReportNotifications } from "./ScheduledReportNotification";
-import { PacketUtils } from "../../../utils/PacketUtils";
+import { dispatchOrRescheduleArrivalNotification } from "../../../bot/ReportNotifications";
 import { StatValues } from "../../../../../../Lib/src/types/StatValues";
-import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
 import { MathUtils } from "../../../utils/MathUtils";
@@ -2029,46 +2027,7 @@ export function initModel(sequelize: Sequelize): void {
 			return;
 		}
 
-		const handleNotifications = async (): Promise<void> => {
-			// Report Notification
-			const now = new Date();
-			const travelEndDate = new Date(TravelTime.getTravelDataSimplified(instance, now).travelEndTime);
-			const destinationId = instance.getDestinationId();
-
-			if (
-				travelEndDate > now
-				&& destinationId !== null
-			) {
-				// Still travelling: (re)schedule the arrival notification (upsert overwrites any stale row).
-				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
-				return;
-			}
-
-			/*
-			 * Arrived: claim the pending row atomically. Only the winner of the claim dispatches
-			 * the notification, so the periodic poller can never send a duplicate (issue #4562).
-			 */
-			const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
-			if (!pendingReportNotification) {
-				return;
-			}
-			const claimed = await ScheduledReportNotifications.claimNotification(instance.id);
-			if (!claimed || destinationId !== pendingReportNotification.mapId) {
-				return;
-			}
-			const mapLocation = MapLocationDataController.instance.getById(pendingReportNotification.mapId);
-			if (mapLocation) {
-				PacketUtils.sendNotifications([
-					makePacket(ReachDestinationNotificationPacket, {
-						keycloakId: pendingReportNotification.keycloakId,
-						mapType: mapLocation.type,
-						mapId: pendingReportNotification.mapId
-					})
-				]);
-			}
-		};
-
-		scheduleAfterCommit(handleNotifications, error => {
+		scheduleAfterCommit(async () => await dispatchOrRescheduleArrivalNotification(instance), error => {
 			CrowniclesLogger.errorWithObj("Error while handling notifications", error);
 		}, options.transaction);
 	});

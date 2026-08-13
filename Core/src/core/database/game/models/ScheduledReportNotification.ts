@@ -38,6 +38,20 @@ export abstract class ScheduledReportNotifications {
 	}
 
 	/**
+	 * Update the pending notification of a player, if any.
+	 *
+	 * Never creates a row: once the arrival of a travel has been notified, any later change of the
+	 * travel timers (an alteration granted by the arrival big event, for instance) must not schedule
+	 * a second arrival notification for a travel that is already over (issue #4626).
+	 */
+	static async rescheduleNotification(playerId: number, mapId: number, scheduledAt: Date): Promise<void> {
+		await ScheduledReportNotification.update({
+			mapId,
+			scheduledAt
+		}, { where: { playerId } });
+	}
+
+	/**
 	 * Atomically claim (delete) the scheduled notification of a player.
 	 *
 	 * The row acts as a single-use token: the DELETE is serialised by the

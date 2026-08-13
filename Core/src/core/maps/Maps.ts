@@ -21,6 +21,7 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CityDataController } from "../../data/City";
+import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
 
 export type OptionsStartBoatTravel = {
 	startTravelTimestamp: number;
@@ -95,6 +96,17 @@ export class Maps {
 		player.startTravelDate = new Date(time);
 		player.insideCity = false;
 		await player.save();
+
+		const destinationId = player.getDestinationId();
+		if (destinationId !== null) {
+			// The arrival notification only exists for the travel that is starting here; later saves may refresh it but never recreate it
+			await ScheduledReportNotifications.scheduleNotification(
+				player.id,
+				player.keycloakId,
+				destinationId,
+				new Date(TravelTime.getTravelDataSimplified(player, new Date()).travelEndTime)
+			);
+		}
 
 		crowniclesInstance?.logsDatabase.logNewTravel(player.keycloakId, newLink)
 			.then();
