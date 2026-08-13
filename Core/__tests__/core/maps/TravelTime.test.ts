@@ -146,6 +146,36 @@ describe('TravelTime', () => {
 		expect(save).toHaveBeenCalledOnce();
 	});
 
+	it('removeEffect keeps a non travelling player stationary', async () => {
+		vi.spyOn(TravelTime, 'timeTravelMilliseconds').mockResolvedValue();
+		const player: any = {
+			effectRemainingTime: () => 0,
+			effectDuration: 1440,
+			startTravelDate: new Date(0),
+			effectEndDate: new Date(now),
+			effectId: 'occupied',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(0);
+		expect(Maps.isTravelling(player)).toBe(false);
+	});
+
+	it('timeTravel keeps a non travelling player stationary', async () => {
+		const player: any = {
+			effectEndDate: new Date(now + 5_000),
+			startTravelDate: new Date(0),
+			id: 1,
+			keycloakId: 'user123'
+		};
+
+		await TravelTime.timeTravelMilliseconds(player, asMilliseconds(-500_000), 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(0);
+	});
+
 	it('applyEffect sets new effect and logs', async () => {
 		const save = vi.fn().mockResolvedValue(undefined);
 		const player: any = {
