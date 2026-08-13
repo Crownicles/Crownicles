@@ -126,6 +126,10 @@ export class CommandMissionShopMarketAnalysis extends CrowniclesPacket {
 	 */
 	plantRotation?: {
 		horizonIndex: number;
+
+		/** Exact number of days before the rotation, so the report does not round it up to the next forecast horizon */
+		daysUntilRotation: number;
+
 		newPlantIds: PlantId[];
 
 		/**
