@@ -15,7 +15,6 @@ import { DiscordAnnouncement } from "../announcements/DiscordAnnouncement";
 import { NotificationsHandler } from "../notifications/NotificationsHandler";
 import { NotificationsSerializedPacket } from "../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
 import { LANGUAGE } from "../../../Lib/src/Language";
-import { TextChannel } from "discord.js";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import { MqttTopicUtils } from "../../../Lib/src/utils/MqttTopicUtils";
@@ -235,7 +234,7 @@ export class DiscordMQTT {
 		const lng = context.discord.language ?? LANGUAGE.ENGLISH;
 		try {
 			const channel = await crowniclesClient.channels.fetch(context.discord.channel);
-			if (channel instanceof TextChannel) {
+			if (channel?.isTextBased() && channel.isSendable()) {
 				await channel.send({ embeds: [
 					new CrowniclesEmbed()
 						.setErrorColor()
