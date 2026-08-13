@@ -222,7 +222,11 @@ export abstract class TravelTime {
 
 		// Move the start of the travel because the effect will have a duration of 0
 		if (Maps.isTravelling(player)) {
-			player.startTravelDate = new Date(player.startTravelDate.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)));
+			// Clamped to now: an effect started before the current travel (e.g. while staying in a city) never delayed it
+			player.startTravelDate = new Date(Math.min(
+				player.startTravelDate.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)),
+				nowMs()
+			));
 		}
 
 		// Now we can safely remove the effect, as the player is after the effect
