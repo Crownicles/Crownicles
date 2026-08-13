@@ -219,20 +219,33 @@ export class DiscordMQTT {
 				CrowniclesLogger.errorWithObj("Error while handling packet", error);
 				CrowniclesDiscordMetrics.incrementPacketErrorCount(packet.name);
 
-				const context = dataJson.context as PacketContext;
-				const lng = context.discord?.language ?? LANGUAGE.ENGLISH;
-				if (context.discord?.channel) {
-					const channel = await crowniclesClient.channels.fetch(context.discord.channel);
-					if (channel instanceof TextChannel) {
-						await channel.send({ embeds: [
-							new CrowniclesEmbed()
-								.setErrorColor()
-								.setTitle(i18n.t("error:errorOccurredTitle", { lng }))
-								.setDescription(i18n.t("error:errorOccurred", { lng }))
-						] });
-					}
-				}
+				await DiscordMQTT.notifyErrorInChannel(context);
 			}
+		}
+	}
+
+	/**
+	 * Warn the player in the channel where the command was launched that an error occurred
+	 * @param context
+	 */
+	private static async notifyErrorInChannel(context: PacketContext): Promise<void> {
+		if (!context.discord?.channel) {
+			return;
+		}
+		const lng = context.discord.language ?? LANGUAGE.ENGLISH;
+		try {
+			const channel = await crowniclesClient.channels.fetch(context.discord.channel);
+			if (channel instanceof TextChannel) {
+				await channel.send({ embeds: [
+					new CrowniclesEmbed()
+						.setErrorColor()
+						.setTitle(i18n.t("error:errorOccurredTitle", { lng }))
+						.setDescription(i18n.t("error:errorOccurred", { lng }))
+				] });
+			}
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj(`Unable to send the error message in channel ${context.discord.channel}`, error);
 		}
 	}
 
