@@ -14,6 +14,9 @@ import type { PlayerMissionsInfo as PlayerMissionsInfoType } from "../../src/cor
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import { HomeConstants } from "../../../Lib/src/constants/HomeConstants";
 import { CommandReportHomeChestActionReq } from "../../../Lib/src/packets/commands/CommandReportPacket";
+import { HomeLevel } from "../../../Lib/src/types/HomeLevel";
+import { hoursToMilliseconds } from "../../../Lib/src/utils/TimeUtils";
+import { asHours } from "../../../Lib/src/types/TimeTypes";
 
 type ReportCityChestServiceModule = typeof import("../../src/core/report/ReportCityChestService");
 
@@ -22,8 +25,13 @@ const INVENTORY_WEAPON_ID = 1;
 const CHEST_WEAPON_ID = 2;
 const CHEST_SLOT = 1;
 const MISSION_OBJECTIVE = 100;
-const ONE_HOUR = 3_600_000;
-const HOME_LEVEL_WITH_CHEST = 8;
+const ONE_HOUR_MS = hoursToMilliseconds(asHours(1));
+
+// Max home level: every chest category has enough slots for the swap scenario.
+const HOME_LEVEL_WITH_CHEST = HomeLevel.LEVEL_8.level;
+
+// Withdrawing takes an item out of the chest, so no destination chest slot applies.
+const NO_CHEST_SLOT = -1;
 
 /**
  * Functional regression test for issue #4589.
@@ -57,7 +65,7 @@ describe("Chest deposit mission (issue #4589)", () => {
 			missionVariant: 0,
 			missionObjective: MISSION_OBJECTIVE,
 			numberDone: 0,
-			expiresAt: new Date(Date.now() + ONE_HOUR),
+			expiresAt: new Date(Date.now() + ONE_HOUR_MS),
 			gemsToWin: 0,
 			pointsToWin: 0,
 			xpToWin: 0,
@@ -149,7 +157,7 @@ describe("Chest deposit mission (issue #4589)", () => {
 			action: HomeConstants.CHEST_ACTIONS.WITHDRAW,
 			slot: CHEST_SLOT,
 			itemCategory: ItemCategory.WEAPON,
-			chestSlot: -1
+			chestSlot: NO_CHEST_SLOT
 		};
 
 		const result = await chestService.handleChestAction(KEYCLOAK_ID, withdrawPacket, []);
