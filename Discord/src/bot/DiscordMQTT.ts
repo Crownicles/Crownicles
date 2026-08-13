@@ -6,7 +6,7 @@ import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
-import { ErrorPacket } from "../../../Lib/src/packets/commands/ErrorPacket";
+import { ErrorInternalPacket } from "../../../Lib/src/packets/commands/ErrorPacket";
 import {
 	connect, MqttClient
 } from "mqtt";
@@ -208,8 +208,9 @@ export class DiscordMQTT {
 
 				let listener = DiscordMQTT.packetListener.getListener(packet.name);
 				if (!listener) {
-					packet.packet = makePacket(ErrorPacket, { message: `No packet listener found for received packet '${packet.name}'.\n\nData:\n${JSON.stringify(packet.packet)}` });
-					listener = DiscordMQTT.packetListener.getListener("ErrorPacket")!;
+					CrowniclesLogger.error(`No packet listener found for received packet '${packet.name}'.`, { packet: packet.packet });
+					packet.packet = makePacket(ErrorInternalPacket, {});
+					listener = DiscordMQTT.packetListener.getListener("ErrorInternalPacket")!;
 				}
 				const startTime = nowMs();
 				await listener(context as PacketContext, packet.packet as CrowniclesPacket);

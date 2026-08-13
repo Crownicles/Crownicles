@@ -65,7 +65,6 @@
   "guildNameNotValid": "Les règles pour le nom d'une guilde sont les suivantes:\n$t(error:stringRules)",
   "alreadyInAGuild": "Vous appartenez déjà à une guilde.",
   "petDoesntExist": "Aucun familier n'a été trouvé.",
-  "unexpectedError": "Une erreur est survenue :(",
   "pleaseWaitForHeal": "Veuillez attendre la fin des soins de votre altération d'état pour continuer à jouer : {{time}}",
   "pleaseWaitForHisHeal": "Veuillez attendre la fin des soins de son altération d'état : {{time}}",
   "notEnoughMoney": "Vous n'avez pas assez d'argent pour effectuer cette action. Il vous manque {{money, number}} {emote:unitValues.money}.",

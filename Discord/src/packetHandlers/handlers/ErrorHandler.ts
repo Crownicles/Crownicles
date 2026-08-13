@@ -6,7 +6,6 @@ import {
 	ErrorBannedPacket,
 	ErrorInternalPacket,
 	ErrorMaintenancePacket,
-	ErrorPacket,
 	ErrorResetIsNow,
 	ErrorSeasonEndIsNow
 } from "../../../../Lib/src/packets/commands/ErrorPacket";
@@ -34,20 +33,6 @@ type EmbedReplyOptions = {
 };
 
 export default class ErrorHandler {
-	@packetHandler(ErrorPacket)
-	async errorHandler(context: PacketContext, packet: ErrorPacket): Promise<void> {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		if (!interaction) {
-			return;
-		}
-		const embed = new CrowniclesEmbed()
-			.setErrorColor()
-			.setTitle(i18n.t("error:unexpectedError", { lng: interaction.userLanguage }))
-			.setDescription(packet.message);
-
-		await interaction.channel.send({ embeds: [embed] });
-	}
-
 	@packetHandler(BlockedPacket)
 	async blockedHandler(context: PacketContext, packet: BlockedPacket): Promise<void> {
 		const target = ErrorHandler.getBlockedReplyTarget(context);
