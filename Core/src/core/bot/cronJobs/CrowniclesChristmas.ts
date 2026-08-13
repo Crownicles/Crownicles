@@ -13,6 +13,7 @@ import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstant
 import { TimeoutFunctionsConstants } from "../../../../../Lib/src/constants/TimeoutFunctionsConstants";
 import { ChristmasConstants } from "../../../../../Lib/src/constants/ChristmasConstants";
 import { hoursToMilliseconds } from "../../../../../Lib/src/utils/TimeUtils";
+import { literal } from "sequelize";
 
 export class CrowniclesChristmas {
 	/**
@@ -95,9 +96,9 @@ export class CrowniclesChristmas {
 
 		CrowniclesLogger.info("Applying Christmas token bonus to all players...");
 
-		// Set all players' tokens to maximum
+		// Refill all players' tokens, without cutting down those who are above the cap
 		await Player.update(
-			{ tokens: TokensConstants.MAX },
+			{ tokens: literal(`GREATEST(tokens, ${TokensConstants.MAX})`) },
 			{ where: {} }
 		);
 

@@ -50,7 +50,8 @@ export class CrowniclesDaily {
 
 		await Player.update(
 			{
-				tokens: literal(`LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY})`)
+				// Mirrors computeNewTokens: players above the cap (expedition and big event rewards) keep their tokens instead of being cut down to MAX
+				tokens: literal(`GREATEST(tokens, LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY}))`)
 			},
 			{ where: {} }
 		);

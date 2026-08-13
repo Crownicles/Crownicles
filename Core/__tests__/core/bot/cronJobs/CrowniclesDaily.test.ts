@@ -41,6 +41,8 @@ vi.mock("../../../../src/core/bot/CrowniclesCoreMetrics", () => ({
 
 import { CrowniclesDaily } from "../../../../src/core/bot/cronJobs/CrowniclesDaily";
 import { CrowniclesCoreMetrics } from "../../../../src/core/bot/CrowniclesCoreMetrics";
+import Player from "../../../../src/core/database/game/models/Player";
+import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
 
 type Gate<T> = {
 	promise: Promise<T>;
@@ -73,6 +75,26 @@ describe("CrowniclesDaily.job", () => {
 	beforeEach(() => {
 		vi.restoreAllMocks();
 		vi.mocked(CrowniclesCoreMetrics.incrementDailyTaskFailure).mockReset();
+	});
+
+	it("never cuts down players that are above the token cap", async () => {
+		vi.spyOn(CrowniclesDaily, "randomPotion").mockResolvedValue();
+		vi.spyOn(CrowniclesDaily, "randomLovePointsLoose").mockResolvedValue(false);
+		vi.spyOn(CrowniclesDaily, "reloadEnchanter").mockResolvedValue();
+		vi.spyOn(CrowniclesDaily, "trainingGroundLoveBonus").mockResolvedValue();
+		vi.spyOn(CrowniclesDaily, "pantryAutoFill").mockResolvedValue();
+		vi.mocked(Player.update).mockClear();
+
+		await CrowniclesDaily.job();
+
+		expect(Player.update).toHaveBeenCalledWith(
+			{
+				tokens: expect.objectContaining({
+					val: `GREATEST(tokens, LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY}))`
+				})
+			},
+			{ where: {} }
+		);
 	});
 
 	it("keeps running the other daily tasks when one of them fails", async () => {
