@@ -157,23 +157,25 @@ export async function handleChestAction(
 	 */
 	response.push(makePacket(CommandReportHomeChestActionRes, result));
 
-	/*
-	 * Trigger the mission update only after the Player + Home locks are
-	 * released: `MissionsController.update` additionally locks
-	 * `player_missions_info` then `players`, which would invert the
-	 * already-held `players` lock and risk a deadlock.
-	 */
-	if (result.success && actionPlacesItemInChest(packet.action)) {
-		await MissionsController.update(chestActionContext.player, response, { missionId: "depositChestItem" });
-	}
+	if (result.success) {
+		/*
+		 * Trigger the mission update only after the Player + Home locks are
+		 * released: `MissionsController.update` additionally locks
+		 * `player_missions_info` then `players`, which would invert the
+		 * already-held `players` lock and risk a deadlock.
+		 */
+		if (actionPlacesItemInChest(packet.action)) {
+			await MissionsController.update(chestActionContext.player, response, { missionId: "depositChestItem" });
+		}
 
-	/*
-	 * Withdrawing or swapping brings an item (potentially of higher rarity) back
-	 * into the inventory, so re-evaluate the "have an item of a given rarity"
-	 * mission against the player's best owned item. See issue #4393.
-	 */
-	if (result.success && actionBringsItemToInventory(packet.action)) {
-		await updateHaveItemRarityMission(chestActionContext.player, response);
+		/*
+		 * Withdrawing or swapping brings an item (potentially of higher rarity) back
+		 * into the inventory, so re-evaluate the "have an item of a given rarity"
+		 * mission against the player's best owned item. See issue #4393.
+		 */
+		if (actionBringsItemToInventory(packet.action)) {
+			await updateHaveItemRarityMission(chestActionContext.player, response);
+		}
 	}
 	return result;
 }
