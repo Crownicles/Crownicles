@@ -3,11 +3,12 @@ import {
 } from "../CrowniclesPacket";
 
 /**
- * An unexpected exception was thrown while processing a packet.
- * Carries no detail: the cause is only logged server-side, never shown to the player.
+ * An unexpected failure happened while processing a packet.
+ * Only carries the reason we wrote ourselves, so the player can report it: the caught exception stays server-side.
  */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class ErrorInternalPacket extends CrowniclesPacket {
+	reason!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

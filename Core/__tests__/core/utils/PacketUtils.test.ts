@@ -63,15 +63,16 @@ describe("PacketUtils.pushInternalError", () => {
 		vi.restoreAllMocks();
 	});
 
-	it("sends a packet carrying no detail, so the reason never reaches the player", () => {
-		vi.spyOn(CrowniclesLogger, "error")
+	it("sends the reason to the player but never the caught exception", () => {
+		vi.spyOn(CrowniclesLogger, "errorWithObj")
 			.mockImplementation(() => {});
 		const response: CrowniclesPacket[] = [];
 
-		PacketUtils.pushInternalError(response, "connection timeout on table players");
+		PacketUtils.pushInternalError(response, "the shop could not be built", new Error("connection timeout on table players"));
 
 		expect(response).toHaveLength(1);
 		expect(response[0]).toBeInstanceOf(ErrorInternalPacket);
+		expect((response[0] as ErrorInternalPacket).reason).toBe("the shop could not be built");
 		expect(JSON.stringify(response[0])).not.toContain("connection timeout");
 	});
 
