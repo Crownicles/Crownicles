@@ -163,6 +163,23 @@ describe('TravelTime', () => {
 		expect(Maps.isTravelling(player)).toBe(false);
 	});
 
+	it('removeEffect never pushes the travel start into the future', async () => {
+		vi.spyOn(TravelTime, 'timeTravelMilliseconds').mockResolvedValue();
+		const player: any = {
+			effectRemainingTime: () => 0,
+			// 24h alteration entirely consumed before the travel started
+			effectDuration: 1440,
+			startTravelDate: new Date(now - 60_000),
+			effectEndDate: new Date(now - 60_000),
+			effectId: 'occupied',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(now);
+	});
+
 	it('timeTravel keeps a non travelling player stationary', async () => {
 		const player: any = {
 			effectEndDate: new Date(now + 5_000),
