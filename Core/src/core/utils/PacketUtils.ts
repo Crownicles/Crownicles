@@ -13,8 +13,8 @@ import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorP
 
 export abstract class PacketUtils {
 	/**
-	 * Report a failure the player can do nothing about: the reason is logged server-side and the front only
-	 * gets a generic error. Exception messages and internal identifiers must never reach the player (CWE-209).
+	 * Report a failure the player can do nothing about. The reason describes what went wrong and is shown to the
+	 * player so they can write a useful bug report, while the caught exception is only logged server-side (CWE-209).
 	 * @param response
 	 * @param reason
 	 * @param cause The caught exception, when the failure comes from one
@@ -26,7 +26,7 @@ export abstract class PacketUtils {
 		else {
 			CrowniclesLogger.errorWithObj(reason, cause);
 		}
-		response.push(makePacket(ErrorInternalPacket, {}));
+		response.push(makePacket(ErrorInternalPacket, { reason }));
 	}
 
 	/**
