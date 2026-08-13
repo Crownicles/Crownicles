@@ -282,7 +282,9 @@ function buildRotationSection(packet: CommandMissionShopMarketAnalysis, lng: Lan
 		return "";
 	}
 
-	const horizonLabel = i18n.t(`commands:shop.shopItems.marketAnalysis.horizonLabels.${TIME_HORIZONS[packet.plantRotation.horizonIndex]}`, { lng });
+	const horizonLabel = i18n.t("commands:shop.shopItems.marketAnalysis.rotationHorizon", {
+		lng, count: packet.plantRotation.daysUntilRotation
+	});
 	const newPlantsList = packet.plantRotation.newPlantIds.map(plantId =>
 		i18n.t("commands:shop.shopItems.marketAnalysis.plantHeader", {
 			lng, plantId
