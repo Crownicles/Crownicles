@@ -160,8 +160,10 @@ export abstract class TravelTime {
 		// Move the end date of the effect
 		player.effectEndDate = new Date(Math.max(player.effectEndDate.valueOf() - adjustedTimeMs, 0));
 
-		// Move the start date
-		player.startTravelDate = new Date(Math.max(player.startTravelDate.valueOf() - adjustedTimeMs, 0));
+		// Move the start date, unless the player is not travelling: 0 is the sentinel value meaning "no travel in progress"
+		if (Maps.isTravelling(player)) {
+			player.startTravelDate = new Date(Math.max(player.startTravelDate.valueOf() - adjustedTimeMs, 0));
+		}
 
 		// If the effect is not active anymore and was active before
 		if ((player.effectEndDate.valueOf() < currentTime) && (initialEffectEndDate > currentTime)) {
@@ -219,7 +221,9 @@ export abstract class TravelTime {
 		await TravelTime.timeTravelMilliseconds(player, player.effectRemainingTime(), reason);
 
 		// Move the start of the travel because the effect will have a duration of 0
-		player.startTravelDate = new Date(player.startTravelDate.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)));
+		if (Maps.isTravelling(player)) {
+			player.startTravelDate = new Date(player.startTravelDate.valueOf() + minutesToMilliseconds(asMinutes(player.effectDuration)));
+		}
 
 		// Now we can safely remove the effect, as the player is after the effect
 		player.effectId = Effect.NO_EFFECT.id;
