@@ -5,8 +5,14 @@ import {
 vi.mock("../../../src/core/database/game/models/ScheduledReportNotification", () => ({
 	ScheduledReportNotifications: {
 		getNotificationsBeforeDate: vi.fn(),
-		claimNotification: vi.fn()
+		claimNotification: vi.fn(),
+		rescheduleNotification: vi.fn(),
+		getPendingNotification: vi.fn()
 	}
+}));
+
+vi.mock("../../../src/core/maps/TravelTime", () => ({
+	TravelTime: { getTravelDataSimplified: vi.fn() }
 }));
 
 vi.mock("../../../src/core/utils/PacketUtils", () => ({
@@ -23,8 +29,11 @@ vi.mock("../../../src/data/MapLocation", () => ({
 	}
 }));
 
-import { processDueReportNotifications } from "../../../src/core/bot/ReportNotifications";
+import {
+	dispatchOrRescheduleArrivalNotification, processDueReportNotifications
+} from "../../../src/core/bot/ReportNotifications";
 import { ScheduledReportNotifications } from "../../../src/core/database/game/models/ScheduledReportNotification";
+import { TravelTime } from "../../../src/core/maps/TravelTime";
 import { PacketUtils } from "../../../src/core/utils/PacketUtils";
 import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 
@@ -65,5 +74,54 @@ describe("processDueReportNotifications", () => {
 
 		expect(ScheduledReportNotifications.claimNotification).toHaveBeenCalledWith(1);
 		expect(PacketUtils.sendNotifications).not.toHaveBeenCalled();
+	});
+});
+
+describe("dispatchOrRescheduleArrivalNotification", () => {
+	const now = Date.now();
+
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it("never resurrects a notification for a travel that is already over", async () => {
+		// The arrival big event granted an alteration, pushing the travel end back into the future
+		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue({ travelEndTime: now + 3_600_000 } as never);
+
+		await dispatchOrRescheduleArrivalNotification({
+			id: 1,
+			getDestinationId: (): number => 42
+		} as never);
+
+		expect(ScheduledReportNotifications.rescheduleNotification).toHaveBeenCalledWith(1, 42, new Date(now + 3_600_000));
+		expect(PacketUtils.sendNotifications).not.toHaveBeenCalled();
+	});
+
+	it("stays silent when the player has no pending notification left", async () => {
+		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue({ travelEndTime: now - 1_000 } as never);
+		vi.mocked(ScheduledReportNotifications.getPendingNotification).mockResolvedValue(null);
+
+		await dispatchOrRescheduleArrivalNotification({
+			id: 1,
+			getDestinationId: (): number => 42
+		} as never);
+
+		expect(ScheduledReportNotifications.claimNotification).not.toHaveBeenCalled();
+		expect(PacketUtils.sendNotifications).not.toHaveBeenCalled();
+	});
+
+	it("dispatches the arrival notification it claimed", async () => {
+		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue({ travelEndTime: now - 1_000 } as never);
+		vi.mocked(ScheduledReportNotifications.getPendingNotification).mockResolvedValue({
+			playerId: 1, keycloakId: "player", mapId: 42
+		} as never);
+		vi.mocked(ScheduledReportNotifications.claimNotification).mockResolvedValue(true);
+
+		await dispatchOrRescheduleArrivalNotification({
+			id: 1,
+			getDestinationId: (): number => 42
+		} as never);
+
+		expect(PacketUtils.sendNotifications).toHaveBeenCalledOnce();
 	});
 });
