@@ -192,14 +192,14 @@ export class LogsReadRequests {
 
 		const leaveTravels = await getPveIslandLeaveDates(logsPlayers.map(logsPlayer => logsPlayer.id));
 		const oldestAcceptedLeaveDate = dateToLogs(new Date(Date.now() - PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND));
-		const recentlyLeftLogsPlayerIds = leaveTravels
+		const recentlyLeftLogsPlayerIds = new Set(leaveTravels
 			.filter(travel => travel.leaveDate > oldestAcceptedLeaveDate)
-			.map(travel => travel.playerId);
-		const recentlyLeftKeycloakIds = logsPlayers
-			.filter(logsPlayer => recentlyLeftLogsPlayerIds.includes(logsPlayer.id))
-			.map(logsPlayer => logsPlayer.keycloakId);
+			.map(travel => travel.playerId));
+		const recentlyLeftKeycloakIds = new Set(logsPlayers
+			.filter(logsPlayer => recentlyLeftLogsPlayerIds.has(logsPlayer.id))
+			.map(logsPlayer => logsPlayer.keycloakId));
 
-		return playersInGuild.filter(guildMember => recentlyLeftKeycloakIds.includes(guildMember.keycloakId));
+		return playersInGuild.filter(guildMember => recentlyLeftKeycloakIds.has(guildMember.keycloakId));
 	}
 
 	/**

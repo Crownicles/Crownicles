@@ -24,14 +24,18 @@ import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { PetUtils } from "../../utils/PetUtils";
 import { ItemConstants } from "../../../../../Lib/src/constants/ItemConstants";
 
+export type PveMemberStats = {
+	attack: number; speed: number;
+};
+
 /**
  * Fighter
  * Class representing a human-controlled player in a fight
  */
 export class PlayerFighter extends PlayerBaseFighter {
-	protected pveMembers!: {
-		attack: number; speed: number;
-	}[];
+	protected pveMembers: PveMemberStats[] = [];
+
+	protected pveMembersLoaded = false;
 
 	protected petAssisted: boolean;
 
@@ -158,9 +162,9 @@ export class PlayerFighter extends PlayerBaseFighter {
 
 		// Add guild attack if on PVE island and members are here
 		if (Maps.isOnPveIsland(this.player)) {
-			if (!this.pveMembers) {
+			if (!this.pveMembersLoaded) {
+				this.pveMembersLoaded = true;
 				const members = await Maps.getGuildMembersOnPveIsland(this.player);
-				this.pveMembers = [];
 				for (const member of members) {
 					const memberActiveObjects = await InventorySlots.getMainSlotsItems(member.id);
 					this.pveMembers.push({
@@ -180,9 +184,7 @@ export class PlayerFighter extends PlayerBaseFighter {
 	/**
 	 * Get the members of the player's guild on the island of the fighter
 	 */
-	public getPveMembersOnIsland(): {
-		attack: number; speed: number;
-	}[] {
+	public getPveMembersOnIsland(): PveMemberStats[] {
 		return this.pveMembers;
 	}
 
