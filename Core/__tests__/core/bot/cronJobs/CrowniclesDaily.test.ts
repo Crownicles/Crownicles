@@ -90,7 +90,7 @@ describe("CrowniclesDaily.job", () => {
 		expect(Player.update).toHaveBeenCalledWith(
 			{
 				tokens: expect.objectContaining({
-					val: `GREATEST(tokens, LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY}))`
+					val: TokensConstants.buildRefillExpression(TokensConstants.DAILY.FREE_PER_DAY)
 				})
 			},
 			{ where: {} }
