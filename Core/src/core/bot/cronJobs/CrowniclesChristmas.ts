@@ -98,7 +98,7 @@ export class CrowniclesChristmas {
 
 		// Refill all players' tokens, without cutting down those who are above the cap
 		await Player.update(
-			{ tokens: literal(`GREATEST(tokens, ${TokensConstants.MAX})`) },
+			{ tokens: literal(TokensConstants.buildRefillExpression()) },
 			{ where: {} }
 		);
 

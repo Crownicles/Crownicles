@@ -91,7 +91,7 @@ describe("CrowniclesChristmas.christmasBonus", () => {
 
 		// Players above the token cap must keep their tokens instead of being cut down to MAX
 		expect(Player.update).toHaveBeenCalledWith(
-			{ tokens: expect.objectContaining({ val: `GREATEST(tokens, ${TokensConstants.MAX})` }) },
+			{ tokens: expect.objectContaining({ val: TokensConstants.buildRefillExpression() }) },
 			{ where: {} }
 		);
 		expect(Settings.LAST_CHRISTMAS_BONUS_YEAR.setValue).toHaveBeenCalledWith(currentYear);
