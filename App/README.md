@@ -23,11 +23,16 @@ linked from the repository (`link:../WsPackets`).
 
    `.env` is gitignored because the URLs depend on your setup. `localhost` works
    for the web build and the simulators; on a physical device, replace it with the
-   LAN IP of the machine running RestWs.
+   LAN IP of the machine running RestWs and Keycloak — including in the Keycloak
+   URL, since the login page opens on the device itself.
 
-3. Start the **RestWs** service, and the **Core** service it relies on.
+3. Set up the Discord identity provider in Keycloak, as described in
+   [the Keycloak README](../keycloak/README.md). The app signs in through Keycloak
+   only, so no Discord credential is ever configured here.
 
-4. Start the app:
+4. Start the **RestWs** service, and the **Core** service it relies on.
+
+5. Start the app:
 
    ```bash
    pnpm start
@@ -42,6 +47,6 @@ linked from the repository (`link:../WsPackets`).
 
 - `app/` — screens, using [file-based routing](https://docs.expo.dev/router/introduction)
 - `src/networking/` — REST client and WebSocket client
-- `src/authentication/` — Keycloak token handling
+- `src/authentication/` — Keycloak login (Authorization Code + PKCE) and token handling
 - `src/translations/` — i18n, fed at runtime by the assets downloaded from RestWs
 - `metro.config.js` — makes Metro watch and resolve the linked `WsPackets` package

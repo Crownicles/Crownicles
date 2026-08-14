@@ -12,15 +12,6 @@ port = 10500
 # Beta authentication. If true, only keycloak users with the "beta" role can log in to the API
 betaLogin = false
 
-[restApi.discordSso]
-# Discord SSO client ID
-clientId = ""
-# Discord SSO client secret
-clientSecret = ""
-# Discord SSO callback URL without the route (ex: http://localhost:10500)
-# The callback URL must be the same as the one configured in the Discord developer portal with /discord/callback at the end in the developer portal
-callbackUrl = ""
-
 [webSocket]
 # Port to run the WebSocket server on
 port = 10501

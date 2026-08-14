@@ -549,43 +549,6 @@ export abstract class KeycloakUtils {
 		return formatApiCallOk(res, await res.json() as KeycloakOAuth2Token);
 	}
 
-	/**
-	 * Get an access token for user with keycloak ID
-	 * @param keycloakConfig
-	 * @param keycloakId
-	 */
-	public static async getUserAccessToken(keycloakConfig: KeycloakConfig, keycloakId: string): Promise<ApiCallReturnType<KeycloakOAuth2Token>> {
-		const checkAndQueryToken = await this.checkAndQueryToken(keycloakConfig);
-		if (checkAndQueryToken.isError) {
-			return checkAndQueryToken;
-		}
-
-		const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/x-www-form-urlencoded"
-			},
-			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: keycloakConfig.clientId,
-				client_secret: keycloakConfig.clientSecret,
-				grant_type: "urn:ietf:params:oauth:grant-type:token-exchange",
-				subject_token: this.keycloakToken!,
-				subject_token_type: "urn:ietf:params:oauth:token-type:access_token",
-				requested_subject: keycloakId,
-				scope: "openid"
-				/* eslint-enable camelcase */
-			})
-		});
-
-		if (!res.ok) {
-			return formatApiCallError(res);
-		}
-
-		return formatApiCallOk(res, await res.json() as KeycloakOAuth2Token);
-	}
-
 	private static async checkAndQueryToken(keycloakConfig: KeycloakConfig): Promise<ApiCallReturnType<Record<string, never>>> {
 		if (this.keycloakToken === null || this.keycloakTokenExpirationDate! < Date.now()) {
 			const res = await fetch(`${keycloakConfig.url}/realms/${keycloakConfig.realm}/protocol/openid-connect/token`, {

@@ -1,7 +1,3 @@
-import * as WebBrowser from 'expo-web-browser';
-import {WebBrowserAuthSessionResult} from 'expo-web-browser';
-import {KeycloakOAuth2Token} from "../authentication/KeycloakOAuth2Token";
-
 export class RestApi {
 	private static getBaseUrl(): string {
 		const url = process.env.EXPO_PUBLIC_REST_API_URL;
@@ -25,40 +21,6 @@ export class RestApi {
 		}
 
 		return await response.json() as Promise<T>;
-	}
-
-	private static async post<T>(endpoint: string, body: object, headers: Record<string, string> = {}): Promise<T> {
-		const response = await fetch(`${RestApi.getBaseUrl()}/${endpoint}`, {
-			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-				...headers
-			},
-			body: JSON.stringify(body)
-		});
-
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-
-		return await response.json() as Promise<T>;
-	}
-
-	public static loginWithDiscord(): Promise<WebBrowserAuthSessionResult> {
-		return WebBrowser.openAuthSessionAsync(`${RestApi.getBaseUrl()}/discord`, "crownicles://discord");
-	}
-
-	public static async refreshToken(refreshToken: string): Promise<KeycloakOAuth2Token> {
-		const response = await RestApi.post<KeycloakOAuth2Token>("refresh-token", {
-			// Naming convention
-			refresh_token: refreshToken
-		});
-
-		if (!response || !response.access_token || !response.refresh_token || !response.expires_in || !response.refresh_expires_in) {
-			throw new Error("Failed to refresh token: Invalid response from server.");
-		}
-
-		return response;
 	}
 
 	public static async getAssets(): Promise<{ file: string, hash: string }[]> {

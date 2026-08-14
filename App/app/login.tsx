@@ -1,12 +1,10 @@
 import {ActivityIndicator, Button, StyleSheet, Text, View} from "react-native";
 import React from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
-import {RestApi} from "@/src/networking/RestApi";
+import {KeycloakAuth} from "@/src/authentication/KeycloakAuth";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
-import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 import {useRouter} from "expo-router";
-import {Buffer} from "buffer";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
 export default function LoginScreen() {
@@ -30,40 +28,29 @@ export default function LoginScreen() {
 			<Text style={styles.text}>Login screen</Text>
 			<View style={{ height: 24 }} />
 			<Button title="Log In" onPress={() => {
-				RestApi.loginWithDiscord().then(async (result) => {
-					if (result.type === "success") {
-						let token = result.url.split('token=')[1];
-						if (!token) {
-							alert("Login failed. No token received.");
-							return;
-						}
+				KeycloakAuth.login().then(async (keycloakToken) => {
+					const authToken = AuthToken.fromKeycloakOAuth2Token(keycloakToken);
 
-						let authToken = AuthToken.fromKeycloakOAuth2Token(JSON.parse(Buffer.from(token, "base64").toString("utf8")) as KeycloakOAuth2Token);
-
-						if (!authToken || !authToken.getAccessToken()) {
-							alert("Login failed. Invalid token received.");
-							return;
-						}
-
-						// Handle successful login, save the token and initialize WebSocketClient
-						authState.saveToken(authToken)
-								.then()
-								.catch((err) => {
-									console.error("Failed to save token:", err);
-								});
-
-						await WebSocketClient.getInstance()
-								.init(authToken, authState.setState, authState.saveToken)
-								.catch((error) => {
-									console.error("Failed to initialize WebSocketClient:", error);
-									if (authState.state === AuthStateEnum.CONNECTING) {
-										authState.setState(AuthStateEnum.CONNECTION_ERROR);
-									}
-								});
+					if (!authToken.getAccessToken()) {
+						alert("Login failed. Invalid token received.");
+						return;
 					}
-					else {
-						alert("Login failed. Please try again.");
-					}
+
+					// Handle successful login, save the token and initialize WebSocketClient
+					authState.saveToken(authToken)
+							.then()
+							.catch((err) => {
+								console.error("Failed to save token:", err);
+							});
+
+					await WebSocketClient.getInstance()
+							.init(authToken, authState.setState, authState.saveToken)
+							.catch((error) => {
+								console.error("Failed to initialize WebSocketClient:", error);
+								if (authState.state === AuthStateEnum.CONNECTING) {
+									authState.setState(AuthStateEnum.CONNECTION_ERROR);
+								}
+							});
 				}).catch((error) => {
 					console.error("Login error:", error);
 					alert("An error occurred during login. Please try again.");

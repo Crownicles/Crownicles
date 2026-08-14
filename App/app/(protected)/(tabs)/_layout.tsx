@@ -74,20 +74,12 @@ function TabLayoutContent() {
 				),
 				headerTitle: ProfileHeader,
 				headerRight: () => (
-					<>
-						<TouchableOpacity
-							style={{ marginRight: 20 }}
-							onPress={() => router.push("/friends")}
-						>
-							<Ionicons name="people" size={24} color="blue" />
-						</TouchableOpacity>
-						<TouchableOpacity
-							style={{ marginRight: 15 }}
-							onPress={() => router.push("/settings")}
-						>
-							<Ionicons name="settings" size={24} color="gray" />
-						</TouchableOpacity>
-					</>
+					<TouchableOpacity
+						style={{ marginRight: 15 }}
+						onPress={() => router.push("/settings")}
+					>
+						<Ionicons name="settings" size={24} color="gray" />
+					</TouchableOpacity>
 				),
 			}} />
 			<Tabs.Screen name="pet" options={{

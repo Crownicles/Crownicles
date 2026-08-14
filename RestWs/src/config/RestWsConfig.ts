@@ -1,6 +1,5 @@
 import { parse } from "toml";
 import { readFileSync } from "fs";
-import { DiscordSsoConfig } from "./DiscordSsoConfig";
 import {
 	createMqttPrefix, MqttPrefix
 } from "../../../Lib/src/utils/MqttTopicUtils";
@@ -21,7 +20,6 @@ export interface RestWsConfig {
 	LOKI_PASSWORD?: string;
 	REST_API_ALLOW_NEW_USERS_REGISTERING: boolean;
 	REST_API_PORT: number;
-	REST_API_DISCORD_SSO?: DiscordSsoConfig;
 	REST_API_BETA_LOGIN: boolean;
 	WEB_SOCKET_PORT: number;
 	PREFIX: MqttPrefix;
@@ -39,7 +37,6 @@ type ConfigStructure = {
 	restApi: {
 		allowRegister: boolean;
 		port: number;
-		discordSso?: DiscordSsoConfig;
 		betaLogin: boolean;
 	};
 	webSocket: { port: number };
@@ -80,13 +77,6 @@ export function loadConfig(): RestWsConfig {
 		LOKI_PASSWORD: config.logs.loki?.password,
 		REST_API_ALLOW_NEW_USERS_REGISTERING: config.restApi.allowRegister,
 		REST_API_PORT: config.restApi.port,
-		REST_API_DISCORD_SSO: config.restApi.discordSso
-			? {
-				clientId: config.restApi.discordSso.clientId,
-				clientSecret: config.restApi.discordSso.clientSecret,
-				callbackUrl: config.restApi.discordSso.callbackUrl
-			}
-			: undefined,
 		REST_API_BETA_LOGIN: config.restApi.betaLogin,
 		WEB_SOCKET_PORT: config.webSocket.port,
 		PREFIX: createMqttPrefix(config.global.prefix),

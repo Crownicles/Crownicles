@@ -1,4 +1,4 @@
-import {RestApi} from "@/src/networking/RestApi";
+import {KeycloakAuth} from "@/src/authentication/KeycloakAuth";
 import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 
 export interface AuthTokenData {
@@ -37,7 +37,7 @@ export class AuthToken {
 	public async refreshIfNeeded(): Promise<boolean> {
 		if (this.isAccessTokenExpired() && !this.isRefreshTokenExpired()) {
 			try {
-				let refreshedToken = await RestApi.refreshToken(this.data.refreshToken);
+				let refreshedToken = await KeycloakAuth.refresh(this.data.refreshToken);
 				this.data.accessToken = refreshedToken.access_token;
 				this.data.refreshToken = refreshedToken.refresh_token;
 				this.data.accessTokenExpiresAt = new Date(Date.now() + refreshedToken.expires_in * 1000);

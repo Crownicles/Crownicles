@@ -5,8 +5,6 @@ import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { setupRegisterRoute } from "./routes/RegisterRoute";
 import { setupLoginRoute } from "./routes/LoginRoute";
 import { setupRefreshTokenRoute } from "./routes/RefreshTokenRoute";
-import { DiscordSsoConfig } from "../config/DiscordSsoConfig";
-import { setupDiscordRoutes } from "./routes/DiscordRoutes";
 import { setupAssetsRoutes } from "./routes/AssetsRoute";
 
 // todo add anti spam mechanism and registering with a captcha
@@ -50,11 +48,6 @@ export class RestApi {
 	private readonly allowNewUsersRegistering: boolean;
 
 	/**
-	 * Discord SSO configuration.
-	 */
-	private readonly discordSso?: DiscordSsoConfig;
-
-	/**
 	 * Flag to enable beta login.
 	 */
 	private readonly betaLogin: boolean;
@@ -70,13 +63,11 @@ export class RestApi {
 	 */
 	constructor(options: {
 		allowNewUsersRegistering: boolean;
-		discordSso?: DiscordSsoConfig;
 		betaLogin: boolean;
 		debugMode: boolean;
 	}) {
 		this.server = fastify();
 		this.allowNewUsersRegistering = options.allowNewUsersRegistering;
-		this.discordSso = options.discordSso;
 		this.betaLogin = options.betaLogin;
 		this.debugMode = options.debugMode;
 	}
@@ -96,10 +87,6 @@ export class RestApi {
 		setupLoginRoute(this.server, this.betaLogin);
 		setupRefreshTokenRoute(this.server);
 		await setupAssetsRoutes(this.server, this.debugMode);
-
-		if (this.discordSso) {
-			setupDiscordRoutes(this.server, this.discordSso, this.betaLogin);
-		}
 	}
 
 	/**

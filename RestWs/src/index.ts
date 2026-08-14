@@ -50,7 +50,6 @@ async function main(): Promise<void> {
 	// Initialize and start the Rest API server
 	await new RestApi({
 		allowNewUsersRegistering: restWsConfig.REST_API_ALLOW_NEW_USERS_REGISTERING,
-		discordSso: restWsConfig.REST_API_DISCORD_SSO,
 		betaLogin: restWsConfig.REST_API_BETA_LOGIN,
 		debugMode: restWsConfig.DEBUG
 	}).start(restWsConfig.REST_API_PORT);
