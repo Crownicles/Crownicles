@@ -220,6 +220,28 @@ function applyOutcomeNextEvent(outcome: PossibilityOutcome, player: Player): voi
 	}
 }
 
+function getMapTypesDestinationLink(outcome: PossibilityOutcome, player: Player): MapLink {
+	const {
+		mapTypesDestination, mapTypesExcludeDestination
+	} = outcome;
+
+	let allowedMapTypes = Maps.getConnectedMapTypes(player, !mapTypesDestination);
+	if (mapTypesDestination) {
+		allowedMapTypes = allowedMapTypes.filter(mapType => mapTypesDestination.includes(mapType));
+	}
+	if (mapTypesExcludeDestination) {
+		allowedMapTypes = allowedMapTypes.filter(mapType => !mapTypesExcludeDestination.includes(mapType));
+	}
+
+	return RandomUtils.crowniclesRandom.pick(
+		MapLinkDataController.instance.getMapLinksWithMapTypes(
+			allowedMapTypes,
+			player.getDestinationId() ?? -1,
+			mapTypesDestination ? -1 : player.getPreviousMapId() ?? -1
+		)
+	);
+}
+
 function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | null {
 	if (outcome.mapLink) {
 		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
@@ -230,21 +252,7 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | 
 	}
 
 	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
-		let allowedMapTypes = Maps.getConnectedMapTypes(player, !outcome.mapTypesDestination);
-		if (outcome.mapTypesDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => outcome.mapTypesDestination!.includes(mapType));
-		}
-		if (outcome.mapTypesExcludeDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => !outcome.mapTypesExcludeDestination!.includes(mapType));
-		}
-
-		return RandomUtils.crowniclesRandom.pick(
-			MapLinkDataController.instance.getMapLinksWithMapTypes(
-				allowedMapTypes,
-				player.getDestinationId() ?? -1,
-				!outcome.mapTypesDestination ? player.getPreviousMapId() ?? -1 : -1
-			)
-		);
+		return getMapTypesDestinationLink(outcome, player);
 	}
 
 	return null;
