@@ -19,7 +19,7 @@ import { handleClassicError } from "../../utils/ErrorUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { formatBlockedReasons } from "../../utils/BlockingReasonUtils";
 import {
-	ButtonInteraction
+	ButtonInteraction, escapeCodeBlock
 } from "discord.js";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 
@@ -127,7 +127,8 @@ export default class ErrorHandler {
 			return;
 		}
 
-		await handleClassicError(context, "error:internalError", { reason: packet.reason });
+		// The reason lands inside a code block: a backtick in it would break out of the fence
+		await handleClassicError(context, "error:internalError", { reason: escapeCodeBlock(packet.reason) }, { ephemeral: true });
 	}
 
 	@packetHandler(ErrorMaintenancePacket)

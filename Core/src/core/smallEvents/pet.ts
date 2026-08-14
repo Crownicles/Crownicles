@@ -356,7 +356,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const petEntity = await PetEntities.getById(player.petId);
 		if (!petEntity) {
-			PacketUtils.pushInternalError(response, `Small event pet: pet entity ${player.petId} not found for player ${player.keycloakId}`);
+			PacketUtils.pushInternalError(response, "Small event pet: pet entity not found", {
+				context: {
+					keycloakId: player.keycloakId, petId: player.petId
+				}
+			});
 			return;
 		}
 		const pet = PetDataController.instance.getById(petEntity.typeId)!;
@@ -371,7 +375,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 			randomPetSex: randomPet.sex as SexTypeShort
 		};
 		if (packet.interactionName === Constants.DEFAULT_ERROR) {
-			PacketUtils.pushInternalError(response, `Small event pet: cannot determine an interaction for player ${player.keycloakId}`);
+			PacketUtils.pushInternalError(response, "Small event pet: cannot determine an interaction", {
+				context: { keycloakId: player.keycloakId }
+			});
 			return;
 		}
 		await managePickedInteraction(packet, response, context, player, petEntity);

@@ -337,7 +337,9 @@ export async function doRandomBigEvent(
 		const mapId = player.getDestinationId()!;
 		const randomEvent = await BigEventDataController.instance.getRandomEvent(mapId, player);
 		if (!randomEvent) {
-			PacketUtils.pushInternalError(response, `No big event available on map ${mapId} for player ${player.keycloakId}`);
+			PacketUtils.pushInternalError(response, `No big event available on map ${mapId}`, {
+				context: { keycloakId: player.keycloakId }
+			});
 			return;
 		}
 		event = randomEvent;

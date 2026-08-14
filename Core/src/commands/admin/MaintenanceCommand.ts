@@ -21,7 +21,7 @@ export default class MaintenanceCommand {
 			response.push(makePacket(CommandMaintenancePacketRes, { enabled: packet.enable }));
 		}
 		catch (err) {
-			PacketUtils.pushInternalError(response, "Failed to toggle maintenance mode", err);
+			PacketUtils.pushInternalError(response, "Failed to toggle maintenance mode", { cause: err });
 		}
 	}
 }

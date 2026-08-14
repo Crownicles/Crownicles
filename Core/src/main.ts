@@ -91,7 +91,7 @@ async function dispatchPacket(response: CrowniclesPacket[], context: PacketConte
 		await listener(response, context, dataJson.packet.data);
 	}
 	catch (error: unknown) {
-		PacketUtils.pushInternalError(response, `Error while processing packet '${dataJson.packet.name}'`, error);
+		PacketUtils.pushInternalError(response, `Error while processing packet '${dataJson.packet.name}'`, { cause: error });
 		CrowniclesCoreMetrics.incrementPacketErrorCount(dataJson.packet.name);
 	}
 	CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(msDiff(nowMs(), startTime)));

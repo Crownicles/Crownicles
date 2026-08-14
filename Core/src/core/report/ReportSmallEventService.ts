@@ -128,7 +128,7 @@ async function loadAndExecuteSmallEvent(
 			await runSmallEventUnderLock(player, event, smallEvent, response, context, playerActiveObjects);
 		}
 		catch (e) {
-			PacketUtils.pushInternalError(response, `Error while executing ${filename} small event`, e);
+			PacketUtils.pushInternalError(response, `Error while executing ${filename} small event`, { cause: e });
 		}
 	}
 	catch {
@@ -187,7 +187,9 @@ export async function executeSmallEvent(
 	const event = forced ?? await getRandomSmallEvent(response, player, playerActiveObjects);
 
 	if (!event) {
-		PacketUtils.pushInternalError(response, `No small event can be executed for player ${player.keycloakId}`);
+		PacketUtils.pushInternalError(response, "No small event can be executed", {
+			context: { keycloakId: player.keycloakId }
+		});
 		return;
 	}
 
