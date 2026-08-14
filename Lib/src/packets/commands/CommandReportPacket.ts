@@ -140,6 +140,11 @@ export class CommandReportChooseDestinationRes extends CrowniclesPacket {
 	mapTypeId!: string;
 
 	tripDuration!: number;
+
+	/**
+	 * The player did not pick this destination: an event outcome sent them back where they came from.
+	 */
+	isGoingBack?: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

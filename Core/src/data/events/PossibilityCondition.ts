@@ -1,6 +1,7 @@
 import Player from "../../core/database/game/models/Player";
 import Guild, { Guilds } from "../../core/database/game/models/Guild";
 import { GuildPets } from "../../core/database/game/models/GuildPet";
+import { Maps } from "../../core/maps/Maps";
 
 async function verifyConditionCanAcceptPet(condition: PossibilityCondition, player: Player): Promise<boolean> {
 	if (!condition.canAcceptPet) {
@@ -24,10 +25,16 @@ async function verifyConditionCanAcceptPet(condition: PossibilityCondition, play
 
 export async function verifyPossibilityCondition(condition: PossibilityCondition, player: Player): Promise<boolean> {
 	return player.level >= (condition.level ?? 0)
+		&& (!condition.canGoBack || Maps.getGoBackMapLink(player) !== null)
 		&& await verifyConditionCanAcceptPet(condition, player);
 }
 
 export interface PossibilityCondition {
 	level?: number;
 	canAcceptPet?: boolean;
+
+	/**
+	 * Only offer this possibility when the player may actually go back to the map they come from.
+	 */
+	canGoBack?: boolean;
 }

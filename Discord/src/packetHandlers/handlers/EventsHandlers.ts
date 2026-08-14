@@ -141,11 +141,11 @@ export default class EventsHandlers {
 		const timeDisplay = i18n.formatDuration(packet.tripDuration, lng);
 		let i18nTr: string;
 		if (time < 60) {
-			i18nTr = "commands:report.choseMapMinutes";
+			i18nTr = packet.isGoingBack ? "commands:report.goBackMapMinutes" : "commands:report.choseMapMinutes";
 		}
 		else {
 			time = Math.round(minutesToHours(asMinutes(packet.tripDuration)));
-			i18nTr = "commands:report.choseMap";
+			i18nTr = packet.isGoingBack ? "commands:report.goBackMap" : "commands:report.choseMap";
 		}
 		embed.setDescription(i18n.t(i18nTr, {
 			count: time,
