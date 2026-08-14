@@ -27,7 +27,29 @@ docker-compose up -d
 ```
 
 You can find the docker-compose file here:
-[docker-compose.yml](./docker-compose.yml) 
+[docker-compose.yml](./docker-compose.yml)
+
+## Choosing the address Keycloak answers on
+
+`KC_HOSTNAME` pins the address Keycloak puts in the tokens it issues and in the redirect URIs it
+sends to the identity providers. Every client and service must therefore be able to reach Keycloak at
+that exact address, but in exchange a token stays valid whichever address a service uses to reach
+Keycloak: RestWs can keep calling `127.0.0.1` while a phone signs in through the LAN address.
+
+It defaults to `http://localhost:8080`, which is enough for the web build and the simulators. To let a
+phone or another machine sign in, create your own file:
+
+```bash
+cp .env.example .env
+```
+
+and set `KEYCLOAK_HOSTNAME` to the LAN address of the machine running Keycloak. `.env` is gitignored
+because that address depends on your setup.
+
+Note that the shipped realm has `sslRequired` set to `none`, because this whole setup serves plain
+HTTP. Leaving the default `external` makes Keycloak reject requests as soon as it sees the client
+address as public, which happens with some Docker networking setups even on a local machine. A real
+deployment must raise it back and serve Keycloak over HTTPS.
 
 ## Configuring a realm
 
@@ -60,9 +82,9 @@ Two values are environment specific and are therefore left as placeholders in `r
 1. In *Identity providers -> Discord*, replace `TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_ID` and
    `TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_SECRET` with the credentials of your Discord application.
 2. Copy the *Redirect URI* displayed on that same page and add it to the *Redirects* list of your
-   application in the [Discord developer portal](https://discord.com/developers/applications). It
-   looks like `http://127.0.0.1:8080/realms/Crownicles/broker/discord/endpoint`. Use the address the
-   client will actually reach, not `127.0.0.1`, when testing from a phone.
+   application in the [Discord developer portal](https://discord.com/developers/applications). It is
+   built from `KEYCLOAK_HOSTNAME`, so a single URI is enough:
+   `http://localhost:8080/realms/Crownicles/broker/discord/endpoint`.
 
 The provider uses the generic `oauth2` type because Discord is not an OpenID Connect provider: it
 returns opaque tokens, so Keycloak reads the profile from `https://discord.com/api/users/@me`.

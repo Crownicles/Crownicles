@@ -7,6 +7,7 @@
 **/dist
 **/coverage
 **/config/config.toml
+keycloak/.env
 **/test-results.xml
 **/test-integration-results.xml
 .run
