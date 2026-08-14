@@ -43,6 +43,14 @@ linked from the repository (`link:../WsPackets`).
    an [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/) or
    [Expo Go](https://expo.dev/go).
 
+## Rebuilding the native app
+
+Only changes to the native dependencies require a new build: everything written in TypeScript is
+served by Metro and reloads on the fly. When a build is needed, `ios/Podfile.properties.json` enables
+ccache, which cuts the compilation of the several hundred C++ files down to a fraction on the runs
+that follow the first one. It is silently ignored when ccache is not installed, so run
+`brew install ccache` to benefit from it.
+
 ## Project layout
 
 - `app/` — screens, using [file-based routing](https://docs.expo.dev/router/introduction)
