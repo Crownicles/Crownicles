@@ -23,7 +23,7 @@ linked from the repository (`link:../WsPackets`).
 
    `.env` is gitignored because the URLs depend on your setup. `localhost` works
    for the web build and the simulators; on a physical device, replace it with the
-   LAN IP of the machine running RestWs (for example `http://192.168.1.32:10500`).
+   LAN IP of the machine running RestWs.
 
 3. Start the **RestWs** service, and the **Core** service it relies on.
 
