@@ -46,10 +46,10 @@
           "experimentalLauncherActivity": true
         }
       ],
-      "expo-font"
+      "expo-font",
+      "./plugins/withIosBuildFixes"
     ],
     "experiments": {
       "typedRoutes": true
-    }
-  }
+    }  }
 }

@@ -38,3 +38,8 @@ yarn-error.*
 *.tsbuildinfo
 
 app-example
+
+# Native projects, regenerated from app.json by expo prebuild.
+# Customise them through a config plugin in plugins/, never by hand.
+/ios
+/android

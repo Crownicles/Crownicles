@@ -43,13 +43,21 @@ linked from the repository (`link:../WsPackets`).
    an [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/) or
    [Expo Go](https://expo.dev/go).
 
-## Rebuilding the native app
+## The native projects are generated, not stored
 
-Only changes to the native dependencies require a new build: everything written in TypeScript is
-served by Metro and reloads on the fly. When a build is needed, `ios/Podfile.properties.json` enables
-ccache, which cuts the compilation of the several hundred C++ files down to a fraction on the runs
-that follow the first one. It is silently ignored when ccache is not installed, so run
-`brew install ccache` to benefit from it.
+`ios/` and `android/` are absent from the repository: `npx expo prebuild` rebuilds them from
+`app.json`, and `npx expo run:ios` or `run:android` does it on its own when they are missing.
+Anything edited by hand in there is lost on the next generation, so a native change belongs in a
+config plugin under `plugins/`.
+
+`plugins/withIosBuildFixes.js` carries the two this app needs: building the `fmt` pod as C++17, whose
+use of `consteval` Xcode 26 rejects, and turning on the ccache support React Native ships. Beware
+that the latter was measured to have no effect under Xcode 26, whose build system ignores the `CC`
+and `CXX` settings the switch relies on; it is kept because it is the supported knob and costs
+nothing, not because it currently speeds anything up.
+
+Only a change to the native dependencies or to `app.json` calls for a new build. Everything written
+in TypeScript is served by Metro and reloads on the fly.
 
 ## Project layout
 
@@ -57,4 +65,5 @@ that follow the first one. It is silently ignored when ccache is not installed, 
 - `src/networking/` — REST client and WebSocket client
 - `src/authentication/` — Keycloak login (Authorization Code + PKCE) and token handling
 - `src/translations/` — i18n, fed at runtime by the assets downloaded from RestWs
+- `plugins/` — config plugins, the only supported way to alter the generated native projects
 - `metro.config.js` — makes Metro watch and resolve the linked `WsPackets` package
