@@ -26,6 +26,14 @@ vi.mock("../../../../src/core/database/game/models/Player", () => ({
 	default: { update: vi.fn().mockResolvedValue([0]) }
 }));
 
+vi.mock("../../../../src/core/database/game/models/PetEntity", () => ({
+	default: { update: vi.fn().mockResolvedValue([0]) }
+}));
+
+vi.mock("../../../../src/core/database/game/models/Guild", () => ({
+	default: { sequelize: { query: vi.fn().mockResolvedValue([undefined, 0]) } }
+}));
+
 vi.mock("../../../../src/app", () => ({
 	crowniclesInstance: {
 		logsDatabase: {
@@ -41,6 +49,11 @@ vi.mock("../../../../src/core/bot/CrowniclesCoreMetrics", () => ({
 
 import { CrowniclesDaily } from "../../../../src/core/bot/cronJobs/CrowniclesDaily";
 import { CrowniclesCoreMetrics } from "../../../../src/core/bot/CrowniclesCoreMetrics";
+import PetEntity from "../../../../src/core/database/game/models/PetEntity";
+import Guild from "../../../../src/core/database/game/models/Guild";
+import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
+import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
+import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 
 type Gate<T> = {
 	promise: Promise<T>;
@@ -150,5 +163,64 @@ describe("CrowniclesDaily.job", () => {
 
 		trainingGate.resolve();
 		await jobPromise;
+	});
+});
+
+/**
+ * Sequelize `literal()` hides its SQL in an opaque wrapper; unwrap it for assertions.
+ */
+function literalSql(value: unknown): string {
+	return (value as { val: string }).val;
+}
+
+describe("CrowniclesDaily.randomLovePointsLoose", () => {
+	beforeEach(() => {
+		vi.restoreAllMocks();
+		vi.mocked(PetEntity.update)
+			.mockReset()
+			.mockResolvedValue([0]);
+	});
+
+	it("removes the balancing constant, not a hardcoded amount", async () => {
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(true);
+
+		await expect(CrowniclesDaily.randomLovePointsLoose()).resolves.toBe(true);
+
+		const [values] = vi.mocked(PetEntity.update).mock.calls[0];
+		expect(literalSql(values.lovePoints)).toBe(`GREATEST(0, lovePoints - ${PetConstants.DAILY_LOVE_LOSS})`);
+	});
+
+	it("leaves every pet untouched when the daily draw says so", async () => {
+		vi.spyOn(RandomUtils.crowniclesRandom, "bool").mockReturnValue(false);
+
+		await expect(CrowniclesDaily.randomLovePointsLoose()).resolves.toBe(false);
+
+		expect(PetEntity.update).not.toHaveBeenCalled();
+	});
+});
+
+describe("CrowniclesDaily.trainingGroundLoveBonus", () => {
+	beforeEach(() => {
+		vi.mocked(Guild.sequelize!.query)
+			.mockReset()
+			.mockResolvedValue([undefined, 0]);
+	});
+
+	it("gives each training ground level its balancing love value", async () => {
+		await CrowniclesDaily.trainingGroundLoveBonus();
+
+		const [sql] = vi.mocked(Guild.sequelize!.query).mock.calls[0];
+		GuildDomainConstants.TRAINING_LOVE_PER_DAY.forEach((lovePerDay, level) => {
+			if (lovePerDay > 0) {
+				expect(sql).toContain(`WHEN ${level} THEN ${lovePerDay}`);
+			}
+		});
+	});
+
+	it("never uses the building level itself as the love amount", async () => {
+		await CrowniclesDaily.trainingGroundLoveBonus();
+
+		const [sql] = vi.mocked(Guild.sequelize!.query).mock.calls[0];
+		expect(sql).not.toContain("lovePoints + g.trainingGroundLevel");
 	});
 });
