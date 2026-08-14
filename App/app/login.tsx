@@ -4,7 +4,7 @@ import {AuthContext} from "@/src/authentication/AuthContext";
 import {RestApi} from "@/src/networking/RestApi";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
-import {KeycloakOAuth2Token} from "../../Lib/src/keycloak/KeycloakOAuth2Token";
+import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 import {useRouter} from "expo-router";
 import {Buffer} from "buffer";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";

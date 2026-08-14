@@ -60,5 +60,15 @@ target 'Crownicles' do
         end
       end
     end
+
+    # fmt 11.0.2 (pinned by React Native 0.81) uses consteval in a way Xcode 26's clang rejects.
+    # Building only that pod as C++17 disables fmt's consteval path; its public API is unaffected.
+    installer.pods_project.targets.each do |target|
+      next unless target.name == 'fmt'
+
+      target.build_configurations.each do |config|
+        config.build_settings['CLANG_CXX_LANGUAGE_STANDARD'] = 'c++17'
+      end
+    end
   end
 end

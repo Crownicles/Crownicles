@@ -46,3 +46,6 @@ services:
       - mariadb_keycloak
     command:
       - start-dev
+      # RestWs impersonates players through the legacy token exchange (requested_subject),
+      # which Keycloak 26+ only serves when its v1 feature is explicitly enabled.
+      - --features=token-exchange:v1,admin-fine-grained-authz:v1

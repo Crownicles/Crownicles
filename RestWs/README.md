@@ -7,7 +7,7 @@ Don't forget to setup keycloak password policy
 In terms of performances, it is better to use a reverse proxy than integrate SSL in the application (https://fastify.dev/docs/latest/Guides/Recommendations/#use-a-reverse-proxy)
 
 For being able to log in Discord user:
-- Add the following feature to keycloak using this environment variable: `KC_FEATURES: token-exchange`
+- Add the following feature to keycloak using this environment variable: `KC_FEATURES: token-exchange:v1,admin-fine-grained-authz:v1`. Since Keycloak 26 the legacy token exchange is versioned, and it needs the v1 permission model because v2 dropped token exchange permissions. The provided `keycloak/docker-compose.yml` already passes them.
 - the client must have the role "impersonation"
 
 In keycloak client scopes, add "openid" and inside it enable "Include in token scope"
