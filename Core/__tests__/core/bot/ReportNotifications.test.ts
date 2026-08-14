@@ -36,6 +36,8 @@ import { ScheduledReportNotifications } from "../../../src/core/database/game/mo
 import { TravelTime } from "../../../src/core/maps/TravelTime";
 import { PacketUtils } from "../../../src/core/utils/PacketUtils";
 import { ReachDestinationNotificationPacket } from "../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
+import type Player from "../../../src/core/database/game/models/Player";
+import { asMilliseconds } from "../../../../Lib/src/utils/TimeUtils";
 
 describe("processDueReportNotifications", () => {
 	beforeEach(() => {
@@ -80,48 +82,74 @@ describe("processDueReportNotifications", () => {
 describe("dispatchOrRescheduleArrivalNotification", () => {
 	const now = Date.now();
 
+	/**
+	 * `dispatchOrRescheduleArrivalNotification` only reads the id and the destination of the player, and a full
+	 * Sequelize model instance cannot be built here: the cast keeps the fixture in a single place.
+	 */
+	function travellingPlayer(destinationId: number): Player {
+		return {
+			id: 1,
+			getDestinationId: (): number => destinationId
+		} as Player;
+	}
+
+	function travelEndingAt(travelEndTime: number): ReturnType<typeof TravelTime.getTravelDataSimplified> {
+		return {
+			travelStartTime: asMilliseconds(0),
+			travelEndTime: asMilliseconds(travelEndTime),
+			effectStartTime: asMilliseconds(0),
+			effectEndTime: asMilliseconds(0),
+			effectDuration: asMilliseconds(0),
+			effectRemainingTime: asMilliseconds(0),
+			playerTravelledTime: asMilliseconds(0)
+		};
+	}
+
 	beforeEach(() => {
 		vi.clearAllMocks();
 	});
 
 	it("never resurrects a notification for a travel that is already over", async () => {
 		// The arrival big event granted an alteration, pushing the travel end back into the future
-		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue({ travelEndTime: now + 3_600_000 } as never);
+		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue(travelEndingAt(now + 3_600_000));
 
-		await dispatchOrRescheduleArrivalNotification({
-			id: 1,
-			getDestinationId: (): number => 42
-		} as never);
+		await dispatchOrRescheduleArrivalNotification(travellingPlayer(42));
 
 		expect(ScheduledReportNotifications.rescheduleNotification).toHaveBeenCalledWith(1, 42, new Date(now + 3_600_000));
 		expect(PacketUtils.sendNotifications).not.toHaveBeenCalled();
 	});
 
 	it("stays silent when the player has no pending notification left", async () => {
-		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue({ travelEndTime: now - 1_000 } as never);
+		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue(travelEndingAt(now - 1_000));
 		vi.mocked(ScheduledReportNotifications.getPendingNotification).mockResolvedValue(null);
 
-		await dispatchOrRescheduleArrivalNotification({
-			id: 1,
-			getDestinationId: (): number => 42
-		} as never);
+		await dispatchOrRescheduleArrivalNotification(travellingPlayer(42));
 
 		expect(ScheduledReportNotifications.claimNotification).not.toHaveBeenCalled();
 		expect(PacketUtils.sendNotifications).not.toHaveBeenCalled();
 	});
 
 	it("dispatches the arrival notification it claimed", async () => {
-		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue({ travelEndTime: now - 1_000 } as never);
+		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue(travelEndingAt(now - 1_000));
 		vi.mocked(ScheduledReportNotifications.getPendingNotification).mockResolvedValue({
 			playerId: 1, keycloakId: "player", mapId: 42
-		} as never);
+		});
 		vi.mocked(ScheduledReportNotifications.claimNotification).mockResolvedValue(true);
 
-		await dispatchOrRescheduleArrivalNotification({
-			id: 1,
-			getDestinationId: (): number => 42
-		} as never);
+		await dispatchOrRescheduleArrivalNotification(travellingPlayer(42));
 
 		expect(PacketUtils.sendNotifications).toHaveBeenCalledOnce();
+	});
+
+	it("never dispatches a notification scheduled for another destination", async () => {
+		vi.mocked(TravelTime.getTravelDataSimplified).mockReturnValue(travelEndingAt(now - 1_000));
+		vi.mocked(ScheduledReportNotifications.getPendingNotification).mockResolvedValue({
+			playerId: 1, keycloakId: "player", mapId: 42
+		});
+		vi.mocked(ScheduledReportNotifications.claimNotification).mockResolvedValue(true);
+
+		await dispatchOrRescheduleArrivalNotification(travellingPlayer(43));
+
+		expect(PacketUtils.sendNotifications).not.toHaveBeenCalled();
 	});
 });

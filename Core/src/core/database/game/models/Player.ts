@@ -2027,7 +2027,7 @@ export function initModel(sequelize: Sequelize): void {
 			return;
 		}
 
-		scheduleAfterCommit(async () => await dispatchOrRescheduleArrivalNotification(instance), error => {
+		scheduleAfterCommit(() => dispatchOrRescheduleArrivalNotification(instance), error => {
 			CrowniclesLogger.errorWithObj("Error while handling notifications", error);
 		}, options.transaction);
 	});
