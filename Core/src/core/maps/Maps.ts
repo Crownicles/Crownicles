@@ -57,6 +57,20 @@ export class Maps {
 	}
 
 	/**
+	 * Link sending the player back to the map they are coming from, or null when the U-turn is not allowed.
+	 * Travelling backwards is normally forbidden by `getNextPlayerAvailableMaps`: only a big event outcome
+	 * may grant this exception, and never towards a city, to keep the anti re-entry guard effective.
+	 */
+	static getGoBackMapLink(player: Player): MapLink | null {
+		const inverseLink = MapLinkDataController.instance.getInverseLinkOf(player.mapLinkId);
+		if (!inverseLink) {
+			return null;
+		}
+
+		return CityDataController.instance.getCityByMapId(inverseLink.endMap) ? null : inverseLink;
+	}
+
+	/**
 	 * Get connected map types. There can be duplicates if multiple maps have the same type
 	 * @param player
 	 * @param excludePlayerLink Exclude the player link from the types
