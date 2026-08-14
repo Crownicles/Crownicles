@@ -9,9 +9,13 @@ vi.mock("../../../src/core/database/game/models/PlayerBadges", () => ({
 	}
 }));
 
-import { getMarketAnalysisShopItem } from "../../../src/core/utils/StockExchangeShopItems";
+import {
+	FORECAST_OFFSETS, getMarketAnalysisShopItem
+} from "../../../src/core/utils/StockExchangeShopItems";
 import { CommandMissionShopMarketAnalysis } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
-import { CrowniclesPacket } from "../../../../Lib/src/packets/CrowniclesPacket";
+import {
+	CrowniclesPacket, PacketContext
+} from "../../../../Lib/src/packets/CrowniclesPacket";
 
 /**
  * Number of days between a date and the next monday, when the herbalist renews its selection.
@@ -20,16 +24,27 @@ function daysUntilNextMonday(date: Date): number {
 	return (8 - date.getDay()) % 7 || 7;
 }
 
+const emptyContext: PacketContext = {
+	keycloakId: "player",
+	frontEndOrigin: "test",
+	frontEndSubOrigin: "test"
+};
+
 function buildAnalysis(): CommandMissionShopMarketAnalysis {
 	const response: CrowniclesPacket[] = [];
 	getMarketAnalysisShopItem()
-		.buyCallback(response, 1, {} as never);
+		.buyCallback(response, 1, emptyContext, 1);
 	return response[0] as CommandMissionShopMarketAnalysis;
 }
 
 describe("market analysis rotation horizon", () => {
 	afterEach(() => {
 		vi.useRealTimers();
+	});
+
+	// The rotation search scans up to the last offset and resolves its horizon with the first one reaching that day
+	it("keeps the forecast offsets sorted ascending", () => {
+		expect([...FORECAST_OFFSETS].sort((a, b) => a - b)).toEqual([...FORECAST_OFFSETS]);
 	});
 
 	it("announces the exact day of the rotation instead of the forecast horizon", () => {
