@@ -50,9 +50,10 @@ const TREND_THRESHOLDS = {
 };
 
 /**
- * Day offsets for market analysis forecasts
+ * Day offsets for market analysis forecasts. Sorted ascending: the rotation search relies on the last
+ * one being the furthest away, and resolves its horizon with the first offset reaching the rotation day.
  */
-const FORECAST_OFFSETS: [number, number, number] = [
+export const FORECAST_OFFSETS: [number, number, number] = [
 	1,
 	3,
 	7
