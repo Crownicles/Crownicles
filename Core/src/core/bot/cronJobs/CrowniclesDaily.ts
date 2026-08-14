@@ -217,11 +217,16 @@ export class CrowniclesDaily {
 	 * Add love points to all pets in guild shelters based on training ground level
 	 */
 	static async trainingGroundLoveBonus(): Promise<void> {
+		// The building level is not the love amount: map each level to its balancing value
+		const loveGainCases = GuildDomainConstants.TRAINING_LOVE_PER_DAY
+			.map((lovePerDay, level) => `WHEN ${level} THEN ${lovePerDay}`)
+			.join(" ");
+
 		await Guild.sequelize!.query(
 			`UPDATE pet_entities pe
 			JOIN guild_pets gp ON gp.petEntityId = pe.id
 			JOIN guilds g ON gp.guildId = g.id
-			SET pe.lovePoints = LEAST(pe.lovePoints + g.trainingGroundLevel, ${PetConstants.MAX_LOVE_POINTS})
+			SET pe.lovePoints = LEAST(pe.lovePoints + CASE g.trainingGroundLevel ${loveGainCases} ELSE 0 END, ${PetConstants.MAX_LOVE_POINTS})
 			WHERE g.trainingGroundLevel > 0`
 		);
 		CrowniclesLogger.info("Training ground love bonus applied");
