@@ -177,11 +177,11 @@ export class CrowniclesDaily {
 	 */
 	static async randomLovePointsLoose(): Promise<boolean> {
 		if (RandomUtils.crowniclesRandom.bool()) {
-			CrowniclesLogger.info("All pets lost 4 loves point");
+			CrowniclesLogger.info("All pets lost love points", { lostLovePoints: PetConstants.DAILY_LOVE_LOSS });
 			await PetEntity.update(
 				{
 					lovePoints: literal(
-						"CASE WHEN lovePoints - 4 < 0 THEN 0 ELSE lovePoints - 4 END"
+						`GREATEST(0, lovePoints - ${PetConstants.DAILY_LOVE_LOSS})`
 					)
 				},
 				{
