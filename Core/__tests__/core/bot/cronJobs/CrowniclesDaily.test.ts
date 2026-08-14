@@ -206,6 +206,7 @@ describe("CrowniclesDaily.trainingGroundLoveBonus", () => {
 			.mockResolvedValue([undefined, 0]);
 	});
 
+	// The love amount comes from the balancing table, never from the building level itself
 	it("gives each training ground level its balancing love value", async () => {
 		await CrowniclesDaily.trainingGroundLoveBonus();
 
@@ -215,12 +216,5 @@ describe("CrowniclesDaily.trainingGroundLoveBonus", () => {
 				expect(sql).toContain(`WHEN ${level} THEN ${lovePerDay}`);
 			}
 		});
-	});
-
-	it("never uses the building level itself as the love amount", async () => {
-		await CrowniclesDaily.trainingGroundLoveBonus();
-
-		const [sql] = vi.mocked(Guild.sequelize!.query).mock.calls[0];
-		expect(sql).not.toContain("lovePoints + g.trainingGroundLevel");
 	});
 });

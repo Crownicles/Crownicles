@@ -242,6 +242,10 @@ export class CrowniclesDaily {
 			.map(({ level }) => level)
 			.join(", ");
 
+		/*
+		 * `ELSE 0` is unreachable, the WHERE clause restricts the rows to the levels of the CASE: it only
+		 * exists because a CASE without ELSE yields NULL, which would wipe the love points it is added to.
+		 */
 		const [, affectedPets] = await Guild.sequelize!.query(
 			`UPDATE pet_entities pe
 			JOIN guild_pets gp ON gp.petEntityId = pe.id
