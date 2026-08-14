@@ -4,6 +4,9 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {PreferencesContext} from "@/src/preferences/PreferencesContext";
+import {makeFromClientPacket} from "ws-packets/src/MakePackets";
+import {PingReq} from "ws-packets/src/fromClient/PingReq";
+import {PingRes} from "ws-packets/src/fromServer/ping/PingRes";
 
 const ListItem = ({ children }: PropsWithChildren) => (
   <View style={styles.listItem}>
@@ -21,7 +24,7 @@ export default function Index() {
 		setPingLoading(true);
 		setPingTime(null);
 		const startTime = Date.now();
-		WebSocketClient.getInstance().sendPacket(PingReq.create({ time: startTime }), {
+		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(PingReq, { time: startTime }), {
 			[PingRes.name]: (packet: PingRes) => {
 				const elapsed = Date.now() - packet.time;
 				setPingTime(elapsed);

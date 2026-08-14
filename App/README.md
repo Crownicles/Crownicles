@@ -1,50 +1,47 @@
-# Welcome to your Expo app 👋
+# Crownicles mobile app
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Expo (React Native) client for Crownicles. It talks to the **RestWs** service:
+REST for authentication and asset downloads, WebSocket for gameplay packets.
 
-## Get started
+Packet definitions are shared with the backend through the `WsPackets` package,
+linked from the repository (`link:../WsPackets`).
 
-1. Install dependencies
+## Setup
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
+1. Install the dependencies of `WsPackets` then of the app:
 
    ```bash
-   npx expo start
+   cd ../WsPackets && pnpm i
+   cd ../App && pnpm i
    ```
 
-In the output, you'll find options to open the app in a
+2. Create your local environment file:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   cp .env.example .env
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   `.env` is gitignored because the URLs depend on your setup. `localhost` works
+   for the web build and the simulators; on a physical device, replace it with the
+   LAN IP of the machine running RestWs (for example `http://192.168.1.32:10500`).
 
-## Get a fresh project
+3. Start the **RestWs** service, and the **Core** service it relies on.
 
-When you're ready, run:
+4. Start the app:
 
-```bash
-npm run reset-project
-```
+   ```bash
+   pnpm start
+   ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+   Then open it in a [development build](https://docs.expo.dev/develop/development-builds/introduction/),
+   an [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/),
+   an [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/) or
+   [Expo Go](https://expo.dev/go).
 
-## Learn more
+## Project layout
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- `app/` — screens, using [file-based routing](https://docs.expo.dev/router/introduction)
+- `src/networking/` — REST client and WebSocket client
+- `src/authentication/` — Keycloak token handling
+- `src/translations/` — i18n, fed at runtime by the assets downloaded from RestWs
+- `metro.config.js` — makes Metro watch and resolve the linked `WsPackets` package

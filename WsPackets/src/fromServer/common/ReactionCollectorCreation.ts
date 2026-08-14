@@ -1,6 +1,6 @@
-import {FromServerPacket} from "../FromServerPacket";
-import {ReactionCollectorData} from "./ReactionCollectorData";
-import {ReactionCollectorReaction} from "./ReactionCollectorReaction";
+import { FromServerPacket } from "../FromServerPacket";
+import { ReactionCollectorData } from "./ReactionCollectorData";
+import { ReactionCollectorReaction } from "./ReactionCollectorReaction";
 
 export class ReactionCollectorCreation extends FromServerPacket {
 	id!: string;

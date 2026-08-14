@@ -7,4 +7,6 @@ export type SupportItem = {
 	power: number;
 	maxPower: number;
 	itemCategory: number;
+	usages?: number;
+	maxUsages?: number;
 };

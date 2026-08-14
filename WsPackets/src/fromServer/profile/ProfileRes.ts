@@ -86,7 +86,7 @@ export class ProfileRes extends FromServerPacket {
 
 	pet?: Pet;
 
-	color!: string;
+	color?: string;
 
 	level!: number;
 

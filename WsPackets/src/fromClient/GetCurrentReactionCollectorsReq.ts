@@ -1,3 +1,3 @@
-import {FromClientPacket} from "./FromClientPacket";
+import { FromClientPacket } from "./FromClientPacket";
 
 export class CommandGetCurrentReactionCollectorsReq extends FromClientPacket {}

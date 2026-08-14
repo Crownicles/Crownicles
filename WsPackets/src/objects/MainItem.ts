@@ -1,11 +1,13 @@
 import { ItemRarity } from "./ItemRarity";
-import { ValueAndMax } from "./ValueAndMax";
+import { MainItemStat } from "./MainItemStat";
 
 export type MainItem = {
 	id: number;
 	rarity: ItemRarity;
 	itemCategory: number;
-	attack: ValueAndMax;
-	defense: ValueAndMax;
-	speed: ValueAndMax;
+	itemLevel: number;
+	itemEnchantmentId?: string;
+	attack: MainItemStat;
+	defense: MainItemStat;
+	speed: MainItemStat;
 };

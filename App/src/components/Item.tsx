@@ -1,6 +1,7 @@
 import React, {useState} from "react";
 import {Animated, StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {MainItem} from "ws-packets/src/objects/MainItem";
+import {MainItemStat} from "ws-packets/src/objects/MainItemStat";
 import {SupportItem} from "ws-packets/src/objects/SupportItem";
 import {ItemRarity} from "ws-packets/src/objects/ItemRarity";
 import {ItemNature} from "ws-packets/src/objects/ItemNature";
@@ -54,47 +55,29 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 		return { text: value.toString(), isNerfed: false };
 	};
 
+	const renderMainItemStat = (key: string, icon: string, stat: MainItemStat) => {
+		const value = stat.baseValue + stat.upgradeValue;
+		if (value <= 0) {
+			return null;
+		}
+
+		const { text, isNerfed } = formatStatValue(value, stat.maxValue);
+		return (
+			<Text key={key} style={styles.itemStatText}>
+				<Text style={styles.itemStatIcon}>{icon}</Text>
+				<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
+					{isNerfed && <Text style={styles.strikethrough}>{value}</Text>} {text}
+				</Text>
+			</Text>
+		);
+	};
+
 	const renderMainItemStats = (item: MainItem) => {
-		const stats = [];
-
-		// Attack stat
-		if (item.attack.value > 0) {
-			const { text, isNerfed } = formatStatValue(item.attack.value, item.attack.max);
-			stats.push(
-				<Text key="attack" style={styles.itemStatText}>
-					<Text style={styles.itemStatIcon}>⚔️</Text>
-					<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
-						{isNerfed && <Text style={styles.strikethrough}>{item.attack.value}</Text>} {text}
-					</Text>
-				</Text>
-			);
-		}
-
-		// Defense stat
-		if (item.defense.value > 0) {
-			const { text, isNerfed } = formatStatValue(item.defense.value, item.defense.max);
-			stats.push(
-				<Text key="defense" style={styles.itemStatText}>
-					<Text style={styles.itemStatIcon}>🛡️</Text>
-					<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
-						{isNerfed && <Text style={styles.strikethrough}>{item.defense.value}</Text>} {text}
-					</Text>
-				</Text>
-			);
-		}
-
-		// Speed stat
-		if (item.speed.value > 0) {
-			const { text, isNerfed } = formatStatValue(item.speed.value, item.speed.max);
-			stats.push(
-				<Text key="speed" style={styles.itemStatText}>
-					<Text style={styles.itemStatIcon}>🚀</Text>
-					<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
-						{isNerfed && <Text style={styles.strikethrough}>{item.speed.value}</Text>} {text}
-					</Text>
-				</Text>
-			);
-		}
+		const stats = [
+			renderMainItemStat("attack", "⚔️", item.attack),
+			renderMainItemStat("defense", "🛡️", item.defense),
+			renderMainItemStat("speed", "🚀", item.speed)
+		].filter(stat => stat !== null);
 
 		if (stats.length === 0) return null;
 

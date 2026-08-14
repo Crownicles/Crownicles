@@ -48,7 +48,7 @@
     "react-native-uuid": "^2.0.3",
     "react-native-web": "~0.21.2",
     "react-native-webview": "13.15.0",
-    "ws-packets": "file:../WsPackets/ws-packets-1.0.0.tgz"
+    "ws-packets": "link:../WsPackets"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
