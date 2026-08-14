@@ -186,6 +186,27 @@ describe("CookingSlotRotation", () => {
 			// Without the param, should still work (backward compatible)
 			expect(recipesWithout).toHaveLength(SLOT_CONFIGS.length);
 		});
+
+		it("should always fill the dedicated material slot with a material recipe, even with default recipes only", () => {
+			const materialSlotIndex = SLOT_CONFIGS.findIndex(
+				config => config.eligibleTypes.length === 1 && config.eligibleTypes[0] === RecipeType.MATERIAL_CRAFT
+			);
+			expect(materialSlotIndex).toBeGreaterThanOrEqual(0);
+
+			for (const daySeed of [1, 42, 100, 999, 12345, 50000]) {
+				for (let furnacePosition = 0; furnacePosition < 20; furnacePosition++) {
+					const recipes = getUniqueRecipesForSlots({
+						cookingSlots: SLOT_CONFIGS.length,
+						furnacePosition,
+						daySeed,
+						discoveredRecipeIds: [],
+						maxRecipeLevelWithoutPenalty: 2
+					});
+
+					expect(recipes[materialSlotIndex]?.recipeType).toBe(RecipeType.MATERIAL_CRAFT);
+				}
+			}
+		});
 	});
 
 	describe("isRecipeSecret", () => {
