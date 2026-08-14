@@ -145,7 +145,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 		const packet: SmallEventUltimateFoodMerchantPacket = { interactionName: generateReward(player, guild) };
 		await giveReward(packet, response, context, player, guild);
 		if (packet.interactionName === Constants.DEFAULT_ERROR) {
-			PacketUtils.pushInternalError(response, `Small event ultimate food merchant: cannot determine an interaction for player ${player.keycloakId}`);
+			PacketUtils.pushInternalError(response, "Small event ultimate food merchant: cannot determine an interaction", {
+				context: { keycloakId: player.keycloakId }
+			});
 			return;
 		}
 

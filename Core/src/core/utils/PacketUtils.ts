@@ -11,20 +11,37 @@ import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 
+export type InternalErrorDetails = {
+
+	/**
+	 * The caught exception, when the failure comes from one
+	 */
+	cause?: unknown;
+
+	/**
+	 * Identifiers pinpointing the failure. Logged server-side only: the reason is echoed in a public
+	 * Discord message, so nothing identifying a player may travel with it.
+	 */
+	context?: Record<string, unknown>;
+};
+
 export abstract class PacketUtils {
 	/**
 	 * Report a failure the player can do nothing about. The reason describes what went wrong and is shown to the
 	 * player so they can write a useful bug report, while the caught exception is only logged server-side (CWE-209).
 	 * @param response
 	 * @param reason
-	 * @param cause The caught exception, when the failure comes from one
+	 * @param details Server-side only information about the failure
 	 */
-	static pushInternalError(response: CrowniclesPacket[], reason: string, cause?: unknown): void {
-		if (cause === undefined) {
-			CrowniclesLogger.error(reason);
+	static pushInternalError(response: CrowniclesPacket[], reason: string, details: InternalErrorDetails = {}): void {
+		if (details.cause === undefined) {
+			CrowniclesLogger.error(reason, details.context);
 		}
 		else {
-			CrowniclesLogger.errorWithObj(reason, cause);
+			CrowniclesLogger.errorWithObj(reason, {
+				cause: details.cause,
+				...details.context
+			});
 		}
 		response.push(makePacket(ErrorInternalPacket, { reason }));
 	}
