@@ -805,7 +805,7 @@
     "rewardEmbedTitle": "{{pseudo}}, ricompense per il combattimento",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Esperienza di gilda acquisita: **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Argento vinto : **{{money, number}}**\n:star: XP guadagnati : **{{experience, number}}**",
-    "monsterRewardsGuildPoints": ":mirror_ball: Punti gilda guadagnati : **{{guildPoints, number}}**",
+    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints, number}}**. La trésorerie augmente du même montant.",
     "monsterRewardsTitle": "{{pseudo}}, ricompense per il combattimento",
     "newBigEvent": ":flag_fr: Avete raggiunto **{{destination}}** !",
     "noFight": ":newspaper: **Giornale di {{pseudo}} :** {{waitABitReaction}} | Fai una rapida fuga e trova un piccolo nascondiglio! Il mostro sta aspettando pazientemente fuori...",
