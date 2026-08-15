@@ -1562,8 +1562,6 @@ def("pet", "pet", "Familier", () =>
     + kv("Surnom", P.pet.nickname)
     + kv("Rareté", P.pet.rarity)
     + kv("Sexe", P.pet.sex)
-    + kv("Mentalité", P.pet.love)
-    + kv("Régime", P.pet.diet)
   )
   + head("Moral", { label: "Vétérinaire", go: "veterinarian" })
   + panel(
@@ -1609,9 +1607,9 @@ def("petFeed", "pet", "Nourrir", () =>
   hero({ eyebrow: "Commande /nourrirfamilier", title: "🍖 Nourrir " + P.pet.nickname, text: "La durée de satiété dépend uniquement de l'espèce, entre 30 minutes et 5 heures. Le type de nourriture n'influence que les points d'amour." })
   + panel(rows([
     { icon: "🍬", title: "Friandise", sub: "+1 💕 · entrepôt 0 sur 150", end: "Donner", act: "feed" },
-    { icon: "🍖", title: "Viande", sub: "+3 💕 · compatible carnivore", end: "Donner", act: "feed" },
-    { icon: "🥬", title: "Salade", sub: "+3 💕 · incompatible carnivore", locked: true, end: "Régime" },
-    { icon: "🍲", title: "Soupe ultime", sub: "+5 💕 · tous régimes", end: "Donner", act: "feed" }
+    { icon: "🍖", title: "Viande", sub: "+3 💕 si votre familier en mange", end: "Donner", act: "feed" },
+    { icon: "🥬", title: "Salade", sub: "+3 💕 si votre familier en mange", end: "Donner", act: "feed" },
+    { icon: "🍲", title: "Soupe ultime", sub: "+5 💕 · appréciée de tous les familiers", end: "Donner", act: "feed" }
   ]))
   + note("Sans guilde, seule la friandise achetée à l'unité est disponible. Ravitaillez l'entrepôt en ville.")
 , "nourrir familier nourriture");
