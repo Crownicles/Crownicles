@@ -1658,11 +1658,11 @@
       },
       "goBack": {
         "outcomes": {
-          "0": "Shortly after turning around, you meet a crying and scared little boy by the wayside. He explains to you that he fled during a bandit attack on his parents merchandise cart. You rush to offer your help, the child accepts immediately. After walking two long hours, you find the parents of the child alive, but hurted. As you bid them farewell, the mother gives you a purse filled with gold.",
-          "1": "Shortly after turning around, you meet a crying and scared little boy by the wayside. He explains to you that he fled during a bandit attack on his parents' merchandise cart. You rush to offer your help; the child accepts immediately. After walking for a few minutes, a group of heavily armed bandits attacks you by surprise. This trap will not have been fatal to you, but you lose many gold coins during your escape.",
-          "2": "Shortly after turning around, you hear the clatter of pots and pans approaching you. It's a traveler in search of new culinary flavors, about to set up camp and rest. In the course of conversation, you discover her first name: Lucya. She offers you a pie that delights your palate. Full, rested and delighted by your chance encounter, you decide to continue on your way."
+          "0": "Peu après avoir renoncé à l'escalier, vous rencontrez un petit garçon en pleurs et apeuré au bord d'un chemin. Il vous explique s'être enfui lors d'une attaque de bandits contre le chariot de marchandises de ses parents. Vous vous empressez de lui proposer votre aide, l'enfant accepte immédiatement. Après avoir marché deux longues heures, vous retrouvez les parents de l'enfant en vie, mais blessés. Alors que vous leur faites vos adieux, la mère de l'enfant vous donne une bourse remplie d'or.",
+          "1": "Peu après avoir renoncé à l'escalier, vous rencontrez un petit garçon en pleurs et apeuré au bord d'un chemin. Il vous explique s'être enfui lors d'une attaque de bandits contre le chariot de marchandises de ses parents. Vous vous empressez de lui proposer votre aide, l'enfant accepte immédiatement. Après avoir marché quelques minutes, un groupe de bandits lourdement armés vous attaque par surprise. Ce piège ne vous aura pas été fatal, mais vous perdez de nombreuses pièces d'or lors de votre fuite.",
+          "2": "Peu après avoir renoncé à l'escalier, vous entendez des bruits de casseroles qui s'entrechoquent et se rapprochent de vous. C'est une voyageuse à la recherche de nouvelles saveurs culinaires qui s'apprêtait à poser son campement afin de se reposer. Au fil de la conservation, vous découvrez son prénom : Lucya. Elle vous offre une tourte qui vous ravit le palais. Repu, reposé et ravi de votre hasardeuse rencontre vous décidez tout de même de reprendre votre chemin."
         },
-        "text": "Turn around."
+        "text": "Renoncer à l'ascension et poursuivre votre route."
       },
       "search": {
         "outcomes": {
@@ -2652,11 +2652,11 @@
       },
       "flee": {
         "outcomes": {
-          "0": "Preferring to avoid all danger, you turn back and take an alternative route. Your caution comes at a price: you lose time and end up getting lost on this new path, but at least you avoid potential problems.",
-          "1": "As you turn back, you stumble in your haste and injure yourself slightly. The noise alerts the two men who stop their argument to look in your direction, but they don't pursue you.",
-          "2": "Your retreat leads you by chance to a forgotten path where you discover the remains of an ancient encampment. Among the debris, you find a still-usable object abandoned by previous travelers."
+          "0": "Préférant éviter tout danger, vous contournez la clairière pour emprunter un chemin alternatif. Votre prudence a un prix : vous perdez du temps et finissez par vous égarer sur ce nouveau sentier, mais au moins, vous échappez aux problèmes potentiels.",
+          "1": "En vous éloignant, vous trébuchez dans votre hâte et vous blessez légèrement. Le bruit alerte les deux hommes qui cessent leur dispute pour regarder dans votre direction, mais ils ne vous poursuivent pas.",
+          "2": "Votre détour vous mène par hasard vers un sentier oublié où vous découvrez les vestiges d'un ancien campement. Parmi les débris, vous trouvez un objet encore utilisable abandonné par de précédents voyageurs."
         },
-        "text": "Turn back and avoid confrontation."
+        "text": "Contourner la clairière et éviter la confrontation."
       }
     },
     "text": "As you make your way along a winding path in the Celestrum Forest, you suddenly hear the sound of voices from a nearby clearing. Intrigued, you discreetly approach and discover two men arguing. They're standing face to face, gesticulating wildly, obviously disagreeing about something important. One wears a patched cape, the other a worn leather jacket. Between them, on the floor, lies a wooden box that each seems to claim."
