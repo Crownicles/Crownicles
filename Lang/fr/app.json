@@ -1,10 +1,31 @@
 {
+  "common": {
+    "loading": "Chargement",
+    "error": "Les informations n'ont pas pu être récupérées",
+    "retry": "Réessayer"
+  },
   "tabs": {
     "arena": "Arène",
     "guild": "Guilde",
     "adventure": "Aventure",
     "profile": "Profil",
     "pet": "Familier"
+  },
+  "pet": {
+    "eyebrow": "Votre familier",
+    "noPet": "Aucun familier ne vous accompagne pour le moment",
+    "titles": {
+      "sheet": "Fiche",
+      "mood": "Moral"
+    },
+    "fields": {
+      "type": "Type",
+      "nickname": "Surnom",
+      "rarity": "Rareté",
+      "sex": "Sexe",
+      "mood": "Mentalité"
+    },
+    "moodScale": "Le moral progresse en nourrissant et en caressant le familier"
   },
   "profile": {
     "level": "Niveau {{level}}",
