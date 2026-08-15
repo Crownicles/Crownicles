@@ -30,7 +30,7 @@ let expeditionIdCounter = 0;
  * @param mapLocation - The map location (can be null/undefined)
  * @returns The corresponding expedition location type
  */
-function getExpeditionTypeFromMapLocation(mapLocation: MapLocation | null): ExpeditionLocationType {
+export function getExpeditionTypeFromMapLocation(mapLocation: MapLocation | null): ExpeditionLocationType {
 	if (!mapLocation) {
 		return ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS;
 	}

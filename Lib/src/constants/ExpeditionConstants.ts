@@ -143,6 +143,7 @@ export abstract class ExpeditionConstants {
 		[MapLocationConstants.TYPES.BEACH]: "coast",
 		[MapLocationConstants.TYPES.RIVER]: "coast",
 		[MapLocationConstants.TYPES.LAKE]: "swamp",
+		[MapLocationConstants.TYPES.SWAMP]: "swamp",
 		[MapLocationConstants.TYPES.PLAINS]: "plains",
 		[MapLocationConstants.TYPES.ROAD]: "plains",
 		[MapLocationConstants.TYPES.VILLAGE]: "plains",
