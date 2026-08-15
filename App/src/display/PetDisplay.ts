@@ -34,7 +34,8 @@ export function petRarity(pet: OwnedPet): string {
 }
 
 export function petSex(pet: OwnedPet): string {
-	return i18n.t("commands:pet.sexDisplay", { context: sexContext(pet.sex) });
+	// This key is the odd one out: it is suffixed with the short sex, not the long one
+	return i18n.t("commands:pet.sexDisplay", { context: pet.sex });
 }
 
 export function petMood(pet: OwnedPet): string {

@@ -22,9 +22,24 @@ linked from the repository (`link:../WsPackets`).
    ```
 
    `.env` is gitignored because the URLs depend on your setup. `localhost` works
-   for the web build and the simulators; on a physical device, replace it with the
-   LAN IP of the machine running RestWs and Keycloak — including in the Keycloak
-   URL, since the login page opens on the device itself.
+   for the web build and the simulators; on a physical device, use the **name** of the
+   machine running RestWs and Keycloak rather than its IP address — including in the
+   Keycloak URL, since the login page opens on the device itself:
+
+   ```bash
+   echo "http://$(scutil --get LocalHostName).local:10500"   # macOS
+   echo "http://$(hostname).local:10500"                     # Linux with avahi, Windows with Bonjour
+   ```
+
+   A name is resolved on the local network and keeps working when the machine changes
+   IP address. An IP has to be updated in three places every time it moves: here, in
+   the `callbackUrl` of RestWs, and in the Discord developer portal — and the symptom
+   is a login that fails without any request ever reaching RestWs.
+
+   Whichever you pick, the same host must appear in the `callbackUrl` of
+   `RestWs/config/config.toml`, and `<callbackUrl>/discord/callback` must be declared
+   in the Discord developer portal. In that portal, the **Save Changes** button only
+   appears once the field loses focus.
 
 3. Set up the Discord identity provider in Keycloak, as described in
    [the Keycloak README](../keycloak/README.md). The app signs in through Keycloak

@@ -1567,8 +1567,8 @@ def("pet", "pet", "Familier", () =>
   )
   + head("Moral", { label: "Vétérinaire", go: "veterinarian" })
   + panel(
-    stat("💕 Points d'amour", P.pet.lovePoints + " / 110", pct(P.pet.lovePoints, 110), "red")
-    + note("😼 Fielleux 0 à 4 · 🙀 Sauvage 5 à 24 · 😿 Craintif 25 à 49 · 😺 Apprivoisé 50 à 99 · 😻 Dressé 100 à 110")
+    kv("Mentalité", P.pet.love)
+    + note("Le moral progresse en nourrissant et en caressant le familier. Seul le vétérinaire révèle le niveau d'amour exact.")
   )
   + head("Actions")
   + panel(rows([
