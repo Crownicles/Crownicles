@@ -805,7 +805,7 @@
     "rewardEmbedTitle": "{{pseudo}}, fight rewards",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Guild experience gained : **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Money earned: **{{money, number}}**\n{emote:unitValues.xp} XP earned: **{{experience, number}}**",
-    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Guild points earned: **{{guildPoints, number}}**",
+    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints, number}}**. La trésorerie augmente du même montant.",
     "monsterRewardsTitle": "{{pseudo}}, fight rewards",
     "newBigEvent": "{emote:languages.fr} You arrived at **{{destination}}**!",
     "noFight": "{emote:commands.report} **{{pseudo}}'s log:** {emote:pveFights.waitABit} | You make a quick getaway and find a little hiding place! The monster is waiting patiently outside...",
