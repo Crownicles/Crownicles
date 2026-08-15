@@ -30,7 +30,10 @@ Two consequences that decide most design questions:
 
 `WsPackets` is deliberately standalone: it duplicates the few types it needs (`MainItem`,
 `SupportItem`, ...) rather than importing `Lib`. That is what lets the wire format stay stable while
-`Lib` evolves. Keep it that way.
+`Lib` evolves. Keep it that way — and register every duplicated enum in
+`RestWs/__tests__/packets/WireEnums.test.ts`, because numeric enums are mutually assignable and a
+member reordered in `Lib` would otherwise change the meaning of a value for installed clients
+without a single compilation error.
 
 ## The interaction model is collectors, not screens
 
@@ -60,6 +63,9 @@ Core needs no change at all. Use `/drink` or `/profile` as a working model.
 
 Watch out for:
 
+- **A packet without a translator is not an exposed command.** `WsPackets` held drink packets for
+  months while nothing referenced them, and they silently drifted away from the `Lib` ones. Grep the
+  translators, not the packets, to know what a client can actually reach.
 - **Error packets are packets too.** A command that can answer `PlayerNotFound` or `NoAvailablePotion`
   needs a translator for each of them, otherwise RestWs silently drops the answer and the app waits
   forever.
