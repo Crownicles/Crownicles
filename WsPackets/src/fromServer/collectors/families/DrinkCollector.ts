@@ -15,6 +15,6 @@ declare module "../ReactionCollectorProtocol" {
 	}
 }
 
-export const DRINK_COLLECTOR_KIND = "drink" satisfies ReactionCollectorDataKind;
+export const DRINK_DATA_KINDS = { COLLECTOR: "drink" } as const satisfies Record<string, ReactionCollectorDataKind>;
 
 export const DRINK_REACTION_KINDS = { POTION: "drinkPotion" } as const satisfies Record<string, ReactionCollectorReactionKind>;

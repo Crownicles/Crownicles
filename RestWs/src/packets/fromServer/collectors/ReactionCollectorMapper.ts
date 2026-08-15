@@ -39,7 +39,7 @@ type TaggedLibPayload<LibPayload> = {
  * instead of being dropped.
  * @param serverType
  */
-function toUnknownPayload(serverType: string): UnknownCollectorTag {
+function toUnknownTag(serverType: string): UnknownCollectorTag {
 	if (!reportedUnmappedTypes.has(serverType)) {
 		reportedUnmappedTypes.add(serverType);
 		CrowniclesLogger.warn("No WebSocket mapping for reaction collector type", { serverType });
@@ -72,7 +72,7 @@ export function mapCollectorCreation(packet: ReactionCollectorCreationPacket): R
 
 		// Spread rather than assign: passing undefined would overwrite the default of the packet class
 		...packet.mainPacket === undefined ? {} : { mainPacket: packet.mainPacket },
-		data: translate(dataMappings, packet.data) ?? toUnknownPayload(packet.data.type),
-		reactions: packet.reactions.map(reaction => translate(reactionMappings, reaction) ?? toUnknownPayload(reaction.type))
+		data: translate(dataMappings, packet.data) ?? toUnknownTag(packet.data.type),
+		reactions: packet.reactions.map(reaction => translate(reactionMappings, reaction) ?? toUnknownTag(reaction.type))
 	});
 }

@@ -60,4 +60,11 @@ describe("ReactionCollectorReactClientTranslator", () => {
 		await expect(ReactionCollectorReactClientTranslator.translate(contextOf(AUTHENTICATED_PLAYER), reactionOf(reactionIndex)))
 			.rejects.toThrow(InvalidClientPacketError);
 	});
+
+	it("rejects a reaction that targets no collector", async () => {
+		const withoutCollector = makeFromClientPacket(ReactionCollectorReactReq, { reactionIndex: 0 } as ReactionCollectorReactReq);
+
+		await expect(ReactionCollectorReactClientTranslator.translate(contextOf(AUTHENTICATED_PLAYER), withoutCollector))
+			.rejects.toThrow(InvalidClientPacketError);
+	});
 });

@@ -26,6 +26,10 @@ export default class ReactionCollectorReactClientTranslator {
 			return Promise.reject(new InvalidClientPacketError(`Reaction index is not a positive integer: ${packet.reactionIndex}`));
 		}
 
+		if (typeof packet.collectorId !== "string") {
+			return Promise.reject(new InvalidClientPacketError("Reaction carries no collector identifier"));
+		}
+
 		return asyncMakePacket(ReactionCollectorReactPacket, {
 			id: packet.collectorId,
 			keycloakId: context.keycloakId,

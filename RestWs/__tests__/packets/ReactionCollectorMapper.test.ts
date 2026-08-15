@@ -13,7 +13,7 @@ import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
 import { ItemNature } from "../../../Lib/src/constants/ItemConstants";
 import {
-	DRINK_COLLECTOR_KIND,
+	DRINK_DATA_KINDS,
 	DRINK_REACTION_KINDS,
 	GENERIC_REACTION_KINDS,
 	UNKNOWN_COLLECTOR_KIND
@@ -78,7 +78,7 @@ describe("mapCollectorCreation", () => {
 
 		expect(mapped.id).toBe("collector-1");
 		expect(mapped.endTime).toBe(END_TIME);
-		expect(mapped.data.type).toBe(DRINK_COLLECTOR_KIND);
+		expect(mapped.data.type).toBe(DRINK_DATA_KINDS.COLLECTOR);
 		expect(mapped.reactions.map(reaction => reaction.type)).toStrictEqual([
 			DRINK_REACTION_KINDS.POTION,
 			DRINK_REACTION_KINDS.POTION,

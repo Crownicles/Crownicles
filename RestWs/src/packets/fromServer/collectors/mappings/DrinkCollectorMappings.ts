@@ -3,7 +3,7 @@ import {
 	ReactionCollectorDrinkReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import {
-	DRINK_COLLECTOR_KIND, DRINK_REACTION_KINDS
+	DRINK_DATA_KINDS, DRINK_REACTION_KINDS
 } from "../../../../../../WsPackets/src/fromServer/collectors";
 import { SupportItem } from "../../../../../../WsPackets/src/objects/SupportItem";
 import { ItemWithDetails } from "../../../../../../Lib/src/types/ItemWithDetails";
@@ -27,4 +27,4 @@ export const drinkReactionMappings: ReactionMapping[] = [
 	})
 ];
 
-export const drinkDataMappings: DataMapping[] = [defineDataMapping(ReactionCollectorDrinkData, DRINK_COLLECTOR_KIND, () => ({}))];
+export const drinkDataMappings: DataMapping[] = [defineDataMapping(ReactionCollectorDrinkData, DRINK_DATA_KINDS.COLLECTOR, () => ({}))];
