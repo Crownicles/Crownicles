@@ -26,10 +26,20 @@ export const Theme = {
 	},
 	radius: 14,
 	fontSize: {
+		eyebrow: 11.5,
 		note: 12.5,
 		body: 13.5,
-		label: 15,
-		title: 20,
-		hero: 24
+		sectionHeader: 15.5,
+		title: 18,
+		hero: 25
+	},
+
+	/**
+	 * React Native takes absolute points where the mockup uses em, so these are already converted.
+	 */
+	letterSpacing: {
+		hero: -0.9,
+		sectionHeader: -0.3,
+		eyebrow: 0.9
 	}
 } as const;

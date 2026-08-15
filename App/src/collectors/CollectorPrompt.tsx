@@ -62,9 +62,7 @@ export function CollectorPrompt({ collector, onChoose }: {
 }
 
 const styles = StyleSheet.create({
-	choice: {
-		paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg, borderTopWidth: 1, borderTopColor: Theme.colors.line
-	},
+	choice: { paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg },
 	choiceLabel: { color: Theme.colors.blue, fontSize: Theme.fontSize.body },
 	disabled: { color: Theme.colors.faint }
 });

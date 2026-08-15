@@ -1,4 +1,4 @@
-import {ReactNode} from "react";
+import {Children, Fragment, ReactNode} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {Theme} from "@/src/design/Theme";
 
@@ -23,8 +23,22 @@ export function SectionHeader({ children }: { children: string }): ReactNode {
 	return <Text style={styles.sectionHeader}>{children}</Text>;
 }
 
+/**
+ * Separators are drawn by the panel rather than by its children, so the first row never carries a
+ * line that would double the border of the card.
+ * @param children
+ */
 export function Panel({ children }: { children: ReactNode }): ReactNode {
-	return <View style={styles.panel}>{children}</View>;
+	return (
+		<View style={styles.panel}>
+			{Children.toArray(children).map((child, index) => (
+				<Fragment key={index}>
+					{index > 0 ? <View style={styles.separator} /> : null}
+					{child}
+				</Fragment>
+			))}
+		</View>
+	);
 }
 
 export function KeyValue({ label, value }: { label: string; value: string }): ReactNode {
@@ -61,30 +75,31 @@ export function Note({ children }: { children: string }): ReactNode {
 const styles = StyleSheet.create({
 	hero: { marginBottom: Theme.spacing.xl },
 	eyebrow: {
-		color: Theme.colors.faint, fontSize: Theme.fontSize.note, textTransform: "uppercase", letterSpacing: 1
+		color: Theme.colors.muted, fontSize: Theme.fontSize.eyebrow, fontWeight: "600", textTransform: "uppercase", letterSpacing: Theme.letterSpacing.eyebrow, marginBottom: 5
 	},
 	heroTitle: {
-		color: Theme.colors.ink, fontSize: Theme.fontSize.hero, fontWeight: "700", marginTop: Theme.spacing.xs
+		color: Theme.colors.ink, fontSize: Theme.fontSize.hero, fontWeight: "800", letterSpacing: Theme.letterSpacing.hero, lineHeight: Theme.fontSize.hero * 1.16, marginBottom: 6
 	},
 	heroSubtitle: {
-		color: Theme.colors.muted, fontSize: Theme.fontSize.body, marginTop: Theme.spacing.xs
+		color: Theme.colors.muted, fontSize: 14
 	},
 	sectionHeader: {
-		color: Theme.colors.ink, fontSize: Theme.fontSize.label, fontWeight: "600", marginBottom: Theme.spacing.sm, marginTop: Theme.spacing.xl
+		color: Theme.colors.ink, fontSize: Theme.fontSize.sectionHeader, fontWeight: "700", letterSpacing: Theme.letterSpacing.sectionHeader, marginBottom: Theme.spacing.sm, marginTop: Theme.spacing.xl
 	},
 	panel: {
 		borderWidth: 1, borderColor: Theme.colors.line, borderRadius: Theme.radius, overflow: "hidden", backgroundColor: Theme.colors.paper
 	},
+	separator: {
+		height: 1, backgroundColor: Theme.colors.line
+	},
 	keyValue: {
-		flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: 10, paddingHorizontal: Theme.spacing.lg, borderTopWidth: 1, borderTopColor: Theme.colors.line
+		flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: 10, paddingHorizontal: Theme.spacing.lg
 	},
 	keyValueLabel: { color: Theme.colors.muted, fontSize: Theme.fontSize.body },
 	keyValueValue: {
 		color: Theme.colors.ink, fontSize: Theme.fontSize.body, flexShrink: 1, textAlign: "right"
 	},
-	stat: {
-		paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg, borderTopWidth: 1, borderTopColor: Theme.colors.line
-	},
+	stat: { paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg },
 	statHead: {
 		flexDirection: "row", justifyContent: "space-between", marginBottom: Theme.spacing.sm
 	},
@@ -93,6 +108,6 @@ const styles = StyleSheet.create({
 	},
 	fill: { height: "100%", borderRadius: 3 },
 	note: {
-		paddingVertical: 11, paddingHorizontal: Theme.spacing.lg, borderTopWidth: 1, borderTopColor: Theme.colors.line, fontSize: Theme.fontSize.note, color: Theme.colors.muted
+		paddingVertical: 11, paddingHorizontal: Theme.spacing.lg, fontSize: Theme.fontSize.note, color: Theme.colors.muted
 	}
 });
