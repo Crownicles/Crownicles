@@ -48,16 +48,14 @@ linked from the repository (`link:../WsPackets`).
 `ios/` and `android/` are absent from the repository: `npx expo prebuild` rebuilds them from
 `app.json`, and `npx expo run:ios` or `run:android` does it on its own when they are missing.
 Anything edited by hand in there is lost on the next generation, so a native change belongs in a
-config plugin under `plugins/`.
-
-`plugins/withIosBuildFixes.js` carries the two this app needs: building the `fmt` pod as C++17, whose
-use of `consteval` Xcode 26 rejects, and turning on the ccache support React Native ships. Beware
-that the latter was measured to have no effect under Xcode 26, whose build system ignores the `CC`
-and `CXX` settings the switch relies on; it is kept because it is the supported knob and costs
-nothing, not because it currently speeds anything up.
+config plugin declared in `app.json`.
 
 Only a change to the native dependencies or to `app.json` calls for a new build. Everything written
 in TypeScript is served by Metro and reloads on the fly.
+
+**Unlock the device before running `expo run:ios` on a phone.** A locked device makes the command
+stop on a confirmation prompt that the progress spinner draws over, so it looks like a build that
+never finishes when it is in fact waiting for an answer.
 
 ## Project layout
 
@@ -65,5 +63,4 @@ in TypeScript is served by Metro and reloads on the fly.
 - `src/networking/` — REST client and WebSocket client
 - `src/authentication/` — Keycloak login (Authorization Code + PKCE) and token handling
 - `src/translations/` — i18n, fed at runtime by the assets downloaded from RestWs
-- `plugins/` — config plugins, the only supported way to alter the generated native projects
 - `metro.config.js` — makes Metro watch and resolve the linked `WsPackets` package
