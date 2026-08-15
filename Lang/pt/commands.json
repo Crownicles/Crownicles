@@ -805,7 +805,7 @@
     "rewardEmbedTitle": "{{pseudo}}recompensas de combate",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Experiência de guilda ganha: **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Prata ganha :{{money, number}}\n:star: ** ** XP ganho :{{experience, number}}** **",
-    "monsterRewardsGuildPoints": ":mirror_ball: Pontos de guilda ganhos :{{guildPoints, number}}** **",
+    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints, number}}**. La trésorerie augmente du même montant.",
     "monsterRewardsTitle": "{{pseudo}}recompensas de combate",
     "newBigEvent": ":flag_fr:{{destination}}Chegou a !",
     "noFight": ":newspaper: {{pseudo}} {{waitABitReaction}} ** Fazes uma fuga rápida e encontras um pequeno esconderijo! O monstro está à espera pacientemente lá fora...",
