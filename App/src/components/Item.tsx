@@ -50,6 +50,30 @@ interface ItemFrontProps {
 	onFlip: () => void;
 }
 
+interface ItemFlipState {
+	flipAnim: Animated.Value;
+	isFlipped: boolean;
+	handleFlip: () => void;
+}
+
+interface EmptyItemProps {
+	itemType: InventoryItemType;
+	customKey?: string;
+}
+
+interface FilledItemProps {
+	item: MainItem | SupportItem;
+	itemType: InventoryItemType;
+	customKey?: string;
+	onDrink?: () => void;
+	onSwitch?: () => void;
+	onSell?: () => void;
+	isBackupItem: boolean;
+	flipAnim: Animated.Value;
+	isFlipped: boolean;
+	onFlip: () => void;
+}
+
 function getItemIcon(itemType: InventoryItemType, itemId: number): string {
 	return AppIcons.getIconOrNull(`${itemType}s.${itemId}`) || AppIcons.getIcon("inventory.empty");
 }
@@ -60,6 +84,40 @@ function getRarityIcon(rarity: ItemRarity): string {
 
 function getItemNatureEffect(nature: ItemNature): string {
 	return AppIcons.getIcon(`itemNatures.${nature}`);
+}
+
+function useItemFlip(): ItemFlipState {
+	const [isFlipped, setIsFlipped] = useState<boolean>(false);
+	const [flipAnim] = useState<Animated.Value>(new Animated.Value(0));
+
+	const handleFlip = (): void => {
+		const toValue = isFlipped ? 0 : 1;
+
+		Animated.timing(flipAnim, {
+			toValue,
+			duration: 300,
+			useNativeDriver: true,
+		}).start();
+
+		setIsFlipped(!isFlipped);
+	};
+
+	return {
+		flipAnim,
+		isFlipped,
+		handleFlip
+	};
+}
+
+function EmptyItem({itemType, customKey}: EmptyItemProps): ReactElement {
+	return (
+		<View key={customKey || itemType} style={styles.inventoryItem}>
+			<Text style={styles.itemIcon}>⬜</Text>
+			<View style={styles.itemDetails}>
+				<Text style={styles.itemName}>{i18n.t("app:profile.inventory.emptySlot")}</Text>
+			</View>
+		</View>
+	);
 }
 
 function formatStatValue(value: number, max: number): { text: string; isNerfed: boolean } {
@@ -166,63 +224,42 @@ function ItemFront({item, itemType, itemIcon, rarityIcon, itemName, onFlip}: Ite
 						{i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
 					</Text>
 				</View>
-				{'attack' in item && (
+				{"attack" in item && (
 					<View style={styles.itemStatsContainer}>
 						<MainItemStats item={item} />
 					</View>
 				)}
-				{'nature' in item && <SupportItemEffect item={item} itemType={itemType as SupportItemType} />}
+				{"nature" in item && <SupportItemEffect item={item} itemType={itemType as SupportItemType} />}
 			</View>
 			<Text style={styles.clickIndicator}>👆</Text>
 		</TouchableOpacity>
 	);
 }
 
-export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSwitch, onSell, isBackupItem = false }: InventoryItemProps): ReactElement {
-	const [isFlipped, setIsFlipped] = useState<boolean>(false);
-	const [flipAnim] = useState(new Animated.Value(0));
-
-	const handleFlip = (): void => {
-		const toValue = isFlipped ? 0 : 1;
-
-		Animated.timing(flipAnim, {
-			toValue,
-			duration: 300,
-			useNativeDriver: true,
-		}).start();
-
-		setIsFlipped(!isFlipped);
-	};
-
-	// Handle empty slot
-	const hasNoItem = !item;
-	const hasEmptyItemId = item?.id === 0;
-	const shouldRenderEmptySlot = isEmpty || hasNoItem || hasEmptyItemId;
-
-	if (shouldRenderEmptySlot) {
-		return (
-			<View key={customKey || itemType} style={styles.inventoryItem}>
-				<Text style={styles.itemIcon}>⬜</Text>
-				<View style={styles.itemDetails}>
-					<Text style={styles.itemName}>{i18n.t("app:profile.inventory.emptySlot")}</Text>
-				</View>
-			</View>
-		);
-	}
-
-	// Render filled item
+function FilledItem({
+	item,
+	itemType,
+	customKey,
+	onDrink,
+	onSwitch,
+	onSell,
+	isBackupItem,
+	flipAnim,
+	isFlipped,
+	onFlip
+}: FilledItemProps): ReactElement {
 	const itemIcon = getItemIcon(itemType, item.id);
 	const rarityIcon = getRarityIcon(item.rarity);
 	const itemName = i18n.t(`models:${itemType}s.${item.id}`);
 
 	const frontRotateY = flipAnim.interpolate({
 		inputRange: [0, 1],
-		outputRange: ['0deg', '180deg'],
+		outputRange: ["0deg", "180deg"],
 	});
 
 	const backRotateY = flipAnim.interpolate({
 		inputRange: [0, 1],
-		outputRange: ['180deg', '360deg'],
+		outputRange: ["180deg", "360deg"],
 	});
 
 	return (
@@ -242,7 +279,7 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 					itemIcon={itemIcon}
 					rarityIcon={rarityIcon}
 					itemName={itemName}
-					onFlip={handleFlip}
+					onFlip={onFlip}
 				/>
 			</Animated.View>
 
@@ -263,9 +300,45 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 					onSwitch={onSwitch}
 					onSell={onSell}
 					isBackupItem={isBackupItem}
-					onFlip={handleFlip}
+					onFlip={onFlip}
 				/>
 			</Animated.View>
 		</View>
+	);
+}
+
+export function Item({
+	item,
+	itemType,
+	isEmpty = false,
+	customKey,
+	onDrink,
+	onSwitch,
+	onSell,
+	isBackupItem = false
+}: InventoryItemProps): ReactElement {
+	const {
+		flipAnim,
+		isFlipped,
+		handleFlip
+	} = useItemFlip();
+
+	if (isEmpty || !item || item.id === 0) {
+		return <EmptyItem itemType={itemType} customKey={customKey} />;
+	}
+
+	return (
+		<FilledItem
+			item={item}
+			itemType={itemType}
+			customKey={customKey}
+			onDrink={onDrink}
+			onSwitch={onSwitch}
+			onSell={onSell}
+			isBackupItem={isBackupItem}
+			flipAnim={flipAnim}
+			isFlipped={isFlipped}
+			onFlip={handleFlip}
+		/>
 	);
 }

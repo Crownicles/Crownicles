@@ -9,7 +9,9 @@ import { IncomingMessage } from "http";
 import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
 import { InvalidClientPacketError } from "../packets/fromClient/InvalidClientPacketError";
-import * as WebSocket from "ws";
+import {
+	Server, WebSocket
+} from "ws";
 
 /**
  * Handle the message received from the client
@@ -89,7 +91,7 @@ export class WebSocketServer {
 	/**
 	 * WebSocket server instance
 	 */
-	private static server: WebSocket.Server;
+	private static server: Server;
 
 	/**
 	 * Map of keycloakId to WebSocket client
@@ -106,7 +108,7 @@ export class WebSocketServer {
 			return;
 		}
 
-		WebSocketServer.server = new WebSocket.Server({
+		WebSocketServer.server = new Server({
 			port, host: "0.0.0.0"
 		});
 

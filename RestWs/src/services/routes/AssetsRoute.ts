@@ -27,7 +27,7 @@ function computeFileHash(fileContent: string): string {
  * Computes the assets for the languages and stores them in the `assets` and `assetsHashes` maps.
  */
 async function computeLanguagesAssets(debugMode: boolean): Promise<void> {
-	const languages = (await readdir(`dist/Lang`, {
+	const languages = (await readdir("dist/Lang", {
 		withFileTypes: true
 	}))
 		.filter(dirent => dirent.isDirectory())
