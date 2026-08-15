@@ -1481,8 +1481,7 @@
       "name": "Désert"
     },
     "swamp": {
-      "name": "Marais",
-      "prefix": "du"
+      "name": "Marais"
     },
     "cave": {
       "name": "Grotte"

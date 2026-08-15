@@ -1110,7 +1110,6 @@ export const CrowniclesIcons: {
 		fo: "🌳",
 		iceBeach: "🌨️",
 		la: "🚣‍♂️",
-		swamp: "🌿",
 		mine: "🪨",
 		mo: "⛰️",
 		pl: "🌺",

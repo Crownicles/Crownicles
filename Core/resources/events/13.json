@@ -14,16 +14,12 @@
         "0": {
           "effect": "occupied",
           "lostTime": 25,
-          "mapTypesDestination": [
-            "ro"
-          ]
+          "excludeCityDestination": true
         },
         "1": {
           "effect": "occupied",
           "lostTime": 70,
-          "mapTypesDestination": [
-            "ro"
-          ]
+          "excludeCityDestination": true
         }
       }
     },

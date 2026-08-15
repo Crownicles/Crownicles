@@ -1,5 +1,6 @@
 {
-  "type": "swamp",
+  "type": "ro",
+  "expeditionType": "swamp",
   "tags": [
     "detALa"
   ],

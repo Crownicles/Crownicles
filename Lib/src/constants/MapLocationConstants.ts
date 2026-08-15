@@ -22,7 +22,6 @@ export abstract class MapLocationConstants {
 		ICE_BEACH: "iceBeach",
 		ICE_PEAK: "icePeak",
 		LAKE: "la",
-		SWAMP: "swamp",
 		MINE: "mine",
 		MISTY_PATH: "mistyPath",
 		MOUNTAIN: "mo",

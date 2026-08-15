@@ -4,25 +4,19 @@
       "outcomes": {
         "0": {
           "money": 350,
-          "mapTypesDestination": [
-            "ro"
-          ]
+          "excludeCityDestination": true
         },
         "1": {
           "money": 150,
           "randomItem": {},
-          "mapTypesDestination": [
-            "ro"
-          ]
+          "excludeCityDestination": true
         },
         "2": {
           "money": -150,
           "tags": [
             "moneyUsage"
           ],
-          "mapTypesDestination": [
-            "ro"
-          ]
+          "excludeCityDestination": true
         },
         "3": {
           "effect": "hurt",
@@ -31,9 +25,7 @@
           "tags": [
             "moneyUsage"
           ],
-          "mapTypesDestination": [
-            "ro"
-          ]
+          "excludeCityDestination": true
         }
       }
     },

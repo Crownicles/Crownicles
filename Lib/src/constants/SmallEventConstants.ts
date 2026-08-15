@@ -379,9 +379,7 @@ export abstract class SmallEventConstants {
 		VEGETARIAN_TYPES: [
 			MapLocationConstants.TYPES.FOREST,
 			MapLocationConstants.TYPES.PLAINS,
-			MapLocationConstants.TYPES.ROAD,
-			MapLocationConstants.TYPES.RUINS,
-			MapLocationConstants.TYPES.SWAMP
+			MapLocationConstants.TYPES.ROAD
 		],
 
 		// Map location types where meat is more likely

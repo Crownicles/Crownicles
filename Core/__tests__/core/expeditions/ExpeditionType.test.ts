@@ -21,8 +21,9 @@ describe("Expedition type resolution", () => {
 		expect(ExpeditionConstants.MAP_TYPE_TO_EXPEDITION_TYPE).toMatchObject({
 			[MapLocationConstants.TYPES.DESERT]: expeditionTypes.DESERT,
 			[MapLocationConstants.TYPES.MOUNTAIN]: expeditionTypes.MOUNTAIN,
+			[MapLocationConstants.TYPES.LAKE]: expeditionTypes.SWAMP,
 			[MapLocationConstants.TYPES.RUINS]: expeditionTypes.RUINS,
-			[MapLocationConstants.TYPES.SWAMP]: expeditionTypes.SWAMP
+			[MapLocationConstants.TYPES.ROAD]: expeditionTypes.PLAINS
 		});
 	});
 
@@ -35,19 +36,25 @@ describe("Expedition type resolution", () => {
 		expect(getExpeditionTypeFromMapLocation(mapLocation)).toBe(ExpeditionConstants.EXPEDITION_LOCATION_TYPES.CAVE);
 	});
 
-	it("derives the current expedition biome for the five migrated locations", () => {
-		const migratedLocations: [number, ExpeditionLocationType][] = [
-			[5, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.RUINS],
-			[13, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.SWAMP],
-			[17, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.DESERT],
-			[19, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.DESERT],
-			[24, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.MOUNTAIN]
+	it("derives the expedition biome proposed for the continent locations", () => {
+		const migratedLocations: [number, ExpeditionLocationType, boolean][] = [
+			[3, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.SWAMP, true],
+			[5, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.RUINS, true],
+			[7, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.DESERT, false],
+			[13, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.SWAMP, true],
+			[16, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.PLAINS, false],
+			[17, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.DESERT, true],
+			[19, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.DESERT, true],
+			[21, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.RUINS, true],
+			[22, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.FOREST, false],
+			[23, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.CAVE, true],
+			[24, ExpeditionConstants.EXPEDITION_LOCATION_TYPES.MOUNTAIN, true]
 		];
 
-		for (const [id, expectedType] of migratedLocations) {
+		for (const [id, expectedType, hasOverride] of migratedLocations) {
 			const mapLocation = readMapLocation(id);
 
-			expect(mapLocation.expeditionType).toBeUndefined();
+			expect(mapLocation.expeditionType).toBe(hasOverride ? expectedType : undefined);
 			expect(getExpeditionTypeFromMapLocation(mapLocation)).toBe(expectedType);
 		}
 	});

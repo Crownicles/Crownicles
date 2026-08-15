@@ -1,5 +1,6 @@
 {
-  "type": "ruins",
+  "type": "ro",
+  "expeditionType": "ruins",
   "tags": [
     "detAu"
   ],
