@@ -1,5 +1,5 @@
 import {
-	CrowniclesPacket, makePacket, PacketContext
+	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { Player } from "../database/game/models/Player";
 import { MissionsController } from "../missions/MissionsController";
@@ -8,9 +8,8 @@ import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { PacketUtils } from "../utils/PacketUtils";
 import { PlayerSmallEvents } from "../database/game/models/PlayerSmallEvent";
-import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { crowniclesInstance } from "../../app";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
@@ -36,7 +35,7 @@ async function checkSmallEventEligibility(
 	const file = await import(`../smallEvents/${key}.js`);
 
 	if (!file.smallEventFuncs?.canBeExecuted) {
-		response.push(makePacket(ErrorPacket, { message: `${key} doesn't contain a canBeExecuted function` }));
+		PacketUtils.pushInternalError(response, `Small event ${key} doesn't contain a canBeExecuted function`);
 		return null;
 	}
 
@@ -129,12 +128,11 @@ async function loadAndExecuteSmallEvent(
 			await runSmallEventUnderLock(player, event, smallEvent, response, context, playerActiveObjects);
 		}
 		catch (e) {
-			CrowniclesLogger.errorWithObj(`Error while executing ${filename} small event`, e);
-			response.push(makePacket(ErrorPacket, { message: `${e}` }));
+			PacketUtils.pushInternalError(response, `Error while executing ${filename} small event`, { cause: e });
 		}
 	}
 	catch {
-		response.push(makePacket(ErrorPacket, { message: `${filename} doesn't exist` }));
+		PacketUtils.pushInternalError(response, `Small event file ${filename} doesn't exist`);
 	}
 }
 
@@ -189,7 +187,9 @@ export async function executeSmallEvent(
 	const event = forced ?? await getRandomSmallEvent(response, player, playerActiveObjects);
 
 	if (!event) {
-		response.push(makePacket(ErrorPacket, { message: "No small event can be executed..." }));
+		PacketUtils.pushInternalError(response, "No small event can be executed", {
+			context: { keycloakId: player.keycloakId }
+		});
 		return;
 	}
 

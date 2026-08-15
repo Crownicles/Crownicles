@@ -6,7 +6,7 @@ import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { crowniclesInstance } from "../../app";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { PacketUtils } from "../../core/utils/PacketUtils";
 import { adminCommand } from "../../core/utils/CommandUtils";
 import { RightGroup } from "../../../../Lib/src/types/RightGroup";
 
@@ -21,7 +21,7 @@ export default class MaintenanceCommand {
 			response.push(makePacket(CommandMaintenancePacketRes, { enabled: packet.enable }));
 		}
 		catch (err) {
-			response.push(makePacket(ErrorPacket, { message: (err as Error).message }));
+			PacketUtils.pushInternalError(response, "Failed to toggle maintenance mode", { cause: err });
 		}
 	}
 }

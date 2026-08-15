@@ -50,9 +50,10 @@ const TREND_THRESHOLDS = {
 };
 
 /**
- * Day offsets for market analysis forecasts
+ * Day offsets for market analysis forecasts. Sorted ascending: the rotation search relies on the last
+ * one being the furthest away, and resolves its horizon with the first offset reaching the rotation day.
  */
-const FORECAST_OFFSETS: [number, number, number] = [
+export const FORECAST_OFFSETS: [number, number, number] = [
 	1,
 	3,
 	7
@@ -108,6 +109,7 @@ type PlantTrendData = {
 
 type PlantRotationData = {
 	horizonIndex: number;
+	daysUntilRotation: number;
 	newPlantIds: PlantId[];
 	newPlantForecasts: {
 		plantId: PlantId;
@@ -129,15 +131,26 @@ function computeKingsMoneyTrends(): [MarketTrend, MarketTrend, MarketTrend] {
 	}) as [MarketTrend, MarketTrend, MarketTrend];
 }
 
-function findRotationHorizon(weeklyPlants: PlantType[], now: Date): {
-	index: number; newPlantIds: PlantId[];
-} | null {
-	for (let i = 0; i < FORECAST_OFFSETS.length; i++) {
-		const futureDate = new Date(now.getTime() + FORECAST_OFFSETS[i] * TimeConstants.MS_TIME.DAY);
+type RotationHorizon = {
+	index: number;
+	daysUntilRotation: number;
+	newPlantIds: PlantId[];
+};
+
+/**
+ * Find when the herbalist renews its selection within the forecast period.
+ * The search is day by day so the exact date is known, while `index` still points at the first
+ * forecast horizon that falls after the rotation.
+ */
+function findRotationHorizon(weeklyPlants: PlantType[], now: Date): RotationHorizon | null {
+	const lastForecastDay = FORECAST_OFFSETS[FORECAST_OFFSETS.length - 1];
+	for (let day = 1; day <= lastForecastDay; day++) {
+		const futureDate = new Date(now.getTime() + day * TimeConstants.MS_TIME.DAY);
 		const futurePlants = PlantConstants.getWeeklyHerbalistPlants(futureDate);
 		if (!samePlants(weeklyPlants, futurePlants)) {
 			return {
-				index: i,
+				index: FORECAST_OFFSETS.findIndex(offset => offset >= day),
+				daysUntilRotation: day,
 				newPlantIds: futurePlants.map(p => p.id)
 			};
 		}
@@ -194,6 +207,7 @@ function buildMarketAnalysisPacket(): MarketAnalysisData {
 	if (rotation) {
 		result.plantRotation = {
 			horizonIndex: rotation.index,
+			daysUntilRotation: rotation.daysUntilRotation,
 			newPlantIds: rotation.newPlantIds,
 			newPlantForecasts: computeNewPlantForecasts(rotation.index, now)
 		};

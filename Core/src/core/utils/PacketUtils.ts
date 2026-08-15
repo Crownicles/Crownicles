@@ -1,5 +1,5 @@
 import {
-	CrowniclesPacket, PacketContext
+	CrowniclesPacket, makePacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
 import { botConfig } from "../../bootstrap";
 import { mqttClient } from "../../mqttClient";
@@ -9,8 +9,43 @@ import { NotificationsSerializedPacket } from "../../../../Lib/src/packets/notif
 import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { MqttTopicUtils } from "../../../../Lib/src/utils/MqttTopicUtils";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+
+export type InternalErrorDetails = {
+
+	/**
+	 * The caught exception, when the failure comes from one
+	 */
+	cause?: unknown;
+
+	/**
+	 * Identifiers pinpointing the failure. Logged server-side only: the reason is echoed in a public
+	 * Discord message, so nothing identifying a player may travel with it.
+	 */
+	context?: Record<string, unknown>;
+};
 
 export abstract class PacketUtils {
+	/**
+	 * Report a failure the player can do nothing about. The reason describes what went wrong and is shown to the
+	 * player so they can write a useful bug report, while the caught exception is only logged server-side (CWE-209).
+	 * @param response
+	 * @param reason
+	 * @param details Server-side only information about the failure
+	 */
+	static pushInternalError(response: CrowniclesPacket[], reason: string, details: InternalErrorDetails = {}): void {
+		if (details.cause === undefined) {
+			CrowniclesLogger.error(reason, details.context);
+		}
+		else {
+			CrowniclesLogger.errorWithObj(reason, {
+				cause: details.cause,
+				...details.context
+			});
+		}
+		response.push(makePacket(ErrorInternalPacket, { reason }));
+	}
+
 	/**
 	 * The death of a player is detected as soon as their health reaches 0, which can happen in the middle of a flow
 	 * (e.g. before the outcome of a big event has been described). Sending the death packets last keeps the kill

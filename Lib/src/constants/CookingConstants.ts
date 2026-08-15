@@ -308,6 +308,8 @@ const POTION_TYPES_ONLY = [
 	RecipeType.POTION_SPEED
 ] as const;
 
+const MATERIAL_TYPES_ONLY = [RecipeType.MATERIAL_CRAFT] as const;
+
 const ALL_TYPES_WITH_MATERIALS = [
 	...ALL_TYPES,
 	RecipeType.MATERIAL_CRAFT
@@ -329,7 +331,7 @@ export const SLOT_CONFIGS: readonly SlotConfig[] = [
 	{
 		minLevel: 1,
 		maxLevel: 8,
-		eligibleTypes: ALL_TYPES_WITH_MATERIALS,
+		eligibleTypes: MATERIAL_TYPES_ONLY,
 		potionsOnly: false
 	},
 	{

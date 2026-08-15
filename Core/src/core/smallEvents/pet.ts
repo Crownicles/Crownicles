@@ -22,7 +22,7 @@ import {
 } from "../../../../Lib/src/constants/PetConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import { LogsDatabase } from "../database/logs/LogsDatabase";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { PacketUtils } from "../utils/PacketUtils";
 import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { MissionsController } from "../missions/MissionsController";
@@ -356,7 +356,11 @@ export const smallEventFuncs: SmallEventFuncs = {
 	executeSmallEvent: async (response, player, context): Promise<void> => {
 		const petEntity = await PetEntities.getById(player.petId);
 		if (!petEntity) {
-			response.push(makePacket(ErrorPacket, { message: "SmallEvent Pet : pet entity not found" }));
+			PacketUtils.pushInternalError(response, "Small event pet: pet entity not found", {
+				context: {
+					keycloakId: player.keycloakId, petId: player.petId
+				}
+			});
 			return;
 		}
 		const pet = PetDataController.instance.getById(petEntity.typeId)!;
@@ -371,7 +375,9 @@ export const smallEventFuncs: SmallEventFuncs = {
 			randomPetSex: randomPet.sex as SexTypeShort
 		};
 		if (packet.interactionName === Constants.DEFAULT_ERROR) {
-			response.push(makePacket(ErrorPacket, { message: "SmallEvent Pet : cannot determine an interaction for the user" }));
+			PacketUtils.pushInternalError(response, "Small event pet: cannot determine an interaction", {
+				context: { keycloakId: player.keycloakId }
+			});
 			return;
 		}
 		await managePickedInteraction(packet, response, context, player, petEntity);

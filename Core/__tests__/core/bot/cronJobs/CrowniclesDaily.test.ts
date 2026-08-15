@@ -51,8 +51,10 @@ import { CrowniclesDaily } from "../../../../src/core/bot/cronJobs/CrowniclesDai
 import { CrowniclesCoreMetrics } from "../../../../src/core/bot/CrowniclesCoreMetrics";
 import PetEntity from "../../../../src/core/database/game/models/PetEntity";
 import Guild from "../../../../src/core/database/game/models/Guild";
+import Player from "../../../../src/core/database/game/models/Player";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
+import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 
 type Gate<T> = {
@@ -86,6 +88,26 @@ describe("CrowniclesDaily.job", () => {
 	beforeEach(() => {
 		vi.restoreAllMocks();
 		vi.mocked(CrowniclesCoreMetrics.incrementDailyTaskFailure).mockReset();
+	});
+
+	it("never cuts down players that are above the token cap", async () => {
+		vi.spyOn(CrowniclesDaily, "randomPotion").mockResolvedValue();
+		vi.spyOn(CrowniclesDaily, "randomLovePointsLoose").mockResolvedValue(false);
+		vi.spyOn(CrowniclesDaily, "reloadEnchanter").mockResolvedValue();
+		vi.spyOn(CrowniclesDaily, "trainingGroundLoveBonus").mockResolvedValue();
+		vi.spyOn(CrowniclesDaily, "pantryAutoFill").mockResolvedValue();
+		vi.mocked(Player.update).mockClear();
+
+		await CrowniclesDaily.job();
+
+		expect(Player.update).toHaveBeenCalledWith(
+			{
+				tokens: expect.objectContaining({
+					val: TokensConstants.buildRefillExpression(TokensConstants.DAILY.FREE_PER_DAY)
+				})
+			},
+			{ where: {} }
+		);
 	});
 
 	it("keeps running the other daily tasks when one of them fails", async () => {

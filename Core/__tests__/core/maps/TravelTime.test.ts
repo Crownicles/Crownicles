@@ -146,6 +146,93 @@ describe('TravelTime', () => {
 		expect(save).toHaveBeenCalledOnce();
 	});
 
+	it('removeEffect keeps a non travelling player stationary', async () => {
+		vi.spyOn(TravelTime, 'timeTravelMilliseconds').mockResolvedValue();
+		const player: any = {
+			effectRemainingTime: () => 0,
+			effectDuration: 1440,
+			startTravelDate: new Date(0),
+			effectEndDate: new Date(now),
+			effectId: 'occupied',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(0);
+		expect(Maps.isTravelling(player)).toBe(false);
+	});
+
+	it('removeEffect never pushes the travel start into the future', async () => {
+		vi.spyOn(TravelTime, 'timeTravelMilliseconds').mockResolvedValue();
+		const player: any = {
+			effectRemainingTime: () => 0,
+			// 24h alteration entirely consumed before the travel started
+			effectDuration: 1440,
+			startTravelDate: new Date(now - 60_000),
+			effectEndDate: new Date(now - 60_000),
+			effectId: 'occupied',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(now);
+	});
+
+	it('removeEffect never delays a travel started after the alteration when it is healed early', async () => {
+		const thirtyMinutes = 30 * 60_000;
+		const player: any = {
+			/*
+			 * A 60 minutes alteration taken while staying in the city, half of it left, and the travel
+			 * just started: paying to be healed must not push the departure into the future.
+			 */
+			effectRemainingTime: () => asMilliseconds(thirtyMinutes),
+			effectDuration: 60,
+			startTravelDate: new Date(now),
+			effectEndDate: new Date(now + thirtyMinutes),
+			mapLinkId: 1,
+			id: 1,
+			keycloakId: 'user123',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(now);
+	});
+
+	it('removeEffect consumes the whole alteration of a travel it delayed', async () => {
+		const thirtyMinutes = 30 * 60_000;
+		const player: any = {
+			// Travelling for 30 minutes under a 60 minutes alteration: none of it counted as travel time
+			effectRemainingTime: () => asMilliseconds(thirtyMinutes),
+			effectDuration: 60,
+			startTravelDate: new Date(now - thirtyMinutes),
+			effectEndDate: new Date(now + thirtyMinutes),
+			mapLinkId: 1,
+			id: 1,
+			keycloakId: 'user123',
+			save: vi.fn().mockResolvedValue(undefined)
+		};
+
+		await TravelTime.removeEffect(player, 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(now);
+	});
+
+	it('timeTravel keeps a non travelling player stationary', async () => {		const player: any = {
+			effectEndDate: new Date(now + 5_000),
+			startTravelDate: new Date(0),
+			id: 1,
+			keycloakId: 'user123'
+		};
+
+		await TravelTime.timeTravelMilliseconds(player, asMilliseconds(-500_000), 0);
+
+		expect(player.startTravelDate.valueOf()).toBe(0);
+	});
+
 	it('applyEffect sets new effect and logs', async () => {
 		const save = vi.fn().mockResolvedValue(undefined);
 		const player: any = {

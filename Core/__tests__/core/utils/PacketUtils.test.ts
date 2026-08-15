@@ -10,6 +10,7 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { PlayerDeathPacket } from "../../../../Lib/src/packets/events/PlayerDeathPacket";
 import { PlayerLevelUpPacket } from "../../../../Lib/src/packets/events/PlayerLevelUpPacket";
 import { PlayerLeavePveIslandPacket } from "../../../../Lib/src/packets/events/PlayerLeavePveIslandPacket";
+import { ErrorInternalPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
 
 const context = { discord: { shardId: 0 } } as PacketContext;
 
@@ -54,5 +55,67 @@ describe("PacketUtils.sendPackets", () => {
 		PacketUtils.sendPackets(context, packets);
 
 		expect(getSentPacketNames(publishSpy)).toStrictEqual(["PlayerLevelUpPacket", "PlayerLeavePveIslandPacket"]);
+	});
+});
+
+describe("PacketUtils.pushInternalError", () => {
+	afterEach(() => {
+		vi.restoreAllMocks();
+	});
+
+	it("sends the reason to the player but never the caught exception", () => {
+		vi.spyOn(CrowniclesLogger, "errorWithObj")
+			.mockImplementation(() => {});
+		const response: CrowniclesPacket[] = [];
+
+		PacketUtils.pushInternalError(response, "the shop could not be built", { cause: new Error("connection timeout on table players") });
+
+		expect(response).toHaveLength(1);
+		expect(response[0]).toBeInstanceOf(ErrorInternalPacket);
+		expect((response[0] as ErrorInternalPacket).reason).toBe("the shop could not be built");
+		expect(JSON.stringify(response[0])).not.toContain("connection timeout");
+	});
+
+	it("never sends the identifiers of the failing player to the client", () => {
+		vi.spyOn(CrowniclesLogger, "error")
+			.mockImplementation(() => {});
+		const response: CrowniclesPacket[] = [];
+
+		PacketUtils.pushInternalError(response, "no small event can be executed", {
+			context: {
+				keycloakId: "8f14e45f-ceea-467a-9575-28db1c0a4a24", petId: 12
+			}
+		});
+
+		expect(JSON.stringify(response[0])).not.toContain("8f14e45f");
+		expect(JSON.stringify(response[0])).not.toContain("12");
+	});
+
+	it("logs the reason server-side", () => {
+		const errorSpy = vi.spyOn(CrowniclesLogger, "error")
+			.mockImplementation(() => {});
+
+		PacketUtils.pushInternalError([], "small event xyz is missing");
+
+		expect(errorSpy).toHaveBeenCalledWith("small event xyz is missing", undefined);
+	});
+
+	it("logs the identifiers server-side", () => {
+		const errorSpy = vi.spyOn(CrowniclesLogger, "error")
+			.mockImplementation(() => {});
+
+		PacketUtils.pushInternalError([], "no big event available", { context: { keycloakId: "player-42" } });
+
+		expect(errorSpy).toHaveBeenCalledWith("no big event available", { keycloakId: "player-42" });
+	});
+
+	it("logs the caught exception alongside the reason when there is one", () => {
+		const errorWithObjSpy = vi.spyOn(CrowniclesLogger, "errorWithObj")
+			.mockImplementation(() => {});
+		const cause = new Error("SQLState 08S01");
+
+		PacketUtils.pushInternalError([], "packet processing failed", { cause });
+
+		expect(errorWithObjSpy).toHaveBeenCalledWith("packet processing failed", { cause });
 	});
 });

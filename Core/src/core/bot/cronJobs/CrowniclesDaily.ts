@@ -50,7 +50,7 @@ export class CrowniclesDaily {
 
 		await Player.update(
 			{
-				tokens: literal(`LEAST(${TokensConstants.MAX}, tokens + ${TokensConstants.DAILY.FREE_PER_DAY})`)
+				tokens: literal(TokensConstants.buildRefillExpression(TokensConstants.DAILY.FREE_PER_DAY))
 			},
 			{ where: {} }
 		);
