@@ -84,3 +84,27 @@ describe("GuildDomainConstants.getBuildingRequiredGuildLevel", () => {
 		expect(GuildDomainConstants.getBuildingRequiredGuildLevel(GuildBuilding.SHOP, 0)).toBe(0);
 	});
 });
+
+/*
+ * The daily cron drives the training ground bonus from TRAINING_LOVE_PER_DAY and only updates guilds
+ * whose level appears in it: a level reachable in game but missing from the table would silently give
+ * nothing. Same reasoning for the pantry auto-fill rates.
+ */
+describe("per level reward tables cover every reachable building level", () => {
+	it("gives a training ground love value to every reachable level", () => {
+		expect(GuildDomainConstants.TRAINING_LOVE_PER_DAY).toHaveLength(
+			GuildDomainConstants.BUILDINGS[GuildBuilding.TRAINING_GROUND].maxLevel + 1
+		);
+	});
+
+	it("gives a pantry auto fill rate to every reachable level", () => {
+		expect(GuildDomainConstants.PANTRY_AUTO_FILL).toHaveLength(
+			GuildDomainConstants.BUILDINGS[GuildBuilding.PANTRY].maxLevel + 1
+		);
+	});
+
+	it("never rewards the level 0 of a building that does not exist yet", () => {
+		expect(GuildDomainConstants.TRAINING_LOVE_PER_DAY[0]).toBe(0);
+		expect(GuildDomainConstants.PANTRY_AUTO_FILL[0].every(rate => rate === 0)).toBe(true);
+	});
+});

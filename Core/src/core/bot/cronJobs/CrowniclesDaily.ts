@@ -6,7 +6,7 @@ import { PotionDataController } from "../../../data/Potion";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
 import PetEntity from "../../database/game/models/PetEntity";
 import {
-	literal, Op
+	literal, Op, QueryTypes
 } from "sequelize";
 import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { ItemEnchantment } from "../../../../../Lib/src/types/ItemEnchantment";
@@ -176,25 +176,29 @@ export class CrowniclesDaily {
 	 * Make some pet lose some love points
 	 */
 	static async randomLovePointsLoose(): Promise<boolean> {
-		if (RandomUtils.crowniclesRandom.bool()) {
-			CrowniclesLogger.info("All pets lost 4 loves point");
-			await PetEntity.update(
-				{
-					lovePoints: literal(
-						"CASE WHEN lovePoints - 4 < 0 THEN 0 ELSE lovePoints - 4 END"
-					)
-				},
-				{
-					where: {
-						lovePoints: {
-							[Op.notIn]: [PetConstants.MAX_LOVE_POINTS, 0]
-						}
+		if (!RandomUtils.crowniclesRandom.bool()) {
+			return false;
+		}
+
+		const [affectedPets] = await PetEntity.update(
+			{
+				lovePoints: literal(
+					`GREATEST(0, lovePoints - ${PetConstants.DAILY_LOVE_LOSS})`
+				)
+			},
+			{
+				where: {
+					lovePoints: {
+						[Op.notIn]: [PetConstants.MAX_LOVE_POINTS, 0]
 					}
 				}
-			);
-			return true;
-		}
-		return false;
+			}
+		);
+		CrowniclesLogger.info("Daily love loss applied to pets", {
+			lostLovePoints: PetConstants.DAILY_LOVE_LOSS,
+			affectedPets
+		});
+		return true;
 	}
 
 	/**
@@ -217,14 +221,40 @@ export class CrowniclesDaily {
 	 * Add love points to all pets in guild shelters based on training ground level
 	 */
 	static async trainingGroundLoveBonus(): Promise<void> {
-		await Guild.sequelize!.query(
+		// The building level is not the love amount: map each level to its balancing value
+		const rewardingLevels = GuildDomainConstants.TRAINING_LOVE_PER_DAY
+			.map((lovePerDay, level) => ({
+				level, lovePerDay
+			}))
+			.filter(({ lovePerDay }) => lovePerDay > 0);
+
+		if (rewardingLevels.length === 0) {
+			CrowniclesLogger.info("Training ground love bonus skipped: no rewarding level");
+			return;
+		}
+
+		const loveGainCases = rewardingLevels
+			.map(({
+				level, lovePerDay
+			}) => `WHEN ${level} THEN ${lovePerDay}`)
+			.join(" ");
+		const eligibleLevels = rewardingLevels
+			.map(({ level }) => level)
+			.join(", ");
+
+		/*
+		 * `ELSE 0` is unreachable, the WHERE clause restricts the rows to the levels of the CASE: it only
+		 * exists because a CASE without ELSE yields NULL, which would wipe the love points it is added to.
+		 */
+		const [, affectedPets] = await Guild.sequelize!.query(
 			`UPDATE pet_entities pe
 			JOIN guild_pets gp ON gp.petEntityId = pe.id
 			JOIN guilds g ON gp.guildId = g.id
-			SET pe.lovePoints = LEAST(pe.lovePoints + g.trainingGroundLevel, ${PetConstants.MAX_LOVE_POINTS})
-			WHERE g.trainingGroundLevel > 0`
+			SET pe.lovePoints = LEAST(pe.lovePoints + CASE g.trainingGroundLevel ${loveGainCases} ELSE 0 END, ${PetConstants.MAX_LOVE_POINTS})
+			WHERE g.trainingGroundLevel IN (${eligibleLevels})`,
+			{ type: QueryTypes.UPDATE }
 		);
-		CrowniclesLogger.info("Training ground love bonus applied");
+		CrowniclesLogger.info("Training ground love bonus applied", { affectedPets });
 	}
 
 	/**
