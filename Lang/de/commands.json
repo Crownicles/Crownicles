@@ -805,7 +805,7 @@
     "rewardEmbedTitle": "{{pseudo}}Kampfbelohnungen",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Verdiente Gildenerfahrung : **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Silber gewonnen : **{{money, number}}**\n:star: XP verdient: **{{experience, number}}**",
-    "monsterRewardsGuildPoints": ":mirror_ball: Gilde-Gewinner: **{{guildPoints, number}}**",
+    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints, number}}**. La trésorerie augmente du même montant.",
     "monsterRewardsTitle": "{{pseudo}}, Kampfbelohnungen",
     "newBigEvent": ":flag_fr: Sie kamen zu **{{destination}}**!",
     "noFight": ":newspaper: ** Journal von {{pseudo}} : ** {{waitABitReaction}} | Sie verlassen sich schnell und finden Sie ein kleines Versteck! Das Monster wartet geduldig auf Sie.",
