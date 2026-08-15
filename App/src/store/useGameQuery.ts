@@ -1,7 +1,10 @@
-import {useQuery} from "@tanstack/react-query";
+import {useCallback} from "react";
+import {useFocusEffect} from "expo-router";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {GameAnswer} from "@/src/networking/GameClient";
 import {gameKey, GameEntity} from "@/src/store/GameEntities";
+import {AppConstants} from "@/src/AppConstants";
 
 export type RequestState<Answer extends FromServerPacket> =
 	| { status: "loading" }
@@ -49,6 +52,21 @@ export function useGameQuery<Answer extends FromServerPacket>(
 			return answer;
 		}
 	});
+
+	/*
+	 * Tab screens stay mounted, so the cache would otherwise keep serving what was read the first
+	 * time the screen was opened. The age of the cached answer is compared here rather than through
+	 * the cache's own stale filter, which only reflects what the last render computed.
+	 */
+	const queryClient = useQueryClient();
+	useFocusEffect(useCallback((): void => {
+		const cached = queryClient.getQueryState(gameKey(entity));
+		const isOutdated = !cached?.dataUpdatedAt || Date.now() - cached.dataUpdatedAt >= AppConstants.GAME_STATE_STALE_TIME;
+		if (isOutdated) {
+			queryClient.refetchQueries({ queryKey: gameKey(entity), type: "active" })
+				.catch(error => console.error("Failed to refresh the game state on focus:", error));
+		}
+	}, [queryClient, entity]));
 
 	if (query.isPending) {
 		return { status: "loading" };
