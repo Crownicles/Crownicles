@@ -1,0 +1,2437 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crownicles — Prototype mobile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Twemoji (graphismes CC-BY 4.0, Twitter puis jdecked) : rendu identique a Discord sur toutes les plateformes -->
+<script src="https://cdn.jsdelivr.net/npm/@twemoji/api@17.0.3/dist/twemoji.min.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+
+:root{
+  --ink:#0B0B0C;
+  --muted:#6E6E73;
+  --faint:#8A8A90;
+  --paper:#FFFFFF;
+  --wash:#F4F4F5;
+  --line:#E6E6E8;
+  --gold:#C8963C;
+  --red:#D2504B;
+  --green:#3F9A5C;
+  --blue:#2F6FD0;
+  --violet:#6C56C8;
+  --radius:14px;
+}
+
+html,body{margin:0;height:100%}
+body{
+  font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:var(--wash);
+  font-size:15px;line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+  font-feature-settings:"cv05","ss01";
+}
+
+/* ---------- chassis ---------- */
+.stage{min-height:100%;display:flex;align-items:center;justify-content:center;padding:32px 16px}
+.phone{
+  position:relative;width:390px;height:844px;background:var(--paper);
+  border-radius:38px;overflow:hidden;display:flex;flex-direction:column;
+  border:1px solid var(--line);box-shadow:0 24px 60px rgba(0,0,0,.14);
+}
+.status{display:flex;justify-content:space-between;align-items:center;padding:12px 24px 4px;font-size:13px;font-weight:600;letter-spacing:-.01em}
+
+/* ---------- entete ---------- */
+.app-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 18px 10px}
+.identity{display:flex;align-items:center;gap:10px;min-width:0;border:0;background:none;padding:0;font:inherit;color:inherit;text-align:left;cursor:pointer}
+.identity:active{opacity:.6}
+.avatar{width:34px;height:34px;border-radius:10px;object-fit:cover;flex:none;background:var(--wash)}
+.identity strong{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.identity small{display:block;font-size:12.5px;color:var(--muted);font-weight:500}
+.head-actions{display:flex;gap:6px;flex:none}
+.icon-btn{
+  position:relative;width:34px;height:34px;border-radius:50%;border:0;background:var(--wash);
+  font-size:15px;cursor:pointer;display:grid;place-items:center;padding:0;
+}
+.icon-btn:active{background:var(--line)}
+.icon-btn .dot{position:absolute;top:5px;right:5px;width:7px;height:7px;border-radius:50%;background:var(--red);border:1.5px solid var(--paper)}
+
+/* ---------- barre de vitalite ---------- */
+.vitals{display:flex;align-items:center;gap:14px;padding:0 18px 8px}
+.vital{flex:1;min-width:0}
+.vital-top{display:flex;justify-content:space-between;gap:6px;white-space:nowrap;font-size:11px;font-weight:600;color:var(--muted);margin-bottom:4px;letter-spacing:-.01em}
+.vital-top b{color:var(--ink);font-variant-numeric:tabular-nums}
+.wallet{display:flex;gap:6px;padding:0 18px 10px}
+.chip{
+  flex:1;display:inline-flex;align-items:center;justify-content:center;gap:4px;background:var(--wash);
+  border-radius:99px;padding:5px 10px;font-size:12px;font-weight:700;
+  font-variant-numeric:tabular-nums;letter-spacing:-.01em;
+  border:0;font-family:inherit;color:inherit;cursor:pointer;
+}
+.chip:active{background:var(--line)}
+
+/* ---------- barre contextuelle ---------- */
+.appbar{display:none;align-items:center;gap:8px;padding:4px 14px 10px;border-bottom:1px solid var(--line)}
+.appbar.on{display:flex}
+.appbar button{
+  border:0;background:none;padding:4px 6px;margin-left:-6px;font:inherit;
+  font-size:14px;font-weight:600;color:var(--blue);cursor:pointer;flex:none;
+}
+.appbar button:active{opacity:.55}
+.appbar span{font-size:13px;font-weight:600;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* ---------- contenu ---------- */
+.content{flex:1;overflow-y:auto;padding:16px 18px 26px;scrollbar-width:none}
+.content::-webkit-scrollbar{display:none}
+.screen{animation:enter .16s ease-out}
+@keyframes enter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* ---------- typographie ---------- */
+.eyebrow{font-size:11.5px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
+h1{font-size:25px;line-height:1.16;font-weight:800;letter-spacing:-.035em;margin:0 0 6px}
+h2{font-size:15.5px;font-weight:700;letter-spacing:-.02em;margin:0}
+.hero{margin-bottom:18px}
+.hero p{margin:0;color:var(--muted);font-size:14px}
+.sub{color:var(--muted);font-size:13.5px;margin:0}
+.section-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin:22px 0 9px}
+.section-head:first-child{margin-top:0}
+.section-head button{border:0;background:none;padding:0;cursor:pointer;font:inherit;font-size:13px;font-weight:600;color:var(--blue)}
+.section-head button:active{opacity:.55}
+.section-head .hint{font-size:12px;font-weight:600;color:var(--faint)}
+
+/* ---------- panneaux et lignes ---------- */
+.panel{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--paper)}
+.row{
+  display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;text-align:left;
+  background:none;border:0;border-top:1px solid var(--line);font:inherit;color:inherit;
+}
+button.row{cursor:pointer}
+button.row:active{background:var(--wash)}
+.panel > .row:first-child,.panel > .kv:first-child,.panel > .actions:first-child,.panel > .note:first-child{border-top:0}
+.row-icon{font-size:20px;line-height:1;flex:none;min-width:24px;text-align:center}
+.row-body{flex:1;min-width:0}
+.row-body strong{display:block;font-size:14px;font-weight:600;letter-spacing:-.01em;overflow-wrap:anywhere}
+.row-body small{display:block;color:var(--muted);font-size:12.5px;line-height:1.35;overflow-wrap:anywhere}
+.row-end{flex:none;max-width:40%;font-size:12px;font-weight:600;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.row-end.chev{font-size:17px;color:var(--faint);font-weight:400}
+.row.danger .row-body strong{color:var(--red)}
+.row.locked{opacity:.5}
+
+.kv{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-top:1px solid var(--line);font-size:13.5px}
+.kv span{color:var(--muted)}
+.kv b{font-weight:700;letter-spacing:-.01em;font-variant-numeric:tabular-nums;text-align:right}
+.note{padding:11px 14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted)}
+
+.actions{display:flex;flex-wrap:wrap;gap:7px;padding:11px 14px;border-top:1px solid var(--line)}
+.actions button{
+  font:inherit;font-size:12.5px;font-weight:600;letter-spacing:-.01em;padding:7px 12px;cursor:pointer;
+  border:1px solid var(--line);border-radius:99px;background:var(--paper);color:var(--ink);
+}
+.actions button:active{background:var(--wash)}
+.actions button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+
+/* ---------- jauges ---------- */
+.bar{height:5px;border-radius:99px;background:var(--line);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:99px;background:var(--ink)}
+.bar.red i{background:var(--red)}
+.bar.green i{background:var(--green)}
+.bar.blue i{background:var(--blue)}
+.bar.gold i{background:var(--gold)}
+.stat{display:block;padding:12px 14px;border-top:1px solid var(--line)}
+.panel > .stat:first-child{border-top:0}
+.stat label{display:block;font-size:12.5px;color:var(--muted);margin-bottom:5px}
+.stat label b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+/* ---------- divers ---------- */
+.tag{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;font-weight:600;color:var(--muted);background:var(--wash);border-radius:99px;padding:3px 9px}
+.tag.gold{color:var(--gold)}
+.tag.green{color:var(--green)}
+.tag.red{color:var(--red)}
+.notice{display:flex;align-items:center;gap:11px;padding:12px 14px;border-radius:var(--radius);background:var(--wash);font-size:13px;color:var(--muted);margin:14px 0}
+.notice strong{display:block;color:var(--ink);font-size:13.5px}
+.notice .row-icon{font-size:19px}
+.notice button{border:0;background:none;font:inherit;font-size:13px;font-weight:600;color:var(--blue);cursor:pointer;flex:none;padding:0}
+.empty{padding:18px 14px;text-align:center;color:var(--muted);font-size:13px}
+
+.button{
+  appearance:none;font:inherit;font-size:14.5px;font-weight:600;letter-spacing:-.01em;
+  padding:12px 20px;border-radius:99px;cursor:pointer;
+  border:1px solid var(--line);background:var(--paper);color:var(--ink);
+}
+.button:active{transform:scale(.985);background:var(--wash)}
+.button.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.button.danger{color:var(--red)}
+.button.block{display:block;width:100%;text-align:center}
+.button-row{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
+.button-row .button{flex:1;min-width:130px;text-align:center}
+
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 4px}
+.quick button{
+  display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 4px;cursor:pointer;
+  border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);
+  font:inherit;font-size:11px;font-weight:600;color:var(--ink);letter-spacing:-.01em;
+}
+.quick button:active{background:var(--wash)}
+.quick button i{font-style:normal;font-size:19px;line-height:1}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.card{border:1px solid var(--line);border-radius:var(--radius);padding:12px}
+.card b{display:block;font-size:14px}
+.card small{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+
+/* ---------- voyage ---------- */
+.travel-path{display:flex;align-items:center;gap:12px;padding:26px 14px 14px}
+.travel-path .node{font-size:20px;line-height:1;flex:none}
+.travel-path .track{flex:1;height:5px;border-radius:99px;background:var(--line);position:relative}
+.travel-path .track i{display:block;height:100%;border-radius:99px;background:var(--ink)}
+.travel-path .runner{position:absolute;top:-21px;transform:translateX(-50%);font-size:16px;line-height:1}
+.raw{
+  display:block;padding:11px 13px;border-radius:var(--radius);background:var(--wash);
+  font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.7;overflow-wrap:anywhere;color:var(--muted);
+}
+
+/* ---------- combat ---------- */
+.versus{display:flex;align-items:stretch;gap:8px;margin-bottom:12px}
+.versus .side{flex:1;border:1px solid var(--line);border-radius:var(--radius);padding:11px;text-align:center}
+.versus .side i{font-style:normal;font-size:22px;display:block;margin-bottom:4px}
+.versus .side strong{display:block;font-size:13.5px;letter-spacing:-.01em}
+.versus .side small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+.versus .mid{align-self:center;font-size:12px;font-weight:700;color:var(--faint)}
+.fight-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.fight-actions button{
+  text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+  background:var(--paper);font:inherit;cursor:pointer;color:inherit;
+}
+.fight-actions button:active{background:var(--wash)}
+.fight-actions button:disabled{opacity:.45;cursor:default}
+.fight-actions b{display:block;font-size:13px}
+.fight-actions small{display:block;color:var(--muted);font-size:11.5px}
+.log{padding:12px 14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);white-space:pre-line;line-height:1.6}
+
+/* ---------- navigation basse ---------- */
+.bottom{display:flex;border-top:1px solid var(--line);padding:7px 6px calc(7px + env(safe-area-inset-bottom));background:var(--paper)}
+.bottom button{
+  flex:1;border:0;background:none;cursor:pointer;padding:5px 2px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  font:inherit;font-size:10.5px;font-weight:600;color:var(--muted);letter-spacing:-.01em;
+}
+.bottom button i{font-style:normal;font-size:18px;line-height:1;opacity:.55}
+.bottom button.on{color:var(--ink)}
+.bottom button.on i{opacity:1}
+
+/* ---------- feuille modale ---------- */
+.modal{position:absolute;inset:0;background:rgba(0,0,0,.35);display:none;align-items:flex-end;z-index:5}
+.modal.on{display:flex}
+.sheet{width:100%;background:var(--paper);border-radius:22px 22px 0 0;padding:18px 18px 22px;max-height:80%;overflow-y:auto;animation:up .22s cubic-bezier(.32,.72,0,1);scrollbar-width:none}
+.sheet::-webkit-scrollbar{display:none}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.sheet-head h2{font-size:18px;letter-spacing:-.025em}
+.close{width:30px;height:30px;padding:0;border-radius:50%;background:var(--wash);border:0;font-size:15px;cursor:pointer}
+.search{width:100%;font:inherit;font-size:14px;padding:10px 13px;border-radius:11px;border:1px solid var(--line);background:var(--wash);margin-bottom:10px}
+.search:focus{outline:none;border-color:var(--faint);background:var(--paper)}
+.sheet-group{font-size:11px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 6px}
+
+/* ---------- notification ---------- */
+.toast{
+  position:absolute;left:18px;right:18px;bottom:86px;z-index:9;
+  background:var(--ink);color:var(--paper);padding:12px 15px;border-radius:13px;
+  font-size:13px;font-weight:500;opacity:0;transform:translateY(10px);transition:.22s;pointer-events:none;
+}
+.toast.on{opacity:1;transform:none}
+
+/* ---------- panneau de pilotage ---------- */
+.mockup-controls{
+  position:fixed;right:18px;top:18px;width:198px;background:var(--paper);
+  border:1px solid var(--line);border-radius:13px;padding:12px;
+  display:flex;flex-direction:column;gap:6px;font-size:12px;
+}
+.mockup-controls strong{font-size:10.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--faint)}
+.mockup-controls button{
+  font:inherit;font-size:12.5px;font-weight:600;padding:7px 10px;text-align:left;cursor:pointer;
+  border:1px solid var(--line);border-radius:9px;background:var(--paper);
+}
+.mockup-controls button:active{background:var(--wash)}
+.mockup-controls button.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.mockup-controls hr{border:0;border-top:1px solid var(--line);margin:4px 0}
+@media (max-width:940px){.mockup-controls{display:none}}
+
+/* ---------- emojis Twemoji ---------- */
+img.emoji{height:1em;width:1em;margin:0 .06em;vertical-align:-.12em;display:inline-block}
+.row-icon img.emoji,.quick i img.emoji,.bottom i img.emoji,.versus .side i img.emoji{display:block;margin:0 auto}
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="phone">
+    <div class="status"><span>09:41</span><span>▰ ◔ 100%</span></div>
+
+    <header class="app-head">
+      <button class="identity" data-go="profile">
+        <img class="avatar" src="../assets/images/icon.png" alt="">
+        <span>
+          <strong id="hdName">Bastien</strong>
+          <small id="hdSub">Niveau 42 · Cavalier</small>
+        </span>
+      </button>
+      <div class="head-actions">
+        <button class="icon-btn" data-sheet="alerts">🔔<span class="dot"></span></button>
+        <button class="icon-btn" data-sheet="menu">☰</button>
+      </div>
+    </header>
+
+    <div class="vitals">
+      <div class="vital">
+        <div class="vital-top"><span>❤️ Vie</span><b id="vHealth"></b></div>
+        <div class="bar red"><i id="vHealthBar"></i></div>
+      </div>
+      <div class="vital">
+        <div class="vital-top"><span>⚡ Énergie</span><b id="vEnergy"></b></div>
+        <div class="bar green"><i id="vEnergyBar"></i></div>
+      </div>
+    </div>
+    <div class="wallet" id="wallet"></div>
+
+    <div class="appbar" id="appbar"></div>
+    <main class="content" id="content"></main>
+    <nav class="bottom" id="bottom"></nav>
+
+    <div class="modal" id="modal"><div class="sheet" id="sheet"></div></div>
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <aside class="mockup-controls" aria-label="Pilotage de la maquette">
+    <strong>État du joueur</strong>
+    <button data-demo="city">🛖 En ville</button>
+    <button data-demo="travel">🧍 En voyage</button>
+    <button data-demo="smallEvent">🪓 Mini-évènement</button>
+    <button data-demo="bigEvent">❗ Évènement</button>
+    <button data-demo="alteration">🤒 Altération d'état</button>
+    <button data-demo="island">🏝️ Île mystérieuse</button>
+    <button data-demo="dead">💀 Mort</button>
+    <hr>
+    <strong>Actions</strong>
+    <button data-demo="advance">⏱️ Avancer le temps</button>
+    <button data-demo="reset">↺ Réinitialiser</button>
+  </aside>
+</div>
+
+<script>
+"use strict";
+
+/* =====================================================================
+   1. Données de démonstration
+   ===================================================================== */
+
+const P = {
+  name: "Bastien",
+  level: 42,
+  className: "Cavalier",
+  classEmoji: "⚔️",
+  health: 82, maxHealth: 104,
+  energy: 612, maxEnergy: 780,
+  xp: 222, xpMax: 941,
+  money: 11197, gems: 51, tokens: 14, tokensMax: 20,
+  attack: 184, defense: 162, speed: 97,
+  breath: 8, maxBreath: 12, breathRegen: 3,
+  score: 16258, rank: 24536, players: 25008,
+  glory: 1000, gloryRank: null, league: "Ligue bronze", leagueEmoji: "🥉",
+  guild: "Banane", guildLevel: 110, guildRank: 39, guildTotal: 313,
+  city: "Ville Forte",
+  campaign: { current: 42, max: 149, percent: 28 },
+  cooking: { level: 14, grade: "Marmiton", xp: 120, xpMax: 300 },
+  home: { owned: true, level: 3, city: "Ville Forte" },
+  pet: {
+    name: "Jack-o'-lantern", nickname: "Citrouille", emoji: "🎃",
+    rarity: "🌟 Légendaire", sex: "Femelle ♀️", love: "😼 Fielleuse",
+    lovePoints: 4, hungry: true, diet: "🍖 Carnivore", strength: 22, speed: 18
+  }
+};
+
+const CITY = {
+  name: "Ville Forte",
+  emoji: "🛖",
+  story: "Ancienne grande ville fortifiée, Ville Forte n'est plus que l'ombre d'elle-même. Ses murailles éventrées abritent aujourd'hui un marché de fortune où l'on négocie plus de ferraille que d'or.",
+  services: [
+    { id: "notary", icon: "🧑‍💼", title: "Le notaire", sub: "Acheter, améliorer ou déplacer un logement, et gérer le domaine de guilde." },
+    { id: "blacksmith", icon: "⚒️", title: "Le forgeron", sub: "Améliorer un équipement avec des matériaux, ou en retirer l'enchantement." },
+    { id: "scrapDealer", icon: "♻️", title: "Le ferrailleur", sub: "Gorim le Brise-Fer démonte les équipements de réserve en matériaux." },
+    { id: "enchanter", icon: "🔮", title: "L'enchanteur", sub: "Mernil propose chaque jour un enchantement différent, contre argent et gemmes." },
+    { id: "inn", icon: "🍺", title: "L'auberge La Chope Sanglante", sub: "Un repas toutes les 12 h pour l'énergie, une chambre toutes les 24 h pour la vie." },
+    { id: "guildFoodShop", icon: "🍖", title: "Le ravitaillement", sub: "Remplir l'entrepôt de la guilde en nourriture pour familiers." }
+  ],
+  shops: [
+    { id: "shop", icon: "🛒", title: "La boutique générale", sub: "Équipements aléatoires, potions du jour, extensions d'inventaire et services." },
+    { id: "materialMerchant", icon: "📦", title: "Le marchand de matériaux", sub: "Des lots de 10, 15 ou 30 matériaux aléatoires à 133 💰 l'unité." }
+  ],
+  otherCities: [
+    { city: "Mergagnan", icon: "🧳", title: "Le tanneur", sub: "Agrandit la réserve d'équipements et le stockage de plantes." },
+    { city: "Mergagnan · Claire de Ville", icon: "🧑‍⚕️", title: "Le vétérinaire", sub: "Ausculte le familier pour 3 💎 et lui rend 15 points d'amour." },
+    { city: "Claire de Ville", icon: "💎", title: "La Bourse", sub: "Spéculation sur les prix à venir et badge de prestige monétaire." },
+    { city: "Village Coco", icon: "🌿", title: "L'herboriste", sub: "Une sélection de graines renouvelée chaque semaine, et le Cœur Sylvestre." },
+    { city: "Village Coco", icon: "🪓", title: "Le bûcheron", sub: "Des lots de bois pour alimenter les fourneaux de la cuisine." },
+    { city: "Château du Roi", icon: "👑", title: "Le forgeron royal", sub: "Seul artisan capable de porter un équipement au niveau 5." },
+    { city: "Château du Roi", icon: "💠", title: "Le marché royal", sub: "Échange de gemmes contre argent, trésors, points et change-mission." },
+    { city: "Château du Roi", icon: "📜", title: "L'archiviste des îles", sub: "Registre des boss finaux vaincus et classement par classe." }
+  ]
+};
+
+const DESTINATIONS = [
+  { icon: "🛣️", name: "Croisement des Destins", time: "2 h", sub: "Un très grand carrefour qui relie les principaux chemins à l'ouest du Mont Célestrum." },
+  { icon: "🛣️", name: "Grande Rue", time: "1 h 30", sub: "Ancienne grande route commerciale reliant le Berceau et Ville Forte." },
+  { icon: "🏞️", name: "Rivière aux Crabes", time: "?", sub: "Le temps de trajet vous est encore inconnu." }
+];
+
+const ALTERATIONS = [
+  { icon: "😱", name: "Effrayé", time: "15 min" },
+  { icon: "😖", name: "Confus", time: "40 min" },
+  { icon: "🤤", name: "Affamé", time: "50 min" },
+  { icon: "🥶", name: "Gelé", time: "1 h" },
+  { icon: "🦶", name: "Mal aux pieds", time: "1 h 50" },
+  { icon: "😴", name: "Endormi", time: "variable" },
+  { icon: "🤪", name: "Ivre", time: "4 h" },
+  { icon: "🧐", name: "Perdu", time: "4 h 30" },
+  { icon: "🤕", name: "Blessé", time: "5 h" },
+  { icon: "🤢", name: "Malade", time: "5 h 30" },
+  { icon: "😵", name: "Gravement blessé", time: "11 h" },
+  { icon: "🔒", name: "Enfermé", time: "24 h · caution de 3 000 💰" },
+  { icon: "🕑", name: "Occupé", time: "variable · jetons uniquement" },
+  { icon: "💀", name: "Mort", time: "commande /revivre" }
+];
+
+const LEAGUES = [
+  "🌲 Ligue bois", "🪨 Ligue pierre", "⛓️ Ligue fer", "🥉 Ligue bronze", "🥈 Ligue argent",
+  "🥇 Ligue or", "💎 Ligue diamant", "✨ Ligue d'élite", "♾️ Ligue infinie", "🏅 Ligue légende", "👑 Ligue royale"
+];
+
+const BLESSINGS = [
+  ["Rage amplifiée", "La rage gagnée en combat est doublée pour tous les joueurs."],
+  ["Butin de combat", "Les récompenses des combats (argent et points) sont multipliées par 4, hors gloire."],
+  ["Régénération d'énergie", "La régénération d'énergie de combat est doublée."],
+  ["Bourse dorée", "Tous les gains d'argent sont augmentés de 10 %."],
+  ["Gloire accrue", "Tous les gains de score sont augmentés de 20 %."],
+  ["Amour des familiers", "Les points d'amour gagnés par les familiers sont doublés."],
+  ["Potions curatives", "L'efficacité des potions de soin est doublée."],
+  ["Jeton d'expédition", "Les expéditions de familiers rapportent un jeton bonus."],
+  ["Mission quotidienne bénie", "Les récompenses des missions quotidiennes sont doublées."]
+];
+
+const FIGHT_ACTIONS = [
+  { icon: "⚔️", name: "Attaque simple", cost: 2, sub: "Des dégâts fiables, sans effet particulier." },
+  { icon: "🗡️", name: "Attaque rapide", cost: 3, sub: "Frappe basée sur la vitesse, difficile à esquiver." },
+  { icon: "🏋️", name: "Attaque lourde", cost: 7, sub: "Dégâts élevés mais précision réduite." },
+  { icon: "👼", name: "Bénédiction", cost: 5, sub: "Augmente l'attaque pour les tours suivants." },
+  { icon: "🛏️", name: "Repos", cost: 0, sub: "Ne fait rien ce tour-ci mais restaure du souffle." },
+  { icon: "🐾", name: "Assistance du familier", cost: 0, sub: "Une fois par combat, si le familier est disponible." }
+];
+
+const EXPEDITIONS = [
+  { icon: "🌾", biome: "Plaine", place: "Voie champêtre", duration: "48 min", danger: "🌿 Tranquille", ground: "🌸 Paisible", rations: 6, success: 92, loot: "Butin modeste · 1 🪙" },
+  { icon: "🌲", biome: "Forêt", place: "Forêt du Vieillard", duration: "7 h 20", danger: "⚡ Risqué", ground: "⛰️ Accidenté", rations: 14, success: 71, loot: "Butin correct · 2 🪙 · équipement" },
+  { icon: "🕳️", biome: "Grotte", place: "Bois Hurlant", duration: "2 j 6 h", danger: "💀 Mortel", ground: "🏔️ Hostile", rations: 32, success: 38, loot: "Trésor en jetons · 9 🪙 · équipement rare" }
+];
+
+const RECIPES = [
+  { icon: "⚗️", name: "Potion de soin améliorée", level: 4, sub: "3 🌿 Herbe commune · 1 🍀 Trèfle doré", state: "prête" },
+  { icon: "🍲", name: "Soupe ultime", level: 5, sub: "2 🥬 Salade · 1 🍖 Viande · entrepôt de guilde", state: "libre" },
+  { icon: "💠", name: "Lingot d'azur", level: 3, sub: "3 🧱 Cristal azur — emplacement matériau", state: "en cours · 12 min" },
+  { icon: "❔", name: "Recette masquée", level: 6, sub: "Le résultat sera une surprise", state: "libre" }
+];
+
+const CLASSES = [
+  { tier: "Palier 3 · niveaux 32 à 47", list: [
+    { icon: "🐴", name: "Cavalier", sub: "Classe actuelle · polyvalente", current: true },
+    { icon: "🛡️", name: "Maillé", sub: "Défense élevée, faible attaque" },
+    { icon: "🏹", name: "Archer", sub: "Vitesse et attaque, peu de vie" },
+    { icon: "🗡️", name: "Soldat", sub: "Équilibrée et simple à jouer" }
+  ] },
+  { tier: "Palier 4 · à partir du niveau 48", list: [
+    { icon: "🤺", name: "Chevalier", sub: "Débloqué au niveau 48", locked: true },
+    { icon: "✨", name: "Paladin", sub: "Débloqué au niveau 48", locked: true },
+    { icon: "🎖️", name: "Vétéran", sub: "Débloqué au niveau 48", locked: true }
+  ] }
+];
+
+const BADGES = [
+  { icon: "🏅", name: "Vainqueur d'un tournoi", owned: false },
+  { icon: "🗳️", name: "Personne ayant voté dans les 12 dernières heures", owned: true },
+  { icon: "🪩", name: "Membre d'une guilde puissante", owned: true },
+  { icon: "🐾", name: "Joueur ayant dressé un familier puissant", owned: false },
+  { icon: "💍", name: "Maître des quêtes · 150 💎 au marché royal", owned: false },
+  { icon: "🧭", name: "Expéditeur expert", owned: true },
+  { icon: "🙏", name: "Protecteur de l'Oracle", owned: false }
+];
+
+const GUILD_MEMBERS = [
+  { icon: "👑", name: "Drapht", rank: "Chef", sub: "150 🏆 · 1 035 138 🏅", status: "🏝️" },
+  { icon: "🎖️", name: "rօmаin22222", rank: "Aîné", sub: "242 🏆 · 717 237 🏅", status: "🤝" },
+  { icon: "⚫", name: "Kyusaor", rank: "Membre", sub: "53 🏆 · 2 008 799 🏅", status: "⛴️" },
+  { icon: "⚫", name: "Surdidi", rank: "Membre", sub: "258 🏆 · 679 451 🏅", status: "👻" },
+  { icon: "⚫", name: "Bastien", rank: "Membre", sub: "24 536 🏆 · 16 258 🏅", status: "" }
+];
+
+const GUILD_BUILDINGS = [
+  { id: "guildDomainShop", icon: "🛒", name: "La boutique", level: 2, sub: "Dons à la trésorerie et achat de nourriture" },
+  { id: "guildDomainShelter", icon: "🐾", name: "Le refuge", level: 3, sub: "12 places de familiers sur 18" },
+  { id: "guildDomainPantry", icon: "🍖", name: "L'entrepôt", level: 2, sub: "Stocks et production quotidienne de nourriture" },
+  { id: "guildDomainTraining", icon: "⚔️", name: "La ménagerie", level: 1, sub: "+1 💕 par jour aux familiers du refuge" }
+];
+
+const MONSTERS = [
+  { icon: "🕸️", place: "Toundra", name: "Loup blanc", state: "vaincu" },
+  { icon: "🔮", place: "Caverne de cristal", name: "Élémentaire brillant", state: "vaincu" },
+  { icon: "🐊", place: "Lac souterrain", name: "Crocodile", state: "en cours" },
+  { icon: "❄️", place: "Village dévasté", name: "Yuki Onna", state: "à venir" },
+  { icon: "🛡️", place: "Portes sacrées", name: "Gardien céleste", state: "à venir" },
+  { icon: "🐉", place: "Pic enneigé", name: "Seigneur des glaces", state: "boss" }
+];
+
+/* =====================================================================
+   2. État de la maquette
+   ===================================================================== */
+
+const S = {
+  screen: "adventure",
+  stack: [],
+  report: "city",          // city | travel | smallEvent | bigEvent | alteration | island | dead
+  alteration: ALTERATIONS[9],
+  travelProgress: 0.42,
+  seg: { inventory: "equipped", top: "score", chest: "items", archivist: "personal", petSheet: "info" },
+  daily: { bonus: false, guild: false, mission: false, potion: false, meal: false },
+  fight: { turn: 1, hp: 82, foeHp: 94, breath: 8, log: [], over: false },
+  eventChoice: null
+};
+
+/* =====================================================================
+   3. Fabriques de balisage
+   ===================================================================== */
+
+const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+const num = n => n.toLocaleString("fr-FR");
+const pct = (a, b) => Math.max(0, Math.min(100, Math.round(a / b * 100)));
+
+function trigger(o) {
+  const parts = [];
+  if (o.go) parts.push('data-go="' + o.go + '"');
+  if (o.act) parts.push('data-act="' + o.act + '"');
+  if (o.tab) parts.push('data-tab="' + o.tab + '"');
+  if (o.sheet) parts.push('data-sheet="' + o.sheet + '"');
+  if (o.toast) parts.push('data-toast="' + esc(o.toast) + '"');
+  if (o.demo) parts.push('data-demo="' + o.demo + '"');
+  return parts.join(" ");
+}
+const isButton = o => Boolean(o.go || o.act || o.toast || o.tab || o.sheet || o.demo);
+
+function row(o) {
+  const tag = isButton(o) ? "button" : "div";
+  const cls = ["row", o.danger ? "danger" : "", o.locked ? "locked" : ""].filter(Boolean).join(" ");
+  const end = o.end !== undefined
+    ? '<span class="row-end">' + o.end + "</span>"
+    : o.go ? '<span class="row-end chev">›</span>' : "";
+  return "<" + tag + ' class="' + cls + '" ' + trigger(o) + ">"
+    + (o.icon ? '<span class="row-icon">' + o.icon + "</span>" : "")
+    + '<span class="row-body"><strong>' + o.title + "</strong>"
+    + (o.sub ? "<small>" + o.sub + "</small>" : "") + "</span>"
+    + end + "</" + tag + ">";
+}
+
+const rows = list => list.map(row).join("");
+const panel = inner => '<div class="panel">' + inner + "</div>";
+const kv = (label, value) => '<div class="kv"><span>' + label + "</span><b>" + value + "</b></div>";
+const note = text => '<div class="note">' + text + "</div>";
+const empty = text => '<div class="empty">' + text + "</div>";
+
+function head(title, action) {
+  return '<div class="section-head"><h2>' + title + "</h2>"
+    + (action
+      ? action.hint
+        ? '<span class="hint">' + action.hint + "</span>"
+        : "<button " + trigger(action) + ">" + action.label + "</button>"
+      : "")
+    + "</div>";
+}
+
+function hero(o) {
+  return '<div class="hero">'
+    + (o.eyebrow ? '<div class="eyebrow">' + o.eyebrow + "</div>" : "")
+    + "<h1>" + o.title + "</h1>"
+    + (o.text ? "<p>" + o.text + "</p>" : "") + "</div>";
+}
+
+function stat(label, value, ratio, tone) {
+  return '<div class="stat"><label>' + label + " · <b>" + value + "</b></label>"
+    + '<div class="bar ' + (tone || "") + '"><i style="width:' + ratio + '%"></i></div></div>';
+}
+
+function actions(list) {
+  return '<div class="actions">' + list.map(b =>
+    "<button " + trigger(b) + ' class="' + (b.on ? "on" : "") + '">' + b.label + "</button>").join("") + "</div>";
+}
+
+function notice(o) {
+  return '<div class="notice">'
+    + (o.icon ? '<span class="row-icon">' + o.icon + "</span>" : "")
+    + "<div><strong>" + o.title + "</strong>" + (o.text ? o.text : "") + "</div>"
+    + (o.action ? "<button " + trigger(o.action) + ">" + o.action.label + "</button>" : "")
+    + "</div>";
+}
+
+function buttonRow(list) {
+  return '<div class="button-row">' + list.map(b =>
+    "<button " + trigger(b) + ' class="button ' + (b.style || "") + '">' + b.label + "</button>").join("") + "</div>";
+}
+
+function quick(list) {
+  return '<div class="quick">' + list.map(b =>
+    "<button " + trigger(b) + "><i>" + b.icon + "</i>" + b.label + "</button>").join("") + "</div>";
+}
+
+/* =====================================================================
+   4. Écrans
+   ===================================================================== */
+
+const TABS = [
+  { id: "adventure", icon: "🧭", label: "Aventure" },
+  { id: "profile", icon: "👤", label: "Profil" },
+  { id: "pet", icon: "🐾", label: "Familier" },
+  { id: "guild", icon: "🏰", label: "Guilde" },
+  { id: "fight", icon: "⚔️", label: "Combat" }
+];
+
+const SCREENS = {};
+const def = (id, tab, title, body, keywords) => {
+  SCREENS[id] = { id, tab, title, body, keywords: keywords || "" };
+};
+
+/* ---------- Aventure : le rapport et ses cinq états ---------- */
+
+function reportCity() {
+  return hero({
+    eyebrow: "Rapport · vous êtes en ville",
+    title: CITY.emoji + " " + CITY.name,
+    text: CITY.story
+  })
+    + quick([
+      { icon: "🗺️", label: "Carte", go: "map" },
+      { icon: "🏠", label: "Chez moi", go: "home" },
+      { icon: "🛒", label: "Boutique", go: "shop" },
+      { icon: "🚶", label: "Repartir", go: "destinations" }
+    ])
+    + head("Services de la ville", { label: "Tout voir", go: "city" })
+    + panel(rows(CITY.services.slice(0, 4).map(s => ({ icon: s.icon, title: s.title, sub: s.sub, go: s.id }))))
+    + head("Commerces")
+    + panel(rows(CITY.shops.map(s => ({ icon: s.icon, title: s.title, sub: s.sub, go: s.id }))))
+    + todaySection()
+    + head("Reprendre la route")
+    + panel(
+      rows([
+        { icon: "🚶", title: "Choisir une destination", sub: "Trois liaisons partent de Ville Forte", go: "destinations" },
+        { icon: "👀", title: "Rester en ville", sub: "Conserver Ville Forte comme position actuelle", toast: "Vous restez en ville." }
+      ])
+    );
+}
+
+function reportTravel() {
+  const left = "1 h 59";
+  return hero({
+    eyebrow: "Rapport · en voyage",
+    title: "Tout se passe bien dans votre aventure",
+    text: "Prochain arrêt prévu dans 22 minutes. Le trajet vers le Croisement des Destins durera encore " + left + "."
+  })
+    + panel(
+      '<div class="travel-path"><span class="node">🛖</span>'
+      + '<div class="track"><i style="width:' + Math.round(S.travelProgress * 100) + '%"></i>'
+      + '<span class="runner" style="left:' + Math.round(S.travelProgress * 100) + '%">🧍</span></div>'
+      + '<span class="node">🛣️</span></div>'
+      + kv("Départ", "🛖 Ville Forte")
+      + kv("Arrivée", "🛣️ Croisement des Destins")
+      + kv("Temps restant", left)
+      + kv("🏅 Points récoltés", "1 240")
+    )
+    + quick([
+      { icon: "🪙", label: "Avancer", act: "useToken" },
+      { icon: "🗺️", label: "Carte", go: "map" },
+      { icon: "🐾", label: "Familier", go: "pet" },
+      { icon: "⚔️", label: "Combat", go: "fight" }
+    ])
+    + head("Le trajet en détail")
+    + panel(
+      rows([
+        { icon: "🪓", title: "Dernier mini-évènement", sub: "Vous avez croisé un bûcheron il y a 8 minutes", go: "smallEvent" },
+        { icon: "❗", title: "Prochain évènement", sub: "À l'arrivée au Croisement des Destins", go: "bigEvent" },
+        { icon: "🪙", title: "Avancer de 10 minutes", sub: "Coûte 1 jeton · " + P.tokens + " / " + P.tokensMax + " disponibles", act: "useToken" }
+      ])
+    )
+    + todaySection()
+    + head("Rendu Discord d'origine")
+    + '<span class="raw">🛖 🧍■■■■■■■[1h59]■■■■■■■■ 🛣️</span>'
+    + note("Le marcheur avance sur seize cases, le temps restant s'insère après la huitième et les icônes des extrémités dépendent du type de lieu.");
+}
+
+function reportSmallEvent() {
+  return hero({
+    eyebrow: "Rapport · mini-évènement",
+    title: "🪓 Le bûcheron",
+    text: "Un bûcheron interrompt sa besogne en vous voyant approcher. Il vous propose une brassée de bois de chauffage contre une poignée de pièces, en assurant que la nuit sera froide."
+  })
+    + panel(
+      rows([
+        { icon: "🪵", title: "Accepter le marché", sub: "12 matériaux de type bois pour 420 💰", act: "smallEventAccept" },
+        { icon: "🚶", title: "Décliner poliment", sub: "Reprendre la route sans rien dépenser", act: "smallEventRefuse" }
+      ])
+    )
+    + head("Ce que rapporte un mini-évènement")
+    + panel(
+      kv("Fréquence", "un toutes les 9 min 45 environ")
+      + kv("🏅 Points accumulés", "ajoutés à l'évènement suivant")
+      + kv("Interaction", "faible, un simple rapport suffit")
+    )
+    + note("Sur une île mystérieuse, un mini-évènement survient environ toutes les 18 secondes.");
+}
+
+function reportBigEvent() {
+  const outcome = S.eventChoice;
+  return hero({
+    eyebrow: "Rapport · évènement",
+    title: "❗ Une carriole renversée",
+    text: "Une carriole gît en travers du chemin, une roue brisée. Le marchand vous observe sans oser demander de l'aide, alors que la nuit tombe et que les bois environnants s'animent."
+  })
+    + (outcome
+      ? notice({ icon: outcome.icon, title: outcome.title, text: outcome.text })
+      : "")
+    + panel(
+      rows([
+        { icon: "🛠️", title: "Réparer la roue", sub: "Un effort long mais consciencieux", act: "event:repair" },
+        { icon: "🐎", title: "Prêter votre monture", sub: "Vous perdrez du temps sur votre trajet", act: "event:horse" },
+        { icon: "🚶", title: "Ne rien faire", sub: "Se déclenche seul au bout de 2 minutes", act: "event:nothing" }
+      ])
+    )
+    + head("Comment lire un évènement")
+    + panel(
+      kv("Choix proposés", "boutons, plus le non-choix")
+      + kv("Délai avant non-choix", "2 minutes")
+      + kv("Conséquence", "vie, argent, points, altération…")
+    )
+    + note("Dans certains évènements, ne rien faire est le meilleur choix. Dans d'autres, c'est le pire.");
+}
+
+function reportAlteration() {
+  const a = S.alteration;
+  return hero({
+    eyebrow: "Rapport · altération d'état",
+    title: a.icon + " Vous êtes " + a.name.toLowerCase(),
+    text: "Votre personnage ne récolte plus de points et certaines actions vous sont interdites. L'altération se dissipera d'elle-même dans " + a.time + "."
+  })
+    + panel(
+      rows([
+        { icon: "💰", title: "Acheter un soin", sub: "Jusqu'à 510 💰 selon le temps restant, et avance de 10 minutes", go: "buyHeal" },
+        { icon: "🪙", title: "Utiliser des jetons", sub: "Seul remède à l'altération occupé, jusqu'à 5 jetons", go: "tokenMerchant" },
+        { icon: "🎁", title: "Attendre la récompense de guilde", sub: "Le soin d'altération est un tirage possible", go: "guildDaily" }
+      ])
+    )
+    + head("Toutes les altérations")
+    + panel(rows(ALTERATIONS.map(x => ({
+      icon: x.icon, title: x.name, end: x.time,
+      act: "setAlteration:" + x.name
+    }))))
+    + note("Enfermé ne peut être levé que par la caution de 3 000 💰 d'un autre joueur. Mort bloque toutes les commandes sauf la réapparition.");
+}
+
+function reportIsland() {
+  const done = MONSTERS.filter(m => m.state === "vaincu").length;
+  return hero({
+    eyebrow: "Rapport · île mystérieuse",
+    title: "🏝️ Île de glace",
+    text: "Le temps s'écoule plus vite ici : un mini-évènement toutes les 18 secondes et 4 minutes de trajet entre deux lieux. L'énergie ne se régénère pas."
+  })
+    + panel(
+      stat("⚡ Énergie restante", P.energy + " / " + P.maxEnergy, pct(P.energy, P.maxEnergy), "green")
+      + kv("Progression", done + " lieux sur " + MONSTERS.length)
+      + kv("🤝 Alliés sur l'île", "2 membres de la guilde")
+      + kv("🔴 Points de rage", "3 · dégâts bonus au prochain combat")
+    )
+    + head("Les lieux de l'île")
+    + panel(rows(MONSTERS.map(m => ({
+      icon: m.icon, title: m.name, sub: m.place,
+      end: m.state === "vaincu" ? "✅" : m.state === "en cours" ? "Ici" : m.state === "boss" ? "Boss" : "—",
+      go: m.state === "en cours" ? "pveFight" : undefined
+    }))))
+    + head("Actions")
+    + panel(rows([
+      { icon: "⚔️", title: "Affronter le crocodile", sub: "Combat de monstre au lac souterrain", go: "pveFight" },
+      { icon: "⛴️", title: "Quitter l'île", sub: "5 minutes de trajet, puis 8 minutes vers une côte", act: "leaveIsland" },
+      { icon: "🏰", title: "Voir la guilde", sub: "Les points de guilde alimentent la trésorerie", go: "guild" }
+    ]));
+}
+
+function reportDead() {
+  return hero({
+    eyebrow: "Rapport · fin de partie",
+    title: "💀 Votre personnage est mort",
+    text: "Toutes les commandes sont bloquées tant que vous n'avez pas fait réapparaître votre aventurier."
+  })
+    + panel(rows([
+      { icon: "❤️", title: "Réapparaître", sub: "Vous perdez une partie de vos points", act: "respawn" },
+      { icon: "📖", title: "Consulter le guide", sub: "Comprendre comment éviter la mort", toast: "guide.crownicles.com s'ouvre dans le navigateur." }
+    ]));
+}
+
+function todaySection() {
+  const d = S.daily;
+  const line = (k, icon, title, sub) => ({
+    icon, title, sub, act: d[k] ? undefined : "claim:" + k,
+    end: d[k] ? "✅" : "À faire", locked: d[k]
+  });
+  const left = Object.values(d).filter(v => !v).length;
+  return head("Aujourd'hui", { hint: left + " sur 5 en attente" })
+    + panel(rows([
+      line("bonus", "🎁", "Bonus journalier", "Un objet utilisable toutes les 22 heures"),
+      line("guild", "🪩", "Récompense de guilde", "Partagée par tous les membres, toutes les 22 heures"),
+      line("mission", "📅", "Mission quotidienne", "Explorer 3 lieux différents · 1 sur 3"),
+      line("potion", "⚗️", "Potion du jour", "5 potions par jour à 60 % du prix"),
+      line("meal", "🍞", "Repas d'auberge", "Un repas toutes les 12 heures pour l'énergie")
+    ]));
+}
+
+def("adventure", "adventure", "Aventure", () => {
+  if (S.report === "travel") return reportTravel();
+  if (S.report === "smallEvent") return reportSmallEvent();
+  if (S.report === "bigEvent") return reportBigEvent();
+  if (S.report === "alteration") return reportAlteration();
+  if (S.report === "island") return reportIsland();
+  if (S.report === "dead") return reportDead();
+  return reportCity();
+}, "rapport report voyage ville");
+
+def("travel", "adventure", "Voyage en cours", () => reportTravel(), "voyage trajet");
+
+def("destinations", "adventure", "Choix de destination", () =>
+  hero({
+    eyebrow: "Rapport · destination",
+    title: "Où souhaitez-vous aller ?",
+    text: "Il n'est pas possible de revenir sur ses pas, sauf si c'est le seul chemin disponible. Le temps entre parenthèses est la durée du trajet."
+  })
+  + panel(rows(DESTINATIONS.map(d => ({
+    icon: d.icon, title: d.name + " (" + d.time + ")", sub: d.sub, act: "depart:" + d.name
+  }))))
+  + panel(rows([
+    { icon: "👀", title: "Rester en ville", sub: "Revenir aux services de Ville Forte", go: "city" }
+  ]))
+, "destination partir");
+
+def("map", "adventure", "Carte", () =>
+  hero({ eyebrow: "Commande /carte", title: "Le monde de Crownicles", text: "Votre position et les liaisons ouvertes depuis Ville Forte." })
+  + '<div class="panel"><img src="https://crownicles.com/public/ressources/mapsCursed/fr_26_map.jpg" alt="Carte du continent principal" style="display:block;width:100%">'
+  + kv("Position", "🛖 Ville Forte")
+  + kv("Destination", "🛣️ Croisement des Destins")
+  + kv("Type de lieu", "Ville · arrêt possible")
+  + "</div>"
+  + head("Les six villes")
+  + panel(rows([
+    { icon: "🏘️", title: "Mergagnan", sub: "Tanneur · vétérinaire" },
+    { icon: "🛖", title: "Ville Forte", sub: "Marchand de matériaux · vous êtes ici", end: "Ici" },
+    { icon: "🛖", title: "Boug-Coton", sub: "Le logis le moins cher du royaume" },
+    { icon: "🛖", title: "Village Coco", sub: "Herboriste · bûcheron · pas de forgeron" },
+    { icon: "🏘️", title: "Claire de Ville", sub: "Bourse · vétérinaire" },
+    { icon: "🏰", title: "Château du Roi", sub: "Forgeron royal · marché royal · archiviste" }
+  ]))
+, "carte map lieux villes");
+
+def("smallEvent", "adventure", "Mini-évènement", reportSmallEvent, "mini evenement");
+def("bigEvent", "adventure", "Évènement", reportBigEvent, "evenement choix");
+def("alteration", "adventure", "Altérations d'état", reportAlteration, "alteration etat malade");
+def("island", "adventure", "Île mystérieuse", reportIsland, "ile mysterieuse monstre");
+
+def("respawn", "adventure", "Réapparition", () =>
+  hero({ eyebrow: "Commande /revivre", title: "Revenir à la vie", text: "La réapparition rend le contrôle du personnage mais ampute une partie du score accumulé." })
+  + panel(kv("Points conservés", "80 %") + kv("Vie au retour", "1 ❤️") + kv("Position", "inchangée"))
+  + buttonRow([{ label: "Réapparaître", style: "primary", act: "respawn" }])
+, "revivre mort respawn");
+
+def("buyHeal", "adventure", "Soin d'altération", () =>
+  hero({ eyebrow: "Rapport · soin", title: "Acheter un soin d'altération", text: "Le prix baisse à mesure que l'altération approche de sa fin. Le soin avance également le voyage de 10 minutes." })
+  + panel(kv("Altération", S.alteration.icon + " " + S.alteration.name) + kv("Temps restant", S.alteration.time) + kv("Prix demandé", "410 💰") + kv("Votre argent", num(P.money) + " 💰"))
+  + buttonRow([
+    { label: "Payer 410 💰", style: "primary", act: "heal" },
+    { label: "Renoncer", act: "back" }
+  ])
+  + note("L'altération occupé ne peut pas être soignée contre de l'argent : seuls les jetons en viennent à bout.")
+, "soin heal alteration");
+
+def("tokenMerchant", "adventure", "Marchand de jetons", () =>
+  hero({ eyebrow: "Rapport · marchand de jetons", title: "🪙 Le marchand de jetons", text: "Les jetons avancent le voyage de 10 minutes et soignent l'altération occupé. Vous en recevez 3 par jour, dans la limite de 20." })
+  + panel(stat("🪙 Jetons", P.tokens + " / " + P.tokensMax, pct(P.tokens, P.tokensMax), "gold")
+    + kv("Prix unitaire", "1 200 💰")
+    + kv("Lot de 3", "3 300 💰"))
+  + buttonRow([
+    { label: "Acheter 1 jeton", style: "primary", act: "buyToken:1" },
+    { label: "Acheter 3 jetons", act: "buyToken:3" }
+  ])
+  + note("Les jetons gagnés en expédition peuvent dépasser le plafond de 20.")
+, "jeton token marchand");
+
+def("pveFight", "adventure", "Combat de monstre", () =>
+  hero({ eyebrow: "Île de glace · lac souterrain", title: "🐊 Un crocodile vous barre la route", text: "Un grand crocodile terrifiant, à la recherche d'un aventurier pour en faire son festin." })
+  + panel(
+    kv("Énergie du monstre", "1 240 ⚡")
+    + kv("Attaques", "morsure puissante, impact, coup de queue")
+    + kv("Récompenses", "argent, expérience, matériaux et points de guilde")
+  )
+  + buttonRow([
+    { label: "Combattre", style: "primary", go: "fightBattle" },
+    { label: "Quitter l'île", act: "leaveIsland" }
+  ])
+  + note("Une défaite vous éjecte de l'île avec l'altération confus et une perte d'argent, doublée si vous n'avez pas de guilde.")
+, "monstre pve ile combat");
+
+/* ---------- Ville ---------- */
+
+def("city", "adventure", "Ville", () =>
+  hero({ eyebrow: "Vous êtes en ville", title: CITY.emoji + " " + CITY.name, text: CITY.story })
+  + head("Votre logement")
+  + panel(rows([
+    { icon: "🏠", title: "Aller chez vous", sub: "Maison de niveau " + P.home.level + " · lit, coffre, jardin, cuisine, forge", go: "home" },
+    { icon: "🧑‍💼", title: "Voir le notaire", sub: "Acheter, améliorer ou déplacer un logement", go: "notary" }
+  ]))
+  + head("Services")
+  + panel(rows(CITY.services.map(s => ({ icon: s.icon, title: s.title, sub: s.sub, go: s.id }))))
+  + head("Commerces")
+  + panel(rows(CITY.shops.map(s => ({ icon: s.icon, title: s.title, sub: s.sub, go: s.id }))))
+  + head("Guilde")
+  + panel(rows([
+    { icon: "🏰", title: "Domaine de guilde", sub: "Boutique, refuge, entrepôt et ménagerie", go: "guildDomain" }
+  ]))
+  + head("Ailleurs sur la carte", { hint: "services propres à d'autres villes" })
+  + panel(rows(CITY.otherCities.map(s => ({
+    icon: s.icon, title: s.title, sub: s.city + " · " + s.sub,
+    go: { "Le tanneur": "tanner", "Le vétérinaire": "veterinarian", "La Bourse": "stockExchange", "L'herboriste": "herbalist", "Le bûcheron": "lumberjack", "Le forgeron royal": "royalBlacksmith", "Le marché royal": "royalMarket", "L'archiviste des îles": "bossArchivist" }[s.title]
+  }))))
+  + head("Quitter")
+  + panel(rows([
+    { icon: "🏃", title: "Sortir de la ville", sub: "Choisir une destination", go: "destinations", danger: true },
+    { icon: "👀", title: "Rester en ville", sub: "Ne rien changer à votre position", toast: "Vous restez en ville." }
+  ]))
+, "ville services city");
+
+def("notary", "adventure", "Le notaire", () =>
+  hero({ eyebrow: "Ville · notaire", title: "🧑‍💼 Le notaire", text: "Il gère les maisons, les logis et l'implantation des domaines de guilde. Chaque ville applique son propre coefficient de prix, de −5 % à +8 %." })
+  + head("Votre maison")
+  + panel(
+    kv("Niveau actuel", "3 · " + P.home.city)
+    + kv("Amélioration niveau 4", "18 500 💰")
+    + kv("Déménagement", "15 000 💰 · 1 000 💰 vers la ville la moins peuplée")
+    + rows([
+      { icon: "⬆️", title: "Améliorer la maison", sub: "Plus d'emplacements, meilleure terre, forge plus puissante", act: "upgradeHome" },
+      { icon: "📦", title: "Déménager", sub: "Déplacer la maison dans la ville actuelle", toast: "Déménagement vers Ville Forte confirmé." }
+    ])
+  )
+  + head("Les logis")
+  + panel(
+    note("Un logis donne accès au lit, au coffre et aux fourneaux. Dans la ville de votre maison, il rapporte 212 💰 par jour de rente.")
+    + rows([
+      { icon: "🏢", title: "Acheter un logis ici", sub: "Ville Forte · 9 000 💰", toast: "Logis de Ville Forte acheté." },
+      { icon: "💰", title: "Percevoir les rentes", sub: "2 logis · 1 484 💰 accumulés", act: "claimRent" }
+    ])
+  )
+  + head("Domaine de guilde")
+  + panel(rows([
+    { icon: "🏰", title: "Implanter le domaine", sub: "Gratuit la première fois, 100 000 💰 pour le déplacer", go: "guildDomain" }
+  ]))
+, "notaire maison logis");
+
+def("blacksmith", "adventure", "Le forgeron", () =>
+  hero({ eyebrow: "Ville · forgeron", title: "⚒️ Le forgeron", text: "La chaleur du brasier vous enveloppe. Le forgeron examine vos équipements d'un œil expert : ses services ne sont pas donnés, mais la qualité de son travail parle d'elle-même." })
+  + head("Améliorer un équipement")
+  + panel(rows([
+    { icon: "🗡️", title: "Épée courte · niveau 2", sub: "Vers le niveau 3 · 8 🧱 fer, 4 🧱 charbon · 2 400 💰", act: "upgradeItem" },
+    { icon: "🛡️", title: "Bouclier de bois · niveau 1", sub: "Vers le niveau 2 · 6 🧱 chêne · 900 💰", act: "upgradeItem" },
+    { icon: "🪑", title: "Chaise · niveau 4", sub: "Niveau maximum ici, voir le forgeron royal", locked: true, end: "Max" }
+  ]))
+  + head("Désenchanter")
+  + panel(rows([
+    { icon: "✨", title: "Doudoune de combat", sub: "Énergie max II · retirer l'enchantement pour 3 100 💰", act: "disenchant" }
+  ]))
+  + notice({ icon: "🧱", title: "Matériaux manquants", text: "Le forgeron peut vous vendre ce qui vous manque, avec un prix croissant à chaque ressource ajoutée.", action: { label: "Voir", toast: "Il vous manque 3 🧱 charbon pour 640 💰." } })
+  + note("Le forgeron est absent du Village Coco. Le forgeron royal du Château est le seul à porter un équipement au niveau 5.")
+, "forgeron amelioration desenchanter");
+
+def("royalBlacksmith", "adventure", "Le forgeron royal", () =>
+  hero({ eyebrow: "Château du Roi · forgeron royal", title: "👑 Le forgeron royal", text: "Il déroule ses outils sertis d'or. Lui seul porte un équipement du niveau 4 au niveau 5, ce qui accorde un tiers de puissance supplémentaire." })
+  + panel(
+    kv("Niveau de joueur requis", "100")
+    + kv("Votre niveau", P.level + " · insuffisant")
+    + kv("Coût", "matériaux rares, argent et gemmes")
+  )
+  + panel(rows([
+    { icon: "🪑", title: "Chaise · niveau 4", sub: "Éligible dès le niveau 100", locked: true, end: "Verrouillé" }
+  ]))
+  + note("Faire améliorer une humble relique jusqu'au sommet accorde un badge de forgeron sentimental.")
+, "forgeron royal niveau 5");
+
+def("scrapDealer", "adventure", "Le ferrailleur", () =>
+  hero({ eyebrow: "Ville · ferrailleur", title: "♻️ Gorim le Brise-Fer", text: "Il démonte les équipements de réserve pour les convertir en matériaux. Le démontage est définitif." })
+  + head("Équipements recyclables")
+  + panel(rows([
+    { icon: "🗡️", title: "Dague émoussée", sub: "🔶 Commun · rend 4 🧱 fer, 2 🧱 cuir", act: "recycle" },
+    { icon: "🛡️", title: "Écu fendu", sub: "🔥 Peu commun · rend 6 🧱 chêne, 3 🧱 fer", act: "recycle" }
+  ]))
+  + note("Seuls les équipements de réserve et non enchantés peuvent être recyclés. Désenchantez d'abord chez le forgeron.")
+, "ferrailleur recyclage materiaux");
+
+def("enchanter", "adventure", "L'enchanteur", () =>
+  hero({ eyebrow: "Ville · enchanteur", title: "🔮 Mernil l'enchanteur", text: "Itinérant, il change de ville chaque jour et ne propose qu'un seul enchantement par jour. Les mages mystiques bénéficient de 20 % de réduction." })
+  + panel(
+    kv("Enchantement du jour", "⚡ Énergie max I")
+    + kv("Compatible avec", "armures et boucliers")
+    + kv("Prix", "5 000 💰 et 9 💎")
+  )
+  + head("Vos équipements éligibles")
+  + panel(rows([
+    { icon: "🧥", title: "Doudoune de combat", sub: "Déjà enchantée · désenchanter d'abord", locked: true, end: "Enchantée" },
+    { icon: "🛡️", title: "Bouclier de bois", sub: "Aucun enchantement · éligible", act: "enchant" }
+  ]))
+  + head("Catalogue des enchantements")
+  + panel(rows([
+    { icon: "🗡️", title: "Attaque I à III", sub: "Jusqu'à +10 % de dégâts · armes" },
+    { icon: "⚔️", title: "Attaque PvP et PvE I à III", sub: "Jusqu'à +12 % contre joueurs ou monstres · armes" },
+    { icon: "🛡️", title: "Défense I à III", sub: "Jusqu'à −8,3 % de dégâts reçus · armures" },
+    { icon: "🚀", title: "Vitesse I à III", sub: "Jusqu'à +20 % de vitesse · armures" },
+    { icon: "⚡", title: "Énergie max I à III", sub: "Jusqu'à +9 % d'énergie · armures" },
+    { icon: "🌬️", title: "Souffle de base I à II et souffle max", sub: "+2 au souffle initial, +3 au souffle maximal" },
+    { icon: "🔥", title: "Aspect de feu, de givre, de venin", sub: "+20 % de dégâts d'altération et +25 % de résistance" }
+  ]))
+, "enchanteur enchantement mernil rune");
+
+def("inn", "adventure", "L'auberge", () =>
+  hero({ eyebrow: "Ville · auberge", title: "🍺 La Chope Sanglante", text: "Réputée pour ses boissons fortes et son ambiance sombre. La nourriture n'y est pas de grande qualité, et les lits non plus d'ailleurs." })
+  + panel(
+    stat("⚡ Énergie", P.energy + " / " + P.maxEnergy, pct(P.energy, P.maxEnergy), "green")
+    + stat("❤️ Vie", P.health + " / " + P.maxHealth, pct(P.health, P.maxHealth), "red")
+  )
+  + head("Repas", { hint: "un toutes les 12 h" })
+  + panel(rows([
+    { icon: "🍞", title: "Pain", sub: "Énergie +200 ⚡", end: "25 💰", act: "eat" },
+    { icon: "🥗", title: "Salade simple", sub: "Énergie +250 ⚡", end: "30 💰", act: "eat" },
+    { icon: "🥨", title: "Bretzels", sub: "Énergie +300 ⚡", end: "30 💰", act: "eat" }
+  ]))
+  + head("Chambres", { hint: "une toutes les 24 h" })
+  + panel(rows([
+    { icon: "🕸️", title: "Chambre horrible", sub: "Vie +4 ❤️", end: "200 💰", act: "sleep" },
+    { icon: "🚪", title: "Chambre commune", sub: "Vie +14 ❤️", end: "500 💰", act: "sleep" }
+  ]))
+  + note("Dormir chez soi consomme la même nuit de repos qu'une chambre d'auberge. Les villes les plus luxueuses proposent des services plus chers mais plus efficaces.")
+, "auberge repas chambre inn");
+
+def("bossArchivist", "adventure", "L'archiviste des îles", () => {
+  const tab = S.seg.archivist;
+  return hero({ eyebrow: "Château du Roi · archiviste", title: "📜 L'archiviste des îles", text: "Il consigne les exploits des aventuriers vainqueurs des boss finaux : Titan de magma, Reine des glaces, Seigneur des glaces, Kraken et Léviathan." })
+    + actions([
+      { label: "Vos exploits", act: "seg:archivist:personal", on: tab === "personal" },
+      { label: "Classement", act: "seg:archivist:leaderboard", on: tab === "leaderboard" }
+    ])
+    + (tab === "personal"
+      ? panel(rows([
+        { icon: "🌋", title: "Titan de magma", sub: "Vaincu le 14 mars · ⚔️ Cavalier", end: "Niv. 38" },
+        { icon: "🐉", title: "Reine des glaces", sub: "Jamais vaincue", locked: true, end: "—" },
+        { icon: "🐉", title: "Seigneur des glaces", sub: "Jamais vaincu", locked: true, end: "—" },
+        { icon: "🦑", title: "Kraken", sub: "Jamais vaincu", locked: true, end: "—" },
+        { icon: "🐉", title: "Léviathan", sub: "Jamais vaincu", locked: true, end: "—" }
+      ]))
+      : panel(rows([
+        { icon: "1", title: "Procion", sub: "🧙 Mage mystique · Titan de magma", end: "Niv. 122" },
+        { icon: "2", title: "Yuno", sub: "🤺 Chevalier valeureux · Reine des glaces", end: "Niv. 118" },
+        { icon: "3", title: "Kyusaor", sub: "🎖️ Vétéran chevronné · Kraken", end: "Niv. 111" }
+      ])) + note("Seules les classes du cinquième palier, à partir du niveau 80, apparaissent dans ce classement."));
+}, "archiviste boss ile classement");
+
+def("guildFoodShop", "adventure", "Le ravitaillement", () =>
+  hero({ eyebrow: "Ville · ravitaillement", title: "🍖 Le ravitaillement de guilde", text: "Accessible depuis n'importe quelle ville une fois la boutique du domaine achetée. La nourriture rejoint directement l'entrepôt commun." })
+  + panel(rows([
+    { icon: "🍬", title: "Friandise", sub: "+1 point d'amour · stock 0 / 150", end: "20 💰", act: "buyFood" },
+    { icon: "🍖", title: "Viande", sub: "+3 points d'amour · carnivores", end: "250 💰", act: "buyFood" },
+    { icon: "🥬", title: "Salade", sub: "+3 points d'amour · herbivores", end: "250 💰", act: "buyFood" },
+    { icon: "🍲", title: "Soupe ultime", sub: "+5 points d'amour · tous régimes", end: "600 💰", act: "buyFood" }
+  ]))
+  + note("Sans guilde, seule la friandise vous est accessible. Après un achat, l'intendant propose de vous rembourser sans commission.")
+, "ravitaillement nourriture familier");
+
+/* ---------- Boutiques ---------- */
+
+def("shop", "adventure", "La boutique générale", () =>
+  hero({ eyebrow: "Ville · boutique générale", title: "🛒 La boutique générale", text: "Parcourez les rayons et appuyez sur Acheter à côté de l'article qui vous intéresse. Le stock du jour se renouvelle chaque matin." })
+  + panel(kv("Votre argent", num(P.money) + " 💰") + kv("Vos gemmes", P.gems + " 💎"))
+  + head("Ventes permanentes")
+  + panel(rows([
+    { icon: "🎁", title: "Équipement aléatoire", sub: "Probabilités détaillées par la commande /rareté", end: "350 💰", act: "buy" },
+    { icon: "💉", title: "Soin des altérations d'état", sub: "Retire l'altération en cours", end: "1 500 💰", act: "buy" },
+    { icon: "❤️", title: "Régénération complète", sub: "Restaure toute la vie", end: "3 000 💰", act: "buy" }
+  ]))
+  + head("Potion du jour", { hint: "3 sur 5 disponibles" })
+  + panel(rows([
+    { icon: "⚗️", title: "Potion de vigueur améliorée", sub: "☄️ Rare · 60 % du prix habituel", end: "1 840 💰", act: "buy" }
+  ]))
+  + head("Jetons", { hint: P.tokens + " / " + P.tokensMax })
+  + panel(rows([
+    { icon: "🪙", title: "Jeton", sub: "Avance le voyage de 10 minutes", end: "1 200 💰", act: "buyToken:1" }
+  ]))
+  + head("Extensions d'inventaire")
+  + panel(rows([
+    { icon: "🗡️", title: "Emplacement d'arme", sub: "Réserve · 1 sur 1 acheté", end: "épuisé", locked: true },
+    { icon: "🧪", title: "Emplacement de potion", sub: "Réserve · 2 sur 3 achetés", end: "7 000 💰", act: "buy" },
+    { icon: "🔑", title: "Emplacement d'objet", sub: "Réserve · 1 sur 3 acheté", end: "2 500 💰", act: "buy" }
+  ]))
+  + note("Le prix des extensions augmente à chaque achat. La réserve s'agrandit aussi chez le tanneur de Mergagnan et avec les niveaux de maison.")
+, "boutique magasin shop achat");
+
+def("materialMerchant", "adventure", "Le marchand de matériaux", () =>
+  hero({ eyebrow: "Ville Forte · marchand de matériaux", title: "📦 Le marchand de matériaux", text: "Un négociant baroudeur étale des caisses récupérées aux quatre coins du royaume. Le contenu reste une surprise." })
+  + panel(rows([
+    { icon: "📦", title: "Lot de 10 matériaux", sub: "133 💰 l'unité", end: "1 330 💰", act: "buy" },
+    { icon: "📦", title: "Lot de 15 matériaux", sub: "133 💰 l'unité", end: "1 995 💰", act: "buy" },
+    { icon: "📦", title: "Lot de 30 matériaux", sub: "133 💰 l'unité", end: "3 990 💰", act: "buy" }
+  ]))
+  + panel(kv("🔥 Rare", "1 chance sur 10") + kv("🔶 Peu commun", "3 chances sur 10") + kv("🔸 Commun", "6 chances sur 10"))
+, "materiaux marchand lot");
+
+def("tanner", "adventure", "Le tanneur", () =>
+  hero({ eyebrow: "Mergagnan · tanneur", title: "🧳 Le tanneur", text: "Il élargit la réserve d'équipements et le stockage de plantes. Chaque achat renchérit le suivant." })
+  + panel(rows([
+    { icon: "🎒", title: "Emplacement d'équipement", sub: "Paliers : 500, 1 000, 2 500, 7 000, 12 000, 17 000, 25 000, 30 000 💰", end: "2 500 💰", act: "buy" },
+    { icon: "🌱", title: "Stockage de plantes", sub: "Deux paliers : 3 000 puis 8 000 💰", end: "3 000 💰", act: "buy" }
+  ]))
+, "tanneur inventaire emplacement");
+
+def("herbalist", "adventure", "L'herboriste", () =>
+  hero({ eyebrow: "Village Coco · herboriste", title: "🌿 L'herboriste", text: "Une sélection hebdomadaire de graines : toujours une des trois premières plantes, une des quatre dernières et une intermédiaire. Les prix varient de ±40 %." })
+  + panel(rows([
+    { icon: "🌿", title: "Herbe commune", sub: "Prix moyen 40 💰", end: "36 💰", act: "buy" },
+    { icon: "🍀", title: "Trèfle doré", sub: "Prix moyen 124 💰", end: "151 💰", act: "buy" },
+    { icon: "🌙", title: "Mousse lunaire", sub: "Plante intermédiaire", end: "410 💰", act: "buy" }
+  ]))
+  + head("Objet spécial")
+  + panel(rows([
+    { icon: "🍀", title: "Cœur Sylvestre", sub: "Récolter le jardin à distance avec la commande /jardin", end: "2 450 💰", act: "buy" }
+  ]))
+  + note("La Bourse de Claire de Ville vend une estimation des variations de prix à venir.")
+, "herboriste graines plantes");
+
+def("lumberjack", "adventure", "Le bûcheron", () =>
+  hero({ eyebrow: "Village Coco · bûcheron", title: "🪓 Le bûcheron", text: "Il ne vend que du bois, indispensable pour attiser les fourneaux de la cuisine." })
+  + panel(rows([
+    { icon: "🍁", title: "Lot de bois de chauffage", sub: "Feuilles d'érable, pommes de pin, branches de chêne", end: "10 💰 l'unité", act: "buy" },
+    { icon: "🌳", title: "Lot de bois travaillé", sub: "Planches d'acacia, écorces de hêtre, branches de noyer", end: "35 💰 l'unité", act: "buy" }
+  ]))
+, "bucheron bois fourneau");
+
+def("veterinarian", "adventure", "Le vétérinaire", () =>
+  hero({ eyebrow: "Mergagnan et Claire de Ville · vétérinaire", title: "🧑‍⚕️ Le vétérinaire", text: "Pour 3 💎, il ausculte le familier, révèle ses statistiques et lui rend 15 points d'amour si son moral est au plus à 50." })
+  + panel(rows([
+    { icon: "🩺", title: "Consulter " + P.pet.nickname, sub: "Amour, statistiques, âge, préférences, régime et faim", end: "3 💎", act: "vet" }
+  ]))
+  + head("Ce que révèle la consultation")
+  + panel(
+    kv("Niveau d'amour exact", P.pet.lovePoints + " / 110")
+    + kv("Force", P.pet.strength + " / 30")
+    + kv("Vitesse", P.pet.speed + " / 30")
+    + kv("Biomes appréciés", "🕳️ Grotte, 🌲 Forêt")
+    + kv("Biome détesté", "🌊 Côte")
+  )
+, "veterinaire familier consultation");
+
+def("stockExchange", "adventure", "La Bourse", () =>
+  hero({ eyebrow: "Claire de Ville · Bourse", title: "💎 La Bourse", text: "Elle vend une spéculation sur les prix à venir des différents commerces, ainsi qu'un badge de prestige monétaire." })
+  + panel(rows([
+    { icon: "📈", title: "Analyse de marché", sub: "Estimation des variations de prix de la semaine", end: "1 200 💰", act: "buy" },
+    { icon: "🤑", title: "Badge de prestige monétaire", sub: "Purement décoratif", end: "1 000 000 💰", act: "buy" }
+  ]))
+, "bourse speculation badge");
+
+def("royalMarket", "adventure", "Le marché royal", () =>
+  hero({ eyebrow: "Château du Roi · marché royal", title: "💠 Le marché royal", text: "Tout s'y paie en gemmes, gagnées dans les missions de campagne et quotidiennes." })
+  + panel(kv("Vos gemmes", P.gems + " 💎"))
+  + head("Ressources")
+  + panel(rows([
+    { icon: "💰", title: "L'argent du roi", sub: "Entre 5 150 et 7 850 💰", end: "50 💎", act: "buy" },
+    { icon: "👑", title: "Le trésor du roi", sub: "Un objet de rareté minimale spécial", end: "30 💎", act: "buy" },
+    { icon: "🏅", title: "La ferveur du roi", sub: "1 000 points, une fois par semaine", end: "5 💎", act: "buy" }
+  ]))
+  + head("Utilitaires")
+  + panel(rows([
+    { icon: "🧾", title: "Change-mission", sub: "Remplace une mission secondaire · gratuit puis +1 💎 par usage", end: "2 💎", act: "buy" }
+  ]))
+  + head("Prestige")
+  + panel(rows([
+    { icon: "💍", title: "Badge Maître des quêtes", sub: "Montre votre investissement dans les missions", end: "150 💎", act: "buy" }
+  ]))
+, "marche royal gemmes missions shop");
+
+/* ---------- Maison ---------- */
+
+def("home", "adventure", "Votre maison", () =>
+  hero({ eyebrow: "Ville Forte · votre maison", title: "🏠 Chez " + P.name, text: "Maison de niveau " + P.home.level + ". Elle donne accès au lit, au coffre, au jardin, à la cuisine et à une forge personnelle qui économise le prix du forgeron." })
+  + panel(rows([
+    { icon: "🛏️", title: "Le lit", sub: "Rendre de la vie gratuitement · consomme la nuit de repos", go: "homeBed" },
+    { icon: "📦", title: "Le coffre", sub: "Stocker équipements, matériaux et plantes", go: "homeChest" },
+    { icon: "🌱", title: "Le jardin", sub: "4 emplacements · 2 plantes prêtes", go: "homeGarden" },
+    { icon: "🍳", title: "La cuisine", sub: "Potions, nourriture et matériaux rares", go: "homeCooking" },
+    { icon: "⚒️", title: "La station d'amélioration", sub: "Forge personnelle · consomme les matériaux sans payer l'artisan", go: "homeUpgrade" },
+    { icon: "🧑‍💼", title: "Gérer la maison", sub: "Améliorer, déménager, gérer les logis", go: "notary" }
+  ]))
+  + notice({ icon: "🍳", title: "Deux préparations en attente", text: "Le lingot d'azur sort dans 12 minutes, un emplacement reste libre.", action: { label: "Ouvrir", go: "homeCooking" } })
+  + head("Ce qu'apporte le niveau 4")
+  + panel(
+    kv("Emplacements arme et bouclier", "3 → 4")
+    + kv("Emplacements de cuisine", "2 → 3")
+    + kv("Qualité de la terre", "normale → riche")
+    + kv("Niveau max d'amélioration", "3 → 4")
+  )
+, "maison home logement");
+
+def("homeBed", "adventure", "Le lit", () =>
+  hero({ eyebrow: "Maison · lit", title: "🛏️ Le lit", text: "Dormir restaure de la vie gratuitement mais consomme la nuit de repos : plus de chambre d'auberge pendant 24 heures." })
+  + panel(stat("❤️ Vie", P.health + " / " + P.maxHealth, pct(P.health, P.maxHealth), "red") + kv("Gain au niveau 3", "+12 ❤️") + kv("Disponible", "maintenant"))
+  + buttonRow([{ label: "Dormir", style: "primary", act: "sleep" }])
+, "lit dormir repos");
+
+def("homeChest", "adventure", "Le coffre", () => {
+  const tab = S.seg.chest;
+  return hero({ eyebrow: "Maison · coffre", title: "📦 Le coffre", text: "Déposez ou retirez des équipements et des plantes. Le coffre ne compte pas dans la réserve transportée." })
+    + actions([
+      { label: "Équipements", act: "seg:chest:items", on: tab === "items" },
+      { label: "Plantes", act: "seg:chest:plants", on: tab === "plants" }
+    ])
+    + (tab === "items"
+      ? head("Déposé dans le coffre") + panel(rows([
+        { icon: "🗡️", title: "Dague émoussée", sub: "🔶 Commun · 🗡️ 4", end: "Retirer", act: "withdraw" },
+        { icon: "🧪", title: "Potion de célérité", sub: "☄️ Rare · avance le temps", end: "Retirer", act: "withdraw" }
+      ]))
+      + head("Dans votre réserve") + panel(rows([
+        { icon: "🛡️", title: "Écu fendu", sub: "🔥 Peu commun · 🛡️ 11", end: "Déposer", act: "deposit" }
+      ]))
+      : head("Plantes stockées") + panel(rows([
+        { icon: "🌿", title: "Herbe commune", sub: "Utilisable en cuisine ou compostable", end: "×14" },
+        { icon: "🍀", title: "Trèfle doré", sub: "Utilisable en cuisine ou compostable", end: "×3" }
+      ])) + note("Le stockage de plantes s'agrandit chez le tanneur de Mergagnan."));
+}, "coffre chest stockage");
+
+def("homeGarden", "adventure", "Le jardin", () =>
+  hero({ eyebrow: "Maison · jardin", title: "🌱 Le jardin", text: "Une graine plantée produit sa plante de façon cyclique : inutile de replanter. La qualité de la terre modifie la durée de croissance d'un tiers." })
+  + panel(rows([
+    { icon: "🍀", title: "Emplacement 1 · Trèfle doré", sub: "Prêt à récolter", end: "Récolter", act: "harvest" },
+    { icon: "🌿", title: "Emplacement 2 · Herbe commune", sub: "Prêt à récolter", end: "Récolter", act: "harvest" },
+    { icon: "🌱", title: "Emplacement 3 · Mousse lunaire", sub: "Croissance · 3 h 20 restantes", end: "—" },
+    { icon: "➕", title: "Emplacement 4", sub: "Libre · une graine peut y être plantée", end: "Planter", act: "plant" }
+  ]))
+  + actions([
+    { label: "💧 Arroser · +5 %", act: "water" },
+    { label: "🧺 Tout récolter", act: "harvest" },
+    { label: "♻️ Composter", act: "compost" },
+    { label: "📦 Stockage", go: "homeChest" }
+  ])
+  + note("L'arrosage est possible toutes les 12 heures. Le Cœur Sylvestre permet de récolter à distance, mais ni d'arroser ni de planter.")
+, "jardin plantes graines arroser");
+
+def("homeCooking", "adventure", "La cuisine", () =>
+  hero({ eyebrow: "Maison · cuisine", title: "🍳 Les fourneaux", text: "Allumez le fourneau avec un matériau de type bois, puis choisissez une préparation. En cas d'échec, les ressources sont perdues mais l'expérience reste acquise." })
+  + panel(
+    stat("👨‍🍳 Niveau de cuisine · " + P.cooking.grade, P.cooking.xp + " / " + P.cooking.xpMax + " ⭐", pct(P.cooking.xp, P.cooking.xpMax), "gold")
+    + kv("Niveau max de préparation", "3")
+    + kv("Succès de base", "92 %")
+    + kv("Recettes cachées", "10 %")
+  )
+  + head("Emplacements", { hint: "2 sur 2 au niveau 3" })
+  + panel(rows(RECIPES.map(r => ({
+    icon: r.icon,
+    title: r.name + " · niveau " + r.level,
+    sub: r.sub,
+    end: r.state === "prête" ? "Cuisiner" : r.state === "libre" ? "Choisir" : r.state,
+    act: r.state === "en cours" ? undefined : "cook"
+  }))))
+  + actions([
+    { label: "🔥 Allumer le fourneau", act: "ignite" },
+    { label: "🔄 Relancer les recettes", act: "reroll" },
+    { label: "📌 Épingler une recette", act: "pin" }
+  ])
+  + note("Une préparation d'un niveau supérieur à votre grade ajoute 15 % d'échec par niveau d'écart. Relancer coûte un matériau de type bois.")
+, "cuisine recettes fourneau potion");
+
+def("homeUpgrade", "adventure", "Station d'amélioration", () =>
+  hero({ eyebrow: "Maison · station d'amélioration", title: "⚒️ La forge personnelle", text: "Elle économise le prix du forgeron mais consomme les mêmes matériaux. Sa qualité limite la rareté et le niveau des équipements traités." })
+  + panel(kv("Qualité de la station", "Avancée") + kv("Rareté maximale", "☄️ Rare") + kv("Niveau maximal", "3"))
+  + panel(rows([
+    { icon: "🗡️", title: "Épée courte · niveau 2", sub: "Vers le niveau 3 · 8 🧱 fer, 4 🧱 charbon", end: "Améliorer", act: "upgradeItem" },
+    { icon: "🧥", title: "Doudoune de combat", sub: "Rareté trop élevée pour cette station", locked: true, end: "Bloqué" }
+  ]))
+, "forge station amelioration maison");
+
+def("apartment", "adventure", "Les logis", () =>
+  hero({ eyebrow: "Notaire · logis", title: "🏢 Vos logis", text: "Un logis donne accès au lit, au coffre et aux fourneaux dans la ville où il se trouve. Celui de la ville de votre maison rapporte 212 💰 par jour." })
+  + panel(rows([
+    { icon: "🛖", title: "Boug-Coton", sub: "Acheté · aucun loyer", end: "6 000 💰" },
+    { icon: "🛖", title: "Ville Forte", sub: "Acheté · rente de 1 484 💰 en attente", end: "Percevoir", act: "claimRent" },
+    { icon: "🏘️", title: "Claire de Ville", sub: "Disponible à l'achat", end: "12 000 💰", act: "buy" }
+  ]))
+, "logis appartement rente");
+
+/* ---------- Profil ---------- */
+
+def("profile", "profile", "Profil", () =>
+  hero({ eyebrow: "Commande /profil", title: P.name, text: P.classEmoji + " " + P.className + " · niveau " + P.level + " · 🛖 " + P.city })
+  + quick([
+    { icon: "🎒", label: "Inventaire", go: "inventory" },
+    { icon: "🎖️", label: "Missions", go: "missions" },
+    { icon: "🎭", label: "Classes", go: "classes" },
+    { icon: "🏅", label: "Badges", go: "badges" }
+  ])
+  + head("Informations")
+  + panel(
+    stat("❤️ Vie", P.health + " / " + P.maxHealth, pct(P.health, P.maxHealth), "red")
+    + stat("⭐ Expérience", num(P.xp) + " / " + num(P.xpMax), pct(P.xp, P.xpMax), "gold")
+    + kv("💰 Argent", num(P.money))
+    + kv("🪙 Jetons", P.tokens + " / " + P.tokensMax)
+  )
+  + head("Statistiques", { label: "Comparer", go: "classesInfo" })
+  + panel(
+    kv("⚡ Énergie", num(P.energy) + " / " + num(P.maxEnergy))
+    + kv("🗡️ Attaque", P.attack)
+    + kv("🛡️ Défense", P.defense)
+    + kv("🚀 Vitesse", P.speed)
+    + kv("🌬️ Souffle", P.breath + " / " + P.maxBreath)
+    + kv("🫁 Récupération de souffle", P.breathRegen)
+  )
+  + head("Missions", { label: "Marché royal", go: "royalMarket" })
+  + panel(kv("💎 Gemmes", P.gems) + kv("📖 Campagne", P.campaign.percent + " % · " + P.campaign.current + " sur " + P.campaign.max))
+  + head("Classement et score", { label: "Classements", go: "top" })
+  + panel(kv("🏆 Classement", num(P.rank) + " / " + num(P.players)) + kv("🏅 Score", num(P.score)))
+  + head("Gloire et ligue", { label: "Ligue", go: "league" })
+  + panel(kv("🏆 Classement de gloire", "Non classé") + kv("✨ Points de gloire", num(P.glory)) + kv(P.leagueEmoji + " Ligue", P.league))
+  + head("Temps restant")
+  + panel(kv(S.report === "alteration" ? S.alteration.icon + " " + S.alteration.name : "😀 Aucune altération",
+    S.report === "alteration" ? S.alteration.time : "Reprise du jeu possible"))
+  + head("Cuisine", { label: "Fourneaux", go: "homeCooking" })
+  + panel(kv("👨‍🍳 Grade", "Niveau " + P.cooking.level + " · " + P.cooking.grade))
+  + head("Guilde", { label: "Voir", go: "guild" })
+  + panel(kv("🏰 Guilde", P.guild + " · niveau " + P.guildLevel))
+  + head("Destination", { label: "Carte", go: "map" })
+  + panel(kv("🛖 Position", P.city))
+  + head("Familier", { label: "Détails", go: "pet" })
+  + panel(rows([{ icon: P.pet.emoji, title: P.pet.nickname, sub: P.pet.name + " · " + P.pet.rarity, go: "pet" }]))
+  + head("Autres écrans")
+  + panel(rows([
+    { icon: "✨", title: "Bénédictions", sub: "Les avantages offerts par l'Oracle", go: "blessing" },
+    { icon: "🎁", title: "Bonus journalier", sub: "Utiliser un objet à effet quotidien", go: "dailyBonus" },
+    { icon: "🔔", title: "Notifications", sub: "Choisir quoi recevoir et où", go: "notifications" },
+    { icon: "💎", title: "Raretés", sub: "Probabilités d'obtention des équipements", go: "rarity" },
+    { icon: "⚙️", title: "Commandes utilitaires", sub: "Aide, vote, invitation, langue, latence", go: "utilities" }
+  ]))
+, "profil profile stats");
+
+def("inventory", "profile", "Inventaire", () => {
+  const tab = S.seg.inventory;
+  const body = {
+    equipped: head("Équipement porté") + panel(rows([
+      { icon: "🪑", title: "Arme · Chaise", sub: "🔥 Peu commun · 🗡️ 8 · niveau 4", end: "Portée" },
+      { icon: "🧥", title: "Armure · Doudoune de combat", sub: "🔥 Peu commun · 🛡️ 19 🚀 10 · ✨ Énergie max II", end: "Portée" },
+      { icon: "🛏️", title: "Potion · Bave sur l'oreiller", sub: "☄️ Rare · aucun effet", end: "Prête" },
+      { icon: "🧱", title: "Objet actif · Lego", sub: "🔥 Peu commun · 🗡️ +17 en combat", end: "Actif" }
+    ]))
+      + head("Artefacts") + panel(rows([
+        { icon: "⚓", title: "Talisman d'Ancrage", sub: "Permet d'envoyer le familier en expédition", end: "Porté" },
+        { icon: "🧬", title: "Talisman de Clonage", sub: "Le familier assiste en défense même en expédition", locked: true, end: "Absent" },
+        { icon: "🍀", title: "Cœur Sylvestre", sub: "Récolter le jardin à distance", locked: true, end: "Absent" }
+      ])),
+    stock: head("Réserve", { hint: "extensible chez le tanneur" }) + panel(rows([
+      { icon: "🗡️", title: "Dague émoussée", sub: "🔶 Commun · 🗡️ 4", end: "1 / 2" },
+      { icon: "🛡️", title: "Écu fendu", sub: "🔥 Peu commun · 🛡️ 11", end: "1 / 2" },
+      { icon: "🧪", title: "Potion de célérité", sub: "☄️ Rare · avance le temps", end: "1 / 3" },
+      { icon: "➕", title: "Emplacement libre", sub: "Objet · achetable en boutique", locked: true, end: "0 / 3" }
+    ])) + note("Les potions sont les seuls équipements qui ne se revendent pas : elles ne peuvent qu'être jetées."),
+    materials: head("Matériaux", { hint: "90 types répartis en 3 raretés" }) + panel(rows([
+      { icon: "🧱", title: "Fer brut", sub: "🔸 Commun · forge", end: "×42" },
+      { icon: "🪵", title: "Branche de chêne", sub: "🔸 Commun · bois de chauffage", end: "×18" },
+      { icon: "💠", title: "Cristal azur", sub: "🔥 Rare · cuisine et forge", end: "×5" }
+    ])),
+    plants: head("Plantes transportées") + panel(rows([
+      { icon: "🌿", title: "Herbe commune", sub: "Cuisine ou compost", end: "×14" },
+      { icon: "🍀", title: "Trèfle doré", sub: "Cuisine ou compost", end: "×3" },
+      { icon: "🌱", title: "Graine de mousse lunaire", sub: "Emplacement de graine", end: "×1" }
+    ]))
+  }[tab];
+  return hero({ eyebrow: "Commande /inventaire", title: "Inventaire", text: "L'équipement porté d'un côté, la réserve de l'autre, plus les matériaux et les plantes." })
+    + actions([
+      { label: "Équipement", act: "seg:inventory:equipped", on: tab === "equipped" },
+      { label: "Réserve", act: "seg:inventory:stock", on: tab === "stock" },
+      { label: "Matériaux", act: "seg:inventory:materials", on: tab === "materials" },
+      { label: "Plantes", act: "seg:inventory:plants", on: tab === "plants" }
+    ])
+    + body
+    + head("Agir sur l'inventaire")
+    + panel(rows([
+      { icon: "🔁", title: "Équiper", sub: "Échanger un objet porté avec la réserve", go: "equip" },
+      { icon: "💰", title: "Vendre", sub: "Convertir un objet de la réserve en argent", go: "sell" },
+      { icon: "🧪", title: "Boire une potion", sub: "Certaines potions ne sont utilisables qu'en combat", go: "drink" },
+      { icon: "🎁", title: "Bonus journalier", sub: "Utiliser un objet à effet quotidien", go: "dailyBonus" }
+    ]));
+}, "inventaire inventory equipement reserve materiaux plantes");
+
+def("equip", "profile", "Équiper", () =>
+  hero({ eyebrow: "Commande /équiper", title: "Gestion de l'équipement", text: "Sélectionnez une catégorie pour échanger l'objet porté avec un objet de la réserve." })
+  + head("Arme")
+  + panel(rows([
+    { icon: "🪑", title: "Chaise", sub: "Objet équipé · 🗡️ 8", end: "Portée" },
+    { icon: "🗡️", title: "Dague émoussée", sub: "Réserve 1 / 2 · 🗡️ 4", end: "Équiper", act: "equipItem" }
+  ]))
+  + head("Armure ou bouclier")
+  + panel(rows([
+    { icon: "🧥", title: "Doudoune de combat", sub: "Objet équipé · 🛡️ 19 🚀 10", end: "Portée" },
+    { icon: "🛡️", title: "Écu fendu", sub: "Réserve 1 / 2 · 🛡️ 11", end: "Équiper", act: "equipItem" }
+  ]))
+  + head("Potion et objet")
+  + panel(rows([
+    { icon: "🛏️", title: "Bave sur l'oreiller", sub: "Potion équipée", end: "Portée" },
+    { icon: "🧱", title: "Lego", sub: "Objet actif · 🗡️ +17 en combat", end: "Actif" }
+  ]))
+, "equiper equip");
+
+def("sell", "profile", "Vendre", () =>
+  hero({ eyebrow: "Commande /vendre", title: "Vendre un équipement", text: "Seuls les objets de la réserve peuvent être vendus. Les potions ne rapportent rien et ne peuvent qu'être jetées." })
+  + panel(rows([
+    { icon: "🗡️", title: "Dague émoussée", sub: "🔶 Commun", end: "120 💰", act: "sellItem" },
+    { icon: "🛡️", title: "Écu fendu", sub: "🔥 Peu commun", end: "480 💰", act: "sellItem" },
+    { icon: "🧪", title: "Potion de célérité", sub: "Non revendable", end: "🗑️ Jeter", act: "throwItem" }
+  ]))
+, "vendre sell");
+
+def("drink", "profile", "Boire une potion", () =>
+  hero({ eyebrow: "Commande /boire", title: "Boire une potion", text: "Les potions de combat sont consommées automatiquement pendant les duels et n'apparaissent pas ici." })
+  + panel(rows([
+    { icon: "🧪", title: "Potion de célérité", sub: "⏳ Avance le temps de 2 h", end: "Boire", act: "drinkPotion" },
+    { icon: "🛏️", title: "Bave sur l'oreiller", sub: "Aucun effet notable", end: "Boire", act: "drinkPotion" }
+  ]))
+, "boire potion drink");
+
+def("dailyBonus", "profile", "Bonus journalier", () =>
+  hero({ eyebrow: "Commande /bonusjournalier", title: "Votre bonus journalier", text: "Un objet à effet journalier peut être utilisé toutes les 22 heures. Les objets de combat n'y donnent pas droit." })
+  + panel(rows([
+    { icon: "⌛", title: "Sablier fêlé", sub: "Avance le temps de 1 h", end: "Utiliser", act: "claim:bonus" },
+    { icon: "❤️", title: "Amulette de vie", sub: "Rend 25 ❤️", end: "Utiliser", act: "claim:bonus" }
+  ]))
+  + panel(kv("Prochaine utilisation", S.daily.bonus ? "dans 22 h" : "disponible maintenant"))
+, "bonus journalier daily");
+
+def("classes", "profile", "Classes", () =>
+  hero({ eyebrow: "Commande /classes", title: "Changer de classe", text: "Vingt-cinq classes réparties en cinq paliers. Le délai entre deux changements va d'une semaine au premier palier à trois semaines au cinquième." })
+  + CLASSES.map(t => head(t.tier) + panel(rows(t.list.map(c => ({
+    icon: c.icon, title: c.name, sub: c.sub, locked: c.locked,
+    end: c.current ? "Actuelle" : c.locked ? "Verrouillée" : "Choisir",
+    act: c.current || c.locked ? undefined : "changeClass:" + c.name
+  }))))).join("")
+  + head("Comparer les statistiques")
+  + panel(rows([{ icon: "📊", title: "Informations sur les classes", sub: "Énergie, attaque, défense, vitesse, souffle et récupération", go: "classesInfo" }]))
+, "classes changement palier");
+
+def("classesInfo", "profile", "Informations sur les classes", () =>
+  hero({ eyebrow: "Commande /infosclasses", title: "Comparatif des classes", text: "Les attaques disponibles et leur consommation de souffle dépendent de la classe choisie." })
+  + head("Cavalier · classe actuelle")
+  + panel(
+    kv("⚡ Énergie", "780")
+    + kv("🗡️ Attaque", "184")
+    + kv("🛡️ Défense", "162")
+    + kv("🚀 Vitesse", "97")
+    + kv("🌬️ Souffle", "8 / 12")
+    + kv("🫁 Récupération", "3")
+  )
+  + head("Attaques de la classe")
+  + panel(rows(FIGHT_ACTIONS.slice(0, 5).map(a => ({ icon: a.icon, title: a.name, sub: a.sub, end: a.cost + " 🌬️" }))))
+  + note("Utiliser une attaque sans avoir assez de souffle ne réussit qu'avec une faible probabilité.")
+, "infosclasses statistiques attaques");
+
+def("badges", "profile", "Badges", () =>
+  hero({ eyebrow: "Commande /badges", title: "Badges", text: "Des distinctions purement décoratives affichées en réaction sous votre profil." })
+  + panel(rows(BADGES.map(b => ({ icon: b.icon, title: b.name, end: b.owned ? "Obtenu" : "—", locked: !b.owned }))))
+  + panel(kv("Badges obtenus", BADGES.filter(b => b.owned).length + " sur " + BADGES.length))
+, "badges distinctions");
+
+def("missions", "profile", "Missions", () =>
+  hero({ eyebrow: "Commande /missions", title: "Vos missions", text: "Les missions rapportent de l'expérience et des gemmes. La campagne compte 149 étapes et se termine par un familier mythique." })
+  + head("📖 Campagne", { hint: P.campaign.current + " sur " + P.campaign.max })
+  + panel(
+    stat("Progression", P.campaign.percent + " %", P.campaign.percent, "gold")
+    + rows([{ icon: "📖", title: "Vendre 3 équipements", sub: "▰▰▰▱▱▱▱▱▱▱ 1 sur 3", end: "En cours" }])
+  )
+  + head("📅 Mission quotidienne", { hint: "expire dans 14 h" })
+  + panel(rows([{ icon: "🗺️", title: "Explorer 3 lieux différents", sub: "▰▰▰▱▱▱▱▱▱▱ 1 sur 3", end: S.daily.mission ? "Terminée" : "En cours" }]))
+  + head("📜 Missions secondaires", { hint: "1 sur 2" })
+  + panel(rows([
+    { icon: "📜", title: "Gagner 2 combats", sub: "▰▰▰▰▰▱▱▱▱▱ 1 sur 2 · expire dans 2 j", end: "En cours" },
+    { icon: "🧾", title: "Changer une mission secondaire", sub: "Au marché royal, contre des gemmes", go: "royalMarket" }
+  ]))
+  + note("Une mission secondaire s'obtient occasionnellement lors d'un mini-évènement, en demandant un rapport.")
+  + head("Dépenser vos gemmes")
+  + panel(rows([{ icon: "💠", title: "Marché royal", sub: P.gems + " 💎 disponibles", go: "royalMarket" }]))
+, "missions campagne quotidienne secondaire");
+
+def("blessing", "profile", "Bénédictions", () =>
+  hero({ eyebrow: "Commande /bénédiction", title: "✨ Bourse dorée", text: "Tous les gains d'argent sont augmentés de 10 % pour l'ensemble des joueurs." })
+  + panel(
+    kv("Temps restant", "6 h 12")
+    + kv("Déclenchée par", "Kyusaor")
+    + kv("Durée d'une bénédiction", "de 8 à 24 heures")
+  )
+  + head("Cagnotte suivante")
+  + panel(
+    stat("💰 Progression", "182 400 / 340 000", 54, "gold")
+    + kv("Expiration", "dans 2 j 4 h")
+    + kv("Plus gros contributeur", "Drapht · 42 000 💰")
+    + kv("Contributeurs", "318 aventuriers")
+  )
+  + note("Contribuez en rencontrant l'Oracle lors de vos voyages. Une cagnotte non remplie en 4 jours expire et la suivante est divisée par deux.")
+  + head("Toutes les bénédictions")
+  + panel(rows(BLESSINGS.map(b => ({ icon: "✨", title: b[0], sub: b[1] }))))
+, "benediction oracle cagnotte");
+
+def("rarity", "profile", "Raretés", () =>
+  hero({ eyebrow: "Commande /rareté", title: "Probabilités des raretés", text: "Elles s'appliquent aux équipements aléatoires comme aux familiers." })
+  + panel(rows([
+    { icon: "🔶", title: "Commun", end: "43,76 %" },
+    { icon: "🔥", title: "Peu commun", end: "25 %" },
+    { icon: "🔱", title: "Exotique", end: "15 %" },
+    { icon: "☄️", title: "Rare", end: "10 %" },
+    { icon: "💫", title: "Spécial", end: "5 %" },
+    { icon: "⭐", title: "Épique", end: "1 %" },
+    { icon: "🌟", title: "Légendaire", end: "0,23 %" },
+    { icon: "💎", title: "Mythique", end: "0,02 %" }
+  ]))
+, "rarete probabilite");
+
+def("notifications", "profile", "Notifications", () =>
+  hero({ eyebrow: "Commande /notifications", title: "Gestion des notifications", text: "Choisissez ce que vous recevez, et où." })
+  + panel(rows([
+    { icon: "📨", title: "Rapports", sub: "Arrivée à un lieu", end: "Activé", act: "toggleNotif" },
+    { icon: "🪩", title: "Récompenses de guilde", sub: "Bonus quotidien disponible", end: "Activé", act: "toggleNotif" },
+    { icon: "🔓", title: "Libération de prison", sub: "Un joueur paie votre caution", end: "Activé", act: "toggleNotif" },
+    { icon: "⚔️", title: "Attaqué par un autre joueur", sub: "Votre défense a été affrontée", end: "Désactivé", act: "toggleNotif" },
+    { icon: "👞", title: "Exclusion de guilde", sub: "Vous avez été expulsé", end: "Activé", act: "toggleNotif" },
+    { icon: "🎖️", title: "Changement de statut de guilde", sub: "Promotion ou rétrogradation", end: "Activé", act: "toggleNotif" },
+    { icon: "⚡", title: "Énergie régénérée", sub: "Énergie de combat au maximum", end: "Activé", act: "toggleNotif" },
+    { icon: "🎁", title: "Bonus journalier", sub: "Objet quotidien de nouveau utilisable", end: "Activé", act: "toggleNotif" },
+    { icon: "🧭", title: "Expédition terminée", sub: "Le familier est rentré", end: "Activé", act: "toggleNotif" }
+  ]))
+  + head("Endroit d'envoi")
+  + panel(actions([
+    { label: "En message privé", act: "notifDm", on: true },
+    { label: "Dans le salon", act: "notifChannel" }
+  ]))
+, "notifications alertes");
+
+def("utilities", "profile", "Commandes utilitaires", () =>
+  hero({ eyebrow: "Divers", title: "Commandes utilitaires", text: "Elles n'ont pas d'écran de jeu à proprement parler mais doivent exister dans l'application." })
+  + panel(rows([
+    { icon: "❓", title: "Aide", sub: "Liste et détail des commandes", end: "/aide", toast: "L'aide détaillée s'ouvre." },
+    { icon: "🗳️", title: "Voter", sub: "Soutenir le jeu et recevoir une récompense", end: "/voter", act: "vote" },
+    { icon: "💡", title: "Proposer une idée", sub: "Suggérer ou voter pour une idée existante", end: "/idée", toast: "La page des idées s'ouvre." },
+    { icon: "📨", title: "Inviter", sub: "Partager le jeu avec un serveur", end: "/inviter", toast: "Lien d'invitation copié." },
+    { icon: "🌍", title: "Langue", sub: "Six langues disponibles", end: "/langue", act: "language" },
+    { icon: "🔓", title: "Libérer un joueur", sub: "Payer une caution de 3 000 💰", end: "/libérer", act: "unlock" },
+    { icon: "❤️", title: "Réapparaître", sub: "Revenir en jeu après la mort", end: "/revivre", go: "respawn" },
+    { icon: "⛴️", title: "Rejoindre le bateau", sub: "Suivre un membre de la guilde vers une île", end: "/rejoindrebateau", act: "joinBoat" },
+    { icon: "🔄", title: "Version", sub: "Version des différents modules", end: "/version", toast: "Core 5.2.4 · Discord 5.2.4 · Lib 5.2.4" },
+    { icon: "📡", title: "Latence", sub: "Temps de réponse du bot", end: "/ping", toast: "Temps de réponse : 128 ms." }
+  ]))
+, "aide vote idee invitation langue ping version");
+
+/* ---------- Familier ---------- */
+
+def("pet", "pet", "Familier", () =>
+  hero({ eyebrow: "Commande /familier", title: P.pet.emoji + " " + P.pet.nickname, text: P.pet.name + " · " + P.pet.rarity })
+  + (P.pet.hungry ? notice({ icon: "🍖", title: "Votre familier a faim", text: "Nourrissez-le pour améliorer son moral et débloquer les expéditions.", action: { label: "Nourrir", go: "petFeed" } }) : "")
+  + quick([
+    { icon: "🖐️", label: "Caresser", act: "petPet" },
+    { icon: "🍖", label: "Nourrir", go: "petFeed" },
+    { icon: "🗺️", label: "Expédition", go: "petExpedition" },
+    { icon: "🔄", label: "Transférer", go: "petTransfer" }
+  ])
+  + head("Fiche")
+  + panel(
+    kv("Type", P.pet.emoji + " " + P.pet.name)
+    + kv("Surnom", P.pet.nickname)
+    + kv("Rareté", P.pet.rarity)
+    + kv("Sexe", P.pet.sex)
+    + kv("Mentalité", P.pet.love)
+    + kv("Régime", P.pet.diet)
+  )
+  + head("Moral", { label: "Vétérinaire", go: "veterinarian" })
+  + panel(
+    stat("💕 Points d'amour", P.pet.lovePoints + " / 110", pct(P.pet.lovePoints, 110), "red")
+    + note("😼 Fielleux 0 à 4 · 🙀 Sauvage 5 à 24 · 😿 Craintif 25 à 49 · 😺 Apprivoisé 50 à 99 · 😻 Dressé 100 à 110")
+  )
+  + head("Actions")
+  + panel(rows([
+    { icon: "✏️", title: "Renommer", sub: "Donner ou effacer un surnom", go: "petNick" },
+    { icon: "💰", title: "Vendre", sub: "L'argent alimente la trésorerie de la guilde", go: "petSell" },
+    { icon: "🔄", title: "Transférer", sub: "Déposer, retirer ou échanger avec le refuge", go: "petTransfer" },
+    { icon: "🕊️", title: "Libérer", sub: "Action définitive et irréversible", go: "petFree", danger: true },
+    { icon: "⚔️", title: "Pouvoir en combat", sub: "Ce que fait votre familier pendant un duel", go: "petPowers" }
+  ]))
+, "familier pet animal");
+
+def("petExpedition", "pet", "Expéditions", () =>
+  hero({ eyebrow: "Familier · expédition", title: "🗺️ Envoyer " + P.pet.nickname + " en expédition", text: "Trois destinations sont proposées. Le taux de réussite dépend de la dangerosité, du terrain, de la force et de l'amour du familier." })
+  + notice({ icon: "⚓", title: "Talisman d'Ancrage requis", text: "Vous le possédez. Le familier doit être nourri et avoir au moins 20 points d'amour.", action: { label: "Nourrir", go: "petFeed" } })
+  + panel(rows(EXPEDITIONS.map((e, i) => ({
+    icon: e.icon,
+    title: e.place + " · " + e.duration,
+    sub: e.danger + " · " + e.ground + " · " + e.rations + " 🍖 · " + e.loot,
+    end: e.success + " %",
+    act: "expedition:" + i
+  }))))
+  + head("Ce qui influence la réussite")
+  + panel(
+    kv("Dangerosité", "de 🌿 Tranquille à ⚰️ Désespéré")
+    + kv("Terrain", "de 🌸 Paisible à 🌋 Périlleux · influence 4 fois moindre")
+    + kv("Biome apprécié", "−5 % d'échec et 100 % des récompenses")
+    + kv("Biome détesté", "+10 % d'échec sous 12 h et 25 % des récompenses")
+    + kv("Provisions", "jusqu'à 32 🍖 puisées dans l'entrepôt de guilde")
+  )
+  + note("Pendant une expédition, le familier n'assiste plus aux mini-évènements ni aux combats. Annuler un départ deux fois en 7 jours lui fait perdre confiance.")
+  + head("Une expédition terminée")
+  + panel(rows([
+    { icon: "🎁", title: "Rappeler le familier", sub: "Ouvrir le butin : argent, expérience, points, jetons, matériaux et un équipement", end: "Prêt", act: "recallPet" }
+  ]))
+, "expedition familier butin talisman");
+
+def("petFeed", "pet", "Nourrir", () =>
+  hero({ eyebrow: "Commande /nourrirfamilier", title: "🍖 Nourrir " + P.pet.nickname, text: "La durée de satiété dépend uniquement de l'espèce, entre 30 minutes et 5 heures. Le type de nourriture n'influence que les points d'amour." })
+  + panel(rows([
+    { icon: "🍬", title: "Friandise", sub: "+1 💕 · entrepôt 0 sur 150", end: "Donner", act: "feed" },
+    { icon: "🍖", title: "Viande", sub: "+3 💕 · compatible carnivore", end: "Donner", act: "feed" },
+    { icon: "🥬", title: "Salade", sub: "+3 💕 · incompatible carnivore", locked: true, end: "Régime" },
+    { icon: "🍲", title: "Soupe ultime", sub: "+5 💕 · tous régimes", end: "Donner", act: "feed" }
+  ]))
+  + note("Sans guilde, seule la friandise achetée à l'unité est disponible. Ravitaillez l'entrepôt en ville.")
+, "nourrir familier nourriture");
+
+def("petNick", "pet", "Renommer", () =>
+  hero({ eyebrow: "Commande /surnomfamilier", title: "✏️ Surnom du familier", text: "Le surnom rend le familier unique. Laisser le champ vide efface le surnom actuel." })
+  + panel(kv("Surnom actuel", P.pet.nickname))
+  + buttonRow([{ label: "Modifier le surnom", style: "primary", act: "rename" }, { label: "Effacer", act: "clearNick" }])
+, "surnom renommer familier");
+
+def("petSell", "pet", "Vendre le familier", () =>
+  hero({ eyebrow: "Commande /vendrefamilier", title: "💰 Vendre " + P.pet.nickname, text: "L'argent va dans la trésorerie de votre guilde, moins 5 % de commission plafonnée à 350 💰." })
+  + panel(
+    kv("Prix minimum", "100 💰")
+    + kv("Prix maximum", "50 000 💰")
+    + kv("Commission", "5 % · maximum 350 💰")
+  )
+  + panel(rows([
+    { icon: "⛔", title: "Vente impossible", sub: "Un familier fielleux ne peut pas être vendu", locked: true, end: "Bloqué" }
+  ]))
+  + note("Vous devez appartenir à une guilde pour vendre, mais pas pour acheter. La vente à un membre de sa propre guilde est interdite, et le moral du familier retombe à sauvage.")
+, "vendre familier prix");
+
+def("petTransfer", "pet", "Transférer", () =>
+  hero({ eyebrow: "Commande /transfererfamilier", title: "🔄 Transfert de familier", text: "Le refuge de la guilde accueille 6 familiers par défaut, jusqu'à 18 en l'améliorant." })
+  + panel(rows([
+    { icon: "📥", title: "Déposer " + P.pet.nickname + " dans le refuge", sub: "Vous repartez sans familier", act: "transfer" },
+    { icon: "📤", title: "Retirer un familier du refuge", sub: "Nécessite de ne pas déjà en avoir un", locked: true, end: "Occupé" },
+    { icon: "🔁", title: "Échanger avec un familier du refuge", sub: "12 familiers hébergés", act: "transfer" }
+  ]))
+  + note("Un familier fielleux ne peut pas être transféré, ni un familier parti en expédition.")
+, "transfert refuge familier");
+
+def("petFree", "pet", "Libérer", () =>
+  hero({ eyebrow: "Commande /libererfamilier", title: "🕊️ Libérer un familier", text: "Cette action est définitive : le familier ne pourra jamais être récupéré." })
+  + notice({ icon: "⚠️", title: "Familier fielleux", text: "La libération vous coûtera 1 000 💰 supplémentaires." })
+  + panel(rows([
+    { icon: P.pet.emoji, title: P.pet.nickname, sub: "Votre familier personnel", end: "Libérer", act: "free", danger: true },
+    { icon: "🐕", title: "Chien du refuge", sub: "🔶 Commun · Sauvage", end: "Libérer", act: "free", danger: true }
+  ]))
+, "liberer familier definitif");
+
+def("petPowers", "pet", "Pouvoirs des familiers", () =>
+  hero({ eyebrow: "Familier · combat", title: "⚔️ Pouvoir en combat", text: "Chaque familier tente d'aider son propriétaire pendant un duel, avec plus ou moins de succès." })
+  + panel(rows([
+    { icon: "🎃", title: "Jack-o'-lantern", sub: "Son regard hypnotique pétrifie l'adversaire", end: "🌟 Légendaire" },
+    { icon: "🦄", title: "Licorne", sub: "Soigne son propriétaire après une attaque magique", end: "🌟 Légendaire" },
+    { icon: "🧚", title: "Fée", sub: "Soigne avec efficacité et régularité", end: "💎 Mythique" },
+    { icon: "🐌", title: "Escargot", sub: "Ne fait absolument rien, mais il le fait bien", end: "🔶 Commun" },
+    { icon: "🦭", title: "Otarie", sub: "Redonne du souffle à son propriétaire", end: "🔥 Peu commun" },
+    { icon: "🐘", title: "Éléphant", sub: "Restitue le souffle consommé", end: "☄️ Rare" }
+  ]))
+  + note("Un familier en expédition n'assiste ni aux combats, ni aux mini-évènements, ni aux îles mystérieuses.")
+, "pouvoir familier combat");
+
+/* ---------- Guilde ---------- */
+
+def("guild", "guild", "Guilde", () =>
+  hero({ eyebrow: "Commande /guilde", title: "🏰 Guilde " + P.guild, text: "Niveau " + P.guildLevel + " sur 150 · Mort aux malus domestica" })
+  + panel(
+    stat("⭐ Expérience de guilde", "3 903 / 27 925", 13, "gold")
+    + kv("🪩 Points de guilde", num(52447))
+    + kv("🏆 Classement", P.guildRank + " / " + P.guildTotal)
+    + kv("🏝️ Alliés sur l'île mystérieuse", "2")
+  )
+  + quick([
+    { icon: "🎁", label: "Bonus", go: "guildDaily" },
+    { icon: "🐾", label: "Refuge", go: "guildShelter" },
+    { icon: "📦", label: "Entrepôt", go: "guildStorage" },
+    { icon: "🏰", label: "Domaine", go: "guildDomain" }
+  ])
+  + head("Membres", { hint: GUILD_MEMBERS.length + " sur 6" })
+  + panel(rows(GUILD_MEMBERS.map(m => ({ icon: m.icon, title: m.name + " " + m.status, sub: m.sub, end: m.rank }))))
+  + note("👑 Chef · 🎖️ Aîné · ⚫ Membre — 🏝️ sur une île · ⛴️ sur le bateau · 🤝 compte comme allié · 👻 injoignable")
+  + head("Gestion", { label: "Tout", go: "guildManage" })
+  + panel(rows([
+    { icon: "➕", title: "Inviter un membre", sub: "Chef et aîné · l'invité confirme lui-même", go: "guildManage" },
+    { icon: "⛴️", title: "Rejoindre le bateau", sub: "Possible si un membre s'y trouve déjà", act: "joinBoat" },
+    { icon: "🚪", title: "Quitter la guilde", sub: "Le chef transmet à l'aîné, sinon la guilde est dissoute", go: "guildManage", danger: true }
+  ]))
+  + head("Sans guilde")
+  + panel(rows([{ icon: "🏗️", title: "Créer une guilde", sub: "Niveau 10 requis · 5 000 💰", go: "guildCreate" }]))
+, "guilde guild membres");
+
+def("guildManage", "guild", "Gérer la guilde", () =>
+  hero({ eyebrow: "Guilde · gestion", title: "Gérer la guilde", text: "Le chef dispose de toutes les actions. L'aîné l'assiste sur le recrutement et la description." })
+  + head("Membres")
+  + panel(rows([
+    { icon: "➕", title: "Inviter un membre", sub: "Refusé si la guilde est pleine, si le joueur a déjà une guilde ou s'il est sur un bateau", end: "/invitationguilde", act: "guildInvite" },
+    { icon: "👞", title: "Expulser un membre", sub: "Impossible sur soi-même", end: "/exclureguilde", act: "guildKick" }
+  ]))
+  + head("Hiérarchie")
+  + panel(rows([
+    { icon: "🎖️", title: "Nommer un aîné", sub: "Réservé au chef", end: "/aineguilde", act: "guildElder" },
+    { icon: "⬇️", title: "Rétrograder l'aîné", sub: "Réservé au chef", end: "/supprimeraineguilde", act: "guildElder" }
+  ]))
+  + head("Identité")
+  + panel(rows([
+    { icon: "📜", title: "Changer la description", sub: "De 2 à 140 caractères · chef et aîné", end: "/descriptionguilde", act: "guildDescription" }
+  ]))
+  + note("Le nom d'une guilde est unique et ne peut pas être modifié : de 2 à 14 caractères, au moins une lettre, pas de caractère spécial.")
+  + head("Départ")
+  + panel(rows([
+    { icon: "🚪", title: "Quitter la guilde", sub: "Le chef transmet la guilde à l'aîné, sinon elle est dissoute", end: "/quitterguilde", act: "guildLeave", danger: true }
+  ]))
+, "gestion guilde invitation aine");
+
+def("guildCreate", "guild", "Créer une guilde", () =>
+  hero({ eyebrow: "Commande /creationguilde", title: "Créer une guilde", text: "La trésorerie démarre avec le montant de la création, soit 5 000 💰." })
+  + panel(
+    kv("💰 Coût", "5 000")
+    + kv("⭐ Niveau requis", "10")
+    + kv("🏷️ Longueur du nom", "2 à 14 caractères")
+    + kv("🙎 Membres maximum", "6")
+  )
+  + buttonRow([{ label: "Confirmer la création", style: "primary", act: "createGuild" }, { label: "Annuler", act: "back" }])
+  + note("Le nom est définitif : il ne peut pas être modifié par la suite.")
+, "creation guilde");
+
+def("guildDaily", "guild", "Bonus de guilde", () =>
+  hero({ eyebrow: "Commande /bonusjournalierguilde", title: "🪩 Récompense de la guilde " + P.guild, text: "Une récompense tirée au sort, partagée par tous les membres, toutes les 22 heures. L'arrivée d'un nouveau membre réinitialise le compteur." })
+  + buttonRow([{ label: S.daily.guild ? "Déjà réclamée" : "Réclamer la récompense", style: "primary", act: "claim:guild" }])
+  + head("Récompenses possibles")
+  + panel(rows([
+    { icon: "⭐", title: "Expérience", sub: "Pour les membres ou pour la guilde", end: "50 %" },
+    { icon: "💰", title: "Un peu d'argent", sub: "Versé à chaque membre", end: "35 %" },
+    { icon: "💉", title: "Soin des altérations d'état", sub: "Les membres sains sont partiellement soignés", end: "10 %" },
+    { icon: "🍬", title: "Friandises", sub: "Ajoutées à l'entrepôt", end: "2 %" },
+    { icon: "🪩", title: "Points de guilde", sub: "La trésorerie augmente d'autant" },
+    { icon: "⏱️", title: "Avancement du temps", sub: "Pour chaque membre" },
+    { icon: "🎁", title: "Un objet au hasard", sub: "Pour chaque membre" },
+    { icon: "🐾", title: "Un familier pour le refuge", sub: "7 % de chance" },
+    { icon: "🎖️", title: "Badge de guilde", sub: "Puissante ou très puissante" }
+  ]))
+  + note("La récompense est bloquée si un membre se trouve sur une île mystérieuse.")
+, "bonus guilde quotidien");
+
+def("guildShelter", "guild", "Refuge", () =>
+  hero({ eyebrow: "Commande /abriguilde", title: "🐾 Refuge de la guilde " + P.guild, text: "12 familiers hébergés sur 18 places. Chaque niveau du bâtiment ajoute 2 places." })
+  + panel(rows([
+    { icon: "🐉", title: "Familier n° 1 · Dragonne", sub: "🌟 Légendaire · Femelle · 😻 Dressée", end: "Échanger", act: "transfer" },
+    { icon: "🦊", title: "Familier n° 2 · Renard", sub: "🔥 Peu commun · Mâle · 😺 Apprivoisé", end: "Échanger", act: "transfer" },
+    { icon: "🐢", title: "Familier n° 3 · Tortue", sub: "🔱 Exotique · Femelle · 🙀 Sauvage", end: "Échanger", act: "transfer" }
+  ]))
+  + panel(rows([{ icon: "🔄", title: "Transférer un familier", sub: "Dans les deux sens entre vous et le refuge", go: "petTransfer" }]))
+  + note("Quand le refuge est plein, aucun nouveau familier ne peut être accueilli tant qu'un pensionnaire n'a pas été libéré ou vendu.")
+, "refuge abri familiers guilde");
+
+def("guildStorage", "guild", "Entrepôt", () =>
+  hero({ eyebrow: "Commande /entrepotguilde", title: "📦 Entrepôt de la guilde " + P.guild, text: "La nourriture sert à nourrir les familiers et à ravitailler les expéditions." })
+  + panel(
+    stat("🍬 Friandise", "212 / 400", 53, "gold")
+    + stat("🍖 Viande", "84 / 250", 34, "red")
+    + stat("🥬 Salade", "120 / 250", 48, "green")
+    + stat("🍲 Soupe ultime", "12 / 80", 15, "blue")
+  )
+  + panel(rows([
+    { icon: "🛒", title: "Se ravitailler en ville", sub: "Disponible depuis n'importe quelle ville", go: "guildFoodShop" },
+    { icon: "🐾", title: "Nourrir un familier", sub: "Consomme la nourriture de l'entrepôt", go: "petFeed" }
+  ]))
+  + note("Vérifiez l'entrepôt avant d'envoyer un familier en expédition : sans provisions, ses chances de succès s'effondrent.")
+, "entrepot nourriture guilde");
+
+def("guildDomain", "guild", "Domaine de guilde", () =>
+  hero({ eyebrow: "Ville · domaine de guilde", title: "🏰 Domaine de la guilde " + P.guild, text: "Vous franchissez les lourdes portes du domaine. L'enceinte fortifiée abrite les bâtiments de votre fraternité." })
+  + panel(kv("Niveau de guilde", P.guildLevel) + kv("Trésorerie commune", "422 500 💰") + kv("Ville d'implantation", "Ville Forte"))
+  + head("Bâtiments")
+  + panel(rows(GUILD_BUILDINGS.map(b => ({ icon: b.icon, title: b.name + " · niveau " + b.level, sub: b.sub, go: b.id }))))
+  + head("Trésorerie")
+  + panel(rows([
+    { icon: "💰", title: "Déposer de l'argent", sub: "Commission de 5 %, plafonnée à 350 💰", act: "deposit" },
+    { icon: "📈", title: "Améliorer un bâtiment", sub: "20 % du prix est converti en expérience de guilde", act: "upgradeBuilding" }
+  ]))
+  + note("Déplacer le domaine dans une autre ville coûte 100 000 💰. Son installation initiale est gratuite chez le notaire.")
+, "domaine guilde batiments tresorerie");
+
+def("guildDomainShop", "guild", "La boutique du domaine", () =>
+  hero({ eyebrow: "Domaine · boutique", title: "🛒 La boutique", text: "Elle permet aux membres de participer au trésor commun et d'acheter de la nourriture pour les familiers." })
+  + panel(rows([
+    { icon: "🍬", title: "Friandise", end: "20 💰", act: "buyFood" },
+    { icon: "🍖", title: "Viande", end: "250 💰", act: "buyFood" },
+    { icon: "🥬", title: "Salade", end: "250 💰", act: "buyFood" },
+    { icon: "🍲", title: "Soupe ultime", end: "600 💰", act: "buyFood" }
+  ]))
+  + head("Trésorerie")
+  + panel(rows([
+    { icon: "💰", title: "Donner 1 000 💰", sub: "Commission de 5 % · 950 💰 versés", act: "deposit" },
+    { icon: "💰", title: "Donner tout votre argent", sub: num(P.money) + " 💰 · commission plafonnée à 350 💰", act: "deposit" }
+  ]))
+  + note("Après un achat de nourriture, l'intendant propose de vous rembourser la somme utilisée, sans commission.")
+, "boutique domaine tresorerie nourriture");
+
+def("guildDomainShelter", "guild", "Le refuge du domaine", () =>
+  hero({ eyebrow: "Domaine · refuge", title: "🐾 Le refuge", text: "Chaque amélioration ajoute deux places, jusqu'à 18 au niveau 6." })
+  + panel(kv("Niveau actuel", "3 · 12 places") + kv("Niveau 4", "80 000 💰 · niveau de guilde 90") + kv("Occupation", "12 sur 12"))
+  + buttonRow([{ label: "Améliorer le refuge", style: "primary", act: "upgradeBuilding" }, { label: "Voir les pensionnaires", go: "guildShelter" }])
+, "refuge domaine amelioration");
+
+def("guildDomainPantry", "guild", "L'entrepôt du domaine", () =>
+  hero({ eyebrow: "Domaine · entrepôt", title: "🍖 L'entrepôt", text: "Chaque niveau augmente le stockage et produit chaque jour un peu de nourriture gratuitement." })
+  + panel(kv("Niveau actuel", "2") + kv("Production quotidienne", "+4 🍬 par jour") + kv("Niveau 3", "90 000 💰 · niveau de guilde 70"))
+  + buttonRow([{ label: "Améliorer l'entrepôt", style: "primary", act: "upgradeBuilding" }, { label: "Voir les stocks", go: "guildStorage" }])
+, "entrepot domaine amelioration");
+
+def("guildDomainTraining", "guild", "La ménagerie", () =>
+  hero({ eyebrow: "Domaine · ménagerie", title: "⚔️ La ménagerie", text: "Elle entraîne les familiers du refuge, qui gagnent automatiquement des points d'amour chaque jour." })
+  + panel(kv("Niveau actuel", "1 · +1 💕 par jour") + kv("Niveau 2", "300 000 💰 · niveau de guilde 100") + kv("Niveau 1 acquis", "150 000 💰"))
+  + buttonRow([{ label: "Améliorer la ménagerie", style: "primary", act: "upgradeBuilding" }])
+, "menagerie entrainement familiers");
+
+/* ---------- Combat ---------- */
+
+def("fight", "fight", "Combat", () =>
+  hero({ eyebrow: "Commande /combat", title: "⚔️ Arène", text: "Vous affrontez l'intelligence artificielle d'un joueur réel, de gloire proche de la vôtre. Il faut au moins 80 % d'énergie pour lancer un combat." })
+  + panel(
+    stat("⚡ Énergie de combat", num(P.energy) + " / " + num(P.maxEnergy) + " · " + pct(P.energy, P.maxEnergy) + " %", pct(P.energy, P.maxEnergy), "green")
+    + kv("Seuil requis", "80 %")
+    + kv("✨ Gloire", num(P.glory) + " · " + P.leagueEmoji + " " + P.league)
+    + kv("🎭 Classe", P.classEmoji + " " + P.className)
+    + kv("🐾 Familier", P.pet.emoji + " " + P.pet.nickname)
+  )
+  + buttonRow([
+    { label: "Lancer une recherche", style: "primary", go: "fightConfirm" },
+    { label: "Historique", go: "fightHistory" }
+  ])
+  + quick([
+    { icon: "🥉", label: "Ligue", go: "league" },
+    { icon: "🏆", label: "Classements", go: "top" },
+    { icon: "📜", label: "Historique", go: "fightHistory" },
+    { icon: "🏝️", label: "Îles", go: "island" }
+  ])
+  + head("Comment se déroule un combat")
+  + panel(
+    kv("Tour par tour", "le plus rapide commence")
+    + kv("Durée maximale", "26 tours, puis match nul")
+    + kv("Inactivité", "45 secondes et le combat est perdu")
+    + kv("Plafonds quotidiens", "3 750 💰 et 105 🏅")
+  )
+  + note("Votre gloire se divise en gloire d'attaque et gloire de défense. Votre intelligence artificielle continue de défendre en votre absence.")
+, "combat fight arene");
+
+def("fightConfirm", "fight", "Recherche de combat", () =>
+  hero({ eyebrow: "Commande /combat", title: "Souhaitez-vous lancer une recherche ?", text: "Un adversaire dont la gloire de défense se situe à moins de 450 points de votre gloire d'attaque sera sélectionné." })
+  + panel(
+    kv("⚔️ Combattant", P.name)
+    + kv("✨ Gloire", num(P.glory))
+    + kv("🎭 Classe", P.className)
+    + kv("🐾 Familier", P.pet.emoji + " " + P.pet.nickname)
+    + kv("📊 Statistiques", P.attack + " 🗡️ · " + P.defense + " 🛡️ · " + P.speed + " 🚀")
+  )
+  + buttonRow([
+    { label: "Chercher un adversaire", style: "primary", act: "startFight" },
+    { label: "Annuler", act: "back" }
+  ])
+, "recherche combat confirmation");
+
+def("fightBattle", "fight", "Combat en cours", () => {
+  const f = S.fight;
+  if (f.over) return SCREENS.fightResult.body();
+  return hero({ eyebrow: "Combat · tour " + f.turn + " sur 26", title: "⚔️ " + P.name + " contre Arsène", text: "Chaque attaque consomme du souffle. Vous en récupérez " + P.breathRegen + " au début de votre tour." })
+    + '<div class="versus">'
+    + '<div class="side"><i>👤</i><strong>' + P.name + "</strong><small>⚡ " + f.hp + " · 🌬️ " + f.breath + " / " + P.maxBreath + "</small></div>"
+    + '<div class="mid">VS</div>'
+    + '<div class="side"><i>🤺</i><strong>Arsène</strong><small>⚡ ' + f.foeHp + " · 🎭 Chevalier</small></div>"
+    + "</div>"
+    + panel(
+      stat("⚡ Votre énergie", f.hp + " / 104", pct(f.hp, 104), "green")
+      + stat("⚡ Énergie adverse", f.foeHp + " / 94", pct(f.foeHp, 94), "red")
+      + stat("🌬️ Souffle", f.breath + " / " + P.maxBreath, pct(f.breath, P.maxBreath), "blue")
+      + '<div class="fight-actions">'
+      + FIGHT_ACTIONS.map((a, i) =>
+        "<button data-act=\"fightAction:" + i + "\"" + (a.cost > f.breath ? " disabled" : "") + ">"
+        + "<b>" + a.icon + " " + a.name + "</b><small>" + a.cost + " 🌬️ · " + a.sub + "</small></button>").join("")
+      + "</div>"
+      + '<div class="log">' + (f.log.length ? f.log.slice(-6).join("\n") : "Le combat commence. À vous de jouer.") + "</div>"
+    )
+    + buttonRow([{ label: "Abandonner", style: "danger", act: "surrender" }]);
+}, "combat tour souffle");
+
+def("fightResult", "fight", "Résultat du combat", () =>
+  hero({ eyebrow: "Combat terminé", title: S.fight.foeHp <= 0 ? "🏆 Victoire" : "💀 Défaite", text: S.fight.foeHp <= 0 ? "Votre adversaire est à terre. L'énergie perdue mettra un moment à revenir." : "Vous avez perdu la totalité de votre énergie de combat." })
+  + panel(
+    kv("✨ Gloire", S.fight.foeHp <= 0 ? "1 000 → 1 042 (+42)" : "1 000 → 968 (−32)")
+    + kv("💰 Argent", S.fight.foeHp <= 0 ? "+380" : "+90")
+    + kv("🏅 Points", S.fight.foeHp <= 0 ? "+45" : "+12")
+    + kv("Tours joués", S.fight.turn)
+  )
+  + buttonRow([
+    { label: "Nouveau combat", style: "primary", act: "resetFight" },
+    { label: "Historique", go: "fightHistory" }
+  ])
+, "resultat combat gloire");
+
+def("fightHistory", "fight", "Historique des combats", () =>
+  hero({ eyebrow: "Commande /historiquecombat", title: "Historique des combats", text: "Votre intelligence artificielle combat pour vous en votre absence : cet écran retrace l'évolution de votre gloire." })
+  + panel(rows([
+    { icon: "⚔️", title: "Vous avez attaqué Arsène", sub: "🤺 Chevalier · aujourd'hui 09:12", end: "Gagné +42 ✨" },
+    { icon: "🛡️", title: "Vous avez été attaqué par Yuno", sub: "🧙 Mage mystique · hier 21:44", end: "Perdu −18 ✨" },
+    { icon: "⚔️", title: "Vous avez attaqué Kyusaor", sub: "🎖️ Vétéran · hier 18:03", end: "Nul ±0 ✨" },
+    { icon: "🛡️", title: "Vous avez été attaqué par Drapht", sub: "✨ Paladin · avant-hier", end: "Gagné +27 ✨" }
+  ]))
+  + note("Un changement de ligue est signalé directement dans la ligne d'historique.")
+, "historique combats gloire");
+
+def("league", "fight", "Ligue", () =>
+  hero({ eyebrow: "Commande /bonusligue", title: P.leagueEmoji + " " + P.league, text: "La saison va du dimanche au samedi. La récompense se réclame le dimanche, à condition d'avoir combattu la saison précédente." })
+  + panel(
+    stat("✨ Gloire", num(P.glory) + " points", 42, "gold")
+    + kv("Ligue suivante", "🥈 Ligue argent à 1 400 ✨")
+    + kv("Récompense de fin de saison", "expérience, argent et un équipement")
+    + kv("Points de classement", "3 000 🏅 pour le premier, rien sous le top 200")
+  )
+  + buttonRow([{ label: "Réclamer la récompense", style: "primary", act: "claimLeague" }])
+  + head("Les onze ligues")
+  + panel(rows(LEAGUES.map((l, i) => ({ icon: l.split(" ")[0], title: l.replace(/^\S+\s/, ""), end: i === 3 ? "Votre ligue" : "", locked: i > 3 }))))
+  + note("Le vainqueur de la saison reçoit également un badge, s'il ne le possède pas encore.")
+, "ligue saison recompense");
+
+def("top", "fight", "Classements", () => {
+  const tab = S.seg.top;
+  const lists = {
+    score: [
+      { icon: "1", title: "Kyusaor", sub: "Niveau 122", end: "2 008 799 🏅" },
+      { icon: "2", title: "Drapht", sub: "Niveau 118", end: "1 035 138 🏅" },
+      { icon: "3", title: "rօmаin22222", sub: "Niveau 111", end: "717 237 🏅" },
+      { icon: "🔵", title: P.name, sub: "Votre position · niveau " + P.level, end: num(P.rank) + "ᵉ" }
+    ],
+    week: [
+      { icon: "1", title: "Yuno", sub: "Cette semaine", end: "18 420 🏅" },
+      { icon: "2", title: "Procion", sub: "Cette semaine", end: "16 980 🏅" },
+      { icon: "🔵", title: P.name, sub: "Votre position", end: "412ᵉ" }
+    ],
+    glory: [
+      { icon: "1", title: "La Reine Noire", sub: "💎 Ligue diamant", end: "12 840 ✨" },
+      { icon: "2", title: "Arsène", sub: "🥇 Ligue or", end: "11 920 ✨" },
+      { icon: "🔵", title: P.name, sub: "Pas assez de combats classés", end: "Non classé" }
+    ],
+    guilds: [
+      { icon: "1", title: "La Horde 3", sub: "Niveau 150", end: "482 100 🪩" },
+      { icon: "2", title: "Les Veilleurs", sub: "Niveau 147", end: "398 640 🪩" },
+      { icon: "🔵", title: "Banane", sub: "Votre guilde · niveau " + P.guildLevel, end: P.guildRank + "ᵉ" }
+    ]
+  }[tab];
+  return hero({ eyebrow: "Commande /classement", title: "Classements", text: "Les classements s'affichent par tranches de quinze. Les joueurs de votre serveur sont signalés par une pastille bleue." })
+    + actions([
+      { label: "Score", act: "seg:top:score", on: tab === "score" },
+      { label: "Semaine", act: "seg:top:week", on: tab === "week" },
+      { label: "Gloire", act: "seg:top:glory", on: tab === "glory" },
+      { label: "Guildes", act: "seg:top:guilds", on: tab === "guilds" }
+    ])
+    + panel(rows(lists))
+    + note(tab === "glory"
+      ? "Il faut avoir réalisé assez de combats classés pour apparaître dans le classement glorieux."
+      : "Un score inférieur ou égal à 100 empêche d'apparaître dans le classement général.");
+}, "classement top score gloire guildes");
+
+/* =====================================================================
+   5. Rendu
+   ===================================================================== */
+
+const $ = id => document.getElementById(id);
+
+function renderVitals() {
+  $("hdName").textContent = P.name;
+  $("hdSub").textContent = "Niveau " + P.level + " · " + P.className;
+  $("vHealth").textContent = P.health + " / " + P.maxHealth;
+  $("vEnergy").textContent = num(P.energy) + " / " + num(P.maxEnergy);
+  $("vHealthBar").style.width = pct(P.health, P.maxHealth) + "%";
+  $("vEnergyBar").style.width = pct(P.energy, P.maxEnergy) + "%";
+  $("wallet").innerHTML =
+    '<button class="chip" data-go="shop">💰 ' + num(P.money) + "</button>"
+    + '<button class="chip" data-go="royalMarket">💎 ' + P.gems + "</button>"
+    + '<button class="chip" data-go="tokenMerchant">🪙 ' + P.tokens + "</button>";
+}
+
+function renderBottom() {
+  const current = SCREENS[S.screen];
+  $("bottom").innerHTML = TABS.map(t =>
+    '<button data-tab="' + t.id + '" class="' + (current && current.tab === t.id ? "on" : "") + '">'
+    + "<i>" + t.icon + "</i>" + t.label + "</button>").join("");
+}
+
+function renderAppbar() {
+  const bar = $("appbar");
+  if (!S.stack.length) {
+    bar.className = "appbar";
+    bar.innerHTML = "";
+    return;
+  }
+  const parent = SCREENS[S.stack[S.stack.length - 1]];
+  bar.className = "appbar on";
+  bar.innerHTML = '<button data-act="back">‹ ' + (parent ? parent.title : "Retour") + "</button>"
+    + "<span>" + (SCREENS[S.screen] ? SCREENS[S.screen].title : "") + "</span>";
+}
+
+function render() {
+  const screen = SCREENS[S.screen] || SCREENS.adventure;
+  $("content").innerHTML = '<div class="screen">' + screen.body() + "</div>";
+  $("content").scrollTop = 0;
+  renderVitals();
+  renderBottom();
+  renderAppbar();
+  paintEmoji(document.body);
+}
+
+function paintEmoji(root) {
+  if (window.twemoji) twemoji.parse(root, { folder: "svg", ext: ".svg" });
+}
+
+/* =====================================================================
+   6. Navigation
+   ===================================================================== */
+
+function go(id) {
+  if (!SCREENS[id] || id === S.screen) return;
+  S.stack.push(S.screen);
+  S.screen = id;
+  render();
+}
+
+function back() {
+  if (!S.stack.length) return;
+  S.screen = S.stack.pop();
+  render();
+}
+
+function openTab(id) {
+  S.stack = [];
+  S.screen = id;
+  render();
+}
+
+/* =====================================================================
+   7. Notifications et feuilles
+   ===================================================================== */
+
+let toastTimer;
+let toastMuted = false;
+function toast(text) {
+  if (toastMuted) return;
+  const el = $("toast");
+  el.innerHTML = text;
+  paintEmoji(el);
+  el.classList.add("on");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove("on"), 2600);
+}
+
+const SHEETS = {
+  menu: () => {
+    const groups = [
+      ["Aventure", ["adventure", "travel", "destinations", "map", "smallEvent", "bigEvent", "alteration", "island", "pveFight", "respawn"]],
+      ["Ville", ["city", "notary", "blacksmith", "royalBlacksmith", "scrapDealer", "enchanter", "inn", "bossArchivist", "guildFoodShop", "buyHeal", "tokenMerchant"]],
+      ["Commerces", ["shop", "materialMerchant", "tanner", "herbalist", "lumberjack", "veterinarian", "stockExchange", "royalMarket"]],
+      ["Maison", ["home", "homeBed", "homeChest", "homeGarden", "homeCooking", "homeUpgrade", "apartment"]],
+      ["Personnage", ["profile", "inventory", "equip", "sell", "drink", "dailyBonus", "classes", "classesInfo", "badges", "missions", "blessing", "rarity", "notifications", "utilities"]],
+      ["Familier", ["pet", "petExpedition", "petFeed", "petNick", "petSell", "petTransfer", "petFree", "petPowers"]],
+      ["Guilde", ["guild", "guildManage", "guildCreate", "guildDaily", "guildShelter", "guildStorage", "guildDomain", "guildDomainShop", "guildDomainShelter", "guildDomainPantry", "guildDomainTraining"]],
+      ["Combat", ["fight", "fightConfirm", "fightBattle", "fightResult", "fightHistory", "league", "top"]]
+    ];
+    return '<div class="sheet-head"><h2>Tous les écrans</h2><button class="close" data-act="closeSheet">×</button></div>'
+      + '<input class="search" id="sheetSearch" type="search" placeholder="Rechercher un écran ou une commande…" autocomplete="off">'
+      + '<div id="sheetList">' + groups.map(g =>
+        '<div class="sheet-group">' + g[0] + "</div>"
+        + panel(g[1].filter(id => SCREENS[id]).map(id =>
+          '<button class="row" data-go="' + id + '"><span class="row-body"><strong>' + SCREENS[id].title + "</strong></span>"
+          + '<span class="row-end chev">›</span><span hidden>' + SCREENS[id].keywords + "</span></button>").join("")
+        )).join("") + "</div>";
+  },
+  alerts: () => '<div class="sheet-head"><h2>Notifications</h2><button class="close" data-act="closeSheet">×</button></div>'
+    + panel(rows([
+      { icon: "🧭", title: "Expédition terminée", sub: "Citrouille est rentrée de la Forêt du Vieillard · il y a 4 min", go: "petExpedition" },
+      { icon: "🪩", title: "Récompense de guilde disponible", sub: "La guilde Banane peut réclamer son bonus · il y a 1 h", go: "guildDaily" },
+      { icon: "⚡", title: "Énergie régénérée", sub: "Vous pouvez relancer un combat · il y a 2 h", go: "fight" },
+      { icon: "⚔️", title: "Vous avez été attaqué", sub: "Yuno a affronté votre défense · hier", go: "fightHistory" }
+    ]))
+    + panel(rows([{ icon: "⚙️", title: "Gérer les notifications", sub: "Choisir quoi recevoir et où", go: "notifications" }]))
+};
+
+function openSheet(name) {
+  const sheet = $("sheet");
+  sheet.innerHTML = SHEETS[name] ? SHEETS[name]() : "";
+  $("modal").classList.add("on");
+  paintEmoji(sheet);
+  const search = $("sheetSearch");
+  if (search) {
+    search.addEventListener("input", () => {
+      const q = search.value.trim().toLowerCase();
+      sheet.querySelectorAll("#sheetList .row").forEach(r => {
+        r.style.display = !q || r.textContent.toLowerCase().includes(q) ? "" : "none";
+      });
+      sheet.querySelectorAll("#sheetList .panel").forEach(p => {
+        const visible = [...p.querySelectorAll(".row")].some(r => r.style.display !== "none");
+        p.style.display = visible ? "" : "none";
+        const label = p.previousElementSibling;
+        if (label && label.classList.contains("sheet-group")) label.style.display = visible ? "" : "none";
+      });
+    });
+  }
+}
+
+function closeSheet() {
+  $("modal").classList.remove("on");
+}
+
+/* =====================================================================
+   8. Actions
+   ===================================================================== */
+
+function claim(kind) {
+  S.daily[kind] = true;
+  const labels = {
+    bonus: "Bonus journalier utilisé : vous avancez de 1 h.",
+    guild: "Récompense de guilde : chaque membre reçoit 1 240 💰.",
+    mission: "Mission quotidienne terminée : +3 💎 et +450 ⭐.",
+    potion: "Potion du jour achetée pour 1 840 💰.",
+    meal: "Repas avalé : +250 ⚡."
+  };
+  toast(labels[kind]);
+  render();
+}
+
+function fightAction(index) {
+  const f = S.fight;
+  const a = FIGHT_ACTIONS[index];
+  if (!a || f.over || a.cost > f.breath) return;
+  const damage = 6 + Math.floor(Math.random() * 14);
+  const taken = 4 + Math.floor(Math.random() * 11);
+  f.breath -= a.cost;
+  f.log.push("Tour " + f.turn + " · " + a.icon + " " + a.name + " inflige " + damage + " ⚡ de dégâts.");
+  f.foeHp = Math.max(0, f.foeHp - damage);
+  if (f.foeHp > 0) {
+    f.hp = Math.max(0, f.hp - taken);
+    f.log.push("Arsène riposte et vous retire " + taken + " ⚡.");
+  }
+  f.breath = Math.min(P.maxBreath, f.breath + P.breathRegen);
+  f.turn += 1;
+  if (f.foeHp <= 0 || f.hp <= 0 || f.turn > 26) {
+    f.over = true;
+    S.screen = "fightResult";
+  }
+  render();
+}
+
+const ACTIONS = {
+  back,
+  closeSheet,
+  useToken() {
+    if (P.tokens <= 0) return toast("Vous n'avez plus de jetons. Achetez-en au marchand.");
+    P.tokens -= 1;
+    S.travelProgress = Math.min(1, S.travelProgress + 0.08);
+    toast("Vous avancez de 10 minutes. Il vous reste " + P.tokens + " 🪙.");
+    render();
+  },
+  smallEventAccept() {
+    P.money -= 420;
+    toast("Vous repartez avec 12 🪵 de bois de chauffage.");
+    S.report = "travel";
+    S.screen = "adventure";
+    S.stack = [];
+    render();
+  },
+  smallEventRefuse() {
+    toast("Vous saluez le bûcheron et reprenez la route.");
+    S.report = "travel";
+    S.screen = "adventure";
+    S.stack = [];
+    render();
+  },
+  heal() {
+    P.money -= 410;
+    S.report = "travel";
+    S.stack = [];
+    S.screen = "adventure";
+    toast("Altération soignée. Votre voyage avance de 10 minutes.");
+    render();
+  },
+  respawn() {
+    S.report = "city";
+    P.health = 1;
+    S.stack = [];
+    S.screen = "adventure";
+    toast("Votre aventurier est de retour, avec 1 ❤️ et 80 % de son score.");
+    render();
+  },
+  leaveIsland() {
+    S.report = "travel";
+    S.stack = [];
+    S.screen = "adventure";
+    toast("Vous quittez l'île : 5 minutes de trajet, puis 8 minutes vers une côte.");
+    render();
+  },
+  startFight() {
+    S.fight = { turn: 1, hp: 104, foeHp: 94, breath: P.breath, log: [], over: false };
+    S.screen = "fightBattle";
+    render();
+  },
+  resetFight() {
+    S.fight = { turn: 1, hp: 104, foeHp: 94, breath: P.breath, log: [], over: false };
+    S.screen = "fight";
+    S.stack = [];
+    render();
+  },
+  surrender() {
+    S.fight.hp = 0;
+    S.fight.over = true;
+    S.screen = "fightResult";
+    render();
+  },
+  claimRent() {
+    P.money += 1484;
+    toast("1 484 💰 de rentes perçues chez le notaire.");
+    render();
+  },
+  petPet() {
+    toast("Votre main caresse " + P.pet.nickname + " qui se frotte contre vous. Cela n'a aucun effet sur son moral.");
+  },
+  feed() {
+    P.pet.lovePoints = Math.min(110, P.pet.lovePoints + 3);
+    P.pet.hungry = false;
+    P.pet.love = P.pet.lovePoints >= 5 ? "🙀 Sauvage" : "😼 Fielleuse";
+    toast(P.pet.nickname + " est rassasiée et semble heureuse. +3 💕");
+    render();
+  },
+  water() { toast("2 emplacements arrosés : croissance accélérée de 5 %."); },
+  harvest() { toast("Récolte effectuée : 2 🍀 Trèfle doré et 3 🌿 Herbe commune."); },
+  plant() { toast("Graine de mousse lunaire plantée dans l'emplacement 4."); },
+  compost() { toast("14 🌿 compostées : vous récupérez 6 🧱 matériaux."); },
+  cook() { toast("Préparation lancée : le résultat sera prêt dans 20 minutes."); },
+  ignite() { toast("Fourneau allumé : un matériau de type bois a été consommé."); },
+  reroll() { toast("Recettes relancées pour un matériau de type bois."); },
+  pin() { toast("Recette épinglée : elle sera conservée pour plus tard."); },
+  sleep() {
+    P.health = Math.min(P.maxHealth, P.health + 12);
+    toast("Vous dormez : +12 ❤️. Plus de chambre d'auberge pendant 24 h.");
+    render();
+  },
+  eat() {
+    P.energy = Math.min(P.maxEnergy, P.energy + 250);
+    S.daily.meal = true;
+    toast("Repas avalé : +250 ⚡. Prochain repas dans 12 h.");
+    render();
+  },
+  vet() {
+    P.gems -= 3;
+    P.pet.lovePoints = Math.min(110, P.pet.lovePoints + 15);
+    toast("Consultation effectuée : +15 💕 pour " + P.pet.nickname + ".");
+    render();
+  },
+  claimLeague() { toast("Récompense de ligue réclamée : 250 💰, 200 ⭐ et un équipement."); },
+  language() { toast("Langue disponible : français, anglais, espagnol, allemand, italien, portugais."); },
+  vote() { toast("Merci pour votre vote : un badge et une récompense vous attendent."); },
+  unlock() { toast("Caution de 3 000 💰 versée : le joueur est libéré."); },
+  joinBoat() { toast("Vous embarquez avec un membre de la guilde vers l'île mystérieuse."); },
+  createGuild() { toast("La guilde a été créée et démarre avec 5 000 💰 de trésorerie."); },
+  deposit() { toast("Don effectué : la commission de 5 % est plafonnée à 350 💰."); },
+  upgradeBuilding() { toast("Bâtiment amélioré : 20 % du prix devient de l'expérience de guilde."); },
+  upgradeHome() { toast("Maison portée au niveau 4 pour 18 500 💰."); },
+  upgradeItem() { toast("Équipement amélioré : les matériaux ont été consommés."); },
+  disenchant() { toast("Enchantement retiré pour 3 100 💰."); },
+  enchant() { toast("Enchantement Énergie max I appliqué pour 5 000 💰 et 9 💎."); },
+  recycle() { toast("Équipement démonté : vous récupérez les matériaux listés."); },
+  buy() { toast("Achat effectué."); },
+  buyFood() { toast("Nourriture ajoutée à l'entrepôt de la guilde."); },
+  equipItem() { toast("Équipement échangé avec la réserve."); },
+  sellItem() { toast("Objet vendu."); },
+  throwItem() { toast("Potion versée dans un évier : aucune contrepartie."); },
+  drinkPotion() { toast("Potion bue : vous avancez de 2 h."); },
+  transfer() { toast("Transfert effectué avec le refuge de la guilde."); },
+  free() { toast("Le familier a été libéré. Cette action est définitive."); },
+  rename() { toast("Surnom modifié."); },
+  clearNick() { toast("Surnom effacé."); },
+  recallPet() { toast("Butin récupéré : 1 480 💰, 620 ⭐, 96 🏅, 3 🪙, 7 🧱 et un équipement."); },
+  guildInvite() { toast("Invitation envoyée : le joueur doit confirmer son entrée."); },
+  guildKick() { toast("Membre expulsé de la guilde."); },
+  guildElder() { toast("Statut d'aîné mis à jour."); },
+  guildDescription() { toast("Description de la guilde modifiée."); },
+  guildLeave() { toast("Vous avez quitté la guilde."); },
+  toggleNotif() { toast("Notification activée ou désactivée."); },
+  notifDm() { toast("Les notifications arriveront en message privé."); },
+  notifChannel() { toast("Les notifications arriveront dans le salon."); }
+};
+
+function runAction(raw) {
+  const [name, arg] = raw.split(":");
+  if (name === "seg") {
+    const [, group, value] = raw.split(":");
+    S.seg[group] = value;
+    return render();
+  }
+  if (name === "claim") return claim(arg);
+  if (name === "fightAction") return fightAction(Number(arg));
+  if (name === "buyToken") {
+    const n = Number(arg);
+    P.tokens = Math.min(P.tokensMax, P.tokens + n);
+    P.money -= n === 1 ? 1200 : 3300;
+    toast(n + " jeton" + (n > 1 ? "s" : "") + " acheté" + (n > 1 ? "s" : "") + ". Vous en avez " + P.tokens + ".");
+    return render();
+  }
+  if (name === "setAlteration") {
+    S.alteration = ALTERATIONS.find(a => a.name === arg) || S.alteration;
+    return render();
+  }
+  if (name === "depart") {
+    S.report = "travel";
+    S.travelProgress = 0.02;
+    S.stack = [];
+    S.screen = "adventure";
+    toast("Départ confirmé vers " + arg + ".");
+    return render();
+  }
+  if (name === "event") {
+    const outcomes = {
+      repair: { icon: "🛠️", title: "La roue est réparée", text: "Le marchand vous glisse 640 💰 et une potion en remerciement." },
+      horse: { icon: "🐎", title: "Vous perdez du temps", text: "Le trajet s'allonge de 40 minutes, mais vous gagnez 320 🏅." },
+      nothing: { icon: "🚶", title: "Vous passez votre chemin", text: "Rien ne se produit. Parfois, ne rien faire est le bon choix." }
+    };
+    S.eventChoice = outcomes[arg];
+    return render();
+  }
+  if (name === "expedition") {
+    const e = EXPEDITIONS[Number(arg)];
+    toast(P.pet.nickname + " part pour " + e.place + " · " + e.duration + " · " + e.rations + " 🍖 consommées.");
+    return;
+  }
+  if (name === "changeClass") {
+    P.className = arg;
+    toast("Classe modifiée : " + arg + ". Prochain changement dans deux semaines.");
+    return render();
+  }
+  const fn = ACTIONS[name];
+  if (fn) fn();
+}
+
+/* =====================================================================
+   9. Simulation d'états
+   ===================================================================== */
+
+const DEMOS = {
+  city() { S.report = "city"; toast("Le joueur est arrivé en ville."); },
+  travel() { S.report = "travel"; S.travelProgress = 0.42; toast("Le joueur est reparti sur les routes."); },
+  smallEvent() { S.report = "smallEvent"; toast("Un mini-évènement se déclenche."); },
+  bigEvent() { S.report = "bigEvent"; S.eventChoice = null; toast("Un évènement à choix se déclenche."); },
+  alteration() { S.report = "alteration"; toast("Le joueur subit une altération d'état."); },
+  island() { S.report = "island"; toast("Le joueur débarque sur l'île de glace."); },
+  dead() { S.report = "dead"; P.health = 0; toast("Le personnage est mort : toutes les commandes sont bloquées."); },
+  advance() {
+    if (S.report === "travel") {
+      S.travelProgress = Math.min(1, S.travelProgress + 0.25);
+      if (S.travelProgress >= 1) {
+        S.report = "city";
+        toast("Vous arrivez à destination : vous êtes en ville.");
+      } else {
+        toast("Le temps avance : un mini-évènement a été résolu.");
+      }
+    } else if (S.report === "alteration") {
+      S.report = "travel";
+      toast("L'altération s'est dissipée d'elle-même.");
+    } else {
+      S.report = "travel";
+      S.travelProgress = 0.1;
+      toast("Le joueur reprend la route.");
+    }
+  },
+  reset() {
+    S.report = "city";
+    S.eventChoice = null;
+    S.alteration = ALTERATIONS[9];
+    S.travelProgress = 0.42;
+    S.daily = { bonus: false, guild: false, mission: false, potion: false, meal: false };
+    S.fight = { turn: 1, hp: 82, foeHp: 94, breath: 8, log: [], over: false };
+    P.health = 82; P.energy = 612; P.money = 11197; P.gems = 51; P.tokens = 14;
+    P.pet.lovePoints = 4; P.pet.hungry = true; P.pet.love = "😼 Fielleuse";
+    toast("Maquette réinitialisée.");
+  }
+};
+
+function runDemo(name, silent) {
+  const fn = DEMOS[name];
+  if (!fn) return;
+  toastMuted = Boolean(silent);
+  fn();
+  toastMuted = false;
+  if (!["advance", "reset"].includes(name) || S.screen !== "adventure") {
+    S.stack = [];
+    S.screen = "adventure";
+  }
+  document.querySelectorAll(".mockup-controls button").forEach(b =>
+    b.classList.toggle("on", b.dataset.demo === S.report));
+  render();
+}
+
+/* =====================================================================
+   10. Écoute des interactions
+   ===================================================================== */
+
+document.addEventListener("click", event => {
+  const target = event.target.closest("[data-go],[data-act],[data-tab],[data-sheet],[data-toast],[data-demo]");
+  if (!target) return;
+  const d = target.dataset;
+  if (d.demo) return runDemo(d.demo);
+  if (d.sheet) return openSheet(d.sheet);
+  if (d.tab) { closeSheet(); return openTab(d.tab); }
+  if (d.act) return runAction(d.act);
+  if (d.go) { closeSheet(); return go(d.go); }
+  if (d.toast) return toast(d.toast);
+});
+
+$("modal").addEventListener("click", event => {
+  if (event.target === $("modal")) closeSheet();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    if ($("modal").classList.contains("on")) closeSheet();
+    else back();
+  }
+});
+
+runDemo("city", true);
+</script>
+</body>
+</html>
