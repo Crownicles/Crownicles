@@ -12,6 +12,8 @@
     "setup": "pnpm i",
     "start": "tsc && node dist/RestWs/src/index.js",
     "cd": "cd",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "eslint": "eslint src",
     "eslintFix": "eslint src --fix",
     "tsc": "tsc",
@@ -47,6 +49,7 @@
     "eslint": "9.39.4",
     "eslint-plugin-jsdoc": "62.9.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.59.0"
+    "typescript-eslint": "8.59.0",
+    "vitest": "4.1.5"
   }
 }

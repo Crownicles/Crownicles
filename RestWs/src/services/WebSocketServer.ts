@@ -8,6 +8,7 @@ import { MqttManager } from "../mqtt/MqttManager";
 import { IncomingMessage } from "http";
 import { WebSocketConstants } from "../constants/WebSocketConstants";
 import { getClientTranslator } from "../packets/fromClient/FromClientTranslator";
+import { InvalidClientPacketError } from "../packets/fromClient/InvalidClientPacketError";
 import * as WebSocket from "ws";
 
 /**
@@ -63,6 +64,15 @@ function handleClientMessage(ws: WebSocket, keycloakId: string, groups: string[]
 			MqttManager.globalMqttClient.sendToBackEnd(context, await translator(context, parsedMessage.data));
 		}
 		catch (error) {
+			if (error instanceof InvalidClientPacketError) {
+				// Dropping the packet is enough: a client mistake must not show up as a server error
+				CrowniclesLogger.warn("Rejected client packet", {
+					keycloakId,
+					packetName: parsedMessage.name,
+					reason: error.message
+				});
+				return;
+			}
 			CrowniclesLogger.errorWithObj("Error while sending MQTT message", error);
 		}
 	});

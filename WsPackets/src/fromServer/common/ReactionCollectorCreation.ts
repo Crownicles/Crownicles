@@ -1,19 +1,17 @@
 import { FromServerPacket } from "../FromServerPacket";
-import { ReactionCollectorData } from "./ReactionCollectorData";
-import { ReactionCollectorReaction } from "./ReactionCollectorReaction";
+import {
+	ReactionCollectorData, ReactionCollectorReaction
+} from "../collectors";
 
 export class ReactionCollectorCreation extends FromServerPacket {
 	id!: string;
 
-	data!: {
-		type: string;
-		data: ReactionCollectorData;
-	};
+	data!: ReactionCollectorData;
 
-	reactions!: {
-		type: string;
-		data: ReactionCollectorReaction;
-	}[];
+	/**
+	 * Order is significant: a client answers a collector by the index of its choice in this array.
+	 */
+	reactions!: ReactionCollectorReaction[];
 
 	endTime!: number;
 
