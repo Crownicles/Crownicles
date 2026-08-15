@@ -46,7 +46,7 @@ export function CollectorPrompt({ collector, onChoose }: {
 			<Panel>
 				{collector.reactions.map((reaction, index) => (
 					<Pressable
-						key={`${reaction.type}-${index}`}
+						key={`${collector.id}-${index}`}
 						disabled={locked || !isChoosable(reaction)}
 						onPress={(): void => {
 							setAnswered(true);

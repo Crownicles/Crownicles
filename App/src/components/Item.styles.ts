@@ -33,7 +33,7 @@ const layoutStyles = StyleSheet.create({
 	},
 });
 
-const textStyles = StyleSheet.create({
+const itemTextStyles = StyleSheet.create({
 	itemIcon: {
 		fontSize: 24,
 		marginRight: 12,
@@ -57,6 +57,15 @@ const textStyles = StyleSheet.create({
 		fontSize: 12,
 		color: '#666',
 	},
+	clickIndicator: {
+		fontSize: 16,
+		marginLeft: 8,
+		color: '#007AFF',
+		opacity: 0.8,
+	},
+});
+
+const statTextStyles = StyleSheet.create({
 	itemStatsContainer: {
 		marginTop: 4,
 	},
@@ -85,6 +94,9 @@ const textStyles = StyleSheet.create({
 	strikethrough: {
 		textDecorationLine: 'line-through',
 	},
+});
+
+const effectTextStyles = StyleSheet.create({
 	itemEffect: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -97,12 +109,6 @@ const textStyles = StyleSheet.create({
 	itemEffectText: {
 		fontSize: 12,
 		color: '#666',
-	},
-	clickIndicator: {
-		fontSize: 16,
-		marginLeft: 8,
-		color: '#007AFF',
-		opacity: 0.8,
 	},
 });
 
@@ -159,7 +165,9 @@ const actionStyles = StyleSheet.create({
 
 export const styles = {
 	...layoutStyles,
-	...textStyles,
+	...itemTextStyles,
+	...statTextStyles,
+	...effectTextStyles,
 	...flipStyles,
 	...actionStyles,
 };

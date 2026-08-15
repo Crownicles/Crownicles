@@ -282,7 +282,9 @@ export class WebSocketClient {
 		setTimeout((): void => {
 			console.log("Attempting to reconnect WebSocket...");
 			this.connectionAttempts++;
-			void this.connect(authToken, false);
+			this.connect(authToken, false).catch((error) => {
+				console.error("Failed to reconnect WebSocket:", error);
+			});
 		}, 1000);
 	}
 

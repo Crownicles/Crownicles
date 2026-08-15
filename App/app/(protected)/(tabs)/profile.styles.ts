@@ -1,4 +1,34 @@
-import {StyleSheet} from "react-native";
+import {StyleSheet, TextStyle, ViewStyle} from "react-native";
+
+const sharedStyles = {
+	sectionTitle: {
+		fontSize: 16,
+		fontWeight: "700",
+		color: "#333",
+		marginBottom: 10,
+	} satisfies TextStyle,
+	cardSurface: {
+		backgroundColor: "#f9f9f9",
+		borderRadius: 10,
+		shadowColor: "#000",
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 2,
+	} satisfies ViewStyle,
+	cardEmoji: {
+		fontSize: 24,
+	} satisfies TextStyle,
+	cardValue: {
+		fontSize: 16,
+		fontWeight: "500",
+		color: "#333",
+		marginTop: 5,
+	} satisfies TextStyle,
+};
 
 const layoutStyles = StyleSheet.create({
 	container: {
@@ -113,38 +143,21 @@ const statisticsStyles = StyleSheet.create({
 	statsContainer: {
 		marginTop: 20,
 	},
-	statsTitle: {
-		fontSize: 16,
-		fontWeight: '700',
-		color: '#333',
-		marginBottom: 10,
-	},
+	statsTitle: sharedStyles.sectionTitle,
 	statsGrid: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		justifyContent: 'space-between',
 	},
 	statItem: {
+		...sharedStyles.cardSurface,
 		width: '31%',
-		backgroundColor: '#f9f9f9',
-		borderRadius: 10,
 		padding: 12,
 		marginBottom: 10,
 		alignItems: 'center',
 		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 2,
 	},
-	statEmoji: {
-		fontSize: 24,
-		textAlign: 'center',
-	},
+	statEmoji: {...sharedStyles.cardEmoji, textAlign: 'center'},
 	statValue: {
 		fontSize: 14,
 		fontWeight: '500',
@@ -192,42 +205,21 @@ const currencyStyles = StyleSheet.create({
 	currencyContainer: {
 		marginTop: 20,
 	},
-	currencyTitle: {
-		fontSize: 16,
-		fontWeight: '700',
-		color: '#333',
-		marginBottom: 10,
-	},
+	currencyTitle: sharedStyles.sectionTitle,
 	currencyGrid: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 	},
 	currencyItem: {
+		...sharedStyles.cardSurface,
 		flex: 1,
-		backgroundColor: '#f9f9f9',
-		borderRadius: 10,
 		padding: 12,
 		marginHorizontal: 5,
 		alignItems: 'center',
 		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 2,
 	},
-	currencyEmoji: {
-		fontSize: 24,
-	},
-	currencyValue: {
-		fontSize: 16,
-		fontWeight: '500',
-		color: '#333',
-		marginTop: 5,
-	},
+	currencyEmoji: sharedStyles.cardEmoji,
+	currencyValue: sharedStyles.cardValue,
 	moneyContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
@@ -245,43 +237,21 @@ const scoreStyles = StyleSheet.create({
 	scoreRankContainer: {
 		marginTop: 20,
 	},
-	scoreRankTitle: {
-		fontSize: 16,
-		fontWeight: '700',
-		color: '#333',
-		marginBottom: 10,
-	},
+	scoreRankTitle: sharedStyles.sectionTitle,
 	scoreRankGrid: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 	},
 	scoreRankItem: {
+		...sharedStyles.cardSurface,
 		flex: 1,
-		backgroundColor: '#f9f9f9',
-		borderRadius: 10,
 		padding: 12,
 		marginHorizontal: 5,
 		alignItems: 'center',
 		justifyContent: 'center',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 2,
 	},
-	scoreRankEmoji: {
-		fontSize: 24,
-	},
-	scoreRankValue: {
-		fontSize: 16,
-		fontWeight: '500',
-		color: '#333',
-		marginTop: 5,
-		textAlign: 'center',
-	},
+	scoreRankEmoji: sharedStyles.cardEmoji,
+	scoreRankValue: {...sharedStyles.cardValue, textAlign: 'center'},
 });
 
 const inventoryStyles = StyleSheet.create({
@@ -316,19 +286,10 @@ const inventoryStyles = StyleSheet.create({
 		gap: 10,
 	},
 	inventoryItem: {
-		backgroundColor: '#f9f9f9',
-		borderRadius: 10,
+		...sharedStyles.cardSurface,
 		padding: 15,
 		flexDirection: 'row',
 		alignItems: 'center',
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 2,
 		position: 'relative',
 	},
 	itemIcon: {

@@ -1,5 +1,12 @@
-import * as FileSystem from 'expo-file-system/legacy';
-import {EncodingType} from 'expo-file-system/legacy';
+import {
+	EncodingType,
+	documentDirectory,
+	getInfoAsync,
+	makeDirectoryAsync,
+	readAsStringAsync,
+	readDirectoryAsync,
+	writeAsStringAsync
+} from "expo-file-system/legacy";
 import {RestApi} from "@/src/networking/RestApi";
 import {AppIcons} from "@/src/AppIcons";
 import {reloadI18n} from "@/src/translations/i18nLoader";
@@ -11,20 +18,21 @@ export class AssetsManager {
 		const assetsWithHashes: { file: string, hash: string }[] = [];
 
 		const readDirectoryRecursively = async (dir: string): Promise<void> => {
-			const dirInfo = await FileSystem.getInfoAsync(dir);
+			const dirInfo = await getInfoAsync(dir);
 			if (!dirInfo.exists || !dirInfo.isDirectory) {
 				return;
 			}
-			const entries = await FileSystem.readDirectoryAsync(dir);
+			const entries = await readDirectoryAsync(dir);
 			for (const entry of entries) {
-				const fileInfo = await FileSystem.getInfoAsync(dir + "/" + entry);
+				const filePath = `${dir}/${entry}`;
+				const fileInfo = await getInfoAsync(filePath);
 				if (fileInfo.isDirectory) {
-					await readDirectoryRecursively(dir + "/" + entry);
+					await readDirectoryRecursively(filePath);
 				}
 				else {
-					const hash = await FileSystem.getInfoAsync(dir + "/" + entry, { md5: true });
+					const hash = await getInfoAsync(filePath, { md5: true });
 					if (hash.exists) {
-						let assetName = (dir + "/" + entry).split("/").slice(FileSystem.documentDirectory!.split("/").length).join("/");
+						const assetName = filePath.split("/").slice(documentDirectory!.split("/").length).join("/");
 						assetsWithHashes.push({file: assetName, hash: hash.md5!});
 						console.log(`Asset: ${assetName}, Hash: ${hash.md5}`);
 					}
@@ -32,28 +40,28 @@ export class AssetsManager {
 			}
 		}
 
-		await readDirectoryRecursively(FileSystem.documentDirectory + "assets");
+		await readDirectoryRecursively(`${documentDirectory!}assets`);
 
 		return assetsWithHashes;
 	}
 
 	static async updateAssets(): Promise<void> {
-		const documentDirectoryInfo = await FileSystem.getInfoAsync(FileSystem.documentDirectory!);
+		const documentDirectoryInfo = await getInfoAsync(documentDirectory!);
 		if (!documentDirectoryInfo.exists || !documentDirectoryInfo.isDirectory) {
 			throw new Error("Document directory does not exist or is not a directory.");
 		}
 
-		let assetDirectory = FileSystem.documentDirectory + "assets";
-		const dirInfo = await FileSystem.getInfoAsync(assetDirectory);
+		const assetDirectory = `${documentDirectory!}assets`;
+		const dirInfo = await getInfoAsync(assetDirectory);
 		if (!dirInfo.exists) {
-			await FileSystem.makeDirectoryAsync(assetDirectory, { intermediates: true });
+			await makeDirectoryAsync(assetDirectory, { intermediates: true });
 			console.log("Created assets directory:", assetDirectory);
 		}
 
-		let localAssets = await this.readLocalAssets();
-		let remoteAssets = await RestApi.getAssets();
+		const localAssets = await this.readLocalAssets();
+		const remoteAssets = await RestApi.getAssets();
 
-		let assetsToUpdate = remoteAssets.filter(remoteAsset => {
+		const assetsToUpdate = remoteAssets.filter(remoteAsset => {
 			const localAsset = localAssets.find(local => local.file === remoteAsset.file);
 			return !localAsset || localAsset.hash !== remoteAsset.hash;
 		});
@@ -61,21 +69,21 @@ export class AssetsManager {
 		console.log("Assets to update:", assetsToUpdate);
 
 		for (const assetToUpdate of assetsToUpdate) {
-			let assetContent = await RestApi.downloadAsset(assetToUpdate.file);
-			let assetPath = FileSystem.documentDirectory + "assets/" + assetToUpdate.file;
-			let directories = assetToUpdate.file.split("/");
+			const assetContent = await RestApi.downloadAsset(assetToUpdate.file);
+			const assetPath = `${documentDirectory!}assets/${assetToUpdate.file}`;
+			const directories = assetToUpdate.file.split("/");
 			for (let i = 0; i < directories.length - 1; i++) {
-				const dirPath = FileSystem.documentDirectory + "assets/" + directories.slice(0, i + 1).join("/");
-				const dirInfo = await FileSystem.getInfoAsync(dirPath);
+				const dirPath = `${documentDirectory!}assets/${directories.slice(0, i + 1).join("/")}`;
+				const dirInfo = await getInfoAsync(dirPath);
 				if (!dirInfo.exists) {
-					await FileSystem.makeDirectoryAsync(dirPath, { intermediates: true });
+					await makeDirectoryAsync(dirPath, { intermediates: true });
 					console.log(`Created directory: ${dirPath}`);
 				}
 			}
-			await FileSystem.writeAsStringAsync(assetPath, assetContent, {
-				encoding: FileSystem.EncodingType.UTF8
+			await writeAsStringAsync(assetPath, assetContent, {
+				encoding: EncodingType.UTF8
 			});
-			const assetHash = await FileSystem.getInfoAsync(FileSystem.documentDirectory + "assets/" + assetToUpdate.file, { md5: true });
+			const assetHash = await getInfoAsync(`${documentDirectory!}assets/${assetToUpdate.file}`, { md5: true });
 			if (!assetHash.exists) {
 				throw new Error(`Asset ${assetToUpdate.file} does not exist after download.`);
 			}
@@ -87,7 +95,7 @@ export class AssetsManager {
 
 		this.assets = new Map<string, string>();
 		for (const asset of remoteAssets) {
-			let assetContent = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + "assets/" + asset.file, {
+			const assetContent = await readAsStringAsync(`${documentDirectory!}assets/${asset.file}`, {
 				encoding: EncodingType.UTF8
 			});
 			this.assets.set(asset.file, assetContent);
@@ -97,14 +105,14 @@ export class AssetsManager {
 		AppIcons.reloadAppIcons(AssetsManager.getAssets((asset) => asset === "icons.json"));
 	}
 
-	static getAssets(filter: (file: string) => boolean = () => true): Map<string, string> {
+	static getAssets(filter?: (file: string) => boolean): Map<string, string> {
 		if (this.assets === null) {
 			throw new Error("Assets have not been initialized. Call updateAssets() first.");
 		}
 
 		const filteredAssets = new Map<string, string>();
 		for (const [file, content] of this.assets.entries()) {
-			if (filter(file)) {
+			if (filter === undefined || filter(file)) {
 				filteredAssets.set(file, content);
 			}
 		}

@@ -73,18 +73,18 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 	};
 
 	const renderMainItemStats = (item: MainItem) => {
-		const stats = [
+			const stats = [
 			renderMainItemStat("attack", "⚔️", item.attack),
 			renderMainItemStat("defense", "🛡️", item.defense),
 			renderMainItemStat("speed", "🚀", item.speed)
-		].filter(stat => stat !== null);
+			].filter((stat): stat is React.ReactElement => stat !== null);
 
 		if (stats.length === 0) return null;
 
 		return (
 			<Text style={styles.itemStatsLine}>
 				{stats.map((stat, index) => (
-					<Text key={index}>
+					<Text key={stat.key}>
 						{stat}
 						{index < stats.length - 1 && <Text style={styles.statSeparator}> • </Text>}
 					</Text>

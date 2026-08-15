@@ -25,7 +25,9 @@ export function useGameInvalidations(): { afterCollector: (kind: ReactionCollect
 
 	const afterCollector = useCallback((kind: ReactionCollectorDataKind): void => {
 		for (const entity of COLLECTOR_INVALIDATES[kind] ?? []) {
-			void queryClient.invalidateQueries({ queryKey: gameKey(entity) });
+			queryClient.invalidateQueries({ queryKey: gameKey(entity) }).catch((error) => {
+				console.error(`Failed to invalidate ${entity}:`, error);
+			});
 		}
 	}, [queryClient]);
 

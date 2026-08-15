@@ -10,6 +10,9 @@ module.exports = defineConfig([
       'no-use-before-define': ['error', { variables: true }],
       'no-alert': 'error',
       'react/jsx-boolean-value': ['error', 'never'],
+      'prefer-template': 'error',
+      'object-shorthand': ['error', 'always'],
+      'no-void': 'error',
     },
   },
 ]);

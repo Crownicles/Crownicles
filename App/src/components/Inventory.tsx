@@ -129,36 +129,35 @@ function sortBackupSlots(items: React.ReactElement[]): React.ReactElement[] {
 	return items.sort((firstItem, secondItem) => getBackupSlotNumber(firstItem) - getBackupSlotNumber(secondItem));
 }
 
-function createBackupSlotElements(
+function createFilledBackupSlotElement(
 	type: InventoryItemType,
-	backupItems: BackupItemData[] | undefined,
-	maxSlots: number,
+	item: BackupItemData,
 	actions: BackupItemActions
+): React.ReactElement {
+	const isEmpty = !item.display || item.display.id === 0;
+	return (
+		<Item
+			key={`${type}-${item.slot}`}
+			item={item.display}
+			itemType={type}
+			customKey={`${type}-${item.slot}`}
+			isBackupItem
+			onDrink={!isEmpty && type === 'potion' ? actions.handleDrink : undefined}
+			onSwitch={!isEmpty ? () => actions.handleSwitch(item.display, type) : undefined}
+			onSell={!isEmpty ? () => actions.handleSell(item.display, type) : undefined}
+		/>
+	);
+}
+
+function createEmptyBackupSlotElements(
+	type: InventoryItemType,
+	maxSlots: number,
+	filledSlots: Set<number>
 ): React.ReactElement[] {
-	const allSlots: React.ReactElement[] = [];
-	const filledSlots = new Set(backupItems?.map(item => item.slot) || []);
-
-	if (backupItems) {
-		backupItems.forEach(item => {
-			const isEmpty = !item.display || item.display.id === 0;
-			allSlots.push(
-				<Item
-					key={`${type}-${item.slot}`}
-					item={item.display}
-					itemType={type}
-					customKey={`${type}-${item.slot}`}
-					isBackupItem
-					onDrink={!isEmpty && type === 'potion' ? actions.handleDrink : undefined}
-					onSwitch={!isEmpty ? () => actions.handleSwitch(item.display, type) : undefined}
-					onSell={!isEmpty ? () => actions.handleSell(item.display, type) : undefined}
-				/>
-			);
-		});
-	}
-
+	const emptySlotElements: React.ReactElement[] = [];
 	for (let slot = 1; slot <= maxSlots; slot++) {
 		if (!filledSlots.has(slot)) {
-			allSlots.push(
+			emptySlotElements.push(
 				<Item
 					key={`${type}-empty-${slot}`}
 					itemType={type}
@@ -168,8 +167,20 @@ function createBackupSlotElements(
 			);
 		}
 	}
+	return emptySlotElements;
+}
 
-	return sortBackupSlots(allSlots);
+function createBackupSlotElements(
+	type: InventoryItemType,
+	backupItems: BackupItemData[] | undefined,
+	maxSlots: number,
+	actions: BackupItemActions
+): React.ReactElement[] {
+	const filledSlots = new Set(backupItems?.map(item => item.slot) ?? []);
+	const filledSlotElements = backupItems?.map(item => createFilledBackupSlotElement(type, item, actions)) ?? [];
+	const emptySlotElements = createEmptyBackupSlotElements(type, maxSlots, filledSlots);
+
+	return sortBackupSlots([...filledSlotElements, ...emptySlotElements]);
 }
 
 export function Inventory({ inventoryData }: InventoryProps): React.ReactElement {

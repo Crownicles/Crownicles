@@ -19,11 +19,13 @@ export const AuthContext = React.createContext<AuthState>({
 	setState: () => {
 		console.warn("setState called without AuthContext.Provider");
 	},
-	saveToken: async (_token: AuthToken) => {
+	saveToken: (_token: AuthToken): Promise<void> => {
 		console.warn("saveToken called without AuthContext.Provider");
+		return Promise.resolve();
 	},
-	clearToken: async () => {
+	clearToken: (): Promise<void> => {
 		console.warn("clearToken called without AuthContext.Provider");
+		return Promise.resolve();
 	}
 });
 

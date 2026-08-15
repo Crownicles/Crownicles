@@ -6,9 +6,20 @@ interface LanguageAssetLocation {
 	namespace: string;
 }
 
+type LanguageAssetPath = [string, string, string, ...string[]];
+
+function isLanguageAssetPath(parts: string[]): parts is LanguageAssetPath {
+	const hasExpectedSegmentCount = parts.length >= 3;
+	const isLanguageDirectory = parts[0]?.startsWith("Lang") ?? false;
+	const hasLanguage = Boolean(parts[1]);
+	const hasJsonNamespace = parts[2]?.endsWith(".json") ?? false;
+
+	return hasExpectedSegmentCount && isLanguageDirectory && hasLanguage && hasJsonNamespace;
+}
+
 function getLanguageAssetLocation(path: string): LanguageAssetLocation | null {
 	const split = path.split("/");
-	if (split.length < 3 || !split[0].startsWith("Lang") || !split[1] || !split[2].endsWith(".json")) {
+	if (!isLanguageAssetPath(split)) {
 		return null;
 	}
 	return {

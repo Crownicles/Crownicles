@@ -1,4 +1,4 @@
-import {Children, Fragment, ReactNode} from "react";
+import {Children, Fragment, ReactNode, isValidElement} from "react";
 import {StyleSheet, Text, View} from "react-native";
 import {Theme} from "@/src/design/Theme";
 
@@ -42,6 +42,13 @@ const styles = StyleSheet.create({
 	}
 });
 
+function getPanelChildKey(child: ReactNode): string {
+	if (isValidElement(child) && child.key !== null) {
+		return child.key.toString();
+	}
+	return String(child);
+}
+
 /**
  * Building blocks of `App/mockups/mobile.html`: a bordered card, key/value rows, section headers,
  * a progress bar and a footnote.
@@ -72,7 +79,7 @@ export function Panel({ children }: { children: ReactNode }): ReactNode {
 	return (
 		<View style={styles.panel}>
 			{Children.toArray(children).map((child, index) => (
-				<Fragment key={index}>
+				<Fragment key={getPanelChildKey(child)}>
 					{index > 0 ? <View style={styles.separator} /> : null}
 					{child}
 				</Fragment>

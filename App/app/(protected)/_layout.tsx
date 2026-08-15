@@ -53,7 +53,9 @@ function useAssetState(): AssetState {
 		if (assetsReady) {
 			return;
 		}
-		void updateAssets(() => setAssetsReady(true), () => setAssetUpdateError(true));
+		updateAssets(() => setAssetsReady(true), () => setAssetUpdateError(true)).catch((error) => {
+			console.error("Failed to update assets state:", error);
+		});
 	}, [assetsReady]);
 
 	const retryAssetUpdate = async (): Promise<void> => {
