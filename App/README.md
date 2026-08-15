@@ -32,18 +32,30 @@ linked from the repository (`link:../WsPackets`).
    ```
 
    A name is resolved on the local network and keeps working when the machine changes
-   IP address. An IP has to be updated in three places every time it moves: here, in
-   the `callbackUrl` of RestWs, and in the Discord developer portal — and the symptom
-   is a login that fails without any request ever reaching RestWs.
-
-   Whichever you pick, the same host must appear in the `callbackUrl` of
-   `RestWs/config/config.toml`, and `<callbackUrl>/discord/callback` must be declared
-   in the Discord developer portal. In that portal, the **Save Changes** button only
-   appears once the field loses focus.
+   IP address. An IP has to be updated every time it moves, here and in the two places
+   listed in the next step — and the symptom is a login that fails without any request
+   ever reaching RestWs.
 
 3. Set up the Discord identity provider in Keycloak, as described in
    [the Keycloak README](../keycloak/README.md). The app signs in through Keycloak
-   only, so no Discord credential is ever configured here.
+   only, so no Discord credential is ever configured in this project.
+
+   Keycloak brokers the login, so the URL to declare in the Discord developer portal is
+   the one of its broker endpoint, **not** an app or a RestWs URL:
+
+   ```
+   http://<keycloak-host>:8080/realms/Crownicles/broker/discord/endpoint
+   ```
+
+   In that portal, the **Save Changes** button only appears once the field loses focus.
+
+   Keycloak also freezes the host it advertises when it starts: run it with the same
+   `KEYCLOAK_HOSTNAME`, otherwise it keeps redirecting to the previous one and the login
+   fails with an invalid URI. Check what it currently advertises with:
+
+   ```bash
+   curl -s http://<keycloak-host>:8080/realms/Crownicles/.well-known/openid-configuration
+   ```
 
 4. Start the **RestWs** service, and the **Core** service it relies on.
 
