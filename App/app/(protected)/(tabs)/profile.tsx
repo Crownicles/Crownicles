@@ -60,33 +60,36 @@ interface TooltipCardProps {
 	onMeasure: (measurement: CardMeasurement) => void;
 }
 
-interface StatCardProps {
-	emoji: string;
-	value: string;
-	label: string;
-	onShow: StatTooltipHandler;
-}
+type ProfileCardVariant = "stats" | "currency" | "scoreRank";
 
-interface CurrencyCardProps {
-	type: "money" | "gems";
-	emoji: string;
-	value: number;
-	onShow: CurrencyTooltipHandler;
-}
-
-interface CurrencySectionProps extends ProfileProps {
-	onShow: CurrencyTooltipHandler;
-}
-
-interface ScoreRankCardProps {
-	type: "score" | "rank";
+interface ProfileCardData<Type extends string> {
+	key: string;
+	type: Type;
 	emoji: string;
 	value: number | string;
-	onShow: ScoreRankTooltipHandler;
 }
 
-interface ScoreRankSectionProps extends ProfileProps {
-	onShow: ScoreRankTooltipHandler;
+interface ProfileCardSectionStyles {
+	container: StyleProp<ViewStyle>;
+	title: StyleProp<TextStyle>;
+	grid: StyleProp<ViewStyle>;
+	card: StyleProp<ViewStyle>;
+	emoji: StyleProp<TextStyle>;
+	value: StyleProp<TextStyle>;
+}
+
+interface ProfileCardProps {
+	emoji: string;
+	value: number | string;
+	sectionStyles: ProfileCardSectionStyles;
+	onMeasure: (measurement: CardMeasurement) => void;
+}
+
+interface ProfileCardSectionProps<Type extends string> {
+	variant: ProfileCardVariant;
+	title: string;
+	items: readonly ProfileCardData<Type>[];
+	onShow: (type: Type, measurement: CardMeasurement) => void;
 }
 
 interface StatsSectionProps extends ProfileProps {
@@ -105,6 +108,33 @@ interface ProfileStateViewProps {
 	onShowCurrencyTooltip: CurrencyTooltipHandler;
 	onShowScoreRankTooltip: ScoreRankTooltipHandler;
 }
+
+const profileCardSectionStyles: Record<ProfileCardVariant, ProfileCardSectionStyles> = {
+	stats: {
+		container: styles.statsContainer,
+		title: styles.statsTitle,
+		grid: styles.statsGrid,
+		card: styles.statItem,
+		emoji: styles.statEmoji,
+		value: styles.statValue
+	},
+	currency: {
+		container: styles.currencyContainer,
+		title: styles.currencyTitle,
+		grid: styles.currencyGrid,
+		card: styles.currencyItem,
+		emoji: styles.currencyEmoji,
+		value: styles.currencyValue
+	},
+	scoreRank: {
+		container: styles.scoreRankContainer,
+		title: styles.scoreRankTitle,
+		grid: styles.scoreRankGrid,
+		card: styles.scoreRankItem,
+		emoji: styles.scoreRankEmoji,
+		value: styles.scoreRankValue
+	}
+};
 
 function ProgressBar({ current, max, color, label }: ProgressBarProps): ReactElement {
 	const percentage = Math.min((current / max) * 100, 100);
@@ -168,16 +198,37 @@ function TooltipCard({ emoji, value, cardStyle, emojiStyle, valueStyle, onMeasur
 	);
 }
 
-function StatCard({ emoji, value, label, onShow }: StatCardProps): ReactElement {
+function ProfileCard({ emoji, value, sectionStyles, onMeasure }: ProfileCardProps): ReactElement {
 	return (
 		<TooltipCard
-			cardStyle={styles.statItem}
-			emojiStyle={styles.statEmoji}
-			valueStyle={styles.statValue}
+			cardStyle={sectionStyles.card}
+			emojiStyle={sectionStyles.emoji}
+			valueStyle={sectionStyles.value}
 			emoji={emoji}
 			value={value}
-			onMeasure={({pageX, pageY, width}): void => onShow(label, pageX, pageY, width)}
+			onMeasure={onMeasure}
 		/>
+	);
+}
+
+function ProfileCardSection<Type extends string>({ variant, title, items, onShow }: ProfileCardSectionProps<Type>): ReactElement {
+	const sectionStyles = profileCardSectionStyles[variant];
+
+	return (
+		<View style={sectionStyles.container}>
+			<Text style={sectionStyles.title}>{title}</Text>
+			<View style={sectionStyles.grid}>
+				{items.map((item) => (
+					<ProfileCard
+						key={item.key}
+						emoji={item.emoji}
+						value={item.value}
+						sectionStyles={sectionStyles}
+						onMeasure={(measurement): void => onShow(item.type, measurement)}
+					/>
+				))}
+			</View>
+		</View>
 	);
 }
 
@@ -187,76 +238,55 @@ function StatsSection({ profile, onShow }: StatsSectionProps): ReactElement | nu
 	}
 
 	const { stats } = profile;
-	const statItems = [
-		{ key: "energy", emoji: "⚡", value: `${stats.energy.value} / ${stats.energy.max}`, label: i18n.t("app:profile.tooltips.energy") },
-		{ key: "breath", emoji: "🌬️", value: `${stats.breath.base} / ${stats.breath.max}`, label: i18n.t("app:profile.tooltips.breath") },
-		{ key: "breathRegen", emoji: "🫁", value: `${stats.breath.regen}`, label: i18n.t("app:profile.tooltips.breathRegen") },
-		{ key: "attack", emoji: "⚔️", value: `${stats.attack}`, label: i18n.t("app:profile.tooltips.attack") },
-		{ key: "defense", emoji: "🛡️", value: `${stats.defense}`, label: i18n.t("app:profile.tooltips.defense") },
-		{ key: "speed", emoji: "🚀", value: `${stats.speed}`, label: i18n.t("app:profile.tooltips.speed") }
+	const statItems: ProfileCardData<string>[] = [
+		{ key: "energy", type: i18n.t("app:profile.tooltips.energy"), emoji: "⚡", value: `${stats.energy.value} / ${stats.energy.max}` },
+		{ key: "breath", type: i18n.t("app:profile.tooltips.breath"), emoji: "🌬️", value: `${stats.breath.base} / ${stats.breath.max}` },
+		{ key: "breathRegen", type: i18n.t("app:profile.tooltips.breathRegen"), emoji: "🫁", value: `${stats.breath.regen}` },
+		{ key: "attack", type: i18n.t("app:profile.tooltips.attack"), emoji: "⚔️", value: `${stats.attack}` },
+		{ key: "defense", type: i18n.t("app:profile.tooltips.defense"), emoji: "🛡️", value: `${stats.defense}` },
+		{ key: "speed", type: i18n.t("app:profile.tooltips.speed"), emoji: "🚀", value: `${stats.speed}` }
 	];
 
 	return (
-		<View style={styles.statsContainer}>
-			<Text style={styles.statsTitle}>{i18n.t("app:profile.titles.statistics")}</Text>
-			<View style={styles.statsGrid}>
-				{statItems.map(({ key, emoji, value, label }) => (
-					<StatCard key={key} emoji={emoji} value={value} label={label} onShow={onShow} />
-				))}
-			</View>
-		</View>
-	);
-}
-
-function CurrencyCard({ type, emoji, value, onShow }: CurrencyCardProps): ReactElement {
-	return (
-		<TooltipCard
-			cardStyle={styles.currencyItem}
-			emojiStyle={styles.currencyEmoji}
-			valueStyle={styles.currencyValue}
-			emoji={emoji}
-			value={value}
-			onMeasure={({pageX, pageY, width}): void => onShow(type, pageX, pageY, width)}
+		<ProfileCardSection
+			variant="stats"
+			title={i18n.t("app:profile.titles.statistics")}
+			items={statItems}
+			onShow={(type, {pageX, pageY, width}): void => onShow(type, pageX, pageY, width)}
 		/>
 	);
 }
 
-function CurrencySection({ profile, onShow }: CurrencySectionProps): ReactElement {
-	return (
-		<View style={styles.currencyContainer}>
-			<Text style={styles.currencyTitle}>{i18n.t("app:profile.titles.currencies")}</Text>
-			<View style={styles.currencyGrid}>
-				<CurrencyCard type="money" emoji="💰" value={profile.money} onShow={onShow} />
-				<CurrencyCard type="gems" emoji="💎" value={profile.missions.gems} onShow={onShow} />
-			</View>
-		</View>
-	);
-}
+function CurrencySection({ profile, onShow }: ProfileProps & { onShow: CurrencyTooltipHandler }): ReactElement {
+	const currencyItems: ProfileCardData<"money" | "gems">[] = [
+		{ key: "money", type: "money", emoji: "💰", value: profile.money },
+		{ key: "gems", type: "gems", emoji: "💎", value: profile.missions.gems }
+	];
 
-function ScoreRankCard({ type, emoji, value, onShow }: ScoreRankCardProps): ReactElement {
 	return (
-		<TooltipCard
-			cardStyle={styles.scoreRankItem}
-			emojiStyle={styles.scoreRankEmoji}
-			valueStyle={styles.scoreRankValue}
-			emoji={emoji}
-			value={value}
-			onMeasure={({pageX, pageY, width}): void => onShow(type, pageX + width / 2, pageY)}
+		<ProfileCardSection
+			variant="currency"
+			title={i18n.t("app:profile.titles.currencies")}
+			items={currencyItems}
+			onShow={(type, {pageX, pageY, width}): void => onShow(type, pageX, pageY, width)}
 		/>
 	);
 }
 
-function ScoreRankSection({ profile, onShow }: ScoreRankSectionProps): ReactElement {
+function ScoreRankSection({ profile, onShow }: ProfileProps & { onShow: ScoreRankTooltipHandler }): ReactElement {
 	const rank = profile.rank.unranked ? "Unranked" : `${profile.rank.rank} / ${profile.rank.numberOfPlayers}`;
+	const scoreRankItems: ProfileCardData<"score" | "rank">[] = [
+		{ key: "score", type: "score", emoji: "🏅", value: profile.rank.score },
+		{ key: "rank", type: "rank", emoji: "🏆", value: rank }
+	];
 
 	return (
-		<View style={styles.scoreRankContainer}>
-			<Text style={styles.scoreRankTitle}>{i18n.t("app:profile.titles.scoreAndRank")}</Text>
-			<View style={styles.scoreRankGrid}>
-				<ScoreRankCard type="score" emoji="🏅" value={profile.rank.score} onShow={onShow} />
-				<ScoreRankCard type="rank" emoji="🏆" value={rank} onShow={onShow} />
-			</View>
-		</View>
+		<ProfileCardSection
+			variant="scoreRank"
+			title={i18n.t("app:profile.titles.scoreAndRank")}
+			items={scoreRankItems}
+			onShow={(type, {pageX, pageY, width}): void => onShow(type, pageX + width / 2, pageY)}
+		/>
 	);
 }
 

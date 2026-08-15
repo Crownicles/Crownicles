@@ -17,6 +17,16 @@ interface IncomingPacket {
 	packet?: FromServerPacket;
 }
 
+interface ResponseHandler {
+	cleanTime: Date;
+	callback: WebSocketPacketResponseHandler<never>;
+}
+
+interface ResponseHandlerGroup {
+	handlers: Map<string, ResponseHandler>;
+	received?: boolean;
+}
+
 export class WebSocketClient {
 	private static instance: WebSocketClient;
 
@@ -30,31 +40,21 @@ export class WebSocketClient {
 		id?: string; packet: FromClientPacket;
 	}[] = [];
 
-	private responseHandlers: {
-		[packetId: string]: {
-			handlers: {
-				[packetName: string]: {
-					cleanTime: Date;
-					callback: WebSocketPacketResponseHandler<never>;
-				};
-			};
-			received?: boolean; // Track if the packet has been received
-		}
-	} = {};
+	private responseHandlers = new Map<string, ResponseHandlerGroup>();
 
-	private globalPacketHandlers: {
-		[packetName: string]: WebSocketPacketResponseHandler<never>;
-	} = {};
+	private globalPacketHandlers = new Map<string, WebSocketPacketResponseHandler<never>>();
 
-	private setState: (newState: AuthStateEnum) => void = () => {};
+	private setState?: (newState: AuthStateEnum) => void;
 
-	private saveToken: (token: AuthToken) => Promise<void> = async () => {};
+	private saveToken?: (token: AuthToken) => Promise<void>;
 
 	private processPacketQueueIntervalId: number | null = null;
 
 	private cleanResponseHandlersIntervalId: number | null = null;
 
-	private constructor() {}
+	private constructor() {
+		// Singleton construction is restricted to getInstance().
+	}
 
 	public static getInstance(): WebSocketClient {
 		if (!WebSocketClient.instance) {
@@ -64,14 +64,14 @@ export class WebSocketClient {
 	}
 
 	public setGlobalPacketHandler(packetName: string, callback: WebSocketPacketResponseHandler<never>): void {
-		this.globalPacketHandlers[packetName] = callback;
+		this.globalPacketHandlers.set(packetName, callback);
 	}
 
 	public async init(authToken: AuthToken, setState: (newState: AuthStateEnum) => void, saveToken: (token: AuthToken) => Promise<void>): Promise<void> {
 		this.setState = setState;
 		this.saveToken = saveToken;
 
-		this.setState(AuthStateEnum.CONNECTING);
+		this.setState?.(AuthStateEnum.CONNECTING);
 		await this.connect(authToken, true);
 
 		this.processPacketQueueIntervalId = setInterval((): void => {
@@ -90,7 +90,7 @@ export class WebSocketClient {
 		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
 			console.warn("WebSocket is not open. Packet will be queued.");
 			this.packetQueue.push({ packet });
-			this.setState(AuthStateEnum.RECONNECTING_PACKET_QUEUE);
+			this.setState?.(AuthStateEnum.RECONNECTING_PACKET_QUEUE);
 			return;
 		}
 
@@ -113,25 +113,31 @@ export class WebSocketClient {
 		}
 
 		const packetId = uuid.v4();
-		this.responseHandlers[packetId] = { handlers: {} };
+		const handlers = new Map<string, ResponseHandler>();
+		this.responseHandlers.set(packetId, { handlers });
 		for (const [packetName, callback] of Object.entries(responseHandlers)) {
-			this.responseHandlers[packetId].handlers[packetName] = {
+			handlers.set(packetName, {
 				cleanTime: new Date(Date.now() + 10 * 60 * 60 * 1000),
 				callback
-			};
+			});
 		}
 		return packetId;
 	}
 
 	private scheduleResponseHandlerCleanup(packetId: string, timeout: PacketTimeout): void {
 		setTimeout((): void => {
-			for (const packetName of Object.keys(this.responseHandlers[packetId].handlers)) {
-				delete this.responseHandlers[packetId].handlers[packetName];
+			const responseHandlerGroup = this.responseHandlers.get(packetId);
+			if (!responseHandlerGroup) {
+				return;
 			}
-			if (timeout.callback && !this.responseHandlers[packetId].received) {
+
+			for (const packetName of responseHandlerGroup.handlers.keys()) {
+				responseHandlerGroup.handlers.delete(packetName);
+			}
+			if (timeout.callback && !responseHandlerGroup.received) {
 				timeout.callback();
 			}
-			delete this.responseHandlers[packetId];
+			this.responseHandlers.delete(packetId);
 		}, timeout.time);
 	}
 
@@ -146,13 +152,13 @@ export class WebSocketClient {
 	private async getAccessToken(authToken: AuthToken): Promise<string | null> {
 		if (await authToken.refreshIfNeeded()) {
 			console.debug("Token refreshed successfully:", authToken);
-			await this.saveToken(authToken);
+			await this.saveToken?.(authToken);
 		}
 
 		const accessToken = authToken.getAccessToken();
 		if (!accessToken) {
 			console.error("No access token available for WebSocket connection.");
-			this.setState(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+			this.setState?.(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
 			return null;
 		}
 		return accessToken;
@@ -160,7 +166,7 @@ export class WebSocketClient {
 
 	private async connect(authToken: AuthToken, firstConnection: boolean): Promise<void> {
 		if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-			this.setState(AuthStateEnum.LOGGED_IN);
+			this.setState?.(AuthStateEnum.LOGGED_IN);
 			return;
 		}
 
@@ -188,7 +194,7 @@ export class WebSocketClient {
 	private handleSocketOpen(): void {
 		console.log("WebSocket connection established.");
 		this.connectionAttempts = 0;
-		this.setState(AuthStateEnum.LOGGED_IN);
+		this.setState?.(AuthStateEnum.LOGGED_IN);
 	}
 
 	private handleMessage(event: MessageEvent): void {
@@ -219,12 +225,14 @@ export class WebSocketClient {
 		const packetName = packet.name;
 		const packetData = packet.packet;
 
-		if (packetId && this.responseHandlers[packetId]?.handlers[packetName]) {
+		const responseHandlerGroup = packetId ? this.responseHandlers.get(packetId) : undefined;
+		if (packetId && responseHandlerGroup?.handlers.has(packetName)) {
 			this.handleResponse(packetId, packetName, packetData);
 			return;
 		}
-		if (this.globalPacketHandlers[packetName]) {
-			this.globalPacketHandlers[packetName](packetData as never);
+		const globalPacketHandler = this.globalPacketHandlers.get(packetName);
+		if (globalPacketHandler) {
+			globalPacketHandler(packetData as never);
 			return;
 		}
 		console.warn(`No response handler for packet ID: ${packetId}, Name: ${packetName}`);
@@ -233,7 +241,7 @@ export class WebSocketClient {
 	private handleSocketError(error: Event): void {
 		console.info("WebSocket error:", error);
 		this.socket?.close();
-		this.setState(AuthStateEnum.CONNECTION_ERROR);
+		this.setState?.(AuthStateEnum.CONNECTION_ERROR);
 		this.clearIntervals();
 	}
 
@@ -256,7 +264,7 @@ export class WebSocketClient {
 
 	private handleUnauthorizedClose(): void {
 		console.error("WebSocket authentication failed.");
-		this.setState(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
+		this.setState?.(AuthStateEnum.TOKEN_INVALID_OR_EXPIRED);
 		this.clearIntervals();
 	}
 
@@ -267,7 +275,7 @@ export class WebSocketClient {
 		this.connectionAttempts = 0;
 		this.socket = null;
 		this.packetQueue = [];
-		this.setState(AuthStateEnum.CONNECTION_ERROR);
+		this.setState?.(AuthStateEnum.CONNECTION_ERROR);
 		this.clearIntervals();
 	}
 
@@ -275,7 +283,7 @@ export class WebSocketClient {
 		const state = this.packetQueue.length > 0
 			? AuthStateEnum.RECONNECTING_PACKET_QUEUE
 			: AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE;
-		this.setState(state);
+		this.setState?.(state);
 	}
 
 	private scheduleReconnect(authToken: AuthToken): void {
@@ -309,28 +317,28 @@ export class WebSocketClient {
 
 	private cleanResponseHandlers(): void {
 		const now = new Date();
-		for (const packetId of Object.keys(this.responseHandlers)) {
-			for (const packetName of Object.keys(this.responseHandlers[packetId])) {
-				const handler = this.responseHandlers[packetId].handlers[packetName];
+		for (const [packetId, responseHandlerGroup] of this.responseHandlers) {
+			for (const [packetName, handler] of responseHandlerGroup.handlers) {
 				if (handler && handler.cleanTime < now) {
-					delete this.responseHandlers[packetId].handlers[packetName];
+					responseHandlerGroup.handlers.delete(packetName);
 				}
 			}
-			if (Object.keys(this.responseHandlers[packetId]).length === 0) {
-				delete this.responseHandlers[packetId];
+			if (responseHandlerGroup.handlers.size === 0) {
+				this.responseHandlers.delete(packetId);
 			}
 		}
 	}
 
 	private handleResponse(packetId: string, packetName: string, packet: FromServerPacket): void {
-		if (this.responseHandlers[packetId]) {
-			this.responseHandlers[packetId].received = true; // Mark the packet as received
-			if (this.responseHandlers[packetId].handlers[packetName]) {
-				const handler = this.responseHandlers[packetId].handlers[packetName];
+		const responseHandlerGroup = this.responseHandlers.get(packetId);
+		if (responseHandlerGroup) {
+			responseHandlerGroup.received = true;
+			const handler = responseHandlerGroup.handlers.get(packetName);
+			if (handler) {
 				handler.callback(packet as never);
-				delete this.responseHandlers[packetId].handlers[packetName]; // Clean up after handling
-				if (Object.keys(this.responseHandlers[packetId]).length === 0) {
-					delete this.responseHandlers[packetId]; // Clean up empty packetId
+				responseHandlerGroup.handlers.delete(packetName);
+				if (responseHandlerGroup.handlers.size === 0) {
+					this.responseHandlers.delete(packetId);
 				}
 			}
 			else {

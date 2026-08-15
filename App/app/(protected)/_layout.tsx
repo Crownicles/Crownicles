@@ -119,6 +119,16 @@ function renderBlockingState(authState: AuthStateEnum, assetState: AssetState, o
 	return null;
 }
 
+function ReconnectingOverlay(): React.ReactElement {
+	return (
+		<View style={styles.overlay} pointerEvents="auto">
+			<View style={styles.indicatorContainer}>
+				<ActivityIndicator size="large" color="#00ff00" />
+			</View>
+		</View>
+	);
+}
+
 function AuthenticatedLayout({ state }: { state: AuthStateEnum }): React.ReactElement {
 	return (
 		<SafeAreaProvider>
@@ -129,11 +139,7 @@ function AuthenticatedLayout({ state }: { state: AuthStateEnum }): React.ReactEl
 					<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 				</Stack>
 				{state === AuthStateEnum.RECONNECTING_PACKET_QUEUE && (
-					<View style={styles.overlay} pointerEvents="auto">
-						<View style={styles.indicatorContainer}>
-							<ActivityIndicator size="large" color="#00ff00" />
-						</View>
-					</View>
+					<ReconnectingOverlay />
 				)}
 			</View>
 		</SafeAreaProvider>

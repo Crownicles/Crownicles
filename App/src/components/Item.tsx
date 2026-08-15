@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {ReactElement, useState} from "react";
 import {Animated, Text, TouchableOpacity, View} from "react-native";
 import {MainItem} from "ws-packets/src/objects/MainItem";
 import {MainItemStat} from "ws-packets/src/objects/MainItemStat";
@@ -9,9 +9,12 @@ import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
 import {styles} from "./Item.styles";
 
+type InventoryItemType = "weapon" | "armor" | "potion" | "object";
+type SupportItemType = "potion" | "object";
+
 export interface InventoryItemProps {
 	item?: MainItem | SupportItem;
-	itemType: 'weapon' | 'armor' | 'potion' | 'object';
+	itemType: InventoryItemType;
 	isEmpty?: boolean;
 	customKey?: string;
 	onDrink?: () => void;
@@ -19,11 +22,167 @@ export interface InventoryItemProps {
 	onSell?: () => void;
 	isBackupItem?: boolean;
 }
-export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSwitch, onSell, isBackupItem = false }: InventoryItemProps) {
+interface MainItemStatsProps {
+	item: MainItem;
+}
+
+interface SupportItemEffectProps {
+	item: SupportItem;
+	itemType: SupportItemType;
+}
+
+interface ActionButtonsProps {
+	item?: MainItem | SupportItem;
+	itemType: InventoryItemType;
+	onDrink?: () => void;
+	onSwitch?: () => void;
+	onSell?: () => void;
+	isBackupItem: boolean;
+	onFlip: () => void;
+}
+
+interface ItemFrontProps {
+	item: MainItem | SupportItem;
+	itemType: InventoryItemType;
+	itemIcon: string;
+	rarityIcon: string;
+	itemName: string;
+	onFlip: () => void;
+}
+
+function getItemIcon(itemType: InventoryItemType, itemId: number): string {
+	return AppIcons.getIconOrNull(`${itemType}s.${itemId}`) || AppIcons.getIcon("inventory.empty");
+}
+
+function getRarityIcon(rarity: ItemRarity): string {
+	return AppIcons.getIcon(`rarity.${rarity}`);
+}
+
+function getItemNatureEffect(nature: ItemNature): string {
+	return AppIcons.getIcon(`itemNatures.${nature}`);
+}
+
+function formatStatValue(value: number, max: number): { text: string; isNerfed: boolean } {
+	if (value > max) {
+		return { text: max.toString(), isNerfed: true };
+	}
+	return { text: value.toString(), isNerfed: false };
+}
+
+function renderMainItemStat(icon: string, stat: MainItemStat): ReactElement {
+	const value = stat.baseValue + stat.upgradeValue;
+	const { text, isNerfed } = formatStatValue(value, stat.maxValue);
+
+	return (
+		<Text style={styles.itemStatText}>
+			<Text style={styles.itemStatIcon}>{icon}</Text>
+			<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
+				{isNerfed && <Text style={styles.strikethrough}>{value}</Text>} {text}
+			</Text>
+		</Text>
+	);
+}
+
+function MainItemStats({item}: MainItemStatsProps): ReactElement | null {
+	const stats = [
+		{key: "attack", icon: "⚔️", stat: item.attack},
+		{key: "defense", icon: "🛡️", stat: item.defense},
+		{key: "speed", icon: "🚀", stat: item.speed}
+	].filter(({stat}) => stat.baseValue + stat.upgradeValue > 0);
+
+	if (stats.length === 0) {
+		return null;
+	}
+
+	return (
+		<Text style={styles.itemStatsLine}>
+			{stats.map(({key, icon, stat}, index) => (
+				<React.Fragment key={key}>
+					{renderMainItemStat(icon, stat)}
+					{index < stats.length - 1 && <Text style={styles.statSeparator}> • </Text>}
+				</React.Fragment>
+			))}
+		</Text>
+	);
+}
+
+function SupportItemEffect({item, itemType}: SupportItemEffectProps): ReactElement {
+	const effectIcon = getItemNatureEffect(item.nature);
+	return (
+		<View style={styles.itemEffect}>
+			<Text style={styles.itemEffectIcon}>{effectIcon}</Text>
+			<Text style={styles.itemEffectText}>
+				{itemType === "potion" ? i18n.t(`items:potionsNaturesWithoutEmote.${item.nature}`, { power: item.power })
+						: i18n.t(`items:objectsNaturesWithoutEmote.${item.nature}`, { power: item.power })}
+			</Text>
+		</View>
+	);
+}
+
+function ActionButtons({item, itemType, onDrink, onSwitch, onSell, isBackupItem, onFlip}: ActionButtonsProps): ReactElement | null {
+	if (!item || item.id === 0) {
+		return null;
+	}
+
+	return (
+		<View style={styles.actionButtons}>
+			{itemType === "potion" && onDrink && (
+				<TouchableOpacity style={styles.actionButton} onPress={onDrink}>
+					<Text style={styles.actionButtonIcon}>🍺</Text>
+					<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.drink")}</Text>
+				</TouchableOpacity>
+			)}
+			{onSwitch && (
+				<TouchableOpacity style={styles.actionButton} onPress={onSwitch}>
+					<Text style={styles.actionButtonIcon}>🔄</Text>
+					<Text style={styles.actionButtonText}>
+						{i18n.t(isBackupItem ? "app:profile.inventory.actions.equip" : "app:profile.inventory.actions.switch")}
+					</Text>
+				</TouchableOpacity>
+			)}
+			{onSell && (
+				<TouchableOpacity style={styles.actionButton} onPress={onSell}>
+					<Text style={styles.actionButtonIcon}>💰</Text>
+					<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.sell")}</Text>
+				</TouchableOpacity>
+			)}
+			<TouchableOpacity style={styles.actionButton} onPress={onFlip}>
+				<Text style={styles.actionButtonIcon}>❌</Text>
+				<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.close")}</Text>
+			</TouchableOpacity>
+		</View>
+	);
+}
+
+function ItemFront({item, itemType, itemIcon, rarityIcon, itemName, onFlip}: ItemFrontProps): ReactElement {
+	return (
+		<TouchableOpacity style={styles.itemTouchable} onPress={onFlip}>
+			<Text style={styles.itemIcon}>{itemIcon}</Text>
+			<View style={styles.itemDetails}>
+				<Text style={styles.itemName}>{itemName}</Text>
+				<View style={styles.itemRarity}>
+					<Text style={styles.rarityIcon}>{rarityIcon}</Text>
+					<Text style={styles.rarityText}>
+						{i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
+					</Text>
+				</View>
+				{'attack' in item && (
+					<View style={styles.itemStatsContainer}>
+						<MainItemStats item={item} />
+					</View>
+				)}
+				{'nature' in item && <SupportItemEffect item={item} itemType={itemType as SupportItemType} />}
+			</View>
+			<Text style={styles.clickIndicator}>👆</Text>
+		</TouchableOpacity>
+	);
+}
+
+export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSwitch, onSell, isBackupItem = false }: InventoryItemProps): ReactElement {
 	const [isFlipped, setIsFlipped] = useState<boolean>(false);
 	const [flipAnim] = useState(new Animated.Value(0));
 
-	const handleFlip = () => {
+	const handleFlip = (): void => {
 		const toValue = isFlipped ? 0 : 1;
 
 		Animated.timing(flipAnim, {
@@ -33,110 +192,6 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 		}).start();
 
 		setIsFlipped(!isFlipped);
-	};
-
-	// Helper functions
-	const getItemIcon = (itemType: 'weapon' | 'armor' | 'potion' | 'object', itemId: number): string => {
-		return AppIcons.getIconOrNull(`${itemType}s.${itemId}`) || AppIcons.getIcon("inventory.empty");
-	};
-
-	const getRarityIcon = (rarity: ItemRarity): string => {
-		return AppIcons.getIcon(`rarity.${rarity}`);
-	};
-
-	const getItemNatureEffect = (nature: ItemNature): string => {
-		return AppIcons.getIcon(`itemNatures.${nature}`);
-	};
-
-	const formatStatValue = (value: number, max: number): { text: string; isNerfed: boolean } => {
-		if (value > max) {
-			return { text: max.toString(), isNerfed: true };
-		}
-		return { text: value.toString(), isNerfed: false };
-	};
-
-	const renderMainItemStat = (key: string, icon: string, stat: MainItemStat) => {
-		const value = stat.baseValue + stat.upgradeValue;
-		if (value <= 0) {
-			return null;
-		}
-
-		const { text, isNerfed } = formatStatValue(value, stat.maxValue);
-		return (
-			<Text key={key} style={styles.itemStatText}>
-				<Text style={styles.itemStatIcon}>{icon}</Text>
-				<Text style={[styles.itemStatValue, isNerfed && styles.nerfedStat]}>
-					{isNerfed && <Text style={styles.strikethrough}>{value}</Text>} {text}
-				</Text>
-			</Text>
-		);
-	};
-
-	const renderMainItemStats = (item: MainItem) => {
-			const stats = [
-			renderMainItemStat("attack", "⚔️", item.attack),
-			renderMainItemStat("defense", "🛡️", item.defense),
-			renderMainItemStat("speed", "🚀", item.speed)
-			].filter((stat): stat is React.ReactElement => stat !== null);
-
-		if (stats.length === 0) return null;
-
-		return (
-			<Text style={styles.itemStatsLine}>
-				{stats.map((stat, index) => (
-					<Text key={stat.key}>
-						{stat}
-						{index < stats.length - 1 && <Text style={styles.statSeparator}> • </Text>}
-					</Text>
-				))}
-			</Text>
-		);
-	};
-
-	const renderSupportItemEffect = (item: SupportItem, itemType: "potion" | "object") => {
-		const effectIcon = getItemNatureEffect(item.nature);
-		return (
-			<View style={styles.itemEffect}>
-				<Text style={styles.itemEffectIcon}>{effectIcon}</Text>
-				<Text style={styles.itemEffectText}>
-					{itemType === "potion" ? i18n.t(`items:potionsNaturesWithoutEmote.${item.nature}`, { power: item.power })
-							: i18n.t(`items:objectsNaturesWithoutEmote.${item.nature}`, { power: item.power })}
-				</Text>
-			</View>
-		);
-	};
-
-	const renderActionButtons = () => {
-		if (!item || item.id === 0) return null;
-
-		return (
-			<View style={styles.actionButtons}>
-				{itemType === 'potion' && onDrink && (
-					<TouchableOpacity style={styles.actionButton} onPress={onDrink}>
-						<Text style={styles.actionButtonIcon}>🍺</Text>
-						<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.drink")}</Text>
-					</TouchableOpacity>
-				)}
-				{onSwitch && (
-					<TouchableOpacity style={styles.actionButton} onPress={onSwitch}>
-						<Text style={styles.actionButtonIcon}>🔄</Text>
-						<Text style={styles.actionButtonText}>
-							{i18n.t(isBackupItem ? "app:profile.inventory.actions.equip" : "app:profile.inventory.actions.switch")}
-						</Text>
-					</TouchableOpacity>
-				)}
-				{onSell && (
-					<TouchableOpacity style={styles.actionButton} onPress={onSell}>
-						<Text style={styles.actionButtonIcon}>💰</Text>
-						<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.sell")}</Text>
-					</TouchableOpacity>
-				)}
-				<TouchableOpacity style={styles.actionButton} onPress={handleFlip}>
-					<Text style={styles.actionButtonIcon}>❌</Text>
-					<Text style={styles.actionButtonText}>{i18n.t("app:profile.inventory.actions.close")}</Text>
-				</TouchableOpacity>
-			</View>
-		);
 	};
 
 	// Handle empty slot
@@ -177,27 +232,14 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 					isFlipped && styles.hiddenSide
 				]}
 			>
-				<TouchableOpacity style={styles.itemTouchable} onPress={handleFlip}>
-					<Text style={styles.itemIcon}>{itemIcon}</Text>
-					<View style={styles.itemDetails}>
-						<Text style={styles.itemName}>{itemName}</Text>
-						<View style={styles.itemRarity}>
-							<Text style={styles.rarityIcon}>{rarityIcon}</Text>
-							<Text style={styles.rarityText}>
-								{i18n.t(`items:raritiesWithoutEmote.${item.rarity}`)}
-							</Text>
-						</View>
-						{/* Stats for weapons and armors */}
-						{'attack' in item && (
-							<View style={styles.itemStatsContainer}>
-								{renderMainItemStats(item)}
-							</View>
-						)}
-						{/* Effect for potions and objects */}
-						{'nature' in item && renderSupportItemEffect(item, itemType as "potion" | "object")}
-					</View>
-					<Text style={styles.clickIndicator}>👆</Text>
-				</TouchableOpacity>
+				<ItemFront
+					item={item}
+					itemType={itemType}
+					itemIcon={itemIcon}
+					rarityIcon={rarityIcon}
+					itemName={itemName}
+					onFlip={handleFlip}
+				/>
 			</Animated.View>
 
 			{/* Back side - Action buttons */}
@@ -210,7 +252,15 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 					!isFlipped && styles.hiddenSide
 				]}
 			>
-				{renderActionButtons()}
+				<ActionButtons
+					item={item}
+					itemType={itemType}
+					onDrink={onDrink}
+					onSwitch={onSwitch}
+					onSell={onSell}
+					isBackupItem={isBackupItem}
+					onFlip={handleFlip}
+				/>
 			</Animated.View>
 		</View>
 	);
