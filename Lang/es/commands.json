@@ -805,7 +805,7 @@
     "rewardEmbedTitle": "{{pseudo}}recompensas de combate",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Experiencia de gremio ganada: **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Plata ganada :{{money, number}}\n:star: ** XP ganada :{{experience, number}}** **",
-    "monsterRewardsGuildPoints": ":mirror_ball: Puntos de gremio ganados : **{{guildPoints, number}}**",
+    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Points de guilde gagnés : **{{guildPoints, number}}**. La trésorerie augmente du même montant.",
     "monsterRewardsTitle": "{{pseudo}}recompensas de combate",
     "newBigEvent": ":flag_fr: ¡Ha llegado a{{destination}}!",
     "noFight": ":newspaper: ** {{pseudo}} :** {{waitABitReaction}} | ¡Haces una rápida escapada y encuentras un pequeño escondite! El monstruo espera pacientemente fuera...",
