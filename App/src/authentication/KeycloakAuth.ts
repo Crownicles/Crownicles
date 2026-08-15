@@ -1,16 +1,22 @@
 import * as AuthSession from "expo-auth-session";
 import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 
-function getEnv(name: string): string {
-	const value = process.env[name];
+// Expo inlines the EXPO_PUBLIC_ variables at build time, so each one has to be read literally.
+function requireEnv(value: string | undefined, name: string): string {
 	if (!value) {
 		throw new Error(`${name} is not defined in the environment variables.`);
 	}
 	return value;
 }
 
+function getClientId(): string {
+	return requireEnv(process.env.EXPO_PUBLIC_KEYCLOAK_CLIENT_ID, "EXPO_PUBLIC_KEYCLOAK_CLIENT_ID");
+}
+
 function getRealmUrl(): string {
-	return `${getEnv("EXPO_PUBLIC_KEYCLOAK_URL")}/realms/${getEnv("EXPO_PUBLIC_KEYCLOAK_REALM")}`;
+	const url = requireEnv(process.env.EXPO_PUBLIC_KEYCLOAK_URL, "EXPO_PUBLIC_KEYCLOAK_URL");
+	const realm = requireEnv(process.env.EXPO_PUBLIC_KEYCLOAK_REALM, "EXPO_PUBLIC_KEYCLOAK_REALM");
+	return `${url}/realms/${realm}`;
 }
 
 function getDiscovery(): AuthSession.DiscoveryDocument {
@@ -39,7 +45,7 @@ export class KeycloakAuth {
 	public static async login(): Promise<KeycloakOAuth2Token> {
 		const redirectUri = getRedirectUri();
 		const request = new AuthSession.AuthRequest({
-			clientId: getEnv("EXPO_PUBLIC_KEYCLOAK_CLIENT_ID"),
+			clientId: getClientId(),
 			redirectUri,
 			scopes: ["openid"],
 			responseType: AuthSession.ResponseType.Code,
@@ -53,23 +59,17 @@ export class KeycloakAuth {
 		}
 
 		return KeycloakAuth.requestToken({
-			// Keycloak api naming conventions
-			/* eslint-disable camelcase */
 			grant_type: "authorization_code",
 			code: result.params.code,
 			redirect_uri: redirectUri,
 			code_verifier: request.codeVerifier ?? ""
-			/* eslint-enable camelcase */
 		});
 	}
 
 	public static refresh(refreshToken: string): Promise<KeycloakOAuth2Token> {
 		return KeycloakAuth.requestToken({
-			// Keycloak api naming conventions
-			/* eslint-disable camelcase */
 			grant_type: "refresh_token",
 			refresh_token: refreshToken
-			/* eslint-enable camelcase */
 		});
 	}
 
@@ -82,10 +82,7 @@ export class KeycloakAuth {
 				"Content-Type": "application/x-www-form-urlencoded"
 			},
 			body: new URLSearchParams({
-				// Keycloak api naming conventions
-				/* eslint-disable camelcase */
-				client_id: getEnv("EXPO_PUBLIC_KEYCLOAK_CLIENT_ID"),
-				/* eslint-enable camelcase */
+				client_id: getClientId(),
 				...params
 			}).toString()
 		});
