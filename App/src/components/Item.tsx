@@ -307,6 +307,10 @@ function FilledItem({
 	);
 }
 
+function isEmptySlot(isEmpty: boolean, item: MainItem | SupportItem): boolean {
+	return isEmpty || item.id === 0;
+}
+
 export function Item({
 	item,
 	itemType,
@@ -323,7 +327,7 @@ export function Item({
 		handleFlip
 	} = useItemFlip();
 
-	if (isEmpty || !item || item.id === 0) {
+	if (!item || isEmptySlot(isEmpty, item)) {
 		return <EmptyItem itemType={itemType} customKey={customKey} />;
 	}
 
