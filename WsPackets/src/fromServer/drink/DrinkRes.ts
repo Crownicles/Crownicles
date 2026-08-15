@@ -1,9 +1,11 @@
 import { FromServerPacket } from "../FromServerPacket";
+import { ItemNature } from "../../objects/ItemNature";
 
-export class CommandDrinkConsumePotionRes extends FromServerPacket {
-	health?: number;
+/**
+ * Effect of the potion the player drank. `value` is expressed in the unit of its nature.
+ */
+export class DrinkRes extends FromServerPacket {
+	value!: number;
 
-	energy?: number;
-
-	time?: number;
+	itemNature!: ItemNature;
 }
