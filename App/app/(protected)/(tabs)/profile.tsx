@@ -1,9 +1,9 @@
-import {useFocusEffect, useNavigation} from "expo-router";
+import {useNavigation} from "expo-router";
 import {ActivityIndicator, ScrollView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import {WebSocketClient} from "@/src/networking/WebSocketClient";
-import {useCallback, useEffect, useState} from "react";
-import {AppConstants} from "@/src/AppConstants";
-import {useProfile} from "@/src/contexts/ProfileContext";
+import {useEffect, useState} from "react";
+import {GameClient} from "@/src/networking/GameClient";
+import {useGameQuery} from "@/src/store/useGameQuery";
+import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {ProfileReq} from "ws-packets/src/fromClient/ProfileReq";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
@@ -12,29 +12,6 @@ import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {i18n} from "@/src/translations/i18n";
-
-type LoadingState = 'loading' | 'success' | 'error' | 'timeout';
-
-interface PlayerStats {
-	level: number;
-	health: { value: number; max: number };
-	experience: { value: number; max: number };
-	money: number;
-	gems: number;
-	score: number;
-	rank: {
-		unranked: boolean;
-		rank: number;
-		numberOfPlayers: number;
-	};
-	stats?: {
-		energy: { value: number; max: number };
-		attack: number;
-		defense: number;
-		speed: number;
-		breath: { base: number; max: number; regen: number };
-	};
-}
 
 interface TooltipState {
 	visible: boolean;
@@ -45,101 +22,28 @@ interface TooltipState {
 
 
 export default function Profile() {
-	const { profileData, setProfileData } = useProfile();
-	const [profileState, setProfileState] = useState<LoadingState>('loading');
-	const [playerStats, setPlayerStats] = useState<PlayerStats | null>(null);
-	const [inventoryData, setInventoryData] = useState<InventoryData | null>(null);
-	const [showBackupItems, setShowBackupItems] = useState<boolean>(false);
+	const profileState = useGameQuery<ProfileRes>(
+		GAME_ENTITIES.PROFILE,
+		() => GameClient.request(makeFromClientPacket(ProfileReq, { askedPlayer: {} }), ProfileRes, [PlayerNotFound])
+	);
+	const inventoryState = useGameQuery<InventoryRes>(
+		GAME_ENTITIES.INVENTORY,
+		() => GameClient.request(makeFromClientPacket(InventoryReq, { askedPlayer: {} }), InventoryRes, [PlayerNotFound])
+	);
 	const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, text: '', x: 0, y: 0 });
 	const [tooltipTimeout, setTooltipTimeout] = useState<number | null>(null);
 	const navigation = useNavigation();
 
-	const loadProfile = useCallback(() => {
-		setProfileState('loading');
+	const profile = profileState.status === "ready" ? profileState.data : null;
 
-		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ProfileReq, { askedPlayer: {} }), {
-			[ProfileRes.name]: (packet: ProfileRes) => {
-				setProfileData({
-					pseudo: packet.pseudo,
-					classId: packet.classId,
-					level: packet.level
-				});
-				setPlayerStats({
-					level: packet.level,
-					health: packet.health,
-					experience: packet.experience,
-					money: packet.money,
-					gems: packet.missions.gems,
-					score: packet.rank.score,
-					rank: {
-						unranked: packet.rank.unranked,
-						rank: packet.rank.rank,
-						numberOfPlayers: packet.rank.numberOfPlayers
-					},
-					stats: packet.stats ? {
-						energy: packet.stats.energy,
-						attack: packet.stats.attack,
-						defense: packet.stats.defense,
-						speed: packet.stats.speed,
-						breath: packet.stats.breath
-					} : undefined
-				});
-				setProfileState('success');
-				// Update navigation title with pseudo and level
-				navigation.setOptions({
-					title: packet.pseudo
-				});
-			},
-			[PlayerNotFound.name]: () => {
-				setProfileState('error');
-			}
-		}, {
-			time: AppConstants.PACKET_TIMEOUT,
-			callback: () => {
-				setProfileState('timeout');
-			}
-		});
-
-		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(InventoryReq, { askedPlayer: {} }), {
-			[InventoryRes.name]: (packet: InventoryRes) => {
-				if (packet.foundPlayer && packet.data) {
-					setInventoryData({
-						weapon: packet.data.weapon,
-						armor: packet.data.armor,
-						potion: packet.data.potion,
-						object: packet.data.object,
-						backupWeapons: packet.data.backupWeapons,
-						backupArmors: packet.data.backupArmors,
-						backupPotions: packet.data.backupPotions,
-						backupObjects: packet.data.backupObjects,
-						slots: packet.data.slots
-					});
-				}
-			},
-			[PlayerNotFound.name]: () => {
-				// Inventory not found, but this is handled by the main profile request
-			}
-		}, {
-			time: AppConstants.PACKET_TIMEOUT,
-			callback: () => {
-				// Inventory request timeout, but this is not critical
-			}
-		});
-	}, [setProfileData, navigation]);
-
-	// todo: verify that it does not run twice in production mode
-	useFocusEffect(useCallback(() => {
-		loadProfile();
-		}, [loadProfile])
-	);
+	// The server leaves the payload out when it has no inventory to show, so its absence is the empty case
+	const inventoryData: InventoryData | null = inventoryState.status === "ready" ? inventoryState.data.data ?? null : null;
 
 	useEffect(() => {
-		if (profileState === 'success' && profileData.pseudo && playerStats) {
-			navigation.setOptions({
-				title: `${profileData.pseudo}`
-			});
+		if (profile) {
+			navigation.setOptions({ title: profile.pseudo });
 		}
-	}, [profileState, profileData.pseudo, playerStats, navigation]);
+	}, [profile, navigation]);
 
 	const renderProgressBar = (current: number, max: number, color: string, label: string) => {
 		const percentage = Math.min((current / max) * 100, 100);
@@ -260,9 +164,9 @@ export default function Profile() {
 	};
 
 	const renderStatsContainer = () => {
-		if (!playerStats?.stats) return null;
+		if (!profile?.stats) return null;
 
-		const { stats } = playerStats;
+		const { stats } = profile;
 
 		return (
 			<View style={styles.statsContainer}>
@@ -280,7 +184,7 @@ export default function Profile() {
 	};
 
 	const renderProfileSection = () => {
-		switch (profileState) {
+		switch (profileState.status) {
 			case 'loading':
 				return (
 					<View style={styles.centerContent}>
@@ -288,26 +192,26 @@ export default function Profile() {
 						<Text style={styles.loadingText}>Loading profile...</Text>
 					</View>
 				);
-			case 'error':
-			case 'timeout':
+			case 'empty':
+			case 'failed':
 				return (
 					<View style={styles.centerContent}>
 						<Text style={styles.errorText}>
-							{profileState === 'error' ? 'Profile not found' : 'Request timed out. Please try again.'}
+							{profileState.status === 'empty' ? 'Profile not found' : 'Request timed out. Please try again.'}
 						</Text>
 					</View>
 				);
-			case 'success':
+			case 'ready':
 				return (
 					<View style={styles.profileContent}>
-						{playerStats && (
+						{profile && (
 							<>
 								{/* Health and Experience Bars Row */}
 								<View style={styles.barsContainer}>
 									<View style={styles.barItem}>
 										{renderProgressBar(
-											playerStats.health.value,
-											playerStats.health.max,
+											profile.health.value,
+											profile.health.max,
 											'#ff4444',
 											i18n.t("app:profile.titles.health")
 										)}
@@ -320,12 +224,12 @@ export default function Profile() {
 													<View
 														style={[
 															styles.progressBarFill,
-															{ width: `${Math.min((playerStats.experience.value / playerStats.experience.max) * 100, 100)}%`, backgroundColor: '#FFDF00' }
+															{ width: `${Math.min((profile.experience.value / profile.experience.max) * 100, 100)}%`, backgroundColor: '#FFDF00' }
 														]}
 													/>
 												</View>
 												<Text style={styles.progressText}>
-													{playerStats.experience.value} / {playerStats.experience.max}
+													{profile.experience.value} / {profile.experience.max}
 												</Text>
 											</View>
 										</View>
@@ -345,7 +249,7 @@ export default function Profile() {
 												}}
 										>
 											<Text style={styles.currencyEmoji}>💰</Text>
-											<Text style={styles.currencyValue}>{playerStats.money}</Text>
+											<Text style={styles.currencyValue}>{profile.money}</Text>
 										</TouchableOpacity>
 
 										<TouchableOpacity
@@ -357,7 +261,7 @@ export default function Profile() {
 												}}
 										>
 											<Text style={styles.currencyEmoji}>💎</Text>
-											<Text style={styles.currencyValue}>{playerStats.gems}</Text>
+											<Text style={styles.currencyValue}>{profile.missions.gems}</Text>
 										</TouchableOpacity>
 									</View>
 								</View>
@@ -375,7 +279,7 @@ export default function Profile() {
 											}}
 										>
 											<Text style={styles.scoreRankEmoji}>🏅</Text>
-											<Text style={styles.scoreRankValue}>{playerStats.score}</Text>
+											<Text style={styles.scoreRankValue}>{profile.rank.score}</Text>
 										</TouchableOpacity>
 
 										<TouchableOpacity
@@ -388,7 +292,7 @@ export default function Profile() {
 										>
 											<Text style={styles.scoreRankEmoji}>🏆</Text>
 											<Text style={styles.scoreRankValue}>
-												{playerStats.rank.unranked ? 'Unranked' : `${playerStats.rank.rank} / ${playerStats.rank.numberOfPlayers}`}
+												{profile.rank.unranked ? 'Unranked' : `${profile.rank.rank} / ${profile.rank.numberOfPlayers}`}
 											</Text>
 										</TouchableOpacity>
 									</View>

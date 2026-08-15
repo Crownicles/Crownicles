@@ -20,7 +20,6 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#B95E4B"
       },
-      "edgeToEdgeEnabled": true,
       "package": "com.anonymous.Crownicles"
     },
     "web": {
