@@ -781,6 +781,10 @@
     "choseMapMinutes_other": "You have decided to head for {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. This journey will take approximately **{{timeDisplay}}**.",
     "choseMap_one": "You chose to go in the direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. You'll travel for about **{{time}} hour**.",
     "choseMap_other": "You chose to go in the direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. You'll travel for about **{{time}} hours**.",
+    "goBackMapMinutes_one": "Vous rebroussez chemin en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, d'où vous veniez. Ce retour durera environ **{{timeDisplay}}**.",
+    "goBackMapMinutes_other": "Vous rebroussez chemin en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, d'où vous veniez. Ce retour durera environ **{{timeDisplay}}**.",
+    "goBackMap_one": "Vous rebroussez chemin en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, d'où vous veniez. Ce retour durera environ **{{time}} heure**.",
+    "goBackMap_other": "Vous rebroussez chemin en direction {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, d'où vous veniez. Ce retour durera environ **{{time}} heures**.",
     "collectedPointsTitle": "Collected points:",
     "commandDescription": "Get a report on your character's situation.",
     "commandName": "report",
@@ -1746,55 +1750,52 @@
         "plantHeader_bold": "{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})**:",
         "plants": {
           "tomorrow": {
-            "bigDrop": "• **Tomorrow**: Massive stocks of $t(models:plants.{{plantId}}) will arrive on the stalls, prices will collapse.",
-            "drop": "• **Tomorrow**: The $toffer (models:plants.{{plantId}}) will be slightly higher on demand, prices should fall.",
+            "bigDrop": "• **Demain** : Des stocks massifs arriveront sur les étals, les prix vont s'effondrer.",
+            "drop": "• **Demain** : L'offre sera un peu supérieure à la demande, les prix devraient baisser.",
             "stable": "• **Tomorrow**: Nothing special to report for this plant, the courses will remain stable.",
-            "rise": "• **Tomorrow**: $treserves (models:plants.{{plantId}}) decrease in herbalists, prices will rise.",
-            "bigRise": "• **Tomorrow**: A smash of $t(models:plants.{{plantId}}) is on the rise, the prices will flame!"
+            "rise": "• **Demain** : Les réserves s'amenuisent chez les herboristes, les prix vont monter.",
+            "bigRise": "• **Demain** : Une pénurie se profile, les prix vont flamber !"
           },
           "threeDays": {
-            "bigDrop": "• **In 3 days**: The market will be flooded with $t(models:plants.{{plantId}}), prices will drop sharply.",
-            "drop": "• **In 3 days**: $toverproduction (models:plants.{{plantId}}) will lower prices.",
+            "bigDrop": "• **Dans 3 jours** : Le marché sera inondé de cette plante, les prix chuteront fortement.",
+            "drop": "• **Dans 3 jours** : Une légère surproduction fera baisser les prix.",
             "stable": "• **In 3 days**: The operation of this plant will remain balanced.",
-            "rise": "• **In 3 days**: The demand for $t(models:plants.{{plantId}}) will increase significantly, prices will rise.",
-            "bigRise": "• **In 3 days**: Herbalists will struggle to find $t(models:plants.{{plantId}}), prices will explode!"
+            "rise": "• **Dans 3 jours** : La demande augmentera sensiblement, les prix grimperont.",
+            "bigRise": "• **Dans 3 jours** : Les herboristes peineront à s'approvisionner, les prix exploseront !"
           },
           "oneWeek": {
-            "bigDrop": "• **In one week**: Massive overproduction will cause the prices of the $t(models:plants.{{plantId}}) to plummet.",
-            "drop": "• **In a week**: The price of the $t(models:plants.{{plantId}}) will be raised in surplus.",
+            "bigDrop": "• **Dans une semaine** : Une surproduction massive fera chuter les prix.",
+            "drop": "• **Dans une semaine** : Le marché sera légèrement en surplus.",
             "stable": "• **Within a week**: The market for this plant should maintain its current balance.",
-            "rise": "• **In a week**: $treserves (models:plants.{{plantId}}) will run out, prices will rise.",
-            "bigRise": "• **In one week**: A drought will hit the crops of $t(models:plants.{{plantId}}), prices will be at their highest!"
+            "rise": "• **Dans une semaine** : Les réserves s'épuiseront, les prix augmenteront.",
+            "bigRise": "• **Dans une semaine** : Une sécheresse frappera les cultures, les prix seront au plus haut !"
           }
         },
         "outro": "*The advisor rolls the scroll and tends it to you with a smile heard.*",
-        "horizonLabels": {
-          "tomorrow": "tomorrow",
-          "threeDays": "in 3 days",
-          "oneWeek": "in a week"
-        },
+        "rotationHorizon_one": "demain",
+        "rotationHorizon_other": "dans {{count}} jours",
         "rotation": "{emote:inventory.stock} **Changing stock**: Herbalist will renew their selection **{{horizon}}**. New available plants will be: {{newPlants}}.",
         "newPlants": {
           "tomorrow": {
-            "bigDrop": "• **Tomorrow**: The price of the $t(models:plants.{{plantId}}) will be treasured below its usual value, a great deal!",
-            "drop": "• **Tomorrow**: The price of $t(models:plants.{{plantId}}) will be raised below the current price.",
-            "stable": "• **Tomorrow**: The price of the $t(models:plants.{{plantId}}) will conform to its usual value.",
-            "rise": "• **Tomorrow**: The price of the $t(models:plants.{{plantId}}) will be slightly higher than normal.",
-            "bigRise": "• **Tomorrow**: The price of the $t(models:plants.{{plantId}}) will be well above its usual value, better wait."
+            "bigDrop": "• **Demain** : Le prix sera très en dessous de sa valeur habituelle, une excellente affaire !",
+            "drop": "• **Demain** : Le prix sera légèrement en dessous du prix courant.",
+            "stable": "• **Demain** : Le prix sera conforme à sa valeur habituelle.",
+            "rise": "• **Demain** : Le prix sera un peu élevé par rapport à la normale.",
+            "bigRise": "• **Demain** : Le prix sera bien au-dessus de sa valeur habituelle, mieux vaut attendre."
           },
           "threeDays": {
-            "bigDrop": "• **In 3 days**: The $t(models:plants.{{plantId}}) will be offered at an attractive price.",
-            "drop": "• **In 3 days**: The price of the $t(models:plants.{{plantId}}) will be a little below the average.",
-            "stable": "• **In 3 days**: The price of the $t(models:plants.{{plantId}}) will not be surprising.",
-            "rise": "• **In 3 days**: The $t(models:plants.{{plantId}}) will be a little better than usual.",
-            "bigRise": "• **In 3 days**: The $t(models:plants.{{plantId}}) will cost much more than usual."
+            "bigDrop": "• **Dans 3 jours** : Le prix sera très avantageux.",
+            "drop": "• **Dans 3 jours** : Le prix sera un peu en dessous de la moyenne.",
+            "stable": "• **Dans 3 jours** : Le prix n'aura rien de surprenant.",
+            "rise": "• **Dans 3 jours** : Le prix sera un peu plus élevé que d'ordinaire.",
+            "bigRise": "• **Dans 3 jours** : Le prix sera bien plus élevé que d'habitude."
           },
           "oneWeek": {
-            "bigDrop": "• **In a week**: The price of $t(models:plants.{{plantId}}) will be exceptionally low.",
-            "drop": "• **In a week**: The $t(models:plants.{{plantId}}) will be offered at a discounted price.",
-            "stable": "• **In a week**: The price of $t(models:plants.{{plantId}}) will be average.",
-            "rise": "• **In a week**: The price of $t(models:plants.{{plantId}}) will be a little above normal.",
-            "bigRise": "• **In a week**: The $t(models:plants.{{plantId}}) will be sold at an exorbitant price!"
+            "bigDrop": "• **Dans une semaine** : Le prix sera exceptionnellement bas.",
+            "drop": "• **Dans une semaine** : Le prix sera légèrement réduit.",
+            "stable": "• **Dans une semaine** : Le prix sera dans la moyenne.",
+            "rise": "• **Dans une semaine** : Le prix sera un peu au-dessus de la normale.",
+            "bigRise": "• **Dans une semaine** : Le prix sera exorbitant !"
           }
         }
       },
