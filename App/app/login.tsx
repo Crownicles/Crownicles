@@ -1,4 +1,4 @@
-import {ActivityIndicator, Button, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Alert, Button, StyleSheet, Text, View} from "react-native";
 import React from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {KeycloakAuth} from "@/src/authentication/KeycloakAuth";
@@ -7,13 +7,25 @@ import {AuthToken} from "@/src/authentication/AuthToken";
 import {useRouter} from "expo-router";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		justifyContent: "center",
+		alignItems: "center",
+	},
+	text: {
+		fontSize: 24,
+		fontWeight: "bold",
+	},
+});
+
 export default function LoginScreen() {
 	const authState = React.useContext(AuthContext);
 	const router = useRouter();
 
 	// If auth state is token invalid or expired, we show a popup message to the user
 	if (authState.state === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED) {
-		alert("Your session has expired. Please log in again.");
+		Alert.alert("Your session has expired. Please log in again.");
 		authState.setState(AuthStateEnum.NO_TOKEN);
 		authState.clearToken().then().catch((err) => {
 			console.error("Failed to clear token:", err);
@@ -32,7 +44,7 @@ export default function LoginScreen() {
 					const authToken = AuthToken.fromKeycloakOAuth2Token(keycloakToken);
 
 					if (!authToken.getAccessToken()) {
-						alert("Login failed. Invalid token received.");
+						Alert.alert("Login failed. Invalid token received.");
 						return;
 					}
 
@@ -53,22 +65,10 @@ export default function LoginScreen() {
 							});
 				}).catch((error) => {
 					console.error("Login error:", error);
-					alert("An error occurred during login. Please try again.");
+					Alert.alert("An error occurred during login. Please try again.");
 					router.replace("/login");
 				});
 			}} />
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: "center",
-		alignItems: "center",
-	},
-	text: {
-		fontSize: 24,
-		fontWeight: "bold",
-	},
-});

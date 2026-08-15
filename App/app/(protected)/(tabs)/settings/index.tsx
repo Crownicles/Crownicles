@@ -8,6 +8,36 @@ import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {PingReq} from "ws-packets/src/fromClient/PingReq";
 import {PingRes} from "ws-packets/src/fromServer/ping/PingRes";
 
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		padding: 20,
+		backgroundColor: '#fff',
+	},
+	header: {
+		fontSize: 24,
+		fontWeight: 'bold',
+		marginBottom: 20,
+	},
+	item: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		marginBottom: 20,
+	},
+	listItem: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		padding: 16,
+		marginBottom: 8,
+		backgroundColor: '#f5f5f5',
+		borderRadius: 8,
+		borderWidth: 1,
+		borderColor: '#e0e0e0',
+	},
+});
+
 const ListItem = ({ children }: PropsWithChildren) => (
   <View style={styles.listItem}>
     {children}
@@ -62,33 +92,3 @@ export default function Index() {
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		padding: 20,
-		backgroundColor: '#fff',
-	},
-	header: {
-		fontSize: 24,
-		fontWeight: 'bold',
-		marginBottom: 20,
-	},
-	item: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		marginBottom: 20,
-	},
-	listItem: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		justifyContent: 'space-between',
-		padding: 16,
-		marginBottom: 8,
-		backgroundColor: '#f5f5f5',
-		borderRadius: 8,
-		borderWidth: 1,
-		borderColor: '#e0e0e0',
-	},
-});

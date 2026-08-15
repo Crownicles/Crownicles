@@ -35,6 +35,10 @@ function getRedirectUri(): string {
 	});
 }
 
+function hasCompleteToken(token: KeycloakOAuth2Token): boolean {
+	return Boolean(token.access_token && token.refresh_token && token.expires_in && token.refresh_expires_in);
+}
+
 /**
  * Authenticates against Keycloak with Authorization Code + PKCE.
  *
@@ -93,7 +97,7 @@ export class KeycloakAuth {
 
 		const token = await response.json() as KeycloakOAuth2Token;
 
-		if (!token.access_token || !token.refresh_token || !token.expires_in || !token.refresh_expires_in) {
+		if (!hasCompleteToken(token)) {
 			throw new Error("Keycloak returned an incomplete token.");
 		}
 

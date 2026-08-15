@@ -12,6 +12,18 @@ import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {petIcon, petMood, petMoodRatio, petNickname, petRarity, petSex, petTypeName} from "@/src/display/PetDisplay";
 
+const styles = StyleSheet.create({
+	content: {
+		padding: Theme.spacing.xl, backgroundColor: Theme.colors.wash, flexGrow: 1
+	},
+	centered: {
+		flex: 1, alignItems: "center", justifyContent: "center", padding: Theme.spacing.xxl, backgroundColor: Theme.colors.wash
+	},
+	message: {
+		color: Theme.colors.muted, fontSize: Theme.fontSize.body, textAlign: "center"
+	}
+});
+
 function Centered({ children }: { children: ReactNode }): ReactNode {
 	return <View style={styles.centered}>{children}</View>;
 }
@@ -66,15 +78,3 @@ export default function Pet(): ReactNode {
 			return <PetSheet packet={state.data} />;
 	}
 }
-
-const styles = StyleSheet.create({
-	content: {
-		padding: Theme.spacing.xl, backgroundColor: Theme.colors.wash, flexGrow: 1
-	},
-	centered: {
-		flex: 1, alignItems: "center", justifyContent: "center", padding: Theme.spacing.xxl, backgroundColor: Theme.colors.wash
-	},
-	message: {
-		color: Theme.colors.muted, fontSize: Theme.fontSize.body, textAlign: "center"
-	}
-});

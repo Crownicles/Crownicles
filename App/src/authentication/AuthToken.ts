@@ -71,7 +71,7 @@ export class AuthToken {
 				refreshTokenExpiresAt: new Date(data.refreshTokenExpiresAt)
 			});
 		}
-		catch (_) {
+		catch {
 			throw new Error("Invalid token string format");
 		}
 	}

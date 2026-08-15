@@ -13,6 +13,86 @@ import {
 } from "../../../../../WsPackets/src/MakePackets";
 import { PlayerNotFound } from "../../../../../WsPackets/src/fromServer/common/PlayerNotFound";
 
+type ProfilePlayerData = CommandProfilePacketRes["playerData"];
+type ProfileStats = NonNullable<ProfileRes["stats"]>;
+type ProfilePet = NonNullable<ProfileRes["pet"]>;
+type ProfileFightRanking = NonNullable<ProfileRes["fightRanking"]>;
+
+function translateValueAndMax(value: ProfilePlayerData["health"]): ProfileRes["health"] {
+	return {
+		value: value.value,
+		max: value.max
+	};
+}
+
+function translateStats(stats: NonNullable<ProfilePlayerData["stats"]>): ProfileStats {
+	return {
+		breath: {
+			max: stats.breath.max,
+			base: stats.breath.base,
+			regen: stats.breath.regen
+		},
+		attack: stats.attack,
+		defense: stats.defense,
+		speed: stats.speed,
+		energy: {
+			max: stats.energy.max,
+			value: stats.energy.value
+		}
+	};
+}
+
+function translatePet(pet: NonNullable<ProfilePlayerData["pet"]>): ProfilePet {
+	return {
+		sex: pet.sex,
+		rarity: pet.rarity,
+		typeId: pet.typeId,
+		nickname: pet.nickname
+	};
+}
+
+function translateFightRanking(fightRanking: NonNullable<ProfilePlayerData["fightRanking"]>): ProfileFightRanking {
+	return {
+		glory: fightRanking.glory,
+		league: fightRanking.league
+	};
+}
+
+function translateProfileData(pseudo: string, playerData: ProfilePlayerData): ProfileRes {
+	return makeFromServerPacket(ProfileRes, {
+		pseudo,
+		health: translateValueAndMax(playerData.health),
+		experience: translateValueAndMax(playerData.experience),
+		badges: playerData.badges,
+		guild: playerData.guild,
+		classId: playerData.classId,
+		color: playerData.color,
+		level: playerData.level,
+		rank: {
+			rank: playerData.rank.rank,
+			numberOfPlayers: playerData.rank.numberOfPlayers,
+			score: playerData.rank.score,
+			unranked: playerData.rank.unranked
+		},
+		money: playerData.money,
+		effect: {
+			effect: playerData.effect.effect,
+			healed: playerData.effect.healed,
+			timeLeft: playerData.effect.timeLeft,
+			hasTimeDisplay: playerData.effect.hasTimeDisplay
+		},
+		missions: {
+			gems: playerData.missions.gems,
+			campaignProgression: playerData.missions.campaignProgression
+		},
+		mapTypeId: playerData.mapTypeId,
+		destinationId: playerData.destinationId,
+		...playerData.pet ? { pet: translatePet(playerData.pet) } : {},
+		...playerData.stats ? { stats: translateStats(playerData.stats) } : {},
+		...playerData.fightRanking ? { fightRanking: translateFightRanking(playerData.fightRanking) } : {}
+	});
+}
+
 export default class ProfileCommandServerTranslator {
 	@fromServerTranslator(CommandProfilePacketRes, ProfileRes)
 	public static async translate(_context: PacketContext, packet: CommandProfilePacketRes): Promise<ProfileRes> {
@@ -21,71 +101,7 @@ export default class ProfileCommandServerTranslator {
 			throw "Error when retrieving the player";
 		}
 
-		return makeFromServerPacket(ProfileRes, {
-			pseudo: escapeUsername(user.payload.user.attributes.gameUsername[0]),
-			health: {
-				value: packet.playerData.health.value,
-				max: packet.playerData.health.max
-			},
-			experience: {
-				value: packet.playerData.experience.value,
-				max: packet.playerData.experience.max
-			},
-			badges: packet.playerData.badges,
-			guild: packet.playerData.guild,
-			classId: packet.playerData.classId,
-			color: packet.playerData.color,
-			level: packet.playerData.level,
-			rank: {
-				rank: packet.playerData.rank.rank,
-				numberOfPlayers: packet.playerData.rank.numberOfPlayers,
-				score: packet.playerData.rank.score,
-				unranked: packet.playerData.rank.unranked
-			},
-			money: packet.playerData.money,
-			effect: {
-				effect: packet.playerData.effect.effect,
-				healed: packet.playerData.effect.healed,
-				timeLeft: packet.playerData.effect.timeLeft,
-				hasTimeDisplay: packet.playerData.effect.hasTimeDisplay
-			},
-			pet: packet.playerData.pet
-				? {
-					sex: packet.playerData.pet.sex,
-					rarity: packet.playerData.pet.rarity,
-					typeId: packet.playerData.pet.typeId,
-					nickname: packet.playerData.pet.nickname
-				}
-				: undefined,
-			stats: packet.playerData.stats
-				? {
-					breath: {
-						max: packet.playerData.stats.breath.max,
-						base: packet.playerData.stats.breath.base,
-						regen: packet.playerData.stats.breath.regen
-					},
-					attack: packet.playerData.stats.attack,
-					defense: packet.playerData.stats.defense,
-					speed: packet.playerData.stats.speed,
-					energy: {
-						max: packet.playerData.stats?.energy.max,
-						value: packet.playerData.stats?.energy.value
-					}
-				}
-				: undefined,
-			missions: {
-				gems: packet.playerData.missions.gems,
-				campaignProgression: packet.playerData.missions.campaignProgression
-			},
-			fightRanking: packet.playerData.fightRanking
-				? {
-					glory: packet.playerData.fightRanking.glory,
-					league: packet.playerData.fightRanking.league
-				}
-				: undefined,
-			mapTypeId: packet.playerData.mapTypeId,
-			destinationId: packet.playerData.destinationId
-		});
+		return translateProfileData(escapeUsername(user.payload.user.attributes.gameUsername[0]), packet.playerData);
 	}
 
 	@fromServerTranslator(CommandProfilePlayerNotFound, PlayerNotFound)

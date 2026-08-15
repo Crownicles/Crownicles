@@ -6,5 +6,10 @@ module.exports = defineConfig([
   expoConfig,
   {
     ignores: ['dist/*'],
+    rules: {
+      'no-use-before-define': ['error', { variables: true }],
+      'no-alert': 'error',
+      'react/jsx-boolean-value': ['error', 'never'],
+    },
   },
 ]);

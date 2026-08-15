@@ -5,14 +5,6 @@ import {AppIcons} from "@/src/AppIcons";
 import {reloadI18n} from "@/src/translations/i18nLoader";
 
 /**
- * Replace in the given string all occurences of "{emote:...}" by the corresponding discord emote
- * @param str
- */
-function convertEmoteFormat(str: string): string {
-	return str.replace(/{emote:(.*?)}/g, (_match, emote) => getEmote(emote) ?? `EMOTE NOT FOUND : ${emote}`);
-}
-
-/**
  * Get the corresponding to emote for the given emote name
  * @param path
  */
@@ -25,6 +17,14 @@ function getEmote(path: string): string | null {
 	}
 
 	return emote;
+}
+
+/**
+ * Replace in the given string all occurences of "{emote:...}" by the corresponding discord emote
+ * @param str
+ */
+function convertEmoteFormat(str: string): string {
+	return str.replace(/{emote:(.*?)}/g, (_match, emote) => getEmote(emote) ?? `EMOTE NOT FOUND : ${emote}`);
 }
 
 /**

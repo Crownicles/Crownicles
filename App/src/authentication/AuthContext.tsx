@@ -33,28 +33,28 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	const [state, setState] = React.useState(AuthStateEnum.NOT_READY); // Persist state: https://youtu.be/yNaOaR2kIa0?t=649
 	const router = useRouter();
 
-	const setStateInternal = (newState: AuthStateEnum) => {
-		const previousState = state;
-
-		setState(newState);
-		console.log("Auth state changed from", previousState, "to", newState);
-
-		if (newState === AuthStateEnum.LOGGED_IN && previousState !== AuthStateEnum.LOGGED_IN && previousState !== AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE && previousState !== AuthStateEnum.RECONNECTING_PACKET_QUEUE) {
-			router.replace("/");
-		}
-		else if (newState === AuthStateEnum.NO_TOKEN || newState === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED) {
-			router.replace("/login");
-		}
-		else if (newState === AuthStateEnum.NOT_READY) {
-			startAuthenticationFlow().then().catch(err => {
-				console.error("Error during authentication flow restart:", err);
-				setStateInternal(AuthStateEnum.NO_TOKEN);
-			}); // Restart the authentication flow if the state is not ready (happens when the connection cannot be established)
-			router.replace("/");
+	const clearToken = async (): Promise<void> => {
+		let shouldContinue = true;
+		let count = 1;
+		while (shouldContinue) {
+			const tokenStorageKey = `${tokenStorageKeyTemplate}${count}`;
+			count++;
+			let result = await SecureStore.getItemAsync(tokenStorageKey).catch((error) => {
+				console.error("Failed to load token for clearing:", error);
+				return null;
+			});
+			if (result) {
+				await SecureStore.deleteItemAsync(tokenStorageKey).catch((error) => {
+					console.error("Failed to clear token part:", error);
+				});
+			}
+			else {
+				shouldContinue = false; // Stop if no more token parts are found
+			}
 		}
 	}
 
-	const saveToken = async (token: AuthToken) => {
+	const saveToken = async (token: AuthToken): Promise<void> => {
 		console.debug("Saving token:", token);
 
 		if (!token) {
@@ -80,28 +80,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		}
 	}
 
-	const clearToken = async () => {
-		let shouldContinue = true;
-		let count = 1;
-		while (shouldContinue) {
-			const tokenStorageKey = `${tokenStorageKeyTemplate}${count}`;
-			count++;
-			let result = await SecureStore.getItemAsync(tokenStorageKey).catch((error) => {
-				console.error("Failed to load token for clearing:", error);
-				return null;
-			});
-			if (result) {
-				await SecureStore.deleteItemAsync(tokenStorageKey).catch((error) => {
-					console.error("Failed to clear token part:", error);
-				});
-			}
-			else {
-				shouldContinue = false; // Stop if no more token parts are found
-			}
-		}
-	}
+	let setStateInternal: (newState: AuthStateEnum) => void;
 
-	const startAuthenticationFlow = async () => {
+	const startAuthenticationFlow = async (): Promise<void> => {
 		// The token is stored in multiple parts because the Expo SecureStore has a limit on the size of the stored item.
 		let shouldContinue = true;
 		let count = 1;
@@ -141,6 +122,33 @@ export function AuthProvider({ children }: PropsWithChildren) {
 				setStateInternal(AuthStateEnum.CONNECTION_ERROR);
 			}
 		});
+	}
+
+	setStateInternal = (newState: AuthStateEnum): void => {
+		const previousState = state;
+		const isInitialLogin = newState === AuthStateEnum.LOGGED_IN
+			&& previousState !== AuthStateEnum.LOGGED_IN
+			&& previousState !== AuthStateEnum.RECONNECTING_NO_PACKET_QUEUE
+			&& previousState !== AuthStateEnum.RECONNECTING_PACKET_QUEUE;
+		const shouldRedirectToLogin = newState === AuthStateEnum.NO_TOKEN || newState === AuthStateEnum.TOKEN_INVALID_OR_EXPIRED;
+		const shouldRestartAuthentication = newState === AuthStateEnum.NOT_READY;
+
+		setState(newState);
+		console.log("Auth state changed from", previousState, "to", newState);
+
+		if (isInitialLogin) {
+			router.replace("/");
+		}
+		else if (shouldRedirectToLogin) {
+			router.replace("/login");
+		}
+		else if (shouldRestartAuthentication) {
+			startAuthenticationFlow().then().catch(err => {
+				console.error("Error during authentication flow restart:", err);
+				setStateInternal(AuthStateEnum.NO_TOKEN);
+			}); // Restart the authentication flow if the state is not ready (happens when the connection cannot be established)
+			router.replace("/");
+		}
 	}
 
 	useEffect(() => {

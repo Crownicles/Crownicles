@@ -4,6 +4,12 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {Theme} from "@/src/design/Theme";
 
+const styles = StyleSheet.create({
+	container: {
+		paddingHorizontal: Theme.spacing.xl, paddingBottom: Theme.spacing.md, backgroundColor: Theme.colors.wash
+	}
+});
+
 /**
  * Shows every collector waiting for an answer, wherever the player is.
  *
@@ -29,9 +35,3 @@ export function OpenCollectors(): ReactNode {
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	container: {
-		paddingHorizontal: Theme.spacing.xl, paddingBottom: Theme.spacing.md, backgroundColor: Theme.colors.wash
-	}
-});

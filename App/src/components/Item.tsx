@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Animated, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {Animated, Text, TouchableOpacity, View} from "react-native";
 import {MainItem} from "ws-packets/src/objects/MainItem";
 import {MainItemStat} from "ws-packets/src/objects/MainItemStat";
 import {SupportItem} from "ws-packets/src/objects/SupportItem";
@@ -7,6 +7,7 @@ import {ItemRarity} from "ws-packets/src/objects/ItemRarity";
 import {ItemNature} from "ws-packets/src/objects/ItemNature";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
+import {styles} from "./Item.styles";
 
 export interface InventoryItemProps {
 	item?: MainItem | SupportItem;
@@ -18,7 +19,6 @@ export interface InventoryItemProps {
 	onSell?: () => void;
 	isBackupItem?: boolean;
 }
-
 export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSwitch, onSell, isBackupItem = false }: InventoryItemProps) {
 	const [isFlipped, setIsFlipped] = useState<boolean>(false);
 	const [flipAnim] = useState(new Animated.Value(0));
@@ -215,151 +215,3 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	itemContainer: {
-		position: 'relative',
-		height: 80,
-		marginBottom: 8,
-	},
-	inventoryItem: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		padding: 12,
-		backgroundColor: '#f9f9f9',
-		borderRadius: 10,
-		marginBottom: 8,
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 2,
-		minHeight: 68,
-	},
-	itemIcon: {
-		fontSize: 24,
-		marginRight: 12,
-	},
-	itemDetails: {
-		flex: 1,
-	},
-	itemName: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		marginBottom: 4,
-		color: '#333',
-	},
-	itemRarity: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginBottom: 4,
-	},
-	rarityIcon: {
-		fontSize: 12,
-		marginRight: 4,
-	},
-	rarityText: {
-		fontSize: 12,
-		color: '#666',
-	},
-	itemStatsContainer: {
-		marginTop: 4,
-	},
-	itemStatText: {
-		fontSize: 12,
-	},
-	itemStatsLine: {
-		flexDirection: 'row',
-		flexWrap: 'wrap',
-		marginTop: 4,
-	},
-	statSeparator: {
-		color: '#999',
-	},
-	itemStatIcon: {
-		fontSize: 12,
-		marginRight: 2,
-	},
-	itemStatValue: {
-		fontSize: 12,
-		color: '#666',
-	},
-	nerfedStat: {
-		color: '#ff6b6b',
-	},
-	strikethrough: {
-		textDecorationLine: 'line-through',
-	},
-	itemEffect: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginTop: 4,
-	},
-	itemEffectIcon: {
-		fontSize: 12,
-		marginRight: 4,
-	},
-	itemEffectText: {
-		fontSize: 12,
-		color: '#666',
-	},
-	flipSide: {
-		position: 'absolute',
-		top: 0,
-		left: 0,
-		right: 0,
-		bottom: 0,
-		backfaceVisibility: 'hidden',
-	},
-	backSide: {
-		backgroundColor: '#fff',
-		borderColor: '#ddd',
-		borderWidth: 1,
-		borderRadius: 10,
-		justifyContent: 'center',
-	},
-	hiddenSide: {
-		opacity: 0,
-		pointerEvents: 'none',
-	},
-	itemTouchable: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		flex: 1,
-	},
-	clickIndicator: {
-		fontSize: 16,
-		marginLeft: 8,
-		color: '#007AFF',
-		opacity: 0.8,
-	},
-	actionButtons: {
-		flexDirection: 'row',
-		justifyContent: 'space-around',
-		alignItems: 'center',
-		width: '100%',
-		paddingHorizontal: 8,
-	},
-	actionButton: {
-		alignItems: 'center',
-		justifyContent: 'center',
-		paddingVertical: 8,
-		paddingHorizontal: 12,
-		borderRadius: 8,
-		backgroundColor: '#f0f0f0',
-		minWidth: 60,
-	},
-	actionButtonIcon: {
-		fontSize: 20,
-		marginBottom: 2,
-	},
-	actionButtonText: {
-		fontSize: 10,
-		color: '#333',
-		textAlign: 'center',
-		fontWeight: '500',
-	},
-});

@@ -6,6 +6,12 @@ import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {collectorTitle, isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
 
+const styles = StyleSheet.create({
+	choice: { paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg },
+	choiceLabel: { color: Theme.colors.blue, fontSize: Theme.fontSize.body },
+	disabled: { color: Theme.colors.faint }
+});
+
 function useSecondsLeft(endTime: number): number {
 	const [secondsLeft, setSecondsLeft] = useState(() => Math.max(0, Math.ceil((endTime - Date.now()) / 1000)));
 
@@ -60,9 +66,3 @@ export function CollectorPrompt({ collector, onChoose }: {
 		</View>
 	);
 }
-
-const styles = StyleSheet.create({
-	choice: { paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg },
-	choiceLabel: { color: Theme.colors.blue, fontSize: Theme.fontSize.body },
-	disabled: { color: Theme.colors.faint }
-});

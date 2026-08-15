@@ -25,18 +25,7 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
 		devMode: false
 	});
 
-	const setDevMode = (devMode: boolean) => {
-		setPreferences(prev => ({ ...prev, devMode }));
-		savePreferences().then().catch(error => {
-			console.error("Failed to save preferences:", error);
-		});
-	};
-
-	const getDevMode = () => {
-		return preferences.devMode;
-	}
-
-	const savePreferences = async () => {
+	const savePreferences = async (): Promise<void> => {
 		try {
 			await AsyncStorage.setItem("preferences", JSON.stringify(preferences));
 		} catch (error) {
@@ -44,23 +33,38 @@ export function PreferencesProvider({ children }: PropsWithChildren) {
 		}
 	}
 
-	// todo: loadPreferences not working
-	const loadPreferences = async () => {
+	const setDevMode = (devMode: boolean): void => {
+		setPreferences(prev => ({ ...prev, devMode }));
+		savePreferences().then().catch(error => {
+			console.error("Failed to save preferences:", error);
+		});
+	};
+
+	const getDevMode = (): boolean => {
+		return preferences.devMode;
+	}
+
+	const loadPreferences = async (): Promise<PreferencesValues | null> => {
 		try {
 			const storedPreferences = await AsyncStorage.getItem("preferences");
 			if (storedPreferences) {
 				const parsedPreferences = JSON.parse(storedPreferences);
-				setPreferences({
+				return {
 					devMode: parsedPreferences.devMode || false,
-				});
+				};
 			}
 		} catch (error) {
 			console.error("Failed to load preferences:", error);
 		}
+		return null;
 	}
 
 	useEffect(() => {
-		loadPreferences().then().catch(error => {
+		loadPreferences().then(storedPreferences => {
+			if (storedPreferences) {
+				setPreferences(storedPreferences);
+			}
+		}).catch(error => {
 			console.error("Failed to load preferences on mount:", error);
 		});
 	}, []);
