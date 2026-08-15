@@ -13,9 +13,7 @@ const clientTranslators = new Map<string, ClientTranslatorFunction<FromClientPac
 /**
  * Class type of packet coming from the client
  */
-interface FromClientPacketLike<Packet extends FromClientPacket> {
-	new(): Packet;
-}
+type FromClientPacketLike<Packet extends FromClientPacket> = new () => Packet;
 
 /**
  * Function type of client translator

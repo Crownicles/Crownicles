@@ -21,9 +21,7 @@ const serverTranslators = new Map<string, ServerTranslatorProperties>();
 /**
  * Class type of packet coming from the server
  */
-interface FromServerPacketLike<Packet extends FromServerPacket> {
-	new(): Packet;
-}
+type FromServerPacketLike<Packet extends FromServerPacket> = new () => Packet;
 
 /**
  * Function type of server translator

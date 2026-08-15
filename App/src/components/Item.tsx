@@ -195,7 +195,11 @@ export function Item({ item, itemType, isEmpty = false, customKey, onDrink, onSw
 	};
 
 	// Handle empty slot
-	if (isEmpty || !item || item.id === 0) {
+	const hasNoItem = !item;
+	const hasEmptyItemId = item?.id === 0;
+	const shouldRenderEmptySlot = isEmpty || hasNoItem || hasEmptyItemId;
+
+	if (shouldRenderEmptySlot) {
 		return (
 			<View key={customKey || itemType} style={styles.inventoryItem}>
 				<Text style={styles.itemIcon}>⬜</Text>

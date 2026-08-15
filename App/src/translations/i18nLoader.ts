@@ -1,5 +1,11 @@
 import i18next from "i18next";
 import {LANGUAGE} from "@/src/translations/Language";
+import englishNative from "./lang/en/native.json";
+import frenchNative from "./lang/fr/native.json";
+import italianNative from "./lang/it/native.json";
+import spanishNative from "./lang/es/native.json";
+import portugueseNative from "./lang/pt/native.json";
+import germanNative from "./lang/de/native.json";
 
 interface LanguageAssetLocation {
 	language: string;
@@ -42,12 +48,12 @@ function loadLanguageAssets(languagesAssets: Map<string, string>): void {
 }
 
 function loadNativeLanguageAssets(): void {
-	i18next.addResourceBundle(LANGUAGE.ENGLISH, "native", require("./lang/en/native.json"));
-	i18next.addResourceBundle(LANGUAGE.FRENCH, "native", require("./lang/fr/native.json"));
-	i18next.addResourceBundle(LANGUAGE.ITALIAN, "native", require("./lang/it/native.json"));
-	i18next.addResourceBundle(LANGUAGE.SPANISH, "native", require("./lang/es/native.json"));
-	i18next.addResourceBundle(LANGUAGE.PORTUGUESE, "native", require("./lang/pt/native.json"));
-	i18next.addResourceBundle(LANGUAGE.GERMAN, "native", require("./lang/de/native.json"));
+	i18next.addResourceBundle(LANGUAGE.ENGLISH, "native", englishNative);
+	i18next.addResourceBundle(LANGUAGE.FRENCH, "native", frenchNative);
+	i18next.addResourceBundle(LANGUAGE.ITALIAN, "native", italianNative);
+	i18next.addResourceBundle(LANGUAGE.SPANISH, "native", spanishNative);
+	i18next.addResourceBundle(LANGUAGE.PORTUGUESE, "native", portugueseNative);
+	i18next.addResourceBundle(LANGUAGE.GERMAN, "native", germanNative);
 }
 
 export async function reloadI18n(languagesAssets = new Map<string, string>()): Promise<void> {
