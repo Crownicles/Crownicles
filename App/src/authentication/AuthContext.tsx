@@ -1,6 +1,6 @@
 import React, {PropsWithChildren, useEffect} from "react";
 import {SplashScreen, useRouter} from "expo-router";
-import * as SecureStore from "expo-secure-store";
+import {deleteItemAsync, getItemAsync, setItemAsync} from "expo-secure-store";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
@@ -31,7 +31,7 @@ export const AuthContext = React.createContext<AuthState>({
 
 const tokenStorageKeyTemplate = "auth-token-"; // This key is used to store the authentication token in local storage
 
-export function AuthProvider({ children }: PropsWithChildren) {
+export function AuthProvider({ children }: PropsWithChildren): React.ReactElement {
 	const [state, setState] = React.useState(AuthStateEnum.NOT_READY); // Persist state: https://youtu.be/yNaOaR2kIa0?t=649
 	const router = useRouter();
 
@@ -41,12 +41,12 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		while (shouldContinue) {
 			const tokenStorageKey = `${tokenStorageKeyTemplate}${count}`;
 			count++;
-			let result = await SecureStore.getItemAsync(tokenStorageKey).catch((error) => {
+			const result = await getItemAsync(tokenStorageKey).catch((error) => {
 				console.error("Failed to load token for clearing:", error);
 				return null;
 			});
 			if (result) {
-				await SecureStore.deleteItemAsync(tokenStorageKey).catch((error) => {
+				await deleteItemAsync(tokenStorageKey).catch((error) => {
 					console.error("Failed to clear token part:", error);
 				});
 			}
@@ -66,7 +66,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 		await clearToken();
 
-		let tokenString = token.toJsonString();
+		const tokenString = token.toJsonString();
 
 		let tokenParts = tokenString.match(/.{1,2048}/g); // Split the token into parts of 2048 characters each
 
@@ -76,15 +76,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 		for (let i = 0; i < tokenParts.length; i++) {
 			const tokenStorageKey = `${tokenStorageKeyTemplate}${i + 1}`;
-			await SecureStore.setItemAsync(tokenStorageKey, tokenParts[i]).catch((error) => {
+			await setItemAsync(tokenStorageKey, tokenParts[i]).catch((error) => {
 				console.error("Failed to save token part:", error);
 			});
 		}
 	}
 
-	let setStateInternal: (newState: AuthStateEnum) => void;
-
-	const startAuthenticationFlow = async (): Promise<void> => {
+	const startAuthenticationFlow = async (onStateChange: (newState: AuthStateEnum) => void): Promise<void> => {
 		// The token is stored in multiple parts because the Expo SecureStore has a limit on the size of the stored item.
 		let shouldContinue = true;
 		let count = 1;
@@ -92,9 +90,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
 		while (shouldContinue) {
 			const tokenStorageKey = `${tokenStorageKeyTemplate}${count}`;
 			count++;
-			let result = await SecureStore.getItemAsync(tokenStorageKey).catch((error) => {
+			const result = await getItemAsync(tokenStorageKey).catch((error) => {
 				console.error("Failed to load token:", error);
-				setStateInternal(AuthStateEnum.NO_TOKEN);
+				onStateChange(AuthStateEnum.NO_TOKEN);
 			});
 			if (result) {
 				token += result; // Append the token part to the full token
@@ -106,27 +104,27 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 		console.debug("Loaded token:", token);
 
-	if (!token || token.length === 0) {
+		if (!token || token.length === 0) {
 			console.log("No token found, setting state to NO_TOKEN");
-			setStateInternal(AuthStateEnum.NO_TOKEN);
+			onStateChange(AuthStateEnum.NO_TOKEN);
 			return;
 		}
 
-		let authToken = AuthToken.fromJsonString(token);
+		const authToken = AuthToken.fromJsonString(token);
 		if (await authToken.refreshIfNeeded()) {
 			console.debug("Token refreshed successfully:", authToken);
 			await saveToken(authToken); // Save the refreshed token
 		}
 
-		await WebSocketClient.getInstance().init(authToken, setStateInternal, saveToken).catch((error) => {
+		await WebSocketClient.getInstance().init(authToken, onStateChange, saveToken).catch((error) => {
 			console.error("Failed to initialize WebSocketClient:", error);
 			if (state === AuthStateEnum.CONNECTING) {
-				setStateInternal(AuthStateEnum.CONNECTION_ERROR);
+				onStateChange(AuthStateEnum.CONNECTION_ERROR);
 			}
 		});
 	}
 
-	setStateInternal = (newState: AuthStateEnum): void => {
+	const setStateInternal = (newState: AuthStateEnum): void => {
 		const previousState = state;
 		const isInitialLogin = newState === AuthStateEnum.LOGGED_IN
 			&& previousState !== AuthStateEnum.LOGGED_IN
@@ -145,7 +143,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
 			router.replace("/login");
 		}
 		else if (shouldRestartAuthentication) {
-			startAuthenticationFlow().then().catch(err => {
+			startAuthenticationFlow(setStateInternal).then().catch(err => {
 				console.error("Error during authentication flow restart:", err);
 				setStateInternal(AuthStateEnum.NO_TOKEN);
 			}); // Restart the authentication flow if the state is not ready (happens when the connection cannot be established)
@@ -154,11 +152,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
 	}
 
 	useEffect(() => {
-		startAuthenticationFlow()
-				.then ().catch((error) => {
-					console.error("Error during authentication flow:", error);
-					setStateInternal(AuthStateEnum.NO_TOKEN);
-				});
+		startAuthenticationFlow(setStateInternal)
+			.then().catch((error) => {
+				console.error("Error during authentication flow:", error);
+				setStateInternal(AuthStateEnum.NO_TOKEN);
+			});
 	}, []);
 
 	useEffect(() => {

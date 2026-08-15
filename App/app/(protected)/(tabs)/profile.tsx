@@ -1,5 +1,14 @@
 import {useNavigation} from "expo-router";
-import {ActivityIndicator, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {
+	ActivityIndicator,
+	ScrollView,
+	Text,
+	TouchableOpacity,
+	View,
+	type StyleProp,
+	type TextStyle,
+	type ViewStyle
+} from "react-native";
 import {ReactElement, useEffect, useState} from "react";
 import {GameClient} from "@/src/networking/GameClient";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
@@ -34,6 +43,21 @@ interface ProgressBarProps {
 	max: number;
 	color: string;
 	label: string;
+}
+
+interface CardMeasurement {
+	width: number;
+	pageX: number;
+	pageY: number;
+}
+
+interface TooltipCardProps {
+	emoji: string;
+	value: number | string;
+	cardStyle: StyleProp<ViewStyle>;
+	emojiStyle: StyleProp<TextStyle>;
+	valueStyle: StyleProp<TextStyle>;
+	onMeasure: (measurement: CardMeasurement) => void;
 }
 
 interface StatCardProps {
@@ -128,19 +152,32 @@ function HealthExperienceSection({ profile }: ProfileProps): ReactElement {
 	);
 }
 
-function StatCard({ emoji, value, label, onShow }: StatCardProps): ReactElement {
+function TooltipCard({ emoji, value, cardStyle, emojiStyle, valueStyle, onMeasure }: TooltipCardProps): ReactElement {
 	return (
 		<TouchableOpacity
-			style={styles.statItem}
+			style={cardStyle}
 			onPress={(event): void => {
 				event.currentTarget.measure((_frameX, _frameY, width, _height, pageX, pageY): void => {
-					onShow(label, pageX, pageY, width);
+					onMeasure({width, pageX, pageY});
 				});
 			}}
 		>
-			<Text style={styles.statEmoji}>{emoji}</Text>
-			<Text style={styles.statValue}>{value}</Text>
+			<Text style={emojiStyle}>{emoji}</Text>
+			<Text style={valueStyle}>{value}</Text>
 		</TouchableOpacity>
+	);
+}
+
+function StatCard({ emoji, value, label, onShow }: StatCardProps): ReactElement {
+	return (
+		<TooltipCard
+			cardStyle={styles.statItem}
+			emojiStyle={styles.statEmoji}
+			valueStyle={styles.statValue}
+			emoji={emoji}
+			value={value}
+			onMeasure={({pageX, pageY, width}): void => onShow(label, pageX, pageY, width)}
+		/>
 	);
 }
 
@@ -173,17 +210,14 @@ function StatsSection({ profile, onShow }: StatsSectionProps): ReactElement | nu
 
 function CurrencyCard({ type, emoji, value, onShow }: CurrencyCardProps): ReactElement {
 	return (
-		<TouchableOpacity
-			style={styles.currencyItem}
-			onPress={(event): void => {
-				event.currentTarget.measure((_frameX, _frameY, width, _height, pageX, pageY): void => {
-					onShow(type, pageX, pageY, width);
-				});
-			}}
-		>
-			<Text style={styles.currencyEmoji}>{emoji}</Text>
-			<Text style={styles.currencyValue}>{value}</Text>
-		</TouchableOpacity>
+		<TooltipCard
+			cardStyle={styles.currencyItem}
+			emojiStyle={styles.currencyEmoji}
+			valueStyle={styles.currencyValue}
+			emoji={emoji}
+			value={value}
+			onMeasure={({pageX, pageY, width}): void => onShow(type, pageX, pageY, width)}
+		/>
 	);
 }
 
@@ -201,17 +235,14 @@ function CurrencySection({ profile, onShow }: CurrencySectionProps): ReactElemen
 
 function ScoreRankCard({ type, emoji, value, onShow }: ScoreRankCardProps): ReactElement {
 	return (
-		<TouchableOpacity
-			style={styles.scoreRankItem}
-			onPress={(event): void => {
-				event.currentTarget.measure((_frameX, _frameY, width, _height, pageX, pageY): void => {
-					onShow(type, pageX + width / 2, pageY);
-				});
-			}}
-		>
-			<Text style={styles.scoreRankEmoji}>{emoji}</Text>
-			<Text style={styles.scoreRankValue}>{value}</Text>
-		</TouchableOpacity>
+		<TooltipCard
+			cardStyle={styles.scoreRankItem}
+			emojiStyle={styles.scoreRankEmoji}
+			valueStyle={styles.scoreRankValue}
+			emoji={emoji}
+			value={value}
+			onMeasure={({pageX, pageY, width}): void => onShow(type, pageX + width / 2, pageY)}
+		/>
 	);
 }
 
@@ -304,82 +335,44 @@ export default function Profile(): ReactElement {
 		}
 	}, [profile, navigation]);
 
-	const showStatTooltip = (statName: string, x: number, y: number, width: number): void => {
-		// Clear any existing timeout
+	const showTooltip = (text: string, x: number, y: number, duration: number): void => {
 		if (tooltipTimeout) {
 			clearTimeout(tooltipTimeout);
 		}
 
-		// Calculate center position above the stat item
-		const centerX = x + 50 + width / 2;
-		const tooltipY = y - 150; // Show above the stat item
-
 		setTooltip({
 			visible: true,
-			text: statName,
-			x: centerX,
-			y: tooltipY
+			text,
+			x,
+			y
 		});
 
-		// Set new timeout and store its reference
 		const newTimeout = setTimeout(() => {
-			setTooltip(prev => ({ ...prev, visible: false }));
+			setTooltip(prev => ({...prev, visible: false}));
 			setTooltipTimeout(null);
-		}, 2000);
+		}, duration);
 
 		setTooltipTimeout(newTimeout);
+	};
+
+	const showStatTooltip = (statName: string, x: number, y: number, width: number): void => {
+		const centerX = x + 50 + width / 2;
+		showTooltip(statName, centerX, y - 150, 2000);
 	};
 
 	const showCurrencyTooltip = (currencyType: "money" | "gems", x: number, y: number, width: number): void => {
-		// Clear any existing timeout
-		if (tooltipTimeout) {
-			clearTimeout(tooltipTimeout);
-		}
-
-		const tooltipText = currencyType === 'money'
+		const tooltipText = currencyType === "money"
 			? i18n.t("app:profile.tooltips.money")
 			: i18n.t("app:profile.tooltips.gems");
-
-		setTooltip({
-			visible: true,
-			text: tooltipText,
-			x: currencyType === 'money' ? x + width / 2 + 60 : x + width / 2 - 50,
-			y: y - 150
-		});
-
-		// Set new timeout and store its reference
-		const newTimeout = setTimeout(() => {
-			setTooltip(prev => ({ ...prev, visible: false }));
-			setTooltipTimeout(null);
-		}, 3000);
-
-		setTooltipTimeout(newTimeout);
+		const tooltipX = currencyType === "money" ? x + width / 2 + 60 : x + width / 2 - 50;
+		showTooltip(tooltipText, tooltipX, y - 150, 3000);
 	};
 
 	const showScoreRankTooltip = (type: "score" | "rank", x: number, y: number): void => {
-		// Clear any existing timeout
-		if (tooltipTimeout) {
-			clearTimeout(tooltipTimeout);
-		}
-
-		const tooltipText = type === 'score'
+		const tooltipText = type === "score"
 			? i18n.t("app:profile.tooltips.score")
 			: i18n.t("app:profile.tooltips.rank");
-
-		setTooltip({
-			visible: true,
-			text: tooltipText,
-			x,
-			y: y - 50
-		});
-
-		// Set new timeout and store its reference
-		const newTimeout = setTimeout(() => {
-			setTooltip(prev => ({ ...prev, visible: false }));
-			setTooltipTimeout(null);
-		}, 3000);
-
-		setTooltipTimeout(newTimeout);
+		showTooltip(tooltipText, x, y - 50, 3000);
 	};
 
 	const hideTooltip = (): void => {

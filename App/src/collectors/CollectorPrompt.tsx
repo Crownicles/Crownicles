@@ -39,23 +39,28 @@ export function CollectorPrompt({ collector, onChoose }: {
 
 	// A second press would send a second reaction for a collector that no longer accepts one
 	const locked = answered || secondsLeft === 0;
+	const choices = collector.reactions.map((reaction, index) => ({
+		reaction,
+		index,
+		key: `${collector.id}-${index}`
+	}));
 
 	return (
 		<View>
 			<SectionHeader>{collectorTitle(collector.data)}</SectionHeader>
 			<Panel>
-				{collector.reactions.map((reaction, index) => (
+				{choices.map((choice) => (
 					<Pressable
-						key={`${collector.id}-${index}`}
-						disabled={locked || !isChoosable(reaction)}
+						key={choice.key}
+						disabled={locked || !isChoosable(choice.reaction)}
 						onPress={(): void => {
 							setAnswered(true);
-							onChoose(index);
+							onChoose(choice.index);
 						}}
 						style={styles.choice}
 					>
-						<Text style={[styles.choiceLabel, (locked || !isChoosable(reaction)) && styles.disabled]}>
-							{reactionLabel(reaction)}
+						<Text style={[styles.choiceLabel, (locked || !isChoosable(choice.reaction)) && styles.disabled]}>
+							{reactionLabel(choice.reaction)}
 						</Text>
 					</Pressable>
 				))}

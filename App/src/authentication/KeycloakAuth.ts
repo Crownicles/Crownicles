@@ -1,4 +1,4 @@
-import * as AuthSession from "expo-auth-session";
+import {AuthRequest, makeRedirectUri, ResponseType, type DiscoveryDocument} from "expo-auth-session";
 import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 
 // Expo inlines the EXPO_PUBLIC_ variables at build time, so each one has to be read literally.
@@ -19,7 +19,7 @@ function getRealmUrl(): string {
 	return `${url}/realms/${realm}`;
 }
 
-function getDiscovery(): AuthSession.DiscoveryDocument {
+function getDiscovery(): DiscoveryDocument {
 	const realmUrl = getRealmUrl();
 	return {
 		authorizationEndpoint: `${realmUrl}/protocol/openid-connect/auth`,
@@ -29,7 +29,7 @@ function getDiscovery(): AuthSession.DiscoveryDocument {
 }
 
 function getRedirectUri(): string {
-	return AuthSession.makeRedirectUri({
+	return makeRedirectUri({
 		scheme: "crownicles",
 		path: "auth"
 	});
@@ -48,11 +48,11 @@ function hasCompleteToken(token: KeycloakOAuth2Token): boolean {
 export class KeycloakAuth {
 	public static async login(): Promise<KeycloakOAuth2Token> {
 		const redirectUri = getRedirectUri();
-		const request = new AuthSession.AuthRequest({
+		const request = new AuthRequest({
 			clientId: getClientId(),
 			redirectUri,
 			scopes: ["openid"],
-			responseType: AuthSession.ResponseType.Code,
+			responseType: ResponseType.Code,
 			usePKCE: true
 		});
 

@@ -254,20 +254,27 @@ const scoreStyles = StyleSheet.create({
 	scoreRankValue: {...sharedStyles.cardValue, textAlign: 'center'},
 });
 
-const inventoryStyles = StyleSheet.create({
+const inventoryLayoutStyles = StyleSheet.create({
 	inventoryContent: {
 		flex: 1,
-	},
-	inventoryTitle: {
-		fontSize: 16,
-		fontWeight: '700',
-		color: '#333',
-		marginBottom: 10,
 	},
 	inventoryHeader: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
+		marginBottom: 10,
+	},
+	inventoryList: {
+		flexDirection: 'column',
+		gap: 10,
+	},
+});
+
+const inventoryControlsStyles = StyleSheet.create({
+	inventoryTitle: {
+		fontSize: 16,
+		fontWeight: '700',
+		color: '#333',
 		marginBottom: 10,
 	},
 	toggleButton: {
@@ -281,10 +288,9 @@ const inventoryStyles = StyleSheet.create({
 		fontSize: 14,
 		fontWeight: '500',
 	},
-	inventoryList: {
-		flexDirection: 'column',
-		gap: 10,
-	},
+});
+
+const inventoryItemStyles = StyleSheet.create({
 	inventoryItem: {
 		...sharedStyles.cardSurface,
 		padding: 15,
@@ -319,6 +325,21 @@ const inventoryStyles = StyleSheet.create({
 		color: '#666',
 		textTransform: 'capitalize',
 	},
+	itemTypeHeader: {
+		backgroundColor: '#f1f1f1',
+		padding: 10,
+		borderTopLeftRadius: 10,
+		borderTopRightRadius: 10,
+		marginBottom: 5,
+	},
+	itemTypeHeaderText: {
+		fontSize: 14,
+		fontWeight: '600',
+		color: '#333',
+	},
+});
+
+const inventoryStatsStyles = StyleSheet.create({
 	itemStatsContainer: {
 		flexDirection: 'column',
 		marginTop: 4,
@@ -334,18 +355,6 @@ const inventoryStyles = StyleSheet.create({
 	},
 	statSeparator: {
 		color: '#999',
-	},
-	itemTypeHeader: {
-		backgroundColor: '#f1f1f1',
-		padding: 10,
-		borderTopLeftRadius: 10,
-		borderTopRightRadius: 10,
-		marginBottom: 5,
-	},
-	itemTypeHeaderText: {
-		fontSize: 14,
-		fontWeight: '600',
-		color: '#333',
 	},
 });
 
@@ -381,6 +390,9 @@ export const styles = {
 	...statisticsStyles,
 	...currencyStyles,
 	...scoreStyles,
-	...inventoryStyles,
+	...inventoryLayoutStyles,
+	...inventoryControlsStyles,
+	...inventoryItemStyles,
+	...inventoryStatsStyles,
 	...tooltipStyles,
 };

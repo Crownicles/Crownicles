@@ -11,6 +11,7 @@ module.exports = defineConfig([
       'no-alert': 'error',
       'react/jsx-boolean-value': ['error', 'never'],
       'prefer-template': 'error',
+      'prefer-const': 'error',
       'object-shorthand': ['error', 'always'],
       'no-void': 'error',
     },
