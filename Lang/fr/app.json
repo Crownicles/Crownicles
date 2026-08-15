@@ -72,6 +72,7 @@
         "close": "Fermer",
         "equip": "Équiper"
       }
-    }
+    },
+    "notFound": "Profil introuvable"
   }
 }

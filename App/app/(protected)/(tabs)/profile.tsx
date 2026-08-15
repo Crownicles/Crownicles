@@ -316,7 +316,7 @@ function ProfileStateView({
 		return (
 			<View style={styles.centerContent}>
 				<ActivityIndicator size="large" color="#007AFF" />
-				<Text style={styles.loadingText}>Loading profile...</Text>
+				<Text style={styles.loadingText}>{i18n.t("app:common.loading")}</Text>
 			</View>
 		);
 	}
@@ -325,7 +325,7 @@ function ProfileStateView({
 		return (
 			<View style={styles.centerContent}>
 				<Text style={styles.errorText}>
-					{profileState.status === "empty" ? "Profile not found" : "Request timed out. Please try again."}
+					{profileState.status === "empty" ? i18n.t("app:profile.notFound") : i18n.t("app:common.error")}
 				</Text>
 			</View>
 		);
