@@ -150,6 +150,7 @@ describe("dispatchOrRescheduleArrivalNotification", () => {
 
 		await dispatchOrRescheduleArrivalNotification(travellingPlayer(43));
 
+		expect(ScheduledReportNotifications.claimNotification).not.toHaveBeenCalled();
 		expect(PacketUtils.sendNotifications).not.toHaveBeenCalled();
 	});
 });

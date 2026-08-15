@@ -41,15 +41,16 @@ export async function dispatchOrRescheduleArrivalNotification(player: Player): P
 		return;
 	}
 
+	const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(player.id);
+	if (!pendingReportNotification || destinationId !== pendingReportNotification.mapId) {
+		return;
+	}
+
 	/*
 	 * Arrived: claim the pending row atomically. Only the winner of the claim dispatches
 	 * the notification, so the periodic poller can never send a duplicate (issue #4562).
 	 */
-	const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(player.id);
-	if (!pendingReportNotification) {
-		return;
-	}
-	if (!await ScheduledReportNotifications.claimNotification(player.id) || destinationId !== pendingReportNotification.mapId) {
+	if (!await ScheduledReportNotifications.claimNotification(player.id)) {
 		return;
 	}
 	sendArrivalNotification(pendingReportNotification.keycloakId, pendingReportNotification.mapId);
