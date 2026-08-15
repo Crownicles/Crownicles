@@ -64,3 +64,9 @@ never finishes when it is in fact waiting for an answer.
 - `src/authentication/` — Keycloak login (Authorization Code + PKCE) and token handling
 - `src/translations/` — i18n, fed at runtime by the assets downloaded from RestWs
 - `metro.config.js` — makes Metro watch and resolve the linked `WsPackets` package
+
+## Before writing code
+
+Read [the contribution guide](../.github/instructions/app.instructions.md): service boundaries, how
+to expose a command or a collector family, and the pitfalls already paid for. `mockups/mobile.html`
+holds the target screens and `mockups/architecture.html` the diagrams.

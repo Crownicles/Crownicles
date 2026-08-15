@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crownicles - Architecture de l'app</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+:root {
+  --ink: #18201d;
+  --muted: #63706b;
+  --paper: #f7f5ef;
+  --surface: #fffdf8;
+  --line: #d9ded7;
+  --green: #24735a;
+  --green-soft: #dceee4;
+  --coral: #d45d4b;
+  --coral-soft: #f7ded6;
+  --blue: #39729b;
+  --blue-soft: #dcecf4;
+  --gold: #ad7c2d;
+  --gold-soft: #f3e8c9;
+  --shadow: 0 18px 50px rgba(38, 54, 46, .1);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 8% 8%, rgba(212, 93, 75, .12), transparent 25rem),
+    radial-gradient(circle at 92% 4%, rgba(57, 114, 155, .12), transparent 28rem),
+    var(--paper);
+  font-family: "DM Sans", sans-serif;
+  line-height: 1.5;
+}
+
+.shell { width: min(1420px, calc(100% - 40px)); margin: 0 auto; padding: 48px 0 72px; }
+header { display: grid; grid-template-columns: 1fr auto; gap: 28px; align-items: end; margin-bottom: 30px; }
+.kicker { color: var(--coral); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+h1, h2, h3 { font-family: "Space Grotesk", sans-serif; line-height: 1.08; }
+h1 { max-width: 850px; margin: 8px 0 12px; font-size: clamp(34px, 5vw, 66px); letter-spacing: -.045em; }
+header p { max-width: 760px; margin: 0; color: var(--muted); font-size: 17px; }
+.meta { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.meta span, .tag { border: 1px solid var(--line); border-radius: 999px; padding: 7px 11px; color: var(--muted); background: rgba(255, 253, 248, .7); font-size: 12px; font-weight: 600; }
+
+.tabs { position: sticky; top: 12px; z-index: 10; display: flex; flex-wrap: wrap; gap: 6px; padding: 7px; margin-bottom: 24px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 253, 248, .9); box-shadow: 0 8px 30px rgba(38, 54, 46, .08); backdrop-filter: blur(14px); }
+.tabs button { border: 0; border-radius: 9px; padding: 11px 15px; color: var(--muted); background: transparent; cursor: pointer; font: inherit; font-size: 13px; font-weight: 700; }
+.tabs button:hover, .tabs button.active { color: var(--ink); background: var(--green-soft); }
+.view { display: none; }
+.view.active { display: block; animation: rise .25s ease-out; }
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+.view-head { display: flex; justify-content: space-between; gap: 20px; align-items: end; margin: 0 0 18px; }
+.view-head h2 { margin: 0; font-size: clamp(25px, 3vw, 38px); letter-spacing: -.035em; }
+.view-head p { max-width: 640px; margin: 0; color: var(--muted); font-size: 14px; }
+.diagram { overflow: auto; min-height: 360px; padding: 26px; border: 1px solid var(--line); border-radius: 18px; background: var(--surface); box-shadow: var(--shadow); }
+.diagram .mermaid { min-width: 760px; text-align: center; }
+.diagram svg { max-width: none; height: auto; }
+
+.grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; margin-top: 18px; }
+.card { grid-column: span 4; padding: 20px; border: 1px solid var(--line); border-radius: 14px; background: rgba(255, 253, 248, .76); }
+.card.wide { grid-column: span 6; }
+.card h3 { margin: 0 0 8px; font-size: 18px; }
+.card p { margin: 0; color: var(--muted); font-size: 14px; }
+.card ul { margin: 11px 0 0; padding-left: 19px; color: var(--muted); font-size: 13px; }
+.card li + li { margin-top: 5px; }
+.card.green { border-color: #b9daca; background: var(--green-soft); }
+.card.coral { border-color: #edc0b5; background: var(--coral-soft); }
+.card.blue { border-color: #b9d6e4; background: var(--blue-soft); }
+.card.gold { border-color: #e5d3a0; background: var(--gold-soft); }
+
+.legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 18px; color: var(--muted); font-size: 13px; }
+.legend span { display: inline-flex; align-items: center; gap: 7px; }
+.legend i { width: 11px; height: 11px; display: inline-block; border-radius: 3px; background: var(--green); }
+.legend .rest i { background: var(--blue); }
+.legend .core i { background: var(--coral); }
+.legend .shared i { background: var(--gold); }
+
+.roadmap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 18px; }
+.phase { position: relative; min-height: 190px; padding: 19px; border-top: 4px solid var(--green); border-radius: 12px; background: var(--surface); box-shadow: 0 8px 24px rgba(38, 54, 46, .06); }
+.phase:nth-child(2) { border-color: var(--blue); }
+.phase:nth-child(3) { border-color: var(--coral); }
+.phase:nth-child(4) { border-color: var(--gold); }
+.phase strong { display: block; margin-bottom: 8px; font: 700 17px "Space Grotesk", sans-serif; }
+.phase p { margin: 0; color: var(--muted); font-size: 13px; }
+.issue { display: inline-block; margin: 12px 5px 0 0; padding: 4px 7px; border-radius: 5px; color: var(--ink); background: rgba(255,255,255,.65); font-size: 11px; font-weight: 700; }
+
+footer { display: flex; justify-content: space-between; gap: 18px; margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; }
+footer a { color: var(--green); font-weight: 700; }
+
+@media (max-width: 850px) {
+  .shell { width: min(100% - 24px, 680px); padding-top: 28px; }
+  header { grid-template-columns: 1fr; }
+  .meta { justify-content: flex-start; }
+  .tabs { top: 6px; }
+  .tabs button { flex: 1 1 45%; }
+  .diagram { padding: 12px; }
+  .grid { grid-template-columns: 1fr; }
+  .card, .card.wide { grid-column: auto; }
+  .roadmap { grid-template-columns: 1fr; }
+  footer { flex-direction: column; }
+}
+</style>
+</head>
+<body>
+<main class="shell">
+  <header>
+    <div>
+      <div class="kicker">Crownicles / PR 4662 / architecture</div>
+      <h1>Une app mobile qui parle au jeu, pas à Discord.</h1>
+      <p>Lecture progressive de l'architecture actuelle et de sa trajectoire : système, transport, interactions, puis milestone produit.</p>
+    </div>
+    <div class="meta"><span>Expo 57</span><span>Keycloak</span><span>WebSocket</span><span>MQTT</span><span>WsPackets</span></div>
+  </header>
+
+  <nav class="tabs" aria-label="Niveaux de lecture">
+    <button class="active" data-view="system">01 · Système</button>
+    <button data-view="request">02 · Requête</button>
+    <button data-view="collectors">03 · Collectors</button>
+    <button data-view="mobile">04 · App mobile</button>
+    <button data-view="roadmap">05 · Milestone</button>
+  </nav>
+
+  <section class="view active" id="system">
+    <div class="view-head"><div><h2>Les frontières du système</h2><p>Le chemin d'exécution réel. Discord et l'app sont deux frontends parallèles qui partagent Core, mais ne se parlent pas directement.</p></div></div>
+    <div class="diagram"><pre class="mermaid">
+flowchart LR
+  subgraph App["App mobile - Expo / React Native"]
+    UI["Écrans et navigation\nExpo Router"]
+    Auth["AuthContext\nSecureStore"]
+    Net["WebSocketClient\nqueue + reconnexion"]
+    Contracts["WsPackets\ncontrats partagés"]
+    UI --> Net
+    Auth --> Net
+    Net --> Contracts
+  end
+  KC["Keycloak\nidentité + tokens"]
+  RW["RestWs\nREST + WebSocket\nvalidation + traduction"]
+  MQ["MQTT broker"]
+  Core["Core\nlogique de jeu\nétat joueur"]
+  DB[("MariaDB")]
+  D["Discord\ncommands + UI collectors"]
+  Auth -->|OAuth2 / PKCE| KC
+  Net -->|WS + access token| RW
+  RW -->|paquets traduits| MQ
+  MQ --> Core
+  Core --> DB
+  Core --> MQ
+  MQ --> RW
+  MQ <--> D
+  D -. "frontend parallèle" .-> Core
+  classDef app fill:#dceee4,stroke:#24735a,color:#18201d
+  classDef rest fill:#dcecf4,stroke:#39729b,color:#18201d
+  classDef core fill:#f7ded6,stroke:#d45d4b,color:#18201d
+  classDef shared fill:#f3e8c9,stroke:#ad7c2d,color:#18201d
+  class App,UI,Auth,Net app
+  class RW,KC rest
+  class Core,DB,D core
+  class Contracts shared
+    </pre></div>
+    <div class="legend"><span><i></i> App</span><span class="rest"><i></i> Identité et RestWs</span><span class="core"><i></i> Runtime du jeu</span><span class="shared"><i></i> Contrat partagé</span></div>
+    <div class="grid">
+      <article class="card green"><h3>App</h3><p>Présente l'état du jeu, conserve la session et envoie des intentions utilisateur.</p></article>
+      <article class="card blue"><h3>RestWs</h3><p>Frontière de sécurité et de traduction. Il injecte le <strong>keycloakId</strong> dans le contexte.</p></article>
+      <article class="card coral"><h3>Core</h3><p>Décide des règles, des récompenses, des collectors et des mutations persistées.</p></article>
+    </div>
+  </section>
+
+  <section class="view" id="request">
+    <div class="view-head"><div><h2>Une requête de bout en bout</h2><p>Exemple concret : l'écran Profile envoie <code>ProfileReq</code> et reçoit <code>ProfileRes</code>.</p></div></div>
+    <div class="diagram"><pre class="mermaid">
+sequenceDiagram
+  participant Screen as Profile.tsx
+  participant Client as WebSocketClient
+  participant WS as RestWs WebSocketServer
+  participant Tr as Traducteurs RestWs
+  participant MQTT as MQTT
+  participant Core as Core
+  participant DB as MariaDB
+  Screen->>Client: ProfileReq + response handler
+  Client->>WS: JSON { id, name, data }
+  WS->>WS: Vérifie access token
+  WS->>Tr: ProfileCommandClientTranslator
+  Tr->>MQTT: CommandProfilePacketReq + context
+  MQTT->>Core: Requête métier
+  Core->>DB: Lit le joueur
+  DB-->>Core: Données de profil
+  Core-->>MQTT: CommandProfilePacketRes
+  MQTT-->>Tr: Réponse + keycloakId
+  Tr->>Tr: Enrichit le pseudo via Keycloak
+  Tr-->>WS: ProfileRes
+  WS-->>Client: JSON { id, name, packet }
+  Client-->>Screen: callback ProfileRes
+    </pre></div>
+    <div class="grid">
+      <article class="card wide blue"><h3>Deux identifiants, deux rôles</h3><p><strong>packetId</strong> relie une réponse à une requête mobile. <strong>keycloakId</strong> relie une connexion authentifiée au joueur Core. Le second ne doit pas être fourni par le client.</p></article>
+      <article class="card wide gold"><h3>REST n'est pas le gameplay</h3><p>Dans la PR, REST sert surtout les hashes et téléchargements d'assets. Les profils, inventaires et interactions passent par WebSocket, puis MQTT.</p></article>
+    </div>
+  </section>
+
+  <section class="view" id="collectors">
+    <div class="view-head"><div><h2>Les collectors : même jeu, deux interfaces</h2><p>Core propose une interaction. Discord fabrique un composant Discord ; l'app fabrique un composant mobile à partir du contrat stable.</p></div></div>
+    <div class="diagram"><pre class="mermaid">
+flowchart TD
+  Core["Core ouvre un collector"] --> Creation["ReactionCollectorCreationPacket"]
+  Creation --> RestWs["RestWs mapper\nclasse Core -> kind stable"]
+  RestWs --> Mobile["App\nréactions + endTime"]
+  Mobile --> Choice["Joueur choisit\nreactionIndex"]
+  Choice --> Req["ReactionCollectorReactReq\ncollectorId + index"]
+  Req --> Guard["RestWs\nvalide identité + index"]
+  Guard --> Core2["Core applique l'effet"]
+  Creation --> Discord["Discord\nReactionCollectorHandlers"]
+  Discord --> DiscordUI["Embed + bouton/menu\ndiscord.js"]
+  DiscordUI --> Core2
+  Core2 --> End["Fin / nouveau paquet"]
+  classDef core fill:#f7ded6,stroke:#d45d4b,color:#18201d
+  classDef rest fill:#dcecf4,stroke:#39729b,color:#18201d
+  classDef app fill:#dceee4,stroke:#24735a,color:#18201d
+  class Core,Creation,Core2,End core
+  class RestWs,Guard,Req rest
+  class Mobile,Choice app
+  class Discord,DiscordUI app
+    </pre></div>
+    <div class="grid">
+      <article class="card green"><h3>Contrat mobile</h3><ul><li><code>id</code> du collector</li><li><code>data</code> discriminée par <code>type</code></li><li><code>reactions[]</code> dont l'ordre compte</li><li><code>endTime</code> pour un timer local</li></ul></article>
+      <article class="card coral"><h3>Référence Discord</h3><p>Discord possède déjà un registre de dizaines de familles : combat, inventaire, boutique, pets, guildes, expéditions et événements.</p></article>
+      <article class="card blue"><h3>Point encore à construire dans App</h3><p>Un store global doit recevoir les collectors spontanés, les restaurer après reconnexion, afficher les choix, envoyer la réaction et retirer les collectors terminés.</p></article>
+    </div>
+  </section>
+
+  <section class="view" id="mobile">
+    <div class="view-head"><div><h2>À l'intérieur de l'app</h2><p>La PR installe le shell et un premier flux métier. Les onglets sont déjà nommés, mais plusieurs écrans restent des placeholders.</p></div></div>
+    <div class="diagram"><pre class="mermaid">
+flowchart TB
+  Root["app/_layout.tsx\nAuthProvider + PreferencesProvider"] --> Protected["(protected)/_layout.tsx\nredirect + assets + SafeArea"]
+  Protected --> Tabs["(tabs)/_layout.tsx\nProfileProvider + Tabs"]
+  Root --> Login["login.tsx\nKeycloakAuth.login()"]
+  Tabs --> Profile["profile.tsx\nProfileReq + InventoryReq"]
+  Tabs --> Adventure["index.tsx\nplaceholder"]
+  Tabs --> Arena["arena.tsx\nplaceholder"]
+  Tabs --> Guild["guild.tsx\nplaceholder"]
+  Tabs --> Pet["pet.tsx\nplaceholder"]
+  Tabs --> Settings["settings/index.tsx\nlogout + dev ping"]
+  Profile --> WS["WebSocketClient"]
+  Profile --> Inventory["Inventory + Item\nprésentation locale"]
+  Protected --> Assets["AssetsManager\nRestApi + FileSystem"]
+  Assets --> I18n["i18n + AppIcons"]
+  classDef route fill:#dceee4,stroke:#24735a,color:#18201d
+  classDef screen fill:#f3e8c9,stroke:#ad7c2d,color:#18201d
+  classDef net fill:#dcecf4,stroke:#39729b,color:#18201d
+  class Root,Protected,Tabs route
+  class Login,Profile,Adventure,Arena,Guild,Pet,Settings screen
+  class WS,Inventory,Assets,I18n net
+    </pre></div>
+    <div class="grid">
+      <article class="card green"><h3>Déjà branché</h3><p>Session Keycloak, refresh token, reconnexion WebSocket, profile, inventory, assets, traductions et déconnexion.</p></article>
+      <article class="card coral"><h3>À brancher</h3><p>Aventure, combat, guildes, pets, écrans de création de personnage, erreurs métier et moteur générique de collectors.</p></article>
+      <article class="card gold"><h3>Principe d'évolution</h3><p>Les écrans doivent consommer des contrats <code>WsPackets</code> et des stores métier, sans connaître MQTT, les classes Core ou les composants Discord.</p></article>
+    </div>
+  </section>
+
+  <section class="view" id="roadmap">
+    <div class="view-head"><div><h2>La milestone comme trajectoire</h2><p>Les issues ne décrivent pas seulement des écrans : elles complètent l'identité, la robustesse et la chaîne de publication autour du noyau de transport.</p></div></div>
+    <div class="roadmap">
+      <article class="phase"><strong>Fondations</strong><p>Contrats de paquets, traductions RestWs, reconnexion et premiers écrans.</p><span class="issue">#4664</span><span class="issue">#4665</span><span class="issue">#4666</span></article>
+      <article class="phase"><strong>Gameplay mobile</strong><p>Collectors génériques, profil, inventaire, aventure, boutiques du jeu et création de personnage.</p><span class="issue">#4737</span><span class="issue">#4735</span><span class="issue">#4764</span><span class="issue">#4763</span></article>
+      <article class="phase"><strong>Identité et confiance</strong><p>Onboarding, compte Discord/Crownicles, Apple, suppression de compte, erreurs, accessibilité et traductions.</p><span class="issue">#4772</span><span class="issue">#4773</span><span class="issue">#4770</span><span class="issue">#4762</span><span class="issue">#4765</span></article>
+      <article class="phase"><strong>Livraison</strong><p>Tests, CI, EAS, signature, fiches des magasins d'applications, mises à jour OTA et programme de test interne.</p><span class="issue">#4760</span><span class="issue">#4759</span><span class="issue">#4757</span><span class="issue">#4758</span><span class="issue">#4766</span></article>
+    </div>
+    <div class="grid">
+      <article class="card wide blue"><h3>Dépendance critique</h3><p>Le parcours « compte neuf -> création de personnage -> premier rapport » dépend de l'identité Keycloak et du gameplay collector. Il ne suffit pas d'ajouter des écrans au-dessus du shell actuel.</p></article>
+      <article class="card wide coral"><h3>Contrainte de publication</h3><p>Les issues Apple, suppression de compte, confidentialité et paiements sont des contraintes d'architecture : elles influencent les routes, les tokens et les endpoints, pas seulement le contenu des écrans.</p></article>
+    </div>
+  </section>
+
+  <footer><span>Source de lecture : PR 4662, milestone App, App / RestWs / WsPackets / Discord / Core.</span><a href="mobile.html">Ouvrir le prototype mobile</a></footer>
+</main>
+<script>
+const buttons = [...document.querySelectorAll('.tabs button')];
+const views = [...document.querySelectorAll('.view')];
+function selectView(name) {
+  buttons.forEach(button => button.classList.toggle('active', button.dataset.view === name));
+  views.forEach(view => view.classList.toggle('active', view.id === name));
+  history.replaceState(null, '', `#${name}`);
+}
+buttons.forEach(button => button.addEventListener('click', () => selectView(button.dataset.view)));
+
+mermaid.initialize({ startOnLoad: false, theme: 'base', securityLevel: 'loose', themeVariables: {
+  fontFamily: 'DM Sans, sans-serif',
+  primaryColor: '#dceee4', primaryTextColor: '#18201d', primaryBorderColor: '#24735a',
+  lineColor: '#63706b', secondaryColor: '#dcecf4', tertiaryColor: '#f3e8c9',
+  actorBkg: '#dceee4', actorBorder: '#24735a', signalColor: '#24735a', signalTextColor: '#18201d'
+}});
+(async () => {
+  const diagrams = [...document.querySelectorAll('.mermaid')];
+  for (const diagram of diagrams) {
+    const source = diagram.textContent;
+    const id = `diagram-${Math.random().toString(36).slice(2)}`;
+    const rendered = await mermaid.render(id, source);
+    diagram.innerHTML = rendered.svg;
+  }
+  const initial = location.hash.slice(1);
+  if (buttons.some(button => button.dataset.view === initial)) selectView(initial);
+})();
+</script>
+</body>
+</html>
