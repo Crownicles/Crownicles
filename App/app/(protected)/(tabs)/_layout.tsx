@@ -2,6 +2,8 @@ import {Tabs, useRouter} from "expo-router";
 import {Ionicons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {Alert, Text, TouchableOpacity, View} from "react-native";
 import {ProfileProvider, useProfile} from "@/src/contexts/ProfileContext";
+import {CollectorsProvider} from "@/src/collectors/CollectorsContext";
+import {OpenCollectors} from "@/src/collectors/OpenCollectors";
 import {AppIcons} from "@/src/AppIcons";
 import {i18n} from "@/src/translations/i18n";
 
@@ -96,7 +98,10 @@ function TabLayoutContent() {
 export default function TabLayout() {
 	return (
 		<ProfileProvider>
-			<TabLayoutContent />
+			<CollectorsProvider>
+				<TabLayoutContent />
+				<OpenCollectors />
+			</CollectorsProvider>
 		</ProfileProvider>
 	);
 }

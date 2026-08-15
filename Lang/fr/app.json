@@ -4,6 +4,17 @@
     "error": "Les informations n'ont pas pu être récupérées",
     "retry": "Réessayer"
   },
+  "collector": {
+    "accept": "Confirmer",
+    "refuse": "Annuler",
+    "unknownChoice": "Choix indisponible dans cette version",
+    "timeLeft": "{{seconds}} s",
+    "expired": "Le temps imparti est écoulé",
+    "titles": {
+      "drink": "Quelle potion boire ?",
+      "unknown": "Une action est en attente"
+    }
+  },
   "tabs": {
     "arena": "Arène",
     "guild": "Guilde",

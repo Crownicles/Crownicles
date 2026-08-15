@@ -2,6 +2,12 @@ import React, {useState} from "react";
 import {StyleSheet, Text, TouchableOpacity, View} from "react-native";
 import {MainItem} from "ws-packets/src/objects/MainItem";
 import {SupportItem} from "ws-packets/src/objects/SupportItem";
+import {DrinkReq} from "ws-packets/src/fromClient/DrinkReq";
+import {DrinkNoAvailablePotion} from "ws-packets/src/fromServer/drink/DrinkNoAvailablePotion";
+import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {makeFromClientPacket} from "ws-packets/src/MakePackets";
+import {GameClient} from "@/src/networking/GameClient";
+import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {Item} from "@/src/components/Item";
 import {i18n} from "@/src/translations/i18n";
 
@@ -28,11 +34,16 @@ interface InventoryProps {
 
 export function Inventory({ inventoryData }: InventoryProps) {
 	const [showBackupItems, setShowBackupItems] = useState<boolean>(false);
+	const { track } = useCollectors();
 
-	// Action handlers for item interactions
-	const handleDrink = (item: SupportItem, itemType: string) => {
-		console.log(`Drinking ${itemType}:`, item);
-		// TODO: Implement drink action
+	// The server decides which potions can be drunk and offers them in a collector
+	const handleDrink = () => {
+		GameClient.request(makeFromClientPacket(DrinkReq, {}), ReactionCollectorCreation, [DrinkNoAvailablePotion])
+			.then(answer => {
+				if (answer.kind === "answer") {
+					track(answer.packet);
+				}
+			});
 	};
 
 	const handleSwitch = (item: MainItem | SupportItem, itemType: string) => {
@@ -82,7 +93,7 @@ export function Inventory({ inventoryData }: InventoryProps) {
 								item={item}
 								itemType={itemType}
 								isEmpty={isEmpty}
-								onDrink={!isEmpty && itemType === 'potion' ? () => handleDrink(item as SupportItem, itemType) : undefined}
+								onDrink={!isEmpty && itemType === 'potion' ? handleDrink : undefined}
 								onSwitch={!isEmpty ? () => handleSwitch(item, itemType) : undefined}
 								onSell={!isEmpty ? () => handleSell(item, itemType) : undefined}
 							/>
@@ -125,7 +136,7 @@ export function Inventory({ inventoryData }: InventoryProps) {
 									itemType={type}
 									customKey={`${type}-${item.slot}`}
 									isBackupItem={true}
-									onDrink={!isEmpty && type === 'potion' ? () => handleDrink(item.display as SupportItem, type) : undefined}
+										onDrink={!isEmpty && type === 'potion' ? handleDrink : undefined}
 									onSwitch={!isEmpty ? () => handleSwitch(item.display, type) : undefined}
 									onSell={!isEmpty ? () => handleSell(item.display, type) : undefined}
 								/>
