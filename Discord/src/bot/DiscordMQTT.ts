@@ -82,7 +82,6 @@ export class DiscordMQTT {
 			payload => DiscordAnnouncement.announceBlessing(JSON.parse(payload)),
 			"No blessing announcement in the MQTT topic"
 		);
-
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
 			if (discordConfig.TEST_MODE) {
