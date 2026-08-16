@@ -14,6 +14,11 @@ vi.mock("../../../../../Lib/src/logs/CrowniclesLogger", () => ({
 }));
 
 vi.mock("../../../../src/core/database/game/models/Setting", () => ({
+	default: {
+		sequelize: {
+			transaction: vi.fn(async (callback: () => Promise<void>) => await callback())
+		}
+	},
 	Settings: {
 		NEXT_DAILY_RESET: {
 			getValue: vi.fn().mockResolvedValue(0),
@@ -267,6 +272,8 @@ describe("CrowniclesDaily.reloadEnchanter", () => {
 	it("promotes tomorrow's choice and prepares the following day", async () => {
 		await CrowniclesDaily.reloadEnchanter();
 
+		expect(Settings.ENCHANTER_ENCHANTMENT_ID.getValue).toHaveBeenCalledTimes(1);
+		expect(Settings.ENCHANTER_CITY.getValue).toHaveBeenCalledTimes(1);
 		expect(Settings.ENCHANTER_ENCHANTMENT_ID.setValue).toHaveBeenCalledWith("defense1");
 		expect(Settings.ENCHANTER_CITY.setValue).toHaveBeenCalledWith("ville_forte");
 		expect(Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.setValue).toHaveBeenCalledWith("speed1");

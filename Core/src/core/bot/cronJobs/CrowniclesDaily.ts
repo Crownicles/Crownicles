@@ -1,5 +1,5 @@
 import { setDailyCronJob } from "../../utils/CronInterface";
-import { Settings } from "../../database/game/models/Setting";
+import Setting, { Settings } from "../../database/game/models/Setting";
 import { crowniclesInstance } from "../../../app";
 import { CrowniclesLogger } from "../../../../../Lib/src/logs/CrowniclesLogger";
 import { PotionDataController } from "../../../data/Potion";
@@ -17,6 +17,7 @@ import Guild from "../../database/game/models/Guild";
 import { MissionSlot } from "../../database/game/models/MissionSlot";
 import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
 import { NumberChangeReason } from "../../../../../Lib/src/constants/LogsConstants";
+import { getCurrentTransaction } from "../../../../../Lib/src/locks/CLSNamespace";
 import { CrowniclesCoreMetrics } from "../CrowniclesCoreMetrics";
 import {
 	msDiff, nowMs
@@ -205,23 +206,32 @@ export class CrowniclesDaily {
 	 * Reload the enchanter's enchantment and location
 	 */
 	static async reloadEnchanter(): Promise<void> {
-		const currentEnchantmentId = await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.getValue();
-		const currentCityId = await Settings.NEXT_ENCHANTER_CITY.getValue();
-		await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(currentEnchantmentId);
-		await Settings.ENCHANTER_CITY.setValue(currentCityId);
+		const reloadEnchanterSettings = async (): Promise<void> => {
+			const currentEnchantmentId = await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.getValue();
+			const currentCityId = await Settings.NEXT_ENCHANTER_CITY.getValue();
+			await Settings.ENCHANTER_ENCHANTMENT_ID.getValue();
+			await Settings.ENCHANTER_CITY.getValue();
+			await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(currentEnchantmentId);
+			await Settings.ENCHANTER_CITY.setValue(currentCityId);
 
-		const nextEnchantmentId = ItemEnchantment.getRandomEnchantment().id;
-		const nextCity = CityDataController.instance.getRandomCity();
-		const nextCityId = nextCity.id;
-		await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.setValue(nextEnchantmentId);
-		await Settings.NEXT_ENCHANTER_CITY.setValue(nextCityId);
+			const nextEnchantmentId = ItemEnchantment.getRandomEnchantment().id;
+			const nextCityId = CityDataController.instance.getRandomCity().id;
+			await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.setValue(nextEnchantmentId);
+			await Settings.NEXT_ENCHANTER_CITY.setValue(nextCityId);
 
-		CrowniclesLogger.info("Enchanter reloaded", {
-			enchantmentId: currentEnchantmentId,
-			cityId: currentCityId,
-			nextEnchantmentId,
-			nextCityId
-		});
+			CrowniclesLogger.info("Enchanter reloaded", {
+				enchantmentId: currentEnchantmentId,
+				cityId: currentCityId,
+				nextEnchantmentId,
+				nextCityId
+			});
+		};
+
+		if (getCurrentTransaction()) {
+			await reloadEnchanterSettings();
+			return;
+		}
+		await Setting.sequelize!.transaction(reloadEnchanterSettings);
 	}
 
 	/**

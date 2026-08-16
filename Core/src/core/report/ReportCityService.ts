@@ -164,16 +164,14 @@ export async function buildEnchanterData(
 		enchantment: ItemEnchantment;
 		enchantmentId: string;
 		isPlayerMage: boolean;
-		nextCityMapLocationId: number;
-		nextEnchantment: ItemEnchantment;
-		nextEnchantmentId: string;
+		tomorrow?: EnchanterData["tomorrow"];
 	}
 ): Promise<EnchanterData> {
 	const {
 		inventory: playerInventory, player
 	} = playerData;
 	const {
-		enchantment, enchantmentId, isPlayerMage, nextCityMapLocationId, nextEnchantment, nextEnchantmentId
+		enchantment, enchantmentId, isPlayerMage, tomorrow
 	} = enchantData;
 
 	const enchantableItems: EnchanterData["enchantableItems"] = [];
@@ -211,9 +209,7 @@ export async function buildEnchanterData(
 		enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
 		enchantmentType: enchantment.kind.type.id,
 		enchantmentSlot: enchantment.kind.slot,
-		nextCityMapLocationId,
-		nextEnchantmentId,
-		nextEnchantmentType: nextEnchantment.kind.type.id,
+		...tomorrow ? { tomorrow } : {},
 		mageReduction: isPlayerMage,
 		playerMoney: player.money,
 		playerGems: playerMissionsInfo.gems
@@ -244,16 +240,21 @@ export async function buildAvailableEnchanterData(
 			nextCityId,
 			nextEnchantmentId
 		});
-		return undefined;
 	}
 
 	return buildEnchanterData(playerData, {
 		enchantment,
 		enchantmentId,
 		isPlayerMage: playerData.player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE,
-		nextCityMapLocationId,
-		nextEnchantment,
-		nextEnchantmentId
+		...nextEnchantment && nextCityMapLocationId !== undefined
+			? {
+				tomorrow: {
+					cityMapLocationId: nextCityMapLocationId,
+					enchantmentId: nextEnchantmentId,
+					enchantmentType: nextEnchantment.kind.type.id
+				}
+			}
+			: {}
 	});
 }
 
