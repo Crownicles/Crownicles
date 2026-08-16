@@ -161,14 +161,19 @@ export async function buildApartmentNotaryData(
 export async function buildEnchanterData(
 	playerData: EnchanterPlayerData,
 	enchantData: {
-		enchantment: ItemEnchantment; enchantmentId: string; isPlayerMage: boolean;
+		enchantment: ItemEnchantment;
+		enchantmentId: string;
+		isPlayerMage: boolean;
+		nextCityMapLocationId: number;
+		nextEnchantment: ItemEnchantment;
+		nextEnchantmentId: string;
 	}
 ): Promise<EnchanterData> {
 	const {
 		inventory: playerInventory, player
 	} = playerData;
 	const {
-		enchantment, enchantmentId, isPlayerMage
+		enchantment, enchantmentId, isPlayerMage, nextCityMapLocationId, nextEnchantment, nextEnchantmentId
 	} = enchantData;
 
 	const enchantableItems: EnchanterData["enchantableItems"] = [];
@@ -206,6 +211,9 @@ export async function buildEnchanterData(
 		enchantmentCost: enchantment.getEnchantmentCost(isPlayerMage),
 		enchantmentType: enchantment.kind.type.id,
 		enchantmentSlot: enchantment.kind.slot,
+		nextCityMapLocationId,
+		nextEnchantmentId,
+		nextEnchantmentType: nextEnchantment.kind.type.id,
 		mageReduction: isPlayerMage,
 		playerMoney: player.money,
 		playerGems: playerMissionsInfo.gems
@@ -226,10 +234,26 @@ export async function buildAvailableEnchanterData(
 		return undefined;
 	}
 
+	const nextEnchantmentId = await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.getValue();
+	const nextEnchantment = ItemEnchantment.getById(nextEnchantmentId);
+	const nextCityId = await Settings.NEXT_ENCHANTER_CITY.getValue();
+	const nextCity = CityDataController.instance.getById(nextCityId);
+	const nextCityMapLocationId = nextCity?.maps[0];
+	if (!nextEnchantment || nextCityMapLocationId === undefined) {
+		CrowniclesLogger.error("Invalid next enchanter setting. Cannot display Mernil's next destination.", {
+			nextCityId,
+			nextEnchantmentId
+		});
+		return undefined;
+	}
+
 	return buildEnchanterData(playerData, {
 		enchantment,
 		enchantmentId,
-		isPlayerMage: playerData.player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE
+		isPlayerMage: playerData.player.class === ClassConstants.CLASSES_ID.MYSTIC_MAGE,
+		nextCityMapLocationId,
+		nextEnchantment,
+		nextEnchantmentId
 	});
 }
 

@@ -13,6 +13,7 @@ import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
+import { MapLocationConstants } from "../../../../../../Lib/src/constants/MapLocationConstants";
 import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector,
@@ -194,8 +195,18 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 		buildEnchantmentDescription(data, lng),
 		buildEnchantmentBalance(data, lng),
 		data.hasAtLeastOneEnchantedItem
-			&& i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng })
+			&& i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng }),
+		buildTomorrowStory(data, lng)
 	]);
+}
+
+export function buildTomorrowStory(data: EnchanterCityData, lng: Language): string {
+	return i18n.t("commands:report.city.enchanter.tomorrowStory", {
+		lng,
+		nextCity: DisplayUtils.getMapLocationDisplay(MapLocationConstants.TYPES.CITY, data.nextCityMapLocationId, lng),
+		nextEnchantmentId: data.nextEnchantmentId,
+		nextEnchantmentType: data.nextEnchantmentType
+	});
 }
 
 function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language): string {
@@ -217,7 +228,11 @@ function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language): st
 	else {
 		story = i18n.t("commands:report.city.enchanter.allEnchantedStory", { lng });
 	}
-	return StringUtils.joinParagraphs([story, buildEnchantmentDescription(data, lng)]);
+	return StringUtils.joinParagraphs([
+		story,
+		buildEnchantmentDescription(data, lng),
+		buildTomorrowStory(data, lng)
+	]);
 }
 
 function addEnchantableItemsSection(container: ContainerBuilder, data: EnchanterCityData, lng: Language): void {

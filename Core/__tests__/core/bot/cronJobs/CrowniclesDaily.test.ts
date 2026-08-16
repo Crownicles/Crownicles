@@ -18,7 +18,37 @@ vi.mock("../../../../src/core/database/game/models/Setting", () => ({
 		NEXT_DAILY_RESET: {
 			getValue: vi.fn().mockResolvedValue(0),
 			setValue: vi.fn().mockResolvedValue(undefined)
+		},
+		ENCHANTER_CITY: {
+			getValue: vi.fn().mockResolvedValue("capital"),
+			setValue: vi.fn().mockResolvedValue(undefined)
+		},
+		ENCHANTER_ENCHANTMENT_ID: {
+			getValue: vi.fn().mockResolvedValue("pvpAttack1"),
+			setValue: vi.fn().mockResolvedValue(undefined)
+		},
+		NEXT_ENCHANTER_CITY: {
+			getValue: vi.fn().mockResolvedValue("ville_forte"),
+			setValue: vi.fn().mockResolvedValue(undefined)
+		},
+		NEXT_ENCHANTER_ENCHANTMENT_ID: {
+			getValue: vi.fn().mockResolvedValue("defense1"),
+			setValue: vi.fn().mockResolvedValue(undefined)
 		}
+	}
+}));
+
+vi.mock("../../../../src/data/City", () => ({
+	CityDataController: {
+		instance: {
+			getRandomCity: vi.fn().mockReturnValue({ id: "coco_village" })
+		}
+	}
+}));
+
+vi.mock("../../../../../Lib/src/types/ItemEnchantment", () => ({
+	ItemEnchantment: {
+		getRandomEnchantment: vi.fn().mockReturnValue({ id: "speed1" })
 	}
 }));
 
@@ -56,6 +86,9 @@ import { PetConstants } from "../../../../../Lib/src/constants/PetConstants";
 import { GuildDomainConstants } from "../../../../../Lib/src/constants/GuildDomainConstants";
 import { TokensConstants } from "../../../../../Lib/src/constants/TokensConstants";
 import { RandomUtils } from "../../../../../Lib/src/utils/RandomUtils";
+import { Settings } from "../../../../src/core/database/game/models/Setting";
+import { CityDataController } from "../../../../src/data/City";
+import { ItemEnchantment } from "../../../../../Lib/src/types/ItemEnchantment";
 
 type Gate<T> = {
 	promise: Promise<T>;
@@ -218,6 +251,26 @@ describe("CrowniclesDaily.randomLovePointsLoose", () => {
 		await expect(CrowniclesDaily.randomLovePointsLoose()).resolves.toBe(false);
 
 		expect(PetEntity.update).not.toHaveBeenCalled();
+	});
+});
+
+describe("CrowniclesDaily.reloadEnchanter", () => {
+	beforeEach(() => {
+		vi.mocked(Settings.ENCHANTER_CITY.setValue).mockClear();
+		vi.mocked(Settings.ENCHANTER_ENCHANTMENT_ID.setValue).mockClear();
+		vi.mocked(Settings.NEXT_ENCHANTER_CITY.setValue).mockClear();
+		vi.mocked(Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.setValue).mockClear();
+		vi.mocked(CityDataController.instance.getRandomCity).mockClear();
+		vi.mocked(ItemEnchantment.getRandomEnchantment).mockClear();
+	});
+
+	it("promotes tomorrow's choice and prepares the following day", async () => {
+		await CrowniclesDaily.reloadEnchanter();
+
+		expect(Settings.ENCHANTER_ENCHANTMENT_ID.setValue).toHaveBeenCalledWith("defense1");
+		expect(Settings.ENCHANTER_CITY.setValue).toHaveBeenCalledWith("ville_forte");
+		expect(Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.setValue).toHaveBeenCalledWith("speed1");
+		expect(Settings.NEXT_ENCHANTER_CITY.setValue).toHaveBeenCalledWith("coco_village");
 	});
 });
 

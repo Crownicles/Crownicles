@@ -205,15 +205,22 @@ export class CrowniclesDaily {
 	 * Reload the enchanter's enchantment and location
 	 */
 	static async reloadEnchanter(): Promise<void> {
-		const enchantmentId = ItemEnchantment.getRandomEnchantment().id;
-		await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(enchantmentId);
+		const currentEnchantmentId = await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.getValue();
+		const currentCityId = await Settings.NEXT_ENCHANTER_CITY.getValue();
+		await Settings.ENCHANTER_ENCHANTMENT_ID.setValue(currentEnchantmentId);
+		await Settings.ENCHANTER_CITY.setValue(currentCityId);
 
-		const cityId = CityDataController.instance.getRandomCity().id;
-		await Settings.ENCHANTER_CITY.setValue(cityId);
+		const nextEnchantmentId = ItemEnchantment.getRandomEnchantment().id;
+		const nextCity = CityDataController.instance.getRandomCity();
+		const nextCityId = nextCity.id;
+		await Settings.NEXT_ENCHANTER_ENCHANTMENT_ID.setValue(nextEnchantmentId);
+		await Settings.NEXT_ENCHANTER_CITY.setValue(nextCityId);
 
 		CrowniclesLogger.info("Enchanter reloaded", {
-			enchantmentId,
-			cityId
+			enchantmentId: currentEnchantmentId,
+			cityId: currentCityId,
+			nextEnchantmentId,
+			nextCityId
 		});
 	}
 
