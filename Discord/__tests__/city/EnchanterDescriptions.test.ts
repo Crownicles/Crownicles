@@ -18,9 +18,11 @@ function createEnchanterData(enchantmentId: string): EnchanterCityData {
 		enchantmentId,
 		enchantmentType: "magic",
 		enchantmentSlot: ItemCategory.WEAPON,
-		nextCityMapLocationId: 23,
-		nextEnchantmentId: ItemEnchantment.DEFENSE_1.id,
-		nextEnchantmentType: ItemEnchantment.DEFENSE_1.kind.type.id,
+		tomorrow: {
+			cityMapLocationId: 23,
+			enchantmentId: ItemEnchantment.DEFENSE_1.id,
+			enchantmentType: ItemEnchantment.DEFENSE_1.kind.type.id
+		},
 		enchantmentCost: {
 			money: 1000,
 			gems: 0
@@ -54,6 +56,13 @@ describe("enchanter enchantment descriptions", () => {
 
 		expect(story).toContain("Claire de Ville");
 		expect(story).toContain("Défense I");
+	});
+
+	it("keeps the current enchanter story usable without tomorrow data", () => {
+		const data = createEnchanterData(ItemEnchantment.PVP_ATTACK_1.id);
+		delete data.tomorrow;
+
+		expect(buildTomorrowStory(data, LANGUAGE.FRENCH)).toBe("");
 	});
 
 	it("throws an explicit error for an unknown enchantment", () => {

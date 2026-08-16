@@ -201,11 +201,15 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 }
 
 export function buildTomorrowStory(data: EnchanterCityData, lng: Language): string {
+	if (!data.tomorrow) {
+		return "";
+	}
+
 	return i18n.t("commands:report.city.enchanter.tomorrowStory", {
 		lng,
-		nextCity: DisplayUtils.getMapLocationDisplay(MapLocationConstants.TYPES.CITY, data.nextCityMapLocationId, lng),
-		nextEnchantmentId: data.nextEnchantmentId,
-		nextEnchantmentType: data.nextEnchantmentType
+		nextCity: DisplayUtils.getMapLocationDisplay(MapLocationConstants.TYPES.CITY, data.tomorrow.cityMapLocationId, lng),
+		nextEnchantmentId: data.tomorrow.enchantmentId,
+		nextEnchantmentType: data.tomorrow.enchantmentType
 	});
 }
 

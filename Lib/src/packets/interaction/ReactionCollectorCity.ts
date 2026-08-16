@@ -92,9 +92,11 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		enchantmentId: string;
 		enchantmentType: string;
 		enchantmentSlot: ItemCategory; // The slot (WEAPON or ARMOR) that today's enchantment can be applied to.
-		nextCityMapLocationId: number;
-		nextEnchantmentId: string;
-		nextEnchantmentType: string;
+		tomorrow?: {
+			cityMapLocationId: number;
+			enchantmentId: string;
+			enchantmentType: string;
+		};
 		enchantmentCost: {
 			money: number;
 			gems: number;
