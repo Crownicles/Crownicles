@@ -10,12 +10,14 @@ vi.mock("../../../src/core/database/game/models/PlayerBadges", () => ({
 }));
 
 import {
-	FORECAST_OFFSETS, getMarketAnalysisShopItem
+	FORECAST_OFFSETS, getBadgeShopItem, getMarketAnalysisShopItem
 } from "../../../src/core/utils/StockExchangeShopItems";
 import { CommandMissionShopMarketAnalysis } from "../../../../Lib/src/packets/commands/CommandMissionShopPacket";
 import {
 	CrowniclesPacket, PacketContext
 } from "../../../../Lib/src/packets/CrowniclesPacket";
+import { PlayerBadgesManager } from "../../../src/core/database/game/models/PlayerBadges";
+import { ShopItemType } from "../../../../Lib/src/constants/LogsConstants";
 
 /**
  * Number of days between a date and the next monday, when the herbalist renews its selection.
@@ -66,5 +68,21 @@ describe("market analysis rotation horizon", () => {
 		}
 
 		expect(checkedDays).toBeGreaterThan(0);
+	});
+});
+
+describe("money mouth badge shop item", () => {
+	it("is not displayed when the player already owns the badge", async () => {
+		vi.mocked(PlayerBadgesManager.hasBadge).mockResolvedValue(true);
+
+		await expect(getBadgeShopItem(1)).resolves.toBeNull();
+	});
+
+	it("is displayed when the player does not own the badge", async () => {
+		vi.mocked(PlayerBadgesManager.hasBadge).mockResolvedValue(false);
+
+		const item = await getBadgeShopItem(1);
+
+		expect(item?.id).toBe(ShopItemType.MONEY_MOUTH_BADGE);
 	});
 });

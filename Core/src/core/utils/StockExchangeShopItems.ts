@@ -23,7 +23,11 @@ import { calculateGemsToMoneyRatio } from "./MissionShopItems";
 /**
  * Get the shop item for the money mouth badge
  */
-export function getBadgeShopItem(): ShopItem {
+export async function getBadgeShopItem(playerId: number): Promise<ShopItem | null> {
+	if (await PlayerBadgesManager.hasBadge(playerId, Badge.RICH)) {
+		return null;
+	}
+
 	return {
 		id: ShopItemType.MONEY_MOUTH_BADGE,
 		price: ShopConstants.MONEY_MOUTH_BADGE_PRICE,

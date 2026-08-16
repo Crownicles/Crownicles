@@ -120,7 +120,11 @@ export function getMissionSkipShopItem(missionSkipsUsedThisWeek: number): ShopIt
  * Creates the quest master badge shop item configuration
  * @returns Shop item for purchasing the quest master badge
  */
-export function getQuestMasterBadgeShopItem(): ShopItem {
+export async function getQuestMasterBadgeShopItem(playerId: number): Promise<ShopItem | null> {
+	if (await PlayerBadgesManager.hasBadge(playerId, Badge.MISSION_COMPLETER)) {
+		return null;
+	}
+
 	return {
 		id: ShopItemType.QUEST_MASTER_BADGE,
 		price: Constants.MISSION_SHOP.PRICES.BADGE,
