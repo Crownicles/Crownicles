@@ -53,7 +53,8 @@ export class Campaign {
 				pointsToWin: 0, // Campaign doesn't give points
 				petRewardTypeId: currentCampaignData?.petRewardTypeId
 			});
-			missionInfo.campaignBlob = `${missionInfo.campaignBlob.slice(0, missionInfo.campaignProgression - 1)}1${missionInfo.campaignBlob.slice(missionInfo.campaignProgression)}`;
+			const campaignBlob = missionInfo.getCampaignBlob();
+			missionInfo.campaignBlob = `${campaignBlob.slice(0, missionInfo.campaignProgression - 1)}1${campaignBlob.slice(missionInfo.campaignProgression)}`;
 			missionInfo.campaignProgression = this.hasNextCampaign(missionInfo.campaignBlob) ? this.findNextCampaignIndex(missionInfo.campaignBlob) + 1 : 0;
 			crowniclesInstance.logsDatabase.logMissionCampaignProgress(player.keycloakId, missionInfo.campaignProgression)
 				.then();

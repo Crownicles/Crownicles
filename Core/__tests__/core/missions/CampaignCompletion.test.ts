@@ -113,13 +113,13 @@ describe("Campaign.completeCampaignMissions", () => {
 	 * Creates a mock PlayerMissionsInfo
 	 */
 	function createMockMissionInfo(overrides: Partial<{
-		campaignBlob: string;
+		campaignBlob: string | null;
 		campaignProgression: number;
 	}> = {}): PlayerMissionsInfo {
 		const info = Object.create(PlayerMissionsInfo.prototype);
 		Object.assign(info, {
 			playerId: 1,
-			campaignBlob: overrides.campaignBlob ?? "000", // 3 missions, none completed
+			campaignBlob: overrides.campaignBlob !== undefined ? overrides.campaignBlob : "000", // 3 missions, none completed
 			campaignProgression: overrides.campaignProgression ?? 1, // Currently on mission 1
 			save: vi.fn().mockResolvedValue(undefined)
 		});
@@ -231,6 +231,27 @@ describe("Campaign.completeCampaignMissions", () => {
 			expect(result).toHaveLength(1);
 			expect(missionInfo.campaignBlob).toBe("111");
 			expect(getMissionInfoSpy).not.toHaveBeenCalled();
+		});
+
+		it("should initialize a null campaign blob before marking a mission complete", async () => {
+			const campaign = createMockCampaignSlot({
+				missionId: "earnLifePoints",
+				numberDone: 100,
+				missionObjective: 100
+			});
+			const missionInfo = createMockMissionInfo({
+				campaignBlob: null,
+				campaignProgression: 1
+			});
+			vi.spyOn(MissionSlots, "getCampaignOfPlayer").mockResolvedValue(campaign);
+			vi.spyOn(MissionsController, "getMissionInterface").mockReturnValue({
+				initialNumberDone: vi.fn().mockResolvedValue(0)
+			} as never);
+
+			const result = await Campaign.updatePlayerCampaign(true, player, missionInfo);
+
+			expect(result).toHaveLength(1);
+			expect(missionInfo.campaignBlob).toBe(`1${"0".repeat(CAMPAIGN_MISSIONS.length - 1)}`);
 		});
 
 		it("should record completion and advance progression for a single completed mission", async () => {
