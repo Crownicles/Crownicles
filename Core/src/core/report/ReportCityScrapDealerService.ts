@@ -44,6 +44,13 @@ type PositionedMaterialUnit = {
 	position: number;
 };
 
+/** A material unit tagged with its relative position inside one upgrade level. */
+type PositionedLevelMaterialUnit = {
+	unit: ScrapDealerMaterialUnit;
+	position: number;
+	level: number;
+};
+
 /** Identifies the exact inventory row being recycled, so the lookup and the deletion cannot drift apart. */
 type RecycleSlotFilter = {
 	playerId: number;
@@ -52,19 +59,16 @@ type RecycleSlotFilter = {
 	itemId: number;
 };
 
-/** Every single material the item consumed to reach its level, bucketed by rarity. */
-function groupRecipeUnitsByRarity(item: MainItem, itemLevel: number): Map<MaterialRarity, ScrapDealerMaterialUnit[]> {
+/** Every single material the item consumed for one upgrade level, bucketed by rarity. */
+function groupRecipeUnitsByRarity(item: MainItem, level: number): Map<MaterialRarity, ScrapDealerMaterialUnit[]> {
 	const unitsByRarity = new Map<MaterialRarity, ScrapDealerMaterialUnit[]>();
-	const maxLevel = Math.max(itemLevel, ItemConstants.MIN_UPGRADE_LEVEL);
-	for (let level = ItemConstants.MIN_UPGRADE_LEVEL; level <= maxLevel; level++) {
-		for (const material of item.getUpgradeMaterials(level)) {
-			const units = unitsByRarity.get(material.rarity) ?? [];
-			units.push({
-				materialId: Number.parseInt(material.id, 10),
-				rarity: material.rarity
-			});
-			unitsByRarity.set(material.rarity, units);
-		}
+	for (const material of item.getUpgradeMaterials(level)) {
+		const units = unitsByRarity.get(material.rarity) ?? [];
+		units.push({
+			materialId: Number.parseInt(material.id, 10),
+			rarity: material.rarity
+		});
+		unitsByRarity.set(material.rarity, units);
 	}
 	return unitsByRarity;
 }
@@ -78,17 +82,37 @@ function positionUnitsInsideBucket(units: ScrapDealerMaterialUnit[]): Positioned
 	}));
 }
 
-/**
- * Every single material the item consumed to reach its level, interleaved across rarities so that
- * taking the first N units keeps the proportions of the item's own recipe instead of draining all
- * the common materials first.
- */
-function getRecipeMaterialUnits(item: MainItem, itemLevel: number): ScrapDealerMaterialUnit[] {
-	const interleavedUnits = [...groupRecipeUnitsByRarity(item, itemLevel).values()]
+/** Materials consumed for one level, interleaved across that level's rarities. */
+function getRecipeMaterialUnitsForLevel(item: MainItem, level: number): ScrapDealerMaterialUnit[] {
+	const interleavedUnits = [...groupRecipeUnitsByRarity(item, level).values()]
 		.flatMap(positionUnitsInsideBucket);
 	interleavedUnits.sort((firstEntry, secondEntry) =>
 		firstEntry.position - secondEntry.position || firstEntry.unit.rarity - secondEntry.unit.rarity);
 	return interleavedUnits.map(entry => entry.unit);
+}
+
+/**
+ * Every single material the item consumed to reach its level, interleaved across levels so that
+ * taking the first N units keeps materials from every reached upgrade instead of draining one
+ * level before considering the next one.
+ */
+function getRecipeMaterialUnits(item: MainItem, itemLevel: number): ScrapDealerMaterialUnit[] {
+	const maxLevel = Math.max(itemLevel, ItemConstants.MIN_UPGRADE_LEVEL);
+	const positionedUnits: PositionedLevelMaterialUnit[] = [];
+	for (let level = ItemConstants.MIN_UPGRADE_LEVEL; level <= maxLevel; level++) {
+		const levelUnits = getRecipeMaterialUnitsForLevel(item, level);
+		for (const [position, unit] of levelUnits.entries()) {
+			positionedUnits.push({
+				unit,
+				position: position / levelUnits.length,
+				level
+			});
+		}
+	}
+
+	positionedUnits.sort((firstEntry, secondEntry) =>
+		firstEntry.position - secondEntry.position || firstEntry.level - secondEntry.level);
+	return positionedUnits.map(entry => entry.unit);
 }
 
 /**

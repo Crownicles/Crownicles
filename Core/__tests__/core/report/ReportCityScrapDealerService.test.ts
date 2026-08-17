@@ -111,6 +111,20 @@ describe("getScrapDealerMaterials", () => {
 		]);
 	});
 
+	it("keeps materials from every reached upgrade level in the recovery cycle", () => {
+		const item = new TestMainItem(ItemRarity.EXOTIC, new Map([
+			[1, Array.from({ length: 4 }, () => makeMaterial("10"))],
+			[2, Array.from({ length: 4 }, () => makeMaterial("20"))],
+			[3, Array.from({ length: 4 }, () => makeMaterial("30"))],
+			[4, Array.from({ length: 4 }, () => makeMaterial("5"))]
+		]));
+
+		const recoveredMaterialIds = getScrapDealerMaterials(item, 4)
+			.map(material => material.materialId);
+
+		expect(recoveredMaterialIds).toEqual(expect.arrayContaining([5, 10, 20, 30]));
+	});
+
 	it("hands out materials worth the item value scaled by its upgrade level", () => {
 		const rarityByMaterialId = new Map([
 			[10, MaterialRarity.COMMON],
