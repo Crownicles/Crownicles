@@ -59,6 +59,15 @@ class CollectorsStore {
 		this.timers.set(collector.id, timer);
 	};
 
+	public readonly removeExpired = (now: number = Date.now()): void => {
+		for (const [collectorId, collector] of this.open) {
+			if (collector.endTime <= now) {
+				this.answeredKinds.delete(collectorId);
+				this.forget(collectorId);
+			}
+		}
+	};
+
 	public readonly react = (collectorId: string, reactionIndex: number): void => {
 		const collector = this.open.get(collectorId);
 		if (collector) {

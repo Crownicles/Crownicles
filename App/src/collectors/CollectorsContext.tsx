@@ -1,4 +1,5 @@
 import {createContext, ReactNode, useContext, useEffect, useMemo, useSyncExternalStore} from "react";
+import {AppState} from "react-native";
 import type {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {collectorsStore} from "@/src/collectors/CollectorsStore";
 import {useGameInvalidations} from "@/src/store/GameInvalidations";
@@ -33,6 +34,17 @@ export function CollectorsProvider({ children }: { children: ReactNode }): React
 	const open = useSyncExternalStore(collectorsStore.subscribe, collectorsStore.getSnapshot, collectorsStore.getSnapshot);
 
 	useEffect(() => collectorsStore.subscribeToResolution(afterCollector), [afterCollector]);
+
+	useEffect(() => {
+		collectorsStore.removeExpired();
+		const subscription = AppState.addEventListener("change", nextState => {
+			if (nextState === "active") {
+				collectorsStore.removeExpired();
+			}
+		});
+
+		return (): void => subscription.remove();
+	}, []);
 
 	const value = useMemo(() => ({
 		open,

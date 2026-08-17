@@ -18,7 +18,10 @@
     ],
     "setupFilesAfterEnv": [
       "<rootDir>/jest.setup.ts"
-    ]
+    ],
+    "moduleNameMapper": {
+      "^@babel/runtime/(.*)$": "<rootDir>/node_modules/@babel/runtime/$1"
+    }
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
