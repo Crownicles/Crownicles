@@ -194,24 +194,99 @@ button.row:active{background:var(--wash)}
   display:block;padding:11px 13px;border-radius:var(--radius);background:var(--wash);
   font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12px;line-height:1.7;overflow-wrap:anywhere;color:var(--muted);
 }
+.island-map-panel{overflow:hidden}
+.island-map-panel img{display:block;width:100%;height:auto}
+.island-map-caption{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;border-top:1px solid var(--line);font-size:13px}
+.island-map-caption strong{font-size:13.5px}
+.island-map-caption span{color:var(--muted);text-align:right}
 
 /* ---------- combat ---------- */
-.versus{display:flex;align-items:stretch;gap:8px;margin-bottom:12px}
-.versus .side{flex:1;border:1px solid var(--line);border-radius:var(--radius);padding:11px;text-align:center}
-.versus .side i{font-style:normal;font-size:22px;display:block;margin-bottom:4px}
-.versus .side strong{display:block;font-size:13.5px;letter-spacing:-.01em}
-.versus .side small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
-.versus .mid{align-self:center;font-size:12px;font-weight:700;color:var(--faint)}
-.fight-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px;border-top:1px solid var(--line)}
+.fight-header{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:4px}
+.fight-header-main{min-width:0}
+.fight-header .eyebrow{margin-bottom:3px}
+.fight-header h1{font-size:23px;margin:0}
+.fight-turn{flex:none;padding:5px 8px;border-radius:99px;background:var(--wash);font-size:11px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.fight-section-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:13px 0 7px}
+.fight-section-head h2{font-size:15.5px}
+.fight-section-head span{color:var(--muted);font-size:11.5px;font-weight:600;white-space:nowrap}
+.versus{display:flex;align-items:stretch;gap:6px;margin-bottom:10px}
+.versus .side{flex:1;border:1px solid var(--line);border-radius:14px;padding:9px;text-align:center;background:var(--paper)}
+.versus .side.active{border-color:var(--ink);background:var(--wash)}
+.versus .side .fighter-role{display:block;margin-bottom:4px;font-size:9.5px;font-weight:700;color:var(--faint);letter-spacing:.08em}
+.fighter-name{display:flex;align-items:center;justify-content:center;gap:4px;min-width:0}
+.fighter-name i{font-style:normal;font-size:18px;line-height:1}
+.fighter-name strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13.5px;letter-spacing:-.01em}
+.versus .side small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+.fighter-health{margin-top:7px;text-align:left}
+.fighter-health-top{display:flex;justify-content:space-between;gap:6px;margin-bottom:4px;font-size:10.5px;color:var(--muted)}
+.fighter-health-top b{color:var(--ink);font-variant-numeric:tabular-nums}
+.versus .mid{align-self:center;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:12px;font-weight:700;color:var(--faint)}
+.versus .mid small{font-size:10px;font-weight:600;white-space:nowrap}
+.fight-resource{padding:9px 12px;border:1px solid var(--line);border-radius:var(--radius);background:var(--wash);margin-bottom:12px}
+.fight-resource-top{display:flex;justify-content:space-between;gap:8px;margin-bottom:6px;font-size:12px;font-weight:600}
+.fight-resource-top b{font-variant-numeric:tabular-nums}
+.fight-resource small{display:block;margin-top:4px;color:var(--muted);font-size:10.5px}
+.fight-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:9px}
 .fight-actions button{
-  text-align:left;padding:10px 12px;border-radius:12px;border:1px solid var(--line);
-  background:var(--paper);font:inherit;cursor:pointer;color:inherit;
+  min-height:58px;position:relative;text-align:left;padding:11px 11px 10px;border-radius:12px;border:1px solid var(--line);
+  background:var(--paper);font:inherit;cursor:pointer;color:inherit;box-shadow:0 2px 0 var(--line);
 }
-.fight-actions button:active{background:var(--wash)}
+.fight-actions button::after{content:"";position:absolute;right:10px;bottom:8px;width:5px;height:5px;border-radius:50%;background:var(--green);opacity:.7}
+.fight-actions button:active{transform:translateY(1px);background:var(--wash);box-shadow:none}
 .fight-actions button:disabled{opacity:.45;cursor:default}
-.fight-actions b{display:block;font-size:13px}
-.fight-actions small{display:block;color:var(--muted);font-size:11.5px}
-.log{padding:12px 14px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);white-space:pre-line;line-height:1.6}
+.fight-actions button:disabled::after{background:var(--faint)}
+.fight-actions button.is-fired{animation:actionPress .62s cubic-bezier(.22,.8,.24,1);z-index:1}
+.fight-actions.is-waiting{opacity:.62;pointer-events:none}
+.fight-actions button:last-child{grid-column:1 / -1}
+.fight-actions b{display:flex;align-items:flex-start;justify-content:space-between;gap:6px;font-size:12.5px}
+.fight-actions b em{padding:2px 6px;border-radius:99px;background:var(--wash);font-size:10.5px;font-style:normal;font-weight:700;color:var(--muted);white-space:nowrap}
+.panel > .fight-actions:first-child,.panel > .log:first-child{border-top:0}
+.fight-battlefield.action-hit{animation:battleHit .72s ease-out}
+.fight-battlefield.action-slash{animation:battleSlash .78s ease-out}
+.fight-battlefield.action-heavy{animation:battleHeavy .82s ease-out}
+.fight-battlefield.action-bless{animation:battleBless .9s ease-out}
+.fight-battlefield.action-rest{animation:battleRest .9s ease-out}
+.fight-battlefield.opponent-hit{animation:opponentHit .72s ease-out}
+.fight-battlefield.opponent-slash{animation:opponentSlash .78s ease-out}
+.fight-battlefield.opponent-heavy{animation:opponentHeavy .82s ease-out}
+.fight-battlefield.action-hit .side:not(.active){animation:foeImpact .72s ease-out;box-shadow:0 0 0 4px rgba(210,80,75,.18),0 0 26px rgba(210,80,75,.3)}
+.fight-battlefield.action-slash .side:not(.active){position:relative;overflow:visible;animation:foeSlash .78s ease-out;box-shadow:0 0 0 3px rgba(210,80,75,.16)}
+.fight-battlefield.action-slash .side:not(.active)::after{content:"";position:absolute;top:8%;bottom:8%;left:-8%;width:3px;border-radius:99px;background:var(--red);opacity:0;transform:rotate(18deg) translateX(-28px);box-shadow:0 0 12px rgba(210,80,75,.7);animation:slashMark .58s .04s ease-out}
+.fight-battlefield.action-heavy .side:not(.active){animation:foeHeavy .82s ease-out;box-shadow:0 0 0 5px rgba(210,80,75,.2),0 0 32px rgba(210,80,75,.38)}
+.fight-battlefield.action-bless .side.active,.fight-battlefield.action-rest .side.active{animation:selfPulse .9s ease-out}
+.fight-battlefield.action-bless .fight-resource{animation:resourceSurge .9s ease-out}
+.fight-battlefield.action-rest .fight-resource{animation:resourceRest .9s ease-out}
+.fight-battlefield.opponent-hit .side.active{animation:foeImpact .72s ease-out;box-shadow:0 0 0 4px rgba(210,80,75,.18),0 0 26px rgba(210,80,75,.3)}
+.fight-battlefield.opponent-slash .side.active{position:relative;overflow:visible;animation:foeSlash .78s ease-out;box-shadow:0 0 0 3px rgba(210,80,75,.16)}
+.fight-battlefield.opponent-slash .side.active::after{content:"";position:absolute;top:8%;bottom:8%;right:-8%;width:3px;border-radius:99px;background:var(--red);opacity:0;transform:rotate(-18deg) translateX(28px);box-shadow:0 0 12px rgba(210,80,75,.7);animation:slashMarkOpponent .58s .04s ease-out}
+.fight-battlefield.opponent-heavy .side.active{animation:foeHeavy .82s ease-out;box-shadow:0 0 0 5px rgba(210,80,75,.2),0 0 32px rgba(210,80,75,.38)}
+.fight-battlefield.action-hit .mid,.fight-battlefield.action-slash .mid,.fight-battlefield.action-heavy .mid{color:var(--red)}
+.fight-battlefield.action-bless .mid{color:var(--gold)}
+.fight-battlefield.action-rest .mid{color:var(--blue)}
+.fight-log.action-feedback{animation:logFeedback .9s ease-out}
+@keyframes actionPress{0%{transform:scale(1);box-shadow:0 2px 0 var(--line)}35%{transform:scale(.9) translateY(2px);box-shadow:0 0 0 5px rgba(47,111,208,.18),0 0 18px rgba(47,111,208,.3)}70%{transform:scale(1.04);box-shadow:0 0 0 2px rgba(47,111,208,.12),0 2px 0 var(--line)}100%{transform:scale(1);box-shadow:0 2px 0 var(--line)}}
+@keyframes battleHit{0%{transform:translateX(0);filter:brightness(1)}18%{transform:translateX(-7px);filter:brightness(1.16)}38%{transform:translateX(6px);filter:brightness(1.08)}58%{transform:translateX(-3px)}100%{transform:translateX(0);filter:brightness(1)}}
+@keyframes battleSlash{0%{transform:translateX(0)}18%{transform:translateX(7px)}40%{transform:translateX(-6px)}62%{transform:translateX(3px)}100%{transform:translateX(0)}}
+@keyframes battleHeavy{0%{transform:scale(1)}24%{transform:scale(.96) translateY(5px)}48%{transform:scale(1.025) translateY(-2px)}70%{transform:scale(.99)}100%{transform:scale(1)}}
+@keyframes battleBless{0%{filter:brightness(1)}30%{filter:brightness(1.3)}58%{filter:brightness(1.12)}100%{filter:brightness(1)}}
+@keyframes battleRest{0%{opacity:.7;transform:translateY(2px)}35%{opacity:1;transform:translateY(-2px)}65%{transform:translateY(1px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes foeImpact{0%{transform:translateX(0) rotate(0);filter:brightness(1)}20%{transform:translateX(12px) rotate(2deg);filter:brightness(1.25)}42%{transform:translateX(-9px) rotate(-2deg)}64%{transform:translateX(5px) rotate(1deg)}100%{transform:translateX(0) rotate(0);filter:brightness(1)}}
+@keyframes foeSlash{0%{transform:translateX(0)}28%{transform:translateX(8px) rotate(1deg)}52%{transform:translateX(-6px) rotate(-1deg)}100%{transform:translateX(0)}}
+@keyframes foeHeavy{0%{transform:scale(1)}25%{transform:scale(.9) translateY(7px)}48%{transform:scale(1.05) translateY(-3px)}72%{transform:scale(.98)}100%{transform:scale(1)}}
+@keyframes slashMark{0%{opacity:0;transform:rotate(18deg) translateX(-28px)}28%{opacity:1}100%{opacity:0;transform:rotate(18deg) translateX(68px)}}
+@keyframes opponentHit{0%{transform:translateX(0);filter:brightness(1)}18%{transform:translateX(7px);filter:brightness(1.16)}38%{transform:translateX(-6px);filter:brightness(1.08)}58%{transform:translateX(3px)}100%{transform:translateX(0);filter:brightness(1)}}
+@keyframes opponentSlash{0%{transform:translateX(0)}18%{transform:translateX(-7px)}40%{transform:translateX(6px)}62%{transform:translateX(-3px)}100%{transform:translateX(0)}}
+@keyframes opponentHeavy{0%{transform:scale(1)}24%{transform:scale(.96) translateY(5px)}48%{transform:scale(1.025) translateY(-2px)}70%{transform:scale(.99)}100%{transform:scale(1)}}
+@keyframes slashMarkOpponent{0%{opacity:0;transform:rotate(-18deg) translateX(28px)}28%{opacity:1}100%{opacity:0;transform:rotate(-18deg) translateX(-68px)}}
+@keyframes selfPulse{0%{box-shadow:0 0 0 rgba(200,150,60,0);filter:brightness(1)}35%{box-shadow:0 0 0 8px rgba(200,150,60,.28),0 0 30px rgba(200,150,60,.45);filter:brightness(1.24)}70%{box-shadow:0 0 0 3px rgba(200,150,60,.12);filter:brightness(1.08)}100%{box-shadow:0 0 0 rgba(200,150,60,0);filter:brightness(1)}}
+@keyframes resourceSurge{0%{box-shadow:0 0 0 rgba(200,150,60,0)}35%{box-shadow:0 0 0 7px rgba(200,150,60,.2),0 0 24px rgba(200,150,60,.32)}100%{box-shadow:0 0 0 rgba(200,150,60,0)}}
+@keyframes resourceRest{0%{box-shadow:0 0 0 rgba(47,111,208,0)}40%{box-shadow:0 0 0 7px rgba(47,111,208,.2),0 0 24px rgba(47,111,208,.32)}100%{box-shadow:0 0 0 rgba(47,111,208,0)}}
+@keyframes logFeedback{0%{border-color:var(--line);background:var(--paper);transform:translateY(0)}28%{border-color:var(--blue);background:#F4F8FF;transform:translateY(3px)}62%{border-color:#9BB8EB;background:#FAFCFF;transform:translateY(0)}100%{border-color:var(--line);background:var(--paper)}}
+.fight-log{margin:0 0 10px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--paper)}
+.fight-log{display:block;width:100%;padding:0;text-align:left;font:inherit;color:inherit;cursor:pointer}
+.fight-log:active{background:var(--wash)}
+.fight-log[aria-expanded="true"] .log{max-height:none}
+.fight-log .log{max-height:76px;overflow:hidden;padding:10px 12px;font-size:12px;color:var(--muted);white-space:pre-line;line-height:1.45}
 
 /* ---------- navigation basse ---------- */
 .bottom{display:flex;border-top:1px solid var(--line);padding:7px 6px calc(7px + env(safe-area-inset-bottom));background:var(--paper)}
@@ -285,7 +360,7 @@ img.emoji{height:1em;width:1em;margin:0 .06em;vertical-align:-.12em;display:inli
       </div>
     </header>
 
-    <div class="vitals">
+    <div class="vitals" id="vitals">
       <div class="vital">
         <div class="vital-top"><span>❤️ Vie</span><b id="vHealth"></b></div>
         <div class="bar red"><i id="vHealthBar"></i></div>
@@ -401,7 +476,7 @@ const ALTERATIONS = [
   { icon: "😵", name: "Gravement blessé", time: "11 h" },
   { icon: "🔒", name: "Enfermé", time: "24 h · caution de 3 000 💰" },
   { icon: "🕑", name: "Occupé", time: "variable · jetons uniquement" },
-  { icon: "💀", name: "Mort", time: "commande /revivre" }
+  { icon: "💀", name: "Mort", time: "réapparition" }
 ];
 
 const LEAGUES = [
@@ -422,13 +497,20 @@ const BLESSINGS = [
 ];
 
 const FIGHT_ACTIONS = [
-  { icon: "⚔️", name: "Attaque simple", cost: 2, sub: "Des dégâts fiables, sans effet particulier." },
-  { icon: "🗡️", name: "Attaque rapide", cost: 3, sub: "Frappe basée sur la vitesse, difficile à esquiver." },
-  { icon: "🏋️", name: "Attaque lourde", cost: 7, sub: "Dégâts élevés mais précision réduite." },
-  { icon: "👼", name: "Bénédiction", cost: 5, sub: "Augmente l'attaque pour les tours suivants." },
-  { icon: "🛏️", name: "Repos", cost: 0, sub: "Ne fait rien ce tour-ci mais restaure du souffle." },
-  { icon: "🐾", name: "Assistance du familier", cost: 0, sub: "Une fois par combat, si le familier est disponible." }
+  { icon: "⚔️", name: "Attaque simple", cost: 2, animation: "hit", sub: "Des dégâts fiables, sans effet particulier." },
+  { icon: "🗡️", name: "Attaque rapide", cost: 3, animation: "slash", sub: "Frappe basée sur la vitesse, difficile à esquiver." },
+  { icon: "🏋️", name: "Attaque lourde", cost: 7, animation: "heavy", sub: "Dégâts élevés mais précision réduite." },
+  { icon: "👼", name: "Bénédiction", cost: 5, animation: "bless", sub: "Augmente l'attaque pour les tours suivants." },
+  { icon: "🛏️", name: "Repos", cost: 0, animation: "rest", sub: "Ne fait rien ce tour-ci mais restaure du souffle." }
 ];
+
+const OPPONENT_FIGHT_ACTIONS = [
+  { icon: "⚔️", name: "Attaque simple", animation: "hit" },
+  { icon: "🗡️", name: "Attaque rapide", animation: "slash" },
+  { icon: "🏋️", name: "Attaque lourde", animation: "heavy" }
+];
+
+const FIGHT_OPPONENT_DELAY_MS = 850;
 
 const EXPEDITIONS = [
   { icon: "🌾", place: "Voie champêtre", duration: "48 min", danger: "🌿 Tranquille", ground: "🌸 Paisible", reward: "🎁 Modestes", rations: 6 },
@@ -491,6 +573,11 @@ const MONSTERS = [
   { icon: "🐉", place: "Pic enneigé", name: "Seigneur des glaces", state: "boss" }
 ];
 
+const ISLAND_MAP = {
+  url: "https://crownicles.com/public/ressources/mapsCursed/fr_1105_map.jpg",
+  position: "Lac souterrain"
+};
+
 /* =====================================================================
    2. État de la maquette
    ===================================================================== */
@@ -503,7 +590,7 @@ const S = {
   travelProgress: 0.42,
   seg: { inventory: "equipped", top: "score", chest: "items", archivist: "personal", petSheet: "info" },
   daily: { bonus: false, guild: false, mission: false, potion: false, meal: false },
-  fight: { turn: 1, hp: 82, foeHp: 94, breath: 8, log: [], over: false },
+  fight: { turn: 1, hp: 82, foeHp: 94, breath: 8, log: [], phase: "player", animation: "", opponentAnimation: "", logExpanded: false, over: false },
   eventChoice: null,
   expedition: { inProgress: false, option: 1, returnTime: "", foodConsumed: 0 }
 };
@@ -631,8 +718,7 @@ function reportCity() {
     + head("Reprendre la route")
     + panel(
       rows([
-        { icon: "🚶", title: "Choisir une destination", sub: "Trois liaisons partent de Ville Forte", go: "destinations" },
-        { icon: "👀", title: "Rester en ville", sub: "Conserver Ville Forte comme position actuelle", toast: "Vous restez en ville." }
+        { icon: "🚶", title: "Choisir une destination", sub: "Trois liaisons partent de Ville Forte", go: "destinations" }
       ])
     );
 }
@@ -669,9 +755,7 @@ function reportTravel() {
       ])
     )
     + todaySection()
-    + head("Rendu Discord d'origine")
-    + '<span class="raw">🛖 🧍■■■■■■■[1h59]■■■■■■■■ 🛣️</span>'
-    + note("Le marcheur avance sur seize cases, le temps restant s'insère après la huitième et les icônes des extrémités dépendent du type de lieu.");
+    ;
 }
 
 function reportSmallEvent() {
@@ -685,14 +769,7 @@ function reportSmallEvent() {
         { icon: "🪵", title: "Accepter le marché", sub: "12 matériaux de type bois pour 420 💰", act: "smallEventAccept" },
         { icon: "🚶", title: "Décliner poliment", sub: "Reprendre la route sans rien dépenser", act: "smallEventRefuse" }
       ])
-    )
-    + head("Ce que rapporte un mini-évènement")
-    + panel(
-      kv("Fréquence", "un toutes les 9 min 45 environ")
-      + kv("🏅 Points accumulés", "ajoutés à l'évènement suivant")
-      + kv("Interaction", "faible, un simple rapport suffit")
-    )
-    + note("Sur une île mystérieuse, un mini-évènement survient environ toutes les 18 secondes.");
+    );
 }
 
 function reportBigEvent() {
@@ -711,14 +788,7 @@ function reportBigEvent() {
         { icon: "🐎", title: "Prêter votre monture", sub: "Vous perdrez du temps sur votre trajet", act: "event:horse" },
         { icon: "🚶", title: "Ne rien faire", sub: "Se déclenche seul au bout de 2 minutes", act: "event:nothing" }
       ])
-    )
-    + head("Comment lire un évènement")
-    + panel(
-      kv("Choix proposés", "boutons, plus le non-choix")
-      + kv("Délai avant non-choix", "2 minutes")
-      + kv("Conséquence", "vie, argent, points, altération…")
-    )
-    + note("Dans certains évènements, ne rien faire est le meilleur choix. Dans d'autres, c'est le pire.");
+    );
 }
 
 function reportAlteration() {
@@ -740,7 +810,7 @@ function reportAlteration() {
       icon: x.icon, title: x.name, end: x.time,
       act: "setAlteration:" + x.name
     }))))
-    + note("Enfermé ne peut être levé que par la caution de 3 000 💰 d'un autre joueur. Mort bloque toutes les commandes sauf la réapparition.");
+    + note("Enfermé ne peut être levé que par la caution de 3 000 💰 d'un autre joueur. Mort bloque toutes les actions sauf la réapparition.");
 }
 
 function reportIsland() {
@@ -756,12 +826,11 @@ function reportIsland() {
       + kv("🤝 Alliés sur l'île", "2 membres de la guilde")
       + kv("🔴 Points de rage", "3 · dégâts bonus au prochain combat")
     )
-    + head("Les lieux de l'île")
-    + panel(rows(MONSTERS.map(m => ({
-      icon: m.icon, title: m.name, sub: m.place,
-      end: m.state === "vaincu" ? "✅" : m.state === "en cours" ? "Ici" : m.state === "boss" ? "Boss" : "—",
-      go: m.state === "en cours" ? "pveFight" : undefined
-    }))))
+    + head("Carte de l'île")
+    + '<div class="panel island-map-panel">'
+    + '<img src="' + ISLAND_MAP.url + '" alt="Carte de l\'île de glace avec votre position au ' + ISLAND_MAP.position + '">'
+    + '<div class="island-map-caption"><strong>📍 Vous êtes ici</strong><span>' + ISLAND_MAP.position + '</span></div>'
+    + '</div>'
     + head("Actions")
     + panel(rows([
       { icon: "⚔️", title: "Affronter le crocodile", sub: "Combat de monstre au lac souterrain", go: "pveFight" },
@@ -774,7 +843,7 @@ function reportDead() {
   return hero({
     eyebrow: "Rapport · fin de partie",
     title: "💀 Votre personnage est mort",
-    text: "Toutes les commandes sont bloquées tant que vous n'avez pas fait réapparaître votre aventurier."
+    text: "Toutes les actions sont bloquées tant que vous n'avez pas fait réapparaître votre aventurier."
   })
     + panel(rows([
       { icon: "❤️", title: "Réapparaître", sub: "Vous perdez une partie de vos points", act: "respawn" },
@@ -826,7 +895,7 @@ def("destinations", "adventure", "Choix de destination", () =>
 , "destination partir");
 
 def("map", "adventure", "Carte", () =>
-  hero({ eyebrow: "Commande /carte", title: "Le monde de Crownicles", text: "Votre position et les liaisons ouvertes depuis Ville Forte." })
+  hero({ eyebrow: "Aventure · carte", title: "Le monde de Crownicles", text: "Votre position et les liaisons ouvertes depuis Ville Forte." })
   + '<div class="panel"><img src="https://crownicles.com/public/ressources/mapsCursed/fr_26_map.jpg" alt="Carte du continent principal" style="display:block;width:100%">'
   + kv("Position", "🛖 Ville Forte")
   + kv("Destination", "🛣️ Croisement des Destins")
@@ -849,7 +918,7 @@ def("alteration", "adventure", "Altérations d'état", reportAlteration, "altera
 def("island", "adventure", "Île mystérieuse", reportIsland, "ile mysterieuse monstre");
 
 def("respawn", "adventure", "Réapparition", () =>
-  hero({ eyebrow: "Commande /revivre", title: "Revenir à la vie", text: "La réapparition rend le contrôle du personnage mais ampute une partie du score accumulé." })
+  hero({ eyebrow: "Aventure · réapparition", title: "Revenir à la vie", text: "La réapparition rend le contrôle du personnage mais ampute une partie du score accumulé." })
   + panel(kv("Points conservés", "80 %") + kv("Vie au retour", "1 ❤️") + kv("Position", "inchangée"))
   + buttonRow([{ label: "Réapparaître", style: "primary", act: "respawn" }])
 , "revivre mort respawn");
@@ -1068,7 +1137,7 @@ def("shop", "adventure", "La boutique générale", () =>
   + panel(kv("Votre argent", num(P.money) + " 💰") + kv("Vos gemmes", P.gems + " 💎"))
   + head("Ventes permanentes")
   + panel(rows([
-    { icon: "🎁", title: "Équipement aléatoire", sub: "Probabilités détaillées par la commande /rareté", end: "350 💰", act: "buy" },
+    { icon: "🎁", title: "Équipement aléatoire", sub: "Probabilités détaillées dans l'écran Raretés", end: "350 💰", act: "buy" },
     { icon: "💉", title: "Soin des altérations d'état", sub: "Retire l'altération en cours", end: "1 500 💰", act: "buy" },
     { icon: "❤️", title: "Régénération complète", sub: "Restaure toute la vie", end: "3 000 💰", act: "buy" }
   ]))
@@ -1116,7 +1185,7 @@ def("herbalist", "adventure", "L'herboriste", () =>
   ]))
   + head("Objet spécial")
   + panel(rows([
-    { icon: "🍀", title: "Cœur Sylvestre", sub: "Récolter le jardin à distance avec la commande /jardin", end: "2 450 💰", act: "buy" }
+    { icon: "🍀", title: "Cœur Sylvestre", sub: "Récolter le jardin à distance", end: "2 450 💰", act: "buy" }
   ]))
   + note("La Bourse de Claire de Ville vend une estimation des variations de prix à venir.")
 , "herboriste graines plantes");
@@ -1282,7 +1351,7 @@ def("apartment", "adventure", "Les logis", () =>
 /* ---------- Profil ---------- */
 
 def("profile", "profile", "Profil", () =>
-  hero({ eyebrow: "Commande /profil", title: P.name, text: P.classEmoji + " " + P.className + " · niveau " + P.level + " · 🛖 " + P.city })
+  hero({ eyebrow: "Profil", title: P.name, text: P.classEmoji + " " + P.className + " · niveau " + P.level + " · 🛖 " + P.city })
   + quick([
     { icon: "🎒", label: "Inventaire", go: "inventory" },
     { icon: "🎖️", label: "Missions", go: "missions" },
@@ -1328,7 +1397,7 @@ def("profile", "profile", "Profil", () =>
     { icon: "🎁", title: "Bonus journalier", sub: "Utiliser un objet à effet quotidien", go: "dailyBonus" },
     { icon: "🔔", title: "Notifications", sub: "Choisir quelles alertes recevoir dans l'application", go: "notifications" },
     { icon: "💎", title: "Raretés", sub: "Probabilités d'obtention des équipements", go: "rarity" },
-    { icon: "⚙️", title: "Commandes utilitaires", sub: "Aide, vote, invitation, langue, latence", go: "utilities" }
+    { icon: "⚙️", title: "Services utilitaires", sub: "Aide, vote, invitation, langue, latence", go: "utilities" }
   ]))
 , "profil profile stats");
 
@@ -1363,7 +1432,7 @@ def("inventory", "profile", "Inventaire", () => {
       { icon: "🌱", title: "Graine de mousse lunaire", sub: "Emplacement de graine", end: "×1" }
     ]))
   }[tab];
-  return hero({ eyebrow: "Commande /inventaire", title: "Inventaire", text: "L'équipement porté d'un côté, la réserve de l'autre, plus les matériaux et les plantes." })
+  return hero({ eyebrow: "Personnage · inventaire", title: "Inventaire", text: "L'équipement porté d'un côté, la réserve de l'autre, plus les matériaux et les plantes." })
     + actions([
       { label: "Équipement", act: "seg:inventory:equipped", on: tab === "equipped" },
       { label: "Réserve", act: "seg:inventory:stock", on: tab === "stock" },
@@ -1381,7 +1450,7 @@ def("inventory", "profile", "Inventaire", () => {
 }, "inventaire inventory equipement reserve materiaux plantes");
 
 def("equip", "profile", "Équiper", () =>
-  hero({ eyebrow: "Commande /équiper", title: "Gestion de l'équipement", text: "Sélectionnez une catégorie pour échanger l'objet porté avec un objet de la réserve." })
+  hero({ eyebrow: "Inventaire · équipement", title: "Gestion de l'équipement", text: "Sélectionnez une catégorie pour échanger l'objet porté avec un objet de la réserve." })
   + head("Arme")
   + panel(rows([
     { icon: "🪑", title: "Chaise", sub: "Objet équipé · 🗡️ 8", end: "Portée" },
@@ -1400,7 +1469,7 @@ def("equip", "profile", "Équiper", () =>
 , "equiper equip");
 
 def("sell", "profile", "Vendre", () =>
-  hero({ eyebrow: "Commande /vendre", title: "Vendre un équipement", text: "Seuls les objets de la réserve peuvent être vendus. Les potions ne rapportent rien et ne peuvent qu'être jetées." })
+  hero({ eyebrow: "Inventaire · vente", title: "Vendre un équipement", text: "Seuls les objets de la réserve peuvent être vendus. Les potions ne rapportent rien et ne peuvent qu'être jetées." })
   + panel(rows([
     { icon: "🗡️", title: "Dague émoussée", sub: "🔶 Commun", end: "120 💰", act: "sellItem" },
     { icon: "🛡️", title: "Écu fendu", sub: "🔥 Peu commun", end: "480 💰", act: "sellItem" },
@@ -1409,7 +1478,7 @@ def("sell", "profile", "Vendre", () =>
 , "vendre sell");
 
 def("drink", "profile", "Boire une potion", () =>
-  hero({ eyebrow: "Commande /boire", title: "Boire une potion", text: "Les potions de combat sont consommées automatiquement pendant les duels et n'apparaissent pas ici." })
+  hero({ eyebrow: "Inventaire · potion", title: "Boire une potion", text: "Les potions de combat sont consommées automatiquement pendant les duels et n'apparaissent pas ici." })
   + panel(rows([
     { icon: "🧪", title: "Potion de célérité", sub: "⏳ Avance le temps de 2 h", end: "Boire", act: "drinkPotion" },
     { icon: "🛏️", title: "Bave sur l'oreiller", sub: "Aucun effet notable", end: "Boire", act: "drinkPotion" }
@@ -1417,7 +1486,7 @@ def("drink", "profile", "Boire une potion", () =>
 , "boire potion drink");
 
 def("dailyBonus", "profile", "Bonus journalier", () =>
-  hero({ eyebrow: "Commande /bonusjournalier", title: "Votre bonus journalier", text: "Un objet à effet journalier peut être utilisé toutes les 22 heures. Les objets de combat n'y donnent pas droit." })
+  hero({ eyebrow: "Personnage · bonus quotidien", title: "Votre bonus journalier", text: "Un objet à effet journalier peut être utilisé toutes les 22 heures. Les objets de combat n'y donnent pas droit." })
   + panel(rows([
     { icon: "⌛", title: "Sablier fêlé", sub: "Avance le temps de 1 h", end: "Utiliser", act: "claim:bonus" },
     { icon: "❤️", title: "Amulette de vie", sub: "Rend 25 ❤️", end: "Utiliser", act: "claim:bonus" }
@@ -1426,7 +1495,7 @@ def("dailyBonus", "profile", "Bonus journalier", () =>
 , "bonus journalier daily");
 
 def("classes", "profile", "Classes", () =>
-  hero({ eyebrow: "Commande /classes", title: "Changer de classe", text: "Vingt-cinq classes réparties en cinq paliers. Le délai entre deux changements va d'une semaine au premier palier à trois semaines au cinquième." })
+  hero({ eyebrow: "Personnage · classes", title: "Changer de classe", text: "Vingt-cinq classes réparties en cinq paliers. Le délai entre deux changements va d'une semaine au premier palier à trois semaines au cinquième." })
   + CLASSES.map(t => head(t.tier) + panel(rows(t.list.map(c => ({
     icon: c.icon, title: c.name, sub: c.sub, locked: c.locked,
     end: c.current ? "Actuelle" : c.locked ? "Verrouillée" : "Choisir",
@@ -1437,7 +1506,7 @@ def("classes", "profile", "Classes", () =>
 , "classes changement palier");
 
 def("classesInfo", "profile", "Informations sur les classes", () =>
-  hero({ eyebrow: "Commande /infosclasses", title: "Comparatif des classes", text: "Les attaques disponibles et leur consommation de souffle dépendent de la classe choisie." })
+  hero({ eyebrow: "Personnage · classes", title: "Comparatif des classes", text: "Les attaques disponibles et leur consommation de souffle dépendent de la classe choisie." })
   + head("Cavalier · classe actuelle")
   + panel(
     kv("⚡ Énergie", "780")
@@ -1453,13 +1522,13 @@ def("classesInfo", "profile", "Informations sur les classes", () =>
 , "infosclasses statistiques attaques");
 
 def("badges", "profile", "Badges", () =>
-  hero({ eyebrow: "Commande /badges", title: "Badges", text: "Des distinctions purement décoratives affichées en réaction sous votre profil." })
+  hero({ eyebrow: "Personnage · badges", title: "Badges", text: "Des distinctions purement décoratives affichées en réaction sous votre profil." })
   + panel(rows(BADGES.map(b => ({ icon: b.icon, title: b.name, end: b.owned ? "Obtenu" : "—", locked: !b.owned }))))
   + panel(kv("Badges obtenus", BADGES.filter(b => b.owned).length + " sur " + BADGES.length))
 , "badges distinctions");
 
 def("missions", "profile", "Missions", () =>
-  hero({ eyebrow: "Commande /missions", title: "Vos missions", text: "Les missions rapportent de l'expérience et des gemmes. La campagne compte 149 étapes et se termine par un familier mythique." })
+  hero({ eyebrow: "Personnage · missions", title: "Vos missions", text: "Les missions rapportent de l'expérience et des gemmes. La campagne compte 149 étapes et se termine par un familier mythique." })
   + head("📖 Campagne", { hint: P.campaign.current + " sur " + P.campaign.max })
   + panel(
     stat("Progression", P.campaign.percent + " %", P.campaign.percent, "gold")
@@ -1478,7 +1547,7 @@ def("missions", "profile", "Missions", () =>
 , "missions campagne quotidienne secondaire");
 
 def("blessing", "profile", "Bénédictions", () =>
-  hero({ eyebrow: "Commande /bénédiction", title: "✨ Bourse dorée", text: "Tous les gains d'argent sont augmentés de 10 % pour l'ensemble des joueurs." })
+  hero({ eyebrow: "Oracle · bénédiction", title: "✨ Bourse dorée", text: "Tous les gains d'argent sont augmentés de 10 % pour l'ensemble des joueurs." })
   + panel(
     kv("Temps restant", "6 h 12")
     + kv("Déclenchée par", "Kyusaor")
@@ -1497,7 +1566,7 @@ def("blessing", "profile", "Bénédictions", () =>
 , "benediction oracle cagnotte");
 
 def("rarity", "profile", "Raretés", () =>
-  hero({ eyebrow: "Commande /rareté", title: "Probabilités des raretés", text: "Elles s'appliquent aux équipements aléatoires comme aux familiers." })
+  hero({ eyebrow: "Personnage · raretés", title: "Probabilités des raretés", text: "Elles s'appliquent aux équipements aléatoires comme aux familiers." })
   + panel(rows([
     { icon: "🔶", title: "Commun", end: "43,76 %" },
     { icon: "🔥", title: "Peu commun", end: "25 %" },
@@ -1526,10 +1595,10 @@ def("notifications", "profile", "Notifications", () =>
   + note("Ces réglages concernent uniquement l'application. Ils ne modifient pas les notifications Discord.")
 , "notifications alertes");
 
-def("utilities", "profile", "Commandes utilitaires", () =>
-  hero({ eyebrow: "Divers", title: "Commandes utilitaires", text: "Elles n'ont pas d'écran de jeu à proprement parler mais doivent exister dans l'application." })
+def("utilities", "profile", "Services utilitaires", () =>
+  hero({ eyebrow: "Divers", title: "Services utilitaires", text: "Des fonctions pratiques pour gérer votre compte et accéder aux informations utiles dans l'application." })
   + panel(rows([
-    { icon: "❓", title: "Aide", sub: "Liste et détail des commandes", end: "/aide", toast: "L'aide détaillée s'ouvre." },
+    { icon: "❓", title: "Aide", sub: "Aide et informations disponibles", end: "/aide", toast: "L'aide détaillée s'ouvre." },
     { icon: "🗳️", title: "Voter", sub: "Soutenir le jeu et recevoir une récompense", end: "/voter", act: "vote" },
     { icon: "💡", title: "Proposer une idée", sub: "Suggérer ou voter pour une idée existante", end: "/idée", toast: "La page des idées s'ouvre." },
     { icon: "📨", title: "Inviter", sub: "Partager le jeu avec un serveur", end: "/inviter", toast: "Lien d'invitation copié." },
@@ -1560,7 +1629,7 @@ function petExpeditionStatus() {
 }
 
 def("pet", "pet", "Familier", () =>
-  hero({ eyebrow: "Commande /familier", title: P.pet.emoji + " " + P.pet.nickname, text: P.pet.name + " · " + P.pet.rarity })
+  hero({ eyebrow: "Familier", title: P.pet.emoji + " " + P.pet.nickname, text: P.pet.name + " · " + P.pet.rarity })
   + (!S.expedition.inProgress && P.pet.hungry ? notice({ icon: "🍖", title: "Votre familier a faim", text: "Nourrissez-le pour améliorer son moral et débloquer les expéditions.", action: { label: "Nourrir", go: "petFeed" } }) : "")
   + (S.expedition.inProgress ? petExpeditionStatus() : "")
   + (!S.expedition.inProgress ? quick([
@@ -1579,9 +1648,7 @@ def("pet", "pet", "Familier", () =>
   + head("Moral")
   + panel(
     kv("Mentalité", P.pet.love)
-    + note(S.expedition.inProgress
-      ? "Le moral reste inchangé pendant l'expédition. Seul le vétérinaire révèle le niveau d'amour exact."
-      : "Le moral progresse en nourrissant et en caressant le familier. Seul le vétérinaire révèle le niveau d'amour exact.")
+    + (S.expedition.inProgress ? note("Le moral reste inchangé pendant l'expédition. Seul le vétérinaire révèle le niveau d'amour exact.") : "")
   )
   + (S.expedition.inProgress
     ? head("Action disponible") + panel(rows([
@@ -1619,7 +1686,7 @@ def("petExpedition", "pet", "Expéditions", () =>
 , "expedition familier talisman");
 
 def("petFeed", "pet", "Nourrir", () =>
-  hero({ eyebrow: "Commande /nourrirfamilier", title: "🍖 Nourrir " + P.pet.nickname, text: "La durée de satiété dépend uniquement de l'espèce, entre 30 minutes et 5 heures. Le type de nourriture n'influence que les points d'amour." })
+  hero({ eyebrow: "Familier · nourriture", title: "🍖 Nourrir " + P.pet.nickname, text: "La durée de satiété dépend uniquement de l'espèce, entre 30 minutes et 5 heures. Le type de nourriture n'influence que les points d'amour." })
   + panel(rows([
     { icon: "🍬", title: "Friandise", sub: "+1 💕 · entrepôt 0 sur 150", end: "Donner", act: "feed" },
     { icon: "🍖", title: "Viande", sub: "+3 💕 si votre familier en mange", end: "Donner", act: "feed" },
@@ -1630,13 +1697,13 @@ def("petFeed", "pet", "Nourrir", () =>
 , "nourrir familier nourriture");
 
 def("petNick", "pet", "Renommer", () =>
-  hero({ eyebrow: "Commande /surnomfamilier", title: "✏️ Surnom du familier", text: "Le surnom rend le familier unique. Laisser le champ vide efface le surnom actuel." })
+  hero({ eyebrow: "Familier · surnom", title: "✏️ Surnom du familier", text: "Le surnom rend le familier unique. Laisser le champ vide efface le surnom actuel." })
   + panel(kv("Surnom actuel", P.pet.nickname))
   + buttonRow([{ label: "Modifier le surnom", style: "primary", act: "rename" }, { label: "Effacer", act: "clearNick" }])
 , "surnom renommer familier");
 
 def("petSell", "pet", "Vendre le familier", () =>
-  hero({ eyebrow: "Commande /vendrefamilier", title: "💰 Vendre " + P.pet.nickname, text: "L'argent va dans la trésorerie de votre guilde, moins 5 % de commission plafonnée à 350 💰." })
+  hero({ eyebrow: "Familier · vente", title: "💰 Vendre " + P.pet.nickname, text: "L'argent va dans la trésorerie de votre guilde, moins 5 % de commission plafonnée à 350 💰." })
   + panel(
     kv("Prix minimum", "100 💰")
     + kv("Prix maximum", "50 000 💰")
@@ -1649,7 +1716,7 @@ def("petSell", "pet", "Vendre le familier", () =>
 , "vendre familier prix");
 
 def("petTransfer", "pet", "Transférer", () =>
-  hero({ eyebrow: "Commande /transfererfamilier", title: "🔄 Transfert de familier", text: "Le refuge de la guilde accueille 6 familiers par défaut, jusqu'à 18 en l'améliorant." })
+  hero({ eyebrow: "Familier · transfert", title: "🔄 Transfert de familier", text: "Le refuge de la guilde accueille 6 familiers par défaut, jusqu'à 18 en l'améliorant." })
   + panel(rows([
     { icon: "📥", title: "Déposer " + P.pet.nickname + " dans le refuge", sub: "Vous repartez sans familier", act: "transfer" },
     { icon: "📤", title: "Retirer un familier du refuge", sub: "Nécessite de ne pas déjà en avoir un", locked: true, end: "Occupé" },
@@ -1659,7 +1726,7 @@ def("petTransfer", "pet", "Transférer", () =>
 , "transfert refuge familier");
 
 def("petFree", "pet", "Libérer", () =>
-  hero({ eyebrow: "Commande /libererfamilier", title: "🕊️ Libérer un familier", text: "Cette action est définitive : le familier ne pourra jamais être récupéré." })
+  hero({ eyebrow: "Familier · libération", title: "🕊️ Libérer un familier", text: "Cette action est définitive : le familier ne pourra jamais être récupéré." })
   + notice({ icon: "⚠️", title: "Familier fielleux", text: "La libération vous coûtera 1 000 💰 supplémentaires." })
   + panel(rows([
     { icon: P.pet.emoji, title: P.pet.nickname, sub: "Votre familier personnel", end: "Libérer", act: "free", danger: true },
@@ -1683,7 +1750,7 @@ def("petPowers", "pet", "Pouvoirs des familiers", () =>
 /* ---------- Guilde ---------- */
 
 def("guild", "guild", "Guilde", () =>
-  hero({ eyebrow: "Commande /guilde", title: "🏰 Guilde " + P.guild, text: "Niveau " + P.guildLevel + " sur 150 · Mort aux malus domestica" })
+  hero({ eyebrow: "Guilde", title: "🏰 Guilde " + P.guild, text: "Niveau " + P.guildLevel + " sur 150 · Mort aux malus domestica" })
   + panel(
     stat("⭐ Expérience de guilde", "3 903 / 27 925", 13, "gold")
     + kv("🪩 Points de guilde", num(52447))
@@ -1733,7 +1800,7 @@ def("guildManage", "guild", "Gérer la guilde", () =>
 , "gestion guilde invitation aine");
 
 def("guildCreate", "guild", "Créer une guilde", () =>
-  hero({ eyebrow: "Commande /creationguilde", title: "Créer une guilde", text: "La trésorerie démarre avec le montant de la création, soit 5 000 💰." })
+  hero({ eyebrow: "Guilde · création", title: "Créer une guilde", text: "La trésorerie démarre avec le montant de la création, soit 5 000 💰." })
   + panel(
     kv("💰 Coût", "5 000")
     + kv("⭐ Niveau requis", "10")
@@ -1745,7 +1812,7 @@ def("guildCreate", "guild", "Créer une guilde", () =>
 , "creation guilde");
 
 def("guildDaily", "guild", "Bonus de guilde", () =>
-  hero({ eyebrow: "Commande /bonusjournalierguilde", title: "🪩 Récompense de la guilde " + P.guild, text: "Une récompense tirée au sort, partagée par tous les membres, toutes les 22 heures. L'arrivée d'un nouveau membre réinitialise le compteur." })
+  hero({ eyebrow: "Guilde · bonus quotidien", title: "🪩 Récompense de la guilde " + P.guild, text: "Une récompense tirée au sort, partagée par tous les membres, toutes les 22 heures. L'arrivée d'un nouveau membre réinitialise le compteur." })
   + buttonRow([{ label: S.daily.guild ? "Déjà réclamée" : "Réclamer la récompense", style: "primary", act: "claim:guild" }])
   + head("Récompenses possibles")
   + panel(rows([
@@ -1763,7 +1830,7 @@ def("guildDaily", "guild", "Bonus de guilde", () =>
 , "bonus guilde quotidien");
 
 def("guildShelter", "guild", "Refuge", () =>
-  hero({ eyebrow: "Commande /abriguilde", title: "🐾 Refuge de la guilde " + P.guild, text: "12 familiers hébergés sur 18 places. Chaque niveau du bâtiment ajoute 2 places." })
+  hero({ eyebrow: "Guilde · refuge", title: "🐾 Refuge de la guilde " + P.guild, text: "12 familiers hébergés sur 18 places. Chaque niveau du bâtiment ajoute 2 places." })
   + panel(rows([
     { icon: "🐉", title: "Familier n° 1 · Dragonne", sub: "🌟 Légendaire · Femelle · 😻 Dressée", end: "Échanger", act: "transfer" },
     { icon: "🦊", title: "Familier n° 2 · Renard", sub: "🔥 Peu commun · Mâle · 😺 Apprivoisé", end: "Échanger", act: "transfer" },
@@ -1774,7 +1841,7 @@ def("guildShelter", "guild", "Refuge", () =>
 , "refuge abri familiers guilde");
 
 def("guildStorage", "guild", "Entrepôt", () =>
-  hero({ eyebrow: "Commande /entrepotguilde", title: "📦 Entrepôt de la guilde " + P.guild, text: "La nourriture sert à nourrir les familiers et à ravitailler les expéditions." })
+  hero({ eyebrow: "Guilde · entrepôt", title: "📦 Entrepôt de la guilde " + P.guild, text: "La nourriture sert à nourrir les familiers et à ravitailler les expéditions." })
   + panel(
     stat("🍬 Friandise", "212 / 400", 53, "gold")
     + stat("🍖 Viande", "84 / 250", 34, "red")
@@ -1838,7 +1905,7 @@ def("guildDomainTraining", "guild", "La ménagerie", () =>
 /* ---------- Combat ---------- */
 
 def("fight", "fight", "Combat", () =>
-  hero({ eyebrow: "Commande /combat", title: "⚔️ Arène", text: "Vous affrontez l'intelligence artificielle d'un joueur réel, de gloire proche de la vôtre. Il faut au moins 80 % d'énergie pour lancer un combat." })
+  hero({ eyebrow: "Combat · arène", title: "⚔️ Arène", text: "Vous affrontez l'intelligence artificielle d'un joueur réel, de gloire proche de la vôtre. Il faut au moins 80 % d'énergie pour lancer un combat." })
   + panel(
     stat("⚡ Énergie de combat", num(P.energy) + " / " + num(P.maxEnergy) + " · " + pct(P.energy, P.maxEnergy) + " %", pct(P.energy, P.maxEnergy), "green")
     + kv("Seuil requis", "80 %")
@@ -1847,26 +1914,17 @@ def("fight", "fight", "Combat", () =>
     + kv("🐾 Familier", P.pet.emoji + " " + P.pet.nickname)
   )
   + buttonRow([
-    { label: "Lancer une recherche", style: "primary", go: "fightConfirm" },
-    { label: "Historique", go: "fightHistory" }
+    { label: "Lancer une recherche", style: "primary", go: "fightConfirm" }
   ])
   + quick([
     { icon: "🥉", label: "Ligue", go: "league" },
     { icon: "🏆", label: "Classements", go: "top" },
     { icon: "📜", label: "Historique", go: "fightHistory" }
   ])
-  + head("Comment se déroule un combat")
-  + panel(
-    kv("Tour par tour", "le plus rapide commence")
-    + kv("Durée maximale", "26 tours, puis match nul")
-    + kv("Inactivité", "45 secondes et le combat est perdu")
-    + kv("Plafonds quotidiens", "3 750 💰 et 105 🏅")
-  )
-  + note("Votre gloire se divise en gloire d'attaque et gloire de défense. Votre intelligence artificielle continue de défendre en votre absence.")
 , "combat fight arene");
 
 def("fightConfirm", "fight", "Recherche de combat", () =>
-  hero({ eyebrow: "Commande /combat", title: "Souhaitez-vous lancer une recherche ?", text: "Un adversaire dont la gloire de défense se situe à moins de 450 points de votre gloire d'attaque sera sélectionné." })
+  hero({ eyebrow: "Combat · recherche", title: "Souhaitez-vous lancer une recherche ?", text: "Un adversaire dont la gloire de défense se situe à moins de 450 points de votre gloire d'attaque sera sélectionné." })
   + panel(
     kv("⚔️ Combattant", P.name)
     + kv("✨ Gloire", num(P.glory))
@@ -1883,24 +1941,29 @@ def("fightConfirm", "fight", "Recherche de combat", () =>
 def("fightBattle", "fight", "Combat en cours", () => {
   const f = S.fight;
   if (f.over) return SCREENS.fightResult.body();
-  return hero({ eyebrow: "Combat · tour " + f.turn + " sur 26", title: "⚔️ " + P.name + " contre Arsène", text: "Chaque attaque consomme du souffle. Vous en récupérez " + P.breathRegen + " au début de votre tour." })
-    + '<div class="versus">'
-    + '<div class="side"><i>👤</i><strong>' + P.name + "</strong><small>⚡ " + f.hp + " · 🌬️ " + f.breath + " / " + P.maxBreath + "</small></div>"
-    + '<div class="mid">VS</div>'
-    + '<div class="side"><i>🤺</i><strong>Arsène</strong><small>⚡ ' + f.foeHp + " · 🎭 Chevalier</small></div>"
+  const logEntries = f.logExpanded ? f.log : f.log.slice(-3);
+  const battlefieldClass = "fight-battlefield"
+    + (f.animation ? " action-" + f.animation : "")
+    + (f.opponentAnimation ? " opponent-" + f.opponentAnimation : "");
+  const actionDisabled = f.phase !== "player";
+  return '<div class="fight-header"><div class="fight-header-main"><div class="eyebrow">Combat</div><h1>⚔️ ' + (actionDisabled ? "Arsène joue" : "Votre tour") + '</h1></div><span class="fight-turn">Tour ' + f.turn + ' / 26</span></div>'
+    + '<div class="' + battlefieldClass + '"><div class="versus">'
+    + '<div class="side active"><span class="fighter-role">VOUS</span><div class="fighter-name"><i>👤</i><strong>' + P.name + "</strong></div><small>🎭 " + P.className + "</small>"
+    + '<div class="fighter-health"><div class="fighter-health-top"><span>Énergie</span><b>' + f.hp + ' / 104</b></div><div class="bar green"><i style="width:' + pct(f.hp, 104) + '%"></i></div></div></div>'
+    + '<div class="mid"><span>VS</span></div>'
+    + '<div class="side"><span class="fighter-role">ADVERSAIRE</span><div class="fighter-name"><i>🤺</i><strong>Arsène</strong></div><small>🎭 Chevalier</small>'
+    + '<div class="fighter-health"><div class="fighter-health-top"><span>Énergie</span><b>' + f.foeHp + ' / 94</b></div><div class="bar red"><i style="width:' + pct(f.foeHp, 94) + '%"></i></div></div></div>'
     + "</div>"
+    + '<div class="fight-resource"><div class="fight-resource-top"><span>🌬️ Souffle</span><b>' + f.breath + " / " + P.maxBreath + '</b></div><div class="bar blue"><i style="width:' + pct(f.breath, P.maxBreath) + '%"></i></div><small>+' + P.breathRegen + " au prochain tour</small></div>"
+    + '<button class="fight-log' + (f.animation || f.opponentAnimation ? " action-feedback" : "") + '" data-act="toggleFightLog" aria-expanded="' + f.logExpanded + '"><div class="log">' + (logEntries.length ? logEntries.join("\n") : "Le combat commence. À vous de jouer.") + "</div></button></div>"
     + panel(
-      stat("⚡ Votre énergie", f.hp + " / 104", pct(f.hp, 104), "green")
-      + stat("⚡ Énergie adverse", f.foeHp + " / 94", pct(f.foeHp, 94), "red")
-      + stat("🌬️ Souffle", f.breath + " / " + P.maxBreath, pct(f.breath, P.maxBreath), "blue")
-      + '<div class="fight-actions">'
+      '<div class="fight-actions' + (actionDisabled ? " is-waiting" : "") + '">'
       + FIGHT_ACTIONS.map((a, i) =>
-        "<button data-act=\"fightAction:" + i + "\"" + (a.cost > f.breath ? " disabled" : "") + ">"
-        + "<b>" + a.icon + " " + a.name + "</b><small>" + a.cost + " 🌬️ · " + a.sub + "</small></button>").join("")
+        '<button class="' + (f.animation === a.animation ? "is-fired" : "") + '" data-act="fightAction:' + i + '" aria-label="' + esc(a.name + " : " + a.sub) + '" title="' + esc(a.sub) + '"' + (actionDisabled || a.cost > f.breath ? " disabled" : "") + ">"
+        + "<b><span>" + a.icon + " " + a.name + "</span><em>" + a.cost + " 🌬️</em></b></button>").join("")
       + "</div>"
-      + '<div class="log">' + (f.log.length ? f.log.slice(-6).join("\n") : "Le combat commence. À vous de jouer.") + "</div>"
     )
-    + buttonRow([{ label: "Abandonner", style: "danger", act: "surrender" }]);
+    ;
 }, "combat tour souffle");
 
 def("fightResult", "fight", "Résultat du combat", () =>
@@ -1918,7 +1981,7 @@ def("fightResult", "fight", "Résultat du combat", () =>
 , "resultat combat gloire");
 
 def("fightHistory", "fight", "Historique des combats", () =>
-  hero({ eyebrow: "Commande /historiquecombat", title: "Historique des combats", text: "Votre intelligence artificielle combat pour vous en votre absence : cet écran retrace l'évolution de votre gloire." })
+  hero({ eyebrow: "Combat · historique", title: "Historique des combats", text: "Votre intelligence artificielle combat pour vous en votre absence : cet écran retrace l'évolution de votre gloire." })
   + panel(rows([
     { icon: "⚔️", title: "Vous avez attaqué Arsène", sub: "🤺 Chevalier · aujourd'hui 09:12", end: "Gagné +42 ✨" },
     { icon: "🛡️", title: "Vous avez été attaqué par Yuno", sub: "🧙 Mage mystique · hier 21:44", end: "Perdu −18 ✨" },
@@ -1929,7 +1992,7 @@ def("fightHistory", "fight", "Historique des combats", () =>
 , "historique combats gloire");
 
 def("league", "fight", "Ligue", () =>
-  hero({ eyebrow: "Commande /bonusligue", title: P.leagueEmoji + " " + P.league, text: "La saison va du dimanche au samedi. La récompense se réclame le dimanche, à condition d'avoir combattu la saison précédente." })
+  hero({ eyebrow: "Combat · ligue", title: P.leagueEmoji + " " + P.league, text: "La saison va du dimanche au samedi. La récompense se réclame le dimanche, à condition d'avoir combattu la saison précédente." })
   + panel(
     stat("✨ Gloire", num(P.glory) + " points", 42, "gold")
     + kv("Ligue suivante", "🥈 Ligue argent à 1 400 ✨")
@@ -1967,7 +2030,7 @@ def("top", "fight", "Classements", () => {
       { icon: "🔵", title: "Banane", sub: "Votre guilde · niveau " + P.guildLevel, end: P.guildRank + "ᵉ" }
     ]
   }[tab];
-  return hero({ eyebrow: "Commande /classement", title: "Classements", text: "Les classements s'affichent par tranches de quinze. Les joueurs de votre serveur sont signalés par une pastille bleue." })
+  return hero({ eyebrow: "Classements", title: "Classements", text: "Les classements s'affichent par tranches de quinze. Les joueurs de votre serveur sont signalés par une pastille bleue." })
     + actions([
       { label: "Score", act: "seg:top:score", on: tab === "score" },
       { label: "Semaine", act: "seg:top:week", on: tab === "week" },
@@ -1987,12 +2050,14 @@ def("top", "fight", "Classements", () => {
 const $ = id => document.getElementById(id);
 
 function renderVitals() {
+  $("vitals").style.display = S.screen === "profile" ? "none" : "";
   $("hdName").textContent = P.name;
   $("hdSub").textContent = "Niveau " + P.level + " · " + P.className;
   $("vHealth").textContent = P.health + " / " + P.maxHealth;
   $("vEnergy").textContent = num(P.energy) + " / " + num(P.maxEnergy);
   $("vHealthBar").style.width = pct(P.health, P.maxHealth) + "%";
   $("vEnergyBar").style.width = pct(P.energy, P.maxEnergy) + "%";
+  $("wallet").style.display = S.screen === "profile" ? "none" : "";
   $("wallet").innerHTML =
     '<button class="chip" data-go="shop">💰 ' + num(P.money) + "</button>"
     + '<button class="chip" data-go="royalMarket">💎 ' + P.gems + "</button>"
@@ -2085,7 +2150,7 @@ const SHEETS = {
       ["Combat", ["fight", "fightConfirm", "fightBattle", "fightResult", "fightHistory", "league", "top"]]
     ];
     return '<div class="sheet-head"><h2>Tous les écrans</h2><button class="close" data-act="closeSheet">×</button></div>'
-      + '<input class="search" id="sheetSearch" type="search" placeholder="Rechercher un écran ou une commande…" autocomplete="off">'
+      + '<input class="search" id="sheetSearch" type="search" placeholder="Rechercher un écran ou une fonction…" autocomplete="off">'
       + '<div id="sheetList">' + groups.map(g =>
         '<div class="sheet-group">' + g[0] + "</div>"
         + panel(g[1].filter(id => SCREENS[id]).map(id =>
@@ -2149,18 +2214,35 @@ function claim(kind) {
 function fightAction(index) {
   const f = S.fight;
   const a = FIGHT_ACTIONS[index];
-  if (!a || f.over || a.cost > f.breath) return;
+  if (!a || f.over || f.phase !== "player" || a.cost > f.breath) return;
   const damage = 6 + Math.floor(Math.random() * 14);
-  const taken = 4 + Math.floor(Math.random() * 11);
+  f.animation = a.animation;
+  f.opponentAnimation = "";
+  f.phase = "opponent";
   f.breath -= a.cost;
   f.log.push("Tour " + f.turn + " · " + a.icon + " " + a.name + " inflige " + damage + " ⚡ de dégâts.");
   f.foeHp = Math.max(0, f.foeHp - damage);
-  if (f.foeHp > 0) {
-    f.hp = Math.max(0, f.hp - taken);
-    f.log.push("Arsène riposte et vous retire " + taken + " ⚡.");
+  if (f.foeHp <= 0 || f.hp <= 0 || f.turn > 26) {
+    f.over = true;
+    S.screen = "fightResult";
+    return render();
   }
+  render();
+  setTimeout(() => resolveOpponentTurn(), FIGHT_OPPONENT_DELAY_MS);
+}
+
+function resolveOpponentTurn() {
+  const f = S.fight;
+  if (f.over || f.phase !== "opponent") return;
+  const action = OPPONENT_FIGHT_ACTIONS[(f.turn - 1) % OPPONENT_FIGHT_ACTIONS.length];
+  const taken = 4 + Math.floor(Math.random() * 11);
+  f.animation = "";
+  f.opponentAnimation = action.animation;
+  f.hp = Math.max(0, f.hp - taken);
+  f.log.push("Arsène riposte avec " + action.icon + " " + action.name + " et vous retire " + taken + " ⚡.");
   f.breath = Math.min(P.maxBreath, f.breath + P.breathRegen);
   f.turn += 1;
+  f.phase = "player";
   if (f.foeHp <= 0 || f.hp <= 0 || f.turn > 26) {
     f.over = true;
     S.screen = "fightResult";
@@ -2217,20 +2299,18 @@ const ACTIONS = {
     render();
   },
   startFight() {
-    S.fight = { turn: 1, hp: 104, foeHp: 94, breath: P.breath, log: [], over: false };
+    S.fight = { turn: 1, hp: 104, foeHp: 94, breath: P.breath, log: [], phase: "player", animation: "", opponentAnimation: "", logExpanded: false, over: false };
     S.screen = "fightBattle";
     render();
   },
   resetFight() {
-    S.fight = { turn: 1, hp: 104, foeHp: 94, breath: P.breath, log: [], over: false };
+    S.fight = { turn: 1, hp: 104, foeHp: 94, breath: P.breath, log: [], phase: "player", animation: "", opponentAnimation: "", logExpanded: false, over: false };
     S.screen = "fight";
     S.stack = [];
     render();
   },
-  surrender() {
-    S.fight.hp = 0;
-    S.fight.over = true;
-    S.screen = "fightResult";
+  toggleFightLog() {
+    S.fight.logExpanded = !S.fight.logExpanded;
     render();
   },
   claimRent() {
@@ -2377,7 +2457,7 @@ const DEMOS = {
   bigEvent() { S.report = "bigEvent"; S.eventChoice = null; toast("Un évènement à choix se déclenche."); },
   alteration() { S.report = "alteration"; toast("Le joueur subit une altération d'état."); },
   island() { S.report = "island"; toast("Le joueur débarque sur l'île de glace."); },
-  dead() { S.report = "dead"; P.health = 0; toast("Le personnage est mort : toutes les commandes sont bloquées."); },
+  dead() { S.report = "dead"; P.health = 0; toast("Le personnage est mort : toutes les actions sont bloquées."); },
   advance() {
     if (S.report === "travel") {
       S.travelProgress = Math.min(1, S.travelProgress + 0.25);
@@ -2402,7 +2482,7 @@ const DEMOS = {
     S.alteration = ALTERATIONS[9];
     S.travelProgress = 0.42;
     S.daily = { bonus: false, guild: false, mission: false, potion: false, meal: false };
-    S.fight = { turn: 1, hp: 82, foeHp: 94, breath: 8, log: [], over: false };
+    S.fight = { turn: 1, hp: 82, foeHp: 94, breath: 8, log: [], phase: "player", animation: "", opponentAnimation: "", logExpanded: false, over: false };
     S.expedition = { inProgress: false, option: 1, returnTime: "", foodConsumed: 0 };
     P.health = 82; P.energy = 612; P.money = 11197; P.gems = 51; P.tokens = 14;
     P.pet.lovePoints = 4; P.pet.hungry = true; P.pet.love = "😼 Fielleuse";
