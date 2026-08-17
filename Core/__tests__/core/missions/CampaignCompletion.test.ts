@@ -4,8 +4,8 @@ import {
 import { Campaign } from "../../../src/core/missions/Campaign";
 import { MissionsController } from "../../../src/core/missions/MissionsController";
 import Player from "../../../src/core/database/game/models/Player";
-import { MissionSlot } from "../../../src/core/database/game/models/MissionSlot";
-import { PlayerMissionsInfo } from "../../../src/core/database/game/models/PlayerMissionsInfo";
+import { MissionSlot, MissionSlots } from "../../../src/core/database/game/models/MissionSlot";
+import { PlayerMissionsInfo, PlayerMissionsInfos } from "../../../src/core/database/game/models/PlayerMissionsInfo";
 import { CampaignData, CampaignMission } from "../../../src/data/Campaign";
 
 // Mock crowniclesInstance (required by Campaign for logging)
@@ -212,6 +212,27 @@ describe("Campaign.completeCampaignMissions", () => {
 	});
 
 	describe("Normal completion: completedCampaign=true", () => {
+		it("should use the locked mission info passed by the mission controller", async () => {
+			const campaign = createMockCampaignSlot({
+				missionId: "findItem",
+				missionVariant: 1,
+				numberDone: 3,
+				missionObjective: 3
+			});
+			const missionInfo = createMockMissionInfo({
+				campaignBlob: "110",
+				campaignProgression: 3
+			});
+			vi.spyOn(MissionSlots, "getCampaignOfPlayer").mockResolvedValue(campaign);
+			const getMissionInfoSpy = vi.spyOn(PlayerMissionsInfos, "getOfPlayer");
+
+			const result = await Campaign.updatePlayerCampaign(true, player, missionInfo);
+
+			expect(result).toHaveLength(1);
+			expect(missionInfo.campaignBlob).toBe("111");
+			expect(getMissionInfoSpy).not.toHaveBeenCalled();
+		});
+
 		it("should record completion and advance progression for a single completed mission", async () => {
 			const campaign = createMockCampaignSlot({
 				missionId: "earnLifePoints",

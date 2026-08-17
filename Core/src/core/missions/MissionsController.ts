@@ -167,7 +167,7 @@ export abstract class MissionsController {
 		dailyMission: DailyMission
 	): Promise<Player> {
 		assertUnderLock("MissionsController.checkCompletedMissionsUnderLock");
-		const completedMissions = await MissionsController.completeAndUpdateMissionsUnderLock(player, missionSlots, specialMissionCompletion, dailyMission);
+		const completedMissions = await MissionsController.completeAndUpdateMissionsUnderLock(player, missionSlots, missionInfo, specialMissionCompletion, dailyMission);
 		if (completedMissions.length === 0) {
 			return player;
 		}
@@ -483,12 +483,13 @@ export abstract class MissionsController {
 	static async completeAndUpdateMissionsUnderLock(
 		player: Locked<Player>,
 		missionSlots: MissionSlot[],
+		missionInfo: Locked<PlayerMissionsInfo>,
 		specialMissionCompletion: SpecialMissionCompletion,
 		dailyMission: DailyMission
 	): Promise<CompletedMission[]> {
 		assertUnderLock("MissionsController.completeAndUpdateMissionsUnderLock");
 		const completedMissions: CompletedMission[] = [];
-		completedMissions.push(...await Campaign.updatePlayerCampaign(specialMissionCompletion.campaign, player));
+		completedMissions.push(...await Campaign.updatePlayerCampaign(specialMissionCompletion.campaign, player, missionInfo));
 		for (const mission of missionSlots.filter(mission => mission.isCompleted() && !mission.isCampaign())) {
 			completedMissions.push({
 				...mission.toJSON(),
