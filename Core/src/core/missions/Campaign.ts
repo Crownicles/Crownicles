@@ -2,12 +2,13 @@
 import MissionSlot, { MissionSlots } from "../database/game/models/MissionSlot";
 import { MissionsController } from "./MissionsController";
 import Player from "../database/game/models/Player";
-import PlayerMissionsInfo, { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
+import PlayerMissionsInfo from "../database/game/models/PlayerMissionsInfo";
 import { crowniclesInstance } from "../../app";
 import { CampaignData } from "../../data/Campaign";
 import {
 	CompletedMission, MissionType
 } from "../../../../Lib/src/types/CompletedMission";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 export class Campaign {
 	private static maxCampaignCache = -1;
@@ -38,7 +39,7 @@ export class Campaign {
 		return campaignBlob.indexOf("0");
 	}
 
-	public static async completeCampaignMissions(player: Player, missionInfo: PlayerMissionsInfo, completedCampaign: boolean, campaign: MissionSlot): Promise<CompletedMission[]> {
+	public static async completeCampaignMissions(player: Locked<Player>, missionInfo: Locked<PlayerMissionsInfo>, completedCampaign: boolean, campaign: MissionSlot): Promise<CompletedMission[]> {
 		if (!completedCampaign) {
 			return [];
 		}
@@ -78,14 +79,13 @@ export class Campaign {
 		return completedMissions;
 	}
 
-	public static async updatePlayerCampaign(completedCampaign: boolean, player: Player): Promise<CompletedMission[]> {
+	public static async updatePlayerCampaign(completedCampaign: boolean, player: Locked<Player>, missionInfo: Locked<PlayerMissionsInfo>): Promise<CompletedMission[]> {
 		if (!completedCampaign) {
 			return [];
 		}
 		const campaign = await MissionSlots.getCampaignOfPlayer(player.id);
-		const missionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
-		if (Campaign.hasNextCampaign(missionsInfo.campaignBlob)) {
-			return this.completeCampaignMissions(player, missionsInfo, completedCampaign, campaign);
+		if (Campaign.hasNextCampaign(missionInfo.getCampaignBlob())) {
+			return this.completeCampaignMissions(player, missionInfo, completedCampaign, campaign);
 		}
 		return [];
 	}
