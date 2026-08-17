@@ -3,6 +3,7 @@ import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {FromServerPacket} from "ws-packets/src/fromServer/FromServerPacket";
 import {FromClientPacket} from "ws-packets/src/fromClient/FromClientPacket";
+import {PushedPacketRegistry} from "@/src/networking/PushedPacketRegistry";
 
 export type WebSocketPacketResponseHandler<T extends FromServerPacket> = (packet: T) => void;
 
@@ -42,7 +43,7 @@ export class WebSocketClient {
 
 	private responseHandlers = new Map<string, ResponseHandlerGroup>();
 
-	private globalPacketHandlers = new Map<string, WebSocketPacketResponseHandler<never>>();
+	private readonly pushedPacketRegistry = new PushedPacketRegistry();
 
 	private setState?: (newState: AuthStateEnum) => void;
 
@@ -63,8 +64,8 @@ export class WebSocketClient {
 		return WebSocketClient.instance;
 	}
 
-	public setGlobalPacketHandler(packetName: string, callback: WebSocketPacketResponseHandler<never>): void {
-		this.globalPacketHandlers.set(packetName, callback);
+	public registerPushedPacketHandler<Packet extends FromServerPacket>(packetName: string, callback: WebSocketPacketResponseHandler<Packet>): () => void {
+		return this.pushedPacketRegistry.register(packetName, callback);
 	}
 
 	public async init(authToken: AuthToken, setState: (newState: AuthStateEnum) => void, saveToken: (token: AuthToken) => Promise<void>): Promise<void> {
@@ -230,12 +231,10 @@ export class WebSocketClient {
 			this.handleResponse(packetId, packetName, packetData);
 			return;
 		}
-		const globalPacketHandler = this.globalPacketHandlers.get(packetName);
-		if (globalPacketHandler) {
-			globalPacketHandler(packetData as never);
+		if (this.pushedPacketRegistry.dispatch(packetName, packetData)) {
 			return;
 		}
-		console.warn(`No response handler for packet ID: ${packetId}, Name: ${packetName}`);
+		this.pushedPacketRegistry.reportUnhandled(packetName);
 	}
 
 	private handleSocketError(error: Event): void {
