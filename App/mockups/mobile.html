@@ -504,7 +504,8 @@ const S = {
   seg: { inventory: "equipped", top: "score", chest: "items", archivist: "personal", petSheet: "info" },
   daily: { bonus: false, guild: false, mission: false, potion: false, meal: false },
   fight: { turn: 1, hp: 82, foeHp: 94, breath: 8, log: [], over: false },
-  eventChoice: null
+  eventChoice: null,
+  expedition: { inProgress: false, option: 1, returnTime: "", foodConsumed: 0 }
 };
 
 /* =====================================================================
@@ -1573,14 +1574,38 @@ def("pet", "pet", "Familier", () =>
   ]))
 , "familier pet animal");
 
+function petExpeditionChoice() {
+  return hero({ eyebrow: "Familier · expédition", title: "🗺️ Envoyer " + P.pet.nickname + " en expédition", text: "Trois destinations sont proposées à votre familier." })
+    + panel(rows(EXPEDITIONS.map((e, i) => ({
+      icon: e.icon,
+      title: e.place,
+      sub: e.duration + " · " + e.danger + " · " + e.ground + " · " + e.reward + " · " + e.rations + " 🍖",
+      act: "expedition:" + i
+    }))));
+}
+
+function petExpeditionInProgress() {
+  const expedition = EXPEDITIONS[S.expedition.option];
+  return hero({
+    eyebrow: "Familier · expédition en cours",
+    title: "🗺️ Expédition en cours",
+    text: P.pet.emoji + " " + P.pet.nickname + " arpente actuellement des terres lointaines et mystérieuses."
+  })
+    + panel(
+      kv("Destination", expedition.icon + " " + expedition.place)
+      + kv("Dangerosité", expedition.danger)
+      + kv("Retour prévu", S.expedition.returnTime)
+      + (S.expedition.foodConsumed > 0 ? kv("Provisions emportées", S.expedition.foodConsumed + " 🍖") : "")
+    )
+    + notice({ icon: "⚠️", title: "Rappeler votre familier prématurément", text: "Il reviendra sans butin et le lien de confiance sera fragilisé." })
+    + buttonRow([
+      { label: "Rappeler", style: "danger", act: "recallExpedition" },
+      { label: "Continuer l'exploration", act: "continueExpedition" }
+    ]);
+}
+
 def("petExpedition", "pet", "Expéditions", () =>
-  hero({ eyebrow: "Familier · expédition", title: "🗺️ Envoyer " + P.pet.nickname + " en expédition", text: "Trois destinations sont proposées à votre familier." })
-  + panel(rows(EXPEDITIONS.map((e, i) => ({
-    icon: e.icon,
-    title: e.place,
-    sub: e.duration + " · " + e.danger + " · " + e.ground + " · " + e.reward + " · " + e.rations + " 🍖",
-    act: "expedition:" + i
-  }))))
+  S.expedition.inProgress ? petExpeditionInProgress() : petExpeditionChoice()
 , "expedition familier talisman");
 
 def("petFeed", "pet", "Nourrir", () =>
@@ -2267,7 +2292,18 @@ const ACTIONS = {
   guildElder() { toast("Statut d'aîné mis à jour."); },
   guildDescription() { toast("Description de la guilde modifiée."); },
   guildLeave() { toast("Vous avez quitté la guilde."); },
-  toggleNotif() { toast("Préférence de notification de l'application mise à jour."); }
+  toggleNotif() { toast("Préférence de notification de l'application mise à jour."); },
+  recallExpedition() {
+    S.expedition.inProgress = false;
+    toast(P.pet.nickname + " est rappelée sans butin. Le lien de confiance est fragilisé.");
+    render();
+  },
+  continueExpedition() {
+    S.stack = [];
+    S.screen = "pet";
+    toast("Vous continuez l'exploration. " + P.pet.nickname + " reviendra à l'heure prévue.");
+    render();
+  }
 };
 
 function runAction(raw) {
@@ -2309,8 +2345,14 @@ function runAction(raw) {
   }
   if (name === "expedition") {
     const e = EXPEDITIONS[Number(arg)];
-    toast(P.pet.nickname + " part pour " + e.place + " · " + e.duration + " · " + e.rations + " 🍖 consommées.");
-    return;
+    S.expedition = {
+      inProgress: true,
+      option: Number(arg),
+      returnTime: "dans " + e.duration,
+      foodConsumed: e.rations
+    };
+    toast(P.pet.nickname + " part pour " + e.place + ".");
+    return render();
   }
   if (name === "changeClass") {
     P.className = arg;
@@ -2358,6 +2400,7 @@ const DEMOS = {
     S.travelProgress = 0.42;
     S.daily = { bonus: false, guild: false, mission: false, potion: false, meal: false };
     S.fight = { turn: 1, hp: 82, foeHp: 94, breath: 8, log: [], over: false };
+    S.expedition = { inProgress: false, option: 1, returnTime: "", foodConsumed: 0 };
     P.health = 82; P.energy = 612; P.money = 11197; P.gems = 51; P.tokens = 14;
     P.pet.lovePoints = 4; P.pet.hungry = true; P.pet.love = "😼 Fielleuse";
     toast("Maquette réinitialisée.");
