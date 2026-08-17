@@ -64,4 +64,11 @@ jobs:
         run: pnpm --dir ./App lint
 
       - name: Jest tests for App
-        run: pnpm --dir ./App exec jest --ci --runInBand
+        run: pnpm --dir ./App exec jest --ci --runInBand --coverage
+
+      - name: Upload App coverage
+        uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: app-coverage
+          path: App/coverage
