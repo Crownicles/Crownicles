@@ -431,9 +431,9 @@ const FIGHT_ACTIONS = [
 ];
 
 const EXPEDITIONS = [
-  { icon: "🌾", biome: "Plaine", place: "Voie champêtre", duration: "48 min", danger: "🌿 Tranquille", ground: "🌸 Paisible", rations: 6, success: 92, loot: "Butin modeste · 1 🪙" },
-  { icon: "🌲", biome: "Forêt", place: "Forêt du Vieillard", duration: "7 h 20", danger: "⚡ Risqué", ground: "⛰️ Accidenté", rations: 14, success: 71, loot: "Butin correct · 2 🪙 · équipement" },
-  { icon: "🕳️", biome: "Grotte", place: "Bois Hurlant", duration: "2 j 6 h", danger: "💀 Mortel", ground: "🏔️ Hostile", rations: 32, success: 38, loot: "Trésor en jetons · 9 🪙 · équipement rare" }
+  { icon: "🌾", place: "Voie champêtre", duration: "48 min", danger: "🌿 Tranquille", ground: "🌸 Paisible", reward: "🎁 Modestes", rations: 6 },
+  { icon: "🌲", place: "Forêt du Vieillard", duration: "7 h 20", danger: "⚡ Risqué", ground: "⛰️ Accidenté", reward: "🎁 Correctes", rations: 14 },
+  { icon: "🕳️", place: "Bois Hurlant", duration: "2 j 6 h", danger: "💀 Mortel", ground: "🏔️ Hostile", reward: "🎁 Exceptionnelles", rations: 32 }
 ];
 
 const RECIPES = [
@@ -1325,7 +1325,7 @@ def("profile", "profile", "Profil", () =>
   + panel(rows([
     { icon: "✨", title: "Bénédictions", sub: "Les avantages offerts par l'Oracle", go: "blessing" },
     { icon: "🎁", title: "Bonus journalier", sub: "Utiliser un objet à effet quotidien", go: "dailyBonus" },
-    { icon: "🔔", title: "Notifications", sub: "Choisir quoi recevoir et où", go: "notifications" },
+    { icon: "🔔", title: "Notifications", sub: "Choisir quelles alertes recevoir dans l'application", go: "notifications" },
     { icon: "💎", title: "Raretés", sub: "Probabilités d'obtention des équipements", go: "rarity" },
     { icon: "⚙️", title: "Commandes utilitaires", sub: "Aide, vote, invitation, langue, latence", go: "utilities" }
   ]))
@@ -1510,7 +1510,7 @@ def("rarity", "profile", "Raretés", () =>
 , "rarete probabilite");
 
 def("notifications", "profile", "Notifications", () =>
-  hero({ eyebrow: "Commande /notifications", title: "Gestion des notifications", text: "Choisissez ce que vous recevez, et où." })
+  hero({ eyebrow: "Réglages de l'application", title: "Notifications dans l'application", text: "Activez ou désactivez chaque alerte indépendamment de vos réglages Discord." })
   + panel(rows([
     { icon: "📨", title: "Rapports", sub: "Arrivée à un lieu", end: "Activé", act: "toggleNotif" },
     { icon: "🪩", title: "Récompenses de guilde", sub: "Bonus quotidien disponible", end: "Activé", act: "toggleNotif" },
@@ -1522,11 +1522,7 @@ def("notifications", "profile", "Notifications", () =>
     { icon: "🎁", title: "Bonus journalier", sub: "Objet quotidien de nouveau utilisable", end: "Activé", act: "toggleNotif" },
     { icon: "🧭", title: "Expédition terminée", sub: "Le familier est rentré", end: "Activé", act: "toggleNotif" }
   ]))
-  + head("Endroit d'envoi")
-  + panel(actions([
-    { label: "En message privé", act: "notifDm", on: true },
-    { label: "Dans le salon", act: "notifChannel" }
-  ]))
+  + note("Ces réglages concernent uniquement l'application. Ils ne modifient pas les notifications Discord.")
 , "notifications alertes");
 
 def("utilities", "profile", "Commandes utilitaires", () =>
@@ -1563,7 +1559,7 @@ def("pet", "pet", "Familier", () =>
     + kv("Rareté", P.pet.rarity)
     + kv("Sexe", P.pet.sex)
   )
-  + head("Moral", { label: "Vétérinaire", go: "veterinarian" })
+  + head("Moral")
   + panel(
     kv("Mentalité", P.pet.love)
     + note("Le moral progresse en nourrissant et en caressant le familier. Seul le vétérinaire révèle le niveau d'amour exact.")
@@ -1573,35 +1569,19 @@ def("pet", "pet", "Familier", () =>
     { icon: "✏️", title: "Renommer", sub: "Donner ou effacer un surnom", go: "petNick" },
     { icon: "💰", title: "Vendre", sub: "L'argent alimente la trésorerie de la guilde", go: "petSell" },
     { icon: "🔄", title: "Transférer", sub: "Déposer, retirer ou échanger avec le refuge", go: "petTransfer" },
-    { icon: "🕊️", title: "Libérer", sub: "Action définitive et irréversible", go: "petFree", danger: true },
-    { icon: "⚔️", title: "Pouvoir en combat", sub: "Ce que fait votre familier pendant un duel", go: "petPowers" }
+    { icon: "🕊️", title: "Libérer", sub: "Action définitive et irréversible", go: "petFree", danger: true }
   ]))
 , "familier pet animal");
 
 def("petExpedition", "pet", "Expéditions", () =>
-  hero({ eyebrow: "Familier · expédition", title: "🗺️ Envoyer " + P.pet.nickname + " en expédition", text: "Trois destinations sont proposées. Le taux de réussite dépend de la dangerosité, du terrain, de la force et de l'amour du familier." })
-  + notice({ icon: "⚓", title: "Talisman d'Ancrage requis", text: "Vous le possédez. Le familier doit être nourri et avoir au moins 20 points d'amour.", action: { label: "Nourrir", go: "petFeed" } })
+  hero({ eyebrow: "Familier · expédition", title: "🗺️ Envoyer " + P.pet.nickname + " en expédition", text: "Trois destinations sont proposées à votre familier." })
   + panel(rows(EXPEDITIONS.map((e, i) => ({
     icon: e.icon,
-    title: e.place + " · " + e.duration,
-    sub: e.danger + " · " + e.ground + " · " + e.rations + " 🍖 · " + e.loot,
-    end: e.success + " %",
+    title: e.place,
+    sub: e.duration + " · " + e.danger + " · " + e.ground + " · " + e.reward + " · " + e.rations + " 🍖",
     act: "expedition:" + i
   }))))
-  + head("Ce qui influence la réussite")
-  + panel(
-    kv("Dangerosité", "de 🌿 Tranquille à ⚰️ Désespéré")
-    + kv("Terrain", "de 🌸 Paisible à 🌋 Périlleux · influence 4 fois moindre")
-    + kv("Biome apprécié", "−5 % d'échec et 100 % des récompenses")
-    + kv("Biome détesté", "+10 % d'échec sous 12 h et 25 % des récompenses")
-    + kv("Provisions", "jusqu'à 32 🍖 puisées dans l'entrepôt de guilde")
-  )
-  + note("Pendant une expédition, le familier n'assiste plus aux mini-évènements ni aux combats. Annuler un départ deux fois en 7 jours lui fait perdre confiance.")
-  + head("Une expédition terminée")
-  + panel(rows([
-    { icon: "🎁", title: "Rappeler le familier", sub: "Ouvrir le butin : argent, expérience, points, jetons, matériaux et un équipement", end: "Prêt", act: "recallPet" }
-  ]))
-, "expedition familier butin talisman");
+, "expedition familier talisman");
 
 def("petFeed", "pet", "Nourrir", () =>
   hero({ eyebrow: "Commande /nourrirfamilier", title: "🍖 Nourrir " + P.pet.nickname, text: "La durée de satiété dépend uniquement de l'espèce, entre 30 minutes et 5 heures. Le type de nourriture n'influence que les points d'amour." })
@@ -2086,7 +2066,7 @@ const SHEETS = {
       { icon: "⚡", title: "Énergie régénérée", sub: "Vous pouvez relancer un combat · il y a 2 h", go: "fight" },
       { icon: "⚔️", title: "Vous avez été attaqué", sub: "Yuno a affronté votre défense · hier", go: "fightHistory" }
     ]))
-    + panel(rows([{ icon: "⚙️", title: "Gérer les notifications", sub: "Choisir quoi recevoir et où", go: "notifications" }]))
+    + panel(rows([{ icon: "⚙️", title: "Gérer les notifications", sub: "Choisir quelles alertes recevoir dans l'application", go: "notifications" }]))
 };
 
 function openSheet(name) {
@@ -2282,15 +2262,12 @@ const ACTIONS = {
   free() { toast("Le familier a été libéré. Cette action est définitive."); },
   rename() { toast("Surnom modifié."); },
   clearNick() { toast("Surnom effacé."); },
-  recallPet() { toast("Butin récupéré : 1 480 💰, 620 ⭐, 96 🏅, 3 🪙, 7 🧱 et un équipement."); },
   guildInvite() { toast("Invitation envoyée : le joueur doit confirmer son entrée."); },
   guildKick() { toast("Membre expulsé de la guilde."); },
   guildElder() { toast("Statut d'aîné mis à jour."); },
   guildDescription() { toast("Description de la guilde modifiée."); },
   guildLeave() { toast("Vous avez quitté la guilde."); },
-  toggleNotif() { toast("Notification activée ou désactivée."); },
-  notifDm() { toast("Les notifications arriveront en message privé."); },
-  notifChannel() { toast("Les notifications arriveront dans le salon."); }
+  toggleNotif() { toast("Préférence de notification de l'application mise à jour."); }
 };
 
 function runAction(raw) {
