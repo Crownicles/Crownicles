@@ -1,0 +1,67 @@
+name: App module
+
+on:
+  pull_request:
+    branches:
+      - '**'
+    paths:
+      - App/**
+      - WsPackets/**
+      - Lang/**
+      - .github/workflows/**
+  push:
+    branches:
+      - develop
+      - master
+    paths:
+      - App/**
+      - WsPackets/**
+      - Lang/**
+      - .github/workflows/**
+  workflow_dispatch:
+
+jobs:
+  app-module:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v7
+        with:
+          node-version: '24'
+
+      - name: Setup PNPM
+        run: |
+          npm install --global corepack@latest
+          corepack enable
+          corepack prepare pnpm@10.26.0 --activate
+
+      - name: Cache PNPM dependencies
+        uses: actions/cache@v6
+        with:
+          path: |
+            App/node_modules
+            WsPackets/node_modules
+          key: ${{ runner.os }}-app-dependencies-${{ hashFiles('App/pnpm-lock.yaml', 'WsPackets/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-app-dependencies-
+
+      - name: Install WsPackets dependencies
+        run: pnpm --dir ./WsPackets install --frozen-lockfile
+
+      - name: Install App dependencies
+        run: pnpm --dir ./App install --frozen-lockfile
+
+      - name: TypeScript check for WsPackets
+        run: pnpm --dir ./WsPackets tsc
+
+      - name: TypeScript check for App
+        run: pnpm --dir ./App exec tsc --noEmit
+
+      - name: ESLint check for App
+        run: pnpm --dir ./App lint
+
+      - name: Jest tests for App
+        run: pnpm --dir ./App exec jest --ci --runInBand

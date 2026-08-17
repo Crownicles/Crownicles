@@ -1,7 +1,6 @@
 import { ReactElement } from "react";
 import { Text } from "react-native";
-import { render, screen, waitFor, act } from "@testing-library/react-native";
-import { GameQueryProvider } from "@/src/store/GameQueryProvider";
+import { screen, waitFor, act } from "@testing-library/react-native";
 import { useGameQuery } from "@/src/store/useGameQuery";
 import { useGameInvalidations } from "@/src/store/GameInvalidations";
 import { GAME_ENTITIES } from "@/src/store/GameEntities";
@@ -9,6 +8,7 @@ import { GameAnswer } from "@/src/networking/GameClient";
 import { DRINK_DATA_KINDS } from "ws-packets/src/fromServer/collectors";
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
+import {renderWithGameQuery} from "@/src/testing/testUtils";
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined
@@ -44,11 +44,7 @@ describe("invalidation after a collector is answered", () => {
 			return <Text>{profile.status === "ready" ? `health ${profile.data.health.value}` : profile.status}</Text>;
 		}
 
-		render(
-			<GameQueryProvider>
-				<DrinkScreen />
-			</GameQueryProvider>
-		);
+		await renderWithGameQuery(<DrinkScreen />);
 		await waitFor(() => expect(screen.getByText("health 50")).toBeTruthy());
 		expect(inventoryReads).toBe(1);
 
@@ -78,11 +74,7 @@ describe("invalidation after a collector is answered", () => {
 			return <Text>{pet.status}</Text>;
 		}
 
-		render(
-			<GameQueryProvider>
-				<PetScreen />
-			</GameQueryProvider>
-		);
+		await renderWithGameQuery(<PetScreen />);
 		await waitFor(() => expect(screen.getByText("ready")).toBeTruthy());
 
 		await act(async () => {

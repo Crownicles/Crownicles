@@ -15,6 +15,9 @@
     "preset": "jest-expo",
     "transformIgnorePatterns": [
       "node_modules/(?!(.pnpm|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-svg|ws-packets))"
+    ],
+    "setupFilesAfterEnv": [
+      "<rootDir>/jest.setup.ts"
     ]
   },
   "dependencies": {

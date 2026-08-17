@@ -1,11 +1,11 @@
 import { ReactElement } from "react";
 import { Text } from "react-native";
-import { render, screen, waitFor, act } from "@testing-library/react-native";
-import { GameQueryProvider } from "@/src/store/GameQueryProvider";
+import { screen, waitFor, act } from "@testing-library/react-native";
 import { useGameQuery } from "@/src/store/useGameQuery";
 import { GAME_ENTITIES } from "@/src/store/GameEntities";
 import { GameAnswer } from "@/src/networking/GameClient";
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
+import {renderWithGameQuery} from "@/src/testing/testUtils";
 
 /**
  * Screens regain focus through expo-router. Driving it by hand is what lets a test assert that
@@ -58,11 +58,11 @@ describe("game state store", () => {
 			return <Text>{state.status === "ready" ? state.data.pseudo : state.status}</Text>;
 		}
 
-		render(
-			<GameQueryProvider>
-				<ProfileReader />
-				<ProfileReader />
-			</GameQueryProvider>
+		await renderWithGameQuery(
+				<>
+					<ProfileReader />
+					<ProfileReader />
+				</>
 		);
 
 		await waitFor(() => expect(screen.getAllByText("Rocky")).toHaveLength(2));
@@ -81,11 +81,7 @@ describe("game state store", () => {
 			return <Text>{state.status === "ready" ? state.data.pseudo : state.status}</Text>;
 		}
 
-		render(
-			<GameQueryProvider>
-				<ProfileReader />
-			</GameQueryProvider>
-		);
+		await renderWithGameQuery(<ProfileReader />);
 		await waitFor(() => expect(screen.getByText("Rocky 1")).toBeTruthy());
 
 		// The cache compares timestamps rather than running timers, so the clock is what has to move
@@ -115,11 +111,7 @@ describe("game state store", () => {
 			return <Text>{state.status === "ready" ? state.data.pseudo : state.status}</Text>;
 		}
 
-		render(
-			<GameQueryProvider>
-				<ProfileReader />
-			</GameQueryProvider>
-		);
+		await renderWithGameQuery(<ProfileReader />);
 		await waitFor(() => expect(screen.getByText("Rocky")).toBeTruthy());
 
 		await regainFocus();
