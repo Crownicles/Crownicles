@@ -1544,15 +1544,31 @@ def("utilities", "profile", "Commandes utilitaires", () =>
 
 /* ---------- Familier ---------- */
 
+function petExpeditionStatus() {
+  const expedition = EXPEDITIONS[S.expedition.option];
+  return head("Expédition en cours")
+    + panel(
+      kv("Destination", expedition.icon + " " + expedition.place)
+      + kv("Dangerosité", expedition.danger)
+      + kv("Retour prévu", S.expedition.returnTime)
+      + (S.expedition.foodConsumed > 0 ? kv("Provisions emportées", S.expedition.foodConsumed + " 🍖") : "")
+    )
+    + notice({ icon: "⚠️", title: "Rappeler votre familier prématurément", text: "Il reviendra sans butin et le lien de confiance sera fragilisé." })
+    + buttonRow([
+      { label: "Rappeler", style: "danger", act: "recallExpedition" }
+    ]);
+}
+
 def("pet", "pet", "Familier", () =>
   hero({ eyebrow: "Commande /familier", title: P.pet.emoji + " " + P.pet.nickname, text: P.pet.name + " · " + P.pet.rarity })
-  + (P.pet.hungry ? notice({ icon: "🍖", title: "Votre familier a faim", text: "Nourrissez-le pour améliorer son moral et débloquer les expéditions.", action: { label: "Nourrir", go: "petFeed" } }) : "")
-  + quick([
+  + (!S.expedition.inProgress && P.pet.hungry ? notice({ icon: "🍖", title: "Votre familier a faim", text: "Nourrissez-le pour améliorer son moral et débloquer les expéditions.", action: { label: "Nourrir", go: "petFeed" } }) : "")
+  + (S.expedition.inProgress ? petExpeditionStatus() : "")
+  + (!S.expedition.inProgress ? quick([
     { icon: "🖐️", label: "Caresser", act: "petPet" },
     { icon: "🍖", label: "Nourrir", go: "petFeed" },
     { icon: "🗺️", label: "Expédition", go: "petExpedition" },
     { icon: "🔄", label: "Transférer", go: "petTransfer" }
-  ])
+  ]) : "")
   + head("Fiche")
   + panel(
     kv("Type", P.pet.emoji + " " + P.pet.name)
@@ -1563,15 +1579,20 @@ def("pet", "pet", "Familier", () =>
   + head("Moral")
   + panel(
     kv("Mentalité", P.pet.love)
-    + note("Le moral progresse en nourrissant et en caressant le familier. Seul le vétérinaire révèle le niveau d'amour exact.")
+    + note(S.expedition.inProgress
+      ? "Le moral reste inchangé pendant l'expédition. Seul le vétérinaire révèle le niveau d'amour exact."
+      : "Le moral progresse en nourrissant et en caressant le familier. Seul le vétérinaire révèle le niveau d'amour exact.")
   )
-  + head("Actions")
-  + panel(rows([
-    { icon: "✏️", title: "Renommer", sub: "Donner ou effacer un surnom", go: "petNick" },
-    { icon: "💰", title: "Vendre", sub: "L'argent alimente la trésorerie de la guilde", go: "petSell" },
-    { icon: "🔄", title: "Transférer", sub: "Déposer, retirer ou échanger avec le refuge", go: "petTransfer" },
-    { icon: "🕊️", title: "Libérer", sub: "Action définitive et irréversible", go: "petFree", danger: true }
-  ]))
+  + (S.expedition.inProgress
+    ? head("Action disponible") + panel(rows([
+      { icon: "✏️", title: "Renommer", sub: "Donner ou effacer un surnom", go: "petNick" }
+    ]))
+    : head("Actions") + panel(rows([
+      { icon: "✏️", title: "Renommer", sub: "Donner ou effacer un surnom", go: "petNick" },
+      { icon: "💰", title: "Vendre", sub: "L'argent alimente la trésorerie de la guilde", go: "petSell" },
+      { icon: "🔄", title: "Transférer", sub: "Déposer, retirer ou échanger avec le refuge", go: "petTransfer" },
+      { icon: "🕊️", title: "Libérer", sub: "Action définitive et irréversible", go: "petFree", danger: true }
+    ])))
 , "familier pet animal");
 
 function petExpeditionChoice() {
@@ -1585,23 +1606,12 @@ function petExpeditionChoice() {
 }
 
 function petExpeditionInProgress() {
-  const expedition = EXPEDITIONS[S.expedition.option];
   return hero({
     eyebrow: "Familier · expédition en cours",
     title: "🗺️ Expédition en cours",
     text: P.pet.emoji + " " + P.pet.nickname + " arpente actuellement des terres lointaines et mystérieuses."
   })
-    + panel(
-      kv("Destination", expedition.icon + " " + expedition.place)
-      + kv("Dangerosité", expedition.danger)
-      + kv("Retour prévu", S.expedition.returnTime)
-      + (S.expedition.foodConsumed > 0 ? kv("Provisions emportées", S.expedition.foodConsumed + " 🍖") : "")
-    )
-    + notice({ icon: "⚠️", title: "Rappeler votre familier prématurément", text: "Il reviendra sans butin et le lien de confiance sera fragilisé." })
-    + buttonRow([
-      { label: "Rappeler", style: "danger", act: "recallExpedition" },
-      { label: "Continuer l'exploration", act: "continueExpedition" }
-    ]);
+    + petExpeditionStatus();
 }
 
 def("petExpedition", "pet", "Expéditions", () =>
@@ -1843,8 +1853,7 @@ def("fight", "fight", "Combat", () =>
   + quick([
     { icon: "🥉", label: "Ligue", go: "league" },
     { icon: "🏆", label: "Classements", go: "top" },
-    { icon: "📜", label: "Historique", go: "fightHistory" },
-    { icon: "🏝️", label: "Îles", go: "island" }
+    { icon: "📜", label: "Historique", go: "fightHistory" }
   ])
   + head("Comment se déroule un combat")
   + panel(
@@ -2296,12 +2305,6 @@ const ACTIONS = {
   recallExpedition() {
     S.expedition.inProgress = false;
     toast(P.pet.nickname + " est rappelée sans butin. Le lien de confiance est fragilisé.");
-    render();
-  },
-  continueExpedition() {
-    S.stack = [];
-    S.screen = "pet";
-    toast("Vous continuez l'exploration. " + P.pet.nickname + " reviendra à l'heure prévue.");
     render();
   }
 };
