@@ -159,7 +159,7 @@
   "maintenance": "O jogo está atualmente em manutenção, por favor tente novamente mais tarde.\n\nPara mais informações, visita o servidor oficial do Discord: https://discord.gg/AP3Wmzb",
   "banned": "Foste banido do jogo.",
   "aDevMessedUp": "Ops! Ocorreu um erro. Não se preocupe, a culpa não é sua. Por favor, aceite as nossas desculpas por qualquer incómodo causado. Para resolver este problema, contacte a nossa equipa de apoio através do nosso servidor Discord: https://discord.gg/5JqrMtZ",
-  "internalError": "$t(error:aDevMessedUp)\n\nEn transmettant le détail suivant, vous nous aiderez à retrouver l'origine du problème plus rapidement :\n```\n{{reason}}\n```",
+  "internalError": "$t(error:aDevMessedUp)\n\nAo enviar os seguintes detalhes, estará a ajudar-nos a identificar a origem do problema mais rapidamente:\n```\n{{reason}}\n```",
   "commandNotAvailableHere": "Este comando não pode ser utilizado nesta localização.",
   "oracleNotMet": "Este comando ainda não está disponível para si.",
   "guildFoodStorageFull": "Recebeste **{{quantity, number}}x {{food}}**, mas o stock de comida da tua guilda está cheio. A comida foi deitada fora.",
