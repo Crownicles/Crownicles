@@ -1208,7 +1208,7 @@
       "atParticle": "an die"
     },
     "19": {
-      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
+      "description": "Diese Düne entstand durch die starken Winde im Tal der Könige. Sie schützt die umliegenden Gebiete vor der Hitze und leitet das Wasser des Flusses Vacarme weiter.",
       "name": "La Dune",
       "particle": "in",
       "atParticle": "à"
@@ -2487,7 +2487,7 @@
     "10": "Uralter Baum"
   },
   "cooking": {
-    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Stufe {{level}})",
     "grades": {
       "kitchenHelper": "Küchenhilfe",
       "scullion": "Marmiton",
