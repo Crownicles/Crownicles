@@ -85,6 +85,8 @@ const stripLokiStructuredMetadata = format(info => {
 	return info;
 });
 
+const LOKI_REQUEST_TIMEOUT_MS = 30_000;
+
 type LogMetadata = { [key: string]: unknown } & {
 	error?: never;
 	level?: never;
@@ -133,7 +135,7 @@ export abstract class CrowniclesLogger {
 						format: stripLokiStructuredMetadata(),
 						onConnectionError: console.error,
 						interval: 5,
-						timeout: 5
+						timeout: LOKI_REQUEST_TIMEOUT_MS
 					}));
 					break;
 				default:

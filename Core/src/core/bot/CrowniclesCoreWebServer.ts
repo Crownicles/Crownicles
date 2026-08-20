@@ -1,4 +1,4 @@
-import {
+import express, {
 	Express, Request, Response
 } from "express";
 import { botConfig } from "../../bootstrap";
@@ -9,7 +9,6 @@ import {
 } from "./CrowniclesCoreMetrics";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { BlockingUtils } from "../utils/BlockingUtils";
-import * as express from "express";
 
 export abstract class CrowniclesCoreWebServer {
 	static start(): void {

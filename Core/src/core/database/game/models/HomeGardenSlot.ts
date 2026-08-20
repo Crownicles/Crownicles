@@ -3,7 +3,7 @@ import {
 } from "sequelize";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { PlantId } from "../../../../../../Lib/src/constants/PlantConstants";
 import { TimeConstants } from "../../../../../../Lib/src/constants/TimeConstants";
 

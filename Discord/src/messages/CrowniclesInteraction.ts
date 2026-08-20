@@ -4,6 +4,7 @@ import {
 	ButtonInteraction,
 	Client,
 	CommandInteraction,
+	CommandInteractionOptionResolver,
 	DiscordjsError,
 	DiscordjsErrorCodes,
 	GuildTextBasedChannel,
@@ -16,18 +17,22 @@ import {
 	MessagePayload,
 	StringSelectMenuInteraction
 } from "discord.js";
-import {
-	RawInteractionData, RawWebhookData
-} from "discord.js/typings/rawDataTypes";
 import i18n from "../translations/i18n";
 import {
 	LANGUAGE, Language
 } from "../../../Lib/src/Language";
-import { CommandInteractionOptionResolver } from "discord.js/typings";
 import { CrowniclesEmbed } from "./CrowniclesEmbed";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
-import { MessageFlags } from "discord-api-types/v10";
+import {
+	MessageFlags,
+	type APIWebhook,
+	type GatewayInteractionCreateDispatchData,
+	type RESTGetAPIWebhookWithTokenResult
+} from "discord-api-types/v10";
 import { DiscordConstants } from "../DiscordConstants";
+
+type RawInteractionData = GatewayInteractionCreateDispatchData;
+type RawWebhookData = APIWebhook | RESTGetAPIWebhookWithTokenResult | (Partial<APIWebhook> & Required<Pick<APIWebhook, "id" | "guild_id">>);
 
 type CrowniclesInteractionWithoutSendCommands = new(client: Client<true>, data: RawInteractionData) => Omit<CommandInteraction, "reply" | "followUp" | "channel" | "editReply">;
 const CrowniclesInteractionWithoutSendCommands: CrowniclesInteractionWithoutSendCommands = CommandInteraction as unknown as CrowniclesInteractionWithoutSendCommands;

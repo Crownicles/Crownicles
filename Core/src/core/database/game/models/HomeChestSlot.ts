@@ -12,7 +12,7 @@ import { ItemWithDetails } from "../../../../../../Lib/src/types/ItemWithDetails
 import { toItemWithDetails } from "../../../utils/ItemUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { ChestSlotsPerCategory } from "../../../../../../Lib/src/types/HomeFeatures";
 
 export class HomeChestSlot extends Model {

@@ -1,7 +1,7 @@
 import {
 	DataTypes, Model, Sequelize
 } from "sequelize";
-import * as moment from "moment";
+import moment from "moment";
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";

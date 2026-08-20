@@ -8,7 +8,7 @@ import { crowniclesInstance } from "../../../../app";
 import { MissionDataController } from "../../../../data/Mission";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 
 export class DailyMission extends Model {
 	declare readonly id: number;

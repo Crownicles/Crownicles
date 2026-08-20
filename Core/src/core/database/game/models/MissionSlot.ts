@@ -6,7 +6,7 @@ import {
 } from "../../../../../../Lib/src/types/CompletedMission";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import missionJson = require("../../../../../resources/campaign.json");
 
 export class MissionSlot extends Model {

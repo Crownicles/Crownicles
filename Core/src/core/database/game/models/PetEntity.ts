@@ -34,7 +34,7 @@ import {
 } from "../../../../../../Lib/src/locks/withLockedEntities";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 
 export class PetEntity extends Model {
 	/**

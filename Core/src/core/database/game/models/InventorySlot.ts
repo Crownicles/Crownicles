@@ -19,7 +19,7 @@ import {
 import Player from "./Player";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { InventoryConstants } from "../../../../../../Lib/src/constants/InventoryConstants";
 import { ItemWithDetails } from "../../../../../../Lib/src/types/ItemWithDetails";
 import { toItemWithDetails } from "../../../utils/ItemUtils";
