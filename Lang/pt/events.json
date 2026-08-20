@@ -1529,7 +1529,7 @@
           "2": "Pronto para lutar, mas sabendo pouco sobre o seu adversário, aproxima-se dele com o pretexto de querer discutir um acordo. Aproximando-te do teu inimigo, desembainhas a tua espada e derrubas-o com o punho. Revistas o guarda e encontras uma chave. Abre a porta. Uma vez lá dentro, não tens dificuldade em encontrar o artefacto. Após uma hora de procura, encontras um comerciante. Ele compra-te o artefacto pela módica quantia de quinhentas moedas de ouro.",
           "3": "Pronto para lutar, mas sabendo pouco sobre o seu adversário, aproxima-se dele com o pretexto de querer discutir um acordo. Ao aproximares-te do teu inimigo, desembainhas a tua espada e derrubas-o com o punho. Tenta então abrir a porta da torre, mas está trancada... Procuras o guarda e encontras a chave. Abres a porta e encontras o artefacto no interior. Parte então em busca de um mercador, que encontra facilmente. Ele rouba o artefacto com um movimento hábil, mas tu consegues roubar-lhe algo também. Na esperança de que este seja valioso, procuras saber o que é.",
           "4": "Sabendo pouco sobre o seu adversário, aproxima-se dele com o pretexto de querer discutir um acordo. Uma vez suficientemente perto do teu inimigo, desembainhaste a tua espada e atordoaste-o com o punho. Infelizmente para ti, o cavaleiro era muito mais forte e rápido do que tu. Ele avançou para ti, enganchou-te com o pé direito e deu-te um pontapé no estômago antes de te dar um poderoso uppercut. No chão, à beira de desmaiar, não consegues levantar-te.",
-          "5": "O Cavaleiro brandia a sua espada para vos intimidar. Perante este colosso, hesitas em fugir, mas decides ficar. Vais lutar contra este Cavaleiro, mesmo que as tuas hipóteses de o derrotar sejam escassas. O teu adversário desvia sem esforço os teus golpes, um a um, antes de te derrubar no chão. No chão, desarmado, sabes que o combate acabou. É então que o cavaleiro te diz: \"És muito corajoso, aqui tens a tua recompensa\". Ele dá-te um objeto antes de se dirigir para a entrada da torre.",
+          "5": "O cavaleiro empunha a espada para o intimidar. Perante este colosso, hesita em fugir, mas decide ficar. Vai lutar contra este cavaleiro, apesar de as suas hipóteses de o derrotar serem escassas. O seu adversário defende os seus golpes, um a um, sem fazer o menor esforço, antes de o derrubar ao chão. No chão, desarmado, sabes que a luta acabou. É então que o cavaleiro te diz que demonstraste grande coragem e que te vai recompensar. Ele entrega-te um objeto antes de se posicionar à entrada da torre.",
           "6": "Preparado para lutar, avançou rapidamente para o seu adversário, desembainhando a sua espada. O Cavaleiro mal teve tempo de sacar da arma antes de o atacares. Nesse momento, apercebeste-te do teu erro. Ele tem armadura, mas tu não tens. Por isso, tentas bater-lhe várias vezes com o punho da tua espada. Parece que isso o desorientou, por isso preparas-te para tentar de novo. Mas antes de o fazeres, o teu adversário fere-te na perna. Estás no chão, incapaz de te levantares. O Cavaleiro ergue-se sobre ti e levanta a espada. Fechas os olhos e ouves o teu próprio grito."
         },
         "text": "Luta contra o cavaleiro."
@@ -1658,11 +1658,11 @@
       },
       "goBack": {
         "outcomes": {
-          "0": "Pouco depois de voltar para trás, encontra um rapazinho assustado a chorar à beira de uma estrada. Ele diz-te que fugiu de um ataque de bandidos à carroça de mercadorias dos pais. Ofereces logo a tua ajuda e o rapaz aceita imediatamente. Depois de caminhar durante duas longas horas, encontras os pais da criança vivos, mas feridos. Ao despedir-se deles, a mãe da criança dá-lhe uma bolsa cheia de ouro.",
-          "1": "Pouco depois de voltar para trás, encontra um rapazinho assustado a chorar à beira de uma estrada. Ele diz-te que fugiu de um ataque de bandidos à carroça de mercadorias dos pais. Ofereces a tua ajuda e o rapaz aceita imediatamente. Após alguns minutos de caminhada, um grupo de bandidos fortemente armados surpreende-te. A armadilha não é fatal, mas perdes muitas moedas de ouro enquanto foges.",
-          "2": "Pouco depois de voltar para trás, ouve-se o barulho de tachos e panelas a vir na sua direção. É uma viajante em busca de novas delícias culinárias, prestes a montar acampamento para descansar. No decurso da conservação, descobre o seu primeiro nome: Lucya. Ela oferece-lhe uma tarte que faz as delícias do seu paladar. Saciado, descansado e encantado com o seu encontro casual, decide partir de novo."
+          "0": "Pouco depois de ter desistido de subir as escadas, encontras um menino a chorar e assustado à beira de um caminho. Ele explica-te que fugiu durante um ataque de bandidos à carroça de mercadorias dos seus pais. Apressa-se a oferecer-lhe a sua ajuda, e a criança aceita imediatamente. Depois de caminhar duas longas horas, encontra os pais da criança vivos, mas feridos. Enquanto se despede deles, a mãe da criança entrega-lhe uma bolsa cheia de ouro.",
+          "1": "Pouco depois de ter desistido de subir as escadas, encontra um menino a chorar e assustado à beira de um caminho. Ele explica-lhe que fugiu durante um ataque de bandidos à carroça de mercadorias dos seus pais. Apressa-te a oferecer-lhe a tua ajuda, e a criança aceita imediatamente. Depois de caminhares alguns minutos, um grupo de bandidos fortemente armados ataca-te de surpresa. Esta armadilha não te custou a vida, mas perdeste muitas moedas de ouro durante a tua fuga.",
+          "2": "Pouco depois de ter desistido de subir as escadas, ouve-se o barulho de panelas a bater umas nas outras, aproximando-se de si. Trata-se de uma viajante em busca de novos sabores culinários, que se preparava para montar acampamento a fim de descansar. Ao longo da conversa, descobriste o seu primeiro nome: Lucya. Ela oferece-te uma tarte que te encanta o paladar. Saciado, descansado e encantado com este encontro fortuito, decides, mesmo assim, retomar o teu caminho."
         },
-        "text": "Dar a volta."
+        "text": "Desistir da subida e prosseguir o caminho."
       },
       "search": {
         "outcomes": {
@@ -2652,11 +2652,11 @@
       },
       "flee": {
         "outcomes": {
-          "0": "Preferindo evitar qualquer perigo, volta para trás para seguir um caminho alternativo. A sua prudência tem um preço: perde tempo e acaba por se perder neste novo caminho, mas pelo menos evita potenciais problemas.",
-          "1": "Ao voltar para trás, tropeça na sua pressa e fere-se ligeiramente. O barulho alerta os dois homens que param a discussão para olhar na sua direção, mas não o perseguem.",
-          "2": "A tua retirada leva-te por acaso a um caminho esquecido onde descobres os restos de um antigo acampamento. Entre os destroços, encontra um objeto ainda utilizável abandonado por viajantes anteriores."
+          "0": "Preferindo evitar qualquer perigo, contornam a clareira para seguirem por um caminho alternativo. A vossa prudência tem um preço: perdem tempo e acabam por se perder neste novo trilho, mas, pelo menos, escapam a potenciais problemas.",
+          "1": "Ao afastar-se, tropeça na pressa e magoa-se ligeiramente. O barulho alerta os dois homens, que interrompem a discussão para olharem na sua direção, mas não o perseguem.",
+          "2": "O seu desvio leva-o, por acaso, a um trilho esquecido, onde descobre os vestígios de um antigo acampamento. Entre os escombros, encontra um objeto ainda utilizável, abandonado por viajantes anteriores."
         },
-        "text": "Voltar para trás e evitar o confronto."
+        "text": "Contornar a clareira e evitar o confronto."
       }
     },
     "text": "Enquanto percorres um caminho sinuoso na Floresta de Celestrum, ouves de repente vozes altas vindas de uma clareira próxima. Intrigado, aproxima-se discretamente e descobre dois homens a meio de uma discussão. Estão frente a frente, gesticulando descontroladamente, obviamente discordando sobre algo importante. Um deles está a usar uma capa remendada, o outro um casaco de cabedal gasto. Entre eles, no chão, encontra-se uma caixa de madeira que cada um deles parece reclamar."
