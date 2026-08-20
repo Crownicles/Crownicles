@@ -1208,7 +1208,7 @@
       "atParticle": "at"
     },
     "19": {
-      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
+      "description": "A beach formed by the strong winds of the Valley of the Kings. The dune protects the surrounding land from the heat and channels water from the Vacarme River.",
       "name": "The Dune",
       "particle": "towards",
       "atParticle": "in"
@@ -2487,7 +2487,7 @@
     "10": "Ancestral Tree"
   },
   "cooking": {
-    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Level {{level}})",
     "grades": {
       "kitchenHelper": "Kitchen Help",
       "scullion": "Pot",
