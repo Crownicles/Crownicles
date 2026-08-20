@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, readdirSync } from "fs";
 import { resolve } from "path";
+import { SlashCommandBuilderGenerator } from "../../src/commands/SlashCommandBuilderGenerator";
 
 const LANG_DIR = resolve(__dirname, "../../../Lang");
 
@@ -42,4 +43,11 @@ describe("DiscordBuilder translations", () => {
 			}
 		});
 	}
+
+	it("should fall back to the command key when a translated name is invalid", () => {
+		const command = SlashCommandBuilderGenerator.generateBaseCommand("giveBadge").toJSON();
+
+		expect(command.name).toBe("givebadge");
+		expect(command.name_localizations?.fr).toBe("donnerbadge");
+	});
 });

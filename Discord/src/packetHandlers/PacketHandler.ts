@@ -35,7 +35,7 @@ export async function registerAllPacketHandlers(): Promise<void> {
 		recursive: true
 	})) {
 		if (file.toString().endsWith(".js")) {
-			await import(`./handlers/${file.toString().substring(0, file.length - 3)}`);
+			await import(`./handlers/${file.toString().substring(0, file.length - 3)}.js`);
 		}
 	}
 }

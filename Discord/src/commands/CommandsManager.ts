@@ -335,7 +335,7 @@ export class CommandsManager {
 			commandsFiles = commandsFiles.filter(command => !command.startsWith("Test"));
 		}
 		for (const commandFile of commandsFiles) {
-			const commandInfo = (await import(`./${category}/${commandFile}`)).commandInfo as ICommand;
+			const commandInfo = (await import(`./${category}/${commandFile}.js`)).commandInfo as ICommand;
 			if (!commandInfo?.slashCommandBuilder) {
 				CrowniclesLogger.error(`Command dist/Discord/src/commands/${category}/${commandFile} is not a slash command`);
 				continue;

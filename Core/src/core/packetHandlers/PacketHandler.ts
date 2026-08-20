@@ -16,7 +16,7 @@ export const packetHandler = <T extends CrowniclesPacket>(val: PacketLike<T>) =>
 export async function registerAllPacketHandlers(): Promise<void> {
 	for (const file of readdirSync("dist/Core/src/core/packetHandlers/handlers")) {
 		if (file.endsWith(".js")) {
-			await import(`./handlers/${file.substring(0, file.length - 3)}`);
+			await import(`./handlers/${file.substring(0, file.length - 3)}.js`);
 		}
 	}
 
@@ -25,7 +25,7 @@ export async function registerAllPacketHandlers(): Promise<void> {
 		withFileTypes: true
 	})) {
 		if (file.isFile() && file.name.endsWith(".js")) {
-			await import(`../../../../../${file.parentPath}/${file.name.substring(0, file.name.length - 3)}`);
+			await import(`../../../../../${file.parentPath}/${file.name.substring(0, file.name.length - 3)}.js`);
 		}
 	}
 }
