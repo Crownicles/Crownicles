@@ -159,7 +159,7 @@
   "maintenance": "The game is currently under maintenance, please try again later.\n\nFor more information, go to the official Discord server: https://discord.gg/AP3Wmzb",
   "banned": "You have been banned from the game.",
   "aDevMessedUp": "Oops! An error has occurred. Don't worry, it's not your fault. Please accept our apologies for the inconvenience. To resolve this problem, please contact our support team via our Discord server: https://discord.gg/5JqrMtZ",
-  "internalError": "$t(error:aDevMessedUp)\n\nEn transmettant le détail suivant, vous nous aiderez à retrouver l'origine du problème plus rapidement :\n```\n{{reason}}\n```",
+  "internalError": "$t(error:aDevMessedUp)\n\nBy providing the following information, you'll help us identify the source of the problem more quickly:\n```\n{{reason}}\n```",
   "commandNotAvailableHere": "This command cannot be used at this location.",
   "oracleNotMet": "This command is not yet available to you.",
   "guildFoodStorageFull": "You have received **{{quantity, number}}x {{food}}**, but your guild's food supply is full. The food has been thrown away.",
