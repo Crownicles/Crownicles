@@ -1208,7 +1208,7 @@
       "atParticle": "para o"
     },
     "19": {
-      "description": "Uma praia criada pelos ventos fortes do Vale dos Reis. A duna protege as planícies do Contre Bois do calor e traz a água do rio Vacarme.",
+      "description": "Praia formada pelos ventos fortes do Vale dos Reis. A duna protege as terras vizinhas do calor e conduz a água do rio Vacarme.",
       "name": "A Duna",
       "particle": "para",
       "atParticle": "à"
@@ -1224,12 +1224,6 @@
       "name": "Caminho rural",
       "particle": "para o",
       "atParticle": "para o"
-    },
-    "20": {
-      "description": "Uma vasta e pacífica planície agrícola.",
-      "name": "Planícies do Contre Bois",
-      "particle": "para o",
-      "atParticle": "em"
     },
     "21": {
       "description": "Uma estrada muito utilizada pelos habitantes da aldeia. Muitos pequenos vendedores ambulantes instalam-se aqui durante um dia, criando um enorme mercado.",
@@ -2493,6 +2487,7 @@
     "10": "Árvore genealógica"
   },
   "cooking": {
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
     "grades": {
       "kitchenHelper": "Ajudante de cozinha",
       "scullion": "Marmitão",
