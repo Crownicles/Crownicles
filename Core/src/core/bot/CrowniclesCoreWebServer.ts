@@ -5,7 +5,7 @@ import { botConfig } from "../../bootstrap";
 import { crowniclesInstance } from "../../app";
 import { mqttClient } from "../../mqttClient";
 import {
-	CrowniclesCoreMetrics, crowniclesMetricsRegistry
+	CrowniclesCoreMetrics, crowniclesMetricsRegistry, MONITORED_DATABASES
 } from "./CrowniclesCoreMetrics";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { BlockingUtils } from "../utils/BlockingUtils";
@@ -35,7 +35,19 @@ export abstract class CrowniclesCoreWebServer {
 		});
 
 		app.get("/metrics", async (_req: Request, res: Response) => {
-			CrowniclesCoreMetrics.computeSporadicMetrics();
+			CrowniclesCoreMetrics.computeSporadicMetrics(
+				[
+					{
+						name: MONITORED_DATABASES.GAME,
+						sequelize: crowniclesInstance!.gameDatabase.sequelize
+					},
+					{
+						name: MONITORED_DATABASES.LOGS,
+						sequelize: crowniclesInstance!.logsDatabase.sequelize
+					}
+				],
+				botConfig.MODE_MAINTENANCE
+			);
 			res.setHeader("Content-Type", crowniclesMetricsRegistry.contentType);
 			res.end(await crowniclesMetricsRegistry.metrics());
 		});

@@ -10,6 +10,7 @@ import {
 	asWeeks, minutesToMilliseconds, weeksToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { TimeoutFunctionsConstants } from "../../../../Lib/src/constants/TimeoutFunctionsConstants";
+import { asMilliseconds } from "../../../../Lib/src/types/TimeTypes";
 import { MapCache } from "../maps/MapCache";
 import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
 import { CommandsTest } from "../CommandsTest";
@@ -44,6 +45,9 @@ import { CrowniclesMonday } from "./cronJobs/CrowniclesMonday";
 import { CrowniclesEach10Minutes } from "./cronJobs/CrowniclesEach10Minutes";
 import { CrowniclesChristmas } from "./cronJobs/CrowniclesChristmas";
 import { ReleaseGift } from "./ReleaseGift";
+import {
+	PERIODIC_LOOPS, startResilientLoop
+} from "./ResilientLoop";
 
 export class Crownicles {
 	public readonly packetListener: PacketListenerServer;
@@ -173,7 +177,7 @@ export class Crownicles {
 			})));
 		}
 
-		Player.update(
+		await Player.update(
 			{
 				fightPointsLost: Sequelize.literal(
 					`CASE WHEN fightPointsLost - ${regenAmount} < 0 THEN 0 ELSE fightPointsLost - ${regenAmount} END`
@@ -185,11 +189,6 @@ export class Crownicles {
 					mapLinkId: { [Op.in]: MapCache.regenEnergyMapLinks }
 				}
 			}
-		)
-			.finally(() => null);
-		setTimeout(
-			Crownicles.fightPowerRegenerationLoop,
-			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
 		);
 	}
 
@@ -217,60 +216,33 @@ export class Crownicles {
 	}
 
 	static async reportNotifications(): Promise<void> {
-		try {
-			if (PacketUtils.isMqttConnected()) {
-				await processDueReportNotifications();
-			}
-			else {
-				CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
-			}
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error(`MQTT is not connected, can't do report notifications. Trying again in ${TimeoutFunctionsConstants.REPORT_NOTIFICATIONS} ms`);
+			return;
 		}
-		catch (error) {
-			CrowniclesLogger.errorWithObj("Error while dispatching report notifications", error);
-		}
-		finally {
-			setTimeout(Crownicles.reportNotifications, TimeoutFunctionsConstants.REPORT_NOTIFICATIONS);
-		}
+		await processDueReportNotifications();
 	}
 
 	static async dailyBonusNotifications(): Promise<void> {
-		try {
-			if (PacketUtils.isMqttConnected()) {
-				const notifications = await ScheduledDailyBonusNotifications.getNotificationsBeforeDate(new Date());
-				if (notifications.length !== 0) {
-					PacketUtils.sendNotifications(notifications.map(notification => makePacket(DailyBonusNotificationPacket, {
-						keycloakId: notification.keycloakId
-					})));
-					await ScheduledDailyBonusNotifications.bulkDelete(notifications);
-				}
-			}
-			else {
-				CrowniclesLogger.error(`MQTT is not connected, can't do daily bonus notifications. Trying again in ${TimeoutFunctionsConstants.DAILY_TIMEOUT} ms`);
-			}
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error(`MQTT is not connected, can't do daily bonus notifications. Trying again in ${TimeoutFunctionsConstants.DAILY_TIMEOUT} ms`);
+			return;
 		}
-		catch (error) {
-			CrowniclesLogger.errorWithObj("Error while dispatching daily bonus notifications", error);
-		}
-		finally {
-			setTimeout(Crownicles.dailyBonusNotifications, TimeoutFunctionsConstants.DAILY_TIMEOUT);
+		const notifications = await ScheduledDailyBonusNotifications.getNotificationsBeforeDate(new Date());
+		if (notifications.length !== 0) {
+			PacketUtils.sendNotifications(notifications.map(notification => makePacket(DailyBonusNotificationPacket, {
+				keycloakId: notification.keycloakId
+			})));
+			await ScheduledDailyBonusNotifications.bulkDelete(notifications);
 		}
 	}
 
 	static async expeditionNotifications(): Promise<void> {
-		try {
-			if (PacketUtils.isMqttConnected()) {
-				await processDueExpeditionNotifications();
-			}
-			else {
-				CrowniclesLogger.error(`MQTT is not connected, can't do expedition notifications. Trying again in ${TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS} ms`);
-			}
+		if (!PacketUtils.isMqttConnected()) {
+			CrowniclesLogger.error(`MQTT is not connected, can't do expedition notifications. Trying again in ${TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS} ms`);
+			return;
 		}
-		catch (error) {
-			CrowniclesLogger.errorWithObj("Error while dispatching expedition notifications", error);
-		}
-		finally {
-			setTimeout(Crownicles.expeditionNotifications, TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS);
-		}
+		await processDueExpeditionNotifications();
 	}
 
 	/**
@@ -385,21 +357,35 @@ export class Crownicles {
 		await CrowniclesEach10Minutes.programCronJob();
 		await CrowniclesChristmas.programCronJob();
 
-		Crownicles.reportNotifications()
-			.then();
+		startResilientLoop(
+			PERIODIC_LOOPS.REPORT_NOTIFICATIONS,
+			Crownicles.reportNotifications,
+			asMilliseconds(TimeoutFunctionsConstants.REPORT_NOTIFICATIONS),
+			{ startImmediately: true }
+		);
 
-		Crownicles.dailyBonusNotifications()
-			.then();
+		startResilientLoop(
+			PERIODIC_LOOPS.DAILY_BONUS_NOTIFICATIONS,
+			Crownicles.dailyBonusNotifications,
+			asMilliseconds(TimeoutFunctionsConstants.DAILY_TIMEOUT),
+			{ startImmediately: true }
+		);
 
-		Crownicles.expeditionNotifications()
-			.then();
+		startResilientLoop(
+			PERIODIC_LOOPS.EXPEDITION_NOTIFICATIONS,
+			Crownicles.expeditionNotifications,
+			asMilliseconds(TimeoutFunctionsConstants.EXPEDITION_NOTIFICATIONS),
+			{ startImmediately: true }
+		);
 
 		ReleaseGift.apply()
 			.then();
 
-		setTimeout(
+		startResilientLoop(
+			PERIODIC_LOOPS.ENERGY_REGEN,
 			Crownicles.fightPowerRegenerationLoop,
-			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES)
+			minutesToMilliseconds(FightConstants.POINTS_REGEN_MINUTES),
+			{ startImmediately: false }
 		);
 	}
 }
