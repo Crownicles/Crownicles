@@ -168,7 +168,7 @@ export abstract class Database {
 		if (modelSplit[1] !== "js" || modelSplit.length !== 2) {
 			return;
 		}
-		const model = await import(`${this.modelsPath}/${modelName}`);
+		const model = await import(`${this.modelsPath}/${modelName}.js`);
 		models.push(model);
 		if (model.initModel) {
 			await model.initModel(this.sequelize);
