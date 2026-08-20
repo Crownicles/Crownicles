@@ -9,19 +9,26 @@ export default class InventoryCommandServerTranslator {
 	public static translate(_context: PacketContext, packet: CommandInventoryPacketRes): Promise<InventoryRes> {
 		return asyncMakeFromServerPacket(InventoryRes, {
 			foundPlayer: packet.foundPlayer,
-			data: packet.data
+			...packet.data
 				? {
-					armor: packet.data.armor,
-					weapon: packet.data.weapon,
-					potion: packet.data.potion,
-					object: packet.data.object,
-					backupArmors: packet.data.backupArmors,
-					backupWeapons: packet.data.backupWeapons,
-					backupPotions: packet.data.backupPotions,
-					backupObjects: packet.data.backupObjects,
-					slots: packet.data.slots
+					data: {
+						armor: packet.data.armor,
+						weapon: packet.data.weapon,
+						potion: packet.data.potion,
+						object: packet.data.object,
+						backupArmors: packet.data.backupArmors,
+						backupWeapons: packet.data.backupWeapons,
+						backupPotions: packet.data.backupPotions,
+						backupObjects: packet.data.backupObjects,
+						slots: packet.data.slots,
+						materials: packet.data.materials,
+						...packet.data.plants ? { plants: packet.data.plants } : {}
+					}
 				}
-				: undefined
+				: {},
+			...packet.hasTalisman === undefined ? {} : { hasTalisman: packet.hasTalisman },
+			...packet.hasCloneTalisman === undefined ? {} : { hasCloneTalisman: packet.hasCloneTalisman },
+			...packet.hasRemoteHarvestTalisman === undefined ? {} : { hasRemoteHarvestTalisman: packet.hasRemoteHarvestTalisman }
 		});
 	}
 }

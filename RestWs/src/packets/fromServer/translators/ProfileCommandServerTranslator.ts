@@ -17,6 +17,7 @@ type ProfilePlayerData = CommandProfilePacketRes["playerData"];
 type ProfileStats = NonNullable<ProfileRes["stats"]>;
 type ProfilePet = NonNullable<ProfileRes["pet"]>;
 type ProfileFightRanking = NonNullable<ProfileRes["fightRanking"]>;
+type ProfileCooking = NonNullable<ProfileRes["cooking"]>;
 
 function translateValueAndMax(value: ProfilePlayerData["health"]): ProfileRes["health"] {
 	return {
@@ -54,11 +55,21 @@ function translatePet(pet: NonNullable<ProfilePlayerData["pet"]>): ProfilePet {
 function translateFightRanking(fightRanking: NonNullable<ProfilePlayerData["fightRanking"]>): ProfileFightRanking {
 	return {
 		glory: fightRanking.glory,
+		gloryRank: fightRanking.gloryRank,
+		numberOfFighters: fightRanking.numberOfFighters,
 		league: fightRanking.league
 	};
 }
 
-function translateProfileData(pseudo: string, playerData: ProfilePlayerData): ProfileRes {
+function translateCooking(cooking: NonNullable<ProfilePlayerData["cooking"]>): ProfileCooking {
+	return {
+		level: cooking.level,
+		grade: cooking.grade,
+		experience: translateValueAndMax(cooking.experience)
+	};
+}
+
+export function translateProfileData(pseudo: string, playerData: ProfilePlayerData): ProfileRes {
 	return makeFromServerPacket(ProfileRes, {
 		pseudo,
 		health: translateValueAndMax(playerData.health),
@@ -75,6 +86,8 @@ function translateProfileData(pseudo: string, playerData: ProfilePlayerData): Pr
 			unranked: playerData.rank.unranked
 		},
 		money: playerData.money,
+		...playerData.tokens ? { tokens: translateValueAndMax(playerData.tokens) } : {},
+		...playerData.cooking ? { cooking: translateCooking(playerData.cooking) } : {},
 		effect: {
 			effect: playerData.effect.effect,
 			healed: playerData.effect.healed,

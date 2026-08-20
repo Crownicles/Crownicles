@@ -1,6 +1,8 @@
 import { FromServerPacket } from "../FromServerPacket";
+import { MaterialQuantity } from "../../objects/MaterialQuantity";
 import { SupportItem } from "../../objects/SupportItem";
 import { MainItem } from "../../objects/MainItem";
+import { PlantId } from "../../objects/PlantId";
 
 export class InventoryRes extends FromServerPacket {
 	foundPlayer!: boolean;
@@ -32,5 +34,20 @@ export class InventoryRes extends FromServerPacket {
 			potions: number;
 			objects: number;
 		};
+		materials: MaterialQuantity[];
+		plants?: {
+			seed?: PlantId;
+			plantSlots: {
+				plantId: PlantId;
+				slot: number;
+			}[];
+			maxPlantSlots: number;
+		};
 	};
+
+	hasTalisman?: boolean;
+
+	hasCloneTalisman?: boolean;
+
+	hasRemoteHarvestTalisman?: boolean;
 }

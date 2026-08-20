@@ -1,4 +1,5 @@
 import { FromServerPacket } from "../FromServerPacket";
+import { PetSex } from "../../objects/OwnedPet";
 import { ValueAndMax } from "../../objects/ValueAndMax";
 
 type Breath = {
@@ -50,7 +51,7 @@ type Effect = {
 type Pet = {
 	typeId: number;
 
-	sex: string;
+	sex: PetSex;
 
 	rarity: number;
 
@@ -60,7 +61,19 @@ type Pet = {
 type FightRanking = {
 	glory: number;
 
+	gloryRank: number;
+
+	numberOfFighters: number;
+
 	league: number;
+};
+
+type Cooking = {
+	level: number;
+
+	grade: string;
+
+	experience: ValueAndMax;
 };
 
 export class ProfileRes extends FromServerPacket {
@@ -95,6 +108,10 @@ export class ProfileRes extends FromServerPacket {
 	experience!: ValueAndMax;
 
 	money!: number;
+
+	tokens?: ValueAndMax;
+
+	cooking?: Cooking;
 
 	pseudo!: string;
 }

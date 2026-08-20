@@ -1,0 +1,188 @@
+import {
+	CommandDrinkCancelDrink,
+	CommandDrinkNoAvailablePotion,
+	CommandDrinkPacketReq,
+	CommandDrinkPacketRes
+} from "../../../Lib/src/packets/commands/CommandDrinkPacket";
+import {
+	CommandGetCurrentReactionCollectorsPacket,
+	CommandGetCurrentReactionCollectorsPacketRes
+} from "../../../Lib/src/packets/commands/CommandGetCurrentReactionCollectorsPacket";
+import {
+	CommandInventoryPacketReq,
+	CommandInventoryPacketRes
+} from "../../../Lib/src/packets/commands/CommandInventoryPacket";
+import {
+	CommandPetPacketReq,
+	CommandPetPacketRes
+} from "../../../Lib/src/packets/commands/CommandPetPacket";
+import {
+	CommandPingPacketReq,
+	CommandPingPacketRes
+} from "../../../Lib/src/packets/commands/CommandPingPacket";
+import {
+	CommandProfilePacketReq,
+	CommandProfilePacketRes
+} from "../../../Lib/src/packets/commands/CommandProfilePacket";
+import {
+	ReactionCollectorCreationPacket,
+	ReactionCollectorEnded,
+	ReactionCollectorReactPacket
+} from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import { ReactionCollectorStopPacket as ReactionCollectorStopPacketWithReason } from "../../../Lib/src/packets/interaction/ReactionCollectorStopPacket";
+import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
+import { MaterialQuantity as LibMaterialQuantity } from "../../../Lib/src/types/MaterialQuantity";
+import { OwnedPet as LibOwnedPet } from "../../../Lib/src/types/OwnedPet";
+import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
+import { DrinkCancel } from "../../../WsPackets/src/fromServer/drink/DrinkCancel";
+import { DrinkNoAvailablePotion } from "../../../WsPackets/src/fromServer/drink/DrinkNoAvailablePotion";
+import { DrinkReq } from "../../../WsPackets/src/fromClient/DrinkReq";
+import { DrinkRes } from "../../../WsPackets/src/fromServer/drink/DrinkRes";
+import { CommandGetCurrentReactionCollectorsReq } from "../../../WsPackets/src/fromClient/GetCurrentReactionCollectorsReq";
+import { CommandGetCurrentReactionCollectorsRes } from "../../../WsPackets/src/fromServer/getCurrentReactionCollectors/GetCurrentReactionCollectorsRes";
+import { InventoryReq } from "../../../WsPackets/src/fromClient/InventoryReq";
+import { InventoryRes } from "../../../WsPackets/src/fromServer/inventory/InventoryRes";
+import { PetReq } from "../../../WsPackets/src/fromClient/PetReq";
+import { PetRes } from "../../../WsPackets/src/fromServer/pet/PetRes";
+import { PingReq } from "../../../WsPackets/src/fromClient/PingReq";
+import { PingRes } from "../../../WsPackets/src/fromServer/ping/PingRes";
+import { ProfileReq } from "../../../WsPackets/src/fromClient/ProfileReq";
+import { ProfileRes } from "../../../WsPackets/src/fromServer/profile/ProfileRes";
+import { ReactionCollectorCreation } from "../../../WsPackets/src/fromServer/common/ReactionCollectorCreation";
+import { ReactionCollectorEnded as WireReactionCollectorEnded } from "../../../WsPackets/src/fromServer/common/ReactionCollectorEnded";
+import { ReactionCollectorReactReq } from "../../../WsPackets/src/fromClient/ReactionCollectorReactReq";
+import { ReactionCollectorStop } from "../../../WsPackets/src/fromServer/common/ReactionCollectorStop";
+import { MainItem } from "../../../WsPackets/src/objects/MainItem";
+import { MaterialQuantity } from "../../../WsPackets/src/objects/MaterialQuantity";
+import { OwnedPet } from "../../../WsPackets/src/objects/OwnedPet";
+import { SupportItem } from "../../../WsPackets/src/objects/SupportItem";
+import { ValueAndMax } from "../../../WsPackets/src/objects/ValueAndMax";
+
+type WireShape<Value> =
+	[Value] extends [number] ? "number"
+		: [Value] extends [string] ? "string"
+			: [Value] extends [boolean] ? "boolean"
+				: [Value] extends [readonly (infer Item)[]] ? readonly ["array", WireShape<NonNullable<Item>>]
+					: [Value] extends [object] ? { [Key in keyof Value]: WireShape<NonNullable<Value[Key]>> }
+						: "unknown";
+
+type IsEqual<Left, Right> =
+	(<Type>() => Type extends Left ? 1 : 2) extends
+	(<Type>() => Type extends Right ? 1 : 2)
+		? (<Type>() => Type extends Right ? 1 : 2) extends
+		(<Type>() => Type extends Left ? 1 : 2) ? true : false
+		: false;
+
+type Assert<Condition extends true> = Condition;
+
+type WirePacketFields<Packet> = Omit<Packet, "_typeLock">;
+
+type SameKeys<Left, Right> = IsEqual<keyof Left, keyof Right>;
+
+type RenameField<Packet, From extends keyof Packet, To extends PropertyKey> = Omit<Packet, From> & Record<To, Packet[From]>;
+
+type DrinkRequestContract = Assert<IsEqual<WireShape<CommandDrinkPacketReq>, WireShape<WirePacketFields<DrinkReq>>>>;
+type InventoryRequestContract = Assert<IsEqual<WireShape<CommandInventoryPacketReq>, WireShape<WirePacketFields<InventoryReq>>>>;
+type PetRequestContract = Assert<IsEqual<WireShape<CommandPetPacketReq>, WireShape<WirePacketFields<PetReq>>>>;
+type PingRequestContract = Assert<IsEqual<WireShape<CommandPingPacketReq>, WireShape<WirePacketFields<PingReq>>>>;
+type ProfileRequestContract = Assert<IsEqual<WireShape<CommandProfilePacketReq>, WireShape<WirePacketFields<ProfileReq>>>>;
+type CollectorsRequestContract = Assert<IsEqual<WireShape<CommandGetCurrentReactionCollectorsPacket>, WireShape<WirePacketFields<CommandGetCurrentReactionCollectorsReq>>>>;
+
+type DrinkResponseContract = Assert<IsEqual<WireShape<CommandDrinkPacketRes>, WireShape<WirePacketFields<DrinkRes>>>>;
+type DrinkCancelContract = Assert<IsEqual<WireShape<CommandDrinkCancelDrink>, WireShape<WirePacketFields<DrinkCancel>>>>;
+type DrinkUnavailableContract = Assert<IsEqual<WireShape<CommandDrinkNoAvailablePotion>, WireShape<WirePacketFields<DrinkNoAvailablePotion>>>>;
+type InventoryResponseContract = Assert<IsEqual<
+	WireShape<Omit<CommandInventoryPacketRes, "keycloakId">>,
+	WireShape<WirePacketFields<InventoryRes>>
+>>;
+type PetResponseContract = Assert<IsEqual<
+	WireShape<Omit<CommandPetPacketRes, "askedKeycloakId">>,
+	WireShape<WirePacketFields<PetRes>>
+>>;
+type PingResponseContract = Assert<IsEqual<
+	WireShape<RenameField<CommandPingPacketRes, "clientTime", "time">>,
+	WireShape<WirePacketFields<PingRes>>
+>>;
+type ProfileResponseContract = Assert<IsEqual<
+	WireShape<CommandProfilePacketRes["playerData"]>,
+	WireShape<Omit<WirePacketFields<ProfileRes>, "pseudo">>
+>>;
+type CollectorsResponseKeysContract = Assert<SameKeys<
+	CommandGetCurrentReactionCollectorsPacketRes,
+	WirePacketFields<CommandGetCurrentReactionCollectorsRes>
+>>;
+type CollectorCreationKeysContract = Assert<SameKeys<
+	ReactionCollectorCreationPacket,
+	WirePacketFields<ReactionCollectorCreation>
+>>;
+type CollectorEndedContract = Assert<IsEqual<
+	WireShape<ReactionCollectorEnded>,
+	WireShape<WirePacketFields<WireReactionCollectorEnded>>
+>>;
+type CollectorReactionContract = Assert<IsEqual<
+	WireShape<RenameField<Omit<ReactionCollectorReactPacket, "keycloakId">, "id", "collectorId">>,
+	WireShape<WirePacketFields<ReactionCollectorReactReq>>
+>>;
+type CollectorStopContract = Assert<IsEqual<
+	WireShape<RenameField<ReactionCollectorStopPacketWithReason, "id", "collectorId">>,
+	WireShape<WirePacketFields<ReactionCollectorStop>>
+>>;
+
+type MainItemContract = Assert<IsEqual<WireShape<MainItemDetails>, WireShape<MainItem>>>;
+type MainItemStatContract = Assert<IsEqual<WireShape<MainItemDetails["attack"]>, WireShape<MainItem["attack"]>>>;
+type MaterialQuantityContract = Assert<IsEqual<WireShape<LibMaterialQuantity>, WireShape<MaterialQuantity>>>;
+type OwnedPetContract = Assert<IsEqual<WireShape<LibOwnedPet>, WireShape<OwnedPet>>>;
+type SupportItemContract = Assert<IsEqual<WireShape<SupportItemDetails>, WireShape<SupportItem>>>;
+type ValueAndMaxContract = Assert<IsEqual<WireShape<CommandProfilePacketRes["playerData"]["health"]>, WireShape<ValueAndMax>>>;
+
+export const packetContractChecks: {
+	drinkRequest: DrinkRequestContract;
+	inventoryRequest: InventoryRequestContract;
+	petRequest: PetRequestContract;
+	pingRequest: PingRequestContract;
+	profileRequest: ProfileRequestContract;
+	collectorsRequest: CollectorsRequestContract;
+	drinkResponse: DrinkResponseContract;
+	drinkCancel: DrinkCancelContract;
+	drinkUnavailable: DrinkUnavailableContract;
+	inventoryResponse: InventoryResponseContract;
+	petResponse: PetResponseContract;
+	pingResponse: PingResponseContract;
+	profileResponse: ProfileResponseContract;
+	collectorEnded: CollectorEndedContract;
+	collectorReaction: CollectorReactionContract;
+	collectorStop: CollectorStopContract;
+	collectorsResponseKeys: CollectorsResponseKeysContract;
+	collectorCreationKeys: CollectorCreationKeysContract;
+	mainItem: MainItemContract;
+	mainItemStat: MainItemStatContract;
+	materialQuantity: MaterialQuantityContract;
+	ownedPet: OwnedPetContract;
+	supportItem: SupportItemContract;
+	valueAndMax: ValueAndMaxContract;
+} = {
+	drinkRequest: true,
+	inventoryRequest: true,
+	petRequest: true,
+	pingRequest: true,
+	profileRequest: true,
+	collectorsRequest: true,
+	drinkResponse: true,
+	drinkCancel: true,
+	drinkUnavailable: true,
+	inventoryResponse: true,
+	petResponse: true,
+	pingResponse: true,
+	profileResponse: true,
+	collectorEnded: true,
+	collectorReaction: true,
+	collectorStop: true,
+	collectorsResponseKeys: true,
+	collectorCreationKeys: true,
+	mainItem: true,
+	mainItemStat: true,
+	materialQuantity: true,
+	ownedPet: true,
+	supportItem: true,
+	valueAndMax: true
+};
