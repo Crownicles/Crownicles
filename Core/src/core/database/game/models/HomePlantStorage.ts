@@ -6,7 +6,7 @@ import {
 } from "../../../../../../Lib/src/constants/PlantConstants";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 
 export class HomePlantStorage extends Model {
 	declare readonly homeId: number;

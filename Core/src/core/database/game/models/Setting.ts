@@ -7,7 +7,7 @@ import { CityDataController } from "../../../../data/City";
 import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 
 class SettingClassNumber {
 	private readonly name: string;

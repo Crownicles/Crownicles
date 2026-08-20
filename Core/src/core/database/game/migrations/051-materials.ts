@@ -1,7 +1,7 @@
 import {
 	DataTypes, QueryInterface
 } from "sequelize";
-import * as moment from "moment";
+import moment from "moment";
 
 export async function up({ context }: { context: QueryInterface }): Promise<void> {
 	await context.createTable("material", {

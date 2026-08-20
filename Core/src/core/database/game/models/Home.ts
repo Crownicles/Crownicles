@@ -2,7 +2,7 @@ import {
 	DataTypes, Model, Sequelize
 } from "sequelize";
 import { HomeLevel } from "../../../../../../Lib/src/types/HomeLevel";
-import * as moment from "moment";
+import moment from "moment";
 import { HomeChestSlots } from "./HomeChestSlot";
 import { HomeGardenSlots } from "./HomeGardenSlot";
 import { HomePlantStorages } from "./HomePlantStorage";

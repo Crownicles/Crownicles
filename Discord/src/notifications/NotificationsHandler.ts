@@ -30,14 +30,14 @@ import { DailyBonusNotificationPacket } from "../../../Lib/src/packets/notificat
 import { ExpeditionFinishedNotificationPacket } from "../../../Lib/src/packets/notifications/ExpeditionFinishedNotificationPacket";
 import { GDPRExportCompleteNotificationPacket } from "../../../Lib/src/packets/notifications/GDPRExportCompleteNotificationPacket";
 import { SexTypeShort } from "../../../Lib/src/constants/StringConstants";
-import * as archiver from "archiver";
+import { ZipArchive } from "archiver";
 import { DiscordConstants } from "../DiscordConstants";
 
 /**
  * Create a ZIP buffer from CSV files
  */
 async function createGDPRZipBuffer(csvFiles: Record<string, string>): Promise<Buffer> {
-	const archive = archiver("zip", { zlib: { level: DiscordConstants.GDPR_EXPORT.ZIP_COMPRESSION_LEVEL } });
+	const archive = new ZipArchive({ zlib: { level: DiscordConstants.GDPR_EXPORT.ZIP_COMPRESSION_LEVEL } });
 	const chunks: Buffer[] = [];
 
 	archive.on("data", (chunk: Buffer) => chunks.push(chunk));

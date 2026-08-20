@@ -67,7 +67,7 @@ import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConst
 import { MathUtils } from "../../../utils/MathUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { CityDataController } from "../../../../data/City";
 import { ItemEnchantmentKind } from "../../../../../../Lib/src/types/ItemEnchantment";

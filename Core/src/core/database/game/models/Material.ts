@@ -1,7 +1,7 @@
 import {
 	DataTypes, Model, Op, Sequelize
 } from "sequelize";
-import * as moment from "moment";
+import moment from "moment";
 
 export class Material extends Model {
 	declare readonly playerId: number;
