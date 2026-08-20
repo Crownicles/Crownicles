@@ -159,7 +159,7 @@
   "maintenance": "Das Spiel wird derzeit gewartet, bitte versuchen Sie es später noch einmal.\n\nWeitere Informationen finden Sie auf dem offiziellen Discord-Server: https://discord.gg/AP3Wmzb",
   "banned": "Sie wurden aus dem Spiel verbannt.",
   "aDevMessedUp": "Ups! Es ist ein Fehler aufgetreten. Seien Sie versichert, dass dies nicht Ihr Verschulden ist. Wir bitten Sie, unsere Entschuldigung für die Unannehmlichkeiten zu akzeptieren. Um das Problem zu beheben, kontaktieren Sie bitte unseren Support über unseren Discord-Server: https://discord.gg/5JqrMtZ",
-  "internalError": "$t(error:aDevMessedUp)\n\nEn transmettant le détail suivant, vous nous aiderez à retrouver l'origine du problème plus rapidement :\n```\n{{reason}}\n```",
+  "internalError": "$t(error:aDevMessedUp)\n\nWenn Sie uns die folgenden Informationen übermitteln, helfen Sie uns, die Ursache des Problems schneller zu ermitteln:\n```\n{{reason}}\n```",
   "commandNotAvailableHere": "Dieser Befehl kann an dieser Stelle nicht verwendet werden.",
   "oracleNotMet": "Dieser Befehl ist für Sie noch nicht zugänglich.",
   "guildFoodStorageFull": "Du hast **{{quantity, number}}x {{food}}** erhalten, aber der Nahrungsvorrat deiner Gilde ist voll. Die Nahrung wurde weggeworfen.",
