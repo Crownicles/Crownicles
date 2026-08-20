@@ -59,7 +59,7 @@
   },
   "petFree": {
     "description": "Free a pet.",
-    "name": "free Pet"
+    "name": "petfree"
   },
   "petNick": {
     "description": "Give a nickname to your pet.",
@@ -73,7 +73,7 @@
   },
   "guildCreate": {
     "description": "Create a new guild.",
-    "name": "guild Creation",
+    "name": "guildcreate",
     "options": {
       "guildName": {
         "description": "The name of the guild.",
