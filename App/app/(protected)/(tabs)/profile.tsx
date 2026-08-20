@@ -14,7 +14,6 @@ import {GameClient} from "@/src/networking/GameClient";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
-import {ProfileReq} from "ws-packets/src/fromClient/ProfileReq";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
@@ -22,6 +21,7 @@ import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {i18n} from "@/src/translations/i18n";
 import {styles} from "./profile.styles";
+import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 
 interface TooltipState {
 	visible: boolean;
@@ -342,10 +342,7 @@ function ProfileStateView({
 }
 
 export default function Profile(): ReactElement {
-	const profileState = useGameQuery<ProfileRes>(
-		GAME_ENTITIES.PROFILE,
-		() => GameClient.request(makeFromClientPacket(ProfileReq, { askedPlayer: {} }), ProfileRes, [PlayerNotFound])
-	);
+	const profileState = usePlayerProfile();
 	const inventoryState = useGameQuery<InventoryRes>(
 		GAME_ENTITIES.INVENTORY,
 		() => GameClient.request(makeFromClientPacket(InventoryReq, { askedPlayer: {} }), InventoryRes, [PlayerNotFound])

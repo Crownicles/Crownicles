@@ -56,6 +56,33 @@ describe("invalidation after a collector is answered", () => {
 		expect(inventoryReads).toBe(2);
 	});
 
+	it("refreshes the profile even when the collector kind is unknown", async () => {
+		let profileReads = 0;
+		const readProfile = (): Promise<GameAnswer<ProfileRes>> => {
+			profileReads++;
+			return Promise.resolve({ kind: "answer", packet: { level: profileReads } as ProfileRes });
+		};
+
+		let answerUnknown = (): void => undefined;
+
+		function UnknownCollectorScreen(): ReactElement {
+			const profile = useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, readProfile);
+			const { afterCollector } = useGameInvalidations();
+			answerUnknown = (): void => afterCollector("unknown");
+
+			return <Text>{profile.status === "ready" ? `level ${profile.data.level}` : profile.status}</Text>;
+		}
+
+		await renderWithGameQuery(<UnknownCollectorScreen />);
+		await waitFor(() => expect(screen.getByText("level 1")).toBeTruthy());
+
+		await act(async () => {
+			answerUnknown();
+		});
+
+		await waitFor(() => expect(screen.getByText("level 2")).toBeTruthy());
+	});
+
 	it("leaves untouched entities alone", async () => {
 		let petReads = 0;
 		const readPet = (): Promise<GameAnswer<ProfileRes>> => {

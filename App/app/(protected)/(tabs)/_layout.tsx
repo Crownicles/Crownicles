@@ -1,17 +1,13 @@
 import {Tabs, useRouter} from "expo-router";
 import {Ionicons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {Alert, Text, TouchableOpacity, View} from "react-native";
-import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
-import {ProfileReq} from "ws-packets/src/fromClient/ProfileReq";
-import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
-import {makeFromClientPacket} from "ws-packets/src/MakePackets";
-import {GameClient} from "@/src/networking/GameClient";
-import {useGameQuery} from "@/src/store/useGameQuery";
-import {GAME_ENTITIES} from "@/src/store/GameEntities";
+import {useContext} from "react";
+import {AuthContext} from "@/src/authentication/AuthContext";
 import {GameQueryProvider} from "@/src/store/GameQueryProvider";
 import {CollectorsProvider} from "@/src/collectors/CollectorsContext";
 import {OpenCollectors} from "@/src/collectors/OpenCollectors";
 import {AppIcons} from "@/src/AppIcons";
+import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
 
 const ProfileHeader = ({ children }: { children?: string }) => {
@@ -19,10 +15,7 @@ const ProfileHeader = ({ children }: { children?: string }) => {
 	 * Reads the profile from the store rather than waiting for the profile screen to fill it in:
 	 * the header is shown before that screen is ever opened, and both share this single request.
 	 */
-	const state = useGameQuery<ProfileRes>(
-		GAME_ENTITIES.PROFILE,
-		() => GameClient.request(makeFromClientPacket(ProfileReq, { askedPlayer: {} }), ProfileRes, [PlayerNotFound])
-	);
+	const state = usePlayerProfile();
 	const profile = state.status === "ready" ? state.data : null;
 
 	const showClassInfo = () => {
@@ -111,8 +104,10 @@ function TabLayoutContent() {
 }
 
 export default function TabLayout() {
+	const {state: authState} = useContext(AuthContext);
+
 	return (
-		<GameQueryProvider>
+		<GameQueryProvider authState={authState}>
 			<CollectorsProvider>
 				<TabLayoutContent />
 				<OpenCollectors />
