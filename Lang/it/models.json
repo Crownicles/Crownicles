@@ -1208,7 +1208,7 @@
       "atParticle": "al"
     },
     "19": {
-      "description": "Una spiaggia creata dai forti venti della Valle dei Re. La duna protegge le Pianure del Boschive dal caldo e porta l'acqua del fiume Baccano.",
+      "description": "Spiaggia formatasi grazie ai forti venti della Valle dei Re. La duna protegge i terreni circostanti dal calore e convoglia l'acqua del fiume Vacarme.",
       "name": "La Duna",
       "particle": "verso",
       "atParticle": "à"
@@ -1224,12 +1224,6 @@
       "name": "Strada di campagna",
       "particle": "verso la",
       "atParticle": "al"
-    },
-    "20": {
-      "description": "Una vasta e tranquilla pianura agricola.",
-      "name": "Pianure Boschive",
-      "particle": "verso gli",
-      "atParticle": "a"
     },
     "21": {
       "description": "Una strada molto utilizzata dagli abitanti del villaggio. Molti piccoli venditori ambulanti si installano qui per un giorno, creando un grande mercato.",
@@ -2493,6 +2487,7 @@
     "10": "Albero ancestrale"
   },
   "cooking": {
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Liv. {{level}})",
     "grades": {
       "kitchenHelper": "Assistente di cucina",
       "scullion": "Marmiton",

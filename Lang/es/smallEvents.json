@@ -1393,15 +1393,15 @@
         "success": {
           "withGuild": "Gracias a la ayuda de tus compañeros de gremio, consigues izarte fuera de esta grieta y salvarlos a su vez. Esta prueba superada ha reforzado vuestros lazos, tu gremio recibe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Sin perder la calma, aplicas inmediatamente las enseñanzas de tu gremio y consigues escalar la pared fácilmente. Tu gremio recibe **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Sin perder la calma, aplicas lo que has aprendido durante tus aventuras y consigues escalar la pared fácilmente. Recibes **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Sin perder la calma, pones en práctica lo que has aprendido durante tus aventuras y consigues escalar la pared sin dificultad. Obtienes **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "Sin perder tiempo, tú y tus compañeros os apresuráis a examinar esta grieta, que resulta ser una cueva. Un poco más tarde, caminando a ciegas, conseguís salir del agujero que hay más adelante.",
           "solo": "Desesperado, solo en el fondo de esta grieta, sólo adviertes el estrecho paso a tu izquierda al cabo de unos minutos. Tras luchar contra la tierra que ha decidido encerrarte, sales al aire libre."
         },
         "lose": {
-          "withGuild": "Gracias a la ayuda de tus compañeros de gremio, logras izarte fuera de esta grieta y salvarlos a su vez. Sin embargo, el que tenía tu bolsa subió el último y desafortunadamente dejó caer el dinero durante la escalada. Pierdes **{{amount, number}} {emote:unitValues.lostMoney}**.",
-          "solo": "Mientras intentas escalar la pared, la tierra se desmorona bajo tus dedos y pies provocando un derrumbe. Gracias a él, logras salir de esta grieta pero estás bastante maltrecho. Pierdes **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Gracias a la ayuda de tus compañeros de gremio, consigues salir de esa grieta y salvarlos a tu vez. Sin embargo, el que llevaba tu bolsa subió el último y, por desgracia, se le cayó el dinero mientras trepaba. Pierdes **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Mientras intentas escalar la pared, la tierra se desmorona bajo tus dedos y tus pies y provoca un desprendimiento. Gracias a ello, consigues salir de esa grieta, pero acabas bastante magullado. Pierdes **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -1409,15 +1409,15 @@
         "success": {
           "withGuild": "Sin embargo, os agarráis unos a otros para evitar que una posible grieta haga caer a uno de vosotros. El temblor termina y todos estáis sanos y salvos. Tu gremio gana **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Sigues las instrucciones que te dio tu gremio en caso de terremoto y decides refugiarte bajo una estructura que, afortunadamente, no se te ha caído encima. Sano y salvo, te prometes agradecer a tu gremio a tu regreso de la expedición. Tu gremio gana **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Intentas mantenerte a pesar del temblor. Afortunadamente, no ha causado ningún daño a tu alrededor, continúas descansando un poco admirando el cielo y los alrededores. Recibes **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Intentas mantenerte en pie a pesar de la sacudida. Por suerte, no ha causado ningún daño a tu alrededor, así que sigues descansando un poco mientras contemplas el cielo y el paisaje. Recibes **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "Presa del pánico, tu gremio intenta encontrar un lugar más seguro para evitar que alguno de vosotros sufra daños. Tras varios minutos de dar vueltas en círculos porque al menos uno de los miembros piensa que un lugar concreto es inseguro, dejáis de sentir el temblor. Sin embargo, tratáis de recuperar la confianza para lo que está por venir mientras recorréis la isla...",
           "solo": "Presa del pánico, intentas esquivar los posibles daños del terremoto. Al cabo de unos instantes, dejas de sentir el temblor. Cuando vuelves al lugar donde querías descansar, observas los daños causados por el terremoto. Menos mal que no te habías quedado allí..."
         },
         "lose": {
-          "withGuild": "Te dices que este terremoto será corto y pides al resto del gremio que lo resista. ¡Qué error! Una roca cae sobre ti y te noquea. Pierdes **{{amount, number}} {emote:unitValues.energy}**.",
-          "solo": "Pensando que habrá pocos daños, continúas descansando. Sin embargo, una grieta se forma bajo tu cuerpo. Por miedo a caer en ella, intentas correr lo más lejos posible, pero tropiezas y te cortas el brazo. Pierdes **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Piensas que este terremoto durará poco y pides al resto del gremio que lo afronte. ¡Qué error! Una roca te cae encima y te deja inconsciente. Pierdes **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Pensando que los daños serán mínimos, sigues descansando. Sin embargo, se forma una grieta debajo de tu cuerpo. Por miedo a caer en ella, intentas correr lo más lejos posible, pero tropiezas y te haces un corte en el brazo. Pierdes **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -2798,7 +2798,7 @@
           "Théobald sacude la cabeza al ver tu mochila llena. **Siembra tu semilla actual** antes de pedirle una nueva."
         ],
         "allSeedsObtained": [
-          "Théobald te felicita calurosamente al ver todas las plantas de tu jardín. Ya tienes **todas sus semillas** y él no tiene nada más que ofrecerte, pero está muy orgulloso de tu jardín.",
+          "Teobald te felicita con orgullo al ver todas las plantas de tu jardín. Ya has conseguido **todas sus semillas** y ya no te puede ofrecer nada más, pero está muy orgulloso de tu jardín.",
           "El viejo jardinero te estrecha la mano calurosamente. Has hecho todo lo que podía enseñarte. Tu jardín es una **obra maestra**, dice con lágrimas en los ojos."
         ],
         "noPlantSpace": [

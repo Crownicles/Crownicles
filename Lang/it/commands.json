@@ -314,7 +314,6 @@
       "17": "le Oasi nascoste del Coco Village",
       "18": "le tumultuose rapide della Rivière Vacarme",
       "19": "le sabbie mobili di La Dune",
-      "20": "i campi tranquilli delle Plaines du Contre Bois",
       "21": "i negozi abbandonati della Route des Merveilles",
       "22": "le gallerie oscure del Bois Hurlant",
       "23": "i vicoli segreti di Claire de Ville",
@@ -633,7 +632,7 @@
     "talismanNotOwned": "{emote:inventory.empty} **Non ci sono manufatti",
     "randomItemTitle": "{{pseudo}}, avete trovato qualcosa !",
     "randomItemAcceptTitle": "Possedete già un'attrezzatura e volete venderla?",
-    "randomItemAcceptTitlePotion": "Hai già una pozione, cosa vorresti fare?",
+    "randomItemAcceptTitlePotion": "Hai già una pozione. Vuoi sostituire la tua pozione attuale con quella che hai trovato?",
     "randomItemFooterPotion": "Utilizzare {emote:collectors.accept} per conservare la pozione trovata e sostituire quella attuale, {emote:items.drinkPotion} per consumare la pozione trovata, {emote:collectors.refuse} per scartare la pozione trovata.",
     "randomItemFooterPotionChoice": "Utilizzare un numero per sostituire una pozione con la pozione trovata, {emote:items.drinkPotion} per consumare la pozione trovata, {emote:collectors.refuse} per scartare la pozione trovata.",
     "acceptedTitle": "{{pseudo}}, avete ricevuto un equipaggiamento !",
@@ -691,7 +690,7 @@
       "top_v1_player": ":trophy: `Migliore giocatore al reset 1.0`",
       "major_bug_reporter": ":lady_beetle: `Persona che ha segnalato dei bug maggiori`",
       "bot_owner": ":crown: `Proprietario del bot'",
-      "mission_completer": "Distintivo acquistato nel negozio di missioni",
+      "mission_completer": "Distintivo acquistato al Mercato Reale",
       "powerful_guild": ":gem: `Membro di una gilda potente`",
       "legendary_pet": "Giocatore che ha addestrato con successo un animale domestico potente",
       "donor": ":money_with_wings: `Donatore`",
@@ -700,7 +699,7 @@
       "redactor": ":pen_fountain: `Redattore del bot`",
       "voter": ":ballot_box: `Persona che ha votato per il bot nelle 12 ultime ore`",
       "funny": ":joy: `Badge regalato a una persona divertente`",
-      "rich": ":money_mouth: `Badge comprato nel negozio`",
+      "rich": "Distintivo acquistato alla Borsa",
       "top_1_before_reset": ":first_place: `Persona che ha per primo ottenuto il primo posto della dopo il reset`",
       "very_powerful_guild": ":mirror_ball: `Membro di una gilda molto potente`",
       "animal_lover": "Persona che ha mostrato tutti gli animali domestici a Talvar il nano",
@@ -782,6 +781,10 @@
     "choseMapMinutes_other": "Hai deciso di dirigerti verso {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Questo viaggio durerà circa **{{timeDisplay}}**.",
     "choseMap_one": "Avete deciso di dirigervi verso {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Il viaggio durerà circa **{{time}} ora**.",
     "choseMap_other": "Avete deciso di partire per {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**. Il viaggio durerà circa **{{time}} ore**.",
+    "goBackMapMinutes_one": "Tornerete indietro in direzione {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, da dove siete venuti. Il viaggio di ritorno durerà circa **{{timeDisplay}}**.",
+    "goBackMapMinutes_other": "Tornerete indietro in direzione {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, da dove siete venuti. Il viaggio di ritorno durerà circa **{{timeDisplay}}**.",
+    "goBackMap_one": "Tornerete indietro in direzione {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, da dove siete venuti. Il viaggio di ritorno durerà circa **{{time}} ora**.",
+    "goBackMap_other": "Tornerete indietro in direzione {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}**, da dove siete venuti. Il viaggio di ritorno durerà circa **{{time}} ore**.",
     "collectedPointsTitle": "Punti raccolti :",
     "commandDescription": "Ottenere un rapporto sulla situazione del personaggio.",
     "commandName": "rapporto",
@@ -806,7 +809,7 @@
     "rewardEmbedTitle": "{{pseudo}}, ricompense per il combattimento",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Esperienza di gilda acquisita: **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Argento vinto : **{{money, number}}**\n:star: XP guadagnati : **{{experience, number}}**",
-    "monsterRewardsGuildPoints": ":mirror_ball: Punti gilda guadagnati : **{{guildPoints, number}}**",
+    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Punti gilda guadagnati: **{{guildPoints, number}}**. La cassa aumenta dello stesso importo.",
     "monsterRewardsTitle": "{{pseudo}}, ricompense per il combattimento",
     "newBigEvent": ":flag_fr: Avete raggiunto **{{destination}}** !",
     "noFight": ":newspaper: **Giornale di {{pseudo}} :** {{waitABitReaction}} | Fai una rapida fuga e trova un piccolo nascondiglio! Il mostro sta aspettando pazientemente fuori...",
@@ -839,6 +842,8 @@
         "goToApartment": "Entrare in casa",
         "seeNotary": "Visita",
         "enterForge": "Entrare nella fucina",
+        "meetScrapDealer": "Incontrare Gorim",
+        "recycle": "Riciclare",
         "talkToEnchanter": "Parlare con lui",
         "browseShop": "Esaminare la bancarella",
         "sitDown": "Siediti",
@@ -871,7 +876,7 @@
         },
         "enchanter": {
           "label": "Andate a trovare l'incantatore",
-          "description": "Un viaggiatore con le mani ricoperte di rune luminose attira la vostra attenzione. Sostiene di essere in grado di incantare qualsiasi arma o armatura."
+          "description": "Un viaggiatore con le mani ricoperte di incantesimi luminosi attira la tua attenzione. Sostiene di poter incantare qualsiasi arma o pezzo di armatura."
         },
         "blacksmith": {
           "label": "Andare dal fabbro",
@@ -988,31 +993,33 @@
       },
       "enchanter": {
         "title": "{{pseudo}}incontri l'incantatore",
-        "emptyInventoryStory": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, ti spiega di essere l'unico e il migliore incantatore di tutte le regioni e di poter potenziare il tuo equipaggiamento grazie alla magia delle rune. Purtroppo, sembra che al momento tu non abbia alcun equipaggiamento da mostrargli, quindi decidi di andartene e tornare più tardi. Mentre te ne vai, però, ti dice che non sa se domani sarà ancora in questa città.",
-        "runeForWeaponOnlyArmorAvailableStory_one": "{emote:city.services.enchanter} Incontri un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, ti spiega di essere l'unico e il migliore incantatore di tutte le regioni. Oggi, la sua runa {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** funziona solo sulle armi. Hai solo un’arma già incantata o pezzi di armatura da mostrargli: ti guarda dall’alto in basso con disprezzo e sospira dicendo che gli stai facendo perdere tempo. Meglio tornare un altro giorno, oppure con una lama vergine degna di essere ornata da una runa.",
-        "runeForWeaponOnlyArmorAvailableStory_other": "{emote:city.services.enchanter} Incontri un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, ti spiega di essere l'unico e il migliore incantatore di tutte le regioni. Oggi, la sua runa {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** funziona solo sulle armi. Hai solo armi già incantate o pezzi di armatura da mostrargli: ti guarda dall’alto in basso con disprezzo e sospira dicendo che gli stai facendo perdere tempo. Meglio tornare un altro giorno, oppure con una lama vergine degna di essere ornata da una runa.",
-        "runeForArmorOnlyWeaponAvailableStory_one": "{emote:city.services.enchanter} Incontri un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, ti spiega di essere l'unico e il migliore incantatore di tutte le regioni. Oggi, la sua runa {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** funziona solo sulle parti dell’armatura. Avete solo un'armatura già incantata o delle armi da mostrargli: lui stringe le labbra e borbotta che state entrambi perdendo tempo. Tornate con un'armatura non ancora incantata, oppure un altro giorno quando la sua runa sarà diversa.",
-        "runeForArmorOnlyWeaponAvailableStory_other": "{emote:city.services.enchanter} Incontri un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, ti spiega di essere l'unico e il migliore incantatore di tutte le regioni. Oggi, la sua runa {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** funziona solo sulle parti dell’armatura. Avete solo armature già incantate o armi da mostrargli: lui stringe le labbra e borbotta che state entrambi perdendo tempo. Tornate con un'armatura non ancora incantata, oppure un altro giorno quando la sua runa sarà diversa.",
+        "emptyInventoryStory": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, ti spiega di essere l'unico e il miglior incantatore di tutte le regioni e di poter potenziare il tuo equipaggiamento grazie alla magia degli incantesimi. Purtroppo, sembra che al momento non abbiate alcun equipaggiamento da mostrargli, quindi decidete di andarvene e tornare più tardi.",
+        "runeForWeaponOnlyArmorAvailableStory_one": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, vi spiega di essere l'unico e il migliore incantatore di tutte le regioni. Oggi, il suo incantesimo {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** funziona solo sulle armi. Se hai solo un’arma già incantata o pezzi di armatura da mostrargli, ti guarda dall’alto in basso con disprezzo e sospira dicendo che gli stai facendo perdere tempo. Meglio tornare un altro giorno, oppure con una lama vergine degna di ricevere un incantesimo.",
+        "runeForWeaponOnlyArmorAvailableStory_other": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, vi spiega di essere l’unico e il migliore incantatore di tutte le regioni. Oggi, il suo incantesimo {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** funziona solo sulle armi. Avendo solo armi già incantate o pezzi di armatura da mostrargli, ti guarda dall’alto in basso con disprezzo e sospira dicendo che gli stai facendo perdere tempo. Meglio tornare un altro giorno, oppure con una lama vergine degna di ricevere un incantesimo.",
+        "runeForArmorOnlyWeaponAvailableStory_one": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, vi spiega di essere l'unico e il migliore incantatore di tutte le regioni. Oggi, il suo incantesimo {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** funziona solo sulle parti dell’armatura. Avete solo un'armatura già incantata o delle armi da mostrargli: lui stringe le labbra e borbotta che state entrambi perdendo tempo. Tornate con un'armatura non ancora incantata, oppure un altro giorno quando il suo incantesimo sarà diverso.",
+        "runeForArmorOnlyWeaponAvailableStory_other": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, vi spiega di essere l’unico e il migliore incantatore di tutte le terre. Oggi, il suo incantesimo {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** funziona solo sulle parti dell'armatura. Avete solo armature già incantate o armi da mostrargli: stringe le labbra e borbotta che state entrambi perdendo tempo. Tornate con un’armatura non incantata da incantare, oppure un altro giorno quando il suo incantesimo sarà diverso.",
         "allEnchantedStory": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, esamina il vostro equipaggiamento e poi scuote la testa, infastidito: tutto ciò che indossate è già incantato. Ti ricorda seccamente che sono i fabbri a rimuovere gli incantesimi esistenti, non lui, e che si rifiuta categoricamente di toccare questi oggetti già runici. Torna con un equipaggiamento non incantato, oppure riprova domani.",
-        "story": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, ti spiega di essere l'unico e il migliore incantatore di tutte le regioni e di poter potenziare il tuo equipaggiamento grazie alla magia delle rune.",
-        "enchantmentNoReduction": "Infatti, può mettere l'incantesimo {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** per{{price}}**.\nPrendete tempo per riflettere sulla sua proposta, ma lui vi fa notare che se non dovesse funzionare, potete sempre tornare a trovarlo domani, perché avrà altre rune a disposizione. Tuttavia, non garantisce che sarà ancora in città...",
-        "enchantmentWithReduction": "Infatti, può mettere l'incantesimo {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** per **{{price}}**. Aggiunge che vi ha fatto uno sconto perché apprezza le persone interessate alla magia!\nPrendete tempo per riflettere sulla sua proposta, ma lui vi fa notare che se non dovesse andare bene, potete sempre tornare da lui domani, perché avrà altre rune tra cui scegliere. Tuttavia, non garantisce che sarà ancora in questa città...",
+        "story": "{emote:city.services.enchanter} Incontrate un incantatore itinerante che si presenta con il nome di Mernil. Con aria altezzosa, ti spiega che è l'unico e il migliore incantatore di tutte le regioni e che può potenziare il tuo equipaggiamento grazie alla magia degli incantesimi.",
+        "tomorrowStory": "Prima che partiate, Mernil vi rivela dove proseguirà il suo viaggio domani: si troverà **{{nextCity}}**, con l'incantesimo {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Fareste bene a raggiungerlo prima che riparta.",
+        "tomorrowSameCityStory": "Sembra che Mernil abbia apprezzato il suo soggiorno a **{{nextCity}}**: ci resterà anche domani, un po’ più a lungo del previsto, grazie all’incantesimo {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Approfittatene per preparare il vostro equipaggiamento prima che riprenda il viaggio.",
+        "enchantmentNoReduction": "Infatti, può applicare l'incantesimo {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** per **{{price}}**.\nVi prendete un po’ di tempo per riflettere sulla sua proposta, ma lui precisa che, se non vi va bene, potete sempre tornare a trovarlo domani perché avrà altri incantesimi a disposizione. Tuttavia, non garantisce che sarà sempre in questa città...",
+        "enchantmentWithReduction": "Infatti, può applicare l'incantesimo {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** per **{{price}}**. Aggiunge che vi ha fatto uno sconto perché apprezza le persone che si interessano alla magia!\nVi prendete un po’ di tempo per riflettere sulla sua proposta, ma lui precisa che, se non vi va bene, potete sempre tornare a trovarlo domani perché avrà altri incantesimi a disposizione. Tuttavia, non garantisce che sarà sempre in questa città...",
         "descriptions": {
-          "pvpAttack": "Mernil fa brillare la runa tra le dita e ne descrive il potere: essa aumenta direttamente il danno inflitto agli altri avventurieri, senza modificare le statistiche dell'arma.",
-          "pveAttack": "Mernil fa brillare la runa tra le dita e ne descrive il potere: essa aumenta direttamente il danno inflitto ai mostri, senza modificare le statistiche dell'arma.",
-          "allAttack": "Mernil fa brillare la runa tra le dita e ne descrive il potere: essa aumenta direttamente il danno inflitto a tutti gli avversari, senza modificare le statistiche dell'arma.",
-          "defense": "Mernil fa risplendere un bagliore protettivo sulla runa: la sua magia riduce direttamente i danni subiti in combattimento, senza aumentare le statistiche dell'armatura.",
-          "speed": "Mernil fa risplendere la runa di una luce intensa: la sua magia aumenta la velocità di chi la indossa, consentendogli di agire più rapidamente in combattimento.",
-          "maxEnergy": "Mernil riscalda la runa nel palmo della mano: la sua magia aumenta l'energia massima di chi la indossa, rafforzandone così la resistenza.",
-          "baseBreath": "Mernil soffia sulla runa, che si illumina dolcemente: chi la indossa inizia ogni combattimento con più fiato.",
-          "maxBreath": "Mernil imprigiona una spirale d'aria nella runa: chi la indossa può accumulare più fiato nel corso del combattimento.",
-          "burnedDamage": "Mernil libera le braci racchiuse nella runa: queste amplificano i danni da fuoco inflitti e riducono i danni da gelo subiti.",
-          "frozenDamage": "Mernil libera il gelo racchiuso nella runa: aumenta i danni da gelo inflitti e riduce i danni da fuoco subiti.",
-          "poisonedDamage": "Mernil libera i vapori racchiusi nella runa: questi aumentano i danni da veleno inflitti e riducono quelli subiti."
+          "pvpAttack": "Mernil presenta questo incantesimo come un vantaggio decisivo: aumenta direttamente il danno inflitto agli altri avventurieri, senza modificare le statistiche dell'arma.",
+          "pveAttack": "Mernil vi spiega che questo incantesimo aumenta direttamente il danno inflitto ai mostri, senza modificare le statistiche dell'arma.",
+          "allAttack": "Mernil esalta i pregi di questo incantesimo, che aumenta direttamente il danno inflitto a tutti gli avversari, senza modificare le statistiche dell'arma.",
+          "defense": "Mernil descrive questo incantesimo come una protezione discreta: riduce direttamente i danni subiti in combattimento, senza aumentare le statistiche dell'armatura.",
+          "speed": "Secondo Mernil, questo incantesimo accelera i movimenti di chi lo indossa, che può agire più rapidamente in combattimento.",
+          "maxEnergy": "Mernil spiega che questo incantesimo aumenta l'energia massima di chi lo indossa, rafforzandone così la resistenza.",
+          "baseBreath": "\"Questo incantesimo permette a chi lo indossa di iniziare ogni combattimento con più fiato\", precisa Mernil.",
+          "maxBreath": "\"Questo incantesimo permette a chi lo indossa di accumulare più fiato durante il combattimento\", precisa Mernil.",
+          "burnedDamage": "Mernil svela le proprietà di questo incantesimo: aumenta i danni da fuoco inflitti e riduce i danni da gelo subiti.",
+          "frozenDamage": "Mernil svela le proprietà di questo incantesimo: aumenta i danni da gelo inflitti e riduce i danni da fuoco subiti.",
+          "poisonedDamage": "Mernil svela le proprietà di questo incantesimo: aumenta i danni da veleno inflitti e riduce quelli subiti."
         },
         "hasAtLeastOneEnchantedItem": "Inoltre, quando Mernil vede il vostro equipaggiamento già incantato, aggrotta le sopracciglia. Dice che è compito del fabbro disincantare gli oggetti, non suo, e che non li toccherà.",
         "confirmDescription": "{Questa convalida applicherà l'incantamento {emote:collectors.warning}.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** sul seguente equipaggiamento:\n{{item}}\n\nCosto: **{{price}}**.\n{{balance}}",
-        "acceptStory": "Prende subito il vostro equipaggiamento e sussurra qualche incantesimo agitando una runa sopra di esso... Dopo qualche istante, vi restituisce l'oggetto, dicendovi che è fatta! Il vostro equipaggiamento è ora incantato con {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Fatene buon uso!",
+        "acceptStory": "Prende subito il vostro equipaggiamento e mormora alcune formule magiche agitando un cristallo incantato sopra di esso... Dopo pochi istanti, vi restituisce l'oggetto dicendovi che il gioco è fatto! Il vostro equipaggiamento è ora incantato con {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Fatene buon uso!",
         "acceptTitle": "{{pseudo}}È un'esperienza incantevole!",
         "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
         "priceMoneyAndGems": "{{money}} {emote:unitValues.money} e {{gems}} {emote:unitValues.gem}",
@@ -1060,6 +1067,21 @@
         "notEnoughMoney": "{Il fabbro scuote la testa mentre conta le monete. Ti manca **{{missingMoney, number}}** {emote:unitValues.money} per pagare i suoi servizi.",
         "missingMaterialsTitle": "{{pseudo}}materiali insufficienti!",
         "missingMaterialsDescription": "I materiali necessari per questo aggiornamento non sono disponibili presso il fabbro. Raccoglieteli nelle vostre avventure o acquistateli direttamente dal fabbro."
+      },
+      "scrapDealer": {
+        "menuLabel": "Incontrare il rottamatore",
+        "menuDescription": "Gorim il Spezzferro smonta le attrezzature di riserva per trasformarle in materiali.",
+        "title": "{{pseudo}}, incontrate il rottamatore",
+        "description": "{emote:city.services.scrapDealer} L'officina di Gorim il Spezzferro risuona del fragore dei martelli. L'equipaggiamento di riserva può essere smontato per essere convertito in materiali, il cui numero aumenta in proporzione al livello di potenziamento dell'equipaggiamento. Una parte del valore dell’attrezzatura viene inoltre restituita sotto forma di monete.",
+        "descriptionNoItems": "{emote:city.services.scrapDealer} Gorim il Spezzferro non trova alcun equipaggiamento da smantellare. Solo le armi e le armature di riserva non incantate possono essere riciclate.",
+        "itemPreview": "{{itemDisplay}}\n\n{{materials}}\n{emote:unitValues.money} Monete raccolte: **{{money, number}}**",
+        "confirmTitle": "{{pseudo}}, smontaggio di un'apparecchiatura",
+        "confirmDescription": "{emote:city.services.scrapDealer} Gorim il Rompiferro appoggia l'attrezzatura sul suo banco da lavoro. Lo smontaggio è definitivo: l'equipaggiamento verrà distrutto e verranno recuperati solo i materiali elencati.\n\n{{itemDisplay}}\n\n{{materials}}\n{emote:unitValues.money} Monete recuperate: **{{money, number}}**",
+        "confirmRecycle": "Confermare lo smontaggio",
+        "backToItems": "Torna all'elenco delle attrezzature",
+        "backToCity": "Uscire dal laboratorio",
+        "recycleTitle": "{{pseudo}}, riciclaggio riuscito!",
+        "recycleSuccess": "{emote:city.services.scrapDealer} Gorim il Demolitore smonta l'equipaggiamento con metodo. I materiali recuperati vengono aggiunti alla tua riserva e lui ti ricompensa per gli scarti con **{{money, number}}** {emote:unitValues.money}.\n\n{{materialLoot}}"
       },
       "royalBlacksmith": {
         "menuLabel": "Incontro con il fabbro reale",
@@ -1272,7 +1294,7 @@
           "waterNothingToWater": "{Non ci sono piante in crescita da irrigare.",
           "wateredPlots_one": "{{count}} trama",
           "wateredPlots_other": "{{count}} trame",
-          "waterSuccess_zero": "{emote:city.gardenStatus.water} Hai annaffiato **{{wateredPlots}}**. La loro crescita è stata accelerata di un'ora.",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Hai innaffiato **{{wateredPlots}}**. La loro crescita è aumentata del {{growthPercent}} %.",
           "waterSuccess_one": "{emote:city.gardenStatus.water} Hai annaffiato **{{wateredPlots}}**. **{{slotsBecameReady}}** la pianta è ora pronta per essere raccolta!",
           "waterSuccess_other": "{emote:city.gardenStatus.water} Hai innaffiato **{{wateredPlots}}**. **{{slotsBecameReady}}** le piante sono ora pronte per essere raccolte!",
           "waterSuccessTitle": "{{pseudo}} ha innaffiato il suo giardino",
@@ -1568,7 +1590,7 @@
     "acceptedTitle": "{{pseudo}}il familiare liberato!",
     "canceledTitle": "{{pseudo}}, cancellazione del rilascio.",
     "canceledDesc": "L'animale non è stato rilasciato.",
-    "confirmDesc": ":warning: Siete sicuri di voler rilasciare **{{pet}}** ? Non è possibile annullare una volta completata l'azione.",
+    "confirmDesc": "{emote:collectors.warning} Sei sicuro di voler liberare **{{pet}}**? Una volta eseguita l'azione, non sarà possibile annullarla.",
     "acceptedDesc": "{{pet}}Addio *** ***...",
     "isFeisty": "{emote:collectors.warning} Attenzione: liberare un animale con la febbre vi costerà {{cost, number}} {emote:unitValues.money}.",
     "petOnExpedition": "Il vostro animale è in fase di spedizione e non può essere rilasciato.",
@@ -1730,55 +1752,52 @@
         "plantHeader_bold": "{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** :",
         "plants": {
           "tomorrow": {
-            "bigDrop": "- Domani**: arrivano sugli scaffali ingenti scorte di $t(models:plants.{{plantId}}) e i prezzi crollano.",
-            "drop": "- Domani**: L'offerta su $t(models:plants.{{plantId}}) sarà leggermente superiore alla domanda, quindi i prezzi dovrebbero scendere.",
+            "bigDrop": "• **Domani**: arriveranno enormi quantità di merce sui banchi del mercato, i prezzi crolleranno.",
+            "drop": "• **Domani**: L'offerta sarà leggermente superiore alla domanda, quindi i prezzi dovrebbero scendere.",
             "stable": "- Domani**: Non c'è nulla di particolare da segnalare per questa pianta, con prezzi destinati a rimanere stabili.",
-            "rise": "- Domani**: Le scorte di $t(models:plants.{{plantId}}) nelle erboristerie stanno diminuendo e i prezzi sono destinati ad aumentare.",
-            "bigRise": "- Domani**: si profila una carenza di $t(models:plants.{{plantId}}) e i prezzi sono destinati a salire!"
+            "rise": "• **Domani**: Le scorte degli erboristi si stanno esaurendo, i prezzi sono destinati a salire.",
+            "bigRise": "• **Domani**: Si profila una carenza, i prezzi saliranno alle stelle!"
           },
           "threeDays": {
-            "bigDrop": "- Tra 3 giorni**: Il mercato sarà invaso da $t(models:plants.{{plantId}})e i prezzi scenderanno bruscamente.",
-            "drop": "- Tra 3 giorni**: una leggera sovrapproduzione di $t(models:plants.{{plantId}}) farà scendere i prezzi.",
+            "bigDrop": "• **Tra 3 giorni**: Il mercato sarà invaso da questa pianta e i prezzi subiranno un forte calo.",
+            "drop": "• **Tra 3 giorni**: Una leggera sovrapproduzione farà scendere i prezzi.",
             "stable": "- Tra 3 giorni** : Il mercato di questa pianta rimarrà in equilibrio.",
-            "rise": "- Tra 3 giorni**: La domanda di $t(models:plants.{{plantId}}) aumenterà in modo significativo e i prezzi saliranno.",
-            "bigRise": "- Tra 3 giorni**: Le erboristerie faranno fatica a trovare $t(models:plants.{{plantId}})e i prezzi saliranno alle stelle!"
+            "rise": "• **Tra 3 giorni**: La domanda aumenterà notevolmente, i prezzi saliranno.",
+            "bigRise": "• **Tra 3 giorni**: Gli erboristi avranno difficoltà a rifornirsi, i prezzi saliranno alle stelle!"
           },
           "oneWeek": {
-            "bigDrop": "- Tra una settimana**: una massiccia sovrapproduzione farà crollare i prezzi $t(models:plants.{{plantId}}).",
-            "drop": "- A una settimana da oggi**: Il mercato $t(models:plants.{{plantId}}) sarà leggermente in attivo.",
+            "bigDrop": "• **Tra una settimana**: una massiccia sovrapproduzione farà crollare i prezzi.",
+            "drop": "• **Tra una settimana**: Il mercato registrerà un leggero surplus.",
             "stable": "- Una settimana da oggi**: Il mercato di questa pianta dovrebbe mantenere l'attuale equilibrio.",
-            "rise": "- Una settimana da oggi**: Le riserve di $t(models:plants.{{plantId}}) si esauriranno, i prezzi aumenteranno.",
-            "bigRise": "- Tra una settimana**: la siccità colpirà i raccolti di $t(models:plants.{{plantId}})e i prezzi saranno al massimo!"
+            "rise": "• **Tra una settimana**: le scorte si esauriranno e i prezzi aumenteranno.",
+            "bigRise": "• **Tra una settimana**: una siccità colpirà i raccolti, i prezzi raggiungeranno livelli record!"
           }
         },
         "outro": "*Il consigliere arrotola la pergamena e ve la porge con un sorriso complice.",
-        "horizonLabels": {
-          "tomorrow": "domani",
-          "threeDays": "in 3 giorni",
-          "oneWeek": "in una settimana"
-        },
+        "rotationHorizon_one": "domani",
+        "rotationHorizon_other": "tra {{count}} giorni",
         "rotation": "{emote:inventory.stock} **Cambio di scorte**: L'erborista rinnoverà la sua selezione **{{horizon}}**. Le nuove piante disponibili saranno: {{newPlants}}.",
         "newPlants": {
           "tomorrow": {
-            "bigDrop": "- Domani**: Il prezzo di $t(models:plants.{{plantId}}) sarà ben al di sotto del suo valore abituale: un ottimo affare!",
-            "drop": "- Domani**: Il prezzo di $t(models:plants.{{plantId}}) sarà leggermente inferiore al prezzo attuale.",
-            "stable": "- Domani**: Il prezzo di $t(models:plants.{{plantId}}) sarà in linea con il suo valore abituale.",
-            "rise": "- Domani**: Il prezzo di $t(models:plants.{{plantId}}) sarà leggermente più alto del normale.",
-            "bigRise": "- Domani**: Il prezzo di $t(models:plants.{{plantId}}) sarà ben al di sopra del suo valore abituale, quindi è meglio aspettare."
+            "bigDrop": "• **Domani**: Il prezzo sarà ben al di sotto del suo valore abituale, un vero affare!",
+            "drop": "• **Domani**: Il prezzo sarà leggermente inferiore a quello attuale.",
+            "stable": "• **Domani**: Il prezzo sarà in linea con il suo valore abituale.",
+            "rise": "• **Domani**: Il prezzo sarà leggermente più alto del solito.",
+            "bigRise": "• **Domani**: Il prezzo sarà ben al di sopra del suo valore abituale, è meglio aspettare."
           },
           "threeDays": {
-            "bigDrop": "- Tra 3 giorni**: $t(models:plants.{{plantId}}) sarà disponibile a un prezzo molto interessante.",
-            "drop": "- 3 giorni da adesso**: Il prezzo di $t(models:plants.{{plantId}}) sarà leggermente inferiore alla media.",
-            "stable": "- In 3 giorni**: Il prezzo di $t(models:plants.{{plantId}}) non è una sorpresa.",
-            "rise": "- Tra 3 giorni**: $t(models:plants.{{plantId}}) sarà un po' più costoso del solito.",
-            "bigRise": "- Tra 3 giorni**: $t(models:plants.{{plantId}}) costerà molto più del solito."
+            "bigDrop": "• **Tra 3 giorni**: Il prezzo sarà molto conveniente.",
+            "drop": "• **Tra 3 giorni**: Il prezzo sarà leggermente inferiore alla media.",
+            "stable": "• **Tra 3 giorni**: Il prezzo non riserverà sorprese.",
+            "rise": "• **Tra 3 giorni**: Il prezzo sarà leggermente più alto del solito.",
+            "bigRise": "• **Tra 3 giorni**: Il prezzo sarà molto più alto del solito."
           },
           "oneWeek": {
-            "bigDrop": "- A una settimana da oggi**: Il prezzo di $t(models:plants.{{plantId}}) sarà eccezionalmente basso.",
-            "drop": "- Entro una settimana**: Il sito $t(models:plants.{{plantId}}) sarà disponibile a un prezzo leggermente ridotto.",
-            "stable": "- Una settimana da oggi**: Il prezzo di $t(models:plants.{{plantId}}) sarà medio.",
-            "rise": "- Tra una settimana**: Il prezzo di $t(models:plants.{{plantId}}) sarà leggermente superiore alla norma.",
-            "bigRise": "- A una settimana da oggi**: Il sito $t(models:plants.{{plantId}}) sarà venduto ad un prezzo esorbitante!"
+            "bigDrop": "• **Tra una settimana**: Il prezzo sarà eccezionalmente basso.",
+            "drop": "• **Tra una settimana**: Il prezzo subirà una leggera riduzione.",
+            "stable": "• **Tra una settimana**: Il prezzo sarà nella media.",
+            "rise": "• **Tra una settimana**: Il prezzo sarà leggermente superiore alla media.",
+            "bigRise": "• **Tra una settimana**: Il prezzo sarà esorbitante!"
           }
         }
       },
@@ -2700,6 +2719,7 @@
     "noMoney": "Non hai abbastanza soldi per fare questo acquisto...",
     "notHungry": "Sembra che **{{pet}}** non abbia fame...",
     "guildStorageEmpty": "Il magazzino di cibo della tua gilda è vuoto. Compra cibo da {command:guildshop}.",
+    "situationChanged": "Il tuo animale domestico è cambiato mentre lo stavi nutrendo. Prova di nuovo.",
     "cancelled": "Alimentazione annullata!",
     "resultTitle": "{{pseudo}}alimentazione effettuata!",
     "result": {
