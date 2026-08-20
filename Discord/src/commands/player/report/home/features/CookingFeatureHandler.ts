@@ -46,6 +46,7 @@ import { CrowniclesEmbed } from "../../../../../messages/CrowniclesEmbed";
 import { PacketUtils } from "../../../../../utils/PacketUtils";
 import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtils";
 import { buildCustomId } from "../../../../../utils/CustomIdUtils";
+import { buildRecipeDiscoveryMessage } from "../../../../../utils/CookingDisplayUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 
 /**
@@ -78,10 +79,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	private getState(ctx: HomeFeatureHandlerContext): CookingSessionState {
 		let state = this.sessions.get(ctx.user.id);
 		if (!state) {
+			const cookingLevel = ctx.homeData.cooking.level;
 			state = {
 				currentSlots: [],
-				cookingGrade: getCookingGrade(0).id,
-				cookingLevel: 0,
+				cookingGrade: getCookingGrade(cookingLevel).id,
+				cookingLevel,
 				craftPending: false,
 				isIgnited: false
 			};
@@ -1030,24 +1032,8 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 * Build the discovered recipes message
 	 */
 	private buildDiscoveredRecipesMessage(response: CommandReportCookingCraftRes, ctx: HomeFeatureHandlerContext): string {
-		if (!response.discoveredRecipeIds || response.discoveredRecipeIds.length === 0) {
-			return "";
-		}
-
-		if (response.discoveredRecipeIds.length === 1) {
-			return `\n${i18n.t("commands:report.city.homes.cooking.recipeDiscovered", {
-				lng: ctx.lng,
-				recipe: i18n.t(`models:cooking.recipes.${response.discoveredRecipeIds[0]}`, { lng: ctx.lng })
-			})}`;
-		}
-
-		const recipeNames = response.discoveredRecipeIds
-			.map(id => `**${i18n.t(`models:cooking.recipes.${id}`, { lng: ctx.lng })}**`)
-			.join(", ");
-		return `\n${i18n.t("commands:report.city.homes.cooking.recipesDiscovered", {
-			lng: ctx.lng,
-			recipes: recipeNames
-		})}`;
+		const message = buildRecipeDiscoveryMessage(response.discoveredRecipes ?? [], ctx.lng);
+		return message === "" ? "" : `\n${message}`;
 	}
 
 	/**

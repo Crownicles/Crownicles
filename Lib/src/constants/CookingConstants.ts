@@ -308,6 +308,8 @@ const POTION_TYPES_ONLY = [
 	RecipeType.POTION_SPEED
 ] as const;
 
+const MATERIAL_TYPES_ONLY = [RecipeType.MATERIAL_CRAFT] as const;
+
 const ALL_TYPES_WITH_MATERIALS = [
 	...ALL_TYPES,
 	RecipeType.MATERIAL_CRAFT
@@ -329,7 +331,7 @@ export const SLOT_CONFIGS: readonly SlotConfig[] = [
 	{
 		minLevel: 1,
 		maxLevel: 8,
-		eligibleTypes: ALL_TYPES_WITH_MATERIALS,
+		eligibleTypes: MATERIAL_TYPES_ONLY,
 		potionsOnly: false
 	},
 	{
@@ -364,6 +366,40 @@ export const SLOT_SEED_OFFSETS = [
  * Minimum number of recipes at or below the player's grade level that should be guaranteed across all slots
  */
 export const MIN_GUARANTEED_PLAYER_LEVEL_RECIPES = 2;
+
+/**
+ * Player levels granting the n-th `PLAYER_LEVEL_MILESTONE` recipe (recipes ordered by level).
+ * Must hold exactly as many entries as there are recipes of that source.
+ */
+export const PLAYER_LEVEL_RECIPE_MILESTONES: readonly number[] = [
+	10,
+	20,
+	30,
+	40,
+	50,
+	60,
+	70,
+	80,
+	90,
+	100
+];
+
+/**
+ * Number of completed campaign missions granting the n-th `CAMPAIGN_MILESTONE` recipe
+ * (recipes ordered by level). Must hold exactly as many entries as there are recipes of that source.
+ */
+export const CAMPAIGN_RECIPE_MILESTONES: readonly number[] = [
+	15,
+	30,
+	45,
+	60,
+	75,
+	90,
+	105,
+	120,
+	135,
+	149
+];
 
 /**
  * Gaspard Jo recipe costs by grade index (0-9)

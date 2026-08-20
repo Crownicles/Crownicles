@@ -1208,7 +1208,7 @@
       "atParticle": "à la"
     },
     "19": {
-      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les Plaines du Contre Bois de la chaleur et amène l'eau de la rivière Vacarme.",
+      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
       "name": "La Dune",
       "particle": "vers",
       "atParticle": "à"
@@ -1224,12 +1224,6 @@
       "name": "Voie champêtre",
       "particle": "vers la",
       "atParticle": "à la"
-    },
-    "20": {
-      "description": "Une vaste plaine paisible et agricole.",
-      "name": "Plaines du Contre Bois",
-      "particle": "vers les",
-      "atParticle": "aux"
     },
     "21": {
       "description": "Une route très empruntée par les villageois. Beaucoup de petits vendeurs ambulants s'y installent le temps d'une journée pour au final créer un immense marché.",
@@ -2493,6 +2487,7 @@
     "10": "Arbre ancestral"
   },
   "cooking": {
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
     "grades": {
       "kitchenHelper": "Aide-cuisine",
       "scullion": "Marmiton",

@@ -60,7 +60,9 @@ import {
 	verifyDeletionCode
 } from "../utils/AccountDeletionUtils";
 import { isCommandModuleFile } from "./CommandDiscoveryUtils";
-import { getThreadSendAccessError } from "./ChannelPermissionUtils";
+import {
+	CHANNEL_PERMISSION_ERRORS, getThreadSendAccessError
+} from "./ChannelPermissionUtils";
 
 export class CommandsManager {
 	static commands = new Map<string, ICommand>();
@@ -640,13 +642,13 @@ export class CommandsManager {
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.ViewChannel)) {
 			CrowniclesLogger.error(`No way to access the channel where the command has been executed : ${channel.guildId}/${channel.id}`);
-			return [false, "noChannelAccess"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_CHANNEL_ACCESS];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.SendMessages)) {
 			CrowniclesLogger.error(`No way to send messages in the channel where the command has been executed : ${channel.guildId}/${channel.id}`);
-			return [false, "noSpeakPermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_SPEAK_PERMISSION];
 		}
 
 		const threadSendAccessError = getThreadSendAccessError(channel);
@@ -658,25 +660,25 @@ export class CommandsManager {
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.AddReactions)) {
 			CrowniclesLogger.error(`No perms to show i can't react in server / channel : ${channel.guildId}/${channel.id}`);
-			return [false, "noReacPermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_REACTION_PERMISSION];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.EmbedLinks)) {
 			CrowniclesLogger.error(`No perms to show i can't embed in server / channel : ${channel.guildId}/${channel.id}`);
-			return [false, "noEmbedPermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_EMBED_PERMISSION];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.AttachFiles)) {
 			CrowniclesLogger.error(`No perms to show i can't attach files in server / channel : ${channel.guildId}/${channel.id}`);
-			return [false, "noFilePermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_FILE_PERMISSION];
 		}
 
 		if (!channel.permissionsFor(crowniclesClient!.user!)
 			?.has(PermissionsBitField.Flags.ReadMessageHistory)) {
 			CrowniclesLogger.error(`No perms to show i can't see messages history in server / channel : ${channel.guildId}/${channel.id}`);
-			return [false, "noHistoryPermission"];
+			return [false, CHANNEL_PERMISSION_ERRORS.NO_HISTORY_PERMISSION];
 		}
 
 		return [true, ""];

@@ -1393,15 +1393,15 @@
         "success": {
           "withGuild": "Mit der Hilfe deiner Gildenkameraden gelingt es dir, dich aus der Gletscherspalte zu ziehen und sie ebenfalls zu retten. Diese überstandene Prüfung hat eure Bande gestärkt, eure Gilde erhält **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Sie verlieren nicht die Nerven, sondern wenden sofort die Lehren Ihrer Gilde an und schaffen es mit Leichtigkeit, die Wand hochzuklettern. Ihre Gilde erhält **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Sie verlieren nicht die Nerven, wenden an, was Sie während Ihrer Abenteuer gelernt haben, und schaffen es mit Leichtigkeit, die Wand hochzuklettern. Sie erhalten **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Ohne die Fassung zu verlieren, wendest du das an, was du während deiner Abenteuer gelernt hast, und schaffst es mühelos, die Felswand zu erklimmen. Du erhältst **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "Sie und Ihre Begleiter verlieren keine Zeit und beeilen sich, den Spalt zu untersuchen, der sich als Höhle entpuppt. Nach einer Weile des Blindlaufs gelingt es Ihnen, aus dem Loch wieder herauszukommen.",
           "solo": "Verzweifelt und allein am Boden der Spalte stehend, bemerken Sie erst nach einigen Minuten den schmalen Schacht zu Ihrer Linken. Nachdem Sie sich gegen die Erde gewehrt haben, die beschlossen hatte, Sie einzusperren, kommen Sie wieder an die frische Luft."
         },
         "lose": {
-          "withGuild": "Mit der Hilfe Ihrer Gildenkameraden gelingt es Ihnen, sich aus der Gletscherspalte zu ziehen und sie ebenfalls zu retten. Derjenige, der Ihren Geldbeutel hatte, kletterte jedoch als Letzter nach oben und ließ das Geld beim Klettern versehentlich fallen. Sie verlieren **{{amount, number}} {emote:unitValues.lostMoney}**.",
-          "solo": "Als Sie versuchen, die Wand zu erklimmen, bröckelt die Erde unter Ihren Fingern und Füßen und verursacht einen Erdrutsch. Mit seiner Hilfe gelingt es Ihnen, aus der Spalte zu klettern, aber Sie sind ziemlich angeschlagen. Sie verlieren **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Dank der Hilfe eurer Gildenkameraden gelingt es euch, euch aus dieser Gletscherspalte hochzuziehen und sie wiederum zu retten. Derjenige, der eure Geldbörse hatte, kletterte jedoch als Letzter hinauf und ließ das Geld beim Klettern unglücklicherweise fallen. Ihr verliert **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Während Sie versuchen, die Felswand zu erklimmen, bröckelt die Erde unter Ihren Fingern und Füßen und löst einen Steinschlag aus. Dank dessen gelingt es Ihnen, aus dieser Gletscherspalte zu entkommen, aber Sie sind ziemlich mitgenommen. Du verlierst **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -1409,15 +1409,15 @@
         "success": {
           "withGuild": "Sie halten sich jedoch gegenseitig fest, um zu verhindern, dass eine potenzielle Spalte einen von Ihnen zu Fall bringt. Die Erschütterung endet und Sie sind alle in Sicherheit. Ihre Gilde gewinnt **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Sie befolgen die Anweisungen, die Ihnen Ihre Gilde für den Fall eines Erdbebens gegeben hat, und beschließen, unter einem Gebäude Schutz zu suchen, das glücklicherweise nicht über Ihnen zusammengebrochen ist. Sie versprechen, sich bei Ihrer Gilde zu bedanken, sobald Sie von Ihrer Expedition zurückkehren. Ihre Gilde gewinnt **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Sie versuchen, sich trotz der Erschütterung zu halten. Glücklicherweise hat es in der Umgebung keinen Schaden angerichtet, sodass Sie sich weiter ausruhen und den Himmel und die Umgebung bewundern können. Sie erhalten **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Sie versuchen, trotz des Erdbebens die Balance zu halten. Glücklicherweise hat es in der Umgebung keinen Schaden angerichtet, also ruhen Sie sich weiter ein wenig aus und bewundern den Himmel und die Umgebung. Sie erhalten **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "In Panik versucht Ihre Gilde, einen sichereren Ort zu finden, um zu verhindern, dass einer von Ihnen Schaden erleidet. Nach mehreren Minuten, in denen Sie sich im Kreis drehen, weil mindestens ein Mitglied der Meinung ist, dass dieser Ort nicht sicher ist, spüren Sie die Erschütterung nicht mehr. Trotzdem versuchen Sie, wieder Vertrauen für das zu gewinnen, was auf Ihrem Weg über die Insel noch kommen wird...",
           "solo": "In Panik versuchen Sie, den möglichen Schäden des Bebens auszuweichen. Nach einer Weile ist das Beben nicht mehr spürbar. Als Sie zu dem Ort zurückkehren, an dem Sie sich ausruhen wollten, bemerken Sie die Schäden des Erdbebens. Gut, dass Sie nicht dort geblieben sind..."
         },
         "lose": {
-          "withGuild": "Sie reden sich ein, dass dieses Beben kurz sein wird, und bitten den Rest der Gilde, ihm zu trotzen. Was für ein Fehler! Ein Felsbrocken stürzt auf Sie und schlägt Sie bewusstlos. Sie verlieren **{{amount, number}} {emote:unitValues.energy}**.",
-          "solo": "Da Sie sich einreden, dass es nur wenig Schaden geben wird, ruhen Sie sich weiter aus. Allerdings bildet sich unter Ihrem Körper eine Spalte. Aus Angst, hineinzufallen, versuchen Sie, so weit wie möglich wegzulaufen, stolpern aber und schneiden sich in den Arm. Sie verlieren **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Ihr geht davon aus, dass dieses Erdbeben nur kurz dauern wird, und fordert den Rest der Gilde auf, sich ihm zu stellen. Was für ein Fehler! Ein Felsbrocken stürzt auf euch herab und schlägt euch bewusstlos. Ihr verliert **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Da ihr davon ausgeht, dass der Schaden gering sein wird, ruht ihr euch weiter aus. Doch unter eurem Körper bildet sich eine Spalte. Aus Angst, hineinzufallen, versucht ihr, so weit wie möglich wegzulaufen, doch ihr stolpert und schneidet euch am Arm. Du verlierst **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -2798,7 +2798,7 @@
           "Theobald schüttelt den Kopf, als er Ihre volle Satteltasche sieht. **Pflanzt euren aktuellen Samen**, bevor ihr ihn um einen neuen bittet."
         ],
         "allSeedsObtained": [
-          "Theobald gratuliert Ihnen herzlich, als er all die Pflanzen in Ihrem Garten sieht. Sie haben bereits **alle seine Samen** erhalten und er hat nichts mehr, was er Ihnen schenken kann, aber er ist sehr stolz auf Ihren Garten.",
+          "Theobald gratuliert euch voller Stolz, als er all die Pflanzen in eurem Garten sieht. Ihr habt bereits **alle seine Samen** erhalten und er hat euch nichts mehr zu schenken, aber er ist sehr stolz auf euren Garten.",
           "Der alte Gärtner schüttelt Ihnen herzlich die Hand. Sie haben alles erreicht, was er Ihnen beibringen konnte. Ihr Garten ist ein **Meisterwerk**\", sagt er mit Tränen in den Augen."
         ],
         "noPlantSpace": [

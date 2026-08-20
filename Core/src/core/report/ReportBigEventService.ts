@@ -28,7 +28,7 @@ import {
 	ReactionCollectorBigEvent,
 	ReactionCollectorBigEventPossibilityReaction
 } from "../../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
-import { ErrorPacket } from "../../../../Lib/src/packets/commands/ErrorPacket";
+import { PacketUtils } from "../utils/PacketUtils";
 import { TravelTime } from "../maps/TravelTime";
 import { Maps } from "../maps/Maps";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -39,7 +39,7 @@ import {
 } from "../../../../Lib/src/utils/TimeUtils";
 import { chooseDestination } from "./ReportDestinationService";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import {
 	PlayerMissionsInfo, PlayerMissionsInfos
@@ -136,7 +136,7 @@ async function updateTagMissions(
  * `withLockedEntities([Player, PlayerMissionsInfo])`.
  */
 async function applyLockedOutcomeUnderLock(
-	lockedPlayer: Player,
+	lockedPlayer: Locked<Player>,
 	outcomeContext: {
 		event: BigEvent;
 		possibility: PossibilityEntry;
@@ -337,7 +337,9 @@ export async function doRandomBigEvent(
 		const mapId = player.getDestinationId()!;
 		const randomEvent = await BigEventDataController.instance.getRandomEvent(mapId, player);
 		if (!randomEvent) {
-			response.push(makePacket(ErrorPacket, { message: "It seems that there is no event here... It's a bug, please report it to the Crownicles staff." }));
+			PacketUtils.pushInternalError(response, `No big event available on map ${mapId}`, {
+				context: { keycloakId: player.keycloakId }
+			});
 			return;
 		}
 		event = randomEvent;

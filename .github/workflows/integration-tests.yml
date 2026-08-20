@@ -38,10 +38,10 @@ jobs:
       TEST_DB_PASSWORD: secret_password
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
 
@@ -52,7 +52,7 @@ jobs:
           corepack prepare pnpm@10.26.0 --activate
 
       - name: Cache PNPM dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             **/node_modules
@@ -96,7 +96,7 @@ jobs:
         run: pnpm --dir ./Core test:integration
 
       - name: Upload integration test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: core-integration-results

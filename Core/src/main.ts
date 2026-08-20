@@ -6,7 +6,6 @@ import {
 } from "../../Lib/src/packets/CrowniclesPacket";
 import {
 	ErrorMaintenancePacket,
-	ErrorPacket,
 	ErrorResetIsNow
 } from "../../Lib/src/packets/commands/ErrorPacket";
 import { PacketUtils } from "./core/utils/PacketUtils";
@@ -75,9 +74,7 @@ function globalStopOfPlayers(response: CrowniclesPacket[], dataJson: IncomingPac
 async function dispatchPacket(response: CrowniclesPacket[], context: PacketContext, dataJson: IncomingPacketData): Promise<void> {
 	const listener = crowniclesInstance!.packetListener.getListener(dataJson.packet.name);
 	if (!listener) {
-		const errorMessage = `No listener found for packet '${dataJson.packet.name}'`;
-		CrowniclesLogger.error(errorMessage);
-		response.push(makePacket(ErrorPacket, { message: errorMessage }));
+		PacketUtils.pushInternalError(response, `No listener found for packet '${dataJson.packet.name}'`);
 		return;
 	}
 
@@ -94,8 +91,7 @@ async function dispatchPacket(response: CrowniclesPacket[], context: PacketConte
 		await listener(response, context, dataJson.packet.data);
 	}
 	catch (error: unknown) {
-		CrowniclesLogger.errorWithObj(`Error while processing packet '${dataJson.packet.name}'`, error);
-		response.push(makePacket(ErrorPacket, { message: error instanceof Error ? error.message : String(error) }));
+		PacketUtils.pushInternalError(response, `Error while processing packet '${dataJson.packet.name}'`, { cause: error });
 		CrowniclesCoreMetrics.incrementPacketErrorCount(dataJson.packet.name);
 	}
 	CrowniclesCoreMetrics.observePacketTime(dataJson.packet.name, millisecondsToSeconds(msDiff(nowMs(), startTime)));

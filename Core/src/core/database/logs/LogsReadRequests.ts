@@ -31,13 +31,13 @@ import { LogsSeasonEnd } from "./models/LogsSeasonEnd";
 import { LogsPlayerLeagueReward } from "./models/LogsPlayerLeagueReward";
 import { LogsPlayersClassChanges } from "./models/LogsPlayersClassChanges";
 import Player from "../game/models/Player";
-import { MapCache } from "../../maps/MapCache";
 import { PVEConstants } from "../../../../../Lib/src/constants/PVEConstants";
 import { LogsGuildsJoins } from "./models/LogsGuildJoins";
 import { LogsGuilds } from "./models/LogsGuilds";
 import { MapLocationDataController } from "../../../data/MapLocation";
 import { LogsExpeditions } from "./models/LogsExpeditions";
 import { ExpeditionConstants } from "../../../../../Lib/src/constants/ExpeditionConstants";
+import { getPveIslandLeaveDates } from "./requests/LogsPveIslandRequests";
 
 export type RankedFightResult = {
 	won: number;
@@ -169,11 +169,12 @@ export class LogsReadRequests {
 	}
 
 	/**
-	 * Get all the members of the player's guild on the pve island
+	 * Get the members of the player's guild that left the pve island recently enough to still be considered as allies.
+	 * Members still on the island have no leave date and are handled by the caller.
 	 */
 	static async getGuildMembersThatWereOnPveIsland(player: Player): Promise<Player[]> {
-		if (!player.guildId) { // Player has no guild
-			return Promise.resolve([]);
+		if (!player.guildId) {
+			return [];
 		}
 
 		// Get all the players in the guild excluding the player
@@ -184,53 +185,21 @@ export class LogsReadRequests {
 			}
 		});
 
-		// Extract ids from players
-		const ids = playersInGuild.map(player => player.keycloakId);
-
 		// Convert the players to log players
 		const logsPlayers = await LogsPlayers.findAll({
-			where: { keycloakId: { [Op.in]: ids } }
+			where: { keycloakId: { [Op.in]: playersInGuild.map(guildMember => guildMember.keycloakId) } }
 		});
 
-		// Extract ids from players
-		const logsPlayersIds = logsPlayers.map(logsPlayer => logsPlayer.id);
+		const leaveTravels = await getPveIslandLeaveDates(logsPlayers.map(logsPlayer => logsPlayer.id));
+		const oldestAcceptedLeaveDate = dateToLogs(new Date(Date.now() - PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND));
+		const recentlyLeftLogsPlayerIds = new Set(leaveTravels
+			.filter(travel => travel.leaveDate > oldestAcceptedLeaveDate)
+			.map(travel => travel.playerId));
+		const recentlyLeftKeycloakIds = new Set(logsPlayers
+			.filter(logsPlayer => recentlyLeftLogsPlayerIds.has(logsPlayer.id))
+			.map(logsPlayer => logsPlayer.keycloakId));
 
-		// Get travels from the last hours of guildsMembers
-		const travelsInPveIsland = await LogsPlayersTravels.findAll({
-			where: {
-				mapLinkId: {
-					[Op.in]: MapCache.logsPveIslandMapLinks
-				},
-				playerId: {
-					[Op.in]: logsPlayersIds
-				},
-				date: {
-					[Op.gt]: Math.floor(millisecondsToSeconds(msDiff(nowMs(), PVEConstants.TIME_CHECKED_FOR_PLAYERS_THAT_WERE_ON_THE_ISLAND)))
-				}
-			},
-			group: ["playerId"],
-			include: [
-				{
-					model: LogsPlayers,
-					association: new HasOne(LogsPlayersTravels, LogsPlayers, {
-						sourceKey: "playerId",
-						foreignKey: "id",
-						as: "LogsPlayer1"
-					})
-				}
-			]
-		}) as unknown as {
-			LogsPlayer1: {
-				keycloakId: string;
-			};
-		}[];
-		return await Player.findAll({
-			where: {
-				keycloakId: {
-					[Op.in]: travelsInPveIsland.map(travelsInPveIsland => travelsInPveIsland.LogsPlayer1.keycloakId)
-				}
-			}
-		});
+		return playersInGuild.filter(guildMember => recentlyLeftKeycloakIds.has(guildMember.keycloakId));
 	}
 
 	/**

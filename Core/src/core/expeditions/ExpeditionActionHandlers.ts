@@ -31,7 +31,7 @@ import { ScheduledExpeditionNotifications } from "../database/game/models/Schedu
 import { PlayerTalismansManager } from "../database/game/models/PlayerTalismans";
 import { Guild } from "../database/game/models/Guild";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 
 /**
@@ -265,7 +265,7 @@ export async function handleExpeditionSelect(
 async function handleExpeditionSelectUnderLock(
 	ctx: ExpeditionSelectContext,
 	response: CrowniclesPacket[],
-	guild: Guild | null
+	guild: Locked<Guild> | null
 ): Promise<void> {
 	const {
 		player, petEntity, expeditionId, keycloakId

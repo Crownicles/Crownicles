@@ -7,7 +7,7 @@ import { crowniclesInstance } from "../../../../app";
 import { Campaign } from "../../../missions/Campaign";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { MissionsController } from "../../../missions/MissionsController";
 import { Players } from "./Player";
 import { CrowniclesPacket } from "../../../../../../Lib/src/packets/CrowniclesPacket";
@@ -66,6 +66,14 @@ export class PlayerMissionsInfo extends Model {
 
 	public hasCompletedDailyMission(): boolean {
 		return this.lastDailyMissionCompleted && datesAreOnSameDay(this.lastDailyMissionCompleted, new Date());
+	}
+
+	/**
+	 * The column is nullable in database and only defaulted in memory by
+	 * {@link PlayerMissionsInfos.getOfPlayer}, so a freshly locked row can still hold NULL.
+	 */
+	public getCampaignBlob(): string {
+		return this.campaignBlob || Campaign.getDefaultCampaignBlob();
 	}
 
 	public async addGems(amount: number, keycloakId: string, reason: NumberChangeReason): Promise<void> {

@@ -4,8 +4,8 @@ import {
 import { Campaign } from "../../../src/core/missions/Campaign";
 import { MissionsController } from "../../../src/core/missions/MissionsController";
 import Player from "../../../src/core/database/game/models/Player";
-import { MissionSlot } from "../../../src/core/database/game/models/MissionSlot";
-import { PlayerMissionsInfo } from "../../../src/core/database/game/models/PlayerMissionsInfo";
+import { MissionSlot, MissionSlots } from "../../../src/core/database/game/models/MissionSlot";
+import { PlayerMissionsInfo, PlayerMissionsInfos } from "../../../src/core/database/game/models/PlayerMissionsInfo";
 import { CampaignData, CampaignMission } from "../../../src/data/Campaign";
 
 // Mock crowniclesInstance (required by Campaign for logging)
@@ -113,13 +113,13 @@ describe("Campaign.completeCampaignMissions", () => {
 	 * Creates a mock PlayerMissionsInfo
 	 */
 	function createMockMissionInfo(overrides: Partial<{
-		campaignBlob: string;
+		campaignBlob: string | null;
 		campaignProgression: number;
 	}> = {}): PlayerMissionsInfo {
 		const info = Object.create(PlayerMissionsInfo.prototype);
 		Object.assign(info, {
 			playerId: 1,
-			campaignBlob: overrides.campaignBlob ?? "000", // 3 missions, none completed
+			campaignBlob: overrides.campaignBlob !== undefined ? overrides.campaignBlob : "000", // 3 missions, none completed
 			campaignProgression: overrides.campaignProgression ?? 1, // Currently on mission 1
 			save: vi.fn().mockResolvedValue(undefined)
 		});
@@ -212,6 +212,48 @@ describe("Campaign.completeCampaignMissions", () => {
 	});
 
 	describe("Normal completion: completedCampaign=true", () => {
+		it("should use the locked mission info passed by the mission controller", async () => {
+			const campaign = createMockCampaignSlot({
+				missionId: "findItem",
+				missionVariant: 1,
+				numberDone: 3,
+				missionObjective: 3
+			});
+			const missionInfo = createMockMissionInfo({
+				campaignBlob: "110",
+				campaignProgression: 3
+			});
+			vi.spyOn(MissionSlots, "getCampaignOfPlayer").mockResolvedValue(campaign);
+			const getMissionInfoSpy = vi.spyOn(PlayerMissionsInfos, "getOfPlayer");
+
+			const result = await Campaign.updatePlayerCampaign(true, player, missionInfo);
+
+			expect(result).toHaveLength(1);
+			expect(missionInfo.campaignBlob).toBe("111");
+			expect(getMissionInfoSpy).not.toHaveBeenCalled();
+		});
+
+		it("should initialize a null campaign blob before marking a mission complete", async () => {
+			const campaign = createMockCampaignSlot({
+				missionId: "earnLifePoints",
+				numberDone: 100,
+				missionObjective: 100
+			});
+			const missionInfo = createMockMissionInfo({
+				campaignBlob: null,
+				campaignProgression: 1
+			});
+			vi.spyOn(MissionSlots, "getCampaignOfPlayer").mockResolvedValue(campaign);
+			vi.spyOn(MissionsController, "getMissionInterface").mockReturnValue({
+				initialNumberDone: vi.fn().mockResolvedValue(0)
+			} as never);
+
+			const result = await Campaign.updatePlayerCampaign(true, player, missionInfo);
+
+			expect(result).toHaveLength(1);
+			expect(missionInfo.campaignBlob).toBe(`1${"0".repeat(CAMPAIGN_MISSIONS.length - 1)}`);
+		});
+
 		it("should record completion and advance progression for a single completed mission", async () => {
 			const campaign = createMockCampaignSlot({
 				missionId: "earnLifePoints",

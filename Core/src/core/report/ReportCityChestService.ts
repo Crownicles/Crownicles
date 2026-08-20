@@ -24,7 +24,9 @@ import InventoryInfo from "../database/game/models/InventoryInfo";
 import {
 	buildChestData, buildUpgradeStationData
 } from "./ReportCityService";
-import { withLockedEntities } from "../../../../Lib/src/locks/withLockedEntities";
+import {
+	Locked, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
@@ -69,6 +71,14 @@ function hasChestActionContext(params: {
  */
 function actionBringsItemToInventory(action: ChestAction): boolean {
 	return action === HomeConstants.CHEST_ACTIONS.WITHDRAW || action === HomeConstants.CHEST_ACTIONS.SWAP;
+}
+
+/**
+ * Whether a chest action places an item from the inventory into the chest, which
+ * is what the "deposit an item in the chest" mission tracks. See issue #4589.
+ */
+function actionPlacesItemInChest(action: ChestAction): boolean {
+	return action === HomeConstants.CHEST_ACTIONS.DEPOSIT || action === HomeConstants.CHEST_ACTIONS.SWAP;
 }
 
 function findEmptyActiveSlot(playerInventory: PlayerInventory, itemCategory: ItemCategory): InventorySlot | undefined {
@@ -147,31 +157,33 @@ export async function handleChestAction(
 	 */
 	response.push(makePacket(CommandReportHomeChestActionRes, result));
 
-	/*
-	 * Trigger the mission update only after the Player + Home locks are
-	 * released: `MissionsController.update` additionally locks
-	 * `player_missions_info` then `players`, which would invert the
-	 * already-held `players` lock and risk a deadlock.
-	 */
-	if (result.success && packet.action === HomeConstants.CHEST_ACTIONS.DEPOSIT) {
-		await MissionsController.update(chestActionContext.player, response, { missionId: "depositChestItem" });
-	}
+	if (result.success) {
+		/*
+		 * Trigger the mission update only after the Player + Home locks are
+		 * released: `MissionsController.update` additionally locks
+		 * `player_missions_info` then `players`, which would invert the
+		 * already-held `players` lock and risk a deadlock.
+		 */
+		if (actionPlacesItemInChest(packet.action)) {
+			await MissionsController.update(chestActionContext.player, response, { missionId: "depositChestItem" });
+		}
 
-	/*
-	 * Withdrawing or swapping brings an item (potentially of higher rarity) back
-	 * into the inventory, so re-evaluate the "have an item of a given rarity"
-	 * mission against the player's best owned item. See issue #4393.
-	 */
-	if (result.success && actionBringsItemToInventory(packet.action)) {
-		await updateHaveItemRarityMission(chestActionContext.player, response);
+		/*
+		 * Withdrawing or swapping brings an item (potentially of higher rarity) back
+		 * into the inventory, so re-evaluate the "have an item of a given rarity"
+		 * mission against the player's best owned item. See issue #4393.
+		 */
+		if (actionBringsItemToInventory(packet.action)) {
+			await updateHaveItemRarityMission(chestActionContext.player, response);
+		}
 	}
 	return result;
 }
 
 async function runChestActionUnderLock(
 	packet: CommandReportHomeChestActionReq,
-	player: Player,
-	home: Home
+	player: Locked<Player>,
+	home: Locked<Home>
 ): Promise<ChestActionResult> {
 	const homeLevel = home.getLevel();
 	if (homeLevel === null) {

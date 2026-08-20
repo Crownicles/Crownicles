@@ -24,17 +24,20 @@ function getI18nOptions(): i18next.InitOptions<unknown> {
 		resources[language] = resourceFiles;
 	}
 
+	const format: i18next.FormatFunction = (value, format, lng): string => {
+		if (format === "number" && Number.isFinite(value)) {
+			return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
+		}
+		return String(value);
+	};
+	const interpolation = {
+		escapeValue: false,
+		format
+	};
+
 	return {
 		fallbackLng: LANGUAGE.DEFAULT_LANGUAGE,
-		interpolation: {
-			escapeValue: false,
-			format: (value, format, lng): string => {
-				if (format === "number" && Number.isFinite(value)) {
-					return new Intl.NumberFormat(lng, { useGrouping: true }).format(value);
-				}
-				return String(value);
-			}
-		},
+		interpolation,
 		resources
 	};
 }

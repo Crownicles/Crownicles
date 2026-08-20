@@ -24,7 +24,7 @@ import {
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import {
-	LockKey, withLockedEntities
+	LockKey, Locked, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { HomeConstants } from "../../../../Lib/src/constants/HomeConstants";
 import {
@@ -192,8 +192,8 @@ export async function handleBuyHomeReaction(player: Player, city: City, data: Re
  * and return the upgrade log params (or null when the upgrade is aborted).
  */
 async function runUpgradeHomeUnderLock(params: {
-	lockedHome: Home;
-	lockedPlayer: Player;
+	lockedHome: Locked<Home>;
+	lockedPlayer: Locked<Player>;
 	city: City;
 	upgradePrice: number;
 	response: CrowniclesPacket[];
@@ -340,8 +340,8 @@ function resetSourceApartmentRentClock(
  * `lastRentClaimedAt` reset so unrented periods never accrue rent.
  */
 async function applyMoveHomeUnderLock(params: {
-	lockedHome: Home;
-	lockedPlayer: Player;
+	lockedHome: Locked<Home>;
+	lockedPlayer: Locked<Player>;
 	sourceCityId: string;
 	sourceApartment: Apartment | null;
 	destinationApartment: Apartment | null;

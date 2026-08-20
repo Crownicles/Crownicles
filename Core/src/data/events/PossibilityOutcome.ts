@@ -26,6 +26,7 @@ import { BlessingManager } from "../../core/blessings/BlessingManager";
 import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 async function applyOutcomeScore(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
 	const scoreChange = TravelTime.timeTravelledToScore(minutesToMilliseconds(asMinutes(time)))
@@ -108,7 +109,7 @@ async function applyOutcomeHealth(outcome: PossibilityOutcome, player: Player, r
 	return 0;
 }
 
-async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Player, response: CrowniclesPacket[]): Promise<number> {
+async function applyOutcomeMoneyUnderLock(outcome: PossibilityOutcome, time: number, player: Locked<Player>, response: CrowniclesPacket[]): Promise<number> {
 	let moneyChange = (outcome.money ?? 0) + Math.round(time / 10 + RandomUtils.crowniclesRandom.integer(0, time / 10 + player.level / 5 - 1));
 	if (outcome.money && outcome.money < 0 && moneyChange > 0) {
 		moneyChange = Math.floor(outcome.money / 2);
@@ -219,27 +220,39 @@ function applyOutcomeNextEvent(outcome: PossibilityOutcome, player: Player): voi
 	}
 }
 
+function getMapTypesDestinationLink(outcome: PossibilityOutcome, player: Player): MapLink {
+	const {
+		mapTypesDestination, mapTypesExcludeDestination
+	} = outcome;
+
+	let allowedMapTypes = Maps.getConnectedMapTypes(player, !mapTypesDestination);
+	if (mapTypesDestination) {
+		allowedMapTypes = allowedMapTypes.filter(mapType => mapTypesDestination.includes(mapType));
+	}
+	if (mapTypesExcludeDestination) {
+		allowedMapTypes = allowedMapTypes.filter(mapType => !mapTypesExcludeDestination.includes(mapType));
+	}
+
+	return RandomUtils.crowniclesRandom.pick(
+		MapLinkDataController.instance.getMapLinksWithMapTypes(
+			allowedMapTypes,
+			player.getDestinationId() ?? -1,
+			mapTypesDestination ? -1 : player.getPreviousMapId() ?? -1
+		)
+	);
+}
+
 function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | null {
 	if (outcome.mapLink) {
 		return MapLinkDataController.instance.getById(outcome.mapLink) ?? null;
 	}
 
-	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
-		let allowedMapTypes = Maps.getConnectedMapTypes(player, !outcome.mapTypesDestination);
-		if (outcome.mapTypesDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => outcome.mapTypesDestination!.includes(mapType));
-		}
-		if (outcome.mapTypesExcludeDestination) {
-			allowedMapTypes = allowedMapTypes.filter(mapType => !outcome.mapTypesExcludeDestination!.includes(mapType));
-		}
+	if (outcome.goBackToPreviousMap) {
+		return Maps.getGoBackMapLink(player);
+	}
 
-		return RandomUtils.crowniclesRandom.pick(
-			MapLinkDataController.instance.getMapLinksWithMapTypes(
-				allowedMapTypes,
-				player.getDestinationId() ?? -1,
-				!outcome.mapTypesDestination ? player.getPreviousMapId() ?? -1 : -1
-			)
-		);
+	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
+		return getMapTypesDestinationLink(outcome, player);
 	}
 
 	return null;
@@ -425,6 +438,12 @@ export interface PossibilityOutcome {
 	 * Forced map link
 	 */
 	mapLink?: number;
+
+	/**
+	 * Send the player back to the map they are coming from. Requires the `canGoBack`
+	 * possibility condition so the choice is never offered when the U-turn is impossible.
+	 */
+	goBackToPreviousMap?: boolean;
 
 	/**
 	 * Force the player to stay in the city after the outcome: the destination

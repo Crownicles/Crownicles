@@ -6,7 +6,7 @@ import { registerAllPacketHandlers } from "../packetHandlers/PacketHandler";
 import {
 	CrowniclesPacket, makePacket, PacketContext
 } from "../../../Lib/src/packets/CrowniclesPacket";
-import { ErrorPacket } from "../../../Lib/src/packets/commands/ErrorPacket";
+import { ErrorInternalPacket } from "../../../Lib/src/packets/commands/ErrorPacket";
 import {
 	connect, MqttClient
 } from "mqtt";
@@ -15,7 +15,6 @@ import { DiscordAnnouncement } from "../announcements/DiscordAnnouncement";
 import { NotificationsHandler } from "../notifications/NotificationsHandler";
 import { NotificationsSerializedPacket } from "../../../Lib/src/packets/notifications/NotificationsSerializedPacket";
 import { LANGUAGE } from "../../../Lib/src/Language";
-import { TextChannel } from "discord.js";
 import { CrowniclesEmbed } from "../messages/CrowniclesEmbed";
 import i18n from "../translations/i18n";
 import { MqttTopicUtils } from "../../../Lib/src/utils/MqttTopicUtils";
@@ -83,7 +82,6 @@ export class DiscordMQTT {
 			payload => DiscordAnnouncement.announceBlessing(JSON.parse(payload)),
 			"No blessing announcement in the MQTT topic"
 		);
-
 		if (isMainShard) {
 			this.connectSubscribeAndHandleNotifications();
 			if (discordConfig.TEST_MODE) {
@@ -208,8 +206,10 @@ export class DiscordMQTT {
 
 				let listener = DiscordMQTT.packetListener.getListener(packet.name);
 				if (!listener) {
-					packet.packet = makePacket(ErrorPacket, { message: `No packet listener found for received packet '${packet.name}'.\n\nData:\n${JSON.stringify(packet.packet)}` });
-					listener = DiscordMQTT.packetListener.getListener("ErrorPacket")!;
+					const reason = `No packet listener found for received packet '${packet.name}'.`;
+					CrowniclesLogger.error(reason, { packet: packet.packet });
+					packet.packet = makePacket(ErrorInternalPacket, { reason });
+					listener = DiscordMQTT.packetListener.getListener("ErrorInternalPacket")!;
 				}
 				const startTime = nowMs();
 				await listener(context as PacketContext, packet.packet as CrowniclesPacket);
@@ -219,20 +219,33 @@ export class DiscordMQTT {
 				CrowniclesLogger.errorWithObj("Error while handling packet", error);
 				CrowniclesDiscordMetrics.incrementPacketErrorCount(packet.name);
 
-				const context = dataJson.context as PacketContext;
-				const lng = context.discord?.language ?? LANGUAGE.ENGLISH;
-				if (context.discord?.channel) {
-					const channel = await crowniclesClient.channels.fetch(context.discord.channel);
-					if (channel instanceof TextChannel) {
-						await channel.send({ embeds: [
-							new CrowniclesEmbed()
-								.setErrorColor()
-								.setTitle(i18n.t("error:errorOccurredTitle", { lng }))
-								.setDescription(i18n.t("error:errorOccurred", { lng }))
-						] });
-					}
-				}
+				await DiscordMQTT.notifyErrorInChannel(context);
 			}
+		}
+	}
+
+	/**
+	 * Warn the player in the channel where the command was launched that an error occurred
+	 * @param context
+	 */
+	private static async notifyErrorInChannel(context: PacketContext): Promise<void> {
+		if (!context.discord?.channel) {
+			return;
+		}
+		const lng = context.discord.language ?? LANGUAGE.ENGLISH;
+		try {
+			const channel = await crowniclesClient.channels.fetch(context.discord.channel);
+			if (channel?.isTextBased() && channel.isSendable()) {
+				await channel.send({ embeds: [
+					new CrowniclesEmbed()
+						.setErrorColor()
+						.setTitle(i18n.t("error:errorOccurredTitle", { lng }))
+						.setDescription(i18n.t("error:errorOccurred", { lng }))
+				] });
+			}
+		}
+		catch (error) {
+			CrowniclesLogger.errorWithObj(`Unable to send the error message in channel ${context.discord.channel}`, error);
 		}
 	}
 

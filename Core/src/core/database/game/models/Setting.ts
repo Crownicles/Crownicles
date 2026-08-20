@@ -3,9 +3,11 @@ import {
 } from "sequelize";
 import { PotionDataController } from "../../../../data/Potion";
 import { MapCache } from "../../../maps/MapCache";
+import { CityDataController } from "../../../../data/City";
+import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 
 class SettingClassNumber {
 	private readonly name: string;
@@ -151,6 +153,22 @@ export abstract class Settings {
 	public static readonly ENCHANTER_ENCHANTMENT_ID = new SettingClassString(
 		"enchanterEnchantmentId",
 		(): Promise<string> => Promise.resolve("pvpAttack1")
+	);
+
+	/**
+	 * The city where the enchanter will be located on the next daily reset
+	 */
+	public static readonly NEXT_ENCHANTER_CITY = new SettingClassString(
+		"nextEnchanterCity",
+		(): Promise<string> => Promise.resolve(CityDataController.instance.getRandomCity().id)
+	);
+
+	/**
+	 * The enchantment offered by the enchanter on the next daily reset
+	 */
+	public static readonly NEXT_ENCHANTER_ENCHANTMENT_ID = new SettingClassString(
+		"nextEnchanterEnchantmentId",
+		(): Promise<string> => Promise.resolve(ItemEnchantment.getRandomEnchantment().id)
 	);
 }
 

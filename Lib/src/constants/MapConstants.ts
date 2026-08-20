@@ -54,7 +54,6 @@ export abstract class MapConstants {
 		COCO_VILLAGE: 17,
 		VACARME_RIVER: 18,
 		THE_DUNE: 19,
-		BACKWOODS_PLAINS: 20,
 		ROAD_OF_WONDERS: 21,
 		HOWLING_WOODS: 22,
 		CLAIRE_DE_VILLE: 23,

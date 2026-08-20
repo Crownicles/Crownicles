@@ -3,8 +3,8 @@
     "expired": {
       "title_one": "{{pseudo}}, a mission has expired",
       "title_other": "{{pseudo}}, some missions have expired",
-      "description_one": "{emote:missions.expired} **The following mission has expired: **\n{{missionsExpired}}",
-      "description_other": "{emote:missions.expired} **The following missions have expired: **\n{{missionsExpired}}"
+      "description_one": "{emote:missions.expired} **The following mission has expired :**\n{{missionsExpired}}",
+      "description_other": "{emote:missions.expired} **The following missions have expired :**\n{{missionsExpired}}"
     },
     "completed": {
       "title_one": "{{pseudo}}, a mission has been completed.",

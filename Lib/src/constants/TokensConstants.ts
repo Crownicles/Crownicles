@@ -26,4 +26,16 @@ export abstract class TokensConstants {
 
 	/** Number of tokens gifted by the report token merchant to a player with no tokens and not enough money (max once per week) */
 	static readonly MERCHANT_CHARITY_AMOUNT = 10;
+
+	/**
+	 * SQL expression refilling the `tokens` column of every player, mirroring `computeNewTokens`:
+	 * a player above the cap (expedition and big event rewards) keeps their tokens instead of being cut down to MAX.
+	 * @param dailyGain Tokens granted on top of the current balance, capped at MAX. Omit to only top up to MAX.
+	 */
+	static buildRefillExpression(dailyGain?: number): string {
+		const target = dailyGain === undefined
+			? `${TokensConstants.MAX}`
+			: `LEAST(${TokensConstants.MAX}, tokens + ${dailyGain})`;
+		return `GREATEST(tokens, ${target})`;
+	}
 }

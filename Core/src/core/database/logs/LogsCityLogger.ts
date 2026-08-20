@@ -2,6 +2,7 @@ import { LogsInnMeals } from "./models/LogsInnMeals";
 import { LogsInnRooms } from "./models/LogsInnRooms";
 import { LogsBlacksmithUpgrades } from "./models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "./models/LogsBlacksmithDisenchants";
+import { LogsScrapDealerRecycles } from "./models/LogsScrapDealerRecycles";
 import { LogsEnchanterUses } from "./models/LogsEnchanterUses";
 import { LogsHomePurchases } from "./models/LogsHomePurchases";
 import { LogsHomeUpgrades } from "./models/LogsHomeUpgrades";
@@ -118,6 +119,18 @@ export interface BlacksmithDisenchantLogParams {
 	itemCategory: number;
 	slot: number;
 	cost: number;
+}
+
+/**
+ * Parameters for logging a scrap dealer recycle
+ */
+export interface ScrapDealerRecycleLogParams {
+	keycloakId: string;
+	cityId: string;
+	itemCategory: number;
+	itemId: number;
+	itemLevel: number;
+	slot: number;
 }
 
 /**
@@ -308,6 +321,7 @@ export type CityVisitExitReasonValue = typeof CityVisitExitReason[keyof typeof C
 
 /**
  * Bitmask of sub-menus opened during a city visit. Combined via bitwise OR.
+ * Stored in the `menusOpenedMask` SMALLINT UNSIGNED column, so at most 16 services can be tracked.
  */
 export const CityMenuMask = {
 	INN: 1,
@@ -318,7 +332,8 @@ export const CityMenuMask = {
 	HOME: 32,
 	GUILD_DOMAIN: 64,
 	GARDEN_OR_COOKING: 128,
-	ROYAL_BLACKSMITH: 256
+	ROYAL_BLACKSMITH: 256,
+	SCRAP_DEALER: 512
 } as const;
 
 export interface CityVisitLogParams {
@@ -401,6 +416,19 @@ export class LogsCityLogger {
 		keycloakId, ...fields
 	}: BlacksmithDisenchantLogParams): Promise<void> {
 		await createDatedLogEntry(keycloakId, (playerId, date) => LogsBlacksmithDisenchants.create({
+			playerId,
+			...fields,
+			date
+		}));
+	}
+
+	/**
+	 * Log when a player scraps an equipment at the city scrap dealer.
+	 */
+	async logScrapDealerRecycle({
+		keycloakId, ...fields
+	}: ScrapDealerRecycleLogParams): Promise<void> {
+		await createDatedLogEntry(keycloakId, (playerId, date) => LogsScrapDealerRecycles.create({
 			playerId,
 			...fields,
 			date

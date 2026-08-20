@@ -32,7 +32,9 @@ import { WitchActionOutcomeType } from "../../../../Lib/src/types/WitchActionOut
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { ClassConstants } from "../../../../Lib/src/constants/ClassConstants";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { RecipeDisplayInfo } from "../../../../Lib/src/types/CookingTypes";
 import { withLockedPlayerAndMissionsSafe } from "../utils/withLockedPlayerAndMissionsSafe";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 
 type WitchEventSelection = {
@@ -94,7 +96,7 @@ async function givePotion(context: PacketContext, player: Player, potionToGive: 
  * @param player
  * @param response
  */
-async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<string | undefined> {
+async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: WitchAction, context: PacketContext, player: Player, response: CrowniclesPacket[]): Promise<RecipeDisplayInfo | undefined> {
 	if (selectedEvent.forceEffect || outcome === WitchActionOutcomeType.EFFECT) {
 		await selectedEvent.giveEffect(player);
 	}
@@ -120,7 +122,7 @@ async function applyOutcome(outcome: WitchActionOutcomeType, selectedEvent: Witc
 		const discovered = await RecipeDiscoveryService.discoverWitchRecipe(player, potionNature);
 		if (discovered) {
 			await player.save();
-			return discovered.id;
+			return RecipeDiscoveryService.toDisplayInfo(discovered);
 		}
 	}
 	await player.save();
@@ -137,7 +139,7 @@ function getEndCallback(player: Player): EndCallback {
 }
 
 async function runWitchEndCallbackUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	collector: ReactionCollectorInstance,
 	response: CrowniclesPacket[]
 ): Promise<void> {
@@ -173,9 +175,9 @@ async function runWitchEndCallbackUnderLock(
 		return;
 	}
 
-	const discoveredRecipeId = await applyOutcome(outcome, selectedEvent, collector.context, player, response);
-	if (discoveredRecipeId) {
-		resultPacket.discoveredRecipeId = discoveredRecipeId;
+	const discoveredRecipe = await applyOutcome(outcome, selectedEvent, collector.context, player, response);
+	if (discoveredRecipe) {
+		resultPacket.discoveredRecipe = discoveredRecipe;
 	}
 
 	response.push(resultPacket);

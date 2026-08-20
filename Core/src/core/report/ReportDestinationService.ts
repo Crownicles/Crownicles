@@ -30,19 +30,22 @@ import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
 import { CityDataController } from "../../data/City";
 import { withLockedPlayerSafe } from "../utils/withLockedPlayerSafe";
 
+type ChosenDestination = {
+	mapLink: MapLink;
+	mapTypeId: string;
+	tripDuration: number;
+	isGoingBack?: boolean;
+};
+
 /**
  * Add the appropriate destination response packet (city or regular) to the response
  */
-function addDestinationResToResponse(
-	response: CrowniclesPacket[],
-	mapLink: MapLink,
-	mapTypeId: string,
-	tripDuration: number
-): void {
+function addDestinationResToResponse(response: CrowniclesPacket[], destination: ChosenDestination): void {
 	response.push(makePacket(CommandReportChooseDestinationRes, {
-		mapId: mapLink.endMap,
-		mapTypeId,
-		tripDuration
+		mapId: destination.mapLink.endMap,
+		mapTypeId: destination.mapTypeId,
+		tripDuration: destination.tripDuration,
+		...destination.isGoingBack ? { isGoingBack: true } : {}
 	}));
 }
 
@@ -66,8 +69,17 @@ async function automaticChooseDestination(forcedLink: MapLink | null, player: Pl
 		CrowniclesLogger.error(`No map location found for mapId ${newLink.endMap}`);
 		return;
 	}
+
+	// Read before starting the travel: `startTravel` makes the current destination become the previous map.
+	const isGoingBack = newLink.endMap === player.getPreviousMapId();
+
 	await Maps.startTravel(player, newLink, Date.now());
-	addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration ?? 0);
+	addDestinationResToResponse(response, {
+		mapLink: newLink,
+		mapTypeId: endMap.type,
+		tripDuration: newLink.tripDuration ?? 0,
+		isGoingBack
+	});
 }
 
 /**
@@ -144,7 +156,11 @@ function sendDestinationCollector(
 
 		await Maps.startTravel(player, newLink, Date.now());
 
-		addDestinationResToResponse(response, newLink, endMap.type, newLink.tripDuration ?? 0);
+		addDestinationResToResponse(response, {
+			mapLink: newLink,
+			mapTypeId: endMap.type,
+			tripDuration: newLink.tripDuration ?? 0
+		});
 
 		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
 	};

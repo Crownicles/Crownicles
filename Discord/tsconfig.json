@@ -1,23 +1,28 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
+		"module": "nodenext",
 		"noImplicitAny": true,
 		"removeComments": true,
 		"preserveConstEnums": true,
 		"sourceMap": true,
 		"allowJs": true,
 		"outDir": "dist",
+		"rootDir": "..",
 		"checkJs": false,
+		"esModuleInterop": true,
 		"emitDecoratorMetadata": true,
 		"experimentalDecorators": true,
 		"incremental": true,
 		"noResolve": false,
 		"noEmitOnError": false,
-		"moduleResolution": "node",
+		"moduleResolution": "nodenext",
 		"skipLibCheck": true,
 		"resolveJsonModule": true,
 		"target": "es2024",
 		"allowSyntheticDefaultImports": true,
+		"types": [
+			"node"
+		],
 		"lib": [
 			"ES2022",
 			"dom"

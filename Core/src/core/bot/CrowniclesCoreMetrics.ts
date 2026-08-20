@@ -65,6 +65,13 @@ export abstract class CrowniclesCoreMetrics {
 		registers: [crowniclesMetricsRegistry]
 	});
 
+	private static dailyTaskFailuresCount = new client.Counter({
+		name: "crownicles_daily_task_failures_count",
+		help: "Count of daily task failures",
+		labelNames: ["task"],
+		registers: [crowniclesMetricsRegistry]
+	});
+
 	private static blockedPlayersCount = new client.Gauge({
 		name: "crownicles_blocked_players_count",
 		help: "Count of blocked players",
@@ -145,6 +152,11 @@ export abstract class CrowniclesCoreMetrics {
 
 	static incrementPacketErrorCount(packetName: string): void {
 		this.packetsErrorCount.labels(packetName)
+			.inc();
+	}
+
+	static incrementDailyTaskFailure(taskName: string): void {
+		this.dailyTaskFailuresCount.labels(taskName)
 			.inc();
 	}
 

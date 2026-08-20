@@ -40,6 +40,13 @@ export abstract class GardenConstants {
 	public static readonly WATERING_COOLDOWN_MS = 12 * TimeConstants.MS_TIME.HOUR;
 
 	/**
+	 * Share of a plant's growth cycle recovered by one watering.
+	 */
+	public static readonly WATERING_ADVANCE_RATIO = 1 / 12;
+
+	public static readonly WATERING_ADVANCE_PERCENT = Math.round(GardenConstants.WATERING_ADVANCE_RATIO * 100);
+
+	/**
 	 * Price in coins of the "Cœur Sylvestre" talisman that unlocks remote garden harvest.
 	 */
 	public static readonly REMOTE_HARVEST_TALISMAN_PRICE = 2_450;
@@ -49,5 +56,13 @@ export abstract class GardenConstants {
 	 */
 	public static getEffectiveGrowthTime(baseGrowthTimeSeconds: number, earthQuality: GardenEarthQuality): number {
 		return Math.ceil(baseGrowthTimeSeconds * GardenConstants.EARTH_QUALITY_MULTIPLIER[earthQuality]);
+	}
+
+	/**
+	 * Growth time in seconds a single watering removes from a plant's remaining cycle.
+	 * Computed on the effective growth time so the advertised percentage holds for every earth quality.
+	 */
+	public static getWateringAdvanceSeconds(baseGrowthTimeSeconds: number, earthQuality: GardenEarthQuality): number {
+		return Math.round(GardenConstants.getEffectiveGrowthTime(baseGrowthTimeSeconds, earthQuality) * GardenConstants.WATERING_ADVANCE_RATIO);
 	}
 }

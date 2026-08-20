@@ -5,6 +5,7 @@ import {
 	ReactionCollectorData,
 	ReactionCollectorRefuseReaction
 } from "./ReactionCollectorPacket";
+import { RecipeDisplayInfo } from "../../types/CookingTypes";
 
 export enum RecipeShopSource {
 	FARMER = "farmer",
@@ -26,7 +27,7 @@ export class RecipeShopUltimateFoodMerchantContext {
 export class ReactionCollectorRecipeShopSmallEventData extends ReactionCollectorData {
 	source!: RecipeShopSource;
 
-	recipeId!: string;
+	recipe!: RecipeDisplayInfo;
 
 	recipeCost!: number;
 

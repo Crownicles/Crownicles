@@ -3,7 +3,7 @@
     "followPath": {
       "outcomes": {
         "0": {
-          "mapLink": 100
+          "mapLink": 97
         }
       }
     },
@@ -25,7 +25,7 @@
     "end": {
       "outcomes": {
         "0": {
-          "mapLink": 100
+          "mapLink": 97
         }
       }
     }

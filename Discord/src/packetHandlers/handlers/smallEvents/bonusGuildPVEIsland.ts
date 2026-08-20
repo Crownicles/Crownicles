@@ -18,7 +18,7 @@ export default class BonusGuildPVEIslandSmallEventHandler {
 						i18n.t(`smallEvents:bonusGuildPVEIsland.events.${packet.event}.${packet.result}.${packet.surrounding}`, {
 							lng,
 							amount: packet.amount,
-							emoteKey: packet.isExperienceGain ? "xp" : "guildPoint"
+							emoteKey: packet.emoteKey
 						})}`,
 					interaction.user,
 					lng

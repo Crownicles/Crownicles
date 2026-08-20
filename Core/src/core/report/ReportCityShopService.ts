@@ -58,6 +58,7 @@ import {
 import { PlayerMissionsInfos } from "../database/game/models/PlayerMissionsInfo";
 import { pickMaterialDistribution } from "./MaterialLootGenerator";
 import { GardenConstants } from "../../../../Lib/src/constants/GardenConstants";
+import { CITY_SERVICES } from "../../../../Lib/src/constants/CityServiceConstants";
 import { Homes } from "../database/game/models/Home";
 
 /**
@@ -258,6 +259,7 @@ export async function openRoyalMarket({
 	player, city, context, response, onClose
 }: CityShopOpenerContext): Promise<void> {
 	const playerMissionsInfo = await PlayerMissionsInfos.getOfPlayer(player.id);
+	const questMasterBadgeShopItem = await getQuestMasterBadgeShopItem(player.id);
 	await openGemShop({
 		player,
 		context,
@@ -280,7 +282,7 @@ export async function openRoyalMarket({
 				id: "prestige",
 				items: [
 					getAThousandPointsShopItem(),
-					getQuestMasterBadgeShopItem()
+					...questMasterBadgeShopItem ? [questMasterBadgeShopItem] : []
 				]
 			}
 		],
@@ -299,10 +301,15 @@ export async function openGeneralShop({
 	} = await getGeneralShopData(player.keycloakId);
 
 	const shopCategories: ShopCategory[] = [
-		{
-			id: "permanentItem",
-			items: [getRandomItemShopItem()]
-		},
+		// A city with a scrap dealer would let players buy random equipments just to convert them into more valuable materials
+		...city.hasService(CITY_SERVICES.SCRAP_DEALER)
+			? []
+			: [
+				{
+					id: "permanentItem",
+					items: [getRandomItemShopItem()]
+				}
+			],
 		{
 			id: "dailyPotion",
 			items: [getDailyPotionShopItem(potion)]
@@ -328,6 +335,7 @@ export async function openGeneralShop({
 export async function openStockExchange({
 	player, city, context, response, onClose
 }: CityShopOpenerContext): Promise<void> {
+	const badgeShopItem = await getBadgeShopItem(player.id);
 	await openGemShop({
 		player,
 		context,
@@ -337,7 +345,7 @@ export async function openStockExchange({
 		shopCategories: [
 			{
 				id: "permanentItem",
-				items: [getBadgeShopItem()]
+				items: badgeShopItem ? [badgeShopItem] : []
 			},
 			{
 				id: "services",

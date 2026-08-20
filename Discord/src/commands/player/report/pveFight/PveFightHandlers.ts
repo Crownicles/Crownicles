@@ -13,6 +13,7 @@ import i18n from "../../../../translations/i18n";
 import { ReactionCollectorReturnTypeOrNull } from "../../../../packetHandlers/handlers/ReactionCollectorHandlers";
 import { DiscordCollectorUtils } from "../../../../utils/DiscordCollectorUtils";
 import { formatMaterialLoot } from "../../../../utils/MaterialLootDisplayUtils";
+import { buildRecipeDiscoveryMessage } from "../../../../utils/CookingDisplayUtils";
 import { PetUtils } from "../../../../utils/PetUtils";
 import {
 	escapeUsername, StringUtils
@@ -116,6 +117,10 @@ export async function displayMonsterReward(
 	const materialLootText = formatMaterialLoot(packet.materialLoot, lng);
 	if (materialLootText) {
 		descriptionParts.push(`\n${materialLootText}`);
+	}
+
+	if (packet.discoveredRecipe) {
+		descriptionParts.push(`\n${buildRecipeDiscoveryMessage([packet.discoveredRecipe], lng)}`);
 	}
 
 	const embed = new CrowniclesEmbed()

@@ -13,6 +13,7 @@ import { CrowniclesIcons } from "../../../../../../Lib/src/CrowniclesIcons";
 import { Language } from "../../../../../../Lib/src/Language";
 import { ItemCategory } from "../../../../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../../../../Lib/src/types/ItemEnchantment";
+import { MapLocationConstants } from "../../../../../../Lib/src/constants/MapLocationConstants";
 import {
 	CrowniclesNestedMenu,
 	CrowniclesNestedMenuCollector,
@@ -179,7 +180,7 @@ export function buildEnchantmentDescription(data: EnchanterCityData, lng: Langua
 	});
 }
 
-function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
+function buildEnchanterStory(data: EnchanterCityData, lng: Language, currentCityMapLocationId: number): string {
 	const enchantmentKey = data.mageReduction
 		? "commands:report.city.enchanter.enchantmentWithReduction"
 		: "commands:report.city.enchanter.enchantmentNoReduction";
@@ -194,11 +195,28 @@ function buildEnchanterStory(data: EnchanterCityData, lng: Language): string {
 		buildEnchantmentDescription(data, lng),
 		buildEnchantmentBalance(data, lng),
 		data.hasAtLeastOneEnchantedItem
-			&& i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng })
+			&& i18n.t("commands:report.city.enchanter.hasAtLeastOneEnchantedItem", { lng }),
+		buildTomorrowStory(data, lng, currentCityMapLocationId)
 	]);
 }
 
-function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language): string {
+export function buildTomorrowStory(data: EnchanterCityData, lng: Language, currentCityMapLocationId: number): string {
+	if (!data.tomorrow) {
+		return "";
+	}
+
+	const translationKey = data.tomorrow.cityMapLocationId === currentCityMapLocationId
+		? "commands:report.city.enchanter.tomorrowSameCityStory"
+		: "commands:report.city.enchanter.tomorrowStory";
+	return i18n.t(translationKey, {
+		lng,
+		nextCity: DisplayUtils.getMapLocationDisplay(MapLocationConstants.TYPES.CITY, data.tomorrow.cityMapLocationId, lng),
+		nextEnchantmentId: data.tomorrow.enchantmentId,
+		nextEnchantmentType: data.tomorrow.enchantmentType
+	});
+}
+
+function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language, currentCityMapLocationId: number): string {
 	let story: string;
 	if (data.isInventoryEmpty) {
 		story = i18n.t("commands:report.city.enchanter.emptyInventoryStory", { lng });
@@ -217,19 +235,23 @@ function buildNoEnchantableItemStory(data: EnchanterCityData, lng: Language): st
 	else {
 		story = i18n.t("commands:report.city.enchanter.allEnchantedStory", { lng });
 	}
-	return StringUtils.joinParagraphs([story, buildEnchantmentDescription(data, lng)]);
+	return StringUtils.joinParagraphs([
+		story,
+		buildEnchantmentDescription(data, lng),
+		buildTomorrowStory(data, lng, currentCityMapLocationId)
+	]);
 }
 
-function addEnchantableItemsSection(container: ContainerBuilder, data: EnchanterCityData, lng: Language): void {
+function addEnchantableItemsSection(container: ContainerBuilder, data: EnchanterCityData, lng: Language, currentCityMapLocationId: number): void {
 	if (data.enchantableItems.length === 0) {
 		container.addTextDisplayComponents(
-			new TextDisplayBuilder().setContent(buildNoEnchantableItemStory(data, lng))
+			new TextDisplayBuilder().setContent(buildNoEnchantableItemStory(data, lng, currentCityMapLocationId))
 		);
 		return;
 	}
 
 	container.addTextDisplayComponents(
-		new TextDisplayBuilder().setContent(buildEnchanterStory(data, lng))
+		new TextDisplayBuilder().setContent(buildEnchanterStory(data, lng, currentCityMapLocationId))
 	);
 
 	for (let i = 0; i < data.enchantableItems.length; i++) {
@@ -261,12 +283,13 @@ function addEnchanterNavigation(container: ContainerBuilder, lng: Language): voi
 }
 
 export function getEnchanterMenu(params: CityMenuParams): CrowniclesNestedMenu {
-	const data = (params.packet.data.data as ReactionCollectorCityData).enchanter!;
+	const cityData = params.packet.data.data as ReactionCollectorCityData;
+	const data = cityData.enchanter!;
 	const lng = params.interaction.userLanguage;
 
 	const container = new ContainerBuilder();
 	addEnchanterTitle(container, lng, params.pseudo);
-	addEnchantableItemsSection(container, data, lng);
+	addEnchantableItemsSection(container, data, lng, cityData.mapLocationId);
 	addEnchanterNavigation(container, lng);
 
 	return {

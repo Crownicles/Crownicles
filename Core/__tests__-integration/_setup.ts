@@ -2,6 +2,8 @@ import { createConnection } from "mariadb";
 import { Sequelize } from "sequelize";
 import { useCLSOnSequelize } from "../../Lib/src/locks/CLSNamespace";
 
+const INTEGRATION_DB_CONNECT_TIMEOUT_MS = 5_000;
+
 /**
  * Configuration for the MariaDB instance backing the integration tests.
  *
@@ -61,7 +63,8 @@ export async function setupIntegrationDb(suiteName: string): Promise<Integration
 		host: config.host,
 		port: config.port,
 		user: config.rootUser,
-		password: config.rootPassword
+		password: config.rootPassword,
+		connectTimeout: INTEGRATION_DB_CONNECT_TIMEOUT_MS
 	});
 	try {
 		await adminConn.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;`);
@@ -96,7 +99,10 @@ export async function setupIntegrationDb(suiteName: string): Promise<Integration
 		dialect: "mariadb",
 		host: config.host,
 		port: config.port,
-		logging: false
+		logging: false,
+		dialectOptions: {
+			connectTimeout: INTEGRATION_DB_CONNECT_TIMEOUT_MS
+		}
 	});
 
 	await sequelize.authenticate();
@@ -115,7 +121,8 @@ export async function setupIntegrationDb(suiteName: string): Promise<Integration
 				host: config.host,
 				port: config.port,
 				user: config.rootUser,
-				password: config.rootPassword
+				password: config.rootPassword,
+				connectTimeout: INTEGRATION_DB_CONNECT_TIMEOUT_MS
 			});
 			try {
 				await cleanupConn.query(`DROP DATABASE IF EXISTS \`${dbName}\`;`);

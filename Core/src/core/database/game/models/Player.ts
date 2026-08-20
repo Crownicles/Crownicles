@@ -5,7 +5,9 @@ import InventorySlot, { InventorySlots } from "./InventorySlot";
 import PetEntity from "./PetEntity";
 import MissionSlot from "./MissionSlot";
 import { InventoryInfos } from "./InventoryInfo";
-import { MissionsController } from "../../../missions/MissionsController";
+import {
+	LockedPlayerMutation, MissionInformationsWithoutMutation, MissionsController
+} from "../../../missions/MissionsController";
 import { PlayerActiveObjects } from "./PlayerActiveObjects";
 import {
 	asMilliseconds,
@@ -42,6 +44,7 @@ import {
 import {
 	LockKey, withLockedEntities
 } from "../../../../../../Lib/src/locks/withLockedEntities";
+import { getCrowniclesNamespace } from "../../../../../../Lib/src/locks/CLSNamespace";
 import {
 	League, LeagueDataController
 } from "../../../../data/League";
@@ -57,16 +60,14 @@ import { ClassInfoConstants } from "../../../../../../Lib/src/constants/ClassInf
 import { GuildConstants } from "../../../../../../Lib/src/constants/GuildConstants";
 import { MapConstants } from "../../../../../../Lib/src/constants/MapConstants";
 import { Effect } from "../../../../../../Lib/src/types/Effect";
-import { ScheduledReportNotifications } from "./ScheduledReportNotification";
-import { PacketUtils } from "../../../utils/PacketUtils";
+import { dispatchOrRescheduleArrivalNotification } from "../../../bot/ReportNotifications";
 import { StatValues } from "../../../../../../Lib/src/types/StatValues";
-import { ReachDestinationNotificationPacket } from "../../../../../../Lib/src/packets/notifications/ReachDestinationNotificationPacket";
 import { CrowniclesLogger } from "../../../../../../Lib/src/logs/CrowniclesLogger";
 import { TokensConstants } from "../../../../../../Lib/src/constants/TokensConstants";
 import { MathUtils } from "../../../utils/MathUtils";
 
 // skipcq: JS-C1003 - moment does not expose itself as an ES Module.
-import * as moment from "moment";
+import moment from "moment";
 import { ClassConstants } from "../../../../../../Lib/src/constants/ClassConstants";
 import { CityDataController } from "../../../../data/City";
 import { ItemEnchantmentKind } from "../../../../../../Lib/src/types/ItemEnchantment";
@@ -79,6 +80,7 @@ import { BlessingManager } from "../../../blessings/BlessingManager";
 import { Homes } from "./Home";
 import { getSlotCountForCategory } from "../../../../../../Lib/src/types/HomeFeatures";
 import { RecipeDiscoveryService } from "../../../cooking/RecipeDiscoveryService";
+import { RecipeDisplayInfo } from "../../../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoverySource } from "../../../../../../Lib/src/constants/CookingConstants";
 import { buildNewItemSlotData } from "../../../utils/ItemSlotUtils";
 
@@ -103,6 +105,8 @@ const OVER_CAP_TOKEN_REASONS: ReadonlySet<NumberChangeReason> = new Set([
 	NumberChangeReason.EXPEDITION,
 	NumberChangeReason.BIG_EVENT
 ]);
+
+const PLAYERS_LEVELING_UP_CONTEXT_KEY = "playersLevelingUp" as const;
 
 /**
  * Compute the new token count after applying `amount` to `currentTokens`, honoring
@@ -286,6 +290,45 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Apply a gameplay mutation and its mission progress against the same freshly
+	 * locked player, then synchronize this caller instance with the committed state.
+	 */
+	private async mutateWithMission(
+		response: CrowniclesPacket[],
+		mission: MissionInformationsWithoutMutation,
+		mutate: LockedPlayerMutation
+	): Promise<void> {
+		await MissionsController.update(this, response, {
+			...mission,
+			applyOnLockedPlayer: mutate
+		});
+	}
+
+	private async mutateWithMissions(
+		response: CrowniclesPacket[],
+		missions: MissionInformationsWithoutMutation[],
+		mutate: LockedPlayerMutation
+	): Promise<void> {
+		const [firstMission, ...otherMissions] = missions;
+		await MissionsController.updateMultiple(this, response, [
+			{
+				...firstMission,
+				applyOnLockedPlayer: mutate
+			},
+			...otherMissions
+		]);
+	}
+
+	private async mutateLocked(mutate: LockedPlayerMutation): Promise<void> {
+		const updatedPlayer = await Player.withLocked(this.id, async lockedPlayer => {
+			mutate(lockedPlayer);
+			await lockedPlayer.save();
+			return lockedPlayer;
+		});
+		Object.assign(this, updatedPlayer);
+	}
+
+	/**
 	 * Add or remove points from the score of a player
 	 * @param parameters
 	 */
@@ -294,22 +337,25 @@ export class Player extends Model {
 			parameters.amount = Math.round(parameters.amount * BlessingManager.getInstance().getScoreMultiplier());
 		}
 		const delta = parameters.amount;
-		if (delta > 0) {
-			const newPlayer = await MissionsController.update(this, parameters.response, {
-				missionId: "earnPoints",
-				count: delta,
-				applyOnLockedPlayer: locked => {
-					locked.score += delta;
-					locked.addWeeklyScore(delta);
-				}
-			});
-			Object.assign(this, newPlayer);
-		}
-		else {
-			this.score += delta;
-			this.addWeeklyScore(delta);
-		}
-		await this.setScore(this.score, parameters.response);
+		const scoreMissions: MissionInformationsWithoutMutation[] = [
+			...delta > 0
+				? [
+					{
+						missionId: "earnPoints",
+						count: delta
+					}
+				]
+				: [],
+			{
+				missionId: "reachScore",
+				count: locked => locked.score,
+				set: true
+			}
+		];
+		await this.mutateWithMissions(parameters.response, scoreMissions, locked => {
+			locked.score = Math.max(0, locked.score + delta);
+			locked.addWeeklyScore(delta);
+		});
 		crowniclesInstance?.logsDatabase.logScoreChange(this.keycloakId, this.score, parameters.reason)
 			.then();
 		return this;
@@ -325,24 +371,18 @@ export class Player extends Model {
 		}
 		const delta = parameters.amount;
 		if (delta > 0) {
-			const newPlayer = await MissionsController.update(this, parameters.response, {
+			await this.mutateWithMission(parameters.response, {
 				missionId: "earnMoney",
-				count: delta,
-				applyOnLockedPlayer: locked => {
-					locked.money += delta;
-				}
+				count: delta
+			}, locked => {
+				locked.money = Math.max(0, locked.money + delta);
 			});
-
-			/*
-			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
-			 * As the money and experience may have changed, we update the models of the caller
-			 */
-			Object.assign(this, newPlayer);
 		}
 		else {
-			this.money += delta;
+			await this.mutateLocked(locked => {
+				locked.money = Math.max(0, locked.money + delta);
+			});
 		}
-		this.setMoney(this.money);
 		crowniclesInstance?.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
 			.then();
 		return this;
@@ -353,15 +393,40 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async spendMoney(parameters: EditValueParameters): Promise<Player> {
-		const newPlayer = await MissionsController.update(this, parameters.response, {
+		const amount = Math.abs(parameters.amount);
+		await this.mutateWithMission(parameters.response, {
 			missionId: "spendMoney",
-			count: parameters.amount
+			count: amount
+		}, locked => {
+			locked.money = Math.max(0, locked.money - amount);
 		});
-		Object.assign(this, newPlayer);
-		return this.addMoney({
-			...parameters,
-			amount: -parameters.amount
+		crowniclesInstance?.logsDatabase.logMoneyChange(this.keycloakId, this.money, parameters.reason)
+			.then();
+		return this;
+	}
+
+	/**
+	 * Apply a token gain under lock and report how many tokens were actually
+	 * granted, which can be less than requested because of the token cap.
+	 */
+	private async earnTokens(parameters: EditValueParameters): Promise<number> {
+		let actualChange = 0;
+		await this.mutateWithMissions(parameters.response, [
+			{
+				missionId: "earnTokens",
+				count: (): number => actualChange
+			},
+			{
+				missionId: "maxTokensReached",
+				count: (locked): number => locked.tokens >= TokensConstants.MAX ? 1 : 0,
+				set: true
+			}
+		], locked => {
+			const previousTokens = locked.tokens;
+			locked.tokens = computeNewTokens(previousTokens, parameters.amount, parameters.reason);
+			actualChange = locked.tokens - previousTokens;
 		});
+		return actualChange;
 	}
 
 	/**
@@ -369,46 +434,18 @@ export class Player extends Model {
 	 * @param parameters
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
-		const previousTokens = this.tokens;
-		const newTokens = computeNewTokens(this.tokens, parameters.amount, parameters.reason);
-
-		if (newTokens === previousTokens) {
-			return this;
-		}
-
-		this.setTokens(newTokens);
-		await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
-
-		// Track missions for earning tokens
-		const actualChange = newTokens - previousTokens;
-		if (actualChange > 0) {
-			let newPlayer = await MissionsController.update(this, parameters.response, {
-				missionId: "earnTokens",
-				count: actualChange,
-				applyOnLockedPlayer: locked => {
-					/*
-					 * Recompute against the fresh locked value to avoid clobbering
-					 * a concurrent token update that happened between the caller's
-					 * read of `this.tokens` and the lock acquisition.
-					 */
-					locked.tokens = computeNewTokens(locked.tokens, parameters.amount, parameters.reason);
-				}
-			});
-
-			/*
-			 * Clone the mission entity and player to this player model and the entity instance passed in the parameters
-			 * As the money and experience may have changed, we update the models of the caller
-			 */
-			Object.assign(this, newPlayer);
-
-			// Check if max tokens reached
-			if (this.tokens >= TokensConstants.MAX) {
-				newPlayer = await MissionsController.update(this, parameters.response, {
-					missionId: "maxTokensReached"
-				});
-				Object.assign(this, newPlayer);
+		if (parameters.amount > 0) {
+			const gainedTokens = await this.earnTokens(parameters);
+			if (gainedTokens === 0) {
+				return this;
 			}
 		}
+		else {
+			await this.mutateLocked(locked => {
+				locked.tokens = computeNewTokens(locked.tokens, parameters.amount, parameters.reason);
+			});
+		}
+		await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
 
 		return this;
 	}
@@ -420,15 +457,14 @@ export class Player extends Model {
 	public async useTokens(parameters: EditValueParameters): Promise<Player> {
 		const tokensToUse = Math.abs(parameters.amount);
 
-		// Track missions for spending tokens
-		const newPlayer = await MissionsController.update(this, parameters.response, {
+		await this.mutateWithMission(parameters.response, {
 			missionId: "spendTokens",
 			count: tokensToUse
+		}, locked => {
+			locked.tokens = computeNewTokens(locked.tokens, -tokensToUse, parameters.reason);
 		});
-		Object.assign(this, newPlayer);
-
-		parameters.amount = -tokensToUse;
-		return this.addTokens(parameters);
+		await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+		return this;
 	}
 
 	/**
@@ -464,7 +500,7 @@ export class Player extends Model {
 	 * @param response
 	 * @param newLevel
 	 */
-	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number): Promise<void> {
+	public async addLevelUpPacket(response: CrowniclesPacket[], newLevel: number, discoveredRecipes: RecipeDisplayInfo[]): Promise<void> {
 		const healthRestored = newLevel % 10 === 0;
 
 		const packet = makePacket(PlayerLevelUpPacket, {
@@ -480,7 +516,8 @@ export class Player extends Model {
 			classesTier5Unlocked: newLevel === ClassConstants.GROUP4LEVEL,
 			missionSlotUnlocked: Player.isMissionSlotUnlockedAtLevel(newLevel),
 			pveUnlocked: newLevel === PVEConstants.MIN_LEVEL,
-			statsIncreased: true
+			statsIncreased: true,
+			...discoveredRecipes.length > 0 ? { discoveredRecipes } : {}
 		});
 
 		if (healthRestored) {
@@ -503,29 +540,43 @@ export class Player extends Model {
 	 * @param response
 	 */
 	public async levelUpIfNeeded(response: CrowniclesPacket[]): Promise<void> {
+		const namespace = getCrowniclesNamespace();
+		const playersLevelingUp = namespace.get(PLAYERS_LEVELING_UP_CONTEXT_KEY) as ReadonlySet<number> | undefined;
+		if (playersLevelingUp?.has(this.id)) {
+			return;
+		}
+		await namespace.runPromise(async () => {
+			namespace.set(PLAYERS_LEVELING_UP_CONTEXT_KEY, new Set([
+				...playersLevelingUp ?? [],
+				this.id
+			]));
+			await this.processLevelUps(response);
+		});
+	}
+
+	private async processLevelUps(response: CrowniclesPacket[]): Promise<void> {
 		if (!this.needLevelUp()) {
 			return;
 		}
 
 		let didLevelUp = false;
-		Object.assign(this, await MissionsController.update(this, response, {
+		await this.mutateWithMission(response, {
 			missionId: "reachLevel",
 			count: locked => locked.level,
-			set: true,
-			applyOnLockedPlayer: locked => {
-				/*
-				 * Re-evaluate against the freshly-locked row in case a concurrent
-				 * transaction already advanced the level: only apply the level-up
-				 * if `locked` still has enough XP for its current level.
-				 */
-				if (!locked.needLevelUp()) {
-					return;
-				}
-				locked.experience -= locked.getExperienceNeededToLevelUp();
-				locked.level += 1;
-				didLevelUp = true;
+			set: true
+		}, locked => {
+			/*
+			 * Re-evaluate against the freshly-locked row in case a concurrent
+			 * transaction already advanced the level: only apply the level-up
+			 * if `locked` still has enough XP for its current level.
+			 */
+			if (!locked.needLevelUp()) {
+				return;
 			}
-		}));
+			locked.experience -= locked.getExperienceNeededToLevelUp();
+			locked.level += 1;
+			didLevelUp = true;
+		});
 		if (!didLevelUp) {
 			return;
 		}
@@ -534,11 +585,11 @@ export class Player extends Model {
 		crowniclesInstance?.logsDatabase.logLevelChange(this.keycloakId, this.level)
 			.then();
 
-		await RecipeDiscoveryService.discoverFromSource(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE);
+		const discoveredRecipes = await RecipeDiscoveryService.syncProgressionRecipes(this, RecipeDiscoverySource.PLAYER_LEVEL_MILESTONE, this.level);
 
-		await this.addLevelUpPacket(response, this.level);
+		await this.addLevelUpPacket(response, this.level, discoveredRecipes);
 
-		await this.levelUpIfNeeded(response);
+		await this.processLevelUps(response);
 	}
 
 	/**
@@ -554,16 +605,23 @@ export class Player extends Model {
 
 	/**
 	 * Check if we need to kill the player (mouahaha)
+	 * Idempotent: the death effect is (re)applied as long as the player has no health left, but a single
+	 * {@link PlayerDeathPacket} is pushed per response, even when several health changes reach 0 in the same flow
+	 * (e.g. a big event outcome that damages the player and then overwrites their effect).
 	 * @param response
 	 * @param reason
+	 * @returns true if the player is dead
 	 */
 	public async killIfNeeded(response: CrowniclesPacket[], reason: NumberChangeReason): Promise<boolean> {
 		if (this.health > 0) {
 			return false;
 		}
-		await TravelTime.applyEffect(this, Effect.DEAD, 0, new Date(), reason);
-		const packet = makePacket(PlayerDeathPacket, {});
-		response.push(packet);
+		if (this.effectId !== Effect.DEAD.id) {
+			await TravelTime.applyEffect(this, Effect.DEAD, 0, new Date(), reason);
+		}
+		if (!response.some(packet => packet instanceof PlayerDeathPacket)) {
+			response.push(makePacket(PlayerDeathPacket, {}));
+		}
 		return true;
 	}
 
@@ -582,6 +640,9 @@ export class Player extends Model {
 			where: { id: this.id }
 		});
 		this.lastActivityAt = lastActivityAt;
+
+		// The value above is already persisted by the bulk update: clearing the dirty flag keeps the instance eligible for mission updates
+		this.changed("lastActivityAt", false);
 	}
 
 	/**
@@ -805,22 +866,17 @@ export class Player extends Model {
 	public async addExperience(parameters: EditValueParameters): Promise<Player> {
 		const delta = parameters.amount;
 		if (delta > 0) {
-			const newPlayer = await MissionsController.update(this, parameters.response, {
+			await this.mutateWithMission(parameters.response, {
 				missionId: "earnXP",
-				count: delta,
-				applyOnLockedPlayer: locked => {
-					locked.experience += delta;
-				}
+				count: delta
+			}, locked => {
+				locked.experience += delta;
 			});
-
-			/*
-			 * Clone the mission entity and player to this player model, and the entity instance passed in the parameters
-			 * As the money and experience may have changed, we update the models of the caller
-			 */
-			Object.assign(this, newPlayer);
 		}
 		else {
-			this.experience += delta;
+			await this.mutateLocked(locked => {
+				locked.experience += delta;
+			});
 		}
 		crowniclesInstance?.logsDatabase.logExperienceChange(this.keycloakId, this.experience, parameters.reason)
 			.then();
@@ -962,23 +1018,56 @@ export class Player extends Model {
 
 	/**
 	 * Add health to the player
+	 * Note: this method automatically calls {@link killIfNeeded} after updating the health, so no code path can
+	 * leave the player alive with 0 health (#4597). A lethal change therefore persists the player through
+	 * {@link TravelTime.applyEffect}: callers must hold the player lock.
 	 * @param parameters - Object containing amount, response, reason and optional missionHealthParameter
 	 */
-	public async addHealth(parameters: HealthEditValueParameters): Promise<boolean> {
+	public async addHealth(parameters: HealthEditValueParameters): Promise<void> {
 		const missionParam: MissionHealthParameter = parameters.missionHealthParameter ?? {
 			overHealCountsForMission: true,
 			shouldPokeMission: true
 		};
 
-		const maxHealth = this.getMaxHealth();
-		if (this.health > maxHealth) {
-			this.health = maxHealth;
-		}
-		await this.setHealth(this.health + parameters.amount, parameters.response, missionParam);
+		await this.applyHealthDelta(parameters.amount, parameters.response, missionParam);
 
 		crowniclesInstance?.logsDatabase.logHealthChange(this.keycloakId, this.health, parameters.reason)
 			.then();
-		return this.health > 0;
+		await this.killIfNeeded(parameters.response, parameters.reason);
+	}
+
+	/**
+	 * Change the class of the player, rescaling their health and energy so they keep the same ratios.
+	 *
+	 * Both maximums depend on the class, so they have to be read before the class actually changes: computing the
+	 * health target on the old scale while {@link addHealth} applies the delta on the new one made the difference be
+	 * subtracted twice and dropped players to 0 health (#4597).
+	 * @param newClassId
+	 * @param playerActiveObjects
+	 * @param response
+	 */
+	public async changeClass(newClassId: number, playerActiveObjects: PlayerActiveObjects, response: CrowniclesPacket[]): Promise<void> {
+		const previousMaxHealth = this.getMaxHealth();
+		const previousHealth = Math.min(this.getHealthValue(), previousMaxHealth);
+		const previousEnergyLostRatio = this.fightPointsLost / this.getMaxCumulativeEnergy(playerActiveObjects);
+
+		this.class = newClassId;
+
+		const targetHealth = Math.ceil(previousHealth / previousMaxHealth * this.getMaxHealth());
+		await this.addHealth({
+			amount: targetHealth - this.getHealth(),
+			response,
+			reason: NumberChangeReason.CLASS,
+			missionHealthParameter: {
+				shouldPokeMission: false,
+				overHealCountsForMission: false
+			}
+		});
+		this.setEnergyLost(
+			Math.ceil(previousEnergyLostRatio * this.getMaxCumulativeEnergy(playerActiveObjects)),
+			NumberChangeReason.CLASS,
+			playerActiveObjects
+		);
 	}
 
 	/**
@@ -993,10 +1082,7 @@ export class Player extends Model {
 	 * Get the health of the player (capped to max health)
 	 */
 	public getHealth(): number {
-		if (this.health > this.getMaxHealth()) {
-			this.health = this.getMaxHealth();
-		}
-		return this.health;
+		return Math.min(this.health, this.getMaxHealth());
 	}
 
 	/**
@@ -1129,7 +1215,7 @@ export class Player extends Model {
 		else {
 			await crowniclesInstance?.logsDatabase.logPlayersAttackGloryPoints(this.keycloakId, gloryPoints, reason, fightId ?? undefined);
 		}
-		Object.assign(this, await MissionsController.update(this, response, {
+		await this.mutateWithMission(response, {
 			missionId: "reachGlory",
 
 			/*
@@ -1138,16 +1224,15 @@ export class Player extends Model {
 			 * update is included rather than overwritten.
 			 */
 			count: locked => locked.attackGloryPoints + locked.defenseGloryPoints,
-			set: true,
-			applyOnLockedPlayer: locked => {
-				if (isDefense) {
-					locked.defenseGloryPoints = gloryPoints;
-				}
-				else {
-					locked.attackGloryPoints = gloryPoints;
-				}
+			set: true
+		}, locked => {
+			if (isDefense) {
+				locked.defenseGloryPoints = gloryPoints;
 			}
-		}));
+			else {
+				locked.attackGloryPoints = gloryPoints;
+			}
+		});
 	}
 
 	/**
@@ -1178,20 +1263,29 @@ export class Player extends Model {
 		const amount = parameters.amount > 0 && BlessingManager.getInstance().isRageAmplified()
 			? parameters.amount * 2
 			: parameters.amount;
-		await this.setRage(this.rage + amount, parameters.reason);
 		if (parameters.amount > 0) {
-			await MissionsController.update(this, parameters.response, {
+			await this.mutateWithMission(parameters.response, {
 				missionId: "gainRage",
 				count: parameters.amount
+			}, locked => {
+				locked.rage += amount;
 			});
 		}
+		else {
+			await this.mutateLocked(locked => {
+				locked.rage += amount;
+			});
+		}
+		crowniclesInstance?.logsDatabase.logRageChange(this.keycloakId, this.rage, parameters.reason)
+			.then();
 	}
 
 	public async setRage(rage: number, reason: NumberChangeReason): Promise<void> {
-		this.rage = rage;
+		await this.mutateLocked(locked => {
+			locked.rage = rage;
+		});
 		crowniclesInstance?.logsDatabase.logRageChange(this.keycloakId, this.rage, reason)
 			.then();
-		await this.save();
 	}
 
 	/**
@@ -1241,47 +1335,6 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Allow to set the score of a player to a specific value this is only called from addScore
-	 * @param score
-	 * @param response
-	 */
-	private async setScore(score: number, response: CrowniclesPacket[]): Promise<void> {
-		await MissionsController.update(this, response, {
-			missionId: "reachScore",
-			count: score,
-			set: true
-		});
-		if (score > 0) {
-			this.score = score;
-		}
-		else {
-			this.score = 0;
-		}
-	}
-
-	/**
-	 * Allow to set the money of a player to a specific value this is only called from addMoney
-	 * @param money
-	 */
-	private setMoney(money: number): void {
-		if (money > 0) {
-			this.money = money;
-		}
-		else {
-			this.money = 0;
-		}
-	}
-
-	/**
-	 * Set the tokens of a player. Callers are responsible for the upper bound; expedition rewards
-	 * are allowed to push tokens above TokensConstants.MAX, so this only enforces the lower bound.
-	 * @param tokens
-	 */
-	private setTokens(tokens: number): void {
-		this.tokens = Math.max(0, tokens);
-	}
-
-	/**
 	 * Add points to the weekly score of the player
 	 * @param weeklyScore
 	 */
@@ -1304,44 +1357,36 @@ export class Player extends Model {
 	}
 
 	/**
-	 * Set the player health
-	 * @param health
+	 * Apply a health delta to the player
+	 * @param healthDelta
 	 * @param response
 	 * @param missionHealthParameter
 	 */
-	private async setHealth(health: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
+	private async applyHealthDelta(healthDelta: number, response: CrowniclesPacket[], missionHealthParameter: MissionHealthParameter = {
 		overHealCountsForMission: true,
 		shouldPokeMission: true
 	}): Promise<void> {
-		const maxHealth = this.getMaxHealth();
-		const healthDelta = health - this.health;
 		if (healthDelta > 0 && missionHealthParameter.shouldPokeMission) {
 			let lockedDifference = 0;
-			const updatedPlayer = await MissionsController.update(this, response, {
+			await this.mutateWithMission(response, {
 				missionId: "earnLifePoints",
-				count: () => lockedDifference,
-				applyOnLockedPlayer: locked => {
-					const lockedMaxHealth = locked.getMaxHealth();
-					const lockedHealth = Math.min(locked.health, lockedMaxHealth);
-					const requestedHealth = lockedHealth + healthDelta;
-					lockedDifference = (requestedHealth > lockedMaxHealth && !missionHealthParameter.overHealCountsForMission
-						? lockedMaxHealth
-						: requestedHealth < 0 ? 0 : requestedHealth) - lockedHealth;
-					locked.health = MathUtils.clamp(requestedHealth, 0, lockedMaxHealth);
-				}
+				count: () => lockedDifference
+			}, locked => {
+				const lockedMaxHealth = locked.getMaxHealth();
+				const lockedHealth = Math.min(locked.health, lockedMaxHealth);
+				const requestedHealth = lockedHealth + healthDelta;
+				lockedDifference = (requestedHealth > lockedMaxHealth && !missionHealthParameter.overHealCountsForMission
+					? lockedMaxHealth
+					: requestedHealth < 0 ? 0 : requestedHealth) - lockedHealth;
+				locked.health = MathUtils.clamp(requestedHealth, 0, lockedMaxHealth);
 			});
-			Object.assign(this, updatedPlayer);
 			return;
 		}
-		if (health < 0) {
-			this.health = 0;
-		}
-		else if (health > maxHealth) {
-			this.health = maxHealth;
-		}
-		else {
-			this.health = health;
-		}
+		await this.mutateLocked(locked => {
+			const lockedMaxHealth = locked.getMaxHealth();
+			const lockedHealth = Math.min(locked.health, lockedMaxHealth);
+			locked.health = MathUtils.clamp(lockedHealth + healthDelta, 0, lockedMaxHealth);
+		});
 	}
 
 	/**
@@ -1977,43 +2022,12 @@ export function initModel(sequelize: Sequelize): void {
 	});
 
 	Player.afterSave((instance, options) => {
-		if (!instance.mapLinkId) {
+		if (!instance.mapLinkId || !MapLinkDataController.instance.getById(instance.mapLinkId)) {
+			// No resolvable map link: nothing to notify, and getTravelDataSimplified would throw on the missing link.
 			return;
 		}
 
-		const handleNotifications = async (): Promise<void> => {
-			// Report Notification
-			const now = new Date();
-			const travelEndDate = new Date(TravelTime.getTravelDataSimplified(instance, now).travelEndTime);
-			const destinationId = instance.getDestinationId();
-			const pendingReportNotification = await ScheduledReportNotifications.getPendingNotification(instance.id);
-			if (pendingReportNotification) {
-				await ScheduledReportNotifications.bulkDelete([pendingReportNotification]);
-			}
-
-			if (
-				travelEndDate > now
-				&& destinationId !== null
-			) {
-				await ScheduledReportNotifications.scheduleNotification(instance.id, instance.keycloakId, destinationId, travelEndDate);
-				return;
-			}
-
-			if (pendingReportNotification && destinationId === pendingReportNotification.mapId) {
-				const mapLocation = MapLocationDataController.instance.getById(pendingReportNotification.mapId);
-				if (mapLocation) {
-					PacketUtils.sendNotifications([
-						makePacket(ReachDestinationNotificationPacket, {
-							keycloakId: pendingReportNotification.keycloakId,
-							mapType: mapLocation.type,
-							mapId: pendingReportNotification.mapId
-						})
-					]);
-				}
-			}
-		};
-
-		scheduleAfterCommit(handleNotifications, error => {
+		scheduleAfterCommit(() => dispatchOrRescheduleArrivalNotification(instance), error => {
 			CrowniclesLogger.errorWithObj("Error while handling notifications", error);
 		}, options.transaction);
 	});

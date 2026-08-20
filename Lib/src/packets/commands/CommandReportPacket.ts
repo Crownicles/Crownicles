@@ -25,7 +25,7 @@ export {
 	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients, CookingMenuSnapshot
 } from "../../types/CookingTypes";
 import {
-	CookingCraftError, CookingMenuSnapshot
+	CookingCraftError, CookingMenuSnapshot, RecipeDisplayInfo
 } from "../../types/CookingTypes";
 import type { ReactionCollectorCityData } from "../interaction/ReactionCollectorCity";
 
@@ -116,6 +116,11 @@ export class CommandReportMonsterRewardRes extends CrowniclesPacket {
 	};
 
 	materialLoot?: MaterialQuantity[];
+
+	/**
+	 * Cooking recipe learned from the notes left by a defeated island boss.
+	 */
+	discoveredRecipe?: RecipeDisplayInfo;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -135,6 +140,11 @@ export class CommandReportChooseDestinationRes extends CrowniclesPacket {
 	mapTypeId!: string;
 
 	tripDuration!: number;
+
+	/**
+	 * The player did not pick this destination: an event outcome sent them back where they came from.
+	 */
+	isGoingBack?: boolean;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
@@ -342,6 +352,13 @@ export class CommandReportBlacksmithDisenchantRes extends CrowniclesPacket {
 
 	/** Gold cost paid for disenchanting */
 	cost!: number;
+}
+
+@sendablePacket(PacketDirection.BACK_TO_FRONT)
+export class CommandReportScrapDealerRecycleRes extends CrowniclesPacket {
+	materialLoot!: MaterialQuantity[];
+
+	moneyGained!: number;
 }
 
 // Royal Blacksmith packets — special NPC at the royal castle that only upgrades items to level 5.
@@ -701,7 +718,7 @@ export class CommandReportCookingCraftRes extends CrowniclesPacket {
 
 	bonusOutput?: boolean;
 
-	discoveredRecipeIds?: string[];
+	discoveredRecipes?: RecipeDisplayInfo[];
 
 	error?: CookingCraftError;
 

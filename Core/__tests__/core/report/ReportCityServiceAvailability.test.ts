@@ -8,6 +8,7 @@ describe("getAvailableCityServices", () => {
 	it("returns available services in their shared definition order", () => {
 		expect(getAvailableCityServices({
 			[CITY_SERVICES.BLACKSMITH]: true,
+			[CITY_SERVICES.SCRAP_DEALER]: false,
 			[CITY_SERVICES.ROYAL_BLACKSMITH]: false,
 			[CITY_SERVICES.ENCHANTER]: true,
 			[CITY_SERVICES.BOSS_ARCHIVIST]: false

@@ -14,10 +14,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v7
 
       - name: Setup Node.js environment
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '24'
 
@@ -28,7 +28,7 @@ jobs:
           corepack prepare pnpm@10.26.0 --activate
 
       - name: Cache PNPM dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             **/node_modules
@@ -46,7 +46,7 @@ jobs:
         run: pnpm --dir ./Lib test
 
       - name: Upload Lib test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: lib-test-results
@@ -60,7 +60,7 @@ jobs:
         run: pnpm --dir ./Discord test
 
       - name: Upload Discord test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: discord-test-results
@@ -74,7 +74,7 @@ jobs:
         run: pnpm --dir ./Core test
 
       - name: Upload Core test results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         if: always()
         with:
           name: core-test-results

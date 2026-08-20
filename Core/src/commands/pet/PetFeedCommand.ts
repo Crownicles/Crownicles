@@ -15,6 +15,7 @@ import {
 	CommandPetFeedPacketReq,
 	CommandPetFeedPetOnExpeditionErrorPacket,
 	CommandPetFeedResult,
+	CommandPetFeedSituationChangedErrorPacket,
 	CommandPetFeedSuccessPacket
 } from "../../../../Lib/src/packets/commands/CommandPetFeedPacket";
 import {
@@ -41,10 +42,12 @@ import {
 import { GuildDomainConstants } from "../../../../Lib/src/constants/GuildDomainConstants";
 import { PetUtils } from "../../core/utils/PetUtils";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 
 type GuildFeedReason = "OK" | "petChanged" | "storageEmpty";
+
+type CandyFeedReason = "OK" | "petChanged" | "noMoney";
 
 /**
  * In-lock body for the no-guild candy-feed flow. Re-validates that
@@ -58,7 +61,7 @@ async function applyLockedCandyFeed(
 		player: Player; pet: PetEntity;
 	},
 	expectedPetId: number
-): Promise<boolean> {
+): Promise<CandyFeedReason> {
 	const {
 		player, pet
 	} = locked;
@@ -66,10 +69,10 @@ async function applyLockedCandyFeed(
 	const candyPrice = GuildDomainConstants.SHOP_PRICES.FOOD[candyIndex];
 
 	if (player.petId !== expectedPetId) {
-		return false;
+		return "petChanged";
 	}
 	if (player.money < candyPrice) {
-		return false;
+		return "noMoney";
 	}
 
 	await player.spendMoney({
@@ -87,7 +90,7 @@ async function applyLockedCandyFeed(
 	});
 
 	await Promise.all([pet.save(), player.save()]);
-	return true;
+	return "OK";
 }
 
 /**
@@ -105,7 +108,8 @@ type FeedResolution =
 		errorPacket:
 			| typeof CommandPetFeedNoPetErrorPacket
 			| typeof CommandPetFeedNoMoneyFeedErrorPacket
-			| typeof CommandPetFeedGuildStorageEmptyErrorPacket;
+			| typeof CommandPetFeedGuildStorageEmptyErrorPacket
+			| typeof CommandPetFeedSituationChangedErrorPacket;
 	};
 
 /**
@@ -158,8 +162,8 @@ function runFeedEndCallback(
  */
 async function runCandyFeedUnderLock(
 	response: CrowniclesPacket[],
-	player: Player,
-	authorPet: PetEntity
+	player: Locked<Player>,
+	authorPet: Locked<PetEntity>
 ): Promise<FeedResolution> {
 	try {
 		await PlayerMissionsInfos.getOfPlayer(player.id);
@@ -177,9 +181,10 @@ async function runCandyFeedUnderLock(
 				authorPet.id
 			)
 		);
-		if (!outcome) {
+		if (outcome !== "OK") {
 			return {
-				ok: false, errorPacket: CommandPetFeedNoMoneyFeedErrorPacket
+				ok: false,
+				errorPacket: outcome === "petChanged" ? CommandPetFeedSituationChangedErrorPacket : CommandPetFeedNoMoneyFeedErrorPacket
 			};
 		}
 		return {
@@ -334,9 +339,9 @@ async function applyLockedGuildFeed(
 async function runGuildFeedUnderLock(
 	args: {
 		response: CrowniclesPacket[];
-		player: Player;
-		authorPet: PetEntity;
-		guild: Guild;
+		player: Locked<Player>;
+		authorPet: Locked<PetEntity>;
+		guild: Locked<Guild>;
 		foodReaction: ReactionCollectorPetFeedWithGuildFoodReaction;
 	}
 ): Promise<FeedResolution> {
@@ -368,7 +373,8 @@ async function runGuildFeedUnderLock(
 		);
 		if (outcome.reason !== "OK") {
 			return {
-				ok: false, errorPacket: CommandPetFeedGuildStorageEmptyErrorPacket
+				ok: false,
+				errorPacket: outcome.reason === "petChanged" ? CommandPetFeedSituationChangedErrorPacket : CommandPetFeedGuildStorageEmptyErrorPacket
 			};
 		}
 		return {

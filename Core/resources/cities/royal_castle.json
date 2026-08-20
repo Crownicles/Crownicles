@@ -4,9 +4,10 @@
   "maps": [
     41
   ],
-  "hasBlacksmith": false,
-  "hasRoyalBlacksmith": true,
-  "hasBossArchivist": true,
+  "services": [
+    "royalBlacksmith",
+    "bossArchivist"
+  ],
   "inns": [
     {
       "id": "royalPavilion",

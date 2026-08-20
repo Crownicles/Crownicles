@@ -87,6 +87,7 @@ import { ReactionCollectorRefuseReaction } from "../../../Lib/src/packets/intera
 import { DiscordCollectorUtils } from "../../src/utils/DiscordCollectorUtils";
 import { DiscordCache } from "../../src/bot/DiscordCache";
 import i18n from "../../src/translations/i18n";
+import { GardenConstants } from "../../../Lib/src/constants/GardenConstants";
 
 describe("GardenFeatureHandler", () => {
 	let handler: GardenFeatureHandler;
@@ -499,6 +500,7 @@ describe("GardenFeatureHandler", () => {
 				expect.objectContaining({
 					lng: ctx.lng,
 					slotsBecameReady: 1,
+					growthPercent: GardenConstants.WATERING_ADVANCE_PERCENT,
 					count: 1
 				})
 			);

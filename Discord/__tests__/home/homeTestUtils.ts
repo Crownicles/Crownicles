@@ -147,9 +147,11 @@ export function createHomeData(options?: {
 	garden?: ReturnType<typeof createGardenData> | undefined;
 	chest?: HomeFeatureHandlerContext["homeData"]["chest"];
 	upgradeStation?: HomeFeatureHandlerContext["homeData"]["upgradeStation"];
+	cookingLevel?: number;
 }): HomeFeatureHandlerContext["homeData"] {
 	return {
 		level: 3,
+		cooking: { level: options?.cookingLevel ?? 0 },
 		features: {
 			bedHealthRegeneration: 10,
 			gardenEarthQuality: GardenEarthQuality.RICH,

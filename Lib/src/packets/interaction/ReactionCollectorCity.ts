@@ -27,6 +27,7 @@ import { OwnedApartmentSummary } from "../../types/ApartmentLocation";
 import { GardenAccessMode } from "../../types/GardenAccessMode";
 import { GardenConstants } from "../../constants/GardenConstants";
 import { CityService } from "../../constants/CityServiceConstants";
+import { ScrapDealerData } from "../../types/ScrapDealerData";
 
 export class ReactionCollectorCityData extends ReactionCollectorData {
 	mapTypeId!: string;
@@ -91,6 +92,11 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		enchantmentId: string;
 		enchantmentType: string;
 		enchantmentSlot: ItemCategory; // The slot (WEAPON or ARMOR) that today's enchantment can be applied to.
+		tomorrow?: {
+			cityMapLocationId: number;
+			enchantmentId: string;
+			enchantmentType: string;
+		};
 		enchantmentCost: {
 			money: number;
 			gems: number;
@@ -105,6 +111,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 	home!: {
 		owned?: {
 			level: number;
+			cooking: {
+				level: number;
+			};
 
 			/** True when this `owned` entry describes a remote apartment (logis), not the player's main home. */
 			isApartment?: boolean;
@@ -267,6 +276,8 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 		/** Current player money for UI display */
 		playerMoney: number;
 	};
+
+	scrapDealer?: ScrapDealerData;
 
 	/**
 	 * Royal Blacksmith data — only present at the royal castle.
@@ -540,6 +551,16 @@ export class ReactionCollectorBlacksmithDisenchantReaction extends ReactionColle
 	itemCategory!: ItemCategory;
 }
 
+export class ReactionCollectorScrapDealerMenuReaction extends ReactionCollectorReaction {}
+
+export class ReactionCollectorScrapDealerRecycleReaction extends ReactionCollectorReaction {
+	slot!: number;
+
+	itemCategory!: ItemCategory;
+
+	itemId!: number;
+}
+
 /** Reaction for opening the Royal Blacksmith menu at the royal castle */
 export class ReactionCollectorRoyalBlacksmithMenuReaction extends ReactionCollectorReaction {}
 
@@ -602,6 +623,8 @@ type CityReaction =
 	| ReactionCollectorBlacksmithMenuReaction
 	| ReactionCollectorBlacksmithUpgradeReaction
 	| ReactionCollectorBlacksmithDisenchantReaction
+	| ReactionCollectorScrapDealerMenuReaction
+	| ReactionCollectorScrapDealerRecycleReaction
 	| ReactionCollectorRoyalBlacksmithMenuReaction
 	| ReactionCollectorRoyalBlacksmithUpgradeReaction
 	| ReactionCollectorGardenHarvestReaction
@@ -806,6 +829,24 @@ export class ReactionCollectorCity extends ReactionCollector {
 		];
 	}
 
+	private buildScrapDealerReactions(): {
+		type: string; data: ReactionCollectorReaction;
+	}[] {
+		if (!this.data.scrapDealer) {
+			return [];
+		}
+
+		return [
+			this.buildReaction(ReactionCollectorScrapDealerMenuReaction, {}),
+			...this.data.scrapDealer.recyclableItems.map(item =>
+				this.buildReaction(ReactionCollectorScrapDealerRecycleReaction, {
+					slot: item.slot,
+					itemCategory: item.category,
+					itemId: item.itemId
+				}))
+		];
+	}
+
 	private buildGuildDomainReactions(): {
 		type: string; data: ReactionCollectorReaction;
 	}[] {
@@ -885,6 +926,7 @@ export class ReactionCollectorCity extends ReactionCollector {
 				...this.buildHomeManageReaction(),
 				...this.buildHomeFeatureReactions(),
 				...this.buildBlacksmithReactions(),
+				...this.buildScrapDealerReactions(),
 				...this.buildRoyalBlacksmithReactions(),
 				...this.buildGuildDomainReactions(),
 				...this.buildApartmentNotaryReactions()

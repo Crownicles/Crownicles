@@ -4,7 +4,7 @@
       "outcomes": {
         "0": {
           "health": -5,
-          "mapLink": 101
+          "mapLink": 98
         }
       }
     },
@@ -42,14 +42,14 @@
           },
           "effect": "freezing",
           "health": -80,
-          "mapLink": 102
+          "mapLink": 99
         },
         "4": {
           "condition": {
             "canAcceptPet": true
           },
           "oneshot": true,
-          "mapLink": 101
+          "mapLink": 98
         }
       }
     },
@@ -75,13 +75,13 @@
             ]
           },
           "health": -20,
-          "mapLink": 102
+          "mapLink": 99
         },
         "2": {
           "health": -35,
           "effect": "confounded",
           "money": -200,
-          "mapLink": 101
+          "mapLink": 98
         },
         "3": {
           "randomItem": {
@@ -144,7 +144,7 @@
         "3": {
           "health": -15,
           "effect": "feetHurt",
-          "mapLink": 102
+          "mapLink": 99
         },
         "4": {
           "condition": {
@@ -152,7 +152,7 @@
           },
           "health": -120,
           "effect": "injured",
-          "mapLink": 101
+          "mapLink": 98
         }
       }
     }

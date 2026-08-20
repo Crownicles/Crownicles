@@ -3,6 +3,7 @@ import {MissionsController} from "../../../src/core/missions/MissionsController"
 import Player from "../../../src/core/database/game/models/Player";
 import {NumberChangeReason} from "../../../../Lib/src/constants/LogsConstants";
 import type {CrowniclesPacket} from "@crownicles/lib";
+import {RecipeDiscoveryService} from "../../../src/core/cooking/RecipeDiscoveryService";
 
 // Mock crowniclesInstance with all required logsDatabase methods
 vi.mock("../../../src/app", () => ({
@@ -18,14 +19,14 @@ vi.mock("../../../src/app", () => ({
 }));
 
 /**
- * This test suite verifies that the Object.assign pattern in Player methods
- * correctly synchronizes state when MissionsController.update returns modified values.
+ * This test suite verifies that MissionsController synchronizes the caller
+ * before Player mutation methods resume.
  *
  * WHY this pattern is critical:
  * When MissionsController.update is called, completing a mission can trigger rewards
  * (XP, money, points) which may complete OTHER missions (chain reaction).
- * The returned Player object contains these updated values.
- * Without Object.assign(this, ...), the original player instance loses these changes.
+ * The synchronized Player object contains these updated values.
+ * Without central caller synchronization, the original instance loses these changes.
  *
  * Example bug scenario without Object.assign:
  * 1. Player earns 100 money -> triggers "earnMoney" mission
@@ -67,7 +68,6 @@ describe("Mission chain state synchronization", () => {
 			weeklyScore: overrides.weeklyScore ?? 0,
 			level: overrides.level ?? 10,
 			// Mock methods that interact with DB
-			setMoney: vi.fn(),
 			setScore: vi.fn().mockResolvedValue(undefined),
 			needLevelUp: vi.fn().mockReturnValue(false),
 			save: vi.fn().mockResolvedValue(undefined),
@@ -83,6 +83,11 @@ describe("Mission chain state synchronization", () => {
 		return player as Player;
 	}
 
+	function synchronizeMockCaller(inputPlayer: Player, updatedPlayer: Player): Player {
+		Object.assign(inputPlayer, updatedPlayer);
+		return inputPlayer;
+	}
+
 	describe("Player.addMoney", () => {
 		it("should sync experience changes from mission rewards when earning money", async () => {
 			const player = createTestPlayer({ money: 1000, experience: 500 });
@@ -94,11 +99,11 @@ describe("Mission chain state synchronization", () => {
 
 				// Simulate what happens when a mission completes:
 				// The returned player has modified experience (mission reward)
-				return createTestPlayer({
+				return synchronizeMockCaller(inputPlayer, createTestPlayer({
 					...inputPlayer,
 					money: inputPlayer.money,
 					experience: inputPlayer.experience + 25 // Mission reward: +25 XP
-				});
+				}));
 			});
 
 			// Call the actual addMoney method
@@ -118,6 +123,7 @@ describe("Mission chain state synchronization", () => {
 			const player = createTestPlayer({ money: 1000 });
 
 			const updateSpy = vi.spyOn(MissionsController, "update").mockResolvedValue(player);
+			vi.spyOn(Player, "withLocked").mockImplementation(async (_id, body) => body(player));
 
 			await player.addMoney({
 				amount: -100,
@@ -140,12 +146,12 @@ describe("Mission chain state synchronization", () => {
 			// Mock: returns player with +25 XP and +10 score (from chain reaction)
 			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
 				opts.applyOnLockedPlayer?.(inputPlayer);
-				return createTestPlayer({
+				return synchronizeMockCaller(inputPlayer, createTestPlayer({
 					...inputPlayer,
 					money: inputPlayer.money,
 					experience: inputPlayer.experience + 25,
 					score: inputPlayer.score + 10 // Also got score from a chain reaction
-				});
+				}));
 			});
 
 			await player.addMoney({
@@ -162,9 +168,15 @@ describe("Mission chain state synchronization", () => {
 	});
 
 	describe("Player.spendMoney", () => {
-		it("keeps money awarded by the spendMoney mission before applying the debit", async () => {
-			const player = createTestPlayer({ money: 1000 });
-			vi.spyOn(MissionsController, "update").mockResolvedValue(createTestPlayer({ money: 1100 }));
+		it("applies the debit before awarding money from the spendMoney mission", async () => {
+			const player = createTestPlayer({ money: 25 });
+			let moneySeenByMission = -1;
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+				opts.applyOnLockedPlayer?.(inputPlayer);
+				moneySeenByMission = inputPlayer.money;
+				inputPlayer.money += 100;
+				return inputPlayer;
+			});
 
 			await player.spendMoney({
 				amount: 50,
@@ -172,7 +184,8 @@ describe("Mission chain state synchronization", () => {
 				reason: NumberChangeReason.SHOP
 			});
 
-			expect(player.money).toBe(1050);
+			expect(moneySeenByMission).toBe(0);
+			expect(player.money).toBe(100);
 		});
 	});
 
@@ -193,6 +206,40 @@ describe("Mission chain state synchronization", () => {
 
 			expect(player.addLevelUpPacket).not.toHaveBeenCalled();
 		});
+
+		it("emits nested mission reward levels once and in ascending order", async () => {
+			const player = createTestPlayer({ level: 10, experience: 150 });
+			player.getExperienceNeededToLevelUp = vi.fn().mockReturnValue(100);
+			player.needLevelUp = vi.fn(function(this: Player) {
+				return this.experience >= this.getExperienceNeededToLevelUp();
+			});
+			const levelEffects: string[] = [];
+			player.addLevelUpPacket = vi.fn(async (_response, level) => {
+				levelEffects.push(`packet:${level}`);
+			});
+			vi.spyOn(RecipeDiscoveryService, "syncProgressionRecipes").mockImplementation(async currentPlayer => {
+				levelEffects.push(`recipe:${currentPlayer.level}`);
+				return [];
+			});
+
+			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, missionResponse, opts) => {
+				opts.applyOnLockedPlayer?.(inputPlayer);
+				if (inputPlayer.level === 11) {
+					inputPlayer.experience += 50;
+					await inputPlayer.levelUpIfNeeded(missionResponse);
+				}
+				return inputPlayer;
+			});
+
+			await player.levelUpIfNeeded(response);
+
+			expect(levelEffects).toEqual([
+				"recipe:11",
+				"packet:11",
+				"recipe:12",
+				"packet:12"
+			]);
+		});
 	});
 
 	describe("Player.addScore", () => {
@@ -200,13 +247,14 @@ describe("Mission chain state synchronization", () => {
 			const player = createTestPlayer({ score: 100, experience: 500 });
 			const originalExperience = player.experience;
 
-			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
-				opts.applyOnLockedPlayer?.(inputPlayer);
-				return createTestPlayer({
+			vi.spyOn(MissionsController, "updateMultiple").mockImplementation(async (inputPlayer, _response, missions) => {
+				expect(missions.map(mission => mission.missionId)).toEqual(["earnPoints", "reachScore"]);
+				missions[0].applyOnLockedPlayer?.(inputPlayer);
+				return synchronizeMockCaller(inputPlayer, createTestPlayer({
 					...inputPlayer,
 					score: inputPlayer.score,
 					experience: inputPlayer.experience + 15 // Mission reward
-				});
+				}));
 			});
 
 			await player.addScore({
@@ -223,15 +271,15 @@ describe("Mission chain state synchronization", () => {
 			const player = createTestPlayer({ score: 100, weeklyScore: 200 });
 			let persistedWeeklyScore = 0;
 
-			vi.spyOn(MissionsController, "update").mockImplementation(async (inputPlayer, _response, opts) => {
+			vi.spyOn(MissionsController, "updateMultiple").mockImplementation(async (inputPlayer, _response, missions) => {
 				const lockedPlayer = createTestPlayer({
 					...inputPlayer,
 					score: inputPlayer.score,
 					weeklyScore: inputPlayer.weeklyScore
 				});
-				opts.applyOnLockedPlayer?.(lockedPlayer);
+				missions[0].applyOnLockedPlayer?.(lockedPlayer);
 				persistedWeeklyScore = lockedPlayer.weeklyScore;
-				return lockedPlayer;
+				return synchronizeMockCaller(inputPlayer, lockedPlayer);
 			});
 
 			await player.addScore({

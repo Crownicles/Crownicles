@@ -5,6 +5,7 @@ import {
 import { SmallEventConstants } from "../../../../Lib/src/constants/SmallEventConstants";
 import {
 	SmallEventBonusGuildPVEIslandOutcomeSurrounding,
+	SmallEventBonusGuildPVEIslandEmote,
 	SmallEventBonusGuildPVEIslandPacket,
 	SmallEventBonusGuildPVEIslandResultType
 } from "../../../../Lib/src/packets/smallEvents/SmallEventBonusGuildPVEIslandPacket";
@@ -43,12 +44,35 @@ async function hasEnoughMemberOnPVEIsland(player: Player): Promise<boolean> {
 	return (await Maps.getGuildMembersOnPveIsland(player)).length >= RandomUtils.randInt(1, 4);
 }
 
-type Winnings = {
+type RewardResult = {
 	amount: number;
 	isExperienceGain: boolean;
 };
 
-async function manageGuildReward(response: CrowniclesPacket[], player: Player, result: Winnings): Promise<void> {
+type Winnings = RewardResult & {
+	emoteKey: SmallEventBonusGuildPVEIslandEmote;
+};
+
+function getEmoteKey(rewardKind: Outcome, isExperienceGain: boolean): SmallEventBonusGuildPVEIslandEmote {
+	switch (rewardKind) {
+		case Outcome.EXPERIENCE:
+			return SmallEventBonusGuildPVEIslandEmote.EXPERIENCE;
+		case Outcome.MONEY:
+			return SmallEventBonusGuildPVEIslandEmote.LOST_MONEY;
+		case Outcome.LIFE:
+			return SmallEventBonusGuildPVEIslandEmote.LOST_HEALTH;
+		case Outcome.EXP_OR_POINTS_GUILD:
+			return isExperienceGain
+				? SmallEventBonusGuildPVEIslandEmote.EXPERIENCE
+				: SmallEventBonusGuildPVEIslandEmote.GUILD_POINTS;
+		default: {
+			const exhaustiveRewardKind: never = rewardKind;
+			throw new Error(`Unknown PVE island reward kind: ${exhaustiveRewardKind}`);
+		}
+	}
+}
+
+async function manageGuildReward(response: CrowniclesPacket[], player: Player, result: RewardResult): Promise<void> {
 	const guild = await Guilds.getById(player.guildId);
 	if (!guild) {
 		return;
@@ -68,7 +92,7 @@ async function manageGuildReward(response: CrowniclesPacket[], player: Player, r
 	await guild.save();
 }
 
-async function manageClassicReward(response: CrowniclesPacket[], player: Player, result: Winnings, rewardKind: Outcome): Promise<void> {
+async function manageClassicReward(response: CrowniclesPacket[], player: Player, result: RewardResult, rewardKind: Outcome): Promise<void> {
 	const reason = NumberChangeReason.SMALL_EVENT;
 	switch (rewardKind) {
 		case Outcome.MONEY:
@@ -105,17 +129,22 @@ async function applyPossibility(
 ): Promise<Winnings> {
 	const rewardRange = SmallEventDataController.instance.getById("bonusGuildPVEIsland")!
 		.getProperties<BonusGuildPVEIslandProperties>().ranges[rewardKind];
+	const isExperienceGain = rewardKind === Outcome.EXP_OR_POINTS_GUILD && RandomUtils.crowniclesRandom.bool();
 	const result = {
 		amount: RandomUtils.randInt(rewardRange.min, rewardRange.max),
-		isExperienceGain: rewardKind === Outcome.EXP_OR_POINTS_GUILD && RandomUtils.crowniclesRandom.bool()
+		isExperienceGain
 	};
 	if (issue === SmallEventBonusGuildPVEIslandResultType.SUCCESS && player.hasAGuild()) {
 		await manageGuildReward(response, player, result);
-		return result;
 	}
-	await manageClassicReward(response, player, result, rewardKind);
-	await player.save();
-	return result;
+	else {
+		await manageClassicReward(response, player, result, rewardKind);
+		await player.save();
+	}
+	return {
+		...result,
+		emoteKey: getEmoteKey(rewardKind, isExperienceGain)
+	};
 }
 
 export const smallEventFuncs: SmallEventFuncs = {

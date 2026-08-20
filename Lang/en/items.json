@@ -56,7 +56,7 @@
     "allAttack2": "Attack II",
     "allAttack3": "Attack III",
     "defense1": "Defend I",
-    "defense2": "Defend II",
+    "defense2": "Defense II",
     "defense3": "Challenge III",
     "speed1": "Speed I",
     "speed2": "Speed II",
@@ -69,7 +69,7 @@
     "maxBreath1": "Max Breath",
     "burnedDamage1": "Fire Aspect",
     "frozenDamage1": "Frosty appearance",
-    "poisonedDamage1": "Appearance of Venom"
+    "poisonedDamage1": "Venom aspect"
   },
   "categories": {
     "weapons": "Weapons",

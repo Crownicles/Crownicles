@@ -1,6 +1,6 @@
 import { Fighter } from "../../../fighter/Fighter";
 import { simpleDamageFightAction } from "../../templates/SimpleDamageFightActionTemplate";
-import { RealPlayerFighter } from "../../../fighter/RealPlayerFighter";
+import { PlayerFighter } from "../../../fighter/PlayerFighter";
 import { FightActionFunc } from "../../../../../data/FightAction";
 import {
 	attackInfo, statsInfo
@@ -34,9 +34,11 @@ function getAttackInfo(): attackInfo {
 function getStatsInfo(sender: Fighter, receiver: Fighter): statsInfo {
 	let cumulatedAttack = sender.getAttack();
 	let cumulatedSpeed = sender.getSpeed();
-	for (const member of (sender as RealPlayerFighter).getPveMembersOnIsland()) {
-		cumulatedAttack += member.attack;
-		cumulatedSpeed += member.speed;
+	if (sender instanceof PlayerFighter) {
+		for (const member of sender.getPveMembersOnIsland()) {
+			cumulatedAttack += member.attack;
+			cumulatedSpeed += member.speed;
+		}
 	}
 
 	return {

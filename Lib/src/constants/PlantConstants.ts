@@ -94,14 +94,6 @@ export interface PlantType {
 	/** Growth time in seconds */
 	growthTimeSeconds: number;
 
-	/**
-	 * Per-plant watering advance in seconds. The watering action subtracts
-	 * this duration from the plant's `plantedAt`. A value of `0` means
-	 * watering this plant is pointless (typically the fastest plants whose
-	 * cycle is shorter than the watering cooldown).
-	 */
-	wateringAdvanceSeconds: number;
-
 	/** Material IDs that this plant can produce when composted */
 	compostMaterials: number[];
 }
@@ -110,13 +102,11 @@ export interface PlantType {
  * Definitions of all 10 plant types.
  * Growth times follow a geometric ~x1.5 progression from 4 hours
  * (Common Herb) to 4 days (Ancient Tree) on rich soil.
- * Watering advances are scaled to ~1/12 of each plant's growth cycle.
  */
 export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.COMMON_HERB,
 		growthTimeSeconds: 4 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: 20 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			52, // Herbe de prairie
 			54, // Mousses
@@ -126,7 +116,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.GOLDEN_CLOVER,
 		growthTimeSeconds: 6 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: 30 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			43, // Laiton doré
 			59, // Feuilles de chêne
@@ -136,7 +125,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.LUNAR_MOSS,
 		growthTimeSeconds: 8 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: 40 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			53, // Pierre de lune
 			30, // Lavande séchée
@@ -146,7 +134,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.IRON_ROOT,
 		growthTimeSeconds: 12 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			70, // Fer brut
 			41, // Racines de gingembre
@@ -156,7 +143,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.NIGHT_MUSHROOM,
 		growthTimeSeconds: 18 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: 90 * TimeConstants.S_TIME.MINUTE,
 		compostMaterials: [
 			55, // Champignon
 			66, // Champignon vénéneux
@@ -166,7 +152,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.VENOMOUS_LEAF,
 		growthTimeSeconds: TimeConstants.S_TIME.DAY,
-		wateringAdvanceSeconds: 2 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			10, // Belladone
 			17, // Graine de ricin
@@ -176,7 +161,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.FIRE_BULB,
 		growthTimeSeconds: 36 * TimeConstants.S_TIME.HOUR,
-		wateringAdvanceSeconds: 3 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			35, // Flamme éternelle
 			82, // Soufre
@@ -186,7 +170,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.MEAT_PLANT,
 		growthTimeSeconds: 2 * TimeConstants.S_TIME.DAY,
-		wateringAdvanceSeconds: 4 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			42, // Cuir de chèvre
 			48, // Cuir d'agneau
@@ -196,7 +179,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.CRYSTAL_FLOWER,
 		growthTimeSeconds: 3 * TimeConstants.S_TIME.DAY,
-		wateringAdvanceSeconds: 6 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			34, // Rune enchantée
 			67, // Pierre précieuse
@@ -206,7 +188,6 @@ export const PLANT_TYPES: readonly PlantType[] = [
 	{
 		id: PlantId.ANCIENT_TREE,
 		growthTimeSeconds: 4 * TimeConstants.S_TIME.DAY,
-		wateringAdvanceSeconds: 8 * TimeConstants.S_TIME.HOUR,
 		compostMaterials: [
 			84, // Planche de teck
 			31, // Écorce d'ébène

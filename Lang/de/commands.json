@@ -314,7 +314,6 @@
       "17": "die versteckten Oasen des Coco-Resorts",
       "18": "die tumultartigen Stromschnellen des Flusses Vacarme",
       "19": "der Treibsand von La Dune",
-      "20": "die Friedlichen Felder der Ebenen des Gegenwaldes",
       "21": "die Verlassenen Schenken der Wunderstraße",
       "22": "die dunklen Galerien des Schreienden Holzes",
       "23": "die geheimen Gassen von Claire de Ville",
@@ -633,7 +632,7 @@
     "talismanNotOwned": "{emote:inventory.empty} **Kein Artefakt**",
     "randomItemTitle": "{{pseudo}}Sie haben etwas gefunden!",
     "randomItemAcceptTitle": "Sie haben bereits eine Ausrüstung, möchten Sie diese verkaufen?",
-    "randomItemAcceptTitlePotion": "Sie haben bereits einen Trank, was möchten Sie tun?",
+    "randomItemAcceptTitlePotion": "Sie haben bereits einen Trank. Möchten Sie Ihren aktuellen Trank durch den gefundenen Trank ersetzen?",
     "randomItemFooterPotion": "Verwende {emote:collectors.accept} , um den gefundenen Trank zu behalten und deinen aktuellen Trank zu ersetzen, {emote:items.drinkPotion} , um den gefundenen Trank zu konsumieren, {emote:collectors.refuse} , um den gefundenen Trank wegzuwerfen.",
     "randomItemFooterPotionChoice": "Benutze eine Zahl, um einen Trank durch den gefundenen Trank zu ersetzen, {emote:items.drinkPotion} , um den gefundenen Trank zu konsumieren, {emote:collectors.refuse} , um den gefundenen Trank wegzuwerfen.",
     "acceptedTitle": "{{pseudo}}Sie haben eine Ausrüstung erhalten!",
@@ -691,7 +690,7 @@
       "top_v1_player": "Bester Spieler zum Zeitpunkt des Reset von 1.0",
       "major_bug_reporter": ":lady_beetle: Personen, die große Bugs gemeldet haben.",
       "bot_owner": "Eigentümer des Bots",
-      "mission_completer": "Badge im Missionsshop gekauft",
+      "mission_completer": "Am Marché royal gekaufter Anstecker",
       "powerful_guild": "Mitglied einer leistungsfähigen Gilde",
       "legendary_pet": "Spieler, dem es gelungen ist, einen mächtigen Vertrauten abzurichten",
       "donor": ":money_with_wings: ` Donator `",
@@ -700,7 +699,7 @@
       "redactor": "Redakteur des Bots",
       "voter": ":ballot_box: Personen, die in den letzten 12 Stunden abgestimmt haben.",
       "funny": "Badge angeboten für eine lustige Person",
-      "rich": ":money_mouth: ` Badge, gekauft im Shop `",
+      "rich": "An der Börse gekaufter Anstecker",
       "top_1_before_reset": "Personen, die nach dem Reset den ersten Platz in der Rangfolge erreicht haben.",
       "very_powerful_guild": "Mitglied einer sehr mächtigen Gilde",
       "animal_lover": "Person, die Talvar dem Zwerg alle Vertrauten gezeigt hat",
@@ -782,6 +781,10 @@
     "choseMapMinutes_other": "Sie haben sich entschieden, eine Reise nach {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}** anzutreten. Diese Fahrt wird ungefähr **{{timeDisplay}}** dauern.",
     "choseMap_one": "Sie haben entschieden, in Richtung {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}** zu gehen. Diese Strecke dauert **{{time}} Stunden**.",
     "choseMap_other": "Sie haben entschieden, in Richtung {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}** zu gehen. Diese Strecke dauert **{{time}} Stunden**.",
+    "goBackMapMinutes_one": "Sie kehren in Richtung {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}** zurück, von wo Sie gekommen sind. Diese Rückfahrt dauert etwa **{{timeDisplay}}**.",
+    "goBackMapMinutes_other": "Sie kehren in Richtung {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}** zurück, von wo Sie gekommen sind. Die Rückfahrt dauert etwa **{{timeDisplay}}**.",
+    "goBackMap_one": "Sie kehren in Richtung {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}** zurück, von wo Sie gekommen sind. Die Rückfahrt dauert etwa **{{time}} Stunde**.",
+    "goBackMap_other": "Sie kehren in Richtung {{mapPrefix}} {{mapType}} {{mapEmote}} **{{mapName}}** um, von wo Sie gekommen sind. Diese Rückfahrt dauert etwa **{{time}} Stunden**.",
     "collectedPointsTitle": "geerntete Punkte:",
     "commandDescription": "Holen Sie sich einen Bericht über die Situation Ihres Charakters.",
     "commandName": "Bericht",
@@ -806,7 +809,7 @@
     "rewardEmbedTitle": "{{pseudo}}Kampfbelohnungen",
     "monsterRewardGuildXp": "{emote:unitValues.xp} Verdiente Gildenerfahrung : **{{guildXp, number}}**",
     "monsterRewardsDescription": "{emote:unitValues.money} Silber gewonnen : **{{money, number}}**\n:star: XP verdient: **{{experience, number}}**",
-    "monsterRewardsGuildPoints": ":mirror_ball: Gilde-Gewinner: **{{guildPoints, number}}**",
+    "monsterRewardsGuildPoints": "{emote:unitValues.guildPoint} Gildenpunkte verdient: **{{guildPoints, number}}**. Die Gildenkasse erhöht sich um denselben Betrag.",
     "monsterRewardsTitle": "{{pseudo}}, Kampfbelohnungen",
     "newBigEvent": ":flag_fr: Sie kamen zu **{{destination}}**!",
     "noFight": ":newspaper: ** Journal von {{pseudo}} : ** {{waitABitReaction}} | Sie verlassen sich schnell und finden Sie ein kleines Versteck! Das Monster wartet geduldig auf Sie.",
@@ -839,6 +842,8 @@
         "goToApartment": "Betreten des Logis",
         "seeNotary": "Besuchen Sie",
         "enterForge": "Die Schmiede betreten",
+        "meetScrapDealer": "Gorim kennenlernen",
+        "recycle": "Recyceln",
         "talkToEnchanter": "Mit ihm sprechen",
         "browseShop": "Den Stall untersuchen",
         "sitDown": "Sich an einen Tisch setzen",
@@ -871,7 +876,7 @@
         },
         "enchanter": {
           "label": "Zum Zauberer gehen",
-          "description": "Ein Reisender, dessen Hände mit leuchtenden Runen bedeckt sind, erregt Ihre Aufmerksamkeit. Er behauptet, jede Waffe und jedes Rüstungsteil verzaubern zu können."
+          "description": "Ein Reisender, dessen Hände von leuchtenden Zaubern umhüllt sind, zieht Ihre Aufmerksamkeit auf sich. Er behauptet, jede Waffe und jedes Rüstungsteil verzaubern zu können."
         },
         "blacksmith": {
           "label": "Zum Schmied gehen",
@@ -988,31 +993,33 @@
       },
       "enchanter": {
         "title": "{{pseudo}}Sie treffen den Zauberer",
-        "emptyInventoryStory": "{emote:city.services.enchanter} Ihr trefft einen wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in der ganzen Gegend sei und dass er eure Ausrüstung mithilfe der Runenmagie verbessern könne. Leider scheint es, als hättest du ihm im Moment keine Ausrüstung vorzuweisen, also beschließt du, zu gehen und später wiederzukommen. Beim Abschied sagt er dir jedoch, dass er nicht weiß, ob er morgen noch in dieser Stadt sein wird.",
-        "runeForWeaponOnlyArmorAvailableStory_one": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in allen Landen sei. Heute wirkt seine Rune {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Waffen. Da ihr ihm nur eine bereits verzauberte Waffe oder Rüstungsteile vorlegen könnt, mustert er euch verächtlich und seufzt, dass ihr seine Zeit verschwendet. Es ist besser, an einem anderen Tag wiederzukommen – oder mit einer unberührten Klinge, die es wert ist, mit einer Rune verziert zu werden.",
-        "runeForWeaponOnlyArmorAvailableStory_other": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in allen Landen sei. Heute wirkt seine Rune {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Waffen. Da ihr ihm jedoch nur bereits verzauberte Waffen oder Rüstungsteile vorlegen könnt, mustert er euch verächtlich und seufzt, dass ihr seine Zeit verschwendet. Es ist besser, an einem anderen Tag wiederzukommen – oder mit einer unberührten Klinge, die es wert ist, mit einer Rune verziert zu werden.",
-        "runeForArmorOnlyWeaponAvailableStory_one": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in allen Landen sei. Heute wirkt seine Rune {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Rüstungsteile. Ihr habt ihm jedoch nur bereits verzauberte Rüstungen oder Waffen vorzuweisen: Er presst die Lippen zusammen und brummt, dass ihr beide eure Zeit verschwendet. Kommt mit einem unverzauberten Rüstungsteil zurück oder an einem anderen Tag, wenn seine Rune eine andere ist.",
-        "runeForArmorOnlyWeaponAvailableStory_other": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in allen Landen sei. Heute wirkt seine Rune {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Rüstungsteile. Ihr habt ihm jedoch nur bereits verzauberte Rüstungen oder Waffen anzubieten: Er presst die Lippen zusammen und brummt, dass ihr beide eure Zeit verschwendet. Kommt mit einem unverzauberten Rüstungsteil zurück oder an einem anderen Tag, wenn seine Rune eine andere ist.",
+        "emptyInventoryStory": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er dir, dass er der einzige und beste Verzauberer in der ganzen Gegend ist und dass er deine Ausrüstung mithilfe der Magie der Verzauberungen verbessern kann. Leider scheint es, als hättest du ihm im Moment keine Ausrüstung vorzuweisen, also beschließt du, zu gehen und später wiederzukommen.",
+        "runeForWeaponOnlyArmorAvailableStory_one": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in der ganzen Gegend sei. Heute funktioniert sein Zauber {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur bei Waffen. Da Sie ihm nur eine bereits verzauberte Waffe oder Rüstungsteile vorlegen können, mustert er Sie verächtlich und seufzt, dass Sie seine Zeit verschwenden. Komm lieber an einem anderen Tag wieder oder mit einer unberührten Klinge, die es wert ist, verzaubert zu werden.",
+        "runeForWeaponOnlyArmorAvailableStory_other": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in allen Landen sei. Heute funktioniert sein Zauber {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur auf Waffen. Da ihr ihm jedoch nur bereits verzauberte Waffen oder Rüstungsteile vorlegen könnt, mustert er euch verächtlich und seufzt, dass ihr seine Zeit verschwendet. Kommt lieber an einem anderen Tag wieder oder bringt eine unzauberte Klinge mit, die es wert ist, verzaubert zu werden.",
+        "runeForArmorOnlyWeaponAvailableStory_one": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in der ganzen Gegend sei. Heute funktioniert sein Verzauberungszauber {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur noch bei Rüstungsteilen. Ihr habt ihm nur eine bereits verzauberte Rüstung oder Waffen anzubieten: Er presst die Lippen zusammen und brummt, dass ihr beide eure Zeit verschwendet. Kommt mit einem unverzauberten Schutzgegenstand zurück, der verzaubert werden soll, oder an einem anderen Tag, wenn sein Zauber ein anderer ist.",
+        "runeForArmorOnlyWeaponAvailableStory_other": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er euch, dass er der einzige und beste Verzauberer in der ganzen Gegend sei. Heute funktioniert sein Verzauberungszauber {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** nur noch bei Rüstungsteilen. Ihr habt jedoch nur bereits verzauberte Rüstungen oder Waffen, die ihr ihm zeigen könnt: Er presst die Lippen zusammen und brummt, dass ihr beide eure Zeit verschwendet. Kommt mit einem noch unverzauberten Schutzgegenstand zurück oder an einem anderen Tag, wenn sein Zauber anders ist.",
         "allEnchantedStory": "{emote:city.services.enchanter} Ihr trefft einen wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene begutachtet er eure Ausrüstung und schüttelt dann genervt den Kopf: Alles, was ihr tragt, ist bereits verzaubert. Er erinnert euch schroff daran, dass es die Schmiede sind, die bestehende Verzauberungen entfernen, nicht er, und dass er sich kategorisch weigert, diese bereits mit Runen versehenen Gegenstände anzufassen. Kommt mit unverzauberter Ausrüstung zurück oder versucht euer Glück morgen.",
-        "story": "{emote:city.services.enchanter} Ihr trefft einen wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er dir, dass er der einzige und beste Verzauberer in der ganzen Gegend sei und dass er deine Ausrüstung mithilfe der Magie der Runen verbessern könne.",
-        "enchantmentNoReduction": "Er kann Ihnen nämlich die Verzauberung {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** für **{{price}}**.\nSie nehmen sich einen Moment Zeit, um über seinen Vorschlag nachzudenken, aber er sagt, dass Sie, wenn es nicht passt, immer noch morgen wieder zu ihm kommen können, weil er dann andere Runen zur Verfügung hat. Allerdings garantiert er nicht, dass er dann immer noch in dieser Stadt sein wird...",
-        "enchantmentWithReduction": "Er kann Ihnen nämlich die Verzauberung {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** für **{{price}}**. Er fügt hinzu, dass er Ihnen einen Rabatt gegeben hat, weil er Leute schätzt, die sich für Magie interessieren!\nSie nehmen sich etwas Zeit, um über seinen Vorschlag nachzudenken, aber er sagt, dass Sie morgen immer noch zu ihm kommen können, wenn es nicht passt, weil er dann andere Runen zur Verfügung hat. Allerdings garantiert er nicht, dass er dann immer noch in dieser Stadt sein wird ...",
+        "story": "{emote:city.services.enchanter} Ihr begegnet einem wandernden Verzauberer, der sich als Mernil vorstellt. Mit hochmütiger Miene erklärt er dir, dass er der einzige und beste Verzauberer in der ganzen Gegend sei und dass er deine Ausrüstung mithilfe der Magie der Verzauberungen verbessern könne.",
+        "tomorrowStory": "Bevor ihr aufbrecht, verrät euch Mernil, wohin er morgen weiterziehen wird: Er wird sich **{{nextCity}}** befinden, mit dem Zauber {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Ihr solltet euch beeilen, ihn einzuholen, bevor er wieder aufbricht.",
+        "tomorrowSameCityStory": "Mernil scheint seinen Aufenthalt in **{{nextCity}}** genossen zu haben: Er wird morgen noch dort bleiben, etwas länger als geplant, mit dem Zauber {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Nutzt die Gelegenheit, um eure Ausrüstung vorzubereiten, bevor er sich wieder auf den Weg macht.",
+        "enchantmentNoReduction": "Tatsächlich kann er Ihnen den Zauber {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** für **{{price}}** auferlegen.\nIhr nehmt euch Zeit, über seinen Vorschlag nachzudenken, doch er weist darauf hin, dass ihr, falls euch das nicht zusagt, morgen jederzeit wieder zu ihm kommen könnt, da er dann weitere Verzauberungen zur Verfügung haben wird. Er kann jedoch nicht garantieren, dass er immer in dieser Stadt sein wird...",
+        "enchantmentWithReduction": "Tatsächlich kann er euch den Zauber {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** für **{{price}}** auferlegen. Er fügt hinzu, dass er euch einen Rabatt gewährt hat, da er Menschen schätzt, die sich für Magie interessieren!\nSie nehmen sich Zeit, über sein Angebot nachzudenken, doch er weist darauf hin, dass Sie, falls es Ihnen nicht zusagt, morgen gerne wieder vorbeikommen können, da er dann weitere Verzauberungen zur Auswahl haben wird. Er kann jedoch nicht garantieren, dass er noch lange in dieser Stadt bleiben wird...",
         "descriptions": {
-          "pvpAttack": "Mernil lässt die Rune zwischen seinen Fingern schimmern und erläutert deren Wirkung: Sie erhöht direkt den Schaden, der anderen Abenteurern zugefügt wird, ohne die Werte der Waffe zu verändern.",
-          "pveAttack": "Mernil lässt die Rune zwischen seinen Fingern leuchten und erläutert deren Wirkung: Sie erhöht direkt den Schaden, der Monstern zugefügt wird, ohne die Werte der Waffe zu verändern.",
-          "allAttack": "Mernil lässt die Rune zwischen seinen Fingern schimmern und erläutert deren Wirkung: Sie erhöht direkt den allen Gegnern zugefügten Schaden, ohne die Werte der Waffe zu verändern.",
-          "defense": "Mernil lässt einen schützenden Schimmer über die Rune gleiten: Seine Magie verringert den im Kampf erlittenen Schaden direkt, ohne die Rüstungswerte zu erhöhen.",
-          "speed": "Mernil lässt die Rune hell aufleuchten: Seine Magie erhöht die Geschwindigkeit des Trägers, sodass dieser im Kampf schneller handeln kann.",
-          "maxEnergy": "Mernil erwärmt die Rune in seiner Handfläche: Seine Magie erhöht die maximale Energie des Trägers und stärkt so dessen Ausdauer.",
-          "baseBreath": "Mernil haucht auf die Rune, die sanft zu leuchten beginnt: Ihr Träger beginnt jeden Kampf mit mehr Atem.",
-          "maxBreath": "Mernil schließt einen Luftwirbel in der Rune ein: Ihr Träger kann im Verlauf des Kampfes mehr Atemkraft ansammeln.",
-          "burnedDamage": "Mernil entfesselt die in der Rune eingeschlossenen Glut: Sie verstärken den verursachten Brandschaden und mindern den erlittenen Frostschaden.",
-          "frozenDamage": "Mernil setzt den in der Rune eingeschlossenen Frost frei: Er verstärkt den verursachten Frostschaden und mindert den erlittenen Brandschaden.",
-          "poisonedDamage": "Mernil setzt die in der Rune eingeschlossenen Dämpfe frei: Sie verstärken den verursachten Giftschaden und mindern den erlittenen Giftschaden."
+          "pvpAttack": "Mernil stellt euch diesen Zauber als entscheidenden Vorteil vor: Er erhöht direkt den Schaden, der anderen Abenteurern zugefügt wird, ohne die Werte der Waffe zu verändern.",
+          "pveAttack": "Mernil erklärt euch, dass dieser Zauber den Schaden, der Monstern zugefügt wird, direkt erhöht, ohne die Werte der Waffe zu verändern.",
+          "allAttack": "Mernil lobt die Vorzüge dieses Zaubers, der den allen Gegnern zugefügten Schaden direkt erhöht, ohne die Werte der Waffe zu verändern.",
+          "defense": "Mernil beschreibt diesen Zauber als unauffälligen Schutz: Er verringert den im Kampf erlittenen Schaden direkt, ohne die Rüstungswerte zu erhöhen.",
+          "speed": "Laut Mernil beschleunigt dieser Zauber die Bewegungen seines Trägers, der im Kampf schneller handeln kann.",
+          "maxEnergy": "Mernil erklärt, dass dieser Zauber die maximale Energie seines Trägers erhöht und somit dessen Ausdauer stärkt.",
+          "baseBreath": "„Dieser Zauber ermöglicht es seinem Träger, jeden Kampf mit mehr Ausdauer zu beginnen“, erklärt Mernil.",
+          "maxBreath": "„Dieser Zauber ermöglicht es seinem Träger, im Laufe des Kampfes mehr Atem zu sammeln“, erklärt Mernil.",
+          "burnedDamage": "Mernil erklärt die Wirkungen dieses Zaubers: Er verstärkt den verursachten Brandschaden und mindert den erlittenen Frostschaden.",
+          "frozenDamage": "Mernil erklärt die Wirkungsweise dieses Zaubers: Er verstärkt den verursachten Frostschaden und mindert den erlittenen Feuerschaden.",
+          "poisonedDamage": "Mernil enthüllt die Eigenschaften dieses Zaubers: Er verstärkt den verursachten Giftschaden und mindert den erlittenen Giftschaden."
         },
         "hasAtLeastOneEnchantedItem": "Als Mernil außerdem Ihre bereits verzauberten Ausrüstungsgegenstände sieht, runzelt er die Stirn. Er sagt, dass es die Aufgabe der Schmiede sei, die Gegenstände zu entzaubern, nicht seine, und dass er sie nicht berühren werde.",
         "confirmDescription": "{emote:collectors.warning} Diese Validierung wendet die Verzauberung {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** auf die folgende Ausrüstung:\n{{item}}\n\nKosten: **{{price}}**.\n{{balance}}",
-        "acceptStory": "Er nimmt sofort Ihre Ausrüstung und murmelt einige Beschwörungsformeln, während er eine Rune darüber schwenkt... Nach einer Weile gibt er Ihnen den Gegenstand zurück und sagt Ihnen, dass er fertig ist! Ihre Ausrüstung ist nun verzaubert mit {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})**. Machen Sie guten Gebrauch davon!",
+        "acceptStory": "Er nimmt sofort eure Ausrüstung entgegen und flüstert ein paar Zaubersprüche, während er einen verzauberten Kristall darüber schwingt… Nach wenigen Augenblicken gibt er euch den Gegenstand zurück und sagt, dass es erledigt ist! Eure Ausrüstung ist nun mit {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** verzaubert. Nutzt sie gut!",
         "acceptTitle": "{{pseudo}}Der Zauber ist gelungen!",
         "priceMoneyOnly": "{{money}} {emote:unitValues.money}",
         "priceMoneyAndGems": "{{money}} {emote:unitValues.money} und {{gems}} {emote:unitValues.gem}",
@@ -1060,6 +1067,21 @@
         "notEnoughMoney": "{emote:messages.refuse} Der Schmied schüttelt den Kopf, während er Ihre Münzen zählt. Ihnen fehlt **{{missingMoney, number}}** {emote:unitValues.money}, um seine Dienste zu bezahlen.",
         "missingMaterialsTitle": "{{pseudo}}Unzureichende Materialien!",
         "missingMaterialsDescription": "Sie haben die für diese Verbesserung benötigten Materialien nicht beim Schmied. Sammle sie auf deinen Abenteuern oder kaufe sie direkt beim Schmied."
+      },
+      "scrapDealer": {
+        "menuLabel": "Treffen mit dem Schrotthändler",
+        "menuDescription": "Gorim der Eisenbrecher zerlegt die Reserveausrüstung, um sie in Rohstoffe umzuwandeln.",
+        "title": "{{pseudo}}, treffen Sie den Schrotthändler",
+        "description": "{emote:city.services.scrapDealer} In der Werkstatt von Gorim, dem Eisenbrecher, hallt das Klirren der Hämmer wider. Ausrangierte Ausrüstung kann zerlegt und in Rohstoffe umgewandelt werden, wobei die Menge an Rohstoffen umso größer ist, je weiter die Ausrüstung verbessert wurde. Ein Teil des Wertes der Ausrüstung wird zudem in Münzen zurückerstattet.",
+        "descriptionNoItems": "{emote:city.services.scrapDealer} Gorim der Eisenbrecher findet keine Ausrüstung, die er zerlegen könnte. Nur nicht verzauberte Ersatzwaffen und -rüstungen können recycelt werden.",
+        "itemPreview": "{{itemDisplay}}\n\n{{materials}}\n{emote:unitValues.money} Gesammelte Münzen: **{{money, number}}**",
+        "confirmTitle": "{{pseudo}}, Demontage einer Anlage",
+        "confirmDescription": "{emote:city.services.scrapDealer} Gorim der Eisenbrecher legt die Ausrüstung auf seine Werkbank. Die Demontage ist endgültig: Die Ausrüstung wird zerstört und nur die aufgeführten Materialien werden wiedergewonnen.\n\n{{itemDisplay}}\n\n{{materials}}\n{emote:unitValues.money} Wiedergewonnene Münzen: **{{money, number}}**",
+        "confirmRecycle": "Demontage bestätigen",
+        "backToItems": "Zurück zur Ausrüstung",
+        "backToCity": "Die Werkstatt verlassen",
+        "recycleTitle": "{{pseudo}}, Recycling gelungen!",
+        "recycleSuccess": "{emote:city.services.scrapDealer} Gorim der Schrottzerstörer zerlegt die Ausrüstung methodisch. Die gewonnenen Materialien werden deinem Vorrat hinzugefügt, und er kauft dir die Reststücke für **{{money, number}}** {emote:unitValues.money} ab.\n\n{{materialLoot}}"
       },
       "royalBlacksmith": {
         "menuLabel": "Den königlichen Schmied treffen",
@@ -1272,7 +1294,7 @@
           "waterNothingToWater": "{emote:messages.info} Keine wachsenden Pflanzen, die gegossen werden müssen.",
           "wateredPlots_one": "{{count}} Parzelle",
           "wateredPlots_other": "{{count}} Parzellen",
-          "waterSuccess_zero": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. Ihr Wachstum wurde um eine Stunde beschleunigt.",
+          "waterSuccess_zero": "{emote:city.gardenStatus.water} Du hast **{{wateredPlots}}** gegossen. Ihr Wachstum hat sich um {{growthPercent}} % verbessert.",
           "waterSuccess_one": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. **{{slotsBecameReady}}** Pflanze ist nun bereit, geerntet zu werden!",
           "waterSuccess_other": "{emote:city.gardenStatus.water} Sie haben **{{wateredPlots}}** gegossen. **{{slotsBecameReady}}** Pflanzen sind nun bereit, geerntet zu werden!",
           "waterSuccessTitle": "{{pseudo}} seinen Garten bewässert hat",
@@ -1568,7 +1590,7 @@
     "acceptedTitle": "{{pseudo}}, Vertrauter befreit!",
     "canceledTitle": "{{pseudo}}Die Befreiung wird aufgehoben.",
     "canceledDesc": "Der Vertraute wurde nicht befreit.",
-    "confirmDesc": ":warning: Sind Sie sicher, dass Sie **{{pet}}** befreien wollen? Es ist nicht möglich, eine einmal durchgeführte Aktion rückgängig zu machen.",
+    "confirmDesc": "{emote:collectors.warning} Möchten Sie **{{pet}}** wirklich freigeben? Sobald der Vorgang abgeschlossen ist, kann er nicht mehr rückgängig gemacht werden.",
     "acceptedDesc": "Adieu **{{pet}}**...",
     "isFeisty": "{emote:collectors.warning} Achtung: Die Befreiung eines galligen Vertrauten kostet Sie {{cost, number}} {emote:unitValues.money}.",
     "petOnExpedition": "Ihr Vertrauter befindet sich derzeit auf einer Expedition und kann nicht befreit werden.",
@@ -1730,55 +1752,52 @@
         "plantHeader_bold": "{emote:plants.{{plantId}}} **$t(models:plants.{{plantId}})** :",
         "plants": {
           "tomorrow": {
-            "bigDrop": "- **Morgen**: Massive Bestände von $t(models:plants.{{plantId}}) werden in die Regale kommen, die Preise werden zusammenbrechen.",
-            "drop": "- **Morgen**: Das Angebot von $t(models:plants.{{plantId}}) wird etwas größer sein als die Nachfrage, die Preise werden voraussichtlich sinken.",
+            "bigDrop": "• **Morgen**: Riesige Mengen werden in die Regale gelangen, die Preise werden einbrechen.",
+            "drop": "• **Morgen**: Das Angebot wird etwas größer sein als die Nachfrage, daher dürften die Preise sinken.",
             "stable": "- **Morgen**: Für diese Pflanze gibt es nichts Besonderes zu berichten, die Kurse werden stabil bleiben.",
-            "rise": "- **Morgen**: Die Vorräte an $t(models:plants.{{plantId}}) gehen bei den Kräuterhändlern zur Neige, die Preise werden steigen.",
-            "bigRise": "- **Morgen**: Ein Mangel an $t(models:plants.{{plantId}}) zeichnet sich ab, die Preise werden in die Höhe schnellen!"
+            "rise": "• **Morgen**: Die Vorräte bei den Kräuterhändlern gehen zur Neige, die Preise werden steigen.",
+            "bigRise": "• **Morgen**: Es zeichnet sich eine Verknappung ab, die Preise werden in die Höhe schnellen!"
           },
           "threeDays": {
-            "bigDrop": "- **In drei Tagen** : Der Markt wird von $t(models:plants.{{plantId}})überschwemmt werden , die Preise werden stark fallen.",
-            "drop": "- **In 3 Tagen**: Eine leichte Überproduktion von $t(models:plants.{{plantId}}) wird die Preise senken.",
+            "bigDrop": "• **In 3 Tagen**: Der Markt wird mit dieser Pflanze überschwemmt sein, die Preise werden stark fallen.",
+            "drop": "• **In 3 Tagen**: Eine leichte Überproduktion wird zu einem Preisrückgang führen.",
             "stable": "- **In drei Tagen**: Der Markt für diese Pflanze wird ausgeglichen bleiben.",
-            "rise": "- **In drei Tagen**: Die Nachfrage nach $t(models:plants.{{plantId}}) wird deutlich ansteigen, die Preise werden steigen.",
-            "bigRise": "- **In drei Tagen** : Die Kräuterhändler werden Mühe haben, $t(models:plants.{{plantId}})zu finden, die Preise werden explodieren!"
+            "rise": "• **In 3 Tagen**: Die Nachfrage wird deutlich steigen, die Preise werden in die Höhe schnellen.",
+            "bigRise": "• **In 3 Tagen**: Die Kräuterhändler werden Schwierigkeiten haben, sich mit Waren zu versorgen, die Preise werden in die Höhe schnellen!"
           },
           "oneWeek": {
-            "bigDrop": "- **In einer Woche**: Eine massive Überproduktion wird die Preise für $t(models:plants.{{plantId}}) in den Keller treiben.",
-            "drop": "- **In einer Woche**: Der Markt für $t(models:plants.{{plantId}}) wird einen leichten Überschuss aufweisen.",
+            "bigDrop": "• **In einer Woche**: Eine massive Überproduktion wird zu einem Preisverfall führen.",
+            "drop": "• **In einer Woche**: Auf dem Markt wird ein leichter Überschuss herrschen.",
             "stable": "- **In einer Woche**: Der Markt für diese Pflanze dürfte sein derzeitiges Gleichgewicht beibehalten.",
-            "rise": "- **In einer Woche**: Die Reserven von $t(models:plants.{{plantId}}) werden zur Neige gehen, die Preise werden steigen.",
-            "bigRise": "- **In einer Woche**: Eine Dürre wird den Anbau von $t(models:plants.{{plantId}})treffen , die Preise werden auf einem Höchststand sein!"
+            "rise": "• **In einer Woche**: Die Vorräte werden zur Neige gehen, die Preise werden steigen.",
+            "bigRise": "• **In einer Woche**: Eine Dürre wird die Ernten treffen, die Preise werden auf ein Allzeithoch steigen!"
           }
         },
         "outro": "*Der Berater rollt das Pergament zusammen und reicht es Ihnen mit einem wissenden Lächeln.*",
-        "horizonLabels": {
-          "tomorrow": "morgen",
-          "threeDays": "in 3 Tagen",
-          "oneWeek": "in einer Woche"
-        },
+        "rotationHorizon_one": "morgen",
+        "rotationHorizon_other": "in {{count}} Tagen",
         "rotation": "{emote:inventory.stock} **Bestandsänderung**: Der Kräuterkundler wird seine Auswahl erneuern **{{horizon}}**. Die neu verfügbaren Pflanzen werden sein: {{newPlants}}.",
         "newPlants": {
           "tomorrow": {
-            "bigDrop": "- **Morgen**: Der Preis für $t(models:plants.{{plantId}}) wird weit unter seinem üblichen Wert liegen, ein hervorragendes Geschäft!",
-            "drop": "- **Morgen**: Der Preis für $t(models:plants.{{plantId}}) wird etwas unter dem aktuellen Preis liegen.",
-            "stable": "- **Morgen**: Der Preis von $t(models:plants.{{plantId}}) wird seinem üblichen Wert entsprechen.",
-            "rise": "- **Morgen**: Der Preis für $t(models:plants.{{plantId}}) wird im Vergleich zum Normalfall etwas höher sein.",
-            "bigRise": "- **Morgen**: Der Preis für $t(models:plants.{{plantId}}) wird weit über seinem üblichen Wert liegen, besser warten."
+            "bigDrop": "• **Morgen**: Der Preis wird deutlich unter dem üblichen Wert liegen – ein echtes Schnäppchen!",
+            "drop": "• **Morgen**: Der Preis wird etwas unter dem aktuellen Preis liegen.",
+            "stable": "• **Morgen**: Der Preis entspricht dem üblichen Wert.",
+            "rise": "• **Morgen**: Der Preis wird etwas höher sein als üblich.",
+            "bigRise": "• **Morgen**: Der Preis wird deutlich über dem üblichen Wert liegen, es ist besser, noch abzuwarten."
           },
           "threeDays": {
-            "bigDrop": "- **In drei Tagen**: Die $t(models:plants.{{plantId}}) wird zu einem sehr günstigen Preis angeboten.",
-            "drop": "- **In drei Tagen**: Der Preis für $t(models:plants.{{plantId}}) wird etwas unter dem Durchschnitt liegen.",
-            "stable": "- **In drei Tagen** : Der Preis von $t(models:plants.{{plantId}}) wird nicht überraschend sein.",
-            "rise": "- **In drei Tagen**: Die $t(models:plants.{{plantId}}) wird etwas teurer sein als üblich.",
-            "bigRise": "- **In drei Tagen**: Die $t(models:plants.{{plantId}}) wird viel mehr kosten als sonst."
+            "bigDrop": "• **In 3 Tagen**: Der Preis wird sehr günstig sein.",
+            "drop": "• **In 3 Tagen**: Der Preis wird etwas unter dem Durchschnitt liegen.",
+            "stable": "• **In 3 Tagen**: Der Preis wird keine Überraschung sein.",
+            "rise": "• **In 3 Tagen**: Der Preis wird etwas höher sein als sonst.",
+            "bigRise": "• **In 3 Tagen**: Der Preis wird deutlich höher sein als sonst."
           },
           "oneWeek": {
-            "bigDrop": "- **In einer Woche**: Der Preis für $t(models:plants.{{plantId}}) wird außergewöhnlich niedrig sein.",
-            "drop": "- **In einer Woche**: Die $t(models:plants.{{plantId}}) wird zu einem leicht reduzierten Preis angeboten.",
-            "stable": "- **In einer Woche** : Der Preis für $t(models:plants.{{plantId}}) wird im mittleren Bereich liegen.",
-            "rise": "- **In einer Woche**: Der Preis für $t(models:plants.{{plantId}}) wird etwas über dem Normalwert liegen.",
-            "bigRise": "- **In einer Woche** : Die $t(models:plants.{{plantId}}) wird zu einem exorbitanten Preis verkauft!"
+            "bigDrop": "• **In einer Woche**: Der Preis wird außergewöhnlich niedrig sein.",
+            "drop": "• **In einer Woche**: Der Preis wird leicht gesenkt.",
+            "stable": "• **In einer Woche**: Der Preis wird im mittleren Bereich liegen.",
+            "rise": "• **In einer Woche**: Der Preis wird etwas über dem Normalpreis liegen.",
+            "bigRise": "• **In einer Woche**: Der Preis wird exorbitant sein!"
           }
         }
       },
@@ -2700,6 +2719,7 @@
     "noMoney": "Sie haben nicht genug Geld, um diesen Kauf zu tätigen...",
     "notHungry": "Es scheint, dass **{{pet}}** keinen Hunger hat...",
     "guildStorageEmpty": "Das Nahrungslager Ihrer Gilde ist leer. Kaufen Sie Nahrung mit {command:guildshop}.",
+    "situationChanged": "Dein Begleiter hat sich verändert, während du ihn gefüttert hast. Bitte versuche es erneut.",
     "cancelled": "Fütterung abgesagt!",
     "resultTitle": "{{pseudo}}Fütterung durchgeführt!",
     "result": {

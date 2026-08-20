@@ -19,7 +19,9 @@ import {
 import {
 	PetEntities, PetEntity
 } from "../../core/database/game/models/PetEntity";
-import { ReactionCollectorInstance } from "../../core/utils/ReactionsCollector";
+import {
+	EndCallback, ReactionCollectorInstance
+} from "../../core/utils/ReactionsCollector";
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import {
 	ReactionCollectorReaction,
@@ -327,35 +329,96 @@ async function switchPetWithGuild(
 	);
 }
 
-function getEndCallback(player: Player) {
-	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
+const PET_TRANSFER_CHOICES = {
+	DEPOSIT: "deposit",
+	WITHDRAW: "withdraw",
+	SWITCH: "switch"
+} as const;
 
-		const firstReaction = collector.getFirstReaction();
-		if (!firstReaction || firstReaction.reaction.type === ReactionCollectorRefuseReaction.name) {
-			response.push(makePacket(CommandPetTransferCancelErrorPacket, {}));
+type PetTransferChoice =
+	| { kind: typeof PET_TRANSFER_CHOICES.DEPOSIT }
+	| {
+		kind: typeof PET_TRANSFER_CHOICES.WITHDRAW; petEntityId: number;
+	}
+	| {
+		kind: typeof PET_TRANSFER_CHOICES.SWITCH; petEntityId: number;
+	};
+
+/**
+ * Read the collected reaction as one of the three transfer choices. Returns null when the
+ * player refused or let the collector expire.
+ */
+function readTransferChoice(collector: ReactionCollectorInstance): PetTransferChoice | null {
+	const firstReaction = collector.getFirstReaction();
+	if (!firstReaction) {
+		return null;
+	}
+
+	switch (firstReaction.reaction.type) {
+		case ReactionCollectorPetTransferDepositReaction.name:
+			return { kind: PET_TRANSFER_CHOICES.DEPOSIT };
+		case ReactionCollectorPetTransferWithdrawReaction.name:
+			return {
+				kind: PET_TRANSFER_CHOICES.WITHDRAW,
+				petEntityId: (firstReaction.reaction.data as ReactionCollectorPetTransferWithdrawReaction).petEntityId
+			};
+		case ReactionCollectorPetTransferSwitchReaction.name:
+			return {
+				kind: PET_TRANSFER_CHOICES.SWITCH,
+				petEntityId: (firstReaction.reaction.data as ReactionCollectorPetTransferSwitchReaction).petEntityId
+			};
+		default:
+			return null;
+	}
+}
+
+/**
+ * Apply the transfer chosen by the player. The reaction has already been
+ * validated, so only the persistence work is left.
+ */
+async function applyChosenTransfer(
+	response: CrowniclesPacket[],
+	player: Player,
+	choice: PetTransferChoice
+): Promise<void> {
+	await player.reload();
+
+	switch (choice.kind) {
+		case PET_TRANSFER_CHOICES.DEPOSIT:
+			await deposePetToGuild(response, player);
 			return;
-		}
+		case PET_TRANSFER_CHOICES.WITHDRAW:
+			await withdrawPetFromGuild(response, player, choice.petEntityId);
+			return;
+		case PET_TRANSFER_CHOICES.SWITCH:
+			await switchPetWithGuild(response, player, choice.petEntityId);
+			return;
+		default:
 
-		const depositOwnPet = firstReaction.reaction.type === ReactionCollectorPetTransferDepositReaction.name || firstReaction.reaction.type === ReactionCollectorPetTransferSwitchReaction.name;
-		const withdrawPetEntityId = firstReaction.reaction.type === ReactionCollectorPetTransferWithdrawReaction.name
-			? (firstReaction.reaction.data as ReactionCollectorPetTransferWithdrawReaction).petEntityId
-			: firstReaction.reaction.type === ReactionCollectorPetTransferSwitchReaction.name
-				? (firstReaction.reaction.data as ReactionCollectorPetTransferSwitchReaction).petEntityId
-				: null;
+			// `choice` narrows to never here: the compiler proves every choice is handled
+			throw new Error(`unhandled pet transfer choice: ${JSON.stringify(choice)}`);
+	}
+}
 
-		await player.reload();
-
-		if (depositOwnPet) {
-			if (withdrawPetEntityId) {
-				await switchPetWithGuild(response, player, withdrawPetEntityId);
+function getEndCallback(player: Player): EndCallback {
+	return async (collector: ReactionCollectorInstance, response: CrowniclesPacket[]): Promise<void> => {
+		/*
+		 * The collector block expires on its own deadline, so it is renewed here: the player must stay
+		 * blocked until `petId` is persisted, otherwise a pet command fired right after the choice would
+		 * read the pet being transferred away.
+		 */
+		BlockingUtils.blockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
+		try {
+			const choice = readTransferChoice(collector);
+			if (!choice) {
+				response.push(makePacket(CommandPetTransferCancelErrorPacket, {}));
+				return;
 			}
-			else {
-				await deposePetToGuild(response, player);
-			}
+
+			await applyChosenTransfer(response, player, choice);
 		}
-		else if (withdrawPetEntityId !== null) {
-			await withdrawPetFromGuild(response, player, withdrawPetEntityId);
+		finally {
+			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.PET_TRANSFER);
 		}
 	};
 }

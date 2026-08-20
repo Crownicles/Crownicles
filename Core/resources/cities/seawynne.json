@@ -4,6 +4,9 @@
   "maps": [
     26
   ],
+  "services": [
+    "blacksmith"
+  ],
   "shops": [
     "generalShop",
     "tanner",

@@ -38,7 +38,7 @@ import {
 	isRecipeSecret
 } from "./CookingSlotRotation";
 import {
-	CookingSlotData, RecipeSlotData, PinnedRecipeInfo, RecipeIngredients
+	CookingSlotData, RecipeSlotData, PinnedRecipeInfo, RecipeIngredients, RecipeDisplayInfo
 } from "../../../../Lib/src/types/CookingTypes";
 import { RecipeDiscoveryService } from "./RecipeDiscoveryService";
 import {
@@ -63,7 +63,7 @@ export interface CraftResult {
 	levelUp: boolean;
 	newLevel?: number;
 	newGrade?: string;
-	discoveredRecipeIds: string[];
+	discoveredRecipes: RecipeDisplayInfo[];
 	bonusOutput: boolean;
 }
 
@@ -447,8 +447,8 @@ export class CookingService {
 		});
 
 		// Discover cooking-level recipes on level up
-		const discoveredRecipeIds = levelResult.levelUp
-			? (await RecipeDiscoveryService.discoverCookingLevelRecipes(player)).map(r => r.id)
+		const discoveredRecipes = levelResult.levelUp
+			? await RecipeDiscoveryService.discoverCookingLevelRecipes(player)
 			: [];
 
 		return {
@@ -456,7 +456,7 @@ export class CookingService {
 			xpGained: xp,
 			materialSaved,
 			...levelResult,
-			discoveredRecipeIds,
+			discoveredRecipes,
 			bonusOutput
 		};
 	}

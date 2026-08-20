@@ -3,6 +3,15 @@ import {
 	PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 
+export const SmallEventBonusGuildPVEIslandEmote = {
+	EXPERIENCE: "xp",
+	GUILD_POINTS: "guildPoint",
+	LOST_HEALTH: "lostHealth",
+	LOST_MONEY: "lostMoney"
+} as const;
+
+export type SmallEventBonusGuildPVEIslandEmote = typeof SmallEventBonusGuildPVEIslandEmote[keyof typeof SmallEventBonusGuildPVEIslandEmote];
+
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
 export class SmallEventBonusGuildPVEIslandPacket extends SmallEventPacket {
 	event!: number;
@@ -14,6 +23,8 @@ export class SmallEventBonusGuildPVEIslandPacket extends SmallEventPacket {
 	amount!: number;
 
 	isExperienceGain!: boolean;
+
+	emoteKey?: SmallEventBonusGuildPVEIslandEmote;
 }
 
 export enum SmallEventBonusGuildPVEIslandOutcomeSurrounding {

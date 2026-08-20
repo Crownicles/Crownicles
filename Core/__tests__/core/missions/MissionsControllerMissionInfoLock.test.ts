@@ -1,8 +1,10 @@
 import {
-	describe, expect, it, vi
+	beforeEach, describe, expect, it, vi
 } from "vitest";
 import type Player from "../../../src/core/database/game/models/Player";
-import { MissionsController } from "../../../src/core/missions/MissionsController";
+import {
+	MissionsController, UnsavedPlayerChangesError
+} from "../../../src/core/missions/MissionsController";
 import type { CrowniclesPacket } from "@crownicles/lib";
 
 const mocks = vi.hoisted(() => ({
@@ -49,17 +51,22 @@ vi.mock("../../../../Lib/src/locks/withLockedEntities", async importOriginal => 
 	};
 });
 
-function createPlayer(): Player {
+function createPlayer(changedFields: false | string[] = false): Player {
 	return {
-		id: 393
+		id: 393,
+		changed: vi.fn().mockReturnValue(changedFields)
 	} as Player;
 }
 
 describe("MissionsController.update mission info lock", () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		mocks.calls = [];
+	});
+
 	it("creates the player mission info row before acquiring the mission lock", async () => {
 		const player = createPlayer();
 		const response: CrowniclesPacket[] = [];
-		mocks.calls = [];
 		mocks.getDailyMission.mockImplementation(async () => {
 			mocks.calls.push("dailyMission");
 			return {};
@@ -78,5 +85,37 @@ describe("MissionsController.update mission info lock", () => {
 		expect(updatedPlayer).toBe(player);
 		expect(mocks.getPlayerMissionInfo).toHaveBeenCalledWith(player.id);
 		expect(mocks.calls).toEqual(["dailyMission", "missionInfo", "lock"]);
+	});
+
+	it("rejects pending player changes before preparing mission locks", async () => {
+		const player = createPlayer(["money", "guildId"]);
+
+		await expect(MissionsController.update(player, [], { missionId: "earnMoney" }))
+			.rejects.toThrow(UnsavedPlayerChangesError);
+		await expect(MissionsController.updateMultiple(player, [], [{ missionId: "earnMoney" }]))
+			.rejects.toThrow("money, guildId");
+
+		expect(mocks.getDailyMission).not.toHaveBeenCalled();
+		expect(mocks.getPlayerMissionInfo).not.toHaveBeenCalled();
+		expect(mocks.withLockedEntities).not.toHaveBeenCalled();
+	});
+
+	it("synchronizes the caller instance with the locked result", async () => {
+		const player = createPlayer();
+		const lockedPlayer = Object.assign(createPlayer(), {
+			money: 1250,
+			experience: 750
+		});
+		mocks.getDailyMission.mockResolvedValue({});
+		mocks.getPlayerMissionInfo.mockResolvedValue({});
+		mocks.withLockedEntities.mockResolvedValue(lockedPlayer);
+
+		const updatedPlayer = await MissionsController.update(player, [], { missionId: "earnMoney" });
+
+		expect(updatedPlayer).toBe(player);
+		expect(player).toMatchObject({
+			money: 1250,
+			experience: 750
+		});
 	});
 });

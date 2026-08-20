@@ -34,13 +34,22 @@ import { BlessingManager } from "../blessings/BlessingManager";
 import { PetEntities } from "../database/game/models/PetEntity";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { assertUnderLock } from "../../../../Lib/src/locks/CLSNamespace";
 import { CrowniclesLogger } from "../../../../Lib/src/logs/CrowniclesLogger";
+import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { RecipeDiscoverySource } from "../../../../Lib/src/constants/CookingConstants";
 
 
-type MissionInformations = {
+export type LockedPlayerMutation = (lockedPlayer: Player) => void;
+
+const MISSION_UPDATE_CALLERS = {
+	UPDATE: "MissionsController.update",
+	UPDATE_MULTIPLE: "MissionsController.updateMultiple"
+} as const;
+
+export type MissionInformations = {
 	missionId: string;
 
 	/**
@@ -65,14 +74,19 @@ type MissionInformations = {
 	 * by the re-fetch nor lost to a concurrent writer.
 	 *
 	 * Do NOT mutate the caller's player before invoking `update`; let this
-	 * callback own the mutation. The caller will receive the up-to-date
-	 * locked instance back from `update` and can mirror it onto its own
-	 * reference via `Object.assign`.
+	 * callback own the mutation. The caller instance is synchronized with
+	 * the committed state before `update` resolves.
 	 *
 	 * @see https://github.com/Crownicles/Crownicles/issues/4207
 	 */
-	applyOnLockedPlayer?: (lockedPlayer: Player) => void;
+	applyOnLockedPlayer?: LockedPlayerMutation;
 };
+
+/**
+ * Mission update declared by a `Player` mutator: the mutation itself is owned by
+ * the mutator and injected separately, so it must not be part of the declaration.
+ */
+export type MissionInformationsWithoutMutation = Omit<MissionInformations, "applyOnLockedPlayer">;
 
 /**
  * Internal shape passed to all *UnderLock helpers once the optional `count`
@@ -97,7 +111,33 @@ type SpecialMissionCompletion = {
 	campaign: boolean;
 };
 
+type MissionLockContext = {
+	player: Player;
+	missionInfo: PlayerMissionsInfo;
+	dailyMission: DailyMission;
+	response: CrowniclesPacket[];
+};
+
+export class UnsavedPlayerChangesError extends Error {
+	constructor(caller: string, playerId: number, changedFields: string[]) {
+		super(`${caller}: player ${playerId} has unsaved changes: ${changedFields.join(", ")}`);
+		this.name = "UnsavedPlayerChangesError";
+	}
+}
+
 export abstract class MissionsController {
+	private static assertPlayerHasNoPendingChanges(player: Player, caller: string): void {
+		const changedFields = player.changed();
+		if (changedFields) {
+			throw new UnsavedPlayerChangesError(caller, player.id, changedFields);
+		}
+	}
+
+	private static synchronizeCaller(player: Player, updatedPlayer: Player): Player {
+		Object.assign(player, updatedPlayer);
+		return player;
+	}
+
 	static getMissionInterface(missionId: string): IMission {
 		try {
 			return (require(`./interfaces/${missionId}`) as {
@@ -119,25 +159,31 @@ export abstract class MissionsController {
 	 * @param specialMissionCompletion
 	 */
 	static async checkCompletedMissionsUnderLock(
-		player: Player,
+		player: Locked<Player>,
 		missionSlots: MissionSlot[],
-		missionInfo: PlayerMissionsInfo,
+		missionInfo: Locked<PlayerMissionsInfo>,
 		response: CrowniclesPacket[],
 		specialMissionCompletion: SpecialMissionCompletion,
 		dailyMission: DailyMission
 	): Promise<Player> {
 		assertUnderLock("MissionsController.checkCompletedMissionsUnderLock");
-		const completedMissions = await MissionsController.completeAndUpdateMissionsUnderLock(player, missionSlots, specialMissionCompletion, dailyMission);
+		const completedMissions = await MissionsController.completeAndUpdateMissionsUnderLock(player, missionSlots, missionInfo, specialMissionCompletion, dailyMission);
 		if (completedMissions.length === 0) {
 			return player;
 		}
+		const discoveredRecipes = await RecipeDiscoveryService.syncProgressionRecipes(
+			player,
+			RecipeDiscoverySource.CAMPAIGN_MILESTONE,
+			Campaign.getAmountOfCampaignCompleted(missionInfo.getCampaignBlob())
+		);
 		player = await MissionsController.updatePlayerStats(player, missionInfo, completedMissions, response);
 		MissionsController.applyBlessingsToCompletedMissions(completedMissions);
 		const nextCampaignMission = await MissionsController.getNextCampaignMission(player, completedMissions);
 		response.push(makePacket(MissionsCompletedPacket, {
 			missions: MissionsController.prepareBaseMissions(completedMissions),
 			keycloakId: player.keycloakId,
-			...nextCampaignMission ? { nextCampaignMission } : {}
+			...nextCampaignMission ? { nextCampaignMission } : {},
+			...discoveredRecipes.length > 0 ? { discoveredRecipes } : {}
 		}));
 		await MissionsController.giveCampaignPetRewards(completedMissions, player, response);
 		return player;
@@ -198,16 +244,15 @@ export abstract class MissionsController {
 	 * @param response
 	 */
 	private static async handleDailyStreakMissionUnderLock(
-		player: Player,
-		missionSlots: MissionSlot[],
-		missionInfo: PlayerMissionsInfo,
-		response: CrowniclesPacket[]
+		context: MissionLockContext,
+		missionSlots: MissionSlot[]
 	): Promise<void> {
 		assertUnderLock("MissionsController.handleDailyStreakMissionUnderLock");
+		const { missionInfo } = context;
 		const streakMission = missionSlots.find(slot => slot.missionId === "dailyStreak");
 		if (!streakMission || streakMission.isCompleted()) {
 			// Update the mission if the player doesn't have it or has already completed it
-			await MissionsController.update(player, response, { missionId: "dailyStreak" });
+			await MissionsController.runSingleUpdateUnderLock(context, { missionId: "dailyStreak" });
 			return;
 		}
 
@@ -229,7 +274,7 @@ export abstract class MissionsController {
 		}
 
 		// Update the dailyStreak mission
-		await MissionsController.update(player, response, { missionId: "dailyStreak" });
+		await MissionsController.runSingleUpdateUnderLock(context, { missionId: "dailyStreak" });
 	}
 
 	/**
@@ -284,7 +329,7 @@ export abstract class MissionsController {
 	 * @param params
 	 * @param set
 	 */
-	static update(
+	static async update(
 		player: Player,
 		response: CrowniclesPacket[],
 		{
@@ -295,24 +340,45 @@ export abstract class MissionsController {
 			applyOnLockedPlayer
 		}: MissionInformations
 	): Promise<Player> {
-		return MissionsController.runUnderMissionLock(player, "MissionsController.update", (lockedPlayer, lockedMissionInfo, dailyMission) => {
-			/*
-			 * Apply the caller-supplied mutation on the locked instance so
-			 * the change is persisted under the same row lock as the mission
-			 * progression — see `applyOnLockedPlayer` JSDoc and #4207.
-			 */
-			applyOnLockedPlayer?.(lockedPlayer);
-			const resolvedCount = typeof count === "function" ? count(lockedPlayer) : count;
-			const info: ResolvedMissionInformations = {
-				missionId, count: resolvedCount, params, set, applyOnLockedPlayer
-			};
-			return MissionsController.runUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, info, dailyMission);
-		});
+		MissionsController.assertPlayerHasNoPendingChanges(player, MISSION_UPDATE_CALLERS.UPDATE);
+		const updatedPlayer = await MissionsController.runUnderMissionLock(
+			player,
+			MISSION_UPDATE_CALLERS.UPDATE,
+			(lockedPlayer, lockedMissionInfo, dailyMission) => MissionsController.runSingleUpdateUnderLock({
+				player: lockedPlayer,
+				missionInfo: lockedMissionInfo,
+				dailyMission,
+				response
+			}, {
+				missionId, count, params, set, applyOnLockedPlayer
+			})
+		);
+		return MissionsController.synchronizeCaller(player, updatedPlayer);
+	}
+
+	private static runSingleUpdateUnderLock(
+		context: MissionLockContext,
+		missionInformation: MissionInformations
+	): Promise<Player> {
+		assertUnderLock("MissionsController.runSingleUpdateUnderLock");
+		const {
+			player, missionInfo, dailyMission, response
+		} = context;
+		missionInformation.applyOnLockedPlayer?.(player);
+		const resolvedCount = typeof missionInformation.count === "function"
+			? missionInformation.count(player)
+			: missionInformation.count ?? 1;
+		return MissionsController.runUpdateUnderLock(player, missionInfo, response, {
+			...missionInformation,
+			count: resolvedCount,
+			params: missionInformation.params ?? {},
+			set: missionInformation.set ?? false
+		}, dailyMission);
 	}
 
 	private static async runUpdateUnderLock(
-		player: Player,
-		missionInfo: PlayerMissionsInfo,
+		player: Locked<Player>,
+		missionInfo: Locked<PlayerMissionsInfo>,
 		response: CrowniclesPacket[],
 		info: ResolvedMissionInformations,
 		dailyMission: DailyMission
@@ -351,22 +417,24 @@ export abstract class MissionsController {
 	 * @param response the response packets
 	 * @param missionInformationsList the mission updates to apply together
 	 */
-	static updateMultiple(
+	static async updateMultiple(
 		player: Player,
 		response: CrowniclesPacket[],
 		missionInformationsList: MissionInformations[]
 	): Promise<Player> {
-		return MissionsController.runUnderMissionLock(
+		MissionsController.assertPlayerHasNoPendingChanges(player, MISSION_UPDATE_CALLERS.UPDATE_MULTIPLE);
+		const updatedPlayer = await MissionsController.runUnderMissionLock(
 			player,
-			"MissionsController.updateMultiple",
+			MISSION_UPDATE_CALLERS.UPDATE_MULTIPLE,
 			(lockedPlayer, lockedMissionInfo, dailyMission) =>
 				MissionsController.runBatchUpdateUnderLock(lockedPlayer, lockedMissionInfo, response, missionInformationsList, dailyMission)
 		);
+		return MissionsController.synchronizeCaller(player, updatedPlayer);
 	}
 
 	private static async runBatchUpdateUnderLock(
-		player: Player,
-		missionInfo: PlayerMissionsInfo,
+		player: Locked<Player>,
+		missionInfo: Locked<PlayerMissionsInfo>,
 		response: CrowniclesPacket[],
 		missionInformationsList: MissionInformations[],
 		dailyMission: DailyMission
@@ -413,14 +481,15 @@ export abstract class MissionsController {
 	 * @param specialMissionCompletion
 	 */
 	static async completeAndUpdateMissionsUnderLock(
-		player: Player,
+		player: Locked<Player>,
 		missionSlots: MissionSlot[],
+		missionInfo: Locked<PlayerMissionsInfo>,
 		specialMissionCompletion: SpecialMissionCompletion,
 		dailyMission: DailyMission
 	): Promise<CompletedMission[]> {
 		assertUnderLock("MissionsController.completeAndUpdateMissionsUnderLock");
 		const completedMissions: CompletedMission[] = [];
-		completedMissions.push(...await Campaign.updatePlayerCampaign(specialMissionCompletion.campaign, player));
+		completedMissions.push(...await Campaign.updatePlayerCampaign(specialMissionCompletion.campaign, player, missionInfo));
 		for (const mission of missionSlots.filter(mission => mission.isCompleted() && !mission.isCampaign())) {
 			completedMissions.push({
 				...mission.toJSON(),
@@ -475,7 +544,7 @@ export abstract class MissionsController {
 		return player;
 	}
 
-	static async handleExpiredMissionsUnderLock(player: Player, missionSlots: MissionSlot[], response: CrowniclesPacket[]): Promise<void> {
+	static async handleExpiredMissionsUnderLock(player: Locked<Player>, missionSlots: MissionSlot[], response: CrowniclesPacket[]): Promise<void> {
 		assertUnderLock("MissionsController.handleExpiredMissionsUnderLock");
 		const expiredMissions: MissionSlot[] = [];
 		for (const mission of missionSlots) {
@@ -645,9 +714,9 @@ export abstract class MissionsController {
 		ctx: {
 			missionInformation: ResolvedMissionInformations;
 			missionInterface: IMission;
-			missionInfo: PlayerMissionsInfo;
+			missionInfo: Locked<PlayerMissionsInfo>;
 			missionSlots: MissionSlot[];
-			player: Player;
+			player: Locked<Player>;
 			response: CrowniclesPacket[];
 			count: number;
 			dailyMission: DailyMission;
@@ -677,7 +746,12 @@ export abstract class MissionsController {
 		await missionInfo.save();
 
 		if (missionInfo.dailyMissionNumberDone >= dailyMission.missionObjective) {
-			await MissionsController.handleDailyStreakMissionUnderLock(player, missionSlots, missionInfo, response);
+			await MissionsController.handleDailyStreakMissionUnderLock({
+				player,
+				missionInfo,
+				dailyMission,
+				response
+			}, missionSlots);
 			missionInfo.lastDailyMissionCompleted = new Date();
 			await missionInfo.save();
 			return true;
@@ -688,8 +762,8 @@ export abstract class MissionsController {
 	private static async updateMissionsCountsUnderLock(
 		missionInformation: ResolvedMissionInformations,
 		missionSlots: MissionSlot[],
-		missionInfo: PlayerMissionsInfo,
-		player: Player,
+		missionInfo: Locked<PlayerMissionsInfo>,
+		player: Locked<Player>,
 		response: CrowniclesPacket[],
 		dailyMission: DailyMission
 	): Promise<SpecialMissionCompletion> {

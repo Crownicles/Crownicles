@@ -1,7 +1,7 @@
 import {
 	CrowniclesPacket, makePacket
 } from "../../../../Lib/src/packets/CrowniclesPacket";
-import { PetEntities } from "../../core/database/game/models/PetEntity";
+import { PetEntity } from "../../core/database/game/models/PetEntity";
 import {
 	CommandPetNickPacketReq,
 	CommandPetNickPacketRes
@@ -13,7 +13,61 @@ import {
 } from "../../core/utils/CommandUtils";
 import Player from "../../core/database/game/models/Player";
 import { crowniclesInstance } from "../../app";
+import {
+	Locked, LockedRowNotFoundError, withLockedEntities
+} from "../../../../Lib/src/locks/withLockedEntities";
 
+/**
+ * In-lock body: the pet may have been transferred, sold or freed between the
+ * command being accepted and the write, so the ownership is re-checked here.
+ */
+async function applyLockedRename(
+	locked: {
+		player: Locked<Player>; pet: Locked<PetEntity>;
+	},
+	expectedPetId: number,
+	nickname: string
+): Promise<PetEntity | null> {
+	const {
+		player, pet
+	} = locked;
+
+	if (player.petId !== expectedPetId) {
+		return null;
+	}
+
+	pet.nickname = nickname;
+	await pet.save();
+	return pet;
+}
+
+/**
+ * Persist the new nickname under a player + pet lock. Returns null when the player
+ * no longer owns that pet, or when the pet row vanished concurrently.
+ */
+export async function renameOwnPet(player: Player, expectedPetId: number, nickname: string): Promise<PetEntity | null> {
+	try {
+		return await withLockedEntities(
+			[
+				Player.lockKey(player.id),
+				PetEntity.lockKey(expectedPetId)
+			] as const,
+			async ([lockedPlayer, lockedPet]) => await applyLockedRename(
+				{
+					player: lockedPlayer, pet: lockedPet
+				},
+				expectedPetId,
+				nickname
+			)
+		);
+	}
+	catch (error) {
+		if (!(error instanceof LockedRowNotFoundError)) {
+			throw error;
+		}
+		return null;
+	}
+}
 
 export default class PetNickCommand {
 	@commandRequires(CommandPetNickPacketReq, {
@@ -22,9 +76,8 @@ export default class PetNickCommand {
 		whereAllowed: CommandUtils.WHERE.EVERYWHERE
 	})
 	async execute(response: CrowniclesPacket[], player: Player, packet: CommandPetNickPacketReq): Promise<void> {
-		const playerPet = await PetEntities.getById(player.petId);
-
-		if (!playerPet) {
+		const expectedPetId = player.petId;
+		if (expectedPetId === null) {
 			response.push(makePacket(CommandPetNickPacketRes, {
 				foundPet: false
 			}));
@@ -32,34 +85,30 @@ export default class PetNickCommand {
 		}
 
 		const newPetNickName = packet.newNickname;
-
-		if (!newPetNickName) {
-			// No nickname provided, reset the nickname to None
-			response.push(makePacket(CommandPetNickPacketRes, {
-				foundPet: true,
-				newNickname: undefined,
-				nickNameIsAcceptable: true
-			}));
-		}
-		else {
-			if (!checkNameString(newPetNickName, PetConstants.NICKNAME_LENGTH_RANGE)) {
-				response.push(makePacket(CommandPetNickPacketRes, {
-					foundPet: true,
-					newNickname: newPetNickName,
-					nickNameIsAcceptable: false
-				}));
-				return;
-			}
+		if (newPetNickName && !checkNameString(newPetNickName, PetConstants.NICKNAME_LENGTH_RANGE)) {
 			response.push(makePacket(CommandPetNickPacketRes, {
 				foundPet: true,
 				newNickname: newPetNickName,
-				nickNameIsAcceptable: true
+				nickNameIsAcceptable: false
 			}));
+			return;
 		}
 
-		playerPet.nickname = newPetNickName ?? "";
-		await playerPet.save();
+		// An empty nickname resets it to None
+		const renamedPet = await renameOwnPet(player, expectedPetId, newPetNickName ?? "");
+		if (!renamedPet) {
+			response.push(makePacket(CommandPetNickPacketRes, {
+				foundPet: false
+			}));
+			return;
+		}
 
-		crowniclesInstance?.logsDatabase.logPetNickname(playerPet, player.keycloakId).then();
+		response.push(makePacket(CommandPetNickPacketRes, {
+			foundPet: true,
+			newNickname: newPetNickName,
+			nickNameIsAcceptable: true
+		}));
+
+		crowniclesInstance?.logsDatabase.logPetNickname(renamedPet, player.keycloakId).then();
 	}
 }

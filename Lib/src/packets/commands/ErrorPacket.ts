@@ -2,9 +2,13 @@ import {
 	CrowniclesPacket, PacketDirection, sendablePacket
 } from "../CrowniclesPacket";
 
+/**
+ * An unexpected failure happened while processing a packet.
+ * Only carries the reason we wrote ourselves, so the player can report it: the caught exception stays server-side.
+ */
 @sendablePacket(PacketDirection.BACK_TO_FRONT)
-export class ErrorPacket extends CrowniclesPacket {
-	message!: string;
+export class ErrorInternalPacket extends CrowniclesPacket {
+	reason!: string;
 }
 
 @sendablePacket(PacketDirection.BACK_TO_FRONT)

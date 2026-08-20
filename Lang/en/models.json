@@ -7,7 +7,7 @@
     "101": "Heat shield",
     "102": "Mythril armor",
     "103": "Faceplate",
-    "104": "Faceplate protection 4",
+    "104": "Breastplate protection 4",
     "105": "Cuirass",
     "106": "Shield 3 in 1",
     "107": "Mk IX armor",
@@ -40,7 +40,7 @@
     "31": "Shield of solitude",
     "32": "Royal shield",
     "33": "Scutum",
-    "34": "Roundel",
+    "34": "Roudache",
     "35": "Vibranium shield",
     "36": "Spiked shield",
     "37": "Geneva Conventions",
@@ -119,7 +119,7 @@
     "10": "Archer",
     "11": "Gunner",
     "12": "Squire",
-    "13": "Horse rider",
+    "13": "Cavalier",
     "14": "Pikeman",
     "15": "Knight",
     "16": "Paladin",
@@ -138,7 +138,7 @@
     "6": "Mailed",
     "7": "Tank",
     "8": "Rock thrower",
-    "9": "Slinger"
+    "9": "Rebel"
   },
   "classes_plural": {
     "0": "Recruits",
@@ -239,7 +239,7 @@
       "name_other": "Blessings"
     },
     "bite": {
-      "success": "is helped by **{{petNickname}}** who decides to bite his opponent."
+      "success": "is helped by **{{petNickname}}** who decides to bite his opponent violently."
     },
     "bleeding": {
       "name": "is bleeding",
@@ -280,16 +280,16 @@
     },
     "breathTakingAttack": {
       "description": "Inflicts a small amount of damage but can steal your opponent's breath or slow them down.",
-      "name_one": "Breath-taking attack",
+      "name_one": "Breath-stealing attack",
       "name_other": "Breath-taking attacks"
     },
     "buildBarrage": {
-      "success": "is helped by **{{petNickname}}** who builds a dam to protect his master."
+      "success": "is helped by **{{petNickname}}** who builds a barrier to protect his master."
     },
     "burned": {
       "name": "burned",
       "new": "is burned.",
-      "active": "suffers from his burn.",
+      "active": "suffers from its burn.",
       "stop": "is no longer burnt."
     },
     "callOfTheSea": {
@@ -664,10 +664,10 @@
       "customMessage": "cannot attack."
     },
     "outOfBreath": {
-      "active": "is too out of breath to attack and has to catch his breath."
+      "active": "is too out of breath to attack and has to catch its breath."
     },
     "outrage": {
-      "name": "angry",
+      "name": "outrage",
       "new": "is angry.",
       "active": "is angry.",
       "stop": "is no longer angry but becomes stunned."
@@ -738,7 +738,7 @@
     "poisoned": {
       "name": "poisoned",
       "new": "is poisoned.",
-      "active": "suffers from his poisoning.",
+      "active": "suffers from poisoning.",
       "stop": "is no longer poisoned."
     },
     "poisonousAttack": {
@@ -794,7 +794,7 @@
       "name_other": "Ram Attacks"
     },
     "resting": {
-      "description": "Applied as healing to the caster.",
+      "description": "Applied as healing to the caster. The amount of energy recovered is divided by 4 after 4 uses.",
       "customMessage": "rests...",
       "name_one": "Rest",
       "name_other": "Rests"
@@ -911,7 +911,7 @@
       "name_other": "Stealth"
     },
     "stealWeapon": {
-      "failure": "appeals to **{{petNickname}}** for a little help, but the creature, finding no treasure worthy of his interest on the adversary, refuses to venture into hostile territory.",
+      "failure": "appeals to **{{petNickname}}** for a little help, but the creature, finding no treasure worthy of its interest on the adversary, refuses to venture into hostile territory.",
       "success": "asks for help from **{{petNickname}}** who bravely dashes forward and seizes the enemy's weapon in an act of boldness."
     },
     "stoneSkinAttack": {
@@ -1029,11 +1029,11 @@
     "1": {
       "description": "A large sandy beach on the edge of the town.",
       "name": "Sentinel Beach",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "10": {
-      "description": "An anciently fortified city, Ville Forte is not what it used to be. Ravaged by the old war, only a dozen houses and peasants remain. The rest of the old fortification isn't more than ruins.",
+      "description": "An ancient fortified city, Ville Forte is but a shadow of its former self. Ravaged by the old war, only a dozen houses and peasants remain. The rest of the old fortification is nothing but ruins.",
       "name": "Ville Forte",
       "particle": "of",
       "atParticle": "at",
@@ -1042,55 +1042,55 @@
     "1000": {
       "description": "A large beach of black volcanic sand. It takes its name from its very particular color. The first men to set foot on the black beach feared a great curse. This is obviously not the case. Be careful though, the black sand stains your feet and clothes.",
       "name": "Black beach",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "1001": {
       "description": "A huge forest that covers almost the entire island. Fine particles of ash fall from the Grumble Volcano, which makes the visibility in this forest rather difficult. It is therefore very little explored.",
       "name": "Forest of twilight",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "1002": {
       "description": "A small village of about twenty houses, partially destroyed, which is located near the forest of twilight. Nobody knows exactly why this village is in ruins. Many think that it is the village of the former inhabitants who succumbed to the lava flows of the Grumble Volcano. But others put forward the theory of a disease, the plague and many rats. There is not a single inhabitant left here...",
       "name": "Village in ruins",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1003": {
       "description": "This old abandoned mine passes under the steep path and the mountains. It is so large and labyrinthine that it ends up in the heart of the volcano. It is however difficult to get there. Be careful though, some people would have found old banana remains in the misty mine.",
       "name": "Misty mine",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "1004": {
       "description": "This path is the only real path to the top of the Grumble Volcano. It is very difficult to use and very dangerous. Many men have died trying to use it. At your own risk.",
       "name": "Steep path",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1005": {
-      "description": "The centerpiece of the volcanic island, this volcano is still active. It pours several tons of ash per year on this small island, which only grows. The lava that flows in the center of the island is in such great quantity that an underground channel called Lava Channel runs for several kilometers. From the boats on the water, you can see this channel boiling the water in depth. This volcano is said to be the creator of several small islands in the area, such as the Ice Island.",
-      "name": "Grumble volcano",
-      "particle": "of the",
+      "description": "The centerpiece of the volcanic island, this volcano is still active. It pours several tons of ash per year on this small island, which only grows. The lava that flows in the center is in such great quantity that an underground channel called Lava Channel runs for several kilometers. From the boats on the water, you can see this channel boiling the water deep below. This volcano is said to be the creator of several small islands in the area, such as the Ice Island.",
+      "name": "Rumbling volcano",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "11": {
-      "description": "True last road which still allows to go around the Mount Celestrum from the north, the Great Road is still widely used, but mainly by brigands.",
-      "name": "Great Road",
-      "particle": "of the",
+      "description": "The last true road that still allows you to bypass Mount Celestrum to the north; the Great Road is still widely used today, primarily by brigands.",
+      "name": "Great Axe",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1100": {
       "description": "This shoreline is the first thing we see when we arrive at the icy island. It bears its name from the noise coming from the sailors when they docked. Obviously, they came from the volcanic island where the temperature is much warmer.",
-      "name": "Cool cool shore",
-      "particle": "of the",
+      "name": "Icy-icy Shore",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1101": {
       "description": "A frozen land where the climate is merciless. Only the strongest adventurers dare to brave its glacial expanses.",
       "name": "Tundra",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "1102": {
@@ -1120,7 +1120,7 @@
     "1106": {
       "description": "A once-thriving village, now reduced to ruins and desolation. Only the cries of suffering of lost souls remind us that life once existed here.",
       "name": "Village devastated",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "1107": {
@@ -1167,124 +1167,118 @@
     "12": {
       "description": "A great empty Nordic plain, without much interest.",
       "name": "The Expanse",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in"
     },
     "13": {
-      "description": "A difficult course. Muddy and wet, the Marshy Road connects the Expanse to the Crab River.",
+      "description": "A hard-to-access path, muddy and wet. The Marshy Road connects the Expanse to the Crab River.",
       "name": "Marshy Road",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "14": {
-      "description": "A large lake where families enjoy to round up. The Vacarme river flows to there.",
+      "description": "A large lake where families enjoy gathering. The Vacarme river flows into it.",
       "name": "Mirage Lake",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "15": {
       "description": "Mount Celestrum is the dominant mountain in the region. Celestrum, being several kilometers high, is visible to all. It is said to bear the name of the ancient goddess. Moreover, only one person managed to climb to the top. Only their initials are known: M-B.",
       "name": "Mount Celestrum",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "16": {
       "description": "Small and dangerous path bordering the Vacarme river. Be careful not to fall off.",
       "name": "Wolves Path",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "17": {
       "description": "Warm village bordering the Kings' Valley. It is a welcoming oasis for transit travelers.",
       "name": "Coco Village",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to",
       "inParticle": "in the"
     },
     "18": {
       "description": "This river owes its name to the noise produced by its strong current which took the lives of many villagers.",
-      "name": "Vacarme river",
-      "particle": "of the",
+      "name": "Vacarme River",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "19": {
-      "description": "Beach created by the strong winds from the Kings' Valley. The Dune protects the Backwoods Plains from heat and gathers water from the Vacarme river.",
+      "description": "A beach formed by the strong winds of the Valley of the Kings. The dune protects the surrounding land from the heat and channels water from the Vacarme River.",
       "name": "The Dune",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in"
     },
     "1999": {
       "description": "An old wooden boat, it seems to hold up thanks to the repairs of the workers. It is ready to leave and is waiting for your arrival.",
       "name": "Boat to leave the island",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "2": {
       "description": "A small road that takes you to the countryside from Mergagnan and vice versa.",
       "name": "Rural Path",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
-    },
-    "20": {
-      "description": "A vast and peaceful plain, for agricultural purposes.",
-      "name": "Backwoods Plains",
-      "particle": "of the",
-      "atParticle": "to"
     },
     "21": {
       "description": "A road, very popular with the villagers. Lots of small sellers settle there for a day ultimately creating a huge market.",
       "name": "Road of Wonders",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "22": {
       "description": "Ill-famed forest near Claire de Ville. Howling Woods has a bad reputation. Hideout of many bandits and outlaws, it owes its name mainly from its doubtful practices, hundreds of years ago.",
       "name": "Howling Woods",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "23": {
       "description": "Large commercial city and economical crossroad, Claire de Ville hasn't always been that welcoming. Very poor at the beginning, she managed to quickly develop thanks to its many shops and hostels which offers a great choice to wanderers of the region. Claire de Ville is also known for its calm and its order.",
       "name": "Claire de Ville",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in",
       "inParticle": "in"
     },
     "24": {
       "description": "A very steep road that leads to Claire de Ville. Everything depends on which way you're following it.",
-      "name": "Climbing road",
-      "particle": "of the",
+      "name": "Climbing Road",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "25": {
       "description": "Everything is in the name. A river well appreciated by fishmongers from Claire de Ville.",
       "name": "Crabs' River",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "26": {
       "description": "A peaceful town on the edge of the Sentinel Beach.",
       "name": "Seawynne",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in",
       "inParticle": "in"
     },
     "27": {
       "description": "A forest at the foot of Mount Celestrum",
       "name": "Celestrum Forest",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "28": {
       "description": "Entrance to the king's castle. Surrounded by a thick wall, it seems to be able to resist every conceivable attack.",
-      "name": "Castle's entrance",
-      "particle": "of",
+      "name": "Castle Gates",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "29": {
       "description": "A vast room adorned with numerous works of art.",
       "name": "Reception room",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "3": {
@@ -1296,7 +1290,7 @@
     "32": {
       "description": "The road which leads to the King's castle.",
       "name": "Road to the King's castle",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in"
     },
     "33": {
@@ -1325,38 +1319,38 @@
     "4": {
       "description": "Huge forest at the South of the Cradle. It is said that many travelers got lost there.",
       "name": "Oldster's Forest",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "5": {
-      "description": "A way named after its furrow within the abundant nature at the South of the Oldster's forest.",
+      "description": "A path named after its furrow within the lush nature in the south of the Oldster's forest.",
       "name": "Daedalus Path",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "6": {
       "description": "A peaceful village known for its welcoming inn.",
       "name": "Boug-Coton",
-      "particle": "of",
+      "particle": "towards",
       "atParticle": "in",
       "inParticle": "in"
     },
     "7": {
       "description": "Hot sandy desert named in honor of the region's ancient kings.",
       "name": "Kings' Valley",
-      "particle": "of",
+      "particle": "towards the",
       "atParticle": "at"
     },
     "8": {
       "description": "A major crossroad that links main paths to the West of Mount Celestrum.",
       "name": "Crossroads of Fates",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "to"
     },
     "9": {
       "description": "Formerly important trade route connecting the Cradle and Ville Forte, only old chipped pavement remains of the Main Road.",
       "name": "Main Road",
-      "particle": "of the",
+      "particle": "towards the",
       "atParticle": "at"
     }
   },
@@ -1439,7 +1433,7 @@
     },
     "ruins": {
       "name": "Ruins",
-      "prefix": "of the"
+      "prefix": "the"
     },
     "testZone": {
       "name": "",
@@ -1505,7 +1499,7 @@
     "bigFeast": "Participate in a big feast",
     "buyApartment": "Owning a home",
     "buyHome": "Buying a House",
-    "buyApartments": "Own a home at {{count}}",
+    "buyApartments": "Own {{count}} dwellings",
     "buyGuildPetFood_one": "Buy {{count}} pet food",
     "buyGuildPetFood_other": "Buy {{count}} pet food",
     "buyItemFromAlderic": "Buy an item from Aldéric",
@@ -1527,8 +1521,8 @@
     "cookRecipes_other": "Make {{count}} recipes",
     "cultivatePlants_one": "Harvesting {{count}} plant",
     "cultivatePlants_other": "Harvesting {{count}} plants",
-    "getAncestralTrees_one": "Harvest or buy {{count}} ancestral tree shoots",
-    "getAncestralTrees_other": "Harvest or buy {{count}} ancestral tree sprouts",
+    "getAncestralTrees_one": "Harvest or buy {{count}} ancestral tree shoot",
+    "getAncestralTrees_other": "Harvest or buy {{count}} ancestral tree shoots",
     "dailyPotionsStock": "Buy the whole stock of daily potions",
     "depositChestItem_one": "Place the {{count}} item in the chest in your house",
     "depositChestItem_other": "Place {{count}} items in your home's safe",
@@ -1539,7 +1533,7 @@
     "drinkAlcohol": "Drink an alcoholic beverage",
     "drinkEnergyPotion_one": "Drink {{count}} energy potion",
     "drinkEnergyPotion_other": "Drink {{count}} energy potions",
-    "drinkPotionRarity": "Drink a potion of rarity {{variantText}} or more",
+    "drinkPotionRarity": "Drink a potion of rarity {{variantText}} or higher",
     "drinkPotionWithoutEffect_one": "Drink {{count}} potion without effect",
     "drinkPotionWithoutEffect_other": "Drink {{count}} potions without effect",
     "drinkPotion_one": "Drink {{count}} potion",
@@ -1552,7 +1546,7 @@
     "earnTokens_other": "Win {{count}} tokens {emote:unitValues.token}",
     "earnTokensInOneExpedition_one": "Win {{count}} {emote:unitValues.token} tokens in a single expedition",
     "earnTokensInOneExpedition_other": "Win {{count}} {emote:unitValues.token} tokens in a single expedition",
-    "earnXP": "Win {{count, number}} {emote:unitValues.xp}",
+    "earnXP": "Earn {{count, number}} {emote:unitValues.xp}",
     "enchantItem": "Enchanting a Weapon or Shield",
     "exploreDifferentPlaces": "Explore {{count}} different places",
     "fightAttacks": "Do {{count}} {{variantText}} in fights",
@@ -1563,12 +1557,12 @@
     "fightStreak": "Do a fight for {{count}} consecutive days",
     "findOrBuyItem_one": "Find or buy {{count}} item",
     "findOrBuyItem_other": "Find or buy {{count}} items",
-    "finishWithAttack": "Use {{count}} times the {{variantText}} to finish your opponent",
+    "finishWithAttack": "Use the {{variantText}} {{count}} times",
     "fromPlaceToPlace": "{{variantText}}",
     "gainRage_one": "Earn {{count}} rage point {emote:unitValues.rage} by beating wild animals",
     "gainRage_other": "Earn {{count}} rage points {emote:unitValues.rage} by defeating wild animals",
     "goToPlace": "Travel to {{variantText}}",
-    "guildDailyFromSomeoneElse": "Receive a guild daily reward without asking for it",
+    "guildDailyFromSomeoneElse": "Receive a guild reward without claiming it",
     "guildDaily_one": "Receive {{count}} guild reward",
     "guildDaily_other": "Receive {{count}} guild rewards",
     "guildHasPoints": "Help your guild get more than {{count, number}} guild points {emote:unitValues.guildPoint}",
@@ -1588,14 +1582,14 @@
     "joinGuildHouse": "Joining a guild realm",
     "joinMemberOnBoat": "Join a member on the island",
     "joinPVEIsland": "Join the mysterious island",
-    "kingsMoneyValue": "Get less than 6500 {emote:unitValues.money} in King Money",
+    "kingsMoneyValue": "Get less than 6500 {emote:unitValues.money} in the King's Money",
     "maxTokensReached_one": "Reach the maximum number of tokens {emote:unitValues.token} {{count}} times",
     "maxTokensReached_other": "Reach the maximum number of tokens {emote:unitValues.token} {{count}} times",
-    "meetDifferentPlayers_one": "Meet {{count}}  player",
+    "meetDifferentPlayers_one": "Meet {{count}} player",
     "meetDifferentPlayers_other": "Meet {{count}} different players",
     "meetGruffo": "Meet Gruffo",
     "meetHermit": "Meet a hermit",
-    "meetSirRowan_one": "Receive {{count}} fighting advice from Sir Rowan",
+    "meetSirRowan_one": "Receive {{count}} fighting tips from Sir Rowan",
     "meetSirRowan_other": "Receive {{count}} fighting tips from Sir Rowan",
     "meetTalvar": "Meet Talvar",
     "meetVelanna": "Meet Velanna",
@@ -1603,7 +1597,7 @@
     "meetAllOracles": "Meet the two oracles",
     "contributeToBlessing_one": "Contribute {{count, number}} {emote:unitValues.money} to a blessing",
     "contributeToBlessing_other": "Contribute {{count, number}} {emote:unitValues.money} to blessings",
-    "doExpeditions_one": "Complete the \" {{count}} \" pet quest",
+    "doExpeditions_one": "Complete {{count}} pet expedition",
     "doExpeditions_other": "Complete {{count}} pet expeditions",
     "longExpedition": "A successful expedition of at least {{variantText}}",
     "dangerousExpedition": "Successfully complete an expedition of \"{{variantText}}\" or higher danger level",
@@ -1618,8 +1612,8 @@
     "reachGlory": "{{count}} glory points {emote:unitValues.glory} or more",
     "reachLevel": "Reach level {{count}}",
     "reachScore": "Have a score higher than {{count}} {emote:unitValues.score}",
-    "recoverAlteration_one": "Recover from {{count}} alteration",
-    "recoverAlteration_other": "Recover from {{count}} alterations",
+    "recoverAlteration_one": "Recover from {{count}} status alteration",
+    "recoverAlteration_other": "Recover from {{count}} status alterations",
     "replaceMission": "Replace a task",
     "sellItemWithGivenCost_one": "Sell {{count}} equipment for more than {{variantText}} {emote:unitValues.money}",
     "sellItemWithGivenCost_other": "Sell {{count}} equipment for more than {{variantText}} {emote:unitValues.money}",
@@ -1635,15 +1629,15 @@
     "spendTokens_other": "Spend {{count}} tokens {emote:unitValues.token}",
     "tamedPet": "Have a tamed or trained pet",
     "trainedPet": "Have a trained pet",
-    "travelHours_one": "Take a trip to {{count}} that lasts at least {{variantText}}",
-    "travelHours_other": "Take trips to {{count}} that last at least {{variantText}}",
-    "unlock": "Unlock someone from jail",
+    "travelHours_one": "Take {{count}} trip that lasts at least {{variantText}}",
+    "travelHours_other": "Take {{count}} trips that last at least {{variantText}}",
+    "unlock": "Free someone from prison",
     "upgradeHomeLevel": "Upgrade Your Home to the Next Level {{variantText}}",
     "upgradeItem": "Upgrading a Weapon or Shield",
     "upgradeEpicItemLevel5": "Upgrade a weapon or shield of Epic rarity or higher to level 5",
     "visitCityNpc": "Visit a town's general store",
     "wealthyPayForPVEIsland": "Buy a trip to a mysterious island at a very high price",
-    "winBoss_one": "Defeat the {{count}} monster",
+    "winBoss_one": "Defeat {{count}} monster",
     "winBoss_other": "Defeat {{count}} monsters",
     "winAnyBossWithDifferentClasses_one": "Defeat {{count}} boss",
     "winAnyBossWithDifferentClasses_other": "Defeat bosses using {{count}} different classes",
@@ -1784,7 +1778,7 @@
     "29": "Credit card",
     "3": "Keraunic diamond",
     "30": "Mechanical leg",
-    "31": "Cute cat with laser-throwing eyes",
+    "31": "Cute cat with laser eyes",
     "32": "Kyu'spoon",
     "33": "Jack-o'-lantern",
     "34": "Teddy bear",
@@ -1797,9 +1791,9 @@
     "40": "Lifeless angel's ring",
     "41": "Ornate minotaur's urn",
     "42": "Bunny's clock",
-    "43": "Banan'ase split",
+    "43": "Banana-pineapple split",
     "44": "Big tree's apple",
-    "45": "Midas Midas Amulet",
+    "45": "Midas Amulet",
     "46": "Shooting star",
     "47": "Kyuran",
     "48": "Particle accelerator",
@@ -1808,9 +1802,9 @@
     "50": "Pegasus Boots",
     "51": "Nimbus 2000",
     "52": "Slippery soap",
-    "53": "Super medal",
+    "53": "Medal of Merit",
     "54": "Hunting horn",
-    "55": "Big Wallet",
+    "55": "Thief's Purse",
     "56": "Slot machine",
     "57": "High heel shoes",
     "58": "Defense rings",
@@ -1842,9 +1836,9 @@
     "81": "Full battery",
     "82": "Easy's script",
     "83": "Cardboard rocket",
-    "84": "4-Leaf clover",
+    "84": "4-leaf clover",
     "85": "Toilet paper roll",
-    "86": "Destiny star",
+    "86": "Star of Destiny",
     "87": "Electric guitar",
     "88": "SYM card",
     "89": "Dead fish",
@@ -1912,7 +1906,7 @@
     "30_male": "Seal",
     "31_female": "Hippopotamus",
     "31_male": "Hippopotamus",
-    "32_female": "Llama",
+    "32_female": "Lamate",
     "32_male": "Llama",
     "33_female": "Swan",
     "33_male": "Swan",
@@ -1930,7 +1924,7 @@
     "39_male": "Sloth",
     "3_female": "Cat",
     "3_male": "Cat",
-    "40_female": "Chipmunk",
+    "40_female": "Tamia",
     "40_male": "Chipmunk",
     "41_female": "Hedgehog",
     "41_male": "Hedgehog",
@@ -1985,7 +1979,7 @@
     "64_female": "Dragon",
     "64_male": "Dragon",
     "65_female": "T. Rex",
-    "65_male": "T. Rex",
+    "65_male": "T -Rex",
     "66_female": "Angel",
     "66_male": "Stitch",
     "67_female": "Snowwoman",
@@ -2081,7 +2075,7 @@
     "21": "Speed potion",
     "22": "Healing potion",
     "23": "Ultimate healing potion",
-    "24": "Regeneration potion",
+    "24": "Healing potion",
     "25": "Tropical drink",
     "26": "Glass of milk",
     "27": "Baby bottle",
@@ -2092,7 +2086,7 @@
     "31": "Grandma's soup",
     "32": "Purified water",
     "33": "Red wine",
-    "34": "Fowl essence n°5",
+    "34": "Fowl Essence No. 5",
     "35": "Kyufuel",
     "36": "Juice",
     "37": "Melted ice cubes",
@@ -2104,13 +2098,13 @@
     "42": "SmoochSip",
     "43": "Opponent's tears",
     "44": "Wolf blood potion",
-    "45": "Erythroxylum coca mixture",
+    "45": "Coca concoction",
     "46": "Ghost pepper oil",
-    "47": "Potion of the death that kills",
+    "47": "Potion of Deadly Death",
     "48": "Battery oil",
     "49": "Nut oil",
-    "5": "Super potion",
-    "50": "Bravery beverage",
+    "5": "Super Potion",
+    "50": "Potion of Courage",
     "51": "Spinach",
     "52": "Kiwi juice",
     "53": "Banana juice",
@@ -2183,7 +2177,7 @@
     "23": "Pan",
     "24": "Scissors",
     "25": "Fragile dagger",
-    "26": "Hockey stick",
+    "26": "Club",
     "27": "Saber",
     "28": "Battle hammer",
     "29": "Beginner's knife",
@@ -2201,7 +2195,7 @@
     "4": "Wolfslayer",
     "40": "Diamond sword",
     "41": "Sharpness 4 sword",
-    "42": "Loaded gun",
+    "42": "Loaded pistol",
     "43": "Pickle",
     "44": "Rose bouquet",
     "45": "Banana",
@@ -2216,7 +2210,7 @@
     "53": "Chair",
     "54": "Brick",
     "55": "Fork and knife",
-    "56": "Kokiri sword",
+    "56": "Kokiri Sword",
     "57": "Fire extinguisher",
     "58": "Big book",
     "59": "Syringe",
@@ -2230,29 +2224,29 @@
     "66": "Beat Saber",
     "67": "Royal sword",
     "68": "Claw",
-    "69": "Ines'word",
+    "69": "Ines' word",
     "7": "Dagger",
-    "70": "Pan pan QQ gun",
+    "70": "QQ Bang Bang Gun",
     "71": "Ragnell's sword",
     "72": "Fluxball ball",
-    "73": "Shopper",
+    "73": "Ashoir",
     "74": "Devil's soul",
     "75": "Boomerang",
-    "76": "Charge blade",
+    "76": "Sweep axe",
     "77": "Oxygen sabotage",
     "78": "Power of friendship",
     "79": "Grandma's umbrella",
-    "8": "Knightfest",
+    "8": "Gas Piercer",
     "80": "100-spell scepter",
     "81": "Exagide",
     "82": "Rabid cat's claw",
-    "83": "Insults",
+    "83": "Injuries",
     "84": "Sonic screwdriver",
     "85": "Power of love",
     "86": "Mojaro mask",
     "87": "Plothammer",
     "88": "Icarus' left wing",
-    "89": "Dragon's sword",
+    "89": "Dragon' s Sword",
     "9": "Rusty key",
     "90": "Unicorn horn",
     "91": "Fibonacci's wand",
@@ -2294,18 +2288,18 @@
   "ordinals": {
     "get_feminine_ordinal_one": "1st",
     "get_feminine_ordinal_other": "{{count}}th",
-    "get_ordinal_one": "{{count}}st",
+    "get_ordinal_one": "1st",
     "get_ordinal_other": "{{count}}th"
   },
   "guilds": {
-    "levelUpTitle": "{emote:unitValues.xp} The {{guild}} guild goes up a level!",
+    "levelUpTitle": "{emote:unitValues.xp} The {{guild}} guild levels up!",
     "levelUpDesc": "The guild is now level **{{level, number}}**!"
   },
   "players": {
     "koTitle": "{{pseudo}}, you've been knocked out!",
     "koDesc": "{emote:effects.dead} Use the {command:respawn} command to start playing again.",
     "koDmTitle": "Hello Fighter!",
-    "koDmDesc": "It seems that you've been knocked out... {emote:effects.dead}\nThanks to our advanced technologies, we were able to alter the events as such as to let you avoid an agonizing death! {emote:other.tada}\nUnfortunately, the operation is costly and your score has been affected by this death in consequence...\n\nTo restart playing, use {command:respawn}.",
+    "koDmDesc": "It seems that you've been knocked out... {emote:effects.dead}\nThanks to our advanced technologies, we were able to alter events to help you avoid an agonizing death! {emote:other.tada}\nUnfortunately, the operation is costly and your score has been impacted by this death...\n\nTo start playing again, use {command:respawn}.",
     "leavePVEIslandTitle": "{{pseudo}}, fainting",
     "leavePVEIslandDescStart": "{emote:effects.confounded} You feel your strength leave you, you're at your wits' end. You pass out on the floor...\n\n{emote:unitValues.lostMoney} Money lost: **{{moneyLost, number}}**",
     "leavePVEIslandMalusGuildPoints": "\n{emote:unitValues.guildPoint} Guild points lost: **{{guildPointsLost, number}}**",
@@ -2326,8 +2320,8 @@
     }
   },
   "petReceived": {
-    "genericGiveTitle": "{{pseudo}}obtaining a pet",
-    "genericGiveNoSlot": "You get a new pet: **{{pet}}**. However, you don't have room for him.",
+    "genericGiveTitle": "{{pseudo}} obtaining a pet",
+    "genericGiveNoSlot": "You get a new pet: **{{pet}}**. However, you don't have room for it.",
     "genericGiveGuild": "You get a new pet: **{{pet}}**. Place it in the guild hut.",
     "genericGivePlayer": "You get a new pet: **{{pet}}**. You decide to take him with you."
   },
@@ -2438,7 +2432,7 @@
     "47": "Jute Rope",
     "48": "Lamb Hide",
     "49": "Leather Braided Rope",
-    "50": "Aluminium legium",
+    "50": "Light aluminum",
     "51": "Maple Leaf",
     "52": "Meadow Grass",
     "53": "Moonstone",
@@ -2493,13 +2487,14 @@
     "10": "Ancestral Tree"
   },
   "cooking": {
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Level {{level}})",
     "grades": {
       "kitchenHelper": "Kitchen Help",
       "scullion": "Pot",
       "cook": "Cook",
       "roaster": "Roaster",
       "saucier": "Sauce",
-      "steward": "Office Mayor",
+      "steward": "Kitchen Master",
       "tableChef": "Table leader",
       "stoveChef": "Master Furnace",
       "kitchenMaster": "Kitchen Mayor",

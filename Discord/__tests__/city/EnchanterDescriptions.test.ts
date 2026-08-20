@@ -5,7 +5,9 @@ import { EnchanterCityData } from "../../../Lib/src/packets/interaction/Reaction
 import { LANGUAGE } from "../../../Lib/src/Language";
 import { ItemCategory } from "../../../Lib/src/constants/ItemConstants";
 import { ItemEnchantment } from "../../../Lib/src/types/ItemEnchantment";
-import { buildEnchantmentDescription } from "../../src/commands/player/report/cityMenu/EnchanterMenu";
+import {
+	buildEnchantmentDescription, buildTomorrowStory
+} from "../../src/commands/player/report/cityMenu/EnchanterMenu";
 
 function createEnchanterData(enchantmentId: string): EnchanterCityData {
 	return {
@@ -16,6 +18,11 @@ function createEnchanterData(enchantmentId: string): EnchanterCityData {
 		enchantmentId,
 		enchantmentType: "magic",
 		enchantmentSlot: ItemCategory.WEAPON,
+		tomorrow: {
+			cityMapLocationId: 23,
+			enchantmentId: ItemEnchantment.DEFENSE_1.id,
+			enchantmentType: ItemEnchantment.DEFENSE_1.kind.type.id
+		},
 		enchantmentCost: {
 			money: 1000,
 			gems: 0
@@ -42,6 +49,28 @@ describe("enchanter enchantment descriptions", () => {
 
 		expect(description).toContain("damage dealt to other adventurers");
 		expect(description).not.toContain("commands:report.city.enchanter.descriptions");
+	});
+
+	it("reveals Mernil's next city and enchantment", () => {
+		const story = buildTomorrowStory(createEnchanterData(ItemEnchantment.PVP_ATTACK_1.id), LANGUAGE.FRENCH, 26);
+
+		expect(story).toContain("Claire de Ville");
+		expect(story).toContain("Défense I");
+	});
+
+	it("uses a warmer story when Mernil stays in the same city", () => {
+		const story = buildTomorrowStory(createEnchanterData(ItemEnchantment.PVP_ATTACK_1.id), LANGUAGE.FRENCH, 23);
+
+		expect(story).toContain("apprécié son séjour");
+		expect(story).toContain("y restera encore demain");
+		expect(story).toContain("Défense I");
+	});
+
+	it("keeps the current enchanter story usable without tomorrow data", () => {
+		const data = createEnchanterData(ItemEnchantment.PVP_ATTACK_1.id);
+		delete data.tomorrow;
+
+		expect(buildTomorrowStory(data, LANGUAGE.FRENCH, 23)).toBe("");
 	});
 
 	it("throws an explicit error for an unknown enchantment", () => {

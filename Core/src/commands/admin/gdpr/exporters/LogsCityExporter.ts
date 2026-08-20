@@ -9,6 +9,7 @@ import { LogsInnMeals } from "../../../../core/database/logs/models/LogsInnMeals
 import { LogsInnRooms } from "../../../../core/database/logs/models/LogsInnRooms";
 import { LogsBlacksmithUpgrades } from "../../../../core/database/logs/models/LogsBlacksmithUpgrades";
 import { LogsBlacksmithDisenchants } from "../../../../core/database/logs/models/LogsBlacksmithDisenchants";
+import { LogsScrapDealerRecycles } from "../../../../core/database/logs/models/LogsScrapDealerRecycles";
 import { LogsEnchanterUses } from "../../../../core/database/logs/models/LogsEnchanterUses";
 import { LogsHomePurchases } from "../../../../core/database/logs/models/LogsHomePurchases";
 import { LogsHomeUpgrades } from "../../../../core/database/logs/models/LogsHomeUpgrades";
@@ -117,6 +118,20 @@ export async function exportLogsCity(
 			slot: disenchant.slot,
 			cost: disenchant.cost,
 			date: disenchant.date
+		})
+	});
+	await exportLogTable({
+		logsPlayerId,
+		csvFiles,
+		filePath: "logs/100_scrap_dealer_recycles.csv",
+		model: LogsScrapDealerRecycles,
+		transform: recycle => ({
+			cityId: recycle.cityId,
+			itemCategory: recycle.itemCategory,
+			itemId: recycle.itemId,
+			itemLevel: recycle.itemLevel,
+			slot: recycle.slot,
+			date: recycle.date
 		})
 	});
 	await exportLogTable({

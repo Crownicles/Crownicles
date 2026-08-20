@@ -4,8 +4,8 @@ import { DiscordCache } from "../../bot/DiscordCache";
 import i18n from "../../translations/i18n";
 import {
 	ErrorBannedPacket,
+	ErrorInternalPacket,
 	ErrorMaintenancePacket,
-	ErrorPacket,
 	ErrorResetIsNow,
 	ErrorSeasonEndIsNow
 } from "../../../../Lib/src/packets/commands/ErrorPacket";
@@ -19,7 +19,7 @@ import { handleClassicError } from "../../utils/ErrorUtils";
 import { DisplayUtils } from "../../utils/DisplayUtils";
 import { formatBlockedReasons } from "../../utils/BlockingReasonUtils";
 import {
-	ButtonInteraction
+	ButtonInteraction, escapeCodeBlock
 } from "discord.js";
 import { CrowniclesInteraction } from "../../messages/CrowniclesInteraction";
 
@@ -33,20 +33,6 @@ type EmbedReplyOptions = {
 };
 
 export default class ErrorHandler {
-	@packetHandler(ErrorPacket)
-	async errorHandler(context: PacketContext, packet: ErrorPacket): Promise<void> {
-		const interaction = DiscordCache.getInteraction(context.discord!.interaction);
-		if (!interaction) {
-			return;
-		}
-		const embed = new CrowniclesEmbed()
-			.setErrorColor()
-			.setTitle(i18n.t("error:unexpectedError", { lng: interaction.userLanguage }))
-			.setDescription(packet.message);
-
-		await interaction.channel.send({ embeds: [embed] });
-	}
-
 	@packetHandler(BlockedPacket)
 	async blockedHandler(context: PacketContext, packet: BlockedPacket): Promise<void> {
 		const target = ErrorHandler.getBlockedReplyTarget(context);
@@ -132,6 +118,17 @@ export default class ErrorHandler {
 		}
 
 		await interaction.channel.send(replyOptions);
+	}
+
+	@packetHandler(ErrorInternalPacket)
+	async internalErrorHandler(context: PacketContext, packet: ErrorInternalPacket): Promise<void> {
+		// The interaction often expired already, since the packet that failed took long enough to break
+		if (!DiscordCache.getInteraction(context.discord!.interaction)) {
+			return;
+		}
+
+		// The reason lands inside a code block: a backtick in it would break out of the fence
+		await handleClassicError(context, "error:internalError", { reason: escapeCodeBlock(packet.reason) }, { ephemeral: true });
 	}
 
 	@packetHandler(ErrorMaintenancePacket)

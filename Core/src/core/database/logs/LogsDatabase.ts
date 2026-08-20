@@ -123,6 +123,7 @@ import {
 	InnRoomLogParams,
 	BlacksmithUpgradeLogParams,
 	BlacksmithDisenchantLogParams,
+	ScrapDealerRecycleLogParams,
 	EnchanterUseLogParams,
 	HomePurchaseLogParams,
 	HomeUpgradeLogParams,
@@ -1755,6 +1756,13 @@ export class LogsDatabase extends Database {
 	 */
 	public logBlacksmithDisenchant(params: BlacksmithDisenchantLogParams): Promise<void> {
 		return this.cityLogger.logBlacksmithDisenchant(params);
+	}
+
+	/**
+	 * Log when a player scraps an equipment at the city scrap dealer
+	 */
+	public logScrapDealerRecycle(params: ScrapDealerRecycleLogParams): Promise<void> {
+		return this.cityLogger.logScrapDealerRecycle(params);
 	}
 
 	/**

@@ -28,6 +28,7 @@ import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
 import { Homes } from "../database/game/models/Home";
 import { buildUpgradeStationData } from "./ReportCityService";
+import { Locked } from "../../../../Lib/src/locks/withLockedEntities";
 
 export interface UpgradeItemValidationResult {
 	itemToUpgrade?: {
@@ -241,7 +242,7 @@ export async function handleUpgradeItemReaction(
 }
 
 async function refreshUpgradeStationDataUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	data: ReactionCollectorCityData
 ): Promise<ReactionCollectorCityData | null> {
 	const home = await Homes.getOfPlayer(player.id);
@@ -278,7 +279,7 @@ const UNKNOWN_ITEM_RARITY = 0;
  * Shared by the home upgrade station, the city blacksmith and the royal blacksmith flows.
  */
 export async function updateUpgradeMissionsUnderLock(
-	lockedPlayer: Player,
+	lockedPlayer: Locked<Player>,
 	response: CrowniclesPacket[],
 	inventorySlot: PlayerInventorySlot,
 	newLevel: number
@@ -297,7 +298,7 @@ export async function updateUpgradeMissionsUnderLock(
  * the locked row, consume materials, mutate the inventory slot.
  */
 async function executeUpgradeItemUnderLock(params: {
-	lockedPlayer: Player;
+	lockedPlayer: Locked<Player>;
 	reaction: ReactionCollectorUpgradeItemReaction;
 	data: ReactionCollectorCityData;
 	response: CrowniclesPacket[];

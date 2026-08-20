@@ -37,7 +37,7 @@ import {
 import { WhereAllowed } from "../../../../Lib/src/types/WhereAllowed";
 import { GuildRole } from "../../../../Lib/src/types/GuildRole";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 
 export default class GuildInviteCommand {
@@ -199,9 +199,9 @@ async function applyLockedAcceptInvitation(
  * or concurrent guild destruction.
  */
 async function runAcceptInvitationUnderLock(
-	invitedPlayer: Player,
-	invitingPlayer: Player,
-	guild: Guild,
+	invitedPlayer: Locked<Player>,
+	invitingPlayer: Locked<Player>,
+	guild: Locked<Guild>,
 	response: CrowniclesPacket[]
 ): Promise<void> {
 	const packetData = {

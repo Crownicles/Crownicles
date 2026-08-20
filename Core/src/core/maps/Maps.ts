@@ -21,6 +21,7 @@ import {
 	asMinutes, minutesToMilliseconds
 } from "../../../../Lib/src/utils/TimeUtils";
 import { CityDataController } from "../../data/City";
+import { ScheduledReportNotifications } from "../database/game/models/ScheduledReportNotification";
 
 export type OptionsStartBoatTravel = {
 	startTravelTimestamp: number;
@@ -57,6 +58,20 @@ export class Maps {
 	}
 
 	/**
+	 * Link sending the player back to the map they are coming from, or null when the U-turn is not allowed.
+	 * Travelling backwards is normally forbidden by `getNextPlayerAvailableMaps`: only a big event outcome
+	 * may grant this exception, and never towards a city, to keep the anti re-entry guard effective.
+	 */
+	static getGoBackMapLink(player: Player): MapLink | null {
+		const inverseLink = MapLinkDataController.instance.getInverseLinkOf(player.mapLinkId);
+		if (!inverseLink) {
+			return null;
+		}
+
+		return CityDataController.instance.getCityByMapId(inverseLink.endMap) ? null : inverseLink;
+	}
+
+	/**
 	 * Get connected map types. There can be duplicates if multiple maps have the same type
 	 * @param player
 	 * @param excludePlayerLink Exclude the player link from the types
@@ -81,6 +96,17 @@ export class Maps {
 		player.startTravelDate = new Date(time);
 		player.insideCity = false;
 		await player.save();
+
+		const destinationId = player.getDestinationId();
+		if (destinationId !== null) {
+			// The arrival notification only exists for the travel that is starting here; later saves may refresh it but never recreate it
+			await ScheduledReportNotifications.scheduleNotification(
+				player.id,
+				player.keycloakId,
+				destinationId,
+				new Date(TravelTime.getTravelDataSimplified(player, new Date()).travelEndTime)
+			);
+		}
 
 		crowniclesInstance?.logsDatabase.logNewTravel(player.keycloakId, newLink)
 			.then();
@@ -163,7 +189,7 @@ export class Maps {
 	}
 
 	/**
-	 * Get all the members of the player's guild on the pve island
+	 * Get the members of the player's guild considered as pve island allies: those currently on the island and those who left it recently
 	 */
 	static async getGuildMembersOnPveIsland(player: Player): Promise<Player[]> {
 		if (!player.guildId) {

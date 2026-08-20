@@ -4,6 +4,10 @@
   "maps": [
     10
   ],
+  "services": [
+    "blacksmith",
+    "scrapDealer"
+  ],
   "shops": [
     "generalShop",
     "materialMerchant"

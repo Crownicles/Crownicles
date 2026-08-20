@@ -21,7 +21,7 @@ import {
 } from "../database/game/models/Guild";
 import { PVEConstants } from "../../../../Lib/src/constants/PVEConstants";
 import {
-	LockedRowNotFoundError, withLockedEntities
+	Locked, LockedRowNotFoundError, withLockedEntities
 } from "../../../../Lib/src/locks/withLockedEntities";
 import { GuildConstants } from "../../../../Lib/src/constants/GuildConstants";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
@@ -45,6 +45,7 @@ import { InventorySlots } from "../database/game/models/InventorySlot";
 import { PlayerActiveObjects } from "../database/game/models/PlayerActiveObjects";
 import { chooseDestination } from "./ReportDestinationService";
 import { RecipeDiscoveryService } from "../cooking/RecipeDiscoveryService";
+import { RecipeDisplayInfo } from "../../../../Lib/src/types/CookingTypes";
 import {
 	applyMaterialLoot, generateBossLoot, updateCollectMaterialsMission
 } from "../utils/MaterialLootUtils";
@@ -193,7 +194,10 @@ function sendMonsterRewardPacket(
 	rewards: PveFightRewards,
 	guildResult: GuildRewardsResult,
 	fight: FightController,
-	materialLoot?: MaterialQuantity[]
+	loot: {
+		materialLoot?: MaterialQuantity[];
+		discoveredRecipe?: RecipeDisplayInfo;
+	}
 ): void {
 	endFightResponse.push(makePacket(CommandReportMonsterRewardRes, {
 		money: BlessingManager.getInstance().applyMoneyBlessing(rewards.money),
@@ -209,7 +213,8 @@ function sendMonsterRewardPacket(
 				petNickname: fight.petReactionData.petNickname
 			}
 			: undefined,
-		...materialLoot && materialLoot.length > 0 ? { materialLoot } : {}
+		...loot.materialLoot && loot.materialLoot.length > 0 ? { materialLoot: loot.materialLoot } : {},
+		...loot.discoveredRecipe ? { discoveredRecipe: loot.discoveredRecipe } : {}
 	}));
 }
 
@@ -246,7 +251,13 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
 		await updateCollectMaterialsMission(player, endFightResponse, materialLoot);
 	}
 
-	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, materialLoot);
+	const isFinalBoss = Maps.isAtFinalPveBoss(player);
+	const bossRecipe = isFinalBoss ? await RecipeDiscoveryService.discoverFromBoss(player, mapId) : null;
+
+	sendMonsterRewardPacket(endFightResponse, rewards, result, fight, {
+		materialLoot,
+		...bossRecipe ? { discoveredRecipe: RecipeDiscoveryService.toDisplayInfo(bossRecipe) } : {}
+	});
 	await MissionsController.update(player, endFightResponse, {
 		missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS satisfies PveBossMissionId
 	});
@@ -256,14 +267,11 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
 	});
 
 	// Only count final island bosses for the different classes mission
-	if (Maps.isAtFinalPveBoss(player)) {
+	if (isFinalBoss) {
 		await MissionsController.update(player, endFightResponse, {
 			missionId: PVE_BOSS_MISSION_IDS.WIN_BOSS_WITH_DIFFERENT_CLASSES satisfies PveBossMissionId,
 			params: { classId: player.class }
 		});
-
-		// Discover an island boss cooking recipe
-		await RecipeDiscoveryService.discoverFromBoss(player, mapId);
 	}
 }
 
@@ -278,7 +286,7 @@ async function applyPveBossWinRewards(ctx: ApplyPveBossWinRewardsCtx): Promise<v
  * to dodge the latent clobber-by-Object.assign on the local `player`.
  */
 async function persistPveBossPostFightUnderLock(
-	player: Player,
+	player: Locked<Player>,
 	initialFightPointsLost: number,
 	isWinOrDraw: boolean,
 	playerActiveObjects: PlayerActiveObjects

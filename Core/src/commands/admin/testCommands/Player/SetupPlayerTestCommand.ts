@@ -80,6 +80,7 @@ const setupPlayerTestCommand: ExecuteTestCommandLike = async (player, _args, res
 	const pet = PetEntities.createPet(petId, petSex, "");
 	await pet.save();
 	player.setPet(pet);
+	await player.save();
 	await MissionsController.update(player, response, { missionId: "havePet" });
 	results.push(`Pet #${petId} (${petSex})`);
 
