@@ -3,7 +3,7 @@
     "possibilities": {
       "cutTree": {
         "outcomes": {
-          "0": "Felling this tree took half an hour!"
+          "0": "Felt the tree has taken half an hour"
         },
         "text": "Fell the tree and continue."
       },
@@ -33,8 +33,8 @@
         "outcomes": {
           "0": "The man politely refuses your help, and you continue on your journey.",
           "1": "Thanks to you, the man catches a superb fish weighing in at 3 kg! To thank you, he offers you something that could be useful to you...",
-          "2": "Thanks to you, the man catches a superb fish weighing over a kilo! He offers you some money to help you in your adventure.",
-          "3": "The fish at the end of the line must be huge! You find yourself quickly pulled down to the bottom of the water! You are saved just in time by the fisherman. Stunned by this adventure, you will have to heal before continuing!"
+          "2": "You help the man catch a superb fish weighing over a kilo! The fisherman offers you some coins to thank you.",
+          "3": "The fish at the end of the line must be huge! You find yourself quickly pulled down to the bottom of the water! You are saved just in time by the fisherman. Stunned by this adventure, you will have to heal!"
         },
         "text": "Offer your help."
       },
@@ -57,7 +57,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "After spending several long minutes chatting with the stranger, you end up setting off again! Following her directions, you arrive safely at the other end of the forest."
+          "0": "After spending several long minutes chatting with the stranger, you end up setting off again! Following her directions, you arrive safely at your destination."
         }
       },
       "followHint": {
@@ -110,13 +110,13 @@
           "0": "After 30 minutes, you finally give up and head off in another direction...",
           "1": "After 60 minutes, you finally find a river crossing. You decide not to go to the village, which is now too far away, and continue your journey in another direction.",
           "2": "After a few minutes, you find a little wooden bridge. You quickly reach the village where the locals, eager to meet a stranger for the first time in ages, offer you a few coins.",
-          "3": "After a few minutes, you find a little wooden bridge. Unfortunately, it's in a state of disrepair as no one took it for years. A few steps in, a plank collapses under your weight! You manage to hold on the railing in the nick of time and land on solid ground. However, being stunned, you'll have to heal yourself!"
+          "3": "After a few minutes, you find a little wooden bridge. Unfortunately, it's in a state of disrepair as no one has used it for years. A few steps in, a plank collapses under your weight! You manage to hold on to the railing in the nick of time and land on solid ground. Stunned, you'll have to go and heal yourself!"
         },
         "text": "Look for a bridge further away."
       },
       "swim": {
         "outcomes": {
-          "0": "The water is frozen! You motivate yourself and dive. Once on the other side, you realize your mistake. You are freezing and weakened. You will need to heal before continuing!",
+          "0": "The water is frozen! You steel yourself and dive. Once on the other side, you realize your mistake. You are frozen and weakened. You will need to heal before continuing!",
           "1": "You reach the other side easily, and when you arrive in the village, people greet you and give you something to eat."
         },
         "text": "Swim across the river."
@@ -216,7 +216,7 @@
           "2": "You continue on your way without stopping.",
           "3": "You continue without stopping, walking through the small streets. At the corner of one of them, you are savagely pushed by a man who quickly flees."
         },
-        "text": "Continue walking without wasting any more time."
+        "text": "Continue your journey without wasting time."
       },
       "steal": {
         "outcomes": {
@@ -248,9 +248,9 @@
       },
       "enterCastle": {
         "outcomes": {
-          "0": "Shortly after entering the castle, you realize how insalubrious the place is. Abandoned for years, the building is totally damaged. After a few minutes of exploration, you enter a large, dilapidated room, as a huge piece of the ceiling falls onto you! With great difficulty, you manage to get out of the building, wounded.",
+          "0": "Shortly after entering the castle, you realize how decrepit the place is. Abandoned for years, the building is in a state of total ruin. After a few minutes of exploration, you enter a large, dilapidated room, as a huge piece of the ceiling falls onto you! With great difficulty, you manage to get out of the building, wounded.",
           "1": "You enter the castle and quickly walk through the area. After a few minutes, you find a room that looks like the old armory. In a hurry to get out of the building, you pick up the first object that falls into your hands and get out at a quick pace.",
-          "2": "It seems this castle isn't as abandoned as it looks! Shortly after entering, you hear noises coming from various rooms. With little confidence, you prefer to continue on your way."
+          "2": "It seems this castle isn't as abandoned as it looks! Shortly after entering, you hear noises coming from various rooms. Feeling uneasy, you prefer to continue on your way."
         },
         "text": "Enter to search the castle."
       },
@@ -264,12 +264,12 @@
         "outcomes": {
           "0": "You go around the castle, but you can't find anything. Believing you wasted enough time, you continue your way.",
           "1": "This sweep doesn't tell you much about the big building. However, you discover numerous small gold coins scattered around the castle. Happy with your discovery, you head back on your way.",
-          "2": "As you began to walk around the castle, you accidentally fall into a hole. Injuring your leg, this sweep will cost you a lot of time!"
+          "2": "As you began to walk around the castle, you accidentally fall into a hole. Injured in the leg, you will need to treat yourself before continuing!"
         },
         "text": "Walk around the castle's exterior."
       }
     },
-    "text": "After following a small river for hours, you discover what seems to be an old, abandoned castle by the riverside."
+    "text": "After following a river for hours, you discover what seems to be an old, abandoned castle by the riverside."
   },
   "17": {
     "possibilities": {
@@ -298,7 +298,7 @@
       "mushrooms": {
         "outcomes": {
           "0": "As you bend down to pick up the mushrooms, you see a strange object shining on the ground...",
-          "1": "You pick up a few mushrooms before noticing that you don't have anything to cook them. Abandoning your picking, you get back on the road.",
+          "1": "You pick up a few mushrooms before noticing that you have nothing to cook them with. Leaving the mushrooms behind, you get back on the road.",
           "2": "You bite into a red mushroom with small white dots... and quickly regret this action!"
         },
         "text": "Gather mushrooms."
@@ -306,7 +306,7 @@
       "salad": {
         "outcomes": {
           "0": "You pick a small amount and eat your meal. Energized by your meal, you head back on your way.",
-          "1": "After some research, you don't really find any plants satisfying your hunger, so head back on your way without eating anything.",
+          "1": "After some research, you don't really find any plants satisfying your hunger, so you head back on your way without eating anything.",
           "2": "You quickly change your mind. While looking around, you discover thick vegetation preventing you from gathering anything. Without wasting any more time, you continue on your journey."
         },
         "text": "Make a salad with the plants you find."
@@ -368,7 +368,7 @@
         "outcomes": {
           "0": "Considering your poor cooking skills, you should've expected it, you get sick soon after tasting your meal.",
           "1": "Despite your reduced cooking skills, your fox on the spit satiates you well.",
-          "2": "You approach the fox to pick it up, when suddenly it rears up and bites you! You flee, wounded and with your stomach in your heels.",
+          "2": "You approach the fox to pick it up, when suddenly it rears up and bites you! You flee, wounded and scrambling away in a panic.",
           "3": "You've cooked this fox surprisingly well, and after eating it, you feel refreshed."
         },
         "text": "Try to cook the fox."
@@ -381,7 +381,7 @@
       "skip": {
         "outcomes": {
           "0": "You choose to ignore the corpse and waste no time.",
-          "1": "You choose to ignore the fox and waste no time... but as soon as you pass him, the fox gets up and bites you violently!"
+          "1": "You choose to ignore this corpse and waste no time... but as soon as you pass it, the fox gets up and bites you violently!"
         },
         "text": "Just ignore it and hurry to the nearest inn."
       }
@@ -392,7 +392,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "You decided not to move, the dog mustn't have liked it as it bit you and ran away!"
+          "0": "You decided not to move; the dog doesn't seem to like it, as it bites you savagely before running away!"
         }
       },
       "followDog": {
@@ -438,10 +438,10 @@
       "surpriseAttack": {
         "outcomes": {
           "0": "You manage to stun the guard and retrieve a precious object he was carrying.",
-          "1": "At the last moment, the guard turns around and attacks you. After a fierce battle during which the woman escaped, you failed to deflect one of their attacks. Victorious, the guard nevertheless leaves you alive and also flees.",
+          "1": "At the last moment, the guard turns around and attacks you. After a fierce battle during which the woman escaped, you fail to deflect one of his attacks. Victorious, the guard nevertheless leaves you alive and also flees.",
           "2": "The guard dodges and the woman manages to escape. Having scared off the guard, you find her out of danger. To thank you, she offers you a few gold coins."
         },
-        "text": "Attack the guard to help the lady."
+        "text": "Attack the guard by surprise to help the lady."
       }
     },
     "text": "When you arrive in a village, you notice out of the corner of your eye a guard beating up a poor woman."
@@ -453,9 +453,9 @@
           "0": "The crossing seems risky, but you have no time to lose, so you cross. After a 5-minute walk across the bridge, you reach the end safe and sound.",
           "1": "As you cross the bridge, you see a small bag. While opening it, you notice numerous coins.",
           "2": "As you walk across the bridge, you hear little creaks, when suddenly, a plank falls and you fall with it.",
-          "3": "As you cross, a plank falls off. Fortunately, you manage to hold on to a sturdier board. After a few minutes to recover, you continue on your way."
+          "3": "As you cross, a plank falls off. Fortunately, you manage to hold on to a sturdier board. After taking a few minutes to recover, you continue on your way."
         },
-        "text": "Take a risk crossing the bridge."
+        "text": "Take the risk of crossing this bridge."
       },
       "end": {
         "outcomes": {
@@ -552,7 +552,7 @@
       "gameStand": {
         "outcomes": {
           "0": "You play this game several times but never succeed in getting your prize back. Disappointed with your performance, you pay the manager and leave.",
-          "1": "You play this game again and again for a long time, but with no luck. However, since the manager became friends with you, he'll partially refund you. You leave with a warm thanks.",
+          "1": "You play this game again and again for a long time, but you have no luck. However, since the manager became friends with you, he refunds your games. You leave with a warm thanks.",
           "2": "You've hit the jackpot! Happy and jumping with excitement, you pick it up and head out of town."
         },
         "text": "Go to a game stand."
@@ -571,7 +571,7 @@
     "possibilities": {
       "dontHelp": {
         "outcomes": {
-          "0": "You don't look at the massacre that took place, instead going a little further to rest.",
+          "0": "You pay no attention to the massacre that took place and go to rest a little further away.",
           "1": "No time to lose! You continue your journey.",
           "2": "In a hurry to continue your journey, you trip on a lifeless body, and get hurt."
         },
@@ -677,7 +677,7 @@
           "2": "Noticing your lack of sensitivity to their speeches, the group starts to get aggressive! It takes you several minutes to get away from them, but not without a few blows.",
           "3": "You join them, then leave just as quickly, stealing an object that may be useful to you."
         },
-        "text": "Accept to join them."
+        "text": "Accept to join her."
       },
       "deny": {
         "outcomes": {
@@ -753,7 +753,7 @@
         "outcomes": {
           "0": "After 50 minutes of searching, you find the key! Buried right next to the chest, it's the key to a treasure trove of gold coins!",
           "1": "After an hour of searching, you find the key! Buried right next to the chest, it reveals a few gold coins!",
-          "2": "After 40 minutes of searching, you find the key! Buried right next to the chest, it's so damaged that you can't open it! You finally give up and leave the box behind.",
+          "2": "After 40 minutes of searching, you find the key! Buried right next to the chest, it's so damaged that you can't open it! You finally give up and leave the chest behind.",
           "3": "After 20 minutes of digging all around the little chest, you finally give up and leave it behind.",
           "4": "After 2 hours of searching, you finally give up and leave the chest behind."
         },
@@ -796,7 +796,7 @@
       },
       "steal": {
         "outcomes": {
-          "0": "As you're about to leave the farm with your loot, a slave alerts the others and shames you. You end up locked in a cell.",
+          "0": "As you're about to leave the farm with your loot, a slave calls out and reports you. You end up locked in a cell.",
           "1": "You discreetly come out with your delicious loot that you swiftly finish eating.",
           "2": "To your great misfortune, you didn't notice the \"Unsuitable for sale\" sign in front of your newly acquired bananas, which quickly made you sick!"
         },
@@ -831,7 +831,7 @@
       "wave": {
         "outcomes": {
           "0": "As he notices you waving, the knight comes to a halt by your side. You quickly realize that he is very friendly. You chat for about an hour, before you both set off again.",
-          "1": "The knight comes to a halt next to you and violently hits you, you fall to the ground and pass out. When you wake up, you discover that your pockets have been emptied...",
+          "1": "The knight comes to a halt next to you and violently hits you. You fall to the ground and pass out. When you wake up, you discover that your pockets have been emptied...",
           "2": "The knight passes you by. He probably didn't see your sign or doesn't have time to waste."
         },
         "text": "Signal him to stop."
@@ -844,7 +844,7 @@
       "end": {
         "outcomes": {
           "0": "Continuing on your way, you decide to stop by a tree and find a few gold coins.",
-          "1": "You leave as fast as you can, people see you and decide to chase you. You run for a while and only stop after making sure they lost sight of you.",
+          "1": "As you leave in haste, people see you and decide to chase you. You run for several minutes before losing them.",
           "2": "You continue on your way as if nothing happened.",
           "3": "As you are getting away, you encounter a group of poachers who decide to rob you."
         }
@@ -860,7 +860,7 @@
       },
       "kill": {
         "outcomes": {
-          "0": "You draw your sword and finish off the wounded man. However, this was without counting on the witnesses to the scene who, incensed by your action, attack you savagely.",
+          "0": "You draw your sword and finish off the wounded man. However, you failed to account for the witnesses who, incensed by your action, attack you savagely.",
           "1": "You were about to kill the injured person when you were interrupted by a passer-by. You decide to abandon the idea and continue on your way.",
           "2": "When you draw your sword, the man screams, but no one hears him. You kill him before robbing him."
         },
@@ -882,8 +882,8 @@
     "possibilities": {
       "chat": {
         "outcomes": {
-          "0": "Time goes by quickly as you chat during 2 hours with a farmer about the countryside.",
-          "1": "You bond with the guy sitting next to you who gifts you a present for the sake of it.",
+          "0": "You don't notice time passing as you chat for 2 hours with a farmer about the countryside.",
+          "1": "You bond with your table neighbor who gives you an object as a gift.",
           "2": "As the alcohol kicks in, some people start getting aggressive and you watch a fight happen before going away.",
           "3": "A generous young man insists on giving you a bag of money and something to drink.",
           "4": "You accept politely and stay a few minutes before leaving, pretending to be in a hurry."
@@ -894,7 +894,7 @@
         "outcomes": {
           "0": "This good food makes you full of energy!",
           "1": "Bad luck! You end up eating a piece of spoiled food and get sick.",
-          "2": "You stuff yourself full. You'll need a good time to digest and be ready to resume your adventure.",
+          "2": "You stuff yourself full. You'll need some time to digest before you can resume your journey.",
           "3": "You ate very well, you chat with your neighbor who keeps serving you drinks. You end up collapsing, drunk."
         },
         "text": "Take the opportunity to stuff yourself with food."
@@ -916,7 +916,7 @@
       "steal": {
         "outcomes": {
           "0": "You take advantage of the situation to gather some gold here and there.",
-          "1": "You get caught but succeed in running away.",
+          "1": "You are spotted by some people, but manage to escape.",
           "2": "You get caught. Enraged, the victims decide to hurt you badly."
         },
         "text": "Take advantage of the commotion to rob people."
@@ -928,18 +928,18 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "In the absence of any response from you, the group of friends decide to go and get you a present anyway. As you wait politely for them, you become increasingly anxious at the thought of wasting time. The risk of not being able to save the princess obsesses you, even sickens you... and you end up fainting. Discovering you lifeless on your way back, the honest men lean you against a tree to let you rest, and leave you this gift, before setting off again.",
+          "0": "In the absence of any response from you, the group of friends decide to go and get you a present anyway. As you wait politely for them, you become increasingly anxious at the thought of wasting time. The risk of not being able to save the princess obsesses you, even sickens you... and you end up fainting. Discovering you unconscious on their way back, the honest individuals lean you against a tree to let you rest, and leave you this gift, before setting off again.",
           "1": "Seeing that you don't react, the bystanders don't press the issue and walk away.",
           "2": "Seeing that you were hesitating for too long, the young men finally decided to give you a little money so you could buy a few trinkets. You thanked them for their kindness."
         }
       },
       "food": {
         "outcomes": {
-          "0": "One of them hands you a rather appetizing soup. You drink it carelessly. Those scoundrels set up a trap for you! They had waited for a long time to plunder you, the drink contained just enough fly agaric to make you sick. You feel increasingly ill while helplessly seeing your pockets being stripped.",
+          "0": "One of them hands you a rather appetizing soup. You drink it carelessly. Those scoundrels set up a trap for you! They had waited for a long time to plunder you; the drink contained just enough fly agaric to make you sick. You feel yourself fading while helplessly watching your pockets being stripped.",
           "1": "These passers-by cooked a tasty dish for you, worthy of a Gallic potion. As you look closer, you see an object laying at the bottom of the bowl. It could be useful in the future.",
           "2": "Happy to help, the group goes out to buy you the local specialty. When the dish arrives, you put on a brave face but eat it with some distaste: you don't like mushrooms! With some effort, you finish the dish."
         },
-        "text": "Gift in food."
+        "text": "Food gift."
       },
       "health": {
         "outcomes": {
@@ -947,7 +947,7 @@
           "1": "The few people offer you a treatment in a massage center near there. While you are getting a massage, one of the candles hanging on the wall falls into the jar of essential oils, setting the whole establishment on fire. With some difficulty, you manage to get out of the blaze that emanates from the building.",
           "2": "They weren't expecting this kind of request and are unsure how to respond. Not wanting the awkwardness to linger, you thank them anyway and end the conversation."
         },
-        "text": "Gift in health."
+        "text": "Gift of health."
       },
       "kind": {
         "outcomes": {
@@ -955,7 +955,7 @@
           "1": "Those smart alecks decided to play a prank on you and give you a lousy gift. They didn't realize, though, that a board with protruding nails would be dangerous to unwrap. With your fingers bleeding, you walk away, furious, to tend to your wounds.",
           "2": "Your generous donors are proud of their gift, found in a market. They give you an object which, at first glance, is of great interest to you."
         },
-        "text": "Gift in kindness."
+        "text": "In-kind gift."
       },
       "money": {
         "outcomes": {
@@ -985,8 +985,8 @@
       },
       "steal": {
         "outcomes": {
-          "0": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving of since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts \"Stop thief!\". You flee.",
-          "1": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving of since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts \"Stop thief!\". You end up the night in jail and compensate these people."
+          "0": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts thief! You flee.",
+          "1": "You explain to him that you don't really want to be a guinea pig, so the bartender, seemingly disappointed, leaves you to it. So you do the thing you've been craving since you entered the bar: discreetly robbing customers. You pick the pockets of three people without any trouble, but the fourth one notices you and shouts \"Stop thief!\" You end up the night in jail and compensate these people."
         },
         "text": "Refuse, and try to rob people."
       },
@@ -1073,7 +1073,7 @@
           "0": "You buy an inexpensive item in exchange for a few gold coins. You're satisfied with the item he's sold you and put it back in your bag.",
           "1": "You decide to buy a cheap item. However, as you inspect its quality, you realize that it is in very poor condition. You were taken advantage of, and that guy already fled the scene while you were busy with the item. You swear not to be fooled by this guy again."
         },
-        "text": "Accept to buy a cheap item."
+        "text": "Agree to buy a cheap item."
       },
       "buyExpensive": {
         "outcomes": {
@@ -1100,7 +1100,7 @@
         "outcomes": {
           "0": "You discreetly steal one of his objects and rush off.",
           "1": "The merchant notices what you're trying to do, so he asks you to return his merchandise. Out of mercy, he decides to let you go, which you do without asking for anything else.",
-          "2": "The merchant notices you as you start robbing him. He knocks your teeth out with a punch then leaves."
+          "2": "You begin to rob the merchant, who notices you. He lands a heavy punch, then leaves."
         },
         "text": "Steal his merchandise."
       }
@@ -1113,15 +1113,15 @@
         "outcomes": {
           "0": "For a little money, he agrees to accompany you. So off you go, and a short time later, you come across a gleaming sword stuck in a rock. You try to pull it out, but your efforts prove inconclusive. Price in turn tries and manages to dislodge the weapon from its stony carapace. Knowing that he wouldn't have come across it without you, he gives you money as a thank-you, far more than you paid him. The rest of the journey is uneventful, and you part after a few dozen kilometers.",
           "1": "For a little money, he agrees to accompany you. During your journey, you come across an abandoned satchel along the way. Delighted by this discovery, you decide to share its content with Price. You thus obtain a small sum of money, and an item which you think will be useful for your adventure.",
-          "2": "For a little money, he agrees to accompany you. You walk together for a little while without anything special happening, except for a small incident with thieves which didn't last long with Price's help. You then split up.",
-          "3": "You give him a few coins to accompany you until the next town. You leave quickly, and when the sun goes down, you bivouac and then you set. You are suddenly woken up by the sound of metal clattering together, and it takes a few seconds to realize that Price is taking your money away. Without thinking twice about it, determined to stop him, you run to him. He violently punches you into the temple, and runs away with your possessions while you are dizzy."
+          "2": "For a little money, he agrees to accompany you. You walk together for a little while without anything special happening, except for a small incident with thieves who didn't hold out long against Price. You then split up.",
+          "3": "You give him a few coins to accompany you until the next town. You leave quickly, and when the sun goes down, you bivouac and then go to sleep. You are suddenly woken up by the sound of metal clattering together, and it takes a few seconds to realize that Price is taking your money. Without thinking twice about it, determined to stop him, you lunge at him. He delivers a violent punch to your temple, and dazed, you watch him flee with your possessions."
         },
         "text": "Pay him to accompany you to your next destination."
       },
       "end": {
         "outcomes": {
           "0": "You stay and chat with Price for a few minutes before letting him go about his business.",
-          "1": "After a short chat, you part company. A few streets further on, you are attacked by a group of unkind-looking people who lighten your purse at gunpoint."
+          "1": "After a short chat, you part company. A few streets further on, you are attacked by a group of unkind-looking people who lighten your purse under the threat of violence."
         }
       },
       "meal": {
@@ -1185,7 +1185,7 @@
           "1": "You decide to enter this Xetrix's house, and start stealing from him as he arrives. He sees you and lunges at you, but you manage to escape after a struggle, as you're more agile than he is. However, you are wounded and have lost all your loot in the altercation.",
           "2": "You enter the house to wait for the man. Once there, you chat and he decides to take you out to dinner. After a delicious meal, you leave with a full belly and feeling great."
         },
-        "text": "Break into his house."
+        "text": "Break into the house."
       },
       "end": {
         "outcomes": {
@@ -1201,7 +1201,7 @@
         "text": "Go back the way you came."
       }
     },
-    "text": "As you go deep into a dark forest, you see the silhouette of a man in the distance. While going closer, you realize he's a hermit, out for the picking. You approach his house, on which you read the inscription \"Xetrix\", which is probably his name. You're thinking about what to do..."
+    "text": "As you go deep into a dark forest, you see the silhouette of a man in the distance. While moving closer, you realize he's a hermit, out foraging. You approach his house, on which you read the inscription \"Xetrix\", which is probably his name. You're thinking about what to do..."
   },
   "41": {
     "possibilities": {
@@ -1243,7 +1243,7 @@
         "outcomes": {
           "0": "You pretend to be dead in the hope that the guard will discard your corpse and you can leave. As expected, the guard complies. Once relieved, you decide to go to the inn as you're quite tired.",
           "1": "The guard doesn't notice you right away, but as soon as he sees you, he decides to check if you're really dead. Poor actor that you are, he realizes this and decides to leave you in the cell for some extra time.",
-          "2": "The guard examines your body, and you manage to fool him. He disposes of your corpse. Once you're gone, you get up and set off again."
+          "2": "The guard examines your body, and you manage to fool him. He disposes of your corpse. Once he's gone, you get up and set off again."
         },
         "text": "Play possum."
       },
@@ -1276,9 +1276,9 @@
       "feign": {
         "outcomes": {
           "0": "After searching the cave for an hour, you abandon the search and return empty-handed.",
-          "1": "As you retrace your steps, you don't notice the rope stretched between two roots. You trip over it and find yourself suspended in mid-air. Some looters, alerted by the noise, run up and pick your pocket. By the time they've extricated you from the knot, they're long gone with their booty.",
+          "1": "As you retrace your steps, you don't notice the rope stretched between two roots. You trip over it and find yourself suspended in mid-air. Some looters, alerted by the noise, run up and pick your pockets. By the time you've extricated yourself from the knot, they're already far away with their loot.",
           "2": "Retracing your steps, you see what could be a cave in the distance. You step forward slowly and inhale the sweet smell. As you tiptoe closer, you manage to snatch a bit of food. You then set off again quickly, for fear of being caught by someone who may have witnessed your petty theft.",
-          "3": "You enter the cave in small steps and begin to explore. After about fifteen meters, you come face to face with an imposing bear, which lunges at you. You engage it in combat and, after a fierce fight, manage to knock it down with a blow to the skull. You then skin it and cook the meat. Once you're satisfied, you set off in search of a merchant to whom you can sell the bear's skin."
+          "3": "You enter the cave treading softly and begin to explore. After about fifteen meters, you come face to face with an imposing bear, which lunges at you. You engage it in combat and, after a fierce fight, manage to strike it down with a blow to the skull. You then skin it and cook the meat. Once you're satisfied, you set off in search of a merchant to whom you can sell the bear's skin."
         },
         "text": "Pretend to walk away and come back alone to search the cave."
       },
@@ -1299,7 +1299,7 @@
       "continue": {
         "outcomes": {
           "0": "You continue on your way and realize that he's really just a Nordic hunter. You greet each other, and watch as he sets his traps. You realize that this is where the liquid dripping from his hand comes from.",
-          "1": "Curious, you approach the person. He's a Nordic hunter who's setting his traps. You greet each other and offer to help, which he gladly accepts. After helping him set all his traps, he asks if you'd like to spend the evening at his place. The hunter cooks the game he's caught. You relax by eating a nice leg of lamb in front of the fire, then he lets you rest on his bed. You leave at dawn, having thanked him by giving him a few coins."
+          "1": "Curious, you approach the person. He's a Nordic hunter who's collecting his traps. You greet each other and offer to help, which he gladly accepts. After helping him collect all his traps, he asks if you'd like to spend the evening at his place. The hunter cooks the game he's caught. You relax by eating a nice leg of lamb in front of the fire, then he lets you rest on his bed. You leave at dawn, having thanked him by giving him a few coins."
         },
         "text": "Continue on your way."
       },
@@ -1307,7 +1307,7 @@
         "outcomes": {
           "0": "You ignore the person in front of you and, a little further down the road, find a shiny object which you stow in your bag.",
           "1": "Out of fear, you turn back and make a detour to avoid running into the creature.",
-          "2": "You run without looking to see what it was, but you stumble in the dark over a stone. You fall on your arms, all flayed."
+          "2": "You run without looking to see what it was, but you stumble in the dark over a stone. You fall on your arms, all scraped."
         }
       },
       "fight": {
@@ -1327,7 +1327,7 @@
       },
       "shelter": {
         "outcomes": {
-          "0": "You remember having passed by a church few minutes ago, without any hesitation you decide to go there, in order to be protected from the unholy being. You run all the way there and arrive in less than ten minutes in front of said church. You knock, a little feverish for fear of having been followed by the beast. A kyutist answers the door, and after you have explained everything to him, he lets you in. Very kindly, the people inside the church give you something to eat and tell you that they can keep you for the night without any problem. Grateful, you join them in the praises to Askeriel, during which everyone present whispers in chorus how Askeriel, the Great God, created existence, matter, the earth, and then humans and animals. When you have finished, you all go to bed.",
+          "0": "You remember having passed by a church a few minutes ago, without any hesitation you decide to go there, in order to be protected from the unholy being. You run all the way there and arrive in less than ten minutes in front of said church. You knock, a little feverish for fear of having been followed by the beast. A kyutist answers the door, and after you have explained everything to him, he lets you in. Very kindly, the people inside the church give you something to eat and tell you that they can keep you for the night without any problem. Grateful, you join them in the praises to Askeriel, during which everyone present whispers in chorus how Askeriel, the Great God, created existence, matter, the earth, and then humans and animals. When you have finished, you all go to bed.",
           "1": "You remember going past a church not long ago. So you head there, hoping to get some help. Once there, you knock on the large door. After a few seconds of no reaction, you decide to enter, fearing you have been followed by the beast. It is at this moment that you realize that the church is completely empty, abandoned. You close the door and settle down on the floor before falling asleep.",
           "2": "You immediately think of seeking refuge in a church: what could be better, after all, in the face of something seemingly demonic? However, you soon realize that you have absolutely no idea where the nearest church is. So you decide to run as far away from the creature as possible, which you do.",
           "3": "You think going to a church is a good option. You hurry and arrive in a few minutes at the church you passed earlier. You knock and are greeted by a jovial priest, who immediately takes you in. You soon tell him about what you saw, and he replies that it could very well be a terrible demonic creature under Y'ahnor's orders. Impressed, you join him in the Ode to the Three, the ceremony where Orthgard, Fenrir, and Iatneh, the protective gods who guide mankind and inspire the greatest inventions and discoveries, are celebrated."
@@ -1335,13 +1335,13 @@
         "text": "Take shelter in a Kyutist church."
       }
     },
-    "text": "You are heading eastwards in the middle of the night. It is dark but the moon is clear. You see before you a being bathed in moonlight. A tall man, dressed in black; you see a red liquid dripping from one of his hands, the dim white light puncturing the skies illuminates the pale skin of the individual, who has not yet noticed you. What to do?"
+    "text": "You are heading eastwards in the middle of the night. It is dark but the moon is clear. You see before you a being bathed in moonlight. He is tall, dressed in black; you see a liquid dripping from one of his hands, the night illuminates the pale skin of the individual who has not yet noticed you. What to do?"
   },
   "44": {
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "You leave the scene, wanting to have no part in the man's fate. Nearby, you stumble upon an abandoned object which probably belonged to the bloke."
+          "0": "You pass by, not wanting to be involved in this man's death. Just nearby, you stumble upon an abandoned object that surely belonged to him."
         }
       },
       "help": {
@@ -1349,21 +1349,21 @@
           "0": "As you try to help him, he gets scared and knocks you out with the rock. You stay unconscious for a while, but eventually wake up and get on your way.",
           "1": "You throw yourself on the stone and catch it. You quickly cut the rope and go to find the unfortunate man, who is soaking wet. You spend several hours with him, trying to dissuade him from doing it again. Grateful, he offers you shelter for the night.",
           "2": "You throw yourself at the stone, but you're too slow. The poor man quickly sinks into the river, carried away by the current. You look around to see if he's left any of his belongings behind. You come across a strange, glittering object.",
-          "3": "You run to help him. Nevertheless he succeeds in throwing his rock before you get to him. You jump after him to try to bring him to shore but he struggles and bring you underwater with him. As you start to suffocate, you release him and your are forced to resurface."
+          "3": "You run to help him. Nevertheless he succeeds in throwing his rock before you get to him. You jump after him to try to bring him to shore but he struggles and brings you underwater with him. As you start to suffocate, you release him and you are forced to resurface."
         },
         "text": "Come quickly to his rescue."
       },
       "push": {
         "outcomes": {
-          "0": "You approach quietly behind him and violently push him in the swirling waters. He sinks and disappears from sight. You watch around briefly, hoping to not have been seen.",
-          "1": "You approach quietly when you suddenly trip over an unseen fallen branch. You fall forward onto the suicidal man and bring him with you in your fall towards the cold deadly waters.",
-          "2": "You creep behind the man when a step loudly breaks a stick. Afraid, the poor man throws the rock and follow behind. You get up and find a filled moneybag he left behind."
+          "0": "You approach silently behind him and push him violently into the river. He sinks and disappears from your sight. You watch around for a few moments, hoping not to have been seen, and leave quietly.",
+          "1": "You approach silently when suddenly a branch catches your leg. You fall backward onto the suicidal man and drag him down with you in your fatal fall toward the icy whirlpools of death.",
+          "2": "You approach stealthily when your foot breaks a branch. Startled, the poor man throws the stone and follows it. You then stand up and discover a pouch he left behind."
         },
-        "text": "\"Help\" him throwing the rock."
+        "text": "\"Help\" him by pushing him."
       },
       "watch": {
         "outcomes": {
-          "0": "Apathetically, you watch as the man sinks following his rock. You search around to see if he left any things and find a filled moneybag. You leave, satisfied.",
+          "0": "Nonchalantly, you watch the man sink into the river as a result of his stone. You search the surroundings to see if he left anything behind and find a purse containing coins. You leave, satisfied.",
           "1": "As you lean back comfortably, you see him change his mind and throw his rock aside. While turning around, he notices you and invites you for dinner. Without asking questions about the previous turn of events, you accept and follow him to his cottage. As you start dining your head feels heavy, your vision gets blurred and you fall into a deep slumber. You wake up many hours later on the side of an empty and unknown road."
         },
         "text": "Watch him throw the rock."
@@ -1407,7 +1407,7 @@
       },
       "talk": {
         "outcomes": {
-          "0": "You spend 30 minutes trying to get some information on the shrine, but unfortunately none of the information turns out to be of any use.",
+          "0": "You spend nearly 30 minutes gathering information on this sanctuary, information that will not prove useful.",
           "1": "The group shrugs off your attempts to discuss the shrine with them and makes it very clear with their body language that they have no interest in having you around."
         },
         "text": "Discuss with the group."
@@ -1419,53 +1419,53 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "The minstrel, seeing you not answering, ignores you and restart singing basic songs. You then continue your way.",
-          "1": "Seeing you not reacting, the minstrel, determined to earn money at all costs, and seeing in you the perfect fool, decides to drug you and drag you into the dark nearby alley. There, he starts singing a song about laboratory torture, casting you as the executioner. Having the strength to carry out this experiment, which goes perfectly on this beautiful test subject, the minstrel, or in your hallucination your boss, decides to give you two objects as a reward. Waiting for you to come back to your senses, he starts singing soulless songs again.",
-          "2": "Seeing you not reacting, Perotin decides to drug you, so you reveal what you think about by talking, to see if something happens. He doesn't see anything there, even in the deepest of them. Panicked, he calls the guards who arrest you for madness."
+          "0": "The minstrel, seeing that you do not respond, ignores you and restarts singing basic, soulless songs. You then continue on your way.",
+          "1": "Seeing you not reacting, the minstrel, determined to earn money at all costs, and seeing in you the perfect guinea pig, decides to drug you and drag you into the dark nearby alley. There, he starts singing a song about laboratory torture, casting you as the executioner. Having the strength to carry out this atrocious experiment, which goes perfectly on this beautiful test subject, the minstrel—or in your hallucination, your boss—decides to give you two objects as a reward. Following this, Pérotin waits for you to return to normal, takes the object of greater value, and leaves you with the other object, which may be useful for the journey ahead.",
+          "2": "Seeing you fail to react, Perotin decides to drug you so that you will reveal your thoughts through speech to see if anything is there. He sees nothing, not even in the deepest of them. Panicked, the minstrel calls the guards who commit you for madness."
         }
       },
       "singCrazyLove": {
         "outcomes": {
-          "0": "Immediately asked, immediately done. You find yourself in a bed, undressed, and the person next to you looks like your lover. Watching at yourself, you see that you are attached on the bed and... you're missing your legs and arms. You can only move with your torso. Seeing your distress, Perotin ends his song with \"all this was just a dream\", and you are back as before. You will however need to take a rest.",
+          "0": "Immediately asked, immediately done. You find yourself in a bed, undressed, next to what appears to be your lover. Looking more closely at yourself, you realize that you are attached at the waist, and... you're missing your limbs entirely, both arms and legs. You can only move with your torso. Seeing your distress, Perotin ends his song with \"all this was just a dream\" and you become as before, whole and detached. You will, however, need to rest to recover from your trauma.",
           "1": "No sooner asked than done. You find yourself at sea, far from everything, accompanied by a single sailor, your love. Arriving on a desert island, you see a cross on the ground. It's a treasure trove, filled with beautiful booty and a useful object. Greed and avarice have got the better of you, and you decide to leave the island, alone. On your way back home, you come across Pérotin, who sings about giving the money he's earned there, as a gift to this unparalleled melody. Following these adventures, you set off again, accompanied by the object you found on the island.",
-          "2": "Knowing you heroic quest to save the princess, the minstrel decided to sing a song about one of the possible following of you adventure after saving her. But not knowing much about you relationship with the princess, if preferred to tell the story of \"The old and the fake monster\", in which you are the monster of course. Already knowing the synopsis, Perotin succeeded to not change you, probably because of the under dosage of his drugs. Having not entered in the story, you thank him for this beautiful story, and continue you trip, aware of this useless waste of time."
+          "2": "Knowing your heroic quest to save the princess, the minstrel decides to tell one of the possible outcomes of your adventures after this rescue. But not knowing much about your relationship with the princess, he preferred to tell the story of \"The Old Woman and the Fake Monster,\" in which you play the fake monster, of course. Already knowing the synopsis, Perotin fails to make you change, likely due to the low dosage of his drugs. Not having entered into his tale, you decide to thank him for this magnificent story and continue your journey, aware of this useless waste of time."
         },
         "text": "Sing a crazy love."
       },
       "singHero": {
         "outcomes": {
-          "0": "This famous bard, not knowing much about the adventurer's work, decides to tell a simple trip in a forest, like you know well. Disappointed about this song, and about Perotin, you choose to continue your adventure.",
-          "1": "Perotin decides to make you live the moment at which you asked him to sing the song. The problem, is that the drugs are so real that you answer the same thing you did, and the minstrel always does the same. It then created an hallucino-temporal loop, because of the talents of Perotin, and your stupidity. Perotin, the only consent of the scene that you live with him had mercy for you at the end of the day and released you from this bad drug.",
-          "2": "Perotin decides to make you see the future, whether it's real or only fiction of your mind, and by the occasion let you earn some money: you get yourself around an old abandoned castle. Looking around you, you find a passage full of traps. You finally avoid all of them, and find a big treasure room. But our favorite minstrel, before the end of your looting, run away with all your booty, leaving you with the main chest, which contains much money, and a surprising item useful to save the princess. Amused, you continue this funny adventure, still a bit under the influence of this drug, called the γ-hydroxybutyric acid according to rumors."
+          "0": "This famous bard, knowing little about the life of an adventurer, decides to recount a mundane trip into a forest just like those you know so well. Disappointed by this song and by Perotin, you continue your adventure.",
+          "1": "Perotin decides to make you go back two minutes just before speaking to him. Small problem: his story and his drugs are so faithful to the original that you give the same reaction to this report, without the minstrel's decision regarding this reaction changing. A hallucinatory-temporal loop thus occurs, thanks to Perotin's talents and your stupidity. Perotin, the only one aware of the scene you are living with him, had mercy on you at the end of the day and released you from this bad drug.",
+          "2": "Perotin decides to show you the future, whether it be real or merely a figment of your imagination, and at the same time help you earn some money: you head to the surroundings of an old abandoned castle. Searching around, you stumble upon a secret passage riddled with traps. You manage to avoid them all and find a room of immense treasure. But our favorite minstrel, just before the end of your looting and gathering of treasures outside the trap zone, slips away with your booty, leaving you only with the room's main chest, containing plenty of money and a surprisingly useful item for saving the princess. Amused, you continue this strange adventure, still somewhat under the influence of the drug known by rumors as γ-hydroxybutyric acid."
         },
         "text": "Sing about our life, and our heroic history."
       },
       "singLove": {
         "outcomes": {
-          "0": "Taking your words back, you find yourself in an old monastery, in the countryside. Your lover and yourself are staying in this dingy place, harvesting just enough food to survive. You fulfill yourself in this story, due to the overdose of the drugs, that you don't see time going forward. Waking you up, after a few minutes, Perotin tells you that the drugs makes the use feel a few minutes, but those are months. Fortunately, or you would be dead of old age. Meditative, you continue your trip.",
-          "1": "Not understanding your wish, for an uncolored love, Perotin thinks that you are depressive, he then chooses to sing a comforting song, to get you rid of this sudden depression. This song made you feel very well.",
+          "0": "Returning to your words, you find yourself in an old monastery in the countryside, working the land. You and your lover remain in this dingy place, managing to harvest just enough each month to survive. You thrive so much in this story due to the drug overdose that you don't notice time passing. Perotin comes to wake you and tells you that the drugs ingested make the user feel as if 1 to 2 minutes of their stories are an entire month of their life. Fortunately, it is the case; otherwise, you would have died of old age. Meditative, you continue your journey.",
+          "1": "Perotin, unable to understand your sudden longing for a colorless love, believes you are depressed; he decides to sing you a comforting song to cure you of this sudden melancholy. The song does you a world of good.",
           "2": "Seeing your knowledge of passionless love, the minstrel takes a liking to you, and makes you a song where your love is you. Caught up in a violent couple's quarrel between you and yourself, the minstrel stops the song, and asks you for a charge for the frantic fight you had with yourself in front of his admirers. Again in the story, you think you're leaving each other, which makes you sad, very sad. So you leave, leaving some money for Pérotin to make up for the inconvenience."
         },
         "text": "Sing a dull and redundant love."
       },
       "singRoyalty": {
         "outcomes": {
-          "0": "The minstrel loving his homeland of ever, fills your request and singed the dukes. The duke of the next region came this way, and heard this soft melody, rocking his heart. At the end of the song, he rewards you with a big gold bag.",
-          "1": "The minstrel, hating the current power, by his song decides to make a revolution. He take you with him, drugs you, and makes you think that the rest of the people are on their way to the king's room. Unfortunately, one of the string of the mandoline breaks, and the music stops. You however are in the king's room, alone, with a fork. You immediately get arrested for madness.",
-          "2": "Perotin, knowing a bit your story to save the princess, decides to make you live the view of her mother for a day, so that you learn a bit more about this distressed woman. But the queen's life is boring for you, and appart from some gossips and thoughts of woman on her child, you don't get any useful informations because of the fact that those are caused by magic drugs of Perotin. At the end of the day, you take your body back, and continue your trip."
+          "0": "The minstrel, loving his eternal homeland, grants your request and sings the praises of the dukes and tales. The duke of the neighboring region passes by and hears this sweet melody, which soothes his heart. At the end of the song, he rewards you and your friend with a large pouch of gold.",
+          "1": "The minstrel, hating the current power, decides through his song to start a revolution in order to seize the throne. He takes you with him, drugs you, and makes you believe that the people and you are making your way into the king's room. Unfortunately, one of the strings of the mandolin breaks and the music stops abruptly. You are, however, very much in the throne room, alone, with a fork. You are promptly imprisoned for madness.",
+          "2": "Perotin, knowing a bit about your quest to rescue the princess, decides to let you experience her mother's point of view for a day so that you can learn more about this distressed damsel. However, the queen's life seems rather dull to you; apart from some gossip and the lady's thoughts on her daughter, you gain no useful information, as these are merely products of Perotin's magic drugs. At the end of the day, you regain control of your body and continue your journey."
         },
         "text": "Sing about the royalty, and the power in place."
       },
       "singWork": {
         "outcomes": {
-          "0": "Perotin, sad of this request, decides to make you live the role of minstrel in the song and... You see yourself arriving, to ask your choice, but you force yourself to sing it, and it loops for a long time. At a moment, our favorite minstrel stops the song, and give you the antidote, to this hallucinatory poison. Afraid of what just happened, and of the duration of this loop, you run away to know what time is it. And... it's the evening now.",
-          "1": "Perotin, nostalgic, decides to tell his beginnings in the profession in his song. He tells how his master gave him his melodious lessons, and his softening drugs. You feel this sweetness in the teacher's words that inhibits you with all your being. At the end of his last lesson, Perissien, Perotin's master, decides to give you a present, as he had received from his predecessors, but to prevent this magical instrument, this mandolin, from leaving you since its beginnings, Perotin changes the end of the song in order to give you an object that could be useful to you for the rest of your adventure.",
-          "2": "The excellent minstrel Perotin decides to tell a dream he would like to live, whether real or hallucinated: at the beginning you are alone, in the village alley, with your guitar. You sing for yourself the joys of the work and the sadness of life, when a monarch passes in the main avenue. This one, hearing the beautiful melody, comes towards you and asks if you could create a song for him on the theme of his love. At the end of your sweet ballad just made up, he thanks you and gives you a big bag of gold, considering that this man was real. Happy with this music, you decide to share it with Perotin as a donation."
+          "0": "Perotin, saddened by this request, decides to make you live the role of minstrel in his song and... You see yourself approaching you to ask for this song, but you force yourself to sing that same song, and it repeats in a loop for a very long time. After a while, our favorite minstrel stops the loop by giving you the antidote to this hallucinatory poison. Terrified by what just happened and by the duration of this loop, you run toward the nearest person to find out what day it is. And... you have reached the evening.",
+          "1": "Perotin, nostalgic, decides to tell his beginnings in the profession through his song. He tells of how his former master gave him melodious lessons via his softening drugs. You feel this sweetness in the teacher's words, which inhibits you with all your being. At the end of his last lesson, Perissien, Perotin's master, decides to give you a parting gift, just as he had received from his predecessors; however, to avoid it being that magical instrument—this mandolin, which has not left him since his beginnings—Perotin changes the ending in order to give you an object that could be useful for the rest of your adventure.",
+          "2": "The excellent minstrel Perotin decides to tell a dream he would like to see come true, whether real or hallucinated: at the beginning you are alone, in the village alley, with your guitar. You sing for yourself the joys of your craft and the sadness of life, when a monarch passes along the main street. This one, hearing the beautiful melody, comes towards you and asks if you could create a song for him on the theme of his love. At the end of your sweet ballad just made up, he thanks you and gives you a nice pile of gold, considering that this passerby was real. Happy with this music, you decide to share some of this sum with Perotin as a donation."
         },
         "text": "Sing about the minstrel's job."
       }
     },
-    "text": "While crossing a small village, you found the most famous minstrel of the region, called Perotin. He is so good at his work, that he wanted to let you live a song, because of his powerful drugs. Having the courage of going talk to him, he would like you to choose the following theme. What do you suggest?"
+    "text": "Passing through a small village, you come across the most famous minstrel in the region and beyond the borders, named Perotin. He is so skilled at his craft that he can make you live a song—literally—thanks to his powerful drugs. Having gathered the courage to speak with him, he would like you to suggest the theme for his next song. What do you suggest?"
   },
   "47": {
     "possibilities": {
@@ -1478,7 +1478,7 @@
       },
       "goAway": {
         "outcomes": {
-          "0": "You decide not to take part in this madness and leave as soon as possible. Unfortunately, you pass by a guard, hungry of wealth, that asks you to stop. You are quickly immobilized and stripped.",
+          "0": "You decide not to take part in this madness and leave as soon as possible. Unfortunately, you pass by a guard, hungry for wealth, who asks you to stop. You are quickly immobilized and stripped.",
           "1": "You do not want to risk your life and so, decline the offer before leaving by thanking the villagers for welcoming you.",
           "2": "You declare yourself exhausted, they find you a shelter for you to rest. You take advantage of the night to flee the village.",
           "3": "You tell them that you cannot fight the Lord because you are exhausted. They agree to offer you shelter for you to rest. You take an item during the night and flee as quickly as possible.",
@@ -1490,11 +1490,11 @@
         "outcomes": {
           "0": "With the help of the whole village, you organize a siege of the castle. No reaction is observed in the castle, where people seem to be making do with the slight inconvenience caused by the blockade of surrounding roads. After a few hours, the drawbridge gates are lowered and some thirty men rush towards the camp you've set up. A bloody struggle ensues. In the rush, you grab a horse and run.",
           "1": "You and the villagers plan a rebellion! Unfortunately, when you decide to attack a guard, the villagers are too frightened to follow you and flee. Your opponent gives you a violent strike that knocks you down, the guard takes advantage of the situation to steal your purse.",
-          "2": "You decide to organize an uprising! Tho, a villager betrays you to obtain a prize. The castle´s guards hasten to haunt you. You manage to distract them, not without having suffered a few blows.",
-          "3": "You take advantage of your knightly status to visit the squire. After the introductions, you reveal the reason for your visit by thrusting a dagger into his heart. The guards react immediately and surround you. One of them swings a sword at you, which you manage to dodge, but another rushes in and pierces you with his blade.",
-          "4": "You try to siege the lord's castle with the village but the night falls, therefore, you decide to sleep in front of the castle. The lord took advantage of the situation to go out with his man and reach the camp, but a villager alerts everyone. You rush on the lord and send him an agile sword strike. The guards surrender and the villagers give you a purse filled with gold to thank you for helping them!",
-          "5": "You go see the lord and announce him that his village is planning a rebellion. After a long discussion, you manage to gain his trust and seize the opportunity to pierce his heart with a dagger. The Lord's loyal guards rush on you and immobilize you. One of them propose to execute you in front of the villagers to get the message across, but the rebellion is raging! The villagers end up making the guards flee and offer you a large purse filled with gold to thank you.",
-          "6": "You go see the Lord and announce him that a rebellion is being planned. After a long discussion, you manage to gain his trust and seize the opportunity to pierce his heart with a dagger. The loyal guards attack you, but other's that only wanted the Lord's death help you flee. Back in the village, we offer you a bit of money and an item that could be useful."
+          "2": "You decide to organize an uprising! However, a villager betrays you to obtain a reward. The castle's guards hasten to apprehend you. You manage to distract them, not without having suffered a few blows.",
+          "3": "You take advantage of your knightly status to visit the castellan. After the introductions, you reveal the reason for your visit by thrusting a dagger into his heart. The guards react immediately and surround you. One of them swings a sword at you, which you manage to dodge, but another rushes in and pierces you with his blade.",
+          "4": "You try to siege the lord's castle with the village but the night falls, therefore, you decide to sleep in front of the castle. The lord takes advantage of the situation to go out with his men and reach your camp, but a villager alerts everyone. You rush on the lord and deliver an agile sword strike. The guards surrender and the villagers give you a purse filled with gold to thank you for helping them!",
+          "5": "You go see the lord and announce to him that his village is planning a rebellion. After a long discussion, you manage to gain his trust and seize the opportunity to pierce his heart with a dagger. The Lord's loyal guards rush on you and immobilize you. One of them proposes to execute you in front of the villagers to get the message across, but the rebellion is raging! The villagers end up making the guards flee and offer you a large purse filled with gold to thank you.",
+          "6": "You go see the Lord and announce him that a rebellion is being planned. After a long discussion, you manage to gain his trust and seize the opportunity to pierce his heart with a dagger. The loyal guards attack you, but others that only wanted the Lord's death help you flee. Back in the village, they offer you a bit of money and an item that could be useful."
         },
         "text": "Help the villagers dethrone the lord."
       },
@@ -1502,14 +1502,14 @@
         "outcomes": {
           "0": "You go visit the lord, tell him about the villager's request and help him find the person. He thanks you and you leave.",
           "1": "You visit the lord and tell him of the treachery in the neighboring village, announcing that you are prepared to give him the names of the dissidents in exchange for a large sum of money. He accepts your offer and you lead him to the traitors, whom he executes before your very eyes. On the way, you check the purse he's given you and realize that it contains very few coins!",
-          "2": "You go visit the Lord and tell him about the villager's request and explain to him that you can help him find the rebel, but in exchange you want a nice sum of money. He accepts and asks you to help him find him. Together, you get there, but when you ask the Lord for the money, this one refuses. A duel begins but the lord is no match for your swordsmanship. However, he didn't have much wealth on him.",
+          "2": "You go visit the Lord and tell him about the villager's request and explain to him that you can help him find the rebel, but in exchange you want a nice sum of money. He accepts and asks you to help him find him. Together, you get there, but when you ask the Lord for the money, he backs out. A duel begins but the lord is no match for your swordsmanship. However, he didn't have much wealth on him.",
           "3": "You go visit the Lord, but the guards won't let you pass. You let them know that this is important, but they do not want to hear anything. Under their threats, you leave cursing under your breath, helpless.",
           "4": "You decide to tell the Lord what you've heard, but on your way you see a villager who seems to have guessed your intention to betray the village. You try to force the way but reinforcements arrive fast. Surrounded by the hating crowd, you get knocked down and severely struck."
         },
-        "text": "Tell the lord the plans of the village."
+        "text": "Repeat to the lord what you heard."
       }
     },
-    "text": "You have been so tired that you have trouble walking. This is when you see a village. Saved! Not without pain, you finally arrive to the village. From the sympathy of a group of villagers, you find a place to sleep and food to eat. You plan to leave soon, however, a villager asks you for a favor. Shining you with vast wealth, the villager requests you to help them dethrone the chatelain of the neighboring castle."
+    "text": "You are so exhausted that you have difficulty walking. That is when you spot a village—you are saved! With great effort, you reach the village and manage to find favor with a group of locals who agree to feed you and provide a place to sleep. You plan to leave soon, but one of the villagers approaches you with a favor. Luring you with the promise of great riches, the inhabitant begs you to rid them of the neighboring castle's chatelain."
   },
   "48": {
     "possibilities": {
@@ -1519,7 +1519,7 @@
           "1": "You watch the knight, unsure of what to do in the face of this armored colossus. Summoning your courage, you confront him in a duel... and are miserably defeated by him. The knight demands your purse in exchange for your life.",
           "2": "You watch the knight, unsure of what to do in the face of this armored colossus. Suddenly, you have an idea: you wait until it's dark and pitch-black before making your way discreetly towards the tower. The door is closed and the knight has disappeared. You climb the tower and enter through a window. You search it from top to bottom, but find nothing but food. You eat on the spot, taking as much as you can. Your meal has restored your strength and you're feeling better than ever.",
           "3": "Not knowing what to do, you engage the discussion and sympathize with the knight. You gradually get the discussion on the artifact and enjoy your speaker talent in advance. The knight, convinced that you are worthy of possessing it, will get you the artifact. He brings it to you, as promised. You thank him and go to search for someone to buy it. You see what seems to be a merchant, but it was a thief shooting you an arrow in the leg. He steals the artifact from you and runs away. Blessed and helpless, you watch him running away with your loot.",
-          "4": "Not knowing what to do, you engage the discussion and sympathize with the knight. You gradually get the discussion on the artifact and enjoy your speaker talent in advance. Against all expectations, when you ask him about the artifact he refuses. Not wishing to bother him, you do not insist more and talk to the knight a little before you get back to your path."
+          "4": "Not knowing what to do, you engage in conversation and sympathize with the knight. You gradually steer the discussion toward the artifact, relishing your oratory skills in advance. Against all expectations, when you ask him for the artifact, he refuses. Not wishing to upset him, you do not press further and chat with the knight for a while before continuing on your way."
         }
       },
       "fight": {
@@ -1527,20 +1527,20 @@
           "0": "Ready to fight, but knowing little about your opponent, you approach him on the pretext of wanting to discuss an arrangement. Close enough to your enemy, you draw your sword and lunge at him. Unfortunately for you, the knight was on the lookout and possesses colossal strength, which he uses to disarm you before pushing you back to the ground.",
           "1": "Ready to fight, but knowing little about your opponent, you approach him on the pretext of wanting to discuss an arrangement. Close enough to your enemy, you draw your sword and lunge at him. The knight hardly has time to react as you're already knocking him out with the pommel of your sword. But that's not enough. You strike him a second time and, this time, he collapses to the ground. You then try to open the tower door, but to no avail. You check the guard for the key, but he doesn't have it on him. So you leave, dejected.",
           "2": "Ready to fight, but knowing little about your opponent, you approach him on the pretext of wanting to discuss an arrangement. Close enough to your enemy, you draw your sword and knock him out with the pommel. You then search the guard and soon find a key. Open the door. Once inside, you have no trouble finding the artifact. After an hour of searching, you find a merchant. He buys the artifact from you for the modest sum of five hundred gold coins.",
-          "3": "Ready to fight but not knowing your opponent, you come together on the pretext of wanting to discuss an arrangement. Close to your opponent, you draw your sword and knock him with the pommel. Then you try to open the tower door but it is locked... You search the guard and quickly find a key. You open the door, inside you don't find any difficulty to find the artifact. So you go in search of a merchant and find one easily. He steals the artifact with a skillful move, but you also reach to steal one",
-          "4": "Barely knowing your opponent, you approach with the excuse of wanting to discuss an arrangement. Once close enough to your enemy you draw your sword to stun him with the pommel. Unfortunately for you, the knight was far stronger and faster than you. The knight runs at you, makes a right hook and pushes you back by hitting you in the stomach with his foot before hitting you with a powerful uppercut. On the ground, on the edge of fainting, you are not able to get up.",
-          "5": "The knight brandishes his sword to intimidate you. Faced with this colossus, you hesitate to flee, but decide to stay. You will fight this knight, although your chances of defeating him are slim. Your opponent effortlessly parries your blows one by one, before knocking you to the ground. On the ground, unarmed, you know the fight is over. Then the knight says to you: \"You're very brave, so here's your reward\". He gives you an item before moving to the tower entrance.",
-          "6": "Ready to fight, you quickly lunged at your opponent, drawing your sword. The knight barely had time to draw his weapon before you charged at him. At that moment, you realize your mistake. He's wearing armour, but you're not. So you try to stun him with the pommel of your sword, several times. This seems to have disorientated him, so you prepare to try again. But before you can, your opponent wounds you in the leg. You're on the ground, unable to get up. The knight stands over you and raises his sword. You close your eyes and hear your own scream."
+          "3": "Ready to fight but not knowing your opponent, you approach him on the pretext of wanting to discuss an arrangement. Close to your enemy, you draw your sword and knock him out with the pommel. You then try to open the tower door, but it is locked... You search the guard and quickly find a key. You open the door; inside, you have no trouble finding the artifact. You then go in search of a merchant and find one easily. He steals the artifact with a skillful move, but you also manage to steal an item from him. Hoping that it has value, you look at what it is.",
+          "4": "Knowing little of your opponent, you approach under the pretext of wanting to discuss an arrangement. Once close enough to your enemy, you draw your sword to stun him with the pommel. Unfortunately for you, the knight was far stronger and faster than you. He charges at you, lands a right hook, and pushes you back with a kick to the stomach before delivering a powerful uppercut. On the ground, on the verge of fainting, you are unable to get up.",
+          "5": "The knight brandishes his sword to intimidate you. Faced with this colossus, you hesitate to flee, but decide to stay. You will fight this knight even though your chances of defeating him are slim. Your opponent parries your blows one by one without the slightest effort before knocking you to the ground. Lying on the ground, unarmed, you know the fight is over. That’s when the knight tells you that you’ve shown great courage and that he’s rewarding you. He gives you an item before stepping to the entrance of the tower.",
+          "6": "Ready to fight, you quickly lunge at your opponent, drawing your sword. The knight barely had time to draw his weapon before you charged at him. At that moment, you realize your mistake. He's wearing armour, but you're not. So you try to stun him with the pommel of your sword, several times. This seems to have disorientated him, so you prepare to try again. But before you can, your opponent wounds you in the leg. You're on the ground, unable to get up. The knight stands over you and raises his sword. You close your eyes and hear your own scream."
         },
         "text": "Fight the knight."
       },
       "meetHim": {
         "outcomes": {
-          "0": "You start talking to him, and find him very nice. You gradually steer the discussion towards his role here, he explains that he is the tower's guardian. You ask him if it is possible for you to enter, but he refuses. You get back on your way.",
-          "1": "You engage the discussion and talk for several minutes. The knight didn't say a word. Understanding that he will not talk, you abandon any discussion as you leave.",
+          "0": "You start talking to him and find him very nice. You gradually steer the discussion towards his role here. He explains that he is the tower's guardian. You ask him if it is possible for you to enter, but he refuses. You get back on your way.",
+          "1": "You engage the discussion and talk for several minutes. The knight doesn't say a word. Understanding that he will not talk, you abandon the discussion as you leave.",
           "2": "You engage the discussion, the knight immediately orders you to move on. You don't want to leave, but as soon as he shows you his sword, you don't hesitate any longer.",
           "3": "You start a discussion but the knight stays quiet. Understanding that any attempt to dialogue is useless, you leave.",
-          "4": "You start a discussion and spend over an hour with the knight. You gradually steer the discussion around the artefact and enjoy in advance your oratory skills. The knight goes away to get the artefact while you, obsessed by your triumph, do not notice the person behind you until he stabs you in the back. You fall to the ground.",
+          "4": "You engage in conversation and spend over an hour bonding with the knight. You gradually steer the discussion toward the artifact and congratulate yourself in advance on your oratory skills. The knight leaves to fetch the artifact while you, obsessed with your triumph, do not notice the person behind you until they stab you in the back. You fall to the ground, seriously injured.",
           "5": "You engage the knight in discussion and attempt to sympathise for over an hour. He does not want to let you pass by in any way. With no other choice, you draw your sword and attack him. The knight, insensitive to your blows thanks to his armor, hits you violently in the face before knocking you out with a stroke of his pommel.",
           "6": "You start a discussion and sympathize with the knight. You gradually steer the discussion around the artefact and enjoy in advance your oratory skills. The knight, convinced that you are worthy to possess it, goes to fetch the artefact for you. He brings it to you, as promised. You thank him and go looking for a merchant. You manage to sell it for the modest sum of five hundred gold coins."
         },
@@ -1582,7 +1582,7 @@
         "text": "Take it with you."
       }
     },
-    "text": "After strolling along the beach for a few minutes, you come across a strange little creature - a hermit crab! It seems to have turned on its shell..."
+    "text": "After strolling along the beach for a few minutes, you come across a strange little creature - a hermit crab! It seems to have flipped over on its shell..."
   },
   "5": {
     "possibilities": {
@@ -1634,7 +1634,7 @@
           "1": "As you are about to leave, you realize that the group of villagers is heading towards you, they then begin to extort money from you and you give them money so that they leave you alone.",
           "2": "You decide to leave, without a glance, you leave the Coco village to continue your quest."
         },
-        "text": "Leave the village without further waiting."
+        "text": "Leave the village without further delay."
       },
       "nap": {
         "outcomes": {
@@ -1651,24 +1651,24 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "The sun is about to set, so you settle down to rest.",
+          "0": "After hesitating for a long time before the possibilities that lay before you, the sun is about to set, so you settle down to rest.",
           "1": "After hesitating for a long time about the possibilities available to you, you decide to try to climb half a dozen steps before changing your mind, finding the climb too perilous. As you pivot your foot to go back down, it slips and you roll down the stairs. You stand up painfully to find that you are badly gashed. You get back on your way, annoyed by this unfortunate incident.",
           "2": "You sit down on the ground lined with clovers to think about what you want to do. Quickly, a fox faces you. He slowly approaches you and ends up reaching for one of your hands, puts his nose on it, yaps at you and runs away. You decide to follow the path this friendly animal has just blazed for you."
         }
       },
       "goBack": {
         "outcomes": {
-          "0": "Shortly after turning around, you meet a crying and scared little boy by the wayside. He explains to you that he fled during a bandit attack on his parents merchandise cart. You rush to offer your help, the child accepts immediately. After walking two long hours, you find the parents of the child alive, but hurted. As you bid them farewell, the mother gives you a purse filled with gold.",
-          "1": "Shortly after turning around, you meet a crying and scared little boy by the wayside. He explains to you that he fled during a bandit attack on his parents merchandise cart. You rush to offer your help, the child accepts immediately. After walking for a few minutes, a group of heavily armed bandit attacks you by surprise. This trap will not have been fatal to you, but you lose many gold coins during your escape.",
-          "2": "Shortly after turning around, you hear the clatter of pots and pans approaching you. It's a traveler in search of new culinary flavors, about to set up camp and rest. In the course of conversation, you discover her first name: Lucya. She offers you a pie that delights your palate. Full, rested and delighted by your chance encounter, you decide to continue on your way."
+          "0": "Shortly after deciding not to take the stairs, you come across a small, frightened, crying boy at the side of a path. He explains that he ran away during an attack by bandits on his parents’ goods wagon. You quickly offer to help him, and the child accepts immediately. After walking for two long hours, you find the child’s parents alive but injured. As you say goodbye to them, the child’s mother gives you a pouch filled with gold.",
+          "1": "Shortly after deciding not to take the stairs, you come across a frightened, crying little boy standing by the side of a path. He explains that he ran away during a bandit attack on his parents’ goods wagon. You quickly offer to help him, and the child accepts immediately. After walking for a few minutes, a group of heavily armed bandits attacks you by surprise. This ambush didn’t prove fatal, but you lose many gold coins as you flee.",
+          "2": "Shortly after deciding not to take the stairs, you hear the clatter of pots and pans getting closer and closer. It’s a traveler in search of new culinary flavors who was just about to set up camp to rest. As you chat, you learn her first name: Lucya. She offers you a pie that delights your palate. Full, rested, and delighted by your chance encounter, you decide all the same to continue on your way."
         },
-        "text": "Turn around."
+        "text": "Give up on the climb and continue on your way."
       },
       "search": {
         "outcomes": {
-          "0": "You search for a few moments around the base of the stairs, without success. Two more steps let you discover a few gold coins scattered here and there among the weeds. Delighted with your skinny discovery, you continue your adventure whistling.",
-          "1": "After a handful of minutes searching the surroundings, you find a used leather satchel, almost entirely hidden under a heavy stone. By opening it, you discover a papyrus where only a few words are still legible: \"staircase\", \"cave\", \"camp\" and \"Xetrix\". This name sounds familiar to you, but especially disappointed not to have found any treasure, you resume your journey.",
-          "2": "Suddenly, when looking around, an enormous rock breaks off from Mount Celestrum and grazes you in its fall. You don't even have time to react and look at the rock still falling, hitting you at the arm violently."
+          "0": "You search for a few moments around the base of the stairs, without success. Two more steps let you discover a few gold coins scattered here and there among the weeds. Delighted with your meager discovery, you continue your adventure whistling.",
+          "1": "After a handful of minutes searching the surroundings, you find a worn leather satchel, almost entirely hidden under a heavy stone. By opening it, you discover a papyrus where only a few words are still legible: \"staircase\", \"cave\", \"camp\" and \"Xetrix\". This name sounds familiar to you, but feeling especially disappointed not to have found any treasure, you resume your journey.",
+          "2": "Suddenly, while searching the surroundings, an enormous rock breaks off from Mount Celestrum and grazes you as it falls. You don't even have time to react, watching the rock continue its fall after violently grazing your forearm."
         },
         "text": "Search the surroundings."
       },
@@ -1688,7 +1688,7 @@
       "deny": {
         "outcomes": {
           "0": "You refuse to play with the children and leave them to their own devices.",
-          "1": "You refuse, and this has the consequence of annoying the children who pick up stones from the ground and throw them at you. In front of the rubble rain, you are forced to flee, out of reach of children. You realize that you have been hit in the head and the wound is bleeding profusely, you will need treatment.",
+          "1": "You refuse, and this angers the children who pick up stones from the ground and throw them at you. Faced with a rain of stones, you are forced to flee, out of reach of the children. You realize that you have been hit in the head and the wound is bleeding profusely; you will need treatment.",
           "2": "You say no, and the kids get upset. Seeing that the situation is about to turn sour, you quickly walk away from them."
         },
         "text": "Refuse and continue."
@@ -1715,7 +1715,7 @@
           "2": "Without doing it intentionally, you cut the cheek of one of the children... Embarrassed, you give him some coins so that he can pay for his care.",
           "3": "Very energetic, the children keep you going in circles for a while. After twenty minutes, however, you finally put an end to the game."
         },
-        "text": "Play a fighting game."
+        "text": "Play-fight."
       },
       "teach": {
         "outcomes": {
@@ -1734,13 +1734,13 @@
         "outcomes": {
           "0": "With nothing special happening on the road, you succeed in reaching the building where you have to deliver your package. A man comes out and hands you your due. You set off again for the next part of your adventures.",
           "1": "You pick up the package and head off in the direction the courier points you. You quickly fall into an ambush and get robbed of the package and your purse. Still in shock, you decide to take a rest under a nearby tree.",
-          "2": "You take the package from the courier's hands and leave for the house he indicated to you. Arrived at your destination, you find yourself unable to locate the house despite long research. You finally decide to keep the object and continue your way."
+          "2": "You take the package from the courier's hands and leave for the house he indicated to you. Arrived at your destination, you find yourself unable to locate the house despite searching for a long time. You finally decide to keep the object and continue on your way."
         },
         "text": "Agree to deliver the package."
       },
       "deny": {
         "outcomes": {
-          "0": "You Politely decline, explaining that you are occupied. You go to rest under a nearby tree.",
+          "0": "You politely decline, explaining that you are occupied. You go to rest under a nearby tree.",
           "1": "You refuse and the man apologizes for the inconvenience. You quickly change the subject and chat with him. After a few minutes of conversation, he offers you a snack. This little break won't have been a total waste of time, you made a friend.",
           "2": "You politely reject the offer. The outraged man throws the package in your face and orders you to deliver it for him! You take the package for yourself and go away from this obnoxious character. You come out with a pretty bruise on your face and an item that will surely come in handy."
         },
@@ -1748,18 +1748,18 @@
       },
       "end": {
         "outcomes": {
-          "0": "You remain silent in front of man. He doesn't quite know how to react to your bliss. After 5 minutes, he decides to accost another man to have the package delivered to him.",
+          "0": "You remain silent in front of the man. He doesn't quite know how to react to your bliss. After 5 minutes, he decides to accost another man to have the package delivered to him.",
           "1": "You hesitate then end up refusing and continue your journey without worrying about the future of this package.",
-          "2": "You have no answer to this proposition. The man is not disturbing you more when he understands that you will not accept his request. You leave it for continuing your journey."
+          "2": "You remain silent in response to this proposal. The man does not bother you further once he understands that you will not accept his request. You leave him to continue your journey."
         }
       },
       "steal": {
         "outcomes": {
-          "0": "You take the package and store it in your bag. You assure the man that it will be delivered before nightfall. A bit later, you open the package and discover a beautiful painting. You continue on your way and come across a painting expert's building, where you decide to get the painting you just stole assessed. You show your work to the painter, who calls you every name under the sun. It was to him that the package was intended! You decide to compensate him and you apologize to him. Taken with remorse, you immediately return to your way.",
+          "0": "You take the package and store it in your bag. You assure the man that it will be delivered before nightfall. A bit later, you open the package and discover a beautiful painting. You continue on your way and come across a painting expert's studio, where you decide to get the painting you just stole appraised. You show your work to the painter, who calls you every name under the sun. It was to him that the package was intended! You decide to compensate him and you apologize to him. Taken with remorse, you set off again immediately.",
           "1": "You take the package. On your road, you cross the path of an itinerant trader. You call out to him to buy the package. You get a very good price for it. You continue on your way, without any remorse.",
           "2": "You promise to the courier to deliver the package and return to the inn that hosted you the night before. You decide to open the package in order to see the content and find out that it is completely empty. What a waste!",
           "3": "You decide to steal the package and resell it. However, since you are not in a hurry, you decide to sit down near a river. You are quickly joined by what seems to be a wandering trader. Having no need for his trinkets, you offer him the package. The man, with his curiosity piqued by your mysterious parcel, accepts your offer. You will never know the contents of this package, but the few coins you got from it are enough for you.",
-          "4": "You leave with the package and tell the courier that it will arrive safely. A few minutes later you meet a woman who looks like a merchant. She explains to you that she has no money, but that she can exchange your package for an item from her cart. You trade the packet for an item you think it's useful and continuing your journey."
+          "4": "You leave with the package and tell the courier that it will arrive safely. A few minutes later you meet a woman who looks like a merchant. She explains to you that she has no money, but that she can exchange your package for an item from her cart. You trade the package for an item you think is useful and continue your journey."
         },
         "text": "Steal the package."
       }
@@ -1795,7 +1795,7 @@
           "1": "Understanding the Lord's distress, you offer him your help. You are then equipped before the duel begins. You fight valiantly but are just as easily overcome by your opponent. It is when he slashes you with his blade that you bitterly regret having offered your help. Indeed, it is a death match. And you just lost it. You close your eyes, and the pain goes away. You wake up a few hours later, seriously injured.",
           "2": "Realizing the lord’s distress, you offer to help him. You are then outfitted with armor before the duel begins. Knowing you don’t stand a chance, you defend yourself as best you can. Your opponent, growing impatient, lowers his guard, and you take the opportunity to attack him. You manage to knock him to the ground before disarming him. You emerge from the arena victorious, and the lord comes to meet you and gives you a purse filled with gold. You thank him warmly for his generosity.",
           "3": "Understanding the lord’s distress, you offer to resolve the conflict through your words. He promises you a reward if you succeed. Determined, you go to meet the knight once he arrives in the village and tell him that you wish to negotiate with his lord. He agrees and takes you to him. You quickly hit it off and ask him to call off the duel. You also tell him that negotiations to resolve the conflict can take place afterward. He agrees, and you return to the village center to announce the news. The lord hands you a purse filled with gold as a token of his gratitude.",
-          "4": "Understanding the distress of the Lord, you propose to him to settle the conflict by using your words. He promises you a reward if you succeed. You meet the knight so that he takes you to his Lord. Once arrived, you get on quickly with him. Unfortunately, he still doesn't want to cancel the duel, even if he likes you. You come back to the the village with the knight to announce that the duel will takes place.",
+          "4": "Understanding the distress of the Lord, you propose to him to settle the conflict by using your words. He promises you a reward if you succeed. You meet the knight so that he takes you to his Lord. Once arrived, you get on quickly with him. Unfortunately, he still doesn't want to cancel the duel, even if he likes you. You come back to the village with the knight to announce that the duel will take place.",
           "5": "Understanding the lord’s distress, you offer to resolve the conflict through your words. He promises you a reward if you succeed. You meet with the knight so he can take you to his lord. Once there, you try to negotiate with him for several hours, without much success. Since your efforts are in vain, you consider leaving. But before you do, the lord tells you that he appreciates you; in fact, he adds that he was impressed by the fact that you didn’t give up. He offers to make you a knight, but you politely decline his offer and return to Boug-Coton."
         },
         "text": "Propose your help to the Lord of Boug-Coton."
@@ -1822,23 +1822,23 @@
         "text": "Visit Boug-Coton."
       }
     },
-    "text": "️You see the village of Boug-Coton and decide to go there. Once you have arrived you hear rumours about a duel against a knight. You soon understand that there is conflict between the lord of these lands and that of the neighbouring village. To solve it, a fight is organized between their best combatants, but all here are mediocre and the duel begins soon."
+    "text": "You see the village of Boug-Coton and decide to go there. As soon as you arrive, you hear about a conflict between the lord of these lands and that of the neighboring village. To settle it, a fight is organized between their best combatants, but all here are mediocre and the duel begins soon."
   },
   "55": {
     "possibilities": {
       "climb": {
         "outcomes": {
-          "0": "You decide to climb the tree because you think that it's the faster way to do it. In a few seconds, you are in the other side, free to continue your way.",
-          "1": "You climb the trunk, however you are not enough careful: you wounded yourself with the rough tree's bark and fall. You have to retry your climbing. At the second time you did it, but your hand is very painful.",
-          "2": "You find that climb is a good idea so you do it. When you arrive at the other side, you note the presence of four peoples, armed and they are waiting for you. Because of your numerical inferiority, you don't hesitate to give them your possessions to live."
+          "0": "You decide to climb the tree because you think that it's the fastest way to do it. In a few seconds, you are on the other side, free to continue on your way.",
+          "1": "You climb the trunk, but you aren't careful enough: you cut your hand on the tree's rough bark and lose your grip. You are forced to start your climb again. You succeed on the second attempt, but your hand is quite sore!",
+          "2": "You tell yourself that climbing would be a good idea, so you do it. Arriving on the other side, you find four armed people waiting for you with their eyes fixed on you. Cautious, you do not hesitate to give them your possessions to keep your life."
         },
         "text": "Climb the tree."
       },
       "cut": {
         "outcomes": {
           "0": "You take an axe from your bag and cut down the tree. It took you 30 minutes to clear your way!",
-          "1": "You begin to cut down the tree and take a long time to cut the totality of it. You go to the nearest village, borrow a wain and his horse and carriage, come back to the forest, and load the cut wood in the wain, come back to the village, and sell it to the cabinetmaker. It's only after all that you discover that a wain and his horse and carriage are more expensive than the wood of only one tree!",
-          "2": "You want to cut down the tree, but you realize that you don't have any tool. So you decide to climb the tree and did it without problems. You continue your road."
+          "1": "You begin to cut down the tree and take a long time to fell it entirely. You go to the nearest village, borrow a wain and its team, return to the forest, load the cut wood into the wain, return to the village, and sell it all to the cabinetmaker. It's only after all that you discover that a wain and its team cost more than the wood from a single tree!",
+          "2": "You wanted to cut down the tree, but you realize that you have absolutely no means of doing so. You decide instead to climb the imposing oak, manage to do so without any trouble, and continue on your way."
         },
         "text": "Cut down the tree and continue."
       },
@@ -1846,14 +1846,14 @@
         "outcomes": {
           "0": "Not knowing what to do, you finally decide to climb the tree. Within seconds, you are on the other side, free to continue on your way.",
           "1": "Not knowing what to do, you remember that you entered the forest a while ago, so you decide to retrace your steps.",
-          "2": "While you are hesitating on what to do, you hear footsteps in your back! You barely have the time to turn around before four men jump on you. You faint almost instantly, and get up a few hours later, stunned and with a much lighter purse."
+          "2": "You prefer to slightly change your route. You climb the embankment of the path you were on and travel a few meters that way. After passing the tree, you descend back onto the path and quietly resume your journey."
         }
       },
       "otherWay": {
         "outcomes": {
           "0": "You prefer to slightly change your route. You climb the embankment of the path where you were on, and pass some meters that way. After having passed the tree, you come back down on the path and resume your way.",
           "1": "You decide to change your route. To do so, you climb the embankment of your way and progress in the forest. You find, on a dead body, a beautiful item and a lot of money. Knowing that it will be more useful for you than the body, you take it and continue your forest hike.",
-          "2": "You think that climbing the tree is too dangerous and you don't have anything to cut it. As a result, you have to change your route. But because of your poor sense of direction, you manage to lose your way. It's not until nightfall that you only managed to get out of the forest."
+          "2": "You think that climbing the tree is too dangerous and you don't have anything to cut it. As a result, you are forced to change your route. Because of your poor sense of direction, you manage to lose your way. It is not until nightfall that you manage to get out of the forest."
         },
         "text": "Go another way."
       }
@@ -1864,7 +1864,7 @@
     "possibilities": {
       "beach": {
         "outcomes": {
-          "0": "You approach the turquoise sea with the firm intention of taking a midnight swim. Leaving your belongings at the water's edge, you will swim a few fathoms before returning to the sand. You angrily notice the disappearance of some of your money as well as the charlatan's tent.",
+          "0": "You approach the turquoise sea with the firm intention of taking a midnight swim. Leaving your belongings at the water's edge, you will swim a few strokes before returning to the sand. You angrily notice the disappearance of some of your money as well as the charlatan's tent.",
           "1": "As you wander among the rocks, you spot a horde of these little crustaceans famous for their great presence on this beach. You observe them for a few moments before heading back.",
           "2": "Not having eaten yet, you decide to take advantage of this beach's resources in order to fill your empty stomach a little. As you search under a stone for crustaceans, a large bird takes flight and catches the hermit crab you just spotted. Startled, you take a step back, your foot slips and you sprain your ankle on the rocks."
         },
@@ -1873,13 +1873,13 @@
       "drinkBlack": {
         "outcomes": {
           "0": "Considering that it's easy money, you agree to become Gruffo's guinea pig. He gives you a steaming, blackish liquid. After having drunk a few unsavory sips of it and having waited for what seems like an eternity, you suddenly start vomiting followed by violent convulsions. It will take you almost forty minutes to come back to your senses before resuming your adventure.",
-          "1": "Considering that this is easy money, you agree to become Gruffo's guinea pig. He gives you a vial containing a coal-coated liquid. Once drunk, the liquid immediately plunges you into a deep sleep. You wake up three hours later, comfortably installed on a coconut tree branch. At its foot, you discover an enamelled purse filled with gold!"
+          "1": "Considering that this is easy money, you agree to become Gruffo's guinea pig. He gives you a vial containing a coal-black liquid. Once drunk, the decoction immediately plunges you into a deep sleep. You wake up three hours later, comfortably perched on a coconut tree branch. At its foot, you discover an enamelled purse filled with gold!"
         },
         "text": "Drink the black potion."
       },
       "drinkRandom": {
         "outcomes": {
-          "0": "Not without a hint of concern, you accept Gruffo's proposal. He gives you a tan-colored vial. Thinking of the financial compensation, you decide to drink it all at once. Immediately, a burning sensation invades your throat. After ten minutes or so, you stammered, hardly seeing anything. You are completely drunk! Strongly nauseous, you try to strike a blow at Gruffo who easily dodges it. Not one to hold a grudge, he makes you comfortable on his bench. You pester the stunted charlatan alchemist for a moment before he deigns to keep his side of the bargain.",
+          "0": "Not without a hint of concern, you accept Gruffo's proposal. He gives you a tan-colored vial. Thinking of the financial compensation, you decide to drink it all at once. Immediately, a burning sensation invades your throat. After ten minutes or so, you stammer and your vision blurs. You are completely drunk! Strongly nauseous, you try to strike a blow at Gruffo who easily dodges it. Not one to hold a grudge, he makes you comfortable on his bench. You pester the stunted charlatan alchemist for a moment before he deigns to keep his side of the bargain.",
           "1": "You impulsively accept, while refusing any amount of money from Gruffo. Indeed, participating in a potential scientific discovery swells you with honor! The alchemist hands you a tiny vial filled with a crimson liquid. It takes only one sip to empty the contents, and you feel a pleasant warmth spreading throughout your body. Here you are in much better shape!",
           "2": "Lured by greed, you enthusiastically accept Gruffo's proposal. You quietly drink the scarlet liquid handed to you by the alchemist. Once done, Gruffo gives you a disappointed look while justifying that his experimental drink has an immediate effect. While promising you that you won't be sick, he throws you out of his tent. A little bitter not to see the shadow of a penny, you decide to continue your journey.",
           "3": "With suspicion and apprehension, you decide to drink in one go the sapphire-colored beverage that Gruffo hands you. Immediately, a freezing cold grips your entire body. As you painfully call Gruffo a shriveled charlatan, he settles you into a heap of warm blankets."
@@ -1888,16 +1888,16 @@
       },
       "end": {
         "outcomes": {
-          "0": "You end up accepting Gruffo's enticing offer. This one asks you to wait a little while, while he brings you your liquid. Just as you are carefully studying a still, a powerful blow lands on your pretty skull.",
-          "1": "In front of your inert attitude, Gruffo gets impatient and throws you out of his tent, making you pay for the time you wasted. You get back on your road in no time!",
-          "2": "Faced with your inability to make up your mind, Gruffo does not insist and offers you a cup of black tea. You discuss for many minutes about everything except alchemy! You resume your way as the moon timidly lights up the beach."
+          "0": "You end up accepting Gruffo's enticing offer. He asks you to wait a little while, the time it takes for him to bring you your decoction. Just as you are carefully studying a still, a powerful blow lands on your pretty skull.",
+          "1": "Seeing your blank expression, Gruffo grows impatient and throws you out of his tent, not without charging you for the time you just wasted. You resume your journey without delay!",
+          "2": "Faced with your inability to make up your mind, Gruffo does not insist and offers you a cup of black tea. You discuss for many minutes about everything except alchemy! You continue on your way as the moon timidly lights up the beach."
         }
       },
       "refuse": {
         "outcomes": {
           "0": "You prefer to politely decline Gruffo's offer while wondering how to find a safe place to sleep. Seeing your worried face, Gruffo suggests that you stay in his tent until the sun rises. You accept wholeheartedly and fall asleep, serene.",
-          "1": "You refuse to serve as a guinea pig for the alchemist. He then offers you to create your own potion and taken aback by this new proposal, you accept. After some research, you end up making a translucent liquid. You hesitate a few moments before drinking your mixture all at once. Long minutes later, you are overcome by dizziness and funny hallucinations where you see your dear princess. Almost an hour of rest will be necessary to allow you to resume your adventure.",
-          "2": "You categorically refuse the alchemist's proposal. He seems disappointed, so you decide to have a chat with him for a while. During the discussion, you ask him where all his alchemical knowledge comes from and it is with a touch of bitterness that he gives you the name of this famous minstrel known throughout the all country: Périssien. However, Gruffo will not answer you about the location of his master. Not wanting to insist, you thank him for this interesting conversation and decide to get back on your way."
+          "1": "You refuse to serve as a guinea pig for the alchemist. He then suggests that you create your own potion and, taken aback by this new proposal, you accept. After some research, you end up making a translucent decoction. You hesitate a few moments before drinking your mixture all at once. Long minutes later, you are overcome by dizziness and funny hallucinations where you see your dear princess. Almost an hour of rest will be necessary to allow you to resume your adventure.",
+          "2": "You categorically refuse the alchemist's proposal. He seems disappointed, so you decide to converse with him for a moment. During the discussion, you ask him where all his alchemical knowledge comes from and it is with a touch of bitterness that he gives you the name of this famous minstrel known throughout the whole country: Périssien. However, Gruffo will not answer you about the location of his master. Not wanting to insist, you thank him for this interesting conversation and decide to get back on your way."
         },
         "text": "Decline Gruffo's proposal."
       }
@@ -1909,8 +1909,8 @@
       "continue": {
         "outcomes": {
           "0": "You enter the river and turn right to follow the current. The water is cool and it makes you feel a lot better.",
-          "1": "You put one foot in the river and then the second. You begin your progress in the river. After walking for a few minutes, you arrive at a small one-meter-high waterfall and decide to jump down. As you gain your momentum, the stone where your right foot is resting on moves and you fall to the bottom of the waterfall, hitting your skull twice. You are still conscious, although strongly stunned.",
-          "2": "You have been walking for a good hour when you arrive again to a crossroads. You decide to continue on dry land."
+          "1": "You put one foot in the river and then the second. You begin your progress in the river. After walking for a few minutes, you arrive at a small one-meter-high waterfall and decide to jump down. As you gain your momentum, the stone your right foot is resting on moves and you fall to the bottom of the waterfall, hitting your skull twice. You are still conscious, although strongly stunned.",
+          "2": "You have been walking for a good hour when you reach a crossroads again. You decide to continue on dry land."
         },
         "text": "Continue your way by walking in the water."
       },
@@ -1924,10 +1924,10 @@
       "findMeal": {
         "outcomes": {
           "0": "You look into the river and spot a few fish and crabs. You build a makeshift trap and set it in the water. After 10 long minutes, your trap contains 2 nice crabs and a small fish. You build a fire and grill them. You feel invigorated after eating them.",
-          "1": "You see at the bottom of the water strange creatures that you had never seen before. They are fitted with two claws and move sideways. You assume that these are the famous things that gave this river their name and remember that they are edible. You decide to catch a few of them. You dip your hand in and manage to catch some, but they attack you with their chelae. You end up injured with a nice gash in your hand, but also with enough to make you a delicious meal.",
+          "1": "You see at the bottom of the water strange creatures that you had never seen before. They are fitted with two claws and move sideways. You assume that these are the famous things that gave this river their name and remember that they are edible. You decide to catch a few of them. You dip your hand in and manage to catch some, but they attack you with their claws. You end up injured with a nice gash in your hand, but also with enough to make you a delicious meal.",
           "2": "You hesitate for a moment between the fish in the river and the mulberry trees. Finally, you decide to prepare a feast. You prepare a fish trap and, after installing it, you go pick some blackberries. Salmon with blackberries, a treat!"
         },
-        "text": "Find something to prepare you a meal."
+        "text": "Find something to prepare a meal."
       },
       "settle": {
         "outcomes": {
@@ -2000,7 +2000,7 @@
         "outcomes": {
           "0": "After 30 minutes, you finally discover a strange object...",
           "1": "After 60 minutes, you end up abandoning your search without having discovered anything...",
-          "2": "As you began your search, you drop a large bag of coins at the bottom of a large hole! It can't be retrieved anymore...",
+          "2": "As you begin your search, you drop a large bag of coins at the bottom of a large hole! It will be impossible to retrieve...",
           "3": "As you were looking for items to pick up, a huge branch breaks off from the tree next to you and falls on your leg! You manage to get up, stunned, but you'll have to recover!"
         },
         "text": "Search the surroundings."
@@ -2033,7 +2033,7 @@
       },
       "follow": {
         "outcomes": {
-          "0": "The young woman introduces herself and quickly follows up with some initial advice which you listen to carefully, you learn that the {command:report} report allows you to get all the information about your trip."
+          "0": "The young woman introduces herself and quickly follows up with some initial advice which you listen to carefully; you learn that the {command:report} command allows you to get all the information about your trip."
         },
         "text": "Follow your guide."
       },
@@ -2050,24 +2050,24 @@
     "possibilities": {
       "deny": {
         "outcomes": {
-          "0": "You refuse the peasant's request with such a lack of sympathy that he ends up stoning you!",
-          "1": "You refuse the peasant's request with such courtesy that he wishes you a good continuation for your adventure!",
-          "2": "You decide to ignore the peasant's request. As you walk for several minutes, you see a road lined with impressive cherry trees. A few red cherries seem to reach out you. After tasting a few, you resume your journey."
+          "0": "You refuse the peasant's request with such meanness that he ends up chasing you away and throwing stones at you!",
+          "1": "You refuse the peasant's request with such courtesy that he even wishes you good luck for the rest of your adventure!",
+          "2": "You decide to ignore the peasant's request. As you walk for several minutes, you see a road lined with impressive cherry trees. A few red cherries seem to reach out to you. After tasting a few, you resume your journey."
         },
         "text": "Refuse to help the peasant."
       },
       "end": {
         "outcomes": {
-          "0": "Seeing you unresponsive, the peasant seems quite annoyed but lets you leave without insisting. You find a lost wallet on the edge of a path. When you open it, you discover two small pieces of dried bacon.",
-          "1": "Seeing the peasant's desperate face, you decide to start looking for its fork. You end up at the edge of a fallow field where cattle quietly eat fresh grass. Suddenly, a tawny-colored dog springs up from the premises of the pasture and gets on you. Faster than it takes to say so, you knock the dog out and get on your way like nothing happened.",
-          "2": "While you agreed to help the peasant, you feel something buzzing in your ear and stick your little finger in. A sharp pain grabs you: a bee just stung you! You leave this stinging place without further ado."
+          "0": "Seeing you unresponsive, the peasant seems quite annoyed but lets you leave without insisting. You find a forgotten satchel on the edge of a path. When you open it, you discover two small pieces of dried bacon.",
+          "1": "Seeing the peasant's desperate look, you decide to search for his famous pitchfork. You eventually reach the edge of a fallow field where cattle are quietly grazing on fresh grass. Suddenly, a tawny dog leaps from the bushes near the pasture and lunges at you. In a flash, you knock the dog unconscious and continue on your way as if nothing had happened.",
+          "2": "Just as you were about to agree to help the peasant, you feel something buzzing near your ear and stick your little finger in. A sharp pain seizes you: a bee has just stung you! You leave this stinging place without further ado."
         }
       },
       "searchPatures": {
         "outcomes": {
-          "0": "After watching cattle chewing fresh grass in the first wild grass stretch from a distance, you head for the second. Many sheep graze peacefully. An impressive oak dominates the pastures and attracts your attention, so you decide to approach it. A few meters from the tree, you notice a fork against the trunk. The peasant seems overjoyued when you give it back to him. He then grants you, as promised, a small purse filled with gold.",
+          "0": "After watching cattle chewing fresh grass in the first wild grass stretch from a distance, you head for the second. Many sheep graze peacefully. An impressive oak dominates the pasture and attracts your attention, so you decide to approach it. A few meters from the tree, you notice a pitchfork leaning nonchalantly against the trunk. The peasant seems overjoyed when you give him your find. He then grants you, as promised, a small purse filled with gold.",
           "1": "As you approach the pastures, you notice footprints. Following them, you enter a dark grove containing a gloomy hut, to say the least. Curious, you walk around the building and come face to face with the much sought-after pitchfork! Retracing your steps in the opposite direction, you hand the object over to the farmer, who is full of thanks and invites you to share his meal so you can tell him all about your investigation. It's a pleasant evening, and you leave the farmer late into the night, invigorated by the local produce.",
-          "2": "As you approach pastures, you notice footprints crossing the land leading to an enclosure where sheep benefit from the refreshing shade of young oaks. You decide to follow the footprints, thinking they'll lead you to the fork. When you arrive in the middle of the sheep, one of them comes to you. In a playful mood, you show him your hand with a bit of grass in it. He benefits of it to satiate himself, biting your finger while eating. Irritated, you decide to flee this place. Approaching the edge of the pasture, you do not see the fork on the ground, and walk over it. Furious about this misfortune, you are thinking about not helping anyone anymore on your adventure."
+          "2": "As you approach the pastures, you notice footprints crossing the land leading to a grove where sheep enjoy the refreshing shade of slender oaks. You decide to follow them, thinking they are a trail. When you arrive in the middle of the sheep, one of them comes toward you. In a playful mood, you hold out your hand with a bit of grass in it. The sheep takes advantage of this to satiate itself, biting your finger in the process. Irritated, you decide to flee the area. Approaching the edge of the pasture, you do not see the fork on the ground and step on it. Furious at this misfortune, you think of never helping anyone again during your adventure."
         },
         "text": "Search near pastures."
       },
@@ -2097,7 +2097,7 @@
           "0": "You chose to simply watch the fireworks and stay to see the village fall into despair, leaning against a tree just outside the village. But, even after midnight, nothing happened. It seems these so-called beasts are nothing but a sham, and you leave.",
           "1": "You decide to watch the attic from the local tavern, but get distracted by some delicious beer. You black out, drunk, and lose your consciousness. Upon waking up, you notice that they simply tossed your unconscious body onto the road and that you are a few coins short.",
           "2": "Deciding not to do anything, you enter the local tavern and rent a room for the night. But during your slumber, figures dressed in black attack you, beating you into submission and robbing you. They leave you bleeding on the floor and warn you to never snoop around in their affairs again...",
-          "3": "Since you are already there, you think to yourself: why not go shopping? You wander around the local market, visit the local black- and weapon smith. After some time, you find something."
+          "3": "Since you are already there, you think to yourself: why not go shopping? You wander around the local market and stop by the local blacksmith and armorer. After some time, you find something."
         }
       },
       "faceThem": {
@@ -2116,28 +2116,28 @@
           "2": "After dashing out of the village, you take a short rest to catch your breath. While doing so, you are approached by some armed figures dressed in black. Seems like they didn't like you snooping around the village. They draw their weapons and attack. Catching you off guard and exhausted, they beat you into unconsciousness.",
           "3": "You make it out of the cursed village alive. After some time, you stumble upon a beautiful piece of untouched land. You can see a waterfall and multiple tamed carnivores. You decide to meditate under the stream of falling water. After an hour, you feel energized and continue your journey."
         },
-        "text": "Get out of there as fast as possible."
+        "text": "Leave here quickly."
       },
       "helpThem": {
         "outcomes": {
           "0": "You find figures dressed in black in the aforementioned basement. They don't seem to be beasts, but ordinary people betting on cockfights. You join them and bet on the red rooster who, in the end, lost. Which makes you a few coins lighter.",
           "1": "You find figures dressed in black in the aforementioned basement. They don't seem to be beasts, but ordinary people betting on cockfights. You join them and place your bets on the blue rooster who, in the end, won. A few coins richer, you leave the men to their games and leave.",
-          "2": "You meet 4 black-hooded men in the basement. After convincing them to let you join them, they reveal their plan of sacrificing the local folks' vital force to a devil they worship. Hoping to take advantage of their knowledge, you say you're willing to participate. You and the cultists sacrifice a girl and some animals. Furthermore, you spread their innards throughout the room. Yet nothing happens. After wasting your time, you angrily stomp away...",
-          "3": "You meet 4 black-hooded men in the basement. After convincing them to let you join them, they reveal their plan of sacrificing the local folks' life force to a devil they worship. Hoping you'll profit from their knowledge, you say you're willing to participate. You and the cultists sacrifice a woman and some animals. Furthermore, you spread their innards throughout the room. Yet nothing happens. It's only when you walk away from the room that you stumble upon guards..."
+          "2": "You meet 4 black-hooded men in the basement. After convincing them to let you join them, they reveal their plan of sacrificing the local folks' vital force to a devil they worship. Hoping to take advantage of their knowledge, you say you're willing to participate. You and the wild beasts you just met sacrifice a woman and some animals. Furthermore, you spread their innards throughout the room. Yet nothing happens. After wasting your time, you angrily stomp away...",
+          "3": "You meet 4 black-hooded men in the basement. After convincing them to let you join them, they reveal their plan of sacrificing the local folks' life force to a devil they worship. Hoping you'll profit from their knowledge, you say you're willing to participate. You and the wild beasts you just met sacrifice a woman and some animals. Furthermore, you spread their innards throughout the room. Yet nothing happens. It's only when you walk away from the room that you stumble upon guards..."
         },
-        "text": "Try to find the cultists in order to help them."
+        "text": "Try to find the silhouettes in order to help them."
       },
       "warnEveryone": {
         "outcomes": {
           "0": "Without checking for yourself, you start running around the village like a madman, screaming at everyone that they'll die if they stay. General panic ensues and everyone starts to leave the perimeter. But after a while, nothing happens, and some people aren't too happy about your bad joke. They gang up on you, beat you up and rob you.",
-          "1": "You tell the guards where the malevolent entities are hiding. They follow up on your tip and, after some minutes pass, another guard approaches you. It seems that heretics were about to kill a fair maiden and, thanks to your hint, she was saved. He hands you a small pouch before shaking your hand.",
-          "2": "After telling everyone about the dark misfortune that is about to hit the village, everyone packs up their stuff and stays just outside in the forest. When suddenly an earthquake hits and panic ensues. You help the guards calming down the masses which, after some time, quiet down. You are warmly thanked for the warning.",
+          "1": "You tell the guards the location of the culprits. They follow your advice and, after a few minutes, another guard approaches you. It seems that heretics were about to kill a young girl and, thanks to your advice, she was saved. He hands you a small pouch before shaking your hand.",
+          "2": "After telling everyone about the dark misfortune that is about to hit the village, everyone packs up their stuff and stays just outside in the forest. Suddenly, an earthquake hits and panic ensues. You help the guards calm down the people, who, after some time, settle down. You are warmly thanked for the warning.",
           "3": "You try to convince everyone that they're in danger, but people don't want to know and simply ignore you. You try for several hours and finally decide to leave them. You continue on your journey, unconcerned by the stubborn people of this village."
         },
         "text": "Revealing to everyone what it's all about."
       }
     },
-    "text": "After some time, you finally arrive at Boug-Coton where some supposedly unholy creatures are into something... After investigating the place for a few moments, you find a clue. There are reports of weird sounds and sightings of figures dressed in black going in and out of a barn's basement. Seems that a dark ritual is underway..."
+    "text": "After some time, you finally arrive at the village of Boug-Coton, where a rumor circulates that evil creatures are at work... After investigating the area for a few moments, you find a clue. The residents' testimonies mention strange noises, and hooded black figures have been seen entering and leaving a barn's basement. It seems that a dark ritual is being prepared..."
   },
   "64": {
     "possibilities": {
@@ -2179,7 +2179,7 @@
         "outcomes": {
           "0": "You open your gift and take out a piece of equipment. It's a powerful suit of armor that you add to your collection. You leave the castle, happy to have received this gift."
         },
-        "text": "Wait and hope to get a new armor."
+        "text": "Wait and hope to get new armor."
       },
       "hopeGems": {
         "outcomes": {
@@ -2236,7 +2236,7 @@
     "possibilities": {
       "end": {
         "outcomes": {
-          "0": "Suddenly, you're lying on the floor, the crew leaning over you. The captain explains that you've fainted. They grab you and, like a bundle, throw you overboard before quickly walking away.",
+          "0": "Suddenly, you're lying on the floor, the crew leaning over you. The captain explains that you've fainted. They grab you and, like a bundle, throw you overboard before quickly moving away.",
           "1": "Suddenly, you're lying on the floor, the crew leaning over you. The captain explains that you've fainted. He gives you a few more words of advice before letting you leave for the island."
         }
       },
@@ -2325,7 +2325,7 @@
         "outcomes": {
           "0": "You feel like you're participating in a knighthood ceremony, since Donia puts the end of the staff on both your shoulders - first on the left one, then on the right - to give you her blessings. Either way, you don't feel that much different from before.",
           "1": "You feel overpowered after her blessing... until Donia leaves. You try to find her, embarrassed to have believed such folly, but you can't. You leave, ashamed and confused, and swear, a little too late, that she won't fool you again.",
-          "2": "As soon as Donia uses her \"blessing\" on you, she also throw some strange blue powder in your face. You get drowsy and she helps you to walk to one of the nearest trees, where you fall asleep. You dream of being in the royal palace, during a social event. You see the princess approaching you, with her face hidden by a dark veil, since you are actually oblivious to her physical appearance. You spend the rest of the dream dancing with her. You sleep a few hours feeling refreshed."
+          "2": "As Donia begins to \"bless\" you, she throws a strange blue powder in your face. The forest begins to sway before your eyes, and Donia guides you to a nearby tree against which you fall asleep. You dream of the royal castle and see yourself participating in an important banquet. The princess approaches you, a distorted black veil concealing her face, no doubt because you do not know her true appearance. You spend the rest of the dream dancing with her... You remain there in a restorative sleep."
         },
         "text": "Accept her offer."
       },
@@ -2393,7 +2393,7 @@
           "2": "Once through the trapdoor, you walk until you come to a dead end. You decide to get out, for fear of getting lost. As you reach the trapdoor, you are savagely attacked by an individual wearing a brown hat and carrying a whip on his belt. You somehow manage to dodge most of the blows, and fight back. You fight for a long time, but finally deliver the decisive blow. While searching him, you discover a small purse containing a substantial sum of money.",
           "3": "Once through the trapdoor, you walk until you discover a burial chamber, the underground is a tomb! Wanting to turn back, you fail to recognize the corridors you're passing through, and wander for many hours before finding an exit. You resume your adventure as the full moon illuminates the silent desert as if it were daylight.",
           "4": "After passing through the trapdoor, you step into the darkness and discover a strange place: an abandoned crypt, the underground tunnels resembling a funerary maze! You're tempted to turn back, but to your dismay, the corridors seem to play tricks on your senses and transform before you. You wander aimlessly for a time, before finally finding a way out.",
-          "5": "Once through the trapdoor, you walk to a room where a sphinx is enthroned, made entirely of gold! As if hypnotized, you approach it until your left foot lands on a slab, which sinks into the floor... Two golden arrows whistle eerily in your ears, while a third scratches your arm. It's not a serious wound, but this trap urges you to evacuate."
+          "5": "Once through the trapdoor, you walk to a room where a sphinx is enthroned, made entirely of gold! As if hypnotized, you approach it until your left foot lands on a slab, which sinks into the floor... Two golden arrows whistle eerily in your ears, while a third scratches your arm. It's not a serious wound, but this trap forces you to flee the area."
         },
         "text": "Explore the underground."
       },
@@ -2439,7 +2439,7 @@
           "0": "You let the man guide you to his tent and discreetly pick up a large stone while his back is turned to you. You then land a heavy blow on his hooded skull. The hermit collapses, blood spilling onto the cracked oasis floor. You decide to leave him like that, and head off to take a look inside the tent. Inside, you discover trunks set with jewels and objects in great quantity. You leave with a substantial sum of money, as well as an item you grabbed in a hurry. You quickly resume your crossing, unwilling to be caught red-handed.",
           "1": "You let the man guide you to his tent and discreetly pick up a large stone while his back is turned to you. Just as you're about to hit him, he turns and pulls a dagger from his sleeve, cutting deep into your chest. You scramble for cover, doing your best to stop the blood flowing. As you flee, you hear the crazy old man's demented laughter.",
           "2": "You let the man guide you to his tent and discreetly pick up a large stone while his back is turned to you. You land a heavy blow on his hooded head, the hermit collapses to the ground, and you are immediately overcome with remorse. You bandage the old man's head and lay him down on his mat to recover. When he wakes up, you apologize and give him some money in compensation for your misdeed.",
-          "3": "As you follow the old man, you pick up a stone from the ground behind his back. Discretion is not your strong suit, and the hermit immediately notices your suspicious silence. Realizing the situation, he repudiates you from his kyutchen with a punch the likes of which you've never received."
+          "3": "As you follow the old man, you pick up a stone from the ground behind his back. Discretion is not your strong suit, and the hermit immediately notices your suspicious silence. Realizing the situation, he casts you out of his kitchen with a punch the likes of which you've never received."
         },
         "text": "Accept and take advantage of the night to steal his belongings."
       }
@@ -2456,7 +2456,7 @@
       },
       "joinArchery": {
         "outcomes": {
-          "0": "The test seems a little difficult: you have to shoot three arrows at a straw target some 50 meters away. All three arrows land in the middle of the straw target. You're the winner! The beautiful Lady of the local Lord, Yseldia, comes to offer you a heavy purse, while you are dazzled by her ruby-set crown.",
+          "0": "The test seems a little difficult: you have to shoot three arrows at a straw target some fifty meters away. All three arrows land in the middle of the straw target. You are crowned winner of this trial! The beautiful Lady of the local Lord, Yseldia, comes to offer you a heavy purse, while you are dazzled by her ruby-set crown.",
           "1": "The test seems a little difficult: you have to shoot three arrows at a straw placed about fifty meters away from you. You're not very skillful, so you miss two out of the three arrows and come last in the ranking! Happy to have been part of the general euphoria, you happily set off again.",
           "2": "As you notch your first arrow, a sneeze startles you. You drop your bow, and your arrow comes to rest near the head of a muscular knight. He glares at you and starts to rush towards you. Adventure doesn't wait: you're back on the road in no time!"
         },
@@ -2484,7 +2484,7 @@
         "outcomes": {
           "0": "The rhythm, rhymes and sounds of your poem captivate the crowd. You're acclaimed the winner! Yseldia, wife of the local Lord, presents you with your prize, not without a touch of emotion.",
           "1": "A few minutes before the results are announced, you notice that your purse is missing. You've probably had it stolen before you got there. Good thing you didn't have all your gold on you! You leave without waiting for the rest of the festivities, empty-handed.",
-          "2": "As you loudly proclaim your poem in a lilting voice, you notice a damsel eyeing you with much fervor. Just as you've finished your tirade, the young woman grabs your hand and starts running! A few alleys further on, the young lady kisses you! She's not your Princess, but you don't let her distract you, and explain that your heart's already in the right place. As you bid her farewell, she gives you an object that may prove useful in your further adventures."
+          "2": "As you loudly proclaim your poem in a lilting voice, you notice a damsel eyeing you with much fervor. Just as you've finished your tirade, the young woman grabs your hand and starts running! A few alleys further on, the young lady kisses you! She's not your Princess, but you don't let her distract you, and explain that your heart is already taken. As you bid her farewell, she gives you an object that may prove useful in your further adventures."
         },
         "text": "Take part in the poetry test."
       },
@@ -2652,11 +2652,11 @@
       },
       "flee": {
         "outcomes": {
-          "0": "Preferring to avoid all danger, you turn back and take an alternative route. Your caution comes at a price: you lose time and end up getting lost on this new path, but at least you avoid potential problems.",
-          "1": "As you turn back, you stumble in your haste and injure yourself slightly. The noise alerts the two men who stop their argument to look in your direction, but they don't pursue you.",
-          "2": "Your retreat leads you by chance to a forgotten path where you discover the remains of an ancient encampment. Among the debris, you find a still-usable object abandoned by previous travelers."
+          "0": "Preferring to avoid any danger, you go around the clearing to take an alternate path. Your caution comes at a price: you lose time and end up getting lost on this new trail, but at least you avoid potential problems.",
+          "1": "As you walk away, you trip in your haste and hurt yourself slightly. The noise alerts the two men, who stop arguing and look in your direction, but they don't chase after you.",
+          "2": "Your detour leads you by chance to a forgotten trail where you discover the remains of an ancient campsite. Among the debris, you find a still-usable object left behind by previous travelers."
         },
-        "text": "Turn back and avoid confrontation."
+        "text": "Go around the clearing and avoid a confrontation."
       }
     },
     "text": "As you make your way along a winding path in the Celestrum Forest, you suddenly hear the sound of voices from a nearby clearing. Intrigued, you discreetly approach and discover two men arguing. They're standing face to face, gesticulating wildly, obviously disagreeing about something important. One wears a patched cape, the other a worn leather jacket. Between them, on the floor, lies a wooden box that each seems to claim."
@@ -3067,7 +3067,7 @@
     "possibilities": {
       "climb": {
         "outcomes": {
-          "0": "You reach the upper floor and discover a bag left behind behind a pile of rubble. Inside: a few coins and a dry ration that’s still edible. You regain your strength, pleased with this modest but welcome find.",
+          "0": "You reach the upper floor and discover a bag left behind a pile of rubble. Inside: a few coins and a dry ration that’s still edible. You regain your strength, pleased with this modest but welcome find.",
           "1": "You climb silently, scanning every nook and cranny. Under a loose slab, you find a hiding place containing coins, hidden there long ago by someone unknown. You slip them carefully into your pouch.",
           "2": "A step, worn down by the years, collapses under your weight. Your leg hits the stone hard, and a sharp pain shoots through you. You spend some time disinfecting the wound and bandaging it with a piece of torn cloth."
         },
