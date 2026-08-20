@@ -1393,15 +1393,15 @@
         "success": {
           "withGuild": "Con l'aiuto dei tuoi compagni di gilda, riesci a tirarti fuori dal crepaccio e a salvarli a tua volta. Questa prova ha rafforzato il vostro legame e la vostra gilda riceve **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Non perdendo la calma, applicate immediatamente gli insegnamenti della vostra gilda e riuscite facilmente a scalare il muro. La tua gilda riceve **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Mantenendo la calma, applichi ciò che hai imparato nelle tue avventure e riesci a scalare la parete con facilità. Ricevi **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Senza perdere la calma, metti in pratica ciò che hai imparato durante le tue avventure e riesci facilmente a scalare la parete. Ricevi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "Senza perdere tempo, voi e i vostri compagni vi affrettate a esaminare questo crepaccio, che si rivela essere una grotta. Dopo un po' di cammino alla cieca, riuscite a emergere dal buco più avanti.",
           "solo": "Disperati, soli in fondo a questo crepaccio, notate solo dopo qualche minuto lo stretto passaggio alla vostra sinistra. Dopo aver lottato contro la terra che aveva deciso di confinarvi, emergete all'aria aperta."
         },
         "lose": {
-          "withGuild": "Con l'aiuto dei vostri compagni di gilda, riuscite a tirarvi fuori dal crepaccio e a salvare anche loro. Tuttavia, quello che aveva la borsa si è arrampicato per ultimo e ha fatto accidentalmente cadere i soldi durante la scalata. Si perde **{{amount, number}} {emote:unitValues.lostMoney}**.",
-          "solo": "Mentre cercate di arrampicarvi sulla parete, la terra si sgretola sotto le vostre dita e i vostri piedi, provocando una frana. Grazie a lui, riuscite a uscire dal crepaccio, ma siete gravemente feriti. Si perde **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Grazie all'aiuto dei tuoi compagni di gilda, riesci a tirarti fuori da quel crepaccio e a salvarli a tua volta. Tuttavia, colui che aveva la tua borsa è risalito per ultimo e, sfortunatamente, ha fatto cadere i soldi durante la scalata. Perdi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Mentre cercate di scalare la parete, il terreno si sgretola sotto le vostre dita e i vostri piedi, provocando una frana. Grazie a questo, riuscite a uscire da quel crepaccio, ma siete piuttosto malconci. Perdi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -1409,15 +1409,15 @@
         "success": {
           "withGuild": "Tuttavia, vi aggrappate l'uno all'altro per evitare un potenziale crepaccio che potrebbe far cadere uno di voi. La scossa termina e siete tutti sani e salvi. La vostra gilda vince **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
           "soloWithGuild": "Seguite le istruzioni impartite dalla vostra gilda in caso di terremoto e decidete di ripararvi sotto una struttura che, fortunatamente, non è crollata su di voi. Sani e salvi, promettete di ringraziare la vostra gilda non appena tornerete dalla spedizione. La vostra gilda vince **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
-          "solo": "Cercate di resistere nonostante la scossa. Fortunatamente non ha causato danni intorno a voi, quindi continuate a riposare per un po', ammirando il cielo e l'area circostante. Ricevi un **{{amount, number}} {emote:unitValues.xp}**."
+          "solo": "Cerchi di mantenerti in piedi nonostante la scossa. Per fortuna non ha causato alcun danno nei dintorni, quindi continui a riposarti un po' ammirando il cielo e il paesaggio circostante. Ricevi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         },
         "escape": {
           "withGuild": "In preda al panico, la vostra gilda cerca di trovare un posto più sicuro per evitare danni a chiunque di voi. Dopo aver girato in tondo per diversi minuti perché almeno uno dei membri ritiene che un determinato posto non sia sicuro, non sentite più la scossa. Ciononostante, cercate di recuperare la fiducia in voi stessi per ciò che vi aspetta mentre vi fate strada sull'isola...",
           "solo": "Presi dal panico, cercate di schivare i potenziali danni del terremoto. Dopo qualche istante, non sentite più la scossa. Quando tornate nel luogo in cui volevate riposare, notate i danni causati dal terremoto. È un bene che non siate rimasti lì..."
         },
         "lose": {
-          "withGuild": "Vi dite che questo terremoto sarà di breve durata e chiedete al resto della gilda di affrontarlo. Ma che errore! Una roccia si abbatte su di voi e vi fa perdere i sensi. Perdi **{{amount, number}} {emote:unitValues.energy}**.",
-          "solo": "Dicendo a se stessi che i danni saranno minimi, si continua a riposare. Tuttavia, sotto il vostro corpo si forma un crepaccio. Temendo di caderci dentro, si cerca di correre il più lontano possibile, ma si inciampa e ci si taglia il braccio. Si perde **{{amount, number}} {emote:unitValues.lostHealth}**."
+          "withGuild": "Pensate che questo terremoto durerà poco e chiedete al resto della gilda di affrontarlo. Che errore! Un masso vi cade addosso e vi stordisce. Perdete **{{amount, number}} {emote:unitValues.{{emoteKey}}}**.",
+          "solo": "Pensando che i danni saranno minimi, continui a riposarti. Tuttavia, sotto di te si sta formando una crepa. Per paura di cadervi dentro, cerchi di correre il più lontano possibile, ma inciampi e ti tagli il braccio. Perdi **{{amount, number}} {emote:unitValues.{{emoteKey}}}**."
         }
       },
       {
@@ -2798,7 +2798,7 @@
           "Théobald scuote la testa alla vista della tua borsa piena. **Pianta il tuo seme attuale** prima di chiedergliene uno nuovo."
         ],
         "allSeedsObtained": [
-          "Théobald si congratula calorosamente con voi per aver visto tutte le piante del vostro giardino. Avete già preso **tutti i suoi semi** e lui non ha più nulla da offrirvi, ma è molto orgoglioso del vostro giardino.",
+          "Teobaldo si congratula con voi con orgoglio vedendo tutte le piante del vostro giardino. Avete già ricevuto **tutti i suoi semi** e lui non ha più nulla da offrirvi, ma è molto orgoglioso del vostro giardino.",
           "Il vecchio giardiniere vi stringe la mano con calore. Hai fatto tutto quello che poteva insegnarti. Il tuo giardino è un **pezzo forte**\", dice, con le lacrime agli occhi."
         ],
         "noPlantSpace": [
