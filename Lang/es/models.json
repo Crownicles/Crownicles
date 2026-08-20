@@ -1208,7 +1208,7 @@
       "atParticle": "a la"
     },
     "19": {
-      "description": "Una playa creada por los fuertes vientos del Valle de los Reyes. La Duna protege las Plaines du Contre Bois del calor y trae agua del río Vacarme.",
+      "description": "Playa formada por los fuertes vientos del Valle de los Reyes. La duna protege las tierras vecinas del calor y conduce el agua del río Vacarme.",
       "name": "La Duna",
       "particle": "a",
       "atParticle": "à"
@@ -1224,12 +1224,6 @@
       "name": "Camino rural",
       "particle": "a la",
       "atParticle": "a la"
-    },
-    "20": {
-      "description": "Una vasta y pacífica llanura agrícola.",
-      "name": "Plaines du Contre Bois",
-      "particle": "a la",
-      "atParticle": "en"
     },
     "21": {
       "description": "Una carretera muy utilizada por los aldeanos. Muchos pequeños vendedores ambulantes se instalan aquí durante un día, creando un enorme mercado.",
@@ -2493,6 +2487,7 @@
     "10": "Árbol genealógico"
   },
   "cooking": {
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
     "grades": {
       "kitchenHelper": "Ayudante de cocina",
       "scullion": "Marmiton",
