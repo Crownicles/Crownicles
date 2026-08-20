@@ -1208,7 +1208,7 @@
       "atParticle": "al"
     },
     "19": {
-      "description": "Plage créée par les forts vents de la Vallée des Rois. La Dune protège les terres voisines de la chaleur et amène l'eau de la rivière Vacarme.",
+      "description": "Spiaggia formatasi grazie ai forti venti della Valle dei Re. La duna protegge i terreni circostanti dal calore e convoglia l'acqua del fiume Vacarme.",
       "name": "La Duna",
       "particle": "verso",
       "atParticle": "à"
@@ -2487,7 +2487,7 @@
     "10": "Albero ancestrale"
   },
   "cooking": {
-    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Niv. {{level}})",
+    "recipeDisplay": "{emote:cookingRecipeTypes.{{recipeType}}} $t(models:cooking.recipes.{{recipeId}}) (Liv. {{level}})",
     "grades": {
       "kitchenHelper": "Assistente di cucina",
       "scullion": "Marmiton",
