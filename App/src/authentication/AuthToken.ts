@@ -1,11 +1,38 @@
 import {KeycloakAuth} from "@/src/authentication/KeycloakAuth";
 import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 
+const NEVER_EXPIRES = "never" as const;
+
+export type TokenExpiration = Date | typeof NEVER_EXPIRES;
+
 export interface AuthTokenData {
 	accessToken: string;
 	refreshToken: string;
 	accessTokenExpiresAt: Date;
-	refreshTokenExpiresAt: Date;
+	refreshTokenExpiresAt: TokenExpiration;
+}
+
+interface SerializedAuthTokenData {
+	accessToken: string;
+	refreshToken: string;
+	accessTokenExpiresAt: string;
+	refreshTokenExpiresAt: string | typeof NEVER_EXPIRES;
+}
+
+function expirationFromSeconds(seconds: number): TokenExpiration {
+	if (seconds === 0) {
+		return NEVER_EXPIRES;
+	}
+
+	return new Date(Date.now() + seconds * 1000);
+}
+
+function serializeExpiration(expiration: TokenExpiration): string {
+	return expiration === NEVER_EXPIRES ? NEVER_EXPIRES : expiration.toISOString();
+}
+
+function parseExpiration(expiration: string | typeof NEVER_EXPIRES): TokenExpiration {
+	return expiration === NEVER_EXPIRES ? NEVER_EXPIRES : new Date(expiration);
 }
 
 export class AuthToken {
@@ -20,6 +47,10 @@ export class AuthToken {
 	}
 
 	private isRefreshTokenExpired(): boolean {
+		if (this.data.refreshTokenExpiresAt === NEVER_EXPIRES) {
+			return false;
+		}
+
 		return Date.now() >= this.data.refreshTokenExpiresAt.getTime();
 	}
 
@@ -41,7 +72,7 @@ export class AuthToken {
 				this.data.accessToken = refreshedToken.access_token;
 				this.data.refreshToken = refreshedToken.refresh_token;
 				this.data.accessTokenExpiresAt = new Date(Date.now() + refreshedToken.expires_in * 1000);
-				this.data.refreshTokenExpiresAt = new Date(Date.now() + refreshedToken.refresh_expires_in * 1000);
+				this.data.refreshTokenExpiresAt = expirationFromSeconds(refreshedToken.refresh_expires_in);
 				return true; // Refresh successful
 			}
 			catch {
@@ -57,18 +88,18 @@ export class AuthToken {
 			accessToken: this.data.accessToken,
 			refreshToken: this.data.refreshToken,
 			accessTokenExpiresAt: this.data.accessTokenExpiresAt.toISOString(),
-			refreshTokenExpiresAt: this.data.refreshTokenExpiresAt.toISOString()
+			refreshTokenExpiresAt: serializeExpiration(this.data.refreshTokenExpiresAt)
 		});
 	}
 
 	public static fromJsonString(tokenString: string): AuthToken {
 		try {
-			const data = JSON.parse(tokenString) as AuthTokenData;
+			const data = JSON.parse(tokenString) as SerializedAuthTokenData;
 			return new AuthToken({
 				accessToken: data.accessToken,
 				refreshToken: data.refreshToken,
 				accessTokenExpiresAt: new Date(data.accessTokenExpiresAt),
-				refreshTokenExpiresAt: new Date(data.refreshTokenExpiresAt)
+				refreshTokenExpiresAt: parseExpiration(data.refreshTokenExpiresAt)
 			});
 		}
 		catch {
@@ -81,7 +112,7 @@ export class AuthToken {
 			accessToken: keycloakOAuth2Token.access_token,
 			refreshToken: keycloakOAuth2Token.refresh_token,
 			accessTokenExpiresAt: new Date(Date.now() + keycloakOAuth2Token.expires_in * 1000),
-			refreshTokenExpiresAt: new Date(Date.now() + keycloakOAuth2Token.refresh_expires_in * 1000)
+			refreshTokenExpiresAt: expirationFromSeconds(keycloakOAuth2Token.refresh_expires_in)
 		});
 	}
 }

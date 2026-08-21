@@ -42,7 +42,11 @@ function getRedirectUri(): string {
 }
 
 function hasCompleteToken(token: KeycloakOAuth2Token): boolean {
-	return Boolean(token.access_token && token.refresh_token && token.expires_in && token.refresh_expires_in);
+	return Boolean(token.access_token && token.refresh_token)
+		&& Number.isFinite(token.expires_in)
+		&& token.expires_in > 0
+		&& Number.isFinite(token.refresh_expires_in)
+		&& token.refresh_expires_in >= 0;
 }
 
 function describeAuthResult(result: AuthSessionResult): string {
@@ -69,7 +73,7 @@ export class KeycloakAuth {
 		const request = new AuthRequest({
 			clientId: getClientId(),
 			redirectUri,
-			scopes: ["openid"],
+			scopes: ["openid", "offline_access"],
 			responseType: ResponseType.Code,
 			usePKCE: true
 		});

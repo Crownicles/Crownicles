@@ -955,7 +955,10 @@
         "view": true,
         "configure": true,
         "manage": true
-      }
+      },
+      "optionalClientScopes": [
+        "offline_access"
+      ]
     }
   ],
   "clientScopes": [
