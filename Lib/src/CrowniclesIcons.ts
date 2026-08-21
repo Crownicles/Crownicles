@@ -206,6 +206,13 @@ export const CrowniclesIcons: {
 		switch: string;
 		withdraw: string;
 	};
+	navigation: {
+		adventure: string;
+		profile: string;
+		pet: string;
+		guild: string;
+		fight: string;
+	};
 	other: { [otherId: string]: string };
 	guild: {
 		icon: string;
@@ -2576,6 +2583,13 @@ export const CrowniclesIcons: {
 		deposit: "📥",
 		switch: "🔄",
 		withdraw: "📤"
+	},
+	navigation: {
+		adventure: "🧭",
+		profile: "👤",
+		pet: "🐾",
+		guild: "🏰",
+		fight: "⚔️"
 	},
 	other: {
 		trash: "🗑️",

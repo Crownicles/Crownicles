@@ -1,5 +1,4 @@
 import {Tabs, useRouter} from "expo-router";
-import {Ionicons, MaterialCommunityIcons, MaterialIcons} from "@expo/vector-icons";
 import {Alert, Text, TouchableOpacity, View} from "react-native";
 import {useContext} from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
@@ -9,6 +8,9 @@ import {OpenCollectors} from "@/src/collectors/OpenCollectors";
 import {AppIcons} from "@/src/AppIcons";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {i18n} from "@/src/translations/i18n";
+import {navigationStyles, tabBarOptions} from "@/src/design/Navigation";
+import {Theme} from "@/src/design/Theme";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 
 const ProfileHeader = ({ children }: { children?: string }) => {
 	/*
@@ -35,17 +37,17 @@ const ProfileHeader = ({ children }: { children?: string }) => {
 	return (
 		<TouchableOpacity
 			onPress={showClassInfo}
-			style={{ flexDirection: 'row', alignItems: 'center' }}
+			style={navigationStyles.profileHeader}
 		>
-			<Text style={{ fontSize: 25, marginRight: 8 }}>
+			<Text style={navigationStyles.profileClassIcon}>
 				{getClassIcon()}
 			</Text>
-			<View style={{ flexDirection: 'column', alignItems: 'center' }}>
-				<Text style={{ fontSize: 17, fontWeight: '600', textAlign: 'center' }}>
+			<View style={navigationStyles.profileIdentity}>
+				<Text style={navigationStyles.profileName}>
 					{children || profile?.pseudo}
 				</Text>
 				{profile && (
-					<Text style={{ fontSize: 12, color: '#666', textAlign: 'center' }}>
+					<Text style={navigationStyles.profileLevel}>
 						{i18n.t("app:profile.level", { level: profile.level })}
 					</Text>
 				)}
@@ -58,44 +60,44 @@ function TabLayoutContent() {
 	const router = useRouter();
 
 	return (
-		<Tabs>
-			<Tabs.Screen name="arena" options={{
-				title: i18n.t("app:tabs.arena"),
-				tabBarIcon: ({ color }) => (
-						<MaterialCommunityIcons name="shield-sword" size={28} color={color} />
-				),
-			}} />
-			<Tabs.Screen name="guild" options={{
-				title: i18n.t("app:tabs.guild"),
-				tabBarIcon: ({ color }) => (
-						<MaterialIcons name="stadium" size={28} color={color} />
-				),
-			}} />
+		<Tabs screenOptions={tabBarOptions}>
 			<Tabs.Screen name="index" options={{
 				title: i18n.t("app:tabs.adventure"),
-				tabBarIcon: ({ color }) => (
-						<MaterialCommunityIcons name="book-open-page-variant" size={28} color={color} />
+				tabBarIcon: ({ focused }) => (
+					<TwemojiIcon emoji={AppIcons.getIcon("navigation.adventure")} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : 0.55} />
 				),
 			}} />
 			<Tabs.Screen name="profile" options={{
 				title: i18n.t("app:tabs.profile"),
-				tabBarIcon: ({ color }) => (
-						<MaterialCommunityIcons name="account" size={28} color={color} />
+				tabBarIcon: ({ focused }) => (
+					<TwemojiIcon emoji={AppIcons.getIcon("navigation.profile")} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : 0.55} />
 				),
 				headerTitle: ProfileHeader,
 				headerRight: () => (
 					<TouchableOpacity
-						style={{ marginRight: 15 }}
+						style={navigationStyles.settingsButton}
 						onPress={() => router.push("/settings")}
 					>
-						<Ionicons name="settings" size={24} color="gray" />
+						<Text style={navigationStyles.settingsIcon}>{AppIcons.getIcon("other.gear")}</Text>
 					</TouchableOpacity>
 				),
 			}} />
 			<Tabs.Screen name="pet" options={{
 				title: i18n.t("app:tabs.pet"),
-				tabBarIcon: ({ color }) => (
-						<MaterialCommunityIcons name="paw" size={28} color={color} />
+				tabBarIcon: ({ focused }) => (
+					<TwemojiIcon emoji={AppIcons.getIcon("navigation.pet")} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : 0.55} />
+				),
+			}} />
+			<Tabs.Screen name="guild" options={{
+				title: i18n.t("app:tabs.guild"),
+				tabBarIcon: ({ focused }) => (
+					<TwemojiIcon emoji={AppIcons.getIcon("navigation.guild")} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : 0.55} />
+				),
+			}} />
+			<Tabs.Screen name="arena" options={{
+				title: i18n.t("app:tabs.arena"),
+				tabBarIcon: ({ focused }) => (
+					<TwemojiIcon emoji={AppIcons.getIcon("navigation.fight")} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : 0.55} />
 				),
 			}} />
 			<Tabs.Screen name="settings/index" options={{ href: null, title: "Settings" }} />
