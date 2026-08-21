@@ -8,7 +8,12 @@ import {collectorTitle, isChoosable, reactionLabel} from "@/src/collectors/Colle
 
 const styles = StyleSheet.create({
 	choice: { paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg },
-	choiceLabel: { color: Theme.colors.blue, fontSize: Theme.fontSize.body },
+	choiceLabel: {
+		color: Theme.colors.blue,
+		fontFamily: Theme.fonts.semiBold,
+		fontSize: Theme.fontSize.body,
+		lineHeight: Theme.lineHeight.body
+	},
 	disabled: { color: Theme.colors.faint }
 });
 

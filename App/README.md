@@ -135,6 +135,26 @@ never finishes when it is in fact waiting for an answer.
 - `src/translations/` — i18n, fed at runtime by the assets downloaded from RestWs
 - `metro.config.js` — makes Metro watch and resolve the linked `WsPackets` package
 
+## Visual source of truth
+
+`mockups/mobile.html` is the visual source of truth for the mobile client: layout, colours,
+spacing, typography and the five-tab bottom navigation are kept there first. React Native screens
+reuse the matching tokens and primitives from `src/design/` instead of introducing screen-local
+hex colours, font sizes or spacing values. The app loads the same Inter family used by the mockup
+through `src/design/Fonts.ts`.
+
+## Emoji assets
+
+The app renders Unicode emoji with [jdecked Twemoji 17.0.3](https://github.com/jdecked/twemoji),
+the same artwork family used by Discord and by `mockups/mobile.html`. The graphics are licensed
+under [CC-BY 4.0](https://creativecommons.org/licenses/by/4.0/); this attribution covers the
+Twemoji assets loaded by `src/design/TwemojiIcon.tsx`.
+
+When a reusable pattern is missing, add it to `src/design/` and use it from at least one screen
+before creating a second local variant. Keep route files focused on data and interaction; styles
+shared by several screens do not belong beside a route because Expo Router treats every file in
+`app/` as a possible route.
+
 ## Before writing code
 
 Read [the contribution guide](../.github/instructions/app.instructions.md): service boundaries, how

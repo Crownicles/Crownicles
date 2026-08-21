@@ -1,4 +1,4 @@
-import {ActivityIndicator, Alert, Button, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Alert, StyleSheet, Text, View} from "react-native";
 import React from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {KeycloakAuth} from "@/src/authentication/KeycloakAuth";
@@ -6,6 +6,8 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthToken} from "@/src/authentication/AuthToken";
 import {useRouter} from "expo-router";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
+import {Theme} from "@/src/design/Theme";
+import {Button as DesignButton} from "@/src/design/Primitives";
 
 const styles = StyleSheet.create({
 	container: {
@@ -14,8 +16,15 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 	},
 	text: {
-		fontSize: 24,
-		fontWeight: "bold",
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.hero,
+		color: Theme.colors.ink,
+	},
+	loginIndicator: {
+		marginBottom: Theme.spacing.xxl
+	},
+	loginGap: {
+		height: Theme.spacing.xxl
 	},
 });
 
@@ -35,11 +44,11 @@ export default function LoginScreen() {
 	return (
 		<View style={styles.container}>
 			{authState.state === AuthStateEnum.CONNECTING && (
-					<ActivityIndicator size="large" color="#00ff00" style={{ marginBottom: 24 }} />
+					<ActivityIndicator size="large" color={Theme.colors.ink} style={styles.loginIndicator} />
 			)}
 			<Text style={styles.text}>Login screen</Text>
-			<View style={{ height: 24 }} />
-			<Button title="Log In" onPress={() => {
+			<View style={styles.loginGap} />
+			<DesignButton variant="primary" onPress={() => {
 				KeycloakAuth.login().then(async (keycloakToken) => {
 					const authToken = AuthToken.fromKeycloakOAuth2Token(keycloakToken);
 
@@ -69,7 +78,7 @@ export default function LoginScreen() {
 					Alert.alert("Login failed", message);
 					router.replace("/login");
 				});
-			}} />
+			}}>Log In</DesignButton>
 		</View>
 	);
 }

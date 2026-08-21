@@ -2,23 +2,33 @@ import {Redirect, Stack} from "expo-router";
 import React, {useEffect} from "react";
 import {AuthContext} from "@/src/authentication/AuthContext";
 import {SafeAreaProvider} from "react-native-safe-area-context";
-import {ActivityIndicator, Button, Modal, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, Modal, StyleSheet, Text, View} from "react-native";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AssetsManager} from "@/src/assets/AssetsManager";
+import {Theme} from "@/src/design/Theme";
+import {Button as DesignButton} from "@/src/design/Primitives";
 
 const styles = StyleSheet.create({
 	overlay: {
 		...StyleSheet.absoluteFill,
-		backgroundColor: "rgba(0,0,0,0.4)",
+		backgroundColor: Theme.colors.overlay,
 		justifyContent: "center",
 		alignItems: "center",
 		zIndex: 9999,
 	},
 	indicatorContainer: {
-		backgroundColor: "#fff",
-		borderRadius: 12,
-		padding: 24,
+		backgroundColor: Theme.colors.paper,
+		borderRadius: Theme.radius,
+		padding: Theme.spacing.xxl,
 		elevation: 4,
+	},
+	blockingText: {
+		fontFamily: Theme.fonts.regular,
+		marginBottom: Theme.spacing.md,
+		textAlign: "center"
+	},
+	authenticatedRoot: {
+		flex: 1
 	},
 });
 
@@ -76,10 +86,10 @@ function renderBlockingState(authState: AuthStateEnum, assetState: AssetState, o
 			<Modal visible transparent animationType="fade">
 				<View style={styles.overlay} pointerEvents="auto">
 					<View style={styles.indicatorContainer}>
-						<Text style={{ marginBottom: 16, textAlign: "center" }}>
+						<Text style={styles.blockingText}>
 							Connection error. Please check your internet connection and try again.
 						</Text>
-						<Button title="Reconnect" onPress={onReconnect} />
+						<DesignButton variant="primary" onPress={onReconnect}>Reconnect</DesignButton>
 					</View>
 				</View>
 			</Modal>
@@ -91,10 +101,10 @@ function renderBlockingState(authState: AuthStateEnum, assetState: AssetState, o
 			<Modal visible transparent animationType="fade">
 				<View style={styles.overlay} pointerEvents="auto">
 					<View style={styles.indicatorContainer}>
-						<Text style={{ marginBottom: 16, textAlign: "center" }}>
+						<Text style={styles.blockingText}>
 							Failed to update assets. Please check your internet connection and try again.
 						</Text>
-						<Button title="Retry" onPress={assetState.retryAssetUpdate} />
+						<DesignButton variant="primary" onPress={assetState.retryAssetUpdate}>Retry</DesignButton>
 					</View>
 				</View>
 			</Modal>
@@ -106,10 +116,10 @@ function renderBlockingState(authState: AuthStateEnum, assetState: AssetState, o
 			<Modal visible transparent animationType="fade">
 				<View style={styles.overlay} pointerEvents="auto">
 					<View style={styles.indicatorContainer}>
-						<Text style={{ marginBottom: 16, textAlign: "center" }}>
+						<Text style={styles.blockingText}>
 							Updating assets. Please wait...
 						</Text>
-						<ActivityIndicator size="large" color="#00ff00" />
+						<ActivityIndicator size="large" color={Theme.colors.ink} />
 					</View>
 				</View>
 			</Modal>
@@ -123,7 +133,7 @@ function ReconnectingOverlay(): React.ReactElement {
 	return (
 		<View style={styles.overlay} pointerEvents="auto">
 			<View style={styles.indicatorContainer}>
-				<ActivityIndicator size="large" color="#00ff00" />
+				<ActivityIndicator size="large" color={Theme.colors.ink} />
 			</View>
 		</View>
 	);
@@ -132,7 +142,7 @@ function ReconnectingOverlay(): React.ReactElement {
 function AuthenticatedLayout({ state }: { state: AuthStateEnum }): React.ReactElement {
 	return (
 		<SafeAreaProvider>
-			<View style={{ flex: 1 }}>
+			<View style={styles.authenticatedRoot}>
 				<Stack screenOptions={{
 					headerShown: false,
 				}}>

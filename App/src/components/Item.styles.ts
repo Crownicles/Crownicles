@@ -1,27 +1,22 @@
 import {StyleSheet} from "react-native";
+import {Theme} from "@/src/design/Theme";
 
 const layoutStyles = StyleSheet.create({
 	itemContainer: {
 		position: 'relative',
-		height: 80,
-		marginBottom: 8,
+		height: Theme.dimensions.itemHeight,
+		marginBottom: Theme.spacing.sm,
 	},
 	inventoryItem: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		padding: 12,
-		backgroundColor: '#f9f9f9',
-		borderRadius: 10,
-		marginBottom: 8,
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.1,
-		shadowRadius: 4,
-		elevation: 2,
-		minHeight: 68,
+		padding: Theme.spacing.md,
+		backgroundColor: Theme.colors.paper,
+		borderWidth: 1,
+		borderColor: Theme.colors.line,
+		borderRadius: Theme.radius,
+		marginBottom: Theme.spacing.sm,
+		minHeight: Theme.dimensions.itemMinHeight,
 	},
 	itemDetails: {
 		flex: 1,
@@ -35,61 +30,68 @@ const layoutStyles = StyleSheet.create({
 
 const itemTextStyles = StyleSheet.create({
 	itemIcon: {
-		fontSize: 24,
-		marginRight: 12,
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.hero,
+		marginRight: Theme.spacing.md,
 	},
 	itemName: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		marginBottom: 4,
-		color: '#333',
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.body,
+		marginBottom: Theme.spacing.xs,
+		color: Theme.colors.ink,
 	},
 	itemRarity: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginBottom: 4,
+		marginBottom: Theme.spacing.xs,
 	},
 	rarityIcon: {
-		fontSize: 12,
-		marginRight: 4,
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.caption,
+		marginRight: Theme.spacing.xs,
 	},
 	rarityText: {
-		fontSize: 12,
-		color: '#666',
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.caption,
+		color: Theme.colors.muted,
 	},
 	clickIndicator: {
-		fontSize: 16,
-		marginLeft: 8,
-		color: '#007AFF',
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.body,
+		marginLeft: Theme.spacing.sm,
+		color: Theme.colors.blue,
 		opacity: 0.8,
 	},
 });
 
 const statTextStyles = StyleSheet.create({
 	itemStatsContainer: {
-		marginTop: 4,
+		marginTop: Theme.spacing.xs,
 	},
 	itemStatText: {
-		fontSize: 12,
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.caption,
 	},
 	itemStatsLine: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		marginTop: 4,
+		marginTop: Theme.spacing.xs,
 	},
 	statSeparator: {
-		color: '#999',
+		color: Theme.colors.faint,
 	},
 	itemStatIcon: {
-		fontSize: 12,
-		marginRight: 2,
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.caption,
+		marginRight: Theme.spacing.xs,
 	},
 	itemStatValue: {
-		fontSize: 12,
-		color: '#666',
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.caption,
+		color: Theme.colors.muted,
 	},
 	nerfedStat: {
-		color: '#ff6b6b',
+		color: Theme.colors.red,
 	},
 	strikethrough: {
 		textDecorationLine: 'line-through',
@@ -100,15 +102,17 @@ const effectTextStyles = StyleSheet.create({
 	itemEffect: {
 		flexDirection: 'row',
 		alignItems: 'center',
-		marginTop: 4,
+		marginTop: Theme.spacing.xs,
 	},
 	itemEffectIcon: {
-		fontSize: 12,
-		marginRight: 4,
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.caption,
+		marginRight: Theme.spacing.xs,
 	},
 	itemEffectText: {
-		fontSize: 12,
-		color: '#666',
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.caption,
+		color: Theme.colors.muted,
 	},
 });
 
@@ -122,10 +126,10 @@ const flipStyles = StyleSheet.create({
 		backfaceVisibility: 'hidden',
 	},
 	backSide: {
-		backgroundColor: '#fff',
-		borderColor: '#ddd',
+		backgroundColor: Theme.colors.paper,
+		borderColor: Theme.colors.line,
 		borderWidth: 1,
-		borderRadius: 10,
+		borderRadius: Theme.radius,
 		justifyContent: 'center',
 	},
 	hiddenSide: {
@@ -140,26 +144,27 @@ const actionStyles = StyleSheet.create({
 		justifyContent: 'space-around',
 		alignItems: 'center',
 		width: '100%',
-		paddingHorizontal: 8,
+		paddingHorizontal: Theme.spacing.sm,
 	},
 	actionButton: {
 		alignItems: 'center',
 		justifyContent: 'center',
-		paddingVertical: 8,
-		paddingHorizontal: 12,
-		borderRadius: 8,
-		backgroundColor: '#f0f0f0',
-		minWidth: 60,
+		paddingVertical: Theme.spacing.sm,
+		paddingHorizontal: Theme.spacing.md,
+		borderRadius: Theme.radius,
+		backgroundColor: Theme.colors.wash,
+		minWidth: Theme.dimensions.actionButtonMinWidth,
 	},
 	actionButtonIcon: {
-		fontSize: 20,
-		marginBottom: 2,
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.title,
+		marginBottom: Theme.spacing.xs,
 	},
 	actionButtonText: {
-		fontSize: 10,
-		color: '#333',
+		fontFamily: Theme.fonts.medium,
+		fontSize: Theme.fontSize.eyebrow,
+		color: Theme.colors.ink,
 		textAlign: 'center',
-		fontWeight: '500',
 	},
 });
 

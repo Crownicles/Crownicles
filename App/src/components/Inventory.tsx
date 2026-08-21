@@ -10,59 +10,62 @@ import {GameClient} from "@/src/networking/GameClient";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {Item} from "@/src/components/Item";
 import {i18n} from "@/src/translations/i18n";
+import {Theme} from "@/src/design/Theme";
 
 const styles = StyleSheet.create({
 	centerContent: {
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
-		padding: 20,
+		padding: Theme.spacing.xxl,
 	},
 	placeholderText: {
-		fontSize: 16,
-		color: '#666',
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.body,
+		lineHeight: Theme.lineHeight.body,
+		color: Theme.colors.muted,
 		textAlign: 'center',
 	},
 	inventoryContent: {
-		padding: 16,
+		padding: Theme.spacing.xl,
 	},
 	inventoryTitle: {
-		fontSize: 18,
-		fontWeight: 'bold',
-		marginBottom: 16,
-		color: '#333',
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.title,
+		marginBottom: Theme.spacing.xl,
+		color: Theme.colors.ink,
 	},
 	inventoryHeader: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
-		marginBottom: 16,
+		marginBottom: Theme.spacing.xl,
 	},
 	toggleButton: {
-		backgroundColor: '#007AFF',
-		paddingHorizontal: 12,
-		paddingVertical: 6,
-		borderRadius: 8,
+		backgroundColor: Theme.colors.ink,
+		paddingHorizontal: Theme.spacing.md,
+		paddingVertical: Theme.spacing.xs,
+		borderRadius: Theme.pillRadius,
 	},
 	toggleButtonText: {
-		color: '#fff',
-		fontSize: 12,
-		fontWeight: '500',
+		fontFamily: Theme.fonts.medium,
+		color: Theme.colors.paper,
+		fontSize: Theme.fontSize.caption,
 	},
 	inventoryList: {
-		gap: 16,
+		gap: Theme.spacing.xl,
 	},
 	itemTypeHeader: {
-		backgroundColor: '#e8e8e8',
-		paddingVertical: 8,
-		paddingHorizontal: 12,
-		borderRadius: 6,
-		marginBottom: 8,
+		backgroundColor: Theme.colors.wash,
+		paddingVertical: Theme.spacing.sm,
+		paddingHorizontal: Theme.spacing.md,
+		borderRadius: Theme.radius,
+		marginBottom: Theme.spacing.sm,
 	},
 	itemTypeHeaderText: {
-		fontSize: 14,
-		fontWeight: 'bold',
-		color: '#333'
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.rowTitle,
+		color: Theme.colors.ink
 	},
 });
 

@@ -1,5 +1,5 @@
 import React, {PropsWithChildren} from "react";
-import {ActivityIndicator, Button, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
+import {ActivityIndicator, ScrollView, StyleSheet, Switch, Text, View} from "react-native";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AuthContext} from "@/src/authentication/AuthContext";
@@ -7,34 +7,49 @@ import {PreferencesContext} from "@/src/preferences/PreferencesContext";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {PingReq} from "ws-packets/src/fromClient/PingReq";
 import {PingRes} from "ws-packets/src/fromServer/ping/PingRes";
+import {Theme} from "@/src/design/Theme";
+import {Button as DesignButton} from "@/src/design/Primitives";
 
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		padding: 20,
-		backgroundColor: '#fff',
+		padding: Theme.spacing.xl,
+		backgroundColor: Theme.colors.wash,
 	},
 	header: {
-		fontSize: 24,
-		fontWeight: 'bold',
-		marginBottom: 20,
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.hero,
+		marginBottom: Theme.spacing.xl,
 	},
 	item: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		marginBottom: 20,
+		marginBottom: Theme.spacing.xl,
 	},
 	listItem: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		justifyContent: 'space-between',
-		padding: 16,
-		marginBottom: 8,
-		backgroundColor: '#f5f5f5',
-		borderRadius: 8,
+		padding: Theme.spacing.lg,
+		marginBottom: Theme.spacing.sm,
+		backgroundColor: Theme.colors.paper,
+		borderRadius: Theme.radius,
 		borderWidth: 1,
-		borderColor: '#e0e0e0',
+		borderColor: Theme.colors.line,
+	},
+	loadingIndicator: {
+		marginLeft: Theme.spacing.sm
+	},
+	pingValue: {
+		marginLeft: Theme.spacing.sm,
+		fontFamily: Theme.fonts.regular,
+		color: Theme.colors.muted
+	},
+	label: {
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.body,
+		color: Theme.colors.ink
 	},
 });
 
@@ -67,26 +82,26 @@ export default function Index() {
 		<View style={styles.container}>
 			<ScrollView>
 				<ListItem>
-					<Text>Developer Mode</Text>
+					<Text style={styles.label}>Developer Mode</Text>
 					<Switch value={preferences.getDevMode()} onValueChange={preferences.setDevMode} />
 				</ListItem>
 				{preferences.getDevMode() && (
 					<ListItem>
-						<Button title="Ping" onPress={handlePing} disabled={pingLoading} />
+							<DesignButton onPress={handlePing} disabled={pingLoading} variant="primary">Ping</DesignButton>
 						{pingLoading ? (
-							<ActivityIndicator size="small" style={{ marginLeft: 10 }} />
+							<ActivityIndicator size="small" style={styles.loadingIndicator} />
 						) : pingTime !== null ? (
-							<Text style={{ marginLeft: 10 }}>{pingTime} ms</Text>
+							<Text style={styles.pingValue}>{pingTime} ms</Text>
 						) : null}
 					</ListItem>
 				)}
 				<ListItem>
-					<Button title="Logout" color="red" onPress={() => {
+					<DesignButton variant="danger" onPress={() => {
 						authState.setState(AuthStateEnum.NO_TOKEN);
 						authState.clearToken().then().catch((err) => {
 							console.error("Failed to clear token:", err);
 						});
-					}} />
+					}}>Logout</DesignButton>
 				</ListItem>
 			</ScrollView>
 		</View>

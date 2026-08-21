@@ -20,7 +20,8 @@ import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
 import {i18n} from "@/src/translations/i18n";
-import {styles} from "./profile.styles";
+import {styles} from "@/src/design/ProfileStyles";
+import {Theme} from "@/src/design/Theme";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 
 interface TooltipState {
@@ -141,19 +142,17 @@ function ProgressBar({ current, max, color, label }: ProgressBarProps): ReactEle
 
 	return (
 		<View style={styles.progressBarContainer}>
-			<Text style={styles.progressLabel}>{label}</Text>
-			<View style={styles.progressBarWrapper}>
-				<View style={styles.progressBarBackground}>
-					<View
-						style={[
-							styles.progressBarFill,
-							{ width: `${percentage}%`, backgroundColor: color }
-						]}
-					/>
-				</View>
-				<Text style={styles.progressText}>
-					{current} / {max}
-				</Text>
+			<View style={styles.progressBarHeader}>
+				<Text style={styles.progressLabel}>{label}</Text>
+				<Text style={styles.progressValue}>{current} / {max}</Text>
+			</View>
+			<View style={styles.progressBarBackground}>
+				<View
+					style={[
+						styles.progressBarFill,
+						{ width: `${percentage}%`, backgroundColor: color }
+					]}
+				/>
 			</View>
 		</View>
 	);
@@ -166,7 +165,7 @@ function HealthExperienceSection({ profile }: ProfileProps): ReactElement {
 				<ProgressBar
 					current={profile.health.value}
 					max={profile.health.max}
-					color="#ff4444"
+					color={Theme.colors.red}
 					label={i18n.t("app:profile.titles.health")}
 				/>
 			</View>
@@ -174,7 +173,7 @@ function HealthExperienceSection({ profile }: ProfileProps): ReactElement {
 				<ProgressBar
 					current={profile.experience.value}
 					max={profile.experience.max}
-					color="#FFDF00"
+					color={Theme.colors.gold}
 					label={i18n.t("app:profile.titles.experience")}
 				/>
 			</View>
@@ -315,7 +314,7 @@ function ProfileStateView({
 	if (profileState.status === "loading") {
 		return (
 			<View style={styles.centerContent}>
-				<ActivityIndicator size="large" color="#007AFF" />
+				<ActivityIndicator size="large" color={Theme.colors.ink} />
 				<Text style={styles.loadingText}>{i18n.t("app:common.loading")}</Text>
 			</View>
 		);
@@ -413,7 +412,7 @@ export default function Profile(): ReactElement {
 	return (
 		<View style={styles.container}>
 			<ScrollView
-				style={{ flex: 1 }}
+				style={styles.scroll}
 				contentContainerStyle={styles.scrollContent}
 				showsVerticalScrollIndicator={false}
 				onTouchStart={hideTooltip}

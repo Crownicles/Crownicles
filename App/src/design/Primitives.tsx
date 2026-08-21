@@ -9,6 +9,7 @@ import {
 	type ViewStyle
 } from "react-native";
 import {Theme} from "@/src/design/Theme";
+import {TwemojiText} from "@/src/design/TwemojiText";
 
 const styles = StyleSheet.create({
 	screenContent: {
@@ -20,37 +21,63 @@ const styles = StyleSheet.create({
 	},
 	hero: { marginBottom: Theme.spacing.xl },
 	eyebrow: {
-		color: Theme.colors.muted, fontSize: Theme.fontSize.eyebrow, fontWeight: "600", textTransform: "uppercase", letterSpacing: Theme.letterSpacing.eyebrow, marginBottom: 5
+		color: Theme.colors.muted,
+		fontFamily: Theme.fonts.semiBold,
+		fontSize: Theme.fontSize.eyebrow,
+		lineHeight: Theme.lineHeight.eyebrow,
+		textTransform: "uppercase",
+		letterSpacing: Theme.letterSpacing.eyebrow,
+		marginBottom: Theme.spacing.headerGap
 	},
 	heroTitle: {
-		color: Theme.colors.ink, fontSize: Theme.fontSize.hero, fontWeight: "800", letterSpacing: Theme.letterSpacing.hero, lineHeight: Theme.fontSize.hero * 1.16, marginBottom: 6
+		marginBottom: Theme.spacing.titleGap
+	},
+	heroTitleText: {
+		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.extraBold,
+		fontSize: Theme.fontSize.hero,
+		letterSpacing: Theme.letterSpacing.hero,
+		lineHeight: Theme.lineHeight.hero
 	},
 	heroSubtitle: {
-		color: Theme.colors.muted, fontSize: 14, lineHeight: 20
+		color: Theme.colors.muted,
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.body,
+		lineHeight: Theme.lineHeight.heroSubtitle
 	},
 	sectionHead: {
 		flexDirection: "row",
 		alignItems: "center",
 		justifyContent: "space-between",
 		gap: Theme.spacing.md,
-		marginBottom: 9,
-		marginTop: 22
+		marginBottom: Theme.spacing.sectionActionGap,
+		marginTop: Theme.spacing.sectionGap
 	},
 	sectionHeadFirst: {
 		marginTop: 0
 	},
 	sectionHeader: {
-		color: Theme.colors.ink, fontSize: Theme.fontSize.sectionHeader, fontWeight: "700", letterSpacing: Theme.letterSpacing.sectionHeader, flexShrink: 1
+		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.sectionHeader,
+		letterSpacing: Theme.letterSpacing.sectionHeader,
+		flexShrink: 1
 	},
 	sectionHint: {
-		color: Theme.colors.faint, fontSize: 12, fontWeight: "600", flexShrink: 1, textAlign: "right"
+		color: Theme.colors.faint,
+		fontFamily: Theme.fonts.semiBold,
+		fontSize: Theme.fontSize.caption,
+		flexShrink: 1,
+		textAlign: "right"
 	},
 	sectionAction: {
 		paddingVertical: 2,
 		paddingLeft: Theme.spacing.sm
 	},
 	sectionActionText: {
-		color: Theme.colors.blue, fontSize: 13, fontWeight: "600"
+		color: Theme.colors.blue,
+		fontFamily: Theme.fonts.semiBold,
+		fontSize: Theme.fontSize.bodySmall
 	},
 	panel: {
 		borderWidth: 1, borderColor: Theme.colors.line, borderRadius: Theme.radius, overflow: "hidden", backgroundColor: Theme.colors.paper
@@ -84,28 +111,29 @@ const styles = StyleSheet.create({
 	},
 	rowTitle: {
 		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.medium,
 		fontSize: Theme.fontSize.rowTitle,
-		fontWeight: "600",
 		flexShrink: 1
 	},
 	rowSubtitle: {
 		color: Theme.colors.muted,
+		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.rowSubtitle,
-		lineHeight: 17,
+		lineHeight: Theme.lineHeight.rowSubtitle,
 		flexShrink: 1
 	},
 	rowEnd: {
 		maxWidth: "40%",
 		color: Theme.colors.muted,
-		fontSize: 12,
-		fontWeight: "600",
+		fontFamily: Theme.fonts.semiBold,
+		fontSize: Theme.fontSize.caption,
 		textAlign: "right",
 		flexShrink: 1
 	},
 	rowChevron: {
 		color: Theme.colors.faint,
-		fontSize: 22,
-		fontWeight: "400"
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.chevron
 	},
 	rowDanger: {
 		color: Theme.colors.red
@@ -113,10 +141,17 @@ const styles = StyleSheet.create({
 	keyValue: {
 		flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: 10, paddingHorizontal: Theme.spacing.lg
 	},
-	keyValueLabel: { color: Theme.colors.muted, fontSize: Theme.fontSize.body },
+	keyValueLabel: { color: Theme.colors.muted, fontFamily: Theme.fonts.regular, fontSize: Theme.fontSize.body, lineHeight: Theme.lineHeight.body },
+	keyValueLabelContainer: { flexShrink: 1 },
 	keyValueValue: {
-		color: Theme.colors.ink, fontSize: Theme.fontSize.body, fontWeight: "700", flexShrink: 1, textAlign: "right"
+		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.body,
+		lineHeight: Theme.lineHeight.body,
+		flexShrink: 1,
+		textAlign: "right"
 	},
+	keyValueValueContainer: { flexShrink: 1, alignItems: "flex-end" },
 	stat: { paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg },
 	statHead: {
 		flexDirection: "row", justifyContent: "space-between", marginBottom: Theme.spacing.sm
@@ -126,7 +161,14 @@ const styles = StyleSheet.create({
 	},
 	fill: { height: "100%", borderRadius: 3 },
 	note: {
-		paddingVertical: 11, paddingHorizontal: Theme.spacing.lg, fontSize: Theme.fontSize.note, lineHeight: 18, color: Theme.colors.muted
+		paddingVertical: Theme.spacing.noteVertical,
+		paddingHorizontal: Theme.spacing.lg,
+	},
+	noteText: {
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.note,
+		lineHeight: Theme.lineHeight.note,
+		color: Theme.colors.muted
 	},
 	buttonRow: {
 		flexDirection: "row",
@@ -139,7 +181,7 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center",
 		paddingVertical: Theme.spacing.md,
-		paddingHorizontal: 20,
+		paddingHorizontal: Theme.spacing.buttonHorizontal,
 		borderWidth: 1,
 		borderColor: Theme.colors.line,
 		borderRadius: Theme.pillRadius,
@@ -158,8 +200,8 @@ const styles = StyleSheet.create({
 	},
 	buttonText: {
 		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.button,
-		fontWeight: "600"
 	},
 	buttonPrimaryText: {
 		color: Theme.colors.paper
@@ -170,7 +212,7 @@ const styles = StyleSheet.create({
 	notice: {
 		flexDirection: "row",
 		alignItems: "center",
-		gap: 11,
+		gap: Theme.spacing.noticeGap,
 		marginVertical: 14,
 		paddingVertical: Theme.spacing.md,
 		paddingHorizontal: Theme.spacing.lg,
@@ -187,21 +229,23 @@ const styles = StyleSheet.create({
 	},
 	noticeTitle: {
 		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.semiBold,
 		fontSize: Theme.fontSize.body,
-		fontWeight: "600"
+		lineHeight: Theme.lineHeight.body
 	},
 	noticeText: {
 		color: Theme.colors.muted,
-		fontSize: 13,
-		lineHeight: 18
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.bodySmall,
+		lineHeight: Theme.lineHeight.bodySmall
 	},
 	noticeAction: {
 		paddingLeft: Theme.spacing.sm
 	},
 	noticeActionText: {
 		color: Theme.colors.blue,
-		fontSize: 13,
-		fontWeight: "600"
+		fontFamily: Theme.fonts.semiBold,
+		fontSize: Theme.fontSize.bodySmall
 	},
 	empty: {
 		paddingVertical: Theme.spacing.xl,
@@ -210,8 +254,9 @@ const styles = StyleSheet.create({
 	},
 	emptyText: {
 		color: Theme.colors.muted,
+		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.note,
-		lineHeight: 18,
+		lineHeight: Theme.lineHeight.note,
 		textAlign: "center"
 	}
 });
@@ -241,8 +286,14 @@ export function Hero({ eyebrow, title, subtitle }: {
 	return (
 		<View style={styles.hero}>
 			<Text style={styles.eyebrow}>{eyebrow}</Text>
-			<Text style={styles.heroTitle}>{title}</Text>
-			{subtitle ? <Text style={styles.heroSubtitle}>{subtitle}</Text> : null}
+			<TwemojiText
+				containerStyle={styles.heroTitle}
+				textStyle={styles.heroTitleText}
+				emojiSize={Theme.fontSize.hero}
+			>
+				{title}
+			</TwemojiText>
+			{subtitle ? <TwemojiText textStyle={styles.heroSubtitle} emojiSize={Theme.fontSize.body}>{subtitle}</TwemojiText> : null}
 		</View>
 	);
 }
@@ -324,8 +375,12 @@ export function Row({ icon, title, subtitle, end, chevron = false, tone, disable
 export function KeyValue({ label, value }: { label: string; value: string }): ReactNode {
 	return (
 		<View style={styles.keyValue}>
-			<Text style={styles.keyValueLabel}>{label}</Text>
-			<Text style={styles.keyValueValue} numberOfLines={2}>{value}</Text>
+			<TwemojiText containerStyle={styles.keyValueLabelContainer} textStyle={styles.keyValueLabel} emojiSize={Theme.fontSize.body}>
+				{label}
+			</TwemojiText>
+			<TwemojiText containerStyle={styles.keyValueValueContainer} textStyle={styles.keyValueValue} emojiSize={Theme.fontSize.body}>
+				{value}
+			</TwemojiText>
 		</View>
 	);
 }
@@ -336,8 +391,8 @@ export function StatBar({ label, value, ratio, color }: {
 	return (
 		<View style={styles.stat}>
 			<View style={styles.statHead}>
-				<Text style={styles.keyValueLabel}>{label}</Text>
-				<Text style={styles.keyValueValue}>{value}</Text>
+				<TwemojiText textStyle={styles.keyValueLabel} emojiSize={Theme.fontSize.body}>{label}</TwemojiText>
+				<TwemojiText containerStyle={styles.keyValueValueContainer} textStyle={styles.keyValueValue} emojiSize={Theme.fontSize.body}>{value}</TwemojiText>
 			</View>
 			<View style={styles.track}>
 				<View style={[styles.fill, {
@@ -349,7 +404,7 @@ export function StatBar({ label, value, ratio, color }: {
 }
 
 export function Note({ children }: { children: string }): ReactNode {
-	return <Text style={styles.note}>{children}</Text>;
+	return <TwemojiText containerStyle={styles.note} textStyle={styles.noteText} emojiSize={Theme.fontSize.note}>{children}</TwemojiText>;
 }
 
 export function Button({ children, onPress, variant = "secondary", disabled = false }: {
