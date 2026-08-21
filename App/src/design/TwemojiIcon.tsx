@@ -14,14 +14,15 @@ const styles = StyleSheet.create({
 export function twemojiAssetUrl(emoji: string): string {
 	const filenameSource = emoji.includes("\u200D")
 		? emoji
-		: emoji.replace(/\uFE0F/g, "");
+		: emoji.replace(/\uFE0F/gu, "");
 	return `${TWEMOJI_ASSET_BASE_URL}/${twemoji.convert.toCodePoint(filenameSource)}.svg`;
 }
 
-export function TwemojiIcon({emoji, size, opacity = 1}: {
+export function TwemojiIcon({emoji, size, opacity = 1, verticalOffset = 0}: {
 	emoji: string;
 	size: number;
 	opacity?: number;
+	verticalOffset?: number;
 }): ReactElement {
 	const source = twemojiAssetUrl(emoji);
 
@@ -31,7 +32,7 @@ export function TwemojiIcon({emoji, size, opacity = 1}: {
 			accessibilityLabel={emoji}
 			contentFit="contain"
 			source={source}
-			style={[styles.icon, {width: size, height: size, opacity}]}
+			style={[styles.icon, {width: size, height: size, opacity, transform: [{translateY: verticalOffset}]}]}
 		/>
 	);
 }

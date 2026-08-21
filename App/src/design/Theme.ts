@@ -50,6 +50,10 @@ export const Theme = {
 		tabBarIcon: 18,
 		headerIcon: 24
 	},
+	emoji: {
+		iosHeroOffset: 2,
+		iosFieldOffset: -2
+	},
 	radius: 14,
 	pillRadius: 999,
 	fontSize: {

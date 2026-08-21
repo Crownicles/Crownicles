@@ -1,5 +1,6 @@
 import {render} from "@testing-library/react-native";
 import {createElement} from "react";
+import {Platform} from "react-native";
 import {twemojiAssetUrl} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 
@@ -31,10 +32,32 @@ describe("twemojiAssetUrl", () => {
 		expect(toJSON()).toEqual(
 			expect.objectContaining({
 				props: expect.objectContaining({
-					style: expect.arrayContaining([expect.objectContaining({alignItems: "baseline"})])
+					style: expect.arrayContaining([expect.objectContaining({alignItems: "center"})])
 				})
 			})
 		);
 		expect(queryByText(femaleSymbol)).toBeNull();
+		expect(image.props.style).toEqual(
+			expect.objectContaining({
+				transform: [{translateY: 0}]
+			})
+		);
+	});
+
+	it("applies an iOS-only offset when a text role provides one", async () => {
+		const femaleSymbol = String.fromCodePoint(0x26a7, 0xfe0f);
+		const {getByLabelText} = await render(
+			createElement(TwemojiText, {
+				children: femaleSymbol,
+				emojiSize: 14,
+				iosEmojiVerticalOffset: -2
+			})
+		);
+
+		expect(getByLabelText(femaleSymbol).props.style).toEqual(
+			expect.objectContaining({
+				transform: [{translateY: Platform.OS === "ios" ? -2 : 0}]
+			})
+		);
 	});
 });

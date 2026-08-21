@@ -290,10 +290,11 @@ export function Hero({ eyebrow, title, subtitle }: {
 				containerStyle={styles.heroTitle}
 				textStyle={styles.heroTitleText}
 				emojiSize={Theme.fontSize.hero}
+				iosEmojiVerticalOffset={Theme.emoji.iosHeroOffset}
 			>
 				{title}
 			</TwemojiText>
-			{subtitle ? <TwemojiText textStyle={styles.heroSubtitle} emojiSize={Theme.fontSize.body}>{subtitle}</TwemojiText> : null}
+			{subtitle ? <TwemojiText textStyle={styles.heroSubtitle} emojiSize={Theme.fontSize.body} iosEmojiVerticalOffset={Theme.emoji.iosHeroOffset}>{subtitle}</TwemojiText> : null}
 		</View>
 	);
 }
@@ -378,7 +379,7 @@ export function KeyValue({ label, value }: { label: string; value: string }): Re
 			<TwemojiText containerStyle={styles.keyValueLabelContainer} textStyle={styles.keyValueLabel} emojiSize={Theme.fontSize.body}>
 				{label}
 			</TwemojiText>
-			<TwemojiText containerStyle={styles.keyValueValueContainer} textStyle={styles.keyValueValue} emojiSize={Theme.fontSize.body}>
+			<TwemojiText containerStyle={styles.keyValueValueContainer} textStyle={styles.keyValueValue} emojiSize={Theme.fontSize.body} iosEmojiVerticalOffset={Theme.emoji.iosFieldOffset}>
 				{value}
 			</TwemojiText>
 		</View>
@@ -392,7 +393,7 @@ export function StatBar({ label, value, ratio, color }: {
 		<View style={styles.stat}>
 			<View style={styles.statHead}>
 				<TwemojiText textStyle={styles.keyValueLabel} emojiSize={Theme.fontSize.body}>{label}</TwemojiText>
-				<TwemojiText containerStyle={styles.keyValueValueContainer} textStyle={styles.keyValueValue} emojiSize={Theme.fontSize.body}>{value}</TwemojiText>
+				<TwemojiText containerStyle={styles.keyValueValueContainer} textStyle={styles.keyValueValue} emojiSize={Theme.fontSize.body} iosEmojiVerticalOffset={Theme.emoji.iosFieldOffset}>{value}</TwemojiText>
 			</View>
 			<View style={styles.track}>
 				<View style={[styles.fill, {
