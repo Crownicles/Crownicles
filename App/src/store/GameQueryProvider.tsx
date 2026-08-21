@@ -13,6 +13,7 @@ export function createGameQueryClient(): QueryClient {
 		defaultOptions: {
 			queries: {
 				staleTime: AppConstants.GAME_STATE_STALE_TIME,
+				gcTime: Infinity,
 
 				// A request already waits a long time before giving up; retrying would double that wait
 				retry: false
