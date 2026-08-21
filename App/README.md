@@ -15,26 +15,25 @@ linked from the repository (`link:../WsPackets`).
    cd ../App && pnpm i
    ```
 
-2. Create your local environment file:
+2. Create your local environment file for the web build or simulators:
 
    ```bash
    cp .env.example .env
    ```
 
-   `.env` is gitignored because the URLs depend on your setup. `localhost` works
-   for the web build and the simulators; on a physical device, use the **name** of the
-   machine running RestWs and Keycloak rather than its IP address — including in the
-   Keycloak URL, since the login page opens on the device itself:
+   `.env` is gitignored because the URLs depend on your setup. `localhost` works for the web
+   build and the simulators. Do not use this file as the physical-device launcher: the mobile
+   scripts inject the same URLs into Metro and the app bundle at launch.
+
+   The physical-device default is the stable mDNS name of the Mac, not its current IP address:
 
    ```bash
    echo "http://$(scutil --get LocalHostName).local:10500"   # macOS
    echo "http://$(hostname).local:10500"                     # Linux with avahi, Windows with Bonjour
    ```
 
-   A name is resolved on the local network and keeps working when the machine changes
-   IP address. An IP has to be updated every time it moves, here and in the two places
-   listed in the next step — and the symptom is a login that fails without any request
-   ever reaching RestWs.
+   A name keeps working when the Mac moves between Wi-Fi networks or an iPhone hotspot. The
+   Android USB mode uses `adb reverse` instead of relying on Wi-Fi or mDNS.
 
 3. Set up the Discord identity provider in Keycloak, as described in
    [the Keycloak README](../keycloak/README.md). The app signs in through Keycloak
@@ -69,6 +68,50 @@ linked from the repository (`link:../WsPackets`).
    an [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/),
    an [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/) or
    [Expo Go](https://expo.dev/go).
+
+   For a physical iPhone on Wi-Fi or USB tethering, use:
+
+   ```bash
+   pnpm start:iphone
+   ```
+
+   This starts Expo Go in tunnel mode and derives the Mac hostname at launch. It also injects the
+   REST, WebSocket and Keycloak URLs into the same Metro process, so the app cannot load a bundle
+   with missing `EXPO_PUBLIC_*` values. Core, RestWs, MQTT and Keycloak must already be running.
+
+   Expo Go is the intended client for this quick physical-device preview; no native iOS build or
+   CocoaPods installation is required for this path.
+
+   Once a development build is installed on the iPhone, start its Metro bundle with:
+
+   ```bash
+   pnpm start:iphone:dev
+   ```
+
+   The explicit USB alias is also available:
+
+   ```bash
+   pnpm start:iphone:usb:dev
+   ```
+
+   Scan the QR code or open the `exp+crownicles://...` link shown by this command. Opening the
+   development-build icon by itself does not select a Metro server.
+
+   For Android on Wi-Fi:
+
+   ```bash
+   pnpm start:android:dev
+   ```
+
+   For Android over USB, with USB debugging enabled and the device authorized:
+
+   ```bash
+   pnpm start:android:usb:dev
+   ```
+
+   The USB command runs `adb reverse` for Keycloak, REST and WebSocket ports. It is the only
+   platform-specific networking step; iOS USB requires Personal Hotspot or USB tethering because
+   iOS has no equivalent reverse-port command for an arbitrary development server.
 
 ## The native projects are generated, not stored
 

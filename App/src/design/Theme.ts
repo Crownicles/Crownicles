@@ -22,16 +22,22 @@ export const Theme = {
 		md: 12,
 		lg: 14,
 		xl: 18,
-		xxl: 24
+		xxl: 24,
+		screenTop: 16,
+		screenBottom: 26
 	},
 	radius: 14,
+	pillRadius: 999,
 	fontSize: {
 		eyebrow: 11.5,
 		note: 12.5,
 		body: 13.5,
 		sectionHeader: 15.5,
 		title: 18,
-		hero: 25
+		hero: 25,
+		rowTitle: 14,
+		rowSubtitle: 12.5,
+		button: 14.5
 	},
 
 	/**

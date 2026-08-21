@@ -33,18 +33,23 @@ You can find the docker-compose file here:
 
 `KC_HOSTNAME` pins the address Keycloak puts in the tokens it issues and in the redirect URIs it
 sends to the identity providers. Every client and service must therefore be able to reach Keycloak at
-that exact address, but in exchange a token stays valid whichever address a service uses to reach
-Keycloak: RestWs can keep calling `127.0.0.1` while a phone signs in through the LAN address.
+that exact address. For physical devices, use the stable mDNS hostname of the development Mac, not
+the current Wi-Fi or hotspot IP. RestWs may still call Keycloak through `127.0.0.1` internally.
 
 It defaults to `http://localhost:8080`, which is enough for the web build and the simulators. To let a
-phone or another machine sign in, create your own file:
+phone sign in, create your own file with the stable Mac hostname:
 
 ```bash
 cp .env.example .env
 ```
 
-and set `KEYCLOAK_HOSTNAME` to the LAN address of the machine running Keycloak. `.env` is gitignored
-because that address depends on your setup.
+and set `KEYCLOAK_HOSTNAME` to `http://<mac-name>.local:8080`. `.env` is gitignored because the
+machine name depends on the developer, but it does not change when the Mac moves between networks.
+After changing it, recreate Keycloak so the issuer is updated:
+
+```bash
+docker compose --env-file .env up -d --force-recreate keycloak
+```
 
 Note that the shipped realm has `sslRequired` set to `none`, because this whole setup serves plain
 HTTP. Leaving the default `external` makes Keycloak reject requests as soon as it sees the client
@@ -83,8 +88,16 @@ Two values are environment specific and are therefore left as placeholders in `r
    `TO_REPLACE_WITH_YOUR_DISCORD_CLIENT_SECRET` with the credentials of your Discord application.
 2. Copy the *Redirect URI* displayed on that same page and add it to the *Redirects* list of your
    application in the [Discord developer portal](https://discord.com/developers/applications). It is
-   built from `KEYCLOAK_HOSTNAME`, so a single URI is enough:
-   `http://localhost:8080/realms/Crownicles/broker/discord/endpoint`.
+   built from `KEYCLOAK_HOSTNAME`. Register the stable iOS/Wi-Fi/USB-tethering URI once:
+   `http://<mac-name>.local:8080/realms/Crownicles/broker/discord/endpoint`.
+
+   For Android USB mode, also register the loopback URI once because `adb reverse` exposes the Mac
+   through the device's `127.0.0.1`:
+   `http://127.0.0.1:8080/realms/Crownicles/broker/discord/endpoint`.
+
+   These are two fixed development redirect URIs. Switching from home Wi-Fi to an iPhone hotspot
+   does not require changing Discord, and the old IP-based fallback should be removed after the
+   stable URI has been registered.
 
 The provider uses the generic `oauth2` type because Discord is not an OpenID Connect provider: it
 returns opaque tokens, so Keycloak reads the profile from `https://discord.com/api/users/@me`.

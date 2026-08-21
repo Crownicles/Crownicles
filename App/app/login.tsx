@@ -65,7 +65,8 @@ export default function LoginScreen() {
 							});
 				}).catch((error) => {
 					console.error("Login error:", error);
-					Alert.alert("An error occurred during login. Please try again.");
+					const message = error instanceof Error ? error.message : "Unknown authentication error";
+					Alert.alert("Login failed", message);
 					router.replace("/login");
 				});
 			}} />

@@ -1,4 +1,10 @@
-import {AuthRequest, makeRedirectUri, ResponseType, type DiscoveryDocument} from "expo-auth-session";
+import {
+	AuthRequest,
+	makeRedirectUri,
+	ResponseType,
+	type AuthSessionResult,
+	type DiscoveryDocument
+} from "expo-auth-session";
 import {KeycloakOAuth2Token} from "@/src/authentication/KeycloakOAuth2Token";
 
 // Expo inlines the EXPO_PUBLIC_ variables at build time, so each one has to be read literally.
@@ -39,6 +45,18 @@ function hasCompleteToken(token: KeycloakOAuth2Token): boolean {
 	return Boolean(token.access_token && token.refresh_token && token.expires_in && token.refresh_expires_in);
 }
 
+function describeAuthResult(result: AuthSessionResult): string {
+	if (result.type !== "error") {
+		return result.type;
+	}
+
+	const error = result.error?.message
+		?? result.params.error_description
+		?? result.params.error
+		?? result.errorCode;
+	return error ? `${result.type}: ${error}` : result.type;
+}
+
 /**
  * Authenticates against Keycloak with Authorization Code + PKCE.
  *
@@ -59,7 +77,7 @@ export class KeycloakAuth {
 		const result = await request.promptAsync(getDiscovery());
 
 		if (result.type !== "success") {
-			throw new Error(`Login was not completed: ${result.type}`);
+			throw new Error(`Login was not completed: ${describeAuthResult(result)}`);
 		}
 
 		return KeycloakAuth.requestToken({

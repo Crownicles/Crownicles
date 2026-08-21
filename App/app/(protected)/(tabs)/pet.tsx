@@ -1,5 +1,5 @@
 import {ReactNode} from "react";
-import {ActivityIndicator, ScrollView, StyleSheet, Text, View} from "react-native";
+import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {PetReq} from "ws-packets/src/fromClient/PetReq";
 import {PetRes} from "ws-packets/src/fromServer/pet/PetRes";
@@ -7,15 +7,12 @@ import {PetNotFound} from "ws-packets/src/fromServer/pet/PetNotFound";
 import {GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
-import {Hero, KeyValue, Note, Panel, SectionHeader, StatBar} from "@/src/design/Primitives";
+import {Hero, KeyValue, Note, Panel, Screen, SectionHeader, StatBar} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {i18n} from "@/src/translations/i18n";
 import {petIcon, petMood, petMoodRatio, petNickname, petRarity, petSex, petTypeName} from "@/src/display/PetDisplay";
 
 const styles = StyleSheet.create({
-	content: {
-		padding: Theme.spacing.xl, backgroundColor: Theme.colors.wash, flexGrow: 1
-	},
 	centered: {
 		flex: 1, alignItems: "center", justifyContent: "center", padding: Theme.spacing.xxl, backgroundColor: Theme.colors.wash
 	},
@@ -32,7 +29,7 @@ function PetSheet({ packet }: { packet: PetRes }): ReactNode {
 	const pet = packet.pet;
 
 	return (
-		<ScrollView contentContainerStyle={styles.content}>
+		<Screen>
 			<Hero
 				eyebrow={i18n.t("app:pet.eyebrow")}
 				title={`${petIcon(pet)} ${petNickname(pet)}`}
@@ -57,7 +54,7 @@ function PetSheet({ packet }: { packet: PetRes }): ReactNode {
 				/>
 				<Note>{i18n.t("app:pet.moodScale")}</Note>
 			</Panel>
-		</ScrollView>
+		</Screen>
 	);
 }
 
