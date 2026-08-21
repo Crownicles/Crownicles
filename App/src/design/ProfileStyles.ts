@@ -8,7 +8,7 @@ const cardSurface = {
 	backgroundColor: Theme.colors.paper
 };
 
-export const styles = StyleSheet.create({
+const layoutStyles = StyleSheet.create({
 	container: {
 		flex: 1,
 		backgroundColor: Theme.colors.wash
@@ -53,7 +53,10 @@ export const styles = StyleSheet.create({
 		color: Theme.colors.red,
 		textAlign: "center",
 		paddingHorizontal: Theme.spacing.xl
-	},
+	}
+});
+
+const contentStyles = StyleSheet.create({
 	profileContent: {
 		flex: 1
 	},
@@ -67,7 +70,10 @@ export const styles = StyleSheet.create({
 	},
 	progressBarContainer: {
 		width: "100%"
-	},
+	}
+});
+
+const progressStyles = StyleSheet.create({
 	progressLabel: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.body,
@@ -96,7 +102,10 @@ export const styles = StyleSheet.create({
 		lineHeight: Theme.lineHeight.body,
 		color: Theme.colors.ink,
 		textAlign: "right"
-	},
+	}
+});
+
+const statStyles = StyleSheet.create({
 	statsContainer: {
 		marginTop: Theme.spacing.sectionGap
 	},
@@ -131,7 +140,10 @@ export const styles = StyleSheet.create({
 		color: Theme.colors.ink,
 		marginTop: Theme.spacing.headerGap,
 		textAlign: "center"
-	},
+	}
+});
+
+const currencyStyles = StyleSheet.create({
 	currencyContainer: {
 		marginTop: Theme.spacing.sectionGap
 	},
@@ -163,7 +175,10 @@ export const styles = StyleSheet.create({
 		lineHeight: Theme.lineHeight.body,
 		color: Theme.colors.ink,
 		marginTop: Theme.spacing.headerGap
-	},
+	}
+});
+
+const rankStyles = StyleSheet.create({
 	scoreRankContainer: {
 		marginTop: Theme.spacing.sectionGap
 	},
@@ -196,7 +211,10 @@ export const styles = StyleSheet.create({
 		color: Theme.colors.ink,
 		marginTop: Theme.spacing.headerGap,
 		textAlign: "center"
-	},
+	}
+});
+
+const tooltipStyles = StyleSheet.create({
 	tooltip: {
 		position: "absolute",
 		backgroundColor: Theme.colors.ink,
@@ -215,3 +233,13 @@ export const styles = StyleSheet.create({
 		textAlign: "center"
 	}
 });
+
+export const styles = {
+	...layoutStyles,
+	...contentStyles,
+	...progressStyles,
+	...statStyles,
+	...currencyStyles,
+	...rankStyles,
+	...tooltipStyles
+};

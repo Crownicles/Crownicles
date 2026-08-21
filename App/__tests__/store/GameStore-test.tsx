@@ -41,6 +41,13 @@ function aProfile(pseudo: string): ProfileRes {
 	return { pseudo } as ProfileRes;
 }
 
+function ProfileReader({readProfile}: {
+	readProfile: () => Promise<GameAnswer<ProfileRes>>;
+}): ReactElement {
+	const state = useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, readProfile);
+	return <Text>{state.status === "ready" ? state.data.pseudo : state.status}</Text>;
+}
+
 describe("game state store", () => {
 	beforeEach(() => {
 		mockFocusCallbacks = [];
@@ -53,15 +60,10 @@ describe("game state store", () => {
 			return Promise.resolve({ kind: "answer", packet: aProfile("Rocky") });
 		};
 
-		function ProfileReader(): ReactElement {
-			const state = useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, readProfile);
-			return <Text>{state.status === "ready" ? state.data.pseudo : state.status}</Text>;
-		}
-
 		await renderWithGameQuery(
 				<>
-					<ProfileReader />
-					<ProfileReader />
+					<ProfileReader readProfile={readProfile} />
+					<ProfileReader readProfile={readProfile} />
 				</>
 		);
 
@@ -76,12 +78,7 @@ describe("game state store", () => {
 			return Promise.resolve({ kind: "answer", packet: aProfile(`Rocky ${calls}`) });
 		};
 
-		function ProfileReader(): ReactElement {
-			const state = useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, readProfile);
-			return <Text>{state.status === "ready" ? state.data.pseudo : state.status}</Text>;
-		}
-
-		await renderWithGameQuery(<ProfileReader />);
+		await renderWithGameQuery(<ProfileReader readProfile={readProfile} />);
 		await waitFor(() => expect(screen.getByText("Rocky 1")).toBeTruthy());
 
 		// The cache compares timestamps rather than running timers, so the clock is what has to move
@@ -106,12 +103,7 @@ describe("game state store", () => {
 			return Promise.resolve({ kind: "answer", packet: aProfile("Rocky") });
 		};
 
-		function ProfileReader(): ReactElement {
-			const state = useGameQuery<ProfileRes>(GAME_ENTITIES.PROFILE, readProfile);
-			return <Text>{state.status === "ready" ? state.data.pseudo : state.status}</Text>;
-		}
-
-		await renderWithGameQuery(<ProfileReader />);
+		await renderWithGameQuery(<ProfileReader readProfile={readProfile} />);
 		await waitFor(() => expect(screen.getByText("Rocky")).toBeTruthy());
 
 		await regainFocus();

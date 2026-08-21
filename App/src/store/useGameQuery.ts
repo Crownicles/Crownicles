@@ -29,6 +29,20 @@ export class GameRequestTimeout extends Error {
 	}
 }
 
+function isGameStateOutdated(dataUpdatedAt: number | undefined): boolean {
+	return !dataUpdatedAt || Date.now() - dataUpdatedAt >= AppConstants.GAME_STATE_STALE_TIME;
+}
+
+function refreshGameStateOnFocus(queryClient: ReturnType<typeof useQueryClient>, entity: GameEntity): void {
+	const cached = queryClient.getQueryState(gameKey(entity));
+	if (!isGameStateOutdated(cached?.dataUpdatedAt)) {
+		return;
+	}
+
+	queryClient.refetchQueries({queryKey: gameKey(entity), type: "active"})
+		.catch(error => console.error("Failed to refresh the game state on focus:", error));
+}
+
 /**
  * Reads a piece of game state through the shared cache.
  *
@@ -60,12 +74,7 @@ export function useGameQuery<Answer extends FromServerPacket>(
 	 */
 	const queryClient = useQueryClient();
 	useFocusEffect(useCallback((): void => {
-		const cached = queryClient.getQueryState(gameKey(entity));
-		const isOutdated = !cached?.dataUpdatedAt || Date.now() - cached.dataUpdatedAt >= AppConstants.GAME_STATE_STALE_TIME;
-		if (isOutdated) {
-			queryClient.refetchQueries({ queryKey: gameKey(entity), type: "active" })
-				.catch(error => console.error("Failed to refresh the game state on focus:", error));
-		}
+		refreshGameStateOnFocus(queryClient, entity);
 	}, [queryClient, entity]));
 
 	if (query.isPending) {

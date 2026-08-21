@@ -6,12 +6,13 @@ import {
 	Text,
 	View,
 	type StyleProp,
+	type TextStyle,
 	type ViewStyle
 } from "react-native";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiText} from "@/src/design/TwemojiText";
 
-const styles = StyleSheet.create({
+const screenStyles = StyleSheet.create({
 	screenContent: {
 		flexGrow: 1,
 		paddingTop: Theme.spacing.screenTop,
@@ -84,7 +85,10 @@ const styles = StyleSheet.create({
 	},
 	separator: {
 		height: 1, backgroundColor: Theme.colors.line
-	},
+	}
+});
+
+const rowStyles = StyleSheet.create({
 	row: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -137,7 +141,10 @@ const styles = StyleSheet.create({
 	},
 	rowDanger: {
 		color: Theme.colors.red
-	},
+	}
+});
+
+const fieldStyles = StyleSheet.create({
 	keyValue: {
 		flexDirection: "row", alignItems: "center", justifyContent: "space-between", gap: Theme.spacing.md, paddingVertical: 10, paddingHorizontal: Theme.spacing.lg
 	},
@@ -169,7 +176,10 @@ const styles = StyleSheet.create({
 		fontSize: Theme.fontSize.note,
 		lineHeight: Theme.lineHeight.note,
 		color: Theme.colors.muted
-	},
+	}
+});
+
+const actionStyles = StyleSheet.create({
 	buttonRow: {
 		flexDirection: "row",
 		flexWrap: "wrap",
@@ -208,7 +218,10 @@ const styles = StyleSheet.create({
 	},
 	buttonDangerText: {
 		color: Theme.colors.red
-	},
+	}
+});
+
+const noticeStyles = StyleSheet.create({
 	notice: {
 		flexDirection: "row",
 		alignItems: "center",
@@ -260,6 +273,40 @@ const styles = StyleSheet.create({
 		textAlign: "center"
 	}
 });
+
+const styles = {
+	...screenStyles,
+	...rowStyles,
+	...fieldStyles,
+	...actionStyles,
+	...noticeStyles
+};
+
+type ButtonVariant = "secondary" | "primary" | "danger";
+
+type RowProps = {
+	icon?: ReactNode;
+	title: string;
+	subtitle?: string;
+	end?: ReactNode;
+	chevron?: boolean;
+	tone?: "danger";
+	disabled?: boolean;
+	onPress?: () => void;
+};
+
+type ButtonProps = {
+	children: string;
+	onPress?: () => void;
+	variant?: ButtonVariant;
+	disabled?: boolean;
+};
+
+const buttonVariantStyles = {
+	secondary: {button: undefined, text: undefined},
+	primary: {button: styles.buttonPrimary, text: styles.buttonPrimaryText},
+	danger: {button: styles.buttonDanger, text: styles.buttonDangerText}
+} satisfies Record<ButtonVariant, {button: StyleProp<ViewStyle>; text: StyleProp<TextStyle>}>;
 
 function getPanelChildKey(child: ReactNode): string {
 	if (isValidElement(child) && child.key !== null) {
@@ -335,17 +382,8 @@ export function Panel({ children }: { children: ReactNode }): ReactNode {
 	);
 }
 
-export function Row({ icon, title, subtitle, end, chevron = false, tone, disabled = false, onPress }: {
-	icon?: ReactNode;
-	title: string;
-	subtitle?: string;
-	end?: ReactNode;
-	chevron?: boolean;
-	tone?: "danger";
-	disabled?: boolean;
-	onPress?: () => void;
-}): ReactNode {
-	const content = (
+function RowContent({icon, title, subtitle, end, chevron = false, tone}: RowProps): ReactNode {
+	return (
 		<>
 			{icon ? <View style={styles.rowIcon}>{icon}</View> : null}
 			<View style={styles.rowBody}>
@@ -356,9 +394,17 @@ export function Row({ icon, title, subtitle, end, chevron = false, tone, disable
 			{chevron ? <Text style={styles.rowChevron}>›</Text> : null}
 		</>
 	);
+}
+
+function getRowStyle(disabled: boolean, pressed = false): StyleProp<ViewStyle> {
+	return [styles.row, pressed && styles.rowPressed, disabled && styles.rowDisabled];
+}
+
+export function Row({onPress, disabled = false, ...props}: RowProps): ReactNode {
+	const content = <RowContent {...props} disabled={disabled} onPress={onPress} />;
 
 	if (!onPress) {
-		return <View style={[styles.row, disabled && styles.rowDisabled]}>{content}</View>;
+		return <View style={getRowStyle(disabled)}>{content}</View>;
 	}
 
 	return (
@@ -366,7 +412,7 @@ export function Row({ icon, title, subtitle, end, chevron = false, tone, disable
 			accessibilityRole="button"
 			disabled={disabled}
 			onPress={onPress}
-			style={({pressed}) => [styles.row, pressed && styles.rowPressed, disabled && styles.rowDisabled]}
+			style={({pressed}) => getRowStyle(disabled, pressed)}
 		>
 			{content}
 		</Pressable>
@@ -408,20 +454,24 @@ export function Note({ children }: { children: string }): ReactNode {
 	return <TwemojiText containerStyle={styles.note} textStyle={styles.noteText} emojiSize={Theme.fontSize.note}>{children}</TwemojiText>;
 }
 
-export function Button({ children, onPress, variant = "secondary", disabled = false }: {
-	children: string;
-	onPress?: () => void;
-	variant?: "secondary" | "primary" | "danger";
-	disabled?: boolean;
-}): ReactNode {
+function getButtonStyle(variant: ButtonVariant, disabled: boolean, pressed = false): StyleProp<ViewStyle> {
+	return [
+		styles.button,
+		buttonVariantStyles[variant].button,
+		pressed && styles.buttonPressed,
+		disabled && styles.rowDisabled
+	];
+}
+
+export function Button({children, onPress, variant = "secondary", disabled = false}: ButtonProps): ReactNode {
 	const button = (
-		<Text style={[styles.buttonText, variant === "primary" && styles.buttonPrimaryText, variant === "danger" && styles.buttonDangerText]}>
+		<Text style={[styles.buttonText, buttonVariantStyles[variant].text]}>
 			{children}
 		</Text>
 	);
 
 	if (!onPress) {
-		return <View style={[styles.button, variant === "primary" && styles.buttonPrimary, variant === "danger" && styles.buttonDanger, disabled && styles.rowDisabled]}>{button}</View>;
+		return <View style={getButtonStyle(variant, disabled)}>{button}</View>;
 	}
 
 	return (
@@ -429,13 +479,7 @@ export function Button({ children, onPress, variant = "secondary", disabled = fa
 			accessibilityRole="button"
 			disabled={disabled}
 			onPress={onPress}
-			style={({pressed}) => [
-				styles.button,
-				variant === "primary" && styles.buttonPrimary,
-				variant === "danger" && styles.buttonDanger,
-				pressed && styles.buttonPressed,
-				disabled && styles.rowDisabled
-			]}
+			style={({pressed}) => getButtonStyle(variant, disabled, pressed)}
 		>
 			{button}
 		</Pressable>
