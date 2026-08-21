@@ -112,28 +112,28 @@ interface ProfileStateViewProps {
 
 const profileCardSectionStyles: Record<ProfileCardVariant, ProfileCardSectionStyles> = {
 	stats: {
-		container: styles.statsContainer,
-		title: styles.statsTitle,
-		grid: styles.statsGrid,
-		card: styles.statItem,
-		emoji: styles.statEmoji,
+		container: styles.metricContainer,
+		title: styles.metricTitle,
+		grid: styles.metricGrid,
+		card: styles.statCard,
+		emoji: styles.metricEmoji,
 		value: styles.statValue
 	},
 	currency: {
-		container: styles.currencyContainer,
-		title: styles.currencyTitle,
-		grid: styles.currencyGrid,
-		card: styles.currencyItem,
-		emoji: styles.currencyEmoji,
-		value: styles.currencyValue
+		container: styles.metricContainer,
+		title: styles.metricTitle,
+		grid: styles.metricGrid,
+		card: styles.metricCard,
+		emoji: styles.metricEmoji,
+		value: styles.metricValue
 	},
 	scoreRank: {
-		container: styles.scoreRankContainer,
-		title: styles.scoreRankTitle,
-		grid: styles.scoreRankGrid,
-		card: styles.scoreRankItem,
-		emoji: styles.scoreRankEmoji,
-		value: styles.scoreRankValue
+		container: styles.metricContainer,
+		title: styles.metricTitle,
+		grid: styles.metricGrid,
+		card: styles.metricCard,
+		emoji: styles.metricEmoji,
+		value: styles.metricValue
 	}
 };
 

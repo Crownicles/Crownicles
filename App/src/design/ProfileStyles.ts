@@ -105,22 +105,22 @@ const progressStyles = StyleSheet.create({
 	}
 });
 
-const statStyles = StyleSheet.create({
-	statsContainer: {
+const cardStyles = StyleSheet.create({
+	metricContainer: {
 		marginTop: Theme.spacing.sectionGap
 	},
-	statsTitle: {
+	metricTitle: {
 		fontFamily: Theme.fonts.bold,
 		fontSize: Theme.fontSize.sectionHeader,
 		color: Theme.colors.ink,
 		marginBottom: Theme.spacing.sectionActionGap
 	},
-	statsGrid: {
+	metricGrid: {
 		flexDirection: "row",
 		flexWrap: "wrap",
 		justifyContent: "space-between"
 	},
-	statItem: {
+	statCard: {
 		...cardSurface,
 		width: "31%",
 		padding: Theme.spacing.md,
@@ -128,7 +128,15 @@ const statStyles = StyleSheet.create({
 		alignItems: "center",
 		justifyContent: "center"
 	},
-	statEmoji: {
+	metricCard: {
+		...cardSurface,
+		flex: 1,
+		padding: Theme.spacing.md,
+		marginHorizontal: Theme.spacing.xs,
+		alignItems: "center",
+		justifyContent: "center"
+	},
+	metricEmoji: {
 		fontFamily: Theme.fonts.regular,
 		fontSize: Theme.fontSize.title,
 		textAlign: "center"
@@ -140,77 +148,13 @@ const statStyles = StyleSheet.create({
 		color: Theme.colors.ink,
 		marginTop: Theme.spacing.headerGap,
 		textAlign: "center"
-	}
-});
-
-const currencyStyles = StyleSheet.create({
-	currencyContainer: {
-		marginTop: Theme.spacing.sectionGap
 	},
-	currencyTitle: {
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.sectionHeader,
-		color: Theme.colors.ink,
-		marginBottom: Theme.spacing.sectionActionGap
-	},
-	currencyGrid: {
-		flexDirection: "row",
-		justifyContent: "space-between"
-	},
-	currencyItem: {
-		...cardSurface,
-		flex: 1,
-		padding: Theme.spacing.md,
-		marginHorizontal: Theme.spacing.xs,
-		alignItems: "center",
-		justifyContent: "center"
-	},
-	currencyEmoji: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.title
-	},
-	currencyValue: {
+	metricValue: {
 		fontFamily: Theme.fonts.medium,
 		fontSize: Theme.fontSize.body,
 		lineHeight: Theme.lineHeight.body,
 		color: Theme.colors.ink,
 		marginTop: Theme.spacing.headerGap
-	}
-});
-
-const rankStyles = StyleSheet.create({
-	scoreRankContainer: {
-		marginTop: Theme.spacing.sectionGap
-	},
-	scoreRankTitle: {
-		fontFamily: Theme.fonts.bold,
-		fontSize: Theme.fontSize.sectionHeader,
-		color: Theme.colors.ink,
-		marginBottom: Theme.spacing.sectionActionGap
-	},
-	scoreRankGrid: {
-		flexDirection: "row",
-		justifyContent: "space-between"
-	},
-	scoreRankItem: {
-		...cardSurface,
-		flex: 1,
-		padding: Theme.spacing.md,
-		marginHorizontal: Theme.spacing.xs,
-		alignItems: "center",
-		justifyContent: "center"
-	},
-	scoreRankEmoji: {
-		fontFamily: Theme.fonts.regular,
-		fontSize: Theme.fontSize.title
-	},
-	scoreRankValue: {
-		fontFamily: Theme.fonts.medium,
-		fontSize: Theme.fontSize.body,
-		lineHeight: Theme.lineHeight.body,
-		color: Theme.colors.ink,
-		marginTop: Theme.spacing.headerGap,
-		textAlign: "center"
 	}
 });
 
@@ -238,8 +182,6 @@ export const styles = {
 	...layoutStyles,
 	...contentStyles,
 	...progressStyles,
-	...statStyles,
-	...currencyStyles,
-	...rankStyles,
+	...cardStyles,
 	...tooltipStyles
 };
