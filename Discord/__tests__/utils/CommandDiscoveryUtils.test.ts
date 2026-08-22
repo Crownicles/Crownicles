@@ -1,7 +1,9 @@
 import {
 	describe, expect, it
 } from "vitest";
-import { isCommandModuleFile } from "../../src/commands/CommandDiscoveryUtils";
+import {
+	getCommandModuleImportPath, isCommandModuleFile
+} from "../../src/commands/CommandDiscoveryUtils";
 
 describe("isCommandModuleFile", () => {
 	it("accepts compiled command modules", () => {
@@ -14,5 +16,10 @@ describe("isCommandModuleFile", () => {
 
 	it("rejects source maps", () => {
 		expect(isCommandModuleFile("MissionShopCommand.js.map")).toBe(false);
+	});
+
+	it("uses the compiled command filename without adding another extension", () => {
+		expect(getCommandModuleImportPath("admin", "DeleteCodeCommand.js"))
+			.toBe("./admin/DeleteCodeCommand.js");
 	});
 });

@@ -59,7 +59,9 @@ import {
 	setPendingDeletion,
 	verifyDeletionCode
 } from "../utils/AccountDeletionUtils";
-import { isCommandModuleFile } from "./CommandDiscoveryUtils";
+import {
+	getCommandModuleImportPath, isCommandModuleFile
+} from "./CommandDiscoveryUtils";
 import {
 	CHANNEL_PERMISSION_ERRORS, getThreadSendAccessError
 } from "./ChannelPermissionUtils";
@@ -335,7 +337,7 @@ export class CommandsManager {
 			commandsFiles = commandsFiles.filter(command => !command.startsWith("Test"));
 		}
 		for (const commandFile of commandsFiles) {
-			const commandInfo = (await import(`./${category}/${commandFile}.js`)).commandInfo as ICommand;
+			const commandInfo = (await import(getCommandModuleImportPath(category, commandFile))).commandInfo as ICommand;
 			if (!commandInfo?.slashCommandBuilder) {
 				CrowniclesLogger.error(`Command dist/Discord/src/commands/${category}/${commandFile} is not a slash command`);
 				continue;
