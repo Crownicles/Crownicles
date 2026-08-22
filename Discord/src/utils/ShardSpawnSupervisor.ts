@@ -2,7 +2,7 @@ import {
 	type APIGatewaySessionStartLimit, RESTGetAPIGatewayBotResult, Routes
 } from "discord-api-types/v10";
 import {
-	REST, Shard
+	REST, type Shard
 } from "discord.js";
 import { CrowniclesLogger } from "../../../Lib/src/logs/CrowniclesLogger";
 import { getShardSpawnRetryDelay } from "./ShardSpawnRetryUtils";
@@ -46,9 +46,41 @@ export class ShardSpawnSupervisor {
 		});
 	}
 
-	public ignoreDeath(shard: Shard): void {
+	public killIntentionally(shard: Shard): boolean {
 		this.clearRetry(shard.id);
+		if (!shard.process && !shard.worker) {
+			return true;
+		}
+
 		this.ignoredDeaths.add(shard);
+		try {
+			shard.kill();
+			return true;
+		}
+		catch (error) {
+			this.ignoredDeaths.delete(shard);
+			CrowniclesLogger.errorWithObj(`Error while intentionally killing shard ${shard.id}`, error);
+			return false;
+		}
+	}
+
+	public cancelRetry(shardId: number): void {
+		this.clearRetry(shardId);
+	}
+
+	public handleSpawnFailure(shard: Shard): void {
+		if (shard.process || shard.worker) {
+			try {
+				shard.kill();
+			}
+			catch (error) {
+				CrowniclesLogger.errorWithObj(`Error while cleaning up failed shard ${shard.id}`, error);
+			}
+		}
+
+		if (!shard.process && !shard.worker) {
+			void this.scheduleRetry(shard);
+		}
 	}
 
 	private clearRetry(shardId: number): void {
@@ -86,12 +118,7 @@ export class ShardSpawnSupervisor {
 				this.retryTimers.delete(shard.id);
 				void shard.spawn().catch(error => {
 					CrowniclesLogger.errorWithObj(`Error while respawning shard ${shard.id}`, error);
-					if (shard.process || shard.worker) {
-						shard.kill();
-					}
-					else {
-						void this.scheduleRetry(shard);
-					}
+					this.handleSpawnFailure(shard);
 				});
 			}, retryPlan.delayMs);
 			this.retryTimers.set(shard.id, retryTimer);
