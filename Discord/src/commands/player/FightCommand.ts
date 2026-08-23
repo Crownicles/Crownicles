@@ -11,7 +11,9 @@ import { DiscordCollectorUtils } from "../../utils/DiscordCollectorUtils";
 import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 import { PacketUtils } from "../../utils/PacketUtils";
 import { CommandFightPacketReq } from "../../../../Lib/src/packets/commands/CommandFightPacket";
-import { ReactionCollectorFightPacket } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
+import {
+	ReactionCollectorFightData, ReactionCollectorFightPacket
+} from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
 import { KeycloakUser } from "../../../../Lib/src/keycloak/KeycloakUser";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { FightConstants } from "../../../../Lib/src/constants/FightConstants";
@@ -49,6 +51,43 @@ import { deferFightInteraction } from "./FightInteractionUtils";
 
 const buggedFights = new Set<string>();
 
+type FightConfirmationSubTextKey = "common" | "rare";
+
+export function buildFightConfirmationDescription(
+	lng: Language,
+	pseudo: string,
+	data: ReactionCollectorFightData,
+	subTextKey: FightConfirmationSubTextKey
+): string {
+	return i18n.t("commands:fight.confirmDesc", {
+		lng,
+		pseudo,
+		confirmSubText: i18n.t(`commands:fight.confirmSubTexts.${subTextKey}`, { lng }),
+		glory: data.playerStats.fightRanking.glory,
+		className: i18n.t("commands:fight:information.class", {
+			lng,
+			id: data.playerStats.classId
+		}),
+		pet: data.playerStats.pet?.petTypeId
+			? i18n.t(data.playerStats.pet.isOnExpedition ? "commands:fight.petOnExpedition" : "commands:fight.pet", {
+				lng,
+				petInfo: PetUtils.petToShortString(lng, data.playerStats.pet.petNickname, data.playerStats.pet.petTypeId, data.playerStats.pet.petSex)
+			})
+			: "",
+		stats: i18n.t("commands:fight:information.stats", {
+			lng,
+			baseBreath: data.playerStats.breath.base,
+			breathRegen: data.playerStats.breath.regen,
+			cumulativeAttack: data.playerStats.attack,
+			cumulativeDefense: data.playerStats.defense,
+			cumulativeHealth: data.playerStats.energy.value,
+			cumulativeSpeed: data.playerStats.speed,
+			cumulativeMaxHealth: data.playerStats.energy.max,
+			maxBreath: data.playerStats.breath.max
+		})
+	});
+}
+
 /**
  * Mark a fight as bugged and request cancellation from the backend
  * @param context - Packet context
@@ -78,38 +117,12 @@ export async function createFightCollector(context: PacketContext, packet: React
 		lng,
 		pseudo: escapeUsername(interaction.user.displayName)
 	}), interaction.user)
-		.setDescription(
-			i18n.t("commands:fight.confirmDesc", {
-				lng,
-				pseudo: escapeUsername(interaction.user.displayName),
-				confirmSubText: i18n.t(`commands:fight.confirmSubTexts.${subTextKey}`, { lng }),
-				glory: i18n.t("commands:fight:information.glory", {
-					lng,
-					gloryPoints: data.playerStats.fightRanking.glory
-				}),
-				className: i18n.t("commands:fight:information.class", {
-					lng,
-					id: data.playerStats.classId
-				}),
-				pet: data.playerStats.pet?.petTypeId
-					? i18n.t(data.playerStats.pet.isOnExpedition ? "commands:fight.petOnExpedition" : "commands:fight.pet", {
-						lng,
-						petInfo: PetUtils.petToShortString(lng, data.playerStats.pet.petNickname, data.playerStats.pet.petTypeId, data.playerStats.pet.petSex)
-					})
-					: "",
-				stats: i18n.t("commands:fight:information.stats", {
-					lng,
-					baseBreath: data.playerStats.breath.base,
-					breathRegen: data.playerStats.breath.regen,
-					cumulativeAttack: data.playerStats.attack,
-					cumulativeDefense: data.playerStats.defense,
-					cumulativeHealth: data.playerStats.energy.value,
-					cumulativeSpeed: data.playerStats.speed,
-					cumulativeMaxHealth: data.playerStats.energy.max,
-					maxBreath: data.playerStats.breath.max
-				})
-			})
-		);
+		.setDescription(buildFightConfirmationDescription(
+			lng,
+			escapeUsername(interaction.user.displayName),
+			data,
+			subTextKey
+		));
 
 	return await DiscordCollectorUtils.createAcceptRefuseCollector(interaction, embed, packet, context, {
 		emojis: {
