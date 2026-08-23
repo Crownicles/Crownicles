@@ -39,7 +39,7 @@ async function getPacket(interaction: CrowniclesInteraction): Promise<CommandTop
 	await interaction.deferReply();
 
 	const subCommand = interaction.options.getSubcommand();
-	const timing = interaction.options.getString("timing") as TopTiming ?? TopTiming.ALL_TIME;
+	const timing = interaction.options.getString("duration") as TopTiming ?? TopTiming.ALL_TIME;
 	const page = interaction.options.getInteger("page") ?? undefined;
 
 	return makePacket(CommandTopPacketReq, {
