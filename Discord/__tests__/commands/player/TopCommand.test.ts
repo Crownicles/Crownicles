@@ -30,4 +30,19 @@ describe("top command packet", () => {
 		expect(getString).toHaveBeenCalledWith("duration");
 		expect(deferReply).toHaveBeenCalledOnce();
 	});
+
+	it("serializes the duration option with its localized name", () => {
+		const command = commandInfo.slashCommandBuilder.toJSON();
+		const scoreSubcommand = command.options?.find(option => option.name === "score");
+		if (!scoreSubcommand || !("options" in scoreSubcommand)) {
+			throw new Error("The score subcommand has no options");
+		}
+
+		const durationOption = scoreSubcommand.options?.find(option => option.name === "duration");
+
+		expect(durationOption).toMatchObject({
+			name: "duration",
+			name_localizations: { fr: "duree" }
+		});
+	});
 });
