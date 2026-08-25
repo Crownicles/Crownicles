@@ -4,15 +4,13 @@ import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ReportReq} from "ws-packets/src/fromClient/ReportReq";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
-import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
+import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
-import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {
-  EmptyState, Hero, KeyValue, Panel, Screen, SectionHeader, StatBar
+  EmptyState, Hero, KeyValue, Panel, QuickAction, QuickActions, Screen
 } from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -51,7 +49,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: Theme.spacing.md,
-    paddingVertical: Theme.spacing.xl,
+    paddingTop: Theme.spacing.xl + Theme.spacing.sm,
+    paddingBottom: Theme.spacing.lg,
     paddingHorizontal: Theme.spacing.lg
   },
   mapNode: {
@@ -65,12 +64,17 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: Theme.pillRadius,
     backgroundColor: Theme.colors.line,
-    overflow: "hidden"
+    position: "relative"
   },
   travelFill: {
     height: "100%",
     borderRadius: Theme.pillRadius,
     backgroundColor: Theme.colors.ink
+  },
+  runner: {
+    position: "absolute",
+    top: -Theme.dimensions.headerIcon + Theme.spacing.xs,
+    marginLeft: -Theme.dimensions.quickActionIcon / 2
   },
 });
 
@@ -136,7 +140,10 @@ function formatDuration(milliseconds: number): string {
   const totalMinutes = Math.max(Math.ceil(milliseconds / MILLISECONDS_PER_MINUTE), NO_PROGRESS);
   const hours = Math.floor(totalMinutes / MINUTES_PER_HOUR);
   const minutes = totalMinutes % MINUTES_PER_HOUR;
-  return i18n.t("app:adventure.duration", {hours, minutes});
+  const durationKey = hours > NO_PROGRESS
+    ? "app:adventure.duration.hoursMinutes"
+    : "app:adventure.duration.minutes";
+  return i18n.t(durationKey, hours > NO_PROGRESS ? {hours, minutes} : {minutes: totalMinutes});
 }
 
 function mapName(map: MapPoint): string {
@@ -150,6 +157,18 @@ function mapIcon(map: MapPoint): ReactNode {
   return icon ? <TwemojiIcon emoji={icon} size={Theme.dimensions.headerIcon} /> : null;
 }
 
+function mapLabel(map: MapPoint): string {
+  const icon = AppIcons.getIconOrNull(`mapTypes.${map.type}`);
+  const name = mapName(map);
+  return icon ? `${icon} ${name}` : name;
+}
+
+function runnerIcon(packet: ReportTravelSummaryRes): string {
+  return packet.isOnBoat
+    ? AppIcons.getIcon("guild.isOnBoat")
+    : AppIcons.getIcon("other.walking");
+}
+
 function TravelPath({packet, progress}: { packet: ReportTravelSummaryRes; progress: number }): ReactNode {
   const progressLabel = i18n.t("app:adventure.onTheRoad");
   return (
@@ -161,49 +180,23 @@ function TravelPath({packet, progress}: { packet: ReportTravelSummaryRes; progre
       <View style={styles.mapNode}>{mapIcon(packet.startMap)}</View>
       <View style={styles.travelTrack}>
         <View style={[styles.travelFill, {width: `${progress * PERCENTAGE_SCALE}%`}]} />
+        <View style={[styles.runner, {left: `${progress * PERCENTAGE_SCALE}%`}]}>
+          <TwemojiIcon emoji={runnerIcon(packet)} size={Theme.dimensions.quickActionIcon} />
+        </View>
       </View>
       <View style={styles.mapNode}>{mapIcon(packet.endMap)}</View>
     </View>
   );
 }
 
-function nextStopText(packet: ReportTravelSummaryRes, currentTime: number): string {
+function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): string {
   if (packet.nextStopTime > packet.arriveTime) {
     return i18n.t("app:adventure.noNextStop");
   }
   if (packet.nextStopTime <= currentTime) {
-    return i18n.t("app:adventure.nextStopNow");
+    return i18n.t("app:adventure.now");
   }
-  return i18n.t("app:adventure.nextStopIn", {
-    time: formatDuration(packet.nextStopTime - currentTime)
-  });
-}
-
-function healthPanel(profileState: RequestState<ProfileRes>): ReactNode {
-  if (profileState.status !== "ready") {
-    return (
-      <Panel>
-        <KeyValue
-          label={i18n.t("app:adventure.fields.condition")}
-          value={profileState.status === "loading"
-            ? i18n.t("app:common.loading")
-            : i18n.t("app:adventure.healthUnavailable")}
-        />
-      </Panel>
-    );
-  }
-
-  const health = profileState.data.health;
-  return (
-    <Panel>
-      <StatBar
-        label={i18n.t("app:adventure.fields.health")}
-        value={`${health.value} / ${health.max}`}
-        ratio={health.max > NO_PROGRESS ? health.value / health.max : NO_PROGRESS}
-        color={Theme.colors.red}
-      />
-    </Panel>
-  );
+  return formatDuration(packet.nextStopTime - currentTime);
 }
 
 function RoutePanel({packet, destination, metrics}: {
@@ -212,127 +205,72 @@ function RoutePanel({packet, destination, metrics}: {
   metrics: TravelMetrics;
 }): ReactNode {
   return (
-    <>
-      <SectionHeader first>{i18n.t("app:adventure.sections.route")}</SectionHeader>
-      <Panel>
-        <TravelPath packet={packet} progress={metrics.progress} />
-        <KeyValue label={i18n.t("app:adventure.fields.departure")} value={mapName(packet.startMap)} />
-        <KeyValue label={i18n.t("app:adventure.fields.arrival")} value={destination} />
-        {!packet.isInCity && (
-          <KeyValue
-            label={i18n.t("app:adventure.fields.timeRemaining")}
-            value={formatDuration(metrics.remainingMilliseconds)}
-          />
-        )}
-        {packet.points.show && (
-          <KeyValue
-            label={i18n.t("app:adventure.fields.points")}
-            value={String(packet.points.cumulated)}
-          />
-        )}
-      </Panel>
-    </>
+    <Panel>
+      <TravelPath packet={packet} progress={metrics.progress} />
+      <KeyValue label={i18n.t("app:adventure.fields.departure")} value={mapLabel(packet.startMap)} />
+      <KeyValue label={i18n.t("app:adventure.fields.arrival")} value={mapLabel(packet.endMap)} />
+      {!packet.isInCity && (
+        <KeyValue
+          label={i18n.t("app:adventure.fields.timeRemaining")}
+          value={formatDuration(metrics.remainingMilliseconds)}
+        />
+      )}
+      {packet.points.show && (
+        <KeyValue
+          label={`${AppIcons.getIcon("unitValues.score")} ${i18n.t("app:adventure.fields.points")}`}
+          value={String(packet.points.cumulated)}
+        />
+      )}
+    </Panel>
   );
 }
 
-function EnergyPanel({packet}: { packet: ReportTravelSummaryRes }): ReactNode {
-  if (!packet.energy.show) {
-    return null;
-  }
-
+function TravelQuickActions(): ReactNode {
   return (
-    <>
-      <SectionHeader>{i18n.t("app:adventure.fields.energy")}</SectionHeader>
-      <Panel>
-        <StatBar
-          label={i18n.t("app:adventure.fields.energy")}
-          value={`${packet.energy.current} / ${packet.energy.max}`}
-          ratio={packet.energy.max > NO_PROGRESS ? packet.energy.current / packet.energy.max : NO_PROGRESS}
-          color={Theme.colors.blue}
-        />
-      </Panel>
-    </>
+    <QuickActions>
+      <QuickAction icon={AppIcons.getIcon("unitValues.token")}>
+        {i18n.t("app:adventure.quick.advance")}
+      </QuickAction>
+      <QuickAction icon={AppIcons.getIcon("expedition.map")}>
+        {i18n.t("app:adventure.quick.map")}
+      </QuickAction>
+    </QuickActions>
   );
 }
 
-function StatusPanel({packet, currentTime}: {
+function AdventureSheet({packet, currentTime}: {
   packet: ReportTravelSummaryRes;
-  currentTime: number;
-}): ReactNode {
-  const activeEffect = isEffectActive(packet, currentTime);
-  const lastEventIcon = packet.lastSmallEventId
-    ? AppIcons.getIconOrNull(`smallEvents.${packet.lastSmallEventId}`)
-    : null;
-
-  return (
-    <>
-      <SectionHeader>{i18n.t("app:adventure.sections.status")}</SectionHeader>
-      <Panel>
-        <KeyValue
-          label={i18n.t("app:adventure.fields.condition")}
-          value={packet.isInCity ? i18n.t("app:adventure.inCity") : i18n.t("app:adventure.onTheRoad")}
-        />
-        <KeyValue
-          label={i18n.t("app:adventure.fields.nextStop")}
-          value={nextStopText(packet, currentTime)}
-        />
-        {lastEventIcon && (
-          <KeyValue
-            label={i18n.t("app:adventure.fields.lastEvent")}
-            value={lastEventIcon}
-          />
-        )}
-        <KeyValue
-          label={i18n.t("app:adventure.fields.effect")}
-          value={activeEffect && packet.effectEndTime !== undefined
-            ? i18n.t("app:adventure.activeEffect", {time: formatDuration(packet.effectEndTime - currentTime)})
-            : i18n.t("app:adventure.noEffect")}
-        />
-      </Panel>
-    </>
-  );
-}
-
-function AdventureSheet({packet, profileState, currentTime}: {
-  packet: ReportTravelSummaryRes;
-  profileState: RequestState<ProfileRes>;
   currentTime: number;
 }): ReactNode {
   const metrics = getTravelMetrics(packet, currentTime);
   const destination = mapName(packet.endMap);
   const title = packet.isInCity
     ? i18n.t("app:adventure.cityTitle")
-    : i18n.t("app:adventure.travelTitle");
+    : i18n.t("app:adventure.travel.title");
   const subtitle = packet.isInCity
     ? i18n.t("app:adventure.citySubtitle", {location: destination})
-    : i18n.t("app:adventure.travelSubtitle", {
+    : i18n.t("app:adventure.travel.subtitle", {
+      nextStop: nextStopDuration(packet, currentTime),
       destination,
-      time: formatDuration(metrics.remainingMilliseconds)
+      remaining: formatDuration(metrics.remainingMilliseconds)
     });
 
   return (
     <Screen>
       <Hero
-        eyebrow={i18n.t("app:adventure.eyebrow")}
+        eyebrow={packet.isInCity ? i18n.t("app:adventure.eyebrow") : i18n.t("app:adventure.travel.eyebrow")}
         title={title}
         subtitle={subtitle}
       />
 
       <RoutePanel packet={packet} destination={destination} metrics={metrics} />
-
-      <SectionHeader>{i18n.t("app:adventure.sections.health")}</SectionHeader>
-      {healthPanel(profileState)}
-
-      <EnergyPanel packet={packet} />
-      <StatusPanel packet={packet} currentTime={currentTime} />
-
+      {!packet.isInCity ? <TravelQuickActions /> : null}
     </Screen>
   );
 }
 
 export default function Index(): ReactNode {
   const reportState = useGameQuery<ReportTravelSummaryRes>(GAME_ENTITIES.REPORT, requestReport);
-  const profileState = usePlayerProfile();
   const {open: openCollectors} = useCollectors();
   const currentTime = useCurrentTime();
 
@@ -358,5 +296,5 @@ export default function Index(): ReactNode {
     return <Centered><Text style={styles.message}>{i18n.t("app:common.error")}</Text></Centered>;
   }
 
-  return <AdventureSheet packet={reportState.data} profileState={profileState} currentTime={currentTime} />;
+  return <AdventureSheet packet={reportState.data} currentTime={currentTime} />;
 }

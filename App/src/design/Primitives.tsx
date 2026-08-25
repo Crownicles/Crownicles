@@ -10,6 +10,7 @@ import {
 	type ViewStyle
 } from "react-native";
 import {Theme} from "@/src/design/Theme";
+import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {TwemojiText} from "@/src/design/TwemojiText";
 
 const screenStyles = StyleSheet.create({
@@ -221,6 +222,38 @@ const actionStyles = StyleSheet.create({
 	}
 });
 
+const quickActionStyles = StyleSheet.create({
+	quickActions: {
+		flexDirection: "row",
+		gap: Theme.spacing.sm,
+		marginTop: Theme.spacing.lg,
+		marginBottom: Theme.spacing.xs
+	},
+	quickAction: {
+		flex: 1,
+		minHeight: Theme.dimensions.quickActionHeight,
+		alignItems: "center",
+		justifyContent: "center",
+		gap: Theme.spacing.xs,
+		paddingVertical: Theme.spacing.quickActionVertical,
+		paddingHorizontal: Theme.spacing.xs,
+		borderWidth: 1,
+		borderColor: Theme.colors.line,
+		borderRadius: Theme.radius,
+		backgroundColor: Theme.colors.paper
+	},
+	quickActionPressed: {
+		backgroundColor: Theme.colors.wash
+	},
+	quickActionLabel: {
+		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.semiBold,
+		fontSize: Theme.fontSize.caption,
+		lineHeight: Theme.lineHeight.tabLabel,
+		textAlign: "center"
+	}
+});
+
 const noticeStyles = StyleSheet.create({
 	notice: {
 		flexDirection: "row",
@@ -279,6 +312,7 @@ const styles = {
 	...rowStyles,
 	...fieldStyles,
 	...actionStyles,
+	...quickActionStyles,
 	...noticeStyles
 };
 
@@ -299,6 +333,13 @@ type ButtonProps = {
 	children: string;
 	onPress?: () => void;
 	variant?: ButtonVariant;
+	disabled?: boolean;
+};
+
+type QuickActionProps = {
+	icon: string;
+	children: string;
+	onPress?: () => void;
 	disabled?: boolean;
 };
 
@@ -488,6 +529,34 @@ export function Button({children, onPress, variant = "secondary", disabled = fal
 
 export function ButtonRow({ children }: { children: ReactNode }): ReactNode {
 	return <View style={styles.buttonRow}>{children}</View>;
+}
+
+export function QuickActions({ children }: { children: ReactNode }): ReactNode {
+	return <View style={styles.quickActions}>{children}</View>;
+}
+
+export function QuickAction({icon, children, onPress, disabled = false}: QuickActionProps): ReactNode {
+	const content = (
+		<>
+			<TwemojiIcon emoji={icon} size={Theme.dimensions.quickActionIcon} />
+			<Text style={styles.quickActionLabel}>{children}</Text>
+		</>
+	);
+
+	if (!onPress) {
+		return <View style={[styles.quickAction, disabled && styles.rowDisabled]}>{content}</View>;
+	}
+
+	return (
+		<Pressable
+			accessibilityRole="button"
+			disabled={disabled}
+			onPress={onPress}
+			style={({pressed}) => [styles.quickAction, pressed && styles.quickActionPressed, disabled && styles.rowDisabled]}
+		>
+			{content}
+		</Pressable>
+	);
 }
 
 export function Notice({ icon, title, text, action }: {

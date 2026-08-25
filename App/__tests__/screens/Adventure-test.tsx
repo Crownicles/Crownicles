@@ -24,6 +24,7 @@ jest.mock("@/src/collectors/CollectorsContext", () => ({
 
 jest.mock("@/src/AppIcons", () => ({
 	AppIcons: {
+		getIcon: (path: string): string => `icon:${path}`,
 		getIconOrNull: jest.fn(() => null)
 	}
 }));
@@ -63,23 +64,17 @@ describe("Adventure screen", () => {
 		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn()});
 	});
 
-	it("renders the server-owned route, remaining time and health", async () => {
+	it("matches the travel report composition from the mobile mockup", async () => {
 		mockedUseGameQuery.mockReturnValue({status: "ready", data: report()});
 
 		await render(<Adventure />);
 
-		expect(screen.getByText("app:adventure.sections.route")).toBeTruthy();
+		expect(screen.getByText("app:adventure.travel.title")).toBeTruthy();
 		expect(screen.getByText("models:map_locations.2.name")).toBeTruthy();
-		expect(screen.getByText("75 / 100")).toBeTruthy();
 		expect(screen.getByText("app:adventure.fields.timeRemaining")).toBeTruthy();
-	});
-
-	it("renders energy only when the server exposes it", async () => {
-		mockedUseGameQuery.mockReturnValue({status: "ready", data: report(true)});
-
-		await render(<Adventure />);
-
-		expect(screen.getByText("8 / 10")).toBeTruthy();
+		expect(screen.getByText("app:adventure.quick.advance")).toBeTruthy();
+		expect(screen.getByText("app:adventure.quick.map")).toBeTruthy();
+		expect(screen.queryByText("app:adventure.sections.status")).toBeNull();
 	});
 
 	it("renders a readable loading state", async () => {

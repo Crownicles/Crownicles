@@ -26,36 +26,31 @@
   },
   "adventure": {
     "eyebrow": "Votre aventure",
-    "travelTitle": "Voyage en cours",
     "cityTitle": "Arrivée en ville",
-    "travelSubtitle": "Destination {{destination}} · encore {{time}}",
     "citySubtitle": "Position actuelle : {{location}}",
-    "sections": {
-      "route": "Itinéraire",
-      "health": "Santé",
-      "status": "État du voyage"
+    "travel": {
+      "eyebrow": "Rapport · en voyage",
+      "title": "Tout se passe bien dans votre aventure",
+      "subtitle": "Prochain arrêt prévu dans {{nextStop}}. Le trajet vers {{destination}} durera encore {{remaining}}."
     },
     "fields": {
       "departure": "Départ",
       "arrival": "Arrivée",
       "timeRemaining": "Temps restant",
-      "points": "Points récoltés",
-      "energy": "Énergie",
-      "nextStop": "Prochain arrêt",
-      "lastEvent": "Dernier événement",
-      "condition": "Situation",
-      "effect": "Altération"
+      "points": "Points récoltés"
     },
-    "duration": "{{hours}} h {{minutes}} min",
-    "inCity": "Position actuelle en ville",
+    "duration": {
+      "hoursMinutes": "{{hours}} h {{minutes}}",
+      "minutes": "{{minutes}} minutes"
+    },
+    "now": "Maintenant",
+    "quick": {
+      "advance": "Avancer",
+      "map": "Carte"
+    },
     "onTheRoad": "Progression sur la route",
-    "nextStopIn": "Dans {{time}}",
-    "nextStopNow": "Maintenant",
     "noNextStop": "Aucun arrêt prévu avant l'arrivée",
-    "activeEffect": "Altération active · fin dans {{time}}",
-    "noEffect": "Aucune altération active",
     "unknownLocation": "Lieu inconnu",
-    "healthUnavailable": "Indisponible pour le moment",
     "empty": "Aucun rapport de voyage disponible"
   },
   "pet": {

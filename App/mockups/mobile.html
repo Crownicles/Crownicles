@@ -170,7 +170,7 @@ button.row:active{background:var(--wash)}
 .button-row{display:flex;gap:9px;margin-top:14px;flex-wrap:wrap}
 .button-row .button{flex:1;min-width:130px;text-align:center}
 
-.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0 4px}
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:8px;margin:14px 0 4px}
 .quick button{
   display:flex;flex-direction:column;align-items:center;gap:5px;padding:11px 4px;cursor:pointer;
   border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);
@@ -742,18 +742,8 @@ function reportTravel() {
     )
     + quick([
       { icon: "🪙", label: "Avancer", act: "useToken" },
-      { icon: "🗺️", label: "Carte", go: "map" },
-      { icon: "🐾", label: "Familier", go: "pet" },
-      { icon: "⚔️", label: "Combat", go: "fight" }
+      { icon: "🗺️", label: "Carte", go: "map" }
     ])
-    + head("Le trajet en détail")
-    + panel(
-      rows([
-        { icon: "🪓", title: "Dernier mini-évènement", sub: "Vous avez croisé un bûcheron il y a 8 minutes", go: "smallEvent" },
-        { icon: "❗", title: "Prochain évènement", sub: "À l'arrivée au Croisement des Destins", go: "bigEvent" },
-        { icon: "🪙", title: "Avancer de 10 minutes", sub: "Coûte 1 jeton · " + P.tokens + " / " + P.tokensMax + " disponibles", act: "useToken" }
-      ])
-    )
     + todaySection()
     ;
 }
@@ -801,15 +791,9 @@ function reportAlteration() {
     + panel(
       rows([
         { icon: "💰", title: "Acheter un soin", sub: "Jusqu'à 510 💰 selon le temps restant, et avance de 10 minutes", go: "buyHeal" },
-        { icon: "🪙", title: "Utiliser des jetons", sub: "Seul remède à l'altération occupé, jusqu'à 5 jetons", go: "tokenMerchant" },
-        { icon: "🎁", title: "Attendre la récompense de guilde", sub: "Le soin d'altération est un tirage possible", go: "guildDaily" }
+        { icon: "🪙", title: "Utiliser des jetons", sub: "Seul remède à l'altération occupé, jusqu'à 5 jetons", go: "tokenMerchant" }
       ])
     )
-    + head("Toutes les altérations")
-    + panel(rows(ALTERATIONS.map(x => ({
-      icon: x.icon, title: x.name, end: x.time,
-      act: "setAlteration:" + x.name
-    }))))
     + note("Enfermé ne peut être levé que par la caution de 3 000 💰 d'un autre joueur. Mort bloque toutes les actions sauf la réapparition.");
 }
 
@@ -1542,8 +1526,6 @@ def("missions", "profile", "Missions", () =>
     { icon: "🧾", title: "Changer une mission secondaire", sub: "Au marché royal, contre des gemmes", go: "royalMarket" }
   ]))
   + note("Une mission secondaire s'obtient occasionnellement lors d'un mini-évènement, en demandant un rapport.")
-  + head("Dépenser vos gemmes")
-  + panel(rows([{ icon: "💠", title: "Marché royal", sub: P.gems + " 💎 disponibles", go: "royalMarket" }]))
 , "missions campagne quotidienne secondaire");
 
 def("blessing", "profile", "Bénédictions", () =>

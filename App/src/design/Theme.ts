@@ -37,6 +37,7 @@ export const Theme = {
 		sectionActionGap: 9,
 		noteVertical: 11,
 		buttonHorizontal: 20,
+		quickActionVertical: 11,
 		noticeGap: 11,
 		tabBarVertical: 7,
 		tabBarHorizontal: 6,
@@ -48,7 +49,10 @@ export const Theme = {
 		itemMinHeight: 68,
 		actionButtonMinWidth: 60,
 		tabBarIcon: 18,
-		headerIcon: 24
+		headerIcon: 24,
+		travelTrackHeight: 5,
+		quickActionHeight: 72,
+		quickActionIcon: 19
 	},
 	emoji: {
 		iosHeroOffset: 2,
