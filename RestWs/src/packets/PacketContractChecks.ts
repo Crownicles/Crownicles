@@ -25,6 +25,10 @@ import {
 	CommandProfilePacketRes
 } from "../../../Lib/src/packets/commands/CommandProfilePacket";
 import {
+	CommandReportPacketReq,
+	CommandReportTravelSummaryRes
+} from "../../../Lib/src/packets/commands/CommandReportPacket";
+import {
 	ReactionCollectorCreationPacket,
 	ReactionCollectorEnded,
 	ReactionCollectorReactPacket
@@ -48,6 +52,8 @@ import { PingReq } from "../../../WsPackets/src/fromClient/PingReq";
 import { PingRes } from "../../../WsPackets/src/fromServer/ping/PingRes";
 import { ProfileReq } from "../../../WsPackets/src/fromClient/ProfileReq";
 import { ProfileRes } from "../../../WsPackets/src/fromServer/profile/ProfileRes";
+import { ReportReq } from "../../../WsPackets/src/fromClient/ReportReq";
+import { ReportTravelSummaryRes } from "../../../WsPackets/src/fromServer/report/ReportTravelSummaryRes";
 import { ReactionCollectorCreation } from "../../../WsPackets/src/fromServer/common/ReactionCollectorCreation";
 import { ReactionCollectorEnded as WireReactionCollectorEnded } from "../../../WsPackets/src/fromServer/common/ReactionCollectorEnded";
 import { ReactionCollectorReactReq } from "../../../WsPackets/src/fromClient/ReactionCollectorReactReq";
@@ -87,6 +93,7 @@ type PetRequestContract = Assert<IsEqual<WireShape<CommandPetPacketReq>, WireSha
 type PingRequestContract = Assert<IsEqual<WireShape<CommandPingPacketReq>, WireShape<WirePacketFields<PingReq>>>>;
 type ProfileRequestContract = Assert<IsEqual<WireShape<CommandProfilePacketReq>, WireShape<WirePacketFields<ProfileReq>>>>;
 type CollectorsRequestContract = Assert<IsEqual<WireShape<CommandGetCurrentReactionCollectorsPacket>, WireShape<WirePacketFields<CommandGetCurrentReactionCollectorsReq>>>>;
+type ReportRequestContract = Assert<IsEqual<WireShape<CommandReportPacketReq>, WireShape<WirePacketFields<ReportReq>>>>;
 
 type DrinkResponseContract = Assert<IsEqual<WireShape<CommandDrinkPacketRes>, WireShape<WirePacketFields<DrinkRes>>>>;
 type DrinkCancelContract = Assert<IsEqual<WireShape<CommandDrinkCancelDrink>, WireShape<WirePacketFields<DrinkCancel>>>>;
@@ -106,6 +113,10 @@ type PingResponseContract = Assert<IsEqual<
 type ProfileResponseContract = Assert<IsEqual<
 	WireShape<CommandProfilePacketRes["playerData"]>,
 	WireShape<Omit<WirePacketFields<ProfileRes>, "pseudo">>
+>>;
+type ReportTravelSummaryContract = Assert<IsEqual<
+	WireShape<CommandReportTravelSummaryRes>,
+	WireShape<WirePacketFields<ReportTravelSummaryRes>>
 >>;
 type CollectorsResponseKeysContract = Assert<SameKeys<
 	CommandGetCurrentReactionCollectorsPacketRes,
@@ -142,6 +153,7 @@ export const packetContractChecks: {
 	pingRequest: PingRequestContract;
 	profileRequest: ProfileRequestContract;
 	collectorsRequest: CollectorsRequestContract;
+	reportRequest: ReportRequestContract;
 	drinkResponse: DrinkResponseContract;
 	drinkCancel: DrinkCancelContract;
 	drinkUnavailable: DrinkUnavailableContract;
@@ -149,6 +161,7 @@ export const packetContractChecks: {
 	petResponse: PetResponseContract;
 	pingResponse: PingResponseContract;
 	profileResponse: ProfileResponseContract;
+	reportTravelSummary: ReportTravelSummaryContract;
 	collectorEnded: CollectorEndedContract;
 	collectorReaction: CollectorReactionContract;
 	collectorStop: CollectorStopContract;
@@ -167,6 +180,7 @@ export const packetContractChecks: {
 	pingRequest: true,
 	profileRequest: true,
 	collectorsRequest: true,
+	reportRequest: true,
 	drinkResponse: true,
 	drinkCancel: true,
 	drinkUnavailable: true,
@@ -174,6 +188,7 @@ export const packetContractChecks: {
 	petResponse: true,
 	pingResponse: true,
 	profileResponse: true,
+	reportTravelSummary: true,
 	collectorEnded: true,
 	collectorReaction: true,
 	collectorStop: true,
