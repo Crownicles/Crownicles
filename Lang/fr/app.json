@@ -22,6 +22,40 @@
     "profile": "Profil",
     "pet": "Familier"
   },
+  "adventure": {
+    "eyebrow": "Votre aventure",
+    "travelTitle": "Voyage en cours",
+    "cityTitle": "Arrivée en ville",
+    "travelSubtitle": "Destination {{destination}} · encore {{time}}",
+    "citySubtitle": "Position actuelle : {{location}}",
+    "sections": {
+      "route": "Itinéraire",
+      "health": "Santé",
+      "status": "État du voyage"
+    },
+    "fields": {
+      "departure": "Départ",
+      "arrival": "Arrivée",
+      "timeRemaining": "Temps restant",
+      "points": "Points récoltés",
+      "energy": "Énergie",
+      "nextStop": "Prochain arrêt",
+      "lastEvent": "Dernier événement",
+      "condition": "Situation",
+      "effect": "Altération"
+    },
+    "duration": "{{hours}} h {{minutes}} min",
+    "inCity": "Position actuelle en ville",
+    "onTheRoad": "Progression sur la route",
+    "nextStopIn": "Dans {{time}}",
+    "nextStopNow": "Maintenant",
+    "noNextStop": "Aucun arrêt prévu avant l'arrivée",
+    "activeEffect": "Altération active · fin dans {{time}}",
+    "noEffect": "Aucune altération active",
+    "unknownLocation": "Lieu inconnu",
+    "healthUnavailable": "Indisponible pour le moment",
+    "empty": "Aucun rapport de voyage disponible"
+  },
   "pet": {
     "eyebrow": "Votre familier",
     "noPet": "Aucun familier ne vous accompagne pour le moment",

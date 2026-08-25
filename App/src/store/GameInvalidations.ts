@@ -27,6 +27,7 @@ export function useGameInvalidations(): { afterCollector: (kind: ReactionCollect
 	const afterCollector = useCallback((kind: ReactionCollectorDataKind): void => {
 		const entities = new Set<GameEntity>([
 			GAME_ENTITIES.PROFILE,
+				GAME_ENTITIES.REPORT,
 			...(COLLECTOR_INVALIDATES[kind] ?? [])
 		]);
 		for (const entity of entities) {
