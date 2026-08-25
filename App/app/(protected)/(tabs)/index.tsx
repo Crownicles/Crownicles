@@ -199,9 +199,8 @@ function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): 
   return formatDuration(packet.nextStopTime - currentTime);
 }
 
-function RoutePanel({packet, destination, metrics}: {
+function RoutePanel({packet, metrics}: {
   packet: ReportTravelSummaryRes;
-  destination: string;
   metrics: TravelMetrics;
 }): ReactNode {
   return (
@@ -263,7 +262,7 @@ function AdventureSheet({packet, currentTime}: {
         subtitle={subtitle}
       />
 
-      <RoutePanel packet={packet} destination={destination} metrics={metrics} />
+      <RoutePanel packet={packet} metrics={metrics} />
       {!packet.isInCity ? <TravelQuickActions /> : null}
     </Screen>
   );
