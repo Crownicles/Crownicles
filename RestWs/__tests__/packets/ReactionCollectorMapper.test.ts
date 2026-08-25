@@ -9,12 +9,15 @@ import {
 	ReactionCollectorDrink,
 	ReactionCollectorDrinkReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorDrink";
+import {ReactionCollectorBigEvent} from "../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
 import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
 import { ItemNature } from "../../../Lib/src/constants/ItemConstants";
 import {
 	DRINK_DATA_KINDS,
 	DRINK_REACTION_KINDS,
+	BIG_EVENT_DATA_KINDS,
+	BIG_EVENT_REACTION_KINDS,
 	GENERIC_REACTION_KINDS,
 	UNKNOWN_COLLECTOR_KIND
 } from "../../../WsPackets/src/fromServer/collectors";
@@ -97,6 +100,26 @@ describe("mapCollectorCreation", () => {
 			nature: ItemNature.HEALTH,
 			power: 12
 		});
+	});
+
+	it("translates a big event without changing the order of its possibilities", () => {
+		const packet = new ReactionCollectorBigEvent(19, [
+			{name: "butch"},
+			{name: "cook"},
+			{name: "end"}
+		]).creationPacket("collector-1", END_TIME);
+
+		const mapped = mapCollectorCreation(packet);
+
+		expect(mapped.data).toStrictEqual({
+			type: BIG_EVENT_DATA_KINDS.COLLECTOR,
+			data: {eventId: 19}
+		});
+		expect(mapped.reactions).toStrictEqual([
+			{type: BIG_EVENT_REACTION_KINDS.POSSIBILITY, data: {name: "butch"}},
+			{type: BIG_EVENT_REACTION_KINDS.POSSIBILITY, data: {name: "cook"}},
+			{type: BIG_EVENT_REACTION_KINDS.POSSIBILITY, data: {name: "end"}}
+		]);
 	});
 
 	/*

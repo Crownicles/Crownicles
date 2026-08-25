@@ -9,3 +9,4 @@
 export * from "./ReactionCollectorProtocol";
 export * from "./families/GenericReactions";
 export * from "./families/DrinkCollector";
+export * from "./families/BigEventCollector";

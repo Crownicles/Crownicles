@@ -3,12 +3,14 @@ import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ReportReq} from "ws-packets/src/fromClient/ReportReq";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
+import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
+import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {
   EmptyState, Hero, KeyValue, Panel, Screen, SectionHeader, StatBar
 } from "@/src/design/Primitives";
@@ -90,7 +92,7 @@ function useCurrentTime(): number {
 }
 
 function requestReport(): Promise<GameAnswer<ReportTravelSummaryRes>> {
-  return GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes);
+  return GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [ReactionCollectorCreation]);
 }
 
 function getEffectStartTime(packet: ReportTravelSummaryRes): number | null {
@@ -331,8 +333,16 @@ function AdventureSheet({packet, profileState, currentTime}: {
 export default function Index(): ReactNode {
   const reportState = useGameQuery<ReportTravelSummaryRes>(GAME_ENTITIES.REPORT, requestReport);
   const profileState = usePlayerProfile();
+  const {open: openCollectors} = useCollectors();
   const currentTime = useCurrentTime();
 
+  const reportIsWaitingForCollector = openCollectors.length > 0
+    && (reportState.status === "loading"
+      || reportState.status === "empty" && reportState.packetName === ReactionCollectorCreation.name);
+
+  if (reportIsWaitingForCollector) {
+    return <Centered><EmptyState>{i18n.t("app:collector.pending")}</EmptyState></Centered>;
+  }
   if (reportState.status === "loading") {
     return (
       <Centered>

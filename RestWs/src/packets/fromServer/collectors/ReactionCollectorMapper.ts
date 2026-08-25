@@ -12,13 +12,20 @@ import { genericReactionMappings } from "./mappings/GenericReactionMappings";
 import {
 	drinkDataMappings, drinkReactionMappings
 } from "./mappings/DrinkCollectorMappings";
+import {
+	bigEventDataMappings, bigEventReactionMappings
+} from "./mappings/BigEventCollectorMappings";
 
 const reactionMappings = indexMappings([
 	...genericReactionMappings,
-	...drinkReactionMappings
+	...drinkReactionMappings,
+	...bigEventReactionMappings
 ]);
 
-const dataMappings = indexMappings([...drinkDataMappings]);
+const dataMappings = indexMappings([
+	...drinkDataMappings,
+	...bigEventDataMappings
+]);
 
 /**
  * Back-end types already reported as unmapped. Most collectors are not exposed to the app yet, so

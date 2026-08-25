@@ -8,6 +8,7 @@ import {GameQueryProvider} from "@/src/store/GameQueryProvider";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 
 jest.mock("@/src/collectors/CollectorLabels", () => ({
+	collectorDescription: (): undefined => undefined,
 	collectorTitle: (): string => "collector title",
 	isChoosable: (): boolean => true,
 	reactionLabel: (): string => "collector choice"

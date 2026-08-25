@@ -227,14 +227,15 @@ export class WebSocketClient {
 		const packetData = packet.packet;
 
 		const responseHandlerGroup = packetId ? this.responseHandlers.get(packetId) : undefined;
-		if (packetId && responseHandlerGroup?.handlers.has(packetName)) {
+		const hasResponseHandler = Boolean(packetId && responseHandlerGroup?.handlers.has(packetName));
+		if (packetId !== undefined && hasResponseHandler) {
 			this.handleResponse(packetId, packetName, packetData);
-			return;
 		}
-		if (this.pushedPacketRegistry.dispatch(packetName, packetData)) {
-			return;
+
+		const handledAsPushedPacket = this.pushedPacketRegistry.dispatch(packetName, packetData);
+		if (!hasResponseHandler && !handledAsPushedPacket) {
+			this.pushedPacketRegistry.reportUnhandled(packetName);
 		}
-		this.pushedPacketRegistry.reportUnhandled(packetName);
 	}
 
 	private handleSocketError(error: Event): void {

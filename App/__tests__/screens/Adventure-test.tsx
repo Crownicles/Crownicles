@@ -4,6 +4,7 @@ import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTra
 import Adventure from "@/app/(protected)/(tabs)/index";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {useGameQuery} from "@/src/store/useGameQuery";
+import {useCollectors} from "@/src/collectors/CollectorsContext";
 
 jest.mock("expo-router", () => ({
 	useFocusEffect: (): void => undefined
@@ -15,6 +16,10 @@ jest.mock("@/src/store/useGameQuery", () => ({
 
 jest.mock("@/src/store/usePlayerProfile", () => ({
 	usePlayerProfile: jest.fn()
+}));
+
+jest.mock("@/src/collectors/CollectorsContext", () => ({
+	useCollectors: jest.fn()
 }));
 
 jest.mock("@/src/AppIcons", () => ({
@@ -31,6 +36,7 @@ jest.mock("@/src/translations/i18n", () => ({
 
 const mockedUseGameQuery = jest.mocked(useGameQuery);
 const mockedUsePlayerProfile = jest.mocked(usePlayerProfile);
+const mockedUseCollectors = jest.mocked(useCollectors);
 
 function report(showEnergy = false): ReportTravelSummaryRes {
 	return {
@@ -54,6 +60,7 @@ describe("Adventure screen", () => {
 	beforeEach((): void => {
 		jest.clearAllMocks();
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: profile()});
+		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn()});
 	});
 
 	it("renders the server-owned route, remaining time and health", async () => {
@@ -81,6 +88,19 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 
 		expect(screen.getByText("app:common.loading")).toBeTruthy();
+	});
+
+	it("renders a pending action instead of an endless spinner", async () => {
+		mockedUseGameQuery.mockReturnValue({status: "loading"});
+		mockedUseCollectors.mockReturnValue({
+			open: [{id: "collector-1"} as never],
+			track: jest.fn(),
+			react: jest.fn()
+		});
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:collector.pending")).toBeTruthy();
 	});
 
 	it("renders an error state instead of a blank screen", async () => {

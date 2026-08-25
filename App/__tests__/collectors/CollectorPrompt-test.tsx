@@ -4,6 +4,7 @@ import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 
 jest.mock("@/src/collectors/CollectorLabels", () => ({
+	collectorDescription: (): undefined => undefined,
 	collectorTitle: (): string => "collector title",
 	isChoosable: (reaction: {type: string}): boolean => reaction.type !== "unknown",
 	reactionLabel: (reaction: {type: string}): string => reaction.type === "unknown" ? "unknown choice" : "valid choice"

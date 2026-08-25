@@ -55,6 +55,28 @@ describe("WebSocketClient", () => {
 		expect(responseHandler).toHaveBeenCalledWith({value: "ok"});
 	});
 
+	it("dispatches a correlated response to pushed consumers as well", () => {
+		const {client, socket} = clientWithSocket();
+		const responseHandler = jest.fn();
+		const pushedHandler = jest.fn();
+		const unregister = client.registerPushedPacketHandler(TestResponse.name, pushedHandler);
+
+		client.sendPacket(new TestRequest(), {
+			[TestResponse.name]: responseHandler as never
+		});
+
+		const sentPacket = JSON.parse(socket.send.mock.calls[0][0] as string) as {id: string};
+		handleIncomingPacket(client, {
+			id: sentPacket.id,
+			name: TestResponse.name,
+			packet: {value: "ok"}
+		});
+
+		expect(responseHandler).toHaveBeenCalledWith({value: "ok"});
+		expect(pushedHandler).toHaveBeenCalledWith({value: "ok"});
+		unregister();
+	});
+
 	it("dispatches a pushed packet to a registered consumer", () => {
 		const {client} = clientWithSocket();
 		const pushedHandler = jest.fn();
