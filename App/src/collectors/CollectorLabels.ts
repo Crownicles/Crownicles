@@ -56,7 +56,7 @@ export function reactionLabel(reaction: ReactionCollectorReaction, data: Reactio
 			return i18n.t("app:collector.refuse");
 		case DRINK_REACTION_KINDS.POTION:
 			return `${AppIcons.getIcon(`potions.${reaction.data.potion.id}`)} ${i18n.t(`models:potions.${reaction.data.potion.id}`)}`;
-		case BIG_EVENT_REACTION_KINDS.POSSIBILITY:
+		case BIG_EVENT_REACTION_KINDS.POSSIBILITY: {
 			if (data.type !== BIG_EVENT_DATA_KINDS.COLLECTOR) {
 				return i18n.t("app:collector.unknownChoice");
 			}
@@ -65,6 +65,7 @@ export function reactionLabel(reaction: ReactionCollectorReaction, data: Reactio
 			const icon = eventReactionIcon(eventId, possibilityName);
 			const label = i18n.t(`events:${eventId}.possibilities.${possibilityName}.text`);
 			return icon ? `${icon} ${label}` : label;
+		}
 		case "unknown":
 			return i18n.t("app:collector.unknownChoice");
 		default: {

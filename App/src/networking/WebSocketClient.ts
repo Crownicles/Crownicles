@@ -215,6 +215,20 @@ export class WebSocketClient {
 		}
 	}
 
+private handleCorrelatedPacket(packetId: string | undefined, packetName: string, packetData: FromServerPacket): boolean {
+		if (!packetId) {
+			return false;
+		}
+
+		const responseHandlerGroup = this.responseHandlers.get(packetId);
+		if (!responseHandlerGroup?.handlers.has(packetName)) {
+			return false;
+		}
+
+		this.handleResponse(packetId, packetName, packetData);
+		return true;
+	}
+
 	private handleIncomingPacket(packet: IncomingPacket): void {
 		if (!packet.name || !packet.packet) {
 			console.warn("Received malformed packet:", packet);
@@ -226,14 +240,10 @@ export class WebSocketClient {
 		const packetName = packet.name;
 		const packetData = packet.packet;
 
-		const responseHandlerGroup = packetId ? this.responseHandlers.get(packetId) : undefined;
-		const hasResponseHandler = Boolean(packetId && responseHandlerGroup?.handlers.has(packetName));
-		if (packetId !== undefined && hasResponseHandler) {
-			this.handleResponse(packetId, packetName, packetData);
-		}
+		const handledAsResponse = this.handleCorrelatedPacket(packetId, packetName, packetData);
 
 		const handledAsPushedPacket = this.pushedPacketRegistry.dispatch(packetName, packetData);
-		if (!hasResponseHandler && !handledAsPushedPacket) {
+		if (!handledAsResponse && !handledAsPushedPacket) {
 			this.pushedPacketRegistry.reportUnhandled(packetName);
 		}
 	}
