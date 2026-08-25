@@ -62,25 +62,28 @@ export function CollectorPrompt({ collector, onChoose }: {
 			<SectionHeader>{collectorTitle(collector.data)}</SectionHeader>
 			{description ? <Note>{description}</Note> : null}
 			<Panel>
-				{choices.map((choice) => (
-					<Pressable
-						key={choice.key}
-						disabled={locked || !isChoosable(choice.reaction)}
-						onPress={(): void => {
-							setAnswered(true);
-							onChoose(choice.index);
-						}}
-						style={styles.choice}
-					>
-						<TwemojiText
-							containerStyle={styles.choiceText}
-							textStyle={[styles.choiceLabel, (locked || !isChoosable(choice.reaction)) && styles.disabled]}
-							emojiSize={Theme.fontSize.body}
+				{choices.map((choice) => {
+					const choosable = isChoosable(choice.reaction, collector.data);
+					return (
+						<Pressable
+							key={choice.key}
+							disabled={locked || !choosable}
+							onPress={(): void => {
+								setAnswered(true);
+								onChoose(choice.index);
+							}}
+							style={styles.choice}
 						>
-							{reactionLabel(choice.reaction, collector.data)}
-						</TwemojiText>
-					</Pressable>
-				))}
+							<TwemojiText
+								containerStyle={styles.choiceText}
+								textStyle={[styles.choiceLabel, (locked || !choosable) && styles.disabled]}
+								emojiSize={Theme.fontSize.body}
+							>
+								{reactionLabel(choice.reaction, collector.data)}
+							</TwemojiText>
+						</Pressable>
+					);
+				})}
 				<Note>
 					{secondsLeft === 0 ? i18n.t("app:collector.expired") : i18n.t("app:collector.timeLeft", { seconds: secondsLeft })}
 				</Note>

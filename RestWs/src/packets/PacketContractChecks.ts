@@ -35,6 +35,7 @@ import {
 } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
 import { ReactionCollectorStopPacket as ReactionCollectorStopPacketWithReason } from "../../../Lib/src/packets/interaction/ReactionCollectorStopPacket";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
+import { Item as LibItem } from "../../../Lib/src/types/Item";
 import { MaterialQuantity as LibMaterialQuantity } from "../../../Lib/src/types/MaterialQuantity";
 import { OwnedPet as LibOwnedPet } from "../../../Lib/src/types/OwnedPet";
 import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
@@ -59,6 +60,7 @@ import { ReactionCollectorEnded as WireReactionCollectorEnded } from "../../../W
 import { ReactionCollectorReactReq } from "../../../WsPackets/src/fromClient/ReactionCollectorReactReq";
 import { ReactionCollectorStop } from "../../../WsPackets/src/fromServer/common/ReactionCollectorStop";
 import { MainItem } from "../../../WsPackets/src/objects/MainItem";
+import { Item } from "../../../WsPackets/src/objects/Item";
 import { MaterialQuantity } from "../../../WsPackets/src/objects/MaterialQuantity";
 import { OwnedPet } from "../../../WsPackets/src/objects/OwnedPet";
 import { SupportItem } from "../../../WsPackets/src/objects/SupportItem";
@@ -140,6 +142,7 @@ type CollectorStopContract = Assert<IsEqual<
 >>;
 
 type MainItemContract = Assert<IsEqual<WireShape<MainItemDetails>, WireShape<MainItem>>>;
+type ItemContract = Assert<IsEqual<WireShape<LibItem>, WireShape<Item>>>;
 type MainItemStatContract = Assert<IsEqual<WireShape<MainItemDetails["attack"]>, WireShape<MainItem["attack"]>>>;
 type MaterialQuantityContract = Assert<IsEqual<WireShape<LibMaterialQuantity>, WireShape<MaterialQuantity>>>;
 type OwnedPetContract = Assert<IsEqual<WireShape<LibOwnedPet>, WireShape<OwnedPet>>>;
@@ -168,6 +171,7 @@ export const packetContractChecks: {
 	collectorsResponseKeys: CollectorsResponseKeysContract;
 	collectorCreationKeys: CollectorCreationKeysContract;
 	mainItem: MainItemContract;
+	item: ItemContract;
 	mainItemStat: MainItemStatContract;
 	materialQuantity: MaterialQuantityContract;
 	ownedPet: OwnedPetContract;
@@ -195,6 +199,7 @@ export const packetContractChecks: {
 	collectorsResponseKeys: true,
 	collectorCreationKeys: true,
 	mainItem: true,
+	item: true,
 	mainItemStat: true,
 	materialQuantity: true,
 	ownedPet: true,

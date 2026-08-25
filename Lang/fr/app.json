@@ -14,7 +14,37 @@
     "titles": {
       "drink": "Quelle potion boire ?",
       "bigEvent": "Événement en cours",
+      "altar": "L'autel des bénédictions",
+      "badPet": "Un familier en colère",
+      "gardener": "Le jardinier",
+      "gobletsGame": "Le jeu des gobelets",
+      "interactOtherPlayers": "Un autre aventurier",
+      "limoges": "Le conteur de Limoges",
+      "lottery": "La loterie",
+      "petFood": "Une trouvaille pour le familier",
+      "witch": "La sorcière",
+      "itemChoice": "Choisir dans l'inventaire",
+      "itemAccept": "Gérer l'objet reçu",
       "unknown": "Une action est en attente"
+    },
+    "descriptions": {
+      "interactOtherPlayers": "Vous croisez un aventurier sur la route. Il semble avoir besoin d'une pièce.",
+      "interactOtherPlayersRanked": "Vous croisez un aventurier classé au rang {{rank}}. Il semble avoir besoin d'une pièce.",
+      "unknownPlayer": "Une rencontre vous attend sur la route.",
+      "gardenerSeed": "Graine proposée : {{seed}}.",
+      "itemChoice": "Votre inventaire est plein. Choisissez l'objet à remplacer par {{item}}.",
+      "itemAccept": "Votre inventaire est plein. Choisissez quoi faire de {{item}} pour accueillir l'objet reçu.",
+      "unknownItem": "cet objet",
+      "unknownPet": "votre familier"
+    },
+    "choices": {
+      "altarContribute": "Offrir {{amount}} {emote:unitValues.money}",
+      "replaceItem": "Remplacer {{item}}",
+      "replaceItemInSlot": "Remplacer {{item}} (emplacement {{slot}})",
+      "drinkPotion": "Boire la potion",
+      "lotteryEasy": "Petite récompense",
+      "lotteryMedium": "Récompense moyenne",
+      "lotteryHard": "Grande récompense"
     }
   },
   "tabs": {

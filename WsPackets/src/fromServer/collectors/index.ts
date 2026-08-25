@@ -10,3 +10,5 @@ export * from "./ReactionCollectorProtocol";
 export * from "./families/GenericReactions";
 export * from "./families/DrinkCollector";
 export * from "./families/BigEventCollector";
+export * from "./families/SmallEventCollectors";
+export * from "./families/ItemCollectors";

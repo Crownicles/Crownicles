@@ -15,16 +15,26 @@ import {
 import {
 	bigEventDataMappings, bigEventReactionMappings
 } from "./mappings/BigEventCollectorMappings";
+import {
+	smallEventDataMappings, smallEventReactionMappings
+} from "./mappings/SmallEventCollectorMappings";
+import {
+	itemDataMappings, itemReactionMappings
+} from "./mappings/ItemCollectorMappings";
 
 const reactionMappings = indexMappings([
 	...genericReactionMappings,
 	...drinkReactionMappings,
-	...bigEventReactionMappings
+	...bigEventReactionMappings,
+	...smallEventReactionMappings,
+	...itemReactionMappings
 ]);
 
 const dataMappings = indexMappings([
 	...drinkDataMappings,
-	...bigEventDataMappings
+	...bigEventDataMappings,
+	...smallEventDataMappings,
+	...itemDataMappings
 ]);
 
 /**

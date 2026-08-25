@@ -5,7 +5,7 @@ import { useGameQuery } from "@/src/store/useGameQuery";
 import { useGameInvalidations } from "@/src/store/GameInvalidations";
 import { GAME_ENTITIES } from "@/src/store/GameEntities";
 import { GameAnswer } from "@/src/networking/GameClient";
-import { DRINK_DATA_KINDS } from "ws-packets/src/fromServer/collectors";
+import { DRINK_DATA_KINDS, ITEM_DATA_KINDS } from "ws-packets/src/fromServer/collectors";
 import { ProfileRes } from "ws-packets/src/fromServer/profile/ProfileRes";
 import { InventoryRes } from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {renderWithGameQuery} from "@/src/testing/testUtils";
@@ -109,5 +109,33 @@ describe("invalidation after a collector is answered", () => {
 		});
 
 		expect(petReads).toBe(1);
+	});
+
+	it("reads the inventory again once an item collector is answered", async () => {
+		let inventoryReads = 0;
+		const readInventory = (): Promise<GameAnswer<InventoryRes>> => {
+			inventoryReads++;
+			return Promise.resolve({ kind: "answer", packet: { foundPlayer: true } as InventoryRes });
+		};
+
+		let answerItem = (): void => undefined;
+
+		function ItemScreen(): ReactElement {
+			useGameQuery<InventoryRes>(GAME_ENTITIES.INVENTORY, readInventory);
+			const { afterCollector } = useGameInvalidations();
+
+			answerItem = (): void => afterCollector(ITEM_DATA_KINDS.CHOICE);
+
+			return <Text>{inventoryReads}</Text>;
+		}
+
+		await renderWithGameQuery(<ItemScreen />);
+		await waitFor(() => expect(inventoryReads).toBe(1));
+
+		await act(async () => {
+			answerItem();
+		});
+
+		await waitFor(() => expect(inventoryReads).toBe(2));
 	});
 });

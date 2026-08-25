@@ -135,6 +135,7 @@ describe("packet contracts", () => {
 			collectorStop: true,
 			collectorsResponseKeys: true,
 			collectorCreationKeys: true,
+			item: true,
 			mainItem: true,
 			mainItemStat: true,
 			materialQuantity: true,
