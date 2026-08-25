@@ -204,35 +204,13 @@ function healthPanel(profileState: RequestState<ProfileRes>): ReactNode {
   );
 }
 
-function AdventureSheet({packet, profileState, currentTime}: {
+function RoutePanel({packet, destination, metrics}: {
   packet: ReportTravelSummaryRes;
-  profileState: RequestState<ProfileRes>;
-  currentTime: number;
+  destination: string;
+  metrics: TravelMetrics;
 }): ReactNode {
-  const metrics = getTravelMetrics(packet, currentTime);
-  const destination = mapName(packet.endMap);
-  const title = packet.isInCity
-    ? i18n.t("app:adventure.cityTitle")
-    : i18n.t("app:adventure.travelTitle");
-  const subtitle = packet.isInCity
-    ? i18n.t("app:adventure.citySubtitle", {location: destination})
-    : i18n.t("app:adventure.travelSubtitle", {
-      destination,
-      time: formatDuration(metrics.remainingMilliseconds)
-    });
-  const activeEffect = isEffectActive(packet, currentTime);
- const lastEventIcon = packet.lastSmallEventId
-    ? AppIcons.getIconOrNull(`smallEvents.${packet.lastSmallEventId}`)
-    : null;
-
   return (
-    <Screen>
-      <Hero
-        eyebrow={i18n.t("app:adventure.eyebrow")}
-        title={title}
-        subtitle={subtitle}
-      />
-
+    <>
       <SectionHeader first>{i18n.t("app:adventure.sections.route")}</SectionHeader>
       <Panel>
         <TravelPath packet={packet} progress={metrics.progress} />
@@ -251,24 +229,41 @@ function AdventureSheet({packet, profileState, currentTime}: {
           />
         )}
       </Panel>
+    </>
+  );
+}
 
-      <SectionHeader>{i18n.t("app:adventure.sections.health")}</SectionHeader>
-      {healthPanel(profileState)}
+function EnergyPanel({packet}: { packet: ReportTravelSummaryRes }): ReactNode {
+  if (!packet.energy.show) {
+    return null;
+  }
 
-      {packet.energy.show && (
-        <>
-          <SectionHeader>{i18n.t("app:adventure.fields.energy")}</SectionHeader>
-          <Panel>
-            <StatBar
-              label={i18n.t("app:adventure.fields.energy")}
-              value={`${packet.energy.current} / ${packet.energy.max}`}
-              ratio={packet.energy.max > NO_PROGRESS ? packet.energy.current / packet.energy.max : NO_PROGRESS}
-              color={Theme.colors.blue}
-            />
-          </Panel>
-        </>
-      )}
+  return (
+    <>
+      <SectionHeader>{i18n.t("app:adventure.fields.energy")}</SectionHeader>
+      <Panel>
+        <StatBar
+          label={i18n.t("app:adventure.fields.energy")}
+          value={`${packet.energy.current} / ${packet.energy.max}`}
+          ratio={packet.energy.max > NO_PROGRESS ? packet.energy.current / packet.energy.max : NO_PROGRESS}
+          color={Theme.colors.blue}
+        />
+      </Panel>
+    </>
+  );
+}
 
+function StatusPanel({packet, currentTime}: {
+  packet: ReportTravelSummaryRes;
+  currentTime: number;
+}): ReactNode {
+  const activeEffect = isEffectActive(packet, currentTime);
+  const lastEventIcon = packet.lastSmallEventId
+    ? AppIcons.getIconOrNull(`smallEvents.${packet.lastSmallEventId}`)
+    : null;
+
+  return (
+    <>
       <SectionHeader>{i18n.t("app:adventure.sections.status")}</SectionHeader>
       <Panel>
         <KeyValue
@@ -292,6 +287,42 @@ function AdventureSheet({packet, profileState, currentTime}: {
             : i18n.t("app:adventure.noEffect")}
         />
       </Panel>
+    </>
+  );
+}
+
+function AdventureSheet({packet, profileState, currentTime}: {
+  packet: ReportTravelSummaryRes;
+  profileState: RequestState<ProfileRes>;
+  currentTime: number;
+}): ReactNode {
+  const metrics = getTravelMetrics(packet, currentTime);
+  const destination = mapName(packet.endMap);
+  const title = packet.isInCity
+    ? i18n.t("app:adventure.cityTitle")
+    : i18n.t("app:adventure.travelTitle");
+  const subtitle = packet.isInCity
+    ? i18n.t("app:adventure.citySubtitle", {location: destination})
+    : i18n.t("app:adventure.travelSubtitle", {
+      destination,
+      time: formatDuration(metrics.remainingMilliseconds)
+    });
+
+  return (
+    <Screen>
+      <Hero
+        eyebrow={i18n.t("app:adventure.eyebrow")}
+        title={title}
+        subtitle={subtitle}
+      />
+
+      <RoutePanel packet={packet} destination={destination} metrics={metrics} />
+
+      <SectionHeader>{i18n.t("app:adventure.sections.health")}</SectionHeader>
+      {healthPanel(profileState)}
+
+      <EnergyPanel packet={packet} />
+      <StatusPanel packet={packet} currentTime={currentTime} />
 
     </Screen>
   );
