@@ -15,6 +15,7 @@ import {
 import {
 	MapLink, MapLinkDataController
 } from "../MapLink";
+import { CityDataController } from "../City";
 import { Effect } from "../../../../Lib/src/types/Effect";
 import { TravelTime } from "../../core/maps/TravelTime";
 import { PetConstants } from "../../../../Lib/src/constants/PetConstants";
@@ -220,7 +221,7 @@ function applyOutcomeNextEvent(outcome: PossibilityOutcome, player: Player): voi
 	}
 }
 
-function getMapTypesDestinationLink(outcome: PossibilityOutcome, player: Player): MapLink {
+export function getMapTypesDestinationLink(outcome: PossibilityOutcome, player: Player): MapLink {
 	const {
 		mapTypesDestination, mapTypesExcludeDestination
 	} = outcome;
@@ -233,12 +234,17 @@ function getMapTypesDestinationLink(outcome: PossibilityOutcome, player: Player)
 		allowedMapTypes = allowedMapTypes.filter(mapType => !mapTypesExcludeDestination.includes(mapType));
 	}
 
+	let destinationLinks = MapLinkDataController.instance.getMapLinksWithMapTypes(
+		allowedMapTypes,
+		player.getDestinationId() ?? -1,
+		mapTypesDestination ? -1 : player.getPreviousMapId() ?? -1
+	);
+	if (outcome.excludeCityDestination) {
+		destinationLinks = destinationLinks.filter(link => !CityDataController.instance.getCityByMapId(link.endMap));
+	}
+
 	return RandomUtils.crowniclesRandom.pick(
-		MapLinkDataController.instance.getMapLinksWithMapTypes(
-			allowedMapTypes,
-			player.getDestinationId() ?? -1,
-			mapTypesDestination ? -1 : player.getPreviousMapId() ?? -1
-		)
+		destinationLinks
 	);
 }
 
@@ -251,7 +257,7 @@ function getNextMapLink(outcome: PossibilityOutcome, player: Player): MapLink | 
 		return Maps.getGoBackMapLink(player);
 	}
 
-	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination) {
+	if (outcome.mapTypesDestination || outcome.mapTypesExcludeDestination || outcome.excludeCityDestination) {
 		return getMapTypesDestinationLink(outcome, player);
 	}
 
@@ -433,6 +439,11 @@ export interface PossibilityOutcome {
 	 * Exclude these map types in the destination choice
 	 */
 	mapTypesExcludeDestination?: string[];
+
+	/**
+	 * Exclude every destination belonging to a city while choosing the next map.
+	 */
+	excludeCityDestination?: boolean;
 
 	/**
 	 * Forced map link
