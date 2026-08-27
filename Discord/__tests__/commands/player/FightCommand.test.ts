@@ -6,9 +6,10 @@ vi.mock("../../../src/bot/CrowniclesShard", () => ({
 
 import { buildFightConfirmationDescription } from "../../../src/commands/player/FightCommand";
 import { ReactionCollectorFightData } from "../../../../Lib/src/packets/interaction/ReactionCollectorFight";
+import { CrowniclesIcons } from "../../../../Lib/src/CrowniclesIcons";
 
 describe("buildFightConfirmationDescription", () => {
-	it("keeps glory numeric in the confirmation message", () => {
+	it("renders the glory icon and its numeric value in the confirmation message", () => {
 		const data = {
 			playerStats: {
 				classId: 21,
@@ -24,6 +25,7 @@ describe("buildFightConfirmationDescription", () => {
 		const description = buildFightConfirmationDescription("fr", "Jack", data, "common");
 
 		expect(description).not.toContain("NaN");
+		expect(description).toContain(CrowniclesIcons.unitValues.glory);
 		expect(description).toMatch(/1\D869/);
 	});
 });
