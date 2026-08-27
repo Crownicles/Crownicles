@@ -4,6 +4,7 @@ import {
 } from "../constants/CookingConstants";
 import { PetFood } from "./PetFood";
 import { MaterialQuantity } from "./MaterialQuantity";
+import type { CookingRecipeId } from "./CookingRecipe";
 
 export interface PlantQuantity {
 	plantId: PlantId;
@@ -26,7 +27,7 @@ export interface RecipeIngredients {
 export interface CookingSlotData {
 	slotIndex: number;
 	recipe: {
-		id: string;
+		id: CookingRecipeId;
 		level: number;
 		isSecret: boolean;
 		outputDescription: string;
@@ -53,13 +54,13 @@ export type CookingCraftError = typeof CookingCraftErrors[keyof typeof CookingCr
  * Minimal recipe info needed to render a recipe as "{icon} Name (level)".
  */
 export interface RecipeDisplayInfo {
-	recipeId: string;
+	recipeId: CookingRecipeId;
 	level: number;
 	recipeType: RecipeType;
 }
 
 export interface PinnedRecipeInfo {
-	recipeId: string;
+	recipeId: CookingRecipeId;
 	level: number;
 	recipeType: RecipeType;
 	outputType: CookingOutputTypeValue;

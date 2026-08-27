@@ -99,6 +99,7 @@ import {
 	CommandReportCookingWoodConfirmReq,
 	CommandReportCookingReviveRes,
 	CommandReportCookingCraftRes,
+	CommandReportCookingMenuReq,
 	CommandReportCookingMenuRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
 import { CookingCraftErrors, CookingSlotData } from "../../../Lib/src/types/CookingTypes";
@@ -388,19 +389,19 @@ describe("CookingFeatureHandler", () => {
 			expect(result).toBe(false);
 		});
 
-		it("should ignore craft selection with invalid slot index", async () => {
+		it("should refresh the menu for a legacy craft button without a recipe ID", async () => {
 			const ctx = createHandlerContext({
 				homeData: createCookingHomeData(2)
 			});
-			const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}notanumber:test_recipe`;
+			const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0`;
 			const interaction = createMockComponentInteraction(craftValue);
 			const nestedMenus = createMockNestedMenus();
 
 			const result = await handler.handleSubMenuSelection(ctx, craftValue, interaction as any, nestedMenus as any);
 
 			expect(result).toBe(true);
-			// No MQTT call since slot index is NaN
-			expect(DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse).not.toHaveBeenCalled();
+			const sendMock = DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse as ReturnType<typeof vi.fn>;
+			expect(sendMock.mock.calls[0][1]).toBeInstanceOf(CommandReportCookingMenuReq);
 		});
 	});
 
@@ -913,6 +914,36 @@ describe("CookingFeatureHandler", () => {
 			// Now check state via getMenuOption
 			const option = handler.getMenuOption(ctx);
 			expect(option!.description).toContain('"level":20');
+		});
+
+		it("should bind each rendered craft button to its recipe ID", async () => {
+			const ctx = createHandlerContext({
+				homeData: createCookingHomeData(2)
+			});
+			const nestedMenus = createMockNestedMenus();
+
+			await handler.handleSubMenuSelection(
+				ctx,
+				HomeMenuIds.COOKING_IGNITE,
+				createMockComponentInteraction(HomeMenuIds.COOKING_IGNITE) as any,
+				nestedMenus as any
+			);
+			await simulateMqttResponse(CommandReportCookingIgniteRes.name, {
+				menu: {
+					cookingLevel: 5,
+					cookingGrade: "apprentice",
+					currentSlots: [createSlotWithRecipe({
+						slotIndex: 0,
+						recipeId: "testRecipe"
+					})],
+					isIgnited: true
+				},
+				woodConsumed: true,
+				woodMaterialId: 1
+			} as CommandReportCookingIgniteRes);
+
+			const menuOptions = (nestedMenus.registerMenu as ReturnType<typeof vi.fn>).mock.calls[0][1];
+			expect(JSON.stringify(menuOptions.containers)).toContain(`${HomeMenuIds.COOKING_CRAFT_PREFIX}0:testRecipe`);
 		});
 	});
 });
