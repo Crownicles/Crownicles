@@ -63,6 +63,7 @@ import { PlayerCookingRecipe } from "../database/game/models/PlayerCookingRecipe
 import { crowniclesInstance } from "../../app";
 import { MissionsController } from "../missions/MissionsController";
 import type { CookingUseLogParams } from "../database/logs/LogsCityLogger";
+import type { CookingRecipeId } from "../../../../Lib/src/types/CookingRecipe";
 
 interface PlayerAndHome {
 	player: Player;
@@ -719,7 +720,7 @@ function validateCraftRequest(
 	slot: CookingSlotData | undefined,
 	recipe: CookingRecipeData | undefined,
 	guild: Guild | null,
-	requestedRecipeId: string
+	requestedRecipeId: CookingRecipeId
 ): CookingCraftError | null {
 	if (!slot?.recipe || !recipe) {
 		return CookingCraftErrors.CRAFT_UNAVAILABLE;

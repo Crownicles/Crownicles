@@ -7,6 +7,9 @@ import {
 } from "../constants/CookingConstants";
 import { PetFood } from "./PetFood";
 
+/** Identifier of a cooking recipe stored in the recipe data set. */
+export type CookingRecipeId = string;
+
 export interface CookingRecipeMaterial {
 	materialId: number;
 	quantity: number;
@@ -24,7 +27,7 @@ export interface PetFoodRecipe {
 }
 
 export interface CookingRecipe {
-	id: string;
+	id: CookingRecipeId;
 	level: number;
 	recipeType: RecipeType;
 	plants: CookingRecipePlant[];

@@ -48,6 +48,7 @@ import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtil
 import { buildCustomId } from "../../../../../utils/CustomIdUtils";
 import { buildRecipeDiscoveryMessage } from "../../../../../utils/CookingDisplayUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import type { CookingRecipeId } from "../../../../../../../Lib/src/types/CookingRecipe";
 
 /**
  * Cosmetic cache of the last menu state known to the client.
@@ -73,7 +74,7 @@ interface CookingSessionState {
 
 interface CookingCraftSelection {
 	slotIndex: number;
-	recipeId: string;
+	recipeId: CookingRecipeId;
 }
 
 export class CookingFeatureHandler implements HomeFeatureHandler {
@@ -251,6 +252,11 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		}
 		const craftSelection = this.parseCraftSelection(selectedValue);
 		if (!craftSelection) {
+			/*
+			 * Buttons rendered before the recipe ID was added use the legacy
+			 * slot-only format. Refresh instead of crafting from a stale snapshot.
+			 */
+			await this.fetchAndShowCookingMenu(ctx, nestedMenus);
 			return true;
 		}
 		await this.sendCraftAction(ctx, craftSelection, nestedMenus);
@@ -264,18 +270,13 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private parseCraftSelection(selectedValue: string): CookingCraftSelection | null {
 		const payload = selectedValue.slice(HomeMenuIds.COOKING_CRAFT_PREFIX.length);
-		const separatorIndex = payload.indexOf(":");
-		if (separatorIndex <= 0 || separatorIndex !== payload.lastIndexOf(":")) {
-			return null;
-		}
-		const slotIndex = Number(payload.slice(0, separatorIndex));
-		const recipeId = payload.slice(separatorIndex + 1);
-		if (!Number.isInteger(slotIndex) || slotIndex < 0 || !recipeId) {
+		const selection = (/^(\d+):([^:]+)$/).exec(payload);
+		if (!selection) {
 			return null;
 		}
 		return {
-			slotIndex,
-			recipeId
+			slotIndex: Number(selection[1]),
+			recipeId: selection[2]
 		};
 	}
 
@@ -685,10 +686,10 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	}
 
 	/**
-	 * Keep the slot and recipe in one custom-ID part: recipe identifiers contain
-	 * underscores, which are reserved by buildCustomId for multi-part payloads.
+	 * Keep the slot and recipe in one custom-ID part because buildCustomId uses
+	 * underscores to separate multiple parts.
 	 */
-	private buildCraftCustomId(slotIndex: number, recipeId: string): string {
+	private buildCraftCustomId(slotIndex: number, recipeId: CookingRecipeId): string {
 		return buildCustomId(HomeMenuIds.COOKING_CRAFT_PREFIX, `${slotIndex}:${recipeId}`);
 	}
 
