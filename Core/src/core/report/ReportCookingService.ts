@@ -718,9 +718,18 @@ function getCraftErrorInfo(
 function validateCraftRequest(
 	slot: CookingSlotData | undefined,
 	recipe: CookingRecipeData | undefined,
-	guild: Guild | null
+	guild: Guild | null,
+	requestedRecipeId: string
 ): CookingCraftError | null {
 	if (!slot?.recipe || !recipe) {
+		return CookingCraftErrors.CRAFT_UNAVAILABLE;
+	}
+
+	/*
+	 * The displayed menu is a snapshot. Never craft whatever currently happens
+	 * to occupy a slot when the snapshot used for the click is stale.
+	 */
+	if (slot.recipe.id !== requestedRecipeId) {
 		return CookingCraftErrors.CRAFT_UNAVAILABLE;
 	}
 	if (recipe.outputType === CookingOutputType.PET_FOOD && !guild) {
@@ -923,7 +932,12 @@ export async function handleCookingCraft(
 		return [];
 	}
 
-	const validationError = validateCraftRequest(craftContext.slot, craftContext.recipe, craftContext.guild);
+	const validationError = validateCraftRequest(
+		craftContext.slot,
+		craftContext.recipe,
+		craftContext.guild,
+		packet.recipeId
+	);
 	if (validationError) {
 		return [await buildBlockedCookingCraftPacket(craftContext, validationError)];
 	}

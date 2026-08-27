@@ -672,6 +672,12 @@ export class CommandReportCookingReviveRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingCraftReq extends CrowniclesPacket {
 	slotIndex!: number;
+
+	/**
+	 * Recipe shown in the menu snapshot that produced this request. Core uses
+	 * it as an optimistic-concurrency guard before consuming ingredients.
+	 */
+	recipeId!: string;
 }
 
 export interface CraftPetFoodResult {
