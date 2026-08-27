@@ -347,7 +347,7 @@
     "members": "{emote:guild.membersCount} {{memberCount, number}}/{{maxGuildMembers, number}} members",
     "infoTitle": "Information",
     "islandInfo": "{emote:guild.isOnPveIsland} Number of allies on the mysterious island: {{membersOnPveIsland}}\n",
-    "info": "{emote:unitValues.xp} {{experience}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
+    "info": "{emote:unitValues.xp} {{experience, number}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
     "xpNeeded": "{{xp, number}} / {{xpToLevelUp, number}}",
     "xpMax": "Max",
     "ranking": "{{rank, number}} / {{rankTotal, number}}",

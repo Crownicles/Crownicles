@@ -347,7 +347,7 @@
     "members": ":person_pouting: {{memberCount, number}}/{{maxGuildMembers, number}} membros",
     "infoTitle": "Informações",
     "islandInfo": ":island: Número de aliados na ilha misteriosa: {{membersOnPveIsland}}\n",
-    "info": ":star: {{experience}} :mirror_ball: {{guildPoints, number}} :trophy: {{ranking}}|",
+    "info": ":star: {{experience, number}} :mirror_ball: {{guildPoints, number}} :trophy: {{ranking}}|",
     "xpNeeded": "{{xp, number}} / {{xpToLevelUp, number}}",
     "xpMax": "Máximo",
     "ranking": "{{rank, number}} / {{rankTotal, number}}",
