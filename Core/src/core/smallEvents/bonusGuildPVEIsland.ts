@@ -1,4 +1,4 @@
-/* @lockInherited — body runs under loadAndExecuteSmallEvents withLockedPlayerAndMissions callback. */
+/* @lockInherited — player write paths run under loadAndExecuteSmallEvents withLockedPlayerAndMissions; guild writes use Guild.withLocked. */
 import {
 	SmallEventDataController, SmallEventFuncs
 } from "../../data/SmallEvent";
@@ -16,7 +16,8 @@ import { Maps } from "../maps/Maps";
 import Player from "../database/game/models/Player";
 import { RandomUtils } from "../../../../Lib/src/utils/RandomUtils";
 import { NumberChangeReason } from "../../../../Lib/src/constants/LogsConstants";
-import { Guilds } from "../database/game/models/Guild";
+import { Guild } from "../database/game/models/Guild";
+import { LockedRowNotFoundError } from "../../../../Lib/src/locks/withLockedEntities";
 
 enum Outcome {
 	EXPERIENCE = "experience",
@@ -73,23 +74,33 @@ function getEmoteKey(rewardKind: Outcome, isExperienceGain: boolean): SmallEvent
 }
 
 async function manageGuildReward(response: CrowniclesPacket[], player: Player, result: RewardResult): Promise<void> {
-	const guild = await Guilds.getById(player.guildId);
-	if (!guild) {
+	if (!player.guildId) {
 		return;
 	}
-	if (guild.isAtMaxLevel()) {
-		result.isExperienceGain = false;
+
+	try {
+		await Guild.withLocked(player.guildId, async guild => {
+			if (guild.isAtMaxLevel()) {
+				result.isExperienceGain = false;
+			}
+			const params = {
+				amount: result.amount, response, reason: NumberChangeReason.SMALL_EVENT
+			};
+			if (result.isExperienceGain) {
+				await guild.addExperience(params);
+			}
+			else {
+				await guild.addScore(params);
+			}
+			await guild.save();
+		});
 	}
-	const params = {
-		amount: result.amount, response, reason: NumberChangeReason.SMALL_EVENT
-	};
-	if (result.isExperienceGain) {
-		await guild.addExperience(params);
+	catch (error) {
+		if (error instanceof LockedRowNotFoundError) {
+			return;
+		}
+		throw error;
 	}
-	else {
-		await guild.addScore(params);
-	}
-	await guild.save();
 }
 
 async function manageClassicReward(response: CrowniclesPacket[], player: Player, result: RewardResult, rewardKind: Outcome): Promise<void> {
@@ -143,7 +154,7 @@ async function applyPossibility(
 	}
 	return {
 		...result,
-		emoteKey: getEmoteKey(rewardKind, isExperienceGain)
+		emoteKey: getEmoteKey(rewardKind, result.isExperienceGain)
 	};
 }
 
