@@ -181,6 +181,58 @@ describe("canAutoChooseDestination", () => {
 });
 
 describe("chooseDestination collector", () => {
+	it("retries travel persistence after a connection setup timeout", async () => {
+		capturedEndCallback = undefined;
+		vi.clearAllMocks();
+		isOnPveIslandMock.mockReturnValue(true);
+		getNextPlayerAvailableMapsMock.mockReturnValue([2, 3]);
+		getMapLinkByLocationsMock.mockReturnValue({
+			id: 12, endMap: 2, tripDuration: 10
+		});
+		getMapLocationByIdMock.mockReturnValue({ type: "cavern" });
+
+		const connectionTimeout = Object.assign(new Error("Connection timeout: failed to create socket"), {
+			name: "SequelizeConnectionError",
+			parent: {
+				code: "ER_CONNECTION_TIMEOUT",
+				sql: null
+			}
+		});
+		startTravelMock
+			.mockRejectedValueOnce(connectionTimeout)
+			.mockResolvedValueOnce(undefined);
+
+		const player = {
+			id: 1,
+			keycloakId: "destination-player",
+			mapLinkId: 1,
+			getDestinationId: (): number => 1,
+			getPreviousMapId: (): number => 0,
+			effectRemainingTime: (): number => 0
+		} as Player;
+
+		await chooseDestination({} as never, player, null, [], { allowStayInCity: false });
+
+		if (!capturedEndCallback) {
+			throw new Error("Expected destination collector callback to be set");
+		}
+
+		await expect(capturedEndCallback({
+			getFirstReaction: () => ({
+				reaction: {
+					type: "chooseDestination",
+					data: { mapId: 2 }
+				}
+			})
+		}, [])).resolves.toBeUndefined();
+
+		expect(startTravelMock).toHaveBeenCalledTimes(2);
+		expect(BlockingUtils.unblockPlayer).toHaveBeenCalledWith(
+			player.keycloakId,
+			BlockingConstants.REASONS.CHOOSE_DESTINATION
+		);
+	});
+
 	it("releases the destination lock when travel persistence fails", async () => {
 		capturedEndCallback = undefined;
 		vi.clearAllMocks();
