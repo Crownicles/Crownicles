@@ -145,6 +145,19 @@ export abstract class TravelTime {
 	}
 
 	/**
+	 * Get how far a player has progressed through their current trip, clamped
+	 * between the departure (0) and the destination (1).
+	 */
+	static getTravelProgress(player: Player, date = new Date()): number {
+		const travelData = this.getTravelDataSimplified(player, date);
+		const tripDuration = travelData.travelEndTime - travelData.travelStartTime - travelData.effectDuration;
+		if (tripDuration <= 0) {
+			return 1;
+		}
+		return Math.min(1, Math.max(0, travelData.playerTravelledTime / tripDuration));
+	}
+
+	/**
 	 * Move travel-related timers by a duration expressed in milliseconds.
 	 *
 	 * @param player The player

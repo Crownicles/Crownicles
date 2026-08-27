@@ -23,23 +23,11 @@ function getBiomeExpeditionType(mapType: string | undefined): ExpeditionLocation
 }
 
 /**
- * Compute the travel progress of the player (0 at the start of the trip, 1 once arrived).
- */
-function getTravelProgress(player: Player): number {
-	const travelData = TravelTime.getTravelDataSimplified(player, new Date());
-	const tripDuration = travelData.travelEndTime - travelData.travelStartTime - travelData.effectDuration;
-	if (tripDuration <= 0) {
-		return 1;
-	}
-	return Math.min(1, Math.max(0, travelData.playerTravelledTime / tripDuration));
-}
-
-/**
  * Pick the biome to loot from: it blends the origin and destination biomes, the destination being
  * more likely the further along the trip the player is.
  */
 function pickBiomeExpeditionType(player: Player): ExpeditionLocationType {
-	const progress = getTravelProgress(player);
+	const progress = TravelTime.getTravelProgress(player);
 	return RandomUtils.crowniclesRandom.realZeroToOneInclusive() < progress
 		? getBiomeExpeditionType(player.getDestination()?.type)
 		: getBiomeExpeditionType(player.getPreviousMap()?.type);

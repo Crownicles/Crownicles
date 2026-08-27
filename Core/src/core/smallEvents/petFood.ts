@@ -101,11 +101,11 @@ function getProbabilities(type: string): { [key: string]: number } {
 }
 
 /**
- * Determine the type of food found based on the player's current map location
+ * Determine the type of food found from the origin or destination biome, weighted by travel progress.
  * @param player - The player finding the food
  * @returns The food type identifier
  */
-function getFoodType(player: Player): string {
+export function getFoodType(player: Player): string {
 	const mapLink = MapLinkDataController.instance.getById(player.mapLinkId)!;
 	const endMap = MapLocationDataController.instance.getById(mapLink.endMap)!;
 	const startMap = MapLocationDataController.instance.getById(mapLink.startMap)!;
@@ -114,7 +114,10 @@ function getFoodType(player: Player): string {
 		return SmallEventConstants.PET_FOOD.FOOD_TYPES.SOUP;
 	}
 
-	const probabilities = getProbabilities(endMap.type);
+	const selectedMap = RandomUtils.crowniclesRandom.realZeroToOneInclusive() < TravelTime.getTravelProgress(player)
+		? endMap
+		: startMap;
+	const probabilities = getProbabilities(selectedMap.type);
 	const rand = RandomUtils.crowniclesRandom.realZeroToOneInclusive();
 	let cumulativeProbability = 0;
 	for (const [foodType, probability] of Object.entries(probabilities)) {
