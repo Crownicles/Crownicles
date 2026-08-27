@@ -12,7 +12,7 @@ import { DailyMissions } from "../database/game/models/DailyMission";
  * / `setGloryPoints` / `addRage` / level-up): those all go through `MissionsController.update`,
  * which locks `player_missions_info` + `players`. Locking a player-only row first and then
  * letting the nested mission update acquire `player_missions_info` inverts the canonical lock
- * order (`players -> player_missions_info`) and can deadlock against a concurrent standalone
+ * order (`player_missions_info -> players`) and can deadlock against a concurrent standalone
  * mission update on the same player. Acquiring both rows up-front keeps the order canonical.
  * The daily mission is resolved before either row is locked because its rollover resets every
  * `player_missions_info` row. Running that reset under a per-player lock can deadlock with another
