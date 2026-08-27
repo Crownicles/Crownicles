@@ -4,7 +4,6 @@ import {
 import { BlockingConstants } from "../../../../Lib/src/constants/BlockingConstants";
 import { Constants } from "../../../../Lib/src/constants/Constants";
 import type { Player } from "../../../src/core/database/game/models/Player";
-import { PlayerSmallEvents } from "../../../src/core/database/game/models/PlayerSmallEvent";
 import type { MapLink } from "../../../src/data/MapLink";
 import { BlockingUtils } from "../../../src/core/utils/BlockingUtils";
 
@@ -233,6 +232,56 @@ describe("chooseDestination collector", () => {
 		);
 	});
 
+	it("does not retry travel persistence when a query may have been sent", async () => {
+		capturedEndCallback = undefined;
+		vi.clearAllMocks();
+		isOnPveIslandMock.mockReturnValue(true);
+		getNextPlayerAvailableMapsMock.mockReturnValue([2, 3]);
+		getMapLinkByLocationsMock.mockReturnValue({
+			id: 12, endMap: 2, tripDuration: 10
+		});
+		getMapLocationByIdMock.mockReturnValue({ type: "cavern" });
+
+		const ambiguousConnectionTimeout = Object.assign(new Error("Connection timeout after a query was sent"), {
+			name: "SequelizeConnectionError",
+			parent: {
+				code: "ER_CONNECTION_TIMEOUT",
+				sql: "UPDATE players SET mapLinkId = ?"
+			}
+		});
+		startTravelMock.mockRejectedValue(ambiguousConnectionTimeout);
+
+		const player = {
+			id: 1,
+			keycloakId: "destination-player",
+			mapLinkId: 1,
+			getDestinationId: (): number => 1,
+			getPreviousMapId: (): number => 0,
+			effectRemainingTime: (): number => 0
+		} as Player;
+
+		await chooseDestination({} as never, player, null, [], { allowStayInCity: false });
+
+		if (!capturedEndCallback) {
+			throw new Error("Expected destination collector callback to be set");
+		}
+
+		await expect(capturedEndCallback({
+			getFirstReaction: () => ({
+				reaction: {
+					type: "chooseDestination",
+					data: { mapId: 2 }
+				}
+			})
+		}, [])).rejects.toBe(ambiguousConnectionTimeout);
+
+		expect(startTravelMock).toHaveBeenCalledTimes(1);
+		expect(BlockingUtils.unblockPlayer).toHaveBeenCalledWith(
+			player.keycloakId,
+			BlockingConstants.REASONS.CHOOSE_DESTINATION
+		);
+	});
+
 	it("releases the destination lock when travel persistence fails", async () => {
 		capturedEndCallback = undefined;
 		vi.clearAllMocks();
@@ -242,7 +291,6 @@ describe("chooseDestination collector", () => {
 			id: 12, endMap: 2, tripDuration: 10
 		});
 		getMapLocationByIdMock.mockReturnValue({ type: "cavern" });
-		vi.mocked(PlayerSmallEvents.removeSmallEventsOfPlayer).mockResolvedValue(undefined);
 		startTravelMock.mockRejectedValue(new Error("Database connection timed out"));
 
 		const player = {
