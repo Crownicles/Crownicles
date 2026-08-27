@@ -133,36 +133,38 @@ function sendDestinationCollector(
 	const collector = new ReactionCollectorChooseDestination(mapReactions, stayInCityAllowed);
 
 	const endCallback: EndCallback = async (collector, response) => {
-		const firstReaction = collector.getFirstReaction();
+		try {
+			const firstReaction = collector.getFirstReaction();
 
-		// Doing nothing (timeout) or explicitly choosing it defaults to staying in the city when that option is offered.
-		const staysInCity = stayInCityAllowed
-			&& (!firstReaction || firstReaction.reaction.type === ReactionCollectorStayInCityReaction.name);
-		if (staysInCity) {
-			await applyStayInCity(player, response);
+			// Doing nothing (timeout) or explicitly choosing it defaults to staying in the city when that option is offered.
+			const staysInCity = stayInCityAllowed
+				&& (!firstReaction || firstReaction.reaction.type === ReactionCollectorStayInCityReaction.name);
+			if (staysInCity) {
+				await applyStayInCity(player, response);
+				return;
+			}
+
+			const mapId = firstReaction
+				? (firstReaction.reaction.data as ReactionCollectorChooseDestinationReaction).mapId
+				: RandomUtils.crowniclesRandom.pick(mapReactions).mapId;
+			const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
+			const endMap = MapLocationDataController.instance.getById(mapId);
+			if (!newLink || !endMap) {
+				CrowniclesLogger.error(`No map link or location found for chosen destination ${player.getDestinationId()} -> ${mapId}`);
+				return;
+			}
+
+			await Maps.startTravel(player, newLink, Date.now());
+
+			addDestinationResToResponse(response, {
+				mapLink: newLink,
+				mapTypeId: endMap.type,
+				tripDuration: newLink.tripDuration ?? 0
+			});
+		}
+		finally {
 			BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
-			return;
 		}
-
-		const mapId = firstReaction
-			? (firstReaction.reaction.data as ReactionCollectorChooseDestinationReaction).mapId
-			: RandomUtils.crowniclesRandom.pick(mapReactions).mapId;
-		const newLink = MapLinkDataController.instance.getLinkByLocations(player.getDestinationId()!, mapId);
-		const endMap = MapLocationDataController.instance.getById(mapId);
-		if (!newLink || !endMap) {
-			CrowniclesLogger.error(`No map link or location found for chosen destination ${player.getDestinationId()} -> ${mapId}`);
-			return;
-		}
-
-		await Maps.startTravel(player, newLink, Date.now());
-
-		addDestinationResToResponse(response, {
-			mapLink: newLink,
-			mapTypeId: endMap.type,
-			tripDuration: newLink.tripDuration ?? 0
-		});
-
-		BlockingUtils.unblockPlayer(player.keycloakId, BlockingConstants.REASONS.CHOOSE_DESTINATION);
 	};
 
 	const packet = new ReactionCollectorInstance(
