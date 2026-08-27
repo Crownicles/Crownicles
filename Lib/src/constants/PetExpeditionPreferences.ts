@@ -209,6 +209,15 @@ export const PET_EXPEDITION_PREFERENCES: Record<number, PetExpeditionPreferenceC
 		disliked: ["desert"]
 	},
 
+	// Sea urchin - Coastal creature
+	103: {
+		liked: [
+			"coast",
+			"swamp"
+		],
+		disliked: ["desert", "mountain"]
+	},
+
 	// Rat - Ultimate survivor, thrives in ruins
 	93: {
 		liked: [
