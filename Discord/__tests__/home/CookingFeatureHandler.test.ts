@@ -366,7 +366,7 @@ describe("CookingFeatureHandler", () => {
 			const ctx = createHandlerContext({
 				homeData: createCookingHomeData(2)
 			});
-			const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0`;
+			const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0:test_recipe`;
 			const interaction = createMockComponentInteraction(craftValue);
 			const nestedMenus = createMockNestedMenus();
 
@@ -392,7 +392,7 @@ describe("CookingFeatureHandler", () => {
 			const ctx = createHandlerContext({
 				homeData: createCookingHomeData(2)
 			});
-			const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}notanumber`;
+			const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}notanumber:test_recipe`;
 			const interaction = createMockComponentInteraction(craftValue);
 			const nestedMenus = createMockNestedMenus();
 
@@ -638,7 +638,7 @@ describe("CookingFeatureHandler", () => {
 				const ctx = createHandlerContext({
 					homeData: createCookingHomeData(2)
 				});
-				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}1`;
+				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}1:test_recipe`;
 				const interaction = createMockComponentInteraction(craftValue);
 				const nestedMenus = createMockNestedMenus();
 				nestedMenus.message = {
@@ -652,9 +652,10 @@ describe("CookingFeatureHandler", () => {
 
 				const sendMock = DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse as ReturnType<typeof vi.fn>;
 				expect(sendMock).toHaveBeenCalled();
-				// Verify the packet has slotIndex = 1
+				// The request remains bound to the recipe rendered in the button.
 				const packetArg = sendMock.mock.calls[0][1];
 				expect(packetArg).toHaveProperty("slotIndex", 1);
+				expect(packetArg).toHaveProperty("recipeId", "test_recipe");
 			});
 
 			it("should handle craft success response", async () => {
@@ -662,7 +663,7 @@ describe("CookingFeatureHandler", () => {
 					homeData: createCookingHomeData(2),
 					packet: createMockPacket([{ type: ReactionCollectorHomeMenuReaction.name }]) as HomeFeatureHandlerContext["packet"]
 				});
-				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0`;
+				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0:test_recipe`;
 				const interaction = createMockComponentInteraction(craftValue);
 				const nestedMenus = createMockNestedMenus();
 				nestedMenus.message = {
@@ -701,7 +702,7 @@ describe("CookingFeatureHandler", () => {
 					homeData: createCookingHomeData(2),
 					packet: createMockPacket([{ type: ReactionCollectorHomeMenuReaction.name }]) as HomeFeatureHandlerContext["packet"]
 				});
-				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0`;
+				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0:test_recipe`;
 				const interaction = createMockComponentInteraction(craftValue);
 				const nestedMenus = createMockNestedMenus();
 				nestedMenus.message = {
@@ -734,7 +735,7 @@ describe("CookingFeatureHandler", () => {
 					homeData: createCookingHomeData(2),
 					packet: createMockPacket([{ type: ReactionCollectorHomeMenuReaction.name }]) as HomeFeatureHandlerContext["packet"]
 				});
-				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0`;
+				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0:test_recipe`;
 				const interaction = createMockComponentInteraction(craftValue);
 				const nestedMenus = createMockNestedMenus();
 				nestedMenus.message = {
@@ -769,7 +770,7 @@ describe("CookingFeatureHandler", () => {
 					homeData: createCookingHomeData(2),
 					packet: createMockPacket([{ type: ReactionCollectorHomeMenuReaction.name }]) as HomeFeatureHandlerContext["packet"]
 				});
-				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0`;
+				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0:test_recipe`;
 				const interaction = createMockComponentInteraction(craftValue);
 				const nestedMenus = createMockNestedMenus();
 				nestedMenus.message = {
@@ -807,7 +808,7 @@ describe("CookingFeatureHandler", () => {
 					homeData: createCookingHomeData(2),
 					packet: createMockPacket([{ type: ReactionCollectorHomeMenuReaction.name }]) as HomeFeatureHandlerContext["packet"]
 				});
-				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0`;
+				const craftValue = `${HomeMenuIds.COOKING_CRAFT_PREFIX}0:test_recipe`;
 				const nestedMenus = createMockNestedMenus();
 				nestedMenus.message = {
 					reply: vi.fn().mockResolvedValue(undefined)
