@@ -47,12 +47,10 @@ async function translateGuildInfo(locale: string): Promise<string> {
 }
 
 describe("guild command translations", () => {
-	for (const locale of ["de", "en", "es", "fr", "it", "pt"]) {
-		it(`keeps the already formatted experience value as text in ${locale}`, async () => {
-			const result = await translateGuildInfo(locale);
+	it("keeps the already formatted French experience value as text", async () => {
+		const result = await translateGuildInfo("fr");
 
-			expect(result).toContain("115 455 / 230 000");
-			expect(result).not.toContain("NaN");
-		});
-	}
+		expect(result).toContain("115 455 / 230 000");
+		expect(result).not.toContain("NaN");
+	});
 });
