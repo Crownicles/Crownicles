@@ -16,6 +16,7 @@ import { RandomUtils } from '../../../../Lib/src/utils/RandomUtils';
 import { ReactionCollectorItemChoiceItemReaction } from '../../../../Lib/src/packets/interaction/ReactionCollectorItemChoice';
 import { ReactionCollectorAcceptReaction } from '../../../../Lib/src/packets/interaction/ReactionCollectorPacket';
 import { MainItem } from '../../../src/data/MainItem';
+import { Potion } from '../../../src/data/Potion';
 
 type CapturedCollector = {
 	getFirstReaction: () => {
@@ -27,6 +28,18 @@ type CapturedCollector = {
 };
 
 let capturedCollectorCallback: ((collector: CapturedCollector, response: CrowniclesPacket[]) => Promise<void>) | undefined;
+let capturedCollectorPacket: {
+	data: {
+		data: {
+			itemWithDetails?: { usages?: number };
+		};
+	};
+	reactions: {
+		data: {
+			itemWithDetails?: { usages?: number };
+		};
+	}[];
+} | undefined;
 
 // Mock all external dependencies
 vi.mock('../../../src/core/database/game/models/InventorySlot');
@@ -42,6 +55,7 @@ vi.mock('../../../src/core/utils/BlockingUtils');
 vi.mock('../../../src/core/utils/ReactionsCollector', () => ({
 	ReactionCollectorInstance: class {
 		constructor(collector: any, context: any, options: any, callback: any) {
+			capturedCollectorPacket = collector.creationPacket('test-collector', 0);
 			capturedCollectorCallback = callback;
 		}
 		block() {
@@ -131,6 +145,7 @@ describe('ItemUtils - giveItemToPlayer', () => {
 		// Clear all mocks
 		vi.clearAllMocks();
 		capturedCollectorCallback = undefined;
+		capturedCollectorPacket = undefined;
 
 		// Mock player
 		mockPlayer = {
@@ -446,6 +461,76 @@ describe('ItemUtils - giveItemToPlayer', () => {
 
 			// Assert
 			expect(mockResponse).toHaveLength(2); // ItemFoundPacket + ReactionCollectorInstance
+		});
+
+		it('should show the remaining usages of a potion when replacing a single-slot inventory', async () => {
+			const existingPotion = {
+				id: 50,
+				getDisplayPacket: vi.fn().mockReturnValue({ usages: 2 })
+			};
+			Object.setPrototypeOf(existingPotion, Potion.prototype);
+			mockInventorySlots[0] = {
+				playerId: 1,
+				slot: 0,
+				itemCategory: ItemCategory.POTION,
+				itemId: existingPotion.id,
+				itemLevel: 0,
+				itemEnchantmentId: null,
+				remainingPotionUsages: 2,
+				isEquipped: vi.fn().mockReturnValue(true),
+				isPotion: vi.fn().mockReturnValue(true),
+				getItem: vi.fn().mockReturnValue(existingPotion)
+			};
+
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
+
+			expect(existingPotion.getDisplayPacket).toHaveBeenCalledWith(100, 2);
+			expect(capturedCollectorPacket?.data.data.itemWithDetails).toEqual({ usages: 2 });
+		});
+
+		it('should show the remaining usages of every potion in a multi-slot replacement choice', async () => {
+			const firstPotion = {
+				id: 50,
+				getDisplayPacket: vi.fn().mockReturnValue({ usages: 2 })
+			};
+			const secondPotion = {
+				id: 51,
+				getDisplayPacket: vi.fn().mockReturnValue({ usages: 1 })
+			};
+			Object.setPrototypeOf(firstPotion, Potion.prototype);
+			Object.setPrototypeOf(secondPotion, Potion.prototype);
+			mockInventoryInfo.slotLimitForCategory.mockReturnValue(2);
+			mockInventorySlots[0] = {
+				playerId: 1,
+				slot: 0,
+				itemCategory: ItemCategory.POTION,
+				itemId: firstPotion.id,
+				itemLevel: 0,
+				itemEnchantmentId: null,
+				remainingPotionUsages: 2,
+				isEquipped: vi.fn().mockReturnValue(true),
+				isPotion: vi.fn().mockReturnValue(true),
+				getItem: vi.fn().mockReturnValue(firstPotion)
+			};
+			mockInventorySlots.push({
+				playerId: 1,
+				slot: 1,
+				itemCategory: ItemCategory.POTION,
+				itemId: secondPotion.id,
+				itemLevel: 0,
+				itemEnchantmentId: null,
+				remainingPotionUsages: 1,
+				isEquipped: vi.fn().mockReturnValue(false),
+				isPotion: vi.fn().mockReturnValue(true),
+				getItem: vi.fn().mockReturnValue(secondPotion)
+			});
+
+			await giveItemToPlayer(mockResponse, mockContext, mockPlayer, mockItem);
+
+			expect(firstPotion.getDisplayPacket).toHaveBeenCalledWith(100, 2);
+			expect(secondPotion.getDisplayPacket).toHaveBeenCalledWith(100, 1);
+			expect(capturedCollectorPacket?.reactions.slice(0, 2).map(reaction => reaction.data.itemWithDetails))
+				.toEqual([{ usages: 2 }, { usages: 1 }]);
 		});
 
 		it('should auto-sell fight potions when all are same', async () => {

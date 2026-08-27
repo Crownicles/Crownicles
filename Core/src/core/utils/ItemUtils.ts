@@ -363,7 +363,13 @@ function manageMoreThan2ItemsSwitching(
 	},
 	tradableItems.map(i => ({
 		slot: i.slot,
-		itemWithDetails: toItemWithDetails(whoIsConcerned.player, i.getItem()!, i.itemLevel, i.itemEnchantmentId)
+		itemWithDetails: toItemWithDetails(
+			whoIsConcerned.player,
+			i.getItem()!,
+			i.itemLevel,
+			i.itemEnchantmentId,
+			i.remainingPotionUsages
+		)
 	})),
 	canDrinkThisPotion);
 
@@ -533,7 +539,13 @@ export async function giveItemToPlayer(
 
 	response.push(new ReactionCollectorInstance(
 		new ReactionCollectorItemAccept(
-			toItemWithDetails(player, itemToReplaceInstance, itemToReplace.itemLevel, itemToReplace.itemEnchantmentId),
+			toItemWithDetails(
+				player,
+				itemToReplaceInstance,
+				itemToReplace.itemLevel,
+				itemToReplace.itemEnchantmentId,
+				itemToReplace.remainingPotionUsages
+			),
 			canDrinkThisPotion
 		),
 		context,
