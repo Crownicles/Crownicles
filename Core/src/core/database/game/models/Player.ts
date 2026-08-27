@@ -1053,6 +1053,13 @@ export class Player extends Model {
 
 		this.class = newClassId;
 
+		/*
+		 * Persist the selected class before the health rescale. `addHealth` may re-fetch this player under the
+		 * current transaction; without this flush, that nested lock reads the former class and synchronizes it
+		 * back onto this instance, silently cancelling the class change (#4817).
+		 */
+		await this.save();
+
 		const targetHealth = Math.ceil(previousHealth / previousMaxHealth * this.getMaxHealth());
 		await this.addHealth({
 			amount: targetHealth - this.getHealth(),
