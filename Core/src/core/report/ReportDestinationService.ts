@@ -37,6 +37,50 @@ type ChosenDestination = {
 	isGoingBack?: boolean;
 };
 
+const DESTINATION_TRAVEL_RETRY_DELAY_MS = 250;
+
+type MariaDbConnectionSetupError = {
+	code?: unknown;
+	sql?: unknown;
+};
+
+type SequelizeConnectionSetupError = Error & {
+	parent?: MariaDbConnectionSetupError;
+	original?: MariaDbConnectionSetupError;
+};
+
+/**
+ * `ER_CONNECTION_TIMEOUT` happens while the driver is establishing a socket,
+ * before an SQL statement is sent. Retrying this specific error is therefore
+ * safe; broader connection failures may have an ambiguous write outcome.
+ */
+function isRetryableConnectionSetupTimeout(error: unknown): boolean {
+	if (!(error instanceof Error) || error.name !== "SequelizeConnectionError") {
+		return false;
+	}
+
+	const sequelizeError = error as SequelizeConnectionSetupError;
+	const driverErrors = [sequelizeError.parent, sequelizeError.original];
+	return driverErrors.some(driverError => driverError?.code === "ER_CONNECTION_TIMEOUT" && driverError.sql === null);
+}
+
+async function startDestinationTravel(player: Player, newLink: MapLink, time: number): Promise<void> {
+	try {
+		await Maps.startTravel(player, newLink, time);
+	}
+	catch (error) {
+		if (!isRetryableConnectionSetupTimeout(error)) {
+			throw error;
+		}
+
+		if (CrowniclesLogger.isInitialized()) {
+			CrowniclesLogger.warn(`chooseDestination: retrying travel persistence after a transient database connection timeout for player ${player.id}`);
+		}
+		await new Promise(resolve => setTimeout(resolve, DESTINATION_TRAVEL_RETRY_DELAY_MS));
+		await Maps.startTravel(player, newLink, time);
+	}
+}
+
 /**
  * Add the appropriate destination response packet (city or regular) to the response
  */
@@ -73,7 +117,7 @@ async function automaticChooseDestination(forcedLink: MapLink | null, player: Pl
 	// Read before starting the travel: `startTravel` makes the current destination become the previous map.
 	const isGoingBack = newLink.endMap === player.getPreviousMapId();
 
-	await Maps.startTravel(player, newLink, Date.now());
+	await startDestinationTravel(player, newLink, Date.now());
 	addDestinationResToResponse(response, {
 		mapLink: newLink,
 		mapTypeId: endMap.type,
@@ -154,7 +198,7 @@ function sendDestinationCollector(
 				return;
 			}
 
-			await Maps.startTravel(player, newLink, Date.now());
+			await startDestinationTravel(player, newLink, Date.now());
 
 			addDestinationResToResponse(response, {
 				mapLink: newLink,

@@ -14,6 +14,7 @@ import TYPES = Transaction.TYPES;
 const DB_RETRY_MAX_ATTEMPTS = 10;
 const DB_RETRY_BASE_DELAY_MS = 1000;
 const DB_RETRY_MAX_DELAY_MS = 30000;
+const DB_CONNECT_TIMEOUT_MS = 5000;
 
 export abstract class Database {
 	/**
@@ -111,6 +112,10 @@ export abstract class Database {
 					host: this.databaseConfiguration.host,
 					port: this.databaseConfiguration.port,
 					logging: false,
+					dialectOptions: {
+						// mariadb defaults to one second, which is too short for transient production network stalls.
+						connectTimeout: DB_CONNECT_TIMEOUT_MS
+					},
 					transactionType: TYPES.IMMEDIATE
 				});
 				await sequelize.authenticate();
