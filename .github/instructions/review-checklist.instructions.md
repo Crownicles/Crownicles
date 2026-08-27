@@ -15,6 +15,20 @@ Generic review procedure to catch common issues before submitting a PR. Based on
 
 ---
 
+## 0.5 Architecture & System Boundaries
+
+Apply this section when a change has a non-local blast radius: a shared abstraction or utility, persisted state or migration, cache, packet/API contract, authorization, asynchronous callback/job, transaction, or cross-module flow. Do not turn it into ceremony for a leaf UI/text-only change.
+
+- [ ] **Write a short architecture note before approving** — name the 1–3 invariants that must remain true, the canonical source of truth for each affected state, the components/boundaries crossed, and the observable test that proves it. Example: “a successful class choice is persisted before any health recalculation; the database and response expose the same class”.
+- [ ] **Trace the complete changed path, not only the diff** — follow input/event → orchestration → model/service → persistence/cache/external side effect → packet/job. At every `await`, callback, reload, retry, event publication, or transaction boundary, state which data may have changed and which object/store is authoritative afterwards.
+- [ ] **Search the reverse dependencies and parallel flows** — before changing shared behavior, inspect every caller, implementation, sibling feature, background job, and protocol consumer with `rg`. Check compatibility, duplicated business rules, and alternate paths that bypass the proposed invariant.
+- [ ] **Give each state transition one owner** — do not let a stale in-memory object, cache, database row, packet payload, or background job independently overwrite another source of truth. A refresh, merge, retry, invalidation, or synchronization must have an explicit ownership rule and preserve all fields it does not own.
+- [ ] **Review failure and time dimensions deliberately** — cover partial success, exceptions after a side effect, duplicate/retried delivery, cancellation, concurrent execution, and stale reads whenever the flow can encounter them. The required property is explicit: idempotence, compensation, serialization, or a user-visible recoverable failure.
+- [ ] **Ask for one adversarial counterexample from a fresh review context** — the reviewer must try to break an invariant through a different caller, an old persisted state, an interrupted/retried operation, or two executions in a different order. Do not accept “looks correct”; record why the counterexample cannot occur or add the regression test it exposes.
+- [ ] **Test the invariant at an observable boundary** — tests must assert persisted state, externally returned packets/API, or a conserved domain value after the full flow. A unit test of the new helper alone is insufficient for a cross-boundary change.
+
+---
+
 ## 1. Magic Strings & Constants
 
 - [ ] **No hardcoded strings** used as identifiers, action names, or error codes — use `as const` objects (e.g., `CHEST_ACTIONS.DEPOSIT`, `EQUIP_ERRORS.INVALID`)
