@@ -56,13 +56,14 @@ describe("enchanter enchantment descriptions", () => {
 
 		expect(story).toContain("Claire de Ville");
 		expect(story).toContain("Défense I");
+		expect(story).toContain("prochaine étape de son voyage");
 	});
 
 	it("uses a warmer story when Mernil stays in the same city", () => {
 		const story = buildTomorrowStory(createEnchanterData(ItemEnchantment.PVP_ATTACK_1.id), LANGUAGE.FRENCH, 23);
 
-		expect(story).toContain("apprécié son séjour");
-		expect(story).toContain("y restera encore demain");
+		expect(story).toContain("prolonge son séjour");
+		expect(story).toContain("l'accueillera encore demain");
 		expect(story).toContain("Défense I");
 	});
 
