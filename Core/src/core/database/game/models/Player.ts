@@ -430,23 +430,40 @@ export class Player extends Model {
 	}
 
 	/**
+	 * Add tokens to the player and return the actual gain applied.
+	 *
+	 * The returned value must be used when the value shown to the player depends
+	 * on the capped token mutation. It is calculated on the locked instance,
+	 * rather than from this caller's synchronized Sequelize instance.
+	 * This is only valid for positive amounts.
+	 * @param parameters
+	 */
+	public async addTokensAndGetActualGain(parameters: EditValueParameters): Promise<number> {
+		if (parameters.amount <= 0) {
+			throw new Error("addTokensAndGetActualGain requires a positive amount");
+		}
+		const gainedTokens = await this.earnTokens(parameters);
+		if (gainedTokens === 0) {
+			return 0;
+		}
+		await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
+		return gainedTokens;
+	}
+
+	/**
 	 * Add or remove tokens to the player
 	 * @param parameters
 	 */
 	public async addTokens(parameters: EditValueParameters): Promise<Player> {
 		if (parameters.amount > 0) {
-			const gainedTokens = await this.earnTokens(parameters);
-			if (gainedTokens === 0) {
-				return this;
-			}
+			await this.addTokensAndGetActualGain(parameters);
 		}
 		else {
 			await this.mutateLocked(locked => {
 				locked.tokens = computeNewTokens(locked.tokens, parameters.amount, parameters.reason);
 			});
+			await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
 		}
-		await crowniclesInstance?.logsDatabase.logTokensChange(this.keycloakId, this.tokens, parameters.reason);
-
 		return this;
 	}
 
