@@ -132,11 +132,11 @@
       },
       "merchant": {
         "eyebrow": "Rapport · marchand de jetons",
-        "title": "🪙 Le marchand de jetons",
+        "title": "{emote:unitValues.token} Le marchand de jetons",
         "description": "Les jetons permettent d'avancer jusqu'au prochain arrêt. Le marchand vous propose les lots actuellement accessibles.",
         "limits": "Limite d'achat : {{maxDaily}} par jour et {{maxWeekly}} par semaine.",
-        "buyOne": "Acheter {{amount}} jeton — {{price}} 💰",
-        "buyMany": "Acheter {{amount}} jetons — {{price}} 💰",
+        "buyOne": "Acheter {{amount}} jeton — {{price}} {emote:unitValues.money}",
+        "buyMany": "Acheter {{amount}} jetons — {{price}} {emote:unitValues.money}",
         "cancel": "Ne rien acheter"
       },
       "outcomes": {
