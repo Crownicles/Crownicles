@@ -5,6 +5,7 @@ import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ReportReq} from "ws-packets/src/fromClient/ReportReq";
 import {ReportUseTokensReq} from "ws-packets/src/fromClient/ReportUseTokensReq";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
+import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
 	ReportTokenMerchantBoughtRes,
 	ReportTokenMerchantCannotAffordRes,
@@ -19,10 +20,21 @@ import {
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
-import {useGameQuery} from "@/src/store/useGameQuery";
+import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {gameKey, GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
-import {AdventureCollector, BigEventOutcome, LotteryOutcome, SmallEventOutcome, TokenOutcome} from "@/src/collectors/AdventureCollector";
+import {
+	AdventureCollector,
+	BigEventOutcome as BigEventOutcomeScreen,
+	LotteryOutcome as LotteryOutcomeScreen,
+	SmallEventOutcome as SmallEventOutcomeScreen,
+	TokenOutcome as TokenOutcomeScreen
+} from "@/src/collectors/AdventureCollector";
+import type {
+	LotteryOutcome as LotteryOutcomeData,
+	SmallEventOutcome as SmallEventOutcomeData,
+	TokenOutcome as TokenOutcomeData
+} from "@/src/collectors/ReportEventStore";
 import {isAdventureCollector, isBigEventCollector} from "@/src/collectors/CollectorRouting";
 import {
 	reportEventStore, useBigEventOutcome, useLotteryOutcome, useSmallEventOutcome, useTokenOutcome
@@ -259,6 +271,89 @@ function useReportRefreshAtNextStop(packet: ReportTravelSummaryRes | null): void
 	}, [arriveTime, nextStopTime, packet, queryClient]);
 }
 
+type CollectorOutcomeViewProps = {
+	bigEventCollector: ReactionCollectorCreation | undefined;
+	adventureCollector: ReactionCollectorCreation | undefined;
+	bigEventOutcome: ReportBigEventResultRes | null;
+	lotteryOutcome: LotteryOutcomeData | null;
+	smallEventOutcome: SmallEventOutcomeData | null;
+	tokenOutcome: TokenOutcomeData | null;
+	reactToCollector: (collectorId: string, reactionIndex: number) => void;
+	isAnswerPending: (collectorId: string) => boolean;
+	continueAfterTokenOutcome: () => void;
+};
+
+function CollectorOutcomeView({
+	bigEventCollector,
+	adventureCollector,
+	bigEventOutcome,
+	lotteryOutcome,
+	smallEventOutcome,
+	tokenOutcome,
+	reactToCollector,
+	isAnswerPending,
+	continueAfterTokenOutcome
+}: CollectorOutcomeViewProps): ReactNode {
+	if (bigEventCollector) {
+		return (
+			<AdventureCollector
+				collector={bigEventCollector}
+				onChoose={(reactionIndex): void => reactToCollector(bigEventCollector.id, reactionIndex)}
+				submitting={isAnswerPending(bigEventCollector.id)}
+			/>
+		);
+	}
+	if (bigEventOutcome) {
+		return <BigEventOutcomeScreen outcome={bigEventOutcome} onContinue={reportEventStore.clear} />;
+	}
+	if (lotteryOutcome) {
+		return <LotteryOutcomeScreen outcome={lotteryOutcome} onContinue={reportEventStore.clearLottery} />;
+	}
+	if (tokenOutcome) {
+		return <TokenOutcomeScreen outcome={tokenOutcome} onContinue={continueAfterTokenOutcome} />;
+	}
+	if (adventureCollector) {
+		return (
+			<AdventureCollector
+				collector={adventureCollector}
+				onChoose={(reactionIndex): void => reactToCollector(adventureCollector.id, reactionIndex)}
+				submitting={isAnswerPending(adventureCollector.id)}
+			/>
+		);
+	}
+	if (smallEventOutcome) {
+		return <SmallEventOutcomeScreen outcome={smallEventOutcome} onContinue={reportEventStore.clearSmallEvent} />;
+	}
+	return null;
+}
+
+function ReportStatusView({
+	reportState,
+	waitingForCollector
+}: {
+	reportState: RequestState<ReportTravelSummaryRes>;
+	waitingForCollector: boolean;
+}): ReactNode {
+	if (waitingForCollector) {
+		return <Centered><EmptyState>{i18n.t("app:collector.pending")}</EmptyState></Centered>;
+	}
+	switch (reportState.status) {
+		case "loading":
+			return (
+				<Centered>
+					<ActivityIndicator />
+					<Text style={styles.message}>{i18n.t("app:common.loading")}</Text>
+				</Centered>
+			);
+		case "empty":
+			return <Centered><EmptyState>{i18n.t("app:adventure.empty")}</EmptyState></Centered>;
+		case "failed":
+			return <Centered><Text style={styles.message}>{i18n.t("app:common.error")}</Text></Centered>;
+		case "ready":
+			return null;
+	}
+}
+
 function RoutePanel({packet, metrics}: {
   packet: ReportTravelSummaryRes;
   metrics: TravelMetrics;
@@ -369,57 +464,31 @@ export default function Index(): ReactNode {
 		}
 	};
 
-  const reportIsWaitingForCollector = openCollectors.length > 0
-    && (reportState.status === "loading"
-      || reportState.status === "empty" && reportState.packetName === ReactionCollectorCreation.name);
+  const collectorOutcome = CollectorOutcomeView({
+    bigEventCollector,
+    adventureCollector,
+    bigEventOutcome,
+    lotteryOutcome,
+    smallEventOutcome,
+    tokenOutcome,
+    reactToCollector,
+    isAnswerPending,
+    continueAfterTokenOutcome
+  });
+  if (collectorOutcome) {
+		return collectorOutcome;
+	}
 
-	if (bigEventCollector) {
-		return (
-			<AdventureCollector
-				collector={bigEventCollector}
-				onChoose={(reactionIndex): void => reactToCollector(bigEventCollector.id, reactionIndex)}
-				submitting={isAnswerPending(bigEventCollector.id)}
-			/>
-		);
+	const reportIsWaitingForCollector = openCollectors.length > 0
+		&& (reportState.status === "loading"
+			|| reportState.status === "empty" && reportState.packetName === ReactionCollectorCreation.name);
+	const reportStatus = ReportStatusView({reportState, waitingForCollector: reportIsWaitingForCollector});
+	if (reportStatus) {
+		return reportStatus;
 	}
-	if (bigEventOutcome) {
-		return <BigEventOutcome outcome={bigEventOutcome} onContinue={reportEventStore.clear} />;
+	if (reportState.status !== "ready") {
+		return null;
 	}
-	if (lotteryOutcome) {
-		return <LotteryOutcome outcome={lotteryOutcome} onContinue={reportEventStore.clearLottery} />;
-	}
-	if (tokenOutcome) {
-		return <TokenOutcome outcome={tokenOutcome} onContinue={continueAfterTokenOutcome} />;
-	}
-	if (adventureCollector) {
-		return (
-			<AdventureCollector
-				collector={adventureCollector}
-				onChoose={(reactionIndex): void => reactToCollector(adventureCollector.id, reactionIndex)}
-				submitting={isAnswerPending(adventureCollector.id)}
-			/>
-		);
-	}
-	if (smallEventOutcome) {
-		return <SmallEventOutcome outcome={smallEventOutcome} onContinue={reportEventStore.clearSmallEvent} />;
-	}
-	if (reportIsWaitingForCollector) {
-    return <Centered><EmptyState>{i18n.t("app:collector.pending")}</EmptyState></Centered>;
-  }
-  if (reportState.status === "loading") {
-    return (
-      <Centered>
-        <ActivityIndicator />
-        <Text style={styles.message}>{i18n.t("app:common.loading")}</Text>
-      </Centered>
-    );
-  }
-  if (reportState.status === "empty") {
-    return <Centered><EmptyState>{i18n.t("app:adventure.empty")}</EmptyState></Centered>;
-  }
-  if (reportState.status === "failed") {
-    return <Centered><Text style={styles.message}>{i18n.t("app:common.error")}</Text></Centered>;
-  }
 
 	return <AdventureSheet packet={reportState.data} currentTime={currentTime} onAdvance={advanceWithTokens} advancePending={advancePending} />;
 }

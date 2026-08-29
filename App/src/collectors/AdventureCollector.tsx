@@ -3,7 +3,7 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
 	BIG_EVENT_DATA_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS,
-	REPORT_COLLECTOR_REACTION_KINDS
+	REPORT_COLLECTOR_REACTION_KINDS, ReactionCollectorData, ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
@@ -109,6 +109,98 @@ function lotteryOutcomeText(outcome: LotteryOutcomeData): string {
 	}
 }
 
+type TokenMerchantData = Extract<ReactionCollectorData, {type: typeof REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT}>;
+
+function tokenRatio(data: TokenMerchantData): number {
+	return data.data.maxTokens === 0 ? 0 : data.data.playerTokens / data.data.maxTokens;
+}
+
+function merchantReactionIndex(reactions: ReactionCollectorReaction[], amount: number): number {
+	return reactions.findIndex(reaction => reaction.type === REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY
+		&& reaction.data.amount === amount);
+}
+
+function merchantPurchaseLabel(amount: number, pricePerToken: number): string {
+	return amount === 1
+		? i18n.t("app:adventure.tokens.merchant.buyOne", {amount, price: amount * pricePerToken})
+		: i18n.t("app:adventure.tokens.merchant.buyMany", {amount, price: amount * pricePerToken});
+}
+
+function TokenMerchantSummary({data}: {data: TokenMerchantData}): ReactNode {
+	const {maxTokens, playerMoney, playerTokens, pricePerToken} = data.data;
+	return (
+		<Panel>
+			<StatBar
+				label={i18n.t("app:adventure.tokens.fields.balance")}
+				value={`${tokenCount(playerTokens)} / ${tokenCount(maxTokens)} 🪙`}
+				ratio={tokenRatio(data)}
+				color={Theme.colors.gold}
+			/>
+			<KeyValue label={i18n.t("app:adventure.tokens.fields.price")} value={`${tokenCount(pricePerToken)} 💰`} />
+			<KeyValue label={i18n.t("app:adventure.tokens.fields.money")} value={`${tokenCount(playerMoney)} 💰`} />
+		</Panel>
+	);
+}
+
+function MerchantPurchaseButton({
+	amount,
+	firstAmount,
+	pricePerToken,
+	index,
+	onChoose,
+	submitting
+}: {
+	amount: number;
+	firstAmount: number;
+	pricePerToken: number;
+	index: number;
+	onChoose: (reactionIndex: number) => void;
+	submitting: boolean;
+}): ReactNode {
+	const canBuy = index >= 0 && !submitting;
+	return (
+		<Button
+			variant={amount === firstAmount ? "primary" : "secondary"}
+			disabled={!canBuy}
+			onPress={canBuy ? (): void => onChoose(index) : undefined}
+		>
+			{merchantPurchaseLabel(amount, pricePerToken)}
+		</Button>
+	);
+}
+
+function MerchantPurchaseActions({collector, onChoose, submitting}: {
+	collector: ReactionCollectorCreation;
+	onChoose: (reactionIndex: number) => void;
+	submitting: boolean;
+}): ReactNode {
+	if (collector.data.type !== REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
+		return null;
+	}
+	const {amounts, pricePerToken} = collector.data.data;
+	const refuseIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.REFUSE);
+	return (
+		<ButtonRow>
+			{amounts.map(amount => (
+				<MerchantPurchaseButton
+					key={amount}
+					amount={amount}
+					firstAmount={amounts[0]}
+					pricePerToken={pricePerToken}
+					index={merchantReactionIndex(collector.reactions, amount)}
+					onChoose={onChoose}
+					submitting={submitting}
+				/>
+			))}
+			{refuseIndex >= 0 ? (
+				<Button disabled={submitting} onPress={submitting ? undefined : (): void => onChoose(refuseIndex)}>
+					{i18n.t("app:adventure.tokens.merchant.cancel")}
+				</Button>
+			) : null}
+		</ButtonRow>
+	);
+}
+
 function TokenUseCollector({collector, onChoose, submitting}: {
 	collector: ReactionCollectorCreation;
 	onChoose: (reactionIndex: number) => void;
@@ -153,8 +245,7 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 	if (collector.data.type !== REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
 		return null;
 	}
-	const {amounts, maxDaily, maxTokens, maxWeekly, playerMoney, playerTokens, pricePerToken} = collector.data.data;
-	const refuseIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.REFUSE);
+	const {maxDaily, maxWeekly} = collector.data.data;
 
 	return (
 		<Screen>
@@ -163,40 +254,12 @@ function TokenMerchantCollector({collector, onChoose, submitting}: {
 				title={i18n.t("app:adventure.tokens.merchant.title")}
 				subtitle={i18n.t("app:adventure.tokens.merchant.description")}
 			/>
-			<Panel>
-				<StatBar
-					label={i18n.t("app:adventure.tokens.fields.balance")}
-					value={`${tokenCount(playerTokens)} / ${tokenCount(maxTokens)} 🪙`}
-					ratio={maxTokens === 0 ? 0 : playerTokens / maxTokens}
-					color={Theme.colors.gold}
-				/>
-				<KeyValue label={i18n.t("app:adventure.tokens.fields.price")} value={`${tokenCount(pricePerToken)} 💰`} />
-				<KeyValue label={i18n.t("app:adventure.tokens.fields.money")} value={`${tokenCount(playerMoney)} 💰`} />
-			</Panel>
+			<TokenMerchantSummary data={collector.data} />
 			<Notice
 				icon={AppIcons.getIconOrNull("collectors.warning") ? <TwemojiIcon emoji={AppIcons.getIcon("collectors.warning")} size={Theme.dimensions.headerIcon} /> : undefined}
 				title={i18n.t("app:adventure.tokens.merchant.limits", {maxDaily, maxWeekly})}
 			/>
-			<ButtonRow>
-				{amounts.map(amount => {
-					const index = collector.reactions.findIndex(reaction => reaction.type === REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY
-						&& reaction.data.amount === amount);
-					const canBuy = index >= 0 && !submitting;
-					const label = amount === 1
-						? i18n.t("app:adventure.tokens.merchant.buyOne", {amount, price: amount * pricePerToken})
-						: i18n.t("app:adventure.tokens.merchant.buyMany", {amount, price: amount * pricePerToken});
-					return (
-						<Button key={amount} variant={amount === amounts[0] ? "primary" : "secondary"} disabled={!canBuy} onPress={canBuy ? (): void => onChoose(index) : undefined}>
-							{label}
-						</Button>
-					);
-				})}
-				{refuseIndex >= 0 ? (
-					<Button disabled={submitting} onPress={submitting ? undefined : (): void => onChoose(refuseIndex)}>
-						{i18n.t("app:adventure.tokens.merchant.cancel")}
-					</Button>
-				) : null}
-			</ButtonRow>
+			<MerchantPurchaseActions collector={collector} onChoose={onChoose} submitting={submitting} />
 		</Screen>
 	);
 }
