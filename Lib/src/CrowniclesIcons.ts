@@ -1206,6 +1206,10 @@ export const CrowniclesIcons: {
 			emoteFemale: "🧚‍♀️",
 			emoteMale: "🧚"
 		},
+		103: {
+			emoteFemale: "✴️",
+			emoteMale: "✴️"
+		},
 		11: {
 			emoteFemale: "🐦",
 			emoteMale: "🐦"

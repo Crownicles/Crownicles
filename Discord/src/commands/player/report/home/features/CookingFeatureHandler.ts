@@ -48,6 +48,7 @@ import { DiscordCollectorUtils } from "../../../../../utils/DiscordCollectorUtil
 import { buildCustomId } from "../../../../../utils/CustomIdUtils";
 import { buildRecipeDiscoveryMessage } from "../../../../../utils/CookingDisplayUtils";
 import { ReactionCollectorRefuseReaction } from "../../../../../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import type { CookingRecipeId } from "../../../../../../../Lib/src/types/CookingRecipe";
 
 /**
  * Cosmetic cache of the last menu state known to the client.
@@ -69,6 +70,11 @@ interface CookingSessionState {
 	craftPending: boolean;
 	isIgnited: boolean;
 	pinnedRecipe?: PinnedRecipeInfo;
+}
+
+interface CookingCraftSelection {
+	slotIndex: number;
+	recipeId: CookingRecipeId;
 }
 
 export class CookingFeatureHandler implements HomeFeatureHandler {
@@ -244,12 +250,34 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		if (this.getState(ctx).craftPending) {
 			return true;
 		}
-		const slotIndex = parseInt(selectedValue.replace(HomeMenuIds.COOKING_CRAFT_PREFIX, ""), 10);
-		if (isNaN(slotIndex)) {
+		const craftSelection = this.parseCraftSelection(selectedValue);
+		if (!craftSelection) {
+			/*
+			 * Buttons rendered before the recipe ID was added use the legacy
+			 * slot-only format. Refresh instead of crafting from a stale snapshot.
+			 */
+			await this.fetchAndShowCookingMenu(ctx, nestedMenus);
 			return true;
 		}
-		await this.sendCraftAction(ctx, slotIndex, nestedMenus);
+		await this.sendCraftAction(ctx, craftSelection, nestedMenus);
 		return true;
+	}
+
+	/**
+	 * Decode the immutable recipe identity embedded in a craft button. The
+	 * recipe ID is part of the button payload rather than the cosmetic cache so
+	 * a delayed Discord interaction remains bound to what the player saw.
+	 */
+	private parseCraftSelection(selectedValue: string): CookingCraftSelection | null {
+		const payload = selectedValue.slice(HomeMenuIds.COOKING_CRAFT_PREFIX.length);
+		const selection = (/^(\d+):([^:]+)$/).exec(payload);
+		if (!selection) {
+			return null;
+		}
+		return {
+			slotIndex: Number(selection[1]),
+			recipeId: selection[2]
+		};
 	}
 
 	/**
@@ -650,11 +678,19 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		const stationEmoji = CrowniclesIcons.cookingStations[slot.slotIndex] ?? CrowniclesIcons.city.homeUpgrades.cooking;
 		const craftLabel = i18n.t(`commands:report.city.homes.cooking.craftButton.${slot.slotIndex}`, { lng: ctx.lng });
 		return new ButtonBuilder()
-			.setCustomId(buildCustomId(HomeMenuIds.COOKING_CRAFT_PREFIX, slot.slotIndex))
+			.setCustomId(this.buildCraftCustomId(slot.slotIndex, recipe.id))
 			.setLabel(craftLabel)
 			.setEmoji(parseEmoji(stationEmoji)!)
 			.setStyle(recipe.canCraft && !allDisabled ? ButtonStyle.Primary : ButtonStyle.Secondary)
 			.setDisabled(!recipe.canCraft || allDisabled);
+	}
+
+	/**
+	 * Keep the slot and recipe in one custom-ID part because buildCustomId uses
+	 * underscores to separate multiple parts.
+	 */
+	private buildCraftCustomId(slotIndex: number, recipeId: CookingRecipeId): string {
+		return buildCustomId(HomeMenuIds.COOKING_CRAFT_PREFIX, `${slotIndex}:${recipeId}`);
 	}
 
 	/**
@@ -883,7 +919,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 	 */
 	private async sendCraftAction(
 		ctx: HomeFeatureHandlerContext,
-		slotIndex: number,
+		craftSelection: CookingCraftSelection,
 		nestedMenus: CrowniclesNestedMenus
 	): Promise<void> {
 		const state = this.getState(ctx);
@@ -891,7 +927,7 @@ export class CookingFeatureHandler implements HomeFeatureHandler {
 		try {
 			await DiscordMQTT.asyncPacketSender.sendPacketAndHandleResponse(
 				ctx.context,
-				makePacket(CommandReportCookingCraftReq, { slotIndex }),
+				makePacket(CommandReportCookingCraftReq, craftSelection),
 				async (_responseContext, packetName, responsePacket) => {
 					if (packetName !== CommandReportCookingCraftRes.name) {
 						return;

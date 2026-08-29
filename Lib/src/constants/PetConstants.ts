@@ -315,7 +315,8 @@ export abstract class PetConstants {
 		JACK_O_LANTERN: 99,
 		GHOST: 100,
 		VAMPIRE: 101,
-		FAIRY: 102
+		FAIRY: 102,
+		SEA_URCHIN: 103
 	};
 
 	static readonly PET_BEHAVIORS = [
@@ -493,7 +494,10 @@ export abstract class PetConstants {
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.MEDUSE_PARALYZE
 		},
 		{
-			petIds: [PetConstants.PETS.HEDGEHOG],
+			petIds: [
+				PetConstants.PETS.HEDGEHOG,
+				PetConstants.PETS.SEA_URCHIN
+			],
 			behaviorId: FightConstants.FIGHT_ACTIONS.PET.REVENGE
 		},
 		{

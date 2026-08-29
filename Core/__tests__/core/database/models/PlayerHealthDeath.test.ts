@@ -49,6 +49,7 @@ function countDeathPackets(response: CrowniclesPacket[]): number {
 
 describe("Player health and death", () => {
 	let applyEffectSpy: ReturnType<typeof vi.spyOn>;
+	let saveSpy: ReturnType<typeof vi.spyOn>;
 
 	beforeEach(() => {
 		setCrowniclesInstanceForTests({
@@ -60,7 +61,7 @@ describe("Player health and death", () => {
 		applyEffectSpy = vi.spyOn(TravelTime, "applyEffect")
 			.mockResolvedValue(undefined);
 		vi.spyOn(Player, "withLocked").mockImplementation((_id, body) => body(lockedPlayer));
-		vi.spyOn(Player.prototype, "save").mockImplementation(function(this: Player) {
+		saveSpy = vi.spyOn(Player.prototype, "save").mockImplementation(function(this: Player) {
 			return Promise.resolve(this);
 		});
 	});
@@ -243,6 +244,26 @@ describe("Player health and death", () => {
 
 			expect(player.getMaxCumulativeEnergy(noEnchantmentActiveObjects)).toBe(281);
 			expect(player.fightPointsLost).toBe(141);
+		});
+
+		it("does not restore the old class when health rescaling re-fetches the player", async () => {
+			const player = buildPlayer({
+				level: 9,
+				classId: 0,
+				health: 71
+			});
+			const reloadedPlayer = Object.assign(Object.create(Player.prototype) as Player, player);
+			lockedPlayer = reloadedPlayer;
+			saveSpy.mockImplementation(function(this: Player) {
+				// Simulate the database row seen by the nested `Player.withLocked` call.
+				reloadedPlayer.class = this.class;
+				return Promise.resolve(this);
+			});
+
+			await player.changeClass(8, noEnchantmentActiveObjects, []);
+
+			expect(player.class).toBe(8);
+			expect(player.getHealthValue()).toBe(19);
 		});
 	});
 });

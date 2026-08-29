@@ -21,6 +21,7 @@ import { ApartmentLocationRef } from "../../types/ApartmentLocation";
 import {
 	FinalPveBossId, PveBossLeaderboardEntry, PveBossPersonalRecord
 } from "../../types/PveBossRecord";
+import type { CookingRecipeId } from "../../types/CookingRecipe";
 export {
 	CookingSlotData, CookingCraftErrors, CookingCraftError, PinnedRecipeInfo, RecipeIngredients, CookingMenuSnapshot
 } from "../../types/CookingTypes";
@@ -672,6 +673,12 @@ export class CommandReportCookingReviveRes extends CrowniclesPacket {
 @sendablePacket(PacketDirection.FRONT_TO_BACK)
 export class CommandReportCookingCraftReq extends CrowniclesPacket {
 	slotIndex!: number;
+
+	/**
+	 * Recipe shown in the menu snapshot that produced this request. Core uses
+	 * it as an optimistic-concurrency guard before consuming ingredients.
+	 */
+	recipeId!: CookingRecipeId;
 }
 
 export interface CraftPetFoodResult {

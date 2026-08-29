@@ -4,6 +4,7 @@ import {MapLinkDataController} from '../../../src/data/MapLink';
 import {PVEConstants} from '../../../../Lib/src/constants/PVEConstants';
 import {Constants} from '../../../../Lib/src/constants/Constants';
 import {PlayerSmallEvents} from '../../../src/core/database/game/models/PlayerSmallEvent';
+import type Player from '../../../src/core/database/game/models/Player';
 import {RandomUtils} from '../../../../Lib/src/utils/RandomUtils';
 import {Maps} from '../../../src/core/maps/Maps';
 import {TravelTime} from '../../../src/core/maps/TravelTime';
@@ -62,6 +63,19 @@ describe('TravelTime', () => {
 		expect(data.effectEndTime).toBe(start + effectDurationMs);
 		expect(data.playerTravelledTime).toBe((date.valueOf() - start) - effectDurationMs);
 		expect(data.travelEndTime).toBe(start + effectDurationMs + 10 * 60_000);
+	});
+
+	it('calculates clamped travel progress', () => {
+		const player = {
+			startTravelDate: new Date(now),
+			effectEndDate: new Date(now),
+			effectDuration: 0,
+			mapLinkId: 5
+		} as Player;
+
+		expect(TravelTime.getTravelProgress(player, new Date(now - 60_000))).toBe(0);
+		expect(TravelTime.getTravelProgress(player, new Date(now + 5 * 60_000))).toBe(0.5);
+		expect(TravelTime.getTravelProgress(player, new Date(now + 15 * 60_000))).toBe(1);
 	});
 
 	it('gets travel data with small events', async () => {

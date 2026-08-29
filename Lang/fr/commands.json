@@ -347,7 +347,7 @@
     "members": "{emote:guild.membersCount} {{memberCount, number}} / {{maxGuildMembers, number}} membres",
     "infoTitle": "Informations",
     "islandInfo": "{emote:guild.isOnPveIsland} Nombre d'alliés sur l'île mystérieuse : {{membersOnPveIsland}}\n",
-    "info": "{emote:unitValues.xp} {{experience, number}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
+    "info": "{emote:unitValues.xp} {{experience}} | {emote:unitValues.guildPoint} {{guildPoints, number}} | {emote:announcements.trophy} {{ranking}}",
     "xpNeeded": "{{xp, number}} / {{xpToLevelUp, number}}",
     "xpMax": "Max",
     "ranking": "{{rank, number}} / {{rankTotal, number}}",
@@ -1000,10 +1000,10 @@
         "runeForArmorOnlyWeaponAvailableStory_other": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées. Aujourd'hui, son enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** ne fonctionne que sur les pièces d'armure. Vous n'avez que des armures déjà enchantées ou des armes à lui présenter : il pince les lèvres et grommelle que vous perdez tous les deux votre temps. Revenez avec une protection vierge à enchanter, ou un autre jour quand son enchantement sera différent.",
         "allEnchantedStory": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il examine vos équipements puis secoue la tête, agacé : tout ce que vous portez est déjà enchanté. Il vous rappelle sèchement que ce sont les forgerons qui retirent les enchantements existants, pas lui, et qu'il refuse catégoriquement de toucher à ces objets déjà runiques. Revenez avec un équipement vierge, ou tentez votre chance demain.",
         "story": "{emote:city.services.enchanter} Vous rencontrez un enchanteur itinérant qui se présente sous le nom de Mernil. D'un air hautain, il vous explique qu'il est le seul et le meilleur enchanteur de toutes les contrées, et qu'il peut améliorer vos équipements grâce à la magie des enchantements.",
-        "tomorrowStory": "Avant que vous ne partiez, Mernil vous révèle où il poursuivra sa route demain : il sera **{{nextCity}}**, avec l'enchantement {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Vous avez tout intérêt à le rejoindre avant qu'il ne reparte.",
-        "tomorrowSameCityStory": "Mernil semble avoir apprécié son séjour à **{{nextCity}}** : il y restera encore demain, un peu plus longtemps que prévu, avec l'enchantement {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Profitez-en pour préparer votre équipement avant qu'il ne reprenne la route.",
-        "enchantmentNoReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**.\nVous prenez le temps de réfléchir à sa proposition, mais il précise que si ça ne convient pas, vous pouvez toujours revenir le voir demain car il aura d'autres enchantements à sa disposition. Cependant, il ne garantit pas qu'il sera toujours dans cette ville...",
-        "enchantmentWithReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**. Il ajoute qu'il vous a fait une réduction car il apprécie les personnes qui s'intéressent à la magie !\nVous prenez le temps de réfléchir à sa proposition, mais il précise que si ça ne convient pas, vous pouvez toujours revenir le voir demain car il aura d'autres enchantements à sa disposition. Cependant, il ne garantit pas qu'il sera toujours dans cette ville...",
+        "tomorrowStory": "Vous prenez le temps de réfléchir à sa proposition. Avant votre départ, Mernil vous révèle la prochaine étape de son voyage : **{{nextCity}}**, où il proposera l'enchantement {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Vous avez tout intérêt à le rejoindre avant qu'il ne reparte.",
+        "tomorrowSameCityStory": "Vous prenez le temps de réfléchir à sa proposition. Mernil annonce qu'il prolonge son séjour : **{{nextCity}}** l'accueillera encore demain, avec l'enchantement {emote:enchantmentTypes.{{nextEnchantmentType}}} **$t(items:enchantments.{{nextEnchantmentId}})**. Profitez-en pour préparer votre équipement avant qu'il ne reprenne la route.",
+        "enchantmentNoReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**.",
+        "enchantmentWithReduction": "En effet, il peut vous mettre l'enchantement {emote:enchantmentTypes.{{enchantmentType}}} **$t(items:enchantments.{{enchantmentId}})** pour **{{price}}**. Il ajoute qu'il vous a fait une réduction car il apprécie les personnes qui s'intéressent à la magie !",
         "descriptions": {
           "pvpAttack": "Mernil vous présente cet enchantement comme un avantage décisif : il augmente directement les dégâts infligés aux autres aventuriers, sans modifier les statistiques de l'arme.",
           "pveAttack": "Mernil vous explique que cet enchantement augmente directement les dégâts infligés aux monstres, sans modifier les statistiques de l'arme.",
@@ -2348,7 +2348,7 @@
   "fight": {
     "title": "{{pseudo}}, vous êtes sur le point de démarrer un combat",
     "canceledTitle": "{{pseudo}}, vous avez annulé la recherche",
-    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {{glory, number}} | {{className}} {{pet}}\n\n{{stats}}",
+    "confirmDesc": "{emote:fightCommand.crossedSwords} | **{{pseudo}}**{{confirmSubText}}\n\n{emote:fightCommand.crossedSwords} | **Combattant : {{pseudo}}** | {emote:unitValues.glory} {{glory, number}} | {{className}} {{pet}}\n\n{{stats}}",
     "pet": "| {{petInfo}}",
     "petOnExpedition": "| ~~{{petInfo}}~~",
     "confirmSubTexts": {
