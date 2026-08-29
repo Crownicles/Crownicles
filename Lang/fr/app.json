@@ -2,7 +2,9 @@
   "common": {
     "loading": "Chargement",
     "error": "Les informations n'ont pas pu être récupérées",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "yes": "Oui",
+    "no": "Non"
   },
   "collector": {
     "accept": "Confirmer",
@@ -71,6 +73,8 @@
     },
     "smallEvent": {
       "eyebrow": "Rapport · mini-événement",
+      "resultTitle": "Résultat du mini-événement",
+      "resultDescription": "Le mini-événement {{event}} est terminé.",
       "continue": "Continuer"
     },
     "event": {

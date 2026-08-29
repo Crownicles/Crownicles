@@ -1,5 +1,6 @@
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {SmallEventLotteryWinRes} from "ws-packets/src/fromServer/smallEvents/SmallEventLotteryRes";
+import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
 import {ReportUseTokensAcceptedRes} from "ws-packets/src/fromServer/report/ReportTokenRes";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
@@ -24,6 +25,7 @@ describe("ReportEventStore", () => {
 	beforeEach((): void => {
 		reportEventStore.clear();
 		reportEventStore.clearLottery();
+		reportEventStore.clearSmallEvent();
 		reportEventStore.clearTokens();
 	});
 
@@ -68,5 +70,19 @@ describe("ReportEventStore", () => {
 		expect(reportEventStore.getTokenSnapshot()).toEqual({kind: "used", packet: result});
 		reportEventStore.clearTokens();
 		expect(reportEventStore.getTokenSnapshot()).toBeNull();
+	});
+
+	it("keeps a generic mini-event resolution until the player continues", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const result: SmallEventResultRes = {
+			eventName: "SmallEventAltarContributedPacket",
+			data: {amount: 130, blessingTriggered: false}
+		};
+
+		registry.dispatch(SmallEventResultRes.name, result);
+
+		expect(reportEventStore.getSmallEventSnapshot()).toBe(result);
+		reportEventStore.clearSmallEvent();
+		expect(reportEventStore.getSmallEventSnapshot()).toBeNull();
 	});
 });

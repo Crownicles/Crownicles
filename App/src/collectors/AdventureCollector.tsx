@@ -9,7 +9,7 @@ import {AppIcons} from "@/src/AppIcons";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {collectorDescription, collectorTitle} from "@/src/collectors/CollectorLabels";
 import type {
-	LotteryOutcome as LotteryOutcomeData, TokenOutcome as TokenOutcomeData
+	LotteryOutcome as LotteryOutcomeData, SmallEventOutcome as SmallEventOutcomeData, TokenOutcome as TokenOutcomeData
 } from "@/src/collectors/ReportEventStore";
 import {
 	Button, ButtonRow, Hero, KeyValue, Notice, Panel, Screen, StatBar
@@ -56,6 +56,29 @@ function duration(milliseconds: number): string {
 
 function signed(value: number): string {
 	return value > 0 ? `+${value}` : String(value);
+}
+
+function resultEventLabel(eventName: string): string {
+	return eventName
+		.replace(/^SmallEvent/, "")
+		.replace(/Packet$/, "")
+		.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+function resultFieldLabel(field: string): string {
+	return field
+		.replace(/([a-z])([A-Z])/g, "$1 $2")
+		.replace(/^./, character => character.toUpperCase());
+}
+
+function resultFieldValue(value: unknown): string {
+	if (typeof value === "boolean") {
+		return value ? i18n.t("app:common.yes") : i18n.t("app:common.no");
+	}
+	if (typeof value === "string" || typeof value === "number") {
+		return String(value);
+	}
+	return "";
 }
 
 function outcomeIcon(outcome: ReportBigEventResultRes): string | undefined {
@@ -345,6 +368,31 @@ export function LotteryOutcome({outcome, onContinue}: {
 				<Panel>
 					{fields.map(field => <KeyValue key={field.label} label={field.label} value={field.value} />)}
 				</Panel>
+			) : null}
+			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.smallEvent.continue")}</Button></ButtonRow>
+		</Screen>
+	);
+}
+
+/** Shows a generic resolution for mini-events without a dedicated result design yet. */
+export function SmallEventOutcome({outcome, onContinue}: {
+	outcome: SmallEventOutcomeData;
+	onContinue: () => void;
+}): ReactNode {
+	const fields = Object.entries(outcome.data)
+		.filter(([field, value]) => !field.toLowerCase().includes("keycloak") && resultFieldValue(value) !== "")
+		.map(([field, value]) => ({label: resultFieldLabel(field), value: resultFieldValue(value)}));
+	const eventLabel = resultEventLabel(outcome.eventName);
+
+	return (
+		<Screen>
+			<Hero
+				eyebrow={i18n.t("app:adventure.smallEvent.eyebrow")}
+				title={i18n.t("app:adventure.smallEvent.resultTitle")}
+				subtitle={i18n.t("app:adventure.smallEvent.resultDescription", {event: eventLabel})}
+			/>
+			{fields.length > 0 ? (
+				<Panel>{fields.map(field => <KeyValue key={field.label} label={field.label} value={field.value} />)}</Panel>
 			) : null}
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.smallEvent.continue")}</Button></ButtonRow>
 		</Screen>

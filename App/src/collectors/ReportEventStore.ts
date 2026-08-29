@@ -6,6 +6,7 @@ import {
 	SmallEventLotteryPoorRes,
 	SmallEventLotteryWinRes
 } from "ws-packets/src/fromServer/smallEvents/SmallEventLotteryRes";
+import {SmallEventResultRes} from "ws-packets/src/fromServer/smallEvents/SmallEventResultRes";
 import {
 	ReportTokenMerchantBoughtRes,
 	ReportTokenMerchantCannotAffordRes,
@@ -27,6 +28,8 @@ export type LotteryOutcome =
 	| {kind: "win"; packet: SmallEventLotteryWinRes}
 	| {kind: "lose"; packet: SmallEventLotteryLoseRes};
 
+export type SmallEventOutcome = SmallEventResultRes;
+
 export type TokenOutcome =
 	| {kind: "used"; packet: ReportUseTokensAcceptedRes}
 	| {kind: "useRefused"; packet: ReportUseTokensRefusedRes}
@@ -47,6 +50,8 @@ class ReportEventStore {
 
 	private lotteryOutcome: LotteryOutcome | null = null;
 
+	private smallEventOutcome: SmallEventOutcome | null = null;
+
 	private tokenOutcome: TokenOutcome | null = null;
 
 	private readonly listeners = new Set<Listener>();
@@ -58,6 +63,7 @@ class ReportEventStore {
 		client.registerPushedPacketHandler<SmallEventLotteryPoorRes>(SmallEventLotteryPoorRes.name, packet => this.setLotteryOutcome({kind: "poor", packet}));
 		client.registerPushedPacketHandler<SmallEventLotteryWinRes>(SmallEventLotteryWinRes.name, packet => this.setLotteryOutcome({kind: "win", packet}));
 		client.registerPushedPacketHandler<SmallEventLotteryLoseRes>(SmallEventLotteryLoseRes.name, packet => this.setLotteryOutcome({kind: "lose", packet}));
+		client.registerPushedPacketHandler<SmallEventResultRes>(SmallEventResultRes.name, this.setSmallEventOutcome);
 		client.registerPushedPacketHandler<ReportUseTokensAcceptedRes>(ReportUseTokensAcceptedRes.name, packet => this.setTokenOutcome({kind: "used", packet}));
 		client.registerPushedPacketHandler<ReportUseTokensRefusedRes>(ReportUseTokensRefusedRes.name, packet => this.setTokenOutcome({kind: "useRefused", packet}));
 		client.registerPushedPacketHandler<ReportTokenMerchantBoughtRes>(ReportTokenMerchantBoughtRes.name, packet => this.setTokenOutcome({kind: "bought", packet}));
@@ -80,6 +86,8 @@ class ReportEventStore {
 
 	public readonly getLotterySnapshot = (): LotteryOutcome | null => this.lotteryOutcome;
 
+	public readonly getSmallEventSnapshot = (): SmallEventOutcome | null => this.smallEventOutcome;
+
 	public readonly getTokenSnapshot = (): TokenOutcome | null => this.tokenOutcome;
 
 	public readonly clear = (): void => {
@@ -98,6 +106,14 @@ class ReportEventStore {
 		this.notify();
 	};
 
+	public readonly clearSmallEvent = (): void => {
+		if (this.smallEventOutcome === null) {
+			return;
+		}
+		this.smallEventOutcome = null;
+		this.notify();
+	};
+
 	public readonly clearTokens = (): void => {
 		if (this.tokenOutcome === null) {
 			return;
@@ -113,6 +129,11 @@ class ReportEventStore {
 
 	private readonly setLotteryOutcome = (outcome: LotteryOutcome): void => {
 		this.lotteryOutcome = outcome;
+		this.notify();
+	};
+
+	private readonly setSmallEventOutcome = (outcome: SmallEventOutcome): void => {
+		this.smallEventOutcome = outcome;
 		this.notify();
 	};
 
@@ -136,6 +157,10 @@ export function useBigEventOutcome(): ReportBigEventResultRes | null {
 
 export function useLotteryOutcome(): LotteryOutcome | null {
 	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getLotterySnapshot, reportEventStore.getLotterySnapshot);
+}
+
+export function useSmallEventOutcome(): SmallEventOutcome | null {
+	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getSmallEventSnapshot, reportEventStore.getSmallEventSnapshot);
 }
 
 export function useTokenOutcome(): TokenOutcome | null {

@@ -22,10 +22,10 @@ import {GameAnswer, GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {gameKey, GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
-import {AdventureCollector, BigEventOutcome, LotteryOutcome, TokenOutcome} from "@/src/collectors/AdventureCollector";
+import {AdventureCollector, BigEventOutcome, LotteryOutcome, SmallEventOutcome, TokenOutcome} from "@/src/collectors/AdventureCollector";
 import {isAdventureCollector, isBigEventCollector} from "@/src/collectors/CollectorRouting";
 import {
-	reportEventStore, useBigEventOutcome, useLotteryOutcome, useTokenOutcome
+	reportEventStore, useBigEventOutcome, useLotteryOutcome, useSmallEventOutcome, useTokenOutcome
 } from "@/src/collectors/ReportEventStore";
 import {
   EmptyState, Hero, KeyValue, Panel, QuickAction, QuickActions, Screen
@@ -348,6 +348,7 @@ export default function Index(): ReactNode {
 	const adventureCollector = openCollectors.find(isAdventureCollector);
 	const bigEventOutcome = useBigEventOutcome();
 	const lotteryOutcome = useLotteryOutcome();
+	const smallEventOutcome = useSmallEventOutcome();
 	const tokenOutcome = useTokenOutcome();
 	const currentTime = useCurrentTime();
 
@@ -398,6 +399,9 @@ export default function Index(): ReactNode {
 				submitting={isAnswerPending(adventureCollector.id)}
 			/>
 		);
+	}
+	if (smallEventOutcome) {
+		return <SmallEventOutcome outcome={smallEventOutcome} onContinue={reportEventStore.clearSmallEvent} />;
 	}
 	if (reportIsWaitingForCollector) {
     return <Centered><EmptyState>{i18n.t("app:collector.pending")}</EmptyState></Centered>;

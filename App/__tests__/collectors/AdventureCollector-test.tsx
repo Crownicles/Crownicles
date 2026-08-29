@@ -6,7 +6,7 @@ import {
 } from "ws-packets/src/fromServer/collectors";
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
-	AdventureCollector, BigEventOutcome, LotteryOutcome, TokenOutcome
+	AdventureCollector, BigEventOutcome, LotteryOutcome, SmallEventOutcome, TokenOutcome
 } from "@/src/collectors/AdventureCollector";
 
 jest.mock("@/src/AppIcons", () => ({
@@ -157,6 +157,24 @@ describe("AdventureCollector", () => {
 		expect(screen.getByText("app:adventure.lottery.win")).toBeTruthy();
 		expect(screen.getByText("app:adventure.lottery.rewards.money")).toBeTruthy();
 		expect(screen.getByText("+40")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:adventure.smallEvent.continue"));
+
+		expect(onContinue).toHaveBeenCalledTimes(1);
+	});
+
+	it("shows a generic result for an altar resolution", async () => {
+		const onContinue = jest.fn();
+		await render(<SmallEventOutcome
+			outcome={{
+				eventName: "SmallEventAltarContributedPacket",
+				data: {amount: 130, blessingTriggered: false}
+			}}
+			onContinue={onContinue}
+		/>);
+
+		expect(screen.getByText("app:adventure.smallEvent.resultTitle")).toBeTruthy();
+		expect(screen.getByText("Amount")).toBeTruthy();
+		expect(screen.getByText("130")).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:adventure.smallEvent.continue"));
 
 		expect(onContinue).toHaveBeenCalledTimes(1);

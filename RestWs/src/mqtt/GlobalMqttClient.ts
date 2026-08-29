@@ -7,6 +7,8 @@ import {
 } from "../../../Lib/src/packets/CrowniclesPacket";
 import { WebSocketServer } from "../services/WebSocketServer";
 import { getServerTranslator } from "../packets/fromServer/FromServerTranslator";
+import { translateSmallEventResult } from "../packets/fromServer/translators/SmallEventResultServerTranslator";
+import { SmallEventResultRes } from "../../../WsPackets/src/fromServer/smallEvents/SmallEventResultRes";
 
 /**
  * Global MQTT client class for communication with the backend
@@ -43,6 +45,14 @@ export class GlobalMqttClient extends RestWsMqttClient {
 		for (const packet of dataJson.packets) {
 			const translator = getServerTranslator(packet.name);
 			if (!translator) {
+				if (packet.name.startsWith("SmallEvent") && packet.name.endsWith("Packet")) {
+					translatedPackets.push({
+						id: context.packetId,
+						name: SmallEventResultRes.name,
+						packet: await translateSmallEventResult(packet.name, packet.packet)
+					});
+					continue;
+				}
 				CrowniclesLogger.warn("No translator found for packet", { packet });
 				continue;
 			}
