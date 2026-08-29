@@ -107,6 +107,7 @@ function lotteryOutcomeText(outcome: LotteryOutcomeData): string {
 		case "noAnswer":
 			return i18n.t("app:adventure.lottery.noAnswer");
 	}
+	return i18n.t("app:adventure.lottery.noAnswer");
 }
 
 type TokenMerchantData = Extract<ReactionCollectorData, {type: typeof REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT}>;
@@ -333,6 +334,11 @@ function tokenOutcomeDetails(outcome: TokenOutcomeData): {
 		case "charityAlreadyUsed":
 			return {eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"), title: i18n.t("app:adventure.tokens.outcomes.charityAlreadyUsed"), fields: []};
 	}
+	return {
+		eyebrow: i18n.t("app:adventure.tokens.merchant.eyebrow"),
+		title: i18n.t("app:common.error"),
+		fields: []
+	};
 }
 
 /** Keeps the player on a clear terminal screen after any token-flow action. */

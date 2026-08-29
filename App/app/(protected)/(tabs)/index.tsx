@@ -267,7 +267,9 @@ function useReportRefreshAtNextStop(packet: ReportTravelSummaryRes | null): void
 			queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.REPORT), refetchType: "active"})
 				.catch(error => console.error("Failed to refresh report at next stop:", error));
 		}, delay);
-		return (): void => clearTimeout(timeoutId);
+		return (): void => {
+			clearTimeout(timeoutId);
+		};
 	}, [arriveTime, nextStopTime, packet, queryClient]);
 }
 
@@ -352,6 +354,7 @@ function ReportStatusView({
 		case "ready":
 			return null;
 	}
+	return null;
 }
 
 function RoutePanel({packet, metrics}: {
