@@ -31,9 +31,9 @@ function handleIncomingPacket(client: WebSocketClient, packet: unknown): void {
 	handler.call(client, packet);
 }
 
-function handleSocketOpen(client: WebSocketClient): void {
-	const handler = Reflect.get(client, "handleSocketOpen") as () => void;
-	handler.call(client);
+function handleSocketOpen(client: WebSocketClient, socket: TestSocket): void {
+	const handler = Reflect.get(client, "handleSocketOpen") as (socket: TestSocket) => void;
+	handler.call(client, socket);
 }
 
 function queuedPackets(client: WebSocketClient): unknown[] {
@@ -113,7 +113,7 @@ describe("WebSocketClient", () => {
 		expect(queuedPacket.id).toEqual(expect.any(String));
 
 		socket.readyState = OPEN_STATE;
-		handleSocketOpen(client);
+		handleSocketOpen(client, socket);
 
 		const sentPacket = JSON.parse(socket.send.mock.calls[0][0] as string) as {id: string};
 		expect(sentPacket.id).toBe(queuedPacket.id);

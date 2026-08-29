@@ -75,13 +75,17 @@ export class WebSocketClient {
 		this.setState?.(AuthStateEnum.CONNECTING);
 		await this.connect(authToken, true);
 
-		this.processPacketQueueIntervalId = setInterval((): void => {
-			this.processPacketQueue();
-		}, 1000);
+		if (this.processPacketQueueIntervalId === null) {
+			this.processPacketQueueIntervalId = setInterval((): void => {
+				this.processPacketQueue();
+			}, 1000);
+		}
 
-		this.cleanResponseHandlersIntervalId = setInterval((): void => {
-			this.cleanResponseHandlers();
-		}, 60 * 1000); // Clean response handlers every minute
+		if (this.cleanResponseHandlersIntervalId === null) {
+			this.cleanResponseHandlersIntervalId = setInterval((): void => {
+				this.cleanResponseHandlers();
+			}, 60 * 1000); // Clean response handlers every minute
+		}
 	}
 
 	public sendPacket(packet: FromClientPacket, responseHandlers: {
@@ -170,9 +174,14 @@ export class WebSocketClient {
 	}
 
 	private async connect(authToken: AuthToken, firstConnection: boolean): Promise<void> {
-		if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-			this.setState?.(AuthStateEnum.LOGGED_IN);
-			return;
+		if (this.socket) {
+			if (this.socket.readyState === WebSocket.OPEN) {
+				this.setState?.(AuthStateEnum.LOGGED_IN);
+				return;
+			}
+			if (this.socket.readyState === WebSocket.CONNECTING) {
+				return;
+			}
 		}
 
 		const webSocketUrl = this.getWebSocketUrl();
@@ -182,21 +191,28 @@ export class WebSocketClient {
 		}
 
 		let firstConnectionFlag = firstConnection;
-		this.socket = new WebSocket(`${webSocketUrl}?token=${accessToken}`);
+		const socket = new WebSocket(`${webSocketUrl}?token=${accessToken}`);
+		this.socket = socket;
 
-		this.socket.onopen = (): void => {
-			this.handleSocketOpen();
+		socket.onopen = (): void => {
+			if (this.socket !== socket) {
+				return;
+			}
+			this.handleSocketOpen(socket);
 			firstConnectionFlag = false;
 		};
 
-		this.socket.onmessage = (event): void => this.handleMessage(event);
+		socket.onmessage = (event): void => this.handleMessage(event);
 
-		this.socket.onerror = (error): void => this.handleSocketError(error);
+		socket.onerror = (error): void => this.handleSocketError(socket, error);
 
-		this.socket.onclose = (error): void => this.handleSocketClose(error, authToken, firstConnectionFlag);
+		socket.onclose = (error): void => this.handleSocketClose(socket, error, authToken, firstConnectionFlag);
 	}
 
-	private handleSocketOpen(): void {
+	private handleSocketOpen(socket: WebSocket): void {
+		if (this.socket !== socket) {
+			return;
+		}
 		console.log("WebSocket connection established.");
 		this.connectionAttempts = 0;
 		this.setState?.(AuthStateEnum.LOGGED_IN);
@@ -253,14 +269,20 @@ private handleCorrelatedPacket(packetId: string | undefined, packetName: string,
 		}
 	}
 
-	private handleSocketError(error: Event): void {
+	private handleSocketError(socket: WebSocket, error: Event): void {
+		if (this.socket !== socket) {
+			return;
+		}
 		console.info("WebSocket error:", error);
-		this.socket?.close();
+		socket.close();
 		this.setState?.(AuthStateEnum.CONNECTION_ERROR);
 		this.clearIntervals();
 	}
 
-	private handleSocketClose(error: CloseEvent, authToken: AuthToken, firstConnection: boolean): void {
+	private handleSocketClose(socket: WebSocket, error: CloseEvent, authToken: AuthToken, firstConnection: boolean): void {
+		if (this.socket !== socket) {
+			return;
+		}
 		console.log("WebSocket connection closed.");
 		if (error.reason === "Unauthorized") {
 			this.handleUnauthorizedClose();
