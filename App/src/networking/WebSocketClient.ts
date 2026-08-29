@@ -88,20 +88,24 @@ export class WebSocketClient {
 		[packetName: string]: WebSocketPacketResponseHandler<never>;
 	}, timeout?: PacketTimeout): void {
 		console.debug("Sending packet:", packet);
-		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
-			console.warn("WebSocket is not open. Packet will be queued.");
-			this.packetQueue.push({ packet });
-			this.setState?.(AuthStateEnum.RECONNECTING_PACKET_QUEUE);
-			return;
-		}
-
+		/*
+		 * A screen may make its initial request while the socket is reconnecting. Register the
+		 * response before queuing it, otherwise the request is eventually sent without an id and
+		 * its promise can never settle.
+		 */
 		const packetId = this.registerResponseHandlers(responseHandlers);
+		if (packetId && timeout) {
+			this.scheduleResponseHandlerCleanup(packetId, timeout);
+		}
 		this.packetQueue.push({
 			packet,
 			...(packetId ? { id: packetId } : {})
 		});
-		if (packetId && timeout) {
-			this.scheduleResponseHandlerCleanup(packetId, timeout);
+
+		if (!this.socket || this.socket.readyState !== WebSocket.OPEN) {
+			console.warn("WebSocket is not open. Packet will be queued.");
+			this.setState?.(AuthStateEnum.RECONNECTING_PACKET_QUEUE);
+			return;
 		}
 		this.processPacketQueue();
 	}
@@ -196,6 +200,7 @@ export class WebSocketClient {
 		console.log("WebSocket connection established.");
 		this.connectionAttempts = 0;
 		this.setState?.(AuthStateEnum.LOGGED_IN);
+		this.processPacketQueue();
 	}
 
 	private handleMessage(event: MessageEvent): void {

@@ -31,6 +31,11 @@ function handleIncomingPacket(client: WebSocketClient, packet: unknown): void {
 	handler.call(client, packet);
 }
 
+function handleSocketOpen(client: WebSocketClient): void {
+	const handler = Reflect.get(client, "handleSocketOpen") as () => void;
+	handler.call(client);
+}
+
 function queuedPackets(client: WebSocketClient): unknown[] {
 	return Reflect.get(client, "packetQueue") as unknown[];
 }
@@ -91,18 +96,34 @@ describe("WebSocketClient", () => {
 		unregister();
 	});
 
-	it("queues a packet while the socket is unavailable", () => {
+	it("keeps a queued request correlated when the socket reconnects", () => {
 		const warnSpy = jest.spyOn(console, "warn").mockImplementation();
-		const {client} = clientWithSocket({
+		const {client, socket} = clientWithSocket({
 			readyState: 0,
 			send: jest.fn(),
 			close: jest.fn()
 		});
 		const request = new TestRequest();
+		const responseHandler = jest.fn();
 
-		client.sendPacket(request, {});
+		client.sendPacket(request, {[TestResponse.name]: responseHandler as never});
 
-		expect(queuedPackets(client)).toEqual([{packet: request}]);
+		const [queuedPacket] = queuedPackets(client) as {id: string; packet: TestRequest}[];
+		expect(queuedPacket.packet).toBe(request);
+		expect(queuedPacket.id).toEqual(expect.any(String));
+
+		socket.readyState = OPEN_STATE;
+		handleSocketOpen(client);
+
+		const sentPacket = JSON.parse(socket.send.mock.calls[0][0] as string) as {id: string};
+		expect(sentPacket.id).toBe(queuedPacket.id);
+		handleIncomingPacket(client, {
+			id: sentPacket.id,
+			name: TestResponse.name,
+			packet: {value: "reconnected"}
+		});
+
+		expect(responseHandler).toHaveBeenCalledWith({value: "reconnected"});
 		warnSpy.mockRestore();
 	});
 });
