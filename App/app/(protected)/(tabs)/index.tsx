@@ -1,17 +1,32 @@
 import {ReactNode, useEffect, useState} from "react";
 import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
+import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ReportReq} from "ws-packets/src/fromClient/ReportReq";
+import {ReportUseTokensReq} from "ws-packets/src/fromClient/ReportUseTokensReq";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
+import {
+	ReportTokenMerchantBoughtRes,
+	ReportTokenMerchantCannotAffordRes,
+	ReportTokenMerchantCharityAlreadyUsedRes,
+	ReportTokenMerchantCharityRes,
+	ReportTokenMerchantFullRes,
+	ReportTokenMerchantRefusedRes,
+	ReportTokenMerchantTooMuchRes,
+	ReportUseTokensAcceptedRes,
+	ReportUseTokensRefusedRes
+} from "ws-packets/src/fromServer/report/ReportTokenRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
-import {GAME_ENTITIES} from "@/src/store/GameEntities";
+import {gameKey, GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
-import {AdventureCollector, BigEventOutcome} from "@/src/collectors/AdventureCollector";
+import {AdventureCollector, BigEventOutcome, LotteryOutcome, TokenOutcome} from "@/src/collectors/AdventureCollector";
 import {isAdventureCollector, isBigEventCollector} from "@/src/collectors/CollectorRouting";
-import {reportEventStore, useBigEventOutcome} from "@/src/collectors/ReportEventStore";
+import {
+	reportEventStore, useBigEventOutcome, useLotteryOutcome, useTokenOutcome
+} from "@/src/collectors/ReportEventStore";
 import {
   EmptyState, Hero, KeyValue, Panel, QuickAction, QuickActions, Screen
 } from "@/src/design/Primitives";
@@ -99,7 +114,21 @@ function useCurrentTime(): number {
 }
 
 function requestReport(): Promise<GameAnswer<ReportTravelSummaryRes>> {
-  return GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [ReactionCollectorCreation]);
+	return GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [ReactionCollectorCreation]);
+}
+
+function requestTokenAdvance(): Promise<GameAnswer<ReactionCollectorCreation>> {
+	return GameClient.request(makeFromClientPacket(ReportUseTokensReq, {}), ReactionCollectorCreation, [
+		ReportUseTokensAcceptedRes,
+		ReportUseTokensRefusedRes,
+		ReportTokenMerchantBoughtRes,
+		ReportTokenMerchantTooMuchRes,
+		ReportTokenMerchantFullRes,
+		ReportTokenMerchantRefusedRes,
+		ReportTokenMerchantCannotAffordRes,
+		ReportTokenMerchantCharityRes,
+		ReportTokenMerchantCharityAlreadyUsedRes
+	]);
 }
 
 function getEffectStartTime(packet: ReportTravelSummaryRes): number | null {
@@ -202,6 +231,34 @@ function nextStopDuration(packet: ReportTravelSummaryRes, currentTime: number): 
   return formatDuration(packet.nextStopTime - currentTime);
 }
 
+export function reportRefreshDelay(packet: ReportTravelSummaryRes, now = Date.now()): number | null {
+	if (packet.nextStopTime > packet.arriveTime) {
+		return null;
+	}
+	return Math.max(0, packet.nextStopTime - now);
+}
+
+function useReportRefreshAtNextStop(packet: ReportTravelSummaryRes | null): void {
+	const queryClient = useQueryClient();
+	const nextStopTime = packet?.nextStopTime;
+	const arriveTime = packet?.arriveTime;
+
+	useEffect(() => {
+		if (!packet || nextStopTime === undefined || arriveTime === undefined) {
+			return;
+		}
+		const delay = reportRefreshDelay(packet);
+		if (delay === null) {
+			return;
+		}
+		const timeoutId = setTimeout(() => {
+			queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.REPORT), refetchType: "active"})
+				.catch(error => console.error("Failed to refresh report at next stop:", error));
+		}, delay);
+		return (): void => clearTimeout(timeoutId);
+	}, [arriveTime, nextStopTime, packet, queryClient]);
+}
+
 function RoutePanel({packet, metrics}: {
   packet: ReportTravelSummaryRes;
   metrics: TravelMetrics;
@@ -227,22 +284,30 @@ function RoutePanel({packet, metrics}: {
   );
 }
 
-function TravelQuickActions(): ReactNode {
-  return (
-    <QuickActions>
-      <QuickAction icon={AppIcons.getIcon("unitValues.token")}>
-        {i18n.t("app:adventure.quick.advance")}
-      </QuickAction>
-      <QuickAction icon={AppIcons.getIcon("expedition.map")}>
-        {i18n.t("app:adventure.quick.map")}
+function TravelQuickActions({packet, onAdvance, advancePending}: {
+	packet: ReportTravelSummaryRes;
+	onAdvance: () => void;
+	advancePending: boolean;
+}): ReactNode {
+	return (
+		<QuickActions>
+			{packet.tokens ? (
+				<QuickAction icon={AppIcons.getIcon("unitValues.token")} disabled={advancePending} onPress={onAdvance}>
+					{i18n.t("app:adventure.quick.advance")}
+				</QuickAction>
+			) : null}
+			<QuickAction icon={AppIcons.getIcon("expedition.map")}>
+				{i18n.t("app:adventure.quick.map")}
       </QuickAction>
     </QuickActions>
   );
 }
 
-function AdventureSheet({packet, currentTime}: {
-  packet: ReportTravelSummaryRes;
-  currentTime: number;
+function AdventureSheet({packet, currentTime, onAdvance, advancePending}: {
+	packet: ReportTravelSummaryRes;
+	currentTime: number;
+	onAdvance: () => void;
+	advancePending: boolean;
 }): ReactNode {
   const metrics = getTravelMetrics(packet, currentTime);
   const destination = mapName(packet.endMap);
@@ -266,20 +331,42 @@ function AdventureSheet({packet, currentTime}: {
       />
 
       <RoutePanel packet={packet} metrics={metrics} />
-      {!packet.isInCity ? <TravelQuickActions /> : null}
+		{!packet.isInCity ? <TravelQuickActions packet={packet} onAdvance={onAdvance} advancePending={advancePending} /> : null}
     </Screen>
   );
 }
 
 export default function Index(): ReactNode {
 	const reportState = useGameQuery<ReportTravelSummaryRes>(GAME_ENTITIES.REPORT, requestReport);
+	useReportRefreshAtNextStop(reportState.status === "ready" ? reportState.data : null);
+	const queryClient = useQueryClient();
+	const [advancePending, setAdvancePending] = useState(false);
 	const {
 		open: openCollectors, react: reactToCollector, isAnswerPending
 	} = useCollectors();
 	const bigEventCollector = openCollectors.find(isBigEventCollector);
 	const adventureCollector = openCollectors.find(isAdventureCollector);
 	const bigEventOutcome = useBigEventOutcome();
+	const lotteryOutcome = useLotteryOutcome();
+	const tokenOutcome = useTokenOutcome();
 	const currentTime = useCurrentTime();
+
+	const advanceWithTokens = (): void => {
+		if (advancePending) {
+			return;
+		}
+		setAdvancePending(true);
+		requestTokenAdvance().finally(() => setAdvancePending(false));
+	};
+
+	const continueAfterTokenOutcome = (): void => {
+		reportEventStore.clearTokens();
+		for (const entity of [GAME_ENTITIES.PROFILE, GAME_ENTITIES.REPORT]) {
+			queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(error => {
+				console.error(`Failed to refresh ${entity} after token action:`, error);
+			});
+		}
+	};
 
   const reportIsWaitingForCollector = openCollectors.length > 0
     && (reportState.status === "loading"
@@ -296,6 +383,12 @@ export default function Index(): ReactNode {
 	}
 	if (bigEventOutcome) {
 		return <BigEventOutcome outcome={bigEventOutcome} onContinue={reportEventStore.clear} />;
+	}
+	if (lotteryOutcome) {
+		return <LotteryOutcome outcome={lotteryOutcome} onContinue={reportEventStore.clearLottery} />;
+	}
+	if (tokenOutcome) {
+		return <TokenOutcome outcome={tokenOutcome} onContinue={continueAfterTokenOutcome} />;
 	}
 	if (adventureCollector) {
 		return (
@@ -324,5 +417,5 @@ export default function Index(): ReactNode {
     return <Centered><Text style={styles.message}>{i18n.t("app:common.error")}</Text></Centered>;
   }
 
-  return <AdventureSheet packet={reportState.data} currentTime={currentTime} />;
+	return <AdventureSheet packet={reportState.data} currentTime={currentTime} onAdvance={advanceWithTokens} advancePending={advancePending} />;
 }

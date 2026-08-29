@@ -1,7 +1,7 @@
 import {render, screen} from "@testing-library/react-native";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
-import Adventure from "@/app/(protected)/(tabs)/index";
+import Adventure, {reportRefreshDelay} from "@/app/(protected)/(tabs)/index";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
@@ -20,6 +20,10 @@ jest.mock("@/src/store/usePlayerProfile", () => ({
 
 jest.mock("@/src/collectors/CollectorsContext", () => ({
 	useCollectors: jest.fn()
+}));
+
+jest.mock("@tanstack/react-query", () => ({
+	useQueryClient: (): {invalidateQueries: jest.Mock} => ({invalidateQueries: jest.fn(() => Promise.resolve())})
 }));
 
 jest.mock("@/src/AppIcons", () => ({
@@ -49,6 +53,7 @@ function report(showEnergy = false): ReportTravelSummaryRes {
 		isOnBoat: false,
 		points: {show: true, cumulated: 42},
 		energy: {show: showEnergy, current: 8, max: 10},
+		tokens: {cost: 1, canAfford: true},
 		isInCity: false
 	};
 }
@@ -118,5 +123,21 @@ describe("Adventure screen", () => {
 		await render(<Adventure />);
 
 		expect(screen.getByText("app:adventure.empty")).toBeTruthy();
+	});
+
+	it("schedules the next report when the journey has another stop", () => {
+		const packet = report();
+		packet.nextStopTime = 1_700_000_300_000;
+		packet.arriveTime = 1_700_000_600_000;
+
+		expect(reportRefreshDelay(packet, 1_700_000_000_000)).toBe(300_000);
+	});
+
+	it("does not schedule another report after arrival", () => {
+		const packet = report();
+		packet.nextStopTime = 1_700_000_700_000;
+		packet.arriveTime = 1_700_000_600_000;
+
+		expect(reportRefreshDelay(packet, 1_700_000_000_000)).toBeNull();
 	});
 });

@@ -1,4 +1,6 @@
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
+import {SmallEventLotteryWinRes} from "ws-packets/src/fromServer/smallEvents/SmallEventLotteryRes";
+import {ReportUseTokensAcceptedRes} from "ws-packets/src/fromServer/report/ReportTokenRes";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {reportEventStore} from "@/src/collectors/ReportEventStore";
 
@@ -21,6 +23,8 @@ function outcome(): ReportBigEventResultRes {
 describe("ReportEventStore", () => {
 	beforeEach((): void => {
 		reportEventStore.clear();
+		reportEventStore.clearLottery();
+		reportEventStore.clearTokens();
 	});
 
 	it("keeps a pushed event result until the player continues", () => {
@@ -37,5 +41,32 @@ describe("ReportEventStore", () => {
 		expect(reportEventStore.getSnapshot()).toBeNull();
 		expect(listener).toHaveBeenCalledTimes(2);
 		unsubscribe();
+	});
+
+	it("keeps the lottery resolution until the player continues", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const result: SmallEventLotteryWinRes = {
+			lostTime: 300_000,
+			winAmount: 40,
+			winReward: "money",
+			level: "medium"
+		};
+
+		registry.dispatch(SmallEventLotteryWinRes.name, result);
+
+		expect(reportEventStore.getLotterySnapshot()).toEqual({kind: "win", packet: result});
+		reportEventStore.clearLottery();
+		expect(reportEventStore.getLotterySnapshot()).toBeNull();
+	});
+
+	it("keeps a token result until the player continues", () => {
+		const registry = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+		const result: ReportUseTokensAcceptedRes = {tokensSpent: 2, isArrived: true};
+
+		registry.dispatch(ReportUseTokensAcceptedRes.name, result);
+
+		expect(reportEventStore.getTokenSnapshot()).toEqual({kind: "used", packet: result});
+		reportEventStore.clearTokens();
+		expect(reportEventStore.getTokenSnapshot()).toBeNull();
 	});
 });

@@ -198,6 +198,8 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 	[ITEM_DATA_KINDS.CHOICE]: () => smallEventTitle("app:collector.titles.itemChoice", "collectors.warning"),
 	[ITEM_DATA_KINDS.ACCEPT]: () => smallEventTitle("app:collector.titles.itemAccept", "collectors.warning"),
 	[REPORT_COLLECTOR_DATA_KINDS.DESTINATION]: () => i18n.t("app:collector.titles.destination"),
+	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: () => i18n.t("app:adventure.tokens.use.title"),
+	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.title"),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.titles.unknown")
 };
 
@@ -231,6 +233,8 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 		item: itemDisplayName(data.data.itemWithDetails)
 	})),
 	[REPORT_COLLECTOR_DATA_KINDS.DESTINATION]: () => i18n.t("app:collector.descriptions.destination"),
+	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: () => i18n.t("app:adventure.tokens.use.description"),
+	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.description"),
 	[UNKNOWN_COLLECTOR_KIND]: () => undefined
 };
 
@@ -300,6 +304,14 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 		});
 	}),
 	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: () => withIcon("other.stay", i18n.t("app:collector.choices.stayInCity")),
+	[REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY]: makeReactionHandler(REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, (reaction, data) => {
+		if (!isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT)) {
+			return i18n.t("app:collector.unknownChoice");
+		}
+		const {amount} = reaction.data;
+		const price = amount * data.data.pricePerToken;
+		return i18n.t(amount === 1 ? "app:adventure.tokens.merchant.buyOne" : "app:adventure.tokens.merchant.buyMany", {amount, price});
+	}),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.unknownChoice")
 };
 
@@ -327,6 +339,7 @@ const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHan
 	[ITEM_REACTION_KINDS.ACCEPT_DRINK_POTION]: makeChoosableHandler(ITEM_REACTION_KINDS.ACCEPT_DRINK_POTION, (_reaction, data) => isDataOfType(data, ITEM_DATA_KINDS.ACCEPT)),
 	[REPORT_COLLECTOR_REACTION_KINDS.DESTINATION]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
 	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
+	[REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT)),
 	[UNKNOWN_COLLECTOR_KIND]: () => false
 };
 

@@ -11,8 +11,10 @@ import {
  */
 export function isAdventureCollector(collector: ReactionCollectorCreation): boolean {
 	switch (collector.data.type) {
-		case BIG_EVENT_DATA_KINDS.COLLECTOR:
-		case REPORT_COLLECTOR_DATA_KINDS.DESTINATION:
+			case BIG_EVENT_DATA_KINDS.COLLECTOR:
+			case REPORT_COLLECTOR_DATA_KINDS.DESTINATION:
+			case REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS:
+			case REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT:
 		case ITEM_DATA_KINDS.CHOICE:
 		case ITEM_DATA_KINDS.ACCEPT:
 		case SMALL_EVENT_DATA_KINDS.ALTAR:

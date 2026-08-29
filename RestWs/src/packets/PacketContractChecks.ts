@@ -26,13 +26,30 @@ import {
 } from "../../../Lib/src/packets/commands/CommandProfilePacket";
 import {
 	CommandReportPacketReq,
-	CommandReportBigEventResultRes, CommandReportTravelSummaryRes
+	CommandReportBigEventResultRes,
+	CommandReportTokenMerchantBoughtRes,
+	CommandReportTokenMerchantCannotAffordRes,
+	CommandReportTokenMerchantCharityAlreadyUsedRes,
+	CommandReportTokenMerchantCharityRes,
+	CommandReportTokenMerchantFullRes,
+	CommandReportTokenMerchantRefuseRes,
+	CommandReportTokenMerchantTooMuchRes,
+	CommandReportTravelSummaryRes,
+	CommandReportUseTokensAcceptPacketRes,
+	CommandReportUseTokensPacketReq,
+	CommandReportUseTokensRefusePacketRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	ReactionCollectorCreationPacket,
 	ReactionCollectorEnded,
 	ReactionCollectorReactPacket
 } from "../../../Lib/src/packets/interaction/ReactionCollectorPacket";
+import {
+	SmallEventLotteryLosePacket,
+	SmallEventLotteryNoAnswerPacket,
+	SmallEventLotteryPoorPacket,
+	SmallEventLotteryWinPacket
+} from "../../../Lib/src/packets/smallEvents/SmallEventLotteryPacket";
 import { ReactionCollectorStopPacket as ReactionCollectorStopPacketWithReason } from "../../../Lib/src/packets/interaction/ReactionCollectorStopPacket";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
 import { Item as LibItem } from "../../../Lib/src/types/Item";
@@ -54,8 +71,26 @@ import { PingRes } from "../../../WsPackets/src/fromServer/ping/PingRes";
 import { ProfileReq } from "../../../WsPackets/src/fromClient/ProfileReq";
 import { ProfileRes } from "../../../WsPackets/src/fromServer/profile/ProfileRes";
 import { ReportReq } from "../../../WsPackets/src/fromClient/ReportReq";
+import { ReportUseTokensReq } from "../../../WsPackets/src/fromClient/ReportUseTokensReq";
 import { ReportTravelSummaryRes } from "../../../WsPackets/src/fromServer/report/ReportTravelSummaryRes";
 import { ReportBigEventResultRes } from "../../../WsPackets/src/fromServer/report/ReportBigEventResultRes";
+import {
+	ReportTokenMerchantBoughtRes,
+	ReportTokenMerchantCannotAffordRes,
+	ReportTokenMerchantCharityAlreadyUsedRes,
+	ReportTokenMerchantCharityRes,
+	ReportTokenMerchantFullRes,
+	ReportTokenMerchantRefusedRes,
+	ReportTokenMerchantTooMuchRes,
+	ReportUseTokensAcceptedRes,
+	ReportUseTokensRefusedRes
+} from "../../../WsPackets/src/fromServer/report/ReportTokenRes";
+import {
+	SmallEventLotteryLoseRes,
+	SmallEventLotteryNoAnswerRes,
+	SmallEventLotteryPoorRes,
+	SmallEventLotteryWinRes
+} from "../../../WsPackets/src/fromServer/smallEvents/SmallEventLotteryRes";
 import { ReactionCollectorCreation } from "../../../WsPackets/src/fromServer/common/ReactionCollectorCreation";
 import { ReactionCollectorEnded as WireReactionCollectorEnded } from "../../../WsPackets/src/fromServer/common/ReactionCollectorEnded";
 import { ReactionCollectorReactReq } from "../../../WsPackets/src/fromClient/ReactionCollectorReactReq";
@@ -97,6 +132,7 @@ type PingRequestContract = Assert<IsEqual<WireShape<CommandPingPacketReq>, WireS
 type ProfileRequestContract = Assert<IsEqual<WireShape<CommandProfilePacketReq>, WireShape<WirePacketFields<ProfileReq>>>>;
 type CollectorsRequestContract = Assert<IsEqual<WireShape<CommandGetCurrentReactionCollectorsPacket>, WireShape<WirePacketFields<CommandGetCurrentReactionCollectorsReq>>>>;
 type ReportRequestContract = Assert<IsEqual<WireShape<CommandReportPacketReq>, WireShape<WirePacketFields<ReportReq>>>>;
+type ReportUseTokensRequestContract = Assert<IsEqual<WireShape<CommandReportUseTokensPacketReq>, WireShape<WirePacketFields<ReportUseTokensReq>>>>;
 
 type DrinkResponseContract = Assert<IsEqual<WireShape<CommandDrinkPacketRes>, WireShape<WirePacketFields<DrinkRes>>>>;
 type DrinkCancelContract = Assert<IsEqual<WireShape<CommandDrinkCancelDrink>, WireShape<WirePacketFields<DrinkCancel>>>>;
@@ -124,6 +160,58 @@ type ReportTravelSummaryContract = Assert<IsEqual<
 type ReportBigEventResultContract = Assert<IsEqual<
 	WireShape<CommandReportBigEventResultRes>,
 	WireShape<WirePacketFields<ReportBigEventResultRes>>
+>>;
+type ReportUseTokensAcceptedContract = Assert<IsEqual<
+	WireShape<CommandReportUseTokensAcceptPacketRes>,
+	WireShape<WirePacketFields<ReportUseTokensAcceptedRes>>
+>>;
+type ReportUseTokensRefusedContract = Assert<IsEqual<
+	WireShape<CommandReportUseTokensRefusePacketRes>,
+	WireShape<WirePacketFields<ReportUseTokensRefusedRes>>
+>>;
+type ReportTokenMerchantBoughtContract = Assert<IsEqual<
+	WireShape<CommandReportTokenMerchantBoughtRes>,
+	WireShape<WirePacketFields<ReportTokenMerchantBoughtRes>>
+>>;
+type ReportTokenMerchantTooMuchContract = Assert<IsEqual<
+	WireShape<CommandReportTokenMerchantTooMuchRes>,
+	WireShape<WirePacketFields<ReportTokenMerchantTooMuchRes>>
+>>;
+type ReportTokenMerchantFullContract = Assert<IsEqual<
+	WireShape<CommandReportTokenMerchantFullRes>,
+	WireShape<WirePacketFields<ReportTokenMerchantFullRes>>
+>>;
+type ReportTokenMerchantRefusedContract = Assert<IsEqual<
+	WireShape<CommandReportTokenMerchantRefuseRes>,
+	WireShape<WirePacketFields<ReportTokenMerchantRefusedRes>>
+>>;
+type ReportTokenMerchantCannotAffordContract = Assert<IsEqual<
+	WireShape<CommandReportTokenMerchantCannotAffordRes>,
+	WireShape<WirePacketFields<ReportTokenMerchantCannotAffordRes>>
+>>;
+type ReportTokenMerchantCharityContract = Assert<IsEqual<
+	WireShape<CommandReportTokenMerchantCharityRes>,
+	WireShape<WirePacketFields<ReportTokenMerchantCharityRes>>
+>>;
+type ReportTokenMerchantCharityAlreadyUsedContract = Assert<IsEqual<
+	WireShape<CommandReportTokenMerchantCharityAlreadyUsedRes>,
+	WireShape<WirePacketFields<ReportTokenMerchantCharityAlreadyUsedRes>>
+>>;
+type SmallEventLotteryNoAnswerContract = Assert<IsEqual<
+	WireShape<SmallEventLotteryNoAnswerPacket>,
+	WireShape<WirePacketFields<SmallEventLotteryNoAnswerRes>>
+>>;
+type SmallEventLotteryPoorContract = Assert<IsEqual<
+	WireShape<SmallEventLotteryPoorPacket>,
+	WireShape<WirePacketFields<SmallEventLotteryPoorRes>>
+>>;
+type SmallEventLotteryWinContract = Assert<IsEqual<
+	WireShape<SmallEventLotteryWinPacket>,
+	WireShape<WirePacketFields<SmallEventLotteryWinRes>>
+>>;
+type SmallEventLotteryLoseContract = Assert<IsEqual<
+	WireShape<SmallEventLotteryLosePacket>,
+	WireShape<WirePacketFields<SmallEventLotteryLoseRes>>
 >>;
 type CollectorsResponseKeysContract = Assert<SameKeys<
 	CommandGetCurrentReactionCollectorsPacketRes,
@@ -162,6 +250,7 @@ export const packetContractChecks: {
 	profileRequest: ProfileRequestContract;
 	collectorsRequest: CollectorsRequestContract;
 	reportRequest: ReportRequestContract;
+	reportUseTokensRequest: ReportUseTokensRequestContract;
 	drinkResponse: DrinkResponseContract;
 	drinkCancel: DrinkCancelContract;
 	drinkUnavailable: DrinkUnavailableContract;
@@ -171,6 +260,19 @@ export const packetContractChecks: {
 	profileResponse: ProfileResponseContract;
 	reportTravelSummary: ReportTravelSummaryContract;
 	reportBigEventResult: ReportBigEventResultContract;
+	reportUseTokensAccepted: ReportUseTokensAcceptedContract;
+	reportUseTokensRefused: ReportUseTokensRefusedContract;
+	reportTokenMerchantBought: ReportTokenMerchantBoughtContract;
+	reportTokenMerchantTooMuch: ReportTokenMerchantTooMuchContract;
+	reportTokenMerchantFull: ReportTokenMerchantFullContract;
+	reportTokenMerchantRefused: ReportTokenMerchantRefusedContract;
+	reportTokenMerchantCannotAfford: ReportTokenMerchantCannotAffordContract;
+	reportTokenMerchantCharity: ReportTokenMerchantCharityContract;
+	reportTokenMerchantCharityAlreadyUsed: ReportTokenMerchantCharityAlreadyUsedContract;
+	smallEventLotteryNoAnswer: SmallEventLotteryNoAnswerContract;
+	smallEventLotteryPoor: SmallEventLotteryPoorContract;
+	smallEventLotteryWin: SmallEventLotteryWinContract;
+	smallEventLotteryLose: SmallEventLotteryLoseContract;
 	collectorEnded: CollectorEndedContract;
 	collectorReaction: CollectorReactionContract;
 	collectorStop: CollectorStopContract;
@@ -191,6 +293,7 @@ export const packetContractChecks: {
 	profileRequest: true,
 	collectorsRequest: true,
 	reportRequest: true,
+	reportUseTokensRequest: true,
 	drinkResponse: true,
 	drinkCancel: true,
 	drinkUnavailable: true,
@@ -200,6 +303,19 @@ export const packetContractChecks: {
 	profileResponse: true,
 	reportTravelSummary: true,
 	reportBigEventResult: true,
+	reportUseTokensAccepted: true,
+	reportUseTokensRefused: true,
+	reportTokenMerchantBought: true,
+	reportTokenMerchantTooMuch: true,
+	reportTokenMerchantFull: true,
+	reportTokenMerchantRefused: true,
+	reportTokenMerchantCannotAfford: true,
+	reportTokenMerchantCharity: true,
+	reportTokenMerchantCharityAlreadyUsed: true,
+	smallEventLotteryNoAnswer: true,
+	smallEventLotteryPoor: true,
+	smallEventLotteryWin: true,
+	smallEventLotteryLose: true,
 	collectorEnded: true,
 	collectorReaction: true,
 	collectorStop: true,
