@@ -162,7 +162,14 @@ export class WebSocketServer {
 						port: req.socket.remotePort,
 						keycloakId
 					});
-					WebSocketServer.keycloakIdToClients.delete(keycloakId);
+
+					/*
+					 * A reconnect closes the previous socket after the new one has been registered. Do not
+					 * let that delayed close event remove the active connection.
+					 */
+					if (WebSocketServer.keycloakIdToClients.get(keycloakId) === ws) {
+						WebSocketServer.keycloakIdToClients.delete(keycloakId);
+					}
 				});
 			}
 			catch (error) {
