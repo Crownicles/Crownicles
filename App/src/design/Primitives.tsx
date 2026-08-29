@@ -428,8 +428,8 @@ function RowContent({icon, title, subtitle, end, chevron = false, tone}: RowProp
 		<>
 			{icon ? <View style={styles.rowIcon}>{icon}</View> : null}
 			<View style={styles.rowBody}>
-				<Text style={[styles.rowTitle, tone === "danger" && styles.rowDanger]}>{title}</Text>
-				{subtitle ? <Text style={styles.rowSubtitle}>{subtitle}</Text> : null}
+				<TwemojiText textStyle={[styles.rowTitle, tone === "danger" && styles.rowDanger]} emojiSize={Theme.fontSize.rowTitle}>{title}</TwemojiText>
+				{subtitle ? <TwemojiText textStyle={styles.rowSubtitle} emojiSize={Theme.fontSize.rowSubtitle}>{subtitle}</TwemojiText> : null}
 			</View>
 			{end ? <Text style={styles.rowEnd}>{end}</Text> : null}
 			{chevron ? <Text style={styles.rowChevron}>›</Text> : null}

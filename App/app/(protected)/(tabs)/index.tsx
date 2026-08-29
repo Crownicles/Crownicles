@@ -9,6 +9,9 @@ import {GameAnswer, GameClient} from "@/src/networking/GameClient";
 import {useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
+import {AdventureCollector, BigEventOutcome} from "@/src/collectors/AdventureCollector";
+import {isAdventureCollector, isBigEventCollector} from "@/src/collectors/CollectorRouting";
+import {reportEventStore, useBigEventOutcome} from "@/src/collectors/ReportEventStore";
 import {
   EmptyState, Hero, KeyValue, Panel, QuickAction, QuickActions, Screen
 } from "@/src/design/Primitives";
@@ -269,15 +272,41 @@ function AdventureSheet({packet, currentTime}: {
 }
 
 export default function Index(): ReactNode {
-  const reportState = useGameQuery<ReportTravelSummaryRes>(GAME_ENTITIES.REPORT, requestReport);
-  const {open: openCollectors} = useCollectors();
-  const currentTime = useCurrentTime();
+	const reportState = useGameQuery<ReportTravelSummaryRes>(GAME_ENTITIES.REPORT, requestReport);
+	const {
+		open: openCollectors, react: reactToCollector, isAnswerPending
+	} = useCollectors();
+	const bigEventCollector = openCollectors.find(isBigEventCollector);
+	const adventureCollector = openCollectors.find(isAdventureCollector);
+	const bigEventOutcome = useBigEventOutcome();
+	const currentTime = useCurrentTime();
 
   const reportIsWaitingForCollector = openCollectors.length > 0
     && (reportState.status === "loading"
       || reportState.status === "empty" && reportState.packetName === ReactionCollectorCreation.name);
 
-  if (reportIsWaitingForCollector) {
+	if (bigEventCollector) {
+		return (
+			<AdventureCollector
+				collector={bigEventCollector}
+				onChoose={(reactionIndex): void => reactToCollector(bigEventCollector.id, reactionIndex)}
+				submitting={isAnswerPending(bigEventCollector.id)}
+			/>
+		);
+	}
+	if (bigEventOutcome) {
+		return <BigEventOutcome outcome={bigEventOutcome} onContinue={reportEventStore.clear} />;
+	}
+	if (adventureCollector) {
+		return (
+			<AdventureCollector
+				collector={adventureCollector}
+				onChoose={(reactionIndex): void => reactToCollector(adventureCollector.id, reactionIndex)}
+				submitting={isAnswerPending(adventureCollector.id)}
+			/>
+		);
+	}
+	if (reportIsWaitingForCollector) {
     return <Centered><EmptyState>{i18n.t("app:collector.pending")}</EmptyState></Centered>;
   }
   if (reportState.status === "loading") {

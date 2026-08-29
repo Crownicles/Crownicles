@@ -10,6 +10,10 @@ import {
 	ReactionCollectorDrinkReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import {ReactionCollectorBigEvent} from "../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
+import {
+	ReactionCollectorChooseDestination,
+	ReactionCollectorChooseDestinationReaction
+} from "../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import { SupportItemDetails } from "../../../Lib/src/types/SupportItemDetails";
 import { MainItemDetails } from "../../../Lib/src/types/MainItemDetails";
 import { ItemNature } from "../../../Lib/src/constants/ItemConstants";
@@ -18,7 +22,7 @@ import {
 	DRINK_REACTION_KINDS,
 	BIG_EVENT_DATA_KINDS,
 	BIG_EVENT_REACTION_KINDS,
-	GENERIC_REACTION_KINDS,
+	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	UNKNOWN_COLLECTOR_KIND
 } from "../../../WsPackets/src/fromServer/collectors";
 import { mapCollectorCreation } from "../../src/packets/fromServer/collectors/ReactionCollectorMapper";
@@ -119,6 +123,32 @@ describe("mapCollectorCreation", () => {
 			{type: BIG_EVENT_REACTION_KINDS.POSSIBILITY, data: {name: "butch"}},
 			{type: BIG_EVENT_REACTION_KINDS.POSSIBILITY, data: {name: "cook"}},
 			{type: BIG_EVENT_REACTION_KINDS.POSSIBILITY, data: {name: "end"}}
+		]);
+	});
+
+	it("translates the destination collector sent after an event", () => {
+		const destination = Object.assign(new ReactionCollectorChooseDestinationReaction(), {
+			mapId: 42,
+			mapTypeId: "port",
+			tripDuration: 15 * 60_000
+		});
+		const packet = new ReactionCollectorChooseDestination([destination], true)
+			.creationPacket("collector-1", END_TIME);
+
+		const mapped = mapCollectorCreation(packet);
+
+		expect(mapped).toMatchObject({
+			id: "collector-1",
+			endTime: END_TIME,
+			mainPacket: true
+		});
+		expect(mapped.data).toStrictEqual({type: REPORT_COLLECTOR_DATA_KINDS.DESTINATION, data: {}});
+		expect(mapped.reactions).toStrictEqual([
+			{
+				type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION,
+				data: {mapId: 42, mapTypeId: "port", tripDuration: 15 * 60_000}
+			},
+			{type: REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, data: {}}
 		]);
 	});
 

@@ -26,7 +26,7 @@ import {
 } from "../../../Lib/src/packets/commands/CommandProfilePacket";
 import {
 	CommandReportPacketReq,
-	CommandReportTravelSummaryRes
+	CommandReportBigEventResultRes, CommandReportTravelSummaryRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
 import {
 	ReactionCollectorCreationPacket,
@@ -55,6 +55,7 @@ import { ProfileReq } from "../../../WsPackets/src/fromClient/ProfileReq";
 import { ProfileRes } from "../../../WsPackets/src/fromServer/profile/ProfileRes";
 import { ReportReq } from "../../../WsPackets/src/fromClient/ReportReq";
 import { ReportTravelSummaryRes } from "../../../WsPackets/src/fromServer/report/ReportTravelSummaryRes";
+import { ReportBigEventResultRes } from "../../../WsPackets/src/fromServer/report/ReportBigEventResultRes";
 import { ReactionCollectorCreation } from "../../../WsPackets/src/fromServer/common/ReactionCollectorCreation";
 import { ReactionCollectorEnded as WireReactionCollectorEnded } from "../../../WsPackets/src/fromServer/common/ReactionCollectorEnded";
 import { ReactionCollectorReactReq } from "../../../WsPackets/src/fromClient/ReactionCollectorReactReq";
@@ -120,6 +121,10 @@ type ReportTravelSummaryContract = Assert<IsEqual<
 	WireShape<CommandReportTravelSummaryRes>,
 	WireShape<WirePacketFields<ReportTravelSummaryRes>>
 >>;
+type ReportBigEventResultContract = Assert<IsEqual<
+	WireShape<CommandReportBigEventResultRes>,
+	WireShape<WirePacketFields<ReportBigEventResultRes>>
+>>;
 type CollectorsResponseKeysContract = Assert<SameKeys<
 	CommandGetCurrentReactionCollectorsPacketRes,
 	WirePacketFields<CommandGetCurrentReactionCollectorsRes>
@@ -165,6 +170,7 @@ export const packetContractChecks: {
 	pingResponse: PingResponseContract;
 	profileResponse: ProfileResponseContract;
 	reportTravelSummary: ReportTravelSummaryContract;
+	reportBigEventResult: ReportBigEventResultContract;
 	collectorEnded: CollectorEndedContract;
 	collectorReaction: CollectorReactionContract;
 	collectorStop: CollectorStopContract;
@@ -193,6 +199,7 @@ export const packetContractChecks: {
 	pingResponse: true,
 	profileResponse: true,
 	reportTravelSummary: true,
+	reportBigEventResult: true,
 	collectorEnded: true,
 	collectorReaction: true,
 	collectorStop: true,

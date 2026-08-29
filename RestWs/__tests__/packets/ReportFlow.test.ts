@@ -6,11 +6,13 @@ import {
 } from "../../../Lib/src/packets/CrowniclesPacket";
 import {
 	CommandReportPacketReq,
+	CommandReportBigEventResultRes,
 	CommandReportTravelSummaryRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
 import {makeFromClientPacket} from "../../../WsPackets/src/MakePackets";
 import {ReportReq} from "../../../WsPackets/src/fromClient/ReportReq";
 import {ReportTravelSummaryRes} from "../../../WsPackets/src/fromServer/report/ReportTravelSummaryRes";
+import {ReportBigEventResultRes} from "../../../WsPackets/src/fromServer/report/ReportBigEventResultRes";
 import {
 	getClientTranslator
 } from "../../src/packets/fromClient/FromClientTranslator";
@@ -54,11 +56,31 @@ function travelSummaryPacket(withOptionalFields: boolean): CommandReportTravelSu
 	});
 }
 
+function bigEventResultPacket(withEffect: boolean): CommandReportBigEventResultRes {
+	return makePacket(CommandReportBigEventResultRes, {
+		eventId: 19,
+		possibilityId: "cook",
+		outcomeId: "success",
+		score: 15,
+		experience: 10,
+		...(withEffect ? {effect: {name: "slowed", time: 300_000}} : {}),
+		health: -3,
+		money: 20,
+		energy: -2,
+		gems: 1,
+		tokens: 0,
+		oneshot: false
+	});
+}
+
 describe("/report over the WebSocket protocol", () => {
 	it("registers the request and travel summary translators", () => {
 		expect(getClientTranslator(ReportReq.name)).toBeDefined();
 		expect(getServerTranslator(CommandReportTravelSummaryRes.name)).toMatchObject({
 			protoName: ReportTravelSummaryRes.name
+		});
+		expect(getServerTranslator(CommandReportBigEventResultRes.name)).toMatchObject({
+			protoName: ReportBigEventResultRes.name
 		});
 	});
 
@@ -85,5 +107,19 @@ describe("/report over the WebSocket protocol", () => {
 		expect(translated).not.toHaveProperty("lastSmallEventId");
 		expect(translated).not.toHaveProperty("tokens");
 		expect(translated).not.toHaveProperty("heal");
+	});
+
+	it("transports the result of a big-event possibility", async () => {
+		const source = bigEventResultPacket(true);
+		const translated = await ReportCommandServerTranslator.translateBigEventResult(context(), source);
+
+		expect(translated).toBeInstanceOf(ReportBigEventResultRes);
+		expect(overTheWire(translated)).toStrictEqual(overTheWire(source));
+	});
+
+	it("does not fabricate a missing big-event effect", async () => {
+		const translated = await ReportCommandServerTranslator.translateBigEventResult(context(), bigEventResultPacket(false));
+
+		expect(translated).not.toHaveProperty("effect");
 	});
 });

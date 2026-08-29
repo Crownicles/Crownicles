@@ -1,7 +1,8 @@
 import {
 	BIG_EVENT_DATA_KINDS, BIG_EVENT_REACTION_KINDS,
 	DRINK_DATA_KINDS, DRINK_REACTION_KINDS,
-	GENERIC_REACTION_KINDS, SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
+	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
+	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
 	SMALL_EVENT_BAD_PET_ACTION_IDS, SMALL_EVENT_GOBLET_IDS, SMALL_EVENT_GOBLET_STRATEGIES,
 	UNKNOWN_COLLECTOR_KIND, GardenerConditionKey,
@@ -25,6 +26,8 @@ const ITEM_TYPES_BY_CATEGORY = [
 	"potion",
 	"object"
 ] as const;
+
+const MILLISECONDS_PER_MINUTE = 60_000;
 
 
 const BAD_PET_ACTIONS_WITH_SEX = new Set<SmallEventBadPetActionId>([
@@ -123,6 +126,17 @@ function itemIconPath(item: ItemWithDetails): string | null {
 	return itemType ? `${itemType}s.${item.id}` : null;
 }
 
+function destinationDuration(tripDuration: number | undefined): string {
+	if (tripDuration === undefined) {
+		return i18n.t("app:collector.descriptions.unknownDuration");
+	}
+	const minutes = Math.max(0, Math.ceil(tripDuration / MILLISECONDS_PER_MINUTE));
+	const hours = Math.floor(minutes / 60);
+	return hours > 0
+		? i18n.t("app:adventure.duration.hoursMinutes", {hours, minutes: minutes % 60})
+		: i18n.t("app:adventure.duration.minutes", {minutes});
+}
+
 function eventReactionIcon(eventId: number, possibilityName: string): string | null {
 	return AppIcons.getIconOrNull(`events.${eventId}.${possibilityName}`)
 		?? AppIcons.getIconOrNull(`events.${eventId}.${possibilityName}.0`);
@@ -183,6 +197,7 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 	[SMALL_EVENT_DATA_KINDS.WITCH]: () => smallEventTitle("app:collector.titles.witch", "smallEvents.witch"),
 	[ITEM_DATA_KINDS.CHOICE]: () => smallEventTitle("app:collector.titles.itemChoice", "collectors.warning"),
 	[ITEM_DATA_KINDS.ACCEPT]: () => smallEventTitle("app:collector.titles.itemAccept", "collectors.warning"),
+	[REPORT_COLLECTOR_DATA_KINDS.DESTINATION]: () => i18n.t("app:collector.titles.destination"),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.titles.unknown")
 };
 
@@ -215,6 +230,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 	[ITEM_DATA_KINDS.ACCEPT]: makeDataHandler(ITEM_DATA_KINDS.ACCEPT, data => i18n.t("app:collector.descriptions.itemAccept", {
 		item: itemDisplayName(data.data.itemWithDetails)
 	})),
+	[REPORT_COLLECTOR_DATA_KINDS.DESTINATION]: () => i18n.t("app:collector.descriptions.destination"),
 	[UNKNOWN_COLLECTOR_KIND]: () => undefined
 };
 
@@ -275,6 +291,15 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 	[ITEM_REACTION_KINDS.CHOICE_DRINK_POTION]: () => withIcon("collectors.accept", i18n.t("app:collector.choices.drinkPotion")),
 	[ITEM_REACTION_KINDS.CHOICE_REFUSE]: () => withIcon("collectors.refuse", i18n.t("app:collector.refuse")),
 	[ITEM_REACTION_KINDS.ACCEPT_DRINK_POTION]: () => withIcon("collectors.accept", i18n.t("app:collector.choices.drinkPotion")),
+	[REPORT_COLLECTOR_REACTION_KINDS.DESTINATION]: makeReactionHandler(REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, reaction => {
+		const icon = AppIcons.getIconOrNull(`mapTypes.${reaction.data.mapTypeId}`);
+		const destination = i18n.t(`models:map_locations.${reaction.data.mapId}.name`);
+		return i18n.t("app:collector.choices.destination", {
+			destination: icon ? `${icon} ${destination}` : destination,
+			duration: destinationDuration(reaction.data.tripDuration)
+		});
+	}),
+	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: () => withIcon("other.stay", i18n.t("app:collector.choices.stayInCity")),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.unknownChoice")
 };
 
@@ -300,6 +325,8 @@ const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHan
 	[ITEM_REACTION_KINDS.CHOICE_DRINK_POTION]: makeChoosableHandler(ITEM_REACTION_KINDS.CHOICE_DRINK_POTION, (_reaction, data) => isDataOfType(data, ITEM_DATA_KINDS.CHOICE)),
 	[ITEM_REACTION_KINDS.CHOICE_REFUSE]: makeChoosableHandler(ITEM_REACTION_KINDS.CHOICE_REFUSE, (_reaction, data) => isDataOfType(data, ITEM_DATA_KINDS.CHOICE)),
 	[ITEM_REACTION_KINDS.ACCEPT_DRINK_POTION]: makeChoosableHandler(ITEM_REACTION_KINDS.ACCEPT_DRINK_POTION, (_reaction, data) => isDataOfType(data, ITEM_DATA_KINDS.ACCEPT)),
+	[REPORT_COLLECTOR_REACTION_KINDS.DESTINATION]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
+	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
 	[UNKNOWN_COLLECTOR_KIND]: () => false
 };
 

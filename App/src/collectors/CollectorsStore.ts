@@ -15,6 +15,8 @@ class CollectorsStore {
 
 	private readonly answeredKinds = new Map<string, ReactionCollectorDataKind>();
 
+	private readonly answering = new Set<string>();
+
 	private readonly listeners = new Set<StoreListener>();
 
 	private readonly resolutionListeners = new Set<ResolutionListener>();
@@ -43,6 +45,8 @@ class CollectorsStore {
 		};
 	};
 
+	public readonly isAnswerPending = (collectorId: string): boolean => this.answering.has(collectorId);
+
 	public readonly track = (collector: ReactionCollectorCreation): void => {
 		if (this.open.has(collector.id)) {
 			return;
@@ -70,10 +74,13 @@ class CollectorsStore {
 
 	public readonly react = (collectorId: string, reactionIndex: number): void => {
 		const collector = this.open.get(collectorId);
-		if (collector) {
-			this.answeredKinds.set(collectorId, collector.data.type);
+		if (!collector || this.answering.has(collectorId)) {
+			return;
 		}
-		this.forget(collectorId);
+		this.answering.add(collectorId);
+		this.answeredKinds.set(collectorId, collector.data.type);
+		this.snapshot = [...this.open.values()];
+		this.notifyListeners();
 		WebSocketClient.getInstance().sendPacket(makeFromClientPacket(ReactionCollectorReactReq, {
 			collectorId,
 			reactionIndex
@@ -92,6 +99,7 @@ class CollectorsStore {
 	};
 
 	private readonly forget = (collectorId: string): void => {
+		this.answering.delete(collectorId);
 		const timer = this.timers.get(collectorId);
 		if (timer) {
 			clearTimeout(timer);

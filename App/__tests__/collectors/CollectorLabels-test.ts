@@ -1,6 +1,7 @@
 import {
 	BIG_EVENT_DATA_KINDS, BIG_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
+	REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS
 } from "ws-packets/src/fromServer/collectors";
 import {
@@ -141,5 +142,21 @@ describe("CollectorLabels", () => {
 
 		expect(collectorDescription(data)).toBe("app:collector.descriptions.itemChoice");
 		expect(reactionLabel(reaction, data)).toBe("app:collector.choices.replaceItemInSlot");
+	});
+
+	it("renders and enables the destination choice which follows a report event", () => {
+		const data = {
+			type: REPORT_COLLECTOR_DATA_KINDS.DESTINATION,
+			data: {}
+		} as const;
+		const reaction = {
+			type: REPORT_COLLECTOR_REACTION_KINDS.DESTINATION,
+			data: {mapId: 3, mapTypeId: "port", tripDuration: 15 * 60_000}
+		} as const;
+
+		expect(collectorTitle(data)).toBe("app:collector.titles.destination");
+		expect(collectorDescription(data)).toBe("app:collector.descriptions.destination");
+		expect(reactionLabel(reaction, data)).toBe("app:collector.choices.destination");
+		expect(isChoosable(reaction, data)).toBe(true);
 	});
 });

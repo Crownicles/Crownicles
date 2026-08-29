@@ -21,20 +21,25 @@ import {
 import {
 	itemDataMappings, itemReactionMappings
 } from "./mappings/ItemCollectorMappings";
+import {
+	reportCollectorDataMappings, reportCollectorReactionMappings
+} from "./mappings/ReportCollectorMappings";
 
 const reactionMappings = indexMappings([
 	...genericReactionMappings,
 	...drinkReactionMappings,
 	...bigEventReactionMappings,
 	...smallEventReactionMappings,
-	...itemReactionMappings
+	...itemReactionMappings,
+	...reportCollectorReactionMappings
 ]);
 
 const dataMappings = indexMappings([
 	...drinkDataMappings,
 	...bigEventDataMappings,
 	...smallEventDataMappings,
-	...itemDataMappings
+	...itemDataMappings,
+	...reportCollectorDataMappings
 ]);
 
 /**

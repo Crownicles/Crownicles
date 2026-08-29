@@ -18,6 +18,9 @@ type CollectorsState = {
 	 * result packet is specific to the command and is picked up by its own handler.
 	 */
 	react: (collectorId: string, reactionIndex: number) => void;
+
+	/** True after a reaction has been sent and until the server closes the collector. */
+	isAnswerPending: (collectorId: string) => boolean;
 };
 
 const CollectorsContext = createContext<CollectorsState | null>(null);
@@ -49,7 +52,8 @@ export function CollectorsProvider({ children }: { children: ReactNode }): React
 	const value = useMemo(() => ({
 		open,
 		track: collectorsStore.track,
-		react: collectorsStore.react
+		react: collectorsStore.react,
+		isAnswerPending: collectorsStore.isAnswerPending
 	}), [open]);
 
 	return <CollectorsContext.Provider value={value}>{children}</CollectorsContext.Provider>;

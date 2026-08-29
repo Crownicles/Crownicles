@@ -61,7 +61,7 @@ describe("Adventure screen", () => {
 	beforeEach((): void => {
 		jest.clearAllMocks();
 		mockedUsePlayerProfile.mockReturnValue({status: "ready", data: profile()});
-		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn()});
+		mockedUseCollectors.mockReturnValue({open: [], track: jest.fn(), react: jest.fn(), isAnswerPending: jest.fn(() => false)});
 	});
 
 	it("matches the travel report composition from the mobile mockup", async () => {
@@ -88,9 +88,15 @@ describe("Adventure screen", () => {
 	it("renders a pending action instead of an endless spinner", async () => {
 		mockedUseGameQuery.mockReturnValue({status: "loading"});
 		mockedUseCollectors.mockReturnValue({
-			open: [{id: "collector-1"} as never],
+			open: [{
+				id: "collector-1",
+				endTime: Date.now() + 60_000,
+				data: {type: "unknown", data: {serverType: "test"}},
+				reactions: []
+			}],
 			track: jest.fn(),
-			react: jest.fn()
+			react: jest.fn(),
+			isAnswerPending: jest.fn(() => false)
 		});
 
 		await render(<Adventure />);

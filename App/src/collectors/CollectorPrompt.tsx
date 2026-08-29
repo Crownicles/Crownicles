@@ -1,27 +1,11 @@
 import {ReactNode, useEffect, useState} from "react";
-import {Pressable, StyleSheet, View} from "react-native";
+import {View} from "react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
-import {Note, Panel, SectionHeader} from "@/src/design/Primitives";
-import {Theme} from "@/src/design/Theme";
-import {TwemojiText} from "@/src/design/TwemojiText";
+import {Note, Panel, Row, SectionHeader} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 import {
 	collectorDescription, collectorTitle, isChoosable, reactionLabel
 } from "@/src/collectors/CollectorLabels";
-
-const styles = StyleSheet.create({
-	choice: { paddingVertical: Theme.spacing.md, paddingHorizontal: Theme.spacing.lg },
-	choiceLabel: {
-		color: Theme.colors.blue,
-		fontFamily: Theme.fonts.semiBold,
-		fontSize: Theme.fontSize.body,
-		lineHeight: Theme.lineHeight.body
-	},
-	choiceText: {
-		flex: 1
-	},
-	disabled: { color: Theme.colors.faint }
-});
 
 function useSecondsLeft(endTime: number): number {
 	const [secondsLeft, setSecondsLeft] = useState(() => Math.max(0, Math.ceil((endTime - Date.now()) / 1000)));
@@ -41,16 +25,14 @@ function useSecondsLeft(endTime: number): number {
  * @param collector Collector to display
  * @param onChoose Called with the index of the chosen reaction
  */
-export function CollectorPrompt({ collector, onChoose }: {
+export function CollectorChoices({collector, onChoose, submitting = false}: {
 	collector: ReactionCollectorCreation;
 	onChoose: (reactionIndex: number) => void;
+	submitting?: boolean;
 }): ReactNode {
 	const secondsLeft = useSecondsLeft(collector.endTime);
 	const [answered, setAnswered] = useState(false);
-	const description = collectorDescription(collector.data);
-
-	// A second press would send a second reaction for a collector that no longer accepts one
-	const locked = answered || secondsLeft === 0;
+	const locked = answered || submitting || secondsLeft === 0;
 	const choices = collector.reactions.map((reaction, index) => ({
 		reaction,
 		index,
@@ -58,36 +40,43 @@ export function CollectorPrompt({ collector, onChoose }: {
 	}));
 
 	return (
+		<Panel>
+			{choices.map((choice) => {
+				const choosable = isChoosable(choice.reaction, collector.data);
+				return (
+					<Row
+						key={choice.key}
+						disabled={locked || !choosable}
+						onPress={locked || !choosable ? undefined : (): void => {
+							setAnswered(true);
+							onChoose(choice.index);
+						}}
+						title={reactionLabel(choice.reaction, collector.data)}
+						chevron={choosable && !locked}
+					/>
+				);
+			})}
+			<Note>
+				{submitting
+					? i18n.t("app:collector.answering")
+					: secondsLeft === 0 ? i18n.t("app:collector.expired") : i18n.t("app:collector.timeLeft", {seconds: secondsLeft})}
+			</Note>
+		</Panel>
+	);
+}
+
+export function CollectorPrompt({ collector, onChoose, submitting = false }: {
+	collector: ReactionCollectorCreation;
+	onChoose: (reactionIndex: number) => void;
+	submitting?: boolean;
+}): ReactNode {
+	const description = collectorDescription(collector.data);
+
+	return (
 		<View>
 			<SectionHeader>{collectorTitle(collector.data)}</SectionHeader>
 			{description ? <Note>{description}</Note> : null}
-			<Panel>
-				{choices.map((choice) => {
-					const choosable = isChoosable(choice.reaction, collector.data);
-					return (
-						<Pressable
-							key={choice.key}
-							disabled={locked || !choosable}
-							onPress={(): void => {
-								setAnswered(true);
-								onChoose(choice.index);
-							}}
-							style={styles.choice}
-						>
-							<TwemojiText
-								containerStyle={styles.choiceText}
-								textStyle={[styles.choiceLabel, (locked || !choosable) && styles.disabled]}
-								emojiSize={Theme.fontSize.body}
-							>
-								{reactionLabel(choice.reaction, collector.data)}
-							</TwemojiText>
-						</Pressable>
-					);
-				})}
-				<Note>
-					{secondsLeft === 0 ? i18n.t("app:collector.expired") : i18n.t("app:collector.timeLeft", { seconds: secondsLeft })}
-				</Note>
-			</Panel>
+			<CollectorChoices collector={collector} onChoose={onChoose} submitting={submitting} />
 		</View>
 	);
 }

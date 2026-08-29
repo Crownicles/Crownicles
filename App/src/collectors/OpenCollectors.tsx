@@ -2,6 +2,7 @@ import {ReactNode} from "react";
 import {StyleSheet, View} from "react-native";
 import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {CollectorPrompt} from "@/src/collectors/CollectorPrompt";
+import {isAdventureCollector} from "@/src/collectors/CollectorRouting";
 import {Theme} from "@/src/design/Theme";
 
 const styles = StyleSheet.create({
@@ -17,19 +18,21 @@ const styles = StyleSheet.create({
  * it is rendered above the tabs rather than inside a screen.
  */
 export function OpenCollectors(): ReactNode {
-	const { open, react } = useCollectors();
+	const { open, react, isAnswerPending } = useCollectors();
+	const fallbackCollectors = open.filter(collector => !isAdventureCollector(collector));
 
-	if (open.length === 0) {
+	if (fallbackCollectors.length === 0) {
 		return null;
 	}
 
 	return (
 		<View style={styles.container}>
-			{open.map(collector => (
+			{fallbackCollectors.map(collector => (
 				<CollectorPrompt
 					key={collector.id}
 					collector={collector}
 					onChoose={(reactionIndex): void => react(collector.id, reactionIndex)}
+					submitting={isAnswerPending(collector.id)}
 				/>
 			))}
 		</View>

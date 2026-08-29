@@ -9,6 +9,7 @@
     "refuse": "Annuler",
     "unknownChoice": "Choix indisponible dans cette version",
     "pending": "Une action est en attente",
+    "answering": "Votre choix est envoyé…",
     "timeLeft": "{{seconds}} s",
     "expired": "Le temps imparti est écoulé",
     "titles": {
@@ -25,6 +26,7 @@
       "witch": "La sorcière",
       "itemChoice": "Choisir dans l'inventaire",
       "itemAccept": "Gérer l'objet reçu",
+      "destination": "Où souhaitez-vous aller ?",
       "unknown": "Une action est en attente"
     },
     "descriptions": {
@@ -35,7 +37,9 @@
       "itemChoice": "Votre inventaire est plein. Choisissez l'objet à remplacer par {{item}}.",
       "itemAccept": "Votre inventaire est plein. Choisissez quoi faire de {{item}} pour accueillir l'objet reçu.",
       "unknownItem": "cet objet",
-      "unknownPet": "votre familier"
+      "unknownPet": "votre familier",
+      "destination": "Choisissez la prochaine étape de votre aventure.",
+      "unknownDuration": "durée inconnue"
     },
     "choices": {
       "altarContribute": "Offrir {{amount}} {emote:unitValues.money}",
@@ -44,7 +48,9 @@
       "drinkPotion": "Boire la potion",
       "lotteryEasy": "Petite récompense",
       "lotteryMedium": "Récompense moyenne",
-      "lotteryHard": "Grande récompense"
+      "lotteryHard": "Grande récompense",
+      "destination": "{{destination}} ({{duration}})",
+      "stayInCity": "Rester en ville"
     }
   },
   "tabs": {
@@ -62,6 +68,28 @@
       "eyebrow": "Rapport · en voyage",
       "title": "Tout se passe bien dans votre aventure",
       "subtitle": "Prochain arrêt prévu dans {{nextStop}}. Le trajet vers {{destination}} durera encore {{remaining}}."
+    },
+    "smallEvent": {
+      "eyebrow": "Rapport · mini-événement"
+    },
+    "event": {
+      "eyebrow": "Rapport · événement",
+      "resultTitle": "Conséquences de votre choix",
+      "resultDescription": "Les conséquences ont été appliquées à votre aventure.",
+      "continue": "Continuer",
+      "fields": {
+        "points": "Points",
+        "money": "Argent",
+        "health": "Santé",
+        "energy": "Énergie",
+        "gems": "Gemmes",
+        "tokens": "Jetons",
+        "experience": "Expérience",
+        "timeLost": "Temps perdu"
+      }
+    },
+    "destination": {
+      "eyebrow": "Rapport · destination"
     },
     "fields": {
       "departure": "Départ",

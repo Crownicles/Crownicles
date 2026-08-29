@@ -130,6 +130,7 @@ describe("packet contracts", () => {
 			pingResponse: true,
 			profileResponse: true,
 			reportTravelSummary: true,
+			reportBigEventResult: true,
 			collectorEnded: true,
 			collectorReaction: true,
 			collectorStop: true,

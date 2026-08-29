@@ -48,12 +48,15 @@ describe("CollectorsStore", () => {
 		const sentPacket = sendPacket.mock.calls[0]?.[0] as ReactionCollectorReactReq;
 		expect(sentPacket.collectorId).toBe(item.id);
 		expect(sentPacket.reactionIndex).toBe(0);
-		expect(collectorsStore.getSnapshot()).toHaveLength(0);
+		expect(collectorsStore.getSnapshot()).toHaveLength(1);
+		expect(collectorsStore.isAnswerPending(item.id)).toBe(true);
 
 		const stop = new ReactionCollectorStop();
 		Object.assign(stop, {collectorId: item.id, reason: COLLECTOR_STOP_REASONS.RESOLVED});
 		const registeredHandler = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
 		registeredHandler.dispatch(ReactionCollectorStop.name, stop);
+		expect(collectorsStore.getSnapshot()).toHaveLength(0);
+		expect(collectorsStore.isAnswerPending(item.id)).toBe(false);
 		expect(resolution).toHaveBeenCalledWith("unknown");
 		unsubscribe();
 	});
