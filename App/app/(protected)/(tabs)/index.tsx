@@ -257,11 +257,11 @@ function useReportRefreshAtNextStop(packet: ReportTravelSummaryRes | null): void
 
 	useEffect(() => {
 		if (!packet) {
-			return;
+			return undefined;
 		}
 		const delay = reportRefreshDelay(packet);
 		if (delay === null) {
-			return;
+			return undefined;
 		}
 		const timeoutId = setTimeout(() => {
 			queryClient.invalidateQueries({queryKey: gameKey(GAME_ENTITIES.REPORT), refetchType: "active"})
@@ -353,8 +353,9 @@ function ReportStatusView({
 			return <Centered><Text style={styles.message}>{i18n.t("app:common.error")}</Text></Centered>;
 		case "ready":
 			return null;
+		default:
+			return null;
 	}
-	return null;
 }
 
 function RoutePanel({packet, metrics}: {
