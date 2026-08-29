@@ -256,7 +256,7 @@ function useReportRefreshAtNextStop(packet: ReportTravelSummaryRes | null): void
 	const arriveTime = packet?.arriveTime;
 
 	useEffect(() => {
-		if (!packet || nextStopTime === undefined || arriveTime === undefined) {
+		if (!packet) {
 			return;
 		}
 		const delay = reportRefreshDelay(packet);
