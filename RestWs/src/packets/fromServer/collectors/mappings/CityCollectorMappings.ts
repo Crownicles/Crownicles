@@ -51,21 +51,27 @@ export const cityReactionMappings: ReactionMapping[] = [
 		price: reaction.room.price,
 		health: reaction.room.health
 	})),
-	defineReactionMapping(ReactionCollectorEnchantReaction, CITY_REACTION_KINDS.ENCHANT, reaction => ({slot: reaction.slot, itemCategory: reaction.itemCategory})),
-	defineReactionMapping(ReactionCollectorCityShopReaction, CITY_REACTION_KINDS.SHOP, reaction => ({shopId: reaction.shopId})),
+	defineReactionMapping(ReactionCollectorEnchantReaction, CITY_REACTION_KINDS.ENCHANT, reaction => ({
+		slot: reaction.slot, itemCategory: reaction.itemCategory
+	})),
+	defineReactionMapping(ReactionCollectorCityShopReaction, CITY_REACTION_KINDS.SHOP, reaction => ({ shopId: reaction.shopId })),
 	defineReactionMapping(ReactionCollectorCityBuyHomeReaction, CITY_REACTION_KINDS.BUY_HOME, () => ({})),
 	defineReactionMapping(ReactionCollectorCityUpgradeHomeReaction, CITY_REACTION_KINDS.UPGRADE_HOME, () => ({})),
 	defineReactionMapping(ReactionCollectorCityMoveHomeReaction, CITY_REACTION_KINDS.MOVE_HOME, () => ({})),
 	defineReactionMapping(ReactionCollectorHomeMenuReaction, CITY_REACTION_KINDS.HOME_MENU, () => ({})),
 	defineReactionMapping(ReactionCollectorHomeBedReaction, CITY_REACTION_KINDS.HOME_BED, () => ({})),
-	defineReactionMapping(ReactionCollectorUpgradeItemReaction, CITY_REACTION_KINDS.UPGRADE_ITEM, reaction => ({slot: reaction.slot, itemCategory: reaction.itemCategory})),
+	defineReactionMapping(ReactionCollectorUpgradeItemReaction, CITY_REACTION_KINDS.UPGRADE_ITEM, reaction => ({
+		slot: reaction.slot, itemCategory: reaction.itemCategory
+	})),
 	defineReactionMapping(ReactionCollectorBlacksmithMenuReaction, CITY_REACTION_KINDS.BLACKSMITH_MENU, () => ({})),
 	defineReactionMapping(ReactionCollectorBlacksmithUpgradeReaction, CITY_REACTION_KINDS.BLACKSMITH_UPGRADE, reaction => ({
 		slot: reaction.slot,
 		itemCategory: reaction.itemCategory,
 		buyMaterials: reaction.buyMaterials
 	})),
-	defineReactionMapping(ReactionCollectorBlacksmithDisenchantReaction, CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT, reaction => ({slot: reaction.slot, itemCategory: reaction.itemCategory})),
+	defineReactionMapping(ReactionCollectorBlacksmithDisenchantReaction, CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT, reaction => ({
+		slot: reaction.slot, itemCategory: reaction.itemCategory
+	})),
 	defineReactionMapping(ReactionCollectorScrapDealerMenuReaction, CITY_REACTION_KINDS.SCRAP_DEALER_MENU, () => ({})),
 	defineReactionMapping(ReactionCollectorScrapDealerRecycleReaction, CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE, reaction => ({
 		slot: reaction.slot,
@@ -80,11 +86,13 @@ export const cityReactionMappings: ReactionMapping[] = [
 	})),
 	defineReactionMapping(ReactionCollectorGardenHarvestReaction, CITY_REACTION_KINDS.GARDEN_HARVEST, () => ({})),
 	defineReactionMapping(ReactionCollectorGardenWaterReaction, CITY_REACTION_KINDS.GARDEN_WATER, () => ({})),
-	defineReactionMapping(ReactionCollectorGardenCompostReaction, CITY_REACTION_KINDS.GARDEN_COMPOST, reaction => ({plantId: reaction.plantId, quantity: reaction.quantity})),
+	defineReactionMapping(ReactionCollectorGardenCompostReaction, CITY_REACTION_KINDS.GARDEN_COMPOST, reaction => ({
+		plantId: reaction.plantId, quantity: reaction.quantity
+	})),
 	defineReactionMapping(ReactionCollectorGuildDomainMenuReaction, CITY_REACTION_KINDS.GUILD_DOMAIN_MENU, () => ({})),
 	defineReactionMapping(ReactionCollectorGuildDomainNotaryReaction, CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY, () => ({})),
 	defineReactionMapping(ReactionCollectorApartmentBuyReaction, CITY_REACTION_KINDS.APARTMENT_BUY, () => ({})),
-	defineReactionMapping(ReactionCollectorApartmentClaimRentReaction, CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT, reaction => ({apartmentId: reaction.apartmentId}))
+	defineReactionMapping(ReactionCollectorApartmentClaimRentReaction, CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT, reaction => ({ apartmentId: reaction.apartmentId }))
 ];
 
 export const cityDataMappings: DataMapping[] = [
@@ -92,7 +100,7 @@ export const cityDataMappings: DataMapping[] = [
 		mapTypeId: data.mapTypeId,
 		mapLocationId: data.mapLocationId,
 		availableServices: [...data.availableServices],
-		...data.initialMenu === undefined ? {} : {initialMenu: data.initialMenu},
-		...data.gardenOnly === undefined ? {} : {gardenOnly: data.gardenOnly}
+		...data.initialMenu === undefined ? {} : { initialMenu: data.initialMenu },
+		...data.gardenOnly === undefined ? {} : { gardenOnly: data.gardenOnly }
 	}))
 ];
