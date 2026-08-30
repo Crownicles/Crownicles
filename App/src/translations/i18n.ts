@@ -60,9 +60,20 @@ function formatSimpleTranslation(value: string | string[]): string | string[] {
 	return crowniclesFormat(value);
 }
 
+function translationObject(value: string | string[] | object): object | null {
+	if (Array.isArray(value)) {
+		return null;
+	}
+	if (typeof value === "object") {
+		return value;
+	}
+	return null;
+}
+
 function formatRequestedTranslation(value: string | string[] | object): string | string[] | Record<string, string> {
-	if (typeof value === "object" && value !== null && !Array.isArray(value)) {
-		return formatObjectTranslation(value);
+	const objectValue = translationObject(value);
+	if (objectValue) {
+		return formatObjectTranslation(objectValue);
 	}
 	return formatSimpleTranslation(value as string | string[]);
 }

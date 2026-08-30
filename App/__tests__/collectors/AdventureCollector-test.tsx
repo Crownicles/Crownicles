@@ -1,3 +1,4 @@
+import type {ReactElement} from "react";
 import {fireEvent, render, screen} from "@testing-library/react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
@@ -84,6 +85,18 @@ async function chooseFirstCollectorChoice(
 	expect(onChoose).toHaveBeenCalledWith(0);
 }
 
+async function continueOutcome(
+	renderOutcome: (onContinue: jest.Mock) => ReactElement,
+	continueText: string,
+	assertView: () => void
+): Promise<void> {
+	const onContinue = jest.fn();
+	await render(renderOutcome(onContinue));
+	assertView();
+	await fireEvent.press(screen.getByText(continueText));
+	expect(onContinue).toHaveBeenCalledTimes(1);
+}
+
 describe("AdventureCollector", () => {
 	it("renders the city menu in the adventure tab and submits its indexed choice", async () => {
 		const onChoose = jest.fn();
@@ -122,16 +135,16 @@ describe("AdventureCollector", () => {
 	});
 
 	it("shows a big-event outcome before the player continues", async () => {
-		const onContinue = jest.fn();
-		await render(<BigEventOutcome outcome={bigEventOutcome()} onContinue={onContinue} />);
-
-		expect(screen.getByText("events:19.possibilities.cook.outcomes.success")).toBeTruthy();
-		expect(screen.getByText("app:adventure.event.fields.money")).toBeTruthy();
-		expect(screen.getByText("+20")).toBeTruthy();
-		expect(screen.getByText("app:adventure.event.fields.timeLost")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.event.continue"));
-
-		expect(onContinue).toHaveBeenCalledTimes(1);
+		await continueOutcome(
+			onContinue => <BigEventOutcome outcome={bigEventOutcome()} onContinue={onContinue} />,
+			"app:adventure.event.continue",
+			() => {
+				expect(screen.getByText("events:19.possibilities.cook.outcomes.success")).toBeTruthy();
+				expect(screen.getByText("app:adventure.event.fields.money")).toBeTruthy();
+				expect(screen.getByText("+20")).toBeTruthy();
+				expect(screen.getByText("app:adventure.event.fields.timeLost")).toBeTruthy();
+			}
+		);
 	});
 
 	it("renders the confirmation before spending travel tokens", async () => {
@@ -181,61 +194,61 @@ describe("AdventureCollector", () => {
 	});
 
 	it("shows the token result before returning to the journey", async () => {
-		const onContinue = jest.fn();
-		await render(<TokenOutcome outcome={{kind: "used", packet: {tokensSpent: 2, isArrived: true}}} onContinue={onContinue} />);
-
-		expect(screen.getAllByText("app:adventure.tokens.outcomes.used")).toHaveLength(1);
-		expect(screen.getByText("app:adventure.tokens.fields.spent")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.tokens.continue"));
-
-		expect(onContinue).toHaveBeenCalledTimes(1);
+		await continueOutcome(
+			onContinue => <TokenOutcome outcome={{kind: "used", packet: {tokensSpent: 2, isArrived: true}}} onContinue={onContinue} />,
+			"app:adventure.tokens.continue",
+			() => {
+				expect(screen.getAllByText("app:adventure.tokens.outcomes.used")).toHaveLength(1);
+				expect(screen.getByText("app:adventure.tokens.fields.spent")).toBeTruthy();
+			}
+		);
 	});
 
 	it("shows the cure result before returning to the journey", async () => {
-		const onContinue = jest.fn();
-		await render(<HealOutcome outcome={{kind: "accepted", packet: {healPrice: 410, isArrived: false}}} onContinue={onContinue} />);
-
-		expect(screen.getByText("app:adventure.heal.outcomes.accepted")).toBeTruthy();
-		expect(screen.getByText("app:adventure.heal.fields.spent")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.heal.continue"));
-
-		expect(onContinue).toHaveBeenCalledTimes(1);
+		await continueOutcome(
+			onContinue => <HealOutcome outcome={{kind: "accepted", packet: {healPrice: 410, isArrived: false}}} onContinue={onContinue} />,
+			"app:adventure.heal.continue",
+			() => {
+				expect(screen.getByText("app:adventure.heal.outcomes.accepted")).toBeTruthy();
+				expect(screen.getByText("app:adventure.heal.fields.spent")).toBeTruthy();
+			}
+		);
 	});
 
 	it("shows the reward and the lost time sent by the lottery", async () => {
-		const onContinue = jest.fn();
-		await render(<LotteryOutcome
-			outcome={{
-				kind: "win",
-				packet: {lostTime: 15 * 60_000, winAmount: 40, winReward: "money", level: "medium"}
-			}}
-			onContinue={onContinue}
-		/>);
-
-		expect(screen.getByText("app:adventure.lottery.resultTitle")).toBeTruthy();
-		expect(screen.getByText("app:adventure.lottery.win")).toBeTruthy();
-		expect(screen.getByText("app:adventure.lottery.rewards.money")).toBeTruthy();
-		expect(screen.getByText("+40")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.smallEvent.continue"));
-
-		expect(onContinue).toHaveBeenCalledTimes(1);
+		await continueOutcome(
+			onContinue => <LotteryOutcome
+				outcome={{
+					kind: "win",
+					packet: {lostTime: 15 * 60_000, winAmount: 40, winReward: "money", level: "medium"}
+				}}
+				onContinue={onContinue}
+			/>,
+			"app:adventure.smallEvent.continue",
+			() => {
+				expect(screen.getByText("app:adventure.lottery.resultTitle")).toBeTruthy();
+				expect(screen.getByText("app:adventure.lottery.win")).toBeTruthy();
+				expect(screen.getByText("app:adventure.lottery.rewards.money")).toBeTruthy();
+				expect(screen.getByText("+40")).toBeTruthy();
+			}
+		);
 	});
 
 	it("shows a generic result for an altar resolution", async () => {
-		const onContinue = jest.fn();
-		await render(<SmallEventOutcome
-			outcome={{
-				eventName: "SmallEventAltarContributedPacket",
-				data: {amount: 130, blessingTriggered: false}
-			}}
-			onContinue={onContinue}
-		/>);
-
-		expect(screen.getByText("app:adventure.smallEvent.resultTitle")).toBeTruthy();
-		expect(screen.getByText("Amount")).toBeTruthy();
-		expect(screen.getByText("130")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.smallEvent.continue"));
-
-		expect(onContinue).toHaveBeenCalledTimes(1);
+		await continueOutcome(
+			onContinue => <SmallEventOutcome
+				outcome={{
+					eventName: "SmallEventAltarContributedPacket",
+					data: {amount: 130, blessingTriggered: false}
+				}}
+				onContinue={onContinue}
+			/>,
+			"app:adventure.smallEvent.continue",
+			() => {
+				expect(screen.getByText("app:adventure.smallEvent.resultTitle")).toBeTruthy();
+				expect(screen.getByText("Amount")).toBeTruthy();
+				expect(screen.getByText("130")).toBeTruthy();
+			}
+		);
 	});
 });
