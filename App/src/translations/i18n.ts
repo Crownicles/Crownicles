@@ -53,14 +53,25 @@ function formatObjectTranslation(value: object): Record<string, string> {
 		}, {} as Record<string, string>);
 }
 
-function formatTranslation(value: string | string[] | object, options?: i18next.TOptions): string | string[] | Record<string, string> {
-	if (options?.returnObjects && typeof value === "object" && value !== null && !Array.isArray(value)) {
-		return formatObjectTranslation(value);
-	}
+function formatSimpleTranslation(value: string | string[]): string | string[] {
 	if (Array.isArray(value)) {
 		return value.map(crowniclesFormat);
 	}
 	return crowniclesFormat(value);
+}
+
+function formatRequestedTranslation(value: string | string[] | object): string | string[] | Record<string, string> {
+	if (typeof value === "object" && value !== null && !Array.isArray(value)) {
+		return formatObjectTranslation(value);
+	}
+	return formatSimpleTranslation(value as string | string[]);
+}
+
+function formatTranslation(value: string | string[] | object, options?: i18next.TOptions): string | string[] | Record<string, string> {
+	if (options?.returnObjects) {
+		return formatRequestedTranslation(value);
+	}
+	return formatSimpleTranslation(value as string | string[]);
 }
 
 export class I18nCrownicles {

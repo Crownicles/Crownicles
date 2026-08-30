@@ -72,6 +72,18 @@ function confirmationCollector(id: string, data: ReactionCollectorCreation["data
 	};
 }
 
+async function chooseFirstCollectorChoice(
+	collector: ReactionCollectorCreation,
+	choiceText: string,
+	onChoose: jest.Mock,
+	assertView: () => void
+): Promise<void> {
+	await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
+	assertView();
+	await fireEvent.press(screen.getByText(choiceText));
+	expect(onChoose).toHaveBeenCalledWith(0);
+}
+
 describe("AdventureCollector", () => {
 	it("renders the city menu in the adventure tab and submits its indexed choice", async () => {
 		const onChoose = jest.fn();
@@ -90,29 +102,23 @@ describe("AdventureCollector", () => {
 			]
 		};
 
-		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
-
-		expect(screen.getByText("app:city.titles.eyebrow")).toBeTruthy();
-		expect(screen.getByText("app:city.titles.housing")).toBeTruthy();
-		expect(screen.getByText("app:city.titles.services")).toBeTruthy();
-		expect(screen.getByText("app:city.titles.quit")).toBeTruthy();
-		expect(screen.queryByText("commands:report.city.reactions.stay.label")).toBeNull();
-		expect(screen.queryByText("app:collector.timeLeft")).toBeNull();
-		await fireEvent.press(screen.getByText("app:city.actions.home"));
-
-		expect(onChoose).toHaveBeenCalledWith(0);
+		await chooseFirstCollectorChoice(collector, "app:city.actions.home", onChoose, () => {
+			expect(screen.getByText("app:city.titles.eyebrow")).toBeTruthy();
+			expect(screen.getByText("app:city.titles.housing")).toBeTruthy();
+			expect(screen.getByText("app:city.titles.services")).toBeTruthy();
+			expect(screen.getByText("app:city.titles.quit")).toBeTruthy();
+			expect(screen.queryByText("commands:report.city.reactions.stay.label")).toBeNull();
+			expect(screen.queryByText("app:collector.timeLeft")).toBeNull();
+		});
 	});
 
 	it("uses the Adventure tab composition for a mini-event and submits its indexed choice", async () => {
 		const onChoose = jest.fn();
-		await render(<AdventureCollector collector={smallEvent()} onChoose={onChoose} submitting={false} />);
-
-		expect(screen.getByText("app:adventure.smallEvent.eyebrow")).toBeTruthy();
-		expect(screen.getByText("small-event-title")).toBeTruthy();
-		expect(screen.getByText("small-event-description")).toBeTruthy();
-		await fireEvent.press(screen.getByText("small-event-choice"));
-
-		expect(onChoose).toHaveBeenCalledWith(0);
+		await chooseFirstCollectorChoice(smallEvent(), "small-event-choice", onChoose, () => {
+			expect(screen.getByText("app:adventure.smallEvent.eyebrow")).toBeTruthy();
+			expect(screen.getByText("small-event-title")).toBeTruthy();
+			expect(screen.getByText("small-event-description")).toBeTruthy();
+		});
 	});
 
 	it("shows a big-event outcome before the player continues", async () => {
@@ -134,13 +140,10 @@ describe("AdventureCollector", () => {
 			type: REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data: {cost: 2, playerTokens: 5}
 		});
 
-		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
-
-		expect(screen.getByText("app:adventure.tokens.use.title")).toBeTruthy();
-		expect(screen.getByText("app:adventure.tokens.fields.cost")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.tokens.use.confirm"));
-
-		expect(onChoose).toHaveBeenCalledWith(0);
+		await chooseFirstCollectorChoice(collector, "app:adventure.tokens.use.confirm", onChoose, () => {
+			expect(screen.getByText("app:adventure.tokens.use.title")).toBeTruthy();
+			expect(screen.getByText("app:adventure.tokens.fields.cost")).toBeTruthy();
+		});
 	});
 
 	it("renders the alteration cure confirmation with the server price", async () => {
@@ -149,13 +152,10 @@ describe("AdventureCollector", () => {
 			type: REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data: {healPrice: 410, playerMoney: 1_000}
 		});
 
-		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
-
-		expect(screen.getByText("app:adventure.heal.use.title")).toBeTruthy();
-		expect(screen.getByText("app:adventure.heal.fields.cost")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.heal.use.confirm"));
-
-		expect(onChoose).toHaveBeenCalledWith(0);
+		await chooseFirstCollectorChoice(collector, "app:adventure.heal.use.confirm", onChoose, () => {
+			expect(screen.getByText("app:adventure.heal.use.title")).toBeTruthy();
+			expect(screen.getByText("app:adventure.heal.fields.cost")).toBeTruthy();
+		});
 	});
 
 	it("uses the merchant's server-provided bundles and limits", async () => {
@@ -174,13 +174,10 @@ describe("AdventureCollector", () => {
 			]
 		};
 
-		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
-
-		expect(screen.getByText("app:adventure.tokens.merchant.title")).toBeTruthy();
-		expect(screen.getByText("app:adventure.tokens.fields.balance")).toBeTruthy();
-		await fireEvent.press(screen.getByText("app:adventure.tokens.merchant.buyOne"));
-
-		expect(onChoose).toHaveBeenCalledWith(0);
+		await chooseFirstCollectorChoice(collector, "app:adventure.tokens.merchant.buyOne", onChoose, () => {
+			expect(screen.getByText("app:adventure.tokens.merchant.title")).toBeTruthy();
+			expect(screen.getByText("app:adventure.tokens.fields.balance")).toBeTruthy();
+		});
 	});
 
 	it("shows the token result before returning to the journey", async () => {

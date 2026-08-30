@@ -486,8 +486,15 @@ function AlterationPanel({packet, metrics, currentTime}: {
 	);
 }
 
-function adventureTitle(packet: ReportTravelSummaryRes, altered: boolean): string {
-	if (altered) {
+type AdventureContext = {
+	packet: ReportTravelSummaryRes;
+	currentTime: number;
+	metrics: TravelMetrics;
+	destination: string;
+};
+
+function adventureTitle({packet}: AdventureContext): string {
+	if (isAlterationReport(packet)) {
 		return alterationTitle(packet);
 	}
 	if (packet.isInCity) {
@@ -496,7 +503,11 @@ function adventureTitle(packet: ReportTravelSummaryRes, altered: boolean): strin
 	return i18n.t("app:adventure.travel.title");
 }
 
-function adventureSubtitle(packet: ReportTravelSummaryRes, altered: boolean, currentTime: number, remainingMilliseconds: number, destination: string): string {
+function adventureSubtitle({packet, currentTime, metrics, destination}: AdventureContext): string {
+	const altered = isAlterationReport(packet);
+	const remainingMilliseconds = altered
+		? alterationRemainingMilliseconds(packet, currentTime, metrics.remainingMilliseconds)
+		: metrics.remainingMilliseconds;
 	if (altered) {
 		return i18n.t("app:adventure.alteration.description", {time: formatDuration(remainingMilliseconds)});
 	}
@@ -521,11 +532,9 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
   const metrics = getTravelMetrics(packet, currentTime);
   const destination = mapName(packet.endMap);
   const altered = isAlterationReport(packet);
-  const remainingMilliseconds = altered
-	? alterationRemainingMilliseconds(packet, currentTime, metrics.remainingMilliseconds)
-	: metrics.remainingMilliseconds;
-  const title = adventureTitle(packet, altered);
-  const subtitle = adventureSubtitle(packet, altered, currentTime, remainingMilliseconds, destination);
+  const context: AdventureContext = {packet, currentTime, metrics, destination};
+  const title = adventureTitle(context);
+  const subtitle = adventureSubtitle(context);
 
   return (
     <Screen>
