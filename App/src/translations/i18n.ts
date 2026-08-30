@@ -38,6 +38,31 @@ function crowniclesFormat(value: unknown): string {
 	return convertEmoteFormat(value);
 }
 
+function fallbackTranslation(key: string | string[], options?: i18next.TOptions): string | string[] | Record<string, string> {
+	if (options?.returnObjects) {
+		return Array.isArray(key) ? [] : {};
+	}
+	return Array.isArray(key) ? key[0] : key;
+}
+
+function formatObjectTranslation(value: object): Record<string, string> {
+	return Object.entries(value)
+		.reduce((acc, [key, entry]) => {
+			acc[key] = crowniclesFormat(entry);
+			return acc;
+		}, {} as Record<string, string>);
+}
+
+function formatTranslation(value: string | string[] | object, options?: i18next.TOptions): string | string[] | Record<string, string> {
+	if (options?.returnObjects && typeof value === "object" && value !== null && !Array.isArray(value)) {
+		return formatObjectTranslation(value);
+	}
+	if (Array.isArray(value)) {
+		return value.map(crowniclesFormat);
+	}
+	return crowniclesFormat(value);
+}
+
 export class I18nCrownicles {
 	/**
 	 * Translate the given key with the given options and returns all the objects found
@@ -85,22 +110,9 @@ export class I18nCrownicles {
 	static t(key: string | string[], options?: i18next.TOptions): string | string[] | Record<string, string> {
 		const value: string | string[] | object | undefined = i18next.t(key, options);
 		if (value === undefined || value === null) {
-			if (options?.returnObjects) {
-				return Array.isArray(key) ? [] : {};
-			}
-			return Array.isArray(key) ? key[0] : key;
+			return fallbackTranslation(key, options);
 		}
-		if (options?.returnObjects && !Array.isArray(value)) {
-			return Object.entries(value)
-				.reduce((acc, [k, v]) => {
-					acc[k] = crowniclesFormat(v as string);
-					return acc;
-				}, {} as Record<string, string>);
-		}
-		if (Array.isArray(value)) {
-			return (value as string[]).map(crowniclesFormat);
-		}
-		return crowniclesFormat(value);
+		return formatTranslation(value, options);
 	}
 
 	/**

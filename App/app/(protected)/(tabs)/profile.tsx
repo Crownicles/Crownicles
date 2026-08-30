@@ -95,8 +95,13 @@ function locationLabel(profile: ProfileRes): string {
 	return icon ? `${icon} ${name}` : name;
 }
 
+function shouldDisplayEffectTime(profile: ProfileRes): boolean {
+	const {effect} = profile;
+	return !effect.healed && effect.hasTimeDisplay && effect.effect !== "none";
+}
+
 function effectLabel(profile: ProfileRes): string {
-	if (profile.effect.healed || !profile.effect.hasTimeDisplay || profile.effect.effect === "none") {
+	if (!shouldDisplayEffectTime(profile)) {
 		return i18n.t("commands:profile.noTimeLeft.fieldValue");
 	}
 	return i18n.t("commands:profile.timeLeft.fieldValue", {

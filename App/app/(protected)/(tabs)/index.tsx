@@ -486,6 +486,30 @@ function AlterationPanel({packet, metrics, currentTime}: {
 	);
 }
 
+function adventureTitle(packet: ReportTravelSummaryRes, altered: boolean): string {
+	if (altered) {
+		return alterationTitle(packet);
+	}
+	if (packet.isInCity) {
+		return i18n.t("app:adventure.cityTitle");
+	}
+	return i18n.t("app:adventure.travel.title");
+}
+
+function adventureSubtitle(packet: ReportTravelSummaryRes, altered: boolean, currentTime: number, remainingMilliseconds: number, destination: string): string {
+	if (altered) {
+		return i18n.t("app:adventure.alteration.description", {time: formatDuration(remainingMilliseconds)});
+	}
+	if (packet.isInCity) {
+		return i18n.t("app:adventure.citySubtitle", {location: destination});
+	}
+	return i18n.t("app:adventure.travel.subtitle", {
+		nextStop: nextStopDuration(packet, currentTime),
+		destination,
+		remaining: formatDuration(remainingMilliseconds)
+	});
+}
+
 function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending, healPending}: {
 	packet: ReportTravelSummaryRes;
 	currentTime: number;
@@ -497,23 +521,11 @@ function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending,
   const metrics = getTravelMetrics(packet, currentTime);
   const destination = mapName(packet.endMap);
   const altered = isAlterationReport(packet);
-  const alterationRemaining = altered
+  const remainingMilliseconds = altered
 	? alterationRemainingMilliseconds(packet, currentTime, metrics.remainingMilliseconds)
 	: metrics.remainingMilliseconds;
-  const title = altered
-    ? alterationTitle(packet)
-    : packet.isInCity
-    ? i18n.t("app:adventure.cityTitle")
-    : i18n.t("app:adventure.travel.title");
-  const subtitle = altered
-    ? i18n.t("app:adventure.alteration.description", {time: formatDuration(alterationRemaining)})
-    : packet.isInCity
-    ? i18n.t("app:adventure.citySubtitle", {location: destination})
-    : i18n.t("app:adventure.travel.subtitle", {
-      nextStop: nextStopDuration(packet, currentTime),
-      destination,
-      remaining: formatDuration(metrics.remainingMilliseconds)
-    });
+  const title = adventureTitle(packet, altered);
+  const subtitle = adventureSubtitle(packet, altered, currentTime, remainingMilliseconds, destination);
 
   return (
     <Screen>

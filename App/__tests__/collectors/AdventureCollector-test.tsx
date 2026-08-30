@@ -60,6 +60,18 @@ function bigEventOutcome(): ReportBigEventResultRes {
 	};
 }
 
+function confirmationCollector(id: string, data: ReactionCollectorCreation["data"]): ReactionCollectorCreation {
+	return {
+		id,
+		endTime: Date.now() + 60_000,
+		data,
+		reactions: [
+			{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}},
+			{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
+		]
+	};
+}
+
 describe("AdventureCollector", () => {
 	it("renders the city menu in the adventure tab and submits its indexed choice", async () => {
 		const onChoose = jest.fn();
@@ -118,15 +130,9 @@ describe("AdventureCollector", () => {
 
 	it("renders the confirmation before spending travel tokens", async () => {
 		const onChoose = jest.fn();
-		const collector: ReactionCollectorCreation = {
-			id: "use-tokens",
-			endTime: Date.now() + 60_000,
-			data: {type: REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data: {cost: 2, playerTokens: 5}},
-			reactions: [
-				{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}},
-				{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
-			]
-		};
+		const collector = confirmationCollector("use-tokens", {
+			type: REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data: {cost: 2, playerTokens: 5}
+		});
 
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 
@@ -139,15 +145,9 @@ describe("AdventureCollector", () => {
 
 	it("renders the alteration cure confirmation with the server price", async () => {
 		const onChoose = jest.fn();
-		const collector: ReactionCollectorCreation = {
-			id: "buy-heal",
-			endTime: Date.now() + 60_000,
-			data: {type: REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data: {healPrice: 410, playerMoney: 1_000}},
-			reactions: [
-				{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}},
-				{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
-			]
-		};
+		const collector = confirmationCollector("buy-heal", {
+			type: REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data: {healPrice: 410, playerMoney: 1_000}
+		});
 
 		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
 

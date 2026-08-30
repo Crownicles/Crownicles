@@ -19,54 +19,39 @@ type CityCollectorProps = {
 
 type CityEntry = {reaction: ReactionCollectorReaction; index: number};
 
+const CITY_ICON_PATHS: Partial<Record<ReactionCollectorReaction["type"], string>> = {
+	[GENERIC_REACTION_KINDS.REFUSE]: "city.stay",
+	[CITY_REACTION_KINDS.EXIT]: "city.exit",
+	[CITY_REACTION_KINDS.INN_MEAL]: "city.inn",
+	[CITY_REACTION_KINDS.INN_ROOM]: "city.inn",
+	[CITY_REACTION_KINDS.ENCHANT]: "city.services.enchanter",
+	[CITY_REACTION_KINDS.BUY_HOME]: "city.manageHome",
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: "city.manageHome",
+	[CITY_REACTION_KINDS.MOVE_HOME]: "city.manageHome",
+	[CITY_REACTION_KINDS.HOME_MENU]: "city.home.5",
+	[CITY_REACTION_KINDS.HOME_BED]: "city.homeUpgrades.bed",
+	[CITY_REACTION_KINDS.UPGRADE_ITEM]: "city.homeUpgrades.upgradeEquipment",
+	[CITY_REACTION_KINDS.BLACKSMITH_MENU]: "city.services.blacksmith",
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: "city.services.blacksmith",
+	[CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT]: "city.blacksmith.disenchant",
+	[CITY_REACTION_KINDS.SCRAP_DEALER_MENU]: "city.services.scrapDealer",
+	[CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE]: "city.services.scrapDealer",
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU]: "city.services.royalBlacksmith",
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: "city.services.royalBlacksmith",
+	[CITY_REACTION_KINDS.GARDEN_HARVEST]: "city.homeUpgrades.garden",
+	[CITY_REACTION_KINDS.GARDEN_WATER]: "city.homeUpgrades.garden",
+	[CITY_REACTION_KINDS.GARDEN_COMPOST]: "city.homeUpgrades.garden",
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_MENU]: "city.guildDomain.menu",
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: "city.guildDomainNotary",
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: "city.apartmentNotary.menu",
+	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: "city.apartmentNotary.menu"
+};
+
 function cityIconPath(reaction: ReactionCollectorReaction): string | undefined {
-	switch (reaction.type) {
-		case GENERIC_REACTION_KINDS.REFUSE:
-			return "city.stay";
-		case CITY_REACTION_KINDS.EXIT:
-			return "city.exit";
-		case CITY_REACTION_KINDS.INN_MEAL:
-		case CITY_REACTION_KINDS.INN_ROOM:
-			return "city.inn";
-		case CITY_REACTION_KINDS.ENCHANT:
-			return "city.services.enchanter";
-		case CITY_REACTION_KINDS.SHOP:
-			return `city.shops.${reaction.data.shopId}`;
-		case CITY_REACTION_KINDS.BUY_HOME:
-		case CITY_REACTION_KINDS.UPGRADE_HOME:
-		case CITY_REACTION_KINDS.MOVE_HOME:
-			return "city.manageHome";
-		case CITY_REACTION_KINDS.HOME_MENU:
-			return "city.home.5";
-		case CITY_REACTION_KINDS.HOME_BED:
-			return "city.homeUpgrades.bed";
-		case CITY_REACTION_KINDS.UPGRADE_ITEM:
-			return "city.homeUpgrades.upgradeEquipment";
-		case CITY_REACTION_KINDS.BLACKSMITH_MENU:
-		case CITY_REACTION_KINDS.BLACKSMITH_UPGRADE:
-			return "city.services.blacksmith";
-		case CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT:
-			return "city.blacksmith.disenchant";
-		case CITY_REACTION_KINDS.SCRAP_DEALER_MENU:
-		case CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE:
-			return "city.services.scrapDealer";
-		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU:
-		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE:
-			return "city.services.royalBlacksmith";
-		case CITY_REACTION_KINDS.GARDEN_HARVEST:
-		case CITY_REACTION_KINDS.GARDEN_WATER:
-		case CITY_REACTION_KINDS.GARDEN_COMPOST:
-			return "city.homeUpgrades.garden";
-		case CITY_REACTION_KINDS.GUILD_DOMAIN_MENU:
-			return "city.guildDomain.menu";
-		case CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY:
-			return "city.guildDomainNotary";
-		case CITY_REACTION_KINDS.APARTMENT_BUY:
-		case CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT:
-			return "city.apartmentNotary.menu";
-		default:
-			return undefined;
+	if (reaction.type === CITY_REACTION_KINDS.SHOP) {
+		return `city.shops.${reaction.data.shopId}`;
 	}
+	return CITY_ICON_PATHS[reaction.type];
 }
 
 function cityRowIcon(reaction: ReactionCollectorReaction): ReactNode | undefined {
@@ -102,51 +87,38 @@ function compactCityDescription(description: string): string {
 	return (firstSentence ?? firstParagraph).trim();
 }
 
+const CITY_SUBTITLE_KEYS: Partial<Record<ReactionCollectorReaction["type"], string>> = {
+	[GENERIC_REACTION_KINDS.REFUSE]: "commands:report.city.reactions.stay.description",
+	[CITY_REACTION_KINDS.EXIT]: "commands:report.city.reactions.exit.description",
+	[CITY_REACTION_KINDS.ENCHANT]: "commands:report.city.reactions.enchanter.description",
+	[CITY_REACTION_KINDS.BLACKSMITH_MENU]: "commands:report.city.blacksmith.menuDescription",
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: "commands:report.city.blacksmith.upgradeDescription",
+	[CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT]: "commands:report.city.blacksmith.disenchantDescription",
+	[CITY_REACTION_KINDS.SCRAP_DEALER_MENU]: "commands:report.city.scrapDealer.menuDescription",
+	[CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE]: "commands:report.city.scrapDealer.menuDescription",
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU]: "commands:report.city.royalBlacksmith.menuDescription",
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: "commands:report.city.royalBlacksmith.menuDescription",
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_MENU]: "commands:report.city.guildDomain.description",
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: "commands:report.city.guildDomain.notaryDescription",
+	[CITY_REACTION_KINDS.BUY_HOME]: "commands:report.city.homes.manageHomeDescriptionNew",
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: "commands:report.city.homes.manageHomeDescriptionUpgrade",
+	[CITY_REACTION_KINDS.MOVE_HOME]: "commands:report.city.homes.manageHomeDescriptionMove",
+	[CITY_REACTION_KINDS.HOME_MENU]: "commands:report.city.homes.goToOwnedHomeDescription",
+	[CITY_REACTION_KINDS.HOME_BED]: "commands:report.city.homes.bed.menuDescription"
+};
+
 function cityRowSubtitle(reaction: ReactionCollectorReaction): string | undefined {
-	switch (reaction.type) {
-		case CITY_REACTION_KINDS.EXIT:
-			return compactCityDescription(i18n.t("commands:report.city.reactions.exit.description"));
-		case GENERIC_REACTION_KINDS.REFUSE:
-			return compactCityDescription(i18n.t("commands:report.city.reactions.stay.description"));
-		case CITY_REACTION_KINDS.SHOP:
-			return compactCityDescription(i18n.t(`commands:report.city.shops.${reaction.data.shopId}.description`));
-		case CITY_REACTION_KINDS.INN_MEAL:
-			return `${i18n.t(`commands:report.city.inns.names.${reaction.data.innId}`)} · ${compactCityDescription(i18n.t("commands:report.city.inns.mealDescription", reaction.data))}`;
-		case CITY_REACTION_KINDS.INN_ROOM:
-			return `${i18n.t(`commands:report.city.inns.names.${reaction.data.innId}`)} · ${compactCityDescription(i18n.t("commands:report.city.inns.roomDescription", reaction.data))}`;
-		case CITY_REACTION_KINDS.BUY_HOME:
-			return compactCityDescription(i18n.t("commands:report.city.homes.manageHomeDescriptionNew"));
-		case CITY_REACTION_KINDS.UPGRADE_HOME:
-			return compactCityDescription(i18n.t("commands:report.city.homes.manageHomeDescriptionUpgrade"));
-		case CITY_REACTION_KINDS.MOVE_HOME:
-			return compactCityDescription(i18n.t("commands:report.city.homes.manageHomeDescriptionMove"));
-		case CITY_REACTION_KINDS.HOME_MENU:
-			return compactCityDescription(i18n.t("commands:report.city.homes.goToOwnedHomeDescription"));
-		case CITY_REACTION_KINDS.HOME_BED:
-			return compactCityDescription(i18n.t("commands:report.city.homes.bed.menuDescription"));
-		case CITY_REACTION_KINDS.ENCHANT:
-			return compactCityDescription(i18n.t("commands:report.city.reactions.enchanter.description"));
-		case CITY_REACTION_KINDS.BLACKSMITH_MENU:
-			return compactCityDescription(i18n.t("commands:report.city.blacksmith.menuDescription"));
-		case CITY_REACTION_KINDS.BLACKSMITH_UPGRADE:
-			return compactCityDescription(i18n.t("commands:report.city.blacksmith.upgradeDescription"));
-		case CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT:
-			return compactCityDescription(i18n.t("commands:report.city.blacksmith.disenchantDescription"));
-		case CITY_REACTION_KINDS.SCRAP_DEALER_MENU:
-			return compactCityDescription(i18n.t("commands:report.city.scrapDealer.menuDescription"));
-		case CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE:
-			return compactCityDescription(i18n.t("commands:report.city.scrapDealer.menuDescription"));
-		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU:
-			return compactCityDescription(i18n.t("commands:report.city.royalBlacksmith.menuDescription"));
-		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE:
-			return compactCityDescription(i18n.t("commands:report.city.royalBlacksmith.menuDescription"));
-		case CITY_REACTION_KINDS.GUILD_DOMAIN_MENU:
-			return compactCityDescription(i18n.t("commands:report.city.guildDomain.description"));
-		case CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY:
-			return compactCityDescription(i18n.t("commands:report.city.guildDomain.notaryDescription"));
-		default:
-			return undefined;
+	if (reaction.type === CITY_REACTION_KINDS.SHOP) {
+		return compactCityDescription(i18n.t(`commands:report.city.shops.${reaction.data.shopId}.description`));
 	}
+	if (reaction.type === CITY_REACTION_KINDS.INN_MEAL || reaction.type === CITY_REACTION_KINDS.INN_ROOM) {
+		const detailKey = reaction.type === CITY_REACTION_KINDS.INN_MEAL
+			? "commands:report.city.inns.mealDescription"
+			: "commands:report.city.inns.roomDescription";
+		return `${i18n.t(`commands:report.city.inns.names.${reaction.data.innId}`)} · ${compactCityDescription(i18n.t(detailKey, reaction.data))}`;
+	}
+	const key = CITY_SUBTITLE_KEYS[reaction.type];
+	return key ? compactCityDescription(i18n.t(key)) : undefined;
 }
 
 function cityRowEnd(reaction: ReactionCollectorReaction): string | undefined {
@@ -185,76 +157,67 @@ function CityRows({entries, collector, onChoose, locked}: {
 	});
 }
 
-function groupEntries(entries: CityEntry[]): Record<string, CityEntry[]> {
-	const groups: Record<string, CityEntry[]> = {
+type CityGroup = "housing" | "services" | "shops" | "guild" | "elsewhere" | "quit";
+
+const CITY_REACTION_GROUPS: Partial<Record<ReactionCollectorReaction["type"], CityGroup>> = {
+	[CITY_REACTION_KINDS.EXIT]: "quit",
+	[CITY_REACTION_KINDS.BUY_HOME]: "housing",
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: "housing",
+	[CITY_REACTION_KINDS.MOVE_HOME]: "housing",
+	[CITY_REACTION_KINDS.HOME_MENU]: "housing",
+	[CITY_REACTION_KINDS.HOME_BED]: "housing",
+	[CITY_REACTION_KINDS.UPGRADE_ITEM]: "housing",
+	[CITY_REACTION_KINDS.SHOP]: "shops",
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_MENU]: "guild",
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: "guild",
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: "housing",
+	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: "housing"
+};
+
+const CITY_REACTION_ORDER: Partial<Record<ReactionCollectorReaction["type"], number>> = {
+	[CITY_REACTION_KINDS.HOME_MENU]: 0,
+	[CITY_REACTION_KINDS.BUY_HOME]: 1,
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: 2,
+	[CITY_REACTION_KINDS.MOVE_HOME]: 3,
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: 4,
+	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: 5,
+	[CITY_REACTION_KINDS.HOME_BED]: 6,
+	[CITY_REACTION_KINDS.UPGRADE_ITEM]: 7,
+	[CITY_REACTION_KINDS.INN_MEAL]: 0,
+	[CITY_REACTION_KINDS.INN_ROOM]: 1,
+	[CITY_REACTION_KINDS.BLACKSMITH_MENU]: 2,
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: 3,
+	[CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT]: 4,
+	[CITY_REACTION_KINDS.SCRAP_DEALER_MENU]: 5,
+	[CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE]: 6,
+	[CITY_REACTION_KINDS.ENCHANT]: 7,
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU]: 8,
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: 9,
+	[CITY_REACTION_KINDS.GARDEN_HARVEST]: 10,
+	[CITY_REACTION_KINDS.GARDEN_WATER]: 11,
+	[CITY_REACTION_KINDS.GARDEN_COMPOST]: 12,
+	[CITY_REACTION_KINDS.SHOP]: 0,
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_MENU]: 0,
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: 1,
+	[CITY_REACTION_KINDS.EXIT]: 0,
+	[GENERIC_REACTION_KINDS.REFUSE]: 1
+};
+
+function groupEntries(entries: CityEntry[]): Record<CityGroup, CityEntry[]> {
+	const groups: Record<CityGroup, CityEntry[]> = {
 		housing: [], services: [], shops: [], guild: [], elsewhere: [], quit: []
 	};
 	for (const entry of entries) {
-		switch (entry.reaction.type) {
-			case GENERIC_REACTION_KINDS.REFUSE:
-				// Staying in a city is the server default. The mobile app keeps this state in the
-				// background instead of exposing Discord's explicit "Rester en ville" button.
-				break;
-			case CITY_REACTION_KINDS.EXIT:
-				groups.quit.push(entry);
-				break;
-			case CITY_REACTION_KINDS.BUY_HOME:
-			case CITY_REACTION_KINDS.UPGRADE_HOME:
-			case CITY_REACTION_KINDS.MOVE_HOME:
-			case CITY_REACTION_KINDS.HOME_MENU:
-			case CITY_REACTION_KINDS.HOME_BED:
-			case CITY_REACTION_KINDS.UPGRADE_ITEM:
-				groups.housing.push(entry);
-				break;
-			case CITY_REACTION_KINDS.SHOP:
-				groups.shops.push(entry);
-				break;
-			case CITY_REACTION_KINDS.GUILD_DOMAIN_MENU:
-			case CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY:
-				groups.guild.push(entry);
-				break;
-			case CITY_REACTION_KINDS.APARTMENT_BUY:
-			case CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT:
-				// Apartments are managed by the notary and belong with the player's housing.
-				groups.housing.push(entry);
-				break;
-			default:
-				groups.services.push(entry);
+		if (entry.reaction.type === GENERIC_REACTION_KINDS.REFUSE) {
+			// Staying in a city is the server default. The mobile app keeps this state in the
+			// background instead of exposing Discord's explicit "Rester en ville" button.
+			continue;
 		}
+		groups[CITY_REACTION_GROUPS[entry.reaction.type] ?? "services"].push(entry);
 	}
 
-	// The packet is intentionally ordered for Discord's reaction collector, not for a mobile
-	// screen. Keep the same reading order as the city mockup: entry point first, then details.
-	const order: Record<string, number> = {
-		[CITY_REACTION_KINDS.HOME_MENU]: 0,
-		[CITY_REACTION_KINDS.BUY_HOME]: 1,
-		[CITY_REACTION_KINDS.UPGRADE_HOME]: 2,
-		[CITY_REACTION_KINDS.MOVE_HOME]: 3,
-		[CITY_REACTION_KINDS.APARTMENT_BUY]: 4,
-		[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: 5,
-		[CITY_REACTION_KINDS.HOME_BED]: 6,
-		[CITY_REACTION_KINDS.UPGRADE_ITEM]: 7,
-		[CITY_REACTION_KINDS.INN_MEAL]: 0,
-		[CITY_REACTION_KINDS.INN_ROOM]: 1,
-		[CITY_REACTION_KINDS.BLACKSMITH_MENU]: 2,
-		[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: 3,
-		[CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT]: 4,
-		[CITY_REACTION_KINDS.SCRAP_DEALER_MENU]: 5,
-		[CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE]: 6,
-		[CITY_REACTION_KINDS.ENCHANT]: 7,
-		[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU]: 8,
-		[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: 9,
-		[CITY_REACTION_KINDS.GARDEN_HARVEST]: 10,
-		[CITY_REACTION_KINDS.GARDEN_WATER]: 11,
-		[CITY_REACTION_KINDS.GARDEN_COMPOST]: 12,
-		[CITY_REACTION_KINDS.SHOP]: 0,
-		[CITY_REACTION_KINDS.GUILD_DOMAIN_MENU]: 0,
-		[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: 1,
-		[CITY_REACTION_KINDS.EXIT]: 0,
-		[GENERIC_REACTION_KINDS.REFUSE]: 1
-	};
 	for (const group of Object.values(groups)) {
-		group.sort((left, right) => (order[left.reaction.type] ?? Number.MAX_SAFE_INTEGER) - (order[right.reaction.type] ?? Number.MAX_SAFE_INTEGER));
+		group.sort((left, right) => (CITY_REACTION_ORDER[left.reaction.type] ?? Number.MAX_SAFE_INTEGER) - (CITY_REACTION_ORDER[right.reaction.type] ?? Number.MAX_SAFE_INTEGER));
 	}
 	return groups;
 }
