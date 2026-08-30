@@ -26,6 +26,11 @@ import {
 } from "../../../Lib/src/packets/commands/CommandProfilePacket";
 import {
 	CommandReportPacketReq,
+	CommandReportBuyHealAcceptPacketRes,
+	CommandReportBuyHealCannotHealOccupiedPacketRes,
+	CommandReportBuyHealNoAlterationPacketRes,
+	CommandReportBuyHealPacketReq,
+	CommandReportBuyHealRefusePacketRes,
 	CommandReportBigEventResultRes,
 	CommandReportTokenMerchantBoughtRes,
 	CommandReportTokenMerchantCannotAffordRes,
@@ -71,9 +76,16 @@ import { PingRes } from "../../../WsPackets/src/fromServer/ping/PingRes";
 import { ProfileReq } from "../../../WsPackets/src/fromClient/ProfileReq";
 import { ProfileRes } from "../../../WsPackets/src/fromServer/profile/ProfileRes";
 import { ReportReq } from "../../../WsPackets/src/fromClient/ReportReq";
+import { ReportBuyHealReq } from "../../../WsPackets/src/fromClient/ReportBuyHealReq";
 import { ReportUseTokensReq } from "../../../WsPackets/src/fromClient/ReportUseTokensReq";
 import { ReportTravelSummaryRes } from "../../../WsPackets/src/fromServer/report/ReportTravelSummaryRes";
 import { ReportBigEventResultRes } from "../../../WsPackets/src/fromServer/report/ReportBigEventResultRes";
+import {
+	ReportBuyHealAcceptedRes,
+	ReportBuyHealCannotHealOccupiedRes,
+	ReportBuyHealNoAlterationRes,
+	ReportBuyHealRefusedRes
+} from "../../../WsPackets/src/fromServer/report/ReportHealRes";
 import {
 	ReportTokenMerchantBoughtRes,
 	ReportTokenMerchantCannotAffordRes,
@@ -133,6 +145,7 @@ type ProfileRequestContract = Assert<IsEqual<WireShape<CommandProfilePacketReq>,
 type CollectorsRequestContract = Assert<IsEqual<WireShape<CommandGetCurrentReactionCollectorsPacket>, WireShape<WirePacketFields<CommandGetCurrentReactionCollectorsReq>>>>;
 type ReportRequestContract = Assert<IsEqual<WireShape<CommandReportPacketReq>, WireShape<WirePacketFields<ReportReq>>>>;
 type ReportUseTokensRequestContract = Assert<IsEqual<WireShape<CommandReportUseTokensPacketReq>, WireShape<WirePacketFields<ReportUseTokensReq>>>>;
+type ReportBuyHealRequestContract = Assert<IsEqual<WireShape<CommandReportBuyHealPacketReq>, WireShape<WirePacketFields<ReportBuyHealReq>>>>;
 
 type DrinkResponseContract = Assert<IsEqual<WireShape<CommandDrinkPacketRes>, WireShape<WirePacketFields<DrinkRes>>>>;
 type DrinkCancelContract = Assert<IsEqual<WireShape<CommandDrinkCancelDrink>, WireShape<WirePacketFields<DrinkCancel>>>>;
@@ -168,6 +181,22 @@ type ReportUseTokensAcceptedContract = Assert<IsEqual<
 type ReportUseTokensRefusedContract = Assert<IsEqual<
 	WireShape<CommandReportUseTokensRefusePacketRes>,
 	WireShape<WirePacketFields<ReportUseTokensRefusedRes>>
+>>;
+type ReportBuyHealAcceptedContract = Assert<IsEqual<
+	WireShape<CommandReportBuyHealAcceptPacketRes>,
+	WireShape<WirePacketFields<ReportBuyHealAcceptedRes>>
+>>;
+type ReportBuyHealRefusedContract = Assert<IsEqual<
+	WireShape<CommandReportBuyHealRefusePacketRes>,
+	WireShape<WirePacketFields<ReportBuyHealRefusedRes>>
+>>;
+type ReportBuyHealNoAlterationContract = Assert<IsEqual<
+	WireShape<CommandReportBuyHealNoAlterationPacketRes>,
+	WireShape<WirePacketFields<ReportBuyHealNoAlterationRes>>
+>>;
+type ReportBuyHealCannotHealOccupiedContract = Assert<IsEqual<
+	WireShape<CommandReportBuyHealCannotHealOccupiedPacketRes>,
+	WireShape<WirePacketFields<ReportBuyHealCannotHealOccupiedRes>>
 >>;
 type ReportTokenMerchantBoughtContract = Assert<IsEqual<
 	WireShape<CommandReportTokenMerchantBoughtRes>,
@@ -251,6 +280,7 @@ export const packetContractChecks: {
 	collectorsRequest: CollectorsRequestContract;
 	reportRequest: ReportRequestContract;
 	reportUseTokensRequest: ReportUseTokensRequestContract;
+	reportBuyHealRequest: ReportBuyHealRequestContract;
 	drinkResponse: DrinkResponseContract;
 	drinkCancel: DrinkCancelContract;
 	drinkUnavailable: DrinkUnavailableContract;
@@ -262,6 +292,10 @@ export const packetContractChecks: {
 	reportBigEventResult: ReportBigEventResultContract;
 	reportUseTokensAccepted: ReportUseTokensAcceptedContract;
 	reportUseTokensRefused: ReportUseTokensRefusedContract;
+	reportBuyHealAccepted: ReportBuyHealAcceptedContract;
+	reportBuyHealRefused: ReportBuyHealRefusedContract;
+	reportBuyHealNoAlteration: ReportBuyHealNoAlterationContract;
+	reportBuyHealCannotHealOccupied: ReportBuyHealCannotHealOccupiedContract;
 	reportTokenMerchantBought: ReportTokenMerchantBoughtContract;
 	reportTokenMerchantTooMuch: ReportTokenMerchantTooMuchContract;
 	reportTokenMerchantFull: ReportTokenMerchantFullContract;
@@ -294,6 +328,7 @@ export const packetContractChecks: {
 	collectorsRequest: true,
 	reportRequest: true,
 	reportUseTokensRequest: true,
+	reportBuyHealRequest: true,
 	drinkResponse: true,
 	drinkCancel: true,
 	drinkUnavailable: true,
@@ -305,6 +340,10 @@ export const packetContractChecks: {
 	reportBigEventResult: true,
 	reportUseTokensAccepted: true,
 	reportUseTokensRefused: true,
+	reportBuyHealAccepted: true,
+	reportBuyHealRefused: true,
+	reportBuyHealNoAlteration: true,
+	reportBuyHealCannotHealOccupied: true,
 	reportTokenMerchantBought: true,
 	reportTokenMerchantTooMuch: true,
 	reportTokenMerchantFull: true,

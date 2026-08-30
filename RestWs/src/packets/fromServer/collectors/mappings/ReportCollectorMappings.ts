@@ -4,6 +4,7 @@ import {
 	ReactionCollectorStayInCityReaction
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorChooseDestination";
 import { ReactionCollectorUseTokensData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorUseTokens";
+import { ReactionCollectorBuyHealData } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorBuyHeal";
 import {
 	ReactionCollectorTokenMerchantBuyReaction, ReactionCollectorTokenMerchantData
 } from "../../../../../../Lib/src/packets/interaction/ReactionCollectorTokenMerchant";
@@ -35,6 +36,10 @@ export const reportCollectorDataMappings: DataMapping[] = [
 	defineDataMapping(ReactionCollectorUseTokensData, REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data => ({
 		cost: data.cost,
 		playerTokens: data.playerTokens
+	})),
+	defineDataMapping(ReactionCollectorBuyHealData, REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data => ({
+		healPrice: data.healPrice,
+		playerMoney: data.playerMoney
 	})),
 	defineDataMapping(ReactionCollectorTokenMerchantData, REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT, data => ({
 		pricePerToken: data.pricePerToken,

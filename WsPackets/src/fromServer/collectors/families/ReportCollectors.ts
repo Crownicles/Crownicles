@@ -9,6 +9,10 @@ declare module "../ReactionCollectorProtocol" {
 			cost: number;
 			playerTokens: number;
 		};
+		reportBuyHeal: {
+			healPrice: number;
+			playerMoney: number;
+		};
 		reportTokenMerchant: {
 			pricePerToken: number;
 			playerMoney: number;
@@ -37,6 +41,7 @@ declare module "../ReactionCollectorProtocol" {
 export const REPORT_COLLECTOR_DATA_KINDS = {
 	DESTINATION: "reportDestination",
 	USE_TOKENS: "reportUseTokens",
+	BUY_HEAL: "reportBuyHeal",
 	TOKEN_MERCHANT: "reportTokenMerchant"
 } as const satisfies Record<string, ReactionCollectorDataKind>;
 
