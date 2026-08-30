@@ -97,158 +97,181 @@ async function continueOutcome(
 	expect(onContinue).toHaveBeenCalledTimes(1);
 }
 
-describe("AdventureCollector", () => {
-	it("renders the city menu in the adventure tab and submits its indexed choice", async () => {
-		const onChoose = jest.fn();
-		const collector: ReactionCollectorCreation = {
-			id: "city",
-			endTime: Date.now() + 60_000,
-			data: {
-				type: CITY_DATA_KINDS.CITY,
-				data: {mapTypeId: "ci", mapLocationId: 10, availableServices: ["blacksmith"]}
-			},
-			reactions: [
-				{type: CITY_REACTION_KINDS.HOME_MENU, data: {}},
-				{type: CITY_REACTION_KINDS.BLACKSMITH_MENU, data: {}},
-				{type: CITY_REACTION_KINDS.EXIT, data: {}},
-				{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
-			]
-		};
+type CollectorScenario = {
+	name: string;
+	collector: () => ReactionCollectorCreation;
+	choiceText: string;
+	assertView: () => void;
+};
 
-		await chooseFirstCollectorChoice(collector, "app:city.actions.home", onChoose, () => {
+function cityCollector(): ReactionCollectorCreation {
+	return {
+		id: "city",
+		endTime: Date.now() + 60_000,
+		data: {
+			type: CITY_DATA_KINDS.CITY,
+			data: {mapTypeId: "ci", mapLocationId: 10, availableServices: ["blacksmith"]}
+		},
+		reactions: [
+			{type: CITY_REACTION_KINDS.HOME_MENU, data: {}},
+			{type: CITY_REACTION_KINDS.BLACKSMITH_MENU, data: {}},
+			{type: CITY_REACTION_KINDS.EXIT, data: {}},
+			{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
+		]
+	};
+}
+
+function merchantCollector(): ReactionCollectorCreation {
+	return {
+		id: "merchant",
+		endTime: Date.now() + 60_000,
+		data: {
+			type: REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT,
+			data: {pricePerToken: 375, playerMoney: 2_000, playerTokens: 0, maxTokens: 20, maxDaily: 10, maxWeekly: 30, amounts: [1, 5]}
+		},
+		reactions: [
+			{type: REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, data: {amount: 1}},
+			{type: REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, data: {amount: 5}},
+			{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
+		]
+	};
+}
+
+const collectorScenarios: CollectorScenario[] = [
+	{
+		name: "renders the city menu in the adventure tab and submits its indexed choice",
+		collector: cityCollector,
+		choiceText: "app:city.actions.home",
+		assertView: () => {
 			expect(screen.getByText("app:city.titles.eyebrow")).toBeTruthy();
 			expect(screen.getByText("app:city.titles.housing")).toBeTruthy();
 			expect(screen.getByText("app:city.titles.services")).toBeTruthy();
 			expect(screen.getByText("app:city.titles.quit")).toBeTruthy();
 			expect(screen.queryByText("commands:report.city.reactions.stay.label")).toBeNull();
 			expect(screen.queryByText("app:collector.timeLeft")).toBeNull();
-		});
-	});
-
-	it("uses the Adventure tab composition for a mini-event and submits its indexed choice", async () => {
-		const onChoose = jest.fn();
-		await chooseFirstCollectorChoice(smallEvent(), "small-event-choice", onChoose, () => {
+		}
+	},
+	{
+		name: "uses the Adventure tab composition for a mini-event and submits its indexed choice",
+		collector: smallEvent,
+		choiceText: "small-event-choice",
+		assertView: () => {
 			expect(screen.getByText("app:adventure.smallEvent.eyebrow")).toBeTruthy();
 			expect(screen.getByText("small-event-title")).toBeTruthy();
 			expect(screen.getByText("small-event-description")).toBeTruthy();
-		});
-	});
-
-	it("shows a big-event outcome before the player continues", async () => {
-		await continueOutcome(
-			onContinue => <BigEventOutcome outcome={bigEventOutcome()} onContinue={onContinue} />,
-			"app:adventure.event.continue",
-			() => {
-				expect(screen.getByText("events:19.possibilities.cook.outcomes.success")).toBeTruthy();
-				expect(screen.getByText("app:adventure.event.fields.money")).toBeTruthy();
-				expect(screen.getByText("+20")).toBeTruthy();
-				expect(screen.getByText("app:adventure.event.fields.timeLost")).toBeTruthy();
-			}
-		);
-	});
-
-	it("renders the confirmation before spending travel tokens", async () => {
-		const onChoose = jest.fn();
-		const collector = confirmationCollector("use-tokens", {
+		}
+	},
+	{
+		name: "renders the confirmation before spending travel tokens",
+		collector: () => confirmationCollector("use-tokens", {
 			type: REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data: {cost: 2, playerTokens: 5}
-		});
-
-		await chooseFirstCollectorChoice(collector, "app:adventure.tokens.use.confirm", onChoose, () => {
+		}),
+		choiceText: "app:adventure.tokens.use.confirm",
+		assertView: () => {
 			expect(screen.getByText("app:adventure.tokens.use.title")).toBeTruthy();
 			expect(screen.getByText("app:adventure.tokens.fields.cost")).toBeTruthy();
-		});
-	});
-
-	it("renders the alteration cure confirmation with the server price", async () => {
-		const onChoose = jest.fn();
-		const collector = confirmationCollector("buy-heal", {
+		}
+	},
+	{
+		name: "renders the alteration cure confirmation with the server price",
+		collector: () => confirmationCollector("buy-heal", {
 			type: REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data: {healPrice: 410, playerMoney: 1_000}
-		});
-
-		await chooseFirstCollectorChoice(collector, "app:adventure.heal.use.confirm", onChoose, () => {
+		}),
+		choiceText: "app:adventure.heal.use.confirm",
+		assertView: () => {
 			expect(screen.getByText("app:adventure.heal.use.title")).toBeTruthy();
 			expect(screen.getByText("app:adventure.heal.fields.cost")).toBeTruthy();
-		});
-	});
-
-	it("uses the merchant's server-provided bundles and limits", async () => {
-		const onChoose = jest.fn();
-		const collector: ReactionCollectorCreation = {
-			id: "merchant",
-			endTime: Date.now() + 60_000,
-			data: {
-				type: REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT,
-				data: {pricePerToken: 375, playerMoney: 2_000, playerTokens: 0, maxTokens: 20, maxDaily: 10, maxWeekly: 30, amounts: [1, 5]}
-			},
-			reactions: [
-				{type: REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, data: {amount: 1}},
-				{type: REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, data: {amount: 5}},
-				{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
-			]
-		};
-
-		await chooseFirstCollectorChoice(collector, "app:adventure.tokens.merchant.buyOne", onChoose, () => {
+		}
+	},
+	{
+		name: "uses the merchant's server-provided bundles and limits",
+		collector: merchantCollector,
+		choiceText: "app:adventure.tokens.merchant.buyOne",
+		assertView: () => {
 			expect(screen.getByText("app:adventure.tokens.merchant.title")).toBeTruthy();
 			expect(screen.getByText("app:adventure.tokens.fields.balance")).toBeTruthy();
-		});
+		}
+	}
+];
+
+type OutcomeScenario = {
+	name: string;
+	renderOutcome: (onContinue: jest.Mock) => ReactElement;
+	continueText: string;
+	assertView: () => void;
+};
+
+const outcomeScenarios: OutcomeScenario[] = [
+	{
+		name: "shows a big-event outcome before the player continues",
+		renderOutcome: onContinue => <BigEventOutcome outcome={bigEventOutcome()} onContinue={onContinue} />,
+		continueText: "app:adventure.event.continue",
+		assertView: () => {
+			expect(screen.getByText("events:19.possibilities.cook.outcomes.success")).toBeTruthy();
+			expect(screen.getByText("app:adventure.event.fields.money")).toBeTruthy();
+			expect(screen.getByText("+20")).toBeTruthy();
+			expect(screen.getByText("app:adventure.event.fields.timeLost")).toBeTruthy();
+		}
+	},
+	{
+		name: "shows the token result before returning to the journey",
+		renderOutcome: onContinue => <TokenOutcome outcome={{kind: "used", packet: {tokensSpent: 2, isArrived: true}}} onContinue={onContinue} />,
+		continueText: "app:adventure.tokens.continue",
+		assertView: () => {
+			expect(screen.getAllByText("app:adventure.tokens.outcomes.used")).toHaveLength(1);
+			expect(screen.getByText("app:adventure.tokens.fields.spent")).toBeTruthy();
+		}
+	},
+	{
+		name: "shows the cure result before returning to the journey",
+		renderOutcome: onContinue => <HealOutcome outcome={{kind: "accepted", packet: {healPrice: 410, isArrived: false}}} onContinue={onContinue} />,
+		continueText: "app:adventure.heal.continue",
+		assertView: () => {
+			expect(screen.getByText("app:adventure.heal.outcomes.accepted")).toBeTruthy();
+			expect(screen.getByText("app:adventure.heal.fields.spent")).toBeTruthy();
+		}
+	},
+	{
+		name: "shows the reward and the lost time sent by the lottery",
+		renderOutcome: onContinue => <LotteryOutcome
+			outcome={{
+				kind: "win",
+				packet: {lostTime: 15 * 60_000, winAmount: 40, winReward: "money", level: "medium"}
+			}}
+			onContinue={onContinue}
+		/>,
+		continueText: "app:adventure.smallEvent.continue",
+		assertView: () => {
+			expect(screen.getByText("app:adventure.lottery.resultTitle")).toBeTruthy();
+			expect(screen.getByText("app:adventure.lottery.win")).toBeTruthy();
+			expect(screen.getByText("app:adventure.lottery.rewards.money")).toBeTruthy();
+			expect(screen.getByText("+40")).toBeTruthy();
+		}
+	},
+	{
+		name: "shows a generic result for an altar resolution",
+		renderOutcome: onContinue => <SmallEventOutcome
+			outcome={{
+				eventName: "SmallEventAltarContributedPacket",
+				data: {amount: 130, blessingTriggered: false}
+			}}
+			onContinue={onContinue}
+		/>,
+		continueText: "app:adventure.smallEvent.continue",
+		assertView: () => {
+			expect(screen.getByText("app:adventure.smallEvent.resultTitle")).toBeTruthy();
+			expect(screen.getByText("Amount")).toBeTruthy();
+			expect(screen.getByText("130")).toBeTruthy();
+		}
+	}
+];
+
+describe("AdventureCollector", () => {
+	it.each(collectorScenarios)("$name", async scenario => {
+		await chooseFirstCollectorChoice(scenario.collector(), scenario.choiceText, jest.fn(), scenario.assertView);
 	});
 
-	it("shows the token result before returning to the journey", async () => {
-		await continueOutcome(
-			onContinue => <TokenOutcome outcome={{kind: "used", packet: {tokensSpent: 2, isArrived: true}}} onContinue={onContinue} />,
-			"app:adventure.tokens.continue",
-			() => {
-				expect(screen.getAllByText("app:adventure.tokens.outcomes.used")).toHaveLength(1);
-				expect(screen.getByText("app:adventure.tokens.fields.spent")).toBeTruthy();
-			}
-		);
-	});
-
-	it("shows the cure result before returning to the journey", async () => {
-		await continueOutcome(
-			onContinue => <HealOutcome outcome={{kind: "accepted", packet: {healPrice: 410, isArrived: false}}} onContinue={onContinue} />,
-			"app:adventure.heal.continue",
-			() => {
-				expect(screen.getByText("app:adventure.heal.outcomes.accepted")).toBeTruthy();
-				expect(screen.getByText("app:adventure.heal.fields.spent")).toBeTruthy();
-			}
-		);
-	});
-
-	it("shows the reward and the lost time sent by the lottery", async () => {
-		await continueOutcome(
-			onContinue => <LotteryOutcome
-				outcome={{
-					kind: "win",
-					packet: {lostTime: 15 * 60_000, winAmount: 40, winReward: "money", level: "medium"}
-				}}
-				onContinue={onContinue}
-			/>,
-			"app:adventure.smallEvent.continue",
-			() => {
-				expect(screen.getByText("app:adventure.lottery.resultTitle")).toBeTruthy();
-				expect(screen.getByText("app:adventure.lottery.win")).toBeTruthy();
-				expect(screen.getByText("app:adventure.lottery.rewards.money")).toBeTruthy();
-				expect(screen.getByText("+40")).toBeTruthy();
-			}
-		);
-	});
-
-	it("shows a generic result for an altar resolution", async () => {
-		await continueOutcome(
-			onContinue => <SmallEventOutcome
-				outcome={{
-					eventName: "SmallEventAltarContributedPacket",
-					data: {amount: 130, blessingTriggered: false}
-				}}
-				onContinue={onContinue}
-			/>,
-			"app:adventure.smallEvent.continue",
-			() => {
-				expect(screen.getByText("app:adventure.smallEvent.resultTitle")).toBeTruthy();
-				expect(screen.getByText("Amount")).toBeTruthy();
-				expect(screen.getByText("130")).toBeTruthy();
-			}
-		);
+	it.each(outcomeScenarios)("$name", async scenario => {
+		await continueOutcome(scenario.renderOutcome, scenario.continueText, scenario.assertView);
 	});
 });
