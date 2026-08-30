@@ -432,6 +432,11 @@ function healOutcomeDetails(outcome: HealOutcomeData): {title: string; descripti
 				title: i18n.t("app:adventure.heal.outcomes.cannotHealOccupied"),
 				description: i18n.t("app:adventure.heal.outcomes.cannotHealOccupiedDescription")
 			};
+		default:
+			return {
+				title: i18n.t("app:common.error"),
+				description: i18n.t("app:common.error")
+			};
 	}
 }
 

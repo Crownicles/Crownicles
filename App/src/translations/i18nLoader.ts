@@ -77,7 +77,7 @@ function loadNativeLanguageAssets(resources: I18nResources): void {
 	resources[LANGUAGE.GERMAN].native = germanNative;
 }
 
-export async function reloadI18n(languagesAssets = new Map<string, string>()): Promise<void> {
+export function reloadI18n(languagesAssets = new Map<string, string>()): Promise<void> {
 	const reload = async (): Promise<void> => {
 		const resources = loadLanguageAssets(languagesAssets);
 		loadNativeLanguageAssets(resources);
@@ -96,6 +96,7 @@ export async function reloadI18n(languagesAssets = new Map<string, string>()): P
 
 	// Start the first bootstrap immediately. This makes i18next initialise before
 	// React renders the asset-loading overlay; later reloads stay serialised.
-	reloadChain = reloadChain === null ? reload() : reloadChain.then(reload, reload);
-	return reloadChain;
+	const nextReload = reloadChain === null ? reload() : reloadChain.then(reload, reload);
+	reloadChain = nextReload;
+	return nextReload;
 }
