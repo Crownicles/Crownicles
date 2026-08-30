@@ -4,6 +4,7 @@ import {
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
+	CITY_DATA_KINDS, CITY_REACTION_KINDS,
 	SMALL_EVENT_BAD_PET_ACTION_IDS, SMALL_EVENT_GOBLET_IDS, SMALL_EVENT_GOBLET_STRATEGIES,
 	UNKNOWN_COLLECTOR_KIND, GardenerConditionKey,
 	SmallEventBadPetActionId, SmallEventGobletId, SmallEventGobletStrategy,
@@ -62,6 +63,14 @@ const GARDENER_REWARD_CONDITION_KEYS = new Set<GardenerConditionKey>([
 	"fireItem",
 	"carnivorePet"
 ]);
+
+function cityServiceLabel(service: string): string {
+	return i18n.t(`commands:report.city.shops.${service}.label`);
+}
+
+function cityReactionLabel(reaction: string): string {
+	return i18n.t(`app:city.reactions.${reaction}`);
+}
 
 function sexContext(sex: PetSex): string {
 	return sex === "f" ? SEX_CONTEXTS.FEMALE : SEX_CONTEXTS.MALE;
@@ -201,6 +210,7 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: () => i18n.t("app:adventure.tokens.use.title"),
 	[REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL]: () => i18n.t("app:adventure.heal.use.title"),
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.title"),
+	[CITY_DATA_KINDS.CITY]: () => i18n.t("app:collector.titles.city"),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.titles.unknown")
 };
 
@@ -240,6 +250,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 		money: data.data.playerMoney
 	})),
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.description"),
+	[CITY_DATA_KINDS.CITY]: () => undefined,
 	[UNKNOWN_COLLECTOR_KIND]: () => undefined
 };
 
@@ -317,6 +328,31 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 		const price = amount * data.data.pricePerToken;
 		return i18n.t(amount === 1 ? "app:adventure.tokens.merchant.buyOne" : "app:adventure.tokens.merchant.buyMany", {amount, price});
 	}),
+	[CITY_REACTION_KINDS.EXIT]: makeReactionHandler(CITY_REACTION_KINDS.EXIT, () => withIcon("other.walking", i18n.t("commands:report.city.reactions.exit.label"))),
+	[CITY_REACTION_KINDS.INN_MEAL]: makeReactionHandler(CITY_REACTION_KINDS.INN_MEAL, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.meals.${reaction.data.mealId}`))} · ${i18n.t("commands:report.city.mealDescription", reaction.data)}`),
+	[CITY_REACTION_KINDS.INN_ROOM]: makeReactionHandler(CITY_REACTION_KINDS.INN_ROOM, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.rooms.${reaction.data.roomId}`))} · ${i18n.t("commands:report.city.roomDescription", reaction.data)}`),
+	[CITY_REACTION_KINDS.ENCHANT]: makeReactionHandler(CITY_REACTION_KINDS.ENCHANT, () => cityReactionLabel("enchant")),
+	[CITY_REACTION_KINDS.SHOP]: makeReactionHandler(CITY_REACTION_KINDS.SHOP, reaction => withIcon(`city.shops.${reaction.data.shopId}`, cityServiceLabel(reaction.data.shopId))),
+	[CITY_REACTION_KINDS.BUY_HOME]: makeReactionHandler(CITY_REACTION_KINDS.BUY_HOME, () => cityReactionLabel("buyHome")),
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: makeReactionHandler(CITY_REACTION_KINDS.UPGRADE_HOME, () => cityReactionLabel("upgradeHome")),
+	[CITY_REACTION_KINDS.MOVE_HOME]: makeReactionHandler(CITY_REACTION_KINDS.MOVE_HOME, () => cityReactionLabel("moveHome")),
+	[CITY_REACTION_KINDS.HOME_MENU]: makeReactionHandler(CITY_REACTION_KINDS.HOME_MENU, () => cityReactionLabel("home")),
+	[CITY_REACTION_KINDS.HOME_BED]: makeReactionHandler(CITY_REACTION_KINDS.HOME_BED, () => cityReactionLabel("bed")),
+	[CITY_REACTION_KINDS.UPGRADE_ITEM]: makeReactionHandler(CITY_REACTION_KINDS.UPGRADE_ITEM, () => cityReactionLabel("upgradeItem")),
+	[CITY_REACTION_KINDS.BLACKSMITH_MENU]: makeReactionHandler(CITY_REACTION_KINDS.BLACKSMITH_MENU, () => cityReactionLabel("blacksmith")),
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: makeReactionHandler(CITY_REACTION_KINDS.BLACKSMITH_UPGRADE, reaction => i18n.t("app:city.reactions.blacksmithUpgrade", {buyMaterials: reaction.data.buyMaterials})),
+	[CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT]: makeReactionHandler(CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT, () => cityReactionLabel("disenchant")),
+	[CITY_REACTION_KINDS.SCRAP_DEALER_MENU]: makeReactionHandler(CITY_REACTION_KINDS.SCRAP_DEALER_MENU, () => cityReactionLabel("scrapDealer")),
+	[CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE]: makeReactionHandler(CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE, () => cityReactionLabel("recycle")),
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU]: makeReactionHandler(CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU, () => cityReactionLabel("royalBlacksmith")),
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: makeReactionHandler(CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE, reaction => i18n.t("app:city.reactions.royalBlacksmithUpgrade", {buyMaterials: reaction.data.buyMaterials})),
+	[CITY_REACTION_KINDS.GARDEN_HARVEST]: makeReactionHandler(CITY_REACTION_KINDS.GARDEN_HARVEST, () => cityReactionLabel("gardenHarvest")),
+	[CITY_REACTION_KINDS.GARDEN_WATER]: makeReactionHandler(CITY_REACTION_KINDS.GARDEN_WATER, () => cityReactionLabel("gardenWater")),
+	[CITY_REACTION_KINDS.GARDEN_COMPOST]: makeReactionHandler(CITY_REACTION_KINDS.GARDEN_COMPOST, reaction => i18n.t("app:city.reactions.gardenCompost", reaction.data)),
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_MENU]: makeReactionHandler(CITY_REACTION_KINDS.GUILD_DOMAIN_MENU, () => cityReactionLabel("guildDomain")),
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: makeReactionHandler(CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY, () => cityReactionLabel("guildNotary")),
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: makeReactionHandler(CITY_REACTION_KINDS.APARTMENT_BUY, () => cityReactionLabel("apartmentBuy")),
+	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: makeReactionHandler(CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT, () => cityReactionLabel("claimRent")),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.unknownChoice")
 };
 
@@ -345,6 +381,31 @@ const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHan
 	[REPORT_COLLECTOR_REACTION_KINDS.DESTINATION]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
 	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
 	[REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT)),
+	[CITY_REACTION_KINDS.EXIT]: makeChoosableHandler(CITY_REACTION_KINDS.EXIT, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.INN_MEAL]: makeChoosableHandler(CITY_REACTION_KINDS.INN_MEAL, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.INN_ROOM]: makeChoosableHandler(CITY_REACTION_KINDS.INN_ROOM, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.ENCHANT]: makeChoosableHandler(CITY_REACTION_KINDS.ENCHANT, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.SHOP]: makeChoosableHandler(CITY_REACTION_KINDS.SHOP, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.BUY_HOME]: makeChoosableHandler(CITY_REACTION_KINDS.BUY_HOME, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: makeChoosableHandler(CITY_REACTION_KINDS.UPGRADE_HOME, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.MOVE_HOME]: makeChoosableHandler(CITY_REACTION_KINDS.MOVE_HOME, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.HOME_MENU]: makeChoosableHandler(CITY_REACTION_KINDS.HOME_MENU, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.HOME_BED]: makeChoosableHandler(CITY_REACTION_KINDS.HOME_BED, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.UPGRADE_ITEM]: makeChoosableHandler(CITY_REACTION_KINDS.UPGRADE_ITEM, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.BLACKSMITH_MENU]: makeChoosableHandler(CITY_REACTION_KINDS.BLACKSMITH_MENU, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: makeChoosableHandler(CITY_REACTION_KINDS.BLACKSMITH_UPGRADE, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT]: makeChoosableHandler(CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.SCRAP_DEALER_MENU]: makeChoosableHandler(CITY_REACTION_KINDS.SCRAP_DEALER_MENU, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE]: makeChoosableHandler(CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU]: makeChoosableHandler(CITY_REACTION_KINDS.ROYAL_BLACKSMITH_MENU, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: makeChoosableHandler(CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.GARDEN_HARVEST]: makeChoosableHandler(CITY_REACTION_KINDS.GARDEN_HARVEST, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.GARDEN_WATER]: makeChoosableHandler(CITY_REACTION_KINDS.GARDEN_WATER, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.GARDEN_COMPOST]: makeChoosableHandler(CITY_REACTION_KINDS.GARDEN_COMPOST, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_MENU]: makeChoosableHandler(CITY_REACTION_KINDS.GUILD_DOMAIN_MENU, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY]: makeChoosableHandler(CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: makeChoosableHandler(CITY_REACTION_KINDS.APARTMENT_BUY, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
+	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: makeChoosableHandler(CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
 	[UNKNOWN_COLLECTOR_KIND]: () => false
 };
 

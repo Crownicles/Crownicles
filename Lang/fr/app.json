@@ -29,6 +29,7 @@
       "itemChoice": "Choisir dans l'inventaire",
       "itemAccept": "Gérer l'objet reçu",
       "destination": "Où souhaitez-vous aller ?",
+      "city": "Ville",
       "unknown": "Une action est en attente"
     },
     "descriptions": {
@@ -209,6 +210,52 @@
     "noNextStop": "Aucun arrêt prévu avant l'arrivée",
     "unknownLocation": "Lieu inconnu",
     "empty": "Aucun rapport de voyage disponible"
+  },
+  "city": {
+    "titles": {
+      "eyebrow": "Vous êtes en ville",
+      "housing": "Votre logement",
+      "services": "Services",
+      "shops": "Commerces",
+      "guild": "Guilde",
+      "otherCities": "Ailleurs sur la carte",
+      "quit": "Quitter"
+    },
+    "subtitles": {
+      "home": "Retrouver votre maison et ses services",
+      "notary": "Acheter ou gérer votre logement",
+      "stay": "Ne rien changer à votre position",
+      "otherCities": "Services propres à d'autres villes"
+    },
+    "reactions": {
+      "enchant": "Aller voir l'enchanteur",
+      "buyHome": "Acheter une maison",
+      "upgradeHome": "Améliorer la maison",
+      "moveHome": "Déménager la maison",
+      "home": "Rentrer chez vous",
+      "bed": "Se reposer chez vous",
+      "upgradeItem": "Améliorer l'équipement",
+      "blacksmith": "Aller chez le forgeron",
+      "blacksmithUpgrade": "Améliorer un équipement",
+      "disenchant": "Désenchanter un équipement",
+      "scrapDealer": "Aller chez le ferrailleur",
+      "recycle": "Recycler un équipement",
+      "royalBlacksmith": "Aller chez le forgeron royal",
+      "royalBlacksmithUpgrade": "Améliorer un équipement au niveau 5",
+      "gardenHarvest": "Récolter le jardin",
+      "gardenWater": "Arroser le jardin",
+      "gardenCompost": "Composter des plantes ({{quantity}})",
+      "guildDomain": "Visiter le domaine de guilde",
+      "guildNotary": "Consulter le notaire de guilde",
+      "apartmentBuy": "Acheter le logis",
+      "claimRent": "Percevoir la rente"
+    },
+    "actions": {
+      "home": "Aller chez vous",
+      "notary": "Voir le notaire",
+      "exit": "Sortir de la ville",
+      "stay": "Rester en ville"
+    }
   },
   "pet": {
     "eyebrow": "Votre familier",

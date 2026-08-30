@@ -2,7 +2,7 @@ import {fireEvent, render, screen} from "@testing-library/react-native";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
-	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS
+	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS, CITY_DATA_KINDS, CITY_REACTION_KINDS
 } from "ws-packets/src/fromServer/collectors";
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
@@ -61,6 +61,34 @@ function bigEventOutcome(): ReportBigEventResultRes {
 }
 
 describe("AdventureCollector", () => {
+	it("renders the city menu in the adventure tab and submits its indexed choice", async () => {
+		const onChoose = jest.fn();
+		const collector: ReactionCollectorCreation = {
+			id: "city",
+			endTime: Date.now() + 60_000,
+			data: {
+				type: CITY_DATA_KINDS.CITY,
+				data: {mapTypeId: "ci", mapLocationId: 10, availableServices: ["blacksmith"]}
+			},
+			reactions: [
+				{type: CITY_REACTION_KINDS.HOME_MENU, data: {}},
+				{type: CITY_REACTION_KINDS.BLACKSMITH_MENU, data: {}},
+				{type: CITY_REACTION_KINDS.EXIT, data: {}},
+				{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
+			]
+		};
+
+		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
+
+		expect(screen.getByText("app:city.titles.eyebrow")).toBeTruthy();
+		expect(screen.getByText("app:city.titles.housing")).toBeTruthy();
+		expect(screen.getByText("app:city.titles.services")).toBeTruthy();
+		expect(screen.getByText("app:city.titles.quit")).toBeTruthy();
+		await fireEvent.press(screen.getAllByText("small-event-choice")[0]);
+
+		expect(onChoose).toHaveBeenCalledWith(0);
+	});
+
 	it("uses the Adventure tab composition for a mini-event and submits its indexed choice", async () => {
 		const onChoose = jest.fn();
 		await render(<AdventureCollector collector={smallEvent()} onChoose={onChoose} submitting={false} />);

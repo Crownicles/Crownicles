@@ -13,3 +13,4 @@ export * from "./families/BigEventCollector";
 export * from "./families/SmallEventCollectors";
 export * from "./families/ItemCollectors";
 export * from "./families/ReportCollectors";
+export * from "./families/CityCollectors";
