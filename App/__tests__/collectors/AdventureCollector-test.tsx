@@ -84,7 +84,9 @@ describe("AdventureCollector", () => {
 		expect(screen.getByText("app:city.titles.housing")).toBeTruthy();
 		expect(screen.getByText("app:city.titles.services")).toBeTruthy();
 		expect(screen.getByText("app:city.titles.quit")).toBeTruthy();
-		await fireEvent.press(screen.getAllByText("small-event-choice")[0]);
+		expect(screen.queryByText("commands:report.city.reactions.stay.label")).toBeNull();
+		expect(screen.queryByText("app:collector.timeLeft")).toBeNull();
+		await fireEvent.press(screen.getByText("app:city.actions.home"));
 
 		expect(onChoose).toHaveBeenCalledWith(0);
 	});

@@ -1,11 +1,12 @@
 import { fromServerTranslator } from "../FromServerTranslator";
 import { PacketContext } from "../../../../../Lib/src/packets/CrowniclesPacket";
 import {
-	CommandReportBigEventResultRes, CommandReportTravelSummaryRes
+	CommandReportBigEventResultRes, CommandReportStayInCity, CommandReportTravelSummaryRes
 } from "../../../../../Lib/src/packets/commands/CommandReportPacket";
 import { asyncMakeFromServerPacket } from "../../../../../WsPackets/src/MakePackets";
 import { ReportBigEventResultRes } from "../../../../../WsPackets/src/fromServer/report/ReportBigEventResultRes";
 import { ReportTravelSummaryRes } from "../../../../../WsPackets/src/fromServer/report/ReportTravelSummaryRes";
+import { ReportStayInCity } from "../../../../../WsPackets/src/fromServer/report/ReportStayInCity";
 
 export default class ReportCommandServerTranslator {
 	@fromServerTranslator(CommandReportTravelSummaryRes, ReportTravelSummaryRes)
@@ -45,5 +46,10 @@ export default class ReportCommandServerTranslator {
 			tokens: packet.tokens,
 			oneshot: packet.oneshot
 		});
+	}
+
+	@fromServerTranslator(CommandReportStayInCity, ReportStayInCity)
+	public static translateStayInCity(_context: PacketContext, _packet: CommandReportStayInCity): Promise<ReportStayInCity> {
+		return asyncMakeFromServerPacket(ReportStayInCity, {});
 	}
 }

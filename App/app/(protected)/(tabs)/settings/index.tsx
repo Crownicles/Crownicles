@@ -9,6 +9,7 @@ import {PingReq} from "ws-packets/src/fromClient/PingReq";
 import {PingRes} from "ws-packets/src/fromServer/ping/PingRes";
 import {Theme} from "@/src/design/Theme";
 import {Button as DesignButton} from "@/src/design/Primitives";
+import {i18n} from "@/src/translations/i18n";
 
 const styles = StyleSheet.create({
 	container: {
@@ -82,12 +83,12 @@ export default function Index() {
 		<View style={styles.container}>
 			<ScrollView>
 				<ListItem>
-					<Text style={styles.label}>Developer Mode</Text>
+					<Text style={styles.label}>{i18n.t("app:settings.developerMode")}</Text>
 					<Switch value={preferences.getDevMode()} onValueChange={preferences.setDevMode} />
 				</ListItem>
 				{preferences.getDevMode() && (
 					<ListItem>
-							<DesignButton onPress={handlePing} disabled={pingLoading} variant="primary">Ping</DesignButton>
+							<DesignButton onPress={handlePing} disabled={pingLoading} variant="primary">{i18n.t("app:settings.ping")}</DesignButton>
 						{pingLoading ? (
 							<ActivityIndicator size="small" style={styles.loadingIndicator} />
 						) : pingTime !== null ? (
@@ -101,7 +102,7 @@ export default function Index() {
 						authState.clearToken().then().catch((err) => {
 							console.error("Failed to clear token:", err);
 						});
-					}}>Logout</DesignButton>
+					}}>{i18n.t("app:settings.logout")}</DesignButton>
 				</ListItem>
 			</ScrollView>
 		</View>

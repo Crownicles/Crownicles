@@ -132,6 +132,7 @@ describe("packet contracts", () => {
 			pingResponse: true,
 			profileResponse: true,
 			reportTravelSummary: true,
+			reportStayInCity: true,
 			reportBigEventResult: true,
 			reportUseTokensAccepted: true,
 			reportUseTokensRefused: true,

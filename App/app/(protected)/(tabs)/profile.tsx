@@ -97,9 +97,9 @@ function locationLabel(profile: ProfileRes): string {
 
 function effectLabel(profile: ProfileRes): string {
 	if (profile.effect.healed || !profile.effect.hasTimeDisplay || profile.effect.effect === "none") {
-		return i18n.t("commands:profile.noTimeLeft");
+		return i18n.t("commands:profile.noTimeLeft.fieldValue");
 	}
-	return i18n.t("commands:profile.timeLeft", {
+	return i18n.t("commands:profile.timeLeft.fieldValue", {
 		effectId: profile.effect.effect,
 		timeLeft: duration(profile.effect.timeLeft)
 	});

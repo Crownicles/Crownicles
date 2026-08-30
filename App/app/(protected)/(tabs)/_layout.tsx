@@ -21,7 +21,7 @@ const ProfileHeader = ({ children }: { children?: string }) => {
 	const profile = state.status === "ready" ? state.data : null;
 
 	const showClassInfo = () => {
-		Alert.alert("Class Info", "This feature will be implemented later!");
+		Alert.alert(i18n.t("app:navigation.classInfo"), i18n.t("app:navigation.featureNotAvailable"));
 	};
 
 	const getClassIcon = () => {
@@ -100,7 +100,7 @@ function TabLayoutContent() {
 					<TwemojiIcon emoji={AppIcons.getIcon("navigation.fight")} size={Theme.dimensions.tabBarIcon} opacity={focused ? 1 : 0.55} />
 				),
 			}} />
-			<Tabs.Screen name="settings/index" options={{ href: null, title: "Settings" }} />
+			<Tabs.Screen name="settings/index" options={{ href: null, title: i18n.t("app:settings.title") }} />
 		</Tabs>
 	);
 }

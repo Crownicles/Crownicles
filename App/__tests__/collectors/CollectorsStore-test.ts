@@ -3,6 +3,8 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {COLLECTOR_STOP_REASONS, ReactionCollectorStop} from "ws-packets/src/fromServer/common/ReactionCollectorStop";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReactionCollectorReactReq} from "ws-packets/src/fromClient/ReactionCollectorReactReq";
+import {CITY_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
+import {ReportStayInCity} from "ws-packets/src/fromServer/report/ReportStayInCity";
 
 function collector(id: string, endTime = Date.now() + 60_000): ReactionCollectorCreation {
 	return {
@@ -58,6 +60,30 @@ describe("CollectorsStore", () => {
 		expect(collectorsStore.getSnapshot()).toHaveLength(0);
 		expect(collectorsStore.isAnswerPending(item.id)).toBe(false);
 		expect(resolution).toHaveBeenCalledWith("unknown");
+		unsubscribe();
+	});
+
+	it("notifies the app when a collector expires locally", () => {
+		const resolution = jest.fn();
+		const unsubscribe = collectorsStore.subscribeToResolution(resolution);
+		const item = collector("collector-expired");
+
+		collectorsStore.track(item);
+		collectorsStore.removeExpired(Number.MAX_SAFE_INTEGER);
+
+		expect(collectorsStore.getSnapshot()).toHaveLength(0);
+		expect(resolution).toHaveBeenCalledWith("unknown");
+		unsubscribe();
+	});
+
+	it("refreshes the report when the server confirms an automatic city stay", () => {
+		const resolution = jest.fn();
+		const unsubscribe = collectorsStore.subscribeToResolution(resolution);
+		const registeredHandler = Reflect.get(WebSocketClient.getInstance(), "pushedPacketRegistry");
+
+		registeredHandler.dispatch(ReportStayInCity.name, new ReportStayInCity());
+
+		expect(resolution).toHaveBeenCalledWith(CITY_DATA_KINDS.CITY);
 		unsubscribe();
 	});
 });

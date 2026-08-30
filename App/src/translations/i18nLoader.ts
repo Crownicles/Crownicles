@@ -13,10 +13,18 @@ interface LanguageAssetLocation {
 }
 
 type LanguageAssetPath = [string, string, string, ...string[]];
+type I18nResources = Record<string, Record<string, object>>;
+
+/**
+ * Assets are downloaded asynchronously while the app is starting. Keeping the
+ * reloads in a single chain prevents a second i18next.init() from racing with
+ * the first one and resetting resources that have just been loaded.
+ */
+let reloadChain: Promise<void> | null = null;
 
 function isLanguageAssetPath(parts: string[]): parts is LanguageAssetPath {
 	const hasExpectedSegmentCount = parts.length >= 3;
-	const isLanguageDirectory = parts[0]?.startsWith("Lang") ?? false;
+	const isLanguageDirectory = parts[0] === "Lang";
 	const hasLanguage = Boolean(parts[1]);
 	const hasJsonNamespace = parts[2]?.endsWith(".json") ?? false;
 
@@ -34,38 +42,60 @@ function getLanguageAssetLocation(path: string): LanguageAssetLocation | null {
 	};
 }
 
-function loadLanguageAssets(languagesAssets: Map<string, string>): void {
+function loadLanguageAssets(languagesAssets: Map<string, string>): I18nResources {
+	const resources: I18nResources = {};
 	for (const languageAsset of languagesAssets.entries()) {
-		console.log(`Loading i18next resource ${languageAsset[0]}`);
 		const location = getLanguageAssetLocation(languageAsset[0]);
-		if (!location) {
+		if (!location || !LANGUAGE.LANGUAGES.includes(location.language as typeof LANGUAGE.LANGUAGES[number])) {
 			console.warn(`Invalid language asset path: ${languageAsset[0]}`);
 			continue;
 		}
 
-		i18next.addResourceBundle(location.language, location.namespace, JSON.parse(languageAsset[1]));
+		try {
+			resources[location.language] ??= {};
+			resources[location.language][location.namespace] = JSON.parse(languageAsset[1]) as object;
+		}
+		catch (error) {
+			console.error(`Failed to parse language asset ${languageAsset[0]}`, error);
+		}
 	}
+	return resources;
 }
 
-function loadNativeLanguageAssets(): void {
-	i18next.addResourceBundle(LANGUAGE.ENGLISH, "native", englishNative);
-	i18next.addResourceBundle(LANGUAGE.FRENCH, "native", frenchNative);
-	i18next.addResourceBundle(LANGUAGE.ITALIAN, "native", italianNative);
-	i18next.addResourceBundle(LANGUAGE.SPANISH, "native", spanishNative);
-	i18next.addResourceBundle(LANGUAGE.PORTUGUESE, "native", portugueseNative);
-	i18next.addResourceBundle(LANGUAGE.GERMAN, "native", germanNative);
+function loadNativeLanguageAssets(resources: I18nResources): void {
+	resources[LANGUAGE.ENGLISH] ??= {};
+	resources[LANGUAGE.ENGLISH].native = englishNative;
+	resources[LANGUAGE.FRENCH] ??= {};
+	resources[LANGUAGE.FRENCH].native = frenchNative;
+	resources[LANGUAGE.ITALIAN] ??= {};
+	resources[LANGUAGE.ITALIAN].native = italianNative;
+	resources[LANGUAGE.SPANISH] ??= {};
+	resources[LANGUAGE.SPANISH].native = spanishNative;
+	resources[LANGUAGE.PORTUGUESE] ??= {};
+	resources[LANGUAGE.PORTUGUESE].native = portugueseNative;
+	resources[LANGUAGE.GERMAN] ??= {};
+	resources[LANGUAGE.GERMAN].native = germanNative;
 }
 
 export async function reloadI18n(languagesAssets = new Map<string, string>()): Promise<void> {
-	await i18next.init({
-		fallbackLng: LANGUAGE.DEFAULT_LANGUAGE,
-		interpolation: { escapeValue: false },
-		resources: {},
-	});
+	const reload = async (): Promise<void> => {
+		const resources = loadLanguageAssets(languagesAssets);
+		loadNativeLanguageAssets(resources);
+		const currentLanguage = LANGUAGE.LANGUAGES.includes(i18next.language?.split("-")[0] as typeof LANGUAGE.LANGUAGES[number])
+			? i18next.language.split("-")[0]
+			: LANGUAGE.FRENCH;
 
-	// todo for testing, remove later
-	await i18next.changeLanguage(LANGUAGE.FRENCH);
+		// eslint-disable-next-line import/no-named-as-default-member
+		await i18next.init({
+			lng: currentLanguage,
+			fallbackLng: [LANGUAGE.DEFAULT_LANGUAGE, LANGUAGE.FRENCH],
+			interpolation: { escapeValue: false },
+			resources,
+		});
+	};
 
-	loadLanguageAssets(languagesAssets);
-	loadNativeLanguageAssets();
+	// Start the first bootstrap immediately. This makes i18next initialise before
+	// React renders the asset-loading overlay; later reloads stay serialised.
+	reloadChain = reloadChain === null ? reload() : reloadChain.then(reload, reload);
+	return reloadChain;
 }

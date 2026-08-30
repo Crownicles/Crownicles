@@ -1,7 +1,8 @@
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReactionCollectorStop, COLLECTOR_STOP_REASONS} from "ws-packets/src/fromServer/common/ReactionCollectorStop";
 import {ReactionCollectorReactReq} from "ws-packets/src/fromClient/ReactionCollectorReactReq";
-import {ReactionCollectorDataKind} from "ws-packets/src/fromServer/collectors";
+import {CITY_DATA_KINDS, ReactionCollectorDataKind} from "ws-packets/src/fromServer/collectors";
+import {ReportStayInCity} from "ws-packets/src/fromServer/report/ReportStayInCity";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
@@ -27,6 +28,7 @@ class CollectorsStore {
 		const client = WebSocketClient.getInstance();
 		client.registerPushedPacketHandler(ReactionCollectorCreation.name, this.track);
 		client.registerPushedPacketHandler(ReactionCollectorStop.name, this.stop);
+		client.registerPushedPacketHandler(ReportStayInCity.name, this.stayInCity);
 	}
 
 	public readonly subscribe = (listener: StoreListener): (() => void) => {
@@ -57,8 +59,7 @@ class CollectorsStore {
 		this.notifyListeners();
 
 		const timer = setTimeout((): void => {
-			this.answeredKinds.delete(collector.id);
-			this.forget(collector.id);
+			this.expireLocally(collector.id);
 		}, Math.max(0, collector.endTime - Date.now()));
 		this.timers.set(collector.id, timer);
 	};
@@ -66,8 +67,7 @@ class CollectorsStore {
 	public readonly removeExpired = (now: number = Date.now()): void => {
 		for (const [collectorId, collector] of this.open) {
 			if (collector.endTime <= now) {
-				this.answeredKinds.delete(collectorId);
-				this.forget(collectorId);
+				this.expireLocally(collectorId);
 			}
 		}
 	};
@@ -92,10 +92,29 @@ class CollectorsStore {
 		const answeredKind = this.answeredKinds.get(packet.collectorId);
 		this.answeredKinds.delete(packet.collectorId);
 		if (answeredKind && packet.reason === COLLECTOR_STOP_REASONS.RESOLVED) {
-			for (const listener of this.resolutionListeners) {
-				listener(answeredKind);
-			}
+			this.notifyResolution(answeredKind);
 		}
+	};
+
+	/**
+	 * The server sends this after a city collector times out (or when a destination choice defaults
+	 * to staying put). It has no UI of its own; it simply tells the app to refresh the report while
+	 * the player remains in the city.
+	 */
+	private readonly stayInCity = (): void => {
+		this.notifyResolution(CITY_DATA_KINDS.CITY);
+	};
+
+	private readonly expireLocally = (collectorId: string): void => {
+		const collector = this.open.get(collectorId);
+		if (!collector) {
+			return;
+		}
+		this.answeredKinds.delete(collectorId);
+		this.forget(collectorId);
+		// This is a fallback for a backgrounded/offline app. A server stop packet may still follow;
+		// invalidating the same queries twice is harmless and keeps the report from getting stuck.
+		this.notifyResolution(collector.data.type);
 	};
 
 	private readonly forget = (collectorId: string): void => {
@@ -115,6 +134,12 @@ class CollectorsStore {
 	private readonly notifyListeners = (): void => {
 		for (const listener of this.listeners) {
 			listener();
+		}
+	};
+
+	private readonly notifyResolution = (kind: ReactionCollectorDataKind): void => {
+		for (const listener of this.resolutionListeners) {
+			listener(kind);
 		}
 	};
 }

@@ -293,7 +293,7 @@ export function Inventory({ inventoryData }: InventoryProps): React.ReactElement
 	if (!inventoryData) {
 		return (
 			<View style={styles.centerContent}>
-				<Text style={styles.placeholderText}>Loading inventory...</Text>
+				<Text style={styles.placeholderText}>{i18n.t("app:common.loading")}</Text>
 			</View>
 		);
 	}

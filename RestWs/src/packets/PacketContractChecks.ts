@@ -32,6 +32,7 @@ import {
 	CommandReportBuyHealPacketReq,
 	CommandReportBuyHealRefusePacketRes,
 	CommandReportBigEventResultRes,
+	CommandReportStayInCity,
 	CommandReportTokenMerchantBoughtRes,
 	CommandReportTokenMerchantCannotAffordRes,
 	CommandReportTokenMerchantCharityAlreadyUsedRes,
@@ -80,6 +81,7 @@ import { ReportBuyHealReq } from "../../../WsPackets/src/fromClient/ReportBuyHea
 import { ReportUseTokensReq } from "../../../WsPackets/src/fromClient/ReportUseTokensReq";
 import { ReportTravelSummaryRes } from "../../../WsPackets/src/fromServer/report/ReportTravelSummaryRes";
 import { ReportBigEventResultRes } from "../../../WsPackets/src/fromServer/report/ReportBigEventResultRes";
+import { ReportStayInCity } from "../../../WsPackets/src/fromServer/report/ReportStayInCity";
 import {
 	ReportBuyHealAcceptedRes,
 	ReportBuyHealCannotHealOccupiedRes,
@@ -169,6 +171,10 @@ type ProfileResponseContract = Assert<IsEqual<
 type ReportTravelSummaryContract = Assert<IsEqual<
 	WireShape<CommandReportTravelSummaryRes>,
 	WireShape<WirePacketFields<ReportTravelSummaryRes>>
+>>;
+type ReportStayInCityContract = Assert<IsEqual<
+	WireShape<CommandReportStayInCity>,
+	WireShape<WirePacketFields<ReportStayInCity>>
 >>;
 type ReportBigEventResultContract = Assert<IsEqual<
 	WireShape<CommandReportBigEventResultRes>,
@@ -289,6 +295,7 @@ export const packetContractChecks: {
 	pingResponse: PingResponseContract;
 	profileResponse: ProfileResponseContract;
 	reportTravelSummary: ReportTravelSummaryContract;
+	reportStayInCity: ReportStayInCityContract;
 	reportBigEventResult: ReportBigEventResultContract;
 	reportUseTokensAccepted: ReportUseTokensAcceptedContract;
 	reportUseTokensRefused: ReportUseTokensRefusedContract;
@@ -337,6 +344,7 @@ export const packetContractChecks: {
 	pingResponse: true,
 	profileResponse: true,
 	reportTravelSummary: true,
+	reportStayInCity: true,
 	reportBigEventResult: true,
 	reportUseTokensAccepted: true,
 	reportUseTokensRefused: true,

@@ -4,7 +4,29 @@
     "error": "Les informations n'ont pas pu être récupérées",
     "retry": "Réessayer",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "connectionError": "Impossible de joindre le serveur. Vérifiez votre connexion puis réessayez.",
+    "reconnect": "Se reconnecter",
+    "assetsUpdateError": "Les ressources de l'application n'ont pas pu être mises à jour. Vérifiez votre connexion puis réessayez.",
+    "assetsUpdating": "Mise à jour de l'application…"
+  },
+  "auth": {
+    "loginTitle": "Connexion",
+    "loginAction": "Se connecter",
+    "sessionExpired": "Votre session a expiré. Veuillez vous reconnecter.",
+    "invalidToken": "La connexion a échoué : le jeton reçu est invalide.",
+    "loginFailed": "Échec de la connexion",
+    "unknownError": "Une erreur inconnue est survenue."
+  },
+  "settings": {
+    "title": "Paramètres",
+    "developerMode": "Mode développeur",
+    "ping": "Ping",
+    "logout": "Se déconnecter"
+  },
+  "navigation": {
+    "classInfo": "Informations de classe",
+    "featureNotAvailable": "Cette fonctionnalité sera disponible prochainement."
   },
   "collector": {
     "accept": "Confirmer",

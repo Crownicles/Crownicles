@@ -7,6 +7,7 @@ import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {AssetsManager} from "@/src/assets/AssetsManager";
 import {Theme} from "@/src/design/Theme";
 import {Button as DesignButton} from "@/src/design/Primitives";
+import {i18n} from "@/src/translations/i18n";
 
 const styles = StyleSheet.create({
 	overlay: {
@@ -87,9 +88,9 @@ function renderBlockingState(authState: AuthStateEnum, assetState: AssetState, o
 				<View style={styles.overlay} pointerEvents="auto">
 					<View style={styles.indicatorContainer}>
 						<Text style={styles.blockingText}>
-							Connection error. Please check your internet connection and try again.
+							{i18n.t("app:common.connectionError")}
 						</Text>
-						<DesignButton variant="primary" onPress={onReconnect}>Reconnect</DesignButton>
+						<DesignButton variant="primary" onPress={onReconnect}>{i18n.t("app:common.reconnect")}</DesignButton>
 					</View>
 				</View>
 			</Modal>
@@ -102,9 +103,9 @@ function renderBlockingState(authState: AuthStateEnum, assetState: AssetState, o
 				<View style={styles.overlay} pointerEvents="auto">
 					<View style={styles.indicatorContainer}>
 						<Text style={styles.blockingText}>
-							Failed to update assets. Please check your internet connection and try again.
+							{i18n.t("app:common.assetsUpdateError")}
 						</Text>
-						<DesignButton variant="primary" onPress={assetState.retryAssetUpdate}>Retry</DesignButton>
+						<DesignButton variant="primary" onPress={assetState.retryAssetUpdate}>{i18n.t("app:common.retry")}</DesignButton>
 					</View>
 				</View>
 			</Modal>
@@ -117,7 +118,7 @@ function renderBlockingState(authState: AuthStateEnum, assetState: AssetState, o
 				<View style={styles.overlay} pointerEvents="auto">
 					<View style={styles.indicatorContainer}>
 						<Text style={styles.blockingText}>
-							Updating assets. Please wait...
+							{i18n.t("app:common.assetsUpdating")}
 						</Text>
 						<ActivityIndicator size="large" color={Theme.colors.ink} />
 					</View>

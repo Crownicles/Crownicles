@@ -15,6 +15,7 @@ import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {PetSex} from "ws-packets/src/objects/OwnedPet";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
+import type {TOptions} from "i18next";
 
 const SEX_CONTEXTS = {
 	MALE: "male",
@@ -83,6 +84,14 @@ function withIcon(iconPath: string, label: string): string {
 
 function smallEventTitle(titleKey: string, iconPath: string): string {
 	return withIcon(iconPath, i18n.t(titleKey));
+}
+
+function randomTranslation(key: string, options: TOptions = {}): string {
+	const translations = i18n.tArray(key, options);
+	if (translations.length === 0) {
+		return i18n.t(key, options);
+	}
+	return translations[Math.floor(Math.random() * translations.length)];
 }
 
 function badPetActionTranslationKey(actionId: SmallEventBadPetActionId, sex: PetSex): string {
@@ -217,26 +226,26 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], DataHandler> = {
 	[BIG_EVENT_DATA_KINDS.COLLECTOR]: makeDataHandler(BIG_EVENT_DATA_KINDS.COLLECTOR, data => i18n.t(`events:${data.data.eventId}.text`)),
 	[DRINK_DATA_KINDS.COLLECTOR]: () => undefined,
-	[SMALL_EVENT_DATA_KINDS.ALTAR]: makeDataHandler(SMALL_EVENT_DATA_KINDS.ALTAR, data => i18n.t("smallEvents:altar.intro.0", {
+	[SMALL_EVENT_DATA_KINDS.ALTAR]: makeDataHandler(SMALL_EVENT_DATA_KINDS.ALTAR, data => randomTranslation("smallEvents:altar.intro", {
 		poolAmount: data.data.poolAmount,
 		poolThreshold: data.data.poolThreshold,
 		moneyEmote: AppIcons.getIcon("unitValues.money")
 	})),
-	[SMALL_EVENT_DATA_KINDS.BAD_PET]: makeDataHandler(SMALL_EVENT_DATA_KINDS.BAD_PET, data => i18n.t("smallEvents:badPet.intro", {
+	[SMALL_EVENT_DATA_KINDS.BAD_PET]: makeDataHandler(SMALL_EVENT_DATA_KINDS.BAD_PET, data => randomTranslation("smallEvents:badPet.intro", {
 		context: sexContext(data.data.sex),
 		pet: badPetDisplayName(data.data.petId, data.data.petNickname, data.data.sex)
 	})),
-	[SMALL_EVENT_DATA_KINDS.GARDENER]: makeDataHandler(SMALL_EVENT_DATA_KINDS.GARDENER, data => `${i18n.t(`smallEvents:gardener.stories.${data.data.isFirstEncounter === true ? "first" : "recurring"}.0`)} ${i18n.t(`smallEvents:gardener.rewards.seed.${gardenerRewardConditionKey(data.data.conditionKey)}.0`, {
+	[SMALL_EVENT_DATA_KINDS.GARDENER]: makeDataHandler(SMALL_EVENT_DATA_KINDS.GARDENER, data => `${randomTranslation(`smallEvents:gardener.stories.${data.data.isFirstEncounter === true ? "first" : "recurring"}`)} ${randomTranslation(`smallEvents:gardener.rewards.seed.${gardenerRewardConditionKey(data.data.conditionKey)}`, {
 		cost: data.data.cost
 	})} ${i18n.t("app:collector.descriptions.gardenerSeed", {
 		seed: gardenerSeedDisplay(data.data.seedId)
 	})}`),
-	[SMALL_EVENT_DATA_KINDS.GOBLETS_GAME]: () => i18n.t("smallEvents:gobletsGame.intro.0"),
+	[SMALL_EVENT_DATA_KINDS.GOBLETS_GAME]: () => i18n.t("smallEvents:gobletsGame.intro"),
 	[SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS]: makeDataHandler(SMALL_EVENT_DATA_KINDS.INTERACT_OTHER_PLAYERS, data => interactOtherPlayersDescription(data.data.keycloakId, data.data.rank)),
 	[SMALL_EVENT_DATA_KINDS.LIMOGES]: makeDataHandler(SMALL_EVENT_DATA_KINDS.LIMOGES, data => i18n.t(`smallEvents:limoges.questions.${data.data.questionId}`)),
 	[SMALL_EVENT_DATA_KINDS.LOTTERY]: () => i18n.t("smallEvents:lottery.intro"),
 	[SMALL_EVENT_DATA_KINDS.PET_FOOD]: makeDataHandler(SMALL_EVENT_DATA_KINDS.PET_FOOD, data => i18n.t(`smallEvents:petFood.intro.${data.data.foodType}_${data.data.petSex === "f" ? "female" : "male"}`)),
-	[SMALL_EVENT_DATA_KINDS.WITCH]: () => `${i18n.t("smallEvents:witch.intro.0")}${i18n.t("smallEvents:witch.description.0")}${i18n.t("smallEvents:witch.situation.0")}`,
+	[SMALL_EVENT_DATA_KINDS.WITCH]: () => `${randomTranslation("smallEvents:witch.intro")}${randomTranslation("smallEvents:witch.description")}${randomTranslation("smallEvents:witch.situation")}`,
 	[ITEM_DATA_KINDS.CHOICE]: makeDataHandler(ITEM_DATA_KINDS.CHOICE, data => i18n.t("app:collector.descriptions.itemChoice", {
 		item: itemDisplayName(data.data.item)
 	})),
@@ -329,8 +338,8 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 		return i18n.t(amount === 1 ? "app:adventure.tokens.merchant.buyOne" : "app:adventure.tokens.merchant.buyMany", {amount, price});
 	}),
 	[CITY_REACTION_KINDS.EXIT]: makeReactionHandler(CITY_REACTION_KINDS.EXIT, () => withIcon("other.walking", i18n.t("commands:report.city.reactions.exit.label"))),
-	[CITY_REACTION_KINDS.INN_MEAL]: makeReactionHandler(CITY_REACTION_KINDS.INN_MEAL, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.meals.${reaction.data.mealId}`))} · ${i18n.t("commands:report.city.mealDescription", reaction.data)}`),
-	[CITY_REACTION_KINDS.INN_ROOM]: makeReactionHandler(CITY_REACTION_KINDS.INN_ROOM, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.rooms.${reaction.data.roomId}`))} · ${i18n.t("commands:report.city.roomDescription", reaction.data)}`),
+	[CITY_REACTION_KINDS.INN_MEAL]: makeReactionHandler(CITY_REACTION_KINDS.INN_MEAL, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.inns.meals.${reaction.data.mealId}`))} · ${i18n.t("commands:report.city.inns.mealDescription", reaction.data)}`),
+	[CITY_REACTION_KINDS.INN_ROOM]: makeReactionHandler(CITY_REACTION_KINDS.INN_ROOM, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.inns.rooms.${reaction.data.roomId}`))} · ${i18n.t("commands:report.city.inns.roomDescription", reaction.data)}`),
 	[CITY_REACTION_KINDS.ENCHANT]: makeReactionHandler(CITY_REACTION_KINDS.ENCHANT, () => cityReactionLabel("enchant")),
 	[CITY_REACTION_KINDS.SHOP]: makeReactionHandler(CITY_REACTION_KINDS.SHOP, reaction => withIcon(`city.shops.${reaction.data.shopId}`, cityServiceLabel(reaction.data.shopId))),
 	[CITY_REACTION_KINDS.BUY_HOME]: makeReactionHandler(CITY_REACTION_KINDS.BUY_HOME, () => cityReactionLabel("buyHome")),

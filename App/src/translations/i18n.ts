@@ -31,8 +31,11 @@ function convertEmoteFormat(str: string): string {
  * Apply all the crownicles formatting to the given string
  * @param str
  */
-function crowniclesFormat(str: string): string {
-	return convertEmoteFormat(str);
+function crowniclesFormat(value: unknown): string {
+	if (typeof value !== "string") {
+		return value == null ? "" : String(value);
+	}
+	return convertEmoteFormat(value);
 }
 
 export class I18nCrownicles {
@@ -80,7 +83,13 @@ export class I18nCrownicles {
 	 * @param options
 	 */
 	static t(key: string | string[], options?: i18next.TOptions): string | string[] | Record<string, string> {
-		const value: string | string[] | object = i18next.t(key, options);
+		const value: string | string[] | object | undefined = i18next.t(key, options);
+		if (value === undefined || value === null) {
+			if (options?.returnObjects) {
+				return Array.isArray(key) ? [] : {};
+			}
+			return Array.isArray(key) ? key[0] : key;
+		}
 		if (options?.returnObjects && !Array.isArray(value)) {
 			return Object.entries(value)
 				.reduce((acc, [k, v]) => {
@@ -94,11 +103,31 @@ export class I18nCrownicles {
 		return crowniclesFormat(value);
 	}
 
+	/**
+	 * Return all variants of an array translation. Discord uses the same helper
+	 * for small-event stories, so the app can reuse those resources safely.
+	 */
+	static tArray(key: string, options?: i18next.TOptions): string[] {
+		const value = i18next.t(key, {...options, returnObjects: true});
+		if (Array.isArray(value)) {
+			return value.map(crowniclesFormat);
+		}
+		if (typeof value === "string") {
+			return [crowniclesFormat(value)];
+		}
+		return [];
+	}
+
 	static async changeLanguage(language: Language): Promise<void> {
 		await i18next.changeLanguage(language);
 	}
 }
 
-reloadI18n().then();
+// Initialise the native bundle immediately so loading and authentication screens
+// can safely call i18n before the downloaded language assets are ready. Asset
+// reloads are queued by the loader and replace this bootstrap resource set.
+reloadI18n().catch(error => {
+	console.error("Failed to initialize translations:", error);
+});
 
 export const i18n = I18nCrownicles;

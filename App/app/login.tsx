@@ -8,6 +8,7 @@ import {useRouter} from "expo-router";
 import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 import {Theme} from "@/src/design/Theme";
 import {Button as DesignButton} from "@/src/design/Primitives";
+import {i18n} from "@/src/translations/i18n";
 
 const styles = StyleSheet.create({
 	container: {
@@ -36,7 +37,7 @@ function handleExpiredSession(authState: LoginAuthState): void {
 		return;
 	}
 
-	Alert.alert("Your session has expired. Please log in again.");
+	Alert.alert(i18n.t("app:auth.sessionExpired"));
 	authState.setState(AuthStateEnum.NO_TOKEN);
 	authState.clearToken().then().catch((err) => {
 		console.error("Failed to clear token:", err);
@@ -49,7 +50,7 @@ async function handleLogin(authState: LoginAuthState, router: LoginRouter): Prom
 		const authToken = AuthToken.fromKeycloakOAuth2Token(keycloakToken);
 
 		if (!authToken.getAccessToken()) {
-			Alert.alert("Login failed. Invalid token received.");
+			Alert.alert(i18n.t("app:auth.invalidToken"));
 			return;
 		}
 
@@ -68,8 +69,8 @@ async function handleLogin(authState: LoginAuthState, router: LoginRouter): Prom
 	}
 	catch (error) {
 		console.error("Login error:", error);
-		const message = error instanceof Error ? error.message : "Unknown authentication error";
-		Alert.alert("Login failed", message);
+		const message = error instanceof Error ? error.message : i18n.t("app:auth.unknownError");
+		Alert.alert(i18n.t("app:auth.loginFailed"), message);
 		router.replace("/login");
 	}
 }
@@ -85,11 +86,11 @@ export default function LoginScreen(): React.ReactElement {
 			{authState.state === AuthStateEnum.CONNECTING && (
 					<ActivityIndicator size="large" color={Theme.colors.ink} style={styles.loginIndicator} />
 			)}
-			<Text style={styles.text}>Login screen</Text>
+			<Text style={styles.text}>{i18n.t("app:auth.loginTitle")}</Text>
 			<View style={styles.loginGap} />
 			<DesignButton variant="primary" onPress={() => {
 				handleLogin(authState, router).then();
-			}}>Log In</DesignButton>
+			}}>{i18n.t("app:auth.loginAction")}</DesignButton>
 		</View>
 	);
 }

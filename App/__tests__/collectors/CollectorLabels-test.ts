@@ -21,7 +21,8 @@ jest.mock("@/src/AppIcons", () => ({
 
 jest.mock("@/src/translations/i18n", () => ({
 	i18n: {
-		t: (key: string): string => key
+		t: (key: string): string => key,
+		tArray: (): string[] => []
 	}
 }));
 
@@ -61,7 +62,7 @@ describe("CollectorLabels", () => {
 		} as const;
 
 		expect(collectorTitle(altarData)).toBe("app:collector.titles.altar");
-		expect(collectorDescription(altarData)).toBe("smallEvents:altar.intro.0");
+		expect(collectorDescription(altarData)).toBe("smallEvents:altar.intro");
 		expect(reactionLabel(altarReaction, altarData)).toBe("app:collector.choices.altarContribute");
 	});
 
@@ -109,7 +110,7 @@ describe("CollectorLabels", () => {
 			data: {seedId: 2, cost: 30, conditionKey: "paid", isFirstEncounter: true}
 		} as const;
 
-		expect(collectorDescription(data)).toBe("smallEvents:gardener.stories.first.0 smallEvents:gardener.rewards.seed.paid.0 app:collector.descriptions.gardenerSeed");
+		expect(collectorDescription(data)).toBe("smallEvents:gardener.stories.first smallEvents:gardener.rewards.seed.paid app:collector.descriptions.gardenerSeed");
 	});
 
 	it("uses a safe ranked description for the other-player collector", () => {

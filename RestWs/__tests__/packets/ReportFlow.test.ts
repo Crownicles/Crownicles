@@ -7,12 +7,14 @@ import {
 import {
 	CommandReportPacketReq,
 	CommandReportBigEventResultRes,
+	CommandReportStayInCity,
 	CommandReportTravelSummaryRes
 } from "../../../Lib/src/packets/commands/CommandReportPacket";
 import {makeFromClientPacket} from "../../../WsPackets/src/MakePackets";
 import {ReportReq} from "../../../WsPackets/src/fromClient/ReportReq";
 import {ReportTravelSummaryRes} from "../../../WsPackets/src/fromServer/report/ReportTravelSummaryRes";
 import {ReportBigEventResultRes} from "../../../WsPackets/src/fromServer/report/ReportBigEventResultRes";
+import {ReportStayInCity} from "../../../WsPackets/src/fromServer/report/ReportStayInCity";
 import {
 	getClientTranslator
 } from "../../src/packets/fromClient/FromClientTranslator";
@@ -82,6 +84,9 @@ describe("/report over the WebSocket protocol", () => {
 		expect(getServerTranslator(CommandReportBigEventResultRes.name)).toMatchObject({
 			protoName: ReportBigEventResultRes.name
 		});
+		expect(getServerTranslator(CommandReportStayInCity.name)).toMatchObject({
+			protoName: ReportStayInCity.name
+		});
 	});
 
 	it("turns a client request into the command the back end expects", async () => {
@@ -121,5 +126,12 @@ describe("/report over the WebSocket protocol", () => {
 		const translated = await ReportCommandServerTranslator.translateBigEventResult(context(), bigEventResultPacket(false));
 
 		expect(translated).not.toHaveProperty("effect");
+	});
+
+	it("transports the automatic city-stay signal", async () => {
+		const translated = await ReportCommandServerTranslator.translateStayInCity(context(), makePacket(CommandReportStayInCity, {}));
+
+		expect(translated).toBeInstanceOf(ReportStayInCity);
+		expect(overTheWire(translated)).toStrictEqual({});
 	});
 });
