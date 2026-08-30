@@ -18,6 +18,12 @@ import {
 	ReportUseTokensAcceptedRes,
 	ReportUseTokensRefusedRes
 } from "ws-packets/src/fromServer/report/ReportTokenRes";
+import {
+	ReportBuyHealAcceptedRes,
+	ReportBuyHealCannotHealOccupiedRes,
+	ReportBuyHealNoAlterationRes,
+	ReportBuyHealRefusedRes
+} from "ws-packets/src/fromServer/report/ReportHealRes";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type Listener = () => void;
@@ -41,6 +47,12 @@ export type TokenOutcome =
 	| {kind: "charity"; packet: ReportTokenMerchantCharityRes}
 	| {kind: "charityAlreadyUsed"; packet: ReportTokenMerchantCharityAlreadyUsedRes};
 
+export type HealOutcome =
+	| {kind: "accepted"; packet: ReportBuyHealAcceptedRes}
+	| {kind: "refused"; packet: ReportBuyHealRefusedRes}
+	| {kind: "noAlteration"; packet: ReportBuyHealNoAlterationRes}
+	| {kind: "cannotHealOccupied"; packet: ReportBuyHealCannotHealOccupiedRes};
+
 /**
  * Keeps the last big-event outcome until the player has read it. The result follows the collector
  * stop packet, so it cannot live in the collector itself.
@@ -53,6 +65,8 @@ class ReportEventStore {
 	private smallEventOutcome: SmallEventOutcome | null = null;
 
 	private tokenOutcome: TokenOutcome | null = null;
+
+	private healOutcome: HealOutcome | null = null;
 
 	private readonly listeners = new Set<Listener>();
 
@@ -73,6 +87,10 @@ class ReportEventStore {
 		client.registerPushedPacketHandler<ReportTokenMerchantCannotAffordRes>(ReportTokenMerchantCannotAffordRes.name, packet => this.setTokenOutcome({kind: "cannotAfford", packet}));
 		client.registerPushedPacketHandler<ReportTokenMerchantCharityRes>(ReportTokenMerchantCharityRes.name, packet => this.setTokenOutcome({kind: "charity", packet}));
 		client.registerPushedPacketHandler<ReportTokenMerchantCharityAlreadyUsedRes>(ReportTokenMerchantCharityAlreadyUsedRes.name, packet => this.setTokenOutcome({kind: "charityAlreadyUsed", packet}));
+		client.registerPushedPacketHandler<ReportBuyHealAcceptedRes>(ReportBuyHealAcceptedRes.name, packet => this.setHealOutcome({kind: "accepted", packet}));
+		client.registerPushedPacketHandler<ReportBuyHealRefusedRes>(ReportBuyHealRefusedRes.name, packet => this.setHealOutcome({kind: "refused", packet}));
+		client.registerPushedPacketHandler<ReportBuyHealNoAlterationRes>(ReportBuyHealNoAlterationRes.name, packet => this.setHealOutcome({kind: "noAlteration", packet}));
+		client.registerPushedPacketHandler<ReportBuyHealCannotHealOccupiedRes>(ReportBuyHealCannotHealOccupiedRes.name, packet => this.setHealOutcome({kind: "cannotHealOccupied", packet}));
 	}
 
 	public readonly subscribe = (listener: Listener): (() => void) => {
@@ -89,6 +107,8 @@ class ReportEventStore {
 	public readonly getSmallEventSnapshot = (): SmallEventOutcome | null => this.smallEventOutcome;
 
 	public readonly getTokenSnapshot = (): TokenOutcome | null => this.tokenOutcome;
+
+	public readonly getHealSnapshot = (): HealOutcome | null => this.healOutcome;
 
 	public readonly clear = (): void => {
 		if (this.outcome === null) {
@@ -122,6 +142,14 @@ class ReportEventStore {
 		this.notify();
 	};
 
+	public readonly clearHeal = (): void => {
+		if (this.healOutcome === null) {
+			return;
+		}
+		this.healOutcome = null;
+		this.notify();
+	};
+
 	private readonly setOutcome = (outcome: ReportBigEventResultRes): void => {
 		this.outcome = outcome;
 		this.notify();
@@ -139,6 +167,11 @@ class ReportEventStore {
 
 	private readonly setTokenOutcome = (outcome: TokenOutcome): void => {
 		this.tokenOutcome = outcome;
+		this.notify();
+	};
+
+	private readonly setHealOutcome = (outcome: HealOutcome): void => {
+		this.healOutcome = outcome;
 		this.notify();
 	};
 
@@ -165,4 +198,8 @@ export function useSmallEventOutcome(): SmallEventOutcome | null {
 
 export function useTokenOutcome(): TokenOutcome | null {
 	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getTokenSnapshot, reportEventStore.getTokenSnapshot);
+}
+
+export function useHealOutcome(): HealOutcome | null {
+	return useSyncExternalStore(reportEventStore.subscribe, reportEventStore.getHealSnapshot, reportEventStore.getHealSnapshot);
 }

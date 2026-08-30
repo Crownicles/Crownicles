@@ -71,6 +71,16 @@
       "title": "Tout se passe bien dans votre aventure",
       "subtitle": "Prochain arrêt prévu dans {{nextStop}}. Le trajet vers {{destination}} durera encore {{remaining}}."
     },
+    "alteration": {
+      "eyebrow": "Rapport · altération",
+      "title": "Altération d'état",
+      "description": "Cette altération vous affecte encore pendant {{time}}.",
+      "fields": {
+        "status": "État",
+        "timeRemaining": "Temps restant",
+        "price": "Prix du soin"
+      }
+    },
     "smallEvent": {
       "eyebrow": "Rapport · mini-événement",
       "resultTitle": "Résultat du mini-événement",
@@ -153,6 +163,32 @@
         "charityAlreadyUsed": "Le marchand vous a déjà aidé cette semaine."
       }
     },
+    "heal": {
+      "use": {
+        "eyebrow": "Rapport · soin",
+        "title": "Acheter un soin",
+        "description": "Retirez votre altération pour {{price}} pièces. Votre solde actuel est de {{money}} pièces.",
+        "confirm": "Payer {{price}} pièces",
+        "cancel": "Renoncer"
+      },
+      "fields": {
+        "cost": "Prix du soin",
+        "balance": "Votre argent",
+        "spent": "Argent dépensé"
+      },
+      "outcomes": {
+        "accepted": "Soin acheté",
+        "arrived": "L'altération a été soignée à votre arrivée.",
+        "nextStop": "L'altération a été soignée. Vous pouvez reprendre votre aventure.",
+        "refused": "Soin annulé",
+        "refusedDescription": "Vous avez conservé votre argent et votre altération.",
+        "noAlteration": "Aucune altération à soigner",
+        "noAlterationDescription": "L'altération a déjà pris fin.",
+        "cannotHealOccupied": "Cette altération ne peut pas être soignée ici",
+        "cannotHealOccupiedDescription": "Utilisez des jetons pour avancer malgré cette situation."
+      },
+      "continue": "Continuer"
+    },
     "fields": {
       "departure": "Départ",
       "arrival": "Arrivée",
@@ -166,6 +202,7 @@
     "now": "Maintenant",
     "quick": {
       "advance": "Avancer",
+      "heal": "Se soigner",
       "map": "Carte"
     },
     "onTheRoad": "Progression sur la route",

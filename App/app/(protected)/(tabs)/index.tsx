@@ -3,6 +3,7 @@ import {ActivityIndicator, StyleSheet, Text, View} from "react-native";
 import {useQueryClient} from "@tanstack/react-query";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
 import {ReportReq} from "ws-packets/src/fromClient/ReportReq";
+import {ReportBuyHealReq} from "ws-packets/src/fromClient/ReportBuyHealReq";
 import {ReportUseTokensReq} from "ws-packets/src/fromClient/ReportUseTokensReq";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
@@ -17,6 +18,12 @@ import {
 	ReportUseTokensAcceptedRes,
 	ReportUseTokensRefusedRes
 } from "ws-packets/src/fromServer/report/ReportTokenRes";
+import {
+	ReportBuyHealAcceptedRes,
+	ReportBuyHealCannotHealOccupiedRes,
+	ReportBuyHealNoAlterationRes,
+	ReportBuyHealRefusedRes
+} from "ws-packets/src/fromServer/report/ReportHealRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
@@ -26,6 +33,7 @@ import {useCollectors} from "@/src/collectors/CollectorsContext";
 import {
 	AdventureCollector,
 	BigEventOutcome as BigEventOutcomeScreen,
+	HealOutcome as HealOutcomeScreen,
 	LotteryOutcome as LotteryOutcomeScreen,
 	SmallEventOutcome as SmallEventOutcomeScreen,
 	TokenOutcome as TokenOutcomeScreen
@@ -35,9 +43,11 @@ import type {
 	SmallEventOutcome as SmallEventOutcomeData,
 	TokenOutcome as TokenOutcomeData
 } from "@/src/collectors/ReportEventStore";
-import {isAdventureCollector, isBigEventCollector} from "@/src/collectors/CollectorRouting";
 import {
-	reportEventStore, useBigEventOutcome, useLotteryOutcome, useSmallEventOutcome, useTokenOutcome
+	isAdventureScreenCollector, isBigEventCollector, isBuyHealCollector, isTokenUseCollector
+} from "@/src/collectors/CollectorRouting";
+import {
+	reportEventStore, useBigEventOutcome, useHealOutcome, useLotteryOutcome, useSmallEventOutcome, useTokenOutcome
 } from "@/src/collectors/ReportEventStore";
 import {
   EmptyState, Hero, KeyValue, Panel, QuickAction, QuickActions, Screen
@@ -67,6 +77,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: Theme.spacing.xxl,
     backgroundColor: Theme.colors.wash
+  },
+  adventureRoot: {
+    flex: 1
   },
   message: {
     color: Theme.colors.muted,
@@ -140,6 +153,15 @@ function requestTokenAdvance(): Promise<GameAnswer<ReactionCollectorCreation>> {
 		ReportTokenMerchantCannotAffordRes,
 		ReportTokenMerchantCharityRes,
 		ReportTokenMerchantCharityAlreadyUsedRes
+	]);
+}
+
+function requestBuyHeal(): Promise<GameAnswer<ReactionCollectorCreation>> {
+	return GameClient.request(makeFromClientPacket(ReportBuyHealReq, {}), ReactionCollectorCreation, [
+		ReportBuyHealAcceptedRes,
+		ReportBuyHealRefusedRes,
+		ReportBuyHealNoAlterationRes,
+		ReportBuyHealCannotHealOccupiedRes
 	]);
 }
 
@@ -280,9 +302,11 @@ type CollectorOutcomeViewProps = {
 	lotteryOutcome: LotteryOutcomeData | null;
 	smallEventOutcome: SmallEventOutcomeData | null;
 	tokenOutcome: TokenOutcomeData | null;
+	healOutcome: ReturnType<typeof useHealOutcome>;
 	reactToCollector: (collectorId: string, reactionIndex: number) => void;
 	isAnswerPending: (collectorId: string) => boolean;
 	continueAfterTokenOutcome: () => void;
+	continueAfterHealOutcome: () => void;
 };
 
 function CollectorOutcomeView({
@@ -292,9 +316,11 @@ function CollectorOutcomeView({
 	lotteryOutcome,
 	smallEventOutcome,
 	tokenOutcome,
+	healOutcome,
 	reactToCollector,
 	isAnswerPending,
-	continueAfterTokenOutcome
+	continueAfterTokenOutcome,
+	continueAfterHealOutcome
 }: CollectorOutcomeViewProps): ReactNode {
 	if (bigEventCollector) {
 		return (
@@ -313,6 +339,9 @@ function CollectorOutcomeView({
 	}
 	if (tokenOutcome) {
 		return <TokenOutcomeScreen outcome={tokenOutcome} onContinue={continueAfterTokenOutcome} />;
+	}
+	if (healOutcome) {
+		return <HealOutcomeScreen outcome={healOutcome} onContinue={continueAfterHealOutcome} />;
 	}
 	if (adventureCollector) {
 		return (
@@ -383,37 +412,102 @@ function RoutePanel({packet, metrics}: {
   );
 }
 
-function TravelQuickActions({packet, onAdvance, advancePending}: {
+function TravelQuickActions({packet, onAdvance, onHeal, advancePending, healPending}: {
 	packet: ReportTravelSummaryRes;
 	onAdvance: () => void;
+	onHeal: () => void;
 	advancePending: boolean;
+	healPending: boolean;
 }): ReactNode {
 	return (
 		<QuickActions>
+			{packet.heal ? (
+				<QuickAction
+					icon={AppIcons.getIcon("shopItems.healAlteration")}
+					disabled={!packet.heal.canAfford || healPending}
+					onPress={packet.heal.canAfford ? onHeal : undefined}
+				>
+					{i18n.t("app:adventure.quick.heal")}
+				</QuickAction>
+			) : null}
 			{packet.tokens ? (
 				<QuickAction icon={AppIcons.getIcon("unitValues.token")} disabled={advancePending} onPress={onAdvance}>
 					{i18n.t("app:adventure.quick.advance")}
 				</QuickAction>
 			) : null}
-			<QuickAction icon={AppIcons.getIcon("expedition.map")}>
-				{i18n.t("app:adventure.quick.map")}
-      </QuickAction>
-    </QuickActions>
-  );
+			{!packet.isInCity ? (
+				<QuickAction icon={AppIcons.getIcon("expedition.map")}>
+					{i18n.t("app:adventure.quick.map")}
+				</QuickAction>
+			) : null}
+		</QuickActions>
+	);
 }
 
-function AdventureSheet({packet, currentTime, onAdvance, advancePending}: {
+function isAlterationReport(packet: ReportTravelSummaryRes): boolean {
+	return packet.effect !== undefined && packet.effect !== "none";
+}
+
+function alterationTitle(packet: ReportTravelSummaryRes): string {
+	const icon = packet.effect ? AppIcons.getIconOrNull(`effects.${packet.effect}`) : null;
+	const title = packet.effect ? i18n.t(`error:effects.${packet.effect}.self`) : i18n.t("app:adventure.alteration.title");
+	return icon ? `${icon} ${title}` : title;
+}
+
+function alterationRemainingMilliseconds(packet: ReportTravelSummaryRes, currentTime: number, fallback: number): number {
+	if (packet.effectEndTime === undefined) {
+		return fallback;
+	}
+	return Math.max(0, packet.effectEndTime - currentTime);
+}
+
+function AlterationPanel({packet, metrics, currentTime}: {
+	packet: ReportTravelSummaryRes;
+	metrics: TravelMetrics;
+	currentTime: number;
+}): ReactNode {
+	const remainingMilliseconds = alterationRemainingMilliseconds(packet, currentTime, metrics.remainingMilliseconds);
+	return (
+		<Panel>
+			{packet.effect ? (
+				<KeyValue label={i18n.t("app:adventure.alteration.fields.status")} value={alterationTitle(packet)} />
+			) : null}
+			<KeyValue
+				label={i18n.t("app:adventure.alteration.fields.timeRemaining")}
+				value={formatDuration(remainingMilliseconds)}
+			/>
+			{packet.heal ? (
+				<KeyValue
+					label={i18n.t("app:adventure.alteration.fields.price")}
+					value={`${packet.heal.price.toLocaleString("fr-FR")} 💰`}
+				/>
+			) : null}
+		</Panel>
+	);
+}
+
+function AdventureSheet({packet, currentTime, onAdvance, onHeal, advancePending, healPending}: {
 	packet: ReportTravelSummaryRes;
 	currentTime: number;
 	onAdvance: () => void;
+	onHeal: () => void;
 	advancePending: boolean;
+	healPending: boolean;
 }): ReactNode {
   const metrics = getTravelMetrics(packet, currentTime);
   const destination = mapName(packet.endMap);
-  const title = packet.isInCity
+  const altered = isAlterationReport(packet);
+  const alterationRemaining = altered
+	? alterationRemainingMilliseconds(packet, currentTime, metrics.remainingMilliseconds)
+	: metrics.remainingMilliseconds;
+  const title = altered
+    ? alterationTitle(packet)
+    : packet.isInCity
     ? i18n.t("app:adventure.cityTitle")
     : i18n.t("app:adventure.travel.title");
-  const subtitle = packet.isInCity
+  const subtitle = altered
+    ? i18n.t("app:adventure.alteration.description", {time: formatDuration(alterationRemaining)})
+    : packet.isInCity
     ? i18n.t("app:adventure.citySubtitle", {location: destination})
     : i18n.t("app:adventure.travel.subtitle", {
       nextStop: nextStopDuration(packet, currentTime),
@@ -424,13 +518,21 @@ function AdventureSheet({packet, currentTime, onAdvance, advancePending}: {
   return (
     <Screen>
       <Hero
-        eyebrow={packet.isInCity ? i18n.t("app:adventure.eyebrow") : i18n.t("app:adventure.travel.eyebrow")}
+        eyebrow={altered ? i18n.t("app:adventure.alteration.eyebrow") : packet.isInCity ? i18n.t("app:adventure.eyebrow") : i18n.t("app:adventure.travel.eyebrow")}
         title={title}
         subtitle={subtitle}
       />
 
-      <RoutePanel packet={packet} metrics={metrics} />
-		{!packet.isInCity ? <TravelQuickActions packet={packet} onAdvance={onAdvance} advancePending={advancePending} /> : null}
+      {altered && packet.isInCity ? <AlterationPanel packet={packet} metrics={metrics} currentTime={currentTime} /> : <RoutePanel packet={packet} metrics={metrics} />}
+		{(!packet.isInCity || altered) ? (
+			<TravelQuickActions
+				packet={packet}
+				onAdvance={onAdvance}
+				onHeal={onHeal}
+				advancePending={advancePending}
+				healPending={healPending}
+			/>
+		) : null}
     </Screen>
   );
 }
@@ -440,15 +542,19 @@ export default function Index(): ReactNode {
 	useReportRefreshAtNextStop(reportState.status === "ready" ? reportState.data : null);
 	const queryClient = useQueryClient();
 	const [advancePending, setAdvancePending] = useState(false);
+	const [healPending, setHealPending] = useState(false);
 	const {
 		open: openCollectors, react: reactToCollector, isAnswerPending
 	} = useCollectors();
 	const bigEventCollector = openCollectors.find(isBigEventCollector);
-	const adventureCollector = openCollectors.find(isAdventureCollector);
+	const tokenUseCollector = openCollectors.find(isTokenUseCollector);
+	const buyHealCollector = openCollectors.find(isBuyHealCollector);
+	const adventureCollector = openCollectors.find(isAdventureScreenCollector);
 	const bigEventOutcome = useBigEventOutcome();
 	const lotteryOutcome = useLotteryOutcome();
 	const smallEventOutcome = useSmallEventOutcome();
 	const tokenOutcome = useTokenOutcome();
+	const healOutcome = useHealOutcome();
 	const currentTime = useCurrentTime();
 
 	const advanceWithTokens = (): void => {
@@ -457,6 +563,14 @@ export default function Index(): ReactNode {
 		}
 		setAdvancePending(true);
 		requestTokenAdvance().finally(() => setAdvancePending(false));
+	};
+
+	const buyHeal = (): void => {
+		if (healPending) {
+			return;
+		}
+		setHealPending(true);
+		requestBuyHeal().finally(() => setHealPending(false));
 	};
 
 	const continueAfterTokenOutcome = (): void => {
@@ -468,16 +582,27 @@ export default function Index(): ReactNode {
 		}
 	};
 
+	const continueAfterHealOutcome = (): void => {
+		reportEventStore.clearHeal();
+		for (const entity of [GAME_ENTITIES.PROFILE, GAME_ENTITIES.REPORT]) {
+			queryClient.invalidateQueries({queryKey: gameKey(entity)}).catch(error => {
+				console.error(`Failed to refresh ${entity} after heal action:`, error);
+			});
+		}
+	};
+
   const collectorOutcome = CollectorOutcomeView({
     bigEventCollector,
     adventureCollector,
     bigEventOutcome,
-    lotteryOutcome,
-    smallEventOutcome,
-    tokenOutcome,
-    reactToCollector,
-    isAnswerPending,
-    continueAfterTokenOutcome
+		lotteryOutcome,
+		smallEventOutcome,
+		tokenOutcome,
+		healOutcome,
+		reactToCollector,
+		isAnswerPending,
+		continueAfterTokenOutcome,
+		continueAfterHealOutcome
   });
   if (collectorOutcome) {
 		return collectorOutcome;
@@ -494,5 +619,30 @@ export default function Index(): ReactNode {
 		return null;
 	}
 
-	return <AdventureSheet packet={reportState.data} currentTime={currentTime} onAdvance={advanceWithTokens} advancePending={advancePending} />;
+		return (
+		<View style={styles.adventureRoot}>
+			<AdventureSheet
+				packet={reportState.data}
+				currentTime={currentTime}
+				onAdvance={advanceWithTokens}
+				onHeal={buyHeal}
+				advancePending={advancePending}
+				healPending={healPending}
+			/>
+			{tokenUseCollector ? (
+				<AdventureCollector
+					collector={tokenUseCollector}
+					onChoose={(reactionIndex): void => reactToCollector(tokenUseCollector.id, reactionIndex)}
+					submitting={isAnswerPending(tokenUseCollector.id)}
+				/>
+			) : null}
+			{buyHealCollector ? (
+				<AdventureCollector
+					collector={buyHealCollector}
+					onChoose={(reactionIndex): void => reactToCollector(buyHealCollector.id, reactionIndex)}
+					submitting={isAnswerPending(buyHealCollector.id)}
+				/>
+			) : null}
+		</View>
+	);
 }

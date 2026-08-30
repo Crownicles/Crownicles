@@ -6,7 +6,7 @@ import {
 } from "ws-packets/src/fromServer/collectors";
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
-	AdventureCollector, BigEventOutcome, LotteryOutcome, SmallEventOutcome, TokenOutcome
+	AdventureCollector, BigEventOutcome, HealOutcome, LotteryOutcome, SmallEventOutcome, TokenOutcome
 } from "@/src/collectors/AdventureCollector";
 
 jest.mock("@/src/AppIcons", () => ({
@@ -107,6 +107,27 @@ describe("AdventureCollector", () => {
 		expect(onChoose).toHaveBeenCalledWith(0);
 	});
 
+	it("renders the alteration cure confirmation with the server price", async () => {
+		const onChoose = jest.fn();
+		const collector: ReactionCollectorCreation = {
+			id: "buy-heal",
+			endTime: Date.now() + 60_000,
+			data: {type: REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data: {healPrice: 410, playerMoney: 1_000}},
+			reactions: [
+				{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}},
+				{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
+			]
+		};
+
+		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
+
+		expect(screen.getByText("app:adventure.heal.use.title")).toBeTruthy();
+		expect(screen.getByText("app:adventure.heal.fields.cost")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:adventure.heal.use.confirm"));
+
+		expect(onChoose).toHaveBeenCalledWith(0);
+	});
+
 	it("uses the merchant's server-provided bundles and limits", async () => {
 		const onChoose = jest.fn();
 		const collector: ReactionCollectorCreation = {
@@ -139,6 +160,17 @@ describe("AdventureCollector", () => {
 		expect(screen.getAllByText("app:adventure.tokens.outcomes.used")).toHaveLength(1);
 		expect(screen.getByText("app:adventure.tokens.fields.spent")).toBeTruthy();
 		await fireEvent.press(screen.getByText("app:adventure.tokens.continue"));
+
+		expect(onContinue).toHaveBeenCalledTimes(1);
+	});
+
+	it("shows the cure result before returning to the journey", async () => {
+		const onContinue = jest.fn();
+		await render(<HealOutcome outcome={{kind: "accepted", packet: {healPrice: 410, isArrived: false}}} onContinue={onContinue} />);
+
+		expect(screen.getByText("app:adventure.heal.outcomes.accepted")).toBeTruthy();
+		expect(screen.getByText("app:adventure.heal.fields.spent")).toBeTruthy();
+		await fireEvent.press(screen.getByText("app:adventure.heal.continue"));
 
 		expect(onContinue).toHaveBeenCalledTimes(1);
 	});

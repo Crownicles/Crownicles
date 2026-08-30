@@ -1,5 +1,6 @@
 import {Children, Fragment, ReactNode, isValidElement} from "react";
 import {
+	Modal,
 	Pressable,
 	ScrollView,
 	StyleSheet,
@@ -307,13 +308,57 @@ const noticeStyles = StyleSheet.create({
 	}
 });
 
+const confirmationStyles = StyleSheet.create({
+	overlay: {
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
+		paddingHorizontal: Theme.spacing.xl,
+		backgroundColor: Theme.colors.overlay
+	},
+	card: {
+		width: "100%",
+		maxWidth: 420,
+		padding: Theme.spacing.xl,
+		borderRadius: Theme.radius,
+		backgroundColor: Theme.colors.paper,
+		elevation: 4
+	},
+	icon: {
+		alignItems: "center",
+		marginBottom: Theme.spacing.md
+	},
+	titleContainer: {
+		justifyContent: "center"
+	},
+	title: {
+		color: Theme.colors.ink,
+		fontFamily: Theme.fonts.bold,
+		fontSize: Theme.fontSize.title,
+		lineHeight: Theme.lineHeight.hero,
+		textAlign: "center"
+	},
+	message: {
+		marginTop: Theme.spacing.sm,
+		color: Theme.colors.muted,
+		fontFamily: Theme.fonts.regular,
+		fontSize: Theme.fontSize.body,
+		lineHeight: Theme.lineHeight.body,
+		textAlign: "center"
+	},
+	content: {
+		marginTop: Theme.spacing.lg
+	}
+});
+
 const styles = {
 	...screenStyles,
 	...rowStyles,
 	...fieldStyles,
 	...actionStyles,
 	...quickActionStyles,
-	...noticeStyles
+	...noticeStyles,
+	...confirmationStyles
 };
 
 type ButtonVariant = "secondary" | "primary" | "danger";
@@ -578,6 +623,35 @@ export function Notice({ icon, title, text, action }: {
 				</Pressable>
 			) : null}
 		</View>
+	);
+}
+
+/** A compact confirmation layer for quick, binary decisions made from an existing screen. */
+export function Confirmation({icon, title, message, children, onRequestClose}: {
+	icon?: ReactNode;
+	title: string;
+	message?: string;
+	children: ReactNode;
+	onRequestClose?: () => void;
+}): ReactNode {
+	return (
+		<Modal visible transparent animationType="fade" onRequestClose={onRequestClose}>
+			<View style={styles.overlay}>
+				<View style={styles.card}>
+					{icon ? <View style={styles.icon}>{icon}</View> : null}
+					<TwemojiText
+						containerStyle={styles.titleContainer}
+						textStyle={styles.title}
+						emojiSize={Theme.fontSize.title}
+						iosEmojiVerticalOffset={Theme.emoji.iosHeroOffset}
+					>
+						{title}
+					</TwemojiText>
+					{message ? <TwemojiText textStyle={styles.message} emojiSize={Theme.fontSize.body}>{message}</TwemojiText> : null}
+					<View style={styles.content}>{children}</View>
+				</View>
+			</View>
+		</Modal>
 	);
 }
 

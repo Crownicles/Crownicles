@@ -8,6 +8,7 @@ const ADVENTURE_COLLECTOR_TYPES = new Set<string>([
 	BIG_EVENT_DATA_KINDS.COLLECTOR,
 	REPORT_COLLECTOR_DATA_KINDS.DESTINATION,
 	REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS,
+	REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL,
 	REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT,
 	ITEM_DATA_KINDS.CHOICE,
 	ITEM_DATA_KINDS.ACCEPT,
@@ -33,4 +34,16 @@ export function isAdventureCollector(collector: ReactionCollectorCreation): bool
 
 export function isBigEventCollector(collector: ReactionCollectorCreation): boolean {
 	return collector.data.type === BIG_EVENT_DATA_KINDS.COLLECTOR;
+}
+
+export function isTokenUseCollector(collector: ReactionCollectorCreation): boolean {
+	return collector.data.type === REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS;
+}
+
+export function isBuyHealCollector(collector: ReactionCollectorCreation): boolean {
+	return collector.data.type === REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL;
+}
+
+export function isAdventureScreenCollector(collector: ReactionCollectorCreation): boolean {
+	return isAdventureCollector(collector) && !isTokenUseCollector(collector) && !isBuyHealCollector(collector);
 }

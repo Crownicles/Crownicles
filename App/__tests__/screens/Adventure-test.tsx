@@ -1,6 +1,7 @@
 import {render, screen} from "@testing-library/react-native";
 import {ProfileRes} from "ws-packets/src/fromServer/profile/ProfileRes";
 import {ReportTravelSummaryRes} from "ws-packets/src/fromServer/report/ReportTravelSummaryRes";
+import {GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import Adventure, {reportRefreshDelay} from "@/app/(protected)/(tabs)/index";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 import {useGameQuery} from "@/src/store/useGameQuery";
@@ -80,6 +81,92 @@ describe("Adventure screen", () => {
 		expect(screen.getByText("app:adventure.quick.advance")).toBeTruthy();
 		expect(screen.getByText("app:adventure.quick.map")).toBeTruthy();
 		expect(screen.queryByText("app:adventure.sections.status")).toBeNull();
+	});
+
+	it("keeps the travel report visible behind the token confirmation", async () => {
+		mockedUseGameQuery.mockReturnValue({status: "ready", data: report()});
+		mockedUseCollectors.mockReturnValue({
+			open: [{
+				id: "use-tokens",
+				endTime: Date.now() + 60_000,
+				data: {type: REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS, data: {cost: 2, playerTokens: 5}},
+				reactions: [
+					{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}},
+					{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
+				]
+			}],
+			track: jest.fn(),
+			react: jest.fn(),
+			isAnswerPending: jest.fn(() => false)
+		});
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:adventure.travel.title")).toBeTruthy();
+		expect(screen.getByText("app:adventure.tokens.use.title")).toBeTruthy();
+	});
+
+	it("shows the cure action for an alteration while staying in a city", async () => {
+		const altered = report();
+		altered.effect = "sick";
+		altered.effectDuration = 30 * 60_000;
+		altered.effectEndTime = Date.now() + altered.effectDuration;
+		altered.heal = {price: 410, canAfford: true};
+		altered.tokens = undefined;
+		altered.isInCity = true;
+		mockedUseGameQuery.mockReturnValue({status: "ready", data: altered});
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:adventure.alteration.eyebrow")).toBeTruthy();
+		expect(screen.getByText("app:adventure.quick.heal")).toBeTruthy();
+		expect(screen.queryByText("app:adventure.quick.advance")).toBeNull();
+		expect(screen.getByText("app:adventure.alteration.fields.timeRemaining")).toBeTruthy();
+	});
+
+	it("keeps the alteration report visible behind the cure confirmation", async () => {
+		const altered = report();
+		altered.effect = "sick";
+		altered.effectDuration = 30 * 60_000;
+		altered.effectEndTime = Date.now() + altered.effectDuration;
+		altered.heal = {price: 410, canAfford: true};
+		altered.tokens = undefined;
+		altered.isInCity = true;
+		mockedUseGameQuery.mockReturnValue({status: "ready", data: altered});
+		mockedUseCollectors.mockReturnValue({
+			open: [{
+				id: "buy-heal",
+				endTime: Date.now() + 60_000,
+				data: {type: REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data: {healPrice: 410, playerMoney: 1_000}},
+				reactions: [
+					{type: GENERIC_REACTION_KINDS.ACCEPT, data: {}},
+					{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
+				]
+			}],
+			track: jest.fn(),
+			react: jest.fn(),
+			isAnswerPending: jest.fn(() => false)
+		});
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:adventure.alteration.eyebrow")).toBeTruthy();
+		expect(screen.getByText("app:adventure.heal.use.title")).toBeTruthy();
+	});
+
+	it("keeps token advance as the remedy for an occupied alteration", async () => {
+		const occupied = report();
+		occupied.effect = "occupied";
+		occupied.effectDuration = 30 * 60_000;
+		occupied.effectEndTime = Date.now() + occupied.effectDuration;
+		occupied.heal = undefined;
+		occupied.isInCity = true;
+		mockedUseGameQuery.mockReturnValue({status: "ready", data: occupied});
+
+		await render(<Adventure />);
+
+		expect(screen.getByText("app:adventure.quick.advance")).toBeTruthy();
+		expect(screen.queryByText("app:adventure.quick.heal")).toBeNull();
 	});
 
 	it("renders a readable loading state", async () => {

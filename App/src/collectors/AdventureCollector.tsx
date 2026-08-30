@@ -9,10 +9,10 @@ import {AppIcons} from "@/src/AppIcons";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {collectorDescription, collectorTitle} from "@/src/collectors/CollectorLabels";
 import type {
-	LotteryOutcome as LotteryOutcomeData, SmallEventOutcome as SmallEventOutcomeData, TokenOutcome as TokenOutcomeData
+	HealOutcome as HealOutcomeData, LotteryOutcome as LotteryOutcomeData, SmallEventOutcome as SmallEventOutcomeData, TokenOutcome as TokenOutcomeData
 } from "@/src/collectors/ReportEventStore";
 import {
-	Button, ButtonRow, Hero, KeyValue, Notice, Panel, Screen, StatBar
+	Button, ButtonRow, Confirmation, Hero, KeyValue, Notice, Panel, Screen, StatBar
 } from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
@@ -112,6 +112,7 @@ function lotteryOutcomeText(outcome: LotteryOutcomeData): string {
 }
 
 type TokenMerchantData = Extract<ReactionCollectorData, {type: typeof REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT}>;
+type BuyHealData = Extract<ReactionCollectorData, {type: typeof REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL}>;
 
 function tokenRatio(data: TokenMerchantData): number {
 	return data.data.maxTokens === 0 ? 0 : data.data.playerTokens / data.data.maxTokens;
@@ -217,12 +218,12 @@ function TokenUseCollector({collector, onChoose, submitting}: {
 	const canRefuse = refuseIndex >= 0 && !submitting;
 
 	return (
-		<Screen>
-			<Hero
-				eyebrow={i18n.t("app:adventure.tokens.use.eyebrow")}
-				title={i18n.t("app:adventure.tokens.use.title")}
-				subtitle={i18n.t("app:adventure.tokens.use.description")}
-			/>
+		<Confirmation
+			icon={<TwemojiIcon emoji={AppIcons.getIconOrNull("unitValues.token") ?? "🪙"} size={Theme.dimensions.headerIcon} />}
+			title={i18n.t("app:adventure.tokens.use.title")}
+			message={i18n.t("app:adventure.tokens.use.description")}
+			onRequestClose={canRefuse ? (): void => onChoose(refuseIndex) : undefined}
+		>
 			<Panel>
 				<KeyValue label={i18n.t("app:adventure.tokens.fields.cost")} value={`${collector.data.data.cost} 🪙`} />
 				<KeyValue label={i18n.t("app:adventure.tokens.fields.balance")} value={`${collector.data.data.playerTokens} 🪙`} />
@@ -235,7 +236,47 @@ function TokenUseCollector({collector, onChoose, submitting}: {
 					{i18n.t("app:adventure.tokens.use.cancel")}
 				</Button>
 			</ButtonRow>
-		</Screen>
+		</Confirmation>
+	);
+}
+
+function BuyHealCollector({collector, onChoose, submitting}: {
+	collector: ReactionCollectorCreation;
+	onChoose: (reactionIndex: number) => void;
+	submitting: boolean;
+}): ReactNode {
+	if (collector.data.type !== REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL) {
+		return null;
+	}
+	const data = collector.data as BuyHealData;
+	const acceptIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.ACCEPT);
+	const refuseIndex = reactionIndex(collector, GENERIC_REACTION_KINDS.REFUSE);
+	const canConfirm = acceptIndex >= 0 && !submitting;
+	const canRefuse = refuseIndex >= 0 && !submitting;
+
+	return (
+		<Confirmation
+			icon={<TwemojiIcon emoji={AppIcons.getIconOrNull("shopItems.healAlteration") ?? "🏥"} size={Theme.dimensions.headerIcon} />}
+			title={i18n.t("app:adventure.heal.use.title")}
+			message={i18n.t("app:adventure.heal.use.description", {
+				price: data.data.healPrice,
+				money: data.data.playerMoney
+			})}
+			onRequestClose={canRefuse ? (): void => onChoose(refuseIndex) : undefined}
+		>
+			<Panel>
+				<KeyValue label={i18n.t("app:adventure.heal.fields.cost")} value={`${tokenCount(data.data.healPrice)} 💰`} />
+				<KeyValue label={i18n.t("app:adventure.heal.fields.balance")} value={`${tokenCount(data.data.playerMoney)} 💰`} />
+			</Panel>
+			<ButtonRow>
+				<Button variant="primary" disabled={!canConfirm} onPress={canConfirm ? (): void => onChoose(acceptIndex) : undefined}>
+					{i18n.t("app:adventure.heal.use.confirm", {price: data.data.healPrice})}
+				</Button>
+				<Button disabled={!canRefuse} onPress={canRefuse ? (): void => onChoose(refuseIndex) : undefined}>
+					{i18n.t("app:adventure.heal.use.cancel")}
+				</Button>
+			</ButtonRow>
+		</Confirmation>
 	);
 }
 
@@ -274,6 +315,9 @@ export function AdventureCollector({collector, onChoose, submitting}: {
 }): ReactNode {
 	if (collector.data.type === REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS) {
 		return <TokenUseCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
+	}
+	if (collector.data.type === REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL) {
+		return <BuyHealCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
 	}
 	if (collector.data.type === REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT) {
 		return <TokenMerchantCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
@@ -356,6 +400,56 @@ export function TokenOutcome({outcome, onContinue}: {
 				<Panel>{details.fields.map(field => <KeyValue key={field.label} label={field.label} value={field.value} />)}</Panel>
 			) : null}
 			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.tokens.continue")}</Button></ButtonRow>
+		</Screen>
+	);
+}
+
+function healOutcomeDetails(outcome: HealOutcomeData): {title: string; description: string} {
+	switch (outcome.kind) {
+		case "accepted":
+			return {
+				title: i18n.t("app:adventure.heal.outcomes.accepted"),
+				description: i18n.t(outcome.packet.isArrived
+					? "app:adventure.heal.outcomes.arrived"
+					: "app:adventure.heal.outcomes.nextStop", {price: outcome.packet.healPrice})
+			};
+		case "refused":
+			return {
+				title: i18n.t("app:adventure.heal.outcomes.refused"),
+				description: i18n.t("app:adventure.heal.outcomes.refusedDescription")
+			};
+		case "noAlteration":
+			return {
+				title: i18n.t("app:adventure.heal.outcomes.noAlteration"),
+				description: i18n.t("app:adventure.heal.outcomes.noAlterationDescription")
+			};
+		case "cannotHealOccupied":
+			return {
+				title: i18n.t("app:adventure.heal.outcomes.cannotHealOccupied"),
+				description: i18n.t("app:adventure.heal.outcomes.cannotHealOccupiedDescription")
+			};
+	}
+}
+
+/** Shows the result of buying an alteration cure before refreshing the adventure report. */
+export function HealOutcome({outcome, onContinue}: {
+	outcome: HealOutcomeData;
+	onContinue: () => void;
+}): ReactNode {
+	const details = healOutcomeDetails(outcome);
+	return (
+		<Screen>
+			<Hero
+				eyebrow={i18n.t("app:adventure.heal.use.eyebrow")}
+				title={details.title}
+				subtitle={details.description}
+			/>
+			{outcome.kind === "accepted" ? (
+				<Panel>
+					<KeyValue label={i18n.t("app:adventure.heal.fields.spent")} value={`-${tokenCount(outcome.packet.healPrice)} 💰`} />
+				</Panel>
+			) : null}
+			<ButtonRow><Button variant="primary" onPress={onContinue}>{i18n.t("app:adventure.heal.continue")}</Button></ButtonRow>
 		</Screen>
 	);
 }

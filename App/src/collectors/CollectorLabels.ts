@@ -199,6 +199,7 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 	[ITEM_DATA_KINDS.ACCEPT]: () => smallEventTitle("app:collector.titles.itemAccept", "collectors.warning"),
 	[REPORT_COLLECTOR_DATA_KINDS.DESTINATION]: () => i18n.t("app:collector.titles.destination"),
 	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: () => i18n.t("app:adventure.tokens.use.title"),
+	[REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL]: () => i18n.t("app:adventure.heal.use.title"),
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.title"),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.titles.unknown")
 };
@@ -234,6 +235,10 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 	})),
 	[REPORT_COLLECTOR_DATA_KINDS.DESTINATION]: () => i18n.t("app:collector.descriptions.destination"),
 	[REPORT_COLLECTOR_DATA_KINDS.USE_TOKENS]: () => i18n.t("app:adventure.tokens.use.description"),
+	[REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL]: makeDataHandler(REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL, data => i18n.t("app:adventure.heal.use.description", {
+		price: data.data.healPrice,
+		money: data.data.playerMoney
+	})),
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.description"),
 	[UNKNOWN_COLLECTOR_KIND]: () => undefined
 };
