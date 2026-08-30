@@ -227,31 +227,65 @@
     "moodScale": "Le moral progresse en nourrissant et en caressant le familier"
   },
   "profile": {
+    "eyebrow": "Profil",
+    "subtitle": "{{className}} · niveau {{level, number}} · {{location}}",
     "level": "Niveau {{level}}",
     "titles": {
-      "health": "Santé",
-      "experience": "Expérience",
-      "currencies": "Monnaies",
+      "information": "Informations",
       "scoreAndRank": "Score et Rang",
-      "statistics": "Statistiques"
+      "statistics": "Statistiques",
+      "missions": "Missions",
+      "gloryAndLeague": "Gloire et ligue",
+      "status": "Temps restant",
+      "cooking": "Cuisine",
+      "guild": "Guilde",
+      "destination": "Destination",
+      "pet": "Familier",
+      "inventory": "Inventaire"
     },
-    "tooltips": {
+    "fields": {
+      "health": "Vie",
+      "experience": "Expérience",
       "money": "Argent",
-      "gems": "Gemmes.\nPeuvent être gagnées en faisant des missions.",
-      "score": "Score.\nVotre performance dans le jeu.",
-      "rank": "Rang.\nVotre position par rapport aux autres joueurs.",
-      "energy": "Énergie.\nUtilisée dans les combats.\nSe recharge avec le temps.",
-      "breath": "Souffle.\nUtilisé pour attaquer dans les combats.",
-      "breathRegen": "Régénération de Souffle.\nNombre de points de souffle récupérés par tour de combat.",
-      "attack": "Attaque.\nUtilisée dans les combats et les événements.",
-      "defense": "Défense.\nUtilisée dans les combats et les événements.",
-      "speed": "Vitesse.\nUtilisée dans les combats et les événements."
+      "tokens": "Jetons",
+      "energy": "Énergie",
+      "attack": "Attaque",
+      "defense": "Défense",
+      "speed": "Vitesse",
+      "breath": "Souffle",
+      "breathRegen": "Récupération de souffle",
+      "gems": "Gemmes",
+      "campaign": "Campagne",
+      "rank": "Classement",
+      "score": "Score",
+      "gloryRank": "Classement de gloire",
+      "glory": "Points de gloire",
+      "league": "Ligue",
+      "effect": "État",
+      "cooking": "Grade",
+      "guild": "Guilde",
+      "location": "Position",
+      "pet": "Familier"
+    },
+    "formats": {
+      "number": "{{value, number}}",
+      "progress": "{{value, number}} / {{max, number}}",
+      "percentage": "{{value, number}} %",
+      "rank": "{{rank, number}} / {{players, number}}",
+      "cooking": "Niveau {{level, number}} · {{grade}}"
+    },
+    "values": {
+      "none": "Aucun",
+      "unknown": "Classe inconnue",
+      "unknownLocation": "Lieu inconnu",
+      "unranked": "Non classé"
     },
     "inventory": {
       "equippedItems": "Objets équipés",
       "backupItems": "Reserve d'objets",
       "seeBackupItems": "Voir la réserve d'objets",
       "seeEquippedItems": "Voir les objets équipés",
+      "empty": "Aucun objet à afficher",
       "emptySlot": "Emplacement vide",
       "actions": {
         "drink": "Boire",

@@ -1,15 +1,6 @@
 import {useNavigation} from "expo-router";
-import {
-	ActivityIndicator,
-	ScrollView,
-	Text,
-	TouchableOpacity,
-	View,
-	type StyleProp,
-	type TextStyle,
-	type ViewStyle
-} from "react-native";
-import {ReactElement, useEffect, useState} from "react";
+import {ReactNode, useEffect} from "react";
+import {ActivityIndicator, StyleSheet, View} from "react-native";
 import {GameClient} from "@/src/networking/GameClient";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
 import {GAME_ENTITIES} from "@/src/store/GameEntities";
@@ -19,439 +10,330 @@ import {PlayerNotFound} from "ws-packets/src/fromServer/common/PlayerNotFound";
 import {InventoryReq} from "ws-packets/src/fromClient/InventoryReq";
 import {InventoryRes} from "ws-packets/src/fromServer/inventory/InventoryRes";
 import {Inventory, InventoryData} from "@/src/components/Inventory";
-import {i18n} from "@/src/translations/i18n";
-import {styles} from "@/src/design/ProfileStyles";
+import {AppIcons} from "@/src/AppIcons";
+import {
+	EmptyState,
+	Hero,
+	KeyValue,
+	Panel,
+	Screen,
+	SectionHeader,
+	StatBar
+} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
+import {i18n} from "@/src/translations/i18n";
 import {usePlayerProfile} from "@/src/store/usePlayerProfile";
 
-interface TooltipState {
-	visible: boolean;
-	text: string;
-	x: number;
-	y: number;
-}
+const MILLISECONDS_PER_MINUTE = 60_000;
+const MINUTES_PER_HOUR = 60;
+const MINIMUM_RATIO = 0;
+const MAXIMUM_RATIO = 1;
+const PET_RARITY_MIN = 0;
+const PET_RARITY_MAX = 8;
 
-type StatTooltipHandler = (statName: string, x: number, y: number, width: number) => void;
-type CurrencyTooltipHandler = (currencyType: "money" | "gems", x: number, y: number, width: number) => void;
-type ScoreRankTooltipHandler = (type: "score" | "rank", x: number, y: number) => void;
-
-interface ProfileProps {
-	profile: ProfileRes;
-}
-
-interface ProgressBarProps {
-	current: number;
-	max: number;
-	color: string;
-	label: string;
-}
-
-interface CardMeasurement {
-	width: number;
-	pageX: number;
-	pageY: number;
-}
-
-interface TooltipCardProps {
-	emoji: string;
-	value: number | string;
-	cardStyle: StyleProp<ViewStyle>;
-	emojiStyle: StyleProp<TextStyle>;
-	valueStyle: StyleProp<TextStyle>;
-	onMeasure: (measurement: CardMeasurement) => void;
-}
-
-type ProfileCardVariant = "stats" | "currency" | "scoreRank";
-
-interface ProfileCardData<Type extends string> {
-	key: string;
-	type: Type;
-	emoji: string;
-	value: number | string;
-}
-
-interface ProfileCardSectionStyles {
-	container: StyleProp<ViewStyle>;
-	title: StyleProp<TextStyle>;
-	grid: StyleProp<ViewStyle>;
-	card: StyleProp<ViewStyle>;
-	emoji: StyleProp<TextStyle>;
-	value: StyleProp<TextStyle>;
-}
-
-interface ProfileCardProps {
-	emoji: string;
-	value: number | string;
-	sectionStyles: ProfileCardSectionStyles;
-	onMeasure: (measurement: CardMeasurement) => void;
-}
-
-interface ProfileCardSectionProps<Type extends string> {
-	variant: ProfileCardVariant;
-	title: string;
-	items: readonly ProfileCardData<Type>[];
-	onShow: (type: Type, measurement: CardMeasurement) => void;
-}
-
-interface StatsSectionProps extends ProfileProps {
-	onShow: StatTooltipHandler;
-}
-
-interface ProfileDetailsProps extends ProfileProps {
-	onShowStatTooltip: StatTooltipHandler;
-	onShowCurrencyTooltip: CurrencyTooltipHandler;
-	onShowScoreRankTooltip: ScoreRankTooltipHandler;
-}
-
-interface ProfileStateViewProps {
-	profileState: RequestState<ProfileRes>;
-	onShowStatTooltip: StatTooltipHandler;
-	onShowCurrencyTooltip: CurrencyTooltipHandler;
-	onShowScoreRankTooltip: ScoreRankTooltipHandler;
-}
-
-const profileCardSectionStyles: Record<ProfileCardVariant, ProfileCardSectionStyles> = {
-	stats: {
-		container: styles.metricContainer,
-		title: styles.metricTitle,
-		grid: styles.metricGrid,
-		card: styles.statCard,
-		emoji: styles.metricEmoji,
-		value: styles.statValue
+const styles = StyleSheet.create({
+	state: {
+		alignItems: "center",
+		justifyContent: "center",
+		paddingVertical: Theme.spacing.xxl
 	},
-	currency: {
-		container: styles.metricContainer,
-		title: styles.metricTitle,
-		grid: styles.metricGrid,
-		card: styles.metricCard,
-		emoji: styles.metricEmoji,
-		value: styles.metricValue
-	},
-	scoreRank: {
-		container: styles.metricContainer,
-		title: styles.metricTitle,
-		grid: styles.metricGrid,
-		card: styles.metricCard,
-		emoji: styles.metricEmoji,
-		value: styles.metricValue
+	inventory: {
+		marginTop: Theme.spacing.sectionGap
 	}
-};
+});
 
-function ProgressBar({ current, max, color, label }: ProgressBarProps): ReactElement {
-	const percentage = Math.min((current / max) * 100, 100);
-
-	return (
-		<View style={styles.progressBarContainer}>
-			<View style={styles.progressBarHeader}>
-				<Text style={styles.progressLabel}>{label}</Text>
-				<Text style={styles.progressValue}>{current} / {max}</Text>
-			</View>
-			<View style={styles.progressBarBackground}>
-				<View
-					style={[
-						styles.progressBarFill,
-						{ width: `${percentage}%`, backgroundColor: color }
-					]}
-				/>
-			</View>
-		</View>
-	);
+function ratio(value: number, max: number): number {
+	if (max <= 0) {
+		return MINIMUM_RATIO;
+	}
+	return Math.min(MAXIMUM_RATIO, Math.max(MINIMUM_RATIO, value / max));
 }
 
-function HealthExperienceSection({ profile }: ProfileProps): ReactElement {
+function numberValue(value: number): string {
+	return i18n.t("app:profile.formats.number", {value});
+}
+
+function progressValue(value: number, max: number): string {
+	return i18n.t("app:profile.formats.progress", {value, max});
+}
+
+function percentageValue(value: number): string {
+	return i18n.t("app:profile.formats.percentage", {value});
+}
+
+function duration(milliseconds: number): string {
+	const totalMinutes = Math.max(Math.ceil(milliseconds / MILLISECONDS_PER_MINUTE), MINIMUM_RATIO);
+	const hours = Math.floor(totalMinutes / MINUTES_PER_HOUR);
+	if (hours > 0) {
+		return i18n.t("app:adventure.duration.hoursMinutes", {
+			hours,
+			minutes: totalMinutes % MINUTES_PER_HOUR
+		});
+	}
+	return i18n.t("app:adventure.duration.minutes", {minutes: totalMinutes});
+}
+
+function iconLabel(path: string, label: string): string {
+	return `${AppIcons.getIcon(path)} ${label}`;
+}
+
+function classLabel(profile: ProfileRes): string {
+	if (profile.classId === undefined) {
+		return i18n.t("app:profile.values.unknown");
+	}
+	const icon = AppIcons.getIconOrNull(`classes.${profile.classId}`);
+	const name = i18n.t(`models:classes.${profile.classId}`);
+	return icon ? `${icon} ${name}` : name;
+}
+
+function locationLabel(profile: ProfileRes): string {
+	if (profile.destinationId === undefined) {
+		return i18n.t("app:profile.values.unknownLocation");
+	}
+	const name = i18n.t(`models:map_locations.${profile.destinationId}.name`);
+	const icon = profile.mapTypeId ? AppIcons.getIconOrNull(`mapTypes.${profile.mapTypeId}`) : null;
+	return icon ? `${icon} ${name}` : name;
+}
+
+function effectLabel(profile: ProfileRes): string {
+	if (profile.effect.healed || !profile.effect.hasTimeDisplay || profile.effect.effect === "none") {
+		return i18n.t("commands:profile.noTimeLeft");
+	}
+	return i18n.t("commands:profile.timeLeft", {
+		effectId: profile.effect.effect,
+		timeLeft: duration(profile.effect.timeLeft)
+	});
+}
+
+function petLabel(profile: ProfileRes): string {
+	if (!profile.pet) {
+		return i18n.t("app:profile.values.none");
+	}
+	const {pet} = profile;
+	const icon = AppIcons.getIcon(`pets.${pet.typeId}.${pet.sex === "f" ? "emoteFemale" : "emoteMale"}`);
+	const typeName = i18n.t(`models:pets:${pet.typeId}`, {context: pet.sex === "f" ? "female" : "male"});
+	const rarity = i18n.t(`items:rarities.${Math.min(PET_RARITY_MAX, Math.max(PET_RARITY_MIN, pet.rarity))}`);
+	return `${icon} ${pet.nickname || typeName} · ${rarity}`;
+}
+
+function ProfileInformation({profile}: {profile: ProfileRes}): ReactNode {
 	return (
-		<View style={styles.barsContainer}>
-			<View style={styles.barItem}>
-				<ProgressBar
-					current={profile.health.value}
-					max={profile.health.max}
+		<>
+			<SectionHeader first>{i18n.t("app:profile.titles.information")}</SectionHeader>
+			<Panel>
+				<StatBar
+					label={iconLabel("unitValues.health", i18n.t("app:profile.fields.health"))}
+					value={progressValue(profile.health.value, profile.health.max)}
+					ratio={ratio(profile.health.value, profile.health.max)}
 					color={Theme.colors.red}
-					label={i18n.t("app:profile.titles.health")}
 				/>
-			</View>
-			<View style={styles.barItem}>
-				<ProgressBar
-					current={profile.experience.value}
-					max={profile.experience.max}
+				<StatBar
+					label={iconLabel("unitValues.xp", i18n.t("app:profile.fields.experience"))}
+					value={progressValue(profile.experience.value, profile.experience.max)}
+					ratio={ratio(profile.experience.value, profile.experience.max)}
 					color={Theme.colors.gold}
-					label={i18n.t("app:profile.titles.experience")}
 				/>
-			</View>
-		</View>
-	);
-}
-
-function TooltipCard({ emoji, value, cardStyle, emojiStyle, valueStyle, onMeasure }: TooltipCardProps): ReactElement {
-	return (
-		<TouchableOpacity
-			style={cardStyle}
-			onPress={(event): void => {
-				event.currentTarget.measure((_frameX, _frameY, width, _height, pageX, pageY): void => {
-					onMeasure({width, pageX, pageY});
-				});
-			}}
-		>
-			<Text style={emojiStyle}>{emoji}</Text>
-			<Text style={valueStyle}>{value}</Text>
-		</TouchableOpacity>
-	);
-}
-
-function ProfileCard({ emoji, value, sectionStyles, onMeasure }: ProfileCardProps): ReactElement {
-	return (
-		<TooltipCard
-			cardStyle={sectionStyles.card}
-			emojiStyle={sectionStyles.emoji}
-			valueStyle={sectionStyles.value}
-			emoji={emoji}
-			value={value}
-			onMeasure={onMeasure}
-		/>
-	);
-}
-
-function ProfileCardSection<Type extends string>({ variant, title, items, onShow }: ProfileCardSectionProps<Type>): ReactElement {
-	const sectionStyles = profileCardSectionStyles[variant];
-
-	return (
-		<View style={sectionStyles.container}>
-			<Text style={sectionStyles.title}>{title}</Text>
-			<View style={sectionStyles.grid}>
-				{items.map((item) => (
-					<ProfileCard
-						key={item.key}
-						emoji={item.emoji}
-						value={item.value}
-						sectionStyles={sectionStyles}
-						onMeasure={(measurement): void => onShow(item.type, measurement)}
+				<KeyValue label={iconLabel("unitValues.money", i18n.t("app:profile.fields.money"))} value={numberValue(profile.money)} />
+				{profile.tokens ? (
+					<KeyValue
+						label={iconLabel("unitValues.token", i18n.t("app:profile.fields.tokens"))}
+						value={progressValue(profile.tokens.value, profile.tokens.max)}
 					/>
-				))}
-			</View>
-		</View>
+				) : null}
+			</Panel>
+		</>
 	);
 }
 
-function StatsSection({ profile, onShow }: StatsSectionProps): ReactElement | null {
+function Statistics({profile}: {profile: ProfileRes}): ReactNode {
 	if (!profile.stats) {
 		return null;
 	}
-
-	const { stats } = profile;
-	const statItems: ProfileCardData<string>[] = [
-		{ key: "energy", type: i18n.t("app:profile.tooltips.energy"), emoji: "⚡", value: `${stats.energy.value} / ${stats.energy.max}` },
-		{ key: "breath", type: i18n.t("app:profile.tooltips.breath"), emoji: "🌬️", value: `${stats.breath.base} / ${stats.breath.max}` },
-		{ key: "breathRegen", type: i18n.t("app:profile.tooltips.breathRegen"), emoji: "🫁", value: `${stats.breath.regen}` },
-		{ key: "attack", type: i18n.t("app:profile.tooltips.attack"), emoji: "⚔️", value: `${stats.attack}` },
-		{ key: "defense", type: i18n.t("app:profile.tooltips.defense"), emoji: "🛡️", value: `${stats.defense}` },
-		{ key: "speed", type: i18n.t("app:profile.tooltips.speed"), emoji: "🚀", value: `${stats.speed}` }
-	];
-
+	const {stats} = profile;
 	return (
-		<ProfileCardSection
-			variant="stats"
-			title={i18n.t("app:profile.titles.statistics")}
-			items={statItems}
-			onShow={(type, {pageX, pageY, width}): void => onShow(type, pageX, pageY, width)}
-		/>
+		<>
+			<SectionHeader>{i18n.t("app:profile.titles.statistics")}</SectionHeader>
+			<Panel>
+				<KeyValue label={iconLabel("unitValues.energy", i18n.t("app:profile.fields.energy"))} value={progressValue(stats.energy.value, stats.energy.max)} />
+				<KeyValue label={iconLabel("unitValues.attack", i18n.t("app:profile.fields.attack"))} value={numberValue(stats.attack)} />
+				<KeyValue label={iconLabel("unitValues.defense", i18n.t("app:profile.fields.defense"))} value={numberValue(stats.defense)} />
+				<KeyValue label={iconLabel("unitValues.speed", i18n.t("app:profile.fields.speed"))} value={numberValue(stats.speed)} />
+				<KeyValue label={iconLabel("unitValues.breath", i18n.t("app:profile.fields.breath"))} value={progressValue(stats.breath.base, stats.breath.max)} />
+				<KeyValue label={iconLabel("unitValues.breathRegen", i18n.t("app:profile.fields.breathRegen"))} value={numberValue(stats.breath.regen)} />
+			</Panel>
+		</>
 	);
 }
 
-function CurrencySection({ profile, onShow }: ProfileProps & { onShow: CurrencyTooltipHandler }): ReactElement {
-	const currencyItems: ProfileCardData<"money" | "gems">[] = [
-		{ key: "money", type: "money", emoji: "💰", value: profile.money },
-		{ key: "gems", type: "gems", emoji: "💎", value: profile.missions.gems }
-	];
-
+function Missions({profile}: {profile: ProfileRes}): ReactNode {
 	return (
-		<ProfileCardSection
-			variant="currency"
-			title={i18n.t("app:profile.titles.currencies")}
-			items={currencyItems}
-			onShow={(type, {pageX, pageY, width}): void => onShow(type, pageX, pageY, width)}
-		/>
+		<>
+			<SectionHeader>{i18n.t("app:profile.titles.missions")}</SectionHeader>
+			<Panel>
+				<KeyValue label={iconLabel("unitValues.gem", i18n.t("app:profile.fields.gems"))} value={numberValue(profile.missions.gems)} />
+				<KeyValue label={iconLabel("missions.campaign", i18n.t("app:profile.fields.campaign"))} value={percentageValue(profile.missions.campaignProgression)} />
+			</Panel>
+		</>
 	);
 }
 
-function ScoreRankSection({ profile, onShow }: ProfileProps & { onShow: ScoreRankTooltipHandler }): ReactElement {
-	const rank = profile.rank.unranked ? "Unranked" : `${profile.rank.rank} / ${profile.rank.numberOfPlayers}`;
-	const scoreRankItems: ProfileCardData<"score" | "rank">[] = [
-		{ key: "score", type: "score", emoji: "🏅", value: profile.rank.score },
-		{ key: "rank", type: "rank", emoji: "🏆", value: rank }
-	];
-
+function ScoreAndRanking({profile}: {profile: ProfileRes}): ReactNode {
+	const rank = profile.rank.unranked
+		? i18n.t("app:profile.values.unranked")
+		: i18n.t("app:profile.formats.rank", {rank: profile.rank.rank, players: profile.rank.numberOfPlayers});
 	return (
-		<ProfileCardSection
-			variant="scoreRank"
-			title={i18n.t("app:profile.titles.scoreAndRank")}
-			items={scoreRankItems}
-			onShow={(type, {pageX, pageY, width}): void => onShow(type, pageX + width / 2, pageY)}
-		/>
+		<>
+			<SectionHeader>{i18n.t("app:profile.titles.scoreAndRank")}</SectionHeader>
+			<Panel>
+				<KeyValue label={iconLabel("announcements.trophy", i18n.t("app:profile.fields.rank"))} value={rank} />
+				<KeyValue label={iconLabel("unitValues.score", i18n.t("app:profile.fields.score"))} value={numberValue(profile.rank.score)} />
+			</Panel>
+		</>
 	);
 }
 
-function ProfileDetails({
-	profile,
-	onShowStatTooltip,
-	onShowCurrencyTooltip,
-	onShowScoreRankTooltip
-}: ProfileDetailsProps): ReactElement {
+function GloryAndLeague({profile}: {profile: ProfileRes}): ReactNode {
+	if (!profile.fightRanking) {
+		return null;
+	}
+	const {fightRanking} = profile;
+	const rank = fightRanking.gloryRank === -1
+		? i18n.t("app:profile.values.unranked")
+		: i18n.t("app:profile.formats.rank", {
+			rank: fightRanking.gloryRank,
+			players: fightRanking.numberOfFighters
+		});
+	const leagueIcon = AppIcons.getIconOrNull(`leagues.${fightRanking.league}`);
+	const leagueName = i18n.t(`models:leagues.${fightRanking.league}`);
 	return (
-		<View style={styles.profileContent}>
-			<HealthExperienceSection profile={profile} />
-			<CurrencySection profile={profile} onShow={onShowCurrencyTooltip} />
-			<ScoreRankSection profile={profile} onShow={onShowScoreRankTooltip} />
-			<StatsSection profile={profile} onShow={onShowStatTooltip} />
+		<>
+			<SectionHeader>{i18n.t("app:profile.titles.gloryAndLeague")}</SectionHeader>
+			<Panel>
+				<KeyValue label={iconLabel("announcements.trophy", i18n.t("app:profile.fields.gloryRank"))} value={rank} />
+				<KeyValue label={iconLabel("unitValues.glory", i18n.t("app:profile.fields.glory"))} value={numberValue(fightRanking.glory)} />
+				<KeyValue label={`${leagueIcon ?? AppIcons.getIcon("announcements.trophy")} ${i18n.t("app:profile.fields.league")}`} value={leagueName} />
+			</Panel>
+		</>
+	);
+}
+
+function AdditionalProfileSections({profile}: {profile: ProfileRes}): ReactNode {
+	return (
+		<>
+			<SectionHeader>{i18n.t("app:profile.titles.status")}</SectionHeader>
+			<Panel>
+				<KeyValue label={iconLabel("effects.none", i18n.t("app:profile.fields.effect"))} value={effectLabel(profile)} />
+			</Panel>
+			{profile.cooking ? (
+				<>
+					<SectionHeader>{i18n.t("app:profile.titles.cooking")}</SectionHeader>
+					<Panel>
+						<KeyValue
+							label={iconLabel("city.homeUpgrades.cooking", i18n.t("app:profile.fields.cooking"))}
+							value={i18n.t("app:profile.formats.cooking", {
+								level: profile.cooking.level,
+								grade: i18n.t(`models:cooking.grades.${profile.cooking.grade}`)
+							})}
+						/>
+						<StatBar
+							label={iconLabel("unitValues.xp", i18n.t("app:profile.fields.experience"))}
+							value={progressValue(profile.cooking.experience.value, profile.cooking.experience.max)}
+							ratio={ratio(profile.cooking.experience.value, profile.cooking.experience.max)}
+							color={Theme.colors.gold}
+						/>
+					</Panel>
+				</>
+			) : null}
+			{profile.guild ? (
+				<>
+					<SectionHeader>{i18n.t("app:profile.titles.guild")}</SectionHeader>
+					<Panel><KeyValue label={iconLabel("guild.icon", i18n.t("app:profile.fields.guild"))} value={profile.guild} /></Panel>
+				</>
+			) : null}
+			{profile.destinationId !== undefined ? (
+				<>
+					<SectionHeader>{i18n.t("app:profile.titles.destination")}</SectionHeader>
+					<Panel><KeyValue label={iconLabel("navigation.adventure", i18n.t("app:profile.fields.location"))} value={locationLabel(profile)} /></Panel>
+				</>
+			) : null}
+			{profile.pet ? (
+				<>
+					<SectionHeader>{i18n.t("app:profile.titles.pet")}</SectionHeader>
+					<Panel><KeyValue label={iconLabel("other.pet", i18n.t("app:profile.fields.pet"))} value={petLabel(profile)} /></Panel>
+				</>
+			) : null}
+		</>
+	);
+}
+
+function ProfileDetails({profile}: {profile: ProfileRes}): ReactNode {
+	const subtitle = i18n.t("app:profile.subtitle", {
+		className: classLabel(profile),
+		level: profile.level,
+		location: locationLabel(profile)
+	});
+	return (
+		<>
+			<Hero eyebrow={i18n.t("app:profile.eyebrow")} title={profile.pseudo} subtitle={subtitle} />
+			<ProfileInformation profile={profile} />
+			<Statistics profile={profile} />
+			<Missions profile={profile} />
+			<ScoreAndRanking profile={profile} />
+			<GloryAndLeague profile={profile} />
+			<AdditionalProfileSections profile={profile} />
+		</>
+	);
+}
+
+function ProfileState({state}: {state: RequestState<ProfileRes>}): ReactNode {
+	if (state.status === "loading") {
+		return (
+			<View style={styles.state}>
+				<ActivityIndicator size="large" color={Theme.colors.ink} />
+				<EmptyState>{i18n.t("app:common.loading")}</EmptyState>
+			</View>
+		);
+	}
+	if (state.status === "empty" || state.status === "failed") {
+		return <EmptyState>{state.status === "empty" ? i18n.t("app:profile.notFound") : i18n.t("app:common.error")}</EmptyState>;
+	}
+	return <ProfileDetails profile={state.data} />;
+}
+
+function InventorySection({state}: {state: RequestState<InventoryRes>}): ReactNode {
+	const inventoryData: InventoryData | null = state.status === "ready" ? state.data.data ?? null : null;
+	const emptyMessage = state.status === "failed"
+		? i18n.t("app:common.error")
+		: state.status === "ready"
+			? i18n.t("app:profile.inventory.empty")
+			: i18n.t("app:common.loading");
+	return (
+		<View style={styles.inventory}>
+			<SectionHeader>{i18n.t("app:profile.titles.inventory")}</SectionHeader>
+			{inventoryData ? <Inventory inventoryData={inventoryData} /> : <EmptyState>{emptyMessage}</EmptyState>}
 		</View>
 	);
 }
 
-function ProfileStateView({
-	profileState,
-	onShowStatTooltip,
-	onShowCurrencyTooltip,
-	onShowScoreRankTooltip
-}: ProfileStateViewProps): ReactElement | null {
-	if (profileState.status === "loading") {
-		return (
-			<View style={styles.centerContent}>
-				<ActivityIndicator size="large" color={Theme.colors.ink} />
-				<Text style={styles.loadingText}>{i18n.t("app:common.loading")}</Text>
-			</View>
-		);
-	}
-
-	if (profileState.status === "empty" || profileState.status === "failed") {
-		return (
-			<View style={styles.centerContent}>
-				<Text style={styles.errorText}>
-					{profileState.status === "empty" ? i18n.t("app:profile.notFound") : i18n.t("app:common.error")}
-				</Text>
-			</View>
-		);
-	}
-
-	return (
-		<ProfileDetails
-			profile={profileState.data}
-			onShowStatTooltip={onShowStatTooltip}
-			onShowCurrencyTooltip={onShowCurrencyTooltip}
-			onShowScoreRankTooltip={onShowScoreRankTooltip}
-		/>
-	);
-}
-
-export default function Profile(): ReactElement {
+export default function Profile(): ReactNode {
 	const profileState = usePlayerProfile();
 	const inventoryState = useGameQuery<InventoryRes>(
 		GAME_ENTITIES.INVENTORY,
-		() => GameClient.request(makeFromClientPacket(InventoryReq, { askedPlayer: {} }), InventoryRes, [PlayerNotFound])
+		() => GameClient.request(makeFromClientPacket(InventoryReq, {askedPlayer: {}}), InventoryRes, [PlayerNotFound])
 	);
-	const [tooltip, setTooltip] = useState<TooltipState>({ visible: false, text: '', x: 0, y: 0 });
-	const [tooltipTimeout, setTooltipTimeout] = useState<number | null>(null);
 	const navigation = useNavigation();
-
 	const profile = profileState.status === "ready" ? profileState.data : null;
-
-	// The server leaves the payload out when it has no inventory to show, so its absence is the empty case
-	const inventoryData: InventoryData | null = inventoryState.status === "ready" ? inventoryState.data.data ?? null : null;
 
 	useEffect(() => {
 		if (profile) {
-			navigation.setOptions({ title: profile.pseudo });
+			navigation.setOptions({title: profile.pseudo});
 		}
 	}, [profile, navigation]);
 
-	const showTooltip = (text: string, x: number, y: number, duration: number): void => {
-		if (tooltipTimeout) {
-			clearTimeout(tooltipTimeout);
-		}
-
-		setTooltip({
-			visible: true,
-			text,
-			x,
-			y
-		});
-
-		const newTimeout = setTimeout(() => {
-			setTooltip(prev => ({...prev, visible: false}));
-			setTooltipTimeout(null);
-		}, duration);
-
-		setTooltipTimeout(newTimeout);
-	};
-
-	const showStatTooltip = (statName: string, x: number, y: number, width: number): void => {
-		const centerX = x + 50 + width / 2;
-		showTooltip(statName, centerX, y - 150, 2000);
-	};
-
-	const showCurrencyTooltip = (currencyType: "money" | "gems", x: number, y: number, width: number): void => {
-		const tooltipText = currencyType === "money"
-			? i18n.t("app:profile.tooltips.money")
-			: i18n.t("app:profile.tooltips.gems");
-		const tooltipX = currencyType === "money" ? x + width / 2 + 60 : x + width / 2 - 50;
-		showTooltip(tooltipText, tooltipX, y - 150, 3000);
-	};
-
-	const showScoreRankTooltip = (type: "score" | "rank", x: number, y: number): void => {
-		const tooltipText = type === "score"
-			? i18n.t("app:profile.tooltips.score")
-			: i18n.t("app:profile.tooltips.rank");
-		showTooltip(tooltipText, x, y - 50, 3000);
-	};
-
-	const hideTooltip = (): void => {
-		if (tooltipTimeout) {
-			clearTimeout(tooltipTimeout);
-			setTooltipTimeout(null);
-		}
-		setTooltip(prev => ({ ...prev, visible: false }));
-	};
-
 	return (
-		<View style={styles.container}>
-			<ScrollView
-				style={styles.scroll}
-				contentContainerStyle={styles.scrollContent}
-				showsVerticalScrollIndicator={false}
-				onTouchStart={hideTooltip}
-			>
-				{/* Profile Section */}
-				<View style={styles.section}>
-					<ProfileStateView
-						profileState={profileState}
-						onShowStatTooltip={showStatTooltip}
-						onShowCurrencyTooltip={showCurrencyTooltip}
-						onShowScoreRankTooltip={showScoreRankTooltip}
-					/>
-				</View>
-
-				{/* Separator Line */}
-				<View style={styles.separator} />
-
-				{/* Inventory Section */}
-				<View style={styles.section}>
-					<Inventory inventoryData={inventoryData} />
-				</View>
-			</ScrollView>
-
-			{/* Tooltip Overlay */}
-			{tooltip.visible && (
-				<TouchableOpacity
-					style={[
-						styles.tooltip,
-						{
-							left: tooltip.x - 50,
-							top: tooltip.y
-						}
-					]}
-					onPress={hideTooltip}
-					activeOpacity={1}
-				>
-					<Text style={styles.tooltipText}>{tooltip.text}</Text>
-				</TouchableOpacity>
-			)}
-		</View>
+		<Screen>
+			<ProfileState state={profileState} />
+			{profileState.status === "ready" ? <InventorySection state={inventoryState} /> : null}
+		</Screen>
 	);
 }

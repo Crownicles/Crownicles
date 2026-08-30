@@ -394,11 +394,11 @@ const buttonVariantStyles = {
 	danger: {button: styles.buttonDanger, text: styles.buttonDangerText}
 } satisfies Record<ButtonVariant, {button: StyleProp<ViewStyle>; text: StyleProp<TextStyle>}>;
 
-function getPanelChildKey(child: ReactNode): string {
+function getPanelChildKey(child: ReactNode, index: number): string {
 	if (isValidElement(child) && child.key !== null) {
 		return child.key.toString();
 	}
-	return String(child);
+	return `panel-child-${index}`;
 }
 
 /**
@@ -459,7 +459,7 @@ export function Panel({ children }: { children: ReactNode }): ReactNode {
 	return (
 		<View style={styles.panel}>
 			{Children.toArray(children).map((child, index) => (
-				<Fragment key={getPanelChildKey(child)}>
+				<Fragment key={getPanelChildKey(child, index)}>
 					{index > 0 ? <View style={styles.separator} /> : null}
 					{child}
 				</Fragment>
