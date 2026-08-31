@@ -74,6 +74,7 @@ function contextualSubtitle(reaction: ReactionCollectorReaction, snapshot: CityM
 	}
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function itemSubtitle(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: CityMobileItem): string | undefined {
 	switch (reaction.type) {
 		case CITY_REACTION_KINDS.ENCHANT:

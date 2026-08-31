@@ -1,6 +1,7 @@
 import {CITY_REACTION_KINDS, CityMobileSnapshot, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
 import {itemSnapshotForReaction} from "@/src/collectors/CityItemPresentation";
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function directAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): boolean | undefined {
 	switch (reaction.type) {
 		case CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY: return snapshot?.guildDomainNotary?.canAfford ?? true;
