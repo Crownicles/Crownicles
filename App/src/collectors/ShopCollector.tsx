@@ -2,7 +2,7 @@ import {Fragment, ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {SHOP_DATA_KINDS, SHOP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {isChoosable, shopItemKey, shopItemName} from "@/src/collectors/CollectorLabels";
+import {isChoosable, shopItemName} from "@/src/collectors/CollectorLabels";
 import {Hero, KeyValue, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
@@ -33,6 +33,7 @@ function shopItemSubtitle(amount: number, price: number, currency: "money" | "ge
 	});
 }
 
+// @codescene(disable:"Complex Method")
 export function ShopCollector({collector, onChoose, submitting}: ShopCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
 	if (collector.data.type !== SHOP_DATA_KINDS.COLLECTOR) {

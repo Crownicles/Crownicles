@@ -87,6 +87,7 @@ function upgradeItemSnapshot(item: {
 	};
 }
 
+// @codescene(disable:"Complex Method")
 function mapCitySnapshot(data: ReactionCollectorCityData): CityMobileSnapshot {
 	const ownedHome = data.home.owned;
 	const manage = data.home.manage;

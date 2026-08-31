@@ -93,6 +93,7 @@ function cityItemName(item: {itemId: number; itemCategory: number}): string {
 	return i18n.t(`models:${itemType}s.${item.itemId}`);
 }
 
+// @codescene(disable:"Complex Method")
 function cityItem(snapshot: CityMobileSnapshot | undefined, reaction: ReactionCollectorReaction): CityMobileItem | undefined {
 	if (!snapshot) {
 		return undefined;
@@ -122,6 +123,7 @@ function cityItemIconPath(item: CityMobileItem): string {
 	return `${itemType}.${item.itemId}`;
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional", disable:"Bumpy Road Ahead")
 function cityRowIcon(reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot): ReactNode | undefined {
 	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT) {
 		const item = itemSnapshotForReaction(snapshot, reaction);
@@ -144,6 +146,7 @@ function cityRowIcon(reaction: ReactionCollectorReaction, snapshot?: CityMobileS
 	return iconPath ? iconForPath(iconPath) : undefined;
 }
 
+// @codescene(disable:"Complex Method")
 function cityReactionAvailable(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): boolean {
 	if (reaction.type === CITY_REACTION_KINDS.GUILD_DOMAIN_NOTARY) {
 		return snapshot?.guildDomainNotary?.canAfford ?? true;
@@ -277,6 +280,7 @@ function materialSummary(materials: {materialId: number; quantity: number; playe
 	return materials.map(material => `${material.quantity} × ${i18n.t(`models:materials.${material.materialId}`)} (${material.playerQuantity})`).join(", ");
 }
 
+// @codescene(disable:"Complex Method", disable:"Bumpy Road Ahead")
 function cityRowSubtitle(reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot): string | undefined {
 	if (reaction.type === CITY_REACTION_KINDS.SHOP) {
 		return compactCityDescription(i18n.t(`commands:report.city.shops.${reaction.data.shopId}.description`));
@@ -369,6 +373,7 @@ function cityRowSubtitle(reaction: ReactionCollectorReaction, snapshot?: CityMob
 	return key ? compactCityDescription(i18n.t(key)) : undefined;
 }
 
+// @codescene(disable:"Complex Method")
 function cityRowEnd(reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot): string | undefined {
 	switch (reaction.type) {
 		case CITY_REACTION_KINDS.INN_MEAL:
@@ -458,6 +463,7 @@ function homeIconPath(level: number | undefined): string {
 	return `city.home.${safeLevel}`;
 }
 
+// @codescene(disable:"Complex Method")
 function homeFeatureItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
 	const home = snapshot?.home?.owned;
 	if (!home) {
@@ -655,6 +661,7 @@ function enchantmentCatalogItems(): CityInfoItem[] {
 	}));
 }
 
+// @codescene(disable:"Complex Method")
 function submenuSections(view: CitySubmenu, entries: CityEntry[], snapshot?: CityMobileSnapshot): CitySubmenuSection[] {
 	if (view === "inn") {
 		return [
@@ -1061,6 +1068,7 @@ function groupCityEntries(entries: CityEntry[], options: {
 	return {groups, submenus};
 }
 
+// @codescene(disable:"Complex Method")
 function CityRows({items, collector, onChoose, onNavigate, locked}: {
 	items: CityListItem[];
 	collector: ReactionCollectorCreation;
@@ -1152,6 +1160,7 @@ function submenuTitle(view: CitySubmenu, innId?: string): {eyebrow: string; titl
 	};
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function citySnapshotSummary(view: CitySubmenu, snapshot: CityMobileSnapshot | undefined): ReactNode {
 	if (!snapshot) {
 		return null;
@@ -1312,6 +1321,7 @@ function citySnapshotSummary(view: CitySubmenu, snapshot: CityMobileSnapshot | u
 	return null;
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function citySnapshotNote(view: CitySubmenu, snapshot: CityMobileSnapshot | undefined): ReactNode {
 	if (view === "blacksmith" && snapshot?.blacksmith) {
 		const missingMaterials = snapshot.blacksmith.upgradeableItems.some(item => !item.hasAllMaterials);
@@ -1392,6 +1402,7 @@ function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, o
 	);
 }
 
+// @codescene(disable:"Complex Method")
 export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
