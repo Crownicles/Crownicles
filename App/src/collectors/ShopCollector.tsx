@@ -2,7 +2,8 @@ import {Fragment, ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {SHOP_DATA_KINDS, SHOP_REACTION_KINDS} from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
-import {isChoosable, shopItemName} from "@/src/collectors/CollectorLabels";
+import {isChoosable} from "@/src/collectors/CollectorLabels";
+import {shopItemName} from "@/src/collectors/ShopLabels";
 import {Hero, KeyValue, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
@@ -90,7 +91,7 @@ export function ShopCollector({collector, onChoose, submitting}: ShopCollectorPr
 									key={`${collector.id}-${reactionIndex}`}
 									disabled={disabled}
 									onPress={disabled ? undefined : (): void => choose(reactionIndex)}
-									title={shopItemName(reaction.data.shopItemId)}
+									title={shopItemName({shopItemId: reaction.data.shopItemId})}
 									subtitle={shopItemSubtitle(reaction.data.amount, reaction.data.price, currency)}
 									end={currencyLabel(reaction.data.price, currency)}
 									chevron={!disabled}

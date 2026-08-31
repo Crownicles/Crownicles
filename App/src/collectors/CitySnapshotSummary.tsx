@@ -8,9 +8,20 @@ import {i18n} from "@/src/translations/i18n";
 type CitySubmenu = "home" | "homeBed" | "homeChest" | "homeGarden" | "homeCooking" | "homeUpgrade" | "notary" | "inn" | "enchanter" | "blacksmith" | "scrapDealer" | "royalBlacksmith" | "guild";
 
 type SummaryRenderer = (snapshot: CityMobileSnapshot) => ReactNode;
+type OwnedHome = NonNullable<NonNullable<CityMobileSnapshot["home"]>["owned"]>;
 
 function formatMoney(value: number): string {
 	return `${value.toLocaleString("fr-FR")} ${AppIcons.getIcon("unitValues.money")}`;
+}
+
+function homeServices(home: OwnedHome): string {
+	return [
+		home.hasBed ? i18n.t("app:city.summary.bed") : null,
+		home.hasChest ? i18n.t("app:city.summary.chest") : null,
+		home.hasGarden ? i18n.t("app:city.summary.garden") : null,
+		home.hasCooking ? i18n.t("app:city.summary.cooking") : null,
+		home.hasUpgradeStation ? i18n.t("app:city.summary.forge") : null
+	].filter(Boolean).join(" · ") || "—";
 }
 
 function renderInnSummary(snapshot: CityMobileSnapshot): ReactNode {
@@ -38,13 +49,6 @@ function renderHomeSummary(snapshot: CityMobileSnapshot): ReactNode {
 	if (!home) {
 		return null;
 	}
-	const services = [
-		home.hasBed ? i18n.t("app:city.summary.bed") : null,
-		home.hasChest ? i18n.t("app:city.summary.chest") : null,
-		home.hasGarden ? i18n.t("app:city.summary.garden") : null,
-		home.hasCooking ? i18n.t("app:city.summary.cooking") : null,
-		home.hasUpgradeStation ? i18n.t("app:city.summary.forge") : null
-	].filter(Boolean).join(" · ") || "—";
 	return <Panel>
 		<KeyValue label={i18n.t("app:city.summary.homeType")} value={home.isApartment ? i18n.t("app:city.summary.apartment") : i18n.t("app:city.summary.mainHome")} />
 		<KeyValue label={i18n.t("app:city.summary.level")} value={String(home.level)} />
@@ -52,7 +56,7 @@ function renderHomeSummary(snapshot: CityMobileSnapshot): ReactNode {
 		<KeyValue label={i18n.t("app:city.summary.bedRegeneration")} value={`+${home.bedHealthRegeneration} ${AppIcons.getIcon("unitValues.health")}`} />
 		<KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={String(home.gardenPlots)} />
 		<KeyValue label={i18n.t("app:city.summary.upgradeableItems")} value={String(home.upgradeableItemCount)} />
-		<KeyValue label={i18n.t("app:city.summary.services")} value={services} />
+		<KeyValue label={i18n.t("app:city.summary.services")} value={homeServices(home)} />
 	</Panel>;
 }
 
@@ -106,25 +110,41 @@ function renderHomeUpgradeSummary(snapshot: CityMobileSnapshot): ReactNode {
 	</Panel> : null;
 }
 
-function renderNotarySummary(snapshot: CityMobileSnapshot): ReactNode {
+function notaryRows(snapshot: CityMobileSnapshot): ReactNode[] {
 	const manage = snapshot.home?.manage;
 	const apartment = snapshot.apartmentNotary;
-	const hasApartmentDetails = Boolean(apartment?.forSale) || (apartment?.ownedCount ?? 0) > 0;
-	if (!manage && !hasApartmentDetails && !snapshot.guildDomainNotary) {
-		return null;
+	const rows: ReactNode[] = [];
+	if (manage?.currentMoney !== undefined) {
+		rows.push(<KeyValue key="money" label={i18n.t("app:city.summary.money")} value={formatMoney(manage.currentMoney)} />);
 	}
-	return <Panel>
-		{manage?.currentMoney !== undefined ? <KeyValue label={i18n.t("app:city.summary.money")} value={formatMoney(manage.currentMoney)} /> : null}
-		{manage?.upgradePrice !== undefined ? <KeyValue label={i18n.t("app:city.summary.upgradePrice")} value={formatMoney(manage.upgradePrice)} /> : null}
-		{manage?.newPrice !== undefined ? <KeyValue label={i18n.t("app:city.summary.purchasePrice")} value={formatMoney(manage.newPrice)} /> : null}
-		{manage?.movePrice !== undefined ? <KeyValue label={i18n.t("app:city.summary.movePrice")} value={formatMoney(manage.movePrice)} /> : null}
-		{apartment?.forSale ? <KeyValue label={i18n.t("app:city.summary.apartmentPrice")} value={apartment.forSale.canAfford
+	if (manage?.upgradePrice !== undefined) {
+		rows.push(<KeyValue key="upgrade" label={i18n.t("app:city.summary.upgradePrice")} value={formatMoney(manage.upgradePrice)} />);
+	}
+	if (manage?.newPrice !== undefined) {
+		rows.push(<KeyValue key="purchase" label={i18n.t("app:city.summary.purchasePrice")} value={formatMoney(manage.newPrice)} />);
+	}
+	if (manage?.movePrice !== undefined) {
+		rows.push(<KeyValue key="move" label={i18n.t("app:city.summary.movePrice")} value={formatMoney(manage.movePrice)} />);
+	}
+	if (apartment?.forSale) {
+		const value = apartment.forSale.canAfford
 			? formatMoney(apartment.forSale.price)
-			: i18n.t("app:city.summary.missingMoney", {amount: formatMoney(apartment.forSale.missingMoney ?? 0)})} /> : null}
-		{apartment && apartment.ownedCount > 0 ? <KeyValue label={i18n.t("app:city.summary.rents")} value={`${apartment.ownedCount} · ${formatMoney(apartment.accumulatedRent)}`} /> : null}
-		{snapshot.guildDomainNotary ? <KeyValue label={i18n.t("app:city.summary.domain")} value={snapshot.guildDomainNotary.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} /> : null}
-		{snapshot.guildDomainNotary ? <KeyValue label={i18n.t("app:city.summary.domainCost")} value={formatMoney(snapshot.guildDomainNotary.cost)} /> : null}
-	</Panel>;
+			: i18n.t("app:city.summary.missingMoney", {amount: formatMoney(apartment.forSale.missingMoney ?? 0)});
+		rows.push(<KeyValue key="apartment" label={i18n.t("app:city.summary.apartmentPrice")} value={value} />);
+	}
+	if (apartment && apartment.ownedCount > 0) {
+		rows.push(<KeyValue key="rents" label={i18n.t("app:city.summary.rents")} value={`${apartment.ownedCount} · ${formatMoney(apartment.accumulatedRent)}`} />);
+	}
+	if (snapshot.guildDomainNotary) {
+		rows.push(<KeyValue key="domain" label={i18n.t("app:city.summary.domain")} value={snapshot.guildDomainNotary.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} />);
+		rows.push(<KeyValue key="domain-cost" label={i18n.t("app:city.summary.domainCost")} value={formatMoney(snapshot.guildDomainNotary.cost)} />);
+	}
+	return rows;
+}
+
+function renderNotarySummary(snapshot: CityMobileSnapshot): ReactNode {
+	const rows = notaryRows(snapshot);
+	return rows.length > 0 ? <Panel>{rows}</Panel> : null;
 }
 
 function renderEnchanterSummary(snapshot: CityMobileSnapshot): ReactNode {
@@ -217,4 +237,3 @@ const SUMMARY_RENDERERS: Partial<Record<CitySubmenu, SummaryRenderer>> = {
 export function CitySnapshotSummary({view, snapshot}: {view: CitySubmenu; snapshot?: CityMobileSnapshot}): ReactNode {
 	return snapshot ? SUMMARY_RENDERERS[view]?.(snapshot) ?? null : null;
 }
-

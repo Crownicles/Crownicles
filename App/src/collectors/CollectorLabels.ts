@@ -16,6 +16,7 @@ import {ItemWithDetails} from "ws-packets/src/objects/ItemWithDetails";
 import {PetSex} from "ws-packets/src/objects/OwnedPet";
 import {i18n} from "@/src/translations/i18n";
 import {AppIcons} from "@/src/AppIcons";
+import {shopItemName} from "@/src/collectors/ShopLabels";
 import type {TOptions} from "i18next";
 
 const SEX_CONTEXTS = {
@@ -29,34 +30,6 @@ const ITEM_TYPES_BY_CATEGORY = [
 	"potion",
 	"object"
 ] as const;
-
-/** The numeric ids come from Lib's ShopItemType enum and are kept stable on the wire. */
-const SHOP_ITEM_KEYS = [
-	"dailyPotion", "randomItem", "alterationHeal", "fullRegen", "slotExtension", "moneyMouthBadge",
-	"commonFood", "herbivorousFood", "carnivorousFood", "ultimateFood", "money", "treasure", "kingsFavor",
-	"skipMission", "lovePointsValue", "smallGuildXp", "energyHeal", "bigGuildXp", "questMasterBadge", "token",
-	"plantSlotExtension", "weeklyPlantTier1", "weeklyPlantTier2", "weeklyPlantTier3", "marketAnalysis",
-	"woodCommonBundle", "woodUncommonBundle", "randomMaterialPack", "remoteHarvestTalisman", "tokenCharity"
-] as const;
-
-export function shopItemKey(shopItemId: number): string {
-	return SHOP_ITEM_KEYS[shopItemId] ?? `item-${shopItemId}`;
-}
-
-export function shopItemName(shopItemId: number): string {
-	const key = shopItemKey(shopItemId);
-	// The daily potion is the only shop item whose Discord label is built from
-	// the category (the concrete potion is supplied in additionalShopData).
-	// There is deliberately no `shopItems.dailyPotion.name` translation, so do
-	// not leak the i18next key into the mobile UI.
-	return key === "dailyPotion"
-		? i18n.t("app:city.shop.dailyPotion")
-		: i18n.t(`commands:shop.shopItems.${key}.name`);
-}
-
-function shopCurrencyIcon(currency: "money" | "gem"): string {
-	return AppIcons.getIcon(`unitValues.${currency}`);
-}
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 
@@ -373,10 +346,10 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 			return i18n.t("app:collector.unknownChoice");
 		}
 		return i18n.t("app:city.shop.item", {
-			item: shopItemName(reaction.data.shopItemId),
+			item: shopItemName({shopItemId: reaction.data.shopItemId}),
 			amount: reaction.data.amount,
 			price: reaction.data.price,
-			currency: shopCurrencyIcon(data.data.currency)
+			currency: AppIcons.getIcon(`unitValues.${data.data.currency}`)
 		});
 	}),
 	[SHOP_REACTION_KINDS.CLOSE]: () => withIcon("collectors.refuse", i18n.t("app:city.shop.close")),
