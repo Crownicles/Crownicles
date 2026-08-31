@@ -6,6 +6,10 @@
         {
           "name": "Primitive Obsession",
           "weight": 0
+        },
+        {
+          "name": "Overall Code Complexity",
+          "weight": 0
         }
       ],
       "thresholds": []
