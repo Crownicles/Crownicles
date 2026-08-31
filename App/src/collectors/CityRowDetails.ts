@@ -52,6 +52,7 @@ function apartmentRentSubtitle(reaction: ReactionCollectorReaction, snapshot: Ci
 	return apartment ? i18n.t(apartment.isRented ? "commands:report.city.homes.apartmentNotary.ownedLineRented" : "commands:report.city.homes.apartmentNotary.ownedLineEmpty", {mapLocationId: apartment.mapLocationId, rent: apartment.accumulatedRent}) : defaultSubtitle(reaction);
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function contextualSubtitle(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): string | undefined {
 	switch (reaction.type) {
 		case CITY_REACTION_KINDS.SHOP:
