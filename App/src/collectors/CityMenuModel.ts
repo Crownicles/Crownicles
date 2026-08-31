@@ -191,13 +191,20 @@ function addCityEntry(state: CityGroupingState, entry: CityEntry, options: CityG
 	state.groups.services.push({kind: "reaction", entry});
 }
 
+function addAvailableInn(state: CityGroupingState, innId: string, existingInnIds: Set<string>): void {
+	if (existingInnIds.has(innId)) return;
+	state.groups.services.push(innNavigationItem(innId));
+	existingInnIds.add(innId);
+}
+
 function addInnServices(state: CityGroupingState, innIds: string[] | undefined): void {
 	for (const [innId, innEntries] of state.inns) {
 		state.submenus.inn.push(...innEntries);
 		state.groups.services.push(innNavigationItem(innId));
 	}
+	const existingInnIds = new Set(state.inns.keys());
 	for (const innId of innIds ?? []) {
-		if (!state.groups.services.some(item => item.kind === "navigation" && item.view === "inn" && item.innId === innId)) state.groups.services.push(innNavigationItem(innId));
+		addAvailableInn(state, innId, existingInnIds);
 	}
 }
 
@@ -206,7 +213,10 @@ function addNotaryService(state: CityGroupingState): void {
 }
 
 function addGuildService(state: CityGroupingState): void {
-	if (state.hasGuildActions && !state.groups.guild.some(item => item.kind === "navigation" && item.view === "guild")) state.groups.guild.push(navigationItem("guild", "guild-domain"));
+	if (!state.hasGuildActions) return;
+	const hasGuildNavigation = state.groups.guild.some(item => item.kind === "navigation" && item.view === "guild");
+	if (hasGuildNavigation) return;
+	state.groups.guild.push(navigationItem("guild", "guild-domain"));
 }
 
 function addEnchanterService(state: CityGroupingState, availableServices: string[] | undefined): void {

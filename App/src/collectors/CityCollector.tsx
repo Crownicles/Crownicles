@@ -150,17 +150,23 @@ function cityOverview({collector, model, locationName, locationDescription, mapI
 	</Screen>;
 }
 
-function cityGroupingOptions(data: CityCollectorData): Parameters<typeof groupCityEntries>[1] {
+function cityServiceOptions(data: CityCollectorData): Pick<CityGroupingOptions, "availableServices" | "innIds" | "shops" | "guildFoodShop" | "otherCityServices"> {
 	const snapshot = data.data.snapshot;
 	return {
 		availableServices: data.data.availableServices,
 		innIds: snapshot?.inns?.map(inn => inn.innId),
-		homeOwned: snapshot?.home?.owned,
-		homeManage: snapshot?.home?.manage,
 		shops: snapshot?.shops,
 		guildFoodShop: snapshot?.guildFoodShop,
 		otherCityServices: snapshot?.otherCityServices
 	};
+}
+
+function cityHomeOptions(snapshot: CityMobileSnapshot | undefined): Pick<CityGroupingOptions, "homeOwned" | "homeManage"> {
+	return {homeOwned: snapshot?.home?.owned, homeManage: snapshot?.home?.manage};
+}
+
+function cityGroupingOptions(data: CityCollectorData): Parameters<typeof groupCityEntries>[1] {
+	return {...cityServiceOptions(data), ...cityHomeOptions(data.data.snapshot)};
 }
 
 function renderGardenView({collector, model, snapshot, choose, gardenCloseIndex, locked}: {
