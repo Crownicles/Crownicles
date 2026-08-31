@@ -3,7 +3,6 @@ import {CITY_REACTION_KINDS, CityMobileSnapshot, ReactionCollectorReaction} from
 import {cityIconPath, iconForPath} from "@/src/collectors/CityIcons";
 import {cityItemIconPath, itemSnapshotForReaction} from "@/src/collectors/CityItemPresentation";
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional", disable:"Bumpy Road Ahead")
 export function cityRowIcon(reaction: ReactionCollectorReaction, snapshot?: CityMobileSnapshot): ReactNode | undefined {
 	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT) {
 		const item = itemSnapshotForReaction(snapshot, reaction);

@@ -8,7 +8,6 @@ function formatMoney(value: number): string {
 	return `${value.toLocaleString("fr-FR")} ${AppIcons.getIcon("unitValues.money")}`;
 }
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 export function renderCityNotarySummary(snapshot: CityMobileSnapshot): ReactNode {
 	const manage = snapshot.home?.manage;
 	const apartment = snapshot.apartmentNotary;

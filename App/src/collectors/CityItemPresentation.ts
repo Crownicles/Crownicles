@@ -8,7 +8,6 @@ export function cityItemName(item: {itemId: number; itemCategory: number}): stri
 	return i18n.t(`models:${itemType}s.${item.itemId}`);
 }
 
-// @codescene(disable:"Complex Method")
 export function itemSnapshotForReaction(snapshot: CityMobileSnapshot | undefined, reaction: ReactionCollectorReaction): CityMobileItem | undefined {
 	if (!snapshot) return undefined;
 	const data = reaction.data as {slot?: number; itemCategory?: number};

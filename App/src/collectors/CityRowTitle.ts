@@ -4,7 +4,6 @@ import {reactionLabel} from "@/src/collectors/CollectorLabels";
 import {cityItemName, itemSnapshotForReaction} from "@/src/collectors/CityItemPresentation";
 import {i18n} from "@/src/translations/i18n";
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional", disable:"Large Method")
 export function cityRowTitle(reaction: ReactionCollectorReaction, collectorData: ReactionCollectorCreation["data"], snapshot?: CityMobileSnapshot): string {
 	if (collectorData.type !== CITY_DATA_KINDS.CITY) return reactionLabel(reaction, collectorData);
 	switch (reaction.type) {

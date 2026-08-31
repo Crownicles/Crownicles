@@ -3,7 +3,6 @@ import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
 import {Note} from "@/src/design/Primitives";
 import {i18n} from "@/src/translations/i18n";
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 export function citySnapshotNote(view: string, snapshot: CityMobileSnapshot | undefined): ReactNode {
 	if (view === "blacksmith" && snapshot?.blacksmith) {
 		const missingMaterials = snapshot.blacksmith.upgradeableItems.some(item => !item.hasAllMaterials);

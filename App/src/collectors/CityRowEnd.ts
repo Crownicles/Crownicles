@@ -1,7 +1,6 @@
 import {CITY_REACTION_KINDS, CityMobileItem, CityMobileSnapshot, ReactionCollectorReaction} from "ws-packets/src/fromServer/collectors";
 import {formatMoney} from "@/src/collectors/CityText";
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function upgradeEnd(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem): string | undefined {
 	if (!item) return undefined;
 	const upgrades = reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE ? snapshot?.blacksmith?.upgradeableItems : snapshot?.royalBlacksmith?.upgradeableItems;
@@ -27,7 +26,6 @@ function apartmentRentEnd(reaction: ReactionCollectorReaction, snapshot: CityMob
 	return apartment && apartment.accumulatedRent > 0 ? formatMoney(apartment.accumulatedRent) : undefined;
 }
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function cityRowEndForReaction(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem): string | undefined {
 	switch (reaction.type) {
 		case CITY_REACTION_KINDS.INN_MEAL:

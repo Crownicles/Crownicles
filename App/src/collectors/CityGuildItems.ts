@@ -2,7 +2,6 @@ import {CityMobileSnapshot} from "ws-packets/src/fromServer/collectors";
 import type {CityListItem} from "@/src/collectors/CityCollector";
 import {i18n} from "@/src/translations/i18n";
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 export function guildFeatureItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
 	const guild = snapshot?.guildDomain;
 	if (!guild) return [];

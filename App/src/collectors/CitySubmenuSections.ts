@@ -13,7 +13,6 @@ type SubmenuDependencies = {
 
 const reactionItems = (entries: CityEntry[]): CityListItem[] => entries.map(entry => ({kind: "reaction" as const, entry}));
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 export function submenuSections(view: CitySubmenu, entries: CityEntry[], snapshot: CityMobileSnapshot | undefined, deps: SubmenuDependencies): CitySubmenuSection[] {
 	if (view === "inn") {
 		return [

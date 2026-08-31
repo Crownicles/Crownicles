@@ -34,7 +34,6 @@ function shopItemSubtitle(amount: number, price: number, currency: "money" | "ge
 	});
 }
 
-// @codescene(disable:"Complex Method")
 export function ShopCollector({collector, onChoose, submitting}: ShopCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
 	if (collector.data.type !== SHOP_DATA_KINDS.COLLECTOR) {

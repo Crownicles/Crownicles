@@ -7,7 +7,6 @@ export function homeIconPath(level: number | undefined): string {
 	return `city.home.${safeLevel}`;
 }
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 export function homeFeatureItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
 	const home = snapshot?.home?.owned;
 	if (!home) return [];

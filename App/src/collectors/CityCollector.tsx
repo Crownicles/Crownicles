@@ -118,7 +118,6 @@ function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, o
 	);
 }
 
-// @codescene(disable:"Complex Method")
 export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);

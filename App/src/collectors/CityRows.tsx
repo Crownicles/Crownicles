@@ -30,7 +30,6 @@ type CityRowsProps = {
 	reactionAvailable: (reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined) => boolean;
 };
 
-// @codescene(disable:"Complex Method")
 export function CityRows({items, collector, onChoose, onNavigate, locked, iconForPath, rowIcon, rowTitle, rowSubtitle, rowEnd, reactionAvailable}: CityRowsProps): ReactNode {
 	return items.map(item => {
 		if (item.kind === "navigation") {
