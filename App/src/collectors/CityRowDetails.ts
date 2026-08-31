@@ -109,6 +109,7 @@ export function cityRowSubtitle(reaction: ReactionCollectorReaction, snapshot: C
 	return contextualSubtitle(reaction, snapshot) ?? (item ? itemSubtitle(reaction, snapshot, item) : undefined) ?? defaultSubtitle(reaction);
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function upgradeEnd(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem): string | undefined {
 	if (!item) return undefined;
 	const upgrades = reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE ? snapshot?.blacksmith?.upgradeableItems : snapshot?.royalBlacksmith?.upgradeableItems;
