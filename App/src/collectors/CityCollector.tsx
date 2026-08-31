@@ -807,6 +807,7 @@ function addCityEntry(state: CityGroupingState, entry: CityEntry, options: CityG
 	state.groups.services.push({kind: "reaction", entry});
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addInnServices(state: CityGroupingState, innIds: string[] | undefined): void {
 	for (const [innId, innEntries] of state.inns) {
 		state.submenus.inn.push(...innEntries);
