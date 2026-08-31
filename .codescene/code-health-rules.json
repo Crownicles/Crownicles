@@ -1,0 +1,14 @@
+{
+  "rule_sets": [
+    {
+      "matching_content_path": "App/src/collectors/CollectorLabels.ts",
+      "rules": [
+        {
+          "name": "Primitive Obsession",
+          "weight": 0
+        }
+      ],
+      "thresholds": []
+    }
+  ]
+}

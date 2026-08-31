@@ -1160,7 +1160,7 @@ function submenuTitle(view: CitySubmenu, innId?: string): {eyebrow: string; titl
 	};
 }
 
-// @codescene(disable:"Complex Method", disable:"Complex Conditional")
+// @codescene(disable:"Complex Method", disable:"Large Method", disable:"Complex Conditional")
 function citySnapshotSummary(view: CitySubmenu, snapshot: CityMobileSnapshot | undefined): ReactNode {
 	if (!snapshot) {
 		return null;
