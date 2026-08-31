@@ -771,6 +771,7 @@ type CityGroupingState = {
 	hasGuildActions: boolean;
 };
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addCityEntry(state: CityGroupingState, entry: CityEntry, options: CityGroupingOptions): void {
 	const {reaction} = entry;
 	if (reaction.type === GENERIC_REACTION_KINDS.REFUSE) return;
