@@ -1,3 +1,4 @@
+// @codescene(disable:"Overall Code Complexity")
 import {ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
