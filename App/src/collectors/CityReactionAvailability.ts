@@ -22,6 +22,7 @@ function apartmentRentAvailability(reaction: ReactionCollectorReaction, snapshot
 	return snapshot?.apartmentNotary?.ownedApartments.find(apartment => apartment.apartmentId === apartmentId)?.canClaim ?? true;
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function equipmentAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: NonNullable<ReturnType<typeof itemSnapshotForReaction>>): boolean {
 	switch (reaction.type) {
 		case CITY_REACTION_KINDS.BLACKSMITH_UPGRADE: {

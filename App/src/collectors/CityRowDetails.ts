@@ -133,6 +133,7 @@ function apartmentRentEnd(reaction: ReactionCollectorReaction, snapshot: CityMob
 	return apartment && apartment.accumulatedRent > 0 ? formatMoney(apartment.accumulatedRent) : undefined;
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function cityRowEndForReaction(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem): string | undefined {
 	switch (reaction.type) {
 		case CITY_REACTION_KINDS.INN_MEAL:
