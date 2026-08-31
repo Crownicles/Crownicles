@@ -24,20 +24,18 @@ function apartmentRentAvailability(reaction: ReactionCollectorReaction, snapshot
 	return snapshot?.apartmentNotary?.ownedApartments.find(apartment => apartment.apartmentId === apartmentId)?.canClaim ?? true;
 }
 
+function upgradeAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: NonNullable<ReturnType<typeof itemSnapshotForReaction>>, royal: boolean): boolean {
+	const upgrades = royal ? snapshot?.royalBlacksmith?.upgradeableItems : snapshot?.blacksmith?.upgradeableItems;
+	const upgrade = upgrades?.find(candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory);
+	const buyMaterials = (reaction.data as {buyMaterials?: boolean}).buyMaterials;
+	return buyMaterials ? upgrade?.canBuyAndUpgrade ?? true : upgrade?.canUpgrade ?? true;
+}
+
 function equipmentAvailability(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item: NonNullable<ReturnType<typeof itemSnapshotForReaction>>): boolean {
-	switch (reaction.type) {
-		case CITY_REACTION_KINDS.BLACKSMITH_UPGRADE: {
-			const upgrade = snapshot?.blacksmith?.upgradeableItems.find(candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory);
-			return reaction.data.buyMaterials ? upgrade?.canBuyAndUpgrade ?? true : upgrade?.canUpgrade ?? true;
-		}
-		case CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT:
-			return snapshot?.blacksmith?.disenchantableItems.find(candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory)?.canDisenchant ?? true;
-		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE: {
-			const upgrade = snapshot?.royalBlacksmith?.upgradeableItems.find(candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory);
-			return reaction.data.buyMaterials ? upgrade?.canBuyAndUpgrade ?? true : upgrade?.canUpgrade ?? true;
-		}
-		default: return true;
-	}
+	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_UPGRADE) return upgradeAvailability(reaction, snapshot, item, false);
+	if (reaction.type === CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT) return snapshot?.blacksmith?.disenchantableItems.find(candidate => candidate.slot === item.slot && candidate.itemCategory === item.itemCategory)?.canDisenchant ?? true;
+	if (reaction.type === CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE) return upgradeAvailability(reaction, snapshot, item, true);
+	return true;
 }
 
 export function cityReactionAvailable(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): boolean {

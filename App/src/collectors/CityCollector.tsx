@@ -118,6 +118,36 @@ function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, o
 	);
 }
 
+function citySectionDefinitions(): {key: CityGroup; title: string; hint?: string}[] {
+	return [
+		{key: "housing", title: i18n.t("app:city.titles.housing")},
+		{key: "services", title: i18n.t("app:city.titles.services")},
+		{key: "shops", title: i18n.t("app:city.titles.shops")},
+		{key: "guild", title: i18n.t("app:city.titles.guild")},
+		{key: "elsewhere", title: i18n.t("app:city.titles.otherCities"), hint: i18n.t("app:city.subtitles.otherCities")},
+		{key: "quit", title: i18n.t("app:city.titles.quit")}
+	];
+}
+
+function cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting}: {
+	collector: ReactionCollectorCreation;
+	model: CityMenuModel;
+	locationName: string;
+	locationDescription: string;
+	mapIcon: ReactNode | undefined;
+	choose: (index: number) => void;
+	navigate: (item: CityNavigationItem) => void;
+	locked: boolean;
+	submitting: boolean;
+}): ReactNode {
+	const sections = citySectionDefinitions().filter(section => model.groups[section.key].length > 0);
+	return <Screen>
+		<Hero eyebrow={i18n.t("app:city.titles.eyebrow")} title={`${mapIcon ? `${mapIcon} ` : ""}${locationName}`} subtitle={locationDescription} />
+		{sections.map((section, index) => <CitySection key={section.key} title={section.title} hint={section.hint} items={model.groups[section.key]} collector={collector} onChoose={choose} onNavigate={navigate} locked={locked} first={index === 0} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={renderCityRowSubtitle} rowEnd={renderCityRowEnd} reactionAvailable={cityReactionAvailable} />)}
+		{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
+	</Screen>;
+}
+
 export function CityCollector({collector, onChoose, submitting}: CityCollectorProps): ReactNode {
 	const [answered, setAnswered] = useState(false);
 	const [submenu, setSubmenu] = useState<CitySubmenu | null>(null);
@@ -155,22 +185,5 @@ export function CityCollector({collector, onChoose, submitting}: CityCollectorPr
 		return <CitySubmenuView view={submenu} innId={innId} entries={submenuEntries} collector={collector} snapshot={collector.data.data.snapshot} onChoose={choose} onNavigate={navigate} onBack={() => setSubmenu(null)} locked={locked} />;
 	}
 
-	const sectionDefinitions = [
-		{key: "housing" as const, title: i18n.t("app:city.titles.housing")},
-		{key: "services" as const, title: i18n.t("app:city.titles.services")},
-		{key: "shops" as const, title: i18n.t("app:city.titles.shops")},
-		{key: "guild" as const, title: i18n.t("app:city.titles.guild")},
-		{key: "elsewhere" as const, title: i18n.t("app:city.titles.otherCities"), hint: i18n.t("app:city.subtitles.otherCities")},
-		{key: "quit" as const, title: i18n.t("app:city.titles.quit")}
-	].filter(section => model.groups[section.key].length > 0);
-
-	return (
-		<Screen>
-			<Hero eyebrow={i18n.t("app:city.titles.eyebrow")} title={`${mapIcon ? `${mapIcon} ` : ""}${locationName}`} subtitle={locationDescription} />
-			{sectionDefinitions.map((section, index) => (
-				<CitySection key={section.key} title={section.title} hint={section.hint} items={model.groups[section.key]} collector={collector} onChoose={choose} onNavigate={navigate} locked={locked} first={index === 0} iconForPath={iconForPath} rowIcon={cityRowIcon} rowTitle={cityRowTitle} rowSubtitle={renderCityRowSubtitle} rowEnd={renderCityRowEnd} reactionAvailable={cityReactionAvailable} />
-			))}
-			{submitting ? <Note>{i18n.t("app:collector.answering")}</Note> : null}
-		</Screen>
-	);
+	return cityOverview({collector, model, locationName, locationDescription, mapIcon, choose, navigate, locked, submitting});
 }

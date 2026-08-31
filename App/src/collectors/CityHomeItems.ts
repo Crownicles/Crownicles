@@ -34,17 +34,21 @@ function notaryItem(): CityListItem {
 	return {kind: "navigation", key: "home-notary", view: "notary", iconPath: "city.manageHome", title: i18n.t("app:city.labels.manageHome"), subtitle: i18n.t("app:city.subtitles.notary")};
 }
 
+type HomeFeatureBuilder = (home: OwnedHome, snapshot: CityMobileSnapshot) => CityListItem | undefined;
+
+const HOME_FEATURE_BUILDERS: HomeFeatureBuilder[] = [
+	(home => home.hasBed ? bedItem(home) : undefined),
+	(home => home.hasChest ? chestItem(home) : undefined),
+	(home => home.hasGarden ? gardenItem(home) : undefined),
+	(home => home.hasCooking ? cookingItem(home) : undefined),
+	(home => home.hasUpgradeStation ? upgradeStationItem() : undefined),
+	((_, snapshot) => snapshot.home?.manage ? notaryItem() : undefined)
+];
+
 export function homeFeatureItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {
 	const home = snapshot?.home?.owned;
 	if (!home) return [];
-	return [
-		home.hasBed ? bedItem(home) : undefined,
-		home.hasChest ? chestItem(home) : undefined,
-		home.hasGarden ? gardenItem(home) : undefined,
-		home.hasCooking ? cookingItem(home) : undefined,
-		home.hasUpgradeStation ? upgradeStationItem() : undefined,
-		snapshot?.home?.manage ? notaryItem() : undefined
-	].filter((item): item is CityListItem => item !== undefined);
+	return HOME_FEATURE_BUILDERS.map(builder => builder(home, snapshot)).filter((item): item is CityListItem => item !== undefined);
 }
 
 export function gardenPlotItems(snapshot: CityMobileSnapshot | undefined): CityListItem[] {

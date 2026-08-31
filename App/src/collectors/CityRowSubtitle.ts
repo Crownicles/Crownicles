@@ -39,26 +39,39 @@ function apartmentRentSubtitle(reaction: ReactionCollectorReaction, snapshot: Ci
 	return apartment ? i18n.t(apartment.isRented ? "commands:report.city.homes.apartmentNotary.ownedLineRented" : "commands:report.city.homes.apartmentNotary.ownedLineEmpty", {mapLocationId: apartment.mapLocationId, rent: apartment.accumulatedRent}) : defaultSubtitle(reaction);
 }
 
+function shopSubtitle(reaction: ReactionCollectorReaction): string {
+	const {shopId} = reaction.data as {shopId: string};
+	return compactCityDescription(i18n.t(`commands:report.city.shops.${shopId}.description`));
+}
+
+function innSubtitle(reaction: ReactionCollectorReaction): string {
+	const data = reaction.data as {innId: string; mealId?: string; roomId?: string; price?: number; energy?: number; health?: number};
+	const detailKey = reaction.type === CITY_REACTION_KINDS.INN_MEAL ? "app:city.subtitles.mealDetails" : "app:city.subtitles.roomDetails";
+	return `${i18n.t(`commands:report.city.inns.names.${data.innId}`)} · ${i18n.t(detailKey, data)}`;
+}
+
+function homeBedSubtitle(snapshot: CityMobileSnapshot | undefined, reaction: ReactionCollectorReaction): string | undefined {
+	return snapshot?.home?.owned ? i18n.t("commands:report.city.homes.bed.menuDescription", {health: snapshot.home.owned.bedHealthRegeneration}) : defaultSubtitle(reaction);
+}
+
+function apartmentBuySubtitle(snapshot: CityMobileSnapshot | undefined, reaction: ReactionCollectorReaction): string | undefined {
+	const sale = snapshot?.apartmentNotary?.forSale;
+	return sale ? i18n.t(sale.canAfford ? "commands:report.city.homes.apartmentNotary.forSaleDescription" : "commands:report.city.homes.apartmentNotary.buyNotEnoughMoney", {price: sale.price, cost: sale.price, missingMoney: sale.missingMoney ?? 0}) : defaultSubtitle(reaction);
+}
+
+type ContextualResolver = (reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined) => string | undefined;
+
+const CONTEXTUAL_RESOLVERS: Partial<Record<ReactionCollectorReaction["type"], ContextualResolver>> = {
+	[CITY_REACTION_KINDS.SHOP]: reaction => shopSubtitle(reaction),
+	[CITY_REACTION_KINDS.INN_MEAL]: reaction => innSubtitle(reaction),
+	[CITY_REACTION_KINDS.INN_ROOM]: reaction => innSubtitle(reaction),
+	[CITY_REACTION_KINDS.HOME_BED]: (reaction, snapshot) => homeBedSubtitle(snapshot, reaction),
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: (reaction, snapshot) => apartmentBuySubtitle(snapshot, reaction),
+	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: (reaction, snapshot) => apartmentRentSubtitle(reaction, snapshot)
+};
+
 function contextualSubtitle(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined): string | undefined {
-	switch (reaction.type) {
-		case CITY_REACTION_KINDS.SHOP:
-			return compactCityDescription(i18n.t(`commands:report.city.shops.${reaction.data.shopId}.description`));
-		case CITY_REACTION_KINDS.INN_MEAL:
-		case CITY_REACTION_KINDS.INN_ROOM: {
-			const detailKey = reaction.type === CITY_REACTION_KINDS.INN_MEAL ? "app:city.subtitles.mealDetails" : "app:city.subtitles.roomDetails";
-			return `${i18n.t(`commands:report.city.inns.names.${reaction.data.innId}`)} · ${i18n.t(detailKey, reaction.data)}`;
-		}
-		case CITY_REACTION_KINDS.HOME_BED:
-			return snapshot?.home?.owned ? i18n.t("commands:report.city.homes.bed.menuDescription", {health: snapshot.home.owned.bedHealthRegeneration}) : defaultSubtitle(reaction);
-		case CITY_REACTION_KINDS.APARTMENT_BUY: {
-			const sale = snapshot?.apartmentNotary?.forSale;
-			return sale ? i18n.t(sale.canAfford ? "commands:report.city.homes.apartmentNotary.forSaleDescription" : "commands:report.city.homes.apartmentNotary.buyNotEnoughMoney", {price: sale.price, cost: sale.price, missingMoney: sale.missingMoney ?? 0}) : defaultSubtitle(reaction);
-		}
-		case CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT:
-			return apartmentRentSubtitle(reaction, snapshot);
-		default:
-			return undefined;
-	}
+	return CONTEXTUAL_RESOLVERS[reaction.type]?.(reaction, snapshot);
 }
 
 function enchantSubtitle(snapshot: CityMobileSnapshot | undefined): string | undefined {

@@ -26,31 +26,24 @@ function apartmentRentEnd(reaction: ReactionCollectorReaction, snapshot: CityMob
 	return apartment && apartment.accumulatedRent > 0 ? formatMoney(apartment.accumulatedRent) : undefined;
 }
 
+type EndResolver = (reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem) => string | undefined;
+
+const END_RESOLVERS: Partial<Record<ReactionCollectorReaction["type"], EndResolver>> = {
+	[CITY_REACTION_KINDS.INN_MEAL]: reaction => formatMoney((reaction.data as {price: number}).price),
+	[CITY_REACTION_KINDS.INN_ROOM]: reaction => formatMoney((reaction.data as {price: number}).price),
+	[CITY_REACTION_KINDS.BLACKSMITH_UPGRADE]: upgradeEnd,
+	[CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE]: upgradeEnd,
+	[CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT]: (_, snapshot, item) => disenchantEnd(snapshot, item),
+	[CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE]: (_, snapshot, item) => recycleEnd(snapshot, item),
+	[CITY_REACTION_KINDS.BUY_HOME]: (_, snapshot) => snapshot?.home?.manage?.newPrice === undefined ? undefined : formatMoney(snapshot.home.manage.newPrice),
+	[CITY_REACTION_KINDS.UPGRADE_HOME]: (_, snapshot) => snapshot?.home?.manage?.upgradePrice === undefined ? undefined : formatMoney(snapshot.home.manage.upgradePrice),
+	[CITY_REACTION_KINDS.MOVE_HOME]: (_, snapshot) => snapshot?.home?.manage?.movePrice === undefined ? undefined : formatMoney(snapshot.home.manage.movePrice),
+	[CITY_REACTION_KINDS.APARTMENT_BUY]: (_, snapshot) => snapshot?.apartmentNotary?.forSale ? formatMoney(snapshot.apartmentNotary.forSale.price) : undefined,
+	[CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT]: apartmentRentEnd
+};
+
 function cityRowEndForReaction(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem): string | undefined {
-	switch (reaction.type) {
-		case CITY_REACTION_KINDS.INN_MEAL:
-		case CITY_REACTION_KINDS.INN_ROOM:
-			return formatMoney(reaction.data.price);
-		case CITY_REACTION_KINDS.BLACKSMITH_UPGRADE:
-		case CITY_REACTION_KINDS.ROYAL_BLACKSMITH_UPGRADE:
-			return upgradeEnd(reaction, snapshot, item);
-		case CITY_REACTION_KINDS.BLACKSMITH_DISENCHANT:
-			return disenchantEnd(snapshot, item);
-		case CITY_REACTION_KINDS.SCRAP_DEALER_RECYCLE:
-			return recycleEnd(snapshot, item);
-		case CITY_REACTION_KINDS.BUY_HOME:
-			return snapshot?.home?.manage?.newPrice === undefined ? undefined : formatMoney(snapshot.home.manage.newPrice);
-		case CITY_REACTION_KINDS.UPGRADE_HOME:
-			return snapshot?.home?.manage?.upgradePrice === undefined ? undefined : formatMoney(snapshot.home.manage.upgradePrice);
-		case CITY_REACTION_KINDS.MOVE_HOME:
-			return snapshot?.home?.manage?.movePrice === undefined ? undefined : formatMoney(snapshot.home.manage.movePrice);
-		case CITY_REACTION_KINDS.APARTMENT_BUY:
-			return snapshot?.apartmentNotary?.forSale ? formatMoney(snapshot.apartmentNotary.forSale.price) : undefined;
-		case CITY_REACTION_KINDS.APARTMENT_CLAIM_RENT:
-			return apartmentRentEnd(reaction, snapshot);
-		default:
-			return undefined;
-	}
+	return END_RESOLVERS[reaction.type]?.(reaction, snapshot, item);
 }
 
 export function cityRowEnd(reaction: ReactionCollectorReaction, snapshot: CityMobileSnapshot | undefined, item?: CityMobileItem): string | undefined {

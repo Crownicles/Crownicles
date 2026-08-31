@@ -190,11 +190,27 @@ function addInnServices(state: CityGroupingState, innIds: string[] | undefined):
 	}
 }
 
-function addAvailableServices(state: CityGroupingState, options: CityGroupingOptions): void {
+function addNotaryService(state: CityGroupingState): void {
 	if (state.hasNotary) state.groups.housing.push(navigationItem("notary", "notary"));
+}
+
+function addGuildService(state: CityGroupingState): void {
 	if (state.hasGuildActions && !state.groups.guild.some(item => item.kind === "navigation" && item.view === "guild")) state.groups.guild.push(navigationItem("guild", "guild-domain"));
-	if (state.submenus.enchanter.length > 0 || options.availableServices?.includes("enchanter")) state.groups.services.push(navigationItem("enchanter", "enchanter"));
-	if (options.availableServices?.includes("bossArchivist")) state.groups.services.push({kind: "info", key: "boss-archivist", iconPath: "city.services.bossArchivist", title: i18n.t("commands:report.city.bossArchivist.serviceTitle"), subtitle: compactCityDescription(i18n.t("commands:report.city.bossArchivist.serviceDescription"))});
+}
+
+function addEnchanterService(state: CityGroupingState, availableServices: string[] | undefined): void {
+	if (state.submenus.enchanter.length > 0 || availableServices?.includes("enchanter")) state.groups.services.push(navigationItem("enchanter", "enchanter"));
+}
+
+function addBossArchivistService(state: CityGroupingState, availableServices: string[] | undefined): void {
+	if (availableServices?.includes("bossArchivist")) state.groups.services.push({kind: "info", key: "boss-archivist", iconPath: "city.services.bossArchivist", title: i18n.t("commands:report.city.bossArchivist.serviceTitle"), subtitle: compactCityDescription(i18n.t("commands:report.city.bossArchivist.serviceDescription"))});
+}
+
+function addAvailableServices(state: CityGroupingState, options: CityGroupingOptions): void {
+	addNotaryService(state);
+	addGuildService(state);
+	addEnchanterService(state, options.availableServices);
+	addBossArchivistService(state, options.availableServices);
 }
 
 function addEmptyShops(state: CityGroupingState, shops: CityGroupingOptions["shops"]): void {
