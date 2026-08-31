@@ -12,7 +12,8 @@ import {
 
 jest.mock("@/src/AppIcons", () => ({
 	AppIcons: {
-		getIconOrNull: (): null => null
+		getIconOrNull: (): null => null,
+		getIcon: (): string => ""
 	}
 }));
 
@@ -110,12 +111,33 @@ function cityCollector(): ReactionCollectorCreation {
 		endTime: Date.now() + 60_000,
 		data: {
 			type: CITY_DATA_KINDS.CITY,
-			data: {mapTypeId: "ci", mapLocationId: 10, availableServices: ["blacksmith"]}
+			data: {
+				mapTypeId: "ci",
+				mapLocationId: 10,
+				availableServices: ["blacksmith", "bossArchivist"],
+				snapshot: {
+					home: {
+					owned: {
+						level: 3,
+						bedHealthRegeneration: 12,
+						gardenPlots: 0,
+						hasBed: true,
+						hasChest: false,
+						hasGarden: false,
+						hasCooking: false,
+						hasUpgradeStation: false,
+						upgradeableItemCount: 0
+					}
+				},
+					shops: [{shopId: "generalShop", isEmpty: true}],
+					guildFoodShop: {guildName: "Les tests", playerMoney: 0, treasury: 0}
+				}
+			}
 		},
 		reactions: [
+			{type: CITY_REACTION_KINDS.EXIT, data: {}},
 			{type: CITY_REACTION_KINDS.HOME_MENU, data: {}},
 			{type: CITY_REACTION_KINDS.BLACKSMITH_MENU, data: {}},
-			{type: CITY_REACTION_KINDS.EXIT, data: {}},
 			{type: GENERIC_REACTION_KINDS.REFUSE, data: {}}
 		]
 	};
@@ -141,11 +163,15 @@ const collectorScenarios: CollectorScenario[] = [
 	{
 		name: "renders the city menu in the adventure tab and submits its indexed choice",
 		collector: cityCollector,
-		choiceText: "app:city.actions.home",
+		choiceText: "commands:report.city.reactions.exit.label",
 		assertView: () => {
 			expect(screen.getByText("app:city.titles.eyebrow")).toBeTruthy();
 			expect(screen.getByText("app:city.titles.housing")).toBeTruthy();
 			expect(screen.getByText("app:city.titles.services")).toBeTruthy();
+			expect(screen.getByText("commands:report.city.bossArchivist.serviceTitle")).toBeTruthy();
+			expect(screen.getByText("commands:report.city.shops.generalShop.label")).toBeTruthy();
+			expect(screen.getByText("commands:report.city.shopEmptyDescription")).toBeTruthy();
+			expect(screen.getByText("commands:report.city.guildFoodShop.label")).toBeTruthy();
 			expect(screen.getByText("app:city.titles.quit")).toBeTruthy();
 			expect(screen.queryByText("commands:report.city.reactions.stay.label")).toBeNull();
 			expect(screen.queryByText("app:collector.timeLeft")).toBeNull();
@@ -269,6 +295,24 @@ const outcomeScenarios: OutcomeScenario[] = [
 describe("AdventureCollector", () => {
 	it.each(collectorScenarios)("$name", async scenario => {
 		await chooseFirstCollectorChoice(scenario.collector(), scenario.choiceText, jest.fn(), scenario.assertView);
+	});
+
+	it("opens a city top-level menu locally before submitting a nested action", async () => {
+		const onChoose = jest.fn();
+		const collector = cityCollector();
+		collector.reactions.splice(2, 0, {type: CITY_REACTION_KINDS.HOME_BED, data: {}});
+		await render(<AdventureCollector collector={collector} onChoose={onChoose} submitting={false} />);
+
+		await fireEvent.press(screen.getByText("app:city.labels.home"));
+		expect(onChoose).not.toHaveBeenCalled();
+		expect(screen.getByText("app:city.titles.homeServices")).toBeTruthy();
+
+		await fireEvent.press(screen.getByText("app:city.labels.bed"));
+		expect(onChoose).not.toHaveBeenCalled();
+		expect(screen.getByText("app:city.titles.actions")).toBeTruthy();
+
+		await fireEvent.press(screen.getByText("commands:report.city.homes.bed.buttonLabel"));
+		expect(onChoose).toHaveBeenCalledWith(2);
 	});
 
 	it.each(outcomeScenarios)("$name", async scenario => {

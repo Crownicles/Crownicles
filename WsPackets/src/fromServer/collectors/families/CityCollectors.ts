@@ -4,9 +4,167 @@ import {
 } from "../ReactionCollectorProtocol";
 
 /**
- * The city collector deliberately keeps the wire payload focused on the menu. Detailed service
- * snapshots stay owned by their respective commands; the city screen only needs the location and
- * the reactions that Core already computed for this visit.
+ * Data needed to render the mobile city screens without leaking the complete server-side models.
+ * Reactions remain the source of truth for actions; this snapshot is display-only.
+ */
+export type CityMobileSnapshot = {
+	energy?: {
+		current: number; max: number;
+	};
+	health?: {
+		current: number; max: number;
+	};
+	inns?: { innId: string }[];
+	shops?: {
+		shopId: string; isEmpty: boolean;
+	}[];
+	otherCityServices?: {
+		mapLocationId: number; mapLocationIds?: number[]; serviceKey: string; kind: "service" | "shop";
+	}[];
+	home?: {
+		owned?: {
+			level: number;
+			isApartment?: boolean;
+			cookingLevel?: number;
+			cookingSlots?: number;
+			bedHealthRegeneration: number;
+			gardenPlots: number;
+			hasBed: boolean;
+			hasChest: boolean;
+			hasGarden: boolean;
+			hasCooking: boolean;
+			hasUpgradeStation: boolean;
+			upgradeableItemCount: number;
+			chestItemCount?: number;
+			depositableItemCount?: number;
+			gardenReadyPlots?: number;
+			gardenTotalPlots?: number;
+			garden?: {
+				plots: {
+					slot: number; plantId: number; growthProgress: number; isReady: boolean; readyAtTimestamp: number;
+				}[];
+				hasSeed: boolean;
+				seedPlantId: number;
+				eligibility: {
+					canHarvest: boolean; canPlantSeed: boolean; canWaterGarden: boolean; canCompost: boolean;
+				};
+			};
+		};
+		manage?: {
+			newPrice?: number;
+			upgradePrice?: number;
+			movePrice?: number;
+			currentMoney: number;
+			canBuy?: boolean;
+			canUpgrade?: boolean;
+			canMove?: boolean;
+		};
+	};
+	enchanter?: {
+		enchantmentId: string;
+		enchantmentType: string;
+		enchantmentSlot: number;
+		enchantmentCost: {
+			money: number; gems: number;
+		};
+		mageReduction: boolean;
+		playerMoney: number;
+		playerGems: number;
+		enchantableItems: CityMobileItem[];
+	};
+	blacksmith?: {
+		playerMoney: number;
+		upgradeableItems: CityMobileUpgradeItem[];
+		disenchantableItems: CityMobileDisenchantItem[];
+	};
+	scrapDealer?: {
+		recyclableItems: CityMobileRecycleItem[];
+	};
+	royalBlacksmith?: {
+		status: string;
+		playerLevel: number;
+		requiredPlayerLevel: number;
+		playerMoney: number;
+		playerGems: number;
+		upgradeableItems: CityMobileUpgradeItem[];
+	};
+	guildDomain?: {
+		guildName: string;
+		shopLevel: number;
+		shelterLevel: number;
+		pantryLevel: number;
+		trainingGroundLevel: number;
+		shelterMaxCount: number;
+		guildLevel: number;
+		treasury: number;
+		playerMoney: number;
+		food: {
+			common: number; carnivorous: number; herbivorous: number; ultimate: number;
+		};
+	};
+	guildDomainNotary?: {
+		hasDomain: boolean;
+		cost: number;
+		treasury: number;
+		canAfford: boolean;
+	};
+	guildFoodShop?: {
+		guildName: string;
+		playerMoney: number;
+		treasury: number;
+	};
+	apartmentNotary?: {
+		forSale?: {
+			price: number; canAfford: boolean; missingMoney?: number;
+		};
+		ownedApartments: {
+			apartmentId: number;
+			mapLocationId: number;
+			accumulatedRent: number;
+			isRented: boolean;
+			canClaim: boolean;
+		}[];
+		ownedCount: number;
+		accumulatedRent: number;
+	};
+};
+
+export type CityMobileItem = {
+	slot: number;
+	itemId: number;
+	itemCategory: number;
+	itemLevel: number;
+};
+
+export type CityMobileUpgradeItem = CityMobileItem & {
+	nextLevel: number;
+	upgradeCost: number;
+	missingMaterialsCost: number;
+	hasAllMaterials: boolean;
+	canUpgrade: boolean;
+	canBuyAndUpgrade: boolean;
+	materials: {
+		materialId: number; quantity: number; playerQuantity: number;
+	}[];
+};
+
+export type CityMobileDisenchantItem = CityMobileItem & {
+	enchantmentId: string;
+	enchantmentType: string;
+	disenchantCost: number;
+	canDisenchant: boolean;
+};
+
+export type CityMobileRecycleItem = CityMobileItem & {
+	recoveredMaterials: {
+		materialId: number; quantity: number;
+	}[];
+	recoveredMoney: number;
+};
+
+/**
+ * The city collector keeps actions in the ordered reaction list and carries a compact display
+ * snapshot for the mobile menu. The snapshot never authorises an action; Core remains authoritative.
  */
 declare module "../ReactionCollectorProtocol" {
 	interface ReactionCollectorDataPayloads {
@@ -16,6 +174,7 @@ declare module "../ReactionCollectorProtocol" {
 			availableServices: string[];
 			initialMenu?: string;
 			gardenOnly?: boolean;
+			snapshot?: CityMobileSnapshot;
 		};
 	}
 

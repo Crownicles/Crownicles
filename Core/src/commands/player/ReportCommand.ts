@@ -591,6 +591,50 @@ function buildCanUpgradeBuildings(guild: Guild): BuildingUpgradeEligibilityMap {
 	return result;
 }
 
+function buildOtherCityServices(currentCity: City): ReactionCollectorCityData["otherCityServices"] {
+	const currentCityServices = new Set([...currentCity.services, ...currentCity.shops ?? []]);
+	const services = new Map<string, {
+		mapLocationIds: number[];
+		serviceKey: string;
+		kind: "service" | "shop";
+	}>();
+
+	for (const otherCity of CityDataController.instance.getAllValues()) {
+		if (otherCity.id === currentCity.id || otherCity.maps.length === 0) {
+			continue;
+		}
+		const cityServices = [
+			...otherCity.services.map(serviceKey => ({
+				serviceKey, kind: "service" as const
+			})),
+			...(otherCity.shops ?? []).map(serviceKey => ({
+				serviceKey, kind: "shop" as const
+			}))
+		];
+		for (const service of cityServices) {
+			if (currentCityServices.has(service.serviceKey)) {
+				continue;
+			}
+			const key = `${service.kind}:${service.serviceKey}`;
+			const existing = services.get(key);
+			if (existing) {
+				existing.mapLocationIds.push(otherCity.maps[0]);
+			}
+			else {
+				services.set(key, {
+					mapLocationIds: [otherCity.maps[0]],
+					...service
+				});
+			}
+		}
+	}
+
+	return [...services.values()].map(service => ({
+		...service,
+		mapLocationId: service.mapLocationIds[0]
+	}));
+}
+
 async function sendCityCollector(
 	context: PacketContext,
 	response: CrowniclesPacket[],
@@ -721,6 +765,7 @@ async function sendCityCollector(
 			[CITY_SERVICES.ENCHANTER]: enchanter !== undefined,
 			[CITY_SERVICES.BOSS_ARCHIVIST]: city.hasService(CITY_SERVICES.BOSS_ARCHIVIST)
 		}),
+		otherCityServices: buildOtherCityServices(city),
 		inns: city.inns.map(inn => ({
 			innId: inn.id,
 			meals: city.getTodayInnMeals(inn, new Date()).map(meal => ({

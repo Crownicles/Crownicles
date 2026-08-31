@@ -1,8 +1,9 @@
-import {createContext, ReactNode, useContext, useEffect, useMemo, useSyncExternalStore} from "react";
+import {createContext, ReactNode, useContext, useEffect, useMemo, useRef, useSyncExternalStore} from "react";
 import {AppState} from "react-native";
 import type {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {collectorsStore} from "@/src/collectors/CollectorsStore";
 import {useGameInvalidations} from "@/src/store/GameInvalidations";
+import {AuthStateEnum} from "@/src/authentication/AuthStateEnum";
 
 type CollectorsState = {
 	open: ReactionCollectorCreation[];
@@ -32,11 +33,23 @@ const CollectorsContext = createContext<CollectorsState | null>(null);
  * open one without being asked. Keeping them here rather than in a screen is what makes both cases
  * work with the same code.
  */
-export function CollectorsProvider({ children }: { children: ReactNode }): ReactNode {
+export function CollectorsProvider({ children, authState }: { children: ReactNode; authState?: AuthStateEnum }): ReactNode {
 	const { afterCollector } = useGameInvalidations();
+	const previousAuthState = useRef<AuthStateEnum>(AuthStateEnum.NOT_READY);
 	const open = useSyncExternalStore(collectorsStore.subscribe, collectorsStore.getSnapshot, collectorsStore.getSnapshot);
 
 	useEffect(() => collectorsStore.subscribeToResolution(afterCollector), [afterCollector]);
+
+	useEffect(() => {
+		const hasConnected = authState === AuthStateEnum.LOGGED_IN
+			&& previousAuthState.current !== AuthStateEnum.LOGGED_IN;
+		if (authState !== undefined) {
+			previousAuthState.current = authState;
+		}
+		if (hasConnected) {
+			collectorsStore.syncCurrent();
+		}
+	}, [authState]);
 
 	useEffect(() => {
 		collectorsStore.removeExpired();

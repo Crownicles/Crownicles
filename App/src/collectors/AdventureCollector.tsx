@@ -3,11 +3,12 @@ import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/Reacti
 import {ReportBigEventResultRes} from "ws-packets/src/fromServer/report/ReportBigEventResultRes";
 import {
 	BIG_EVENT_DATA_KINDS, GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS,
-	REPORT_COLLECTOR_REACTION_KINDS, CITY_DATA_KINDS, ReactionCollectorData, ReactionCollectorReaction
+	REPORT_COLLECTOR_REACTION_KINDS, CITY_DATA_KINDS, SHOP_DATA_KINDS, ReactionCollectorData, ReactionCollectorReaction
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
 import {CollectorChoices} from "@/src/collectors/CollectorPrompt";
 import {CityCollector} from "@/src/collectors/CityCollector";
+import {ShopCollector} from "@/src/collectors/ShopCollector";
 import {collectorDescription, collectorTitle} from "@/src/collectors/CollectorLabels";
 import type {
 	HealOutcome as HealOutcomeData, LotteryOutcome as LotteryOutcomeData, SmallEventOutcome as SmallEventOutcomeData, TokenOutcome as TokenOutcomeData
@@ -325,6 +326,9 @@ export function AdventureCollector({collector, onChoose, submitting}: {
 	}
 	if (collector.data.type === CITY_DATA_KINDS.CITY) {
 		return <CityCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
+	}
+	if (collector.data.type === SHOP_DATA_KINDS.COLLECTOR) {
+		return <ShopCollector collector={collector} onChoose={onChoose} submitting={submitting} />;
 	}
 	const description = collectorDescription(collector.data);
 	return (

@@ -34,6 +34,29 @@ const tokenStorageKeyTemplate = "auth-token-"; // This key is used to store the 
 export function AuthProvider({ children }: PropsWithChildren): React.ReactElement {
 	const [state, setState] = React.useState(AuthStateEnum.NOT_READY); // Persist state: https://youtu.be/yNaOaR2kIa0?t=649
 	const router = useRouter();
+	const initialNavigationTimer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+	const navigateToAuthenticatedRoot = (): void => {
+		if (initialNavigationTimer.current !== null) {
+			clearTimeout(initialNavigationTimer.current);
+		}
+
+		// AuthProvider is mounted just above the root navigator. A direct replace from the first
+		// websocket callback can therefore run before Expo Router has mounted its navigation ref.
+		// Defer it briefly and retry while the root is mounting instead of crashing the app with
+		// "Attempted to navigate before mounting the Root Layout component".
+		const attempt = (): void => {
+			try {
+				router.replace("/");
+				initialNavigationTimer.current = null;
+			}
+			catch (error) {
+				console.warn("Root navigator is not ready yet; retrying authenticated navigation:", error);
+				initialNavigationTimer.current = setTimeout(attempt, 100);
+			}
+		};
+		initialNavigationTimer.current = setTimeout(attempt, 100);
+	};
 
 	const clearToken = async (): Promise<void> => {
 		let shouldContinue = true;
@@ -137,7 +160,7 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 		console.log("Auth state changed from", previousState, "to", newState);
 
 		if (isInitialLogin) {
-			router.replace("/");
+			navigateToAuthenticatedRoot();
 		}
 		else if (shouldRedirectToLogin) {
 			router.replace("/login");
@@ -157,6 +180,12 @@ export function AuthProvider({ children }: PropsWithChildren): React.ReactElemen
 				console.error("Error during authentication flow:", error);
 				setStateInternal(AuthStateEnum.NO_TOKEN);
 			});
+	}, []);
+
+	useEffect(() => (): void => {
+		if (initialNavigationTimer.current !== null) {
+			clearTimeout(initialNavigationTimer.current);
+		}
 	}, []);
 
 	useEffect(() => {

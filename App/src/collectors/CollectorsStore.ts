@@ -1,9 +1,12 @@
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReactionCollectorStop, COLLECTOR_STOP_REASONS} from "ws-packets/src/fromServer/common/ReactionCollectorStop";
 import {ReactionCollectorReactReq} from "ws-packets/src/fromClient/ReactionCollectorReactReq";
+import {CommandGetCurrentReactionCollectorsReq} from "ws-packets/src/fromClient/GetCurrentReactionCollectorsReq";
+import {CommandGetCurrentReactionCollectorsRes} from "ws-packets/src/fromServer/getCurrentReactionCollectors/GetCurrentReactionCollectorsRes";
 import {CITY_DATA_KINDS, ReactionCollectorDataKind} from "ws-packets/src/fromServer/collectors";
 import {ReportStayInCity} from "ws-packets/src/fromServer/report/ReportStayInCity";
 import {makeFromClientPacket} from "ws-packets/src/MakePackets";
+import {AppConstants} from "@/src/AppConstants";
 import {WebSocketClient} from "@/src/networking/WebSocketClient";
 
 type StoreListener = () => void;
@@ -48,6 +51,25 @@ class CollectorsStore {
 	};
 
 	public readonly isAnswerPending = (collectorId: string): boolean => this.answering.has(collectorId);
+
+	/**
+	 * Rehydrates collectors that were created while the app was backgrounded or reconnecting.
+	 * Pushed packets are not replayed by the websocket server, so relying on them alone leaves the
+	 * adventure tab empty even though the player is still in a city (or has a pending event).
+	 */
+	public readonly syncCurrent = (): void => {
+		WebSocketClient.getInstance().sendPacket(
+			makeFromClientPacket(CommandGetCurrentReactionCollectorsReq, {}),
+			{
+				[CommandGetCurrentReactionCollectorsRes.name]: (packet: CommandGetCurrentReactionCollectorsRes): void => {
+					for (const collector of packet.collectors) {
+						this.track(collector);
+					}
+				}
+			},
+			{time: AppConstants.PACKET_TIMEOUT}
+		);
+	};
 
 	public readonly track = (collector: ReactionCollectorCreation): void => {
 		if (this.open.has(collector.id)) {

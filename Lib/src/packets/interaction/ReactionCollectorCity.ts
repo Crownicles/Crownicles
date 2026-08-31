@@ -36,6 +36,14 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 	availableServices!: CityService[];
 
+	/** Services hosted by other cities, shown as an informational catalogue in mobile. */
+	otherCityServices?: {
+		mapLocationId: number;
+		mapLocationIds?: number[];
+		serviceKey: string;
+		kind: "service" | "shop";
+	}[];
+
 	/**
 	 * If set, the Discord side should auto-navigate to this menu after rendering.
 	 * Used to keep the player in the chest menu after a deposit/withdraw action.
@@ -299,6 +307,9 @@ export class ReactionCollectorCityData extends ReactionCollectorData {
 
 		/** Player level snapshot — used for the "not worthy" RP message. */
 		playerLevel: number;
+
+		/** Minimum player level required to use the royal blacksmith. */
+		requiredPlayerLevel: number;
 
 		/** Items currently at level 4 that the Royal Blacksmith can push to level 5. */
 		upgradeableItems: {

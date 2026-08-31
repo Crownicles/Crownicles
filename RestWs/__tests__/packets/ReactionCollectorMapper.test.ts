@@ -10,6 +10,9 @@ import {
 	ReactionCollectorDrinkReaction
 } from "../../../Lib/src/packets/interaction/ReactionCollectorDrink";
 import {ReactionCollectorBigEvent} from "../../../Lib/src/packets/interaction/ReactionCollectorBigEvent";
+import {ReactionCollectorShop} from "../../../Lib/src/packets/interaction/ReactionCollectorShop";
+import {ShopCurrency} from "../../../Lib/src/constants/ShopConstants";
+import {ShopItemType} from "../../../Lib/src/constants/LogsConstants";
 import {
 	ReactionCollectorChooseDestination,
 	ReactionCollectorChooseDestinationReaction
@@ -25,6 +28,7 @@ import {
 	GENERIC_REACTION_KINDS, REPORT_COLLECTOR_DATA_KINDS, REPORT_COLLECTOR_REACTION_KINDS,
 	UNKNOWN_COLLECTOR_KIND
 } from "../../../WsPackets/src/fromServer/collectors";
+import {SHOP_DATA_KINDS, SHOP_REACTION_KINDS} from "../../../WsPackets/src/fromServer/collectors";
 import { mapCollectorCreation } from "../../src/packets/fromServer/collectors/ReactionCollectorMapper";
 import {
 	defineReactionMapping, indexMappings
@@ -149,6 +153,39 @@ describe("mapCollectorCreation", () => {
 				data: {mapId: 42, mapTypeId: "port", tripDuration: 15 * 60_000}
 			},
 			{type: REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, data: {}}
+		]);
+	});
+
+	it("translates a city shop while preserving its indexed purchase choices", () => {
+		const packet = new ReactionCollectorShop([{
+			id: "permanentItem",
+			items: [{
+				id: ShopItemType.RANDOM_ITEM,
+				price: 350,
+				amounts: [1],
+				buyCallback: () => true
+			}]
+		}], 1_000, {
+			currency: ShopCurrency.MONEY,
+			remainingPotions: 4
+		}).creationPacket("shop-collector", END_TIME);
+
+		const mapped = mapCollectorCreation(packet);
+
+		expect(mapped.data).toStrictEqual({
+			type: SHOP_DATA_KINDS.COLLECTOR,
+			data: {
+				availableCurrency: 1_000,
+				currency: ShopCurrency.MONEY,
+				additionalShopData: {remainingPotions: 4}
+			}
+		});
+		expect(mapped.reactions).toStrictEqual([
+			{
+				type: SHOP_REACTION_KINDS.ITEM,
+				data: {shopCategoryId: "permanentItem", shopItemId: ShopItemType.RANDOM_ITEM, price: 350, amount: 1}
+			},
+			{type: SHOP_REACTION_KINDS.CLOSE, data: {}}
 		]);
 	});
 

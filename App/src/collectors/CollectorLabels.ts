@@ -5,6 +5,7 @@ import {
 	SMALL_EVENT_DATA_KINDS, SMALL_EVENT_REACTION_KINDS,
 	ITEM_DATA_KINDS, ITEM_REACTION_KINDS,
 	CITY_DATA_KINDS, CITY_REACTION_KINDS,
+	SHOP_DATA_KINDS, SHOP_REACTION_KINDS,
 	SMALL_EVENT_BAD_PET_ACTION_IDS, SMALL_EVENT_GOBLET_IDS, SMALL_EVENT_GOBLET_STRATEGIES,
 	UNKNOWN_COLLECTOR_KIND, GardenerConditionKey,
 	SmallEventBadPetActionId, SmallEventGobletId, SmallEventGobletStrategy,
@@ -28,6 +29,34 @@ const ITEM_TYPES_BY_CATEGORY = [
 	"potion",
 	"object"
 ] as const;
+
+/** The numeric ids come from Lib's ShopItemType enum and are kept stable on the wire. */
+const SHOP_ITEM_KEYS = [
+	"dailyPotion", "randomItem", "alterationHeal", "fullRegen", "slotExtension", "moneyMouthBadge",
+	"commonFood", "herbivorousFood", "carnivorousFood", "ultimateFood", "money", "treasure", "kingsFavor",
+	"skipMission", "lovePointsValue", "smallGuildXp", "energyHeal", "bigGuildXp", "questMasterBadge", "token",
+	"plantSlotExtension", "weeklyPlantTier1", "weeklyPlantTier2", "weeklyPlantTier3", "marketAnalysis",
+	"woodCommonBundle", "woodUncommonBundle", "randomMaterialPack", "remoteHarvestTalisman", "tokenCharity"
+] as const;
+
+export function shopItemKey(shopItemId: number): string {
+	return SHOP_ITEM_KEYS[shopItemId] ?? `item-${shopItemId}`;
+}
+
+export function shopItemName(shopItemId: number): string {
+	const key = shopItemKey(shopItemId);
+	// The daily potion is the only shop item whose Discord label is built from
+	// the category (the concrete potion is supplied in additionalShopData).
+	// There is deliberately no `shopItems.dailyPotion.name` translation, so do
+	// not leak the i18next key into the mobile UI.
+	return key === "dailyPotion"
+		? i18n.t("app:city.shop.dailyPotion")
+		: i18n.t(`commands:shop.shopItems.${key}.name`);
+}
+
+function shopCurrencyIcon(currency: "money" | "gem"): string {
+	return AppIcons.getIcon(`unitValues.${currency}`);
+}
 
 const MILLISECONDS_PER_MINUTE = 60_000;
 
@@ -220,6 +249,7 @@ const COLLECTOR_TITLE_HANDLERS: Record<ReactionCollectorData["type"], () => stri
 	[REPORT_COLLECTOR_DATA_KINDS.BUY_HEAL]: () => i18n.t("app:adventure.heal.use.title"),
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.title"),
 	[CITY_DATA_KINDS.CITY]: () => i18n.t("app:collector.titles.city"),
+	[SHOP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:city.shop.title"),
 	[UNKNOWN_COLLECTOR_KIND]: () => i18n.t("app:collector.titles.unknown")
 };
 
@@ -260,6 +290,7 @@ const COLLECTOR_DESCRIPTION_HANDLERS: Record<ReactionCollectorData["type"], Data
 	})),
 	[REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT]: () => i18n.t("app:adventure.tokens.merchant.description"),
 	[CITY_DATA_KINDS.CITY]: () => undefined,
+	[SHOP_DATA_KINDS.COLLECTOR]: () => i18n.t("app:city.shop.description"),
 	[UNKNOWN_COLLECTOR_KIND]: () => undefined
 };
 
@@ -337,6 +368,18 @@ const REACTION_LABEL_HANDLERS: Record<ReactionCollectorReaction["type"], Reactio
 		const price = amount * data.data.pricePerToken;
 		return i18n.t(amount === 1 ? "app:adventure.tokens.merchant.buyOne" : "app:adventure.tokens.merchant.buyMany", {amount, price});
 	}),
+	[SHOP_REACTION_KINDS.ITEM]: makeReactionHandler(SHOP_REACTION_KINDS.ITEM, (reaction, data) => {
+		if (!isDataOfType(data, SHOP_DATA_KINDS.COLLECTOR)) {
+			return i18n.t("app:collector.unknownChoice");
+		}
+		return i18n.t("app:city.shop.item", {
+			item: shopItemName(reaction.data.shopItemId),
+			amount: reaction.data.amount,
+			price: reaction.data.price,
+			currency: shopCurrencyIcon(data.data.currency)
+		});
+	}),
+	[SHOP_REACTION_KINDS.CLOSE]: () => withIcon("collectors.refuse", i18n.t("app:city.shop.close")),
 	[CITY_REACTION_KINDS.EXIT]: makeReactionHandler(CITY_REACTION_KINDS.EXIT, () => withIcon("other.walking", i18n.t("commands:report.city.reactions.exit.label"))),
 	[CITY_REACTION_KINDS.INN_MEAL]: makeReactionHandler(CITY_REACTION_KINDS.INN_MEAL, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.inns.meals.${reaction.data.mealId}`))} · ${i18n.t("commands:report.city.inns.mealDescription", reaction.data)}`),
 	[CITY_REACTION_KINDS.INN_ROOM]: makeReactionHandler(CITY_REACTION_KINDS.INN_ROOM, reaction => `${withIcon("city.inn", i18n.t(`commands:report.city.inns.rooms.${reaction.data.roomId}`))} · ${i18n.t("commands:report.city.inns.roomDescription", reaction.data)}`),
@@ -390,6 +433,8 @@ const CHOOSABLE_HANDLERS: Record<ReactionCollectorReaction["type"], ChoosableHan
 	[REPORT_COLLECTOR_REACTION_KINDS.DESTINATION]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.DESTINATION, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
 	[REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.STAY_IN_CITY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.DESTINATION)),
 	[REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY]: makeChoosableHandler(REPORT_COLLECTOR_REACTION_KINDS.TOKEN_MERCHANT_BUY, (_reaction, data) => isDataOfType(data, REPORT_COLLECTOR_DATA_KINDS.TOKEN_MERCHANT)),
+	[SHOP_REACTION_KINDS.ITEM]: makeChoosableHandler(SHOP_REACTION_KINDS.ITEM, (_reaction, data) => isDataOfType(data, SHOP_DATA_KINDS.COLLECTOR)),
+	[SHOP_REACTION_KINDS.CLOSE]: makeChoosableHandler(SHOP_REACTION_KINDS.CLOSE, (_reaction, data) => isDataOfType(data, SHOP_DATA_KINDS.COLLECTOR)),
 	[CITY_REACTION_KINDS.EXIT]: makeChoosableHandler(CITY_REACTION_KINDS.EXIT, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
 	[CITY_REACTION_KINDS.INN_MEAL]: makeChoosableHandler(CITY_REACTION_KINDS.INN_MEAL, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),
 	[CITY_REACTION_KINDS.INN_ROOM]: makeChoosableHandler(CITY_REACTION_KINDS.INN_ROOM, (_reaction, data) => isDataOfType(data, CITY_DATA_KINDS.CITY)),

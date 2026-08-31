@@ -2731,10 +2731,12 @@ export const CrowniclesIcons: {
 		shops: {
 			royalMarket: "💎",
 			generalShop: "🛒",
+			materialMerchant: "📦",
 			stockExchange: "💎",
 			tanner: "🧳",
 			herbalist: "🌿",
-			lumberjack: "🪵"
+			lumberjack: "🪵",
+			veterinarian: "🧑‍⚕️"
 		},
 		home: {
 			1: "🏕️",

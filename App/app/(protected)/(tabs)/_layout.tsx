@@ -110,7 +110,7 @@ export default function TabLayout() {
 
 	return (
 		<GameQueryProvider authState={authState}>
-			<CollectorsProvider>
+			<CollectorsProvider authState={authState}>
 				<TabLayoutContent />
 				<OpenCollectors />
 			</CollectorsProvider>

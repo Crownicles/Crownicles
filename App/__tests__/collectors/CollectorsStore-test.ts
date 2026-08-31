@@ -3,6 +3,7 @@ import {WebSocketClient} from "@/src/networking/WebSocketClient";
 import {COLLECTOR_STOP_REASONS, ReactionCollectorStop} from "ws-packets/src/fromServer/common/ReactionCollectorStop";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {ReactionCollectorReactReq} from "ws-packets/src/fromClient/ReactionCollectorReactReq";
+import {CommandGetCurrentReactionCollectorsRes} from "ws-packets/src/fromServer/getCurrentReactionCollectors/GetCurrentReactionCollectorsRes";
 import {CITY_DATA_KINDS} from "ws-packets/src/fromServer/collectors";
 import {ReportStayInCity} from "ws-packets/src/fromServer/report/ReportStayInCity";
 
@@ -85,5 +86,21 @@ describe("CollectorsStore", () => {
 
 		expect(resolution).toHaveBeenCalledWith(CITY_DATA_KINDS.CITY);
 		unsubscribe();
+	});
+
+	it("rehydrates collectors returned after a reconnect", () => {
+		const sendPacket = jest.spyOn(WebSocketClient.getInstance(), "sendPacket").mockImplementation();
+		sendPacket.mockClear();
+		const current = collector("collector-reconnected");
+
+		collectorsStore.syncCurrent();
+		const handlers = sendPacket.mock.calls[0]?.[1];
+		const response = new CommandGetCurrentReactionCollectorsRes();
+		response.collectors = [current];
+		handlers[CommandGetCurrentReactionCollectorsRes.name](response as never);
+
+		expect(collectorsStore.getSnapshot()).toEqual([current]);
+		collectorsStore.removeExpired(Number.MAX_SAFE_INTEGER);
+		sendPacket.mockRestore();
 	});
 });

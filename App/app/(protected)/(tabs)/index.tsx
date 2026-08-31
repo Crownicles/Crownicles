@@ -25,6 +25,7 @@ import {
 	ReportBuyHealRefusedRes
 } from "ws-packets/src/fromServer/report/ReportHealRes";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
+import {Blocked} from "ws-packets/src/fromServer/common/Blocked";
 import {AppIcons} from "@/src/AppIcons";
 import {GameAnswer, GameClient} from "@/src/networking/GameClient";
 import {RequestState, useGameQuery} from "@/src/store/useGameQuery";
@@ -139,7 +140,7 @@ function useCurrentTime(): number {
 }
 
 function requestReport(): Promise<GameAnswer<ReportTravelSummaryRes>> {
-	return GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [ReactionCollectorCreation]);
+	return GameClient.request(makeFromClientPacket(ReportReq, {}), ReportTravelSummaryRes, [ReactionCollectorCreation, Blocked]);
 }
 
 function requestTokenAdvance(): Promise<GameAnswer<ReactionCollectorCreation>> {
