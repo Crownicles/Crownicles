@@ -1,4 +1,3 @@
-// @codescene(disable:"Overall Code Complexity")
 import {ReactNode, useState} from "react";
 import {ReactionCollectorCreation} from "ws-packets/src/fromServer/common/ReactionCollectorCreation";
 import {
@@ -7,7 +6,8 @@ import {
 } from "ws-packets/src/fromServer/collectors";
 import {AppIcons} from "@/src/AppIcons";
 import {isChoosable, reactionLabel} from "@/src/collectors/CollectorLabels";
-import {Button, ButtonRow, Hero, KeyValue, Note, Panel, Row, Screen, SectionHeader, StatBar} from "@/src/design/Primitives";
+import {CitySnapshotSummary} from "@/src/collectors/CitySnapshotSummary";
+import {Button, ButtonRow, Hero, Note, Panel, Row, Screen, SectionHeader} from "@/src/design/Primitives";
 import {Theme} from "@/src/design/Theme";
 import {TwemojiIcon} from "@/src/design/TwemojiIcon";
 import {i18n} from "@/src/translations/i18n";
@@ -1161,167 +1161,6 @@ function submenuTitle(view: CitySubmenu, innId?: string): {eyebrow: string; titl
 	};
 }
 
-// @codescene(disable:"Complex Method", disable:"Large Method", disable:"Complex Conditional")
-function citySnapshotSummary(view: CitySubmenu, snapshot: CityMobileSnapshot | undefined): ReactNode {
-	if (!snapshot) {
-		return null;
-	}
-	if (view === "inn" && snapshot.energy && snapshot.health) {
-		return <Panel>
-			<StatBar
-				label={i18n.t("app:city.summary.energy")}
-				value={`${snapshot.energy.current} / ${snapshot.energy.max} ${AppIcons.getIcon("unitValues.energy")}`}
-				ratio={snapshot.energy.max > 0 ? snapshot.energy.current / snapshot.energy.max : 0}
-				color={Theme.colors.green}
-			/>
-			<StatBar
-				label={i18n.t("app:city.summary.health")}
-				value={`${snapshot.health.current} / ${snapshot.health.max} ${AppIcons.getIcon("unitValues.health")}`}
-				ratio={snapshot.health.max > 0 ? snapshot.health.current / snapshot.health.max : 0}
-				color={Theme.colors.red}
-			/>
-		</Panel>;
-	}
-	if (view === "home" && snapshot.home?.owned) {
-		const home = snapshot.home.owned;
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.homeType")} value={home.isApartment ? i18n.t("app:city.summary.apartment") : i18n.t("app:city.summary.mainHome")} />
-			<KeyValue label={i18n.t("app:city.summary.level")} value={String(home.level)} />
-			<KeyValue label={i18n.t("app:city.summary.cooking")} value={home.cookingLevel === undefined ? "—" : String(home.cookingLevel)} />
-			<KeyValue label={i18n.t("app:city.summary.bedRegeneration")} value={`+${home.bedHealthRegeneration} ${AppIcons.getIcon("unitValues.health")}`} />
-			<KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={String(home.gardenPlots)} />
-			<KeyValue label={i18n.t("app:city.summary.upgradeableItems")} value={String(home.upgradeableItemCount)} />
-			<KeyValue label={i18n.t("app:city.summary.services")} value={[
-					home.hasBed ? i18n.t("app:city.summary.bed") : null,
-					home.hasChest ? i18n.t("app:city.summary.chest") : null,
-					home.hasGarden ? i18n.t("app:city.summary.garden") : null,
-					home.hasCooking ? i18n.t("app:city.summary.cooking") : null,
-					home.hasUpgradeStation ? i18n.t("app:city.summary.forge") : null
-			].filter(Boolean).join(" · ") || "—"} />
-		</Panel>;
-	}
-	if (view === "homeBed" && snapshot.home?.owned && snapshot.health) {
-		const home = snapshot.home.owned;
-		return <Panel>
-			<StatBar
-				label={i18n.t("app:city.summary.health")}
-				value={`${snapshot.health.current} / ${snapshot.health.max} ${AppIcons.getIcon("unitValues.health")}`}
-				ratio={snapshot.health.max > 0 ? snapshot.health.current / snapshot.health.max : 0}
-				color={Theme.colors.red}
-			/>
-			<KeyValue label={i18n.t("app:city.summary.bedRegeneration")} value={`+${home.bedHealthRegeneration} ${AppIcons.getIcon("unitValues.health")}`} />
-			<KeyValue label={i18n.t("app:city.summary.available")} value={snapshot.health.current < snapshot.health.max ? i18n.t("app:common.yes") : i18n.t("app:city.summary.fullHealth")} />
-		</Panel>;
-	}
-	if (view === "homeChest" && snapshot.home?.owned) {
-		const home = snapshot.home.owned;
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.storedItems")} value={String(home.chestItemCount ?? 0)} />
-			<KeyValue label={i18n.t("app:city.summary.depositableItems")} value={String(home.depositableItemCount ?? 0)} />
-		</Panel>;
-	}
-	if (view === "homeCooking" && snapshot.home?.owned) {
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.cooking")} value={String(snapshot.home.owned.cookingLevel ?? 0)} />
-			<KeyValue label={i18n.t("app:city.summary.cookingSlots")} value={String(snapshot.home.owned.cookingSlots ?? 0)} />
-			<KeyValue label={i18n.t("app:city.summary.cookingStatus")} value={i18n.t("app:city.summary.cookingStatusUnavailable")} />
-		</Panel>;
-	}
-	if (view === "homeGarden" && snapshot.home?.owned) {
-		const home = snapshot.home.owned;
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.gardenPlots")} value={`${home.gardenReadyPlots ?? 0} / ${home.gardenTotalPlots ?? home.gardenPlots}`} />
-			<KeyValue label={i18n.t("app:city.summary.upgradeableItems")} value={String(home.upgradeableItemCount)} />
-		</Panel>;
-	}
-	if (view === "homeUpgrade" && snapshot.home?.owned) {
-		const home = snapshot.home.owned;
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.level")} value={String(home.level)} />
-			<KeyValue label={i18n.t("app:city.summary.upgradeableItems")} value={String(home.upgradeableItemCount)} />
-		</Panel>;
-	}
-	if (view === "notary") {
-		const manage = snapshot.home?.manage;
-		const apartment = snapshot.apartmentNotary;
-		const hasApartmentDetails = Boolean(apartment?.forSale) || (apartment?.ownedCount ?? 0) > 0;
-		if (!manage && !hasApartmentDetails && !snapshot.guildDomainNotary) {
-			return null;
-		}
-		return <Panel>
-			{manage?.currentMoney !== undefined ? <KeyValue label={i18n.t("app:city.summary.money")} value={formatMoney(manage.currentMoney)} /> : null}
-			{manage?.upgradePrice !== undefined ? <KeyValue label={i18n.t("app:city.summary.upgradePrice")} value={formatMoney(manage.upgradePrice)} /> : null}
-			{manage?.newPrice !== undefined ? <KeyValue label={i18n.t("app:city.summary.purchasePrice")} value={formatMoney(manage.newPrice)} /> : null}
-			{manage?.movePrice !== undefined ? <KeyValue label={i18n.t("app:city.summary.movePrice")} value={formatMoney(manage.movePrice)} /> : null}
-			{apartment?.forSale ? <KeyValue label={i18n.t("app:city.summary.apartmentPrice")} value={apartment.forSale.canAfford
-				? formatMoney(apartment.forSale.price)
-				: i18n.t("app:city.summary.missingMoney", {amount: formatMoney(apartment.forSale.missingMoney ?? 0)})} /> : null}
-			{apartment && apartment.ownedCount > 0 ? <KeyValue label={i18n.t("app:city.summary.rents")} value={`${apartment.ownedCount} · ${formatMoney(apartment.accumulatedRent)}`} /> : null}
-			{snapshot.guildDomainNotary ? <KeyValue label={i18n.t("app:city.summary.domain")} value={snapshot.guildDomainNotary.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} /> : null}
-			{snapshot.guildDomainNotary ? <KeyValue label={i18n.t("app:city.summary.domainCost")} value={formatMoney(snapshot.guildDomainNotary.cost)} /> : null}
-		</Panel>;
-	}
-	if (view === "enchanter" && snapshot.enchanter) {
-		const data = snapshot.enchanter;
-		const compatibleItemType = data.enchantmentSlot === 0
-			? i18n.t("items:weapon", {count: 1})
-			: i18n.t("items:armor", {count: 1});
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.enchantment")} value={`${AppIcons.getIcon(`enchantmentTypes.${data.enchantmentType}`)} ${i18n.t(`items:enchantments.${data.enchantmentId}`)}`} />
-			<KeyValue label={i18n.t("app:city.summary.compatibleWith")} value={compatibleItemType} />
-			<KeyValue label={i18n.t("app:city.summary.price")} value={`${formatMoney(data.enchantmentCost.money)} · ${data.enchantmentCost.gems} ${AppIcons.getIcon("unitValues.gem")}`} />
-			<KeyValue label={i18n.t("app:city.summary.money")} value={`${formatMoney(data.playerMoney)} · ${data.playerGems} ${AppIcons.getIcon("unitValues.gem")}`} />
-			<KeyValue label={i18n.t("app:city.summary.discount")} value={data.mageReduction ? i18n.t("app:common.yes") : i18n.t("app:common.no")} />
-			<KeyValue label={i18n.t("app:city.summary.eligibleItems")} value={String(data.enchantableItems.length)} />
-		</Panel>;
-	}
-	if (view === "blacksmith" && snapshot.blacksmith) {
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.money")} value={formatMoney(snapshot.blacksmith.playerMoney)} />
-			<KeyValue label={i18n.t("app:city.summary.upgrades")} value={String(snapshot.blacksmith.upgradeableItems.length)} />
-			<KeyValue label={i18n.t("app:city.summary.disenchantable")} value={String(snapshot.blacksmith.disenchantableItems.length)} />
-		</Panel>;
-	}
-	if (view === "scrapDealer" && snapshot.scrapDealer) {
-		return <Panel><KeyValue label={i18n.t("app:city.summary.recyclableItems")} value={String(snapshot.scrapDealer.recyclableItems.length)} /></Panel>;
-	}
-	if (view === "royalBlacksmith" && snapshot.royalBlacksmith) {
-		const data = snapshot.royalBlacksmith;
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.status")} value={i18n.t(`app:city.status.${data.status}`)} />
-			<KeyValue label={i18n.t("app:city.summary.requiredPlayerLevel")} value={String(data.requiredPlayerLevel)} />
-			<KeyValue label={i18n.t("app:city.summary.playerLevel")} value={String(data.playerLevel)} />
-			<KeyValue label={i18n.t("app:city.summary.money")} value={formatMoney(data.playerMoney)} />
-			<KeyValue label={i18n.t("app:city.summary.gems")} value={`${data.playerGems} ${AppIcons.getIcon("unitValues.gem")}`} />
-		</Panel>;
-	}
-	if (view === "guild" && snapshot.guildDomain) {
-		const guild = snapshot.guildDomain;
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.guild")} value={guild.guildName} />
-			<KeyValue label={i18n.t("app:city.summary.guildLevel")} value={String(guild.guildLevel)} />
-			<KeyValue label={i18n.t("app:city.summary.treasury")} value={formatMoney(guild.treasury)} />
-			<KeyValue label={i18n.t("app:city.summary.money")} value={formatMoney(guild.playerMoney)} />
-			<KeyValue label={i18n.t("app:city.summary.buildings")} value={i18n.t("app:city.summary.buildingLevels", {
-				shop: guild.shopLevel,
-				shelter: guild.shelterLevel,
-				pantry: guild.pantryLevel,
-				training: guild.trainingGroundLevel
-			})} />
-			<KeyValue label={i18n.t("app:city.summary.foodStock")} value={i18n.t("app:city.summary.foodStockDetails", guild.food)} />
-		</Panel>;
-	}
-	if (view === "guild" && snapshot.guildDomainNotary) {
-		const notary = snapshot.guildDomainNotary;
-		return <Panel>
-			<KeyValue label={i18n.t("app:city.summary.domain")} value={notary.hasDomain ? i18n.t("app:common.yes") : i18n.t("app:common.no")} />
-			<KeyValue label={i18n.t("app:city.summary.domainCost")} value={formatMoney(notary.cost)} />
-			<KeyValue label={i18n.t("app:city.summary.treasury")} value={formatMoney(notary.treasury)} />
-		</Panel>;
-	}
-	return null;
-}
-
 // @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function citySnapshotNote(view: CitySubmenu, snapshot: CityMobileSnapshot | undefined): ReactNode {
 	if (view === "blacksmith" && snapshot?.blacksmith) {
@@ -1383,7 +1222,7 @@ function CitySubmenuView({view, innId, entries, collector, snapshot, onChoose, o
 	return (
 		<Screen>
 			<Hero eyebrow={details.eyebrow} title={`${icon ? `${icon} ` : ""}${details.title}`} subtitle={details.subtitle} />
-			{citySnapshotSummary(view, snapshot)}
+			<CitySnapshotSummary view={view} snapshot={snapshot} />
 			{visibleSections.map((section, index) => (
 				<CitySection
 					key={section.title}
