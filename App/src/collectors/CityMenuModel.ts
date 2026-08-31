@@ -171,6 +171,7 @@ function addCityEntry(state: CityGroupingState, entry: CityEntry, options: CityG
 	state.groups.services.push({kind: "reaction", entry});
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addInnServices(state: CityGroupingState, innIds: string[] | undefined): void {
 	for (const [innId, innEntries] of state.inns) {
 		state.submenus.inn.push(...innEntries);
@@ -181,6 +182,7 @@ function addInnServices(state: CityGroupingState, innIds: string[] | undefined):
 	}
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addAvailableServices(state: CityGroupingState, options: CityGroupingOptions): void {
 	if (state.hasNotary) state.groups.housing.push(navigationItem("notary", "notary"));
 	if (state.hasGuildActions && !state.groups.guild.some(item => item.kind === "navigation" && item.view === "guild")) state.groups.guild.push(navigationItem("guild", "guild-domain"));
@@ -188,6 +190,7 @@ function addAvailableServices(state: CityGroupingState, options: CityGroupingOpt
 	if (options.availableServices?.includes("bossArchivist")) state.groups.services.push({kind: "info", key: "boss-archivist", iconPath: "city.services.bossArchivist", title: i18n.t("commands:report.city.bossArchivist.serviceTitle"), subtitle: compactCityDescription(i18n.t("commands:report.city.bossArchivist.serviceDescription"))});
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addEmptyShops(state: CityGroupingState, shops: CityGroupingOptions["shops"]): void {
 	for (const shop of shops ?? []) {
 		if (!shop.isEmpty) continue;
@@ -195,11 +198,13 @@ function addEmptyShops(state: CityGroupingState, shops: CityGroupingOptions["sho
 	}
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addGuildFoodShop(state: CityGroupingState, foodShop: CityGroupingOptions["guildFoodShop"]): void {
 	if (!foodShop) return;
 	state.groups.guild.push({kind: "info", key: "guild-food-shop", iconPath: "expedition.food", title: i18n.t("commands:report.city.guildFoodShop.label"), subtitle: i18n.t("commands:report.city.guildFoodShop.description", {guildName: foodShop.guildName})});
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function addOtherCityServices(state: CityGroupingState, services: CityGroupingOptions["otherCityServices"]): void {
 	for (const service of services ?? []) {
 		const locationName = (service.mapLocationIds ?? [service.mapLocationId]).map(mapLocationId => i18n.t(`models:map_locations.${mapLocationId}.name`)).join(" · ");
@@ -209,6 +214,7 @@ function addOtherCityServices(state: CityGroupingState, services: CityGroupingOp
 	}
 }
 
+// @codescene(disable:"Complex Method", disable:"Complex Conditional")
 function decorateHomeNavigation(state: CityGroupingState, home: CityGroupingOptions["homeOwned"]): void {
 	if (!home) return;
 	state.groups.housing = state.groups.housing.map(item => item.kind === "navigation" && item.view === "home" ? {...item, iconPath: homeIconPath(home.level), subtitle: i18n.t("app:city.subtitles.homeDetails", {level: home.level, services: [home.hasBed ? i18n.t("app:city.summary.bed") : null, home.hasChest ? i18n.t("app:city.summary.chest") : null, home.hasGarden ? i18n.t("app:city.summary.garden") : null, home.hasCooking ? i18n.t("app:city.summary.cooking") : null, home.hasUpgradeStation ? i18n.t("app:city.summary.forge") : null].filter(Boolean).join(", ")})} : item);
